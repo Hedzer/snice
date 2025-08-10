@@ -7,7 +7,7 @@ describe('CSS scoping', () => {
   });
 
   describe('basic scoping', () => {
-    it('should scope CSS selectors to component tag name', () => {
+    it('should add CSS without scoping in Shadow DOM', () => {
       @element('scoped-component')
       class ScopedComponent extends HTMLElement {
         css() {
@@ -18,11 +18,11 @@ describe('CSS scoping', () => {
       const el = document.createElement('scoped-component');
       document.body.appendChild(el);
       
-      const style = el.querySelector('style[data-component-css]');
-      expect(style?.textContent).toContain('scoped-component .test { color: red; }');
+      const style = el.shadowRoot?.querySelector('style[data-component-css]');
+      expect(style?.textContent).toContain('.test { color: red; }');
     });
 
-    it('should scope multiple selectors', () => {
+    it('should add multiple selectors without scoping in Shadow DOM', () => {
       @element('multi-scope')
       class MultiScope extends HTMLElement {
         css() {
@@ -37,15 +37,15 @@ describe('CSS scoping', () => {
       const el = document.createElement('multi-scope');
       document.body.appendChild(el);
       
-      const style = el.querySelector('style[data-component-css]');
+      const style = el.shadowRoot?.querySelector('style[data-component-css]');
       const css = style?.textContent || '';
       
-      expect(css).toContain('multi-scope .header { color: blue; }');
-      expect(css).toContain('multi-scope .content { color: green; }');
-      expect(css).toContain('multi-scope .footer { color: red; }');
+      expect(css).toContain('.header { color: blue; }');
+      expect(css).toContain('.content { color: green; }');
+      expect(css).toContain('.footer { color: red; }');
     });
 
-    it('should scope complex selectors', () => {
+    it('should add complex selectors without scoping in Shadow DOM', () => {
       @element('complex-scope')
       class ComplexScope extends HTMLElement {
         css() {
@@ -60,12 +60,12 @@ describe('CSS scoping', () => {
       const el = document.createElement('complex-scope');
       document.body.appendChild(el);
       
-      const style = el.querySelector('style[data-component-css]');
+      const style = el.shadowRoot?.querySelector('style[data-component-css]');
       const css = style?.textContent || '';
       
-      expect(css).toContain('complex-scope .parent .child { color: red; }');
-      expect(css).toContain('complex-scope div.class1.class2 { color: blue; }');
-      expect(css).toContain('complex-scope [data-attr="value"] { color: green; }');
+      expect(css).toContain('.parent .child { color: red; }');
+      expect(css).toContain('div.class1.class2 { color: blue; }');
+      expect(css).toContain('[data-attr="value"] { color: green; }');
     });
   });
 
@@ -88,14 +88,14 @@ describe('CSS scoping', () => {
       const el = document.createElement('media-component');
       document.body.appendChild(el);
       
-      const style = el.querySelector('style[data-component-css]');
+      const style = el.shadowRoot?.querySelector('style[data-component-css]');
       const css = style?.textContent || '';
       
       expect(css).toContain('@media (min-width: 600px)');
       expect(css).toContain('@media print');
-      // Content inside media queries should still be scoped
-      expect(css).toContain('media-component .test { color: blue; }');
-      expect(css).toContain('media-component .test { display: none; }');
+      // Content inside media queries no longer scoped with Shadow DOM
+      expect(css).toContain('.test { color: blue; }');
+      expect(css).toContain('.test { display: none; }');
     });
 
     it('should not scope @keyframes', () => {
@@ -115,12 +115,12 @@ describe('CSS scoping', () => {
       const el = document.createElement('keyframe-component');
       document.body.appendChild(el);
       
-      const style = el.querySelector('style[data-component-css]');
+      const style = el.shadowRoot?.querySelector('style[data-component-css]');
       const css = style?.textContent || '';
       
       expect(css).toContain('@keyframes slide');
       expect(css).toContain('from { left: 0; }');
-      expect(css).toContain('keyframe-component .animated { animation: slide 1s; }');
+      expect(css).toContain('.animated { animation: slide 1s; }');
     });
 
     it('should not scope @supports', () => {
@@ -138,11 +138,11 @@ describe('CSS scoping', () => {
       const el = document.createElement('supports-component');
       document.body.appendChild(el);
       
-      const style = el.querySelector('style[data-component-css]');
+      const style = el.shadowRoot?.querySelector('style[data-component-css]');
       const css = style?.textContent || '';
       
       expect(css).toContain('@supports (display: grid)');
-      expect(css).toContain('supports-component .grid { display: grid; }');
+      expect(css).toContain('.grid { display: grid; }');
     });
 
     it('should not scope @import', () => {
@@ -159,7 +159,7 @@ describe('CSS scoping', () => {
       const el = document.createElement('import-component');
       document.body.appendChild(el);
       
-      const style = el.querySelector('style[data-component-css]');
+      const style = el.shadowRoot?.querySelector('style[data-component-css]');
       const css = style?.textContent || '';
       
       expect(css).toContain('@import url');
@@ -184,12 +184,12 @@ describe('CSS scoping', () => {
       const el = document.createElement('array-css');
       document.body.appendChild(el);
       
-      const style = el.querySelector('style[data-component-css]');
+      const style = el.shadowRoot?.querySelector('style[data-component-css]');
       const css = style?.textContent || '';
       
-      expect(css).toContain('array-css .first { color: red; }');
-      expect(css).toContain('array-css .second { color: blue; }');
-      expect(css).toContain('array-css .third { color: green; }');
+      expect(css).toContain('.first { color: red; }');
+      expect(css).toContain('.second { color: blue; }');
+      expect(css).toContain('.third { color: green; }');
     });
 
     it('should handle empty array', () => {
@@ -203,7 +203,7 @@ describe('CSS scoping', () => {
       const el = document.createElement('empty-array-css');
       document.body.appendChild(el);
       
-      const style = el.querySelector('style[data-component-css]');
+      const style = el.shadowRoot?.querySelector('style[data-component-css]');
       expect(style?.textContent).toBe('');
     });
 
@@ -224,13 +224,13 @@ describe('CSS scoping', () => {
       const el = document.createElement('array-join');
       document.body.appendChild(el);
       
-      const style = el.querySelector('style[data-component-css]');
+      const style = el.shadowRoot?.querySelector('style[data-component-css]');
       const css = style?.textContent || '';
       
       // Comments should be preserved
       expect(css).toContain('/* First section */');
       expect(css).toContain('/* Second section */');
-      // Selectors should be scoped (but with newlines)
+      // Selectors no longer scoped with Shadow DOM
       expect(css).toContain('.one { color: red; }');
       expect(css).toContain('.two { color: blue; }');
     });
@@ -248,7 +248,7 @@ describe('CSS scoping', () => {
       const el = document.createElement('style-attr');
       document.body.appendChild(el);
       
-      const style = el.querySelector('style[data-component-css]');
+      const style = el.shadowRoot?.querySelector('style[data-component-css]');
       expect(style).toBeDefined();
       expect(style?.hasAttribute('data-component-css')).toBe(true);
     });
@@ -265,15 +265,15 @@ describe('CSS scoping', () => {
       
       // Connect
       document.body.appendChild(el);
-      let styles = el.querySelectorAll('style[data-component-css]');
-      expect(styles.length).toBe(1);
+      let styles = el.shadowRoot?.querySelectorAll('style[data-component-css]');
+      expect(styles?.length).toBe(1);
       
       // Disconnect and reconnect
       document.body.removeChild(el);
       document.body.appendChild(el);
       
-      styles = el.querySelectorAll('style[data-component-css]');
-      expect(styles.length).toBe(1);
+      styles = el.shadowRoot?.querySelectorAll('style[data-component-css]');
+      expect(styles?.length).toBe(1);
     });
 
     it('should append style element as last child', () => {
@@ -291,7 +291,7 @@ describe('CSS scoping', () => {
       const el = document.createElement('style-position');
       document.body.appendChild(el);
       
-      const lastChild = el.lastElementChild;
+      const lastChild = el.shadowRoot?.lastElementChild;
       expect(lastChild?.tagName).toBe('STYLE');
       expect(lastChild?.hasAttribute('data-component-css')).toBe(true);
     });

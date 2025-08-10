@@ -4,7 +4,6 @@ import { page } from '../router';
 export class AboutPage extends HTMLElement {
   html() {
     return /*html*/`
-      <app-nav></app-nav>
       <div class="container">
         <div class="about-content">
           <h1>About Snice</h1>

@@ -25,7 +25,7 @@ describe('@element decorator', () => {
     const el = document.createElement('test-html');
     document.body.appendChild(el);
     
-    expect(el.innerHTML).toBe('<div>Test Content</div>');
+    expect(el.shadowRoot?.innerHTML).toContain('<div>Test Content</div>');
   });
 
   it('should call css() method and add styles', () => {
@@ -42,7 +42,7 @@ describe('@element decorator', () => {
     const el = document.createElement('test-css');
     document.body.appendChild(el);
     
-    const style = el.querySelector('style[data-component-css]');
+    const style = el.shadowRoot?.querySelector('style');
     expect(style).toBeDefined();
     expect(style?.textContent).toContain('.test { color: red; }');
   });
@@ -58,7 +58,7 @@ describe('@element decorator', () => {
     const el = document.createElement('test-css-array');
     document.body.appendChild(el);
     
-    const style = el.querySelector('style[data-component-css]');
+    const style = el.shadowRoot?.querySelector('style');
     expect(style?.textContent).toContain('.test { color: red; }');
     expect(style?.textContent).toContain('.other { color: blue; }');
   });

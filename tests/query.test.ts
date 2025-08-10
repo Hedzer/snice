@@ -137,11 +137,11 @@ describe('query decorators', () => {
       
       expect(el.dynamicEl).toBeNull();
       
-      // Add element dynamically
+      // Add element dynamically to shadow DOM
       const div = document.createElement('div');
       div.className = 'dynamic';
       div.textContent = 'Dynamic';
-      el.appendChild(div);
+      el.shadowRoot?.appendChild(div);
       
       expect(el.dynamicEl).toBeDefined();
       expect(el.dynamicEl?.textContent).toBe('Dynamic');
@@ -256,12 +256,12 @@ describe('query decorators', () => {
       
       expect(el.dynamicEls?.length).toBe(0);
       
-      // Add elements dynamically
+      // Add elements dynamically to shadow DOM
       for (let i = 1; i <= 3; i++) {
         const div = document.createElement('div');
         div.className = 'dynamic';
         div.textContent = `Dynamic ${i}`;
-        el.appendChild(div);
+        el.shadowRoot?.appendChild(div);
       }
       
       expect(el.dynamicEls?.length).toBe(3);

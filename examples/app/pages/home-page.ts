@@ -5,7 +5,16 @@ import { containerStyles } from '../styles/shared';
 export class HomePage extends HTMLElement {
   html() {
     return /*html*/`
-      <app-nav></app-nav>
+      <nav class="navbar">
+        <div class="nav-container">
+          <h1 class="nav-brand">Snice</h1>
+          <ul class="nav-menu">
+            <li><a href="#/" class="nav-link active">Home</a></li>
+            <li><a href="#/todos" class="nav-link">Todos</a></li>
+            <li><a href="#/about" class="nav-link">About</a></li>
+          </ul>
+        </div>
+      </nav>
       <div class="container">
         <div class="hero">
           <h1>Welcome to Snice</h1>
@@ -38,6 +47,52 @@ export class HomePage extends HTMLElement {
     return [
       containerStyles,
       /*css*/`
+        .navbar {
+          background: white;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          position: sticky;
+          top: 0;
+          z-index: 100;
+        }
+        
+        .nav-container {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 1rem 2rem;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        
+        .nav-brand {
+          font-size: 1.5rem;
+          color: #333;
+          margin: 0;
+        }
+        
+        .nav-menu {
+          display: flex;
+          list-style: none;
+          gap: 2rem;
+          margin: 0;
+          padding: 0;
+        }
+        
+        .nav-link {
+          color: #666;
+          text-decoration: none;
+          font-weight: 500;
+          transition: color 0.3s;
+        }
+        
+        .nav-link:hover {
+          color: #667eea;
+        }
+        
+        .nav-link.active {
+          color: #667eea;
+        }
+        
         .container {
           min-height: calc(100vh - 60px);
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -112,7 +167,12 @@ export class HomePage extends HTMLElement {
           gap: 1.5rem;
           justify-content: center;
           margin-top: 4rem;
+          margin-bottom: 4rem;
+          padding: 2rem 0;
           flex-wrap: wrap;
+          position: relative;
+          z-index: 10;
+          min-height: auto;
         }
         
         .btn {
@@ -125,6 +185,7 @@ export class HomePage extends HTMLElement {
           cursor: pointer;
           border: none;
           display: inline-block;
+          line-height: 1.5;
         }
         
         .btn-primary {

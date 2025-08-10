@@ -25,7 +25,7 @@ describe('@on decorator', () => {
     const el = document.createElement('test-click');
     document.body.appendChild(el);
     
-    const btn = el.querySelector('.btn') as HTMLElement;
+    const btn = el.shadowRoot?.querySelector('.btn') as HTMLElement;
     btn.click();
     
     expect(clickHandler).toHaveBeenCalledTimes(1);
@@ -74,7 +74,7 @@ describe('@on decorator', () => {
     const el = document.createElement('test-delegated');
     document.body.appendChild(el);
     
-    const item = el.querySelector('.item[data-index="1"]') as HTMLElement;
+    const item = el.shadowRoot?.querySelector('.item[data-index="1"]') as HTMLElement;
     item.click();
     
     expect(clickHandler).toHaveBeenCalledTimes(1);
@@ -129,8 +129,8 @@ describe('@on decorator', () => {
     const el = document.createElement('test-multi-events');
     document.body.appendChild(el);
     
-    const btn = el.querySelector('.btn') as HTMLElement;
-    const input = el.querySelector('.input') as HTMLInputElement;
+    const btn = el.shadowRoot?.querySelector('.btn') as HTMLElement;
+    const input = el.shadowRoot?.querySelector('.input') as HTMLInputElement;
     
     btn.click();
     expect(clickHandler).toHaveBeenCalledTimes(1);

@@ -309,9 +309,9 @@ describe('race conditions and async edge cases', () => {
       // Rapidly change DOM
       for (let i = 0; i < 100; i++) {
         if (i % 2 === 0) {
-          el.innerHTML = '<div class="target">Target</div>';
+          if (el.shadowRoot) el.shadowRoot.innerHTML = '<div class="target">Target</div>';
         } else {
-          el.innerHTML = '<div class="other">Other</div>';
+          if (el.shadowRoot) el.shadowRoot.innerHTML = '<div class="other">Other</div>';
         }
       }
       
@@ -504,7 +504,7 @@ describe('race conditions and async edge cases', () => {
       const el = document.createElement('reconnect-events');
       document.body.appendChild(el);
       
-      const btn = el.querySelector('.btn') as HTMLElement;
+      const btn = el.shadowRoot?.querySelector('.btn') as HTMLElement;
       
       // Click works
       btn.click();
@@ -521,7 +521,7 @@ describe('race conditions and async edge cases', () => {
       document.body.appendChild(el);
       
       // Get new button reference after reconnection
-      const newBtn = el.querySelector('.btn') as HTMLElement;
+      const newBtn = el.shadowRoot?.querySelector('.btn') as HTMLElement;
       
       // Click after reconnection
       newBtn.click();
@@ -562,7 +562,7 @@ describe('race conditions and async edge cases', () => {
       const el = document.createElement('bubble-race');
       document.body.appendChild(el);
       
-      const inner = el.querySelector('.inner') as HTMLElement;
+      const inner = el.shadowRoot?.querySelector('.inner') as HTMLElement;
       inner.click();
       
       // With event delegation, handlers fire in registration order
@@ -594,7 +594,7 @@ describe('race conditions and async edge cases', () => {
       const el = document.createElement('error-in-handler');
       document.body.appendChild(el);
       
-      const btn = el.querySelector('.btn') as HTMLElement;
+      const btn = el.shadowRoot?.querySelector('.btn') as HTMLElement;
       
       // Should not prevent other handlers
       expect(() => btn.click()).not.toThrow();

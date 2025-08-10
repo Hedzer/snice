@@ -29,7 +29,7 @@ describe('edge cases and error handling', () => {
       const el = document.createElement('empty-element');
       document.body.appendChild(el);
       
-      expect(el.innerHTML).toBe('');
+      expect(el.shadowRoot?.innerHTML).toBe('');
     });
 
     it('should handle html() throwing an error', () => {
@@ -122,7 +122,7 @@ describe('edge cases and error handling', () => {
       const el = document.createElement('multi-handler');
       document.body.appendChild(el);
       
-      const btn = el.querySelector('.btn') as HTMLElement;
+      const btn = el.shadowRoot?.querySelector('.btn') as HTMLElement;
       btn.click();
       
       expect(handler1).toHaveBeenCalled();
@@ -180,7 +180,7 @@ describe('edge cases and error handling', () => {
       const el = document.createElement('stop-propagation');
       document.body.appendChild(el);
       
-      const child = el.querySelector('.child') as HTMLElement;
+      const child = el.shadowRoot?.querySelector('.child') as HTMLElement;
       child.click();
       
       expect(childHandler).toHaveBeenCalled();
@@ -223,8 +223,8 @@ describe('edge cases and error handling', () => {
       
       expect(el.dynamic).toBeNull();
       
-      // Change innerHTML
-      el.innerHTML = '<div class="dynamic">Dynamic</div>';
+      // Change shadowRoot innerHTML
+      if (el.shadowRoot) el.shadowRoot.innerHTML = '<div class="dynamic">Dynamic</div>';
       
       // Query is reactive, should find it now
       expect(el.dynamic).toBeDefined();
@@ -382,7 +382,7 @@ describe('edge cases and error handling', () => {
       navigate('/search/test');
       
       const el = targetEl.querySelector('query-page');
-      expect(el?.innerHTML).toBe('<div>Searching for: test</div>');
+      expect(el?.shadowRoot?.innerHTML).toBe('<div>Searching for: test</div>');
     });
   });
 
@@ -402,7 +402,7 @@ describe('edge cases and error handling', () => {
       const el = document.createElement('pseudo-class');
       document.body.appendChild(el);
       
-      const style = el.querySelector('style[data-component-css]');
+      const style = el.shadowRoot?.querySelector('style[data-component-css]');
       const css = style?.textContent || '';
       
       expect(css).toContain('.btn:hover { color: blue; }');
@@ -423,7 +423,7 @@ describe('edge cases and error handling', () => {
       const el = document.createElement('pseudo-element');
       document.body.appendChild(el);
       
-      const style = el.querySelector('style[data-component-css]');
+      const style = el.shadowRoot?.querySelector('style[data-component-css]');
       const css = style?.textContent || '';
       
       expect(css).toContain('.item::before { content: "→"; }');
@@ -445,7 +445,7 @@ describe('edge cases and error handling', () => {
       const el = document.createElement('long-css');
       document.body.appendChild(el);
       
-      const style = el.querySelector('style[data-component-css]');
+      const style = el.shadowRoot?.querySelector('style[data-component-css]');
       expect(style?.textContent?.length).toBeGreaterThan(2000);
     });
   });
@@ -469,12 +469,12 @@ describe('edge cases and error handling', () => {
       const parent = document.createElement('parent-element');
       document.body.appendChild(parent);
       
-      const child = parent.querySelector('child-element');
+      const child = parent.shadowRoot?.querySelector('child-element');
       expect(child).toBeDefined();
-      expect(child?.innerHTML).toBe('<div>Child Content</div>');
+      expect(child?.shadowRoot?.innerHTML).toBe('<div>Child Content</div>');
     });
 
-    it('should handle deeply nested custom elements', () => {
+    it('should handle deeply nested custom elements', async () => {
       @element('level-1')
       class Level1 extends HTMLElement {
         html() {
@@ -499,9 +499,15 @@ describe('edge cases and error handling', () => {
       const el = document.createElement('level-1');
       document.body.appendChild(el);
       
-      const deep = el.querySelector('level-3');
+      // Wait a microtask for nested elements to be connected
+      await new Promise(resolve => setTimeout(resolve, 0));
+      
+      const level2 = el.shadowRoot?.querySelector('level-2');
+      expect(level2).toBeDefined();
+      
+      const deep = level2?.shadowRoot?.querySelector('level-3');
       expect(deep).toBeDefined();
-      expect(deep?.innerHTML).toBe('<div>Deep Content</div>');
+      expect(deep?.shadowRoot?.innerHTML).toBe('<div>Deep Content</div>');
     });
   });
 
@@ -547,11 +553,11 @@ describe('edge cases and error handling', () => {
       expect(el.content).toBeDefined();
       expect(el.content?.querySelector('h1')?.textContent).toBe('Custom Title');
       
-      const btn = el.querySelector('.btn') as HTMLElement;
+      const btn = el.shadowRoot?.querySelector('.btn') as HTMLElement;
       btn.click();
       expect(clickHandler).toHaveBeenCalledWith('Custom Title');
       
-      const style = el.querySelector('style[data-component-css]');
+      const style = el.shadowRoot?.querySelector('style[data-component-css]');
       expect(style).toBeDefined();
     });
   });

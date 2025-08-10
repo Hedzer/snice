@@ -63,34 +63,40 @@ export function Router(options: RouterOptions) {
       const originalDisconnectedCallback = constructor.prototype.disconnectedCallback;
       
       constructor.prototype.connectedCallback = function() {
-        // Check if there's html method
+        // Create shadow root if it doesn't exist
+        if (!this.shadowRoot) {
+          this.attachShadow({ mode: 'open' });
+        }
+        
+        // Build the shadow DOM content
+        let shadowContent = '';
+        
+        // Add HTML first (maintaining original order)
         if (this.html) {
           const htmlContent = this.html();
           if (htmlContent !== undefined) {
-            this.innerHTML = htmlContent;
+            shadowContent += htmlContent;
           }
         }
         
-        // Check if there's css method - MUST come after HTML
+        // Add CSS after HTML (maintaining original order)
         if (this.css) {
           const cssResult = this.css();
           if (cssResult) {
             // Handle both string and array of strings
             const cssContent = Array.isArray(cssResult) ? cssResult.join('\n') : cssResult;
-            
-            // Check if style doesn't already exist
-            let styleEl = this.querySelector('style[data-component-css]');
-            if (!styleEl) {
-              styleEl = document.createElement('style');
-              styleEl.setAttribute('data-component-css', '');
-              styleEl.textContent = cssContent;
-              this.appendChild(styleEl);
-            }
+            // No need for scoping with Shadow DOM, but add data attribute for compatibility
+            shadowContent += `<style data-component-css>${cssContent}</style>`;
           }
         }
         
+        // Set shadow DOM content
+        if (shadowContent) {
+          this.shadowRoot.innerHTML = shadowContent;
+        }
+        
         originalConnectedCallback?.call(this);
-        // Setup @on event handlers
+        // Setup @on event handlers - use element for host events, shadow root for delegated events
         setupEventHandlers(this, this);
       };
       

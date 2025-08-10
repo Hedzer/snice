@@ -17,29 +17,3 @@ body {
   margin: 0 auto;
   padding: 2rem;
 }
-
-/* Shared button styles */
-.btn {
-  padding: 0.75rem 2rem;
-  border-radius: 6px;
-  text-decoration: none;
-  font-weight: 600;
-  transition: transform 0.2s;
-  cursor: pointer;
-  border: none;
-}
-
-.btn:hover {
-  transform: translateY(-2px);
-}
-
-.btn-primary {
-  background: #667eea;
-  color: white;
-}
-
-.btn-secondary {
-  background: white;
-  color: #667eea;
-  border: 2px solid #667eea;
-}

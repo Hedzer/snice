@@ -10,7 +10,6 @@ export class TodoPage extends HTMLElement {
   
   html() {
     return /*html*/`
-      <app-nav></app-nav>
       <div class="todo-wrapper" controller="todo-controller">
         <div class="todo-header">
           <h1>✨ Todo List</h1>
@@ -40,7 +39,7 @@ export class TodoPage extends HTMLElement {
   css() {
     return /*css*/`
       .todo-wrapper {
-        min-height: calc(100vh - 80px);
+        min-height: 100vh;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         padding: 3rem 1rem;
       }
@@ -90,6 +89,8 @@ export class TodoPage extends HTMLElement {
         font-size: 1rem;
         background: white;
         transition: all 0.2s ease;
+        font-family: inherit;
+        color: #333;
       }
       
       .todo-input:focus {
@@ -116,6 +117,9 @@ export class TodoPage extends HTMLElement {
         gap: 0.5rem;
         transition: all 0.2s ease;
         white-space: nowrap;
+        font-family: inherit;
+        min-width: 120px;
+        justify-content: center;
       }
       
       .add-btn:hover {

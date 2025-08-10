@@ -36,7 +36,7 @@ describe('element lifecycle', () => {
       document.body.appendChild(el);
       
       expect(htmlSpy).toHaveBeenCalled();
-      expect(el.innerHTML).toBe('<div>Content</div>');
+      expect(el.shadowRoot?.innerHTML).toBe('<div>Content</div>');
     });
 
     it('should call css() method after html()', () => {
@@ -72,7 +72,7 @@ describe('element lifecycle', () => {
       const el = document.createElement('undefined-html');
       document.body.appendChild(el);
       
-      expect(el.innerHTML).toBe('');
+      expect(el.shadowRoot?.innerHTML).toBe('');
     });
 
     it('should handle css() returning undefined', () => {
@@ -86,7 +86,7 @@ describe('element lifecycle', () => {
       const el = document.createElement('undefined-css');
       document.body.appendChild(el);
       
-      const style = el.querySelector('style[data-component-css]');
+      const style = el.shadowRoot?.querySelector('style[data-component-css]');
       expect(style).toBeNull();
     });
 
@@ -101,7 +101,7 @@ describe('element lifecycle', () => {
       const el = document.createElement('empty-css');
       document.body.appendChild(el);
       
-      const style = el.querySelector('style[data-component-css]');
+      const style = el.shadowRoot?.querySelector('style[data-component-css]');
       expect(style).toBeNull();
     });
   });
@@ -240,7 +240,7 @@ describe('element lifecycle', () => {
       const el = document.createElement('alias-element');
       document.body.appendChild(el);
       
-      expect(el.innerHTML).toBe('<div>Alias Works</div>');
+      expect(el.shadowRoot?.innerHTML).toBe('<div>Alias Works</div>');
     });
   });
 
@@ -266,7 +266,7 @@ describe('element lifecycle', () => {
       expect(el).toBeInstanceOf(CreateTest);
       
       document.body.appendChild(el);
-      expect(el.innerHTML).toBe('<div>Created</div>');
+      expect(el.shadowRoot?.innerHTML).toBe('<div>Created</div>');
     });
 
     it('should be instantiable via innerHTML', () => {
@@ -283,7 +283,7 @@ describe('element lifecycle', () => {
       
       const el = container.querySelector('inner-html-test');
       expect(el).toBeInstanceOf(InnerHTMLTest);
-      expect(el?.innerHTML).toBe('<div>Via innerHTML</div>');
+      expect(el?.shadowRoot?.innerHTML).toBe('<div>Via innerHTML</div>');
     });
   });
 
@@ -303,7 +303,7 @@ describe('element lifecycle', () => {
       document.body.removeChild(el);
       document.body.appendChild(el);
       
-      const styles = el.querySelectorAll('style[data-component-css]');
+      const styles = el.shadowRoot?.querySelectorAll('style[data-component-css]');
       expect(styles.length).toBe(1);
     });
 
@@ -320,11 +320,11 @@ describe('element lifecycle', () => {
       
       const el = document.createElement('rerender-test');
       document.body.appendChild(el);
-      expect(el.innerHTML).toBe('<div>Render 1</div>');
+      expect(el.shadowRoot?.innerHTML).toBe('<div>Render 1</div>');
       
       document.body.removeChild(el);
       document.body.appendChild(el);
-      expect(el.innerHTML).toBe('<div>Render 2</div>');
+      expect(el.shadowRoot?.innerHTML).toBe('<div>Render 2</div>');
     });
   });
 });

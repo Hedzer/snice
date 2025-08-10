@@ -67,44 +67,35 @@ describe('shadow DOM event handling', () => {
     expect(clickHandler).toHaveBeenCalled(); // Works in happy-dom, not in browsers
   });
 
-  it('should handle events in light DOM even with shadow DOM present', () => {
-    const lightClick = vi.fn();
+  it('should handle events within shadow DOM', () => {
     const shadowClick = vi.fn();
+    const hostClick = vi.fn();
     
-    @element('mixed-dom')
-    class MixedDom extends HTMLElement {
-      connectedCallback() {
-        // Add light DOM content
-        this.innerHTML = '<button class="light-btn">Light Button</button>';
-        
-        // Also add shadow DOM
-        const shadow = this.attachShadow({ mode: 'open' });
-        shadow.innerHTML = '<button class="shadow-btn">Shadow Button</button>';
+    @element('shadow-events')
+    class ShadowEvents extends HTMLElement {
+      html() {
+        return '<button class="shadow-btn">Shadow Button</button>';
       }
       
-      @on('click', '.light-btn')
-      handleLightClick(e: Event) {
-        lightClick(e);
+      @on('click', '.shadow-btn')
+      handleShadowClick(e: Event) {
+        shadowClick(e);
       }
       
       @on('click')
-      handleAnyClick(e: Event) {
-        shadowClick(e);
+      handleHostClick(e: Event) {
+        hostClick(e);
       }
     }
     
-    const el = document.createElement('mixed-dom');
+    const el = document.createElement('shadow-events');
     document.body.appendChild(el);
     
-    // Light DOM button should work with selector
-    const lightButton = el.querySelector('.light-btn') as HTMLElement;
-    lightButton?.click();
-    expect(lightClick).toHaveBeenCalled();
-    
-    // Shadow DOM button click should bubble to host
+    // Shadow DOM button click should trigger both handlers
     const shadowButton = el.shadowRoot?.querySelector('.shadow-btn') as HTMLElement;
     shadowButton?.click();
     expect(shadowClick).toHaveBeenCalled();
+    expect(hostClick).toHaveBeenCalled();
   });
 
   it('should handle non-composed events correctly', () => {
@@ -173,7 +164,7 @@ describe('shadow DOM event handling', () => {
     const el = document.createElement('regular-dom');
     document.body.appendChild(el);
     
-    const button = el.querySelector('.btn') as HTMLElement;
+    const button = el.shadowRoot?.querySelector('.btn') as HTMLElement;
     button?.click();
     
     // With regular DOM, everything just works

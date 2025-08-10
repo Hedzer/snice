@@ -46,37 +46,36 @@ export function element(tagName: string) {
       // Clean up any existing event handlers first (for reconnection)
       cleanupEventHandlers(this);
       
-      // Check if there's html method
+      // Create shadow root if it doesn't exist
+      if (!this.shadowRoot) {
+        this.attachShadow({ mode: 'open' });
+      }
+      
+      // Build the shadow DOM content
+      let shadowContent = '';
+      
+      // Add HTML first (maintaining original order)
       if (this.html) {
         const htmlContent = this.html();
         if (htmlContent !== undefined) {
-          this.innerHTML = htmlContent;
+          shadowContent += htmlContent;
         }
       }
       
-      // Check if there's css method - MUST come after HTML
+      // Add CSS after HTML (maintaining original order)
       if (this.css) {
         const cssResult = this.css();
         if (cssResult) {
           // Handle both string and array of strings
           const cssContent = Array.isArray(cssResult) ? cssResult.join('\n') : cssResult;
-          
-          // Check if style doesn't already exist
-          let styleEl = this.querySelector('style[data-component-css]');
-          if (!styleEl) {
-            styleEl = document.createElement('style');
-            styleEl.setAttribute('data-component-css', '');
-            // Add scoping to the component
-            const scopedCss = cssContent.replace(/([^{}]+){/g, (match: string, selector: string) => {
-              // Don't scope keyframes or media queries
-              if (selector.includes('@')) return match;
-              // Add the tag name as a scope
-              return `${tagName} ${selector.trim()} {`;
-            });
-            styleEl.textContent = scopedCss;
-            this.appendChild(styleEl);
-          }
+          // No need for scoping with Shadow DOM, but add data attribute for compatibility
+          shadowContent += `<style data-component-css>${cssContent}</style>`;
         }
+      }
+      
+      // Set shadow DOM content
+      if (shadowContent) {
+        this.shadowRoot.innerHTML = shadowContent;
       }
       
       originalConnectedCallback?.call(this);
@@ -84,7 +83,7 @@ export function element(tagName: string) {
       if (controllerName) {
         this.controller = controllerName;
       }
-      // Setup @on event handlers (will work on reconnection now)
+      // Setup @on event handlers - use element for host events, shadow root for delegated events
       setupEventHandlers(this, this);
     };
     
@@ -160,9 +159,13 @@ export function query(selector: string) {
   return function (target: any, propertyKey: string) {
     Object.defineProperty(target, propertyKey, {
       get() {
-        // Check if this is a controller (has .element) or a custom element
+        // For elements with shadow DOM, query within shadow root
+        // For controllers, check the element's shadow root first
         const root = this.element || this;
-        return root.shadowRoot?.querySelector(selector) || root.querySelector(selector);
+        if (root.shadowRoot) {
+          return root.shadowRoot.querySelector(selector);
+        }
+        return root.querySelector(selector);
       },
       enumerable: true,
       configurable: true,
@@ -174,9 +177,13 @@ export function queryAll(selector: string) {
   return function (target: any, propertyKey: string) {
     Object.defineProperty(target, propertyKey, {
       get() {
-        // Check if this is a controller (has .element) or a custom element
+        // For elements with shadow DOM, query within shadow root
+        // For controllers, check the element's shadow root first
         const root = this.element || this;
-        return root.shadowRoot?.querySelectorAll(selector) || root.querySelectorAll(selector);
+        if (root.shadowRoot) {
+          return root.shadowRoot.querySelectorAll(selector);
+        }
+        return root.querySelectorAll(selector);
       },
       enumerable: true,
       configurable: true,

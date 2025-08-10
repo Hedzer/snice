@@ -168,8 +168,8 @@ describe('@controller decorator', () => {
     
     // Controller queries aren't automatically set up, need to manually query
     if (ctrl.element) {
-      const testEl = ctrl.element.querySelector('.test');
-      const items = ctrl.element.querySelectorAll('.item');
+      const testEl = ctrl.element.shadowRoot?.querySelector('.test');
+      const items = ctrl.element.shadowRoot?.querySelectorAll('.item');
       expect(testEl).toBeDefined();
       expect(testEl?.className).toBe('test');
       expect(items?.length).toBe(2);

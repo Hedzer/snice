@@ -110,7 +110,7 @@ describe('Router', () => {
       navigate('/non-existent');
       const customNotFound = targetEl.querySelector('custom-404');
       expect(customNotFound).toBeDefined();
-      expect(customNotFound?.innerHTML).toContain('Custom 404 Page');
+      expect(customNotFound?.shadowRoot?.innerHTML).toContain('Custom 404 Page');
     });
 
     it('should respond to hashchange events', async () => {
@@ -177,9 +177,9 @@ describe('Router', () => {
       
       const styledPage = targetEl.querySelector('styled-page');
       expect(styledPage).toBeDefined();
-      expect(styledPage?.innerHTML).toContain('Styled Content');
+      expect(styledPage?.shadowRoot?.innerHTML).toContain('Styled Content');
       
-      const style = styledPage?.querySelector('style[data-component-css]');
+      const style = styledPage?.shadowRoot?.querySelector('style[data-component-css]');
       expect(style).toBeDefined();
       expect(style?.textContent).toContain('.content { color: red; }');
     });
@@ -210,7 +210,7 @@ describe('Router', () => {
       navigate('/multi');
       
       const multiPage = targetEl.querySelector('multi-style');
-      const style = multiPage?.querySelector('style[data-component-css]');
+      const style = multiPage?.shadowRoot?.querySelector('style[data-component-css]');
       expect(style?.textContent).toContain('.one { color: red; }');
       expect(style?.textContent).toContain('.two { color: blue; }');
     });

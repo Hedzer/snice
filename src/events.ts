@@ -19,7 +19,7 @@ export function on(eventName: string, selector?: string) {
 }
 
 // Helper to setup event handlers for elements
-export function setupEventHandlers(instance: any, root: HTMLElement) {
+export function setupEventHandlers(instance: any, element: HTMLElement) {
   const handlers = instance.constructor.prototype[ON_HANDLERS];
   if (!handlers) return;
   
@@ -42,23 +42,29 @@ export function setupEventHandlers(instance: any, root: HTMLElement) {
     };
     
     if (handler.selector) {
-      // Delegated event handling
+      // Delegated event handling - use shadow root if available
+      const eventRoot = element.shadowRoot || element;
       const delegatedHandler = (event: Event) => {
         const target = event.target as HTMLElement;
-        if (target.matches(handler.selector) || target.closest(handler.selector)) {
+        if (target.matches && target.matches(handler.selector)) {
           boundMethod(event);
+        } else if (target.closest) {
+          const closest = target.closest(handler.selector);
+          if (closest) {
+            boundMethod(event);
+          }
         }
       };
       
-      root.addEventListener(handler.eventName, delegatedHandler);
+      eventRoot.addEventListener(handler.eventName, delegatedHandler);
       instance._eventCleanup.push(() => {
-        root.removeEventListener(handler.eventName, delegatedHandler);
+        eventRoot.removeEventListener(handler.eventName, delegatedHandler);
       });
     } else {
-      // Direct event handling
-      root.addEventListener(handler.eventName, boundMethod);
+      // Direct event handling - always on the element itself
+      element.addEventListener(handler.eventName, boundMethod);
       instance._eventCleanup.push(() => {
-        root.removeEventListener(handler.eventName, boundMethod);
+        element.removeEventListener(handler.eventName, boundMethod);
       });
     }
   }
