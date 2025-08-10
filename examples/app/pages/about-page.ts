@@ -7,11 +7,11 @@ export class AboutPage extends HTMLElement {
       <app-nav></app-nav>
       <div class="container">
         <div class="about-content">
-          <h1>About Dark-TS</h1>
+          <h1>About Snice</h1>
           
           <section>
-            <h2>What is Dark-TS?</h2>
-            <p>Dark-TS is a lightweight TypeScript framework for building web applications using Web Components and decorators. It provides a simple, intuitive API inspired by Lit but with a focus on simplicity.</p>
+            <h2>What is Snice?</h2>
+            <p>Snice is a lightweight TypeScript framework for building web applications using Web Components and decorators. It provides a simple, intuitive API inspired by Lit but with a focus on simplicity.</p>
           </section>
           
           <section>
@@ -27,13 +27,13 @@ export class AboutPage extends HTMLElement {
           </section>
           
           <section>
-            <h2>Why Dark-TS?</h2>
-            <p>We built Dark-TS to provide a simpler alternative to existing frameworks while maintaining the power of decorators and TypeScript. No virtual DOM, no complex build steps, just clean, readable code.</p>
+            <h2>Why Snice?</h2>
+            <p>We built Snice to provide a simpler alternative to existing frameworks while maintaining the power of decorators and TypeScript. No virtual DOM, no complex build steps, just clean, readable code.</p>
           </section>
           
           <section>
             <h2>Get Started</h2>
-            <pre><code>npm install dark-ts
+            <pre><code>npm install snice
             
 @element('my-element')
 class MyElement extends HTMLElement {

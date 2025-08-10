@@ -8,7 +8,7 @@ export class AppNav extends HTMLElement {
     return /*html*/`
       <nav class="navbar">
         <div class="nav-container">
-          <h1 class="nav-brand">Dark-TS</h1>
+          <h1 class="nav-brand">Snice</h1>
           <ul class="nav-menu">
             <li><a href="#/" class="nav-link ${currentHash === '#/' ? 'active' : ''}">Home</a></li>
             <li><a href="#/todos" class="nav-link ${currentHash === '#/todos' ? 'active' : ''}">Todos</a></li>

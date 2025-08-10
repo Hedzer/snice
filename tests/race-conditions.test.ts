@@ -355,53 +355,56 @@ describe('race conditions and async edge cases', () => {
   describe('router race conditions', () => {
     it('should handle rapid navigation', () => {
       const targetEl = document.createElement('div');
-      targetEl.id = 'rapid-nav-target';
+      targetEl.id = 'rapid-nav-target-unique';
       document.body.appendChild(targetEl);
       
       const router = Router({
-        target: '#rapid-nav-target',
+        target: '#rapid-nav-target-unique',
         routing_type: 'hash'
       });
       
       const { page, initialize, navigate } = router;
       
-      @page({ tag: 'page-a', routes: ['/a'] })
-      class PageA extends HTMLElement {
+      @page({ tag: 'rapid-page-a', routes: ['/rapid/a'] })
+      class RapidPageA extends HTMLElement {
         html() { return '<div>Page A</div>'; }
       }
       
-      @page({ tag: 'page-b', routes: ['/b'] })
-      class PageB extends HTMLElement {
+      @page({ tag: 'rapid-page-b', routes: ['/rapid/b'] })
+      class RapidPageB extends HTMLElement {
         html() { return '<div>Page B</div>'; }
       }
       
-      @page({ tag: 'page-c', routes: ['/c'] })
-      class PageC extends HTMLElement {
+      @page({ tag: 'rapid-page-c', routes: ['/rapid/c'] })
+      class RapidPageC extends HTMLElement {
         html() { return '<div>Page C</div>'; }
       }
       
       initialize();
       
       // Rapid navigation
-      navigate('/a');
-      navigate('/b');
-      navigate('/c');
-      navigate('/a');
-      navigate('/b');
+      navigate('/rapid/a');
+      navigate('/rapid/b');
+      navigate('/rapid/c');
+      navigate('/rapid/a');
+      navigate('/rapid/b');
       
       // Should end up on page B
-      const currentPage = targetEl.querySelector('page-b');
+      const currentPage = targetEl.querySelector('rapid-page-b');
       expect(currentPage).toBeDefined();
       expect(targetEl.children.length).toBe(1); // Only one page element
+      
+      // Clean up
+      targetEl.remove();
     });
 
     it('should handle navigation during page render', () => {
       const targetEl = document.createElement('div');
-      targetEl.id = 'nav-during-render';
+      targetEl.id = 'nav-during-render-unique';
       document.body.appendChild(targetEl);
       
       const router = Router({
-        target: '#nav-during-render',
+        target: '#nav-during-render-unique',
         routing_type: 'hash'
       });
       
@@ -409,8 +412,8 @@ describe('race conditions and async edge cases', () => {
       
       let slowPageRendered = false;
       
-      @page({ tag: 'slow-page', routes: ['/slow'] })
-      class SlowPage extends HTMLElement {
+      @page({ tag: 'render-slow-page', routes: ['/render/slow'] })
+      class RenderSlowPage extends HTMLElement {
         html() {
           // Simulate slow render
           const start = Date.now();
@@ -422,21 +425,21 @@ describe('race conditions and async edge cases', () => {
         }
       }
       
-      @page({ tag: 'fast-page', routes: ['/fast'] })
-      class FastPage extends HTMLElement {
+      @page({ tag: 'render-fast-page', routes: ['/render/fast'] })
+      class RenderFastPage extends HTMLElement {
         html() { return '<div>Fast Page</div>'; }
       }
       
       initialize();
       
       // Navigate to slow page
-      navigate('/slow');
+      navigate('/render/slow');
       
       // Immediately navigate to fast page
-      navigate('/fast');
+      navigate('/render/fast');
       
       // Should show fast page
-      const currentPage = targetEl.querySelector('fast-page');
+      const currentPage = targetEl.querySelector('render-fast-page');
       expect(currentPage).toBeDefined();
       expect(slowPageRendered).toBe(true); // Slow page still rendered
     });
@@ -444,40 +447,40 @@ describe('race conditions and async edge cases', () => {
     it('should handle hashchange events during navigation', async () => {
       // Create a fresh target element
       const targetEl = document.createElement('div');
-      targetEl.id = 'hashchange-race';
+      targetEl.id = 'hashchange-race-unique';
       document.body.appendChild(targetEl);
       
       const router = Router({
-        target: '#hashchange-race',
+        target: '#hashchange-race-unique',
         routing_type: 'hash'
       });
       
       const { page, initialize, navigate } = router;
       
-      @page({ tag: 'hash-page-1', routes: ['/hash1'] })
-      class HashPage1 extends HTMLElement {
+      @page({ tag: 'hashchange-page-1', routes: ['/hashchange/1'] })
+      class HashchangePage1 extends HTMLElement {
         html() { return '<div>Hash 1</div>'; }
       }
       
-      @page({ tag: 'hash-page-2', routes: ['/hash2'] })
-      class HashPage2 extends HTMLElement {
+      @page({ tag: 'hashchange-page-2', routes: ['/hashchange/2'] })
+      class HashchangePage2 extends HTMLElement {
         html() { return '<div>Hash 2</div>'; }
       }
       
       initialize();
       
       // Programmatic navigation
-      navigate('/hash1');
+      navigate('/hashchange/1');
       
       // Simultaneous hash change
-      window.location.hash = '#/hash2';
+      window.location.hash = '#/hashchange/2';
       window.dispatchEvent(new HashChangeEvent('hashchange'));
       
       // Let events process
       await new Promise(resolve => setTimeout(resolve, 0));
       
       // Should show hash2 page
-      const currentPage = targetEl.querySelector('hash-page-2');
+      const currentPage = targetEl.querySelector('hashchange-page-2');
       expect(currentPage).toBeDefined();
     });
   });

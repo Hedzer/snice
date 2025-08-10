@@ -143,14 +143,20 @@ export function Router(options: RouterOptions) {
     switch (options.routing_type) {
       case 'hash':
         window.addEventListener('hashchange', () => {
-          const path = get_path();
-          navigate(path);
+          // Only navigate if target still exists
+          if (document.querySelector(options.target)) {
+            const path = get_path();
+            navigate(path);
+          }
         });
         break;
       case 'pushstate':
         window.addEventListener('popstate', () => {
-          const path = get_path();
-          navigate(path);
+          // Only navigate if target still exists
+          if (document.querySelector(options.target)) {
+            const path = get_path();
+            navigate(path);
+          }
         });
         break;
     }

@@ -6,7 +6,7 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
       name: 'DarkTS',
-      fileName: 'dark-ts'
+      fileName: 'snice'
     }
   },
   esbuild: {

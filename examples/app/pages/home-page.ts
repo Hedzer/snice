@@ -8,7 +8,7 @@ export class HomePage extends HTMLElement {
       <app-nav></app-nav>
       <div class="container">
         <div class="hero">
-          <h1>Welcome to Dark-TS</h1>
+          <h1>Welcome to Snice</h1>
           <p class="subtitle">A simple, decorator-based framework for building web applications</p>
           <div class="features">
             <div class="feature">
