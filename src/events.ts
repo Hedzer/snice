@@ -29,7 +29,17 @@ export function setupEventHandlers(instance: any, root: HTMLElement) {
   }
   
   for (const handler of handlers) {
-    const boundMethod = handler.method.bind(instance);
+    const originalMethod = handler.method.bind(instance);
+    
+    // Wrap boundMethod in try-catch for error isolation
+    const boundMethod = (event: Event) => {
+      try {
+        return originalMethod(event);
+      } catch (error) {
+        console.error(`Error in event handler ${handler.methodName}:`, error);
+        // Don't rethrow - allow other handlers to continue
+      }
+    };
     
     if (handler.selector) {
       // Delegated event handling

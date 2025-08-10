@@ -27,10 +27,12 @@ export function element(tagName: string) {
         const oldValue = this._controller;
         this._controller = value;
         if (value !== oldValue && value) {
+          // Attach controller asynchronously
           attachController(this, value).catch(error => {
             console.error(`Failed to attach controller "${value}":`, error);
           });
         } else if (!value && oldValue) {
+          // Detach controller asynchronously
           detachController(this).catch(error => {
             console.error(`Failed to detach controller:`, error);
           });
@@ -41,6 +43,9 @@ export function element(tagName: string) {
     });
     
     constructor.prototype.connectedCallback = function() {
+      // Clean up any existing event handlers first (for reconnection)
+      cleanupEventHandlers(this);
+      
       // Check if there's html method
       if (this.html) {
         const htmlContent = this.html();
@@ -79,7 +84,7 @@ export function element(tagName: string) {
       if (controllerName) {
         this.controller = controllerName;
       }
-      // Setup @on event handlers
+      // Setup @on event handlers (will work on reconnection now)
       setupEventHandlers(this, this);
     };
     
@@ -124,6 +129,10 @@ export function property(options?: PropertyOptions) {
       },
       set(this: any, value: any) {
         const oldValue = this[`_${propertyKey}`];
+        
+        // Don't update if value hasn't changed
+        if (oldValue === value) return;
+        
         this[`_${propertyKey}`] = value;
         
         if (options?.reflect && this.setAttribute) {
@@ -134,6 +143,7 @@ export function property(options?: PropertyOptions) {
           }
         }
         
+        // Call requestUpdate if available and value changed
         if (this.requestUpdate) {
           this.requestUpdate(propertyKey, oldValue);
         }

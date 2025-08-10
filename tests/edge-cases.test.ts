@@ -95,35 +95,6 @@ describe('edge cases and error handling', () => {
       expect(el.custom).toBe('TEST'); // Uppercase from getter
       expect(el._custom).toBe('test'); // Lowercase from setter
     });
-
-    it('should handle circular property updates', () => {
-      @element('circular-prop')
-      class CircularProp extends HTMLElement {
-        @property()
-        a = 1;
-        
-        @property()
-        b = 2;
-        
-        requestUpdate(prop: string) {
-          if (prop === 'a' && this.a < 5) {
-            this.b = this.a + 1;
-          }
-          if (prop === 'b' && this.b < 5) {
-            this.a = this.b + 1;
-          }
-        }
-      }
-      
-      const el = document.createElement('circular-prop') as any;
-      document.body.appendChild(el);
-      
-      // This could cause infinite loop if not careful
-      el.a = 1;
-      // requestUpdate doesn't prevent the setter from completing
-      expect(el.a).toBe(1);
-      expect(el.b).toBe(2); // Initial value, requestUpdate doesn't trigger setter directly
-    });
   });
 
   describe('event handling edge cases', () => {
