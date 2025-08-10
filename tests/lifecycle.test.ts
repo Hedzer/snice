@@ -1,0 +1,330 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { element, customElement } from '../src/element';
+import { controller } from '../src/controller';
+
+describe('element lifecycle', () => {
+  beforeEach(() => {
+    document.body.innerHTML = '';
+  });
+
+  describe('connectedCallback', () => {
+    it('should preserve existing connectedCallback', () => {
+      const originalCallback = vi.fn();
+      
+      @element('preserve-connected')
+      class PreserveConnected extends HTMLElement {
+        connectedCallback() {
+          originalCallback(this);
+        }
+      }
+      
+      const el = document.createElement('preserve-connected');
+      document.body.appendChild(el);
+      
+      expect(originalCallback).toHaveBeenCalledWith(el);
+    });
+
+    it('should call html() method', () => {
+      const htmlSpy = vi.fn(() => '<div>Content</div>');
+      
+      @element('test-html-call')
+      class TestHtmlCall extends HTMLElement {
+        html = htmlSpy;
+      }
+      
+      const el = document.createElement('test-html-call');
+      document.body.appendChild(el);
+      
+      expect(htmlSpy).toHaveBeenCalled();
+      expect(el.innerHTML).toBe('<div>Content</div>');
+    });
+
+    it('should call css() method after html()', () => {
+      const order: string[] = [];
+      
+      @element('test-order')
+      class TestOrder extends HTMLElement {
+        html() {
+          order.push('html');
+          return '<div>Content</div>';
+        }
+        
+        css() {
+          order.push('css');
+          return '.test { color: red; }';
+        }
+      }
+      
+      const el = document.createElement('test-order');
+      document.body.appendChild(el);
+      
+      expect(order).toEqual(['html', 'css']);
+    });
+
+    it('should handle html() returning undefined', () => {
+      @element('undefined-html')
+      class UndefinedHtml extends HTMLElement {
+        html() {
+          return undefined;
+        }
+      }
+      
+      const el = document.createElement('undefined-html');
+      document.body.appendChild(el);
+      
+      expect(el.innerHTML).toBe('');
+    });
+
+    it('should handle css() returning undefined', () => {
+      @element('undefined-css')
+      class UndefinedCss extends HTMLElement {
+        css() {
+          return undefined;
+        }
+      }
+      
+      const el = document.createElement('undefined-css');
+      document.body.appendChild(el);
+      
+      const style = el.querySelector('style[data-component-css]');
+      expect(style).toBeNull();
+    });
+
+    it('should handle css() returning empty string', () => {
+      @element('empty-css')
+      class EmptyCss extends HTMLElement {
+        css() {
+          return '';
+        }
+      }
+      
+      const el = document.createElement('empty-css');
+      document.body.appendChild(el);
+      
+      const style = el.querySelector('style[data-component-css]');
+      expect(style).toBeNull();
+    });
+  });
+
+  describe('disconnectedCallback', () => {
+    it('should preserve existing disconnectedCallback', () => {
+      const originalCallback = vi.fn();
+      
+      @element('preserve-disconnected')
+      class PreserveDisconnected extends HTMLElement {
+        disconnectedCallback() {
+          originalCallback(this);
+        }
+      }
+      
+      const el = document.createElement('preserve-disconnected');
+      document.body.appendChild(el);
+      document.body.removeChild(el);
+      
+      expect(originalCallback).toHaveBeenCalledWith(el);
+    });
+
+    it('should detach controller on disconnect', async () => {
+      const detachSpy = vi.fn();
+      
+      @controller('lifecycle-ctrl')
+      class LifecycleController {
+        element: HTMLElement | null = null;
+        async attach(element: HTMLElement) {
+          this.element = element;
+        }
+        async detach() {
+          detachSpy();
+          this.element = null;
+        }
+      }
+      
+      @element('test-controller-detach')
+      class TestControllerDetach extends HTMLElement {}
+      
+      const el = document.createElement('test-controller-detach');
+      el.setAttribute('controller', 'lifecycle-ctrl');
+      document.body.appendChild(el);
+      
+      await new Promise(resolve => setTimeout(resolve, 0));
+      
+      document.body.removeChild(el);
+      await new Promise(resolve => setTimeout(resolve, 0));
+      
+      expect(detachSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('attributeChangedCallback', () => {
+    it('should preserve existing attributeChangedCallback', () => {
+      const originalCallback = vi.fn();
+      
+      @element('preserve-attr-changed')
+      class PreserveAttrChanged extends HTMLElement {
+        static get observedAttributes() {
+          return ['test-attr'];
+        }
+        
+        attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+          originalCallback(name, oldValue, newValue);
+        }
+      }
+      
+      const el = document.createElement('preserve-attr-changed');
+      document.body.appendChild(el);
+      el.setAttribute('test-attr', 'value');
+      
+      expect(originalCallback).toHaveBeenCalledWith('test-attr', null, 'value');
+    });
+
+    it('should observe controller attribute', async () => {
+      const attach1Spy = vi.fn();
+      const attach2Spy = vi.fn();
+      const detach1Spy = vi.fn();
+      
+      @controller('ctrl-a')
+      class ControllerA {
+        element: HTMLElement | null = null;
+        async attach(element: HTMLElement) {
+          attach1Spy(element);
+          this.element = element;
+        }
+        async detach() {
+          detach1Spy();
+          this.element = null;
+        }
+      }
+      
+      @controller('ctrl-b')
+      class ControllerB {
+        element: HTMLElement | null = null;
+        async attach(element: HTMLElement) {
+          attach2Spy(element);
+          this.element = element;
+        }
+        async detach() {
+          this.element = null;
+        }
+      }
+      
+      @element('test-controller-switch')
+      class TestControllerSwitch extends HTMLElement {}
+      
+      const el = document.createElement('test-controller-switch');
+      document.body.appendChild(el);
+      
+      // Set first controller
+      el.setAttribute('controller', 'ctrl-a');
+      await new Promise(resolve => setTimeout(resolve, 0));
+      expect(attach1Spy).toHaveBeenCalled();
+      
+      // Switch to second controller
+      el.setAttribute('controller', 'ctrl-b');
+      await new Promise(resolve => setTimeout(resolve, 0));
+      expect(detach1Spy).toHaveBeenCalled();
+      expect(attach2Spy).toHaveBeenCalled();
+    });
+  });
+
+  describe('customElement alias', () => {
+    it('should work with customElement alias', () => {
+      @customElement('alias-element')
+      class AliasElement extends HTMLElement {
+        html() {
+          return '<div>Alias Works</div>';
+        }
+      }
+      
+      expect(customElements.get('alias-element')).toBeDefined();
+      
+      const el = document.createElement('alias-element');
+      document.body.appendChild(el);
+      
+      expect(el.innerHTML).toBe('<div>Alias Works</div>');
+    });
+  });
+
+  describe('element registration', () => {
+    it('should register element with custom elements registry', () => {
+      @element('registry-test')
+      class RegistryTest extends HTMLElement {}
+      
+      const ElementClass = customElements.get('registry-test');
+      expect(ElementClass).toBeDefined();
+      expect(ElementClass).toBe(RegistryTest);
+    });
+
+    it('should be instantiable via document.createElement', () => {
+      @element('create-test')
+      class CreateTest extends HTMLElement {
+        html() {
+          return '<div>Created</div>';
+        }
+      }
+      
+      const el = document.createElement('create-test');
+      expect(el).toBeInstanceOf(CreateTest);
+      
+      document.body.appendChild(el);
+      expect(el.innerHTML).toBe('<div>Created</div>');
+    });
+
+    it('should be instantiable via innerHTML', () => {
+      @element('inner-html-test')
+      class InnerHTMLTest extends HTMLElement {
+        html() {
+          return '<div>Via innerHTML</div>';
+        }
+      }
+      
+      const container = document.createElement('div');
+      container.innerHTML = '<inner-html-test></inner-html-test>';
+      document.body.appendChild(container);
+      
+      const el = container.querySelector('inner-html-test');
+      expect(el).toBeInstanceOf(InnerHTMLTest);
+      expect(el?.innerHTML).toBe('<div>Via innerHTML</div>');
+    });
+  });
+
+  describe('reconnection', () => {
+    it('should not duplicate styles on reconnect', () => {
+      @element('reconnect-test')
+      class ReconnectTest extends HTMLElement {
+        css() {
+          return '.test { color: green; }';
+        }
+      }
+      
+      const el = document.createElement('reconnect-test');
+      document.body.appendChild(el);
+      
+      // Remove and re-add
+      document.body.removeChild(el);
+      document.body.appendChild(el);
+      
+      const styles = el.querySelectorAll('style[data-component-css]');
+      expect(styles.length).toBe(1);
+    });
+
+    it('should re-render html on reconnect', () => {
+      let renderCount = 0;
+      
+      @element('rerender-test')
+      class RerenderTest extends HTMLElement {
+        html() {
+          renderCount++;
+          return `<div>Render ${renderCount}</div>`;
+        }
+      }
+      
+      const el = document.createElement('rerender-test');
+      document.body.appendChild(el);
+      expect(el.innerHTML).toBe('<div>Render 1</div>');
+      
+      document.body.removeChild(el);
+      document.body.appendChild(el);
+      expect(el.innerHTML).toBe('<div>Render 2</div>');
+    });
+  });
+});
