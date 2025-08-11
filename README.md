@@ -1,6 +1,16 @@
-# snice
+# Snice
 
 A lightweight TypeScript framework for building web components with decorators and routing.
+
+## Core Concepts
+
+Snice provides a clear separation of concerns through three main decorators:
+
+- **`@element`** - Creates custom HTML elements with encapsulated visual behavior and styling
+- **`@controller`** - Handles data fetching, server communication, and business logic separate from visual components  
+- **`@page`** - Sets up routing and navigation between different views
+
+This separation keeps your components focused: elements handle presentation, controllers manage data, and pages define navigation.
 
 ## Quick Start
 
@@ -30,20 +40,38 @@ That's it. Your component renders when added to the DOM:
 
 ## Properties
 
+Properties can be reflected to attributes but do NOT trigger re-renders. The HTML is rendered once when the element connects to the DOM. Use properties for initial configuration.
+
 ```typescript
 import { element, property } from 'snice';
 
-@element('my-counter')
-class MyCounter extends HTMLElement {
-  @property()
-  count = 0;
+@element('user-card')
+class UserCard extends HTMLElement {
+  @property({ reflect: true })
+  name = 'Anonymous';
+  
+  @property({ reflect: true })
+  role = 'User';
+  
+  @property({ type: Boolean })
+  verified = false;
 
   html() {
+    // This renders ONCE with the initial property values
     return `
-      <button id="btn">Count: ${this.count}</button>
+      <div class="card">
+        <h3>${this.name}</h3>
+        <span class="role">${this.role}</span>
+        ${this.verified ? '<span class="badge">✓ Verified</span>' : ''}
+      </div>
     `;
   }
 }
+```
+
+Use it with attributes:
+```html
+<user-card name="Jane Doe" role="Admin" verified></user-card>
 ```
 
 ## Events
@@ -189,72 +217,129 @@ Use it:
 
 ## Complete Example
 
+Here's how the pieces work together - a generic display component filled by a controller:
+
 ```typescript
-import { element, property, on, query } from 'snice';
+import { element, controller, query } from 'snice';
 
-@element('todo-app')
-class TodoApp extends HTMLElement {
-  @property()
-  todos: string[] = [];
-
-  @query('input')
-  input?: HTMLInputElement;
+// Generic card component - purely visual
+@element('info-card')
+class InfoCard extends HTMLElement {
+  @query('.title')
+  titleElement?: HTMLElement;
+  
+  @query('.content')
+  contentElement?: HTMLElement;
+  
+  @query('.footer')
+  footerElement?: HTMLElement;
 
   html() {
     return `
-      <div class="todo-app">
-        <input type="text" placeholder="Add todo" />
-        <button>Add</button>
-        <ul>
-          ${this.todos.map((todo, i) => `
-            <li>
-              ${todo}
-              <button data-index="${i}">Delete</button>
-            </li>
-          `).join('')}
-        </ul>
+      <div class="card">
+        <h2 class="title">Loading...</h2>
+        <div class="content">
+          <div class="skeleton"></div>
+        </div>
+        <div class="footer"></div>
       </div>
     `;
   }
 
   css() {
     return `
-      .todo-app {
+      .card {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 20px;
         max-width: 400px;
-        margin: 0 auto;
       }
-      input {
-        width: 200px;
-        padding: 5px;
+      .title {
+        margin: 0 0 15px 0;
+        color: #333;
       }
-      button {
-        padding: 5px 10px;
+      .content {
+        min-height: 60px;
+      }
+      .skeleton {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        height: 20px;
+        border-radius: 4px;
+        animation: loading 1.5s infinite;
+      }
+      .footer {
+        margin-top: 15px;
+        font-size: 0.9em;
+        color: #666;
+      }
+      @keyframes loading {
+        0% { background-position: -200px 0; }
+        100% { background-position: 200px 0; }
       }
     `;
   }
-
-  @on('click', 'button:not([data-index])')
-  addTodo() {
-    if (this.input?.value) {
-      this.todos = [...this.todos, this.input.value];
-      this.innerHTML = this.html();
-      this.input = this.querySelector('input');
-      this.input!.value = '';
+  
+  // Methods the controller can call to update the display
+  setTitle(title: string) {
+    if (this.titleElement) {
+      this.titleElement.textContent = title;
     }
   }
+  
+  setContent(html: string) {
+    if (this.contentElement) {
+      this.contentElement.innerHTML = html;
+    }
+  }
+  
+  setFooter(text: string) {
+    if (this.footerElement) {
+      this.footerElement.textContent = text;
+    }
+  }
+}
 
-  @on('click', 'button[data-index]')
-  deleteTodo(e: Event) {
-    const index = (e.target as HTMLElement).dataset.index;
-    this.todos = this.todos.filter((_, i) => i !== Number(index));
-    this.innerHTML = this.html();
+// Controller that fetches and populates data
+@controller('weather-controller')
+class WeatherController {
+  element: HTMLElement | null = null;
+  
+  async attach(element: HTMLElement) {
+    this.element = element;
+    
+    // Simulate fetching weather data
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    const weatherData = {
+      location: 'San Francisco',
+      temp: '72°F',
+      conditions: 'Partly Cloudy',
+      humidity: '65%'
+    };
+    
+    // Update the generic card with specific data
+    (element as any).setTitle(weatherData.location);
+    (element as any).setContent(`
+      <p><strong>${weatherData.temp}</strong></p>
+      <p>${weatherData.conditions}</p>
+      <p>Humidity: ${weatherData.humidity}</p>
+    `);
+    (element as any).setFooter('Updated just now');
   }
 }
 ```
 
-## That's It!
+Use the same card with different controllers:
+```html
+<!-- Weather widget -->
+<info-card controller="weather-controller"></info-card>
 
-No build step required for development. Just import and use.
+<!-- Stock widget - same card, different controller -->
+<info-card controller="stock-controller"></info-card>
+
+<!-- News widget - same card, different controller -->
+<info-card controller="news-controller"></info-card>
+```
 
 ## License
 
