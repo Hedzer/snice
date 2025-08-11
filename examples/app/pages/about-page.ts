@@ -1,6 +1,10 @@
 import { page } from '../router';
 
-@page({ tag: 'about-page', routes: ['/about'] })
+@page({ 
+  tag: 'about-page', 
+  routes: ['/about']
+  // Using default fade transition
+})
 export class AboutPage extends HTMLElement {
   html() {
     return /*html*/`

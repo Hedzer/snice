@@ -3,14 +3,22 @@ import { on, query } from '../../../src';
 import '../components/todo-list';
 import '../controllers/todo-controller';
 
-@page({ tag: 'todo-page', routes: ['/todos'] })
+@page({ 
+  tag: 'todo-page', 
+  routes: ['/todos'],
+  // Using default fade transition
+})
 export class TodoPage extends HTMLElement {
   @query('#todo-input')
   todoInput!: HTMLInputElement;
   
+  @query('todo-list')
+  todoList!: HTMLElement;
+  
+  
   html() {
     return /*html*/`
-      <div class="todo-wrapper" controller="todo-controller">
+      <div class="todo-wrapper">
         <div class="todo-header">
           <h1>✨ Todo List</h1>
           <p class="todo-subtitle">Stay organized and productive</p>
@@ -30,7 +38,7 @@ export class TodoPage extends HTMLElement {
             </button>
           </div>
           
-          <todo-list></todo-list>
+          <todo-list controller="todo-controller"></todo-list>
         </div>
       </div>
     `;
@@ -143,11 +151,11 @@ export class TodoPage extends HTMLElement {
   addTodo() {
     const text = this.todoInput.value.trim();
     if (text) {
-      const container = this.querySelector('.todo-wrapper');
-      container?.dispatchEvent(new CustomEvent('add-todo', {
+      const event = new CustomEvent('add-todo', {
         bubbles: true,
         detail: { text }
-      }));
+      });
+      this.todoList?.dispatchEvent(event);
       this.todoInput.value = '';
     }
   }

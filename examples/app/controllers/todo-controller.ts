@@ -9,16 +9,15 @@ interface Todo {
 @controller('todo-controller')
 export class TodoController {
   element: HTMLElement | null = null;
-  todoList: any = null;
   todos: Todo[] = [];
   nextId = 1;
   
   async attach(element: HTMLElement) {
     this.element = element;
-    this.todoList = element.querySelector('todo-list');
     await this.loadTodos();
-    if (this.todoList) {
-      this.todoList.setTodos(this.todos);
+    // The element IS the todo-list, so call setTodos directly on it
+    if ((element as any).setTodos) {
+      (element as any).setTodos(this.todos);
     }
   }
   
@@ -55,14 +54,17 @@ export class TodoController {
     const text = event.detail.text;
     
     if (text) {
-      this.todos.push({
+      const newTodo = {
         id: this.nextId++,
         text,
         completed: false
-      });
+      };
+      this.todos.push(newTodo);
       this.saveTodos();
-      if (this.todoList) {
-        this.todoList.addTodo(this.todos[this.todos.length - 1]);
+      
+      // Set all todos, not just add one
+      if (this.element && (this.element as any).setTodos) {
+        (this.element as any).setTodos(this.todos);
       }
     }
   }
@@ -73,8 +75,8 @@ export class TodoController {
     if (todo) {
       todo.completed = event.detail.completed;
       this.saveTodos();
-      if (this.todoList) {
-        this.todoList.updateTodo(event.detail.id, { completed: event.detail.completed });
+      if (this.element && (this.element as any).updateTodo) {
+        (this.element as any).updateTodo(event.detail.id, { completed: event.detail.completed });
       }
     }
   }
@@ -83,8 +85,8 @@ export class TodoController {
   handleDelete(event: CustomEvent) {
     this.todos = this.todos.filter(t => t.id !== event.detail.id);
     this.saveTodos();
-    if (this.todoList) {
-      this.todoList.removeTodo(event.detail.id);
+    if (this.element && (this.element as any).removeTodo) {
+      (this.element as any).removeTodo(event.detail.id);
     }
   }
   
@@ -92,8 +94,8 @@ export class TodoController {
   handleClearCompleted() {
     this.todos = this.todos.filter(t => !t.completed);
     this.saveTodos();
-    if (this.todoList) {
-      this.todoList.clearCompleted();
+    if (this.element && (this.element as any).clearCompleted) {
+      (this.element as any).clearCompleted();
     }
   }
   

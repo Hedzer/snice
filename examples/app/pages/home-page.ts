@@ -1,7 +1,18 @@
 import { page } from '../router';
 import { containerStyles } from '../styles/shared';
 
-@page({ tag: 'home-page', routes: ['/'] })
+@page({ 
+  tag: 'home-page', 
+  routes: ['/'],
+  // Zoom transition for home page
+  transition: {
+    mode: 'simultaneous',
+    outDuration: 150,
+    inDuration: 150,
+    out: 'opacity: 0; transform: scale(1.05);',
+    in: 'opacity: 1; transform: scale(1);'
+  }
+})
 export class HomePage extends HTMLElement {
   html() {
     return /*html*/`

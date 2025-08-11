@@ -22,7 +22,7 @@ export class TodoItem extends HTMLElement {
           >
           <span class="checkmark"></span>
         </label>
-        <span class="todo-text">${this.text || ''}</span>
+        <span class="todo-text"><slot></slot></span>
         <button class="todo-delete" aria-label="Delete task">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
             <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>

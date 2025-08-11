@@ -1,4 +1,4 @@
-import { element, query, on } from '../../../src';
+import { element, on } from '../../../src';
 import './todo-item';
 
 interface Todo {
@@ -11,14 +11,6 @@ interface Todo {
 export class TodoList extends HTMLElement {
   private todos: Todo[] = [];
   
-  @query('.todo-items')
-  todoItemsContainer!: HTMLElement;
-  
-  @query('.count-number')
-  countNumber!: HTMLElement;
-  
-  @query('.todo-count')
-  todoCount!: HTMLElement;
   
   html() {
     return /*html*/`
@@ -109,30 +101,30 @@ export class TodoList extends HTMLElement {
   
   setTodos(todos: Todo[]) {
     this.todos = todos;
-    this.render();
+    this.updateDisplay();
   }
   
   addTodo(todo: Todo) {
     this.todos.push(todo);
-    this.render();
+    this.updateDisplay();
   }
   
   removeTodo(id: number) {
     this.todos = this.todos.filter(t => t.id !== id);
-    this.render();
+    this.updateDisplay();
   }
   
   updateTodo(id: number, updates: Partial<Todo>) {
     const todo = this.todos.find(t => t.id === id);
     if (todo) {
       Object.assign(todo, updates);
-      this.render();
+      this.updateDisplay();
     }
   }
   
   clearCompleted() {
     this.todos = this.todos.filter(t => !t.completed);
-    this.render();
+    this.updateDisplay();
   }
   
   @on('click', '.clear-completed')
@@ -142,26 +134,31 @@ export class TodoList extends HTMLElement {
     }));
   }
   
-  private render() {
+  private updateDisplay() {
+    // Query elements from shadow root
+    const todoItemsContainer = this.shadowRoot?.querySelector('.todo-items') as HTMLElement;
+    const countNumber = this.shadowRoot?.querySelector('.count-number') as HTMLElement;
+    const todoCount = this.shadowRoot?.querySelector('.todo-count') as HTMLElement;
+    
     // Update todo items
-    if (this.todoItemsContainer) {
-      this.todoItemsContainer.innerHTML = this.todos
+    if (todoItemsContainer) {
+      const todoHtml = this.todos
         .map(todo => /*html*/`<todo-item 
           data-id="${todo.id}" 
-          data-text="${this.escapeHtml(todo.text)}"
           ${todo.completed ? 'data-completed="true"' : ''}
-        ></todo-item>`)
+        >${this.escapeHtml(todo.text)}</todo-item>`)
         .join('');
+      todoItemsContainer.innerHTML = todoHtml;
     }
     
     // Update count
     const count = this.todos.filter(t => !t.completed).length;
-    if (this.countNumber) {
-      this.countNumber.textContent = String(count);
+    if (countNumber) {
+      countNumber.textContent = String(count);
     }
-    if (this.todoCount) {
+    if (todoCount) {
       const itemText = count === 1 ? 'item' : 'items';
-      this.todoCount.innerHTML = /*html*/`<span class="count-number">${count}</span> ${itemText} left`;
+      todoCount.innerHTML = /*html*/`<span class="count-number">${count}</span> ${itemText} left`;
     }
   }
   
