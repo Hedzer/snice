@@ -108,6 +108,9 @@ export function Router(options: RouterOptions) {
       const originalDisconnectedCallback = constructor.prototype.disconnectedCallback;
       
       constructor.prototype.connectedCallback = function() {
+        // Call original connectedCallback first to allow property initialization
+        originalConnectedCallback?.call(this);
+        
         // Create shadow root if it doesn't exist
         if (!this.shadowRoot) {
           this.attachShadow({ mode: 'open' });
@@ -139,8 +142,6 @@ export function Router(options: RouterOptions) {
         if (shadowContent) {
           this.shadowRoot.innerHTML = shadowContent;
         }
-        
-        originalConnectedCallback?.call(this);
         // Setup @on event handlers - use element for host events, shadow root for delegated events
         setupEventHandlers(this, this);
       };

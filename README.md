@@ -23,7 +23,7 @@ Snice provides a clear separation of concerns through decorators:
 - **`@page`** - Sets up routing and navigation between different views
 
 ### Property & Query Decorators
-- **`@property`** - Declares reactive properties that can reflect to attributes
+- **`@property`** - Declares properties that can reflect to attributes
 - **`@query`** - Queries a single element from shadow DOM
 - **`@queryAll`** - Queries multiple elements from shadow DOM
 
@@ -219,7 +219,7 @@ class MyClicker extends HTMLElement {
 Automatically dispatch custom events with `@dispatch`:
 
 ```typescript
-import { element, dispatch, on } from 'snice';
+import { element, dispatch, on, query } from 'snice';
 
 @element('toggle-switch')
 class ToggleSwitch extends HTMLElement {
@@ -315,11 +315,22 @@ class AboutPage extends HTMLElement {
   }
 }
 
+// Page with URL parameter
+@page({ tag: 'user-page', routes: ['/users/:id'] })
+class UserPage extends HTMLElement {
+  id = '';  // Automatically set from URL
+  
+  html() {
+    return `<h1>User ${this.id}</h1>`;
+  }
+}
+
 // Start the router
 initialize();
 
 // Navigate programmatically
 navigate('/about');
+navigate('/users/123');  // Sets id="123" on UserPage
 ```
 
 ## Controllers (Data Fetching)
@@ -339,7 +350,7 @@ class UserController {
     (element as any).setUsers(users);
   }
 
-  async detach() {
+  async detach(element: HTMLElement) {
     // Cleanup
   }
 }
@@ -358,7 +369,9 @@ class UserList extends HTMLElement {
 
   setUsers(users: any[]) {
     this.users = users;
-    this.innerHTML = this.html();
+    if (this.shadowRoot) {
+      this.shadowRoot.innerHTML = this.html();
+    }
   }
 }
 ```
@@ -393,6 +406,11 @@ class UserCard extends HTMLElement {
 // --- controllers/user-controller.ts
 @controller('user-controller')
 class UserController {
+  element: HTMLElement | null = null;
+  
+  async attach(element: HTMLElement) {}
+  async detach(element: HTMLElement) {}
+  
   @channel('get-data')
   handleGetData(request) {
     console.log(request);  // { id: 123 }
@@ -491,7 +509,6 @@ class WeatherController {
   element: HTMLElement | null = null;
   
   async attach(element: HTMLElement) {
-    this.element = element;
     
     // Simulate fetching weather data
     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -511,6 +528,10 @@ class WeatherController {
       <p>Humidity: ${weatherData.humidity}</p>
     `);
     (element as any).setFooter('Updated just now');
+  }
+  
+  async detach(element: HTMLElement) {
+    // Cleanup if needed
   }
 }
 ```
@@ -557,9 +578,16 @@ Use the same card with different controllers:
 
 ```typescript
 interface PropertyOptions {
-  type?: typeof String | typeof Number | typeof Boolean;  // Type converter
-  reflect?: boolean;     // Reflect property to attribute
-  attribute?: string;    // Custom attribute name
+  type?: typeof String | typeof Number | typeof Boolean | typeof Array | typeof Object;  // Type converter
+  reflect?: boolean;        // Reflect property to attribute
+  attribute?: string | boolean;  // Custom attribute name or false to disable
+  converter?: PropertyConverter;  // Custom converter
+  hasChanged?: (value: any, oldValue: any) => boolean;  // Custom change detector
+}
+
+interface PropertyConverter {
+  fromAttribute?(value: string | null, type?: any): any;
+  toAttribute?(value: any, type?: any): string | null;
 }
 ```
 
@@ -570,6 +598,15 @@ interface DispatchOptions extends EventInit {
   dispatchOnUndefined?: boolean;  // Whether to dispatch when method returns undefined
 }
 ```
+
+## Documentation
+
+- [Elements API](./docs/elements.md) - Complete guide to creating elements with properties, queries, and styling
+- [Controllers API](./docs/controllers.md) - Data fetching, business logic, and controller patterns
+- [Events API](./docs/events.md) - Event handling, dispatching, and custom events
+- [Channels API](./docs/channels.md) - Bidirectional communication between elements and controllers
+- [Routing API](./docs/routing.md) - Single-page application routing with transitions
+- [Migration Guide](./docs/migration-guide.md) - Migrating from React, Vue, Angular, and other frameworks
 
 ## License
 
