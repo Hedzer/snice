@@ -3,11 +3,13 @@
   "version": "1.0.0",
   "type": "module",
   "description": "A TypeScript library",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "types": "src/index.ts",
   "files": [
-    "dist"
+    "src",
+    "!src/**/*.test.ts",
+    "!src/**/*.spec.ts"
   ],
   "publishConfig": {
     "access": "public"

@@ -1,0 +1,37 @@
+# Test files
+tests/
+**/*.test.ts
+**/*.spec.ts
+
+# Configuration files
+.gitlab-ci.yml
+.releaserc.json
+vite.config.ts
+vitest.config.ts
+tsconfig.json
+tsconfig.node.json
+
+# Development files
+*.log
+.npm/
+node_modules/
+coverage/
+.vitest/
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git files
+.git/
+.gitignore
+
+# Build artifacts
+dist/
+*.tsbuildinfo
