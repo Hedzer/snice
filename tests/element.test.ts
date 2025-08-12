@@ -194,4 +194,181 @@ describe('@queryAll decorator', () => {
     expect(el.items).toBeDefined();
     expect(el.items?.length).toBe(0);
   });
+
+  it('should handle async html() method', async () => {
+    @element('test-async-html')
+    class TestAsyncHtml extends HTMLElement {
+      async html() {
+        // Simulate async operation
+        await new Promise(resolve => setTimeout(resolve, 10));
+        return '<div class="async-content">Async HTML Content</div>';
+      }
+    }
+    
+    const el = document.createElement('test-async-html');
+    document.body.appendChild(el);
+    
+    // Wait for async html to complete
+    await new Promise(resolve => setTimeout(resolve, 20));
+    
+    expect(el.shadowRoot?.innerHTML).toContain('<div class="async-content">Async HTML Content</div>');
+  });
+
+  it('should handle async css() method', async () => {
+    @element('test-async-css')
+    class TestAsyncCss extends HTMLElement {
+      html() {
+        return '<div class="styled">Content</div>';
+      }
+      
+      async css() {
+        // Simulate async operation
+        await new Promise(resolve => setTimeout(resolve, 10));
+        return '.styled { background: blue; }';
+      }
+    }
+    
+    const el = document.createElement('test-async-css');
+    document.body.appendChild(el);
+    
+    // Wait for async css to complete
+    await new Promise(resolve => setTimeout(resolve, 20));
+    
+    const style = el.shadowRoot?.querySelector('style');
+    expect(style).toBeDefined();
+    expect(style?.textContent).toContain('.styled { background: blue; }');
+  });
+
+  it('should handle both async html() and css() methods', async () => {
+    @element('test-async-both')
+    class TestAsyncBoth extends HTMLElement {
+      async html() {
+        await new Promise(resolve => setTimeout(resolve, 5));
+        return '<h1>Async Title</h1>';
+      }
+      
+      async css() {
+        await new Promise(resolve => setTimeout(resolve, 5));
+        return 'h1 { color: green; }';
+      }
+    }
+    
+    const el = document.createElement('test-async-both');
+    document.body.appendChild(el);
+    
+    // Wait for both async methods to complete
+    await new Promise(resolve => setTimeout(resolve, 20));
+    
+    expect(el.shadowRoot?.innerHTML).toContain('<h1>Async Title</h1>');
+    expect(el.shadowRoot?.innerHTML).toContain('h1 { color: green; }');
+  });
+
+  it('should handle async css() returning array', async () => {
+    @element('test-async-css-array')
+    class TestAsyncCssArray extends HTMLElement {
+      html() {
+        return '<div>Content</div>';
+      }
+      
+      async css() {
+        await new Promise(resolve => setTimeout(resolve, 5));
+        return [
+          'div { padding: 10px; }',
+          'div:hover { background: yellow; }'
+        ];
+      }
+    }
+    
+    const el = document.createElement('test-async-css-array');
+    document.body.appendChild(el);
+    
+    // Wait for async css to complete
+    await new Promise(resolve => setTimeout(resolve, 20));
+    
+    const style = el.shadowRoot?.querySelector('style');
+    expect(style?.textContent).toContain('div { padding: 10px; }');
+    expect(style?.textContent).toContain('div:hover { background: yellow; }');
+  });
+
+  it('should handle mix of sync html and async css', async () => {
+    @element('test-mixed-sync-async')
+    class TestMixedSyncAsync extends HTMLElement {
+      html() {
+        return '<p>Sync HTML</p>';
+      }
+      
+      async css() {
+        await new Promise(resolve => setTimeout(resolve, 5));
+        return 'p { font-weight: bold; }';
+      }
+    }
+    
+    const el = document.createElement('test-mixed-sync-async');
+    document.body.appendChild(el);
+    
+    // Wait for async connectedCallback to complete
+    await new Promise(resolve => setTimeout(resolve, 20));
+    
+    // Now both HTML and CSS should be there
+    expect(el.shadowRoot?.innerHTML).toContain('<p>Sync HTML</p>');
+    const style = el.shadowRoot?.querySelector('style');
+    expect(style?.textContent).toContain('p { font-weight: bold; }');
+  });
+
+  it('should handle async html with fetch simulation', async () => {
+    @element('test-async-fetch')
+    class TestAsyncFetch extends HTMLElement {
+      async html() {
+        // Simulate fetching template from server
+        const mockFetch = async () => {
+          await new Promise(resolve => setTimeout(resolve, 10));
+          return '<article>Fetched Content</article>';
+        };
+        
+        return await mockFetch();
+      }
+      
+      async css() {
+        // Simulate fetching styles from server
+        const mockFetch = async () => {
+          await new Promise(resolve => setTimeout(resolve, 10));
+          return 'article { border: 1px solid black; }';
+        };
+        
+        return await mockFetch();
+      }
+    }
+    
+    const el = document.createElement('test-async-fetch');
+    document.body.appendChild(el);
+    
+    // Wait for async operations
+    await new Promise(resolve => setTimeout(resolve, 30));
+    
+    expect(el.shadowRoot?.innerHTML).toContain('<article>Fetched Content</article>');
+    expect(el.shadowRoot?.innerHTML).toContain('article { border: 1px solid black; }');
+  });
+
+  it('should resolve ready promise after async html/css', async () => {
+    @element('test-async-ready')
+    class TestAsyncReady extends HTMLElement {
+      async html() {
+        await new Promise(resolve => setTimeout(resolve, 10));
+        return '<div>Ready</div>';
+      }
+    }
+    
+    const el = document.createElement('test-async-ready') as any;
+    document.body.appendChild(el);
+    
+    // Ready promise should exist
+    expect(el.ready).toBeDefined();
+    expect(el.ready).toBeInstanceOf(Promise);
+    
+    // Wait for ready promise
+    await el.ready;
+    
+    // Shadow DOM should be populated
+    expect(el.shadowRoot?.innerHTML).toContain('<div>Ready</div>');
+  });
 });

@@ -1,7 +1,8 @@
 import { element, property, on, dispatch, query } from '../../../src';
+import type { TodoItemElement } from '../types/todo-item-element';
 
 @element('todo-item')
-export class TodoItem extends HTMLElement {
+export class TodoItem extends HTMLElement implements TodoItemElement {
   @property({ type: Number, reflect: true, attribute: 'todo-id' })
   todoId = 0;
   

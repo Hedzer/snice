@@ -1,6 +1,6 @@
 import { attachController, detachController } from './controller';
 import { setupEventHandlers, cleanupEventHandlers } from './events';
-import { IS_ELEMENT_CLASS } from './symbols';
+import { IS_ELEMENT_CLASS, READY_PROMISE, READY_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES } from './symbols';
 
 export function element(tagName: string) {
   return function (constructor: any) {
@@ -25,13 +25,13 @@ export function element(tagName: string) {
     // Add ready property - always returns a promise
     Object.defineProperty(constructor.prototype, 'ready', {
       get() {
-        if (!this._ready) {
+        if (!this[READY_PROMISE]) {
           // Create a pending promise if not yet initialized
-          this._ready = new Promise<void>((resolve) => {
-            this._readyResolve = resolve;
+          this[READY_PROMISE] = new Promise<void>((resolve) => {
+            this[READY_RESOLVE] = resolve;
           });
         }
-        return this._ready;
+        return this[READY_PROMISE];
       },
       enumerable: true,
       configurable: true
@@ -40,11 +40,11 @@ export function element(tagName: string) {
     // Add controller property
     Object.defineProperty(constructor.prototype, 'controller', {
       get() {
-        return this._controller;
+        return this[CONTROLLER];
       },
       set(value: string) {
-        const oldValue = this._controller;
-        this._controller = value;
+        const oldValue = this[CONTROLLER];
+        this[CONTROLLER] = value;
         if (value !== oldValue && value) {
           // Attach controller asynchronously
           attachController(this, value).catch(error => {
@@ -61,69 +61,83 @@ export function element(tagName: string) {
       configurable: true
     });
     
-    constructor.prototype.connectedCallback = function() {
+    constructor.prototype.connectedCallback = async function() {
       // If ready promise was already created (controller attached before connected), use existing resolve
       // Otherwise create the ready promise now
-      if (!this._ready) {
-        this._ready = new Promise<void>((resolve) => {
-          this._readyResolve = resolve;
+      if (!this[READY_PROMISE]) {
+        this[READY_PROMISE] = new Promise<void>((resolve) => {
+          this[READY_RESOLVE] = resolve;
         });
       }
       
-      // Clean up any existing event handlers first (for reconnection)
-      cleanupEventHandlers(this);
-      
-      // Create shadow root if it doesn't exist
-      if (!this.shadowRoot) {
-        this.attachShadow({ mode: 'open' });
-      }
-      
-      // Build the shadow DOM content
-      let shadowContent = '';
-      
-      // Add HTML first (maintaining original order)
-      if (this.html) {
-        const htmlContent = this.html();
-        if (htmlContent !== undefined) {
-          shadowContent += htmlContent;
+      try {
+        // Clean up any existing event handlers first (for reconnection)
+        cleanupEventHandlers(this);
+        
+        // Create shadow root if it doesn't exist
+        if (!this.shadowRoot) {
+          this.attachShadow({ mode: 'open' });
+        }
+        
+        // Build the shadow DOM content
+        let shadowContent = '';
+        
+        // Add HTML first (maintaining original order)
+        if (this.html) {
+          try {
+            const htmlResult = this.html();
+            // Handle both async and sync html
+            const htmlContent = htmlResult instanceof Promise ? await htmlResult : htmlResult;
+            if (htmlContent !== undefined) {
+              shadowContent += htmlContent;
+            }
+          } catch (error) {
+            console.error(`Error in html() method for ${this.tagName}:`, error);
+          }
+        }
+        
+        // Add CSS after HTML (maintaining original order)
+        if (this.css) {
+          try {
+            const cssResult = this.css();
+            // Handle both async and sync css
+            const cssResolved = cssResult instanceof Promise ? await cssResult : cssResult;
+            if (cssResolved) {
+              // Handle both string and array of strings
+              const cssContent = Array.isArray(cssResolved) ? cssResolved.join('\n') : cssResolved;
+              // No need for scoping with Shadow DOM, but add data attribute for compatibility
+              shadowContent += `<style data-component-css>${cssContent}</style>`;
+            }
+          } catch (error) {
+            console.error(`Error in css() method for ${this.tagName}:`, error);
+          }
+        }
+        
+        // Set shadow DOM content
+        if (shadowContent) {
+          this.shadowRoot.innerHTML = shadowContent;
+        }
+        
+        originalConnectedCallback?.call(this);
+        
+        const controllerName = this.getAttribute('controller');
+        if (controllerName) {
+          this.controller = controllerName;
+        }
+        // Setup @on event handlers - use element for host events, shadow root for delegated events
+        setupEventHandlers(this, this);
+      } finally {
+        // Always mark element as ready, even if there were errors
+        if (this[READY_RESOLVE]) {
+          this[READY_RESOLVE]();
+          this[READY_RESOLVE] = null; // Clear the resolver
         }
       }
-      
-      // Add CSS after HTML (maintaining original order)
-      if (this.css) {
-        const cssResult = this.css();
-        if (cssResult) {
-          // Handle both string and array of strings
-          const cssContent = Array.isArray(cssResult) ? cssResult.join('\n') : cssResult;
-          // No need for scoping with Shadow DOM, but add data attribute for compatibility
-          shadowContent += `<style data-component-css>${cssContent}</style>`;
-        }
-      }
-      
-      // Set shadow DOM content
-      if (shadowContent) {
-        this.shadowRoot.innerHTML = shadowContent;
-      }
-      
-      originalConnectedCallback?.call(this);
-      
-      // Mark element as ready before attaching controller
-      if (this._readyResolve) {
-        this._readyResolve();
-        this._readyResolve = null; // Clear the resolver
-      }
-      
-      const controllerName = this.getAttribute('controller');
-      if (controllerName) {
-        this.controller = controllerName;
-      }
-      // Setup @on event handlers - use element for host events, shadow root for delegated events
-      setupEventHandlers(this, this);
     };
     
     constructor.prototype.disconnectedCallback = function() {
       originalDisconnectedCallback?.call(this);
-      if (this._controller) {
+      if (this[CONTROLLER]) {
         detachController(this).catch(error => {
           console.error(`Failed to detach controller:`, error);
         });
@@ -150,23 +164,29 @@ export function property(options?: PropertyOptions) {
   return function (target: any, propertyKey: string) {
     const constructor = target.constructor;
     
-    if (!constructor._properties) {
-      constructor._properties = new Map();
+    if (!constructor[PROPERTIES]) {
+      constructor[PROPERTIES] = new Map();
     }
     
-    constructor._properties.set(propertyKey, options || {});
+    constructor[PROPERTIES].set(propertyKey, options || {});
     
     const descriptor: PropertyDescriptor = {
       get(this: any) {
-        return this[`_${propertyKey}`];
+        if (!this[PROPERTY_VALUES]) {
+          this[PROPERTY_VALUES] = {};
+        }
+        return this[PROPERTY_VALUES][propertyKey];
       },
       set(this: any, value: any) {
-        const oldValue = this[`_${propertyKey}`];
+        if (!this[PROPERTY_VALUES]) {
+          this[PROPERTY_VALUES] = {};
+        }
+        const oldValue = this[PROPERTY_VALUES][propertyKey];
         
         // Don't update if value hasn't changed
         if (oldValue === value) return;
         
-        this[`_${propertyKey}`] = value;
+        this[PROPERTY_VALUES][propertyKey] = value;
         
         if (options?.reflect && this.setAttribute) {
           if (value === null || value === undefined || value === false) {

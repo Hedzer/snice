@@ -1,7 +1,8 @@
-import { element, on, dispatch, query } from '../../../src';
+import { element, on, dispatch, query, queryAll } from '../../../src';
 import { TodoItem } from './todo-item';
 import type { Todo } from '../types/todo';
 import type { TodoListElement } from '../types/todo-list-element';
+import type { TodoItemElement } from '../types/todo-item-element';
 
 @element('todo-list')
 export class TodoList extends HTMLElement implements TodoListElement {
@@ -16,6 +17,9 @@ export class TodoList extends HTMLElement implements TodoListElement {
   
   @query('.clear-button')
   clearButton?: HTMLButtonElement;
+  
+  @queryAll('todo-item[completed="true"]')
+  completedItems?: NodeListOf<TodoItemElement>;
   
   html() {
     return /*html*/`
@@ -149,15 +153,17 @@ export class TodoList extends HTMLElement implements TodoListElement {
   }
   
   updateTodo(id: number, updates: { completed?: boolean }) {
-    const todoItem = this.querySelector(`todo-item[todo-id="${id}"]`) as any;
+    const todoItem = this.querySelector(`todo-item[todo-id="${id}"]`) as TodoItemElement | null;
     if (todoItem && updates.completed !== undefined) {
       todoItem.setCompleted(updates.completed);
     }
   }
   
   clearCompleted() {
-    const completedItems = this.querySelectorAll('todo-item[completed="true"]');
-    completedItems.forEach(item => item.remove());
+    // Using @queryAll to get all completed items
+    if (this.completedItems) {
+      this.completedItems.forEach(item => item.remove());
+    }
   }
   
   updateCount(todos: Todo[]) {

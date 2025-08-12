@@ -22,7 +22,7 @@ describe('@property decorator', () => {
       expect(el.value).toBe('updated');
     });
 
-    it('should store value with underscore prefix', () => {
+    it('should store and retrieve property values', () => {
       @element('test-prop-storage')
       class TestPropStorage extends HTMLElement {
         @property()
@@ -33,7 +33,7 @@ describe('@property decorator', () => {
       document.body.appendChild(el);
       
       el.data = 'changed';
-      expect(el._data).toBe('changed');
+      expect(el.data).toBe('changed');
     });
   });
 

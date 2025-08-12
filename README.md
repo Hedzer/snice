@@ -2,22 +2,37 @@
 
 A lightweight TypeScript framework for building web components with decorators and routing.
 
+## Core Philosophy: Imperative, Not Reactive
+
+Snice takes an **imperative approach** to web components. Unlike reactive frameworks that automatically re-render when data changes, Snice components:
+
+- **Render once** when connected to the DOM
+- **Never re-render** automatically
+- Require **explicit method calls** to update visual state
+- Give you **full control** over when and how updates happen
+
+This approach eliminates the complexity of reactive systems, virtual DOM diffing, and unexpected re-renders. You write straightforward code that does exactly what you tell it to do.
+
 ## Core Concepts
 
-Snice provides a clear separation of concerns through three main decorators:
+Snice provides a clear separation of concerns through decorators:
 
+### Component Decorators
 - **`@element`** - Creates custom HTML elements with encapsulated visual behavior and styling
 - **`@controller`** - Handles data fetching, server communication, and business logic separate from visual components  
 - **`@page`** - Sets up routing and navigation between different views
 
+### Property & Query Decorators
+- **`@property`** - Declares reactive properties that can reflect to attributes
+- **`@query`** - Queries a single element from shadow DOM
+- **`@queryAll`** - Queries multiple elements from shadow DOM
+
+### Event Decorators
+- **`@on`** - Listens for events on elements
+- **`@dispatch`** - Dispatches custom events after method execution
+- **`@channel`** - Enables bidirectional communication between elements and controllers
+
 This separation keeps your components focused: elements handle presentation, controllers manage data, and pages define navigation.
-
-## Quick Start
-
-```bash
-npm install
-npm run build
-```
 
 ## Basic Component
 
@@ -37,6 +52,61 @@ That's it. Your component renders when added to the DOM:
 ```html
 <my-button></my-button>
 ```
+
+## The Imperative Way
+
+In Snice, updates are explicit. Components expose methods that controllers or other components call to update state:
+
+```typescript
+import { element, property, query } from 'snice';
+
+@element('counter-display')
+class CounterDisplay extends HTMLElement {
+  @property({ type: Number })
+  count = 0;
+  
+  @query('.count')
+  countElement?: HTMLElement;
+  
+  @query('.status')
+  statusElement?: HTMLElement;
+
+  html() {
+    // Renders ONCE - no automatic re-rendering
+    return `
+      <div class="counter">
+        <span class="count">${this.count}</span>
+        <span class="status">Ready</span>
+      </div>
+    `;
+  }
+  
+  // Imperative update methods - YOU control when updates happen
+  setCount(newCount: number) {
+    this.count = newCount;
+    if (this.countElement) {
+      this.countElement.textContent = String(newCount);
+    }
+  }
+  
+  setStatus(status: string) {
+    if (this.statusElement) {
+      this.statusElement.textContent = status;
+    }
+  }
+  
+  increment() {
+    this.setCount(this.count + 1);
+    this.setStatus('Incremented!');
+  }
+}
+```
+
+**Key Points:**
+- The `html()` method runs **once** when the element connects
+- Updates happen through **explicit method calls** like `setCount()`
+- You have **full control** over what updates and when
+- No surprises, no magic, no hidden re-renders
 
 ## Properties
 
@@ -77,6 +147,8 @@ Use it with attributes:
 
 ## Queries
 
+Query single elements with `@query`:
+
 ```typescript
 import { element, query } from 'snice';
 
@@ -91,6 +163,33 @@ class MyForm extends HTMLElement {
 
   getValue() {
     return this.input?.value;
+  }
+}
+```
+
+Query multiple elements with `@queryAll`:
+
+```typescript
+import { element, queryAll } from 'snice';
+
+@element('checkbox-group')
+class CheckboxGroup extends HTMLElement {
+  @queryAll('input[type="checkbox"]')
+  checkboxes?: NodeListOf<HTMLInputElement>;
+
+  html() {
+    return `
+      <input type="checkbox" value="option1" />
+      <input type="checkbox" value="option2" />
+      <input type="checkbox" value="option3" />
+    `;
+  }
+
+  getSelectedValues() {
+    if (!this.checkboxes) return [];
+    return Array.from(this.checkboxes)
+      .filter(cb => cb.checked)
+      .map(cb => cb.value);
   }
 }
 ```
@@ -423,6 +522,50 @@ Use the same card with different controllers:
 
 <!-- News widget - same card, different controller -->
 <info-card controller="news-controller"></info-card>
+```
+
+## Decorator Reference
+
+### Component Decorators
+
+| Decorator | Purpose | Example |
+|-----------|---------|---------|
+| `@element(tagName)` | Defines a custom HTML element | `@element('my-button')` |
+| `@controller(name)` | Creates a data controller | `@controller('user-controller')` |
+| `@page(options)` | Defines a routable page component | `@page({ tag: 'home-page', routes: ['/'] })` |
+
+### Property Decorators
+
+| Decorator | Purpose | Example |
+|-----------|---------|---------|
+| `@property(options)` | Declares a property that can reflect to attributes | `@property({ type: Boolean, reflect: true })` |
+| `@query(selector)` | Queries a single element from shadow DOM | `@query('.button')` |
+| `@queryAll(selector)` | Queries multiple elements from shadow DOM | `@queryAll('input[type="checkbox"]')` |
+
+### Event Decorators
+
+| Decorator | Purpose | Example |
+|-----------|---------|---------|
+| `@on(event, selector?)` | Listens for DOM events | `@on('click', '.button')` |
+| `@dispatch(eventName, options?)` | Dispatches custom events after method execution | `@dispatch('data-updated')` |
+| `@channel(name, options?)` | Enables request/response communication | `@channel('fetch-data')` |
+
+### Property Options
+
+```typescript
+interface PropertyOptions {
+  type?: typeof String | typeof Number | typeof Boolean;  // Type converter
+  reflect?: boolean;     // Reflect property to attribute
+  attribute?: string;    // Custom attribute name
+}
+```
+
+### Dispatch Options
+
+```typescript
+interface DispatchOptions extends EventInit {
+  dispatchOnUndefined?: boolean;  // Whether to dispatch when method returns undefined
+}
 ```
 
 ## License

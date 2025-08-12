@@ -1,6 +1,7 @@
 import { setupEventHandlers, cleanupEventHandlers } from './events';
 import { setupChannelHandlers, cleanupChannelHandlers } from './channel';
-import { IS_CONTROLLER_CLASS } from './symbols';
+import { IS_CONTROLLER_CLASS, CONTROLLER_KEY, CONTROLLER_NAME_KEY, CONTROLLER_ID, CONTROLLER_OPERATIONS } from './symbols';
+import { snice } from './global';
 
 type Maybe<T> = T | null | undefined;
 
@@ -11,15 +12,6 @@ export interface IController<T extends HTMLElement = HTMLElement> {
 }
 
 export type ControllerClass<T extends HTMLElement = HTMLElement> = new() => IController<T>;
-
-const CONTROLLER_REGISTRY = new Map<string, ControllerClass>();
-const CONTROLLER_KEY = Symbol('controller');
-const CONTROLLER_NAME_KEY = Symbol('controller-name');
-
-// Controller instance tracking
-let controllerIdCounter = 0;
-const CONTROLLER_ID = Symbol('controller-id');
-const CONTROLLER_OPERATIONS = Symbol('controller-operations');
 
 // Controller-scoped cleanup registry
 class ControllerScope {
@@ -71,7 +63,7 @@ class ControllerScope {
  */
 export function controller(name: string) {
   return function <T extends ControllerClass>(constructor: T) {
-    CONTROLLER_REGISTRY.set(name, constructor);
+    snice.controllerRegistry.set(name, constructor);
     // Mark as controller class for channel decorator detection
     (constructor.prototype as any)[IS_CONTROLLER_CLASS] = true;
     return constructor;
@@ -96,14 +88,15 @@ export async function attachController(element: HTMLElement, controllerName: str
     await detachController(element);
   }
   
-  const ControllerClass = CONTROLLER_REGISTRY.get(controllerName);
+  const ControllerClass = snice.controllerRegistry.get(controllerName);
   if (!ControllerClass) {
     throw new Error(`Controller "${controllerName}" not found in registry`);
   }
   
   // Create controller instance with unique ID and scope
   const controllerInstance = new ControllerClass();
-  const controllerId = ++controllerIdCounter;
+  snice.controllerIdCounter += 1;
+  const controllerId = snice.controllerIdCounter;
   const scope = new ControllerScope();
   
   (controllerInstance as any)[CONTROLLER_ID] = controllerId;

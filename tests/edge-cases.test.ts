@@ -46,7 +46,13 @@ describe('edge cases and error handling', () => {
       expect(() => {
         const el = document.createElement('error-html');
         document.body.appendChild(el);
-      }).toThrow(); // Will throw because html() throws
+      }).not.toThrow(); // Error is caught and logged
+      
+      // Check that error was logged
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Error in html() method'),
+        expect.any(Error)
+      );
       
       consoleSpy.mockRestore();
     });

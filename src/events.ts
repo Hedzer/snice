@@ -1,4 +1,4 @@
-const ON_HANDLERS = Symbol('on-handlers');
+import { ON_HANDLERS, CLEANUP } from './symbols';
 
 export function on(eventName: string, selector?: string) {
   return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
@@ -23,9 +23,9 @@ export function setupEventHandlers(instance: any, element: HTMLElement) {
   const handlers = instance.constructor.prototype[ON_HANDLERS];
   if (!handlers) return;
   
-  // Store cleanup functions
-  if (!instance._eventCleanup) {
-    instance._eventCleanup = [];
+  // Initialize cleanup object if needed
+  if (!instance[CLEANUP]) {
+    instance[CLEANUP] = { events: [], channels: [] };
   }
   
   for (const handler of handlers) {
@@ -57,13 +57,13 @@ export function setupEventHandlers(instance: any, element: HTMLElement) {
       };
       
       eventRoot.addEventListener(handler.eventName, delegatedHandler);
-      instance._eventCleanup.push(() => {
+      instance[CLEANUP].events.push(() => {
         eventRoot.removeEventListener(handler.eventName, delegatedHandler);
       });
     } else {
       // Direct event handling - always on the element itself
       element.addEventListener(handler.eventName, boundMethod);
-      instance._eventCleanup.push(() => {
+      instance[CLEANUP].events.push(() => {
         element.removeEventListener(handler.eventName, boundMethod);
       });
     }
@@ -72,11 +72,11 @@ export function setupEventHandlers(instance: any, element: HTMLElement) {
 
 // Helper to cleanup event handlers
 export function cleanupEventHandlers(instance: any) {
-  if (instance._eventCleanup) {
-    for (const cleanup of instance._eventCleanup) {
+  if (instance[CLEANUP]?.events) {
+    for (const cleanup of instance[CLEANUP].events) {
       cleanup();
     }
-    instance._eventCleanup = [];
+    instance[CLEANUP].events = [];
   }
 }
 

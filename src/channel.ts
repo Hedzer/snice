@@ -1,4 +1,4 @@
-import { CHANNEL_HANDLERS } from './symbols';
+import { CHANNEL_HANDLERS, CLEANUP } from './symbols';
 
 export interface ChannelOptions extends EventInit {
   /**
@@ -128,8 +128,9 @@ export function setupChannelHandlers(instance: any, element: HTMLElement) {
   if (!handlers) return;
   
   // Store cleanup functions
-  if (!instance._channelCleanup) {
-    instance._channelCleanup = [];
+  // Initialize cleanup object if needed
+  if (!instance[CLEANUP]) {
+    instance[CLEANUP] = { events: [], channels: [] };
   }
   
   for (const handler of handlers) {
@@ -163,7 +164,7 @@ export function setupChannelHandlers(instance: any, element: HTMLElement) {
     
     element.addEventListener(eventName, channelHandler as EventListener);
     
-    instance._channelCleanup.push(() => {
+    instance[CLEANUP].channels.push(() => {
       element.removeEventListener(eventName, channelHandler as EventListener);
     });
   }
@@ -171,10 +172,10 @@ export function setupChannelHandlers(instance: any, element: HTMLElement) {
 
 // Helper to cleanup channel handlers
 export function cleanupChannelHandlers(instance: any) {
-  if (instance._channelCleanup) {
-    for (const cleanup of instance._channelCleanup) {
+  if (instance[CLEANUP]?.channels) {
+    for (const cleanup of instance[CLEANUP].channels) {
       cleanup();
     }
-    instance._channelCleanup = [];
+    instance[CLEANUP].channels = [];
   }
 }
