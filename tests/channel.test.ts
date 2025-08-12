@@ -604,4 +604,160 @@ describe('@channel decorator', () => {
     expect(result1).toEqual({ step: 1, data: 10 });  // 5 * 2
     expect(result2).toEqual({ step: 2, data: 20 });  // 10 + 10
   });
+
+  it('should work across shadow DOM boundaries', async () => {
+    const controllerName = uniqueName('shadow-ctrl');
+    const childElementName = uniqueName('shadow-child');
+    const parentElementName = uniqueName('shadow-parent');
+    const channelName = uniqueName('shadow-channel');
+
+    @controller(controllerName)
+    class ShadowController {
+      element: HTMLElement | null = null;
+
+      attach(element: HTMLElement) {
+        this.element = element;
+      }
+
+      detach() {
+        this.element = null;
+      }
+
+      @channel(channelName)
+      handleShadowRequest(data: any) {
+        return { 
+          received: data.value,
+          fromController: true,
+          doubled: data.value * 2
+        };
+      }
+    }
+
+    // Child element that sends channel requests from within shadow DOM
+    @element(childElementName)
+    class ShadowChild extends HTMLElement {
+      @channel(channelName)
+      async *sendFromShadow(value: number) {
+        const response = await (yield { value });
+        return response;
+      }
+
+      async triggerChannel() {
+        return await this.sendFromShadow(42);
+      }
+
+      html() {
+        return '<button>Send</button>';
+      }
+    }
+
+    // Parent element that contains the child in its shadow DOM
+    @element(parentElementName)
+    class ShadowParent extends HTMLElement {
+      html() {
+        return `<${childElementName}></${childElementName}>`;
+      }
+    }
+
+    const parent = document.createElement(parentElementName);
+    container.appendChild(parent);
+    
+    // Attach controller to parent
+    await attachController(parent, controllerName);
+    await new Promise(resolve => setTimeout(resolve, 10));
+
+    // Get child from parent's shadow DOM
+    const child = parent.shadowRoot!.querySelector(childElementName) as any;
+    
+    // Trigger channel from child in shadow DOM
+    const result = await child.triggerChannel();
+    
+    expect(result).toEqual({
+      received: 42,
+      fromController: true,
+      doubled: 84
+    });
+  });
+
+  it('should handle nested shadow DOM channel communication', async () => {
+    const controllerName = uniqueName('nested-ctrl');
+    const deepElementName = uniqueName('nested-deep');
+    const middleElementName = uniqueName('nested-middle');
+    const topElementName = uniqueName('nested-top');
+    const channelName = uniqueName('nested-channel');
+
+    @controller(controllerName)
+    class NestedController {
+      element: HTMLElement | null = null;
+
+      attach(element: HTMLElement) {
+        this.element = element;
+      }
+
+      detach() {
+        this.element = null;
+      }
+
+      @channel(channelName)
+      handleNestedRequest(data: any) {
+        return { 
+          depth: data.depth,
+          message: `Received from depth ${data.depth}`,
+          processed: true
+        };
+      }
+    }
+
+    // Deeply nested element
+    @element(deepElementName)
+    class NestedDeep extends HTMLElement {
+      @channel(channelName)
+      async *sendFromDeep() {
+        const response = await (yield { depth: 3, message: 'from deep' });
+        return response;
+      }
+
+      async triggerDeepChannel() {
+        return await this.sendFromDeep();
+      }
+
+      html() {
+        return '<div>Deep Element</div>';
+      }
+    }
+
+    @element(middleElementName)
+    class NestedMiddle extends HTMLElement {
+      html() {
+        return `<${deepElementName}></${deepElementName}>`;
+      }
+    }
+
+    @element(topElementName)  
+    class NestedTop extends HTMLElement {
+      html() {
+        return `<${middleElementName}></${middleElementName}>`;
+      }
+    }
+
+    const top = document.createElement(topElementName);
+    container.appendChild(top);
+    
+    // Attach controller to top element
+    await attachController(top, controllerName);
+    await new Promise(resolve => setTimeout(resolve, 10));
+
+    // Navigate through shadow DOMs to get deep element
+    const middle = top.shadowRoot!.querySelector(middleElementName);
+    const deep = middle!.shadowRoot!.querySelector(deepElementName) as any;
+    
+    // Trigger channel from deeply nested element
+    const result = await deep.triggerDeepChannel();
+    
+    expect(result).toEqual({
+      depth: 3,
+      message: 'Received from depth 3',
+      processed: true
+    });
+  });
 });

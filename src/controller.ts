@@ -114,6 +114,9 @@ export async function attachController(element: HTMLElement, controllerName: str
   (element as any)[CONTROLLER_NAME_KEY] = controllerName;
   (element as any)[CONTROLLER_OPERATIONS] = scope;
   
+  // Wait for element to be ready (required)
+  await (element as any).ready;
+  
   // Run attach in the controller's scope
   await scope.runOperation(async () => {
     await controllerInstance.attach(element);

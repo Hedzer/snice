@@ -1,26 +1,33 @@
-import { element, on } from '../../../src';
-import './todo-item';
-
-interface Todo {
-  id: number;
-  text: string;
-  completed: boolean;
-}
+import { element, on, dispatch, query } from '../../../src';
+import { TodoItem } from './todo-item';
+import type { Todo } from '../types/todo';
+import type { TodoListElement } from '../types/todo-list-element';
 
 @element('todo-list')
-export class TodoList extends HTMLElement {
-  private todos: Todo[] = [];
+export class TodoList extends HTMLElement implements TodoListElement {
+  @query('.todo-items')
+  todoItemsContainer?: HTMLElement;
   
+  @query('.count-number')
+  countNumber?: HTMLElement;
+  
+  @query('.todo-count')
+  todoCount?: HTMLElement;
+  
+  @query('.clear-button')
+  clearButton?: HTMLButtonElement;
   
   html() {
     return /*html*/`
-      <div class="todo-items"></div>
+      <div class="todo-items">
+        <slot></slot>
+      </div>
       
       <div class="todo-footer">
         <span class="todo-count">
           <span class="count-number">0</span> items left
         </span>
-        <button class="clear-completed">Clear completed</button>
+        <button class="clear-button">Clear completed</button>
       </div>
     `;
   }
@@ -63,7 +70,7 @@ export class TodoList extends HTMLElement {
         font-size: 1.2rem;
       }
       
-      .clear-completed {
+      .clear-button {
         background: none;
         border: none;
         color: #999;
@@ -74,9 +81,14 @@ export class TodoList extends HTMLElement {
         transition: all 0.3s ease;
       }
       
-      .clear-completed:hover {
+      .clear-button:hover {
         background: #f0f0f0;
         color: #667eea;
+      }
+      
+      .clear-button:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
       }
       
       /* Custom scrollbar */
@@ -99,72 +111,84 @@ export class TodoList extends HTMLElement {
     `;
   }
   
+  @on('click', '.clear-button')
+  @dispatch('clear-completed')
+  handleClearClick() {
+    return {};
+  }
+  
   setTodos(todos: Todo[]) {
-    this.todos = todos;
-    this.updateDisplay();
+    // Clear existing todo items
+    this.innerHTML = '';
+    
+    // Create todo-item elements
+    todos.forEach(todo => {
+      const todoItem = new TodoItem();
+      todoItem.todoId = todo.id;
+      todoItem.completed = todo.completed;
+      todoItem.textContent = todo.text;
+      this.appendChild(todoItem);
+    });
+    
+    this.updateCount(todos);
   }
   
   addTodo(todo: Todo) {
-    this.todos.push(todo);
-    this.updateDisplay();
+    const todoItem = new TodoItem();
+    todoItem.todoId = todo.id;
+    todoItem.completed = todo.completed;
+    todoItem.textContent = todo.text;
+    this.appendChild(todoItem);
   }
   
   removeTodo(id: number) {
-    this.todos = this.todos.filter(t => t.id !== id);
-    this.updateDisplay();
+    const todoItem = this.querySelector(`todo-item[todo-id="${id}"]`);
+    if (todoItem) {
+      todoItem.remove();
+    }
   }
   
-  updateTodo(id: number, updates: Partial<Todo>) {
-    const todo = this.todos.find(t => t.id === id);
-    if (todo) {
-      Object.assign(todo, updates);
-      this.updateDisplay();
+  updateTodo(id: number, updates: { completed?: boolean }) {
+    const todoItem = this.querySelector(`todo-item[todo-id="${id}"]`) as any;
+    if (todoItem && updates.completed !== undefined) {
+      todoItem.setCompleted(updates.completed);
     }
   }
   
   clearCompleted() {
-    this.todos = this.todos.filter(t => !t.completed);
-    this.updateDisplay();
+    const completedItems = this.querySelectorAll('todo-item[completed="true"]');
+    completedItems.forEach(item => item.remove());
   }
   
-  @on('click', '.clear-completed')
-  handleClearClick() {
-    this.dispatchEvent(new CustomEvent('clear-completed', {
-      bubbles: true
-    }));
+  updateCount(todos: Todo[]) {
+    const activeCount = todos.filter(t => !t.completed).length;
+    const hasCompleted = todos.some(t => t.completed);
+    
+    if (this.countNumber) {
+      this.countNumber.textContent = String(activeCount);
+    }
+    if (this.todoCount) {
+      const itemText = activeCount === 1 ? 'item' : 'items';
+      this.todoCount.innerHTML = /*html*/`<span class="count-number">${activeCount}</span> ${itemText} left`;
+    }
+    if (this.clearButton) {
+      this.clearButton.disabled = !hasCompleted;
+    }
   }
   
-  private updateDisplay() {
-    // Query elements from shadow root
-    const todoItemsContainer = this.shadowRoot?.querySelector('.todo-items') as HTMLElement;
-    const countNumber = this.shadowRoot?.querySelector('.count-number') as HTMLElement;
-    const todoCount = this.shadowRoot?.querySelector('.todo-count') as HTMLElement;
-    
-    // Update todo items
-    if (todoItemsContainer) {
-      const todoHtml = this.todos
-        .map(todo => /*html*/`<todo-item 
-          data-id="${todo.id}" 
-          ${todo.completed ? 'data-completed="true"' : ''}
-        >${this.escapeHtml(todo.text)}</todo-item>`)
-        .join('');
-      todoItemsContainer.innerHTML = todoHtml;
+  setCount(count: number) {
+    if (this.countNumber) {
+      this.countNumber.textContent = String(count);
     }
-    
-    // Update count
-    const count = this.todos.filter(t => !t.completed).length;
-    if (countNumber) {
-      countNumber.textContent = String(count);
-    }
-    if (todoCount) {
+    if (this.todoCount) {
       const itemText = count === 1 ? 'item' : 'items';
-      todoCount.innerHTML = /*html*/`<span class="count-number">${count}</span> ${itemText} left`;
+      this.todoCount.innerHTML = /*html*/`<span class="count-number">${count}</span> ${itemText} left`;
     }
   }
   
-  private escapeHtml(text: string): string {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
+  setClearButtonState(hasCompleted: boolean) {
+    if (this.clearButton) {
+      this.clearButton.disabled = !hasCompleted;
+    }
   }
 }

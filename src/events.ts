@@ -113,6 +113,7 @@ export function dispatch(eventName: string, options?: DispatchOptions) {
           // Create event with spread operator for options
           const event = new CustomEvent(eventName, {
             bubbles: true,  // Default to true for component events
+            composed: true, // Allow crossing shadow DOM boundaries
             ...options,     // Spread all EventInit options
             detail: resolvedResult
           });
@@ -130,6 +131,7 @@ export function dispatch(eventName: string, options?: DispatchOptions) {
       // Create event with spread operator for options
       const event = new CustomEvent(eventName, {
         bubbles: true,  // Default to true for component events
+        composed: true, // Allow crossing shadow DOM boundaries
         ...options,     // Spread all EventInit options
         detail: result
       });

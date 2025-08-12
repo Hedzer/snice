@@ -1,5 +1,6 @@
 import { page } from '../router';
 import { on, query } from '../../../src';
+import '../components/todo-item';
 import '../components/todo-list';
 import '../controllers/todo-controller';
 

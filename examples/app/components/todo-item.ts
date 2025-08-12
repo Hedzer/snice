@@ -1,15 +1,28 @@
-import { element, property, on } from '../../../src';
+import { element, property, on, dispatch, query } from '../../../src';
 
 @element('todo-item')
 export class TodoItem extends HTMLElement {
-  @property({ type: Number, reflect: true, attribute: 'data-id' })
-  todoId!: number;
+  @property({ type: Number, reflect: true, attribute: 'todo-id' })
+  todoId = 0;
   
-  @property({ type: String, reflect: true, attribute: 'data-text' })
-  text!: string;
-  
-  @property({ type: Boolean, reflect: true, attribute: 'data-completed' })
+  @property({ type: Boolean, reflect: true, attribute: 'completed' })
   completed = false;
+  
+  @query('.todo-checkbox')
+  checkbox?: HTMLInputElement;
+  
+  @query('.todo-item')
+  todoItem?: HTMLElement;
+  
+  setCompleted(completed: boolean) {
+    this.completed = completed;
+    if (this.checkbox) {
+      this.checkbox.checked = completed;
+    }
+    if (this.todoItem) {
+      this.todoItem.classList.toggle('completed', completed);
+    }
+  }
   
   html() {
     return /*html*/`
@@ -17,7 +30,7 @@ export class TodoItem extends HTMLElement {
         <label class="checkbox-container">
           <input 
             type="checkbox" 
-            class="todo-checkbox" 
+            class="todo-checkbox"
             ${this.completed ? 'checked' : ''}
           >
           <span class="checkmark"></span>
@@ -40,13 +53,12 @@ export class TodoItem extends HTMLElement {
         padding: 1.25rem 2rem;
         background: white;
         border-bottom: 1px solid #f0f0f0;
-        transition: all 0.3s ease;
+        transition: background 0.3s ease;
         position: relative;
       }
       
       .todo-item:hover {
         background: #f8f9fa;
-        transform: translateX(5px);
       }
       
       .todo-item.completed {
@@ -149,20 +161,20 @@ export class TodoItem extends HTMLElement {
   }
   
   @on('change', '.todo-checkbox')
+  @dispatch('todo-toggle')
   handleToggle(event: Event) {
     const checkbox = event.target as HTMLInputElement;
-    this.completed = checkbox.checked;
-    this.dispatchEvent(new CustomEvent('todo-toggle', {
-      bubbles: true,
-      detail: { id: Number(this.todoId), completed: this.completed }
-    }));
+    // Update visual state
+    if (this.todoItem) {
+      this.todoItem.classList.toggle('completed', checkbox.checked);
+    }
+    return { id: this.todoId, completed: checkbox.checked };
   }
   
   @on('click', '.todo-delete')
+  @dispatch('todo-delete')
   handleDelete() {
-    this.dispatchEvent(new CustomEvent('todo-delete', {
-      bubbles: true,
-      detail: { id: Number(this.todoId) }
-    }));
+    console.log('Delete button clicked, dispatching with id:', this.todoId);
+    return { id: this.todoId };
   }
 }

@@ -22,6 +22,21 @@ export function element(tagName: string) {
       configurable: true
     });
     
+    // Add ready property - always returns a promise
+    Object.defineProperty(constructor.prototype, 'ready', {
+      get() {
+        if (!this._ready) {
+          // Create a pending promise if not yet initialized
+          this._ready = new Promise<void>((resolve) => {
+            this._readyResolve = resolve;
+          });
+        }
+        return this._ready;
+      },
+      enumerable: true,
+      configurable: true
+    });
+    
     // Add controller property
     Object.defineProperty(constructor.prototype, 'controller', {
       get() {
@@ -47,6 +62,14 @@ export function element(tagName: string) {
     });
     
     constructor.prototype.connectedCallback = function() {
+      // If ready promise was already created (controller attached before connected), use existing resolve
+      // Otherwise create the ready promise now
+      if (!this._ready) {
+        this._ready = new Promise<void>((resolve) => {
+          this._readyResolve = resolve;
+        });
+      }
+      
       // Clean up any existing event handlers first (for reconnection)
       cleanupEventHandlers(this);
       
@@ -83,6 +106,13 @@ export function element(tagName: string) {
       }
       
       originalConnectedCallback?.call(this);
+      
+      // Mark element as ready before attaching controller
+      if (this._readyResolve) {
+        this._readyResolve();
+        this._readyResolve = null; // Clear the resolver
+      }
+      
       const controllerName = this.getAttribute('controller');
       if (controllerName) {
         this.controller = controllerName;

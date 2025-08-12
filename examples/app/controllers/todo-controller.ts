@@ -1,28 +1,22 @@
 import { controller, on } from '../../../src';
-
-interface Todo {
-  id: number;
-  text: string;
-  completed: boolean;
-}
+import type { Todo } from '../types/todo';
+import type { TodoListElement } from '../types/todo-list-element';
 
 @controller('todo-controller')
 export class TodoController {
-  element: HTMLElement | null = null;
+  element!: TodoListElement;
   todos: Todo[] = [];
   nextId = 1;
   
   async attach(element: HTMLElement) {
-    this.element = element;
+    this.element = element as TodoListElement;
     await this.loadTodos();
-    // The element IS the todo-list, so call setTodos directly on it
-    if ((element as any).setTodos) {
-      (element as any).setTodos(this.todos);
-    }
+    // Call the element's method to set todos
+    this.element.setTodos(this.todos);
   }
   
   async detach() {
-    this.element = null;
+    // Nothing to manually clean up
   }
   
   private async loadTodos() {
@@ -54,7 +48,7 @@ export class TodoController {
     const text = event.detail.text;
     
     if (text) {
-      const newTodo = {
+      const newTodo: Todo = {
         id: this.nextId++,
         text,
         completed: false
@@ -62,9 +56,10 @@ export class TodoController {
       this.todos.push(newTodo);
       this.saveTodos();
       
-      // Set all todos, not just add one
-      if (this.element && (this.element as any).setTodos) {
-        (this.element as any).setTodos(this.todos);
+      // Call element's method to add the todo
+      if (this.element) {
+        this.element.addTodo(newTodo);
+        this.element.updateCount(this.todos);
       }
     }
   }
@@ -75,18 +70,25 @@ export class TodoController {
     if (todo) {
       todo.completed = event.detail.completed;
       this.saveTodos();
-      if (this.element && (this.element as any).updateTodo) {
-        (this.element as any).updateTodo(event.detail.id, { completed: event.detail.completed });
+      
+      // Call element's method to update the todo
+      if (this.element) {
+        this.element.updateTodo(event.detail.id, { completed: event.detail.completed });
+        this.element.updateCount(this.todos);
       }
     }
   }
   
   @on('todo-delete')
   handleDelete(event: CustomEvent) {
+    console.log('Delete event received:', event.detail);
     this.todos = this.todos.filter(t => t.id !== event.detail.id);
     this.saveTodos();
-    if (this.element && (this.element as any).removeTodo) {
-      (this.element as any).removeTodo(event.detail.id);
+    
+    // Call element's method to remove the todo
+    if (this.element) {
+      this.element.removeTodo(event.detail.id);
+      this.element.updateCount(this.todos);
     }
   }
   
@@ -94,9 +96,11 @@ export class TodoController {
   handleClearCompleted() {
     this.todos = this.todos.filter(t => !t.completed);
     this.saveTodos();
-    if (this.element && (this.element as any).clearCompleted) {
-      (this.element as any).clearCompleted();
+    
+    // Call element's method to clear completed
+    if (this.element) {
+      this.element.clearCompleted();
+      this.element.updateCount(this.todos);
     }
   }
-  
 }

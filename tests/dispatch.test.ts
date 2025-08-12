@@ -268,4 +268,90 @@ describe('@dispatch decorator', () => {
     expect(detail).toBeNull();
     expect(el.sideEffect).toBe('done');
   });
+
+  it('should cross shadow DOM boundaries with composed events', async () => {
+    // Create a child element with shadow DOM that dispatches events
+    @element('test-shadow-child')
+    class TestShadowChild extends HTMLElement {
+      @dispatch('child-event')
+      triggerEvent() {
+        return { message: 'from shadow child' };
+      }
+
+      html() {
+        return '<button id="trigger">Trigger</button>';
+      }
+    }
+
+    // Create a parent element that contains the child
+    @element('test-shadow-parent')
+    class TestShadowParent extends HTMLElement {
+      html() {
+        return '<test-shadow-child></test-shadow-child>';
+      }
+    }
+
+    const parent = document.createElement('test-shadow-parent');
+    container.appendChild(parent);
+
+    // Wait for elements to be connected
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    const child = parent.shadowRoot!.querySelector('test-shadow-child') as any;
+
+    // Listen for event at the document level
+    const eventPromise = new Promise((resolve) => {
+      document.addEventListener('child-event', (e: Event) => {
+        resolve((e as CustomEvent).detail);
+      }, { once: true });
+    });
+
+    // Trigger event from within shadow DOM
+    child.triggerEvent();
+    const detail = await eventPromise;
+
+    expect(detail).toEqual({ message: 'from shadow child' });
+  });
+
+  it('should allow nested shadow DOM event propagation', async () => {
+    // Create a simpler test with just one level of nesting
+    @element('test-nested-child')
+    class TestNestedChild extends HTMLElement {
+      @dispatch('nested-event')
+      fireEvent() {
+        return { from: 'child' };
+      }
+
+      html() {
+        return '<button id="fire">Fire Event</button>';
+      }
+    }
+
+    @element('test-nested-parent')
+    class TestNestedParent extends HTMLElement {
+      html() {
+        return '<test-nested-child></test-nested-child>';
+      }
+    }
+
+    const parent = document.createElement('test-nested-parent');
+    container.appendChild(parent);
+
+    // Wait for elements to be connected
+    await new Promise(resolve => setTimeout(resolve, 10));
+
+    // Listen at the parent level
+    const eventPromise = new Promise((resolve) => {
+      parent.addEventListener('nested-event', (e: Event) => {
+        resolve((e as CustomEvent).detail);
+      });
+    });
+
+    // Get child and trigger event
+    const child = parent.shadowRoot!.querySelector('test-nested-child') as any;
+    child.fireEvent();
+    
+    const detail = await eventPromise;
+    expect(detail).toEqual({ from: 'child' });
+  });
 });

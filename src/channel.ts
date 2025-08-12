@@ -1,4 +1,4 @@
-import { IS_CONTROLLER_CLASS, IS_ELEMENT_CLASS, CHANNEL_HANDLERS } from './symbols';
+import { CHANNEL_HANDLERS } from './symbols';
 
 export interface ChannelOptions extends EventInit {
   /**
@@ -63,6 +63,7 @@ export function channel(channelName: string, options?: ChannelOptions) {
         const event = new CustomEvent(eventName, {
           bubbles: options?.bubbles !== undefined ? options.bubbles : true,
           cancelable: options?.cancelable || false,
+          composed: true, // Allow crossing shadow DOM boundaries
           detail: {
             payload,
             timeout: {
