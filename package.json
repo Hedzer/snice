@@ -2,6 +2,16 @@
   "name": "snice",
   "version": "1.0.0",
   "type": "module",
+  "description": "A TypeScript library",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
@@ -9,16 +19,25 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest --coverage"
+    "test:coverage": "vitest --coverage",
+    "release": "semantic-release --no-ci",
+    "release:dry": "semantic-release --dry-run --no-ci"
   },
   "dependencies": {
     "route-parser": "^0.0.5"
   },
   "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^13.0.1",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/gitlab": "^13.2.6",
+    "@semantic-release/npm": "^12.0.2",
+    "@semantic-release/release-notes-generator": "^14.0.3",
     "@types/node": "^20.0.0",
     "@types/route-parser": "^0.1.7",
     "@vitest/ui": "^1.0.0",
     "happy-dom": "^12.0.0",
+    "semantic-release": "^24.2.7",
     "typescript": "^5.3.3",
     "vite": "^5.0.10",
     "vitest": "^1.0.0"
