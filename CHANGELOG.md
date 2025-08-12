@@ -1,3 +1,10 @@
+# [1.2.0](https://gitlab.com/Hedzer/snice/compare/v1.1.0...v1.2.0) (2025-08-12)
+
+
+### Features
+
+* added detailed docs ([3858e62](https://gitlab.com/Hedzer/snice/commit/3858e6264cf8fb490147402c558ac40572202215))
+
 # [1.1.0](https://gitlab.com/Hedzer/snice/compare/v1.0.0...v1.1.0) (2025-08-12)
 
 
