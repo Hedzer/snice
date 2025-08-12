@@ -374,6 +374,7 @@ Use it:
 Request/response between elements and controllers:
 
 ```typescript
+// --- components/user-card.ts
 @element('user-card')
 class UserCard extends HTMLElement {
   @channel('get-data')
@@ -389,6 +390,7 @@ class UserCard extends HTMLElement {
   }
 }
 
+// --- controllers/user-controller.ts
 @controller('user-controller')
 class UserController {
   @channel('get-data')
@@ -397,6 +399,7 @@ class UserController {
     return { name: 'Alice' };
   }
 }
+```
 
 ## Complete Example
 
