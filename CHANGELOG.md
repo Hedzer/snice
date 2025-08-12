@@ -1,3 +1,10 @@
+# [1.1.0](https://gitlab.com/Hedzer/snice/compare/v1.0.0...v1.1.0) (2025-08-12)
+
+
+### Features
+
+* added publishing ts files ([25bb5f6](https://gitlab.com/Hedzer/snice/commit/25bb5f67748c1b2756399b8c23999a3c87ff3523))
+
 # 1.0.0 (2025-08-12)
 
 
