@@ -79,3 +79,66 @@ export function cleanupEventHandlers(instance: any) {
     instance._eventCleanup = [];
   }
 }
+
+export interface DispatchOptions extends EventInit {
+  /**
+   * Whether to dispatch even if the method returns undefined (default: true)
+   */
+  dispatchOnUndefined?: boolean;
+}
+
+/**
+ * Decorator that automatically dispatches a custom event after a method is called.
+ * The return value of the method becomes the event detail.
+ * 
+ * @param eventName The name of the event to dispatch
+ * @param options Optional configuration extending EventInit
+ */
+export function dispatch(eventName: string, options?: DispatchOptions) {
+  return function (_target: any, _propertyKey: string, descriptor: PropertyDescriptor) {
+    const originalMethod = descriptor.value;
+    
+    descriptor.value = function (this: HTMLElement, ...args: any[]) {
+      // Call the original method
+      const result = originalMethod.apply(this, args);
+      
+      // Handle async methods
+      if (result instanceof Promise) {
+        return result.then((resolvedResult: any) => {
+          // Skip dispatch if result is undefined and dispatchOnUndefined is false
+          if (resolvedResult === undefined && options?.dispatchOnUndefined === false) {
+            return resolvedResult;
+          }
+          
+          // Create event with spread operator for options
+          const event = new CustomEvent(eventName, {
+            bubbles: true,  // Default to true for component events
+            ...options,     // Spread all EventInit options
+            detail: resolvedResult
+          });
+          
+          this.dispatchEvent(event);
+          return resolvedResult;
+        });
+      }
+      
+      // Skip dispatch if result is undefined and dispatchOnUndefined is false
+      if (result === undefined && options?.dispatchOnUndefined === false) {
+        return result;
+      }
+      
+      // Create event with spread operator for options
+      const event = new CustomEvent(eventName, {
+        bubbles: true,  // Default to true for component events
+        ...options,     // Spread all EventInit options
+        detail: result
+      });
+      
+      this.dispatchEvent(event);
+      
+      return result;
+    };
+    
+    return descriptor;
+  };
+}

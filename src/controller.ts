@@ -1,4 +1,6 @@
 import { setupEventHandlers, cleanupEventHandlers } from './events';
+import { setupChannelHandlers, cleanupChannelHandlers } from './channel';
+import { IS_CONTROLLER_CLASS } from './symbols';
 
 type Maybe<T> = T | null | undefined;
 
@@ -70,6 +72,8 @@ class ControllerScope {
 export function controller(name: string) {
   return function <T extends ControllerClass>(constructor: T) {
     CONTROLLER_REGISTRY.set(name, constructor);
+    // Mark as controller class for channel decorator detection
+    (constructor.prototype as any)[IS_CONTROLLER_CLASS] = true;
     return constructor;
   };
 }
@@ -118,6 +122,9 @@ export async function attachController(element: HTMLElement, controllerName: str
   // Setup @on event handlers for controller
   setupEventHandlers(controllerInstance, element);
   
+  // Setup @channel handlers for controller
+  setupChannelHandlers(controllerInstance, element);
+  
   element.dispatchEvent(new CustomEvent('controller.attached', {
     detail: { name: controllerName, controller: controllerInstance }
   }));
@@ -149,6 +156,9 @@ export async function detachController(element: HTMLElement): Promise<void> {
   
   // Cleanup @on event handlers for controller
   cleanupEventHandlers(controllerInstance);
+  
+  // Cleanup @channel handlers for controller
+  cleanupChannelHandlers(controllerInstance);
   
   // Cleanup the controller scope
   if (scope) {

@@ -74,23 +74,6 @@ Use it with attributes:
 <user-card name="Jane Doe" role="Admin" verified></user-card>
 ```
 
-## Events
-
-```typescript
-import { element, on } from 'snice';
-
-@element('my-clicker')
-class MyClicker extends HTMLElement {
-  html() {
-    return `<button>Click me</button>`;
-  }
-
-  @on('click', 'button')
-  handleClick() {
-    console.log('Button clicked!');
-  }
-}
-```
 
 ## Queries
 
@@ -110,6 +93,78 @@ class MyForm extends HTMLElement {
     return this.input?.value;
   }
 }
+```
+
+## Events
+
+Listen for events with `@on`:
+
+```typescript
+import { element, on } from 'snice';
+
+@element('my-clicker')
+class MyClicker extends HTMLElement {
+  html() {
+    return `<button>Click me</button>`;
+  }
+
+  @on('click', 'button')
+  handleClick() {
+    console.log('Button clicked!');
+  }
+}
+```
+
+## Dispatching Events
+
+Automatically dispatch custom events with `@dispatch`:
+
+```typescript
+import { element, dispatch, on } from 'snice';
+
+@element('toggle-switch')
+class ToggleSwitch extends HTMLElement {
+  private isOn = false;
+
+  @query('.toggle')
+  toggleButton?: HTMLElement;
+
+  html() {
+    return `
+      <button class="toggle">
+        <span class="slider"></span>
+      </button>
+    `;
+  }
+  
+  css() {
+    return `...`;
+  }
+  
+  @on('click', '.toggle')
+  @dispatch('toggled')
+  toggle() {
+    this.isOn = !this.isOn;
+    this.toggleButton?.classList.toggle('on', this.isOn);
+
+    // Return value becomes event detail
+    return { on: this.isOn };
+  }
+}
+```
+
+The `@dispatch` decorator:
+- Dispatches after the method completes
+- Uses the return value as the event detail
+- Works with async methods
+- Bubbles by default
+
+```typescript
+// With options from EventInit
+@dispatch('my-event', { bubbles: false, cancelable: true })
+
+// Don't dispatch if method returns undefined
+@dispatch('maybe-data', { dispatchOnUndefined: false })
 ```
 
 ## Styling
@@ -214,6 +269,35 @@ Use it:
 ```html
 <user-list controller="user-controller"></user-list>
 ```
+
+## Channels
+
+Request/response between elements and controllers:
+
+```typescript
+@element('user-card')
+class UserCard extends HTMLElement {
+  @channel('get-data')
+  async *fetchUserData() {
+    // Yield sends request, await waits for response
+    const user = await (yield { id: 123 });
+    return user;
+  }
+  
+  async loadUser() {
+    const user = await this.fetchUserData();
+    console.log(user);  // { name: 'Alice' }
+  }
+}
+
+@controller('user-controller')
+class UserController {
+  @channel('get-data')
+  handleGetData(request) {
+    console.log(request);  // { id: 123 }
+    return { name: 'Alice' };
+  }
+}
 
 ## Complete Example
 

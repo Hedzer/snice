@@ -185,6 +185,11 @@ export function Router(options: RouterOptions) {
    * initialize();
    */
   function initialize(): void {
+    // Check if target exists before initializing
+    if (!document.querySelector(options.target)) {
+      throw new Error(`Target element not found: ${options.target}`);
+    }
+    
     if (!is_sorted) {
       routes.sort((a: any, b: any) => b.route.spec.length - a.route.spec.length);
       is_sorted = true;

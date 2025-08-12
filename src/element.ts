@@ -1,8 +1,12 @@
 import { attachController, detachController } from './controller';
 import { setupEventHandlers, cleanupEventHandlers } from './events';
+import { IS_ELEMENT_CLASS } from './symbols';
 
 export function element(tagName: string) {
   return function (constructor: any) {
+    // Mark as element class for channel decorator detection
+    (constructor.prototype as any)[IS_ELEMENT_CLASS] = true;
+    
     // Add controller property to all elements
     const originalConnectedCallback = constructor.prototype.connectedCallback;
     const originalDisconnectedCallback = constructor.prototype.disconnectedCallback;

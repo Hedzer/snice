@@ -1,7 +1,10 @@
 export { element, customElement, property, query, queryAll } from './element';
 export { Router } from './router';
 export { controller, attachController, detachController, getController } from './controller';
-export { on } from './events';
+export { on, dispatch } from './events';
+export { channel } from './channel';
 export type { PropertyOptions, PropertyConverter } from './element';
 export type { RouterOptions, PageOptions, PageTransition } from './router';
 export type { IController, ControllerClass } from './controller';
+export type { DispatchOptions } from './events';
+export type { ChannelOptions } from './channel';
