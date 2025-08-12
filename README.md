@@ -315,13 +315,16 @@ class AboutPage extends HTMLElement {
   }
 }
 
-// Page with URL parameter
-@page({ tag: 'user-page', routes: ['/users/:id'] })
+// Page with URL parameter  
+import { property } from 'snice';
+
+@page({ tag: 'user-page', routes: ['/users/:userId'] })
 class UserPage extends HTMLElement {
-  id = '';  // Automatically set from URL
+  @property()
+  userId = '';
   
   html() {
-    return `<h1>User ${this.id}</h1>`;
+    return `<h1>User ${this.userId}</h1>`;
   }
 }
 
