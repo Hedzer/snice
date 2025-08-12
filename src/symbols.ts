@@ -20,6 +20,7 @@ export const CONTROLLER_KEY = getSymbol('controller-key');
 export const CONTROLLER_NAME_KEY = getSymbol('controller-name');
 export const CONTROLLER_ID = getSymbol('controller-id');
 export const CONTROLLER_OPERATIONS = getSymbol('controller-operations');
+export const NATIVE_CONTROLLER = getSymbol('native-controller');
 
 // Cleanup symbol - holds an object with all cleanup arrays
 export const CLEANUP = getSymbol('cleanup');

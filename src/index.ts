@@ -1,6 +1,6 @@
 export { element, customElement, property, query, queryAll } from './element';
 export { Router } from './router';
-export { controller, attachController, detachController, getController } from './controller';
+export { controller, attachController, detachController, getController, useNativeElementControllers, cleanupNativeElementControllers } from './controller';
 export { on, dispatch } from './events';
 export { channel } from './channel';
 export type { PropertyOptions, PropertyConverter } from './element';

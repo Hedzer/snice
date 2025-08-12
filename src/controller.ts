@@ -1,6 +1,6 @@
 import { setupEventHandlers, cleanupEventHandlers } from './events';
 import { setupChannelHandlers, cleanupChannelHandlers } from './channel';
-import { IS_CONTROLLER_CLASS, CONTROLLER_KEY, CONTROLLER_NAME_KEY, CONTROLLER_ID, CONTROLLER_OPERATIONS } from './symbols';
+import { IS_CONTROLLER_CLASS, CONTROLLER_KEY, CONTROLLER_NAME_KEY, CONTROLLER_ID, CONTROLLER_OPERATIONS, NATIVE_CONTROLLER, IS_ELEMENT_CLASS } from './symbols';
 import { snice } from './global';
 
 type Maybe<T> = T | null | undefined;
@@ -79,7 +79,15 @@ export async function attachController(element: HTMLElement, controllerName: str
   const existingController = (element as any)[CONTROLLER_KEY] as IController | undefined;
   const existingName = (element as any)[CONTROLLER_NAME_KEY] as string | undefined;
   
-  if (existingName === controllerName) {
+  // For native elements, check if this is actually the desired controller
+  const nativeController = (element as any)[NATIVE_CONTROLLER];
+  if (nativeController !== undefined && nativeController !== controllerName) {
+    // This attachment is outdated, skip it
+    return;
+  }
+  
+  if (existingName === controllerName && existingController) {
+    // Already attached and controller exists
     return;
   }
   
@@ -186,6 +194,123 @@ export function getController<T extends IController = IController>(element: HTML
  */
 export function getControllerScope(element: HTMLElement): ControllerScope | undefined {
   return (element as any)[CONTROLLER_OPERATIONS] as ControllerScope | undefined;
+}
+
+/**
+ * Enable controller support for native HTML elements
+ * This sets up a MutationObserver to watch for controller attributes
+ * on non-custom elements (elements without hyphens in their tag names)
+ */
+export function useNativeElementControllers() {
+  // Return if already initialized
+  if ((globalThis as any).sniceNativeControllersInitialized) {
+    return;
+  }
+  (globalThis as any).sniceNativeControllersInitialized = true;
+
+  // Process elements that already have controller attribute
+  function processElement(element: Element) {
+    if (!(element instanceof HTMLElement)) return;
+    
+    // Skip custom elements (they handle controllers themselves)
+    if (element.tagName.includes('-')) return;
+    
+    // Skip elements that are @element decorated (they have their own controller handling)
+    if ((element as any)[IS_ELEMENT_CLASS]) return;
+    
+    const controllerName = element.getAttribute('controller');
+    const currentControllerName = (element as any)[NATIVE_CONTROLLER];
+    
+    if (controllerName && controllerName !== currentControllerName) {
+      // Controller added or changed
+      (element as any)[NATIVE_CONTROLLER] = controllerName;
+      
+      // For non-custom elements, we need to add the ready promise
+      if (!(element as any).ready) {
+        (element as any).ready = Promise.resolve();
+      }
+      
+      // Detach old controller if exists (don't await - let it run async)
+      if (currentControllerName) {
+        detachController(element as HTMLElement).catch(error => {
+          console.error(`Failed to detach old controller from native element:`, error);
+        });
+      }
+      
+      // Attach the new controller
+      attachController(element as HTMLElement, controllerName).catch(error => {
+        console.error(`Failed to attach controller "${controllerName}" to native element:`, error);
+      });
+    } else if (!controllerName && currentControllerName) {
+      // Controller was removed
+      delete (element as any)[NATIVE_CONTROLLER];
+      // Clear the controller name immediately to allow re-attachment
+      delete (element as any)[CONTROLLER_NAME_KEY];
+      detachController(element as HTMLElement).catch(error => {
+        console.error(`Failed to detach controller from native element:`, error);
+      });
+    }
+  }
+
+  // Set up MutationObserver to watch for controller attributes
+  const observer = new MutationObserver((mutations) => {
+    for (const mutation of mutations) {
+      if (mutation.type === 'attributes' && mutation.attributeName === 'controller') {
+        processElement(mutation.target as Element);
+      } else if (mutation.type === 'childList') {
+        // Process added nodes
+        mutation.addedNodes.forEach(node => {
+          if (node instanceof HTMLElement) {
+            // Process the node itself
+            processElement(node);
+            // Process all descendants with controller attribute
+            node.querySelectorAll('[controller]:not([class*="-"])').forEach(processElement);
+          }
+        });
+      }
+    }
+  });
+
+  // Start observing when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      // Process existing elements (excluding custom elements)
+      document.querySelectorAll('[controller]:not([class*="-"])').forEach(processElement);
+      
+      // Start observing
+      observer.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['controller'],
+        childList: true,
+        subtree: true
+      });
+    });
+  } else {
+    // DOM already loaded
+    document.querySelectorAll('[controller]:not([class*="-"])').forEach(processElement);
+    
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ['controller'],
+      childList: true,
+      subtree: true
+    });
+  }
+
+  // Store observer reference for cleanup if needed
+  (globalThis as any).sniceNativeControllerObserver = observer;
+}
+
+/**
+ * Stop watching for native element controllers
+ */
+export function cleanupNativeElementControllers() {
+  const observer = (globalThis as any).sniceNativeControllerObserver;
+  if (observer) {
+    observer.disconnect();
+    delete (globalThis as any).sniceNativeControllerObserver;
+    delete (globalThis as any).sniceNativeControllersInitialized;
+  }
 }
 
 /**
