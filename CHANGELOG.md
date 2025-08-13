@@ -1,3 +1,11 @@
+# [1.4.0](https://gitlab.com/Hedzer/snice/compare/v1.3.0...v1.4.0) (2025-08-13)
+
+
+### Features
+
+* added [@watch](https://gitlab.com/watch) ([147f402](https://gitlab.com/Hedzer/snice/commit/147f4029b92553382754cfac8239dbdfe6db1e18))
+* added multiple and all* watchers ([85367b3](https://gitlab.com/Hedzer/snice/commit/85367b371c97ed20bb75e92deee8145a308185dd))
+
 # [1.3.0](https://gitlab.com/Hedzer/snice/compare/v1.2.0...v1.3.0) (2025-08-13)
 
 
