@@ -30,3 +30,4 @@ export const PROPERTIES = getSymbol('properties');
 export const PROPERTY_VALUES = getSymbol('property-values');
 export const PROPERTIES_INITIALIZED = getSymbol('properties-initialized');
 export const PROPERTY_WATCHERS = getSymbol('property-watchers');
+export const EXPLICITLY_SET_PROPERTIES = getSymbol('explicitly-set-properties');

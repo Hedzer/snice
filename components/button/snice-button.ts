@@ -1,13 +1,31 @@
 import { element, property, query, on, dispatch, watch } from '../../src/index';
 import css from './snice-button.css?inline';
 
+export type ButtonVariant = 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'text';
+export type ButtonSize = 'small' | 'medium' | 'large';
+
 @element('snice-button')
 export class SniceButton extends HTMLElement {
-  @property({ reflect: true })
-  variant: 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'text' = 'default';
+  private _variant: ButtonVariant = 'default';
+  private _size: ButtonSize = 'medium';
 
   @property({ reflect: true })
-  size: 'small' | 'medium' | 'large' = 'medium';
+  get variant() {
+    return this._variant;
+  }
+  set variant(value: ButtonVariant) {
+    // If null, undefined, or empty string, use 'default'
+    this._variant = value || 'default';
+  }
+
+  @property({ reflect: true })
+  get size() {
+    return this._size;
+  }
+  set size(value: ButtonSize) {
+    // If null, undefined, or empty string, use 'medium'
+    this._size = value || 'medium';
+  }
 
   @property({ type: Boolean, reflect: true })
   disabled = false;
@@ -86,15 +104,7 @@ export class SniceButton extends HTMLElement {
     return css;
   }
 
-  @watch('variant')
-  @watch('size')
-  @watch('outline')
-  @watch('pill')
-  @watch('circle')
-  @watch('loading')
-  @watch('disabled')
-  @watch('icon')
-  @watch('iconPlacement')
+  @watch('*')
   updateButtonClasses() {
     if (!this.button) return;
     

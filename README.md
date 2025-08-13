@@ -186,7 +186,8 @@ class ThemeToggle extends HTMLElement {
   }
   
   @watch('theme')
-  onThemeChange(oldTheme: string, newTheme: string) {
+  onThemeChange(oldTheme: string, newTheme: string, propertyName: string) {
+    // propertyName will be 'theme'
     // Update icon when theme changes
     if (this.icon) {
       this.icon.textContent = newTheme === 'dark' ? '🌙' : '🌞';
@@ -208,7 +209,8 @@ class ThemeToggle extends HTMLElement {
   }
   
   @watch('animated')
-  onAnimatedChange(oldValue: boolean, newValue: boolean) {
+  onAnimatedChange(oldValue: boolean, newValue: boolean, propertyName: string) {
+    // propertyName will be 'animated'
     if (this.button) {
       this.button.classList.toggle('animations-enabled', newValue);
     }
@@ -223,20 +225,29 @@ class ThemeToggle extends HTMLElement {
 
 **Key Points:**
 - `@watch` methods are called when the property value changes
-- Receives `oldValue` and `newValue` as parameters
+- Receives `oldValue`, `newValue`, and `propertyName` as parameters
 - Perfect for imperatively updating DOM elements
 - Can watch multiple properties with multiple decorators
 - Works with both programmatic changes and attribute changes
 
-You can also apply multiple watchers to the same method:
+You can watch multiple properties with a single decorator:
 
 ```typescript
-@watch('width')
-@watch('height')
-@watch('scale')
-updateDimensions() {
+@watch('width', 'height', 'scale')
+updateDimensions(oldValue: number, newValue: number, propertyName: string) {
   // Called when any of these properties change
+  console.log(`${propertyName} changed from ${oldValue} to ${newValue}`);
   this.recalculateLayout();
+}
+```
+
+Watch all property changes with the wildcard:
+
+```typescript
+@watch('*')
+handleAnyPropertyChange(oldValue: any, newValue: any, propertyName: string) {
+  console.log(`Property ${propertyName} changed from ${oldValue} to ${newValue}`);
+  // Useful for debugging or when all properties affect the same output
 }
 ```
 
@@ -663,7 +674,7 @@ Use the same card with different controllers:
 | `@property(options)` | Declares a property that can reflect to attributes | `@property({ type: Boolean, reflect: true })` |
 | `@query(selector)` | Queries a single element from shadow DOM | `@query('.button')` |
 | `@queryAll(selector)` | Queries multiple elements from shadow DOM | `@queryAll('input[type="checkbox"]')` |
-| `@watch(propertyName)` | Watches a property for changes and calls the method | `@watch('theme')` |
+| `@watch(...propertyNames)` | Watches properties for changes and calls the method | `@watch('width', 'height')` or `@watch('*')` |
 
 ### Event Decorators
 

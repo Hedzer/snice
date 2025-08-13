@@ -1,6 +1,6 @@
 import { attachController, detachController } from './controller';
 import { setupEventHandlers, cleanupEventHandlers } from './events';
-import { IS_ELEMENT_CLASS, READY_PROMISE, READY_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PROPERTY_WATCHERS } from './symbols';
+import { IS_ELEMENT_CLASS, READY_PROMISE, READY_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PROPERTY_WATCHERS, EXPLICITLY_SET_PROPERTIES } from './symbols';
 
 export function element(tagName: string) {
   return function (constructor: any) {
@@ -95,6 +95,13 @@ export function element(tagName: string) {
               if (this.hasAttribute(attributeName) && !(propName in (this[PROPERTY_VALUES] || {}))) {
                 // Attribute exists, parse and set the property value
                 const attrValue = this.getAttribute(attributeName);
+                
+                // Mark as explicitly set since it came from an attribute
+                if (!this[EXPLICITLY_SET_PROPERTIES]) {
+                  this[EXPLICITLY_SET_PROPERTIES] = new Set();
+                }
+                this[EXPLICITLY_SET_PROPERTIES].add(propName);
+                
                 if (propOptions.type === Boolean) {
                   this[propName] = attrValue !== null;
                 } else if (propOptions.type === Number) {
@@ -110,10 +117,11 @@ export function element(tagName: string) {
         // Mark that properties have been initialized
         this[PROPERTIES_INITIALIZED] = true;
         
-        // Now reflect any properties that were set before connection
-        if (properties) {
+        // Reflect properties that were explicitly set before connection
+        // but skip default values that were never explicitly set
+        if (properties && this[EXPLICITLY_SET_PROPERTIES]) {
           for (const [propName, propOptions] of properties) {
-            if (propOptions.reflect && propName in this[PROPERTY_VALUES]) {
+            if (propOptions.reflect && this[EXPLICITLY_SET_PROPERTIES].has(propName) && propName in this[PROPERTY_VALUES]) {
               const value = this[PROPERTY_VALUES][propName];
               const attributeName = typeof propOptions.attribute === 'string' ? propOptions.attribute : propName;
               
@@ -231,6 +239,12 @@ export function element(tagName: string) {
                 
                 // Only update if the value actually changed
                 if (currentValue !== parsedValue) {
+                  // Mark as explicitly set since it came from an attribute change
+                  if (!this[EXPLICITLY_SET_PROPERTIES]) {
+                    this[EXPLICITLY_SET_PROPERTIES] = new Set();
+                  }
+                  this[EXPLICITLY_SET_PROPERTIES].add(propName);
+                  
                   this[propName] = parsedValue;
                 }
                 break;
@@ -269,16 +283,28 @@ export function property(options?: PropertyOptions) {
         if (!this[PROPERTY_VALUES]) {
           this[PROPERTY_VALUES] = {};
         }
+        if (!this[EXPLICITLY_SET_PROPERTIES]) {
+          this[EXPLICITLY_SET_PROPERTIES] = new Set();
+        }
+        
         const oldValue = this[PROPERTY_VALUES][propertyKey];
         
         // Don't update if value hasn't changed
         if (oldValue === value) return;
         
+        // Only mark as explicitly set if there was a previous value
+        // (i.e., this is not the initial default value being set during class initialization)
+        if (oldValue !== undefined) {
+          this[EXPLICITLY_SET_PROPERTIES].add(propertyKey);
+        }
+        
         this[PROPERTY_VALUES][propertyKey] = value;
         
-        // Only reflect to attributes after properties have been initialized from attributes
-        // This prevents default values from overwriting HTML attributes
-        if (options?.reflect && this.setAttribute && this[PROPERTIES_INITIALIZED]) {
+        // Only reflect to attributes if:
+        // 1. Properties have been initialized from attributes  
+        // 2. The property was explicitly set (not just default value)
+        // This prevents default values from creating attributes
+        if (options?.reflect && this.setAttribute && this[PROPERTIES_INITIALIZED] && this[EXPLICITLY_SET_PROPERTIES].has(propertyKey)) {
           const attributeName = typeof options.attribute === 'string' ? options.attribute : propertyKey;
           
           if (value === null || value === undefined || value === false) {
@@ -290,13 +316,30 @@ export function property(options?: PropertyOptions) {
         
         // Call watchers for this property
         const watchers = constructor[PROPERTY_WATCHERS];
-        if (watchers && watchers.has(propertyKey)) {
-          const propertyWatchers = watchers.get(propertyKey);
-          for (const watcher of propertyWatchers) {
-            try {
-              watcher.method.call(this, oldValue, value);
-            } catch (error) {
-              console.error(`Error in @watch('${propertyKey}') method ${watcher.methodName}:`, error);
+        if (watchers) {
+          // Call specific property watchers
+          if (watchers.has(propertyKey)) {
+            const propertyWatchers = watchers.get(propertyKey);
+            for (const watcher of propertyWatchers) {
+              try {
+                // Always pass oldValue, newValue, and propertyName
+                watcher.method.call(this, oldValue, value, propertyKey);
+              } catch (error) {
+                console.error(`Error in @watch('${propertyKey}') method ${watcher.methodName}:`, error);
+              }
+            }
+          }
+          
+          // Call wildcard watchers (watching "*")
+          if (watchers.has('*')) {
+            const wildcardWatchers = watchers.get('*');
+            for (const watcher of wildcardWatchers) {
+              try {
+                // Same signature for consistency
+                watcher.method.call(this, oldValue, value, propertyKey);
+              } catch (error) {
+                console.error(`Error in @watch('*') method ${watcher.methodName}:`, error);
+              }
             }
           }
         }
@@ -363,7 +406,7 @@ export interface PropertyConverter {
   toAttribute?(value: any, type?: any): string | null;
 }
 
-export function watch(propertyName: string) {
+export function watch(...propertyNames: string[]) {
   return function (target: any, methodName: string, descriptor: PropertyDescriptor) {
     const constructor = target.constructor;
     
@@ -371,15 +414,17 @@ export function watch(propertyName: string) {
       constructor[PROPERTY_WATCHERS] = new Map();
     }
     
-    // Store the watcher method for this property
-    if (!constructor[PROPERTY_WATCHERS].has(propertyName)) {
-      constructor[PROPERTY_WATCHERS].set(propertyName, []);
+    // Store the watcher method for each property
+    for (const propertyName of propertyNames) {
+      if (!constructor[PROPERTY_WATCHERS].has(propertyName)) {
+        constructor[PROPERTY_WATCHERS].set(propertyName, []);
+      }
+      
+      constructor[PROPERTY_WATCHERS].get(propertyName).push({
+        methodName,
+        method: descriptor.value
+      });
     }
-    
-    constructor[PROPERTY_WATCHERS].get(propertyName).push({
-      methodName,
-      method: descriptor.value
-    });
     
     return descriptor;
   };
