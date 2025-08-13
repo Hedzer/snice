@@ -1,0 +1,231 @@
+:root {
+  /* Color primitives */
+  --snice-color-gray-50: 250 250 250;
+  --snice-color-gray-100: 241 241 241;
+  --snice-color-gray-200: 226 226 226;
+  --snice-color-gray-300: 204 204 204;
+  --snice-color-gray-400: 163 163 163;
+  --snice-color-gray-500: 115 115 115;
+  --snice-color-gray-600: 82 82 82;
+  --snice-color-gray-700: 64 64 64;
+  --snice-color-gray-800: 38 38 38;
+  --snice-color-gray-900: 23 23 23;
+  --snice-color-gray-950: 10 10 10;
+
+  --snice-color-blue-50: 239 246 255;
+  --snice-color-blue-100: 219 234 254;
+  --snice-color-blue-200: 191 219 254;
+  --snice-color-blue-300: 147 197 253;
+  --snice-color-blue-400: 96 165 250;
+  --snice-color-blue-500: 59 130 246;
+  --snice-color-blue-600: 37 99 235;
+  --snice-color-blue-700: 29 78 216;
+  --snice-color-blue-800: 30 64 175;
+  --snice-color-blue-900: 30 58 138;
+  --snice-color-blue-950: 23 37 84;
+
+  --snice-color-green-50: 240 253 244;
+  --snice-color-green-100: 220 252 231;
+  --snice-color-green-200: 187 247 208;
+  --snice-color-green-300: 134 239 172;
+  --snice-color-green-400: 74 222 128;
+  --snice-color-green-500: 34 197 94;
+  --snice-color-green-600: 22 163 74;
+  --snice-color-green-700: 21 128 61;
+  --snice-color-green-800: 22 101 52;
+  --snice-color-green-900: 20 83 45;
+  --snice-color-green-950: 5 46 22;
+
+  --snice-color-red-50: 254 242 242;
+  --snice-color-red-100: 254 226 226;
+  --snice-color-red-200: 254 202 202;
+  --snice-color-red-300: 252 165 165;
+  --snice-color-red-400: 248 113 113;
+  --snice-color-red-500: 239 68 68;
+  --snice-color-red-600: 220 38 38;
+  --snice-color-red-700: 185 28 28;
+  --snice-color-red-800: 153 27 27;
+  --snice-color-red-900: 127 29 29;
+  --snice-color-red-950: 69 10 10;
+
+  --snice-color-yellow-50: 254 252 232;
+  --snice-color-yellow-100: 254 249 195;
+  --snice-color-yellow-200: 254 240 138;
+  --snice-color-yellow-300: 253 224 71;
+  --snice-color-yellow-400: 250 204 21;
+  --snice-color-yellow-500: 234 179 8;
+  --snice-color-yellow-600: 202 138 4;
+  --snice-color-yellow-700: 161 98 7;
+  --snice-color-yellow-800: 133 77 14;
+  --snice-color-yellow-900: 113 63 18;
+  --snice-color-yellow-950: 66 32 6;
+
+  /* Light theme (default) */
+  --snice-color-primary: rgb(var(--snice-color-blue-600));
+  --snice-color-success: rgb(var(--snice-color-green-600));
+  --snice-color-warning: rgb(var(--snice-color-yellow-600));
+  --snice-color-danger: rgb(var(--snice-color-red-600));
+  --snice-color-neutral: rgb(var(--snice-color-gray-600));
+
+  --snice-color-primary-hover: rgb(var(--snice-color-blue-700));
+  --snice-color-success-hover: rgb(var(--snice-color-green-700));
+  --snice-color-warning-hover: rgb(var(--snice-color-yellow-700));
+  --snice-color-danger-hover: rgb(var(--snice-color-red-700));
+  --snice-color-neutral-hover: rgb(var(--snice-color-gray-700));
+
+  /* Semantic colors */
+  --snice-color-text: rgb(var(--snice-color-gray-900));
+  --snice-color-text-secondary: rgb(var(--snice-color-gray-600));
+  --snice-color-text-tertiary: rgb(var(--snice-color-gray-500));
+  --snice-color-text-inverse: rgb(var(--snice-color-gray-50));
+
+  --snice-color-background: rgb(255 255 255);
+  --snice-color-background-secondary: rgb(var(--snice-color-gray-50));
+  --snice-color-background-tertiary: rgb(var(--snice-color-gray-100));
+
+  --snice-color-border: rgb(var(--snice-color-gray-200));
+  --snice-color-border-hover: rgb(var(--snice-color-gray-300));
+  --snice-color-border-focus: rgb(var(--snice-color-blue-500));
+
+  /* Spacing */
+  --snice-spacing-3xs: 0.125rem;  /* 2px */
+  --snice-spacing-2xs: 0.25rem;   /* 4px */
+  --snice-spacing-xs: 0.5rem;     /* 8px */
+  --snice-spacing-sm: 0.75rem;    /* 12px */
+  --snice-spacing-md: 1rem;       /* 16px */
+  --snice-spacing-lg: 1.5rem;     /* 24px */
+  --snice-spacing-xl: 2rem;       /* 32px */
+  --snice-spacing-2xl: 3rem;      /* 48px */
+  --snice-spacing-3xl: 4rem;      /* 64px */
+
+  /* Typography */
+  --snice-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+  --snice-font-family-mono: SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+
+  --snice-font-size-2xs: 0.625rem;   /* 10px */
+  --snice-font-size-xs: 0.75rem;     /* 12px */
+  --snice-font-size-sm: 0.875rem;    /* 14px */
+  --snice-font-size-md: 1rem;        /* 16px */
+  --snice-font-size-lg: 1.125rem;    /* 18px */
+  --snice-font-size-xl: 1.25rem;     /* 20px */
+  --snice-font-size-2xl: 1.5rem;     /* 24px */
+  --snice-font-size-3xl: 1.875rem;   /* 30px */
+  --snice-font-size-4xl: 2.25rem;    /* 36px */
+
+  --snice-font-weight-light: 300;
+  --snice-font-weight-normal: 400;
+  --snice-font-weight-medium: 500;
+  --snice-font-weight-semibold: 600;
+  --snice-font-weight-bold: 700;
+
+  --snice-line-height-dense: 1.25;
+  --snice-line-height-normal: 1.5;
+  --snice-line-height-loose: 1.75;
+
+  /* Border radius */
+  --snice-border-radius-sm: 0.125rem;  /* 2px */
+  --snice-border-radius-md: 0.25rem;   /* 4px */
+  --snice-border-radius-lg: 0.5rem;    /* 8px */
+  --snice-border-radius-xl: 1rem;      /* 16px */
+  --snice-border-radius-circle: 50%;
+  --snice-border-radius-pill: 9999px;
+
+  /* Shadows */
+  --snice-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --snice-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --snice-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --snice-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --snice-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --snice-shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+
+  /* Transitions */
+  --snice-transition-fast: 150ms;
+  --snice-transition-medium: 250ms;
+  --snice-transition-slow: 350ms;
+
+  /* Z-index */
+  --snice-z-index-dropdown: 1000;
+  --snice-z-index-sticky: 1020;
+  --snice-z-index-fixed: 1030;
+  --snice-z-index-modal-backdrop: 1040;
+  --snice-z-index-modal: 1050;
+  --snice-z-index-popover: 1060;
+  --snice-z-index-tooltip: 1070;
+
+  /* Focus */
+  --snice-focus-ring-width: 2px;
+  --snice-focus-ring-color: rgb(var(--snice-color-blue-500) / 0.5);
+  --snice-focus-ring-offset: 2px;
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+  --snice-color-primary: rgb(var(--snice-color-blue-500));
+  --snice-color-success: rgb(var(--snice-color-green-500));
+  --snice-color-warning: rgb(var(--snice-color-yellow-500));
+  --snice-color-danger: rgb(var(--snice-color-red-500));
+  --snice-color-neutral: rgb(var(--snice-color-gray-400));
+
+  --snice-color-primary-hover: rgb(var(--snice-color-blue-400));
+  --snice-color-success-hover: rgb(var(--snice-color-green-400));
+  --snice-color-warning-hover: rgb(var(--snice-color-yellow-400));
+  --snice-color-danger-hover: rgb(var(--snice-color-red-400));
+  --snice-color-neutral-hover: rgb(var(--snice-color-gray-300));
+
+  --snice-color-text: rgb(var(--snice-color-gray-50));
+  --snice-color-text-secondary: rgb(var(--snice-color-gray-300));
+  --snice-color-text-tertiary: rgb(var(--snice-color-gray-400));
+  --snice-color-text-inverse: rgb(var(--snice-color-gray-900));
+
+  --snice-color-background: rgb(var(--snice-color-gray-900));
+  --snice-color-background-secondary: rgb(var(--snice-color-gray-800));
+  --snice-color-background-tertiary: rgb(var(--snice-color-gray-700));
+
+  --snice-color-border: rgb(var(--snice-color-gray-700));
+  --snice-color-border-hover: rgb(var(--snice-color-gray-600));
+  --snice-color-border-focus: rgb(var(--snice-color-blue-400));
+
+  --snice-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.1);
+  --snice-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.15), 0 1px 2px -1px rgb(0 0 0 / 0.15);
+  --snice-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.15), 0 2px 4px -2px rgb(0 0 0 / 0.15);
+  --snice-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.15), 0 4px 6px -4px rgb(0 0 0 / 0.15);
+  --snice-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.15), 0 8px 10px -6px rgb(0 0 0 / 0.15);
+  --snice-shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.35);
+}
+
+/* Auto dark theme based on system preference */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --snice-color-primary: rgb(var(--snice-color-blue-500));
+    --snice-color-success: rgb(var(--snice-color-green-500));
+    --snice-color-warning: rgb(var(--snice-color-yellow-500));
+    --snice-color-danger: rgb(var(--snice-color-red-500));
+    --snice-color-neutral: rgb(var(--snice-color-gray-400));
+
+    --snice-color-primary-hover: rgb(var(--snice-color-blue-400));
+    --snice-color-success-hover: rgb(var(--snice-color-green-400));
+    --snice-color-warning-hover: rgb(var(--snice-color-yellow-400));
+    --snice-color-danger-hover: rgb(var(--snice-color-red-400));
+    --snice-color-neutral-hover: rgb(var(--snice-color-gray-300));
+
+    --snice-color-text: rgb(var(--snice-color-gray-50));
+    --snice-color-text-secondary: rgb(var(--snice-color-gray-300));
+    --snice-color-text-tertiary: rgb(var(--snice-color-gray-400));
+    --snice-color-text-inverse: rgb(var(--snice-color-gray-900));
+
+    --snice-color-background: rgb(var(--snice-color-gray-900));
+    --snice-color-background-secondary: rgb(var(--snice-color-gray-800));
+    --snice-color-background-tertiary: rgb(var(--snice-color-gray-700));
+
+    --snice-color-border: rgb(var(--snice-color-gray-700));
+    --snice-color-border-hover: rgb(var(--snice-color-gray-600));
+    --snice-color-border-focus: rgb(var(--snice-color-blue-400));
+
+    --snice-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.1);
+    --snice-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.15), 0 1px 2px -1px rgb(0 0 0 / 0.15);
+    --snice-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.15), 0 2px 4px -2px rgb(0 0 0 / 0.15);
+    --snice-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.15), 0 4px 6px -4px rgb(0 0 0 / 0.15);
+    --snice-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.15), 0 8px 10px -6px rgb(0 0 0 / 0.15);
+    --snice-shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.35);
+  }
+}

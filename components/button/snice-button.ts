@@ -1,0 +1,176 @@
+import { element, property, query, on, dispatch, watch } from '../../src/index';
+import css from './snice-button.css?inline';
+
+@element('snice-button')
+export class SniceButton extends HTMLElement {
+  @property({ reflect: true })
+  variant: 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'text' = 'default';
+
+  @property({ reflect: true })
+  size: 'small' | 'medium' | 'large' = 'medium';
+
+  @property({ type: Boolean, reflect: true })
+  disabled = false;
+
+  @property({ type: Boolean, reflect: true })
+  loading = false;
+
+  @property({ type: Boolean, reflect: true })
+  outline = false;
+
+  @property({ type: Boolean, reflect: true })
+  pill = false;
+
+  @property({ type: Boolean, reflect: true })
+  circle = false;
+
+  @property()
+  href = '';
+
+  @property()
+  target = '';
+
+  @property()
+  download = '';
+
+  @property()
+  icon = '';
+
+  @property({ attribute: 'icon-placement', reflect: true })
+  iconPlacement: 'start' | 'end' = 'start';
+
+
+  @query('.button')
+  button?: HTMLButtonElement;
+
+  @query('.spinner')
+  spinner?: HTMLElement;
+
+  @query('.label')
+  label?: HTMLElement;
+
+  @query('.icon')
+  iconElement?: HTMLImageElement;
+
+  html() {
+    const classes = [
+      'button',
+      `button--${this.variant}`,
+      `button--${this.size}`,
+      this.outline ? 'button--outline' : '',
+      this.pill ? 'button--pill' : '',
+      this.circle ? 'button--circle' : '',
+      this.loading ? 'button--loading' : '',
+      this.disabled ? 'button--disabled' : '',
+      this.icon ? `button--has-icon` : '',
+      this.icon ? `button--icon-${this.iconPlacement}` : ''
+    ].filter(Boolean).join(' ');
+
+    const iconElement = this.icon ? /*html*/`
+      <img class="icon" src="${this.icon}" alt="" part="icon" />
+    ` : '';
+
+    return /*html*/`
+      <button class="${classes}" type="button" ${this.disabled ? 'disabled' : ''} part="base">
+        <span class="spinner" part="spinner"></span>
+        ${this.iconPlacement === 'start' ? iconElement : ''}
+        <span class="label" part="label">
+          <slot></slot>
+        </span>
+        ${this.iconPlacement === 'end' ? iconElement : ''}
+      </button>
+    `;
+  }
+
+  css() {
+    return css;
+  }
+
+  @watch('variant')
+  @watch('size')
+  @watch('outline')
+  @watch('pill')
+  @watch('circle')
+  @watch('loading')
+  @watch('disabled')
+  @watch('icon')
+  @watch('iconPlacement')
+  updateButtonClasses() {
+    if (!this.button) return;
+    
+    // Rebuild all classes based on current state
+    const classes = [
+      'button',
+      `button--${this.variant}`,
+      `button--${this.size}`,
+      this.outline ? 'button--outline' : '',
+      this.pill ? 'button--pill' : '',
+      this.circle ? 'button--circle' : '',
+      this.loading ? 'button--loading' : '',
+      this.disabled ? 'button--disabled' : '',
+      this.icon ? `button--has-icon` : '',
+      this.icon ? `button--icon-${this.iconPlacement}` : ''
+    ].filter(Boolean);
+    
+    // Set the className directly to avoid class manipulation issues
+    this.button.className = classes.join(' ');
+  }
+
+  @watch('disabled')
+  updateDisabledState() {
+    if (this.button) {
+      this.button.disabled = this.disabled;
+    }
+  }
+
+  // Keep these methods for backwards compatibility if needed
+  setLoading(loading: boolean) {
+    this.loading = loading;
+  }
+
+  setDisabled(disabled: boolean) {
+    this.disabled = disabled;
+  }
+
+  setVariant(variant: typeof this.variant) {
+    this.variant = variant;
+  }
+
+  @on('click')
+  @dispatch('@snice/click')
+  handleClick(event: MouseEvent) {
+    if (this.disabled || this.loading) {
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+
+    // Handle navigation if href is set
+    if (this.href) {
+      if (this.download) {
+        const a = document.createElement('a');
+        a.href = this.href;
+        a.download = this.download;
+        a.click();
+      } else if (this.target) {
+        window.open(this.href, this.target);
+      } else {
+        window.location.href = this.href;
+      }
+    }
+
+    return { originalEvent: event };
+  }
+
+  focus(options?: FocusOptions) {
+    this.button?.focus(options);
+  }
+
+  blur() {
+    this.button?.blur();
+  }
+
+  click() {
+    this.button?.click();
+  }
+}

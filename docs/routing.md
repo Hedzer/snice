@@ -258,27 +258,8 @@ class UserProfile extends HTMLElement {
   @property()
   id = '';
   
-  connectedCallback() {
-    super.connectedCallback?.();
-    console.log('User ID:', this.id);
-    this.loadUser();
-  }
-  
-  async loadUser() {
-    const response = await fetch(`/api/users/${this.id}`);
-    const user = await response.json();
-    this.renderUser(user);
-  }
-  
-  renderUser(user: any) {
-    const content = this.shadowRoot?.querySelector('.content');
-    if (content) {
-      content.innerHTML = `
-        <h2>${user.name}</h2>
-        <p>${user.email}</p>
-      `;
-    }
-  }
+  @query('.content')
+  contentDiv?: HTMLElement;
   
   html() {
     return `
@@ -287,6 +268,25 @@ class UserProfile extends HTMLElement {
         <div class="content">Loading...</div>
       </div>
     `;
+  }
+  
+  @watch('id')
+  async loadUser() {
+    if (!this.id) return;
+    
+    console.log('User ID:', this.id);
+    const response = await fetch(`/api/users/${this.id}`);
+    const user = await response.json();
+    this.renderUser(user);
+  }
+  
+  renderUser(user: any) {
+    if (this.contentDiv) {
+      this.contentDiv.innerHTML = `
+        <h2>${user.name}</h2>
+        <p>${user.email}</p>
+      `;
+    }
   }
 }
 ```
@@ -305,12 +305,22 @@ class BlogPost extends HTMLElement {
   @property()
   slug = '';
   
-  connectedCallback() {
-    super.connectedCallback?.();
-    this.loadPost();
+  html() {
+    return `
+      <article>
+        <h1 class="title">Loading...</h1>
+        <time class="date"></time>
+        <div class="content"></div>
+      </article>
+    `;
   }
   
+  @watch('slug')
+  @watch('year')
+  @watch('month')
   async loadPost() {
+    if (!this.slug || !this.year || !this.month) return;
+    
     const url = `/api/posts/${this.year}/${this.month}/${this.slug}`;
     const response = await fetch(url);
     const post = await response.json();
@@ -318,13 +328,13 @@ class BlogPost extends HTMLElement {
   }
   
   renderPost(post: any) {
-    this.shadowRoot!.innerHTML = `
-      <article>
-        <h1>${post.title}</h1>
-        <time>${this.year}-${this.month}</time>
-        <div>${post.content}</div>
-      </article>
-    `;
+    const title = this.shadowRoot?.querySelector('.title');
+    const date = this.shadowRoot?.querySelector('.date');
+    const content = this.shadowRoot?.querySelector('.content');
+    
+    if (title) title.textContent = post.title;
+    if (date) date.textContent = `${this.year}-${this.month}`;
+    if (content) content.innerHTML = post.content;
   }
 }
 ```
@@ -340,16 +350,11 @@ class SearchPage extends HTMLElement {
   @property()
   query = '';
   
-  connectedCallback() {
-    super.connectedCallback?.();
-    if (this.query) {
-      this.performSearch();
-    }
-  }
+  @query('input[type="text"]')
+  searchInput?: HTMLInputElement;
   
-  performSearch() {
-    console.log('Searching for:', this.query);
-  }
+  @query('.results')
+  resultsDiv?: HTMLElement;
   
   html() {
     return `
@@ -359,6 +364,38 @@ class SearchPage extends HTMLElement {
         <div class="results"></div>
       </div>
     `;
+  }
+  
+  @watch('query')
+  async performSearch() {
+    if (this.searchInput) {
+      this.searchInput.value = this.query;
+    }
+    
+    if (!this.query) {
+      if (this.resultsDiv) {
+        this.resultsDiv.innerHTML = '';
+      }
+      return;
+    }
+    
+    console.log('Searching for:', this.query);
+    // Perform actual search and update results
+    const results = await this.fetchResults(this.query);
+    this.displayResults(results);
+  }
+  
+  async fetchResults(query: string) {
+    // Simulate API call
+    return [`Result 1 for ${query}`, `Result 2 for ${query}`];
+  }
+  
+  displayResults(results: string[]) {
+    if (this.resultsDiv) {
+      this.resultsDiv.innerHTML = results
+        .map(r => `<div>${r}</div>`)
+        .join('');
+    }
   }
 }
 ```
@@ -591,7 +628,11 @@ async function setupLazyRoutes() {
 ```typescript
 @element('breadcrumb-nav')
 class BreadcrumbNav extends HTMLElement {
-  private currentPath = '';
+  @property()
+  currentPath = '';
+  
+  @query('.breadcrumb')
+  navElement?: HTMLElement;
   
   html() {
     return `
@@ -641,19 +682,17 @@ class BreadcrumbNav extends HTMLElement {
     
     // Update on navigation
     window.addEventListener('hashchange', () => {
-      this.currentPath = window.location.hash.slice(1);
-      this.updateBreadcrumbs();
+      this.currentPath = window.location.hash.slice(1) || '/';
     });
     
     // Set initial path
     this.currentPath = window.location.hash.slice(1) || '/';
-    this.updateBreadcrumbs();
   }
   
+  @watch('currentPath')
   updateBreadcrumbs() {
-    const nav = this.shadowRoot?.querySelector('.breadcrumb');
-    if (nav) {
-      nav.innerHTML = this.generateBreadcrumbs();
+    if (this.navElement) {
+      this.navElement.innerHTML = this.generateBreadcrumbs();
     }
   }
 }

@@ -1,6 +1,6 @@
 import { attachController, detachController } from './controller';
 import { setupEventHandlers, cleanupEventHandlers } from './events';
-import { IS_ELEMENT_CLASS, READY_PROMISE, READY_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES } from './symbols';
+import { IS_ELEMENT_CLASS, READY_PROMISE, READY_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PROPERTY_WATCHERS } from './symbols';
 
 export function element(tagName: string) {
   return function (constructor: any) {
@@ -12,11 +12,25 @@ export function element(tagName: string) {
     const originalDisconnectedCallback = constructor.prototype.disconnectedCallback;
     const originalAttributeChangedCallback = constructor.prototype.attributeChangedCallback;
     
-    // Add 'controller' to observed attributes
+    // Add 'controller' and all reflected properties to observed attributes
     const observedAttributes = constructor.observedAttributes || [];
     if (!observedAttributes.includes('controller')) {
       observedAttributes.push('controller');
     }
+    
+    // Add all reflected properties to observed attributes
+    const properties = constructor[PROPERTIES];
+    if (properties) {
+      for (const [propName, propOptions] of properties) {
+        if (propOptions.reflect) {
+          const attributeName = typeof propOptions.attribute === 'string' ? propOptions.attribute : propName;
+          if (!observedAttributes.includes(attributeName)) {
+            observedAttributes.push(attributeName);
+          }
+        }
+      }
+    }
+    
     Object.defineProperty(constructor, 'observedAttributes', {
       get() { return observedAttributes; },
       configurable: true
@@ -71,6 +85,45 @@ export function element(tagName: string) {
       }
       
       try {
+        // Initialize properties from attributes before rendering
+        const properties = constructor[PROPERTIES];
+        if (properties) {
+          for (const [propName, propOptions] of properties) {
+            if (propOptions.reflect) {
+              const attributeName = typeof propOptions.attribute === 'string' ? propOptions.attribute : propName;
+              // Only read from attribute if property hasn't been set yet
+              if (this.hasAttribute(attributeName) && !(propName in (this[PROPERTY_VALUES] || {}))) {
+                // Attribute exists, parse and set the property value
+                const attrValue = this.getAttribute(attributeName);
+                if (propOptions.type === Boolean) {
+                  this[propName] = attrValue !== null;
+                } else if (propOptions.type === Number) {
+                  this[propName] = Number(attrValue);
+                } else {
+                  this[propName] = attrValue;
+                }
+              }
+            }
+          }
+        }
+        
+        // Mark that properties have been initialized
+        this[PROPERTIES_INITIALIZED] = true;
+        
+        // Now reflect any properties that were set before connection
+        if (properties) {
+          for (const [propName, propOptions] of properties) {
+            if (propOptions.reflect && propName in this[PROPERTY_VALUES]) {
+              const value = this[PROPERTY_VALUES][propName];
+              const attributeName = typeof propOptions.attribute === 'string' ? propOptions.attribute : propName;
+              
+              if (value !== null && value !== undefined && value !== false) {
+                this.setAttribute(attributeName, String(value));
+              }
+            }
+          }
+        }
+        
         // Clean up any existing event handlers first (for reconnection)
         cleanupEventHandlers(this);
         
@@ -150,6 +203,41 @@ export function element(tagName: string) {
       originalAttributeChangedCallback?.call(this, name, oldValue, newValue);
       if (name === 'controller') {
         this.controller = newValue;
+      } else {
+        // Handle reflected properties
+        const properties = constructor[PROPERTIES];
+        if (properties) {
+          for (const [propName, propOptions] of properties) {
+            if (propOptions.reflect) {
+              const attributeName = typeof propOptions.attribute === 'string' ? propOptions.attribute : propName;
+              if (attributeName === name) {
+                // Check if the current property value already matches to avoid feedback loops
+                const currentValue = this[PROPERTY_VALUES]?.[propName];
+                
+                // Parse the new value based on type
+                let parsedValue: any;
+                if (propOptions.type === Boolean) {
+                  parsedValue = newValue !== null;
+                } else if (propOptions.type === Number) {
+                  parsedValue = Number(newValue);
+                } else {
+                  // If no type specified, try to infer from current value type
+                  if (typeof currentValue === 'number' && newValue !== null) {
+                    parsedValue = Number(newValue);
+                  } else {
+                    parsedValue = newValue;
+                  }
+                }
+                
+                // Only update if the value actually changed
+                if (currentValue !== parsedValue) {
+                  this[propName] = parsedValue;
+                }
+                break;
+              }
+            }
+          }
+        }
       }
     };
     
@@ -188,11 +276,28 @@ export function property(options?: PropertyOptions) {
         
         this[PROPERTY_VALUES][propertyKey] = value;
         
-        if (options?.reflect && this.setAttribute) {
+        // Only reflect to attributes after properties have been initialized from attributes
+        // This prevents default values from overwriting HTML attributes
+        if (options?.reflect && this.setAttribute && this[PROPERTIES_INITIALIZED]) {
+          const attributeName = typeof options.attribute === 'string' ? options.attribute : propertyKey;
+          
           if (value === null || value === undefined || value === false) {
-            this.removeAttribute(options.attribute || propertyKey);
+            this.removeAttribute(attributeName);
           } else {
-            this.setAttribute(options.attribute || propertyKey, String(value));
+            this.setAttribute(attributeName, String(value));
+          }
+        }
+        
+        // Call watchers for this property
+        const watchers = constructor[PROPERTY_WATCHERS];
+        if (watchers && watchers.has(propertyKey)) {
+          const propertyWatchers = watchers.get(propertyKey);
+          for (const watcher of propertyWatchers) {
+            try {
+              watcher.method.call(this, oldValue, value);
+            } catch (error) {
+              console.error(`Error in @watch('${propertyKey}') method ${watcher.methodName}:`, error);
+            }
           }
         }
         
@@ -256,4 +361,26 @@ export interface PropertyOptions {
 export interface PropertyConverter {
   fromAttribute?(value: string | null, type?: any): any;
   toAttribute?(value: any, type?: any): string | null;
+}
+
+export function watch(propertyName: string) {
+  return function (target: any, methodName: string, descriptor: PropertyDescriptor) {
+    const constructor = target.constructor;
+    
+    if (!constructor[PROPERTY_WATCHERS]) {
+      constructor[PROPERTY_WATCHERS] = new Map();
+    }
+    
+    // Store the watcher method for this property
+    if (!constructor[PROPERTY_WATCHERS].has(propertyName)) {
+      constructor[PROPERTY_WATCHERS].set(propertyName, []);
+    }
+    
+    constructor[PROPERTY_WATCHERS].get(propertyName).push({
+      methodName,
+      method: descriptor.value
+    });
+    
+    return descriptor;
+  };
 }

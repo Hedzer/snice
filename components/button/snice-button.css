@@ -1,0 +1,231 @@
+:host {
+  display: inline-block;
+  position: relative;
+  width: auto;
+  cursor: pointer;
+}
+
+:host([disabled]) {
+  cursor: not-allowed;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  border: 1px solid;
+  font-family: var(--snice-font-family);
+  font-weight: var(--snice-font-weight-medium);
+  text-decoration: none;
+  user-select: none;
+  white-space: nowrap;
+  vertical-align: middle;
+  padding: 0;
+  transition: 
+    color var(--snice-transition-fast) ease,
+    background-color var(--snice-transition-fast) ease,
+    border-color var(--snice-transition-fast) ease,
+    box-shadow var(--snice-transition-fast) ease;
+  cursor: inherit;
+  position: relative;
+}
+
+.button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 var(--snice-focus-ring-width) var(--snice-focus-ring-color);
+}
+
+.button--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Sizes */
+.button--small {
+  font-size: var(--snice-font-size-sm);
+  height: 30px;
+  padding: 0 var(--snice-spacing-sm);
+  border-radius: var(--snice-border-radius-md);
+}
+
+.button--medium {
+  font-size: var(--snice-font-size-md);
+  height: 40px;
+  padding: 0 var(--snice-spacing-md);
+  border-radius: var(--snice-border-radius-md);
+}
+
+.button--large {
+  font-size: var(--snice-font-size-lg);
+  height: 50px;
+  padding: 0 var(--snice-spacing-lg);
+  border-radius: var(--snice-border-radius-md);
+}
+
+/* Variants - Default */
+.button--default {
+  background-color: var(--snice-color-background);
+  color: var(--snice-color-text);
+  border-color: var(--snice-color-border);
+}
+
+.button--default:hover:not(.button--disabled) {
+  background-color: var(--snice-color-background-secondary);
+  border-color: var(--snice-color-border-hover);
+}
+
+.button--default:active:not(.button--disabled) {
+  background-color: var(--snice-color-background-tertiary);
+}
+
+/* Variants - Primary */
+.button--primary {
+  background-color: var(--snice-color-primary);
+  color: var(--snice-color-text-inverse);
+  border-color: var(--snice-color-primary);
+}
+
+.button--primary:hover:not(.button--disabled) {
+  background-color: var(--snice-color-primary-hover);
+  border-color: var(--snice-color-primary-hover);
+}
+
+.button--primary:active:not(.button--disabled) {
+  background-color: var(--snice-color-primary-hover);
+}
+
+/* Variants - Success */
+.button--success {
+  background-color: var(--snice-color-success);
+  color: var(--snice-color-text-inverse);
+  border-color: var(--snice-color-success);
+}
+
+.button--success:hover:not(.button--disabled) {
+  background-color: var(--snice-color-success-hover);
+  border-color: var(--snice-color-success-hover);
+}
+
+/* Variants - Warning */
+.button--warning {
+  background-color: var(--snice-color-warning);
+  color: var(--snice-color-text-inverse);
+  border-color: var(--snice-color-warning);
+}
+
+.button--warning:hover:not(.button--disabled) {
+  background-color: var(--snice-color-warning-hover);
+  border-color: var(--snice-color-warning-hover);
+}
+
+/* Variants - Danger */
+.button--danger {
+  background-color: var(--snice-color-danger);
+  color: var(--snice-color-text-inverse);
+  border-color: var(--snice-color-danger);
+}
+
+.button--danger:hover:not(.button--disabled) {
+  background-color: var(--snice-color-danger-hover);
+  border-color: var(--snice-color-danger-hover);
+}
+
+/* Variants - Text */
+.button--text {
+  background-color: transparent;
+  color: var(--snice-color-primary);
+  border-color: transparent;
+}
+
+.button--text:hover:not(.button--disabled) {
+  background-color: var(--snice-color-primary);
+  background-color: rgb(var(--snice-color-blue-500) / 0.1);
+  color: var(--snice-color-primary-hover);
+}
+
+/* Outline modifier */
+.button--outline.button--default {
+  background-color: transparent;
+  color: var(--snice-color-text);
+}
+
+.button--outline.button--primary {
+  background-color: transparent;
+  color: var(--snice-color-primary);
+}
+
+.button--outline.button--success {
+  background-color: transparent;
+  color: var(--snice-color-success);
+}
+
+.button--outline.button--warning {
+  background-color: transparent;
+  color: var(--snice-color-warning);
+}
+
+.button--outline.button--danger {
+  background-color: transparent;
+  color: var(--snice-color-danger);
+}
+
+.button--outline:hover:not(.button--disabled) {
+  background-color: rgb(var(--snice-color-gray-500) / 0.1);
+}
+
+/* Shape modifiers */
+.button--pill {
+  border-radius: var(--snice-border-radius-pill);
+}
+
+.button--circle {
+  border-radius: var(--snice-border-radius-circle);
+  width: var(--size);
+  padding: 0;
+}
+
+.button--small.button--circle { --size: 30px; }
+.button--medium.button--circle { --size: 40px; }
+.button--large.button--circle { --size: 50px; }
+
+/* Loading state */
+.button--loading {
+  position: relative;
+  cursor: wait;
+}
+
+.button--loading .label {
+  visibility: hidden;
+}
+
+.spinner {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 1em;
+  height: 1em;
+}
+
+.button--loading .spinner {
+  display: block;
+}
+
+.spinner::after {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

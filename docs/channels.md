@@ -549,13 +549,24 @@ class CachedController implements IController {
 
 ```typescript
 // Element that can both request and be updated
+import { element, property, query, channel, watch } from 'snice';
+
 @element('live-data')
 class LiveData extends HTMLElement {
   private updateInterval?: number;
+
+  @property({ reflect: true })
+  status = 'Disconnected';
+  
+  @query('.status')
+  statusDiv?: HTMLElement;
+  
+  @query('.data')
+  dataDiv?: HTMLElement;
   
   html() {
     return `
-      <div class="status">Disconnected</div>
+      <div class="status">${this.status}</div>
       <div class="data"></div>
       <button class="connect">Connect</button>
       <button class="disconnect">Disconnect</button>
@@ -571,7 +582,7 @@ class LiveData extends HTMLElement {
     });
     
     if (subscription.success) {
-      this.setStatus('Connected');
+      this.status = 'Connected';  // @watch will handle UI update
       
       // Start polling for updates
       this.startPolling();
@@ -605,20 +616,19 @@ class LiveData extends HTMLElement {
   }
   
   processUpdates(updates: any[]) {
-    const dataDiv = this.shadowRoot?.querySelector('.data');
-    if (dataDiv) {
+    if (this.dataDiv) {
       updates.forEach(update => {
         const entry = document.createElement('div');
         entry.textContent = `${update.type}: ${update.value}`;
-        dataDiv.appendChild(entry);
+        this.dataDiv!.appendChild(entry);
       });
     }
   }
   
-  setStatus(status: string) {
-    const statusDiv = this.shadowRoot?.querySelector('.status');
-    if (statusDiv) {
-      statusDiv.textContent = status;
+  @watch('status')
+  updateStatus() {
+    if (this.statusDiv) {
+      this.statusDiv.textContent = this.status;
     }
   }
   

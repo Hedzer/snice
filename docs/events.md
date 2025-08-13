@@ -132,30 +132,33 @@ The `@dispatch` decorator automatically dispatches custom events after method ex
 ### Basic Usage
 
 ```typescript
-import { element, dispatch, on } from 'snice';
+import { element, property, query, dispatch, on, watch } from 'snice';
 
 @element('toggle-button')
 class ToggleButton extends HTMLElement {
-  private isOn = false;
+  @property({ type: Boolean })
+  isOn = false;
+  
+  @query('button')
+  button?: HTMLButtonElement;
   
   html() {
-    return `<button>OFF</button>`;
+    return `<button>${this.isOn ? 'ON' : 'OFF'}</button>`;
   }
   
   @on('click', 'button')
   @dispatch('toggled')
   toggle() {
     this.isOn = !this.isOn;
-    this.updateButton();
     
     // Return value becomes event detail
     return { on: this.isOn, timestamp: Date.now() };
   }
   
+  @watch('isOn')
   updateButton() {
-    const button = this.shadowRoot?.querySelector('button');
-    if (button) {
-      button.textContent = this.isOn ? 'ON' : 'OFF';
+    if (this.button) {
+      this.button.textContent = this.isOn ? 'ON' : 'OFF';
     }
   }
 }

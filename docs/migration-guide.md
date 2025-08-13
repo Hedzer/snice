@@ -41,7 +41,7 @@ function UserCard({ userId }) {
 
 **Snice Equivalent:**
 ```typescript
-import { element, property, query, controller } from 'snice';
+import { element, property, query, watch } from 'snice';
 
 @element('user-card')
 class UserCard extends HTMLElement {
@@ -51,6 +51,9 @@ class UserCard extends HTMLElement {
   @query('.content')
   content?: HTMLElement;
   
+  private user: any = null;
+  private loading = true;
+  
   html() {
     return `
       <div class="user-card">
@@ -59,33 +62,32 @@ class UserCard extends HTMLElement {
     `;
   }
   
-  setUser(user: any) {
-    if (this.content) {
+  @watch('userId')
+  async fetchUser() {
+    if (!this.userId) return;
+    
+    this.loading = true;
+    this.updateContent();
+    
+    const response = await fetch(`/api/users/${this.userId}`);
+    this.user = await response.json();
+    this.loading = false;
+    this.updateContent();
+  }
+  
+  @watch('loading')
+  @watch('user')
+  updateContent() {
+    if (!this.content) return;
+    
+    if (this.loading) {
+      this.content.innerHTML = 'Loading...';
+    } else if (this.user) {
       this.content.innerHTML = `
-        <h3>${user.name}</h3>
-        <p>${user.email}</p>
+        <h3>${this.user.name}</h3>
+        <p>${this.user.email}</p>
       `;
     }
-  }
-}
-
-@controller('user-controller')
-class UserController {
-  element: HTMLElement | null = null;
-  
-  async attach(element: HTMLElement) {
-    const userId = element.getAttribute('user-id');
-    const user = await this.fetchUser(userId);
-    (element as any).setUser(user);
-  }
-  
-  async detach(element: HTMLElement) {
-    // Cleanup if needed
-  }
-  
-  async fetchUser(userId: string) {
-    const response = await fetch(`/api/users/${userId}`);
-    return response.json();
   }
 }
 ```
@@ -108,11 +110,12 @@ function Counter() {
 
 **Snice Equivalent:**
 ```typescript
-import { element, query, on } from 'snice';
+import { element, property, query, on, watch } from 'snice';
 
 @element('counter-element')
 class CounterElement extends HTMLElement {
-  private count = 0;
+  @property()
+  count = 0;
   
   @query('.count')
   countDisplay?: HTMLElement;
@@ -129,9 +132,9 @@ class CounterElement extends HTMLElement {
   @on('click', 'button')
   increment() {
     this.count++;
-    this.updateCount();
   }
   
+  @watch('count')
   updateCount() {
     if (this.countDisplay) {
       this.countDisplay.textContent = String(this.count);
@@ -484,7 +487,7 @@ export class MyElement extends LitElement {
 
 **Snice Equivalent:**
 ```typescript
-import { element, property, query, on } from 'snice';
+import { element, property, query, on, watch } from 'snice';
 
 @element('my-element')
 class MyElement extends HTMLElement {
@@ -513,9 +516,9 @@ class MyElement extends HTMLElement {
   @on('click', 'button')
   handleClick() {
     this.name = 'Clicked';
-    this.updateHeading();
   }
   
+  @watch('name')
   updateHeading() {
     if (this.heading) {
       this.heading.textContent = `Hello, ${this.name}!`;
@@ -542,13 +545,14 @@ export class ReactiveElement extends LitElement {
 }
 ```
 
-**Snice (Imperative):**
+**Snice (Imperative with @watch):**
 ```typescript
-import { element, query, on } from 'snice';
+import { element, property, query, on, watch } from 'snice';
 
 @element('imperative-element')
 class ImperativeElement extends HTMLElement {
-  private count = 0;
+  @property()
+  count = 0;
   
   @query('.count')
   countDisplay?: HTMLElement;
@@ -563,6 +567,10 @@ class ImperativeElement extends HTMLElement {
   @on('click', 'button')
   increment() {
     this.count++;
+  }
+  
+  @watch('count')
+  updateCountDisplay() {
     if (this.countDisplay) {
       this.countDisplay.textContent = String(this.count);
     }
@@ -728,6 +736,140 @@ class AttributeComponent extends HTMLElement {
 3. **Shadow DOM**: Built-in style encapsulation without runtime overhead
 4. **Native Web Components**: Works with browser's component model
 
+## Using @watch for Reactive Updates
+
+Snice provides the `@watch` decorator to automatically call methods when properties change, bridging the gap between reactive frameworks and imperative updates:
+
+### Watching Single Properties
+
+```typescript
+import { element, property, query, watch } from 'snice';
+
+@element('user-status')
+class UserStatus extends HTMLElement {
+  @property()
+  status: 'online' | 'offline' | 'away' = 'offline';
+  
+  @query('.status-indicator')
+  indicator?: HTMLElement;
+  
+  html() {
+    return `
+      <div class="status-indicator">●</div>
+      <span>${this.status}</span>
+    `;
+  }
+  
+  @watch('status')
+  updateStatusIndicator() {
+    if (!this.indicator) return;
+    
+    const colors = {
+      online: 'green',
+      offline: 'gray',
+      away: 'yellow'
+    };
+    
+    this.indicator.style.color = colors[this.status];
+  }
+}
+```
+
+### Watching Multiple Properties
+
+```typescript
+@element('price-calculator')
+class PriceCalculator extends HTMLElement {
+  @property({ type: Number })
+  price = 0;
+  
+  @property({ type: Number })
+  quantity = 1;
+  
+  @property({ type: Number })
+  discount = 0;
+  
+  @query('.total')
+  totalDisplay?: HTMLElement;
+  
+  html() {
+    return `
+      <div>
+        <div>Price: $${this.price}</div>
+        <div>Quantity: ${this.quantity}</div>
+        <div>Discount: ${this.discount}%</div>
+        <div class="total">Total: $0</div>
+      </div>
+    `;
+  }
+  
+  @watch('price')
+  @watch('quantity')
+  @watch('discount')
+  calculateTotal() {
+    const subtotal = this.price * this.quantity;
+    const discountAmount = subtotal * (this.discount / 100);
+    const total = subtotal - discountAmount;
+    
+    if (this.totalDisplay) {
+      this.totalDisplay.textContent = `Total: $${total.toFixed(2)}`;
+    }
+  }
+}
+```
+
+### Async Operations with @watch
+
+```typescript
+@element('data-fetcher')
+class DataFetcher extends HTMLElement {
+  @property()
+  searchTerm = '';
+  
+  @query('.results')
+  resultsDiv?: HTMLElement;
+  
+  html() {
+    return `
+      <input type="text" placeholder="Search...">
+      <div class="results"></div>
+    `;
+  }
+  
+  @on('input', 'input')
+  handleInput(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.searchTerm = input.value;
+  }
+  
+  @watch('searchTerm')
+  async performSearch() {
+    if (!this.searchTerm) {
+      if (this.resultsDiv) {
+        this.resultsDiv.innerHTML = '';
+      }
+      return;
+    }
+    
+    // Show loading state
+    if (this.resultsDiv) {
+      this.resultsDiv.innerHTML = 'Searching...';
+    }
+    
+    // Perform search
+    const response = await fetch(`/api/search?q=${this.searchTerm}`);
+    const results = await response.json();
+    
+    // Display results
+    if (this.resultsDiv) {
+      this.resultsDiv.innerHTML = results
+        .map((r: any) => `<div>${r.title}</div>`)
+        .join('');
+    }
+  }
+}
+```
+
 ## Best Practices for Migration
 
 1. **Start Small**: Migrate one component at a time
@@ -735,3 +877,4 @@ class AttributeComponent extends HTMLElement {
 3. **Gradual Migration**: Run old and new systems in parallel
 4. **Test Thoroughly**: Ensure functionality is preserved
 5. **Document Differences**: Help team understand the imperative approach
+6. **Use @watch**: Leverage the @watch decorator for reactive-like updates without the overhead

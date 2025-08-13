@@ -343,7 +343,7 @@ describe('@queryAll decorator', () => {
     document.body.appendChild(el);
     
     // Wait for async operations
-    await new Promise(resolve => setTimeout(resolve, 30));
+    await new Promise(resolve => setTimeout(resolve, 100));
     
     expect(el.shadowRoot?.innerHTML).toContain('<article>Fetched Content</article>');
     expect(el.shadowRoot?.innerHTML).toContain('article { border: 1px solid black; }');

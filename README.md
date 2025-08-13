@@ -36,6 +36,7 @@ Snice provides a clear separation of concerns through decorators:
 - **`@property`** - Declares properties that can reflect to attributes
 - **`@query`** - Queries a single element from shadow DOM
 - **`@queryAll`** - Queries multiple elements from shadow DOM
+- **`@watch`** - Watches property changes and calls a method when they occur
 
 ### Event Decorators
 - **`@on`** - Listens for events on elements
@@ -154,6 +155,90 @@ Use it with attributes:
 <user-card name="Jane Doe" role="Admin" verified></user-card>
 ```
 
+
+## Watching Property Changes
+
+Use `@watch` to imperatively update DOM when properties change:
+
+```typescript
+import { element, property, watch, query } from 'snice';
+
+@element('theme-toggle')
+class ThemeToggle extends HTMLElement {
+  @property({ reflect: true })
+  theme: 'light' | 'dark' = 'light';
+  
+  @property({ type: Boolean })
+  animated = true;
+  
+  @query('.toggle-button')
+  button?: HTMLElement;
+  
+  @query('.theme-icon')
+  icon?: HTMLElement;
+  
+  html() {
+    return `
+      <button class="toggle-button">
+        <span class="theme-icon">🌞</span>
+      </button>
+    `;
+  }
+  
+  @watch('theme')
+  onThemeChange(oldTheme: string, newTheme: string) {
+    // Update icon when theme changes
+    if (this.icon) {
+      this.icon.textContent = newTheme === 'dark' ? '🌙' : '🌞';
+    }
+    
+    // Update button styling
+    if (this.button) {
+      this.button.classList.remove(`theme--${oldTheme}`);
+      this.button.classList.add(`theme--${newTheme}`);
+    }
+    
+    // Animate if enabled
+    if (this.animated && this.button) {
+      this.button.classList.add('transitioning');
+      setTimeout(() => {
+        this.button?.classList.remove('transitioning');
+      }, 300);
+    }
+  }
+  
+  @watch('animated')
+  onAnimatedChange(oldValue: boolean, newValue: boolean) {
+    if (this.button) {
+      this.button.classList.toggle('animations-enabled', newValue);
+    }
+  }
+  
+  @on('click', '.toggle-button')
+  toggleTheme() {
+    this.theme = this.theme === 'light' ? 'dark' : 'light';
+  }
+}
+```
+
+**Key Points:**
+- `@watch` methods are called when the property value changes
+- Receives `oldValue` and `newValue` as parameters
+- Perfect for imperatively updating DOM elements
+- Can watch multiple properties with multiple decorators
+- Works with both programmatic changes and attribute changes
+
+You can also apply multiple watchers to the same method:
+
+```typescript
+@watch('width')
+@watch('height')
+@watch('scale')
+updateDimensions() {
+  // Called when any of these properties change
+  this.recalculateLayout();
+}
+```
 
 ## Queries
 
@@ -578,6 +663,7 @@ Use the same card with different controllers:
 | `@property(options)` | Declares a property that can reflect to attributes | `@property({ type: Boolean, reflect: true })` |
 | `@query(selector)` | Queries a single element from shadow DOM | `@query('.button')` |
 | `@queryAll(selector)` | Queries multiple elements from shadow DOM | `@queryAll('input[type="checkbox"]')` |
+| `@watch(propertyName)` | Watches a property for changes and calls the method | `@watch('theme')` |
 
 ### Event Decorators
 

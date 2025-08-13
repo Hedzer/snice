@@ -66,3 +66,6 @@ Desktop.ini
 
 # Snice specific demo projects
 *-demo/
+
+
+!global.d.ts

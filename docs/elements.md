@@ -443,7 +443,7 @@ class HostStyled extends HTMLElement {
 ### Complex Form Component
 
 ```typescript
-import { element, property, query, queryAll, on } from 'snice';
+import { element, property, query, queryAll, on, watch } from 'snice';
 
 @element('registration-form')
 class RegistrationForm extends HTMLElement {
@@ -467,6 +467,9 @@ class RegistrationForm extends HTMLElement {
   
   @queryAll('.field-error')
   fieldErrors?: NodeListOf<HTMLElement>;
+  
+  @query('button[type="submit"]')
+  submitButton?: HTMLButtonElement;
   
   html() {
     return `
@@ -588,7 +591,7 @@ class RegistrationForm extends HTMLElement {
       return;
     }
     
-    this.setLoading(true);
+    this.loading = true;  // @watch will handle UI update
     this.clearErrors();
     
     try {
@@ -611,7 +614,7 @@ class RegistrationForm extends HTMLElement {
     } catch (error) {
       this.showError('Registration failed. Please try again.');
     } finally {
-      this.setLoading(false);
+      this.loading = false;  // @watch will handle UI update
     }
   }
   
@@ -671,12 +674,11 @@ class RegistrationForm extends HTMLElement {
     this.fieldErrors?.forEach(error => error.textContent = '');
   }
   
-  setLoading(loading: boolean) {
-    this.loading = loading;
-    const button = this.shadowRoot?.querySelector('button');
-    if (button) {
-      button.disabled = loading;
-      button.textContent = loading ? 'Registering...' : 'Register';
+  @watch('loading')
+  updateLoadingState() {
+    if (this.submitButton) {
+      this.submitButton.disabled = this.loading;
+      this.submitButton.textContent = this.loading ? 'Registering...' : 'Register';
     }
   }
 }
