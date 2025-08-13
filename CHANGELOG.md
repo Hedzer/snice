@@ -1,3 +1,15 @@
+# [1.3.0](https://gitlab.com/Hedzer/snice/compare/v1.2.0...v1.3.0) (2025-08-13)
+
+
+### Bug Fixes
+
+* added route args ([66e55ea](https://gitlab.com/Hedzer/snice/commit/66e55ea932bd34374d5b7abb8bf0125807d548b6))
+
+
+### Features
+
+* added create-app command ([ba2535e](https://gitlab.com/Hedzer/snice/commit/ba2535ecda3dd3756ec859b844d9372f7af38b6b))
+
 # [1.2.0](https://gitlab.com/Hedzer/snice/compare/v1.1.0...v1.2.0) (2025-08-12)
 
 
