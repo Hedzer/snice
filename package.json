@@ -6,8 +6,13 @@
   "main": "src/index.ts",
   "module": "src/index.ts",
   "types": "src/index.ts",
+  "bin": {
+    "snice": "./bin/snice.js"
+  },
   "files": [
     "src",
+    "bin",
+    "templates",
     "!src/**/*.test.ts",
     "!src/**/*.spec.ts"
   ],

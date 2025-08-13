@@ -2,6 +2,16 @@
 
 A lightweight TypeScript framework for building web components with decorators and routing.
 
+## Quick Start
+
+Create a new Snice app with one command:
+
+```bash
+npx snice create-app my-app
+cd my-app
+npm run dev
+```
+
 ## Core Philosophy: Imperative, Not Reactive
 
 Snice takes an **imperative approach** to web components. Unlike reactive frameworks that automatically re-render when data changes, Snice components:
