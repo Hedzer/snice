@@ -27,7 +27,7 @@ This approach eliminates the complexity of reactive systems, virtual DOM diffing
 
 Snice provides a clear separation of concerns through decorators:
 
-### Component Decorators
+### Class Decorators
 - **`@element`** - Creates custom HTML elements with encapsulated visual behavior and styling
 - **`@controller`** - Handles data fetching, server communication, and business logic separate from visual components  
 - **`@page`** - Sets up routing and navigation between different views
