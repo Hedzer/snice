@@ -131,7 +131,7 @@ class UserCard extends HTMLElement {
   @property({ reflect: true })
   name = 'Anonymous';
   
-  @property({ reflect: true })
+  @property({ attribute: 'user-role' })  // Maps to user-role attribute
   role = 'User';
   
   @property({ type: Boolean })
@@ -152,7 +152,7 @@ class UserCard extends HTMLElement {
 
 Use it with attributes:
 ```html
-<user-card name="Jane Doe" role="Admin" verified></user-card>
+<user-card name="Jane Doe" user-role="Admin" verified></user-card>
 ```
 
 
@@ -168,56 +168,26 @@ class ThemeToggle extends HTMLElement {
   @property({ reflect: true })
   theme: 'light' | 'dark' = 'light';
   
-  @property({ type: Boolean })
-  animated = true;
-  
-  @query('.toggle-button')
-  button?: HTMLElement;
-  
-  @query('.theme-icon')
+  @query('.icon')
   icon?: HTMLElement;
   
   html() {
     return `
-      <button class="toggle-button">
-        <span class="theme-icon">🌞</span>
+      <button>
+        <span class="icon">🌞</span>
       </button>
     `;
   }
   
   @watch('theme')
-  onThemeChange(oldTheme: string, newTheme: string, propertyName: string) {
-    // propertyName will be 'theme'
-    // Update icon when theme changes
+  updateTheme(oldValue: string, newValue: string) {
     if (this.icon) {
-      this.icon.textContent = newTheme === 'dark' ? '🌙' : '🌞';
-    }
-    
-    // Update button styling
-    if (this.button) {
-      this.button.classList.remove(`theme--${oldTheme}`);
-      this.button.classList.add(`theme--${newTheme}`);
-    }
-    
-    // Animate if enabled
-    if (this.animated && this.button) {
-      this.button.classList.add('transitioning');
-      setTimeout(() => {
-        this.button?.classList.remove('transitioning');
-      }, 300);
+      this.icon.textContent = newValue === 'dark' ? '🌙' : '🌞';
     }
   }
   
-  @watch('animated')
-  onAnimatedChange(oldValue: boolean, newValue: boolean, propertyName: string) {
-    // propertyName will be 'animated'
-    if (this.button) {
-      this.button.classList.toggle('animations-enabled', newValue);
-    }
-  }
-  
-  @on('click', '.toggle-button')
-  toggleTheme() {
+  @on('click', 'button')
+  toggle() {
     this.theme = this.theme === 'light' ? 'dark' : 'light';
   }
 }
@@ -234,9 +204,9 @@ You can watch multiple properties with a single decorator:
 
 ```typescript
 @watch('width', 'height', 'scale')
-updateDimensions(oldValue: number, newValue: number, propertyName: string) {
+updateDimensions(_old: number, _new: number, _name: string) {
   // Called when any of these properties change
-  console.log(`${propertyName} changed from ${oldValue} to ${newValue}`);
+  console.log(`${_name} changed from ${_old} to ${_new}`);
   this.recalculateLayout();
 }
 ```
@@ -245,8 +215,8 @@ Watch all property changes with the wildcard:
 
 ```typescript
 @watch('*')
-handleAnyPropertyChange(oldValue: any, newValue: any, propertyName: string) {
-  console.log(`Property ${propertyName} changed from ${oldValue} to ${newValue}`);
+handleAnyPropertyChange(_old: any, _new: any, _name: string) {
+  console.log(`Property ${_name} changed from ${_old} to ${_new}`);
   // Useful for debugging or when all properties affect the same output
 }
 ```
@@ -335,24 +305,16 @@ class ToggleSwitch extends HTMLElement {
   toggleButton?: HTMLElement;
 
   html() {
-    return `
-      <button class="toggle">
-        <span class="slider"></span>
-      </button>
-    `;
-  }
-  
-  css() {
-    return `...`;
+    return `<button class="toggle">OFF</button>`;
   }
   
   @on('click', '.toggle')
   @dispatch('toggled')
   toggle() {
     this.isOn = !this.isOn;
-    this.toggleButton?.classList.toggle('on', this.isOn);
-
-    // Return value becomes event detail
+    if (this.toggleButton) {
+      this.toggleButton.textContent = this.isOn ? 'ON' : 'OFF';
+    }
     return { on: this.isOn };
   }
 }
@@ -493,219 +455,35 @@ Use it:
 
 ## Channels
 
-Request/response between elements and controllers:
+Bidirectional communication between elements and controllers:
 
 ```typescript
-// --- components/user-card.ts
-@element('user-card')
-class UserCard extends HTMLElement {
-  @channel('get-data')
-  async *fetchUserData() {
-    // Yield sends request, await waits for response
-    const user = await (yield { id: 123 });
+// Element sends request, controller responds
+@element('user-profile')
+class UserProfile extends HTMLElement {
+
+  @channel('fetch-user')
+  async *getUser() {
+    const user = await (yield { userId: 123 });
     return user;
   }
   
-  async loadUser() {
-    const user = await this.fetchUserData();
-    console.log(user);  // { name: 'Alice' }
+  async connectedCallback() {
+    const userData = await this.getUser();
+    this.displayUser(userData);
   }
+  
 }
 
-// --- controllers/user-controller.ts
 @controller('user-controller')
 class UserController {
-  element: HTMLElement | null = null;
-  
-  async attach(element: HTMLElement) {}
-  async detach(element: HTMLElement) {}
-  
-  @channel('get-data')
-  handleGetData(request) {
-    console.log(request);  // { id: 123 }
-    return { name: 'Alice' };
-  }
-}
-```
 
-## Complete Example
-
-Here's how the pieces work together - a generic display component filled by a controller:
-
-```typescript
-import { element, controller, query } from 'snice';
-
-// Generic card component - purely visual
-@element('info-card')
-class InfoCard extends HTMLElement {
-  @query('.title')
-  titleElement?: HTMLElement;
-  
-  @query('.content')
-  contentElement?: HTMLElement;
-  
-  @query('.footer')
-  footerElement?: HTMLElement;
-
-  html() {
-    return `
-      <div class="card">
-        <h2 class="title">Loading...</h2>
-        <div class="content">
-          <div class="skeleton"></div>
-        </div>
-        <div class="footer"></div>
-      </div>
-    `;
+  @channel('fetch-user')
+  async handleFetchUser(request: { userId: number }) {
+    const response = await fetch(`/api/users/${request.userId}`);
+    return response.json();
   }
 
-  css() {
-    return `
-      .card {
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        padding: 20px;
-        max-width: 400px;
-      }
-      .title {
-        margin: 0 0 15px 0;
-        color: #333;
-      }
-      .content {
-        min-height: 60px;
-      }
-      .skeleton {
-        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-        height: 20px;
-        border-radius: 4px;
-        animation: loading 1.5s infinite;
-      }
-      .footer {
-        margin-top: 15px;
-        font-size: 0.9em;
-        color: #666;
-      }
-      @keyframes loading {
-        0% { background-position: -200px 0; }
-        100% { background-position: 200px 0; }
-      }
-    `;
-  }
-  
-  // Methods the controller can call to update the display
-  setTitle(title: string) {
-    if (this.titleElement) {
-      this.titleElement.textContent = title;
-    }
-  }
-  
-  setContent(html: string) {
-    if (this.contentElement) {
-      this.contentElement.innerHTML = html;
-    }
-  }
-  
-  setFooter(text: string) {
-    if (this.footerElement) {
-      this.footerElement.textContent = text;
-    }
-  }
-}
-
-// Controller that fetches and populates data
-@controller('weather-controller')
-class WeatherController {
-  element: HTMLElement | null = null;
-  
-  async attach(element: HTMLElement) {
-    
-    // Simulate fetching weather data
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const weatherData = {
-      location: 'San Francisco',
-      temp: '72°F',
-      conditions: 'Partly Cloudy',
-      humidity: '65%'
-    };
-    
-    // Update the generic card with specific data
-    (element as any).setTitle(weatherData.location);
-    (element as any).setContent(`
-      <p><strong>${weatherData.temp}</strong></p>
-      <p>${weatherData.conditions}</p>
-      <p>Humidity: ${weatherData.humidity}</p>
-    `);
-    (element as any).setFooter('Updated just now');
-  }
-  
-  async detach(element: HTMLElement) {
-    // Cleanup if needed
-  }
-}
-```
-
-Use the same card with different controllers:
-```html
-<!-- Weather widget -->
-<info-card controller="weather-controller"></info-card>
-
-<!-- Stock widget - same card, different controller -->
-<info-card controller="stock-controller"></info-card>
-
-<!-- News widget - same card, different controller -->
-<info-card controller="news-controller"></info-card>
-```
-
-## Decorator Reference
-
-### Component Decorators
-
-| Decorator | Purpose | Example |
-|-----------|---------|---------|
-| `@element(tagName)` | Defines a custom HTML element | `@element('my-button')` |
-| `@controller(name)` | Creates a data controller | `@controller('user-controller')` |
-| `@page(options)` | Defines a routable page component | `@page({ tag: 'home-page', routes: ['/'] })` |
-
-### Property Decorators
-
-| Decorator | Purpose | Example |
-|-----------|---------|---------|
-| `@property(options)` | Declares a property that can reflect to attributes | `@property({ type: Boolean, reflect: true })` |
-| `@query(selector)` | Queries a single element from shadow DOM | `@query('.button')` |
-| `@queryAll(selector)` | Queries multiple elements from shadow DOM | `@queryAll('input[type="checkbox"]')` |
-| `@watch(...propertyNames)` | Watches properties for changes and calls the method | `@watch('width', 'height')` or `@watch('*')` |
-
-### Event Decorators
-
-| Decorator | Purpose | Example |
-|-----------|---------|---------|
-| `@on(event, selector?)` | Listens for DOM events | `@on('click', '.button')` |
-| `@dispatch(eventName, options?)` | Dispatches custom events after method execution | `@dispatch('data-updated')` |
-| `@channel(name, options?)` | Enables request/response communication | `@channel('fetch-data')` |
-
-### Property Options
-
-```typescript
-interface PropertyOptions {
-  type?: typeof String | typeof Number | typeof Boolean | typeof Array | typeof Object;  // Type converter
-  reflect?: boolean;        // Reflect property to attribute
-  attribute?: string | boolean;  // Custom attribute name or false to disable
-  converter?: PropertyConverter;  // Custom converter
-  hasChanged?: (value: any, oldValue: any) => boolean;  // Custom change detector
-}
-
-interface PropertyConverter {
-  fromAttribute?(value: string | null, type?: any): any;
-  toAttribute?(value: any, type?: any): string | null;
-}
-```
-
-### Dispatch Options
-
-```typescript
-interface DispatchOptions extends EventInit {
-  dispatchOnUndefined?: boolean;  // Whether to dispatch when method returns undefined
 }
 ```
 
