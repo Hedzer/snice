@@ -2,7 +2,7 @@ import { Router } from 'snice';
 
 const { page, initialize, navigate } = Router({ 
   target: '#app', 
-  routing_type: 'hash',
+  type: 'hash',
   transition: {
     mode: 'simultaneous',
     outDuration: 200,

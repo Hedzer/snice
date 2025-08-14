@@ -20,7 +20,7 @@ import { Router } from 'snice';
 
 const router = Router({
   target: '#app',           // Target element selector
-  routing_type: 'hash'      // 'hash' or 'pushstate'
+  type: 'hash'      // 'hash' or 'pushstate'
 });
 
 // Destructure router methods
@@ -32,7 +32,7 @@ const { page, initialize, navigate, register } = router;
 ```typescript
 interface RouterOptions {
   target: string;                    // Target element selector
-  routing_type: 'hash' | 'pushstate'; // Routing type
+  type: 'hash' | 'pushstate'; // Routing type
   window?: Window;                   // Override window object
   document?: Document;               // Override document object
   transition?: PageTransition;       // Global transition config
@@ -48,7 +48,7 @@ import { Router } from 'snice';
 
 const { page, initialize } = Router({
   target: '#app',
-  routing_type: 'hash'
+  type: 'hash'
 });
 
 @page({ tag: 'home-page', routes: ['/'] })
@@ -420,7 +420,7 @@ interface PageTransition {
 ```typescript
 const router = Router({
   target: '#app',
-  routing_type: 'hash',
+  type: 'hash',
   transition: {
     name: 'fade',
     outDuration: 300,
@@ -498,336 +498,420 @@ const rotateTransition: PageTransition = {
 };
 ```
 
-## Advanced Patterns
+## Route Guards
 
-### Protected Routes
+Snice provides built-in guard functionality to protect routes based on conditions. Guards are functions that determine if navigation should proceed.
+
+### Basic Guard Usage
 
 ```typescript
-// Auth service
-class AuthService {
-  static isAuthenticated(): boolean {
-    return !!localStorage.getItem('token');
+import { Router, Guard, RouteParams } from 'snice';
+
+// Define your app context class
+class AppContext {
+  private user: { id: number; role: string } | null = null;
+  private permissions: string[] = [];
+  
+  getUser() {
+    return this.user;
   }
   
-  static requireAuth(fallbackRoute: string = '/login') {
-    if (!this.isAuthenticated()) {
-      navigate(fallbackRoute);
-      return false;
-    }
-    return true;
+  setUser(user: { id: number; role: string } | null) {
+    this.user = user;
+  }
+  
+  getPermissions() {
+    return this.permissions;
+  }
+  
+  setPermissions(permissions: string[]) {
+    this.permissions = permissions;
   }
 }
 
+// Create context instance
+const appContext = new AppContext();
+
+// Create router with context
+const router = Router({
+  target: '#app',
+  type: 'hash',
+  context: appContext
+});
+
+const { page, navigate, initialize } = router;
+
+// Create guard functions (receive context and route params)
+const isAuthenticated: Guard<AppContext> = (ctx, params) => ctx.getUser() !== null;
+const isAdmin: Guard<AppContext> = (ctx, params) => ctx.getUser()?.role === 'admin';
+
+// Page with single guard
 @page({ 
   tag: 'protected-page',
-  routes: ['/dashboard']
+  routes: ['/protected'],
+  guards: isAuthenticated
 })
 class ProtectedPage extends HTMLElement {
-  connectedCallback() {
-    super.connectedCallback?.();
-    
-    // Check authentication
-    if (!AuthService.requireAuth()) {
-      return;
-    }
-    
-    // Load protected content
-    this.loadDashboard();
-  }
-  
-  loadDashboard() {
-    console.log('Loading dashboard...');
-  }
-  
   html() {
-    return `<h1>Protected Dashboard</h1>`;
+    return `<h1>Protected Content</h1>`;
   }
 }
 ```
 
-### Route Guards
+### Multiple Guards
+
+All guards must pass for navigation to proceed:
 
 ```typescript
-// Create a route guard system
-class RouteGuard {
-  private static guards = new Map<string, () => boolean>();
-  
-  static register(route: string, guard: () => boolean) {
-    this.guards.set(route, guard);
-  }
-  
-  static canActivate(route: string): boolean {
-    const guard = this.guards.get(route);
-    return guard ? guard() : true;
-  }
-}
+// Guard factory function
+const hasPermission = (perm: string): Guard<AppContext> => 
+  (ctx, params) => ctx.getPermissions().includes(perm);
 
-// Register guards
-RouteGuard.register('/admin', () => {
-  const user = getCurrentUser();
-  return user?.role === 'admin';
-});
-
-// Modified page with guard check
+// Page with multiple guards (AND logic)
 @page({ 
-  tag: 'admin-page',
-  routes: ['/admin']
+  tag: 'admin-panel',
+  routes: ['/admin'],
+  guards: [isAuthenticated, isAdmin, hasPermission('manage-users')]
 })
-class AdminPage extends HTMLElement {
-  connectedCallback() {
-    super.connectedCallback?.();
-    
-    if (!RouteGuard.canActivate('/admin')) {
-      navigate('/unauthorized');
-      return;
-    }
-    
-    this.loadAdminData();
-  }
-  
-  loadAdminData() {
-    console.log('Loading admin data...');
-  }
-  
+class AdminPanel extends HTMLElement {
   html() {
     return `<h1>Admin Panel</h1>`;
   }
 }
 ```
 
-### Lazy Loading Pages
+### Guards with Route Parameters
+
+Guards receive route parameters as the second argument:
 
 ```typescript
-// Lazy load page components
-async function lazyLoadPage(modulePath: string, pageName: string) {
-  const module = await import(modulePath);
-  return module[pageName];
-}
+// Guard that checks if user owns the resource
+const ownsResource: Guard<AppContext> = (ctx, params: RouteParams) => {
+  const user = ctx.getUser();
+  if (!user) return false;
+  
+  // params.resourceId comes from route like '/resources/:resourceId'
+  return user.ownedResources.includes(parseInt(params.resourceId));
+};
 
-// Register lazy loaded routes
-async function setupLazyRoutes() {
-  const { register } = router;
+@page({ 
+  tag: 'resource-editor',
+  routes: ['/resources/:resourceId/edit'],
+  guards: ownsResource
+})
+class ResourceEditor extends HTMLElement {
+  @property()
+  resourceId = '';
   
-  // Register route without loading component
-  register('/heavy-page', 'heavy-page');
-  
-  // Load component when needed
-  window.addEventListener('hashchange', async () => {
-    const hash = window.location.hash;
-    
-    if (hash === '#/heavy-page' && !customElements.get('heavy-page')) {
-      const HeavyPage = await lazyLoadPage('./pages/heavy-page.js', 'HeavyPage');
-      customElements.define('heavy-page', HeavyPage);
-    }
-  });
+  html() {
+    return `<h1>Editing Resource ${this.resourceId}</h1>`;
+  }
 }
 ```
 
-### Breadcrumb Navigation
+### Async Guards
+
+Guards can be async for checking permissions from APIs:
 
 ```typescript
-@element('breadcrumb-nav')
-class BreadcrumbNav extends HTMLElement {
-  @property()
-  currentPath = '';
+const canEditResource: Guard<AppContext> = async (ctx, params: RouteParams) => {
+  const user = ctx.getUser();
+  if (!user) return false;
   
-  @query('.breadcrumb')
-  navElement?: HTMLElement;
-  
+  // Use params in API call
+  const response = await fetch(`/api/resources/${params.resourceId}/permissions/${user.id}`);
+  const permissions = await response.json();
+  return permissions.includes('edit');
+};
+
+@page({ 
+  tag: 'editor-page',
+  routes: ['/editor'],
+  guards: canEditResource
+})
+class EditorPage extends HTMLElement {
+  html() {
+    return `<h1>Resource Editor</h1>`;
+  }
+}
+```
+
+### Custom 403 Page
+
+When guards deny access, a 403 page is rendered:
+
+```typescript
+// Define custom 403 page
+@page({ 
+  tag: 'forbidden-page',
+  routes: ['/403']
+})
+class ForbiddenPage extends HTMLElement {
   html() {
     return `
-      <nav class="breadcrumb">
-        ${this.generateBreadcrumbs()}
-      </nav>
+      <div class="forbidden">
+        <h1>403 - Access Denied</h1>
+        <p>You don't have permission to view this page.</p>
+        <a href="#/">Return to Home</a>
+      </div>
     `;
   }
   
   css() {
     return `
-      .breadcrumb {
-        padding: 10px;
-        background: #f5f5f5;
+      .forbidden {
+        text-align: center;
+        padding: 50px;
       }
-      .breadcrumb a {
-        color: blue;
-        text-decoration: none;
-        margin: 0 5px;
-      }
-      .breadcrumb span {
-        margin: 0 5px;
+      .forbidden h1 {
+        color: #ff4444;
       }
     `;
   }
+}
+```
+
+### Guards with Route Parameters
+
+**Important**: Guards cannot access route parameters since they run before the element is created. For parameter-based access control, check permissions in the component's `connectedCallback`:
+
+```typescript
+@page({ 
+  tag: 'item-edit',
+  routes: ['/items/:itemId/edit'],
+  guards: isAuthenticated  // Basic auth check in guard
+})
+class ItemEdit extends HTMLElement {
+  @property()
+  itemId = '';
   
-  generateBreadcrumbs(): string {
-    const parts = this.currentPath.split('/').filter(Boolean);
-    const breadcrumbs: string[] = ['<a href="#/">Home</a>'];
-    
-    parts.forEach((part, index) => {
-      const path = '/' + parts.slice(0, index + 1).join('/');
-      const label = part.charAt(0).toUpperCase() + part.slice(1);
-      
-      if (index === parts.length - 1) {
-        breadcrumbs.push(`<span>${label}</span>`);
-      } else {
-        breadcrumbs.push(`<a href="#${path}">${label}</a>`);
-      }
-    });
-    
-    return breadcrumbs.join(' > ');
-  }
-  
-  connectedCallback() {
+  async connectedCallback() {
     super.connectedCallback?.();
     
-    // Update on navigation
-    window.addEventListener('hashchange', () => {
-      this.currentPath = window.location.hash.slice(1) || '/';
-    });
+    // Parameter-based access check in component
+    const user = getCurrentUser();
+    if (!user.ownedItems.includes(parseInt(this.itemId))) {
+      this.renderForbidden();
+      return;
+    }
     
-    // Set initial path
-    this.currentPath = window.location.hash.slice(1) || '/';
+    this.loadItem();
   }
   
-  @watch('currentPath')
-  updateBreadcrumbs() {
-    if (this.navElement) {
-      this.navElement.innerHTML = this.generateBreadcrumbs();
+  renderForbidden() {
+    if (this.shadowRoot) {
+      this.shadowRoot.innerHTML = `<h1>You don't own this item</h1>`;
     }
+  }
+  
+  html() {
+    return `<h1>Edit Item ${this.itemId}</h1>`;
   }
 }
 ```
 
-### Route Analytics
+### Working with Context
+
+Context is exposed by the router and can be modified through your context object's methods:
 
 ```typescript
-class RouteAnalytics {
-  private static startTime: number;
+// Use the same context instance from above
+const { navigate, context } = router;
+
+// After login, update the context
+async function login(credentials: any) {
+  const response = await fetch('/api/login', {
+    method: 'POST',
+    body: JSON.stringify(credentials)
+  });
   
-  static init() {
-    // Track initial page load
-    this.trackPageView(window.location.pathname);
-    
-    // Track navigation
-    window.addEventListener('hashchange', () => {
-      this.trackPageView(window.location.hash.slice(1));
-    });
-    
-    // For pushstate
-    const originalPushState = history.pushState;
-    history.pushState = function(...args) {
-      originalPushState.apply(history, args);
-      RouteAnalytics.trackPageView(window.location.pathname);
-    };
-  }
+  const userData = await response.json();
   
-  static trackPageView(path: string) {
-    const endTime = Date.now();
-    const duration = this.startTime ? endTime - this.startTime : 0;
-    
-    // Send analytics
-    console.log('Page view:', {
-      path,
-      duration,
-      timestamp: endTime,
-      referrer: document.referrer
-    });
-    
-    // Update start time for next navigation
-    this.startTime = endTime;
-    
-    // Send to analytics service
-    if (typeof gtag !== 'undefined') {
-      gtag('config', 'GA_MEASUREMENT_ID', {
-        page_path: path
-      });
-    }
-  }
+  // Update context through its methods
+  context.setUser(userData.user);
+  context.setPermissions(userData.permissions);
+  
+  // Navigate to protected area
+  navigate('/dashboard');
 }
 
-// Initialize analytics
-RouteAnalytics.init();
+// On logout, clear context
+function logout() {
+  context.setUser(null);
+  context.setPermissions([]);
+  navigate('/');
+}
 ```
 
-### Multi-Layout System
+### Guard Best Practices
+
+1. **Keep guards simple**: Guards should only check conditions, not perform side effects
+2. **Use async sparingly**: Only use async guards when necessary (API checks)
+3. **Provide feedback**: Always define a custom 403 page for better UX
+4. **Cache results**: For expensive checks, cache guard results
+5. **Test thoroughly**: Write tests for all guard scenarios
+
+## Advanced Patterns
+
+### Navigation Wrapper
+
+Create a navigation service to handle common patterns:
 
 ```typescript
-// Base layout
-@element('base-layout')
-class BaseLayout extends HTMLElement {
-  @query('.content')
-  contentArea?: HTMLElement;
+import { Router } from 'snice';
+
+class NavigationService {
+  private router: ReturnType<typeof Router>;
+  private navigate: (path: string) => Promise<void>;
   
-  html() {
-    return `
-      <header>
-        <nav><!-- Navigation --></nav>
-      </header>
-      <main class="content"></main>
-      <footer><!-- Footer --></footer>
-    `;
+  constructor(routerInstance: ReturnType<typeof Router>) {
+    this.router = routerInstance;
+    this.navigate = routerInstance.navigate;
   }
   
-  setContent(element: HTMLElement) {
-    if (this.contentArea) {
-      this.contentArea.innerHTML = '';
-      this.contentArea.appendChild(element);
+  // Navigate with hash or pushstate prefix
+  go(path: string) {
+    this.navigate(path);
+  }
+  
+  // Navigate after delay
+  async goDelayed(path: string, delay: number) {
+    await new Promise(resolve => setTimeout(resolve, delay));
+    this.navigate(path);
+  }
+  
+  // Navigate with confirmation
+  async goWithConfirm(path: string, message: string) {
+    if (confirm(message)) {
+      this.navigate(path);
     }
   }
 }
 
-// Admin layout
-@element('admin-layout')
-class AdminLayout extends HTMLElement {
-  @query('.content')
-  contentArea?: HTMLElement;
+// Usage
+const router = Router({ target: '#app', type: 'hash' });
+const nav = new NavigationService(router);
+
+// In components
+av.go('/dashboard');
+av.goWithConfirm('/delete', 'Are you sure?');
+```
+
+### Handling Navigation Events
+
+Listen to router events using the target element:
+
+```typescript
+const router = Router({ target: '#app', type: 'hash' });
+const { initialize } = router;
+
+initialize();
+
+// Listen for navigation by watching DOM changes
+const target = document.querySelector('#app');
+if (target) {
+  const observer = new MutationObserver((mutations) => {
+    // Page changed
+    const currentPage = target.firstElementChild;
+    if (currentPage) {
+      console.log('Navigated to:', currentPage.tagName.toLowerCase());
+      
+      // Update page title
+      document.title = `App - ${currentPage.tagName}`;
+      
+      // Track analytics
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'page_view', {
+          page_title: currentPage.tagName,
+          page_location: window.location.href
+        });
+      }
+    }
+  });
+  
+  observer.observe(target, { childList: true });
+}
+```
+
+### Preloading Pages
+
+Ensure page components are defined before navigation:
+
+```typescript
+// Define all pages upfront
+import './pages/home-page';
+import './pages/about-page';
+import './pages/contact-page';
+
+// Or dynamically load and define
+async function preloadPage(tag: string, modulePath: string) {
+  if (!customElements.get(tag)) {
+    const module = await import(modulePath);
+    // Module should define the custom element
+  }
+}
+
+// Preload critical pages
+await preloadPage('home-page', './pages/home-page.js');
+await preloadPage('dashboard-page', './pages/dashboard-page.js');
+
+// Then initialize router
+const router = Router({ target: '#app', type: 'hash' });
+router.initialize();
+```
+
+### Nested Page Components
+
+Create pages that contain sub-navigation:
+
+```typescript
+@page({ tag: 'settings-page', routes: ['/settings'] })
+class SettingsPage extends HTMLElement {
+  @query('.sub-content')
+  subContent?: HTMLElement;
   
   html() {
     return `
-      <div class="admin-wrapper">
-        <aside class="sidebar"><!-- Admin menu --></aside>
-        <main class="content"></main>
+      <div class="settings">
+        <h1>Settings</h1>
+        <nav class="sub-nav">
+          <button data-section="profile">Profile</button>
+          <button data-section="security">Security</button>
+          <button data-section="notifications">Notifications</button>
+        </nav>
+        <div class="sub-content">
+          <!-- Sub-content loads here -->
+        </div>
       </div>
     `;
   }
   
-  setContent(element: HTMLElement) {
-    if (this.contentArea) {
-      this.contentArea.innerHTML = '';
-      this.contentArea.appendChild(element);
-    }
-  }
-}
-
-// Route with layout
-class LayoutRouter {
-  static layouts = new Map<string, string>();
-  
-  static setLayout(route: string, layoutTag: string) {
-    this.layouts.set(route, layoutTag);
-  }
-  
-  static getLayout(route: string): string {
-    // Check specific route
-    if (this.layouts.has(route)) {
-      return this.layouts.get(route)!;
-    }
+  @on('click', '[data-section]')
+  loadSection(event: Event) {
+    const button = event.target as HTMLElement;
+    const section = button.dataset.section;
     
-    // Check route patterns
-    for (const [pattern, layout] of this.layouts) {
-      if (route.startsWith(pattern)) {
-        return layout;
+    if (this.subContent) {
+      switch(section) {
+        case 'profile':
+          this.subContent.innerHTML = '<h2>Profile Settings</h2>';
+          break;
+        case 'security':
+          this.subContent.innerHTML = '<h2>Security Settings</h2>';
+          break;
+        case 'notifications':
+          this.subContent.innerHTML = '<h2>Notification Settings</h2>';
+          break;
       }
     }
-    
-    return 'base-layout';
+  }
+  
+  connectedCallback() {
+    super.connectedCallback?.();
+    // Load default section
+    this.loadSection({ target: { dataset: { section: 'profile' } } } as any);
   }
 }
-
-// Configure layouts
-LayoutRouter.setLayout('/admin', 'admin-layout');
-LayoutRouter.setLayout('/user', 'base-layout');
-```
 
 ## Best Practices
 

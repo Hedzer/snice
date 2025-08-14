@@ -1,6 +1,18 @@
 import Route from 'route-parser';
 import { setupEventHandlers, cleanupEventHandlers } from './events';
 
+/**
+ * Route parameters extracted from the URL
+ */
+export type RouteParams = Record<string, string>;
+
+/**
+ * Guard function that determines if navigation is allowed
+ * @param context The application context
+ * @param params The URL parameters from the route
+ */
+export type Guard<T = any> = (context: T, params: RouteParams) => boolean | Promise<boolean>;
+
 export interface RouterOptions {
   /**
    * The target element selector where the page element will be instantiated.
@@ -11,7 +23,7 @@ export interface RouterOptions {
   /**
    * Whether to use hash routing or push state routing.
    */
-  routing_type: 'hash' | 'pushstate';
+  type: 'hash' | 'pushstate';
 
   /**
    * Override for the window object to use for routing, defaults to global.
@@ -27,6 +39,11 @@ export interface RouterOptions {
    * Global transition configuration for all pages
    */
   transition?: PageTransition;
+  
+  /**
+   * Optional context object passed to guard functions
+   */
+  context?: any;
 }
 
 export interface PageTransition {
@@ -79,6 +96,23 @@ export interface PageOptions {
    * Optional per-page transition override
    */
   transition?: PageTransition;
+  
+  /**
+   * Guard functions that must pass for navigation to proceed.
+   * Can be a single guard or an array of guards (all must pass).
+   */
+  guards?: Guard<any> | Guard<any>[];
+}
+
+/**
+ * Router return type
+ */
+export interface RouterInstance {
+  page: (pageOptions: PageOptions) => <C extends { new(...args: any[]): HTMLElement }>(constructor: C) => void;
+  initialize: () => void;
+  navigate: (path: string) => Promise<void>;
+  register: (route: string, tag: string, transition?: PageTransition, guards?: Guard<any> | Guard<any>[]) => void;
+  context: any;
 }
 
 /**
@@ -86,13 +120,15 @@ export interface PageOptions {
  * @param {RouterOptions} options - The router configuration options.
  * @returns An object containing the router's API methods.
  */
-export function Router(options: RouterOptions) {
-  const routes: { route: Route, tag: string, transition?: PageTransition }[] = [];
+export function Router(options: RouterOptions): RouterInstance {
+  const routes: { route: Route, tag: string, transition?: PageTransition, guards?: Guard<any> | Guard<any>[] }[] = [];
   let is_sorted = false;
 
   let _404: string; // the 404 page
+  let _403: string; // the 403 forbidden page
   let home: string; // the home page
   let currentPageElement: HTMLElement | null = null; // Track current page for transitions
+  const context = options.context || {}; // Store context for guards
 
   /**
    * Decorator function for defining a page with associated routes.
@@ -100,7 +136,7 @@ export function Router(options: RouterOptions) {
    * @returns A decorator function to apply to a custom element class.
    */
   function page(pageOptions: PageOptions) {
-    return function <T extends { new(...args: any[]): HTMLElement }>(constructor: T) {
+    return function <C extends { new(...args: any[]): HTMLElement }>(constructor: C) {
       // Store transition config on constructor for later use
       (constructor as any).__transition = pageOptions.transition;
       // Add event handler support
@@ -155,8 +191,8 @@ export function Router(options: RouterOptions) {
       // Define the custom element
       customElements.define(pageOptions.tag, constructor);
 
-      // Register the routes
-      pageOptions.routes.forEach(route => register(route, pageOptions.tag));
+      // Register the routes with guards
+      pageOptions.routes.forEach(route => register(route, pageOptions.tag, pageOptions.transition, pageOptions.guards));
     }
   }
 
@@ -167,12 +203,16 @@ export function Router(options: RouterOptions) {
    * @example
    * register('/custom-route', 'custom-element');
    */
-  function register(route: string, tag: string, transition?: PageTransition): void {
-    routes.push({ route: new Route(route), tag, transition });
+  function register(route: string, tag: string, transition?: PageTransition, guards?: Guard<any> | Guard<any>[]): void {
+    routes.push({ route: new Route(route), tag, transition, guards });
     is_sorted = false;
 
     if (route === '/404') {
       _404 = tag;
+    }
+    
+    if (route === '/403') {
+      _403 = tag;
     }
 
     if (route === '/') {
@@ -197,7 +237,7 @@ export function Router(options: RouterOptions) {
     }
 
     // Listen for navigation events
-    switch (options.routing_type) {
+    switch (options.type) {
       case 'hash':
         window.addEventListener('hashchange', () => {
           // Only navigate if target still exists
@@ -223,7 +263,7 @@ export function Router(options: RouterOptions) {
   }
   
   function get_path(): string {
-    switch (options.routing_type) {
+    switch (options.type) {
       case 'hash':
         return window.location.hash.slice(1);
       case 'pushstate':
@@ -245,9 +285,40 @@ export function Router(options: RouterOptions) {
 
     let newPageElement: HTMLElement | null = null;
     let transition: PageTransition | undefined;
+    let guards: Guard<any> | Guard<any>[] | undefined;
 
     // Home
     if ((path.trim() === '' || path === '/') && home) {
+      // Find home route to get guards
+      const homeRoute = routes.find(r => r.route.match('/'));
+      guards = homeRoute?.guards;
+      
+      // Check guards before creating element
+      if (guards) {
+        const guardsArray = Array.isArray(guards) ? guards : [guards];
+        for (const guard of guardsArray) {
+          const allowed = await guard(context, {});  // No params for home route
+          if (!allowed) {
+            // Render 403 page
+            if (_403) {
+              newPageElement = document.createElement(_403);
+            } else {
+              const div = document.createElement('div');
+              div.className = 'default-403';
+              div.innerHTML = '<h1>403</h1><p>Unauthorized</p>';
+              newPageElement = div;
+            }
+            // Don't perform transition for 403
+            target.innerHTML = '';
+            if (newPageElement) {
+              target.appendChild(newPageElement);
+            }
+            currentPageElement = newPageElement;
+            return;
+          }
+        }
+      }
+      
       newPageElement = document.createElement(home);
       const constructor = customElements.get(home);
       transition = (constructor as any)?.__transition;
@@ -259,6 +330,32 @@ export function Router(options: RouterOptions) {
         const is_match = params !== false;
 
         if (is_match) {
+          // Check guards before creating element
+          if (route.guards) {
+            const guardsArray = Array.isArray(route.guards) ? route.guards : [route.guards];
+            for (const guard of guardsArray) {
+              const allowed = await guard(context, params as RouteParams);
+              if (!allowed) {
+                // Render 403 page
+                if (_403) {
+                  newPageElement = document.createElement(_403);
+                } else {
+                  const div = document.createElement('div');
+                  div.className = 'default-403';
+                  div.innerHTML = '<h1>403</h1><p>Unauthorized</p>';
+                  newPageElement = div;
+                }
+                // Don't perform transition for 403
+                target.innerHTML = '';
+                if (newPageElement) {
+                  target.appendChild(newPageElement);
+                }
+                currentPageElement = newPageElement;
+                return;
+              }
+            }
+          }
+          
           newPageElement = document.createElement(route.tag);
           Object.keys(params).forEach(key => newPageElement!.setAttribute(key, params[key]));
           transition = route.transition;
@@ -382,5 +479,11 @@ export function Router(options: RouterOptions) {
     containerStyle.position = originalPosition;
   }
 
-  return { page, initialize, navigate, register };
+  return { 
+    page, 
+    initialize, 
+    navigate, 
+    register,
+    context,
+  };
 }

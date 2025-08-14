@@ -19,7 +19,7 @@ describe('Router', () => {
     beforeEach(() => {
       router = Router({
         target: '#app',
-        routing_type: 'hash'
+        type: 'hash'
       });
     });
 
@@ -156,7 +156,7 @@ describe('Router', () => {
     it('should add html and css methods support', () => {
       const router = Router({
         target: '#app',
-        routing_type: 'hash'
+        type: 'hash'
       });
       
       const { page, initialize, navigate } = router;
@@ -187,7 +187,7 @@ describe('Router', () => {
     it('should handle css returning array', () => {
       const router = Router({
         target: '#app',
-        routing_type: 'hash'
+        type: 'hash'
       });
       
       const { page, initialize, navigate } = router;
@@ -220,7 +220,7 @@ describe('Router', () => {
     it('should handle multiple routes for same page', () => {
       const router = Router({
         target: '#app',
-        routing_type: 'hash'
+        type: 'hash'
       });
       
       const { page, initialize, navigate } = router;

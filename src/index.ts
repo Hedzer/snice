@@ -4,7 +4,7 @@ export { controller, attachController, detachController, getController, useNativ
 export { on, dispatch } from './events';
 export { channel } from './channel';
 export type { PropertyOptions, PropertyConverter } from './element';
-export type { RouterOptions, PageOptions, PageTransition } from './router';
+export type { RouterOptions, PageOptions, PageTransition, Guard, RouteParams, RouterInstance } from './router';
 export type { IController, ControllerClass } from './controller';
 export type { DispatchOptions } from './events';
 export type { ChannelOptions } from './channel';

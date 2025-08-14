@@ -19,7 +19,7 @@ describe('Router URL Parameters', () => {
     // Create router
     router = Router({
       target: '#test-app',
-      routing_type: 'hash'
+      type: 'hash'
     });
   });
 

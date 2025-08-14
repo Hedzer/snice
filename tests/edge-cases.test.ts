@@ -324,7 +324,7 @@ describe('edge cases and error handling', () => {
     it('should handle missing target element', () => {
       const router = Router({
         target: '#non-existent',
-        routing_type: 'hash'
+        type: 'hash'
       });
       
       expect(() => {
@@ -339,7 +339,7 @@ describe('edge cases and error handling', () => {
       
       const router = Router({
         target: '#router-target',
-        routing_type: 'hash'
+        type: 'hash'
       });
       
       const { page, initialize, navigate } = router;
@@ -371,7 +371,7 @@ describe('edge cases and error handling', () => {
       
       const router = Router({
         target: '#query-target',
-        routing_type: 'hash'
+        type: 'hash'
       });
       
       const { page, initialize, navigate } = router;

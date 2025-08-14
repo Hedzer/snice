@@ -362,10 +362,7 @@ CSS is automatically scoped to your component.
 ```typescript
 import { Router } from 'snice';
 
-const router = Router({
-  target: '#app',
-  routing_type: 'hash'
-});
+const router = Router({ target: '#app', type: 'hash' });
 
 const { page, navigate, initialize } = router;
 
@@ -401,8 +398,103 @@ initialize();
 
 // Navigate programmatically
 navigate('/about');
-navigate('/users/123');  // Sets id="123" on UserPage
+navigate('/users/123');  // Sets userId="123" on UserPage
 ```
+
+### Route Guards
+
+Protect routes with guard functions that control access:
+
+```typescript
+import { Router, Guard, RouteParams } from 'snice';
+
+// Create router with context
+const router = Router({
+  target: '#app',
+  type: 'hash',
+  context: new AppContext(),  // Your app's context object
+});
+
+const { page, navigate, initialize } = router;
+
+// Simple guards (params is empty object for non-parameterized routes)
+const isAuthenticated: Guard<AppContext> = (ctx, params) => ctx.getUser() !== null;
+const isAdmin: Guard<AppContext> = (ctx, params) => ctx.getUser()?.role === 'admin';
+
+// Protected page with single guard
+@page({ tag: 'dashboard-page', routes: ['/dashboard'], guards: isAuthenticated })
+class DashboardPage extends HTMLElement {
+  html() {
+    return `<h1>Dashboard</h1>`;
+  }
+}
+
+// Admin page with multiple guards (all must pass)
+@page({ tag: 'admin-page', routes: ['/admin'], guards: [isAuthenticated, isAdmin] })
+class AdminPage extends HTMLElement {
+  html() {
+    return `<h1>Admin Panel</h1>`;
+  }
+}
+
+// Guard that uses route params to check resource-specific permissions
+const canEditUser: Guard<AppContext> = async (ctx, params) => {
+  const user = ctx.getUser();
+  if (!user) return false;
+  
+  // params.id comes from route '/users/:id/edit'
+  const response = await fetch(`/api/permissions/users/${params.id}/can-edit`);
+  return response.ok;
+};
+
+// Guard that checks ownership
+const ownsItem: Guard<AppContext> = (ctx, params) => {
+  const user = ctx.getUser();
+  if (!user) return false;
+  
+  // params.itemId comes from route '/items/:itemId'
+  return user.ownedItems.includes(parseInt(params.itemId));
+};
+
+@page({ tag: 'user-edit', routes: ['/users/:id/edit'], guards: [isAuthenticated, canEditUser] })
+class UserEditPage extends HTMLElement {
+  @property()
+  id = '';  // Automatically set from route param
+  
+  html() {
+    return `<h1>Edit User ${this.id}</h1>`;
+  }
+}
+
+@page({ tag: 'item-view', routes: ['/items/:itemId'], guards: [isAuthenticated, ownsItem] })
+class ItemView extends HTMLElement {
+  @property()
+  itemId = '';  // Automatically set from route param
+  
+  html() {
+    return `<h1>Item ${this.itemId}</h1>`;
+  }
+}
+
+// Custom 403 page (optional)
+@page({ tag: 'forbidden-page', routes: ['/403'] })
+class ForbiddenPage extends HTMLElement {
+  html() {
+    return `
+      <h1>Access Denied</h1>
+      <p>You don't have permission to view this page.</p>
+      <a href="#/">Return to home</a>
+    `;
+  }
+}
+
+initialize();
+```
+
+When a guard denies access:
+- The 403 page is rendered if defined
+- Otherwise, a default "Unauthorized" message is shown
+- The URL doesn't change (no redirect)
 
 ## Controllers (Data Fetching)
 

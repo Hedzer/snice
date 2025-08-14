@@ -360,7 +360,7 @@ describe('race conditions and async edge cases', () => {
       
       const router = Router({
         target: '#rapid-nav-target-unique',
-        routing_type: 'hash'
+        type: 'hash'
       });
       
       const { page, initialize, navigate } = router;
@@ -405,7 +405,7 @@ describe('race conditions and async edge cases', () => {
       
       const router = Router({
         target: '#nav-during-render-unique',
-        routing_type: 'hash'
+        type: 'hash'
       });
       
       const { page, initialize, navigate } = router;
@@ -452,7 +452,7 @@ describe('race conditions and async edge cases', () => {
       
       const router = Router({
         target: '#hashchange-race-unique',
-        routing_type: 'hash'
+        type: 'hash'
       });
       
       const { page, initialize, navigate } = router;
