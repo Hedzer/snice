@@ -32,10 +32,10 @@ const { page, initialize, navigate, register } = router;
 ```typescript
 interface RouterOptions {
   target: string;                    // Target element selector
-  type: 'hash' | 'pushstate'; // Routing type
+  type: 'hash' | 'pushstate';        // Routing type
   window?: Window;                   // Override window object
   document?: Document;               // Override document object
-  transition?: PageTransition;       // Global transition config
+  transition?: Transition;           // Global transition config
 }
 ```
 
@@ -102,7 +102,7 @@ initialize();
 interface PageOptions {
   tag: string;                // Custom element tag name
   routes: string[];           // Routes that trigger this page
-  transition?: PageTransition; // Page-specific transition
+  transition?: Transition; // Page-specific transition
 }
 ```
 
@@ -405,7 +405,7 @@ class SearchPage extends HTMLElement {
 ### Transition Configuration
 
 ```typescript
-interface PageTransition {
+interface Transition {
   name?: string;                     // Transition name
   outDuration?: number;              // Out transition duration (ms)
   inDuration?: number;               // In transition duration (ms)
@@ -458,7 +458,7 @@ class AnimatedPage extends HTMLElement {
 
 ```typescript
 // Fade transition
-const fadeTransition: PageTransition = {
+const fadeTransition: Transition = {
   name: 'fade',
   outDuration: 200,
   inDuration: 200,
@@ -468,7 +468,7 @@ const fadeTransition: PageTransition = {
 };
 
 // Slide transition
-const slideTransition: PageTransition = {
+const slideTransition: Transition = {
   name: 'slide',
   outDuration: 300,
   inDuration: 300,
@@ -478,7 +478,7 @@ const slideTransition: PageTransition = {
 };
 
 // Scale transition
-const scaleTransition: PageTransition = {
+const scaleTransition: Transition = {
   name: 'scale',
   outDuration: 250,
   inDuration: 250,
@@ -488,7 +488,7 @@ const scaleTransition: PageTransition = {
 };
 
 // Rotate transition
-const rotateTransition: PageTransition = {
+const rotateTransition: Transition = {
   name: 'rotate',
   outDuration: 400,
   inDuration: 400,

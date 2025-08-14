@@ -1,6 +1,6 @@
 import { attachController, detachController } from './controller';
 import { setupEventHandlers, cleanupEventHandlers } from './events';
-import { IS_ELEMENT_CLASS, READY_PROMISE, READY_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PROPERTY_WATCHERS, EXPLICITLY_SET_PROPERTIES, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS } from './symbols';
+import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PROPERTY_WATCHERS, EXPLICITLY_SET_PROPERTIES, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS } from './symbols';
 
 /**
  * Applies core element functionality to a constructor
@@ -394,17 +394,34 @@ export function property(options?: PropertyOptions) {
   };
 }
 
-export function query(selector: string) {
+export interface QueryOptions {
+  light?: boolean;
+  shadow?: boolean;
+}
+
+export function query(selector: string, options: QueryOptions = {}) {
   return function (target: any, propertyKey: string) {
+    // Default to shadow DOM only
+    const { light = false, shadow = true } = options;
+    
     Object.defineProperty(target, propertyKey, {
       get() {
-        // For elements with shadow DOM, query within shadow root
-        // For controllers, check the element's shadow root first
-        const root = this.element || this;
-        if (root.shadowRoot) {
-          return root.shadowRoot.querySelector(selector);
+        // Check if this is a controller using the symbol
+        const isController = this[IS_CONTROLLER_INSTANCE] === true;
+        const root = isController && this.element ? this.element : this;
+        
+        // Query in specified contexts
+        let result = null;
+        
+        if (shadow && root.shadowRoot) {
+          result = root.shadowRoot.querySelector(selector);
         }
-        return root.querySelector(selector);
+        
+        if (!result && light) {
+          result = root.querySelector(selector);
+        }
+        
+        return result || null;
       },
       enumerable: true,
       configurable: true,
@@ -412,17 +429,32 @@ export function query(selector: string) {
   };
 }
 
-export function queryAll(selector: string) {
+export function queryAll(selector: string, options: QueryOptions = {}) {
   return function (target: any, propertyKey: string) {
+    // Default to shadow DOM only
+    const { light = false, shadow = true } = options;
+    
     Object.defineProperty(target, propertyKey, {
       get() {
-        // For elements with shadow DOM, query within shadow root
-        // For controllers, check the element's shadow root first
-        const root = this.element || this;
-        if (root.shadowRoot) {
-          return root.shadowRoot.querySelectorAll(selector);
+        // Check if this is a controller using the symbol
+        const isController = this[IS_CONTROLLER_INSTANCE] === true;
+        const root = isController && this.element ? this.element : this;
+        
+        // Query in specified contexts and combine results
+        const results: Element[] = [];
+        
+        if (shadow && root.shadowRoot) {
+          const shadowResults = root.shadowRoot.querySelectorAll(selector);
+          results.push(...shadowResults);
         }
-        return root.querySelectorAll(selector);
+        
+        if (light) {
+          const lightResults = root.querySelectorAll(selector);
+          results.push(...lightResults);
+        }
+        
+        // Return a static NodeList-like object
+        return results as any as NodeListOf<Element>;
       },
       enumerable: true,
       configurable: true,

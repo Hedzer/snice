@@ -1,6 +1,6 @@
 import { setupEventHandlers, cleanupEventHandlers } from './events';
 import { setupChannelHandlers, cleanupChannelHandlers } from './channel';
-import { IS_CONTROLLER_CLASS, CONTROLLER_KEY, CONTROLLER_NAME_KEY, CONTROLLER_ID, CONTROLLER_OPERATIONS, NATIVE_CONTROLLER, IS_ELEMENT_CLASS, ROUTER_CONTEXT } from './symbols';
+import { IS_CONTROLLER_CLASS, IS_CONTROLLER_INSTANCE, CONTROLLER_KEY, CONTROLLER_NAME_KEY, CONTROLLER_ID, CONTROLLER_OPERATIONS, NATIVE_CONTROLLER, IS_ELEMENT_CLASS, ROUTER_CONTEXT } from './symbols';
 import { snice } from './global';
 
 type Maybe<T> = T | null | undefined;
@@ -107,6 +107,8 @@ export async function attachController(element: HTMLElement, controllerName: str
   const controllerId = snice.controllerIdCounter;
   const scope = new ControllerScope();
   
+  // Mark this as a controller instance
+  (controllerInstance as any)[IS_CONTROLLER_INSTANCE] = true;
   (controllerInstance as any)[CONTROLLER_ID] = controllerId;
   controllerInstance.element = element;
   

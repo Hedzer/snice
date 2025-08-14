@@ -4,50 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Button Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    :root {
-      --snice-font-family: system-ui, -apple-system, sans-serif;
-      --snice-font-weight-medium: 500;
-      --snice-font-size-sm: 14px;
-      --snice-font-size-md: 16px;
-      --snice-font-size-lg: 18px;
-      --snice-spacing-sm: 12px;
-      --snice-spacing-md: 16px;
-      --snice-spacing-lg: 20px;
-      --snice-border-radius-md: 6px;
-      --snice-border-radius-pill: 100px;
-      --snice-border-radius-circle: 50%;
-      --snice-transition-fast: 150ms;
-      --snice-focus-ring-width: 3px;
-      --snice-focus-ring-color: rgba(66, 153, 225, 0.5);
-      
-      --snice-color-background: #fff;
-      --snice-color-background-secondary: #f7f7f7;
-      --snice-color-background-tertiary: #e0e0e0;
-      --snice-color-text: #333;
-      --snice-color-text-inverse: #fff;
-      --snice-color-border: #d0d0d0;
-      --snice-color-border-hover: #b0b0b0;
-      
-      --snice-color-primary: #3b82f6;
-      --snice-color-primary-hover: #2563eb;
-      --snice-color-success: #10b981;
-      --snice-color-success-hover: #059669;
-      --snice-color-warning: #f59e0b;
-      --snice-color-warning-hover: #d97706;
-      --snice-color-danger: #ef4444;
-      --snice-color-danger-hover: #dc2626;
-    }
-    
     body {
       padding: 40px;
-      font-family: system-ui;
+      font-family: var(--snice-font-family);
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
     }
     
     .row {
       margin-bottom: 20px;
       display: flex;
       gap: 10px;
+      align-items: center;
+    }
+    
+    h2 {
+      color: var(--snice-color-text);
+      margin-bottom: 20px;
     }
   </style>
 </head>

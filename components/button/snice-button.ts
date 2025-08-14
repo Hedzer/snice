@@ -27,16 +27,16 @@ export class SniceButton extends HTMLElement {
   @property({ type: Boolean, reflect: true })
   circle = false;
 
-  @property()
+  @property({ type: String, reflect: true })
   href = '';
 
-  @property()
+  @property({ type: String, reflect: true })
   target = '';
 
-  @property()
+  @property({ type: String, reflect: true })
   download = '';
 
-  @property()
+  @property({ type: String, reflect: true })
   icon = '';
 
   @property({ attribute: 'icon-placement', reflect: true })

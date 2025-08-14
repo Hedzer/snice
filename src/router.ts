@@ -1,6 +1,7 @@
 import Route from 'route-parser';
 import { applyElementFunctionality } from './element';
-import { ROUTER_CONTEXT, CONTEXT_REQUEST_HANDLER } from './symbols';
+import { ROUTER_CONTEXT, CONTEXT_REQUEST_HANDLER, PAGE_TRANSITION } from './symbols';
+import { Transition, performTransition as performTransitionUtil } from './transitions';
 
 /**
  * Route parameters extracted from the URL
@@ -39,44 +40,12 @@ export interface RouterOptions {
   /**
    * Global transition configuration for all pages
    */
-  transition?: PageTransition;
+  transition?: Transition;
   
   /**
    * Optional context object passed to guard functions
    */
   context?: any;
-}
-
-export interface PageTransition {
-  /**
-   * Name of the transition (for CSS class naming)
-   */
-  name?: string;
-  
-  /**
-   * Duration of the out transition in ms
-   */
-  outDuration?: number;
-  
-  /**
-   * Duration of the in transition in ms
-   */
-  inDuration?: number;
-  
-  /**
-   * CSS classes or styles for the out transition
-   */
-  out?: string;
-  
-  /**
-   * CSS classes or styles for the in transition
-   */
-  in?: string;
-  
-  /**
-   * Mode: 'sequential' (out then in) or 'simultaneous' (both at once)
-   */
-  mode?: 'sequential' | 'simultaneous';
 }
 
 export interface PageOptions {
@@ -96,7 +65,7 @@ export interface PageOptions {
   /**
    * Optional per-page transition override
    */
-  transition?: PageTransition;
+  transition?: Transition;
   
   /**
    * Guard functions that must pass for navigation to proceed.
@@ -112,7 +81,7 @@ export interface RouterInstance {
   page: (pageOptions: PageOptions) => <C extends { new(...args: any[]): HTMLElement }>(constructor: C) => void;
   initialize: () => void;
   navigate: (path: string) => Promise<void>;
-  register: (route: string, tag: string, transition?: PageTransition, guards?: Guard<any> | Guard<any>[]) => void;
+  register: (route: string, tag: string, transition?: Transition, guards?: Guard<any> | Guard<any>[]) => void;
   context: any;
 }
 
@@ -122,7 +91,7 @@ export interface RouterInstance {
  * @returns An object containing the router's API methods.
  */
 export function Router(options: RouterOptions): RouterInstance {
-  const routes: { route: Route, tag: string, transition?: PageTransition, guards?: Guard<any> | Guard<any>[] }[] = [];
+  const routes: { route: Route, tag: string, transition?: Transition, guards?: Guard<any> | Guard<any>[] }[] = [];
   let is_sorted = false;
 
   let _404: string; // the 404 page
@@ -142,7 +111,7 @@ export function Router(options: RouterOptions): RouterInstance {
       applyElementFunctionality(constructor);
       
       // Store transition config on constructor for later use
-      (constructor as any).__transition = pageOptions.transition;
+      (constructor as any)[PAGE_TRANSITION] = pageOptions.transition;
       
       // Extend the connectedCallback to add router-specific functionality
       const elementConnectedCallback = constructor.prototype.connectedCallback;
@@ -196,7 +165,7 @@ export function Router(options: RouterOptions): RouterInstance {
    * @example
    * register('/custom-route', 'custom-element');
    */
-  function register(route: string, tag: string, transition?: PageTransition, guards?: Guard<any> | Guard<any>[]): void {
+  function register(route: string, tag: string, transition?: Transition, guards?: Guard<any> | Guard<any>[]): void {
     routes.push({ route: new Route(route), tag, transition, guards });
     is_sorted = false;
 
@@ -277,7 +246,7 @@ export function Router(options: RouterOptions): RouterInstance {
     }
 
     let newPageElement: HTMLElement | null = null;
-    let transition: PageTransition | undefined;
+    let transition: Transition | undefined;
     let guards: Guard<any> | Guard<any>[] | undefined;
 
     // Home
@@ -318,7 +287,7 @@ export function Router(options: RouterOptions): RouterInstance {
       // Store context on the page element
       (newPageElement as any)[ROUTER_CONTEXT] = context;
       const constructor = customElements.get(home);
-      transition = (constructor as any)?.__transition;
+      transition = (constructor as any)?.[PAGE_TRANSITION];
     } else {
 
       // Get the current route
@@ -372,7 +341,7 @@ export function Router(options: RouterOptions): RouterInstance {
         // Store context on 404 page too
         (newPageElement as any)[ROUTER_CONTEXT] = context;
         const constructor = customElements.get(_404);
-        transition = (constructor as any)?.__transition;
+        transition = (constructor as any)?.[PAGE_TRANSITION];
       } else {
         // Provide a default 404 page
         const div = document.createElement('div');
@@ -403,83 +372,9 @@ export function Router(options: RouterOptions): RouterInstance {
     container: Element,
     oldElement: HTMLElement,
     newElement: HTMLElement,
-    transition: PageTransition
+    transition: Transition
   ): Promise<void> {
-    const outDuration = transition.outDuration || 300;
-    const inDuration = transition.inDuration || 300;
-    const mode = transition.mode || 'sequential';
-
-    // Parse CSS properties from transition config
-    const parseStyles = (styleString: string): Record<string, string> => {
-      const styles: Record<string, string> = {};
-      styleString.split(';').forEach(rule => {
-        const [prop, value] = rule.split(':').map(s => s.trim());
-        if (prop && value) {
-          styles[prop] = value;
-        }
-      });
-      return styles;
-    };
-
-    // Default transitions
-    const outStyles = transition.out ? parseStyles(transition.out) : { opacity: '0' };
-    const inStartStyles = { opacity: '0' }; // Always start invisible
-    const inEndStyles = transition.in ? parseStyles(transition.in) : { opacity: '1' };
-
-    // Set container to relative positioning to allow absolute positioning of pages
-    const containerStyle = (container as HTMLElement).style;
-    const originalPosition = containerStyle.position;
-    containerStyle.position = 'relative';
-
-    // Style old element for transition
-    oldElement.style.position = 'absolute';
-    oldElement.style.top = '0';
-    oldElement.style.left = '0';
-    oldElement.style.width = '100%';
-    oldElement.style.transition = `all ${outDuration}ms ease-in-out`;
-
-    // Style new element with initial state
-    newElement.style.position = 'absolute';
-    newElement.style.top = '0';
-    newElement.style.left = '0';
-    newElement.style.width = '100%';
-    Object.assign(newElement.style, inStartStyles);
-    newElement.style.transition = `all ${inDuration}ms ease-in-out`;
-
-    // Add new element to container
-    container.appendChild(newElement);
-
-    // Force browser to calculate styles
-    void newElement.offsetHeight;
-
-    if (mode === 'simultaneous') {
-      // Start both transitions at once
-      Object.assign(oldElement.style, outStyles);
-      Object.assign(newElement.style, inEndStyles);
-      
-      // Wait for both transitions to complete
-      await new Promise(resolve => setTimeout(resolve, Math.max(outDuration, inDuration)));
-    } else {
-      // Sequential: transition out old, then transition in new
-      Object.assign(oldElement.style, outStyles);
-      await new Promise(resolve => setTimeout(resolve, outDuration));
-      
-      Object.assign(newElement.style, inEndStyles);
-      await new Promise(resolve => setTimeout(resolve, inDuration));
-    }
-
-    // Cleanup
-    oldElement.remove();
-    newElement.style.position = '';
-    newElement.style.top = '';
-    newElement.style.left = '';
-    newElement.style.width = '';
-    newElement.style.transition = '';
-    // Reset any transition styles
-    Object.keys({...inStartStyles, ...inEndStyles}).forEach(prop => {
-      newElement.style[prop as any] = '';
-    });
-    containerStyle.position = originalPosition;
+    return performTransitionUtil(container, oldElement, newElement, transition);
   }
 
   return { 

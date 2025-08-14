@@ -1,0 +1,27 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+:host([hidden]) {
+  display: none !important;
+}
+
+.tab-panel {
+  display: block;
+  width: 100%;
+  animation: fadeIn var(--snice-transition-medium) ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+::slotted(*) {
+  display: block;
+}

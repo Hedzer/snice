@@ -311,6 +311,50 @@ class TodoList extends HTMLElement {
 }
 ```
 
+### Query Options
+
+By default, `@query` and `@queryAll` search within the shadow DOM. You can control where queries search using the `light` and `shadow` options:
+
+```typescript
+import { element, query, queryAll } from 'snice';
+
+@element('query-options')
+class QueryOptions extends HTMLElement {
+  // Query only in shadow DOM (default)
+  @query('.shadow-only')
+  shadowElement?: HTMLElement;
+  
+  // Query only in light DOM (slotted content)
+  @query('.light-only', { light: true, shadow: false })
+  lightElement?: HTMLElement;
+  
+  // Query in both light and shadow DOM
+  @query('.anywhere', { light: true, shadow: true })
+  anyElement?: HTMLElement;
+  
+  // Query all in light DOM only
+  @queryAll('[slot="item"]', { light: true, shadow: false })
+  slottedItems?: NodeListOf<HTMLElement>;
+  
+  // Query all in both contexts
+  @queryAll('.item', { light: true, shadow: true })
+  allItems?: NodeListOf<HTMLElement>;
+  
+  html() {
+    return `
+      <div class="shadow-only">Shadow Content</div>
+      <slot name="item"></slot>
+    `;
+  }
+}
+```
+
+Options:
+- `light`: Boolean (default: `false`) - Search in light DOM (element's children)
+- `shadow`: Boolean (default: `true`) - Search in shadow DOM
+
+When both are `true`, `@query` returns the first match (shadow DOM is checked first), while `@queryAll` returns all matches from both contexts.
+
 ## Styling
 
 ### Scoped Styles
