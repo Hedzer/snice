@@ -1,3 +1,16 @@
+# [1.6.0](https://gitlab.com/Hedzer/snice/compare/v1.5.0...v1.6.0) (2025-08-14)
+
+
+### Bug Fixes
+
+* button property ([4283e85](https://gitlab.com/Hedzer/snice/commit/4283e85eebbd0d999171bb9e277d0aff4f5c025b))
+
+
+### Features
+
+* added [@context](https://gitlab.com/context) for pages, elements, and controllers ([983e829](https://gitlab.com/Hedzer/snice/commit/983e829944cf85641c0214746ad75a3e1fcc9046))
+* added route guards & app context ([1881b43](https://gitlab.com/Hedzer/snice/commit/1881b4327ce1f2b960730a925125a9c44606aae1))
+
 # [1.5.0](https://gitlab.com/Hedzer/snice/compare/v1.4.0...v1.5.0) (2025-08-14)
 
 
