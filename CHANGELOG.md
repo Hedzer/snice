@@ -1,3 +1,15 @@
+# [1.5.0](https://gitlab.com/Hedzer/snice/compare/v1.4.0...v1.5.0) (2025-08-14)
+
+
+### Bug Fixes
+
+* docs terminology ([768679d](https://gitlab.com/Hedzer/snice/commit/768679de02f9616dbbbf08904de8068c5c26e06e))
+
+
+### Features
+
+* added css import support to templates ([89a5cbf](https://gitlab.com/Hedzer/snice/commit/89a5cbf6315be8067931bf899fc621605ad641da))
+
 # [1.4.0](https://gitlab.com/Hedzer/snice/compare/v1.3.0...v1.4.0) (2025-08-13)
 
 
