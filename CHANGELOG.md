@@ -1,3 +1,10 @@
+# [1.7.0](https://gitlab.com/Hedzer/snice/compare/v1.6.0...v1.7.0) (2025-08-14)
+
+
+### Features
+
+* added [@ready](https://gitlab.com/ready) & [@dispose](https://gitlab.com/dispose) lifecycle decorators ([46cb718](https://gitlab.com/Hedzer/snice/commit/46cb71825248d57d73be2b89aae46046c4d93dea))
+
 # [1.6.0](https://gitlab.com/Hedzer/snice/compare/v1.5.0...v1.6.0) (2025-08-14)
 
 
