@@ -1,7 +1,7 @@
 import { element, property, query, queryAll, on, watch, ready, dispatch } from '../../src/index';
 import css from './snice-tabs.css?inline';
 import type { TabsPlacement, SniceTabElement, SniceTabPanelElement, TabChangeDetail, TabSelectDetail } from './snice-tabs.types';
-import { Transition, fadeTransition } from '../../src/transitions';
+import { transitions } from '../transitions';
 
 @element('snice-tabs')
 export class SniceTabs extends HTMLElement {
@@ -14,8 +14,9 @@ export class SniceTabs extends HTMLElement {
   @property({ type: Boolean, reflect: true })
   noScrollControls = false;
 
-  @property({ type: Object })
-  transition: Transition | null = null;
+  @property({ reflect: true })
+  transition = 'none';
+
 
 
   @query('.tabs__nav')
@@ -33,11 +34,17 @@ export class SniceTabs extends HTMLElement {
   @query('.tabs__scroll-button--end')
   scrollButtonEnd?: HTMLButtonElement;
   
+  @query('.tabs')
+  tabsContainer?: HTMLElement;
+  
   @queryAll('snice-tab[slot="nav"]', { light: true, shadow: false })
   tabs?: NodeListOf<SniceTabElement>;
   
   @queryAll('snice-tab-panel', { light: true, shadow: false })
   panels?: NodeListOf<SniceTabPanelElement>;
+  
+  @query('.tabs__panels')
+  panelsContainer?: HTMLElement;
 
 
   html() {
@@ -99,6 +106,20 @@ export class SniceTabs extends HTMLElement {
   handleSelectedChange() {
     this.updateSelection();
     this.updateIndicator();
+  }
+
+  @watch('placement')
+  handlePlacementChange() {
+    if (!this.tabsContainer) return;
+    
+    // Remove all placement classes
+    this.tabsContainer.classList.remove('tabs--top', 'tabs--bottom', 'tabs--start', 'tabs--end');
+    // Add the new placement class
+    this.tabsContainer.classList.add(`tabs--${this.placement}`);
+    // Update indicator position
+    this.updateIndicator();
+    // Update scroll buttons visibility
+    this.updateScrollButtons();
   }
 
   @on('click', '.tabs__scroll-button--start')
@@ -164,6 +185,8 @@ export class SniceTabs extends HTMLElement {
     };
   }
 
+  private previousSelected = -1;
+
   updateSelection() {
     if (!this.tabs || !this.panels) return;
     
@@ -174,38 +197,66 @@ export class SniceTabs extends HTMLElement {
       tab.classList.toggle('snice-tab--active', isSelected);
     });
 
-    // Simple show/hide without transition for now
-    // Transition would need more complex handling since panels are in light DOM
-    this.panels.forEach((panel, index) => {
-      const isSelected = index === this.selected;
-      panel.setAttribute('aria-hidden', String(!isSelected));
+    // Handle panel transitions
+    const oldPanel = this.previousSelected >= 0 ? this.panels[this.previousSelected] : null;
+    const newPanel = this.panels[this.selected];
+    
+    if (this.transition && this.transition !== 'none' && oldPanel && newPanel && oldPanel !== newPanel) {
+      // Get transition config and set CSS variables for timing
+      const transitionConfig = transitions[this.transition];
+      const outDuration = transitionConfig?.outDuration || 300;
+      const inDuration = transitionConfig?.inDuration || 300;
+      const maxDuration = Math.max(outDuration, inDuration);
       
-      if (this.transition && !isSelected && !panel.hidden) {
-        // Apply fade out transition
-        panel.style.transition = `opacity ${this.transition.outDuration || 300}ms ease-in-out`;
-        panel.style.opacity = '0';
-        setTimeout(() => {
-          panel.hidden = true;
-          panel.style.opacity = '';
-          panel.style.transition = '';
-        }, this.transition.outDuration || 300);
-      } else if (this.transition && isSelected && panel.hidden) {
-        // Apply fade in transition
-        panel.hidden = false;
-        panel.style.opacity = '0';
-        panel.style.transition = `opacity ${this.transition.inDuration || 300}ms ease-in-out`;
-        requestAnimationFrame(() => {
-          panel.style.opacity = '1';
-          setTimeout(() => {
-            panel.style.opacity = '';
-            panel.style.transition = '';
-          }, this.transition!.inDuration || 300);
-        });
-      } else {
-        // No transition
-        panel.hidden = !isSelected;
+      // Update CSS custom property for transition duration
+      this.style.setProperty('--snice-tabs-transition-duration', `${maxDuration}ms`);
+      
+      // Lock container height BEFORE any changes to prevent ANY reflow
+      if (this.panelsContainer) {
+        const currentHeight = this.panelsContainer.offsetHeight;
+        this.panelsContainer.style.height = `${currentHeight}px`;
+        this.panelsContainer.style.overflow = 'hidden';
       }
+      
+      // Now show new panel to measure it
+      newPanel.hidden = false;
+      newPanel.setAttribute('transition-in', this.transition);
+      oldPanel.setAttribute('transition-out', this.transition);
+      
+      // Pass timing info to panels via properties
+      (newPanel as any).transitionDuration = inDuration;
+      (oldPanel as any).transitionDuration = outDuration;
+      
+      // Hide old panel well before transition completes to avoid flicker
+      setTimeout(() => {
+        oldPanel.hidden = true;
+        oldPanel.removeAttribute('transition-out');
+      }, outDuration - 50); // Hide 50ms early to prevent flicker
+      
+      // Clean up new panel transition attribute and unlock height
+      setTimeout(() => {
+        newPanel.removeAttribute('transition-in');
+        if (this.panelsContainer) {
+          // Reset to auto height without animation to prevent bounce
+          this.panelsContainer.style.height = '';
+          this.panelsContainer.style.overflow = '';
+        }
+      }, maxDuration);
+    } else {
+      // No transition - immediate switch
+      this.panels.forEach((panel, index) => {
+        const isSelected = index === this.selected;
+        panel.setAttribute('aria-hidden', String(!isSelected));
+        panel.hidden = !isSelected;
+      });
+    }
+    
+    // Update aria attributes
+    this.panels.forEach((panel, index) => {
+      panel.setAttribute('aria-hidden', String(index !== this.selected));
     });
+    
+    this.previousSelected = this.selected;
   }
 
   updateIndicator() {

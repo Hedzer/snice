@@ -88,7 +88,7 @@
   
   <div class="section">
     <h3>Basic Tabs (with Fade Transition)</h3>
-    <snice-tabs id="basic-tabs">
+    <snice-tabs transition="fade">
       <snice-tab slot="nav">General</snice-tab>
       <snice-tab slot="nav">Account</snice-tab>
       <snice-tab slot="nav">Security</snice-tab>
@@ -129,8 +129,8 @@
   </div>
   
   <div class="section">
-    <h3>Tabs with Icons</h3>
-    <snice-tabs>
+    <h3>Tabs with Icons (Scale Transition)</h3>
+    <snice-tabs transition="scale">
       <snice-tab slot="nav">
         <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
           <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
@@ -408,7 +408,7 @@
   </div>
   
   <div class="section">
-    <h3>Programmatic Control</h3>
+    <h3>Programmatic Control (Slide Transition)</h3>
     
     <div class="controls">
       <button onclick="selectTab(0)">Select First</button>
@@ -416,7 +416,7 @@
       <button onclick="selectTab(2)">Select Third</button>
     </div>
     
-    <snice-tabs id="programmatic-tabs">
+    <snice-tabs id="programmatic-tabs" transition="slide">
       <snice-tab slot="nav">First</snice-tab>
       <snice-tab slot="nav">Second</snice-tab>
       <snice-tab slot="nav">Third</snice-tab>
@@ -448,10 +448,6 @@
     import './snice-tabs.ts';
     import './snice-tab.ts';
     import './snice-tab-panel.ts';
-    import { fadeTransition } from '../../src/transitions.ts';
-    
-    // Add fade transition to basic tabs
-    document.getElementById('basic-tabs').transition = fadeTransition;
     
     // Placement control
     document.getElementById('placement-select').addEventListener('change', (e) => {
@@ -466,7 +462,7 @@
     };
     
     // Listen for tab changes
-    document.getElementById('basic-tabs').addEventListener('@snice/tab-change', (e) => {
+    document.querySelector('snice-tabs').addEventListener('@snice/tab-change', (e) => {
       console.log('Tab changed:', e.detail);
     });
     

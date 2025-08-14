@@ -1,6 +1,9 @@
 :host {
   display: block;
   position: relative;
+  /* CSS custom properties for child components */
+  --snice-tabs-panel-padding: var(--snice-spacing-md);
+  --snice-tabs-transition-duration: 300ms;
 }
 
 .tabs {
@@ -159,7 +162,12 @@
 
 .tabs__panels {
   flex: 1;
-  padding: var(--snice-spacing-md);
+  padding: var(--snice-tabs-panel-padding);
+  position: relative;
+  /* Prevent scrollbars during transitions */
+  overflow: hidden;
+  /* Maintain minimum height during transitions */
+  min-height: 200px;
 }
 
 ::slotted(snice-tab) {
@@ -169,4 +177,13 @@
 .tabs--start ::slotted(snice-tab),
 .tabs--end ::slotted(snice-tab) {
   width: 100%;
+}
+
+/* Base panel styles */
+::slotted(snice-tab-panel) {
+  display: block;
+}
+
+::slotted(snice-tab-panel[hidden]) {
+  display: none !important;
 }
