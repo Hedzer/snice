@@ -37,6 +37,8 @@ Snice provides a clear separation of concerns through decorators:
 - **`@query`** - Queries a single element from shadow DOM
 - **`@queryAll`** - Queries multiple elements from shadow DOM
 - **`@watch`** - Watches property changes and calls a method when they occur
+- **`@ready`** - Runs a method after the element's shadow DOM is ready
+- **`@dispose`** - Runs a method when the element is removed from the DOM
 
 ### Event Decorators
 - **`@on`** - Listens for events on elements
@@ -559,8 +561,9 @@ class UserProfile extends HTMLElement {
     const user = await (yield { userId: 123 });
     return user;
   }
-  
-  async connectedCallback() {
+
+  @ready()
+  async load() {
     const userData = await this.getUser();
     this.displayUser(userData);
   }

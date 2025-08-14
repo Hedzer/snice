@@ -35,3 +35,7 @@ export const EXPLICITLY_SET_PROPERTIES = getSymbol('explicitly-set-properties');
 // Router context symbol
 export const ROUTER_CONTEXT = getSymbol('router-context');
 export const CONTEXT_REQUEST_HANDLER = getSymbol('context-request-handler');
+
+// Lifecycle symbols
+export const READY_HANDLERS = getSymbol('ready-handlers');
+export const DISPOSE_HANDLERS = getSymbol('dispose-handlers');

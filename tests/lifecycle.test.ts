@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { element, customElement } from '../src/element';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { element, customElement, ready, dispose } from '../src/element';
 import { controller } from '../src/controller';
 
 describe('element lifecycle', () => {
@@ -287,6 +287,171 @@ describe('element lifecycle', () => {
     });
   });
 
+  describe('@ready decorator', () => {
+    it('should call ready method after element is ready', async () => {
+      const connectedSpy = vi.fn();
+      
+      @element('ready-test')
+      class ReadyTest extends HTMLElement {
+        @ready()
+        onReady() {
+          connectedSpy();
+          // Shadow DOM should be ready
+          expect(this.shadowRoot).toBeTruthy();
+        }
+        
+        html() {
+          return '<div>Test</div>';
+        }
+      }
+      
+      const el = document.createElement('ready-test');
+      document.body.appendChild(el);
+      
+      await (el as any).ready;
+      
+      expect(connectedSpy).toHaveBeenCalledOnce();
+    });
+
+    it('should support multiple ready methods', async () => {
+      const order: string[] = [];
+      
+      @element('multi-ready')
+      class MultiReady extends HTMLElement {
+        @ready()
+        firstReady() {
+          order.push('first');
+        }
+        
+        @ready()
+        secondReady() {
+          order.push('second');
+        }
+        
+        html() {
+          return '<div>Test</div>';
+        }
+      }
+      
+      const el = document.createElement('multi-ready');
+      document.body.appendChild(el);
+      
+      await (el as any).ready;
+      
+      expect(order).toEqual(['first', 'second']);
+    });
+
+    it('should handle manual cleanup with @dispose', async () => {
+      let counter = 0;
+      let intervalId: any;
+      
+      @element('manual-interval-cleanup')
+      class ManualIntervalCleanup extends HTMLElement {
+        private intervalId: any;
+        
+        @ready()
+        startInterval() {
+          this.intervalId = setInterval(() => {
+            counter++;
+          }, 20);
+        }
+        
+        @dispose()
+        stopInterval() {
+          if (this.intervalId) {
+            clearInterval(this.intervalId);
+          }
+        }
+        
+        html() {
+          return '<div>Test</div>';
+        }
+      }
+      
+      const el = document.createElement('manual-interval-cleanup');
+      document.body.appendChild(el);
+      
+      await (el as any).ready;
+      await new Promise(resolve => setTimeout(resolve, 50));
+      
+      const countBefore = counter;
+      expect(countBefore).toBeGreaterThan(0);
+      
+      // Remove element to trigger cleanup
+      document.body.removeChild(el);
+      // Give time for async disconnectedCallback to run
+      await new Promise(resolve => setTimeout(resolve, 10));
+      
+      const countAfterDisconnect = counter;
+      
+      // Wait more to verify interval is stopped
+      await new Promise(resolve => setTimeout(resolve, 50));
+      
+      // Counter should not have increased after dispose handler cleared it
+      expect(counter).toBe(countAfterDisconnect);
+    });
+  });
+
+  describe('@dispose decorator', () => {
+    it('should call dispose method when element is removed', async () => {
+      const disconnectedSpy = vi.fn();
+      
+      @element('dispose-decorator-test')
+      class DisposeTest extends HTMLElement {
+        @dispose()
+        onDispose() {
+          disconnectedSpy();
+        }
+        
+        html() {
+          return '<div>Test</div>';
+        }
+      }
+      
+      const el = document.createElement('dispose-decorator-test');
+      document.body.appendChild(el);
+      
+      await (el as any).ready;
+      expect(disconnectedSpy).not.toHaveBeenCalled();
+      
+      document.body.removeChild(el);
+      await new Promise(resolve => setTimeout(resolve, 0));
+      
+      expect(disconnectedSpy).toHaveBeenCalledOnce();
+    });
+
+    it('should support multiple dispose methods', async () => {
+      const order: string[] = [];
+      
+      @element('multi-dispose')
+      class MultiDispose extends HTMLElement {
+        @dispose()
+        firstDispose() {
+          order.push('first');
+        }
+        
+        @dispose()
+        secondDispose() {
+          order.push('second');
+        }
+        
+        html() {
+          return '<div>Test</div>';
+        }
+      }
+      
+      const el = document.createElement('multi-dispose');
+      document.body.appendChild(el);
+      
+      await (el as any).ready;
+      
+      document.body.removeChild(el);
+      await new Promise(resolve => setTimeout(resolve, 0));
+      
+      expect(order).toEqual(['first', 'second']);
+    });
+  });
+
   describe('reconnection', () => {
     it('should not duplicate styles on reconnect', () => {
       @element('reconnect-test')
@@ -304,7 +469,7 @@ describe('element lifecycle', () => {
       document.body.appendChild(el);
       
       const styles = el.shadowRoot?.querySelectorAll('style[data-component-css]');
-      expect(styles.length).toBe(1);
+      expect(styles?.length).toBe(1);
     });
 
     it('should re-render html on reconnect', () => {

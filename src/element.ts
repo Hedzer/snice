@@ -1,6 +1,6 @@
 import { attachController, detachController } from './controller';
 import { setupEventHandlers, cleanupEventHandlers } from './events';
-import { IS_ELEMENT_CLASS, READY_PROMISE, READY_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PROPERTY_WATCHERS, EXPLICITLY_SET_PROPERTIES, ROUTER_CONTEXT } from './symbols';
+import { IS_ELEMENT_CLASS, READY_PROMISE, READY_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PROPERTY_WATCHERS, EXPLICITLY_SET_PROPERTIES, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS } from './symbols';
 
 /**
  * Applies core element functionality to a constructor
@@ -193,6 +193,18 @@ export function applyElementFunctionality(constructor: any) {
         }
         // Setup @on event handlers - use element for host events, shadow root for delegated events
         setupEventHandlers(this, this);
+        
+        // Call @ready handlers after everything is set up
+        const readyHandlers = constructor[READY_HANDLERS];
+        if (readyHandlers) {
+          for (const handler of readyHandlers) {
+            try {
+              await handler.method.call(this);
+            } catch (error) {
+              console.error(`Error in @ready handler ${handler.methodName}:`, error);
+            }
+          }
+        }
       } finally {
         // Always mark element as ready, even if there were errors
         if (this[READY_RESOLVE]) {
@@ -202,8 +214,20 @@ export function applyElementFunctionality(constructor: any) {
       }
     };
     
-    constructor.prototype.disconnectedCallback = function() {
-      // Call original user-defined disconnectedCallback first
+    constructor.prototype.disconnectedCallback = async function() {
+      // Call @dispose handlers
+      const disposeHandlers = constructor[DISPOSE_HANDLERS];
+      if (disposeHandlers) {
+        for (const handler of disposeHandlers) {
+          try {
+            await handler.method.call(this);
+          } catch (error) {
+            console.error(`Error in @dispose handler ${handler.methodName}:`, error);
+          }
+        }
+      }
+      
+      // Call original user-defined disconnectedCallback
       if (originalDisconnectedCallback) {
         originalDisconnectedCallback.call(this);
       }
@@ -494,5 +518,48 @@ export function context() {
       enumerable: true,
       configurable: true
     });
+  };
+}
+
+/**
+ * Decorator for methods that should run when element is ready
+ * Runs after shadow DOM, controller attachment, and event setup
+ * Supports async methods
+ */
+export function ready() {
+  return function (target: any, methodName: string, descriptor: PropertyDescriptor) {
+    const constructor = target.constructor;
+    
+    if (!constructor[READY_HANDLERS]) {
+      constructor[READY_HANDLERS] = [];
+    }
+    
+    constructor[READY_HANDLERS].push({
+      methodName,
+      method: descriptor.value
+    });
+    
+    return descriptor;
+  };
+}
+
+/**
+ * Decorator for methods that should run when element is being disposed
+ * Used for cleanup tasks when element is removed from DOM
+ */
+export function dispose() {
+  return function (target: any, methodName: string, descriptor: PropertyDescriptor) {
+    const constructor = target.constructor;
+    
+    if (!constructor[DISPOSE_HANDLERS]) {
+      constructor[DISPOSE_HANDLERS] = [];
+    }
+    
+    constructor[DISPOSE_HANDLERS].push({
+      methodName,
+      method: descriptor.value
+    });
+    
+    return descriptor;
   };
 }

@@ -103,45 +103,15 @@ css() {
 
 ### connectedCallback()
 
-Called when the element is added to the DOM. The base implementation sets up the shadow DOM, renders HTML/CSS, and initializes event handlers.
-
-```typescript
-@element('lifecycle-demo')
-class LifecycleDemo extends HTMLElement {
-  connectedCallback() {
-    // Base class handles rendering
-    super.connectedCallback?.();
-    
-    // Your custom logic after rendering
-    console.log('Element connected');
-  }
-}
-```
+Called when the element is added to the DOM. The @element decorator automatically handles shadow DOM setup, HTML/CSS rendering, and event handler initialization.
 
 ### disconnectedCallback()
 
-Called when the element is removed from the DOM.
+Called when the element is removed from the DOM. The @element decorator automatically handles cleanup of event handlers and controllers.
 
-```typescript
-@element('cleanup-demo')
-class CleanupDemo extends HTMLElement {
-  private interval?: number;
-  
-  connectedCallback() {
-    super.connectedCallback?.();
-    this.interval = setInterval(() => {
-      console.log('tick');
-    }, 1000);
-  }
-  
-  disconnectedCallback() {
-    if (this.interval) {
-      clearInterval(this.interval);
-    }
-    super.disconnectedCallback?.();
-  }
-}
-```
+### ready Promise
+
+Every element has a `ready` promise that resolves when the element is fully initialized (shadow DOM created, HTML/CSS rendered, event handlers attached). Use this to ensure the element is ready before accessing its DOM or calling methods.
 
 ## Shadow DOM
 
@@ -899,13 +869,75 @@ class DataTable extends HTMLElement {
 }
 ```
 
+## Lifecycle Decorators
+
+### @ready and @dispose
+
+Use `@ready` for initialization logic that needs to run after the shadow DOM is ready. Use `@dispose` for cleanup tasks when the element is removed from the DOM.
+
+```typescript
+import { element, ready, dispose } from 'snice';
+
+@element('polling-element')
+class PollingElement extends HTMLElement {
+  private intervalId?: number;
+  
+  @ready()
+  startPolling() {
+    // Called after shadow DOM is ready
+    this.intervalId = setInterval(() => {
+      this.updateData();
+    }, 5000);
+  }
+  
+  @dispose()
+  stopPolling() {
+    // Clean up when element is removed
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
+  }
+  
+  html() {
+    return `<div class="data">Loading...</div>`;
+  }
+  
+  private updateData() {
+    // Update logic
+  }
+}
+```
+
+Multiple methods can be decorated and they'll run in order:
+
+```typescript
+@element('multi-lifecycle')
+class MultiLifecycle extends HTMLElement {
+  @ready()
+  async setupData() {
+    // First ready method
+  }
+  
+  @ready()
+  setupListeners() {
+    // Second ready method
+  }
+  
+  @dispose()
+  cleanup() {
+    // Cleanup method
+  }
+}
+```
+
 ## Best Practices
 
 1. **Keep elements focused**: Elements should handle presentation logic only
 2. **Use Shadow DOM**: Take advantage of style encapsulation
 3. **Avoid re-rendering**: Update specific elements rather than re-rendering the entire component
-4. **Clean up resources**: Use disconnectedCallback for cleanup
+4. **Clean up resources**: Use @dispose for cleanup tasks
 5. **Type your queries**: Use proper TypeScript types for queried elements
 6. **Validate inputs**: Always validate and sanitize user inputs
 7. **Use semantic HTML**: Maintain accessibility with proper HTML structure
 8. **Handle errors gracefully**: Wrap async operations in try-catch blocks
+9. **Use lifecycle decorators**: Prefer @ready and @dispose over overriding lifecycle methods
