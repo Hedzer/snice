@@ -1,5 +1,6 @@
 import Route from 'route-parser';
-import { setupEventHandlers, cleanupEventHandlers } from './events';
+import { applyElementFunctionality } from './element';
+import { ROUTER_CONTEXT, CONTEXT_REQUEST_HANDLER } from './symbols';
 
 /**
  * Route parameters extracted from the URL
@@ -137,55 +138,47 @@ export function Router(options: RouterOptions): RouterInstance {
    */
   function page(pageOptions: PageOptions) {
     return function <C extends { new(...args: any[]): HTMLElement }>(constructor: C) {
+      // Apply all element functionality (properties, queries, watchers, controllers, etc.)
+      applyElementFunctionality(constructor);
+      
       // Store transition config on constructor for later use
       (constructor as any).__transition = pageOptions.transition;
-      // Add event handler support
-      const originalConnectedCallback = constructor.prototype.connectedCallback;
-      const originalDisconnectedCallback = constructor.prototype.disconnectedCallback;
       
+      // Extend the connectedCallback to add router-specific functionality
+      const elementConnectedCallback = constructor.prototype.connectedCallback;
       constructor.prototype.connectedCallback = function() {
-        // Call original connectedCallback first to allow property initialization
-        originalConnectedCallback?.call(this);
+        // Call the element's connectedCallback first
+        elementConnectedCallback?.call(this);
         
-        // Create shadow root if it doesn't exist
-        if (!this.shadowRoot) {
-          this.attachShadow({ mode: 'open' });
-        }
-        
-        // Build the shadow DOM content
-        let shadowContent = '';
-        
-        // Add HTML first (maintaining original order)
-        if (this.html) {
-          const htmlContent = this.html();
-          if (htmlContent !== undefined) {
-            shadowContent += htmlContent;
+        // Setup context request handler for nested elements
+        const contextRequestHandler = (event: any) => {
+          // Only respond if this element has context
+          if (this[ROUTER_CONTEXT] !== undefined) {
+            event.detail.context = this[ROUTER_CONTEXT];
+            event.stopPropagation(); // Stop bubbling once context is provided
           }
-        }
+        };
+        this.addEventListener('@context/request', contextRequestHandler);
         
-        // Add CSS after HTML (maintaining original order)
-        if (this.css) {
-          const cssResult = this.css();
-          if (cssResult) {
-            // Handle both string and array of strings
-            const cssContent = Array.isArray(cssResult) ? cssResult.join('\n') : cssResult;
-            // No need for scoping with Shadow DOM, but add data attribute for compatibility
-            shadowContent += `<style data-component-css>${cssContent}</style>`;
-          }
-        }
-        
-        // Set shadow DOM content
-        if (shadowContent) {
-          this.shadowRoot.innerHTML = shadowContent;
-        }
-        // Setup @on event handlers - use element for host events, shadow root for delegated events
-        setupEventHandlers(this, this);
+        // Store handler for cleanup
+        (this as any)[CONTEXT_REQUEST_HANDLER] = contextRequestHandler;
       };
       
+      // Extend the disconnectedCallback to clean up router-specific stuff
+      const elementDisconnectedCallback = constructor.prototype.disconnectedCallback;
       constructor.prototype.disconnectedCallback = function() {
-        originalDisconnectedCallback?.call(this);
-        // Cleanup @on event handlers
-        cleanupEventHandlers(this);
+        // Call element's disconnectedCallback first
+        elementDisconnectedCallback?.call(this);
+        
+        // Clean up context request handler
+        const handler = (this as any)[CONTEXT_REQUEST_HANDLER];
+        if (handler) {
+          this.removeEventListener('@context/request', handler);
+          delete (this as any)[CONTEXT_REQUEST_HANDLER];
+        }
+        
+        // Clean up context reference
+        delete (this as any)[ROUTER_CONTEXT];
       };
       
       // Define the custom element
@@ -302,6 +295,8 @@ export function Router(options: RouterOptions): RouterInstance {
             // Render 403 page
             if (_403) {
               newPageElement = document.createElement(_403);
+              // Store context on 403 page too
+              (newPageElement as any)[ROUTER_CONTEXT] = context;
             } else {
               const div = document.createElement('div');
               div.className = 'default-403';
@@ -320,6 +315,8 @@ export function Router(options: RouterOptions): RouterInstance {
       }
       
       newPageElement = document.createElement(home);
+      // Store context on the page element
+      (newPageElement as any)[ROUTER_CONTEXT] = context;
       const constructor = customElements.get(home);
       transition = (constructor as any)?.__transition;
     } else {
@@ -339,6 +336,8 @@ export function Router(options: RouterOptions): RouterInstance {
                 // Render 403 page
                 if (_403) {
                   newPageElement = document.createElement(_403);
+                  // Store context on 403 page too
+                  (newPageElement as any)[ROUTER_CONTEXT] = context;
                 } else {
                   const div = document.createElement('div');
                   div.className = 'default-403';
@@ -357,6 +356,8 @@ export function Router(options: RouterOptions): RouterInstance {
           }
           
           newPageElement = document.createElement(route.tag);
+          // Store context on the page element
+          (newPageElement as any)[ROUTER_CONTEXT] = context;
           Object.keys(params).forEach(key => newPageElement!.setAttribute(key, params[key]));
           transition = route.transition;
           break;
@@ -368,6 +369,8 @@ export function Router(options: RouterOptions): RouterInstance {
     if (!newPageElement) {
       if (_404) {
         newPageElement = document.createElement(_404);
+        // Store context on 404 page too
+        (newPageElement as any)[ROUTER_CONTEXT] = context;
         const constructor = customElements.get(_404);
         transition = (constructor as any)?.__transition;
       } else {

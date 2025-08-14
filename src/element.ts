@@ -1,11 +1,14 @@
 import { attachController, detachController } from './controller';
 import { setupEventHandlers, cleanupEventHandlers } from './events';
-import { IS_ELEMENT_CLASS, READY_PROMISE, READY_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PROPERTY_WATCHERS, EXPLICITLY_SET_PROPERTIES } from './symbols';
+import { IS_ELEMENT_CLASS, READY_PROMISE, READY_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PROPERTY_WATCHERS, EXPLICITLY_SET_PROPERTIES, ROUTER_CONTEXT } from './symbols';
 
-export function element(tagName: string) {
-  return function (constructor: any) {
-    // Mark as element class for channel decorator detection
-    (constructor.prototype as any)[IS_ELEMENT_CLASS] = true;
+/**
+ * Applies core element functionality to a constructor
+ * This is shared between @element and @page decorators
+ */
+export function applyElementFunctionality(constructor: any) {
+  // Mark as element class for channel decorator detection
+  (constructor.prototype as any)[IS_ELEMENT_CLASS] = true;
     
     // Add controller property to all elements
     const originalConnectedCallback = constructor.prototype.connectedCallback;
@@ -179,7 +182,10 @@ export function element(tagName: string) {
           this.shadowRoot.innerHTML = shadowContent;
         }
         
-        originalConnectedCallback?.call(this);
+        // NOW call the original user-defined connectedCallback after shadow DOM is set up
+        if (originalConnectedCallback) {
+          originalConnectedCallback.call(this);
+        }
         
         const controllerName = this.getAttribute('controller');
         if (controllerName) {
@@ -197,7 +203,10 @@ export function element(tagName: string) {
     };
     
     constructor.prototype.disconnectedCallback = function() {
-      originalDisconnectedCallback?.call(this);
+      // Call original user-defined disconnectedCallback first
+      if (originalDisconnectedCallback) {
+        originalDisconnectedCallback.call(this);
+      }
       if (this[CONTROLLER]) {
         detachController(this).catch(error => {
           console.error(`Failed to detach controller:`, error);
@@ -254,7 +263,11 @@ export function element(tagName: string) {
         }
       }
     };
-    
+}
+
+export function element(tagName: string) {
+  return function (constructor: any) {
+    applyElementFunctionality(constructor);
     customElements.define(tagName, constructor);
   };
 }
@@ -427,5 +440,59 @@ export function watch(...propertyNames: string[]) {
     }
     
     return descriptor;
+  };
+}
+
+/**
+ * Decorator that injects router context into a property
+ * The context is automatically provided to page components by the router
+ */
+export function context() {
+  return function(target: any, propertyKey: string) {
+    // Define property getter that returns the context
+    Object.defineProperty(target, propertyKey, {
+      get() {
+        // First check if context is stored directly on this element
+        if (this[ROUTER_CONTEXT] !== undefined) {
+          return this[ROUTER_CONTEXT];
+        }
+        
+        // Otherwise, request context from parent page via event
+        const detail: any = { target: this };
+        const event = new CustomEvent('@context/request', {
+          bubbles: true,
+          cancelable: true,
+          detail
+        });
+        
+        // Dispatch event and wait for response
+        // For controllers, use their element. For elements, dispatch on the host
+        let targetElement = this.element || this;
+        
+        // If element is null (e.g., controller was detached), can't get context
+        if (!targetElement || !targetElement.dispatchEvent) {
+          return undefined;
+        }
+        
+        // If we're in shadow DOM, dispatch on the host element to ensure proper bubbling
+        if (targetElement.getRootNode && targetElement.getRootNode() instanceof ShadowRoot) {
+          const shadowRoot = targetElement.getRootNode() as ShadowRoot;
+          targetElement = shadowRoot.host as HTMLElement;
+        }
+        
+        targetElement.dispatchEvent(event);
+        
+        // Check if context was provided via the event
+        if (detail.context !== undefined) {
+          // Cache it for future use
+          this[ROUTER_CONTEXT] = detail.context;
+          return detail.context;
+        }
+        
+        return undefined;
+      },
+      enumerable: true,
+      configurable: true
+    });
   };
 }

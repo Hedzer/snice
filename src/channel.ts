@@ -59,7 +59,7 @@ export function channel(channelName: string, options?: ChannelOptions) {
         });
         
         // Dispatch event with promises
-        const eventName = `@channel:${channelName}`;
+        const eventName = `@channel/${channelName}`;
         const event = new CustomEvent(eventName, {
           bubbles: options?.bubbles !== undefined ? options.bubbles : true,
           cancelable: options?.cancelable || false,
@@ -135,7 +135,7 @@ export function setupChannelHandlers(instance: any, element: HTMLElement) {
   
   for (const handler of handlers) {
     const boundMethod = handler.method.bind(instance);
-    const eventName = `@channel:${handler.channelName}`;
+    const eventName = `@channel/${handler.channelName}`;
     
     // Setup channel handler
     const channelHandler = (event: CustomEvent) => {

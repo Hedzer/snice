@@ -579,6 +579,138 @@ class UserController {
 }
 ```
 
+## Router Context
+
+Access router context in page components, nested elements, and controllers using the `@context` decorator.
+
+### ⚠️ Important Warning About Global State
+
+**Context is global shared state and should be treated with extreme caution.** Mutating context from multiple components creates hard-to-debug issues, race conditions, and tightly coupled code. This is a serious footgun if used improperly.
+
+**Best practices:**
+- Treat context as **read-only** in components
+- Only mutate context through well-defined methods in the context class
+- Use context for truly global, app-wide state (user auth, theme, locale)
+- For component-specific state, use properties instead
+- Consider the context immutable from the component's perspective
+
+### Basic Usage in Pages
+
+```typescript
+// Define your context class with controlled mutations
+class AppContext {
+  private user: User | null = null;
+  
+  // Controlled mutation through methods
+  setUser(user: User) {...}
+  
+  // Read-only access
+  getUser() {...}
+  
+  isAuthenticated() {...}
+}
+
+// Create router with context
+const appContext = new AppContext();
+const { page, initialize } = Router({
+  target: '#app',
+  type: 'hash',
+  context: appContext
+});
+
+// Access context in page components
+@page({ tag: 'profile-page', routes: ['/profile'] })
+class ProfilePage extends HTMLElement {
+  @context()
+  ctx?: AppContext;
+  
+  html() {
+    // READ context, don't mutate it directly
+    const user = this.ctx?.getUser();
+    if (!user) {
+      return `<p>Please log in</p>`;
+    }
+    return `
+      <h1>Welcome, ${user.name}!</h1>
+      <p>Email: ${user.email}</p>
+    `;
+  }
+}
+```
+
+### Context in Nested Elements
+
+Nested elements within pages can also access context through event bubbling:
+
+```typescript
+// This element can be used inside any page
+@element('user-avatar')
+class UserAvatar extends HTMLElement {
+  @context()
+  ctx?: AppContext;
+  
+  html() {
+    // Context is available even in nested elements
+    const user = this.ctx?.getUser();
+    return user 
+      ? `<img src="${user.avatar}" alt="${user.name}">`
+      : `<div class="placeholder">?</div>`;
+  }
+}
+
+// Use it in a page
+@page({ tag: 'dashboard', routes: ['/'] })
+class Dashboard extends HTMLElement {
+  html() {
+    return `
+      <h1>Dashboard</h1>
+      <user-avatar></user-avatar>  <!-- Will have access to context -->
+    `;
+  }
+}
+```
+
+### Context in Controllers
+
+Controllers attached to page elements automatically acquire context:
+
+```typescript
+@controller('nav-controller')
+class NavController {
+  element: HTMLElement | null = null;
+  
+  @context()
+  ctx?: AppContext;
+  
+  attach(element: HTMLElement) {
+    // Context is available in controllers too
+    if (!this.ctx?.isAuthenticated()) {
+      window.location.hash = '#/login';
+    }
+  }
+  
+  detach(element: HTMLElement) {
+    // Cleanup if needed
+  }
+}
+
+@page({ tag: 'admin-page', routes: ['/admin'] })
+class AdminPage extends HTMLElement {
+  html() {
+    return `<div controller="nav-controller">Admin Panel</div>`;
+  }
+}
+```
+
+The `@context` decorator:
+- Injects the router's context into page components
+- Available to nested elements via event bubbling
+- Available to controllers attached to pages
+- Returns the same context instance everywhere
+- Automatically cleaned up when elements are removed
+
+**Remember:** With great power comes great responsibility. Global state is dangerous - use it wisely and sparingly.
+
 ## Documentation
 
 - [Elements API](./docs/elements.md) - Complete guide to creating elements with properties, queries, and styling

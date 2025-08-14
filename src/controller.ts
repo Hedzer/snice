@@ -1,6 +1,6 @@
 import { setupEventHandlers, cleanupEventHandlers } from './events';
 import { setupChannelHandlers, cleanupChannelHandlers } from './channel';
-import { IS_CONTROLLER_CLASS, CONTROLLER_KEY, CONTROLLER_NAME_KEY, CONTROLLER_ID, CONTROLLER_OPERATIONS, NATIVE_CONTROLLER, IS_ELEMENT_CLASS } from './symbols';
+import { IS_CONTROLLER_CLASS, CONTROLLER_KEY, CONTROLLER_NAME_KEY, CONTROLLER_ID, CONTROLLER_OPERATIONS, NATIVE_CONTROLLER, IS_ELEMENT_CLASS, ROUTER_CONTEXT } from './symbols';
 import { snice } from './global';
 
 type Maybe<T> = T | null | undefined;
@@ -110,6 +110,12 @@ export async function attachController(element: HTMLElement, controllerName: str
   (controllerInstance as any)[CONTROLLER_ID] = controllerId;
   controllerInstance.element = element;
   
+  // Pass router context from element to controller if it exists
+  const routerContext = (element as any)[ROUTER_CONTEXT];
+  if (routerContext !== undefined) {
+    (controllerInstance as any)[ROUTER_CONTEXT] = routerContext;
+  }
+  
   // Store references
   (element as any)[CONTROLLER_KEY] = controllerInstance;
   (element as any)[CONTROLLER_NAME_KEY] = controllerName;
@@ -168,6 +174,9 @@ export async function detachController(element: HTMLElement): Promise<void> {
   if (scope) {
     await scope.cleanup();
   }
+  
+  // Clean up router context reference
+  delete (controllerInstance as any)[ROUTER_CONTEXT];
   
   delete (element as any)[CONTROLLER_KEY];
   delete (element as any)[CONTROLLER_NAME_KEY];

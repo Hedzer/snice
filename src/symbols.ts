@@ -31,3 +31,7 @@ export const PROPERTY_VALUES = getSymbol('property-values');
 export const PROPERTIES_INITIALIZED = getSymbol('properties-initialized');
 export const PROPERTY_WATCHERS = getSymbol('property-watchers');
 export const EXPLICITLY_SET_PROPERTIES = getSymbol('explicitly-set-properties');
+
+// Router context symbol
+export const ROUTER_CONTEXT = getSymbol('router-context');
+export const CONTEXT_REQUEST_HANDLER = getSymbol('context-request-handler');

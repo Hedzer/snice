@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { Router } from '../src/router';
+import { Router, property } from '../src';
 
 describe('Router URL Parameters', () => {
   let container: HTMLElement;
@@ -71,16 +71,14 @@ describe('Router URL Parameters', () => {
 
     @page({ tag: 'blog-post', routes: ['/blog/:year/:month/:slug'] })
     class BlogPost extends HTMLElement {
+      @property({ reflect: true })
       year = '';
-      month = '';
-      slug = '';
       
-      connectedCallback() {
-        // Read attributes when connected
-        this.year = this.getAttribute('year') || '';
-        this.month = this.getAttribute('month') || '';
-        this.slug = this.getAttribute('slug') || '';
-      }
+      @property({ reflect: true })
+      month = '';
+      
+      @property({ reflect: true })
+      slug = '';
       
       html() {
         return `<article>
@@ -152,13 +150,8 @@ describe('Router URL Parameters', () => {
 
     @page({ tag: 'search-page', routes: ['/search/:query'] })
     class SearchPage extends HTMLElement {
+      @property({ reflect: true })
       query = '';
-      
-      connectedCallback() {
-        // Read attribute when connected
-        this.query = this.getAttribute('query') || '';
-        super.connectedCallback?.();
-      }
       
       html() {
         return `<div>Searching for: ${this.query}</div>`;
