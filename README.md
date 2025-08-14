@@ -1,6 +1,6 @@
 # Snice
 
-A lightweight TypeScript framework for building web components with decorators and routing.
+An imperative TypeScript framework for building vanilla web components with decorators and routing
 
 ## Quick Start
 
@@ -21,7 +21,7 @@ Snice takes an **imperative approach** to web components. Unlike reactive framew
 - Require **explicit method calls** to update visual state
 - Give you **full control** over when and how updates happen
 
-This approach eliminates the complexity of reactive systems, virtual DOM diffing, and unexpected re-renders. You write straightforward code that does exactly what you tell it to do.
+This approach gives you direct control over DOM updates without hidden complexity or automatic re-renders.
 
 ## Core Concepts
 
@@ -30,7 +30,7 @@ Snice provides a clear separation of concerns through decorators:
 ### Class Decorators
 - **`@element`** - Creates custom HTML elements with encapsulated visual behavior and styling
 - **`@controller`** - Handles data fetching, server communication, and business logic separate from visual components  
-- **`@page`** - Sets up routing and navigation between different views
+- **`@page`** - Defines routable page components that render when their route is active, with URL params passed as attributes
 
 ### Property & Query Decorators
 - **`@property`** - Declares properties that can reflect to attributes
