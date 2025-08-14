@@ -6,26 +6,11 @@ export type ButtonSize = 'small' | 'medium' | 'large';
 
 @element('snice-button')
 export class SniceButton extends HTMLElement {
-  private _variant: ButtonVariant = 'default';
-  private _size: ButtonSize = 'medium';
+  @property({ reflect: true })
+  variant: ButtonVariant = 'default';
 
   @property({ reflect: true })
-  get variant() {
-    return this._variant;
-  }
-  set variant(value: ButtonVariant) {
-    // If null, undefined, or empty string, use 'default'
-    this._variant = value || 'default';
-  }
-
-  @property({ reflect: true })
-  get size() {
-    return this._size;
-  }
-  set size(value: ButtonSize) {
-    // If null, undefined, or empty string, use 'medium'
-    this._size = value || 'medium';
-  }
+  size: ButtonSize = 'medium';
 
   @property({ type: Boolean, reflect: true })
   disabled = false;
@@ -73,8 +58,8 @@ export class SniceButton extends HTMLElement {
   html() {
     const classes = [
       'button',
-      `button--${this.variant}`,
-      `button--${this.size}`,
+      `button--${this.variant || 'default'}`,
+      `button--${this.size || 'medium'}`,
       this.outline ? 'button--outline' : '',
       this.pill ? 'button--pill' : '',
       this.circle ? 'button--circle' : '',
