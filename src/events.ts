@@ -17,7 +17,7 @@ export interface OnOptions {
   throttle?: number;
 }
 
-export function on(eventName: string, selectorOrOptions?: string | OnOptions, options?: OnOptions) {
+export function on(eventName: string | string[], selectorOrOptions?: string | OnOptions, options?: OnOptions) {
   // Handle overloaded parameters
   let selector: string | undefined;
   let opts: OnOptions | undefined;
@@ -36,13 +36,19 @@ export function on(eventName: string, selectorOrOptions?: string | OnOptions, op
       target[ON_HANDLERS] = [];
     }
     
-    target[ON_HANDLERS].push({
-      eventName,
-      selector,
-      methodName: propertyKey,
-      method: descriptor.value,
-      options: opts
-    });
+    // Normalize to array and expand at decoration time
+    const eventNames = Array.isArray(eventName) ? eventName : [eventName];
+    
+    // Create a handler entry for each event
+    for (const event of eventNames) {
+      target[ON_HANDLERS].push({
+        eventName: event,
+        selector,
+        methodName: propertyKey,
+        method: descriptor.value,
+        options: opts
+      });
+    }
     
     return descriptor;
   };

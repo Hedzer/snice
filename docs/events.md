@@ -56,10 +56,10 @@ interface OnOptions {
   throttle?: number;       // Throttle the handler by specified milliseconds
 }
 
-function on(eventName: string, selectorOrOptions?: string | OnOptions, options?: OnOptions): MethodDecorator
+function on(eventName: string | string[], selectorOrOptions?: string | OnOptions, options?: OnOptions): MethodDecorator
 ```
 
-- `eventName`: The DOM event to listen for (supports key modifiers with `:`)
+- `eventName`: The DOM event(s) to listen for - can be a string or array of strings (supports key modifiers with `:`)
 - `selectorOrOptions`: Either a CSS selector for delegation OR options object
 - `options`: Options object (when second parameter is a selector)
 
@@ -93,6 +93,62 @@ class HoverCard extends HTMLElement {
   handleBlur() {
     console.log('Element blurred');
   }
+}
+```
+
+### Multiple Events with Array Syntax
+
+You can listen for multiple events with a single decorator by passing an array:
+
+```typescript
+@element('multi-action-button')
+class MultiActionButton extends HTMLElement {
+  html() {
+    return `<button class="action-btn">Click or Press Enter</button>`;
+  }
+  
+  // Handle multiple events with one method
+  @on(['click', 'keydown:Enter'], '.action-btn')
+  handleAction(e: Event) {
+    console.log(`Action triggered via ${e.type}`);
+    this.performAction();
+  }
+  
+  performAction() {
+    // Your action logic here
+  }
+}
+```
+
+This is especially useful for keyboard navigation where multiple keys should trigger the same action:
+
+```typescript
+@element('navigation-menu')
+class NavigationMenu extends HTMLElement {
+  html() {
+    return `
+      <div class="menu" tabindex="0">
+        <div class="menu-item">Item 1</div>
+        <div class="menu-item">Item 2</div>
+      </div>
+    `;
+  }
+  
+  // Arrow keys for navigation
+  @on(['keydown:ArrowDown', 'keydown:ArrowUp', 'keydown:Home', 'keydown:End'], '.menu', { preventDefault: true })
+  handleNavigation(e: KeyboardEvent) {
+    switch(e.key) {
+      case 'ArrowDown': this.selectNext(); break;
+      case 'ArrowUp': this.selectPrevious(); break;
+      case 'Home': this.selectFirst(); break;
+      case 'End': this.selectLast(); break;
+    }
+  }
+  
+  selectNext() { /* ... */ }
+  selectPrevious() { /* ... */ }
+  selectFirst() { /* ... */ }
+  selectLast() { /* ... */ }
 }
 ```
 

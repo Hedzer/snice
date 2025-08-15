@@ -334,51 +334,37 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     console.log('Read options:', this.options); // Debug log
   }
 
-  @on('keydown', '.select-trigger')
-  handleTriggerKeyDown(e: KeyboardEvent) {
-    switch (e.key) {
-      case 'Enter':
-      case ' ':
-      case 'ArrowDown':
-        e.preventDefault();
-        if (!this.open) {
-          this.openDropdown();
-        }
-        break;
-      case 'ArrowUp':
-        e.preventDefault();
-        if (!this.open) {
-          this.openDropdown();
-        }
-        break;
+  @on(['keydown:Enter', 'keydown:Space', 'keydown:ArrowDown', 'keydown:ArrowUp'], '.select-trigger', { preventDefault: true })
+  handleTriggerOpen() {
+    if (!this.open) {
+      this.openDropdown();
     }
   }
   
-  @on('keydown', '.select-search-input')
-  handleSearchKeyDown(e: KeyboardEvent) {
-    switch (e.key) {
-      case 'Escape':
-        this.closeDropdown();
-        this.trigger?.focus();
-        break;
-      case 'ArrowDown':
-        e.preventDefault();
-        this.focusNextOption();
-        break;
-      case 'ArrowUp':
-        e.preventDefault();
-        this.focusPreviousOption();
-        break;
-      case 'Enter':
-        e.preventDefault();
-        if (this.focusedIndex >= 0) {
-          const options = this.searchable ? this.filteredOptions : this.options;
-          const option = options[this.focusedIndex];
-          if (option && !option.disabled) {
-            this.handleOptionSelect(option);
-          }
-        }
-        break;
+  @on('keydown:Escape', '.select-search-input')
+  handleSearchEscape() {
+    this.closeDropdown();
+    this.trigger?.focus();
+  }
+
+  @on('keydown:ArrowDown', '.select-search-input', { preventDefault: true })
+  handleSearchArrowDown() {
+    this.focusNextOption();
+  }
+
+  @on('keydown:ArrowUp', '.select-search-input', { preventDefault: true })
+  handleSearchArrowUp() {
+    this.focusPreviousOption();
+  }
+
+  @on('keydown:Enter', '.select-search-input', { preventDefault: true })
+  handleSearchEnter() {
+    if (this.focusedIndex >= 0) {
+      const options = this.searchable ? this.filteredOptions : this.options;
+      const option = options[this.focusedIndex];
+      if (option && !option.disabled) {
+        this.handleOptionSelect(option);
+      }
     }
   }
 

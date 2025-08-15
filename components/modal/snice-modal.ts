@@ -133,18 +133,18 @@ export class SniceModal extends HTMLElement implements SniceModalElement {
     this.close();
   }
 
-  @on('keydown')
-  handleKeyDown(e: KeyboardEvent) {
+  @on('keydown:Escape', { stopPropagation: true })
+  handleEscape() {
     if (!this.open) return;
-    
-    // Handle escape key
-    if (e.key === 'Escape' && !this.noEscapeDismiss) {
-      e.stopPropagation();
+    if (!this.noEscapeDismiss) {
       this.close();
     }
-    
-    // Handle tab for focus trap
-    if (e.key === 'Tab' && !this.noFocusTrap) {
+  }
+
+  @on('keydown:Tab')
+  handleTab(e: KeyboardEvent) {
+    if (!this.open) return;
+    if (!this.noFocusTrap) {
       this.trapFocus(e);
     }
   }
