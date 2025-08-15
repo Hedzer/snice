@@ -1,8 +1,9 @@
 import { element, property, watch } from '../../src/index';
 import css from './snice-tab-panel.css?inline';
+import type { SniceTabPanelElement } from './snice-tabs.types';
 
 @element('snice-tab-panel')
-export class SniceTabPanel extends HTMLElement {
+export class SniceTabPanel extends HTMLElement implements SniceTabPanelElement {
   @property()
   name = '';
 

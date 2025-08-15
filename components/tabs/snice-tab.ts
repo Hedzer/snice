@@ -1,9 +1,9 @@
 import { element, property, query, on, dispatch } from '../../src/index';
 import css from './snice-tab.css?inline';
-import type { TabSelectDetail, TabCloseDetail } from './snice-tabs.types';
+import type { TabSelectDetail, TabCloseDetail, SniceTabElement } from './snice-tabs.types';
 
 @element('snice-tab')
-export class SniceTab extends HTMLElement {
+export class SniceTab extends HTMLElement implements SniceTabElement {
   @property({ type: Boolean, reflect: true })
   disabled = false;
 

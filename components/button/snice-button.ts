@@ -1,11 +1,9 @@
 import { element, property, query, on, dispatch, watch } from '../../src/index';
 import css from './snice-button.css?inline';
-
-export type ButtonVariant = 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'text';
-export type ButtonSize = 'small' | 'medium' | 'large';
+import type { ButtonVariant, ButtonSize, IconPlacement, SniceButtonElement } from './snice-button.types';
 
 @element('snice-button')
-export class SniceButton extends HTMLElement {
+export class SniceButton extends HTMLElement implements SniceButtonElement {
   @property({ reflect: true })
   variant: ButtonVariant = 'default';
 
@@ -40,7 +38,7 @@ export class SniceButton extends HTMLElement {
   icon = '';
 
   @property({ attribute: 'icon-placement', reflect: true })
-  iconPlacement: 'start' | 'end' = 'start';
+  iconPlacement: IconPlacement = 'start';
 
 
   @query('.button')

@@ -1,13 +1,14 @@
 import { element, property, query, on, watch, ready, dispatch } from '../../src/index';
 import css from './snice-modal.css?inline';
+import type { ModalSize, SniceModalElement } from './snice-modal.types';
 
 @element('snice-modal')
-export class SniceModal extends HTMLElement {
+export class SniceModal extends HTMLElement implements SniceModalElement {
   @property({ type: Boolean, reflect: true })
   open = false;
 
   @property({ reflect: true })
-  size: 'small' | 'medium' | 'large' | 'fullscreen' = 'medium';
+  size: ModalSize = 'medium';
   
   private previousSize = 'medium';
 
