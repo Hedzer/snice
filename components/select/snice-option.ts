@@ -15,6 +15,9 @@ export class SniceOption extends HTMLElement implements SniceOptionElement {
   @property({ type: Boolean, reflect: true })
   selected = false;
 
+  @property({ reflect: true })
+  icon = '';
+
   html() {
     // Options are data-only elements, no shadow DOM needed
     return '';
@@ -42,7 +45,8 @@ export class SniceOption extends HTMLElement implements SniceOptionElement {
       value: this.value,
       label: this.label || this.textContent?.trim() || this.value,
       disabled: this.disabled,
-      selected: this.selected
+      selected: this.selected,
+      icon: this.icon
     };
   }
 }

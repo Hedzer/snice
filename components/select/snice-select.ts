@@ -182,7 +182,8 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
         <div class="select-option 
           ${isSelected ? 'select-option--selected' : ''}
           ${opt.disabled ? 'select-option--disabled' : ''}
-          ${index === this.focusedIndex ? 'select-option--focused' : ''}"
+          ${index === this.focusedIndex ? 'select-option--focused' : ''}
+          ${opt.icon ? 'select-option--has-icon' : ''}"
           data-value="${opt.value}"
           role="option"
           aria-selected="${isSelected}"
@@ -192,6 +193,9 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
             <span class="select-option-check">
               ${isSelected ? '✓' : ''}
             </span>
+          ` : ''}
+          ${opt.icon ? /*html*/`
+            <img class="select-option-icon" src="${opt.icon}" alt="" />
           ` : ''}
           <span class="select-option-label">${opt.label}</span>
         </div>
@@ -602,16 +606,23 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
         <div class="select-value--multiple">
           ${selectedOptions.map(opt => /*html*/`
             <span class="select-tag">
+              ${opt.icon ? /*html*/`<img class="select-tag-icon" src="${opt.icon}" alt="" />` : ''}
               ${opt.label}
               ${!this.disabled && !this.readonly ? /*html*/`
-                <button type="button" class="select-tag-remove" data-value="${opt.value}" aria-label="Remove ${opt.label}">×</button>
+                <span class="select-tag-remove" data-value="${opt.value}" aria-label="Remove ${opt.label}">×</span>
               ` : ''}
             </span>
           `).join('')}
         </div>
       `;
     } else if (selectedOptions.length > 0) {
-      this.valueDisplay.textContent = selectedOptions[0].label;
+      const selected = selectedOptions[0];
+      this.valueDisplay.innerHTML = /*html*/`
+        <div class="select-value--single">
+          ${selected.icon ? /*html*/`<img class="select-value-icon" src="${selected.icon}" alt="" />` : ''}
+          <span>${selected.label}</span>
+        </div>
+      `;
     } else {
       this.valueDisplay.innerHTML = /*html*/`<span class="select-placeholder">${this.placeholder}</span>`;
     }

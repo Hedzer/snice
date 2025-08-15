@@ -5,6 +5,7 @@ export interface SelectOption {
   label: string;
   disabled?: boolean;
   selected?: boolean;
+  icon?: string;
 }
 
 export interface SniceOptionElement extends HTMLElement {

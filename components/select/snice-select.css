@@ -113,6 +113,19 @@
   white-space: nowrap;
 }
 
+.select-value--single {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.select-value-icon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
 .select-value--multiple {
   display: flex;
   gap: 4px;
@@ -128,6 +141,13 @@
   color: var(--snice-color-primary);
   border-radius: var(--snice-border-radius-sm);
   font-size: var(--snice-font-size-xs);
+}
+
+.select-tag-icon {
+  width: 12px;
+  height: 12px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .select-tag-remove {
@@ -303,6 +323,14 @@
 .select-option--disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Option icon */
+.select-option-icon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .select-option-check {
