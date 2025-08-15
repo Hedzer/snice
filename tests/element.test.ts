@@ -151,6 +151,77 @@ describe('@property decorator', () => {
     expect(el.getAttribute('data-name')).toBe('test');
   });
 
+  it('should read attribute values without reflect option', () => {
+    @element('test-no-reflect')
+    class TestNoReflect extends HTMLElement {
+      @property()  // No reflect option
+      message = '';
+      
+      @property({ type: Number })  // No reflect option
+      count = 0;
+      
+      @property({ attribute: 'data-label' })  // Custom attribute, no reflect
+      label = '';
+    }
+    
+    const el = document.createElement('test-no-reflect') as any;
+    el.setAttribute('message', 'Hello World');
+    el.setAttribute('count', '42');
+    el.setAttribute('data-label', 'Test Label');
+    document.body.appendChild(el);
+    
+    // Properties should read from attributes even without reflect
+    expect(el.message).toBe('Hello World');
+    expect(el.count).toBe(42);
+    expect(el.label).toBe('Test Label');
+    
+    // But shouldn't reflect back (no reflect option)
+    el.message = 'Updated';
+    expect(el.getAttribute('message')).toBe('Hello World'); // Still original
+  });
+
+  it('should read initial attribute values on connect without reflect', () => {
+    @element('test-initial-attrs')
+    class TestInitialAttrs extends HTMLElement {
+      @property()  // No reflect
+      title = 'default';
+      
+      @property({ type: Number })  // No reflect
+      value = 0;
+      
+      @property({ type: Boolean })  // No reflect
+      enabled = false;
+      
+      @property({ attribute: 'data-config' })  // No reflect
+      config = '';
+      
+      html() {
+        return `<div>${this.title}: ${this.value}</div>`;
+      }
+    }
+    
+    // Create element with attributes already set (simulating HTML parsing)
+    const div = document.createElement('div');
+    div.innerHTML = `<test-initial-attrs 
+      title="Custom Title" 
+      value="100" 
+      enabled
+      data-config="advanced">
+    </test-initial-attrs>`;
+    
+    const el = div.querySelector('test-initial-attrs') as any;
+    document.body.appendChild(el);
+    
+    // All properties should be initialized from attributes on connect
+    expect(el.title).toBe('Custom Title');
+    expect(el.value).toBe(100);
+    expect(el.enabled).toBe(true);
+    expect(el.config).toBe('advanced');
+    
+    // Verify HTML was rendered with initial values
+    expect(el.shadowRoot?.innerHTML).toContain('Custom Title: 100');
+  });
+
   it('should handle kebab-case boolean attributes with false string', () => {
     @element('test-kebab-bool')
     class TestKebabBool extends HTMLElement {

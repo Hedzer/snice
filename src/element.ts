@@ -21,15 +21,13 @@ export function applyElementFunctionality(constructor: any) {
       observedAttributes.push('controller');
     }
     
-    // Add all reflected properties to observed attributes
+    // Add all properties to observed attributes (not just reflected ones)
     const properties = constructor[PROPERTIES];
     if (properties) {
       for (const [propName, propOptions] of properties) {
-        if (propOptions.reflect) {
-          const attributeName = typeof propOptions.attribute === 'string' ? propOptions.attribute : propName;
-          if (!observedAttributes.includes(attributeName)) {
-            observedAttributes.push(attributeName);
-          }
+        const attributeName = typeof propOptions.attribute === 'string' ? propOptions.attribute : propName;
+        if (!observedAttributes.includes(attributeName)) {
+          observedAttributes.push(attributeName);
         }
       }
     }
@@ -92,26 +90,25 @@ export function applyElementFunctionality(constructor: any) {
         const properties = constructor[PROPERTIES];
         if (properties) {
           for (const [propName, propOptions] of properties) {
-            if (propOptions.reflect) {
-              const attributeName = typeof propOptions.attribute === 'string' ? propOptions.attribute : propName;
-              // Only read from attribute if property hasn't been set yet
-              if (this.hasAttribute(attributeName) && !(propName in (this[PROPERTY_VALUES] || {}))) {
-                // Attribute exists, parse and set the property value
-                const attrValue = this.getAttribute(attributeName);
-                
-                // Mark as explicitly set since it came from an attribute
-                if (!this[EXPLICITLY_SET_PROPERTIES]) {
-                  this[EXPLICITLY_SET_PROPERTIES] = new Set();
-                }
-                this[EXPLICITLY_SET_PROPERTIES].add(propName);
-                
-                if (propOptions.type === Boolean) {
-                  this[propName] = attrValue !== null && attrValue !== 'false';
-                } else if (propOptions.type === Number) {
-                  this[propName] = Number(attrValue);
-                } else {
-                  this[propName] = attrValue;
-                }
+            // Always read from attributes, not just when reflect is true
+            const attributeName = typeof propOptions.attribute === 'string' ? propOptions.attribute : propName;
+            // Only read from attribute if property hasn't been set yet
+            if (this.hasAttribute(attributeName) && !(propName in (this[PROPERTY_VALUES] || {}))) {
+              // Attribute exists, parse and set the property value
+              const attrValue = this.getAttribute(attributeName);
+              
+              // Mark as explicitly set since it came from an attribute
+              if (!this[EXPLICITLY_SET_PROPERTIES]) {
+                this[EXPLICITLY_SET_PROPERTIES] = new Set();
+              }
+              this[EXPLICITLY_SET_PROPERTIES].add(propName);
+              
+              if (propOptions.type === Boolean) {
+                this[propName] = attrValue !== null && attrValue !== 'false';
+              } else if (propOptions.type === Number) {
+                this[propName] = Number(attrValue);
+              } else {
+                this[propName] = attrValue;
               }
             }
           }
@@ -245,43 +242,41 @@ export function applyElementFunctionality(constructor: any) {
       if (name === 'controller') {
         this.controller = newValue;
       } else {
-        // Handle reflected properties
+        // Handle all properties (not just reflected ones)
         const properties = constructor[PROPERTIES];
         if (properties) {
           for (const [propName, propOptions] of properties) {
-            if (propOptions.reflect) {
-              const attributeName = typeof propOptions.attribute === 'string' ? propOptions.attribute : propName;
-              if (attributeName === name) {
-                // Check if the current property value already matches to avoid feedback loops
-                const currentValue = this[PROPERTY_VALUES]?.[propName];
-                
-                // Parse the new value based on type
-                let parsedValue: any;
-                if (propOptions.type === Boolean) {
-                  parsedValue = newValue !== null && newValue !== 'false';
-                } else if (propOptions.type === Number) {
+            const attributeName = typeof propOptions.attribute === 'string' ? propOptions.attribute : propName;
+            if (attributeName === name) {
+              // Check if the current property value already matches to avoid feedback loops
+              const currentValue = this[PROPERTY_VALUES]?.[propName];
+              
+              // Parse the new value based on type
+              let parsedValue: any;
+              if (propOptions.type === Boolean) {
+                parsedValue = newValue !== null && newValue !== 'false';
+              } else if (propOptions.type === Number) {
+                parsedValue = Number(newValue);
+              } else {
+                // If no type specified, try to infer from current value type
+                if (typeof currentValue === 'number' && newValue !== null) {
                   parsedValue = Number(newValue);
                 } else {
-                  // If no type specified, try to infer from current value type
-                  if (typeof currentValue === 'number' && newValue !== null) {
-                    parsedValue = Number(newValue);
-                  } else {
-                    parsedValue = newValue;
-                  }
+                  parsedValue = newValue;
                 }
-                
-                // Only update if the value actually changed
-                if (currentValue !== parsedValue) {
-                  // Mark as explicitly set since it came from an attribute change
-                  if (!this[EXPLICITLY_SET_PROPERTIES]) {
-                    this[EXPLICITLY_SET_PROPERTIES] = new Set();
-                  }
-                  this[EXPLICITLY_SET_PROPERTIES].add(propName);
-                  
-                  this[propName] = parsedValue;
-                }
-                break;
               }
+              
+              // Only update if the value actually changed
+              if (currentValue !== parsedValue) {
+                // Mark as explicitly set since it came from an attribute change
+                if (!this[EXPLICITLY_SET_PROPERTIES]) {
+                  this[EXPLICITLY_SET_PROPERTIES] = new Set();
+                }
+                this[EXPLICITLY_SET_PROPERTIES].add(propName);
+                
+                this[propName] = parsedValue;
+              }
+              break;
             }
           }
         }
