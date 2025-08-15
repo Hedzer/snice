@@ -1,6 +1,35 @@
 import { ON_HANDLERS, CLEANUP } from './symbols';
 
-export function on(eventName: string, selector?: string) {
+export interface OnOptions {
+  /** Use capture phase instead of bubble phase */
+  capture?: boolean;
+  /** Remove listener after first trigger */
+  once?: boolean;
+  /** Passive listener (can't preventDefault) */
+  passive?: boolean;
+  /** Automatically call preventDefault on the event */
+  preventDefault?: boolean;
+  /** Automatically call stopPropagation on the event */
+  stopPropagation?: boolean;
+  /** Debounce the handler by specified milliseconds */
+  debounce?: number;
+  /** Throttle the handler by specified milliseconds */
+  throttle?: number;
+}
+
+export function on(eventName: string, selectorOrOptions?: string | OnOptions, options?: OnOptions) {
+  // Handle overloaded parameters
+  let selector: string | undefined;
+  let opts: OnOptions | undefined;
+  
+  if (typeof selectorOrOptions === 'string') {
+    selector = selectorOrOptions;
+    opts = options;
+  } else {
+    selector = undefined;
+    opts = selectorOrOptions;
+  }
+  
   return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
     // Store event handler metadata
     if (!target[ON_HANDLERS]) {
@@ -11,7 +40,8 @@ export function on(eventName: string, selector?: string) {
       eventName,
       selector,
       methodName: propertyKey,
-      method: descriptor.value
+      method: descriptor.value,
+      options: opts
     });
     
     return descriptor;
@@ -30,9 +60,44 @@ export function setupEventHandlers(instance: any, element: HTMLElement) {
   
   for (const handler of handlers) {
     const originalMethod = handler.method.bind(instance);
+    const handlerOptions = handler.options || {};
     
     // Parse event name for key modifiers
     const [baseEventName, keyModifier] = handler.eventName.split(':');
+    
+    // Create debounced/throttled wrapper if needed
+    const createTimedWrapper = (method: Function): Function => {
+      if (handlerOptions.debounce) {
+        let timeoutId: any;
+        return function(this: any, ...args: any[]) {
+          clearTimeout(timeoutId);
+          timeoutId = setTimeout(() => method.apply(this, args), handlerOptions.debounce);
+        };
+      }
+      
+      if (handlerOptions.throttle) {
+        let lastCall = 0;
+        let timeoutId: any;
+        return function(this: any, ...args: any[]) {
+          const now = Date.now();
+          const remaining = handlerOptions.throttle! - (now - lastCall);
+          
+          if (remaining <= 0) {
+            clearTimeout(timeoutId);
+            lastCall = now;
+            method.apply(this, args);
+          } else if (!timeoutId) {
+            timeoutId = setTimeout(() => {
+              lastCall = Date.now();
+              timeoutId = null;
+              method.apply(this, args);
+            }, remaining);
+          }
+        };
+      }
+      
+      return method;
+    };
     
     // Create the event handler with key modifier support
     const createEventHandler = (method: Function) => {
@@ -99,10 +164,21 @@ export function setupEventHandlers(instance: any, element: HTMLElement) {
       return method;
     };
     
+    // Apply timing wrapper (debounce/throttle)
+    const timedMethod = createTimedWrapper(originalMethod);
+    
     // Wrap boundMethod in try-catch for error isolation
     const wrappedMethod = createEventHandler((event: Event) => {
       try {
-        return originalMethod(event);
+        // Apply automatic preventDefault/stopPropagation if configured
+        if (handlerOptions.preventDefault) {
+          event.preventDefault();
+        }
+        if (handlerOptions.stopPropagation) {
+          event.stopPropagation();
+        }
+        
+        return timedMethod(event);
       } catch (error) {
         console.error(`Error in event handler ${handler.methodName}:`, error);
         // Don't rethrow - allow other handlers to continue
@@ -114,25 +190,52 @@ export function setupEventHandlers(instance: any, element: HTMLElement) {
       const eventRoot = element.shadowRoot || element;
       const delegatedHandler = (event: Event) => {
         const target = event.target as HTMLElement;
+        let shouldHandle = false;
+        
         if (target.matches && target.matches(handler.selector)) {
-          wrappedMethod(event);
+          shouldHandle = true;
         } else if (target.closest) {
           const closest = target.closest(handler.selector);
           if (closest) {
-            wrappedMethod(event);
+            shouldHandle = true;
           }
+        }
+        
+        if (shouldHandle) {
+          // Apply automatic preventDefault/stopPropagation only if we're handling this event
+          if (handlerOptions.preventDefault) {
+            event.preventDefault();
+          }
+          if (handlerOptions.stopPropagation) {
+            event.stopPropagation();
+            event.stopImmediatePropagation(); // Also stop other handlers on same element
+          }
+          
+          wrappedMethod(event);
         }
       };
       
-      eventRoot.addEventListener(baseEventName, delegatedHandler);
+      const listenerOptions: AddEventListenerOptions = {
+        capture: handlerOptions.capture || false,
+        once: handlerOptions.once || false,
+        passive: handlerOptions.passive || false
+      };
+      
+      eventRoot.addEventListener(baseEventName, delegatedHandler, listenerOptions);
       instance[CLEANUP].events.push(() => {
-        eventRoot.removeEventListener(baseEventName, delegatedHandler);
+        eventRoot.removeEventListener(baseEventName, delegatedHandler, listenerOptions);
       });
     } else {
       // Direct event handling - always on the element itself
-      element.addEventListener(baseEventName, wrappedMethod as EventListener);
+      const listenerOptions: AddEventListenerOptions = {
+        capture: handlerOptions.capture || false,
+        once: handlerOptions.once || false,
+        passive: handlerOptions.passive || false
+      };
+      
+      element.addEventListener(baseEventName, wrappedMethod as EventListener, listenerOptions);
       instance[CLEANUP].events.push(() => {
-        element.removeEventListener(baseEventName, wrappedMethod as EventListener);
+        element.removeEventListener(baseEventName, wrappedMethod as EventListener, listenerOptions);
       });
     }
   }
@@ -153,6 +256,10 @@ export interface DispatchOptions extends EventInit {
    * Whether to dispatch even if the method returns undefined (default: true)
    */
   dispatchOnUndefined?: boolean;
+  /** Debounce the dispatch by specified milliseconds */
+  debounce?: number;
+  /** Throttle the dispatch by specified milliseconds */
+  throttle?: number;
 }
 
 /**
@@ -166,46 +273,68 @@ export function dispatch(eventName: string, options?: DispatchOptions) {
   return function (_target: any, _propertyKey: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
     
+    // Create timing wrappers for dispatch
+    let debounceTimeout: any;
+    let throttleLastCall = 0;
+    let throttleTimeout: any;
+    
     descriptor.value = function (this: HTMLElement, ...args: any[]) {
       // Call the original method
       const result = originalMethod.apply(this, args);
       
+      // Helper to dispatch the event
+      const doDispatch = (detail: any) => {
+        // Skip dispatch if result is undefined and dispatchOnUndefined is false
+        if (detail === undefined && options?.dispatchOnUndefined === false) {
+          return;
+        }
+        
+        // Create event with spread operator for options
+        const event = new CustomEvent(eventName, {
+          bubbles: true,  // Default to true for component events
+          composed: true, // Allow crossing shadow DOM boundaries
+          ...options,     // Spread all EventInit options
+          detail
+        });
+        
+        this.dispatchEvent(event);
+      };
+      
+      // Helper to handle timed dispatch
+      const timedDispatch = (detail: any) => {
+        if (options?.debounce) {
+          clearTimeout(debounceTimeout);
+          debounceTimeout = setTimeout(() => doDispatch(detail), options.debounce);
+        } else if (options?.throttle) {
+          const now = Date.now();
+          const remaining = options.throttle - (now - throttleLastCall);
+          
+          if (remaining <= 0) {
+            clearTimeout(throttleTimeout);
+            throttleLastCall = now;
+            doDispatch(detail);
+          } else if (!throttleTimeout) {
+            throttleTimeout = setTimeout(() => {
+              throttleLastCall = Date.now();
+              throttleTimeout = null;
+              doDispatch(detail);
+            }, remaining);
+          }
+        } else {
+          doDispatch(detail);
+        }
+      };
+      
       // Handle async methods
       if (result instanceof Promise) {
         return result.then((resolvedResult: any) => {
-          // Skip dispatch if result is undefined and dispatchOnUndefined is false
-          if (resolvedResult === undefined && options?.dispatchOnUndefined === false) {
-            return resolvedResult;
-          }
-          
-          // Create event with spread operator for options
-          const event = new CustomEvent(eventName, {
-            bubbles: true,  // Default to true for component events
-            composed: true, // Allow crossing shadow DOM boundaries
-            ...options,     // Spread all EventInit options
-            detail: resolvedResult
-          });
-          
-          this.dispatchEvent(event);
+          timedDispatch(resolvedResult);
           return resolvedResult;
         });
       }
       
-      // Skip dispatch if result is undefined and dispatchOnUndefined is false
-      if (result === undefined && options?.dispatchOnUndefined === false) {
-        return result;
-      }
-      
-      // Create event with spread operator for options
-      const event = new CustomEvent(eventName, {
-        bubbles: true,  // Default to true for component events
-        composed: true, // Allow crossing shadow DOM boundaries
-        ...options,     // Spread all EventInit options
-        detail: result
-      });
-      
-      this.dispatchEvent(event);
-      
+      // Sync method
+      timedDispatch(result);
       return result;
     };
     

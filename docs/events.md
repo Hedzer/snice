@@ -46,11 +46,22 @@ class ClickCounter extends HTMLElement {
 ### @on Decorator Signature
 
 ```typescript
-function on(eventName: string, selector?: string): MethodDecorator
+interface OnOptions {
+  capture?: boolean;       // Use capture phase instead of bubble phase
+  once?: boolean;          // Remove listener after first trigger
+  passive?: boolean;       // Passive listener (can't preventDefault)
+  preventDefault?: boolean; // Automatically call preventDefault on the event
+  stopPropagation?: boolean; // Automatically call stopPropagation on the event
+  debounce?: number;       // Debounce the handler by specified milliseconds
+  throttle?: number;       // Throttle the handler by specified milliseconds
+}
+
+function on(eventName: string, selectorOrOptions?: string | OnOptions, options?: OnOptions): MethodDecorator
 ```
 
 - `eventName`: The DOM event to listen for (supports key modifiers with `:`)
-- `selector`: Optional CSS selector for event delegation
+- `selectorOrOptions`: Either a CSS selector for delegation OR options object
+- `options`: Options object (when second parameter is a selector)
 
 ### Direct Event Handling
 
@@ -379,6 +390,181 @@ class SearchInput extends HTMLElement {
 }
 ```
 
+### Event Handler Options
+
+The `@on` decorator supports various options to control event handling behavior:
+
+#### Automatic preventDefault and stopPropagation
+
+```typescript
+@element('form-handler')
+class FormHandler extends HTMLElement {
+  html() {
+    return `
+      <form>
+        <input type="text" name="username">
+        <button type="submit">Submit</button>
+      </form>
+    `;
+  }
+  
+  // Automatically prevent default form submission
+  @on('submit', 'form', { preventDefault: true })
+  handleSubmit(e: Event) {
+    // No need to call e.preventDefault() manually
+    const form = e.target as HTMLFormElement;
+    const data = new FormData(form);
+    console.log('Form submitted:', Object.fromEntries(data));
+  }
+  
+  // Stop event from bubbling up
+  @on('click', 'button', { stopPropagation: true })
+  handleButtonClick() {
+    console.log('Button clicked - event won\'t bubble');
+  }
+}
+```
+
+#### Debounce and Throttle
+
+Perfect for handling high-frequency events like input, scroll, or resize:
+
+```typescript
+@element('search-box')
+class SearchBox extends HTMLElement {
+  html() {
+    return `
+      <input type="text" class="search" placeholder="Search...">
+      <div class="results"></div>
+    `;
+  }
+  
+  // Debounce: Wait 300ms after user stops typing
+  @on('input', '.search', { debounce: 300 })
+  async handleSearch(e: Event) {
+    const query = (e.target as HTMLInputElement).value;
+    const results = await this.fetchResults(query);
+    this.displayResults(results);
+  }
+  
+  // Throttle: Execute at most once every 100ms
+  @on('scroll', '.results', { throttle: 100, passive: true })
+  handleScroll(e: Event) {
+    const element = e.target as HTMLElement;
+    if (element.scrollTop + element.clientHeight >= element.scrollHeight - 10) {
+      this.loadMore();
+    }
+  }
+  
+  private async fetchResults(query: string) {
+    // Fetch implementation
+    return [];
+  }
+  
+  private displayResults(results: any[]) {
+    // Display implementation
+  }
+  
+  private loadMore() {
+    console.log('Loading more results...');
+  }
+}
+```
+
+#### Once Option
+
+Remove the listener after it fires once:
+
+```typescript
+@element('tutorial-popup')
+class TutorialPopup extends HTMLElement {
+  html() {
+    return `
+      <div class="popup">
+        <p>Click anywhere to dismiss this tutorial</p>
+      </div>
+    `;
+  }
+  
+  // Only listen for the first click
+  @on('click', { once: true })
+  dismiss() {
+    this.remove();
+  }
+}
+```
+
+#### Capture Phase
+
+Listen during the capture phase instead of bubble phase:
+
+```typescript
+@element('event-interceptor')
+class EventInterceptor extends HTMLElement {
+  html() {
+    return `
+      <div class="container">
+        <button class="btn">Click me</button>
+      </div>
+    `;
+  }
+  
+  // Capture phase fires before bubble phase
+  @on('click', { capture: true })
+  handleCapturePhase(e: Event) {
+    console.log('Capture phase - fires first');
+  }
+  
+  @on('click', '.btn')
+  handleBubblePhase(e: Event) {
+    console.log('Bubble phase - fires second');
+  }
+}
+```
+
+#### Passive Listeners
+
+For better scroll/touch performance:
+
+```typescript
+@element('touch-handler')
+class TouchHandler extends HTMLElement {
+  html() {
+    return `<div class="touchable">Swipe me</div>`;
+  }
+  
+  // Passive: Can't preventDefault, better performance
+  @on('touchstart', '.touchable', { passive: true })
+  handleTouchStart(e: TouchEvent) {
+    // Can't call e.preventDefault() with passive: true
+    console.log('Touch started');
+  }
+}
+```
+
+#### Combining Options
+
+You can combine multiple options:
+
+```typescript
+@element('advanced-handler')
+class AdvancedHandler extends HTMLElement {
+  html() {
+    return `<input type="text" class="input">`;
+  }
+  
+  @on('input', '.input', { 
+    debounce: 300,
+    preventDefault: true,
+    stopPropagation: true
+  })
+  handleInput(e: Event) {
+    // Debounced, prevents default, stops propagation
+    console.log('Processed input');
+  }
+}
+```
+
 ## Event Dispatching with @dispatch
 
 The `@dispatch` decorator automatically dispatches custom events after method execution.
@@ -425,6 +611,8 @@ function dispatch(eventName: string, options?: DispatchOptions): MethodDecorator
 
 interface DispatchOptions extends EventInit {
   dispatchOnUndefined?: boolean;  // Whether to dispatch when method returns undefined
+  debounce?: number;              // Debounce the dispatch by specified milliseconds
+  throttle?: number;              // Throttle the dispatch by specified milliseconds
 }
 ```
 
@@ -460,6 +648,53 @@ class DataLoader extends HTMLElement {
     return data;
   }
 }
+```
+
+### Debounce and Throttle for @dispatch
+
+Control the frequency of dispatched events:
+
+```typescript
+@element('live-editor')
+class LiveEditor extends HTMLElement {
+  private content = '';
+
+  html() {
+    return `
+      <textarea class="editor"></textarea>
+      <div class="preview"></div>
+    `;
+  }
+  
+  @on('input', '.editor')
+  @dispatch('content-changed', { debounce: 500 })
+  handleInput(e: Event) {
+    this.content = (e.target as HTMLTextAreaElement).value;
+    return { content: this.content };
+  }
+  
+  @on('scroll', '.editor')
+  @dispatch('scroll-position', { throttle: 100 })
+  handleScroll(e: Event) {
+    const element = e.target as HTMLElement;
+    return { 
+      scrollTop: element.scrollTop,
+      scrollHeight: element.scrollHeight
+    };
+  }
+}
+
+// Listen for the debounced/throttled events
+const editor = document.querySelector('live-editor');
+editor?.addEventListener('content-changed', (e: CustomEvent) => {
+  // This fires 500ms after user stops typing
+  console.log('Content updated:', e.detail.content);
+});
+
+editor?.addEventListener('scroll-position', (e: CustomEvent) => {
+  // This fires at most once per 100ms during scrolling
+  console.log('Scroll position:', e.detail.scrollTop);
+});
 ```
 
 ### Async Method Support
