@@ -49,7 +49,7 @@ class ClickCounter extends HTMLElement {
 function on(eventName: string, selector?: string): MethodDecorator
 ```
 
-- `eventName`: The DOM event to listen for
+- `eventName`: The DOM event to listen for (supports key modifiers with `:`)
 - `selector`: Optional CSS selector for event delegation
 
 ### Direct Event Handling
@@ -121,6 +121,260 @@ class FormHandler extends HTMLElement {
     console.log('Event type:', event.type);
     console.log('Event timestamp:', event.timeStamp);
     console.log('Is trusted:', event.isTrusted);
+  }
+}
+```
+
+### Keyboard Events with Key Modifiers
+
+The `@on` decorator supports key modifiers for keyboard events using the `:` syntax. This allows you to listen for specific keys without manual checking in your handler.
+
+**Important:** By default, key modifiers match **exactly** - `@on('keydown:Enter')` will only trigger on plain Enter with no modifier keys pressed. Use the `~` prefix if you want to match a key regardless of modifiers.
+
+#### Basic Key Modifiers (Exact Match)
+
+Use the exact `e.key` value after the colon. By default, these only match when NO modifier keys are pressed:
+
+```typescript
+@element('keyboard-handler')
+class KeyboardHandler extends HTMLElement {
+  html() {
+    return `
+      <input type="text" class="search" placeholder="Press Enter to search">
+      <textarea class="editor" placeholder="Press Escape to cancel"></textarea>
+      <div class="list" tabindex="0">Use arrow keys to navigate</div>
+    `;
+  }
+  
+  @on('keydown:Enter', '.search')  // Only plain Enter (no modifiers)
+  handleSearchSubmit(e: KeyboardEvent) {
+    e.preventDefault();
+    const input = e.target as HTMLInputElement;
+    console.log('Searching for:', input.value);
+  }
+  
+  @on('keydown:Escape', '.editor')  // Only plain Escape
+  handleCancel() {
+    console.log('Edit cancelled');
+    this.resetEditor();
+  }
+  
+  @on('keydown:ArrowDown', '.list')  // Only plain ArrowDown
+  handleNextItem(e: KeyboardEvent) {
+    e.preventDefault();
+    this.selectNextItem();
+  }
+  
+  @on('keydown:ArrowUp', '.list')  // Only plain ArrowUp
+  handlePrevItem(e: KeyboardEvent) {
+    e.preventDefault();
+    this.selectPrevItem();
+  }
+  
+  @on('keydown:Space', '.editor')  // Only plain Space key (or use ' ')
+  handleSpace() {
+    console.log('Space pressed');
+  }
+  
+  @on('keydown:Tab')  // Only plain Tab (no Shift+Tab, etc.)
+  handleTab(e: KeyboardEvent) {
+    e.preventDefault();
+    console.log('Tab navigation');
+  }
+}
+```
+
+#### Matching Keys with Any Modifiers
+
+Use the `~` prefix to match a key regardless of modifier keys. This is useful when you want the same behavior whether modifiers are pressed or not:
+
+```typescript
+@element('search-handler')
+class SearchHandler extends HTMLElement {
+  html() {
+    return `
+      <input class="search" placeholder="Search...">
+      <textarea class="editor"></textarea>
+    `;
+  }
+  
+  @on('keydown:~Enter', '.search')  // Enter with or without modifiers
+  handleSearch(e: KeyboardEvent) {
+    e.preventDefault();
+    console.log('Searching (any Enter combination)');
+    this.performSearch();
+  }
+  
+  @on('keydown:Enter', '.editor')  // Only plain Enter
+  handleSubmit(e: KeyboardEvent) {
+    e.preventDefault();
+    console.log('Submitting (plain Enter only)');
+    this.submit();
+  }
+  
+  @on('keydown:ctrl+Enter', '.editor')  // Only Ctrl+Enter
+  handleNewLine(e: KeyboardEvent) {
+    console.log('Adding new line (Ctrl+Enter)');
+    // Let default behavior add the line
+  }
+}
+```
+
+**Default behavior:** Without any prefix, `@on('keydown:Enter')` matches ONLY when Enter is pressed with no modifiers. Use `~` prefix for the old behavior of matching regardless of modifiers.
+
+#### Modifier Key Combinations
+
+Use `+` to combine modifier keys with regular keys. When you specify modifiers, **only that exact combination** will trigger the handler:
+
+```typescript
+@element('shortcut-handler')
+class ShortcutHandler extends HTMLElement {
+  html() {
+    return `
+      <div class="editor" contenteditable="true">
+        Try keyboard shortcuts:
+        Ctrl+S to save, Ctrl+Enter to submit
+      </div>
+    `;
+  }
+  
+  @on('keydown:ctrl+s', '.editor')
+  handleSave(e: KeyboardEvent) {
+    e.preventDefault();
+    console.log('Saving document...');
+    this.saveContent();
+  }
+  
+  @on('keydown:ctrl+Enter', '.editor')
+  handleSubmit(e: KeyboardEvent) {
+    e.preventDefault();
+    console.log('Submitting form...');
+    this.submitForm();
+  }
+  
+  @on('keydown:shift+Tab')
+  handleShiftTab(e: KeyboardEvent) {
+    e.preventDefault();
+    console.log('Navigate backwards');
+  }
+  
+  @on('keydown:alt+ArrowLeft')
+  handleBack(e: KeyboardEvent) {
+    e.preventDefault();
+    console.log('Go back');
+  }
+  
+  @on('keydown:meta+k')  // Cmd+K on Mac
+  handleCommandPalette(e: KeyboardEvent) {
+    e.preventDefault();
+    this.openCommandPalette();
+  }
+  
+  @on('keydown:ctrl+shift+p')
+  handlePreferences(e: KeyboardEvent) {
+    e.preventDefault();
+    this.openPreferences();
+  }
+}
+```
+
+**Important:** When using modifier combinations like `ctrl+s`, the handler will **only** trigger when exactly those modifiers are pressed. For example, `@on('keydown:ctrl+s')` will NOT trigger if both Ctrl and Shift are pressed - it requires Ctrl and only Ctrl.
+
+#### Key Values Reference
+
+The key modifier uses the exact `KeyboardEvent.key` values, with one exception: you can use `Space` instead of a literal space character ` `. Common examples:
+
+- `Enter` - Enter/Return key
+- `Escape` - Escape key
+- `Space` or ` ` - Space key (use `Space` for better readability)
+- `Tab` - Tab key
+- `Backspace` - Backspace key
+- `Delete` - Delete key
+- `ArrowUp`, `ArrowDown`, `ArrowLeft`, `ArrowRight` - Arrow keys
+- `Home`, `End`, `PageUp`, `PageDown` - Navigation keys
+- `a` through `z` - Letter keys (case sensitive)
+- `0` through `9` - Number keys
+- `F1` through `F12` - Function keys
+
+Modifier keys for combinations:
+- `ctrl` - Control key
+- `shift` - Shift key
+- `alt` - Alt/Option key
+- `meta` or `cmd` - Windows/Command key
+
+#### Real-World Example
+
+```typescript
+@element('search-input')
+class SearchInput extends HTMLElement {
+  @property()
+  value = '';
+  
+  @query('.results')
+  results?: HTMLElement;
+  
+  selectedIndex = -1;
+  
+  html() {
+    return `
+      <div class="search-container">
+        <input type="text" class="search-input" placeholder="Search...">
+        <div class="results" hidden></div>
+      </div>
+    `;
+  }
+  
+  @on('keydown:ArrowDown', '.search-input')
+  selectNext(e: KeyboardEvent) {
+    e.preventDefault();
+    const items = this.results?.querySelectorAll('.result-item');
+    if (items && this.selectedIndex < items.length - 1) {
+      this.selectedIndex++;
+      this.highlightItem();
+    }
+  }
+  
+  @on('keydown:ArrowUp', '.search-input')
+  selectPrevious(e: KeyboardEvent) {
+    e.preventDefault();
+    if (this.selectedIndex > 0) {
+      this.selectedIndex--;
+      this.highlightItem();
+    }
+  }
+  
+  @on('keydown:Enter', '.search-input')
+  submitSearch(e: KeyboardEvent) {
+    e.preventDefault();
+    if (this.selectedIndex >= 0) {
+      this.selectResult(this.selectedIndex);
+    } else {
+      this.performSearch();
+    }
+  }
+  
+  @on('keydown:Escape', '.search-input')
+  closeResults() {
+    this.results?.setAttribute('hidden', '');
+    this.selectedIndex = -1;
+  }
+  
+  @on('keydown:ctrl+a', '.search-input')
+  selectAll(e: KeyboardEvent) {
+    // Browser handles Ctrl+A by default for input fields
+    console.log('Select all triggered');
+  }
+  
+  private highlightItem() {
+    // Implementation
+  }
+  
+  private selectResult(index: number) {
+    // Implementation
+  }
+  
+  private performSearch() {
+    // Implementation
   }
 }
 ```

@@ -282,12 +282,25 @@ import { element, on } from 'snice';
 @element('my-clicker')
 class MyClicker extends HTMLElement {
   html() {
-    return `<button>Click me</button>`;
+    return `
+      <button>Click me</button>
+      <input type="text" placeholder="Press Enter" />
+    `;
   }
 
   @on('click', 'button')
   handleClick() {
     console.log('Button clicked!');
+  }
+
+  @on('keydown:Enter', 'input')  // Only plain Enter (no modifiers)
+  handleEnter() {
+    console.log('Enter pressed!');
+  }
+  
+  @on('keydown:ctrl+Enter', 'input')  // Only Ctrl+Enter
+  handleCtrlEnter() {
+    console.log('Ctrl + Enter pressed!');
   }
 }
 ```
