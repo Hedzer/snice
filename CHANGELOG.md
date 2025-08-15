@@ -1,3 +1,17 @@
+# [1.8.0](https://gitlab.com/Hedzer/snice/compare/v1.7.0...v1.8.0) (2025-08-15)
+
+
+### Bug Fixes
+
+* boolean properties with =true/false ([799356d](https://gitlab.com/Hedzer/snice/commit/799356da40b379c5f9a9ec03e588d70c7dbb5235))
+
+
+### Features
+
+* added modal component ([102a11e](https://gitlab.com/Hedzer/snice/commit/102a11e6a0bb152ff65d75dc11feb14519b88b67))
+* query/all options, tabs component ([3956cb3](https://gitlab.com/Hedzer/snice/commit/3956cb32c166fbaad228ff423bf9e52b206044c3))
+* tab transitions ([a48baca](https://gitlab.com/Hedzer/snice/commit/a48baca3b0ef5e6d908bb6c190031fd8381e703a))
+
 # [1.7.0](https://gitlab.com/Hedzer/snice/compare/v1.6.0...v1.7.0) (2025-08-14)
 
 
