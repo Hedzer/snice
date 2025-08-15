@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Input Test</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      padding: 40px;
+      font-family: var(--snice-font-family);
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+    }
+    .test-group {
+      margin-bottom: 30px;
+      padding: 20px;
+      background: var(--snice-color-background-secondary);
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Input Component Test</h2>
+  
+  <div class="test-group">
+    <h3>Test 1: Basic with Label</h3>
+    <snice-input label="Test Label" placeholder="Enter text..."></snice-input>
+  </div>
+
+  <div class="test-group">
+    <h3>Test 2: Number with Max/Min</h3>
+    <snice-input 
+      type="number" 
+      label="Number Input (0-100)" 
+      min="0" 
+      max="100" 
+      step="5"
+      placeholder="0-100">
+    </snice-input>
+  </div>
+
+  <div class="test-group">
+    <h3>Test 3: Required Field</h3>
+    <snice-input 
+      label="Required Field" 
+      placeholder="This is required"
+      required>
+    </snice-input>
+  </div>
+
+  <div class="test-group">
+    <h3>Test 4: Max Length</h3>
+    <snice-input 
+      label="Max 10 Characters" 
+      maxlength="10"
+      placeholder="Max 10 chars">
+    </snice-input>
+  </div>
+
+  <script type="module">
+    import './snice-input.ts';
+    
+    // Test that we can access the element and its properties
+    setTimeout(() => {
+      const inputs = document.querySelectorAll('snice-input');
+      inputs.forEach(input => {
+        console.log('Input label:', input.label);
+        console.log('Shadow root:', input.shadowRoot);
+        const labelEl = input.shadowRoot?.querySelector('.label');
+        console.log('Label element:', labelEl);
+        console.log('Label text:', labelEl?.textContent);
+      });
+    }, 1000);
+  </script>
+</body>
+</html>

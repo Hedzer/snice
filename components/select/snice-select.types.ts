@@ -1,0 +1,54 @@
+export type SelectSize = 'small' | 'medium' | 'large';
+
+export interface SelectOption {
+  value: string;
+  label: string;
+  disabled?: boolean;
+  selected?: boolean;
+}
+
+export interface SniceOptionElement extends HTMLElement {
+  value: string;
+  label: string;
+  disabled: boolean;
+  selected: boolean;
+  optionData: SelectOption;
+}
+
+export interface SniceSelectElement extends HTMLElement {
+  value: string;
+  disabled: boolean;
+  required: boolean;
+  invalid: boolean;
+  readonly: boolean;
+  multiple: boolean;
+  searchable: boolean;
+  clearable: boolean;
+  open: boolean;
+  size: SelectSize;
+  name: string;
+  label: string;
+  placeholder: string;
+  maxHeight: string;
+  focus(): void;
+  blur(): void;
+  clear(): void;
+  openDropdown(): void;
+  closeDropdown(): void;
+  toggleDropdown(): void;
+  selectOption(value: string): void;
+}
+
+export interface SelectChangeDetail {
+  value: string | string[];
+  option?: SelectOption;
+  select: SniceSelectElement;
+}
+
+export interface SelectOpenDetail {
+  select: SniceSelectElement;
+}
+
+export interface SelectCloseDetail {
+  select: SniceSelectElement;
+}

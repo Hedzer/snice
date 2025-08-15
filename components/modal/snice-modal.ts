@@ -18,13 +18,13 @@ export class SniceModal extends HTMLElement implements SniceModalElement {
   @property({ type: Boolean, attribute: 'no-escape-dismiss', reflect: true })
   noEscapeDismiss = false;
 
-  @property({ type: Boolean, attribute: 'no-focus-trap' })
+  @property({ type: Boolean, attribute: 'no-focus-trap', reflect: true })
   noFocusTrap = false;
 
   @property({ type: Boolean, attribute: 'no-close-button', reflect: true })
   noCloseButton = false;
 
-  @property()
+  @property({ reflect: true })
   label = '';
 
   @query('.modal')
