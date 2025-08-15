@@ -106,7 +106,7 @@ export function applyElementFunctionality(constructor: any) {
                 this[EXPLICITLY_SET_PROPERTIES].add(propName);
                 
                 if (propOptions.type === Boolean) {
-                  this[propName] = attrValue !== null;
+                  this[propName] = attrValue !== null && attrValue !== 'false';
                 } else if (propOptions.type === Number) {
                   this[propName] = Number(attrValue);
                 } else {
@@ -258,7 +258,7 @@ export function applyElementFunctionality(constructor: any) {
                 // Parse the new value based on type
                 let parsedValue: any;
                 if (propOptions.type === Boolean) {
-                  parsedValue = newValue !== null;
+                  parsedValue = newValue !== null && newValue !== 'false';
                 } else if (propOptions.type === Number) {
                   parsedValue = Number(newValue);
                 } else {

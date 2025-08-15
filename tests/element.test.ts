@@ -110,6 +110,33 @@ describe('@property decorator', () => {
     expect(el.hasAttribute('active')).toBe(false);
   });
 
+  it('should parse boolean attribute "false" string as false', () => {
+    @element('test-bool-false-string')
+    class TestBoolFalseString extends HTMLElement {
+      @property({ type: Boolean, reflect: true })
+      enabled = true;
+    }
+    
+    const el = document.createElement('test-bool-false-string') as any;
+    el.setAttribute('enabled', 'false');
+    document.body.appendChild(el);
+    
+    // Should parse "false" string as false
+    expect(el.enabled).toBe(false);
+    
+    // Setting to "true" should work
+    el.setAttribute('enabled', 'true');
+    expect(el.enabled).toBe(true);
+    
+    // Empty string or just presence should be true
+    el.setAttribute('enabled', '');
+    expect(el.enabled).toBe(true);
+    
+    // Removing attribute should make it false
+    el.removeAttribute('enabled');
+    expect(el.enabled).toBe(false);
+  });
+
   it('should use custom attribute name', () => {
     @element('test-attr-prop')
     class TestAttrProp extends HTMLElement {
@@ -122,6 +149,29 @@ describe('@property decorator', () => {
     
     el.name = 'test';
     expect(el.getAttribute('data-name')).toBe('test');
+  });
+
+  it('should handle kebab-case boolean attributes with false string', () => {
+    @element('test-kebab-bool')
+    class TestKebabBool extends HTMLElement {
+      @property({ type: Boolean, reflect: true, attribute: 'no-close-button' })
+      noCloseButton = false;
+    }
+    
+    const el = document.createElement('test-kebab-bool') as any;
+    el.setAttribute('no-close-button', 'false');
+    document.body.appendChild(el);
+    
+    // Should parse "false" string as false even with kebab-case attribute
+    expect(el.noCloseButton).toBe(false);
+    
+    // Setting to true via property should reflect to attribute
+    el.noCloseButton = true;
+    expect(el.getAttribute('no-close-button')).toBe('true');
+    
+    // Setting attribute to false should update property
+    el.setAttribute('no-close-button', 'false');
+    expect(el.noCloseButton).toBe(false);
   });
 });
 
