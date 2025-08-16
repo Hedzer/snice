@@ -238,7 +238,6 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     this.childObserver?.disconnect();
   }
 
-  private childObserver?: MutationObserver;
   private outsideClickHandler?: (e: MouseEvent) => void;
   private globalKeyHandler?: (e: KeyboardEvent) => void;
 
@@ -294,23 +293,45 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     }
   }
 
+  // Note: This won't work with @observe as it observes shadow DOM by default
+  // We need to manually observe the light DOM for child option elements
   private observeChildren() {
-    // Watch for changes to child elements
-    this.childObserver = new MutationObserver(() => {
-      this.readOptionsFromChildren();
-      this.filteredOptions = [...this.options];
-      this.updateNativeSelect();
-      this.updateDisplay();
-      this.updateDropdownContent();
+    const observer = new MutationObserver((mutations) => {
+      this.handleChildrenChange(mutations);
     });
     
-    this.childObserver.observe(this, {
+    observer.observe(this, {
       childList: true,
       subtree: true,
       attributes: true,
       attributeFilter: ['value', 'label', 'disabled', 'selected']
     });
+    
+    // Store for cleanup
+    this.childObserver = observer;
   }
+  
+  private childObserver?: MutationObserver;
+  
+  private handleChildrenChange(mutations: MutationRecord[]) {
+    // Check if any of the mutations are relevant (snice-option elements or their attributes)
+    const relevant = mutations.some(m => {
+      if (m.type === 'childList') return true;
+      if (m.type === 'attributes' && ['value', 'label', 'disabled', 'selected'].includes(m.attributeName!)) {
+        return m.target.nodeName === 'SNICE-OPTION';
+      }
+      return false;
+    });
+    
+    if (relevant) {
+      this.readOptionsFromChildren();
+      this.filteredOptions = [...this.options];
+      this.updateNativeSelect();
+      this.updateDisplay();
+      this.updateDropdownContent();
+    }
+  }
+
 
   private readOptionsFromChildren() {
     // Get all snice-option children from light DOM
@@ -330,12 +351,11 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
         selected: opt.hasAttribute('selected')
       };
     });
-    
-    console.log('Read options:', this.options); // Debug log
   }
 
-  @on(['keydown:Enter', 'keydown:Space', 'keydown:ArrowDown', 'keydown:ArrowUp'], '.select-trigger', { preventDefault: true })
-  handleTriggerOpen() {
+  @on(['keydown:Enter', 'keydown:Space', 'keydown:ArrowDown', 'keydown:ArrowUp'], '.select-trigger')
+  handleTriggerOpen(e: KeyboardEvent) {
+    e.preventDefault();
     if (!this.open) {
       this.openDropdown();
     }
@@ -347,18 +367,21 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     this.trigger?.focus();
   }
 
-  @on('keydown:ArrowDown', '.select-search-input', { preventDefault: true })
-  handleSearchArrowDown() {
+  @on('keydown:ArrowDown', '.select-search-input')
+  handleSearchArrowDown(e: KeyboardEvent) {
+    e.preventDefault();
     this.focusNextOption();
   }
 
-  @on('keydown:ArrowUp', '.select-search-input', { preventDefault: true })
-  handleSearchArrowUp() {
+  @on('keydown:ArrowUp', '.select-search-input')
+  handleSearchArrowUp(e: KeyboardEvent) {
+    e.preventDefault();
     this.focusPreviousOption();
   }
 
-  @on('keydown:Enter', '.select-search-input', { preventDefault: true })
-  handleSearchEnter() {
+  @on('keydown:Enter', '.select-search-input')
+  handleSearchEnter(e: KeyboardEvent) {
+    e.preventDefault();
     if (this.focusedIndex >= 0) {
       const options = this.searchable ? this.filteredOptions : this.options;
       const option = options[this.focusedIndex];

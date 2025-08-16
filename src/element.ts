@@ -1,5 +1,6 @@
 import { attachController, detachController } from './controller';
 import { setupEventHandlers, cleanupEventHandlers } from './events';
+import { setupObservers, cleanupObservers } from './observe';
 import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PROPERTY_WATCHERS, EXPLICITLY_SET_PROPERTIES, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS } from './symbols';
 
 /**
@@ -191,6 +192,13 @@ export function applyElementFunctionality(constructor: any) {
         // Setup @on event handlers - use element for host events, shadow root for delegated events
         setupEventHandlers(this, this);
         
+        // Setup @observe observers
+        try {
+          setupObservers(this, this);
+        } catch (error) {
+          console.error(`Error setting up observers for ${this.tagName}:`, error);
+        }
+        
         // Call @ready handlers after everything is set up
         const readyHandlers = constructor[READY_HANDLERS];
         if (readyHandlers) {
@@ -235,6 +243,8 @@ export function applyElementFunctionality(constructor: any) {
       }
       // Cleanup @on event handlers
       cleanupEventHandlers(this);
+      // Cleanup @observe observers
+      cleanupObservers(this);
     };
     
     constructor.prototype.attributeChangedCallback = function(name: string, oldValue: string, newValue: string) {

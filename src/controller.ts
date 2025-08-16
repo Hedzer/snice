@@ -1,4 +1,5 @@
 import { setupEventHandlers, cleanupEventHandlers } from './events';
+import { setupObservers, cleanupObservers } from './observe';
 import { setupChannelHandlers, cleanupChannelHandlers } from './channel';
 import { IS_CONTROLLER_CLASS, IS_CONTROLLER_INSTANCE, CONTROLLER_KEY, CONTROLLER_NAME_KEY, CONTROLLER_ID, CONTROLLER_OPERATIONS, NATIVE_CONTROLLER, IS_ELEMENT_CLASS, ROUTER_CONTEXT } from './symbols';
 import { snice } from './global';
@@ -134,6 +135,9 @@ export async function attachController(element: HTMLElement, controllerName: str
   // Setup @on event handlers for controller
   setupEventHandlers(controllerInstance, element);
   
+  // Setup @observe observers for controller
+  setupObservers(controllerInstance, element);
+  
   // Setup @channel handlers for controller
   setupChannelHandlers(controllerInstance, element);
   
@@ -168,6 +172,9 @@ export async function detachController(element: HTMLElement): Promise<void> {
   
   // Cleanup @on event handlers for controller
   cleanupEventHandlers(controllerInstance);
+  
+  // Cleanup @observe observers for controller
+  cleanupObservers(controllerInstance);
   
   // Cleanup @channel handlers for controller
   cleanupChannelHandlers(controllerInstance);

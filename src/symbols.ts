@@ -41,3 +41,6 @@ export const PAGE_TRANSITION = getSymbol('page-transition');
 // Lifecycle symbols
 export const READY_HANDLERS = getSymbol('ready-handlers');
 export const DISPOSE_HANDLERS = getSymbol('dispose-handlers');
+
+// Observer symbols
+export const OBSERVERS = getSymbol('observers');

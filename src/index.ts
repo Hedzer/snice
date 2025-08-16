@@ -2,6 +2,7 @@ export { element, customElement, property, query, queryAll, watch, context, appl
 export { Router } from './router';
 export { controller, attachController, detachController, getController, useNativeElementControllers, cleanupNativeElementControllers } from './controller';
 export { on, dispatch } from './events';
+export { observe } from './observe';
 export { channel } from './channel';
 export { IS_CONTROLLER_INSTANCE } from './symbols';
 export type { Transition } from './transitions';
@@ -9,4 +10,5 @@ export type { PropertyOptions, PropertyConverter, QueryOptions } from './element
 export type { RouterOptions, PageOptions, Guard, RouteParams, RouterInstance } from './router';
 export type { IController, ControllerClass } from './controller';
 export type { DispatchOptions } from './events';
+export type { ObserveOptions } from './observe';
 export type { ChannelOptions } from './channel';

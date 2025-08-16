@@ -727,6 +727,43 @@ The `@context` decorator:
 
 **Remember:** With great power comes great responsibility. Global state is dangerous - use it wisely and sparingly.
 
+## Observing External Changes
+
+The `@observe` decorator provides lifecycle-managed observation of external changes like viewport intersection, element resize, media queries, and DOM mutations:
+
+```typescript
+import { element, observe } from 'snice';
+
+@element('lazy-image')
+class LazyImage extends HTMLElement {
+  html() {
+    return `
+      <img data-src="photo.jpg" class="lazy" />
+      <div class="loading">Loading...</div>
+    `;
+  }
+
+  // Observe when image enters viewport
+  @observe('intersection', '.lazy', { threshold: 0.1 })
+  loadImage(entry: IntersectionObserverEntry) {
+    if (entry.isIntersecting) {
+      const img = entry.target as HTMLImageElement;
+      img.src = img.dataset.src!;
+      img.classList.add('loaded');
+      return false; // Stop observing after loading
+    }
+  }
+
+  // Respond to viewport size changes
+  @observe('media:(min-width: 768px)')
+  handleDesktop(matches: boolean) {
+    this.classList.toggle('desktop-mode', matches);
+  }
+}
+```
+
+All observers are automatically cleaned up when elements disconnect from the DOM. See the [Observe API documentation](./docs/observe.md) for more examples.
+
 ## Documentation
 
 - [Elements API](./docs/elements.md) - Complete guide to creating elements with properties, queries, and styling
@@ -734,6 +771,7 @@ The `@context` decorator:
 - [Events API](./docs/events.md) - Event handling, dispatching, and custom events
 - [Channels API](./docs/channels.md) - Bidirectional communication between elements and controllers
 - [Routing API](./docs/routing.md) - Single-page application routing with transitions
+- [Observe API](./docs/observe.md) - Lifecycle-managed observers for external changes
 - [Migration Guide](./docs/migration-guide.md) - Migrating from React, Vue, Angular, and other frameworks
 
 ## License
