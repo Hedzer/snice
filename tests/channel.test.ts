@@ -472,7 +472,7 @@ describe('@channel decorator', () => {
       
       async loadUser() {
         const user = await this.fetchUserData();
-        console.log(user);  // { name: 'Alice' }
+        // console.log(user);  // { name: 'Alice' }
         return user;
       }
       
@@ -495,7 +495,7 @@ describe('@channel decorator', () => {
       
       @channel(channelName)
       handleGetData(request: any) {
-        console.log(request);  // { id: 123 }
+        // console.log(request);  // { id: 123 }
         return { name: 'Alice' };
       }
     }

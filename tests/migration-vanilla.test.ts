@@ -30,7 +30,6 @@ describe('Vanilla Web Components Migration', () => {
         @on('click', 'button')
         handleClick() {
           clickCount++;
-          console.log('Clicked');
         }
       }
 

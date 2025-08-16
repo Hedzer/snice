@@ -267,7 +267,6 @@ describe('snice-select component', () => {
       
       // Search input should be in the dropdown
       const searchContainer = select.shadowRoot.querySelector('.select-search');
-      console.log('shadowroot', select.shadowRoot.innerHTML);
       expect(searchContainer).toBeTruthy();
       
       const searchInput = select.shadowRoot.querySelector('.select-search-input');

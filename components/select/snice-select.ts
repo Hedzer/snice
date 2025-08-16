@@ -215,7 +215,8 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     // Now that we have options, update everything
     this.updateDropdownContent();
     this.updateNativeSelect();
-    this.updateDisplay();
+    this.updateValueDisplay();
+    this.updateClearButton();
     
     // Watch for changes to child options
     this.observeChildren();
@@ -319,7 +320,8 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
       this.readOptionsFromChildren();
       this.filteredOptions = [...this.options];
       this.updateNativeSelect();
-      this.updateDisplay();
+      this.updateValueDisplay();
+      this.updateClearButton();
       this.updateDropdownContent();
     }
   }
@@ -430,14 +432,20 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   @on('click', '.select-trigger')
   handleTriggerClick(e: Event) {
     e.stopPropagation();
+    
+    // Don't toggle if clicking on the clear button or tag remove buttons
+    const target = e.target as HTMLElement;
+    if (target.closest('.select-clear') || target.closest('.select-tag-remove')) {
+      return;
+    }
+    
     if (!this.disabled && !this.readonly) {
       this.toggleDropdown();
     }
   }
 
-  @on('click', '.select-clear')
+  @on('click', '.select-clear', { preventDefault: true, stopPropagation: true })
   handleClearClick(e: Event) {
-    e.stopPropagation();
     this.clear();
   }
 
@@ -450,7 +458,8 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
       this.selectedValues.delete(value);
       this.value = Array.from(this.selectedValues).join(',');
       this.updateNativeSelect();
-      this.updateDisplay();
+      this.updateValueDisplay();
+      this.updateClearButton();
       this.dispatchChangeEvent();
     }
   }
@@ -505,7 +514,8 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     }
     
     this.updateNativeSelect();
-    this.updateDisplay();
+    this.updateValueDisplay();
+    this.updateClearButton();
     this.dispatchChangeEvent(option);
   }
 
@@ -515,13 +525,15 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
       this.selectedValues = new Set(this.value ? this.value.split(',').map(v => v.trim()) : []);
     }
     this.updateNativeSelect();
-    this.updateDisplay();
+    this.updateValueDisplay();
+    this.updateClearButton();
   }
 
   @watch('disabled')
   handleDisabledChange() {
     this.updateTriggerState();
     this.updateNativeSelectAttributes();
+    this.updateClearButton();
     if (this.disabled && this.open) {
       this.closeDropdown();
     }
@@ -530,6 +542,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   @watch('readonly')
   handleReadonlyChange() {
     this.updateTriggerState();
+    this.updateClearButton();
   }
 
   @watch('invalid')
@@ -572,7 +585,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
 
   @watch('placeholder')
   handlePlaceholderChange() {
-    this.updateDisplay();
+    this.updateValueDisplay();
   }
 
   @watch('required')
@@ -596,7 +609,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
 
   @watch('clearable')
   handleClearableChange() {
-    this.updateDisplay();
+    this.updateClearButton();
   }
 
   @watch('searchable')
@@ -610,7 +623,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     }
   }
 
-  private updateDisplay() {
+  private updateValueDisplay() {
     if (!this.valueDisplay) return;
 
     const selectedOptions = this.options.filter(opt => 
@@ -640,12 +653,17 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     } else {
       this.valueDisplay.innerHTML = /*html*/`<span class="select-placeholder">${this.placeholder}</span>`;
     }
+  }
 
-    // Update clear button visibility
-    if (this.clearButton) {
-      const shouldShow = this.clearable && selectedOptions.length > 0 && !this.disabled && !this.readonly;
-      this.clearButton.style.display = shouldShow ? '' : 'none';
-    }
+  private updateClearButton() {
+    if (!this.clearButton) return;
+    
+    const selectedOptions = this.options.filter(opt => 
+      this.multiple ? this.selectedValues.has(opt.value) : opt.value === this.value
+    );
+    
+    const shouldShow = this.clearable && selectedOptions.length > 0 && !this.disabled && !this.readonly;
+    this.clearButton.style.display = shouldShow ? '' : 'none';
   }
 
   private updateDropdownContent() {
@@ -708,7 +726,8 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
       this.value = '';
     }
     this.updateNativeSelect();
-    this.updateDisplay();
+    this.updateValueDisplay();
+    this.updateClearButton();
     this.dispatchChangeEvent();
   }
 

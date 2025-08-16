@@ -96,7 +96,6 @@ describe('Angular Migration Examples', () => {
         
         log(message: string) {
           this.messages.push(message);
-          console.log(message);
         }
       }
 
