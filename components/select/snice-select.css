@@ -6,6 +6,15 @@
   max-width: 300px;
 }
 
+[hidden] {
+  display: none !important;
+}
+
+/* Hide empty image tags */
+img[src=""] {
+  display: none;
+}
+
 .select-wrapper {
   position: relative;
   width: 100%;

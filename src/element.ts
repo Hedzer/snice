@@ -91,12 +91,10 @@ export function applyElementFunctionality(constructor: any) {
         const properties = constructor[PROPERTIES];
         if (properties) {
           for (const [propName, propOptions] of properties) {
-            // Always read from attributes, not just when reflect is true
-            const attributeName = typeof propOptions.attribute === 'string' ? propOptions.attribute : propName;
-            // Only read from attribute if property hasn't been set yet
-            if (this.hasAttribute(attributeName) && !(propName in (this[PROPERTY_VALUES] || {}))) {
+            // If attribute exists, it always wins
+            if (this.hasAttribute(propName)) {
               // Attribute exists, parse and set the property value
-              const attrValue = this.getAttribute(attributeName);
+              const attrValue = this.getAttribute(propName);
               
               // Mark as explicitly set since it came from an attribute
               if (!this[EXPLICITLY_SET_PROPERTIES]) {
@@ -104,12 +102,18 @@ export function applyElementFunctionality(constructor: any) {
               }
               this[EXPLICITLY_SET_PROPERTIES].add(propName);
               
-              if (propOptions.type === Boolean) {
-                this[propName] = attrValue !== null && attrValue !== 'false';
-              } else if (propOptions.type === Number) {
-                this[propName] = Number(attrValue);
-              } else {
-                this[propName] = attrValue;
+              switch (propOptions.type) {
+                case Boolean:
+                  this[propName] = attrValue !== null && attrValue !== 'false';
+                  break;
+                case Number:
+                  this[propName] = Number(attrValue);
+                  break;
+                case String:
+                  this[propName] = attrValue;
+                  break;
+                default:
+                  this[propName] = attrValue;
               }
             }
           }

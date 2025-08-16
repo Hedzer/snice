@@ -254,16 +254,12 @@ describe('snice-select component', () => {
     });
 
     it('should handle searchable property', async () => {
-      // Create element programmatically to ensure proper initialization
-      const select = document.createElement('snice-select') as any;
-      select.setAttribute('searchable', '');
-      
-      const option = document.createElement('snice-option');
-      option.setAttribute('value', '1');
-      option.setAttribute('label', 'Option 1');
-      select.appendChild(option);
-      
-      container.appendChild(select);
+      container.innerHTML = `
+        <snice-select searchable>
+          <snice-option value="1" label="Option 1"></snice-option>
+        </snice-select>
+      `;
+      const select = container.querySelector('snice-select') as any;
       
       await new Promise(resolve => setTimeout(resolve, 50));
       
@@ -271,6 +267,7 @@ describe('snice-select component', () => {
       
       // Search input should be in the dropdown
       const searchContainer = select.shadowRoot.querySelector('.select-search');
+      console.log('shadowroot', select.shadowRoot.innerHTML);
       expect(searchContainer).toBeTruthy();
       
       const searchInput = select.shadowRoot.querySelector('.select-search-input');

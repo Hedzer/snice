@@ -1,4 +1,4 @@
-import { OBSERVERS, CLEANUP } from './symbols';
+import { OBSERVERS, CLEANUP, IS_CONTROLLER_INSTANCE } from './symbols';
 
 export interface ObserveOptions {
   /** For IntersectionObserver: threshold of visibility */
@@ -354,9 +354,16 @@ function setupMutationObserver(
   const mo = new MutationObserver(wrappedCallback);
   
   // Find target elements
+  const isController = instance[IS_CONTROLLER_INSTANCE] === true;
+  
+  // For mutation observers without selector:
+  // - Controllers: observe the shadow DOM of the element they're attached to (if it exists)
+  // - Elements: observe the element itself (light DOM) to avoid infinite loops
   const targets = observer.selector 
     ? Array.from(element.shadowRoot?.querySelectorAll(observer.selector) || [])
-    : [element.shadowRoot || element];
+    : isController && element.shadowRoot 
+      ? [element.shadowRoot]
+      : [element];
   
   // Start observing
   targets.forEach(target => {

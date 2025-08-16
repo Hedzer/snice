@@ -77,6 +77,9 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   @query('.select-arrow')
   arrow?: HTMLElement;
 
+  @query('.select-search')
+  searchContainer?: HTMLElement;
+
   @queryAll('.select-option')
   optionElements?: HTMLElement[];
 
@@ -88,23 +91,15 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     // Initial render - options will be populated in @ready()
     return /*html*/`
       <div class="select-wrapper">
-        ${this.label ? /*html*/`
-          <label class="select-label select-label--${this.size} ${this.required ? 'select-label--required' : ''}" part="label">
-            ${this.label}
-          </label>
-        ` : ''}
+        <label class="select-label select-label--${this.size} ${this.required ? 'select-label--required' : ''}" part="label" ${!this.label ? 'hidden' : ''}>
+          ${this.label}
+        </label>
         
         <button
           type="button"
-          class="select-trigger 
-            select-trigger--${this.size}
-            ${this.open ? 'select-trigger--open' : ''}
-            ${this.disabled ? 'select-trigger--disabled' : ''}
-            ${this.readonly ? 'select-trigger--readonly' : ''}
-            ${this.invalid ? 'select-trigger--invalid' : ''}"
-          ${this.disabled ? 'disabled' : ''}
+          class="select-trigger select-trigger--${this.size}"
           aria-haspopup="listbox"
-          aria-expanded="${this.open}"
+          aria-expanded="false"
           aria-label="${this.label || 'Select'}"
           part="trigger">
           
@@ -126,21 +121,19 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
           </span>
         </button>
         
-        <div class="select-dropdown ${this.open ? 'select-dropdown--open' : ''}" 
+        <div class="select-dropdown" 
              role="listbox" 
              aria-label="${this.label || 'Options'}"
              part="dropdown">
           
-          ${this.searchable ? /*html*/`
-            <div class="select-search" part="search">
-              <input
-                type="text"
-                class="select-search-input"
-                placeholder="Search..."
-                aria-label="Search options"
-                part="search-input" />
-            </div>
-          ` : ''}
+          <div class="select-search" part="search" ${!this.searchable ? 'hidden' : ''}>
+            <input
+              type="text"
+              class="select-search-input"
+              placeholder="Search..."
+              aria-label="Search options"
+              part="search-input" />
+          </div>
           
           <div class="select-options" part="options">
             <!-- Options will be rendered in @ready() -->
@@ -150,10 +143,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
         <!-- Hidden native select for form submission -->
         <select
           class="select-native"
-          ${this.name ? `name="${this.name}"` : ''}
-          ${this.disabled ? 'disabled' : ''}
-          ${this.required ? 'required' : ''}
-          ${this.multiple ? 'multiple' : ''}
+          name="${this.name || ''}"
           tabindex="-1"
           aria-hidden="true">
           <!-- Options will be added in @ready() -->
@@ -168,7 +158,8 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     if (options.length === 0) {
       return /*html*/`
         <div class="select-no-options">
-          ${this.searchable && this.filteredOptions.length === 0 ? 'No matches found' : 'No options available'}
+          <span class="select-no-options-text" data-search="true" ${!this.searchable || this.filteredOptions.length > 0 ? 'hidden' : ''}>No matches found</span>
+          <span class="select-no-options-text" data-search="false" ${this.searchable && this.filteredOptions.length === 0 ? 'hidden' : ''}>No options available</span>
         </div>
       `;
     }
@@ -189,14 +180,10 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
           aria-selected="${isSelected}"
           aria-disabled="${opt.disabled}"
           part="option">
-          ${this.multiple ? /*html*/`
-            <span class="select-option-check">
-              ${isSelected ? '✓' : ''}
-            </span>
-          ` : ''}
-          ${opt.icon ? /*html*/`
-            <img class="select-option-icon" src="${opt.icon}" alt="" />
-          ` : ''}
+          <span class="select-option-check" ${!this.multiple ? 'hidden' : ''}>
+            <span class="select-option-check-mark" ${!isSelected ? 'hidden' : ''}>✓</span>
+          </span>
+          <img class="select-option-icon" src="${opt.icon || ''}" alt="" ${!opt.icon ? 'hidden' : ''} />
           <span class="select-option-label">${opt.label}</span>
         </div>
       `;
@@ -219,6 +206,11 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     
     // Initialize filtered options
     this.filteredOptions = [...this.options];
+    
+    // Set initial imperative state
+    this.updateTriggerState();
+    this.updateDropdownState();
+    this.updateNativeSelectAttributes();
     
     // Now that we have options, update everything
     this.updateDropdownContent();
@@ -293,13 +285,13 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     }
   }
 
-  // Note: This won't work with @observe as it observes shadow DOM by default
-  // We need to manually observe the light DOM for child option elements
+  // Manual observation of light DOM children (snice-option elements)
   private observeChildren() {
     const observer = new MutationObserver((mutations) => {
       this.handleChildrenChange(mutations);
     });
     
+    // Observe the host element (this) for changes to its light DOM children
     observer.observe(this, {
       childList: true,
       subtree: true,
@@ -528,31 +520,29 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
 
   @watch('disabled')
   handleDisabledChange() {
-    if (this.trigger) {
-      this.trigger.disabled = this.disabled;
-    }
-    if (this.nativeSelect) {
-      this.nativeSelect.disabled = this.disabled;
-    }
+    this.updateTriggerState();
+    this.updateNativeSelectAttributes();
     if (this.disabled && this.open) {
       this.closeDropdown();
     }
+  }
+
+  @watch('readonly')
+  handleReadonlyChange() {
+    this.updateTriggerState();
+  }
+
+  @watch('invalid')
+  handleInvalidChange() {
+    this.updateTriggerState();
   }
 
   // Remove the @watch('options') since options are now read from children
 
   @watch('open')
   handleOpenChange() {
-    if (this.dropdown) {
-      this.dropdown.classList.toggle('select-dropdown--open', this.open);
-    }
-    if (this.trigger) {
-      this.trigger.classList.toggle('select-trigger--open', this.open);
-      this.trigger.setAttribute('aria-expanded', String(this.open));
-    }
-    if (this.arrow) {
-      this.arrow.classList.toggle('select-arrow--open', this.open);
-    }
+    this.updateDropdownState();
+    this.updateTriggerState();
     
     if (this.open && this.searchable && this.searchInput) {
       setTimeout(() => this.searchInput?.focus(), 100);
@@ -572,7 +562,11 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   handleLabelChange() {
     if (this.labelElement) {
       this.labelElement.textContent = this.label;
-      this.labelElement.style.display = this.label ? '' : 'none';
+      if (this.label) {
+        this.labelElement.removeAttribute('hidden');
+      } else {
+        this.labelElement.setAttribute('hidden', '');
+      }
     }
   }
 
@@ -586,21 +580,34 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     if (this.labelElement) {
       this.labelElement.classList.toggle('select-label--required', this.required);
     }
-    if (this.nativeSelect) {
-      this.nativeSelect.required = this.required;
-    }
+    this.updateNativeSelectAttributes();
   }
 
-  @watch('invalid')
-  handleInvalidChange() {
-    if (this.trigger) {
-      this.trigger.classList.toggle('select-trigger--invalid', this.invalid);
-    }
+  @watch('multiple')
+  handleMultipleChange() {
+    this.updateNativeSelectAttributes();
   }
+
+  @watch('name')
+  handleNameChange() {
+    this.updateNativeSelectAttributes();
+  }
+
 
   @watch('clearable')
   handleClearableChange() {
     this.updateDisplay();
+  }
+
+  @watch('searchable')
+  handleSearchableChange() {
+    if (this.searchContainer) {
+      if (this.searchable) {
+        this.searchContainer.removeAttribute('hidden');
+      } else {
+        this.searchContainer.setAttribute('hidden', '');
+      }
+    }
   }
 
   private updateDisplay() {
@@ -615,11 +622,9 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
         <div class="select-value--multiple">
           ${selectedOptions.map(opt => /*html*/`
             <span class="select-tag">
-              ${opt.icon ? /*html*/`<img class="select-tag-icon" src="${opt.icon}" alt="" />` : ''}
+              <img class="select-tag-icon" src="${opt.icon || ''}" alt="" ${!opt.icon ? 'hidden' : ''} />
               ${opt.label}
-              ${!this.disabled && !this.readonly ? /*html*/`
-                <span class="select-tag-remove" data-value="${opt.value}" aria-label="Remove ${opt.label}">×</span>
-              ` : ''}
+              <span class="select-tag-remove" data-value="${opt.value}" aria-label="Remove ${opt.label}" ${this.disabled || this.readonly ? 'hidden' : ''}>×</span>
             </span>
           `).join('')}
         </div>
@@ -628,7 +633,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
       const selected = selectedOptions[0];
       this.valueDisplay.innerHTML = /*html*/`
         <div class="select-value--single">
-          ${selected.icon ? /*html*/`<img class="select-value-icon" src="${selected.icon}" alt="" />` : ''}
+          <img class="select-value-icon" src="${selected.icon || ''}" alt="" ${!selected.icon ? 'hidden' : ''} />
           <span>${selected.label}</span>
         </div>
       `;
@@ -733,6 +738,40 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     const option = this.options.find(opt => opt.value === value);
     if (option && !option.disabled) {
       this.handleOptionSelect(option);
+    }
+  }
+
+  private updateTriggerState() {
+    if (!this.trigger) return;
+    
+    this.trigger.classList.toggle('select-trigger--open', this.open);
+    this.trigger.classList.toggle('select-trigger--disabled', this.disabled);
+    this.trigger.classList.toggle('select-trigger--readonly', this.readonly);
+    this.trigger.classList.toggle('select-trigger--invalid', this.invalid);
+    this.trigger.setAttribute('aria-expanded', String(this.open));
+    this.trigger.disabled = this.disabled;
+  }
+
+  private updateDropdownState() {
+    if (!this.dropdown) return;
+    
+    this.dropdown.classList.toggle('select-dropdown--open', this.open);
+    
+    if (this.arrow) {
+      this.arrow.classList.toggle('select-arrow--open', this.open);
+    }
+  }
+
+  private updateNativeSelectAttributes() {
+    if (!this.nativeSelect) return;
+    
+    this.nativeSelect.disabled = this.disabled;
+    this.nativeSelect.required = this.required;
+    this.nativeSelect.multiple = this.multiple;
+    if (this.name) {
+      this.nativeSelect.name = this.name;
+    } else {
+      this.nativeSelect.removeAttribute('name');
     }
   }
 }
