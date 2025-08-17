@@ -445,7 +445,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   }
 
   @on('click', '.select-clear', { preventDefault: true, stopPropagation: true })
-  handleClearClick(e: Event) {
+  handleClearClick(_e: Event) {
     this.clear();
   }
 
