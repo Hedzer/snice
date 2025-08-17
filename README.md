@@ -43,7 +43,8 @@ Snice provides a clear separation of concerns through decorators:
 ### Event Decorators
 - **`@on`** - Listens for events on elements
 - **`@dispatch`** - Dispatches custom events after method execution
-- **`@channel`** - Enables bidirectional communication between elements and controllers
+- **`@request`** - Makes requests from elements or controllers
+- **`@response`** - Responds to requests in elements or controllers
 
 This separation keeps your components focused: elements handle presentation, controllers manage data, and pages define navigation.
 
@@ -560,16 +561,16 @@ Use it:
 <user-list controller="user-controller"></user-list>
 ```
 
-## Channels
+## Request/Response
 
 Bidirectional communication between elements and controllers:
 
 ```typescript
-// Element sends request, controller responds
+// Element makes request, controller responds
 @element('user-profile')
 class UserProfile extends HTMLElement {
 
-  @channel('fetch-user')
+  @request('fetch-user')
   async *getUser() {
     const user = await (yield { userId: 123 });
     return user;
@@ -586,7 +587,7 @@ class UserProfile extends HTMLElement {
 @controller('user-controller')
 class UserController {
 
-  @channel('fetch-user')
+  @response('fetch-user')
   async handleFetchUser(request: { userId: number }) {
     const response = await fetch(`/api/users/${request.userId}`);
     return response.json();
@@ -769,7 +770,7 @@ All observers are automatically cleaned up when elements disconnect from the DOM
 - [Elements API](./docs/elements.md) - Complete guide to creating elements with properties, queries, and styling
 - [Controllers API](./docs/controllers.md) - Data fetching, business logic, and controller patterns
 - [Events API](./docs/events.md) - Event handling, dispatching, and custom events
-- [Channels API](./docs/channels.md) - Bidirectional communication between elements and controllers
+- [Request/Response API](./docs/request-response.md) - Bidirectional communication between elements and controllers
 - [Routing API](./docs/routing.md) - Single-page application routing with transitions
 - [Observe API](./docs/observe.md) - Lifecycle-managed observers for external changes
 - [Migration Guide](./docs/migration-guide.md) - Migrating from React, Vue, Angular, and other frameworks

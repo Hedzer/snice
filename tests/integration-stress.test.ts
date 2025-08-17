@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { element, property, query, queryAll } from '../src/element';
 import { controller, attachController, detachController, useNativeElementControllers, cleanupNativeElementControllers } from '../src/controller';
 import { on, dispatch } from '../src/events';
-import { channel } from '../src/channel';
+import { request, response } from '../src/request-response';
 import { Router } from '../src/router';
 
 describe('Integration & Stress Tests', () => {
@@ -328,7 +328,7 @@ describe('Integration & Stress Tests', () => {
         element: HTMLElement | null = null;
         operations = 0;
         
-        @channel('concurrent-channel')
+        @response('concurrent-channel')
         handleConcurrent(data: any) {
           this.operations++;
           return { value: data.value, processed: true };
@@ -345,7 +345,7 @@ describe('Integration & Stress Tests', () => {
       class ConcurrentElement extends HTMLElement {
         controller = 'concurrent-ctrl';
         
-        @channel('concurrent-channel')
+        @request('concurrent-channel')
         async *communicate(value: number) {
           const response = await (yield { value });
           return response;

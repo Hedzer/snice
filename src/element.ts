@@ -1,6 +1,7 @@
 import { attachController, detachController } from './controller';
 import { setupEventHandlers, cleanupEventHandlers } from './events';
 import { setupObservers, cleanupObservers } from './observe';
+import { setupResponseHandlers, cleanupResponseHandlers } from './request-response';
 import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PROPERTY_WATCHERS, EXPLICITLY_SET_PROPERTIES, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS } from './symbols';
 
 /**
@@ -196,6 +197,9 @@ export function applyElementFunctionality(constructor: any) {
         // Setup @on event handlers - use element for host events, shadow root for delegated events
         setupEventHandlers(this, this);
         
+        // Setup @response handlers for elements
+        setupResponseHandlers(this, this);
+        
         // Setup @observe observers
         try {
           setupObservers(this, this);
@@ -247,6 +251,8 @@ export function applyElementFunctionality(constructor: any) {
       }
       // Cleanup @on event handlers
       cleanupEventHandlers(this);
+      // Cleanup @response handlers
+      cleanupResponseHandlers(this);
       // Cleanup @observe observers
       cleanupObservers(this);
     };
@@ -531,8 +537,9 @@ export function context() {
         });
         
         // Dispatch event and wait for response
-        // For controllers, use their element. For elements, dispatch on the host
-        let targetElement = this.element || this;
+        // Check if this is a controller using the symbol
+        const isController = this[IS_CONTROLLER_INSTANCE] === true;
+        let targetElement = isController && this.element ? this.element : this;
         
         // If element is null (e.g., controller was detached), can't get context
         if (!targetElement || !targetElement.dispatchEvent) {

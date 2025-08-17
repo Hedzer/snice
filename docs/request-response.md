@@ -1,19 +1,19 @@
-# Channels API Documentation
+# Request/Response API Documentation
 
-Channels provide bidirectional request/response communication between elements and controllers using async generators.
+Request/Response provides bidirectional request/response communication between elements and controllers using async generators.
 
 ## Table of Contents
 - [Basic Concept](#basic-concept)
-- [Channel Decorator](#channel-decorator)
-- [Element-Side Channels](#element-side-channels)
-- [Controller-Side Channels](#controller-side-channels)
-- [Channel Options](#channel-options)
+- [Request/Response Decorators](#requestresponse-decorators)
+- [Element-Side Requests](#element-side-requests)
+- [Controller-Side Responses](#controller-side-responses)
+- [Request/Response Options](#requestresponse-options)
 - [Error Handling](#error-handling)
 - [Advanced Patterns](#advanced-patterns)
 
 ## Basic Concept
 
-Channels enable a request/response pattern between elements and their controllers:
+Request/Response enables a request/response pattern between elements and their controllers:
 
 1. **Element** sends a request using `yield`
 2. **Controller** receives the request and returns a response
@@ -21,24 +21,29 @@ Channels enable a request/response pattern between elements and their controller
 
 This pattern is implemented using async generators and custom events.
 
-## Channel Decorator
+## Request/Response Decorators
 
 ### Signature
 
 ```typescript
-function channel(channelName: string, options?: ChannelOptions): MethodDecorator
+function request(requestName: string, options?: RequestOptions): MethodDecorator
+function response(responseName: string, options?: ResponseOptions): MethodDecorator
 
-interface ChannelOptions extends EventInit {
+interface RequestOptions extends EventInit {
+  timeout?: number;  // Timeout in milliseconds (default: 100ms)
+}
+
+interface ResponseOptions extends EventInit {
   timeout?: number;  // Timeout in milliseconds (default: 100ms)
 }
 ```
 
-## Element-Side Channels
+## Element-Side Requests
 
-Elements use async generators to open channels:
+Elements use async generators to make requests:
 
 ```typescript
-import { element, channel } from 'snice';
+import { element, request } from 'snice';
 
 @element('user-card')
 class UserCard extends HTMLElement {
@@ -53,7 +58,7 @@ class UserCard extends HTMLElement {
     `;
   }
   
-  @channel('fetch-user')
+  @request('fetch-user')
   async *fetchUserData() {
     // Yield sends the request, await waits for response
     const user = await (yield { userId: this.userId });
@@ -93,7 +98,7 @@ Elements can yield multiple times in a single channel:
 ```typescript
 @element('multi-request')
 class MultiRequest extends HTMLElement {
-  @channel('multi-data')
+  @request('multi-data')
   async *fetchMultipleData() {
     // First request
     const userData = await (yield { type: 'user', id: 1 });
@@ -117,12 +122,12 @@ class MultiRequest extends HTMLElement {
 }
 ```
 
-## Controller-Side Channels
+## Controller-Side Responses
 
-Controllers handle channel requests:
+Controllers handle requests and provide responses:
 
 ```typescript
-import { controller, channel, IController } from 'snice';
+import { controller, response, IController } from 'snice';
 
 @controller('user-controller')
 class UserController implements IController {
@@ -136,7 +141,7 @@ class UserController implements IController {
     console.log('User controller detached');
   }
   
-  @channel('fetch-user')
+  @response('fetch-user')
   async handleFetchUser(request: { userId: number }) {
     // Simulate API call
     const response = await fetch(`/api/users/${request.userId}`);
@@ -146,7 +151,7 @@ class UserController implements IController {
     return user;
   }
   
-  @channel('multi-data')
+  @response('multi-data')
   async handleMultiData(request: any) {
     switch (request.type) {
       case 'user':
@@ -183,7 +188,7 @@ class UserController implements IController {
 }
 ```
 
-## Channel Options
+## Request/Response Options
 
 ### Timeout Configuration
 
@@ -191,21 +196,21 @@ class UserController implements IController {
 @element('timeout-example')
 class TimeoutExample extends HTMLElement {
   // Quick timeout for fast operations
-  @channel('quick-data', { timeout: 50 })
+  @request('quick-data', { timeout: 50 })
   async *fetchQuickData() {
     const data = await (yield { quick: true });
     return data;
   }
   
   // Longer timeout for slow operations
-  @channel('slow-data', { timeout: 5000 })
+  @request('slow-data', { timeout: 5000 })
   async *fetchSlowData() {
     const data = await (yield { slow: true });
     return data;
   }
   
   // Custom event options
-  @channel('private-data', { 
+  @request('private-data', { 
     timeout: 1000,
     bubbles: false,  // Don't bubble
     cancelable: true  // Can be canceled
@@ -224,7 +229,7 @@ class TimeoutExample extends HTMLElement {
 ```typescript
 @element('timeout-handler')
 class TimeoutHandler extends HTMLElement {
-  @channel('data', { timeout: 100 })
+  @request('data', { timeout: 100 })
   async *fetchData() {
     try {
       const data = await (yield { request: 'data' });
@@ -266,7 +271,7 @@ class ErrorController implements IController {
   async attach(element: HTMLElement) {}
   async detach(element: HTMLElement) {}
   
-  @channel('risky-operation')
+  @response('risky-operation')
   async handleRiskyOperation(request: any) {
     try {
       // Validate request
@@ -300,13 +305,13 @@ class ErrorController implements IController {
 
 ## Advanced Patterns
 
-### Authentication Channel
+### Authentication Request/Response
 
 ```typescript
 // Element side
 @element('protected-content')
 class ProtectedContent extends HTMLElement {
-  @channel('authenticate')
+  @request('authenticate')
   async *authenticate() {
     // Send credentials
     const authResult = await (yield { 
@@ -324,7 +329,7 @@ class ProtectedContent extends HTMLElement {
     return authResult;
   }
   
-  @channel('fetch-protected')
+  @request('fetch-protected')
   async *fetchProtectedData() {
     const token = localStorage.getItem('token');
     
@@ -352,7 +357,7 @@ class AuthController implements IController {
   async attach(element: HTMLElement) {}
   async detach(element: HTMLElement) {}
   
-  @channel('authenticate')
+  @response('authenticate')
   async handleAuth(credentials: any) {
     // Validate credentials
     if (credentials.username === 'user@example.com' && 
@@ -376,7 +381,7 @@ class AuthController implements IController {
     };
   }
   
-  @channel('fetch-protected')
+  @response('fetch-protected')
   async handleFetchProtected(request: any) {
     // Validate token
     const user = this.tokens.get(request.token);
@@ -399,7 +404,7 @@ class AuthController implements IController {
 }
 ```
 
-### Streaming Data Channel
+### Streaming Data Request/Response
 
 ```typescript
 // Element side
@@ -407,7 +412,7 @@ class AuthController implements IController {
 class DataStreamer extends HTMLElement {
   private items: any[] = [];
   
-  @channel('stream-data')
+  @request('stream-data')
   async *streamData() {
     let hasMore = true;
     let page = 1;
@@ -468,7 +473,7 @@ class StreamController implements IController {
   async attach(element: HTMLElement) {}
   async detach(element: HTMLElement) {}
   
-  @channel('stream-data')
+  @response('stream-data')
   async handleStreamData(request: { page: number; pageSize: number }) {
     // Simulate delay
     await new Promise(resolve => setTimeout(resolve, 500));
@@ -490,7 +495,7 @@ class StreamController implements IController {
 }
 ```
 
-### Cached Channel Responses
+### Cached Request/Response
 
 ```typescript
 @controller('cached-controller')
@@ -502,7 +507,7 @@ class CachedController implements IController {
   async attach(element: HTMLElement) {}
   async detach(element: HTMLElement) {}
   
-  @channel('fetch-cached')
+  @response('fetch-cached')
   async handleFetchCached(request: { key: string; forceRefresh?: boolean }) {
     const cacheKey = request.key;
     const cached = this.cache.get(cacheKey);
@@ -549,7 +554,7 @@ class CachedController implements IController {
 
 ```typescript
 // Element that can both request and be updated
-import { element, property, query, channel, watch } from 'snice';
+import { element, property, query, request, watch } from 'snice';
 
 @element('live-data')
 class LiveData extends HTMLElement {
@@ -573,7 +578,7 @@ class LiveData extends HTMLElement {
     `;
   }
   
-  @channel('subscribe')
+  @request('subscribe')
   async *subscribe() {
     // Send subscription request
     const subscription = await (yield { 
@@ -591,7 +596,7 @@ class LiveData extends HTMLElement {
     return subscription;
   }
   
-  @channel('poll-updates')
+  @request('poll-updates')
   async *pollForUpdates() {
     const updates = await (yield { poll: true });
     
@@ -660,7 +665,7 @@ class SubscriptionController implements IController {
     this.subscribers.clear();
   }
   
-  @channel('subscribe')
+  @response('subscribe')
   handleSubscribe(request: any) {
     if (request.subscribe) {
       const id = Math.random().toString(36);
@@ -676,7 +681,7 @@ class SubscriptionController implements IController {
     return { success: false };
   }
   
-  @channel('poll-updates')
+  @response('poll-updates')
   handlePollUpdates(request: any) {
     if (!request.poll) return [];
     
@@ -689,12 +694,12 @@ class SubscriptionController implements IController {
 }
 ```
 
-## Channel Event Flow
+## Request/Response Event Flow
 
 Understanding the internal event flow:
 
-1. **Element yields request** → Creates CustomEvent with channel name
-2. **Event bubbles up** → Controller's channel handler catches it
+1. **Element yields request** → Creates CustomEvent with request name
+2. **Event bubbles up** → Controller's response handler catches it
 3. **Controller processes** → Runs handler method with request payload
 4. **Controller responds** → Resolves promise in event detail
 5. **Element receives** → Generator continues with response value
@@ -708,4 +713,4 @@ Understanding the internal event flow:
 5. **Caching**: Implement caching for expensive operations
 6. **Cleanup**: Stop polling/streaming when element disconnects
 7. **Type Safety**: Type your request and response objects
-8. **Documentation**: Document channel contracts clearly
+8. **Documentation**: Document request/response contracts clearly

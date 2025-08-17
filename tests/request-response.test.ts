@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { element, controller, channel, attachController, detachController } from '../src/index';
+import { element, controller, request, response, attachController, detachController } from '../src/index';
 
 // Helper to generate unique names to avoid state conflicts
 function uniqueName(prefix: string): string {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 }
 
-describe('@channel decorator', () => {
+describe('@request and @response decorators', () => {
   let container: HTMLElement;
 
   beforeEach(() => {
@@ -21,7 +21,7 @@ describe('@channel decorator', () => {
   it('should perform handshake and exchange data', async () => {
     const controllerName = uniqueName('basic-ctrl');
     const elementName = uniqueName('basic-elem');
-    const channelName = uniqueName('basic-chan');
+    const requestName = uniqueName('basic-req');
 
     @controller(controllerName)
     class BasicController {
@@ -35,7 +35,7 @@ describe('@channel decorator', () => {
         this.element = null;
       }
 
-      @channel(channelName)
+      @response(requestName)
       handleRequest(data: any) {
         return { 
           received: data.message, 
@@ -46,7 +46,7 @@ describe('@channel decorator', () => {
 
     @element(elementName)
     class BasicElement extends HTMLElement {
-      @channel(channelName)
+      @request(requestName)
       async *communicate() {
         const response = await (yield { message: 'Hello from element' });
         return response;
@@ -77,7 +77,7 @@ describe('@channel decorator', () => {
 
     @element(elementName)
     class OrphanElement extends HTMLElement {
-      @channel(channelName, { timeout: 50 })
+      @request(channelName, { timeout: 50 })
       async *communicate() {
         const response = await (yield { message: 'Hello?' });
         return response;
@@ -91,7 +91,7 @@ describe('@channel decorator', () => {
     const el = document.createElement(elementName) as any;
     container.appendChild(el);
     
-    await expect(el.communicate()).rejects.toThrow('Channel timeout');
+    await expect(el.communicate()).rejects.toThrow('Request timeout');
   });
 
   it('should handle async controller responses', async () => {
@@ -111,7 +111,7 @@ describe('@channel decorator', () => {
         this.element = null;
       }
 
-      @channel(channelName)
+      @response(channelName)
       async handleRequest(data: any) {
         await new Promise(resolve => setTimeout(resolve, 5));
         return { 
@@ -123,7 +123,7 @@ describe('@channel decorator', () => {
 
     @element(elementName)
     class AsyncElement extends HTMLElement {
-      @channel(channelName)
+      @request(channelName)
       async *communicate() {
         const response = await (yield { value: 21 });
         return response;
@@ -163,7 +163,7 @@ describe('@channel decorator', () => {
         this.element = null;
       }
 
-      @channel(channelName)
+      @response(channelName)
       handleRequest(data: any) {
         this.callCount++;
         return { 
@@ -176,7 +176,7 @@ describe('@channel decorator', () => {
 
     @element(elementName)
     class MultiElement extends HTMLElement {
-      @channel(channelName)
+      @request(channelName)
       async *multiStep() {
         const response = await (yield { step: 1, data: 'first' });
         return response;
@@ -216,7 +216,7 @@ describe('@channel decorator', () => {
         this.element = null;
       }
 
-      @channel(channelName)
+      @response(channelName)
       handleRequest() {
         requestCount++;
         return { count: requestCount };
@@ -225,7 +225,7 @@ describe('@channel decorator', () => {
 
     @element(elementName)
     class CleanupElement extends HTMLElement {
-      @channel(channelName)
+      @request(channelName)
       async *communicate() {
         const response = await (yield { test: true });
         return response;
@@ -248,7 +248,7 @@ describe('@channel decorator', () => {
     await detachController(el);
     await new Promise(resolve => setTimeout(resolve, 10));
     
-    await expect(el.communicate()).rejects.toThrow('Channel timeout');
+    await expect(el.communicate()).rejects.toThrow('Request timeout');
     expect(requestCount).toBe(1);
   });
 
@@ -269,7 +269,7 @@ describe('@channel decorator', () => {
         this.element = null;
       }
 
-      @channel(channelName)
+      @response(channelName)
       async handleSlowRequest() {
         // Never resolve to simulate timeout
         await new Promise(() => {});
@@ -278,7 +278,7 @@ describe('@channel decorator', () => {
 
     @element(elementName)
     class TimeoutElement extends HTMLElement {
-      @channel(channelName, { timeout: 50 })
+      @request(channelName, { timeout: 50 })
       async *requestWithTimeout() {
         const response = await (yield { request: 'data' });
         return response;
@@ -294,7 +294,7 @@ describe('@channel decorator', () => {
     await attachController(el, controllerName);
     await new Promise(resolve => setTimeout(resolve, 10));
 
-    await expect(el.requestWithTimeout()).rejects.toThrow('Channel timeout');
+    await expect(el.requestWithTimeout()).rejects.toThrow('Request timeout');
   });
 
 
@@ -316,7 +316,7 @@ describe('@channel decorator', () => {
         this.element = null;
       }
 
-      @channel(channelName)
+      @response(channelName)
       async handleRequest(data: any) {
         this.requestCount++;
         const count = this.requestCount;
@@ -327,7 +327,7 @@ describe('@channel decorator', () => {
 
     @element(elementName)
     class ConcurrentElement extends HTMLElement {
-      @channel(channelName)
+      @request(channelName)
       async *sendRequest(id: number) {
         const response = await (yield { id });
         return response;
@@ -374,7 +374,7 @@ describe('@channel decorator', () => {
         this.element = null;
       }
 
-      @channel(channelName)
+      @response(channelName)
       handleRequest() {
         return { handled: true };
       }
@@ -382,7 +382,7 @@ describe('@channel decorator', () => {
 
     @element(elementName)
     class NoYieldElement extends HTMLElement {
-      @channel(channelName)
+      @request(channelName)
       async *noYield() {
         const response = await (yield { completed: true, yielded: false });
         return response;
@@ -420,7 +420,7 @@ describe('@channel decorator', () => {
         this.element = null;
       }
 
-      @channel(channelName)
+      @response(channelName)
       handleRequest() {
         return { handled: true };
       }
@@ -428,7 +428,7 @@ describe('@channel decorator', () => {
 
     @element(elementName)
     class BubbleElement extends HTMLElement {
-      @channel(channelName, { bubbles: false })
+      @request(channelName, { bubbles: false })
       async *requestNoBubble() {
         const response = await (yield { test: 'no-bubble' });
         return response;
@@ -463,7 +463,7 @@ describe('@channel decorator', () => {
     // Exact pattern from README
     @element(elementName)
     class UserCard extends HTMLElement {
-      @channel(channelName)
+      @request(channelName)
       async *fetchUserData() {
         // Yield sends request, await waits for response
         const user = await (yield { id: 123 });
@@ -493,7 +493,7 @@ describe('@channel decorator', () => {
         this.element = null;
       }
       
-      @channel(channelName)
+      @response(channelName)
       handleGetData(request: any) {
         // console.log(request);  // { id: 123 }
         return { name: 'Alice' };
@@ -523,7 +523,7 @@ describe('@channel decorator', () => {
 
     @element(elementName)
     class NoYieldCard extends HTMLElement {
-      @channel(channelName)
+      @request(channelName)
       async *getData() {
         // Return without yielding - should just return the value
         return { direct: 'return' };
@@ -559,12 +559,12 @@ describe('@channel decorator', () => {
         this.element = null;
       }
       
-      @channel(channel1Name)
+      @response(channel1Name)
       handleStep1(request: any) {
         return { step: 1, data: request.input * 2 };
       }
       
-      @channel(channel2Name)
+      @response(channel2Name)
       handleStep2(request: any) {
         return { step: 2, data: request.input + 10 };
       }
@@ -572,13 +572,13 @@ describe('@channel decorator', () => {
     
     @element(elementName)
     class MultiElement extends HTMLElement {
-      @channel(channel1Name)
+      @request(channel1Name)
       async *step1(value: number) {
         const response = await (yield { input: value });
         return response;
       }
       
-      @channel(channel2Name)
+      @request(channel2Name)
       async *step2(value: number) {
         const response = await (yield { input: value });
         return response;
@@ -623,7 +623,7 @@ describe('@channel decorator', () => {
         this.element = null;
       }
 
-      @channel(channelName)
+      @response(channelName)
       handleShadowRequest(data: any) {
         return { 
           received: data.value,
@@ -636,7 +636,7 @@ describe('@channel decorator', () => {
     // Child element that sends channel requests from within shadow DOM
     @element(childElementName)
     class ShadowChild extends HTMLElement {
-      @channel(channelName)
+      @request(channelName)
       async *sendFromShadow(value: number) {
         const response = await (yield { value });
         return response;
@@ -698,7 +698,7 @@ describe('@channel decorator', () => {
         this.element = null;
       }
 
-      @channel(channelName)
+      @response(channelName)
       handleNestedRequest(data: any) {
         return { 
           depth: data.depth,
@@ -711,7 +711,7 @@ describe('@channel decorator', () => {
     // Deeply nested element
     @element(deepElementName)
     class NestedDeep extends HTMLElement {
-      @channel(channelName)
+      @request(channelName)
       async *sendFromDeep() {
         const response = await (yield { depth: 3, message: 'from deep' });
         return response;

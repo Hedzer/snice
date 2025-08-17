@@ -1,6 +1,6 @@
 import { setupEventHandlers, cleanupEventHandlers } from './events';
 import { setupObservers, cleanupObservers } from './observe';
-import { setupChannelHandlers, cleanupChannelHandlers } from './channel';
+import { setupResponseHandlers, cleanupResponseHandlers } from './request-response';
 import { IS_CONTROLLER_CLASS, IS_CONTROLLER_INSTANCE, CONTROLLER_KEY, CONTROLLER_NAME_KEY, CONTROLLER_ID, CONTROLLER_OPERATIONS, NATIVE_CONTROLLER, IS_ELEMENT_CLASS, ROUTER_CONTEXT } from './symbols';
 import { snice } from './global';
 
@@ -139,7 +139,7 @@ export async function attachController(element: HTMLElement, controllerName: str
   setupObservers(controllerInstance, element);
   
   // Setup @channel handlers for controller
-  setupChannelHandlers(controllerInstance, element);
+  setupResponseHandlers(controllerInstance, element);
   
   element.dispatchEvent(new CustomEvent('controller.attached', {
     detail: { name: controllerName, controller: controllerInstance }
@@ -177,7 +177,7 @@ export async function detachController(element: HTMLElement): Promise<void> {
   cleanupObservers(controllerInstance);
   
   // Cleanup @channel handlers for controller
-  cleanupChannelHandlers(controllerInstance);
+  cleanupResponseHandlers(controllerInstance);
   
   // Cleanup the controller scope
   if (scope) {
