@@ -1,3 +1,27 @@
+# [1.9.0](https://gitlab.com/Hedzer/snice/compare/v1.8.0...v1.9.0) (2025-08-17)
+
+
+### Bug Fixes
+
+* element property init bug ([4072d33](https://gitlab.com/Hedzer/snice/commit/4072d33e3220dc41d56145875ef36d2bce406038))
+* removed conditional renders ([02e844c](https://gitlab.com/Hedzer/snice/commit/02e844c9353f5476e435eab795325dfcec69de76))
+* rendering issues in select ([94511d9](https://gitlab.com/Hedzer/snice/commit/94511d93e6fe368c049ce54e21dd921ad55aab9b))
+
+
+### Features
+
+* added [@observable](https://gitlab.com/observable) ([6fc643d](https://gitlab.com/Hedzer/snice/commit/6fc643d84e190d82663d76d81a1acc040a8c9fc7))
+* added accordion component ([bc32c2d](https://gitlab.com/Hedzer/snice/commit/bc32c2d60907cb89a8eed9376b420be30befe26b))
+* added avatar, badge, chip, divider, skeleton ([9c8a8d6](https://gitlab.com/Hedzer/snice/commit/9c8a8d6aa1f45f81272c5963382fa0c930b9599d))
+* added checkbox, inputs, radio, select, switch components ([fef094a](https://gitlab.com/Hedzer/snice/commit/fef094a90fa55e6c402397bd9fe580ed67bc2e12))
+* added debouncing & throttling for events ([2106ac7](https://gitlab.com/Hedzer/snice/commit/2106ac7d60af8da901908595d3a52cf0101c3a36))
+* added event keyboard filters ([ecc1b78](https://gitlab.com/Hedzer/snice/commit/ecc1b786762056ffd3d78e4a0e8681a6c3a8998f))
+* added select option icons ([ea656f9](https://gitlab.com/Hedzer/snice/commit/ea656f91cd1597a2b50d7a26a45ce491ff118efd))
+* added toast component ([a2148e8](https://gitlab.com/Hedzer/snice/commit/a2148e85fc8f192f6d0810acb94ce11e7c0b5afb))
+* added tooltips ([d1c317e](https://gitlab.com/Hedzer/snice/commit/d1c317eb9ea1d4ede6573bcfc8c5aa3b4601acd6))
+* progress component ([30ec9e9](https://gitlab.com/Hedzer/snice/commit/30ec9e923b6e4e67225af45c7b3aeea5cc5772a8))
+* same handler multiple events for [@on](https://gitlab.com/on) ([11c46f9](https://gitlab.com/Hedzer/snice/commit/11c46f955be6b327a564f68a1b4ddc0642d781d2))
+
 # [1.8.0](https://gitlab.com/Hedzer/snice/compare/v1.7.0...v1.8.0) (2025-08-15)
 
 
