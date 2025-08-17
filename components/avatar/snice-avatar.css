@@ -1,0 +1,131 @@
+:host {
+  display: inline-block;
+  --avatar-size: 40px;
+  --avatar-bg: #6b7280;
+  --avatar-color: #ffffff;
+}
+
+.avatar {
+  position: relative;
+  width: var(--avatar-size);
+  height: var(--avatar-size);
+  overflow: hidden;
+  background: var(--avatar-bg);
+  color: var(--avatar-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  user-select: none;
+}
+
+/* Shapes */
+:host([shape="circle"]) .avatar {
+  border-radius: 50%;
+}
+
+:host([shape="square"]) .avatar {
+  border-radius: 0;
+}
+
+:host([shape="rounded"]) .avatar {
+  border-radius: 8px;
+}
+
+/* Sizes */
+:host([size="xs"]) {
+  --avatar-size: 24px;
+  font-size: 10px;
+}
+
+:host([size="small"]) {
+  --avatar-size: 32px;
+  font-size: 12px;
+}
+
+:host([size="medium"]) {
+  --avatar-size: 40px;
+  font-size: 14px;
+}
+
+:host([size="large"]) {
+  --avatar-size: 48px;
+  font-size: 16px;
+}
+
+:host([size="xl"]) {
+  --avatar-size: 64px;
+  font-size: 20px;
+}
+
+:host([size="xxl"]) {
+  --avatar-size: 96px;
+  font-size: 32px;
+}
+
+/* Image */
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.avatar-image--error {
+  display: none;
+}
+
+/* Fallback */
+.avatar-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease;
+}
+
+.avatar-fallback--visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.avatar-icon {
+  width: 60%;
+  height: 60%;
+  opacity: 0.9;
+}
+
+/* Avatar color classes for fallback backgrounds */
+.avatar--red { background: rgb(var(--avatar-color-red, 239 68 68)); }
+.avatar--orange { background: rgb(var(--avatar-color-orange, 251 146 60)); }
+.avatar--yellow { background: rgb(var(--avatar-color-yellow, 234 179 8)); }
+.avatar--lime { background: rgb(var(--avatar-color-lime, 163 230 53)); }
+.avatar--green { background: rgb(var(--avatar-color-green, 34 197 94)); }
+.avatar--teal { background: rgb(var(--avatar-color-teal, 20 184 166)); }
+.avatar--cyan { background: rgb(var(--avatar-color-cyan, 6 182 212)); }
+.avatar--sky { background: rgb(var(--avatar-color-sky, 14 165 233)); }
+.avatar--blue { background: rgb(var(--avatar-color-blue, 59 130 246)); }
+.avatar--indigo { background: rgb(var(--avatar-color-indigo, 99 102 241)); }
+.avatar--violet { background: rgb(var(--avatar-color-violet, 139 92 246)); }
+.avatar--purple { background: rgb(var(--avatar-color-purple, 168 85 247)); }
+.avatar--fuchsia { background: rgb(var(--avatar-color-fuchsia, 217 70 239)); }
+.avatar--pink { background: rgb(var(--avatar-color-pink, 236 72 153)); }
+.avatar--rose { background: rgb(var(--avatar-color-rose, 244 63 94)); }
+
+/* Group avatar support */
+:host(.avatar-group-item) {
+  margin-left: -8px;
+  border: 2px solid white;
+  border-radius: 50%;
+}
+
+:host(.avatar-group-item:first-child) {
+  margin-left: 0;
+}
+
+:host(.avatar-group-item) .avatar {
+  border: 2px solid white;
+}
