@@ -16,13 +16,13 @@ export class SniceDivider extends HTMLElement implements SniceDividerElement {
   @property({ reflect: true })
   align: DividerAlign = 'center';
 
-  @property()
+  @property({ reflect: true })
   text = '';
 
-  @property({ attribute: 'text-background' })
+  @property({ attribute: 'text-background', reflect: true })
   textBackground = '';
 
-  @property()
+  @property({ reflect: true })
   color = '';
 
   @property({ type: Boolean, reflect: true })

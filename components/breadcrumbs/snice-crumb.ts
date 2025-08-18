@@ -3,16 +3,16 @@ import type { SniceCrumbElement } from './snice-breadcrumbs.types';
 
 @element('snice-crumb')
 export class SniceCrumb extends HTMLElement implements SniceCrumbElement {
-  @property()
+  @property({ reflect: true })
   label = '';
 
-  @property()
+  @property({ reflect: true })
   href = '';
 
-  @property()
+  @property({ reflect: true })
   icon = '';
 
-  @property({ attribute: 'icon-image' })
+  @property({ attribute: 'icon-image', reflect: true })
   iconImage = '';
 
   @property({ type: Boolean, reflect: true })

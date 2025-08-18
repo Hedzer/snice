@@ -4,7 +4,7 @@ import type { TooltipPosition, TooltipTrigger, SniceTooltipElement } from './sni
 
 @element('snice-tooltip')
 export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
-  @property()
+  @property({ reflect: true })
   content: string = '';
 
   @property({ reflect: true })
@@ -13,25 +13,25 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
   @property({ reflect: true })
   trigger: TooltipTrigger = 'hover';
 
-  @property({ type: Number })
+  @property({ type: Number, reflect: true })
   delay: number = 0;
 
-  @property({ type: Number, attribute: 'hide-delay' })
+  @property({ type: Number, attribute: 'hide-delay', reflect: true })
   hideDelay: number = 0;
 
-  @property({ type: Number })
+  @property({ type: Number, reflect: true })
   offset: number = 12;
 
-  @property({ type: Boolean })
+  @property({ type: Boolean, reflect: true })
   arrow: boolean = true;
 
   @property({ type: Boolean, reflect: true })
   open: boolean = false;
 
-  @property({ type: Number, attribute: 'max-width' })
+  @property({ type: Number, attribute: 'max-width', reflect: true })
   maxWidth: number = 250;
 
-  @property({ type: Number, attribute: 'z-index' })
+  @property({ type: Number, attribute: 'z-index', reflect: true })
   zIndex: number = 10000;
 
   @query('.tooltip')

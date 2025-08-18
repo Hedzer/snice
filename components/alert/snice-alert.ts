@@ -10,13 +10,13 @@ export class SniceAlert extends HTMLElement implements SniceAlertElement {
   @property({ reflect: true })
   size: AlertSize = 'medium';
 
-  @property()
+  @property({ reflect: true })
   title = '';
 
   @property({ type: Boolean, reflect: true })
   dismissible = false;
 
-  @property()
+  @property({ reflect: true })
   icon = '';
 
   @query('.alert')

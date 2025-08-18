@@ -7,19 +7,19 @@ export class SniceSkeleton extends HTMLElement implements SniceSkeletonElement {
   @property({ reflect: true })
   variant: SkeletonVariant = 'text';
 
-  @property()
+  @property({ reflect: true })
   width = '';
 
-  @property()
+  @property({ reflect: true })
   height = '';
 
   @property({ reflect: true })
   animation: SkeletonAnimation = 'wave';
 
-  @property({ type: Number })
+  @property({ type: Number, reflect: true })
   count = 1;
 
-  @property()
+  @property({ reflect: true })
   spacing = '8px';
 
   html() {

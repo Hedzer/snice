@@ -5,7 +5,7 @@ import type { SniceCrumbElement } from './snice-crumb.types';
 
 @element('snice-breadcrumbs')
 export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsElement {
-  @property({ type: Array })
+  @property({ type: Array, reflect: true })
   items: BreadcrumbItem[] = [];
 
   @property({ reflect: true })
@@ -14,7 +14,7 @@ export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsEle
   @property({ reflect: true })
   size: BreadcrumbSize = 'medium';
 
-  @property({ type: Number })
+  @property({ type: Number, reflect: true })
   maxItems = 0;
 
   @query('.breadcrumb')

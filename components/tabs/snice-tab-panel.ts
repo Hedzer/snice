@@ -4,7 +4,7 @@ import type { SniceTabPanelElement } from './snice-tabs.types';
 
 @element('snice-tab-panel')
 export class SniceTabPanel extends HTMLElement implements SniceTabPanelElement {
-  @property()
+  @property({ reflect: true })
   name = '';
 
   @property({ reflect: true })
@@ -16,7 +16,7 @@ export class SniceTabPanel extends HTMLElement implements SniceTabPanelElement {
   @property({ reflect: true })
   transitioning: 'in' | 'out' | '' = '';
 
-  @property({ type: Number })
+  @property({ type: Number, reflect: true })
   transitionDuration = 300;
 
   @watch('transitionIn')

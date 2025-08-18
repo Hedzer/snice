@@ -4,7 +4,7 @@ import type { ChipVariant, ChipSize, SniceChipElement } from './snice-chip.types
 
 @element('snice-chip')
 export class SniceChip extends HTMLElement implements SniceChipElement {
-  @property()
+  @property({ reflect: true })
   label = '';
 
   @property({ reflect: true })
@@ -22,10 +22,10 @@ export class SniceChip extends HTMLElement implements SniceChipElement {
   @property({ type: Boolean, reflect: true })
   disabled = false;
 
-  @property()
+  @property({ reflect: true })
   icon = '';
 
-  @property()
+  @property({ reflect: true })
   avatar = '';
 
   @query('.chip')

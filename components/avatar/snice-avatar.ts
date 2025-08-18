@@ -4,13 +4,13 @@ import type { AvatarSize, AvatarShape, SniceAvatarElement } from './snice-avatar
 
 @element('snice-avatar')
 export class SniceAvatar extends HTMLElement implements SniceAvatarElement {
-  @property()
+  @property({ reflect: true })
   src = '';
 
-  @property()
+  @property({ reflect: true })
   alt = '';
 
-  @property()
+  @property({ reflect: true })
   name = '';
 
   @property({ reflect: true })
@@ -19,10 +19,10 @@ export class SniceAvatar extends HTMLElement implements SniceAvatarElement {
   @property({ reflect: true })
   shape: AvatarShape = 'circle';
 
-  @property({ attribute: 'fallback-color' })
+  @property({ attribute: 'fallback-color', reflect: true })
   fallbackColor = '#ffffff';
 
-  @property({ attribute: 'fallback-background' })
+  @property({ attribute: 'fallback-background', reflect: true })
   fallbackBackground = '';
 
   @query('.avatar-image')

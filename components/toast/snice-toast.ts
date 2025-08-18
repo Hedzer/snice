@@ -6,13 +6,13 @@ export class SniceToast extends HTMLElement implements SniceToastElement {
   @property({ reflect: true })
   type: ToastType = 'info';
 
-  @property()
+  @property({ reflect: true })
   message: string = '';
 
-  @property({ type: Boolean })
+  @property({ type: Boolean, reflect: true })
   closable: boolean = true;
 
-  @property({ type: Boolean })
+  @property({ type: Boolean, reflect: true })
   icon: boolean = true;
 
   @query('.toast')

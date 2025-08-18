@@ -4,13 +4,13 @@ import type { BadgeVariant, BadgePosition, BadgeSize, SniceBadgeElement } from '
 
 @element('snice-badge')
 export class SniceBadge extends HTMLElement implements SniceBadgeElement {
-  @property()
+  @property({ reflect: true })
   content = '';
 
-  @property({ type: Number })
+  @property({ type: Number, reflect: true })
   count = 0;
 
-  @property({ type: Number })
+  @property({ type: Number, reflect: true })
   max = 99;
 
   @property({ type: Boolean, reflect: true })
@@ -31,7 +31,7 @@ export class SniceBadge extends HTMLElement implements SniceBadgeElement {
   @property({ type: Boolean, reflect: true })
   pulse = false;
 
-  @property({ type: Number })
+  @property({ type: Number, reflect: true })
   offset = 0;
 
   @query('.badge')
