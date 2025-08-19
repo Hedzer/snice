@@ -1,4 +1,4 @@
-import { element, property, watch, query, ready, on } from '../../src/index';
+import { element, property, watch, query, ready, on, part } from '../../src/index';
 import css from './snice-avatar.css?inline';
 import type { AvatarSize, AvatarShape, SniceAvatarElement } from './snice-avatar.types';
 
@@ -34,21 +34,35 @@ export class SniceAvatar extends HTMLElement implements SniceAvatarElement {
   private imageError = false;
 
   html() {
-    const initials = this.getInitials(this.name);
     const colorClass = this.fallbackBackground ? '' : this.getColorClass(this.name);
     const bgStyle = this.fallbackBackground ? `style="--avatar-bg: ${this.fallbackBackground}; --avatar-color: ${this.fallbackColor}"` : '';
     
     return /*html*/`
       <div class="avatar ${colorClass}" ${bgStyle}>
-        ${this.src ? /*html*/`
-          <img class="avatar-image ${this.imageError ? 'avatar-image--error' : ''}" 
-               src="${this.src}" 
-               alt="${this.alt || this.name}"
-               loading="lazy">
-        ` : ''}
-        <div class="avatar-fallback ${!this.src || this.imageError ? 'avatar-fallback--visible' : ''}">
-          ${initials || this.renderIcon()}
-        </div>
+        <div part="image-section"></div>
+        <div part="fallback-section"></div>
+      </div>
+    `;
+  }
+
+  @watch('src')
+  @part('image-section')
+  renderImageSection() {
+    return this.src ? /*html*/`
+      <img class="avatar-image ${this.imageError ? 'avatar-image--error' : ''}" 
+           src="${this.src}" 
+           alt="${this.alt || this.name}"
+           loading="lazy">
+    ` : '';
+  }
+
+  @watch('name')
+  @part('fallback-section')
+  renderFallbackSection() {
+    const initials = this.getInitials(this.name);
+    return /*html*/`
+      <div class="avatar-fallback ${!this.src || this.imageError ? 'avatar-fallback--visible' : ''}">
+        ${initials || this.renderIcon()}
       </div>
     `;
   }
@@ -72,39 +86,17 @@ export class SniceAvatar extends HTMLElement implements SniceAvatarElement {
   @on('load', '.avatar-image')
   handleImageLoad() {
     this.imageError = false;
-    if (this.imageElement) {
-      this.imageElement.classList.remove('avatar-image--error');
-    }
-    if (this.fallbackElement) {
-      this.fallbackElement.classList.remove('avatar-fallback--visible');
-    }
+    this.renderImageSection();
+    this.renderFallbackSection();
   }
 
   @on('error', '.avatar-image')
   handleImageError() {
     this.imageError = true;
-    if (this.imageElement) {
-      this.imageElement.classList.add('avatar-image--error');
-    }
-    if (this.fallbackElement) {
-      this.fallbackElement.classList.add('avatar-fallback--visible');
-    }
+    this.renderImageSection();
+    this.renderFallbackSection();
   }
 
-  @watch('src')
-  updateSrc() {
-    if (this.imageElement && this.src) {
-      this.imageError = false;
-      this.imageElement.src = this.src;
-      this.imageElement.classList.remove('avatar-image--error');
-    }
-  }
-
-  @watch('name')
-  updateName() {
-    // Re-render to update color class and initials
-    this.render();
-  }
 
   getInitials(name: string): string {
     if (!name) return '';
@@ -132,22 +124,6 @@ export class SniceAvatar extends HTMLElement implements SniceAvatarElement {
     
     const colorIndex = Math.abs(hash) % colors.length;
     return `avatar--${colors[colorIndex]}`;
-  }
-
-  private render() {
-    const shadow = this.shadowRoot;
-    if (shadow) {
-      shadow.innerHTML = '';
-      if (this.css) {
-        const style = document.createElement('style');
-        style.textContent = this.css();
-        shadow.appendChild(style);
-      }
-      const template = document.createElement('template');
-      template.innerHTML = this.html();
-      shadow.appendChild(template.content.cloneNode(true));
-      this.setupImageHandlers();
-    }
   }
 
   private renderIcon(): string {
