@@ -974,6 +974,385 @@ class MultiLifecycle extends HTMLElement {
 }
 ```
 
+## Parts - Selective Re-rendering
+
+The `@part` decorator enables selective re-rendering of specific template sections, providing fine-grained control over DOM updates for performance optimization.
+
+### Basic Usage
+
+```typescript
+import { element, part, property } from 'snice';
+
+@element('user-dashboard')
+class UserDashboard extends HTMLElement {
+  @property()
+  user = { name: 'Loading...', stats: { views: 0 } };
+  
+  notifications = [];
+
+  html() {
+    return `
+      <header part="user-info"></header>
+      <section part="stats"></section>
+      <aside part="notifications"></aside>
+    `;
+  }
+
+  @part('user-info')
+  renderUserInfo() {
+    return `
+      <h1>${this.user.name}</h1>
+      <button onclick="this.refreshUser()">Refresh</button>
+    `;
+  }
+
+  @part('stats')
+  renderStats() {
+    return `
+      <div class="stats">
+        Views: ${this.user.stats.views}
+      </div>
+    `;
+  }
+
+  @part('notifications')
+  renderNotifications() {
+    return `
+      <h3>Notifications (${this.notifications.length})</h3>
+      ${this.notifications.map(n => `<div>${n}</div>`).join('')}
+    `;
+  }
+
+  // Update specific parts independently
+  updateUserName(newName: string) {
+    this.user.name = newName;
+    this.renderUserInfo(); // Only re-renders the header part
+  }
+
+  addNotification(notification: string) {
+    this.notifications.unshift(notification);
+    this.renderNotifications(); // Only re-renders the notifications part
+  }
+}
+```
+
+### Part Options - Performance Control
+
+Control render frequency with throttle and debounce options:
+
+```typescript
+@element('performance-optimized')
+class PerformanceOptimized extends HTMLElement {
+  searchResults = [];
+  liveStats = { count: 0 };
+
+  html() {
+    return `
+      <div part="search-results"></div>
+      <div part="live-stats"></div>
+    `;
+  }
+
+  // Debounce: Wait 200ms after search stops before rendering
+  @part('search-results', { debounce: 200 })
+  renderSearchResults() {
+    return this.searchResults.map(result => 
+      `<div class="result">${result.title}</div>`
+    ).join('');
+  }
+
+  // Throttle: Update stats at most once per 100ms
+  @part('live-stats', { throttle: 100 })
+  renderLiveStats() {
+    return `<span>Live count: ${this.liveStats.count}</span>`;
+  }
+
+  // Methods automatically trigger part re-renders when called
+  onSearchInput(query: string) {
+    this.searchResults = this.performSearch(query);
+    this.renderSearchResults(); // Debounced - waits for input to stop
+  }
+
+  onLiveUpdate(newCount: number) {
+    this.liveStats.count = newCount;
+    this.renderLiveStats(); // Throttled - max once per 100ms
+  }
+}
+```
+
+### Part Options Reference
+
+```typescript
+interface PartOptions {
+  throttle?: number;  // Limit renders to once per N milliseconds
+  debounce?: number;  // Delay renders until N milliseconds after last call
+}
+```
+
+- **Throttle**: Limits render frequency. If you call the method multiple times rapidly, it will only render at most once per throttle period.
+- **Debounce**: Delays rendering until calls stop. Each new call resets the timer.
+- **Precedence**: If both are specified, debounce takes precedence over throttle.
+- **Validation**: Non-positive values are ignored (render immediately).
+
+### Async Parts
+
+Part methods can be async for data fetching:
+
+```typescript
+@element('async-parts')
+class AsyncParts extends HTMLElement {
+  userId = '';
+
+  html() {
+    return `
+      <div part="user-profile"></div>
+      <div part="user-posts"></div>
+    `;
+  }
+
+  @part('user-profile')
+  async renderUserProfile() {
+    if (!this.userId) return '<p>No user selected</p>';
+    
+    const user = await fetch(`/api/users/${this.userId}`).then(r => r.json());
+    return `
+      <div class="profile">
+        <img src="${user.avatar}" alt="${user.name}">
+        <h2>${user.name}</h2>
+        <p>${user.bio}</p>
+      </div>
+    `;
+  }
+
+  @part('user-posts', { debounce: 300 })
+  async renderUserPosts() {
+    if (!this.userId) return '<p>No posts</p>';
+    
+    const posts = await fetch(`/api/users/${this.userId}/posts`).then(r => r.json());
+    return posts.map(post => `
+      <article>
+        <h3>${post.title}</h3>
+        <p>${post.excerpt}</p>
+      </article>
+    `).join('');
+  }
+
+  // Calling these methods triggers async rendering
+  async loadUser(userId: string) {
+    this.userId = userId;
+    await this.renderUserProfile();
+    await this.renderUserPosts();
+  }
+}
+```
+
+### How Parts Work
+
+1. **Initial Render**: All parts are automatically rendered during element connection
+2. **Part Elements**: DOM elements with `part="partName"` attributes are targeted for updates
+3. **Method Wrapping**: `@part` decorated methods are wrapped to automatically update their corresponding DOM elements when called
+4. **Performance**: Only the specific part's DOM is updated, not the entire component
+5. **Error Handling**: Parts handle missing elements gracefully with console warnings
+
+### Semi-Reactive Rendering with @watch
+
+Combine `@part` with `@watch` for semi-reactive rendering where parts automatically update when their dependent properties change:
+
+```typescript
+import { element, part, property, watch } from 'snice';
+
+@element('reactive-dashboard')
+class ReactiveDashboard extends HTMLElement {
+  @property()
+  userName = 'Anonymous';
+  
+  @property({ type: Number })
+  score = 0;
+  
+  @property()
+  theme = 'light';
+  
+  notifications = [];
+
+  html() {
+    return `
+      <header part="user-section"></header>
+      <main part="score-display"></main>
+      <aside part="notifications"></aside>
+      <div part="theme-indicator"></div>
+    `;
+  }
+
+  // Define parts that render specific data
+  @part('user-section')
+  renderUserSection() {
+    return `
+      <h1>Welcome, ${this.userName}!</h1>
+      <button onclick="this.refreshProfile()">Refresh</button>
+    `;
+  }
+
+  @part('score-display', { throttle: 100 })
+  renderScoreDisplay() {
+    return `
+      <div class="score">
+        <span class="label">Score:</span>
+        <span class="value">${this.score}</span>
+        <div class="progress-bar" style="width: ${Math.min(this.score, 100)}%"></div>
+      </div>
+    `;
+  }
+
+  @part('notifications', { debounce: 200 })
+  renderNotifications() {
+    return `
+      <h3>Notifications (${this.notifications.length})</h3>
+      ${this.notifications.slice(0, 5).map(n => `<div class="notification">${n}</div>`).join('')}
+    `;
+  }
+
+  @part('theme-indicator')
+  renderThemeIndicator() {
+    return `<div class="theme-badge ${this.theme}">${this.theme.toUpperCase()}</div>`;
+  }
+
+  // Watch properties and automatically re-render corresponding parts
+  @watch('userName')
+  onUserNameChange() {
+    this.renderUserSection(); // Automatically updates header when name changes
+  }
+
+  @watch('score')
+  onScoreChange() {
+    this.renderScoreDisplay(); // Throttled updates for frequent score changes
+  }
+
+  @watch('theme')
+  onThemeChange() {
+    this.renderThemeIndicator(); // Immediate theme updates
+  }
+
+  // Business logic methods that modify data
+  updateUserName(newName: string) {
+    this.userName = newName; // Triggers @watch -> renderUserSection()
+  }
+
+  incrementScore(points: number) {
+    this.score += points; // Triggers @watch -> renderScoreDisplay() (throttled)
+  }
+
+  addNotification(message: string) {
+    this.notifications.unshift(message);
+    this.renderNotifications(); // Manual call (not property-based)
+  }
+
+  switchTheme() {
+    this.theme = this.theme === 'light' ? 'dark' : 'light'; // Triggers @watch -> renderThemeIndicator()
+  }
+}
+```
+
+**Benefits of @part + @watch:**
+
+- **Semi-Reactive**: Components automatically update when properties change
+- **Selective**: Only affected parts re-render, not the entire component
+- **Performance**: Combine with throttle/debounce for optimal rendering
+- **Explicit**: You control which properties trigger which parts
+- **Granular**: Different parts can have different performance characteristics
+
+**Usage Patterns:**
+
+```typescript
+// 1. One-to-one: Property directly controls a part
+@property({ attribute: 'user-name', reflect: true }) 
+userName = '';
+
+@part('user-display') 
+renderUserDisplay() { return `<h1>${this.userName}</h1>`; }
+
+@watch('userName') 
+onUserNameChange() { this.renderUserDisplay(); }
+
+// Usage: <my-element user-name="John"></my-element>
+
+// 2. One-to-many: Property affects multiple parts
+@property()
+theme = 'light';
+
+@watch('theme') 
+onThemeChange() {
+  this.renderHeader();  // Update header styling
+  this.renderContent(); // Update content styling
+  this.renderFooter();  // Update footer styling
+}
+
+// 3. Many-to-one: Multiple properties affect one part
+@property({ attribute: 'first-name', reflect: true }) 
+firstName = '';
+
+@property({ attribute: 'last-name', reflect: true }) 
+lastName = '';
+
+@part('full-name') 
+renderFullName() { return `${this.firstName} ${this.lastName}`; }
+
+@watch('firstName', 'lastName') 
+onNameChange() { this.renderFullName(); }
+
+// Usage: <my-element first-name="John" last-name="Doe"></my-element>
+
+// 4. Conditional rendering based on multiple properties
+@property({ attribute: 'is-logged-in', type: Boolean, reflect: true }) 
+isLoggedIn = false;
+
+@property() 
+user = null;
+
+@part('user-area') 
+renderUserArea() {
+  return this.isLoggedIn && this.user 
+    ? `<div>Welcome ${this.user.name}</div>`
+    : `<div>Please log in</div>`;
+}
+
+@watch('isLoggedIn', 'user') 
+onUserStateChange() { this.renderUserArea(); }
+
+// Usage: <my-element is-logged-in></my-element>
+```
+
+### When to Use Parts
+
+Parts are ideal for:
+
+- **Complex components** with multiple independent sections
+- **High-frequency updates** to specific areas (live data, animations)
+- **Performance optimization** where full re-renders are expensive
+- **Dynamic content** that changes at different rates
+- **Dashboard-style** components with multiple data sources
+
+### Best Practices
+
+1. **Keep parts focused**: Each part should represent a logical, independent section
+2. **Use meaningful names**: Part names should clearly describe what they render
+3. **Consider performance**: Use throttle/debounce for high-frequency updates
+4. **Handle errors**: Parts should gracefully handle missing or invalid data
+5. **Avoid deep nesting**: Keep part templates relatively flat for better performance
+6. **Test updates**: Verify that calling part methods actually updates the UI
+
+```typescript
+// Good: Focused, independent parts
+@part('user-avatar')
+renderAvatar() { /* ... */ }
+
+@part('notification-count', { throttle: 500 })
+renderNotificationCount() { /* ... */ }
+
+// Avoid: Parts that depend heavily on each other
+@part('everything')
+renderEverything() { /* renders entire complex UI */ }
+```
+
 ## Best Practices
 
 1. **Keep elements focused**: Elements should handle presentation logic only
