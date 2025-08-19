@@ -2,7 +2,7 @@ import { attachController, detachController } from './controller';
 import { setupEventHandlers, cleanupEventHandlers } from './events';
 import { setupObservers, cleanupObservers } from './observe';
 import { setupResponseHandlers, cleanupResponseHandlers } from './request-response';
-import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PROPERTY_WATCHERS, EXPLICITLY_SET_PROPERTIES, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS } from './symbols';
+import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PROPERTY_WATCHERS, EXPLICITLY_SET_PROPERTIES, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, PARTS, PART_TIMERS } from './symbols';
 
 /**
  * Applies core element functionality to a constructor
@@ -77,6 +77,7 @@ export function applyElementFunctionality(constructor: any) {
       enumerable: true,
       configurable: true
     });
+    
     
     constructor.prototype.connectedCallback = async function() {
       // If ready promise was already created (controller attached before connected), use existing resolve
@@ -183,6 +184,25 @@ export function applyElementFunctionality(constructor: any) {
         // Set shadow DOM content
         if (shadowContent) {
           this.shadowRoot.innerHTML = shadowContent;
+        }
+        
+        // Render all @part methods into their corresponding elements
+        const parts = constructor[PARTS];
+        if (parts && this.shadowRoot) {
+          for (const [partName, partHandler] of parts) {
+            try {
+              const partElement = this.shadowRoot.querySelector(`[part="${partName}"]`);
+              if (partElement) {
+                const partResult = partHandler.method.call(this);
+                const partContent = partResult instanceof Promise ? await partResult : partResult;
+                if (partContent !== undefined) {
+                  partElement.innerHTML = partContent;
+                }
+              }
+            } catch (error) {
+              console.error(`Error rendering @part('${partName}') in ${this.tagName}:`, error);
+            }
+          }
         }
         
         // NOW call the original user-defined connectedCallback after shadow DOM is set up
@@ -310,9 +330,6 @@ export function element(tagName: string) {
     customElements.define(tagName, constructor);
   };
 }
-
-// Alias for backwards compatibility
-export const customElement = element;
 
 export function property(options?: PropertyOptions) {
   return function (target: any, propertyKey: string) {
@@ -490,6 +507,20 @@ export interface PropertyConverter {
   toAttribute?(value: any, type?: any): string | null;
 }
 
+/**
+ * Interface for Snice elements with all the framework-provided properties and methods
+ */
+export interface SniceElement extends HTMLElement {
+  ready: Promise<void>;
+  html?(): string | Promise<string>;
+  css?(): string | string[] | Promise<string | string[]>;
+}
+
+export interface PartOptions {
+  throttle?: number; // Throttle in milliseconds - limits calls to once per interval
+  debounce?: number; // Debounce in milliseconds - delays execution until after calls stop
+}
+
 export function watch(...propertyNames: string[]) {
   return function (target: any, methodName: string, descriptor: PropertyDescriptor) {
     const constructor = target.constructor;
@@ -607,6 +638,105 @@ export function dispose() {
       methodName,
       method: descriptor.value
     });
+    
+    return descriptor;
+  };
+}
+
+/**
+ * Decorator for methods that render specific parts of the template
+ * Parts are identified by the 'part' attribute in the HTML template
+ * When the decorated method is called, it automatically re-renders its part
+ */
+export function part(partName: string, options: PartOptions = {}) {
+  return function (target: any, methodName: string, descriptor: PropertyDescriptor) {
+    const constructor = target.constructor;
+    const originalMethod = descriptor.value;
+    
+    if (!constructor[PARTS]) {
+      constructor[PARTS] = new Map();
+    }
+    
+    constructor[PARTS].set(partName, {
+      methodName,
+      method: originalMethod
+    });
+    
+    // Wrap the original method to automatically re-render the part when called
+    descriptor.value = async function (this: HTMLElement, ...args: any[]) {
+      // Initialize timers storage if not present
+      if (!(this as any)[PART_TIMERS]) {
+        (this as any)[PART_TIMERS] = new Map();
+      }
+      
+      // Get or create timers for this specific part
+      if (!(this as any)[PART_TIMERS].has(partName)) {
+        (this as any)[PART_TIMERS].set(partName, {
+          throttleTimer: null,
+          debounceTimer: null,
+          lastThrottleCall: 0
+        });
+      }
+      
+      const timers = (this as any)[PART_TIMERS].get(partName);
+      
+      // Create the render function
+      const renderPart = async () => {
+        // Call the original method to get the content
+        const result = originalMethod.apply(this, args);
+        const content = result instanceof Promise ? await result : result;
+        
+        // Re-render the part if shadow DOM exists and content is defined
+        if (this.shadowRoot && content !== undefined) {
+          const partElement = this.shadowRoot.querySelector(`[part="${partName}"]`);
+          if (partElement) {
+            partElement.innerHTML = content;
+          }
+        }
+        
+        return content;
+      };
+      
+      // Handle debounce (only if positive value)
+      if (options.debounce !== undefined && options.debounce > 0) {
+        if (timers.debounceTimer) {
+          clearTimeout(timers.debounceTimer);
+        }
+        
+        return new Promise((resolve) => {
+          timers.debounceTimer = setTimeout(async () => {
+            const result = await renderPart();
+            resolve(result);
+          }, options.debounce);
+        });
+      }
+      
+      // Handle throttle (only if positive value)
+      if (options.throttle !== undefined && options.throttle > 0) {
+        const now = Date.now();
+        
+        if (timers.lastThrottleCall === 0 || now - timers.lastThrottleCall >= options.throttle) {
+          timers.lastThrottleCall = now;
+          return await renderPart();
+        } else {
+          // If throttled, schedule the next call if not already scheduled
+          if (!timers.throttleTimer) {
+            const remainingTime = options.throttle - (now - timers.lastThrottleCall);
+            timers.throttleTimer = setTimeout(async () => {
+              timers.throttleTimer = null;
+              timers.lastThrottleCall = Date.now();
+              await renderPart();
+            }, remainingTime);
+          }
+          // For throttled calls, don't execute the original method, just return undefined
+          // The actual render will happen in the scheduled timeout
+          return undefined;
+        }
+      }
+      
+      // No throttle/debounce - render immediately
+      return await renderPart();
+    };
     
     return descriptor;
   };

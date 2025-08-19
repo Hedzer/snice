@@ -44,3 +44,7 @@ export const DISPOSE_HANDLERS = getSymbol('dispose-handlers');
 
 // Observer symbols
 export const OBSERVERS = getSymbol('observers');
+
+// Part symbols
+export const PARTS = getSymbol('parts');
+export const PART_TIMERS = getSymbol('part-timers');

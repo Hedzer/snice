@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { element, customElement, ready, dispose } from '../src/element';
+import { element, ready, dispose } from '../src/element';
 import { controller } from '../src/controller';
 
 describe('element lifecycle', () => {
@@ -223,24 +223,6 @@ describe('element lifecycle', () => {
       await new Promise(resolve => setTimeout(resolve, 0));
       expect(detach1Spy).toHaveBeenCalled();
       expect(attach2Spy).toHaveBeenCalled();
-    });
-  });
-
-  describe('customElement alias', () => {
-    it('should work with customElement alias', () => {
-      @customElement('alias-element')
-      class AliasElement extends HTMLElement {
-        html() {
-          return '<div>Alias Works</div>';
-        }
-      }
-      
-      expect(customElements.get('alias-element')).toBeDefined();
-      
-      const el = document.createElement('alias-element');
-      document.body.appendChild(el);
-      
-      expect(el.shadowRoot?.innerHTML).toBe('<div>Alias Works</div>');
     });
   });
 

@@ -303,6 +303,11 @@ class MyClicker extends HTMLElement {
   handleCtrlEnter() {
     console.log('Ctrl + Enter pressed!');
   }
+  
+  @on('focus')  // Listen on the host element itself (no target)
+  handleFocus() {
+    console.log('Element received focus!');
+  }
 }
 ```
 
@@ -764,6 +769,119 @@ class LazyImage extends HTMLElement {
 ```
 
 All observers are automatically cleaned up when elements disconnect from the DOM. See the [Observe API documentation](./docs/observe.md) for more examples.
+
+## Parts - Selective Re-rendering
+
+For complex components with frequent updates to specific sections, the `@part` decorator enables selective re-rendering of template parts without rebuilding the entire component:
+
+```typescript
+import { element, part, property, on } from 'snice';
+
+@element('user-dashboard')
+class UserDashboard extends HTMLElement {
+  @property()
+  user = { name: 'Loading...', stats: { views: 0, likes: 0 } };
+  
+  notifications = [];
+  messages = [];
+
+  html() {
+    return `
+      <header part="user-info"></header>
+      <main>
+        <section part="stats"></section>
+        <aside part="notifications"></aside>
+        <div part="messages"></div>
+      </main>
+    `;
+  }
+
+  @part('user-info')
+  renderUserInfo() {
+    return `
+      <h1>${this.user.name}</h1>
+      <button id="refresh-user">Refresh</button>
+    `;
+  }
+
+  @part('stats')
+  renderStats() {
+    return `
+      <div class="stats">
+        <span>Views: ${this.user.stats.views}</span>
+        <span>Likes: ${this.user.stats.likes}</span>
+      </div>
+    `;
+  }
+
+  @part('notifications', { throttle: 300 })
+  renderNotifications() {
+    return `
+      <h3>Notifications (${this.notifications.length})</h3>
+      ${this.notifications.map(n => `<div>${n}</div>`).join('')}
+    `;
+  }
+
+  @part('messages')
+  async renderMessages() {
+    if (this.messages.length === 0) {
+      return '<p>No messages</p>';
+    }
+    return this.messages.map(m => `<div class="message">${m}</div>`).join('');
+  }
+
+  // Update specific parts without re-rendering everything
+  updateUserName(newName) {
+    this.user.name = newName;
+    this.renderUserInfo(); // Only re-renders the header
+  }
+
+  incrementViews() {
+    this.user.stats.views++;
+    this.renderStats(); // Only re-renders the stats section
+  }
+
+  addNotification(notification) {
+    this.notifications.unshift(notification);
+    this.renderNotifications(); // Only re-renders notifications
+  }
+
+  @on('click', '#refresh-user')
+  async handleRefreshUser() {
+    // Simulate API call
+    const userData = await this.fetchUserData();
+    this.user = userData;
+    this.renderUserInfo(); // Update just the user info part
+    this.renderStats();    // Update just the stats part
+  }
+}
+```
+
+**Benefits of `@part`:**
+- **Performance** - Update only what changed instead of re-rendering entire templates
+- **Granular Control** - Target specific sections for updates
+- **Complex UIs** - Perfect for dashboards, lists, or components with independent sections
+- **Async Support** - Part methods can be async for data fetching
+- **Throttle/Debounce** - Control render frequency to optimize performance
+
+### Performance Options
+
+The `@part` decorator supports throttle and debounce options to optimize render performance:
+
+```typescript
+// Throttle: Limit renders to once per 300ms
+@part('notifications', { throttle: 300 })
+renderNotifications() { /* ... */ }
+
+// Debounce: Delay render until 150ms after last call
+@part('search-results', { debounce: 150 })
+renderSearchResults() { /* ... */ }
+```
+
+- **Throttle** - Limits renders to a maximum frequency (e.g., once every 300ms)
+- **Debounce** - Delays renders until after calls stop for the specified time
+
+The `@part` decorator is ideal when you have components with multiple independent sections that update at different frequencies or from different data sources.
 
 ## Documentation
 
