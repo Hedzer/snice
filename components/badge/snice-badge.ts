@@ -1,4 +1,4 @@
-import { element, property, watch, query, ready } from '../../src/index';
+import { element, property, watch, query, ready, part } from '../../src/index';
 import css from './snice-badge.css?inline';
 import type { BadgeVariant, BadgePosition, BadgeSize, SniceBadgeElement } from './snice-badge.types';
 
@@ -38,20 +38,28 @@ export class SniceBadge extends HTMLElement implements SniceBadgeElement {
   badgeElement?: HTMLElement;
 
   html() {
-    const displayContent = this.getDisplayContent();
-    const showBadge = this.shouldShowBadge();
-    
     return /*html*/`
       <div class="badge-wrapper">
         <slot></slot>
-        ${showBadge ? /*html*/`
-          <span class="badge ${this.dot ? 'badge--dot' : ''} ${this.pulse ? 'badge--pulse' : ''}" 
-                aria-label="${displayContent}"
-                role="status">
-            ${!this.dot ? displayContent : ''}
-          </span>
-        ` : ''}
+        <div part="badge-section"></div>
       </div>
+    `;
+  }
+
+  @watch('content', 'count', 'max', 'dot', 'pulse')
+  @part('badge-section')
+  renderBadgeSection() {
+    const displayContent = this.getDisplayContent();
+    const showBadge = this.shouldShowBadge();
+    
+    if (!showBadge) return '';
+    
+    return /*html*/`
+      <span class="badge ${this.dot ? 'badge--dot' : ''} ${this.pulse ? 'badge--pulse' : ''}" 
+            aria-label="${displayContent}"
+            role="status">
+        ${!this.dot ? displayContent : ''}
+      </span>
     `;
   }
 
@@ -77,53 +85,6 @@ export class SniceBadge extends HTMLElement implements SniceBadgeElement {
     this.updateOffset();
   }
 
-  @watch('content', 'count', 'max', 'dot')
-  updateBadge() {
-    // Check if we need to re-render the entire component
-    const shouldShow = this.shouldShowBadge();
-    const badgeExists = !!this.badgeElement;
-    
-    if (shouldShow !== badgeExists) {
-      // Need to re-render the entire shadow DOM
-      this.render();
-      return;
-    }
-    
-    if (!this.badgeElement) return;
-    
-    const displayContent = this.getDisplayContent();
-    if (this.dot) {
-      this.badgeElement.textContent = '';
-      this.badgeElement.classList.add('badge--dot');
-    } else {
-      this.badgeElement.textContent = displayContent;
-      this.badgeElement.classList.remove('badge--dot');
-    }
-  }
-  
-  private render() {
-    const shadow = this.shadowRoot;
-    if (shadow) {
-      shadow.innerHTML = '';
-      if (this.css) {
-        const style = document.createElement('style');
-        style.textContent = this.css();
-        shadow.appendChild(style);
-      }
-      const template = document.createElement('template');
-      template.innerHTML = this.html();
-      shadow.appendChild(template.content.cloneNode(true));
-      
-      // Don't try to set badgeElement - the @query decorator will handle it
-      // The getter will automatically find the new element
-    }
-  }
-
-  @watch('pulse')
-  updatePulse() {
-    if (!this.badgeElement) return;
-    this.badgeElement.classList.toggle('badge--pulse', this.pulse);
-  }
 
   @watch('offset')
   updateOffset() {
