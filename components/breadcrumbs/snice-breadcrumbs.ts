@@ -1,11 +1,11 @@
 import { element, property, watch, query, dispatch, on, ready } from '../../src/index';
 import css from './snice-breadcrumbs.css?inline';
 import type { BreadcrumbItem, BreadcrumbSeparator, BreadcrumbSize, SniceBreadcrumbsElement } from './snice-breadcrumbs.types';
-import type { SniceCrumbElement } from './snice-crumb.types';
+import type { SniceCrumbElement } from './snice-breadcrumbs.types';
 
 @element('snice-breadcrumbs')
 export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsElement {
-  @property({ type: Array, reflect: true })
+  @property({ type: Array })
   items: BreadcrumbItem[] = [];
 
   @property({ reflect: true })
@@ -158,7 +158,7 @@ export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsEle
   updateBreadcrumb() {
     this.collapsed = true;
     // Only render if not using slot items, otherwise slot change will handle it
-    if (this.slotItems.length === 0) {
+    if (!this.slotItems || this.slotItems.length === 0) {
       this.render();
     }
   }

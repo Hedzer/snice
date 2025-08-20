@@ -158,6 +158,25 @@ Use it with attributes:
 <user-card name="Jane Doe" user-role="Admin" verified></user-card>
 ```
 
+For arrays of basic types, use `SimpleArray` for safe reflection:
+
+```typescript
+import { element, property, SimpleArray } from 'snice';
+
+@element('tag-list')
+class TagList extends HTMLElement {
+  @property({ type: SimpleArray, reflect: true })
+  tags = ['javascript', 'typescript', 'web'];
+  
+  html() {
+    return `<div>${this.tags.join(', ')}</div>`;
+  }
+}
+```
+
+```html
+<tag-list tags="react，vue，angular"></tag-list>
+```
 
 ## Watching Property Changes
 
