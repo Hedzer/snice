@@ -171,7 +171,7 @@ class UserProfile extends HTMLElement {
 
 ```typescript
 interface PropertyOptions {
-  type?: StringConstructor | NumberConstructor | BooleanConstructor | ArrayConstructor | ObjectConstructor;
+  type?: String | Number | Boolean | Array | Object | Date | BigInt;
   reflect?: boolean;        // Reflect to HTML attribute
   attribute?: string;        // Custom attribute name
   converter?: PropertyConverter;  // Custom converter

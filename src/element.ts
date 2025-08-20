@@ -114,6 +114,16 @@ export function applyElementFunctionality(constructor: any) {
                 case String:
                   this[propName] = attrValue;
                   break;
+                case Date:
+                  this[propName] = attrValue ? new Date(attrValue) : null;
+                  break;
+                case BigInt:
+                  if (attrValue && attrValue.endsWith('n')) {
+                    this[propName] = BigInt(attrValue.slice(0, -1));
+                  } else {
+                    this[propName] = attrValue ? BigInt(attrValue) : null;
+                  }
+                  break;
                 default:
                   this[propName] = attrValue;
               }
@@ -133,7 +143,16 @@ export function applyElementFunctionality(constructor: any) {
               const attributeName = typeof propOptions.attribute === 'string' ? propOptions.attribute : propName;
               
               if (value !== null && value !== undefined && value !== false) {
-                this.setAttribute(attributeName, String(value));
+                // Handle special types for reflection
+                let attributeValue: string;
+                if (value instanceof Date) {
+                  attributeValue = value.toISOString();
+                } else if (typeof value === 'bigint') {
+                  attributeValue = value.toString() + 'n';
+                } else {
+                  attributeValue = String(value);
+                }
+                this.setAttribute(attributeName, attributeValue);
               }
             }
           }
@@ -297,6 +316,14 @@ export function applyElementFunctionality(constructor: any) {
                 parsedValue = newValue !== null && newValue !== 'false';
               } else if (propOptions.type === Number) {
                 parsedValue = Number(newValue);
+              } else if (propOptions.type === Date) {
+                parsedValue = newValue ? new Date(newValue) : null;
+              } else if (propOptions.type === BigInt) {
+                if (newValue && newValue.endsWith('n')) {
+                  parsedValue = BigInt(newValue.slice(0, -1));
+                } else {
+                  parsedValue = newValue ? BigInt(newValue) : null;
+                }
               } else {
                 // If no type specified, try to infer from current value type
                 if (typeof currentValue === 'number' && newValue !== null) {
@@ -306,7 +333,7 @@ export function applyElementFunctionality(constructor: any) {
                 }
               }
               
-              // Only update if the value actually changed
+              // Only update if the value actually changed and avoid infinite loops
               if (currentValue !== parsedValue) {
                 // Mark as explicitly set since it came from an attribute change
                 if (!this[EXPLICITLY_SET_PROPERTIES]) {
@@ -314,7 +341,39 @@ export function applyElementFunctionality(constructor: any) {
                 }
                 this[EXPLICITLY_SET_PROPERTIES].add(propName);
                 
-                this[propName] = parsedValue;
+                // Set the property value directly in the storage to avoid triggering setter
+                if (!this[PROPERTY_VALUES]) {
+                  this[PROPERTY_VALUES] = {};
+                }
+                this[PROPERTY_VALUES][propName] = parsedValue;
+                
+                // Call watchers manually since we bypassed the setter
+                const watchers = constructor[PROPERTY_WATCHERS];
+                if (watchers) {
+                  // Call specific property watchers
+                  if (watchers.has(propName)) {
+                    const propertyWatchers = watchers.get(propName);
+                    for (const watcher of propertyWatchers) {
+                      try {
+                        watcher.method.call(this, currentValue, parsedValue, propName);
+                      } catch (error) {
+                        console.error(`Error in @watch('${propName}') method ${watcher.methodName}:`, error);
+                      }
+                    }
+                  }
+                  
+                  // Call wildcard watchers (watching "*")
+                  if (watchers.has('*')) {
+                    const wildcardWatchers = watchers.get('*');
+                    for (const watcher of wildcardWatchers) {
+                      try {
+                        watcher.method.call(this, currentValue, parsedValue, propName);
+                      } catch (error) {
+                        console.error(`Error in @watch('*') method ${watcher.methodName}:`, error);
+                      }
+                    }
+                  }
+                }
               }
               break;
             }
@@ -334,6 +393,15 @@ export function element(tagName: string) {
 export function property(options?: PropertyOptions) {
   return function (target: any, propertyKey: string) {
     const constructor = target.constructor;
+    
+    // Warn about problematic reflection usage
+    if (options?.reflect && options?.type === Array) {
+      console.warn(`⚠️  Property '${propertyKey}' uses reflect:true with Array type.`);
+    }
+    
+    if (options?.reflect && options?.type === Object) {
+      console.warn(`⚠️  Property '${propertyKey}' uses reflect:true with Object type.`);
+    }
     
     if (!constructor[PROPERTIES]) {
       constructor[PROPERTIES] = new Map();
@@ -361,9 +429,12 @@ export function property(options?: PropertyOptions) {
         // Don't update if value hasn't changed
         if (oldValue === value) return;
         
-        // Only mark as explicitly set if there was a previous value
-        // (i.e., this is not the initial default value being set during class initialization)
-        if (oldValue !== undefined) {
+        // Mark as explicitly set in these cases:
+        // 1. There was a previous value (normal property update)
+        // 2. This is during element construction and we have a non-null/non-undefined value
+        //    (this handles default values declared in class properties)
+        const isInitialDefaultValue = oldValue === undefined && !this[PROPERTIES_INITIALIZED];
+        if (oldValue !== undefined || (isInitialDefaultValue && value !== null && value !== undefined)) {
           this[EXPLICITLY_SET_PROPERTIES].add(propertyKey);
         }
         
@@ -379,7 +450,16 @@ export function property(options?: PropertyOptions) {
           if (value === null || value === undefined || value === false) {
             this.removeAttribute(attributeName);
           } else {
-            this.setAttribute(attributeName, String(value));
+            // Handle special types for reflection
+            let attributeValue: string;
+            if (value instanceof Date) {
+              attributeValue = value.toISOString();
+            } else if (typeof value === 'bigint') {
+              attributeValue = value.toString() + 'n';
+            } else {
+              attributeValue = String(value);
+            }
+            this.setAttribute(attributeName, attributeValue);
           }
         }
         
@@ -495,7 +575,7 @@ export function queryAll(selector: string, options: QueryOptions = {}) {
 }
 
 export interface PropertyOptions {
-  type?: StringConstructor | NumberConstructor | BooleanConstructor | ArrayConstructor | ObjectConstructor;
+  type?: StringConstructor | NumberConstructor | BooleanConstructor | ArrayConstructor | ObjectConstructor | DateConstructor | BigIntConstructor;
   reflect?: boolean;
   attribute?: string | boolean;
   converter?: PropertyConverter;
