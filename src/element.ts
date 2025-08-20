@@ -27,7 +27,7 @@ export function applyElementFunctionality(constructor: any) {
     const properties = constructor[PROPERTIES];
     if (properties) {
       for (const [propName, propOptions] of properties) {
-        const attributeName = typeof propOptions.attribute === 'string' ? propOptions.attribute : propName;
+        const attributeName = typeof propOptions.attribute === 'string' ? propOptions.attribute : propName.toLowerCase();
         if (!observedAttributes.includes(attributeName)) {
           observedAttributes.push(attributeName);
         }
@@ -124,6 +124,9 @@ export function applyElementFunctionality(constructor: any) {
                     this[propName] = attrValue ? BigInt(attrValue) : null;
                   }
                   break;
+                case SimpleArray:
+                  this[propName] = SimpleArray.parse(attrValue);
+                  break;
                 default:
                   this[propName] = attrValue;
               }
@@ -140,15 +143,18 @@ export function applyElementFunctionality(constructor: any) {
           for (const [propName, propOptions] of properties) {
             if (propOptions.reflect && this[EXPLICITLY_SET_PROPERTIES].has(propName) && propName in this[PROPERTY_VALUES]) {
               const value = this[PROPERTY_VALUES][propName];
-              const attributeName = typeof propOptions.attribute === 'string' ? propOptions.attribute : propName;
+              const attributeName = typeof propOptions.attribute === 'string' ? propOptions.attribute : propName.toLowerCase();
               
-              if (value !== null && value !== undefined && value !== false) {
+              if (value !== null && value !== undefined && value !== false && 
+                  !(propOptions.type === SimpleArray && Array.isArray(value) && value.length === 0)) {
                 // Handle special types for reflection
                 let attributeValue: string;
                 if (value instanceof Date) {
                   attributeValue = value.toISOString();
                 } else if (typeof value === 'bigint') {
                   attributeValue = value.toString() + 'n';
+                } else if (propOptions.type === SimpleArray && Array.isArray(value)) {
+                  attributeValue = SimpleArray.serialize(value);
                 } else {
                   attributeValue = String(value);
                 }
@@ -305,7 +311,7 @@ export function applyElementFunctionality(constructor: any) {
         const properties = constructor[PROPERTIES];
         if (properties) {
           for (const [propName, propOptions] of properties) {
-            const attributeName = typeof propOptions.attribute === 'string' ? propOptions.attribute : propName;
+            const attributeName = typeof propOptions.attribute === 'string' ? propOptions.attribute : propName.toLowerCase();
             if (attributeName === name) {
               // Check if the current property value already matches to avoid feedback loops
               const currentValue = this[PROPERTY_VALUES]?.[propName];
@@ -324,6 +330,8 @@ export function applyElementFunctionality(constructor: any) {
                 } else {
                   parsedValue = newValue ? BigInt(newValue) : null;
                 }
+              } else if (propOptions.type === SimpleArray) {
+                parsedValue = SimpleArray.parse(newValue);
               } else {
                 // If no type specified, try to infer from current value type
                 if (typeof currentValue === 'number' && newValue !== null) {
@@ -445,9 +453,10 @@ export function property(options?: PropertyOptions) {
         // 2. The property was explicitly set (not just default value)
         // This prevents default values from creating attributes
         if (options?.reflect && this.setAttribute && this[PROPERTIES_INITIALIZED] && this[EXPLICITLY_SET_PROPERTIES].has(propertyKey)) {
-          const attributeName = typeof options.attribute === 'string' ? options.attribute : propertyKey;
+          const attributeName = typeof options.attribute === 'string' ? options.attribute : propertyKey.toLowerCase();
           
-          if (value === null || value === undefined || value === false) {
+          if (value === null || value === undefined || value === false || 
+              (options?.type === SimpleArray && Array.isArray(value) && value.length === 0)) {
             this.removeAttribute(attributeName);
           } else {
             // Handle special types for reflection
@@ -456,6 +465,8 @@ export function property(options?: PropertyOptions) {
               attributeValue = value.toISOString();
             } else if (typeof value === 'bigint') {
               attributeValue = value.toString() + 'n';
+            } else if (options?.type === SimpleArray && Array.isArray(value)) {
+              attributeValue = SimpleArray.serialize(value);
             } else {
               attributeValue = String(value);
             }
@@ -574,8 +585,64 @@ export function queryAll(selector: string, options: QueryOptions = {}) {
   };
 }
 
+/**
+ * SimpleArray type for arrays that can be safely reflected to attributes
+ * Supports arrays of: string, number, boolean
+ * Uses full-width comma (，) as separator to avoid conflicts
+ * Strings cannot contain the full-width comma character
+ */
+export class SimpleArray {
+  static readonly SEPARATOR = '，'; // U+FF0C Full-width comma
+  
+  /**
+   * Serialize array to string for attribute storage
+   */
+  static serialize(arr: (string | number | boolean)[]): string {
+    if (!Array.isArray(arr)) return '';
+    
+    return arr.map(item => {
+      if (typeof item === 'string') {
+        // Validate string doesn't contain our separator
+        if (item.includes(SimpleArray.SEPARATOR)) {
+          throw new Error(`SimpleArray strings cannot contain the character "${SimpleArray.SEPARATOR}" (U+FF0C)`);
+        }
+        return item;
+      } else if (typeof item === 'number' || typeof item === 'boolean') {
+        return String(item);
+      } else {
+        throw new Error(`SimpleArray only supports string, number, and boolean types. Got: ${typeof item}`);
+      }
+    }).join(SimpleArray.SEPARATOR);
+  }
+  
+  /**
+   * Parse string from attribute back to array
+   */
+  static parse(str: string | null): (string | number | boolean)[] {
+    if (str === null || str === undefined) return [];
+    // Empty string should not be parsed as containing an empty string
+    // since empty arrays don't get reflected (handled by the reflection logic)
+    if (str === '') return [];
+    
+    return str.split(SimpleArray.SEPARATOR).map(item => {
+      // Try to parse as number
+      if (/^-?\d+\.?\d*$/.test(item)) {
+        const num = Number(item);
+        if (!isNaN(num)) return num;
+      }
+      
+      // Parse as boolean
+      if (item === 'true') return true;
+      if (item === 'false') return false;
+      
+      // Default to string
+      return item;
+    });
+  }
+}
+
 export interface PropertyOptions {
-  type?: StringConstructor | NumberConstructor | BooleanConstructor | ArrayConstructor | ObjectConstructor | DateConstructor | BigIntConstructor;
+  type?: StringConstructor | NumberConstructor | BooleanConstructor | ArrayConstructor | ObjectConstructor | DateConstructor | BigIntConstructor | typeof SimpleArray;
   reflect?: boolean;
   attribute?: string | boolean;
   converter?: PropertyConverter;

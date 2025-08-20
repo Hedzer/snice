@@ -171,7 +171,7 @@ class UserProfile extends HTMLElement {
 
 ```typescript
 interface PropertyOptions {
-  type?: String | Number | Boolean | Array | Object | Date | BigInt;
+  type?: String | Number | Boolean | Array | Object | Date | BigInt | SimpleArray;
   reflect?: boolean;        // Reflect to HTML attribute
   attribute?: string;        // Custom attribute name
   converter?: PropertyConverter;  // Custom converter
@@ -224,6 +224,79 @@ class DateDisplay extends HTMLElement {
     return `<time>${this.date?.toLocaleDateString() || 'No date'}</time>`;
   }
 }
+```
+
+### SimpleArray for Safe Array Reflection
+
+The `SimpleArray` type enables safe reflection of arrays containing basic types (string, number, boolean) to HTML attributes. Unlike the plain `Array` type, `SimpleArray` provides deterministic serialization and parsing.
+
+```typescript
+import { element, property, SimpleArray } from 'snice';
+
+@element('tag-list')
+class TagList extends HTMLElement {
+  @property({ type: SimpleArray, reflect: true })
+  tags = ['javascript', 'typescript', 'web'];
+  
+  @property({ type: SimpleArray, reflect: true })
+  scores = [95, 87, 92];
+  
+  @property({ type: SimpleArray, reflect: true })
+  flags = [true, false, true];
+  
+  html() {
+    return `
+      <div>
+        <h3>Tags:</h3>
+        <ul>
+          ${this.tags.map(tag => `<li>${tag}</li>`).join('')}
+        </ul>
+        
+        <h3>Scores:</h3>
+        <p>${this.scores.join(', ')}</p>
+        
+        <h3>Flags:</h3>
+        <p>${this.flags.map(f => f ? '✓' : '✗').join(' ')}</p>
+      </div>
+    `;
+  }
+}
+```
+
+Usage with attributes:
+```html
+<tag-list 
+  tags="react，vue，angular" 
+  scores="88，92，85"
+  flags="true，false，true">
+</tag-list>
+```
+
+**Key Features:**
+
+- **Safe serialization**: Uses full-width comma (，) as separator to avoid conflicts
+- **Type preservation**: Numbers and booleans are parsed back to their correct types
+- **String validation**: Throws error if strings contain the separator character
+- **Empty array handling**: Empty arrays don't create attributes (like null/undefined)
+- **Mixed types**: Supports arrays containing any combination of string, number, and boolean
+
+**Limitations:**
+
+- Only supports `string`, `number`, and `boolean` types
+- Strings cannot contain the full-width comma character (，)
+- Arrays with only empty strings have special behavior due to serialization constraints
+- Not suitable for complex objects or nested arrays
+
+**Why use SimpleArray instead of Array?**
+
+```typescript
+// ❌ Problematic - no deterministic serialization
+@property({ type: Array, reflect: true })
+items = ['a', 1, true]; // Warning: unsafe for reflection
+
+// ✅ Safe and reliable
+@property({ type: SimpleArray, reflect: true })  
+items = ['a', 1, true]; // Serializes to: "a，1，true"
 ```
 
 ## Queries
