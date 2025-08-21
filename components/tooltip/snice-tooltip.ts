@@ -1,9 +1,11 @@
 import { element, property, query, on, watch, ready, dispose } from '../../src/index';
 import css from './snice-tooltip.css?inline';
+import portalCss from './snice-tooltip-portal.css?inline';
 import type { TooltipPosition, TooltipTrigger, SniceTooltipElement } from './snice-tooltip.types';
 
 @element('snice-tooltip')
 export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
+  private static portalStylesInjected = false;
   @property({ reflect: true })
   content: string = '';
 
@@ -34,6 +36,9 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
   @property({ type: Number, attribute: 'z-index', reflect: true })
   zIndex: number = 10000;
 
+  @property({ type: Boolean, attribute: 'strict-positioning', reflect: true })
+  strictPositioning: boolean = false;
+
   @query('.tooltip')
   tooltipElement?: HTMLElement;
 
@@ -44,6 +49,28 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
   private hideTimeout?: number;
   private activePosition: TooltipPosition = 'top';
   private portalElement?: HTMLElement;
+
+  private static ensurePortalStyles() {
+    if (SniceTooltip.portalStylesInjected) return;
+    
+    try {
+      // Use Constructable Stylesheets if supported
+      if ('adoptedStyleSheets' in document && 'CSSStyleSheet' in window) {
+        const sheet = new CSSStyleSheet();
+        sheet.replaceSync(portalCss);
+        document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
+      } else {
+        // Fallback for older browsers
+        const style = document.createElement('style');
+        style.textContent = portalCss;
+        document.head.appendChild(style);
+      }
+      
+      SniceTooltip.portalStylesInjected = true;
+    } catch (error) {
+      console.warn('Failed to inject tooltip portal styles:', error);
+    }
+  }
 
   html() {
     return /*html*/`
@@ -193,6 +220,9 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
   show() {
     if (!this.content) return;
 
+    // Ensure portal styles are injected
+    SniceTooltip.ensurePortalStyles();
+
     // Create portal element if it doesn't exist
     if (!this.portalElement) {
       this.portalElement = this.createPortalElement();
@@ -278,17 +308,16 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
     const arrow = this.portalElement.querySelector('.snice-tooltip__arrow') as HTMLElement;
     if (!arrow) return;
     
-    // Reset styles
-    arrow.style.top = '';
-    arrow.style.bottom = '';
-    arrow.style.left = '';
-    arrow.style.right = '';
-    arrow.style.transform = '';
-    arrow.style.borderWidth = '';
-    arrow.style.borderTopColor = '';
-    arrow.style.borderBottomColor = '';
-    arrow.style.borderLeftColor = '';
-    arrow.style.borderRightColor = '';
+    // Reset styles - set to explicit values instead of empty strings
+    arrow.style.top = 'auto';
+    arrow.style.bottom = 'auto';
+    arrow.style.left = 'auto';
+    arrow.style.right = 'auto';
+    arrow.style.transform = 'none';
+    arrow.style.borderTopColor = 'transparent';
+    arrow.style.borderBottomColor = 'transparent';
+    arrow.style.borderLeftColor = 'transparent';
+    arrow.style.borderRightColor = 'transparent';
     
     // Apply position-specific styles
     switch (position) {
@@ -298,6 +327,8 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
         arrow.style.bottom = '-6px';
         arrow.style.borderWidth = '6px 6px 0';
         arrow.style.borderTopColor = '#333';
+        arrow.style.borderLeftColor = 'transparent';
+        arrow.style.borderRightColor = 'transparent';
         if (position === 'top') {
           arrow.style.left = '50%';
           arrow.style.transform = 'translateX(-50%)';
@@ -314,6 +345,8 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
         arrow.style.top = '-6px';
         arrow.style.borderWidth = '0 6px 6px';
         arrow.style.borderBottomColor = '#333';
+        arrow.style.borderLeftColor = 'transparent';
+        arrow.style.borderRightColor = 'transparent';
         if (position === 'bottom') {
           arrow.style.left = '50%';
           arrow.style.transform = 'translateX(-50%)';
@@ -330,6 +363,8 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
         arrow.style.right = '-6px';
         arrow.style.borderWidth = '6px 0 6px 6px';
         arrow.style.borderLeftColor = '#333';
+        arrow.style.borderTopColor = 'transparent';
+        arrow.style.borderBottomColor = 'transparent';
         if (position === 'left') {
           arrow.style.top = '50%';
           arrow.style.transform = 'translateY(-50%)';
@@ -346,6 +381,8 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
         arrow.style.left = '-6px';
         arrow.style.borderWidth = '6px 6px 6px 0';
         arrow.style.borderRightColor = '#333';
+        arrow.style.borderTopColor = 'transparent';
+        arrow.style.borderBottomColor = 'transparent';
         if (position === 'right') {
           arrow.style.top = '50%';
           arrow.style.transform = 'translateY(-50%)';
@@ -375,30 +412,32 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
     left = positions.left;
     top = positions.top;
 
-    // Check if tooltip fits in viewport
-    const fitsInViewport = 
-      left >= 0 && 
-      top >= 0 && 
-      left + tooltipRect.width <= viewport.width &&
-      top + tooltipRect.height <= viewport.height;
+    // If strict positioning is disabled, check if tooltip fits in viewport
+    if (!this.strictPositioning) {
+      const fitsInViewport = 
+        left >= 0 && 
+        top >= 0 && 
+        left + tooltipRect.width <= viewport.width &&
+        top + tooltipRect.height <= viewport.height;
 
-    // If it doesn't fit, try alternative positions
-    if (!fitsInViewport) {
-      const alternativePositions = this.getAlternativePositions(position);
-      
-      for (const altPosition of alternativePositions) {
-        const altCoords = this.getPositionCoordinates(triggerRect, tooltipRect, altPosition);
+      // If it doesn't fit, try alternative positions
+      if (!fitsInViewport) {
+        const alternativePositions = this.getAlternativePositions(position);
         
-        if (
-          altCoords.left >= 0 &&
-          altCoords.top >= 0 &&
-          altCoords.left + tooltipRect.width <= viewport.width &&
-          altCoords.top + tooltipRect.height <= viewport.height
-        ) {
-          position = altPosition;
-          left = altCoords.left;
-          top = altCoords.top;
-          break;
+        for (const altPosition of alternativePositions) {
+          const altCoords = this.getPositionCoordinates(triggerRect, tooltipRect, altPosition);
+          
+          if (
+            altCoords.left >= 0 &&
+            altCoords.top >= 0 &&
+            altCoords.left + tooltipRect.width <= viewport.width &&
+            altCoords.top + tooltipRect.height <= viewport.height
+          ) {
+            position = altPosition;
+            left = altCoords.left;
+            top = altCoords.top;
+            break;
+          }
         }
       }
     }
@@ -535,93 +574,12 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
         width: 0;
         height: 0;
         border-style: solid;
-        border-color: transparent;
       `;
       portal.appendChild(arrow);
     }
     
     // Add to body
     document.body.appendChild(portal);
-    
-    // Add global styles if not already present
-    if (!document.getElementById('snice-tooltip-styles')) {
-      const style = document.createElement('style');
-      style.id = 'snice-tooltip-styles';
-      style.textContent = `
-        .snice-tooltip--visible {
-          opacity: 1 !important;
-          transform: scale(1) !important;
-        }
-        
-        /* Arrow positions */
-        .snice-tooltip--top .snice-tooltip__arrow,
-        .snice-tooltip--top-start .snice-tooltip__arrow,
-        .snice-tooltip--top-end .snice-tooltip__arrow {
-          bottom: -6px;
-          border-width: 6px 6px 0;
-          border-top-color: #333;
-        }
-        
-        .snice-tooltip--bottom .snice-tooltip__arrow,
-        .snice-tooltip--bottom-start .snice-tooltip__arrow,
-        .snice-tooltip--bottom-end .snice-tooltip__arrow {
-          top: -6px;
-          border-width: 0 6px 6px;
-          border-bottom-color: #333;
-        }
-        
-        .snice-tooltip--left .snice-tooltip__arrow,
-        .snice-tooltip--left-start .snice-tooltip__arrow,
-        .snice-tooltip--left-end .snice-tooltip__arrow {
-          right: -6px;
-          border-width: 6px 0 6px 6px;
-          border-left-color: #333;
-        }
-        
-        .snice-tooltip--right .snice-tooltip__arrow,
-        .snice-tooltip--right-start .snice-tooltip__arrow,
-        .snice-tooltip--right-end .snice-tooltip__arrow {
-          left: -6px;
-          border-width: 6px 6px 6px 0;
-          border-right-color: #333;
-        }
-        
-        /* Arrow alignment */
-        .snice-tooltip--top .snice-tooltip__arrow,
-        .snice-tooltip--bottom .snice-tooltip__arrow {
-          left: 50%;
-          transform: translateX(-50%);
-        }
-        
-        .snice-tooltip--top-start .snice-tooltip__arrow,
-        .snice-tooltip--bottom-start .snice-tooltip__arrow {
-          left: 16px;
-        }
-        
-        .snice-tooltip--top-end .snice-tooltip__arrow,
-        .snice-tooltip--bottom-end .snice-tooltip__arrow {
-          right: 16px;
-        }
-        
-        .snice-tooltip--left .snice-tooltip__arrow,
-        .snice-tooltip--right .snice-tooltip__arrow {
-          top: 50%;
-          transform: translateY(-50%);
-        }
-        
-        .snice-tooltip--left-start .snice-tooltip__arrow,
-        .snice-tooltip--right-start .snice-tooltip__arrow {
-          top: 16px;
-        }
-        
-        .snice-tooltip--left-end .snice-tooltip__arrow,
-        .snice-tooltip--right-end .snice-tooltip__arrow {
-          bottom: 16px;
-          top: auto;
-        }
-      `;
-      document.head.appendChild(style);
-    }
     
     return portal;
   }
@@ -645,7 +603,6 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
         width: 0;
         height: 0;
         border-style: solid;
-        border-color: transparent;
       `;
       this.portalElement.appendChild(arrow);
     } else if (arrow) {
