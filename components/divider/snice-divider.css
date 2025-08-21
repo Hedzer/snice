@@ -3,8 +3,8 @@
   --divider-color: #e5e7eb;
   --divider-thickness: 1px;
   --divider-text-bg: transparent;
-  --divider-text-padding: 0 16px;
-  --divider-text-gap: 16px;
+  --divider-text-padding: 0 1rem; /* 0 16px */
+  --divider-text-gap: 1rem; /* 16px */
 }
 
 :host([orientation="vertical"]) {
@@ -31,7 +31,7 @@
   padding: var(--divider-text-padding);
   background: var(--divider-text-bg);
   color: #6b7280;
-  font-size: 14px;
+  font-size: 0.875rem; /* 14px */
   font-weight: 500;
   white-space: nowrap;
   margin: 0 var(--divider-text-gap);
@@ -46,11 +46,11 @@
 
 /* Align text */
 :host([align="start"]) .divider--before {
-  flex: 0 0 32px;
+  flex: 0 0 2rem; /* 32px */
 }
 
 :host([align="end"]) .divider--after {
-  flex: 0 0 32px;
+  flex: 0 0 2rem; /* 32px */
 }
 
 /* Vertical override */
@@ -106,15 +106,15 @@
 }
 
 :host([spacing="small"]) {
-  margin: 8px 0;
+  margin: 0.5rem 0; /* 8px 0 */
 }
 
 :host([spacing="medium"]) {
-  margin: 16px 0;
+  margin: 1rem 0; /* 16px 0 */
 }
 
 :host([spacing="large"]) {
-  margin: 24px 0;
+  margin: 1.5rem 0; /* 24px 0 */
 }
 
 :host([orientation="vertical"][spacing="none"]) {
@@ -122,15 +122,15 @@
 }
 
 :host([orientation="vertical"][spacing="small"]) {
-  margin: 0 8px;
+  margin: 0 0.5rem; /* 0 8px */
 }
 
 :host([orientation="vertical"][spacing="medium"]) {
-  margin: 0 16px;
+  margin: 0 1rem; /* 0 16px */
 }
 
 :host([orientation="vertical"][spacing="large"]) {
-  margin: 0 24px;
+  margin: 0 1.5rem; /* 0 24px */
 }
 
 /* Text divider variants */

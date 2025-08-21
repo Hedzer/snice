@@ -54,7 +54,7 @@
   flex-direction: column;
   max-height: calc(100vh - 2 * var(--modal-padding));
   opacity: 0;
-  transform: scale(0.95) translateY(20px);
+  transform: scale(0.95) translateY(1.25rem); /* 20px */
   transition: 
     opacity var(--modal-transition-duration) ease,
     transform var(--modal-transition-duration) ease;
@@ -69,17 +69,17 @@
 /* Sizes */
 .modal__panel--small {
   width: 100%;
-  max-width: 400px;
+  max-width: 25rem; /* 400px */
 }
 
 .modal__panel--medium {
   width: 100%;
-  max-width: 600px;
+  max-width: 37.5rem; /* 600px */
 }
 
 .modal__panel--large {
   width: 100%;
-  max-width: 900px;
+  max-width: 56.25rem; /* 900px */
 }
 
 .modal__panel--fullscreen {
@@ -112,8 +112,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 2rem; /* 32px */
+  height: 2rem; /* 32px */
   padding: 0;
   margin-left: auto;
   background: transparent;
@@ -169,7 +169,7 @@
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(100px);
+    transform: translateY(6.25rem); /* 100px */
   }
   to {
     opacity: 1;

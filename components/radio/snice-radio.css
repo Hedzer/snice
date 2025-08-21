@@ -38,18 +38,18 @@
 
 /* Size variants */
 .radio--small {
-  width: 16px;
-  height: 16px;
+  width: 1rem; /* 16px */
+  height: 1rem; /* 16px */
 }
 
 .radio--medium {
-  width: 20px;
-  height: 20px;
+  width: 1.25rem; /* 20px */
+  height: 1.25rem; /* 20px */
 }
 
 .radio--large {
-  width: 24px;
-  height: 24px;
+  width: 1.5rem; /* 24px */
+  height: 1.5rem; /* 24px */
 }
 
 /* States */
@@ -102,23 +102,23 @@
 
 /* Dot sizes */
 .radio--small .radio-dot {
-  width: 6px;
-  height: 6px;
+  width: 0.375rem; /* 6px */
+  height: 0.375rem; /* 6px */
 }
 
 .radio--medium .radio-dot {
-  width: 8px;
-  height: 8px;
+  width: 0.5rem; /* 8px */
+  height: 0.5rem; /* 8px */
 }
 
 .radio--large .radio-dot {
-  width: 10px;
-  height: 10px;
+  width: 0.625rem; /* 10px */
+  height: 0.625rem; /* 10px */
 }
 
 /* Label */
 .radio-label {
-  margin-left: 8px;
+  margin-left: 0.5rem; /* 8px */
   color: var(--snice-color-text);
   cursor: pointer;
 }
@@ -159,7 +159,7 @@
 
 /* Radio Group styling (when used together) */
 :host {
-  --radio-group-gap: 12px;
+  --radio-group-gap: 0.75rem; /* 12px */
 }
 
 :host([data-group]) {

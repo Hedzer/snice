@@ -1,5 +1,5 @@
 :host {
-  --progress-height: 8px;
+  --progress-height: 0.5rem; /* 8px */
   --progress-radius: 4px;
   --progress-bg: #e5e7eb;
   --progress-color: #3b82f6;
@@ -37,38 +37,38 @@
 
 /* Sizes */
 :host([size="small"]) {
-  --progress-height: 4px;
-  --progress-spinner-size: 24px;
+  --progress-height: 0.25rem; /* 4px */
+  --progress-spinner-size: 1.5rem; /* 24px */
   --progress-spinner-stroke: 3px;
 }
 
 :host([size="medium"]) {
-  --progress-height: 8px;
-  --progress-spinner-size: 40px;
+  --progress-height: 0.5rem; /* 8px */
+  --progress-spinner-size: 2.5rem; /* 40px */
   --progress-spinner-stroke: 4px;
 }
 
 :host([size="large"]) {
-  --progress-height: 12px;
-  --progress-spinner-size: 56px;
+  --progress-height: 0.75rem; /* 12px */
+  --progress-spinner-size: 3.5rem; /* 56px */
   --progress-spinner-stroke: 5px;
 }
 
 :host([size="xl"]) {
-  --progress-height: 16px;
-  --progress-spinner-size: 80px;
+  --progress-height: 1rem; /* 16px */
+  --progress-spinner-size: 5rem; /* 80px */
   --progress-spinner-stroke: 6px;
 }
 
 :host([size="xxl"]) {
-  --progress-height: 20px;
-  --progress-spinner-size: 120px;
+  --progress-height: 1.25rem; /* 20px */
+  --progress-spinner-size: 7.5rem; /* 120px */
   --progress-spinner-stroke: 8px;
 }
 
 :host([size="xxxl"]) {
-  --progress-height: 24px;
-  --progress-spinner-size: 160px;
+  --progress-height: 1.5rem; /* 24px */
+  --progress-spinner-size: 10rem; /* 160px */
   --progress-spinner-stroke: 10px;
 }
 
@@ -158,15 +158,15 @@
 }
 
 .progress--with-label {
-  height: calc(var(--progress-height) + 8px);
-  min-height: 20px;
+  height: calc(var(--progress-height) + 0.5rem); /* +8px */
+  min-height: 1.25rem; /* 20px */
 }
 
 /* Circular Progress */
 .progress--circular {
   display: inline-block;
-  width: var(--progress-spinner-size, 40px);
-  height: var(--progress-spinner-size, 40px);
+  width: var(--progress-spinner-size, 2.5rem); /* 40px */
+  height: var(--progress-spinner-size, 2.5rem); /* 40px */
   position: relative;
   background: transparent;
 }

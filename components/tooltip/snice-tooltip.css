@@ -1,11 +1,11 @@
 :host {
   --tooltip-bg: #333;
   --tooltip-color: white;
-  --tooltip-padding: 8px 12px;
+  --tooltip-padding: 0.5rem 0.75rem; /* 8px 12px */
   --tooltip-radius: 6px;
-  --tooltip-font-size: 14px;
+  --tooltip-font-size: 0.875rem; /* 14px */
   --tooltip-arrow-size: 6px;
-  --tooltip-max-width: 250px;
+  --tooltip-max-width: 15.625rem; /* 250px */
   position: relative;
   display: inline-block;
 }
@@ -87,12 +87,12 @@
 
 .tooltip--top-start .tooltip__arrow,
 .tooltip--bottom-start .tooltip__arrow {
-  left: 16px;
+  left: 1rem; /* 16px */
 }
 
 .tooltip--top-end .tooltip__arrow,
 .tooltip--bottom-end .tooltip__arrow {
-  right: 16px;
+  right: 1rem; /* 16px */
 }
 
 .tooltip--left .tooltip__arrow,
@@ -103,12 +103,12 @@
 
 .tooltip--left-start .tooltip__arrow,
 .tooltip--right-start .tooltip__arrow {
-  top: 16px;
+  top: 1rem; /* 16px */
 }
 
 .tooltip--left-end .tooltip__arrow,
 .tooltip--right-end .tooltip__arrow {
-  bottom: 16px;
+  bottom: 1rem; /* 16px */
   top: auto;
 }
 

@@ -1,6 +1,6 @@
 :host {
   display: inline-block;
-  --avatar-size: 40px;
+  --avatar-size: 2.5rem; /* 40px */
   --avatar-bg: #6b7280;
   --avatar-color: #ffffff;
 }
@@ -34,33 +34,33 @@
 
 /* Sizes */
 :host([size="xs"]) {
-  --avatar-size: 24px;
-  font-size: 10px;
+  --avatar-size: 1.5rem; /* 24px */
+  font-size: 0.625rem; /* 10px */
 }
 
 :host([size="small"]) {
-  --avatar-size: 32px;
-  font-size: 12px;
+  --avatar-size: 2rem; /* 32px */
+  font-size: 0.75rem; /* 12px */
 }
 
 :host([size="medium"]) {
-  --avatar-size: 40px;
-  font-size: 14px;
+  --avatar-size: 2.5rem; /* 40px */
+  font-size: 0.875rem; /* 14px */
 }
 
 :host([size="large"]) {
-  --avatar-size: 48px;
-  font-size: 16px;
+  --avatar-size: 3rem; /* 48px */
+  font-size: 1rem; /* 16px */
 }
 
 :host([size="xl"]) {
-  --avatar-size: 64px;
-  font-size: 20px;
+  --avatar-size: 4rem; /* 64px */
+  font-size: 1.25rem; /* 20px */
 }
 
 :host([size="xxl"]) {
-  --avatar-size: 96px;
-  font-size: 32px;
+  --avatar-size: 6rem; /* 96px */
+  font-size: 2rem; /* 32px */
 }
 
 /* Image */
@@ -117,8 +117,8 @@
 
 /* Group avatar support */
 :host(.avatar-group-item) {
-  margin-left: -8px;
-  border: 2px solid white;
+  margin-left: -0.5rem; /* -8px */
+  border: 2px solid white; /* Keep px for crisp borders */
   border-radius: 50%;
 }
 

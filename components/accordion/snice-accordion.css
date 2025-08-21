@@ -5,11 +5,11 @@
   --accordion-header-bg-hover: #f9fafb;
   --accordion-header-bg-active: #f3f4f6;
   --accordion-header-color: #111827;
-  --accordion-header-padding: 16px;
+  --accordion-header-padding: 1rem; /* 16px */
   --accordion-content-bg: #ffffff;
-  --accordion-content-padding: 16px;
+  --accordion-content-padding: 1rem; /* 16px */
   --accordion-content-color: #4b5563;
-  --accordion-icon-size: 20px;
+  --accordion-icon-size: 1.25rem; /* 20px */
   --accordion-animation-duration: 0.3s;
   
   display: block;

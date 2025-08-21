@@ -8,7 +8,7 @@
 .skeleton-container {
   display: flex;
   flex-direction: column;
-  gap: var(--skeleton-spacing, 8px);
+  gap: var(--skeleton-spacing, 0.5rem); /* 8px */
   width: 100%;
 }
 
@@ -38,20 +38,20 @@
 }
 
 .skeleton--circular {
-  width: var(--skeleton-width, 40px);
-  height: var(--skeleton-height, 40px);
+  width: var(--skeleton-width, 2.5rem); /* 40px */
+  height: var(--skeleton-height, 2.5rem); /* 40px */
   border-radius: 50%;
 }
 
 .skeleton--rectangular {
   width: var(--skeleton-width, 100%);
-  height: var(--skeleton-height, 100px);
+  height: var(--skeleton-height, 6.25rem); /* 100px */
   border-radius: 0;
 }
 
 .skeleton--rounded {
   width: var(--skeleton-width, 100%);
-  height: var(--skeleton-height, 100px);
+  height: var(--skeleton-height, 6.25rem); /* 100px */
   border-radius: 8px;
 }
 

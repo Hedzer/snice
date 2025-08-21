@@ -1,6 +1,6 @@
 :host {
   display: block;
-  --card-padding: 16px;
+  --card-padding: 1rem; /* 16px */
   --card-border-radius: 8px;
   --card-bg: white;
   --card-border-color: rgb(var(--snice-color-gray-200, 226 226 226));

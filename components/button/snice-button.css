@@ -44,21 +44,21 @@
 /* Sizes */
 .button--small {
   font-size: var(--snice-font-size-sm);
-  height: 30px;
+  height: 1.875rem; /* 30px */
   padding: 0 var(--snice-spacing-sm);
   border-radius: var(--snice-border-radius-md);
 }
 
 .button--medium {
   font-size: var(--snice-font-size-md);
-  height: 40px;
+  height: 2.5rem; /* 40px */
   padding: 0 var(--snice-spacing-md);
   border-radius: var(--snice-border-radius-md);
 }
 
 .button--large {
   font-size: var(--snice-font-size-lg);
-  height: 50px;
+  height: 3.125rem; /* 50px */
   padding: 0 var(--snice-spacing-lg);
   border-radius: var(--snice-border-radius-md);
 }
@@ -185,9 +185,9 @@
   padding: 0;
 }
 
-.button--small.button--circle { --size: 30px; }
-.button--medium.button--circle { --size: 40px; }
-.button--large.button--circle { --size: 50px; }
+.button--small.button--circle { --size: 1.875rem; /* 30px */ }
+.button--medium.button--circle { --size: 2.5rem; /* 40px */ }
+.button--large.button--circle { --size: 3.125rem; /* 50px */ }
 
 /* Loading state */
 .button--loading {

@@ -13,7 +13,7 @@
   align-items: center;
   gap: var(--snice-spacing-xs);
   padding: var(--snice-spacing-sm) var(--snice-spacing-md);
-  min-height: 48px;
+  min-height: 3rem; /* 48px */
   color: var(--snice-color-text-secondary);
   font-family: var(--snice-font-family);
   font-size: var(--snice-font-size-md);
@@ -63,8 +63,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
+  width: 1.25rem; /* 20px */
+  height: 1.25rem; /* 20px */
   padding: 0;
   border: none;
   border-radius: var(--snice-border-radius-sm);
