@@ -5,6 +5,14 @@ export interface RequestOptions extends EventInit {
    * Timeout for waiting for responses (in ms)
    */
   timeout?: number;
+  /**
+   * Debounce the request by specified milliseconds
+   */
+  debounce?: number;
+  /**
+   * Throttle the request by specified milliseconds
+   */
+  throttle?: number;
 }
 
 /**
@@ -18,11 +26,17 @@ export function request(requestName: string, options?: RequestOptions) {
   return function (_target: any, _propertyKey: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
     
+    // Create timing variables for debounce/throttle
+    let debounceTimeout: any;
+    let throttleLastCall = 0;
+    let throttleTimeout: any;
+    
     descriptor.value = async function (this: any, ...args: any[]) {
-      // @request always acts as requester (client side)
-      const timeout = options?.timeout ?? 100; // Default 100ms timeout
-      
-      // Create the generator
+      const actualRequest = async () => {
+        // @request always acts as requester (client side)
+        const timeout = options?.timeout ?? 100; // Default 100ms timeout
+        
+        // Create the generator
       const generator = originalMethod.apply(this, args);
       
       // Get the first yield (the request payload)
@@ -49,7 +63,7 @@ export function request(requestName: string, options?: RequestOptions) {
         timeoutResolve = resolve;
         timeoutReject = reject;
         timeoutId = setTimeout(() => {
-          reject(new Error(`Request timeout after ${timeout}ms`));
+          reject(new Error(`Request "${requestName}" timed out after ${timeout}ms`));
         }, timeout);
       });
       
@@ -81,9 +95,11 @@ export function request(requestName: string, options?: RequestOptions) {
       dispatcher.dispatchEvent(event);
       
       try {
-        // Wait for timeout to be resolved or rejected
+        // Wait for timeout to be cleared (handler found) or timeout to reject (no handler)
         await timeoutPromise;
-        // If we get here, responder responded in time
+        
+        // If we get here, a handler was found and timeout was cleared
+        // Now wait for the actual data response (which can take as long as needed)
         const response = await dataPromise;
         
         // Send response back to generator and get final return value
@@ -97,18 +113,76 @@ export function request(requestName: string, options?: RequestOptions) {
           throw generatorError;
         }
       }
+      }; // Close actualRequest function
+      
+      // Apply debounce or throttle if specified
+      if (options?.debounce) {
+        return new Promise((resolve, reject) => {
+          clearTimeout(debounceTimeout);
+          debounceTimeout = setTimeout(async () => {
+            try {
+              const result = await actualRequest();
+              resolve(result);
+            } catch (error) {
+              reject(error);
+            }
+          }, options.debounce);
+        });
+      }
+      
+      if (options?.throttle) {
+        const now = Date.now();
+        const remaining = options.throttle - (now - throttleLastCall);
+        
+        if (remaining <= 0) {
+          clearTimeout(throttleTimeout);
+          throttleLastCall = now;
+          return actualRequest();
+        } else if (!throttleTimeout) {
+          return new Promise((resolve, reject) => {
+            throttleTimeout = setTimeout(async () => {
+              throttleLastCall = Date.now();
+              throttleTimeout = null;
+              try {
+                const result = await actualRequest();
+                resolve(result);
+              } catch (error) {
+                reject(error);
+              }
+            }, remaining);
+          });
+        }
+        
+        // If throttled and timeout already exists, return empty promise
+        return Promise.resolve();
+      }
+      
+      // No timing applied, execute immediately
+      return actualRequest();
     };
     
     return descriptor;
   };
 }
 
+export interface ResponseOptions {
+  /**
+   * Debounce the response by specified milliseconds
+   */
+  debounce?: number;
+  /**
+   * Throttle the response by specified milliseconds
+   */
+  throttle?: number;
+}
+
 /**
  * Decorator for responding to requests in elements or controllers.
  * 
  * @param requestName The name of the request to respond to
+ * @param options Optional configuration
  */
-export function response(requestName: string) {
+export function response(requestName: string, options?: ResponseOptions) {
   return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
     
@@ -121,7 +195,8 @@ export function response(requestName: string) {
     target[CHANNEL_HANDLERS].push({
       channelName: requestName,
       methodName: propertyKey,
-      method: originalMethod
+      method: originalMethod,
+      options: options
     });
     
     return descriptor;
@@ -143,6 +218,63 @@ export function setupResponseHandlers(instance: any, element: HTMLElement) {
     const boundMethod = handler.method.bind(instance);
     const eventName = `@request/${handler.channelName}`;
     
+    // Create timing variables for debounce/throttle per handler
+    let debounceTimeout: any;
+    let throttleLastCall = 0;
+    let throttleTimeout: any;
+    
+    // Create wrapped method with timing if needed
+    const createTimedMethod = (originalMethod: Function) => {
+      if (handler.options?.debounce) {
+        return (...args: any[]) => {
+          return new Promise((resolve, reject) => {
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(async () => {
+              try {
+                const result = await originalMethod(...args);
+                resolve(result);
+              } catch (error) {
+                reject(error);
+              }
+            }, handler.options.debounce);
+          });
+        };
+      }
+      
+      if (handler.options?.throttle) {
+        return (...args: any[]) => {
+          const now = Date.now();
+          const remaining = handler.options.throttle! - (now - throttleLastCall);
+          
+          if (remaining <= 0) {
+            clearTimeout(throttleTimeout);
+            throttleLastCall = now;
+            return originalMethod(...args);
+          } else if (!throttleTimeout) {
+            return new Promise((resolve, reject) => {
+              throttleTimeout = setTimeout(async () => {
+                throttleLastCall = Date.now();
+                throttleTimeout = null;
+                try {
+                  const result = await originalMethod(...args);
+                  resolve(result);
+                } catch (error) {
+                  reject(error);
+                }
+              }, remaining);
+            });
+          }
+          
+          // If throttled and timeout already exists, return cached/empty response
+          return Promise.resolve(undefined);
+        };
+      }
+      
+      return originalMethod;
+    };
+    
+    const timedMethod = createTimedMethod(boundMethod);
+    
     // Setup response handler
     const responseHandler = (event: CustomEvent) => {
       // Extract promises and payload
@@ -153,16 +285,15 @@ export function setupResponseHandlers(instance: any, element: HTMLElement) {
       event.stopImmediatePropagation();
       event.stopPropagation();
       
-      // Call the responder method and handle the result
-      Promise.resolve(boundMethod(payload))
+      // Clear the connection timeout immediately - we found a handler
+      timeout.resolve();
+      
+      // Call the timed responder method and handle the result
+      Promise.resolve(timedMethod(payload))
         .then(result => {
-          // Clear the timeout and resolve the data promise
-          timeout.resolve();
           data.resolve(result);
         })
         .catch(error => {
-          // Clear timeout and reject the data promise on error
-          timeout.resolve();
           data.reject(error);
           console.error(`Error in response handler ${handler.methodName}:`, error);
         });

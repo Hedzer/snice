@@ -30,11 +30,36 @@ function request(requestName: string, options?: RequestOptions): MethodDecorator
 function response(responseName: string, options?: ResponseOptions): MethodDecorator
 
 interface RequestOptions extends EventInit {
-  timeout?: number;  // Timeout in milliseconds (default: 100ms)
+  timeout?: number;    // Connection timeout in ms (default: 100ms)
+  debounce?: number;   // Debounce requests by specified ms
+  throttle?: number;   // Throttle requests by specified ms
 }
 
-interface ResponseOptions extends EventInit {
-  timeout?: number;  // Timeout in milliseconds (default: 100ms)
+interface ResponseOptions {
+  debounce?: number;   // Debounce responses by specified ms
+  throttle?: number;   // Throttle responses by specified ms
+}
+```
+
+#### Response Debounce/Throttle
+
+Response handlers can also be debounced or throttled to prevent excessive processing:
+
+```typescript
+@controller('heavy-processing-controller')
+class ProcessingController implements IController {
+  
+  @response('@api/expensive-calculation', { debounce: 1000 })
+  async calculateResults(params: any) {
+    // Debounced by 1 second - rapid requests will only trigger the latest
+    return await performExpensiveCalculation(params);
+  }
+  
+  @response('@api/real-time-updates', { throttle: 500 })
+  async handleUpdates(data: any) {
+    // Throttled to max 2 requests per second
+    return await processUpdate(data);
+  }
 }
 ```
 
@@ -189,6 +214,59 @@ class UserController implements IController {
 ```
 
 ## Request/Response Options
+
+### RequestOptions
+
+```typescript
+interface RequestOptions extends EventInit {
+  timeout?: number;    // Connection timeout in ms (default: 100ms)
+  debounce?: number;   // Debounce requests by specified ms
+  throttle?: number;   // Throttle requests by specified ms
+}
+```
+
+#### Timeout Behavior (IMPORTANT)
+
+The `timeout` option controls **connection timeout only**, not processing time:
+
+- ✅ **Connection phase**: 100ms timeout to find a handler
+- ✅ **Processing phase**: No time limit once handler is found
+
+```typescript
+@request('@api/heavy-processing', { timeout: 100 })
+async *processData() {
+  // Will timeout in 100ms if no handler exists
+  // But processing can take hours once handler is found
+  const result = await (yield data);
+  return result;
+}
+```
+
+#### Debounce Support
+
+Prevents rapid successive requests by delaying execution:
+
+```typescript
+@request('@api/search', { debounce: 300 })
+async *search() {
+  // Debounced by 300ms - rapid calls will cancel previous ones
+  const results = await (yield query);
+  return results;
+}
+```
+
+#### Throttle Support
+
+Limits request frequency to maximum rate:
+
+```typescript
+@request('@api/analytics', { throttle: 1000 })
+async *trackEvent() {
+  // Throttled to max 1 request per second
+  const response = await (yield eventData);
+  return response;
+}
+```
 
 ### Timeout Configuration
 

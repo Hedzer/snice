@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snice Table Demo</title>
+    <link rel="stylesheet" href="../theme/theme.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 2rem;
+            background: var(--snice-color-background-secondary);
+        }
+        
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            border-radius: 0.5rem;
+            padding: 2rem;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 2rem;
+        }
+        
+        .demo-section {
+            margin-bottom: 3rem;
+        }
+        
+        .demo-section h2 {
+            color: #555;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .demo-controls {
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .demo-controls button {
+            padding: 0.5rem 1rem;
+            border: 1px solid #007bff;
+            background: #007bff;
+            color: white;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+        
+        .demo-controls button:hover {
+            background: #0056b3;
+        }
+        
+        .demo-controls button.secondary {
+            background: white;
+            color: #007bff;
+        }
+        
+        .demo-controls button.secondary:hover {
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1>🗂️ Snice Table Component Demo</h1>
+        
+        <div class="demo-section">
+            <h2>Basic Table with Declarative Columns</h2>
+            <div class="demo-controls">
+                <button onclick="toggleSearch()">Toggle Search</button>
+                <button onclick="togglePagination()">Toggle Pagination</button>
+                <button onclick="toggleSorting()">Toggle Sorting</button>
+                <button onclick="toggleSelection()">Toggle Selection</button>
+                <button class="secondary" onclick="addRandomRow()">Add Random Row</button>
+                <button class="secondary" onclick="loadSampleData()">Load Sample Data</button>
+            </div>
+            
+            <snice-table 
+                id="demo-table"
+                searchable
+                sortable
+                selectable
+                controller="demo-table-controller">
+            </snice-table>
+        </div>
+        
+        <div class="demo-section">
+            <h2>Advanced Table with Sparklines and Progress</h2>
+            
+            <snice-table 
+                id="analytics-table"
+                size="medium"
+                hoverable
+                sortable
+                striped>
+                
+                <snice-column 
+                    slot="columns"
+                    key="metric" 
+                    label="Metric" 
+                    type="text">
+                </snice-column>
+                
+                <snice-column 
+                    slot="columns"
+                    key="value" 
+                    label="Current Value" 
+                    type="number" 
+                    decimals="1"
+                    thousands-separator="true">
+                </snice-column>
+                
+                <snice-column 
+                    slot="columns"
+                    key="progress" 
+                    label="Progress" 
+                    type="progress" 
+                    progress-max="100"
+                    show-percentage="true">
+                </snice-column>
+                
+                <snice-column 
+                    slot="columns"
+                    key="trend" 
+                    label="Trend (7 days)" 
+                    type="sparkline" 
+                    sparkline-type="line"
+                    sparkline-color="#007bff"
+                    sparkline-width="80"
+                    sparkline-height="30">
+                </snice-column>
+                
+                <snice-row slot="rows" 
+                    data-metric="Revenue" 
+                    data-value="125340" 
+                    data-progress="78" 
+                    data-trend="[45000, 47000, 49000, 52000, 48000, 53000, 55000]">
+                </snice-row>
+                <snice-row slot="rows" 
+                    data-metric="Users" 
+                    data-value="8250" 
+                    data-progress="92" 
+                    data-trend="[7800, 7950, 8100, 8200, 8150, 8300, 8250]">
+                </snice-row>
+                <snice-row slot="rows" 
+                    data-metric="Conversion" 
+                    data-value="3.4" 
+                    data-progress="68" 
+                    data-trend="[3.1, 3.2, 3.3, 3.5, 3.3, 3.4, 3.4]">
+                </snice-row>
+                <snice-row slot="rows" 
+                    data-metric="Retention" 
+                    data-value="89.2" 
+                    data-progress="89" 
+                    data-trend="[87, 88, 89, 90, 89, 88, 89]">
+                </snice-row>
+            </snice-table>
+        </div>
+        
+        <div class="demo-section">
+            <h2>Individual Cell Components</h2>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Text Cell</h3>
+                    <snice-cell-text value="Hello World"></snice-cell-text>
+                </div>
+                
+                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Number Cell (Basic)</h3>
+                    <snice-cell-number value="1234.56" thousands-separator="true" decimals="2"></snice-cell-number>
+                </div>
+                
+                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Number Cell (Currency)</h3>
+                    <snice-cell-number value="1234.56" prefix="$" thousands-separator="true" decimals="2"></snice-cell-number>
+                </div>
+                
+                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Number Cell (Negative)</h3>
+                    <snice-cell-number value="-456.78" negative-style="parentheses" thousands-separator="true" decimals="2"></snice-cell-number>
+                </div>
+                
+                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Date Cell (Short)</h3>
+                    <snice-cell-date value="2023-12-25" date-format="short"></snice-cell-date>
+                </div>
+                
+                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Date Cell (Long)</h3>
+                    <snice-cell-date value="2023-12-25" date-format="long"></snice-cell-date>
+                </div>
+                
+                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Date Cell (Custom)</h3>
+                    <snice-cell-date value="2023-12-25" date-format="custom" custom-format="DD/MM/YYYY"></snice-cell-date>
+                </div>
+                
+                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Sparkline (Line)</h3>
+                    <snice-cell-sparkline data="10，20，15，25，30，18，22" chart-type="line" width="80" height="30" color="#3b82f6"></snice-cell-sparkline>
+                </div>
+                
+                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Sparkline (Bar)</h3>
+                    <snice-cell-sparkline data="10，20，15，25，30，18，22" chart-type="bar" width="80" height="30" color="#10b981"></snice-cell-sparkline>
+                </div>
+                
+                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Sparkline (Area)</h3>
+                    <snice-cell-sparkline data="10，20，15，25，30，18，22" chart-type="area" width="80" height="30" color="#f59e0b"></snice-cell-sparkline>
+                </div>
+                
+                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Boolean (Symbols)</h3>
+                    <snice-cell-boolean value="true" use-symbols="true" true-symbol="✅" false-symbol="❌"></snice-cell-boolean>
+                </div>
+                
+                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Boolean (Text)</h3>
+                    <snice-cell-boolean value="false" use-symbols="false" true-value="Yes" false-value="No"></snice-cell-boolean>
+                </div>
+                
+                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Rating (4/5 Stars)</h3>
+                    <snice-cell-rating value="4"></snice-cell-rating>
+                </div>
+                
+                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Rating (3/10 Custom)</h3>
+                    <snice-cell-rating value="3"></snice-cell-rating>
+                </div>
+                
+                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Progress (75%)</h3>
+                    <snice-cell-progress value="75"></snice-cell-progress>
+                </div>
+                
+                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Progress w/ %</h3>
+                    <snice-cell-progress id="progress-with-percent" value="45"></snice-cell-progress>
+                </div>
+                
+                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Duration (1h 1m 1s)</h3>
+                    <snice-cell-duration value="3661"></snice-cell-duration>
+                </div>
+                
+                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Duration (5m 30s)</h3>
+                    <snice-cell-duration value="330"></snice-cell-duration>
+                </div>
+                
+                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">FileSize (2.0 MB)</h3>
+                    <snice-cell-filesize value="2048576"></snice-cell-filesize>
+                </div>
+                
+                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">FileSize (1.5 GB)</h3>
+                    <snice-cell-filesize value="1610612736"></snice-cell-filesize>
+                </div>
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>Individual Row Components</h2>
+            
+            <div style="margin-bottom: 1rem;">
+                <h3 style="font-size: 1rem; color: #666; margin-bottom: 0.5rem;">Employee Row (Text, Number, Date, Boolean)</h3>
+                <snice-row id="employee-row" style="display: block; padding: 0.5rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;"></snice-row>
+            </div>
+            
+            <div style="margin-bottom: 1rem;">
+                <h3 style="font-size: 1rem; color: #666; margin-bottom: 0.5rem;">Analytics Row (Text, Numbers, Progress, Sparkline)</h3>
+                <snice-row id="analytics-row" style="display: block; padding: 0.5rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;"></snice-row>
+            </div>
+            
+            <div style="margin-bottom: 1rem;">
+                <h3 style="font-size: 1rem; color: #666; margin-bottom: 0.5rem;">System Row (Text, FileSize, Duration, Rating)</h3>
+                <snice-row id="system-row" style="display: block; padding: 0.5rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;"></snice-row>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import controller first to register it
+        import './demo-table-controller.ts';
+        // Then import the table component
+        import './snice-table.ts';
+        
+        const table = document.getElementById('demo-table');
+        
+        // Demo functions
+        window.toggleSearch = () => {
+            table.showSearch = !table.showSearch;
+        };
+        
+        window.togglePagination = () => {
+            table.showPagination = !table.showPagination;
+        };
+        
+        window.toggleSorting = () => {
+            table.sortable = !table.sortable;
+        };
+        
+        window.toggleSelection = () => {
+            table.selectable = !table.selectable;
+        };
+        
+        window.addRandomRow = () => {
+            const names = ['Mike Davis', 'Sarah Connor', 'Tom Brady', 'Lisa Simpson', 'Jack Ryan'];
+            const roles = ['Developer', 'Designer', 'Manager', 'QA Engineer', 'DevOps'];
+            const domains = ['tech.com', 'design.io', 'startup.co', 'corp.net'];
+            
+            const randomName = names[Math.floor(Math.random() * names.length)];
+            const randomRole = roles[Math.floor(Math.random() * roles.length)];
+            const randomDomain = domains[Math.floor(Math.random() * domains.length)];
+            const randomEmail = `${randomName.toLowerCase().replace(' ', '.')}@${randomDomain}`;
+            const randomSalary = Math.floor(Math.random() * 50000) + 50000;
+            const randomRating = Math.floor(Math.random() * 5) + 1;
+            
+            const newData = {
+                id: Date.now(),
+                name: randomName,
+                email: randomEmail,
+                role: randomRole,
+                salary: randomSalary,
+                joinDate: new Date().toISOString().split('T')[0],
+                active: Math.random() > 0.2,
+                rating: randomRating
+            };
+            
+            // Add to table data
+            const currentData = table.data || [];
+            table.setData([...currentData, newData]);
+        };
+        
+        window.loadSampleData = () => {
+            const sampleData = [
+                {"id": 1, "name": "John Doe", "email": "john.doe@example.com", "role": "Developer", "salary": 75000, "joinDate": "2023-01-15", "active": true, "rating": 4},
+                {"id": 2, "name": "Jane Smith", "email": "jane.smith@example.com", "role": "Designer", "salary": 68000, "joinDate": "2023-03-20", "active": true, "rating": 5},
+                {"id": 3, "name": "Bob Johnson", "email": "bob.johnson@example.com", "role": "Manager", "salary": 95000, "joinDate": "2022-11-10", "active": false, "rating": 3},
+                {"id": 4, "name": "Alice Brown", "email": "alice.brown@example.com", "role": "Developer", "salary": 72000, "joinDate": "2023-06-05", "active": true, "rating": 4},
+                {"id": 5, "name": "Charlie Wilson", "email": "charlie.wilson@example.com", "role": "QA Engineer", "salary": 65000, "joinDate": "2023-02-28", "active": true, "rating": 4},
+                {"id": 6, "name": "Diana Prince", "email": "diana.prince@example.com", "role": "Developer", "salary": 78000, "joinDate": "2023-04-12", "active": true, "rating": 5},
+                {"id": 7, "name": "Clark Kent", "email": "clark.kent@example.com", "role": "Manager", "salary": 92000, "joinDate": "2022-08-22", "active": true, "rating": 4},
+                {"id": 8, "name": "Bruce Wayne", "email": "bruce.wayne@example.com", "role": "CEO", "salary": 150000, "joinDate": "2020-01-01", "active": true, "rating": 5}
+            ];
+            
+            table.setData(sampleData);
+            table.totalItems = sampleData.length;
+        };
+        
+        // Event listeners
+        table.addEventListener('@snice/table-sort-change', (e) => {
+            console.log('Sort changed:', e.detail);
+        });
+        
+        table.addEventListener('@snice/table-selection-change', (e) => {
+            console.log('Selection changed:', e.detail);
+        });
+        
+        table.addEventListener('@snice/row-click', (e) => {
+            console.log('Row clicked:', e.detail);
+        });
+        
+        // Configure individual row components
+        const configureIndividualRows = async () => {
+            // Wait for components to be defined
+            await Promise.all([
+                customElements.whenDefined('snice-row'),
+                customElements.whenDefined('snice-cell-text'),
+                customElements.whenDefined('snice-cell-number'),
+                customElements.whenDefined('snice-cell-date'),
+                customElements.whenDefined('snice-cell-sparkline')
+            ]);
+            
+            // Configure employee row
+            const employeeRow = document.getElementById('employee-row');
+            if (employeeRow) {
+                employeeRow.columns = [
+                    { key: 'name', label: 'Name', type: 'text', align: 'left' },
+                    { key: 'salary', label: 'Salary', type: 'number', align: 'right', numberFormat: { prefix: '$', thousandsSeparator: true, decimals: 0 } },
+                    { key: 'joinDate', label: 'Join Date', type: 'date', align: 'center', dateFormat: { format: 'medium' } },
+                    { key: 'active', label: 'Active', type: 'boolean', align: 'center', booleanFormat: { useSymbols: true, trueSymbol: '✅', falseSymbol: '❌' } }
+                ];
+                employeeRow.data = {
+                    name: 'John Doe',
+                    salary: 75000,
+                    joinDate: '2022-03-15',
+                    active: true
+                };
+                // Trigger update manually
+                if (typeof employeeRow.updateCells === 'function') {
+                    employeeRow.updateCells();
+                }
+            }
+            
+            // Configure analytics row
+            const analyticsRow = document.getElementById('analytics-row');
+            if (analyticsRow) {
+                analyticsRow.columns = [
+                    { key: 'metric', label: 'Metric', type: 'text', align: 'left' },
+                    { key: 'current', label: 'Current', type: 'number', align: 'right', numberFormat: { prefix: '$', thousandsSeparator: true, decimals: 0 } },
+                    { key: 'progress', label: 'Progress', type: 'progress', align: 'left', progressFormat: { showPercentage: true, color: '#10b981' } },
+                    { key: 'trend', label: 'Trend', type: 'sparkline', align: 'center', sparklineFormat: { type: 'line', color: '#3b82f6', width: 80, height: 30 } }
+                ];
+                analyticsRow.data = {
+                    metric: 'Revenue',
+                    current: 125340,
+                    progress: 78,
+                    trend: [45000, 47000, 49000, 52000, 48000, 53000, 55000]
+                };
+                // Trigger update manually
+                if (typeof analyticsRow.updateCells === 'function') {
+                    analyticsRow.updateCells();
+                }
+            }
+            
+            // Configure system row
+            const systemRow = document.getElementById('system-row');
+            if (systemRow) {
+                systemRow.columns = [
+                    { key: 'process', label: 'Process', type: 'text', align: 'left' },
+                    { key: 'memory', label: 'Memory', type: 'filesize', align: 'right' },
+                    { key: 'uptime', label: 'Uptime', type: 'duration', align: 'right' },
+                    { key: 'rating', label: 'Health', type: 'rating', align: 'center', ratingFormat: { max: 5, symbol: '●', emptySymbol: '○', color: '#10b981' } }
+                ];
+                systemRow.data = {
+                    process: 'nginx',
+                    memory: 52428800,  // 50MB
+                    uptime: 86461,     // 1 day 1 minute 1 second
+                    rating: 4
+                };
+                // Trigger update manually
+                if (typeof systemRow.updateCells === 'function') {
+                    systemRow.updateCells();
+                }
+            }
+        };
+        
+        // Initialize individual rows
+        configureIndividualRows();
+        
+        // Configure individual progress cell with percentage
+        const configureProgressCells = async () => {
+            await customElements.whenDefined('snice-cell-progress');
+            
+            const progressWithPercent = document.getElementById('progress-with-percent');
+            if (progressWithPercent) {
+                progressWithPercent.column = {
+                    key: 'progress',
+                    label: 'Progress',
+                    type: 'progress',
+                    align: 'left',
+                    progressFormat: {
+                        showPercentage: true,
+                        color: '#10b981'
+                    }
+                };
+            }
+        };
+        
+        configureProgressCells();
+        
+        // Uncomment to load sample data programmatically:
+        // setTimeout(() => {
+        //     window.loadSampleData();
+        // }, 100);
+    </script>
+</body>
+</html>

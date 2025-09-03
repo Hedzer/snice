@@ -65,7 +65,7 @@ interface IController<T extends HTMLElement = HTMLElement> {
 3. Element's `ready` promise is awaited
 4. `attach()` method is called
 5. Event and channel handlers are set up
-6. `controller.attached` event is dispatched
+6. `@snice/controller-attached` event is dispatched
 
 ### Detachment Flow
 
@@ -73,7 +73,7 @@ interface IController<T extends HTMLElement = HTMLElement> {
 2. `element` property is set to null
 3. Event and channel handlers are cleaned up
 4. Controller scope is cleaned up
-5. `controller.detached` event is dispatched
+5. `@snice/controller-detached` event is dispatched
 
 ### Example with Lifecycle Logging
 

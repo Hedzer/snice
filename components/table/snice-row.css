@@ -1,0 +1,255 @@
+:host {
+  display: block;
+  width: 100%;
+  min-height: 2.5rem; /* 40px */
+}
+
+/* Row Container */
+.row-container {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  min-height: 2.5rem; /* 40px */
+  height: 2.5rem; /* 40px */
+  background: #ffffff;
+  border-bottom: 1px solid #ddd;
+  transition: background-color 0.15s ease;
+}
+
+/* Cell Base */
+.cell {
+  display: flex;
+  align-items: center;
+  border-right: 1px solid #ddd;
+  min-height: 2.5rem; /* 40px */
+  height: 2.5rem; /* 40px */
+  min-width: 6.25rem; /* 100px */
+  flex: 1;
+  word-wrap: break-word;
+  overflow: hidden;
+}
+
+.cell:last-child {
+  border-right: none;
+}
+
+/* Checkbox Cell */
+.cell--checkbox {
+  width: 3rem; /* 48px */
+  min-width: 3rem; /* 48px */
+  max-width: 3rem; /* 48px */
+  padding: 0.75rem; /* 12px */
+  justify-content: center;
+}
+
+.row-checkbox {
+  width: 1rem; /* 16px */
+  height: 1rem; /* 16px */
+  cursor: pointer;
+}
+
+/* Cells Container */
+.cells-container {
+  display: flex;
+  flex: 1;
+  align-items: stretch;
+}
+
+/* Cell Type Specific Styles */
+.cell--text {
+  text-align: left;
+}
+
+.cell--number,
+.cell--currency,
+.cell--percent,
+.cell--accounting,
+.cell--scientific,
+.cell--fraction {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.cell--date {
+  min-width: 8rem; /* 128px */
+  font-variant-numeric: tabular-nums;
+}
+
+.cell--boolean {
+  text-align: center;
+  font-size: 1rem; /* 16px */
+}
+
+.cell--rating {
+  text-align: center;
+  min-width: 6rem; /* 96px */
+}
+
+.cell--progress {
+  min-width: 8rem; /* 128px */
+}
+
+.cell--sparkline {
+  text-align: center;
+  min-width: 6rem; /* 96px */
+}
+
+.cell--duration,
+.cell--filesize {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Row States */
+:host(.row--hoverable) .row-container:hover {
+  background-color: var(--snice-color-background-secondary);
+}
+
+:host(.row--clickable) .row-container {
+  cursor: pointer;
+}
+
+:host(.row--clickable) .row-container:hover {
+  background-color: var(--snice-color-background-tertiary);
+}
+
+:host(.row--selected) .row-container {
+  background-color: var(--snice-color-primary-light);
+}
+
+:host(.row--selected.row--hoverable) .row-container:hover {
+  background-color: var(--snice-color-primary-lighter);
+}
+
+/* Highlighted State */
+:host(.row--highlighted) .row-container {
+  background-color: #fff3cd !important;
+  animation: row-highlight-fade 2s ease-out;
+}
+
+@keyframes row-highlight-fade {
+  0% {
+    background-color: #ffeaa7;
+  }
+  100% {
+    background-color: #fff3cd;
+  }
+}
+
+/* Focus States */
+:host(:focus) .row-container {
+  outline: 2px solid #007bff;
+  outline-offset: -2px;
+}
+
+:host(.row--selectable) {
+  tabindex: 0;
+}
+
+/* Striped Rows (applied by parent table) */
+:host(.row--striped) .row-container {
+  background-color: var(--snice-color-background-secondary);
+}
+
+/* Bordered Rows (applied by parent table) */
+:host(.row--bordered) .row-container {
+  border-bottom: 1px solid var(--snice-color-border);
+}
+
+/* Size Variants */
+:host(.row--small) .cell {
+  padding: 0.5rem 0.75rem; /* 8px 12px */
+  min-height: 2rem; /* 32px */
+  font-size: 0.75rem; /* 12px */
+}
+
+:host(.row--small) .row-container {
+  min-height: 2rem; /* 32px */
+}
+
+:host(.row--large) .cell {
+  padding: 1rem 1.25rem; /* 16px 20px */
+  min-height: 3.5rem; /* 56px */
+  font-size: 1rem; /* 16px */
+}
+
+:host(.row--large) .row-container {
+  min-height: 3.5rem; /* 56px */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .cell {
+    padding: 0.5rem 0.75rem; /* 8px 12px */
+    font-size: 0.875rem; /* 14px */
+  }
+  
+  .cell--checkbox {
+    width: 2.5rem; /* 40px */
+    min-width: 2.5rem; /* 40px */
+    max-width: 2.5rem; /* 40px */
+    padding: 0.5rem; /* 8px */
+  }
+  
+  .row-checkbox {
+    width: 0.875rem; /* 14px */
+    height: 0.875rem; /* 14px */
+  }
+}
+
+/* Loading State */
+:host(.row--loading) .row-container {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+:host(.row--loading) .row-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  animation: loading-shimmer 1.5s infinite;
+}
+
+@keyframes loading-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .row-container {
+    transition: none;
+  }
+  
+  :host(.row--highlighted) .row-container {
+    animation: none;
+    background-color: #fff3cd !important;
+  }
+  
+  :host(.row--loading) .row-container::after {
+    animation: none;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .cell {
+    border-right: 1px solid;
+  }
+  
+  .row-container {
+    border-bottom: 1px solid;
+  }
+  
+  :host(.row--selected) .row-container {
+    border: 2px solid;
+  }
+}
