@@ -2,7 +2,7 @@
   "name": "snice",
   "version": "1.10.0",
   "type": "module",
-  "description": "A TypeScript library",
+  "description": "Imperative TypeScript framework for building vanilla web components with decorators, routing, and controllers. No virtual DOM, no build complexity.",
   "main": "src/index.ts",
   "module": "src/index.ts",
   "types": "src/index.ts",
@@ -16,6 +16,40 @@
     "!src/**/*.test.ts",
     "!src/**/*.spec.ts"
   ],
+  "keywords": [
+    "web components",
+    "typescript",
+    "framework",
+    "decorators",
+    "custom elements",
+    "vanilla js",
+    "frontend",
+    "spa",
+    "routing",
+    "imperative",
+    "no virtual dom",
+    "lightweight",
+    "minimal",
+    "controllers",
+    "mvc",
+    "shadow dom",
+    "lit alternative",
+    "stencil alternative",
+    "web standards"
+  ],
+  "author": "hedzer",
+  "license": "MIT",
+  "homepage": "https://github.com/hedzer/snice#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hedzer/snice.git"
+  },
+  "bugs": {
+    "url": "https://github.com/hedzer/snice/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "publishConfig": {
     "access": "public"
   },
