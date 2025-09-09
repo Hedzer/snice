@@ -683,7 +683,7 @@ class ProfilePage extends HTMLElement {
 
 ### Context in Nested Elements
 
-Nested elements within pages can also access context through event bubbling:
+Nested elements within pages can also access context:
 
 ```typescript
 // This element can be used inside any page
