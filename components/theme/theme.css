@@ -82,6 +82,7 @@
   --snice-color-background: rgb(255 255 255);
   --snice-color-background-secondary: rgb(var(--snice-color-gray-50));
   --snice-color-background-tertiary: rgb(var(--snice-color-gray-100));
+  --snice-color-background-element: rgb(252 251 249);
 
   --snice-color-border: rgb(var(--snice-color-gray-200));
   --snice-color-border-hover: rgb(var(--snice-color-gray-300));
@@ -180,6 +181,7 @@
   --snice-color-background: rgb(var(--snice-color-gray-900));
   --snice-color-background-secondary: rgb(var(--snice-color-gray-800));
   --snice-color-background-tertiary: rgb(var(--snice-color-gray-700));
+  --snice-color-background-element: rgb(47 45 43);
 
   --snice-color-border: rgb(var(--snice-color-gray-700));
   --snice-color-border-hover: rgb(var(--snice-color-gray-600));
@@ -216,6 +218,7 @@
     --snice-color-background: rgb(var(--snice-color-gray-900));
     --snice-color-background-secondary: rgb(var(--snice-color-gray-800));
     --snice-color-background-tertiary: rgb(var(--snice-color-gray-700));
+    --snice-color-background-element: rgb(47 45 43);
 
     --snice-color-border: rgb(var(--snice-color-gray-700));
     --snice-color-border-hover: rgb(var(--snice-color-gray-600));
