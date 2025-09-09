@@ -175,7 +175,6 @@ export class TodoItem extends HTMLElement implements TodoItemElement {
   @on('click', '.todo-delete')
   @dispatch('todo-delete')
   handleDelete() {
-    console.log('Delete button clicked, dispatching with id:', this.todoId);
     return { id: this.todoId };
   }
 }

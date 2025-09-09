@@ -1,4 +1,4 @@
-import { element, on, part, property, query, queryAll, ready, request, dispatch, watch } from '../../src/index';
+import { element, on, property, query, request, dispatch, watch } from '../../src/index';
 import '../input/snice-input';
 import '../select/snice-select';
 import './snice-cell.ts';

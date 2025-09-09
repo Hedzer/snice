@@ -81,7 +81,6 @@ export class TodoController {
   
   @on('todo-delete')
   handleDelete(event: CustomEvent) {
-    console.log('Delete event received:', event.detail);
     this.todos = this.todos.filter(t => t.id !== event.detail.id);
     this.saveTodos();
     

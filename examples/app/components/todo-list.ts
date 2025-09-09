@@ -18,7 +18,7 @@ export class TodoList extends HTMLElement implements TodoListElement {
   @query('.clear-button')
   clearButton?: HTMLButtonElement;
   
-  @queryAll('todo-item[completed="true"]')
+  @queryAll('todo-item[completed="true"]', { light: true })
   completedItems?: NodeListOf<TodoItemElement>;
   
   html() {
