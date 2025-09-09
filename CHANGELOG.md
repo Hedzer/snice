@@ -1,3 +1,13 @@
+## [1.10.1](https://gitlab.com/Hedzer/snice/compare/v1.10.0...v1.10.1) (2025-09-09)
+
+
+### Bug Fixes
+
+* demo app clear all todos ([201baa3](https://gitlab.com/Hedzer/snice/commit/201baa341be87821791705770c1a124565614d7d))
+* improved npm SEO ([f15c2d6](https://gitlab.com/Hedzer/snice/commit/f15c2d6d4e676871f4356ade862e110a12e53b4f))
+* improved npm SEO ([da6b455](https://gitlab.com/Hedzer/snice/commit/da6b455c192239afc0dc6a22bb37eab3544fb09d))
+* package details ([65fb6c4](https://gitlab.com/Hedzer/snice/commit/65fb6c4cf77e8bb9ae9261d830440edc9083b1e4))
+
 # [1.10.0](https://gitlab.com/Hedzer/snice/compare/v1.9.0...v1.10.0) (2025-09-09)
 
 
