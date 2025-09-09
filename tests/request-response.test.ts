@@ -573,13 +573,13 @@ describe('@request and @respond decorators', () => {
     @element(elementName)
     class MultiElement extends HTMLElement {
       @request(channel1Name)
-      async *step1(value: number): Response<any> {
+      async *step1(value: number): Response<{ step: number; data: number }> {
         const response = await (yield { input: value });
         return response;
       }
       
       @request(channel2Name)
-      async *step2(value: number): Response<any> {
+      async *step2(value: number): Response<{ step: number; data: number }> {
         const response = await (yield { input: value });
         return response;
       }

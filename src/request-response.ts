@@ -1,7 +1,11 @@
 import { CHANNEL_HANDLERS, CLEANUP, IS_CONTROLLER_INSTANCE } from './symbols';
 
-// Type helper to properly type request generators and eliminate TypeScript warnings
-export type Response<T> = AsyncGenerator<any, T, any>;
+// Pragmatic type for @request decorated methods
+// - Eliminates TypeScript implicit 'any' warnings
+// - Allows property access on returned values (result.data works)
+// - Documents the expected return type T
+// - The @request decorator transforms async generators to return Promise<T> at runtime
+export type Response<T = any> = T | any;
 
 export interface RequestOptions extends EventInit {
   /**

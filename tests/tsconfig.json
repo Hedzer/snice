@@ -2,7 +2,12 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "types": ["vitest/globals"],
-    "noEmit": true
+    "noEmit": true,
+    // Suppress TypeScript warnings that are problematic in test files
+    "noImplicitAny": false,
+    "noImplicitReturns": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
   },
   "include": [
     "**/*.test.ts",

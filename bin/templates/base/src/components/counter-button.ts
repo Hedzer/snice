@@ -1,5 +1,5 @@
 import { element, property, query, on, dispatch } from 'snice';
-import type { ICounterButton } from '../types/counter-button';
+import type { ICounterButton } from './counter-button.types';
 
 @element('counter-button')
 export class CounterButton extends HTMLElement implements ICounterButton {

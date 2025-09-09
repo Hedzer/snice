@@ -590,12 +590,14 @@ Use it:
 Bidirectional communication between elements and controllers:
 
 ```typescript
+import { element, request, type Response } from 'snice';
+
 // Element makes request, controller responds
-@element('user-profile')
+@element('user-profile')  
 class UserProfile extends HTMLElement {
 
   @request('fetch-user')
-  async *getUser() {
+  async *getUser(): Response<{ name: string; email: string }> {
     const user = await (yield { userId: 123 });
     return user;
   }
