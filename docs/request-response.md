@@ -27,7 +27,7 @@ This pattern is implemented using async generators and custom events.
 
 ```typescript
 function request(requestName: string, options?: RequestOptions): MethodDecorator
-function response(responseName: string, options?: ResponseOptions): MethodDecorator
+function response(responseName: string, options?: RespondOptions): MethodDecorator
 
 interface RequestOptions extends EventInit {
   timeout?: number;    // Connection timeout in ms (default: 100ms)
@@ -35,7 +35,7 @@ interface RequestOptions extends EventInit {
   throttle?: number;   // Throttle requests by specified ms
 }
 
-interface ResponseOptions {
+interface RespondOptions {
   debounce?: number;   // Debounce responses by specified ms
   throttle?: number;   // Throttle responses by specified ms
 }
@@ -49,13 +49,13 @@ Response handlers can also be debounced or throttled to prevent excessive proces
 @controller('heavy-processing-controller')
 class ProcessingController implements IController {
   
-  @response('@api/expensive-calculation', { debounce: 1000 })
+  @respond('@api/expensive-calculation', { debounce: 1000 })
   async calculateResults(params: any) {
     // Debounced by 1 second - rapid requests will only trigger the latest
     return await performExpensiveCalculation(params);
   }
   
-  @response('@api/real-time-updates', { throttle: 500 })
+  @respond('@api/real-time-updates', { throttle: 500 })
   async handleUpdates(data: any) {
     // Throttled to max 2 requests per second
     return await processUpdate(data);
@@ -152,7 +152,7 @@ class MultiRequest extends HTMLElement {
 Controllers handle requests and provide responses:
 
 ```typescript
-import { controller, response, IController } from 'snice';
+import { controller, respond, IController } from 'snice';
 
 @controller('user-controller')
 class UserController implements IController {
@@ -166,7 +166,7 @@ class UserController implements IController {
     console.log('User controller detached');
   }
   
-  @response('fetch-user')
+  @respond('fetch-user')
   async handleFetchUser(request: { userId: number }) {
     // Simulate API call
     const response = await fetch(`/api/users/${request.userId}`);
@@ -176,7 +176,7 @@ class UserController implements IController {
     return user;
   }
   
-  @response('multi-data')
+  @respond('multi-data')
   async handleMultiData(request: any) {
     switch (request.type) {
       case 'user':
@@ -349,7 +349,7 @@ class ErrorController implements IController {
   async attach(element: HTMLElement) {}
   async detach(element: HTMLElement) {}
   
-  @response('risky-operation')
+  @respond('risky-operation')
   async handleRiskyOperation(request: any) {
     try {
       // Validate request
@@ -435,7 +435,7 @@ class AuthController implements IController {
   async attach(element: HTMLElement) {}
   async detach(element: HTMLElement) {}
   
-  @response('authenticate')
+  @respond('authenticate')
   async handleAuth(credentials: any) {
     // Validate credentials
     if (credentials.username === 'user@example.com' && 
@@ -459,7 +459,7 @@ class AuthController implements IController {
     };
   }
   
-  @response('fetch-protected')
+  @respond('fetch-protected')
   async handleFetchProtected(request: any) {
     // Validate token
     const user = this.tokens.get(request.token);
@@ -551,7 +551,7 @@ class StreamController implements IController {
   async attach(element: HTMLElement) {}
   async detach(element: HTMLElement) {}
   
-  @response('stream-data')
+  @respond('stream-data')
   async handleStreamData(request: { page: number; pageSize: number }) {
     // Simulate delay
     await new Promise(resolve => setTimeout(resolve, 500));
@@ -585,7 +585,7 @@ class CachedController implements IController {
   async attach(element: HTMLElement) {}
   async detach(element: HTMLElement) {}
   
-  @response('fetch-cached')
+  @respond('fetch-cached')
   async handleFetchCached(request: { key: string; forceRefresh?: boolean }) {
     const cacheKey = request.key;
     const cached = this.cache.get(cacheKey);
@@ -743,7 +743,7 @@ class SubscriptionController implements IController {
     this.subscribers.clear();
   }
   
-  @response('subscribe')
+  @respond('subscribe')
   handleSubscribe(request: any) {
     if (request.subscribe) {
       const id = Math.random().toString(36);
@@ -759,7 +759,7 @@ class SubscriptionController implements IController {
     return { success: false };
   }
   
-  @response('poll-updates')
+  @respond('poll-updates')
   handlePollUpdates(request: any) {
     if (!request.poll) return [];
     

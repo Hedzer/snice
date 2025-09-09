@@ -44,7 +44,7 @@ Snice provides a clear separation of concerns through decorators:
 - **`@on`** - Listens for events on elements
 - **`@dispatch`** - Dispatches custom events after method execution
 - **`@request`** - Makes requests from elements or controllers
-- **`@response`** - Responds to requests in elements or controllers
+- **`@respond`** - Responds to requests in elements or controllers
 
 This separation keeps your components focused: elements handle presentation, controllers manage data, and pages define navigation.
 
@@ -611,7 +611,7 @@ class UserProfile extends HTMLElement {
 @controller('user-controller')
 class UserController {
 
-  @response('fetch-user')
+  @respond('fetch-user')
   async handleFetchUser(request: { userId: number }) {
     const response = await fetch(`/api/users/${request.userId}`);
     return response.json();

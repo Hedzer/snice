@@ -328,7 +328,7 @@ describe('Integration & Stress Tests', () => {
         element: HTMLElement | null = null;
         operations = 0;
         
-        @response('concurrent-channel')
+        @respond('concurrent-channel')
         handleConcurrent(data: any) {
           this.operations++;
           return { value: data.value, processed: true };

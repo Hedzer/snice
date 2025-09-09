@@ -3,7 +3,7 @@ export { Router } from './router';
 export { controller, attachController, detachController, getController, useNativeElementControllers, cleanupNativeElementControllers } from './controller';
 export { on, dispatch } from './events';
 export { observe } from './observe';
-export { request, response } from './request-response';
+export { request, respond } from './request-response';
 export { IS_CONTROLLER_INSTANCE } from './symbols';
 export type { Transition } from './transitions';
 export type { PropertyOptions, PropertyConverter, QueryOptions, SniceElement, PartOptions } from './element';

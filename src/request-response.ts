@@ -165,7 +165,7 @@ export function request(requestName: string, options?: RequestOptions) {
   };
 }
 
-export interface ResponseOptions {
+export interface RespondOptions {
   /**
    * Debounce the response by specified milliseconds
    */
@@ -182,7 +182,7 @@ export interface ResponseOptions {
  * @param requestName The name of the request to respond to
  * @param options Optional configuration
  */
-export function response(requestName: string, options?: ResponseOptions) {
+export function respond(requestName: string, options?: RespondOptions) {
   return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
     

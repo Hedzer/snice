@@ -242,7 +242,7 @@ export function applyElementFunctionality(constructor: any) {
         // Setup @on event handlers - use element for host events, shadow root for delegated events
         setupEventHandlers(this, this);
         
-        // Setup @response handlers for elements
+        // Setup @respond handlers for elements
         setupResponseHandlers(this, this);
         
         // Setup @observe observers
@@ -296,7 +296,7 @@ export function applyElementFunctionality(constructor: any) {
       }
       // Cleanup @on event handlers
       cleanupEventHandlers(this);
-      // Cleanup @response handlers
+      // Cleanup @respond handlers
       cleanupResponseHandlers(this);
       // Cleanup @observe observers
       cleanupObservers(this);

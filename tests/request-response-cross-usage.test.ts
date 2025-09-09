@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { element, controller, request, response, attachController, getController, property, query, watch } from '../src/index';
+import { element, controller, request, respond, attachController, getController, property, query, watch } from '../src/index';
 
 // Helper to generate unique names to avoid state conflicts
 function uniqueName(prefix: string): string {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 }
 
-describe('@request and @response cross-usage tests', () => {
+describe('@request and @respond cross-usage tests', () => {
   let container: HTMLElement;
 
   beforeEach(() => {
@@ -18,7 +18,7 @@ describe('@request and @response cross-usage tests', () => {
     container.remove();
   });
 
-  describe('Elements using @request and @response', () => {
+  describe('Elements using @request and @respond', () => {
     it('should allow elements to use @request decorator', async () => {
       const elementName = uniqueName('request-elem');
       const controllerName = uniqueName('response-ctrl');
@@ -38,7 +38,7 @@ describe('@request and @response cross-usage tests', () => {
         }
       }
 
-      // Controller with @response
+      // Controller with @respond
       @controller(controllerName)
       class ResponseController {
         element: HTMLElement | null = null;
@@ -51,7 +51,7 @@ describe('@request and @response cross-usage tests', () => {
           this.element = null;
         }
 
-        @response(channelName)
+        @respond(channelName)
         handleRequest(data: any) {
           return { result: `Processed: ${data.query}` };
         }
@@ -66,15 +66,15 @@ describe('@request and @response cross-usage tests', () => {
       expect(result.result).toBe('Processed: test');
     });
 
-    it('should allow elements to use @response decorator', async () => {
+    it('should allow elements to use @respond decorator', async () => {
       const elementName = uniqueName('response-elem');
       const controllerName = uniqueName('request-ctrl');
       const channelName = uniqueName('elem-response-channel');
 
-      // Element with @response - elements can respond too!
+      // Element with @respond - elements can respond too!
       @element(elementName)
       class ResponseElement extends HTMLElement {
-        @response(channelName)
+        @respond(channelName)
         handleElementRequest(data: any) {
           return { 
             handledBy: 'element',
@@ -126,16 +126,16 @@ describe('@request and @response cross-usage tests', () => {
     });
   });
 
-  describe('Controllers using @request and @response', () => {
+  describe('Controllers using @request and @respond', () => {
     it('should allow controllers to use @request decorator', async () => {
       const elementName = uniqueName('ctrl-request-elem');
       const controllerName = uniqueName('ctrl-request');
       const channelName = uniqueName('ctrl-request-channel');
 
-      // Element with @response
+      // Element with @respond
       @element(elementName)
       class ElementResponder extends HTMLElement {
-        @response(channelName)
+        @respond(channelName)
         handleControllerRequest(data: any) {
           return { 
             elementResponse: true,
@@ -184,12 +184,12 @@ describe('@request and @response cross-usage tests', () => {
       expect(result.doubled).toBe(42);
     });
 
-    it('should allow controllers to use @response decorator', async () => {
+    it('should allow controllers to use @respond decorator', async () => {
       const elementName = uniqueName('ctrl-response-elem');
       const controllerName = uniqueName('ctrl-response');
       const channelName = uniqueName('ctrl-response-channel');
 
-      // Controller with @response (already tested extensively)
+      // Controller with @respond (already tested extensively)
       @controller(controllerName)
       class ResponseController {
         element: HTMLElement | null = null;
@@ -202,7 +202,7 @@ describe('@request and @response cross-usage tests', () => {
           this.element = null;
         }
 
-        @response(channelName)
+        @respond(channelName)
         handleRequest(data: any) {
           return { controllerHandled: true, echo: data.test };
         }
@@ -253,10 +253,10 @@ describe('@request and @response cross-usage tests', () => {
         }
       }
 
-      // Receiver element with @response
+      // Receiver element with @respond
       @element(receiverName)
       class ReceiverElement extends HTMLElement {
-        @response(channelName)
+        @respond(channelName)
         handleFromOther(data: any) {
           return { 
             from: 'receiver',
@@ -291,10 +291,10 @@ describe('@request and @response cross-usage tests', () => {
       const ctrlName = uniqueName('requesting-ctrl');
       const channelName = uniqueName('ctrl-to-elem-channel');
 
-      // Element with @response decorator  
+      // Element with @respond decorator  
       @element(elementName)
       class ElementWithResponse extends HTMLElement {
-        @response(channelName)
+        @respond(channelName)
         handleControllerRequest(data: any) {
           return { 
             answer: '4',
@@ -359,7 +359,7 @@ describe('@request and @response cross-usage tests', () => {
           return response;
         }
 
-        @response(channelName)
+        @respond(channelName)
         elementHandler(data: any) {
           return { handler: 'element' };
         }
@@ -381,7 +381,7 @@ describe('@request and @response cross-usage tests', () => {
           this.element = null;
         }
 
-        @response(channelName)
+        @respond(channelName)
         handleRequest(data: any) {
           return { handler: 'controller1' };
         }
@@ -399,7 +399,7 @@ describe('@request and @response cross-usage tests', () => {
           this.element = null;
         }
 
-        @response(channelName)
+        @respond(channelName)
         handleRequest(data: any) {
           return { handler: 'controller2' };
         }
@@ -454,7 +454,7 @@ describe('@request and @response cross-usage tests', () => {
           this.element = null;
         }
 
-        @response(channelName)
+        @respond(channelName)
         handleRequest(data: any) {
           return { 
             received: data.test,
@@ -496,7 +496,7 @@ describe('@request and @response cross-usage tests', () => {
 
       @element(elementName)
       class ResponseElement extends HTMLElement {
-        @response(channelName)
+        @respond(channelName)
         handleControllerRequest(data: any) {
           return { 
             result: data.value * 3,
@@ -626,7 +626,7 @@ describe('@request and @response cross-usage tests', () => {
           this.element = null;
         }
         
-        @response('fetch-user')
+        @respond('fetch-user')
         async handleFetchUser(request: { userId: number }) {
           // Simulate API response
           return { 
@@ -701,18 +701,18 @@ describe('@request and @response cross-usage tests', () => {
           this.element = null;
         }
 
-        @response('quick-data')
+        @respond('quick-data')
         handleQuick(data: any) {
           return { quick: true, received: data.quick };
         }
 
-        @response('slow-data')
+        @respond('slow-data')
         async handleSlow(data: any) {
           await new Promise(resolve => setTimeout(resolve, 100));
           return { slow: true, received: data.slow };
         }
 
-        @response('private-data')
+        @respond('private-data')
         handlePrivate(data: any) {
           return { private: true, received: data.private };
         }
@@ -801,7 +801,7 @@ describe('@request and @response cross-usage tests', () => {
           this.element = null;
         }
         
-        @response('stream-data')
+        @respond('stream-data')
         async handleStreamData(request: { page: number; pageSize: number }) {
           // Simulate delay
           await new Promise(resolve => setTimeout(resolve, 5));
@@ -962,7 +962,7 @@ describe('@request and @response cross-usage tests', () => {
           this.subscribers.clear();
         }
         
-        @response('subscribe')
+        @respond('subscribe')
         handleSubscribe(request: any) {
           if (request.subscribe) {
             const id = Math.random().toString(36);
@@ -978,7 +978,7 @@ describe('@request and @response cross-usage tests', () => {
           return { success: false };
         }
         
-        @response('poll-updates')
+        @respond('poll-updates')
         handlePollUpdates(request: any) {
           if (!request.poll) return [];
           

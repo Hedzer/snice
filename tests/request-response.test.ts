@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { element, controller, request, response, attachController, detachController } from '../src/index';
+import { element, controller, request, respond, attachController, detachController } from '../src/index';
 
 // Helper to generate unique names to avoid state conflicts
 function uniqueName(prefix: string): string {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 }
 
-describe('@request and @response decorators', () => {
+describe('@request and @respond decorators', () => {
   let container: HTMLElement;
 
   beforeEach(() => {
@@ -35,7 +35,7 @@ describe('@request and @response decorators', () => {
         this.element = null;
       }
 
-      @response(requestName)
+      @respond(requestName)
       handleRequest(data: any) {
         return { 
           received: data.message, 
@@ -111,7 +111,7 @@ describe('@request and @response decorators', () => {
         this.element = null;
       }
 
-      @response(channelName)
+      @respond(channelName)
       async handleRequest(data: any) {
         await new Promise(resolve => setTimeout(resolve, 5));
         return { 
@@ -163,7 +163,7 @@ describe('@request and @response decorators', () => {
         this.element = null;
       }
 
-      @response(channelName)
+      @respond(channelName)
       handleRequest(data: any) {
         this.callCount++;
         return { 
@@ -216,7 +216,7 @@ describe('@request and @response decorators', () => {
         this.element = null;
       }
 
-      @response(channelName)
+      @respond(channelName)
       handleRequest() {
         requestCount++;
         return { count: requestCount };
@@ -269,7 +269,7 @@ describe('@request and @response decorators', () => {
         this.element = null;
       }
 
-      @response(channelName)
+      @respond(channelName)
       async handleSlowRequest() {
         // Never resolve to simulate timeout
         await new Promise(() => {});
@@ -316,7 +316,7 @@ describe('@request and @response decorators', () => {
         this.element = null;
       }
 
-      @response(channelName)
+      @respond(channelName)
       async handleRequest(data: any) {
         this.requestCount++;
         const count = this.requestCount;
@@ -374,7 +374,7 @@ describe('@request and @response decorators', () => {
         this.element = null;
       }
 
-      @response(channelName)
+      @respond(channelName)
       handleRequest() {
         return { handled: true };
       }
@@ -420,7 +420,7 @@ describe('@request and @response decorators', () => {
         this.element = null;
       }
 
-      @response(channelName)
+      @respond(channelName)
       handleRequest() {
         return { handled: true };
       }
@@ -493,7 +493,7 @@ describe('@request and @response decorators', () => {
         this.element = null;
       }
       
-      @response(channelName)
+      @respond(channelName)
       handleGetData(request: any) {
         // console.log(request);  // { id: 123 }
         return { name: 'Alice' };
@@ -559,12 +559,12 @@ describe('@request and @response decorators', () => {
         this.element = null;
       }
       
-      @response(channel1Name)
+      @respond(channel1Name)
       handleStep1(request: any) {
         return { step: 1, data: request.input * 2 };
       }
       
-      @response(channel2Name)
+      @respond(channel2Name)
       handleStep2(request: any) {
         return { step: 2, data: request.input + 10 };
       }
@@ -623,7 +623,7 @@ describe('@request and @response decorators', () => {
         this.element = null;
       }
 
-      @response(channelName)
+      @respond(channelName)
       handleShadowRequest(data: any) {
         return { 
           received: data.value,
@@ -698,7 +698,7 @@ describe('@request and @response decorators', () => {
         this.element = null;
       }
 
-      @response(channelName)
+      @respond(channelName)
       handleNestedRequest(data: any) {
         return { 
           depth: data.depth,
