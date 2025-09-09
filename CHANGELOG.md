@@ -1,3 +1,23 @@
+# [1.10.0](https://gitlab.com/Hedzer/snice/compare/v1.9.0...v1.10.0) (2025-09-09)
+
+
+### Bug Fixes
+
+* added reflection to missing component properties ([9627359](https://gitlab.com/Hedzer/snice/commit/962735937bac14859d252a03780234c75753836e))
+* breadcrum validations & imports ([150541d](https://gitlab.com/Hedzer/snice/commit/150541d55573fda001aed5d9aa37c12fc0d47010))
+* tooltip ui speech bubble ([34bcb23](https://gitlab.com/Hedzer/snice/commit/34bcb23ae71fbb3f85ef12eb9860e6e8f77cba63))
+
+
+### Features
+
+* added [@part](https://gitlab.com/part) decorator ([80144e6](https://gitlab.com/Hedzer/snice/commit/80144e6a9d4292c18619eb14033e476d25128972))
+* added alert, breadcrumbs, and card components ([d09024b](https://gitlab.com/Hedzer/snice/commit/d09024b7be9e0ae9e4957a8f3aec3817606d1416))
+* added drawer ([806246d](https://gitlab.com/Hedzer/snice/commit/806246d6e2ff6b099feff0f2b566ac10eab243be))
+* added SimpleArray ([28850c0](https://gitlab.com/Hedzer/snice/commit/28850c0ea0b4649d4a63bd920d00746623e2bc23))
+* added support for Date and BigInt props ([1ed446d](https://gitlab.com/Hedzer/snice/commit/1ed446d132dbd9756c100724e4c45d529293de59))
+* response improvements ([ac37dac](https://gitlab.com/Hedzer/snice/commit/ac37dac4ade20b911a2a02985d25e055f5da9a8b))
+* test & type improvements ([749f42d](https://gitlab.com/Hedzer/snice/commit/749f42d6900c8526b5cefb09009dba6e22ebf91f))
+
 # [1.9.0](https://gitlab.com/Hedzer/snice/compare/v1.8.0...v1.9.0) (2025-08-17)
 
 
