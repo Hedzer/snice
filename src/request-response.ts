@@ -1,10 +1,17 @@
 import { CHANNEL_HANDLERS, CLEANUP, IS_CONTROLLER_INSTANCE } from './symbols';
 
+// Type helper to properly type request generators and eliminate TypeScript warnings
+export type Response<T> = AsyncGenerator<any, T, any>;
+
 export interface RequestOptions extends EventInit {
   /**
-   * Timeout for waiting for responses (in ms)
+   * Timeout for waiting for responses (in ms) - defaults to 5000ms
    */
   timeout?: number;
+  /**
+   * Timeout for finding a handler (in ms) - defaults to 50ms
+   */
+  discoveryTimeout?: number;
   /**
    * Debounce the request by specified milliseconds
    */
@@ -34,7 +41,8 @@ export function request(requestName: string, options?: RequestOptions) {
     descriptor.value = async function (this: any, ...args: any[]) {
       const actualRequest = async () => {
         // @request always acts as requester (client side)
-        const timeout = options?.timeout ?? 100; // Default 100ms timeout
+        const responseTimeout = options?.timeout ?? 120000; // Default 2 minute timeout
+        const discoveryTimeout = options?.discoveryTimeout ?? 50; // Default 50ms discovery timeout
         
         // Create the generator
       const generator = originalMethod.apply(this, args);
@@ -55,16 +63,16 @@ export function request(requestName: string, options?: RequestOptions) {
         dataReject = reject;
       });
       
-      // Create timeout promise and expose resolve/reject
-      let timeoutResolve: () => void;
-      let timeoutReject: (reason?: any) => void;
-      let timeoutId: NodeJS.Timeout;
-      const timeoutPromise = new Promise<void>((resolve, reject) => {
-        timeoutResolve = resolve;
-        timeoutReject = reject;
-        timeoutId = setTimeout(() => {
-          reject(new Error(`Request "${requestName}" timed out after ${timeout}ms`));
-        }, timeout);
+      // Create discovery timeout promise and expose resolve/reject
+      let discoveryResolve: () => void;
+      let discoveryReject: (reason?: any) => void;
+      let discoveryTimeoutId: NodeJS.Timeout;
+      const discoveryPromise = new Promise<void>((resolve, reject) => {
+        discoveryResolve = resolve;
+        discoveryReject = reject;
+        discoveryTimeoutId = setTimeout(() => {
+          reject(new Error(`Request "${requestName}" timed out after ${discoveryTimeout}ms - no handler found`));
+        }, discoveryTimeout);
       });
       
       // Dispatch event with promises
@@ -75,12 +83,12 @@ export function request(requestName: string, options?: RequestOptions) {
         composed: true, // Allow crossing shadow DOM boundaries
         detail: {
           payload,
-          timeout: {
+          discovery: {
             resolve: () => {
-              clearTimeout(timeoutId);
-              timeoutResolve();
+              clearTimeout(discoveryTimeoutId);
+              discoveryResolve();
             },
-            reject: timeoutReject!
+            reject: discoveryReject!
           },
           data: {
             resolve: dataResolve!,
@@ -95,12 +103,17 @@ export function request(requestName: string, options?: RequestOptions) {
       dispatcher.dispatchEvent(event);
       
       try {
-        // Wait for timeout to be cleared (handler found) or timeout to reject (no handler)
-        await timeoutPromise;
+        // Wait for discovery timeout to be cleared (handler found) or discovery timeout to reject (no handler)
+        await discoveryPromise;
         
-        // If we get here, a handler was found and timeout was cleared
-        // Now wait for the actual data response (which can take as long as needed)
+        // If we get here, a handler was found and discovery timeout was cleared
+        // Now wait for the actual data response with the full response timeout
+        const responseTimeoutId = setTimeout(() => {
+          dataReject!(new Error(`Request "${requestName}" timed out after ${responseTimeout}ms`));
+        }, responseTimeout);
+        
         const response = await dataPromise;
+        clearTimeout(responseTimeoutId);
         
         // Send response back to generator and get final return value
         const { value: finalValue } = await generator.next(response);
@@ -278,15 +291,15 @@ export function setupResponseHandlers(instance: any, element: HTMLElement) {
     // Setup response handler
     const responseHandler = (event: CustomEvent) => {
       // Extract promises and payload
-      const { data, timeout, payload } = event.detail;
+      const { data, discovery, payload } = event.detail;
       
       // Prevent other responders from responding
       event.preventDefault();
       event.stopImmediatePropagation();
       event.stopPropagation();
       
-      // Clear the connection timeout immediately - we found a handler
-      timeout.resolve();
+      // Clear the discovery timeout immediately - we found a handler
+      discovery.resolve();
       
       // Call the timed responder method and handle the result
       Promise.resolve(timedMethod(payload))

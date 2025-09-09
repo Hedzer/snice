@@ -1,9 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { element, property, query, queryAll } from '../src/element';
-import { controller, attachController, detachController, useNativeElementControllers, cleanupNativeElementControllers } from '../src/controller';
-import { on, dispatch } from '../src/events';
-import { request, response } from '../src/request-response';
-import { Router } from '../src/router';
+import { element, property } from '../src/element';
+import { controller, attachController, useNativeElementControllers, cleanupNativeElementControllers } from '../src/controller';
+import { on } from '../src/events';
+import { request, respond } from '../src/request-response';
 
 describe('Integration & Stress Tests', () => {
   beforeEach(() => {

@@ -30,15 +30,20 @@ function request(requestName: string, options?: RequestOptions): MethodDecorator
 function response(responseName: string, options?: RespondOptions): MethodDecorator
 
 interface RequestOptions extends EventInit {
-  timeout?: number;    // Connection timeout in ms (default: 100ms)
-  debounce?: number;   // Debounce requests by specified ms
-  throttle?: number;   // Throttle requests by specified ms
+  timeout?: number;         // Response timeout in ms (default: 120000ms = 2 minutes)
+  discoveryTimeout?: number; // Handler discovery timeout in ms (default: 50ms)
+  debounce?: number;        // Debounce requests by specified ms
+  throttle?: number;        // Throttle requests by specified ms
 }
 
 interface RespondOptions {
   debounce?: number;   // Debounce responses by specified ms
   throttle?: number;   // Throttle responses by specified ms
 }
+
+// Type helper to eliminate TypeScript warnings in request generators
+// Use this for method signatures - it handles both the generator implementation and promise return
+type Response<T> = AsyncGenerator<any, T, any> | Promise<T>;
 ```
 
 #### Response Debounce/Throttle
@@ -68,7 +73,7 @@ class ProcessingController implements IController {
 Elements use async generators to make requests:
 
 ```typescript
-import { element, request } from 'snice';
+import { element, request, Response } from 'snice';
 
 @element('user-card')
 class UserCard extends HTMLElement {
@@ -84,7 +89,7 @@ class UserCard extends HTMLElement {
   }
   
   @request('fetch-user')
-  async *fetchUserData() {
+  async *fetchUserData(): Response<{ success: boolean; user: any }> {
     // Yield sends the request, await waits for response
     const user = await (yield { userId: this.userId });
     
@@ -219,28 +224,36 @@ class UserController implements IController {
 
 ```typescript
 interface RequestOptions extends EventInit {
-  timeout?: number;    // Connection timeout in ms (default: 100ms)
-  debounce?: number;   // Debounce requests by specified ms
-  throttle?: number;   // Throttle requests by specified ms
+  timeout?: number;         // Response timeout in ms (default: 120000ms = 2 minutes)
+  discoveryTimeout?: number; // Handler discovery timeout in ms (default: 50ms)
+  debounce?: number;        // Debounce requests by specified ms
+  throttle?: number;        // Throttle requests by specified ms
 }
 ```
 
 #### Timeout Behavior (IMPORTANT)
 
-The `timeout` option controls **connection timeout only**, not processing time:
+The timeout system has **two separate timeouts** for different phases:
 
-- ✅ **Connection phase**: 100ms timeout to find a handler
-- ✅ **Processing phase**: No time limit once handler is found
+- **Discovery timeout** (`discoveryTimeout`): 50ms (default) - Fast timeout to find a handler
+- **Response timeout** (`timeout`): 2 minutes (default) - Total time allowed for the request
 
 ```typescript
-@request('@api/heavy-processing', { timeout: 100 })
+@request('@api/heavy-processing', { 
+  discoveryTimeout: 50,      // 50ms to find handler (fast)
+  timeout: 30000            // 30s total timeout for processing
+})
 async *processData() {
-  // Will timeout in 100ms if no handler exists
-  // But processing can take hours once handler is found
+  // Will timeout in 50ms if no handler exists
+  // Will timeout in 30s total if processing takes too long
   const result = await (yield data);
   return result;
 }
 ```
+
+**Why two timeouts?**
+- **Discovery**: Should be very fast (dozens of milliseconds) - just finding if anyone can handle the request
+- **Response**: Should be human-scale (seconds/minutes) - actual work takes time
 
 #### Debounce Support
 
@@ -273,25 +286,39 @@ async *trackEvent() {
 ```typescript
 @element('timeout-example')
 class TimeoutExample extends HTMLElement {
-  // Quick timeout for fast operations
-  @request('quick-data', { timeout: 50 })
+  // Quick discovery, short total timeout for fast operations
+  @request('quick-data', { 
+    discoveryTimeout: 25,  // Very fast discovery
+    timeout: 1000          // 1 second total
+  })
   async *fetchQuickData() {
     const data = await (yield { quick: true });
     return data;
   }
   
-  // Longer timeout for slow operations
-  @request('slow-data', { timeout: 5000 })
+  // Standard discovery, longer timeout for slow operations
+  @request('slow-data', { 
+    discoveryTimeout: 50,  // Default discovery
+    timeout: 30000         // 30 seconds total
+  })
   async *fetchSlowData() {
     const data = await (yield { slow: true });
     return data;
   }
   
-  // Custom event options
+  // Use defaults (50ms discovery, 2 minutes total)
+  @request('default-data')
+  async *fetchDefaultData() {
+    const data = await (yield { default: true });
+    return data;
+  }
+  
+  // Custom event options with timeouts
   @request('private-data', { 
-    timeout: 1000,
-    bubbles: false,  // Don't bubble
-    cancelable: true  // Can be canceled
+    discoveryTimeout: 100, // Slower discovery
+    timeout: 60000,        // 1 minute total
+    bubbles: false,        // Don't bubble
+    cancelable: true       // Can be canceled
   })
   async *fetchPrivateData() {
     const data = await (yield { private: true });
@@ -307,15 +334,21 @@ class TimeoutExample extends HTMLElement {
 ```typescript
 @element('timeout-handler')
 class TimeoutHandler extends HTMLElement {
-  @request('data', { timeout: 100 })
+  @request('data', { 
+    discoveryTimeout: 50,
+    timeout: 5000 
+  })
   async *fetchData() {
     try {
       const data = await (yield { request: 'data' });
       return { success: true, data };
     } catch (error) {
-      // Handle timeout or other errors
-      if (error.message.includes('timeout')) {
-        console.error('Request timed out');
+      // Handle different types of timeout errors
+      if (error.message.includes('timed out after') && error.message.includes('no handler found')) {
+        console.error('No handler found for request');
+        return { success: false, error: 'no_handler' };
+      } else if (error.message.includes('timed out after')) {
+        console.error('Request processing timed out');
         return { success: false, error: 'timeout' };
       }
       throw error;

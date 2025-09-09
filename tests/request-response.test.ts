@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { element, controller, request, respond, attachController, detachController } from '../src/index';
+import { element, controller, request, respond, attachController, detachController, type Response } from '../src/index';
 
 // Helper to generate unique names to avoid state conflicts
 function uniqueName(prefix: string): string {
@@ -47,7 +47,7 @@ describe('@request and @respond decorators', () => {
     @element(elementName)
     class BasicElement extends HTMLElement {
       @request(requestName)
-      async *communicate() {
+      async *communicate(): Response<any> {
         const response = await (yield { message: 'Hello from element' });
         return response;
       }
@@ -78,7 +78,7 @@ describe('@request and @respond decorators', () => {
     @element(elementName)
     class OrphanElement extends HTMLElement {
       @request(channelName, { timeout: 50 })
-      async *communicate() {
+      async *communicate(): Response<any> {
         const response = await (yield { message: 'Hello?' });
         return response;
       }
@@ -91,7 +91,7 @@ describe('@request and @respond decorators', () => {
     const el = document.createElement(elementName) as any;
     container.appendChild(el);
     
-    await expect(el.communicate()).rejects.toThrow('Request timeout');
+    await expect(el.communicate()).rejects.toThrow(/timed out after \d+ms/);
   });
 
   it('should handle async controller responses', async () => {
@@ -124,7 +124,7 @@ describe('@request and @respond decorators', () => {
     @element(elementName)
     class AsyncElement extends HTMLElement {
       @request(channelName)
-      async *communicate() {
+      async *communicate(): Response<any> {
         const response = await (yield { value: 21 });
         return response;
       }
@@ -177,7 +177,7 @@ describe('@request and @respond decorators', () => {
     @element(elementName)
     class MultiElement extends HTMLElement {
       @request(channelName)
-      async *multiStep() {
+      async *multiStep(): Response<any> {
         const response = await (yield { step: 1, data: 'first' });
         return response;
       }
@@ -226,7 +226,7 @@ describe('@request and @respond decorators', () => {
     @element(elementName)
     class CleanupElement extends HTMLElement {
       @request(channelName)
-      async *communicate() {
+      async *communicate(): Response<any> {
         const response = await (yield { test: true });
         return response;
       }
@@ -248,7 +248,7 @@ describe('@request and @respond decorators', () => {
     await detachController(el);
     await new Promise(resolve => setTimeout(resolve, 10));
     
-    await expect(el.communicate()).rejects.toThrow('Request timeout');
+    await expect(el.communicate()).rejects.toThrow(/timed out after \d+ms/);
     expect(requestCount).toBe(1);
   });
 
@@ -279,7 +279,7 @@ describe('@request and @respond decorators', () => {
     @element(elementName)
     class TimeoutElement extends HTMLElement {
       @request(channelName, { timeout: 50 })
-      async *requestWithTimeout() {
+      async *requestWithTimeout(): Response<any> {
         const response = await (yield { request: 'data' });
         return response;
       }
@@ -294,7 +294,7 @@ describe('@request and @respond decorators', () => {
     await attachController(el, controllerName);
     await new Promise(resolve => setTimeout(resolve, 10));
 
-    await expect(el.requestWithTimeout()).rejects.toThrow('Request timeout');
+    await expect(el.requestWithTimeout()).rejects.toThrow(/timed out after \d+ms/);
   });
 
 
@@ -328,7 +328,7 @@ describe('@request and @respond decorators', () => {
     @element(elementName)
     class ConcurrentElement extends HTMLElement {
       @request(channelName)
-      async *sendRequest(id: number) {
+      async *sendRequest(id: number): Response<any> {
         const response = await (yield { id });
         return response;
       }
@@ -383,7 +383,7 @@ describe('@request and @respond decorators', () => {
     @element(elementName)
     class NoYieldElement extends HTMLElement {
       @request(channelName)
-      async *noYield() {
+      async *noYield(): Response<any> {
         const response = await (yield { completed: true, yielded: false });
         return response;
       }
@@ -429,7 +429,7 @@ describe('@request and @respond decorators', () => {
     @element(elementName)
     class BubbleElement extends HTMLElement {
       @request(channelName, { bubbles: false })
-      async *requestNoBubble() {
+      async *requestNoBubble(): Response<any> {
         const response = await (yield { test: 'no-bubble' });
         return response;
       }
@@ -464,7 +464,7 @@ describe('@request and @respond decorators', () => {
     @element(elementName)
     class UserCard extends HTMLElement {
       @request(channelName)
-      async *fetchUserData() {
+      async *fetchUserData(): Response<any> {
         // Yield sends request, await waits for response
         const user = await (yield { id: 123 });
         return user;
@@ -524,7 +524,7 @@ describe('@request and @respond decorators', () => {
     @element(elementName)
     class NoYieldCard extends HTMLElement {
       @request(channelName)
-      async *getData() {
+      async *getData(): Response<any> {
         // Return without yielding - should just return the value
         return { direct: 'return' };
       }
@@ -573,13 +573,13 @@ describe('@request and @respond decorators', () => {
     @element(elementName)
     class MultiElement extends HTMLElement {
       @request(channel1Name)
-      async *step1(value: number) {
+      async *step1(value: number): Response<any> {
         const response = await (yield { input: value });
         return response;
       }
       
       @request(channel2Name)
-      async *step2(value: number) {
+      async *step2(value: number): Response<any> {
         const response = await (yield { input: value });
         return response;
       }
@@ -637,7 +637,7 @@ describe('@request and @respond decorators', () => {
     @element(childElementName)
     class ShadowChild extends HTMLElement {
       @request(channelName)
-      async *sendFromShadow(value: number) {
+      async *sendFromShadow(value: number): Response<any> {
         const response = await (yield { value });
         return response;
       }
@@ -712,7 +712,7 @@ describe('@request and @respond decorators', () => {
     @element(deepElementName)
     class NestedDeep extends HTMLElement {
       @request(channelName)
-      async *sendFromDeep() {
+      async *sendFromDeep(): Response<any> {
         const response = await (yield { depth: 3, message: 'from deep' });
         return response;
       }
