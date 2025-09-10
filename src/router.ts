@@ -1,6 +1,6 @@
 import Route from 'route-parser';
 import { applyElementFunctionality } from './element';
-import { ROUTER_CONTEXT, CONTEXT_REQUEST_HANDLER, PAGE_TRANSITION } from './symbols';
+import { ROUTER_CONTEXT, CONTEXT_REQUEST_HANDLER, PAGE_TRANSITION, CREATED_AT } from './symbols';
 import { Transition, performTransition as performTransitionUtil } from './transitions';
 
 /**
@@ -117,9 +117,27 @@ export function Router(options: RouterOptions): RouterInstance {
   let _404: string; // the 404 page
   let _403: string; // the 403 forbidden page
   let home: string; // the home page
-  let currentLayoutElement: HTMLElement | null = null; // Track current layout
   let currentLayoutName: string | null = null; // Track current layout name
+  let currentLayoutTimestamp: number | null = null; // Track current layout timestamp
   const context = options.context || {}; // Store context for guards
+
+  function getCurrentLayoutElement(target: Element): HTMLElement | null {
+    const noCurrentLayout = !currentLayoutName || !currentLayoutTimestamp;
+    if (noCurrentLayout) {
+      return null;
+    }
+    
+    const layoutElements = target.querySelectorAll(currentLayoutName!) as NodeListOf<HTMLElement>;
+    
+    for (const element of layoutElements) {
+      const hasTimestamp = (element as any)[CREATED_AT] === currentLayoutTimestamp;
+      if (hasTimestamp) {
+        return element;
+      }
+    }
+    
+    return null;
+  }
 
   /**
    * Decorator function for defining a page with associated routes.
@@ -281,7 +299,8 @@ export function Router(options: RouterOptions): RouterInstance {
     
     target.innerHTML = '';
     target.appendChild(newPageElement!);
-    currentLayoutElement = null;
+    currentLayoutName = null;
+    currentLayoutTimestamp = null;
   }
 
   async function checkGuards(guards: Guard<any> | Guard<any>[] | undefined, params: RouteParams, target: Element): Promise<boolean> {
@@ -371,46 +390,57 @@ export function Router(options: RouterOptions): RouterInstance {
     return null;
   }
 
-  function setupLayout(layoutToUse: string | null): boolean {
+  function setupLayout(layoutToUse: string | null): { element: HTMLElement | null; needsNewLayout: boolean } {
     const needsNewLayout = layoutToUse !== currentLayoutName;
     if (!needsNewLayout) {
-      return false;
+      return { element: null, needsNewLayout: false };
     }
     
-    currentLayoutElement = null;
     currentLayoutName = layoutToUse;
     
     const shouldCreateLayout = !!layoutToUse;
     if (shouldCreateLayout) {
-      currentLayoutElement = document.createElement(layoutToUse);
-      (currentLayoutElement as any)[ROUTER_CONTEXT] = context;
+      const timestamp = Date.now();
+      currentLayoutTimestamp = timestamp;
+      
+      const layoutElement = document.createElement(layoutToUse);
+      (layoutElement as any)[ROUTER_CONTEXT] = context;
+      (layoutElement as any)[CREATED_AT] = timestamp;
+      
+      return { element: layoutElement, needsNewLayout: true };
     }
     
-    return true;
+    currentLayoutTimestamp = null;
+    return { element: null, needsNewLayout: true };
   }
 
-  async function renderWithLayout(target: Element, pageElement: HTMLElement, transition: Transition | undefined, needsNewLayout: boolean): Promise<void> {
-    const oldPageInLayout = currentLayoutElement!.querySelector('[slot="page"]') as HTMLElement | null;
+  async function renderWithLayout(target: Element, pageElement: HTMLElement, transition: Transition | undefined, layoutElement: HTMLElement | null, needsNewLayout: boolean): Promise<void> {
+    const currentLayout = layoutElement || getCurrentLayoutElement(target);
+    if (!currentLayout) {
+      return;
+    }
+    
+    const oldPageInLayout = currentLayout.querySelector('[slot="page"]') as HTMLElement | null;
     const shouldTransition = !!(transition && oldPageInLayout);
     
     if (shouldTransition) {
       pageElement.setAttribute('slot', 'page');
-      await performTransition(currentLayoutElement!, oldPageInLayout!, pageElement, transition!);
+      await performTransition(currentLayout, oldPageInLayout!, pageElement, transition!);
       if (needsNewLayout) {
         target.innerHTML = '';
-        target.appendChild(currentLayoutElement!);
+        target.appendChild(currentLayout);
       }
       return;
     }
     
-    const existingPages = currentLayoutElement!.querySelectorAll('[slot="page"]');
+    const existingPages = currentLayout.querySelectorAll('[slot="page"]');
     existingPages.forEach(page => page.remove());
     pageElement.setAttribute('slot', 'page');
-    currentLayoutElement!.appendChild(pageElement);
+    currentLayout.appendChild(pageElement);
     
     if (needsNewLayout) {
       target.innerHTML = '';
-      target.appendChild(currentLayoutElement!);
+      target.appendChild(currentLayout);
     }
   }
 
@@ -452,12 +482,12 @@ export function Router(options: RouterOptions): RouterInstance {
       
       const { element, transition, layout } = createHomeElement();
       const layoutToUse = determineLayout(layout);
-      const needsNewLayout = setupLayout(layoutToUse);
+      const { element: layoutElement, needsNewLayout } = setupLayout(layoutToUse);
       const finalTransition = transition || options.transition;
       
-      const hasLayout = !!currentLayoutElement;
+      const hasLayout = layoutElement !== null || getCurrentLayoutElement(target) !== null;
       if (hasLayout) {
-        await renderWithLayout(target, element, finalTransition, needsNewLayout);
+        await renderWithLayout(target, element, finalTransition, layoutElement, needsNewLayout);
         return;
       }
       
@@ -476,12 +506,12 @@ export function Router(options: RouterOptions): RouterInstance {
     if (isSuccess) {
       const { element, transition, layout } = routeResult;
       const layoutToUse = determineLayout(layout);
-      const needsNewLayout = setupLayout(layoutToUse);
+      const { element: layoutElement, needsNewLayout } = setupLayout(layoutToUse);
       const finalTransition = transition || options.transition;
       
-      const hasLayout = !!currentLayoutElement;
+      const hasLayout = layoutElement !== null || getCurrentLayoutElement(target) !== null;
       if (hasLayout) {
-        await renderWithLayout(target, element!, finalTransition, needsNewLayout);
+        await renderWithLayout(target, element!, finalTransition, layoutElement, needsNewLayout);
         return;
       }
       
@@ -491,12 +521,12 @@ export function Router(options: RouterOptions): RouterInstance {
     
     const { element, transition, layout } = create404Element();
     const layoutToUse = determineLayout(layout);
-    const needsNewLayout = setupLayout(layoutToUse);
+    const { element: layoutElement, needsNewLayout } = setupLayout(layoutToUse);
     const finalTransition = transition || options.transition;
     
-    const hasLayout = !!currentLayoutElement;
+    const hasLayout = layoutElement !== null || getCurrentLayoutElement(target) !== null;
     if (hasLayout) {
-      await renderWithLayout(target, element, finalTransition, needsNewLayout);
+      await renderWithLayout(target, element, finalTransition, layoutElement, needsNewLayout);
       return;
     }
     

@@ -38,6 +38,7 @@ export const ROUTER_CONTEXT = getSymbol('router-context');
 export const CURRENT_PAGE_MARKER = getSymbol('current-page-marker');
 export const CONTEXT_REQUEST_HANDLER = getSymbol('context-request-handler');
 export const PAGE_TRANSITION = getSymbol('page-transition');
+export const CREATED_AT = getSymbol('created-at');
 
 // Lifecycle symbols
 export const READY_HANDLERS = getSymbol('ready-handlers');
