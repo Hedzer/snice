@@ -16,98 +16,39 @@ import { containerStyles } from '../styles/shared';
 export class HomePage extends HTMLElement {
   html() {
     return /*html*/`
-      <nav class="navbar">
-        <div class="nav-container">
-          <h1 class="nav-brand">Snice</h1>
-          <ul class="nav-menu">
-            <li><a href="#/" class="nav-link active">Home</a></li>
-            <li><a href="#/todos" class="nav-link">Todos</a></li>
-            <li><a href="#/about" class="nav-link">About</a></li>
-          </ul>
+      <div class="hero">
+        <h1>Welcome to Snice</h1>
+        <p class="subtitle">A simple, decorator-based framework for building web applications</p>
+        <div class="features">
+          <div class="feature">
+            <h3>🎯 Simple</h3>
+            <p>Clean API with decorators for elements, properties, and events</p>
+          </div>
+          <div class="feature">
+            <h3>🚀 Fast</h3>
+            <p>Lightweight with no virtual DOM overhead</p>
+          </div>
+          <div class="feature">
+            <h3>🔧 Flexible</h3>
+            <p>Built-in routing and controller system</p>
+          </div>
         </div>
-      </nav>
-      <div class="container">
-        <div class="hero">
-          <h1>Welcome to Snice</h1>
-          <p class="subtitle">A simple, decorator-based framework for building web applications</p>
-          <div class="features">
-            <div class="feature">
-              <h3>🎯 Simple</h3>
-              <p>Clean API with decorators for elements, properties, and events</p>
-            </div>
-            <div class="feature">
-              <h3>🚀 Fast</h3>
-              <p>Lightweight with no virtual DOM overhead</p>
-            </div>
-            <div class="feature">
-              <h3>🔧 Flexible</h3>
-              <p>Built-in routing and controller system</p>
-            </div>
-          </div>
-          <div class="cta">
-            <a href="#/todos" class="btn btn-primary">Try Todo App</a>
-            <a href="#/about" class="btn btn-secondary">Learn More</a>
-          </div>
+        <div class="cta">
+          <a href="#/todos" class="btn btn-primary">Try Todo App</a>
+          <a href="#/about" class="btn btn-secondary">Learn More</a>
         </div>
       </div>
     `;
   }
 
   css() {
-    // Return array of CSS strings - shared + component-specific
     return [
       containerStyles,
       /*css*/`
-        .navbar {
-          background: white;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-          position: sticky;
-          top: 0;
-          z-index: 100;
-        }
-        
-        .nav-container {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 1rem 2rem;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-        
-        .nav-brand {
-          font-size: 1.5rem;
-          color: #333;
-          margin: 0;
-        }
-        
-        .nav-menu {
-          display: flex;
-          list-style: none;
-          gap: 2rem;
-          margin: 0;
-          padding: 0;
-        }
-        
-        .nav-link {
-          color: #666;
-          text-decoration: none;
-          font-weight: 500;
-          transition: color 0.3s;
-        }
-        
-        .nav-link:hover {
-          color: #667eea;
-        }
-        
-        .nav-link.active {
-          color: #667eea;
-        }
-        
-        .container {
-          min-height: calc(100vh - 60px);
+        :host {
+          display: block;
+          min-height: 100vh;
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          padding: 0;
         }
         
         .hero {
@@ -115,6 +56,10 @@ export class HomePage extends HTMLElement {
           padding: 5rem 2rem;
           max-width: 1200px;
           margin: 0 auto;
+          min-height: calc(100vh - 80px);
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
         }
         
         .hero h1 {

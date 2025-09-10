@@ -1,5 +1,9 @@
 import { initialize } from './router';
 
+// Import layouts
+import './layouts/app-layout';
+import './layouts/minimal-layout';
+
 // Import components
 import './components/app-nav';
 

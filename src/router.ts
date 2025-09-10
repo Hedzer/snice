@@ -46,6 +46,11 @@ export interface RouterOptions {
    * Optional context object passed to guard functions
    */
   context?: any;
+  
+  /**
+   * Default layout element tag name for all pages
+   */
+  layout?: string;
 }
 
 export interface PageOptions {
@@ -72,6 +77,12 @@ export interface PageOptions {
    * Can be a single guard or an array of guards (all must pass).
    */
   guards?: Guard<any> | Guard<any>[];
+  
+  /**
+   * Layout element tag name for this page.
+   * Use false to explicitly disable layout for this page.
+   */
+  layout?: string | false;
 }
 
 /**
@@ -91,13 +102,14 @@ export interface RouterInstance {
  * @returns An object containing the router's API methods.
  */
 export function Router(options: RouterOptions): RouterInstance {
-  const routes: { route: Route, tag: string, transition?: Transition, guards?: Guard<any> | Guard<any>[] }[] = [];
+  const routes: { route: Route, tag: string, transition?: Transition, guards?: Guard<any> | Guard<any>[], layout?: string | false }[] = [];
   let is_sorted = false;
 
   let _404: string; // the 404 page
   let _403: string; // the 403 forbidden page
   let home: string; // the home page
   let currentPageElement: HTMLElement | null = null; // Track current page for transitions
+  let currentLayoutElement: HTMLElement | null = null; // Track current layout
   const context = options.context || {}; // Store context for guards
 
   /**
@@ -153,8 +165,8 @@ export function Router(options: RouterOptions): RouterInstance {
       // Define the custom element
       customElements.define(pageOptions.tag, constructor);
 
-      // Register the routes with guards
-      pageOptions.routes.forEach(route => register(route, pageOptions.tag, pageOptions.transition, pageOptions.guards));
+      // Register the routes with guards and layout
+      pageOptions.routes.forEach(route => register(route, pageOptions.tag, pageOptions.transition, pageOptions.guards, pageOptions.layout));
     }
   }
 
@@ -165,8 +177,8 @@ export function Router(options: RouterOptions): RouterInstance {
    * @example
    * register('/custom-route', 'custom-element');
    */
-  function register(route: string, tag: string, transition?: Transition, guards?: Guard<any> | Guard<any>[]): void {
-    routes.push({ route: new Route(route), tag, transition, guards });
+  function register(route: string, tag: string, transition?: Transition, guards?: Guard<any> | Guard<any>[], layout?: string | false): void {
+    routes.push({ route: new Route(route), tag, transition, guards, layout });
     is_sorted = false;
 
     if (route === '/404') {
@@ -248,12 +260,14 @@ export function Router(options: RouterOptions): RouterInstance {
     let newPageElement: HTMLElement | null = null;
     let transition: Transition | undefined;
     let guards: Guard<any> | Guard<any>[] | undefined;
+    let pageLayout: string | false | undefined;
 
     // Home
     if ((path.trim() === '' || path === '/') && home) {
-      // Find home route to get guards
+      // Find home route to get guards and layout
       const homeRoute = routes.find(r => r.route.match('/'));
       guards = homeRoute?.guards;
+      pageLayout = homeRoute?.layout;
       
       // Check guards before creating element
       if (guards) {
@@ -261,10 +275,9 @@ export function Router(options: RouterOptions): RouterInstance {
         for (const guard of guardsArray) {
           const allowed = await guard(context, {});  // No params for home route
           if (!allowed) {
-            // Render 403 page
+            // Render 403 page without layout
             if (_403) {
               newPageElement = document.createElement(_403);
-              // Store context on 403 page too
               (newPageElement as any)[ROUTER_CONTEXT] = context;
             } else {
               const div = document.createElement('div');
@@ -272,40 +285,39 @@ export function Router(options: RouterOptions): RouterInstance {
               div.innerHTML = '<h1>403</h1><p>Unauthorized</p>';
               newPageElement = div;
             }
-            // Don't perform transition for 403
             target.innerHTML = '';
             if (newPageElement) {
               target.appendChild(newPageElement);
             }
             currentPageElement = newPageElement;
+            currentLayoutElement = null;
             return;
           }
         }
       }
       
       newPageElement = document.createElement(home);
-      // Store context on the page element
       (newPageElement as any)[ROUTER_CONTEXT] = context;
       const constructor = customElements.get(home);
       transition = (constructor as any)?.[PAGE_TRANSITION];
     } else {
-
       // Get the current route
       for (const route of routes) {
         const params = route.route.match(path);
         const is_match = params !== false;
 
         if (is_match) {
+          pageLayout = route.layout;
+          
           // Check guards before creating element
           if (route.guards) {
             const guardsArray = Array.isArray(route.guards) ? route.guards : [route.guards];
             for (const guard of guardsArray) {
               const allowed = await guard(context, params as RouteParams);
               if (!allowed) {
-                // Render 403 page
+                // Render 403 page without layout
                 if (_403) {
                   newPageElement = document.createElement(_403);
-                  // Store context on 403 page too
                   (newPageElement as any)[ROUTER_CONTEXT] = context;
                 } else {
                   const div = document.createElement('div');
@@ -313,19 +325,18 @@ export function Router(options: RouterOptions): RouterInstance {
                   div.innerHTML = '<h1>403</h1><p>Unauthorized</p>';
                   newPageElement = div;
                 }
-                // Don't perform transition for 403
                 target.innerHTML = '';
                 if (newPageElement) {
                   target.appendChild(newPageElement);
                 }
                 currentPageElement = newPageElement;
+                currentLayoutElement = null;
                 return;
               }
             }
           }
           
           newPageElement = document.createElement(route.tag);
-          // Store context on the page element
           (newPageElement as any)[ROUTER_CONTEXT] = context;
           Object.keys(params).forEach(key => newPageElement!.setAttribute(key, params[key]));
           transition = route.transition;
@@ -338,30 +349,96 @@ export function Router(options: RouterOptions): RouterInstance {
     if (!newPageElement) {
       if (_404) {
         newPageElement = document.createElement(_404);
-        // Store context on 404 page too
         (newPageElement as any)[ROUTER_CONTEXT] = context;
         const constructor = customElements.get(_404);
         transition = (constructor as any)?.[PAGE_TRANSITION];
       } else {
-        // Provide a default 404 page
         const div = document.createElement('div');
         div.className = 'default-404';
         div.innerHTML = '<h1>404</h1><p>Page not found</p>';
         newPageElement = div;
+      }
+      pageLayout = undefined; // 404 gets no layout
+    }
+
+    // Determine layout to use: page layout takes precedence, then router default
+    let layoutToUse: string | null = null;
+    if (pageLayout === false) {
+      layoutToUse = null; // Explicitly no layout
+    } else if (pageLayout) {
+      layoutToUse = pageLayout; // Page-specific layout
+    } else if (options.layout) {
+      layoutToUse = options.layout; // Router default layout
+    }
+
+    // Handle layout changes
+    const needsNewLayout = layoutToUse !== (currentLayoutElement?.tagName.toLowerCase() || null);
+    
+    if (needsNewLayout) {
+      // Clear current layout
+      if (currentLayoutElement) {
+        currentLayoutElement = null;
+      }
+      
+      // Create new layout if needed
+      if (layoutToUse) {
+        currentLayoutElement = document.createElement(layoutToUse);
+        (currentLayoutElement as any)[ROUTER_CONTEXT] = context;
+      }
+    }
+
+    // Set up page in layout or directly in target
+    if (newPageElement) {
+      if (currentLayoutElement) {
+        newPageElement.setAttribute('slot', 'page');
       }
     }
 
     // Use page-specific or global transition
     transition = transition || options.transition;
 
-    // Perform transition
+    // Handle transitions and DOM updates
     if (transition && currentPageElement && currentPageElement.parentElement) {
-      await performTransition(target, currentPageElement, newPageElement!, transition);
+      if (currentLayoutElement) {
+        // Clear old page from layout
+        const oldPageInLayout = currentLayoutElement.querySelector('[slot="page"]');
+        if (oldPageInLayout && newPageElement) {
+          await performTransition(currentLayoutElement, oldPageInLayout as HTMLElement, newPageElement, transition);
+        } else if (newPageElement) {
+          currentLayoutElement.appendChild(newPageElement);
+        }
+        
+        // Update target if layout changed
+        if (needsNewLayout) {
+          target.innerHTML = '';
+          target.appendChild(currentLayoutElement);
+        }
+      } else {
+        // No layout, transition directly in target
+        await performTransition(target, currentPageElement, newPageElement!, transition);
+      }
     } else {
       // No transition, just swap
-      target.innerHTML = '';
-      if (newPageElement) {
-        target.appendChild(newPageElement);
+      if (currentLayoutElement) {
+        if (needsNewLayout) {
+          target.innerHTML = '';
+          target.appendChild(currentLayoutElement);
+        } else {
+          // Just replace page in existing layout
+          const oldPage = currentLayoutElement.querySelector('[slot="page"]');
+          if (oldPage) {
+            currentLayoutElement.removeChild(oldPage);
+          }
+        }
+        if (newPageElement) {
+          currentLayoutElement.appendChild(newPageElement);
+        }
+      } else {
+        // No layout, page goes directly in target
+        target.innerHTML = '';
+        if (newPageElement) {
+          target.appendChild(newPageElement);
+        }
       }
     }
 

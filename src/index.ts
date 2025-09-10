@@ -1,4 +1,4 @@
-export { element, property, query, queryAll, watch, context, applyElementFunctionality, ready, dispose, part, SimpleArray } from './element';
+export { element, layout, property, query, queryAll, watch, context, applyElementFunctionality, ready, dispose, part, SimpleArray } from './element';
 export { Router } from './router';
 export { controller, attachController, detachController, getController, useNativeElementControllers, cleanupNativeElementControllers } from './controller';
 export { on, dispatch } from './events';

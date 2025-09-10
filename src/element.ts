@@ -398,6 +398,13 @@ export function element(tagName: string) {
   };
 }
 
+export function layout(tagName: string) {
+  return function (constructor: any) {
+    applyElementFunctionality(constructor);
+    customElements.define(tagName, constructor);
+  };
+}
+
 export function property(options?: PropertyOptions) {
   return function (target: any, propertyKey: string) {
     const constructor = target.constructor;
