@@ -108,8 +108,8 @@ export function Router(options: RouterOptions): RouterInstance {
   let _404: string; // the 404 page
   let _403: string; // the 403 forbidden page
   let home: string; // the home page
-  let currentPageElement: HTMLElement | null = null; // Track current page for transitions
   let currentLayoutElement: HTMLElement | null = null; // Track current layout
+  let currentLayoutName: string | null = null; // Track current layout name
   const context = options.context || {}; // Store context for guards
 
   /**
@@ -257,6 +257,9 @@ export function Router(options: RouterOptions): RouterInstance {
       throw new Error(`Target element not found: ${options.target}`);
     }
 
+    // Reset scroll position to top immediately on page change
+    window.scrollTo(0, 0);
+
     let newPageElement: HTMLElement | null = null;
     let transition: Transition | undefined;
     let guards: Guard<any> | Guard<any>[] | undefined;
@@ -358,7 +361,7 @@ export function Router(options: RouterOptions): RouterInstance {
         div.innerHTML = '<h1>404</h1><p>Page not found</p>';
         newPageElement = div;
       }
-      pageLayout = undefined; // 404 gets no layout
+      pageLayout = false; // 404 gets no layout
     }
 
     // Determine layout to use: page layout takes precedence, then router default
@@ -371,14 +374,13 @@ export function Router(options: RouterOptions): RouterInstance {
       layoutToUse = options.layout; // Router default layout
     }
 
-    // Handle layout changes
-    const needsNewLayout = layoutToUse !== (currentLayoutElement?.tagName.toLowerCase() || null);
+    // Handle layout changes - only recreate if layout name actually changed
+    const needsNewLayout = layoutToUse !== currentLayoutName;
     
     if (needsNewLayout) {
       // Clear current layout
-      if (currentLayoutElement) {
-        currentLayoutElement = null;
-      }
+      currentLayoutElement = null;
+      currentLayoutName = layoutToUse;
       
       // Create new layout if needed
       if (layoutToUse) {
@@ -387,54 +389,42 @@ export function Router(options: RouterOptions): RouterInstance {
       }
     }
 
-    // Set up page in layout or directly in target
-    if (newPageElement) {
-      if (currentLayoutElement) {
-        newPageElement.setAttribute('slot', 'page');
-      }
-    }
 
     // Use page-specific or global transition
     transition = transition || options.transition;
 
-    // Handle transitions and DOM updates
-    if (transition && currentPageElement && currentPageElement.parentElement) {
-      if (currentLayoutElement) {
-        // Clear old page from layout
-        const oldPageInLayout = currentLayoutElement.querySelector('[slot="page"]');
-        if (oldPageInLayout && newPageElement) {
-          await performTransition(currentLayoutElement, oldPageInLayout as HTMLElement, newPageElement, transition);
-        } else if (newPageElement) {
+    // Handle layout case vs direct case
+    if (currentLayoutElement) {
+      // Layout mode: transition between pages within the layout
+      const oldPageInLayout = currentLayoutElement.querySelector('[slot="page"]') as HTMLElement | null;
+      
+      if (transition && oldPageInLayout && newPageElement) {
+        newPageElement.setAttribute('slot', 'page');
+        await performTransition(currentLayoutElement, oldPageInLayout, newPageElement, transition);
+      } else {
+        // No transition, just swap pages in layout
+        const existingPages = currentLayoutElement.querySelectorAll('[slot="page"]');
+        existingPages.forEach(page => page.remove());
+        
+        if (newPageElement) {
+          newPageElement.setAttribute('slot', 'page');
           currentLayoutElement.appendChild(newPageElement);
         }
-        
-        // Update target if layout changed
-        if (needsNewLayout) {
-          target.innerHTML = '';
-          target.appendChild(currentLayoutElement);
-        }
-      } else {
-        // No layout, transition directly in target
-        await performTransition(target, currentPageElement, newPageElement!, transition);
+      }
+      
+      // Ensure layout is in target (for new layouts)
+      if (needsNewLayout) {
+        target.innerHTML = '';
+        target.appendChild(currentLayoutElement);
       }
     } else {
-      // No transition, just swap
-      if (currentLayoutElement) {
-        if (needsNewLayout) {
-          target.innerHTML = '';
-          target.appendChild(currentLayoutElement);
-        } else {
-          // Just replace page in existing layout
-          const oldPage = currentLayoutElement.querySelector('[slot="page"]');
-          if (oldPage) {
-            currentLayoutElement.removeChild(oldPage);
-          }
-        }
-        if (newPageElement) {
-          currentLayoutElement.appendChild(newPageElement);
-        }
+      // Direct mode: page goes directly in target (original behavior)
+      const currentElementInTarget = target.children[0] as HTMLElement | null;
+      
+      if (transition && currentElementInTarget && newPageElement) {
+        await performTransition(target, currentElementInTarget, newPageElement, transition);
       } else {
-        // No layout, page goes directly in target
+        // No transition, just swap
         target.innerHTML = '';
         if (newPageElement) {
           target.appendChild(newPageElement);
@@ -442,7 +432,6 @@ export function Router(options: RouterOptions): RouterInstance {
       }
     }
 
-    currentPageElement = newPageElement;
   }
 
   async function performTransition(

@@ -405,6 +405,64 @@ describe('Layout System', () => {
       expect((finalAppShell as any)._testId).toBeUndefined();
     });
 
+    it('should not stack pages when navigating with transitions', async () => {
+      router = Router({
+        target: '#app',
+        type: 'hash',
+        layout: 'app-shell',
+        transition: {
+          mode: 'simultaneous',
+          outDuration: 100,
+          inDuration: 100,
+          out: 'opacity: 0;',
+          in: 'opacity: 1;'
+        }
+      });
+
+      const { page, initialize, navigate } = router;
+      
+      @page({ tag: 'page-one', routes: ['/one'] })
+      class PageOne extends HTMLElement {
+        html() {
+          return '<div class="page-one-content">Page One</div>';
+        }
+      }
+      
+      @page({ tag: 'page-two', routes: ['/two'] })
+      class PageTwo extends HTMLElement {
+        html() {
+          return '<div class="page-two-content">Page Two</div>';
+        }
+      }
+      
+      @page({ tag: 'page-three', routes: ['/three'] })
+      class PageThree extends HTMLElement {
+        html() {
+          return '<div class="page-three-content">Page Three</div>';
+        }
+      }
+      
+      initialize();
+      
+      // Navigate through multiple pages
+      await navigate('/one');
+      await navigate('/two');
+      await navigate('/three');
+      await navigate('/one');
+      
+      const layoutEl = targetEl.querySelector('app-shell');
+      expect(layoutEl).toBeDefined();
+      
+      // Should only have ONE page element with slot="page"
+      const pagesWithSlot = layoutEl?.querySelectorAll('[slot="page"]');
+      expect(pagesWithSlot?.length).toBe(1);
+      
+      // Should be the current page
+      expect(layoutEl?.querySelector('page-one[slot="page"]')).toBeDefined();
+      expect(layoutEl?.querySelector('page-two[slot="page"]')).toBeNull();
+      expect(layoutEl?.querySelector('page-three[slot="page"]')).toBeNull();
+    });
+
     it('should clean up old layouts properly', async () => {
       router = Router({
         target: '#app',
@@ -458,6 +516,34 @@ describe('Layout System', () => {
       expect(targetEl.querySelector('app-shell')).toBeDefined();
       expect(targetEl.querySelector('minimal-layout')).toBeNull();
       expect(targetEl.querySelector('no-layout-page')).toBeNull();
+    });
+
+    it('should not wrap 404 pages in layout', async () => {
+      router = Router({
+        target: '#app',
+        type: 'hash',
+        layout: 'app-shell'
+      });
+
+      const { page, initialize, navigate } = router;
+      
+      initialize();
+      
+      // Navigate to non-existent route
+      await navigate('/does-not-exist');
+      
+      // Should have default 404 content directly in target, not wrapped in layout
+      const layoutEl = targetEl.querySelector('app-shell');
+      expect(layoutEl).toBeNull();
+      
+      // Should have default 404 div directly in target
+      const notFoundEl = targetEl.querySelector('.default-404');
+      expect(notFoundEl).toBeDefined();
+      expect(notFoundEl?.innerHTML).toContain('404');
+      expect(notFoundEl?.innerHTML).toContain('Page not found');
+      
+      // Should only have one child in target (the 404 element)
+      expect(targetEl.children.length).toBe(1);
     });
   });
 });

@@ -35,6 +35,7 @@ export const EXPLICITLY_SET_PROPERTIES = getSymbol('explicitly-set-properties');
 
 // Router context symbol
 export const ROUTER_CONTEXT = getSymbol('router-context');
+export const CURRENT_PAGE_MARKER = getSymbol('current-page-marker');
 export const CONTEXT_REQUEST_HANDLER = getSymbol('context-request-handler');
 export const PAGE_TRANSITION = getSymbol('page-transition');
 

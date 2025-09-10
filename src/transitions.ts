@@ -71,22 +71,42 @@ export async function performTransition(
   const inEndStyles = transition.in ? parseStyles(transition.in) : { opacity: '1' };
 
   // Set container to relative positioning to allow absolute positioning
+  // Skip for layout elements to avoid jumpy transitions
   const containerStyle = (container as HTMLElement).style;
   const originalPosition = containerStyle.position;
-  containerStyle.position = 'relative';
+  const isLayoutElement = container.tagName.includes('-') && container.shadowRoot;
+  
+  if (!isLayoutElement) {
+    containerStyle.position = 'relative';
+  }
 
-  // Style old element for transition
-  oldElement.style.position = 'absolute';
-  oldElement.style.top = '0';
-  oldElement.style.left = '0';
-  oldElement.style.width = '100%';
-  oldElement.style.transition = `all ${outDuration}ms ease-in-out`;
+  // Check if elements are slotted (inside a layout)
+  const isSlottedTransition = oldElement.hasAttribute('slot') || newElement.hasAttribute('slot');
+  
+  if (isSlottedTransition) {
+    // For slotted elements, use absolute with width/height for crossfade
+    oldElement.style.position = 'absolute';
+    oldElement.style.width = '100%';
+    oldElement.style.height = '100%';
+    oldElement.style.transition = `opacity ${outDuration}ms ease-in-out`;
+    
+    newElement.style.position = 'absolute';
+    newElement.style.width = '100%';
+    newElement.style.height = '100%';
+    newElement.style.transition = `opacity ${inDuration}ms ease-in-out`;
+  } else {
+    // Original absolute positioning for non-slotted elements
+    oldElement.style.position = 'absolute';
+    oldElement.style.top = '0';
+    oldElement.style.left = '0';
+    oldElement.style.width = '100%';
+    oldElement.style.transition = `all ${outDuration}ms ease-in-out`;
 
-  // Style new element with initial state
-  newElement.style.position = 'absolute';
-  newElement.style.top = '0';
-  newElement.style.left = '0';
-  newElement.style.width = '100%';
+    newElement.style.position = 'absolute';
+    newElement.style.top = '0';
+    newElement.style.left = '0';
+    newElement.style.width = '100%';
+  }
   Object.assign(newElement.style, inStartStyles);
   newElement.style.transition = `all ${inDuration}ms ease-in-out`;
 
@@ -114,16 +134,29 @@ export async function performTransition(
 
   // Cleanup
   oldElement.remove();
-  newElement.style.position = '';
-  newElement.style.top = '';
-  newElement.style.left = '';
-  newElement.style.width = '';
-  newElement.style.transition = '';
+  
+  if (isSlottedTransition) {
+    // Cleanup for slotted elements
+    newElement.style.position = '';
+    newElement.style.width = '';
+    newElement.style.height = '';
+    newElement.style.transition = '';
+  } else {
+    // Cleanup for non-slotted elements
+    newElement.style.position = '';
+    newElement.style.top = '';
+    newElement.style.left = '';
+    newElement.style.width = '';
+    newElement.style.transition = '';
+  }
+  
   // Reset any transition styles
   Object.keys({...inStartStyles, ...inEndStyles}).forEach(prop => {
     newElement.style[prop as any] = '';
   });
-  containerStyle.position = originalPosition;
+  if (!isLayoutElement) {
+    containerStyle.position = originalPosition;
+  }
 }
 
 /**
