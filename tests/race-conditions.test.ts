@@ -353,7 +353,7 @@ describe('race conditions and async edge cases', () => {
   });
 
   describe('router race conditions', () => {
-    it('should handle rapid navigation', () => {
+    it('should handle rapid navigation', async () => {
       const targetEl = document.createElement('div');
       targetEl.id = 'rapid-nav-target-unique';
       document.body.appendChild(targetEl);
@@ -383,11 +383,11 @@ describe('race conditions and async edge cases', () => {
       initialize();
       
       // Rapid navigation
-      navigate('/rapid/a');
-      navigate('/rapid/b');
-      navigate('/rapid/c');
-      navigate('/rapid/a');
-      navigate('/rapid/b');
+      await navigate('/rapid/a');
+      await navigate('/rapid/b');
+      await navigate('/rapid/c');
+      await navigate('/rapid/a');
+      await navigate('/rapid/b');
       
       // Should end up on page B
       const currentPage = targetEl.querySelector('rapid-page-b');
@@ -398,7 +398,7 @@ describe('race conditions and async edge cases', () => {
       targetEl.remove();
     });
 
-    it('should handle navigation during page render', () => {
+    it('should handle navigation during page render', async () => {
       const targetEl = document.createElement('div');
       targetEl.id = 'nav-during-render-unique';
       document.body.appendChild(targetEl);
@@ -433,10 +433,10 @@ describe('race conditions and async edge cases', () => {
       initialize();
       
       // Navigate to slow page
-      navigate('/render/slow');
+      await navigate('/render/slow');
       
       // Immediately navigate to fast page
-      navigate('/render/fast');
+      await navigate('/render/fast');
       
       // Should show fast page
       const currentPage = targetEl.querySelector('render-fast-page');

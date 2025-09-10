@@ -518,7 +518,7 @@ describe('Layout System', () => {
       expect(targetEl.querySelector('no-layout-page')).toBeNull();
     });
 
-    it('should not wrap 404 pages in layout', async () => {
+    it('should wrap 404 pages in default layout', async () => {
       router = Router({
         target: '#app',
         type: 'hash',
@@ -532,18 +532,15 @@ describe('Layout System', () => {
       // Navigate to non-existent route
       await navigate('/does-not-exist');
       
-      // Should have default 404 content directly in target, not wrapped in layout
+      // Should have default 404 content wrapped in layout
       const layoutEl = targetEl.querySelector('app-shell');
-      expect(layoutEl).toBeNull();
+      expect(layoutEl).toBeDefined();
       
-      // Should have default 404 div directly in target
-      const notFoundEl = targetEl.querySelector('.default-404');
+      // Should have default 404 div inside layout with slot="page"
+      const notFoundEl = layoutEl?.querySelector('.default-404[slot="page"]');
       expect(notFoundEl).toBeDefined();
       expect(notFoundEl?.innerHTML).toContain('404');
       expect(notFoundEl?.innerHTML).toContain('Page not found');
-      
-      // Should only have one child in target (the 404 element)
-      expect(targetEl.children.length).toBe(1);
     });
   });
 });

@@ -332,7 +332,7 @@ describe('edge cases and error handling', () => {
       }).toThrow('Target element not found');
     });
 
-    it('should handle navigating to same route twice', () => {
+    it('should handle navigating to same route twice', async () => {
       const targetEl = document.createElement('div');
       targetEl.id = 'router-target';
       document.body.appendChild(targetEl);
@@ -353,10 +353,10 @@ describe('edge cases and error handling', () => {
       
       initialize();
       
-      navigate('/same');
+      await navigate('/same');
       const firstEl = targetEl.querySelector('same-route');
       
-      navigate('/same');
+      await navigate('/same');
       const secondEl = targetEl.querySelector('same-route');
       
       // Elements get replaced, not reused
@@ -364,7 +364,7 @@ describe('edge cases and error handling', () => {
       expect(targetEl.querySelector('same-route')).toBe(secondEl);
     });
 
-    it('should handle route with query parameters', () => {
+    it('should handle route with query parameters', async () => {
       const targetEl = document.createElement('div');
       targetEl.id = 'query-target';
       document.body.appendChild(targetEl);
@@ -385,7 +385,7 @@ describe('edge cases and error handling', () => {
       }
       
       initialize();
-      navigate('/search/test');
+      await navigate('/search/test');
       
       const el = targetEl.querySelector('query-page');
       expect(el?.shadowRoot?.innerHTML).toBe('<div>Searching for: test</div>');

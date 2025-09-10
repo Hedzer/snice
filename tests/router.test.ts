@@ -64,7 +64,7 @@ describe('Router', () => {
       expect(targetEl.querySelector('home-page')).toBeNull();
     });
 
-    it('should handle route parameters', () => {
+    it('should handle route parameters', async () => {
       const { page, initialize, navigate } = router;
       
       @page({ tag: 'user-page', routes: ['/user/:id'] })
@@ -76,25 +76,25 @@ describe('Router', () => {
       }
       
       initialize();
-      navigate('/user/123');
+      await navigate('/user/123');
       
       const userPage = targetEl.querySelector('user-page');
       expect(userPage).toBeDefined();
       expect(userPage?.getAttribute('id')).toBe('123');
     });
 
-    it('should show default 404 when no 404 page is registered', () => {
+    it('should show default 404 when no 404 page is registered', async () => {
       const { initialize, navigate } = router;
       
       initialize();
       
       // Navigate to non-existent route should show default 404
-      navigate('/non-existent');
+      await navigate('/non-existent');
       expect(targetEl.innerHTML).toContain('404');
       expect(targetEl.innerHTML).toContain('Page not found');
     });
 
-    it('should use custom 404 page when registered', () => {
+    it('should use custom 404 page when registered', async () => {
       const { page, initialize, navigate } = router;
       
       @page({ tag: 'custom-404', routes: ['/404'] })
@@ -107,7 +107,7 @@ describe('Router', () => {
       initialize();
       
       // Navigate to non-existent route should show custom 404 page
-      navigate('/non-existent');
+      await navigate('/non-existent');
       const customNotFound = targetEl.querySelector('custom-404');
       expect(customNotFound).toBeDefined();
       expect(customNotFound?.shadowRoot?.innerHTML).toContain('Custom 404 Page');
@@ -153,7 +153,7 @@ describe('Router', () => {
   });
 
   describe('page decorator', () => {
-    it('should add html and css methods support', () => {
+    it('should add html and css methods support', async () => {
       const router = Router({
         target: '#app',
         type: 'hash'
@@ -173,7 +173,7 @@ describe('Router', () => {
       }
       
       initialize();
-      navigate('/styled');
+      await navigate('/styled');
       
       const styledPage = targetEl.querySelector('styled-page');
       expect(styledPage).toBeDefined();
@@ -184,7 +184,7 @@ describe('Router', () => {
       expect(style?.textContent).toContain('.content { color: red; }');
     });
 
-    it('should handle css returning array', () => {
+    it('should handle css returning array', async () => {
       const router = Router({
         target: '#app',
         type: 'hash'
@@ -207,7 +207,7 @@ describe('Router', () => {
       }
       
       initialize();
-      navigate('/multi');
+      await navigate('/multi');
       
       const multiPage = targetEl.querySelector('multi-style');
       const style = multiPage?.shadowRoot?.querySelector('style[data-component-css]');

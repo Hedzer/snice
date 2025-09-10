@@ -12,5 +12,11 @@ export default defineConfig({
         'dist/',
       ],
     },
+    exclude: [
+      'node_modules',
+      'dist',
+      'examples',
+      'tests/live'
+    ],
   },
 });

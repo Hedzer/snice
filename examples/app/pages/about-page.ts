@@ -2,8 +2,8 @@ import { page } from '../router';
 
 @page({ 
   tag: 'about-page', 
-  routes: ['/about']
-  // Using default fade transition
+  routes: ['/about'],
+  layout: 'minimal-layout'  // Use different layout to demonstrate layout switching
 })
 export class AboutPage extends HTMLElement {
   html() {

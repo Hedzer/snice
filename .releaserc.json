@@ -8,6 +8,7 @@
         "releaseRules": [
           {"type": "fix", "release": "patch"},
           {"type": "feat", "release": "minor"},
+          {"type": "refactor", "release": "minor"},
           {"type": "perf", "release": "patch"},
           {"type": "revert", "release": "patch"},
           {"breaking": true, "release": "major"}

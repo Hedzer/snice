@@ -11,6 +11,8 @@
   },
   "include": [
     "**/*.test.ts",
-    "../src/**/*"
+    "../src/**/*",
+    "live/layout-navigation.spec.ts",
+    "live/components/date-picker/date-picker.spec.ts"
   ]
 }
