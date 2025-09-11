@@ -1,3 +1,10 @@
+# [1.12.0](https://gitlab.com/Hedzer/snice/compare/v1.11.0...v1.12.0) (2025-09-11)
+
+
+### Features
+
+* login component ([93b5fd7](https://gitlab.com/Hedzer/snice/commit/93b5fd7a54e950f4af8a65a14351648257707ed5))
+
 # [1.11.0](https://gitlab.com/Hedzer/snice/compare/v1.10.1...v1.11.0) (2025-09-11)
 
 
