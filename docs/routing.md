@@ -9,6 +9,8 @@ Snice provides a powerful routing system for single-page applications with suppo
 - [Navigation](#navigation)
 - [Route Parameters](#route-parameters)
 - [Page Transitions](#page-transitions)
+- [Route Guards](#route-guards)
+- [Layouts](#layouts)
 - [Advanced Patterns](#advanced-patterns)
 
 ## Router Setup
@@ -36,6 +38,8 @@ interface RouterOptions {
   window?: Window;                   // Override window object
   document?: Document;               // Override document object
   transition?: Transition;           // Global transition config
+  layout?: string;                   // Default layout for all pages
+  context?: any;                     // Router context object
 }
 ```
 
@@ -580,34 +584,6 @@ class AdminPanel extends HTMLElement {
 }
 ```
 
-### Guards with Route Parameters
-
-Guards receive route parameters as the second argument:
-
-```typescript
-// Guard that checks if user owns the resource
-const ownsResource: Guard<AppContext> = (ctx, params: RouteParams) => {
-  const user = ctx.getUser();
-  if (!user) return false;
-  
-  // params.resourceId comes from route like '/resources/:resourceId'
-  return user.ownedResources.includes(parseInt(params.resourceId));
-};
-
-@page({ 
-  tag: 'resource-editor',
-  routes: ['/resources/:resourceId/edit'],
-  guards: ownsResource
-})
-class ResourceEditor extends HTMLElement {
-  @property()
-  resourceId = '';
-  
-  html() {
-    return `<h1>Editing Resource ${this.resourceId}</h1>`;
-  }
-}
-```
 
 ### Async Guards
 
@@ -673,36 +649,26 @@ class ForbiddenPage extends HTMLElement {
 
 ### Guards with Route Parameters
 
-**Important**: Guards cannot access route parameters since they run before the element is created. For parameter-based access control, check permissions in the component's `connectedCallback`:
+Guards receive route parameters as the second argument and can access them for permission checks:
 
 ```typescript
+// Guard that checks if user owns the resource
+const ownsItem: Guard<AppContext> = (ctx, params: RouteParams) => {
+  const user = ctx.getUser();
+  if (!user) return false;
+  
+  // params.itemId comes from route '/items/:itemId/edit'
+  return user.ownedItems.includes(parseInt(params.itemId));
+};
+
 @page({ 
   tag: 'item-edit',
   routes: ['/items/:itemId/edit'],
-  guards: isAuthenticated  // Basic auth check in guard
+  guards: [isAuthenticated, ownsItem]  // Both guards check different things
 })
 class ItemEdit extends HTMLElement {
   @property()
   itemId = '';
-  
-  async connectedCallback() {
-    super.connectedCallback?.();
-    
-    // Parameter-based access check in component
-    const user = getCurrentUser();
-    if (!user.ownedItems.includes(parseInt(this.itemId))) {
-      this.renderForbidden();
-      return;
-    }
-    
-    this.loadItem();
-  }
-  
-  renderForbidden() {
-    if (this.shadowRoot) {
-      this.shadowRoot.innerHTML = `<h1>You don't own this item</h1>`;
-    }
-  }
   
   html() {
     return `<h1>Edit Item ${this.itemId}</h1>`;
@@ -750,6 +716,209 @@ function logout() {
 3. **Provide feedback**: Always define a custom 403 page for better UX
 4. **Cache results**: For expensive checks, cache guard results
 5. **Test thoroughly**: Write tests for all guard scenarios
+
+## Layouts
+
+Layouts provide a way to wrap pages in shared components like navigation bars, headers, footers, and sidebars. This creates consistent structure across your application while keeping page content focused.
+
+### Layout Components
+
+Create layout components using the `@layout` decorator:
+
+```typescript
+import { layout } from 'snice';
+
+@layout('app-shell')
+class AppShell extends HTMLElement {
+  html() {
+    return /*html*/`
+      <div class="app-layout">
+        <header class="header">
+          <nav>
+            <a href="#/">Home</a>
+            <a href="#/products">Products</a>
+            <a href="#/about">About</a>
+          </nav>
+        </header>
+        <main class="content">
+          <slot name="page"></slot>
+        </main>
+        <footer class="footer">
+          <p>&copy; 2024 My Company</p>
+        </footer>
+      </div>
+    `;
+  }
+
+  css() {
+    return /*css*/`
+      .app-layout {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+      
+      .header {
+        background: #333;
+        color: white;
+        padding: 1rem;
+      }
+      
+      .content {
+        flex: 1;
+        padding: 2rem;
+      }
+      
+      .footer {
+        background: #f5f5f5;
+        padding: 1rem;
+        text-align: center;
+      }
+    `;
+  }
+}
+```
+
+**Key requirement**: Layouts must include `<slot name="page"></slot>` where page content will be rendered.
+
+### Router Layout Configuration
+
+Configure layouts at the router level for default behavior:
+
+```typescript
+const router = Router({
+  target: '#app',
+  type: 'hash',
+  layout: 'app-shell'  // Default layout for all pages
+});
+```
+
+### Page Layout Configuration
+
+Override layouts on a per-page basis:
+
+```typescript
+// Use default layout
+@page({ tag: 'home-page', routes: ['/'] })
+class HomePage extends HTMLElement {
+  html() {
+    return `<h1>Welcome Home</h1>`;
+  }
+}
+
+// Use different layout
+@page({ tag: 'admin-page', routes: ['/admin'], layout: 'admin-shell' })
+class AdminPage extends HTMLElement {
+  html() {
+    return `<h1>Admin Dashboard</h1>`;
+  }
+}
+
+// Disable layout entirely
+@page({ tag: 'fullscreen-page', routes: ['/presentation'], layout: false })
+class FullscreenPage extends HTMLElement {
+  html() {
+    return `<div class="fullscreen">Presentation Mode</div>`;
+  }
+}
+```
+
+### Layout Transitions
+
+Layouts persist across page changes, providing smooth transitions:
+
+```typescript
+const router = Router({
+  target: '#app',
+  type: 'hash',
+  layout: 'app-shell',
+  transition: {
+    name: 'fade',
+    duration: 300
+  }
+});
+```
+
+When transitioning between pages that use the same layout:
+1. **Layout remains**: The layout wrapper stays in place
+2. **Page transitions**: Only the content inside `<slot name="page">` transitions
+
+### Multiple Layouts
+
+Different sections of your app can use different layouts:
+
+```typescript
+// Main app layout
+@layout('app-shell')
+class AppShell extends HTMLElement {
+  html() {
+    return /*html*/`
+      <header>Main Navigation</header>
+      <main><slot name="page"></slot></main>
+    `;
+  }
+}
+
+// Admin layout with sidebar
+@layout('admin-shell') 
+class AdminShell extends HTMLElement {
+  html() {
+    return /*html*/`
+      <div class="admin-layout">
+        <aside class="sidebar">
+          <nav>Admin Menu</nav>
+        </aside>
+        <main class="admin-content">
+          <slot name="page"></slot>
+        </main>
+      </div>
+    `;
+  }
+}
+
+// Configure pages
+@page({ tag: 'home-page', routes: ['/'], layout: 'app-shell' })
+class HomePage extends HTMLElement {}
+
+@page({ tag: 'admin-dashboard', routes: ['/admin'], layout: 'admin-shell' })
+class AdminDashboard extends HTMLElement {}
+```
+
+### Layout Context Access
+
+Layouts can access router context just like pages:
+
+```typescript
+import { layout, context } from 'snice';
+
+@layout('user-shell')
+class UserShell extends HTMLElement {
+  @context()
+  appContext!: AppContext;
+
+  html() {
+    const user = this.appContext.currentUser;
+    return /*html*/`
+      <header>
+        <div class="user-info">
+          Welcome, ${user?.name || 'Guest'}
+        </div>
+        <nav>Navigation</nav>
+      </header>
+      <main><slot name="page"></slot></main>
+    `;
+  }
+}
+```
+
+### Layout Best Practices
+
+1. **Keep layouts focused**: Include only truly shared UI elements
+2. **Use semantic HTML**: Structure layouts with proper landmarks
+3. **Handle responsive design**: Make layouts work across screen sizes
+4. **Minimize layout switching**: Frequent layout changes disrupt UX
+5. **Test transitions**: Ensure smooth transitions between different layouts
+6. **Consider accessibility**: Use proper ARIA attributes in layout navigation
 
 ## Advanced Patterns
 
@@ -859,67 +1028,3 @@ await preloadPage('dashboard-page', './pages/dashboard-page.js');
 const router = Router({ target: '#app', type: 'hash' });
 router.initialize();
 ```
-
-### Nested Page Components
-
-Create pages that contain sub-navigation:
-
-```typescript
-@page({ tag: 'settings-page', routes: ['/settings'] })
-class SettingsPage extends HTMLElement {
-  @query('.sub-content')
-  subContent?: HTMLElement;
-  
-  html() {
-    return `
-      <div class="settings">
-        <h1>Settings</h1>
-        <nav class="sub-nav">
-          <button data-section="profile">Profile</button>
-          <button data-section="security">Security</button>
-          <button data-section="notifications">Notifications</button>
-        </nav>
-        <div class="sub-content">
-          <!-- Sub-content loads here -->
-        </div>
-      </div>
-    `;
-  }
-  
-  @on('click', '[data-section]')
-  loadSection(event: Event) {
-    const button = event.target as HTMLElement;
-    const section = button.dataset.section;
-    
-    if (this.subContent) {
-      switch(section) {
-        case 'profile':
-          this.subContent.innerHTML = '<h2>Profile Settings</h2>';
-          break;
-        case 'security':
-          this.subContent.innerHTML = '<h2>Security Settings</h2>';
-          break;
-        case 'notifications':
-          this.subContent.innerHTML = '<h2>Notification Settings</h2>';
-          break;
-      }
-    }
-  }
-  
-  connectedCallback() {
-    super.connectedCallback?.();
-    // Load default section
-    this.loadSection({ target: { dataset: { section: 'profile' } } } as any);
-  }
-}
-
-## Best Practices
-
-1. **Route Organization**: Group related routes together
-2. **Parameter Validation**: Validate route parameters
-3. **Error Handling**: Provide 404 and error pages
-4. **Loading States**: Show loading indicators during navigation
-5. **Deep Linking**: Support bookmarkable URLs
-6. **SEO Considerations**: Use proper meta tags and titles
-7. **Performance**: Lazy load heavy pages
-8. **Accessibility**: Manage focus on navigation

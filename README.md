@@ -622,6 +622,70 @@ class UserController {
 }
 ```
 
+## Layouts
+
+Wrap your pages in shared layout components for consistent navigation, headers, and footers across your application.
+
+### Basic Layout Usage
+
+```typescript
+import { Router, layout, page } from 'snice';
+
+// Create a layout component
+@layout('app-shell')
+class AppShell extends HTMLElement {
+  html() {
+    return `
+      <header>
+        <nav>
+          <a href="#/">Home</a>
+          <a href="#/about">About</a>
+        </nav>
+      </header>
+      <main>
+        <slot name="page"></slot>
+      </main>
+      <footer>© 2024 My App</footer>
+    `;
+  }
+}
+
+// Configure router with default layout
+const router = Router({
+  target: '#app',
+  type: 'hash',
+  layout: 'app-shell'  // All pages use this layout by default
+});
+
+const { page, initialize } = router;
+
+// Pages automatically render inside the layout
+@page({ tag: 'home-page', routes: ['/'] })
+class HomePage extends HTMLElement {
+  html() {
+    return `<h1>Home Content</h1>`;
+  }
+}
+
+// Override layout per page
+@page({ tag: 'full-page', routes: ['/fullscreen'], layout: false })
+class FullPage extends HTMLElement {
+  html() {
+    return `<div>No layout wrapper</div>`;
+  }
+}
+
+initialize();
+```
+
+### Layout Features
+
+- **Shared wrapper**: Layout components wrap page content using `<slot name="page"></slot>`
+- **Default layouts**: Set `layout: 'component-name'` in router options
+- **Per-page override**: Use `layout: 'other-layout'` or `layout: false` in page options
+- **Smooth transitions**: Layout persists during page transitions for better UX
+- **Nested layouts**: Layouts can contain other layouts for complex structures
+
 ## Router Context
 
 Access router context in page components, nested elements, and controllers using the `@context` decorator.
@@ -912,7 +976,6 @@ The `@part` decorator is ideal when you have components with multiple independen
 - [Request/Response API](./docs/request-response.md) - Bidirectional communication between elements and controllers
 - [Routing API](./docs/routing.md) - Single-page application routing with transitions
 - [Observe API](./docs/observe.md) - Lifecycle-managed observers for external changes
-- [Migration Guide](./docs/migration-guide.md) - Migrating from React, Vue, Angular, and other frameworks
 
 ## License
 

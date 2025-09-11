@@ -805,23 +805,3 @@ class SubscriptionController implements IController {
 }
 ```
 
-## Request/Response Event Flow
-
-Understanding the internal event flow:
-
-1. **Element yields request** → Creates CustomEvent with request name
-2. **Event bubbles up** → Controller's response handler catches it
-3. **Controller processes** → Runs handler method with request payload
-4. **Controller responds** → Resolves promise in event detail
-5. **Element receives** → Generator continues with response value
-
-## Best Practices
-
-1. **Timeout Management**: Set appropriate timeouts for operations
-2. **Error Handling**: Always handle errors in both element and controller
-3. **Request Validation**: Validate requests in the controller
-4. **Response Structure**: Use consistent response formats
-5. **Caching**: Implement caching for expensive operations
-6. **Cleanup**: Stop polling/streaming when element disconnects
-7. **Type Safety**: Type your request and response objects
-8. **Documentation**: Document request/response contracts clearly

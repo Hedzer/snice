@@ -251,11 +251,11 @@ class DynamicList extends HTMLElement {
 
 ## Using with Controllers
 
-Controllers can also use `@observe` for separation of concerns:
+Controllers can also use `@observe` for separation of concerns. When used in controllers, observers operate on the attached element:
 
 ```typescript
 @controller('viewport-controller')
-class ViewportController {
+class ViewportController implements IController {
   element: HTMLElement | null = null;
 
   @observe('media:(min-width: 1024px)')
