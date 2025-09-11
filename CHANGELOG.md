@@ -1,3 +1,10 @@
+## [1.13.1](https://gitlab.com/Hedzer/snice/compare/v1.13.0...v1.13.1) (2025-09-11)
+
+
+### Bug Fixes
+
+* released files ([0e49320](https://gitlab.com/Hedzer/snice/commit/0e4932048c63e2a33701c666bf47da6c20d1c96c))
+
 # [1.13.0](https://gitlab.com/Hedzer/snice/compare/v1.12.0...v1.13.0) (2025-09-11)
 
 
