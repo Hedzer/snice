@@ -1,3 +1,10 @@
+## [1.13.2](https://gitlab.com/Hedzer/snice/compare/v1.13.1...v1.13.2) (2025-09-11)
+
+
+### Bug Fixes
+
+* re-added readme ([9660721](https://gitlab.com/Hedzer/snice/commit/9660721e0b2347283ccc6859d0256a8e2f9d7419))
+
 ## [1.13.1](https://gitlab.com/Hedzer/snice/compare/v1.13.0...v1.13.1) (2025-09-11)
 
 
