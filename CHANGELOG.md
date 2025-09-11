@@ -1,3 +1,10 @@
+# [1.13.0](https://gitlab.com/Hedzer/snice/compare/v1.12.0...v1.13.0) (2025-09-11)
+
+
+### Features
+
+* added release for components ([9140964](https://gitlab.com/Hedzer/snice/commit/9140964c4400cd23a19b1c39e0dcee1ac1ea5b28))
+
 # [1.12.0](https://gitlab.com/Hedzer/snice/compare/v1.11.0...v1.12.0) (2025-09-11)
 
 
