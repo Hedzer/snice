@@ -142,10 +142,10 @@ class CounterDisplay extends HTMLElement {
   count = 0;
   
   @query('.count')
-  countElement?: HTMLElement;
+  countElement!: HTMLSpanElement;
   
   @query('.status')
-  statusElement?: HTMLElement;
+  statusElement!: HTMLSpanElement;
 
   html() {
     // Renders ONCE - no automatic re-rendering
@@ -160,15 +160,11 @@ class CounterDisplay extends HTMLElement {
   // Imperative update methods - YOU control when updates happen
   setCount(newCount: number) {
     this.count = newCount;
-    if (this.countElement) {
-      this.countElement.textContent = String(newCount);
-    }
+    this.countElement.textContent = String(newCount);
   }
   
   setStatus(status: string) {
-    if (this.statusElement) {
-      this.statusElement.textContent = status;
-    }
+    this.statusElement.textContent = status;
   }
   
   increment() {
@@ -253,7 +249,7 @@ class ThemeToggle extends HTMLElement {
   theme: 'light' | 'dark' = 'light';
   
   @query('.icon')
-  icon?: HTMLElement;
+  icon!: HTMLSpanElement;
   
   html() {
     return `
@@ -265,9 +261,7 @@ class ThemeToggle extends HTMLElement {
   
   @watch('theme')
   updateTheme(oldValue: string, newValue: string) {
-    if (this.icon) {
-      this.icon.textContent = newValue === 'dark' ? '🌙' : '🌞';
-    }
+    this.icon.textContent = newValue === 'dark' ? '🌙' : '🌞';
   }
   
   @on('click', 'button')
@@ -315,14 +309,14 @@ import { element, query } from 'snice';
 @element('my-form')
 class MyForm extends HTMLElement {
   @query('input')
-  input?: HTMLInputElement;
+  input!: HTMLInputElement;
 
   html() {
     return `<input type="text" />`;
   }
 
   getValue() {
-    return this.input?.value;
+    return this.input.value;
   }
 }
 ```
@@ -335,7 +329,7 @@ import { element, queryAll } from 'snice';
 @element('checkbox-group')
 class CheckboxGroup extends HTMLElement {
   @queryAll('input[type="checkbox"]')
-  checkboxes?: NodeListOf<HTMLInputElement>;
+  checkboxes!: NodeListOf<HTMLInputElement>;
 
   html() {
     return `
@@ -346,7 +340,6 @@ class CheckboxGroup extends HTMLElement {
   }
 
   getSelectedValues() {
-    if (!this.checkboxes) return [];
     return Array.from(this.checkboxes)
       .filter(cb => cb.checked)
       .map(cb => cb.value);
@@ -404,7 +397,7 @@ class ToggleSwitch extends HTMLElement {
   private isOn = false;
 
   @query('.toggle')
-  toggleButton?: HTMLElement;
+  toggleButton!: HTMLElement;
 
   html() {
     return `<button class="toggle">OFF</button>`;
@@ -414,9 +407,7 @@ class ToggleSwitch extends HTMLElement {
   @dispatch('toggled')
   toggle() {
     this.isOn = !this.isOn;
-    if (this.toggleButton) {
-      this.toggleButton.textContent = this.isOn ? 'ON' : 'OFF';
-    }
+    this.toggleButton.textContent = this.isOn ? 'ON' : 'OFF';
     return { on: this.isOn };
   }
 }
@@ -605,19 +596,21 @@ Controllers handle server communication separately from visual components:
 ```typescript
 import { controller, element } from 'snice';
 
+interface IUserElement extends HTMLElement {
+  setUsers(users: any[]): void;
+}
+
 @controller('user-controller')
 class UserController {
-  element: HTMLElement | null = null;
+  element!: IUserElement;
 
-  async attach(element: HTMLElement) {
+  async attach(element: IUserElement) {
     const response = await fetch('/api/users');
     const users = await response.json();
-    (element as any).setUsers(users);
+    element.setUsers(users);
   }
 
-  async detach(element: HTMLElement) {
-    // Cleanup
-  }
+  async detach(element: IUserElement) { /* Cleanup */ }
 }
 
 @element('user-list')
@@ -846,7 +839,7 @@ Controllers attached to page elements automatically acquire context:
 ```typescript
 @controller('nav-controller')
 class NavController {
-  element: HTMLElement | null = null;
+  element!: HTMLElement;
   
   @context()
   ctx?: AppContext;
@@ -858,9 +851,7 @@ class NavController {
     }
   }
   
-  detach(element: HTMLElement) {
-    // Cleanup if needed
-  }
+  detach(element: HTMLElement) { /* Cleanup */ }
 }
 
 @page({ tag: 'admin-page', routes: ['/admin'] })
