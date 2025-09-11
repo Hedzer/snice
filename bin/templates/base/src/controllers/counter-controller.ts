@@ -1,5 +1,5 @@
 import { controller, on } from 'snice';
-import type { ICounterButton } from '../components/counter-button.types';
+import type { ICounterButton } from '../types/counter-button';
 
 @controller('counter')
 export class CounterController {

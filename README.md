@@ -23,6 +23,68 @@ Snice takes an **imperative approach** to web components. Unlike reactive framew
 
 This approach gives you direct control over DOM updates without hidden complexity or automatic re-renders.
 
+## The Snice Way: Elements + Controllers
+
+Snice separates UI from data: **elements handle UI, controllers handle behavior and data**.
+
+```typescript
+import { element, controller, property, query } from 'snice';
+
+export interface IUserCard extends HTMLElement {
+  userId: string;
+  showUser(user: any): void;
+}
+
+// Element: Just UI
+@element('user-card')
+class UserCard extends HTMLElement implements IUserCard {
+  @property({ attribute: 'user-id' })
+  userId = '';
+  
+  @query('h3')
+  nameElement!: HTMLHeadingElement;
+  
+  @query('p')
+  emailElement!: HTMLParagraphElement;
+  
+  html() {
+    return `
+      <div class="card">
+        <h3>Loading...</h3>
+        <p>Please wait...</p>
+      </div>
+    `;
+  }
+  
+  showUser(user: any) {
+    this.nameElement.textContent = user.name;
+    this.emailElement.textContent = user.email;
+  }
+}
+
+// Controller: Data and behavior
+@controller('user-loader')
+class UserLoaderController {
+  element!: IUserCard;
+  
+  async attach(element: IUserCard) {
+    const response = await fetch(`/api/users/${element.userId}`);
+    const user = await response.json();
+    
+    element.showUser(user);
+  }
+  
+  async detach(element: IUserCard) { /* Cleanup */ }
+}
+```
+
+Connect them in HTML:
+```html
+<user-card user-id="123" controller="user-loader"></user-card>
+```
+
+That's it. Element renders UI, controller fetches data, they communicate through method calls, events, and request/response channels.
+
 ## Core Concepts
 
 Snice provides a clear separation of concerns through decorators:
