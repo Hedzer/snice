@@ -1,3 +1,22 @@
+# [1.11.0](https://gitlab.com/Hedzer/snice/compare/v1.10.1...v1.11.0) (2025-09-11)
+
+
+### Bug Fixes
+
+* broken template ([74eaab2](https://gitlab.com/Hedzer/snice/commit/74eaab20b50d8d0a1fb76c29d6f5d230ab794fca))
+* doc inaccuracies ([4d0dda4](https://gitlab.com/Hedzer/snice/commit/4d0dda473d3538d2124dc0ed6b25472bec5eddf9))
+* eliminated element references from router ([2e88c6a](https://gitlab.com/Hedzer/snice/commit/2e88c6aee7462c191bc0fcc5a2bba89cd6215b9c))
+* layout sizing fixes ([83c555d](https://gitlab.com/Hedzer/snice/commit/83c555dc8bead90e2aad7e737ed27b8f559ea4ee))
+* layout transition fixes ([d1c837a](https://gitlab.com/Hedzer/snice/commit/d1c837ace487336cdd3786b08b36656880bc818e))
+
+
+### Features
+
+* added date picker ([3c49285](https://gitlab.com/Hedzer/snice/commit/3c49285cdf9320f7ce33e9485b431355901bc795))
+* added layouts ([b19d709](https://gitlab.com/Hedzer/snice/commit/b19d7096a1fae93c69114315205d30de8e128451))
+* readme improvements ([fb83246](https://gitlab.com/Hedzer/snice/commit/fb83246e90774368c34d1ee7065b6606ee46e718))
+* readme improvements ([5e87db6](https://gitlab.com/Hedzer/snice/commit/5e87db67d32d1655c9dc051817a6493ddbbc58db))
+
 ## [1.10.1](https://gitlab.com/Hedzer/snice/compare/v1.10.0...v1.10.1) (2025-09-09)
 
 
