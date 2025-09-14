@@ -1,3 +1,10 @@
+## [1.13.8](https://gitlab.com/Hedzer/snice/compare/v1.13.7...v1.13.8) (2025-09-14)
+
+
+### Bug Fixes
+
+* add release/publish validation ([dc68feb](https://gitlab.com/Hedzer/snice/commit/dc68feb0a787cf23d88f5f754b16aba7efd38877))
+
 ## [1.13.7](https://gitlab.com/Hedzer/snice/compare/v1.13.6...v1.13.7) (2025-09-14)
 
 
