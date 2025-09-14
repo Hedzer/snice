@@ -1,3 +1,10 @@
+## [1.13.4](https://gitlab.com/Hedzer/snice/compare/v1.13.3...v1.13.4) (2025-09-14)
+
+
+### Bug Fixes
+
+* switched to built files ([91db67b](https://gitlab.com/Hedzer/snice/commit/91db67beb8e368ed8613491c921e707b40bb416e))
+
 ## [1.13.3](https://gitlab.com/Hedzer/snice/compare/v1.13.2...v1.13.3) (2025-09-14)
 
 
