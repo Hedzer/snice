@@ -1,3 +1,10 @@
+## [1.13.6](https://gitlab.com/Hedzer/snice/compare/v1.13.5...v1.13.6) (2025-09-14)
+
+
+### Bug Fixes
+
+* build output ([8f14a52](https://gitlab.com/Hedzer/snice/commit/8f14a52bb23c9c032a0c4b3ca8bfc003543eebbb))
+
 ## [1.13.5](https://gitlab.com/Hedzer/snice/compare/v1.13.4...v1.13.5) (2025-09-14)
 
 
