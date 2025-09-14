@@ -1,4 +1,4 @@
-import { element, property, query, on, watch, ready, dispatch } from '../../src/index';
+import { element, property, query, on, watch, ready, dispatch } from 'snice';
 import css from './snice-modal.css?inline';
 import type { ModalSize, SniceModalElement } from './snice-modal.types';
 

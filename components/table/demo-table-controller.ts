@@ -1,4 +1,4 @@
-import { controller, respond, IController } from '../../src/index';
+import { controller, respond, IController } from 'snice';
 
 console.log('Loading demo table controller...');
 

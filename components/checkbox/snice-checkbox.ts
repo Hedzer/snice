@@ -1,4 +1,4 @@
-import { element, property, query, on, watch, dispatch, ready } from '../../src/index';
+import { element, property, query, on, watch, dispatch, ready } from 'snice';
 import css from './snice-checkbox.css?inline';
 import type { CheckboxSize, SniceCheckboxElement } from './snice-checkbox.types';
 

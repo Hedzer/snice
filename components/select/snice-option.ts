@@ -1,4 +1,4 @@
-import { element, property, ready } from '../../src/index';
+import { element, property, ready } from 'snice';
 import type { SniceOptionElement } from './snice-option.types';
 
 @element('snice-option')

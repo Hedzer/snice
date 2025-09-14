@@ -1,4 +1,4 @@
-import { element, property, query, on, watch, dispatch, ready } from '../../src/index';
+import { element, property, query, on, watch, dispatch, ready } from 'snice';
 import css from './snice-date-picker.css?inline';
 import type { DatePickerSize, DatePickerVariant, DateFormat, SniceDatePickerElement, DatePickerValue } from './snice-date-picker.types';
 

@@ -1,4 +1,4 @@
-import { element, property, watch } from '../../src/index';
+import { element, property, watch } from 'snice';
 import css from './snice-tab-panel.css?inline';
 import type { SniceTabPanelElement } from './snice-tabs.types';
 

@@ -1,4 +1,4 @@
-import { element, property, query, queryAll, on, dispatch, request, type Response } from '../../src/index';
+import { element, property, query, queryAll, on, dispatch, request, type Response } from 'snice';
 import css from './snice-login.css?inline';
 import type { LoginVariant, LoginSize, LoginCredentials, LoginResult, SniceLoginElement } from './snice-login.types';
 import '../alert/snice-alert';

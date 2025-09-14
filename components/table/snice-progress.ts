@@ -1,4 +1,4 @@
-import { element, property } from '../../src/index';
+import { element, property } from 'snice';
 
 @element('snice-progress')
 export class SniceProgress extends HTMLElement {

@@ -1,4 +1,4 @@
-import { element, property, query, on, watch, dispatch } from '../../src/index';
+import { element, property, query, on, watch, dispatch } from 'snice';
 import type { ToastType, SniceToastElement } from './snice-toast.types';
 
 @element('snice-toast')

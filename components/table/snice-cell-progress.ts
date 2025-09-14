@@ -1,4 +1,4 @@
-import { element, property, watch, ready, query } from '../../src/index';
+import { element, property, watch, ready, query } from 'snice';
 import css from './snice-cell.css?inline';
 import type { ProgressFormat, SniceCellElement, ColumnType, ColumnAlign, ColumnDefinition } from './snice-table.types';
 import './snice-progress';

@@ -1,4 +1,4 @@
-import { controller, respond } from '../../src/index';
+import { controller, respond } from 'snice';
 import type { LoginCredentials, LoginResult } from './snice-login.types';
 
 interface AuthUser {

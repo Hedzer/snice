@@ -1,4 +1,4 @@
-import { element, property, watch, query, ready, on, part } from '../../src/index';
+import { element, property, watch, query, ready, on, part } from 'snice';
 import css from './snice-avatar.css?inline';
 import type { AvatarSize, AvatarShape, SniceAvatarElement } from './snice-avatar.types';
 

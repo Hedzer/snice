@@ -1,4 +1,4 @@
-import { element, property } from '../../src/index';
+import { element, property } from 'snice';
 import type { SniceCrumbElement } from './snice-breadcrumbs.types';
 
 @element('snice-crumb')

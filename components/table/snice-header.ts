@@ -1,4 +1,4 @@
-import { element, property, on, watch, ready, dispatch } from '../../src/index';
+import { element, property, on, watch, ready, dispatch } from 'snice';
 import type { 
   SniceHeaderElement, 
   ColumnDefinition,

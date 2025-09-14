@@ -1,4 +1,4 @@
-import { element, property, query, on, watch, dispatch, ready } from '../../src/index';
+import { element, property, query, on, watch, dispatch, ready } from 'snice';
 import css from './snice-switch.css?inline';
 import type { SwitchSize, SniceSwitchElement } from './snice-switch.types';
 

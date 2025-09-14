@@ -1,4 +1,4 @@
-import { element, property, on, dispatch, ready, queryAll } from '../../src/index';
+import { element, property, on, dispatch, ready, queryAll } from 'snice';
 import css from './snice-accordion.css?inline';
 import type { SniceAccordionElement, SniceAccordionItemElement, AccordionOpenEvent, AccordionCloseEvent } from './snice-accordion.types';
 

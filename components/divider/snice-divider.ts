@@ -1,4 +1,4 @@
-import { element, property, watch, query } from '../../src/index';
+import { element, property, watch, query } from 'snice';
 import css from './snice-divider.css?inline';
 import type { DividerOrientation, DividerVariant, DividerAlign, DividerSpacing, SniceDividerElement } from './snice-divider.types';
 

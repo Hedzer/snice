@@ -1,4 +1,4 @@
-import { element, property, watch, query, ready, part } from '../../src/index';
+import { element, property, watch, query, ready, part } from 'snice';
 import css from './snice-badge.css?inline';
 import type { BadgeVariant, BadgePosition, BadgeSize, SniceBadgeElement } from './snice-badge.types';
 

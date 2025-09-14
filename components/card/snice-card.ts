@@ -1,4 +1,4 @@
-import { element, property, on, dispatch, ready } from '../../src/index';
+import { element, property, on, dispatch, ready } from 'snice';
 import css from './snice-card.css?inline';
 import type { CardVariant, CardSize, SniceCardElement } from './snice-card.types';
 

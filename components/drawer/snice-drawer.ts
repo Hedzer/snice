@@ -1,4 +1,4 @@
-import { element, property, query, on, watch, dispatch, ready, dispose } from '../../src/index';
+import { element, property, query, on, watch, dispatch, ready, dispose } from 'snice';
 import css from './snice-drawer.css?inline';
 import type { DrawerPosition, DrawerSize, SniceDrawerElement } from './snice-drawer.types';
 

@@ -1,4 +1,4 @@
-import { element, property, query, on, dispatch, watch } from '../../src/index';
+import { element, property, query, on, dispatch, watch } from 'snice';
 import css from './snice-button.css?inline';
 import type { ButtonVariant, ButtonSize, IconPlacement, SniceButtonElement } from './snice-button.types';
 

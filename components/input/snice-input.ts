@@ -1,4 +1,4 @@
-import { element, property, query, on, watch, dispatch, ready } from '../../src/index';
+import { element, property, query, on, watch, dispatch, ready } from 'snice';
 import css from './snice-input.css?inline';
 import type { InputType, InputSize, InputVariant, SniceInputElement } from './snice-input.types';
 

@@ -1,4 +1,4 @@
-import { element, property, query, queryAll, on, watch, dispatch, ready, dispose } from '../../src/index';
+import { element, property, query, queryAll, on, watch, dispatch, ready, dispose } from 'snice';
 import css from './snice-select.css?inline';
 import type { SelectSize, SelectOption, SniceSelectElement } from './snice-select.types';
 import './snice-option';

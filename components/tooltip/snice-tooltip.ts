@@ -1,4 +1,4 @@
-import { element, property, query, on, watch, ready, dispose } from '../../src/index';
+import { element, property, query, on, watch, ready, dispose } from 'snice';
 import css from './snice-tooltip.css?inline';
 import portalCss from './snice-tooltip-portal.css?inline';
 import type { TooltipPosition, TooltipTrigger, SniceTooltipElement } from './snice-tooltip.types';

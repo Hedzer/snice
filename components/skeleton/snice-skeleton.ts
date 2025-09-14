@@ -1,4 +1,4 @@
-import { element, property, watch, ready } from '../../src/index';
+import { element, property, watch, ready } from 'snice';
 import css from './snice-skeleton.css?inline';
 import type { SkeletonVariant, SkeletonAnimation, SniceSkeletonElement } from './snice-skeleton.types';
 

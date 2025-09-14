@@ -1,4 +1,4 @@
-import { element, property, watch, query, on, dispatch } from '../../src/index';
+import { element, property, watch, query, on, dispatch } from 'snice';
 import css from './snice-chip.css?inline';
 import type { ChipVariant, ChipSize, SniceChipElement } from './snice-chip.types';
 

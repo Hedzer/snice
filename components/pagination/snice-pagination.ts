@@ -1,4 +1,4 @@
-import { element, property, on, dispatch, watch, ready } from '../../src/index';
+import { element, property, on, dispatch, watch, ready } from 'snice';
 
 @element('snice-pagination')
 export class SnicePagination extends HTMLElement {

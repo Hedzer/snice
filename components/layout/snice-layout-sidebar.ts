@@ -1,4 +1,4 @@
-import { element, property } from '../../src/index';
+import { element, property } from 'snice';
 import css from './snice-layout-sidebar.css?inline';
 
 @element('snice-layout-sidebar')

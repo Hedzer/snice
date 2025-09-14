@@ -1,4 +1,4 @@
-import { element, property, watch, query, dispatch, on, ready } from '../../src/index';
+import { element, property, watch, query, dispatch, on, ready } from 'snice';
 import css from './snice-breadcrumbs.css?inline';
 import type { BreadcrumbItem, BreadcrumbSeparator, BreadcrumbSize, SniceBreadcrumbsElement } from './snice-breadcrumbs.types';
 import type { SniceCrumbElement } from './snice-breadcrumbs.types';

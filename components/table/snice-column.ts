@@ -1,4 +1,4 @@
-import { element, property, watch } from '../../src/index';
+import { element, property, watch } from 'snice';
 import type { 
   SniceColumnElement, 
   ColumnType, 

@@ -1,4 +1,4 @@
-import { element, property, watch, query, on, dispatch, part } from '../../src/index';
+import { element, property, watch, query, on, dispatch, part } from 'snice';
 import css from './snice-alert.css?inline';
 import type { AlertVariant, AlertSize, SniceAlertElement } from './snice-alert.types';
 

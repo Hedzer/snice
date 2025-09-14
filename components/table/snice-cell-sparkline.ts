@@ -1,4 +1,4 @@
-import { element, property, watch, ready, query, SimpleArray } from '../../src/index';
+import { element, property, watch, ready, query, SimpleArray } from 'snice';
 import css from './snice-cell.css?inline';
 import type { SparklineFormat, SniceCellElement, ColumnType, ColumnAlign, ColumnDefinition } from './snice-table.types';
 

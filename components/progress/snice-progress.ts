@@ -1,4 +1,4 @@
-import { element, property, watch, ready, query, dispatch } from '../../src/index';
+import { element, property, watch, ready, query, dispatch } from 'snice';
 import css from './snice-progress.css?inline';
 import type { ProgressVariant, ProgressSize, ProgressColor, SniceProgressElement } from './snice-progress.types';
 

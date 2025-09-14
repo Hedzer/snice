@@ -1,4 +1,4 @@
-import { element, property, query, queryAll, on, watch, ready, dispatch } from '../../src/index';
+import { element, property, query, queryAll, on, watch, ready, dispatch } from 'snice';
 import css from './snice-tabs.css?inline';
 import type { TabsPlacement, SniceTabElement, SniceTabPanelElement, TabChangeDetail, TabSelectDetail } from './snice-tabs.types';
 import { transitions } from '../transitions';
