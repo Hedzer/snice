@@ -3,19 +3,16 @@
   "version": "1.13.7",
   "type": "module",
   "description": "Imperative TypeScript framework for building vanilla web components with decorators, routing, and controllers. No virtual DOM, no build complexity.",
-  "main": "index.js",
-  "module": "index.js",
-  "types": "index.d.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
   "bin": {
     "snice": "./bin/snice.js"
   },
   "files": [
-    "*.js",
-    "*.d.ts",
-    "*.js.map",
+    "dist",
     "components",
     "bin",
-    "templates",
     "README.md",
     "!components/**/*.test.ts",
     "!components/**/*.spec.ts",
@@ -68,6 +65,8 @@
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
+    "test:publish": "vitest run tests/package-integrity.test.ts tests/publish-validation.test.ts",
+    "prerelease": "npm run build && npm run test:publish",
     "release": "semantic-release --no-ci",
     "release:dry": "semantic-release --dry-run --no-ci"
   },
