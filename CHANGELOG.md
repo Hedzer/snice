@@ -1,3 +1,10 @@
+## [1.13.5](https://gitlab.com/Hedzer/snice/compare/v1.13.4...v1.13.5) (2025-09-14)
+
+
+### Bug Fixes
+
+* snice index ([6295797](https://gitlab.com/Hedzer/snice/commit/6295797b7afc4001a574b19d4f5824cb4fe1b570))
+
 ## [1.13.4](https://gitlab.com/Hedzer/snice/compare/v1.13.3...v1.13.4) (2025-09-14)
 
 
