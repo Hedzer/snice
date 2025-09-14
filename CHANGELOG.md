@@ -1,3 +1,10 @@
+## [1.13.9](https://gitlab.com/Hedzer/snice/compare/v1.13.8...v1.13.9) (2025-09-14)
+
+
+### Bug Fixes
+
+* component paths ([6c4ef03](https://gitlab.com/Hedzer/snice/commit/6c4ef0351ddffb344c1af436d159dfe89b274759))
+
 ## [1.13.8](https://gitlab.com/Hedzer/snice/compare/v1.13.7...v1.13.8) (2025-09-14)
 
 
