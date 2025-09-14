@@ -3,12 +3,13 @@
   "compilerOptions": {
     "noEmit": false,
     "outDir": "dist",
+    "rootDir": ".",
     "declaration": true,
     "emitDeclarationOnly": false,
     "sourceMap": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false
   },
-  "include": ["src", "components"],
-  "exclude": ["src/**/*.test.ts", "src/**/*.spec.ts", "components/**/*.test.ts", "components/**/*.spec.ts", "components/**/*.html", "components/**/demo*", "components/**/*.md"]
+  "include": ["components"],
+  "exclude": ["src", "components/**/*.test.ts", "components/**/*.spec.ts", "components/**/*.html", "components/**/demo*", "components/**/*.md"]
 }
