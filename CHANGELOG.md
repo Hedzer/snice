@@ -1,3 +1,10 @@
+## [1.13.3](https://gitlab.com/Hedzer/snice/compare/v1.13.2...v1.13.3) (2025-09-14)
+
+
+### Bug Fixes
+
+* docs & [@part](https://gitlab.com/part) decorator ([e5f32f9](https://gitlab.com/Hedzer/snice/commit/e5f32f9338ed43f1181888c9615b74977ae1e0ab))
+
 ## [1.13.2](https://gitlab.com/Hedzer/snice/compare/v1.13.1...v1.13.2) (2025-09-11)
 
 
