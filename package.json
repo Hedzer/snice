@@ -3,9 +3,9 @@
   "version": "1.13.4",
   "type": "module",
   "description": "Imperative TypeScript framework for building vanilla web components with decorators, routing, and controllers. No virtual DOM, no build complexity.",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/src/index.js",
+  "module": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
   "bin": {
     "snice": "./bin/snice.js"
   },
