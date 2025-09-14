@@ -805,6 +805,17 @@ export function dispose() {
 export function part(partName: string, options: PartOptions = {}) {
   return function (target: any, methodName: string, descriptor: PropertyDescriptor) {
     const constructor = target.constructor;
+
+    // Handle case where descriptor might be undefined (TypeScript experimental decorators)
+    if (!descriptor) {
+      descriptor = Object.getOwnPropertyDescriptor(target, methodName) || {
+        value: target[methodName],
+        writable: true,
+        enumerable: true,
+        configurable: true
+      };
+    }
+
     const originalMethod = descriptor.value;
     
     if (!constructor[PARTS]) {

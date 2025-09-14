@@ -30,4 +30,4 @@ npm run preview
 - `src/router.ts` - Router configuration
 - `src/main.ts` - Application entry point
 
-Built with [Snice](https://github.com/yourusername/snice)
+Built with [Snice](https://gitlab.com/Hedzer/snice)
