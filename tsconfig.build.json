@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "outDir": "dist",
+    "declaration": true,
+    "emitDeclarationOnly": false,
+    "sourceMap": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
+  },
+  "include": ["src", "components"],
+  "exclude": ["src/**/*.test.ts", "src/**/*.spec.ts", "components/**/*.test.ts", "components/**/*.spec.ts", "components/**/*.html", "components/**/demo*", "components/**/*.md"]
+}

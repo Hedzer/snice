@@ -3,20 +3,18 @@
   "version": "1.13.3",
   "type": "module",
   "description": "Imperative TypeScript framework for building vanilla web components with decorators, routing, and controllers. No virtual DOM, no build complexity.",
-  "main": "src/index.ts",
-  "module": "src/index.ts",
-  "types": "src/index.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
   "bin": {
     "snice": "./bin/snice.js"
   },
   "files": [
-    "src",
+    "dist",
     "components",
     "bin",
     "templates",
     "README.md",
-    "!src/**/*.test.ts",
-    "!src/**/*.spec.ts",
     "!components/**/*.test.ts",
     "!components/**/*.spec.ts",
     "!components/**/*.html",
@@ -62,7 +60,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc -p tsconfig.build.json --noEmitOnError false",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
