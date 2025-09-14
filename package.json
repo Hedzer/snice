@@ -10,7 +10,9 @@
     "snice": "./bin/snice.js"
   },
   "files": [
-    "dist",
+    "*.js",
+    "*.d.ts",
+    "*.js.map",
     "components",
     "bin",
     "templates",
