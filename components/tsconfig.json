@@ -10,7 +10,7 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "paths": {
-      "snice": ["../dist/index.ts", "../src/index.ts"]
+      "snice": ["../dist/types/index.d.ts"]
     }
   },
   "include": ["."],

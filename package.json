@@ -3,14 +3,24 @@
   "version": "1.13.11",
   "type": "module",
   "description": "Imperative TypeScript framework for building vanilla web components with decorators, routing, and controllers. No virtual DOM, no build complexity.",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/index.cjs",
+  "module": "dist/index.esm.js",
+  "browser": "dist/index.iife.js",
+  "types": "dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.cjs",
+      "browser": "./dist/index.iife.js",
+      "types": "./dist/types/index.d.ts"
+    }
+  },
   "bin": {
     "snice": "./bin/snice.js"
   },
   "files": [
     "dist",
+    "src",
     "components",
     "bin",
     "README.md",
@@ -59,7 +69,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "rm -rf dist && tsc -p tsconfig.src.json --noEmitOnError false && tsc -p components/tsconfig.json --noEmitOnError false; rm -rf dist/src",
+    "build": "rm -rf dist && rollup -c && tsc -p components/tsconfig.json --noEmitOnError false",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -71,6 +81,9 @@
     "release:dry": "semantic-release --dry-run --no-ci"
   },
   "devDependencies": {
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^12.1.4",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/commit-analyzer": "^13.0.1",
     "@semantic-release/git": "^10.0.1",
@@ -80,12 +93,14 @@
     "@types/node": "^20.0.0",
     "@vitest/ui": "^1.0.0",
     "happy-dom": "^12.0.0",
+    "rollup": "^4.50.2",
     "semantic-release": "^24.2.7",
+    "tslib": "^2.8.1",
     "typescript": "^5.9.2",
     "vite": "^5.0.10",
     "vitest": "^1.0.0"
   },
   "dependencies": {
-    "pica-route": "^1.1.1"
+    "pica-route": "^1.1.2"
   }
 }
