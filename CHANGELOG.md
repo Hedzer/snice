@@ -1,3 +1,15 @@
+# [1.14.0](https://gitlab.com/Hedzer/snice/compare/v1.13.11...v1.14.0) (2025-09-15)
+
+
+### Bug Fixes
+
+* pathing issues ([0936c1b](https://gitlab.com/Hedzer/snice/commit/0936c1b8c4b94e9fbb8be36a7df9684e1857b85d))
+
+
+### Features
+
+* added multiple output formats ([c84bce3](https://gitlab.com/Hedzer/snice/commit/c84bce3194d783b6406f50b2c6300e3ec5b138f9))
+
 ## [1.13.11](https://gitlab.com/Hedzer/snice/compare/v1.13.10...v1.13.11) (2025-09-15)
 
 
