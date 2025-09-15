@@ -8,7 +8,8 @@
     "emitDeclarationOnly": false,
     "sourceMap": true,
     "noUnusedLocals": false,
-    "noUnusedParameters": false
+    "noUnusedParameters": false,
+    "useDefineForClassFields": false
   },
   "include": ["src"],
   "exclude": ["src/**/*.test.ts", "src/**/*.spec.ts"]
