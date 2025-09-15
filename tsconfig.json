@@ -15,5 +15,5 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "include": ["src", "examples/app", "components"]
+  "include": ["src", "examples/app"]
 }
