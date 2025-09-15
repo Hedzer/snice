@@ -1,3 +1,10 @@
+## [1.13.11](https://gitlab.com/Hedzer/snice/compare/v1.13.10...v1.13.11) (2025-09-15)
+
+
+### Bug Fixes
+
+* swapped route-parser with pica-route ([68fd4d9](https://gitlab.com/Hedzer/snice/commit/68fd4d9a83c6fd611cfec0802ea4535b0a779df0))
+
 ## [1.13.10](https://gitlab.com/Hedzer/snice/compare/v1.13.9...v1.13.10) (2025-09-15)
 
 
