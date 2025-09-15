@@ -1,3 +1,10 @@
+## [1.14.3](https://gitlab.com/Hedzer/snice/compare/v1.14.2...v1.14.3) (2025-09-15)
+
+
+### Bug Fixes
+
+* removed components folder from publishing ([9bad7ac](https://gitlab.com/Hedzer/snice/commit/9bad7acd01a8ca7010fb31481b78fcf94e078664))
+
 ## [1.14.2](https://gitlab.com/Hedzer/snice/compare/v1.14.1...v1.14.2) (2025-09-15)
 
 
