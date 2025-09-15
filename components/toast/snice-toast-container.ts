@@ -1,5 +1,5 @@
 import { element, property, ready, dispose } from 'snice';
-import { getSymbol } from 'snice/symbols';
+import { getSymbol } from '../symbols';
 import type { ToastPosition, ToastOptions, ToastEventDetail, ToastResponseEventDetail, SniceToastContainerElement } from './snice-toast.types';
 import './snice-toast';
 

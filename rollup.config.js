@@ -28,6 +28,20 @@ const baseConfig = {
   ]
 };
 
+const createSubmoduleConfig = (name) => ({
+  input: `src/${name}.ts`,
+  external: [],
+  plugins: [
+    resolve(),
+    typescript({
+      tsconfig: './tsconfig.src.json',
+      declaration: true,
+      declarationDir: './dist/types',
+      rootDir: './src'
+    })
+  ]
+});
+
 export default [
   // ESM build
   {
@@ -146,6 +160,66 @@ export default [
         output: {
           comments: /^!/
         }
+      })
+    ]
+  },
+
+  // Symbols ESM build
+  {
+    ...createSubmoduleConfig('symbols'),
+    output: {
+      file: 'dist/symbols.esm.js',
+      format: 'es',
+      banner,
+      sourcemap: true
+    }
+  },
+
+  // Symbols CommonJS build
+  {
+    ...createSubmoduleConfig('symbols'),
+    output: {
+      file: 'dist/symbols.cjs',
+      format: 'cjs',
+      banner,
+      sourcemap: true,
+      exports: 'named'
+    },
+    plugins: [
+      resolve(),
+      typescript({
+        tsconfig: './tsconfig.src.json',
+        declaration: false
+      })
+    ]
+  },
+
+  // Transitions ESM build
+  {
+    ...createSubmoduleConfig('transitions'),
+    output: {
+      file: 'dist/transitions.esm.js',
+      format: 'es',
+      banner,
+      sourcemap: true
+    }
+  },
+
+  // Transitions CommonJS build
+  {
+    ...createSubmoduleConfig('transitions'),
+    output: {
+      file: 'dist/transitions.cjs',
+      format: 'cjs',
+      banner,
+      sourcemap: true,
+      exports: 'named'
+    },
+    plugins: [
+      resolve(),
+      typescript({
+        tsconfig: './tsconfig.src.json',
+        declaration: false
       })
     ]
   }

@@ -13,6 +13,16 @@
       "require": "./dist/index.cjs",
       "browser": "./dist/index.iife.js",
       "types": "./dist/types/index.d.ts"
+    },
+    "./symbols": {
+      "import": "./dist/symbols.esm.js",
+      "require": "./dist/symbols.cjs",
+      "types": "./dist/types/symbols.d.ts"
+    },
+    "./transitions": {
+      "import": "./dist/transitions.esm.js",
+      "require": "./dist/transitions.cjs",
+      "types": "./dist/types/transitions.d.ts"
     }
   },
   "bin": {

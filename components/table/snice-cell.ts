@@ -192,7 +192,7 @@ export class SniceCell extends HTMLElement implements SniceCellElement {
     
     if (isNaN(num)) return String(this.value);
 
-    const currencyFormat = {
+    const currencyFormat: Intl.NumberFormatOptions = {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: format.decimals ?? 2,
@@ -208,7 +208,7 @@ export class SniceCell extends HTMLElement implements SniceCellElement {
     
     if (isNaN(num)) return String(this.value);
 
-    const percentFormat = {
+    const percentFormat: Intl.NumberFormatOptions = {
       style: 'percent',
       minimumFractionDigits: format.decimals ?? 1,
       maximumFractionDigits: format.decimals ?? 1

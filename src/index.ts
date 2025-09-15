@@ -4,7 +4,7 @@ export { controller, attachController, detachController, getController, useNativ
 export { on, dispatch } from './events';
 export { observe } from './observe';
 export { request, respond } from './request-response';
-export { IS_CONTROLLER_INSTANCE } from './symbols';
+export { IS_CONTROLLER_INSTANCE, getSymbol } from './symbols';
 export type { Transition } from './transitions';
 export type { PropertyOptions, PropertyConverter, QueryOptions, SniceElement, PartOptions } from './element';
 export type { RouterOptions, PageOptions, Guard, RouteParams, RouterInstance } from './router';

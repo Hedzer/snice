@@ -3,6 +3,8 @@
 
 import { getSymbol } from './global';
 
+export { getSymbol };
+
 export const IS_CONTROLLER_CLASS = getSymbol('is-controller-class');
 export const IS_CONTROLLER_INSTANCE = getSymbol('is-controller-instance');
 export const IS_ELEMENT_CLASS = getSymbol('is-element-class');
