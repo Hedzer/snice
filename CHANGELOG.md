@@ -1,3 +1,10 @@
+## [1.13.10](https://gitlab.com/Hedzer/snice/compare/v1.13.9...v1.13.10) (2025-09-15)
+
+
+### Bug Fixes
+
+* more pathing fixes ([eb69342](https://gitlab.com/Hedzer/snice/commit/eb69342a95c946cbdec7d9f197b57839942a0202))
+
 ## [1.13.9](https://gitlab.com/Hedzer/snice/compare/v1.13.8...v1.13.9) (2025-09-14)
 
 
