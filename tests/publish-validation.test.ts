@@ -125,7 +125,6 @@ describe('Publish Validation', () => {
     const requiredPaths = [
       packageJson.main,
       packageJson.types,
-      'components' // Should exist if in files array
     ];
 
     requiredPaths.forEach(path => {

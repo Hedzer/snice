@@ -72,7 +72,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "rm -rf dist && rollup -c && tsc -p components/tsconfig.json --noEmitOnError false",
+    "build": "rm -rf dist && rollup -c",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
