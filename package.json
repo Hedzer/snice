@@ -23,22 +23,15 @@
       "import": "./dist/transitions.esm.js",
       "require": "./dist/transitions.cjs",
       "types": "./dist/types/transitions.d.ts"
-    },
-    "./components/*": "./components/*"
+    }
   },
   "bin": {
     "snice": "./bin/snice.js"
   },
   "files": [
     "dist",
-    "components",
     "bin",
-    "README.md",
-    "!components/**/*.test.ts",
-    "!components/**/*.spec.ts",
-    "!components/**/*.html",
-    "!components/**/demo*",
-    "!components/**/*.md"
+    "README.md"
   ],
   "keywords": [
     "web components",
