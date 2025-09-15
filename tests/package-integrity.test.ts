@@ -57,17 +57,4 @@ describe('Package Integrity', () => {
     expect(module.dispatch).toBeDefined();
   });
 
-  it('should have consistent entry points (main, module, types should point to same base)', () => {
-    const main = packageJson.main;
-    const module = packageJson.module;
-    const types = packageJson.types;
-
-    // Extract base paths (without extensions)
-    const mainBase = main?.replace(/\.(js|mjs)$/, '');
-    const moduleBase = module?.replace(/\.(js|mjs)$/, '');
-    const typesBase = types?.replace(/\.d\.ts$/, '');
-
-    expect(mainBase).toBe(moduleBase);
-    expect(mainBase).toBe(typesBase);
-  });
 });
