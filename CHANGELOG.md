@@ -1,3 +1,10 @@
+## [1.14.1](https://gitlab.com/Hedzer/snice/compare/v1.14.0...v1.14.1) (2025-09-15)
+
+
+### Bug Fixes
+
+* added components & removed src ([0f037a4](https://gitlab.com/Hedzer/snice/commit/0f037a4455cff6bed381006959374f2de48825c4))
+
 # [1.14.0](https://gitlab.com/Hedzer/snice/compare/v1.13.11...v1.14.0) (2025-09-15)
 
 
