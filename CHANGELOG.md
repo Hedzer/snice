@@ -1,3 +1,10 @@
+## [1.14.2](https://gitlab.com/Hedzer/snice/compare/v1.14.1...v1.14.2) (2025-09-15)
+
+
+### Bug Fixes
+
+* useDefineForClassFields: false ([554415a](https://gitlab.com/Hedzer/snice/commit/554415a48eadbd99c10e24758291a4775f95b509))
+
 ## [1.14.1](https://gitlab.com/Hedzer/snice/compare/v1.14.0...v1.14.1) (2025-09-15)
 
 
