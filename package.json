@@ -23,14 +23,14 @@
       "import": "./dist/transitions.esm.js",
       "require": "./dist/transitions.cjs",
       "types": "./dist/types/transitions.d.ts"
-    }
+    },
+    "./components/*": "./components/*"
   },
   "bin": {
     "snice": "./bin/snice.js"
   },
   "files": [
     "dist",
-    "src",
     "components",
     "bin",
     "README.md",
