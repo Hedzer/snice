@@ -70,9 +70,6 @@
     "release": "semantic-release --no-ci",
     "release:dry": "semantic-release --dry-run --no-ci"
   },
-  "dependencies": {
-    "route-parser": "^0.0.5"
-  },
   "devDependencies": {
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/commit-analyzer": "^13.0.1",
@@ -81,12 +78,14 @@
     "@semantic-release/npm": "^12.0.2",
     "@semantic-release/release-notes-generator": "^14.0.3",
     "@types/node": "^20.0.0",
-    "@types/route-parser": "^0.1.7",
     "@vitest/ui": "^1.0.0",
     "happy-dom": "^12.0.0",
     "semantic-release": "^24.2.7",
     "typescript": "^5.9.2",
     "vite": "^5.0.10",
     "vitest": "^1.0.0"
+  },
+  "dependencies": {
+    "pica-route": "^1.1.1"
   }
 }

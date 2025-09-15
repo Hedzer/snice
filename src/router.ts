@@ -1,4 +1,4 @@
-import Route from 'route-parser';
+import { Route } from 'pica-route';
 import { applyElementFunctionality } from './element';
 import { ROUTER_CONTEXT, CONTEXT_REQUEST_HANDLER, PAGE_TRANSITION, CREATED_AT } from './symbols';
 import { Transition, performTransition as performTransitionUtil } from './transitions';
