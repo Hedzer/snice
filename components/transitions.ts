@@ -12,7 +12,7 @@ import {
   noneTransition,
   type Transition,
   performTransition
-} from '../src/transitions';
+} from 'snice/transitions';
 
 /**
  * Map of all transitions for components to use

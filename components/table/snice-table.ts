@@ -1,6 +1,6 @@
 import { element, on, property, query, request, dispatch, watch } from 'snice';
-import '../input/snice-input';
-import '../select/snice-select';
+import 'snice/input/snice-input';
+import 'snice/select/snice-select';
 import './snice-cell.ts';
 import './snice-cell-text.ts';
 import './snice-cell-number.ts';
