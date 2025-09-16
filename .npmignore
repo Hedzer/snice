@@ -3,6 +3,12 @@ tests/
 **/*.test.ts
 **/*.spec.ts
 
+# Demo files in components
+components/**/demo.html
+components/**/demo/
+components/**/*.demo.*
+components/**/test.html
+
 # Configuration files
 .gitlab-ci.yml
 .releaserc.json
@@ -32,6 +38,5 @@ Thumbs.db
 .git/
 .gitignore
 
-# Build artifacts
-dist/
+# Build artifacts (note: dist/ is included via package.json files field)
 *.tsbuildinfo
