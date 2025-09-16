@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Button Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      padding: 40px;
+      font-family: var(--snice-font-family);
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+    }
+    
+    .row {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    
+    h2 {
+      color: var(--snice-color-text);
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Button Variants</h2>
+  <div class="row">
+    <snice-button variant="default">Default</snice-button>
+    <snice-button variant="primary">Primary</snice-button>
+    <snice-button variant="success">Success</snice-button>
+    <snice-button variant="warning">Warning</snice-button>
+    <snice-button variant="danger">Danger</snice-button>
+    <snice-button variant="text">Text</snice-button>
+  </div>
+
+  <script type="module" src="./snice-button.ts"></script>
+</body>
+</html>

@@ -1,0 +1,213 @@
+/* Toast Container */
+:host {
+  position: fixed;
+  z-index: var(--snice-z-index-tooltip);
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--snice-spacing-sm);
+  padding: var(--snice-spacing-md);
+}
+
+/* Position variants */
+:host([position="top-left"]) {
+  top: 0;
+  left: 0;
+  align-items: flex-start;
+}
+
+:host([position="top-center"]) {
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  align-items: center;
+}
+
+:host([position="top-right"]) {
+  top: 0;
+  right: 0;
+  align-items: flex-end;
+}
+
+:host([position="bottom-left"]) {
+  bottom: 0;
+  left: 0;
+  align-items: flex-start;
+}
+
+:host([position="bottom-center"]) {
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  align-items: center;
+}
+
+:host([position="bottom-right"]) {
+  bottom: 0;
+  right: 0;
+  align-items: flex-end;
+}
+
+/* Toast Item */
+.toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--snice-spacing-sm);
+  min-width: 12.5rem; /* 200px */
+  max-width: 20rem; /* 320px */
+  padding: var(--snice-spacing-sm) var(--snice-spacing-md);
+  border-radius: var(--snice-border-radius-lg);
+  box-shadow: var(--snice-shadow-lg);
+  font-family: var(--snice-font-family);
+  font-size: var(--snice-font-size-sm);
+  line-height: var(--snice-line-height-normal);
+  animation: slideIn var(--snice-transition-medium) ease-out;
+  transition: all var(--snice-transition-medium) ease;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.toast.toast--hiding {
+  animation: slideOut 0.3s ease-out;
+  opacity: 0;
+  transform: translateY(100%);
+}
+
+/* Type variants */
+.toast--success {
+  background-color: var(--snice-color-success);
+  color: var(--snice-color-text-inverse);
+}
+
+.toast--error {
+  background-color: var(--snice-color-danger);
+  color: var(--snice-color-text-inverse);
+}
+
+.toast--warning {
+  background-color: var(--snice-color-warning);
+  color: var(--snice-color-text-inverse);
+}
+
+.toast--info {
+  background-color: var(--snice-color-primary);
+  color: var(--snice-color-text-inverse);
+}
+
+/* Toast icon */
+.toast-icon {
+  flex-shrink: 0;
+  width: 1.25rem; /* 20px */
+  height: 1.25rem; /* 20px */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toast-icon svg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
+/* Toast content */
+.toast-content {
+  flex: 1;
+  word-wrap: break-word;
+}
+
+/* Close button */
+.toast-close {
+  flex-shrink: 0;
+  width: 1.25rem; /* 20px */
+  height: 1.25rem; /* 20px */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity var(--snice-transition-fast);
+  background: none;
+  border: none;
+  color: inherit;
+  padding: 0;
+}
+
+.toast-close:hover {
+  opacity: 1;
+}
+
+.toast-close svg {
+  width: 0.875rem; /* 14px */
+  height: 0.875rem; /* 14px */
+  fill: currentColor;
+}
+
+/* Animations - Pop up like toast */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+}
+
+/* For top-positioned toasts - slide down */
+:host([position^="top"]) .toast {
+  animation: slideInTop var(--snice-transition-medium) ease-out;
+}
+
+:host([position^="top"]) .toast.toast--hiding {
+  animation: slideOutTop var(--snice-transition-medium) ease-out;
+  transform: translateY(-100%);
+}
+
+@keyframes slideInTop {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideOutTop {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+}
+
+/* Progress bar for auto-dismiss */
+.toast-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 0.1875rem; /* 3px */
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 0 0 var(--snice-toast-border-radius) var(--snice-toast-border-radius);
+  transition: width linear;
+}

@@ -1,0 +1,171 @@
+:host {
+  display: inline-block;
+  font-family: var(--snice-font-family);
+}
+
+.radio-wrapper {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+}
+
+.radio-wrapper--disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Hide native radio */
+.radio-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* Custom radio */
+.radio {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--snice-color-background);
+  border: 2px solid var(--snice-color-border);
+  border-radius: 50%;
+  transition: all var(--snice-transition-fast) ease;
+}
+
+/* Size variants */
+.radio--small {
+  width: 1rem; /* 16px */
+  height: 1rem; /* 16px */
+}
+
+.radio--medium {
+  width: 1.25rem; /* 20px */
+  height: 1.25rem; /* 20px */
+}
+
+.radio--large {
+  width: 1.5rem; /* 24px */
+  height: 1.5rem; /* 24px */
+}
+
+/* States */
+.radio-input:checked ~ .radio {
+  border-color: var(--snice-color-primary);
+}
+
+.radio-input:focus-visible ~ .radio {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.radio-input:disabled ~ .radio {
+  background: var(--snice-color-background-secondary);
+  border-color: var(--snice-color-border);
+}
+
+.radio-input:disabled:checked ~ .radio {
+  border-color: var(--snice-color-text-secondary);
+}
+
+.radio-input:disabled:checked ~ .radio .radio-dot {
+  background: var(--snice-color-text-secondary);
+}
+
+/* Invalid state */
+.radio--invalid {
+  border-color: var(--snice-color-danger);
+}
+
+.radio-input:checked ~ .radio--invalid {
+  border-color: var(--snice-color-danger);
+}
+
+.radio-input:checked ~ .radio--invalid .radio-dot {
+  background: var(--snice-color-danger);
+}
+
+/* Radio dot */
+.radio-dot {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--snice-color-primary);
+  transform: scale(0);
+  transition: transform var(--snice-transition-fast) ease;
+}
+
+.radio-input:checked ~ .radio .radio-dot {
+  transform: scale(1);
+}
+
+/* Dot sizes */
+.radio--small .radio-dot {
+  width: 0.375rem; /* 6px */
+  height: 0.375rem; /* 6px */
+}
+
+.radio--medium .radio-dot {
+  width: 0.5rem; /* 8px */
+  height: 0.5rem; /* 8px */
+}
+
+.radio--large .radio-dot {
+  width: 0.625rem; /* 10px */
+  height: 0.625rem; /* 10px */
+}
+
+/* Label */
+.radio-label {
+  margin-left: 0.5rem; /* 8px */
+  color: var(--snice-color-text);
+  cursor: pointer;
+}
+
+.radio-label--small {
+  font-size: var(--snice-font-size-sm);
+}
+
+.radio-label--medium {
+  font-size: var(--snice-font-size-md);
+}
+
+.radio-label--large {
+  font-size: var(--snice-font-size-lg);
+}
+
+.radio-wrapper--disabled .radio-label {
+  color: var(--snice-color-text-secondary);
+  cursor: not-allowed;
+}
+
+/* Required indicator */
+.radio-label--required::after {
+  content: ' *';
+  color: var(--snice-color-danger);
+}
+
+/* Focus ring for keyboard navigation */
+.radio-input:focus-visible ~ .radio {
+  outline: 2px solid var(--snice-color-primary);
+  outline-offset: 2px;
+}
+
+/* Hover effect */
+.radio-wrapper:not(.radio-wrapper--disabled):hover .radio {
+  border-color: var(--snice-color-primary);
+}
+
+/* Radio Group styling (when used together) */
+:host {
+  --radio-group-gap: 0.75rem; /* 12px */
+}
+
+:host([data-group]) {
+  display: block;
+}
+
+:host([data-group]) + :host([data-group]) {
+  margin-top: var(--radio-group-gap);
+}

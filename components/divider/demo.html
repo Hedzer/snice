@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snice Divider Demo</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 40px;
+      line-height: 1.6;
+      background: #f5f5f5;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      color: #333;
+      border-bottom: 2px solid #e0e0e0;
+      padding-bottom: 10px;
+    }
+
+    h2 {
+      color: #555;
+      margin-top: 30px;
+    }
+
+    .demo-section {
+      margin: 30px 0;
+      padding: 20px;
+      background: #fafafa;
+      border-radius: 4px;
+    }
+
+    .demo-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .vertical-demo {
+      display: flex;
+      align-items: center;
+      height: 100px;
+      gap: 20px;
+    }
+
+    .content-block {
+      padding: 20px;
+      background: #f0f0f0;
+      border-radius: 4px;
+      margin: 10px 0;
+    }
+
+    .flex-container {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .box {
+      width: 100px;
+      height: 100px;
+      background: #3b82f6;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+    }
+
+    code {
+      background: #f0f0f0;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Snice Divider Component Demo</h1>
+
+    <div class="demo-section">
+      <h2>Basic Dividers</h2>
+      
+      <div>
+        <span class="demo-label">Default Horizontal Divider</span>
+        <snice-divider></snice-divider>
+      </div>
+
+      <div>
+        <span class="demo-label">Horizontal with No Spacing</span>
+        <snice-divider spacing="none"></snice-divider>
+      </div>
+
+      <div>
+        <span class="demo-label">Horizontal with Large Spacing</span>
+        <snice-divider spacing="large"></snice-divider>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Variants</h2>
+      
+      <div>
+        <span class="demo-label">Solid (Default)</span>
+        <snice-divider variant="solid"></snice-divider>
+      </div>
+
+      <div>
+        <span class="demo-label">Dashed</span>
+        <snice-divider variant="dashed"></snice-divider>
+      </div>
+
+      <div>
+        <span class="demo-label">Dotted</span>
+        <snice-divider variant="dotted"></snice-divider>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Text Dividers</h2>
+      
+      <div>
+        <span class="demo-label">Center Aligned Text</span>
+        <snice-divider text="OR" align="center"></snice-divider>
+      </div>
+
+      <div>
+        <span class="demo-label">Start Aligned Text</span>
+        <snice-divider text="Section Title" align="start"></snice-divider>
+      </div>
+
+      <div>
+        <span class="demo-label">End Aligned Text</span>
+        <snice-divider text="End of Section" align="end"></snice-divider>
+      </div>
+
+      <div>
+        <span class="demo-label">Dashed with Text</span>
+        <snice-divider text="Choose One" variant="dashed"></snice-divider>
+      </div>
+
+      <div>
+        <span class="demo-label">Dotted with Text</span>
+        <snice-divider text="Continue" variant="dotted"></snice-divider>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Vertical Dividers</h2>
+      
+      <div class="vertical-demo">
+        <div class="box">Item 1</div>
+        <snice-divider orientation="vertical"></snice-divider>
+        <div class="box">Item 2</div>
+        <snice-divider orientation="vertical" variant="dashed"></snice-divider>
+        <div class="box">Item 3</div>
+        <snice-divider orientation="vertical" variant="dotted"></snice-divider>
+        <div class="box">Item 4</div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>In Context</h2>
+      
+      <div class="content-block">
+        <h3>Article Title</h3>
+        <p>This is the first paragraph of content. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        <snice-divider spacing="large"></snice-divider>
+        <p>This is the second paragraph after a divider. Sed do eiusmod tempor incididunt ut labore.</p>
+      </div>
+
+      <div class="content-block">
+        <h3>Login Form</h3>
+        <p>Username: user@example.com</p>
+        <p>Password: ********</p>
+        <snice-divider text="OR" spacing="large"></snice-divider>
+        <p>Sign in with Google</p>
+        <p>Sign in with GitHub</p>
+      </div>
+
+      <div class="content-block">
+        <h3>Navigation Menu</h3>
+        <div class="flex-container">
+          <span>Home</span>
+          <snice-divider orientation="vertical" spacing="small"></snice-divider>
+          <span>About</span>
+          <snice-divider orientation="vertical" spacing="small"></snice-divider>
+          <span>Services</span>
+          <snice-divider orientation="vertical" spacing="small"></snice-divider>
+          <span>Contact</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Custom Styling</h2>
+      
+      <div>
+        <span class="demo-label">Custom Color (via CSS variable)</span>
+        <snice-divider style="--divider-color: #ef4444;"></snice-divider>
+      </div>
+
+      <div>
+        <span class="demo-label">Thick Divider</span>
+        <snice-divider style="--divider-thickness: 3px;"></snice-divider>
+      </div>
+
+      <div>
+        <span class="demo-label">Custom Text Background</span>
+        <div style="background: linear-gradient(to right, #fce7f3, #ddd6fe); padding: 20px;">
+          <snice-divider text="Gradient Background" text-background="transparent"></snice-divider>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import './snice-divider.ts';
+  </script>
+</body>
+</html>

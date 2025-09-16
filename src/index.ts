@@ -11,4 +11,4 @@ export type { RouterOptions, PageOptions, Guard, RouteParams, RouterInstance } f
 export type { IController, ControllerClass } from './controller';
 export type { DispatchOptions } from './events';
 export type { ObserveOptions } from './observe';
-export type { RequestOptions, Response } from './request-response';
+export type { RequestOptions } from './request-response';

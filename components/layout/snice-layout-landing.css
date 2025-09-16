@@ -1,0 +1,92 @@
+/* Landing Page Layout */
+:host {
+  display: block;
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+}
+
+.layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--snice-spacing-lg, 2rem);
+}
+
+.header {
+  background: var(--snice-color-background, white);
+  border-bottom: 1px solid var(--snice-color-border, #d1d5db);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: var(--snice-spacing-md, 1rem);
+  padding-bottom: var(--snice-spacing-md, 1rem);
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: var(--snice-font-size-xl, 1.5rem);
+  font-weight: var(--snice-font-weight-bold, 700);
+  color: var(--snice-color-text, #374151);
+}
+
+.nav {
+  display: flex;
+  gap: var(--snice-spacing-lg, 2rem);
+}
+
+.nav ::slotted(a) {
+  text-decoration: none;
+  color: var(--snice-color-text-secondary, #6b7280);
+  font-weight: var(--snice-font-weight-medium, 500);
+  transition: color var(--snice-transition-fast, 0.15s) ease;
+}
+
+.nav ::slotted(a:hover) {
+  color: var(--snice-color-primary, #3b82f6);
+}
+
+.main {
+  flex: 1;
+}
+
+.hero {
+  background: var(--snice-color-background-secondary, #f8fafc);
+  padding: var(--snice-spacing-2xl, 4rem) 0;
+}
+
+.content {
+  background: var(--snice-color-background, white);
+}
+
+.footer {
+  background: var(--snice-color-background-tertiary, #f1f5f9);
+  border-top: 1px solid var(--snice-color-border, #d1d5db);
+  padding: var(--snice-spacing-xl, 3rem) 0;
+  margin-top: auto;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .header .container {
+    flex-direction: column;
+    gap: var(--snice-spacing-md, 1rem);
+  }
+  
+  .nav {
+    gap: var(--snice-spacing-md, 1rem);
+  }
+  
+  .hero {
+    padding: var(--snice-spacing-xl, 3rem) 0;
+  }
+}

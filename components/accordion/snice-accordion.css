@@ -1,0 +1,31 @@
+:host {
+  --accordion-border-color: #e5e7eb;
+  --accordion-border-radius: 8px;
+  --accordion-header-bg: #ffffff;
+  --accordion-header-bg-hover: #f9fafb;
+  --accordion-header-bg-active: #f3f4f6;
+  --accordion-header-color: #111827;
+  --accordion-header-padding: 1rem; /* 16px */
+  --accordion-content-bg: #ffffff;
+  --accordion-content-padding: 1rem; /* 16px */
+  --accordion-content-color: #4b5563;
+  --accordion-icon-size: 1.25rem; /* 20px */
+  --accordion-animation-duration: 0.3s;
+  
+  display: block;
+  width: 100%;
+}
+
+.accordion {
+  border: 1px solid var(--accordion-border-color);
+  border-radius: var(--accordion-border-radius);
+  overflow: hidden;
+}
+
+::slotted(snice-accordion-item) {
+  display: block;
+}
+
+::slotted(snice-accordion-item:not(:last-child)) {
+  border-bottom: 1px solid var(--accordion-border-color);
+}

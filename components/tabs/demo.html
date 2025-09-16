@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tabs Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      padding: 40px;
+      font-family: var(--snice-font-family);
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+    }
+    
+    .section {
+      margin-bottom: 60px;
+    }
+    
+    h2 {
+      color: var(--snice-color-text);
+      margin-bottom: 20px;
+      font-size: var(--snice-font-size-2xl);
+    }
+    
+    h3 {
+      color: var(--snice-color-text-secondary);
+      margin-bottom: 16px;
+      font-size: var(--snice-font-size-lg);
+    }
+    
+    .demo-content {
+      padding: var(--snice-spacing-md);
+    }
+    
+    .demo-content h4 {
+      margin-top: 0;
+      color: var(--snice-color-text);
+    }
+    
+    .demo-content p {
+      color: var(--snice-color-text-secondary);
+      line-height: var(--snice-line-height-normal);
+    }
+    
+    .icon {
+      width: 16px;
+      height: 16px;
+      margin-right: 4px;
+    }
+    
+    .controls {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    
+    button {
+      padding: 8px 16px;
+      background: var(--snice-color-primary);
+      color: var(--snice-color-text-inverse);
+      border: none;
+      border-radius: var(--snice-border-radius-md);
+      font-family: var(--snice-font-family);
+      font-size: var(--snice-font-size-md);
+      cursor: pointer;
+      transition: background-color var(--snice-transition-fast) ease;
+    }
+    
+    button:hover {
+      background: var(--snice-color-primary-hover);
+    }
+    
+    select {
+      padding: 8px;
+      font-family: var(--snice-font-family);
+      font-size: var(--snice-font-size-md);
+      border: 1px solid var(--snice-color-border);
+      border-radius: var(--snice-border-radius-md);
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+    }
+  </style>
+</head>
+<body>
+  <h2>Tabs Component Demo</h2>
+  
+  <div class="section">
+    <h3>Basic Tabs (with Fade Transition)</h3>
+    <snice-tabs transition="fade">
+      <snice-tab slot="nav">General</snice-tab>
+      <snice-tab slot="nav">Account</snice-tab>
+      <snice-tab slot="nav">Security</snice-tab>
+      <snice-tab slot="nav">Notifications</snice-tab>
+      
+      <snice-tab-panel name="general">
+        <div class="demo-content">
+          <h4>General Settings</h4>
+          <p>Configure your general application preferences and display options.</p>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        </div>
+      </snice-tab-panel>
+      
+      <snice-tab-panel name="account">
+        <div class="demo-content">
+          <h4>Account Settings</h4>
+          <p>Manage your account information, profile details, and preferences.</p>
+          <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        </div>
+      </snice-tab-panel>
+      
+      <snice-tab-panel name="security">
+        <div class="demo-content">
+          <h4>Security Settings</h4>
+          <p>Configure security options, two-factor authentication, and access controls.</p>
+          <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+        </div>
+      </snice-tab-panel>
+      
+      <snice-tab-panel name="notifications">
+        <div class="demo-content">
+          <h4>Notification Settings</h4>
+          <p>Manage your notification preferences and alert configurations.</p>
+          <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        </div>
+      </snice-tab-panel>
+    </snice-tabs>
+  </div>
+  
+  <div class="section">
+    <h3>Tabs with Icons (Scale Transition)</h3>
+    <snice-tabs transition="scale">
+      <snice-tab slot="nav">
+        <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+        Home
+      </snice-tab>
+      <snice-tab slot="nav">
+        <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+        </svg>
+        Profile
+      </snice-tab>
+      <snice-tab slot="nav">
+        <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+        </svg>
+        Favorites
+      </snice-tab>
+      <snice-tab slot="nav">
+        <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1.81.45 1.61 1.67 1.61 1.16 0 1.6-.64 1.6-1.46 0-.84-.68-1.22-1.88-1.54-2.29-.61-3.05-1.86-3.05-3.27 0-1.28.89-2.56 2.81-2.93V4.5h2.67v2.52c1.33.31 2.6 1.16 2.76 2.86h-1.96c-.09-.52-.39-1.34-1.47-1.34-1.09 0-1.5.71-1.5 1.34 0 .71.52 1.09 2.05 1.52 2.18.58 2.88 1.7 2.88 3.27-.01 1.71-1.37 2.85-3.19 3.42z"/>
+        </svg>
+        Settings
+      </snice-tab>
+      
+      <snice-tab-panel>
+        <div class="demo-content">
+          <h4>Home</h4>
+          <p>Welcome to your dashboard. Here you can see an overview of your recent activity.</p>
+        </div>
+      </snice-tab-panel>
+      
+      <snice-tab-panel>
+        <div class="demo-content">
+          <h4>Profile</h4>
+          <p>View and edit your profile information.</p>
+        </div>
+      </snice-tab-panel>
+      
+      <snice-tab-panel>
+        <div class="demo-content">
+          <h4>Favorites</h4>
+          <p>Your saved items and bookmarks appear here.</p>
+        </div>
+      </snice-tab-panel>
+      
+      <snice-tab-panel>
+        <div class="demo-content">
+          <h4>Settings</h4>
+          <p>Configure your application preferences.</p>
+        </div>
+      </snice-tab-panel>
+    </snice-tabs>
+  </div>
+  
+  <div class="section">
+    <h3>Closable Tabs</h3>
+    <snice-tabs id="closable-tabs">
+      <snice-tab slot="nav" closable>Document 1</snice-tab>
+      <snice-tab slot="nav" closable>Document 2</snice-tab>
+      <snice-tab slot="nav" closable>Document 3</snice-tab>
+      <snice-tab slot="nav">Settings (Not Closable)</snice-tab>
+      
+      <snice-tab-panel>
+        <div class="demo-content">
+          <h4>Document 1</h4>
+          <p>This tab can be closed using the X button.</p>
+        </div>
+      </snice-tab-panel>
+      
+      <snice-tab-panel>
+        <div class="demo-content">
+          <h4>Document 2</h4>
+          <p>This tab can also be closed.</p>
+        </div>
+      </snice-tab-panel>
+      
+      <snice-tab-panel>
+        <div class="demo-content">
+          <h4>Document 3</h4>
+          <p>Another closable tab.</p>
+        </div>
+      </snice-tab-panel>
+      
+      <snice-tab-panel>
+        <div class="demo-content">
+          <h4>Settings</h4>
+          <p>This tab cannot be closed.</p>
+        </div>
+      </snice-tab-panel>
+    </snice-tabs>
+  </div>
+  
+  <div class="section">
+    <h3>Disabled Tabs</h3>
+    <snice-tabs>
+      <snice-tab slot="nav">Active Tab</snice-tab>
+      <snice-tab slot="nav" disabled>Disabled Tab</snice-tab>
+      <snice-tab slot="nav">Another Active Tab</snice-tab>
+      
+      <snice-tab-panel>
+        <div class="demo-content">
+          <h4>Active Content</h4>
+          <p>This tab is active and clickable.</p>
+        </div>
+      </snice-tab-panel>
+      
+      <snice-tab-panel>
+        <div class="demo-content">
+          <h4>Disabled Content</h4>
+          <p>You shouldn't be able to see this content.</p>
+        </div>
+      </snice-tab-panel>
+      
+      <snice-tab-panel>
+        <div class="demo-content">
+          <h4>Another Active Content</h4>
+          <p>This tab is also active and clickable.</p>
+        </div>
+      </snice-tab-panel>
+    </snice-tabs>
+  </div>
+  
+  <div class="section">
+    <h3>Tab Placement</h3>
+    
+    <div class="controls">
+      <label>Placement:</label>
+      <select id="placement-select">
+        <option value="top">Top</option>
+        <option value="bottom">Bottom</option>
+        <option value="start">Start (Left)</option>
+        <option value="end">End (Right)</option>
+      </select>
+    </div>
+    
+    <snice-tabs id="placement-tabs" placement="top">
+      <snice-tab slot="nav">First</snice-tab>
+      <snice-tab slot="nav">Second</snice-tab>
+      <snice-tab slot="nav">Third</snice-tab>
+      
+      <snice-tab-panel>
+        <div class="demo-content">
+          <h4>First Panel</h4>
+          <p>Tab placement can be changed dynamically.</p>
+        </div>
+      </snice-tab-panel>
+      
+      <snice-tab-panel>
+        <div class="demo-content">
+          <h4>Second Panel</h4>
+          <p>Try changing the placement using the dropdown above.</p>
+        </div>
+      </snice-tab-panel>
+      
+      <snice-tab-panel>
+        <div class="demo-content">
+          <h4>Third Panel</h4>
+          <p>Tabs can be positioned at top, bottom, left (start), or right (end).</p>
+        </div>
+      </snice-tab-panel>
+    </snice-tabs>
+  </div>
+  
+  <div class="section">
+    <h3>Many Tabs with Scroll</h3>
+    <snice-tabs>
+      <snice-tab slot="nav">Tab 1</snice-tab>
+      <snice-tab slot="nav">Tab 2</snice-tab>
+      <snice-tab slot="nav">Tab 3</snice-tab>
+      <snice-tab slot="nav">Tab 4</snice-tab>
+      <snice-tab slot="nav">Tab 5</snice-tab>
+      <snice-tab slot="nav">Tab 6</snice-tab>
+      <snice-tab slot="nav">Tab 7</snice-tab>
+      <snice-tab slot="nav">Tab 8</snice-tab>
+      <snice-tab slot="nav">Tab 9</snice-tab>
+      <snice-tab slot="nav">Tab 10</snice-tab>
+      <snice-tab slot="nav">Tab 11</snice-tab>
+      <snice-tab slot="nav">Tab 12</snice-tab>
+      <snice-tab slot="nav">Tab 13</snice-tab>
+      <snice-tab slot="nav">Tab 14</snice-tab>
+      <snice-tab slot="nav">Tab 15</snice-tab>
+      
+      <snice-tab-panel>
+        <div class="demo-content">
+          <h4>Content 1</h4>
+          <p>When there are many tabs, scroll buttons appear to navigate.</p>
+        </div>
+      </snice-tab-panel>
+      
+      <snice-tab-panel>
+        <div class="demo-content">
+          <h4>Content 2</h4>
+        </div>
+      </snice-tab-panel>
+      
+      <snice-tab-panel>
+        <div class="demo-content">
+          <h4>Content 3</h4>
+        </div>
+      </snice-tab-panel>
+      
+      <snice-tab-panel>
+        <div class="demo-content">
+          <h4>Content 4</h4>
+        </div>
+      </snice-tab-panel>
+      
+      <snice-tab-panel>
+        <div class="demo-content">
+          <h4>Content 5</h4>
+        </div>
+      </snice-tab-panel>
+      
+      <snice-tab-panel>
+        <div class="demo-content">
+          <h4>Content 6</h4>
+        </div>
+      </snice-tab-panel>
+      
+      <snice-tab-panel>
+        <div class="demo-content">
+          <h4>Content 7</h4>
+        </div>
+      </snice-tab-panel>
+      
+      <snice-tab-panel>
+        <div class="demo-content">
+          <h4>Content 8</h4>
+        </div>
+      </snice-tab-panel>
+      
+      <snice-tab-panel>
+        <div class="demo-content">
+          <h4>Content 9</h4>
+        </div>
+      </snice-tab-panel>
+      
+      <snice-tab-panel>
+        <div class="demo-content">
+          <h4>Content 10</h4>
+        </div>
+      </snice-tab-panel>
+      
+      <snice-tab-panel>
+        <div class="demo-content">
+          <h4>Content 11</h4>
+        </div>
+      </snice-tab-panel>
+      
+      <snice-tab-panel>
+        <div class="demo-content">
+          <h4>Content 12</h4>
+        </div>
+      </snice-tab-panel>
+      
+      <snice-tab-panel>
+        <div class="demo-content">
+          <h4>Content 13</h4>
+        </div>
+      </snice-tab-panel>
+      
+      <snice-tab-panel>
+        <div class="demo-content">
+          <h4>Content 14</h4>
+        </div>
+      </snice-tab-panel>
+      
+      <snice-tab-panel>
+        <div class="demo-content">
+          <h4>Content 15</h4>
+        </div>
+      </snice-tab-panel>
+    </snice-tabs>
+  </div>
+  
+  <div class="section">
+    <h3>Programmatic Control (Slide Transition)</h3>
+    
+    <div class="controls">
+      <button onclick="selectTab(0)">Select First</button>
+      <button onclick="selectTab(1)">Select Second</button>
+      <button onclick="selectTab(2)">Select Third</button>
+    </div>
+    
+    <snice-tabs id="programmatic-tabs" transition="slide">
+      <snice-tab slot="nav">First</snice-tab>
+      <snice-tab slot="nav">Second</snice-tab>
+      <snice-tab slot="nav">Third</snice-tab>
+      
+      <snice-tab-panel>
+        <div class="demo-content">
+          <h4>First Panel</h4>
+          <p>Use the buttons above to programmatically select tabs.</p>
+        </div>
+      </snice-tab-panel>
+      
+      <snice-tab-panel>
+        <div class="demo-content">
+          <h4>Second Panel</h4>
+          <p>Tabs can be controlled via JavaScript.</p>
+        </div>
+      </snice-tab-panel>
+      
+      <snice-tab-panel>
+        <div class="demo-content">
+          <h4>Third Panel</h4>
+          <p>This enables dynamic tab switching based on application logic.</p>
+        </div>
+      </snice-tab-panel>
+    </snice-tabs>
+  </div>
+
+  <script type="module">
+    import './snice-tabs.ts';
+    import './snice-tab.ts';
+    import './snice-tab-panel.ts';
+    
+    // Placement control
+    document.getElementById('placement-select').addEventListener('change', (e) => {
+      const tabs = document.getElementById('placement-tabs');
+      tabs.placement = e.target.value;
+    });
+    
+    // Programmatic control
+    window.selectTab = function(index) {
+      const tabs = document.getElementById('programmatic-tabs');
+      tabs.show(index);
+    };
+    
+    // Listen for tab changes
+    document.querySelector('snice-tabs').addEventListener('@snice/tab-change', (e) => {
+      console.log('Tab changed:', e.detail);
+    });
+    
+    // Handle closable tabs
+    document.getElementById('closable-tabs').addEventListener('@snice/close', (e) => {
+      const tab = e.detail.tab;
+      const tabs = tab.parentElement.parentElement;
+      const index = Array.from(tabs.querySelectorAll('snice-tab')).indexOf(tab);
+      
+      // Remove tab and panel
+      tab.remove();
+      const panels = tabs.querySelectorAll('snice-tab-panel');
+      if (panels[index]) {
+        panels[index].remove();
+      }
+      
+      // Reset tabs
+      tabs.setupTabs();
+    });
+  </script>
+</body>
+</html>

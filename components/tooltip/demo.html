@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snice Tooltip Demo</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 40px;
+      line-height: 1.6;
+      background: #f5f5f5;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      color: #333;
+      border-bottom: 2px solid #e0e0e0;
+      padding-bottom: 10px;
+    }
+
+    h2 {
+      color: #555;
+      margin-top: 30px;
+    }
+
+    .demo-section {
+      margin: 30px 0;
+    }
+
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin: 20px 0;
+    }
+
+    .demo-item {
+      padding: 20px;
+      background: #f8f8f8;
+      border-radius: 4px;
+      text-align: center;
+    }
+
+    button {
+      padding: 8px 16px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    button:hover {
+      background: #2563eb;
+    }
+
+    .edge-demo {
+      position: relative;
+      height: 300px;
+      border: 2px dashed #ccc;
+      border-radius: 4px;
+      margin: 20px 0;
+    }
+
+    .edge-button {
+      position: absolute;
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+
+    .edge-button.top-left { top: 10px; left: 10px; }
+    .edge-button.top-right { top: 10px; right: 10px; }
+    .edge-button.bottom-left { bottom: 10px; left: 10px; }
+    .edge-button.bottom-right { bottom: 10px; right: 10px; }
+    .edge-button.center { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+
+    .custom-tooltip {
+      --tooltip-bg: #6366f1;
+      --tooltip-color: white;
+      --tooltip-radius: 12px;
+      --tooltip-padding: 12px 16px;
+    }
+
+    .link {
+      color: #3b82f6;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    input {
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .icon {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      background: #6366f1;
+      border-radius: 50%;
+      vertical-align: middle;
+    }
+
+    code {
+      background: #f0f0f0;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Snice Tooltip Component Demo</h1>
+
+    <div class="demo-section">
+      <h2>Basic Positions</h2>
+      <div class="demo-grid">
+        <div class="demo-item">
+          <snice-tooltip content="This tooltip appears on top" position="top">
+            <button>Top</button>
+          </snice-tooltip>
+        </div>
+        <div class="demo-item">
+          <snice-tooltip content="This tooltip appears on bottom" position="bottom">
+            <button>Bottom</button>
+          </snice-tooltip>
+        </div>
+        <div class="demo-item">
+          <snice-tooltip content="This tooltip appears on left" position="left">
+            <button>Left</button>
+          </snice-tooltip>
+        </div>
+        <div class="demo-item">
+          <snice-tooltip content="This tooltip appears on right" position="right">
+            <button>Right</button>
+          </snice-tooltip>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Aligned Positions</h2>
+      <div class="demo-grid">
+        <div class="demo-item">
+          <snice-tooltip content="Top start aligned" position="top-start">
+            <button>Top Start</button>
+          </snice-tooltip>
+        </div>
+        <div class="demo-item">
+          <snice-tooltip content="Top end aligned" position="top-end">
+            <button>Top End</button>
+          </snice-tooltip>
+        </div>
+        <div class="demo-item">
+          <snice-tooltip content="Bottom start aligned" position="bottom-start">
+            <button>Bottom Start</button>
+          </snice-tooltip>
+        </div>
+        <div class="demo-item">
+          <snice-tooltip content="Bottom end aligned" position="bottom-end">
+            <button>Bottom End</button>
+          </snice-tooltip>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Trigger Types</h2>
+      <div class="demo-grid">
+        <div class="demo-item">
+          <snice-tooltip content="Hover to see this tooltip" trigger="hover">
+            <button>Hover Trigger</button>
+          </snice-tooltip>
+        </div>
+        <div class="demo-item">
+          <snice-tooltip content="Click to toggle this tooltip" trigger="click">
+            <button>Click Trigger</button>
+          </snice-tooltip>
+        </div>
+        <div class="demo-item">
+          <snice-tooltip content="Focus to see this tooltip" trigger="focus">
+            <input type="text" placeholder="Focus me">
+          </snice-tooltip>
+        </div>
+        <div class="demo-item">
+          <snice-tooltip content="Manually controlled tooltip" trigger="manual" id="manual-tooltip">
+            <button onclick="toggleManualTooltip()">Manual Control</button>
+          </snice-tooltip>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Delays</h2>
+      <div class="demo-grid">
+        <div class="demo-item">
+          <snice-tooltip content="Shows after 500ms delay" delay="500">
+            <button>Show Delay (500ms)</button>
+          </snice-tooltip>
+        </div>
+        <div class="demo-item">
+          <snice-tooltip content="Hides after 500ms delay" hide-delay="500">
+            <button>Hide Delay (500ms)</button>
+          </snice-tooltip>
+        </div>
+        <div class="demo-item">
+          <snice-tooltip content="Both show and hide delays" delay="300" hide-delay="300">
+            <button>Both Delays (300ms)</button>
+          </snice-tooltip>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Customization</h2>
+      <div class="demo-grid">
+        <div class="demo-item">
+          <snice-tooltip content="Tooltip without arrow" :arrow="false">
+            <button>No Arrow</button>
+          </snice-tooltip>
+        </div>
+        <div class="demo-item">
+          <snice-tooltip content="This tooltip has a much wider maximum width for longer content that needs more space" max-width="400">
+            <button>Wide Tooltip</button>
+          </snice-tooltip>
+        </div>
+        <div class="demo-item">
+          <snice-tooltip content="Custom styled tooltip" class="custom-tooltip">
+            <button>Custom Style</button>
+          </snice-tooltip>
+        </div>
+        <div class="demo-item">
+          <snice-tooltip content="Large offset from trigger" offset="20">
+            <button>Large Offset</button>
+          </snice-tooltip>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Smart Positioning (Edge Detection)</h2>
+      <p>Tooltips automatically adjust position when they would overflow the viewport edges.</p>
+      <div class="edge-demo">
+        <snice-tooltip content="This tooltip will flip to avoid viewport edges" position="top" class="edge-button top-left">
+          <button>Top Left</button>
+        </snice-tooltip>
+        <snice-tooltip content="This tooltip will flip to avoid viewport edges" position="top" class="edge-button top-right">
+          <button>Top Right</button>
+        </snice-tooltip>
+        <snice-tooltip content="This tooltip will flip to avoid viewport edges" position="bottom" class="edge-button bottom-left">
+          <button>Bottom Left</button>
+        </snice-tooltip>
+        <snice-tooltip content="This tooltip will flip to avoid viewport edges" position="bottom" class="edge-button bottom-right">
+          <button>Bottom Right</button>
+        </snice-tooltip>
+        <snice-tooltip content="Center positioned tooltip" position="top" class="edge-button center">
+          <button>Center</button>
+        </snice-tooltip>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Content Types</h2>
+      <div class="demo-grid">
+        <div class="demo-item">
+          <snice-tooltip content="Simple text tooltip">
+            <span class="link">Text Content</span>
+          </snice-tooltip>
+        </div>
+        <div class="demo-item">
+          <snice-tooltip content="This is a very long tooltip content that will wrap to multiple lines when it reaches the maximum width of the tooltip container">
+            <span class="link">Long Content</span>
+          </snice-tooltip>
+        </div>
+        <div class="demo-item">
+          <snice-tooltip content="Tooltip on an icon">
+            <span class="icon" aria-label="Info"></span>
+          </snice-tooltip>
+        </div>
+        <div class="demo-item">
+          <snice-tooltip content="Press Ctrl+C to copy">
+            <code>npm install</code>
+          </snice-tooltip>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Programmatic Control</h2>
+      <div class="demo-grid">
+        <div class="demo-item">
+          <snice-tooltip content="Programmatically shown" trigger="manual" id="prog-tooltip">
+            <button>Target Element</button>
+          </snice-tooltip>
+          <br><br>
+          <button onclick="showProgrammatic()">Show</button>
+          <button onclick="hideProgrammatic()">Hide</button>
+        </div>
+        <div class="demo-item">
+          <snice-tooltip content="Dynamic content" trigger="hover" id="dynamic-tooltip">
+            <button onmouseenter="updateDynamicContent()">Dynamic Content</button>
+          </snice-tooltip>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import './snice-tooltip.ts';
+
+    // Manual tooltip control
+    window.toggleManualTooltip = function() {
+      const tooltip = document.getElementById('manual-tooltip');
+      tooltip.toggle();
+    };
+
+    // Programmatic control
+    window.showProgrammatic = function() {
+      const tooltip = document.getElementById('prog-tooltip');
+      tooltip.show();
+    };
+
+    window.hideProgrammatic = function() {
+      const tooltip = document.getElementById('prog-tooltip');
+      tooltip.hide();
+    };
+
+    // Dynamic content
+    let counter = 0;
+    window.updateDynamicContent = function() {
+      const tooltip = document.getElementById('dynamic-tooltip');
+      counter++;
+      tooltip.content = `Hover count: ${counter}`;
+    };
+  </script>
+</body>
+</html>

@@ -898,7 +898,7 @@ export function part(partName: string, options: PartOptions = {}) {
     });
 
     // Return wrapped method that automatically re-renders the part when called
-    return async function (this: HTMLElement, ...args: any[]) {
+    return function (this: HTMLElement, ...args: any[]) {
       // Initialize timers storage if not present
       if (!(this as any)[PART_TIMERS]) {
         (this as any)[PART_TIMERS] = new Map();
@@ -914,63 +914,99 @@ export function part(partName: string, options: PartOptions = {}) {
       }
       
       const timers = (this as any)[PART_TIMERS].get(partName);
-      
-      // Create the render function
-      const renderPart = async () => {
-        // Call the original method to get the content
-        const result = originalMethod.apply(this, args);
-        const content = result instanceof Promise ? await result : result;
-        
-        // Re-render the part if shadow DOM exists and content is defined
+
+      // Call the original method first to get its result
+      const result = originalMethod.apply(this, args);
+
+      // Helper function to update DOM
+      const updateDOM = (content: any) => {
         if (this.shadowRoot && content !== undefined) {
           const partElement = this.shadowRoot.querySelector(`[part="${partName}"]`);
           if (partElement) {
             partElement.innerHTML = content;
           }
         }
-        
-        return content;
       };
       
-      // Handle debounce (only if positive value)
-      if (options.debounce !== undefined && options.debounce > 0) {
-        if (timers.debounceTimer) {
-          clearTimeout(timers.debounceTimer);
-        }
-        
-        return new Promise((resolve) => {
-          timers.debounceTimer = setTimeout(async () => {
-            const result = await renderPart();
-            resolve(result);
-          }, options.debounce);
-        });
-      }
-      
-      // Handle throttle (only if positive value)
-      if (options.throttle !== undefined && options.throttle > 0) {
-        const now = Date.now();
-        
-        if (timers.lastThrottleCall === 0 || now - timers.lastThrottleCall >= options.throttle) {
-          timers.lastThrottleCall = now;
-          return await renderPart();
-        } else {
-          // If throttled, schedule the next call if not already scheduled
-          if (!timers.throttleTimer) {
-            const remainingTime = options.throttle - (now - timers.lastThrottleCall);
-            timers.throttleTimer = setTimeout(async () => {
-              timers.throttleTimer = null;
-              timers.lastThrottleCall = Date.now();
-              await renderPart();
-            }, remainingTime);
+      // Check if result is a Promise (async method)
+      if (result instanceof Promise) {
+        // Handle async method
+        if (options.debounce !== undefined && options.debounce > 0) {
+          // Debounce: defer DOM update, return original Promise
+          if (timers.debounceTimer) {
+            clearTimeout(timers.debounceTimer);
           }
-          // For throttled calls, don't execute the original method, just return undefined
-          // The actual render will happen in the scheduled timeout
-          return undefined;
+          timers.debounceTimer = setTimeout(async () => {
+            const content = await result;
+            updateDOM(content);
+          }, options.debounce);
+          return result;
         }
+
+        if (options.throttle !== undefined && options.throttle > 0) {
+          // Throttle: handle timing but return original Promise
+          const now = Date.now();
+          if (timers.lastThrottleCall === 0 || now - timers.lastThrottleCall >= options.throttle) {
+            timers.lastThrottleCall = now;
+            return result.then(content => {
+              updateDOM(content);
+              return content;
+            });
+          } else {
+            if (!timers.throttleTimer) {
+              const remainingTime = options.throttle - (now - timers.lastThrottleCall);
+              timers.throttleTimer = setTimeout(async () => {
+                timers.throttleTimer = null;
+                timers.lastThrottleCall = Date.now();
+                const content = await result;
+                updateDOM(content);
+              }, remainingTime);
+            }
+            return result;
+          }
+        }
+
+        // No timing: update DOM after Promise resolves
+        return result.then(content => {
+          updateDOM(content);
+          return content;
+        });
+      } else {
+        // Handle sync method
+        if (options.debounce !== undefined && options.debounce > 0) {
+          // Debounce: defer DOM update, return result immediately
+          if (timers.debounceTimer) {
+            clearTimeout(timers.debounceTimer);
+          }
+          timers.debounceTimer = setTimeout(() => {
+            updateDOM(result);
+          }, options.debounce);
+          return result;
+        }
+
+        if (options.throttle !== undefined && options.throttle > 0) {
+          // Throttle: handle timing for DOM updates
+          const now = Date.now();
+          if (timers.lastThrottleCall === 0 || now - timers.lastThrottleCall >= options.throttle) {
+            timers.lastThrottleCall = now;
+            updateDOM(result);
+          } else {
+            if (!timers.throttleTimer) {
+              const remainingTime = options.throttle - (now - timers.lastThrottleCall);
+              timers.throttleTimer = setTimeout(() => {
+                timers.throttleTimer = null;
+                timers.lastThrottleCall = Date.now();
+                updateDOM(result);
+              }, remainingTime);
+            }
+          }
+          return result;
+        }
+
+        // No timing: update DOM immediately
+        updateDOM(result);
+        return result;
       }
-      
-      // No throttle/debounce - render immediately
-      return await renderPart();
     };
   };
 }

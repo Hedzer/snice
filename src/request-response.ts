@@ -1,11 +1,6 @@
 import { CHANNEL_HANDLERS, CLEANUP, IS_CONTROLLER_INSTANCE } from './symbols';
 
-// Pragmatic type for @request decorated methods
-// - Eliminates TypeScript implicit 'any' warnings
-// - Allows property access on returned values (result.data works)
-// - Documents the expected return type T
-// - The @request decorator transforms async generators to return Promise<T> at runtime
-export type Response<T = any> = T | any;
+// @request decorator transforms methods to return Promise<T>
 
 export interface RequestOptions extends EventInit {
   /**
@@ -33,8 +28,8 @@ export interface RequestOptions extends EventInit {
  * @param requestName The name of the request
  * @param options Optional configuration
  */
-export function request(requestName: string, options?: RequestOptions) {
-  return function (originalMethod: any, _context: ClassMethodDecoratorContext) {
+export function request<T = any>(requestName: string, options?: RequestOptions) {
+  return function (originalMethod: any, _context: ClassMethodDecoratorContext): (...args: any[]) => Promise<T> {
     // Create timing variables for debounce/throttle
     let debounceTimeout: any;
     let throttleLastCall = 0;
