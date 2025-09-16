@@ -34,15 +34,13 @@ export interface RequestOptions extends EventInit {
  * @param options Optional configuration
  */
 export function request(requestName: string, options?: RequestOptions) {
-  return function (_target: any, _propertyKey: string, descriptor: PropertyDescriptor) {
-    const originalMethod = descriptor.value;
-    
+  return function (originalMethod: any, _context: ClassMethodDecoratorContext) {
     // Create timing variables for debounce/throttle
     let debounceTimeout: any;
     let throttleLastCall = 0;
     let throttleTimeout: any;
-    
-    descriptor.value = async function (this: any, ...args: any[]) {
+
+    return async function (this: any, ...args: any[]) {
       const actualRequest = async () => {
         // @request always acts as requester (client side)
         const responseTimeout = options?.timeout ?? 120000; // Default 2 minute timeout
@@ -177,8 +175,6 @@ export function request(requestName: string, options?: RequestOptions) {
       // No timing applied, execute immediately
       return actualRequest();
     };
-    
-    return descriptor;
   };
 }
 
@@ -200,23 +196,25 @@ export interface RespondOptions {
  * @param options Optional configuration
  */
 export function respond(requestName: string, options?: RespondOptions) {
-  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-    const originalMethod = descriptor.value;
-    
-    // Store response metadata on the prototype
-    // This will be picked up by setupResponseHandlers
-    if (!target[CHANNEL_HANDLERS]) {
-      target[CHANNEL_HANDLERS] = [];
-    }
-    
-    target[CHANNEL_HANDLERS].push({
-      channelName: requestName,
-      methodName: propertyKey,
-      method: originalMethod,
-      options: options
+  return function (target: any, context: ClassMethodDecoratorContext) {
+    const propertyKey = context.name as string;
+
+    context.addInitializer(function(this: any) {
+      const constructor = this.constructor as any;
+
+      // Store response metadata on the prototype
+      // This will be picked up by setupResponseHandlers
+      if (!constructor.prototype[CHANNEL_HANDLERS]) {
+        constructor.prototype[CHANNEL_HANDLERS] = [];
+      }
+
+      constructor.prototype[CHANNEL_HANDLERS].push({
+        channelName: requestName,
+        methodName: propertyKey,
+        method: target,
+        options: options
+      });
     });
-    
-    return descriptor;
   };
 }
 

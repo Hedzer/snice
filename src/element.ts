@@ -97,13 +97,13 @@ export function applyElementFunctionality(constructor: any) {
             if (this.hasAttribute(propName)) {
               // Attribute exists, parse and set the property value
               const attrValue = this.getAttribute(propName);
-              
+
               // Mark as explicitly set since it came from an attribute
               if (!this[EXPLICITLY_SET_PROPERTIES]) {
                 this[EXPLICITLY_SET_PROPERTIES] = new Set();
               }
               this[EXPLICITLY_SET_PROPERTIES].add(propName);
-              
+
               switch (propOptions.type) {
                 case Boolean:
                   this[propName] = attrValue !== null && attrValue !== 'false';
@@ -138,10 +138,13 @@ export function applyElementFunctionality(constructor: any) {
         this[PROPERTIES_INITIALIZED] = true;
         
         // Reflect properties that were explicitly set before connection
-        // but skip default values that were never explicitly set
-        if (properties && this[EXPLICITLY_SET_PROPERTIES]) {
+        // AND also reflect initial values that have reflect: true
+        if (properties) {
           for (const [propName, propOptions] of properties) {
-            if (propOptions.reflect && this[EXPLICITLY_SET_PROPERTIES].has(propName) && propName in this[PROPERTY_VALUES]) {
+            const wasExplicitlySet = this[EXPLICITLY_SET_PROPERTIES] && this[EXPLICITLY_SET_PROPERTIES].has(propName);
+            const hasInitialValue = propName in this[PROPERTY_VALUES];
+
+            if (propOptions.reflect && hasInitialValue && (wasExplicitlySet || this[PROPERTY_VALUES][propName] !== undefined)) {
               const value = this[PROPERTY_VALUES][propName];
               const attributeName = typeof propOptions.attribute === 'string' ? propOptions.attribute : propName.toLowerCase();
               
@@ -392,135 +395,161 @@ export function applyElementFunctionality(constructor: any) {
 }
 
 export function element(tagName: string) {
-  return function (constructor: any) {
+  return function (constructor: any, context: ClassDecoratorContext) {
+    // Transfer metadata from context to constructor
+    if (context.metadata && (context.metadata as any)[PROPERTIES]) {
+      if (!constructor[PROPERTIES]) {
+        constructor[PROPERTIES] = new Map();
+      }
+      for (const [key, value] of (context.metadata as any)[PROPERTIES]) {
+        constructor[PROPERTIES].set(key, value);
+      }
+    }
+
     applyElementFunctionality(constructor);
     customElements.define(tagName, constructor);
+    return constructor;
   };
 }
 
 export function layout(tagName: string) {
-  return function (constructor: any) {
+  return function (constructor: any, context: ClassDecoratorContext) {
+    // Transfer metadata from context to constructor
+    if (context.metadata && (context.metadata as any)[PROPERTIES]) {
+      if (!constructor[PROPERTIES]) {
+        constructor[PROPERTIES] = new Map();
+      }
+      for (const [key, value] of (context.metadata as any)[PROPERTIES]) {
+        constructor[PROPERTIES].set(key, value);
+      }
+    }
+
     applyElementFunctionality(constructor);
     customElements.define(tagName, constructor);
+    return constructor;
   };
 }
 
 export function property(options?: PropertyOptions) {
-  return function (target: any, propertyKey: string) {
-    const constructor = target.constructor;
-    
-    // Warn about problematic reflection usage
+  return function (_value: any, context: ClassFieldDecoratorContext) {
+    const propertyKey = context.name as string;
+    // Use metadata to store property information at decoration time
+    if (!context.metadata) {
+      (context as any).metadata = {};
+    }
+    if (!(context.metadata as any)[PROPERTIES]) {
+      (context.metadata as any)[PROPERTIES] = new Map();
+    }
+    (context.metadata as any)[PROPERTIES].set(propertyKey, options || {});
+
+    // Warn about problematic reflection usage at decoration time
     if (options?.reflect && options?.type === Array) {
       console.warn(`⚠️  Property '${propertyKey}' uses reflect:true with Array type.`);
     }
-    
+
     if (options?.reflect && options?.type === Object) {
       console.warn(`⚠️  Property '${propertyKey}' uses reflect:true with Object type.`);
     }
-    
-    if (!constructor[PROPERTIES]) {
-      constructor[PROPERTIES] = new Map();
-    }
-    
-    constructor[PROPERTIES].set(propertyKey, options || {});
-    
-    const descriptor: PropertyDescriptor = {
-      get(this: any) {
-        if (!this[PROPERTY_VALUES]) {
-          this[PROPERTY_VALUES] = {};
-        }
-        return this[PROPERTY_VALUES][propertyKey];
-      },
-      set(this: any, value: any) {
-        if (!this[PROPERTY_VALUES]) {
-          this[PROPERTY_VALUES] = {};
-        }
-        if (!this[EXPLICITLY_SET_PROPERTIES]) {
-          this[EXPLICITLY_SET_PROPERTIES] = new Set();
-        }
-        
-        const oldValue = this[PROPERTY_VALUES][propertyKey];
-        
-        // Don't update if value hasn't changed
-        if (oldValue === value) return;
-        
-        // Mark as explicitly set in these cases:
-        // 1. There was a previous value (normal property update)
-        // 2. This is during element construction and we have a non-null/non-undefined value
-        //    (this handles default values declared in class properties)
-        const isInitialDefaultValue = oldValue === undefined && !this[PROPERTIES_INITIALIZED];
-        if (oldValue !== undefined || (isInitialDefaultValue && value !== null && value !== undefined)) {
-          this[EXPLICITLY_SET_PROPERTIES].add(propertyKey);
-        }
-        
-        this[PROPERTY_VALUES][propertyKey] = value;
-        
-        // Only reflect to attributes if:
-        // 1. Properties have been initialized from attributes  
-        // 2. The property was explicitly set (not just default value)
-        // This prevents default values from creating attributes
-        if (options?.reflect && this.setAttribute && this[PROPERTIES_INITIALIZED] && this[EXPLICITLY_SET_PROPERTIES].has(propertyKey)) {
-          const attributeName = typeof options.attribute === 'string' ? options.attribute : propertyKey.toLowerCase();
-          
-          if (value === null || value === undefined || value === false || 
-              (options?.type === SimpleArray && Array.isArray(value) && value.length === 0)) {
-            this.removeAttribute(attributeName);
-          } else {
-            // Handle special types for reflection
-            let attributeValue: string;
-            if (value instanceof Date) {
-              attributeValue = value.toISOString();
-            } else if (typeof value === 'bigint') {
-              attributeValue = value.toString() + 'n';
-            } else if (options?.type === SimpleArray && Array.isArray(value)) {
-              attributeValue = SimpleArray.serialize(value);
-            } else {
-              attributeValue = String(value);
+
+    context.addInitializer(function() {
+      // No longer need warnings here since they're at decoration time
+    });
+
+    // Return a field initializer function for new decorators
+    return function(this: any, initialValue: any) {
+      // Set up the property descriptor on first access
+      if (!Object.hasOwnProperty.call(this.constructor.prototype, propertyKey)) {
+        const descriptor: PropertyDescriptor = {
+          get(this: any) {
+            if (!this[PROPERTY_VALUES]) {
+              this[PROPERTY_VALUES] = {};
             }
-            this.setAttribute(attributeName, attributeValue);
-          }
-        }
-        
-        // Call watchers for this property
-        const watchers = constructor[PROPERTY_WATCHERS];
-        if (watchers) {
-          // Call specific property watchers
-          if (watchers.has(propertyKey)) {
-            const propertyWatchers = watchers.get(propertyKey);
-            for (const watcher of propertyWatchers) {
-              try {
-                // Always pass oldValue, newValue, and propertyName
-                watcher.method.call(this, oldValue, value, propertyKey);
-              } catch (error) {
-                console.error(`Error in @watch('${propertyKey}') method ${watcher.methodName}:`, error);
+            return this[PROPERTY_VALUES][propertyKey];
+          },
+          set(this: any, newValue: any) {
+            if (!this[PROPERTY_VALUES]) {
+              this[PROPERTY_VALUES] = {};
+            }
+            if (!this[EXPLICITLY_SET_PROPERTIES]) {
+              this[EXPLICITLY_SET_PROPERTIES] = new Set();
+            }
+
+            const oldValue = this[PROPERTY_VALUES][propertyKey];
+
+            if (oldValue === newValue) return;
+
+            const isInitialDefaultValue = oldValue === undefined && !this[PROPERTIES_INITIALIZED];
+            if (oldValue !== undefined || (isInitialDefaultValue && newValue !== null && newValue !== undefined)) {
+              this[EXPLICITLY_SET_PROPERTIES].add(propertyKey);
+            }
+
+            this[PROPERTY_VALUES][propertyKey] = newValue;
+
+            if (options?.reflect && this.setAttribute && this[PROPERTIES_INITIALIZED] && this[EXPLICITLY_SET_PROPERTIES].has(propertyKey)) {
+              const attributeName = typeof options.attribute === 'string' ? options.attribute : propertyKey.toLowerCase();
+
+              if (newValue === null || newValue === undefined || newValue === false ||
+                  (options?.type === SimpleArray && Array.isArray(newValue) && newValue.length === 0)) {
+                this.removeAttribute(attributeName);
+              } else {
+                let attributeValue: string;
+                if (newValue instanceof Date) {
+                  attributeValue = newValue.toISOString();
+                } else if (typeof newValue === 'bigint') {
+                  attributeValue = newValue.toString() + 'n';
+                } else if (options?.type === SimpleArray && Array.isArray(newValue)) {
+                  attributeValue = SimpleArray.serialize(newValue);
+                } else {
+                  attributeValue = String(newValue);
+                }
+                this.setAttribute(attributeName, attributeValue);
               }
             }
-          }
-          
-          // Call wildcard watchers (watching "*")
-          if (watchers.has('*')) {
-            const wildcardWatchers = watchers.get('*');
-            for (const watcher of wildcardWatchers) {
-              try {
-                // Same signature for consistency
-                watcher.method.call(this, oldValue, value, propertyKey);
-              } catch (error) {
-                console.error(`Error in @watch('*') method ${watcher.methodName}:`, error);
+
+            const constructor = this.constructor as any;
+            const watchers = constructor[PROPERTY_WATCHERS];
+            if (watchers) {
+              if (watchers.has(propertyKey)) {
+                const propertyWatchers = watchers.get(propertyKey);
+                for (const watcher of propertyWatchers) {
+                  try {
+                    watcher.method.call(this, oldValue, newValue, propertyKey);
+                  } catch (error) {
+                    console.error(`Error in @watch('${propertyKey}') method ${watcher.methodName}:`, error);
+                  }
+                }
+              }
+
+              if (watchers.has('*')) {
+                const wildcardWatchers = watchers.get('*');
+                for (const watcher of wildcardWatchers) {
+                  try {
+                    watcher.method.call(this, oldValue, newValue, propertyKey);
+                  } catch (error) {
+                    console.error(`Error in @watch('*') method ${watcher.methodName}:`, error);
+                  }
+                }
               }
             }
-          }
-        }
-        
-        // Call requestUpdate if available and value changed
-        if (this.requestUpdate) {
-          this.requestUpdate(propertyKey, oldValue);
-        }
-      },
-      enumerable: true,
-      configurable: true,
+
+            if (this.requestUpdate) {
+              this.requestUpdate(propertyKey, oldValue);
+            }
+          },
+          configurable: true,
+          enumerable: true
+        };
+
+        Object.defineProperty(this.constructor.prototype, propertyKey, descriptor);
+      }
+
+      // Initialize the property value
+      if (!this[PROPERTY_VALUES]) {
+        this[PROPERTY_VALUES] = {};
+      }
+      this[PROPERTY_VALUES][propertyKey] = initialValue;
+      return initialValue;
     };
-    
-    Object.defineProperty(target, propertyKey, descriptor);
   };
 }
 
@@ -530,65 +559,94 @@ export interface QueryOptions {
 }
 
 export function query(selector: string, options: QueryOptions = {}) {
-  return function (target: any, propertyKey: string) {
+  return function (_value: any, context: ClassFieldDecoratorContext) {
     // Default to shadow DOM only
     const { light = false, shadow = true } = options;
-    
-    Object.defineProperty(target, propertyKey, {
-      get() {
-        // Check if this is a controller using the symbol
-        const isController = this[IS_CONTROLLER_INSTANCE] === true;
-        const root = isController && this.element ? this.element : this;
-        
-        // Query in specified contexts
-        let result = null;
-        
-        if (shadow && root.shadowRoot) {
-          result = root.shadowRoot.querySelector(selector);
-        }
-        
-        if (!result && light) {
-          result = root.querySelector(selector);
-        }
-        
-        return result || null;
-      },
-      enumerable: true,
-      configurable: true,
-    });
+    const propertyKey = context.name as string;
+
+
+    // Return a field initializer function for new decorators
+    return function(this: any, initialValue: any) {
+      // Set up the property descriptor on first access
+      if (!Object.hasOwnProperty.call(this.constructor.prototype, propertyKey)) {
+        const descriptor: PropertyDescriptor = {
+          get() {
+            // Check if this is a controller using the symbol
+            const isController = (this as any)[IS_CONTROLLER_INSTANCE] === true;
+            const root = isController && (this as any).element ? (this as any).element : this;
+
+            // Query in specified contexts
+            let result = null;
+
+            if (shadow && root.shadowRoot) {
+              result = root.shadowRoot.querySelector(selector);
+            }
+
+            if (!result && light) {
+              result = root.querySelector(selector);
+            }
+
+            return result || null;
+          },
+          set() {
+            // Query results are read-only
+          },
+          configurable: true,
+          enumerable: true
+        };
+
+        Object.defineProperty(this.constructor.prototype, propertyKey, descriptor);
+      }
+
+      return initialValue;
+    };
   };
 }
 
 export function queryAll(selector: string, options: QueryOptions = {}) {
-  return function (target: any, propertyKey: string) {
+  return function (_value: any, context: ClassFieldDecoratorContext) {
     // Default to shadow DOM only
     const { light = false, shadow = true } = options;
-    
-    Object.defineProperty(target, propertyKey, {
-      get() {
-        // Check if this is a controller using the symbol
-        const isController = this[IS_CONTROLLER_INSTANCE] === true;
-        const root = isController && this.element ? this.element : this;
-        
-        // Query in specified contexts and combine results
-        const results: Element[] = [];
-        
-        if (shadow && root.shadowRoot) {
-          const shadowResults = root.shadowRoot.querySelectorAll(selector);
-          results.push(...shadowResults);
-        }
-        
-        if (light) {
-          const lightResults = root.querySelectorAll(selector);
-          results.push(...lightResults);
-        }
-        
-        // Return a static NodeList-like object
-        return results as any as NodeListOf<Element>;
-      },
-      enumerable: true,
-      configurable: true,
-    });
+    const propertyKey = context.name as string;
+
+    // Return a field initializer function for new decorators
+    return function(this: any, initialValue: any) {
+      // Set up the property descriptor on first access
+      if (!Object.hasOwnProperty.call(this.constructor.prototype, propertyKey)) {
+        const descriptor: PropertyDescriptor = {
+          get() {
+            // Check if this is a controller using the symbol
+            const isController = (this as any)[IS_CONTROLLER_INSTANCE] === true;
+            const root = isController && (this as any).element ? (this as any).element : this;
+
+            // Query in specified contexts and combine results
+            const results: Element[] = [];
+
+            if (shadow && root.shadowRoot) {
+              const shadowResults = root.shadowRoot.querySelectorAll(selector);
+              results.push(...shadowResults);
+            }
+
+            if (light) {
+              const lightResults = root.querySelectorAll(selector);
+              results.push(...lightResults);
+            }
+
+            // Return a static NodeList-like object
+            return results as any as NodeListOf<Element>;
+          },
+          set() {
+            // Query results are read-only
+          },
+          configurable: true,
+          enumerable: true
+        };
+
+        Object.defineProperty(this.constructor.prototype, propertyKey, descriptor);
+      }
+
+      return initialValue;
+    };
   };
 }
 
@@ -676,26 +734,28 @@ export interface PartOptions {
 }
 
 export function watch(...propertyNames: string[]) {
-  return function (target: any, methodName: string, descriptor: PropertyDescriptor) {
-    const constructor = target.constructor;
-    
-    if (!constructor[PROPERTY_WATCHERS]) {
-      constructor[PROPERTY_WATCHERS] = new Map();
-    }
-    
-    // Store the watcher method for each property
-    for (const propertyName of propertyNames) {
-      if (!constructor[PROPERTY_WATCHERS].has(propertyName)) {
-        constructor[PROPERTY_WATCHERS].set(propertyName, []);
+  return function (target: any, context: ClassMethodDecoratorContext) {
+    const methodName = context.name as string;
+
+    context.addInitializer(function(this: any) {
+      const constructor = this.constructor as any;
+
+      if (!constructor[PROPERTY_WATCHERS]) {
+        constructor[PROPERTY_WATCHERS] = new Map();
       }
-      
-      constructor[PROPERTY_WATCHERS].get(propertyName).push({
-        methodName,
-        method: descriptor.value
-      });
-    }
-    
-    return descriptor;
+
+      // Store the watcher method for each property
+      for (const propertyName of propertyNames) {
+        if (!constructor[PROPERTY_WATCHERS].has(propertyName)) {
+          constructor[PROPERTY_WATCHERS].set(propertyName, []);
+        }
+
+        constructor[PROPERTY_WATCHERS].get(propertyName).push({
+          methodName,
+          method: target
+        });
+      }
+    });
   };
 }
 
@@ -704,53 +764,67 @@ export function watch(...propertyNames: string[]) {
  * The context is automatically provided to page components by the router
  */
 export function context() {
-  return function(target: any, propertyKey: string) {
-    // Define property getter that returns the context
-    Object.defineProperty(target, propertyKey, {
-      get() {
-        // First check if context is stored directly on this element
-        if (this[ROUTER_CONTEXT] !== undefined) {
-          return this[ROUTER_CONTEXT];
-        }
-        
-        // Otherwise, request context from parent page via event
-        const detail: any = { target: this };
-        const event = new CustomEvent('@context/request', {
-          bubbles: true,
-          cancelable: true,
-          detail
-        });
-        
-        // Dispatch event and wait for response
-        // Check if this is a controller using the symbol
-        const isController = this[IS_CONTROLLER_INSTANCE] === true;
-        let targetElement = isController && this.element ? this.element : this;
-        
-        // If element is null (e.g., controller was detached), can't get context
-        if (!targetElement || !targetElement.dispatchEvent) {
-          return undefined;
-        }
-        
-        // If we're in shadow DOM, dispatch on the host element to ensure proper bubbling
-        if (targetElement.getRootNode && targetElement.getRootNode() instanceof ShadowRoot) {
-          const shadowRoot = targetElement.getRootNode() as ShadowRoot;
-          targetElement = shadowRoot.host as HTMLElement;
-        }
-        
-        targetElement.dispatchEvent(event);
-        
-        // Check if context was provided via the event
-        if (detail.context !== undefined) {
-          // Cache it for future use
-          this[ROUTER_CONTEXT] = detail.context;
-          return detail.context;
-        }
-        
-        return undefined;
-      },
-      enumerable: true,
-      configurable: true
-    });
+  return function(_value: any, context: ClassFieldDecoratorContext) {
+    const propertyKey = context.name as string;
+
+    // Return a field initializer function for new decorators
+    return function(this: any, initialValue: any) {
+      // Set up the property descriptor on first access
+      if (!Object.hasOwnProperty.call(this.constructor.prototype, propertyKey)) {
+        const descriptor: PropertyDescriptor = {
+          get() {
+            // First check if context is stored directly on this element
+            if ((this as any)[ROUTER_CONTEXT] !== undefined) {
+              return (this as any)[ROUTER_CONTEXT];
+            }
+
+            // Otherwise, request context from parent page via event
+            const detail: any = { target: this };
+            const event = new CustomEvent('@context/request', {
+              bubbles: true,
+              cancelable: true,
+              detail
+            });
+
+            // Dispatch event and wait for response
+            // Check if this is a controller using the symbol
+            const isController = (this as any)[IS_CONTROLLER_INSTANCE] === true;
+            let targetElement = isController && (this as any).element ? (this as any).element : this;
+
+            // If element is null (e.g., controller was detached), can't get context
+            if (!targetElement || !targetElement.dispatchEvent) {
+              return undefined;
+            }
+
+            // If we're in shadow DOM, dispatch on the host element to ensure proper bubbling
+            if (targetElement.getRootNode && targetElement.getRootNode() instanceof ShadowRoot) {
+              const shadowRoot = targetElement.getRootNode() as ShadowRoot;
+              targetElement = shadowRoot.host as HTMLElement;
+            }
+
+            targetElement.dispatchEvent(event);
+
+            // Check if context was provided via the event
+            if (detail.context !== undefined) {
+              // Cache it for future use
+              (this as any)[ROUTER_CONTEXT] = detail.context;
+              return detail.context;
+            }
+
+            return undefined;
+          },
+          set() {
+            // Context is read-only
+          },
+          configurable: true,
+          enumerable: true
+        };
+
+        Object.defineProperty(this.constructor.prototype, propertyKey, descriptor);
+      }
+
+      return initialValue;
+    };
   };
 }
 
@@ -760,19 +834,21 @@ export function context() {
  * Supports async methods
  */
 export function ready() {
-  return function (target: any, methodName: string, descriptor: PropertyDescriptor) {
-    const constructor = target.constructor;
-    
-    if (!constructor[READY_HANDLERS]) {
-      constructor[READY_HANDLERS] = [];
-    }
-    
-    constructor[READY_HANDLERS].push({
-      methodName,
-      method: descriptor.value
+  return function (target: any, context: ClassMethodDecoratorContext) {
+    const methodName = context.name as string;
+
+    context.addInitializer(function(this: any) {
+      const constructor = this.constructor as any;
+
+      if (!constructor[READY_HANDLERS]) {
+        constructor[READY_HANDLERS] = [];
+      }
+
+      constructor[READY_HANDLERS].push({
+        methodName,
+        method: target
+      });
     });
-    
-    return descriptor;
   };
 }
 
@@ -781,19 +857,21 @@ export function ready() {
  * Used for cleanup tasks when element is removed from DOM
  */
 export function dispose() {
-  return function (target: any, methodName: string, descriptor: PropertyDescriptor) {
-    const constructor = target.constructor;
-    
-    if (!constructor[DISPOSE_HANDLERS]) {
-      constructor[DISPOSE_HANDLERS] = [];
-    }
-    
-    constructor[DISPOSE_HANDLERS].push({
-      methodName,
-      method: descriptor.value
+  return function (target: any, context: ClassMethodDecoratorContext) {
+    const methodName = context.name as string;
+
+    context.addInitializer(function(this: any) {
+      const constructor = this.constructor as any;
+
+      if (!constructor[DISPOSE_HANDLERS]) {
+        constructor[DISPOSE_HANDLERS] = [];
+      }
+
+      constructor[DISPOSE_HANDLERS].push({
+        methodName,
+        method: target
+      });
     });
-    
-    return descriptor;
   };
 }
 
@@ -803,32 +881,24 @@ export function dispose() {
  * When the decorated method is called, it automatically re-renders its part
  */
 export function part(partName: string, options: PartOptions = {}) {
-  return function (target: any, methodName: string, descriptor: PropertyDescriptor) {
-    const constructor = target.constructor;
+  return function (originalMethod: any, context: ClassMethodDecoratorContext) {
+    const methodName = context.name as string;
 
-    // Handle case where descriptor might be undefined (TypeScript experimental decorators)
-    if (!descriptor) {
-      descriptor = Object.getOwnPropertyDescriptor(target, methodName) || {
-        value: target[methodName],
-        writable: true,
-        enumerable: true,
-        configurable: true
-      };
-    }
+    context.addInitializer(function(this: any) {
+      const constructor = this.constructor as any;
 
-    const originalMethod = descriptor.value;
-    
-    if (!constructor[PARTS]) {
-      constructor[PARTS] = new Map();
-    }
-    
-    constructor[PARTS].set(partName, {
-      methodName,
-      method: originalMethod
+      if (!constructor[PARTS]) {
+        constructor[PARTS] = new Map();
+      }
+
+      constructor[PARTS].set(partName, {
+        methodName,
+        method: originalMethod
+      });
     });
-    
-    // Wrap the original method to automatically re-render the part when called
-    descriptor.value = async function (this: HTMLElement, ...args: any[]) {
+
+    // Return wrapped method that automatically re-renders the part when called
+    return async function (this: HTMLElement, ...args: any[]) {
       // Initialize timers storage if not present
       if (!(this as any)[PART_TIMERS]) {
         (this as any)[PART_TIMERS] = new Map();
@@ -902,7 +972,5 @@ export function part(partName: string, options: PartOptions = {}) {
       // No throttle/debounce - render immediately
       return await renderPart();
     };
-    
-    return descriptor;
   };
 }

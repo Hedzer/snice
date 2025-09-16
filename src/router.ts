@@ -1,6 +1,6 @@
 import { Route } from 'pica-route';
 import { applyElementFunctionality } from './element';
-import { ROUTER_CONTEXT, CONTEXT_REQUEST_HANDLER, PAGE_TRANSITION, CREATED_AT } from './symbols';
+import { ROUTER_CONTEXT, CONTEXT_REQUEST_HANDLER, PAGE_TRANSITION, CREATED_AT, PROPERTIES } from './symbols';
 import { Transition, performTransition as performTransitionUtil } from './transitions';
 
 /**
@@ -98,7 +98,7 @@ export interface PageOptions {
  * Router return type
  */
 export interface RouterInstance {
-  page: (pageOptions: PageOptions) => <C extends { new(...args: any[]): HTMLElement }>(constructor: C) => void;
+  page: (pageOptions: PageOptions) => <C extends { new(...args: any[]): HTMLElement }>(constructor: C, context: ClassDecoratorContext) => C;
   initialize: () => void;
   navigate: (path: string) => Promise<void>;
   register: (route: string, tag: string, transition?: Transition, guards?: Guard<any> | Guard<any>[]) => void;
@@ -145,7 +145,17 @@ export function Router(options: RouterOptions): RouterInstance {
    * @returns A decorator function to apply to a custom element class.
    */
   function page(pageOptions: PageOptions) {
-    return function <C extends { new(...args: any[]): HTMLElement }>(constructor: C) {
+    return function <C extends { new(...args: any[]): HTMLElement }>(constructor: C, context: ClassDecoratorContext) {
+      // Transfer metadata from context to constructor (for new decorators)
+      if (context.metadata && (context.metadata as any)[PROPERTIES]) {
+        if (!(constructor as any)[PROPERTIES]) {
+          (constructor as any)[PROPERTIES] = new Map();
+        }
+        for (const [key, value] of (context.metadata as any)[PROPERTIES]) {
+          (constructor as any)[PROPERTIES].set(key, value);
+        }
+      }
+
       // Apply all element functionality (properties, queries, watchers, controllers, etc.)
       applyElementFunctionality(constructor);
       
@@ -194,6 +204,8 @@ export function Router(options: RouterOptions): RouterInstance {
 
       // Register the routes with guards and layout
       pageOptions.routes.forEach(route => register(route, pageOptions.tag, pageOptions.transition, pageOptions.guards, pageOptions.layout));
+
+      return constructor;
     }
   }
 

@@ -52,31 +52,34 @@ export function observe(observeTarget: string | string[], selectorOrOptions?: st
     opts = selectorOrOptions;
   }
   
-  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-    // Store observer metadata
-    if (!target[OBSERVERS]) {
-      target[OBSERVERS] = [];
-    }
-    
-    // Normalize to array
-    const observeTargets = Array.isArray(observeTarget) ? observeTarget : [observeTarget];
-    
-    // Create an observer entry for each target
-    for (const targetString of observeTargets) {
-      // Parse the observation type from the observeTarget string
-      const [type, ...modifiers] = targetString.split(':');
-      
-      target[OBSERVERS].push({
-        type,
-        target: modifiers.join(':'), // Rejoin for media queries or mutation types
-        selector,
-        methodName: propertyKey,
-        method: descriptor.value,
-        options: opts
-      });
-    }
-    
-    return descriptor;
+  return function (target: any, context: ClassMethodDecoratorContext) {
+    const propertyKey = context.name as string;
+
+    context.addInitializer(function(this: any) {
+      const constructor = this.constructor as any;
+
+      // Store observer metadata
+      if (!constructor.prototype[OBSERVERS]) {
+        constructor.prototype[OBSERVERS] = [];
+      }
+      // Normalize to array
+      const observeTargets = Array.isArray(observeTarget) ? observeTarget : [observeTarget];
+
+      // Create an observer entry for each target
+      for (const targetString of observeTargets) {
+        // Parse the observation type from the observeTarget string
+        const [type, ...modifiers] = targetString.split(':');
+
+        constructor.prototype[OBSERVERS].push({
+          type,
+          target: modifiers.join(':'), // Rejoin for media queries or mutation types
+          selector,
+          methodName: propertyKey,
+          method: target,
+          options: opts
+        });
+      }
+    });
   };
 }
 

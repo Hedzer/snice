@@ -63,7 +63,7 @@ class ControllerScope {
  * @param name The name to register the controller under
  */
 export function controller(name: string) {
-  return function <T extends ControllerClass>(constructor: T) {
+  return function <T extends ControllerClass>(constructor: T, _context: ClassDecoratorContext) {
     snice.controllerRegistry.set(name, constructor);
     // Mark as controller class for channel decorator detection
     (constructor.prototype as any)[IS_CONTROLLER_CLASS] = true;

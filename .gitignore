@@ -73,3 +73,5 @@ Desktop.ini
 
 test-results/
 my-app/
+
+.debug

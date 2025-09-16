@@ -30,27 +30,31 @@ export function on(eventName: string | string[], selectorOrOptions?: string | On
     opts = selectorOrOptions;
   }
   
-  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-    // Store event handler metadata
-    if (!target[ON_HANDLERS]) {
-      target[ON_HANDLERS] = [];
-    }
-    
-    // Normalize to array and expand at decoration time
-    const eventNames = Array.isArray(eventName) ? eventName : [eventName];
-    
-    // Create a handler entry for each event
-    for (const event of eventNames) {
-      target[ON_HANDLERS].push({
-        eventName: event,
-        selector,
-        methodName: propertyKey,
-        method: descriptor.value,
-        options: opts
-      });
-    }
-    
-    return descriptor;
+  return function (target: any, context: ClassMethodDecoratorContext) {
+    const propertyKey = context.name as string;
+
+    context.addInitializer(function(this: any) {
+      const constructor = this.constructor as any;
+
+      // Store event handler metadata
+      if (!constructor.prototype[ON_HANDLERS]) {
+        constructor.prototype[ON_HANDLERS] = [];
+      }
+
+      // Normalize to array and expand at decoration time
+      const eventNames = Array.isArray(eventName) ? eventName : [eventName];
+
+      // Create a handler entry for each event
+      for (const event of eventNames) {
+        constructor.prototype[ON_HANDLERS].push({
+          eventName: event,
+          selector,
+          methodName: propertyKey,
+          method: target,
+          options: opts
+        });
+      }
+    });
   };
 }
 
@@ -276,15 +280,13 @@ export interface DispatchOptions extends EventInit {
  * @param options Optional configuration extending EventInit
  */
 export function dispatch(eventName: string, options?: DispatchOptions) {
-  return function (_target: any, _propertyKey: string, descriptor: PropertyDescriptor) {
-    const originalMethod = descriptor.value;
-    
+  return function (originalMethod: any, _context: ClassMethodDecoratorContext) {
     // Create timing wrappers for dispatch
     let debounceTimeout: any;
     let throttleLastCall = 0;
     let throttleTimeout: any;
-    
-    descriptor.value = function (this: HTMLElement, ...args: any[]) {
+
+    return function (this: HTMLElement, ...args: any[]) {
       // Call the original method
       const result = originalMethod.apply(this, args);
       
@@ -343,7 +345,5 @@ export function dispatch(eventName: string, options?: DispatchOptions) {
       timedDispatch(result);
       return result;
     };
-    
-    return descriptor;
   };
 }
