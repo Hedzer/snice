@@ -1,3 +1,11 @@
+# [2.1.0](https://gitlab.com/Hedzer/snice/compare/v2.0.0...v2.1.0) (2025-09-16)
+
+
+### Features
+
+* added back components ([e4300f8](https://gitlab.com/Hedzer/snice/commit/e4300f8bfeee6af025b470dd6c2bda7bcccf87cb))
+* re-added component publishing ([402e391](https://gitlab.com/Hedzer/snice/commit/402e39129e193751969a759c703fc87658469081))
+
 ## [1.14.3](https://gitlab.com/Hedzer/snice/compare/v1.14.2...v1.14.3) (2025-09-15)
 
 
