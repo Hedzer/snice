@@ -1,3 +1,10 @@
+## [2.1.1](https://gitlab.com/Hedzer/snice/compare/v2.1.0...v2.1.1) (2025-09-17)
+
+
+### Bug Fixes
+
+* generalized login result ([8ab257d](https://gitlab.com/Hedzer/snice/commit/8ab257d5ab257011bcb7052758b25947a16f1a98))
+
 # [2.1.0](https://gitlab.com/Hedzer/snice/compare/v2.0.0...v2.1.0) (2025-09-16)
 
 
