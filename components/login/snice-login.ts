@@ -162,7 +162,6 @@ export class SniceLogin extends HTMLElement implements SniceLoginElement {
 
   @on('click', 'snice-button')
   async handleButtonClick(event: Event) {
-    console.log('Button clicked'); // Debug
     event.preventDefault();
     // Trigger form submit
     if (this.form) {
@@ -173,15 +172,12 @@ export class SniceLogin extends HTMLElement implements SniceLoginElement {
   @on('submit', '.login__form')
   @dispatch('@snice/login-attempt', { bubbles: true, composed: true })
   async handleSubmit(event: Event) {
-    console.log('Submit handler called'); // Debug
     event.preventDefault();
     
     if (this.loading || this.disabled) {
-      console.log('Submit blocked - loading or disabled'); // Debug
       return;
     }
 
-    console.log('Clearing error and setting loading...'); // Debug
     this.clearAlert();
     this.loading = true;
     this.updateLoadingState();
@@ -191,10 +187,8 @@ export class SniceLogin extends HTMLElement implements SniceLoginElement {
     
     try {
       const credentials = this.getFormData();
-      console.log('Final credentials for login:', credentials); // Debug log
       
       if (!credentials.username || !credentials.password) {
-        console.log('Missing credentials detected'); // Debug
         this.showAlert('Username and password are required', 'error');
         return;
       }
@@ -210,7 +204,6 @@ export class SniceLogin extends HTMLElement implements SniceLoginElement {
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Login failed';
-      console.log('Login error:', errorMessage); // Debug
       this.showAlert(errorMessage, 'error');
       this.dispatchLoginError(errorMessage);
     } finally {
@@ -243,11 +236,7 @@ export class SniceLogin extends HTMLElement implements SniceLoginElement {
 
   @dispatch('@snice/login-success', { bubbles: true, composed: true })
   private dispatchLoginSuccess(result: LoginResult) {
-    return {
-      user: result.user,
-      token: result.token,
-      timestamp: new Date().toISOString()
-    };
+    return { timestamp: new Date().toISOString() };
   }
 
   @dispatch('@snice/login-error', { bubbles: true, composed: true })
