@@ -9,13 +9,8 @@ export interface LoginCredentials {
 
 export interface LoginResult {
   success: boolean;
-  token?: string;
   error?: string;
-  user?: {
-    id: string;
-    username: string;
-    email?: string;
-  };
+  data?: any;
 }
 
 export interface SniceLoginElement extends HTMLElement {
