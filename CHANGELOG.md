@@ -1,3 +1,11 @@
+## [2.1.3](https://gitlab.com/Hedzer/snice/compare/v2.1.2...v2.1.3) (2025-09-17)
+
+
+### Bug Fixes
+
+* event handler context ([d917fc4](https://gitlab.com/Hedzer/snice/commit/d917fc42eb1d9b70a6b946cfd74987f3363f6c45))
+* part debouncing ([b3d438b](https://gitlab.com/Hedzer/snice/commit/b3d438bce94a1cecb8ae90eb29a879ec553e9ba9))
+
 ## [2.1.2](https://gitlab.com/Hedzer/snice/compare/v2.1.1...v2.1.2) (2025-09-17)
 
 
