@@ -52,3 +52,6 @@ export const OBSERVERS = getSymbol('observers');
 // Part symbols
 export const PARTS = getSymbol('parts');
 export const PART_TIMERS = getSymbol('part-timers');
+
+// Dispatch timing symbols
+export const DISPATCH_TIMERS = getSymbol('dispatch-timers');

@@ -5,7 +5,7 @@ import { dirname, join } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const demoPath = 'http://localhost:5173/components/date-picker/demo.html';
+const demoPath = 'http://localhost:5566/components/date-picker/demo.html';
 
 test.describe('Snice Date Picker', () => {
   test.beforeEach(async ({ page }) => {

@@ -1,4 +1,4 @@
-import { ON_HANDLERS, CLEANUP } from './symbols';
+import { ON_HANDLERS, CLEANUP, DISPATCH_TIMERS } from './symbols';
 
 export interface OnOptions {
   /** Use capture phase instead of bubble phase */
@@ -281,13 +281,24 @@ export interface DispatchOptions extends EventInit {
  */
 export function dispatch(eventName: string, options?: DispatchOptions) {
   return function (originalMethod: any, _context: ClassMethodDecoratorContext) {
-    // Create timing wrappers for dispatch
-    let debounceTimeout: any;
-    let throttleLastCall = 0;
-    let throttleTimeout: any;
+    return function (this: any, ...args: any[]) {
+      // Create timing wrappers for dispatch (per-instance)
+      if (!this[DISPATCH_TIMERS]) {
+        this[DISPATCH_TIMERS] = new Map();
+      }
 
-    return function (this: HTMLElement, ...args: any[]) {
-      // Call the original method
+      const timerKey = `${eventName}_${_context.name as string}`;
+      if (!this[DISPATCH_TIMERS].has(timerKey)) {
+        this[DISPATCH_TIMERS].set(timerKey, {
+          debounceTimeout: null,
+          throttleLastCall: 0,
+          throttleTimeout: null
+        });
+      }
+
+      const timers = this[DISPATCH_TIMERS].get(timerKey);
+
+      // Call the original method with preserved this context
       const result = originalMethod.apply(this, args);
       
       // Helper to dispatch the event
@@ -311,20 +322,20 @@ export function dispatch(eventName: string, options?: DispatchOptions) {
       // Helper to handle timed dispatch
       const timedDispatch = (detail: any) => {
         if (options?.debounce) {
-          clearTimeout(debounceTimeout);
-          debounceTimeout = setTimeout(() => doDispatch(detail), options.debounce);
+          clearTimeout(timers.debounceTimeout);
+          timers.debounceTimeout = setTimeout(() => doDispatch(detail), options.debounce);
         } else if (options?.throttle) {
           const now = Date.now();
-          const remaining = options.throttle - (now - throttleLastCall);
-          
+          const remaining = options.throttle - (now - timers.throttleLastCall);
+
           if (remaining <= 0) {
-            clearTimeout(throttleTimeout);
-            throttleLastCall = now;
+            clearTimeout(timers.throttleTimeout);
+            timers.throttleLastCall = now;
             doDispatch(detail);
-          } else if (!throttleTimeout) {
-            throttleTimeout = setTimeout(() => {
-              throttleLastCall = Date.now();
-              throttleTimeout = null;
+          } else if (!timers.throttleTimeout) {
+            timers.throttleTimeout = setTimeout(() => {
+              timers.throttleLastCall = Date.now();
+              timers.throttleTimeout = null;
               doDispatch(detail);
             }, remaining);
           }
