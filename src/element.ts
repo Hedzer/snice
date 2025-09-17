@@ -221,6 +221,7 @@ export function applyElementFunctionality(constructor: any) {
             try {
               const partElement = this.shadowRoot.querySelector(`[part="${partName}"]`);
               if (partElement) {
+                // For initial render, call original method directly to avoid timing restrictions
                 const partResult = partHandler.method.call(this);
                 const partContent = partResult instanceof Promise ? await partResult : partResult;
                 if (partContent !== undefined) {
@@ -903,7 +904,7 @@ export function part(partName: string, options: PartOptions = {}) {
       if (!(this as any)[PART_TIMERS]) {
         (this as any)[PART_TIMERS] = new Map();
       }
-      
+
       // Get or create timers for this specific part
       if (!(this as any)[PART_TIMERS].has(partName)) {
         (this as any)[PART_TIMERS].set(partName, {
@@ -912,100 +913,63 @@ export function part(partName: string, options: PartOptions = {}) {
           lastThrottleCall: 0
         });
       }
-      
+
       const timers = (this as any)[PART_TIMERS].get(partName);
 
-      // Call the original method first to get its result
-      const result = originalMethod.apply(this, args);
+      // Helper function to execute method and update DOM
+      const executeAndUpdate = (...methodArgs: any[]) => {
+        const result = originalMethod.apply(this, methodArgs);
 
-      // Helper function to update DOM
-      const updateDOM = (content: any) => {
-        if (this.shadowRoot && content !== undefined) {
-          const partElement = this.shadowRoot.querySelector(`[part="${partName}"]`);
-          if (partElement) {
-            partElement.innerHTML = content;
+        const updateDOM = (content: any) => {
+          const hasContent = content !== undefined;
+          const hasElement = this.shadowRoot?.querySelector(`[part="${partName}"]`);
+
+          if (hasContent && hasElement) {
+            hasElement.innerHTML = content;
           }
-        }
+        };
+
+        const isPromise = result instanceof Promise;
+        return isPromise
+          ? result.then(content => { updateDOM(content); return content; })
+          : (updateDOM(result), result);
       };
-      
-      // Check if result is a Promise (async method)
-      if (result instanceof Promise) {
-        // Handle async method
-        if (options.debounce !== undefined && options.debounce > 0) {
-          // Debounce: defer DOM update, return original Promise
-          if (timers.debounceTimer) {
-            clearTimeout(timers.debounceTimer);
-          }
-          timers.debounceTimer = setTimeout(async () => {
-            const content = await result;
-            updateDOM(content);
-          }, options.debounce);
-          return result;
+
+      const hasDebounce = options.debounce !== undefined && options.debounce > 0;
+      const hasThrottle = options.throttle !== undefined && options.throttle > 0;
+
+      // Handle timing based on priority: debounce > throttle > immediate
+      switch (true) {
+        case hasDebounce: {
+          clearTimeout(timers.debounceTimer);
+          timers.debounceTimer = setTimeout(() => executeAndUpdate(...args), options.debounce!);
+          return undefined;
         }
 
-        if (options.throttle !== undefined && options.throttle > 0) {
-          // Throttle: handle timing but return original Promise
+        case hasThrottle: {
+          const throttleMs = options.throttle!;
           const now = Date.now();
-          if (timers.lastThrottleCall === 0 || now - timers.lastThrottleCall >= options.throttle) {
+          const canExecuteImmediately = timers.lastThrottleCall === 0 || now - timers.lastThrottleCall >= throttleMs;
+
+          if (canExecuteImmediately) {
             timers.lastThrottleCall = now;
-            return result.then(content => {
-              updateDOM(content);
-              return content;
-            });
-          } else {
-            if (!timers.throttleTimer) {
-              const remainingTime = options.throttle - (now - timers.lastThrottleCall);
-              timers.throttleTimer = setTimeout(async () => {
-                timers.throttleTimer = null;
-                timers.lastThrottleCall = Date.now();
-                const content = await result;
-                updateDOM(content);
-              }, remainingTime);
-            }
-            return result;
+            return executeAndUpdate(...args);
           }
+
+          const hasScheduledTimer = !!timers.throttleTimer;
+          if (!hasScheduledTimer) {
+            const remainingTime = throttleMs - (now - timers.lastThrottleCall);
+            timers.throttleTimer = setTimeout(() => {
+              timers.throttleTimer = null;
+              timers.lastThrottleCall = Date.now();
+              executeAndUpdate(...args);
+            }, remainingTime);
+          }
+          return undefined;
         }
 
-        // No timing: update DOM after Promise resolves
-        return result.then(content => {
-          updateDOM(content);
-          return content;
-        });
-      } else {
-        // Handle sync method
-        if (options.debounce !== undefined && options.debounce > 0) {
-          // Debounce: defer DOM update, return result immediately
-          if (timers.debounceTimer) {
-            clearTimeout(timers.debounceTimer);
-          }
-          timers.debounceTimer = setTimeout(() => {
-            updateDOM(result);
-          }, options.debounce);
-          return result;
-        }
-
-        if (options.throttle !== undefined && options.throttle > 0) {
-          // Throttle: handle timing for DOM updates
-          const now = Date.now();
-          if (timers.lastThrottleCall === 0 || now - timers.lastThrottleCall >= options.throttle) {
-            timers.lastThrottleCall = now;
-            updateDOM(result);
-          } else {
-            if (!timers.throttleTimer) {
-              const remainingTime = options.throttle - (now - timers.lastThrottleCall);
-              timers.throttleTimer = setTimeout(() => {
-                timers.throttleTimer = null;
-                timers.lastThrottleCall = Date.now();
-                updateDOM(result);
-              }, remainingTime);
-            }
-          }
-          return result;
-        }
-
-        // No timing: update DOM immediately
-        updateDOM(result);
-        return result;
+        default:
+          return executeAndUpdate(...args);
       }
     };
   };
