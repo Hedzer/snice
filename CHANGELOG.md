@@ -1,3 +1,10 @@
+## [2.1.2](https://gitlab.com/Hedzer/snice/compare/v2.1.1...v2.1.2) (2025-09-17)
+
+
+### Bug Fixes
+
+* removed debug logs ([30b4e66](https://gitlab.com/Hedzer/snice/commit/30b4e66eb9aafc457aac7fadbf25401c87f928b3))
+
 ## [2.1.1](https://gitlab.com/Hedzer/snice/compare/v2.1.0...v2.1.1) (2025-09-17)
 
 
