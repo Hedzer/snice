@@ -1,3 +1,10 @@
+## [2.2.1](https://gitlab.com/Hedzer/snice/compare/v2.2.0...v2.2.1) (2025-09-18)
+
+
+### Bug Fixes
+
+* inlined css in built components ([a3baa6b](https://gitlab.com/Hedzer/snice/commit/a3baa6beb2442cc8f4215b70c31237406d295037))
+
 # [2.2.0](https://gitlab.com/Hedzer/snice/compare/v2.1.5...v2.2.0) (2025-09-18)
 
 
