@@ -233,22 +233,13 @@ export function applyElementFunctionality(constructor: any) {
             }
           }
         }
-        
-        // NOW call the original user-defined connectedCallback after shadow DOM is set up
-        if (originalConnectedCallback) {
-          originalConnectedCallback.call(this);
-        }
-        
-        const controllerName = this.getAttribute('controller');
-        if (controllerName) {
-          this.controller = controllerName;
-        }
+
         // Setup @on event handlers - use element for host events, shadow root for delegated events
         setupEventHandlers(this, this);
-        
+
         // Setup @respond handlers for elements
         setupResponseHandlers(this, this);
-        
+
         // Setup @observe observers
         try {
           setupObservers(this, this);
@@ -256,22 +247,27 @@ export function applyElementFunctionality(constructor: any) {
           console.error(`Error setting up observers for ${this.tagName}:`, error);
         }
         
-        // Call @ready handlers after everything is set up
-        const readyHandlers = constructor[READY_HANDLERS];
-        if (readyHandlers) {
-          for (const handler of readyHandlers) {
-            try {
-              await handler.method.call(this);
-            } catch (error) {
-              console.error(`Error in @ready handler ${handler.methodName}:`, error);
-            }
-          }
+        // NOW call the original user-defined connectedCallback after shadow DOM is set up
+        if (originalConnectedCallback) {
+          originalConnectedCallback.call(this);
         }
       } finally {
         // Always mark element as ready, even if there were errors
         if (this[READY_RESOLVE]) {
           this[READY_RESOLVE]();
           this[READY_RESOLVE] = null; // Clear the resolver
+        }
+      }
+
+      // Call @ready handlers after everything is set up and ready promise is resolved
+      const readyHandlers = constructor[READY_HANDLERS];
+      if (readyHandlers) {
+        for (const handler of readyHandlers) {
+          try {
+            await handler.method.call(this);
+          } catch (error) {
+            console.error(`Error in @ready handler ${handler.methodName}:`, error);
+          }
         }
       }
     };
