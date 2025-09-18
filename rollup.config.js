@@ -2,6 +2,8 @@ import typescript from '@rollup/plugin-typescript';
 import resolve from '@rollup/plugin-node-resolve';
 import terser from '@rollup/plugin-terser';
 import { createRequire } from 'module';
+import fs from 'fs';
+import path from 'path';
 
 const require = createRequire(import.meta.url);
 const packageJson = require('./package.json');
@@ -41,6 +43,33 @@ const createSubmoduleConfig = (name) => ({
     })
   ]
 });
+
+// Function to recursively find all TypeScript files in components directory
+function findComponentFiles(dir) {
+  const files = [];
+  const items = fs.readdirSync(dir);
+
+  for (const item of items) {
+    const fullPath = path.join(dir, item);
+    const stat = fs.statSync(fullPath);
+
+    if (stat.isDirectory()) {
+      files.push(...findComponentFiles(fullPath));
+    } else if (item.endsWith('.ts') &&
+               !item.endsWith('.d.ts') &&
+               !item.endsWith('.types.ts') &&
+               !item.includes('demo') &&
+               !item.includes('controller')) {
+      files.push(fullPath);
+    }
+  }
+
+  return files;
+}
+
+
+// Get all component files
+const componentFiles = findComponentFiles('components');
 
 export default [
   // ESM build
@@ -220,6 +249,55 @@ export default [
       typescript({
         tsconfig: './tsconfig.src.json',
         declaration: false
+      })
+    ]
+  },
+
+  // Component builds - single config with multiple inputs preserving folder structure
+  {
+    input: componentFiles.reduce((acc, file) => {
+      const relativePath = path.relative('components', file);
+      const entryName = relativePath.replace('.ts', '');
+      acc[entryName] = file;
+      return acc;
+    }, {}),
+    external: ['snice', 'snice/symbols', 'snice/transitions', 'tslib'],
+    output: {
+      dir: 'dist/components',
+      format: 'es',
+      sourcemap: true,
+      entryFileNames: '[name].js',
+      preserveModules: false
+    },
+    plugins: [
+      resolve(),
+      // Plugin to handle CSS imports
+      {
+        name: 'css-loader',
+        resolveId(id) {
+          if (id.endsWith('.css?inline')) {
+            return id;
+          }
+          return null;
+        },
+        load(id) {
+          if (id.endsWith('.css?inline')) {
+            const cssPath = id.replace('?inline', '');
+            try {
+              const cssContent = fs.readFileSync(cssPath, 'utf-8');
+              return `export default ${JSON.stringify(cssContent)};`;
+            } catch (error) {
+              console.warn(`Could not load CSS file: ${cssPath}`);
+              return `export default '';`;
+            }
+          }
+          return null;
+        }
+      },
+      typescript({
+        tsconfig: './components/tsconfig.json',
+        declaration: false,
+        declarationMap: false
       })
     ]
   }
