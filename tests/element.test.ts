@@ -228,21 +228,47 @@ describe('@property decorator', () => {
       @property({ type: Boolean, reflect: true, attribute: 'no-close-button' })
       noCloseButton = false;
     }
-    
+
     const el = document.createElement('test-kebab-bool') as any;
     el.setAttribute('no-close-button', 'false');
     document.body.appendChild(el);
-    
+
     // Should parse "false" string as false even with kebab-case attribute
     expect(el.noCloseButton).toBe(false);
-    
+
     // Setting to true via property should reflect to attribute
     el.noCloseButton = true;
     expect(el.getAttribute('no-close-button')).toBe('true');
-    
+
     // Setting attribute to false should update property
     el.setAttribute('no-close-button', 'false');
     expect(el.noCloseButton).toBe(false);
+  });
+
+  it('should parse attributes from string template to initial property values', () => {
+    @element('test-string-attr')
+    class TestStringAttr extends HTMLElement {
+      @property({ type: String, attribute: 'custom-attr' })
+      customAttr = '';
+
+      @property({ type: Number, attribute: 'number-attr' })
+      numberAttr = 0;
+
+      @property({ type: Boolean, attribute: 'bool-attr' })
+      boolAttr = false;
+    }
+
+    // Create element via innerHTML to simulate string template parsing
+    const div = document.createElement('div');
+    div.innerHTML = `<test-string-attr custom-attr="hello" number-attr="123" bool-attr></test-string-attr>`;
+
+    const el = div.querySelector('test-string-attr') as any;
+    document.body.appendChild(el);
+
+    // Properties should have initial values matching the attributes
+    expect(el.customAttr).toBe('hello');
+    expect(el.numberAttr).toBe(123);
+    expect(el.boolAttr).toBe(true);
   });
 });
 

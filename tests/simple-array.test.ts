@@ -293,7 +293,7 @@ describe('@property with SimpleArray type', () => {
     expect(el.getAttribute('mixeddata')).toBe(expected);
 
     // Should round-trip correctly
-    el.setAttribute('mixeddata', 'new，123，false，test，0.5，true');
+    el.setAttribute('mixedData', 'new，123，false，test，0.5，true');
     expect(el.mixedData).toEqual(['new', 123, false, 'test', 0.5, true]);
   });
 });

@@ -2,6 +2,7 @@ import { attachController, detachController } from './controller';
 import { setupEventHandlers, cleanupEventHandlers } from './events';
 import { setupObservers, cleanupObservers } from './observe';
 import { setupResponseHandlers, cleanupResponseHandlers } from './request-response';
+import { parseAttributeValue, detectType } from './utils';
 import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PROPERTY_WATCHERS, EXPLICITLY_SET_PROPERTIES, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, PARTS, PART_TIMERS } from './symbols';
 
 /**
@@ -93,10 +94,11 @@ export function applyElementFunctionality(constructor: any) {
         const properties = constructor[PROPERTIES];
         if (properties) {
           for (const [propName, propOptions] of properties) {
-            // If attribute exists, it always wins
-            if (this.hasAttribute(propName)) {
+            // Check for attribute using proper attribute name
+            const attributeName = typeof propOptions.attribute === 'string' ? propOptions.attribute : propName.toLowerCase();
+            if (this.hasAttribute(attributeName)) {
               // Attribute exists, parse and set the property value
-              const attrValue = this.getAttribute(propName);
+              const attrValue = this.getAttribute(attributeName);
 
               // Mark as explicitly set since it came from an attribute
               if (!this[EXPLICITLY_SET_PROPERTIES]) {
@@ -104,32 +106,7 @@ export function applyElementFunctionality(constructor: any) {
               }
               this[EXPLICITLY_SET_PROPERTIES].add(propName);
 
-              switch (propOptions.type) {
-                case Boolean:
-                  this[propName] = attrValue !== null && attrValue !== 'false';
-                  break;
-                case Number:
-                  this[propName] = Number(attrValue);
-                  break;
-                case String:
-                  this[propName] = attrValue;
-                  break;
-                case Date:
-                  this[propName] = attrValue ? new Date(attrValue) : null;
-                  break;
-                case BigInt:
-                  if (attrValue && attrValue.endsWith('n')) {
-                    this[propName] = BigInt(attrValue.slice(0, -1));
-                  } else {
-                    this[propName] = attrValue ? BigInt(attrValue) : null;
-                  }
-                  break;
-                case SimpleArray:
-                  this[propName] = SimpleArray.parse(attrValue);
-                  break;
-                default:
-                  this[propName] = attrValue;
-              }
+              this[propName] = parseAttributeValue(attrValue, propOptions);
             }
           }
         }
@@ -312,34 +289,12 @@ export function applyElementFunctionality(constructor: any) {
         if (properties) {
           for (const [propName, propOptions] of properties) {
             const attributeName = typeof propOptions.attribute === 'string' ? propOptions.attribute : propName.toLowerCase();
-            if (attributeName === name) {
+            if (attributeName.toLowerCase() === name.toLowerCase()) {
               // Check if the current property value already matches to avoid feedback loops
               const currentValue = this[PROPERTY_VALUES]?.[propName];
               
               // Parse the new value based on type
-              let parsedValue: any;
-              if (propOptions.type === Boolean) {
-                parsedValue = newValue !== null && newValue !== 'false';
-              } else if (propOptions.type === Number) {
-                parsedValue = Number(newValue);
-              } else if (propOptions.type === Date) {
-                parsedValue = newValue ? new Date(newValue) : null;
-              } else if (propOptions.type === BigInt) {
-                if (newValue && newValue.endsWith('n')) {
-                  parsedValue = BigInt(newValue.slice(0, -1));
-                } else {
-                  parsedValue = newValue ? BigInt(newValue) : null;
-                }
-              } else if (propOptions.type === SimpleArray) {
-                parsedValue = SimpleArray.parse(newValue);
-              } else {
-                // If no type specified, try to infer from current value type
-                if (typeof currentValue === 'number' && newValue !== null) {
-                  parsedValue = Number(newValue);
-                } else {
-                  parsedValue = newValue;
-                }
-              }
+              const parsedValue = parseAttributeValue(newValue, propOptions, currentValue, undefined);
               
               // Only update if the value actually changed and avoid infinite loops
               if (currentValue !== parsedValue) {
@@ -448,12 +403,20 @@ export function property(options?: PropertyOptions) {
       console.warn(`⚠️  Property '${propertyKey}' uses reflect:true with Object type.`);
     }
 
-    context.addInitializer(function() {
-      // No longer need warnings here since they're at decoration time
-    });
-
     // Return a field initializer function for new decorators
     return function(this: any, initialValue: any) {
+      // Detect type from initial value if not explicitly provided
+      const finalOptions = { ...options };
+      if (!finalOptions.type && initialValue !== undefined) {
+        finalOptions.type = detectType(initialValue);
+
+        // Update the metadata with the detected type
+        const constructor = this.constructor as any;
+        if (constructor[PROPERTIES]) {
+          constructor[PROPERTIES].set(propertyKey, finalOptions);
+        }
+      }
+
       // Set up the property descriptor on first access
       if (!Object.hasOwnProperty.call(this.constructor.prototype, propertyKey)) {
         const descriptor: PropertyDescriptor = {
@@ -461,7 +424,22 @@ export function property(options?: PropertyOptions) {
             if (!this[PROPERTY_VALUES]) {
               this[PROPERTY_VALUES] = {};
             }
-            return this[PROPERTY_VALUES][propertyKey];
+
+            // If we have a stored value, return it
+            if (this[PROPERTY_VALUES][propertyKey] !== undefined) {
+              return this[PROPERTY_VALUES][propertyKey];
+            }
+
+            // Otherwise check attribute and parse it, or return initial value
+            const attributeName = typeof finalOptions?.attribute === 'string' ? finalOptions?.attribute : propertyKey.toLowerCase();
+            const attrValue = this.getAttribute?.(attributeName);
+
+            // If attribute exists or we have a type that needs special handling for null (like Boolean)
+            if (attrValue !== null || finalOptions?.type === Boolean) {
+              return parseAttributeValue(attrValue, finalOptions || {}, undefined, initialValue);
+            }
+
+            return initialValue;
           },
           set(this: any, newValue: any) {
             if (!this[PROPERTY_VALUES]) {
@@ -482,11 +460,11 @@ export function property(options?: PropertyOptions) {
 
             this[PROPERTY_VALUES][propertyKey] = newValue;
 
-            if (options?.reflect && this.setAttribute && this[PROPERTIES_INITIALIZED] && this[EXPLICITLY_SET_PROPERTIES].has(propertyKey)) {
-              const attributeName = typeof options.attribute === 'string' ? options.attribute : propertyKey.toLowerCase();
+            if (finalOptions?.reflect && this.setAttribute && this[PROPERTIES_INITIALIZED] && this[EXPLICITLY_SET_PROPERTIES].has(propertyKey)) {
+              const attributeName = typeof finalOptions.attribute === 'string' ? finalOptions.attribute : propertyKey.toLowerCase();
 
               if (newValue === null || newValue === undefined || newValue === false ||
-                  (options?.type === SimpleArray && Array.isArray(newValue) && newValue.length === 0)) {
+                  (finalOptions?.type === SimpleArray && Array.isArray(newValue) && newValue.length === 0)) {
                 this.removeAttribute(attributeName);
               } else {
                 let attributeValue: string;
@@ -494,7 +472,7 @@ export function property(options?: PropertyOptions) {
                   attributeValue = newValue.toISOString();
                 } else if (typeof newValue === 'bigint') {
                   attributeValue = newValue.toString() + 'n';
-                } else if (options?.type === SimpleArray && Array.isArray(newValue)) {
+                } else if (finalOptions?.type === SimpleArray && Array.isArray(newValue)) {
                   attributeValue = SimpleArray.serialize(newValue);
                 } else {
                   attributeValue = String(newValue);
