@@ -86,24 +86,6 @@ export default [
     ]
   },
 
-  // ESM minified
-  {
-    ...baseConfig,
-    output: {
-      file: 'dist/index.esm.min.js',
-      format: 'es',
-      banner,
-      sourcemap: true
-    },
-    plugins: [
-      ...baseConfig.plugins,
-      terser({
-        output: {
-          comments: /^!/
-        }
-      })
-    ]
-  },
 
   // CommonJS build
   {
@@ -124,29 +106,6 @@ export default [
     ]
   },
 
-  // CommonJS minified
-  {
-    ...baseConfig,
-    output: {
-      file: 'dist/index.cjs.min',
-      format: 'cjs',
-      banner,
-      sourcemap: true,
-      exports: 'named'
-    },
-    plugins: [
-      resolve(),
-      typescript({
-        tsconfig: './tsconfig.src.json',
-        declaration: false
-      }),
-      terser({
-        output: {
-          comments: /^!/
-        }
-      })
-    ]
-  },
 
   // IIFE build for browsers
   {
@@ -168,30 +127,6 @@ export default [
     ]
   },
 
-  // IIFE minified
-  {
-    ...baseConfig,
-    output: {
-      file: 'dist/index.iife.min.js',
-      format: 'iife',
-      name: 'Snice',
-      banner,
-      sourcemap: true,
-      exports: 'named'
-    },
-    plugins: [
-      resolve(),
-      typescript({
-        tsconfig: './tsconfig.src.json',
-        declaration: false
-      }),
-      terser({
-        output: {
-          comments: /^!/
-        }
-      })
-    ]
-  },
 
   // Symbols ESM build
   {
@@ -274,8 +209,15 @@ export default [
       // Plugin to handle CSS imports
       {
         name: 'css-loader',
-        resolveId(id) {
+        resolveId(id, importer) {
           if (id.endsWith('.css?inline')) {
+            // Resolve the CSS path relative to the importing file
+            const cssPath = id.replace('?inline', '');
+            if (importer) {
+              const importerDir = path.dirname(importer);
+              const resolvedCssPath = path.resolve(importerDir, cssPath);
+              return resolvedCssPath + '?inline';
+            }
             return id;
           }
           return null;
@@ -283,13 +225,18 @@ export default [
         load(id) {
           if (id.endsWith('.css?inline')) {
             const cssPath = id.replace('?inline', '');
+
             try {
-              const cssContent = fs.readFileSync(cssPath, 'utf-8');
-              return `export default ${JSON.stringify(cssContent)};`;
+              if (fs.existsSync(cssPath)) {
+                const cssContent = fs.readFileSync(cssPath, 'utf-8');
+                return `export default ${JSON.stringify(cssContent)};`;
+              }
             } catch (error) {
-              console.warn(`Could not load CSS file: ${cssPath}`);
-              return `export default '';`;
+              // Silently handle any errors
             }
+
+            // Return empty string for missing CSS files
+            return `export default '';`;
           }
           return null;
         }
