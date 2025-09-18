@@ -69,7 +69,9 @@ export function setupEventHandlers(instance: any, element: HTMLElement) {
   }
   
   for (const handler of handlers) {
-    const originalMethod = handler.method.bind(instance);
+    // Get the current method from the instance (preserves decorator stacking)
+    const currentMethod = (instance as any)[handler.method.name];
+    const originalMethod = currentMethod ? currentMethod.bind(instance) : handler.method.bind(instance);
     const handlerOptions = handler.options || {};
     
     // Parse event name for key modifiers
