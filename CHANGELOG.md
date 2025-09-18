@@ -1,3 +1,10 @@
+# [2.2.0](https://gitlab.com/Hedzer/snice/compare/v2.1.5...v2.2.0) (2025-09-18)
+
+
+### Features
+
+* built components ([10de429](https://gitlab.com/Hedzer/snice/commit/10de429e75c10da0c854fa376e18a0c5e339a7fb))
+
 ## [2.1.5](https://gitlab.com/Hedzer/snice/compare/v2.1.4...v2.1.5) (2025-09-18)
 
 
