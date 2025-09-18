@@ -1,3 +1,10 @@
+## [2.1.5](https://gitlab.com/Hedzer/snice/compare/v2.1.4...v2.1.5) (2025-09-18)
+
+
+### Bug Fixes
+
+* moved connecged callback order ([545386c](https://gitlab.com/Hedzer/snice/commit/545386c2da3646e33cd7be632d5e15cbe4a231a1))
+
 ## [2.1.4](https://gitlab.com/Hedzer/snice/compare/v2.1.3...v2.1.4) (2025-09-18)
 
 
