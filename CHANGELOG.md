@@ -1,3 +1,10 @@
+## [2.2.2](https://gitlab.com/Hedzer/snice/compare/v2.2.1...v2.2.2) (2025-09-18)
+
+
+### Bug Fixes
+
+* reactive login classes ([fb4efca](https://gitlab.com/Hedzer/snice/commit/fb4efca37867bc0c69a7392d8143287677cab785))
+
 ## [2.2.1](https://gitlab.com/Hedzer/snice/compare/v2.2.0...v2.2.1) (2025-09-18)
 
 
