@@ -1,4 +1,4 @@
-import { element, property, query, queryAll, on, dispatch, request } from 'snice';
+import { element, property, query, queryAll, on, dispatch, request, watch } from 'snice';
 import css from './snice-login.css?inline';
 import type { LoginVariant, LoginSize, LoginCredentials, LoginResult, SniceLoginElement } from './snice-login.types';
 import '../alert/snice-alert';
@@ -29,6 +29,9 @@ export class SniceLogin extends HTMLElement implements SniceLoginElement {
 
   @property({ reflect: true, attribute: 'action-text' })
   actionText = 'Sign In';
+
+  @query('.login')
+  loginContainer!: HTMLDivElement;
 
   @query('.login__form')
   form!: HTMLFormElement;
@@ -134,6 +137,13 @@ export class SniceLogin extends HTMLElement implements SniceLoginElement {
 
   css() {
     return css;
+  }
+
+  @watch('variant', 'size')
+  updateLoginClasses() {
+    if (this.loginContainer) {
+      this.loginContainer.className = `login login--${this.variant} login--${this.size}`;
+    }
   }
 
   @request('login-user')
