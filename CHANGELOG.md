@@ -1,3 +1,10 @@
+## [2.1.4](https://gitlab.com/Hedzer/snice/compare/v2.1.3...v2.1.4) (2025-09-18)
+
+
+### Bug Fixes
+
+* context loss when multiple decorators are applied ([a6461c4](https://gitlab.com/Hedzer/snice/commit/a6461c4f777adce4fa48c77c6b0ed369839be170))
+
 ## [2.1.3](https://gitlab.com/Hedzer/snice/compare/v2.1.2...v2.1.3) (2025-09-17)
 
 
