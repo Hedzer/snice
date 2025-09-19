@@ -1,3 +1,11 @@
+## [2.2.3](https://gitlab.com/Hedzer/snice/compare/v2.2.2...v2.2.3) (2025-09-19)
+
+
+### Bug Fixes
+
+* moved types into their own dir ([33963af](https://gitlab.com/Hedzer/snice/commit/33963afd87c3934db222057dea5f2d979f072488))
+* property values set properly from innerHTML ([72b208c](https://gitlab.com/Hedzer/snice/commit/72b208cd29a96c735c5cc68973402af6bde32caf))
+
 ## [2.2.2](https://gitlab.com/Hedzer/snice/compare/v2.2.1...v2.2.2) (2025-09-18)
 
 
