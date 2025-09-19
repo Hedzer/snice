@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { element, query, queryAll } from '../src/element';
+import { element, query, queryAll } from './test-imports';
 
 describe('Query Light vs Shadow DOM', () => {
   let container: HTMLDivElement;

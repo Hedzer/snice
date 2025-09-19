@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { controller, controller as registerController, attachController, detachController, useNativeElementControllers, cleanupNativeElementControllers } from '../src/controller';
-import { on, dispatch } from '../src/events';
-import { query } from '../src/element';
-import { CONTROLLER_KEY } from '../src/symbols';
+import { controller, controller as registerController, attachController, detachController, useNativeElementControllers, cleanupNativeElementControllers } from './test-imports';
+import { on, dispatch } from './test-imports';
+import { query } from './test-imports';
+import { CONTROLLER_KEY } from './test-imports';
 
 describe('Native Element Controllers', () => {
   beforeEach(() => {

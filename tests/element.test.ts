@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { element, property, query, queryAll } from '../src/element';
+import { element, property, query, queryAll } from './test-imports';
 
 describe('@element decorator', () => {
   beforeEach(() => {

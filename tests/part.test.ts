@@ -1,6 +1,6 @@
 import { beforeEach, describe, it, expect } from 'vitest';
-import { element, part, property, watch } from '../src/element';
-import type { SniceElement } from '../src/types/SniceElement';
+import { element, part, property, watch } from './test-imports';
+import type { SniceElement } from './test-imports';
 
 describe('@part decorator', () => {
   beforeEach(() => {

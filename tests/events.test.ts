@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { element } from '../src/element';
-import { on } from '../src/events';
+import { element } from './test-imports';
+import { on } from './test-imports';
 
 describe('@on decorator', () => {
   beforeEach(() => {

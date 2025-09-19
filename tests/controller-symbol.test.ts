@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { element, controller, query, queryAll } from '../src/index';
-import { IS_CONTROLLER_INSTANCE, CONTROLLER_KEY } from '../src/symbols';
+import { IS_CONTROLLER_INSTANCE, CONTROLLER_KEY } from './test-imports';
 
 describe('Controller Symbol Detection', () => {
   let container: HTMLDivElement;

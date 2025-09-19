@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { Router, Guard } from '../src/router';
+import { Router, Guard } from './test-imports';
 
 describe('Router Guards with Params', () => {
   let container: HTMLElement;

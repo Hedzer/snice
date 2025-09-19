@@ -33,7 +33,8 @@ export default defineConfig({
       'node_modules',
       'dist',
       'examples',
-      'tests/live'
+      'tests/live',
+      'rollup.config.test.js'
     ],
   },
 });

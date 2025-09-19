@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { Router } from '../src/router';
+import { Router } from './test-imports';
 
 describe('Router', () => {
   let router: ReturnType<typeof Router>;

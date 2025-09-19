@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { element, ready, dispose } from '../src/element';
-import { controller } from '../src/controller';
+import { element, ready, dispose } from './test-imports';
+import { controller } from './test-imports';
 
 describe('element lifecycle', () => {
   beforeEach(() => {

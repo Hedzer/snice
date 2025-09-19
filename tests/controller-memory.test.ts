@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { element, property } from '../src/element';
-import { controller, attachController, detachController, getController, getControllerScope, registerControllerCleanup } from '../src/controller';
-import { CONTROLLER_KEY, CONTROLLER_OPERATIONS } from '../src/symbols';
+import { element, property } from './test-imports';
+import { controller, attachController, detachController, getController, getControllerScope, registerControllerCleanup } from './test-imports';
+import { CONTROLLER_KEY, CONTROLLER_OPERATIONS } from './test-imports';
 
 describe('Controller Scope & Memory Management', () => {
   beforeEach(() => {

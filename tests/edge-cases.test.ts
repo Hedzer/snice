@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { element, property, query, on } from '../src';
-import { controller, attachController } from '../src/controller';
-import { Router } from '../src/router';
+import { controller, attachController } from './test-imports';
+import { Router } from './test-imports';
 
 describe('edge cases and error handling', () => {
   beforeEach(() => {

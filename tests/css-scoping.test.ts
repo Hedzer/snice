@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { element } from '../src/element';
+import { element } from './test-imports';
 
 describe('CSS scoping', () => {
   beforeEach(() => {

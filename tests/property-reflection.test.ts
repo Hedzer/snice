@@ -1,6 +1,6 @@
 import { beforeEach, describe, it, expect, vi } from 'vitest';
-import { element, property } from '../src/element';
-import type { SniceElement } from '../src/types/SniceElement';
+import { element, property } from './test-imports';
+import type { SniceElement } from './test-imports';
 
 describe('@property reflection with Date and BigInt', () => {
   beforeEach(() => {

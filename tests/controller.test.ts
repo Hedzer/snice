@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { element, query, queryAll } from '../src/element';
-import { controller, getController, attachController } from '../src/controller';
-import { on } from '../src/events';
+import { element, query, queryAll } from './test-imports';
+import { controller, getController, attachController } from './test-imports';
+import { on } from './test-imports';
 
 describe('@controller decorator', () => {
   beforeEach(() => {
