@@ -1,12 +1,12 @@
 import { Route } from 'pica-route';
 import { applyElementFunctionality } from './element';
 import { ROUTER_CONTEXT, CONTEXT_REQUEST_HANDLER, PAGE_TRANSITION, CREATED_AT, PROPERTIES } from './symbols';
-import { Transition, performTransition as performTransitionUtil } from './transitions';
+import { performTransition as performTransitionUtil } from './transitions';
+import { Transition } from './types/Transition';
+import { RouterOptions } from './types/RouterOptions';
+import { PageOptions, Guard, RouteParams } from './types/PageOptions';
+import { RouterInstance } from './types/RouterInstance';
 
-/**
- * Route parameters extracted from the URL
- */
-export type RouteParams = Record<string, string>;
 
 /**
  * Possible outcomes from route resolution
@@ -17,93 +17,6 @@ enum RouteResult {
   NOT_FOUND = 'not-found'
 }
 
-/**
- * Guard function that determines if navigation is allowed
- * @param context The application context
- * @param params The URL parameters from the route
- */
-export type Guard<T = any> = (context: T, params: RouteParams) => boolean | Promise<boolean>;
-
-export interface RouterOptions {
-  /**
-   * The target element selector where the page element will be instantiated.
-   * The router will use this selector to find the target element, clear it, and append the page element to it.
-   */
-  target: string;
-  
-  /**
-   * Whether to use hash routing or push state routing.
-   */
-  type: 'hash' | 'pushstate';
-
-  /**
-   * Override for the window object to use for routing, defaults to global.
-   */
-  window?: Window;
-
-  /**
-   * Override for the document object to use for routing, defaults to global.
-   */
-  document?: Document;
-  
-  /**
-   * Global transition configuration for all pages
-   */
-  transition?: Transition;
-  
-  /**
-   * Optional context object passed to guard functions
-   */
-  context?: any;
-  
-  /**
-   * Default layout element tag name for all pages
-   */
-  layout?: string;
-}
-
-export interface PageOptions {
-  /**
-   * The tag name of the custom element.
-   * @example { tag: 'login-page' }
-   * // for <login-page></login-page>
-   */
-  tag: string;
-  
-  /**
-   * The routes that will trigger the page element.
-   * @example { routes: ['/login', '/login/:id'] }
-   */
-  routes: string[];
-  
-  /**
-   * Optional per-page transition override
-   */
-  transition?: Transition;
-  
-  /**
-   * Guard functions that must pass for navigation to proceed.
-   * Can be a single guard or an array of guards (all must pass).
-   */
-  guards?: Guard<any> | Guard<any>[];
-  
-  /**
-   * Layout element tag name for this page.
-   * Use false to explicitly disable layout for this page.
-   */
-  layout?: string | false;
-}
-
-/**
- * Router return type
- */
-export interface RouterInstance {
-  page: (pageOptions: PageOptions) => <C extends { new(...args: any[]): HTMLElement }>(constructor: C, context: ClassDecoratorContext) => C;
-  initialize: () => void;
-  navigate: (path: string) => Promise<void>;
-  register: (route: string, tag: string, transition?: Transition, guards?: Guard<any> | Guard<any>[]) => void;
-  context: any;
-}
 
 /**
  * Creates a new router instance.
@@ -554,11 +467,10 @@ export function Router(options: RouterOptions): RouterInstance {
     return performTransitionUtil(container, oldElement, newElement, transition);
   }
 
-  return { 
-    page, 
-    initialize, 
-    navigate, 
-    register,
-    context,
+  return {
+    page,
+    initialize,
+    navigate,
+    register
   };
 }

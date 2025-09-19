@@ -1,14 +1,10 @@
-export { element, layout, property, query, queryAll, watch, context, applyElementFunctionality, ready, dispose, part, SimpleArray } from './element';
+export { element, layout, property, query, queryAll, watch, context, applyElementFunctionality, ready, dispose, part } from './element';
 export { Router } from './router';
 export { controller, attachController, detachController, getController, useNativeElementControllers, cleanupNativeElementControllers } from './controller';
 export { on, dispatch } from './events';
 export { observe } from './observe';
 export { request, respond } from './request-response';
 export { IS_CONTROLLER_INSTANCE, getSymbol } from './symbols';
-export type { Transition } from './transitions';
-export type { PropertyOptions, PropertyConverter, QueryOptions, SniceElement, PartOptions } from './element';
-export type { RouterOptions, PageOptions, Guard, RouteParams, RouterInstance } from './router';
-export type { IController, ControllerClass } from './controller';
-export type { DispatchOptions } from './events';
-export type { ObserveOptions } from './observe';
-export type { RequestOptions } from './request-response';
+
+// Export all types from centralized types module
+export * from './types';

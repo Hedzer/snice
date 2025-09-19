@@ -1,21 +1,7 @@
 import { ON_HANDLERS, CLEANUP, DISPATCH_TIMERS } from './symbols';
+import { OnOptions } from './types/OnOptions';
+import { DispatchOptions } from './types/DispatchOptions';
 
-export interface OnOptions {
-  /** Use capture phase instead of bubble phase */
-  capture?: boolean;
-  /** Remove listener after first trigger */
-  once?: boolean;
-  /** Passive listener (can't preventDefault) */
-  passive?: boolean;
-  /** Automatically call preventDefault on the event */
-  preventDefault?: boolean;
-  /** Automatically call stopPropagation on the event */
-  stopPropagation?: boolean;
-  /** Debounce the handler by specified milliseconds */
-  debounce?: number;
-  /** Throttle the handler by specified milliseconds */
-  throttle?: number;
-}
 
 export function on(eventName: string | string[], selectorOrOptions?: string | OnOptions, options?: OnOptions) {
   // Handle overloaded parameters
@@ -263,16 +249,6 @@ export function cleanupEventHandlers(instance: any) {
   }
 }
 
-export interface DispatchOptions extends EventInit {
-  /**
-   * Whether to dispatch even if the method returns undefined (default: true)
-   */
-  dispatchOnUndefined?: boolean;
-  /** Debounce the dispatch by specified milliseconds */
-  debounce?: number;
-  /** Throttle the dispatch by specified milliseconds */
-  throttle?: number;
-}
 
 /**
  * Decorator that automatically dispatches a custom event after a method is called.

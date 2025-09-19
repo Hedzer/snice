@@ -4,6 +4,10 @@ import { setupObservers, cleanupObservers } from './observe';
 import { setupResponseHandlers, cleanupResponseHandlers } from './request-response';
 import { parseAttributeValue, detectType } from './utils';
 import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PROPERTY_WATCHERS, EXPLICITLY_SET_PROPERTIES, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, PARTS, PART_TIMERS } from './symbols';
+import { QueryOptions } from './types/QueryOptions';
+import { PropertyOptions } from './types/PropertyOptions';
+import { PartOptions } from './types/PartOptions';
+import { SimpleArray } from './types/SimpleArray';
 
 /**
  * Applies core element functionality to a constructor
@@ -528,10 +532,6 @@ export function property(options?: PropertyOptions) {
   };
 }
 
-export interface QueryOptions {
-  light?: boolean;
-  shadow?: boolean;
-}
 
 export function query(selector: string, options: QueryOptions = {}) {
   return function (_value: any, context: ClassFieldDecoratorContext) {
@@ -625,88 +625,10 @@ export function queryAll(selector: string, options: QueryOptions = {}) {
   };
 }
 
-/**
- * SimpleArray type for arrays that can be safely reflected to attributes
- * Supports arrays of: string, number, boolean
- * Uses full-width comma (，) as separator to avoid conflicts
- * Strings cannot contain the full-width comma character
- */
-export class SimpleArray {
-  static readonly SEPARATOR = '，'; // U+FF0C Full-width comma
-  
-  /**
-   * Serialize array to string for attribute storage
-   */
-  static serialize(arr: (string | number | boolean)[]): string {
-    if (!Array.isArray(arr)) return '';
-    
-    return arr.map(item => {
-      if (typeof item === 'string') {
-        // Validate string doesn't contain our separator
-        if (item.includes(SimpleArray.SEPARATOR)) {
-          throw new Error(`SimpleArray strings cannot contain the character "${SimpleArray.SEPARATOR}" (U+FF0C)`);
-        }
-        return item;
-      } else if (typeof item === 'number' || typeof item === 'boolean') {
-        return String(item);
-      } else {
-        throw new Error(`SimpleArray only supports string, number, and boolean types. Got: ${typeof item}`);
-      }
-    }).join(SimpleArray.SEPARATOR);
-  }
-  
-  /**
-   * Parse string from attribute back to array
-   */
-  static parse(str: string | null): (string | number | boolean)[] {
-    if (str === null || str === undefined) return [];
-    // Empty string should not be parsed as containing an empty string
-    // since empty arrays don't get reflected (handled by the reflection logic)
-    if (str === '') return [];
-    
-    return str.split(SimpleArray.SEPARATOR).map(item => {
-      // Try to parse as number
-      if (/^-?\d+\.?\d*$/.test(item)) {
-        const num = Number(item);
-        if (!isNaN(num)) return num;
-      }
-      
-      // Parse as boolean
-      if (item === 'true') return true;
-      if (item === 'false') return false;
-      
-      // Default to string
-      return item;
-    });
-  }
-}
 
-export interface PropertyOptions {
-  type?: StringConstructor | NumberConstructor | BooleanConstructor | ArrayConstructor | ObjectConstructor | DateConstructor | BigIntConstructor | typeof SimpleArray;
-  reflect?: boolean;
-  attribute?: string | boolean;
-  converter?: PropertyConverter;
-  hasChanged?: (value: any, oldValue: any) => boolean;
-}
 
-export interface PropertyConverter {
-  fromAttribute?(value: string | null, type?: any): any;
-  toAttribute?(value: any, type?: any): string | null;
-}
 
-/**
- * Interface for Snice elements with all the framework-provided properties and methods
- */
-export interface SniceElement extends HTMLElement {
-  ready: Promise<void>;
-  html?(): string | Promise<string>;
-  css?(): string | string[] | Promise<string | string[]>;
-}
 
-export interface PartOptions {
-  throttle?: number; // Throttle in milliseconds - limits calls to once per interval
-  debounce?: number; // Debounce in milliseconds - delays execution until after calls stop
-}
 
 export function watch(...propertyNames: string[]) {
   return function (target: any, context: ClassMethodDecoratorContext) {

@@ -1,25 +1,9 @@
 import { CHANNEL_HANDLERS, CLEANUP, IS_CONTROLLER_INSTANCE } from './symbols';
+import { RequestOptions } from './types/RequestOptions';
+import { RespondOptions } from './types/RespondOptions';
 
 // @request decorator transforms methods to return Promise<T>
 
-export interface RequestOptions extends EventInit {
-  /**
-   * Timeout for waiting for responses (in ms) - defaults to 5000ms
-   */
-  timeout?: number;
-  /**
-   * Timeout for finding a handler (in ms) - defaults to 50ms
-   */
-  discoveryTimeout?: number;
-  /**
-   * Debounce the request by specified milliseconds
-   */
-  debounce?: number;
-  /**
-   * Throttle the request by specified milliseconds
-   */
-  throttle?: number;
-}
 
 /**
  * Decorator for making requests from elements or controllers.
@@ -173,16 +157,6 @@ export function request<T = any>(requestName: string, options?: RequestOptions) 
   };
 }
 
-export interface RespondOptions {
-  /**
-   * Debounce the response by specified milliseconds
-   */
-  debounce?: number;
-  /**
-   * Throttle the response by specified milliseconds
-   */
-  throttle?: number;
-}
 
 /**
  * Decorator for responding to requests in elements or controllers.

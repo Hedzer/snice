@@ -1,11 +1,8 @@
 // Global namespace for Snice framework
 // Ensures all registries and symbols are shared across different JS files/modules
 
-export interface SniceGlobal {
-  controllerRegistry: Map<string, any>;
-  controllerIdCounter: number;
-  symbols: Map<string, symbol>;
-}
+import { SniceGlobal } from './types/SniceGlobal';
+
 
 // Initialize or get the global Snice namespace
 function initGlobalNamespace(): SniceGlobal {

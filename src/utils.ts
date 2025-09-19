@@ -1,4 +1,4 @@
-import { SimpleArray, PropertyOptions } from './element';
+import { SimpleArray, PropertyOptions } from './types';
 
 /**
  * Detects the type constructor from an initial value
