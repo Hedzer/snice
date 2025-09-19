@@ -2,31 +2,31 @@ import { element, property, on, dispatch, watch, ready } from 'snice';
 
 @element('snice-pagination')
 export class SnicePagination extends HTMLElement {
-  @property({ type: Number, reflect: true })
+  @property({ type: Number,  })
   current = 1;
   
-  @property({ type: Number, reflect: true }) 
+  @property({ type: Number,  }) 
   total = 1;
   
-  @property({ type: Number, reflect: true })
+  @property({ type: Number,  })
   siblings = 1;
   
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   showFirst = true;
   
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   showLast = true;
   
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   showPrev = true;
   
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   showNext = true;
   
-  @property({ reflect: true })
+  @property({  })
   size: 'small' | 'medium' | 'large' = 'medium';
   
-  @property({ reflect: true })
+  @property({  })
   variant: 'default' | 'rounded' | 'text' = 'default';
 
   html() {

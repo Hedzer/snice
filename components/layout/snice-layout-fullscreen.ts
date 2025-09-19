@@ -3,7 +3,7 @@ import css from './snice-layout-fullscreen.css?inline';
 
 @element('snice-layout-fullscreen')
 export class SniceLayoutFullscreen extends HTMLElement {
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   overlay = false;
 
   html() {

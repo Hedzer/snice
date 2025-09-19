@@ -4,13 +4,13 @@ import type { BooleanFormat, SniceCellElement, ColumnType, ColumnAlign, ColumnDe
 
 @element('snice-cell-boolean')
 export class SniceCellBoolean extends HTMLElement implements SniceCellElement {
-  @property({ reflect: true })
+  @property({  })
   align: ColumnAlign = 'center';
 
-  @property({ reflect: true })
+  @property({  })
   type: ColumnType = 'boolean';
 
-  @property({ reflect: true })
+  @property({  })
   value: any = false;
 
   @property({ type: Object })
@@ -27,19 +27,19 @@ export class SniceCellBoolean extends HTMLElement implements SniceCellElement {
   @query('.cell-content')
   contentElement?: HTMLElement;
   
-  @property({ reflect: true, attribute: 'true-value' })
+  @property({  attribute: 'true-value' })
   trueValue: string = 'true';
 
-  @property({ reflect: true, attribute: 'false-value' })
+  @property({  attribute: 'false-value' })
   falseValue: string = 'false';
 
-  @property({ type: Boolean, reflect: true, attribute: 'use-symbols' })
+  @property({ type: Boolean,  attribute: 'use-symbols' })
   useSymbols: boolean = true;
 
-  @property({ reflect: true, attribute: 'true-symbol' })
+  @property({  attribute: 'true-symbol' })
   trueSymbol: string = '✓';
 
-  @property({ reflect: true, attribute: 'false-symbol' })
+  @property({  attribute: 'false-symbol' })
   falseSymbol: string = '✗';
 
   html() {

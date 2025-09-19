@@ -4,13 +4,13 @@ import type { SniceCellElement, ColumnType, ColumnAlign, ColumnDefinition } from
 
 @element('snice-cell-duration')
 export class SniceCellDuration extends HTMLElement implements SniceCellElement {
-  @property({ reflect: true })
+  @property({  })
   align: ColumnAlign = 'right';
 
-  @property({ reflect: true })
+  @property({  })
   type: ColumnType = 'duration';
 
-  @property({ reflect: true })
+  @property({  })
   value: any = 0;
 
   @property({ type: Object })

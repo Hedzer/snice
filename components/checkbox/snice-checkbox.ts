@@ -4,31 +4,31 @@ import type { CheckboxSize, SniceCheckboxElement } from './snice-checkbox.types'
 
 @element('snice-checkbox')
 export class SniceCheckbox extends HTMLElement implements SniceCheckboxElement {
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   checked = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   indeterminate = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   disabled = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   required = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   invalid = false;
 
-  @property({ reflect: true })
+  @property({  })
   size: CheckboxSize = 'medium';
 
-  @property({ reflect: true })
+  @property({  })
   name = '';
 
-  @property({ reflect: true })
+  @property({  })
   value = 'on';
 
-  @property({ reflect: true })
+  @property({  })
   label = '';
 
   @query('.checkbox-input')

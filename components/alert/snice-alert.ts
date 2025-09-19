@@ -4,19 +4,19 @@ import type { AlertVariant, AlertSize, SniceAlertElement } from './snice-alert.t
 
 @element('snice-alert')
 export class SniceAlert extends HTMLElement implements SniceAlertElement {
-  @property({ reflect: true })
+  @property({  })
   variant: AlertVariant = 'info';
 
-  @property({ reflect: true })
+  @property({  })
   size: AlertSize = 'medium';
 
-  @property({ reflect: true })
+  @property({  })
   title = '';
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   dismissible = false;
 
-  @property({ reflect: true })
+  @property({  })
   icon = '';
 
   @query('.alert')

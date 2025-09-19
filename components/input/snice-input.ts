@@ -4,76 +4,76 @@ import type { InputType, InputSize, InputVariant, SniceInputElement } from './sn
 
 @element('snice-input')
 export class SniceInput extends HTMLElement implements SniceInputElement {
-  @property({ reflect: true })
+  @property({  })
   type: InputType = 'text';
 
-  @property({ reflect: true })
+  @property({  })
   size: InputSize = 'medium';
 
-  @property({ reflect: true })
+  @property({  })
   variant: InputVariant = 'outlined';
 
-  @property({ reflect: true })
+  @property({  })
   value = '';
 
-  @property({ reflect: true })
+  @property({  })
   placeholder = '';
 
-  @property({ reflect: true })
+  @property({  })
   label = '';
 
-  @property({ attribute: 'helper-text', reflect: true })
+  @property({ attribute: 'helper-text',  })
   helperText = '';
 
-  @property({ attribute: 'error-text', reflect: true })
+  @property({ attribute: 'error-text',  })
   errorText = '';
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   disabled = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   readonly = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   required = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   invalid = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   clearable = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   password = false;
 
-  @property({ reflect: true })
+  @property({  })
   min = '';
 
-  @property({ reflect: true })
+  @property({  })
   max = '';
 
-  @property({ reflect: true })
+  @property({  })
   step = '';
 
-  @property({ reflect: true })
+  @property({  })
   pattern = '';
 
-  @property({ type: Number, reflect: true })
+  @property({ type: Number,  })
   maxlength = -1;
 
-  @property({ type: Number, reflect: true })
+  @property({ type: Number,  })
   minlength = -1;
 
-  @property({ reflect: true })
+  @property({  })
   autocomplete = '';
 
-  @property({ reflect: true })
+  @property({  })
   name = '';
 
-  @property({ attribute: 'prefix-icon', reflect: true })
+  @property({ attribute: 'prefix-icon',  })
   prefixIcon = '';
 
-  @property({ attribute: 'suffix-icon', reflect: true })
+  @property({ attribute: 'suffix-icon',  })
   suffixIcon = '';
 
   @query('.input')

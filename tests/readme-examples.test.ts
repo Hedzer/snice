@@ -127,7 +127,7 @@ describe('README Examples', () => {
     // Theme toggle with @watch example from README
     @element('theme-toggle')
     class ThemeToggle extends HTMLElement {
-      @property({ reflect: true })
+      @property()
       theme: 'light' | 'dark' = 'light';
       
       @query('.icon')
@@ -220,7 +220,7 @@ describe('README Examples', () => {
     // SimpleArray example from README
     @element('tag-list')
     class TagList extends HTMLElement {
-      @property({ type: SimpleArray, reflect: true })
+      @property({ type: SimpleArray })
       tags = ['javascript', 'typescript', 'web'];
       
       html() {

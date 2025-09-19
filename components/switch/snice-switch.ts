@@ -4,34 +4,34 @@ import type { SwitchSize, SniceSwitchElement } from './snice-switch.types';
 
 @element('snice-switch')
 export class SniceSwitch extends HTMLElement implements SniceSwitchElement {
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   checked = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   disabled = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   required = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   invalid = false;
 
-  @property({ reflect: true })
+  @property({  })
   size: SwitchSize = 'medium';
 
-  @property({ reflect: true })
+  @property({  })
   name = '';
 
-  @property({ reflect: true })
+  @property({  })
   value = 'on';
 
-  @property({ reflect: true })
+  @property({  })
   label = '';
 
-  @property({ reflect: true, attribute: 'label-on' })
+  @property({  attribute: 'label-on' })
   labelOn = '';
 
-  @property({ reflect: true, attribute: 'label-off' })
+  @property({  attribute: 'label-off' })
   labelOff = '';
 
   @query('.switch-input')

@@ -6,28 +6,28 @@ import '../button/snice-button';
 
 @element('snice-login')
 export class SniceLogin extends HTMLElement implements SniceLoginElement {
-  @property({ reflect: true })
+  @property({  })
   variant: LoginVariant = 'default';
 
-  @property({ reflect: true })
+  @property({  })
   size: LoginSize = 'medium';
 
-  @property({ reflect: true })
+  @property({  })
   title = 'Sign In';
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   disabled = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   loading = false;
 
-  @property({ type: Boolean, reflect: true, attribute: 'show-remember-me' })
+  @property({ type: Boolean,  attribute: 'show-remember-me' })
   showRememberMe = true;
 
-  @property({ type: Boolean, reflect: true, attribute: 'show-forgot-password' })
+  @property({ type: Boolean,  attribute: 'show-forgot-password' })
   showForgotPassword = true;
 
-  @property({ reflect: true, attribute: 'action-text' })
+  @property({  attribute: 'action-text' })
   actionText = 'Sign In';
 
   @query('.login')

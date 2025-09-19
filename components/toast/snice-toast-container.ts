@@ -13,7 +13,7 @@ const TOAST_EVENT_RESPONSE = '@snice/toast-response';
 
 @element('snice-toast-container')
 export class SniceToastContainer extends HTMLElement implements SniceToastContainerElement {
-  @property({ reflect: true })
+  @property({  })
   position: ToastPosition = 'bottom-center';
 
   private toastIdCounter = 1;

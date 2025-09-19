@@ -4,13 +4,13 @@ import type { SniceAccordionItemElement } from './snice-accordion.types';
 
 @element('snice-accordion-item')
 export class SniceAccordionItem extends HTMLElement implements SniceAccordionItemElement {
-  @property({ attribute: 'item-id', reflect: true })
+  @property({ attribute: 'item-id',  })
   itemId: string = '';
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   open = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   disabled = false;
 
   @query('.accordion-item__content')

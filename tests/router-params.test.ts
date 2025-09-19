@@ -71,13 +71,13 @@ describe('Router URL Parameters', () => {
 
     @page({ tag: 'blog-post', routes: ['/blog/:year/:month/:slug'] })
     class BlogPost extends HTMLElement {
-      @property({ reflect: true })
+      @property()
       year = '';
       
-      @property({ reflect: true })
+      @property()
       month = '';
       
-      @property({ reflect: true })
+      @property()
       slug = '';
       
       html() {
@@ -150,7 +150,7 @@ describe('Router URL Parameters', () => {
 
     @page({ tag: 'search-page', routes: ['/search/:query'] })
     class SearchPage extends HTMLElement {
-      @property({ reflect: true })
+      @property()
       query = '';
       
       html() {

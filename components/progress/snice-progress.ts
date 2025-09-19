@@ -4,37 +4,37 @@ import type { ProgressVariant, ProgressSize, ProgressColor, SniceProgressElement
 
 @element('snice-progress')
 export class SniceProgress extends HTMLElement implements SniceProgressElement {
-  @property({ type: Number, reflect: true })
+  @property({ type: Number,  })
   value = 0;
 
-  @property({ type: Number, reflect: true })
+  @property({ type: Number,  })
   max = 100;
 
-  @property({ reflect: true })
+  @property({  })
   variant: ProgressVariant = 'linear';
 
-  @property({ reflect: true })
+  @property({  })
   size: ProgressSize = 'medium';
 
-  @property({ reflect: true })
+  @property({  })
   color: ProgressColor = 'primary';
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   indeterminate = false;
 
-  @property({ type: Boolean, attribute: 'show-label', reflect: true })
+  @property({ type: Boolean, attribute: 'show-label',  })
   showLabel = false;
 
-  @property({ reflect: true })
+  @property({  })
   label = '';
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   striped = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   animated = false;
 
-  @property({ type: Number, reflect: true })
+  @property({ type: Number,  })
   thickness = 4;
 
   @query('.progress__bar')

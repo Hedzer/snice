@@ -4,7 +4,7 @@ import type { SniceAccordionElement, SniceAccordionItemElement, AccordionOpenEve
 
 @element('snice-accordion')
 export class SniceAccordion extends HTMLElement implements SniceAccordionElement {
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   multiple = false;
 
   @queryAll('snice-accordion-item', { light: true, shadow: false })

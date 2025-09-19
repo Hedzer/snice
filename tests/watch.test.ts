@@ -12,7 +12,7 @@ describe('@watch decorator', () => {
     
     @element('test-watch')
     class TestElement extends HTMLElement {
-      @property({ reflect: true })
+      @property()
       value = 'initial';
       
       @watch('value')
@@ -36,7 +36,7 @@ describe('@watch decorator', () => {
     
     @element('test-multi-watch')
     class TestElement extends HTMLElement {
-      @property({ reflect: true })
+      @property()
       count = 0;
       
       @watch('count')
@@ -64,7 +64,7 @@ describe('@watch decorator', () => {
     
     @element('test-no-change')
     class TestElement extends HTMLElement {
-      @property({ reflect: true })
+      @property()
       status = 'active';
       
       @watch('status')
@@ -90,7 +90,7 @@ describe('@watch decorator', () => {
     
     @element('test-prop-change')
     class TestElement extends HTMLElement {
-      @property({ reflect: true })
+      @property()
       theme = 'light';
       
       @watch('theme')
@@ -176,7 +176,7 @@ describe('@watch decorator', () => {
     
     @element('test-bool-watch')
     class TestElement extends HTMLElement {
-      @property({ type: Boolean, reflect: true })
+      @property({ type: Boolean })
       disabled = false;
       
       @watch('disabled')

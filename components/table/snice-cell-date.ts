@@ -4,13 +4,13 @@ import type { DateFormat, SniceCellElement, ColumnType, ColumnAlign, ColumnDefin
 
 @element('snice-cell-date')
 export class SniceCellDate extends HTMLElement implements SniceCellElement {
-  @property({ reflect: true })
+  @property({  })
   align: ColumnAlign = 'left';
 
-  @property({ reflect: true })
+  @property({  })
   type: ColumnType = 'date';
 
-  @property({ reflect: true })
+  @property({  })
   value: any = '';
 
   @property({ type: Object })
@@ -26,19 +26,19 @@ export class SniceCellDate extends HTMLElement implements SniceCellElement {
 
   @query('.cell-content')
   contentElement?: HTMLElement;
-  @property({ reflect: true, attribute: 'date-format' })
+  @property({  attribute: 'date-format' })
   dateFormat: 'short' | 'medium' | 'long' | 'full' | 'custom' = 'short';
 
-  @property({ reflect: true, attribute: 'custom-format' })
+  @property({  attribute: 'custom-format' })
   customFormat?: string;
 
-  @property({ reflect: true })
+  @property({  })
   locale: string = 'en-US';
 
-  @property({ type: Boolean, reflect: true, attribute: 'relative-time' })
+  @property({ type: Boolean,  attribute: 'relative-time' })
   relativeTime: boolean = false;
 
-  @property({ type: Boolean, reflect: true, attribute: 'show-time' })
+  @property({ type: Boolean,  attribute: 'show-time' })
   showTime: boolean = false;
 
   html() {

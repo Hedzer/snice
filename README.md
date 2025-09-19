@@ -95,7 +95,7 @@ Snice provides a clear separation of concerns through decorators:
 - **`@page`** - Defines routable page components that render when their route is active, with URL params passed as attributes
 
 ### Property & Query Decorators
-- **`@property`** - Declares properties that can reflect to attributes
+- **`@property`** - Declares properties that automatically sync with DOM attributes
 - **`@query`** - Queries a single element from shadow DOM
 - **`@queryAll`** - Queries multiple elements from shadow DOM
 - **`@watch`** - Watches property changes and calls a method when they occur
@@ -182,19 +182,19 @@ class CounterDisplay extends HTMLElement {
 
 ## Properties
 
-Properties can be reflected to attributes but do NOT trigger re-renders. The HTML is rendered once when the element connects to the DOM. Use properties for initial configuration.
+Properties automatically sync with DOM attributes in both directions. The HTML is rendered once when the element connects to the DOM. Use properties for initial configuration and watch for changes to update the UI.
 
 ```typescript
 import { element, property } from 'snice';
 
 @element('user-card')
 class UserCard extends HTMLElement {
-  @property({ reflect: true })
+  @property()
   name = 'Anonymous';
-  
+
   @property({ attribute: 'user-role' })  // Maps to user-role attribute
   role = 'User';
-  
+
   @property({ type: Boolean })
   verified = false;
 
@@ -211,9 +211,16 @@ class UserCard extends HTMLElement {
 }
 ```
 
-Use it with attributes:
+Use it with attributes (both ways work):
 ```html
+<!-- Setting attributes automatically updates properties -->
 <user-card name="Jane Doe" user-role="Admin" verified></user-card>
+
+<script>
+  const card = document.querySelector('user-card');
+  card.name = 'John Smith';      // Sets name="John Smith" attribute
+  card.verified = true;          // Sets verified attribute
+</script>
 ```
 
 For arrays of basic types, use `SimpleArray` for safe reflection:
@@ -223,9 +230,9 @@ import { element, property, SimpleArray } from 'snice';
 
 @element('tag-list')
 class TagList extends HTMLElement {
-  @property({ type: SimpleArray, reflect: true })
+  @property({ type: SimpleArray })
   tags = ['javascript', 'typescript', 'web'];
-  
+
   html() {
     return `<div>${this.tags.join(', ')}</div>`;
   }
@@ -245,9 +252,9 @@ import { element, property, watch, query } from 'snice';
 
 @element('theme-toggle')
 class ThemeToggle extends HTMLElement {
-  @property({ reflect: true })
+  @property()
   theme: 'light' | 'dark' = 'light';
-  
+
   @query('.icon')
   icon!: HTMLSpanElement;
   

@@ -820,7 +820,7 @@ describe('@part decorator', () => {
   it('should demonstrate best practices for nested parts coordination', async () => {
     @element('test-nested-coordination-unique')
     class TestNestedCoordination extends HTMLElement {
-      @property()
+      @property({ type: Object })
       userInfo = { name: 'John', role: 'User' };
       
       @property({ type: Number })

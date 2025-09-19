@@ -3,19 +3,19 @@ import type { SniceOptionElement } from './snice-option.types';
 
 @element('snice-option')
 export class SniceOption extends HTMLElement implements SniceOptionElement {
-  @property({ reflect: true })
+  @property({  })
   value = '';
 
-  @property({ reflect: true })
+  @property({  })
   label = '';
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   disabled = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   selected = false;
 
-  @property({ reflect: true })
+  @property({  })
   icon = '';
 
   html() {

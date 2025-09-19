@@ -4,28 +4,28 @@ import type { ChipVariant, ChipSize, SniceChipElement } from './snice-chip.types
 
 @element('snice-chip')
 export class SniceChip extends HTMLElement implements SniceChipElement {
-  @property({ reflect: true })
+  @property({  })
   label = '';
 
-  @property({ reflect: true })
+  @property({  })
   variant: ChipVariant = 'default';
 
-  @property({ reflect: true })
+  @property({  })
   size: ChipSize = 'medium';
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   removable = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   selected = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   disabled = false;
 
-  @property({ reflect: true })
+  @property({  })
   icon = '';
 
-  @property({ reflect: true })
+  @property({  })
   avatar = '';
 
   @query('.chip')

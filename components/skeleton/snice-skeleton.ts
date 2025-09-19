@@ -4,22 +4,22 @@ import type { SkeletonVariant, SkeletonAnimation, SniceSkeletonElement } from '.
 
 @element('snice-skeleton')
 export class SniceSkeleton extends HTMLElement implements SniceSkeletonElement {
-  @property({ reflect: true })
+  @property({  })
   variant: SkeletonVariant = 'text';
 
-  @property({ reflect: true })
+  @property({  })
   width = '';
 
-  @property({ reflect: true })
+  @property({  })
   height = '';
 
-  @property({ reflect: true })
+  @property({  })
   animation: SkeletonAnimation = 'wave';
 
-  @property({ type: Number, reflect: true })
+  @property({ type: Number,  })
   count = 1;
 
-  @property({ reflect: true })
+  @property({  })
   spacing = '8px';
 
   html() {

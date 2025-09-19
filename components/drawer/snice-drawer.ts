@@ -4,31 +4,31 @@ import type { DrawerPosition, DrawerSize, SniceDrawerElement } from './snice-dra
 
 @element('snice-drawer')
 export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   open = false;
 
-  @property({ reflect: true })
+  @property({  })
   position: DrawerPosition = 'left';
 
-  @property({ reflect: true })
+  @property({  })
   size: DrawerSize = 'medium';
 
-  @property({ type: Boolean, attribute: 'no-backdrop', reflect: true })
+  @property({ type: Boolean, attribute: 'no-backdrop',  })
   noBackdrop = false;
 
-  @property({ type: Boolean, attribute: 'no-backdrop-dismiss', reflect: true })
+  @property({ type: Boolean, attribute: 'no-backdrop-dismiss',  })
   noBackdropDismiss = false;
 
-  @property({ type: Boolean, attribute: 'no-escape-dismiss', reflect: true })
+  @property({ type: Boolean, attribute: 'no-escape-dismiss',  })
   noEscapeDismiss = false;
 
-  @property({ type: Boolean, attribute: 'no-focus-trap', reflect: true })
+  @property({ type: Boolean, attribute: 'no-focus-trap',  })
   noFocusTrap = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   persistent = false;
 
-  @property({ type: Boolean, attribute: 'push-content', reflect: true })
+  @property({ type: Boolean, attribute: 'push-content',  })
   pushContent = false;
 
   @query('.drawer')

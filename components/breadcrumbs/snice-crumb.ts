@@ -3,19 +3,19 @@ import type { SniceCrumbElement } from './snice-breadcrumbs.types';
 
 @element('snice-crumb')
 export class SniceCrumb extends HTMLElement implements SniceCrumbElement {
-  @property({ reflect: true })
+  @property({  })
   label = '';
 
-  @property({ reflect: true })
+  @property({  })
   href = '';
 
-  @property({ reflect: true })
+  @property({  })
   icon = '';
 
-  @property({ attribute: 'icon-image', reflect: true })
+  @property({ attribute: 'icon-image',  })
   iconImage = '';
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   active = false;
 
   // No shadow DOM - this is a data element

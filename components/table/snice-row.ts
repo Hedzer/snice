@@ -13,16 +13,16 @@ import './snice-cell-sparkline';
 
 @element('snice-row')
 export class SniceRow extends HTMLElement implements SniceRowElement {
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   selected: boolean = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   hoverable: boolean = true;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   clickable: boolean = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   selectable: boolean = false;
 
   @property({ type: Object })
@@ -47,7 +47,7 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
     return data;
   }
 
-  @property({ type: Number, reflect: true })
+  @property({ type: Number,  })
   index: number = 0;
 
   @property({ type: Array })

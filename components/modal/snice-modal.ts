@@ -4,27 +4,27 @@ import type { ModalSize, SniceModalElement } from './snice-modal.types';
 
 @element('snice-modal')
 export class SniceModal extends HTMLElement implements SniceModalElement {
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   open = false;
 
-  @property({ reflect: true })
+  @property({  })
   size: ModalSize = 'medium';
   
   private previousSize = 'medium';
 
-  @property({ type: Boolean, attribute: 'no-backdrop-dismiss', reflect: true })
+  @property({ type: Boolean, attribute: 'no-backdrop-dismiss',  })
   noBackdropDismiss = false;
 
-  @property({ type: Boolean, attribute: 'no-escape-dismiss', reflect: true })
+  @property({ type: Boolean, attribute: 'no-escape-dismiss',  })
   noEscapeDismiss = false;
 
-  @property({ type: Boolean, attribute: 'no-focus-trap', reflect: true })
+  @property({ type: Boolean, attribute: 'no-focus-trap',  })
   noFocusTrap = false;
 
-  @property({ type: Boolean, attribute: 'no-close-button', reflect: true })
+  @property({ type: Boolean, attribute: 'no-close-button',  })
   noCloseButton = false;
 
-  @property({ reflect: true })
+  @property({  })
   label = '';
 
   @query('.modal')

@@ -8,13 +8,13 @@ export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsEle
   @property({ type: Array })
   items: BreadcrumbItem[] = [];
 
-  @property({ reflect: true })
+  @property({  })
   separator: BreadcrumbSeparator = '/';
 
-  @property({ reflect: true })
+  @property({  })
   size: BreadcrumbSize = 'medium';
 
-  @property({ type: Number, reflect: true })
+  @property({ type: Number,  })
   maxItems = 0;
 
   @query('.breadcrumb')

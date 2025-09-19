@@ -671,7 +671,7 @@ import { element, property, query, request, watch } from 'snice';
 class LiveData extends HTMLElement {
   private updateInterval?: number;
 
-  @property({ reflect: true })
+  @property()
   status = 'Disconnected';
   
   @query('.status')

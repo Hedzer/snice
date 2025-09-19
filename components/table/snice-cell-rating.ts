@@ -5,13 +5,13 @@ import './snice-rating';
 
 @element('snice-cell-rating')
 export class SniceCellRating extends HTMLElement implements SniceCellElement {
-  @property({ reflect: true })
+  @property({  })
   align: ColumnAlign = 'center';
 
-  @property({ reflect: true })
+  @property({  })
   type: ColumnType = 'rating';
 
-  @property({ reflect: true })
+  @property({  })
   value: any = 0;
 
   @property({ type: Object })

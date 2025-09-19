@@ -17,10 +17,10 @@ import type {
 
 @element('snice-cell')
 export class SniceCell extends HTMLElement implements SniceCellElement {
-  @property({ reflect: true })
+  @property({  })
   align: ColumnAlign = 'left';
 
-  @property({ reflect: true })
+  @property({  })
   type: ColumnType = 'text';
 
   @property()

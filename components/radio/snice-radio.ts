@@ -4,28 +4,28 @@ import type { RadioSize, SniceRadioElement } from './snice-radio.types';
 
 @element('snice-radio')
 export class SniceRadio extends HTMLElement implements SniceRadioElement {
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   checked = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   disabled = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   required = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   invalid = false;
 
-  @property({ reflect: true })
+  @property({  })
   size: RadioSize = 'medium';
 
-  @property({ reflect: true })
+  @property({  })
   name = '';
 
-  @property({ reflect: true })
+  @property({  })
   value = '';
 
-  @property({ reflect: true })
+  @property({  })
   label = '';
 
   @query('.radio-input')

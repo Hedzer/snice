@@ -3,10 +3,10 @@ import type { TodoItemElement } from '../types/todo-item-element';
 
 @element('todo-item')
 export class TodoItem extends HTMLElement implements TodoItemElement {
-  @property({ type: Number, reflect: true, attribute: 'todo-id' })
+  @property({ type: Number, attribute: 'todo-id' })
   todoId = 0;
-  
-  @property({ type: Boolean, reflect: true, attribute: 'completed' })
+
+  @property({ type: Boolean, attribute: 'completed' })
   completed = false;
   
   @query('.todo-checkbox')

@@ -210,7 +210,7 @@ describe('race conditions and async edge cases', () => {
       
       @element('rapid-prop-update')
       class RapidPropUpdate extends HTMLElement {
-        @property({ reflect: true })
+        @property()
         value = 0;
         
         requestUpdate(prop: string, oldValue: any) {
@@ -235,7 +235,7 @@ describe('race conditions and async edge cases', () => {
     it('should handle property updates during disconnection', () => {
       @element('prop-during-disconnect')
       class PropDuringDisconnect extends HTMLElement {
-        @property({ reflect: true })
+        @property()
         value = 'initial';
       }
       

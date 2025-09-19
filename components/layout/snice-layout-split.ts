@@ -3,10 +3,10 @@ import css from './snice-layout-split.css?inline';
 
 @element('snice-layout-split')
 export class SniceLayoutSplit extends HTMLElement {
-  @property({ reflect: true })
+  @property({  })
   direction: 'horizontal' | 'vertical' = 'horizontal';
   
-  @property({ reflect: true })
+  @property({  })
   ratio: '50-50' | '60-40' | '70-30' | '33-67' | '67-33' = '50-50';
 
   html() {

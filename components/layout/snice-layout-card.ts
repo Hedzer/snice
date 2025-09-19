@@ -3,10 +3,10 @@ import css from './snice-layout-card.css?inline';
 
 @element('snice-layout-card')
 export class SniceLayoutCard extends HTMLElement {
-  @property({ reflect: true })
+  @property({  })
   columns: '1' | '2' | '3' | '4' | '6' = '3';
   
-  @property({ reflect: true })
+  @property({  })
   gap: 'sm' | 'md' | 'lg' | 'xl' = 'md';
 
   html() {

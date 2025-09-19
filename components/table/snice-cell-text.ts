@@ -4,13 +4,13 @@ import type { SniceCellElement, ColumnType, ColumnAlign, ColumnDefinition } from
 
 @element('snice-cell-text')
 export class SniceCellText extends HTMLElement implements SniceCellElement {
-  @property({ reflect: true })
+  @property({  })
   align: ColumnAlign = 'left';
 
-  @property({ reflect: true })
+  @property({  })
   type: ColumnType = 'text';
 
-  @property({ reflect: true })
+  @property({  })
   value: any = '';
 
   @property({ type: Object })
@@ -27,7 +27,7 @@ export class SniceCellText extends HTMLElement implements SniceCellElement {
   @query('.cell-content')
   contentElement?: HTMLElement;
   
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   multiline: boolean = false;
 
   @property({ type: Number, attribute: 'max-lines' })

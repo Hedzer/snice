@@ -3,7 +3,7 @@ import css from './snice-layout-sidebar.css?inline';
 
 @element('snice-layout-sidebar')
 export class SniceLayoutSidebar extends HTMLElement {
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   collapsed = false;
 
   html() {

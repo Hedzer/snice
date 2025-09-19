@@ -4,10 +4,10 @@ import type { TabSelectDetail, TabCloseDetail, SniceTabElement } from './snice-t
 
 @element('snice-tab')
 export class SniceTab extends HTMLElement implements SniceTabElement {
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   disabled = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   closable = false;
 
   @query('.tab')

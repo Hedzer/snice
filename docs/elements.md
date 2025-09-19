@@ -139,7 +139,7 @@ class ShadowDemo extends HTMLElement {
 
 ### Basic Properties
 
-Properties can be configured to reflect to attributes and trigger updates.
+Properties automatically sync with DOM attributes and support type conversion:
 
 ```typescript
 import { element, property } from 'snice';
@@ -148,13 +148,13 @@ import { element, property } from 'snice';
 class UserProfile extends HTMLElement {
   @property()
   name = 'Anonymous';
-  
+
   @property({ type: Number })
   age = 0;
-  
+
   @property({ type: Boolean })
   verified = false;
-  
+
   html() {
     return `
       <div>
@@ -167,31 +167,47 @@ class UserProfile extends HTMLElement {
 }
 ```
 
+Usage examples:
+```html
+<!-- Setting attributes automatically updates properties -->
+<user-profile name="John Doe" age="30" verified></user-profile>
+
+<script>
+  const profile = document.querySelector('user-profile');
+  profile.name = 'Jane Smith';  // Sets name="Jane Smith" attribute
+  profile.age = 25;             // Sets age="25" attribute
+  profile.verified = true;      // Sets verified attribute (no value)
+</script>
+```
+
 ### Property Options
 
 ```typescript
 interface PropertyOptions {
   type?: String | Number | Boolean | Array | Object | Date | BigInt | SimpleArray;
-  reflect?: boolean;        // Reflect to HTML attribute
   attribute?: string;        // Custom attribute name
   converter?: PropertyConverter;  // Custom converter
   hasChanged?: (value: any, oldValue: any) => boolean;
 }
 ```
 
-### Reflected Properties
+### Property Behavior
 
-Properties that sync with HTML attributes:
+All properties automatically sync with HTML attributes in both directions:
+
+- **Reading**: Properties always read from DOM attributes when present, falling back to initial values
+- **Writing**: Setting properties automatically reflects to corresponding attributes
+- **Type conversion**: Values are automatically converted between string attributes and typed properties
 
 ```typescript
 @element('reflected-props')
 class ReflectedProps extends HTMLElement {
-  @property({ reflect: true })
+  @property()
   theme = 'light';
-  
-  @property({ reflect: true, attribute: 'user-id' })
+
+  @property({ attribute: 'user-id' })
   userId = '';
-  
+
   html() {
     return `<div class="${this.theme}">User: ${this.userId}</div>`;
   }
@@ -200,8 +216,29 @@ class ReflectedProps extends HTMLElement {
 
 Usage:
 ```html
+<!-- Both ways work: -->
 <reflected-props theme="dark" user-id="123"></reflected-props>
+
+<script>
+  const el = document.querySelector('reflected-props');
+  el.theme = 'dark';    // Automatically sets theme="dark" attribute
+  el.userId = '456';    // Automatically sets user-id="456" attribute
+</script>
 ```
+
+**Boolean Property Semantics:**
+
+Boolean properties follow HTML boolean attribute conventions:
+
+```typescript
+@property({ type: Boolean })
+enabled = false;
+```
+
+- `<element>` or `<element enabled="">` → `true`
+- `<element enabled="true">` → `true`
+- `<element enabled="false">` → `false`
+- No attribute present → `false`
 
 ### Custom Converters
 
@@ -217,9 +254,9 @@ const dateConverter: PropertyConverter = {
 
 @element('date-display')
 class DateDisplay extends HTMLElement {
-  @property({ converter: dateConverter, reflect: true })
+  @property({ converter: dateConverter })
   date: Date | null = null;
-  
+
   html() {
     return `<time>${this.date?.toLocaleDateString() || 'No date'}</time>`;
   }
@@ -235,13 +272,13 @@ import { element, property, SimpleArray } from 'snice';
 
 @element('tag-list')
 class TagList extends HTMLElement {
-  @property({ type: SimpleArray, reflect: true })
+  @property({ type: SimpleArray })
   tags = ['javascript', 'typescript', 'web'];
-  
-  @property({ type: SimpleArray, reflect: true })
+
+  @property({ type: SimpleArray })
   scores = [95, 87, 92];
-  
-  @property({ type: SimpleArray, reflect: true })
+
+  @property({ type: SimpleArray })
   flags = [true, false, true];
   
   html() {
@@ -291,11 +328,11 @@ Usage with attributes:
 
 ```typescript
 // ❌ Problematic - no deterministic serialization
-@property({ type: Array, reflect: true })
+@property({ type: Array })
 items = ['a', 1, true]; // Warning: unsafe for reflection
 
 // ✅ Safe and reliable
-@property({ type: SimpleArray, reflect: true })  
+@property({ type: SimpleArray })
 items = ['a', 1, true]; // Serializes to: "a，1，true"
 ```
 
@@ -1337,13 +1374,13 @@ class ReactiveDashboard extends HTMLElement {
 
 ```typescript
 // 1. One-to-one: Property directly controls a part
-@property({ attribute: 'user-name', reflect: true }) 
+@property({ attribute: 'user-name' })
 userName = '';
 
-@part('user-display') 
+@part('user-display')
 renderUserDisplay() { return `<h1>${this.userName}</h1>`; }
 
-@watch('userName') 
+@watch('userName')
 onUserNameChange() { this.renderUserDisplay(); }
 
 // Usage: <my-element user-name="John"></my-element>
@@ -1360,35 +1397,35 @@ onThemeChange() {
 }
 
 // 3. Many-to-one: Multiple properties affect one part
-@property({ attribute: 'first-name', reflect: true }) 
+@property({ attribute: 'first-name' })
 firstName = '';
 
-@property({ attribute: 'last-name', reflect: true }) 
+@property({ attribute: 'last-name' })
 lastName = '';
 
-@part('full-name') 
+@part('full-name')
 renderFullName() { return `${this.firstName} ${this.lastName}`; }
 
-@watch('firstName', 'lastName') 
+@watch('firstName', 'lastName')
 onNameChange() { this.renderFullName(); }
 
 // Usage: <my-element first-name="John" last-name="Doe"></my-element>
 
 // 4. Conditional rendering based on multiple properties
-@property({ attribute: 'is-logged-in', type: Boolean, reflect: true }) 
+@property({ attribute: 'is-logged-in', type: Boolean })
 isLoggedIn = false;
 
-@property() 
+@property()
 user = null;
 
-@part('user-area') 
+@part('user-area')
 renderUserArea() {
-  return this.isLoggedIn && this.user 
+  return this.isLoggedIn && this.user
     ? `<div>Welcome ${this.user.name}</div>`
     : `<div>Please log in</div>`;
 }
 
-@watch('isLoggedIn', 'user') 
+@watch('isLoggedIn', 'user')
 onUserStateChange() { this.renderUserArea(); }
 
 // Usage: <my-element is-logged-in></my-element>

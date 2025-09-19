@@ -16,34 +16,34 @@ import type {
 
 @element('snice-column')
 export class SniceColumn extends HTMLElement implements SniceColumnElement {
-  @property({ reflect: true })
+  @property({  })
   key: string = '';
 
-  @property({ reflect: true })
+  @property({  })
   label: string = '';
 
-  @property({ reflect: true })
+  @property({  })
   type: ColumnType = 'text';
 
-  @property({ reflect: true })
+  @property({  })
   align: ColumnAlign = 'left';
 
-  @property({ reflect: true })
+  @property({  })
   width: string = '';
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   sortable: boolean = true;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   filterable: boolean = true;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   wrap: boolean = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   ellipsis: boolean = true;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   tooltip: boolean = false;
 
   // Number formatting properties

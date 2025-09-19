@@ -4,13 +4,13 @@ import type { NumberFormat, SniceCellElement, ColumnType, ColumnAlign, ColumnDef
 
 @element('snice-cell-number')
 export class SniceCellNumber extends HTMLElement implements SniceCellElement {
-  @property({ reflect: true })
+  @property({  })
   align: ColumnAlign = 'right';
 
-  @property({ reflect: true })
+  @property({  })
   type: ColumnType = 'number';
 
-  @property({ reflect: true })
+  @property({  })
   value: any = '';
 
   @property({ type: Object })
@@ -26,22 +26,22 @@ export class SniceCellNumber extends HTMLElement implements SniceCellElement {
 
   @query('.cell-content')
   contentElement?: HTMLElement;
-  @property({ type: Number, reflect: true })
+  @property({ type: Number,  })
   decimals: number = 0;
 
-  @property({ type: Boolean, reflect: true, attribute: 'thousands-separator' })
+  @property({ type: Boolean,  attribute: 'thousands-separator' })
   thousandsSeparator: boolean = false;
 
-  @property({ reflect: true })
+  @property({  })
   prefix: string = '';
 
-  @property({ reflect: true })
+  @property({  })
   suffix: string = '';
 
-  @property({ reflect: true, attribute: 'negative-style' })
+  @property({  attribute: 'negative-style' })
   negativeStyle: 'parentheses' | 'red' | 'minus' = 'minus';
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   highlight: boolean = false;
 
   html() {

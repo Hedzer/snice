@@ -5,46 +5,46 @@ import './snice-option';
 
 @element('snice-select')
 export class SniceSelect extends HTMLElement implements SniceSelectElement {
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   disabled = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   required = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   invalid = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   readonly = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   multiple = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   searchable = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   clearable = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   open = false;
 
-  @property({ reflect: true })
+  @property({  })
   size: SelectSize = 'medium';
 
-  @property({ reflect: true })
+  @property({  })
   name = '';
 
-  @property({ reflect: true })
+  @property({  })
   value = '';
 
-  @property({ reflect: true })
+  @property({  })
   label = '';
 
-  @property({ reflect: true })
+  @property({  })
   placeholder = 'Select an option';
 
-  @property({ reflect: true, attribute: 'max-height' })
+  @property({  attribute: 'max-height' })
   maxHeight = '200px';
 
   // Options will be read from child snice-option elements

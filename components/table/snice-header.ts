@@ -8,25 +8,25 @@ import type {
 
 @element('snice-header')
 export class SniceHeader extends HTMLElement implements SniceHeaderElement {
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   sticky: boolean = false;
 
   @property({ type: Array })
   columns: ColumnDefinition[] = [];
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   selectable: boolean = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   sortable: boolean = false;
 
   @property({ type: Object })
   currentSort: TableSort = { column: '', direction: null };
 
-  @property({ type: Boolean, reflect: true, attribute: 'all-selected' })
+  @property({ type: Boolean,  attribute: 'all-selected' })
   allSelected: boolean = false;
 
-  @property({ type: Boolean, reflect: true, attribute: 'some-selected' })
+  @property({ type: Boolean,  attribute: 'some-selected' })
   someSelected: boolean = false;
 
   html() {

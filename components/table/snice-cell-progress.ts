@@ -5,13 +5,13 @@ import './snice-progress';
 
 @element('snice-cell-progress')
 export class SniceCellProgress extends HTMLElement implements SniceCellElement {
-  @property({ reflect: true })
+  @property({  })
   align: ColumnAlign = 'left';
 
-  @property({ reflect: true })
+  @property({  })
   type: ColumnType = 'progress';
 
-  @property({ reflect: true })
+  @property({  })
   value: any = 0;
 
   @property({ type: Object })

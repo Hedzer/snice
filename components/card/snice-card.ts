@@ -4,19 +4,19 @@ import type { CardVariant, CardSize, SniceCardElement } from './snice-card.types
 
 @element('snice-card')
 export class SniceCard extends HTMLElement implements SniceCardElement {
-  @property({ reflect: true })
+  @property({  })
   variant: CardVariant = 'elevated';
 
-  @property({ reflect: true })
+  @property({  })
   size: CardSize = 'medium';
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   clickable = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   selected = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   disabled = false;
 
   private hasHeader = false;

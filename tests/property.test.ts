@@ -41,7 +41,7 @@ describe('@property decorator', () => {
     it('should reflect string property to attribute', () => {
       @element('test-prop-string')
       class TestPropString extends HTMLElement {
-        @property({ type: String, reflect: true })
+        @property({ type: String })
         name = 'default';
       }
       
@@ -55,7 +55,7 @@ describe('@property decorator', () => {
     it('should reflect number property to attribute', () => {
       @element('test-prop-number')
       class TestPropNumber extends HTMLElement {
-        @property({ type: Number, reflect: true })
+        @property({ type: Number })
         count = 0;
       }
       
@@ -69,7 +69,7 @@ describe('@property decorator', () => {
     it('should reflect boolean property to attribute', () => {
       @element('test-prop-bool')
       class TestPropBool extends HTMLElement {
-        @property({ type: Boolean, reflect: true })
+        @property({ type: Boolean })
         active = false;
       }
       
@@ -86,7 +86,7 @@ describe('@property decorator', () => {
     it('should use custom attribute name', () => {
       @element('test-prop-custom-attr')
       class TestPropCustomAttr extends HTMLElement {
-        @property({ type: String, reflect: true, attribute: 'data-name' })
+        @property({ type: String, attribute: 'data-name' })
         name = '';
       }
       
@@ -100,7 +100,7 @@ describe('@property decorator', () => {
     it('should remove attribute when value is null', () => {
       @element('test-prop-null')
       class TestPropNull extends HTMLElement {
-        @property({ reflect: true })
+        @property()
         value: string | null = 'initial';
       }
       
@@ -117,7 +117,7 @@ describe('@property decorator', () => {
     it('should remove attribute when value is undefined', () => {
       @element('test-prop-undefined')
       class TestPropUndefined extends HTMLElement {
-        @property({ reflect: true })
+        @property()
         value: string | undefined = 'initial';
       }
       
@@ -215,13 +215,13 @@ describe('@property decorator', () => {
     it('should handle multiple properties on same class', () => {
       @element('test-multi-props')
       class TestMultiProps extends HTMLElement {
-        @property({ reflect: true })
+        @property()
         firstName = 'John';
         
-        @property({ reflect: true })
+        @property()
         lastName = 'Doe';
         
-        @property({ type: Number, reflect: true })
+        @property({ type: Number })
         age = 30;
       }
       

@@ -3,16 +3,16 @@ import type { ToastType, SniceToastElement } from './snice-toast.types';
 
 @element('snice-toast')
 export class SniceToast extends HTMLElement implements SniceToastElement {
-  @property({ reflect: true })
+  @property({  })
   type: ToastType = 'info';
 
-  @property({ reflect: true })
+  @property({  })
   message: string = '';
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   closable: boolean = true;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   icon: boolean = true;
 
   @query('.toast')

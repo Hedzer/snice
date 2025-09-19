@@ -4,61 +4,61 @@ import type { DatePickerSize, DatePickerVariant, DateFormat, SniceDatePickerElem
 
 @element('snice-date-picker')
 export class SniceDatePicker extends HTMLElement implements SniceDatePickerElement {
-  @property({ reflect: true })
+  @property({  })
   size: DatePickerSize = 'medium';
 
-  @property({ reflect: true })
+  @property({  })
   variant: DatePickerVariant = 'outlined';
 
-  @property({ reflect: true })
+  @property({  })
   value = '';
   
   // Track input separately to prevent cursor jumps during typing
   private inputValue = '';
 
-  @property({ reflect: true })
+  @property({  })
   format: DateFormat = 'mm/dd/yyyy';
 
-  @property({ reflect: true })
+  @property({  })
   placeholder = '';
 
-  @property({ reflect: true })
+  @property({  })
   label = '';
 
-  @property({ attribute: 'helper-text', reflect: true })
+  @property({ attribute: 'helper-text',  })
   helperText = '';
 
-  @property({ attribute: 'error-text', reflect: true })
+  @property({ attribute: 'error-text',  })
   errorText = '';
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   disabled = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   readonly = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   required = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   invalid = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   clearable = false;
 
-  @property({ reflect: true })
+  @property({  })
   min = '';
 
-  @property({ reflect: true })
+  @property({  })
   max = '';
 
-  @property({ reflect: true })
+  @property({  })
   name = '';
 
-  @property({ type: Boolean, attribute: 'show-calendar', reflect: true })
+  @property({ type: Boolean, attribute: 'show-calendar',  })
   showCalendar = false;
 
-  @property({ type: Number, attribute: 'first-day-of-week', reflect: true })
+  @property({ type: Number, attribute: 'first-day-of-week',  })
   firstDayOfWeek = 0; // 0 = Sunday
 
   @query('.input')

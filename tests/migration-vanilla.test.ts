@@ -59,10 +59,10 @@ describe('Vanilla Web Components Migration', () => {
     it('should handle attributes with @property decorator', async () => {
       @element('test-attribute-component')
       class AttributeComponent extends HTMLElement {
-        @property({ reflect: true })
+        @property()
         color = '';
         
-        @property({ type: Number, reflect: true })
+        @property({ type: Number })
         size = 16;
         
         @query('div')

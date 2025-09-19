@@ -4,40 +4,40 @@ import type { ButtonVariant, ButtonSize, IconPlacement, SniceButtonElement } fro
 
 @element('snice-button')
 export class SniceButton extends HTMLElement implements SniceButtonElement {
-  @property({ reflect: true })
+  @property({  })
   variant: ButtonVariant = 'default';
 
-  @property({ reflect: true })
+  @property({  })
   size: ButtonSize = 'medium';
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   disabled = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   loading = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   outline = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   pill = false;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   circle = false;
 
-  @property({ type: String, reflect: true })
+  @property({ type: String,  })
   href = '';
 
-  @property({ type: String, reflect: true })
+  @property({ type: String,  })
   target = '';
 
-  @property({ type: String, reflect: true })
+  @property({ type: String,  })
   download = '';
 
-  @property({ type: String, reflect: true })
+  @property({ type: String,  })
   icon = '';
 
-  @property({ attribute: 'icon-placement', reflect: true })
+  @property({ attribute: 'icon-placement',  })
   iconPlacement: IconPlacement = 'start';
 
 

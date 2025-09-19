@@ -62,7 +62,7 @@ describe('edge cases and error handling', () => {
     it('should handle property set before element is connected', () => {
       @element('pre-connect-prop')
       class PreConnectProp extends HTMLElement {
-        @property({ reflect: true })
+        @property()
         value = 'initial';
       }
       
@@ -523,7 +523,7 @@ describe('edge cases and error handling', () => {
       
       @element('full-featured')
       class FullFeatured extends HTMLElement {
-        @property({ reflect: true })
+        @property()
         title = 'Default Title';
         
         @query('.content')

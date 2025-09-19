@@ -4,28 +4,28 @@ import type { DividerOrientation, DividerVariant, DividerAlign, DividerSpacing, 
 
 @element('snice-divider')
 export class SniceDivider extends HTMLElement implements SniceDividerElement {
-  @property({ reflect: true })
+  @property({  })
   orientation: DividerOrientation = 'horizontal';
 
-  @property({ reflect: true })
+  @property({  })
   variant: DividerVariant = 'solid';
 
-  @property({ reflect: true })
+  @property({  })
   spacing: DividerSpacing = 'medium';
 
-  @property({ reflect: true })
+  @property({  })
   align: DividerAlign = 'center';
 
-  @property({ reflect: true })
+  @property({  })
   text = '';
 
-  @property({ attribute: 'text-background', reflect: true })
+  @property({ attribute: 'text-background',  })
   textBackground = '';
 
-  @property({ reflect: true })
+  @property({  })
   color = '';
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   capped = false;
 
   @query('.divider-text')

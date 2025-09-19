@@ -5,16 +5,16 @@ import { transitions } from '../transitions';
 
 @element('snice-tabs')
 export class SniceTabs extends HTMLElement {
-  @property({ reflect: true })
+  @property({  })
   placement: TabsPlacement = 'top';
 
-  @property({ reflect: true })
+  @property({  })
   selected = 0;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   noScrollControls = false;
 
-  @property({ reflect: true })
+  @property({  })
   transition = 'none';
 
 

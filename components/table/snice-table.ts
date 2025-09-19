@@ -15,22 +15,22 @@ import './snice-cell-sparkline.ts';
 @element('snice-table')
 export class SniceTable extends HTMLElement {
 
-  @property({ type: Boolean, reflect: true, attribute: 'striped' })
+  @property({ type: Boolean,  attribute: 'striped' })
   striped = false;
 
-  @property({ type: Boolean, reflect: true, attribute: 'searchable' })
+  @property({ type: Boolean,  attribute: 'searchable' })
   searchable = false;
 
-  @property({ type: Boolean, reflect: true, attribute: 'sortable' })
+  @property({ type: Boolean,  attribute: 'sortable' })
   sortable = false;
 
-  @property({ type: Boolean, reflect: true, attribute: 'selectable' })
+  @property({ type: Boolean,  attribute: 'selectable' })
   selectable = false;
 
-  @property({ type: Boolean, reflect: true, attribute: 'hoverable' })
+  @property({ type: Boolean,  attribute: 'hoverable' })
   hoverable = true;
 
-  @property({ type: Boolean, reflect: true, attribute: 'clickable' })
+  @property({ type: Boolean,  attribute: 'clickable' })
   clickable = false;
 
   @property({ type: Array, attribute: 'columns' })
@@ -51,7 +51,7 @@ export class SniceTable extends HTMLElement {
   @property({ type: Array, attribute: 'selector-options' })
   selectorOptions: Array<{value: string, label: string}> = [];
 
-  @property({ type: Boolean, reflect: true, attribute: 'loading' })
+  @property({ type: Boolean,  attribute: 'loading' })
   loading: boolean = false;
 
   @property({ type: Array, attribute: 'selected-rows' })

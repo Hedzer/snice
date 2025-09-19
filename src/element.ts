@@ -2,12 +2,11 @@ import { attachController, detachController } from './controller';
 import { setupEventHandlers, cleanupEventHandlers } from './events';
 import { setupObservers, cleanupObservers } from './observe';
 import { setupResponseHandlers, cleanupResponseHandlers } from './request-response';
-import { parseAttributeValue, detectType } from './utils';
+import { parseAttributeValue, detectType, valueToAttribute } from './utils';
 import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PROPERTY_WATCHERS, EXPLICITLY_SET_PROPERTIES, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, PARTS, PART_TIMERS } from './symbols';
 import { QueryOptions } from './types/QueryOptions';
 import { PropertyOptions } from './types/PropertyOptions';
 import { PartOptions } from './types/PartOptions';
-import { SimpleArray } from './types/SimpleArray';
 
 /**
  * Applies core element functionality to a constructor
@@ -118,35 +117,8 @@ export function applyElementFunctionality(constructor: any) {
         // Mark that properties have been initialized
         this[PROPERTIES_INITIALIZED] = true;
         
-        // Reflect properties that were explicitly set before connection
-        // AND also reflect initial values that have reflect: true
-        if (properties) {
-          for (const [propName, propOptions] of properties) {
-            const wasExplicitlySet = this[EXPLICITLY_SET_PROPERTIES] && this[EXPLICITLY_SET_PROPERTIES].has(propName);
-            const hasInitialValue = propName in this[PROPERTY_VALUES];
-
-            if (propOptions.reflect && hasInitialValue && (wasExplicitlySet || this[PROPERTY_VALUES][propName] !== undefined)) {
-              const value = this[PROPERTY_VALUES][propName];
-              const attributeName = typeof propOptions.attribute === 'string' ? propOptions.attribute : propName.toLowerCase();
-              
-              if (value !== null && value !== undefined && value !== false && 
-                  !(propOptions.type === SimpleArray && Array.isArray(value) && value.length === 0)) {
-                // Handle special types for reflection
-                let attributeValue: string;
-                if (value instanceof Date) {
-                  attributeValue = value.toISOString();
-                } else if (typeof value === 'bigint') {
-                  attributeValue = value.toString() + 'n';
-                } else if (propOptions.type === SimpleArray && Array.isArray(value)) {
-                  attributeValue = SimpleArray.serialize(value);
-                } else {
-                  attributeValue = String(value);
-                }
-                this.setAttribute(attributeName, attributeValue);
-              }
-            }
-          }
-        }
+        // Properties are now stateless and read from DOM attributes only
+        // Initial values are not automatically reflected
         
         // Clean up any existing event handlers first (for reconnection)
         cleanupEventHandlers(this);
@@ -307,36 +279,40 @@ export function applyElementFunctionality(constructor: any) {
                   this[EXPLICITLY_SET_PROPERTIES] = new Set();
                 }
                 this[EXPLICITLY_SET_PROPERTIES].add(propName);
-                
+
                 // Set the property value directly in the storage to avoid triggering setter
                 if (!this[PROPERTY_VALUES]) {
                   this[PROPERTY_VALUES] = {};
                 }
                 this[PROPERTY_VALUES][propName] = parsedValue;
-                
-                // Call watchers manually since we bypassed the setter
-                const watchers = constructor[PROPERTY_WATCHERS];
-                if (watchers) {
-                  // Call specific property watchers
-                  if (watchers.has(propName)) {
-                    const propertyWatchers = watchers.get(propName);
-                    for (const watcher of propertyWatchers) {
-                      try {
-                        watcher.method.call(this, currentValue, parsedValue, propName);
-                      } catch (error) {
-                        console.error(`Error in @watch('${propName}') method ${watcher.methodName}:`, error);
+
+                // Only call watchers if this attribute change didn't originate from a property setter
+                const isFromPropertySetter = this._settingFromProperty?.has(name.toLowerCase());
+                if (!isFromPropertySetter) {
+                  // Call watchers manually since we bypassed the setter
+                  const watchers = constructor[PROPERTY_WATCHERS];
+                  if (watchers) {
+                    // Call specific property watchers
+                    if (watchers.has(propName)) {
+                      const propertyWatchers = watchers.get(propName);
+                      for (const watcher of propertyWatchers) {
+                        try {
+                          watcher.method.call(this, currentValue, parsedValue, propName);
+                        } catch (error) {
+                          console.error(`Error in @watch('${propName}') method ${watcher.methodName}:`, error);
+                        }
                       }
                     }
-                  }
-                  
-                  // Call wildcard watchers (watching "*")
-                  if (watchers.has('*')) {
-                    const wildcardWatchers = watchers.get('*');
-                    for (const watcher of wildcardWatchers) {
-                      try {
-                        watcher.method.call(this, currentValue, parsedValue, propName);
-                      } catch (error) {
-                        console.error(`Error in @watch('*') method ${watcher.methodName}:`, error);
+
+                    // Call wildcard watchers (watching "*")
+                    if (watchers.has('*')) {
+                      const wildcardWatchers = watchers.get('*');
+                      for (const watcher of wildcardWatchers) {
+                        try {
+                          watcher.method.call(this, currentValue, parsedValue, propName);
+                        } catch (error) {
+                          console.error(`Error in @watch('*') method ${watcher.methodName}:`, error);
+                        }
                       }
                     }
                   }
@@ -398,14 +374,6 @@ export function property(options?: PropertyOptions) {
     }
     (context.metadata as any)[PROPERTIES].set(propertyKey, options || {});
 
-    // Warn about problematic reflection usage at decoration time
-    if (options?.reflect && options?.type === Array) {
-      console.warn(`⚠️  Property '${propertyKey}' uses reflect:true with Array type.`);
-    }
-
-    if (options?.reflect && options?.type === Object) {
-      console.warn(`⚠️  Property '${propertyKey}' uses reflect:true with Object type.`);
-    }
 
     // Return a field initializer function for new decorators
     return function(this: any, initialValue: any) {
@@ -425,66 +393,58 @@ export function property(options?: PropertyOptions) {
       if (!Object.hasOwnProperty.call(this.constructor.prototype, propertyKey)) {
         const descriptor: PropertyDescriptor = {
           get(this: any) {
-            if (!this[PROPERTY_VALUES]) {
-              this[PROPERTY_VALUES] = {};
-            }
-
-            // If we have a stored value, return it
-            if (this[PROPERTY_VALUES][propertyKey] !== undefined) {
-              return this[PROPERTY_VALUES][propertyKey];
-            }
-
-            // Otherwise check attribute and parse it, or return initial value
+            // Always read from DOM attribute - no internal state
             const attributeName = typeof finalOptions?.attribute === 'string' ? finalOptions?.attribute : propertyKey.toLowerCase();
             const attrValue = this.getAttribute?.(attributeName);
 
-            // If attribute exists or we have a type that needs special handling for null (like Boolean)
-            if (attrValue !== null || finalOptions?.type === Boolean) {
+            // If attribute exists, parse it
+            if (attrValue !== null) {
               return parseAttributeValue(attrValue, finalOptions || {}, undefined, initialValue);
             }
 
+            // For Boolean properties that have been explicitly set via attribute,
+            // follow HTML boolean attribute semantics (absence = false)
+            const inferredType = finalOptions?.type || detectType(initialValue);
+            if (inferredType === Boolean && this[EXPLICITLY_SET_PROPERTIES]?.has(propertyKey)) {
+              return false;
+            }
+
+            // Otherwise return initial value
             return initialValue;
           },
           set(this: any, newValue: any) {
+            // Get old value from stored state for change detection
             if (!this[PROPERTY_VALUES]) {
               this[PROPERTY_VALUES] = {};
             }
-            if (!this[EXPLICITLY_SET_PROPERTIES]) {
-              this[EXPLICITLY_SET_PROPERTIES] = new Set();
-            }
-
             const oldValue = this[PROPERTY_VALUES][propertyKey];
 
+            // Check if value actually changed
             if (oldValue === newValue) return;
 
-            const isInitialDefaultValue = oldValue === undefined && !this[PROPERTIES_INITIALIZED];
-            if (oldValue !== undefined || (isInitialDefaultValue && newValue !== null && newValue !== undefined)) {
-              this[EXPLICITLY_SET_PROPERTIES].add(propertyKey);
-            }
-
+            // Update stored value
             this[PROPERTY_VALUES][propertyKey] = newValue;
 
-            if (finalOptions?.reflect && this.setAttribute && this[PROPERTIES_INITIALIZED] && this[EXPLICITLY_SET_PROPERTIES].has(propertyKey)) {
-              const attributeName = typeof finalOptions.attribute === 'string' ? finalOptions.attribute : propertyKey.toLowerCase();
+            // Always reflect to DOM - properties are always backed by attributes
+            const attributeName = typeof finalOptions.attribute === 'string' ? finalOptions.attribute : propertyKey.toLowerCase();
+            const attributeValue = valueToAttribute(newValue, finalOptions, initialValue);
 
-              if (newValue === null || newValue === undefined || newValue === false ||
-                  (finalOptions?.type === SimpleArray && Array.isArray(newValue) && newValue.length === 0)) {
-                this.removeAttribute(attributeName);
-              } else {
-                let attributeValue: string;
-                if (newValue instanceof Date) {
-                  attributeValue = newValue.toISOString();
-                } else if (typeof newValue === 'bigint') {
-                  attributeValue = newValue.toString() + 'n';
-                } else if (finalOptions?.type === SimpleArray && Array.isArray(newValue)) {
-                  attributeValue = SimpleArray.serialize(newValue);
-                } else {
-                  attributeValue = String(newValue);
-                }
-                this.setAttribute(attributeName, attributeValue);
-              }
+            // Flag to prevent attributeChangedCallback from triggering watchers for this change
+            if (!this._settingFromProperty) this._settingFromProperty = new Set();
+            this._settingFromProperty.add(attributeName.toLowerCase());
+
+            if (attributeValue === null) {
+              this.removeAttribute?.(attributeName);
+            } else {
+              this.setAttribute?.(attributeName, attributeValue);
             }
 
+            // Remove the flag after a short delay to allow attributeChangedCallback to run
+            setTimeout(() => {
+              this._settingFromProperty?.delete(attributeName.toLowerCase());
+            }, 0);
+
+            // Trigger watchers directly with proper parsed values
             const constructor = this.constructor as any;
             const watchers = constructor[PROPERTY_WATCHERS];
             if (watchers) {

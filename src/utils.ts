@@ -51,7 +51,18 @@ export function parseAttributeValue(attributeValue: string | null, propertyOptio
 
   switch (typeToUse) {
     case Boolean:
-      return attributeValue !== null && attributeValue !== 'false';
+      // Boolean semantics per user specification:
+      // - No attribute = false
+      // - String "false" = false
+      // - String "true" = true
+      // - Empty string = true (attribute exists like <element bool-attr>)
+      // - Any other value = true
+
+      if (attributeValue === null) return false;           // No attribute
+      if (attributeValue === 'false') return false;        // String "false"
+
+      // All other cases (including empty string) = true (attribute exists)
+      return true;
     case Number:
       return attributeValue !== null ? Number(attributeValue) : null;
     case String:
@@ -66,6 +77,18 @@ export function parseAttributeValue(attributeValue: string | null, propertyOptio
       }
     case SimpleArray:
       return SimpleArray.parse(attributeValue);
+    case Array:
+      try {
+        return attributeValue ? JSON.parse(attributeValue) : [];
+      } catch {
+        return [];
+      }
+    case Object:
+      try {
+        return attributeValue ? JSON.parse(attributeValue) : {};
+      } catch {
+        return {};
+      }
     default:
       // If no type specified and can't detect, try to infer from current value type
       if (typeof currentValue === 'number' && attributeValue !== null) {
@@ -73,5 +96,43 @@ export function parseAttributeValue(attributeValue: string | null, propertyOptio
       } else {
         return attributeValue;
       }
+  }
+}
+
+/**
+ * Converts a property value to its attribute string representation
+ * @param value - The property value to convert
+ * @param propertyOptions - The options from @property decorator
+ * @param initialValue - The default value assigned to the property field (used for type detection)
+ * @returns The string representation for the HTML attribute, or null if value should remove attribute
+ */
+export function valueToAttribute(value: any, propertyOptions: PropertyOptions, initialValue?: any): string | null {
+  // Handle null/undefined/false values and empty arrays
+  if (value === null || value === undefined || value === false ||
+      (propertyOptions?.type === SimpleArray && Array.isArray(value) && value.length === 0)) {
+    return null;
+  }
+
+  // Use custom converter if provided
+  if (propertyOptions.converter?.toAttribute) {
+    return propertyOptions.converter.toAttribute(value, propertyOptions.type);
+  }
+
+  // Use explicit type or detect from initial value
+  const typeToUse = propertyOptions.type || detectType(initialValue);
+
+  switch (typeToUse) {
+    case Date:
+      return value instanceof Date ? value.toISOString() : String(value);
+    case BigInt:
+      return typeof value === 'bigint' ? value.toString() + 'n' : String(value);
+    case SimpleArray:
+      return Array.isArray(value) ? SimpleArray.serialize(value) : String(value);
+    case Array:
+      return Array.isArray(value) ? JSON.stringify(value) : String(value);
+    case Object:
+      return typeof value === 'object' && value !== null ? JSON.stringify(value) : String(value);
+    default:
+      return String(value);
   }
 }

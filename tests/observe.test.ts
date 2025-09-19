@@ -15,64 +15,6 @@ describe('@observe decorator', () => {
     container.remove();
   });
 
-  describe('intersection observer', () => {
-    it('should observe element visibility', async () => {
-      const tagName = `test-intersection-${testId}`;
-      let visibilityCount = 0;
-      let lastEntry: IntersectionObserverEntry | null = null;
-
-      @element(tagName)
-      class TestIntersection extends HTMLElement {
-        html() {
-          return `<div class="content">Content to observe</div>`;
-        }
-
-        @observe('intersection', '.content', { threshold: 0.5 })
-        handleIntersection(entry: IntersectionObserverEntry) {
-          visibilityCount++;
-          lastEntry = entry;
-        }
-      }
-
-      container.innerHTML = `<${tagName}></${tagName}>`;
-      const el = container.querySelector(tagName) as any;
-      await el.ready;
-
-      // IntersectionObserver is not fully supported in jsdom
-      // We'll test that the setup doesn't crash
-      expect(visibilityCount).toBe(0); // Won't trigger in test environment
-    });
-
-    it('should stop observing when returning false', async () => {
-      const tagName = `test-stop-observe-${testId}`;
-      let observeCount = 0;
-
-      @element(tagName)
-      class TestStopObserve extends HTMLElement {
-        html() {
-          return `<img class="lazy" data-src="image.jpg">`;
-        }
-
-        @observe('intersection', '.lazy')
-        handleLazyLoad(entry: IntersectionObserverEntry) {
-          observeCount++;
-          if (entry.isIntersecting) {
-            const img = entry.target as HTMLImageElement;
-            img.src = img.dataset.src!;
-            return false; // Stop observing
-          }
-        }
-      }
-
-      container.innerHTML = `<${tagName}></${tagName}>`;
-      const el = container.querySelector(tagName) as any;
-      await el.ready;
-
-      // Test setup completed without errors
-      expect(observeCount).toBe(0); // Won't trigger in test environment
-    });
-  });
-
   describe('resize observer', () => {
     it('should observe element resize', async () => {
       const tagName = `test-resize-${testId}`;

@@ -68,7 +68,7 @@ describe('@property decorator', () => {
   it('should reflect string property to attribute', () => {
     @element('test-prop')
     class TestProp extends HTMLElement {
-      @property({ type: String, reflect: true })
+      @property({ type: String })
       name = 'default';
     }
     
@@ -82,7 +82,7 @@ describe('@property decorator', () => {
   it('should reflect number property to attribute', () => {
     @element('test-num-prop')
     class TestNumProp extends HTMLElement {
-      @property({ type: Number, reflect: true })
+      @property({ type: Number })
       count = 0;
     }
     
@@ -96,7 +96,7 @@ describe('@property decorator', () => {
   it('should reflect boolean property to attribute', () => {
     @element('test-bool-prop')
     class TestBoolProp extends HTMLElement {
-      @property({ type: Boolean, reflect: true })
+      @property({ type: Boolean })
       active = false;
     }
     
@@ -113,7 +113,7 @@ describe('@property decorator', () => {
   it('should parse boolean attribute "false" string as false', () => {
     @element('test-bool-false-string')
     class TestBoolFalseString extends HTMLElement {
-      @property({ type: Boolean, reflect: true })
+      @property({ type: Boolean })
       enabled = true;
     }
     
@@ -128,7 +128,7 @@ describe('@property decorator', () => {
     el.setAttribute('enabled', 'true');
     expect(el.enabled).toBe(true);
     
-    // Empty string or just presence should be true
+    // Empty string means attribute exists, should be true
     el.setAttribute('enabled', '');
     expect(el.enabled).toBe(true);
     
@@ -140,7 +140,7 @@ describe('@property decorator', () => {
   it('should use custom attribute name', () => {
     @element('test-attr-prop')
     class TestAttrProp extends HTMLElement {
-      @property({ type: String, reflect: true, attribute: 'data-name' })
+      @property({ type: String,  attribute: 'data-name' })
       name = '';
     }
     
@@ -151,7 +151,7 @@ describe('@property decorator', () => {
     expect(el.getAttribute('data-name')).toBe('test');
   });
 
-  it('should read attribute values without reflect option', () => {
+  it('should read and reflect attribute values', () => {
     @element('test-no-reflect')
     class TestNoReflect extends HTMLElement {
       @property()  // No reflect option
@@ -170,29 +170,29 @@ describe('@property decorator', () => {
     el.setAttribute('data-label', 'Test Label');
     document.body.appendChild(el);
     
-    // Properties should read from attributes even without reflect
+    // Properties always read from attributes
     expect(el.message).toBe('Hello World');
     expect(el.count).toBe(42);
     expect(el.label).toBe('Test Label');
     
-    // But shouldn't reflect back (no reflect option)
+    // Properties now always reflect to attributes
     el.message = 'Updated';
-    expect(el.getAttribute('message')).toBe('Hello World'); // Still original
+    expect(el.getAttribute('message')).toBe('Updated'); // Now reflects
   });
 
-  it('should read initial attribute values on connect without reflect', () => {
+  it('should read initial attribute values on connect', () => {
     @element('test-initial-attrs')
     class TestInitialAttrs extends HTMLElement {
-      @property()  // No reflect
+      @property()
       title = 'default';
-      
-      @property({ type: Number })  // No reflect
+
+      @property({ type: Number })
       value = 0;
-      
-      @property({ type: Boolean })  // No reflect
+
+      @property({ type: Boolean })
       enabled = false;
-      
-      @property({ attribute: 'data-config' })  // No reflect
+
+      @property({ attribute: 'data-config' })
       config = '';
       
       html() {
@@ -215,7 +215,7 @@ describe('@property decorator', () => {
     // All properties should be initialized from attributes on connect
     expect(el.title).toBe('Custom Title');
     expect(el.value).toBe(100);
-    expect(el.enabled).toBe(true);
+    expect(el.enabled).toBe(true); // 'enabled' attribute exists with no = should be true
     expect(el.config).toBe('advanced');
     
     // Verify HTML was rendered with initial values
@@ -225,7 +225,7 @@ describe('@property decorator', () => {
   it('should handle kebab-case boolean attributes with false string', () => {
     @element('test-kebab-bool')
     class TestKebabBool extends HTMLElement {
-      @property({ type: Boolean, reflect: true, attribute: 'no-close-button' })
+      @property({ type: Boolean,  attribute: 'no-close-button' })
       noCloseButton = false;
     }
 
@@ -268,7 +268,7 @@ describe('@property decorator', () => {
     // Properties should have initial values matching the attributes
     expect(el.customAttr).toBe('hello');
     expect(el.numberAttr).toBe(123);
-    expect(el.boolAttr).toBe(true);
+    expect(el.boolAttr).toBe(true); // 'bool-attr' attribute exists with no = should be true
   });
 });
 

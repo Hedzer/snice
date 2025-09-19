@@ -6,37 +6,37 @@ import type { TooltipPosition, TooltipTrigger, SniceTooltipElement } from './sni
 @element('snice-tooltip')
 export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
   private static portalStylesInjected = false;
-  @property({ reflect: true })
+  @property({  })
   content: string = '';
 
-  @property({ reflect: true })
+  @property({  })
   position: TooltipPosition = 'top';
 
-  @property({ reflect: true })
+  @property({  })
   trigger: TooltipTrigger = 'hover';
 
-  @property({ type: Number, reflect: true })
+  @property({ type: Number,  })
   delay: number = 0;
 
-  @property({ type: Number, attribute: 'hide-delay', reflect: true })
+  @property({ type: Number, attribute: 'hide-delay',  })
   hideDelay: number = 0;
 
-  @property({ type: Number, reflect: true })
+  @property({ type: Number,  })
   offset: number = 12;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   arrow: boolean = true;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean,  })
   open: boolean = false;
 
-  @property({ type: Number, attribute: 'max-width', reflect: true })
+  @property({ type: Number, attribute: 'max-width',  })
   maxWidth: number = 250;
 
-  @property({ type: Number, attribute: 'z-index', reflect: true })
+  @property({ type: Number, attribute: 'z-index',  })
   zIndex: number = 10000;
 
-  @property({ type: Boolean, attribute: 'strict-positioning', reflect: true })
+  @property({ type: Boolean, attribute: 'strict-positioning',  })
   strictPositioning: boolean = false;
 
   @query('.tooltip')

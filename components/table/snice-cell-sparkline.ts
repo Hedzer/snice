@@ -4,13 +4,13 @@ import type { SparklineFormat, SniceCellElement, ColumnType, ColumnAlign, Column
 
 @element('snice-cell-sparkline')
 export class SniceCellSparkline extends HTMLElement implements SniceCellElement {
-  @property({ reflect: true })
+  @property({  })
   align: ColumnAlign = 'left';
 
-  @property({ reflect: true })
+  @property({  })
   type: ColumnType = 'sparkline';
 
-  @property({ reflect: true })
+  @property({  })
   value: any = '';
 
   @property({ type: Object })
@@ -27,34 +27,34 @@ export class SniceCellSparkline extends HTMLElement implements SniceCellElement 
   @query('.cell-content')
   contentElement?: HTMLElement;
   
-  @property({ reflect: true, attribute: 'chart-type' })
+  @property({  attribute: 'chart-type' })
   chartType: 'line' | 'bar' | 'area' = 'line';
 
-  @property({ reflect: true })
+  @property({  })
   color: string = 'var(--snice-color-primary)';
 
-  @property({ type: Number, reflect: true })
+  @property({ type: Number,  })
   width: number = 80;
 
-  @property({ type: Number, reflect: true })
+  @property({ type: Number,  })
   height: number = 24;
 
-  @property({ type: Boolean, reflect: true, attribute: 'show-dots' })
+  @property({ type: Boolean,  attribute: 'show-dots' })
   showDots: boolean = false;
 
-  @property({ type: Boolean, reflect: true, attribute: 'show-baseline' })
+  @property({ type: Boolean,  attribute: 'show-baseline' })
   showBaseline: boolean = false;
 
-  @property({ type: Number, reflect: true, attribute: 'stroke-width' })
+  @property({ type: Number,  attribute: 'stroke-width' })
   strokeWidth: number = 1.5;
 
-  @property({ type: Number, reflect: true, attribute: 'min-value' })
+  @property({ type: Number,  attribute: 'min-value' })
   minValue?: number;
 
-  @property({ type: Number, reflect: true, attribute: 'max-value' })
+  @property({ type: Number,  attribute: 'max-value' })
   maxValue?: number;
 
-  @property({ type: SimpleArray, reflect: true })
+  @property({ type: SimpleArray,  })
   data: number[] = [];
 
   html() {

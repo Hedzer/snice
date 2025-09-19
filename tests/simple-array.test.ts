@@ -1,4 +1,4 @@
-import { beforeEach, describe, it, expect, vi } from 'vitest';
+import { beforeEach, describe, it, expect } from 'vitest';
 import { element, property } from '../src/element';
 import { SimpleArray } from '../src/types/SimpleArray';
 import type { SniceElement } from '../src/types/SniceElement';
@@ -138,13 +138,13 @@ describe('@property with SimpleArray type', () => {
   it('should reflect SimpleArray properties to attributes', async () => {
     @element('test-simple-array-reflect-unique')
     class TestSimpleArrayReflect extends HTMLElement {
-      @property({ type: SimpleArray, reflect: true })
+      @property({ type: SimpleArray })
       tags = ['javascript', 'typescript', 'web'];
 
-      @property({ type: SimpleArray, reflect: true })
+      @property({ type: SimpleArray })
       scores = [95, 87, 92];
 
-      @property({ type: SimpleArray, reflect: true })
+      @property({ type: SimpleArray })
       flags = [true, false, true];
     }
 
@@ -152,19 +152,30 @@ describe('@property with SimpleArray type', () => {
     document.body.appendChild(el);
     await el.ready;
 
-    // Should reflect arrays using full-width comma separator
-    expect(el.getAttribute('tags')).toBe('javascript，typescript，web');
-    expect(el.getAttribute('scores')).toBe('95，87，92');
-    expect(el.getAttribute('flags')).toBe('true，false，true');
+    // Initial values: no attributes exist, should return initial values
+    expect(el.getAttribute('tags')).toBe(null);
+    expect(el.getAttribute('scores')).toBe(null);
+    expect(el.getAttribute('flags')).toBe(null);
+    expect(el.tags).toEqual(['javascript', 'typescript', 'web']);
+    expect(el.scores).toEqual([95, 87, 92]);
+    expect(el.flags).toEqual([true, false, true]);
+
+    // Setting properties should reflect arrays using full-width comma separator
+    el.tags = ['react', 'vue', 'angular'];
+    el.scores = [88, 92, 85];
+    el.flags = [false, true, false];
+    expect(el.getAttribute('tags')).toBe('react，vue，angular');
+    expect(el.getAttribute('scores')).toBe('88，92，85');
+    expect(el.getAttribute('flags')).toBe('false，true，false');
   });
 
   it('should parse SimpleArray attributes to array properties', async () => {
     @element('test-simple-array-parse-unique')
     class TestSimpleArrayParse extends HTMLElement {
-      @property({ type: SimpleArray, reflect: true })
+      @property({ type: SimpleArray })
       categories: (string | number | boolean)[] = [];
 
-      @property({ type: SimpleArray, reflect: true })
+      @property({ type: SimpleArray })
       values: (string | number | boolean)[] = [];
     }
 
@@ -182,7 +193,7 @@ describe('@property with SimpleArray type', () => {
   it('should update reflected attributes when SimpleArray property changes', async () => {
     @element('test-simple-array-update-unique')
     class TestSimpleArrayUpdate extends HTMLElement {
-      @property({ type: SimpleArray, reflect: true })
+      @property({ type: SimpleArray })
       items: SimpleArray = ['initial'];
     }
 
@@ -200,10 +211,10 @@ describe('@property with SimpleArray type', () => {
   it('should handle custom attribute names', async () => {
     @element('test-simple-array-custom-attr-unique')
     class TestSimpleArrayCustomAttr extends HTMLElement {
-      @property({ type: SimpleArray, reflect: true, attribute: 'data-keywords' })
+      @property({ type: SimpleArray,  attribute: 'data-keywords' })
       keywords = ['snice', 'framework', 'typescript'];
 
-      @property({ type: SimpleArray, reflect: true, attribute: 'user-scores' })
+      @property({ type: SimpleArray,  attribute: 'user-scores' })
       userScores = [100, 95, 88];
     }
 
@@ -211,18 +222,26 @@ describe('@property with SimpleArray type', () => {
     document.body.appendChild(el);
     await el.ready;
 
-    // Should use custom attribute names
-    expect(el.getAttribute('data-keywords')).toBe('snice，framework，typescript');
-    expect(el.getAttribute('user-scores')).toBe('100，95，88');
+    // Initial values: no attributes exist, should return initial values
+    expect(el.getAttribute('data-keywords')).toBe(null);
+    expect(el.getAttribute('user-scores')).toBe(null);
+    expect(el.keywords).toEqual(['snice', 'framework', 'typescript']);
+    expect(el.userScores).toEqual([100, 95, 88]);
+
+    // Setting properties should use custom attribute names
+    el.keywords = ['react', 'vue', 'svelte'];
+    el.userScores = [99, 87, 94];
+    expect(el.getAttribute('data-keywords')).toBe('react，vue，svelte');
+    expect(el.getAttribute('user-scores')).toBe('99，87，94');
   });
 
   it('should handle empty arrays', async () => {
     @element('test-simple-array-empty-unique')
     class TestSimpleArrayEmpty extends HTMLElement {
-      @property({ type: SimpleArray, reflect: true })
+      @property({ type: SimpleArray })
       emptyArray: (string | number | boolean)[] = [];
 
-      @property({ type: SimpleArray, reflect: true })
+      @property({ type: SimpleArray })
       populatedArray = ['initial'];
     }
 
@@ -230,9 +249,11 @@ describe('@property with SimpleArray type', () => {
     document.body.appendChild(el);
     await el.ready;
 
-    // Empty array should not create attribute initially
+    // Initial values don't reflect automatically
     expect(el.hasAttribute('emptyarray')).toBe(false);
-    expect(el.getAttribute('populatedarray')).toBe('initial');
+    expect(el.hasAttribute('populatedarray')).toBe(false);
+    expect(el.emptyArray).toEqual([]);
+    expect(el.populatedArray).toEqual(['initial']);
 
     // Setting to empty array should remove attribute
     el.populatedArray = [];
@@ -246,7 +267,7 @@ describe('@property with SimpleArray type', () => {
   it('should handle attribute changes from HTML', async () => {
     @element('test-simple-array-html-change-unique')
     class TestSimpleArrayHtmlChange extends HTMLElement {
-      @property({ type: SimpleArray, reflect: true })
+      @property({ type: SimpleArray })
       config: (string | number | boolean)[] = [];
     }
 
@@ -264,7 +285,7 @@ describe('@property with SimpleArray type', () => {
   it('should throw error during reflection for invalid string content', async () => {
     @element('test-simple-array-invalid-string-unique')
     class TestSimpleArrayInvalidString extends HTMLElement {
-      @property({ type: SimpleArray, reflect: true })
+      @property({ type: SimpleArray })
       badData = ['valid'];
     }
 
@@ -281,7 +302,7 @@ describe('@property with SimpleArray type', () => {
   it('should handle complex mixed data types', async () => {
     @element('test-simple-array-mixed-unique')
     class TestSimpleArrayMixed extends HTMLElement {
-      @property({ type: SimpleArray, reflect: true })
+      @property({ type: SimpleArray })
       mixedData = ['string', 42, true, 'another', 3.14159, false, 0, ''];
     }
 
@@ -289,7 +310,12 @@ describe('@property with SimpleArray type', () => {
     document.body.appendChild(el);
     await el.ready;
 
-    // Should handle complex mixed data
+    // Initial values don't reflect automatically
+    expect(el.getAttribute('mixeddata')).toBe(null);
+    expect(el.mixedData).toEqual(['string', 42, true, 'another', 3.14159, false, 0, '']);
+
+    // Setting the property should handle complex mixed data
+    el.mixedData = ['string', 42, true, 'another', 3.14159, false, 0, ''];
     const expected = 'string，42，true，another，3.14159，false，0，';
     expect(el.getAttribute('mixeddata')).toBe(expected);
 
@@ -299,32 +325,3 @@ describe('@property with SimpleArray type', () => {
   });
 });
 
-describe('SimpleArray vs Array warnings', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    vi.spyOn(console, 'warn').mockImplementation(() => {});
-  });
-
-  it('should NOT warn when using SimpleArray with reflect:true', () => {
-    @element('test-simple-array-no-warning-unique')
-    class TestSimpleArrayNoWarning extends HTMLElement {
-      @property({ type: SimpleArray, reflect: true })
-      safeArray: SimpleArray = [];
-    }
-
-    // Should not warn for SimpleArray
-    expect(console.warn).not.toHaveBeenCalled();
-  });
-
-  it('should still warn when using plain Array with reflect:true', () => {
-    @element('test-array-warning-still-unique')
-    class TestArrayWarningStill extends HTMLElement {
-      @property({ type: Array, reflect: true })
-      unsafeArray: any[] = [];
-    }
-
-    expect(console.warn).toHaveBeenCalledWith(
-      "⚠️  Property 'unsafeArray' uses reflect:true with Array type."
-    );
-  });
-});
