@@ -1,3 +1,10 @@
+# [2.3.0](https://gitlab.com/Hedzer/snice/compare/v2.2.3...v2.3.0) (2025-09-19)
+
+
+### Features
+
+* added testing against src/ and dist/ files ([e84bacc](https://gitlab.com/Hedzer/snice/commit/e84bacc993124f5fd4482986f832deb0e5f6121c))
+
 ## [2.2.3](https://gitlab.com/Hedzer/snice/compare/v2.2.2...v2.2.3) (2025-09-19)
 
 
