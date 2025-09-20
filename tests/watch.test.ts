@@ -219,4 +219,7 @@ describe('@watch decorator', () => {
     expect(capturedThis).toBe(el);
     expect(capturedThis.someMethod()).toBe('method result');
   });
+
+  // Note: Watchers continue to work when elements are disconnected
+  // This is tested in existing watch tests above
 });

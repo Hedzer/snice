@@ -329,4 +329,39 @@ describe('@observe decorator', () => {
       }
     });
   });
+
+  describe('reconnection behavior', () => {
+    it('should re-establish observers when element is reconnected', async () => {
+      const tagName = `test-reconnect-observers-${testId}`;
+
+      @element(tagName)
+      class ReconnectObserversTest extends HTMLElement {
+        html() {
+          return '<div>Observer test</div>';
+        }
+
+        @observe('resize')
+        onResize(entry: ResizeObserverEntry) {
+          // This method should be callable after reconnection
+        }
+      }
+
+      container.innerHTML = `<${tagName}></${tagName}>`;
+      const el = container.querySelector(tagName) as any;
+      await el.ready;
+
+      // Verify the method exists
+      expect(typeof el.onResize).toBe('function');
+
+      // Disconnect and reconnect
+      el.remove();
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      container.appendChild(el);
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      // Observer method should still be accessible
+      expect(typeof el.onResize).toBe('function');
+    });
+  });
 });

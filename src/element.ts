@@ -3,10 +3,12 @@ import { setupEventHandlers, cleanupEventHandlers } from './events';
 import { setupObservers, cleanupObservers } from './observe';
 import { setupResponseHandlers, cleanupResponseHandlers } from './request-response';
 import { parseAttributeValue, detectType, valueToAttribute } from './utils';
-import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PROPERTY_WATCHERS, EXPLICITLY_SET_PROPERTIES, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, PARTS, PART_TIMERS } from './symbols';
+import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PROPERTY_WATCHERS, EXPLICITLY_SET_PROPERTIES, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, PARTS, PART_TIMERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS } from './symbols';
 import { QueryOptions } from './types/QueryOptions';
 import { PropertyOptions } from './types/PropertyOptions';
 import { PartOptions } from './types/PartOptions';
+import { MovedOptions } from './types/MovedOptions';
+import { AdoptedOptions } from './types/AdoptedOptions';
 
 /**
  * Applies core element functionality to a constructor
@@ -91,7 +93,27 @@ export function applyElementFunctionality(constructor: any) {
           this[READY_RESOLVE] = resolve;
         });
       }
-      
+
+      // Only run initialization logic once, but re-establish handlers on reconnection
+      if (this[INITIALIZED]) {
+        // Re-establish handlers that get cleaned up on disconnect
+        setupEventHandlers(this, this);
+        setupResponseHandlers(this, this);
+
+        // Re-establish observers that get cleaned up on disconnect
+        try {
+          setupObservers(this, this);
+        } catch (error) {
+          console.error(`Error setting up observers for ${this.tagName} on reconnection:`, error);
+        }
+
+        // Call user's connectedCallback
+        if (originalConnectedCallback) {
+          originalConnectedCallback.call(this);
+        }
+        return;
+      }
+
       try {
         // Initialize properties from attributes before rendering
         const properties = constructor[PROPERTIES];
@@ -120,8 +142,6 @@ export function applyElementFunctionality(constructor: any) {
         // Properties are now stateless and read from DOM attributes only
         // Initial values are not automatically reflected
         
-        // Clean up any existing event handlers first (for reconnection)
-        cleanupEventHandlers(this);
         
         // Create shadow root if it doesn't exist
         if (!this.shadowRoot) {
@@ -199,7 +219,10 @@ export function applyElementFunctionality(constructor: any) {
         } catch (error) {
           console.error(`Error setting up observers for ${this.tagName}:`, error);
         }
-        
+
+        // Mark as initialized
+        this[INITIALIZED] = true;
+
         // NOW call the original user-defined connectedCallback after shadow DOM is set up
         if (originalConnectedCallback) {
           originalConnectedCallback.call(this);
@@ -320,6 +343,36 @@ export function applyElementFunctionality(constructor: any) {
               }
               break;
             }
+          }
+        }
+      }
+    };
+
+    // Add connectedMoveCallback for handling DOM moves
+    constructor.prototype.connectedMoveCallback = async function() {
+      // Call @moved handlers
+      const movedHandlers = constructor[MOVED_HANDLERS];
+      if (movedHandlers) {
+        for (const handler of movedHandlers) {
+          try {
+            await handler.method.call(this);
+          } catch (error) {
+            console.error(`Error in @moved handler ${handler.methodName}:`, error);
+          }
+        }
+      }
+    };
+
+    // Add adoptedCallback for handling document adoption
+    constructor.prototype.adoptedCallback = async function() {
+      // Call @adopted handlers
+      const adoptedHandlers = constructor[ADOPTED_HANDLERS];
+      if (adoptedHandlers) {
+        for (const handler of adoptedHandlers) {
+          try {
+            await handler.method.call(this);
+          } catch (error) {
+            console.error(`Error in @adopted handler ${handler.methodName}:`, error);
           }
         }
       }
@@ -729,6 +782,176 @@ export function dispose() {
         method: target
       });
     });
+  };
+}
+
+/**
+ * Decorator for methods that should run when element is moved within DOM
+ * Supports debounce and throttle options to control execution timing
+ */
+export function moved(options: MovedOptions = {}) {
+  return function (originalMethod: any, context: ClassMethodDecoratorContext) {
+    const methodName = context.name as string;
+
+    context.addInitializer(function(this: any) {
+      const constructor = this.constructor as any;
+
+      if (!constructor[MOVED_HANDLERS]) {
+        constructor[MOVED_HANDLERS] = [];
+      }
+
+      constructor[MOVED_HANDLERS].push({
+        methodName,
+        method: originalMethod,
+        options
+      });
+    });
+
+    // Return wrapped method that handles timing options
+    return function (this: HTMLElement, ...args: any[]) {
+      // Initialize timers storage if not present
+      if (!(this as any)[MOVED_TIMERS]) {
+        (this as any)[MOVED_TIMERS] = new Map();
+      }
+
+      // Get or create timers for this specific method
+      if (!(this as any)[MOVED_TIMERS].has(methodName)) {
+        (this as any)[MOVED_TIMERS].set(methodName, {
+          throttleTimer: null,
+          debounceTimer: null,
+          lastThrottleCall: 0
+        });
+      }
+
+      const timers = (this as any)[MOVED_TIMERS].get(methodName);
+
+      // Helper function to execute method
+      const executeMethod = (...methodArgs: any[]) => {
+        return originalMethod.apply(this, methodArgs);
+      };
+
+      const hasDebounce = options.debounce !== undefined && options.debounce > 0;
+      const hasThrottle = options.throttle !== undefined && options.throttle > 0;
+
+      // Handle timing based on priority: debounce > throttle > immediate
+      switch (true) {
+        case hasDebounce: {
+          clearTimeout(timers.debounceTimer);
+          timers.debounceTimer = setTimeout(() => executeMethod(...args), options.debounce!);
+          return undefined;
+        }
+
+        case hasThrottle: {
+          const throttleMs = options.throttle!;
+          const now = Date.now();
+          const canExecuteImmediately = timers.lastThrottleCall === 0 || now - timers.lastThrottleCall >= throttleMs;
+
+          if (canExecuteImmediately) {
+            timers.lastThrottleCall = now;
+            return executeMethod(...args);
+          }
+
+          const hasScheduledTimer = !!timers.throttleTimer;
+          if (!hasScheduledTimer) {
+            const remainingTime = throttleMs - (now - timers.lastThrottleCall);
+            timers.throttleTimer = setTimeout(() => {
+              timers.throttleTimer = null;
+              timers.lastThrottleCall = Date.now();
+              executeMethod(...args);
+            }, remainingTime);
+          }
+          return undefined;
+        }
+
+        default:
+          return executeMethod(...args);
+      }
+    };
+  };
+}
+
+/**
+ * Decorator for methods that should run when element is adopted to new document
+ * Supports debounce and throttle options to control execution timing
+ */
+export function adopted(options: AdoptedOptions = {}) {
+  return function (originalMethod: any, context: ClassMethodDecoratorContext) {
+    const methodName = context.name as string;
+
+    context.addInitializer(function(this: any) {
+      const constructor = this.constructor as any;
+
+      if (!constructor[ADOPTED_HANDLERS]) {
+        constructor[ADOPTED_HANDLERS] = [];
+      }
+
+      constructor[ADOPTED_HANDLERS].push({
+        methodName,
+        method: originalMethod,
+        options
+      });
+    });
+
+    // Return wrapped method that handles timing options
+    return function (this: HTMLElement, ...args: any[]) {
+      // Initialize timers storage if not present
+      if (!(this as any)[ADOPTED_TIMERS]) {
+        (this as any)[ADOPTED_TIMERS] = new Map();
+      }
+
+      // Get or create timers for this specific method
+      if (!(this as any)[ADOPTED_TIMERS].has(methodName)) {
+        (this as any)[ADOPTED_TIMERS].set(methodName, {
+          throttleTimer: null,
+          debounceTimer: null,
+          lastThrottleCall: 0
+        });
+      }
+
+      const timers = (this as any)[ADOPTED_TIMERS].get(methodName);
+
+      // Helper function to execute method
+      const executeMethod = (...methodArgs: any[]) => {
+        return originalMethod.apply(this, methodArgs);
+      };
+
+      const hasDebounce = options.debounce !== undefined && options.debounce > 0;
+      const hasThrottle = options.throttle !== undefined && options.throttle > 0;
+
+      // Handle timing based on priority: debounce > throttle > immediate
+      switch (true) {
+        case hasDebounce: {
+          clearTimeout(timers.debounceTimer);
+          timers.debounceTimer = setTimeout(() => executeMethod(...args), options.debounce!);
+          return undefined;
+        }
+
+        case hasThrottle: {
+          const throttleMs = options.throttle!;
+          const now = Date.now();
+          const canExecuteImmediately = timers.lastThrottleCall === 0 || now - timers.lastThrottleCall >= throttleMs;
+
+          if (canExecuteImmediately) {
+            timers.lastThrottleCall = now;
+            return executeMethod(...args);
+          }
+
+          const hasScheduledTimer = !!timers.throttleTimer;
+          if (!hasScheduledTimer) {
+            const remainingTime = throttleMs - (now - timers.lastThrottleCall);
+            timers.throttleTimer = setTimeout(() => {
+              timers.throttleTimer = null;
+              timers.lastThrottleCall = Date.now();
+              executeMethod(...args);
+            }, remainingTime);
+          }
+          return undefined;
+        }
+
+        default:
+          return executeMethod(...args);
+      }
+    };
   };
 }
 

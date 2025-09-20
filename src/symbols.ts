@@ -14,6 +14,7 @@ export const CHANNEL_HANDLERS = getSymbol('channel-handlers');
 export const READY_PROMISE = getSymbol('ready-promise');
 export const READY_RESOLVE = getSymbol('ready-resolve');
 export const CONTROLLER = getSymbol('controller');
+export const INITIALIZED = getSymbol('initialized');
 
 // Event handler symbols
 export const ON_HANDLERS = getSymbol('on-handlers');
@@ -45,6 +46,8 @@ export const CREATED_AT = getSymbol('created-at');
 // Lifecycle symbols
 export const READY_HANDLERS = getSymbol('ready-handlers');
 export const DISPOSE_HANDLERS = getSymbol('dispose-handlers');
+export const MOVED_HANDLERS = getSymbol('moved-handlers');
+export const ADOPTED_HANDLERS = getSymbol('adopted-handlers');
 
 // Observer symbols
 export const OBSERVERS = getSymbol('observers');
@@ -52,6 +55,10 @@ export const OBSERVERS = getSymbol('observers');
 // Part symbols
 export const PARTS = getSymbol('parts');
 export const PART_TIMERS = getSymbol('part-timers');
+
+// Lifecycle callback timers
+export const MOVED_TIMERS = getSymbol('moved-timers');
+export const ADOPTED_TIMERS = getSymbol('adopted-timers');
 
 // Dispatch timing symbols
 export const DISPATCH_TIMERS = getSymbol('dispatch-timers');

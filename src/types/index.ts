@@ -4,6 +4,8 @@ export * from './PropertyOptions';
 export * from './PropertyConverter';
 export * from './SniceElement';
 export * from './PartOptions';
+export * from './MovedOptions';
+export * from './AdoptedOptions';
 export * from './SimpleArray';
 export * from './RouterOptions';
 export * from './PageOptions';

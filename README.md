@@ -1028,6 +1028,79 @@ renderSearchResults() { /* ... */ }
 
 The `@part` decorator is ideal when you have components with multiple independent sections that update at different frequencies or from different data sources.
 
+## Lifecycle Callbacks
+
+Snice provides decorators for advanced DOM lifecycle events that go beyond basic connected/disconnected callbacks:
+
+### @moved Decorator
+
+The `@moved` decorator runs methods when an element is moved within the DOM using `Element.moveBefore()`. This is useful for handling position changes without full disconnection/reconnection:
+
+```typescript
+@element('my-element')
+class MyElement extends HTMLElement {
+  @moved()
+  onElementMoved() {
+    console.log('Element moved to new position');
+    this.updatePosition();
+  }
+
+  // With timing options
+  @moved({ debounce: 100 })
+  onMovedDebounced() {
+    // Only called once after moves stop for 100ms
+    this.recalculateLayout();
+  }
+
+  @moved({ throttle: 500 })
+  onMovedThrottled() {
+    // Called at most once every 500ms during rapid moves
+    this.optimizePerformance();
+  }
+}
+```
+
+### @adopted Decorator
+
+The `@adopted` decorator runs methods when an element is moved to a new document (like iframes or document fragments):
+
+```typescript
+@element('portable-element')
+class PortableElement extends HTMLElement {
+  @adopted()
+  onAdoptedToNewDocument() {
+    console.log('Element moved to new document');
+    this.updateDocumentReferences();
+  }
+
+  // With timing options
+  @adopted({ debounce: 200 })
+  onAdoptedDebounced() {
+    // Debounced for performance during rapid document moves
+    this.reinitializeForNewContext();
+  }
+}
+```
+
+### Timing Options
+
+Both decorators support the same timing options as `@part`:
+
+- **`debounce`** - Delays execution until after calls stop for the specified milliseconds
+- **`throttle`** - Limits execution to once per specified milliseconds
+
+```typescript
+// Examples of timing control
+@moved({ debounce: 150 })    // Wait 150ms after moves stop
+@adopted({ throttle: 300 })  // Maximum once per 300ms
+```
+
+These lifecycle callbacks are perfect for:
+- **Performance optimization** during rapid DOM changes
+- **Layout recalculation** when elements move
+- **Context updates** when elements move between documents
+- **Resource cleanup/setup** during document adoption
+
 ## Documentation
 
 - [Elements API](./docs/elements.md) - Complete guide to creating elements with properties, queries, and styling

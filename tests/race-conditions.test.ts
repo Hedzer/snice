@@ -488,44 +488,45 @@ describe('race conditions and async edge cases', () => {
   describe('event handling race conditions', () => {
     it('should handle events during element reconnection', () => {
       const clickSpy = vi.fn();
-      
+
       @element('reconnect-events')
       class ReconnectEvents extends HTMLElement {
         html() {
           return '<button class="btn">Click</button>';
         }
-        
+
         @on('click', '.btn')
         handleClick() {
           clickSpy();
         }
       }
-      
+
       const el = document.createElement('reconnect-events');
       document.body.appendChild(el);
-      
+
       const btn = el.shadowRoot?.querySelector('.btn') as HTMLElement;
-      
-      // Click works
+
+      // Click works initially
       btn.click();
       expect(clickSpy).toHaveBeenCalledTimes(1);
-      
+
       // Disconnect
       document.body.removeChild(el);
-      
-      // Click during disconnection
+
+      // Click during disconnection (events cleaned up)
       btn.click();
       expect(clickSpy).toHaveBeenCalledTimes(1); // No new call
-      
+
       // Reconnect
       document.body.appendChild(el);
-      
-      // Get new button reference after reconnection
-      const newBtn = el.shadowRoot?.querySelector('.btn') as HTMLElement;
-      
-      // Click after reconnection
-      newBtn.click();
-      expect(clickSpy).toHaveBeenCalledTimes(2); // Works again
+
+      // Button reference is still the same (no re-render)
+      const sameBtn = el.shadowRoot?.querySelector('.btn') as HTMLElement;
+      expect(sameBtn).toBe(btn); // Same element reference
+
+      // Click after reconnection - events should work again
+      sameBtn.click();
+      expect(clickSpy).toHaveBeenCalledTimes(2); // Events work after reconnection
     });
 
     it('should handle overlapping event bubbling', () => {

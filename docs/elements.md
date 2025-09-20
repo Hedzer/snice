@@ -1463,6 +1463,148 @@ renderNotificationCount() { /* ... */ }
 renderEverything() { /* renders entire complex UI */ }
 ```
 
+## Advanced Lifecycle Callbacks
+
+Beyond the standard `connectedCallback` and `disconnectedCallback`, Snice provides decorators for advanced DOM lifecycle events:
+
+### @moved Decorator
+
+The `@moved` decorator handles when an element is moved within the DOM using the new `Element.moveBefore()` API. This is triggered by `connectedMoveCallback()` instead of separate disconnect/connect events:
+
+```typescript
+@element('draggable-item')
+class DraggableItem extends HTMLElement {
+  @moved()
+  onElementMoved() {
+    // Called when element is moved to a new position
+    this.updatePositionIndicator();
+    this.notifyParentOfMove();
+  }
+
+  @moved({ debounce: 100 })
+  onMovedDebounced() {
+    // Only called once after rapid moves stop
+    this.recalculateLayout();
+    this.savePosition();
+  }
+
+  @moved({ throttle: 200 })
+  onMovedThrottled() {
+    // Called at most once every 200ms during drag operations
+    this.updateVisualFeedback();
+  }
+}
+```
+
+### @adopted Decorator
+
+The `@adopted` decorator handles when an element is moved to a new document (like iframes or document fragments). This is triggered by the `adoptedCallback()`:
+
+```typescript
+@element('portable-widget')
+class PortableWidget extends HTMLElement {
+  @adopted()
+  onAdoptedToNewDocument() {
+    // Called when element moves to a new document
+    this.updateDocumentReferences();
+    this.reinitializeForNewContext();
+  }
+
+  @adopted({ debounce: 150 })
+  onAdoptedDebounced() {
+    // Debounced for performance during rapid adoption
+    this.rebindDocumentEvents();
+    this.updateGlobalReferences();
+  }
+
+  @adopted({ throttle: 300 })
+  onAdoptedThrottled() {
+    // Throttled for expensive operations
+    this.analyzeNewDocumentContext();
+  }
+}
+```
+
+### Timing Options
+
+Both lifecycle decorators support timing control options:
+
+- **`debounce: number`** - Delays execution until after calls stop for the specified milliseconds
+- **`throttle: number`** - Limits execution to once per specified milliseconds
+
+```typescript
+// Debounce: Wait for activity to stop
+@moved({ debounce: 100 })
+onMovedDebounced() {
+  // Called 100ms after last move
+}
+
+// Throttle: Limit frequency
+@adopted({ throttle: 500 })
+onAdoptedThrottled() {
+  // Called at most once every 500ms
+}
+```
+
+### When to Use Lifecycle Callbacks
+
+**Use `@moved` for:**
+- Drag and drop operations
+- Layout recalculations after position changes
+- Performance optimizations during rapid DOM moves
+- Position-dependent updates without full reconnection overhead
+
+**Use `@adopted` for:**
+- Cross-frame element transfers
+- Document context updates
+- Resource reinitialization in new contexts
+- Global reference updates
+
+**Timing options are ideal for:**
+- **Debounce**: Expensive operations that should only run after activity stops
+- **Throttle**: Visual updates or analytics during high-frequency events
+
+### Integration with Other Lifecycle Events
+
+These callbacks work alongside standard lifecycle methods:
+
+```typescript
+@element('complex-component')
+class ComplexComponent extends HTMLElement {
+  // Standard lifecycle
+  connectedCallback() {
+    // Called when first connected or reconnected
+    super.connectedCallback();
+  }
+
+  disconnectedCallback() {
+    // Called when removed from DOM
+    super.disconnectedCallback();
+  }
+
+  // Advanced lifecycle
+  @moved()
+  onMoved() {
+    // Called instead of disconnect/connect when moved
+  }
+
+  @adopted()
+  onAdopted() {
+    // Called when moved to new document
+  }
+
+  @ready()
+  onReady() {
+    // Called after shadow DOM and setup complete
+  }
+
+  @dispose()
+  onDispose() {
+    // Called during disconnection for cleanup
+  }
+}
+```
+
 ## Best Practices
 
 1. **Keep elements focused**: Elements should handle presentation logic only

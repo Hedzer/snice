@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { element, ready, dispose } from './test-imports';
+import { element, ready, dispose, moved, adopted } from './test-imports';
 import { controller } from './test-imports';
 
 describe('element lifecycle', () => {
@@ -454,9 +454,9 @@ describe('element lifecycle', () => {
       expect(styles?.length).toBe(1);
     });
 
-    it('should re-render html on reconnect', () => {
+    it('should NOT re-render html on reconnect', () => {
       let renderCount = 0;
-      
+
       @element('rerender-test')
       class RerenderTest extends HTMLElement {
         html() {
@@ -464,14 +464,153 @@ describe('element lifecycle', () => {
           return `<div>Render ${renderCount}</div>`;
         }
       }
-      
+
       const el = document.createElement('rerender-test');
       document.body.appendChild(el);
       expect(el.shadowRoot?.innerHTML).toBe('<div>Render 1</div>');
-      
+
       document.body.removeChild(el);
       document.body.appendChild(el);
-      expect(el.shadowRoot?.innerHTML).toBe('<div>Render 2</div>');
+      // Should still be the same content - no re-render
+      expect(el.shadowRoot?.innerHTML).toBe('<div>Render 1</div>');
+      expect(renderCount).toBe(1); // html() called only once
+    });
+  });
+
+  describe('advanced lifecycle callbacks', () => {
+    describe('@moved decorator', () => {
+      it('should call @moved handler when connectedMoveCallback is triggered', async () => {
+        const movedSpy = vi.fn();
+
+        @element('moved-test')
+        class MovedTest extends HTMLElement {
+          @moved()
+          onMoved() {
+            movedSpy();
+          }
+        }
+
+        const el = document.createElement('moved-test') as MovedTest;
+        document.body.appendChild(el);
+
+        // Manually trigger connectedMoveCallback since moveBefore() might not be available
+        if (el.connectedMoveCallback) {
+          await el.connectedMoveCallback();
+        }
+
+        expect(movedSpy).toHaveBeenCalledTimes(1);
+      });
+
+      it('should support multiple @moved handlers', async () => {
+        const firstSpy = vi.fn();
+        const secondSpy = vi.fn();
+
+        @element('multi-moved-test')
+        class MultiMovedTest extends HTMLElement {
+          @moved()
+          onFirstMoved() {
+            firstSpy();
+          }
+
+          @moved()
+          onSecondMoved() {
+            secondSpy();
+          }
+        }
+
+        const el = document.createElement('multi-moved-test') as MultiMovedTest;
+        document.body.appendChild(el);
+
+        if (el.connectedMoveCallback) {
+          await el.connectedMoveCallback();
+        }
+
+        expect(firstSpy).toHaveBeenCalledTimes(1);
+        expect(secondSpy).toHaveBeenCalledTimes(1);
+      });
+
+      it('should debounce @moved calls', async () => {
+        const movedSpy = vi.fn();
+
+        @element('debounced-moved-test')
+        class DebouncedMovedTest extends HTMLElement {
+          @moved({ debounce: 100 })
+          onMoved() {
+            movedSpy();
+          }
+        }
+
+        const el = document.createElement('debounced-moved-test') as DebouncedMovedTest;
+        document.body.appendChild(el);
+
+        // Call multiple times rapidly
+        el.onMoved();
+        el.onMoved();
+        el.onMoved();
+
+        // Should not be called yet
+        expect(movedSpy).toHaveBeenCalledTimes(0);
+
+        // Wait for debounce
+        await new Promise(resolve => setTimeout(resolve, 150));
+
+        // Should be called only once
+        expect(movedSpy).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    describe('@adopted decorator', () => {
+      it('should call @adopted handler when adoptedCallback is triggered', async () => {
+        const adoptedSpy = vi.fn();
+
+        @element('adopted-test')
+        class AdoptedTest extends HTMLElement {
+          @adopted()
+          onAdopted() {
+            adoptedSpy();
+          }
+        }
+
+        const el = document.createElement('adopted-test') as AdoptedTest;
+        document.body.appendChild(el);
+
+        // Manually trigger adoptedCallback
+        if (el.adoptedCallback) {
+          await el.adoptedCallback();
+        }
+
+        expect(adoptedSpy).toHaveBeenCalledTimes(1);
+      });
+
+      it('should throttle @adopted calls', async () => {
+        const adoptedSpy = vi.fn();
+
+        @element('throttled-adopted-test')
+        class ThrottledAdoptedTest extends HTMLElement {
+          @adopted({ throttle: 100 })
+          onAdopted() {
+            adoptedSpy();
+          }
+        }
+
+        const el = document.createElement('throttled-adopted-test') as ThrottledAdoptedTest;
+        document.body.appendChild(el);
+
+        // First call should execute immediately
+        el.onAdopted();
+        expect(adoptedSpy).toHaveBeenCalledTimes(1);
+
+        // Rapid subsequent calls should be throttled
+        el.onAdopted();
+        el.onAdopted();
+        expect(adoptedSpy).toHaveBeenCalledTimes(1);
+
+        // Wait for throttle period
+        await new Promise(resolve => setTimeout(resolve, 150));
+
+        // Should execute the throttled call
+        expect(adoptedSpy).toHaveBeenCalledTimes(2);
+      });
     });
   });
 });
