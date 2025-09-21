@@ -75,17 +75,17 @@
         }
         
         .sample-nav a {
-            color: var(--snice-color-text-secondary, #6b7280);
+            color: var(--snice-color-text-secondary, rgb(107 114 128));
             text-decoration: none;
             padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-md, 1rem);
-            border-radius: var(--snice-border-radius-md, 4px);
-            transition: all var(--snice-transition-fast, 0.15s) ease;
+            border-radius: var(--snice-border-radius-md, 6px);
+            transition: all var(--snice-transition-fast, 150ms) ease;
         }
-        
+
         .sample-nav a:hover,
         .sample-nav a.active {
-            background: var(--snice-color-primary-light, #dbeafe);
-            color: var(--snice-color-primary, #3b82f6);
+            background: var(--snice-color-primary, rgb(59 130 246));
+            color: var(--snice-color-text-inverse, white);
         }
         
         .sample-card {
@@ -111,19 +111,19 @@
             flex-direction: column;
             gap: var(--snice-spacing-sm, 0.75rem);
         }
-        
+
         .sidebar-nav a {
-            color: var(--snice-color-text-secondary, #6b7280);
+            color: var(--snice-color-text-secondary, rgb(107 114 128));
             text-decoration: none;
             padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-md, 1rem);
-            border-radius: var(--snice-border-radius-md, 4px);
-            transition: all var(--snice-transition-fast, 0.15s) ease;
+            border-radius: var(--snice-border-radius-md, 6px);
+            transition: all var(--snice-transition-fast, 150ms) ease;
         }
-        
+
         .sidebar-nav a:hover,
         .sidebar-nav a.active {
-            background: var(--snice-color-primary-light, #dbeafe);
-            color: var(--snice-color-primary, #3b82f6);
+            background: var(--snice-color-primary, rgb(59 130 246));
+            color: var(--snice-color-text-inverse, white);
         }
         
         .hero-section {
@@ -195,7 +195,7 @@
     <!-- Sidebar Layout Demo -->
     <div id="sidebar" class="demo-section">
         <snice-layout-sidebar>
-            <div slot="brand"><h3>Dashboard</h3></div>
+            <div slot="brand"><h3>StartupCo</h3></div>
             <nav slot="nav" class="sidebar-nav">
                 <a href="#" class="active">Overview</a>
                 <a href="#">Analytics</a>
@@ -205,7 +205,6 @@
             </nav>
             <div slot="header">
                 <h1>Dashboard Overview</h1>
-                <p>Welcome back! Here's what's happening today.</p>
             </div>
             
             <div style="padding: 1rem;">
