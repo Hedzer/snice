@@ -1,4 +1,4 @@
-import { element, property, query, on, watch, dispatch, ready, dispose } from 'snice';
+import { element, property, query, on, watch, ready, dispose } from 'snice';
 import css from './snice-drawer.css?inline';
 import type { DrawerPosition, DrawerSize, SniceDrawerElement } from './snice-drawer.types';
 
@@ -115,14 +115,24 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
     }
   }
 
+  private _isHandlingOpenChange = false;
+
   @watch('open')
   handleOpenChange() {
-    this.setAttribute('aria-hidden', String(!this.open));
-    
-    if (this.open) {
-      this.handleOpen();
-    } else {
-      this.handleClose();
+    // Prevent duplicate handling
+    if (this._isHandlingOpenChange) return;
+    this._isHandlingOpenChange = true;
+
+    try {
+      this.setAttribute('aria-hidden', String(!this.open));
+
+      if (this.open) {
+        this.handleOpen();
+      } else {
+        this.handleClose();
+      }
+    } finally {
+      this._isHandlingOpenChange = false;
     }
   }
 
@@ -256,14 +266,41 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
     );
   }
 
-  @dispatch('drawer-open', { bubbles: true, composed: true })
+  private _lastEventType: string | null = null;
+  private _lastEventTime = 0;
+
   private dispatchOpenEvent() {
-    return { drawer: this };
+    // Prevent duplicate events within 100ms
+    const now = Date.now();
+    if (this._lastEventType === 'open' && (now - this._lastEventTime) < 100) {
+      return;
+    }
+    this._lastEventType = 'open';
+    this._lastEventTime = now;
+
+    // Manually dispatch event
+    this.dispatchEvent(new CustomEvent('@snice/drawer-open', {
+      bubbles: true,
+      composed: true,
+      detail: { drawer: this }
+    }));
   }
 
-  @dispatch('drawer-close', { bubbles: true, composed: true })
   private dispatchCloseEvent() {
-    return { drawer: this };
+    // Prevent duplicate events within 100ms
+    const now = Date.now();
+    if (this._lastEventType === 'close' && (now - this._lastEventTime) < 100) {
+      return;
+    }
+    this._lastEventType = 'close';
+    this._lastEventTime = now;
+
+    // Manually dispatch event
+    this.dispatchEvent(new CustomEvent('@snice/drawer-close', {
+      bubbles: true,
+      composed: true,
+      detail: { drawer: this }
+    }));
   }
 
   @dispose()
