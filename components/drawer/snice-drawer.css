@@ -16,12 +16,27 @@
   --drawer-backdrop: rgba(0, 0, 0, 0.5);
   --drawer-transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --drawer-z-index: 1000;
-  
+
+  /* Default: fixed positioning (modal behavior) */
   display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  isolation: isolate;
+}
+
+/* Contained variant - position within parent */
+:host([contained]) {
+  position: absolute;
+  width: 100%;
+  height: 100%;
 }
 
 .drawer-backdrop {
-  position: fixed;
+  position: absolute;
   inset: 0;
   background: var(--drawer-backdrop);
   opacity: 0;
@@ -29,6 +44,10 @@
   z-index: var(--drawer-z-index);
   pointer-events: none;
   visibility: hidden;
+}
+
+:host([open]) {
+  pointer-events: auto;
 }
 
 :host([open]) .drawer-backdrop {
@@ -42,7 +61,7 @@
 }
 
 .drawer {
-  position: fixed;
+  position: absolute;
   background: var(--drawer-bg);
   box-shadow: var(--drawer-shadow);
   transition: var(--drawer-transition);
@@ -52,6 +71,7 @@
   outline: none;
   overflow: hidden;
   visibility: hidden;
+  pointer-events: auto;
 }
 
 :host([open]) .drawer {

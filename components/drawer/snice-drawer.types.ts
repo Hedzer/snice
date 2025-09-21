@@ -5,6 +5,7 @@ export interface SniceDrawerElement extends HTMLElement {
   open: boolean;
   position: DrawerPosition;
   size: DrawerSize;
+  contained: boolean;
   noBackdrop: boolean;
   noBackdropDismiss: boolean;
   noEscapeDismiss: boolean;

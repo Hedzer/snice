@@ -1,5 +1,7 @@
 # Pixel to Rem Conversion Guide
 
+> **Related**: See [THEME_INTEGRATION_GUIDE.md](./THEME_INTEGRATION_GUIDE.md) for theme integration patterns with fallback defaults.
+
 ## Hybrid Strategy: What to Convert
 
 ### 🟢 Convert to REM (scales with user preferences):

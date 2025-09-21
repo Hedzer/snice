@@ -31,6 +31,9 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
   @property({ type: Boolean, attribute: 'push-content',  })
   pushContent = false;
 
+  @property({ type: Boolean,  })
+  contained = false;
+
   @query('.drawer')
   drawerElement?: HTMLElement;
 
@@ -162,7 +165,7 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
   private handleOpen() {
     // Store current focus
     this.previousFocus = document.activeElement as HTMLElement;
-    
+
     // Add escape key handler
     if (!this.noEscapeDismiss && !this.persistent) {
       this.boundHandleEscape = (e: KeyboardEvent) => {
@@ -173,10 +176,10 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
       };
       document.addEventListener('keydown', this.boundHandleEscape);
     }
-    
-    // Prevent body scroll
-    document.body.style.overflow = 'hidden';
-    
+
+    // REMOVED: No longer manipulating document.body.style.overflow
+    // The drawer is now contained and doesn't need to prevent body scroll
+
     // Focus management
     if (!this.noFocusTrap) {
       requestAnimationFrame(() => {
@@ -185,12 +188,12 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
         }
       });
     }
-    
-    // Push content if enabled
+
+    // Push content if enabled (still supported for those who need it)
     if (this.pushContent) {
       this.updatePushContent();
     }
-    
+
     this.dispatchOpenEvent();
   }
 
@@ -200,21 +203,20 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
       document.removeEventListener('keydown', this.boundHandleEscape);
       this.boundHandleEscape = undefined;
     }
-    
-    // Restore body scroll
-    document.body.style.overflow = '';
-    
+
+    // REMOVED: No longer manipulating document.body.style.overflow
+
     // Restore focus
     if (this.previousFocus && this.previousFocus.focus) {
       this.previousFocus.focus();
       this.previousFocus = undefined;
     }
-    
+
     // Reset push content
     if (this.pushContent) {
       this.updatePushContent();
     }
-    
+
     this.dispatchCloseEvent();
   }
 
@@ -269,7 +271,7 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
     if (this.boundHandleEscape) {
       document.removeEventListener('keydown', this.boundHandleEscape);
     }
-    document.body.style.overflow = '';
+    // REMOVED: No longer manipulating document.body.style.overflow
   }
 
   // Public API

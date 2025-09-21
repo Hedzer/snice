@@ -12,6 +12,8 @@
       margin: 0;
       background: #f3f4f6;
     }
+
+
     
     main {
       max-width: 1200px;
@@ -114,6 +116,7 @@
 <body>
   <main>
     <h1>Snice Drawer Component Demo</h1>
+
     
     <!-- Position Demo -->
     <div class="demo-section">
@@ -151,14 +154,15 @@
       </div>
     </div>
     
+
     <!-- Form Example -->
     <div class="demo-section">
       <h2>Form Example</h2>
       <button onclick="document.getElementById('drawer-form').show()">Open Form Drawer</button>
     </div>
   </main>
-  
-  <!-- Left Drawer -->
+
+  <!-- Drawers with default fixed positioning -->
   <snice-drawer id="drawer-left" position="left">
     <span slot="title">Left Drawer</span>
     <div class="drawer-content">
@@ -171,7 +175,7 @@
       </ul>
     </div>
   </snice-drawer>
-  
+
   <!-- Right Drawer -->
   <snice-drawer id="drawer-right" position="right">
     <span slot="title">Right Drawer</span>
@@ -314,15 +318,18 @@
     </div>
   </snice-drawer>
   
+  </div>
+
   <script>
     // Listen for drawer events
     document.addEventListener('drawer-open', (e) => {
       console.log('Drawer opened:', e.detail);
     });
-    
+
     document.addEventListener('drawer-close', (e) => {
       console.log('Drawer closed:', e.detail);
     });
   </script>
+
 </body>
 </html>
