@@ -1,5 +1,5 @@
 import { OBSERVERS, CLEANUP, IS_CONTROLLER_INSTANCE } from './symbols';
-import { ObserveOptions } from './types/ObserveOptions';
+import { ObserveOptions } from './types/observe-options';
 
 
 interface ObserverMetadata {

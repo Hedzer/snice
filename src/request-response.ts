@@ -1,6 +1,6 @@
 import { CHANNEL_HANDLERS, CLEANUP, IS_CONTROLLER_INSTANCE } from './symbols';
-import { RequestOptions } from './types/RequestOptions';
-import { RespondOptions } from './types/RespondOptions';
+import { RequestOptions } from './types/request-options';
+import { RespondOptions } from './types/respond-options';
 
 // @request decorator transforms methods to return Promise<T>
 

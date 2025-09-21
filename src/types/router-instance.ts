@@ -1,5 +1,5 @@
-import { PageOptions, Guard } from './PageOptions';
-import { Transition } from './Transition';
+import { PageOptions, Guard } from './page-options';
+import { Transition } from './transition';
 
 export interface RouterInstance {
   page: (pageOptions: PageOptions) => <C extends { new(...args: any[]): HTMLElement }>(constructor: C, context: ClassDecoratorContext) => C;

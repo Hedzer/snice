@@ -10,12 +10,14 @@ const modules = USE_BUILT ? {
   main: await import('../dist/testing.esm.js') as any,
   symbols: await import('../dist/testing.esm.js') as any, // All symbols are in testing build
   transitions: await import('../dist/testing.esm.js') as any, // All transitions are in testing build
-  types: null // Types come from main module in built version
+  types: null, // Types come from main module in built version
+  controller: null // Controller functions are in main module in built version
 } : {
   main: await import('../src/index.js'),
   symbols: await import('../src/symbols.js'),
   transitions: await import('../src/transitions.js'),
-  types: await import('../src/types/index.js')
+  types: await import('../src/types/index.js'),
+  controller: await import('../src/controller.js')
 };
 
 // Re-export main APIs that are available in both source and built versions
@@ -35,17 +37,19 @@ export const {
   part,
   Router,
   controller,
-  attachController,
-  detachController,
-  getController,
   useNativeElementControllers,
-  cleanupNativeElementControllers,
   on,
   dispatch,
   observe,
   request,
   respond
 } = modules.main;
+
+// Handle controller functions that were removed from main exports
+export const attachController = USE_BUILT ? modules.main.attachController : modules.controller.attachController;
+export const detachController = USE_BUILT ? modules.main.detachController : modules.controller.detachController;
+export const getController = USE_BUILT ? modules.main.getController : modules.controller.getController;
+export const cleanupNativeElementControllers = USE_BUILT ? modules.main.cleanupNativeElementControllers : modules.controller.cleanupNativeElementControllers;
 
 // Handle internal APIs differently for source vs built
 const internalApis = USE_BUILT ? {
@@ -56,8 +60,8 @@ const internalApis = USE_BUILT ? {
   detectType: modules.main.detectType
 } : {
   // In source version, internal APIs come from separate modules
-  registerControllerCleanup: (await import('../src/controller.js')).registerControllerCleanup,
-  getControllerScope: (await import('../src/controller.js')).getControllerScope,
+  registerControllerCleanup: modules.controller.registerControllerCleanup,
+  getControllerScope: modules.controller.getControllerScope,
   parseAttributeValue: (await import('../src/utils.js')).parseAttributeValue,
   detectType: (await import('../src/utils.js')).detectType
 };

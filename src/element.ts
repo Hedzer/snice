@@ -4,11 +4,11 @@ import { setupObservers, cleanupObservers } from './observe';
 import { setupResponseHandlers, cleanupResponseHandlers } from './request-response';
 import { parseAttributeValue, detectType, valueToAttribute } from './utils';
 import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PROPERTY_WATCHERS, EXPLICITLY_SET_PROPERTIES, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, PARTS, PART_TIMERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS } from './symbols';
-import { QueryOptions } from './types/QueryOptions';
-import { PropertyOptions } from './types/PropertyOptions';
-import { PartOptions } from './types/PartOptions';
-import { MovedOptions } from './types/MovedOptions';
-import { AdoptedOptions } from './types/AdoptedOptions';
+import { QueryOptions } from './types/query-options';
+import { PropertyOptions } from './types/property-options';
+import { PartOptions } from './types/part-options';
+import { MovedOptions } from './types/moved-options';
+import { AdoptedOptions } from './types/adopted-options';
 
 /**
  * Applies core element functionality to a constructor

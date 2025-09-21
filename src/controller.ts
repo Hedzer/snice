@@ -3,7 +3,7 @@ import { setupObservers, cleanupObservers } from './observe';
 import { setupResponseHandlers, cleanupResponseHandlers } from './request-response';
 import { IS_CONTROLLER_CLASS, IS_CONTROLLER_INSTANCE, CONTROLLER_KEY, CONTROLLER_NAME_KEY, CONTROLLER_ID, CONTROLLER_OPERATIONS, NATIVE_CONTROLLER, IS_ELEMENT_CLASS, ROUTER_CONTEXT } from './symbols';
 import { snice } from './global';
-import { IController, ControllerClass } from './types/IController';
+import { IController, ControllerClass } from './types/i-controller';
 
 
 

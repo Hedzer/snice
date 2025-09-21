@@ -2,7 +2,7 @@
  * Generic transition system for animating between elements
  */
 
-import { Transition } from './types/Transition';
+import { Transition } from './types/transition';
 
 // Re-export Transition type for external consumers
 export type { Transition };

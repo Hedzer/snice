@@ -1,4 +1,4 @@
-import { Transition } from './Transition';
+import { Transition } from './transition';
 
 export type RouteParams = Record<string, string>;
 export type Guard<T = any> = (context: T, params: RouteParams) => boolean | Promise<boolean>;

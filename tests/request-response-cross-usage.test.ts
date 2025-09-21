@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { element, controller, request, respond, attachController, getController, property, query, watch } from '../src/index';
+import { element, controller, request, respond, attachController, getController, property, query, watch } from './test-imports';
 
 // Helper to generate unique names to avoid state conflicts
 function uniqueName(prefix: string): string {

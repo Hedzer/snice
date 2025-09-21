@@ -1,4 +1,4 @@
-import { Transition } from './Transition';
+import { Transition } from './transition';
 
 export interface RouterOptions {
   /**

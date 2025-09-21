@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { Router, controller, context as contextDecorator, getController, element } from '../src';
+import { Router, controller, context as contextDecorator, getController, element } from './test-imports';
 
 // Helper to wait for element to be ready
 async function waitForElement(element: any): Promise<void> {

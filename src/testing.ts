@@ -7,8 +7,10 @@ export * from './index';
 export {
   registerControllerCleanup,
   getControllerScope,
-  attachController as attachControllerInternal,
-  detachController as detachControllerInternal
+  attachController,
+  detachController,
+  getController,
+  cleanupNativeElementControllers
 } from './controller';
 
 // Export additional symbols that might be needed

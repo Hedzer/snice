@@ -1,7 +1,7 @@
 import { beforeEach, describe, it, expect } from 'vitest';
 import { element, property } from '../src/element';
-import { SimpleArray } from '../src/types/SimpleArray';
-import type { SniceElement } from '../src/types/SniceElement';
+import { SimpleArray } from '../src/types/simple-array';
+import type { SniceElement } from '../src/types/snice-element';
 
 describe('SimpleArray class', () => {
   describe('serialize method', () => {

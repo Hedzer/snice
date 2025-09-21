@@ -1,6 +1,6 @@
 export { element, layout, property, query, queryAll, watch, context, applyElementFunctionality, ready, dispose, moved, adopted, part } from './element';
 export { Router } from './router';
-export { controller, attachController, detachController, getController, useNativeElementControllers, cleanupNativeElementControllers } from './controller';
+export { controller, useNativeElementControllers } from './controller';
 export { on, dispatch } from './events';
 export { observe } from './observe';
 export { request, respond } from './request-response';

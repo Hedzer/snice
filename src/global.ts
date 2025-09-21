@@ -1,7 +1,7 @@
 // Global namespace for Snice framework
 // Ensures all registries and symbols are shared across different JS files/modules
 
-import { SniceGlobal } from './types/SniceGlobal';
+import { SniceGlobal } from './types/snice-global';
 
 
 // Initialize or get the global Snice namespace

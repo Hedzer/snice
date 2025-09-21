@@ -2,10 +2,10 @@ import { Route } from 'pica-route';
 import { applyElementFunctionality } from './element';
 import { ROUTER_CONTEXT, CONTEXT_REQUEST_HANDLER, PAGE_TRANSITION, CREATED_AT, PROPERTIES } from './symbols';
 import { performTransition as performTransitionUtil } from './transitions';
-import { Transition } from './types/Transition';
-import { RouterOptions } from './types/RouterOptions';
-import { PageOptions, Guard, RouteParams } from './types/PageOptions';
-import { RouterInstance } from './types/RouterInstance';
+import { Transition } from './types/transition';
+import { RouterOptions } from './types/router-options';
+import { PageOptions, Guard, RouteParams } from './types/page-options';
+import { RouterInstance } from './types/router-instance';
 
 
 /**

@@ -1,6 +1,6 @@
 import { ON_HANDLERS, CLEANUP, DISPATCH_TIMERS } from './symbols';
-import { OnOptions } from './types/OnOptions';
-import { DispatchOptions } from './types/DispatchOptions';
+import { OnOptions } from './types/on-options';
+import { DispatchOptions } from './types/dispatch-options';
 
 
 export function on(eventName: string | string[], selectorOrOptions?: string | OnOptions, options?: OnOptions) {
