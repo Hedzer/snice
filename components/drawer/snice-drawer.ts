@@ -194,7 +194,7 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
     if (!this.noFocusTrap) {
       requestAnimationFrame(() => {
         if (this.drawerElement) {
-          this.drawerElement.focus();
+          this.drawerElement.focus({ preventScroll: true });
         }
       });
     }
