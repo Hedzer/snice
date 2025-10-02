@@ -4,7 +4,9 @@ import { ROUTER_CONTEXT, CONTEXT_REQUEST_HANDLER, PAGE_TRANSITION, CREATED_AT, P
 import { performTransition as performTransitionUtil } from './transitions';
 import { Transition } from './types/transition';
 import { RouterOptions } from './types/router-options';
-import { PageOptions, Guard, RouteParams } from './types/page-options';
+import { PageOptions } from './types/page-options';
+import { Guard } from './types/guard';
+import { RouteParams } from 'pica-route';
 import { RouterInstance } from './types/router-instance';
 
 

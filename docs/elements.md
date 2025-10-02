@@ -1605,6 +1605,33 @@ class ComplexComponent extends HTMLElement {
 }
 ```
 
+## Layout Components
+
+Layout components wrap page content and provide navigation, headers, footers, and other shared UI elements. They implement the `Layout` interface to receive updates from the router:
+
+```typescript
+import { layout, Layout } from 'snice';
+
+@layout('app-shell')
+class AppShell extends HTMLElement implements Layout {
+  html() {
+    return `
+      <header>
+        <nav></nav>
+      </header>
+      <main>
+        <slot name="page"></slot>
+      </main>
+    `;
+  }
+
+  update(appContext, placards, currentRoute, routeParams) {
+    // Update navigation and other layout elements
+    // Called when layout is created and when routes change
+  }
+}
+```
+
 ## Best Practices
 
 1. **Keep elements focused**: Elements should handle presentation logic only

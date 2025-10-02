@@ -9,6 +9,69 @@ import { PropertyOptions } from './types/property-options';
 import { PartOptions } from './types/part-options';
 import { MovedOptions } from './types/moved-options';
 import { AdoptedOptions } from './types/adopted-options';
+import { AppContext } from './types/app-context';
+import { Placard } from './types/placard';
+import { RouteParams } from './types/route-params';
+
+/**
+ * Interface that layout components must implement to receive updates
+ * from the router about application state and navigation changes.
+ *
+ * The framework will call the update method:
+ * - When the layout is first created/connected
+ * - When route changes occur during navigation
+ *
+ * @example
+ * ```typescript
+ * @layout('app-shell')
+ * class AppShell extends HTMLElement implements Layout {
+ *   update(appContext: AppContext, placards: Placard[], currentRoute: string, routeParams: RouteParams) {
+ *     // Update navigation, breadcrumbs, user info, etc.
+ *     this.renderNavigation(placards, currentRoute);
+ *     this.updateUserInfo(appContext.principal);
+ *     this.applyTheme(appContext.theme);
+ *   }
+ * }
+ * ```
+ */
+export interface Layout {
+  /**
+   * Called by the framework to update the layout with current application state.
+   *
+   * @param appContext - Application-wide context (theme, auth, config, etc.)
+   * @param placards - All page metadata for navigation and breadcrumbs
+   * @param currentRoute - The currently active route path
+   * @param routeParams - Parameters extracted from the current route
+   *
+   * @example
+   * ```typescript
+   * update(appContext, placards, currentRoute, routeParams) {
+   *   // Filter placards for main navigation
+   *   const navItems = placards.filter(p => p.show !== false && !p.parent);
+   *
+   *   // Build breadcrumbs for current page
+   *   const currentPlacard = placards.find(p => matchesRoute(p, currentRoute));
+   *   const breadcrumbs = this.buildBreadcrumbs(currentPlacard, placards);
+   *
+   *   // Resolve dynamic placards with current context
+   *   const resolvedPlacards = placards.map(p =>
+   *     typeof p === 'function' ? p(appContext) : p
+   *   );
+   *
+   *   // Update UI
+   *   this.renderNavigation(resolvedPlacards, currentRoute);
+   *   this.renderBreadcrumbs(breadcrumbs);
+   *   this.updateUserDisplay(appContext.principal);
+   * }
+   * ```
+   */
+  update(
+    appContext: AppContext,
+    placards: Placard[],
+    currentRoute: string,
+    routeParams: RouteParams
+  ): void;
+}
 
 /**
  * Applies core element functionality to a constructor
