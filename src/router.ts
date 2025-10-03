@@ -8,6 +8,8 @@ import { PageOptions } from './types/page-options';
 import { Guard } from './types/guard';
 import { RouteParams } from 'pica-route';
 import { RouterInstance } from './types/router-instance';
+import { Placard } from './types/placard';
+import { AppContext } from './types/app-context';
 
 
 /**
@@ -26,8 +28,9 @@ enum RouteResult {
  * @returns An object containing the router's API methods.
  */
 export function Router(options: RouterOptions): RouterInstance {
-  const routes: { route: Route, tag: string, transition?: Transition, guards?: Guard<any> | Guard<any>[], layout?: string | false }[] = [];
+  const routes: { route: Route, tag: string, transition?: Transition, guards?: Guard<any> | Guard<any>[], layout?: string | false, placard?: Placard | ((context: AppContext) => Placard) }[] = [];
   let is_sorted = false;
+  let placards: Placard[] = []; // Store collected placards
 
   let _404: string; // the 404 page
   let _403: string; // the 403 forbidden page
@@ -62,7 +65,7 @@ export function Router(options: RouterOptions): RouterInstance {
   function page(pageOptions: PageOptions) {
     return function <C extends { new(...args: any[]): HTMLElement }>(constructor: C, context: ClassDecoratorContext) {
       // Transfer metadata from context to constructor (for new decorators)
-      if (context.metadata && (context.metadata as any)[PROPERTIES]) {
+      if (context?.metadata && (context.metadata as any)[PROPERTIES]) {
         if (!(constructor as any)[PROPERTIES]) {
           (constructor as any)[PROPERTIES] = new Map();
         }
@@ -117,8 +120,8 @@ export function Router(options: RouterOptions): RouterInstance {
       // Define the custom element
       customElements.define(pageOptions.tag, constructor);
 
-      // Register the routes with guards and layout
-      pageOptions.routes.forEach(route => register(route, pageOptions.tag, pageOptions.transition, pageOptions.guards, pageOptions.layout));
+      // Register the routes with guards, layout, and placard
+      pageOptions.routes.forEach(route => register(route, pageOptions.tag, pageOptions.transition, pageOptions.guards, pageOptions.layout, pageOptions.placard));
 
       return constructor;
     }
@@ -131,14 +134,14 @@ export function Router(options: RouterOptions): RouterInstance {
    * @example
    * register('/custom-route', 'custom-element');
    */
-  function register(route: string, tag: string, transition?: Transition, guards?: Guard<any> | Guard<any>[], layout?: string | false): void {
-    routes.push({ route: new Route(route), tag, transition, guards, layout });
+  function register(route: string, tag: string, transition?: Transition, guards?: Guard<any> | Guard<any>[], layout?: string | false, placard?: Placard | ((context: AppContext) => Placard)): void {
+    routes.push({ route: new Route(route), tag, transition, guards, layout, placard });
     is_sorted = false;
 
     if (route === '/404') {
       _404 = tag;
     }
-    
+
     if (route === '/403') {
       _403 = tag;
     }
@@ -187,17 +190,38 @@ export function Router(options: RouterOptions): RouterInstance {
     if (!targetExists) {
       throw new Error(`Target element not found: ${options.target}`);
     }
-    
+
     const needsSorting = !is_sorted;
     if (needsSorting) {
       routes.sort((a: any, b: any) => b.route.spec.length - a.route.spec.length);
       is_sorted = true;
     }
 
+    // Collect placards from registered routes
+    collectPlacards();
+
     setupEventListeners();
 
     const path = getPath();
     navigate(path);
+  }
+
+  function collectPlacards(): void {
+    placards = routes
+      .filter(route => route.placard)
+      .map(route => {
+        const placard = route.placard!;
+        return typeof placard === 'function'
+          ? placard(context as AppContext)
+          : placard;
+      });
+  }
+
+  function updateLayout(layoutElement: HTMLElement, currentPath: string, routeParams: RouteParams): void {
+    // Check if layout implements the update method
+    if (typeof (layoutElement as any).update === 'function') {
+      (layoutElement as any).update(context, placards, currentPath, routeParams);
+    }
   }
   
   function getPath(): string {
@@ -274,27 +298,27 @@ export function Router(options: RouterOptions): RouterInstance {
     return { element: div, transition: undefined, layout: undefined };
   }
 
-  async function resolveRoute(path: string, target: Element): Promise<{ result: RouteResult; element?: HTMLElement; transition?: Transition; layout?: string | false }> {
+  async function resolveRoute(path: string, target: Element): Promise<{ result: RouteResult; element?: HTMLElement; transition?: Transition; layout?: string | false; routeParams?: RouteParams }> {
     for (const route of routes) {
       const params = route.route.match(path);
       const isMatch = params !== false;
       if (!isMatch) {
         continue;
       }
-      
+
       const guardsAllowed = await checkGuards(route.guards, params as RouteParams, target);
       if (!guardsAllowed) {
         return { result: RouteResult.GUARDS_FAILED };
       }
-      
+
       const newPageElement = document.createElement(route.tag);
       (newPageElement as any)[ROUTER_CONTEXT] = context;
       const routeParams = params as RouteParams;
       Object.keys(routeParams).forEach(key => newPageElement.setAttribute(key, routeParams[key]));
-      
-      return { result: RouteResult.SUCCESS, element: newPageElement, transition: route.transition, layout: route.layout };
+
+      return { result: RouteResult.SUCCESS, element: newPageElement, transition: route.transition, layout: route.layout, routeParams };
     }
-    
+
     return { result: RouteResult.NOT_FOUND };
   }
 
@@ -341,15 +365,18 @@ export function Router(options: RouterOptions): RouterInstance {
     return { element: null, needsNewLayout: true };
   }
 
-  async function renderWithLayout(target: Element, pageElement: HTMLElement, transition: Transition | undefined, layoutElement: HTMLElement | null, needsNewLayout: boolean): Promise<void> {
+  async function renderWithLayout(target: Element, pageElement: HTMLElement, transition: Transition | undefined, layoutElement: HTMLElement | null, needsNewLayout: boolean, currentPath: string, routeParams: RouteParams): Promise<void> {
     const currentLayout = layoutElement || getCurrentLayoutElement(target);
     if (!currentLayout) {
       return;
     }
-    
+
+    // Update layout with current context and placards
+    updateLayout(currentLayout, currentPath, routeParams);
+
     const oldPageInLayout = currentLayout.querySelector('[slot="page"]') as HTMLElement | null;
     const shouldTransition = !!(transition && oldPageInLayout);
-    
+
     if (shouldTransition) {
       pageElement.setAttribute('slot', 'page');
       await performTransition(currentLayout, oldPageInLayout!, pageElement, transition!);
@@ -359,12 +386,12 @@ export function Router(options: RouterOptions): RouterInstance {
       }
       return;
     }
-    
+
     const existingPages = currentLayout.querySelectorAll('[slot="page"]');
     existingPages.forEach(page => page.remove());
     pageElement.setAttribute('slot', 'page');
     currentLayout.appendChild(pageElement);
-    
+
     if (needsNewLayout) {
       target.innerHTML = '';
       target.appendChild(currentLayout);
@@ -396,6 +423,9 @@ export function Router(options: RouterOptions): RouterInstance {
       throw new Error(`Target element not found: ${options.target}`);
     }
 
+    // Collect fresh placards before navigation
+    collectPlacards();
+
     window.scrollTo(0, 0);
 
     const isHomePath = (path.trim() === '' || path === '/') && !!home;
@@ -414,7 +444,7 @@ export function Router(options: RouterOptions): RouterInstance {
       
       const hasLayout = layoutElement !== null || getCurrentLayoutElement(target) !== null;
       if (hasLayout) {
-        await renderWithLayout(target, element, finalTransition, layoutElement, needsNewLayout);
+        await renderWithLayout(target, element, finalTransition, layoutElement, needsNewLayout, path, {});
         return;
       }
       
@@ -431,17 +461,17 @@ export function Router(options: RouterOptions): RouterInstance {
     
     const isSuccess = routeResult.result === RouteResult.SUCCESS;
     if (isSuccess) {
-      const { element, transition, layout } = routeResult;
+      const { element, transition, layout, routeParams = {} } = routeResult;
       const layoutToUse = determineLayout(layout);
       const { element: layoutElement, needsNewLayout } = setupLayout(layoutToUse);
       const finalTransition = transition || options.transition;
-      
+
       const hasLayout = layoutElement !== null || getCurrentLayoutElement(target) !== null;
       if (hasLayout) {
-        await renderWithLayout(target, element!, finalTransition, layoutElement, needsNewLayout);
+        await renderWithLayout(target, element!, finalTransition, layoutElement, needsNewLayout, path, routeParams);
         return;
       }
-      
+
       await renderDirect(target, element!, finalTransition);
       return;
     }
@@ -453,7 +483,7 @@ export function Router(options: RouterOptions): RouterInstance {
     
     const hasLayout = layoutElement !== null || getCurrentLayoutElement(target) !== null;
     if (hasLayout) {
-      await renderWithLayout(target, element, finalTransition, layoutElement, needsNewLayout);
+      await renderWithLayout(target, element, finalTransition, layoutElement, needsNewLayout, path, {});
       return;
     }
     

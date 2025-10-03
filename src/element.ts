@@ -21,6 +21,9 @@ import { RouteParams } from './types/route-params';
  * - When the layout is first created/connected
  * - When route changes occur during navigation
  *
+ * Placards are collected at route creation and refreshed before each navigation,
+ * ensuring layouts always receive current page metadata.
+ *
  * @example
  * ```typescript
  * @layout('app-shell')
@@ -53,13 +56,8 @@ export interface Layout {
    *   const currentPlacard = placards.find(p => matchesRoute(p, currentRoute));
    *   const breadcrumbs = this.buildBreadcrumbs(currentPlacard, placards);
    *
-   *   // Resolve dynamic placards with current context
-   *   const resolvedPlacards = placards.map(p =>
-   *     typeof p === 'function' ? p(appContext) : p
-   *   );
-   *
    *   // Update UI
-   *   this.renderNavigation(resolvedPlacards, currentRoute);
+   *   this.renderNavigation(navItems, currentRoute);
    *   this.renderBreadcrumbs(breadcrumbs);
    *   this.updateUserDisplay(appContext.principal);
    * }

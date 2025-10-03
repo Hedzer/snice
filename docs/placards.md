@@ -257,10 +257,16 @@ class AppShell extends HTMLElement implements Layout {
   }
 
   update(appContext, placards, currentRoute, routeParams) {
-    // Resolve dynamic placards: placards.map(p => typeof p === 'function' ? p(appContext) : p)
-    // Build navigation from placards
+    // Build navigation from placards (already resolved)
+    const navItems = placards.filter(p => p.show !== false && !p.parent);
+    this.renderNavigation(navItems, currentRoute);
+
     // Update breadcrumbs for current route
+    const currentPlacard = placards.find(p => matchesRoute(p, currentRoute));
+    this.renderBreadcrumbs(currentPlacard, placards);
+
     // Apply theme and user context
+    this.applyTheme(appContext.theme);
   }
 }
 ```

@@ -1625,8 +1625,9 @@ class AppShell extends HTMLElement implements Layout {
     `;
   }
 
-  update(appContext, placards, currentRoute, routeParams) {
-    // Update navigation and other layout elements
+  async update(appContext, placards, currentRoute, routeParams) {
+    // Resolve placards and update navigation/layout elements
+    const resolvedPlacards = await Promise.all(placards);
     // Called when layout is created and when routes change
   }
 }
