@@ -93,44 +93,44 @@ describe('Router Guards', () => {
     expect(container.innerHTML).toContain('Unauthorized');
   });
 
-  it('should support async guards', async () => {
-    const uniqueName = `async-page-${Date.now()}`;
-    
+  it('should support guards with context checks', async () => {
+    const uniqueName = `context-page-${Date.now()}`;
+
     interface AppContext {
       userId: number;
+      permissions: string[];
     }
-    
-    const asyncGuard: Guard<AppContext> = async (ctx, _params) => {
-      // Simulate async permission check
-      await new Promise(resolve => setTimeout(resolve, 10));
-      return ctx.userId === 123;
+
+    const permissionGuard: Guard<AppContext> = (ctx, _params) => {
+      // Guards now execute synchronously
+      return ctx.userId === 123 && ctx.permissions.includes('view-protected');
     };
-    
+
     router = Router({
       target: '#app',
       type: 'hash',
-      context: { userId: 123 }
+      context: { userId: 123, permissions: ['view-protected'] }
     });
-    
+
     const { page, initialize, navigate } = router;
-    
-    @page({ 
-      tag: uniqueName, 
-      routes: ['/async-protected'],
-      guards: asyncGuard
+
+    @page({
+      tag: uniqueName,
+      routes: ['/context-protected'],
+      guards: permissionGuard
     })
-    class AsyncProtectedPage extends HTMLElement {
+    class ContextProtectedPage extends HTMLElement {
       html() {
-        return '<h1>Async Protected</h1>';
+        return '<h1>Context Protected</h1>';
       }
     }
-    
+
     initialize();
-    await navigate('/async-protected');
-    
+    await navigate('/context-protected');
+
     const pageElement = container.querySelector(uniqueName);
     expect(pageElement).toBeTruthy();
-    expect(pageElement?.shadowRoot?.innerHTML).toContain('Async Protected');
+    expect(pageElement?.shadowRoot?.innerHTML).toContain('Context Protected');
   });
 
   it('should support multiple guards (all must pass)', async () => {

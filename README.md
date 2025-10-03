@@ -538,13 +538,12 @@ class AdminPage extends HTMLElement {
 }
 
 // Guard that uses route params to check resource-specific permissions
-const canEditUser: Guard<AppContext> = async (ctx, params) => {
+const canEditUser: Guard<AppContext> = (ctx, params) => {
   const user = ctx.getUser();
   if (!user) return false;
-  
+
   // params.id comes from route '/users/:id/edit'
-  const response = await fetch(`/api/permissions/users/${params.id}/can-edit`);
-  return response.ok;
+  return ctx.hasPermission('users.edit', params.id);
 };
 
 // Guard that checks ownership

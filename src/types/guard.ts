@@ -7,15 +7,14 @@ import { RouteParams } from './route-params';
  * @template T - The context type passed to the guard function
  * @param context - The application context object
  * @param params - Route parameters extracted from the URL
- * @returns boolean or Promise<boolean> - true to allow access, false to deny
+ * @returns boolean - true to allow access, false to deny
  *
  * @example
  * ```typescript
  * const isAuthenticated: Guard<AppContext> = (ctx, params) => ctx.getUser() !== null;
- * const canEditUser: Guard<AppContext> = async (ctx, params) => {
- *   const response = await fetch(`/api/permissions/users/${params.id}/can-edit`);
- *   return response.ok;
+ * const canEditUser: Guard<AppContext> = (ctx, params) => {
+ *   return ctx.hasPermission('users.edit', params.id);
  * };
  * ```
  */
-export type Guard<T = any> = (context: T, params: RouteParams) => boolean | Promise<boolean>;
+export type Guard<T = any> = (context: T, params: RouteParams) => boolean;

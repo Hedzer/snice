@@ -233,10 +233,10 @@ export function Router(options: RouterOptions): RouterInstance {
     }
   }
   
-  async function renderForbiddenPage(target: Element): Promise<void> {
+  function renderForbiddenPage(target: Element): void {
     let newPageElement: HTMLElement;
     const has403Page = !!_403;
-    
+
     if (has403Page) {
       newPageElement = document.createElement(_403);
       (newPageElement as any)[ROUTER_CONTEXT] = context;
@@ -247,24 +247,24 @@ export function Router(options: RouterOptions): RouterInstance {
       div.innerHTML = /*html*/`<h1>403</h1><p>Unauthorized</p>`;
       newPageElement = div;
     }
-    
+
     target.innerHTML = '';
     target.appendChild(newPageElement!);
     currentLayoutName = null;
     currentLayoutTimestamp = null;
   }
 
-  async function checkGuards(guards: Guard<any> | Guard<any>[] | undefined, params: RouteParams, target: Element): Promise<boolean> {
+  function checkGuards(guards: Guard<any> | Guard<any>[] | undefined, params: RouteParams, target: Element): boolean {
     const hasGuards = !!guards;
     if (!hasGuards) {
       return true;
     }
-    
+
     const guardsArray = Array.isArray(guards) ? guards : [guards];
     for (const guard of guardsArray) {
-      const allowed = await guard(context, params);
+      const allowed = guard(context, params);
       if (!allowed) {
-        await renderForbiddenPage(target);
+        renderForbiddenPage(target);
         return false;
       }
     }
@@ -298,7 +298,7 @@ export function Router(options: RouterOptions): RouterInstance {
     return { element: div, transition: undefined, layout: undefined };
   }
 
-  async function resolveRoute(path: string, target: Element): Promise<{ result: RouteResult; element?: HTMLElement; transition?: Transition; layout?: string | false; routeParams?: RouteParams }> {
+  function resolveRoute(path: string, target: Element): { result: RouteResult; element?: HTMLElement; transition?: Transition; layout?: string | false; routeParams?: RouteParams } {
     for (const route of routes) {
       const params = route.route.match(path);
       const isMatch = params !== false;
@@ -306,7 +306,7 @@ export function Router(options: RouterOptions): RouterInstance {
         continue;
       }
 
-      const guardsAllowed = await checkGuards(route.guards, params as RouteParams, target);
+      const guardsAllowed = checkGuards(route.guards, params as RouteParams, target);
       if (!guardsAllowed) {
         return { result: RouteResult.GUARDS_FAILED };
       }
@@ -432,27 +432,27 @@ export function Router(options: RouterOptions): RouterInstance {
     
     if (isHomePath) {
       const homeRoute = routes.find(r => r.route.match('/'));
-      const guardsAllowed = await checkGuards(homeRoute?.guards, {}, target);
+      const guardsAllowed = checkGuards(homeRoute?.guards, {}, target);
       if (!guardsAllowed) {
         return;
       }
-      
+
       const { element, transition, layout } = createHomeElement();
       const layoutToUse = determineLayout(layout);
       const { element: layoutElement, needsNewLayout } = setupLayout(layoutToUse);
       const finalTransition = transition || options.transition;
-      
+
       const hasLayout = layoutElement !== null || getCurrentLayoutElement(target) !== null;
       if (hasLayout) {
         await renderWithLayout(target, element, finalTransition, layoutElement, needsNewLayout, path, {});
         return;
       }
-      
+
       await renderDirect(target, element, finalTransition);
       return;
     }
-    
-    const routeResult = await resolveRoute(path, target);
+
+    const routeResult = resolveRoute(path, target);
     
     const isGuardsFailed = routeResult.result === RouteResult.GUARDS_FAILED;
     if (isGuardsFailed) {

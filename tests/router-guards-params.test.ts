@@ -121,39 +121,38 @@ describe('Router Guards with Params', () => {
     expect(container.innerHTML).toContain('403');
   });
 
-  it('should work with async guards using params', async () => {
-    const uniqueName = `async-params-${Date.now()}`;
-    
+  it('should work with guards using params and context', async () => {
+    const uniqueName = `sync-params-${Date.now()}`;
+
     interface AppContext {
-      apiEndpoint: string;
+      permissions: Record<string, boolean>;
     }
-    
-    // Mock API responses
-    const mockResponses: Record<string, boolean> = {
+
+    // Mock permission checks stored in context
+    const mockPermissions: Record<string, boolean> = {
       '123': true,
       '456': false,
       '789': true
     };
-    
-    // Async guard that checks permission via API
-    const canViewDocument: Guard<AppContext> = async (ctx, params) => {
-      // Simulate API call using params
-      await new Promise(resolve => setTimeout(resolve, 10));
-      return mockResponses[params.docId] || false;
+
+    // Synchronous guard that checks permission using params
+    const canViewDocument: Guard<AppContext> = (ctx, params) => {
+      // Guards now execute synchronously, use context for data
+      return ctx.permissions[params.docId] || false;
     };
-    
+
     router = Router({
       target: '#app',
       type: 'hash',
-      context: { 
-        apiEndpoint: '/api'
+      context: {
+        permissions: mockPermissions
       }
     });
-    
+
     const { page, initialize, navigate } = router;
-    
-    @page({ 
-      tag: uniqueName, 
+
+    @page({
+      tag: uniqueName,
       routes: ['/documents/:docId'],
       guards: canViewDocument
     })
@@ -162,15 +161,15 @@ describe('Router Guards with Params', () => {
         return '<h1>Document Page</h1>';
       }
     }
-    
+
     initialize();
-    
-    // Should allow - mock API returns true for doc 123
+
+    // Should allow - context has permission for doc 123
     await navigate('/documents/123');
     let pageElement = container.querySelector(uniqueName);
     expect(pageElement).toBeTruthy();
-    
-    // Should deny - mock API returns false for doc 456
+
+    // Should deny - context has no permission for doc 456
     await navigate('/documents/456');
     expect(container.innerHTML).toContain('403');
   });

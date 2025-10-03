@@ -585,24 +585,23 @@ class AdminPanel extends HTMLElement {
 ```
 
 
-### Async Guards
+### Guards with Context Data
 
-Guards can be async for checking permissions from APIs:
+Guards execute synchronously and should use data from the context for permission checks:
 
 ```typescript
-const canEditResource: Guard<AppContext> = async (ctx, params: RouteParams) => {
+const canEditResource: Guard<AppContext> = (ctx, params: RouteParams) => {
   const user = ctx.getUser();
   if (!user) return false;
-  
-  // Use params in API call
-  const response = await fetch(`/api/resources/${params.resourceId}/permissions/${user.id}`);
-  const permissions = await response.json();
+
+  // Use context data for permission checks
+  const permissions = ctx.getPermissions(params.resourceId);
   return permissions.includes('edit');
 };
 
-@page({ 
+@page({
   tag: 'editor-page',
-  routes: ['/editor'],
+  routes: ['/editor/:resourceId'],
   guards: canEditResource
 })
 class EditorPage extends HTMLElement {
@@ -611,6 +610,8 @@ class EditorPage extends HTMLElement {
   }
 }
 ```
+
+**Note:** Guards must be synchronous. If you need to check permissions from APIs, fetch and store that data in your context before navigation, or handle permission checks within your page components or controllers.
 
 ### Custom 403 Page
 
@@ -712,9 +713,9 @@ function logout() {
 ### Guard Best Practices
 
 1. **Keep guards simple**: Guards should only check conditions, not perform side effects
-2. **Use async sparingly**: Only use async guards when necessary (API checks)
+2. **Use context for data**: Store permissions and auth data in context for synchronous checks
 3. **Provide feedback**: Always define a custom 403 page for better UX
-4. **Cache results**: For expensive checks, cache guard results
+4. **Cache in context**: For expensive permission checks, cache results in your context object
 5. **Test thoroughly**: Write tests for all guard scenarios
 
 ## Layouts
