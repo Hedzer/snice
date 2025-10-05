@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Placard Demo - Snice</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    #app {
+      min-height: 100vh;
+    }
+
+    /* Navigation styling */
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      text-decoration: none;
+      color: #333;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+    }
+    .nav-link:hover {
+      background-color: #f0f0f0;
+    }
+    .nav-link--active {
+      background-color: #e3f2fd;
+      color: #1976d2;
+      font-weight: 500;
+    }
+    .nav-icon {
+      font-size: 1.2rem;
+    }
+    .nav-group {
+      margin-bottom: 1rem;
+    }
+    .nav-submenu {
+      list-style: none;
+      padding-left: 2rem;
+      margin: 0.25rem 0;
+    }
+    .nav-item {
+      margin: 0.25rem 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script type="module">
+    import { Router } from '../../src/router.ts';
+    import './snice-layout-sidebar.ts';
+
+    // Define placards for pages
+    const dashboardPlacard = {
+      name: 'dashboard',
+      title: 'Dashboard',
+      description: 'Main dashboard overview',
+      icon: '📊',
+      show: true,
+      order: 1
+    };
+
+    const usersPlacard = {
+      name: 'users',
+      title: 'Users',
+      description: 'User management',
+      icon: '👥',
+      show: true,
+      order: 2,
+      group: 'admin'
+    };
+
+    const userListPlacard = {
+      name: 'user-list',
+      title: 'All Users',
+      description: 'View all users',
+      parent: 'users',
+      show: true,
+      order: 1
+    };
+
+    const userCreatePlacard = {
+      name: 'user-create',
+      title: 'Create User',
+      description: 'Add a new user',
+      parent: 'users',
+      show: true,
+      order: 2
+    };
+
+    const settingsPlacard = {
+      name: 'settings',
+      title: 'Settings',
+      description: 'Application settings',
+      icon: '⚙️',
+      show: true,
+      order: 3,
+      group: 'admin'
+    };
+
+    // Create router with sidebar layout
+    const router = Router({
+      target: '#app',
+      type: 'hash',
+      layout: 'snice-layout-sidebar'
+    });
+
+    const { page: createPage, initialize } = router;
+
+    // Dashboard page
+    createPage({
+      tag: 'dashboard-page',
+      routes: ['/'],
+      placard: dashboardPlacard
+    })(class extends HTMLElement {
+      html() {
+        return `
+          <div style="padding: 2rem;">
+            <h1>📊 Dashboard</h1>
+            <p>Welcome to the dashboard! This is the main overview page.</p>
+            <p>The navigation is automatically built from placards.</p>
+          </div>
+        `;
+      }
+    });
+
+    // Users page
+    createPage({
+      tag: 'users-page',
+      routes: ['/users'],
+      placard: usersPlacard
+    })(class extends HTMLElement {
+      html() {
+        return `
+          <div style="padding: 2rem;">
+            <h1>👥 Users</h1>
+            <p>User management section</p>
+            <nav>
+              <a href="#/user-list">View All Users</a> |
+              <a href="#/user-create">Create New User</a>
+            </nav>
+          </div>
+        `;
+      }
+    });
+
+    // User list page
+    createPage({
+      tag: 'user-list-page',
+      routes: ['/user-list'],
+      placard: userListPlacard
+    })(class extends HTMLElement {
+      html() {
+        return `
+          <div style="padding: 2rem;">
+            <h2>All Users</h2>
+            <p>This is a child page of Users, shown in the submenu.</p>
+            <ul>
+              <li>User 1</li>
+              <li>User 2</li>
+              <li>User 3</li>
+            </ul>
+          </div>
+        `;
+      }
+    });
+
+    // User create page
+    createPage({
+      tag: 'user-create-page',
+      routes: ['/user-create'],
+      placard: userCreatePlacard
+    })(class extends HTMLElement {
+      html() {
+        return `
+          <div style="padding: 2rem;">
+            <h2>Create User</h2>
+            <p>This is another child page of Users.</p>
+            <form>
+              <input type="text" placeholder="Name" style="display: block; margin: 0.5rem 0;">
+              <input type="email" placeholder="Email" style="display: block; margin: 0.5rem 0;">
+              <button type="button">Create User</button>
+            </form>
+          </div>
+        `;
+      }
+    });
+
+    // Settings page
+    createPage({
+      tag: 'settings-page',
+      routes: ['/settings'],
+      placard: settingsPlacard
+    })(class extends HTMLElement {
+      html() {
+        return `
+          <div style="padding: 2rem;">
+            <h1>⚙️ Settings</h1>
+            <p>Application settings and configuration</p>
+            <label>
+              <input type="checkbox"> Enable notifications
+            </label>
+            <br>
+            <label>
+              <input type="checkbox"> Dark mode
+            </label>
+          </div>
+        `;
+      }
+    });
+
+    // Start the router
+    initialize();
+  </script>
+</body>
+</html>

@@ -1,8 +1,20 @@
-import { element } from 'snice';
+import { element, part, query, property } from 'snice';
+import type { AppContext, Placard, RouteParams, Layout } from 'snice';
 import css from './snice-layout-landing.css?inline';
+import '../nav/snice-nav.ts';
+import type { SniceNav } from '../nav/snice-nav.ts';
 
 @element('snice-layout-landing')
-export class SniceLayoutLanding extends HTMLElement {
+export class SniceLayoutLanding extends HTMLElement implements Layout {
+  @query('snice-nav')
+  navElement?: SniceNav;
+
+  @property({ type: Boolean, attribute: 'use-nav' })
+  useNav = false;
+
+  private placards: Placard[] = [];
+  private currentRoute = '';
+
   html() {
     return /*html*/`
       <div class="layout">
@@ -13,25 +25,29 @@ export class SniceLayoutLanding extends HTMLElement {
                 <h1>Brand</h1>
               </slot>
             </div>
-            <nav class="nav">
-              <slot name="nav"></slot>
-            </nav>
+            ${this.useNav ? /*html*/`
+              <snice-nav class="nav" part="nav" variant="flat" orientation="horizontal"></snice-nav>
+            ` : /*html*/`
+              <nav class="nav">
+                <slot name="nav"></slot>
+              </nav>
+            `}
             <div class="cta">
               <slot name="cta"></slot>
             </div>
           </div>
         </header>
-        
+
         <main class="main">
           <section class="hero">
             <slot name="hero"></slot>
           </section>
-          
+
           <div class="content">
             <slot></slot>
           </div>
         </main>
-        
+
         <footer class="footer">
           <div class="container">
             <slot name="footer"></slot>
@@ -43,5 +59,22 @@ export class SniceLayoutLanding extends HTMLElement {
 
   css() {
     return css;
+  }
+
+  update(_appContext: AppContext, placards: Placard[], currentRoute: string, _routeParams: RouteParams): void {
+    this.placards = placards;
+    this.currentRoute = currentRoute;
+    this.useNav = true;
+
+    this.renderNav();
+  }
+
+  @part('nav')
+  renderNav() {
+    if (this.navElement) {
+      this.navElement.placards = this.placards;
+      this.navElement.currentRoute = this.currentRoute;
+    }
+    return '';
   }
 }

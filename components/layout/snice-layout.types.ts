@@ -1,5 +1,11 @@
-import type { SniceElement } from 'snice';
+import type { SniceElement, AppContext, Placard, RouteParams } from 'snice';
 
 export interface SniceLayoutElement extends SniceElement {
-  // Add layout-specific properties and methods here as needed
+  // Layout update method called by router on navigation
+  update?(
+    appContext: AppContext,
+    placards: Placard[],
+    currentRoute: string,
+    routeParams: RouteParams,
+  ): void;
 }

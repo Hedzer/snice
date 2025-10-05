@@ -1,18 +1,25 @@
 import { page } from '../router';
 import { containerStyles } from '../styles/shared';
+import type { Placard, Transition } from '../../../src/index';
 
-@page({ 
-  tag: 'home-page', 
-  routes: ['/'],
-  // Zoom transition for home page
-  transition: {
-    mode: 'simultaneous',
-    outDuration: 150,
-    inDuration: 150,
-    out: 'opacity: 0; transform: scale(1.05);',
-    in: 'opacity: 1; transform: scale(1);'
-  }
-})
+const placard: Placard = {
+  name: 'home',
+  title: 'Home',
+  description: 'Welcome to Snice - a simple, decorator-based framework',
+  icon: '🏠',
+  show: true,
+  order: 1
+};
+
+const transition: Transition = {
+  mode: 'simultaneous',
+  outDuration: 150,
+  inDuration: 150,
+  out: 'opacity: 0; transform: scale(1.05);',
+  in: 'opacity: 1; transform: scale(1);'
+};
+
+@page({ tag: 'home-page', routes: ['/'], placard, transition })
 export class HomePage extends HTMLElement {
   html() {
     return /*html*/`

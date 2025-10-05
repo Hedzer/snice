@@ -1,14 +1,20 @@
 import { page } from '../router';
 import { on, query } from '../../../src';
+import type { Placard } from '../../../src/index';
 import '../components/todo-item';
 import '../components/todo-list';
 import '../controllers/todo-controller';
 
-@page({ 
-  tag: 'todo-page', 
-  routes: ['/todos'],
-  // Using default fade transition
-})
+const placard: Placard = {
+  name: 'todos',
+  title: 'Todos',
+  description: 'Stay organized and productive with your todo list',
+  icon: '✨',
+  show: true,
+  order: 2
+};
+
+@page({ tag: 'todo-page', routes: ['/todos'], placard })
 export class TodoPage extends HTMLElement {
   @query('#todo-input')
   todoInput!: HTMLInputElement;

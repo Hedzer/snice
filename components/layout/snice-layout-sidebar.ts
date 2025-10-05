@@ -1,14 +1,24 @@
-import { element, property, on, query } from 'snice';
+import { element, property, on, query, part } from 'snice';
+import type { AppContext, Placard, RouteParams, Layout } from 'snice';
 import css from './snice-layout-sidebar.css?inline';
 import '../drawer/snice-drawer.ts';
+import '../nav/snice-nav.ts';
+import type { SniceNav } from '../nav/snice-nav.ts';
+import type { SniceDrawerElement } from '../drawer/snice-drawer.types.ts';
 
 @element('snice-layout-sidebar')
-export class SniceLayoutSidebar extends HTMLElement {
+export class SniceLayoutSidebar extends HTMLElement implements Layout {
   @property({ type: Boolean,  })
   collapsed = false;
 
   @query('.sidebar-drawer')
-  sidebarDrawer?: HTMLElement;
+  sidebarDrawer?: SniceDrawerElement;
+
+  @query('snice-nav')
+  navElement!: SniceNav;
+
+  private placards: Placard[] = [];
+  private currentRoute = '';
 
   html() {
     return /*html*/`
@@ -32,13 +42,11 @@ export class SniceLayoutSidebar extends HTMLElement {
         <div class="body-area">
           <snice-drawer class="sidebar-drawer" position="left" size="medium" contained>
             <span slot="title">Navigation</span>
-            <nav class="sidebar-nav">
-              <slot name="nav"></slot>
-            </nav>
+            <snice-nav class="sidebar-nav" part="nav" variant="hierarchical" orientation="vertical"></snice-nav>
           </snice-drawer>
 
           <main class="main">
-            <slot></slot>
+            <slot name="page"></slot>
           </main>
         </div>
 
@@ -55,8 +63,25 @@ export class SniceLayoutSidebar extends HTMLElement {
 
   @on('click', '.sidebar-toggle')
   handleSidebarToggle() {
-    if (this.sidebarDrawer && 'toggle' in this.sidebarDrawer) {
-      (this.sidebarDrawer as any).toggle();
+    if (this.sidebarDrawer) {
+      this.sidebarDrawer.toggle();
     }
+  }
+
+  update(_appContext: AppContext, placards: Placard[], currentRoute: string, _routeParams: RouteParams): void {
+    this.placards = placards;
+    this.currentRoute = currentRoute;
+
+    // Update the navigation
+    this.renderNav();
+  }
+
+  @part('nav')
+  renderNav() {
+    if (this.navElement) {
+      this.navElement.placards = this.placards;
+      this.navElement.currentRoute = this.currentRoute;
+    }
+    return '';
   }
 }
