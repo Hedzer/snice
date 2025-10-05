@@ -18,7 +18,7 @@ export class SniceLayoutCard extends HTMLElement {
         
         <main class="main">
           <div class="grid">
-            <slot></slot>
+            <slot name="page"></slot>
           </div>
         </main>
         

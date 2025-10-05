@@ -1,4 +1,4 @@
-import { element, part, query } from 'snice';
+import { element, query, ready } from 'snice';
 import type { AppContext, Placard, RouteParams, Layout } from 'snice';
 import css from './snice-layout.css?inline';
 import '../nav/snice-nav.ts';
@@ -21,7 +21,7 @@ export class SniceLayout extends HTMLElement implements Layout {
               <h1>App</h1>
             </slot>
           </div>
-          <snice-nav class="nav" part="nav" variant="flat" orientation="horizontal"></snice-nav>
+          <snice-nav class="nav" variant="flat" orientation="horizontal"></snice-nav>
         </header>
 
         <main class="main">
@@ -40,20 +40,27 @@ export class SniceLayout extends HTMLElement implements Layout {
     return css;
   }
 
+  @ready()
+  onReady() {
+    // Update nav if we already have placards
+    if (this.placards.length > 0) {
+      this.updateNav();
+    }
+  }
+
   update(_appContext: AppContext, placards: Placard[], currentRoute: string, _routeParams: RouteParams): void {
     this.placards = placards;
     this.currentRoute = currentRoute;
 
-    // Update navigation
-    this.renderNav();
+    // Update navigation - only if shadow DOM exists
+    if (this.shadowRoot) {
+      this.updateNav();
+    }
   }
 
-  @part('nav')
-  renderNav() {
+  updateNav() {
     if (this.navElement) {
-      this.navElement.placards = this.placards;
-      this.navElement.currentRoute = this.currentRoute;
+      this.navElement.update(this.placards, this.currentRoute);
     }
-    return '';
   }
 }

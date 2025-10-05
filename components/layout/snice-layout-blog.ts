@@ -39,7 +39,7 @@ export class SniceLayoutBlog extends HTMLElement implements Layout {
           <div class="container">
             <div class="content-area">
               <article class="article">
-                <slot></slot>
+                <slot name="page"></slot>
               </article>
 
               <aside class="sidebar">

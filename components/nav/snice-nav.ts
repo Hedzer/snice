@@ -1,11 +1,11 @@
-import { element, property } from 'snice';
+import { element, property, part } from 'snice';
 import type { Placard } from 'snice';
 import css from './snice-nav.css?inline';
 import type { SniceNavElement, NavVariant, NavOrientation } from './snice-nav.types';
 
 @element('snice-nav')
 export class SniceNav extends HTMLElement implements SniceNavElement {
-  @property({ type: Array })
+
   placards: Placard[] = [];
 
   @property()
@@ -18,23 +18,7 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
   orientation: NavOrientation = 'horizontal';
 
   html() {
-    const navItems = this.placards
-      .filter(p => !p.parent && p.show !== false)
-      .sort((a, b) => (a.order || 0) - (b.order || 0));
-
-    if (navItems.length === 0) {
-      return '<slot></slot>';
-    }
-
-    if (this.variant === 'grouped') {
-      return this.renderGrouped(navItems);
-    }
-
-    if (this.variant === 'hierarchical') {
-      return this.renderHierarchical(navItems);
-    }
-
-    return this.renderFlat(navItems);
+    return /*html*/`<div part="nav-content"></div><slot></slot>`;
   }
 
   css() {
@@ -138,5 +122,32 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
     return this.currentRoute === placard.name ||
            this.currentRoute.startsWith(`/${placard.name}`) ||
            (placard.name === 'home' && this.currentRoute === '/');
+  }
+
+  update(placards: Placard[], currentRoute: string) {
+    this.placards = placards;
+    this.currentRoute = currentRoute;
+    this.renderNavContent();
+  }
+
+  @part('nav-content')
+  renderNavContent() {
+    const navItems = this.placards
+      .filter(p => !p.parent && p.show !== false)
+      .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+    if (navItems.length === 0) {
+      return '';
+    }
+
+    if (this.variant === 'grouped') {
+      return this.renderGrouped(navItems);
+    }
+
+    if (this.variant === 'hierarchical') {
+      return this.renderHierarchical(navItems);
+    }
+
+    return this.renderFlat(navItems);
   }
 }

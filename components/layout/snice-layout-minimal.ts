@@ -7,7 +7,7 @@ export class SniceLayoutMinimal extends HTMLElement {
     return /*html*/`
       <div class="layout">
         <main class="main">
-          <slot></slot>
+          <slot name="page"></slot>
         </main>
       </div>
     `;

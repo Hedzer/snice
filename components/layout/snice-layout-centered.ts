@@ -10,7 +10,7 @@ export class SniceLayoutCentered extends HTMLElement {
     return /*html*/`
       <div class="layout">
         <div class="container">
-          <slot></slot>
+          <slot name="page"></slot>
         </div>
       </div>
     `;

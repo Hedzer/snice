@@ -18,7 +18,7 @@ export class SniceLayoutFullscreen extends HTMLElement {
         </div>
         
         <div class="content">
-          <slot></slot>
+          <slot name="page"></slot>
         </div>
         
         <div class="controls">

@@ -44,7 +44,7 @@ export class SniceLayoutLanding extends HTMLElement implements Layout {
           </section>
 
           <div class="content">
-            <slot></slot>
+            <slot name="page"></slot>
           </div>
         </main>
 
