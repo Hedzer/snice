@@ -1,8 +1,9 @@
 import { Router } from 'snice';
 
-const { page, initialize, navigate } = Router({ 
-  target: '#app', 
+const { page, initialize, navigate } = Router({
+  target: '#app',
   type: 'hash',
+  layout: 'snice-layout',
   transition: {
     mode: 'simultaneous',
     outDuration: 200,

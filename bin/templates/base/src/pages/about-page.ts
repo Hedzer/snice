@@ -1,6 +1,15 @@
 import { page } from '../router';
+import type { Placard } from 'snice';
 
-@page({ tag: 'about-page', routes: ['/about'] })
+const placard: Placard = {
+  name: 'about',
+  title: 'About',
+  icon: 'ℹ️',
+  show: true,
+  order: 2
+};
+
+@page({ tag: 'about-page', routes: ['/about'], placard })
 export class AboutPage extends HTMLElement {
   html() {
     return /*html*/`
