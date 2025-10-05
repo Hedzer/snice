@@ -1,3 +1,10 @@
+# [2.5.0](https://gitlab.com/Hedzer/snice/compare/v2.4.0...v2.5.0) (2025-10-05)
+
+
+### Features
+
+* updated template project with a layout ([a2eb6da](https://gitlab.com/Hedzer/snice/commit/a2eb6da3f238b5403fec7e845b7c919bc88883d7))
+
 # [2.4.0](https://gitlab.com/Hedzer/snice/compare/v2.3.0...v2.4.0) (2025-10-05)
 
 
