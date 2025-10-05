@@ -1,3 +1,10 @@
+## [2.5.3](https://gitlab.com/Hedzer/snice/compare/v2.5.2...v2.5.3) (2025-10-05)
+
+
+### Bug Fixes
+
+* slot and render fixes ([25244f8](https://gitlab.com/Hedzer/snice/commit/25244f83eeda37a2ddc77d54ec4670d140a954c9))
+
 ## [2.5.2](https://gitlab.com/Hedzer/snice/compare/v2.5.1...v2.5.2) (2025-10-05)
 
 
