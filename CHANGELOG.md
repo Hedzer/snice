@@ -1,3 +1,10 @@
+## [2.5.1](https://gitlab.com/Hedzer/snice/compare/v2.5.0...v2.5.1) (2025-10-05)
+
+
+### Bug Fixes
+
+* component export fixes ([b3a7a99](https://gitlab.com/Hedzer/snice/commit/b3a7a99c896b1b6b03cc0463659eb4a94af98feb))
+
 # [2.5.0](https://gitlab.com/Hedzer/snice/compare/v2.4.0...v2.5.0) (2025-10-05)
 
 
