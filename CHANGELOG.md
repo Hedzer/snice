@@ -1,3 +1,10 @@
+## [2.5.2](https://gitlab.com/Hedzer/snice/compare/v2.5.1...v2.5.2) (2025-10-05)
+
+
+### Bug Fixes
+
+* updated snice version for bin/template ([7b37b37](https://gitlab.com/Hedzer/snice/commit/7b37b371483c5a4fb0fe88dfc5f43ab1b341153a))
+
 ## [2.5.1](https://gitlab.com/Hedzer/snice/compare/v2.5.0...v2.5.1) (2025-10-05)
 
 
