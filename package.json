@@ -24,7 +24,10 @@
       "require": "./dist/transitions.cjs",
       "types": "./dist/types/transitions.d.ts"
     },
-    "./components/*": "./dist/components/*"
+    "./components/*": {
+      "import": "./dist/components/*.js",
+      "types": "./dist/components/*.d.ts"
+    }
   },
   "bin": {
     "snice": "./bin/snice.js"
