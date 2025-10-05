@@ -1,3 +1,21 @@
+# [2.4.0](https://gitlab.com/Hedzer/snice/compare/v2.3.0...v2.4.0) (2025-10-05)
+
+
+### Bug Fixes
+
+* drawer fade & scroll fixes ([8801dd7](https://gitlab.com/Hedzer/snice/commit/8801dd7e916ba7151914651ed4a304aa3e6bda01))
+* event naming & fire frequency ([5862947](https://gitlab.com/Hedzer/snice/commit/5862947304331fe6b5e4c4c65203069968e29b0c))
+* improved import DX ([c62ae74](https://gitlab.com/Hedzer/snice/commit/c62ae748147d5ac5068f6e1f256cc6ffab6e0ec7))
+* style visibility touch ups for sidebar layout ([91ab2d7](https://gitlab.com/Hedzer/snice/commit/91ab2d7ce30c6ed432f8a66cd1810ad6c68057f4))
+
+
+### Features
+
+* added [@moved](https://gitlab.com/moved) & [@adopted](https://gitlab.com/adopted) ([cf84709](https://gitlab.com/Hedzer/snice/commit/cf84709e721f2fb64c2a5c288e12fbc66c70279c))
+* added snice-nav & placard integration for layouts ([64976fb](https://gitlab.com/Hedzer/snice/commit/64976fb57fb19f4fc4d3e9ec664d29657d319b1f))
+* contained drawers ([a74d27e](https://gitlab.com/Hedzer/snice/commit/a74d27e71d1f1ed28bf1c9317a86b909f7aca2be))
+* placards, app context, and layout updates ([4566d80](https://gitlab.com/Hedzer/snice/commit/4566d80f2edcd415c1a55ec3e3993f6548984e2f))
+
 # [2.3.0](https://gitlab.com/Hedzer/snice/compare/v2.2.3...v2.3.0) (2025-09-19)
 
 
