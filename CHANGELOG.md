@@ -1,3 +1,10 @@
+## [2.5.4](https://gitlab.com/Hedzer/snice/compare/v2.5.3...v2.5.4) (2025-10-05)
+
+
+### Bug Fixes
+
+* removed transitions ([049c1f1](https://gitlab.com/Hedzer/snice/commit/049c1f17ebb8ba5b4ba7bd651f7c3514e1f0728c))
+
 ## [2.5.3](https://gitlab.com/Hedzer/snice/compare/v2.5.2...v2.5.3) (2025-10-05)
 
 
