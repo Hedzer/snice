@@ -62,3 +62,12 @@ export const ADOPTED_TIMERS = getSymbol('adopted-timers');
 
 // Dispatch timing symbols
 export const DISPATCH_TIMERS = getSymbol('dispatch-timers');
+
+// Render symbols (v3.0.0)
+export const RENDER_METHOD = getSymbol('render-method');
+export const RENDER_OPTIONS = getSymbol('render-options');
+export const RENDER_INSTANCE = getSymbol('render-instance');
+export const RENDER_SCHEDULED = getSymbol('render-scheduled');
+export const RENDER_TIMERS = getSymbol('render-timers');
+export const STYLES_METHOD = getSymbol('styles-method');
+export const STYLES_APPLIED = getSymbol('styles-applied');

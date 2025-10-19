@@ -1,6 +1,6 @@
-import { setupEventHandlers, cleanupEventHandlers } from './events';
 import { setupObservers, cleanupObservers } from './observe';
 import { setupResponseHandlers, cleanupResponseHandlers } from './request-response';
+import { setupEventHandlers, cleanupEventHandlers } from './on';
 import { IS_CONTROLLER_CLASS, IS_CONTROLLER_INSTANCE, CONTROLLER_KEY, CONTROLLER_NAME_KEY, CONTROLLER_ID, CONTROLLER_OPERATIONS, NATIVE_CONTROLLER, IS_ELEMENT_CLASS, ROUTER_CONTEXT } from './symbols';
 import { snice } from './global';
 import { IController, ControllerClass } from './types/i-controller';
@@ -126,14 +126,14 @@ export async function attachController(element: HTMLElement, controllerName: str
     await controllerInstance.attach(element);
   });
   
-  // Setup @on event handlers for controller
-  setupEventHandlers(controllerInstance, element);
-  
   // Setup @observe observers for controller
   setupObservers(controllerInstance, element);
-  
+
   // Setup @channel handlers for controller
   setupResponseHandlers(controllerInstance, element);
+
+  // Setup @on event handlers for controller
+  setupEventHandlers(controllerInstance, element);
   
   element.dispatchEvent(new CustomEvent('@snice/controller-attached', {
     detail: { name: controllerName, controller: controllerInstance }
@@ -163,15 +163,15 @@ export async function detachController(element: HTMLElement): Promise<void> {
   }
   
   controllerInstance.element = null;
-  
-  // Cleanup @on event handlers for controller
-  cleanupEventHandlers(controllerInstance);
-  
+
   // Cleanup @observe observers for controller
   cleanupObservers(controllerInstance);
-  
+
   // Cleanup @channel handlers for controller
   cleanupResponseHandlers(controllerInstance);
+
+  // Cleanup @on event handlers for controller
+  cleanupEventHandlers(controllerInstance);
   
   // Cleanup the controller scope
   if (scope) {

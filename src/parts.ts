@@ -1,0 +1,764 @@
+/**
+ * Simplified lit-html-style template system
+ * Based on lit-html's approach but simplified
+ */
+
+import { TemplateResult, CSSResult, HTML_RESULT, CSS_RESULT, isTemplateResult } from './template';
+
+// Unique marker for dynamic parts
+const marker = `{{lit-${String(Math.random()).slice(2)}}}`;
+const nodeMarker = `<!--${marker}-->`;
+const markerRegex = new RegExp(marker, 'g');
+
+/**
+ * Template cache - maps template strings to prepared templates
+ */
+const templateCache = new Map<TemplateStringsArray, Template>();
+
+/**
+ * A prepared template ready for rendering
+ */
+class Template {
+  parts: TemplatePart[] = [];
+  element: HTMLTemplateElement;
+
+  constructor(result: TemplateResult, element: HTMLTemplateElement, attrNamesForParts: string[]) {
+    this.element = element;
+    const walker = document.createTreeWalker(
+      element.content,
+      NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_COMMENT | NodeFilter.SHOW_TEXT
+    );
+
+    let partIndex = 0;
+    const nodesToRemove: Node[] = [];
+    let node: Node | null;
+
+    while ((node = walker.nextNode()) !== null) {
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        const element = node as Element;
+        const tagName = element.tagName.toLowerCase();
+
+        // Handle virtual elements: <if>, <case>
+        if (tagName === 'if') {
+          // <if ${condition}>children</if>
+          // The condition becomes an attribute with a name like "lit-NUMBERS"
+          const markerAttr = Array.from(element.attributes).find(attr => attr.name.startsWith('lit-'));
+
+          if (markerAttr) {
+            // Replace <if> with comment markers
+            const parent = element.parentNode!;
+            const startComment = document.createComment('if-start');
+            const endComment = document.createComment('if-end');
+
+            parent.insertBefore(startComment, element);
+            parent.insertBefore(endComment, element.nextSibling);
+
+            // Remove the marker attribute so it doesn't get processed as a regular attribute
+            element.removeAttribute(markerAttr.name);
+
+            this.parts.push({
+              type: 'if',
+              index: partIndex++,
+              startNode: startComment,
+              endNode: endComment,
+              element // Keep reference to actual element, don't remove it
+            });
+
+            // DON'T remove element, DON'T skip children - let them be processed normally
+            // The <if> element stays in template and children's parts work normally
+          }
+          continue;
+        }
+
+        // Handle <case> element
+        if (tagName === 'case') {
+          // <case ${value}>children</case>
+          // The value becomes an attribute with a name like "lit-NUMBERS"
+          const markerAttr = Array.from(element.attributes).find(attr => attr.name.startsWith('lit-'));
+
+          if (markerAttr) {
+            const parent = element.parentNode!;
+            const startComment = document.createComment('case-start');
+            const endComment = document.createComment('case-end');
+
+            parent.insertBefore(startComment, element);
+            parent.insertBefore(endComment, element.nextSibling);
+
+            // Remove the marker attribute so it doesn't get processed as a regular attribute
+            element.removeAttribute(markerAttr.name);
+
+            this.parts.push({
+              type: 'case',
+              index: partIndex++,
+              startNode: startComment,
+              endNode: endComment,
+              caseElement: element // Keep reference to actual element
+            });
+
+            // DON'T remove element, DON'T skip children - let them be processed normally
+            // The <case> element stays in template and children's parts work normally
+          }
+          continue;
+        }
+
+        if (element.hasAttributes()) {
+          const attributes = element.attributes;
+          const attrsToRemove: Attr[] = [];
+
+          for (let i = 0; i < attributes.length; i++) {
+            const attr = attributes[i];
+            const value = attr.value;
+
+            // Check for attribute bindings
+            if (value.includes(marker)) {
+              attrsToRemove.push(attr);
+
+              // Get original attribute name with preserved case
+              const originalName = attrNamesForParts[partIndex] || attr.name;
+
+              if (originalName.startsWith('@')) {
+                // Event binding
+                this.parts.push({
+                  type: 'event',
+                  index: partIndex++,
+                  name: originalName.slice(1),
+                  element
+                });
+              } else if (originalName.startsWith('.')) {
+                // Property binding - preserve original case for JavaScript properties
+                this.parts.push({
+                  type: 'property',
+                  index: partIndex++,
+                  name: originalName.slice(1),
+                  element
+                });
+              } else if (originalName.startsWith('?')) {
+                // Boolean attribute
+                this.parts.push({
+                  type: 'boolean-attribute',
+                  index: partIndex++,
+                  name: originalName.slice(1),
+                  element
+                });
+              } else {
+                // Regular attribute - use lowercased name from DOM
+                this.parts.push({
+                  type: 'attribute',
+                  index: partIndex++,
+                  name: attr.name,
+                  element
+                });
+              }
+            }
+          }
+
+          // Remove marker attributes
+          for (const attr of attrsToRemove) {
+            element.removeAttribute(attr.name);
+          }
+        }
+      } else if (node.nodeType === Node.COMMENT_NODE) {
+        const comment = node as Comment;
+        if (comment.data === marker) {
+          // Node part
+          const parent = comment.parentNode!;
+          const endNode = document.createComment('');
+          parent.insertBefore(endNode, comment.nextSibling);
+
+          this.parts.push({
+            type: 'node',
+            index: partIndex++,
+            startNode: comment,
+            endNode
+          });
+        }
+      } else if (node.nodeType === Node.TEXT_NODE) {
+        const text = node as Text;
+        const data = text.data;
+
+        if (data.includes(marker)) {
+          // Split text node at markers
+          const parent = text.parentNode!;
+          const parts = data.split(markerRegex);
+          const lastIndex = parts.length - 1;
+
+          for (let i = 0; i < lastIndex; i++) {
+            parent.insertBefore(document.createTextNode(parts[i]), text);
+            const comment = document.createComment('');
+            const endNode = document.createComment('');
+            parent.insertBefore(comment, text);
+            parent.insertBefore(endNode, text);
+
+            this.parts.push({
+              type: 'node',
+              index: partIndex++,
+              startNode: comment,
+              endNode
+            });
+          }
+
+          // Last part
+          if (parts[lastIndex] !== '') {
+            text.data = parts[lastIndex];
+          } else {
+            nodesToRemove.push(text);
+          }
+        }
+      }
+    }
+
+    // Remove marker nodes
+    for (const node of nodesToRemove) {
+      node.parentNode?.removeChild(node);
+    }
+  }
+}
+
+interface TemplatePart {
+  type: 'node' | 'attribute' | 'property' | 'boolean-attribute' | 'event' | 'if' | 'case';
+  index: number;
+  name?: string;
+  element?: Element;
+  startNode?: Comment;
+  endNode?: Comment;
+  caseElement?: Element; // For case/when matching
+}
+
+/**
+ * Prepare a template for rendering
+ */
+function prepareTemplate(result: TemplateResult): Template {
+  let cached = templateCache.get(result.strings);
+  if (cached) {
+    return cached;
+  }
+
+  // Build HTML with markers and extract original attribute names
+  const { strings } = result;
+  let html = '';
+  const attrNamesForParts: string[] = [];
+
+  for (let i = 0; i < strings.length; i++) {
+    const str = strings[i];
+    html += str;
+
+    if (i < strings.length - 1) {
+      // Check if we're in an attribute context
+      // Look backwards for = sign
+      const lastEquals = str.lastIndexOf('=');
+      const lastCloseTag = str.lastIndexOf('>');
+
+      if (lastEquals > lastCloseTag) {
+        // We're in an attribute value - extract and preserve the original attribute name
+        let attrStart = lastEquals - 1;
+        while (attrStart >= 0 && /\S/.test(str[attrStart])) {
+          attrStart--;
+        }
+        const attrName = str.substring(attrStart + 1, lastEquals).trim();
+        attrNamesForParts.push(attrName);
+        html += marker;
+      } else {
+        // We're in node content
+        attrNamesForParts.push(''); // Empty string for node parts
+        html += nodeMarker;
+      }
+    }
+  }
+
+  const template = document.createElement('template');
+  template.innerHTML = html;
+
+  const preparedTemplate = new Template(result, template, attrNamesForParts);
+  templateCache.set(result.strings, preparedTemplate);
+  return preparedTemplate;
+}
+
+/**
+ * Instance of a rendered template
+ */
+export class TemplateInstance {
+  template: Template;
+  parts: Part[] = [];
+  fragment: DocumentFragment | null = null;
+
+  constructor(result: TemplateResult) {
+    this.template = prepareTemplate(result);
+  }
+
+  renderFragment(): DocumentFragment {
+    if (!this.fragment) {
+      // First render - clone template and create parts
+      this.fragment = this.template.element.content.cloneNode(true) as DocumentFragment;
+
+      // Build a map of nodes from template to cloned fragment
+      const walker = document.createTreeWalker(
+        this.template.element.content,
+        NodeFilter.SHOW_ALL
+      );
+      const clonedWalker = document.createTreeWalker(
+        this.fragment,
+        NodeFilter.SHOW_ALL
+      );
+
+      const nodeMap = new Map<Node, Node>();
+      let templateNode = walker.currentNode;
+      let clonedNode = clonedWalker.currentNode;
+
+      while (templateNode && clonedNode) {
+        nodeMap.set(templateNode, clonedNode);
+        templateNode = walker.nextNode()!;
+        clonedNode = clonedWalker.nextNode()!;
+      }
+
+      for (const partDef of this.template.parts) {
+        let part: Part;
+
+        switch (partDef.type) {
+          case 'node':
+            const startNode = nodeMap.get(partDef.startNode!) as Comment;
+            const endNode = nodeMap.get(partDef.endNode!) as Comment;
+            part = new NodePart(startNode, endNode);
+            break;
+          case 'attribute':
+            const attrElement = nodeMap.get(partDef.element!) as Element;
+            part = new AttributePart(attrElement, partDef.name!);
+            break;
+          case 'property':
+            const propElement = nodeMap.get(partDef.element!) as Element;
+            part = new PropertyPart(propElement, partDef.name!);
+            break;
+          case 'boolean-attribute':
+            const boolElement = nodeMap.get(partDef.element!) as Element;
+            part = new BooleanAttributePart(boolElement, partDef.name!);
+            break;
+          case 'event':
+            const eventElement = nodeMap.get(partDef.element!) as Element;
+            part = new EventPart(eventElement, partDef.name!);
+            break;
+          case 'if':
+            const ifStart = nodeMap.get(partDef.startNode!) as Comment;
+            const ifEnd = nodeMap.get(partDef.endNode!) as Comment;
+            const ifElement = nodeMap.get(partDef.element!) as Element;
+            part = new IfPart(ifStart, ifEnd, ifElement);
+            break;
+          case 'case':
+            const caseStart = nodeMap.get(partDef.startNode!) as Comment;
+            const caseEnd = nodeMap.get(partDef.endNode!) as Comment;
+            const caseElement = nodeMap.get(partDef.caseElement!) as Element;
+            part = new CasePart(caseStart, caseEnd, caseElement);
+            break;
+          default:
+            throw new Error(`Unknown part type: ${(partDef as any).type}`);
+        }
+
+        this.parts.push(part);
+      }
+    }
+
+    return this.fragment;
+  }
+
+  render(values: readonly any[]): DocumentFragment {
+    const fragment = this.renderFragment();
+    // Commit values to parts
+    this.update(values);
+    return fragment;
+  }
+
+  update(values: readonly any[]): void {
+    // Process virtual elements (if/case) first
+    for (let i = 0; i < this.parts.length; i++) {
+      const part = this.parts[i];
+      if (part instanceof IfPart || part instanceof CasePart) {
+        part.commit(values[i]);
+      }
+    }
+
+    // Then process all other parts
+    for (let i = 0; i < this.parts.length; i++) {
+      const part = this.parts[i];
+      if (!(part instanceof IfPart || part instanceof CasePart)) {
+        part.commit(values[i]);
+      }
+    }
+  }
+
+  clear(): void {
+    for (const part of this.parts) {
+      part.clear();
+    }
+  }
+}
+
+/**
+ * Base class for all parts
+ */
+export abstract class Part {
+  abstract commit(value: any): void;
+  abstract clear(): void;
+}
+
+/**
+ * NodePart handles text content and nested templates
+ */
+export class NodePart extends Part {
+  private startNode: Comment;
+  private endNode: Comment;
+  private value: any = undefined;
+
+  constructor(startNode: Comment, endNode: Comment) {
+    super();
+    this.startNode = startNode;
+    this.endNode = endNode;
+  }
+
+  commit(value: any): void {
+    if (value === this.value) return;
+    this.value = value;
+
+    // Handle arrays
+    if (Array.isArray(value)) {
+      this.commitArray(value);
+      return;
+    }
+
+    // Handle nested templates
+    if (isTemplateResult(value)) {
+      this.commitTemplate(value);
+      return;
+    }
+
+    // Handle primitives
+    this.commitPrimitive(value);
+  }
+
+  private commitPrimitive(value: any): void {
+    this.clear();
+    const text = value === null || value === undefined ? '' : String(value);
+    const textNode = document.createTextNode(text);
+    this.insertBefore(textNode);
+  }
+
+  private commitTemplate(template: TemplateResult): void {
+    this.clear();
+    const instance = new TemplateInstance(template);
+    const fragment = instance.render(template.values);
+    this.insertBefore(fragment);
+  }
+
+  private commitArray(values: any[]): void {
+    this.clear();
+    for (const value of values) {
+      if (isTemplateResult(value)) {
+        const instance = new TemplateInstance(value);
+        const fragment = instance.render(value.values);
+        this.insertBefore(fragment);
+      } else {
+        const text = value === null || value === undefined ? '' : String(value);
+        const textNode = document.createTextNode(text);
+        this.insertBefore(textNode);
+      }
+    }
+  }
+
+  private insertBefore(node: Node): void {
+    this.endNode.parentNode?.insertBefore(node, this.endNode);
+  }
+
+  clear(): void {
+    const parent = this.startNode.parentNode;
+    if (!parent) return;
+
+    let node = this.startNode.nextSibling;
+    while (node && node !== this.endNode) {
+      const next = node.nextSibling;
+      parent.removeChild(node);
+      node = next;
+    }
+  }
+}
+
+/**
+ * AttributePart handles regular attribute updates
+ */
+export class AttributePart extends Part {
+  readonly element: Element;
+  readonly name: string;
+  private value: any = undefined;
+
+  constructor(element: Element, name: string) {
+    super();
+    this.element = element;
+    this.name = name;
+  }
+
+  commit(value: any): void {
+    if (value === this.value) return;
+    this.value = value;
+
+    if (value === null || value === undefined) {
+      this.element.removeAttribute(this.name);
+    } else {
+      this.element.setAttribute(this.name, String(value));
+    }
+  }
+
+  clear(): void {
+    this.element.removeAttribute(this.name);
+  }
+}
+
+/**
+ * PropertyPart handles property bindings
+ */
+export class PropertyPart extends Part {
+  readonly element: Element;
+  readonly name: string;
+  private value: any = undefined;
+
+  constructor(element: Element, name: string) {
+    super();
+    this.element = element;
+    this.name = name;
+  }
+
+  commit(value: any): void {
+    if (value === this.value) return;
+    this.value = value;
+    (this.element as any)[this.name] = value;
+  }
+
+  clear(): void {
+    (this.element as any)[this.name] = undefined;
+  }
+}
+
+/**
+ * BooleanAttributePart handles boolean attributes
+ */
+export class BooleanAttributePart extends Part {
+  readonly element: Element;
+  readonly name: string;
+  private value: any = undefined;
+
+  constructor(element: Element, name: string) {
+    super();
+    this.element = element;
+    this.name = name;
+  }
+
+  commit(value: any): void {
+    if (value === this.value) return;
+    this.value = value;
+
+    if (value) {
+      this.element.setAttribute(this.name, '');
+    } else {
+      this.element.removeAttribute(this.name);
+    }
+  }
+
+  clear(): void {
+    this.element.removeAttribute(this.name);
+  }
+}
+
+/**
+ * EventPart handles event listener bindings
+ */
+export class EventPart extends Part {
+  readonly element: Element;
+  readonly eventName: string;
+  private listener: EventListener | null = null;
+  private value: any = undefined;
+
+  constructor(element: Element, eventName: string) {
+    super();
+    this.element = element;
+    this.eventName = eventName;
+  }
+
+  commit(value: any): void {
+    // Skip if same value (but null/undefined always triggers update)
+    if (value === this.value && value !== null && value !== undefined) return;
+
+    // Remove old listener
+    if (this.listener) {
+      this.element.removeEventListener(this.eventName, this.listener);
+      this.listener = null;
+    }
+
+    this.value = value;
+
+    // Add new listener
+    if (value === null || value === undefined) {
+      return;
+    }
+
+    if (typeof value === 'function') {
+      // Auto-bind to host element (the custom element with shadow root)
+      // This allows @click=${this.handleClick} to work without manual binding
+      const rootNode = this.element.getRootNode();
+      const host = (rootNode as ShadowRoot).host;
+
+      // Create a wrapper that calls the handler with the host as context
+      // This ensures consistent function reference for proper cleanup
+      if (host) {
+        this.listener = ((event: Event) => {
+          value.call(host, event);
+        }) as EventListener;
+      } else {
+        this.listener = value as EventListener;
+      }
+
+      this.element.addEventListener(this.eventName, this.listener);
+    }
+  }
+
+  clear(): void {
+    if (this.listener) {
+      this.element.removeEventListener(this.eventName, this.listener);
+      this.listener = null;
+    }
+  }
+}
+
+/**
+ * IfPart handles <if> conditional rendering
+ * Removes the <if> wrapper and conditionally renders its children
+ */
+export class IfPart extends Part {
+  private startNode: Comment;
+  private endNode: Comment;
+  private ifElement: HTMLElement;
+  private value: any = undefined;
+  private isAttached: boolean = true; // Track if element is in DOM
+
+  constructor(startNode: Comment, endNode: Comment, ifElement: Element) {
+    super();
+    this.startNode = startNode;
+    this.endNode = endNode;
+    this.ifElement = ifElement as HTMLElement;
+  }
+
+  commit(value: any): void {
+    const condition = Boolean(value);
+
+    // If condition hasn't changed, do nothing
+    if (this.value !== undefined && Boolean(this.value) === condition) {
+      return;
+    }
+
+    this.value = value;
+
+    if (condition) {
+      // Should be visible - insert if not already attached
+      if (!this.isAttached) {
+        // Re-insert between markers
+        const parent = this.startNode.parentNode;
+        if (parent) {
+          parent.insertBefore(this.ifElement, this.endNode);
+          this.isAttached = true;
+        }
+      }
+    } else {
+      // Should be hidden - remove if currently attached
+      if (this.isAttached) {
+        const parent = this.ifElement.parentNode;
+        if (parent) {
+          parent.removeChild(this.ifElement);
+          this.isAttached = false;
+        }
+      }
+    }
+  }
+
+  clear(): void {
+    // Remove element if attached
+    if (this.isAttached) {
+      const parent = this.ifElement.parentNode;
+      if (parent) {
+        parent.removeChild(this.ifElement);
+        this.isAttached = false;
+      }
+    }
+  }
+}
+
+/**
+ * CasePart handles <case>/<when>/<default> conditional rendering
+ * Removes/inserts <when> and <default> children based on value matching
+ */
+export class CasePart extends Part {
+  private caseElement: Element;
+  private value: any = undefined;
+  private attachedChildren: Map<Element, boolean> = new Map(); // Track which children are in DOM
+
+  constructor(startNode: Comment, endNode: Comment, caseElement: Element) {
+    super();
+    this.caseElement = caseElement;
+
+    // Initialize all children as attached
+    Array.from(this.caseElement.children).forEach(child => {
+      this.attachedChildren.set(child, true);
+    });
+  }
+
+  commit(value: any): void {
+    // If value hasn't changed, do nothing
+    if (this.value === value) return;
+
+    this.value = value;
+
+    // Find matching <when> or <default> and remove/insert appropriately
+    const children = Array.from(this.caseElement.children);
+    let hasMatch = false;
+
+    // First pass: check if any <when> matches
+    for (const child of children) {
+      if (child.tagName.toLowerCase() === 'when') {
+        const whenValue = child.getAttribute('value');
+        if (whenValue === String(value)) {
+          hasMatch = true;
+          break;
+        }
+      }
+    }
+
+    // Second pass: remove/insert children based on match
+    for (const child of children) {
+      const tagName = child.tagName.toLowerCase();
+      const isAttached = this.attachedChildren.get(child) ?? true;
+      let shouldBeAttached = false;
+
+      if (tagName === 'when') {
+        const whenValue = child.getAttribute('value');
+        shouldBeAttached = (whenValue === String(value));
+      } else if (tagName === 'default') {
+        shouldBeAttached = !hasMatch;
+      }
+
+      // Update DOM if state changed
+      if (shouldBeAttached && !isAttached) {
+        // Re-insert
+        this.caseElement.appendChild(child);
+        this.attachedChildren.set(child, true);
+      } else if (!shouldBeAttached && isAttached) {
+        // Remove
+        this.caseElement.removeChild(child);
+        this.attachedChildren.set(child, false);
+      }
+    }
+  }
+
+  clear(): void {
+    // Remove all children
+    const children = Array.from(this.caseElement.children);
+    for (const child of children) {
+      if (this.attachedChildren.get(child)) {
+        this.caseElement.removeChild(child);
+        this.attachedChildren.set(child, false);
+      }
+    }
+  }
+}

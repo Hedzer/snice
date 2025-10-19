@@ -1,6 +1,16 @@
-# Snice
+# Snice v3.0.0
 
-An imperative TypeScript framework for building vanilla web components with decorators and routing
+An imperative TypeScript framework for building vanilla web components with decorators, **differential rendering**, and routing.
+
+## What's New in v3.0.0
+
+🚀 **Differential Rendering** - Only updates changed parts of your components, not the entire DOM
+⚡ **Tagged Templates** - `html\`\`` and `css\`\`` for clean, type-safe templates
+🎯 **Auto-Rendering** - Components automatically re-render when properties change
+🔥 **Template Events** - `@click=${handler}` syntax directly in templates
+📦 **Smaller Bundles** - No external dependencies, custom lit-html-inspired implementation
+
+**Breaking Changes:** v3.0.0 removes `html()`, `css()`, `@part`, and `@on`. See [MIGRATION_V2_TO_V3.md](./MIGRATION_V2_TO_V3.md).
 
 ## Quick Start
 
@@ -12,53 +22,66 @@ cd my-app
 npm run dev
 ```
 
-## Core Philosophy: Imperative, Not Reactive
+## Core Philosophy: Imperative with Smart Updates
 
-Snice takes an **imperative approach** to web components. Unlike reactive frameworks that automatically re-render when data changes, Snice components:
+Snice v3.0.0 combines **imperative control** with **automatic differential rendering**:
 
-- **Render once** when connected to the DOM
-- **Never re-render** automatically
-- Require **explicit method calls** to update visual state
-- Give you **full control** over when and how updates happen
+- Components render when **properties change** (automatic)
+- Updates are **differential** - only changed parts re-render
+- **Full control** over when renders happen (debounce, throttle, manual)
+- **No virtual DOM** - direct, efficient DOM updates
+- **Template-based** with `html\`\`` tagged templates
 
-This approach gives you direct control over DOM updates without hidden complexity or automatic re-renders.
+You control the data flow imperatively, Snice handles efficient DOM updates automatically.
 
 ## The Snice Way: Elements + Controllers
 
 Snice separates UI from data: **elements handle UI, controllers handle behavior and data**.
 
 ```typescript
-import { element, controller, property, query } from 'snice';
+import { element, controller, property, render, styles, html, css } from 'snice';
 
 export interface IUserCard extends HTMLElement {
   userId: string;
-  showUser(user: any): void;
+  user: { name: string; email: string } | null;
 }
 
-// Element: Just UI
+// Element: Just UI with auto-rendering
 @element('user-card')
 class UserCard extends HTMLElement implements IUserCard {
   @property({ attribute: 'user-id' })
   userId = '';
-  
-  @query('h3')
-  nameElement!: HTMLHeadingElement;
-  
-  @query('p')
-  emailElement!: HTMLParagraphElement;
-  
-  html() {
-    return `
+
+  @property({ type: Object })
+  user: { name: string; email: string } | null = null;
+
+  @render()
+  renderContent() {
+    return html`
       <div class="card">
-        <h3>Loading...</h3>
-        <p>Please wait...</p>
+        ${this.user
+          ? html`
+            <h3>${this.user.name}</h3>
+            <p>${this.user.email}</p>
+          `
+          : html`
+            <h3>Loading...</h3>
+            <p>Please wait...</p>
+          `
+        }
       </div>
     `;
   }
-  
-  showUser(user: any) {
-    this.nameElement.textContent = user.name;
-    this.emailElement.textContent = user.email;
+
+  @styles()
+  cardStyles() {
+    return css`
+      .card {
+        padding: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+      }
+    `;
   }
 }
 
@@ -66,14 +89,14 @@ class UserCard extends HTMLElement implements IUserCard {
 @controller('user-loader')
 class UserLoaderController {
   element!: IUserCard;
-  
+
   async attach(element: IUserCard) {
     const response = await fetch(`/api/users/${element.userId}`);
     const user = await response.json();
-    
-    element.showUser(user);
+
+    element.user = user; // Auto re-renders!
   }
-  
+
   async detach(element: IUserCard) { /* Cleanup */ }
 }
 ```
@@ -83,42 +106,47 @@ Connect them in HTML:
 <user-card user-id="123" controller="user-loader"></user-card>
 ```
 
-That's it. Element renders UI, controller fetches data, they communicate through method calls, events, and request/response channels.
+That's it. Element auto-renders when properties change, controller manages data, differential rendering keeps it fast.
 
 ## Core Concepts
 
 Snice provides a clear separation of concerns through decorators:
 
 ### Class Decorators
-- **`@element`** - Creates custom HTML elements with encapsulated visual behavior and styling
-- **`@controller`** - Handles data fetching, server communication, and business logic separate from visual components  
-- **`@page`** - Defines routable page components that render when their route is active, with URL params passed as attributes
+- **`@element`** - Creates custom HTML elements with differential rendering
+- **`@controller`** - Handles data fetching, server communication, and business logic
+- **`@page`** - Defines routable page components with URL params
+
+### Rendering Decorators (v3.0.0)
+- **`@render`** - Defines the component template with `html\`\`` (auto re-renders on property changes)
+- **`@styles`** - Defines component styles with `css\`\``
 
 ### Property & Query Decorators
-- **`@property`** - Declares properties that automatically sync with DOM attributes
+- **`@property`** - Declares properties that sync with DOM attributes and trigger renders
 - **`@query`** - Queries a single element from shadow DOM
 - **`@queryAll`** - Queries multiple elements from shadow DOM
-- **`@watch`** - Watches property changes and calls a method when they occur
-- **`@ready`** - Runs a method after the element's shadow DOM is ready
-- **`@dispose`** - Runs a method when the element is removed from the DOM
+- **`@watch`** - Watches property changes for side effects (runs alongside auto-render)
+- **`@ready`** - Runs after initial render and setup
+- **`@dispose`** - Runs when element is removed from DOM
 
-### Event Decorators
-- **`@on`** - Listens for events on elements
+### Event & Communication Decorators
+- **Template events** - `@click=${handler}` syntax in templates (no decorator needed)
 - **`@dispatch`** - Dispatches custom events after method execution
 - **`@request`** - Makes requests from elements or controllers
 - **`@respond`** - Responds to requests in elements or controllers
 
-This separation keeps your components focused: elements handle presentation, controllers manage data, and pages define navigation.
+This separation keeps your components focused: elements handle presentation with auto-rendering, controllers manage data, pages define navigation.
 
 ## Basic Component
 
 ```typescript
-import { element } from 'snice';
+import { element, render, html } from 'snice';
 
 @element('my-button')
 class MyButton extends HTMLElement {
-  html() {
-    return `<button>Click me</button>`;
+  @render()
+  renderContent() {
+    return html`<button>Click me</button>`;
   }
 }
 ```
@@ -129,56 +157,58 @@ That's it. Your component renders when added to the DOM:
 <my-button></my-button>
 ```
 
-## The Imperative Way
+## Auto-Rendering with Differential Updates
 
-In Snice, updates are explicit. Components expose methods that controllers or other components call to update state:
+In Snice v3.0.0, components automatically re-render when properties change, but **only the changed parts update**:
 
 ```typescript
-import { element, property, query } from 'snice';
+import { element, property, render, styles, html, css } from 'snice';
 
 @element('counter-display')
 class CounterDisplay extends HTMLElement {
   @property({ type: Number })
   count = 0;
-  
-  @query('.count')
-  countElement!: HTMLSpanElement;
-  
-  @query('.status')
-  statusElement!: HTMLSpanElement;
 
-  html() {
-    // Renders ONCE - no automatic re-rendering
-    return `
+  @property()
+  status = 'Ready';
+
+  @render()
+  renderContent() {
+    return html`
       <div class="counter">
         <span class="count">${this.count}</span>
-        <span class="status">Ready</span>
+        <span class="status">${this.status}</span>
+        <button @click=${this.increment}>+</button>
       </div>
     `;
   }
-  
-  // Imperative update methods - YOU control when updates happen
-  setCount(newCount: number) {
-    this.count = newCount;
-    this.countElement.textContent = String(newCount);
+
+  @styles()
+  counterStyles() {
+    return css`
+      .counter {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+      }
+    `;
   }
-  
-  setStatus(status: string) {
-    this.statusElement.textContent = status;
-  }
-  
+
   increment() {
-    this.setCount(this.count + 1);
-    this.setStatus('Incremented!');
+    this.count++;
+    this.status = 'Incremented!';
+    // Auto re-renders! Only <span class="count"> and <span class="status"> update
+    // Button is unchanged, so it's not touched
   }
 }
 ```
 
 **Key Points:**
-- The `html()` method runs **once** when the element connects
-- Updates happen through **explicit method calls** like `setCount()`
-- You have **full control** over what updates and when
-- No surprises, no magic, no hidden re-renders
+- The `@render()` method defines your template with `html\`\``
+- **Automatic re-rendering** when properties change
+- **Differential updates** - only changed `<span>` elements update, not entire shadow DOM
+- **Event handlers** in templates: `@click=${this.method}`
+- **Batched updates** - multiple property changes = single render (microtask batching)
 
 ## Properties
 
@@ -356,39 +386,153 @@ class CheckboxGroup extends HTMLElement {
 
 ## Events
 
-Listen for events with `@on`:
+Handle events directly in templates with `@event` syntax:
 
 ```typescript
-import { element, on } from 'snice';
+import { element, property, render, html } from 'snice';
 
 @element('my-clicker')
 class MyClicker extends HTMLElement {
-  html() {
-    return `
-      <button>Click me</button>
-      <input type="text" placeholder="Press Enter" />
+  @property()
+  inputValue = '';
+
+  @render()
+  renderContent() {
+    return html`
+      <button @click=${this.handleClick}>Click me</button>
+      <input
+        type="text"
+        placeholder="Type something"
+        .value=${this.inputValue}
+        @input=${this.handleInput}
+        @keydown=${this.handleKeydown}
+      />
+      <p>You typed: ${this.inputValue}</p>
     `;
   }
 
-  @on('click', 'button')
-  handleClick() {
-    console.log('Button clicked!');
+  handleClick(event: Event) {
+    console.log('Button clicked!', event);
   }
 
-  @on('keydown:Enter', 'input')  // Only plain Enter (no modifiers)
-  handleEnter() {
-    console.log('Enter pressed!');
+  handleInput(event: Event) {
+    this.inputValue = (event.target as HTMLInputElement).value;
+    // Auto re-renders!
   }
-  
-  @on('keydown:ctrl+Enter', 'input')  // Only Ctrl+Enter
-  handleCtrlEnter() {
-    console.log('Ctrl + Enter pressed!');
+
+  handleKeydown(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      console.log('Enter pressed:', this.inputValue);
+    }
   }
-  
-  @on('focus')  // Listen on the host element itself (no target)
-  handleFocus() {
-    console.log('Element received focus!');
-  }
+}
+```
+
+**Template Event Syntax:**
+- `@click=${handler}` - Any DOM event
+- `@input=${handler}`, `@change=${handler}` - Form events
+- `@keydown=${handler}`, `@keyup=${handler}` - Keyboard events
+- Event handlers receive the native `Event` object
+- Handlers are automatically bound to component context
+
+## Advanced Template Features
+
+### Property Binding
+
+Use `.property=${value}` to set element properties (not attributes):
+
+```typescript
+@render()
+renderContent() {
+  return html`
+    <input .value=${this.text} @input=${this.onInput} />
+    <custom-element .complexData=${this.dataObject}></custom-element>
+  `;
+}
+```
+
+### Boolean Attributes
+
+Use `?attribute=${boolean}` for boolean attributes:
+
+```typescript
+@render()
+renderContent() {
+  return html`
+    <button ?disabled=${this.isLoading}>Submit</button>
+    <input type="checkbox" ?checked=${this.isChecked} />
+  `;
+}
+```
+
+### Conditionals
+
+```typescript
+@render()
+renderContent() {
+  return html`
+    ${this.isLoggedIn
+      ? html`<span>Welcome, ${this.user.name}!</span>`
+      : html`<a href="/login">Login</a>`
+    }
+  `;
+}
+```
+
+### Lists and Loops
+
+```typescript
+@render()
+renderContent() {
+  return html`
+    <ul>
+      ${this.items.map(item => html`
+        <li>
+          ${item.name}
+          <button @click=${() => this.remove(item.id)}>Remove</button>
+        </li>
+      `)}
+    </ul>
+  `;
+}
+```
+
+**Note:** For lists to trigger re-renders, reassign the array:
+```typescript
+// ✅ Good - triggers render
+this.items = [...this.items, newItem];
+
+// ❌ Bad - doesn't trigger render
+this.items.push(newItem);
+```
+
+### Render Options
+
+Control when and how renders happen:
+
+```typescript
+// Debounce renders (useful for search)
+@render({ debounce: 300 })
+renderContent() {
+  return html`<div>Search: ${this.searchTerm}</div>`;
+}
+
+// Throttle renders (useful for scroll)
+@render({ throttle: 100 })
+renderContent() {
+  return html`<div>Scroll: ${this.scrollY}</div>`;
+}
+
+// Render only once (manual control)
+@render({ once: true })
+renderContent() {
+  return html`<div>Static: ${this.data}</div>`;
+}
+
+// Synchronous rendering (skip batching)
+@render({ sync: true })
+renderContent() {
+  return html`<div>Immediate: ${this.value}</div>`;
 }
 ```
 

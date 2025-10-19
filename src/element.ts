@@ -1,12 +1,11 @@
 import { attachController, detachController } from './controller';
-import { setupEventHandlers, cleanupEventHandlers } from './events';
 import { setupObservers, cleanupObservers } from './observe';
 import { setupResponseHandlers, cleanupResponseHandlers } from './request-response';
 import { parseAttributeValue, detectType, valueToAttribute } from './utils';
-import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PROPERTY_WATCHERS, EXPLICITLY_SET_PROPERTIES, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, PARTS, PART_TIMERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS } from './symbols';
+import { requestRender, applyStyles } from './render';
+import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PROPERTY_WATCHERS, EXPLICITLY_SET_PROPERTIES, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD } from './symbols';
 import { QueryOptions } from './types/query-options';
 import { PropertyOptions } from './types/property-options';
-import { PartOptions } from './types/part-options';
 import { MovedOptions } from './types/moved-options';
 import { AdoptedOptions } from './types/adopted-options';
 import { AppContext } from './types/app-context';
@@ -158,7 +157,6 @@ export function applyElementFunctionality(constructor: any) {
       // Only run initialization logic once, but re-establish handlers on reconnection
       if (this[INITIALIZED]) {
         // Re-establish handlers that get cleaned up on disconnect
-        setupEventHandlers(this, this);
         setupResponseHandlers(this, this);
 
         // Re-establish observers that get cleaned up on disconnect
@@ -199,77 +197,21 @@ export function applyElementFunctionality(constructor: any) {
         
         // Mark that properties have been initialized
         this[PROPERTIES_INITIALIZED] = true;
-        
+
         // Properties are now stateless and read from DOM attributes only
         // Initial values are not automatically reflected
-        
-        
-        // Create shadow root if it doesn't exist
-        if (!this.shadowRoot) {
-          this.attachShadow({ mode: 'open' });
-        }
-        
-        // Build the shadow DOM content
-        let shadowContent = '';
-        
-        // Add HTML first (maintaining original order)
-        if (this.html) {
-          try {
-            const htmlResult = this.html();
-            // Handle both async and sync html
-            const htmlContent = htmlResult instanceof Promise ? await htmlResult : htmlResult;
-            if (htmlContent !== undefined) {
-              shadowContent += htmlContent;
-            }
-          } catch (error) {
-            console.error(`Error in html() method for ${this.tagName}:`, error);
-          }
-        }
-        
-        // Add CSS after HTML (maintaining original order)
-        if (this.css) {
-          try {
-            const cssResult = this.css();
-            // Handle both async and sync css
-            const cssResolved = cssResult instanceof Promise ? await cssResult : cssResult;
-            if (cssResolved) {
-              // Handle both string and array of strings
-              const cssContent = Array.isArray(cssResolved) ? cssResolved.join('\n') : cssResolved;
-              // No need for scoping with Shadow DOM, but add data attribute for compatibility
-              shadowContent += `<style data-component-css>${cssContent}</style>`;
-            }
-          } catch (error) {
-            console.error(`Error in css() method for ${this.tagName}:`, error);
-          }
-        }
-        
-        // Set shadow DOM content
-        if (shadowContent) {
-          this.shadowRoot.innerHTML = shadowContent;
-        }
-        
-        // Render all @part methods into their corresponding elements
-        const parts = constructor[PARTS];
-        if (parts && this.shadowRoot) {
-          for (const [partName, partHandler] of parts) {
-            try {
-              const partElement = this.shadowRoot.querySelector(`[part="${partName}"]`);
-              if (partElement) {
-                // For initial render, call original method directly to avoid timing restrictions
-                const partResult = partHandler.method.call(this);
-                const partContent = partResult instanceof Promise ? await partResult : partResult;
-                if (partContent !== undefined) {
-                  partElement.innerHTML = partContent;
-                }
-              }
-            } catch (error) {
-              console.error(`Error rendering @part('${partName}') in ${this.tagName}:`, error);
-            }
-          }
-        }
 
-        // Setup @on event handlers - use element for host events, shadow root for delegated events
-        setupEventHandlers(this, this);
+        // v3.0.0: Apply @styles decorator if present
+        // This creates the shadow root and applies styles
+        applyStyles(this);
+
+        // v3.0.0: Perform initial @render if present
+        // This uses differential rendering with template system
+        // Defer initial render to next microtask to allow property bindings
+        // from parent to be set first (avoids infinite loops in nested elements)
+        if (this[RENDER_METHOD]) {
+          queueMicrotask(() => requestRender(this, true));
+        }
 
         // Setup @respond handlers for elements
         setupResponseHandlers(this, this);
@@ -331,8 +273,6 @@ export function applyElementFunctionality(constructor: any) {
           console.error(`Failed to detach controller:`, error);
         });
       }
-      // Cleanup @on event handlers
-      cleanupEventHandlers(this);
       // Cleanup @respond handlers
       cleanupResponseHandlers(this);
       // Cleanup @observe observers
@@ -527,21 +467,21 @@ export function property(options?: PropertyOptions) {
             return initialValue;
           },
           set(this: any, newValue: any) {
-            // Get old value from stored state for change detection
-            if (!this[PROPERTY_VALUES]) {
-              this[PROPERTY_VALUES] = {};
-            }
-            const oldValue = this[PROPERTY_VALUES][propertyKey];
+            // Get old value by calling the getter (which reads from attribute)
+            const oldValue = this[propertyKey];
 
             // Check if value actually changed
             if (oldValue === newValue) return;
 
-            // Update stored value
-            this[PROPERTY_VALUES][propertyKey] = newValue;
-
             // Always reflect to DOM - properties are always backed by attributes
             const attributeName = typeof finalOptions.attribute === 'string' ? finalOptions.attribute : propertyKey.toLowerCase();
             const attributeValue = valueToAttribute(newValue, finalOptions, initialValue);
+
+            // Mark as explicitly set for boolean handling
+            if (!this[EXPLICITLY_SET_PROPERTIES]) {
+              this[EXPLICITLY_SET_PROPERTIES] = new Set();
+            }
+            this[EXPLICITLY_SET_PROPERTIES].add(propertyKey);
 
             // Flag to prevent attributeChangedCallback from triggering watchers for this change
             if (!this._settingFromProperty) this._settingFromProperty = new Set();
@@ -585,8 +525,12 @@ export function property(options?: PropertyOptions) {
               }
             }
 
-            if (this.requestUpdate) {
-              this.requestUpdate(propertyKey, oldValue);
+            // v3.0.0: Trigger auto-render on property change
+            // This respects @render options (debounce, throttle, once, sync)
+            // Only trigger renders after element is fully initialized to avoid
+            // infinite loops during initial setup
+            if (this[RENDER_METHOD] && this[INITIALIZED]) {
+              requestRender(this);
             }
           },
           configurable: true,
@@ -1016,101 +960,5 @@ export function adopted(options: AdoptedOptions = {}) {
   };
 }
 
-/**
- * Decorator for methods that render specific parts of the template
- * Parts are identified by the 'part' attribute in the HTML template
- * When the decorated method is called, it automatically re-renders its part
- */
-export function part(partName: string, options: PartOptions = {}) {
-  return function (originalMethod: any, context: ClassMethodDecoratorContext) {
-    const methodName = context.name as string;
-
-    context.addInitializer(function(this: any) {
-      const constructor = this.constructor as any;
-
-      if (!constructor[PARTS]) {
-        constructor[PARTS] = new Map();
-      }
-
-      constructor[PARTS].set(partName, {
-        methodName,
-        method: originalMethod
-      });
-    });
-
-    // Return wrapped method that automatically re-renders the part when called
-    return function (this: HTMLElement, ...args: any[]) {
-      // Initialize timers storage if not present
-      if (!(this as any)[PART_TIMERS]) {
-        (this as any)[PART_TIMERS] = new Map();
-      }
-
-      // Get or create timers for this specific part
-      if (!(this as any)[PART_TIMERS].has(partName)) {
-        (this as any)[PART_TIMERS].set(partName, {
-          throttleTimer: null,
-          debounceTimer: null,
-          lastThrottleCall: 0
-        });
-      }
-
-      const timers = (this as any)[PART_TIMERS].get(partName);
-
-      // Helper function to execute method and update DOM
-      const executeAndUpdate = (...methodArgs: any[]) => {
-        const result = originalMethod.apply(this, methodArgs);
-
-        const updateDOM = (content: any) => {
-          const hasContent = content !== undefined;
-          const hasElement = this.shadowRoot?.querySelector(`[part="${partName}"]`);
-
-          if (hasContent && hasElement) {
-            hasElement.innerHTML = content;
-          }
-        };
-
-        const isPromise = result instanceof Promise;
-        return isPromise
-          ? result.then(content => { updateDOM(content); return content; })
-          : (updateDOM(result), result);
-      };
-
-      const hasDebounce = options.debounce !== undefined && options.debounce > 0;
-      const hasThrottle = options.throttle !== undefined && options.throttle > 0;
-
-      // Handle timing based on priority: debounce > throttle > immediate
-      switch (true) {
-        case hasDebounce: {
-          clearTimeout(timers.debounceTimer);
-          timers.debounceTimer = setTimeout(() => executeAndUpdate(...args), options.debounce!);
-          return undefined;
-        }
-
-        case hasThrottle: {
-          const throttleMs = options.throttle!;
-          const now = Date.now();
-          const canExecuteImmediately = timers.lastThrottleCall === 0 || now - timers.lastThrottleCall >= throttleMs;
-
-          if (canExecuteImmediately) {
-            timers.lastThrottleCall = now;
-            return executeAndUpdate(...args);
-          }
-
-          const hasScheduledTimer = !!timers.throttleTimer;
-          if (!hasScheduledTimer) {
-            const remainingTime = throttleMs - (now - timers.lastThrottleCall);
-            timers.throttleTimer = setTimeout(() => {
-              timers.throttleTimer = null;
-              timers.lastThrottleCall = Date.now();
-              executeAndUpdate(...args);
-            }, remainingTime);
-          }
-          return undefined;
-        }
-
-        default:
-          return executeAndUpdate(...args);
-      }
-    };
-  };
-}
+// @part decorator removed in v3.0.0
+// Use @render with differential rendering instead
