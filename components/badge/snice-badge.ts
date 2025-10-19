@@ -1,5 +1,5 @@
-import { element, property, watch, query, ready, part } from 'snice';
-import css from './snice-badge.css?inline';
+import { element, property, watch, query, ready, render, styles, html } from 'snice';
+import cssContent from './snice-badge.css?inline';
 import type { BadgeVariant, BadgePosition, BadgeSize, SniceBadgeElement } from './snice-badge.types';
 
 @element('snice-badge')
@@ -37,25 +37,24 @@ export class SniceBadge extends HTMLElement implements SniceBadgeElement {
   @query('.badge')
   badgeElement?: HTMLElement;
 
-  html() {
-    return /*html*/`
+  @render()
+  renderContent() {
+    return html`
       <div class="badge-wrapper">
         <slot></slot>
-        <div part="badge-section"></div>
+        ${this.renderBadgeSection()}
       </div>
     `;
   }
 
-  @watch('content', 'count', 'max', 'dot', 'pulse')
-  @part('badge-section')
   renderBadgeSection() {
     const displayContent = this.getDisplayContent();
     const showBadge = this.shouldShowBadge();
-    
+
     if (!showBadge) return '';
-    
-    return /*html*/`
-      <span class="badge ${this.dot ? 'badge--dot' : ''} ${this.pulse ? 'badge--pulse' : ''}" 
+
+    return html`
+      <span class="badge ${this.dot ? 'badge--dot' : ''} ${this.pulse ? 'badge--pulse' : ''}"
             aria-label="${displayContent}"
             role="status">
         ${!this.dot ? displayContent : ''}
@@ -63,8 +62,9 @@ export class SniceBadge extends HTMLElement implements SniceBadgeElement {
     `;
   }
 
-  css() {
-    return css;
+  @styles()
+  componentStyles() {
+    return cssContent;
   }
 
   private getDisplayContent(): string {

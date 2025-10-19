@@ -1,6 +1,6 @@
-import { element, part, query, property } from 'snice';
+import { element, query, property, render, styles, html, watch } from 'snice';
 import type { AppContext, Placard, RouteParams, Layout } from 'snice';
-import css from './snice-layout-landing.css?inline';
+import cssContent from './snice-layout-landing.css?inline';
 import '../nav/snice-nav.ts';
 import type { SniceNav } from '../nav/snice-nav.ts';
 
@@ -15,8 +15,9 @@ export class SniceLayoutLanding extends HTMLElement implements Layout {
   private placards: Placard[] = [];
   private currentRoute = '';
 
-  html() {
-    return /*html*/`
+  @render()
+  renderContent() {
+    return html`
       <div class="layout">
         <header class="header">
           <div class="container">
@@ -25,9 +26,9 @@ export class SniceLayoutLanding extends HTMLElement implements Layout {
                 <h1>Brand</h1>
               </slot>
             </div>
-            ${this.useNav ? /*html*/`
-              <snice-nav class="nav" part="nav" variant="flat" orientation="horizontal"></snice-nav>
-            ` : /*html*/`
+            ${this.useNav ? html`
+              <snice-nav class="nav" variant="flat" orientation="horizontal"></snice-nav>
+            ` : html`
               <nav class="nav">
                 <slot name="nav"></slot>
               </nav>
@@ -57,8 +58,9 @@ export class SniceLayoutLanding extends HTMLElement implements Layout {
     `;
   }
 
-  css() {
-    return css;
+  @styles()
+  componentStyles() {
+    return cssContent;
   }
 
   update(_appContext: AppContext, placards: Placard[], currentRoute: string, _routeParams: RouteParams): void {
@@ -66,15 +68,14 @@ export class SniceLayoutLanding extends HTMLElement implements Layout {
     this.currentRoute = currentRoute;
     this.useNav = true;
 
-    this.renderNav();
+    this.updateNav();
   }
 
-  @part('nav')
-  renderNav() {
+  @watch('placards', 'currentRoute')
+  updateNav() {
     if (this.navElement) {
       this.navElement.placards = this.placards;
       this.navElement.currentRoute = this.currentRoute;
     }
-    return '';
   }
 }

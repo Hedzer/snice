@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { element, query, queryAll } from './test-imports';
+import { element, query, queryAll, render, html } from './test-imports';
 
 describe('Query Light vs Shadow DOM', () => {
   let container: HTMLDivElement;
@@ -14,7 +14,7 @@ describe('Query Light vs Shadow DOM', () => {
   });
 
   describe('@query decorator', () => {
-    it('should query shadow DOM by default', () => {
+    it('should query shadow DOM by default', async () => {
       @element('test-shadow-query')
       class TestShadowQuery extends HTMLElement {
         @query('.shadow-element')
@@ -23,8 +23,9 @@ describe('Query Light vs Shadow DOM', () => {
         @query('.light-element')
         lightEl?: HTMLElement;
 
-        html() {
-          return '<div class="shadow-element">Shadow</div>';
+        @render()
+        renderContent() {
+          return html`<div class="shadow-element">Shadow</div>`;
         }
       }
 
@@ -33,8 +34,9 @@ describe('Query Light vs Shadow DOM', () => {
       lightDiv.className = 'light-element';
       lightDiv.textContent = 'Light';
       el.appendChild(lightDiv);
-      
+
       container.appendChild(el);
+      await el.ready;
 
       // Should find shadow DOM element
       expect(el.shadowEl).toBeDefined();
@@ -44,7 +46,7 @@ describe('Query Light vs Shadow DOM', () => {
       expect(el.lightEl).toBeNull();
     });
 
-    it('should query light DOM when search:"light" is specified', () => {
+    it('should query light DOM when search:"light" is specified', async () => {
       @element('test-light-query')
       class TestLightQuery extends HTMLElement {
         @query('.light-element', { light: true, shadow: false })
@@ -53,8 +55,9 @@ describe('Query Light vs Shadow DOM', () => {
         @query('.shadow-element', { light: true, shadow: false })
         shadowEl?: HTMLElement;
 
-        html() {
-          return '<div class="shadow-element">Shadow</div>';
+        @render()
+        renderContent() {
+          return html`<div class="shadow-element">Shadow</div>`;
         }
       }
 
@@ -63,8 +66,9 @@ describe('Query Light vs Shadow DOM', () => {
       lightDiv.className = 'light-element';
       lightDiv.textContent = 'Light';
       el.appendChild(lightDiv);
-      
+
       container.appendChild(el);
+      await el.ready;
 
       // Should find light DOM element
       expect(el.lightEl).toBeDefined();
@@ -74,7 +78,7 @@ describe('Query Light vs Shadow DOM', () => {
       expect(el.shadowEl).toBeNull();
     });
 
-    it('should handle slotted content with light DOM query', () => {
+    it('should handle slotted content with light DOM query', async () => {
       @element('test-slot-query')
       class TestSlotQuery extends HTMLElement {
         @query('slot[name="content"]')
@@ -83,8 +87,9 @@ describe('Query Light vs Shadow DOM', () => {
         @query('[slot="content"]', { light: true, shadow: false })
         slottedContent?: HTMLElement;
 
-        html() {
-          return '<slot name="content"></slot>';
+        @render()
+        renderContent() {
+          return html`<slot name="content"></slot>`;
         }
       }
 
@@ -93,8 +98,9 @@ describe('Query Light vs Shadow DOM', () => {
       slotted.setAttribute('slot', 'content');
       slotted.textContent = 'Slotted';
       el.appendChild(slotted);
-      
+
       container.appendChild(el);
+      await el.ready;
 
       // Should find slot in shadow DOM
       expect(el.slot).toBeDefined();
@@ -107,14 +113,15 @@ describe('Query Light vs Shadow DOM', () => {
   });
 
   describe('@queryAll decorator', () => {
-    it('should query all in shadow DOM by default', () => {
+    it('should query all in shadow DOM by default', async () => {
       @element('test-shadow-query-all')
       class TestShadowQueryAll extends HTMLElement {
         @queryAll('.item')
         shadowItems?: NodeListOf<HTMLElement>;
 
-        html() {
-          return `
+        @render()
+        renderContent() {
+          return html`
             <div class="item">Shadow 1</div>
             <div class="item">Shadow 2</div>
             <div class="item">Shadow 3</div>
@@ -123,7 +130,7 @@ describe('Query Light vs Shadow DOM', () => {
       }
 
       const el = document.createElement('test-shadow-query-all') as any;
-      
+
       // Add light DOM items
       for (let i = 1; i <= 2; i++) {
         const item = document.createElement('div');
@@ -131,8 +138,9 @@ describe('Query Light vs Shadow DOM', () => {
         item.textContent = `Light ${i}`;
         el.appendChild(item);
       }
-      
+
       container.appendChild(el);
+      await el.ready;
 
       // Should find shadow DOM items only
       expect(el.shadowItems).toBeDefined();
@@ -141,14 +149,15 @@ describe('Query Light vs Shadow DOM', () => {
       expect(el.shadowItems?.[2].textContent).toBe('Shadow 3');
     });
 
-    it('should query all in light DOM when search:"light" is specified', () => {
+    it('should query all in light DOM when search:"light" is specified', async () => {
       @element('test-light-query-all')
       class TestLightQueryAll extends HTMLElement {
         @queryAll('.item', { light: true, shadow: false })
         lightItems?: NodeListOf<HTMLElement>;
 
-        html() {
-          return `
+        @render()
+        renderContent() {
+          return html`
             <div class="item">Shadow 1</div>
             <div class="item">Shadow 2</div>
           `;
@@ -156,7 +165,7 @@ describe('Query Light vs Shadow DOM', () => {
       }
 
       const el = document.createElement('test-light-query-all') as any;
-      
+
       // Add light DOM items
       for (let i = 1; i <= 3; i++) {
         const item = document.createElement('div');
@@ -164,8 +173,9 @@ describe('Query Light vs Shadow DOM', () => {
         item.textContent = `Light ${i}`;
         el.appendChild(item);
       }
-      
+
       container.appendChild(el);
+      await el.ready;
 
       // Should find light DOM items only
       expect(el.lightItems).toBeDefined();
@@ -174,7 +184,7 @@ describe('Query Light vs Shadow DOM', () => {
       expect(el.lightItems?.[2].textContent).toBe('Light 3');
     });
 
-    it('should handle complex selectors in light DOM', () => {
+    it('should handle complex selectors in light DOM', async () => {
       @element('test-complex-selector')
       class TestComplexSelector extends HTMLElement {
         @queryAll('div[data-tab][aria-selected="true"]', { light: true, shadow: false })
@@ -183,13 +193,14 @@ describe('Query Light vs Shadow DOM', () => {
         @queryAll('div.panel:not([hidden])', { light: true, shadow: false })
         visiblePanels?: NodeListOf<HTMLElement>;
 
-        html() {
-          return '<div>Shadow Content</div>';
+        @render()
+        renderContent() {
+          return html`<div>Shadow Content</div>`;
         }
       }
 
       const el = document.createElement('test-complex-selector') as any;
-      
+
       // Add tabs
       for (let i = 1; i <= 3; i++) {
         const tab = document.createElement('div');
@@ -198,7 +209,7 @@ describe('Query Light vs Shadow DOM', () => {
         tab.textContent = `Tab ${i}`;
         el.appendChild(tab);
       }
-      
+
       // Add panels
       for (let i = 1; i <= 3; i++) {
         const panel = document.createElement('div');
@@ -207,8 +218,9 @@ describe('Query Light vs Shadow DOM', () => {
         panel.textContent = `Panel ${i}`;
         el.appendChild(panel);
       }
-      
+
       container.appendChild(el);
+      await el.ready;
 
       // Should find only selected tabs
       expect(el.selectedTabs).toBeDefined();
@@ -265,24 +277,26 @@ describe('Query Light vs Shadow DOM', () => {
   });
 
   describe('Performance considerations', () => {
-    it('should cache query results appropriately', () => {
+    it('should cache query results appropriately', async () => {
       @element('test-cache')
       class TestCache extends HTMLElement {
         @query('.cached')
         cached?: HTMLElement;
 
-        html() {
-          return '<div class="cached">Cached</div>';
+        @render()
+        renderContent() {
+          return html`<div class="cached">Cached</div>`;
         }
       }
 
       const el = document.createElement('test-cache') as any;
       container.appendChild(el);
+      await el.ready;
 
       // Access multiple times - should return same element
       const first = el.cached;
       const second = el.cached;
-      
+
       expect(first).toBe(second);
       expect(first).toBeDefined();
     });

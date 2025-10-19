@@ -99,23 +99,29 @@ export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsEle
     return [firstItem, ...lastItems];
   }
 
-  @on('click', '.breadcrumb-ellipsis')
-  handleEllipsisClick() {
+  @on('click')
+  handleEllipsisClick(event: Event) {
+    const target = event.target as HTMLElement;
+    if (!target.matches('.breadcrumb-ellipsis')) return;
+
     this.collapsed = false;
     this.render();
   }
 
-  @on('click', '.breadcrumb-link')
+  @on('click')
   @dispatch('breadcrumb-click')
   handleLinkClick(event: MouseEvent) {
-    const target = event.target as HTMLAnchorElement;
-    const label = target.textContent?.trim() || '';
-    const href = target.getAttribute('href') || '';
-    
+    const target = event.target as HTMLElement;
+    if (!target.matches('.breadcrumb-link')) return;
+
+    const link = target as HTMLAnchorElement;
+    const label = link.textContent?.trim() || '';
+    const href = link.getAttribute('href') || '';
+
     // Find the item index
     const allItems = this.getAllItems();
     const index = allItems.findIndex(item => item.label === label);
-    
+
     return {
       item: allItems[index],
       index,

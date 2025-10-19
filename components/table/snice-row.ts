@@ -127,9 +127,15 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
 
   @on('click')
   handleRowClick(e: MouseEvent) {
-    // Don't trigger row click if clicking on checkbox or cell interactive elements
     const target = e.target as HTMLElement;
-    if (target.matches('input[type="checkbox"], button, a, .interactive')) {
+
+    // Handle checkbox change separately
+    if (target.matches('.row-checkbox')) {
+      return; // Let the change event handle this
+    }
+
+    // Don't trigger row click if clicking on other interactive elements
+    if (target.matches('button, a, .interactive')) {
       return;
     }
 
@@ -142,9 +148,12 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
     }
   }
 
-  @on('change', '.row-checkbox')
-  handleCheckboxChange(e: Event) {
-    const checkbox = e.target as HTMLInputElement;
+  @on('change')
+  handleChange(e: Event) {
+    const target = e.target as HTMLElement;
+    if (!target.matches('.row-checkbox')) return;
+
+    const checkbox = target as HTMLInputElement;
     this.selected = checkbox.checked;
     this.dispatchRowSelect();
   }
@@ -153,7 +162,7 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
   handleKeyDown(e: KeyboardEvent) {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      
+
       if (this.selectable) {
         this.toggleSelection();
       } else if (this.clickable) {

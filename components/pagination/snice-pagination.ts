@@ -235,45 +235,52 @@ export class SnicePagination extends HTMLElement {
     return pages;
   }
   
-  @on('click', '.pagination-first')
-  handleFirst() {
+  @on('click')
+  handleFirst(event: Event) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.pagination-first')) return;
     if (this.current !== 1) {
       this.changePage(1);
     }
   }
   
-  @on('click', '.pagination-prev')
-  handlePrev() {
+  @on('click')
+  handlePrev(event: Event) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.pagination-prev')) return;
     if (this.current > 1) {
       this.changePage(this.current - 1);
     }
   }
   
-  @on('click', '.pagination-next')
-  handleNext() {
+  @on('click')
+  handleNext(event: Event) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.pagination-next')) return;
     if (this.current < this.total) {
       this.changePage(this.current + 1);
     }
   }
   
-  @on('click', '.pagination-last')
-  handleLast() {
+  @on('click')
+  handleLast(event: Event) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.pagination-last')) return;
     if (this.current !== this.total) {
       this.changePage(this.total);
     }
   }
   
-  @on('click', '.pagination-page')
+  @on('click')
   handlePageClick(event: Event) {
     const target = event.target as HTMLElement;
     const button = target.closest('.pagination-page') as HTMLButtonElement;
-    if (button) {
-      const pageAttr = button.getAttribute('data-page');
-      if (pageAttr) {
-        const page = parseInt(pageAttr);
-        if (page !== this.current) {
-          this.changePage(page);
-        }
+    if (!button) return;
+    const pageAttr = button.getAttribute('data-page');
+    if (pageAttr) {
+      const page = parseInt(pageAttr);
+      if (page !== this.current) {
+        this.changePage(page);
       }
     }
   }

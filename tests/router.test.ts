@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { Router } from './test-imports';
+import { Router, render, html, css, styles } from './test-imports';
 
 describe('Router', () => {
   let router: ReturnType<typeof Router>;
@@ -28,8 +28,9 @@ describe('Router', () => {
       
       @page({ tag: 'test-page', routes: ['/test'] })
       class TestPage extends HTMLElement {
-        html() {
-          return '<div>Test Page</div>';
+        @render()
+        renderContent() {
+          return html`<div>Test Page</div>`;
         }
       }
       
@@ -41,15 +42,17 @@ describe('Router', () => {
       
       @page({ tag: 'home-page', routes: ['/'] })
       class HomePage extends HTMLElement {
-        html() {
-          return '<div>Home</div>';
+        @render()
+        renderContent() {
+          return html`<div>Home</div>`;
         }
       }
-      
+
       @page({ tag: 'about-page', routes: ['/about'] })
       class AboutPage extends HTMLElement {
-        html() {
-          return '<div>About</div>';
+        @render()
+        renderContent() {
+          return html`<div>About</div>`;
         }
       }
       
@@ -69,9 +72,10 @@ describe('Router', () => {
       
       @page({ tag: 'user-page', routes: ['/user/:id'] })
       class UserPage extends HTMLElement {
-        html() {
+        @render()
+        renderContent() {
           const id = this.getAttribute('id');
-          return `<div>User ${id}</div>`;
+          return html`<div>User ${id}</div>`;
         }
       }
       
@@ -99,8 +103,9 @@ describe('Router', () => {
       
       @page({ tag: 'custom-404', routes: ['/404'] })
       class Custom404 extends HTMLElement {
-        html() {
-          return '<div>Custom 404 Page</div>';
+        @render()
+        renderContent() {
+          return html`<div>Custom 404 Page</div>`;
         }
       }
       
@@ -118,15 +123,17 @@ describe('Router', () => {
       
       @page({ tag: 'page-one', routes: ['/one'] })
       class PageOne extends HTMLElement {
-        html() {
-          return '<div>Page One</div>';
+        @render()
+        renderContent() {
+          return html`<div>Page One</div>`;
         }
       }
-      
+
       @page({ tag: 'page-two', routes: ['/two'] })
       class PageTwo extends HTMLElement {
-        html() {
-          return '<div>Page Two</div>';
+        @render()
+        renderContent() {
+          return html`<div>Page Two</div>`;
         }
       }
       
@@ -163,12 +170,14 @@ describe('Router', () => {
       
       @page({ tag: 'styled-page', routes: ['/styled'] })
       class StyledPage extends HTMLElement {
-        html() {
-          return '<div class="content">Styled Content</div>';
+        @render()
+        renderContent() {
+          return html`<div class="content">Styled Content</div>`;
         }
-        
-        css() {
-          return '.content { color: red; }';
+
+        @styles()
+        componentStyles() {
+          return css`.content { color: red; }`;
         }
       }
       
@@ -177,9 +186,10 @@ describe('Router', () => {
       
       const styledPage = targetEl.querySelector('styled-page');
       expect(styledPage).toBeDefined();
+      await (styledPage as any)?.ready;
       expect(styledPage?.shadowRoot?.innerHTML).toContain('Styled Content');
-      
-      const style = styledPage?.shadowRoot?.querySelector('style[data-component-css]');
+
+      const style = styledPage?.shadowRoot?.querySelector('style');
       expect(style).toBeDefined();
       expect(style?.textContent).toContain('.content { color: red; }');
     });
@@ -194,15 +204,14 @@ describe('Router', () => {
       
       @page({ tag: 'multi-style', routes: ['/multi'] })
       class MultiStyle extends HTMLElement {
-        html() {
-          return '<div>Multi Style</div>';
+        @render()
+        renderContent() {
+          return html`<div>Multi Style</div>`;
         }
-        
-        css() {
-          return [
-            '.one { color: red; }',
-            '.two { color: blue; }'
-          ];
+
+        @styles()
+        componentStyles() {
+          return css`.one { color: red; } .two { color: blue; }`;
         }
       }
       
@@ -210,7 +219,8 @@ describe('Router', () => {
       await navigate('/multi');
       
       const multiPage = targetEl.querySelector('multi-style');
-      const style = multiPage?.shadowRoot?.querySelector('style[data-component-css]');
+      await (multiPage as any)?.ready;
+      const style = multiPage?.shadowRoot?.querySelector('style');
       expect(style?.textContent).toContain('.one { color: red; }');
       expect(style?.textContent).toContain('.two { color: blue; }');
     });
@@ -227,8 +237,9 @@ describe('Router', () => {
       
       @page({ tag: 'multi-route', routes: ['/route1', '/route2', '/route3'] })
       class MultiRoute extends HTMLElement {
-        html() {
-          return '<div>Multi Route Page</div>';
+        @render()
+        renderContent() {
+          return html`<div>Multi Route Page</div>`;
         }
       }
       

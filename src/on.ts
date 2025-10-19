@@ -91,7 +91,17 @@ export function setupEventHandlers(instance: any, element: HTMLElement) {
   }
 
   for (const handler of handlers) {
-    const method = handler.method.bind(instance);
+    const boundMethod = handler.method.bind(instance);
+
+    // Wrap handler with error handling
+    const method = (event: Event) => {
+      try {
+        boundMethod(event);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
     const listenerOptions: AddEventListenerOptions = {
       capture: handler.options.capture,
       once: handler.options.once,

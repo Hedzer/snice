@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { element, observe } from '../src/index';
+import { element, observe, render, html } from '../src/index';
 
 describe('@observe decorator', () => {
   let container: HTMLElement;
@@ -23,8 +23,9 @@ describe('@observe decorator', () => {
 
       @element(tagName)
       class TestResize extends HTMLElement {
-        html() {
-          return `<div class="resizable">Resizable content</div>`;
+        @render()
+        renderContent() {
+          return html`<div class="resizable">Resizable content</div>`;
         }
 
         @observe('resize')
@@ -48,8 +49,9 @@ describe('@observe decorator', () => {
 
       @element(tagName)
       class TestResizeThrottle extends HTMLElement {
-        html() {
-          return `<div class="chart">Chart container</div>`;
+        @render()
+        renderContent() {
+          return html`<div class="chart">Chart container</div>`;
         }
 
         @observe('resize', '.chart', { throttle: 100 })
@@ -76,8 +78,9 @@ describe('@observe decorator', () => {
       class TestMedia extends HTMLElement {
         isDesktop = false;
 
-        html() {
-          return `<div class="content">Responsive content</div>`;
+        @render()
+        renderContent() {
+          return html`<div class="content">Responsive content</div>`;
         }
 
         @observe('media:(min-width: 768px)')
@@ -104,8 +107,9 @@ describe('@observe decorator', () => {
 
       @element(tagName)
       class TestMultiMedia extends HTMLElement {
-        html() {
-          return `<div>Multi media content</div>`;
+        @render()
+        renderContent() {
+          return html`<div>Multi media content</div>`;
         }
 
         @observe('media:(prefers-color-scheme: dark)')
@@ -137,8 +141,9 @@ describe('@observe decorator', () => {
 
       @element(tagName)
       class TestMutation extends HTMLElement {
-        html() {
-          return `<ul class="list"></ul>`;
+        @render()
+        renderContent() {
+          return html`<ul class="list"></ul>`;
         }
 
         @observe('mutation:childList', '.list')
@@ -173,8 +178,9 @@ describe('@observe decorator', () => {
 
       @element(tagName)
       class TestAttrMutation extends HTMLElement {
-        html() {
-          return `<div class="item" data-state="inactive">Item</div>`;
+        @render()
+        renderContent() {
+          return html`<div class="item" data-state="inactive">Item</div>`;
         }
 
         @observe('mutation:attributes:data-state', '.item')
@@ -207,8 +213,9 @@ describe('@observe decorator', () => {
 
       @element(tagName)
       class TestClassMutation extends HTMLElement {
-        html() {
-          return `<div class="box">Box</div>`;
+        @render()
+        renderContent() {
+          return html`<div class="box">Box</div>`;
         }
 
         @observe('mutation:attributes:class', '.box')
@@ -239,8 +246,9 @@ describe('@observe decorator', () => {
 
       @element(tagName)
       class TestCleanup extends HTMLElement {
-        html() {
-          return `<div class="content">Content</div>`;
+        @render()
+        renderContent() {
+          return html`<div class="content">Content</div>`;
         }
 
         @observe('mutation:childList', '.content')
@@ -290,8 +298,9 @@ describe('@observe decorator', () => {
 
       @element(tagName)
       class TestThrottle extends HTMLElement {
-        html() {
-          return `<div class="content">Content</div>`;
+        @render()
+        renderContent() {
+          return html`<div class="content">Content</div>`;
         }
 
         @observe('mutation:childList', '.content', { throttle: 50 })
@@ -336,8 +345,9 @@ describe('@observe decorator', () => {
 
       @element(tagName)
       class ReconnectObserversTest extends HTMLElement {
-        html() {
-          return '<div>Observer test</div>';
+        @render()
+        renderContent() {
+          return html`<div>Observer test</div>`;
         }
 
         @observe('resize')

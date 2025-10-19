@@ -91,22 +91,25 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
     }
   }
 
-  @on('change', '.radio-input')
+  @on('change')
   handleChange(e: Event) {
     const target = e.target as HTMLInputElement;
+    if (!target.classList.contains('radio-input')) return;
     const wasChecked = this.checked;
     this.checked = target.checked;
-    
+
     // If this radio was just checked, uncheck others in the same group
     if (this.checked && !wasChecked && this.name) {
       this.uncheckOthersInGroup();
     }
-    
+
     this.dispatchChangeEvent();
   }
 
-  @on('click', '.radio-input')
+  @on('click')
   handleClick(e: Event) {
+    const target = e.target as HTMLElement;
+    if (!target.classList.contains('radio-input')) return;
     // Allow click to propagate for label association
     e.stopPropagation();
   }

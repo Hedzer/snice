@@ -76,24 +76,28 @@ export class SniceCard extends HTMLElement implements SniceCardElement {
     if (footer) footer.toggleAttribute('hidden', !this.hasFooter);
   }
 
-  @on('click', '.card')
+  @on('click')
   @dispatch('card-click')
   handleClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.matches('.card')) return;
     if (!this.clickable || this.disabled) return;
-    
+
     if (this.clickable && !this.disabled) {
       this.selected = !this.selected;
     }
-    
+
     return {
       selected: this.selected
     };
   }
 
-  @on('keydown', '.card')
+  @on('keydown')
   handleKeydown(event: KeyboardEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.matches('.card')) return;
     if (!this.clickable || this.disabled) return;
-    
+
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       this.handleClick(new MouseEvent('click'));

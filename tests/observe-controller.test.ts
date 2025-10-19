@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { element, controller, observe } from '../src/index';
+import { element, controller, observe, render, html } from '../src/index';
 
 describe('@observe in controllers', () => {
   let container: HTMLElement;
@@ -48,8 +48,9 @@ describe('@observe in controllers', () => {
 
     @element(tagName)
     class TestElement extends HTMLElement {
-      html() {
-        return `<div class="content">Initial content</div>`;
+      @render()
+      renderContent() {
+        return html`<div class="content">Initial content</div>`;
       }
     }
 
@@ -106,8 +107,9 @@ describe('@observe in controllers', () => {
 
     @element(tagName)
     class TestElement extends HTMLElement {
-      html() {
-        return `<div class="item" data-test="initial">Item</div>`;
+      @render()
+      renderContent() {
+        return html`<div class="item" data-test="initial">Item</div>`;
       }
     }
 
@@ -169,8 +171,9 @@ describe('@observe in controllers', () => {
 
     @element(tagName)
     class TestElement extends HTMLElement {
-      html() {
-        return `<div class="content">Content</div>`;
+      @render()
+      renderContent() {
+        return html`<div class="content">Content</div>`;
       }
     }
 
@@ -218,8 +221,9 @@ describe('@observe in controllers', () => {
 
     @element(tagName)
     class TestElement extends HTMLElement {
-      html() {
-        return `<ul class="list"></ul>`;
+      @render()
+      renderContent() {
+        return html`<ul class="list"></ul>`;
       }
     }
 

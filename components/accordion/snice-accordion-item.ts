@@ -88,15 +88,23 @@ export class SniceAccordionItem extends HTMLElement implements SniceAccordionIte
     }
   }
 
-  @on('click', '.accordion-item__header', { preventDefault: true })
-  handleHeaderClick() {
+  @on('click')
+  handleHeaderClick(e: Event) {
+    const target = e.target as HTMLElement;
+    if (!target.matches('.accordion-item__header')) return;
+
+    e.preventDefault();
     if (!this.disabled) {
       this.toggle();
     }
   }
 
-  @on(['keydown:Enter', 'keydown:Space'], '.accordion-item__header', { preventDefault: true })
-  handleHeaderKeydown() {
+  @on(['keydown:Enter', 'keydown:Space'])
+  handleHeaderKeydown(e: KeyboardEvent) {
+    const target = e.target as HTMLElement;
+    if (!target.matches('.accordion-item__header')) return;
+
+    e.preventDefault();
     if (!this.disabled) {
       this.toggle();
     }

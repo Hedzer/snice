@@ -547,86 +547,91 @@ export class SniceTable extends HTMLElement {
     }
   }
 
-  @on('click', 'th.sortable')
-  handleSort(e: MouseEvent) {
-    const th = (e.target as HTMLElement).closest('th.sortable');
-    if (!th) return;
-    
-    const columnKey = th.getAttribute('data-key');
-    if (columnKey) {
-      console.log('Sorting column:', columnKey);
-      this.toggleSort(columnKey, true); // Always multi-sort
-    }
-  }
-
-
-  @on('change', '.row-select')
-  handleRowSelect(e: Event) {
-    const checkbox = e.target as HTMLInputElement;
-    const rowIndex = parseInt(checkbox.getAttribute('data-row-index') || '0');
-    
-    if (checkbox.checked) {
-      if (!this.selectedRows.includes(rowIndex)) {
-        this.selectedRows = [...this.selectedRows, rowIndex];
-      }
-    } else {
-      this.selectedRows = this.selectedRows.filter(i => i !== rowIndex);
-    }
-    
-    this.updateRowSelectionState();
-    this.updateSelectAllState();
-    this.dispatchRowSelectionChanged(rowIndex, checkbox.checked);
-  }
-
-  @on('change', '.select-all')
-  handleSelectAll(e: Event) {
-    const checkbox = e.target as HTMLInputElement;
-    
-    if (checkbox.checked) {
-      this.selectedRows = this.data.map((_, index) => index);
-    } else {
-      this.selectedRows = [];
-    }
-    
-    this.updateRowSelectionState();
-    this.dispatchSelectAllChanged(checkbox.checked);
-  }
-
-  @on('click', 'tbody tr')
-  handleRowClick(e: Event) {
-    const tr = (e.target as HTMLElement).closest('tr');
-    if (!tr) return;
-    
+  @on('click')
+  handleClick(e: MouseEvent) {
     const target = e.target as HTMLElement;
-    
-    // Don't trigger if clicking on checkbox or other interactive elements
-    if (target.matches('input[type="checkbox"], button, a, .interactive')) {
+
+    // Handle sortable header click
+    const th = target.closest('th.sortable') as HTMLElement;
+    if (th) {
+      const columnKey = th.getAttribute('data-key');
+      if (columnKey) {
+        console.log('Sorting column:', columnKey);
+        this.toggleSort(columnKey, true); // Always multi-sort
+      }
       return;
     }
-    
-    const rowIndex = parseInt(tr.getAttribute('data-index') || '0');
-    const rowData = this.data[rowIndex];
-    
-    // Handle row selection if selectable
-    if (this.selectable) {
-      const isCurrentlySelected = this.selectedRows.includes(rowIndex);
-      
-      if (isCurrentlySelected) {
-        this.selectedRows = this.selectedRows.filter(i => i !== rowIndex);
-      } else {
-        this.selectedRows = [...this.selectedRows, rowIndex];
+
+    // Handle row click
+    const tr = target.closest('tbody tr') as HTMLElement;
+    if (tr) {
+      // Don't trigger if clicking on checkbox or other interactive elements
+      if (target.matches('input[type="checkbox"], button, a, .interactive')) {
+        return;
       }
-      
+
+      const rowIndex = parseInt(tr.getAttribute('data-index') || '0');
+      const rowData = this.data[rowIndex];
+
+      // Handle row selection if selectable
+      if (this.selectable) {
+        const isCurrentlySelected = this.selectedRows.includes(rowIndex);
+
+        if (isCurrentlySelected) {
+          this.selectedRows = this.selectedRows.filter(i => i !== rowIndex);
+        } else {
+          this.selectedRows = [...this.selectedRows, rowIndex];
+        }
+
+        this.updateRowSelectionState();
+        this.updateSelectAllState();
+        this.dispatchRowSelectionChanged(rowIndex, !isCurrentlySelected);
+      }
+
+      // Handle clickable row event
+      if (this.clickable) {
+        this.dispatchEvent(new CustomEvent('row-clicked', {
+          detail: { rowData, rowIndex }
+        }));
+      }
+    }
+  }
+
+  @on('change')
+  handleChange(e: Event) {
+    const target = e.target as HTMLElement;
+
+    // Handle row select checkbox
+    if (target.matches('.row-select')) {
+      const checkbox = target as HTMLInputElement;
+      const rowIndex = parseInt(checkbox.getAttribute('data-row-index') || '0');
+
+      if (checkbox.checked) {
+        if (!this.selectedRows.includes(rowIndex)) {
+          this.selectedRows = [...this.selectedRows, rowIndex];
+        }
+      } else {
+        this.selectedRows = this.selectedRows.filter(i => i !== rowIndex);
+      }
+
       this.updateRowSelectionState();
       this.updateSelectAllState();
-      this.dispatchRowSelectionChanged(rowIndex, !isCurrentlySelected);
+      this.dispatchRowSelectionChanged(rowIndex, checkbox.checked);
+      return;
     }
-    
-    // Handle clickable row event
-    if (this.clickable) {
-      this.dispatchEvent(new CustomEvent('row-clicked', {
-        detail: { rowData, rowIndex }
-      }));
+
+    // Handle select all checkbox
+    if (target.matches('.select-all')) {
+      const checkbox = target as HTMLInputElement;
+
+      if (checkbox.checked) {
+        this.selectedRows = this.data.map((_, index) => index);
+      } else {
+        this.selectedRows = [];
+      }
+
+      this.updateRowSelectionState();
+      this.dispatchSelectAllChanged(checkbox.checked);
     }
   }
 
@@ -637,17 +642,41 @@ export class SniceTable extends HTMLElement {
     this.getTableData();
   }
 
-  @on('input', '.search-input', { debounce: 500 })
-  handleSearchChange(e: Event) {
-    const input = e.target as HTMLInputElement;
+  private searchDebounceTimeout: any = null;
+
+  @on('input')
+  handleInput(e: Event) {
+    const target = e.target as HTMLElement;
+    if (!target.matches('.search-input')) return;
+
+    const input = target as HTMLInputElement;
     this.searchText = input.value;
-    this.debouncedDataRequest();
+
+    // Manual debounce implementation
+    if (this.searchDebounceTimeout) {
+      clearTimeout(this.searchDebounceTimeout);
+    }
+    this.searchDebounceTimeout = setTimeout(() => {
+      this.debouncedDataRequest();
+    }, 500);
   }
 
-  @on('@snice/select/change', '.selector-input', { debounce: 150 }) 
+  private selectorDebounceTimeout: any = null;
+
+  @on('@snice/select/change')
   handleSelectorChange(e: CustomEvent) {
+    const target = e.target as HTMLElement;
+    if (!target.matches('.selector-input')) return;
+
     this.selector = Array.isArray(e.detail.value) ? e.detail.value.join(',') : e.detail.value;
-    this.debouncedDataRequest();
+
+    // Manual debounce implementation
+    if (this.selectorDebounceTimeout) {
+      clearTimeout(this.selectorDebounceTimeout);
+    }
+    this.selectorDebounceTimeout = setTimeout(() => {
+      this.debouncedDataRequest();
+    }, 150);
   }
 
 

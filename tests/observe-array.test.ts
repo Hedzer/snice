@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { element, observe } from '../src/index';
+import { element, observe, render, html } from '../src/index';
 
 describe('@observe with array syntax', () => {
   let container: HTMLElement;
@@ -22,8 +22,9 @@ describe('@observe with array syntax', () => {
 
     @element(tagName)
     class TestElement extends HTMLElement {
-      html() {
-        return `
+      @render()
+      renderContent() {
+        return html`
           <div class="content" data-state="initial">Content</div>
         `;
       }
@@ -67,8 +68,9 @@ describe('@observe with array syntax', () => {
 
     @element(tagName)
     class TestElement extends HTMLElement {
-      html() {
-        return `<div>Responsive</div>`;
+      @render()
+      renderContent() {
+        return html`<div>Responsive</div>`;
       }
 
       @observe(['media:(max-width: 600px)', 'media:(min-width: 1024px)'])
@@ -100,8 +102,9 @@ describe('@observe with array syntax', () => {
 
     @element(tagName)
     class TestElement extends HTMLElement {
-      html() {
-        return `<div class="mixed">Mixed content</div>`;
+      @render()
+      renderContent() {
+        return html`<div class="mixed">Mixed content</div>`;
       }
 
       // Mix media query and mutation observer
@@ -140,8 +143,9 @@ describe('@observe with array syntax', () => {
 
     @element(tagName)
     class TestElement extends HTMLElement {
-      html() {
-        return `
+      @render()
+      renderContent() {
+        return html`
           <div class="throttled" data-test="initial">Content</div>
         `;
       }

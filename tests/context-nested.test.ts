@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { Router, element, context as contextDecorator, controller } from '../src';
+import { Router, element, context as contextDecorator, controller, render, html } from '../src';
 
 // Helper to wait for element to be ready
 async function waitForElement(element: any): Promise<void> {
@@ -31,9 +31,10 @@ describe('Context in Nested Elements and Controllers', () => {
     class NestedElement extends HTMLElement {
       @contextDecorator()
       ctx?: any;
-      
-      html() {
-        return `<div>Nested: ${this.ctx?.user || 'no context'}</div>`;
+
+      @render()
+      renderContent() {
+        return html`<div>Nested: ${this.ctx?.user || 'no context'}</div>`;
       }
     }
     
@@ -49,9 +50,10 @@ describe('Context in Nested Elements and Controllers', () => {
     class ParentPage extends HTMLElement {
       @contextDecorator()
       ctx?: any;
-      
-      html() {
-        return `
+
+      @render()
+      renderContent() {
+        return html`
           <div>Parent: ${this.ctx?.user}</div>
           <nested-element></nested-element>
         `;
@@ -88,9 +90,10 @@ describe('Context in Nested Elements and Controllers', () => {
     class StandaloneElement extends HTMLElement {
       @contextDecorator()
       ctx?: any;
-      
-      html() {
-        return `<div>Standalone</div>`;
+
+      @render()
+      renderContent() {
+        return html`<div>Standalone</div>`;
       }
     }
     
@@ -155,14 +158,15 @@ describe('Context in Nested Elements and Controllers', () => {
     class ControllerPage extends HTMLElement {
       @contextDecorator()
       ctx?: any;
-      
-      html() {
-        return `
+
+      @render()
+      renderContent() {
+        return html`
           <div>Page with controller</div>
           <button id="increment">Increment</button>
         `;
       }
-      
+
       connectedCallback() {
         super.connectedCallback?.();
         this.setAttribute('controller', 'page-controller');
@@ -205,32 +209,35 @@ describe('Context in Nested Elements and Controllers', () => {
     class PortableElement extends HTMLElement {
       @contextDecorator()
       ctx?: any;
-      
-      html() {
-        return `<div>Portable: ${this.ctx?.page || 'no context'}</div>`;
+
+      @render()
+      renderContent() {
+        return html`<div>Portable: ${this.ctx?.page || 'no context'}</div>`;
       }
     }
-    
+
     // Create router with context
     router = Router({
       target: '#router-target',
       type: 'hash',
       context: appContext
     });
-    
+
     // Define first page
     @router.page({ tag: 'first-page', routes: ['/first'] })
     class FirstPage extends HTMLElement {
-      html() {
-        return `<div id="first">First Page</div>`;
+      @render()
+      renderContent() {
+        return html`<div id="first">First Page</div>`;
       }
     }
-    
+
     // Define second page
     @router.page({ tag: 'second-page', routes: ['/second'] })
     class SecondPage extends HTMLElement {
-      html() {
-        return `<div id="second">Second Page</div>`;
+      @render()
+      renderContent() {
+        return html`<div id="second">Second Page</div>`;
       }
     }
     

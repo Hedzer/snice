@@ -107,16 +107,22 @@ export class SniceCheckbox extends HTMLElement implements SniceCheckboxElement {
     this.updateCheckboxState();
   }
 
-  @on('change', '.checkbox-input')
+  @on('change')
   handleChange(e: Event) {
-    const target = e.target as HTMLInputElement;
-    this.checked = target.checked;
+    const target = e.target as HTMLElement;
+    if (!target.classList.contains('checkbox-input')) return;
+
+    const input = target as HTMLInputElement;
+    this.checked = input.checked;
     this.indeterminate = false; // Clear indeterminate on user interaction
     this.dispatchChangeEvent();
   }
 
-  @on('click', '.checkbox-input')
+  @on('click')
   handleClick(e: Event) {
+    const target = e.target as HTMLElement;
+    if (!target.classList.contains('checkbox-input')) return;
+
     // Allow click to propagate for label association
     e.stopPropagation();
   }

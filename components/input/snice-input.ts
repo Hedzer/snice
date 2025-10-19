@@ -212,37 +212,55 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
     }
   }
 
-  @on('input', '.input')
+  @on('input')
   handleInput(e: Event) {
-    const target = e.target as HTMLInputElement;
-    this.value = target.value;
+    const target = e.target as HTMLElement;
+    if (!target.matches('.input')) return;
+
+    const input = target as HTMLInputElement;
+    this.value = input.value;
     this.dispatchInputEvent();
   }
 
-  @on('change', '.input')
+  @on('change')
   handleChange(e: Event) {
-    const target = e.target as HTMLInputElement;
-    this.value = target.value;
+    const target = e.target as HTMLElement;
+    if (!target.matches('.input')) return;
+
+    const input = target as HTMLInputElement;
+    this.value = input.value;
     this.dispatchChangeEvent();
   }
 
-  @on('focus', '.input')
-  handleFocus() {
+  @on('focus')
+  handleFocus(e: Event) {
+    const target = e.target as HTMLElement;
+    if (!target.matches('.input')) return;
+
     this.dispatchFocusEvent();
   }
 
-  @on('blur', '.input')
-  handleBlur() {
+  @on('blur')
+  handleBlur(e: Event) {
+    const target = e.target as HTMLElement;
+    if (!target.matches('.input')) return;
+
     this.dispatchBlurEvent();
   }
 
-  @on('click', '.clear-button')
-  handleClear() {
+  @on('click')
+  handleClear(e: Event) {
+    const target = e.target as HTMLElement;
+    if (!target.matches('.clear-button')) return;
+
     this.clear();
   }
 
-  @on('click', '.password-toggle')
-  handlePasswordToggle() {
+  @on('click')
+  handlePasswordToggle(e: Event) {
+    const target = e.target as HTMLElement;
+    if (!target.matches('.password-toggle')) return;
+
     this.showPassword = !this.showPassword;
     if (this.input) {
       this.input.type = this.showPassword ? 'text' : 'password';

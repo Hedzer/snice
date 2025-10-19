@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { element, dispatch, on } from '../src/index';
+import { element, dispatch, render, html } from '../src/index';
 
 // Helper to generate unique names to avoid state conflicts  
 function uniqueName(prefix: string): string {
@@ -180,11 +180,11 @@ describe('@dispatch decorator', () => {
     class TestDispatchCombo extends HTMLElement {
       count = 0;
 
-      html() {
-        return '<button id="increment">Increment</button>';
+      @render()
+      renderContent() {
+        return html`<button id="increment" @click=${this.increment}>Increment</button>`;
       }
 
-      @on('click', '#increment')
       @dispatch('count-changed')
       increment() {
         this.count++;
@@ -194,6 +194,7 @@ describe('@dispatch decorator', () => {
 
     const el = document.createElement('test-dispatch-combo') as any;
     container.appendChild(el);
+    await el.ready;
 
     const eventPromise = new Promise((resolve) => {
       el.addEventListener('count-changed', (e: CustomEvent) => {
@@ -278,24 +279,27 @@ describe('@dispatch decorator', () => {
         return { message: 'from shadow child' };
       }
 
-      html() {
-        return '<button id="trigger">Trigger</button>';
+      @render()
+      renderContent() {
+        return html`<button id="trigger">Trigger</button>`;
       }
     }
 
     // Create a parent element that contains the child
     @element('test-shadow-parent')
     class TestShadowParent extends HTMLElement {
-      html() {
-        return '<test-shadow-child></test-shadow-child>';
+      @render()
+      renderContent() {
+        return html`<test-shadow-child></test-shadow-child>`;
       }
     }
 
     const parent = document.createElement('test-shadow-parent');
     container.appendChild(parent);
+    await parent.ready;
 
-    // Wait for elements to be connected
-    await new Promise(resolve => setTimeout(resolve, 0));
+    // Wait for child to be ready
+    await new Promise(resolve => setTimeout(resolve, 10));
 
     const child = parent.shadowRoot!.querySelector('test-shadow-child') as any;
 
@@ -322,20 +326,23 @@ describe('@dispatch decorator', () => {
         return { from: 'child' };
       }
 
-      html() {
-        return '<button id="fire">Fire Event</button>';
+      @render()
+      renderContent() {
+        return html`<button id="fire">Fire Event</button>`;
       }
     }
 
     @element('test-nested-parent')
     class TestNestedParent extends HTMLElement {
-      html() {
-        return '<test-nested-child></test-nested-child>';
+      @render()
+      renderContent() {
+        return html`<test-nested-child></test-nested-child>`;
       }
     }
 
     const parent = document.createElement('test-nested-parent');
     container.appendChild(parent);
+    await parent.ready;
 
     // Wait for elements to be connected
     await new Promise(resolve => setTimeout(resolve, 10));

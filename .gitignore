@@ -77,3 +77,6 @@ my-app/
 .debug
 
 !rollup.config.test.js
+
+
+test-results

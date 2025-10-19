@@ -65,45 +65,56 @@ export class SniceChip extends HTMLElement implements SniceChipElement {
     return css;
   }
 
-  @on('click', '.chip')
+  @on('click')
   @dispatch('chip-click')
   handleClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.matches('.chip')) return;
     if (this.disabled) return;
-    if ((event.target as HTMLElement).closest('.chip-remove')) return;
-    
+    if (target.closest('.chip-remove')) return;
+
     if (!this.removable) {
       this.selected = !this.selected;
     }
-    
-    return { 
+
+    return {
       label: this.label,
-      selected: this.selected 
+      selected: this.selected
     };
   }
 
-  @on('click', '.chip-remove')
+  @on('click')
   @dispatch('chip-remove')
   handleRemove(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.matches('.chip-remove')) return;
+
     event.stopPropagation();
     if (this.disabled) return;
-    
+
     return { label: this.label };
   }
 
-  @on(['keydown:Enter', 'keydown:Space'], '.chip')
+  @on(['keydown:Enter', 'keydown:Space'])
   handleKeyPress(event: KeyboardEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.matches('.chip')) return;
+
     event.preventDefault();
     if (this.disabled) return;
-    
+
     if (!this.removable) {
       this.selected = !this.selected;
       this.dispatchChipClick();
     }
   }
 
-  @on(['keydown:Delete', 'keydown:Backspace'], '.chip')
+  @on(['keydown:Delete', 'keydown:Backspace'])
   handleDelete(event: KeyboardEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.matches('.chip')) return;
     if (this.disabled || !this.removable) return;
+
     event.preventDefault();
     this.dispatchChipRemove();
   }

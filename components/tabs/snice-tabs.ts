@@ -122,32 +122,41 @@ export class SniceTabs extends HTMLElement {
     this.updateScrollButtons();
   }
 
-  @on('click', '.tabs__scroll-button--start')
-  scrollStart() {
-    if (!this.nav) return;
-    
-    const isHorizontal = this.placement === 'top' || this.placement === 'bottom';
-    if (isHorizontal) {
-      this.nav.scrollBy({ left: -200, behavior: 'smooth' });
-    } else {
-      this.nav.scrollBy({ top: -200, behavior: 'smooth' });
+  @on('click')
+  handleClick(e: MouseEvent) {
+    const target = e.target as HTMLElement;
+
+    // Handle scroll button start
+    if (target.closest('.tabs__scroll-button--start')) {
+      if (!this.nav) return;
+
+      const isHorizontal = this.placement === 'top' || this.placement === 'bottom';
+      if (isHorizontal) {
+        this.nav.scrollBy({ left: -200, behavior: 'smooth' });
+      } else {
+        this.nav.scrollBy({ top: -200, behavior: 'smooth' });
+      }
+      return;
+    }
+
+    // Handle scroll button end
+    if (target.closest('.tabs__scroll-button--end')) {
+      if (!this.nav) return;
+
+      const isHorizontal = this.placement === 'top' || this.placement === 'bottom';
+      if (isHorizontal) {
+        this.nav.scrollBy({ left: 200, behavior: 'smooth' });
+      } else {
+        this.nav.scrollBy({ top: 200, behavior: 'smooth' });
+      }
     }
   }
 
-  @on('click', '.tabs__scroll-button--end')
-  scrollEnd() {
-    if (!this.nav) return;
-    
-    const isHorizontal = this.placement === 'top' || this.placement === 'bottom';
-    if (isHorizontal) {
-      this.nav.scrollBy({ left: 200, behavior: 'smooth' });
-    } else {
-      this.nav.scrollBy({ top: 200, behavior: 'smooth' });
-    }
-  }
+  @on('scroll')
+  handleScroll(e: Event) {
+    const target = e.target as HTMLElement;
+    if (!target.matches('.tabs__nav')) return;
 
-  @on('scroll', '.tabs__nav')
-  handleScroll() {
     this.updateScrollButtons();
     this.updateIndicator();
   }

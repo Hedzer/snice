@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { element, controller, IController } from '../src';
+import { element, controller, IController, render, html } from '../src';
 
 describe('Angular Migration Examples', () => {
   let container: HTMLElement;
@@ -27,24 +27,19 @@ describe('Angular Migration Examples', () => {
       @element('test-user-list')
       class UserList extends HTMLElement {
         users: any[] = [];
-        
-        html() {
-          return `
+
+        @render()
+        renderContent() {
+          return html`
             <ul>
-              ${this.users.map(user => `<li>${user.name}</li>`).join('')}
+              ${this.users.map(user => html`<li>${user.name}</li>`)}
             </ul>
           `;
         }
-        
+
         setUsers(users: any[]) {
           this.users = users;
-          this.render();
-        }
-        
-        render() {
-          if (this.shadowRoot) {
-            this.shadowRoot.innerHTML = this.html();
-          }
+          this.renderContent();
         }
       }
 
@@ -102,11 +97,12 @@ describe('Angular Migration Examples', () => {
       @element('test-component-a')
       class ComponentA extends HTMLElement {
         private logger = LoggerService.getInstance();
-        
-        html() {
-          return `<button>Log from A</button>`;
+
+        @render()
+        renderContent() {
+          return html`<button>Log from A</button>`;
         }
-        
+
         connectedCallback() {
           super.connectedCallback?.();
           this.logger.log('Component A initialized');
@@ -116,11 +112,12 @@ describe('Angular Migration Examples', () => {
       @element('test-component-b')
       class ComponentB extends HTMLElement {
         private logger = LoggerService.getInstance();
-        
-        html() {
-          return `<button>Log from B</button>`;
+
+        @render()
+        renderContent() {
+          return html`<button>Log from B</button>`;
         }
-        
+
         connectedCallback() {
           super.connectedCallback?.();
           this.logger.log('Component B initialized');
@@ -149,11 +146,12 @@ describe('Angular Migration Examples', () => {
       @element('test-ng-for')
       class NgForComponent extends HTMLElement {
         items = ['Apple', 'Banana', 'Cherry'];
-        
-        html() {
-          return `
+
+        @render()
+        renderContent() {
+          return html`
             <ul>
-              ${this.items.map(item => `<li>${item}</li>`).join('')}
+              ${this.items.map(item => html`<li>${item}</li>`)}
             </ul>
           `;
         }
@@ -161,7 +159,7 @@ describe('Angular Migration Examples', () => {
 
       const el = document.createElement('test-ng-for');
       container.appendChild(el);
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await el.ready;
 
       const listItems = el.shadowRoot?.querySelectorAll('li');
       expect(listItems?.length).toBe(3);
@@ -174,40 +172,26 @@ describe('Angular Migration Examples', () => {
       @element('test-ng-if')
       class NgIfComponent extends HTMLElement {
         isVisible = true;
-        
-        html() {
-          return `
+
+        @render()
+        renderContent() {
+          return html`
             <div>
-              ${this.isVisible ? '<p>Visible content</p>' : ''}
-              <button>Toggle</button>
+              ${this.isVisible ? html`<p>Visible content</p>` : ''}
+              <button @click=${this.toggle}>Toggle</button>
             </div>
           `;
         }
-        
-        toggle() {
+
+        toggle = () => {
           this.isVisible = !this.isVisible;
-          this.render();
-        }
-        
-        render() {
-          if (this.shadowRoot) {
-            this.shadowRoot.innerHTML = this.html();
-            // Re-attach event listener after re-render
-            const button = this.shadowRoot.querySelector('button');
-            button?.addEventListener('click', () => this.toggle());
-          }
-        }
-        
-        connectedCallback() {
-          super.connectedCallback?.();
-          const button = this.shadowRoot?.querySelector('button');
-          button?.addEventListener('click', () => this.toggle());
-        }
+          this.renderContent();
+        };
       }
 
       const el = document.createElement('test-ng-if');
       container.appendChild(el);
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await el.ready;
 
       // Initially visible
       let content = el.shadowRoot?.querySelector('p');
@@ -216,7 +200,7 @@ describe('Angular Migration Examples', () => {
       // Click to hide
       const button = el.shadowRoot?.querySelector('button');
       button?.click();
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise(resolve => queueMicrotask(resolve));
 
       content = el.shadowRoot?.querySelector('p');
       expect(content).toBeNull();
@@ -224,7 +208,7 @@ describe('Angular Migration Examples', () => {
       // Click to show again
       const buttonAfterRerender = el.shadowRoot?.querySelector('button');
       buttonAfterRerender?.click();
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise(resolve => queueMicrotask(resolve));
 
       content = el.shadowRoot?.querySelector('p');
       expect(content?.textContent).toBe('Visible content');
@@ -238,16 +222,17 @@ describe('Angular Migration Examples', () => {
 
       @element('test-lifecycle')
       class LifecycleComponent extends HTMLElement {
-        html() {
-          return `<div>Lifecycle Component</div>`;
+        @render()
+        renderContent() {
+          return html`<div>Lifecycle Component</div>`;
         }
-        
+
         // ngOnInit equivalent
         connectedCallback() {
           super.connectedCallback?.();
           initialized = true;
         }
-        
+
         // ngOnDestroy equivalent
         disconnectedCallback() {
           super.disconnectedCallback?.();
@@ -257,7 +242,7 @@ describe('Angular Migration Examples', () => {
 
       const el = document.createElement('test-lifecycle');
       container.appendChild(el);
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await el.ready;
 
       expect(initialized).toBe(true);
       expect(destroyed).toBe(false);

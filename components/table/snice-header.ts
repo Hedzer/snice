@@ -67,29 +67,38 @@ export class SniceHeader extends HTMLElement implements SniceHeaderElement {
     }
   }
 
-  @on('click', '.header-cell[data-sortable="true"]')
-  handleSort(e: MouseEvent) {
-    const cell = e.currentTarget as HTMLElement;
+  @on('click')
+  handleClick(e: MouseEvent) {
+    const target = e.target as HTMLElement;
+    const cell = target.closest('.header-cell[data-sortable="true"]') as HTMLElement;
+    if (!cell) return;
+
     const columnKey = cell.dataset.columnKey;
-    
+
     if (columnKey && this.sortable) {
       this.dispatchSort(columnKey);
     }
   }
 
-  @on('change', '.select-all-checkbox')
-  handleSelectAll(e: Event) {
-    const checkbox = e.target as HTMLInputElement;
+  @on('change')
+  handleChange(e: Event) {
+    const target = e.target as HTMLElement;
+    if (!target.matches('.select-all-checkbox')) return;
+
+    const checkbox = target as HTMLInputElement;
     this.dispatchSelectAll(checkbox.checked);
   }
 
-  @on('keydown', '.header-cell[data-sortable="true"]')
+  @on('keydown')
   handleKeyDown(e: KeyboardEvent) {
+    const target = e.target as HTMLElement;
+    const cell = target.closest('.header-cell[data-sortable="true"]') as HTMLElement;
+    if (!cell) return;
+
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      const cell = e.currentTarget as HTMLElement;
       const columnKey = cell.dataset.columnKey;
-      
+
       if (columnKey && this.sortable) {
         this.dispatchSort(columnKey);
       }

@@ -112,15 +112,21 @@ export class SniceSwitch extends HTMLElement implements SniceSwitchElement {
     this.updateStateLabels();
   }
 
-  @on('change', '.switch-input')
+  @on('change')
   handleChange(e: Event) {
-    const target = e.target as HTMLInputElement;
-    this.checked = target.checked;
+    const target = e.target as HTMLElement;
+    if (!target.matches('.switch-input')) return;
+
+    const input = target as HTMLInputElement;
+    this.checked = input.checked;
     this.dispatchChangeEvent();
   }
 
-  @on('click', '.switch-input')
+  @on('click')
   handleClick(e: Event) {
+    const target = e.target as HTMLElement;
+    if (!target.matches('.switch-input')) return;
+
     // Allow click to propagate for label association
     e.stopPropagation();
   }

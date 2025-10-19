@@ -121,22 +121,27 @@ export class SniceModal extends HTMLElement implements SniceModalElement {
     }
   }
 
-  @on('click', '.modal__backdrop')
-  handleBackdropClick() {
+  @on('click')
+  handleBackdropClick(e: Event) {
+    const target = e.target as HTMLElement;
+    if (!target.classList.contains('modal__backdrop')) return;
     if (!this.noBackdropDismiss) {
       this.close();
     }
   }
 
-  @on('click', '.modal__close')
-  handleCloseClick() {
+  @on('click')
+  handleCloseClick(e: Event) {
+    const target = e.target as HTMLElement;
+    if (!target.closest('.modal__close')) return;
     this.close();
   }
 
-  @on('keydown:Escape', { stopPropagation: true })
-  handleEscape() {
+  @on('keydown:Escape')
+  handleEscape(e: KeyboardEvent) {
     if (!this.open) return;
     if (!this.noEscapeDismiss) {
+      e.stopPropagation();
       this.close();
     }
   }

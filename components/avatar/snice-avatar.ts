@@ -1,5 +1,5 @@
-import { element, property, watch, query, ready, on, part } from 'snice';
-import css from './snice-avatar.css?inline';
+import { element, property, watch, query, ready, render, styles, html } from 'snice';
+import cssContent from './snice-avatar.css?inline';
 import type { AvatarSize, AvatarShape, SniceAvatarElement } from './snice-avatar.types';
 
 @element('snice-avatar')
@@ -33,68 +33,55 @@ export class SniceAvatar extends HTMLElement implements SniceAvatarElement {
 
   private imageError = false;
 
-  html() {
+  @render()
+  renderContent() {
     const colorClass = this.fallbackBackground ? '' : this.getColorClass(this.name);
-    const bgStyle = this.fallbackBackground ? `style="--avatar-bg: ${this.fallbackBackground}; --avatar-color: ${this.fallbackColor}"` : '';
-    
-    return /*html*/`
-      <div class="avatar ${colorClass}" ${bgStyle}>
-        <div part="image-section"></div>
-        <div part="fallback-section"></div>
+    const bgStyle = this.fallbackBackground ? `--avatar-bg: ${this.fallbackBackground}; --avatar-color: ${this.fallbackColor}` : '';
+
+    return html`
+      <div class="avatar ${colorClass}" style="${bgStyle}">
+        ${this.renderImageSection()}
+        ${this.renderFallbackSection()}
       </div>
     `;
   }
 
-  @watch('src')
-  @part('image-section')
   renderImageSection() {
-    return this.src ? /*html*/`
-      <img class="avatar-image ${this.imageError ? 'avatar-image--error' : ''}" 
-           src="${this.src}" 
+    return this.src ? html`
+      <img class="avatar-image ${this.imageError ? 'avatar-image--error' : ''}"
+           src="${this.src}"
            alt="${this.alt || this.name}"
-           loading="lazy">
+           loading="lazy"
+           @load=${this.handleImageLoad}
+           @error=${this.handleImageError}>
     ` : '';
   }
 
-  @watch('name')
-  @part('fallback-section')
   renderFallbackSection() {
     const initials = this.getInitials(this.name);
-    return /*html*/`
+    return html`
       <div class="avatar-fallback ${!this.src || this.imageError ? 'avatar-fallback--visible' : ''}">
         ${initials || this.renderIcon()}
       </div>
     `;
   }
 
-  css() {
-    return css;
+  @styles()
+  componentStyles() {
+    return cssContent;
   }
 
   @ready()
   init() {
-    this.setupImageHandlers();
+    // Image handlers are now attached via template events
   }
 
-  private setupImageHandlers() {
-    if (this.imageElement) {
-      this.imageElement.addEventListener('load', this.handleImageLoad.bind(this));
-      this.imageElement.addEventListener('error', this.handleImageError.bind(this));
-    }
-  }
-
-  @on('load', '.avatar-image')
   handleImageLoad() {
     this.imageError = false;
-    this.renderImageSection();
-    this.renderFallbackSection();
   }
 
-  @on('error', '.avatar-image')
   handleImageError() {
     this.imageError = true;
-    this.renderImageSection();
-    this.renderFallbackSection();
   }
 
 
@@ -126,8 +113,8 @@ export class SniceAvatar extends HTMLElement implements SniceAvatarElement {
     return `avatar--${colors[colorIndex]}`;
   }
 
-  private renderIcon(): string {
-    return /*html*/`
+  private renderIcon() {
+    return html`
       <svg class="avatar-icon" viewBox="0 0 24 24" fill="currentColor">
         <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
       </svg>

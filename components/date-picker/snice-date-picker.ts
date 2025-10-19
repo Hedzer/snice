@@ -463,30 +463,34 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
     });
   }
 
-  @on('input', '.input')
+  @on('input')
   handleInput(e: Event) {
-    const target = e.target as HTMLInputElement;
-    
-    this.inputValue = target.value;
-    
-    const date = this.parseDate(target.value);
-    if (date && this.isCompleteDate(target.value)) {
+    const target = e.target as HTMLElement;
+    if (!target.matches('.input')) return;
+
+    const input = target as HTMLInputElement;
+    this.inputValue = input.value;
+
+    const date = this.parseDate(input.value);
+    if (date && this.isCompleteDate(input.value)) {
       this.selectedDate = date;
       this.viewDate = new Date(date);
       if (this.showCalendar) {
         this.updateCalendarGrid();
       }
     }
-    
+
     this.updateClearButton();
     this.dispatchInputEvent();
   }
 
-  @on('change', '.input')
+  @on('change')
   handleChange(e: Event) {
-    const target = e.target as HTMLInputElement;
-    
-    const date = this.parseDate(target.value);
+    const target = e.target as HTMLElement;
+    if (!target.matches('.input')) return;
+
+    const input = target as HTMLInputElement;
+    const date = this.parseDate(input.value);
     if (date) {
       this.selectedDate = date;
       this.value = this.formatDate(date);
@@ -494,39 +498,51 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
       if (this.input) {
         this.input.value = this.value;
       }
-    } else if (target.value) {
+    } else if (input.value) {
       this.selectedDate = null;
-      this.value = target.value;
-      this.inputValue = target.value;
+      this.value = input.value;
+      this.inputValue = input.value;
     } else {
       this.selectedDate = null;
       this.value = '';
       this.inputValue = '';
     }
-    
+
     this.updateClearButton();
     this.dispatchChangeEvent();
   }
 
-  @on('focus', '.input')
-  handleFocus() {
+  @on('focus')
+  handleFocus(e: Event) {
+    const target = e.target as HTMLElement;
+    if (!target.matches('.input')) return;
+
     this.dispatchFocusEvent();
   }
 
-  @on('click', '.input')
-  handleInputClick() {
+  @on('click')
+  handleInputClick(e: Event) {
+    const target = e.target as HTMLElement;
+    if (!target.matches('.input')) return;
+
     if (!this.showCalendar && !this.disabled && !this.readonly) {
       this.open();
     }
   }
 
-  @on('blur', '.input')
-  handleBlur() {
+  @on('blur')
+  handleBlur(e: Event) {
+    const target = e.target as HTMLElement;
+    if (!target.matches('.input')) return;
+
     this.dispatchBlurEvent();
   }
 
-  @on('click', '.calendar-toggle')
-  handleCalendarToggle() {
+  @on('click')
+  handleCalendarToggle(e: Event) {
+    const target = e.target as HTMLElement;
+    if (!target.matches('.calendar-toggle')) return;
+
     if (this.showCalendar) {
       this.close();
     } else {
@@ -534,16 +550,21 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
     }
   }
 
-  @on('click', '.clear-button')
-  handleClear() {
+  @on('click')
+  handleClear(e: Event) {
+    const target = e.target as HTMLElement;
+    if (!target.matches('.clear-button')) return;
+
     this.clear();
   }
 
-  @on('click', '.calendar')
+  @on('click')
   handleCalendarClick(e: Event) {
-    e.stopPropagation();
     const target = e.target as HTMLElement;
-    
+    if (!target.matches('.calendar')) return;
+
+    e.stopPropagation();
+
     if (target.closest('[data-date]')) {
       const dateString = target.closest('[data-date]')?.getAttribute('data-date');
       if (dateString) {
@@ -556,8 +577,11 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
     }
   }
 
-  @on('keydown', '.input')
+  @on('keydown')
   handleKeydown(e: KeyboardEvent) {
+    const target = e.target as HTMLElement;
+    if (!target.matches('.input')) return;
+
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       if (!this.showCalendar) {

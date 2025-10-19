@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { element, on, dispatch, query, property, request, respond, part, observe } from '../src/index';
+import { element, dispatch, query, property, request, respond, observe, render, html } from '../src/index';
 
 describe('Decorator stacking and this context preservation', () => {
   beforeEach(() => {
@@ -18,11 +18,11 @@ describe('Decorator stacking and this context preservation', () => {
       @query('button')
       button?: HTMLElement;
 
-      html() {
-        return `<button>Click me</button>`;
+      @render()
+      renderContent() {
+        return html`<button @click=${this.handleClick}>Click me</button>`;
       }
 
-      @on('click', 'button')
       @dispatch('test-clicked')
       handleClick(event: Event) {
         // Verify this context is preserved
@@ -69,11 +69,11 @@ describe('Decorator stacking and this context preservation', () => {
       @property()
       counter = 0;
 
-      html() {
-        return `<button>Async Click</button>`;
+      @render()
+      renderContent() {
+        return html`<button @click=${this.handleAsyncClick}>Async Click</button>`;
       }
 
-      @on('click', 'button')
       @dispatch('async-completed')
       async handleAsyncClick(event: Event) {
         // Verify this context in async method
@@ -123,14 +123,14 @@ describe('Decorator stacking and this context preservation', () => {
       @property()
       state = 'idle';
 
-      html() {
-        return `
-          <button id="btn1">Button 1</button>
-          <button id="btn2">Button 2</button>
+      @render()
+      renderContent() {
+        return html`
+          <button id="btn1" @click=${this.handleButton1}>Button 1</button>
+          <button id="btn2" @click=${this.handleButton2}>Button 2</button>
         `;
       }
 
-      @on('click', '#btn1')
       @dispatch('button1-clicked')
       handleButton1(event: Event) {
         expect(this).toBeInstanceOf(TestStackingMultiple);
@@ -138,7 +138,6 @@ describe('Decorator stacking and this context preservation', () => {
         return { button: 1, state: this.state };
       }
 
-      @on('click', '#btn2')
       @dispatch('button2-clicked')
       handleButton2(event: Event) {
         expect(this).toBeInstanceOf(TestStackingMultiple);
@@ -171,11 +170,11 @@ describe('Decorator stacking and this context preservation', () => {
       @property()
       clickCount = 0;
 
-      html() {
-        return `<button>Throttled Click</button>`;
+      @render()
+      renderContent() {
+        return html`<button @click=${this.handleThrottledClick}>Throttled Click</button>`;
       }
 
-      @on('click', 'button')
       @dispatch('throttled-click', { throttle: 50 })
       handleThrottledClick(event: Event) {
         expect(this).toBeInstanceOf(TestStackingTiming);
@@ -222,15 +221,15 @@ describe('Decorator stacking and this context preservation', () => {
       @query('span')
       output?: HTMLSpanElement;
 
-      html() {
-        return `
+      @render()
+      renderContent() {
+        return html`
           <input type="text" value="test" />
-          <button>Update</button>
+          <button @click=${this.updateText}>Update</button>
           <span></span>
         `;
       }
 
-      @on('click', 'button')
       @dispatch('text-updated')
       updateText(event: Event) {
         // Test that @query works properly with stacked decorators
@@ -277,11 +276,11 @@ describe('Decorator stacking and this context preservation', () => {
       @property()
       shouldError = false;
 
-      html() {
-        return `<button>Click</button>`;
+      @render()
+      renderContent() {
+        return html`<button @click=${this.handleClickWithError}>Click</button>`;
       }
 
-      @on('click', 'button')
       @dispatch('maybe-error')
       handleClickWithError(event: Event) {
         expect(this).toBeInstanceOf(TestStackingError);
@@ -308,7 +307,11 @@ describe('Decorator stacking and this context preservation', () => {
 
     // Second click should error but not break the decorator stack
     el.shouldError = true;
-    el.shadowRoot!.querySelector('button')!.click();
+    try {
+      el.shadowRoot!.querySelector('button')!.click();
+    } catch (error) {
+      // Error is expected, catch it to continue test
+    }
 
     // Should still be 1 event (error prevented dispatch)
     expect(events).toHaveLength(1);
@@ -325,15 +328,15 @@ describe('Decorator stacking and this context preservation', () => {
       @query('.status')
       statusEl?: HTMLElement;
 
-      html() {
-        return `
-          <button>Triple Stack</button>
+      @render()
+      renderContent() {
+        return html`
+          <button @click=${this.tripleStackMethod}>Triple Stack</button>
           <div class="status"></div>
         `;
       }
 
       // Triple-stacked decorators
-      @on('click', 'button')
       @dispatch('first-event')
       @dispatch('second-event')
       tripleStackMethod(event: Event) {
@@ -388,15 +391,15 @@ describe('Decorator stacking and this context preservation', () => {
     class TestOrderDebug extends HTMLElement {
       testValue = 'test-instance';
 
-      html() {
-        return `
-          <button class="test1">Test @on + @dispatch</button>
-          <button class="test2">Test @dispatch + @on</button>
+      @render()
+      renderContent() {
+        return html`
+          <button class="test1" @click=${this.method1}>Test @on + @dispatch</button>
+          <button class="test2" @click=${this.method2}>Test @dispatch + @on</button>
         `;
       }
 
       // Working order: @on then @dispatch
-      @on('click', '.test1')
       @dispatch('test1-result')
       method1(event: Event) {
         return {
@@ -408,7 +411,6 @@ describe('Decorator stacking and this context preservation', () => {
 
       // Different order: @dispatch then @on
       @dispatch('test2-result')
-      @on('click', '.test2')
       method2(event: Event) {
         return {
           source: 'method2',
@@ -460,11 +462,11 @@ describe('Decorator stacking and this context preservation', () => {
       @property()
       instanceId = Math.random();
 
-      html() {
-        return `<button class="trigger">Trigger Request</button>`;
+      @render()
+      renderContent() {
+        return html`<button class="trigger" @click=${this.fetchData}>Trigger Request</button>`;
       }
 
-      @on('click', '.trigger')
       @request('test-data')
       async *fetchData(event: Event) {
         yield {
@@ -509,26 +511,20 @@ describe('Decorator stacking and this context preservation', () => {
       @property()
       counter = 0;
 
-      html() {
-        return `
-          <button class="increment">Increment</button>
-          <div part="display"></div>
+      @render()
+      renderContent() {
+        renderCount++;
+        expect(this).toBeInstanceOf(TestPartStacking);
+        return html`
+          <button class="increment" @click=${this.incrementCounter}>Increment</button>
+          <div>Count: ${this.counter} (renders: ${renderCount})</div>
         `;
       }
 
-      @on('click', '.increment')
       @dispatch('counter-updated')
       incrementCounter(event: Event) {
         this.counter++;
-        this.updateDisplay();
         return { counter: this.counter, instanceType: this.constructor.name };
-      }
-
-      @part('display')
-      updateDisplay() {
-        renderCount++;
-        expect(this).toBeInstanceOf(TestPartStacking);
-        return `Count: ${this.counter} (renders: ${renderCount})`;
       }
     }
 
@@ -545,14 +541,17 @@ describe('Decorator stacking and this context preservation', () => {
     button.click();
     button.click();
 
+    // Wait for microtask batched re-renders
+    await new Promise(resolve => setTimeout(resolve, 0));
+
     expect(el.counter).toBe(3);
     expect(events).toHaveLength(3); // All dispatch events should fire
-    expect(renderCount).toBeGreaterThan(0); // Parts should render
+    expect(renderCount).toBeGreaterThan(0); // Differential rendering should render
     expect(events[0].instanceType).toBe('TestPartStacking');
 
-    // Check that the part content is updated
-    const displayEl = el.shadowRoot!.querySelector('[part="display"]');
-    expect(displayEl!.innerHTML).toContain('Count: 3');
+    // Check that the content is updated
+    const displayEl = el.shadowRoot!.querySelector('div');
+    expect(displayEl!.textContent).toContain('Count: 3');
   });
 
   it('should work with @part decorator stacking', async () => {
@@ -564,27 +563,20 @@ describe('Decorator stacking and this context preservation', () => {
       @property()
       value = 'initial';
 
-      html() {
-        return `
-          <button class="update">Update</button>
-          <div part="content"></div>
-        `;
-      }
-
-      @on('click', '.update')
-      @dispatch('value-updated')
-      updateValue(event: Event) {
-        this.value = 'updated-' + Date.now();
-        this.renderContent();
-        return { value: this.value, instanceType: this.constructor.name };
-      }
-
-      @part('content')
-      @dispatch('content-rendered')
+      @render()
       renderContent() {
         renderCount++;
         expect(this).toBeInstanceOf(TestPartDispatch);
-        return `Content: ${this.value} (renders: ${renderCount})`;
+        return html`
+          <button class="update" @click=${this.updateValue}>Update</button>
+          <div>Content: ${this.value} (renders: ${renderCount})</div>
+        `;
+      }
+
+      @dispatch('value-updated')
+      updateValue(event: Event) {
+        this.value = 'updated-' + Date.now();
+        return { value: this.value, instanceType: this.constructor.name };
       }
     }
 
@@ -593,14 +585,12 @@ describe('Decorator stacking and this context preservation', () => {
     await el.ready;
 
     el.addEventListener('value-updated', (e: any) => results.push({ type: 'update', ...e.detail }));
-    el.addEventListener('content-rendered', (e: any) => results.push({ type: 'render', ...e.detail }));
 
     // Trigger update
     el.shadowRoot!.querySelector('.update')!.click();
 
     expect(results.length).toBeGreaterThan(0);
     expect(results.some(r => r.type === 'update')).toBe(true);
-    expect(results.some(r => r.type === 'render')).toBe(true);
     expect(renderCount).toBeGreaterThan(0);
   });
 
@@ -612,14 +602,14 @@ describe('Decorator stacking and this context preservation', () => {
       @query('.target')
       targetEl?: HTMLElement;
 
-      html() {
-        return `
-          <button class="action">Test Query</button>
+      @render()
+      renderContent() {
+        return html`
+          <button class="action" @click=${this.testQuery}>Test Query</button>
           <div class="target">Target Element</div>
         `;
       }
 
-      @on('click', '.action')
       @dispatch('query-tested')
       testQuery(event: Event) {
         expect(this).toBeInstanceOf(TestQueryDispatch);
@@ -656,11 +646,11 @@ describe('Decorator stacking and this context preservation', () => {
       @property()
       testValue = 'initial';
 
-      html() {
-        return `<button class="update">Update Property</button>`;
+      @render()
+      renderContent() {
+        return html`<button class="update" @click=${this.updateProperty}>Update Property</button>`;
       }
 
-      @on('click', '.update')
       @dispatch('property-updated')
       updateProperty(event: Event) {
         expect(this).toBeInstanceOf(TestPropertyDispatch);
@@ -695,15 +685,15 @@ describe('Decorator stacking and this context preservation', () => {
     class TestTripleDecorators extends HTMLElement {
       instanceValue = 'test-instance';
 
-      html() {
-        return `
-          <button class="test1">Order 1</button>
-          <button class="test2">Order 2</button>
+      @render()
+      renderContent() {
+        return html`
+          <button class="test1" @click=${this.testMethod1}>Order 1</button>
+          <button class="test2" @click=${this.testMethod2}>Order 2</button>
         `;
       }
 
       // Order: @on → @dispatch → @query (using query in method)
-      @on('click', '.test1')
       @dispatch('test1-result')
       testMethod1(event: Event) {
         expect(this.instanceValue).toBe('test-instance');
@@ -721,7 +711,6 @@ describe('Decorator stacking and this context preservation', () => {
 
       // Reverse order: @dispatch → @on (with method chaining)
       @dispatch('test2-result')
-      @on('click', '.test2')
       testMethod2(event: Event) {
         expect(this.instanceValue).toBe('test-instance');
 

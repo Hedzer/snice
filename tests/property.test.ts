@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { element, property } from './test-imports';
+import { element, property, render, html } from './test-imports';
 
 describe('@property decorator', () => {
   beforeEach(() => {
@@ -170,46 +170,7 @@ describe('@property decorator', () => {
     });
   });
 
-  describe('requestUpdate integration', () => {
-    it('should call requestUpdate when property changes', () => {
-      const updateSpy = vi.fn();
-      
-      @element('test-prop-update')
-      class TestPropUpdate extends HTMLElement {
-        @property()
-        value = 0;
-        
-        requestUpdate(prop: string, oldValue: any) {
-          updateSpy(prop, oldValue);
-        }
-      }
-      
-      const el = document.createElement('test-prop-update') as any;
-      document.body.appendChild(el);
-      
-      el.value = 5;
-      expect(updateSpy).toHaveBeenCalledWith('value', 0);
-      
-      el.value = 10;
-      expect(updateSpy).toHaveBeenCalledWith('value', 5);
-    });
-
-    it('should not call requestUpdate if not defined', () => {
-      @element('test-prop-no-update')
-      class TestPropNoUpdate extends HTMLElement {
-        @property()
-        value = 0;
-      }
-      
-      const el = document.createElement('test-prop-no-update') as any;
-      document.body.appendChild(el);
-      
-      // Should not throw
-      expect(() => {
-        el.value = 5;
-      }).not.toThrow();
-    });
-  });
+  // requestUpdate was removed in v3.0.0 - properties now trigger @render() automatically via differential rendering
 
   describe('multiple properties', () => {
     it('should handle multiple properties on same class', () => {

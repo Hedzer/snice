@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { element, property } from './test-imports';
+import { element, property, render, html } from './test-imports';
 import { controller, attachController, useNativeElementControllers, cleanupNativeElementControllers } from './test-imports';
 import { on } from './test-imports';
 import { request, respond } from './test-imports';
@@ -250,18 +250,20 @@ describe('Integration & Stress Tests', () => {
       @element('parent-shadow')
       class ParentShadow extends HTMLElement {
         controller = 'parent-shadow-ctrl';
-        
-        html() {
-          return '<child-shadow></child-shadow>';
+
+        @render()
+        renderContent() {
+          return html`<child-shadow></child-shadow>`;
         }
       }
-      
+
       @element('child-shadow')
       class ChildShadow extends HTMLElement {
         controller = 'child-shadow-ctrl';
-        
-        html() {
-          return '<div>Nested Shadow Content</div>';
+
+        @render()
+        renderContent() {
+          return html`<div>Nested Shadow Content</div>`;
         }
       }
       

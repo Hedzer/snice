@@ -30,8 +30,11 @@ export class SniceAccordion extends HTMLElement implements SniceAccordionElement
     this.updateItems();
   }
 
-  @on('slotchange', 'slot', { debounce: 50 })
-  handleSlotChange() {
+  @on('slotchange')
+  handleSlotChange(e: Event) {
+    const target = e.target as HTMLElement;
+    if (!target.matches('slot')) return;
+
     this.updateItems();
   }
 
@@ -126,23 +129,27 @@ export class SniceAccordion extends HTMLElement implements SniceAccordionElement
   }
 
   // Keyboard navigation
-  @on('keydown:ArrowDown', { preventDefault: true })
+  @on('keydown:ArrowDown')
   handleArrowDown(event: KeyboardEvent) {
+    event.preventDefault();
     this.navigateItems(event, 1);
   }
 
-  @on('keydown:ArrowUp', { preventDefault: true })
+  @on('keydown:ArrowUp')
   handleArrowUp(event: KeyboardEvent) {
+    event.preventDefault();
     this.navigateItems(event, -1);
   }
 
-  @on('keydown:Home', { preventDefault: true })
+  @on('keydown:Home')
   handleHome(event: KeyboardEvent) {
+    event.preventDefault();
     this.navigateToIndex(event, 0);
   }
 
-  @on('keydown:End', { preventDefault: true })
+  @on('keydown:End')
   handleEnd(event: KeyboardEvent) {
+    event.preventDefault();
     if (!this.items) return;
     this.navigateToIndex(event, this.items.length - 1);
   }

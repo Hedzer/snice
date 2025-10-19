@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { Router, Guard } from './test-imports';
+import { Router, Guard, render, html } from './test-imports';
 
 describe('Router Guards', () => {
   let container: HTMLElement;
@@ -21,29 +21,30 @@ describe('Router Guards', () => {
 
   it('should allow navigation when guard returns true', async () => {
     const uniqueName = `allowed-page-${Date.now()}`;
-    
+
     interface AppContext {
       isAuthenticated: boolean;
     }
-    
+
     const guard: Guard<AppContext> = (ctx, _params) => ctx.isAuthenticated;
-    
+
     router = Router({
       target: '#app',
       type: 'hash',
       context: { isAuthenticated: true }
     });
-    
+
     const { page, initialize, navigate } = router;
-    
-    @page({ 
-      tag: uniqueName, 
+
+    @page({
+      tag: uniqueName,
       routes: ['/protected'],
       guards: guard
     })
     class ProtectedPage extends HTMLElement {
-      html() {
-        return '<h1>Protected Content</h1>';
+      @render()
+      renderContent() {
+        return html`<h1>Protected Content</h1>`;
       }
     }
     
@@ -52,34 +53,36 @@ describe('Router Guards', () => {
     
     const pageElement = container.querySelector(uniqueName);
     expect(pageElement).toBeTruthy();
+    await (pageElement as any)?.ready;
     expect(pageElement?.shadowRoot?.innerHTML).toContain('Protected Content');
   });
 
   it('should deny navigation when guard returns false', async () => {
     const uniqueName = `denied-page-${Date.now()}`;
-    
+
     interface AppContext {
       isAuthenticated: boolean;
     }
-    
+
     const guard: Guard<AppContext> = (ctx, _params) => ctx.isAuthenticated;
-    
+
     router = Router({
       target: '#app',
       type: 'hash',
       context: { isAuthenticated: false }
     });
-    
+
     const { page, initialize, navigate } = router;
-    
-    @page({ 
-      tag: uniqueName, 
+
+    @page({
+      tag: uniqueName,
       routes: ['/protected'],
       guards: guard
     })
     class ProtectedPage extends HTMLElement {
-      html() {
-        return '<h1>Protected Content</h1>';
+      @render()
+      renderContent() {
+        return html`<h1>Protected Content</h1>`;
       }
     }
     
@@ -120,8 +123,9 @@ describe('Router Guards', () => {
       guards: permissionGuard
     })
     class ContextProtectedPage extends HTMLElement {
-      html() {
-        return '<h1>Context Protected</h1>';
+      @render()
+      renderContent() {
+        return html`<h1>Context Protected</h1>`;
       }
     }
 
@@ -130,6 +134,7 @@ describe('Router Guards', () => {
 
     const pageElement = container.querySelector(uniqueName);
     expect(pageElement).toBeTruthy();
+    await (pageElement as any)?.ready;
     expect(pageElement?.shadowRoot?.innerHTML).toContain('Context Protected');
   });
 
@@ -164,16 +169,18 @@ describe('Router Guards', () => {
       guards: [isAuthenticated, hasPermission, isActive]
     })
     class MultiProtectedPage extends HTMLElement {
-      html() {
-        return '<h1>Multi Protected</h1>';
+      @render()
+      renderContent() {
+        return html`<h1>Multi Protected</h1>`;
       }
     }
-    
+
     initialize();
     await navigate('/multi-protected');
-    
+
     const pageElement = container.querySelector(uniqueName);
     expect(pageElement).toBeTruthy();
+    await (pageElement as any)?.ready;
     expect(pageElement?.shadowRoot?.innerHTML).toContain('Multi Protected');
   });
 
@@ -202,20 +209,21 @@ describe('Router Guards', () => {
     
     const { page, initialize, navigate } = router;
     
-    @page({ 
-      tag: uniqueName, 
+    @page({
+      tag: uniqueName,
       routes: ['/multi-protected'],
       guards: [isAuthenticated, hasPermission, isActive]
     })
     class MultiProtectedPage extends HTMLElement {
-      html() {
-        return '<h1>Multi Protected</h1>';
+      @render()
+      renderContent() {
+        return html`<h1>Multi Protected</h1>`;
       }
     }
-    
+
     initialize();
     await navigate('/multi-protected');
-    
+
     const pageElement = container.querySelector(uniqueName);
     expect(pageElement).toBeFalsy();
     expect(container.innerHTML).toContain('403');
@@ -239,24 +247,26 @@ describe('Router Guards', () => {
     
     const { page, initialize, navigate } = router;
     
-    @page({ 
-      tag: forbiddenName, 
+    @page({
+      tag: forbiddenName,
       routes: ['/403']
     })
     class ForbiddenPage extends HTMLElement {
-      html() {
-        return '<h1>Access Denied</h1><p>You do not have permission to view this page.</p>';
+      @render()
+      renderContent() {
+        return html`<h1>Access Denied</h1><p>You do not have permission to view this page.</p>`;
       }
     }
-    
-    @page({ 
-      tag: protectedName, 
+
+    @page({
+      tag: protectedName,
       routes: ['/protected'],
       guards: guard
     })
     class ProtectedPage extends HTMLElement {
-      html() {
-        return '<h1>Protected</h1>';
+      @render()
+      renderContent() {
+        return html`<h1>Protected</h1>`;
       }
     }
     
@@ -265,6 +275,7 @@ describe('Router Guards', () => {
     
     const forbiddenElement = container.querySelector(forbiddenName);
     expect(forbiddenElement).toBeTruthy();
+    await (forbiddenElement as any)?.ready;
     expect(forbiddenElement?.shadowRoot?.innerHTML).toContain('Access Denied');
     expect(forbiddenElement?.shadowRoot?.innerHTML).toContain('You do not have permission');
   });
@@ -289,8 +300,9 @@ describe('Router Guards', () => {
       guards: alwaysAllowGuard
     })
     class AlwaysAllowedPage extends HTMLElement {
-      html() {
-        return '<h1>Always Allowed</h1>';
+      @render()
+      renderContent() {
+        return html`<h1>Always Allowed</h1>`;
       }
     }
     
@@ -324,8 +336,9 @@ describe('Router Guards', () => {
       guards: homeGuard
     })
     class HomePage extends HTMLElement {
-      html() {
-        return '<h1>Home</h1>';
+      @render()
+      renderContent() {
+        return html`<h1>Home</h1>`;
       }
     }
     

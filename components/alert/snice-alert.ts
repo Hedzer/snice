@@ -1,5 +1,5 @@
-import { element, property, watch, query, on, dispatch, part } from 'snice';
-import css from './snice-alert.css?inline';
+import { element, property, watch, query, dispatch, render, styles, html } from 'snice';
+import cssContent from './snice-alert.css?inline';
 import type { AlertVariant, AlertSize, SniceAlertElement } from './snice-alert.types';
 
 @element('snice-alert')
@@ -24,51 +24,46 @@ export class SniceAlert extends HTMLElement implements SniceAlertElement {
 
   private isHidden = false;
 
-  html() {
-    return /*html*/`
-      <div class="alert ${this.isHidden ? 'alert--hidden' : ''}" role="alert" aria-live="polite">
-        <div part="icon-section"></div>
+  @render()
+  renderContent() {
+    return html`
+      <div class="alert ${this.isHidden ? 'alert--hidden' : ''}" role="alert" aria-live="polite" @animationend=${this.handleAnimationEnd}>
+        ${this.renderIconSection()}
         <div class="alert-content">
-          <div part="title-section"></div>
-          <div part="description-section"></div>
+          ${this.renderTitleSection()}
+          ${this.renderDescriptionSection()}
         </div>
-        <div part="dismiss-section"></div>
+        ${this.renderDismissSection()}
       </div>
     `;
   }
 
-  @part('icon-section')
   renderIconSection() {
     const hasIcon = this.icon || this.shouldShowDefaultIcon();
-    return hasIcon ? /*html*/`
+    return hasIcon ? html`
       <div class="alert-icon ${!this.icon ? 'alert-icon--default' : ''}">
         ${this.icon || ''}
       </div>
     ` : '';
   }
 
-  @watch('title')
-  @part('title-section')
   renderTitleSection() {
-    return this.title ? /*html*/`
+    return this.title ? html`
       <div class="alert-title">${this.title}</div>
     ` : '';
   }
 
-  @part('description-section')
   renderDescriptionSection() {
-    return /*html*/`
+    return html`
       <div class="alert-description">
         <slot></slot>
       </div>
     `;
   }
 
-  @watch('dismissible')
-  @part('dismiss-section')
   renderDismissSection() {
-    return this.dismissible ? /*html*/`
-      <button class="alert-dismiss" type="button" aria-label="Dismiss alert">
+    return this.dismissible ? html`
+      <button class="alert-dismiss" type="button" aria-label="Dismiss alert" @click=${this.handleDismiss}>
         <svg viewBox="0 0 24 24" fill="currentColor">
           <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z"/>
         </svg>
@@ -76,8 +71,9 @@ export class SniceAlert extends HTMLElement implements SniceAlertElement {
     ` : '';
   }
 
-  css() {
-    return css;
+  @styles()
+  componentStyles() {
+    return cssContent;
   }
 
   private shouldShowDefaultIcon(): boolean {
@@ -86,7 +82,6 @@ export class SniceAlert extends HTMLElement implements SniceAlertElement {
   }
 
 
-  @on('click', '.alert-dismiss')
   @dispatch('alert-dismiss')
   handleDismiss() {
     this.hide();
@@ -96,7 +91,6 @@ export class SniceAlert extends HTMLElement implements SniceAlertElement {
     };
   }
 
-  @on('animationend', '.alert')
   handleAnimationEnd(event: AnimationEvent) {
     if (event.animationName === 'slideOut') {
       this.isHidden = true;

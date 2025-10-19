@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { Router, property } from '../src';
+import { Router, property, render, html } from '../src';
 
 describe('Router URL Parameters', () => {
   let container: HTMLElement;
@@ -36,9 +36,10 @@ describe('Router URL Parameters', () => {
     @page({ tag: 'user-page', routes: ['/users/:id'] })
     class UserPage extends HTMLElement {
       id = '';  // Automatically set from URL
-      
-      html() {
-        return `<h1>User ${this.id}</h1>`;
+
+      @render()
+      renderContent() {
+        return html`<h1>User ${this.id}</h1>`;
       }
     }
 
@@ -54,6 +55,7 @@ describe('Router URL Parameters', () => {
     // Check that the element was created
     const userPageElement = container.querySelector('user-page');
     expect(userPageElement).toBeTruthy();
+    await (userPageElement as any)?.ready;
 
     // Check that the ID was set as an attribute
     expect(userPageElement?.getAttribute('id')).toBe('123');
@@ -73,15 +75,16 @@ describe('Router URL Parameters', () => {
     class BlogPost extends HTMLElement {
       @property()
       year = '';
-      
+
       @property()
       month = '';
-      
+
       @property()
       slug = '';
-      
-      html() {
-        return `<article>
+
+      @render()
+      renderContent() {
+        return html`<article>
           <h1>${this.slug}</h1>
           <time>${this.year}-${this.month}</time>
         </article>`;
@@ -119,9 +122,10 @@ describe('Router URL Parameters', () => {
     @page({ tag: 'item-page', routes: ['/items/:id'] })
     class ItemPage extends HTMLElement {
       id = '';
-      
-      html() {
-        return `<div>Item ID: ${this.id}</div>`;
+
+      @render()
+      renderContent() {
+        return html`<div>Item ID: ${this.id}</div>`;
       }
     }
 
@@ -152,9 +156,10 @@ describe('Router URL Parameters', () => {
     class SearchPage extends HTMLElement {
       @property()
       query = '';
-      
-      html() {
-        return `<div>Searching for: ${this.query}</div>`;
+
+      @render()
+      renderContent() {
+        return html`<div>Searching for: ${this.query}</div>`;
       }
     }
 
@@ -183,10 +188,11 @@ describe('Router URL Parameters', () => {
     @page({ tag: 'product-page', routes: ['/products/:id'] })
     class ProductPage extends HTMLElement {
       id = '';  // Default empty
-      
-      html() {
+
+      @render()
+      renderContent() {
         // Should handle empty ID gracefully
-        return `<div>Product: ${this.id || 'Loading...'}</div>`;
+        return html`<div>Product: ${this.id || 'Loading...'}</div>`;
       }
     }
 

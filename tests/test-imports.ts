@@ -42,7 +42,11 @@ export const {
   dispatch,
   observe,
   request,
-  respond
+  respond,
+  render,
+  html,
+  css,
+  styles
 } = modules.main;
 
 // Handle controller functions that were removed from main exports

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { element, controller, request, respond, attachController, detachController } from './test-imports';
+import { element, controller, request, respond, attachController, detachController, render, html } from './test-imports';
 
 // Helper to generate unique names to avoid state conflicts
 function uniqueName(prefix: string): string {
@@ -52,18 +52,20 @@ describe('@request and @respond decorators', () => {
         return response;
       }
 
-      html() {
-        return '<div>Basic Element</div>';
+      @render()
+      renderContent() {
+        return html`<div>Basic Element</div>`;
       }
     }
 
     const el = document.createElement(elementName) as any;
     container.appendChild(el);
+    await el.ready;
     await attachController(el, controllerName);
-    
+
     // Small delay to ensure listeners are set up
     await new Promise(resolve => setTimeout(resolve, 20));
-    
+
     const result = await el.communicate();
     
     expect(result).toBeDefined();
@@ -83,13 +85,15 @@ describe('@request and @respond decorators', () => {
         return response;
       }
 
-      html() {
-        return '<div>Orphan</div>';
+      @render()
+      renderContent() {
+        return html`<div>Orphan</div>`;
       }
     }
 
     const el = document.createElement(elementName) as any;
     container.appendChild(el);
+    await el.ready;
     
     await expect(el.communicate()).rejects.toThrow(/timed out after \d+ms/);
   });
@@ -129,13 +133,15 @@ describe('@request and @respond decorators', () => {
         return response;
       }
 
-      html() {
-        return '<div>Async</div>';
+      @render()
+      renderContent() {
+        return html`<div>Async</div>`;
       }
     }
 
     const el = document.createElement(elementName) as any;
     container.appendChild(el);
+    await el.ready;
     await attachController(el, controllerName);
     await new Promise(resolve => setTimeout(resolve, 10));
     
@@ -182,13 +188,15 @@ describe('@request and @respond decorators', () => {
         return response;
       }
 
-      html() {
-        return '<div>Multi</div>';
+      @render()
+      renderContent() {
+        return html`<div>Multi</div>`;
       }
     }
 
     const el = document.createElement(elementName) as any;
     container.appendChild(el);
+    await el.ready;
     await attachController(el, controllerName);
     await new Promise(resolve => setTimeout(resolve, 10));
     
@@ -231,13 +239,15 @@ describe('@request and @respond decorators', () => {
         return response;
       }
 
-      html() {
-        return '<div>Cleanup</div>';
+      @render()
+      renderContent() {
+        return html`<div>Cleanup</div>`;
       }
     }
 
     const el = document.createElement(elementName) as any;
     container.appendChild(el);
+    await el.ready;
     
     await attachController(el, controllerName);
     await new Promise(resolve => setTimeout(resolve, 10));
@@ -284,13 +294,15 @@ describe('@request and @respond decorators', () => {
         return response;
       }
 
-      html() {
-        return '<div>Timeout Test</div>';
+      @render()
+      renderContent() {
+        return html`<div>Timeout Test</div>`;
       }
     }
 
     const el = document.createElement(elementName) as any;
     container.appendChild(el);
+    await el.ready;
     await attachController(el, controllerName);
     await new Promise(resolve => setTimeout(resolve, 10));
 
@@ -333,13 +345,15 @@ describe('@request and @respond decorators', () => {
         return response;
       }
 
-      html() {
-        return '<div>Concurrent</div>';
+      @render()
+      renderContent() {
+        return html`<div>Concurrent</div>`;
       }
     }
 
     const el = document.createElement(elementName) as any;
     container.appendChild(el);
+    await el.ready;
     await attachController(el, controllerName);
     await new Promise(resolve => setTimeout(resolve, 10));
 
@@ -388,13 +402,15 @@ describe('@request and @respond decorators', () => {
         return response;
       }
 
-      html() {
-        return '<div>No Yield</div>';
+      @render()
+      renderContent() {
+        return html`<div>No Yield</div>`;
       }
     }
 
     const el = document.createElement(elementName) as any;
     container.appendChild(el);
+    await el.ready;
     await attachController(el, controllerName);
     await new Promise(resolve => setTimeout(resolve, 10));
 
@@ -434,13 +450,15 @@ describe('@request and @respond decorators', () => {
         return response;
       }
 
-      html() {
-        return '<div>Bubble Test</div>';
+      @render()
+      renderContent() {
+        return html`<div>Bubble Test</div>`;
       }
     }
 
     const el = document.createElement(elementName) as any;
     container.appendChild(el);
+    await el.ready;
     await attachController(el, controllerName);
     await new Promise(resolve => setTimeout(resolve, 10));
 
@@ -476,8 +494,9 @@ describe('@request and @respond decorators', () => {
         return user;
       }
       
-      html() {
-        return '<div>User Card</div>';
+      @render()
+      renderContent() {
+        return html`<div>User Card</div>`;
       }
     }
     
@@ -503,6 +522,7 @@ describe('@request and @respond decorators', () => {
     // Create and attach
     const card = document.createElement(elementName) as any;
     container.appendChild(card);
+    await card.ready;
     await attachController(card, controllerName);
     
     // Small delay to ensure listeners are set up
@@ -529,13 +549,15 @@ describe('@request and @respond decorators', () => {
         return { direct: 'return' };
       }
       
-      html() {
-        return '<div>No Yield</div>';
+      @render()
+      renderContent() {
+        return html`<div>No Yield</div>`;
       }
     }
     
     const card = document.createElement(elementName) as any;
     container.appendChild(card);
+    await card.ready;
     
     const result = await card.getData();
     expect(result).toEqual({ direct: 'return' });
@@ -590,13 +612,15 @@ describe('@request and @respond decorators', () => {
         return { result1, result2 };
       }
       
-      html() {
-        return '<div>Multi</div>';
+      @render()
+      renderContent() {
+        return html`<div>Multi</div>`;
       }
     }
     
     const el = document.createElement(elementName) as any;
     container.appendChild(el);
+    await el.ready;
     await attachController(el, controllerName);
     await new Promise(resolve => setTimeout(resolve, 10));
     
@@ -646,28 +670,52 @@ describe('@request and @respond decorators', () => {
         return await this.sendFromShadow(42);
       }
 
-      html() {
-        return '<button>Send</button>';
+      @render()
+      renderContent() {
+        return html`<button>Send</button>`;
       }
     }
 
     // Parent element that contains the child in its shadow DOM
     @element(parentElementName)
     class ShadowParent extends HTMLElement {
-      html() {
-        return `<${childElementName}></${childElementName}>`;
+      childElementName = childElementName;
+
+      @render()
+      renderContent() {
+        // In v3, dynamic element creation needs to be done via document.createElement
+        // and appended manually, or use a helper method
+        return html`<div id="child-container"></div>`;
+      }
+
+      async connectedCallback() {
+        super.connectedCallback?.();
+        await this.ready;
+        // Dynamically create and append the child element
+        const childContainer = this.shadowRoot?.querySelector('#child-container');
+        if (childContainer) {
+          const child = document.createElement(this.childElementName);
+          childContainer.appendChild(child);
+        }
       }
     }
 
     const parent = document.createElement(parentElementName);
     container.appendChild(parent);
-    
+    await parent.ready;
+
     // Attach controller to parent
     await attachController(parent, controllerName);
-    await new Promise(resolve => setTimeout(resolve, 10));
+    await new Promise(resolve => setTimeout(resolve, 50)); // Wait for dynamic child creation
 
-    // Get child from parent's shadow DOM
-    const child = parent.shadowRoot!.querySelector(childElementName) as any;
+    // Get child from parent's shadow DOM container
+    const childContainer = parent.shadowRoot!.querySelector('#child-container');
+    const child = childContainer?.querySelector(childElementName) as any;
+
+    // Wait for child to be ready
+    if (child) {
+      await child.ready;
+    }
     
     // Trigger channel from child in shadow DOM
     const result = await child.triggerChannel();
@@ -721,35 +769,72 @@ describe('@request and @respond decorators', () => {
         return await this.sendFromDeep();
       }
 
-      html() {
-        return '<div>Deep Element</div>';
+      @render()
+      renderContent() {
+        return html`<div>Deep Element</div>`;
       }
     }
 
     @element(middleElementName)
     class NestedMiddle extends HTMLElement {
-      html() {
-        return `<${deepElementName}></${deepElementName}>`;
+      deepName = deepElementName;
+
+      @render()
+      renderContent() {
+        return html`<div id="deep-container"></div>`;
+      }
+
+      async connectedCallback() {
+        super.connectedCallback?.();
+        await this.ready;
+        const deepContainer = this.shadowRoot?.querySelector('#deep-container');
+        if (deepContainer) {
+          const child = document.createElement(this.deepName);
+          deepContainer.appendChild(child);
+        }
       }
     }
 
-    @element(topElementName)  
+    @element(topElementName)
     class NestedTop extends HTMLElement {
-      html() {
-        return `<${middleElementName}></${middleElementName}>`;
+      middleName = middleElementName;
+
+      @render()
+      renderContent() {
+        return html`<div id="middle-container"></div>`;
+      }
+
+      async connectedCallback() {
+        super.connectedCallback?.();
+        await this.ready;
+        const middleContainer = this.shadowRoot?.querySelector('#middle-container');
+        if (middleContainer) {
+          const child = document.createElement(this.middleName);
+          middleContainer.appendChild(child);
+        }
       }
     }
 
     const top = document.createElement(topElementName);
     container.appendChild(top);
-    
+    await top.ready;
+
     // Attach controller to top element
     await attachController(top, controllerName);
-    await new Promise(resolve => setTimeout(resolve, 10));
+    await new Promise(resolve => setTimeout(resolve, 100)); // Wait for dynamic children creation
 
     // Navigate through shadow DOMs to get deep element
-    const middle = top.shadowRoot!.querySelector(middleElementName);
-    const deep = middle!.shadowRoot!.querySelector(deepElementName) as any;
+    const middleContainer = top.shadowRoot!.querySelector('#middle-container');
+    const middle = middleContainer?.querySelector(middleElementName) as any;
+    if (middle) {
+      await middle.ready;
+      await new Promise(resolve => setTimeout(resolve, 50)); // Wait for middle's child
+    }
+    const deepContainer = middle?.shadowRoot?.querySelector('#deep-container');
+    const deep = deepContainer?.querySelector(deepElementName) as any;
+    if (deep) {
+      await deep.ready;
+    }
     
     // Trigger channel from deeply nested element
     const result = await deep.triggerDeepChannel();

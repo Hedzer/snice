@@ -170,8 +170,11 @@ export class SniceLogin extends HTMLElement implements SniceLoginElement {
     }
   }
 
-  @on('click', 'snice-button')
+  @on('click')
   async handleButtonClick(event: Event) {
+    const target = event.target as HTMLElement;
+    if (!target.matches('snice-button')) return;
+
     event.preventDefault();
     // Trigger form submit
     if (this.form) {
@@ -179,11 +182,14 @@ export class SniceLogin extends HTMLElement implements SniceLoginElement {
     }
   }
 
-  @on('submit', '.login__form')
+  @on('submit')
   @dispatch('@snice/login-attempt', { bubbles: true, composed: true })
   async handleSubmit(event: Event) {
+    const target = event.target as HTMLElement;
+    if (!target.matches('.login__form')) return;
+
     event.preventDefault();
-    
+
     if (this.loading || this.disabled) {
       return;
     }
@@ -191,20 +197,20 @@ export class SniceLogin extends HTMLElement implements SniceLoginElement {
     this.clearAlert();
     this.loading = true;
     this.updateLoadingState();
-    
+
     // Wait a tick to ensure the form is properly rendered
     await new Promise(resolve => setTimeout(resolve, 0));
-    
+
     try {
       const credentials = this.getFormData();
-      
+
       if (!credentials.username || !credentials.password) {
         this.showAlert('Username and password are required', 'error');
         return;
       }
-      
+
       const result = await this.login(credentials);
-      
+
       if (result.success) {
         this.showAlert('Login successful!', 'success');
         this.dispatchLoginSuccess(result);
@@ -228,16 +234,22 @@ export class SniceLogin extends HTMLElement implements SniceLoginElement {
     };
   }
 
-  @on('keydown:Enter', '.login__input')
-  handleEnterKey() {
+  @on('keydown:Enter')
+  handleEnterKey(event: KeyboardEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.matches('.login__input')) return;
+
     if (!this.loading && !this.disabled && this.form) {
       this.form.requestSubmit();
     }
   }
 
-  @on('click', '.login__forgot')
+  @on('click')
   @dispatch('@snice/login-forgot-password', { bubbles: true, composed: true })
   handleForgotPassword(event: Event) {
+    const target = event.target as HTMLElement;
+    if (!target.matches('.login__forgot')) return;
+
     event.preventDefault();
     return {
       timestamp: new Date().toISOString()

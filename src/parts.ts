@@ -692,14 +692,18 @@ export class IfPart extends Part {
 export class CasePart extends Part {
   private caseElement: Element;
   private value: any = undefined;
+  private childrenList: Element[]; // Store all children in original order
   private attachedChildren: Map<Element, boolean> = new Map(); // Track which children are in DOM
 
   constructor(startNode: Comment, endNode: Comment, caseElement: Element) {
     super();
     this.caseElement = caseElement;
 
+    // Store children in original order
+    this.childrenList = Array.from(this.caseElement.children);
+
     // Initialize all children as attached
-    Array.from(this.caseElement.children).forEach(child => {
+    this.childrenList.forEach(child => {
       this.attachedChildren.set(child, true);
     });
   }
@@ -711,11 +715,10 @@ export class CasePart extends Part {
     this.value = value;
 
     // Find matching <when> or <default> and remove/insert appropriately
-    const children = Array.from(this.caseElement.children);
     let hasMatch = false;
 
     // First pass: check if any <when> matches
-    for (const child of children) {
+    for (const child of this.childrenList) {
       if (child.tagName.toLowerCase() === 'when') {
         const whenValue = child.getAttribute('value');
         if (whenValue === String(value)) {
@@ -726,7 +729,7 @@ export class CasePart extends Part {
     }
 
     // Second pass: remove/insert children based on match
-    for (const child of children) {
+    for (const child of this.childrenList) {
       const tagName = child.tagName.toLowerCase();
       const isAttached = this.attachedChildren.get(child) ?? true;
       let shouldBeAttached = false;
@@ -740,8 +743,23 @@ export class CasePart extends Part {
 
       // Update DOM if state changed
       if (shouldBeAttached && !isAttached) {
-        // Re-insert
-        this.caseElement.appendChild(child);
+        // Re-insert in correct position
+        // Find next sibling that is still attached
+        const childIndex = this.childrenList.indexOf(child);
+        let insertBefore: Element | null = null;
+
+        for (let i = childIndex + 1; i < this.childrenList.length; i++) {
+          if (this.attachedChildren.get(this.childrenList[i])) {
+            insertBefore = this.childrenList[i];
+            break;
+          }
+        }
+
+        if (insertBefore) {
+          this.caseElement.insertBefore(child, insertBefore);
+        } else {
+          this.caseElement.appendChild(child);
+        }
         this.attachedChildren.set(child, true);
       } else if (!shouldBeAttached && isAttached) {
         // Remove

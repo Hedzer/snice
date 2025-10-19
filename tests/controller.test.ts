@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { element, query, queryAll } from './test-imports';
+import { element, query, queryAll, render, html } from './test-imports';
 import { controller, getController, attachController } from './test-imports';
 import { on } from './test-imports';
 
@@ -148,8 +148,9 @@ describe('@controller decorator', () => {
     
     @element('test-controller-query')
     class TestControllerQuery extends HTMLElement {
-      html() {
-        return `
+      @render()
+      renderContent() {
+        return html`
           <div class="test">Test</div>
           <div class="item">1</div>
           <div class="item">2</div>

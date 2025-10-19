@@ -210,18 +210,26 @@ export function applyElementFunctionality(constructor: any) {
         // Defer initial render to next microtask to allow property bindings
         // from parent to be set first (avoids infinite loops in nested elements)
         if (this[RENDER_METHOD]) {
-          queueMicrotask(() => requestRender(this, true));
+          queueMicrotask(() => {
+            requestRender(this, true);
+            // Setup observers after first render completes so shadow DOM content exists
+            try {
+              setupObservers(this, this);
+            } catch (error) {
+              console.error(`Error setting up observers for ${this.tagName}:`, error);
+            }
+          });
+        } else {
+          // No render method, setup observers immediately
+          try {
+            setupObservers(this, this);
+          } catch (error) {
+            console.error(`Error setting up observers for ${this.tagName}:`, error);
+          }
         }
 
         // Setup @respond handlers for elements
         setupResponseHandlers(this, this);
-
-        // Setup @observe observers
-        try {
-          setupObservers(this, this);
-        } catch (error) {
-          console.error(`Error setting up observers for ${this.tagName}:`, error);
-        }
 
         // Mark as initialized
         this[INITIALIZED] = true;

@@ -37,21 +37,35 @@ export class SniceTab extends HTMLElement implements SniceTabElement {
     return css;
   }
 
-  @on('click', '.tab__close')
-  @dispatch('@snice/close')
-  handleClose(event: MouseEvent): TabCloseDetail {
-    event.stopPropagation();
-    return { tab: this } as TabCloseDetail;
-  }
-
   @on('click')
-  @dispatch('@snice/tab-select')
-  handleClick(event: MouseEvent): TabSelectDetail | undefined {
+  handleClick(event: MouseEvent): TabSelectDetail | TabCloseDetail | undefined {
+    const target = event.target as HTMLElement;
+
+    // Handle close button click
+    if (target.closest('.tab__close')) {
+      event.stopPropagation();
+      this.dispatchCloseEvent();
+      return { tab: this } as TabCloseDetail;
+    }
+
+    // Handle tab click
     if (this.disabled) {
       event.preventDefault();
       event.stopPropagation();
       return;
     }
+
+    this.dispatchSelectEvent();
+    return { tab: this } as TabSelectDetail;
+  }
+
+  @dispatch('@snice/close')
+  private dispatchCloseEvent(): TabCloseDetail {
+    return { tab: this } as TabCloseDetail;
+  }
+
+  @dispatch('@snice/tab-select')
+  private dispatchSelectEvent(): TabSelectDetail {
     return { tab: this } as TabSelectDetail;
   }
 

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { element, controller, request, respond, attachController, getController, property, query, watch } from './test-imports';
+import { element, controller, request, respond, attachController, getController, property, query, watch, render, html } from './test-imports';
 
 // Helper to generate unique names to avoid state conflicts
 function uniqueName(prefix: string): string {
@@ -33,8 +33,9 @@ describe('@request and @respond cross-usage tests', () => {
           return response;
         }
 
-        html() {
-          return '<div>Request Element</div>';
+        @render()
+      renderContent() {
+          return html`<div>Request Element</div>`;
         }
       }
 
@@ -59,6 +60,7 @@ describe('@request and @respond cross-usage tests', () => {
 
       const el = document.createElement(elementName) as any;
       container.appendChild(el);
+    await el.ready;
       await attachController(el, controllerName);
       await new Promise(resolve => setTimeout(resolve, 20));
 
@@ -83,8 +85,9 @@ describe('@request and @respond cross-usage tests', () => {
           };
         }
 
-        html() {
-          return '<div>Response Element</div>';
+        @render()
+      renderContent() {
+          return html`<div>Response Element</div>`;
         }
       }
 
@@ -114,6 +117,7 @@ describe('@request and @respond cross-usage tests', () => {
 
       const el = document.createElement(elementName) as any;
       container.appendChild(el);
+    await el.ready;
       await attachController(el, controllerName);
       await new Promise(resolve => setTimeout(resolve, 20));
 
@@ -143,8 +147,9 @@ describe('@request and @respond cross-usage tests', () => {
           };
         }
 
-        html() {
-          return '<div>Element Responder</div>';
+        @render()
+      renderContent() {
+          return html`<div>Element Responder</div>`;
         }
       }
 
@@ -174,6 +179,7 @@ describe('@request and @respond cross-usage tests', () => {
 
       const el = document.createElement(elementName) as any;
       container.appendChild(el);
+    await el.ready;
       await attachController(el, controllerName);
       await new Promise(resolve => setTimeout(resolve, 20));
 
@@ -217,13 +223,15 @@ describe('@request and @respond cross-usage tests', () => {
           return response;
         }
 
-        html() {
-          return '<div>Request Element</div>';
+        @render()
+      renderContent() {
+          return html`<div>Request Element</div>`;
         }
       }
 
       const el = document.createElement(elementName) as any;
       container.appendChild(el);
+    await el.ready;
       await attachController(el, controllerName);
       await new Promise(resolve => setTimeout(resolve, 20));
 
@@ -248,8 +256,9 @@ describe('@request and @respond cross-usage tests', () => {
           return response;
         }
 
-        html() {
-          return '<div>Sender</div>';
+        @render()
+      renderContent() {
+          return html`<div>Sender</div>`;
         }
       }
 
@@ -265,8 +274,9 @@ describe('@request and @respond cross-usage tests', () => {
           };
         }
 
-        html() {
-          return '<div>Receiver</div>';
+        @render()
+      renderContent() {
+          return html`<div>Receiver</div>`;
         }
       }
 
@@ -303,8 +313,9 @@ describe('@request and @respond cross-usage tests', () => {
           };
         }
 
-        html() {
-          return '<div>Element with Response</div>';
+        @render()
+      renderContent() {
+          return html`<div>Element with Response</div>`;
         }
       }
 
@@ -334,6 +345,7 @@ describe('@request and @respond cross-usage tests', () => {
 
       const el = document.createElement(elementName) as any;
       container.appendChild(el);
+    await el.ready;
       
       await attachController(el, ctrlName);
       await new Promise(resolve => setTimeout(resolve, 20));
@@ -364,8 +376,9 @@ describe('@request and @respond cross-usage tests', () => {
           return { handler: 'element' };
         }
 
-        html() {
-          return '<div>Multi Response</div>';
+        @render()
+      renderContent() {
+          return html`<div>Multi Response</div>`;
         }
       }
 
@@ -407,6 +420,7 @@ describe('@request and @respond cross-usage tests', () => {
 
       const el = document.createElement(elementName) as any;
       container.appendChild(el);
+    await el.ready;
       
       // Attach controllers in order
       await attachController(el, ctrl1Name);
@@ -437,8 +451,9 @@ describe('@request and @respond cross-usage tests', () => {
           return response;
         }
 
-        html() {
-          return '<div>Tricky Element with this.element</div>';
+        @render()
+      renderContent() {
+          return html`<div>Tricky Element with this.element</div>`;
         }
       }
 
@@ -465,6 +480,7 @@ describe('@request and @respond cross-usage tests', () => {
 
       const el = document.createElement(elementName) as any;
       container.appendChild(el);
+    await el.ready;
       await attachController(el, controllerName);
       await new Promise(resolve => setTimeout(resolve, 20));
 
@@ -504,8 +520,9 @@ describe('@request and @respond cross-usage tests', () => {
           };
         }
 
-        html() {
-          return '<div>Response Element</div>';
+        @render()
+      renderContent() {
+          return html`<div>Response Element</div>`;
         }
       }
 
@@ -537,6 +554,7 @@ describe('@request and @respond cross-usage tests', () => {
 
       const el = document.createElement(elementName) as any;
       container.appendChild(el);
+    await el.ready;
       await attachController(el, controllerName);
       await new Promise(resolve => setTimeout(resolve, 20));
 
@@ -572,8 +590,9 @@ describe('@request and @respond cross-usage tests', () => {
       class UserCard extends HTMLElement {
         userId = 123;
         
-        html() {
-          return `
+        @render()
+        renderContent() {
+          return html`
             <div class="user-info">
               <button class="load">Load User</button>
               <div class="content"></div>
@@ -639,6 +658,7 @@ describe('@request and @respond cross-usage tests', () => {
 
       const card = document.createElement(elementName) as any;
       container.appendChild(card);
+    await card.ready;
       await attachController(card, controllerName);
       await new Promise(resolve => setTimeout(resolve, 20));
 
@@ -684,8 +704,9 @@ describe('@request and @respond cross-usage tests', () => {
           return data;
         }
 
-        html() {
-          return '<div>Timeout Example</div>';
+        @render()
+      renderContent() {
+          return html`<div>Timeout Example</div>`;
         }
       }
 
@@ -720,6 +741,7 @@ describe('@request and @respond cross-usage tests', () => {
 
       const el = document.createElement(elementName) as any;
       container.appendChild(el);
+    await el.ready;
       await attachController(el, controllerName);
       await new Promise(resolve => setTimeout(resolve, 20));
 
@@ -772,8 +794,9 @@ describe('@request and @respond cross-usage tests', () => {
           }
         }
         
-        html() {
-          return `
+        @render()
+      renderContent() {
+          return html`
             <button class="load">Load All Data</button>
             <div class="items"></div>
           `;
@@ -834,6 +857,7 @@ describe('@request and @respond cross-usage tests', () => {
 
       const el = document.createElement(elementName) as any;
       container.appendChild(el);
+    await el.ready;
       await attachController(el, controllerName);
       await new Promise(resolve => setTimeout(resolve, 20));
 
@@ -865,8 +889,9 @@ describe('@request and @respond cross-usage tests', () => {
         @query('.data')
         dataDiv?: HTMLElement;
         
-        html() {
-          return `
+        @render()
+      renderContent() {
+          return html`
             <div class="status">${this.status}</div>
             <div class="data"></div>
             <button class="connect">Connect</button>
@@ -992,6 +1017,7 @@ describe('@request and @respond cross-usage tests', () => {
 
       const el = document.createElement(elementName) as any;
       container.appendChild(el);
+    await el.ready;
       await attachController(el, controllerName);
       await new Promise(resolve => setTimeout(resolve, 20));
 

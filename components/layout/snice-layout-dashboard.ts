@@ -1,6 +1,6 @@
-import { element, part, query } from 'snice';
+import { element, query, render, styles, html, watch } from 'snice';
 import type { AppContext, Placard, RouteParams, Layout } from 'snice';
-import css from './snice-layout-dashboard.css?inline';
+import cssContent from './snice-layout-dashboard.css?inline';
 import '../breadcrumbs/snice-breadcrumbs.ts';
 import '../nav/snice-nav.ts';
 import type { SniceNav } from '../nav/snice-nav.ts';
@@ -10,11 +10,15 @@ export class SniceLayoutDashboard extends HTMLElement implements Layout {
   @query('snice-nav')
   navElement!: SniceNav;
 
+  @query('.sidebar')
+  sidebarElement?: HTMLElement;
+
   private placards: Placard[] = [];
   private currentRoute = '';
 
-  html() {
-    return /*html*/`
+  @render()
+  renderContent() {
+    return html`
       <div class="layout">
         <header class="header">
           <div class="header-start">
@@ -30,9 +34,9 @@ export class SniceLayoutDashboard extends HTMLElement implements Layout {
           </div>
         </header>
 
-        <snice-nav class="nav" part="nav" variant="grouped" orientation="horizontal"></snice-nav>
+        <snice-nav class="nav" variant="grouped" orientation="horizontal"></snice-nav>
 
-        <aside class="sidebar" part="breadcrumbs"></aside>
+        <aside class="sidebar">${this.getBreadcrumbsHtml()}</aside>
 
         <main class="main">
           <slot name="page"></slot>
@@ -45,8 +49,9 @@ export class SniceLayoutDashboard extends HTMLElement implements Layout {
     `;
   }
 
-  css() {
-    return css;
+  @styles()
+  componentStyles() {
+    return cssContent;
   }
 
   update(_appContext: AppContext, placards: Placard[], currentRoute: string, _routeParams: RouteParams): void {
@@ -54,21 +59,26 @@ export class SniceLayoutDashboard extends HTMLElement implements Layout {
     this.currentRoute = currentRoute;
 
     // Update navigation and breadcrumbs
-    this.renderNav();
-    this.renderBreadcrumbs();
+    this.updateNav();
+    this.updateBreadcrumbs();
   }
 
-  @part('nav')
-  renderNav() {
+  @watch('placards', 'currentRoute')
+  updateNav() {
     if (this.navElement) {
       this.navElement.placards = this.placards;
       this.navElement.currentRoute = this.currentRoute;
     }
-    return '';
   }
 
-  @part('breadcrumbs')
-  renderBreadcrumbs() {
+  @watch('placards', 'currentRoute')
+  updateBreadcrumbs() {
+    if (this.sidebarElement) {
+      this.sidebarElement.innerHTML = this.getBreadcrumbsHtml();
+    }
+  }
+
+  private getBreadcrumbsHtml(): string {
     const currentPlacard = this.placards.find(p =>
       this.currentRoute === p.name || this.currentRoute.startsWith(`/${p.name}`)
     );

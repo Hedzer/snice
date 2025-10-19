@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { element, controller, query, queryAll } from '../src/index';
+import { element, controller, query, queryAll, render, html } from '../src/index';
 import { IS_CONTROLLER_INSTANCE, CONTROLLER_KEY } from './test-imports';
 
 describe('Controller Symbol Detection', () => {
@@ -30,14 +30,16 @@ describe('Controller Symbol Detection', () => {
 
     @element('test-element')
     class TestElement extends HTMLElement {
-      html() {
-        return '<div>Test</div>';
+      @render()
+      renderContent() {
+        return html`<div>Test</div>`;
       }
     }
 
     const el = document.createElement('test-element') as any;
     el.setAttribute('controller', 'test-controller');
     container.appendChild(el);
+    await el.ready;
     
     // Wait for controller to attach
     await new Promise(resolve => setTimeout(resolve, 50));
@@ -66,9 +68,10 @@ describe('Controller Symbol Detection', () => {
     class QueryTestElement extends HTMLElement {
       @query('.from-element')
       fromElement?: HTMLElement;
-      
-      html() {
-        return `
+
+      @render()
+      renderContent() {
+        return html`
           <div class="from-element">Element Query</div>
           <div class="from-controller">Controller Query</div>
         `;
@@ -78,7 +81,7 @@ describe('Controller Symbol Detection', () => {
     const el = document.createElement('query-test-element') as any;
     el.setAttribute('controller', 'query-test-controller');
     container.appendChild(el);
-    
+
     await el.ready;
     await new Promise(resolve => setTimeout(resolve, 50));
     
@@ -93,20 +96,21 @@ describe('Controller Symbol Detection', () => {
     expect(ctrl.fromController?.textContent).toBe('Controller Query');
   });
 
-  it('should not confuse elements with an "element" property as controllers', () => {
+  it('should not confuse elements with an "element" property as controllers', async () => {
     @element('confusing-element')
     class ConfusingElement extends HTMLElement {
       // This element has an "element" property but is NOT a controller
       element = 'I am not a controller!';
-      
+
       @query('.test', { light: true, shadow: false })
       lightQuery?: HTMLElement;
-      
+
       @query('.test')
       shadowQuery?: HTMLElement;
-      
-      html() {
-        return '<div class="test">Shadow</div>';
+
+      @render()
+      renderContent() {
+        return html`<div class="test">Shadow</div>`;
       }
     }
 
@@ -115,8 +119,9 @@ describe('Controller Symbol Detection', () => {
     lightDiv.className = 'test';
     lightDiv.textContent = 'Light';
     el.appendChild(lightDiv);
-    
+
     container.appendChild(el);
+    await el.ready;
 
     // Should still work correctly despite having an "element" property
     expect(el[IS_CONTROLLER_INSTANCE]).toBeUndefined();
@@ -142,9 +147,10 @@ describe('Controller Symbol Detection', () => {
     class QueryAllElement extends HTMLElement {
       @queryAll('.item')
       elementItems?: NodeListOf<HTMLElement>;
-      
-      html() {
-        return `
+
+      @render()
+      renderContent() {
+        return html`
           <div class="item">Item 1</div>
           <div class="item">Item 2</div>
           <div class="item">Item 3</div>
@@ -155,7 +161,7 @@ describe('Controller Symbol Detection', () => {
     const el = document.createElement('query-all-element') as any;
     el.setAttribute('controller', 'query-all-controller');
     container.appendChild(el);
-    
+
     await el.ready;
     await new Promise(resolve => setTimeout(resolve, 50));
     
@@ -170,7 +176,7 @@ describe('Controller Symbol Detection', () => {
     expect(ctrl.items?.length).toBe(3);
   });
 
-  it('should not use attach/detach methods for controller detection', () => {
+  it('should not use attach/detach methods for controller detection', async () => {
     // This element has attach/detach methods but is NOT a controller
     @element('fake-controller-element')
     class FakeControllerElement extends HTMLElement {
@@ -178,21 +184,23 @@ describe('Controller Symbol Detection', () => {
       attach() {
         return 'I am not a controller attach!';
       }
-      
+
       detach() {
         return 'I am not a controller detach!';
       }
-      
+
       @query('.test')
       testQuery?: HTMLElement;
-      
-      html() {
-        return '<div class="test">Not a controller</div>';
+
+      @render()
+      renderContent() {
+        return html`<div class="test">Not a controller</div>`;
       }
     }
 
     const el = document.createElement('fake-controller-element') as any;
     container.appendChild(el);
+    await el.ready;
 
     // Should NOT be marked as a controller
     expect(el[IS_CONTROLLER_INSTANCE]).toBeUndefined();
@@ -202,31 +210,33 @@ describe('Controller Symbol Detection', () => {
     expect(el.testQuery?.textContent).toBe('Not a controller');
   });
 
-  it('should handle edge case: object with element property and attach/detach methods', () => {
+  it('should handle edge case: object with element property and attach/detach methods', async () => {
     @element('edge-case-element')
     class EdgeCaseElement extends HTMLElement {
       // Has both element property AND attach/detach methods
       // But is still NOT a controller
       element = document.createElement('div');
-      
+
       attach() {
         return 'fake';
       }
-      
+
       detach() {
         return 'fake';
       }
-      
+
       @query('.edge')
       edgeQuery?: HTMLElement;
-      
-      html() {
-        return '<div class="edge">Edge Case</div>';
+
+      @render()
+      renderContent() {
+        return html`<div class="edge">Edge Case</div>`;
       }
     }
 
     const el = document.createElement('edge-case-element') as any;
     container.appendChild(el);
+    await el.ready;
 
     // Should NOT be marked as a controller
     expect(el[IS_CONTROLLER_INSTANCE]).toBeUndefined();

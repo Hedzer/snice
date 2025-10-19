@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { element, ready, dispose, moved, adopted } from './test-imports';
+import { element, ready, dispose, moved, adopted, render, html, styles, css } from './test-imports';
 import { controller } from './test-imports';
 
 describe('element lifecycle', () => {
@@ -24,83 +24,95 @@ describe('element lifecycle', () => {
       expect(originalCallback).toHaveBeenCalledWith(el);
     });
 
-    it('should call html() method', () => {
-      const htmlSpy = vi.fn(() => '<div>Content</div>');
-      
+    it('should call renderContent() method', async () => {
+      const renderSpy = vi.fn();
+
       @element('test-html-call')
       class TestHtmlCall extends HTMLElement {
-        html = htmlSpy;
+        @render()
+        renderContent() {
+          renderSpy();
+          return html`<div>Content</div>`;
+        }
       }
-      
+
       const el = document.createElement('test-html-call');
       document.body.appendChild(el);
-      
-      expect(htmlSpy).toHaveBeenCalled();
-      expect(el.shadowRoot?.innerHTML).toBe('<div>Content</div>');
+      await (el as any).ready;
+
+      expect(renderSpy).toHaveBeenCalled();
+      expect(el.shadowRoot?.innerHTML).toContain('<div>Content</div>');
     });
 
-    it('should call css() method after html()', () => {
+    it('should call styles() method after renderContent()', async () => {
       const order: string[] = [];
-      
+
       @element('test-order')
       class TestOrder extends HTMLElement {
-        html() {
+        @render()
+        renderContent() {
           order.push('html');
-          return '<div>Content</div>';
+          return html`<div>Content</div>`;
         }
-        
-        css() {
+
+        @styles()
+        componentStyles() {
           order.push('css');
-          return '.test { color: red; }';
+          return css`.test { color: red; }`;
         }
       }
-      
+
       const el = document.createElement('test-order');
       document.body.appendChild(el);
-      
-      expect(order).toEqual(['html', 'css']);
+      await (el as any).ready;
+
+      // In v3, styles are called before render
+      expect(order).toEqual(['css', 'html']);
     });
 
-    it('should handle html() returning undefined', () => {
+    it('should handle element without render method', async () => {
       @element('undefined-html')
       class UndefinedHtml extends HTMLElement {
-        html() {
-          return undefined;
-        }
+        // No @render decorator - element without render method
       }
-      
+
       const el = document.createElement('undefined-html');
       document.body.appendChild(el);
-      
-      expect(el.shadowRoot?.innerHTML).toBe('');
+      await (el as any).ready;
+
+      // In v3, elements without @render do not create a shadow root
+      expect(el.shadowRoot).toBeNull();
     });
 
-    it('should handle css() returning undefined', () => {
+    it('should handle element without styles method', async () => {
       @element('undefined-css')
       class UndefinedCss extends HTMLElement {
-        css() {
-          return undefined;
-        }
+        // No @styles decorator - element without styles
       }
-      
+
       const el = document.createElement('undefined-css');
       document.body.appendChild(el);
-      
-      const style = el.shadowRoot?.querySelector('style[data-component-css]');
-      expect(style).toBeNull();
+      await (el as any).ready;
+
+      if (el.shadowRoot) {
+        const style = el.shadowRoot.querySelector('style[data-component-css]');
+        expect(style).toBeNull();
+      }
     });
 
-    it('should handle css() returning empty string', () => {
+    it('should handle componentStyles() returning empty string', async () => {
       @element('empty-css')
       class EmptyCss extends HTMLElement {
-        css() {
-          return '';
+        @styles()
+        componentStyles() {
+          return css``;
         }
       }
-      
+
       const el = document.createElement('empty-css');
       document.body.appendChild(el);
-      
+      await (el as any).ready;
+
       const style = el.shadowRoot?.querySelector('style[data-component-css]');
       expect(style).toBeNull();
     });
@@ -236,139 +248,147 @@ describe('element lifecycle', () => {
       expect(ElementClass).toBe(RegistryTest);
     });
 
-    it('should be instantiable via document.createElement', () => {
+    it('should be instantiable via document.createElement', async () => {
       @element('create-test')
       class CreateTest extends HTMLElement {
-        html() {
-          return '<div>Created</div>';
+        @render()
+        renderContent() {
+          return html`<div>Created</div>`;
         }
       }
-      
+
       const el = document.createElement('create-test');
       expect(el).toBeInstanceOf(CreateTest);
-      
+
       document.body.appendChild(el);
-      expect(el.shadowRoot?.innerHTML).toBe('<div>Created</div>');
+      await (el as any).ready;
+      expect(el.shadowRoot?.innerHTML).toContain('<div>Created</div>');
     });
 
-    it('should be instantiable via innerHTML', () => {
+    it('should be instantiable via innerHTML', async () => {
       @element('inner-html-test')
       class InnerHTMLTest extends HTMLElement {
-        html() {
-          return '<div>Via innerHTML</div>';
+        @render()
+        renderContent() {
+          return html`<div>Via innerHTML</div>`;
         }
       }
-      
+
       const container = document.createElement('div');
       container.innerHTML = '<inner-html-test></inner-html-test>';
       document.body.appendChild(container);
-      
+
       const el = container.querySelector('inner-html-test');
       expect(el).toBeInstanceOf(InnerHTMLTest);
-      expect(el?.shadowRoot?.innerHTML).toBe('<div>Via innerHTML</div>');
+      await (el as any).ready;
+      expect(el?.shadowRoot?.innerHTML).toContain('<div>Via innerHTML</div>');
     });
   });
 
   describe('@ready decorator', () => {
     it('should call ready method after element is ready', async () => {
       const connectedSpy = vi.fn();
-      
+
       @element('ready-test')
       class ReadyTest extends HTMLElement {
         @ready()
         onReady() {
           connectedSpy();
-          // Shadow DOM should be ready
+          // Shadow DOM should be ready and rendered
           expect(this.shadowRoot).toBeTruthy();
+          expect(this.shadowRoot?.innerHTML).toContain('Test');
         }
-        
-        html() {
-          return '<div>Test</div>';
+
+        @render()
+        renderContent() {
+          return html`<div>Test</div>`;
         }
       }
-      
+
       const el = document.createElement('ready-test');
       document.body.appendChild(el);
-      
+
       await (el as any).ready;
-      
+
       expect(connectedSpy).toHaveBeenCalledOnce();
     });
 
     it('should support multiple ready methods', async () => {
       const order: string[] = [];
-      
+
       @element('multi-ready')
       class MultiReady extends HTMLElement {
         @ready()
         firstReady() {
           order.push('first');
         }
-        
+
         @ready()
         secondReady() {
           order.push('second');
         }
-        
-        html() {
-          return '<div>Test</div>';
+
+        @render()
+        renderContent() {
+          return html`<div>Test</div>`;
         }
       }
-      
+
       const el = document.createElement('multi-ready');
       document.body.appendChild(el);
-      
+
       await (el as any).ready;
-      
+
       expect(order).toEqual(['first', 'second']);
     });
 
     it('should handle manual cleanup with @dispose', async () => {
       let counter = 0;
       let intervalId: any;
-      
+
       @element('manual-interval-cleanup')
       class ManualIntervalCleanup extends HTMLElement {
         private intervalId: any;
-        
+
         @ready()
         startInterval() {
           this.intervalId = setInterval(() => {
             counter++;
           }, 20);
         }
-        
+
         @dispose()
         stopInterval() {
           if (this.intervalId) {
             clearInterval(this.intervalId);
           }
         }
-        
-        html() {
-          return '<div>Test</div>';
+
+        @render()
+        renderContent() {
+          return html`<div>Test</div>`;
         }
       }
-      
+
       const el = document.createElement('manual-interval-cleanup');
       document.body.appendChild(el);
-      
+
       await (el as any).ready;
       await new Promise(resolve => setTimeout(resolve, 50));
-      
+
       const countBefore = counter;
       expect(countBefore).toBeGreaterThan(0);
-      
+
       // Remove element to trigger cleanup
       document.body.removeChild(el);
       // Give time for async disconnectedCallback to run
       await new Promise(resolve => setTimeout(resolve, 10));
-      
+
       const countAfterDisconnect = counter;
-      
+
       // Wait more to verify interval is stopped
       await new Promise(resolve => setTimeout(resolve, 50));
-      
+
       // Counter should not have increased after dispose handler cleared it
       expect(counter).toBe(countAfterDisconnect);
     });
@@ -377,103 +397,127 @@ describe('element lifecycle', () => {
   describe('@dispose decorator', () => {
     it('should call dispose method when element is removed', async () => {
       const disconnectedSpy = vi.fn();
-      
+
       @element('dispose-decorator-test')
       class DisposeTest extends HTMLElement {
         @dispose()
         onDispose() {
           disconnectedSpy();
         }
-        
-        html() {
-          return '<div>Test</div>';
+
+        @render()
+        renderContent() {
+          return html`<div>Test</div>`;
         }
       }
-      
+
       const el = document.createElement('dispose-decorator-test');
       document.body.appendChild(el);
-      
+
       await (el as any).ready;
       expect(disconnectedSpy).not.toHaveBeenCalled();
-      
+
       document.body.removeChild(el);
       await new Promise(resolve => setTimeout(resolve, 0));
-      
+
       expect(disconnectedSpy).toHaveBeenCalledOnce();
     });
 
     it('should support multiple dispose methods', async () => {
       const order: string[] = [];
-      
+
       @element('multi-dispose')
       class MultiDispose extends HTMLElement {
         @dispose()
         firstDispose() {
           order.push('first');
         }
-        
+
         @dispose()
         secondDispose() {
           order.push('second');
         }
-        
-        html() {
-          return '<div>Test</div>';
+
+        @render()
+        renderContent() {
+          return html`<div>Test</div>`;
         }
       }
-      
+
       const el = document.createElement('multi-dispose');
       document.body.appendChild(el);
-      
+
       await (el as any).ready;
-      
+
       document.body.removeChild(el);
       await new Promise(resolve => setTimeout(resolve, 0));
-      
+
       expect(order).toEqual(['first', 'second']);
     });
   });
 
   describe('reconnection', () => {
-    it('should not duplicate styles on reconnect', () => {
+    it('should not duplicate styles on reconnect', async () => {
       @element('reconnect-test')
       class ReconnectTest extends HTMLElement {
-        css() {
-          return '.test { color: green; }';
+        @render()
+        renderContent() {
+          return html`<div class="test">Test</div>`;
+        }
+
+        @styles()
+        componentStyles() {
+          return css`.test { color: rgb(0, 128, 0); }`;
         }
       }
-      
+
       const el = document.createElement('reconnect-test');
       document.body.appendChild(el);
-      
+      await (el as any).ready;
+
+      const testDiv = el.shadowRoot?.querySelector('.test') as HTMLElement;
+      const firstColor = window.getComputedStyle(testDiv).color;
+
       // Remove and re-add
       document.body.removeChild(el);
       document.body.appendChild(el);
-      
-      const styles = el.shadowRoot?.querySelectorAll('style[data-component-css]');
-      expect(styles?.length).toBe(1);
+      await (el as any).ready;
+
+      const testDivAfter = el.shadowRoot?.querySelector('.test') as HTMLElement;
+      const secondColor = window.getComputedStyle(testDivAfter).color;
+
+      // Styles should still be applied correctly after reconnect
+      expect(secondColor).toBe(firstColor);
+      expect(secondColor).toBe('rgb(0, 128, 0)');
     });
 
-    it('should NOT re-render html on reconnect', () => {
+    it('should NOT re-render html on reconnect', async () => {
       let renderCount = 0;
 
       @element('rerender-test')
       class RerenderTest extends HTMLElement {
-        html() {
+        @render()
+        renderContent() {
           renderCount++;
-          return `<div>Render ${renderCount}</div>`;
+          return html`<div>Render ${renderCount}</div>`;
         }
       }
 
       const el = document.createElement('rerender-test');
       document.body.appendChild(el);
-      expect(el.shadowRoot?.innerHTML).toBe('<div>Render 1</div>');
+      await (el as any).ready;
+
+      const firstDiv = el.shadowRoot?.querySelector('div');
+      expect(firstDiv?.textContent).toContain('Render 1');
 
       document.body.removeChild(el);
       document.body.appendChild(el);
+      await (el as any).ready;
+
       // Should still be the same content - no re-render
-      expect(el.shadowRoot?.innerHTML).toBe('<div>Render 1</div>');
-      expect(renderCount).toBe(1); // html() called only once
+      const secondDiv = el.shadowRoot?.querySelector('div');
+      expect(secondDiv?.textContent).toContain('Render 1');
+      expect(renderCount).toBe(1); // renderContent() called only once
     });
   });
 

@@ -1,6 +1,6 @@
-import { element, property, on, query, part } from 'snice';
+import { element, property, query, render, styles, html, watch } from 'snice';
 import type { AppContext, Placard, RouteParams, Layout } from 'snice';
-import css from './snice-layout-sidebar.css?inline';
+import cssContent from './snice-layout-sidebar.css?inline';
 import '../drawer/snice-drawer.ts';
 import '../nav/snice-nav.ts';
 import type { SniceNav } from '../nav/snice-nav.ts';
@@ -20,11 +20,12 @@ export class SniceLayoutSidebar extends HTMLElement implements Layout {
   private placards: Placard[] = [];
   private currentRoute = '';
 
-  html() {
-    return /*html*/`
+  @render()
+  renderContent() {
+    return html`
       <div class="layout">
         <header class="header">
-          <button class="sidebar-toggle" type="button" aria-label="Toggle sidebar">
+          <button class="sidebar-toggle" type="button" aria-label="Toggle sidebar" @click=${this.handleSidebarToggle}>
             <svg viewBox="0 0 24 24" width="20" height="20">
               <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" fill="currentColor"/>
             </svg>
@@ -42,7 +43,7 @@ export class SniceLayoutSidebar extends HTMLElement implements Layout {
         <div class="body-area">
           <snice-drawer class="sidebar-drawer" position="left" size="medium" contained>
             <span slot="title">Navigation</span>
-            <snice-nav class="sidebar-nav" part="nav" variant="hierarchical" orientation="vertical"></snice-nav>
+            <snice-nav class="sidebar-nav" variant="hierarchical" orientation="vertical"></snice-nav>
           </snice-drawer>
 
           <main class="main">
@@ -57,11 +58,11 @@ export class SniceLayoutSidebar extends HTMLElement implements Layout {
     `;
   }
 
-  css() {
-    return css;
+  @styles()
+  componentStyles() {
+    return cssContent;
   }
 
-  @on('click', '.sidebar-toggle')
   handleSidebarToggle() {
     if (this.sidebarDrawer) {
       this.sidebarDrawer.toggle();
@@ -73,15 +74,14 @@ export class SniceLayoutSidebar extends HTMLElement implements Layout {
     this.currentRoute = currentRoute;
 
     // Update the navigation
-    this.renderNav();
+    this.updateNav();
   }
 
-  @part('nav')
-  renderNav() {
+  @watch('placards', 'currentRoute')
+  updateNav() {
     if (this.navElement) {
       this.navElement.placards = this.placards;
       this.navElement.currentRoute = this.currentRoute;
     }
-    return '';
   }
 }

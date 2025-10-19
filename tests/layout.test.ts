@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { Router, layout } from '../src/index';
+import { Router, layout, render, html } from '../src/index';
 import { ROUTER_CONTEXT } from './test-imports';
 
 describe('Layout System', () => {
@@ -20,42 +20,39 @@ describe('Layout System', () => {
     it('should define custom elements', () => {
       @layout('test-layout')
       class TestLayout extends HTMLElement {
-        html() {
-          return '<main><slot name="page"></slot></main>';
+        @render()
+        renderContent() {
+          return html`<main><slot name="page"></slot></main>`;
         }
       }
-      
+
       expect(customElements.get('test-layout')).toBeDefined();
     });
 
-    it('should create functional layout elements', () => {
+    it('should create functional layout elements', async () => {
       @layout('basic-layout')
       class BasicLayout extends HTMLElement {
-        html() {
-          return /*html*/`
+        @render()
+        renderContent() {
+          return html`
             <nav>Navigation</nav>
             <main><slot name="page"></slot></main>
             <footer>Footer</footer>
           `;
         }
       }
-      
-      const layoutEl = document.createElement('basic-layout');
+
+      const layoutEl = document.createElement('basic-layout') as any;
       targetEl.appendChild(layoutEl);
-      
-      // Wait for element to render
-      return new Promise(resolve => {
-        requestAnimationFrame(() => {
-          const nav = layoutEl.shadowRoot?.querySelector('nav');
-          const footer = layoutEl.shadowRoot?.querySelector('footer');
-          const slot = layoutEl.shadowRoot?.querySelector('slot[name="page"]');
-          
-          expect(nav?.textContent).toBe('Navigation');
-          expect(footer?.textContent).toBe('Footer');
-          expect(slot).toBeDefined();
-          resolve(undefined);
-        });
-      });
+      await layoutEl.ready;
+
+      const nav = layoutEl.shadowRoot?.querySelector('nav');
+      const footer = layoutEl.shadowRoot?.querySelector('footer');
+      const slot = layoutEl.shadowRoot?.querySelector('slot[name="page"]');
+
+      expect(nav?.textContent).toBe('Navigation');
+      expect(footer?.textContent).toBe('Footer');
+      expect(slot).toBeDefined();
     });
   });
 
@@ -64,8 +61,9 @@ describe('Layout System', () => {
       // Define test layout
       @layout('app-shell')
       class AppShell extends HTMLElement {
-        html() {
-          return /*html*/`
+        @render()
+        renderContent() {
+          return html`
             <nav class="nav">
               <slot name="nav">Default Nav</slot>
             </nav>
@@ -81,8 +79,9 @@ describe('Layout System', () => {
 
       @layout('minimal-layout')
       class MinimalLayout extends HTMLElement {
-        html() {
-          return /*html*/`
+        @render()
+        renderContent() {
+          return html`
             <div class="minimal">
               <slot name="page"></slot>
             </div>
@@ -99,11 +98,12 @@ describe('Layout System', () => {
       });
 
       const { page, initialize, navigate } = router;
-      
+
       @page({ tag: 'home-page', routes: ['/'] })
       class HomePage extends HTMLElement {
-        html() {
-          return '<div class="home-content">Home Page</div>';
+        @render()
+        renderContent() {
+          return html`<div class="home-content">Home Page</div>`;
         }
       }
       
@@ -130,15 +130,17 @@ describe('Layout System', () => {
       
       @page({ tag: 'home-page', routes: ['/'] })
       class HomePage extends HTMLElement {
-        html() {
-          return '<div>Home with default layout</div>';
+        @render()
+        renderContent() {
+          return html`<div>Home with default layout</div>`;
         }
       }
-      
+
       @page({ tag: 'login-page', routes: ['/login'], layout: 'minimal-layout' })
       class LoginPage extends HTMLElement {
-        html() {
-          return '<div>Login with minimal layout</div>';
+        @render()
+        renderContent() {
+          return html`<div>Login with minimal layout</div>`;
         }
       }
       
@@ -170,15 +172,17 @@ describe('Layout System', () => {
       
       @page({ tag: 'home-page', routes: ['/'] })
       class HomePage extends HTMLElement {
-        html() {
-          return '<div>Home with layout</div>';
+        @render()
+        renderContent() {
+          return html`<div>Home with layout</div>`;
         }
       }
-      
+
       @page({ tag: 'embed-page', routes: ['/embed'], layout: false })
       class EmbedPage extends HTMLElement {
-        html() {
-          return '<div>Embed without layout</div>';
+        @render()
+        renderContent() {
+          return html`<div>Embed without layout</div>`;
         }
       }
       
@@ -209,8 +213,9 @@ describe('Layout System', () => {
       
       @page({ tag: 'simple-page', routes: ['/'] })
       class SimplePage extends HTMLElement {
-        html() {
-          return '<div>Simple page</div>';
+        @render()
+        renderContent() {
+          return html`<div>Simple page</div>`;
         }
       }
       
@@ -235,15 +240,17 @@ describe('Layout System', () => {
       
       @page({ tag: 'page-one', routes: ['/one'] })
       class PageOne extends HTMLElement {
-        html() {
-          return '<div>Page One</div>';
+        @render()
+        renderContent() {
+          return html`<div>Page One</div>`;
         }
       }
-      
+
       @page({ tag: 'page-two', routes: ['/two'] })
       class PageTwo extends HTMLElement {
-        html() {
-          return '<div>Page Two</div>';
+        @render()
+        renderContent() {
+          return html`<div>Page Two</div>`;
         }
       }
       
@@ -275,8 +282,9 @@ describe('Layout System', () => {
       
       @page({ tag: 'context-page', routes: ['/'] })
       class ContextPage extends HTMLElement {
-        html() {
-          return '<div>Context Page</div>';
+        @render()
+        renderContent() {
+          return html`<div>Context Page</div>`;
         }
       }
       
@@ -298,22 +306,25 @@ describe('Layout System', () => {
       
       @page({ tag: 'page-a', routes: ['/a'] })
       class PageA extends HTMLElement {
-        html() {
-          return '<div>Page A</div>';
+        @render()
+        renderContent() {
+          return html`<div>Page A</div>`;
         }
       }
-      
+
       @page({ tag: 'page-b', routes: ['/b'] })
       class PageB extends HTMLElement {
-        html() {
-          return '<div>Page B</div>';
+        @render()
+        renderContent() {
+          return html`<div>Page B</div>`;
         }
       }
-      
+
       @page({ tag: 'page-c', routes: ['/c'] })
       class PageC extends HTMLElement {
-        html() {
-          return '<div>Page C</div>';
+        @render()
+        renderContent() {
+          return html`<div>Page C</div>`;
         }
       }
       
@@ -356,15 +367,17 @@ describe('Layout System', () => {
       
       @page({ tag: 'shell-page', routes: ['/shell'] })
       class ShellPage extends HTMLElement {
-        html() {
-          return '<div>Shell Page</div>';
+        @render()
+        renderContent() {
+          return html`<div>Shell Page</div>`;
         }
       }
-      
+
       @page({ tag: 'minimal-page-test', routes: ['/minimal'], layout: 'minimal-layout' })
       class MinimalPageTest extends HTMLElement {
-        html() {
-          return '<div>Minimal Page</div>';
+        @render()
+        renderContent() {
+          return html`<div>Minimal Page</div>`;
         }
       }
       
@@ -423,22 +436,25 @@ describe('Layout System', () => {
       
       @page({ tag: 'page-one', routes: ['/one'] })
       class PageOne extends HTMLElement {
-        html() {
-          return '<div class="page-one-content">Page One</div>';
+        @render()
+        renderContent() {
+          return html`<div class="page-one-content">Page One</div>`;
         }
       }
-      
+
       @page({ tag: 'page-two', routes: ['/two'] })
       class PageTwo extends HTMLElement {
-        html() {
-          return '<div class="page-two-content">Page Two</div>';
+        @render()
+        renderContent() {
+          return html`<div class="page-two-content">Page Two</div>`;
         }
       }
-      
+
       @page({ tag: 'page-three', routes: ['/three'] })
       class PageThree extends HTMLElement {
-        html() {
-          return '<div class="page-three-content">Page Three</div>';
+        @render()
+        renderContent() {
+          return html`<div class="page-three-content">Page Three</div>`;
         }
       }
       
@@ -474,22 +490,25 @@ describe('Layout System', () => {
       
       @page({ tag: 'default-page', routes: ['/default'] })
       class DefaultPage extends HTMLElement {
-        html() {
-          return '<div>Default</div>';
+        @render()
+        renderContent() {
+          return html`<div>Default</div>`;
         }
       }
-      
+
       @page({ tag: 'minimal-page', routes: ['/minimal'], layout: 'minimal-layout' })
       class MinimalPage extends HTMLElement {
-        html() {
-          return '<div>Minimal</div>';
+        @render()
+        renderContent() {
+          return html`<div>Minimal</div>`;
         }
       }
-      
+
       @page({ tag: 'no-layout-page', routes: ['/none'], layout: false })
       class NoLayoutPage extends HTMLElement {
-        html() {
-          return '<div>No Layout</div>';
+        @render()
+        renderContent() {
+          return html`<div>No Layout</div>`;
         }
       }
       

@@ -347,41 +347,47 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     });
   }
 
-  @on(['keydown:Enter', 'keydown:Space', 'keydown:ArrowDown', 'keydown:ArrowUp'], '.select-trigger')
+  @on('keydown')
   handleTriggerOpen(e: KeyboardEvent) {
-    e.preventDefault();
-    if (!this.open) {
-      this.openDropdown();
+    const target = e.target as HTMLElement;
+    if (!target.matches('.select-trigger')) return;
+
+    if (['Enter', ' ', 'ArrowDown', 'ArrowUp'].includes(e.key)) {
+      e.preventDefault();
+      if (!this.open) {
+        this.openDropdown();
+      }
     }
   }
-  
-  @on('keydown:Escape', '.select-search-input')
-  handleSearchEscape() {
-    this.closeDropdown();
-    this.trigger?.focus();
-  }
 
-  @on('keydown:ArrowDown', '.select-search-input')
-  handleSearchArrowDown(e: KeyboardEvent) {
-    e.preventDefault();
-    this.focusNextOption();
-  }
+  @on('keydown')
+  handleSearchKeydown(e: KeyboardEvent) {
+    const target = e.target as HTMLElement;
+    if (!target.matches('.select-search-input')) return;
 
-  @on('keydown:ArrowUp', '.select-search-input')
-  handleSearchArrowUp(e: KeyboardEvent) {
-    e.preventDefault();
-    this.focusPreviousOption();
-  }
-
-  @on('keydown:Enter', '.select-search-input')
-  handleSearchEnter(e: KeyboardEvent) {
-    e.preventDefault();
-    if (this.focusedIndex >= 0) {
-      const options = this.searchable ? this.filteredOptions : this.options;
-      const option = options[this.focusedIndex];
-      if (option && !option.disabled) {
-        this.handleOptionSelect(option);
-      }
+    switch (e.key) {
+      case 'Escape':
+        this.closeDropdown();
+        this.trigger?.focus();
+        break;
+      case 'ArrowDown':
+        e.preventDefault();
+        this.focusNextOption();
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        this.focusPreviousOption();
+        break;
+      case 'Enter':
+        e.preventDefault();
+        if (this.focusedIndex >= 0) {
+          const options = this.searchable ? this.filteredOptions : this.options;
+          const option = options[this.focusedIndex];
+          if (option && !option.disabled) {
+            this.handleOptionSelect(option);
+          }
+        }
+        break;
     }
   }
 
@@ -429,72 +435,83 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     }
   }
 
-  @on('click', '.select-trigger')
-  handleTriggerClick(e: Event) {
-    e.stopPropagation();
-    
-    // Don't toggle if clicking on the clear button or tag remove buttons
+  @on('click')
+  handleClick(e: Event) {
     const target = e.target as HTMLElement;
-    if (target.closest('.select-clear') || target.closest('.select-tag-remove')) {
+
+    // Handle clear button click
+    if (target.closest('.select-clear')) {
+      e.preventDefault();
+      e.stopPropagation();
+      this.clear();
       return;
     }
-    
-    if (!this.disabled && !this.readonly) {
-      this.toggleDropdown();
+
+    // Handle tag remove click
+    if (target.closest('.select-tag-remove')) {
+      e.stopPropagation();
+      const removeBtn = target.closest('.select-tag-remove') as HTMLElement;
+      const value = removeBtn.getAttribute('data-value');
+      if (value && this.multiple) {
+        this.selectedValues.delete(value);
+        this.value = Array.from(this.selectedValues).join(',');
+        this.updateNativeSelect();
+        this.updateValueDisplay();
+        this.updateClearButton();
+        this.dispatchChangeEvent();
+      }
+      return;
+    }
+
+    // Handle trigger click
+    if (target.closest('.select-trigger')) {
+      e.stopPropagation();
+
+      // Don't toggle if clicking on the clear button or tag remove buttons
+      if (target.closest('.select-clear') || target.closest('.select-tag-remove')) {
+        return;
+      }
+
+      if (!this.disabled && !this.readonly) {
+        this.toggleDropdown();
+      }
+      return;
+    }
+
+    // Handle option click
+    if (target.closest('.select-options')) {
+      e.stopPropagation();
+
+      const optionEl = target.closest('.select-option') as HTMLElement;
+
+      if (!optionEl) return;
+
+      const value = optionEl.getAttribute('data-value');
+      if (!value) return;
+
+      const option = this.options.find(opt => opt.value === value);
+      if (option && !option.disabled) {
+        this.handleOptionSelect(option);
+      }
     }
   }
 
-  @on('click', '.select-clear', { preventDefault: true, stopPropagation: true })
-  handleClearClick(_e: Event) {
-    this.clear();
-  }
-
-  @on('click', '.select-tag-remove')
-  handleTagRemove(e: Event) {
-    e.stopPropagation();
+  @on('input')
+  handleInput(e: Event) {
     const target = e.target as HTMLElement;
-    const value = target.getAttribute('data-value');
-    if (value && this.multiple) {
-      this.selectedValues.delete(value);
-      this.value = Array.from(this.selectedValues).join(',');
-      this.updateNativeSelect();
-      this.updateValueDisplay();
-      this.updateClearButton();
-      this.dispatchChangeEvent();
-    }
-  }
+    if (!target.matches('.select-search-input')) return;
 
-  @on('click', '.select-options')
-  handleOptionsClick(e: Event) {
-    e.stopPropagation();
-    
-    const target = e.target as HTMLElement;
-    const optionEl = target.closest('.select-option') as HTMLElement;
-    
-    if (!optionEl) return;
-    
-    const value = optionEl.getAttribute('data-value');
-    if (!value) return;
+    const input = target as HTMLInputElement;
+    const searchTerm = input.value.toLowerCase();
 
-    const option = this.options.find(opt => opt.value === value);
-    if (option && !option.disabled) {
-      this.handleOptionSelect(option);
-    }
-  }
-
-  @on('input', '.select-search-input')
-  handleSearchInput(e: Event) {
-    const target = e.target as HTMLInputElement;
-    const searchTerm = target.value.toLowerCase();
-    
     if (searchTerm) {
-      this.filteredOptions = this.options.filter(opt => 
+      this.filteredOptions = this.options.filter(opt =>
         opt.label.toLowerCase().includes(searchTerm)
       );
     } else {
       this.filteredOptions = [...this.options];
     }
-    
+
     this.focusedIndex = -1;
     this.updateDropdownContent();
   }

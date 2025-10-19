@@ -239,9 +239,16 @@ export class SniceToast extends HTMLElement implements SniceToastElement {
     this.setHidden('.toast-icon', !this.icon);
   }
 
-  @on('click', '.toast-close')
+  @on('click')
+  handleClick(e: Event) {
+    const target = e.target as HTMLElement;
+    if (!target.closest('.toast-close')) return;
+
+    this.dispatchCloseEvent();
+  }
+
   @dispatch('close-toast')
-  handleClose() {
+  private dispatchCloseEvent() {
     return { id: this.getAttribute('toast-id') };
   }
 

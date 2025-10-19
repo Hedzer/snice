@@ -136,22 +136,31 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
     }
   }
 
-  @on('click', '.drawer-backdrop')
+  @on('click')
   handleBackdropClick(e: MouseEvent) {
+    const target = e.target as HTMLElement;
+    if (!target.matches('.drawer-backdrop')) return;
+
     if (!this.noBackdropDismiss && !this.persistent) {
       e.stopPropagation();
       this.hide();
     }
   }
 
-  @on('click', '.drawer-close')
+  @on('click')
   handleCloseClick(e: MouseEvent) {
+    const target = e.target as HTMLElement;
+    if (!target.matches('.drawer-close')) return;
+
     e.stopPropagation();
     this.hide();
   }
 
-  @on('focus', '.focus-trap-start')
-  handleFocusTrapStart() {
+  @on('focus')
+  handleFocusTrapStart(e: Event) {
+    const target = e.target as HTMLElement;
+    if (!target.matches('.focus-trap-start')) return;
+
     if (!this.noFocusTrap) {
       // Focus the last focusable element in the drawer
       const focusableElements = this.getFocusableElements();
@@ -161,8 +170,11 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
     }
   }
 
-  @on('focus', '.focus-trap-end')
-  handleFocusTrapEnd() {
+  @on('focus')
+  handleFocusTrapEnd(e: Event) {
+    const target = e.target as HTMLElement;
+    if (!target.matches('.focus-trap-end')) return;
+
     if (!this.noFocusTrap) {
       // Focus the first focusable element in the drawer
       const focusableElements = this.getFocusableElements();
