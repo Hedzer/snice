@@ -1,5 +1,5 @@
-import { element, property, watch, ready, query, SimpleArray } from 'snice';
-import css from './snice-cell.css?inline';
+import { element, property, watch, ready, query, SimpleArray, render, styles, html, css } from 'snice';
+import cssContent from './snice-cell.css?inline';
 import type { SparklineFormat, SniceCellElement, ColumnType, ColumnAlign, ColumnDefinition } from './snice-table.types';
 
 @element('snice-cell-sparkline')
@@ -57,16 +57,18 @@ export class SniceCellSparkline extends HTMLElement implements SniceCellElement 
   @property({ type: SimpleArray,  })
   data: number[] = [];
 
-  html() {
-    return `
+  @render()
+  renderContent() {
+    return html/*html*/`
       <div class="cell-content cell-content--sparkline" part="content">
         ${this.renderSparkline()}
       </div>
     `;
   }
 
-  css() {
-    return css;
+  @styles()
+  componentStyles() {
+    return css/*css*/`${cssContent}`;
   }
 
   @ready()

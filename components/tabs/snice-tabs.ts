@@ -1,5 +1,5 @@
-import { element, property, query, queryAll, on, watch, ready, dispatch } from 'snice';
-import css from './snice-tabs.css?inline';
+import { element, property, query, queryAll, watch, ready, dispatch, render, styles, html, css } from 'snice';
+import cssContent from './snice-tabs.css?inline';
 import type { TabsPlacement, SniceTabElement, SniceTabPanelElement, TabChangeDetail, TabSelectDetail } from './snice-tabs.types';
 import { transitions } from '../transitions';
 
@@ -47,34 +47,35 @@ export class SniceTabs extends HTMLElement {
   panelsContainer?: HTMLElement;
 
 
-  html() {
-    return /*html*/`
+  @render()
+  renderContent() {
+    return html/*html*/`
       <div class="tabs tabs--${this.placement}" part="base">
         <div class="tabs__nav-container" part="nav-container">
-          ${!this.noScrollControls ? /*html*/`
+          <if ${!this.noScrollControls}>
             <button class="tabs__scroll-button tabs__scroll-button--start" part="scroll-button scroll-button-start" tabindex="-1" aria-label="Scroll left">
               <svg viewBox="0 0 24 24" width="16" height="16">
                 <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" fill="currentColor"/>
               </svg>
             </button>
-          ` : ''}
-          
+          </if>
+
           <div class="tabs__nav" part="nav" role="tablist">
             <div class="tabs__nav-track">
               <slot name="nav"></slot>
               <div class="tabs__indicator" part="indicator"></div>
             </div>
           </div>
-          
-          ${!this.noScrollControls ? /*html*/`
+
+          <if ${!this.noScrollControls}>
             <button class="tabs__scroll-button tabs__scroll-button--end" part="scroll-button scroll-button-end" tabindex="-1" aria-label="Scroll right">
               <svg viewBox="0 0 24 24" width="16" height="16">
                 <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" fill="currentColor"/>
               </svg>
             </button>
-          ` : ''}
+          </if>
         </div>
-        
+
         <div class="tabs__panels" part="panels">
           <slot></slot>
         </div>
@@ -82,8 +83,9 @@ export class SniceTabs extends HTMLElement {
     `;
   }
 
-  css() {
-    return css;
+  @styles()
+  componentStyles() {
+    return css/*css*/`${cssContent}`;
   }
 
   @ready()

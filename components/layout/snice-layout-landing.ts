@@ -1,4 +1,4 @@
-import { element, query, property, render, styles, html, watch } from 'snice';
+import { element, query, property, render, styles, html, css } from 'snice';
 import type { AppContext, Placard, RouteParams, Layout } from 'snice';
 import cssContent from './snice-layout-landing.css?inline';
 import '../nav/snice-nav.ts';
@@ -17,7 +17,7 @@ export class SniceLayoutLanding extends HTMLElement implements Layout {
 
   @render()
   renderContent() {
-    return html`
+    return html/*html*/`
       <div class="layout">
         <header class="header">
           <div class="container">
@@ -26,13 +26,14 @@ export class SniceLayoutLanding extends HTMLElement implements Layout {
                 <h1>Brand</h1>
               </slot>
             </div>
-            ${this.useNav ? html`
+            <if ${this.useNav}>
               <snice-nav class="nav" variant="flat" orientation="horizontal"></snice-nav>
-            ` : html`
+            </if>
+            <if ${!this.useNav}>
               <nav class="nav">
                 <slot name="nav"></slot>
               </nav>
-            `}
+            </if>
             <div class="cta">
               <slot name="cta"></slot>
             </div>
@@ -60,7 +61,7 @@ export class SniceLayoutLanding extends HTMLElement implements Layout {
 
   @styles()
   componentStyles() {
-    return cssContent;
+    return css/*css*/`${cssContent}`;
   }
 
   update(_appContext: AppContext, placards: Placard[], currentRoute: string, _routeParams: RouteParams): void {
@@ -71,7 +72,6 @@ export class SniceLayoutLanding extends HTMLElement implements Layout {
     this.updateNav();
   }
 
-  @watch('placards', 'currentRoute')
   updateNav() {
     if (this.navElement) {
       this.navElement.placards = this.placards;

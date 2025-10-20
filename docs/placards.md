@@ -17,7 +17,7 @@ The Placard system allows pages to declare metadata that describes their purpose
 Define a placard for your page using the `placard` option in the `@page` decorator:
 
 ```typescript
-import { page, Placard } from 'snice';
+import { page, Placard, render, html } from 'snice';
 
 const placard: Placard<AppContext> = {
   name: 'dashboard',
@@ -34,8 +34,9 @@ const placard: Placard<AppContext> = {
   placard: placard
 })
 class DashboardPage extends HTMLElement {
-  html() {
-    return `<h1>Dashboard</h1>`;
+  @render()
+  renderContent() {
+    return html`<h1>Dashboard</h1>`;
   }
 }
 ```
@@ -243,12 +244,29 @@ Layouts can access placard data to build dynamic UI. The exact mechanism depends
 3. **Event System** - Layouts listen for route changes and update UI
 
 ```typescript
+import { layout, render, html, Layout } from 'snice';
+
 @layout('app-shell')
 class AppShell extends HTMLElement implements Layout {
-  html() {
-    return `
+  private placards: Placard[] = [];
+  private currentRoute = '';
+
+  @render()
+  renderContent() {
+    return html`
       <header>
-        <nav></nav>
+        <nav>
+          ${this.placards
+            .filter(p => p.show !== false && !p.parent)
+            .map(p => html`
+              <a
+                href="#/${p.name}"
+                class="${this.currentRoute === p.name ? 'active' : ''}"
+              >
+                ${p.icon} ${p.title}
+              </a>
+            `)}
+        </nav>
       </header>
       <main>
         <slot name="page"></slot>
@@ -256,17 +274,128 @@ class AppShell extends HTMLElement implements Layout {
     `;
   }
 
-  update(appContext, placards, currentRoute, routeParams) {
-    // Build navigation from placards (already resolved)
-    const navItems = placards.filter(p => p.show !== false && !p.parent);
-    this.renderNavigation(navItems, currentRoute);
-
-    // Update breadcrumbs for current route
-    const currentPlacard = placards.find(p => matchesRoute(p, currentRoute));
-    this.renderBreadcrumbs(currentPlacard, placards);
-
-    // Apply theme and user context
-    this.applyTheme(appContext.theme);
+  // Called by router when route changes
+  update(appContext: any, placards: Placard[], currentRoute: string, routeParams: any) {
+    this.placards = placards;
+    this.currentRoute = currentRoute;
+    // Property changes trigger re-render
   }
 }
 ```
+
+### Building Navigation from Placards
+
+```typescript
+@layout('sidebar-layout')
+class SidebarLayout extends HTMLElement implements Layout {
+  private placards: Placard[] = [];
+  private grouped: Record<string, Placard[]> = {};
+
+  @render()
+  renderContent() {
+    return html`
+      <aside class="sidebar">
+        ${Object.entries(this.grouped).map(([group, items]) => html`
+          <div class="nav-group">
+            <h3>${group}</h3>
+            <ul>
+              ${items
+                .sort((a, b) => (a.order || 0) - (b.order || 0))
+                .map(p => html`
+                  <li>
+                    <a href="#/${p.name}" title="${p.tooltip || ''}">
+                      ${p.icon} ${p.title}
+                    </a>
+                  </li>
+                `)}
+            </ul>
+          </div>
+        `)}
+      </aside>
+      <main>
+        <slot name="page"></slot>
+      </main>
+    `;
+  }
+
+  update(appContext: any, placards: Placard[], currentRoute: string, routeParams: any) {
+    this.placards = placards.filter(p => p.show !== false);
+
+    // Group placards
+    this.grouped = this.placards.reduce((acc, p) => {
+      const group = p.group || 'main';
+      if (!acc[group]) acc[group] = [];
+      acc[group].push(p);
+      return acc;
+    }, {} as Record<string, Placard[]>);
+  }
+}
+```
+
+### Building Breadcrumbs
+
+```typescript
+@layout('breadcrumb-layout')
+class BreadcrumbLayout extends HTMLElement implements Layout {
+  private breadcrumbs: Placard[] = [];
+
+  @render()
+  renderContent() {
+    return html`
+      <nav class="breadcrumbs">
+        ${this.breadcrumbs.map((p, i) => html`
+          ${i > 0 ? html`<span class="separator">/</span>` : ''}
+          <a href="#/${p.name}">${p.title}</a>
+        `)}
+      </nav>
+      <main>
+        <slot name="page"></slot>
+      </main>
+    `;
+  }
+
+  update(appContext: any, placards: Placard[], currentRoute: string, routeParams: any) {
+    // Find current page placard
+    const current = placards.find(p => p.name === currentRoute);
+    if (!current) return;
+
+    // Build breadcrumb trail
+    this.breadcrumbs = this.buildBreadcrumbs(current, placards);
+  }
+
+  buildBreadcrumbs(placard: Placard, all: Placard[]): Placard[] {
+    const trail: Placard[] = [placard];
+
+    // Use explicit breadcrumbs if defined
+    if (placard.breadcrumbs) {
+      return placard.breadcrumbs
+        .map(name => all.find(p => p.name === name))
+        .filter(Boolean) as Placard[];
+    }
+
+    // Otherwise follow parent chain
+    let current = placard;
+    while (current.parent) {
+      const parent = all.find(p => p.name === current.parent);
+      if (!parent) break;
+      trail.unshift(parent);
+      current = parent;
+    }
+
+    return trail;
+  }
+}
+```
+
+## Best Practices
+
+1. **Use consistent naming**: Use kebab-case for placard names
+2. **Provide helpful icons**: Visual indicators improve navigation UX
+3. **Set meaningful order**: Lower numbers appear first in navigation
+4. **Use groups wisely**: Group related pages for better organization
+5. **Define search terms**: Help users discover features through search
+6. **Leverage guards**: Use visibleOn to show/hide navigation based on permissions
+7. **Explicit when needed**: Use explicit breadcrumbs for complex hierarchies
+8. **Keep titles short**: Navigation labels should be concise
+9. **Provide tooltips**: Add helpful context for ambiguous page names
+10. **Use parent relationships**: Build hierarchical navigation automatically

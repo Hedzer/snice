@@ -5,7 +5,7 @@
 
 import { TemplateResult, CSSResult, isTemplateResult, isCSSResult } from './template';
 import { TemplateInstance } from './parts';
-import { RENDER_METHOD, RENDER_OPTIONS, RENDER_INSTANCE, RENDER_SCHEDULED, RENDER_TIMERS, STYLES_METHOD, STYLES_APPLIED } from './symbols';
+import { RENDER_METHOD, RENDER_OPTIONS, RENDER_INSTANCE, RENDER_SCHEDULED, RENDER_TIMERS, RENDER_CALLBACKS, STYLES_METHOD, STYLES_APPLIED } from './symbols';
 
 /**
  * Options for @render decorator
@@ -127,6 +127,14 @@ function performRender(element: HTMLElement, options: RenderOptions, precomputed
 
     // Mark scheduled flag as false
     (element as any)[RENDER_SCHEDULED] = false;
+
+    // Call all registered render callbacks (for testing/debugging)
+    const callbacks = (element as any)[RENDER_CALLBACKS];
+    if (callbacks && callbacks.length > 0) {
+      const cbs = [...callbacks];
+      (element as any)[RENDER_CALLBACKS] = [];
+      cbs.forEach(cb => cb());
+    }
   } catch (error) {
     console.error('Error rendering element:', error);
   }

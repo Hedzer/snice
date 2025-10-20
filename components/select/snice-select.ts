@@ -1,5 +1,5 @@
-import { element, property, query, queryAll, on, watch, dispatch, ready, dispose } from 'snice';
-import css from './snice-select.css?inline';
+import { element, property, query, queryAll, watch, dispatch, ready, dispose, render, styles, html, css as cssTag } from 'snice';
+import cssContent from './snice-select.css?inline';
 import type { SelectSize, SelectOption, SniceSelectElement } from './snice-select.types';
 import './snice-option';
 
@@ -87,28 +87,34 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   private selectedValues: Set<string> = new Set();
   private focusedIndex = -1;
 
-  html() {
-    // Initial render - options will be populated in @ready()
-    return /*html*/`
+  @render()
+  renderContent() {
+    const labelClasses = `select-label select-label--${this.size} ${this.required ? 'select-label--required' : ''}`;
+    const triggerClasses = `select-trigger select-trigger--${this.size}`;
+    const searchHidden = !this.searchable;
+
+    return html`
       <div class="select-wrapper">
-        <label class="select-label select-label--${this.size} ${this.required ? 'select-label--required' : ''}" part="label" ${!this.label ? 'hidden' : ''}>
+        <label class="${labelClasses}" part="label" ?hidden="${!this.label}">
           ${this.label}
         </label>
-        
+
         <button
           type="button"
-          class="select-trigger select-trigger--${this.size}"
+          class="${triggerClasses}"
           aria-haspopup="listbox"
           aria-expanded="false"
           aria-label="${this.label || 'Select'}"
-          part="trigger">
-          
+          part="trigger"
+          @keydown="${(e: KeyboardEvent) => this.handleTriggerOpen(e)}"
+          @click="${(e: MouseEvent) => this.handleTriggerClick(e)}">
+
           <div class="select-value" part="value">
             <span class="select-placeholder">${this.placeholder}</span>
           </div>
-          
+
           <span class="select-icons">
-            <span class="select-clear" aria-label="Clear selection" style="display: none;">
+            <span class="select-clear" aria-label="Clear selection" style="display: none;" @click="${(e: MouseEvent) => this.handleClearClick(e)}">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
                 <path d="M14 1.41L12.59 0L7 5.59L1.41 0L0 1.41L5.59 7L0 12.59L1.41 14L7 8.41L12.59 14L14 12.59L8.41 7L14 1.41Z"/>
               </svg>
@@ -120,26 +126,29 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
             </span>
           </span>
         </button>
-        
-        <div class="select-dropdown" 
-             role="listbox" 
+
+        <div class="select-dropdown"
+             role="listbox"
              aria-label="${this.label || 'Options'}"
-             part="dropdown">
-          
-          <div class="select-search" part="search" ${!this.searchable ? 'hidden' : ''}>
+             part="dropdown"
+             @click="${(e: MouseEvent) => this.handleOptionsClick(e)}">
+
+          <div class="select-search" part="search" ?hidden="${searchHidden}">
             <input
               type="text"
               class="select-search-input"
               placeholder="Search..."
               aria-label="Search options"
-              part="search-input" />
+              part="search-input"
+              @keydown="${(e: KeyboardEvent) => this.handleSearchKeydown(e)}"
+              @input="${(e: Event) => this.handleSearchInput(e)}" />
           </div>
-          
+
           <div class="select-options" part="options">
             <!-- Options will be rendered in @ready() -->
           </div>
         </div>
-        
+
         <!-- Hidden native select for form submission -->
         <select
           class="select-native"
@@ -190,8 +199,9 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     }).join('');
   }
 
-  css() {
-    return css;
+  @styles()
+  componentStyles() {
+    return cssTag`${cssContent}`;
   }
 
   @ready()
@@ -347,11 +357,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     });
   }
 
-  @on('keydown')
-  handleTriggerOpen(e: KeyboardEvent) {
-    const target = e.target as HTMLElement;
-    if (!target.matches('.select-trigger')) return;
-
+  private handleTriggerOpen(e: KeyboardEvent) {
     if (['Enter', ' ', 'ArrowDown', 'ArrowUp'].includes(e.key)) {
       e.preventDefault();
       if (!this.open) {
@@ -360,11 +366,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     }
   }
 
-  @on('keydown')
-  handleSearchKeydown(e: KeyboardEvent) {
-    const target = e.target as HTMLElement;
-    if (!target.matches('.select-search-input')) return;
-
+  private handleSearchKeydown(e: KeyboardEvent) {
     switch (e.key) {
       case 'Escape':
         this.closeDropdown();
@@ -435,17 +437,29 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     }
   }
 
-  @on('click')
-  handleClick(e: Event) {
+  private handleClearClick(e: MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.clear();
+  }
+
+  private handleTriggerClick(e: MouseEvent) {
     const target = e.target as HTMLElement;
 
-    // Handle clear button click
+    // Don't toggle if clicking on the clear button
     if (target.closest('.select-clear')) {
-      e.preventDefault();
-      e.stopPropagation();
-      this.clear();
       return;
     }
+
+    e.stopPropagation();
+
+    if (!this.disabled && !this.readonly) {
+      this.toggleDropdown();
+    }
+  }
+
+  private handleOptionsClick(e: MouseEvent) {
+    const target = e.target as HTMLElement;
 
     // Handle tag remove click
     if (target.closest('.select-tag-remove')) {
@@ -463,45 +477,23 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
       return;
     }
 
-    // Handle trigger click
-    if (target.closest('.select-trigger')) {
-      e.stopPropagation();
+    const optionEl = target.closest('.select-option') as HTMLElement;
 
-      // Don't toggle if clicking on the clear button or tag remove buttons
-      if (target.closest('.select-clear') || target.closest('.select-tag-remove')) {
-        return;
-      }
+    if (!optionEl) return;
 
-      if (!this.disabled && !this.readonly) {
-        this.toggleDropdown();
-      }
-      return;
-    }
+    e.stopPropagation();
 
-    // Handle option click
-    if (target.closest('.select-options')) {
-      e.stopPropagation();
+    const value = optionEl.getAttribute('data-value');
+    if (!value) return;
 
-      const optionEl = target.closest('.select-option') as HTMLElement;
-
-      if (!optionEl) return;
-
-      const value = optionEl.getAttribute('data-value');
-      if (!value) return;
-
-      const option = this.options.find(opt => opt.value === value);
-      if (option && !option.disabled) {
-        this.handleOptionSelect(option);
-      }
+    const option = this.options.find(opt => opt.value === value);
+    if (option && !option.disabled) {
+      this.handleOptionSelect(option);
     }
   }
 
-  @on('input')
-  handleInput(e: Event) {
-    const target = e.target as HTMLElement;
-    if (!target.matches('.select-search-input')) return;
-
-    const input = target as HTMLInputElement;
+  private handleSearchInput(e: Event) {
+    const input = e.target as HTMLInputElement;
     const searchTerm = input.value.toLowerCase();
 
     if (searchTerm) {
@@ -551,33 +543,23 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     this.updateTriggerState();
     this.updateNativeSelectAttributes();
     this.updateClearButton();
+    // Side effect: close dropdown when disabled
     if (this.disabled && this.open) {
       this.closeDropdown();
     }
   }
 
-  @watch('readonly')
-  handleReadonlyChange() {
-    this.updateTriggerState();
-    this.updateClearButton();
-  }
-
-  @watch('invalid')
-  handleInvalidChange() {
-    this.updateTriggerState();
-  }
-
-  // Remove the @watch('options') since options are now read from children
-
   @watch('open')
   handleOpenChange() {
     this.updateDropdownState();
     this.updateTriggerState();
-    
+
+    // Side effect: focus search input when opened
     if (this.open && this.searchable && this.searchInput) {
       setTimeout(() => this.searchInput?.focus(), 100);
     }
-    
+
+    // Side effect: reset search when closed
     if (!this.open) {
       this.focusedIndex = -1;
       if (this.searchInput) {
@@ -588,56 +570,9 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     }
   }
 
-  @watch('label')
-  handleLabelChange() {
-    if (this.labelElement) {
-      this.labelElement.textContent = this.label;
-      if (this.label) {
-        this.labelElement.removeAttribute('hidden');
-      } else {
-        this.labelElement.setAttribute('hidden', '');
-      }
-    }
-  }
-
-  @watch('placeholder')
-  handlePlaceholderChange() {
-    this.updateValueDisplay();
-  }
-
-  @watch('required')
-  handleRequiredChange() {
-    if (this.labelElement) {
-      this.labelElement.classList.toggle('select-label--required', this.required);
-    }
+  @watch('multiple', 'name')
+  handleNativeSelectAttributeChange() {
     this.updateNativeSelectAttributes();
-  }
-
-  @watch('multiple')
-  handleMultipleChange() {
-    this.updateNativeSelectAttributes();
-  }
-
-  @watch('name')
-  handleNameChange() {
-    this.updateNativeSelectAttributes();
-  }
-
-
-  @watch('clearable')
-  handleClearableChange() {
-    this.updateClearButton();
-  }
-
-  @watch('searchable')
-  handleSearchableChange() {
-    if (this.searchContainer) {
-      if (this.searchable) {
-        this.searchContainer.removeAttribute('hidden');
-      } else {
-        this.searchContainer.setAttribute('hidden', '');
-      }
-    }
   }
 
   private updateValueDisplay() {

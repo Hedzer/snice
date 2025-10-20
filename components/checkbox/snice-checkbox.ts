@@ -1,5 +1,5 @@
-import { element, property, query, on, watch, dispatch, ready } from 'snice';
-import css from './snice-checkbox.css?inline';
+import { element, property, query, render, styles, html, css } from 'snice';
+import cssContent from './snice-checkbox.css?inline';
 import type { CheckboxSize, SniceCheckboxElement } from './snice-checkbox.types';
 
 @element('snice-checkbox')
@@ -43,163 +43,69 @@ export class SniceCheckbox extends HTMLElement implements SniceCheckboxElement {
   @query('.checkbox-wrapper')
   wrapper?: HTMLElement;
 
-  html() {
-    return /*html*/`
-      <label class="checkbox-wrapper ${this.disabled ? 'checkbox-wrapper--disabled' : ''}">
+  @render()
+  renderContent() {
+    const wrapperClasses = `checkbox-wrapper${this.disabled ? ' checkbox-wrapper--disabled' : ''}`;
+    const checkboxClasses = `checkbox checkbox--${this.size}${this.invalid ? ' checkbox--invalid' : ''}${this.indeterminate ? ' checkbox--indeterminate' : ''}`;
+    const labelClasses = `checkbox-label checkbox-label--${this.size}${this.required ? ' checkbox-label--required' : ''}`;
+
+    return html/*html*/`
+      <label class="${wrapperClasses}" @change="${(e: Event) => this.handleInternalChange(e)}">
         <input
           type="checkbox"
           class="checkbox-input"
-          ${this.checked ? 'checked' : ''}
-          ${this.disabled ? 'disabled' : ''}
-          ${this.required ? 'required' : ''}
-          ${this.name ? `name="${this.name}"` : ''}
-          ${this.value ? `value="${this.value}"` : ''}
+          ?checked="${this.checked}"
+          ?disabled="${this.disabled}"
+          ?required="${this.required}"
+          name="${this.name}"
+          value="${this.value}"
           aria-invalid="${this.invalid}"
           aria-checked="${this.indeterminate ? 'mixed' : this.checked}"
           part="input"
         />
-        
-        <span class="checkbox 
-          checkbox--${this.size}
-          ${this.invalid ? 'checkbox--invalid' : ''}
-          ${this.indeterminate ? 'checkbox--indeterminate' : ''}"
-          part="checkbox">
-          
+
+        <span class="${checkboxClasses}" part="checkbox">
           <svg class="checkbox-icon checkbox-icon--check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
             <polyline points="20 6 9 17 4 12"></polyline>
           </svg>
-          
+
           <svg class="checkbox-icon checkbox-icon--indeterminate" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
             <line x1="5" y1="12" x2="19" y2="12"></line>
           </svg>
         </span>
-        
-        ${this.label ? /*html*/`
-          <span class="checkbox-label checkbox-label--${this.size} ${this.required ? 'checkbox-label--required' : ''}" part="label">
+
+        <if ${this.label}>
+          <span class="${labelClasses}" part="label">
             ${this.label}
           </span>
-        ` : ''}
+        </if>
       </label>
     `;
   }
 
-  css() {
-    return css;
-  }
-
-  @ready()
-  init() {
-    // Set initial states
-    if (this.input) {
-      this.input.checked = this.checked;
-      this.input.indeterminate = this.indeterminate;
-      
-      // Set form value
-      if (this.name) {
-        this.input.name = this.name;
-      }
-      if (this.value) {
-        this.input.value = this.value;
-      }
-    }
-    
-    // Update visual state
-    this.updateCheckboxState();
-  }
-
-  @on('change')
-  handleChange(e: Event) {
-    const target = e.target as HTMLElement;
+  private handleInternalChange(event: Event) {
+    const target = event.target as HTMLElement;
     if (!target.classList.contains('checkbox-input')) return;
 
     const input = target as HTMLInputElement;
     this.checked = input.checked;
     this.indeterminate = false; // Clear indeterminate on user interaction
-    this.dispatchChangeEvent();
-  }
 
-  @on('click')
-  handleClick(e: Event) {
-    const target = e.target as HTMLElement;
-    if (!target.classList.contains('checkbox-input')) return;
-
-    // Allow click to propagate for label association
-    e.stopPropagation();
-  }
-
-  @watch('checked')
-  handleCheckedChange() {
-    if (this.input) {
-      this.input.checked = this.checked;
-    }
-    this.updateCheckboxState();
-  }
-
-  @watch('indeterminate')
-  handleIndeterminateChange() {
-    if (this.input) {
-      this.input.indeterminate = this.indeterminate;
-    }
-    this.updateCheckboxState();
-  }
-
-  @watch('disabled')
-  handleDisabledChange() {
-    if (this.input) {
-      this.input.disabled = this.disabled;
-    }
-    if (this.wrapper) {
-      this.wrapper.classList.toggle('checkbox-wrapper--disabled', this.disabled);
-    }
-  }
-
-  @watch('invalid')
-  handleInvalidChange() {
-    if (this.input) {
-      this.input.setAttribute('aria-invalid', String(this.invalid));
-    }
-    if (this.checkbox) {
-      this.checkbox.classList.toggle('checkbox--invalid', this.invalid);
-    }
-  }
-
-  @watch('required')
-  handleRequiredChange() {
-    if (this.input) {
-      this.input.required = this.required;
-    }
-    if (this.labelElement) {
-      this.labelElement.classList.toggle('checkbox-label--required', this.required);
-    }
-  }
-
-  @watch('label')
-  handleLabelChange() {
-    if (this.labelElement) {
-      this.labelElement.textContent = this.label;
-      this.labelElement.style.display = this.label ? '' : 'none';
-    }
-  }
-
-  private updateCheckboxState() {
-    if (this.checkbox) {
-      // Update indeterminate state
-      this.checkbox.classList.toggle('checkbox--indeterminate', this.indeterminate);
-      
-      // Update aria-checked
-      if (this.input) {
-        this.input.setAttribute('aria-checked', this.indeterminate ? 'mixed' : String(this.checked));
+    // Dispatch custom event
+    this.dispatchEvent(new CustomEvent('@snice/change', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        checked: this.checked,
+        indeterminate: this.indeterminate,
+        checkbox: this
       }
-    }
+    }));
   }
 
-  @dispatch('@snice/checkbox-change', { bubbles: true, composed: true })
-  private dispatchChangeEvent() {
-    return {
-      checked: this.checked,
-      indeterminate: this.indeterminate,
-      checkbox: this
-    };
+  @styles()
+  componentStyles() {
+    return css/*css*/`${cssContent}`;
   }
 
   // Public API
@@ -218,12 +124,28 @@ export class SniceCheckbox extends HTMLElement implements SniceCheckboxElement {
   toggle() {
     this.checked = !this.checked;
     this.indeterminate = false;
-    this.dispatchChangeEvent();
+    this.dispatchEvent(new CustomEvent('@snice/change', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        checked: this.checked,
+        indeterminate: this.indeterminate,
+        checkbox: this
+      }
+    }));
   }
 
   setIndeterminate() {
     this.indeterminate = true;
     this.checked = false;
-    this.dispatchChangeEvent();
+    this.dispatchEvent(new CustomEvent('@snice/change', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        checked: this.checked,
+        indeterminate: this.indeterminate,
+        checkbox: this
+      }
+    }));
   }
 }

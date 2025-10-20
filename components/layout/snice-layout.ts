@@ -1,6 +1,6 @@
-import { element, query, ready } from 'snice';
+import { element, query, ready, render, styles, html, css } from 'snice';
 import type { AppContext, Placard, RouteParams, Layout } from 'snice';
-import css from './snice-layout.css?inline';
+import cssContent from './snice-layout.css?inline';
 import '../nav/snice-nav.ts';
 import type { SniceNav } from '../nav/snice-nav.ts';
 
@@ -12,8 +12,9 @@ export class SniceLayout extends HTMLElement implements Layout {
   private placards: Placard[] = [];
   private currentRoute = '';
 
-  html() {
-    return /*html*/`
+  @render()
+  renderContent() {
+    return html/*html*/`
       <div class="layout">
         <header class="header">
           <div class="brand">
@@ -36,8 +37,9 @@ export class SniceLayout extends HTMLElement implements Layout {
     `;
   }
 
-  css() {
-    return css;
+  @styles()
+  componentStyles() {
+    return css/*css*/`${cssContent}`;
   }
 
   @ready()

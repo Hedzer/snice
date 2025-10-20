@@ -1,5 +1,5 @@
-import { element, property, query, on, watch, ready, dispatch, observe } from 'snice';
-import css from './snice-accordion-item.css?inline';
+import { element, property, query, watch, ready, observe, render, styles, html, css as cssTag } from 'snice';
+import cssContent from './snice-accordion-item.css?inline';
 import type { SniceAccordionItemElement } from './snice-accordion.types';
 
 @element('snice-accordion-item')
@@ -21,13 +21,16 @@ export class SniceAccordionItem extends HTMLElement implements SniceAccordionIte
 
   private isAnimating = false;
 
-  html() {
-    return /*html*/`
-      <button 
+  @render()
+  renderContent() {
+    return html`
+      <button
         class="accordion-item__header"
         aria-expanded="${this.open}"
         aria-controls="content-${this.itemId}"
-        ${this.disabled ? 'disabled' : ''}
+        ?disabled="${this.disabled}"
+        @click="${(e: Event) => this.handleClick(e)}"
+        @keydown="${(e: KeyboardEvent) => this.handleKeydown(e)}"
       >
         <span class="accordion-item__title">
           <slot name="header"></slot>
@@ -36,8 +39,8 @@ export class SniceAccordionItem extends HTMLElement implements SniceAccordionIte
           <path d="M6 9l6 6 6-6"/>
         </svg>
       </button>
-      <div 
-        class="accordion-item__content" 
+      <div
+        class="accordion-item__content"
         id="content-${this.itemId}"
         role="region"
         aria-labelledby="header-${this.itemId}"
@@ -49,8 +52,25 @@ export class SniceAccordionItem extends HTMLElement implements SniceAccordionIte
     `;
   }
 
-  css() {
-    return css;
+  @styles()
+  componentStyles() {
+    return cssTag`${cssContent}`;
+  }
+
+  private handleClick(e: Event) {
+    e.preventDefault();
+    if (!this.disabled) {
+      this.toggle();
+    }
+  }
+
+  private handleKeydown(e: KeyboardEvent) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      if (!this.disabled) {
+        this.toggle();
+      }
+    }
   }
 
   @ready()
@@ -77,36 +97,6 @@ export class SniceAccordionItem extends HTMLElement implements SniceAccordionIte
       this.expand();
     } else {
       this.collapse();
-    }
-  }
-
-  @watch('disabled')
-  handleDisabledChange() {
-    const header = this.shadowRoot?.querySelector('.accordion-item__header') as HTMLButtonElement;
-    if (header) {
-      header.disabled = this.disabled;
-    }
-  }
-
-  @on('click')
-  handleHeaderClick(e: Event) {
-    const target = e.target as HTMLElement;
-    if (!target.matches('.accordion-item__header')) return;
-
-    e.preventDefault();
-    if (!this.disabled) {
-      this.toggle();
-    }
-  }
-
-  @on(['keydown:Enter', 'keydown:Space'])
-  handleHeaderKeydown(e: KeyboardEvent) {
-    const target = e.target as HTMLElement;
-    if (!target.matches('.accordion-item__header')) return;
-
-    e.preventDefault();
-    if (!this.disabled) {
-      this.toggle();
     }
   }
 
@@ -227,8 +217,11 @@ export class SniceAccordionItem extends HTMLElement implements SniceAccordionIte
     header?.setAttribute('aria-expanded', String(expanded));
   }
 
-  @dispatch('accordion-item-toggle', { bubbles: true, composed: true })
   private dispatchToggleEvent(open: boolean) {
-    return { itemId: this.itemId, open };
+    this.dispatchEvent(new CustomEvent('accordion-item-toggle', {
+      bubbles: true,
+      composed: true,
+      detail: { itemId: this.itemId, open }
+    }));
   }
 }

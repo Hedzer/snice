@@ -1,6 +1,6 @@
 # Routing API Documentation
 
-Snice provides a powerful routing system for single-page applications with support for hash and pushstate routing, page transitions, and route parameters.
+Snice provides a powerful routing system for single-page applications with support for hash and pushstate routing, page transitions, route parameters, guards, and layouts.
 
 ## Table of Contents
 - [Router Setup](#router-setup)
@@ -21,26 +21,53 @@ Snice provides a powerful routing system for single-page applications with suppo
 import { Router } from 'snice';
 
 const router = Router({
-  target: '#app',           // Target element selector
-  type: 'hash'      // 'hash' or 'pushstate'
+  target: '#app',    // Target element selector
+  type: 'hash'       // 'hash' or 'pushstate'
 });
 
 // Destructure router methods
-const { page, initialize, navigate, register } = router;
+const { page, initialize, navigate } = router;
 ```
 
 ### Router Options
 
 ```typescript
-interface RouterOptions {
+interface RouterOptions<T = any> {
   target: string;                    // Target element selector
   type: 'hash' | 'pushstate';        // Routing type
-  window?: Window;                   // Override window object
-  document?: Document;               // Override document object
+  window?: Window;                   // Override window object (for testing)
+  document?: Document;               // Override document object (for testing)
   transition?: Transition;           // Global transition config
   layout?: string;                   // Default layout for all pages
-  context?: any;                     // Router context object
+  context?: T;                       // Router context object (shared state)
 }
+```
+
+### Router Context
+
+The context object provides shared state across all pages and layouts:
+
+```typescript
+// app-context.ts
+class AppContext {
+  user: User | null = null;
+  theme: 'light' | 'dark' = 'light';
+
+  setUser(user: User) {
+    this.user = user;
+  }
+
+  getUser() {
+    return this.user;
+  }
+}
+
+// main.ts
+const { page, initialize } = Router({
+  target: '#app',
+  type: 'hash',
+  context: new AppContext()
+});
 ```
 
 ## Page Components
@@ -48,17 +75,13 @@ interface RouterOptions {
 ### Basic Page
 
 ```typescript
-import { Router } from 'snice';
-
-const { page, initialize } = Router({
-  target: '#app',
-  type: 'hash'
-});
+import { page, render, html, styles, css } from 'snice';
 
 @page({ tag: 'home-page', routes: ['/'] })
 class HomePage extends HTMLElement {
-  html() {
-    return `
+  @render()
+  renderContent() {
+    return html`
       <div class="home">
         <h1>Welcome Home</h1>
         <nav>
@@ -68,229 +91,116 @@ class HomePage extends HTMLElement {
       </div>
     `;
   }
-  
-  css() {
-    return `
+
+  @styles()
+  homeStyles() {
+    return css`
       .home {
         padding: 20px;
         text-align: center;
       }
+
       nav a {
         margin: 0 10px;
         color: blue;
+        text-decoration: none;
+      }
+
+      nav a:hover {
+        text-decoration: underline;
       }
     `;
   }
 }
+```
 
-@page({ tag: 'about-page', routes: ['/about'] })
-class AboutPage extends HTMLElement {
-  html() {
-    return `
-      <div class="about">
-        <h1>About Us</h1>
-        <p>Learn more about our company.</p>
-        <a href="#/">Back to Home</a>
+### Page with Context
+
+```typescript
+import { page, context, render, html } from 'snice';
+
+@page({ tag: 'profile-page', routes: ['/profile'] })
+class ProfilePage extends HTMLElement {
+  @context()
+  ctx?: AppContext;
+
+  @render()
+  renderContent() {
+    const user = this.ctx?.getUser();
+
+    if (!user) {
+      return html`
+        <div>
+          <p>Please log in to view your profile</p>
+          <a href="#/login">Login</a>
+        </div>
+      `;
+    }
+
+    return html`
+      <div class="profile">
+        <h1>Profile: ${user.name}</h1>
+        <p>Email: ${user.email}</p>
+        <button @click=${this.logout}>Logout</button>
       </div>
     `;
   }
-}
 
-// Initialize router after pages are defined
-initialize();
-```
-
-### Page Options
-
-```typescript
-interface PageOptions {
-  tag: string;                // Custom element tag name
-  routes: string[];           // Routes that trigger this page
-  transition?: Transition; // Page-specific transition
+  logout() {
+    this.ctx?.setUser(null);
+    // Property change will trigger re-render
+  }
 }
 ```
 
 ## Route Configuration
 
-### Multiple Routes per Page
+### @page Decorator Options
 
 ```typescript
-@page({ tag: 'product-page', routes: [
-    '/product',
-    '/products',
-    '/item',
-    '/items'
-  ] 
+interface PageOptions<T = any> {
+  tag: string;                       // Custom element tag name
+  routes: string[];                  // Route patterns
+  transition?: Transition;           // Page-specific transition
+  guards?: Guard<T> | Guard<T>[];    // Route guards
+  placard?: Placard<T>;              // Page metadata
+}
+```
+
+### Multiple Routes
+
+```typescript
+@page({
+  tag: 'user-page',
+  routes: ['/user', '/users', '/profile']
 })
-class ProductPage extends HTMLElement {
-  html() {
-    return `<h1>Products</h1>`;
+class UserPage extends HTMLElement {
+  @render()
+  renderContent() {
+    return html`<h1>User Page</h1>`;
   }
 }
 ```
 
-### Nested Routes
+### Route with Parameters
 
 ```typescript
-@page({ 
-  tag: 'admin-dashboard', 
-  routes: ['/admin', '/admin/dashboard'] 
+@page({
+  tag: 'user-detail-page',
+  routes: ['/users/:userId']
 })
-class AdminDashboard extends HTMLElement {
-  html() {
-    return `
-      <div class="admin">
-        <h1>Admin Dashboard</h1>
-        <nav>
-          <a href="#/admin/users">Users</a>
-          <a href="#/admin/settings">Settings</a>
-        </nav>
-      </div>
-    `;
-  }
-}
-
-@page({ 
-  tag: 'admin-users', 
-  routes: ['/admin/users'] 
-})
-class AdminUsers extends HTMLElement {
-  html() {
-    return `<h1>User Management</h1>`;
-  }
-}
-```
-
-### 404 Page
-
-```typescript
-@page({ 
-  tag: 'not-found-page', 
-  routes: ['/404'] 
-})
-class NotFoundPage extends HTMLElement {
-  html() {
-    return `
-      <div class="error-404">
-        <h1>404</h1>
-        <p>Page not found</p>
-        <a href="#/">Go Home</a>
-      </div>
-    `;
-  }
-  
-  css() {
-    return `
-      .error-404 {
-        text-align: center;
-        padding: 50px;
-      }
-      .error-404 h1 {
-        font-size: 72px;
-        color: #ff0000;
-      }
-    `;
-  }
-}
-```
-
-## Navigation
-
-### Programmatic Navigation
-
-```typescript
-const { navigate } = router;
-
-// Navigate to a route
-navigate('/about');
-navigate('/user/123');
-navigate('/search?q=typescript');
-
-// Navigation in response to events
-@element('nav-button')
-class NavButton extends HTMLElement {
-  @on('click', 'button')
-  handleClick() {
-    navigate('/dashboard');
-  }
-  
-  html() {
-    return `<button>Go to Dashboard</button>`;
-  }
-}
-```
-
-### Link Navigation
-
-For hash routing:
-```html
-<a href="#/">Home</a>
-<a href="#/about">About</a>
-<a href="#/contact">Contact</a>
-```
-
-For pushstate routing with click handlers:
-```typescript
-@element('nav-menu')
-class NavMenu extends HTMLElement {
-  html() {
-    return `
-      <nav>
-        <a href="/" data-route>Home</a>
-        <a href="/about" data-route>About</a>
-        <a href="/contact" data-route>Contact</a>
-      </nav>
-    `;
-  }
-  
-  @on('click', 'a[data-route]')
-  handleNavClick(event: Event) {
-    event.preventDefault();
-    const link = event.target as HTMLAnchorElement;
-    navigate(link.pathname);
-  }
-}
-```
-
-## Route Parameters
-
-### Dynamic Routes
-
-```typescript
-@page({ tag: 'user-profile', routes: ['/user/:id'] })
-class UserProfile extends HTMLElement {
+class UserDetailPage extends HTMLElement {
   @property()
-  id = '';
-  
-  @query('.content')
-  contentDiv?: HTMLElement;
-  
-  html() {
-    return `
-      <div class="profile">
-        <h1>User Profile</h1>
-        <div class="content">Loading...</div>
+  userId = '';
+
+  @render()
+  renderContent() {
+    return html`
+      <div>
+        <h1>User Details</h1>
+        <p>Viewing user: ${this.userId}</p>
       </div>
     `;
-  }
-  
-  @watch('id')
-  async loadUser() {
-    if (!this.id) return;
-    
-    console.log('User ID:', this.id);
-    const response = await fetch(`/api/users/${this.id}`);
-    const user = await response.json();
-    this.renderUser(user);
-  }
-  
-  renderUser(user: any) {
-    if (this.contentDiv) {
-      this.contentDiv.innerHTML = `
-        <h2>${user.name}</h2>
-        <p>${user.email}</p>
-      `;
-    }
   }
 }
 ```
@@ -298,734 +208,855 @@ class UserProfile extends HTMLElement {
 ### Multiple Parameters
 
 ```typescript
-@page({ tag: 'blog-post', routes: ['/blog/:year/:month/:slug'] })
-class BlogPost extends HTMLElement {
+@page({
+  tag: 'post-detail-page',
+  routes: ['/users/:userId/posts/:postId']
+})
+class PostDetailPage extends HTMLElement {
   @property()
-  year = '';
-  
+  userId = '';
+
   @property()
-  month = '';
-  
-  @property()
-  slug = '';
-  
-  html() {
-    return `
-      <article>
-        <h1 class="title">Loading...</h1>
-        <time class="date"></time>
-        <div class="content"></div>
-      </article>
+  postId = '';
+
+  @render()
+  renderContent() {
+    return html`
+      <h1>Post ${this.postId} by User ${this.userId}</h1>
     `;
-  }
-  
-  @watch('slug')
-  @watch('year')
-  @watch('month')
-  async loadPost() {
-    if (!this.slug || !this.year || !this.month) return;
-    
-    const url = `/api/posts/${this.year}/${this.month}/${this.slug}`;
-    const response = await fetch(url);
-    const post = await response.json();
-    this.renderPost(post);
-  }
-  
-  renderPost(post: any) {
-    const title = this.shadowRoot?.querySelector('.title');
-    const date = this.shadowRoot?.querySelector('.date');
-    const content = this.shadowRoot?.querySelector('.content');
-    
-    if (title) title.textContent = post.title;
-    if (date) date.textContent = `${this.year}-${this.month}`;
-    if (content) content.innerHTML = post.content;
   }
 }
 ```
 
-### Optional Parameters
+## Navigation
+
+### Hash Navigation
 
 ```typescript
-@page({ 
-  tag: 'search-page', 
-  routes: [ '/search', '/search/:query' ] 
+// In templates
+html`<a href="#/about">About</a>`
+
+// Programmatic navigation
+navigate('/about');
+
+// With parameters
+navigate('/users/123');
+```
+
+### Pushstate Navigation
+
+```typescript
+// In templates
+html`<a href="/about">About</a>`
+
+// Programmatic navigation using the router instance
+const { navigate } = Router({
+  target: '#app',
+  type: 'pushstate'
+});
+
+navigate('/about');
+```
+
+### Back/Forward Navigation
+
+```typescript
+// Browser back
+window.history.back();
+
+// Browser forward
+window.history.forward();
+
+// Go back 2 pages
+window.history.go(-2);
+```
+
+## Route Parameters
+
+### Accessing Parameters
+
+Route parameters are automatically mapped to element properties:
+
+```typescript
+@page({
+  tag: 'article-page',
+  routes: ['/articles/:articleId']
+})
+class ArticlePage extends HTMLElement {
+  @property()
+  articleId = '';
+
+  @ready()
+  async loadArticle() {
+    // articleId is automatically set from URL
+    const article = await fetch(`/api/articles/${this.articleId}`);
+    this.article = await article.json();
+  }
+
+  @render()
+  renderContent() {
+    return html`<h1>Article ${this.articleId}</h1>`;
+  }
+}
+```
+
+### Multiple Parameters
+
+```typescript
+@page({
+  tag: 'comment-page',
+  routes: ['/posts/:postId/comments/:commentId']
+})
+class CommentPage extends HTMLElement {
+  @property()
+  postId = '';
+
+  @property()
+  commentId = '';
+
+  @ready()
+  async loadData() {
+    // Both postId and commentId are set from URL
+    const [post, comment] = await Promise.all([
+      fetch(`/api/posts/${this.postId}`).then(r => r.json()),
+      fetch(`/api/comments/${this.commentId}`).then(r => r.json())
+    ]);
+
+    this.post = post;
+    this.comment = comment;
+  }
+
+  @render()
+  renderContent() {
+    return html`
+      <div>
+        <h2>Comment on Post ${this.postId}</h2>
+        <p>Comment ID: ${this.commentId}</p>
+      </div>
+    `;
+  }
+}
+```
+
+### Query Parameters
+
+Query parameters are not automatically parsed but can be accessed via URL:
+
+```typescript
+@page({
+  tag: 'search-page',
+  routes: ['/search']
 })
 class SearchPage extends HTMLElement {
   @property()
   query = '';
-  
-  @query('input[type="text"]')
-  searchInput?: HTMLInputElement;
-  
-  @query('.results')
-  resultsDiv?: HTMLElement;
-  
-  html() {
-    return `
-      <div class="search">
-        <h1>Search</h1>
-        <input type="text" value="${this.query}" placeholder="Enter search term">
-        <div class="results"></div>
+
+  @property()
+  page = 1;
+
+  @ready()
+  parseQueryParams() {
+    const params = new URLSearchParams(window.location.search);
+    this.query = params.get('q') || '';
+    this.page = parseInt(params.get('page') || '1');
+  }
+
+  @render()
+  renderContent() {
+    return html`
+      <div>
+        <h1>Search Results for: ${this.query}</h1>
+        <p>Page: ${this.page}</p>
       </div>
     `;
-  }
-  
-  @watch('query')
-  async performSearch() {
-    if (this.searchInput) {
-      this.searchInput.value = this.query;
-    }
-    
-    if (!this.query) {
-      if (this.resultsDiv) {
-        this.resultsDiv.innerHTML = '';
-      }
-      return;
-    }
-    
-    console.log('Searching for:', this.query);
-    // Perform actual search and update results
-    const results = await this.fetchResults(this.query);
-    this.displayResults(results);
-  }
-  
-  async fetchResults(query: string) {
-    // Simulate API call
-    return [`Result 1 for ${query}`, `Result 2 for ${query}`];
-  }
-  
-  displayResults(results: string[]) {
-    if (this.resultsDiv) {
-      this.resultsDiv.innerHTML = results
-        .map(r => `<div>${r}</div>`)
-        .join('');
-    }
   }
 }
 ```
 
 ## Page Transitions
 
-### Transition Configuration
-
-```typescript
-interface Transition {
-  name?: string;                     // Transition name
-  outDuration?: number;              // Out transition duration (ms)
-  inDuration?: number;               // In transition duration (ms)
-  out?: string;                      // CSS for out transition
-  in?: string;                       // CSS for in transition
-  mode?: 'sequential' | 'simultaneous'; // Transition mode
-}
-```
-
 ### Global Transitions
 
 ```typescript
+import { fadeTransition } from 'snice';
+
 const router = Router({
   target: '#app',
   type: 'hash',
-  transition: {
-    name: 'fade',
-    outDuration: 300,
-    inDuration: 300,
-    out: 'opacity: 0',
-    in: 'opacity: 1',
-    mode: 'simultaneous'
-  }
+  transition: fadeTransition
 });
 ```
 
 ### Page-Specific Transitions
 
 ```typescript
-@page({ 
-  tag: 'animated-page',
-  routes: ['/animated'],
-  transition: {
-    name: 'slide',
-    outDuration: 500,
-    inDuration: 500,
-    out: 'transform: translateX(-100%); opacity: 0',
-    in: 'transform: translateX(0); opacity: 1',
-    mode: 'sequential'
-  }
+import { slideTransition } from 'snice';
+
+@page({
+  tag: 'about-page',
+  routes: ['/about'],
+  transition: slideTransition
 })
-class AnimatedPage extends HTMLElement {
-  html() {
-    return `<h1>Animated Page</h1>`;
+class AboutPage extends HTMLElement {
+  @render()
+  renderContent() {
+    return html`<h1>About</h1>`;
   }
 }
 ```
 
-### Custom Transition Examples
+### Built-in Transitions
 
 ```typescript
-// Fade transition
-const fadeTransition: Transition = {
-  name: 'fade',
-  outDuration: 200,
-  inDuration: 200,
-  out: 'opacity: 0',
-  in: 'opacity: 1',
-  mode: 'simultaneous'
+import {
+  fadeTransition,
+  slideTransition,
+  slideLeftTransition,
+  slideRightTransition,
+  slideUpTransition,
+  slideDownTransition,
+  scaleTransition
+} from 'snice';
+```
+
+### Custom Transitions
+
+```typescript
+import { Transition } from 'snice';
+
+const customTransition: Transition = {
+  name: 'custom',
+  duration: 500,
+  enterClass: 'page-enter',
+  enterActiveClass: 'page-enter-active',
+  leaveClass: 'page-leave',
+  leaveActiveClass: 'page-leave-active'
 };
 
-// Slide transition
-const slideTransition: Transition = {
-  name: 'slide',
-  outDuration: 300,
-  inDuration: 300,
-  out: 'transform: translateX(-100%)',
-  in: 'transform: translateX(0)',
-  mode: 'sequential'
-};
+// CSS for custom transition
+/*
+.page-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
 
-// Scale transition
-const scaleTransition: Transition = {
-  name: 'scale',
-  outDuration: 250,
-  inDuration: 250,
-  out: 'transform: scale(0.9); opacity: 0',
-  in: 'transform: scale(1); opacity: 1',
-  mode: 'simultaneous'
-};
+.page-enter-active {
+  transition: all 500ms ease-out;
+}
 
-// Rotate transition
-const rotateTransition: Transition = {
-  name: 'rotate',
-  outDuration: 400,
-  inDuration: 400,
-  out: 'transform: rotate(180deg) scale(0.5); opacity: 0',
-  in: 'transform: rotate(0) scale(1); opacity: 1',
-  mode: 'sequential'
-};
+.page-leave {
+  opacity: 1;
+}
+
+.page-leave-active {
+  opacity: 0;
+  transition: all 500ms ease-in;
+}
+*/
 ```
 
 ## Route Guards
 
-Snice provides built-in guard functionality to protect routes based on conditions. Guards are functions that determine if navigation should proceed.
+Guards protect routes and can redirect unauthorized access:
 
-### Basic Guard Usage
+### Basic Guard
 
 ```typescript
-import { Router, Guard, RouteParams } from 'snice';
+import { Guard } from 'snice';
 
-// Define your app context class
-class AppContext {
-  private user: { id: number; role: string } | null = null;
-  private permissions: string[] = [];
-  
-  getUser() {
-    return this.user;
-  }
-  
-  setUser(user: { id: number; role: string } | null) {
-    this.user = user;
-  }
-  
-  getPermissions() {
-    return this.permissions;
-  }
-  
-  setPermissions(permissions: string[]) {
-    this.permissions = permissions;
-  }
-}
+const isAuthenticated: Guard<AppContext> = (ctx) => {
+  return ctx.getUser() !== null;
+};
 
-// Create context instance
-const appContext = new AppContext();
-
-// Create router with context
-const router = Router({
-  target: '#app',
-  type: 'hash',
-  context: appContext
-});
-
-const { page, navigate, initialize } = router;
-
-// Create guard functions (receive context and route params)
-const isAuthenticated: Guard<AppContext> = (ctx, params) => ctx.getUser() !== null;
-const isAdmin: Guard<AppContext> = (ctx, params) => ctx.getUser()?.role === 'admin';
-
-// Page with single guard
-@page({ 
-  tag: 'protected-page',
-  routes: ['/protected'],
+@page({
+  tag: 'dashboard-page',
+  routes: ['/dashboard'],
   guards: isAuthenticated
 })
-class ProtectedPage extends HTMLElement {
-  html() {
-    return `<h1>Protected Content</h1>`;
+class DashboardPage extends HTMLElement {
+  @render()
+  renderContent() {
+    return html`<h1>Dashboard</h1>`;
   }
 }
 ```
 
 ### Multiple Guards
 
-All guards must pass for navigation to proceed:
-
 ```typescript
-// Guard factory function
-const hasPermission = (perm: string): Guard<AppContext> => 
-  (ctx, params) => ctx.getPermissions().includes(perm);
-
-// Page with multiple guards (AND logic)
-@page({ 
-  tag: 'admin-panel',
-  routes: ['/admin'],
-  guards: [isAuthenticated, isAdmin, hasPermission('manage-users')]
-})
-class AdminPanel extends HTMLElement {
-  html() {
-    return `<h1>Admin Panel</h1>`;
-  }
-}
-```
-
-
-### Guards with Context Data
-
-Guards execute synchronously and should use data from the context for permission checks:
-
-```typescript
-const canEditResource: Guard<AppContext> = (ctx, params: RouteParams) => {
+const hasAdminRole: Guard<AppContext> = (ctx) => {
   const user = ctx.getUser();
-  if (!user) return false;
-
-  // Use context data for permission checks
-  const permissions = ctx.getPermissions(params.resourceId);
-  return permissions.includes('edit');
+  return user?.role === 'admin';
 };
 
 @page({
-  tag: 'editor-page',
-  routes: ['/editor/:resourceId'],
-  guards: canEditResource
+  tag: 'admin-page',
+  routes: ['/admin'],
+  guards: [isAuthenticated, hasAdminRole]
 })
-class EditorPage extends HTMLElement {
-  html() {
-    return `<h1>Resource Editor</h1>`;
+class AdminPage extends HTMLElement {
+  @render()
+  renderContent() {
+    return html`<h1>Admin Dashboard</h1>`;
   }
 }
 ```
 
-**Note:** Guards must be synchronous. If you need to check permissions from APIs, fetch and store that data in your context before navigation, or handle permission checks within your page components or controllers.
-
-### Custom 403 Page
-
-When guards deny access, a 403 page is rendered:
+### Guard with Redirect
 
 ```typescript
-// Define custom 403 page
-@page({ 
-  tag: 'forbidden-page',
-  routes: ['/403']
-})
-class ForbiddenPage extends HTMLElement {
-  html() {
-    return `
-      <div class="forbidden">
-        <h1>403 - Access Denied</h1>
-        <p>You don't have permission to view this page.</p>
-        <a href="#/">Return to Home</a>
-      </div>
-    `;
+const requiresAuth: Guard<AppContext> = (ctx) => {
+  const isAuth = ctx.getUser() !== null;
+
+  if (!isAuth) {
+    // Redirect to login page
+    setTimeout(() => {
+      window.location.hash = '#/login';
+    }, 0);
   }
-  
-  css() {
-    return `
-      .forbidden {
-        text-align: center;
-        padding: 50px;
-      }
-      .forbidden h1 {
-        color: #ff4444;
-      }
-    `;
-  }
-}
+
+  return isAuth;
+};
 ```
 
-### Guards with Route Parameters
-
-Guards receive route parameters as the second argument and can access them for permission checks:
+### Async Guards
 
 ```typescript
-// Guard that checks if user owns the resource
-const ownsItem: Guard<AppContext> = (ctx, params: RouteParams) => {
+const checkPermission: Guard<AppContext> = async (ctx) => {
   const user = ctx.getUser();
   if (!user) return false;
-  
-  // params.itemId comes from route '/items/:itemId/edit'
-  return user.ownedItems.includes(parseInt(params.itemId));
+
+  // Check with API
+  const response = await fetch(`/api/permissions/${user.id}`);
+  const permissions = await response.json();
+
+  return permissions.includes('access_dashboard');
 };
-
-@page({ 
-  tag: 'item-edit',
-  routes: ['/items/:itemId/edit'],
-  guards: [isAuthenticated, ownsItem]  // Both guards check different things
-})
-class ItemEdit extends HTMLElement {
-  @property()
-  itemId = '';
-  
-  html() {
-    return `<h1>Edit Item ${this.itemId}</h1>`;
-  }
-}
 ```
-
-### Working with Context
-
-Context is exposed by the router and can be modified through your context object's methods:
-
-```typescript
-// Use the same context instance from above
-const { navigate, context } = router;
-
-// After login, update the context
-async function login(credentials: any) {
-  const response = await fetch('/api/login', {
-    method: 'POST',
-    body: JSON.stringify(credentials)
-  });
-  
-  const userData = await response.json();
-  
-  // Update context through its methods
-  context.setUser(userData.user);
-  context.setPermissions(userData.permissions);
-  
-  // Navigate to protected area
-  navigate('/dashboard');
-}
-
-// On logout, clear context
-function logout() {
-  context.setUser(null);
-  context.setPermissions([]);
-  navigate('/');
-}
-```
-
-### Guard Best Practices
-
-1. **Keep guards simple**: Guards should only check conditions, not perform side effects
-2. **Use context for data**: Store permissions and auth data in context for synchronous checks
-3. **Provide feedback**: Always define a custom 403 page for better UX
-4. **Cache in context**: For expensive permission checks, cache results in your context object
-5. **Test thoroughly**: Write tests for all guard scenarios
 
 ## Layouts
 
-Layouts provide a way to wrap pages in shared components like navigation bars, headers, footers, and sidebars. This creates consistent structure across your application while keeping page content focused.
+Layouts wrap pages with shared UI like headers, footers, and navigation:
 
-### Layout Components
-
-Create layout components using the `@layout` decorator:
+### Creating a Layout
 
 ```typescript
-import { layout } from 'snice';
+import { layout, render, html, styles, css, Layout } from 'snice';
 
 @layout('app-shell')
-class AppShell extends HTMLElement {
-  html() {
-    return /*html*/`
-      <div class="app-layout">
-        <header class="header">
+class AppShell extends HTMLElement implements Layout {
+  private placards: Placard[] = [];
+  private currentRoute = '';
+
+  @render()
+  renderContent() {
+    return html`
+      <div class="app-shell">
+        <header>
+          <h1>My App</h1>
           <nav>
-            <a href="#/">Home</a>
-            <a href="#/products">Products</a>
-            <a href="#/about">About</a>
+            ${this.placards
+              .filter(p => p.show !== false)
+              .map(p => html`
+                <a
+                  href="#/${p.name}"
+                  class="${this.currentRoute === p.name ? 'active' : ''}"
+                >
+                  ${p.icon || ''} ${p.title}
+                </a>
+              `)}
           </nav>
         </header>
-        <main class="content">
+
+        <main>
           <slot name="page"></slot>
         </main>
-        <footer class="footer">
-          <p>&copy; 2024 My Company</p>
+
+        <footer>
+          <p>&copy; 2024 My App</p>
         </footer>
       </div>
     `;
   }
 
-  css() {
-    return /*css*/`
-      .app-layout {
+  @styles()
+  shellStyles() {
+    return css`
+      .app-shell {
         display: flex;
         flex-direction: column;
         min-height: 100vh;
       }
-      
-      .header {
+
+      header {
         background: #333;
         color: white;
         padding: 1rem;
       }
-      
-      .content {
+
+      nav a {
+        color: white;
+        margin: 0 1rem;
+        text-decoration: none;
+      }
+
+      nav a.active {
+        font-weight: bold;
+        text-decoration: underline;
+      }
+
+      main {
         flex: 1;
         padding: 2rem;
       }
-      
-      .footer {
-        background: #f5f5f5;
+
+      footer {
+        background: #f0f0f0;
         padding: 1rem;
         text-align: center;
       }
     `;
   }
+
+  // Called by router when route changes
+  update(appContext: any, placards: Placard[], currentRoute: string, routeParams: any) {
+    this.placards = placards;
+    this.currentRoute = currentRoute;
+    // Property changes trigger re-render
+  }
 }
 ```
 
-**Key requirement**: Layouts must include `<slot name="page"></slot>` where page content will be rendered.
-
-### Router Layout Configuration
-
-Configure layouts at the router level for default behavior:
+### Using a Layout
 
 ```typescript
 const router = Router({
   target: '#app',
   type: 'hash',
-  layout: 'app-shell'  // Default layout for all pages
+  layout: 'app-shell',  // Layout tag name
+  context: new AppContext()
 });
 ```
 
-### Page Layout Configuration
-
-Override layouts on a per-page basis:
+### Layout Interface
 
 ```typescript
-// Use default layout
-@page({ tag: 'home-page', routes: ['/'] })
-class HomePage extends HTMLElement {
-  html() {
-    return `<h1>Welcome Home</h1>`;
-  }
+interface Layout {
+  update(
+    appContext: any,
+    placards: Placard[],
+    currentRoute: string,
+    routeParams: Record<string, string>
+  ): void;
 }
+```
 
-// Use different layout
-@page({ tag: 'admin-page', routes: ['/admin'], layout: 'admin-shell' })
-class AdminPage extends HTMLElement {
-  html() {
-    return `<h1>Admin Dashboard</h1>`;
-  }
-}
+### Conditional Layout
 
-// Disable layout entirely
-@page({ tag: 'fullscreen-page', routes: ['/presentation'], layout: false })
+Different pages can use different layouts or no layout:
+
+```typescript
+// Router with default layout
+const router = Router({
+  target: '#app',
+  layout: 'app-shell'
+});
+
+// Page without layout
+@page({
+  tag: 'fullscreen-page',
+  routes: ['/fullscreen'],
+  layout: null  // Disable layout for this page
+})
 class FullscreenPage extends HTMLElement {
-  html() {
-    return `<div class="fullscreen">Presentation Mode</div>`;
+  @render()
+  renderContent() {
+    return html`<div>Fullscreen content</div>`;
   }
 }
 ```
 
-### Layout Transitions
+## Advanced Patterns
 
-Layouts persist across page changes, providing smooth transitions:
+### Lazy Loading Pages
 
 ```typescript
-const router = Router({
-  target: '#app',
-  type: 'hash',
-  layout: 'app-shell',
-  transition: {
-    name: 'fade',
-    duration: 300
+@page({
+  tag: 'lazy-page',
+  routes: ['/lazy']
+})
+class LazyPage extends HTMLElement {
+  @property({ type: Boolean })
+  loaded = false;
+
+  @ready()
+  async loadContent() {
+    // Simulate loading external content
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    // Dynamically import module
+    const module = await import('./lazy-content.js');
+    module.initialize(this);
+
+    this.loaded = true;
   }
-});
+
+  @render()
+  renderContent() {
+    if (!this.loaded) {
+      return html`<div>Loading...</div>`;
+    }
+
+    return html`<div>Loaded content</div>`;
+  }
+}
 ```
 
-When transitioning between pages that use the same layout:
-1. **Layout remains**: The layout wrapper stays in place
-2. **Page transitions**: Only the content inside `<slot name="page">` transitions
-
-### Multiple Layouts
-
-Different sections of your app can use different layouts:
+### Nested Routing
 
 ```typescript
-// Main app layout
-@layout('app-shell')
-class AppShell extends HTMLElement {
-  html() {
-    return /*html*/`
-      <header>Main Navigation</header>
-      <main><slot name="page"></slot></main>
+// Parent page with sub-navigation
+@page({
+  tag: 'settings-page',
+  routes: ['/settings', '/settings/:section']
+})
+class SettingsPage extends HTMLElement {
+  @property()
+  section = 'general';
+
+  @render()
+  renderContent() {
+    return html`
+      <div class="settings">
+        <nav>
+          <a href="#/settings/general">General</a>
+          <a href="#/settings/privacy">Privacy</a>
+          <a href="#/settings/security">Security</a>
+        </nav>
+
+        <div class="content">
+          <case ${this.section}>
+            <when value="general">
+              <div>General settings</div>
+            </when>
+            <when value="privacy">
+              <div>Privacy settings</div>
+            </when>
+            <when value="security">
+              <div>Security settings</div>
+            </when>
+            <default>
+              <div>Unknown section</div>
+            </default>
+          </case>
+        </div>
+      </div>
     `;
   }
 }
+```
 
-// Admin layout with sidebar
-@layout('admin-shell') 
-class AdminShell extends HTMLElement {
-  html() {
-    return /*html*/`
-      <div class="admin-layout">
-        <aside class="sidebar">
-          <nav>Admin Menu</nav>
-        </aside>
-        <main class="admin-content">
-          <slot name="page"></slot>
-        </main>
+### Route-Based Data Loading
+
+```typescript
+@page({
+  tag: 'product-page',
+  routes: ['/products/:productId']
+})
+class ProductPage extends HTMLElement {
+  @property()
+  productId = '';
+
+  @property()
+  product: any = null;
+
+  @property({ type: Boolean })
+  loading = true;
+
+  @ready()
+  loadProduct() {
+    this.fetchProduct();
+  }
+
+  @watch('productId')
+  onProductIdChange() {
+    // Reload when productId changes
+    this.fetchProduct();
+  }
+
+  async fetchProduct() {
+    this.loading = true;
+
+    try {
+      const response = await fetch(`/api/products/${this.productId}`);
+      this.product = await response.json();
+    } catch (error) {
+      console.error('Failed to load product:', error);
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  @render()
+  renderContent() {
+    if (this.loading) {
+      return html`<div>Loading product...</div>`;
+    }
+
+    if (!this.product) {
+      return html`<div>Product not found</div>`;
+    }
+
+    return html`
+      <div class="product">
+        <h1>${this.product.name}</h1>
+        <p>${this.product.description}</p>
+        <span class="price">$${this.product.price}</span>
+      </div>
+    `;
+  }
+}
+```
+
+### Breadcrumb Navigation
+
+```typescript
+@page({
+  tag: 'breadcrumb-page',
+  routes: ['/categories/:category/products/:productId'],
+  placard: {
+    name: 'product-detail',
+    title: 'Product Details',
+    breadcrumbs: ['home', 'categories', 'products', 'product-detail']
+  }
+})
+class BreadcrumbPage extends HTMLElement {
+  @property()
+  category = '';
+
+  @property()
+  productId = '';
+
+  @render()
+  renderContent() {
+    return html`
+      <nav class="breadcrumbs">
+        <a href="#/">Home</a>
+        <span>/</span>
+        <a href="#/categories">Categories</a>
+        <span>/</span>
+        <a href="#/categories/${this.category}">
+          ${this.category}
+        </a>
+        <span>/</span>
+        <span>${this.productId}</span>
+      </nav>
+      <div class="content">
+        <h1>Product ${this.productId} in ${this.category}</h1>
+      </div>
+    `;
+  }
+}
+```
+
+### Error Page (404)
+
+```typescript
+@page({
+  tag: 'not-found-page',
+  routes: ['/404', '*']  // Catch-all route
+})
+class NotFoundPage extends HTMLElement {
+  @render()
+  renderContent() {
+    return html`
+      <div class="not-found">
+        <h1>404 - Page Not Found</h1>
+        <p>The page you're looking for doesn't exist.</p>
+        <a href="#/">Go Home</a>
+      </div>
+    `;
+  }
+
+  @styles()
+  errorStyles() {
+    return css`
+      .not-found {
+        text-align: center;
+        padding: 4rem;
+      }
+
+      h1 {
+        color: #e74c3c;
+        font-size: 3rem;
+      }
+
+      a {
+        display: inline-block;
+        margin-top: 2rem;
+        padding: 0.5rem 2rem;
+        background: #3498db;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+      }
+    `;
+  }
+}
+```
+
+### Protected Route Pattern
+
+```typescript
+// Context with auth state
+class AppContext {
+  private user: User | null = null;
+
+  setUser(user: User | null) {
+    this.user = user;
+
+    // Redirect if logged out
+    if (!user && window.location.hash.includes('/dashboard')) {
+      window.location.hash = '#/login';
+    }
+  }
+
+  getUser() {
+    return this.user;
+  }
+
+  isAuthenticated() {
+    return this.user !== null;
+  }
+}
+
+// Auth guard
+const requireAuth: Guard<AppContext> = (ctx) => {
+  if (!ctx.isAuthenticated()) {
+    window.location.hash = '#/login';
+    return false;
+  }
+  return true;
+};
+
+// Protected page
+@page({
+  tag: 'dashboard-page',
+  routes: ['/dashboard'],
+  guards: requireAuth
+})
+class DashboardPage extends HTMLElement {
+  @context()
+  ctx?: AppContext;
+
+  @render()
+  renderContent() {
+    const user = this.ctx?.getUser();
+
+    return html`
+      <div>
+        <h1>Welcome, ${user?.name}!</h1>
+        <p>This is your dashboard</p>
       </div>
     `;
   }
 }
 
-// Configure pages
-@page({ tag: 'home-page', routes: ['/'], layout: 'app-shell' })
-class HomePage extends HTMLElement {}
-
-@page({ tag: 'admin-dashboard', routes: ['/admin'], layout: 'admin-shell' })
-class AdminDashboard extends HTMLElement {}
-```
-
-### Layout Context Access
-
-Layouts can access router context just like pages:
-
-```typescript
-import { layout, context } from 'snice';
-
-@layout('user-shell')
-class UserShell extends HTMLElement {
+// Login page
+@page({
+  tag: 'login-page',
+  routes: ['/login']
+})
+class LoginPage extends HTMLElement {
   @context()
-  appContext!: AppContext;
+  ctx?: AppContext;
 
-  html() {
-    const user = this.appContext.currentUser;
-    return /*html*/`
-      <header>
-        <div class="user-info">
-          Welcome, ${user?.name || 'Guest'}
-        </div>
-        <nav>Navigation</nav>
-      </header>
-      <main><slot name="page"></slot></main>
+  @render()
+  renderContent() {
+    return html`
+      <form @submit=${this.handleLogin}>
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <button type="submit">Login</button>
+      </form>
     `;
   }
+
+  handleLogin(e: Event) {
+    e.preventDefault();
+
+    const form = e.target as HTMLFormElement;
+    const formData = new FormData(form);
+
+    // Simulate login
+    const user = {
+      id: 1,
+      name: formData.get('username') as string
+    };
+
+    this.ctx?.setUser(user);
+
+    // Redirect to dashboard
+    window.location.hash = '#/dashboard';
+  }
 }
 ```
 
-### Layout Best Practices
+## Best Practices
 
-1. **Keep layouts focused**: Include only truly shared UI elements
-2. **Use semantic HTML**: Structure layouts with proper landmarks
-3. **Handle responsive design**: Make layouts work across screen sizes
-4. **Minimize layout switching**: Frequent layout changes disrupt UX
-5. **Test transitions**: Ensure smooth transitions between different layouts
-6. **Consider accessibility**: Use proper ARIA attributes in layout navigation
+1. **Use semantic routes**: `/users/123` instead of `/page?id=123`
+2. **Leverage route parameters**: Automatically mapped to properties
+3. **Use guards for protection**: Keep auth logic separate from pages
+4. **Implement transitions**: Smooth user experience between pages
+5. **Use layouts efficiently**: Share common UI without duplication
+6. **Handle 404s**: Always include a catch-all route
+7. **Use context for shared state**: Avoid prop drilling
+8. **Lazy load when needed**: Improve initial load time
+9. **Type your guards**: Use TypeScript generics for context
+10. **Test navigation**: Ensure all routes work correctly
 
-## Advanced Patterns
+## Router API Reference
 
-### Navigation Wrapper
-
-Create a navigation service to handle common patterns:
+### Router()
 
 ```typescript
-import { Router } from 'snice';
-
-class NavigationService {
-  private router: ReturnType<typeof Router>;
-  private navigate: (path: string) => Promise<void>;
-  
-  constructor(routerInstance: ReturnType<typeof Router>) {
-    this.router = routerInstance;
-    this.navigate = routerInstance.navigate;
-  }
-  
-  // Navigate with hash or pushstate prefix
-  go(path: string) {
-    this.navigate(path);
-  }
-  
-  // Navigate after delay
-  async goDelayed(path: string, delay: number) {
-    await new Promise(resolve => setTimeout(resolve, delay));
-    this.navigate(path);
-  }
-  
-  // Navigate with confirmation
-  async goWithConfirm(path: string, message: string) {
-    if (confirm(message)) {
-      this.navigate(path);
-    }
-  }
+function Router<T = any>(options: RouterOptions<T>): {
+  page: PropertyDecorator;
+  navigate: (path: string) => void;
+  initialize: () => void;
+  getCurrentRoute: () => string;
+  getRouteParams: () => Record<string, string>;
 }
-
-// Usage
-const router = Router({ target: '#app', type: 'hash' });
-const nav = new NavigationService(router);
-
-// In components
-av.go('/dashboard');
-av.goWithConfirm('/delete', 'Are you sure?');
 ```
 
-### Handling Navigation Events
-
-Listen to router events using the target element:
+### navigate()
 
 ```typescript
-const router = Router({ target: '#app', type: 'hash' });
-const { initialize } = router;
-
-initialize();
-
-// Listen for navigation by watching DOM changes
-const target = document.querySelector('#app');
-if (target) {
-  const observer = new MutationObserver((mutations) => {
-    // Page changed
-    const currentPage = target.firstElementChild;
-    if (currentPage) {
-      console.log('Navigated to:', currentPage.tagName.toLowerCase());
-      
-      // Update page title
-      document.title = `App - ${currentPage.tagName}`;
-      
-      // Track analytics
-      if (typeof gtag !== 'undefined') {
-        gtag('event', 'page_view', {
-          page_title: currentPage.tagName,
-          page_location: window.location.href
-        });
-      }
-    }
-  });
-  
-  observer.observe(target, { childList: true });
-}
+navigate(path: string): void
 ```
 
-### Preloading Pages
+Navigates to the specified path. Uses hash (#) or pushstate depending on router type.
 
-Ensure page components are defined before navigation:
+### initialize()
 
 ```typescript
-// Define all pages upfront
-import './pages/home-page';
-import './pages/about-page';
-import './pages/contact-page';
-
-// Or dynamically load and define
-async function preloadPage(tag: string, modulePath: string) {
-  if (!customElements.get(tag)) {
-    const module = await import(modulePath);
-    // Module should define the custom element
-  }
-}
-
-// Preload critical pages
-await preloadPage('home-page', './pages/home-page.js');
-await preloadPage('dashboard-page', './pages/dashboard-page.js');
-
-// Then initialize router
-const router = Router({ target: '#app', type: 'hash' });
-router.initialize();
+initialize(): void
 ```
+
+Initializes the router and starts listening for route changes. Must be called after all pages are defined.
+
+### getCurrentRoute()
+
+```typescript
+getCurrentRoute(): string
+```
+
+Returns the current route path.
+
+### getRouteParams()
+
+```typescript
+getRouteParams(): Record<string, string>
+```
+
+Returns current route parameters as an object.

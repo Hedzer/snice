@@ -1,5 +1,5 @@
-import { element, property, query, on, watch, ready, dispatch } from 'snice';
-import css from './snice-modal.css?inline';
+import { element, property, query, watch, ready, dispatch, render, styles, html, css } from 'snice';
+import cssContent from './snice-modal.css?inline';
 import type { ModalSize, SniceModalElement } from './snice-modal.types';
 
 @element('snice-modal')
@@ -9,8 +9,6 @@ export class SniceModal extends HTMLElement implements SniceModalElement {
 
   @property({  })
   size: ModalSize = 'medium';
-  
-  private previousSize = 'medium';
 
   @property({ type: Boolean, attribute: 'no-backdrop-dismiss',  })
   noBackdropDismiss = false;
@@ -38,23 +36,34 @@ export class SniceModal extends HTMLElement implements SniceModalElement {
 
   private previousFocus: HTMLElement | null = null;
 
-  html() {
-    // Renders once - initial state
-    return /*html*/`
-      <div class="modal" 
-           role="dialog" 
+  @render()
+  renderContent() {
+    const modalClass = `modal${this.open ? ' modal--open' : ''}`;
+    const panelClass = `modal__panel modal__panel--${this.size}`;
+    const ariaHidden = this.open ? 'false' : 'true';
+
+    return html/*html*/`
+      <div class="${modalClass}"
+           role="dialog"
            aria-modal="true"
            aria-label="${this.label}"
-           aria-hidden="true">
+           aria-hidden="${ariaHidden}"
+           @click=${this.handleBackdropClick}
+           @keydown=${this.handleKeydown}>
         <div class="modal__backdrop" part="backdrop"></div>
-        <div class="modal__panel modal__panel--${this.size}" part="panel">
+        <div class="${panelClass}" part="panel">
           <div class="modal__header" part="header">
             <slot name="header"></slot>
-            <button class="modal__close" part="close" aria-label="Close modal">
-              <svg viewBox="0 0 24 24" width="20" height="20">
-                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
-              </svg>
-            </button>
+            <if ${!this.noCloseButton}>
+              <button class="modal__close"
+                      part="close"
+                      aria-label="Close modal"
+                      @click=${this.handleCloseClick}>
+                <svg viewBox="0 0 24 24" width="20" height="20">
+                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
+                </svg>
+              </button>
+            </if>
           </div>
           <div class="modal__body" part="body">
             <slot></slot>
@@ -67,8 +76,9 @@ export class SniceModal extends HTMLElement implements SniceModalElement {
     `;
   }
 
-  css() {
-    return css;
+  @styles()
+  componentStyles() {
+    return css/*css*/`${cssContent}`;
   }
 
   @ready()
@@ -77,52 +87,19 @@ export class SniceModal extends HTMLElement implements SniceModalElement {
     if (this.open) {
       this.showModal();
     }
-    // Apply initial close button state
-    if (this.noCloseButton) {
-      const closeButton = this.shadowRoot?.querySelector('.modal__close') as HTMLElement;
-      if (closeButton) {
-        closeButton.style.display = 'none';
-      }
-    }
   }
 
   @watch('open')
   handleOpenChange() {
-    // Imperatively update the modal DOM
-    if (this.modal) {
-      if (this.open) {
-        this.modal.classList.add('modal--open');
-        this.modal.setAttribute('aria-hidden', 'false');
-        this.showModal();
-      } else {
-        this.modal.classList.remove('modal--open');
-        this.modal.setAttribute('aria-hidden', 'true');
-        this.hideModal();
-      }
-    }
-  }
-  
-  @watch('size')
-  handleSizeChange() {
-    // Imperatively update the panel size class
-    if (this.panel) {
-      this.panel.classList.remove(`modal__panel--${this.previousSize}`);
-      this.panel.classList.add(`modal__panel--${this.size}`);
-      this.previousSize = this.size;
+    // Handle side effects when modal opens/closes
+    if (this.open) {
+      this.showModal();
+    } else {
+      this.hideModal();
     }
   }
 
-  @watch('noCloseButton')
-  handleCloseButtonChange() {
-    // Imperatively show/hide the close button
-    const closeButton = this.shadowRoot?.querySelector('.modal__close') as HTMLElement;
-    if (closeButton) {
-      closeButton.style.display = this.noCloseButton ? 'none' : '';
-    }
-  }
-
-  @on('click')
-  handleBackdropClick(e: Event) {
+  private handleBackdropClick(e: Event) {
     const target = e.target as HTMLElement;
     if (!target.classList.contains('modal__backdrop')) return;
     if (!this.noBackdropDismiss) {
@@ -130,26 +107,20 @@ export class SniceModal extends HTMLElement implements SniceModalElement {
     }
   }
 
-  @on('click')
-  handleCloseClick(e: Event) {
-    const target = e.target as HTMLElement;
-    if (!target.closest('.modal__close')) return;
+  private handleCloseClick(e: Event) {
+    e.stopPropagation();
     this.close();
   }
 
-  @on('keydown:Escape')
-  handleEscape(e: KeyboardEvent) {
+  private handleKeydown(e: KeyboardEvent) {
     if (!this.open) return;
-    if (!this.noEscapeDismiss) {
+
+    if (e.key === 'Escape' && !this.noEscapeDismiss) {
       e.stopPropagation();
       this.close();
     }
-  }
 
-  @on('keydown:Tab')
-  handleTab(e: KeyboardEvent) {
-    if (!this.open) return;
-    if (!this.noFocusTrap) {
+    if (e.key === 'Tab' && !this.noFocusTrap) {
       this.trapFocus(e);
     }
   }

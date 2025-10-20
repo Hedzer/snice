@@ -1,4 +1,4 @@
-import { element, property, watch, query, ready, render, styles, html } from 'snice';
+import { element, property, watch, query, ready, render, styles, html, css } from 'snice';
 import cssContent from './snice-badge.css?inline';
 import type { BadgeVariant, BadgePosition, BadgeSize, SniceBadgeElement } from './snice-badge.types';
 
@@ -39,32 +39,27 @@ export class SniceBadge extends HTMLElement implements SniceBadgeElement {
 
   @render()
   renderContent() {
+    const displayContent = this.getDisplayContent();
+    const showBadge = this.shouldShowBadge();
+    const badgeClasses = `badge${this.dot ? ' badge--dot' : ''}${this.pulse ? ' badge--pulse' : ''}`;
+
     return html`
       <div class="badge-wrapper">
         <slot></slot>
-        ${this.renderBadgeSection()}
+        ${showBadge ? html`
+          <span class="${badgeClasses}"
+                aria-label="${displayContent}"
+                role="status">
+            ${!this.dot ? displayContent : ''}
+          </span>
+        ` : ''}
       </div>
-    `;
-  }
-
-  renderBadgeSection() {
-    const displayContent = this.getDisplayContent();
-    const showBadge = this.shouldShowBadge();
-
-    if (!showBadge) return '';
-
-    return html`
-      <span class="badge ${this.dot ? 'badge--dot' : ''} ${this.pulse ? 'badge--pulse' : ''}"
-            aria-label="${displayContent}"
-            role="status">
-        ${!this.dot ? displayContent : ''}
-      </span>
     `;
   }
 
   @styles()
   componentStyles() {
-    return cssContent;
+    return css`${cssContent}`;
   }
 
   private getDisplayContent(): string {

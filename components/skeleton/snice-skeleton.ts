@@ -1,5 +1,5 @@
-import { element, property, watch, ready } from 'snice';
-import css from './snice-skeleton.css?inline';
+import { element, property, watch, ready, render, styles, html, css as cssTag } from 'snice';
+import cssContent from './snice-skeleton.css?inline';
 import type { SkeletonVariant, SkeletonAnimation, SniceSkeletonElement } from './snice-skeleton.types';
 
 @element('snice-skeleton')
@@ -22,48 +22,31 @@ export class SniceSkeleton extends HTMLElement implements SniceSkeletonElement {
   @property({  })
   spacing = '8px';
 
-  html() {
+  @render()
+  renderContent() {
     const items = Array(this.count).fill(0);
-    
-    return /*html*/`
+    const skeletonClass = `skeleton skeleton--${this.variant} skeleton--${this.animation}`;
+    const inlineStyles = this.getInlineStyles();
+
+    return html`
       <div class="skeleton-container" style="gap: ${this.spacing}">
-        ${items.map(() => /*html*/`
-          <div class="skeleton skeleton--${this.variant} skeleton--${this.animation}"
-               style="${this.getInlineStyles()}"
+        ${items.map(() => html`
+          <div class="${skeletonClass}"
+               style="${inlineStyles}"
                role="status"
                aria-label="Loading...">
             <span class="skeleton-screen-reader">Loading...</span>
           </div>
-        `).join('')}
+        `)}
       </div>
     `;
   }
 
-  css() {
-    return css;
+  @styles()
+  componentStyles() {
+    return cssTag`${cssContent}`;
   }
 
-  @ready()
-  init() {
-    this.updateDimensions();
-  }
-
-  @watch('width', 'height')
-  updateDimensions() {
-    const container = this.shadowRoot?.querySelector('.skeleton-container');
-    if (!container) return;
-    
-    const skeletons = container.querySelectorAll('.skeleton');
-    skeletons.forEach(skeleton => {
-      (skeleton as HTMLElement).style.cssText = this.getInlineStyles();
-    });
-  }
-
-  @watch('variant')
-  updateVariant() {
-    // Re-render when variant changes to apply proper default dimensions
-    this.render();
-  }
 
   private getInlineStyles(): string {
     const styles: string[] = [];
@@ -107,20 +90,5 @@ export class SniceSkeleton extends HTMLElement implements SniceSkeletonElement {
     }
     
     return styles.join('; ');
-  }
-
-  private render() {
-    const shadow = this.shadowRoot;
-    if (shadow) {
-      shadow.innerHTML = '';
-      if (this.css) {
-        const style = document.createElement('style');
-        style.textContent = this.css();
-        shadow.appendChild(style);
-      }
-      const template = document.createElement('template');
-      template.innerHTML = this.html();
-      shadow.appendChild(template.content.cloneNode(true));
-    }
   }
 }

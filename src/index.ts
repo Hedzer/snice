@@ -19,6 +19,9 @@ export type { RenderOptions } from './render';
 // v3.0.0 custom element readiness utilities
 export { waitForElementDefined, waitForElementReady, waitForAllCustomElements, setDisableElementReadyWarnings } from './element-ready';
 
+// v3.0.0 render debugging utilities (for testing/debugging only)
+export { trackRenders } from './render-debug';
+
 // v3.0.0 method decorators
 export { debounce, throttle, once, memoize, clearDebounceTimers, clearThrottleTimers, clearMemoizeCache, resetOnce } from './method-decorators';
 

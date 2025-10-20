@@ -1,4 +1,4 @@
-import { element, property, query, on, watch, dispatch } from 'snice';
+import { element, property, dispatch, render, styles, html, css } from 'snice';
 import type { ToastType, SniceToastElement } from './snice-toast.types';
 
 @element('snice-toast')
@@ -15,34 +15,51 @@ export class SniceToast extends HTMLElement implements SniceToastElement {
   @property({ type: Boolean,  })
   icon: boolean = true;
 
-  @query('.toast')
-  toastElement?: HTMLElement;
-
-  @query('.toast-icon')
-  iconElement?: HTMLElement;
-
-  @query('.toast-content')
-  contentElement?: HTMLElement;
-
-  @query('.toast-close')
-  closeButton?: HTMLElement;
-
-  html() {
-    return /*html*/`
+  @render()
+  renderContent() {
+    return html/*html*/`
       <div class="toast toast--${this.type}" role="alert" aria-live="polite">
-        <span class="toast-icon">${this.getIcon(this.type)}</span>
+        <if ${this.icon}>
+          <span class="toast-icon">
+            <case ${this.type}>
+              <when value="success">
+                <svg viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                </svg>
+              </when>
+              <when value="error">
+                <svg viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM10 7a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/>
+                </svg>
+              </when>
+              <when value="warning">
+                <svg viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+              </when>
+              <default>
+                <svg viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                </svg>
+              </default>
+            </case>
+          </span>
+        </if>
         <span class="toast-content">${this.message}</span>
-        <button class="toast-close" aria-label="Close">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
-            <path d="M14 1.41L12.59 0L7 5.59L1.41 0L0 1.41L5.59 7L0 12.59L1.41 14L7 8.41L12.59 14L14 12.59L8.41 7L14 1.41Z"/>
-          </svg>
-        </button>
+        <if ${this.closable}>
+          <button class="toast-close" aria-label="Close" @click=${this.dispatchCloseEvent}>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+              <path d="M14 1.41L12.59 0L7 5.59L1.41 0L0 1.41L5.59 7L0 12.59L1.41 14L7 8.41L12.59 14L14 12.59L8.41 7L14 1.41Z"/>
+            </svg>
+          </button>
+        </if>
       </div>
     `;
   }
 
-  css() {
-    return /*css*/`
+  @styles()
+  componentStyles() {
+    return css/*css*/`
       :host {
         pointer-events: auto;
         display: block;
@@ -196,57 +213,6 @@ export class SniceToast extends HTMLElement implements SniceToastElement {
     `;
   }
 
-  // Helper function to hide/show elements
-  private setHidden(selector: string, hide: boolean): void {
-    const element = this.shadowRoot?.querySelector(selector) as HTMLElement;
-    if (element) {
-      if (hide) {
-        element.setAttribute('hidden', '');
-      } else {
-        element.removeAttribute('hidden');
-      }
-    }
-  }
-
-  @watch('type')
-  updateType() {
-    if (this.toastElement) {
-      // Remove old type class
-      this.toastElement.className = this.toastElement.className.replace(/toast--\w+/, '');
-      // Add new type class
-      this.toastElement.classList.add(`toast--${this.type}`);
-    }
-    // Update icon
-    if (this.iconElement) {
-      this.iconElement.innerHTML = this.getIcon(this.type);
-    }
-  }
-
-  @watch('message')
-  updateMessage() {
-    if (this.contentElement) {
-      this.contentElement.textContent = this.message;
-    }
-  }
-
-  @watch('closable')
-  updateClosable() {
-    this.setHidden('.toast-close', !this.closable);
-  }
-
-  @watch('icon')
-  updateIcon() {
-    this.setHidden('.toast-icon', !this.icon);
-  }
-
-  @on('click')
-  handleClick(e: Event) {
-    const target = e.target as HTMLElement;
-    if (!target.closest('.toast-close')) return;
-
-    this.dispatchCloseEvent();
-  }
-
   @dispatch('close-toast')
   private dispatchCloseEvent() {
     return { id: this.getAttribute('toast-id') };
@@ -254,30 +220,5 @@ export class SniceToast extends HTMLElement implements SniceToastElement {
 
   hide() {
     this.classList.add('hiding');
-  }
-
-  private getIcon(type: ToastType): string {
-    switch (type) {
-      case 'success':
-        return `<svg viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-        </svg>`;
-      
-      case 'error':
-        return `<svg viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM10 7a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/>
-        </svg>`;
-      
-      case 'warning':
-        return `<svg viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-        </svg>`;
-      
-      case 'info':
-      default:
-        return `<svg viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-        </svg>`;
-    }
   }
 }

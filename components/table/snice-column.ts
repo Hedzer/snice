@@ -1,8 +1,8 @@
-import { element, property, watch } from 'snice';
-import type { 
-  SniceColumnElement, 
-  ColumnType, 
-  ColumnAlign, 
+import { element, property, watch, render, styles, html, css } from 'snice';
+import type {
+  SniceColumnElement,
+  ColumnType,
+  ColumnAlign,
   ColumnDefinition,
   NumberFormat,
   DateFormat,
@@ -152,8 +152,9 @@ export class SniceColumn extends HTMLElement implements SniceColumnElement {
   private formatter?: (value: any, row?: any) => string;
   private conditionalFormats: ConditionalFormat[] = [];
 
-  html() {
-    return `<slot></slot>`;
+  @render()
+  renderContent() {
+    return html/*html*/`<slot></slot>`;
   }
 
   // Set custom formatter function

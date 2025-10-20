@@ -53,13 +53,13 @@ Response handlers can also be debounced or throttled to prevent excessive proces
 ```typescript
 @controller('heavy-processing-controller')
 class ProcessingController implements IController {
-  
+
   @respond('@api/expensive-calculation', { debounce: 1000 })
   async calculateResults(params: any) {
     // Debounced by 1 second - rapid requests will only trigger the latest
     return await performExpensiveCalculation(params);
   }
-  
+
   @respond('@api/real-time-updates', { throttle: 500 })
   async handleUpdates(data: any) {
     // Throttled to max 2 requests per second
@@ -73,33 +73,34 @@ class ProcessingController implements IController {
 Elements use async generators to make requests:
 
 ```typescript
-import { element, request, Response } from 'snice';
+import { element, request, Response, render, html } from 'snice';
 
 @element('user-card')
 class UserCard extends HTMLElement {
   userId = 123;
-  
-  html() {
-    return `
+
+  @render()
+  renderContent() {
+    return html`
       <div class="user-info">
-        <button class="load">Load User</button>
+        <button @click=${this.loadUser}>Load User</button>
         <div class="content"></div>
       </div>
     `;
   }
-  
+
   @request('fetch-user')
   async *fetchUserData(): Response<{ success: boolean; user: any }> {
     // Yield sends the request, await waits for response
     const user = await (yield { userId: this.userId });
-    
+
     // Process the response
     this.displayUser(user);
-    
+
     // Return final value (optional)
     return { success: true, user };
   }
-  
+
   async loadUser() {
     try {
       const result = await this.fetchUserData();
@@ -108,7 +109,7 @@ class UserCard extends HTMLElement {
       console.error('Failed to load user:', error);
     }
   }
-  
+
   displayUser(user: any) {
     const content = this.shadowRoot?.querySelector('.content');
     if (content) {
@@ -133,21 +134,31 @@ class MultiRequest extends HTMLElement {
     // First request
     const userData = await (yield { type: 'user', id: 1 });
     console.log('Got user:', userData);
-    
+
     // Second request based on first response
     const postsData = await (yield { type: 'posts', userId: userData.id });
     console.log('Got posts:', postsData);
-    
+
     // Third request
-    const commentsData = await (yield { type: 'comments', postIds: postsData.map(p => p.id) });
+    const commentsData = await (yield { type: 'comments', postIds: postsData.map((p: any) => p.id) });
     console.log('Got comments:', commentsData);
-    
+
     // Return combined result
     return {
       user: userData,
       posts: postsData,
       comments: commentsData
     };
+  }
+
+  @render()
+  renderContent() {
+    return html`<button @click=${this.fetchData}>Fetch All Data</button>`;
+  }
+
+  async fetchData() {
+    const result = await this.fetchMultipleData();
+    console.log('All data loaded:', result);
   }
 }
 ```
@@ -162,25 +173,25 @@ import { controller, respond, IController } from 'snice';
 @controller('user-controller')
 class UserController implements IController {
   element: HTMLElement | null = null;
-  
+
   async attach(element: HTMLElement) {
     console.log('User controller attached');
   }
-  
+
   async detach(element: HTMLElement) {
     console.log('User controller detached');
   }
-  
+
   @respond('fetch-user')
   async handleFetchUser(request: { userId: number }) {
     // Simulate API call
     const response = await fetch(`/api/users/${request.userId}`);
     const user = await response.json();
-    
+
     // Return response to element
     return user;
   }
-  
+
   @respond('multi-data')
   async handleMultiData(request: any) {
     switch (request.type) {
@@ -194,12 +205,12 @@ class UserController implements IController {
         throw new Error(`Unknown request type: ${request.type}`);
     }
   }
-  
+
   private async fetchUser(id: number) {
     // Simulate API call
     return { id, name: 'John Doe', email: 'john@example.com' };
   }
-  
+
   private async fetchPosts(userId: number) {
     // Simulate API call
     return [
@@ -207,7 +218,7 @@ class UserController implements IController {
       { id: 2, userId, title: 'Post 2' }
     ];
   }
-  
+
   private async fetchComments(postIds: number[]) {
     // Simulate API call
     return postIds.flatMap(postId => [
@@ -239,7 +250,7 @@ The timeout system has **two separate timeouts** for different phases:
 - **Response timeout** (`timeout`): 2 minutes (default) - Total time allowed for the request
 
 ```typescript
-@request('@api/heavy-processing', { 
+@request('@api/heavy-processing', {
   discoveryTimeout: 50,      // 50ms to find handler (fast)
   timeout: 30000            // 30s total timeout for processing
 })
@@ -287,7 +298,7 @@ async *trackEvent() {
 @element('timeout-example')
 class TimeoutExample extends HTMLElement {
   // Quick discovery, short total timeout for fast operations
-  @request('quick-data', { 
+  @request('quick-data', {
     discoveryTimeout: 25,  // Very fast discovery
     timeout: 1000          // 1 second total
   })
@@ -295,9 +306,9 @@ class TimeoutExample extends HTMLElement {
     const data = await (yield { quick: true });
     return data;
   }
-  
+
   // Standard discovery, longer timeout for slow operations
-  @request('slow-data', { 
+  @request('slow-data', {
     discoveryTimeout: 50,  // Default discovery
     timeout: 30000         // 30 seconds total
   })
@@ -305,16 +316,16 @@ class TimeoutExample extends HTMLElement {
     const data = await (yield { slow: true });
     return data;
   }
-  
+
   // Use defaults (50ms discovery, 2 minutes total)
   @request('default-data')
   async *fetchDefaultData() {
     const data = await (yield { default: true });
     return data;
   }
-  
+
   // Custom event options with timeouts
-  @request('private-data', { 
+  @request('private-data', {
     discoveryTimeout: 100, // Slower discovery
     timeout: 60000,        // 1 minute total
     bubbles: false,        // Don't bubble
@@ -323,6 +334,11 @@ class TimeoutExample extends HTMLElement {
   async *fetchPrivateData() {
     const data = await (yield { private: true });
     return data;
+  }
+
+  @render()
+  renderContent() {
+    return html`<div>Timeout examples</div>`;
   }
 }
 ```
@@ -334,15 +350,15 @@ class TimeoutExample extends HTMLElement {
 ```typescript
 @element('timeout-handler')
 class TimeoutHandler extends HTMLElement {
-  @request('data', { 
+  @request('data', {
     discoveryTimeout: 50,
-    timeout: 5000 
+    timeout: 5000
   })
   async *fetchData() {
     try {
       const data = await (yield { request: 'data' });
       return { success: true, data };
-    } catch (error) {
+    } catch (error: any) {
       // Handle different types of timeout errors
       if (error.message.includes('timed out after') && error.message.includes('no handler found')) {
         console.error('No handler found for request');
@@ -354,7 +370,7 @@ class TimeoutHandler extends HTMLElement {
       throw error;
     }
   }
-  
+
   async loadData() {
     try {
       const result = await this.fetchData();
@@ -365,9 +381,14 @@ class TimeoutHandler extends HTMLElement {
       this.showError('Unexpected error');
     }
   }
-  
+
   showError(message: string) {
     console.error(message);
+  }
+
+  @render()
+  renderContent() {
+    return html`<button @click=${this.loadData}>Load Data</button>`;
   }
 }
 ```
@@ -378,10 +399,10 @@ class TimeoutHandler extends HTMLElement {
 @controller('error-controller')
 class ErrorController implements IController {
   element: HTMLElement | null = null;
-  
+
   async attach(element: HTMLElement) {}
   async detach(element: HTMLElement) {}
-  
+
   @respond('risky-operation')
   async handleRiskyOperation(request: any) {
     try {
@@ -389,21 +410,21 @@ class ErrorController implements IController {
       if (!request.id) {
         throw new Error('ID is required');
       }
-      
+
       // Perform operation
       const result = await this.performOperation(request.id);
-      
+
       return { success: true, result };
     } catch (error: any) {
       // Return error info instead of throwing
-      return { 
-        success: false, 
+      return {
+        success: false,
         error: error.message,
         code: error.code || 'UNKNOWN_ERROR'
       };
     }
   }
-  
+
   private async performOperation(id: string) {
     // Simulate operation that might fail
     if (Math.random() > 0.5) {
@@ -425,37 +446,51 @@ class ProtectedContent extends HTMLElement {
   @request('authenticate')
   async *authenticate() {
     // Send credentials
-    const authResult = await (yield { 
+    const authResult = await (yield {
       username: 'user@example.com',
       password: 'secret'
     });
-    
+
     if (!authResult.success) {
       throw new Error(authResult.error);
     }
-    
+
     // Store token
     localStorage.setItem('token', authResult.token);
-    
+
     return authResult;
   }
-  
+
   @request('fetch-protected')
   async *fetchProtectedData() {
     const token = localStorage.getItem('token');
-    
+
     if (!token) {
       // Need to authenticate first
       await this.authenticate();
     }
-    
+
     // Fetch with token
-    const data = await (yield { 
+    const data = await (yield {
       resource: 'protected',
       token: localStorage.getItem('token')
     });
-    
+
     return data;
+  }
+
+  @render()
+  renderContent() {
+    return html`<button @click=${this.loadProtected}>Load Protected Data</button>`;
+  }
+
+  async loadProtected() {
+    try {
+      const data = await this.fetchProtectedData();
+      console.log('Protected data:', data);
+    } catch (error) {
+      console.error('Failed to load:', error);
+    }
   }
 }
 
@@ -464,43 +499,43 @@ class ProtectedContent extends HTMLElement {
 class AuthController implements IController {
   element: HTMLElement | null = null;
   private tokens = new Map<string, any>();
-  
+
   async attach(element: HTMLElement) {}
   async detach(element: HTMLElement) {}
-  
+
   @respond('authenticate')
   async handleAuth(credentials: any) {
     // Validate credentials
-    if (credentials.username === 'user@example.com' && 
+    if (credentials.username === 'user@example.com' &&
         credentials.password === 'secret') {
-      
+
       const token = this.generateToken();
       const user = { id: 1, name: 'User' };
-      
+
       this.tokens.set(token, user);
-      
-      return { 
-        success: true, 
+
+      return {
+        success: true,
         token,
         user
       };
     }
-    
-    return { 
-      success: false, 
-      error: 'Invalid credentials' 
+
+    return {
+      success: false,
+      error: 'Invalid credentials'
     };
   }
-  
+
   @respond('fetch-protected')
   async handleFetchProtected(request: any) {
     // Validate token
     const user = this.tokens.get(request.token);
-    
+
     if (!user) {
       throw new Error('Invalid or expired token');
     }
-    
+
     // Return protected data
     return {
       resource: request.resource,
@@ -508,7 +543,7 @@ class AuthController implements IController {
       user
     };
   }
-  
+
   private generateToken() {
     return Math.random().toString(36).substring(2);
   }
@@ -522,34 +557,34 @@ class AuthController implements IController {
 @element('data-streamer')
 class DataStreamer extends HTMLElement {
   private items: any[] = [];
-  
+
   @request('stream-data')
   async *streamData() {
     let hasMore = true;
     let page = 1;
-    
+
     while (hasMore) {
       // Request next page
-      const response = await (yield { 
+      const response = await (yield {
         page,
         pageSize: 10
       });
-      
+
       // Add items to list
       this.items.push(...response.items);
       this.renderItems();
-      
+
       // Check if more pages available
       hasMore = response.hasMore;
       page++;
     }
-    
-    return { 
+
+    return {
       totalItems: this.items.length,
       complete: true
     };
   }
-  
+
   renderItems() {
     const container = this.shadowRoot?.querySelector('.items');
     if (container) {
@@ -558,14 +593,15 @@ class DataStreamer extends HTMLElement {
         .join('');
     }
   }
-  
-  html() {
-    return `
-      <button class="load">Load All Data</button>
+
+  @render()
+  renderContent() {
+    return html`
+      <button @click=${this.loadAllData}>Load All Data</button>
       <div class="items"></div>
     `;
   }
-  
+
   async loadAllData() {
     const result = await this.streamData();
     console.log(`Loaded ${result.totalItems} items`);
@@ -580,22 +616,22 @@ class StreamController implements IController {
     id: i + 1,
     name: `Item ${i + 1}`
   }));
-  
+
   async attach(element: HTMLElement) {}
   async detach(element: HTMLElement) {}
-  
+
   @respond('stream-data')
   async handleStreamData(request: { page: number; pageSize: number }) {
     // Simulate delay
     await new Promise(resolve => setTimeout(resolve, 500));
-    
+
     // Calculate pagination
     const start = (request.page - 1) * request.pageSize;
     const end = start + request.pageSize;
-    
+
     const items = this.allData.slice(start, end);
     const hasMore = end < this.allData.length;
-    
+
     return {
       items,
       hasMore,
@@ -614,45 +650,45 @@ class CachedController implements IController {
   element: HTMLElement | null = null;
   private cache = new Map<string, { data: any; timestamp: number }>();
   private cacheTimeout = 60000; // 1 minute
-  
+
   async attach(element: HTMLElement) {}
   async detach(element: HTMLElement) {}
-  
+
   @respond('fetch-cached')
   async handleFetchCached(request: { key: string; forceRefresh?: boolean }) {
     const cacheKey = request.key;
     const cached = this.cache.get(cacheKey);
-    
+
     // Check cache validity
     if (!request.forceRefresh && cached) {
       const age = Date.now() - cached.timestamp;
       if (age < this.cacheTimeout) {
         console.log(`Returning cached data for ${cacheKey}`);
-        return { 
+        return {
           data: cached.data,
           fromCache: true,
           age
         };
       }
     }
-    
+
     // Fetch fresh data
     console.log(`Fetching fresh data for ${cacheKey}`);
     const freshData = await this.fetchFreshData(cacheKey);
-    
+
     // Update cache
     this.cache.set(cacheKey, {
       data: freshData,
       timestamp: Date.now()
     });
-    
+
     return {
       data: freshData,
       fromCache: false,
       age: 0
     };
   }
-  
+
   private async fetchFreshData(key: string) {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -665,7 +701,7 @@ class CachedController implements IController {
 
 ```typescript
 // Element that can both request and be updated
-import { element, property, query, request, watch } from 'snice';
+import { element, property, query, request, watch, render, html } from 'snice';
 
 @element('live-data')
 class LiveData extends HTMLElement {
@@ -673,64 +709,74 @@ class LiveData extends HTMLElement {
 
   @property()
   status = 'Disconnected';
-  
+
   @query('.status')
   statusDiv?: HTMLElement;
-  
+
   @query('.data')
   dataDiv?: HTMLElement;
-  
-  html() {
-    return `
+
+  @render()
+  renderContent() {
+    return html`
       <div class="status">${this.status}</div>
       <div class="data"></div>
-      <button class="connect">Connect</button>
-      <button class="disconnect">Disconnect</button>
+      <button @click=${this.connect}>Connect</button>
+      <button @click=${this.disconnect}>Disconnect</button>
     `;
   }
-  
+
   @request('subscribe')
   async *subscribe() {
     // Send subscription request
-    const subscription = await (yield { 
+    const subscription = await (yield {
       subscribe: true,
       events: ['update', 'status']
     });
-    
+
     if (subscription.success) {
       this.status = 'Connected';  // @watch will handle UI update
-      
+
       // Start polling for updates
       this.startPolling();
     }
-    
+
     return subscription;
   }
-  
+
   @request('poll-updates')
   async *pollForUpdates() {
     const updates = await (yield { poll: true });
-    
+
     if (updates && updates.length > 0) {
       this.processUpdates(updates);
     }
-    
+
     return { processed: updates.length };
   }
-  
+
+  async connect() {
+    await this.subscribe();
+  }
+
+  disconnect() {
+    this.stopPolling();
+    this.status = 'Disconnected';
+  }
+
   startPolling() {
     this.updateInterval = setInterval(async () => {
       await this.pollForUpdates();
     }, 2000);
   }
-  
+
   stopPolling() {
     if (this.updateInterval) {
       clearInterval(this.updateInterval);
       this.updateInterval = undefined;
     }
   }
-  
+
   processUpdates(updates: any[]) {
     if (this.dataDiv) {
       updates.forEach(update => {
@@ -740,14 +786,14 @@ class LiveData extends HTMLElement {
       });
     }
   }
-  
+
   @watch('status')
   updateStatus() {
     if (this.statusDiv) {
       this.statusDiv.textContent = this.status;
     }
   }
-  
+
   disconnectedCallback() {
     super.disconnectedCallback?.();
     this.stopPolling();
@@ -760,7 +806,7 @@ class SubscriptionController implements IController {
   element: HTMLElement | null = null;
   private subscribers = new Set<string>();
   private updates: any[] = [];
-  
+
   async attach(element: HTMLElement) {
     // Generate updates periodically
     setInterval(() => {
@@ -771,37 +817,36 @@ class SubscriptionController implements IController {
       });
     }, 3000);
   }
-  
+
   async detach(element: HTMLElement) {
     this.subscribers.clear();
   }
-  
+
   @respond('subscribe')
   handleSubscribe(request: any) {
     if (request.subscribe) {
       const id = Math.random().toString(36);
       this.subscribers.add(id);
-      
+
       return {
         success: true,
         subscriptionId: id,
         events: request.events
       };
     }
-    
+
     return { success: false };
   }
-  
+
   @respond('poll-updates')
   handlePollUpdates(request: any) {
     if (!request.poll) return [];
-    
+
     // Return and clear updates
     const updates = [...this.updates];
     this.updates = [];
-    
+
     return updates;
   }
 }
 ```
-

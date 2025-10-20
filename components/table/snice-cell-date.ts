@@ -1,5 +1,5 @@
-import { element, property, watch, ready, query } from 'snice';
-import css from './snice-cell.css?inline';
+import { element, property, watch, ready, query, render, styles, html, css } from 'snice';
+import cssContent from './snice-cell.css?inline';
 import type { DateFormat, SniceCellElement, ColumnType, ColumnAlign, ColumnDefinition } from './snice-table.types';
 
 @element('snice-cell-date')
@@ -41,19 +41,21 @@ export class SniceCellDate extends HTMLElement implements SniceCellElement {
   @property({ type: Boolean,  attribute: 'show-time' })
   showTime: boolean = false;
 
-  html() {
+  @render()
+  renderContent() {
     const formattedValue = this.formatDateValue();
-    const styles = this.getDateStyles();
-    
-    return `
-      <div class="cell-content cell-content--date" part="content" style="${styles}">
+    const dateStyles = this.getDateStyles();
+
+    return html/*html*/`
+      <div class="cell-content cell-content--date" part="content" style="${dateStyles}">
         ${formattedValue}
       </div>
     `;
   }
 
-  css() {
-    return css;
+  @styles()
+  componentStyles() {
+    return css/*css*/`${cssContent}`;
   }
 
   @ready()

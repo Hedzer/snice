@@ -13,6 +13,8 @@ export const CHANNEL_HANDLERS = getSymbol('channel-handlers');
 // Internal element state symbols
 export const READY_PROMISE = getSymbol('ready-promise');
 export const READY_RESOLVE = getSymbol('ready-resolve');
+export const RENDERED_PROMISE = getSymbol('rendered-promise');
+export const RENDERED_RESOLVE = getSymbol('rendered-resolve');
 export const CONTROLLER = getSymbol('controller');
 export const INITIALIZED = getSymbol('initialized');
 
@@ -69,5 +71,6 @@ export const RENDER_OPTIONS = getSymbol('render-options');
 export const RENDER_INSTANCE = getSymbol('render-instance');
 export const RENDER_SCHEDULED = getSymbol('render-scheduled');
 export const RENDER_TIMERS = getSymbol('render-timers');
+export const RENDER_CALLBACKS = getSymbol('render-callbacks');
 export const STYLES_METHOD = getSymbol('styles-method');
 export const STYLES_APPLIED = getSymbol('styles-applied');

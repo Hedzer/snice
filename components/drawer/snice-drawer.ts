@@ -1,5 +1,5 @@
-import { element, property, query, on, watch, ready, dispose } from 'snice';
-import css from './snice-drawer.css?inline';
+import { element, property, query, on, watch, ready, dispose, render, styles, html, css as cssTag } from 'snice';
+import cssContent from './snice-drawer.css?inline';
 import type { DrawerPosition, DrawerSize, SniceDrawerElement } from './snice-drawer.types';
 
 @element('snice-drawer')
@@ -52,18 +52,19 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
   private previousFocus?: HTMLElement;
   private boundHandleEscape?: (e: KeyboardEvent) => void;
 
-  html() {
-    return /*html*/`
+  @render()
+  renderContent() {
+    return html`
       <div class="drawer-backdrop" part="backdrop"></div>
-      
+
       <div class="drawer" role="dialog" aria-modal="true" tabindex="-1" part="base">
         <span class="focus-trap-start" tabindex="0"></span>
-        
+
         <div class="drawer-header" part="header">
           <h2 class="drawer-title" part="title">
             <slot name="title"></slot>
           </h2>
-          ${!this.persistent ? /*html*/`
+          ${!this.persistent ? html`
             <button class="drawer-close" type="button" aria-label="Close" part="close">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M18 6L6 18M6 6l12 12"/>
@@ -71,22 +72,23 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
             </button>
           ` : ''}
         </div>
-        
+
         <div class="drawer-body" part="body">
           <slot></slot>
         </div>
-        
+
         <div class="drawer-footer" part="footer">
           <slot name="footer"></slot>
         </div>
-        
+
         <span class="focus-trap-end" tabindex="0"></span>
       </div>
     `;
   }
 
-  css() {
-    return css;
+  @styles()
+  componentStyles() {
+    return cssTag`${cssContent}`;
   }
 
   @ready()

@@ -1,5 +1,5 @@
-import { element, property, query, queryAll, on, dispatch, request, watch } from 'snice';
-import css from './snice-login.css?inline';
+import { element, property, query, queryAll, dispatch, request, watch, ready, render, styles, html, css } from 'snice';
+import cssContent from './snice-login.css?inline';
 import type { LoginVariant, LoginSize, LoginCredentials, LoginResult, SniceLoginElement } from './snice-login.types';
 import '../alert/snice-alert';
 import '../button/snice-button';
@@ -57,76 +57,93 @@ export class SniceLogin extends HTMLElement implements SniceLoginElement {
   private alertMessage = '';
   private alertVariant: 'error' | 'success' | '' = '';
 
-  html() {
-    return /*html*/`
-      <div class="login login--${this.variant} login--${this.size}">
+  @render()
+  renderContent() {
+    const loginClasses = ['login', `login--${this.variant}`, `login--${this.size}`].join(' ');
+
+    return html/*html*/`
+      <div class="${loginClasses}">
         <slot name="before-header"></slot>
-        
+
         <div class="login__header">
           <h1 class="login__title">${this.title}</h1>
           <slot name="subtitle">
             <p class="login__subtitle">Enter your credentials to continue</p>
           </slot>
         </div>
-        
+
         <slot name="after-header"></slot>
         <slot name="before-form"></slot>
-        
-        <form class="login__form">
+
+        <form class="login__form" @submit=${(e: Event) => this.handleSubmit(e)}>
           <slot name="form-top"></slot>
-          
+
           <div class="login__field">
             <label class="login__label" for="username">Username</label>
-            <input 
+            <input
               class="login__input"
-              type="text" 
-              name="username" 
+              type="text"
+              name="username"
               id="username"
               required
               autocomplete="username"
               placeholder="Enter your username"
-              ${this.disabled || this.loading ? 'disabled' : ''}
+              ?disabled=${this.disabled || this.loading}
             />
           </div>
-          
+
           <slot name="between-fields"></slot>
-          
+
           <div class="login__field">
             <label class="login__label" for="password">Password</label>
-            <input 
+            <input
               class="login__input"
-              type="password" 
-              name="password" 
+              type="password"
+              name="password"
               id="password"
               required
               autocomplete="current-password"
               placeholder="Enter your password"
-              ${this.disabled || this.loading ? 'disabled' : ''}
+              ?disabled=${this.disabled || this.loading}
+              @keydown=${(e: KeyboardEvent) => this.handleEnterKey(e)}
             />
           </div>
-          
-          <div class="login__options" ${!this.showRememberMe && !this.showForgotPassword ? 'hidden' : ''}>
-            <label class="login__remember" ${!this.showRememberMe ? 'hidden' : ''}>
-              <input class="login__checkbox" type="checkbox" name="remember" ${this.disabled || this.loading ? 'disabled' : ''} />
-              Remember me
-            </label>
-            
-            <a href="#" class="login__forgot" ${!this.showForgotPassword ? 'hidden' : ''}>Forgot password?</a>
-          </div>
-          
+
+          <if ${this.showRememberMe || this.showForgotPassword}>
+            <div class="login__options">
+              <if ${this.showRememberMe}>
+                <label class="login__remember">
+                  <input class="login__checkbox" type="checkbox" name="remember" ?disabled="${this.disabled || this.loading}" />
+                  Remember me
+                </label>
+              </if>
+
+              <if ${this.showForgotPassword}>
+                <a href="#" class="login__forgot" @click=${(e: Event) => this.handleForgotPassword(e)}>Forgot password?</a>
+              </if>
+            </div>
+          </if>
+
           <slot name="before-submit"></slot>
-          
-          <snice-button type="submit" variant="primary" ${this.disabled ? 'disabled' : ''} ${this.loading ? 'loading' : ''}>
+
+          <snice-button
+            type="submit"
+            variant="primary"
+            ?disabled=${this.disabled}
+            ?loading=${this.loading}
+            @click=${(e: Event) => this.handleButtonClick(e)}>
             ${this.actionText}
           </snice-button>
-          
+
           <slot name="after-submit"></slot>
         </form>
-        
+
         <slot name="after-form"></slot>
-        
-        <snice-alert variant="${this.alertVariant}" ${!this.alertMessage ? 'hidden' : ''}>${this.alertMessage}</snice-alert>
-        
+
+        <if ${this.alertMessage}>
+          <snice-alert variant="${this.alertVariant}">${this.alertMessage}</snice-alert>
+        </if>
+
         <div class="login__footer">
           <slot name="footer"></slot>
         </div>
@@ -134,9 +151,9 @@ export class SniceLogin extends HTMLElement implements SniceLoginElement {
     `;
   }
 
-
-  css() {
-    return css;
+  @styles()
+  componentStyles() {
+    return css/*css*/`${cssContent}`;
   }
 
   @watch('variant', 'size')
@@ -170,11 +187,7 @@ export class SniceLogin extends HTMLElement implements SniceLoginElement {
     }
   }
 
-  @on('click')
-  async handleButtonClick(event: Event) {
-    const target = event.target as HTMLElement;
-    if (!target.matches('snice-button')) return;
-
+  private async handleButtonClick(event: Event) {
     event.preventDefault();
     // Trigger form submit
     if (this.form) {
@@ -182,12 +195,8 @@ export class SniceLogin extends HTMLElement implements SniceLoginElement {
     }
   }
 
-  @on('submit')
   @dispatch('@snice/login-attempt', { bubbles: true, composed: true })
-  async handleSubmit(event: Event) {
-    const target = event.target as HTMLElement;
-    if (!target.matches('.login__form')) return;
-
+  private async handleSubmit(event: Event) {
     event.preventDefault();
 
     if (this.loading || this.disabled) {
@@ -234,22 +243,14 @@ export class SniceLogin extends HTMLElement implements SniceLoginElement {
     };
   }
 
-  @on('keydown:Enter')
-  handleEnterKey(event: KeyboardEvent) {
-    const target = event.target as HTMLElement;
-    if (!target.matches('.login__input')) return;
-
-    if (!this.loading && !this.disabled && this.form) {
+  private handleEnterKey(event: KeyboardEvent) {
+    if (event.key === 'Enter' && !this.loading && !this.disabled && this.form) {
       this.form.requestSubmit();
     }
   }
 
-  @on('click')
   @dispatch('@snice/login-forgot-password', { bubbles: true, composed: true })
-  handleForgotPassword(event: Event) {
-    const target = event.target as HTMLElement;
-    if (!target.matches('.login__forgot')) return;
-
+  private handleForgotPassword(event: Event) {
     event.preventDefault();
     return {
       timestamp: new Date().toISOString()

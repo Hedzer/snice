@@ -1,4 +1,4 @@
-import { element, on, property, query, request, dispatch, watch } from 'snice';
+import { element, property, query, request, dispatch, watch, render, styles, html, css, ready } from 'snice';
 import '../input/snice-input';
 import '../select/snice-select';
 import './snice-cell.ts';
@@ -119,8 +119,9 @@ export class SniceTable extends HTMLElement {
     }, 500);
   }
 
-  css() {
-    return /*css*/`
+  @styles()
+  componentStyles() {
+    return css/*css*/`
       :host {
         display: block;
       }
@@ -257,7 +258,7 @@ export class SniceTable extends HTMLElement {
       tbody {
         transition: opacity var(--snice-transition-normal);
       }
-      
+
       :host([loading]) tbody {
         opacity: 0.5;
       }
@@ -270,9 +271,10 @@ export class SniceTable extends HTMLElement {
     `;
   }
 
-  html() {
-    return /*html*/`
-      <div class="snice-table">
+  @render()
+  renderContent() {
+    return html/*html*/`
+      <div class="snice-table" @click=${this.handleClick} @change=${this.handleChange}>
         ${this.renderControls()}
         <table>
           <thead></thead>
@@ -283,29 +285,37 @@ export class SniceTable extends HTMLElement {
   }
 
   renderControls() {
-    return /*html*/`
+    return html/*html*/`
       <div class="table-controls" part="controls">
-        <snice-input 
+        <snice-input
           class="search-input"
-          type="search" 
-          placeholder="Search..." 
-          value="${this.searchText}"
+          type="search"
+          placeholder="Search..."
+          .value=${this.searchText}
           size="medium"
+          @input=${this.handleSearchInput}
         ></snice-input>
-        <snice-select 
+        <snice-select
           class="selector-input"
           multiple
           searchable
           clearable
           placeholder="Filter..."
           size="medium"
+          @change=${this.handleSelectorChange}
         >
-          ${this.selectorOptions.map(opt => 
-            `<snice-option value="${opt.value}">${opt.label}</snice-option>`
-          ).join('')}
+          ${this.selectorOptions.map(opt =>
+            html/*html*/`<snice-option value="${opt.value}">${opt.label}</snice-option>`
+          )}
         </snice-select>
       </div>
     `;
+  }
+
+  @ready()
+  initialize() {
+    // Listen for controller attached event
+    this.addEventListener('@snice/controller-attached', this.onAttached as EventListener);
   }
 
   render() {
@@ -399,26 +409,28 @@ export class SniceTable extends HTMLElement {
     const sortItem = this.currentSort.find(s => s.column === column.key);
     const sortIndex = this.currentSort.findIndex(s => s.column === column.key);
     const isActive = !!sortItem;
-    
+
     let indicator = '▲▼'; // Default unsorted state
     let orderNumber = '';
-    
+
     if (sortItem) {
       if (sortItem.direction === 'asc') {
         indicator = '▲';
       } else if (sortItem.direction === 'desc') {
         indicator = '▼';
       }
-      
+
       if (this.currentSort.length > 1) {
         orderNumber = `<span class="sort-order">${sortIndex + 1}</span>`;
       }
     }
-    
+
+    const indicatorClasses = ['sort-indicator', isActive ? 'active' : ''].filter(Boolean).join(' ');
+
     return `
       <div class="sort-header">
         <span>${column.label}</span>
-        <div class="sort-indicator ${isActive ? 'active' : ''}">
+        <div class="${indicatorClasses}">
           ${indicator}
           ${orderNumber}
         </div>
@@ -547,8 +559,7 @@ export class SniceTable extends HTMLElement {
     }
   }
 
-  @on('click')
-  handleClick(e: MouseEvent) {
+  private handleClick = (e: MouseEvent) => {
     const target = e.target as HTMLElement;
 
     // Handle sortable header click
@@ -597,8 +608,7 @@ export class SniceTable extends HTMLElement {
     }
   }
 
-  @on('change')
-  handleChange(e: Event) {
+  private handleChange = (e: Event) => {
     const target = e.target as HTMLElement;
 
     // Handle row select checkbox
@@ -635,8 +645,7 @@ export class SniceTable extends HTMLElement {
     }
   }
 
-  @on('@snice/controller-attached')
-  onAttached() {
+  private onAttached = () => {
     console.log('Controller attached, loading config and data...');
     this.getTableConfig();
     this.getTableData();
@@ -644,11 +653,8 @@ export class SniceTable extends HTMLElement {
 
   private searchDebounceTimeout: any = null;
 
-  @on('input')
-  handleInput(e: Event) {
+  private handleSearchInput = (e: Event) => {
     const target = e.target as HTMLElement;
-    if (!target.matches('.search-input')) return;
-
     const input = target as HTMLInputElement;
     this.searchText = input.value;
 
@@ -663,11 +669,7 @@ export class SniceTable extends HTMLElement {
 
   private selectorDebounceTimeout: any = null;
 
-  @on('@snice/select/change')
-  handleSelectorChange(e: CustomEvent) {
-    const target = e.target as HTMLElement;
-    if (!target.matches('.selector-input')) return;
-
+  private handleSelectorChange = (e: CustomEvent) => {
     this.selector = Array.isArray(e.detail.value) ? e.detail.value.join(',') : e.detail.value;
 
     // Manual debounce implementation

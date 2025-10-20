@@ -1,5 +1,5 @@
-import { element, property, watch, ready, query } from 'snice';
-import css from './snice-cell.css?inline';
+import { element, property, watch, ready, query, render, styles, html, css } from 'snice';
+import cssContent from './snice-cell.css?inline';
 import type { SniceCellElement, ColumnType, ColumnAlign, ColumnDefinition } from './snice-table.types';
 
 @element('snice-cell-filesize')
@@ -27,18 +27,20 @@ export class SniceCellFilesize extends HTMLElement implements SniceCellElement {
   @query('.cell-content')
   contentElement?: HTMLElement;
 
-  html() {
+  @render()
+  renderContent() {
     const content = this.formatFileSize();
-    
-    return `
+
+    return html/*html*/`
       <div class="cell-content cell-content--filesize" part="content">
         ${content}
       </div>
     `;
   }
 
-  css() {
-    return css;
+  @styles()
+  componentStyles() {
+    return css/*css*/`${cssContent}`;
   }
 
   @ready()

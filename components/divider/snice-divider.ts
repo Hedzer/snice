@@ -1,5 +1,5 @@
-import { element, property, watch, query } from 'snice';
-import css from './snice-divider.css?inline';
+import { element, property, watch, render, styles, html, css as cssTag } from 'snice';
+import cssContent from './snice-divider.css?inline';
 import type { DividerOrientation, DividerVariant, DividerAlign, DividerSpacing, SniceDividerElement } from './snice-divider.types';
 
 @element('snice-divider')
@@ -28,12 +28,10 @@ export class SniceDivider extends HTMLElement implements SniceDividerElement {
   @property({ type: Boolean,  })
   capped = false;
 
-  @query('.divider-text')
-  textElement?: HTMLElement;
-
-  html() {
+  @render()
+  renderContent() {
     if (this.text && this.orientation === 'horizontal') {
-      return /*html*/`
+      return html`
         <div class="divider-container" role="separator" aria-orientation="${this.orientation}">
           <div class="divider divider--before"></div>
           <span class="divider-text">${this.text}</span>
@@ -41,18 +39,12 @@ export class SniceDivider extends HTMLElement implements SniceDividerElement {
         </div>
       `;
     }
-    return /*html*/`<div class="divider" role="separator" aria-orientation="${this.orientation}"></div>`;
+    return html`<div class="divider" role="separator" aria-orientation="${this.orientation}"></div>`;
   }
 
-  css() {
-    return css;
-  }
-
-  @watch('text')
-  updateText() {
-    if (this.textElement) {
-      this.textElement.textContent = this.text;
-    }
+  @styles()
+  componentStyles() {
+    return cssTag`${cssContent}`;
   }
 
   @watch('textBackground')

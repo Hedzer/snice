@@ -1,4 +1,4 @@
-import { element, property, render, styles, html } from 'snice';
+import { element, property, render, styles, html, css } from 'snice';
 import type { Placard } from 'snice';
 import cssContent from './snice-nav.css?inline';
 import type { SniceNavElement, NavVariant, NavOrientation } from './snice-nav.types';
@@ -24,7 +24,7 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
 
   @styles()
   componentStyles() {
-    return cssContent;
+    return css`${cssContent}`;
   }
 
   private renderFlat(navItems: Placard[]) {
@@ -45,16 +45,19 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
 
           const childrenHtml = children.length > 0 ? html`
             <ul class="nav__submenu">
-              ${children.map(child => html`
-                <li class="nav__item ${this.isActive(child) ? 'nav__item--active' : ''}">
+              ${children.map(child => {
+                const childClasses = ['nav__item', this.isActive(child) ? 'nav__item--active' : ''].filter(Boolean).join(' ');
+                return html`
+                <li class="${childClasses}">
                   ${this.renderNavLink(child)}
                 </li>
-              `)}
+              `})}
             </ul>
           ` : '';
 
+          const groupClasses = ['nav__group', this.isActive(placard) ? 'nav__group--active' : ''].filter(Boolean).join(' ');
           return html`
-            <div class="nav__group ${this.isActive(placard) ? 'nav__group--active' : ''}">
+            <div class="${groupClasses}">
               ${this.renderNavLink(placard)}
               ${childrenHtml}
             </div>
@@ -95,9 +98,10 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
 
   private renderNavItem(placard: Placard) {
     const isActive = this.isActive(placard);
+    const itemClasses = ['nav__item', isActive ? 'nav__item--active' : ''].filter(Boolean).join(' ');
 
     return html`
-      <div class="nav__item ${isActive ? 'nav__item--active' : ''}">
+      <div class="${itemClasses}">
         ${this.renderNavLink(placard)}
       </div>
     `;
@@ -108,10 +112,11 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
     const icon = placard.icon ? html`<span class="nav__icon">${placard.icon}</span>` : '';
     const tooltip = placard.tooltip ? placard.tooltip : '';
     const href = placard.name === 'home' ? '#/' : `#/${placard.name}`;
+    const linkClasses = ['nav__link', isActive ? 'nav__link--active' : ''].filter(Boolean).join(' ');
 
     return html`
       <a href="${href}"
-         class="nav__link ${isActive ? 'nav__link--active' : ''}"
+         class="${linkClasses}"
          aria-current="${isActive ? 'page' : ''}"
          title="${tooltip}">
         ${icon}

@@ -1,4 +1,4 @@
-import { element, query, render, styles, html, watch } from 'snice';
+import { element, query, property, render, styles, html, css } from 'snice';
 import type { AppContext, Placard, RouteParams, Layout } from 'snice';
 import cssContent from './snice-layout-dashboard.css?inline';
 import '../breadcrumbs/snice-breadcrumbs.ts';
@@ -10,15 +10,15 @@ export class SniceLayoutDashboard extends HTMLElement implements Layout {
   @query('snice-nav')
   navElement!: SniceNav;
 
-  @query('.sidebar')
-  sidebarElement?: HTMLElement;
-
+  @property({ type: Array })
   private placards: Placard[] = [];
+
+  @property({  })
   private currentRoute = '';
 
   @render()
   renderContent() {
-    return html`
+    return html/*html*/`
       <div class="layout">
         <header class="header">
           <div class="header-start">
@@ -51,30 +51,21 @@ export class SniceLayoutDashboard extends HTMLElement implements Layout {
 
   @styles()
   componentStyles() {
-    return cssContent;
+    return css/*css*/`${cssContent}`;
   }
 
   update(_appContext: AppContext, placards: Placard[], currentRoute: string, _routeParams: RouteParams): void {
     this.placards = placards;
     this.currentRoute = currentRoute;
 
-    // Update navigation and breadcrumbs
+    // Update navigation
     this.updateNav();
-    this.updateBreadcrumbs();
   }
 
-  @watch('placards', 'currentRoute')
   updateNav() {
     if (this.navElement) {
       this.navElement.placards = this.placards;
       this.navElement.currentRoute = this.currentRoute;
-    }
-  }
-
-  @watch('placards', 'currentRoute')
-  updateBreadcrumbs() {
-    if (this.sidebarElement) {
-      this.sidebarElement.innerHTML = this.getBreadcrumbsHtml();
     }
   }
 

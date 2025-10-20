@@ -1,7 +1,7 @@
-import { element, property, on, watch, ready, dispatch } from 'snice';
-import css from './snice-row.css?inline';
-import type { 
-  SniceRowElement, 
+import { element, property, watch, ready, dispatch, render, styles, html, css } from 'snice';
+import cssContent from './snice-row.css?inline';
+import type {
+  SniceRowElement,
   ColumnDefinition,
   SniceCellElement
 } from './snice-table.types';
@@ -31,12 +31,12 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
   // Extract data from data-* attributes - pass raw values, let cells handle conversion
   private extractDataFromAttributes() {
     const data: any = {};
-    
+
     // Get all attribute names that start with data-
-    const attrNames = this.getAttributeNames().filter(name => 
+    const attrNames = this.getAttributeNames().filter(name =>
       name.startsWith('data-') && name !== 'data-column-index'
     );
-    
+
     attrNames.forEach(attrName => {
       const key = attrName.slice(5); // Remove 'data-' prefix
       const value = this.getAttribute(attrName);
@@ -53,19 +53,28 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
   @property({ type: Array })
   columns: ColumnDefinition[] = [];
 
-  html() {
-    return `
-      <div class="row-container" part="container">
-        ${this.selectable ? this.renderCheckbox() : ''}
+  @render()
+  renderContent() {
+    return html/*html*/`
+      <div class="row-container" part="container" @click=${(e: MouseEvent) => this.handleRowClick(e)} @keydown=${(e: KeyboardEvent) => this.handleKeyDown(e)}>
+        <if ${this.selectable}>
+          ${this.renderCheckbox()}
+        </if>
         <div class="cells-container">
-          ${this.columns && this.columns.length ? this.columns.map((column, columnIndex) => this.renderCell(column, columnIndex)).join('') : '<!-- No columns set yet -->'}
+          <if ${this.columns && this.columns.length}>
+            ${this.columns.map((column, columnIndex) => this.renderCell(column, columnIndex))}
+          </if>
+          <if ${!this.columns || !this.columns.length}>
+            <!-- No columns set yet -->
+          </if>
         </div>
       </div>
     `;
   }
 
-  css() {
-    return css;
+  @styles()
+  componentStyles() {
+    return css/*css*/`${cssContent}`;
   }
 
   @ready()
@@ -82,7 +91,7 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
     if (!this.columns) {
       return;
     }
-    
+
     this.columns.forEach((column, index) => {
       const cellElement = this.shadowRoot?.querySelector(`[data-column-index="${index}"]`) as any;
       if (cellElement) {
@@ -90,7 +99,7 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
         cellElement.value = value;
         cellElement.column = column;
         cellElement.rowData = this.data;
-        
+
         // For sparkline cells, also set the data property if value is an array
         if (column.type === 'sparkline' && Array.isArray(value)) {
           cellElement.data = value;
@@ -125,8 +134,7 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
     }
   }
 
-  @on('click')
-  handleRowClick(e: MouseEvent) {
+  private handleRowClick(e: MouseEvent) {
     const target = e.target as HTMLElement;
 
     // Handle checkbox change separately
@@ -148,8 +156,7 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
     }
   }
 
-  @on('change')
-  handleChange(e: Event) {
+  private handleChange(e: Event) {
     const target = e.target as HTMLElement;
     if (!target.matches('.row-checkbox')) return;
 
@@ -158,8 +165,7 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
     this.dispatchRowSelect();
   }
 
-  @on('keydown')
-  handleKeyDown(e: KeyboardEvent) {
+  private handleKeyDown(e: KeyboardEvent) {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
 
@@ -171,14 +177,15 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
     }
   }
 
-  private renderCheckbox(): string {
-    return `
+  private renderCheckbox() {
+    return html/*html*/`
       <div class="cell cell--checkbox" part="checkbox-cell">
-        <input 
-          type="checkbox" 
-          class="row-checkbox" 
-          ${this.selected ? 'checked' : ''}
+        <input
+          type="checkbox"
+          class="row-checkbox"
+          ?checked=${this.selected}
           tabindex="-1"
+          @change=${(e: Event) => this.handleChange(e)}
         />
       </div>
     `;
@@ -191,13 +198,13 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
     return this.columns.map((column, columnIndex) => this.renderCell(column, columnIndex)).join('');
   }
 
-  private renderCell(column: ColumnDefinition, columnIndex: number): string {
+  private renderCell(column: ColumnDefinition, columnIndex: number) {
     const value = this.data[column.key];
     const cellComponent = this.getCellComponent(column.type);
-    
-    return `
+
+    return html/*html*/`
       <div class="cell cell--${column.type}" part="cell" style="${this.getCellStyles(column)}">
-        <${cellComponent} 
+        <${cellComponent}
           type="${column.type}"
           align="${column.align || 'left'}"
           data-column-index="${columnIndex}"
@@ -239,13 +246,13 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
 
   private getCellStyles(column: ColumnDefinition): string {
     let styles = [];
-    
+
     if (column.width) {
       styles.push(`width: ${column.width}`);
       styles.push(`min-width: ${column.width}`);
       styles.push(`max-width: ${column.width}`);
     }
-    
+
     if (column.align) {
       styles.push(`text-align: ${column.align}`);
     }
@@ -257,7 +264,7 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
     if (value === null || value === undefined) {
       return '';
     }
-    
+
     const str = String(value);
     const div = document.createElement('div');
     div.textContent = str;
@@ -325,7 +332,7 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
   getCellElement(columnKey: string): SniceCellElement | null {
     const column = this.columns.find(col => col.key === columnKey);
     if (!column) return null;
-    
+
     const columnIndex = this.columns.indexOf(column);
     return this.shadowRoot?.querySelector(`[data-column-index="${columnIndex}"]`) as SniceCellElement || null;
   }

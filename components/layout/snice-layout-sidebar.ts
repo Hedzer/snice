@@ -1,4 +1,4 @@
-import { element, property, query, render, styles, html, watch } from 'snice';
+import { element, property, query, render, styles, html, css } from 'snice';
 import type { AppContext, Placard, RouteParams, Layout } from 'snice';
 import cssContent from './snice-layout-sidebar.css?inline';
 import '../drawer/snice-drawer.ts';
@@ -22,7 +22,7 @@ export class SniceLayoutSidebar extends HTMLElement implements Layout {
 
   @render()
   renderContent() {
-    return html`
+    return html/*html*/`
       <div class="layout">
         <header class="header">
           <button class="sidebar-toggle" type="button" aria-label="Toggle sidebar" @click=${this.handleSidebarToggle}>
@@ -60,7 +60,7 @@ export class SniceLayoutSidebar extends HTMLElement implements Layout {
 
   @styles()
   componentStyles() {
-    return cssContent;
+    return css/*css*/`${cssContent}`;
   }
 
   handleSidebarToggle() {
@@ -77,7 +77,6 @@ export class SniceLayoutSidebar extends HTMLElement implements Layout {
     this.updateNav();
   }
 
-  @watch('placards', 'currentRoute')
   updateNav() {
     if (this.navElement) {
       this.navElement.placards = this.placards;

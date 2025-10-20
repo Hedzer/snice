@@ -1,5 +1,5 @@
-import { element, property, query, on, watch, dispatch, ready } from 'snice';
-import css from './snice-date-picker.css?inline';
+import { element, property, query, watch, dispatch, ready, render, styles, html, css } from 'snice';
+import cssContent from './snice-date-picker.css?inline';
 import type { DatePickerSize, DatePickerVariant, DateFormat, SniceDatePickerElement, DatePickerValue } from './snice-date-picker.types';
 
 @element('snice-date-picker')
@@ -89,50 +89,64 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
 
   private dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-  css() {
-    return css;
+  @styles()
+  componentStyles() {
+    return css/*css*/`${cssContent}`;
   }
 
-  html() {
-    return /*html*/`
+  @render()
+  renderContent() {
+    const labelClasses = ['label', this.required ? 'label--required' : ''].filter(Boolean).join(' ');
+    const inputClasses = [
+      'input',
+      `input--${this.size}`,
+      `input--${this.variant}`,
+      this.invalid ? 'input--invalid' : '',
+      this.clearable ? 'input--clearable' : ''
+    ].filter(Boolean).join(' ');
+
+    return html/*html*/`
       <div class="date-picker-wrapper">
-        ${this.label ? /*html*/`
-          <label class="label ${this.required ? 'label--required' : ''}">
+        <if ${this.label}>
+          <label class="${labelClasses}">
             ${this.label}
           </label>
-        ` : ''}
-        
+        </if>
+
         <div class="input-container">
           <input
-            class="input 
-              input--${this.size} 
-              input--${this.variant}
-              ${this.invalid ? 'input--invalid' : ''}
-              ${this.clearable ? 'input--clearable' : ''}"
+            class="${inputClasses}"
             type="text"
             value="${this.inputValue || this.getFormattedValue()}"
             placeholder="${this.placeholder || this.getPlaceholderForFormat()}"
-            ${this.disabled ? 'disabled' : ''}
-            ${this.readonly ? 'readonly' : ''}
-            ${this.required ? 'required' : ''}
-            ${this.name ? `name="${this.name}"` : ''}
+            ?disabled=${this.disabled}
+            ?readonly=${this.readonly}
+            ?required=${this.required}
+            name="${this.name || ''}"
             part="input"
             autocomplete="off"
+            @input=${(e: Event) => this.handleInput(e)}
+            @change=${(e: Event) => this.handleChange(e)}
+            @focus=${(e: Event) => this.handleFocus(e)}
+            @blur=${(e: Event) => this.handleBlur(e)}
+            @click=${(e: Event) => this.handleInputClick(e)}
+            @keydown=${(e: KeyboardEvent) => this.handleKeydown(e)}
           />
-          
+
           <button
             class="calendar-toggle"
             type="button"
             aria-label="Open calendar"
             tabindex="-1"
             part="calendar-toggle"
-            ${this.disabled ? 'disabled' : ''}
+            ?disabled=${this.disabled}
+            @click=${(e: Event) => this.handleCalendarToggle(e)}
           >
             <svg viewBox="0 0 24 24" width="18" height="18">
               <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z" fill="currentColor"/>
             </svg>
           </button>
-          
+
           <button
             class="clear-button"
             type="button"
@@ -140,41 +154,42 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
             tabindex="-1"
             part="clear"
             style="display: none;"
+            @click=${(e: Event) => this.handleClear(e)}
           >
             <svg viewBox="0 0 24 24" width="16" height="16">
               <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
             </svg>
           </button>
-          
-          <div class="calendar" part="calendar" hidden>
+
+          <div class="calendar" part="calendar" ?hidden=${!this.showCalendar} @click=${(e: Event) => this.handleCalendarClick(e)}>
             <div class="calendar-header">
               <button class="nav-button" type="button" data-nav="prev-month" aria-label="Previous month">
                 <svg viewBox="0 0 24 24" width="20" height="20">
                   <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" fill="currentColor"/>
                 </svg>
               </button>
-              
+
               <div class="calendar-title">
                 <button class="month-button" type="button" data-nav="month-picker">
                   ${this.monthNames[this.viewDate.getMonth()]} ${this.viewDate.getFullYear()}
                 </button>
               </div>
-              
+
               <button class="nav-button" type="button" data-nav="next-month" aria-label="Next month">
                 <svg viewBox="0 0 24 24" width="20" height="20">
                   <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" fill="currentColor"/>
                 </svg>
               </button>
             </div>
-            
+
             <div class="calendar-weekdays">
               ${this.getDayHeaders()}
             </div>
-            
+
             <div class="calendar-days">
               ${this.getDaysGrid()}
             </div>
-            
+
             <div class="calendar-footer">
               <button class="today-button" type="button" data-nav="today">
                 Today
@@ -182,14 +197,18 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
             </div>
           </div>
         </div>
-        
-        ${this.errorText ? /*html*/`
-          <span class="error-text" part="error-text">${this.errorText}</span>
-        ` : this.helperText ? /*html*/`
-          <span class="helper-text" part="helper-text">${this.helperText}</span>
-        ` : /*html*/`
-          <span class="helper-text" part="helper-text">&nbsp;</span>
-        `}
+
+        <case ${this.errorText ? 'error' : this.helperText ? 'helper' : 'empty'}>
+          <when value="error">
+            <span class="error-text" part="error-text">${this.errorText}</span>
+          </when>
+          <when value="helper">
+            <span class="helper-text" part="helper-text">${this.helperText}</span>
+          </when>
+          <default>
+            <span class="helper-text" part="helper-text">&nbsp;</span>
+          </default>
+        </case>
       </div>
     `;
   }
@@ -463,12 +482,8 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
     });
   }
 
-  @on('input')
-  handleInput(e: Event) {
-    const target = e.target as HTMLElement;
-    if (!target.matches('.input')) return;
-
-    const input = target as HTMLInputElement;
+  private handleInput(e: Event) {
+    const input = e.target as HTMLInputElement;
     this.inputValue = input.value;
 
     const date = this.parseDate(input.value);
@@ -484,12 +499,8 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
     this.dispatchInputEvent();
   }
 
-  @on('change')
-  handleChange(e: Event) {
-    const target = e.target as HTMLElement;
-    if (!target.matches('.input')) return;
-
-    const input = target as HTMLInputElement;
+  private handleChange(e: Event) {
+    const input = e.target as HTMLInputElement;
     const date = this.parseDate(input.value);
     if (date) {
       this.selectedDate = date;
@@ -512,37 +523,21 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
     this.dispatchChangeEvent();
   }
 
-  @on('focus')
-  handleFocus(e: Event) {
-    const target = e.target as HTMLElement;
-    if (!target.matches('.input')) return;
-
+  private handleFocus(e: Event) {
     this.dispatchFocusEvent();
   }
 
-  @on('click')
-  handleInputClick(e: Event) {
-    const target = e.target as HTMLElement;
-    if (!target.matches('.input')) return;
-
+  private handleInputClick(e: Event) {
     if (!this.showCalendar && !this.disabled && !this.readonly) {
       this.open();
     }
   }
 
-  @on('blur')
-  handleBlur(e: Event) {
-    const target = e.target as HTMLElement;
-    if (!target.matches('.input')) return;
-
+  private handleBlur(e: Event) {
     this.dispatchBlurEvent();
   }
 
-  @on('click')
-  handleCalendarToggle(e: Event) {
-    const target = e.target as HTMLElement;
-    if (!target.matches('.calendar-toggle')) return;
-
+  private handleCalendarToggle(e: Event) {
     if (this.showCalendar) {
       this.close();
     } else {
@@ -550,20 +545,13 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
     }
   }
 
-  @on('click')
-  handleClear(e: Event) {
-    const target = e.target as HTMLElement;
-    if (!target.matches('.clear-button')) return;
-
+  private handleClear(e: Event) {
     this.clear();
   }
 
-  @on('click')
-  handleCalendarClick(e: Event) {
-    const target = e.target as HTMLElement;
-    if (!target.matches('.calendar')) return;
-
+  private handleCalendarClick(e: Event) {
     e.stopPropagation();
+    const target = e.target as HTMLElement;
 
     if (target.closest('[data-date]')) {
       const dateString = target.closest('[data-date]')?.getAttribute('data-date');
@@ -577,11 +565,7 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
     }
   }
 
-  @on('keydown')
-  handleKeydown(e: KeyboardEvent) {
-    const target = e.target as HTMLElement;
-    if (!target.matches('.input')) return;
-
+  private handleKeydown(e: KeyboardEvent) {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       if (!this.showCalendar) {

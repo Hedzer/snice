@@ -1,5 +1,5 @@
-import { element, property, watch, query, on, dispatch } from 'snice';
-import css from './snice-chip.css?inline';
+import { element, property, watch, query, dispatch, render, styles, html, css } from 'snice';
+import cssContent from './snice-chip.css?inline';
 import type { ChipVariant, ChipSize, SniceChipElement } from './snice-chip.types';
 
 @element('snice-chip')
@@ -34,24 +34,30 @@ export class SniceChip extends HTMLElement implements SniceChipElement {
   @query('.chip-remove')
   removeButton?: HTMLButtonElement;
 
-  html() {
-    return /*html*/`
-      <div class="chip ${this.selected ? 'chip--selected' : ''}" 
+  @render()
+  renderContent() {
+    const chipClasses = `chip${this.selected ? ' chip--selected' : ''}`;
+
+    return html/*html*/`
+      <div class="${chipClasses}"
            role="${this.removable ? 'button' : 'status'}"
            tabindex="${this.disabled ? '-1' : '0'}"
            aria-disabled="${this.disabled}"
-           aria-selected="${this.selected}">
-        ${this.avatar ? /*html*/`
+           aria-selected="${this.selected}"
+           @click=${(e: MouseEvent) => this.handleChipClick(e)}
+           @keydown=${(e: KeyboardEvent) => this.handleKeydown(e)}>
+        ${this.avatar ? html`
           <img class="chip-avatar" src="${this.avatar}" alt="">
-        ` : this.icon ? /*html*/`
+        ` : this.icon ? html`
           <span class="chip-icon">${this.icon}</span>
         ` : ''}
         <span class="chip-label">${this.label}</span>
-        ${this.removable && !this.disabled ? /*html*/`
-          <button class="chip-remove" 
-                  type="button" 
+        ${this.removable && !this.disabled ? html`
+          <button class="chip-remove"
+                  type="button"
                   tabindex="-1"
-                  aria-label="Remove ${this.label}">
+                  aria-label="Remove ${this.label}"
+                  @click=${(e: MouseEvent) => this.handleRemoveClick(e)}>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
               <path d="M14 1.41L12.59 0L7 5.59L1.41 0L0 1.41L5.59 7L0 12.59L1.41 14L7 8.41L12.59 14L14 12.59L8.41 7L14 1.41Z"/>
             </svg>
@@ -61,62 +67,42 @@ export class SniceChip extends HTMLElement implements SniceChipElement {
     `;
   }
 
-  css() {
-    return css;
+  @styles()
+  componentStyles() {
+    return css/*css*/`${cssContent}`;
   }
 
-  @on('click')
-  @dispatch('chip-click')
-  handleClick(event: MouseEvent) {
-    const target = event.target as HTMLElement;
-    if (!target.matches('.chip')) return;
+  private handleChipClick(event: MouseEvent) {
     if (this.disabled) return;
+    const target = event.target as HTMLElement;
     if (target.closest('.chip-remove')) return;
 
     if (!this.removable) {
       this.selected = !this.selected;
     }
 
-    return {
-      label: this.label,
-      selected: this.selected
-    };
+    this.dispatchChipClick();
   }
 
-  @on('click')
-  @dispatch('chip-remove')
-  handleRemove(event: MouseEvent) {
-    const target = event.target as HTMLElement;
-    if (!target.matches('.chip-remove')) return;
-
+  private handleRemoveClick(event: MouseEvent) {
     event.stopPropagation();
     if (this.disabled) return;
-
-    return { label: this.label };
+    this.dispatchChipRemove();
   }
 
-  @on(['keydown:Enter', 'keydown:Space'])
-  handleKeyPress(event: KeyboardEvent) {
-    const target = event.target as HTMLElement;
-    if (!target.matches('.chip')) return;
-
-    event.preventDefault();
+  private handleKeydown(event: KeyboardEvent) {
     if (this.disabled) return;
 
-    if (!this.removable) {
-      this.selected = !this.selected;
-      this.dispatchChipClick();
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      if (!this.removable) {
+        this.selected = !this.selected;
+        this.dispatchChipClick();
+      }
+    } else if ((event.key === 'Delete' || event.key === 'Backspace') && this.removable) {
+      event.preventDefault();
+      this.dispatchChipRemove();
     }
-  }
-
-  @on(['keydown:Delete', 'keydown:Backspace'])
-  handleDelete(event: KeyboardEvent) {
-    const target = event.target as HTMLElement;
-    if (!target.matches('.chip')) return;
-    if (this.disabled || !this.removable) return;
-
-    event.preventDefault();
-    this.dispatchChipRemove();
   }
 
   @watch('selected')
@@ -137,9 +123,9 @@ export class SniceChip extends HTMLElement implements SniceChipElement {
 
   @dispatch('chip-click')
   private dispatchChipClick() {
-    return { 
+    return {
       label: this.label,
-      selected: this.selected 
+      selected: this.selected
     };
   }
 

@@ -1,5 +1,5 @@
-import { element, property, watch, ready, query } from 'snice';
-import css from './snice-cell.css?inline';
+import { element, property, watch, ready, query, render, styles, html, css } from 'snice';
+import cssContent from './snice-cell.css?inline';
 import type { 
   SniceCellElement, 
   ColumnType, 
@@ -40,16 +40,18 @@ export class SniceCell extends HTMLElement implements SniceCellElement {
   @query('.cell-content')
   contentElement?: HTMLElement;
 
-  html() {
-    return `
+  @render()
+  renderContent() {
+    return html/*html*/`
       <div class="cell-content" part="content">
         ${this.formatValue()}
       </div>
     `;
   }
 
-  css() {
-    return css;
+  @styles()
+  componentStyles() {
+    return css/*css*/`${cssContent}`;
   }
 
   @ready()

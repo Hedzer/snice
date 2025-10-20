@@ -1,5 +1,5 @@
-import { element, property, watch, ready, query } from 'snice';
-import css from './snice-cell.css?inline';
+import { element, property, watch, ready, query, render, styles, html, css } from 'snice';
+import cssContent from './snice-cell.css?inline';
 import type { ProgressFormat, SniceCellElement, ColumnType, ColumnAlign, ColumnDefinition } from './snice-table.types';
 import './snice-progress';
 
@@ -28,16 +28,18 @@ export class SniceCellProgress extends HTMLElement implements SniceCellElement {
   @query('.cell-content')
   contentElement?: HTMLElement;
 
-  html() {
-    return `
+  @render()
+  renderContent() {
+    return html/*html*/`
       <div class="cell-content cell-content--progress" part="content">
         <!-- Progress component will be created here -->
       </div>
     `;
   }
 
-  css() {
-    return css;
+  @styles()
+  componentStyles() {
+    return css/*css*/`${cssContent}`;
   }
 
   @ready()

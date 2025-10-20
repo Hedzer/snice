@@ -1,20 +1,8 @@
 # Snice v3.0.0
 
-An imperative TypeScript framework for building vanilla web components with decorators, **differential rendering**, and routing.
-
-## What's New in v3.0.0
-
-🚀 **Differential Rendering** - Only updates changed parts of your components, not the entire DOM
-⚡ **Tagged Templates** - `html\`\`` and `css\`\`` for clean, type-safe templates
-🎯 **Auto-Rendering** - Components automatically re-render when properties change
-🔥 **Template Events** - `@click=${handler}` syntax directly in templates
-📦 **Smaller Bundles** - No external dependencies, custom lit-html-inspired implementation
-
-**Breaking Changes:** v3.0.0 removes `html()`, `css()`, `@part`, and `@on`. See [MIGRATION_V2_TO_V3.md](./MIGRATION_V2_TO_V3.md).
+A TypeScript framework for building sustainable web applications through clear separation of governance.
 
 ## Quick Start
-
-Create a new Snice app with one command:
 
 ```bash
 npx snice create-app my-app
@@ -22,162 +10,352 @@ cd my-app
 npm run dev
 ```
 
-## Core Philosophy: Imperative with Smart Updates
+## Philosophy: Sustainable Architecture Through Separation of Concerns
 
-Snice v3.0.0 combines **imperative control** with **automatic differential rendering**:
+Most frameworks separate code by technology: HTML, CSS, JavaScript. Snice separates by **concerns of governance and data flow**. This shepherds you toward sustainable development by enforcing clear boundaries between what does what.
 
-- Components render when **properties change** (automatic)
-- Updates are **differential** - only changed parts re-render
-- **Full control** over when renders happen (debounce, throttle, manual)
-- **No virtual DOM** - direct, efficient DOM updates
-- **Template-based** with `html\`\`` tagged templates
+### The Snice Architecture
 
-You control the data flow imperatively, Snice handles efficient DOM updates automatically.
+Every application has four distinct concerns:
 
-## The Snice Way: Elements + Controllers
+**1. Cross-Cutting Concerns** - Global state and navigation
+- Authentication/principal
+- Theming and preferences
+- Routing and navigation
+- Application-wide configuration
 
-Snice separates UI from data: **elements handle UI, controllers handle behavior and data**.
+**2. Pages** - Human intent orchestration
+- Understand what the user is trying to accomplish
+- Orchestrate atomic elements to fulfill that intent
+- Handle page-level data fetching and coordination
+- Map URL parameters to user goals
+
+**3. Elements** - Pure presentation
+- Display data, nothing more
+- No understanding of business logic or user intent
+- Completely reusable across different contexts
+- Concerned only with how things look and basic interactions
+
+**4. Controllers** - Behavior and data management
+- Handle server communication and data fetching
+- Manage complex business logic when pages get too large
+- Enable behavior swapping (A/B testing, feature flags)
+- Clear separation of presentation from behavior
+
+This architecture ensures **pages orchestrate**, **elements present**, and **controllers behave**. Data flows down, events flow up, and every piece knows only what it needs to know.
+
+## Why This Matters
+
+Traditional component architectures blur these lines. A "UserProfile" component might handle routing, authentication, API calls, and rendering. When requirements change, you can't swap behavior without touching presentation. When you need to reuse the UI, you can't because it's coupled to specific business logic.
+
+Snice enforces boundaries:
+- Want different behavior? Swap the controller, keep the element
+- Need to reuse UI? Elements don't know about your business logic
+- Debugging data flow? Follow the clear page → element → controller boundaries
+- Onboarding new developers? The architecture guides them to the right place
+
+## The Tools
+
+Snice provides decorators and utilities that map directly to these architectural concerns:
+
+### 1. Cross-Cutting Concerns: Router + Context
 
 ```typescript
-import { element, controller, property, render, styles, html, css } from 'snice';
+// app-context.ts
+class AppContext {
+  user: User | null = null;
+  theme: 'light' | 'dark' = 'light';
 
-export interface IUserCard extends HTMLElement {
-  userId: string;
-  user: { name: string; email: string } | null;
+  setUser(user: User) { this.user = user; }
+  getUser() { return this.user; }
 }
 
-// Element: Just UI with auto-rendering
-@element('user-card')
-class UserCard extends HTMLElement implements IUserCard {
-  @property({ attribute: 'user-id' })
-  userId = '';
+// main.ts
+import { Router } from 'snice';
 
-  @property({ type: Object })
-  user: { name: string; email: string } | null = null;
+const { page, navigate, initialize } = Router({
+  target: '#app',
+  context: new AppContext()  // Global state
+});
+
+// Any page can access context
+@page({ tag: 'dashboard-page', routes: ['/dashboard'] })
+class DashboardPage extends HTMLElement {
+  @context()
+  ctx?: AppContext;
+  // ...
+}
+```
+
+### 2. Pages: Orchestrating Intent
+
+```typescript
+// pages/user-profile-page.ts
+@page({ tag: 'user-profile-page', routes: ['/users/:userId'] })
+class UserProfilePage extends HTMLElement {
+  @property()
+  userId = '';  // From URL parameter
+
+  @ready()
+  async loadUserData() {
+    const response = await fetch(`/api/users/${this.userId}`);
+    this.user = await response.json();
+    // ...
+  }
 
   @render()
   renderContent() {
     return html`
-      <div class="card">
-        ${this.user
-          ? html`
-            <h3>${this.user.name}</h3>
-            <p>${this.user.email}</p>
-          `
-          : html`
-            <h3>Loading...</h3>
-            <p>Please wait...</p>
-          `
-        }
+      <page-header .user=${this.user}></page-header>
+      <user-stats .userId=${this.userId}></user-stats>
+      <user-activity .userId=${this.userId}></user-activity>
+    `;
+  }
+}
+```
+
+### 3. Elements: Pure Presentation
+
+```typescript
+// elements/user-stats.ts
+@element('user-stats')
+class UserStats extends HTMLElement {
+  @property()
+  userId = '';
+
+  @ready()
+  async loadStats() {
+    const response = await fetch(`/api/users/${this.userId}/stats`);
+    this.stats = await response.json();
+    // ...
+  }
+
+  @render()
+  renderContent() {
+    return html`
+      <div class="stats">
+        <div class="stat">
+          <span class="label">Views</span>
+          <span class="value">${this.stats.views}</span>
+        </div>
+        // ...
       </div>
     `;
   }
 
   @styles()
-  cardStyles() {
+  statsStyles() {
     return css`
-      .card {
-        padding: 1rem;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-      }
+      .stats { display: flex; gap: 2rem; }
+      // ...
     `;
   }
 }
-
-// Controller: Data and behavior
-@controller('user-loader')
-class UserLoaderController {
-  element!: IUserCard;
-
-  async attach(element: IUserCard) {
-    const response = await fetch(`/api/users/${element.userId}`);
-    const user = await response.json();
-
-    element.user = user; // Auto re-renders!
-  }
-
-  async detach(element: IUserCard) { /* Cleanup */ }
-}
 ```
 
-Connect them in HTML:
-```html
-<user-card user-id="123" controller="user-loader"></user-card>
-```
-
-That's it. Element auto-renders when properties change, controller manages data, differential rendering keeps it fast.
-
-## Core Concepts
-
-Snice provides a clear separation of concerns through decorators:
-
-### Class Decorators
-- **`@element`** - Creates custom HTML elements with differential rendering
-- **`@controller`** - Handles data fetching, server communication, and business logic
-- **`@page`** - Defines routable page components with URL params
-
-### Rendering Decorators (v3.0.0)
-- **`@render`** - Defines the component template with `html\`\`` (auto re-renders on property changes)
-- **`@styles`** - Defines component styles with `css\`\``
-
-### Property & Query Decorators
-- **`@property`** - Declares properties that sync with DOM attributes and trigger renders
-- **`@query`** - Queries a single element from shadow DOM
-- **`@queryAll`** - Queries multiple elements from shadow DOM
-- **`@watch`** - Watches property changes for side effects (runs alongside auto-render)
-- **`@ready`** - Runs after initial render and setup
-- **`@dispose`** - Runs when element is removed from DOM
-
-### Event & Communication Decorators
-- **Template events** - `@click=${handler}` syntax in templates (no decorator needed)
-- **`@dispatch`** - Dispatches custom events after method execution
-- **`@request`** - Makes requests from elements or controllers
-- **`@respond`** - Responds to requests in elements or controllers
-
-This separation keeps your components focused: elements handle presentation with auto-rendering, controllers manage data, pages define navigation.
-
-## Basic Component
+### 4. Controllers: Behavior Management
 
 ```typescript
-import { element, render, html } from 'snice';
+// controllers/real-time-user-loader.ts
+@controller('real-time-user-loader')
+class RealTimeUserLoader {
+  async attach(element: IUserList) {
+    this.socket = new WebSocket('/api/users/stream');
+    this.socket.onmessage = (e) => {
+      element.setUsers(JSON.parse(e.data));
+    };
+  }
+  // ...
+}
 
-@element('my-button')
-class MyButton extends HTMLElement {
+// controllers/cached-user-loader.ts
+@controller('cached-user-loader')
+class CachedUserLoader {
+  async attach(element: IUserList) {
+    const cached = localStorage.getItem('users');
+    if (cached) element.setUsers(JSON.parse(cached));
+  }
+  // ...
+}
+
+// elements/user-list.ts - stays the same
+@element('user-list')
+class UserList extends HTMLElement {
+  setUsers(users: User[]) {
+    this.users = users;
+    // ...
+  }
+
   @render()
   renderContent() {
-    return html`<button>Click me</button>`;
+    return html`
+      <ul>${this.users.map(u => html`<li>${u.name}</li>`)}</ul>
+    `;
   }
 }
 ```
 
-That's it. Your component renders when added to the DOM:
+Usage - swap behavior without touching presentation:
 
 ```html
-<my-button></my-button>
+<user-list controller="real-time-user-loader"></user-list>
+<user-list controller="cached-user-loader"></user-list>
 ```
 
-## Auto-Rendering with Differential Updates
+## Key Features
 
-In Snice v3.0.0, components automatically re-render when properties change, but **only the changed parts update**:
+**Differential Rendering** - Only updates changed parts of the DOM, not entire components
+
+**Auto-Rendering** - Components automatically re-render when properties change
+
+**Template Syntax** - Clean `html\`...\`` and `css\`...\`` tagged templates
+
+**Type Safety** - Full TypeScript support with decorator-based APIs
+
+**Zero Dependencies** - No external runtime dependencies, small bundle size
+
+**Standards-Based** - Built on web components, works with any framework
+
+## Core APIs
+
+### Class Decorators
+
+**`@element('tag-name')`** - Define reusable UI components
+```typescript
+@element('my-button')
+class MyButton extends HTMLElement { }
+```
+
+**`@page({ tag, routes })`** - Define routable pages
+```typescript
+@page({ tag: 'home-page', routes: ['/'] })
+class HomePage extends HTMLElement { }
+```
+
+**`@controller('controller-name')`** - Define behavior modules
+```typescript
+@controller('data-loader')
+class DataLoader {
+  async attach(element) { }
+  async detach(element) { }
+}
+```
+
+### Rendering
+
+**`@render(options?)`** - Define component template (auto re-renders on property changes)
+```typescript
+@render()
+renderContent() {
+  return html`<div>${this.data}</div>`;
+}
+```
+
+**`@styles()`** - Define scoped styles
+```typescript
+@styles()
+componentStyles() {
+  return css`.container { padding: 1rem; }`;
+}
+```
+
+### Properties & State
+
+**`@property(options?)`** - Reactive properties that sync with attributes
+```typescript
+@property()
+name = 'default';
+
+@property({ type: Boolean })
+enabled = false;
+```
+
+**`@watch(...propertyNames)`** - React to property changes
+```typescript
+@watch('name')
+onNameChange(oldVal, newVal) {
+  console.log(`Name changed from ${oldVal} to ${newVal}`);
+}
+```
+
+### Lifecycle
+
+**`@ready()`** - Runs after initial render completes
+```typescript
+@ready()
+async initialize() {
+  // Fetch data, set up listeners, etc.
+}
+```
+
+**`@dispose()`** - Runs when element is removed from DOM
+```typescript
+@dispose()
+cleanup() {
+  // Clean up listeners, close connections, etc.
+}
+```
+
+### DOM Queries
+
+**`@query(selector)`** - Query single element from shadow DOM
+```typescript
+@query('input')
+input!: HTMLInputElement;
+```
+
+**`@queryAll(selector)`** - Query multiple elements from shadow DOM
+```typescript
+@queryAll('.item')
+items!: NodeListOf<HTMLElement>;
+```
+
+### Events & Communication
+
+**Template Events** - Handle events directly in templates
+```typescript
+html`<button @click=${this.handleClick}>Click</button>`
+```
+
+**`@dispatch(eventName)`** - Auto-dispatch custom events after method execution
+```typescript
+@dispatch('value-changed')
+setValue(val: string) {
+  this.value = val;
+  return { value: val };  // Event detail
+}
+```
+
+### Global State
+
+**`@context()`** - Access router context (global state)
+```typescript
+@context()
+ctx?: AppContext;
+```
+
+### Request/Response
+
+**`@request(channel)`** - Make requests to controllers
+**`@respond(channel)`** - Respond to requests from elements
+
+See [Request/Response documentation](./docs/request-response.md) for details.
+
+## Template Syntax
+
+### Auto-Rendering with Differential Updates
 
 ```typescript
-import { element, property, render, styles, html, css } from 'snice';
-
 @element('counter-display')
 class CounterDisplay extends HTMLElement {
   @property({ type: Number })
   count = 0;
-
-  @property()
-  status = 'Ready';
 
   @render()
   renderContent() {
     return html`
       <div class="counter">
         <span class="count">${this.count}</span>
-        <span class="status">${this.status}</span>
         <button @click=${this.increment}>+</button>
       </div>
     `;
@@ -185,270 +363,31 @@ class CounterDisplay extends HTMLElement {
 
   @styles()
   counterStyles() {
-    return css`
-      .counter {
-        display: flex;
-        gap: 1rem;
-        align-items: center;
-      }
-    `;
+    return css`.counter { display: flex; gap: 1rem; }`;
   }
 
   increment() {
     this.count++;
-    this.status = 'Incremented!';
-    // Auto re-renders! Only <span class="count"> and <span class="status"> update
-    // Button is unchanged, so it's not touched
+    // Auto re-renders! Only <span class="count"> updates
   }
 }
 ```
 
 **Key Points:**
-- The `@render()` method defines your template with `html\`\``
-- **Automatic re-rendering** when properties change
-- **Differential updates** - only changed `<span>` elements update, not entire shadow DOM
-- **Event handlers** in templates: `@click=${this.method}`
-- **Batched updates** - multiple property changes = single render (microtask batching)
-
-## Properties
-
-Properties automatically sync with DOM attributes in both directions. The HTML is rendered once when the element connects to the DOM. Use properties for initial configuration and watch for changes to update the UI.
-
-```typescript
-import { element, property } from 'snice';
-
-@element('user-card')
-class UserCard extends HTMLElement {
-  @property()
-  name = 'Anonymous';
-
-  @property({ attribute: 'user-role' })  // Maps to user-role attribute
-  role = 'User';
-
-  @property({ type: Boolean })
-  verified = false;
-
-  html() {
-    // This renders ONCE with the initial property values
-    return `
-      <div class="card">
-        <h3>${this.name}</h3>
-        <span class="role">${this.role}</span>
-        ${this.verified ? '<span class="badge">✓ Verified</span>' : ''}
-      </div>
-    `;
-  }
-}
-```
-
-Use it with attributes (both ways work):
-```html
-<!-- Setting attributes automatically updates properties -->
-<user-card name="Jane Doe" user-role="Admin" verified></user-card>
-
-<script>
-  const card = document.querySelector('user-card');
-  card.name = 'John Smith';      // Sets name="John Smith" attribute
-  card.verified = true;          // Sets verified attribute
-</script>
-```
-
-For arrays of basic types, use `SimpleArray` for safe reflection:
-
-```typescript
-import { element, property, SimpleArray } from 'snice';
-
-@element('tag-list')
-class TagList extends HTMLElement {
-  @property({ type: SimpleArray })
-  tags = ['javascript', 'typescript', 'web'];
-
-  html() {
-    return `<div>${this.tags.join(', ')}</div>`;
-  }
-}
-```
-
-```html
-<tag-list tags="react，vue，angular"></tag-list>
-```
-
-## Watching Property Changes
-
-Use `@watch` to imperatively update DOM when properties change:
-
-```typescript
-import { element, property, watch, query } from 'snice';
-
-@element('theme-toggle')
-class ThemeToggle extends HTMLElement {
-  @property()
-  theme: 'light' | 'dark' = 'light';
-
-  @query('.icon')
-  icon!: HTMLSpanElement;
-  
-  html() {
-    return `
-      <button>
-        <span class="icon">🌞</span>
-      </button>
-    `;
-  }
-  
-  @watch('theme')
-  updateTheme(oldValue: string, newValue: string) {
-    this.icon.textContent = newValue === 'dark' ? '🌙' : '🌞';
-  }
-  
-  @on('click', 'button')
-  toggle() {
-    this.theme = this.theme === 'light' ? 'dark' : 'light';
-  }
-}
-```
-
-**Key Points:**
-- `@watch` methods are called when the property value changes
-- Receives `oldValue`, `newValue`, and `propertyName` as parameters
-- Perfect for imperatively updating DOM elements
-- Can watch multiple properties with multiple decorators
-- Works with both programmatic changes and attribute changes
-
-You can watch multiple properties with a single decorator:
-
-```typescript
-@watch('width', 'height', 'scale')
-updateDimensions(_old: number, _new: number, _name: string) {
-  // Called when any of these properties change
-  console.log(`${_name} changed from ${_old} to ${_new}`);
-  this.recalculateLayout();
-}
-```
-
-Watch all property changes with the wildcard:
-
-```typescript
-@watch('*')
-handleAnyPropertyChange(_old: any, _new: any, _name: string) {
-  console.log(`Property ${_name} changed from ${_old} to ${_new}`);
-  // Useful for debugging or when all properties affect the same output
-}
-```
-
-## Queries
-
-Query single elements with `@query`:
-
-```typescript
-import { element, query } from 'snice';
-
-@element('my-form')
-class MyForm extends HTMLElement {
-  @query('input')
-  input!: HTMLInputElement;
-
-  html() {
-    return `<input type="text" />`;
-  }
-
-  getValue() {
-    return this.input.value;
-  }
-}
-```
-
-Query multiple elements with `@queryAll`:
-
-```typescript
-import { element, queryAll } from 'snice';
-
-@element('checkbox-group')
-class CheckboxGroup extends HTMLElement {
-  @queryAll('input[type="checkbox"]')
-  checkboxes!: NodeListOf<HTMLInputElement>;
-
-  html() {
-    return `
-      <input type="checkbox" value="option1" />
-      <input type="checkbox" value="option2" />
-      <input type="checkbox" value="option3" />
-    `;
-  }
-
-  getSelectedValues() {
-    return Array.from(this.checkboxes)
-      .filter(cb => cb.checked)
-      .map(cb => cb.value);
-  }
-}
-```
-
-## Events
-
-Handle events directly in templates with `@event` syntax:
-
-```typescript
-import { element, property, render, html } from 'snice';
-
-@element('my-clicker')
-class MyClicker extends HTMLElement {
-  @property()
-  inputValue = '';
-
-  @render()
-  renderContent() {
-    return html`
-      <button @click=${this.handleClick}>Click me</button>
-      <input
-        type="text"
-        placeholder="Type something"
-        .value=${this.inputValue}
-        @input=${this.handleInput}
-        @keydown=${this.handleKeydown}
-      />
-      <p>You typed: ${this.inputValue}</p>
-    `;
-  }
-
-  handleClick(event: Event) {
-    console.log('Button clicked!', event);
-  }
-
-  handleInput(event: Event) {
-    this.inputValue = (event.target as HTMLInputElement).value;
-    // Auto re-renders!
-  }
-
-  handleKeydown(event: KeyboardEvent) {
-    if (event.key === 'Enter') {
-      console.log('Enter pressed:', this.inputValue);
-    }
-  }
-}
-```
-
-**Template Event Syntax:**
-- `@click=${handler}` - Any DOM event
-- `@input=${handler}`, `@change=${handler}` - Form events
-- `@keydown=${handler}`, `@keyup=${handler}` - Keyboard events
-- Event handlers receive the native `Event` object
-- Handlers are automatically bound to component context
-
-## Advanced Template Features
+- Properties trigger automatic re-renders
+- Only changed parts update (differential rendering)
+- Event handlers: `@click=${this.method}`
+- Batched updates (multiple changes = single render)
 
 ### Property Binding
 
-Use `.property=${value}` to set element properties (not attributes):
+Use `.property=${value}` to set element properties directly:
 
 ```typescript
-@render()
-renderContent() {
-  return html`
-    <input .value=${this.text} @input=${this.onInput} />
-    <custom-element .complexData=${this.dataObject}></custom-element>
-  `;
-}
+html`
+  <input .value=${this.text} />
+  <custom-element .complexData=${this.dataObject}></custom-element>
+`
 ```
 
 ### Boolean Attributes
@@ -456,801 +395,235 @@ renderContent() {
 Use `?attribute=${boolean}` for boolean attributes:
 
 ```typescript
-@render()
-renderContent() {
-  return html`
-    <button ?disabled=${this.isLoading}>Submit</button>
-    <input type="checkbox" ?checked=${this.isChecked} />
-  `;
-}
+html`
+  <button ?disabled=${this.isLoading}>Submit</button>
+  <input type="checkbox" ?checked=${this.isChecked} />
+`
 ```
 
 ### Conditionals
 
 ```typescript
-@render()
-renderContent() {
-  return html`
-    ${this.isLoggedIn
-      ? html`<span>Welcome, ${this.user.name}!</span>`
-      : html`<a href="/login">Login</a>`
-    }
-  `;
-}
-```
-
-### Lists and Loops
-
-```typescript
-@render()
-renderContent() {
-  return html`
-    <ul>
-      ${this.items.map(item => html`
-        <li>
-          ${item.name}
-          <button @click=${() => this.remove(item.id)}>Remove</button>
-        </li>
-      `)}
-    </ul>
-  `;
-}
-```
-
-**Note:** For lists to trigger re-renders, reassign the array:
-```typescript
-// ✅ Good - triggers render
-this.items = [...this.items, newItem];
-
-// ❌ Bad - doesn't trigger render
-this.items.push(newItem);
-```
-
-### Render Options
-
-Control when and how renders happen:
-
-```typescript
-// Debounce renders (useful for search)
-@render({ debounce: 300 })
-renderContent() {
-  return html`<div>Search: ${this.searchTerm}</div>`;
-}
-
-// Throttle renders (useful for scroll)
-@render({ throttle: 100 })
-renderContent() {
-  return html`<div>Scroll: ${this.scrollY}</div>`;
-}
-
-// Render only once (manual control)
-@render({ once: true })
-renderContent() {
-  return html`<div>Static: ${this.data}</div>`;
-}
-
-// Synchronous rendering (skip batching)
-@render({ sync: true })
-renderContent() {
-  return html`<div>Immediate: ${this.value}</div>`;
-}
-```
-
-## Dispatching Events
-
-Automatically dispatch custom events with `@dispatch`:
-
-```typescript
-import { element, dispatch, on, query } from 'snice';
-
-@element('toggle-switch')
-class ToggleSwitch extends HTMLElement {
-  private isOn = false;
-
-  @query('.toggle')
-  toggleButton!: HTMLElement;
-
-  html() {
-    return `<button class="toggle">OFF</button>`;
+// Ternary operator
+html`
+  ${this.isLoggedIn
+    ? html`<span>Welcome!</span>`
+    : html`<a href="/login">Login</a>`
   }
-  
-  @on('click', '.toggle')
-  @dispatch('toggled')
-  toggle() {
-    this.isOn = !this.isOn;
-    this.toggleButton.textContent = this.isOn ? 'ON' : 'OFF';
-    return { on: this.isOn };
-  }
-}
+`
+
+// <if> conditional element
+html`
+  <if ${this.isLoggedIn}>
+    <span>Welcome, ${this.user.name}!</span>
+    <button @click=${this.logout}>Logout</button>
+  </if>
+  <if ${!this.isLoggedIn}>
+    <a href="/login">Login</a>
+  </if>
+`
+
+// <case>/<when>/<default> for multiple branches
+html`
+  <case ${this.status}>
+    <when value="loading">
+      <span>Loading...</span>
+    </when>
+    <when value="success">
+      <span>Success!</span>
+    </when>
+    <when value="error">
+      <span>Error occurred</span>
+    </when>
+    <default>
+      <span>Unknown status</span>
+    </default>
+  </case>
+`
 ```
 
-The `@dispatch` decorator:
-- Dispatches after the method completes
-- Uses the return value as the event detail
-- Works with async methods
-- Bubbles by default
+### Lists
 
 ```typescript
-// With options from EventInit
-@dispatch('my-event', { bubbles: false, cancelable: true })
-
-// Don't dispatch if method returns undefined
-@dispatch('maybe-data', { dispatchOnUndefined: false })
+html`
+  <ul>
+    ${this.items.map(item => html`
+      <li @click=${() => this.select(item.id)}>${item.name}</li>
+    `)}
+  </ul>
+`
 ```
 
-## Styling
+### Keyboard Shortcuts
 
 ```typescript
-@element('styled-card')
-class StyledCard extends HTMLElement {
-  html() {
-    return `<div class="card">Hello</div>`;
-  }
-
-  css() {
-    return `
-      .card {
-        padding: 20px;
-        background: #f0f0f0;
-        border-radius: 8px;
-      }
-    `;
-  }
-}
+html`
+  <input @keydown.enter=${this.submit} />
+  <input @keydown.ctrl+s=${this.save} />
+  <input @keydown.ctrl+shift+s=${this.saveAs} />
+  <input @keydown.escape=${this.cancel} />
+  <input @keydown.~enter=${this.submitAny} />
+`
 ```
 
-CSS is automatically scoped to your component.
+Keyboard syntax:
+- `@keydown.enter` - Plain Enter (no modifiers)
+- `@keydown.ctrl+s` - Ctrl+S combination
+- `@keydown.~enter` - Enter with any modifiers
+- `@keydown.down` - Arrow keys (up, down, left, right)
+- `@keydown.escape` - Escape key
 
-## Routing
+## Router
 
 ```typescript
-import { Router } from 'snice';
+// main.ts
+const { page, navigate, initialize } = Router({
+  target: '#app',
+  context: new AppContext()
+});
 
-const router = Router({ target: '#app', type: 'hash' });
-
-const { page, navigate, initialize } = router;
-
+// pages/home-page.ts
 @page({ tag: 'home-page', routes: ['/'] })
 class HomePage extends HTMLElement {
-  html() {
-    return `<h1>Home</h1>`;
+  @render()
+  renderContent() {
+    return html`<h1>Home</h1>`;
   }
 }
 
-@page({ tag: 'about-page', routes: ['/about'] })
-class AboutPage extends HTMLElement {
-  html() {
-    return `<h1>About</h1>`;
-  }
-}
-
-// Page with URL parameter  
-import { property } from 'snice';
-
+// pages/user-page.ts
 @page({ tag: 'user-page', routes: ['/users/:userId'] })
 class UserPage extends HTMLElement {
   @property()
-  userId = '';
-  
-  html() {
-    return `<h1>User ${this.userId}</h1>`;
-  }
+  userId = '';  // Auto-populated from URL
+  // ...
 }
 
-// Start the router
+// main.ts
 initialize();
-
-// Navigate programmatically
-navigate('/about');
-navigate('/users/123');  // Sets userId="123" on UserPage
+navigate('/users/123');
 ```
 
 ### Route Guards
 
-Protect routes with guard functions that control access:
+Protect routes with guard functions:
 
 ```typescript
-import { Router, Guard, RouteParams } from 'snice';
+const isAuthenticated: Guard<AppContext> = (ctx) => ctx.getUser() !== null;
 
-// Create router with context
-const router = Router({
-  target: '#app',
-  type: 'hash',
-  context: new AppContext(),  // Your app's context object
-});
-
-const { page, navigate, initialize } = router;
-
-// Simple guards (params is empty object for non-parameterized routes)
-const isAuthenticated: Guard<AppContext> = (ctx, params) => ctx.getUser() !== null;
-const isAdmin: Guard<AppContext> = (ctx, params) => ctx.getUser()?.role === 'admin';
-
-// Protected page with single guard
-@page({ tag: 'dashboard-page', routes: ['/dashboard'], guards: isAuthenticated })
-class DashboardPage extends HTMLElement {
-  html() {
-    return `<h1>Dashboard</h1>`;
-  }
-}
-
-// Admin page with multiple guards (all must pass)
-@page({ tag: 'admin-page', routes: ['/admin'], guards: [isAuthenticated, isAdmin] })
-class AdminPage extends HTMLElement {
-  html() {
-    return `<h1>Admin Panel</h1>`;
-  }
-}
-
-// Guard that uses route params to check resource-specific permissions
-const canEditUser: Guard<AppContext> = (ctx, params) => {
-  const user = ctx.getUser();
-  if (!user) return false;
-
-  // params.id comes from route '/users/:id/edit'
-  return ctx.hasPermission('users.edit', params.id);
-};
-
-// Guard that checks ownership
-const ownsItem: Guard<AppContext> = (ctx, params) => {
-  const user = ctx.getUser();
-  if (!user) return false;
-  
-  // params.itemId comes from route '/items/:itemId'
-  return user.ownedItems.includes(parseInt(params.itemId));
-};
-
-@page({ tag: 'user-edit', routes: ['/users/:id/edit'], guards: [isAuthenticated, canEditUser] })
-class UserEditPage extends HTMLElement {
-  @property()
-  id = '';  // Automatically set from route param
-  
-  html() {
-    return `<h1>Edit User ${this.id}</h1>`;
-  }
-}
-
-@page({ tag: 'item-view', routes: ['/items/:itemId'], guards: [isAuthenticated, ownsItem] })
-class ItemView extends HTMLElement {
-  @property()
-  itemId = '';  // Automatically set from route param
-  
-  html() {
-    return `<h1>Item ${this.itemId}</h1>`;
-  }
-}
-
-// Custom 403 page (optional)
-@page({ tag: 'forbidden-page', routes: ['/403'] })
-class ForbiddenPage extends HTMLElement {
-  html() {
-    return `
-      <h1>Access Denied</h1>
-      <p>You don't have permission to view this page.</p>
-      <a href="#/">Return to home</a>
-    `;
-  }
-}
-
-initialize();
-```
-
-When a guard denies access:
-- The 403 page is rendered if defined
-- Otherwise, a default "Unauthorized" message is shown
-- The URL doesn't change (no redirect)
-
-## Controllers (Data Fetching)
-
-Controllers handle server communication separately from visual components:
-
-```typescript
-import { controller, element } from 'snice';
-
-interface IUserElement extends HTMLElement {
-  setUsers(users: any[]): void;
-}
-
-@controller('user-controller')
-class UserController {
-  element!: IUserElement;
-
-  async attach(element: IUserElement) {
-    const response = await fetch('/api/users');
-    const users = await response.json();
-    element.setUsers(users);
-  }
-
-  async detach(element: IUserElement) { /* Cleanup */ }
-}
-
-@element('user-list')
-class UserList extends HTMLElement {
-  users: any[] = [];
-
-  html() {
-    return `
-      <ul>
-        ${this.users.map(u => `<li>${u.name}</li>`).join('')}
-      </ul>
-    `;
-  }
-
-  setUsers(users: any[]) {
-    this.users = users;
-    if (this.shadowRoot) {
-      this.shadowRoot.innerHTML = this.html();
-    }
-  }
-}
-```
-
-Use it:
-
-```html
-<user-list controller="user-controller"></user-list>
-```
-
-## Request/Response
-
-Bidirectional communication between elements and controllers:
-
-```typescript
-import { element, request, type Response } from 'snice';
-
-// Element makes request, controller responds
-@element('user-profile')  
-class UserProfile extends HTMLElement {
-
-  @request('fetch-user')
-  async *getUser(): Response<{ name: string; email: string }> {
-    const user = await (yield { userId: 123 });
-    return user;
-  }
-
-  @ready()
-  async load() {
-    const userData = await this.getUser();
-    this.displayUser(userData);
-  }
-  
-}
-
-@controller('user-controller')
-class UserController {
-
-  @respond('fetch-user')
-  async handleFetchUser(request: { userId: number }) {
-    const response = await fetch(`/api/users/${request.userId}`);
-    return response.json();
-  }
-
-}
+@page({
+  tag: 'dashboard-page',
+  routes: ['/dashboard'],
+  guards: isAuthenticated
+})
+class DashboardPage extends HTMLElement { }
 ```
 
 ## Layouts
 
-Wrap your pages in shared layout components for consistent navigation, headers, and footers across your application.
-
-### Basic Layout Usage
+Layouts wrap pages with shared UI and dynamically build navigation from page metadata:
 
 ```typescript
-import { Router, layout, page } from 'snice';
-
-// Create a layout component
+// layouts/app-shell.ts
 @layout('app-shell')
-class AppShell extends HTMLElement {
-  html() {
-    return `
+class AppShell extends HTMLElement implements Layout {
+  private placards: Placard[] = [];
+  private currentRoute = '';
+
+  @render()
+  renderContent() {
+    return html`
       <header>
         <nav>
-          <a href="#/">Home</a>
-          <a href="#/about">About</a>
+          ${this.placards
+            .filter(p => p.show !== false)
+            .map(p => html`
+              <a href="#/${p.name}"
+                 class="${this.currentRoute === p.name ? 'active' : ''}">
+                ${p.icon} ${p.title}
+              </a>
+            `)}
         </nav>
       </header>
-      <main>
-        <slot name="page"></slot>
-      </main>
-      <footer>© 2024 My App</footer>
+      <main><slot name="page"></slot></main>
     `;
   }
-}
 
-// Configure router with default layout
-const router = Router({
-  target: '#app',
-  type: 'hash',
-  layout: 'app-shell'  // All pages use this layout by default
-});
-
-const { page, initialize } = router;
-
-// Pages automatically render inside the layout
-@page({ tag: 'home-page', routes: ['/'] })
-class HomePage extends HTMLElement {
-  html() {
-    return `<h1>Home Content</h1>`;
+  // Called when route changes
+  update(appContext, placards, currentRoute, routeParams) {
+    this.placards = placards;
+    this.currentRoute = currentRoute;
+    // Property changes trigger re-render
   }
 }
 
-// Override layout per page
-@page({ tag: 'full-page', routes: ['/fullscreen'], layout: false })
-class FullPage extends HTMLElement {
-  html() {
-    return `<div>No layout wrapper</div>`;
-  }
-}
-
-initialize();
-```
-
-### Layout Features
-
-- **Shared wrapper**: Layout components wrap page content using `<slot name="page"></slot>`
-- **Default layouts**: Set `layout: 'component-name'` in router options
-- **Per-page override**: Use `layout: 'other-layout'` or `layout: false` in page options
-- **Smooth transitions**: Layout persists during page transitions for better UX
-- **Nested layouts**: Layouts can contain other layouts for complex structures
-
-## Router Context
-
-Access router context in page components, nested elements, and controllers using the `@context` decorator.
-
-### ⚠️ Important Warning About Global State
-
-**Context is global shared state and should be treated with extreme caution.** Mutating context from multiple components creates hard-to-debug issues, race conditions, and tightly coupled code. This is a serious footgun if used improperly.
-
-**Best practices:**
-- Treat context as **read-only** in components
-- Only mutate context through well-defined methods in the context class
-- Use context for truly global, app-wide state (user auth, theme, locale)
-- For component-specific state, use properties instead
-- Consider the context immutable from the component's perspective
-
-### Basic Usage in Pages
-
-```typescript
-// Define your context class with controlled mutations
-class AppContext {
-  private user: User | null = null;
-  
-  // Controlled mutation through methods
-  setUser(user: User) {...}
-  
-  // Read-only access
-  getUser() {...}
-  
-  isAuthenticated() {...}
-}
-
-// Create router with context
-const appContext = new AppContext();
+// main.ts - configure router with layout
 const { page, initialize } = Router({
   target: '#app',
-  type: 'hash',
-  context: appContext
+  layout: 'app-shell'
 });
-
-// Access context in page components
-@page({ tag: 'profile-page', routes: ['/profile'] })
-class ProfilePage extends HTMLElement {
-  @context()
-  ctx?: AppContext;
-  
-  html() {
-    // READ context, don't mutate it directly
-    const user = this.ctx?.getUser();
-    if (!user) {
-      return `<p>Please log in</p>`;
-    }
-    return `
-      <h1>Welcome, ${user.name}!</h1>
-      <p>Email: ${user.email}</p>
-    `;
-  }
-}
 ```
 
-### Context in Nested Elements
+Pages render inside `<slot name="page"></slot>`. Layout persists, only page content swaps.
 
-Nested elements within pages can also access context:
+## Placards
+
+Page metadata that layouts use to build navigation, breadcrumbs, and help systems:
 
 ```typescript
-// This element can be used inside any page
-@element('user-avatar')
-class UserAvatar extends HTMLElement {
-  @context()
-  ctx?: AppContext;
-  
-  html() {
-    // Context is available even in nested elements
-    const user = this.ctx?.getUser();
-    return user 
-      ? `<img src="${user.avatar}" alt="${user.name}">`
-      : `<div class="placeholder">?</div>`;
-  }
-}
+// pages/dashboard-page.ts
+const dashboardPlacard: Placard<AppContext> = {
+  name: 'dashboard',
+  title: 'Dashboard',
+  icon: '📊',
+  order: 1,
+  searchTerms: ['home', 'overview', 'stats'],
+  hotkeys: ['ctrl+d'],
+  visibleOn: [isAuthenticated]
+};
 
-// Use it in a page
-@page({ tag: 'dashboard', routes: ['/'] })
-class Dashboard extends HTMLElement {
-  html() {
-    return `
-      <h1>Dashboard</h1>
-      <user-avatar></user-avatar>  <!-- Will have access to context -->
-    `;
-  }
-}
+@page({
+  tag: 'dashboard-page',
+  routes: ['/dashboard'],
+  placard: dashboardPlacard
+})
+class DashboardPage extends HTMLElement { }
 ```
 
-### Context in Controllers
+**Features:**
+- **Navigation** - `title`, `icon`, `order`, `show`
+- **Hierarchy** - `parent`, `group`, `breadcrumbs`
+- **Discovery** - `searchTerms`, `hotkeys`, `tooltip`
+- **Visibility** - `visibleOn` guards control who sees what
 
-Controllers attached to page elements automatically acquire context:
+Layouts receive placard data in `update()` and auto-build navigation. See [docs](./docs/placards.md).
 
-```typescript
-@controller('nav-controller')
-class NavController {
-  element!: HTMLElement;
-  
-  @context()
-  ctx?: AppContext;
-  
-  attach(element: HTMLElement) {
-    // Context is available in controllers too
-    if (!this.ctx?.isAuthenticated()) {
-      window.location.hash = '#/login';
-    }
-  }
-  
-  detach(element: HTMLElement) { /* Cleanup */ }
-}
+## Migrating from v2.x
 
-@page({ tag: 'admin-page', routes: ['/admin'] })
-class AdminPage extends HTMLElement {
-  html() {
-    return `<div controller="nav-controller">Admin Panel</div>`;
-  }
-}
-```
+v3.0.0 introduces template-based rendering with differential updates. Key changes:
 
-The `@context` decorator:
-- Injects the router's context into page components
-- Available to nested elements via event bubbling
-- Available to controllers attached to pages
-- Returns the same context instance everywhere
-- Automatically cleaned up when elements are removed
+- **Use `@render()` instead of `html()` method**
+  Return `html\`...\`` tagged template instead of string
 
-**Remember:** With great power comes great responsibility. Global state is dangerous - use it wisely and sparingly.
+- **Use `@styles()` instead of `css()` method**
+  Return `css\`...\`` tagged template instead of string
 
-## Observing External Changes
+- **Use template events instead of `@on()` decorator**
+  Replace `@on('click', '.button')` with `@click=${handler}` in templates
 
-The `@observe` decorator provides lifecycle-managed observation of external changes like viewport intersection, element resize, media queries, and DOM mutations:
+- **`@part` decorator removed**
+  Differential rendering makes selective re-rendering unnecessary
 
-```typescript
-import { element, observe } from 'snice';
-
-@element('lazy-image')
-class LazyImage extends HTMLElement {
-  html() {
-    return `
-      <img data-src="photo.jpg" class="lazy" />
-      <div class="loading">Loading...</div>
-    `;
-  }
-
-  // Observe when image enters viewport
-  @observe('intersection', '.lazy', { threshold: 0.1 })
-  loadImage(entry: IntersectionObserverEntry) {
-    if (entry.isIntersecting) {
-      const img = entry.target as HTMLImageElement;
-      img.src = img.dataset.src!;
-      img.classList.add('loaded');
-      return false; // Stop observing after loading
-    }
-  }
-
-  // Respond to viewport size changes
-  @observe('media:(min-width: 768px)')
-  handleDesktop(matches: boolean) {
-    this.classList.toggle('desktop-mode', matches);
-  }
-}
-```
-
-All observers are automatically cleaned up when elements disconnect from the DOM. See the [Observe API documentation](./docs/observe.md) for more examples.
-
-## Parts - Selective Re-rendering
-
-For complex components with frequent updates to specific sections, the `@part` decorator enables selective re-rendering of template parts without rebuilding the entire component:
-
-```typescript
-import { element, part, property, on } from 'snice';
-
-@element('user-dashboard')
-class UserDashboard extends HTMLElement {
-  @property()
-  user = { name: 'Loading...', stats: { views: 0, likes: 0 } };
-  
-  notifications = [];
-  messages = [];
-
-  html() {
-    return `
-      <header part="user-info"></header>
-      <main>
-        <section part="stats"></section>
-        <aside part="notifications"></aside>
-        <div part="messages"></div>
-      </main>
-    `;
-  }
-
-  @part('user-info')
-  renderUserInfo() {
-    return `
-      <h1>${this.user.name}</h1>
-      <button id="refresh-user">Refresh</button>
-    `;
-  }
-
-  @part('stats')
-  renderStats() {
-    return `
-      <div class="stats">
-        <span>Views: ${this.user.stats.views}</span>
-        <span>Likes: ${this.user.stats.likes}</span>
-      </div>
-    `;
-  }
-
-  @part('notifications', { throttle: 300 })
-  renderNotifications() {
-    return `
-      <h3>Notifications (${this.notifications.length})</h3>
-      ${this.notifications.map(n => `<div>${n}</div>`).join('')}
-    `;
-  }
-
-  @part('messages')
-  async renderMessages() {
-    if (this.messages.length === 0) {
-      return '<p>No messages</p>';
-    }
-    return this.messages.map(m => `<div class="message">${m}</div>`).join('');
-  }
-
-  // Update specific parts without re-rendering everything
-  updateUserName(newName) {
-    this.user.name = newName;
-    this.renderUserInfo(); // Only re-renders the header
-  }
-
-  incrementViews() {
-    this.user.stats.views++;
-    this.renderStats(); // Only re-renders the stats section
-  }
-
-  addNotification(notification) {
-    this.notifications.unshift(notification);
-    this.renderNotifications(); // Only re-renders notifications
-  }
-
-  @on('click', '#refresh-user')
-  async handleRefreshUser() {
-    // Simulate API call
-    const userData = await this.fetchUserData();
-    this.user = userData;
-    this.renderUserInfo(); // Update just the user info part
-    this.renderStats();    // Update just the stats part
-  }
-}
-```
-
-**Benefits of `@part`:**
-- **Performance** - Update only what changed instead of re-rendering entire templates
-- **Granular Control** - Target specific sections for updates
-- **Complex UIs** - Perfect for dashboards, lists, or components with independent sections
-- **Async Support** - Part methods can be async for data fetching
-- **Throttle/Debounce** - Control render frequency to optimize performance
-
-### Performance Options
-
-The `@part` decorator supports throttle and debounce options to optimize render performance:
-
-```typescript
-// Throttle: Limit renders to once per 300ms
-@part('notifications', { throttle: 300 })
-renderNotifications() { /* ... */ }
-
-// Debounce: Delay render until 150ms after last call
-@part('search-results', { debounce: 150 })
-renderSearchResults() { /* ... */ }
-```
-
-- **Throttle** - Limits renders to a maximum frequency (e.g., once every 300ms)
-- **Debounce** - Delays renders until after calls stop for the specified time
-
-The `@part` decorator is ideal when you have components with multiple independent sections that update at different frequencies or from different data sources.
-
-## Lifecycle Callbacks
-
-Snice provides decorators for advanced DOM lifecycle events that go beyond basic connected/disconnected callbacks:
-
-### @moved Decorator
-
-The `@moved` decorator runs methods when an element is moved within the DOM using `Element.moveBefore()`. This is useful for handling position changes without full disconnection/reconnection:
-
-```typescript
-@element('my-element')
-class MyElement extends HTMLElement {
-  @moved()
-  onElementMoved() {
-    console.log('Element moved to new position');
-    this.updatePosition();
-  }
-
-  // With timing options
-  @moved({ debounce: 100 })
-  onMovedDebounced() {
-    // Only called once after moves stop for 100ms
-    this.recalculateLayout();
-  }
-
-  @moved({ throttle: 500 })
-  onMovedThrottled() {
-    // Called at most once every 500ms during rapid moves
-    this.optimizePerformance();
-  }
-}
-```
-
-### @adopted Decorator
-
-The `@adopted` decorator runs methods when an element is moved to a new document (like iframes or document fragments):
-
-```typescript
-@element('portable-element')
-class PortableElement extends HTMLElement {
-  @adopted()
-  onAdoptedToNewDocument() {
-    console.log('Element moved to new document');
-    this.updateDocumentReferences();
-  }
-
-  // With timing options
-  @adopted({ debounce: 200 })
-  onAdoptedDebounced() {
-    // Debounced for performance during rapid document moves
-    this.reinitializeForNewContext();
-  }
-}
-```
-
-### Timing Options
-
-Both decorators support the same timing options as `@part`:
-
-- **`debounce`** - Delays execution until after calls stop for the specified milliseconds
-- **`throttle`** - Limits execution to once per specified milliseconds
-
-```typescript
-// Examples of timing control
-@moved({ debounce: 150 })    // Wait 150ms after moves stop
-@adopted({ throttle: 300 })  // Maximum once per 300ms
-```
-
-These lifecycle callbacks are perfect for:
-- **Performance optimization** during rapid DOM changes
-- **Layout recalculation** when elements move
-- **Context updates** when elements move between documents
-- **Resource cleanup/setup** during document adoption
+See [MIGRATION_V2_TO_V3.md](./MIGRATION_V2_TO_V3.md) for detailed migration guide.
 
 ## Documentation
 
 - [Elements API](./docs/elements.md) - Complete guide to creating elements with properties, queries, and styling
 - [Controllers API](./docs/controllers.md) - Data fetching, business logic, and controller patterns
+- [Routing API](./docs/routing.md) - Single-page application routing with transitions
+- [Placards API](./docs/placards.md) - Rich page metadata for dynamic navigation and discovery
 - [Events API](./docs/events.md) - Event handling, dispatching, and custom events
 - [Request/Response API](./docs/request-response.md) - Bidirectional communication between elements and controllers
-- [Routing API](./docs/routing.md) - Single-page application routing with transitions
 - [Observe API](./docs/observe.md) - Lifecycle-managed observers for external changes
 
 ## License

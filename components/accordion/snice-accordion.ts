@@ -1,5 +1,5 @@
-import { element, property, on, dispatch, ready, queryAll } from 'snice';
-import css from './snice-accordion.css?inline';
+import { element, property, ready, queryAll, render, styles, html, css as cssTag } from 'snice';
+import cssContent from './snice-accordion.css?inline';
 import type { SniceAccordionElement, SniceAccordionItemElement, AccordionOpenEvent, AccordionCloseEvent } from './snice-accordion.types';
 
 @element('snice-accordion')
@@ -12,41 +12,61 @@ export class SniceAccordion extends HTMLElement implements SniceAccordionElement
 
   activeItems: Set<string> = new Set();
 
-  html() {
-    return /*html*/`
-      <div class="accordion">
-        <slot></slot>
+  @render()
+  renderContent() {
+    return html`
+      <div class="accordion" @keydown="${(e: KeyboardEvent) => this.handleKeydown(e)}">
+        <slot @slotchange="${(e: Event) => this.handleSlotChange(e)}"></slot>
       </div>
     `;
   }
 
-  css() {
-    return css;
+  @styles()
+  componentStyles() {
+    return cssTag`${cssContent}`;
+  }
+
+  private handleKeydown(e: KeyboardEvent) {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      this.navigateItems(e, 1);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      this.navigateItems(e, -1);
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      this.navigateToIndex(e, 0);
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      if (!this.items) return;
+      this.navigateToIndex(e, this.items.length - 1);
+    }
+  }
+
+  private handleSlotChange(e: Event) {
+    this.updateItems();
   }
 
   @ready()
   init() {
     // Set up initial state
     this.updateItems();
-  }
 
-  @on('slotchange')
-  handleSlotChange(e: Event) {
-    const target = e.target as HTMLElement;
-    if (!target.matches('slot')) return;
-
-    this.updateItems();
+    // Listen for accordion-item-toggle events
+    this.addEventListener('accordion-item-toggle', (e: Event) => {
+      this.handleItemToggle(e as CustomEvent<{ itemId: string; open: boolean }>);
+    });
   }
 
   private updateItems() {
     if (!this.items) return;
-    
+
     this.items.forEach((item, index) => {
       // Set default ID if not provided
       if (!item.itemId) {
         item.itemId = `accordion-item-${index}`;
       }
-      
+
       // Track open items
       if (item.open) {
         this.activeItems.add(item.itemId);
@@ -54,10 +74,9 @@ export class SniceAccordion extends HTMLElement implements SniceAccordionElement
     });
   }
 
-  @on('accordion-item-toggle')
-  handleItemToggle(event: CustomEvent<{ itemId: string; open: boolean }>) {
+  private handleItemToggle(event: CustomEvent<{ itemId: string; open: boolean }>) {
     const { itemId, open } = event.detail;
-    
+
     if (open) {
       // If not multiple mode, close other items
       if (!this.multiple) {
@@ -68,7 +87,7 @@ export class SniceAccordion extends HTMLElement implements SniceAccordionElement
         });
         this.activeItems.clear();
       }
-      
+
       this.activeItems.add(itemId);
       this.dispatchOpenEvent(itemId);
     } else {
@@ -116,42 +135,22 @@ export class SniceAccordion extends HTMLElement implements SniceAccordionElement
     });
   }
 
-  @dispatch('accordion-open', { bubbles: true, composed: true })
-  private dispatchOpenEvent(itemId: string): AccordionOpenEvent['detail'] {
+  private dispatchOpenEvent(itemId: string) {
     const item = this.querySelector(`snice-accordion-item[item-id="${itemId}"]`) as SniceAccordionItemElement;
-    return { itemId, item };
+    this.dispatchEvent(new CustomEvent('accordion-open', {
+      bubbles: true,
+      composed: true,
+      detail: { itemId, item }
+    }));
   }
 
-  @dispatch('accordion-close', { bubbles: true, composed: true })
-  private dispatchCloseEvent(itemId: string): AccordionCloseEvent['detail'] {
+  private dispatchCloseEvent(itemId: string) {
     const item = this.querySelector(`snice-accordion-item[item-id="${itemId}"]`) as SniceAccordionItemElement;
-    return { itemId, item };
-  }
-
-  // Keyboard navigation
-  @on('keydown:ArrowDown')
-  handleArrowDown(event: KeyboardEvent) {
-    event.preventDefault();
-    this.navigateItems(event, 1);
-  }
-
-  @on('keydown:ArrowUp')
-  handleArrowUp(event: KeyboardEvent) {
-    event.preventDefault();
-    this.navigateItems(event, -1);
-  }
-
-  @on('keydown:Home')
-  handleHome(event: KeyboardEvent) {
-    event.preventDefault();
-    this.navigateToIndex(event, 0);
-  }
-
-  @on('keydown:End')
-  handleEnd(event: KeyboardEvent) {
-    event.preventDefault();
-    if (!this.items) return;
-    this.navigateToIndex(event, this.items.length - 1);
+    this.dispatchEvent(new CustomEvent('accordion-close', {
+      bubbles: true,
+      composed: true,
+      detail: { itemId, item }
+    }));
   }
 
   private navigateItems(event: KeyboardEvent, direction: number) {

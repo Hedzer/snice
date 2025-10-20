@@ -1,5 +1,5 @@
-import { element, property, query, on, watch, ready, dispose } from 'snice';
-import css from './snice-tooltip.css?inline';
+import { element, property, query, on, watch, ready, dispose, render, styles, html, css } from 'snice';
+import cssContent from './snice-tooltip.css?inline';
 import portalCss from './snice-tooltip-portal.css?inline';
 import type { TooltipPosition, TooltipTrigger, SniceTooltipElement } from './snice-tooltip.types';
 
@@ -72,8 +72,9 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
     }
   }
 
-  html() {
-    return /*html*/`
+  @render()
+  renderContent() {
+    return html/*html*/`
       <div class="tooltip-trigger">
         <slot></slot>
       </div>
@@ -84,8 +85,9 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
     `;
   }
 
-  css() {
-    return css;
+  @styles()
+  componentStyles() {
+    return css/*css*/`${cssContent}`;
   }
 
   @ready()

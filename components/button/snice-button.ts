@@ -1,5 +1,5 @@
-import { element, property, query, on, dispatch, watch } from 'snice';
-import css from './snice-button.css?inline';
+import { element, property, query, render, styles, html, css } from 'snice';
+import cssContent from './snice-button.css?inline';
 import type { ButtonVariant, ButtonSize, IconPlacement, SniceButtonElement } from './snice-button.types';
 
 @element('snice-button')
@@ -53,7 +53,8 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
   @query('.icon')
   iconElement?: HTMLImageElement;
 
-  html() {
+  @render()
+  renderContent() {
     const classes = [
       'button',
       `button--${this.variant || 'default'}`,
@@ -67,71 +68,23 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
       this.icon ? `button--icon-${this.iconPlacement}` : ''
     ].filter(Boolean).join(' ');
 
-    const iconElement = this.icon ? /*html*/`
-      <img class="icon" src="${this.icon}" alt="" part="icon" />
-    ` : '';
-
-    return /*html*/`
-      <button class="${classes}" type="button" ${this.disabled ? 'disabled' : ''} part="base">
+    return html/*html*/`
+      <button class="${classes}" type="button" ?disabled="${this.disabled}" part="base" @click="${(e: MouseEvent) => this.handleInternalClick(e)}">
         <span class="spinner" part="spinner"></span>
-        ${this.iconPlacement === 'start' ? iconElement : ''}
+        <if ${this.icon && this.iconPlacement === 'start'}>
+          <img class="icon" src="${this.icon}" alt="" part="icon" />
+        </if>
         <span class="label" part="label">
           <slot></slot>
         </span>
-        ${this.iconPlacement === 'end' ? iconElement : ''}
+        <if ${this.icon && this.iconPlacement === 'end'}>
+          <img class="icon" src="${this.icon}" alt="" part="icon" />
+        </if>
       </button>
     `;
   }
 
-  css() {
-    return css;
-  }
-
-  @watch('*')
-  updateButtonClasses() {
-    if (!this.button) return;
-    
-    // Rebuild all classes based on current state
-    const classes = [
-      'button',
-      `button--${this.variant}`,
-      `button--${this.size}`,
-      this.outline ? 'button--outline' : '',
-      this.pill ? 'button--pill' : '',
-      this.circle ? 'button--circle' : '',
-      this.loading ? 'button--loading' : '',
-      this.disabled ? 'button--disabled' : '',
-      this.icon ? `button--has-icon` : '',
-      this.icon ? `button--icon-${this.iconPlacement}` : ''
-    ].filter(Boolean);
-    
-    // Set the className directly to avoid class manipulation issues
-    this.button.className = classes.join(' ');
-  }
-
-  @watch('disabled')
-  updateDisabledState() {
-    if (this.button) {
-      this.button.disabled = this.disabled;
-    }
-  }
-
-  // Keep these methods for backwards compatibility if needed
-  setLoading(loading: boolean) {
-    this.loading = loading;
-  }
-
-  setDisabled(disabled: boolean) {
-    this.disabled = disabled;
-  }
-
-  setVariant(variant: typeof this.variant) {
-    this.variant = variant;
-  }
-
-  @on('click')
-  @dispatch('@snice/click')
-  handleClick(event: MouseEvent) {
+  private handleInternalClick(event: MouseEvent) {
     if (this.disabled || this.loading) {
       event.preventDefault();
       event.stopPropagation();
@@ -152,7 +105,30 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
       }
     }
 
-    return { originalEvent: event };
+    // Dispatch the custom event
+    this.dispatchEvent(new CustomEvent('@snice/click', {
+      bubbles: true,
+      composed: true,
+      detail: { originalEvent: event }
+    }));
+  }
+
+  @styles()
+  componentStyles() {
+    return css/*css*/`${cssContent}`;
+  }
+
+  // Keep these methods for backwards compatibility if needed
+  setLoading(loading: boolean) {
+    this.loading = loading;
+  }
+
+  setDisabled(disabled: boolean) {
+    this.disabled = disabled;
+  }
+
+  setVariant(variant: typeof this.variant) {
+    this.variant = variant;
   }
 
   focus(options?: FocusOptions) {

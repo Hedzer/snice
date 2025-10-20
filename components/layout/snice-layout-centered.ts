@@ -1,13 +1,14 @@
-import { element, property } from 'snice';
-import css from './snice-layout-centered.css?inline';
+import { element, property, render, styles, html, css } from 'snice';
+import cssContent from './snice-layout-centered.css?inline';
 
 @element('snice-layout-centered')
 export class SniceLayoutCentered extends HTMLElement {
   @property({  })
   width: 'sm' | 'md' | 'lg' | 'xl' = 'md';
 
-  html() {
-    return /*html*/`
+  @render()
+  renderContent() {
+    return html/*html*/`
       <div class="layout">
         <div class="container">
           <slot name="page"></slot>
@@ -16,7 +17,8 @@ export class SniceLayoutCentered extends HTMLElement {
     `;
   }
 
-  css() {
-    return css;
+  @styles()
+  componentStyles() {
+    return css/*css*/`${cssContent}`;
   }
 }

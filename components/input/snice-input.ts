@@ -1,5 +1,5 @@
-import { element, property, query, on, watch, dispatch, ready } from 'snice';
-import css from './snice-input.css?inline';
+import { element, property, query, watch, dispatch, ready, render, styles, html, css } from 'snice';
+import cssContent from './snice-input.css?inline';
 import type { InputType, InputSize, InputVariant, SniceInputElement } from './snice-input.types';
 
 @element('snice-input')
@@ -87,65 +87,79 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
 
   private showPassword = false;
 
-  html() {
-    return /*html*/`
+  @render()
+  renderContent() {
+    const inputClasses = [
+      'input',
+      `input--${this.size}`,
+      `input--${this.variant}`,
+      this.invalid ? 'input--invalid' : '',
+      this.prefixIcon ? 'input--with-prefix-icon' : '',
+      this.suffixIcon || (this.type === 'password' && this.password) ? 'input--with-suffix-icon' : '',
+      this.clearable ? 'input--clearable' : ''
+    ].filter(Boolean).join(' ');
+
+    const labelClasses = ['label', this.required ? 'label--required' : ''].filter(Boolean).join(' ');
+    const clearButtonClasses = ['clear-button', this.suffixIcon || (this.type === 'password' && this.password) ? 'clear-button--with-suffix' : ''].filter(Boolean).join(' ');
+
+    return html/*html*/`
       <div class="input-wrapper">
-        ${this.label ? /*html*/`
-          <label class="label ${this.required ? 'label--required' : ''}">
+        <if ${this.label}>
+          <label class="${labelClasses}">
             ${this.label}
           </label>
-        ` : ''}
-        
+        </if>
+
         <div class="input-container">
-          ${this.prefixIcon ? /*html*/`
+          <if ${this.prefixIcon}>
             <span class="icon icon--prefix">${this.prefixIcon}</span>
-          ` : ''}
-          
+          </if>
+
           <input
-            class="input 
-              input--${this.size} 
-              input--${this.variant}
-              ${this.invalid ? 'input--invalid' : ''}
-              ${this.prefixIcon ? 'input--with-prefix-icon' : ''}
-              ${this.suffixIcon || (this.type === 'password' && this.password) ? 'input--with-suffix-icon' : ''}
-              ${this.clearable ? 'input--clearable' : ''}"
+            class="${inputClasses}"
             type="${this.type}"
             value="${this.value}"
             placeholder="${this.placeholder}"
-            ${this.disabled ? 'disabled' : ''}
-            ${this.readonly ? 'readonly' : ''}
-            ${this.required ? 'required' : ''}
-            ${this.min ? `min="${this.min}"` : ''}
-            ${this.max ? `max="${this.max}"` : ''}
-            ${this.step ? `step="${this.step}"` : ''}
-            ${this.pattern ? `pattern="${this.pattern}"` : ''}
-            ${this.maxlength > 0 ? `maxlength="${this.maxlength}"` : ''}
-            ${this.minlength > 0 ? `minlength="${this.minlength}"` : ''}
-            ${this.autocomplete ? `autocomplete="${this.autocomplete}"` : ''}
-            ${this.name ? `name="${this.name}"` : ''}
+            ?disabled="${this.disabled}"
+            ?readonly="${this.readonly}"
+            ?required="${this.required}"
+            min="${this.min || ''}"
+            max="${this.max || ''}"
+            step="${this.step || ''}"
+            pattern="${this.pattern || ''}"
+            maxlength="${this.maxlength > 0 ? this.maxlength : ''}"
+            minlength="${this.minlength > 0 ? this.minlength : ''}"
+            autocomplete="${this.autocomplete || ''}"
+            name="${this.name || ''}"
             part="input"
+            @input=${this.handleInput}
+            @change=${this.handleChange}
+            @focus=${this.handleFocus}
+            @blur=${this.handleBlur}
           />
-          
+
           <button
-            class="clear-button ${this.suffixIcon || (this.type === 'password' && this.password) ? 'clear-button--with-suffix' : ''}"
+            class="${clearButtonClasses}"
             type="button"
             aria-label="Clear"
             tabindex="-1"
             part="clear"
             style="display: none;"
+            @click=${this.handleClear}
           >
             <svg viewBox="0 0 24 24" width="16" height="16">
               <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
             </svg>
           </button>
-          
-          ${this.type === 'password' && this.password ? /*html*/`
+
+          <if ${this.type === 'password' && this.password}>
             <button
               class="password-toggle"
               type="button"
               aria-label="Show password"
               tabindex="-1"
               part="password-toggle"
+              @click=${this.handlePasswordToggle}
             >
               <svg viewBox="0 0 24 24" width="18" height="18" class="password-icon password-icon--hidden">
                 <path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z" fill="currentColor"/>
@@ -154,24 +168,30 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
                 <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="currentColor"/>
               </svg>
             </button>
-          ` : this.suffixIcon ? /*html*/`
+          </if>
+          <if ${!(this.type === 'password' && this.password) && this.suffixIcon}>
             <span class="icon icon--suffix">${this.suffixIcon}</span>
-          ` : ''}
+          </if>
         </div>
-        
-        ${this.errorText ? /*html*/`
-          <span class="error-text" part="error-text">${this.errorText}</span>
-        ` : this.helperText ? /*html*/`
-          <span class="helper-text" part="helper-text">${this.helperText}</span>
-        ` : /*html*/`
-          <span class="helper-text" part="helper-text">&nbsp;</span>
-        `}
+
+        <case ${this.errorText ? 'error' : this.helperText ? 'helper' : 'empty'}>
+          <when value="error">
+            <span class="error-text" part="error-text">${this.errorText}</span>
+          </when>
+          <when value="helper">
+            <span class="helper-text" part="helper-text">${this.helperText}</span>
+          </when>
+          <default>
+            <span class="helper-text" part="helper-text">&nbsp;</span>
+          </default>
+        </case>
       </div>
     `;
   }
 
-  css() {
-    return css;
+  @styles()
+  componentStyles() {
+    return css/*css*/`${cssContent}`;
   }
 
   @ready()
@@ -212,55 +232,31 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
     }
   }
 
-  @on('input')
   handleInput(e: Event) {
-    const target = e.target as HTMLElement;
-    if (!target.matches('.input')) return;
-
-    const input = target as HTMLInputElement;
+    const input = e.target as HTMLInputElement;
     this.value = input.value;
     this.dispatchInputEvent();
   }
 
-  @on('change')
   handleChange(e: Event) {
-    const target = e.target as HTMLElement;
-    if (!target.matches('.input')) return;
-
-    const input = target as HTMLInputElement;
+    const input = e.target as HTMLInputElement;
     this.value = input.value;
     this.dispatchChangeEvent();
   }
 
-  @on('focus')
   handleFocus(e: Event) {
-    const target = e.target as HTMLElement;
-    if (!target.matches('.input')) return;
-
     this.dispatchFocusEvent();
   }
 
-  @on('blur')
   handleBlur(e: Event) {
-    const target = e.target as HTMLElement;
-    if (!target.matches('.input')) return;
-
     this.dispatchBlurEvent();
   }
 
-  @on('click')
   handleClear(e: Event) {
-    const target = e.target as HTMLElement;
-    if (!target.matches('.clear-button')) return;
-
     this.clear();
   }
 
-  @on('click')
   handlePasswordToggle(e: Event) {
-    const target = e.target as HTMLElement;
-    if (!target.matches('.password-toggle')) return;
-
     this.showPassword = !this.showPassword;
     if (this.input) {
       this.input.type = this.showPassword ? 'text' : 'password';

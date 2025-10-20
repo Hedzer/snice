@@ -1,4 +1,4 @@
-import { element, property, ready, dispose } from 'snice';
+import { element, property, ready, dispose, render, styles, html, css } from 'snice';
 import { getSymbol } from '../symbols';
 import type { ToastPosition, ToastOptions, ToastEventDetail, ToastResponseEventDetail, SniceToastContainerElement } from './snice-toast.types';
 import './snice-toast';
@@ -19,14 +19,16 @@ export class SniceToastContainer extends HTMLElement implements SniceToastContai
   private toastIdCounter = 1;
   private toasts: Map<string, HTMLElement> = new Map();
 
-  html() {
-    return /*html*/`
+  @render()
+  renderContent() {
+    return html/*html*/`
       <div class="toast-wrapper"></div>
     `;
   }
 
-  css() {
-    return /*css*/`
+  @styles()
+  componentStyles() {
+    return css/*css*/`
       :host {
         position: fixed;
         z-index: 10000;

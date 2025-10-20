@@ -1,5 +1,5 @@
-import { element, property, watch, ready, query } from 'snice';
-import css from './snice-cell.css?inline';
+import { element, property, watch, ready, query, render, styles, html, css } from 'snice';
+import cssContent from './snice-cell.css?inline';
 import type { SniceCellElement, ColumnType, ColumnAlign, ColumnDefinition } from './snice-table.types';
 
 @element('snice-cell-text')
@@ -33,19 +33,21 @@ export class SniceCellText extends HTMLElement implements SniceCellElement {
   @property({ type: Number, attribute: 'max-lines' })
   maxLines?: number;
 
-  html() {
+  @render()
+  renderContent() {
     const content = this.formatTextContent();
-    const styles = this.getTextStyles();
-    
-    return `
-      <div class="cell-content cell-content--text" part="content" style="${styles}">
+    const textStyles = this.getTextStyles();
+
+    return html/*html*/`
+      <div class="cell-content cell-content--text" part="content" style="${textStyles}">
         ${content}
       </div>
     `;
   }
 
-  css() {
-    return css;
+  @styles()
+  componentStyles() {
+    return css/*css*/`${cssContent}`;
   }
 
   @ready()

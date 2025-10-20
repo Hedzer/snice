@@ -3,7 +3,7 @@ import { setupObservers, cleanupObservers } from './observe';
 import { setupResponseHandlers, cleanupResponseHandlers } from './request-response';
 import { parseAttributeValue, detectType, valueToAttribute } from './utils';
 import { requestRender, applyStyles } from './render';
-import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PROPERTY_WATCHERS, EXPLICITLY_SET_PROPERTIES, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD } from './symbols';
+import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, RENDERED_PROMISE, RENDERED_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PROPERTY_WATCHERS, EXPLICITLY_SET_PROPERTIES, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD } from './symbols';
 import { QueryOptions } from './types/query-options';
 import { PropertyOptions } from './types/property-options';
 import { MovedOptions } from './types/moved-options';
@@ -119,7 +119,11 @@ export function applyElementFunctionality(constructor: any) {
       enumerable: true,
       configurable: true
     });
-    
+
+    // Note: rendered promise is stored via symbols RENDERED_PROMISE and RENDERED_RESOLVE
+    // It's not exposed as a public property - only accessible via test utilities
+    // This prevents accidental misuse in production code
+
     // Add controller property
     Object.defineProperty(constructor.prototype, 'controller', {
       get() {
@@ -218,6 +222,12 @@ export function applyElementFunctionality(constructor: any) {
             } catch (error) {
               console.error(`Error setting up observers for ${this.tagName}:`, error);
             }
+
+            // Mark element as ready after initial render completes
+            if (this[READY_RESOLVE]) {
+              this[READY_RESOLVE]();
+              this[READY_RESOLVE] = null;
+            }
           });
         } else {
           // No render method, setup observers immediately
@@ -225,6 +235,12 @@ export function applyElementFunctionality(constructor: any) {
             setupObservers(this, this);
           } catch (error) {
             console.error(`Error setting up observers for ${this.tagName}:`, error);
+          }
+
+          // Mark element as ready immediately if no render method
+          if (this[READY_RESOLVE]) {
+            this[READY_RESOLVE]();
+            this[READY_RESOLVE] = null;
           }
         }
 
@@ -239,11 +255,8 @@ export function applyElementFunctionality(constructor: any) {
           originalConnectedCallback.call(this);
         }
       } finally {
-        // Always mark element as ready, even if there were errors
-        if (this[READY_RESOLVE]) {
-          this[READY_RESOLVE]();
-          this[READY_RESOLVE] = null; // Clear the resolver
-        }
+        // Ready is now resolved inside the render microtask (or immediately if no render)
+        // This ensures ready waits for initial render to complete
       }
 
       // Call @ready handlers after everything is set up and ready promise is resolved

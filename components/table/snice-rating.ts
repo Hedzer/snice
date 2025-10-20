@@ -1,4 +1,4 @@
-import { element, property } from 'snice';
+import { element, property, render, styles, html, css } from 'snice';
 
 @element('snice-rating')
 export class SniceRating extends HTMLElement {
@@ -17,26 +17,28 @@ export class SniceRating extends HTMLElement {
   @property()
   color = '#facc15';
 
-  html() {
+  @render()
+  renderContent() {
     const filled = Math.round(this.value);
     const empty = this.max - filled;
-    
-    return `
+
+    return html/*html*/`
       <span class="filled">${this.symbol.repeat(filled)}</span><span class="empty">${this.emptySymbol.repeat(empty)}</span>
     `;
   }
 
-  css() {
-    return `
+  @styles()
+  componentStyles() {
+    return css/*css*/`
       :host {
         display: inline-block;
         font-size: 1.2em;
       }
-      
+
       .filled {
         color: ${this.color};
       }
-      
+
       .empty {
         color: #d1d5db;
       }

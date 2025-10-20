@@ -1,5 +1,5 @@
-import { element, property, query, on, watch, dispatch, ready } from 'snice';
-import css from './snice-switch.css?inline';
+import { element, property, query, on, watch, dispatch, ready, render, styles, html, css } from 'snice';
+import cssContent from './snice-switch.css?inline';
 import type { SwitchSize, SniceSwitchElement } from './snice-switch.types';
 
 @element('snice-switch')
@@ -52,45 +52,48 @@ export class SniceSwitch extends HTMLElement implements SniceSwitchElement {
   @query('.switch-state-label--off')
   offLabel?: HTMLElement;
 
-  html() {
-    return /*html*/`
-      <label class="switch-wrapper ${this.disabled ? 'switch-wrapper--disabled' : ''}">
+  @render()
+  renderContent() {
+    const wrapperClasses = `switch-wrapper${this.disabled ? ' switch-wrapper--disabled' : ''}`;
+    const trackClasses = `switch-track switch-track--${this.size}${this.invalid ? ' switch-track--invalid' : ''}`;
+    const labelClasses = `switch-label switch-label--${this.size}${this.required ? ' switch-label--required' : ''}`;
+
+    return html/*html*/`
+      <label class="${wrapperClasses}">
         <input
           type="checkbox"
           class="switch-input"
-          ${this.checked ? 'checked' : ''}
-          ${this.disabled ? 'disabled' : ''}
-          ${this.required ? 'required' : ''}
-          ${this.name ? `name="${this.name}"` : ''}
-          ${this.value ? `value="${this.value}"` : ''}
+          ?checked="${this.checked}"
+          ?disabled="${this.disabled}"
+          ?required="${this.required}"
+          name="${this.name}"
+          value="${this.value}"
           aria-invalid="${this.invalid}"
           aria-checked="${this.checked}"
           role="switch"
           part="input"
         />
-        
-        <span class="switch-track 
-          switch-track--${this.size}
-          ${this.invalid ? 'switch-track--invalid' : ''}"
-          part="track">
+
+        <span class="${trackClasses}" part="track">
           <span class="switch-thumb" part="thumb"></span>
-          ${this.labelOn || this.labelOff ? /*html*/`
+          <if ${this.labelOn || this.labelOff}>
             <span class="switch-state-label switch-state-label--on">${this.labelOn}</span>
             <span class="switch-state-label switch-state-label--off">${this.labelOff}</span>
-          ` : ''}
+          </if>
         </span>
-        
-        ${this.label ? /*html*/`
-          <span class="switch-label switch-label--${this.size} ${this.required ? 'switch-label--required' : ''}" part="label">
+
+        <if ${this.label}>
+          <span class="${labelClasses}" part="label">
             ${this.label}
           </span>
-        ` : ''}
+        </if>
       </label>
     `;
   }
 
-  css() {
-    return css;
+  @styles()
+  componentStyles() {
+    return css/*css*/`${cssContent}`;
   }
 
   @ready()

@@ -6,7 +6,7 @@
 import { TemplateResult, CSSResult, HTML_RESULT, CSS_RESULT, isTemplateResult } from './template';
 
 // Unique marker for dynamic parts
-const marker = `{{lit-${String(Math.random()).slice(2)}}}`;
+const marker = `{{snice-${String(Math.random()).slice(2)}}}`;
 const nodeMarker = `<!--${marker}-->`;
 const markerRegex = new RegExp(marker, 'g');
 
@@ -41,8 +41,8 @@ class Template {
         // Handle virtual elements: <if>, <case>
         if (tagName === 'if') {
           // <if ${condition}>children</if>
-          // The condition becomes an attribute with a name like "lit-NUMBERS"
-          const markerAttr = Array.from(element.attributes).find(attr => attr.name.startsWith('lit-'));
+          // The condition becomes an attribute with a name like "snice-NUMBERS"
+          const markerAttr = Array.from(element.attributes).find(attr => attr.name.startsWith('snice-'));
 
           if (markerAttr) {
             // Replace <if> with comment markers
@@ -73,8 +73,8 @@ class Template {
         // Handle <case> element
         if (tagName === 'case') {
           // <case ${value}>children</case>
-          // The value becomes an attribute with a name like "lit-NUMBERS"
-          const markerAttr = Array.from(element.attributes).find(attr => attr.name.startsWith('lit-'));
+          // The value becomes an attribute with a name like "snice-NUMBERS"
+          const markerAttr = Array.from(element.attributes).find(attr => attr.name.startsWith('snice-'));
 
           if (markerAttr) {
             const parent = element.parentNode!;
@@ -116,6 +116,9 @@ class Template {
               // Get original attribute name with preserved case
               const originalName = attrNamesForParts[partIndex] || attr.name;
 
+              // Extract static string segments by splitting on marker
+              const attrStrings = value.split(marker);
+
               if (originalName.startsWith('@')) {
                 // Event binding
                 this.parts.push({
@@ -142,11 +145,13 @@ class Template {
                 });
               } else {
                 // Regular attribute - use lowercased name from DOM
+                // Store static string segments for interpolation
                 this.parts.push({
                   type: 'attribute',
                   index: partIndex++,
                   name: attr.name,
-                  element
+                  element,
+                  attrStrings
                 });
               }
             }
@@ -222,6 +227,7 @@ interface TemplatePart {
   startNode?: Comment;
   endNode?: Comment;
   caseElement?: Element; // For case/when matching
+  attrStrings?: string[]; // Static string segments for attributes with interpolation
 }
 
 /**
@@ -321,7 +327,7 @@ export class TemplateInstance {
             break;
           case 'attribute':
             const attrElement = nodeMap.get(partDef.element!) as Element;
-            part = new AttributePart(attrElement, partDef.name!);
+            part = new AttributePart(attrElement, partDef.name!, partDef.attrStrings);
             break;
           case 'property':
             const propElement = nodeMap.get(partDef.element!) as Element;
@@ -484,12 +490,14 @@ export class NodePart extends Part {
 export class AttributePart extends Part {
   readonly element: Element;
   readonly name: string;
+  readonly attrStrings?: string[];
   private value: any = undefined;
 
-  constructor(element: Element, name: string) {
+  constructor(element: Element, name: string, attrStrings?: string[]) {
     super();
     this.element = element;
     this.name = name;
+    this.attrStrings = attrStrings;
   }
 
   commit(value: any): void {
@@ -499,13 +507,34 @@ export class AttributePart extends Part {
     if (value === null || value === undefined) {
       this.element.removeAttribute(this.name);
     } else {
-      this.element.setAttribute(this.name, String(value));
+      // Data-oriented: compute final value from strings + value
+      const finalValue = computeAttributeValue(this.attrStrings, value);
+      this.element.setAttribute(this.name, finalValue);
     }
   }
 
   clear(): void {
     this.element.removeAttribute(this.name);
   }
+}
+
+/**
+ * Data-oriented function to compute attribute value from static strings and dynamic value
+ */
+function computeAttributeValue(attrStrings: string[] | undefined, value: any): string {
+  if (!attrStrings || attrStrings.length === 0) {
+    // No template strings, just use the value
+    return String(value);
+  }
+
+  if (attrStrings.length === 1) {
+    // Single string segment, no interpolation (shouldn't happen but handle it)
+    return attrStrings[0];
+  }
+
+  // Multiple segments: "prefix" + value + "suffix"
+  // For aria-label="Remove ${label}", attrStrings = ["Remove ", ""]
+  return attrStrings[0] + String(value) + attrStrings[1];
 }
 
 /**
@@ -564,18 +593,29 @@ export class BooleanAttributePart extends Part {
 }
 
 /**
- * EventPart handles event listener bindings
+ * EventPart handles event listener bindings with keyboard shortcut support
  */
 export class EventPart extends Part {
   readonly element: Element;
   readonly eventName: string;
   private listener: EventListener | null = null;
   private value: any = undefined;
+  private keyFilter: KeyboardFilter | null = null;
 
   constructor(element: Element, eventName: string) {
     super();
     this.element = element;
-    this.eventName = eventName;
+
+    // Parse keyboard shortcuts: @keydown.enter, @keydown.ctrl+s, etc.
+    const dotIndex = eventName.indexOf('.');
+    if (dotIndex > 0) {
+      const baseEvent = eventName.substring(0, dotIndex);
+      const keySpec = eventName.substring(dotIndex + 1);
+      this.eventName = baseEvent;
+      this.keyFilter = parseKeyboardFilter(keySpec);
+    } else {
+      this.eventName = eventName;
+    }
   }
 
   commit(value: any): void {
@@ -605,10 +645,19 @@ export class EventPart extends Part {
       // This ensures consistent function reference for proper cleanup
       if (host) {
         this.listener = ((event: Event) => {
+          // If keyboard filter is specified, check if event matches
+          if (this.keyFilter && !matchesKeyboardFilter(event as KeyboardEvent, this.keyFilter)) {
+            return;
+          }
           value.call(host, event);
         }) as EventListener;
       } else {
-        this.listener = value as EventListener;
+        this.listener = ((event: Event) => {
+          if (this.keyFilter && !matchesKeyboardFilter(event as KeyboardEvent, this.keyFilter)) {
+            return;
+          }
+          value.call(null, event);
+        }) as EventListener;
       }
 
       this.element.addEventListener(this.eventName, this.listener);
@@ -621,6 +670,116 @@ export class EventPart extends Part {
       this.listener = null;
     }
   }
+}
+
+/**
+ * Keyboard filter for matching specific keys and modifiers
+ */
+interface KeyboardFilter {
+  key: string;
+  ctrl?: boolean;
+  alt?: boolean;
+  shift?: boolean;
+  meta?: boolean;
+  anyModifiers?: boolean; // true if prefixed with ~
+}
+
+/**
+ * Parse keyboard shortcut specification
+ * Examples:
+ *   "enter" -> { key: "Enter" }
+ *   "ctrl+s" -> { key: "s", ctrl: true }
+ *   "ctrl+shift+s" -> { key: "s", ctrl: true, shift: true }
+ *   "~enter" -> { key: "Enter", anyModifiers: true }
+ */
+function parseKeyboardFilter(spec: string): KeyboardFilter {
+  // Handle ~ prefix for matching regardless of modifiers
+  const anyModifiers = spec.startsWith('~');
+  if (anyModifiers) {
+    spec = spec.substring(1);
+  }
+
+  const parts = spec.split('+');
+  const filter: KeyboardFilter = {
+    key: '',
+    anyModifiers
+  };
+
+  for (const part of parts) {
+    const lower = part.toLowerCase();
+    if (lower === 'ctrl' || lower === 'control') {
+      filter.ctrl = true;
+    } else if (lower === 'alt') {
+      filter.alt = true;
+    } else if (lower === 'shift') {
+      filter.shift = true;
+    } else if (lower === 'meta' || lower === 'cmd' || lower === 'command') {
+      filter.meta = true;
+    } else {
+      // This is the key itself - normalize common keys
+      filter.key = normalizeKey(part);
+    }
+  }
+
+  return filter;
+}
+
+/**
+ * Normalize key names to match KeyboardEvent.key
+ */
+function normalizeKey(key: string): string {
+  const keyMap: Record<string, string> = {
+    'esc': 'Escape',
+    'escape': 'Escape',
+    'enter': 'Enter',
+    'return': 'Enter',
+    'space': ' ',
+    'spacebar': ' ',
+    'up': 'ArrowUp',
+    'down': 'ArrowDown',
+    'left': 'ArrowLeft',
+    'right': 'ArrowRight',
+    'arrowup': 'ArrowUp',
+    'arrowdown': 'ArrowDown',
+    'arrowleft': 'ArrowLeft',
+    'arrowright': 'ArrowRight',
+    'delete': 'Delete',
+    'del': 'Delete',
+    'backspace': 'Backspace',
+    'tab': 'Tab',
+    'home': 'Home',
+    'end': 'End',
+    'pageup': 'PageUp',
+    'pagedown': 'PageDown'
+  };
+
+  const lower = key.toLowerCase();
+  return keyMap[lower] || key;
+}
+
+/**
+ * Check if keyboard event matches the filter
+ */
+function matchesKeyboardFilter(event: KeyboardEvent, filter: KeyboardFilter): boolean {
+  // Check key match
+  if (event.key !== filter.key) {
+    return false;
+  }
+
+  // If anyModifiers is true, we don't care about modifiers
+  if (filter.anyModifiers) {
+    return true;
+  }
+
+  // Check modifiers - by default, exact match
+  // If filter specifies ctrl: true, event must have ctrlKey
+  // If filter doesn't specify ctrl, event must NOT have ctrlKey
+  const ctrlMatch = filter.ctrl ? event.ctrlKey : !event.ctrlKey;
+  const altMatch = filter.alt ? event.altKey : !event.altKey;
+  const shiftMatch = filter.shift ? event.shiftKey : !event.shiftKey;
+  const metaMatch = filter.meta ? event.metaKey : !event.metaKey;
+
+  return ctrlMatch && altMatch && shiftMatch && metaMatch;
 }
 
 /**

@@ -17,7 +17,7 @@ The `@observe` decorator provides lifecycle-managed observation of external chan
 The `@observe` decorator automatically manages browser observers with proper cleanup, preventing memory leaks and simplifying complex observation patterns.
 
 ```typescript
-import { element, observe } from 'snice';
+import { element, observe, render, html } from 'snice';
 
 @element('lazy-image')
 class LazyImage extends HTMLElement {
@@ -29,6 +29,11 @@ class LazyImage extends HTMLElement {
       return false; // Stop observing this element
     }
   }
+
+  @render()
+  renderContent() {
+    return html`<img data-src="image.jpg" />`;
+  }
 }
 ```
 
@@ -39,8 +44,9 @@ You can observe multiple types with a single handler using array syntax:
 ```typescript
 @element('dynamic-content')
 class DynamicContent extends HTMLElement {
-  html() {
-    return `<div class="content" data-state="initial">Content</div>`;
+  @render()
+  renderContent() {
+    return html`<div class="content" data-state="initial">Content</div>`;
   }
 
   // Watch for both child changes and attribute changes
@@ -61,6 +67,10 @@ class DynamicContent extends HTMLElement {
     // Called for each media query independently
     this.updateLayout();
   }
+
+  updateLayout() {
+    // Update logic
+  }
 }
 ```
 
@@ -73,8 +83,9 @@ Detect when elements enter or leave the viewport. Perfect for lazy loading, infi
 ```typescript
 @element('scroll-trigger')
 class ScrollTrigger extends HTMLElement {
-  html() {
-    return `
+  @render()
+  renderContent() {
+    return html`
       <div class="content">Scroll to see me</div>
       <img class="lazy" data-src="image.jpg" />
     `;
@@ -118,6 +129,10 @@ handleItemVisible(entry: IntersectionObserverEntry) {
     return false; // Don't observe this item anymore
   }
 }
+
+animateItem(target: Element) {
+  // Animation logic
+}
 ```
 
 ## Resize Observer
@@ -129,8 +144,9 @@ Monitor element size changes for responsive components.
 ```typescript
 @element('responsive-chart')
 class ResponsiveChart extends HTMLElement {
-  html() {
-    return `<canvas class="chart"></canvas>`;
+  @render()
+  renderContent() {
+    return html`<canvas class="chart"></canvas>`;
   }
 
   // Observe host element resize
@@ -144,6 +160,14 @@ class ResponsiveChart extends HTMLElement {
   @observe('resize', '.chart', { throttle: 100 })
   handleChartResize(entry: ResizeObserverEntry) {
     this.updateChartDimensions(entry.contentRect);
+  }
+
+  redrawChart(width: number, height: number) {
+    // Chart redraw logic
+  }
+
+  updateChartDimensions(rect: DOMRectReadOnly) {
+    // Update logic
   }
 }
 ```
@@ -165,8 +189,9 @@ class ResponsiveLayout extends HTMLElement {
   isDesktop = false;
   isDarkMode = false;
 
-  html() {
-    return `<div class="layout">Content</div>`;
+  @render()
+  renderContent() {
+    return html`<div class="layout">Content</div>`;
   }
 
   // Desktop breakpoint
@@ -190,6 +215,18 @@ class ResponsiveLayout extends HTMLElement {
       this.adjustForMobilePortrait();
     }
   }
+
+  updateLayout() {
+    // Layout update logic
+  }
+
+  updateTheme() {
+    // Theme update logic
+  }
+
+  adjustForMobilePortrait() {
+    // Adjustment logic
+  }
 }
 ```
 
@@ -208,8 +245,9 @@ Watch for DOM changes like added/removed nodes or attribute modifications.
 ```typescript
 @element('dynamic-list')
 class DynamicList extends HTMLElement {
-  html() {
-    return `
+  @render()
+  renderContent() {
+    return html`
       <ul class="list"></ul>
       <div class="count">0 items</div>
     `;
@@ -228,6 +266,15 @@ class DynamicList extends HTMLElement {
     const mutation = mutations[0];
     const newState = (mutation.target as Element).getAttribute('data-state');
     this.updateItemDisplay(mutation.target, newState);
+  }
+
+  updateCount(count: number) {
+    const countDiv = this.querySelector('.count');
+    if (countDiv) countDiv.textContent = `${count} items`;
+  }
+
+  updateItemDisplay(target: Node, newState: string | null) {
+    // Update display logic
   }
 }
 ```
@@ -280,6 +327,10 @@ class ViewportController implements IController {
     this.element = null;
     // Observers are automatically cleaned up
   }
+
+  trackImpression() {
+    // Analytics tracking
+  }
 }
 ```
 
@@ -305,7 +356,7 @@ interface IntersectionOptions extends ObserveOptions {
   root?: Element | null;          // Viewport element
 }
 
-// Resize Observer  
+// Resize Observer
 interface ResizeOptions extends ObserveOptions {
   box?: 'content-box' | 'border-box';  // Box model to observe
 }
@@ -343,6 +394,10 @@ handleResize(entry: ResizeObserverEntry) {
 handleResize(entry: ResizeObserverEntry) {
   this.expensiveOperation();
 }
+
+expensiveOperation() {
+  // Expensive logic
+}
 ```
 
 ### 3. Stop Observing When Done
@@ -354,6 +409,10 @@ handleLoadMore(entry: IntersectionObserverEntry) {
     this.loadMoreContent();
     return false; // Stop observing after trigger
   }
+}
+
+loadMoreContent() {
+  // Load more logic
 }
 ```
 
@@ -377,9 +436,9 @@ handleDesktop(matches: boolean) {
 }
 
 // Avoid - manual window resize listening
-window.addEventListener('resize', () => {
-  if (window.innerWidth >= 768) { /* ... */ }
-});
+// window.addEventListener('resize', () => {
+//   if (window.innerWidth >= 768) { /* ... */ }
+// });
 ```
 
 ## Lifecycle and Cleanup
@@ -397,14 +456,18 @@ class AutoCleanup extends HTMLElement {
   // All observers are automatically managed
   @observe('intersection')
   handleIntersection(entry: IntersectionObserverEntry) { }
-  
+
   @observe('resize')
   handleResize(entry: ResizeObserverEntry) { }
-  
+
   @observe('media:(min-width: 768px)')
   handleMedia(matches: boolean) { }
-  
+
   // No cleanup code needed!
+  @render()
+  renderContent() {
+    return html`<div>Auto-cleanup content</div>`;
+  }
 }
 ```
 
@@ -425,8 +488,9 @@ class AutoCleanup extends HTMLElement {
 class VirtualList extends HTMLElement {
   visibleItems = new Set<Element>();
 
-  html() {
-    return `<div class="viewport"></div>`;
+  @render()
+  renderContent() {
+    return html`<div class="viewport"></div>`;
   }
 
   @observe('intersection', '.item', { rootMargin: '100px' })
@@ -439,6 +503,14 @@ class VirtualList extends HTMLElement {
       this.unrenderItem(entry.target);
     }
   }
+
+  renderItem(target: Element) {
+    // Render logic
+  }
+
+  unrenderItem(target: Element) {
+    // Unrender logic
+  }
 }
 ```
 
@@ -447,6 +519,8 @@ class VirtualList extends HTMLElement {
 ```typescript
 @element('dashboard')
 class Dashboard extends HTMLElement {
+  columns = 1;
+
   @observe('media:(min-width: 768px)')
   handleTablet(matches: boolean) {
     this.columns = matches ? 2 : 1;
@@ -460,6 +534,15 @@ class Dashboard extends HTMLElement {
   @observe('resize', { throttle: 200 })
   handleResize(entry: ResizeObserverEntry) {
     this.adjustCardSizes(entry.contentRect.width);
+  }
+
+  @render()
+  renderContent() {
+    return html`<div class="dashboard">Dashboard with ${this.columns} columns</div>`;
+  }
+
+  adjustCardSizes(width: number) {
+    // Adjust logic
   }
 }
 ```
@@ -483,6 +566,23 @@ class AutoSaveForm extends HTMLElement {
         }
       });
     });
+  }
+
+  @render()
+  renderContent() {
+    return html`
+      <form>
+        <div class="dynamic-fields"></div>
+      </form>
+    `;
+  }
+
+  saveFormData() {
+    // Save logic
+  }
+
+  initializeField(field: Element) {
+    // Initialize logic
   }
 }
 ```

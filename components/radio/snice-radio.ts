@@ -1,5 +1,5 @@
-import { element, property, query, on, watch, dispatch, ready } from 'snice';
-import css from './snice-radio.css?inline';
+import { element, property, query, on, watch, dispatch, ready, render, styles, html, css } from 'snice';
+import cssContent from './snice-radio.css?inline';
 import type { RadioSize, SniceRadioElement } from './snice-radio.types';
 
 @element('snice-radio')
@@ -40,39 +40,42 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
   @query('.radio-wrapper')
   wrapper?: HTMLElement;
 
-  html() {
-    return /*html*/`
-      <label class="radio-wrapper ${this.disabled ? 'radio-wrapper--disabled' : ''}">
+  @render()
+  renderContent() {
+    const wrapperClasses = `radio-wrapper${this.disabled ? ' radio-wrapper--disabled' : ''}`;
+    const radioClasses = `radio radio--${this.size}${this.invalid ? ' radio--invalid' : ''}`;
+    const labelClasses = `radio-label radio-label--${this.size}${this.required ? ' radio-label--required' : ''}`;
+
+    return html/*html*/`
+      <label class="${wrapperClasses}">
         <input
           type="radio"
           class="radio-input"
-          ${this.checked ? 'checked' : ''}
-          ${this.disabled ? 'disabled' : ''}
-          ${this.required ? 'required' : ''}
-          ${this.name ? `name="${this.name}"` : ''}
-          ${this.value ? `value="${this.value}"` : ''}
+          ?checked="${this.checked}"
+          ?disabled="${this.disabled}"
+          ?required="${this.required}"
+          name="${this.name}"
+          value="${this.value}"
           aria-invalid="${this.invalid}"
           part="input"
         />
-        
-        <span class="radio 
-          radio--${this.size}
-          ${this.invalid ? 'radio--invalid' : ''}"
-          part="radio">
+
+        <span class="${radioClasses}" part="radio">
           <span class="radio-dot" part="dot"></span>
         </span>
-        
-        ${this.label ? /*html*/`
-          <span class="radio-label radio-label--${this.size} ${this.required ? 'radio-label--required' : ''}" part="label">
+
+        <if ${this.label}>
+          <span class="${labelClasses}" part="label">
             ${this.label}
           </span>
-        ` : ''}
+        </if>
       </label>
     `;
   }
 
-  css() {
-    return css;
+  @styles()
+  componentStyles() {
+    return css/*css*/`${cssContent}`;
   }
 
   @ready()

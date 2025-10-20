@@ -1,4 +1,4 @@
-import { element, property } from 'snice';
+import { element, property, render, styles, html, css } from 'snice';
 
 @element('snice-progress')
 export class SniceProgress extends HTMLElement {
@@ -20,28 +20,30 @@ export class SniceProgress extends HTMLElement {
   @property({ type: Boolean })
   showPercentage = false;
 
-  html() {
+  @render()
+  renderContent() {
     const percentage = Math.min(100, (this.value / this.max) * 100);
-    
-    return `
+
+    return html/*html*/`
       <div class="progress-container">
         <div class="progress-bar" style="width: ${percentage}%"></div>
       </div>
-      ${this.showPercentage ? `
+      <if ${this.showPercentage}>
         <span class="percentage">${percentage.toFixed(0)}%</span>
-      ` : ''}
+      </if>
     `;
   }
 
-  css() {
-    return `
+  @styles()
+  componentStyles() {
+    return css/*css*/`
       :host {
         display: inline-flex;
         align-items: center;
         width: 100%;
         gap: 0.5rem; /* 8px */
       }
-      
+
       .progress-container {
         flex: 1;
         height: ${this.height};
@@ -49,13 +51,13 @@ export class SniceProgress extends HTMLElement {
         border-radius: 0.25rem; /* 4px */
         overflow: hidden;
       }
-      
+
       .progress-bar {
         height: 100%;
         background: ${this.color};
         transition: width 0.3s ease;
       }
-      
+
       .percentage {
         font-size: 0.875rem; /* 14px */
         color: #6b7280;

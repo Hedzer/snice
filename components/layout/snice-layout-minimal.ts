@@ -1,10 +1,11 @@
-import { element } from 'snice';
-import css from './snice-layout-minimal.css?inline';
+import { element, render, styles, html, css } from 'snice';
+import cssContent from './snice-layout-minimal.css?inline';
 
 @element('snice-layout-minimal')
 export class SniceLayoutMinimal extends HTMLElement {
-  html() {
-    return /*html*/`
+  @render()
+  renderContent() {
+    return html/*html*/`
       <div class="layout">
         <main class="main">
           <slot name="page"></slot>
@@ -13,7 +14,8 @@ export class SniceLayoutMinimal extends HTMLElement {
     `;
   }
 
-  css() {
-    return css;
+  @styles()
+  componentStyles() {
+    return css/*css*/`${cssContent}`;
   }
 }

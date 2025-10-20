@@ -1,5 +1,5 @@
-import { element, property, watch, ready, query } from 'snice';
-import css from './snice-cell.css?inline';
+import { element, property, watch, ready, query, render, styles, html, css } from 'snice';
+import cssContent from './snice-cell.css?inline';
 import type { BooleanFormat, SniceCellElement, ColumnType, ColumnAlign, ColumnDefinition } from './snice-table.types';
 
 @element('snice-cell-boolean')
@@ -42,18 +42,20 @@ export class SniceCellBoolean extends HTMLElement implements SniceCellElement {
   @property({  attribute: 'false-symbol' })
   falseSymbol: string = '✗';
 
-  html() {
+  @render()
+  renderContent() {
     const content = this.formatBooleanContent();
-    
-    return `
+
+    return html/*html*/`
       <div class="cell-content cell-content--boolean" part="content">
         ${content}
       </div>
     `;
   }
 
-  css() {
-    return css;
+  @styles()
+  componentStyles() {
+    return css/*css*/`${cssContent}`;
   }
 
   @ready()

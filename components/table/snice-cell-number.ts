@@ -1,5 +1,5 @@
-import { element, property, watch, ready, query } from 'snice';
-import css from './snice-cell.css?inline';
+import { element, property, watch, ready, query, render, styles, html, css } from 'snice';
+import cssContent from './snice-cell.css?inline';
 import type { NumberFormat, SniceCellElement, ColumnType, ColumnAlign, ColumnDefinition } from './snice-table.types';
 
 @element('snice-cell-number')
@@ -44,19 +44,21 @@ export class SniceCellNumber extends HTMLElement implements SniceCellElement {
   @property({ type: Boolean,  })
   highlight: boolean = false;
 
-  html() {
+  @render()
+  renderContent() {
     const formattedValue = this.formatNumberValue();
     const styles = this.getNumberStyles();
-    
-    return `
+
+    return html/*html*/`
       <div class="cell-content cell-content--number" part="content" style="${styles}">
         ${formattedValue}
       </div>
     `;
   }
 
-  css() {
-    return css;
+  @styles()
+  componentStyles() {
+    return css/*css*/`${cssContent}`;
   }
 
   @ready()

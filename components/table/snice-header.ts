@@ -1,6 +1,7 @@
-import { element, property, on, watch, ready, dispatch } from 'snice';
-import type { 
-  SniceHeaderElement, 
+import { element, property, watch, ready, dispatch, render, styles, html, css } from 'snice';
+import cssContent from './snice-header.css?inline';
+import type {
+  SniceHeaderElement,
   ColumnDefinition,
   TableSort,
   SortDirection
@@ -29,13 +30,21 @@ export class SniceHeader extends HTMLElement implements SniceHeaderElement {
   @property({ type: Boolean,  attribute: 'some-selected' })
   someSelected: boolean = false;
 
-  html() {
-    return `
+  @render()
+  renderContent() {
+    return html/*html*/`
       <div class="header-container" part="container">
-        ${this.selectable ? this.renderSelectAllCheckbox() : ''}
+        <if ${this.selectable}>
+          ${this.renderSelectAllCheckbox()}
+        </if>
         ${this.renderHeaderCells()}
       </div>
     `;
+  }
+
+  @styles()
+  componentStyles() {
+    return css/*css*/`${cssContent}`;
   }
 
   @ready()
@@ -67,8 +76,7 @@ export class SniceHeader extends HTMLElement implements SniceHeaderElement {
     }
   }
 
-  @on('click')
-  handleClick(e: MouseEvent) {
+  private handleClick(e: MouseEvent) {
     const target = e.target as HTMLElement;
     const cell = target.closest('.header-cell[data-sortable="true"]') as HTMLElement;
     if (!cell) return;
@@ -80,8 +88,7 @@ export class SniceHeader extends HTMLElement implements SniceHeaderElement {
     }
   }
 
-  @on('change')
-  handleChange(e: Event) {
+  private handleChange(e: Event) {
     const target = e.target as HTMLElement;
     if (!target.matches('.select-all-checkbox')) return;
 
@@ -89,8 +96,7 @@ export class SniceHeader extends HTMLElement implements SniceHeaderElement {
     this.dispatchSelectAll(checkbox.checked);
   }
 
-  @on('keydown')
-  handleKeyDown(e: KeyboardEvent) {
+  private handleKeyDown(e: KeyboardEvent) {
     const target = e.target as HTMLElement;
     const cell = target.closest('.header-cell[data-sortable="true"]') as HTMLElement;
     if (!cell) return;
@@ -105,66 +111,72 @@ export class SniceHeader extends HTMLElement implements SniceHeaderElement {
     }
   }
 
-  private renderSelectAllCheckbox(): string {
-    return `
+  private renderSelectAllCheckbox() {
+    return html/*html*/`
       <div class="header-cell header-cell--checkbox" part="checkbox-cell">
-        <input 
-          type="checkbox" 
-          class="select-all-checkbox" 
-          ${this.allSelected ? 'checked' : ''}
+        <input
+          type="checkbox"
+          class="select-all-checkbox"
+          ?checked=${this.allSelected}
           title="Select all rows"
           tabindex="0"
+          @change=${(e: Event) => this.handleChange(e)}
         />
       </div>
     `;
   }
 
-  private renderHeaderCells(): string {
+  private renderHeaderCells() {
     if (!this.columns.length) {
-      return '';
+      return html/*html*/``;
     }
 
-    return `
-      <div class="cells-container">
-        ${this.columns.map((column, index) => this.renderHeaderCell(column, index)).join('')}
+    return html/*html*/`
+      <div class="cells-container" @click=${(e: MouseEvent) => this.handleClick(e)} @keydown=${(e: KeyboardEvent) => this.handleKeyDown(e)}>
+        ${this.columns.map((column, index) => this.renderHeaderCell(column, index))}
       </div>
     `;
   }
 
-  private renderHeaderCell(column: ColumnDefinition, index: number): string {
+  private renderHeaderCell(column: ColumnDefinition, index: number) {
     const isSortable = this.sortable && column.sortable !== false;
     const isCurrentSort = this.currentSort.column === column.key;
     const sortDirection = isCurrentSort ? this.currentSort.direction : null;
-    
-    return `
-      <div 
-        class="header-cell header-cell--${column.type || 'text'}" 
+
+    return html/*html*/`
+      <div
+        class="header-cell header-cell--${column.type || 'text'}"
         part="cell"
         data-column-key="${column.key}"
         data-column-index="${index}"
         data-sortable="${isSortable}"
         style="${this.getHeaderCellStyles(column)}"
-        ${isSortable ? 'role="button" tabindex="0"' : ''}
-        ${isSortable ? `aria-label="Sort by ${column.label}"` : ''}
-        ${isCurrentSort ? `aria-sort="${this.getAriaSortValue(sortDirection)}"` : ''}
+        role="${isSortable ? 'button' : ''}"
+        tabindex="${isSortable ? '0' : ''}"
+        aria-label="${isSortable ? `Sort by ${column.label}` : ''}"
+        aria-sort="${isCurrentSort ? this.getAriaSortValue(sortDirection) : ''}"
       >
         <div class="header-cell-content">
           <span class="header-cell-label">${column.label}</span>
-          ${isSortable ? this.renderSortIndicator(sortDirection) : ''}
+          <if ${isSortable}>
+            ${this.renderSortIndicator(sortDirection)}
+          </if>
         </div>
-        ${column.filterable ? this.renderFilterButton(column) : ''}
+        <if ${column.filterable}>
+          ${this.renderFilterButton(column)}
+        </if>
       </div>
     `;
   }
 
-  private renderSortIndicator(direction: SortDirection): string {
+  private renderSortIndicator(direction: SortDirection) {
     const ascIcon = '▲';
     const descIcon = '▼';
     const neutralIcon = '⇅';
-    
+
     let icon = neutralIcon;
     let state = 'neutral';
-    
+
     if (direction === 'asc') {
       icon = ascIcon;
       state = 'ascending';
@@ -172,20 +184,20 @@ export class SniceHeader extends HTMLElement implements SniceHeaderElement {
       icon = descIcon;
       state = 'descending';
     }
-    
-    return `
-      <span 
-        class="sort-indicator sort-indicator--${state}" 
+
+    return html/*html*/`
+      <span
+        class="sort-indicator sort-indicator--${state}"
         part="sort-indicator"
         aria-hidden="true"
       >${icon}</span>
     `;
   }
 
-  private renderFilterButton(column: ColumnDefinition): string {
-    return `
-      <button 
-        class="filter-button" 
+  private renderFilterButton(column: ColumnDefinition) {
+    return html/*html*/`
+      <button
+        class="filter-button"
         part="filter-button"
         data-column-key="${column.key}"
         title="Filter ${column.label}"
@@ -198,13 +210,13 @@ export class SniceHeader extends HTMLElement implements SniceHeaderElement {
 
   private getHeaderCellStyles(column: ColumnDefinition): string {
     let styles = [];
-    
+
     if (column.width) {
       styles.push(`width: ${column.width}`);
       styles.push(`min-width: ${column.width}`);
       styles.push(`max-width: ${column.width}`);
     }
-    
+
     if (column.align) {
       styles.push(`text-align: ${column.align}`);
     }

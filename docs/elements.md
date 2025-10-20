@@ -1,6 +1,6 @@
 # Elements API Documentation
 
-Elements are the core building blocks of Snice components. They define custom HTML elements with encapsulated styling and behavior.
+Elements are the core building blocks of Snice components. They define custom HTML elements with encapsulated styling and behavior using web components.
 
 ## Table of Contents
 - [Basic Usage](#basic-usage)
@@ -9,6 +9,7 @@ Elements are the core building blocks of Snice components. They define custom HT
 - [Properties](#properties)
 - [Queries](#queries)
 - [Styling](#styling)
+- [Template Events](#template-events)
 - [Advanced Examples](#advanced-examples)
 
 ## Basic Usage
@@ -16,12 +17,13 @@ Elements are the core building blocks of Snice components. They define custom HT
 ### Creating an Element
 
 ```typescript
-import { element } from 'snice';
+import { element, render, html } from 'snice';
 
 @element('my-button')
 class MyButton extends HTMLElement {
-  html() {
-    return `<button>Click me</button>`;
+  @render()
+  renderContent() {
+    return html`<button>Click me</button>`;
   }
 }
 ```
@@ -33,17 +35,23 @@ The `@element` decorator accepts a single parameter:
 
 ## Lifecycle Methods
 
-### html() Method
+### @render() Decorator
 
-Returns the HTML template for the element. Called once when the element connects to the DOM.
+Returns a template using the `html` tagged template. Automatically re-renders when properties change due to differential rendering.
 
 ```typescript
+import { element, render, html, property } from 'snice';
+
 @element('user-card')
 class UserCard extends HTMLElement {
-  html() {
-    return `
+  @property()
+  name = 'Anonymous';
+
+  @render()
+  renderContent() {
+    return html`
       <div class="card">
-        <h3>User Name</h3>
+        <h3>${this.name}</h3>
         <p>User details...</p>
       </div>
     `;
@@ -51,35 +59,28 @@ class UserCard extends HTMLElement {
 }
 ```
 
-**Async Support:**
-```typescript
-@element('async-content')
-class AsyncContent extends HTMLElement {
-  async html() {
-    const data = await this.fetchData();
-    return `<div>${data}</div>`;
-  }
-  
-  async fetchData() {
-    // Simulated async operation
-    return 'Loaded content';
-  }
-}
-```
+**Auto-Rendering:**
+- Template automatically re-renders when `@property()` decorated properties change
+- Only changed parts of the DOM update (differential rendering)
+- No manual re-render calls needed
 
-### css() Method
+### @styles() Decorator
 
-Returns CSS styles scoped to the element's shadow DOM.
+Returns CSS using the `css` tagged template, scoped to the element's shadow DOM.
 
 ```typescript
+import { element, render, styles, html, css } from 'snice';
+
 @element('styled-card')
 class StyledCard extends HTMLElement {
-  html() {
-    return `<div class="card">Content</div>`;
+  @render()
+  renderContent() {
+    return html`<div class="card">Content</div>`;
   }
-  
-  css() {
-    return `
+
+  @styles()
+  cardStyles() {
+    return css`
       .card {
         padding: 20px;
         border: 1px solid #ddd;
@@ -90,28 +91,85 @@ class StyledCard extends HTMLElement {
 }
 ```
 
-**Array of Styles:**
+**Multiple Style Methods:**
 ```typescript
-css() {
-  return [
-    this.baseStyles(),
-    this.themeStyles(),
-    this.responsiveStyles()
-  ];
+@styles()
+baseStyles() {
+  return css`
+    :host { display: block; }
+    // ...
+  `;
+}
+
+@styles()
+themeStyles() {
+  return css`
+    .card { background: var(--bg-color); }
+    // ...
+  `;
 }
 ```
 
-### connectedCallback()
+### Lifecycle Decorators
 
-Called when the element is added to the DOM. The @element decorator automatically handles shadow DOM setup, HTML/CSS rendering, and event handler initialization.
+**@ready()** - Called after shadow DOM is ready and initial render completes:
 
-### disconnectedCallback()
+```typescript
+import { element, ready, render, html } from 'snice';
 
-Called when the element is removed from the DOM. The @element decorator automatically handles cleanup of event handlers and controllers.
+@element('data-loader')
+class DataLoader extends HTMLElement {
+  @ready()
+  async loadData() {
+    // Called after element is fully initialized
+    const data = await fetch('/api/data').then(r => r.json());
+    this.data = data;
+  }
+
+  @render()
+  renderContent() {
+    return html`<div>Loading...</div>`;
+  }
+}
+```
+
+**@dispose()** - Called when element is removed from DOM:
+
+```typescript
+@element('polling-element')
+class PollingElement extends HTMLElement {
+  private intervalId?: number;
+
+  @ready()
+  startPolling() {
+    this.intervalId = setInterval(() => {
+      this.updateData();
+    }, 5000);
+  }
+
+  @dispose()
+  stopPolling() {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
+  }
+
+  @render()
+  renderContent() {
+    return html`<div>Polling...</div>`;
+  }
+}
+```
 
 ### ready Promise
 
-Every element has a `ready` promise that resolves when the element is fully initialized (shadow DOM created, HTML/CSS rendered, event handlers attached). Use this to ensure the element is ready before accessing its DOM or calling methods.
+Every element has a `ready` promise that resolves when fully initialized:
+
+```typescript
+const el = document.createElement('my-element') as MyElement;
+document.body.appendChild(el);
+await (el as any).ready; // Wait for element to be ready
+```
 
 ## Shadow DOM
 
@@ -122,10 +180,11 @@ All elements automatically use Shadow DOM for style encapsulation.
 ```typescript
 @element('shadow-demo')
 class ShadowDemo extends HTMLElement {
-  html() {
-    return `<div id="content">Hello</div>`;
+  @render()
+  renderContent() {
+    return html`<div id="content">Hello</div>`;
   }
-  
+
   updateContent(text: string) {
     const content = this.shadowRoot?.getElementById('content');
     if (content) {
@@ -139,10 +198,10 @@ class ShadowDemo extends HTMLElement {
 
 ### Basic Properties
 
-Properties automatically sync with DOM attributes and support type conversion:
+Properties automatically sync with DOM attributes and trigger re-renders:
 
 ```typescript
-import { element, property } from 'snice';
+import { element, property, render, html } from 'snice';
 
 @element('user-profile')
 class UserProfile extends HTMLElement {
@@ -155,29 +214,22 @@ class UserProfile extends HTMLElement {
   @property({ type: Boolean })
   verified = false;
 
-  html() {
-    return `
+  @render()
+  renderContent() {
+    return html`
       <div>
         <h3>${this.name}</h3>
         <p>Age: ${this.age}</p>
-        ${this.verified ? '<span>✓ Verified</span>' : ''}
+        ${this.verified ? html`<span>✓ Verified</span>` : ''}
       </div>
     `;
   }
 }
 ```
 
-Usage examples:
+Usage:
 ```html
-<!-- Setting attributes automatically updates properties -->
 <user-profile name="John Doe" age="30" verified></user-profile>
-
-<script>
-  const profile = document.querySelector('user-profile');
-  profile.name = 'Jane Smith';  // Sets name="Jane Smith" attribute
-  profile.age = 25;             // Sets age="25" attribute
-  profile.verified = true;      // Sets verified attribute (no value)
-</script>
 ```
 
 ### Property Options
@@ -193,11 +245,11 @@ interface PropertyOptions {
 
 ### Property Behavior
 
-All properties automatically sync with HTML attributes in both directions:
-
-- **Reading**: Properties always read from DOM attributes when present, falling back to initial values
-- **Writing**: Setting properties automatically reflects to corresponding attributes
-- **Type conversion**: Values are automatically converted between string attributes and typed properties
+All properties automatically:
+- Read from DOM attributes when present
+- Reflect changes to corresponding attributes
+- Convert between string attributes and typed properties
+- Trigger re-renders when changed
 
 ```typescript
 @element('reflected-props')
@@ -208,27 +260,14 @@ class ReflectedProps extends HTMLElement {
   @property({ attribute: 'user-id' })
   userId = '';
 
-  html() {
-    return `<div class="${this.theme}">User: ${this.userId}</div>`;
+  @render()
+  renderContent() {
+    return html`<div class="${this.theme}">User: ${this.userId}</div>`;
   }
 }
 ```
 
-Usage:
-```html
-<!-- Both ways work: -->
-<reflected-props theme="dark" user-id="123"></reflected-props>
-
-<script>
-  const el = document.querySelector('reflected-props');
-  el.theme = 'dark';    // Automatically sets theme="dark" attribute
-  el.userId = '456';    // Automatically sets user-id="456" attribute
-</script>
-```
-
-**Boolean Property Semantics:**
-
-Boolean properties follow HTML boolean attribute conventions:
+**Boolean Properties:**
 
 ```typescript
 @property({ type: Boolean })
@@ -238,7 +277,7 @@ enabled = false;
 - `<element>` or `<element enabled="">` → `true`
 - `<element enabled="true">` → `true`
 - `<element enabled="false">` → `false`
-- No attribute present → `false`
+- No attribute → `false`
 
 ### Custom Converters
 
@@ -257,122 +296,72 @@ class DateDisplay extends HTMLElement {
   @property({ converter: dateConverter })
   date: Date | null = null;
 
-  html() {
-    return `<time>${this.date?.toLocaleDateString() || 'No date'}</time>`;
+  @render()
+  renderContent() {
+    return html`<time>${this.date?.toLocaleDateString() || 'No date'}</time>`;
   }
 }
 ```
 
-### SimpleArray for Safe Array Reflection
+### SimpleArray Type
 
-The `SimpleArray` type enables safe reflection of arrays containing basic types (string, number, boolean) to HTML attributes. Unlike the plain `Array` type, `SimpleArray` provides deterministic serialization and parsing.
+The `SimpleArray` type enables safe reflection of arrays containing basic types:
 
 ```typescript
-import { element, property, SimpleArray } from 'snice';
+import { element, property, SimpleArray, render, html } from 'snice';
 
 @element('tag-list')
 class TagList extends HTMLElement {
   @property({ type: SimpleArray })
   tags = ['javascript', 'typescript', 'web'];
 
-  @property({ type: SimpleArray })
-  scores = [95, 87, 92];
-
-  @property({ type: SimpleArray })
-  flags = [true, false, true];
-  
-  html() {
-    return `
-      <div>
-        <h3>Tags:</h3>
-        <ul>
-          ${this.tags.map(tag => `<li>${tag}</li>`).join('')}
-        </ul>
-        
-        <h3>Scores:</h3>
-        <p>${this.scores.join(', ')}</p>
-        
-        <h3>Flags:</h3>
-        <p>${this.flags.map(f => f ? '✓' : '✗').join(' ')}</p>
-      </div>
+  @render()
+  renderContent() {
+    return html`
+      <ul>
+        ${this.tags.map(tag => html`<li>${tag}</li>`)}
+      </ul>
     `;
   }
 }
 ```
 
-Usage with attributes:
+Usage:
 ```html
-<tag-list 
-  tags="react，vue，angular" 
-  scores="88，92，85"
-  flags="true，false，true">
-</tag-list>
+<tag-list tags="react，vue，angular"></tag-list>
 ```
 
-**Key Features:**
-
-- **Safe serialization**: Uses full-width comma (，) as separator to avoid conflicts
-- **Type preservation**: Numbers and booleans are parsed back to their correct types
-- **String validation**: Throws error if strings contain the separator character
-- **Empty array handling**: Empty arrays don't create attributes (like null/undefined)
-- **Mixed types**: Supports arrays containing any combination of string, number, and boolean
-
-**Limitations:**
-
-- Only supports `string`, `number`, and `boolean` types
-- Strings cannot contain the full-width comma character (，)
-- Arrays with only empty strings have special behavior due to serialization constraints
-- Not suitable for complex objects or nested arrays
-
-**Why use SimpleArray instead of Array?**
-
-```typescript
-// ❌ Problematic - no deterministic serialization
-@property({ type: Array })
-items = ['a', 1, true]; // Warning: unsafe for reflection
-
-// ✅ Safe and reliable
-@property({ type: SimpleArray })
-items = ['a', 1, true]; // Serializes to: "a，1，true"
-```
+- Uses full-width comma (，) as separator
+- Supports string, number, and boolean types
+- Type-safe serialization
 
 ## Queries
 
 ### Single Element Query
 
 ```typescript
-import { element, query } from 'snice';
+import { element, query, render, html } from 'snice';
 
 @element('form-component')
 class FormComponent extends HTMLElement {
   @query('input[type="text"]')
   textInput?: HTMLInputElement;
-  
+
   @query('button[type="submit"]')
   submitButton?: HTMLButtonElement;
-  
-  @query('.error-message')
-  errorDiv?: HTMLDivElement;
-  
-  html() {
-    return `
+
+  @render()
+  renderContent() {
+    return html`
       <form>
         <input type="text" placeholder="Enter text">
         <button type="submit">Submit</button>
-        <div class="error-message"></div>
       </form>
     `;
   }
-  
+
   getValue(): string {
     return this.textInput?.value || '';
-  }
-  
-  showError(message: string) {
-    if (this.errorDiv) {
-      this.errorDiv.textContent = message;
-      this.errorDiv.style.display = 'block';
-    }
   }
 }
 ```
@@ -380,90 +369,59 @@ class FormComponent extends HTMLElement {
 ### Multiple Elements Query
 
 ```typescript
-import { element, queryAll } from 'snice';
-
 @element('todo-list')
 class TodoList extends HTMLElement {
   @queryAll('.todo-item')
   todoItems?: NodeListOf<HTMLElement>;
-  
+
   @queryAll('input[type="checkbox"]')
   checkboxes?: NodeListOf<HTMLInputElement>;
-  
-  html() {
-    return `
+
+  @render()
+  renderContent() {
+    return html`
       <ul>
-        <li class="todo-item">
-          <input type="checkbox"> Task 1
-        </li>
-        <li class="todo-item">
-          <input type="checkbox"> Task 2
-        </li>
-        <li class="todo-item">
-          <input type="checkbox"> Task 3
-        </li>
+        <li class="todo-item"><input type="checkbox"> Task 1</li>
+        <li class="todo-item"><input type="checkbox"> Task 2</li>
       </ul>
     `;
   }
-  
+
   getCompletedCount(): number {
     if (!this.checkboxes) return 0;
     return Array.from(this.checkboxes).filter(cb => cb.checked).length;
-  }
-  
-  highlightCompleted() {
-    this.todoItems?.forEach((item, index) => {
-      if (this.checkboxes?.[index]?.checked) {
-        item.classList.add('completed');
-      }
-    });
   }
 }
 ```
 
 ### Query Options
 
-By default, `@query` and `@queryAll` search within the shadow DOM. You can control where queries search using the `light` and `shadow` options:
+Control where queries search using `light` and `shadow` options:
 
 ```typescript
-import { element, query, queryAll } from 'snice';
-
 @element('query-options')
 class QueryOptions extends HTMLElement {
   // Query only in shadow DOM (default)
   @query('.shadow-only')
   shadowElement?: HTMLElement;
-  
+
   // Query only in light DOM (slotted content)
   @query('.light-only', { light: true, shadow: false })
   lightElement?: HTMLElement;
-  
+
   // Query in both light and shadow DOM
   @query('.anywhere', { light: true, shadow: true })
   anyElement?: HTMLElement;
-  
-  // Query all in light DOM only
-  @queryAll('[slot="item"]', { light: true, shadow: false })
-  slottedItems?: NodeListOf<HTMLElement>;
-  
-  // Query all in both contexts
-  @queryAll('.item', { light: true, shadow: true })
-  allItems?: NodeListOf<HTMLElement>;
-  
-  html() {
-    return `
+
+  @render()
+  renderContent() {
+    return html`
       <div class="shadow-only">Shadow Content</div>
-      <slot name="item"></slot>
+      <slot></slot>
     `;
   }
 }
 ```
-
-Options:
-- `light`: Boolean (default: `false`) - Search in light DOM (element's children)
-- `shadow`: Boolean (default: `true`) - Search in shadow DOM
-
-When both are `true`, `@query` returns the first match (shadow DOM is checked first), while `@queryAll` returns all matches from both contexts.
 
 ## Styling
 
@@ -474,26 +432,28 @@ Styles are automatically scoped to the component's shadow DOM:
 ```typescript
 @element('scoped-styles')
 class ScopedStyles extends HTMLElement {
-  html() {
-    return `
+  @render()
+  renderContent() {
+    return html`
       <div class="container">
         <h1>Title</h1>
         <p class="content">Content</p>
       </div>
     `;
   }
-  
-  css() {
-    return `
+
+  @styles()
+  componentStyles() {
+    return css`
       :host {
         display: block;
         padding: 20px;
       }
-      
+
       .container {
         border: 1px solid #ccc;
       }
-      
+
       h1 {
         color: blue;  /* Only affects h1 inside this component */
       }
@@ -509,16 +469,18 @@ class ScopedStyles extends HTMLElement {
 class ThemeComponent extends HTMLElement {
   @property()
   primaryColor = '#007bff';
-  
-  @property()
+
+  @property({ type: Number })
   fontSize = 16;
-  
-  html() {
-    return `<div class="themed">Themed content</div>`;
+
+  @render()
+  renderContent() {
+    return html`<div class="themed">Themed content</div>`;
   }
-  
-  css() {
-    return `
+
+  @styles()
+  themeStyles() {
+    return css`
       .themed {
         color: ${this.primaryColor};
         font-size: ${this.fontSize}px;
@@ -530,34 +492,126 @@ class ThemeComponent extends HTMLElement {
 
 ### Host Styling
 
-Style the host element itself:
-
 ```typescript
 @element('host-styled')
 class HostStyled extends HTMLElement {
-  css() {
-    return `
+  @styles()
+  hostStyles() {
+    return css`
       :host {
         display: block;
         width: 100%;
         max-width: 600px;
         margin: 0 auto;
       }
-      
+
       :host([disabled]) {
         opacity: 0.5;
         pointer-events: none;
       }
-      
+
       :host(:hover) {
         background: #f0f0f0;
       }
-      
-      :host-context(.dark-theme) {
-        background: #333;
-        color: white;
-      }
     `;
+  }
+
+  @render()
+  renderContent() {
+    return html`<div>Content</div>`;
+  }
+}
+```
+
+## Template Events
+
+Handle events directly in templates using `@event=${handler}` syntax:
+
+### Basic Event Handling
+
+```typescript
+@element('click-counter')
+class ClickCounter extends HTMLElement {
+  @property({ type: Number })
+  count = 0;
+
+  @render()
+  renderContent() {
+    return html`
+      <button @click=${this.increment}>Click me</button>
+      <span>Count: ${this.count}</span>
+    `;
+  }
+
+  increment() {
+    this.count++;
+    // Auto re-renders due to property change
+  }
+}
+```
+
+### Keyboard Shortcuts
+
+Use dot notation for keyboard shortcuts:
+
+```typescript
+@element('keyboard-handler')
+class KeyboardHandler extends HTMLElement {
+  @render()
+  renderContent() {
+    return html`
+      <input @keydown.enter=${this.handleEnter} placeholder="Press Enter">
+      <input @keydown.ctrl+s=${this.handleSave} placeholder="Press Ctrl+S">
+      <input @keydown.escape=${this.handleCancel} placeholder="Press Escape">
+    `;
+  }
+
+  handleEnter(e: KeyboardEvent) {
+    console.log('Enter pressed');
+  }
+
+  handleSave(e: KeyboardEvent) {
+    e.preventDefault();
+    console.log('Saving...');
+  }
+
+  handleCancel() {
+    console.log('Cancelled');
+  }
+}
+```
+
+Keyboard syntax:
+- `@keydown.enter` - Plain Enter (no modifiers)
+- `@keydown.ctrl+s` - Ctrl+S combination
+- `@keydown.~enter` - Enter with any modifiers
+- `@keydown.escape`, `@keydown.down`, etc.
+
+### Event Object Access
+
+```typescript
+@element('form-handler')
+class FormHandler extends HTMLElement {
+  @render()
+  renderContent() {
+    return html`
+      <form @submit=${this.handleSubmit}>
+        <input type="text" name="username" @input=${this.handleInput}>
+        <button type="submit">Submit</button>
+      </form>
+    `;
+  }
+
+  handleSubmit(event: Event) {
+    event.preventDefault();
+    const form = event.target as HTMLFormElement;
+    const formData = new FormData(form);
+    console.log('Form data:', Object.fromEntries(formData));
+  }
+
+  handleInput(event: Event) {
+    const input = event.target as HTMLInputElement;
+    console.log('Input changed:', input.value);
   }
 }
 ```
@@ -567,124 +621,71 @@ class HostStyled extends HTMLElement {
 ### Complex Form Component
 
 ```typescript
-import { element, property, query, queryAll, on, watch } from 'snice';
+import { element, property, query, watch, render, styles, html, css } from 'snice';
 
 @element('registration-form')
 class RegistrationForm extends HTMLElement {
   @property({ type: Boolean })
   loading = false;
-  
+
   @query('form')
   form?: HTMLFormElement;
-  
-  @query('#username')
-  usernameInput?: HTMLInputElement;
-  
-  @query('#email')
-  emailInput?: HTMLInputElement;
-  
-  @query('#password')
-  passwordInput?: HTMLInputElement;
-  
-  @query('.error-container')
-  errorContainer?: HTMLElement;
-  
-  @queryAll('.field-error')
-  fieldErrors?: NodeListOf<HTMLElement>;
-  
-  @query('button[type="submit"]')
-  submitButton?: HTMLButtonElement;
-  
-  html() {
-    return `
-      <form>
+
+  @render()
+  renderContent() {
+    return html`
+      <form @submit=${this.handleSubmit}>
         <h2>Register</h2>
-        
+
         <div class="field">
-          <label for="username">Username</label>
-          <input type="text" id="username" required>
-          <span class="field-error" data-field="username"></span>
+          <label>Username</label>
+          <input type="text" name="username" required>
         </div>
-        
+
         <div class="field">
-          <label for="email">Email</label>
-          <input type="email" id="email" required>
-          <span class="field-error" data-field="email"></span>
+          <label>Email</label>
+          <input type="email" name="email" required>
         </div>
-        
-        <div class="field">
-          <label for="password">Password</label>
-          <input type="password" id="password" required minlength="8">
-          <span class="field-error" data-field="password"></span>
-        </div>
-        
-        <div class="error-container"></div>
-        
-        <button type="submit" ${this.loading ? 'disabled' : ''}>
+
+        <button type="submit" ?disabled=${this.loading}>
           ${this.loading ? 'Registering...' : 'Register'}
         </button>
       </form>
     `;
   }
-  
-  css() {
-    return `
+
+  @styles()
+  formStyles() {
+    return css`
       :host {
         display: block;
         max-width: 400px;
         margin: 0 auto;
       }
-      
+
       form {
         padding: 20px;
         background: white;
         border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
       }
-      
+
       .field {
         margin-bottom: 20px;
       }
-      
+
       label {
         display: block;
         margin-bottom: 5px;
         font-weight: bold;
       }
-      
+
       input {
         width: 100%;
         padding: 8px 12px;
         border: 1px solid #ddd;
         border-radius: 4px;
-        font-size: 14px;
       }
-      
-      input:invalid {
-        border-color: #dc3545;
-      }
-      
-      .field-error {
-        display: block;
-        color: #dc3545;
-        font-size: 12px;
-        margin-top: 5px;
-        min-height: 16px;
-      }
-      
-      .error-container {
-        background: #f8d7da;
-        color: #721c24;
-        padding: 10px;
-        border-radius: 4px;
-        margin-bottom: 20px;
-        display: none;
-      }
-      
-      .error-container:not(:empty) {
-        display: block;
-      }
-      
+
       button {
         width: 100%;
         padding: 10px;
@@ -692,955 +693,119 @@ class RegistrationForm extends HTMLElement {
         color: white;
         border: none;
         border-radius: 4px;
-        font-size: 16px;
         cursor: pointer;
       }
-      
-      button:hover:not(:disabled) {
-        background: #0056b3;
-      }
-      
+
       button:disabled {
         opacity: 0.6;
         cursor: not-allowed;
       }
     `;
   }
-  
-  @on('submit', 'form')
+
   async handleSubmit(event: Event) {
     event.preventDefault();
-    
-    if (!this.validateForm()) {
-      return;
-    }
-    
-    this.loading = true;  // @watch will handle UI update
-    this.clearErrors();
-    
+
+    this.loading = true;
+
     try {
-      const formData = {
-        username: this.usernameInput?.value,
-        email: this.emailInput?.value,
-        password: this.passwordInput?.value
-      };
-      
+      const formData = new FormData(this.form!);
+
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Dispatch success event
+
       this.dispatchEvent(new CustomEvent('registration-success', {
-        detail: formData,
+        detail: Object.fromEntries(formData),
         bubbles: true
       }));
-      
+
       this.form?.reset();
     } catch (error) {
-      this.showError('Registration failed. Please try again.');
+      console.error('Registration failed:', error);
     } finally {
-      this.loading = false;  // @watch will handle UI update
-    }
-  }
-  
-  validateForm(): boolean {
-    let isValid = true;
-    
-    // Clear previous errors
-    this.fieldErrors?.forEach(error => error.textContent = '');
-    
-    // Validate username
-    if (!this.usernameInput?.value) {
-      this.showFieldError('username', 'Username is required');
-      isValid = false;
-    } else if (this.usernameInput.value.length < 3) {
-      this.showFieldError('username', 'Username must be at least 3 characters');
-      isValid = false;
-    }
-    
-    // Validate email
-    if (!this.emailInput?.value) {
-      this.showFieldError('email', 'Email is required');
-      isValid = false;
-    } else if (!this.emailInput.validity.valid) {
-      this.showFieldError('email', 'Please enter a valid email');
-      isValid = false;
-    }
-    
-    // Validate password
-    if (!this.passwordInput?.value) {
-      this.showFieldError('password', 'Password is required');
-      isValid = false;
-    } else if (this.passwordInput.value.length < 8) {
-      this.showFieldError('password', 'Password must be at least 8 characters');
-      isValid = false;
-    }
-    
-    return isValid;
-  }
-  
-  showFieldError(field: string, message: string) {
-    const errorElement = this.shadowRoot?.querySelector(`.field-error[data-field="${field}"]`) as HTMLElement;
-    if (errorElement) {
-      errorElement.textContent = message;
-    }
-  }
-  
-  showError(message: string) {
-    if (this.errorContainer) {
-      this.errorContainer.textContent = message;
-    }
-  }
-  
-  clearErrors() {
-    if (this.errorContainer) {
-      this.errorContainer.textContent = '';
-    }
-    this.fieldErrors?.forEach(error => error.textContent = '');
-  }
-  
-  @watch('loading')
-  updateLoadingState() {
-    if (this.submitButton) {
-      this.submitButton.disabled = this.loading;
-      this.submitButton.textContent = this.loading ? 'Registering...' : 'Register';
+      this.loading = false;
     }
   }
 }
 ```
 
-### Data Table Component
+### Watch Decorator
+
+Use `@watch` to react to property changes:
 
 ```typescript
-import { element, property, query, queryAll } from 'snice';
-
-interface TableColumn {
-  key: string;
-  label: string;
-  sortable?: boolean;
-  width?: string;
-}
-
-interface TableRow {
-  [key: string]: any;
-}
-
-@element('data-table')
-class DataTable extends HTMLElement {
-  @property({ type: Array })
-  columns: TableColumn[] = [];
-  
-  @property({ type: Array })
-  rows: TableRow[] = [];
-  
+@element('reactive-component')
+class ReactiveComponent extends HTMLElement {
   @property()
-  sortColumn = '';
-  
-  @property()
-  sortDirection: 'asc' | 'desc' = 'asc';
-  
-  @query('tbody')
-  tbody?: HTMLElement;
-  
-  @queryAll('th[data-sortable]')
-  sortableHeaders?: NodeListOf<HTMLElement>;
-  
-  html() {
-    return `
-      <table>
-        <thead>
-          <tr>
-            ${this.columns.map(col => `
-              <th 
-                ${col.sortable ? 'data-sortable' : ''}
-                data-key="${col.key}"
-                style="${col.width ? `width: ${col.width}` : ''}"
-              >
-                ${col.label}
-                ${col.sortable ? '<span class="sort-indicator"></span>' : ''}
-              </th>
-            `).join('')}
-          </tr>
-        </thead>
-        <tbody>
-          ${this.renderRows()}
-        </tbody>
-      </table>
-    `;
-  }
-  
-  css() {
-    return `
-      :host {
-        display: block;
-        overflow-x: auto;
-      }
-      
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        background: white;
-      }
-      
-      th, td {
-        padding: 12px;
-        text-align: left;
-        border-bottom: 1px solid #ddd;
-      }
-      
-      th {
-        background: #f5f5f5;
-        font-weight: bold;
-        position: relative;
-        user-select: none;
-      }
-      
-      th[data-sortable] {
-        cursor: pointer;
-      }
-      
-      th[data-sortable]:hover {
-        background: #e9e9e9;
-      }
-      
-      .sort-indicator {
-        position: absolute;
-        right: 8px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 0;
-        height: 0;
-        border-style: solid;
-        border-width: 0 4px 8px 4px;
-        border-color: transparent transparent #999 transparent;
-        opacity: 0.3;
-      }
-      
-      th.sort-asc .sort-indicator {
-        opacity: 1;
-        border-color: transparent transparent #333 transparent;
-      }
-      
-      th.sort-desc .sort-indicator {
-        opacity: 1;
-        transform: translateY(-50%) rotate(180deg);
-        border-color: transparent transparent #333 transparent;
-      }
-      
-      tbody tr:hover {
-        background: #f9f9f9;
-      }
-      
-      tbody tr:nth-child(even) {
-        background: #fafafa;
-      }
-    `;
-  }
-  
-  renderRows(): string {
-    const sortedRows = this.getSortedRows();
-    return sortedRows.map(row => `
-      <tr>
-        ${this.columns.map(col => `
-          <td>${this.formatCell(row[col.key])}</td>
-        `).join('')}
-      </tr>
-    `).join('');
-  }
-  
-  formatCell(value: any): string {
-    if (value === null || value === undefined) {
-      return '';
-    }
-    if (typeof value === 'boolean') {
-      return value ? '✓' : '✗';
-    }
-    if (value instanceof Date) {
-      return value.toLocaleDateString();
-    }
-    return String(value);
-  }
-  
-  getSortedRows(): TableRow[] {
-    if (!this.sortColumn) {
-      return this.rows;
-    }
-    
-    return [...this.rows].sort((a, b) => {
-      const aVal = a[this.sortColumn];
-      const bVal = b[this.sortColumn];
-      
-      let comparison = 0;
-      if (aVal < bVal) comparison = -1;
-      if (aVal > bVal) comparison = 1;
-      
-      return this.sortDirection === 'asc' ? comparison : -comparison;
-    });
-  }
-  
-  connectedCallback() {
-    super.connectedCallback?.();
-    this.setupSortHandlers();
-  }
-  
-  setupSortHandlers() {
-    this.sortableHeaders?.forEach(header => {
-      header.addEventListener('click', () => {
-        const key = header.dataset.key!;
-        
-        if (this.sortColumn === key) {
-          this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-        } else {
-          this.sortColumn = key;
-          this.sortDirection = 'asc';
-        }
-        
-        this.updateSort();
-      });
-    });
-  }
-  
-  updateSort() {
-    // Update header classes
-    this.sortableHeaders?.forEach(header => {
-      header.classList.remove('sort-asc', 'sort-desc');
-      if (header.dataset.key === this.sortColumn) {
-        header.classList.add(`sort-${this.sortDirection}`);
-      }
-    });
-    
-    // Update table body
-    if (this.tbody) {
-      this.tbody.innerHTML = this.renderRows();
-    }
-  }
-  
-  setData(columns: TableColumn[], rows: TableRow[]) {
-    this.columns = columns;
-    this.rows = rows;
-    this.shadowRoot!.innerHTML = this.html() + `<style>${this.css()}</style>`;
-    this.setupSortHandlers();
-  }
-}
-```
+  userName = '';
 
-## Lifecycle Decorators
-
-### @ready and @dispose
-
-Use `@ready` for initialization logic that needs to run after the shadow DOM is ready. Use `@dispose` for cleanup tasks when the element is removed from the DOM.
-
-```typescript
-import { element, ready, dispose } from 'snice';
-
-@element('polling-element')
-class PollingElement extends HTMLElement {
-  private intervalId?: number;
-  
-  @ready()
-  startPolling() {
-    // Called after shadow DOM is ready
-    this.intervalId = setInterval(() => {
-      this.updateData();
-    }, 5000);
-  }
-  
-  @dispose()
-  stopPolling() {
-    // Clean up when element is removed
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
-    }
-  }
-  
-  html() {
-    return `<div class="data">Loading...</div>`;
-  }
-  
-  private updateData() {
-    // Update logic
-  }
-}
-```
-
-Multiple methods can be decorated and they'll run in order:
-
-```typescript
-@element('multi-lifecycle')
-class MultiLifecycle extends HTMLElement {
-  @ready()
-  async setupData() {
-    // First ready method
-  }
-  
-  @ready()
-  setupListeners() {
-    // Second ready method
-  }
-  
-  @dispose()
-  cleanup() {
-    // Cleanup method
-  }
-}
-```
-
-## Parts - Selective Re-rendering
-
-The `@part` decorator enables selective re-rendering of specific template sections, providing fine-grained control over DOM updates for performance optimization.
-
-### Basic Usage
-
-```typescript
-import { element, part, property } from 'snice';
-
-@element('user-dashboard')
-class UserDashboard extends HTMLElement {
-  @property()
-  user = { name: 'Loading...', stats: { views: 0 } };
-  
-  notifications = [];
-
-  html() {
-    return `
-      <header part="user-info"></header>
-      <section part="stats"></section>
-      <aside part="notifications"></aside>
-    `;
-  }
-
-  @part('user-info')
-  renderUserInfo() {
-    return `
-      <h1>${this.user.name}</h1>
-      <button onclick="this.refreshUser()">Refresh</button>
-    `;
-  }
-
-  @part('stats')
-  renderStats() {
-    return `
-      <div class="stats">
-        Views: ${this.user.stats.views}
-      </div>
-    `;
-  }
-
-  @part('notifications')
-  renderNotifications() {
-    return `
-      <h3>Notifications (${this.notifications.length})</h3>
-      ${this.notifications.map(n => `<div>${n}</div>`).join('')}
-    `;
-  }
-
-  // Update specific parts independently
-  updateUserName(newName: string) {
-    this.user.name = newName;
-    this.renderUserInfo(); // Only re-renders the header part
-  }
-
-  addNotification(notification: string) {
-    this.notifications.unshift(notification);
-    this.renderNotifications(); // Only re-renders the notifications part
-  }
-}
-```
-
-### Part Options - Performance Control
-
-Control render frequency with throttle and debounce options:
-
-```typescript
-@element('performance-optimized')
-class PerformanceOptimized extends HTMLElement {
-  searchResults = [];
-  liveStats = { count: 0 };
-
-  html() {
-    return `
-      <div part="search-results"></div>
-      <div part="live-stats"></div>
-    `;
-  }
-
-  // Debounce: Wait 200ms after search stops before rendering
-  @part('search-results', { debounce: 200 })
-  renderSearchResults() {
-    return this.searchResults.map(result => 
-      `<div class="result">${result.title}</div>`
-    ).join('');
-  }
-
-  // Throttle: Update stats at most once per 100ms
-  @part('live-stats', { throttle: 100 })
-  renderLiveStats() {
-    return `<span>Live count: ${this.liveStats.count}</span>`;
-  }
-
-  // Methods automatically trigger part re-renders when called
-  onSearchInput(query: string) {
-    this.searchResults = this.performSearch(query);
-    this.renderSearchResults(); // Debounced - waits for input to stop
-  }
-
-  onLiveUpdate(newCount: number) {
-    this.liveStats.count = newCount;
-    this.renderLiveStats(); // Throttled - max once per 100ms
-  }
-}
-```
-
-### Part Options Reference
-
-```typescript
-interface PartOptions {
-  throttle?: number;  // Limit renders to once per N milliseconds
-  debounce?: number;  // Delay renders until N milliseconds after last call
-}
-```
-
-- **Throttle**: Limits render frequency. If you call the method multiple times rapidly, it will only render at most once per throttle period.
-- **Debounce**: Delays rendering until calls stop. Each new call resets the timer.
-- **Precedence**: If both are specified, debounce takes precedence over throttle.
-- **Validation**: Non-positive values are ignored (render immediately).
-
-### Async Parts
-
-Part methods can be async for data fetching:
-
-```typescript
-@element('async-parts')
-class AsyncParts extends HTMLElement {
-  userId = '';
-
-  html() {
-    return `
-      <div part="user-profile"></div>
-      <div part="user-posts"></div>
-    `;
-  }
-
-  @part('user-profile')
-  async renderUserProfile() {
-    if (!this.userId) return '<p>No user selected</p>';
-    
-    const user = await fetch(`/api/users/${this.userId}`).then(r => r.json());
-    return `
-      <div class="profile">
-        <img src="${user.avatar}" alt="${user.name}">
-        <h2>${user.name}</h2>
-        <p>${user.bio}</p>
-      </div>
-    `;
-  }
-
-  @part('user-posts', { debounce: 300 })
-  async renderUserPosts() {
-    if (!this.userId) return '<p>No posts</p>';
-    
-    const posts = await fetch(`/api/users/${this.userId}/posts`).then(r => r.json());
-    return posts.map(post => `
-      <article>
-        <h3>${post.title}</h3>
-        <p>${post.excerpt}</p>
-      </article>
-    `).join('');
-  }
-
-  // Calling these methods triggers async rendering
-  async loadUser(userId: string) {
-    this.userId = userId;
-    await this.renderUserProfile();
-    await this.renderUserPosts();
-  }
-}
-```
-
-### How Parts Work
-
-1. **Initial Render**: All parts are automatically rendered during element connection
-2. **Part Elements**: DOM elements with `part="partName"` attributes are targeted for updates
-3. **Method Wrapping**: `@part` decorated methods are wrapped to automatically update their corresponding DOM elements when called
-4. **Performance**: Only the specific part's DOM is updated, not the entire component
-5. **Error Handling**: Parts handle missing elements gracefully with console warnings
-
-### Semi-Reactive Rendering with @watch
-
-Combine `@part` with `@watch` for semi-reactive rendering where parts automatically update when their dependent properties change:
-
-```typescript
-import { element, part, property, watch } from 'snice';
-
-@element('reactive-dashboard')
-class ReactiveDashboard extends HTMLElement {
-  @property()
-  userName = 'Anonymous';
-  
   @property({ type: Number })
   score = 0;
-  
-  @property()
-  theme = 'light';
-  
-  notifications = [];
 
-  html() {
-    return `
-      <header part="user-section"></header>
-      <main part="score-display"></main>
-      <aside part="notifications"></aside>
-      <div part="theme-indicator"></div>
-    `;
-  }
-
-  // Define parts that render specific data
-  @part('user-section')
-  renderUserSection() {
-    return `
-      <h1>Welcome, ${this.userName}!</h1>
-      <button onclick="this.refreshProfile()">Refresh</button>
-    `;
-  }
-
-  @part('score-display', { throttle: 100 })
-  renderScoreDisplay() {
-    return `
-      <div class="score">
-        <span class="label">Score:</span>
-        <span class="value">${this.score}</span>
-        <div class="progress-bar" style="width: ${Math.min(this.score, 100)}%"></div>
-      </div>
-    `;
-  }
-
-  @part('notifications', { debounce: 200 })
-  renderNotifications() {
-    return `
-      <h3>Notifications (${this.notifications.length})</h3>
-      ${this.notifications.slice(0, 5).map(n => `<div class="notification">${n}</div>`).join('')}
-    `;
-  }
-
-  @part('theme-indicator')
-  renderThemeIndicator() {
-    return `<div class="theme-badge ${this.theme}">${this.theme.toUpperCase()}</div>`;
-  }
-
-  // Watch properties and automatically re-render corresponding parts
   @watch('userName')
-  onUserNameChange() {
-    this.renderUserSection(); // Automatically updates header when name changes
+  onUserNameChange(oldVal: string, newVal: string) {
+    console.log(`Name changed from ${oldVal} to ${newVal}`);
   }
 
   @watch('score')
-  onScoreChange() {
-    this.renderScoreDisplay(); // Throttled updates for frequent score changes
+  onScoreChange(oldVal: number, newVal: number) {
+    if (newVal > 100) {
+      console.log('High score achieved!');
+    }
   }
 
-  @watch('theme')
-  onThemeChange() {
-    this.renderThemeIndicator(); // Immediate theme updates
-  }
-
-  // Business logic methods that modify data
-  updateUserName(newName: string) {
-    this.userName = newName; // Triggers @watch -> renderUserSection()
-  }
-
-  incrementScore(points: number) {
-    this.score += points; // Triggers @watch -> renderScoreDisplay() (throttled)
-  }
-
-  addNotification(message: string) {
-    this.notifications.unshift(message);
-    this.renderNotifications(); // Manual call (not property-based)
-  }
-
-  switchTheme() {
-    this.theme = this.theme === 'light' ? 'dark' : 'light'; // Triggers @watch -> renderThemeIndicator()
+  @render()
+  renderContent() {
+    return html`
+      <div>
+        <h1>${this.userName}</h1>
+        <p>Score: ${this.score}</p>
+      </div>
+    `;
   }
 }
 ```
 
-**Benefits of @part + @watch:**
-
-- **Semi-Reactive**: Components automatically update when properties change
-- **Selective**: Only affected parts re-render, not the entire component
-- **Performance**: Combine with throttle/debounce for optimal rendering
-- **Explicit**: You control which properties trigger which parts
-- **Granular**: Different parts can have different performance characteristics
-
-**Usage Patterns:**
+### Conditional Rendering
 
 ```typescript
-// 1. One-to-one: Property directly controls a part
-@property({ attribute: 'user-name' })
-userName = '';
+@element('conditional-content')
+class ConditionalContent extends HTMLElement {
+  @property({ type: Boolean })
+  isLoggedIn = false;
 
-@part('user-display')
-renderUserDisplay() { return `<h1>${this.userName}</h1>`; }
+  @render()
+  renderContent() {
+    return html`
+      <if ${this.isLoggedIn}>
+        <div>Welcome back!</div>
+        <button @click=${this.logout}>Logout</button>
+      </if>
 
-@watch('userName')
-onUserNameChange() { this.renderUserDisplay(); }
-
-// Usage: <my-element user-name="John"></my-element>
-
-// 2. One-to-many: Property affects multiple parts
-@property()
-theme = 'light';
-
-@watch('theme') 
-onThemeChange() {
-  this.renderHeader();  // Update header styling
-  this.renderContent(); // Update content styling
-  this.renderFooter();  // Update footer styling
-}
-
-// 3. Many-to-one: Multiple properties affect one part
-@property({ attribute: 'first-name' })
-firstName = '';
-
-@property({ attribute: 'last-name' })
-lastName = '';
-
-@part('full-name')
-renderFullName() { return `${this.firstName} ${this.lastName}`; }
-
-@watch('firstName', 'lastName')
-onNameChange() { this.renderFullName(); }
-
-// Usage: <my-element first-name="John" last-name="Doe"></my-element>
-
-// 4. Conditional rendering based on multiple properties
-@property({ attribute: 'is-logged-in', type: Boolean })
-isLoggedIn = false;
-
-@property()
-user = null;
-
-@part('user-area')
-renderUserArea() {
-  return this.isLoggedIn && this.user
-    ? `<div>Welcome ${this.user.name}</div>`
-    : `<div>Please log in</div>`;
-}
-
-@watch('isLoggedIn', 'user')
-onUserStateChange() { this.renderUserArea(); }
-
-// Usage: <my-element is-logged-in></my-element>
-```
-
-### When to Use Parts
-
-Parts are ideal for:
-
-- **Complex components** with multiple independent sections
-- **High-frequency updates** to specific areas (live data, animations)
-- **Performance optimization** where full re-renders are expensive
-- **Dynamic content** that changes at different rates
-- **Dashboard-style** components with multiple data sources
-
-### Best Practices
-
-1. **Keep parts focused**: Each part should represent a logical, independent section
-2. **Use meaningful names**: Part names should clearly describe what they render
-3. **Consider performance**: Use throttle/debounce for high-frequency updates
-4. **Handle errors**: Parts should gracefully handle missing or invalid data
-5. **Avoid deep nesting**: Keep part templates relatively flat for better performance
-6. **Test updates**: Verify that calling part methods actually updates the UI
-
-```typescript
-// Good: Focused, independent parts
-@part('user-avatar')
-renderAvatar() { /* ... */ }
-
-@part('notification-count', { throttle: 500 })
-renderNotificationCount() { /* ... */ }
-
-// Avoid: Parts that depend heavily on each other
-@part('everything')
-renderEverything() { /* renders entire complex UI */ }
-```
-
-## Advanced Lifecycle Callbacks
-
-Beyond the standard `connectedCallback` and `disconnectedCallback`, Snice provides decorators for advanced DOM lifecycle events:
-
-### @moved Decorator
-
-The `@moved` decorator handles when an element is moved within the DOM using the new `Element.moveBefore()` API. This is triggered by `connectedMoveCallback()` instead of separate disconnect/connect events:
-
-```typescript
-@element('draggable-item')
-class DraggableItem extends HTMLElement {
-  @moved()
-  onElementMoved() {
-    // Called when element is moved to a new position
-    this.updatePositionIndicator();
-    this.notifyParentOfMove();
-  }
-
-  @moved({ debounce: 100 })
-  onMovedDebounced() {
-    // Only called once after rapid moves stop
-    this.recalculateLayout();
-    this.savePosition();
-  }
-
-  @moved({ throttle: 200 })
-  onMovedThrottled() {
-    // Called at most once every 200ms during drag operations
-    this.updateVisualFeedback();
-  }
-}
-```
-
-### @adopted Decorator
-
-The `@adopted` decorator handles when an element is moved to a new document (like iframes or document fragments). This is triggered by the `adoptedCallback()`:
-
-```typescript
-@element('portable-widget')
-class PortableWidget extends HTMLElement {
-  @adopted()
-  onAdoptedToNewDocument() {
-    // Called when element moves to a new document
-    this.updateDocumentReferences();
-    this.reinitializeForNewContext();
-  }
-
-  @adopted({ debounce: 150 })
-  onAdoptedDebounced() {
-    // Debounced for performance during rapid adoption
-    this.rebindDocumentEvents();
-    this.updateGlobalReferences();
-  }
-
-  @adopted({ throttle: 300 })
-  onAdoptedThrottled() {
-    // Throttled for expensive operations
-    this.analyzeNewDocumentContext();
-  }
-}
-```
-
-### Timing Options
-
-Both lifecycle decorators support timing control options:
-
-- **`debounce: number`** - Delays execution until after calls stop for the specified milliseconds
-- **`throttle: number`** - Limits execution to once per specified milliseconds
-
-```typescript
-// Debounce: Wait for activity to stop
-@moved({ debounce: 100 })
-onMovedDebounced() {
-  // Called 100ms after last move
-}
-
-// Throttle: Limit frequency
-@adopted({ throttle: 500 })
-onAdoptedThrottled() {
-  // Called at most once every 500ms
-}
-```
-
-### When to Use Lifecycle Callbacks
-
-**Use `@moved` for:**
-- Drag and drop operations
-- Layout recalculations after position changes
-- Performance optimizations during rapid DOM moves
-- Position-dependent updates without full reconnection overhead
-
-**Use `@adopted` for:**
-- Cross-frame element transfers
-- Document context updates
-- Resource reinitialization in new contexts
-- Global reference updates
-
-**Timing options are ideal for:**
-- **Debounce**: Expensive operations that should only run after activity stops
-- **Throttle**: Visual updates or analytics during high-frequency events
-
-### Integration with Other Lifecycle Events
-
-These callbacks work alongside standard lifecycle methods:
-
-```typescript
-@element('complex-component')
-class ComplexComponent extends HTMLElement {
-  // Standard lifecycle
-  connectedCallback() {
-    // Called when first connected or reconnected
-    super.connectedCallback();
-  }
-
-  disconnectedCallback() {
-    // Called when removed from DOM
-    super.disconnectedCallback();
-  }
-
-  // Advanced lifecycle
-  @moved()
-  onMoved() {
-    // Called instead of disconnect/connect when moved
-  }
-
-  @adopted()
-  onAdopted() {
-    // Called when moved to new document
-  }
-
-  @ready()
-  onReady() {
-    // Called after shadow DOM and setup complete
-  }
-
-  @dispose()
-  onDispose() {
-    // Called during disconnection for cleanup
-  }
-}
-```
-
-## Layout Components
-
-Layout components wrap page content and provide navigation, headers, footers, and other shared UI elements. They implement the `Layout` interface to receive updates from the router:
-
-```typescript
-import { layout, Layout } from 'snice';
-
-@layout('app-shell')
-class AppShell extends HTMLElement implements Layout {
-  html() {
-    return `
-      <header>
-        <nav></nav>
-      </header>
-      <main>
-        <slot name="page"></slot>
-      </main>
+      <if ${!this.isLoggedIn}>
+        <a href="/login">Please login</a>
+      </if>
     `;
   }
 
-  async update(appContext, placards, currentRoute, routeParams) {
-    // Resolve placards and update navigation/layout elements
-    const resolvedPlacards = await Promise.all(placards);
-    // Called when layout is created and when routes change
+  logout() {
+    this.isLoggedIn = false;
   }
 }
 ```
 
 ## Best Practices
 
-1. **Keep elements focused**: Elements should handle presentation logic only
-2. **Use Shadow DOM**: Take advantage of style encapsulation
-3. **Avoid re-rendering**: Update specific elements rather than re-rendering the entire component
-4. **Clean up resources**: Use @dispose for cleanup tasks
-5. **Type your queries**: Use proper TypeScript types for queried elements
-6. **Validate inputs**: Always validate and sanitize user inputs
-7. **Use semantic HTML**: Maintain accessibility with proper HTML structure
-8. **Handle errors gracefully**: Wrap async operations in try-catch blocks
-9. **Use lifecycle decorators**: Prefer @ready and @dispose over overriding lifecycle methods
+1. **Use @render() for templates**: Always return `html\`...\`` tagged templates
+2. **Use @styles() for CSS**: Always return `css\`...\`` tagged templates
+3. **Leverage auto-rendering**: Properties automatically trigger re-renders
+4. **Use template events**: Handle events with `@event=${handler}` in templates
+5. **Clean up resources**: Use @dispose() for cleanup tasks
+6. **Type your queries**: Use proper TypeScript types for queried elements
+7. **Handle errors**: Wrap async operations in try-catch blocks
+
+## Removed in v3.0.0
+
+- **@part decorator**: Removed in favor of differential rendering. Use `@render()` with templates instead.
+- **html() method**: Replaced with `@render()` decorator
+- **css() method**: Replaced with `@styles()` decorator
