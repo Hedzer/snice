@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { element, controller, on, render, html, IController } from '../src/index';
 
-describe('@on decorator - v2.5.4 restored functionality', () => {
+describe('@on decorator', () => {
   let container: HTMLDivElement;
 
   beforeEach(() => {

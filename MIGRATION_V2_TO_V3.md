@@ -9,8 +9,8 @@ Snice v3.0.0 introduces a complete rewrite of the rendering system with **differ
 - ❌ `css()` method
 - ❌ `@part` decorator
 
-### Restored v2.5.4 APIs (Now Working in Elements!)
-- ✅ `@on` decorator - **RESTORED with v2.5.4 functionality!**
+### Event Handling with @on
+- ✅ `@on` decorator available
   - Works in both elements AND controllers
   - Supports event delegation with selectors
   - Supports keyboard modifiers (`@on('keydown:Enter')`)
@@ -145,9 +145,9 @@ class MyButton extends HTMLElement {
 }
 ```
 
-#### Option B: `@on` Decorator (v2.5.4 RESTORED!)
+#### Option B: `@on` Decorator
 
-**The `@on` decorator is BACK and works in elements!**
+**The `@on` decorator works in both elements and controllers!**
 
 ```typescript
 import { element, render, html, on } from 'snice';
@@ -162,19 +162,19 @@ class MyButton extends HTMLElement {
     `;
   }
 
-  // Event delegation with selectors (v2.5.4 style)
+  // Event delegation with selectors
   @on('click', 'button')
   handleClick(event: Event) {
     console.log('Button clicked!', event);
   }
 
-  // Keyboard modifiers (v2.5.4 feature)
+  // Keyboard modifiers
   @on('keydown:Enter', 'input')
   handleEnter(event: KeyboardEvent) {
     console.log('Enter pressed in input!');
   }
 
-  // Debounce support (v3.0.0 enhancement)
+  // Debounce support
   @on('input', 'input', { debounce: 300 })
   handleInput(event: Event) {
     console.log('Input value:', (event.target as HTMLInputElement).value);
@@ -182,7 +182,7 @@ class MyButton extends HTMLElement {
 }
 ```
 
-**Key Features Restored:**
+**Key Features:**
 - ✅ Event delegation with CSS selectors
 - ✅ Keyboard modifiers (`keydown:Enter`, `keydown:ctrl+s`)
 - ✅ Debounce and throttle options
@@ -566,4 +566,4 @@ expect(el.shadowRoot!.textContent).toContain('new value');
 | Manual `innerHTML` update | Automatic on property change |
 | `this.shadowRoot!.innerHTML = ...` | Just update property: `this.count++` |
 
-**The future is differential - but your v2.5.4 event handlers still work!** 🚀
+**Automatic differential rendering with powerful event handling!** 🚀

@@ -1,5 +1,5 @@
 /**
- * @on decorator for listening to events (v2.5.4 compatibility + v3.0.0 enhancements)
+ * @on decorator for listening to events
  * Use in elements or controllers to listen to DOM events or custom events
  */
 
@@ -16,15 +16,14 @@ const ON_HANDLERS = getSymbol('on-handlers');
  * @on decorator for listening to events
  *
  * Works in both elements and controllers with full event delegation support.
- * Restored from v2.5.4 with v3.0.0 enhancements (debounce/throttle).
  *
  * @param eventName - Event name(s) to listen for
- * @param selector - Optional CSS selector for event delegation (v2.5.4 style)
+ * @param selector - Optional CSS selector for event delegation
  * @param options - Event listener options including debounce/throttle
  *
  * @example
  * ```typescript
- * // In elements (v2.5.4 style)
+ * // In elements
  * @element('my-button')
  * class MyButton extends HTMLElement {
  *   @on('click', 'button')
@@ -60,20 +59,19 @@ export function on(
   selectorOrOptions?: string | OnOptions | null,
   options?: OnOptions
 ) {
-  // Parse arguments to support both v2.5.4 style (eventName, selector, options)
-  // and v3.0.0 style (eventName, options)
+  // Parse arguments to support multiple call signatures
   let selector: string | null = null;
   let opts: OnOptions = {};
 
   if (typeof selectorOrOptions === 'string') {
-    // v2.5.4 style: (eventName, selector, options)
+    // With selector: (eventName, selector, options)
     selector = selectorOrOptions;
     opts = options || {};
   } else if (selectorOrOptions === null && options) {
-    // v2.5.4 style with null selector: (eventName, null, options)
+    // With null selector: (eventName, null, options)
     opts = options;
   } else if (selectorOrOptions && typeof selectorOrOptions === 'object') {
-    // v3.0.0 style: (eventName, options)
+    // Without selector: (eventName, options)
     opts = selectorOrOptions;
   }
 
@@ -145,8 +143,6 @@ function throttle<T extends (...args: any[]) => any>(fn: T, delay: number): T {
 /**
  * Setup event listeners for an element or controller instance
  * Called automatically during element connection or controller attachment
- *
- * Fully restored v2.5.4 functionality with key modifiers, event delegation, and timing controls
  */
 export function setupEventHandlers(instance: any, targetElement: HTMLElement) {
   const handlers = instance.constructor.prototype[ON_HANDLERS];
@@ -167,7 +163,7 @@ export function setupEventHandlers(instance: any, targetElement: HTMLElement) {
     let boundMethod = currentMethod ? currentMethod.bind(instance) : handler.method.bind(instance);
     const handlerOptions = handler.options || {};
 
-    // Parse event name for key modifiers (v2.5.4 feature)
+    // Parse event name for key modifiers
     const [baseEventName, keyModifier] = handler.eventName.split(':');
 
     // Apply debounce if specified

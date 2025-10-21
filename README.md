@@ -321,7 +321,7 @@ html`
 `
 ```
 
-**`@on` Decorator** - Event delegation with selectors (v2.5.4 RESTORED!)
+**`@on` Decorator** - Event delegation with selectors
 ```typescript
 // Works in both elements AND controllers
 @on('click', 'button')  // Event delegation
@@ -631,8 +631,8 @@ v3.0.0 introduces template-based rendering with differential updates. Key change
 - **Use `@styles()` instead of `css()` method**
   Return `css\`...\`` tagged template instead of string
 
-- **`@on()` decorator RESTORED from v2.5.4!**
-  Now works in both elements AND controllers with full event delegation, keyboard modifiers, and debounce/throttle support.
+- **`@on()` decorator available**
+  Works in both elements AND controllers with full event delegation, keyboard modifiers, and debounce/throttle support.
   Template event syntax (`@click=${handler}`) is also available as an alternative.
 
 - **`@part` decorator removed**
