@@ -31,6 +31,7 @@ export class SniceAvatar extends HTMLElement implements SniceAvatarElement {
   @query('.avatar-fallback')
   fallbackElement?: HTMLElement;
 
+  @property({ type: Boolean, attribute: false })
   private imageError = false;
 
   @render()
@@ -84,11 +85,13 @@ export class SniceAvatar extends HTMLElement implements SniceAvatarElement {
 
   getInitials(name: string): string {
     if (!name) return '';
-    const words = name.trim().split(/\s+/);
+    const words = name.trim().split(/\s+/).filter(w => w.length > 0);
+    if (words.length === 0) return '';
     if (words.length === 1) {
-      return words[0].substring(0, 2).toUpperCase();
+      return words[0][0].toUpperCase();
     }
-    return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+    // Use first and second word (not first and last)
+    return (words[0][0] + words[1][0]).toUpperCase();
   }
 
   private getColorClass(name: string): string {

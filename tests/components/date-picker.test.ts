@@ -183,7 +183,8 @@ describe('snice-date-picker', () => {
       await wait(50);
 
       const toggleBtn = queryShadow(datePicker as HTMLElement, '.calendar-toggle') as HTMLButtonElement;
-      toggleBtn.click();
+      toggleBtn.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+      await wait(10);
 
       expect(datePicker.showCalendar).toBe(true);
     });
@@ -246,7 +247,11 @@ describe('snice-date-picker', () => {
         changeDetail = (e as CustomEvent).detail;
       });
 
-      datePicker.value = '2024-01-15';
+      // Simulate actual user input change event
+      const inputEl = queryShadow(datePicker as HTMLElement, '.input') as HTMLInputElement;
+      inputEl.value = '01/15/2024';
+      inputEl.dispatchEvent(new Event('change', { bubbles: true }));
+      await wait(10);
 
       expect(changeDetail).toBeTruthy();
     });

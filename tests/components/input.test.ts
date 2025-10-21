@@ -257,8 +257,9 @@ describe('snice-input', () => {
       });
       await wait(50);
 
-      const prefixEl = queryShadow(input as HTMLElement, '.prefix-icon');
+      const prefixEl = queryShadow(input as HTMLElement, '.icon--prefix');
       expect(prefixEl).toBeTruthy();
+      expect(prefixEl?.textContent).toBe('🔍');
     });
 
     it('should render suffix icon', async () => {
@@ -267,8 +268,9 @@ describe('snice-input', () => {
       });
       await wait(50);
 
-      const suffixEl = queryShadow(input as HTMLElement, '.suffix-icon');
+      const suffixEl = queryShadow(input as HTMLElement, '.icon--suffix');
       expect(suffixEl).toBeTruthy();
+      expect(suffixEl?.textContent).toBe('✓');
     });
   });
 
@@ -326,9 +328,13 @@ describe('snice-input', () => {
         changeDetail = (e as CustomEvent).detail;
       });
 
-      input.value = 'test';
+      // Simulate actual change event on the input element
+      const inputEl = queryShadow(input as HTMLElement, '.input') as HTMLInputElement;
+      inputEl.value = 'test';
+      inputEl.dispatchEvent(new Event('change', { bubbles: true }));
 
       expect(changeDetail).toBeTruthy();
+      expect(changeDetail.value).toBe('test');
     });
 
     it('should dispatch input-focus event', async () => {

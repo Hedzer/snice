@@ -246,7 +246,7 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
 
   private parseDate(dateString: string): Date | null {
     if (!dateString) return null;
-    
+
     if (this.format === 'mmmm dd, yyyy') {
       const monthNameRegex = /^([A-Za-z]+)\s+(\d{1,2}),\s+(\d{4})$/;
       const match = dateString.match(monthNameRegex);
@@ -262,41 +262,48 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
       }
       return null;
     }
-    
-    let date = new Date(dateString);
-    if (!isNaN(date.getTime())) {
-      return date;
-    }
-    
-    const parts = dateString.split(/[-\/]/);
-    if (parts.length !== 3) return null;
-    
-    let year: number, month: number, day: number;
-    
-    switch (this.format) {
-      case 'mm/dd/yyyy':
-      case 'mm-dd-yyyy':
-        [month, day, year] = parts.map(Number);
-        break;
-      case 'dd/mm/yyyy':
-      case 'dd-mm-yyyy':
-        [day, month, year] = parts.map(Number);
-        break;
-      case 'yyyy-mm-dd':
-      case 'yyyy/mm/dd':
-        [year, month, day] = parts.map(Number);
-        break;
-      default:
-        return null;
-    }
-    
-    if (year && month && day) {
-      date = new Date(year, month - 1, day);
+
+    // Detect ISO date format (yyyy-mm-dd) and parse manually to avoid UTC issues
+    const isoDateRegex = /^(\d{4})-(\d{2})-(\d{2})$/;
+    const isoMatch = dateString.match(isoDateRegex);
+    if (isoMatch) {
+      const [, year, month, day] = isoMatch.map(Number);
+      const date = new Date(year, month - 1, day);
       if (!isNaN(date.getTime())) {
         return date;
       }
     }
-    
+
+    // Try manual parsing based on format
+    const parts = dateString.split(/[-\/]/);
+    if (parts.length === 3) {
+      let year: number, month: number, day: number;
+
+      switch (this.format) {
+        case 'mm/dd/yyyy':
+        case 'mm-dd-yyyy':
+          [month, day, year] = parts.map(Number);
+          break;
+        case 'dd/mm/yyyy':
+        case 'dd-mm-yyyy':
+          [day, month, year] = parts.map(Number);
+          break;
+        case 'yyyy-mm-dd':
+        case 'yyyy/mm/dd':
+          [year, month, day] = parts.map(Number);
+          break;
+        default:
+          return null;
+      }
+
+      if (year && month && day) {
+        const date = new Date(year, month - 1, day);
+        if (!isNaN(date.getTime())) {
+          return date;
+        }
+      }
+    }
+
     return null;
   }
 

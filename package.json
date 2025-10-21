@@ -95,6 +95,7 @@
     "release:dry": "semantic-release --dry-run --no-ci"
   },
   "devDependencies": {
+    "@playwright/test": "^1.56.1",
     "@rollup/plugin-node-resolve": "^16.0.1",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^12.1.4",

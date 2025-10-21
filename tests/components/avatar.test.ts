@@ -101,7 +101,8 @@ describe('snice-avatar', () => {
       await wait(200);
 
       const imgEl = queryShadow(avatar as HTMLElement, '.avatar-image') as HTMLImageElement;
-      expect(imgEl?.loading).toBe('lazy');
+      // Check the attribute (Happy DOM doesn't properly set the property)
+      expect(imgEl?.getAttribute('loading')).toBe('lazy');
     });
   });
 
@@ -145,6 +146,7 @@ describe('snice-avatar', () => {
       // Simulate image error
       const imgEl = queryShadow(avatar as HTMLElement, '.avatar-image') as HTMLImageElement;
       imgEl?.dispatchEvent(new Event('error'));
+      await wait(10);
 
       const fallbackEl = queryShadow(avatar as HTMLElement, '.avatar-fallback');
       expect(fallbackEl?.classList.contains('avatar-fallback--visible')).toBe(true);
@@ -182,8 +184,8 @@ describe('snice-avatar', () => {
       await wait(200);
 
       const avatarEl = queryShadow(avatar as HTMLElement, '.avatar');
-      // Should have a color class applied
-      expect(avatarEl?.className).toMatch(/avatar-color-\d+/);
+      // Should have a color class applied (e.g., avatar--red, avatar--fuchsia)
+      expect(avatarEl?.className).toMatch(/avatar--\w+/);
     });
   });
 
@@ -195,6 +197,7 @@ describe('snice-avatar', () => {
       await wait(200);
 
       avatar.src = '/avatar2.jpg';
+      await wait(10);
 
       const imgEl = queryShadow(avatar as HTMLElement, '.avatar-image') as HTMLImageElement;
       expect(imgEl?.src).toContain('avatar2.jpg');
@@ -207,6 +210,7 @@ describe('snice-avatar', () => {
       await wait(200);
 
       avatar.name = 'Jane Smith';
+      await wait(10);
 
       const fallbackEl = queryShadow(avatar as HTMLElement, '.avatar-fallback');
       expect(fallbackEl?.textContent?.trim()).toBe('JS');

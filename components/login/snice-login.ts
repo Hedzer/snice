@@ -54,7 +54,10 @@ export class SniceLogin extends HTMLElement implements SniceLoginElement {
   @queryAll('input')
   inputElements!: NodeListOf<HTMLInputElement>;
 
+  @property({ attribute: false })
   private alertMessage = '';
+
+  @property({ attribute: false })
   private alertVariant: 'error' | 'success' | '' = '';
 
   @render()
