@@ -477,14 +477,14 @@ export function property(options?: PropertyOptions) {
               return parseAttributeValue(attrValue, finalOptions || {}, undefined, initialValue);
             }
 
-            // For Boolean properties that have been explicitly set via attribute,
+            // For Boolean properties that have been explicitly set via attribute (and then removed),
             // follow HTML boolean attribute semantics (absence = false)
             const inferredType = finalOptions?.type || detectType(initialValue);
             if (inferredType === Boolean && this[EXPLICITLY_SET_PROPERTIES]?.has(propertyKey)) {
               return false;
             }
 
-            // Otherwise return initial value
+            // Otherwise return initial value (respects default values like showRememberMe = true)
             return initialValue;
           },
           set(this: any, newValue: any) {
