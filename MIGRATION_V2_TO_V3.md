@@ -8,14 +8,21 @@ Snice v3.0.0 introduces a complete rewrite of the rendering system with **differ
 - ❌ `html()` method
 - ❌ `css()` method
 - ❌ `@part` decorator
-- ❌ `@on` decorator
+
+### Restored v2.5.4 APIs (Now Working in Elements!)
+- ✅ `@on` decorator - **RESTORED with v2.5.4 functionality!**
+  - Works in both elements AND controllers
+  - Supports event delegation with selectors
+  - Supports keyboard modifiers (`@on('keydown:Enter')`)
+  - Supports debounce and throttle options
 
 ### New APIs
 - ✅ `html``template literals
 - ✅ `css``template literals
 - ✅ `@render()` decorator
 - ✅ `@styles()` decorator
-- ✅ Template event syntax (`@click`, `@input`, etc.)
+- ✅ Template event syntax (`@click`, `@input`, `@keydown:Enter`)
+  - Now supports keyboard modifiers with both `.` and `:` notation
 - ✅ Template property binding (`.value`)
 - ✅ Template boolean attributes (`?disabled`)
 - ✅ Auto-rendering on property changes
@@ -93,7 +100,11 @@ class Counter extends HTMLElement {
 
 ---
 
-### Step 2: Replace Event Handlers
+### Step 2: Event Handlers - Two Options!
+
+**v3.0.0 gives you TWO ways to handle events:**
+
+#### Option A: Template Event Syntax (Recommended for simple cases)
 
 **Before (v2.x):**
 ```typescript
@@ -120,19 +131,63 @@ class MyButton extends HTMLElement {
   renderContent() {
     return html`
       <button @click=${this.handleClick}>Click me</button>
+      <input @keydown:Enter=${this.handleEnter} />
     `;
   }
 
   handleClick(event: Event) {
     console.log('Clicked!', event);
   }
+
+  handleEnter(event: KeyboardEvent) {
+    console.log('Enter pressed!');
+  }
 }
 ```
 
-**Key Changes:**
-- Remove `@on` decorator
-- Use `@click=${handler}` syntax in template
-- Works with any DOM event: `@input`, `@change`, `@submit`, etc.
+#### Option B: `@on` Decorator (v2.5.4 RESTORED!)
+
+**The `@on` decorator is BACK and works in elements!**
+
+```typescript
+import { element, render, html, on } from 'snice';
+
+@element('my-button')
+class MyButton extends HTMLElement {
+  @render()
+  renderContent() {
+    return html`
+      <button>Click me</button>
+      <input type="text" placeholder="Press Enter..." />
+    `;
+  }
+
+  // Event delegation with selectors (v2.5.4 style)
+  @on('click', 'button')
+  handleClick(event: Event) {
+    console.log('Button clicked!', event);
+  }
+
+  // Keyboard modifiers (v2.5.4 feature)
+  @on('keydown:Enter', 'input')
+  handleEnter(event: KeyboardEvent) {
+    console.log('Enter pressed in input!');
+  }
+
+  // Debounce support (v3.0.0 enhancement)
+  @on('input', 'input', { debounce: 300 })
+  handleInput(event: Event) {
+    console.log('Input value:', (event.target as HTMLInputElement).value);
+  }
+}
+```
+
+**Key Features Restored:**
+- ✅ Event delegation with CSS selectors
+- ✅ Keyboard modifiers (`keydown:Enter`, `keydown:ctrl+s`)
+- ✅ Debounce and throttle options
+- ✅ preventDefault and stopPropagation options
+- ✅ Works in both elements AND controllers
 
 ---
 
@@ -504,9 +559,11 @@ expect(el.shadowRoot!.textContent).toContain('new value');
 |------|--------|
 | `html()` method | `@render()` with `html\`\`` |
 | `css()` method | `@styles()` with `css\`\`` |
-| `@on('click', 'button')` | `@click=${handler}` in template |
+| `@on('click', 'button')` | **Still works!** OR use `@click=${handler}` in template |
+| `@on('keydown:Enter')` | **Still works!** OR use `@keydown:Enter=${handler}` in template |
+| `@on('input', { debounce: 300 })` | **Still works!** (enhanced with throttle too) |
 | `@part('name')` | Use `@render()` (differential rendering) |
 | Manual `innerHTML` update | Automatic on property change |
 | `this.shadowRoot!.innerHTML = ...` | Just update property: `this.count++` |
 
-**The future is differential!** 🚀
+**The future is differential - but your v2.5.4 event handlers still work!** 🚀

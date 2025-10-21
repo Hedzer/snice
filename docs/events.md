@@ -1,10 +1,10 @@
 # Events API Documentation
 
-Event handling in Snice provides two approaches: template event syntax for elements and the `@on` decorator for controllers. Additionally, the `@dispatch` decorator enables automatic custom event dispatching.
+Event handling in Snice provides two powerful approaches: **template event syntax** and the **`@on` decorator** (fully restored from v2.5.4!). The `@on` decorator now works in **both elements AND controllers** with full event delegation, keyboard modifiers, debounce/throttle, and more. Additionally, the `@dispatch` decorator enables automatic custom event dispatching.
 
 ## Table of Contents
-- [Template Event Syntax (Preferred for Elements)](#template-event-syntax-preferred-for-elements)
-- [@on Decorator (For Controllers)](#on-decorator-for-controllers)
+- [Template Event Syntax](#template-event-syntax)
+- [@on Decorator (v2.5.4 RESTORED!)](#on-decorator-v254-restored)
 - [@dispatch Decorator](#dispatch-decorator)
 - [Custom Events](#custom-events)
 - [Event Delegation](#event-delegation)
@@ -247,9 +247,16 @@ class TaskList extends HTMLElement {
 }
 ```
 
-## @on Decorator (For Controllers)
+## @on Decorator (v2.5.4 RESTORED!)
 
-The `@on` decorator is used in controllers to handle events from the attached element. It can also be used in elements as an alternative to template syntax.
+The `@on` decorator is **fully restored from v2.5.4** and now works in **both elements AND controllers**! It provides powerful event delegation, keyboard modifiers, debounce/throttle, and automatic event handling features.
+
+**Use `@on` when you need:**
+- Event delegation with CSS selectors
+- Keyboard modifier matching (`Enter`, `ctrl+s`, etc.)
+- Debounce or throttle
+- Multiple events on one handler
+- Automatic preventDefault or stopPropagation
 
 ### Basic Controller Usage
 
@@ -361,9 +368,19 @@ class EditorController implements IController {
 ### @on Options
 
 ```typescript
-interface OnOptions extends AddEventListenerOptions {
-  throttle?: number;  // Throttle event by milliseconds
-  debounce?: number;  // Debounce event by milliseconds
+interface OnOptions {
+  // Standard event listener options
+  capture?: boolean;           // Use capture phase instead of bubble phase
+  once?: boolean;              // Remove listener after first trigger
+  passive?: boolean;           // Passive listener (can't preventDefault)
+
+  // Automatic event handling
+  preventDefault?: boolean;    // Automatically call preventDefault on the event
+  stopPropagation?: boolean;   // Automatically call stopPropagation on the event
+
+  // Timing controls (v3.0.0 enhancements!)
+  debounce?: number;           // Debounce the handler by specified milliseconds
+  throttle?: number;           // Throttle the handler by specified milliseconds
 }
 ```
 

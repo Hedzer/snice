@@ -28,5 +28,8 @@ export { debounce, throttle, once, memoize, clearDebounceTimers, clearThrottleTi
 // Export all types from centralized types module
 export * from './types';
 
-// @on decorator removed in v3.0.0 - use template event syntax instead
-// @part decorator removed in v3.0.0 - use @render with differential rendering
+// NOTE: @on decorator RESTORED from v2.5.4! Now works in both elements AND controllers.
+// Supports event delegation, keyboard modifiers, debounce/throttle - see docs/events.md
+// Template event syntax (@click=${handler}) is also available as an alternative.
+//
+// @part decorator removed in v3.0.0 - use @render with differential rendering instead

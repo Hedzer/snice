@@ -1,6 +1,7 @@
 import { attachController, detachController } from './controller';
 import { setupObservers, cleanupObservers } from './observe';
 import { setupResponseHandlers, cleanupResponseHandlers } from './request-response';
+import { setupEventHandlers, cleanupEventHandlers } from './on';
 import { parseAttributeValue, detectType, valueToAttribute } from './utils';
 import { requestRender, applyStyles } from './render';
 import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, RENDERED_PROMISE, RENDERED_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PROPERTY_WATCHERS, EXPLICITLY_SET_PROPERTIES, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD } from './symbols';
@@ -161,6 +162,7 @@ export function applyElementFunctionality(constructor: any) {
       // Only run initialization logic once, but re-establish handlers on reconnection
       if (this[INITIALIZED]) {
         // Re-establish handlers that get cleaned up on disconnect
+        setupEventHandlers(this, this);
         setupResponseHandlers(this, this);
 
         // Re-establish observers that get cleaned up on disconnect
@@ -244,6 +246,9 @@ export function applyElementFunctionality(constructor: any) {
           }
         }
 
+        // Setup @on event handlers (v2.5.4 compatibility restored!)
+        setupEventHandlers(this, this);
+
         // Setup @respond handlers for elements
         setupResponseHandlers(this, this);
 
@@ -294,6 +299,8 @@ export function applyElementFunctionality(constructor: any) {
           console.error(`Failed to detach controller:`, error);
         });
       }
+      // Cleanup @on event handlers (v2.5.4 compatibility restored!)
+      cleanupEventHandlers(this);
       // Cleanup @respond handlers
       cleanupResponseHandlers(this);
       // Cleanup @observe observers

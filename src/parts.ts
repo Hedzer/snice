@@ -606,11 +606,19 @@ export class EventPart extends Part {
     super();
     this.element = element;
 
-    // Parse keyboard shortcuts: @keydown.enter, @keydown.ctrl+s, etc.
+    // Parse keyboard shortcuts:
+    // Supports both dot notation (@keydown.enter) and colon notation (@keydown:Enter) to match @on decorator
     const dotIndex = eventName.indexOf('.');
-    if (dotIndex > 0) {
-      const baseEvent = eventName.substring(0, dotIndex);
-      const keySpec = eventName.substring(dotIndex + 1);
+    const colonIndex = eventName.indexOf(':');
+
+    // Use whichever delimiter comes first (dot or colon)
+    const delimiterIndex = dotIndex > 0 && colonIndex > 0
+      ? Math.min(dotIndex, colonIndex)
+      : Math.max(dotIndex, colonIndex);
+
+    if (delimiterIndex > 0) {
+      const baseEvent = eventName.substring(0, delimiterIndex);
+      const keySpec = eventName.substring(delimiterIndex + 1);
       this.eventName = baseEvent;
       this.keyFilter = parseKeyboardFilter(keySpec);
     } else {
