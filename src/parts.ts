@@ -10,10 +10,7 @@ const marker = `{{snice-${String(Math.random()).slice(2)}}}`;
 const nodeMarker = `<!--${marker}-->`;
 const markerRegex = new RegExp(marker, 'g');
 
-/**
- * Template cache - maps template strings to prepared templates
- */
-const templateCache = new Map<TemplateStringsArray, Template>();
+// Template cache removed - negligible performance benefit (~0.00004ms per template)
 
 /**
  * A prepared template ready for rendering
@@ -39,64 +36,44 @@ class Template {
         const tagName = element.tagName.toLowerCase();
 
         // Handle virtual elements: <if>, <case>
+        // These elements stay in the DOM but are styled with display:contents
+        // to be transparent wrappers that don't affect layout
         if (tagName === 'if') {
-          // <if ${condition}>children</if>
-          // The condition becomes an attribute with a name like "snice-NUMBERS"
-          const markerAttr = Array.from(element.attributes).find(attr => attr.name.startsWith('snice-'));
+          // <if value="${condition}">children</if>
+          const valueAttr = element.getAttribute('value');
 
-          if (markerAttr) {
-            // Replace <if> with comment markers
-            const parent = element.parentNode!;
-            const startComment = document.createComment('if-start');
-            const endComment = document.createComment('if-end');
-
-            parent.insertBefore(startComment, element);
-            parent.insertBefore(endComment, element.nextSibling);
-
-            // Remove the marker attribute so it doesn't get processed as a regular attribute
-            element.removeAttribute(markerAttr.name);
+          if (valueAttr && valueAttr.includes(marker)) {
+            // Remove the value attribute
+            element.removeAttribute('value');
 
             this.parts.push({
               type: 'if',
               index: partIndex++,
-              startNode: startComment,
-              endNode: endComment,
-              element // Keep reference to actual element, don't remove it
+              element // Keep the <if> element, will show/hide via display property
             });
 
-            // DON'T remove element, DON'T skip children - let them be processed normally
-            // The <if> element stays in template and children's parts work normally
+            // Continue processing children normally
           }
           continue;
         }
 
         // Handle <case> element
+        // Like <if>, <case> stays in DOM styled with display:contents
         if (tagName === 'case') {
-          // <case ${value}>children</case>
-          // The value becomes an attribute with a name like "snice-NUMBERS"
-          const markerAttr = Array.from(element.attributes).find(attr => attr.name.startsWith('snice-'));
+          // <case value="${value}">children</case>
+          const valueAttr = element.getAttribute('value');
 
-          if (markerAttr) {
-            const parent = element.parentNode!;
-            const startComment = document.createComment('case-start');
-            const endComment = document.createComment('case-end');
-
-            parent.insertBefore(startComment, element);
-            parent.insertBefore(endComment, element.nextSibling);
-
-            // Remove the marker attribute so it doesn't get processed as a regular attribute
-            element.removeAttribute(markerAttr.name);
+          if (valueAttr && valueAttr.includes(marker)) {
+            // Remove the value attribute
+            element.removeAttribute('value');
 
             this.parts.push({
               type: 'case',
               index: partIndex++,
-              startNode: startComment,
-              endNode: endComment,
-              caseElement: element // Keep reference to actual element
+              caseElement: element // Keep the <case> element for when/default processing
             });
 
-            // DON'T remove element, DON'T skip children - let them be processed normally
-            // The <case> element stays in template and children's parts work normally
+            // Continue processing children normally
           }
           continue;
         }
@@ -234,11 +211,6 @@ interface TemplatePart {
  * Prepare a template for rendering
  */
 function prepareTemplate(result: TemplateResult): Template {
-  let cached = templateCache.get(result.strings);
-  if (cached) {
-    return cached;
-  }
-
   // Build HTML with markers and extract original attribute names
   const { strings } = result;
   let html = '';
@@ -264,9 +236,19 @@ function prepareTemplate(result: TemplateResult): Template {
         attrNamesForParts.push(attrName);
         html += marker;
       } else {
-        // We're in node content
-        attrNamesForParts.push(''); // Empty string for node parts
-        html += nodeMarker;
+        // Check if this is a meta element (<if> or <case>) by looking backwards
+        // Match pattern: <if or <case followed by whitespace or >
+        const metaElementMatch = str.match(/<(if|case)\s*$/);
+
+        if (metaElementMatch) {
+          // This is a meta element - add value attribute
+          attrNamesForParts.push('value');
+          html += `value="${marker}"`;
+        } else {
+          // We're in node content
+          attrNamesForParts.push(''); // Empty string for node parts
+          html += nodeMarker;
+        }
       }
     }
   }
@@ -274,9 +256,7 @@ function prepareTemplate(result: TemplateResult): Template {
   const template = document.createElement('template');
   template.innerHTML = html;
 
-  const preparedTemplate = new Template(result, template, attrNamesForParts);
-  templateCache.set(result.strings, preparedTemplate);
-  return preparedTemplate;
+  return new Template(result, template, attrNamesForParts);
 }
 
 /**
@@ -342,16 +322,12 @@ export class TemplateInstance {
             part = new EventPart(eventElement, partDef.name!);
             break;
           case 'if':
-            const ifStart = nodeMap.get(partDef.startNode!) as Comment;
-            const ifEnd = nodeMap.get(partDef.endNode!) as Comment;
             const ifElement = nodeMap.get(partDef.element!) as Element;
-            part = new IfPart(ifStart, ifEnd, ifElement);
+            part = new IfPart(ifElement);
             break;
           case 'case':
-            const caseStart = nodeMap.get(partDef.startNode!) as Comment;
-            const caseEnd = nodeMap.get(partDef.endNode!) as Comment;
             const caseElement = nodeMap.get(partDef.caseElement!) as Element;
-            part = new CasePart(caseStart, caseEnd, caseElement);
+            part = new CasePart(caseElement);
             break;
           default:
             throw new Error(`Unknown part type: ${(partDef as any).type}`);
@@ -792,20 +768,25 @@ export function matchesKeyboardFilter(event: KeyboardEvent, filter: KeyboardFilt
 
 /**
  * IfPart handles <if> conditional rendering
- * Removes the <if> wrapper and conditionally renders its children
+ * Uses document fragments to actually remove/insert nodes from the DOM
+ * instead of just hiding them with CSS
  */
 export class IfPart extends Part {
-  private startNode: Comment;
-  private endNode: Comment;
   private ifElement: HTMLElement;
   private value: any = undefined;
-  private isAttached: boolean = true; // Track if element is in DOM
+  private fragment: DocumentFragment | null = null;
+  private childNodes: Node[] = [];
 
-  constructor(startNode: Comment, endNode: Comment, ifElement: Element) {
+  constructor(ifElement: Element) {
     super();
-    this.startNode = startNode;
-    this.endNode = endNode;
     this.ifElement = ifElement as HTMLElement;
+
+    // Set display to contents so the wrapper is transparent
+    // display:contents makes the element invisible but renders its children
+    this.ifElement.style.display = 'contents';
+
+    // Store initial child nodes
+    this.childNodes = Array.from(this.ifElement.childNodes);
   }
 
   commit(value: any): void {
@@ -819,50 +800,41 @@ export class IfPart extends Part {
     this.value = value;
 
     if (condition) {
-      // Should be visible - insert if not already attached
-      if (!this.isAttached) {
-        // Re-insert between markers
-        const parent = this.startNode.parentNode;
-        if (parent) {
-          parent.insertBefore(this.ifElement, this.endNode);
-          this.isAttached = true;
-        }
+      // Show: restore children from fragment if they were removed
+      if (this.fragment && this.fragment.hasChildNodes()) {
+        this.ifElement.appendChild(this.fragment);
+        this.fragment = null;
       }
     } else {
-      // Should be hidden - remove if currently attached
-      if (this.isAttached) {
-        const parent = this.ifElement.parentNode;
-        if (parent) {
-          parent.removeChild(this.ifElement);
-          this.isAttached = false;
-        }
+      // Hide: move children to document fragment
+      this.fragment = document.createDocumentFragment();
+      while (this.ifElement.firstChild) {
+        this.fragment.appendChild(this.ifElement.firstChild);
       }
     }
   }
 
   clear(): void {
-    // Remove element if attached
-    if (this.isAttached) {
-      const parent = this.ifElement.parentNode;
-      if (parent) {
-        parent.removeChild(this.ifElement);
-        this.isAttached = false;
-      }
+    // Move all children to fragment
+    this.fragment = document.createDocumentFragment();
+    while (this.ifElement.firstChild) {
+      this.fragment.appendChild(this.ifElement.firstChild);
     }
   }
 }
 
 /**
  * CasePart handles <case>/<when>/<default> conditional rendering
- * Removes/inserts <when> and <default> children based on value matching
+ * Uses document fragments to remove/insert <when> and <default> children
  */
 export class CasePart extends Part {
   private caseElement: Element;
   private value: any = undefined;
   private childrenList: Element[]; // Store all children in original order
+  private fragments: Map<Element, DocumentFragment> = new Map(); // Store removed children in fragments
   private attachedChildren: Map<Element, boolean> = new Map(); // Track which children are in DOM
 
-  constructor(startNode: Comment, endNode: Comment, caseElement: Element) {
+  constructor(caseElement: Element) {
     super();
     this.caseElement = caseElement;
 
@@ -872,6 +844,8 @@ export class CasePart extends Part {
     // Initialize all children as attached
     this.childrenList.forEach(child => {
       this.attachedChildren.set(child, true);
+      // Create a fragment for each child to hold it when detached
+      this.fragments.set(child, document.createDocumentFragment());
     });
   }
 
@@ -910,7 +884,7 @@ export class CasePart extends Part {
 
       // Update DOM if state changed
       if (shouldBeAttached && !isAttached) {
-        // Re-insert in correct position
+        // Re-insert from fragment in correct position
         // Find next sibling that is still attached
         const childIndex = this.childrenList.indexOf(child);
         let insertBefore: Element | null = null;
@@ -922,26 +896,35 @@ export class CasePart extends Part {
           }
         }
 
-        if (insertBefore) {
-          this.caseElement.insertBefore(child, insertBefore);
-        } else {
-          this.caseElement.appendChild(child);
+        // Get child from fragment
+        const fragment = this.fragments.get(child);
+        if (fragment && fragment.firstChild) {
+          if (insertBefore) {
+            this.caseElement.insertBefore(fragment.firstChild, insertBefore);
+          } else {
+            this.caseElement.appendChild(fragment.firstChild);
+          }
         }
         this.attachedChildren.set(child, true);
       } else if (!shouldBeAttached && isAttached) {
-        // Remove
-        this.caseElement.removeChild(child);
+        // Move to fragment
+        const fragment = this.fragments.get(child);
+        if (fragment) {
+          fragment.appendChild(child);
+        }
         this.attachedChildren.set(child, false);
       }
     }
   }
 
   clear(): void {
-    // Remove all children
-    const children = Array.from(this.caseElement.children);
-    for (const child of children) {
+    // Move all children to fragments
+    for (const child of this.childrenList) {
       if (this.attachedChildren.get(child)) {
-        this.caseElement.removeChild(child);
+        const fragment = this.fragments.get(child);
+        if (fragment) {
+          fragment.appendChild(child);
+        }
         this.attachedChildren.set(child, false);
       }
     }

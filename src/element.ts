@@ -4,7 +4,7 @@ import { setupResponseHandlers, cleanupResponseHandlers } from './request-respon
 import { setupEventHandlers, cleanupEventHandlers } from './on';
 import { parseAttributeValue, detectType, valueToAttribute } from './utils';
 import { requestRender, applyStyles } from './render';
-import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, RENDERED_PROMISE, RENDERED_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PROPERTY_WATCHERS, EXPLICITLY_SET_PROPERTIES, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD } from './symbols';
+import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, RENDERED_PROMISE, RENDERED_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PRE_INIT_PROPERTY_VALUES, PROPERTY_WATCHERS, EXPLICITLY_SET_PROPERTIES, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD } from './symbols';
 import { QueryOptions } from './types/query-options';
 import { PropertyOptions } from './types/property-options';
 import { MovedOptions } from './types/moved-options';
@@ -180,6 +180,10 @@ export function applyElementFunctionality(constructor: any) {
       }
 
       try {
+        // Mark that properties are being initialized from attributes
+        // This allows property setters to work during initialization
+        this[PROPERTIES_INITIALIZED] = true;
+
         // Initialize properties from attributes before rendering
         const properties = constructor[PROPERTIES];
         if (properties) {
@@ -200,9 +204,17 @@ export function applyElementFunctionality(constructor: any) {
             }
           }
         }
-        
-        // Mark that properties have been initialized
-        this[PROPERTIES_INITIALIZED] = true;
+
+        // Apply any properties that were set before element was connected
+        if (this[PRE_INIT_PROPERTY_VALUES]) {
+          for (const [propName, propValue] of this[PRE_INIT_PROPERTY_VALUES]) {
+            // Remove from map first so getter doesn't return it during setter call
+            this[PRE_INIT_PROPERTY_VALUES].delete(propName);
+            this[propName] = propValue;
+          }
+          // Clear the pre-init values map
+          delete this[PRE_INIT_PROPERTY_VALUES];
+        }
 
         // Properties are now stateless and read from DOM attributes only
         // Initial values are not automatically reflected
@@ -491,6 +503,11 @@ export function property(options?: PropertyOptions) {
               return false;
             }
 
+            // Check for pre-init property values (set before element was connected)
+            if (this[PRE_INIT_PROPERTY_VALUES]?.has(propertyKey)) {
+              return this[PRE_INIT_PROPERTY_VALUES].get(propertyKey);
+            }
+
             // Otherwise return initial value (respects default values like showRememberMe = true)
             return initialValue;
           },
@@ -501,7 +518,18 @@ export function property(options?: PropertyOptions) {
             // Check if value actually changed
             if (oldValue === newValue) return;
 
-            // Always reflect to DOM - properties are always backed by attributes
+            // Don't reflect to DOM until connectedCallback has started
+            // This prevents field initializers from overwriting HTML attributes
+            if (!this[PROPERTIES_INITIALIZED]) {
+              // Store value for later application when element is connected
+              if (!this[PRE_INIT_PROPERTY_VALUES]) {
+                this[PRE_INIT_PROPERTY_VALUES] = new Map();
+              }
+              this[PRE_INIT_PROPERTY_VALUES].set(propertyKey, newValue);
+              return;
+            }
+
+            // Reflect to DOM - properties are backed by attributes
             const attributeName = typeof finalOptions.attribute === 'string' ? finalOptions.attribute : propertyKey.toLowerCase();
             const attributeValue = valueToAttribute(newValue, finalOptions, initialValue);
 

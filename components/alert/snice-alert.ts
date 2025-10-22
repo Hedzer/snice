@@ -27,25 +27,32 @@ export class SniceAlert extends HTMLElement implements SniceAlertElement {
   @render()
   renderContent() {
     const hasIcon = this.icon ? this.icon !== 'none' : this.shouldShowDefaultIcon();
-    const classes = ['alert', this.isHidden ? 'alert--hidden' : ''].filter(Boolean).join(' ');
-    const iconClasses = ['alert-icon', !this.icon || this.icon === 'none' ? 'alert-icon--default' : ''].filter(Boolean).join(' ');
+    const classes = [
+      'alert',
+      `alert--${this.variant}`,
+      `alert--${this.size}`,
+      this.isHidden ? 'alert--hidden' : ''
+    ].filter(Boolean).join(' ');
+
+    const showDefaultIcon = !this.icon || this.icon === 'none';
+    const iconClasses = showDefaultIcon ? 'alert-icon alert-icon--default' : 'alert-icon';
 
     return html/*html*/`
       <div class="${classes}" role="alert" aria-live="polite" @animationend=${this.handleAnimationEnd}>
-        <if ${hasIcon}>
+        <if value="${hasIcon}">
           <div class="${iconClasses}">
             ${this.icon || ''}
           </div>
         </if>
         <div class="alert-content">
-          <if ${this.title}>
+          <if value="${this.title}">
             <div class="alert-title">${this.title}</div>
           </if>
           <div class="alert-description">
             <slot></slot>
           </div>
         </div>
-        <if ${this.dismissible}>
+        <if value="${this.dismissible}">
           <button class="alert-dismiss" type="button" aria-label="Dismiss alert" @click=${this.handleDismiss}>
             <svg viewBox="0 0 24 24" fill="currentColor">
               <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z"/>

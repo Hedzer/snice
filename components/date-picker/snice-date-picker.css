@@ -265,22 +265,6 @@
   justify-content: center;
 }
 
-.today-button {
-  background: none;
-  border: 1px solid #d1d5db;
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  color: #374151;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
-}
-
-.today-button:hover {
-  background: #f9fafb;
-  border-color: #9ca3af;
-}
-
 /* Helper/Error Text */
 .helper-text,
 .error-text {

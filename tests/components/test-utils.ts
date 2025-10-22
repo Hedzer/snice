@@ -13,13 +13,10 @@ export async function createComponent<T extends HTMLElement>(
 ): Promise<T> {
   const el = document.createElement(tagName) as T;
 
-  // Set attributes/properties
+  // Set attributes first (before connecting)
   for (const [key, value] of Object.entries(attributes)) {
     if (typeof value === 'boolean') {
-      // For boolean properties, convert kebab-case to camelCase and set property directly
-      const propName = key.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
-      (el as any)[propName] = value;
-      // Also set attribute for consistency
+      // For boolean attributes, set attribute
       if (value) {
         el.setAttribute(key, '');
       } else {
@@ -34,6 +31,15 @@ export async function createComponent<T extends HTMLElement>(
 
   // Wait for element to be ready
   await (el as any).ready;
+
+  // Now set properties after element is connected and ready
+  for (const [key, value] of Object.entries(attributes)) {
+    if (typeof value === 'boolean') {
+      // Convert kebab-case to camelCase and set property
+      const propName = key.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+      (el as any)[propName] = value;
+    }
+  }
 
   return el;
 }

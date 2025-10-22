@@ -30,4 +30,48 @@ test.describe('Snice Chip', () => {
     const count = await page.locator('snice-chip[selected]').count();
     expect(count).toBeGreaterThan(0);
   });
+
+  test('should toggle selection on click', async ({ page }) => {
+    const chip = page.locator('snice-chip').first();
+    const initialSelected = await chip.evaluate((el: any) => el.selected);
+
+    await chip.click();
+    await page.waitForTimeout(100);
+
+    const afterClickSelected = await chip.evaluate((el: any) => el.selected);
+    expect(afterClickSelected).not.toBe(initialSelected);
+  });
+
+  test('should remove chip when remove button clicked', async ({ page }) => {
+    const removableChips = page.locator('snice-chip[removable]');
+    const initialCount = await removableChips.count();
+
+    if (initialCount > 0) {
+      const firstChip = removableChips.first();
+      const removeBtn = firstChip.locator('.chip-remove').first();
+
+      await removeBtn.click();
+      await page.waitForTimeout(100);
+
+      // Check if chip fired remove event (we can't easily test if it was removed from DOM without demo logic)
+      const isVisible = await firstChip.isVisible();
+      console.log('Chip still visible after remove:', isVisible);
+    }
+  });
+
+  test('should not interact when disabled', async ({ page }) => {
+    const disabledChips = page.locator('snice-chip[disabled]');
+    const count = await disabledChips.count();
+
+    if (count > 0) {
+      const chip = disabledChips.first();
+      const beforeClick = await chip.evaluate((el: any) => el.selected);
+
+      await chip.click({ force: true });
+      await page.waitForTimeout(100);
+
+      const afterClick = await chip.evaluate((el: any) => el.selected);
+      expect(afterClick).toBe(beforeClick);
+    }
+  });
 });

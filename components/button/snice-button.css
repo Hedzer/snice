@@ -31,6 +31,14 @@
   position: relative;
 }
 
+.button:active {
+  transition:
+    color 50ms ease,
+    background-color 50ms ease,
+    border-color 50ms ease,
+    box-shadow 50ms ease;
+}
+
 .button:focus-visible {
   outline: none;
   box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
@@ -76,7 +84,8 @@
 }
 
 .button--default:active:not(.button--disabled) {
-  background-color: var(--snice-color-background-tertiary, rgb(241 241 241));
+  background-color: var(--snice-color-background-tertiary, rgb(248 248 248));
+  border-color: var(--snice-color-border-hover, rgb(204 204 204));
 }
 
 /* Variants - Primary */
@@ -92,7 +101,8 @@
 }
 
 .button--primary:active:not(.button--disabled) {
-  background-color: var(--snice-color-primary-hover, rgb(29 78 216));
+  background-color: var(--snice-color-primary-active, rgb(27 76 214));
+  border-color: var(--snice-color-primary-active, rgb(27 76 214));
 }
 
 /* Variants - Success */
@@ -107,6 +117,11 @@
   border-color: var(--snice-color-success-hover, rgb(21 128 61));
 }
 
+.button--success:active:not(.button--disabled) {
+  background-color: var(--snice-color-success-active, rgb(19 126 59));
+  border-color: var(--snice-color-success-active, rgb(19 126 59));
+}
+
 /* Variants - Warning */
 .button--warning {
   background-color: var(--snice-color-warning, rgb(202 138 4));
@@ -117,6 +132,11 @@
 .button--warning:hover:not(.button--disabled) {
   background-color: var(--snice-color-warning-hover, rgb(161 98 7));
   border-color: var(--snice-color-warning-hover, rgb(161 98 7));
+}
+
+.button--warning:active:not(.button--disabled) {
+  background-color: var(--snice-color-warning-active, rgb(159 96 5));
+  border-color: var(--snice-color-warning-active, rgb(159 96 5));
 }
 
 /* Variants - Danger */
@@ -131,6 +151,11 @@
   border-color: var(--snice-color-danger-hover, rgb(185 28 28));
 }
 
+.button--danger:active:not(.button--disabled) {
+  background-color: var(--snice-color-danger-active, rgb(183 26 26));
+  border-color: var(--snice-color-danger-active, rgb(183 26 26));
+}
+
 /* Variants - Text */
 .button--text {
   background-color: transparent;
@@ -141,6 +166,10 @@
 .button--text:hover:not(.button--disabled) {
   background-color: rgb(59 130 246 / 0.1);
   color: var(--snice-color-primary-hover, rgb(29 78 216));
+}
+
+.button--text:active:not(.button--disabled) {
+  background-color: rgb(59 130 246 / 0.11);
 }
 
 /* Outline modifier */
@@ -171,6 +200,10 @@
 
 .button--outline:hover:not(.button--disabled) {
   background-color: rgb(115 115 115 / 0.1);
+}
+
+.button--outline:active:not(.button--disabled) {
+  background-color: rgb(115 115 115 / 0.11);
 }
 
 /* Shape modifiers */

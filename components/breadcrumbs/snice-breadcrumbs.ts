@@ -14,7 +14,7 @@ export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsEle
   @property({  })
   size: BreadcrumbSize = 'medium';
 
-  @property({ type: Number,  })
+  @property({ type: Number, attribute: 'max-items' })
   maxItems = 0;
 
   @query('.breadcrumb')
@@ -24,6 +24,9 @@ export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsEle
   collapsed = true;
 
   private slotItems: BreadcrumbItem[] = [];
+
+  @property({ type: Number, attribute: false })
+  private renderTrigger = 0;
 
   @render()
   renderContent() {
@@ -153,6 +156,9 @@ export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsEle
       iconImage: crumb.iconImage || undefined,
       active: crumb.active || false
     }));
+
+    // Trigger re-render to display slot items by updating a property
+    this.renderTrigger++;
   }
 
   @watch('items', 'separator', 'maxItems')

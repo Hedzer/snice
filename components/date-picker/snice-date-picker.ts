@@ -191,9 +191,9 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
             </div>
 
             <div class="calendar-footer">
-              <button class="today-button" type="button" data-nav="today">
+              <snice-button class="today-button" variant="default" size="small" data-nav="today">
                 Today
-              </button>
+              </snice-button>
             </div>
           </div>
         </div>
@@ -363,41 +363,41 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
     }
   }
 
-  private getDayHeaders(): string {
+  private getDayHeaders() {
     const days = [...this.dayNames];
     // Rotate array based on firstDayOfWeek (0=Sunday, 1=Monday, etc.)
     for (let i = 0; i < this.firstDayOfWeek; i++) {
       days.push(days.shift()!);
     }
-    return days.map(day => `<div class="weekday">${day}</div>`).join('');
+    return days.map(day => html`<div class="weekday">${day}</div>`);
   }
 
-  private getDaysGrid(): string {
+  private getDaysGrid() {
     const year = this.viewDate.getFullYear();
     const month = this.viewDate.getMonth();
-    
+
     // First day of the month
     const firstDay = new Date(year, month, 1);
     // Last day of the month
     const lastDay = new Date(year, month + 1, 0);
-    
+
     // Calculate starting position based on first day of week preference
     let startingDayOfWeek = firstDay.getDay() - this.firstDayOfWeek;
     if (startingDayOfWeek < 0) startingDayOfWeek += 7;
-    
+
     const daysInMonth = lastDay.getDate();
     const today = new Date();
-    const isToday = (date: Date) => 
-      date.getDate() === today.getDate() && 
-      date.getMonth() === today.getMonth() && 
+    const isToday = (date: Date) =>
+      date.getDate() === today.getDate() &&
+      date.getMonth() === today.getMonth() &&
       date.getFullYear() === today.getFullYear();
-    
+
     const isSelected = (date: Date) =>
       this.selectedDate &&
       date.getDate() === this.selectedDate.getDate() &&
       date.getMonth() === this.selectedDate.getMonth() &&
       date.getFullYear() === this.selectedDate.getFullYear();
-    
+
     const isDisabled = (date: Date) => {
       if (this.min) {
         const minDate = this.parseDate(this.min);
@@ -410,36 +410,38 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
       return false;
     };
 
-    let html = '';
-    
+    const days = [];
+
     // Empty cells for days before month starts
     for (let i = 0; i < startingDayOfWeek; i++) {
-      html += '<div class="day day--empty"></div>';
+      days.push(html`<div class="day day--empty"></div>`);
     }
-    
+
     // Days of the month
     for (let day = 1; day <= daysInMonth; day++) {
       const date = new Date(year, month, day);
       const classes = ['day'];
-      
+
       if (isToday(date)) classes.push('day--today');
       if (isSelected(date)) classes.push('day--selected');
       if (isDisabled(date)) classes.push('day--disabled');
-      
-      html += `
-        <button 
-          class="${classes.join(' ')}" 
-          type="button" 
-          data-date="${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}"
-          ${isDisabled(date) ? 'disabled' : ''}
+
+      const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+
+      days.push(html`
+        <button
+          class="${classes.join(' ')}"
+          type="button"
+          data-date="${dateStr}"
+          ?disabled="${isDisabled(date)}"
           aria-label="${this.formatDate(date)}"
         >
           ${day}
         </button>
-      `;
+      `);
     }
-    
-    return html;
+
+    return days;
   }
 
   private updateInputValue() {
@@ -469,16 +471,8 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
   }
 
   private updateCalendarGrid() {
-    const calendarDays = this.calendar?.querySelector('.calendar-days');
-    const calendarTitle = this.calendar?.querySelector('.month-button');
-    
-    if (calendarDays) {
-      calendarDays.innerHTML = this.getDaysGrid();
-    }
-    
-    if (calendarTitle) {
-      calendarTitle.textContent = `${this.monthNames[this.viewDate.getMonth()]} ${this.viewDate.getFullYear()}`;
-    }
+    // Trigger full re-render instead of manual DOM manipulation
+    this.renderContent();
   }
 
   private setupCalendarClickOutside() {
@@ -563,7 +557,9 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
     if (target.closest('[data-date]')) {
       const dateString = target.closest('[data-date]')?.getAttribute('data-date');
       if (dateString) {
-        const date = new Date(dateString);
+        // Parse as local date to avoid timezone issues
+        const [year, month, day] = dateString.split('-').map(Number);
+        const date = new Date(year, month - 1, day);
         this.selectDate(date);
       }
     } else if (target.closest('[data-nav]')) {

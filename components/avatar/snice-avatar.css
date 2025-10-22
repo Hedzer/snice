@@ -5,6 +5,11 @@
   --avatar-color: #ffffff;
 }
 
+/* Meta elements should not interfere with layout */
+case, when, default, if {
+  display: contents;
+}
+
 .avatar {
   position: relative;
   width: var(--avatar-size);
@@ -96,6 +101,7 @@
   width: 60%;
   height: 60%;
   opacity: 0.9;
+  display: block;
 }
 
 /* Avatar color classes for fallback backgrounds */

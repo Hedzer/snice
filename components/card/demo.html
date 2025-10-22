@@ -92,31 +92,6 @@
       margin-top: 16px;
     }
 
-    .card-button {
-      padding: 8px 16px;
-      background: #3b82f6;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: background 0.2s;
-    }
-
-    .card-button:hover {
-      background: #2563eb;
-    }
-
-    .card-button--secondary {
-      background: transparent;
-      color: #3b82f6;
-      border: 1px solid #3b82f6;
-    }
-
-    .card-button--secondary:hover {
-      background: #eff6ff;
-    }
-
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -222,7 +197,7 @@
           <h3 slot="header">Elevated Card</h3>
           <p>This is an elevated card with a shadow. It appears to float above the surface.</p>
           <div slot="footer">
-            <button class="card-button">Action</button>
+            <snice-button variant="text" size="small">Action</snice-button>
           </div>
         </snice-card>
 
@@ -230,7 +205,7 @@
           <h3 slot="header">Bordered Card</h3>
           <p>This is a bordered card with a visible border. Great for clean, defined layouts.</p>
           <div slot="footer">
-            <button class="card-button">Action</button>
+            <snice-button variant="text" size="small">Action</snice-button>
           </div>
         </snice-card>
 
@@ -238,7 +213,7 @@
           <h3 slot="header">Flat Card</h3>
           <p>This is a flat card with a subtle background. Perfect for minimal designs.</p>
           <div slot="footer">
-            <button class="card-button">Action</button>
+            <snice-button variant="text" size="small">Action</snice-button>
           </div>
         </snice-card>
       </div>
@@ -300,8 +275,8 @@
           <h3 class="card-title">Mountain View</h3>
           <p class="card-text">Beautiful scenery from the mountain top with breathtaking views.</p>
           <div class="card-actions">
-            <button class="card-button">View</button>
-            <button class="card-button card-button--secondary">Share</button>
+            <snice-button variant="text" size="small">View</snice-button>
+            <snice-button variant="text" size="small">Share</snice-button>
           </div>
         </snice-card>
 
@@ -334,7 +309,7 @@
           <p style="clear: both; padding-top: 12px;">Building amazing web applications with modern technologies.</p>
           <div slot="footer" style="display: flex; justify-content: space-between;">
             <span style="color: #666; font-size: 14px;">Joined 2024</span>
-            <button class="card-button">Follow</button>
+            <snice-button variant="text" size="small">Follow</snice-button>
           </div>
         </snice-card>
 
@@ -355,17 +330,17 @@
             </div>
           </div>
           <div slot="footer">
-            <button class="card-button" style="width: 100%;">View Details</button>
+            <snice-button variant="text" size="small" style="width: 100%;">View Details</snice-button>
           </div>
         </snice-card>
 
         <snice-card variant="flat">
           <h3 slot="header">Quick Actions</h3>
           <div style="display: flex; flex-direction: column; gap: 8px;">
-            <button class="card-button">Create New Project</button>
-            <button class="card-button card-button--secondary">Import Data</button>
-            <button class="card-button card-button--secondary">Export Report</button>
-            <button class="card-button card-button--secondary">Settings</button>
+            <snice-button variant="text" size="small">Create New Project</snice-button>
+            <snice-button variant="text" size="small">Import Data</snice-button>
+            <snice-button variant="text" size="small">Export Report</snice-button>
+            <snice-button variant="text" size="small">Settings</snice-button>
           </div>
         </snice-card>
       </div>
@@ -400,7 +375,7 @@
             Current state: <code id="card-state">Default</code>
           </p>
           <div slot="footer">
-            <button class="card-button">Sample Action</button>
+            <snice-button variant="text" size="small">Sample Action</snice-button>
           </div>
         </snice-card>
       </div>
@@ -476,6 +451,7 @@
 
   <script type="module">
     import './snice-card.ts';
+    import '../button/snice-button.ts';
 
     const demoCard = document.getElementById('demo-card');
 

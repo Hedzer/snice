@@ -43,6 +43,13 @@ export class SniceCheckbox extends HTMLElement implements SniceCheckboxElement {
   @query('.checkbox-wrapper')
   wrapper?: HTMLElement;
 
+  connectedCallback() {
+    super.connectedCallback?.();
+    this.addEventListener('click', (e) => {
+      if (!this.disabled && e.target === this) this.input?.click();
+    });
+  }
+
   @render()
   renderContent() {
     const wrapperClasses = `checkbox-wrapper${this.disabled ? ' checkbox-wrapper--disabled' : ''}`;
@@ -84,11 +91,12 @@ export class SniceCheckbox extends HTMLElement implements SniceCheckboxElement {
   }
 
   private handleInternalChange(event: Event) {
-    const target = event.target as HTMLElement;
-    if (!target.classList.contains('checkbox-input')) return;
+    const target = event.target as HTMLInputElement;
 
-    const input = target as HTMLInputElement;
-    this.checked = input.checked;
+    // Only handle change events from the checkbox input
+    if (target.type !== 'checkbox') return;
+
+    this.checked = target.checked;
     this.indeterminate = false; // Clear indeterminate on user interaction
 
     // Dispatch custom event

@@ -8,6 +8,11 @@
   --breadcrumb-separator-color: rgb(var(--snice-color-gray-400, 163 163 163));
 }
 
+/* Meta elements should not interfere with layout */
+case, when, default, if {
+  display: contents;
+}
+
 .breadcrumb {
   display: flex;
   align-items: center;
