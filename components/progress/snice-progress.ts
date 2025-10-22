@@ -79,9 +79,9 @@ export class SniceProgress extends HTMLElement implements SniceProgressElement {
            aria-valuemax="${this.max}"
            aria-label="${labelText}">
         <div class="progress__bar" style="${barStyle}">
-          ${this.showLabel ? html`
+          <if ${this.showLabel}>
             <span class="progress__label">${labelText}</span>
-          ` : ''}
+          </if>
         </div>
       </div>
     `;
@@ -122,9 +122,9 @@ export class SniceProgress extends HTMLElement implements SniceProgressElement {
             stroke-dashoffset="${offset}"
           />
         </svg>
-        ${this.showLabel && !this.indeterminate ? html`
+        <if ${this.showLabel && !this.indeterminate}>
           <div class="progress__circle-label">${labelText}</div>
-        ` : ''}
+        </if>
       </div>
     `;
   }

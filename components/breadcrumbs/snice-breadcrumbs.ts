@@ -44,7 +44,7 @@ export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsEle
 
             return html`
               <li class="${itemClass}">
-                ${item.href && !isActive ? html`
+                <if ${item.href && !isActive}>
                   <a href="${item.href}"
                      class="breadcrumb-link"
                      aria-current="${isActive ? 'page' : ''}"
@@ -52,20 +52,21 @@ export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsEle
                     ${this.renderIcon(item)}
                     ${item.label}
                   </a>
-                ` : html`
+                </if>
+                <if ${!item.href || isActive}>
                   <span class="breadcrumb-text"
                         aria-current="${isActive ? 'page' : ''}">
                     ${this.renderIcon(item)}
                     ${item.label}
                   </span>
-                `}
-                ${!isLast ? html`
+                </if>
+                <if ${!isLast}>
                   <span class="breadcrumb-separator" aria-hidden="true">
                     ${this.separator}
                   </span>
-                ` : ''}
+                </if>
               </li>
-              ${hasCollapsed && index === 0 && allItems.length > this.maxItems ? html`
+              <if ${hasCollapsed && index === 0 && allItems.length > this.maxItems}>
                 <li class="breadcrumb-item">
                   <button class="breadcrumb-ellipsis"
                           aria-label="Show all breadcrumbs"
@@ -76,7 +77,7 @@ export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsEle
                     ${this.separator}
                   </span>
                 </li>
-              ` : ''}
+              </if>
             `;
           })}
         </ol>
@@ -165,8 +166,12 @@ export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsEle
 
   private renderIcon(item: BreadcrumbItem) {
     return html`
-      ${item.iconImage ? html`<img class="breadcrumb-icon-image" src="${item.iconImage}" alt="">` : ''}
-      ${item.icon ? html`<span class="breadcrumb-icon">${item.icon}</span>` : ''}
+      <if ${item.iconImage}>
+        <img class="breadcrumb-icon-image" src="${item.iconImage}" alt="">
+      </if>
+      <if ${item.icon}>
+        <span class="breadcrumb-icon">${item.icon}</span>
+      </if>
     `;
   }
 }

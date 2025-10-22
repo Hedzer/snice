@@ -46,13 +46,13 @@ export class SniceBadge extends HTMLElement implements SniceBadgeElement {
     return html`
       <div class="badge-wrapper">
         <slot></slot>
-        ${showBadge ? html`
+        <if ${showBadge}>
           <span class="${badgeClasses}"
                 aria-label="${displayContent}"
                 role="status">
-            ${!this.dot ? displayContent : ''}
+            <if ${!this.dot}>${displayContent}</if>
           </span>
-        ` : ''}
+        </if>
       </div>
     `;
   }

@@ -43,23 +43,21 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
             .filter(p => p.parent === placard.name && p.show !== false)
             .sort((a, b) => (a.order || 0) - (b.order || 0));
 
-          const childrenHtml = children.length > 0 ? html`
-            <ul class="nav__submenu">
-              ${children.map(child => {
-                const childClasses = ['nav__item', this.isActive(child) ? 'nav__item--active' : ''].filter(Boolean).join(' ');
-                return html`
-                <li class="${childClasses}">
-                  ${this.renderNavLink(child)}
-                </li>
-              `})}
-            </ul>
-          ` : '';
-
           const groupClasses = ['nav__group', this.isActive(placard) ? 'nav__group--active' : ''].filter(Boolean).join(' ');
           return html`
             <div class="${groupClasses}">
               ${this.renderNavLink(placard)}
-              ${childrenHtml}
+              <if ${children.length > 0}>
+                <ul class="nav__submenu">
+                  ${children.map(child => {
+                    const childClasses = ['nav__item', this.isActive(child) ? 'nav__item--active' : ''].filter(Boolean).join(' ');
+                    return html`
+                    <li class="${childClasses}">
+                      ${this.renderNavLink(child)}
+                    </li>
+                  `})}
+                </ul>
+              </if>
             </div>
           `;
         })}
@@ -85,9 +83,9 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
 
           return html`
             <div class="nav__group" data-group="${groupName}">
-              ${groupName !== 'default' ? html`
+              <if ${groupName !== 'default'}>
                 <div class="nav__group-label">${groupName}</div>
-              ` : ''}
+              </if>
               ${sortedItems.map(placard => this.renderNavItem(placard))}
             </div>
           `;
@@ -109,7 +107,6 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
 
   private renderNavLink(placard: Placard) {
     const isActive = this.isActive(placard);
-    const icon = placard.icon ? html`<span class="nav__icon">${placard.icon}</span>` : '';
     const tooltip = placard.tooltip ? placard.tooltip : '';
     const href = placard.name === 'home' ? '#/' : `#/${placard.name}`;
     const linkClasses = ['nav__link', isActive ? 'nav__link--active' : ''].filter(Boolean).join(' ');
@@ -119,7 +116,9 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
          class="${linkClasses}"
          aria-current="${isActive ? 'page' : ''}"
          title="${tooltip}">
-        ${icon}
+        <if ${placard.icon}>
+          <span class="nav__icon">${placard.icon}</span>
+        </if>
         <span class="nav__label">${placard.title}</span>
       </a>
     `;

@@ -46,13 +46,14 @@ export class SniceChip extends HTMLElement implements SniceChipElement {
            aria-selected="${this.selected}"
            @click=${(e: MouseEvent) => this.handleChipClick(e)}
            @keydown=${(e: KeyboardEvent) => this.handleKeydown(e)}>
-        ${this.avatar ? html`
+        <if ${this.avatar}>
           <img class="chip-avatar" src="${this.avatar}" alt="">
-        ` : this.icon ? html`
+        </if>
+        <if ${!this.avatar && this.icon}>
           <span class="chip-icon">${this.icon}</span>
-        ` : ''}
+        </if>
         <span class="chip-label">${this.label}</span>
-        ${this.removable && !this.disabled ? html`
+        <if ${this.removable && !this.disabled}>
           <button class="chip-remove"
                   type="button"
                   tabindex="-1"
@@ -62,7 +63,7 @@ export class SniceChip extends HTMLElement implements SniceChipElement {
               <path d="M14 1.41L12.59 0L7 5.59L1.41 0L0 1.41L5.59 7L0 12.59L1.41 14L7 8.41L12.59 14L14 12.59L8.41 7L14 1.41Z"/>
             </svg>
           </button>
-        ` : ''}
+        </if>
       </div>
     `;
   }
