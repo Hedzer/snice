@@ -1,5 +1,7 @@
 # Snice v3.0.0
 
+> **AI Assistants:** For token-efficient documentation, read [docs/ai/](./docs/ai/) instead. Same content, 70% fewer tokens.
+
 A TypeScript framework for building sustainable web applications through clear separation of governance.
 
 ## Quick Start
@@ -12,7 +14,7 @@ npm run dev
 
 ## Philosophy: Sustainable Architecture Through Separation of Concerns
 
-Most frameworks separate code by technology: HTML, CSS, JavaScript. Snice separates by **concerns of governance and data flow**. This shepherds you toward sustainable development by enforcing clear boundaries between what does what.
+Most frameworks separate code by technology: HTML, CSS, JavaScript. Snice separates by **concerns of governance and data flow**. This shepherds you toward sustainable development by providing tools that encourage good practices.
 
 ### The Snice Architecture
 
@@ -24,7 +26,7 @@ Every application has four distinct concerns:
 - Routing and navigation
 - Application-wide configuration
 
-**2. Pages** - Human intent orchestration
+**2. Pages** - Code that handles human intent
 - Understand what the user is trying to accomplish
 - Orchestrate atomic elements to fulfill that intent
 - Handle page-level data fetching and coordination
@@ -34,10 +36,10 @@ Every application has four distinct concerns:
 - Display data, nothing more
 - No understanding of business logic or user intent
 - Completely reusable across different contexts
-- Concerned only with how things look and basic interactions
+- Concerned only with how things look and visual behaviors
 
 **4. Controllers** - Behavior and data management
-- Handle server communication and data fetching
+- Handle server communication and data fetching when applicable
 - Manage complex business logic when pages get too large
 - Enable behavior swapping (A/B testing, feature flags)
 - Clear separation of presentation from behavior
@@ -48,7 +50,7 @@ This architecture ensures **pages orchestrate**, **elements present**, and **con
 
 Traditional component architectures blur these lines. A "UserProfile" component might handle routing, authentication, API calls, and rendering. When requirements change, you can't swap behavior without touching presentation. When you need to reuse the UI, you can't because it's coupled to specific business logic.
 
-Snice enforces boundaries:
+Snice encourages boundaries:
 - Want different behavior? Swap the controller, keep the element
 - Need to reuse UI? Elements don't know about your business logic
 - Debugging data flow? Follow the clear page → element → controller boundaries
@@ -96,18 +98,28 @@ class UserProfilePage extends HTMLElement {
   @property()
   userId = '';  // From URL parameter
 
+  @property({ type: Object })
+  user = null;
+
+  @property({ type: Object })
+  userStats = null;
+
   @ready()
   async loadUserData() {
-    const response = await fetch(`/api/users/${this.userId}`);
-    this.user = await response.json();
-    // ...
+    // Pages handle data fetching, elements just display
+    const [user, stats] = await Promise.all([
+      fetch(`/api/users/${this.userId}`).then(r => r.json()),
+      fetch(`/api/users/${this.userId}/stats`).then(r => r.json())
+    ]);
+    this.user = user;
+    this.userStats = stats;
   }
 
   @render()
   renderContent() {
     return html`
       <page-header .user=${this.user}></page-header>
-      <user-stats .userId=${this.userId}></user-stats>
+      <user-stats .stats=${this.userStats}></user-stats>
       <user-activity .userId=${this.userId}></user-activity>
     `;
   }
@@ -120,25 +132,23 @@ class UserProfilePage extends HTMLElement {
 // elements/user-stats.ts
 @element('user-stats')
 class UserStats extends HTMLElement {
-  @property()
-  userId = '';
-
-  @ready()
-  async loadStats() {
-    const response = await fetch(`/api/users/${this.userId}/stats`);
-    this.stats = await response.json();
-    // ...
-  }
+  @property({ type: Object })
+  stats = null;
 
   @render()
   renderContent() {
+    if (!this.stats) return html`<div>Loading...</div>`;
+
     return html`
       <div class="stats">
         <div class="stat">
           <span class="label">Views</span>
           <span class="value">${this.stats.views}</span>
         </div>
-        // ...
+        <div class="stat">
+          <span class="label">Followers</span>
+          <span class="value">${this.stats.followers}</span>
+        </div>
       </div>
     `;
   }
@@ -147,10 +157,13 @@ class UserStats extends HTMLElement {
   statsStyles() {
     return css`
       .stats { display: flex; gap: 2rem; }
-      // ...
+      .stat { text-align: center; }
     `;
   }
 }
+
+// Usage in parent page (which handles data fetching):
+// <user-stats .stats=${this.userStats}></user-stats>
 ```
 
 ### 4. Controllers: Behavior Management
@@ -595,7 +608,7 @@ Page metadata that layouts use to build navigation, breadcrumbs, and help system
 
 ```typescript
 // pages/dashboard-page.ts
-const dashboardPlacard: Placard<AppContext> = {
+const placard: Placard<AppContext> = {
   name: 'dashboard',
   title: 'Dashboard',
   icon: '📊',
@@ -608,7 +621,7 @@ const dashboardPlacard: Placard<AppContext> = {
 @page({
   tag: 'dashboard-page',
   routes: ['/dashboard'],
-  placard: dashboardPlacard
+  placard: placard
 })
 class DashboardPage extends HTMLElement { }
 ```
@@ -638,7 +651,7 @@ v3.0.0 introduces template-based rendering with differential updates. Key change
 - **`@part` decorator removed**
   Differential rendering makes selective re-rendering unnecessary
 
-See [MIGRATION_V2_TO_V3.md](./MIGRATION_V2_TO_V3.md) for detailed migration guide.
+See [Migration Guide](./docs/migration-v2-to-v3.md) for detailed migration guide.
 
 ## Documentation
 

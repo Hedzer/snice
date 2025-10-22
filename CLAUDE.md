@@ -1,3 +1,3 @@
-# Read the entire README.md
+# For API reference, read docs/ai/ (token-efficient) instead of docs/ (human-friendly)
 
-# Read all files entirely inside the .ai/ directory
+# Always read the entire README.md first for project overview
