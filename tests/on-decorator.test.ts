@@ -201,6 +201,37 @@ describe('@on decorator', () => {
       expect(debugHandler).toHaveBeenCalledTimes(1);
     });
 
+    it('should handle dot notation in @on decorator (same as colon)', async () => {
+      const escapeHandler = vi.fn();
+
+      @element('test-keyboard-dot-decorator')
+      class TestKeyboardDotDecorator extends HTMLElement {
+        @render()
+        renderContent() {
+          return html`<input type="text" />`;
+        }
+
+        @on('keydown.escape', 'input')
+        handleEscape(e: KeyboardEvent) {
+          escapeHandler(e);
+        }
+      }
+
+      const el = document.createElement('test-keyboard-dot-decorator') as TestKeyboardDotDecorator;
+      container.appendChild(el);
+      await el.ready;
+
+      const input = el.shadowRoot?.querySelector('input') as HTMLInputElement;
+
+      const escapeEvent = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, composed: true });
+      input.dispatchEvent(escapeEvent);
+      expect(escapeHandler).toHaveBeenCalledTimes(1);
+
+      const otherEvent = new KeyboardEvent('keydown', { key: 'a', bubbles: true, composed: true });
+      input.dispatchEvent(otherEvent);
+      expect(escapeHandler).toHaveBeenCalledTimes(1); // Should not increment
+    });
+
     it('should handle ~Space (any modifiers) pattern', async () => {
       const spaceHandler = vi.fn();
 

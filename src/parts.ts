@@ -683,7 +683,7 @@ export class EventPart extends Part {
 /**
  * Keyboard filter for matching specific keys and modifiers
  */
-interface KeyboardFilter {
+export interface KeyboardFilter {
   key: string;
   ctrl?: boolean;
   alt?: boolean;
@@ -700,7 +700,7 @@ interface KeyboardFilter {
  *   "ctrl+shift+s" -> { key: "s", ctrl: true, shift: true }
  *   "~enter" -> { key: "Enter", anyModifiers: true }
  */
-function parseKeyboardFilter(spec: string): KeyboardFilter {
+export function parseKeyboardFilter(spec: string): KeyboardFilter {
   // Handle ~ prefix for matching regardless of modifiers
   const anyModifiers = spec.startsWith('~');
   if (anyModifiers) {
@@ -768,7 +768,7 @@ function normalizeKey(key: string): string {
 /**
  * Check if keyboard event matches the filter
  */
-function matchesKeyboardFilter(event: KeyboardEvent, filter: KeyboardFilter): boolean {
+export function matchesKeyboardFilter(event: KeyboardEvent, filter: KeyboardFilter): boolean {
   // Check key match
   if (event.key !== filter.key) {
     return false;

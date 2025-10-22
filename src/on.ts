@@ -6,6 +6,7 @@
 import { CLEANUP } from './symbols';
 import { getSymbol } from './symbols';
 import type { OnOptions } from './types/on-options';
+import { parseKeyboardFilter, matchesKeyboardFilter, type KeyboardFilter } from './parts';
 
 // Re-export OnOptions for public API
 export type { OnOptions } from './types/on-options';
@@ -164,7 +165,21 @@ export function setupEventHandlers(instance: any, targetElement: HTMLElement) {
     const handlerOptions = handler.options || {};
 
     // Parse event name for key modifiers
-    const [baseEventName, keyModifier] = handler.eventName.split(':');
+    // Supports both dot notation (@keydown.enter) and colon notation (@keydown:Enter)
+    const dotIndex = handler.eventName.indexOf('.');
+    const colonIndex = handler.eventName.indexOf(':');
+
+    const delimiterIndex = dotIndex > 0 && colonIndex > 0
+      ? Math.min(dotIndex, colonIndex)
+      : Math.max(dotIndex, colonIndex);
+
+    const baseEventName = delimiterIndex > 0
+      ? handler.eventName.substring(0, delimiterIndex)
+      : handler.eventName;
+
+    const keyModifier = delimiterIndex > 0
+      ? handler.eventName.substring(delimiterIndex + 1)
+      : null;
 
     // Apply debounce if specified
     if (handlerOptions.debounce && handlerOptions.debounce > 0) {
@@ -176,68 +191,22 @@ export function setupEventHandlers(instance: any, targetElement: HTMLElement) {
       boundMethod = throttle(boundMethod, handlerOptions.throttle);
     }
 
-    // Create event handler with key modifier support (v2.5.4 feature)
+    // Create event handler with key modifier support
+    // Uses shared keyboard filter implementation from parts.ts
+    let keyFilter: KeyboardFilter | null = null;
+    if (keyModifier && ['keydown', 'keyup', 'keypress'].includes(baseEventName)) {
+      keyFilter = parseKeyboardFilter(keyModifier);
+    }
+
     const createKeyModifierHandler = (method: Function): Function => {
-      if (!keyModifier || !['keydown', 'keyup', 'keypress'].includes(baseEventName)) {
+      if (!keyFilter) {
         return method;
       }
 
       return (event: Event) => {
         const keyEvent = event as KeyboardEvent;
-
-        // Helper to normalize key names (e.g., "Space" -> " ")
-        const normalizeKey = (key: string): string => {
-          if (key === 'Space') return ' ';
-          return key;
-        };
-
-        // Check for "any modifiers" match with ~ prefix
-        if (keyModifier.startsWith('~')) {
-          const key = normalizeKey(keyModifier.slice(1));
-          if (keyEvent.key === key) {
-            method(event);
-          }
-          return;
-        }
-
-        // Check for modifier combinations using +
-        if (keyModifier.includes('+')) {
-          const parts = keyModifier.split('+');
-          const key = normalizeKey(parts[parts.length - 1]);
-          const modifiers = parts.slice(0, -1);
-
-          // Check the actual key
-          if (keyEvent.key !== key) return;
-
-          // Create a set of expected modifiers
-          const expectedModifiers = new Set(modifiers.map((m: string) => m.toLowerCase()));
-          const hasCtrl = expectedModifiers.has('ctrl');
-          const hasShift = expectedModifiers.has('shift');
-          const hasAlt = expectedModifiers.has('alt');
-          const hasMeta = expectedModifiers.has('meta') || expectedModifiers.has('cmd');
-
-          // Check that expected modifiers are pressed and unexpected ones are not
-          const modifiersMatch =
-            keyEvent.ctrlKey === hasCtrl &&
-            keyEvent.shiftKey === hasShift &&
-            keyEvent.altKey === hasAlt &&
-            keyEvent.metaKey === hasMeta;
-
-          if (modifiersMatch) {
-            method(event);
-          }
-        } else {
-          // Default: exact match (no modifiers allowed)
-          const key = normalizeKey(keyModifier);
-          if (
-            keyEvent.key === key &&
-            !keyEvent.ctrlKey &&
-            !keyEvent.shiftKey &&
-            !keyEvent.altKey &&
-            !keyEvent.metaKey
-          ) {
-            method(event);
-          }
+        if (matchesKeyboardFilter(keyEvent, keyFilter)) {
+          method(event);
         }
       };
     };
