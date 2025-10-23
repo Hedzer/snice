@@ -1,4 +1,4 @@
-import { element, property, query, render, styles, html, css } from 'snice';
+import { element, property, query, ready, render, styles, html, css } from 'snice';
 import type { AppContext, Placard, RouteParams, Layout } from 'snice';
 import cssContent from './snice-layout-sidebar.css?inline';
 import '../drawer/snice-drawer.ts';
@@ -69,6 +69,12 @@ export class SniceLayoutSidebar extends HTMLElement implements Layout {
     }
   }
 
+  @ready()
+  init() {
+    // Update nav when component is ready and shadow DOM is available
+    this.updateNav();
+  }
+
   update(_appContext: AppContext, placards: Placard[], currentRoute: string, _routeParams: RouteParams): void {
     this.placards = placards;
     this.currentRoute = currentRoute;
@@ -78,9 +84,25 @@ export class SniceLayoutSidebar extends HTMLElement implements Layout {
   }
 
   updateNav() {
+    // If @query hasn't resolved yet, try manual query
+    if (!this.navElement && this.shadowRoot) {
+      const manualNav = this.shadowRoot.querySelector('snice-nav');
+      if (manualNav) {
+        (manualNav as SniceNav).update(this.placards, this.currentRoute);
+        return;
+      }
+    }
+
     if (this.navElement) {
-      this.navElement.placards = this.placards;
-      this.navElement.currentRoute = this.currentRoute;
+      this.navElement.update(this.placards, this.currentRoute);
+    } else {
+      // Shadow DOM not ready yet, retry after next frame
+      requestAnimationFrame(() => {
+        const nav = this.shadowRoot?.querySelector('snice-nav') as SniceNav;
+        if (nav) {
+          nav.update(this.placards, this.currentRoute);
+        }
+      });
     }
   }
 }

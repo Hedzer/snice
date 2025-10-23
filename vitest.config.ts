@@ -34,7 +34,8 @@ export default defineConfig({
       'dist',
       'examples',
       'tests/live',
-      'rollup.config.test.js'
+      'rollup.config.test.js',
+      '.debug'
     ],
   },
 });

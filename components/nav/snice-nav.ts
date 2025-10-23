@@ -1,4 +1,4 @@
-import { element, property, render, styles, html, css } from 'snice';
+import { element, property, watch } from 'snice';
 import type { Placard } from 'snice';
 import cssContent from './snice-nav.css?inline';
 import type { SniceNavElement, NavVariant, NavOrientation } from './snice-nav.types';
@@ -6,6 +6,7 @@ import type { SniceNavElement, NavVariant, NavOrientation } from './snice-nav.ty
 @element('snice-nav')
 export class SniceNav extends HTMLElement implements SniceNavElement {
 
+  @property({ type: Array })
   placards: Placard[] = [];
 
   @property()
@@ -17,57 +18,105 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
   @property()
   orientation: NavOrientation = 'horizontal';
 
-  @render()
-  renderContent() {
-    return html`<div class="nav-content">${this.renderNavContent()}</div><slot></slot>`;
+  connectedCallback() {
+    this.attachShadow({ mode: 'open' });
+    this.applyStyles();
+    this.render();
   }
 
-  @styles()
-  componentStyles() {
-    return css`${cssContent}`;
+  @watch('placards')
+  @watch('currentRoute')
+  @watch('variant')
+  @watch('orientation')
+  handleChange() {
+    this.render();
   }
 
-  private renderFlat(navItems: Placard[]) {
-    return html`
-      <nav class="nav nav--${this.variant} nav--${this.orientation}" role="navigation">
-        ${navItems.map(placard => this.renderNavItem(placard))}
-      </nav>
-    `;
+  private applyStyles() {
+    if (!this.shadowRoot) return;
+    const style = document.createElement('style');
+    style.textContent = cssContent;
+    this.shadowRoot.appendChild(style);
   }
 
-  private renderHierarchical(navItems: Placard[]) {
-    return html`
-      <nav class="nav nav--${this.variant} nav--${this.orientation}" role="navigation">
-        ${navItems.map(placard => {
-          const children = this.placards
-            .filter(p => p.parent === placard.name && p.show !== false)
-            .sort((a, b) => (a.order || 0) - (b.order || 0));
+  private render() {
+    if (!this.shadowRoot) return;
+    this.shadowRoot.innerHTML = '';
+    this.applyStyles();
 
-          const groupClasses = ['nav__group', this.isActive(placard) ? 'nav__group--active' : ''].filter(Boolean).join(' ');
-          return html`
-            <div class="${groupClasses}">
-              ${this.renderNavLink(placard)}
-              <if ${children.length > 0}>
-                <ul class="nav__submenu">
-                  ${children.map(child => {
-                    const childClasses = ['nav__item', this.isActive(child) ? 'nav__item--active' : ''].filter(Boolean).join(' ');
-                    return html`
-                    <li class="${childClasses}">
-                      ${this.renderNavLink(child)}
-                    </li>
-                  `})}
-                </ul>
-              </if>
-            </div>
-          `;
-        })}
-      </nav>
-    `;
+    const wrapper = document.createElement('div');
+    wrapper.className = 'nav-content';
+
+    const navItems = this.placards
+      .filter(p => !p.parent && p.show !== false)
+      .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+    if (navItems.length > 0) {
+      if (this.variant === 'grouped') {
+        wrapper.appendChild(this.renderGrouped(navItems));
+      } else if (this.variant === 'hierarchical') {
+        wrapper.appendChild(this.renderHierarchical(navItems));
+      } else {
+        wrapper.appendChild(this.renderFlat(navItems));
+      }
+    }
+
+    this.shadowRoot.appendChild(wrapper);
+
+    const slot = document.createElement('slot');
+    this.shadowRoot.appendChild(slot);
   }
 
-  private renderGrouped(navItems: Placard[]) {
+  private renderFlat(navItems: Placard[]): HTMLElement {
+    const nav = document.createElement('nav');
+    nav.className = `nav nav--${this.variant} nav--${this.orientation}`;
+    nav.setAttribute('role', 'navigation');
+
+    navItems.forEach(placard => {
+      nav.appendChild(this.renderNavItem(placard));
+    });
+
+    return nav;
+  }
+
+  private renderHierarchical(navItems: Placard[]): HTMLElement {
+    const nav = document.createElement('nav');
+    nav.className = `nav nav--${this.variant} nav--${this.orientation}`;
+    nav.setAttribute('role', 'navigation');
+
+    navItems.forEach(placard => {
+      const children = this.placards
+        .filter(p => p.parent === placard.name && p.show !== false)
+        .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+      const groupDiv = document.createElement('div');
+      groupDiv.className = this.isActive(placard) ? 'nav__group nav__group--active' : 'nav__group';
+      groupDiv.appendChild(this.renderNavLink(placard));
+
+      if (children.length > 0) {
+        const submenu = document.createElement('ul');
+        submenu.className = 'nav__submenu';
+        children.forEach(child => {
+          const li = document.createElement('li');
+          li.className = this.isActive(child) ? 'nav__item nav__item--active' : 'nav__item';
+          li.appendChild(this.renderNavLink(child));
+          submenu.appendChild(li);
+        });
+        groupDiv.appendChild(submenu);
+      }
+
+      nav.appendChild(groupDiv);
+    });
+
+    return nav;
+  }
+
+  private renderGrouped(navItems: Placard[]): HTMLElement {
+    const nav = document.createElement('nav');
+    nav.className = `nav nav--${this.variant} nav--${this.orientation}`;
+    nav.setAttribute('role', 'navigation');
+
     const groups = new Map<string, Placard[]>();
-
     navItems.forEach(placard => {
       const groupName = placard.group || 'default';
       if (!groups.has(groupName)) {
@@ -76,52 +125,61 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
       groups.get(groupName)!.push(placard);
     });
 
-    return html`
-      <nav class="nav nav--${this.variant} nav--${this.orientation}" role="navigation">
-        ${Array.from(groups.entries()).map(([groupName, items]) => {
-          const sortedItems = items.sort((a, b) => (a.order || 0) - (b.order || 0));
+    groups.forEach((items, groupName) => {
+      const sortedItems = items.sort((a, b) => (a.order || 0) - (b.order || 0));
+      const groupDiv = document.createElement('div');
+      groupDiv.className = 'nav__group';
+      groupDiv.setAttribute('data-group', groupName);
 
-          return html`
-            <div class="nav__group" data-group="${groupName}">
-              <if ${groupName !== 'default'}>
-                <div class="nav__group-label">${groupName}</div>
-              </if>
-              ${sortedItems.map(placard => this.renderNavItem(placard))}
-            </div>
-          `;
-        })}
-      </nav>
-    `;
+      if (groupName !== 'default') {
+        const label = document.createElement('div');
+        label.className = 'nav__group-label';
+        label.textContent = groupName;
+        groupDiv.appendChild(label);
+      }
+
+      sortedItems.forEach(placard => {
+        groupDiv.appendChild(this.renderNavItem(placard));
+      });
+
+      nav.appendChild(groupDiv);
+    });
+
+    return nav;
   }
 
-  private renderNavItem(placard: Placard) {
-    const isActive = this.isActive(placard);
-    const itemClasses = ['nav__item', isActive ? 'nav__item--active' : ''].filter(Boolean).join(' ');
-
-    return html`
-      <div class="${itemClasses}">
-        ${this.renderNavLink(placard)}
-      </div>
-    `;
+  private renderNavItem(placard: Placard): HTMLElement {
+    const div = document.createElement('div');
+    div.className = this.isActive(placard) ? 'nav__item nav__item--active' : 'nav__item';
+    div.appendChild(this.renderNavLink(placard));
+    return div;
   }
 
-  private renderNavLink(placard: Placard) {
-    const isActive = this.isActive(placard);
-    const tooltip = placard.tooltip ? placard.tooltip : '';
+  private renderNavLink(placard: Placard): HTMLElement {
+    const a = document.createElement('a');
     const href = placard.name === 'home' ? '#/' : `#/${placard.name}`;
-    const linkClasses = ['nav__link', isActive ? 'nav__link--active' : ''].filter(Boolean).join(' ');
+    a.href = href;
+    a.className = this.isActive(placard) ? 'nav__link nav__link--active' : 'nav__link';
+    if (this.isActive(placard)) {
+      a.setAttribute('aria-current', 'page');
+    }
+    if (placard.tooltip) {
+      a.title = placard.tooltip;
+    }
 
-    return html`
-      <a href="${href}"
-         class="${linkClasses}"
-         aria-current="${isActive ? 'page' : ''}"
-         title="${tooltip}">
-        <if ${placard.icon}>
-          <span class="nav__icon">${placard.icon}</span>
-        </if>
-        <span class="nav__label">${placard.title}</span>
-      </a>
-    `;
+    if (placard.icon) {
+      const iconSpan = document.createElement('span');
+      iconSpan.className = 'nav__icon';
+      iconSpan.textContent = placard.icon;
+      a.appendChild(iconSpan);
+    }
+
+    const labelSpan = document.createElement('span');
+    labelSpan.className = 'nav__label';
+    labelSpan.textContent = placard.title;
+    a.appendChild(labelSpan);
+
+    return a;
   }
 
   private isActive(placard: Placard): boolean {
@@ -131,27 +189,7 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
   }
 
   update(placards: Placard[], currentRoute: string) {
-    this.placards = placards;
+    this.placards = [...placards];
     this.currentRoute = currentRoute;
-  }
-
-  renderNavContent() {
-    const navItems = this.placards
-      .filter(p => !p.parent && p.show !== false)
-      .sort((a, b) => (a.order || 0) - (b.order || 0));
-
-    if (navItems.length === 0) {
-      return '';
-    }
-
-    if (this.variant === 'grouped') {
-      return this.renderGrouped(navItems);
-    }
-
-    if (this.variant === 'hierarchical') {
-      return this.renderHierarchical(navItems);
-    }
-
-    return this.renderFlat(navItems);
   }
 }
