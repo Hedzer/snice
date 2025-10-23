@@ -206,11 +206,19 @@ export function applyElementFunctionality(constructor: any) {
         }
 
         // Apply any properties that were set before element was connected
+        // BUT only if they don't have an HTML attribute (don't override HTML attributes)
         if (this[PRE_INIT_PROPERTY_VALUES]) {
           for (const [propName, propValue] of this[PRE_INIT_PROPERTY_VALUES]) {
             // Remove from map first so getter doesn't return it during setter call
             this[PRE_INIT_PROPERTY_VALUES].delete(propName);
-            this[propName] = propValue;
+
+            // Only apply pre-init value if NO HTML attribute exists
+            // This prevents field initializers from overwriting HTML attributes
+            const propOptions = properties?.get(propName);
+            const attributeName = typeof propOptions?.attribute === 'string' ? propOptions.attribute : propName.toLowerCase();
+            if (!this.hasAttribute(attributeName)) {
+              this[propName] = propValue;
+            }
           }
           // Clear the pre-init values map
           delete this[PRE_INIT_PROPERTY_VALUES];

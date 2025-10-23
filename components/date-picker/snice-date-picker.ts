@@ -12,7 +12,7 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
 
   @property({  })
   value = '';
-  
+
   // Track input separately to prevent cursor jumps during typing
   private inputValue = '';
 
@@ -218,12 +218,12 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
     this.parseInitialValue();
     this.updateClearButton();
     this.setupCalendarClickOutside();
-    
+
     if (this.input) {
       this.input.disabled = this.disabled;
       this.input.readOnly = this.readonly;
       this.input.required = this.required;
-      
+
       if (this.invalid) {
         this.input.setAttribute('aria-invalid', 'true');
         this.input.classList.add('input--invalid');
