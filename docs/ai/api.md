@@ -68,7 +68,8 @@ html`
 ```typescript
 @on(event: string | string[], selector?: string, options?: OnOptions)
 // Works in elements + controllers
-// Options: { debounce?, throttle?, preventDefault?, stopPropagation?, once?, capture?, passive? }
+// Options: { debounce?, throttle?, preventDefault?, stopPropagation?, once?, capture?, passive?, target? }
+// target: CSS selector for shadow DOM event delegation
 // Keyboard: 'keydown:Enter', 'keydown.escape', 'keydown:ctrl+s', 'keydown:~Space'
 // Supports both ':' and '.' notation
 
@@ -149,7 +150,7 @@ attr="${val}" // Attribute
 ```typescript
 interface TemplateResult { readonly _$litType$: number; }
 interface CSSResult { cssText: string; }
-interface OnOptions { debounce?, throttle?, preventDefault?, stopPropagation?, once?, capture?, passive? }
+interface OnOptions { debounce?, throttle?, preventDefault?, stopPropagation?, once?, capture?, passive?, target? }
 interface RenderOptions { debounce?, throttle?, once?, sync? }
 interface Layout { update(context, placards, route, params) }
 interface Placard { name, title, icon?, description?, order?, show?, visibleOn?, parent?, group?, searchTerms?, hotkeys?, breadcrumbs?, tooltip? }

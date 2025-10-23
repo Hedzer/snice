@@ -12,8 +12,8 @@ export { request, respond } from './request-response';
 export { IS_CONTROLLER_INSTANCE, getSymbol } from './symbols';
 
 // v3.0.0 new template system
-export { html, css, nothing } from './template';
-export type { TemplateResult, CSSResult, Nothing } from './template';
+export { html, css, nothing, unsafeHTML } from './template';
+export type { TemplateResult, CSSResult, Nothing, UnsafeHTML } from './template';
 export { render, styles } from './render';
 export type { RenderOptions } from './render';
 

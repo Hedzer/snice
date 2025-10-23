@@ -44,7 +44,6 @@ export class SniceCheckbox extends HTMLElement implements SniceCheckboxElement {
   wrapper?: HTMLElement;
 
   connectedCallback() {
-    super.connectedCallback?.();
     this.addEventListener('click', (e) => {
       if (!this.disabled && e.target === this) this.input?.click();
     });

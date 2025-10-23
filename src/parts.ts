@@ -3,11 +3,14 @@
  * Based on lit-html's approach but simplified
  */
 
-import { TemplateResult, CSSResult, HTML_RESULT, CSS_RESULT, isTemplateResult } from './template';
+import { TemplateResult, CSSResult, HTML_RESULT, CSS_RESULT, isTemplateResult, isUnsafeHTML, UnsafeHTML } from './template';
 
 // Unique marker for dynamic parts
-const marker = `{{snice-${String(Math.random()).slice(2)}}}`;
-const nodeMarker = `<!--${marker}-->`;
+// Using processing instruction syntax like lit-html for better compatibility
+// This parses as a comment node but doesn't get escaped in attributes
+const marker = `snice$${Math.random().toFixed(9).slice(2)}$`;
+const markerMatch = '?' + marker;
+const nodeMarker = `<${markerMatch}>`;
 const markerRegex = new RegExp(marker, 'g');
 
 // Template cache removed - negligible performance benefit (~0.00004ms per template)
@@ -141,7 +144,8 @@ class Template {
         }
       } else if (node.nodeType === Node.COMMENT_NODE) {
         const comment = node as Comment;
-        if (comment.data === marker) {
+        // Check for marker match (processing instruction becomes comment)
+        if (comment.data === markerMatch) {
           // Node part
           const parent = comment.parentNode!;
           const endNode = document.createComment('');
@@ -410,6 +414,12 @@ export class NodePart extends Part {
       return;
     }
 
+    // Handle unsafe HTML
+    if (isUnsafeHTML(value)) {
+      this.commitUnsafeHTML(value);
+      return;
+    }
+
     // Handle primitives
     this.commitPrimitive(value);
   }
@@ -441,6 +451,16 @@ export class NodePart extends Part {
         this.insertBefore(textNode);
       }
     }
+  }
+
+  private commitUnsafeHTML(value: UnsafeHTML): void {
+    this.clear();
+    // Create a temporary container to parse the HTML
+    const temp = document.createElement('template');
+    temp.innerHTML = value.html;
+    // Insert all parsed nodes
+    const fragment = temp.content;
+    this.insertBefore(fragment);
   }
 
   private insertBefore(node: Node): void {

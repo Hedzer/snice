@@ -13,4 +13,6 @@ export interface OnOptions {
   debounce?: number;
   /** Throttle the handler by specified milliseconds */
   throttle?: number;
+  /** CSS selector to target specific elements within shadow root */
+  target?: string;
 }

@@ -59,14 +59,6 @@ export class SniceHeader extends HTMLElement implements SniceHeaderElement {
     this.classList.toggle('header--sortable', this.sortable);
   }
 
-  @watch('columns', 'currentSort')
-  updateHeaderCells() {
-    const cellsContainer = this.shadowRoot?.querySelector('.cells-container');
-    if (cellsContainer) {
-      cellsContainer.innerHTML = this.renderHeaderCells();
-    }
-  }
-
   @watch('allSelected', 'someSelected')
   updateSelectAllCheckbox() {
     const checkbox = this.shadowRoot?.querySelector('.select-all-checkbox') as HTMLInputElement;

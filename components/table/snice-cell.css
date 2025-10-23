@@ -190,7 +190,6 @@
 :host([value=""]) .cell-content,
 :host(:not([value])) .cell-content {
   color: #6c757d;
-  font-style: italic;
 }
 
 /* Loading State */

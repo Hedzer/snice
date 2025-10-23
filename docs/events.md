@@ -381,6 +381,9 @@ interface OnOptions {
   // Timing controls (v3.0.0 enhancements!)
   debounce?: number;           // Debounce the handler by specified milliseconds
   throttle?: number;           // Throttle the handler by specified milliseconds
+
+  // Event delegation
+  target?: string;             // CSS selector to target specific elements within shadow root
 }
 ```
 

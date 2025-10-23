@@ -147,3 +147,39 @@ export const nothing = Symbol('nothing');
  * Type for template values that represent "no content"
  */
 export type Nothing = typeof nothing;
+
+// Unique symbol for unsafe HTML
+const UNSAFE_HTML = Symbol('unsafe-html');
+
+/**
+ * Wrapper for raw HTML strings that should not be escaped
+ * WARNING: Only use with sanitized/trusted content to prevent XSS
+ */
+export interface UnsafeHTML {
+  readonly _$litType$: typeof UNSAFE_HTML;
+  readonly html: string;
+}
+
+/**
+ * Mark a string as raw HTML that should not be escaped
+ * WARNING: Only use with sanitized content - using user input can lead to XSS!
+ *
+ * @example
+ * ```typescript
+ * const htmlString = '<span class="bold">Hello</span>';
+ * html`<div>${unsafeHTML(htmlString)}</div>`
+ * ```
+ */
+export function unsafeHTML(html: string): UnsafeHTML {
+  return {
+    _$litType$: UNSAFE_HTML,
+    html
+  };
+}
+
+/**
+ * Check if a value is an UnsafeHTML wrapper
+ */
+export function isUnsafeHTML(value: any): value is UnsafeHTML {
+  return value && value._$litType$ === UNSAFE_HTML;
+}

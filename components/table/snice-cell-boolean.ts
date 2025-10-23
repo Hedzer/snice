@@ -1,4 +1,4 @@
-import { element, property, watch, ready, query, render, styles, html, css } from 'snice';
+import { element, property, watch, ready, query, render, styles, html, css, unsafeHTML } from 'snice';
 import cssContent from './snice-cell.css?inline';
 import type { BooleanFormat, SniceCellElement, ColumnType, ColumnAlign, ColumnDefinition } from './snice-table.types';
 
@@ -48,7 +48,7 @@ export class SniceCellBoolean extends HTMLElement implements SniceCellElement {
 
     return html/*html*/`
       <div class="cell-content cell-content--boolean" part="content">
-        ${content}
+        ${unsafeHTML(content)}
       </div>
     `;
   }
@@ -100,7 +100,7 @@ export class SniceCellBoolean extends HTMLElement implements SniceCellElement {
     };
 
     const isTrue = Boolean(this.value);
-    
+
     if (format.useSymbols ?? this.useSymbols) {
       const symbol = isTrue ? (format.trueSymbol ?? this.trueSymbol) : (format.falseSymbol ?? this.falseSymbol);
       const colorClass = isTrue ? 'boolean--true' : 'boolean--false';
