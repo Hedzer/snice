@@ -4,6 +4,8 @@ import type { RadioSize, SniceRadioElement } from './snice-radio.types';
 
 @element('snice-radio')
 export class SniceRadio extends HTMLElement implements SniceRadioElement {
+  private _isUpdatingGroup = false;
+
   @property({ type: Boolean,  })
   checked = false;
 
@@ -94,37 +96,32 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
     }
   }
 
-  @on('change')
-  handleChange(e: Event) {
-    const target = e.target as HTMLInputElement;
-    if (!target.classList.contains('radio-input')) return;
-    const wasChecked = this.checked;
-    this.checked = target.checked;
-
-    // If this radio was just checked, uncheck others in the same group
-    if (this.checked && !wasChecked && this.name) {
-      this.uncheckOthersInGroup();
-    }
-
-    this.dispatchChangeEvent();
-  }
-
   @on('click')
   handleClick(e: Event) {
-    const target = e.target as HTMLElement;
-    if (!target.classList.contains('radio-input')) return;
-    // Allow click to propagate for label association
-    e.stopPropagation();
+    // Don't handle if disabled
+    if (this.disabled) return;
+
+    // Set this radio as checked
+    if (!this.checked) {
+      this.checked = true;
+      this.dispatchChangeEvent();
+    }
   }
 
+
   @watch('checked')
-  handleCheckedChange() {
+  handleCheckedChange(oldValue: boolean, newValue: boolean) {
     if (this.input) {
       this.input.checked = this.checked;
     }
-    
-    // If checked, uncheck others in the same group
-    if (this.checked && this.name) {
+
+    // Skip if we're in the middle of updating the group (prevent infinite loops)
+    if (this._isUpdatingGroup) {
+      return;
+    }
+
+    // Only uncheck others when transitioning from false to true
+    if (newValue === true && oldValue === false && this.name) {
       this.uncheckOthersInGroup();
     }
   }
@@ -181,14 +178,20 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
     }
   }
 
-  private uncheckOthersInGroup() {
+  private uncheckOthersInGroup(except?: SniceRadio) {
     if (!this.name) return;
-    
-    // Find all radios with the same name
+
+    const exceptElement = except || this;
+
+    // Find all radios with the same name and uncheck them
     const radios = document.querySelectorAll(`snice-radio[name="${this.name}"]`) as NodeListOf<SniceRadio>;
+
     radios.forEach(radio => {
-      if (radio !== this && radio.checked) {
+      if (radio !== exceptElement && radio.checked) {
+        // Set flag to prevent recursive watch handler calls
+        radio._isUpdatingGroup = true;
         radio.checked = false;
+        radio._isUpdatingGroup = false;
       }
     });
   }
