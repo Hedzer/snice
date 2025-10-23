@@ -1,6 +1,6 @@
 import { Route } from 'pica-route';
 import { applyElementFunctionality } from './element';
-import { ROUTER_CONTEXT, CONTEXT_REQUEST_HANDLER, PAGE_TRANSITION, CREATED_AT, PROPERTIES } from './symbols';
+import { ROUTER_CONTEXT, CONTEXT_REQUEST_HANDLER, PAGE_TRANSITION, CREATED_AT, PROPERTIES, CONTEXT_HANDLER } from './symbols';
 import { performTransition as performTransitionUtil } from './transitions';
 import { Transition } from './types/transition';
 import { RouterOptions } from './types/router-options';
@@ -10,7 +10,7 @@ import { RouteParams } from 'pica-route';
 import { RouterInstance } from './types/router-instance';
 import { Placard } from './types/placard';
 import { AppContext } from './types/app-context';
-import { NavigationContext } from './types/navigation-context';
+import { Context } from './types/context';
 
 
 /**
@@ -39,6 +39,9 @@ export function Router(options: RouterOptions): RouterInstance {
   let currentLayoutName: string | null = null; // Track current layout name
   let currentLayoutTimestamp: number | null = null; // Track current layout timestamp
   const context = options.context || {}; // Store context for guards
+
+  // Create Context instance for managing router state
+  const navigationContext = new Context(context, [], '', {});
 
   function getCurrentLayoutElement(target: Element): HTMLElement | null {
     const noCurrentLayout = !currentLayoutName || !currentLayoutTimestamp;
@@ -84,21 +87,11 @@ export function Router(options: RouterOptions): RouterInstance {
       // Extend the connectedCallback to add router-specific functionality
       const elementConnectedCallback = constructor.prototype.connectedCallback;
       constructor.prototype.connectedCallback = function() {
+        // Store the Context instance for @context decorated methods to access
+        (this as any)[CONTEXT_HANDLER] = navigationContext;
+
         // Call the element's connectedCallback first
         elementConnectedCallback?.call(this);
-        
-        // Setup context request handler for nested elements
-        const contextRequestHandler = (event: any) => {
-          // Only respond if this element has context
-          if (this[ROUTER_CONTEXT] !== undefined) {
-            event.detail.context = this[ROUTER_CONTEXT];
-            event.stopPropagation(); // Stop bubbling once context is provided
-          }
-        };
-        this.addEventListener('@context/request', contextRequestHandler);
-        
-        // Store handler for cleanup
-        (this as any)[CONTEXT_REQUEST_HANDLER] = contextRequestHandler;
       };
       
       // Extend the disconnectedCallback to clean up router-specific stuff
@@ -106,16 +99,10 @@ export function Router(options: RouterOptions): RouterInstance {
       constructor.prototype.disconnectedCallback = function() {
         // Call element's disconnectedCallback first
         elementDisconnectedCallback?.call(this);
-        
-        // Clean up context request handler
-        const handler = (this as any)[CONTEXT_REQUEST_HANDLER];
-        if (handler) {
-          this.removeEventListener('@context/request', handler);
-          delete (this as any)[CONTEXT_REQUEST_HANDLER];
-        }
-        
-        // Clean up context reference
+
+        // Clean up context references
         delete (this as any)[ROUTER_CONTEXT];
+        delete (this as any)[CONTEXT_HANDLER];
       };
       
       // Define the custom element
@@ -187,8 +174,8 @@ export function Router(options: RouterOptions): RouterInstance {
    * initialize();
    */
   function initialize(): void {
-    const targetExists = !!document.querySelector(options.target);
-    if (!targetExists) {
+    const target = document.querySelector(options.target);
+    if (!target) {
       throw new Error(`Target element not found: ${options.target}`);
     }
 
@@ -216,6 +203,14 @@ export function Router(options: RouterOptions): RouterInstance {
           ? placard(context as AppContext)
           : placard;
       });
+  }
+
+  // Symbol for storing the navigation context on page elements
+  const ROUTER_CONTEXT_SYMBOL = Symbol.for('router-context');
+
+  function emitContextUpdate(target: Element, currentPath: string, routeParams: RouteParams): void {
+    // Update the navigation context and notify all registered elements
+    navigationContext.update(context, placards, currentPath, routeParams);
   }
 
   function updateLayout(layoutElement: HTMLElement, currentPath: string, routeParams: RouteParams): void {
@@ -314,6 +309,7 @@ export function Router(options: RouterOptions): RouterInstance {
 
       const newPageElement = document.createElement(route.tag);
       (newPageElement as any)[ROUTER_CONTEXT] = context;
+      (newPageElement as any)[CONTEXT_HANDLER] = navigationContext;
       const routeParams = params as RouteParams;
       Object.keys(routeParams).forEach(key => newPageElement.setAttribute(key, routeParams[key]));
 
@@ -429,7 +425,7 @@ export function Router(options: RouterOptions): RouterInstance {
 
     window.scrollTo(0, 0);
 
-    const isHomePath = (path.trim() === '' || path === '/') && !!home;
+    const isHomePath = (path?.trim() === '' || path === '/') && !!home;
     
     if (isHomePath) {
       const homeRoute = routes.find(r => r.route.match('/'));
@@ -446,13 +442,16 @@ export function Router(options: RouterOptions): RouterInstance {
       const hasLayout = layoutElement !== null || getCurrentLayoutElement(target) !== null;
       if (hasLayout) {
         await renderWithLayout(target, element, finalTransition, layoutElement, needsNewLayout, path, {});
+        emitContextUpdate(target, path, {});
         return;
       }
 
       await renderDirect(target, element, finalTransition);
+      emitContextUpdate(target, path, {});
       return;
     }
 
+    if (!path) return;
     const routeResult = resolveRoute(path, target);
     
     const isGuardsFailed = routeResult.result === RouteResult.GUARDS_FAILED;
@@ -470,10 +469,12 @@ export function Router(options: RouterOptions): RouterInstance {
       const hasLayout = layoutElement !== null || getCurrentLayoutElement(target) !== null;
       if (hasLayout) {
         await renderWithLayout(target, element!, finalTransition, layoutElement, needsNewLayout, path, routeParams);
+        emitContextUpdate(target, path, routeParams);
         return;
       }
 
       await renderDirect(target, element!, finalTransition);
+      emitContextUpdate(target, path, routeParams);
       return;
     }
     
@@ -481,14 +482,16 @@ export function Router(options: RouterOptions): RouterInstance {
     const layoutToUse = determineLayout(layout);
     const { element: layoutElement, needsNewLayout } = setupLayout(layoutToUse);
     const finalTransition = transition || options.transition;
-    
+
     const hasLayout = layoutElement !== null || getCurrentLayoutElement(target) !== null;
     if (hasLayout) {
       await renderWithLayout(target, element, finalTransition, layoutElement, needsNewLayout, path, {});
+      emitContextUpdate(target, path, {});
       return;
     }
-    
+
     await renderDirect(target, element, finalTransition);
+    emitContextUpdate(target, path, {});
   }
 
   async function performTransition(

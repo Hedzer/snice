@@ -75,3 +75,16 @@ export const RENDER_TIMERS = getSymbol('render-timers');
 export const RENDER_CALLBACKS = getSymbol('render-callbacks');
 export const STYLES_METHOD = getSymbol('styles-method');
 export const STYLES_APPLIED = getSymbol('styles-applied');
+
+// Navigation context symbols
+export const CONTEXT_HANDLER = getSymbol('context-handler');
+export const CONTEXT_METHOD_NAME = getSymbol('context-method-name');
+export const NAVIGATION_CONTEXT_INSTANCE = getSymbol('navigation-context-instance');
+export const REGISTERED_ELEMENTS = getSymbol('registered-elements');
+export const IS_UPDATING = getSymbol('is-updating');
+export const CONTEXT_REGISTER = getSymbol('context-register');
+export const CONTEXT_UNREGISTER = getSymbol('context-unregister');
+export const CONTEXT_NOTIFY_ELEMENT = getSymbol('context-notify-element');
+export const CONTEXT_OPTIONS = getSymbol('context-options');
+export const CONTEXT_TIMER = getSymbol('context-timer');
+export const CONTEXT_CALLED = getSymbol('context-called');

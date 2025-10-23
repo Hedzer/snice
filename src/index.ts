@@ -1,6 +1,7 @@
 // v3.0.0 exports
-export { element, layout, property, query, queryAll, watch, context, applyElementFunctionality, ready, dispose, moved, adopted } from './element';
+export { element, layout, property, query, queryAll, watch, applyElementFunctionality, ready, dispose, moved, adopted } from './element';
 export type { Layout } from './element';
+export { context as contextProperty } from './element'; // Deprecated: use @context method decorator instead
 export { Router } from './router';
 export { controller, useNativeElementControllers } from './controller';
 export { dispatch } from './events';
@@ -24,6 +25,10 @@ export { trackRenders } from './render-debug';
 
 // v3.0.0 method decorators
 export { debounce, throttle, once, memoize, clearDebounceTimers, clearThrottleTimers, clearMemoizeCache, resetOnce } from './method-decorators';
+
+// Router context decorator (method decorator for receiving router updates)
+export { context } from './context';
+export type { ContextOptions } from './context';
 
 // Export all types from centralized types module
 export * from './types';

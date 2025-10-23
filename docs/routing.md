@@ -117,16 +117,21 @@ class HomePage extends HTMLElement {
 ### Page with Context
 
 ```typescript
-import { page, context, render, html } from 'snice';
+import { page, context, render, html, Context } from 'snice';
 
 @page({ tag: 'profile-page', routes: ['/profile'] })
 class ProfilePage extends HTMLElement {
+  private appContext?: AppContext;
+
   @context()
-  ctx?: AppContext;
+  handleContextUpdate(ctx: Context) {
+    this.appContext = ctx.application;
+    this.requestRender();
+  }
 
   @render()
   renderContent() {
-    const user = this.ctx?.getUser();
+    const user = this.appContext?.getUser();
 
     if (!user) {
       return html`
@@ -147,8 +152,7 @@ class ProfilePage extends HTMLElement {
   }
 
   logout() {
-    this.ctx?.setUser(null);
-    // Property change will trigger re-render
+    this.appContext?.setUser(null);
   }
 }
 ```

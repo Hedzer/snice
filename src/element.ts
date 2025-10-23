@@ -2,6 +2,7 @@ import { attachController, detachController } from './controller';
 import { setupObservers, cleanupObservers } from './observe';
 import { setupResponseHandlers, cleanupResponseHandlers } from './request-response';
 import { setupEventHandlers, cleanupEventHandlers } from './on';
+import { setupContextHandler, cleanupContextHandler } from './context';
 import { parseAttributeValue, detectType, valueToAttribute } from './utils';
 import { requestRender, applyStyles } from './render';
 import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, RENDERED_PROMISE, RENDERED_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PRE_INIT_PROPERTY_VALUES, PROPERTY_WATCHERS, EXPLICITLY_SET_PROPERTIES, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD } from './symbols';
@@ -165,6 +166,7 @@ export function applyElementFunctionality(constructor: any) {
         // Re-establish handlers that get cleaned up on disconnect
         setupEventHandlers(this, this);
         setupResponseHandlers(this, this);
+        setupContextHandler(this);
 
         // Re-establish observers that get cleaned up on disconnect
         try {
@@ -273,6 +275,9 @@ export function applyElementFunctionality(constructor: any) {
         // Setup @respond handlers for elements
         setupResponseHandlers(this, this);
 
+        // Setup @context handler for elements
+        setupContextHandler(this);
+
         // Mark as initialized
         this[INITIALIZED] = true;
 
@@ -324,6 +329,8 @@ export function applyElementFunctionality(constructor: any) {
       cleanupEventHandlers(this);
       // Cleanup @respond handlers
       cleanupResponseHandlers(this);
+      // Cleanup @context handler
+      cleanupContextHandler(this);
       // Cleanup @observe observers
       cleanupObservers(this);
     };

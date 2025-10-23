@@ -97,7 +97,11 @@ html`
 ## Context & Router
 
 ```typescript
-@context() // Access global state from Router
+@context(options?: { debounce?, throttle?, once? })
+// Method decorator: receives Context object on router navigation
+// Method signature: (ctx: Context) => void
+// Context includes: application (AppContext), navigation { placards, route, params }
+// Options: debounce (ms), throttle (ms), once (call once then unregister)
 
 Router({ target, context?, layout? })
 // Returns: { page, navigate, initialize }
