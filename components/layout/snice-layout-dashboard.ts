@@ -54,18 +54,17 @@ export class SniceLayoutDashboard extends HTMLElement implements Layout {
     return css/*css*/`${cssContent}`;
   }
 
-  update(_appContext: AppContext, placards: Placard[], currentRoute: string, _routeParams: RouteParams): void {
+  update(appContext: AppContext, placards: Placard[], currentRoute: string, routeParams: RouteParams): void {
     this.placards = placards;
     this.currentRoute = currentRoute;
 
     // Update navigation
-    this.updateNav();
+    this.updateNav(appContext, routeParams);
   }
 
-  updateNav() {
+  updateNav(appContext?: AppContext, routeParams?: RouteParams) {
     if (this.navElement) {
-      this.navElement.placards = this.placards;
-      this.navElement.currentRoute = this.currentRoute;
+      this.navElement.update(this.placards, appContext, this.currentRoute, routeParams);
     }
   }
 

@@ -49,13 +49,13 @@
 }
 
 .nav__link--active {
-  background-color: var(--snice-color-primary, rgb(37 99 235));
-  color: var(--snice-color-text-inverse, rgb(250 250 250));
+  background-color: var(--snice-color-background-tertiary, rgb(243 244 246));
+  color: var(--snice-color-primary, rgb(37 99 235));
 }
 
 .nav__link--active:hover {
-  background-color: var(--snice-color-primary-dark, rgb(29 78 216));
-  color: var(--snice-color-text-inverse, rgb(250 250 250));
+  background-color: var(--snice-color-background-secondary, rgb(249 250 251));
+  color: var(--snice-color-primary-hover, rgb(29 78 216));
 }
 
 .nav__icon {

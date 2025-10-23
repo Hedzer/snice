@@ -91,7 +91,6 @@ export interface Placard<T = any> {
 
   /**
    * Guard functions that determine if the page should appear in navigation.
-   * Reuses the same guard system as route protection.
    * @example [isAuthenticated, hasAdminRole]
    */
   visibleOn?: Guard<T> | Guard<T>[];

@@ -1,16 +1,10 @@
-import { element, property, watch } from 'snice';
-import type { Placard, AppContext } from 'snice';
+import { element, property, watch, context } from 'snice';
+import type { Placard, AppContext, Context } from 'snice';
 import cssContent from './snice-nav.css?inline';
 import type { SniceNavElement, NavVariant, NavOrientation } from './snice-nav.types';
 
 @element('snice-nav')
 export class SniceNav extends HTMLElement implements SniceNavElement {
-
-  @property({ type: Array })
-  placards: Placard[] = [];
-
-  @property()
-  currentRoute = '';
 
   @property()
   variant: NavVariant = 'flat';
@@ -18,7 +12,13 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
   @property()
   orientation: NavOrientation = 'horizontal';
 
-  private context: AppContext | null = null;
+  @property({ type: Boolean })
+  isTopLevel = false;
+
+  private placards: Placard[] = [];
+  private currentRoute = '';
+  private routeParams: Record<string, string> = {};
+  private appContext: AppContext | null = null;
 
   connectedCallback() {
     this.attachShadow({ mode: 'open' });
@@ -26,8 +26,19 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
     this.render();
   }
 
-  @watch('placards')
-  @watch('currentRoute')
+  @context()
+  handleContext(ctx: Context) {
+    // Only update from context if this is a top-level nav
+    if (this.isTopLevel) {
+      this.update(
+        ctx.navigation.placards,
+        ctx.application,
+        ctx.navigation.route,
+        ctx.navigation.params
+      );
+    }
+  }
+
   @watch('variant')
   @watch('orientation')
   handleChange() {
@@ -162,11 +173,44 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
     const href = placard.name === 'home' ? '#/' : `#/${placard.name}`;
     a.href = href;
     a.className = this.isActive(placard) ? 'nav__link nav__link--active' : 'nav__link';
+
+    // Accessibility
     if (this.isActive(placard)) {
       a.setAttribute('aria-current', 'page');
     }
+
+    // Use description for aria-label if available, otherwise fall back to title
+    if (placard.description) {
+      a.setAttribute('aria-label', placard.description);
+    }
+
+    // Tooltip (prefers tooltip, falls back to description)
     if (placard.tooltip) {
       a.title = placard.tooltip;
+    } else if (placard.description) {
+      a.title = placard.description;
+    }
+
+    // Keyboard shortcuts - add data attribute for external hotkey handlers
+    if (placard.hotkeys && placard.hotkeys.length > 0) {
+      a.setAttribute('data-hotkeys', placard.hotkeys.join(','));
+    }
+
+    // Help URL - add data attribute for external help systems
+    if (placard.helpUrl) {
+      a.setAttribute('data-help-url', placard.helpUrl);
+    }
+
+    // Search terms - add data attribute for search functionality
+    if (placard.searchTerms && placard.searchTerms.length > 0) {
+      a.setAttribute('data-search-terms', placard.searchTerms.join(','));
+    }
+
+    // Custom attributes - apply any custom data attributes
+    if (placard.attributes) {
+      Object.entries(placard.attributes).forEach(([key, value]) => {
+        a.setAttribute(`data-${key}`, String(value));
+      });
     }
 
     if (placard.icon) {
@@ -185,24 +229,36 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
   }
 
   private isActive(placard: Placard): boolean {
-    return this.currentRoute === placard.name ||
-           this.currentRoute.startsWith(`/${placard.name}`) ||
-           (placard.name === 'home' && this.currentRoute === '/');
+    // Normalize route - remove leading slash if present
+    const route = this.currentRoute.startsWith('/')
+      ? this.currentRoute.slice(1)
+      : this.currentRoute;
+
+    // Check exact match or starts with (for child routes)
+    return route === placard.name ||
+           route.startsWith(`${placard.name}/`) ||
+           (placard.name === 'home' && (this.currentRoute === '/' || this.currentRoute === ''));
   }
 
   private isVisible(placard: Placard): boolean {
     if (!placard.visibleOn) return true;
-    if (!this.context) return true;
+    if (!this.appContext) return true;
 
     const guards = Array.isArray(placard.visibleOn) ? placard.visibleOn : [placard.visibleOn];
-    return guards.every(guard => guard(this.context!, {}));
+    return guards.every(guard => guard(this.appContext!, this.routeParams));
   }
 
-  update(placards: Placard[], currentRoute: string, context?: AppContext) {
+  update(placards: Placard[], appContext?: AppContext, currentRoute?: string, routeParams?: Record<string, string>) {
     this.placards = [...placards];
-    this.currentRoute = currentRoute;
-    if (context) {
-      this.context = context;
+    if (appContext) {
+      this.appContext = appContext;
     }
+    if (currentRoute !== undefined) {
+      this.currentRoute = currentRoute;
+    }
+    if (routeParams) {
+      this.routeParams = routeParams;
+    }
+    this.render();
   }
 }

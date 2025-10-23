@@ -75,32 +75,32 @@ export class SniceLayoutSidebar extends HTMLElement implements Layout {
     this.updateNav();
   }
 
-  update(_appContext: AppContext, placards: Placard[], currentRoute: string, _routeParams: RouteParams): void {
+  update(appContext: AppContext, placards: Placard[], currentRoute: string, routeParams: RouteParams): void {
     this.placards = placards;
     this.currentRoute = currentRoute;
 
     // Update the navigation
-    this.updateNav();
+    this.updateNav(appContext, routeParams);
   }
 
-  updateNav() {
+  updateNav(appContext?: AppContext, routeParams?: RouteParams) {
     // If @query hasn't resolved yet, try manual query
     if (!this.navElement && this.shadowRoot) {
       const manualNav = this.shadowRoot.querySelector('snice-nav');
       if (manualNav) {
-        (manualNav as SniceNav).update(this.placards, this.currentRoute);
+        (manualNav as SniceNav).update(this.placards, appContext, this.currentRoute, routeParams);
         return;
       }
     }
 
     if (this.navElement) {
-      this.navElement.update(this.placards, this.currentRoute);
+      this.navElement.update(this.placards, appContext, this.currentRoute, routeParams);
     } else {
       // Shadow DOM not ready yet, retry after next frame
       requestAnimationFrame(() => {
         const nav = this.shadowRoot?.querySelector('snice-nav') as SniceNav;
         if (nav) {
-          nav.update(this.placards, this.currentRoute);
+          nav.update(this.placards, appContext, this.currentRoute, routeParams);
         }
       });
     }

@@ -50,19 +50,19 @@ export class SniceLayout extends HTMLElement implements Layout {
     }
   }
 
-  update(_appContext: AppContext, placards: Placard[], currentRoute: string, _routeParams: RouteParams): void {
+  update(appContext: AppContext, placards: Placard[], currentRoute: string, routeParams: RouteParams): void {
     this.placards = placards;
     this.currentRoute = currentRoute;
 
     // Update navigation - only if shadow DOM exists
     if (this.shadowRoot) {
-      this.updateNav();
+      this.updateNav(appContext, routeParams);
     }
   }
 
-  updateNav() {
+  updateNav(appContext?: AppContext, routeParams?: RouteParams) {
     if (this.navElement) {
-      this.navElement.update(this.placards, this.currentRoute);
+      this.navElement.update(this.placards, appContext, this.currentRoute, routeParams);
     }
   }
 }
