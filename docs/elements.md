@@ -64,6 +64,50 @@ class UserCard extends HTMLElement {
 - Only changed parts of the DOM update (differential rendering)
 - No manual re-render calls needed
 
+**Render Options:**
+
+The `@render()` decorator accepts an optional configuration object:
+
+```typescript
+@render({
+  debounce?: number,    // Delay re-render (ms)
+  throttle?: number,    // Limit re-render frequency (ms)
+  once?: boolean,       // Render once, disable auto-rendering
+  sync?: boolean,       // Synchronous rendering (skip batching)
+  differential?: boolean // Disable differential rendering (default: true)
+})
+```
+
+**Differential Rendering:**
+
+By default, Snice uses differential rendering which only updates changed parts of the DOM. To disable this and re-render from scratch each time:
+
+```typescript
+@element('simple-list')
+class SimpleList extends HTMLElement {
+  @property({ type: Array })
+  items = [];
+
+  @render({ differential: false })
+  renderContent() {
+    // Must return a string when differential: false
+    return `
+      <ul>
+        ${this.items.map(item => `<li>${item}</li>`).join('')}
+      </ul>
+    `;
+  }
+}
+```
+
+**When to use `differential: false`:**
+- Component has complex dynamic structure that changes between renders
+- Template structure changes based on data (e.g., empty state vs. populated)
+- Avoiding differential rendering issues with dynamic attributes
+- Simple components where full re-render is acceptable
+
+**Note:** When `differential: false`, the render method must return a string (not `html\`...\``) and still honors `<if>` and `<switch>/<case>` meta elements.
+
 ### @styles() Decorator
 
 Returns CSS using the `css` tagged template, scoped to the element's shadow DOM.

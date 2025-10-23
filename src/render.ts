@@ -34,6 +34,13 @@ export interface RenderOptions {
    * Renders immediately instead of batching multiple property changes
    */
   sync?: boolean;
+
+  /**
+   * Disable differential rendering
+   * When false, clears shadow root and re-renders from scratch each time
+   * Still honors <if> and <switch>/<case> meta elements
+   */
+  differential?: boolean;
 }
 
 /**
@@ -97,12 +104,41 @@ function performRender(element: HTMLElement, options: RenderOptions, precomputed
     // Use precomputed result if provided, otherwise call the render method
     const result = precomputedResult !== undefined ? precomputedResult : renderMethod.call(element);
 
+    // Check if differential rendering is disabled (expects string)
+    const differential = options.differential !== false;
+
+    if (!differential) {
+      // Non-differential expects string
+      if (typeof result !== 'string') {
+        console.warn('Render method with differential: false must return a string');
+        return;
+      }
+
+      // Simple string rendering
+      if (!element.shadowRoot) {
+        element.attachShadow({ mode: 'open' });
+      }
+      element.shadowRoot!.innerHTML = result;
+
+      // Mark scheduled flag as false
+      (element as any)[RENDER_SCHEDULED] = false;
+
+      // Call all registered render callbacks
+      const callbacks = (element as any)[RENDER_CALLBACKS];
+      if (callbacks && callbacks.length > 0) {
+        const cbs = [...callbacks];
+        (element as any)[RENDER_CALLBACKS] = [];
+        cbs.forEach(cb => cb());
+      }
+      return;
+    }
+
     if (!isTemplateResult(result)) {
       console.warn('Render method must return html`` template result');
       return;
     }
 
-    // Get or create template instance
+    // Get or create template instance (differential rendering)
     let instance = (element as any)[RENDER_INSTANCE] as TemplateInstance | undefined;
 
     if (!instance) {

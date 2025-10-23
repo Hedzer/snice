@@ -23,3 +23,4 @@ export * from './placard';
 export * from './guard';
 export * from './route-params';
 export * from './app-context';
+export * from './navigation-context';

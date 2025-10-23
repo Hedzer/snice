@@ -1,5 +1,5 @@
 import { element, property, watch } from 'snice';
-import type { Placard } from 'snice';
+import type { Placard, AppContext } from 'snice';
 import cssContent from './snice-nav.css?inline';
 import type { SniceNavElement, NavVariant, NavOrientation } from './snice-nav.types';
 
@@ -17,6 +17,8 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
 
   @property()
   orientation: NavOrientation = 'horizontal';
+
+  private context: AppContext | null = null;
 
   connectedCallback() {
     this.attachShadow({ mode: 'open' });
@@ -48,7 +50,7 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
     wrapper.className = 'nav-content';
 
     const navItems = this.placards
-      .filter(p => !p.parent && p.show !== false)
+      .filter(p => !p.parent && p.show !== false && this.isVisible(p))
       .sort((a, b) => (a.order || 0) - (b.order || 0));
 
     if (navItems.length > 0) {
@@ -86,7 +88,7 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
 
     navItems.forEach(placard => {
       const children = this.placards
-        .filter(p => p.parent === placard.name && p.show !== false)
+        .filter(p => p.parent === placard.name && p.show !== false && this.isVisible(p))
         .sort((a, b) => (a.order || 0) - (b.order || 0));
 
       const groupDiv = document.createElement('div');
@@ -188,8 +190,19 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
            (placard.name === 'home' && this.currentRoute === '/');
   }
 
-  update(placards: Placard[], currentRoute: string) {
+  private isVisible(placard: Placard): boolean {
+    if (!placard.visibleOn) return true;
+    if (!this.context) return true;
+
+    const guards = Array.isArray(placard.visibleOn) ? placard.visibleOn : [placard.visibleOn];
+    return guards.every(guard => guard(this.context!, {}));
+  }
+
+  update(placards: Placard[], currentRoute: string, context?: AppContext) {
     this.placards = [...placards];
     this.currentRoute = currentRoute;
+    if (context) {
+      this.context = context;
+    }
   }
 }

@@ -10,6 +10,7 @@ import { RouteParams } from 'pica-route';
 import { RouterInstance } from './types/router-instance';
 import { Placard } from './types/placard';
 import { AppContext } from './types/app-context';
+import { NavigationContext } from './types/navigation-context';
 
 
 /**

@@ -12,10 +12,13 @@
 ## Rendering
 
 ```typescript
-@render(options?: { debounce?, throttle?, once?, sync? })
-// Returns: TemplateResult from html`...`
+@render(options?: { debounce?, throttle?, once?, sync?, differential? })
+// Returns: TemplateResult from html`...` (or string if differential: false)
 // Auto re-renders on property changes
-// Supports differential updates
+// Supports differential updates by default
+// differential: false - disables differential rendering, expects string return
+//   Clears shadow root and re-renders from scratch each time
+//   Still honors <if> and <switch>/<case> meta elements
 
 @styles()
 // Returns: CSSResult from css`...`
