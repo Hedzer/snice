@@ -58,6 +58,7 @@
   border-radius: 50%;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   transition: transform var(--snice-transition-fast) ease;
+  z-index: 2;
 }
 
 /* Thumb sizes */
@@ -168,37 +169,56 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 0.625rem; /* 10px */
-  font-weight: 600;
-  color: white;
+  font-size: 0.5rem; /* 8px */
+  font-weight: 700;
   text-transform: uppercase;
   opacity: 0;
   transition: opacity var(--snice-transition-fast) ease;
   pointer-events: none;
+  z-index: 1;
 }
 
 .switch-state-label--on {
-  left: 0.375rem; /* 6px */
+  left: 0.3125rem; /* 5px - visible when checked (thumb moves right) */
+  color: white;
+  mix-blend-mode: overlay;
 }
 
 .switch-state-label--off {
   right: 0.375rem; /* 6px */
+  color: rgba(0, 0, 0, 0.75);
 }
 
 .switch-track--medium .switch-state-label {
-  font-size: 0.6875rem; /* 11px */
+  font-size: 0.5625rem; /* 9px */
+}
+
+.switch-track--medium .switch-state-label--on {
+  left: 0.3125rem; /* 5px */
+}
+
+.switch-track--medium .switch-state-label--off {
+  right: 0.5rem; /* 8px */
 }
 
 .switch-track--large .switch-state-label {
-  font-size: 0.75rem; /* 12px */
+  font-size: 0.625rem; /* 10px */
+}
+
+.switch-track--large .switch-state-label--on {
+  left: 0.4375rem; /* 7px */
+}
+
+.switch-track--large .switch-state-label--off {
+  right: 0.5rem; /* 8px */
 }
 
 .switch-input:checked ~ .switch-track .switch-state-label--on {
-  opacity: 0.8;
+  opacity: 0.7;
 }
 
 .switch-input:not(:checked) ~ .switch-track .switch-state-label--off {
-  opacity: 0.8;
+  opacity: 0.7;
 }
 
 /* Hide state labels on small size */
