@@ -99,6 +99,10 @@ export class SniceProgress extends HTMLElement implements SniceProgressElement {
     this.radius = radius;
     this.circumference = circumference;
 
+    const viewBox = `0 0 ${size} ${size}`;
+    const centerX = size / 2;
+    const centerY = size / 2;
+
     return html`
       <div class="progress progress--circular"
            role="progressbar"
@@ -106,17 +110,17 @@ export class SniceProgress extends HTMLElement implements SniceProgressElement {
            aria-valuemin="0"
            aria-valuemax="${this.max}"
            aria-label="${labelText}">
-        <svg class="progress__circle" viewBox="0 0 ${size} ${size}">
+        <svg class="progress__circle" viewBox="${viewBox}">
           <circle
             class="progress__circle-bg"
-            cx="${size / 2}"
-            cy="${size / 2}"
+            cx="${centerX}"
+            cy="${centerY}"
             r="${radius}"
           />
           <circle
             class="progress__circle-bar"
-            cx="${size / 2}"
-            cy="${size / 2}"
+            cx="${centerX}"
+            cy="${centerY}"
             r="${radius}"
             stroke-dasharray="${circumference}"
             stroke-dashoffset="${offset}"
