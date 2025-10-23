@@ -132,7 +132,10 @@ onChange() { return { value: this.value }; }
 
 **Global State:** Context
 ```typescript
-@context() ctx: AppContext;
+@context() handleContext(ctx: Context) {
+  this.app = ctx.application;
+  this.route = ctx.navigation.route;
+}
 ```
 
 ## Shadow DOM

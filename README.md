@@ -83,8 +83,13 @@ const { page, navigate, initialize } = Router({
 // Any page can access context
 @page({ tag: 'dashboard-page', routes: ['/dashboard'] })
 class DashboardPage extends HTMLElement {
+  private appContext?: AppContext;
+
   @context()
-  ctx?: AppContext;
+  handleContext(ctx: Context) {
+    this.appContext = ctx.application;
+    cost user = this.getUser();
+  }
   // ...
 }
 ```
@@ -364,11 +369,71 @@ setValue(val: string) {
 
 ### Global State
 
-**`@context()`** - Access router context (global state)
+**`@context(options?)`** - Receive router context updates (global state)
 ```typescript
+// Method decorator that receives context updates
 @context()
-ctx?: AppContext;
+handleContext(ctx: Context) {
+  this.appContext = ctx.application;
+  this.requestRender();
+}
+
+// With timing options
+@context({ debounce: 300 })
+handleContextDebounced(ctx: Context) {
+  // Called after 300ms of no updates
+}
+
+@context({ throttle: 100 })
+handleContextThrottled(ctx: Context) {
+  // Called at most once per 100ms
+}
+
+@context({ once: true })
+handleContextOnce(ctx: Context) {
+  // Called only once, then unregisters
+}
 ```
+
+**Context Object Structure:**
+```typescript
+interface Context {
+  application: AppContext;  // Your router context
+  navigation: {
+    placards: Placard[];    // Page metadata
+    route: string;          // Current route
+    params: Record<string, string>;  // Route parameters
+  };
+  update(): void;  // Notify all subscribers
+}
+```
+
+**Triggering Context Updates:**
+
+When you modify the application context, call `update()` to notify all subscribers:
+
+```typescript
+@page({ tag: 'login-page', routes: ['/login'] })
+class LoginPage extends HTMLElement {
+  private ctx?: Context<AppContext>;
+
+  @context()
+  handleContext(ctx: Context<AppContext>) {
+    this.ctx = ctx;
+    this.requestRender();
+  }
+
+  login(user: User) {
+    // Modify the application context
+    this.ctx!.application.setUser(user);
+
+    // Notify all @context subscribers
+    this.ctx!.update();
+  }
+}
+```
+
+**Note:** The router calls `update()` automatically during navigation. Only call it manually when you change application state (like login/logout, theme changes, etc.).
 
 ### Request/Response
 

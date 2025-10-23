@@ -53,7 +53,13 @@ const { page, navigate, initialize } = Router({
 @page({ tag: 'user-page', routes: ['/users/:id'], guards: isAuth })
 class UserPage extends HTMLElement {
   @property() id = '';
-  @context() ctx: AppContext;
+  private appContext?: AppContext;
+
+  @context()
+  handleContext(ctx: Context<AppContext>) {
+    this.appContext = ctx.application;
+    this.requestRender();
+  }
 
   @ready()
   async load() {

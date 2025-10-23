@@ -100,8 +100,18 @@ html`
 @context(options?: { debounce?, throttle?, once? })
 // Method decorator: receives Context object on router navigation
 // Method signature: (ctx: Context) => void
-// Context includes: application (AppContext), navigation { placards, route, params }
-// Options: debounce (ms), throttle (ms), once (call once then unregister)
+// Context: { application, navigation: { placards, route, params }, update() }
+// Call ctx.update() after modifying ctx.application to notify all subscribers
+// Options:
+//   debounce (ms) - wait for quiet period before calling
+//   throttle (ms) - limit to at most once per period
+//   once - call only once then unregister
+// Example:
+//   @context() handleContext(ctx) {
+//     this.ctx = ctx;
+//     ctx.application.user = user;
+//     ctx.update(); // notify all subscribers
+//   }
 
 Router({ target, context?, layout? })
 // Returns: { page, navigate, initialize }

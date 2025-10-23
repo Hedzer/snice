@@ -116,6 +116,8 @@ class HomePage extends HTMLElement {
 
 ### Page with Context
 
+The `@context()` decorator is a **method decorator** that receives context updates from the router. The method is called whenever navigation occurs, with a Context object containing application state and navigation data.
+
 ```typescript
 import { page, context, render, html, Context } from 'snice';
 
@@ -125,7 +127,9 @@ class ProfilePage extends HTMLElement {
 
   @context()
   handleContextUpdate(ctx: Context) {
+    // ctx.application is your router context (AppContext)
     this.appContext = ctx.application;
+    // ctx.navigation contains { placards, route, params }
     this.requestRender();
   }
 
@@ -156,6 +160,113 @@ class ProfilePage extends HTMLElement {
   }
 }
 ```
+
+### Context Options
+
+The `@context()` decorator accepts optional timing and behavior controls:
+
+```typescript
+@page({ tag: 'dashboard-page', routes: ['/dashboard'] })
+class DashboardPage extends HTMLElement {
+  private appContext?: AppContext;
+
+  // Called immediately on every navigation
+  @context()
+  handleContext(ctx: Context) {
+    this.appContext = ctx.application;
+    this.requestRender();
+  }
+
+  // Debounce: Wait 300ms after last update before calling
+  @context({ debounce: 300 })
+  handleContextDebounced(ctx: Context) {
+    // Useful for expensive operations
+    this.updateExpensiveCalculation(ctx);
+  }
+
+  // Throttle: Call at most once per 100ms
+  @context({ throttle: 100 })
+  handleContextThrottled(ctx: Context) {
+    // Useful for frequent updates
+    this.updateAnimation(ctx);
+  }
+
+  // Once: Call only once, then unregister
+  @context({ once: true })
+  handleContextOnce(ctx: Context) {
+    // Useful for one-time initialization
+    this.initializeFromContext(ctx);
+  }
+}
+```
+
+### Context Object Structure
+
+The Context object passed to `@context()` methods has the following structure:
+
+```typescript
+interface Context<T = any> {
+  application: T;  // Your router context (e.g., AppContext)
+  navigation: {
+    placards: Placard[];           // All page placards
+    route: string;                  // Current route name
+    params: Record<string, string>; // Route parameters
+  };
+  update(): void;  // Notify all subscribers of changes
+}
+```
+
+**Example:**
+
+```typescript
+@page({ tag: 'user-page', routes: ['/users/:userId'] })
+class UserPage extends HTMLElement {
+  private ctx?: Context<AppContext>;
+
+  @context()
+  handleContext(ctx: Context<AppContext>) {
+    this.ctx = ctx;
+
+    // Access application state
+    const currentUser = ctx.application.getUser();
+
+    // Access navigation data
+    const userId = ctx.navigation.params.userId;
+    const currentRoute = ctx.navigation.route;
+    const allPlacards = ctx.navigation.placards;
+
+    // Use this data
+    this.loadUserData(userId, currentUser);
+  }
+}
+```
+
+### Triggering Context Updates
+
+When you modify the application context, call `update()` to notify all subscribers:
+
+```typescript
+@page({ tag: 'settings-page', routes: ['/settings'] })
+class SettingsPage extends HTMLElement {
+  private ctx?: Context<AppContext>;
+
+  @context()
+  handleContext(ctx: Context<AppContext>) {
+    this.ctx = ctx;
+    this.requestRender();
+  }
+
+  changeTheme(theme: 'light' | 'dark') {
+    // Modify the application context
+    this.ctx!.application.theme = theme;
+
+    // Notify all @context subscribers
+    this.ctx!.update();
+  }
+}
+```
+
+**Note:** The router automatically calls `update()` during navigation. Only call it manually when changing application state outside of navigation (login, logout, theme changes, etc.).
 
 ## Route Configuration
 
@@ -950,12 +1061,17 @@ const requireAuth: Guard<AppContext> = (ctx) => {
   guards: requireAuth
 })
 class DashboardPage extends HTMLElement {
+  private appContext?: AppContext;
+
   @context()
-  ctx?: AppContext;
+  handleContext(ctx: Context<AppContext>) {
+    this.appContext = ctx.application;
+    this.requestRender();
+  }
 
   @render()
   renderContent() {
-    const user = this.ctx?.getUser();
+    const user = this.appContext?.getUser();
 
     return html`
       <div>
@@ -972,8 +1088,12 @@ class DashboardPage extends HTMLElement {
   routes: ['/login']
 })
 class LoginPage extends HTMLElement {
+  private appContext?: AppContext;
+
   @context()
-  ctx?: AppContext;
+  handleContext(ctx: Context<AppContext>) {
+    this.appContext = ctx.application;
+  }
 
   @render()
   renderContent() {
@@ -998,7 +1118,7 @@ class LoginPage extends HTMLElement {
       name: formData.get('username') as string
     };
 
-    this.ctx?.setUser(user);
+    this.appContext?.setUser(user);
 
     // Redirect to dashboard
     window.location.hash = '#/dashboard';
