@@ -2,8 +2,17 @@ import { element, property, query, watch, dispatch, ready, render, styles, html,
 import cssContent from './snice-input.css?inline';
 import type { InputType, InputSize, InputVariant, SniceInputElement } from './snice-input.types';
 
-@element('snice-input')
+@element('snice-input', { formAssociated: true })
 export class SniceInput extends HTMLElement implements SniceInputElement {
+  internals!: ElementInternals;
+
+  constructor() {
+    super();
+    if (typeof this.attachInternals == 'function') {
+      this.internals = this.attachInternals();
+    }
+  }
+
   @property({  })
   type: InputType = 'text';
 
@@ -196,6 +205,11 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
 
   @ready()
   init() {
+    // Set initial form value
+    if (this.internals) {
+      this.internals.setFormValue(this.value);
+    }
+
     // Set initial clear button visibility
     if (this.clearButton && this.clearable) {
       const shouldShow = this.value && !this.disabled && !this.readonly;
@@ -274,8 +288,13 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
 
   @watch('value')
   handleValueChange() {
-    if (this.input) {
+    // Only update input.value if it's different to avoid unnecessary DOM updates
+    if (this.input && this.input.value !== this.value) {
       this.input.value = this.value;
+    }
+    // Update form value
+    if (this.internals) {
+      this.internals.setFormValue(this.value);
     }
     // Show/hide clear button based on value
     if (this.clearButton && this.clearable) {

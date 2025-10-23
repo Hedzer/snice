@@ -6,6 +6,7 @@ export * from './snice-element';
 export * from './part-options';
 export * from './moved-options';
 export * from './adopted-options';
+export * from './element-options';
 export * from './simple-array';
 export * from './router-options';
 export * from './page-options';

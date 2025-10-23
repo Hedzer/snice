@@ -9,6 +9,7 @@ import { QueryOptions } from './types/query-options';
 import { PropertyOptions } from './types/property-options';
 import { MovedOptions } from './types/moved-options';
 import { AdoptedOptions } from './types/adopted-options';
+import { ElementOptions } from './types/element-options';
 import { AppContext } from './types/app-context';
 import { Placard } from './types/placard';
 import { RouteParams } from './types/route-params';
@@ -428,7 +429,7 @@ export function applyElementFunctionality(constructor: any) {
     };
 }
 
-export function element(tagName: string) {
+export function element(tagName: string, options?: ElementOptions) {
   return function (constructor: any, context: ClassDecoratorContext) {
     // Transfer metadata from context to constructor
     if (context.metadata && (context.metadata as any)[PROPERTIES]) {
@@ -440,7 +441,14 @@ export function element(tagName: string) {
       }
     }
 
+    // Set up form association if requested via options
+    // MUST be done BEFORE applyElementFunctionality and customElements.define
+    if (options?.formAssociated === true) {
+      constructor.formAssociated = true;
+    }
+
     applyElementFunctionality(constructor);
+
     customElements.define(tagName, constructor);
     return constructor;
   };
