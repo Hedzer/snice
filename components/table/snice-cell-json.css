@@ -1,0 +1,146 @@
+/* JSON Cell Base */
+:host {
+  display: flex;
+  align-items: center;
+  min-height: 2.5rem; /* 40px */
+  height: auto;
+  min-width: 6.25rem; /* 100px */
+  flex: 1;
+  font-size: 0.875rem; /* 14px */
+  line-height: 1.25rem; /* 20px */
+}
+
+.cell-content {
+  width: 100%;
+  min-width: 6.25rem; /* 100px */
+  min-height: 1.25rem; /* 20px */
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem; /* 8px */
+  padding: 0.25rem 0;
+}
+
+.json-toggle {
+  background: none;
+  border: none;
+  color: var(--snice-color-text-secondary, #6c757d);
+  cursor: pointer;
+  padding: 0.125rem 0.25rem;
+  font-size: 0.75rem;
+  line-height: 1;
+  border-radius: 0.25rem;
+  transition: background-color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.json-toggle:hover {
+  background-color: var(--snice-color-gray-100, #f8f9fa);
+}
+
+.json-toggle:focus {
+  outline: 2px solid var(--snice-color-primary, #007bff);
+  outline-offset: 2px;
+}
+
+.json-viewer {
+  font-family: 'Courier New', Consolas, monospace;
+  font-size: 0.8125rem; /* 13px */
+  overflow: hidden;
+  flex: 1;
+}
+
+.json-viewer--collapsed {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.json-viewer--expanded {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.json-preview {
+  color: var(--snice-color-text-secondary, #6c757d);
+  font-style: italic;
+}
+
+.json-object {
+  padding-left: 1rem;
+}
+
+.json-line {
+  margin: 0.125rem 0;
+}
+
+.json-key {
+  color: var(--snice-color-primary, #007bff);
+  font-weight: 500;
+  margin-right: 0.25rem;
+}
+
+.json-string {
+  color: var(--snice-color-success, #28a745);
+}
+
+.json-number {
+  color: var(--snice-color-info, #17a2b8);
+}
+
+.json-boolean {
+  color: var(--snice-color-warning, #ffc107);
+}
+
+.json-null,
+.json-undefined {
+  color: var(--snice-color-text-secondary, #6c757d);
+  font-style: italic;
+}
+
+.json-empty {
+  color: var(--snice-color-text-secondary, #6c757d);
+  font-style: italic;
+}
+
+/* Text Alignment */
+:host([align="left"]) .cell-content {
+  justify-content: flex-start;
+}
+
+:host([align="center"]) .cell-content {
+  justify-content: center;
+}
+
+:host([align="right"]) .cell-content {
+  justify-content: flex-end;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  :host {
+    font-size: 0.75rem; /* 12px */
+    line-height: 1rem; /* 16px */
+  }
+
+  .json-viewer {
+    font-size: 0.75rem; /* 12px */
+  }
+
+  .json-toggle {
+    font-size: 0.625rem; /* 10px */
+  }
+}
+
+/* Print Styles */
+@media print {
+  .json-toggle {
+    display: none;
+  }
+
+  .json-viewer--collapsed {
+    white-space: normal;
+  }
+
+  .json-viewer {
+    font-size: 0.625rem; /* 10px */
+  }
+}

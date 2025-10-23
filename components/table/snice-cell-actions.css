@@ -1,0 +1,140 @@
+/* Actions Cell Base */
+:host {
+  display: flex;
+  align-items: center;
+  min-height: 2.5rem; /* 40px */
+  height: 2.5rem; /* 40px */
+  min-width: 6.25rem; /* 100px */
+  flex: 1;
+  font-size: 0.875rem; /* 14px */
+  line-height: 1.25rem; /* 20px */
+}
+
+.cell-content {
+  width: 100%;
+  min-width: 6.25rem; /* 100px */
+  min-height: 1.25rem; /* 20px */
+}
+
+.actions-container {
+  display: inline-flex;
+  gap: 0.5rem; /* 8px */
+  align-items: center;
+}
+
+.action-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem; /* 4px */
+  padding: 0.25rem 0.5rem; /* 4px 8px */
+  border: 1px solid transparent;
+  border-radius: 0.25rem; /* 4px */
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem; /* 14px */
+  line-height: 1;
+}
+
+.action-button:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.action-button:focus {
+  outline: 2px solid var(--snice-color-primary, #007bff);
+  outline-offset: 2px;
+}
+
+.action-button:active {
+  transform: scale(0.95);
+}
+
+.action-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.action-button:disabled:hover {
+  background: transparent;
+}
+
+/* Button Variants */
+.action-button--primary {
+  color: var(--snice-color-primary, #007bff);
+}
+
+.action-button--primary:hover:not(:disabled) {
+  background: rgba(0, 123, 255, 0.1);
+}
+
+.action-button--secondary {
+  color: var(--snice-color-text, #212529);
+}
+
+.action-button--danger {
+  color: var(--snice-color-danger, #dc3545);
+}
+
+.action-button--danger:hover:not(:disabled) {
+  background: rgba(220, 53, 69, 0.1);
+}
+
+.action-button--success {
+  color: var(--snice-color-success, #28a745);
+}
+
+.action-button--success:hover:not(:disabled) {
+  background: rgba(40, 167, 69, 0.1);
+}
+
+.action-icon {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1rem; /* 16px */
+}
+
+.action-icon--image {
+  width: 1rem; /* 16px */
+  height: 1rem; /* 16px */
+}
+
+.action-icon--image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.action-label {
+  font-weight: 500;
+}
+
+/* Text Alignment */
+:host([align="left"]) {
+  justify-content: flex-start;
+}
+
+:host([align="center"]) {
+  justify-content: center;
+}
+
+:host([align="right"]) {
+  justify-content: flex-end;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .action-button {
+    padding: 0.25rem;
+  }
+
+  .action-label {
+    display: none;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .actions-container {
+    display: none;
+  }
+}

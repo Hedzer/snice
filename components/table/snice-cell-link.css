@@ -1,0 +1,97 @@
+/* Link Cell Base */
+:host {
+  display: flex;
+  align-items: center;
+  min-height: 2.5rem; /* 40px */
+  height: 2.5rem; /* 40px */
+  min-width: 6.25rem; /* 100px */
+  flex: 1;
+  font-size: 0.875rem; /* 14px */
+  line-height: 1.25rem; /* 20px */
+}
+
+.cell-content {
+  width: 100%;
+  min-width: 6.25rem; /* 100px */
+  min-height: 1.25rem; /* 20px */
+}
+
+.cell-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem; /* 4px */
+  color: var(--snice-color-primary, #007bff);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.cell-link:hover {
+  color: var(--snice-color-primary-dark, #0056b3);
+  text-decoration: underline;
+}
+
+.cell-link:focus {
+  outline: 2px solid var(--snice-color-primary, #007bff);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.cell-link:visited {
+  color: var(--snice-color-secondary, #6c757d);
+}
+
+.link-icon {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1rem; /* 16px */
+}
+
+.link-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.external-icon {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.75rem; /* 12px */
+  opacity: 0.7;
+}
+
+/* Text Alignment */
+:host([align="left"]) {
+  text-align: left;
+  justify-content: flex-start;
+}
+
+:host([align="center"]) {
+  text-align: center;
+  justify-content: center;
+}
+
+:host([align="right"]) {
+  text-align: right;
+  justify-content: flex-end;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  :host {
+    font-size: 0.75rem; /* 12px */
+    line-height: 1rem; /* 16px */
+  }
+}
+
+/* Print Styles */
+@media print {
+  .cell-link {
+    text-decoration: underline;
+  }
+
+  .cell-link::after {
+    content: " (" attr(href) ")";
+    font-size: 0.75rem;
+    color: #666;
+  }
+}

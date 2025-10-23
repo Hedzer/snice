@@ -33,6 +33,9 @@ export class SniceTable extends HTMLElement {
   @property({ type: Boolean,  attribute: 'clickable' })
   clickable = false;
 
+  @property({ type: Boolean,  attribute: 'list' })
+  list = false;
+
   @property({ type: Array, attribute: 'columns' })
   columns: any[] = [];
 
@@ -187,6 +190,28 @@ export class SniceTable extends HTMLElement {
 
       tbody tr[data-selected="true"]:hover {
         background-color: var(--snice-color-background-tertiary);
+      }
+
+      /* List mode - hide vertical borders */
+      :host([list]) th,
+      :host([list]) td {
+        border-left: none;
+        border-right: none;
+      }
+
+      :host([list]) th:first-child,
+      :host([list]) td:first-child {
+        border-left: none;
+      }
+
+      :host([list]) th:last-child,
+      :host([list]) td:last-child {
+        border-right: none;
+      }
+
+      :host([list]) table {
+        border-left: none;
+        border-right: none;
       }
 
       [part="header"] {

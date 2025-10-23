@@ -1,0 +1,103 @@
+/* Color Cell Base */
+:host {
+  display: flex;
+  align-items: center;
+  min-height: 2.5rem; /* 40px */
+  height: 2.5rem; /* 40px */
+  min-width: 6.25rem; /* 100px */
+  flex: 1;
+  font-size: 0.875rem; /* 14px */
+  line-height: 1.25rem; /* 20px */
+}
+
+.cell-content {
+  width: 100%;
+  min-width: 6.25rem; /* 100px */
+  min-height: 1.25rem; /* 20px */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* 8px */
+}
+
+.color-swatch {
+  border: 1px solid var(--snice-color-gray-300, #dee2e6);
+  border-radius: 0.25rem; /* 4px */
+  flex-shrink: 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Swatch sizes */
+.color-swatch--small {
+  width: 1rem; /* 16px */
+  height: 1rem; /* 16px */
+}
+
+.color-swatch--medium {
+  width: 1.5rem; /* 24px */
+  height: 1.5rem; /* 24px */
+}
+
+.color-swatch--large {
+  width: 2rem; /* 32px */
+  height: 2rem; /* 32px */
+}
+
+.color-text {
+  font-family: monospace;
+  font-size: 0.875rem; /* 14px */
+  color: var(--snice-color-text, #212529);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Text Alignment */
+:host([align="left"]) .cell-content {
+  justify-content: flex-start;
+}
+
+:host([align="center"]) .cell-content {
+  justify-content: center;
+}
+
+:host([align="right"]) .cell-content {
+  justify-content: flex-end;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  :host {
+    font-size: 0.75rem; /* 12px */
+    line-height: 1rem; /* 16px */
+  }
+
+  .color-swatch--small {
+    width: 0.875rem; /* 14px */
+    height: 0.875rem; /* 14px */
+  }
+
+  .color-swatch--medium {
+    width: 1.25rem; /* 20px */
+    height: 1.25rem; /* 20px */
+  }
+
+  .color-swatch--large {
+    width: 1.75rem; /* 28px */
+    height: 1.75rem; /* 28px */
+  }
+
+  .color-text {
+    font-size: 0.75rem; /* 12px */
+  }
+}
+
+/* Print Styles */
+@media print {
+  .color-swatch {
+    border: 2px solid #000;
+  }
+
+  .color-text {
+    font-size: 0.75rem;
+  }
+}

@@ -10,6 +10,18 @@ import './snice-cell-text';
 import './snice-cell-number';
 import './snice-cell-date';
 import './snice-cell-sparkline';
+import './snice-cell-link';
+import './snice-cell-actions';
+import './snice-cell-tag';
+import './snice-cell-image';
+import './snice-cell-email';
+import './snice-cell-phone';
+import './snice-cell-status';
+import './snice-cell-color';
+import './snice-cell-json';
+import './snice-cell-currency';
+import './snice-cell-percentage';
+import './snice-cell-location';
 
 @element('snice-row')
 export class SniceRow extends HTMLElement implements SniceRowElement {
@@ -127,11 +139,9 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
 
   @watch('data', 'columns')
   updateCells() {
-    const cellsContainer = this.shadowRoot?.querySelector('.cells-container');
-    if (cellsContainer && this.columns && this.columns.length) {
-      cellsContainer.innerHTML = this.renderCells();
-      this.configureCells();
-    }
+    // Re-render is handled automatically by @render decorator
+    // Just need to reconfigure cells after the template updates
+    setTimeout(() => this.configureCells(), 0);
   }
 
   private handleRowClick(e: MouseEvent) {
@@ -191,13 +201,6 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
     `;
   }
 
-  private renderCells(): string {
-    if (!this.columns || !this.columns.length) {
-      return '<!-- No columns available -->';
-    }
-    return this.columns.map((column, columnIndex) => this.renderCell(column, columnIndex)).join('');
-  }
-
   private renderCell(column: ColumnDefinition, columnIndex: number) {
     const value = this.data[column.key];
     const cellComponent = this.getCellComponent(column.type);
@@ -218,8 +221,6 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
       case 'text':
         return 'snice-cell-text';
       case 'number':
-      case 'currency':
-      case 'percent':
       case 'accounting':
       case 'scientific':
       case 'fraction':
@@ -238,6 +239,43 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
         return 'snice-cell-duration';
       case 'filesize':
         return 'snice-cell-filesize';
+      case 'link':
+      case 'url':
+        return 'snice-cell-link';
+      case 'actions':
+        return 'snice-cell-actions';
+      case 'tag':
+      case 'tags':
+      case 'badge':
+      case 'badges':
+        return 'snice-cell-tag';
+      case 'image':
+      case 'avatar':
+      case 'thumbnail':
+        return 'snice-cell-image';
+      case 'email':
+        return 'snice-cell-email';
+      case 'phone':
+      case 'tel':
+      case 'telephone':
+        return 'snice-cell-phone';
+      case 'status':
+        return 'snice-cell-status';
+      case 'color':
+        return 'snice-cell-color';
+      case 'json':
+      case 'object':
+        return 'snice-cell-json';
+      case 'currency':
+      case 'money':
+        return 'snice-cell-currency';
+      case 'percent':
+      case 'percentage':
+        return 'snice-cell-percentage';
+      case 'location':
+      case 'address':
+      case 'coordinates':
+        return 'snice-cell-location';
       case 'custom':
       default:
         return 'snice-cell';

@@ -65,6 +65,106 @@ export interface SparklineFormat {
   height?: number;
 }
 
+export interface PercentageFormat {
+  decimals?: number;
+  showTrend?: boolean;
+  trendValue?: number | null;
+  colorize?: boolean;
+}
+
+export interface PhoneFormat {
+  phone?: string;
+  displayText?: string;
+  showIcon?: boolean;
+  format?: boolean;
+  country?: string;
+}
+
+export interface StatusFormat {
+  status?: string;
+  label?: string;
+  showDot?: boolean;
+  variant?: 'online' | 'offline' | 'busy' | 'away' | 'custom';
+}
+
+export interface TagFormat {
+  variant?: string;
+}
+
+export interface ActionButton {
+  action: string;
+  label?: string;
+  icon?: string;
+  variant?: 'primary' | 'secondary' | 'danger' | 'success';
+  title?: string;
+  disabled?: boolean;
+}
+
+export interface ActionsFormat {
+  actions: ActionButton[];
+}
+
+export interface LinkFormat {
+  href?: string;
+  target?: string;
+  external?: boolean;
+  icon?: string;
+  text?: string;
+}
+
+export interface ColorFormat {
+  color?: string;
+  size?: 'small' | 'medium' | 'large';
+  displayFormat?: 'hex' | 'rgb' | 'hsl' | 'name';
+  showSwatch?: boolean;
+  showHex?: boolean;
+  showRgb?: boolean;
+  swatchSize?: 'small' | 'medium' | 'large';
+}
+
+export interface CurrencyFormat {
+  currency?: string;
+  locale?: string;
+  display?: 'symbol' | 'code' | 'name';
+  currencyDisplay?: 'symbol' | 'code' | 'name';
+  decimals?: number;
+  negativeStyle?: 'parentheses' | 'red' | 'minus';
+}
+
+export interface EmailFormat {
+  email?: string;
+  showIcon?: boolean;
+  displayText?: string;
+}
+
+export interface ImageFormat {
+  src?: string;
+  fallback?: string;
+  shape?: 'rounded' | 'square' | 'circle';
+  variant?: 'rounded' | 'square' | 'circle';
+  size?: 'small' | 'medium' | 'large';
+  alt?: string;
+  lazy?: boolean;
+}
+
+export interface JsonFormat {
+  maxDepth?: number;
+  expanded?: boolean;
+  collapsed?: boolean;
+  showToggle?: boolean;
+}
+
+export interface LocationFormat {
+  address?: string;
+  latitude?: string | number;
+  longitude?: string | number;
+  showMapLink?: boolean;
+  mapProvider?: 'google' | 'openstreetmap' | 'apple';
+  showIcon?: boolean;
+  lat?: number;
+  lng?: number;
+}
+
 export interface ColumnDefinition {
   key: string;
   label: string;
@@ -82,6 +182,18 @@ export interface ColumnDefinition {
   ratingFormat?: RatingFormat;
   progressFormat?: ProgressFormat;
   sparklineFormat?: SparklineFormat;
+  percentageFormat?: PercentageFormat;
+  phoneFormat?: PhoneFormat;
+  statusFormat?: StatusFormat;
+  tagFormat?: TagFormat;
+  actionsFormat?: ActionsFormat;
+  linkFormat?: LinkFormat;
+  colorFormat?: ColorFormat;
+  currencyFormat?: CurrencyFormat;
+  emailFormat?: EmailFormat;
+  imageFormat?: ImageFormat;
+  jsonFormat?: JsonFormat;
+  locationFormat?: LocationFormat;
   style?: CellStyle;
   conditionalFormats?: ConditionalFormat[];
   
@@ -152,7 +264,7 @@ export interface SniceRowElement extends HTMLElement {
 
 export interface SniceCellElement extends HTMLElement {
   align: ColumnAlign;
-  type: ColumnType;
+  type: ColumnType | string;
   value: any;
-  column: ColumnDefinition;
+  column: ColumnDefinition | null;
 }

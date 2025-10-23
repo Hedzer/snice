@@ -1,0 +1,11 @@
+/* Currency Cell - extends number cell styles */
+/* Import base styles from snice-cell.css */
+
+:host {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.cell-content--number {
+  font-feature-settings: 'tnum';
+}

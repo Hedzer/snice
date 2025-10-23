@@ -182,7 +182,7 @@
                     <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Number Cell (Currency)</h3>
                     <snice-cell-number value="1234.56" prefix="$" thousands-separator="true" decimals="2"></snice-cell-number>
                 </div>
-                
+
                 <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
                     <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Number Cell (Negative)</h3>
                     <snice-cell-number value="-456.78" negative-style="parentheses" thousands-separator="true" decimals="2"></snice-cell-number>
@@ -267,27 +267,253 @@
                     <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">FileSize (1.5 GB)</h3>
                     <snice-cell-filesize value="1610612736"></snice-cell-filesize>
                 </div>
+
+                <!-- Additional cell types -->
+                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Link Cell</h3>
+                    <snice-cell-link value="https://example.com" text="Visit Example" external="true"></snice-cell-link>
+                </div>
+
+                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Actions Cell</h3>
+                    <snice-cell-actions id="demo-actions"></snice-cell-actions>
+                </div>
+
+                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Tag Cell</h3>
+                    <snice-cell-tag value="React,TypeScript,Node.js" variant="primary"></snice-cell-tag>
+                </div>
+
+                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Image Cell</h3>
+                    <snice-cell-image value="https://via.placeholder.com/40" alt="Avatar" variant="circle" size="medium"></snice-cell-image>
+                </div>
+
+                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Email Cell</h3>
+                    <snice-cell-email value="john.doe@example.com"></snice-cell-email>
+                </div>
+
+                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Phone Cell</h3>
+                    <snice-cell-phone value="+1-555-123-4567"></snice-cell-phone>
+                </div>
+
+                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Status Cell (Online)</h3>
+                    <snice-cell-status value="online" label="Online"></snice-cell-status>
+                </div>
+
+                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Status Cell (Offline)</h3>
+                    <snice-cell-status value="offline" label="Offline"></snice-cell-status>
+                </div>
+
+                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Color Cell</h3>
+                    <snice-cell-color value="#3b82f6"></snice-cell-color>
+                </div>
+
+                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">JSON Cell</h3>
+                    <snice-cell-json value='{"name":"John","age":30}'></snice-cell-json>
+                </div>
             </div>
         </div>
-        
-        <div class="demo-section">
-            <h2>Individual Row Components</h2>
-            
-            <div style="margin-bottom: 1rem;">
-                <h3 style="font-size: 1rem; color: #666; margin-bottom: 0.5rem;">Employee Row (Text, Number, Date, Boolean)</h3>
-                <snice-row id="employee-row" style="display: block; padding: 0.5rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;"></snice-row>
-            </div>
-            
-            <div style="margin-bottom: 1rem;">
-                <h3 style="font-size: 1rem; color: #666; margin-bottom: 0.5rem;">Analytics Row (Text, Numbers, Progress, Sparkline)</h3>
-                <snice-row id="analytics-row" style="display: block; padding: 0.5rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;"></snice-row>
-            </div>
-            
-            <div style="margin-bottom: 1rem;">
-                <h3 style="font-size: 1rem; color: #666; margin-bottom: 0.5rem;">System Row (Text, FileSize, Duration, Rating)</h3>
-                <snice-row id="system-row" style="display: block; padding: 0.5rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;"></snice-row>
-            </div>
+
+        <div class="demo-section" style="display: none;">
+            <h2>Complete Table with New Cell Types</h2>
+
+            <snice-table
+                id="complete-table"
+                hoverable
+                sortable
+                striped>
+
+                <snice-column
+                    slot="columns"
+                    key="avatar"
+                    label=""
+                    type="image"
+                    width="60px"
+                    align="center">
+                </snice-column>
+
+                <snice-column
+                    slot="columns"
+                    key="name"
+                    label="Name"
+                    type="text">
+                </snice-column>
+
+                <snice-column
+                    slot="columns"
+                    key="email"
+                    label="Email"
+                    type="email">
+                </snice-column>
+
+                <snice-column
+                    slot="columns"
+                    key="phone"
+                    label="Phone"
+                    type="phone">
+                </snice-column>
+
+                <snice-column
+                    slot="columns"
+                    key="status"
+                    label="Status"
+                    type="status"
+                    align="center">
+                </snice-column>
+
+                <snice-column
+                    slot="columns"
+                    key="skills"
+                    label="Skills"
+                    type="tag">
+                </snice-column>
+
+                <snice-column
+                    slot="columns"
+                    key="salary"
+                    label="Salary"
+                    type="number">
+                </snice-column>
+
+                <snice-column
+                    slot="columns"
+                    key="actions"
+                    label="Actions"
+                    type="actions"
+                    align="center"
+                    width="120px">
+                </snice-column>
+
+                <snice-row slot="rows"
+                    data-avatar="https://i.pravatar.cc/40?img=1"
+                    data-name="John Smith"
+                    data-email="john.smith@company.com"
+                    data-phone="+1-555-0101"
+                    data-status="online"
+                    data-skills="JavaScript,React,TypeScript"
+                    data-salary="95000">
+                </snice-row>
+                <snice-row slot="rows"
+                    data-avatar="https://i.pravatar.cc/40?img=5"
+                    data-name="Sarah Johnson"
+                    data-email="sarah.j@company.com"
+                    data-phone="+1-555-0102"
+                    data-status="busy"
+                    data-skills="Python,Django,PostgreSQL"
+                    data-salary="105000">
+                </snice-row>
+                <snice-row slot="rows"
+                    data-avatar="https://i.pravatar.cc/40?img=8"
+                    data-name="Mike Davis"
+                    data-email="mike.davis@company.com"
+                    data-phone="+1-555-0103"
+                    data-status="away"
+                    data-skills="Java,Spring,AWS"
+                    data-salary="110000">
+                </snice-row>
+                <snice-row slot="rows"
+                    data-avatar="https://i.pravatar.cc/40?img=9"
+                    data-name="Emily Chen"
+                    data-email="emily.chen@company.com"
+                    data-phone="+1-555-0104"
+                    data-status="offline"
+                    data-skills="Go,Kubernetes,Docker"
+                    data-salary="115000">
+                </snice-row>
+            </snice-table>
         </div>
+
+        <div class="demo-section" style="display: none;">
+            <h2>List Mode (No Vertical Borders)</h2>
+
+            <snice-table
+                id="list-table"
+                list
+                hoverable
+                striped>
+
+                <snice-column
+                    slot="columns"
+                    key="title"
+                    label="Task"
+                    type="text">
+                </snice-column>
+
+                <snice-column
+                    slot="columns"
+                    key="assignee"
+                    label="Assignee"
+                    type="text">
+                </snice-column>
+
+                <snice-column
+                    slot="columns"
+                    key="priority"
+                    label="Priority"
+                    type="tag"
+                    align="center">
+                </snice-column>
+
+                <snice-column
+                    slot="columns"
+                    key="progress"
+                    label="Progress"
+                    type="progress">
+                </snice-column>
+
+                <snice-column
+                    slot="columns"
+                    key="status"
+                    label="Status"
+                    type="status"
+                    align="center">
+                </snice-column>
+
+                <snice-row slot="rows"
+                    data-title="Implement user authentication"
+                    data-assignee="John Smith"
+                    data-priority="High"
+                    data-progress="85"
+                    data-status="online">
+                </snice-row>
+                <snice-row slot="rows"
+                    data-title="Design landing page"
+                    data-assignee="Sarah Johnson"
+                    data-priority="Medium"
+                    data-progress="60"
+                    data-status="busy">
+                </snice-row>
+                <snice-row slot="rows"
+                    data-title="API integration"
+                    data-assignee="Mike Davis"
+                    data-priority="High"
+                    data-progress="40"
+                    data-status="away">
+                </snice-row>
+                <snice-row slot="rows"
+                    data-title="Write documentation"
+                    data-assignee="Emily Chen"
+                    data-priority="Low"
+                    data-progress="20"
+                    data-status="offline">
+                </snice-row>
+                <snice-row slot="rows"
+                    data-title="Code review"
+                    data-assignee="John Smith"
+                    data-priority="Medium"
+                    data-progress="100"
+                    data-status="online">
+                </snice-row>
+            </snice-table>
+        </div>
+
     </div>
 
     <script type="module">
@@ -295,6 +521,19 @@
         import './demo-table-controller.ts';
         // Then import the table component
         import './snice-table.ts';
+        // Import new cell types directly for testing
+        import './snice-cell-link.ts';
+        import './snice-cell-actions.ts';
+        import './snice-cell-tag.ts';
+        import './snice-cell-email.ts';
+        import './snice-cell-phone.ts';
+        import './snice-cell-status.ts';
+        import './snice-cell-color.ts';
+        import './snice-cell-json.ts';
+        import './snice-cell-currency.ts';
+        import './snice-cell-percentage.ts';
+        import './snice-cell-location.ts';
+        import './snice-cell-image.ts';
         
         const table = document.getElementById('demo-table');
         
@@ -372,84 +611,6 @@
             console.log('Row clicked:', e.detail);
         });
         
-        // Configure individual row components
-        const configureIndividualRows = async () => {
-            // Wait for components to be defined
-            await Promise.all([
-                customElements.whenDefined('snice-row'),
-                customElements.whenDefined('snice-cell-text'),
-                customElements.whenDefined('snice-cell-number'),
-                customElements.whenDefined('snice-cell-date'),
-                customElements.whenDefined('snice-cell-sparkline')
-            ]);
-            
-            // Configure employee row
-            const employeeRow = document.getElementById('employee-row');
-            if (employeeRow) {
-                employeeRow.columns = [
-                    { key: 'name', label: 'Name', type: 'text', align: 'left' },
-                    { key: 'salary', label: 'Salary', type: 'number', align: 'right', numberFormat: { prefix: '$', thousandsSeparator: true, decimals: 0 } },
-                    { key: 'joinDate', label: 'Join Date', type: 'date', align: 'center', dateFormat: { format: 'medium' } },
-                    { key: 'active', label: 'Active', type: 'boolean', align: 'center', booleanFormat: { useSymbols: true, trueSymbol: '✅', falseSymbol: '❌' } }
-                ];
-                employeeRow.data = {
-                    name: 'John Doe',
-                    salary: 75000,
-                    joinDate: '2022-03-15',
-                    active: true
-                };
-                // Trigger update manually
-                if (typeof employeeRow.updateCells === 'function') {
-                    employeeRow.updateCells();
-                }
-            }
-            
-            // Configure analytics row
-            const analyticsRow = document.getElementById('analytics-row');
-            if (analyticsRow) {
-                analyticsRow.columns = [
-                    { key: 'metric', label: 'Metric', type: 'text', align: 'left' },
-                    { key: 'current', label: 'Current', type: 'number', align: 'right', numberFormat: { prefix: '$', thousandsSeparator: true, decimals: 0 } },
-                    { key: 'progress', label: 'Progress', type: 'progress', align: 'left', progressFormat: { showPercentage: true, color: '#10b981' } },
-                    { key: 'trend', label: 'Trend', type: 'sparkline', align: 'center', sparklineFormat: { type: 'line', color: '#3b82f6', width: 80, height: 30 } }
-                ];
-                analyticsRow.data = {
-                    metric: 'Revenue',
-                    current: 125340,
-                    progress: 78,
-                    trend: [45000, 47000, 49000, 52000, 48000, 53000, 55000]
-                };
-                // Trigger update manually
-                if (typeof analyticsRow.updateCells === 'function') {
-                    analyticsRow.updateCells();
-                }
-            }
-            
-            // Configure system row
-            const systemRow = document.getElementById('system-row');
-            if (systemRow) {
-                systemRow.columns = [
-                    { key: 'process', label: 'Process', type: 'text', align: 'left' },
-                    { key: 'memory', label: 'Memory', type: 'filesize', align: 'right' },
-                    { key: 'uptime', label: 'Uptime', type: 'duration', align: 'right' },
-                    { key: 'rating', label: 'Health', type: 'rating', align: 'center', ratingFormat: { max: 5, symbol: '●', emptySymbol: '○', color: '#10b981' } }
-                ];
-                systemRow.data = {
-                    process: 'nginx',
-                    memory: 52428800,  // 50MB
-                    uptime: 86461,     // 1 day 1 minute 1 second
-                    rating: 4
-                };
-                // Trigger update manually
-                if (typeof systemRow.updateCells === 'function') {
-                    systemRow.updateCells();
-                }
-            }
-        };
-        
-        // Initialize individual rows
-        configureIndividualRows();
-        
         // Configure individual progress cell with percentage
         const configureProgressCells = async () => {
             await customElements.whenDefined('snice-cell-progress');
@@ -470,7 +631,53 @@
         };
         
         configureProgressCells();
-        
+
+        // Configure demo actions cell
+        const configureDemoActions = async () => {
+            await customElements.whenDefined('snice-cell-actions');
+
+            const actionsCell = document.getElementById('demo-actions');
+            if (actionsCell) {
+                actionsCell.column = {
+                    key: 'actions',
+                    label: 'Actions',
+                    type: 'actions',
+                    align: 'center',
+                    actionsFormat: {
+                        actions: [
+                            { action: 'view', icon: '👁', title: 'View' },
+                            { action: 'edit', icon: '✏️', title: 'Edit' },
+                            { action: 'delete', icon: '🗑️', title: 'Delete', variant: 'danger' }
+                        ]
+                    }
+                };
+            }
+        };
+
+        configureDemoActions();
+
+        // Event listeners for new cell types
+        document.addEventListener('@snice/cell-action', (e) => {
+            console.log('Cell action triggered:', e.detail);
+            alert(`Action: ${e.detail.action}\nRow data: ${JSON.stringify(e.detail.rowData, null, 2)}`);
+        });
+
+        // Listen for row clicks on complete table
+        const completeTable = document.getElementById('complete-table');
+        if (completeTable) {
+            completeTable.addEventListener('@snice/row-click', (e) => {
+                console.log('Complete table row clicked:', e.detail);
+            });
+        }
+
+        // Listen for row clicks on list table
+        const listTable = document.getElementById('list-table');
+        if (listTable) {
+            listTable.addEventListener('@snice/row-click', (e) => {
+                console.log('List table row clicked:', e.detail);
+            });
+        }
+
         // Uncomment to load sample data programmatically:
         // setTimeout(() => {
         //     window.loadSampleData();
