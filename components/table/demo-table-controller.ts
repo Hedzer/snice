@@ -47,7 +47,7 @@ export class DemoTableController implements IController {
   @respond('@snice/table/data')
   async getTableData(params: any) {
     // Add fake delay to see loading skeleton
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    await new Promise(resolve => setTimeout(resolve, 100));
     
     let filteredData = [...this.sampleData];
     

@@ -39,6 +39,9 @@ export class SniceTable extends HTMLElement {
   @property({ type: Boolean,  attribute: 'list' })
   list = false;
 
+  @property({ type: Number,  attribute: 'search-debounce' })
+  searchDebounce = 500;
+
   // Plain properties - no reflection to attributes
   columns: any[] = [];
   data: any[] = [];
@@ -130,7 +133,7 @@ export class SniceTable extends HTMLElement {
     this.dataRequestTimeout = setTimeout(() => {
       this.getTableData();
       this.dataRequestTimeout = null;
-    }, 500);
+    }, 150);
   }
 
   @styles()
@@ -271,6 +274,7 @@ export class SniceTable extends HTMLElement {
 
       .selector-input {
         min-width: 9.375rem;
+        --snice-select-min-height: 2rem;
       }
 
       /* Sort indicators */
@@ -619,7 +623,7 @@ export class SniceTable extends HTMLElement {
     if (!this.tbody) return;
 
     this.tbody.innerHTML = '';
-    
+
     if (this.data.length === 0 && this.columns.length > 0) {
       if (this.loading) {
         // Show loading spinner
@@ -645,15 +649,17 @@ export class SniceTable extends HTMLElement {
         return;
       }
     }
-    
+
+    const fragment = document.createDocumentFragment();
+
     this.data.forEach((rowData, index) => {
       const tr = document.createElement('tr');
       tr.setAttribute('data-index', String(index));
-      
+
       // Set row selection state
       const isSelected = this.selectedRows.includes(index);
       tr.setAttribute('data-selected', String(isSelected));
-      
+
       if (this.selectable) {
         const selectCell = document.createElement('td');
         selectCell.className = 'select-column';
@@ -664,17 +670,19 @@ export class SniceTable extends HTMLElement {
       this.columns.forEach(column => {
         const td = document.createElement('td');
         const value = rowData[column.key];
-        
+
         // Create cell component as HTML string
         const cellTagName = this.getCellTagName(column.type);
         const attributes = this.getCellAttributes(column, value);
         td.innerHTML = `<${cellTagName} ${attributes}></${cellTagName}>`;
-        
+
         tr.appendChild(td);
       });
 
-      this.tbody.appendChild(tr);
+      fragment.appendChild(tr);
     });
+
+    this.tbody.appendChild(fragment);
   }
 
   getCellAttributes(column: any, value: any): string {
@@ -837,7 +845,7 @@ export class SniceTable extends HTMLElement {
     }
     this.searchDebounceTimeout = setTimeout(() => {
       this.debouncedDataRequest();
-    }, 500);
+    }, this.searchDebounce);
   }
 
   private selectorDebounceTimeout: any = null;

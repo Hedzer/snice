@@ -71,7 +71,7 @@ img[src=""] {
 .select-trigger--medium {
   padding: 0.5rem 2.25rem 0.5rem 0.75rem; /* 8px 36px 8px 12px */
   font-size: var(--snice-font-size-md);
-  min-height: 2.5rem; /* 40px */
+  min-height: var(--snice-select-min-height, 2.5rem); /* 40px */
 }
 
 .select-trigger--large {
