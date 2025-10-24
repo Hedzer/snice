@@ -2,6 +2,7 @@
 :host {
   display: flex;
   align-items: center;
+  padding: var(--snice-table-cell-padding, var(--snice-spacing-md, 0.75rem)); /* Default: 12px */
   min-height: 2.5rem; /* 40px */
   height: 2.5rem; /* 40px */
   min-width: 6.25rem; /* 100px */

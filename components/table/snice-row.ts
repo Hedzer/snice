@@ -1,4 +1,4 @@
-import { element, property, watch, ready, dispatch, render, styles, html, css } from 'snice';
+import { element, property, watch, ready, dispatch, render, styles, html, css, unsafeHTML } from 'snice';
 import cssContent from './snice-row.css?inline';
 import type {
   SniceRowElement,
@@ -207,11 +207,11 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
 
     return html/*html*/`
       <div class="cell cell--${column.type}" part="cell" style="${this.getCellStyles(column)}">
-        <${cellComponent}
+        ${unsafeHTML(`<${cellComponent}
           type="${column.type}"
           align="${column.align || 'left'}"
           data-column-index="${columnIndex}"
-        ></${cellComponent}>
+        ></${cellComponent}>`)}
       </div>
     `;
   }

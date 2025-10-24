@@ -321,14 +321,15 @@
             </div>
         </div>
 
-        <div class="demo-section" style="display: none;">
+        <div class="demo-section">
             <h2>Complete Table with New Cell Types</h2>
 
             <snice-table
                 id="complete-table"
                 hoverable
                 sortable
-                striped>
+                striped
+                searchable>
 
                 <snice-column
                     slot="columns"
@@ -390,54 +391,18 @@
                     align="center"
                     width="120px">
                 </snice-column>
-
-                <snice-row slot="rows"
-                    data-avatar="https://i.pravatar.cc/40?img=1"
-                    data-name="John Smith"
-                    data-email="john.smith@company.com"
-                    data-phone="+1-555-0101"
-                    data-status="online"
-                    data-skills="JavaScript,React,TypeScript"
-                    data-salary="95000">
-                </snice-row>
-                <snice-row slot="rows"
-                    data-avatar="https://i.pravatar.cc/40?img=5"
-                    data-name="Sarah Johnson"
-                    data-email="sarah.j@company.com"
-                    data-phone="+1-555-0102"
-                    data-status="busy"
-                    data-skills="Python,Django,PostgreSQL"
-                    data-salary="105000">
-                </snice-row>
-                <snice-row slot="rows"
-                    data-avatar="https://i.pravatar.cc/40?img=8"
-                    data-name="Mike Davis"
-                    data-email="mike.davis@company.com"
-                    data-phone="+1-555-0103"
-                    data-status="away"
-                    data-skills="Java,Spring,AWS"
-                    data-salary="110000">
-                </snice-row>
-                <snice-row slot="rows"
-                    data-avatar="https://i.pravatar.cc/40?img=9"
-                    data-name="Emily Chen"
-                    data-email="emily.chen@company.com"
-                    data-phone="+1-555-0104"
-                    data-status="offline"
-                    data-skills="Go,Kubernetes,Docker"
-                    data-salary="115000">
-                </snice-row>
             </snice-table>
         </div>
 
-        <div class="demo-section" style="display: none;">
+        <div class="demo-section">
             <h2>List Mode (No Vertical Borders)</h2>
 
             <snice-table
                 id="list-table"
                 list
                 hoverable
-                striped>
+                striped
+                searchable>
 
                 <snice-column
                     slot="columns"
@@ -475,42 +440,6 @@
                     type="status"
                     align="center">
                 </snice-column>
-
-                <snice-row slot="rows"
-                    data-title="Implement user authentication"
-                    data-assignee="John Smith"
-                    data-priority="High"
-                    data-progress="85"
-                    data-status="online">
-                </snice-row>
-                <snice-row slot="rows"
-                    data-title="Design landing page"
-                    data-assignee="Sarah Johnson"
-                    data-priority="Medium"
-                    data-progress="60"
-                    data-status="busy">
-                </snice-row>
-                <snice-row slot="rows"
-                    data-title="API integration"
-                    data-assignee="Mike Davis"
-                    data-priority="High"
-                    data-progress="40"
-                    data-status="away">
-                </snice-row>
-                <snice-row slot="rows"
-                    data-title="Write documentation"
-                    data-assignee="Emily Chen"
-                    data-priority="Low"
-                    data-progress="20"
-                    data-status="offline">
-                </snice-row>
-                <snice-row slot="rows"
-                    data-title="Code review"
-                    data-assignee="John Smith"
-                    data-priority="Medium"
-                    data-progress="100"
-                    data-status="online">
-                </snice-row>
             </snice-table>
         </div>
 
@@ -521,6 +450,9 @@
         import './demo-table-controller.ts';
         // Then import the table component
         import './snice-table.ts';
+        // Import column and row components for declarative syntax
+        import './snice-column.ts';
+        import './snice-row.ts';
         // Import new cell types directly for testing
         import './snice-cell-link.ts';
         import './snice-cell-actions.ts';
@@ -662,21 +594,76 @@
             alert(`Action: ${e.detail.action}\nRow data: ${JSON.stringify(e.detail.rowData, null, 2)}`);
         });
 
-        // Listen for row clicks on complete table
-        const completeTable = document.getElementById('complete-table');
-        if (completeTable) {
-            completeTable.addEventListener('@snice/row-click', (e) => {
-                console.log('Complete table row clicked:', e.detail);
-            });
-        }
+        // Load data for complete table (wait for table to be ready)
+        setTimeout(() => {
+            const completeTable = document.getElementById('complete-table');
+            if (completeTable) {
+                completeTable.addEventListener('@snice/row-click', (e) => {
+                    console.log('Complete table row clicked:', e.detail);
+                });
 
-        // Listen for row clicks on list table
-        const listTable = document.getElementById('list-table');
-        if (listTable) {
-            listTable.addEventListener('@snice/row-click', (e) => {
-                console.log('List table row clicked:', e.detail);
-            });
-        }
+                // Load data with new cell types
+                const completeData = [
+                {
+                    avatar: 'https://i.pravatar.cc/40?img=1',
+                    name: 'John Smith',
+                    email: 'john.smith@company.com',
+                    phone: '+1-555-0101',
+                    status: 'online',
+                    skills: 'JavaScript,React,TypeScript',
+                    salary: 95000
+                },
+                {
+                    avatar: 'https://i.pravatar.cc/40?img=5',
+                    name: 'Sarah Johnson',
+                    email: 'sarah.j@company.com',
+                    phone: '+1-555-0102',
+                    status: 'busy',
+                    skills: 'Python,Django,PostgreSQL',
+                    salary: 105000
+                },
+                {
+                    avatar: 'https://i.pravatar.cc/40?img=8',
+                    name: 'Mike Davis',
+                    email: 'mike.davis@company.com',
+                    phone: '+1-555-0103',
+                    status: 'away',
+                    skills: 'Java,Spring,AWS',
+                    salary: 110000
+                },
+                {
+                    avatar: 'https://i.pravatar.cc/40?img=9',
+                    name: 'Emily Chen',
+                    email: 'emily.chen@company.com',
+                    phone: '+1-555-0104',
+                    status: 'offline',
+                    skills: 'Go,Kubernetes,Docker',
+                    salary: 115000
+                }
+            ];
+
+                completeTable.setData(completeData);
+            }
+
+            // Load data for list table
+            const listTable = document.getElementById('list-table');
+            if (listTable) {
+                listTable.addEventListener('@snice/row-click', (e) => {
+                    console.log('List table row clicked:', e.detail);
+                });
+
+                // Load task data for list mode demo
+                const listData = [
+                { title: 'Update user authentication', assignee: 'John Smith', priority: 'High', progress: 75, status: 'online' },
+                { title: 'Fix payment gateway bug', assignee: 'Sarah Johnson', priority: 'Critical', progress: 90, status: 'busy' },
+                { title: 'Design new dashboard', assignee: 'Mike Davis', priority: 'Medium', progress: 45, status: 'away' },
+                { title: 'Write API documentation', assignee: 'Emily Chen', priority: 'Low', progress: 30, status: 'offline' },
+                { title: 'Optimize database queries', assignee: 'John Smith', priority: 'High', progress: 60, status: 'online' }
+            ];
+
+                listTable.setData(listData);
+            }
+        }, 100);
 
         // Uncomment to load sample data programmatically:
         // setTimeout(() => {

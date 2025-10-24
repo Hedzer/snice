@@ -346,13 +346,17 @@ export function applyStyles(element: HTMLElement): void {
       element.attachShadow({ mode: 'open' });
     }
 
+    // Create base styles for meta elements (if, case)
+    const baseStyleSheet = new CSSStyleSheet();
+    baseStyleSheet.replaceSync('if, case { display: contents; }');
+
     // Try to use constructable stylesheets for better performance
     if (element.shadowRoot && result.styleSheet && 'adoptedStyleSheets' in element.shadowRoot) {
-      element.shadowRoot.adoptedStyleSheets = [result.styleSheet];
+      element.shadowRoot.adoptedStyleSheets = [baseStyleSheet, result.styleSheet];
     } else if (element.shadowRoot) {
       // Fallback to <style> tag
       const style = document.createElement('style');
-      style.textContent = result.cssText;
+      style.textContent = 'if, case { display: contents; }\n' + result.cssText;
       element.shadowRoot.appendChild(style);
     }
   } catch (error) {

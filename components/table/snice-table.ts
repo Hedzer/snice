@@ -1,4 +1,5 @@
 import { element, property, query, request, dispatch, watch, render, styles, html, css, ready } from 'snice';
+import { RENDER_METHOD } from '../../src/symbols';
 import '../input/snice-input';
 import '../select/snice-select';
 import './snice-cell.ts';
@@ -36,11 +37,19 @@ export class SniceTable extends HTMLElement {
   @property({ type: Boolean,  attribute: 'list' })
   list = false;
 
-  @property({ type: Array, attribute: 'columns' })
+  // Plain properties - no reflection to attributes
   columns: any[] = [];
-
-  @property({ type: Array, attribute: 'data' })
   data: any[] = [];
+
+  setData(data: any[]) {
+    this.data = data;
+    this.requestUpdate();
+  }
+
+  setColumns(columns: any[]) {
+    this.columns = columns;
+    this.requestUpdate();
+  }
 
   @property({ type: Array, attribute: 'current-sort' })
   currentSort: Array<{ column: string, direction: 'asc' | 'desc' }> = [];
@@ -293,54 +302,170 @@ export class SniceTable extends HTMLElement {
         padding: var(--snice-spacing-lg);
         color: var(--snice-color-text-secondary);
       }
+
+      /* Slotted table layout */
+      .snice-table--slotted {
+        border: 1px solid var(--snice-color-border);
+        border-radius: var(--snice-border-radius-lg);
+        overflow: hidden;
+      }
+
+      .snice-table--slotted .table-header {
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: 1fr;
+        background-color: var(--snice-color-background-secondary);
+        border-bottom: 2px solid var(--snice-color-border);
+        padding: var(--snice-spacing-sm);
+        font-weight: var(--snice-font-weight-semibold);
+      }
+
+      .snice-table--slotted .table-header::slotted(snice-column) {
+        padding: var(--snice-spacing-sm);
+      }
+
+      .snice-table--slotted .table-body {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .snice-table--slotted .table-body::slotted(snice-row) {
+        border-bottom: 1px solid var(--snice-color-border);
+      }
+
+      .snice-table--slotted .table-body::slotted(snice-row:last-child) {
+        border-bottom: none;
+      }
+
+      :host([striped]) .snice-table--slotted .table-body::slotted(snice-row:nth-child(even)) {
+        background-color: var(--snice-color-background-secondary);
+      }
+
+      :host([hoverable]) .snice-table--slotted .table-body::slotted(snice-row:hover) {
+        background-color: var(--snice-color-background-tertiary);
+      }
     `;
   }
 
   @render()
   renderContent() {
-    return html/*html*/`
-      <div class="snice-table" @click=${this.handleClick} @change=${this.handleChange}>
-        ${this.renderControls()}
-        <table>
-          <thead></thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    `;
+    // Check if we have slotted rows
+    const hasSlottedRows = this.querySelectorAll('snice-row[slot="rows"]').length > 0;
+
+    if (hasSlottedRows) {
+      // Use slotted rows layout
+      return html/*html*/`
+        <div class="snice-table snice-table--slotted" @click=${this.handleClick} @change=${this.handleChange}>
+          ${this.renderControls()}
+          <div class="table-header" id="slotted-header"></div>
+          <div class="table-body">
+            <slot name="rows"></slot>
+          </div>
+          <slot name="columns" style="display: none;"></slot>
+        </div>
+      `;
+    } else {
+      // Use traditional table layout
+      return html/*html*/`
+        <div class="snice-table" @click=${this.handleClick} @change=${this.handleChange}>
+          ${this.renderControls()}
+          <table>
+            <thead></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      `;
+    }
   }
 
   renderControls() {
+    const showControls = this.searchable || this.filterable;
+    if (!showControls) return html``;
+
     return html/*html*/`
       <div class="table-controls" part="controls">
-        <snice-input
-          class="search-input"
-          type="search"
-          placeholder="Search..."
-          .value=${this.searchText}
-          size="medium"
-          @input=${this.handleSearchInput}
-        ></snice-input>
-        <snice-select
-          class="selector-input"
-          multiple
-          searchable
-          clearable
-          placeholder="Filter..."
-          size="medium"
-          @change=${this.handleSelectorChange}
-        >
-          ${this.selectorOptions.map(opt =>
-            html/*html*/`<snice-option value="${opt.value}">${opt.label}</snice-option>`
-          )}
-        </snice-select>
+        <if ${this.searchable}>
+          <snice-input
+            class="search-input"
+            type="search"
+            placeholder="Search..."
+            .value=${this.searchText}
+            size="medium"
+            @input=${this.handleSearchInput}
+          ></snice-input>
+        </if>
+        <if ${this.filterable}>
+          <snice-select
+            class="selector-input"
+            multiple
+            searchable
+            clearable
+            placeholder="Filter..."
+            size="medium"
+            @change=${this.handleSelectorChange}
+          >
+            ${this.selectorOptions.map(opt =>
+              html/*html*/`<snice-option value="${opt.value}">${opt.label}</snice-option>`
+            )}
+          </snice-select>
+        </if>
       </div>
     `;
   }
 
   @ready()
-  initialize() {
+  async initialize() {
     // Listen for controller attached event
     this.addEventListener('@snice/controller-attached', this.onAttached as EventListener);
+
+    // Wait for snice-column to be defined
+    await customElements.whenDefined('snice-column');
+    await customElements.whenDefined('snice-row');
+
+    // Process slotted columns and rows
+    await this.processSlottedContent();
+  }
+
+  private async processSlottedContent() {
+    // Get slotted column elements
+    const columnElements = Array.from(this.querySelectorAll('snice-column[slot="columns"]')) as any[];
+
+    if (columnElements.length > 0) {
+      // Extract column definitions from snice-column elements
+      this.columns = columnElements.map((col: any) => col.getColumnDefinition());
+      console.log('Extracted columns from slotted elements:', this.columns);
+
+      // Pass column definitions to slotted rows
+      const rowElements = Array.from(this.querySelectorAll('snice-row[slot="rows"]')) as any[];
+      rowElements.forEach((row: any, index: number) => {
+        row.columns = this.columns;
+        row.index = index;
+        row.hoverable = this.hoverable;
+        row.clickable = this.clickable;
+        row.selectable = this.selectable;
+      });
+
+      console.log('Configured', rowElements.length, 'slotted rows with columns');
+
+      // Force re-render with the correct layout for slotted mode
+      const renderMethod = (this as any)[RENDER_METHOD];
+      if (renderMethod) {
+        renderMethod.call(this);
+      }
+
+      // Render the header for slotted mode (after next tick to ensure DOM is updated)
+      requestAnimationFrame(() => this.renderSlottedHeader());
+    }
+  }
+
+  private renderSlottedHeader() {
+    const headerContainer = this.shadowRoot?.querySelector('#slotted-header');
+    if (!headerContainer || this.columns.length === 0) return;
+
+    // Render column headers
+    headerContainer.innerHTML = this.columns.map(col =>
+      `<div class="header-cell">${col.label}</div>`
+    ).join('');
   }
 
   render() {
