@@ -13,7 +13,9 @@
 # - Show code changes, not lengthy descriptions.
 # - No unnecessary commentary or play-by-play narration.
 
-# For API reference, always use docs/ai/ (token-efficient) instead of docs/ (human-friendly)
+# Development guidelines:
+# - READ all files in .ai/ folder for development standards and guides
+# - For API reference, always use docs/ai/ (token-efficient) instead of docs/ (human-friendly)
 
 # Before creating new files or directories, USE Glob to examine the existing repository structure
 # Look at how similar files are organized to follow the established patterns

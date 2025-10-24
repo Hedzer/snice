@@ -141,8 +141,8 @@ export class SniceTable extends HTMLElement {
       }
 
       .snice-table {
-        border-collapse: collapse;
         width: 100%;
+        overflow: auto;
       }
 
       table {
@@ -150,7 +150,6 @@ export class SniceTable extends HTMLElement {
         border-collapse: separate;
         border-spacing: 0;
         border-radius: var(--snice-border-radius-lg);
-        overflow: hidden;
         border: 1px solid var(--snice-color-border);
       }
 
@@ -159,6 +158,17 @@ export class SniceTable extends HTMLElement {
         border: 1px solid var(--snice-color-border);
         text-align: left;
         color: var(--snice-color-text);
+        max-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      th.select-column,
+      td.select-column {
+        width: 2.5rem;
+        max-width: 2.5rem;
+        text-align: center;
+        padding: var(--snice-spacing-xs);
       }
 
       th {
@@ -537,6 +547,7 @@ export class SniceTable extends HTMLElement {
     
     if (this.selectable) {
       const selectCell = document.createElement('th');
+      selectCell.className = 'select-column';
       const allSelected = this.selectedRows.length === this.data.length && this.data.length > 0;
       const someSelected = this.selectedRows.length > 0 && this.selectedRows.length < this.data.length;
       selectCell.innerHTML = `<input type="checkbox" class="select-all" ${allSelected ? 'checked' : ''} />`;
@@ -645,6 +656,7 @@ export class SniceTable extends HTMLElement {
       
       if (this.selectable) {
         const selectCell = document.createElement('td');
+        selectCell.className = 'select-column';
         selectCell.innerHTML = `<input type="checkbox" class="row-select" ${isSelected ? 'checked' : ''} data-row-index="${index}" />`;
         tr.appendChild(selectCell);
       }
