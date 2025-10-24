@@ -12,5 +12,6 @@ Token-efficient reference docs for AI assistants. Same content as human docs, mi
 - `api.md` - Complete API reference
 - `patterns.md` - Common usage patterns
 - `architecture.md` - System design
+- `components/*.md` - Component reference, if asked to build using a component
 
 Read these instead of `/docs/*.md` for faster context loading.
