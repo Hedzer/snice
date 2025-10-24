@@ -1,4 +1,4 @@
-# Snice v3.0.0
+# Snice
 
 > **AI Assistants:** For token-efficient documentation, read [docs/ai/](./docs/ai/) instead. Same content, 70% fewer tokens.
 
@@ -12,49 +12,19 @@ cd my-app
 npm run dev
 ```
 
-## Philosophy: Sustainable Architecture Through Separation of Concerns
+## Philosophy
 
-Most frameworks separate code by technology: HTML, CSS, JavaScript. Snice separates by **concerns of governance and data flow**. This shepherds you toward sustainable development by providing tools that encourage good practices.
+Without structure, you'll end up with auth checks mixed in rendering logic, business rules duplicated across components, and data fetching scattered in event handlers. **Snice provides constructs that guide you to put code where it belongs, keeping you productive as your app grows.**
 
-### The Snice Architecture
+- **Pages fetch data and assemble UI** - They understand what the user wants to do
+- **Elements handle visuals only** - They don't know or care about business logic
+- **Controllers let you swap behavior** - Same UI, different data sources or logic
+- **Cross-cutting concerns stay separate** - Auth, routing, and global state don't leak into your components
 
-Every application has four distinct concerns:
+Yes, global state is bad! but you will have a little always, and it should be managed well.
+Usually we see auth/principals, themes, and localization as global state examples.
 
-**1. Cross-Cutting Concerns** - Global state and navigation
-- Authentication/principal
-- Theming and preferences
-- Routing and navigation
-- Application-wide configuration
-
-**2. Pages** - Code that handles human intent
-- Understand what the user is trying to accomplish
-- Orchestrate atomic elements to fulfill that intent
-- Handle page-level data fetching and coordination
-- Map URL parameters to user goals
-
-**3. Elements** - Pure presentation
-- Display data, nothing more
-- No understanding of business logic or user intent
-- Completely reusable across different contexts
-- Concerned only with how things look and visual behaviors
-
-**4. Controllers** - Behavior and data management
-- Handle server communication and data fetching when applicable
-- Manage complex business logic when pages get too large
-- Enable behavior swapping (A/B testing, feature flags)
-- Clear separation of presentation from behavior
-
-This architecture ensures **pages orchestrate**, **elements present**, and **controllers behave**. Data flows down, events flow up, and every piece knows only what it needs to know.
-
-## Why This Matters
-
-Traditional component architectures blur these lines. A "UserProfile" component might handle routing, authentication, API calls, and rendering. When requirements change, you can't swap behavior without touching presentation. When you need to reuse the UI, you can't because it's coupled to specific business logic.
-
-Snice encourages boundaries:
-- Want different behavior? Swap the controller, keep the element
-- Need to reuse UI? Elements don't know about your business logic
-- Debugging data flow? Follow the clear page → element → controller boundaries
-- Onboarding new developers? The architecture guides them to the right place
+Each piece hints at where your code should live, preventing the mess that kills velocity on larger teams.
 
 ## The Tools
 
@@ -63,7 +33,7 @@ Snice provides decorators and utilities that map directly to these architectural
 ### 1. Cross-Cutting Concerns: Router + Context
 
 ```typescript
-// app-context.ts
+// sample-app-context.ts
 class AppContext {
   user: User | null = null;
   theme: 'light' | 'dark' = 'light';
