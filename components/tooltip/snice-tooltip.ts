@@ -265,7 +265,8 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
   }
 
   toggle() {
-    if (!this.portalElement || this.portalElement.style.display === 'none') {
+    const isVisible = this.portalElement?.classList.contains('snice-tooltip--visible');
+    if (!isVisible) {
       this.show();
     } else {
       this.hide();

@@ -42,16 +42,19 @@ export interface ContextOptions {
 export function context(options: ContextOptions = {}) {
   return function (originalMethod: any, context: ClassMethodDecoratorContext) {
     const methodName = context.name as string;
+    const initKey = `__context_init_${methodName}`;
 
     context.addInitializer(function (this: any) {
       const constructor = this.constructor as any;
 
-      // Store handler metadata on the prototype
-      if (!constructor.prototype[CONTEXT_HANDLERS]) {
-        constructor.prototype[CONTEXT_HANDLERS] = [];
+      if (constructor[initKey]) return;
+      constructor[initKey] = true;
+
+      if (!constructor[CONTEXT_HANDLERS]) {
+        constructor[CONTEXT_HANDLERS] = [];
       }
 
-      constructor.prototype[CONTEXT_HANDLERS].push({
+      constructor[CONTEXT_HANDLERS].push({
         methodName,
         method: originalMethod,
         options,
@@ -67,7 +70,7 @@ export function context(options: ContextOptions = {}) {
  * Called automatically during element connection
  */
 export function setupContextHandler(element: HTMLElement) {
-  const handlers = (element.constructor as any).prototype[CONTEXT_HANDLERS];
+  const handlers = (element.constructor as any)[CONTEXT_HANDLERS];
   if (!handlers || !Array.isArray(handlers) || handlers.length === 0) {
     return;
   }
@@ -139,7 +142,7 @@ export function setupContextHandler(element: HTMLElement) {
  * Called automatically during element disconnection
  */
 export function cleanupContextHandler(element: HTMLElement) {
-  const handlers = (element.constructor as any).prototype[CONTEXT_HANDLERS];
+  const handlers = (element.constructor as any)[CONTEXT_HANDLERS];
   if (!handlers || !Array.isArray(handlers) || handlers.length === 0) {
     return;
   }

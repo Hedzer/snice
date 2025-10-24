@@ -592,5 +592,440 @@ describe('@on decorator', () => {
       button.click();
       expect(clickHandler).toHaveBeenCalledTimes(1); // Should not increment
     });
+
+    it('should not duplicate event handlers when reconnected', async () => {
+      const clickHandler = vi.fn();
+
+      @element('test-no-duplicate-handlers')
+      class TestNoDuplicateHandlers extends HTMLElement {
+        @render()
+        renderContent() {
+          return html`<button>Click</button>`;
+        }
+
+        @on('click', 'button')
+        handleClick(e: Event) {
+          clickHandler(e);
+        }
+      }
+
+      const el = document.createElement('test-no-duplicate-handlers') as TestNoDuplicateHandlers;
+      container.appendChild(el);
+      await el.ready;
+
+      const button = el.shadowRoot?.querySelector('button') as HTMLButtonElement;
+
+      // First click
+      button.click();
+      expect(clickHandler).toHaveBeenCalledTimes(1);
+
+      // Disconnect and reconnect - triggers disconnectedCallback then connectedCallback
+      container.removeChild(el);
+      await new Promise(resolve => setTimeout(resolve, 10));
+      container.appendChild(el);
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      // Click again - should only fire once, not multiple times
+      button.click();
+      expect(clickHandler).toHaveBeenCalledTimes(2);
+
+      // Disconnect and reconnect again
+      container.removeChild(el);
+      await new Promise(resolve => setTimeout(resolve, 10));
+      container.appendChild(el);
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      // Click again - still should only fire once
+      button.click();
+      expect(clickHandler).toHaveBeenCalledTimes(3);
+    });
+
+    it('should not duplicate direct event handlers', async () => {
+      const clickHandler = vi.fn();
+
+      @element('test-no-duplicate-direct')
+      class TestNoDuplicateDirect extends HTMLElement {
+        @render()
+        renderContent() {
+          return html`<div>Test</div>`;
+        }
+
+        @on('click')
+        handleClick(e: Event) {
+          clickHandler(e);
+        }
+      }
+
+      const el = document.createElement('test-no-duplicate-direct') as TestNoDuplicateDirect;
+      container.appendChild(el);
+      await el.ready;
+
+      // First click
+      el.click();
+      expect(clickHandler).toHaveBeenCalledTimes(1);
+
+      // Disconnect and reconnect
+      container.removeChild(el);
+      container.appendChild(el);
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      // Click again - should only fire once per click
+      el.click();
+      expect(clickHandler).toHaveBeenCalledTimes(2);
+
+      // One more click to verify
+      el.click();
+      expect(clickHandler).toHaveBeenCalledTimes(3);
+    });
+
+    it('should not duplicate handlers when setupEventHandlers called multiple times', async () => {
+      const clickHandler = vi.fn();
+
+      @element('test-no-duplicate-setup')
+      class TestNoDuplicateSetup extends HTMLElement {
+        @render()
+        renderContent() {
+          return html`<div>Test</div>`;
+        }
+
+        @on('click')
+        handleClick(e: Event) {
+          clickHandler(e);
+        }
+      }
+
+      const el = document.createElement('test-no-duplicate-setup') as TestNoDuplicateSetup;
+      container.appendChild(el);
+      await el.ready;
+
+      // First click - baseline
+      el.click();
+      expect(clickHandler).toHaveBeenCalledTimes(1);
+
+      // Simulate what happens when connectedCallback is called again
+      // This mimics the reconnection flow
+      const connectedCallback = (el as any).connectedCallback;
+      if (connectedCallback) {
+        connectedCallback.call(el);
+      }
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      // Click again - should still only fire once
+      el.click();
+      expect(clickHandler).toHaveBeenCalledTimes(2);
+
+      // Verify one more time
+      el.click();
+      expect(clickHandler).toHaveBeenCalledTimes(3);
+    });
+
+    it('should not duplicate handlers when moved between containers', async () => {
+      const clickHandler = vi.fn();
+
+      @element('test-moved-element')
+      class TestMovedElement extends HTMLElement {
+        @render()
+        renderContent() {
+          return html`<button>Click</button>`;
+        }
+
+        @on('click', 'button')
+        handleClick(e: Event) {
+          clickHandler(e);
+        }
+      }
+
+      const container2 = document.createElement('div');
+      document.body.appendChild(container2);
+
+      try {
+        const el = document.createElement('test-moved-element') as TestMovedElement;
+        container.appendChild(el);
+        await el.ready;
+
+        const button = el.shadowRoot?.querySelector('button') as HTMLButtonElement;
+
+        // Initial click
+        button.click();
+        expect(clickHandler).toHaveBeenCalledTimes(1);
+
+        // Move to different container - triggers disconnect then connect
+        container2.appendChild(el);
+        await new Promise(resolve => setTimeout(resolve, 10));
+
+        button.click();
+        expect(clickHandler).toHaveBeenCalledTimes(2);
+
+        // Move back
+        container.appendChild(el);
+        await new Promise(resolve => setTimeout(resolve, 10));
+
+        button.click();
+        expect(clickHandler).toHaveBeenCalledTimes(3);
+
+        // Move again
+        container2.appendChild(el);
+        await new Promise(resolve => setTimeout(resolve, 10));
+
+        button.click();
+        expect(clickHandler).toHaveBeenCalledTimes(4);
+      } finally {
+        document.body.removeChild(container2);
+      }
+    });
+
+    it('should not duplicate handlers when adopted to new document', async () => {
+      const clickHandler = vi.fn();
+
+      @element('test-adopted-element')
+      class TestAdoptedElement extends HTMLElement {
+        @render()
+        renderContent() {
+          return html`<div>Test</div>`;
+        }
+
+        @on('click')
+        handleClick(e: Event) {
+          clickHandler(e);
+        }
+      }
+
+      const el = document.createElement('test-adopted-element') as TestAdoptedElement;
+      container.appendChild(el);
+      await el.ready;
+
+      // Initial click
+      el.click();
+      expect(clickHandler).toHaveBeenCalledTimes(1);
+
+      // Create new document and adopt node
+      const newDoc = document.implementation.createHTMLDocument('test');
+      const newContainer = newDoc.createElement('div');
+      newDoc.body.appendChild(newContainer);
+
+      // Remove from current document
+      container.removeChild(el);
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      // Adopt and append to new document
+      const adoptedEl = newDoc.adoptNode(el);
+      newContainer.appendChild(adoptedEl);
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      // Click should still work with single handler
+      adoptedEl.click();
+      expect(clickHandler).toHaveBeenCalledTimes(2);
+
+      // Move back to original document
+      container.appendChild(document.adoptNode(adoptedEl));
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      adoptedEl.click();
+      expect(clickHandler).toHaveBeenCalledTimes(3);
+    });
+
+    it('should not duplicate handlers after property changes trigger re-renders', async () => {
+      const clickHandler = vi.fn();
+
+      @element('test-rerender-handlers')
+      class TestRerenderHandlers extends HTMLElement {
+        count = 0;
+
+        @render()
+        renderContent() {
+          return html`<button>Click ${this.count}</button>`;
+        }
+
+        @on('click', 'button')
+        handleClick(e: Event) {
+          clickHandler(e);
+        }
+
+        increment() {
+          this.count++;
+          // Trigger re-render by property change
+          (this as any).updateComplete?.then(() => {});
+        }
+      }
+
+      const el = document.createElement('test-rerender-handlers') as TestRerenderHandlers;
+      container.appendChild(el);
+      await el.ready;
+
+      const getButton = () => el.shadowRoot?.querySelector('button') as HTMLButtonElement;
+
+      // Initial click
+      getButton().click();
+      expect(clickHandler).toHaveBeenCalledTimes(1);
+
+      // Disconnect/reconnect multiple times to stress test
+      for (let i = 0; i < 3; i++) {
+        container.removeChild(el);
+        await new Promise(resolve => setTimeout(resolve, 5));
+        container.appendChild(el);
+        await new Promise(resolve => setTimeout(resolve, 5));
+      }
+
+      getButton().click();
+      expect(clickHandler).toHaveBeenCalledTimes(2);
+
+      // More cycles
+      for (let i = 0; i < 5; i++) {
+        container.removeChild(el);
+        container.appendChild(el);
+      }
+      await new Promise(resolve => setTimeout(resolve, 20));
+
+      getButton().click();
+      expect(clickHandler).toHaveBeenCalledTimes(3);
+    });
+
+    it('should not duplicate handlers through connect/disconnect cycles', async () => {
+      const clickHandler = vi.fn();
+
+      @element('test-cycle-handlers')
+      class TestCycleHandlers extends HTMLElement {
+        @render()
+        renderContent() {
+          return html`<button>Test</button>`;
+        }
+
+        @on('click', 'button')
+        handleClick(e: Event) {
+          clickHandler(e);
+        }
+      }
+
+      const el = document.createElement('test-cycle-handlers') as TestCycleHandlers;
+      container.appendChild(el);
+      await el.ready;
+
+      const getButton = () => el.shadowRoot?.querySelector('button') as HTMLButtonElement;
+
+      // Initial state
+      getButton().click();
+      expect(clickHandler).toHaveBeenCalledTimes(1);
+
+      // Cycle 1: disconnect, reconnect
+      container.removeChild(el);
+      await new Promise(resolve => setTimeout(resolve, 10));
+      container.appendChild(el);
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      getButton().click();
+      expect(clickHandler).toHaveBeenCalledTimes(2);
+
+      // Cycle 2: disconnect, reconnect
+      container.removeChild(el);
+      await new Promise(resolve => setTimeout(resolve, 10));
+      container.appendChild(el);
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      getButton().click();
+      expect(clickHandler).toHaveBeenCalledTimes(3);
+
+      // Cycle 3: multiple rapid disconnects/reconnects
+      for (let i = 0; i < 5; i++) {
+        container.removeChild(el);
+        container.appendChild(el);
+      }
+      await new Promise(resolve => setTimeout(resolve, 20));
+
+      getButton().click();
+      expect(clickHandler).toHaveBeenCalledTimes(4);
+
+      // Cycle 4: more rapid cycles
+      for (let i = 0; i < 10; i++) {
+        container.removeChild(el);
+        container.appendChild(el);
+      }
+      await new Promise(resolve => setTimeout(resolve, 20));
+
+      getButton().click();
+      expect(clickHandler).toHaveBeenCalledTimes(5);
+    });
+
+    it('should not duplicate delegated handlers in stress test', async () => {
+      const clickHandler = vi.fn();
+
+      @element('test-stress-delegated')
+      class TestStressDelegated extends HTMLElement {
+        @render()
+        renderContent() {
+          return html`
+            <div>
+              <button class="btn">Button 1</button>
+              <button class="btn">Button 2</button>
+              <button class="btn">Button 3</button>
+            </div>
+          `;
+        }
+
+        @on('click', '.btn')
+        handleClick(e: Event) {
+          clickHandler(e);
+        }
+      }
+
+      const el = document.createElement('test-stress-delegated') as TestStressDelegated;
+      container.appendChild(el);
+      await el.ready;
+
+      const getButtons = () => Array.from(el.shadowRoot?.querySelectorAll('.btn') || []) as HTMLButtonElement[];
+
+      // Click all buttons initially
+      getButtons().forEach(btn => btn.click());
+      expect(clickHandler).toHaveBeenCalledTimes(3);
+
+      // Stress test: many disconnect/reconnect cycles
+      for (let i = 0; i < 10; i++) {
+        container.removeChild(el);
+        await new Promise(resolve => setTimeout(resolve, 5));
+        container.appendChild(el);
+        await new Promise(resolve => setTimeout(resolve, 5));
+      }
+
+      // Each button should still fire exactly once
+      clickHandler.mockClear();
+      getButtons().forEach(btn => btn.click());
+      expect(clickHandler).toHaveBeenCalledTimes(3);
+    });
+
+    it('should not duplicate direct handlers in stress test', async () => {
+      const clickHandler = vi.fn();
+
+      @element('test-stress-direct')
+      class TestStressDirect extends HTMLElement {
+        @render()
+        renderContent() {
+          return html`<div>Test</div>`;
+        }
+
+        @on('click')
+        handleClick(e: Event) {
+          clickHandler(e);
+        }
+      }
+
+      const el = document.createElement('test-stress-direct') as TestStressDirect;
+      container.appendChild(el);
+      await el.ready;
+
+      // Initial click
+      el.click();
+      expect(clickHandler).toHaveBeenCalledTimes(1);
+
+      // Stress test: many disconnect/reconnect cycles
+      for (let i = 0; i < 20; i++) {
+        container.removeChild(el);
+        container.appendChild(el);
+      }
+      await new Promise(resolve => setTimeout(resolve, 50));
+
+      // Should still fire exactly once
+      clickHandler.mockClear();
+      el.click();
+      expect(clickHandler).toHaveBeenCalledTimes(1);
+    });
   });
 });

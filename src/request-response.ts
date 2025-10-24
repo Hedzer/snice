@@ -167,17 +167,19 @@ export function request<T = any>(requestName: string, options?: RequestOptions) 
 export function respond(requestName: string, options?: RespondOptions) {
   return function (target: any, context: ClassMethodDecoratorContext) {
     const propertyKey = context.name as string;
+    const initKey = `__respond_init_${requestName}_${propertyKey}`;
 
     context.addInitializer(function(this: any) {
       const constructor = this.constructor as any;
 
-      // Store response metadata on the prototype
-      // This will be picked up by setupResponseHandlers
-      if (!constructor.prototype[CHANNEL_HANDLERS]) {
-        constructor.prototype[CHANNEL_HANDLERS] = [];
+      if (constructor[initKey]) return;
+      constructor[initKey] = true;
+
+      if (!constructor[CHANNEL_HANDLERS]) {
+        constructor[CHANNEL_HANDLERS] = [];
       }
 
-      constructor.prototype[CHANNEL_HANDLERS].push({
+      constructor[CHANNEL_HANDLERS].push({
         channelName: requestName,
         methodName: propertyKey,
         method: target,
@@ -189,7 +191,7 @@ export function respond(requestName: string, options?: RespondOptions) {
 
 // Helper to setup response handlers for elements and controllers
 export function setupResponseHandlers(instance: any, element: HTMLElement) {
-  const handlers = instance.constructor.prototype[CHANNEL_HANDLERS];
+  const handlers = instance.constructor[CHANNEL_HANDLERS];
   if (!handlers) return;
   
   // Store cleanup functions

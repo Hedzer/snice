@@ -39,25 +39,27 @@ export function observe(observeTarget: string | string[], selectorOrOptions?: st
   
   return function (target: any, context: ClassMethodDecoratorContext) {
     const propertyKey = context.name as string;
+    const initKey = `__observe_init_${propertyKey}`;
 
     context.addInitializer(function(this: any) {
       const constructor = this.constructor as any;
 
-      // Store observer metadata
-      if (!constructor.prototype[OBSERVERS]) {
-        constructor.prototype[OBSERVERS] = [];
+      if (constructor[initKey]) return;
+      constructor[initKey] = true;
+
+      if (!constructor[OBSERVERS]) {
+        constructor[OBSERVERS] = [];
       }
-      // Normalize to array
+
       const observeTargets = Array.isArray(observeTarget) ? observeTarget : [observeTarget];
 
-      // Create an observer entry for each target
       for (const targetString of observeTargets) {
-        // Parse the observation type from the observeTarget string
         const [type, ...modifiers] = targetString.split(':');
+        const targetStr = modifiers.join(':');
 
-        constructor.prototype[OBSERVERS].push({
+        constructor[OBSERVERS].push({
           type,
-          target: modifiers.join(':'), // Rejoin for media queries or mutation types
+          target: targetStr,
           selector,
           methodName: propertyKey,
           method: target,
@@ -70,8 +72,7 @@ export function observe(observeTarget: string | string[], selectorOrOptions?: st
 
 // Helper to setup observers for elements
 export function setupObservers(instance: any, element: HTMLElement) {
-  // Only check the prototype, not the instance itself to avoid property access issues
-  const observers = instance.constructor.prototype[OBSERVERS];
+  const observers = instance.constructor[OBSERVERS];
   if (!observers || !Array.isArray(observers) || observers.length === 0) {
     return;
   }

@@ -735,15 +735,18 @@ export function queryAll(selector: string, options: QueryOptions = {}) {
 export function watch(...propertyNames: string[]) {
   return function (target: any, context: ClassMethodDecoratorContext) {
     const methodName = context.name as string;
+    const initKey = `__watch_init_${methodName}`;
 
     context.addInitializer(function(this: any) {
       const constructor = this.constructor as any;
+
+      if (constructor[initKey]) return;
+      constructor[initKey] = true;
 
       if (!constructor[PROPERTY_WATCHERS]) {
         constructor[PROPERTY_WATCHERS] = new Map();
       }
 
-      // Store the watcher method for each property
       for (const propertyName of propertyNames) {
         if (!constructor[PROPERTY_WATCHERS].has(propertyName)) {
           constructor[PROPERTY_WATCHERS].set(propertyName, []);
@@ -835,9 +838,13 @@ export function context() {
 export function ready() {
   return function (target: any, context: ClassMethodDecoratorContext) {
     const methodName = context.name as string;
+    const initKey = `__ready_init_${methodName}`;
 
     context.addInitializer(function(this: any) {
       const constructor = this.constructor as any;
+
+      if (constructor[initKey]) return;
+      constructor[initKey] = true;
 
       if (!constructor[READY_HANDLERS]) {
         constructor[READY_HANDLERS] = [];
@@ -858,9 +865,13 @@ export function ready() {
 export function dispose() {
   return function (target: any, context: ClassMethodDecoratorContext) {
     const methodName = context.name as string;
+    const initKey = `__dispose_init_${methodName}`;
 
     context.addInitializer(function(this: any) {
       const constructor = this.constructor as any;
+
+      if (constructor[initKey]) return;
+      constructor[initKey] = true;
 
       if (!constructor[DISPOSE_HANDLERS]) {
         constructor[DISPOSE_HANDLERS] = [];
@@ -881,9 +892,13 @@ export function dispose() {
 export function moved(options: MovedOptions = {}) {
   return function (originalMethod: any, context: ClassMethodDecoratorContext) {
     const methodName = context.name as string;
+    const initKey = `__moved_init_${methodName}`;
 
     context.addInitializer(function(this: any) {
       const constructor = this.constructor as any;
+
+      if (constructor[initKey]) return;
+      constructor[initKey] = true;
 
       if (!constructor[MOVED_HANDLERS]) {
         constructor[MOVED_HANDLERS] = [];

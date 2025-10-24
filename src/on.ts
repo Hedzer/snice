@@ -78,26 +78,28 @@ export function on(
 
   return function (originalMethod: any, context: ClassMethodDecoratorContext) {
     const methodName = context.name as string;
+    const initKey = `__on_init_${methodName}_${selector || ''}_${JSON.stringify(eventName)}`;
 
-    context.addInitializer(function (this: any) {
+    context.addInitializer(function(this: any) {
       const constructor = this.constructor as any;
 
-      // Store listener metadata
-      if (!constructor.prototype[ON_HANDLERS]) {
-        constructor.prototype[ON_HANDLERS] = [];
+      // Only initialize once per class, not per instance
+      if (constructor[initKey]) return;
+      constructor[initKey] = true;
+
+      if (!constructor[ON_HANDLERS]) {
+        constructor[ON_HANDLERS] = [];
       }
 
-      // Normalize to array
       const eventNames = Array.isArray(eventName) ? eventName : [eventName];
 
-      // Create a handler entry for each event
       for (const event of eventNames) {
-        constructor.prototype[ON_HANDLERS].push({
+        constructor[ON_HANDLERS].push({
           eventName: event,
           selector,
           methodName,
           method: originalMethod,
-          options: opts,
+          options: opts
         });
       }
     });
@@ -164,7 +166,7 @@ const NON_BUBBLING_EVENTS = new Set([
  * Called automatically during element connection or controller attachment
  */
 export function setupEventHandlers(instance: any, targetElement: HTMLElement) {
-  const handlers = instance.constructor.prototype[ON_HANDLERS];
+  const handlers = instance.constructor[ON_HANDLERS];
   if (!handlers || !Array.isArray(handlers) || handlers.length === 0) {
     return;
   }
@@ -174,6 +176,9 @@ export function setupEventHandlers(instance: any, targetElement: HTMLElement) {
     instance[CLEANUP] = { events: [], channels: [], observers: [] };
   } else if (!instance[CLEANUP].events) {
     instance[CLEANUP].events = [];
+  } else if (instance[CLEANUP].events.length > 0) {
+    // Events already set up - clean them up first to avoid duplicates
+    cleanupEventHandlers(instance);
   }
 
   for (const handler of handlers) {
