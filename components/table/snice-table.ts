@@ -737,6 +737,8 @@ export class SniceTable extends HTMLElement {
         return 'snice-cell-filesize';
       case 'sparkline':
         return 'snice-cell-sparkline';
+      case 'image':
+        return 'snice-cell-image';
       default:
         return 'snice-cell';
     }

@@ -396,6 +396,11 @@ export function applyElementFunctionality(constructor: any) {
                       }
                     }
                   }
+
+                  // Trigger auto-render on attribute change (same as property setter)
+                  if (this[RENDER_METHOD] && this[INITIALIZED]) {
+                    requestRender(this);
+                  }
                 }
               }
               break;

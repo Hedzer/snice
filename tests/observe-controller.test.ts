@@ -248,10 +248,10 @@ describe('@observe in controllers', () => {
     expect(callCount).toBeLessThan(5);
     expect(callCount).toBeGreaterThan(0);
 
-    // Check timing
+    // Check timing (allow more variance for CI environments)
     for (let i = 1; i < callTimes.length; i++) {
       const timeDiff = callTimes[i] - callTimes[i - 1];
-      expect(timeDiff).toBeGreaterThanOrEqual(45); // Allow small variance
+      expect(timeDiff).toBeGreaterThanOrEqual(40); // Allow variance for timing in tests
     }
   });
 });

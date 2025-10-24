@@ -1,17 +1,19 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { createComponent, removeComponent } from './components/test-utils';
-import '../components/table/snice-table';
-import type { SniceTableElement } from '../components/table/snice-table.types';
+import { createComponent, removeComponent } from './test-utils';
+import '../../components/table/snice-table';
+import type { SniceTableElement } from '../../components/table/snice-table.types';
 
 describe('Table Attribute Reflection', () => {
   let table: SniceTableElement;
 
-  beforeEach(() => {
-    table = createComponent('snice-table') as SniceTableElement;
+  beforeEach(async () => {
+    table = await createComponent<SniceTableElement>('snice-table');
   });
 
   afterEach(() => {
-    removeComponent(table);
+    if (table) {
+      removeComponent(table);
+    }
   });
 
   it('should not reflect data property to attribute', async () => {

@@ -47,16 +47,27 @@ export class SniceCellImage extends HTMLElement implements SniceCellElement {
     const loadingAttr = this.lazy ? 'lazy' : 'eager';
     const variantClass = `image--${this.variant}`;
     const sizeClass = `image--${this.size}`;
+    const classes = `cell-image ${variantClass} ${sizeClass}`;
 
-    const imageHTML = this.imageError && this.fallback
-      ? `<img src="${this.fallback}" alt="${imageAlt}" class="cell-image ${variantClass} ${sizeClass}" />`
-      : imageSrc
-      ? `<img src="${imageSrc}" alt="${imageAlt}" loading="${loadingAttr}" class="cell-image ${variantClass} ${sizeClass}" @error=${this.handleImageError} />`
-      : `<div class="cell-image cell-image--placeholder ${variantClass} ${sizeClass}"></div>`;
+    if (this.imageError && this.fallback) {
+      return html/*html*/`
+        <div class="cell-content cell-content--image" part="content">
+          <img src="${this.fallback}" alt="${imageAlt}" class="${classes}" />
+        </div>
+      `;
+    }
+
+    if (imageSrc) {
+      return html/*html*/`
+        <div class="cell-content cell-content--image" part="content">
+          <img src="${imageSrc}" alt="${imageAlt}" loading="${loadingAttr}" class="${classes}" @error=${this.handleImageError} />
+        </div>
+      `;
+    }
 
     return html/*html*/`
       <div class="cell-content cell-content--image" part="content">
-        ${unsafeHTML(imageHTML)}
+        <div class="${classes} cell-image--placeholder"></div>
       </div>
     `;
   }
@@ -71,7 +82,7 @@ export class SniceCellImage extends HTMLElement implements SniceCellElement {
     this.updateImageAttributes();
   }
 
-  @watch('value', 'column')
+  @watch('column')
   updateImageAttributes() {
     if (this.column?.imageFormat) {
       const format = this.column.imageFormat;
