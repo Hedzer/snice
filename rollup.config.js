@@ -24,7 +24,7 @@ const baseConfig = {
     typescript({
       tsconfig: './tsconfig.src.json',
       declaration: true,
-      declarationDir: './dist/types',
+      declarationDir: './dist',
       rootDir: './src'
     })
   ]
@@ -38,7 +38,7 @@ const createSubmoduleConfig = (name) => ({
     typescript({
       tsconfig: './tsconfig.src.json',
       declaration: true,
-      declarationDir: './dist/types',
+      declarationDir: './dist',
       rootDir: './src'
     })
   ]

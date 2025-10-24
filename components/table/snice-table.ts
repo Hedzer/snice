@@ -1,5 +1,4 @@
 import { element, property, query, request, dispatch, watch, render, styles, html, css, ready } from 'snice';
-import { RENDER_METHOD } from '../../src/symbols';
 import '../input/snice-input';
 import '../select/snice-select';
 import './snice-cell.ts';
@@ -22,6 +21,9 @@ export class SniceTable extends HTMLElement {
   @property({ type: Boolean,  attribute: 'searchable' })
   searchable = false;
 
+  @property({ type: Boolean,  attribute: 'filterable' })
+  filterable = false;
+
   @property({ type: Boolean,  attribute: 'sortable' })
   sortable = false;
 
@@ -43,18 +45,19 @@ export class SniceTable extends HTMLElement {
 
   setData(data: any[]) {
     this.data = data;
-    this.requestUpdate();
+    this.render();
   }
 
   setColumns(columns: any[]) {
     this.columns = columns;
-    this.requestUpdate();
+    this.render();
   }
 
   @property({ type: Array, attribute: 'current-sort' })
   currentSort: Array<{ column: string, direction: 'asc' | 'desc' }> = [];
 
-  @property({ type: String, attribute: 'search-text' })
+  // Don't use @property decorator to avoid auto-rendering on searchText change
+  // This would cause the input to lose focus while typing
   searchText: string = '';
 
   @property({ type: String, attribute: 'selector' })
@@ -78,6 +81,7 @@ export class SniceTable extends HTMLElement {
   @query('tbody')
   tbody!: HTMLTableSectionElement;
 
+
   @request('@snice/table/config')
   async *getTableConfig(): any {
     const config = await (yield {});
@@ -91,16 +95,14 @@ export class SniceTable extends HTMLElement {
   async *getTableData(): any {
     this.loading = true;
     this.selectedRows = []; // Clear selections when loading new data
-    
+
     try {
       const params = {
         search: this.searchText,
         sort: this.currentSort,
         selector: this.selector
       };
-      console.log('Requesting table data with params:', params);
       const response = await (yield params);
-      console.log('Received table data response:', response);
       this.data = response.data || [];
       this.loading = false;
       this.render();
@@ -247,13 +249,18 @@ export class SniceTable extends HTMLElement {
         display: none;
       }
 
+      .search-input,
+      .selector-input {
+        height: 2.5rem;
+      }
+
       .search-input {
-        min-width: 200px;
+        min-width: 12.5rem;
         flex: 1;
       }
 
       .selector-input {
-        min-width: 150px;
+        min-width: 9.375rem;
       }
 
       /* Sort indicators */
@@ -356,7 +363,7 @@ export class SniceTable extends HTMLElement {
       // Use slotted rows layout
       return html/*html*/`
         <div class="snice-table snice-table--slotted" @click=${this.handleClick} @change=${this.handleChange}>
-          ${this.renderControls()}
+          <div class="table-controls-container"></div>
           <div class="table-header" id="slotted-header"></div>
           <div class="table-body">
             <slot name="rows"></slot>
@@ -368,7 +375,7 @@ export class SniceTable extends HTMLElement {
       // Use traditional table layout
       return html/*html*/`
         <div class="snice-table" @click=${this.handleClick} @change=${this.handleChange}>
-          ${this.renderControls()}
+          <div class="table-controls-container"></div>
           <table>
             <thead></thead>
             <tbody></tbody>
@@ -379,44 +386,61 @@ export class SniceTable extends HTMLElement {
   }
 
   renderControls() {
-    const showControls = this.searchable || this.filterable;
-    if (!showControls) return html``;
+    const container = this.shadowRoot?.querySelector('.table-controls-container');
+    if (!container) return;
 
-    return html/*html*/`
-      <div class="table-controls" part="controls">
-        <if ${this.searchable}>
-          <snice-input
-            class="search-input"
-            type="search"
-            placeholder="Search..."
-            .value=${this.searchText}
-            size="medium"
-            @input=${this.handleSearchInput}
-          ></snice-input>
-        </if>
-        <if ${this.filterable}>
-          <snice-select
-            class="selector-input"
-            multiple
-            searchable
-            clearable
-            placeholder="Filter..."
-            size="medium"
-            @change=${this.handleSelectorChange}
-          >
-            ${this.selectorOptions.map(opt =>
-              html/*html*/`<snice-option value="${opt.value}">${opt.label}</snice-option>`
-            )}
-          </snice-select>
-        </if>
-      </div>
-    `;
+    const showControls = this.searchable || this.filterable;
+    if (!showControls) {
+      container.innerHTML = '';
+      return;
+    }
+
+    // Only render if container is empty (first time)
+    if (container.children.length === 0) {
+      const controlsDiv = document.createElement('div');
+      controlsDiv.className = 'table-controls';
+      controlsDiv.setAttribute('part', 'controls');
+
+      if (this.searchable) {
+        const searchInput = document.createElement('snice-input');
+        searchInput.className = 'search-input';
+        searchInput.setAttribute('type', 'search');
+        searchInput.setAttribute('placeholder', 'Search...');
+        searchInput.setAttribute('size', 'medium');
+        searchInput.addEventListener('input', this.handleSearchInput);
+        controlsDiv.appendChild(searchInput);
+      }
+
+      if (this.filterable) {
+        const select = document.createElement('snice-select');
+        select.className = 'selector-input';
+        select.setAttribute('multiple', '');
+        select.setAttribute('searchable', '');
+        select.setAttribute('clearable', '');
+        select.setAttribute('placeholder', 'Filter...');
+        select.setAttribute('size', 'medium');
+
+        this.selectorOptions.forEach(opt => {
+          const option = document.createElement('snice-option');
+          option.setAttribute('value', opt.value);
+          option.textContent = opt.label;
+          select.appendChild(option);
+        });
+
+        controlsDiv.appendChild(select);
+      }
+
+      container.appendChild(controlsDiv);
+    }
   }
 
   @ready()
   async initialize() {
     // Listen for controller attached event
     this.addEventListener('@snice/controller-attached', this.onAttached as EventListener);
+
+    // Listen for select change events from the filter dropdown
+    this.addEventListener('@snice/select-change', this.handleSelectorChange as EventListener);
 
     // Wait for snice-column to be defined
     await customElements.whenDefined('snice-column');
@@ -433,7 +457,6 @@ export class SniceTable extends HTMLElement {
     if (columnElements.length > 0) {
       // Extract column definitions from snice-column elements
       this.columns = columnElements.map((col: any) => col.getColumnDefinition());
-      console.log('Extracted columns from slotted elements:', this.columns);
 
       // Pass column definitions to slotted rows
       const rowElements = Array.from(this.querySelectorAll('snice-row[slot="rows"]')) as any[];
@@ -444,14 +467,6 @@ export class SniceTable extends HTMLElement {
         row.clickable = this.clickable;
         row.selectable = this.selectable;
       });
-
-      console.log('Configured', rowElements.length, 'slotted rows with columns');
-
-      // Force re-render with the correct layout for slotted mode
-      const renderMethod = (this as any)[RENDER_METHOD];
-      if (renderMethod) {
-        renderMethod.call(this);
-      }
 
       // Render the header for slotted mode (after next tick to ensure DOM is updated)
       requestAnimationFrame(() => this.renderSlottedHeader());
@@ -469,7 +484,7 @@ export class SniceTable extends HTMLElement {
   }
 
   render() {
-    console.log('render() called');
+    this.renderControls();
     this.renderHeader();
     this.renderBody();
   }
@@ -592,8 +607,6 @@ export class SniceTable extends HTMLElement {
   renderBody() {
     if (!this.tbody) return;
 
-    console.log('renderBody called with data:', this.data.length, 'columns:', this.columns.length, 'loading:', this.loading);
-    
     this.tbody.innerHTML = '';
     
     if (this.data.length === 0 && this.columns.length > 0) {
@@ -717,7 +730,6 @@ export class SniceTable extends HTMLElement {
     if (th) {
       const columnKey = th.getAttribute('data-key');
       if (columnKey) {
-        console.log('Sorting column:', columnKey);
         this.toggleSort(columnKey, true); // Always multi-sort
       }
       return;
@@ -796,7 +808,6 @@ export class SniceTable extends HTMLElement {
   }
 
   private onAttached = () => {
-    console.log('Controller attached, loading config and data...');
     this.getTableConfig();
     this.getTableData();
   }
@@ -859,12 +870,10 @@ export class SniceTable extends HTMLElement {
   }
 
   toggleSort(columnKey: string, multiSort: boolean = false) {
-    console.log('toggleSort called:', { columnKey, multiSort, currentSort: this.currentSort });
-    
     if (!multiSort) {
       // Single column sort - clear all other sorts
       const existingSort = this.currentSort.find(s => s.column === columnKey);
-      
+
       if (!existingSort) {
         this.currentSort = [{ column: columnKey, direction: 'asc' }];
       } else if (existingSort.direction === 'asc') {
@@ -875,7 +884,7 @@ export class SniceTable extends HTMLElement {
     } else {
       // Multi column sort - modify existing or add new
       const existingSortIndex = this.currentSort.findIndex(s => s.column === columnKey);
-      
+
       if (existingSortIndex === -1) {
         // Add new sort
         this.currentSort = [...this.currentSort, { column: columnKey, direction: 'asc' }];
@@ -883,7 +892,7 @@ export class SniceTable extends HTMLElement {
         const existingSort = this.currentSort[existingSortIndex];
         if (existingSort.direction === 'asc') {
           // Change to desc - create new array to trigger reactivity
-          this.currentSort = this.currentSort.map((sort, index) => 
+          this.currentSort = this.currentSort.map((sort, index) =>
             index === existingSortIndex ? { ...sort, direction: 'desc' as const } : sort
           );
         } else {
@@ -892,8 +901,7 @@ export class SniceTable extends HTMLElement {
         }
       }
     }
-    
-    console.log('New sort state:', this.currentSort);
+
     this.renderHeader(); // Update sort indicators immediately
     this.debouncedDataRequest(); // Show loading immediately, debounce the actual request
   }

@@ -11,7 +11,7 @@
     "noUnusedParameters": false,
     "importHelpers": true,
     "paths": {
-      "snice": ["../dist/types/index.d.ts"]
+      "snice": ["../dist/index.d.ts"]
     }
   },
   "include": ["."],

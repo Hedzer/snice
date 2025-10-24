@@ -1,18 +1,14 @@
 import { controller, respond, IController } from 'snice';
 
-console.log('Loading demo table controller...');
-
 @controller('demo-table-controller')
 export class DemoTableController implements IController {
   element: HTMLElement | null = null;
 
   async attach(element: HTMLElement) {
     this.element = element;
-    console.log('Demo table controller attached');
   }
 
   async detach(_element: HTMLElement) {
-    console.log('Demo table controller detached');
   }
 
   private sampleData = [

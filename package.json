@@ -6,23 +6,23 @@
   "main": "dist/index.cjs",
   "module": "dist/index.esm.js",
   "browser": "dist/index.iife.js",
-  "types": "dist/types/index.d.ts",
+  "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/index.esm.js",
       "require": "./dist/index.cjs",
       "browser": "./dist/index.iife.js",
-      "types": "./dist/types/index.d.ts"
+      "types": "./dist/index.d.ts"
     },
     "./symbols": {
       "import": "./dist/symbols.esm.js",
       "require": "./dist/symbols.cjs",
-      "types": "./dist/types/symbols.d.ts"
+      "types": "./dist/symbols.d.ts"
     },
     "./transitions": {
       "import": "./dist/transitions.esm.js",
       "require": "./dist/transitions.cjs",
-      "types": "./dist/types/transitions.d.ts"
+      "types": "./dist/transitions.d.ts"
     },
     "./components/*": {
       "import": "./dist/components/*.js",
@@ -33,12 +33,10 @@
     "snice": "./bin/snice.js"
   },
   "files": [
-    "dist/*.js",
-    "dist/*.map",
-    "dist/types",
-    "dist/components",
+    "dist",
     "bin",
-    "README.md"
+    "README.md",
+    "docs"
   ],
   "keywords": [
     "web components",
