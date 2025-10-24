@@ -13,7 +13,8 @@ const markerMatch = '?' + marker;
 const nodeMarker = `<${markerMatch}>`;
 const markerRegex = new RegExp(marker, 'g');
 
-// Template cache removed - negligible performance benefit (~0.00004ms per template)
+// Template cache - templates with same string array can be reused
+const templateCache = new WeakMap<TemplateStringsArray, Template>();
 
 /**
  * A prepared template ready for rendering
@@ -215,14 +216,20 @@ interface TemplatePart {
  * Prepare a template for rendering
  */
 function prepareTemplate(result: TemplateResult): Template {
-  // Build HTML with markers and extract original attribute names
+  // Check cache first
   const { strings } = result;
-  let html = '';
+  const cached = templateCache.get(strings);
+  if (cached) {
+    return cached;
+  }
+
+  // Build HTML with markers and extract original attribute names
+  const htmlParts: string[] = [];
   const attrNamesForParts: string[] = [];
 
   for (let i = 0; i < strings.length; i++) {
     const str = strings[i];
-    html += str;
+    htmlParts.push(str);
 
     if (i < strings.length - 1) {
       // Check if we're in an attribute context
@@ -238,7 +245,7 @@ function prepareTemplate(result: TemplateResult): Template {
         }
         const attrName = str.substring(attrStart + 1, lastEquals).trim();
         attrNamesForParts.push(attrName);
-        html += marker;
+        htmlParts.push(marker);
       } else {
         // Check if this is a meta element (<if> or <case>) by looking backwards
         // Match pattern: <if or <case followed by whitespace or >
@@ -247,20 +254,25 @@ function prepareTemplate(result: TemplateResult): Template {
         if (metaElementMatch) {
           // This is a meta element - add value attribute
           attrNamesForParts.push('value');
-          html += `value="${marker}"`;
+          htmlParts.push(`value="${marker}"`);
         } else {
           // We're in node content
           attrNamesForParts.push(''); // Empty string for node parts
-          html += nodeMarker;
+          htmlParts.push(nodeMarker);
         }
       }
     }
   }
 
+  const html = htmlParts.join('');
+
   const template = document.createElement('template');
   template.innerHTML = html;
 
-  return new Template(result, template, attrNamesForParts);
+  const tmpl = new Template(result, template, attrNamesForParts);
+  // Cache the template for reuse
+  templateCache.set(strings, tmpl);
+  return tmpl;
 }
 
 /**
@@ -270,6 +282,8 @@ export class TemplateInstance {
   template: Template;
   parts: Part[] = [];
   fragment: DocumentFragment | null = null;
+  private conditionalParts: Array<{part: Part; index: number}> = []; // if/case parts with their indices
+  private regularParts: Array<{part: Part; index: number}> = []; // all other parts with their indices
 
   constructor(result: TemplateResult) {
     this.template = prepareTemplate(result);
@@ -300,7 +314,8 @@ export class TemplateInstance {
         clonedNode = clonedWalker.nextNode()!;
       }
 
-      for (const partDef of this.template.parts) {
+      for (let i = 0; i < this.template.parts.length; i++) {
+        const partDef = this.template.parts[i];
         let part: Part;
 
         switch (partDef.type) {
@@ -338,6 +353,13 @@ export class TemplateInstance {
         }
 
         this.parts.push(part);
+
+        // Separate conditional parts from regular parts for optimized update
+        if (part instanceof IfPart || part instanceof CasePart) {
+          this.conditionalParts.push({part, index: i});
+        } else {
+          this.regularParts.push({part, index: i});
+        }
       }
     }
 
@@ -352,20 +374,17 @@ export class TemplateInstance {
   }
 
   update(values: readonly any[]): void {
-    // Process virtual elements (if/case) first
-    for (let i = 0; i < this.parts.length; i++) {
-      const part = this.parts[i];
-      if (part instanceof IfPart || part instanceof CasePart) {
-        part.commit(values[i]);
-      }
+    // Optimized: Process conditional parts first (if any), then regular parts
+    // Using pre-separated arrays with cached indices avoids instanceof and indexOf calls
+
+    // Process conditional parts first (they control visibility)
+    for (const {part, index} of this.conditionalParts) {
+      part.commit(values[index]);
     }
 
-    // Then process all other parts
-    for (let i = 0; i < this.parts.length; i++) {
-      const part = this.parts[i];
-      if (!(part instanceof IfPart || part instanceof CasePart)) {
-        part.commit(values[i]);
-      }
+    // Then process regular parts
+    for (const {part, index} of this.regularParts) {
+      part.commit(values[index]);
     }
   }
 
@@ -440,6 +459,7 @@ export class NodePart extends Part {
 
   private commitArray(values: any[]): void {
     this.clear();
+    // Template caching (via prepareTemplate) still provides significant performance benefit
     for (const value of values) {
       if (isTemplateResult(value)) {
         const instance = new TemplateInstance(value);
@@ -503,8 +523,16 @@ export class AttributePart extends Part {
     if (value === null || value === undefined) {
       this.element.removeAttribute(this.name);
     } else {
-      // Data-oriented: compute final value from strings + value
-      const finalValue = computeAttributeValue(this.attrStrings, value);
+      // Inline attribute value computation for performance
+      let finalValue: string;
+      if (!this.attrStrings || this.attrStrings.length === 0) {
+        finalValue = String(value);
+      } else if (this.attrStrings.length === 1) {
+        finalValue = this.attrStrings[0];
+      } else {
+        // Multiple segments: "prefix" + value + "suffix"
+        finalValue = this.attrStrings[0] + String(value) + this.attrStrings[1];
+      }
       this.element.setAttribute(this.name, finalValue);
     }
   }
@@ -512,25 +540,6 @@ export class AttributePart extends Part {
   clear(): void {
     this.element.removeAttribute(this.name);
   }
-}
-
-/**
- * Data-oriented function to compute attribute value from static strings and dynamic value
- */
-function computeAttributeValue(attrStrings: string[] | undefined, value: any): string {
-  if (!attrStrings || attrStrings.length === 0) {
-    // No template strings, just use the value
-    return String(value);
-  }
-
-  if (attrStrings.length === 1) {
-    // Single string segment, no interpolation (shouldn't happen but handle it)
-    return attrStrings[0];
-  }
-
-  // Multiple segments: "prefix" + value + "suffix"
-  // For aria-label="Remove ${label}", attrStrings = ["Remove ", ""]
-  return attrStrings[0] + String(value) + attrStrings[1];
 }
 
 /**
@@ -597,6 +606,7 @@ export class EventPart extends Part {
   private listener: EventListener | null = null;
   private value: any = undefined;
   private keyFilter: KeyboardFilter | null = null;
+  private host: Element | null = null; // Cache host element
 
   constructor(element: Element, eventName: string) {
     super();
@@ -641,15 +651,16 @@ export class EventPart extends Part {
 
     if (typeof value === 'function') {
       // Auto-bind to host element (the custom element with shadow root)
-      // This allows @click=${this.handleClick} to work without manual binding
-      const rootNode = this.element.getRootNode();
-      const host = (rootNode as ShadowRoot).host;
+      // Cache host lookup for performance
+      if (!this.host) {
+        const rootNode = this.element.getRootNode();
+        this.host = (rootNode as ShadowRoot).host || null;
+      }
 
       // Create a wrapper that calls the handler with the host as context
-      // This ensures consistent function reference for proper cleanup
-      if (host) {
+      if (this.host) {
+        const host = this.host; // Capture for closure
         this.listener = ((event: Event) => {
-          // If keyboard filter is specified, check if event matches
           if (this.keyFilter && !matchesKeyboardFilter(event as KeyboardEvent, this.keyFilter)) {
             return;
           }
@@ -796,6 +807,7 @@ export class IfPart extends Part {
   private value: any = undefined;
   private fragment: DocumentFragment | null = null;
   private childNodes: Node[] = [];
+  private lastCondition: boolean = false; // Cache last boolean result
 
   constructor(ifElement: Element) {
     super();
@@ -813,11 +825,12 @@ export class IfPart extends Part {
     const condition = Boolean(value);
 
     // If condition hasn't changed, do nothing
-    if (this.value !== undefined && Boolean(this.value) === condition) {
+    if (this.value !== undefined && this.lastCondition === condition) {
       return;
     }
 
     this.value = value;
+    this.lastCondition = condition;
 
     if (condition) {
       // Show: restore children from fragment if they were removed
