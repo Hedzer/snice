@@ -190,24 +190,25 @@ export class Toast {
     return container;
   }
 
-  static show(message: string, options: ToastOptions = {}): string {
+  static async show(message: string, options: ToastOptions = {}): Promise<string> {
     const container = Toast.ensureContainer(options.position);
+    await (container as any).ready;
     return container.show(message, options);
   }
 
-  static success(message: string, options: ToastOptions = {}): string {
+  static async success(message: string, options: ToastOptions = {}): Promise<string> {
     return Toast.show(message, { ...options, type: 'success' });
   }
 
-  static error(message: string, options: ToastOptions = {}): string {
+  static async error(message: string, options: ToastOptions = {}): Promise<string> {
     return Toast.show(message, { ...options, type: 'error' });
   }
 
-  static warning(message: string, options: ToastOptions = {}): string {
+  static async warning(message: string, options: ToastOptions = {}): Promise<string> {
     return Toast.show(message, { ...options, type: 'warning' });
   }
 
-  static info(message: string, options: ToastOptions = {}): string {
+  static async info(message: string, options: ToastOptions = {}): Promise<string> {
     return Toast.show(message, { ...options, type: 'info' });
   }
 
@@ -229,14 +230,14 @@ export class Toast {
 // Global event listener for toast events
 function initializeGlobalEventListener() {
   if ((globalThis as any)[TOAST_LISTENER_INITIALIZED]) return;
-  
-  document.documentElement.addEventListener(TOAST_EVENT_SHOW, (event: Event) => {
+
+  document.documentElement.addEventListener(TOAST_EVENT_SHOW, async (event: Event) => {
     const customEvent = event as CustomEvent<ToastEventDetail>;
     const { message, options = {} } = customEvent.detail;
-    
+
     // Show the toast
-    const toastId = Toast.show(message, options);
-    
+    const toastId = await Toast.show(message, options);
+
     // Dispatch response event with toast ID if the original event requested it
     if (customEvent.detail.options?.id) {
       const responseEvent = new CustomEvent<ToastResponseEventDetail>(TOAST_EVENT_RESPONSE, {
@@ -247,7 +248,7 @@ function initializeGlobalEventListener() {
       (customEvent.target as HTMLElement)?.dispatchEvent(responseEvent);
     }
   });
-  
+
   (globalThis as any)[TOAST_LISTENER_INITIALIZED] = true;
 }
 
