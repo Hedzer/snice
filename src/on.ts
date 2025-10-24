@@ -142,6 +142,24 @@ function throttle<T extends (...args: any[]) => any>(fn: T, delay: number): T {
 }
 
 /**
+ * Events that don't bubble - these require capture phase for delegation
+ */
+const NON_BUBBLING_EVENTS = new Set([
+  'scroll',
+  'focus',
+  'blur',
+  'load',
+  'unload',
+  'error',
+  'resize',
+  'abort',
+  'mouseenter',
+  'mouseleave',
+  'pointerenter',
+  'pointerleave',
+]);
+
+/**
  * Setup event listeners for an element or controller instance
  * Called automatically during element connection or controller attachment
  */
@@ -252,8 +270,14 @@ export function setupEventHandlers(instance: any, targetElement: HTMLElement) {
         }
       };
 
+      // Auto-enable capture for non-bubbling events when using delegation
+      const needsCapture = NON_BUBBLING_EVENTS.has(baseEventName);
+      const useCapture = handlerOptions.capture !== undefined
+        ? handlerOptions.capture
+        : needsCapture;
+
       const listenerOptions: AddEventListenerOptions = {
-        capture: handlerOptions.capture || false,
+        capture: useCapture,
         once: handlerOptions.once || false,
         passive: handlerOptions.passive || false,
       };

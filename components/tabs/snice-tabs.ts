@@ -92,13 +92,13 @@ export class SniceTabs extends HTMLElement {
   init() {
     this.setupTabs();
     this.updateScrollButtons();
-    
+
     // Update scroll buttons on resize
     const resizeObserver = new ResizeObserver(() => {
       this.updateScrollButtons();
       this.updateIndicator();
     });
-    
+
     if (this.nav) {
       resizeObserver.observe(this.nav);
     }
@@ -124,41 +124,34 @@ export class SniceTabs extends HTMLElement {
     this.updateScrollButtons();
   }
 
-  @on('click')
-  handleClick(e: MouseEvent) {
-    const target = e.target as HTMLElement;
+  @on('click', '.tabs__scroll-button--start')
+  handleScrollStart(e: MouseEvent) {
+    const button = (e.target as HTMLElement).closest('.tabs__scroll-button--start') as HTMLElement;
+    if (!this.nav || !button || button.classList.contains('tabs__scroll-button--disabled')) return;
 
-    // Handle scroll button start
-    if (target.closest('.tabs__scroll-button--start')) {
-      if (!this.nav) return;
-
-      const isHorizontal = this.placement === 'top' || this.placement === 'bottom';
-      if (isHorizontal) {
-        this.nav.scrollBy({ left: -200, behavior: 'smooth' });
-      } else {
-        this.nav.scrollBy({ top: -200, behavior: 'smooth' });
-      }
-      return;
-    }
-
-    // Handle scroll button end
-    if (target.closest('.tabs__scroll-button--end')) {
-      if (!this.nav) return;
-
-      const isHorizontal = this.placement === 'top' || this.placement === 'bottom';
-      if (isHorizontal) {
-        this.nav.scrollBy({ left: 200, behavior: 'smooth' });
-      } else {
-        this.nav.scrollBy({ top: 200, behavior: 'smooth' });
-      }
+    const isHorizontal = this.placement === 'top' || this.placement === 'bottom';
+    if (isHorizontal) {
+      this.nav.scrollBy({ left: -200, behavior: 'smooth' });
+    } else {
+      this.nav.scrollBy({ top: -200, behavior: 'smooth' });
     }
   }
 
-  @on('scroll')
-  handleScroll(e: Event) {
-    const target = e.target as HTMLElement;
-    if (!target.matches('.tabs__nav')) return;
+  @on('click', '.tabs__scroll-button--end')
+  handleScrollEnd(e: MouseEvent) {
+    const button = (e.target as HTMLElement).closest('.tabs__scroll-button--end') as HTMLElement;
+    if (!this.nav || !button || button.classList.contains('tabs__scroll-button--disabled')) return;
 
+    const isHorizontal = this.placement === 'top' || this.placement === 'bottom';
+    if (isHorizontal) {
+      this.nav.scrollBy({ left: 200, behavior: 'smooth' });
+    } else {
+      this.nav.scrollBy({ top: 200, behavior: 'smooth' });
+    }
+  }
+
+  @on('scroll', '.tabs__nav')
+  handleScroll(e: Event) {
     this.updateScrollButtons();
     this.updateIndicator();
   }
@@ -306,23 +299,25 @@ export class SniceTabs extends HTMLElement {
     if (!this.nav || this.noScrollControls) return;
 
     const isHorizontal = this.placement === 'top' || this.placement === 'bottom';
-    
-    const hasOverflow = isHorizontal 
-      ? this.nav.scrollWidth > this.nav.clientWidth
-      : this.nav.scrollHeight > this.nav.clientHeight;
-      
+
+    // Check navTrack width instead of nav scrollWidth
+    const trackWidth = this.navTrack?.scrollWidth || 0;
+    const hasOverflow = isHorizontal
+      ? trackWidth > this.nav.clientWidth
+      : (this.navTrack?.scrollHeight || 0) > this.nav.clientHeight;
+
     const canScrollStart = isHorizontal
       ? this.nav.scrollLeft > 0
       : this.nav.scrollTop > 0;
-      
+
     const canScrollEnd = isHorizontal
-      ? this.nav.scrollLeft < this.nav.scrollWidth - this.nav.clientWidth
-      : this.nav.scrollTop < this.nav.scrollHeight - this.nav.clientHeight;
+      ? this.nav.scrollLeft < trackWidth - this.nav.clientWidth - 1
+      : this.nav.scrollTop < (this.navTrack?.scrollHeight || 0) - this.nav.clientHeight - 1;
 
     // Show/hide buttons based on overflow
     this.scrollButtonStart?.classList.toggle('tabs__scroll-button--visible', hasOverflow);
     this.scrollButtonEnd?.classList.toggle('tabs__scroll-button--visible', hasOverflow);
-    
+
     // Disable buttons when can't scroll in that direction
     this.scrollButtonStart?.classList.toggle('tabs__scroll-button--disabled', !canScrollStart);
     this.scrollButtonEnd?.classList.toggle('tabs__scroll-button--disabled', !canScrollEnd);
