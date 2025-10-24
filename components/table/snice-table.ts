@@ -157,13 +157,17 @@ export class SniceTable extends HTMLElement {
       }
 
       th, td {
-        padding: var(--snice-spacing-sm);
+        padding: var(--snice-spacing-xsm) var(--snice-spacing-xsm);
         border: 1px solid var(--snice-color-border);
         text-align: left;
         color: var(--snice-color-text);
         max-width: 0;
         overflow: hidden;
         text-overflow: ellipsis;
+      }
+
+      th {
+        padding: var(--snice-spacing-sm) var(--snice-spacing-sm);
       }
 
       th.select-column,

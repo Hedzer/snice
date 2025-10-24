@@ -61,8 +61,8 @@ describe('snice-card', () => {
     document.body.appendChild(card);
     await (card as any).ready;
 
-    const tracker = trackRenders(card as HTMLElement);
-    await tracker.next();
+    // Wait for microtask queue to flush (for queueMicrotask in onReady)
+    await new Promise(resolve => setTimeout(resolve, 0));
 
     const footerElement = queryShadow(card as HTMLElement, '.card-footer');
     expect(footerElement).toBeTruthy();

@@ -27,7 +27,8 @@ export class SniceCard extends HTMLElement implements SniceCardElement {
 
   @ready()
   onReady() {
-    this.checkSlots();
+    // Check slots after a microtask to allow slot assignment
+    queueMicrotask(() => this.checkSlots());
   }
 
   @render()

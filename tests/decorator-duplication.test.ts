@@ -56,11 +56,17 @@ describe('Decorator duplication bug - all decorators', () => {
     expect(handlerCount).toBe(1);
 
     // Manually dispatch request to the channel
-    const channelEvent = new CustomEvent(uniqueChannelName, {
+    const channelEvent = new CustomEvent(`@request/${uniqueChannelName}`, {
       detail: {
-        data: { test: 'data' },
-        resolve: (response: any) => {},
-        reject: (error: any) => {}
+        payload: { test: 'data' },
+        discovery: {
+          resolve: () => {},
+          reject: () => {}
+        },
+        data: {
+          resolve: (response: any) => {},
+          reject: (error: any) => {}
+        }
       },
       bubbles: true,
       composed: true
@@ -183,9 +189,20 @@ describe('Decorator duplication bug - all decorators', () => {
     button.click();
     expect(clickHandler).toHaveBeenCalledTimes(1);
 
-    // Request should fire exactly once
-    clickHandler.mockClear();
-    await request('multi-request', { test: 'data' });
+    // Request via @request decorator should fire exactly once
+    // Since we can't easily test @request in this file (requires generator),
+    // we'll manually dispatch the event like a @request would
+    const requestEvent = new CustomEvent('@request/multi-request', {
+      detail: {
+        payload: { test: 'data' },
+        discovery: { resolve: () => {}, reject: () => {} },
+        data: { resolve: () => {}, reject: () => {} }
+      },
+      bubbles: true,
+      composed: true
+    });
+    instances[0].dispatchEvent(requestEvent);
+    await new Promise(resolve => setTimeout(resolve, 10));
     expect(responseHandler).toHaveBeenCalledTimes(1);
   });
 

@@ -216,7 +216,8 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
   @ready()
   init() {
     this.parseInitialValue();
-    this.updateClearButton();
+    // Update clear button after queries are resolved
+    queueMicrotask(() => this.updateClearButton());
     this.setupCalendarClickOutside();
 
     if (this.input) {
@@ -463,11 +464,11 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
   }
 
   private updateClearButton() {
-    if (this.clearButton && this.clearable) {
-      const shouldShow = this.selectedDate && !this.disabled && !this.readonly;
-      this.clearButton.style.display = shouldShow ? '' : 'none';
-      this.clearButton.classList.toggle('clear-button--visible', !!shouldShow);
-    }
+    if (!this.clearButton || !this.clearable) return;
+
+    const shouldShow = this.selectedDate && !this.disabled && !this.readonly;
+    this.clearButton.style.display = shouldShow ? '' : 'none';
+    this.clearButton.classList.toggle('clear-button--visible', !!shouldShow);
   }
 
   private updateCalendarGrid() {
@@ -604,6 +605,7 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
       this.viewDate = new Date(date);
     }
     this.updateInputValue();
+    this.updateClearButton();
     if (this.showCalendar) {
       this.updateCalendarGrid();
     }

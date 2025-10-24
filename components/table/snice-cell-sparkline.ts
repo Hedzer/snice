@@ -1,4 +1,4 @@
-import { element, property, watch, ready, query, SimpleArray, render, styles, html, css } from 'snice';
+import { element, property, watch, ready, query, SimpleArray, render, styles, html, css, unsafeHTML } from 'snice';
 import cssContent from './snice-cell.css?inline';
 import type { SparklineFormat, SniceCellElement, ColumnType, ColumnAlign, ColumnDefinition } from './snice-table.types';
 
@@ -61,7 +61,7 @@ export class SniceCellSparkline extends HTMLElement implements SniceCellElement 
   renderContent() {
     return html/*html*/`
       <div class="cell-content cell-content--sparkline" part="content">
-        ${this.renderSparkline()}
+        ${unsafeHTML(this.renderSparkline())}
       </div>
     `;
   }
