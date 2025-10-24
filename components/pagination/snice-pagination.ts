@@ -248,7 +248,7 @@ export class SnicePagination extends HTMLElement {
       this.changePage(1);
     }
   }
-  
+
   @on('click')
   handlePrev(event: Event) {
     const target = event.target as HTMLElement;
@@ -257,7 +257,7 @@ export class SnicePagination extends HTMLElement {
       this.changePage(this.current - 1);
     }
   }
-  
+
   @on('click')
   handleNext(event: Event) {
     const target = event.target as HTMLElement;
@@ -266,7 +266,7 @@ export class SnicePagination extends HTMLElement {
       this.changePage(this.current + 1);
     }
   }
-  
+
   @on('click')
   handleLast(event: Event) {
     const target = event.target as HTMLElement;
@@ -275,7 +275,7 @@ export class SnicePagination extends HTMLElement {
       this.changePage(this.total);
     }
   }
-  
+
   @on('click')
   handlePageClick(event: Event) {
     const target = event.target as HTMLElement;

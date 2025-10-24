@@ -1027,5 +1027,52 @@ describe('@on decorator', () => {
       el.click();
       expect(clickHandler).toHaveBeenCalledTimes(1);
     });
+
+    it('should call multiple different click handlers on the same element', async () => {
+      const handler1 = vi.fn();
+      const handler2 = vi.fn();
+
+      @element('test-multiple-handlers')
+      class TestMultipleHandlers extends HTMLElement {
+        @render()
+        renderContent() {
+          return html`
+            <button class="test-btn">Click Me</button>
+          `;
+        }
+
+        @on('click')
+        handleClick1(e: Event) {
+          handler1(e);
+        }
+
+        @on('click')
+        handleClick2(e: Event) {
+          handler2(e);
+        }
+      }
+
+      const el = document.createElement('test-multiple-handlers') as TestMultipleHandlers;
+      container.appendChild(el);
+      await el.ready;
+
+      // Click button inside shadow root
+      const button = el.shadowRoot?.querySelector('.test-btn') as HTMLButtonElement;
+      button.click();
+
+      // Both handlers should have been called exactly once
+      expect(handler1).toHaveBeenCalledTimes(1);
+      expect(handler2).toHaveBeenCalledTimes(1);
+
+      // Click again
+      button.click();
+      expect(handler1).toHaveBeenCalledTimes(2);
+      expect(handler2).toHaveBeenCalledTimes(2);
+
+      // Click host element directly
+      el.click();
+      expect(handler1).toHaveBeenCalledTimes(3);
+      expect(handler2).toHaveBeenCalledTimes(3);
+    });
   });
 });

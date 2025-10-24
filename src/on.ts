@@ -297,7 +297,18 @@ export function setupEventHandlers(instance: any, targetElement: HTMLElement) {
       });
     } else {
       // Direct event handling - on the element itself
+      // If element has shadow root, listen on both shadow root AND host element
+      // to catch events from inside shadow DOM (with correct target) and on host itself
+      const shadowRoot = (targetElement as any).shadowRoot;
+      const handledSymbol = Symbol('snice-event-handled');
+
       const wrappedMethod = (event: Event) => {
+        // Prevent double-triggering when listening on both shadow root and host
+        if ((event as any)[handledSymbol]) {
+          return;
+        }
+        (event as any)[handledSymbol] = true;
+
         try {
           // Apply automatic preventDefault/stopPropagation
           if (handlerOptions.preventDefault) {
@@ -319,8 +330,19 @@ export function setupEventHandlers(instance: any, targetElement: HTMLElement) {
         passive: handlerOptions.passive || false,
       };
 
-      targetElement.addEventListener(baseEventName, wrappedMethod as EventListener, listenerOptions);
+      if (shadowRoot) {
+        // Listen on shadow root for events inside shadow DOM
+        shadowRoot.addEventListener(baseEventName, wrappedMethod as EventListener, listenerOptions);
+        instance[CLEANUP].events.push({
+          target: shadowRoot,
+          eventName: baseEventName,
+          handler: wrappedMethod,
+          options: listenerOptions,
+        });
+      }
 
+      // Also listen on host element (for clicks on host itself or when no shadow root)
+      targetElement.addEventListener(baseEventName, wrappedMethod as EventListener, listenerOptions);
       instance[CLEANUP].events.push({
         target: targetElement,
         eventName: baseEventName,
