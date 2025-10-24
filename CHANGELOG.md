@@ -1,3 +1,42 @@
+# [3.1.0](https://gitlab.com/Hedzer/snice/compare/v3.0.0...v3.1.0) (2025-10-24)
+
+
+### Bug Fixes
+
+* [@context](https://gitlab.com/context) docs ([5e7f5de](https://gitlab.com/Hedzer/snice/commit/5e7f5defc90ef2192998f1d0b02b768ddc6b70e5))
+* [@on](https://gitlab.com/on) captures special events ([9b9eb52](https://gitlab.com/Hedzer/snice/commit/9b9eb5215468d68cd34c4c59712a8dd412d3e5be))
+* accidental handler duplication ([c3c3028](https://gitlab.com/Hedzer/snice/commit/c3c30282d3c090469f62813e016c344138946106))
+* AI docs ([7c1fef4](https://gitlab.com/Hedzer/snice/commit/7c1fef4ccdf6cb3aed2c90a74bd4c9aa13cbcb49))
+* circular progress rendering true inside ([8de239b](https://gitlab.com/Hedzer/snice/commit/8de239b3530af53636d4d707bf605679263f5a9f))
+* css interpolation ([c5b41c1](https://gitlab.com/Hedzer/snice/commit/c5b41c1091ca92b8c8981e5184eacab025b23fda))
+* drawer close button ([72da522](https://gitlab.com/Hedzer/snice/commit/72da5227ba49cab0d5c6805bf58f5aeb441ec8ed))
+* element fixes ([a06e32c](https://gitlab.com/Hedzer/snice/commit/a06e32ccff7cb84ad99bfad2f6c22142afdd2893))
+* engine interpolation ([cfd5677](https://gitlab.com/Hedzer/snice/commit/cfd5677f19d63095b1cc6b60f3300f23d978836e))
+* form internals ([e118f04](https://gitlab.com/Hedzer/snice/commit/e118f0402e3cd1e55b7823da92343cf337a7c3dd))
+* if/case styles & cosmetic tablre changes ([8e8f4ed](https://gitlab.com/Hedzer/snice/commit/8e8f4ed9534f09ebef68d86c5adb32a82b51fa59))
+* initial props ([92170f8](https://gitlab.com/Hedzer/snice/commit/92170f86151a45b4e21364edc8d492516c7f35a4))
+* missed toasts ([cb0e645](https://gitlab.com/Hedzer/snice/commit/cb0e6453258ba508d72bf9d2de795a1455855a08))
+* nav placards ([cac5f29](https://gitlab.com/Hedzer/snice/commit/cac5f29f2534252dbeda4ada49dc9022452a4fad))
+* on handler shadow dom calls ([1b10c95](https://gitlab.com/Hedzer/snice/commit/1b10c95d0bc3bbc1398795210d7880f731ba40ac))
+* output types ([7c5b20b](https://gitlab.com/Hedzer/snice/commit/7c5b20b1823cd547340aa3b1af2b2e953397b5cb))
+* placards & docs updates ([3b1329c](https://gitlab.com/Hedzer/snice/commit/3b1329c00dda49f1dc64d4003d8a891d49b6474b))
+* property init ([303eecd](https://gitlab.com/Hedzer/snice/commit/303eecd354609f52a9e395cbbc0732c2115db0a4))
+* property reactivity ([f1f79dd](https://gitlab.com/Hedzer/snice/commit/f1f79ddd1fad2413848e0f6baf73edec8811f518))
+* radio button selection ([cb86008](https://gitlab.com/Hedzer/snice/commit/cb8600858095f5161fe7a1061a709646dd2efc34))
+* tab scroll button height ([5695145](https://gitlab.com/Hedzer/snice/commit/56951454c63af33ca57f7b10a71cf0d16a55611c))
+* table filter & search ([82edca5](https://gitlab.com/Hedzer/snice/commit/82edca5cdbaf854a68af4a058482ecd8853977a6))
+* visual switch fixes ([f9c5d3c](https://gitlab.com/Hedzer/snice/commit/f9c5d3cc85910b4c9232bc7c77e7bd042b1d3745))
+
+
+### Features
+
+* added new table cell types ([d2ea4ad](https://gitlab.com/Hedzer/snice/commit/d2ea4adb92deaeeb3d6ec843450e8323c2da8e5d))
+* additional docs and tests ([27dc7aa](https://gitlab.com/Hedzer/snice/commit/27dc7aa55bd0d7df3f9d16395d9dade5b797c3bb))
+* AI docs & readme fixes ([4148f2a](https://gitlab.com/Hedzer/snice/commit/4148f2a7429be76c666931027352771f6d2c19ce))
+* component tests ([ee9b55a](https://gitlab.com/Hedzer/snice/commit/ee9b55a13a415a4a5a5139b4c67d8bb46ed77567))
+* improved nav ([7b91474](https://gitlab.com/Hedzer/snice/commit/7b91474892221021f0c003feb5dc570f822a6364))
+* restored [@on](https://gitlab.com/on) to its full glory ([63bf439](https://gitlab.com/Hedzer/snice/commit/63bf439be25f77c2b3258d0caab3feec135208fa))
+
 ## [2.5.4](https://gitlab.com/Hedzer/snice/compare/v2.5.3...v2.5.4) (2025-10-05)
 
 
