@@ -118,8 +118,8 @@
   display: none;
   align-items: center;
   justify-content: center;
+  align-self: stretch;
   width: 2rem; /* 32px */
-  height: 3rem; /* 48px */
   padding: 0;
   border: none;
   background: var(--snice-color-background);
