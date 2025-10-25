@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Banner Demo</title>
+  <style>
+    body {
+      padding: 100px 40px 40px;
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .section {
+      margin-bottom: 40px;
+    }
+    h2 {
+      margin-bottom: 20px;
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    button {
+      padding: 0.5rem 1rem;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    button:hover {
+      background: #2563eb;
+    }
+    .note {
+      padding: 1rem;
+      background: #f3f4f6;
+      border-radius: 0.375rem;
+      font-size: 0.875rem;
+      color: #6b7280;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Banner Component Demo</h1>
+
+  <div class="note">
+    Note: Banners are fixed positioned at the top or bottom of the viewport. Toggle them using the buttons below.
+  </div>
+
+  <div class="section">
+    <h2>Variants (Top Position)</h2>
+    <div class="controls">
+      <button onclick="showBanner('info-top')">Show Info</button>
+      <button onclick="showBanner('success-top')">Show Success</button>
+      <button onclick="showBanner('warning-top')">Show Warning</button>
+      <button onclick="showBanner('error-top')">Show Error</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Bottom Position</h2>
+    <div class="controls">
+      <button onclick="showBanner('info-bottom')">Show Info (Bottom)</button>
+      <button onclick="showBanner('success-bottom')">Show Success (Bottom)</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>With Action Button</h2>
+    <div class="controls">
+      <button onclick="showBanner('with-action')">Show Banner with Action</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Not Dismissible</h2>
+    <div class="controls">
+      <button onclick="showBanner('not-dismissible')">Show Non-Dismissible</button>
+      <button onclick="hideBanner('not-dismissible')">Hide (Manual)</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Custom Icon</h2>
+    <div class="controls">
+      <button onclick="showBanner('custom-icon')">Show Custom Icon</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Interactive Demo</h2>
+    <div class="controls">
+      <button onclick="showBanner('interactive')">Show Banner</button>
+      <button onclick="hideBanner('interactive')">Hide Banner</button>
+      <button onclick="toggleBanner('interactive')">Toggle Banner</button>
+    </div>
+    <div id="output" style="padding: 10px; background: #f3f4f6; border-radius: 4px; margin-top: 10px;">
+      <strong>Status:</strong> Banner hidden
+    </div>
+  </div>
+
+  <!-- Banners -->
+  <snice-banner
+    id="info-top"
+    variant="info"
+    message="This is an informational message"
+  ></snice-banner>
+
+  <snice-banner
+    id="success-top"
+    variant="success"
+    message="Operation completed successfully!"
+  ></snice-banner>
+
+  <snice-banner
+    id="warning-top"
+    variant="warning"
+    message="Please review your settings"
+  ></snice-banner>
+
+  <snice-banner
+    id="error-top"
+    variant="error"
+    message="An error occurred. Please try again."
+  ></snice-banner>
+
+  <snice-banner
+    id="info-bottom"
+    variant="info"
+    position="bottom"
+    message="Banner positioned at the bottom"
+  ></snice-banner>
+
+  <snice-banner
+    id="success-bottom"
+    variant="success"
+    position="bottom"
+    message="Success message at the bottom"
+  ></snice-banner>
+
+  <snice-banner
+    id="with-action"
+    variant="info"
+    message="A new version is available"
+    action-text="Update Now"
+  ></snice-banner>
+
+  <snice-banner
+    id="not-dismissible"
+    variant="warning"
+    message="This banner cannot be dismissed by users"
+    dismissible="false"
+  ></snice-banner>
+
+  <snice-banner
+    id="custom-icon"
+    variant="success"
+    icon="🎉"
+    message="Congratulations! You've completed all tasks"
+  ></snice-banner>
+
+  <snice-banner
+    id="interactive"
+    variant="info"
+    message="This banner can be controlled programmatically"
+  ></snice-banner>
+
+  <script type="module">
+    import './snice-banner.ts';
+
+    window.showBanner = (id) => {
+      const banner = document.getElementById(id);
+      banner.show();
+    };
+
+    window.hideBanner = (id) => {
+      const banner = document.getElementById(id);
+      banner.hide();
+    };
+
+    window.toggleBanner = (id) => {
+      const banner = document.getElementById(id);
+      banner.toggle();
+    };
+
+    // Interactive demo
+    const interactive = document.getElementById('interactive');
+    const output = document.getElementById('output');
+
+    interactive.addEventListener('@snice/banner-open', () => {
+      output.innerHTML = '<strong>Status:</strong> Banner opened';
+    });
+
+    interactive.addEventListener('@snice/banner-close', () => {
+      output.innerHTML = '<strong>Status:</strong> Banner closed';
+    });
+
+    interactive.addEventListener('@snice/banner-action', () => {
+      output.innerHTML = '<strong>Status:</strong> Action clicked!';
+    });
+
+    // With action demo
+    const withAction = document.getElementById('with-action');
+    withAction.addEventListener('@snice/banner-action', () => {
+      alert('Update button clicked!');
+      withAction.hide();
+    });
+  </script>
+</body>
+</html>

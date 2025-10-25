@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      padding: 40px;
+      font-family: var(--snice-font-family);
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .section {
+      margin-bottom: 60px;
+    }
+    h2 {
+      color: var(--snice-color-text);
+      margin-bottom: 20px;
+      font-size: var(--snice-font-size-2xl);
+    }
+    h3 {
+      color: var(--snice-color-text-secondary);
+      margin-bottom: 16px;
+      font-size: var(--snice-font-size-lg);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 20px;
+      align-items: center;
+    }
+    .demo-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .demo-item span {
+      font-size: var(--snice-font-size-sm);
+      color: var(--snice-color-text-secondary);
+    }
+  </style>
+</head>
+<body>
+  <h2>Image Component Demo</h2>
+
+  <div class="section">
+    <h3>Sizes</h3>
+    <div class="grid">
+      <div class="demo-item">
+        <snice-image
+          src="https://picsum.photos/200/200?random=1"
+          alt="Small"
+          size="small"
+        ></snice-image>
+        <span>Small</span>
+      </div>
+      <div class="demo-item">
+        <snice-image
+          src="https://picsum.photos/200/200?random=2"
+          alt="Medium"
+          size="medium"
+        ></snice-image>
+        <span>Medium</span>
+      </div>
+      <div class="demo-item">
+        <snice-image
+          src="https://picsum.photos/200/200?random=3"
+          alt="Large"
+          size="large"
+        ></snice-image>
+        <span>Large</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Variants</h3>
+    <div class="grid">
+      <div class="demo-item">
+        <snice-image
+          src="https://picsum.photos/200/200?random=4"
+          alt="Rounded"
+          variant="rounded"
+        ></snice-image>
+        <span>Rounded</span>
+      </div>
+      <div class="demo-item">
+        <snice-image
+          src="https://picsum.photos/200/200?random=5"
+          alt="Square"
+          variant="square"
+        ></snice-image>
+        <span>Square</span>
+      </div>
+      <div class="demo-item">
+        <snice-image
+          src="https://picsum.photos/200/200?random=6"
+          alt="Circle"
+          variant="circle"
+        ></snice-image>
+        <span>Circle</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Object Fit</h3>
+    <div class="grid">
+      <div class="demo-item">
+        <snice-image
+          src="https://picsum.photos/400/200?random=7"
+          alt="Cover"
+          fit="cover"
+          width="100px"
+          height="100px"
+        ></snice-image>
+        <span>Cover</span>
+      </div>
+      <div class="demo-item">
+        <snice-image
+          src="https://picsum.photos/400/200?random=8"
+          alt="Contain"
+          fit="contain"
+          width="100px"
+          height="100px"
+        ></snice-image>
+        <span>Contain</span>
+      </div>
+      <div class="demo-item">
+        <snice-image
+          src="https://picsum.photos/400/200?random=9"
+          alt="Fill"
+          fit="fill"
+          width="100px"
+          height="100px"
+        ></snice-image>
+        <span>Fill</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Custom Dimensions</h3>
+    <div class="grid">
+      <div class="demo-item">
+        <snice-image
+          src="https://picsum.photos/200/200?random=10"
+          width="80px"
+          height="80px"
+        ></snice-image>
+        <span>80x80</span>
+      </div>
+      <div class="demo-item">
+        <snice-image
+          src="https://picsum.photos/200/200?random=11"
+          width="120px"
+          height="80px"
+        ></snice-image>
+        <span>120x80</span>
+      </div>
+      <div class="demo-item">
+        <snice-image
+          src="https://picsum.photos/200/200?random=12"
+          width="100%"
+          height="100px"
+        ></snice-image>
+        <span>100% width</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Placeholder</h3>
+    <div class="grid">
+      <div class="demo-item">
+        <snice-image size="small"></snice-image>
+        <span>No src</span>
+      </div>
+      <div class="demo-item">
+        <snice-image size="medium" variant="circle"></snice-image>
+        <span>Circle placeholder</span>
+      </div>
+      <div class="demo-item">
+        <snice-image size="large" variant="rounded"></snice-image>
+        <span>Large placeholder</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Progressive Blur-Up Loading</h3>
+    <p style="color: var(--snice-color-text-secondary); margin-bottom: 20px;">
+      Uses a tiny placeholder image that loads fast, displayed blurred until the full image loads.
+    </p>
+    <div class="grid">
+      <div class="demo-item">
+        <snice-image
+          src="https://picsum.photos/800/600?random=20"
+          placeholder="https://picsum.photos/20/15?random=20"
+          alt="Blur-up demo"
+          width="200px"
+          height="150px"
+        ></snice-image>
+        <span>Blur-up loading</span>
+      </div>
+      <div class="demo-item">
+        <snice-image
+          src="https://picsum.photos/800/600?random=21"
+          placeholder="https://picsum.photos/20/15?random=21"
+          alt="Blur-up circle"
+          variant="circle"
+          width="150px"
+          height="150px"
+        ></snice-image>
+        <span>Circle with blur-up</span>
+      </div>
+      <div class="demo-item">
+        <snice-image
+          src="https://picsum.photos/800/600?random=22"
+          placeholder="https://picsum.photos/20/15?random=22"
+          alt="Blur-up rounded"
+          variant="rounded"
+          width="200px"
+          height="150px"
+        ></snice-image>
+        <span>Rounded with blur-up</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Responsive Images (srcset & sizes)</h3>
+    <p style="color: var(--snice-color-text-secondary); margin-bottom: 20px;">
+      Automatically selects the best image size based on screen size and device pixel ratio.
+    </p>
+    <div class="grid">
+      <div class="demo-item">
+        <snice-image
+          src="https://picsum.photos/800/600?random=30"
+          srcset="https://picsum.photos/400/300?random=30 400w,
+                  https://picsum.photos/800/600?random=30 800w,
+                  https://picsum.photos/1200/900?random=30 1200w"
+          sizes="(max-width: 600px) 400px, (max-width: 900px) 800px, 1200px"
+          placeholder="https://picsum.photos/20/15?random=30"
+          alt="Responsive image"
+          width="200px"
+          height="150px"
+        ></snice-image>
+        <span>Responsive srcset</span>
+      </div>
+      <div class="demo-item">
+        <snice-image
+          src="https://picsum.photos/800/600?random=31"
+          srcset="https://picsum.photos/400/300?random=31 1x,
+                  https://picsum.photos/800/600?random=31 2x"
+          placeholder="https://picsum.photos/20/15?random=31"
+          alt="Retina image"
+          width="200px"
+          height="150px"
+        ></snice-image>
+        <span>Retina (2x)</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Load When Visible (IntersectionObserver)</h3>
+    <p style="color: var(--snice-color-text-secondary); margin-bottom: 20px;">
+      Images only load when they become visible in the viewport. Scroll down to see them load!
+    </p>
+    <div style="height: 800px; display: flex; align-items: flex-end;">
+      <p style="color: var(--snice-color-text-secondary);">⬇ Scroll down to load images below ⬇</p>
+    </div>
+    <div class="grid">
+      <div class="demo-item">
+        <snice-image
+          src="https://picsum.photos/200/200?random=40"
+          observeVisibility
+          alt="Load on visible"
+          size="medium"
+        ></snice-image>
+        <span>Loads when visible</span>
+      </div>
+      <div class="demo-item">
+        <snice-image
+          src="https://picsum.photos/200/200?random=41"
+          placeholder="https://picsum.photos/20/20?random=41"
+          observeVisibility
+          alt="Blur-up when visible"
+          size="medium"
+        ></snice-image>
+        <span>Blur-up when visible</span>
+      </div>
+      <div class="demo-item">
+        <snice-image
+          src="https://picsum.photos/200/200?random=42"
+          observeVisibility
+          variant="circle"
+          alt="Circle loads on visible"
+          size="medium"
+        ></snice-image>
+        <span>Circle when visible</span>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import './snice-image.ts';
+  </script>
+</body>
+</html>

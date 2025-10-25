@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timeline Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      padding: 40px;
+      font-family: var(--snice-font-family);
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .section {
+      margin-bottom: 60px;
+    }
+
+    h2 {
+      color: var(--snice-color-text);
+      margin-bottom: 20px;
+      font-size: var(--snice-font-size-2xl);
+    }
+
+    h3 {
+      color: var(--snice-color-text-secondary);
+      margin-bottom: 16px;
+      font-size: var(--snice-font-size-lg);
+    }
+  </style>
+</head>
+<body>
+  <h2>Timeline Component Demo</h2>
+
+  <div class="section">
+    <h3>Vertical Timeline (Left)</h3>
+    <snice-timeline id="vertical-left"></snice-timeline>
+  </div>
+
+  <div class="section">
+    <h3>Vertical Timeline (Right)</h3>
+    <snice-timeline id="vertical-right" position="right"></snice-timeline>
+  </div>
+
+  <div class="section">
+    <h3>Vertical Timeline (Alternate)</h3>
+    <snice-timeline id="vertical-alternate" position="alternate"></snice-timeline>
+  </div>
+
+  <div class="section">
+    <h3>Horizontal Timeline</h3>
+    <snice-timeline id="horizontal" orientation="horizontal"></snice-timeline>
+  </div>
+
+  <div class="section">
+    <h3>With Variants</h3>
+    <snice-timeline id="with-variants"></snice-timeline>
+  </div>
+
+  <div class="section">
+    <h3>With Custom Icons</h3>
+    <snice-timeline id="with-icons"></snice-timeline>
+  </div>
+
+  <div class="section">
+    <h3>Reversed</h3>
+    <snice-timeline id="reversed" reverse></snice-timeline>
+  </div>
+
+  <script type="module">
+    import './snice-timeline.ts';
+
+    const basicEvents = [
+      {
+        timestamp: '2024-01-15 09:00',
+        title: 'Project Started',
+        description: 'Initial planning and requirements gathering'
+      },
+      {
+        timestamp: '2024-01-20 14:30',
+        title: 'Design Phase',
+        description: 'Created mockups and wireframes'
+      },
+      {
+        timestamp: '2024-02-01 10:00',
+        title: 'Development Started',
+        description: 'Began implementing core features'
+      },
+      {
+        timestamp: '2024-02-15 16:00',
+        title: 'Testing Phase',
+        description: 'QA testing and bug fixes'
+      },
+      {
+        timestamp: '2024-02-28 11:00',
+        title: 'Launch',
+        description: 'Successfully deployed to production'
+      }
+    ];
+
+    document.getElementById('vertical-left').items = basicEvents;
+    document.getElementById('vertical-right').items = basicEvents.slice(0, 3);
+    document.getElementById('vertical-alternate').items = basicEvents;
+    document.getElementById('horizontal').items = basicEvents.slice(0, 4);
+
+    // With variants
+    document.getElementById('with-variants').items = [
+      {
+        timestamp: '10:00 AM',
+        title: 'Meeting Scheduled',
+        variant: 'info',
+        description: 'Team sync meeting'
+      },
+      {
+        timestamp: '11:30 AM',
+        title: 'Task Completed',
+        variant: 'success',
+        description: 'All tests passing'
+      },
+      {
+        timestamp: '02:00 PM',
+        title: 'Warning Issued',
+        variant: 'warning',
+        description: 'Approaching deadline'
+      },
+      {
+        timestamp: '04:30 PM',
+        title: 'Build Failed',
+        variant: 'error',
+        description: 'Deployment unsuccessful'
+      }
+    ];
+
+    // With custom icons
+    document.getElementById('with-icons').items = [
+      {
+        timestamp: 'January 2024',
+        title: 'Planning',
+        icon: '📋',
+        description: 'Project planning and setup'
+      },
+      {
+        timestamp: 'February 2024',
+        title: 'Development',
+        icon: '💻',
+        description: 'Active development phase'
+      },
+      {
+        timestamp: 'March 2024',
+        title: 'Testing',
+        icon: '🧪',
+        description: 'Quality assurance testing'
+      },
+      {
+        timestamp: 'April 2024',
+        title: 'Launch',
+        icon: '🚀',
+        description: 'Product launch'
+      }
+    ];
+
+    // Reversed
+    document.getElementById('reversed').items = basicEvents;
+  </script>
+</body>
+</html>

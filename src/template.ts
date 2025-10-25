@@ -1,6 +1,5 @@
 /**
  * Template system for Snice v3.0.0
- * Inspired by lit-html but custom implementation
  * Provides html`` and css`` tagged template processors with differential rendering
  */
 

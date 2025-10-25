@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Color Picker Demo</title>
+  <style>
+    body {
+      padding: 40px;
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .section {
+      margin-bottom: 40px;
+    }
+    h2 {
+      margin-bottom: 20px;
+    }
+    .picker-group {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .row {
+      display: flex;
+      gap: 20px;
+    }
+    .output {
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: 8px;
+      color: white;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Color Picker Demo</h1>
+
+  <div class="section">
+    <h2>Basic</h2>
+    <div class="picker-group">
+      <snice-color-picker label="Default"></snice-color-picker>
+      <snice-color-picker label="With Value" value="#3b82f6"></snice-color-picker>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Formats</h2>
+    <div class="picker-group">
+      <snice-color-picker format="hex" label="Hex Format" value="#ff0000"></snice-color-picker>
+      <snice-color-picker format="rgb" label="RGB Format" value="#00ff00"></snice-color-picker>
+      <snice-color-picker format="hsl" label="HSL Format" value="#0000ff"></snice-color-picker>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Sizes</h2>
+    <div class="picker-group">
+      <snice-color-picker size="small" label="Small" value="#f87171"></snice-color-picker>
+      <snice-color-picker size="medium" label="Medium" value="#fb923c"></snice-color-picker>
+      <snice-color-picker size="large" label="Large" value="#fbbf24"></snice-color-picker>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>With Presets</h2>
+    <div class="picker-group">
+      <snice-color-picker label="Default Presets" show-presets></snice-color-picker>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Options</h2>
+    <div class="picker-group">
+      <snice-color-picker show-input="false" label="No Input" show-presets></snice-color-picker>
+      <snice-color-picker helper-text="Choose your theme color"></snice-color-picker>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>States</h2>
+    <div class="picker-group">
+      <snice-color-picker disabled label="Disabled" value="#9ca3af"></snice-color-picker>
+      <snice-color-picker required label="Required"></snice-color-picker>
+      <snice-color-picker invalid error-text="Invalid color" label="Error"></snice-color-picker>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Interactive Demo</h2>
+    <snice-color-picker
+      id="interactive-picker"
+      label="Pick a Color"
+      value="#3b82f6"
+      show-presets
+    ></snice-color-picker>
+    <div id="output" class="output" style="background-color: #3b82f6;">
+      Color: #3b82f6
+    </div>
+  </div>
+
+  <script type="module">
+    import './snice-color-picker.ts';
+
+    const picker = document.getElementById('interactive-picker');
+    const output = document.getElementById('output');
+
+    picker.addEventListener('@snice/color-picker-change', (e) => {
+      output.style.backgroundColor = e.detail.value;
+      output.textContent = `Color: ${e.detail.value}`;
+      console.log('Color changed:', e.detail.value);
+    });
+  </script>
+</body>
+</html>

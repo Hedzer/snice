@@ -1,12 +1,7 @@
-/**
- * Simplified lit-html-style template system
- * Based on lit-html's approach but simplified
- */
 
 import { TemplateResult, CSSResult, HTML_RESULT, CSS_RESULT, isTemplateResult, isUnsafeHTML, UnsafeHTML } from './template';
 
 // Unique marker for dynamic parts
-// Using processing instruction syntax like lit-html for better compatibility
 // This parses as a comment node but doesn't get escaped in attributes
 const marker = `snice$${Math.random().toFixed(9).slice(2)}$`;
 const markerMatch = '?' + marker;

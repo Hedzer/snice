@@ -1,0 +1,40 @@
+:host {
+  display: inline-block;
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  contain: layout style paint;
+}
+
+.color-display {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--snice-spacing-xs, 0.5rem);
+}
+
+.color-swatch {
+  display: inline-block;
+  border: 1px solid var(--snice-color-border, rgb(226 226 226));
+  border-radius: var(--snice-border-radius-sm, 0.25rem);
+  flex-shrink: 0;
+}
+
+/* Swatch sizes */
+.color-swatch--small {
+  width: var(--snice-spacing-md, 1rem);
+  height: var(--snice-spacing-md, 1rem);
+}
+
+.color-swatch--medium {
+  width: var(--snice-spacing-lg, 1.5rem);
+  height: var(--snice-spacing-lg, 1.5rem);
+}
+
+.color-swatch--large {
+  width: var(--snice-spacing-xl, 2rem);
+  height: var(--snice-spacing-xl, 2rem);
+}
+
+.color-label {
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  color: var(--snice-color-text, rgb(23 23 23));
+  font-family: var(--snice-font-family-mono, 'Courier New', monospace);
+}

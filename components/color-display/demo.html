@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Color Display Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      padding: 40px;
+      font-family: var(--snice-font-family);
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .section {
+      margin-bottom: 60px;
+    }
+    h2 {
+      color: var(--snice-color-text);
+      margin-bottom: 20px;
+      font-size: var(--snice-font-size-2xl);
+    }
+    h3 {
+      color: var(--snice-color-text-secondary);
+      margin-bottom: 16px;
+      font-size: var(--snice-font-size-lg);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Color Display Component Demo</h2>
+
+  <div class="section">
+    <h3>Basic Colors</h3>
+    <div class="grid">
+      <snice-color-display value="#ff0000"></snice-color-display>
+      <snice-color-display value="#00ff00"></snice-color-display>
+      <snice-color-display value="#0000ff"></snice-color-display>
+      <snice-color-display value="#ffff00"></snice-color-display>
+      <snice-color-display value="#ff00ff"></snice-color-display>
+      <snice-color-display value="#00ffff"></snice-color-display>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Formats</h3>
+    <div class="grid">
+      <snice-color-display value="#3b82f6" format="hex"></snice-color-display>
+      <snice-color-display value="#3b82f6" format="rgb"></snice-color-display>
+      <snice-color-display value="#3b82f6" format="hsl"></snice-color-display>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Swatch Sizes</h3>
+    <div class="grid">
+      <snice-color-display value="#10b981" swatch-size="small"></snice-color-display>
+      <snice-color-display value="#10b981" swatch-size="medium"></snice-color-display>
+      <snice-color-display value="#10b981" swatch-size="large"></snice-color-display>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>With Custom Labels</h3>
+    <div class="grid">
+      <snice-color-display value="#ef4444" label="Error Red"></snice-color-display>
+      <snice-color-display value="#10b981" label="Success Green"></snice-color-display>
+      <snice-color-display value="#f59e0b" label="Warning Orange"></snice-color-display>
+      <snice-color-display value="#3b82f6" label="Info Blue"></snice-color-display>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Swatch Only</h3>
+    <div class="grid">
+      <snice-color-display value="#ef4444" show-label="false" swatch-size="large"></snice-color-display>
+      <snice-color-display value="#10b981" show-label="false" swatch-size="large"></snice-color-display>
+      <snice-color-display value="#f59e0b" show-label="false" swatch-size="large"></snice-color-display>
+      <snice-color-display value="#3b82f6" show-label="false" swatch-size="large"></snice-color-display>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Label Only</h3>
+    <div class="grid">
+      <snice-color-display value="#ef4444" show-swatch="false" format="hex"></snice-color-display>
+      <snice-color-display value="#10b981" show-swatch="false" format="rgb"></snice-color-display>
+      <snice-color-display value="#f59e0b" show-swatch="false" format="hsl"></snice-color-display>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Color Palette</h3>
+    <div class="grid">
+      <snice-color-display value="#f8fafc" label="Gray 50"></snice-color-display>
+      <snice-color-display value="#f1f5f9" label="Gray 100"></snice-color-display>
+      <snice-color-display value="#e2e8f0" label="Gray 200"></snice-color-display>
+      <snice-color-display value="#cbd5e1" label="Gray 300"></snice-color-display>
+      <snice-color-display value="#94a3b8" label="Gray 400"></snice-color-display>
+      <snice-color-display value="#64748b" label="Gray 500"></snice-color-display>
+      <snice-color-display value="#475569" label="Gray 600"></snice-color-display>
+      <snice-color-display value="#334155" label="Gray 700"></snice-color-display>
+      <snice-color-display value="#1e293b" label="Gray 800"></snice-color-display>
+      <snice-color-display value="#0f172a" label="Gray 900"></snice-color-display>
+    </div>
+  </div>
+
+  <script type="module">
+    import './snice-color-display.ts';
+  </script>
+</body>
+</html>
