@@ -113,12 +113,11 @@ For each component:
 32. [ ] `<snice-camera>` - Live camera view
 33. [ ] `<snice-audio-recorder>` - Audio recording component
 34. [ ] `<snice-draw>` - Paint/draw canvas (copy lazy-brush from https://github.com/dulnan/lazy-brush/tree/master/src)
-35. [ ] `<snice-doc>` - Document editor (WYSIWYG)
+35. [ ] `<snice-doc>` - Document editor, like notion
 36. [ ] `<snice-chat>` - Embeddable chat area (Slack-style)
 37. [ ] `<snice-terminal>` - Shell terminal component
 38. [ ] `<snice-music-player>` - Music player component
 39. [ ] `<snice-video-player>` - Video player with custom controls, quality selection, playback speed, fullscreen, PiP
-40. [ ] `<snice-bluetooth>` - Bluetooth device connection/management
 41. [ ] `<snice-file-gallery>` - File upload gallery with preview, pausable/resumable uploads, deletable files (use @request/@response decorators)
 42. [ ] `<snice-link-preview>` - Website thumbnail/preview card (like social media link previews with Open Graph data)
 43. [ ] `<snice-heatmap>` - Heatmap visualization (separate from chart - for calendar-style heatmaps like GitHub contributions)
@@ -129,3 +128,39 @@ For each component:
 48. [ ] `<snice-network-graph>` - Network/relationship graph visualization
 49. [ ] `<snice-candlestick>` - Candlestick/OHLC chart (for financial data)
 50. [ ] `<snice-masonry>` - Masonry layout (Pinterest-style grid with variable height items)
+51. [ ] `<snice-camera-annotate>` - Image annotation component (combines camera + drawing)
+   - Combines `<snice-camera>` and `<snice-draw>` components
+   - **Workflow:**
+     1. Take a picture from camera
+     2. Draw a shape on the captured image
+     3. Write a label for that shape
+     4. Then either:
+        - Draw and label more shapes on the same image
+        - Take another picture to start fresh
+   - **Labeling System:**
+     - Labels are NOT on canvas - displayed in separate sidebar
+     - Each drawn shape can have an associated label
+     - Labels are linked to their corresponding drawn shapes
+     - Each label-shape pair can be shown/hidden independently
+   - **Label Management:**
+     - Side panel/sidebar for adding labels to drawn shapes
+     - Option to present labels (show/hide all)
+     - Option to render labels on canvas or keep separate
+     - Adding labels happens via sidebar UI, not on canvas
+   - **Visual Highlighting:**
+     - Mouse over a label: corresponding shape highlighted
+     - Other shapes become opacity 0.2 + grayscale filter
+     - Clear visual emphasis on the labeled item being hovered
+   - **Color System:**
+     - Integrate `<snice-color-picker>` component for color selection
+     - Preset color palette displayed in wheel/circular pattern
+     - "Auto Rotate Colors" checkbox:
+       - When enabled, each new shape automatically gets next color from palette
+       - Colors cycle through preset wheel
+       - Makes multi-annotation workflows faster
+   - **Features:**
+     - Show/hide individual annotation layers (shape + label pairs)
+     - Bulk show/hide all annotations
+     - Export annotated image with or without labels
+     - Save annotation data separately (shapes, colors, labels, positions)
+     - Load saved annotations onto images
