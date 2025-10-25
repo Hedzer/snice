@@ -31,9 +31,6 @@ export class SniceImage extends HTMLElement implements SniceImageElement {
   @property({ type: Boolean })
   lazy = true;
 
-  @property({ type: Boolean })
-  observeVisibility = false;
-
   @property({  })
   fit: ImageFit = 'cover';
 
@@ -49,39 +46,6 @@ export class SniceImage extends HTMLElement implements SniceImageElement {
   @property({ type: Boolean, attribute: false })
   private imageLoaded = false;
 
-  @property({ type: Boolean, attribute: false })
-  private isVisible = false;
-
-  private observer: IntersectionObserver | null = null;
-
-  connectedCallback() {
-    super.connectedCallback?.();
-
-    if (this.observeVisibility && 'IntersectionObserver' in window) {
-      this.observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && !this.isVisible) {
-            this.isVisible = true;
-            this.observer?.disconnect();
-          }
-        });
-      }, {
-        rootMargin: '50px'
-      });
-
-      this.observer.observe(this);
-    } else if (this.observeVisibility) {
-      // Fallback if IntersectionObserver not supported
-      this.isVisible = true;
-    }
-  }
-
-  disconnectedCallback() {
-    super.disconnectedCallback?.();
-    this.observer?.disconnect();
-    this.observer = null;
-  }
-
   @styles()
   get componentStyles() {
     return css`${cssContent}`;
@@ -89,7 +53,6 @@ export class SniceImage extends HTMLElement implements SniceImageElement {
 
   @render()
   renderContent() {
-    const shouldLoadImage = !this.observeVisibility || this.isVisible;
     const imageSrc = this.imageError && this.fallback ? this.fallback : this.src;
     const imageAlt = this.alt || 'Image';
     const loadingAttr = this.lazy ? 'lazy' : 'eager';
@@ -117,8 +80,7 @@ export class SniceImage extends HTMLElement implements SniceImageElement {
 
     const inlineStyles = this.getInlineStyles();
 
-    // Show placeholder if no src or if waiting for visibility
-    if (!this.src || !shouldLoadImage) {
+    if (!this.src) {
       return html`
         <div class="${containerClasses}" part="container">
           <div class="${imageClasses} image--placeholder" part="placeholder" style="${inlineStyles}"></div>

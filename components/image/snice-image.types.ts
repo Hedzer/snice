@@ -12,7 +12,6 @@ export interface SniceImageElement extends HTMLElement {
   variant: ImageVariant;
   size: ImageSize;
   lazy: boolean;
-  observeVisibility: boolean;
   fit: ImageFit;
   width: string;
   height: string;

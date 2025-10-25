@@ -1,0 +1,120 @@
+:host {
+  display: inline-block;
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  contain: layout style paint;
+  vertical-align: middle;
+}
+
+.sparkline {
+  display: inline-block;
+}
+
+.sparkline__svg {
+  display: block;
+}
+
+/* Line/Area colors */
+.sparkline--primary .sparkline__line,
+.sparkline--primary .sparkline__dot {
+  stroke: var(--snice-color-primary, rgb(59 130 246));
+}
+
+.sparkline--primary .sparkline__area {
+  fill: var(--snice-color-primary, rgb(59 130 246));
+  opacity: 0.2;
+}
+
+.sparkline--success .sparkline__line,
+.sparkline--success .sparkline__dot {
+  stroke: var(--snice-color-success, rgb(22 163 74));
+}
+
+.sparkline--success .sparkline__area {
+  fill: var(--snice-color-success, rgb(22 163 74));
+  opacity: 0.2;
+}
+
+.sparkline--warning .sparkline__line,
+.sparkline--warning .sparkline__dot {
+  stroke: var(--snice-color-warning, rgb(245 158 11));
+}
+
+.sparkline--warning .sparkline__area {
+  fill: var(--snice-color-warning, rgb(245 158 11));
+  opacity: 0.2;
+}
+
+.sparkline--danger .sparkline__line,
+.sparkline--danger .sparkline__dot {
+  stroke: var(--snice-color-danger, rgb(220 38 38));
+}
+
+.sparkline--danger .sparkline__area {
+  fill: var(--snice-color-danger, rgb(220 38 38));
+  opacity: 0.2;
+}
+
+.sparkline--muted .sparkline__line,
+.sparkline--muted .sparkline__dot {
+  stroke: var(--snice-color-text-secondary, rgb(107 114 128));
+}
+
+.sparkline--muted .sparkline__area {
+  fill: var(--snice-color-text-secondary, rgb(107 114 128));
+  opacity: 0.2;
+}
+
+/* Bar colors */
+.sparkline--primary .sparkline__bar {
+  fill: var(--snice-color-primary, rgb(59 130 246));
+}
+
+.sparkline--success .sparkline__bar {
+  fill: var(--snice-color-success, rgb(22 163 74));
+}
+
+.sparkline--warning .sparkline__bar {
+  fill: var(--snice-color-warning, rgb(245 158 11));
+}
+
+.sparkline--danger .sparkline__bar {
+  fill: var(--snice-color-danger, rgb(220 38 38));
+}
+
+.sparkline--muted .sparkline__bar {
+  fill: var(--snice-color-text-secondary, rgb(107 114 128));
+}
+
+/* Custom color */
+.sparkline--custom .sparkline__line,
+.sparkline--custom .sparkline__dot {
+  stroke: var(--sparkline-custom-color);
+}
+
+.sparkline--custom .sparkline__area {
+  fill: var(--sparkline-custom-color);
+  opacity: 0.2;
+}
+
+.sparkline--custom .sparkline__bar {
+  fill: var(--sparkline-custom-color);
+}
+
+.sparkline__line,
+.sparkline__line path {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.sparkline__area {
+  stroke: none;
+}
+
+.sparkline__dot {
+  fill: white;
+}
+
+.sparkline__bar {
+  stroke: none;
+}

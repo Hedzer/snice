@@ -1,0 +1,82 @@
+:host {
+  display: inline;
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  contain: layout style paint;
+}
+
+.link {
+  color: var(--snice-color-primary, rgb(59 130 246));
+  text-decoration: none;
+  cursor: pointer;
+  transition: color var(--snice-transition-fast, 150ms);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--snice-spacing-2xs, 0.25rem);
+}
+
+.link:hover {
+  color: var(--snice-color-primary-dark, rgb(37 99 235));
+}
+
+.link:active {
+  color: var(--snice-color-primary-darker, rgb(29 78 216));
+}
+
+.link--underline {
+  text-decoration: underline;
+}
+
+.link--default {
+  color: var(--snice-color-primary, rgb(59 130 246));
+}
+
+.link--default:hover {
+  color: var(--snice-color-primary-dark, rgb(37 99 235));
+}
+
+.link--primary {
+  color: var(--snice-color-primary, rgb(59 130 246));
+  font-weight: var(--snice-font-weight-medium, 500);
+}
+
+.link--primary:hover {
+  color: var(--snice-color-primary-dark, rgb(37 99 235));
+}
+
+.link--secondary {
+  color: var(--snice-color-text-secondary, rgb(107 114 128));
+}
+
+.link--secondary:hover {
+  color: var(--snice-color-text, rgb(17 24 39));
+}
+
+.link--muted {
+  color: var(--snice-color-text-muted, rgb(156 163 175));
+}
+
+.link--muted:hover {
+  color: var(--snice-color-text-secondary, rgb(107 114 128));
+}
+
+.link--disabled {
+  color: var(--snice-color-text-disabled, rgb(209 213 219));
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.link__icon {
+  display: inline-flex;
+  font-size: var(--snice-font-size-sm, 0.875rem);
+}
+
+.link__external-icon {
+  display: inline-flex;
+  font-size: var(--snice-font-size-xs, 0.75rem);
+}
+
+:host([disabled]) .link {
+  color: var(--snice-color-text-disabled, rgb(209 213 219));
+  cursor: not-allowed;
+  pointer-events: none;
+}

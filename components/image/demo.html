@@ -268,47 +268,6 @@
     </div>
   </div>
 
-  <div class="section">
-    <h3>Load When Visible (IntersectionObserver)</h3>
-    <p style="color: var(--snice-color-text-secondary); margin-bottom: 20px;">
-      Images only load when they become visible in the viewport. Scroll down to see them load!
-    </p>
-    <div style="height: 800px; display: flex; align-items: flex-end;">
-      <p style="color: var(--snice-color-text-secondary);">⬇ Scroll down to load images below ⬇</p>
-    </div>
-    <div class="grid">
-      <div class="demo-item">
-        <snice-image
-          src="https://picsum.photos/200/200?random=40"
-          observeVisibility
-          alt="Load on visible"
-          size="medium"
-        ></snice-image>
-        <span>Loads when visible</span>
-      </div>
-      <div class="demo-item">
-        <snice-image
-          src="https://picsum.photos/200/200?random=41"
-          placeholder="https://picsum.photos/20/20?random=41"
-          observeVisibility
-          alt="Blur-up when visible"
-          size="medium"
-        ></snice-image>
-        <span>Blur-up when visible</span>
-      </div>
-      <div class="demo-item">
-        <snice-image
-          src="https://picsum.photos/200/200?random=42"
-          observeVisibility
-          variant="circle"
-          alt="Circle loads on visible"
-          size="medium"
-        ></snice-image>
-        <span>Circle when visible</span>
-      </div>
-    </div>
-  </div>
-
   <script type="module">
     import './snice-image.ts';
   </script>

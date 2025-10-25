@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Link Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      padding: 40px;
+      font-family: var(--snice-font-family);
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .section {
+      margin-bottom: 60px;
+    }
+    h2 {
+      color: var(--snice-color-text);
+      margin-bottom: 20px;
+      font-size: var(--snice-font-size-2xl);
+    }
+    h3 {
+      color: var(--snice-color-text-secondary);
+      margin-bottom: 16px;
+      font-size: var(--snice-font-size-lg);
+    }
+    .demo-item {
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .demo-item span {
+      color: var(--snice-color-text-secondary);
+      font-size: var(--snice-font-size-sm);
+      min-width: 120px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Link Component Demo</h2>
+
+  <div class="section">
+    <h3>Variants</h3>
+    <div class="demo-item">
+      <span>Default:</span>
+      <snice-link href="https://example.com" variant="default">Default link</snice-link>
+    </div>
+    <div class="demo-item">
+      <span>Primary:</span>
+      <snice-link href="https://example.com" variant="primary">Primary link</snice-link>
+    </div>
+    <div class="demo-item">
+      <span>Secondary:</span>
+      <snice-link href="https://example.com" variant="secondary">Secondary link</snice-link>
+    </div>
+    <div class="demo-item">
+      <span>Muted:</span>
+      <snice-link href="https://example.com" variant="muted">Muted link</snice-link>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>External Links</h3>
+    <div class="demo-item">
+      <span>External:</span>
+      <snice-link href="https://google.com" external>Opens in new tab</snice-link>
+    </div>
+    <div class="demo-item">
+      <span>Internal:</span>
+      <snice-link href="#section">Internal link</snice-link>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Underline</h3>
+    <div class="demo-item">
+      <span>No underline:</span>
+      <snice-link href="https://example.com">Link without underline</snice-link>
+    </div>
+    <div class="demo-item">
+      <span>With underline:</span>
+      <snice-link href="https://example.com" underline>Link with underline</snice-link>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Disabled</h3>
+    <div class="demo-item">
+      <span>Disabled:</span>
+      <snice-link href="https://example.com" disabled>Disabled link</snice-link>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>In Context</h3>
+    <p style="line-height: 1.6;">
+      This is a paragraph with an <snice-link href="https://example.com">inline link</snice-link>
+      in the middle of the text. You can also have <snice-link href="https://example.com" variant="primary">primary links</snice-link>
+      and <snice-link href="https://google.com" external>external links</snice-link> within paragraphs.
+    </p>
+  </div>
+
+  <div class="section">
+    <h3>Navigation Example</h3>
+    <nav style="display: flex; gap: 20px;">
+      <snice-link href="#home">Home</snice-link>
+      <snice-link href="#about">About</snice-link>
+      <snice-link href="#services">Services</snice-link>
+      <snice-link href="https://docs.example.com" external>Documentation</snice-link>
+    </nav>
+  </div>
+
+  <script type="module">
+    import './snice-link.ts';
+  </script>
+</body>
+</html>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snice Sparkline Demo</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 40px;
+      line-height: 1.6;
+      background: #f5f5f5;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      color: #333;
+      border-bottom: 2px solid #e0e0e0;
+      padding-bottom: 10px;
+    }
+
+    h2 {
+      color: #555;
+      margin-top: 30px;
+    }
+
+    .demo-section {
+      margin: 30px 0;
+    }
+
+    .demo-item {
+      margin: 20px 0;
+      padding: 20px;
+      background: #fafafa;
+      border-radius: 4px;
+      border-left: 4px solid #3b82f6;
+    }
+
+    .demo-label {
+      display: block;
+      margin-bottom: 12px;
+      font-weight: 500;
+      color: #666;
+    }
+
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin: 20px 0;
+    }
+
+    .sparkline-wrapper {
+      background: white;
+      padding: 15px;
+      border-radius: 4px;
+      border: 1px solid #e0e0e0;
+      text-align: center;
+    }
+
+    .sparkline-wrapper h3 {
+      margin: 0 0 10px 0;
+      font-size: 14px;
+      color: #666;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🐱 Snice Sparkline Demo</h1>
+    <p>Compact inline charts for visualizing trends and patterns in data.</p>
+
+    <div class="demo-section">
+      <h2>Chart Types</h2>
+      <div class="demo-grid">
+        <div class="sparkline-wrapper">
+          <h3>Line Chart</h3>
+          <snice-sparkline id="line-demo"></snice-sparkline>
+        </div>
+        <div class="sparkline-wrapper">
+          <h3>Bar Chart</h3>
+          <snice-sparkline id="bar-demo" type="bar"></snice-sparkline>
+        </div>
+        <div class="sparkline-wrapper">
+          <h3>Area Chart</h3>
+          <snice-sparkline id="area-demo" type="area"></snice-sparkline>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Colors</h2>
+      <div class="demo-grid">
+        <div class="sparkline-wrapper">
+          <h3>Primary</h3>
+          <snice-sparkline id="primary-demo" color="primary"></snice-sparkline>
+        </div>
+        <div class="sparkline-wrapper">
+          <h3>Success</h3>
+          <snice-sparkline id="success-demo" color="success"></snice-sparkline>
+        </div>
+        <div class="sparkline-wrapper">
+          <h3>Warning</h3>
+          <snice-sparkline id="warning-demo" color="warning"></snice-sparkline>
+        </div>
+        <div class="sparkline-wrapper">
+          <h3>Danger</h3>
+          <snice-sparkline id="danger-demo" color="danger"></snice-sparkline>
+        </div>
+        <div class="sparkline-wrapper">
+          <h3>Muted</h3>
+          <snice-sparkline id="muted-demo" color="muted"></snice-sparkline>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Line Styles</h2>
+      <div class="demo-grid">
+        <div class="sparkline-wrapper">
+          <h3>With Dots</h3>
+          <snice-sparkline id="dots-demo" show-dots></snice-sparkline>
+        </div>
+        <div class="sparkline-wrapper">
+          <h3>With Area Fill</h3>
+          <snice-sparkline id="area-fill-demo" show-area></snice-sparkline>
+        </div>
+        <div class="sparkline-wrapper">
+          <h3>Thick Stroke</h3>
+          <snice-sparkline id="thick-demo" stroke-width="3"></snice-sparkline>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Sizes</h2>
+      <div class="demo-grid">
+        <div class="sparkline-wrapper">
+          <h3>Small (60x20)</h3>
+          <snice-sparkline id="small-demo" width="60" height="20"></snice-sparkline>
+        </div>
+        <div class="sparkline-wrapper">
+          <h3>Medium (100x30)</h3>
+          <snice-sparkline id="medium-demo" width="100" height="30"></snice-sparkline>
+        </div>
+        <div class="sparkline-wrapper">
+          <h3>Large (150x50)</h3>
+          <snice-sparkline id="large-demo" width="150" height="50"></snice-sparkline>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Smooth Curves</h2>
+      <div class="demo-grid">
+        <div class="sparkline-wrapper">
+          <h3>Sharp (Default)</h3>
+          <snice-sparkline id="sharp-demo" width="150" height="50"></snice-sparkline>
+        </div>
+        <div class="sparkline-wrapper">
+          <h3>Smooth</h3>
+          <snice-sparkline id="smooth-demo" width="150" height="50" smooth></snice-sparkline>
+        </div>
+        <div class="sparkline-wrapper">
+          <h3>Smooth with Area</h3>
+          <snice-sparkline id="smooth-area-demo" width="150" height="50" smooth show-area></snice-sparkline>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Custom Colors</h2>
+      <div class="demo-grid">
+        <div class="sparkline-wrapper">
+          <h3>Purple</h3>
+          <snice-sparkline id="purple-demo" width="150" height="50" custom-color="#9333ea"></snice-sparkline>
+        </div>
+        <div class="sparkline-wrapper">
+          <h3>Pink</h3>
+          <snice-sparkline id="pink-demo" width="150" height="50" custom-color="#ec4899" smooth></snice-sparkline>
+        </div>
+        <div class="sparkline-wrapper">
+          <h3>Teal</h3>
+          <snice-sparkline id="teal-demo" type="bar" width="150" height="50" custom-color="#14b8a6"></snice-sparkline>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Real-World Examples</h2>
+
+      <div class="demo-item">
+        <span class="demo-label">Website Traffic (Last 30 Days)</span>
+        <snice-sparkline id="traffic-demo" color="primary" width="200" height="40" show-area></snice-sparkline>
+      </div>
+
+      <div class="demo-item">
+        <span class="demo-label">Sales Performance (Weekly)</span>
+        <snice-sparkline id="sales-demo" type="bar" color="success" width="200" height="40"></snice-sparkline>
+      </div>
+
+      <div class="demo-item">
+        <span class="demo-label">Server Response Time (Last Hour)</span>
+        <snice-sparkline id="response-demo" color="warning" width="200" height="40" show-dots></snice-sparkline>
+      </div>
+
+      <div class="demo-item">
+        <span class="demo-label">Error Rate (Last 24 Hours)</span>
+        <snice-sparkline id="error-demo" type="area" color="danger" width="200" height="40"></snice-sparkline>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import './snice-sparkline.ts';
+
+    // Sample data generators
+    function randomData(count, min = 0, max = 100) {
+      return Array.from({ length: count }, () =>
+        Math.floor(Math.random() * (max - min + 1)) + min
+      );
+    }
+
+    function trendingData(count, direction = 'up') {
+      const data = [];
+      let value = 50;
+      for (let i = 0; i < count; i++) {
+        value += (direction === 'up' ? 1 : -1) * (Math.random() * 10);
+        data.push(Math.max(0, Math.min(100, value)));
+      }
+      return data;
+    }
+
+    function volatileData(count) {
+      const data = [];
+      let value = 50;
+      for (let i = 0; i < count; i++) {
+        value += (Math.random() - 0.5) * 30;
+        data.push(Math.max(0, Math.min(100, value)));
+      }
+      return data;
+    }
+
+    // Chart types
+    document.getElementById('line-demo').data = randomData(15);
+    document.getElementById('bar-demo').data = randomData(12);
+    document.getElementById('area-demo').data = randomData(15);
+
+    // Colors
+    const colorData = randomData(12);
+    document.getElementById('primary-demo').data = colorData;
+    document.getElementById('success-demo').data = colorData;
+    document.getElementById('warning-demo').data = colorData;
+    document.getElementById('danger-demo').data = colorData;
+    document.getElementById('muted-demo').data = colorData;
+
+    // Line styles
+    document.getElementById('dots-demo').data = randomData(8);
+    document.getElementById('area-fill-demo').data = randomData(12);
+    document.getElementById('thick-demo').data = randomData(12);
+
+    // Sizes
+    const sizeData = randomData(10);
+    document.getElementById('small-demo').data = sizeData;
+    document.getElementById('medium-demo').data = sizeData;
+    document.getElementById('large-demo').data = sizeData;
+
+    // Smooth curves
+    const smoothData = volatileData(15);
+    document.getElementById('sharp-demo').data = smoothData;
+    document.getElementById('smooth-demo').data = smoothData;
+    document.getElementById('smooth-area-demo').data = smoothData;
+
+    // Custom colors
+    document.getElementById('purple-demo').data = trendingData(15, 'up');
+    document.getElementById('pink-demo').data = volatileData(15);
+    document.getElementById('teal-demo').data = randomData(12);
+
+    // Real-world examples
+    document.getElementById('traffic-demo').data = trendingData(30, 'up');
+    document.getElementById('sales-demo').data = randomData(7, 20, 100);
+    document.getElementById('response-demo').data = volatileData(20);
+    document.getElementById('error-demo').data = [5, 3, 7, 12, 8, 15, 25, 20, 18, 22, 28, 35, 30, 25, 20, 15, 10, 8, 5, 3, 2, 1, 1, 0];
+  </script>
+</body>
+</html>
