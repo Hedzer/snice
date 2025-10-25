@@ -30,6 +30,36 @@ Each piece hints at where your code should live, preventing the mess that kills 
 
 Snice provides decorators and utilities that map directly to these architectural concerns:
 
+
+### Basic Building Blocks
+```typescript
+
+@page({ tag: 'user-profile-page', routes: ['/users/:userId'], guards: [isAuthenticated] })
+class UserProfilePage extends HTMLElement { ... }
+
+@element('user-stats')
+class UserStats extends HTMLElement { ... }
+
+@controller('real-time-user-loader')
+class RealTimeUserLoader { ... }
+
+// And within these classes, use decorators like:
+@property() name = 'default';
+@render() fn() { return html`...`; }
+@styles() fn() { return css`...`; }
+@ready() async fn() { ... }
+@dispose() fn() { ... }
+@watch('name') fn(oldVal, newVal) { ... }
+@query('input') input!: HTMLInputElement;
+@queryAll('.item') items!: NodeListOf<HTMLElement>;
+@on('click', 'button') fn(e: Event) { ... }
+@dispatch('value-changed') fn(val: string) => Event Detail
+@context() fn(ctx: Context) { ... }
+@request('user') fn(): () => Request;
+@respond('user') fn(req) => Response;
+```
+
+
 ### 1. Cross-Cutting Concerns: Router + Context
 
 ```typescript
@@ -47,7 +77,8 @@ import { Router } from 'snice';
 
 const { page, navigate, initialize } = Router({
   target: '#app',
-  context: new AppContext()  // Global state
+  context: new AppContext(),  // Global state
+  type: 'hash'
 });
 
 // Any page can access context
@@ -58,7 +89,7 @@ class DashboardPage extends HTMLElement {
   @context()
   handleContext(ctx: Context) {
     this.appContext = ctx.application;
-    cost user = this.getUser();
+    const user = this.getUser();
   }
   // ...
 }
