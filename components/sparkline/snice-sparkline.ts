@@ -41,7 +41,7 @@ export class SniceSparkline extends HTMLElement implements SniceSparklineElement
   max?: number;
 
   @styles()
-  get componentStyles() {
+  componentStyles() {
     return css`${cssContent}`;
   }
 
@@ -59,7 +59,7 @@ export class SniceSparkline extends HTMLElement implements SniceSparklineElement
     };
   }
 
-  private normalize(value: number, min: number, max: number): number {
+  private normalizeValue(value: number, min: number, max: number): number {
     if (max === min) return 0.5;
     return (value - min) / (max - min);
   }
@@ -117,7 +117,7 @@ export class SniceSparkline extends HTMLElement implements SniceSparklineElement
       const actualBarWidth = barWidth - gap;
 
       const bars = this.data.map((value, index) => {
-        const normalizedValue = this.normalize(value, min, max);
+        const normalizedValue = this.normalizeValue(value, min, max);
         const barHeight = normalizedValue * drawHeight;
         const x = padding + (index * barWidth) + gap / 2;
         const y = padding + drawHeight - barHeight;
@@ -129,7 +129,7 @@ export class SniceSparkline extends HTMLElement implements SniceSparklineElement
       // line or area type
       const pointsArray = this.data.map((value, index) => {
         const x = padding + (index / (this.data.length - 1)) * drawWidth;
-        const y = padding + drawHeight - this.normalize(value, min, max) * drawHeight;
+        const y = padding + drawHeight - this.normalizeValue(value, min, max) * drawHeight;
         return { x, y };
       });
 

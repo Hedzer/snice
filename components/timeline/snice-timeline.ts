@@ -17,7 +17,7 @@ export class SniceTimeline extends HTMLElement implements SniceTimelineElement {
   reverse = false;
 
   @styles()
-  get styles() {
+  styles() {
     return css`${cssContent}`;
   }
 

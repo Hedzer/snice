@@ -4,6 +4,7 @@ import terser from '@rollup/plugin-terser';
 import { createRequire } from 'module';
 import fs from 'fs';
 import path from 'path';
+import CleanCSS from 'clean-css';
 
 const require = createRequire(import.meta.url);
 const packageJson = require('./package.json');
@@ -230,7 +231,11 @@ export default [
             try {
               if (fs.existsSync(cssPath)) {
                 const cssContent = fs.readFileSync(cssPath, 'utf-8');
-                return `export default ${JSON.stringify(cssContent)};`;
+                // Minify CSS using clean-css
+                const minified = new CleanCSS({
+                  level: 2 // Advanced optimizations
+                }).minify(cssContent).styles;
+                return `export default ${JSON.stringify(minified)};`;
               }
             } catch (error) {
               // Silently handle any errors

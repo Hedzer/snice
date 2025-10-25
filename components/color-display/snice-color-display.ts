@@ -23,7 +23,7 @@ export class SniceColorDisplay extends HTMLElement implements SniceColorDisplayE
   label = '';
 
   @styles()
-  get componentStyles() {
+  componentStyles() {
     return css`${cssContent}`;
   }
 

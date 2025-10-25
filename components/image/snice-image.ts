@@ -47,7 +47,7 @@ export class SniceImage extends HTMLElement implements SniceImageElement {
   private imageLoaded = false;
 
   @styles()
-  get componentStyles() {
+  componentStyles() {
     return css`${cssContent}`;
   }
 

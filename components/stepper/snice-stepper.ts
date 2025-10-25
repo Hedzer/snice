@@ -1,4 +1,4 @@
-import { element, property, render, styles, html, css, watch } from 'snice';
+import { element, property, queryAll, render, styles, html, css, watch, ready } from 'snice';
 import cssContent from './snice-stepper.css?inline';
 import type { Step, StepStatus, StepperOrientation, SniceStepperElement } from './snice-stepper.types';
 import type { SniceStepperPanelElement } from './snice-stepper-panel.types';
@@ -17,8 +17,17 @@ export class SniceStepper extends HTMLElement implements SniceStepperElement {
   @property({ type: Boolean })
   clickable = false;
 
+  @queryAll('snice-stepper-panel', { light: true, shadow: false })
+  panels?: NodeListOf<SniceStepperPanelElement>;
+
+  @ready()
+  init() {
+    // Initialize panels on first render
+    setTimeout(() => this.updatePanels(), 0);
+  }
+
   @styles()
-  get componentStyles() {
+  componentStyles() {
     return css`${cssContent}`;
   }
 
@@ -54,9 +63,9 @@ export class SniceStepper extends HTMLElement implements SniceStepperElement {
 
   @watch('currentStep')
   updatePanels() {
-    // Find all stepper-panel children and update their active state
-    const panels = Array.from(this.querySelectorAll('snice-stepper-panel')) as SniceStepperPanelElement[];
-    panels.forEach((panel, index) => {
+    // Update all stepper-panel children's active state
+    if (!this.panels) return;
+    this.panels.forEach((panel, index) => {
       panel.active = index === this.currentStep;
     });
   }
@@ -104,6 +113,9 @@ export class SniceStepper extends HTMLElement implements SniceStepperElement {
             </div>
           `;
         })}
+      </div>
+      <div class="stepper__panels" part="panels">
+        <slot></slot>
       </div>
     `;
   }

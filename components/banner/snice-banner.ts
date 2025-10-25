@@ -22,8 +22,17 @@ export class SniceBanner extends HTMLElement implements SniceBannerElement {
   @property({ attribute: 'action-text',  })
   actionText = '';
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean })
   open = false;
+
+  @watch('open')
+  updateOpenAttribute() {
+    if (this.open) {
+      this.setAttribute('open', '');
+    } else {
+      this.removeAttribute('open');
+    }
+  }
 
   @render()
   renderContent() {

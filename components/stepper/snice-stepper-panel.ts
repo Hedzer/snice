@@ -1,4 +1,4 @@
-import { element, property, render, styles, html, css } from 'snice';
+import { element, property, render, styles, html, css, watch } from 'snice';
 import cssContent from './snice-stepper-panel.css?inline';
 import type { SniceStepperPanelElement } from './snice-stepper-panel.types';
 
@@ -7,11 +7,20 @@ export class SniceStepperPanel extends HTMLElement implements SniceStepperPanelE
   @property({ type: Number })
   index = 0;
 
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean })
   active = false;
 
+  @watch('active')
+  updateActiveAttribute() {
+    if (this.active) {
+      this.setAttribute('active', '');
+    } else {
+      this.removeAttribute('active');
+    }
+  }
+
   @styles()
-  get componentStyles() {
+  componentStyles() {
     return css`${cssContent}`;
   }
 

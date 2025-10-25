@@ -30,7 +30,7 @@ export class SniceKpi extends HTMLElement implements SniceKpiElement {
   colorValue = false;
 
   @styles()
-  get componentStyles() {
+  componentStyles() {
     return css`${cssContent}`;
   }
 

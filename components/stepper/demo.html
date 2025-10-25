@@ -146,40 +146,46 @@
     <div class="demo-section">
       <h2>With Stepper Panels</h2>
       <p>Panels automatically show/hide based on active step</p>
-      <snice-stepper id="wizard-with-panels" clickable></snice-stepper>
-
-      <div style="margin-top: 20px; padding: 20px; background: white; border: 1px solid #e0e0e0; border-radius: 4px;">
+      <snice-stepper id="wizard-with-panels" clickable>
         <snice-stepper-panel>
-          <h3>Step 1: Account Information</h3>
-          <p>Enter your account details to get started.</p>
-          <input type="text" placeholder="Email" style="display: block; margin: 10px 0; padding: 8px; width: 100%; max-width: 300px;">
-          <input type="password" placeholder="Password" style="display: block; margin: 10px 0; padding: 8px; width: 100%; max-width: 300px;">
+          <div style="padding: 20px; background: white; border: 1px solid #e0e0e0; border-radius: 4px; margin-top: 20px;">
+            <h3>Step 1: Account Information</h3>
+            <p>Enter your account details to get started.</p>
+            <input type="text" placeholder="Email" style="display: block; margin: 10px 0; padding: 8px; width: 100%; max-width: 300px;">
+            <input type="password" placeholder="Password" style="display: block; margin: 10px 0; padding: 8px; width: 100%; max-width: 300px;">
+          </div>
         </snice-stepper-panel>
 
         <snice-stepper-panel>
-          <h3>Step 2: Personal Details</h3>
-          <p>Tell us a bit about yourself.</p>
-          <input type="text" placeholder="Full Name" style="display: block; margin: 10px 0; padding: 8px; width: 100%; max-width: 300px;">
-          <input type="text" placeholder="Company" style="display: block; margin: 10px 0; padding: 8px; width: 100%; max-width: 300px;">
+          <div style="padding: 20px; background: white; border: 1px solid #e0e0e0; border-radius: 4px; margin-top: 20px;">
+            <h3>Step 2: Personal Details</h3>
+            <p>Tell us a bit about yourself.</p>
+            <input type="text" placeholder="Full Name" style="display: block; margin: 10px 0; padding: 8px; width: 100%; max-width: 300px;">
+            <input type="text" placeholder="Company" style="display: block; margin: 10px 0; padding: 8px; width: 100%; max-width: 300px;">
+          </div>
         </snice-stepper-panel>
 
         <snice-stepper-panel>
-          <h3>Step 3: Preferences</h3>
-          <p>Customize your experience.</p>
-          <label style="display: block; margin: 10px 0;">
-            <input type="checkbox"> Email notifications
-          </label>
-          <label style="display: block; margin: 10px 0;">
-            <input type="checkbox"> Weekly digest
-          </label>
+          <div style="padding: 20px; background: white; border: 1px solid #e0e0e0; border-radius: 4px; margin-top: 20px;">
+            <h3>Step 3: Preferences</h3>
+            <p>Customize your experience.</p>
+            <label style="display: block; margin: 10px 0;">
+              <input type="checkbox"> Email notifications
+            </label>
+            <label style="display: block; margin: 10px 0;">
+              <input type="checkbox"> Weekly digest
+            </label>
+          </div>
         </snice-stepper-panel>
 
         <snice-stepper-panel>
-          <h3>Step 4: Complete</h3>
-          <p>You're all set! Click below to finish.</p>
-          <button style="padding: 10px 20px; background: #2563eb; color: white; border: none; border-radius: 4px; cursor: pointer;">Finish Setup</button>
+          <div style="padding: 20px; background: white; border: 1px solid #e0e0e0; border-radius: 4px; margin-top: 20px;">
+            <h3>Step 4: Complete</h3>
+            <p>You're all set! Click below to finish.</p>
+            <button style="padding: 10px 20px; background: #2563eb; color: white; border: none; border-radius: 4px; cursor: pointer;">Finish Setup</button>
+          </div>
         </snice-stepper-panel>
-      </div>
+      </snice-stepper>
 
       <div class="controls" style="margin-top: 20px;">
         <button onclick="prevStep('wizard-with-panels')">Previous</button>

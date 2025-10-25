@@ -26,7 +26,7 @@ export class SniceLink extends HTMLElement implements SniceLinkElement {
   hash = false;
 
   @styles()
-  get componentStyles() {
+  componentStyles() {
     return css`${cssContent}`;
   }
 
