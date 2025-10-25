@@ -6,6 +6,12 @@ Optimized the template rendering pipeline with several improvements:
 1. **Re-added template caching** (WeakMap keyed by TemplateStringsArray) - PRIMARY WIN
 2. **Optimized TemplateInstance.update()** to pre-separate conditional/regular parts
 3. **Micro-optimizations**: Inlined attribute computation, cached host lookup, optimized conditional checks
+4. **Simplified if/case conditionals** - Replaced complex IfPart/CasePart with streamlined versions:
+   - ConditionalIfPart: Single fragment for all children (vs. complex show/hide logic)
+   - ConditionalCasePart: Simple per-child fragments (vs. O(n²) indexOf + two-pass algorithm)
+   - Reduced code from ~300 lines to ~110 lines
+   - Eliminated all O(n²) complexity
+   - Fragment reuse built-in
 
 ## Performance Improvements
 

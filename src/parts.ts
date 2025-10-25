@@ -40,8 +40,8 @@ class Template {
         const tagName = element.tagName.toLowerCase();
 
         // Handle virtual elements: <if>, <case>
-        // These elements stay in the DOM but are styled with display:contents
-        // to be transparent wrappers that don't affect layout
+        // Keep them in the DOM with display:contents for now
+        // Will optimize later with proper template extraction
         if (tagName === 'if') {
           // <if value="${condition}">children</if>
           const valueAttr = element.getAttribute('value');
@@ -51,9 +51,9 @@ class Template {
             element.removeAttribute('value');
 
             this.parts.push({
-              type: 'if',
+              type: 'conditional-if',
               index: partIndex++,
-              element // Keep the <if> element, will show/hide via display property
+              element // Keep the <if> element
             });
 
             // Continue processing children normally
@@ -62,7 +62,6 @@ class Template {
         }
 
         // Handle <case> element
-        // Like <if>, <case> stays in DOM styled with display:contents
         if (tagName === 'case') {
           // <case value="${value}">children</case>
           const valueAttr = element.getAttribute('value');
@@ -72,9 +71,9 @@ class Template {
             element.removeAttribute('value');
 
             this.parts.push({
-              type: 'case',
+              type: 'conditional-case',
               index: partIndex++,
-              caseElement: element // Keep the <case> element for when/default processing
+              element // Keep the <case> element
             });
 
             // Continue processing children normally
@@ -202,13 +201,12 @@ class Template {
 }
 
 interface TemplatePart {
-  type: 'node' | 'attribute' | 'property' | 'boolean-attribute' | 'event' | 'if' | 'case';
+  type: 'node' | 'attribute' | 'property' | 'boolean-attribute' | 'event' | 'conditional-if' | 'conditional-case';
   index: number;
   name?: string;
   element?: Element;
   startNode?: Comment;
   endNode?: Comment;
-  caseElement?: Element; // For case/when matching
   attrStrings?: string[]; // Static string segments for attributes with interpolation
 }
 
@@ -340,13 +338,13 @@ export class TemplateInstance {
             const eventElement = nodeMap.get(partDef.element!) as Element;
             part = new EventPart(eventElement, partDef.name!);
             break;
-          case 'if':
-            const ifElement = nodeMap.get(partDef.element!) as Element;
-            part = new IfPart(ifElement);
+          case 'conditional-if':
+            const conditionalIfElement = nodeMap.get(partDef.element!) as Element;
+            part = new ConditionalIfPart(conditionalIfElement);
             break;
-          case 'case':
-            const caseElement = nodeMap.get(partDef.caseElement!) as Element;
-            part = new CasePart(caseElement);
+          case 'conditional-case':
+            const conditionalCaseElement = nodeMap.get(partDef.element!) as Element;
+            part = new ConditionalCasePart(conditionalCaseElement);
             break;
           default:
             throw new Error(`Unknown part type: ${(partDef as any).type}`);
@@ -355,7 +353,7 @@ export class TemplateInstance {
         this.parts.push(part);
 
         // Separate conditional parts from regular parts for optimized update
-        if (part instanceof IfPart || part instanceof CasePart) {
+        if (part instanceof ConditionalIfPart || part instanceof ConditionalCasePart) {
           this.conditionalParts.push({part, index: i});
         } else {
           this.regularParts.push({part, index: i});
@@ -798,49 +796,35 @@ export function matchesKeyboardFilter(event: KeyboardEvent, filter: KeyboardFilt
 }
 
 /**
- * IfPart handles <if> conditional rendering
- * Uses document fragments to actually remove/insert nodes from the DOM
- * instead of just hiding them with CSS
+ * ConditionalIfPart handles <if> conditional rendering
+ * Removes/inserts DOM nodes based on condition
  */
-export class IfPart extends Part {
+export class ConditionalIfPart extends Part {
   private ifElement: HTMLElement;
   private value: any = undefined;
   private fragment: DocumentFragment | null = null;
-  private childNodes: Node[] = [];
-  private lastCondition: boolean = false; // Cache last boolean result
 
   constructor(ifElement: Element) {
     super();
     this.ifElement = ifElement as HTMLElement;
-
-    // Set display to contents so the wrapper is transparent
-    // display:contents makes the element invisible but renders its children
     this.ifElement.style.display = 'contents';
-
-    // Store initial child nodes
-    this.childNodes = Array.from(this.ifElement.childNodes);
   }
 
   commit(value: any): void {
     const condition = Boolean(value);
-
-    // If condition hasn't changed, do nothing
-    if (this.value !== undefined && this.lastCondition === condition) {
-      return;
-    }
-
+    if (this.value === value) return;
     this.value = value;
-    this.lastCondition = condition;
 
     if (condition) {
-      // Show: restore children from fragment if they were removed
+      // Show: restore children from fragment
       if (this.fragment && this.fragment.hasChildNodes()) {
         this.ifElement.appendChild(this.fragment);
-        this.fragment = null;
       }
     } else {
-      // Hide: move children to document fragment
-      this.fragment = document.createDocumentFragment();
+      // Hide: move children to fragment
+      if (!this.fragment) {
+        this.fragment = document.createDocumentFragment();
+      }
       while (this.ifElement.firstChild) {
         this.fragment.appendChild(this.ifElement.firstChild);
       }
@@ -848,8 +832,9 @@ export class IfPart extends Part {
   }
 
   clear(): void {
-    // Move all children to fragment
-    this.fragment = document.createDocumentFragment();
+    if (!this.fragment) {
+      this.fragment = document.createDocumentFragment();
+    }
     while (this.ifElement.firstChild) {
       this.fragment.appendChild(this.ifElement.firstChild);
     }
@@ -857,109 +842,72 @@ export class IfPart extends Part {
 }
 
 /**
- * CasePart handles <case>/<when>/<default> conditional rendering
- * Uses document fragments to remove/insert <when> and <default> children
+ * ConditionalCasePart handles <case>/<when>/<default> conditional rendering
+ * Removes/inserts matching branch based on value
  */
-export class CasePart extends Part {
+export class ConditionalCasePart extends Part {
   private caseElement: Element;
   private value: any = undefined;
-  private childrenList: Element[]; // Store all children in original order
-  private fragments: Map<Element, DocumentFragment> = new Map(); // Store removed children in fragments
-  private attachedChildren: Map<Element, boolean> = new Map(); // Track which children are in DOM
+  private childrenMap: Map<string, Element> = new Map();
+  private fragments: Map<Element, DocumentFragment> = new Map();
+  private defaultChild: Element | null = null;
+  private currentChild: Element | null = null;
 
   constructor(caseElement: Element) {
     super();
     this.caseElement = caseElement;
 
-    // Store children in original order
-    this.childrenList = Array.from(this.caseElement.children);
-
-    // Initialize all children as attached
-    this.childrenList.forEach(child => {
-      this.attachedChildren.set(child, true);
-      // Create a fragment for each child to hold it when detached
-      this.fragments.set(child, document.createDocumentFragment());
-    });
+    // Build map and store children in fragments initially
+    for (const child of Array.from(this.caseElement.children)) {
+      const childTag = child.tagName.toLowerCase();
+      if (childTag === 'when') {
+        const whenValue = child.getAttribute('value') || '';
+        this.childrenMap.set(whenValue, child);
+        const fragment = document.createDocumentFragment();
+        fragment.appendChild(child);
+        this.fragments.set(child, fragment);
+      } else if (childTag === 'default') {
+        this.defaultChild = child;
+        const fragment = document.createDocumentFragment();
+        fragment.appendChild(child);
+        this.fragments.set(child, fragment);
+      }
+    }
   }
 
   commit(value: any): void {
-    // If value hasn't changed, do nothing
     if (this.value === value) return;
-
     this.value = value;
 
-    // Find matching <when> or <default> and remove/insert appropriately
-    let hasMatch = false;
+    const valueStr = String(value);
 
-    // First pass: check if any <when> matches
-    for (const child of this.childrenList) {
-      if (child.tagName.toLowerCase() === 'when') {
-        const whenValue = child.getAttribute('value');
-        if (whenValue === String(value)) {
-          hasMatch = true;
-          break;
-        }
+    // Remove current child
+    if (this.currentChild) {
+      const fragment = this.fragments.get(this.currentChild);
+      if (fragment && !fragment.hasChildNodes()) {
+        fragment.appendChild(this.currentChild);
       }
     }
 
-    // Second pass: remove/insert children based on match
-    for (const child of this.childrenList) {
-      const tagName = child.tagName.toLowerCase();
-      const isAttached = this.attachedChildren.get(child) ?? true;
-      let shouldBeAttached = false;
-
-      if (tagName === 'when') {
-        const whenValue = child.getAttribute('value');
-        shouldBeAttached = (whenValue === String(value));
-      } else if (tagName === 'default') {
-        shouldBeAttached = !hasMatch;
+    // Insert matching child
+    const matchingChild = this.childrenMap.get(valueStr) || this.defaultChild;
+    if (matchingChild) {
+      const fragment = this.fragments.get(matchingChild);
+      if (fragment && fragment.hasChildNodes()) {
+        this.caseElement.appendChild(fragment);
       }
-
-      // Update DOM if state changed
-      if (shouldBeAttached && !isAttached) {
-        // Re-insert from fragment in correct position
-        // Find next sibling that is still attached
-        const childIndex = this.childrenList.indexOf(child);
-        let insertBefore: Element | null = null;
-
-        for (let i = childIndex + 1; i < this.childrenList.length; i++) {
-          if (this.attachedChildren.get(this.childrenList[i])) {
-            insertBefore = this.childrenList[i];
-            break;
-          }
-        }
-
-        // Get child from fragment
-        const fragment = this.fragments.get(child);
-        if (fragment && fragment.firstChild) {
-          if (insertBefore) {
-            this.caseElement.insertBefore(fragment.firstChild, insertBefore);
-          } else {
-            this.caseElement.appendChild(fragment.firstChild);
-          }
-        }
-        this.attachedChildren.set(child, true);
-      } else if (!shouldBeAttached && isAttached) {
-        // Move to fragment
-        const fragment = this.fragments.get(child);
-        if (fragment) {
-          fragment.appendChild(child);
-        }
-        this.attachedChildren.set(child, false);
-      }
+      this.currentChild = matchingChild;
     }
   }
 
   clear(): void {
-    // Move all children to fragments
-    for (const child of this.childrenList) {
-      if (this.attachedChildren.get(child)) {
-        const fragment = this.fragments.get(child);
-        if (fragment) {
-          fragment.appendChild(child);
-        }
-        this.attachedChildren.set(child, false);
+    if (this.currentChild) {
+      const fragment = this.fragments.get(this.currentChild);
+      if (fragment && !fragment.hasChildNodes()) {
+        fragment.appendChild(this.currentChild);
       }
+      this.currentChild = null;
     }
   }
 }
+
