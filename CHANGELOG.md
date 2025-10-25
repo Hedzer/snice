@@ -1,3 +1,20 @@
+# [3.2.0](https://gitlab.com/Hedzer/snice/compare/v3.1.0...v3.2.0) (2025-10-25)
+
+
+### Bug Fixes
+
+* styling & build issues ([a22a691](https://gitlab.com/Hedzer/snice/commit/a22a691cb8857f40f08476bd85bff85ca89104c2))
+
+
+### Features
+
+* added spinner, slideer, textarea, timeline, and other components ([da74e6b](https://gitlab.com/Hedzer/snice/commit/da74e6b7e932f028f10dc925b0662fbd4eb44701))
+* kpi & stepper components ([4be6aa7](https://gitlab.com/Hedzer/snice/commit/4be6aa787f409d2f154220893c00ecd5ec92ed8d))
+* new components ([1be65cd](https://gitlab.com/Hedzer/snice/commit/1be65cd7c76e83b14d502285b6dd1d93d305884f))
+* removed conditional elements from dom tree ([61d00d2](https://gitlab.com/Hedzer/snice/commit/61d00d292a6184e691ee2c2acf17b5f94daa1dc7))
+* render optimizations ([b27d9a9](https://gitlab.com/Hedzer/snice/commit/b27d9a9bed09cf507a7e09396527b38c2b81d534))
+* resource leak tests ([8c587de](https://gitlab.com/Hedzer/snice/commit/8c587de1ef897ccf6a147b0176a8d15d329cab80))
+
 # [3.1.0](https://gitlab.com/Hedzer/snice/compare/v3.0.0...v3.1.0) (2025-10-24)
 
 
