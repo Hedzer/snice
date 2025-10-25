@@ -1,3 +1,8 @@
+/**
+ * NOTE: This component uses manual DOM manipulation instead of @render() decorator.
+ * A refactor to use @render() and html`` templates was attempted but reverted.
+ * Keep this implementation as-is for now - it works correctly.
+ */
 import { element, property, watch, context } from 'snice';
 import type { Placard, AppContext, Context } from 'snice';
 import cssContent from './snice-nav.css?inline';
