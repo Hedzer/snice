@@ -1,0 +1,141 @@
+:host {
+  display: inline-block;
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  contain: layout style paint;
+}
+
+.kpi {
+  display: flex;
+  flex-direction: column;
+  gap: var(--snice-spacing-xs, 0.5rem);
+  padding: var(--snice-spacing-md, 1rem);
+  border-radius: var(--snice-border-radius-md, 0.5rem);
+  background: var(--snice-color-background, rgb(255 255 255));
+  border: 1px solid var(--snice-color-border, rgb(229 231 235));
+}
+
+.kpi__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--snice-spacing-sm, 0.75rem);
+}
+
+.kpi__main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--snice-spacing-2xs, 0.25rem);
+  flex: 1;
+}
+
+.kpi__label {
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  font-weight: var(--snice-font-weight-medium, 500);
+  color: var(--snice-color-text-secondary, rgb(107 114 128));
+  margin: 0;
+}
+
+.kpi__value {
+  font-size: var(--snice-font-size-3xl, 2rem);
+  font-weight: var(--snice-font-weight-bold, 700);
+  color: var(--snice-color-text, rgb(23 23 23));
+  line-height: 1;
+  margin: 0;
+}
+
+.kpi__value--up {
+  color: var(--snice-color-success, rgb(22 163 74));
+}
+
+.kpi__value--down {
+  color: var(--snice-color-danger, rgb(220 38 38));
+}
+
+.kpi__value--neutral {
+  color: var(--snice-color-text-secondary, rgb(107 114 128));
+}
+
+.kpi__trend {
+  display: flex;
+  align-items: center;
+  gap: var(--snice-spacing-2xs, 0.25rem);
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  font-weight: var(--snice-font-weight-semibold, 600);
+  padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-xs, 0.5rem);
+  border-radius: var(--snice-border-radius-md, 0.375rem);
+}
+
+.kpi__trend-icon {
+  font-size: var(--snice-font-size-lg, 1.125rem);
+  line-height: 1;
+  font-weight: var(--snice-font-weight-bold, 700);
+}
+
+.kpi__trend-value {
+  line-height: 1;
+}
+
+.kpi__sparkline {
+  margin-top: var(--snice-spacing-xs, 0.5rem);
+}
+
+/* Sentiments */
+.kpi__trend--up {
+  color: var(--snice-color-success, rgb(22 163 74));
+  background: rgb(22 163 74 / 0.1);
+}
+
+.kpi__trend--down {
+  color: var(--snice-color-danger, rgb(220 38 38));
+  background: rgb(220 38 38 / 0.1);
+}
+
+.kpi__trend--neutral {
+  color: var(--snice-color-text-secondary, rgb(107 114 128));
+  background: rgb(107 114 128 / 0.1);
+}
+
+/* Sizes */
+.kpi--small .kpi__label {
+  font-size: var(--snice-font-size-xs, 0.75rem);
+}
+
+.kpi--small .kpi__value {
+  font-size: var(--snice-font-size-2xl, 1.5rem);
+}
+
+.kpi--small .kpi__trend {
+  font-size: var(--snice-font-size-xs, 0.75rem);
+}
+
+.kpi--small {
+  padding: var(--snice-spacing-sm, 0.75rem);
+}
+
+.kpi--medium .kpi__label {
+  font-size: var(--snice-font-size-sm, 0.875rem);
+}
+
+.kpi--medium .kpi__value {
+  font-size: var(--snice-font-size-3xl, 2rem);
+}
+
+.kpi--medium .kpi__trend {
+  font-size: var(--snice-font-size-sm, 0.875rem);
+}
+
+.kpi--large .kpi__label {
+  font-size: var(--snice-font-size-md, 1rem);
+}
+
+.kpi--large .kpi__value {
+  font-size: var(--snice-font-size-4xl, 2.5rem);
+}
+
+.kpi--large .kpi__trend {
+  font-size: var(--snice-font-size-md, 1rem);
+}
+
+.kpi--large {
+  padding: var(--snice-spacing-lg, 1.25rem);
+}

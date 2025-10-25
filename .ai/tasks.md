@@ -72,8 +72,16 @@ For each component:
    - [x] Demo page
    - [x] Human docs
    - [x] AI docs
-13. [ ] `<snice-kpi>` - KPI metric display with value, label, trend sparkline, trend value, and trend sentiment (up/down/neutral)
-14. [ ] `<snice-stepper>` - Step indicator
+13. [x] `<snice-kpi>` - KPI metric display with value, label, trend sparkline, trend value, and trend sentiment (up/down/neutral)
+   - [x] Implementation (19/19 tests passing)
+   - [x] Demo page
+   - [x] Human docs
+   - [x] AI docs
+14. [x] `<snice-stepper>` - Step indicator
+   - [x] Implementation (21/21 tests passing)
+   - [x] Demo page
+   - [x] Human docs
+   - [x] AI docs
 15. [ ] `<snice-menu>` - Menu/dropdown
 16. [ ] `<snice-tree>` - Tree view
 17. [ ] `<snice-command-palette>` - Command palette
@@ -120,3 +128,4 @@ For each component:
 47. [ ] `<snice-sankey>` - Sankey diagram (flow visualization)
 48. [ ] `<snice-network-graph>` - Network/relationship graph visualization
 49. [ ] `<snice-candlestick>` - Candlestick/OHLC chart (for financial data)
+50. [ ] `<snice-masonry>` - Masonry layout (Pinterest-style grid with variable height items)

@@ -1,0 +1,190 @@
+:host {
+  display: block;
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  contain: layout style;
+}
+
+.stepper {
+  display: flex;
+  width: 100%;
+  overflow: visible;
+}
+
+.stepper--horizontal {
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.stepper--vertical {
+  flex-direction: column;
+}
+
+.step {
+  display: flex;
+  flex: 1;
+  position: relative;
+  overflow: visible;
+}
+
+.stepper--horizontal .step {
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.stepper--vertical .step {
+  flex-direction: row;
+  align-items: flex-start;
+  flex: 0 0 auto;
+  padding-bottom: var(--snice-spacing-md, 1rem);
+}
+
+.stepper--vertical .step:last-child {
+  padding-bottom: 0;
+}
+
+.step__indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  font-weight: var(--snice-font-weight-semibold, 600);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  transition: background-color var(--snice-transition-fast, 150ms) ease,
+              border-color var(--snice-transition-fast, 150ms) ease,
+              color var(--snice-transition-fast, 150ms) ease;
+}
+
+.step__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--snice-spacing-3xs, 0.125rem);
+}
+
+.stepper--horizontal .step__content {
+  margin-top: var(--snice-spacing-xs, 0.5rem);
+  max-width: 150px;
+}
+
+.stepper--vertical .step__content {
+  margin-left: var(--snice-spacing-sm, 0.75rem);
+  flex: 1;
+}
+
+.step__label {
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  font-weight: var(--snice-font-weight-medium, 500);
+  margin: 0;
+}
+
+.step__description {
+  font-size: var(--snice-font-size-xs, 0.75rem);
+  color: var(--snice-color-text-secondary, rgb(107 114 128));
+  margin: 0;
+}
+
+/* Connector line */
+.step__connector {
+  position: absolute;
+  background: var(--snice-color-border, rgb(229 231 235));
+  transition: background-color var(--snice-transition-fast, 150ms) ease;
+}
+
+.stepper--horizontal .step__connector {
+  top: 16px;
+  left: calc(50% + 16px);
+  right: calc(-50% + 16px);
+  height: 2px;
+}
+
+.stepper--horizontal .step:last-child .step__connector {
+  display: none;
+}
+
+.stepper--vertical .step__connector {
+  top: 32px;
+  left: 15px;
+  bottom: 0;
+  width: 2px;
+}
+
+.stepper--vertical .step:last-child .step__connector {
+  display: none;
+}
+
+/* Pending state */
+.step--pending .step__indicator {
+  background: var(--snice-color-background, rgb(255 255 255));
+  border: 2px solid var(--snice-color-border, rgb(229 231 235));
+  color: var(--snice-color-text-secondary, rgb(107 114 128));
+}
+
+.step--pending .step__label {
+  color: var(--snice-color-text-secondary, rgb(107 114 128));
+}
+
+/* Active state */
+.step--active .step__indicator {
+  background: var(--snice-color-primary, rgb(37 99 235));
+  border: 2px solid var(--snice-color-primary, rgb(37 99 235));
+  color: var(--snice-color-text-inverse, rgb(255 255 255));
+}
+
+.step--active .step__label {
+  color: var(--snice-color-text, rgb(23 23 23));
+  font-weight: var(--snice-font-weight-semibold, 600);
+}
+
+/* Completed state */
+.step--completed .step__indicator {
+  background: var(--snice-color-success, rgb(22 163 74));
+  border: 2px solid var(--snice-color-success, rgb(22 163 74));
+  color: var(--snice-color-text-inverse, rgb(255 255 255));
+}
+
+.step--completed .step__label {
+  color: var(--snice-color-text, rgb(23 23 23));
+}
+
+.step--completed .step__connector {
+  background: var(--snice-color-success, rgb(22 163 74));
+}
+
+/* Error state */
+.step--error .step__indicator {
+  background: var(--snice-color-danger, rgb(220 38 38));
+  border: 2px solid var(--snice-color-danger, rgb(220 38 38));
+  color: var(--snice-color-text-inverse, rgb(255 255 255));
+}
+
+.step--error .step__label {
+  color: var(--snice-color-danger, rgb(220 38 38));
+}
+
+/* Clickable */
+.step--clickable {
+  cursor: pointer;
+}
+
+.step--clickable:hover .step__indicator {
+  transform: scale(1.05);
+}
+
+.step--clickable:active .step__indicator {
+  transform: scale(0.98);
+}
+
+.step--clickable.step--pending:hover .step__indicator {
+  border-color: var(--snice-color-primary, rgb(37 99 235));
+  background: var(--snice-color-background, rgb(255 255 255));
+}
+
+.step--clickable.step--active:hover .step__indicator,
+.step--clickable.step--completed:hover .step__indicator {
+  opacity: 0.9;
+}

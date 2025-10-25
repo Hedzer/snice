@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snice Stepper Demo</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 40px;
+      line-height: 1.6;
+      background: #f5f5f5;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      color: #333;
+      border-bottom: 2px solid #e0e0e0;
+      padding-bottom: 10px;
+    }
+
+    h2 {
+      color: #555;
+      margin-top: 30px;
+    }
+
+    .demo-section {
+      margin: 30px 0;
+      padding: 20px;
+      background: #fafafa;
+      border-radius: 4px;
+    }
+
+    .demo-vertical {
+      max-width: 600px;
+    }
+
+    .controls {
+      margin: 20px 0;
+      padding: 15px;
+      background: #e8f4f8;
+      border-radius: 4px;
+    }
+
+    .controls button {
+      margin: 5px;
+      padding: 8px 16px;
+      border: none;
+      background: #2563eb;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .controls button:hover {
+      background: #1d4ed8;
+    }
+
+    .event-log {
+      margin-top: 20px;
+      padding: 10px;
+      background: #f0f0f0;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .event-log div {
+      padding: 2px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Snice Stepper Demo</h1>
+    <p>Step indicator component for multi-step processes and wizards.</p>
+
+    <div class="demo-section">
+      <h2>Basic Horizontal Stepper</h2>
+      <snice-stepper id="basic-horizontal"></snice-stepper>
+    </div>
+
+    <div class="demo-section">
+      <h2>Interactive Horizontal Stepper</h2>
+      <p>Click on steps to navigate (clickable mode)</p>
+      <snice-stepper id="interactive-horizontal" clickable></snice-stepper>
+      <div class="controls">
+        <button onclick="navigateStep('interactive-horizontal', 0)">Go to Step 1</button>
+        <button onclick="navigateStep('interactive-horizontal', 1)">Go to Step 2</button>
+        <button onclick="navigateStep('interactive-horizontal', 2)">Go to Step 3</button>
+        <button onclick="navigateStep('interactive-horizontal', 3)">Go to Step 4</button>
+      </div>
+      <div class="event-log" id="horizontal-log"></div>
+    </div>
+
+    <div class="demo-section demo-vertical">
+      <h2>Vertical Stepper</h2>
+      <snice-stepper id="vertical-stepper" orientation="vertical"></snice-stepper>
+    </div>
+
+    <div class="demo-section demo-vertical">
+      <h2>Interactive Vertical Stepper</h2>
+      <p>Click on steps to navigate</p>
+      <snice-stepper id="interactive-vertical" orientation="vertical" clickable></snice-stepper>
+      <div class="controls">
+        <button onclick="navigateStep('interactive-vertical', 0)">Account</button>
+        <button onclick="navigateStep('interactive-vertical', 1)">Profile</button>
+        <button onclick="navigateStep('interactive-vertical', 2)">Payment</button>
+        <button onclick="navigateStep('interactive-vertical', 3)">Review</button>
+      </div>
+      <div class="event-log" id="vertical-log"></div>
+    </div>
+
+    <div class="demo-section">
+      <h2>With Step Descriptions</h2>
+      <snice-stepper id="with-descriptions"></snice-stepper>
+    </div>
+
+    <div class="demo-section">
+      <h2>Error State</h2>
+      <p>One step has an error status</p>
+      <snice-stepper id="with-error"></snice-stepper>
+    </div>
+
+    <div class="demo-section">
+      <h2>Checkout Flow Example</h2>
+      <snice-stepper id="checkout-flow" clickable></snice-stepper>
+      <div class="controls">
+        <button onclick="prevStep('checkout-flow')">Previous</button>
+        <button onclick="nextStep('checkout-flow')">Next</button>
+        <button onclick="resetSteps('checkout-flow')">Reset</button>
+      </div>
+      <div class="event-log" id="checkout-log"></div>
+    </div>
+
+    <div class="demo-section">
+      <h2>With Stepper Panels</h2>
+      <p>Panels automatically show/hide based on active step</p>
+      <snice-stepper id="wizard-with-panels" clickable></snice-stepper>
+
+      <div style="margin-top: 20px; padding: 20px; background: white; border: 1px solid #e0e0e0; border-radius: 4px;">
+        <snice-stepper-panel>
+          <h3>Step 1: Account Information</h3>
+          <p>Enter your account details to get started.</p>
+          <input type="text" placeholder="Email" style="display: block; margin: 10px 0; padding: 8px; width: 100%; max-width: 300px;">
+          <input type="password" placeholder="Password" style="display: block; margin: 10px 0; padding: 8px; width: 100%; max-width: 300px;">
+        </snice-stepper-panel>
+
+        <snice-stepper-panel>
+          <h3>Step 2: Personal Details</h3>
+          <p>Tell us a bit about yourself.</p>
+          <input type="text" placeholder="Full Name" style="display: block; margin: 10px 0; padding: 8px; width: 100%; max-width: 300px;">
+          <input type="text" placeholder="Company" style="display: block; margin: 10px 0; padding: 8px; width: 100%; max-width: 300px;">
+        </snice-stepper-panel>
+
+        <snice-stepper-panel>
+          <h3>Step 3: Preferences</h3>
+          <p>Customize your experience.</p>
+          <label style="display: block; margin: 10px 0;">
+            <input type="checkbox"> Email notifications
+          </label>
+          <label style="display: block; margin: 10px 0;">
+            <input type="checkbox"> Weekly digest
+          </label>
+        </snice-stepper-panel>
+
+        <snice-stepper-panel>
+          <h3>Step 4: Complete</h3>
+          <p>You're all set! Click below to finish.</p>
+          <button style="padding: 10px 20px; background: #2563eb; color: white; border: none; border-radius: 4px; cursor: pointer;">Finish Setup</button>
+        </snice-stepper-panel>
+      </div>
+
+      <div class="controls" style="margin-top: 20px;">
+        <button onclick="prevStep('wizard-with-panels')">Previous</button>
+        <button onclick="nextStep('wizard-with-panels')">Next</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import './snice-stepper.ts';
+    import './snice-stepper-panel.ts';
+
+    // Basic horizontal stepper
+    const basicHorizontal = document.getElementById('basic-horizontal');
+    basicHorizontal.steps = [
+      { label: 'Step 1' },
+      { label: 'Step 2' },
+      { label: 'Step 3' },
+      { label: 'Step 4' }
+    ];
+    basicHorizontal.currentStep = 1;
+
+    // Interactive horizontal stepper
+    const interactiveHorizontal = document.getElementById('interactive-horizontal');
+    interactiveHorizontal.steps = [
+      { label: 'Choose Plan' },
+      { label: 'Account Info' },
+      { label: 'Payment' },
+      { label: 'Confirmation' }
+    ];
+    interactiveHorizontal.currentStep = 0;
+
+    interactiveHorizontal.addEventListener('step-change', (e) => {
+      const log = document.getElementById('horizontal-log');
+      const entry = document.createElement('div');
+      entry.textContent = `Step changed: ${e.detail.previousStep} → ${e.detail.currentStep} (${e.detail.step.label})`;
+      log.prepend(entry);
+    });
+
+    // Vertical stepper
+    const verticalStepper = document.getElementById('vertical-stepper');
+    verticalStepper.steps = [
+      { label: 'Personal Info' },
+      { label: 'Contact Details' },
+      { label: 'Preferences' },
+      { label: 'Complete' }
+    ];
+    verticalStepper.currentStep = 2;
+
+    // Interactive vertical stepper
+    const interactiveVertical = document.getElementById('interactive-vertical');
+    interactiveVertical.steps = [
+      { label: 'Account Setup' },
+      { label: 'Profile Info' },
+      { label: 'Payment Method' },
+      { label: 'Review & Submit' }
+    ];
+    interactiveVertical.currentStep = 1;
+
+    interactiveVertical.addEventListener('step-change', (e) => {
+      const log = document.getElementById('vertical-log');
+      const entry = document.createElement('div');
+      entry.textContent = `Step changed: ${e.detail.previousStep} → ${e.detail.currentStep} (${e.detail.step.label})`;
+      log.prepend(entry);
+    });
+
+    // With descriptions
+    const withDescriptions = document.getElementById('with-descriptions');
+    withDescriptions.steps = [
+      { label: 'Order Details', description: 'Review your items' },
+      { label: 'Shipping', description: 'Enter delivery address' },
+      { label: 'Payment', description: 'Secure checkout' },
+      { label: 'Confirmation', description: 'Order summary' }
+    ];
+    withDescriptions.currentStep = 1;
+
+    // With error
+    const withError = document.getElementById('with-error');
+    withError.steps = [
+      { label: 'Upload Files', status: 'completed' },
+      { label: 'Validate', status: 'error' },
+      { label: 'Process', status: 'pending' },
+      { label: 'Complete', status: 'pending' }
+    ];
+    withError.currentStep = 1;
+
+    // Checkout flow
+    const checkoutFlow = document.getElementById('checkout-flow');
+    checkoutFlow.steps = [
+      { label: 'Cart', description: 'Review items' },
+      { label: 'Delivery', description: 'Shipping details' },
+      { label: 'Payment', description: 'Billing information' },
+      { label: 'Confirm', description: 'Place order' }
+    ];
+    checkoutFlow.currentStep = 0;
+
+    checkoutFlow.addEventListener('step-change', (e) => {
+      const log = document.getElementById('checkout-log');
+      const entry = document.createElement('div');
+      entry.textContent = `[${new Date().toLocaleTimeString()}] Step: ${e.detail.step.label}`;
+      log.prepend(entry);
+    });
+
+    // Wizard with panels
+    const wizardWithPanels = document.getElementById('wizard-with-panels');
+    wizardWithPanels.steps = [
+      { label: 'Account' },
+      { label: 'Personal' },
+      { label: 'Preferences' },
+      { label: 'Complete' }
+    ];
+    wizardWithPanels.currentStep = 0;
+
+    // Global helper functions
+    window.navigateStep = (id, step) => {
+      const stepper = document.getElementById(id);
+      stepper.currentStep = step;
+    };
+
+    window.nextStep = (id) => {
+      const stepper = document.getElementById(id);
+      if (stepper.currentStep < stepper.steps.length - 1) {
+        stepper.currentStep++;
+      }
+    };
+
+    window.prevStep = (id) => {
+      const stepper = document.getElementById(id);
+      if (stepper.currentStep > 0) {
+        stepper.currentStep--;
+      }
+    };
+
+    window.resetSteps = (id) => {
+      const stepper = document.getElementById(id);
+      stepper.currentStep = 0;
+    };
+  </script>
+</body>
+</html>

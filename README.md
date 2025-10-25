@@ -200,7 +200,7 @@ Usage - swap behavior without touching presentation:
 
 **Type Safety** - Full TypeScript support with decorator-based APIs
 
-**Zero Dependencies** - No external runtime dependencies, small bundle size
+**Zero Dependencies** - No external runtime dependencies
 
 **Standards-Based** - Built on web components, works with any framework
 
@@ -407,8 +407,56 @@ class LoginPage extends HTMLElement {
 
 ### Request/Response
 
-**`@request(channel)`** - Make requests to controllers
-**`@respond(channel)`** - Respond to requests from elements
+For the few cases where elements need to request data from controllers (like fetching user info or current state), Snice provides a request/response pattern:
+
+**`@request(channel)`** - Make requests to controllers from elements
+**`@respond(channel)`** - Respond to requests from elements in controllers
+
+This pattern is useful when:
+- Elements need to fetch data without direct controller access
+- You want to keep elements decoupled from specific controller implementations
+- Multiple elements may request the same data
+
+**Example:**
+
+```typescript
+// Controller responds to requests
+@element('app-controller')
+class AppController extends HTMLElement {
+  private currentUser = { name: 'Alice', role: 'admin' };
+
+  @respond('user')
+  getUserData() {
+    return this.currentUser;
+  }
+}
+
+// Element makes requests
+@element('user-badge')
+class UserBadge extends HTMLElement {
+  @request('user')
+  getUser!: () => any;
+
+  @ready()
+  init() {
+    const user = this.getUser();
+    console.log('Current user:', user);
+  }
+
+  @render()
+  renderContent() {
+    const user = this.getUser();
+    return html`<div>Welcome, ${user.name}!</div>`;
+  }
+}
+```
+
+**Usage:**
+```html
+<app-controller>
+  <user-badge></user-badge>
+</app-controller>
+```
 
 See [Request/Response documentation](./docs/request-response.md) for details.
 
