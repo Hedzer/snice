@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menu Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      padding: 40px;
+      font-family: var(--snice-font-family);
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+    }
+
+    .section {
+      margin-bottom: 40px;
+    }
+
+    h2 {
+      color: var(--snice-color-text);
+      margin-bottom: 20px;
+      font-size: var(--snice-font-size-2xl);
+    }
+
+    h3 {
+      color: var(--snice-color-text-secondary);
+      margin-bottom: 16px;
+      font-size: var(--snice-font-size-lg);
+    }
+
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .demo-item {
+      padding: 20px;
+      background: var(--snice-color-surface);
+      border: 1px solid var(--snice-color-border);
+      border-radius: var(--snice-border-radius-lg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .demo-item p {
+      margin: 0;
+      font-size: var(--snice-font-size-sm);
+      color: var(--snice-color-text-secondary);
+    }
+
+    button {
+      padding: 8px 16px;
+      background: var(--snice-color-surface);
+      color: var(--snice-color-text);
+      border: 1px solid var(--snice-color-border);
+      border-radius: var(--snice-border-radius-md);
+      font-family: var(--snice-font-family);
+      font-size: var(--snice-font-size-md);
+      cursor: pointer;
+      transition: all var(--snice-transition-fast) ease;
+    }
+
+    button:hover {
+      background: var(--snice-color-background-hover);
+      border-color: var(--snice-color-border-hover);
+    }
+
+    .event-log {
+      margin-top: 16px;
+      padding: 12px;
+      background: var(--snice-color-surface);
+      border: 1px solid var(--snice-color-border);
+      border-radius: var(--snice-border-radius-md);
+      font-family: monospace;
+      font-size: var(--snice-font-size-sm);
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .event-log div {
+      padding: 2px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="section">
+    <h2>Basic Menu</h2>
+    <snice-menu id="basic-menu">
+      <button slot="trigger">Open Menu</button>
+      <snice-menu-item value="new">New File</snice-menu-item>
+      <snice-menu-item value="open">Open...</snice-menu-item>
+      <snice-menu-item value="save">Save</snice-menu-item>
+      <snice-menu-divider></snice-menu-divider>
+      <snice-menu-item value="exit">Exit</snice-menu-item>
+    </snice-menu>
+  </div>
+
+  <div class="section">
+    <h2>Menu with Icons</h2>
+    <snice-menu>
+      <button slot="trigger">Actions</button>
+      <snice-menu-item value="edit">
+        <span slot="icon">✏️</span>
+        Edit
+      </snice-menu-item>
+      <snice-menu-item value="copy">
+        <span slot="icon">📋</span>
+        Copy
+      </snice-menu-item>
+      <snice-menu-item value="delete">
+        <span slot="icon">🗑️</span>
+        Delete
+      </snice-menu-item>
+      <snice-menu-divider></snice-menu-divider>
+      <snice-menu-item value="settings">
+        <span slot="icon">⚙️</span>
+        Settings
+      </snice-menu-item>
+    </snice-menu>
+  </div>
+
+  <div class="section">
+    <h2>Menu with Shortcuts</h2>
+    <snice-menu>
+      <button slot="trigger">Edit Menu</button>
+      <snice-menu-item value="undo">
+        Undo
+        <span slot="shortcut">⌘Z</span>
+      </snice-menu-item>
+      <snice-menu-item value="redo">
+        Redo
+        <span slot="shortcut">⌘⇧Z</span>
+      </snice-menu-item>
+      <snice-menu-divider></snice-menu-divider>
+      <snice-menu-item value="cut">
+        Cut
+        <span slot="shortcut">⌘X</span>
+      </snice-menu-item>
+      <snice-menu-item value="copy">
+        Copy
+        <span slot="shortcut">⌘C</span>
+      </snice-menu-item>
+      <snice-menu-item value="paste">
+        Paste
+        <span slot="shortcut">⌘V</span>
+      </snice-menu-item>
+    </snice-menu>
+  </div>
+
+  <div class="section">
+    <h2>Disabled Items</h2>
+    <snice-menu>
+      <button slot="trigger">Options</button>
+      <snice-menu-item value="available">Available Option</snice-menu-item>
+      <snice-menu-item value="disabled1" disabled>Disabled Option</snice-menu-item>
+      <snice-menu-item value="another">Another Available</snice-menu-item>
+      <snice-menu-item value="disabled2" disabled>Also Disabled</snice-menu-item>
+    </snice-menu>
+  </div>
+
+  <div class="section">
+    <h2>Menu Placement</h2>
+    <div class="demo-grid">
+      <div class="demo-item">
+        <p>Bottom Start</p>
+        <snice-menu placement="bottom-start">
+          <button slot="trigger">Bottom Start</button>
+          <snice-menu-item value="1">Option 1</snice-menu-item>
+          <snice-menu-item value="2">Option 2</snice-menu-item>
+          <snice-menu-item value="3">Option 3</snice-menu-item>
+        </snice-menu>
+      </div>
+
+      <div class="demo-item">
+        <p>Bottom End</p>
+        <snice-menu placement="bottom-end">
+          <button slot="trigger">Bottom End</button>
+          <snice-menu-item value="1">Option 1</snice-menu-item>
+          <snice-menu-item value="2">Option 2</snice-menu-item>
+          <snice-menu-item value="3">Option 3</snice-menu-item>
+        </snice-menu>
+      </div>
+
+      <div class="demo-item">
+        <p>Top Start</p>
+        <snice-menu placement="top-start">
+          <button slot="trigger">Top Start</button>
+          <snice-menu-item value="1">Option 1</snice-menu-item>
+          <snice-menu-item value="2">Option 2</snice-menu-item>
+          <snice-menu-item value="3">Option 3</snice-menu-item>
+        </snice-menu>
+      </div>
+
+      <div class="demo-item">
+        <p>Top End</p>
+        <snice-menu placement="top-end">
+          <button slot="trigger">Top End</button>
+          <snice-menu-item value="1">Option 1</snice-menu-item>
+          <snice-menu-item value="2">Option 2</snice-menu-item>
+          <snice-menu-item value="3">Option 3</snice-menu-item>
+        </snice-menu>
+      </div>
+
+      <div class="demo-item">
+        <p>Right Start</p>
+        <snice-menu placement="right-start">
+          <button slot="trigger">Right Start</button>
+          <snice-menu-item value="1">Option 1</snice-menu-item>
+          <snice-menu-item value="2">Option 2</snice-menu-item>
+          <snice-menu-item value="3">Option 3</snice-menu-item>
+        </snice-menu>
+      </div>
+
+      <div class="demo-item">
+        <p>Left Start</p>
+        <snice-menu placement="left-start">
+          <button slot="trigger">Left Start</button>
+          <snice-menu-item value="1">Option 1</snice-menu-item>
+          <snice-menu-item value="2">Option 2</snice-menu-item>
+          <snice-menu-item value="3">Option 3</snice-menu-item>
+        </snice-menu>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Hover Trigger</h2>
+    <snice-menu trigger="hover">
+      <button slot="trigger">Hover Me</button>
+      <snice-menu-item value="1">Quick Action 1</snice-menu-item>
+      <snice-menu-item value="2">Quick Action 2</snice-menu-item>
+      <snice-menu-item value="3">Quick Action 3</snice-menu-item>
+    </snice-menu>
+  </div>
+
+  <div class="section">
+    <h2>Keep Open on Select</h2>
+    <snice-menu id="multi-select-menu" close-on-select="false">
+      <button slot="trigger">Multi Select</button>
+      <snice-menu-item value="option1">Option 1</snice-menu-item>
+      <snice-menu-item value="option2">Option 2</snice-menu-item>
+      <snice-menu-item value="option3">Option 3</snice-menu-item>
+      <snice-menu-divider></snice-menu-divider>
+      <snice-menu-item value="close">Close Menu</snice-menu-item>
+    </snice-menu>
+  </div>
+
+  <div class="section">
+    <h2>User Menu with Images</h2>
+    <div style="display: flex; gap: 20px; align-items: start;">
+      <div>
+        <h3>Image on Left</h3>
+        <snice-menu id="user-menu-left" placement="bottom-end">
+          <img slot="image-left" src="https://via.placeholder.com/32" alt="User avatar"
+               style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
+          <span slot="trigger">User Menu</span>
+          <snice-menu-item value="profile">
+            <span slot="icon">👤</span>
+            View Profile
+          </snice-menu-item>
+          <snice-menu-item value="settings">
+            <span slot="icon">⚙️</span>
+            Settings
+          </snice-menu-item>
+          <snice-menu-divider></snice-menu-divider>
+          <snice-menu-item value="logout">
+            <span slot="icon">🚪</span>
+            Logout
+          </snice-menu-item>
+        </snice-menu>
+      </div>
+
+      <div>
+        <h3>Image on Right</h3>
+        <snice-menu id="user-menu-right" placement="bottom-end">
+          <span slot="trigger">Settings</span>
+          <img slot="image-right" src="https://via.placeholder.com/32/FF6B6B" alt="User avatar"
+               style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
+          <snice-menu-item value="profile">
+            <span slot="icon">👤</span>
+            View Profile
+          </snice-menu-item>
+          <snice-menu-item value="settings">
+            <span slot="icon">⚙️</span>
+            Settings
+          </snice-menu-item>
+          <snice-menu-divider></snice-menu-divider>
+          <snice-menu-item value="logout">
+            <span slot="icon">🚪</span>
+            Logout
+          </snice-menu-item>
+        </snice-menu>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Event Handling</h2>
+    <snice-menu id="event-menu">
+      <button slot="trigger">Click for Events</button>
+      <snice-menu-item value="action1">Action 1</snice-menu-item>
+      <snice-menu-item value="action2">Action 2</snice-menu-item>
+      <snice-menu-item value="action3">Action 3</snice-menu-item>
+    </snice-menu>
+    <div class="event-log" id="event-log"></div>
+  </div>
+
+  <script type="module">
+    import './snice-menu.ts';
+    import './snice-menu-item.ts';
+    import './snice-menu-divider.ts';
+
+    const eventMenu = document.getElementById('event-menu');
+    const eventLog = document.getElementById('event-log');
+
+    eventMenu.addEventListener('@snice/menu-open', (e) => {
+      const entry = document.createElement('div');
+      entry.textContent = `[${new Date().toLocaleTimeString()}] Menu opened`;
+      entry.style.color = '#22c55e';
+      eventLog.prepend(entry);
+    });
+
+    eventMenu.addEventListener('@snice/menu-close', (e) => {
+      const entry = document.createElement('div');
+      entry.textContent = `[${new Date().toLocaleTimeString()}] Menu closed`;
+      entry.style.color = '#ef4444';
+      eventLog.prepend(entry);
+    });
+
+    eventMenu.addEventListener('@snice/menu-item-select', (e) => {
+      const entry = document.createElement('div');
+      entry.textContent = `[${new Date().toLocaleTimeString()}] Item selected: ${e.detail.value}`;
+      entry.style.color = '#3b82f6';
+      eventLog.prepend(entry);
+    });
+
+    const multiSelectMenu = document.getElementById('multi-select-menu');
+    multiSelectMenu.addEventListener('@snice/menu-item-select', (e) => {
+      if (e.detail.value === 'close') {
+        multiSelectMenu.closeMenu();
+      }
+    });
+  </script>
+</body>
+</html>

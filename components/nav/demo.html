@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nav Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      padding: 40px;
+      font-family: var(--snice-font-family);
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+    }
+
+    .demo-section {
+      margin-bottom: 40px;
+    }
+
+    h2 {
+      color: var(--snice-color-text);
+      margin-bottom: 20px;
+    }
+
+    snice-nav {
+      display: block;
+      margin-bottom: 20px;
+      padding: 20px;
+      background: var(--snice-color-surface);
+      border: 1px solid var(--snice-color-border);
+      border-radius: var(--snice-border-radius-md);
+    }
+  </style>
+</head>
+<body>
+  <h2>Flat Navigation (Horizontal)</h2>
+  <div class="demo-section">
+    <snice-nav id="flat-nav" variant="flat" orientation="horizontal"></snice-nav>
+  </div>
+
+  <h2>Flat Navigation (Vertical)</h2>
+  <div class="demo-section">
+    <snice-nav id="vertical-nav" variant="flat" orientation="vertical"></snice-nav>
+  </div>
+
+  <h2>Hierarchical Navigation</h2>
+  <div class="demo-section">
+    <snice-nav id="hierarchical-nav" variant="hierarchical" orientation="vertical"></snice-nav>
+  </div>
+
+  <h2>Grouped Navigation</h2>
+  <div class="demo-section">
+    <snice-nav id="grouped-nav" variant="grouped" orientation="vertical"></snice-nav>
+  </div>
+
+  <script type="module">
+    import './snice-nav.ts';
+
+    // Sample placards for demonstration
+    const samplePlacards = [
+      { name: 'home', title: 'Home', icon: '🏠', order: 1 },
+      { name: 'dashboard', title: 'Dashboard', icon: '📊', order: 2 },
+      { name: 'users', title: 'Users', icon: '👥', order: 3 },
+      { name: 'settings', title: 'Settings', icon: '⚙️', order: 4 },
+      { name: 'help', title: 'Help', icon: '❓', order: 5 }
+    ];
+
+    const hierarchicalPlacards = [
+      { name: 'home', title: 'Home', icon: '🏠', order: 1 },
+      { name: 'products', title: 'Products', icon: '📦', order: 2 },
+      { name: 'products/list', parent: 'products', title: 'Product List', order: 1 },
+      { name: 'products/create', parent: 'products', title: 'Create Product', order: 2 },
+      { name: 'orders', title: 'Orders', icon: '🛒', order: 3 },
+      { name: 'orders/pending', parent: 'orders', title: 'Pending', order: 1 },
+      { name: 'orders/completed', parent: 'orders', title: 'Completed', order: 2 }
+    ];
+
+    const groupedPlacards = [
+      { name: 'home', title: 'Home', icon: '🏠', group: 'Main', order: 1 },
+      { name: 'dashboard', title: 'Dashboard', icon: '📊', group: 'Main', order: 2 },
+      { name: 'users', title: 'Users', icon: '👥', group: 'Management', order: 1 },
+      { name: 'roles', title: 'Roles', icon: '🔑', group: 'Management', order: 2 },
+      { name: 'settings', title: 'Settings', icon: '⚙️', group: 'System', order: 1 },
+      { name: 'logs', title: 'Logs', icon: '📝', group: 'System', order: 2 }
+    ];
+
+    // Update nav components when they're ready
+    customElements.whenDefined('snice-nav').then(() => {
+      const flatNav = document.getElementById('flat-nav');
+      const verticalNav = document.getElementById('vertical-nav');
+      const hierarchicalNav = document.getElementById('hierarchical-nav');
+      const groupedNav = document.getElementById('grouped-nav');
+
+      flatNav.update(samplePlacards, undefined, 'dashboard');
+      verticalNav.update(samplePlacards, undefined, 'users');
+      hierarchicalNav.update(hierarchicalPlacards, undefined, 'products/list');
+      groupedNav.update(groupedPlacards, undefined, 'settings');
+    });
+  </script>
+</body>
+</html>
