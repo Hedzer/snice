@@ -1,4 +1,4 @@
-import { element, property, render, styles, request, ready, on, html, css } from 'snice';
+import { element, property, render, styles, request, ready, dispose, on, html, css } from 'snice';
 import cssContent from './snice-list.css?inline';
 import '../skeleton/snice-skeleton.ts';
 
@@ -30,6 +30,7 @@ export class SniceList extends HTMLElement {
 
   private searchTimeout?: number;
   private page = 0;
+  private intersectionObserver?: IntersectionObserver;
 
   @ready()
   init() {
@@ -46,28 +47,57 @@ export class SniceList extends HTMLElement {
     }
   }
 
+  @dispose()
+  cleanup() {
+    if (this.intersectionObserver) {
+      this.intersectionObserver.disconnect();
+    }
+  }
+
   private setupInfiniteScroll() {
+    const sentinel = this.shadowRoot?.querySelector('.list__sentinel');
+    if (!sentinel) return;
+
     const scrollParent = this.getScrollParent();
-    if (!scrollParent) return;
 
-    let lastScrollTime = 0;
-
-    // Listen for scroll events
-    scrollParent.addEventListener('scroll', () => {
-      if (this.loading) return;
-
-      lastScrollTime = Date.now();
-
-      const scrollTop = scrollParent.scrollTop;
-      const scrollHeight = scrollParent.scrollHeight;
-      const clientHeight = scrollParent.clientHeight;
-
-      // Check if we're near the bottom (within 100px)
-      const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
-      if (distanceFromBottom < 100) {
-        this.loadMore();
+    // Use IntersectionObserver to detect when sentinel comes into view
+    this.intersectionObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !this.loading) {
+            this.loadMore();
+          }
+        });
+      },
+      {
+        root: scrollParent,
+        rootMargin: '100px',
+        threshold: 0.01
       }
-    });
+    );
+
+    this.intersectionObserver.observe(sentinel);
+
+    // Also listen for wheel events when at bottom
+    if (scrollParent) {
+      scrollParent.addEventListener('wheel', (e: WheelEvent) => {
+        if (this.loading) return;
+        if (e.deltaY <= 0) return; // Not scrolling down
+
+        // Check after a small delay to ensure scroll has settled
+        requestAnimationFrame(() => {
+          const scrollTop = scrollParent.scrollTop;
+          const scrollHeight = scrollParent.scrollHeight;
+          const clientHeight = scrollParent.clientHeight;
+          const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+
+          // If within 50px of bottom and scrolling down, load more
+          if (distanceFromBottom < 50 && !this.loading) {
+            this.loadMore();
+          }
+        });
+      }, { passive: true });
+    }
   }
 
   @on('input', { target: '.list__search-input' })
