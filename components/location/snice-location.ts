@@ -136,7 +136,7 @@ export class SniceLocation extends HTMLElement implements SniceLocationElement {
   }
 
   @render()
-  template() {
+  render() {
     const coords = this.getCoordinates();
     const fullAddress = this.getFullAddress();
     const mapEmbedUrl = this.showMap ? this.getMapEmbedUrl() : '';
@@ -148,7 +148,7 @@ export class SniceLocation extends HTMLElement implements SniceLocationElement {
             <if ${this.iconImage}>
               <img src="${this.iconImage}" alt="Location icon" />
             </if>
-            <if ${!this.iconImage && this.icon}>
+            <if ${!this.iconImage}>
               ${this.icon}
             </if>
           </div>
@@ -164,7 +164,7 @@ export class SniceLocation extends HTMLElement implements SniceLocationElement {
           </if>
 
           <if ${coords && (this.mode === 'full' || this.mode === 'compact' || this.mode === 'coordinates')}>
-            <div class="coordinates">${coords.latitude.toFixed(6)}, ${coords.longitude.toFixed(6)}</div>
+            <div class="coordinates">${coords ? `${coords.latitude.toFixed(6)}, ${coords.longitude.toFixed(6)}` : ''}</div>
           </if>
 
           <if ${this.showMap && mapEmbedUrl}>

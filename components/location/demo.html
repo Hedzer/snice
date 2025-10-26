@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
   <title>Location Demo</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
@@ -26,13 +27,12 @@
     }
   </style>
   <script type="module">
-    import '../../dist/snice.esm.js';
-    import './snice-location.js';
+    import './snice-location.ts';
 
     document.addEventListener('DOMContentLoaded', () => {
       // Add click event listener
       document.querySelectorAll('snice-location[clickable]').forEach(loc => {
-        loc.addEventListener('location-click', (e) => {
+        loc.addEventListener('@snice/location-click', (e) => {
           console.log('Location clicked:', e.detail);
         });
       });
@@ -113,8 +113,7 @@
         name="Home"
         address="456 Residential St"
         city="Portland"
-        state="OR"
-        show-icon="false">
+        state="OR">
       </snice-location>
     </div>
   </div>
