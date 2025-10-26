@@ -1,4 +1,4 @@
-import { element, property, render, styles, dispatch, html, css } from 'snice';
+import { element, property, render, styles, dispatch, query, html, css } from 'snice';
 import type { ChartType, ChartDataset, ChartOptions, ChartDataPoint, SniceChartElement } from './snice-chart.types';
 import chartStyles from './snice-chart.css?inline';
 
@@ -41,6 +41,9 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
 
   @property({ type: Number, attribute: false })
   private renderTrigger: number = 0;
+
+  @query('.chart-render-canvas')
+  private canvasElement?: HTMLCanvasElement;
 
   @property({ type: Boolean, attribute: false })
   private tooltipVisible: boolean = false;
@@ -100,7 +103,7 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
   }
 
   private initAndDrawChart() {
-    this.canvas = this.shadowRoot?.querySelector('.chart-render-canvas') as HTMLCanvasElement;
+    this.canvas = this.canvasElement || null;
     if (!this.canvas) return;
 
     const width = this.width || this.offsetWidth || 600;

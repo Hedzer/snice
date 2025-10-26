@@ -230,16 +230,10 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
       this.startTime = Date.now();
       this.startTimer();
 
-      this.dispatchEvent(new CustomEvent('@snice/recorder-start', {
-        detail: { recorder: this },
-        bubbles: true
-      }));
+      this.emitRecorderStart();
     } catch (error) {
       this.errorMessage = error instanceof Error ? error.message : 'Failed to start recording';
-      this.dispatchEvent(new CustomEvent('@snice/recorder-error', {
-        detail: { recorder: this, error },
-        bubbles: true
-      }));
+      this.emitRecorderError(error);
     }
   }
 
@@ -281,10 +275,7 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
       this.state = 'paused';
       this.stopTimer();
 
-      this.dispatchEvent(new CustomEvent('@snice/recorder-pause', {
-        detail: { recorder: this },
-        bubbles: true
-      }));
+      this.emitRecorderPause();
     }
   }
 
@@ -296,10 +287,7 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
       this.state = 'recording';
       this.startTimer();
 
-      this.dispatchEvent(new CustomEvent('@snice/recorder-resume', {
-        detail: { recorder: this },
-        bubbles: true
-      }));
+      this.emitRecorderResume();
     }
   }
 
@@ -314,10 +302,7 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
     this.state = 'inactive';
     this.duration = 0;
 
-    this.dispatchEvent(new CustomEvent('@snice/recorder-cancel', {
-      detail: { recorder: this },
-      bubbles: true
-    }));
+    this.emitRecorderCancel();
   }
 
   getState(): RecorderState {
@@ -344,10 +329,7 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
   }
 
   private handleRecordingComplete(): void {
-    this.dispatchEvent(new CustomEvent('@snice/recorder-stop', {
-      detail: { recorder: this },
-      bubbles: true
-    }));
+    this.emitRecorderStop();
   }
 
   private startTimer(): void {
@@ -395,6 +377,36 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
 
     this.analyser = null;
     this.visualizerData = null;
+  }
+
+  @dispatch('@snice/recorder-start', { bubbles: true, composed: true })
+  private emitRecorderStart() {
+    return { recorder: this };
+  }
+
+  @dispatch('@snice/recorder-error', { bubbles: true, composed: true })
+  private emitRecorderError(error: any) {
+    return { recorder: this, error };
+  }
+
+  @dispatch('@snice/recorder-pause', { bubbles: true, composed: true })
+  private emitRecorderPause() {
+    return { recorder: this };
+  }
+
+  @dispatch('@snice/recorder-resume', { bubbles: true, composed: true })
+  private emitRecorderResume() {
+    return { recorder: this };
+  }
+
+  @dispatch('@snice/recorder-cancel', { bubbles: true, composed: true })
+  private emitRecorderCancel() {
+    return { recorder: this };
+  }
+
+  @dispatch('@snice/recorder-stop', { bubbles: true, composed: true })
+  private emitRecorderStop() {
+    return { recorder: this };
   }
 }
 

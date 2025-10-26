@@ -108,6 +108,9 @@ export class SniceDoc extends HTMLElement implements SniceDocElement {
   @query('.doc-container')
   private container!: HTMLElement;
 
+  @query('.block-content')
+  private firstBlockElement?: HTMLElement;
+
   private selection: EditorSelection | null = null;
   private draggedBlock: string | null = null;
   private showBlockMenu: boolean = false;
@@ -268,8 +271,7 @@ export class SniceDoc extends HTMLElement implements SniceDocElement {
    * Focus the editor
    */
   focus(): void {
-    const firstBlock = this.shadowRoot?.querySelector('.block-content') as HTMLElement;
-    firstBlock?.focus();
+    this.firstBlockElement?.focus();
   }
 
   /**

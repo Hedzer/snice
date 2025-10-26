@@ -252,3 +252,105 @@ For each component:
      - Export annotated image with or without labels
      - Save annotation data separately (shapes, colors, labels, positions)
      - Load saved annotations onto images
+
+---
+
+## SNICE DECORATOR PATTERNS - REQUIRED FOR ALL COMPONENTS
+
+### DOM Queries
+- ❌ **ANTI-PATTERN**: `this.shadowRoot.querySelector(selector)`
+- ✅ **USE**: `@query(selector)` decorator
+  ```typescript
+  @query('.my-element') myElement?: HTMLElement;
+  ```
+
+- ❌ **ANTI-PATTERN**: `this.shadowRoot.querySelectorAll(selector)`
+- ✅ **USE**: `@queryAll(selector)` decorator
+  ```typescript
+  @queryAll('.my-items') myItems!: NodeListOf<HTMLElement>;
+  ```
+
+### Event Handling
+- ❌ **ANTI-PATTERN**: `element.addEventListener(event, handler)` + `removeEventListener`
+- ✅ **USE**: `@on(event, options)` decorator
+  ```typescript
+  @on('click', { target: '.button' })
+  handleClick(e: Event) {}
+  ```
+
+- ❌ **ANTI-PATTERN**: Template inline with `addEventListener`
+- ✅ **USE**: Template `@event` binding
+  ```typescript
+  html`<button @click=${this.handleClick}>Click</button>`
+  ```
+
+### Custom Events
+- ❌ **ANTI-PATTERN**: `this.dispatchEvent(new CustomEvent(name, { detail, bubbles, composed }))`
+- ✅ **USE**: `@dispatch(eventName)` decorator
+  ```typescript
+  @dispatch('@snice/my-event', { bubbles: true, composed: true })
+  private emitMyEvent() {
+    return { value: this.value, component: this };
+  }
+  ```
+
+### Lifecycle
+- ❌ **ANTI-PATTERN**: Manual setup in `connectedCallback()`
+- ✅ **USE**: `@ready()` decorator (runs after initial render)
+  ```typescript
+  @ready()
+  init() {
+    // Setup code here
+  }
+  ```
+
+- ❌ **ANTI-PATTERN**: `disconnectedCallback() { /* cleanup */ }`
+- ✅ **USE**: `@dispose()` decorator
+  ```typescript
+  @dispose()
+  cleanup() {
+    // Cleanup code here
+  }
+  ```
+
+### Mutation Observers
+- ❌ **ANTI-PATTERN**: `new MutationObserver()` + manual setup/cleanup
+- ✅ **USE**: `@observe(target, options)` decorator
+  ```typescript
+  @observe(() => this.container, { childList: true })
+  handleMutation(mutations: MutationRecord[]) {}
+  ```
+
+### Property Watching
+- ❌ **ANTI-PATTERN**: Manual property change detection
+- ✅ **USE**: `@watch(propertyName)` decorator
+  ```typescript
+  @watch('value')
+  handleValueChange(oldVal, newVal) {}
+  ```
+
+### Request/Respond Pattern (for async data requests)
+- **USE WHEN**: A component needs to request data and wait for response to continue
+- **EXAMPLE**: Table component requests filtered data when user types in search
+  ```typescript
+  // In table component:
+  @request('fetch-table-data')
+  fetchData!: (params: { search: string, page: number }) => Promise<TableData>;
+
+  async handleSearch(search: string) {
+    const data = await this.fetchData({ search, page: 1 });
+    this.renderData(data);
+  }
+
+  // In controller or parent:
+  @respond('fetch-table-data')
+  async handleDataRequest(req, respond) {
+    const data = await fetch(`/api/data?search=${req.search}&page=${req.page}`).then(r => r.json());
+    respond(data);
+  }
+  ```
+
+### Notes
+- **Method calls are fine**: Calling methods on components directly is acceptable (e.g., `camera.capture()`)
+- **Events for state changes**: Components emit events when their state changes so parent can react
+- **@request/@respond**: ONLY when component needs to request data and wait for response

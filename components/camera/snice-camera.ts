@@ -1,4 +1,4 @@
-import { element, property, render, styles, query, html, css } from 'snice';
+import { element, property, render, styles, query, dispatch, html, css } from 'snice';
 import type { CameraFacingMode, CapturedImage, SniceCameraElement, ControlsPosition } from './snice-camera.types';
 import cameraStyles from './snice-camera.css?inline';
 
@@ -132,16 +132,10 @@ export class SniceCamera extends HTMLElement implements SniceCameraElement {
       this.active = true;
       ;
 
-      this.dispatchEvent(new CustomEvent('@snice/camera-start', {
-        detail: { stream: this.stream },
-        bubbles: true
-      }));
+      this.emitCameraStart();
     } catch (error) {
       console.error('Camera error:', error);
-      this.dispatchEvent(new CustomEvent('@snice/camera-error', {
-        detail: { error },
-        bubbles: true
-      }));
+      this.emitCameraError(error);
     }
   }
 
@@ -158,9 +152,7 @@ export class SniceCamera extends HTMLElement implements SniceCameraElement {
     this.active = false;
     ;
 
-    this.dispatchEvent(new CustomEvent('@snice/camera-stop', {
-      bubbles: true
-    }));
+    this.emitCameraStop();
   }
 
   async capture(): Promise<CapturedImage> {
@@ -196,10 +188,7 @@ export class SniceCamera extends HTMLElement implements SniceCameraElement {
       timestamp: Date.now()
     };
 
-    this.dispatchEvent(new CustomEvent('@snice/camera-capture', {
-      detail: { image },
-      bubbles: true
-    }));
+    this.emitCameraCapture(image);
 
     return image;
   }
@@ -241,6 +230,26 @@ export class SniceCamera extends HTMLElement implements SniceCameraElement {
     } else {
       this.enterFullscreen();
     }
+  }
+
+  @dispatch('@snice/camera-start', { bubbles: true, composed: true })
+  private emitCameraStart() {
+    return { stream: this.stream };
+  }
+
+  @dispatch('@snice/camera-error', { bubbles: true, composed: true })
+  private emitCameraError(error: any) {
+    return { error };
+  }
+
+  @dispatch('@snice/camera-stop', { bubbles: true, composed: true })
+  private emitCameraStop() {
+    return {};
+  }
+
+  @dispatch('@snice/camera-capture', { bubbles: true, composed: true })
+  private emitCameraCapture(image: CapturedImage) {
+    return { image };
   }
 }
 

@@ -1,4 +1,4 @@
-import { element, property, query, watch, dispatch, ready, render, styles, html, css } from 'snice';
+import { element, property, query, watch, dispatch, ready, dispose, on, render, styles, html, css } from 'snice';
 import cssContent from './snice-carousel.css?inline';
 import type { CarouselAutoplayDirection, SniceCarouselElement, CarouselSlideChangeDetail } from './snice-carousel.types';
 
@@ -34,6 +34,9 @@ export class SniceCarousel extends HTMLElement implements SniceCarouselElement {
   @query('.carousel__container')
   container?: HTMLElement;
 
+  @query('slot')
+  private slotElement?: HTMLSlotElement;
+
   private slideCount = 0;
   private autoplayTimer?: number;
   private previousIndex = 0;
@@ -46,16 +49,13 @@ export class SniceCarousel extends HTMLElement implements SniceCarouselElement {
     }
   }
 
-  connectedCallback() {
-    super.connectedCallback?.();
-    const slot = this.shadowRoot?.querySelector('slot');
-    slot?.addEventListener('slotchange', () => {
-      this.updateSlideCount();
-    });
+  @on('slotchange', { target: 'slot' })
+  handleSlotChange() {
+    this.updateSlideCount();
   }
 
-  disconnectedCallback() {
-    super.disconnectedCallback?.();
+  @dispose()
+  cleanup() {
     this.pause();
   }
 
@@ -74,9 +74,8 @@ export class SniceCarousel extends HTMLElement implements SniceCarouselElement {
   }
 
   private updateSlideCount() {
-    const slot = this.shadowRoot?.querySelector('slot') as HTMLSlotElement;
-    if (slot) {
-      this.slideCount = slot.assignedElements().length;
+    if (this.slotElement) {
+      this.slideCount = this.slotElement.assignedElements().length;
     }
   }
 
@@ -118,7 +117,7 @@ export class SniceCarousel extends HTMLElement implements SniceCarouselElement {
               @click="${() => this.prev()}"
               ?disabled="${!canGoPrev}"
               aria-label="Previous slide">
-              ←
+              <span>‹</span>
             </button>
             <button
               class="carousel__button carousel__button--next"
@@ -126,7 +125,7 @@ export class SniceCarousel extends HTMLElement implements SniceCarouselElement {
               @click="${() => this.next()}"
               ?disabled="${!canGoNext}"
               aria-label="Next slide">
-              →
+              <span>›</span>
             </button>
           </div>
         </if>
@@ -156,11 +155,19 @@ export class SniceCarousel extends HTMLElement implements SniceCarouselElement {
 
   @styles()
   styles() {
+    const slideWidth = 100 / this.slidesPerView;
+    const gapAdjustment = this.spaceBetween * (this.slidesPerView - 1) / this.slidesPerView;
+
     return css/*css*/`
       ${cssContent}
-      .carousel__slide {
-        width: calc(${100 / this.slidesPerView}% - ${this.spaceBetween * (this.slidesPerView - 1) / this.slidesPerView}px);
+      ::slotted(*) {
+        flex: 0 0 auto;
+        width: calc(${slideWidth}% - ${gapAdjustment}px);
         margin-right: ${this.spaceBetween}px;
+        box-sizing: border-box;
+      }
+      ::slotted(*:last-child) {
+        margin-right: 0;
       }
     `;
   }
@@ -187,7 +194,8 @@ export class SniceCarousel extends HTMLElement implements SniceCarouselElement {
   }
 
   goToSlide(index: number) {
-    if (index >= 0 && index <= this.slideCount - this.slidesPerView) {
+    if (index >= 0) {
+      // Allow setting any index - validation happens on render
       this.previousIndex = this.activeIndex;
       this.activeIndex = index;
       this.dispatchSlideChange();

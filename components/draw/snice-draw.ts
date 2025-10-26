@@ -1,4 +1,4 @@
-import { element, property, render, styles, ready, dispose, on, html, css } from 'snice';
+import { element, property, render, styles, ready, dispose, on, query, dispatch, html, css } from 'snice';
 import type { DrawTool, Point, DrawStroke, SniceDrawElement } from './snice-draw.types';
 import drawStyles from './snice-draw.css?inline';
 
@@ -204,6 +204,9 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
   @property({ type: Boolean })
   disabled: boolean = false;
 
+  @query('.draw-canvas')
+  private canvasElement?: HTMLCanvasElement;
+
   private canvas: HTMLCanvasElement | null = null;
   private ctx: CanvasRenderingContext2D | null = null;
   private isDrawing: boolean = false;
@@ -257,7 +260,7 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
   }
 
   private initCanvas() {
-    this.canvas = this.shadowRoot?.querySelector('canvas') || null;
+    this.canvas = this.canvasElement || null;
 
     if (!this.canvas) return;
 
@@ -308,10 +311,7 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
 
     this.canvas?.setPointerCapture(e.pointerId);
 
-    this.dispatchEvent(new CustomEvent('@snice/draw-start', {
-      detail: { draw: this, point },
-      bubbles: true
-    }));
+    this.emitDrawStart(point);
   }
 
   @on('pointermove', { target: 'canvas' })
@@ -354,10 +354,7 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
       // Redraw immediately to show the processed polygon
       this.redraw();
 
-      this.dispatchEvent(new CustomEvent('@snice/draw-end', {
-        detail: { draw: this, stroke },
-        bubbles: true
-      }));
+      this.emitDrawEnd(stroke);
     }
 
     this.canvas?.releasePointerCapture(e.pointerId);
@@ -513,10 +510,7 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
     this.ctx.fillStyle = this.backgroundColor;
     this.ctx.fillRect(0, 0, this.width, this.height);
 
-    this.dispatchEvent(new CustomEvent('@snice/draw-clear', {
-      detail: { draw: this },
-      bubbles: true
-    }));
+    this.emitDrawClear();
   }
 
   undo(): void {
@@ -527,10 +521,7 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
       this.undoneStrokes.push(stroke);
       this.redraw();
 
-      this.dispatchEvent(new CustomEvent('@snice/draw-undo', {
-        detail: { draw: this },
-        bubbles: true
-      }));
+      this.emitDrawUndo();
     }
   }
 
@@ -542,10 +533,7 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
       this.strokes.push(stroke);
       this.drawStroke(stroke);
 
-      this.dispatchEvent(new CustomEvent('@snice/draw-redo', {
-        detail: { draw: this },
-        bubbles: true
-      }));
+      this.emitDrawRedo();
     }
   }
 
@@ -558,7 +546,7 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
     if (!this.canvas) throw new Error('Canvas not initialized');
 
     return new Promise((resolve, reject) => {
-      this.canvas.toBlob(
+      this.canvas?.toBlob(
         (blob) => {
           if (blob) resolve(blob);
           else reject(new Error('Failed to create blob'));
@@ -750,6 +738,31 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
     curvePoints.push(end);
 
     return curvePoints;
+  }
+
+  @dispatch('@snice/draw-start', { bubbles: true, composed: true })
+  private emitDrawStart(point: Point) {
+    return { draw: this, point };
+  }
+
+  @dispatch('@snice/draw-end', { bubbles: true, composed: true })
+  private emitDrawEnd(stroke: DrawStroke) {
+    return { draw: this, stroke };
+  }
+
+  @dispatch('@snice/draw-clear', { bubbles: true, composed: true })
+  private emitDrawClear() {
+    return { draw: this };
+  }
+
+  @dispatch('@snice/draw-undo', { bubbles: true, composed: true })
+  private emitDrawUndo() {
+    return { draw: this };
+  }
+
+  @dispatch('@snice/draw-redo', { bubbles: true, composed: true })
+  private emitDrawRedo() {
+    return { draw: this };
   }
 }
 

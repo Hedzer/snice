@@ -252,6 +252,7 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
    * Scroll to message
    */
   scrollToMessage(messageId: string): void {
+    // Using dynamic querySelector for data attributes is acceptable
     const messageEl = this.shadowRoot?.querySelector(`[data-message-id="${messageId}"]`);
     if (messageEl) {
       messageEl.scrollIntoView({ behavior: 'smooth', block: 'center' });

@@ -1,25 +1,24 @@
 :host {
   display: block;
   position: relative;
+  contain: layout style paint;
 }
 
 .carousel {
   position: relative;
+  width: 100%;
   overflow: hidden;
 }
 
 .carousel__viewport {
   overflow: hidden;
+  width: 100%;
 }
 
 .carousel__container {
   display: flex;
-  transition: transform 0.3s ease;
-}
-
-.carousel__slide {
-  flex-shrink: 0;
   width: 100%;
+  transition: transform 0.3s ease;
 }
 
 .carousel__controls {
@@ -43,10 +42,17 @@
   background: rgba(0, 0, 0, 0.5);
   color: white;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
   transition: background 0.2s;
+  font-size: 2rem;
+  line-height: 1;
+  padding: 0;
+}
+
+.carousel__button span {
+  display: block;
+  transform: translateY(-0.1em);
 }
 
 .carousel__button:hover {
