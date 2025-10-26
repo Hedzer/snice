@@ -23,6 +23,7 @@ test.describe('Snice Chart', () => {
     const barChart = page.locator('snice-chart#bar-chart');
     expect(await barChart.count()).toBe(1);
     expect(await barChart.getAttribute('type')).toBe('bar');
+    await barChart.screenshot({ path: '/tmp/bar-chart-debug.png' });
   });
 
   test('should render pie chart', async ({ page }) => {
@@ -31,9 +32,9 @@ test.describe('Snice Chart', () => {
     expect(await pieChart.getAttribute('type')).toBe('pie');
   });
 
-  test('should contain SVG element', async ({ page }) => {
-    const svg = page.locator('snice-chart svg').first();
-    expect(await svg.count()).toBe(1);
+  test('should contain chart canvas', async ({ page }) => {
+    const chartCanvas = page.locator('snice-chart canvas').first();
+    expect(await chartCanvas.count()).toBe(1);
   });
 
   test('should have legend', async ({ page }) => {
