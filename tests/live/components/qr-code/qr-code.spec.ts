@@ -20,8 +20,11 @@ test.describe('Snice QR Code', () => {
   });
 
   test('should render SVG by default', async ({ page }) => {
-    const svg = page.locator('snice-qr-code svg').first();
-    expect(await svg.count()).toBe(1);
+    const hasSVG = await page.evaluate(() => {
+      const qr = document.querySelector('snice-qr-code');
+      return !!qr?.shadowRoot?.querySelector('svg');
+    });
+    expect(hasSVG).toBe(true);
   });
 
   test('should have custom colors', async ({ page }) => {

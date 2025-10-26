@@ -170,6 +170,22 @@ export class SniceQRCode extends HTMLElement implements SniceQRCodeElement {
     const cellSize = (this.size - this.margin * 2) / this.qrSize;
     const totalSize = this.size;
 
+    const rects: any[] = [];
+    this.qrMatrix.forEach((row, y) => {
+      row.forEach((cell, x) => {
+        if (cell) {
+          rects.push(html`
+            <rect
+              x="${this.margin + x * cellSize}"
+              y="${this.margin + y * cellSize}"
+              width="${cellSize}"
+              height="${cellSize}"
+              fill="${this.fgColor}" />
+          `);
+        }
+      });
+    });
+
     return html`
       <svg
         width="${totalSize}"
@@ -177,18 +193,7 @@ export class SniceQRCode extends HTMLElement implements SniceQRCodeElement {
         viewBox="0 0 ${totalSize} ${totalSize}"
         xmlns="http://www.w3.org/2000/svg">
         <rect width="${totalSize}" height="${totalSize}" fill="${this.bgColor}" />
-        ${this.qrMatrix.map((row, y) =>
-          row.map((cell, x) =>
-            cell ? html`
-              <rect
-                x="${this.margin + x * cellSize}"
-                y="${this.margin + y * cellSize}"
-                width="${cellSize}"
-                height="${cellSize}"
-                fill="${this.fgColor}" />
-            ` : ''
-          )
-        )}
+        ${rects}
         ${this.includeImage && this.imageUrl ? this.renderImage() : ''}
       </svg>
     `;

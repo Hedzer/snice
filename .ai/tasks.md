@@ -188,7 +188,7 @@ For each component:
    - [x] Demo page
    - [x] Human docs
    - [x] AI docs
-34. [x] `<snice-draw>` - Paint/draw canvas (copy lazy-brush from https://github.com/dulnan/lazy-brush/tree/master/src)
+34. [x] `<snice-draw>` - Paint/draw canvas with smooth drawing
    - [x] Implementation (1/1 tests passing, limited testing due to Canvas API requirements)
    - [x] Demo page
    - [x] Human docs

@@ -107,6 +107,9 @@
       const widthValue = document.getElementById('width-value');
       const lazyCheck = document.getElementById('lazy-check');
       const lazyRadiusInput = document.getElementById('lazy-radius');
+      const lazyRadiusValue = document.getElementById('lazy-radius-value');
+      const frictionInput = document.getElementById('friction');
+      const frictionValue = document.getElementById('friction-value');
       const smoothingInput = document.getElementById('smoothing');
 
       // Tool selection
@@ -136,6 +139,12 @@
 
       lazyRadiusInput.addEventListener('input', (e) => {
         draw.lazyRadius = parseInt(e.target.value);
+        lazyRadiusValue.textContent = e.target.value;
+      });
+
+      frictionInput.addEventListener('input', (e) => {
+        draw.friction = parseFloat(e.target.value);
+        frictionValue.textContent = parseFloat(e.target.value).toFixed(2);
       });
 
       smoothingInput.addEventListener('input', (e) => {
@@ -220,10 +229,13 @@
         <div class="toolbar-section">
           <div class="toolbar-label">Lazy Brush</div>
           <label style="display: flex; align-items: center; gap: 8px;">
-            <input type="checkbox" id="lazy-check" checked>
+            <input type="checkbox" id="lazy-check">
             Enable
           </label>
-          <input type="range" id="lazy-radius" min="0" max="100" value="30" title="Lazy Radius">
+          <div class="toolbar-label" style="margin-top: 8px;">Radius: <span id="lazy-radius-value">60</span></div>
+          <input type="range" id="lazy-radius" min="0" max="200" value="60" title="Lazy Radius">
+          <div class="toolbar-label" style="margin-top: 8px;">Friction: <span id="friction-value">0.10</span></div>
+          <input type="range" id="friction" min="0" max="1" step="0.01" value="0.1" title="Friction">
         </div>
 
         <div class="toolbar-section">

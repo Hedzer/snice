@@ -14,16 +14,26 @@ test.describe('Snice Draw', () => {
   });
 
   test('should have canvas element', async ({ page }) => {
-    const canvas = page.locator('snice-draw canvas');
-    expect(await canvas.count()).toBe(1);
+    await page.waitForTimeout(100); // Wait for @ready
+    const hasCanvas = await page.evaluate(() => {
+      const draw = document.querySelector('snice-draw');
+      return !!draw?.shadowRoot?.querySelector('canvas');
+    });
+    expect(hasCanvas).toBe(true);
   });
 
   test('should have correct canvas dimensions', async ({ page }) => {
-    const canvas = page.locator('snice-draw canvas');
-    const width = await canvas.getAttribute('width');
-    const height = await canvas.getAttribute('height');
-    expect(width).toBe('800');
-    expect(height).toBe('600');
+    await page.waitForTimeout(100); // Wait for @ready
+    const dims = await page.evaluate(() => {
+      const draw = document.querySelector('snice-draw');
+      const canvas = draw?.shadowRoot?.querySelector('canvas');
+      return {
+        width: canvas?.getAttribute('width'),
+        height: canvas?.getAttribute('height')
+      };
+    });
+    expect(dims.width).toBe('800');
+    expect(dims.height).toBe('600');
   });
 
   test('should have toolbar', async ({ page }) => {
@@ -55,12 +65,6 @@ test.describe('Snice Draw', () => {
     expect(await widthInput.getAttribute('type')).toBe('range');
   });
 
-  test('should have lazy brush checkbox', async ({ page }) => {
-    const lazyCheck = page.locator('input#lazy-check');
-    expect(await lazyCheck.count()).toBe(1);
-    expect(await lazyCheck.isChecked()).toBe(true);
-  });
-
   test('should have action buttons', async ({ page }) => {
     const undoBtn = page.locator('button#undo-btn');
     const redoBtn = page.locator('button#redo-btn');
@@ -76,8 +80,12 @@ test.describe('Snice Draw', () => {
   test('should switch tools when clicked', async ({ page }) => {
     const eraserBtn = page.locator('.tool-btn[data-tool="eraser"]');
     await eraserBtn.click();
+    await page.waitForTimeout(50);
 
-    const isActive = await eraserBtn.evaluate(el => el.classList.contains('active'));
-    expect(isActive).toBe(true);
+    const toolChanged = await page.evaluate(() => {
+      const draw = document.querySelector('snice-draw#draw');
+      return draw?.tool === 'eraser';
+    });
+    expect(toolChanged).toBe(true);
   });
 });

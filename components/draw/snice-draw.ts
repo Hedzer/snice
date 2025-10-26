@@ -1,47 +1,165 @@
-import { element, property, render, styles, query, html, css } from 'snice';
+import { element, property, render, styles, ready, dispose, on, html, css } from 'snice';
 import type { DrawTool, Point, DrawStroke, SniceDrawElement } from './snice-draw.types';
 import drawStyles from './snice-draw.css?inline';
 
-// Lazy brush implementation
-class LazyBrush {
-  private brushX: number = 0;
-  private brushY: number = 0;
-  private pointerX: number = 0;
-  private pointerY: number = 0;
-  private radius: number;
+const ease = (t: number): number => t * (2 - t);
 
-  constructor(radius: number = 30) {
-    this.radius = radius;
+class DrawPoint implements Point {
+  x: number;
+  y: number;
+
+  constructor(x: number, y: number) {
+    this.x = x;
+    this.y = y;
   }
 
-  update(x: number, y: number): { x: number; y: number; changed: boolean } {
-    this.pointerX = x;
-    this.pointerY = y;
+  update(point: Point): DrawPoint {
+    this.x = point.x;
+    this.y = point.y;
+    return this;
+  }
 
-    const dx = this.pointerX - this.brushX;
-    const dy = this.pointerY - this.brushY;
-    const distance = Math.sqrt(dx * dx + dy * dy);
+  moveByAngle(angle: number, distance: number, friction?: number): DrawPoint {
+    const angleRotated = angle + Math.PI / 2;
 
-    if (distance > this.radius) {
-      const angle = Math.atan2(dy, dx);
-      this.brushX = this.pointerX - Math.cos(angle) * this.radius;
-      this.brushY = this.pointerY - Math.sin(angle) * this.radius;
-      return { x: this.brushX, y: this.brushY, changed: true };
+    if (friction) {
+      this.x = this.x + Math.sin(angleRotated) * distance * ease(1 - friction);
+      this.y = this.y - Math.cos(angleRotated) * distance * ease(1 - friction);
+    } else {
+      this.x = this.x + Math.sin(angleRotated) * distance;
+      this.y = this.y - Math.cos(angleRotated) * distance;
     }
 
-    return { x: this.brushX, y: this.brushY, changed: false };
+    return this;
   }
 
-  getBrushCoordinates(): { x: number; y: number } {
-    return { x: this.brushX, y: this.brushY };
+  equalsTo(point: Point): boolean {
+    return this.x === point.x && this.y === point.y;
   }
 
-  getPointerCoordinates(): { x: number; y: number } {
-    return { x: this.pointerX, y: this.pointerY };
+  getDifferenceTo(point: Point): DrawPoint {
+    return new DrawPoint(this.x - point.x, this.y - point.y);
   }
 
-  setRadius(radius: number) {
+  getDistanceTo(point: Point): number {
+    const diff = this.getDifferenceTo(point);
+    return Math.sqrt(Math.pow(diff.x, 2) + Math.pow(diff.y, 2));
+  }
+
+  getAngleTo(point: Point): number {
+    const diff = this.getDifferenceTo(point);
+    return Math.atan2(diff.y, diff.x);
+  }
+
+  toObject(): Point {
+    return { x: this.x, y: this.y };
+  }
+}
+
+class DrawBrush {
+  private _isEnabled: boolean;
+  private _hasMoved: boolean;
+  radius: number;
+  pointer: DrawPoint;
+  brush: DrawPoint;
+  angle: number;
+  distance: number;
+
+  constructor(options: { radius?: number; enabled?: boolean; initialPoint?: Point } = {}) {
+    const initialPoint = options.initialPoint || { x: 0, y: 0 };
+    this.radius = options.radius || 30;
+    this._isEnabled = options.enabled === false ? false : true;
+    this.pointer = new DrawPoint(initialPoint.x, initialPoint.y);
+    this.brush = new DrawPoint(initialPoint.x, initialPoint.y);
+    this.angle = 0;
+    this.distance = 0;
+    this._hasMoved = false;
+  }
+
+  enable(): void {
+    this._isEnabled = true;
+  }
+
+  disable(): void {
+    this._isEnabled = false;
+  }
+
+  isEnabled(): boolean {
+    return this._isEnabled;
+  }
+
+  setRadius(radius: number): void {
     this.radius = radius;
+  }
+
+  getRadius(): number {
+    return this.radius;
+  }
+
+  getBrushCoordinates(): Point {
+    return this.brush.toObject();
+  }
+
+  getPointerCoordinates(): Point {
+    return this.pointer.toObject();
+  }
+
+  getBrush(): DrawPoint {
+    return this.brush;
+  }
+
+  getPointer(): DrawPoint {
+    return this.pointer;
+  }
+
+  getAngle(): number {
+    return this.angle;
+  }
+
+  getDistance(): number {
+    return this.distance;
+  }
+
+  brushHasMoved(): boolean {
+    return this._hasMoved;
+  }
+
+  update(newPointerPoint: Point, options: { both?: boolean; friction?: number } = {}): boolean {
+    this._hasMoved = false;
+    if (this.pointer.equalsTo(newPointerPoint) && !options.both && !options.friction) {
+      return false;
+    }
+
+    this.pointer.update(newPointerPoint);
+
+    if (options.both) {
+      this._hasMoved = true;
+      this.brush.update(newPointerPoint);
+      return true;
+    }
+
+    if (this._isEnabled) {
+      this.distance = this.pointer.getDistanceTo(this.brush);
+      this.angle = this.pointer.getAngleTo(this.brush);
+
+      const isOutside = Math.round((this.distance - this.radius) * 10) / 10 > 0;
+      const friction =
+        options.friction && options.friction < 1 && options.friction > 0
+          ? options.friction
+          : undefined;
+
+      if (isOutside) {
+        this.brush.moveByAngle(this.angle, this.distance - this.radius, friction);
+        this._hasMoved = true;
+      }
+    } else {
+      this.distance = 0;
+      this.angle = 0;
+      this.brush.update(newPointerPoint);
+      this._hasMoved = true;
+    }
+
+    return true;
   }
 }
 
@@ -66,10 +184,13 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
   backgroundColor: string = '#ffffff';
 
   @property({ type: Boolean })
-  lazy: boolean = true;
+  lazy: boolean = false;
 
   @property({ type: Number, attribute: 'lazy-radius' })
-  lazyRadius: number = 30;
+  lazyRadius: number = 60;
+
+  @property({ type: Number })
+  friction: number = 0.1;
 
   @property({ type: Number })
   smoothing: number = 0.5;
@@ -77,20 +198,25 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
   @property({ type: Boolean })
   disabled: boolean = false;
 
-  @query('canvas')
-  private canvas!: HTMLCanvasElement;
-
+  private canvas: HTMLCanvasElement | null = null;
   private ctx: CanvasRenderingContext2D | null = null;
   private isDrawing: boolean = false;
+  private isPressing: boolean = false;
   private currentStroke: Point[] = [];
   private strokes: DrawStroke[] = [];
   private undoneStrokes: DrawStroke[] = [];
-  private lazyBrush: LazyBrush;
+  private drawBrush: DrawBrush;
   private lastPoint: Point | null = null;
+  private rafId: number | null = null;
+  private mouseX: number = 0;
+  private mouseY: number = 0;
 
   constructor() {
     super();
-    this.lazyBrush = new LazyBrush(this.lazyRadius);
+    this.drawBrush = new DrawBrush({
+      radius: this.lazyRadius,
+      enabled: this.lazy
+    });
   }
 
   @styles()
@@ -98,9 +224,17 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
     return css/*css*/`${drawStyles}`;
   }
 
-  connectedCallback() {
-    super.connectedCallback?.();
-    setTimeout(() => this.initCanvas(), 0);
+  @ready()
+  onReady() {
+    requestAnimationFrame(() => {
+      this.initCanvas();
+      this.startLoop();
+    });
+  }
+
+  @dispose()
+  onDispose() {
+    this.stopLoop();
   }
 
   @render()
@@ -108,23 +242,40 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
     return html`
       <div class="draw-container">
         <canvas
-          class="draw-canvas tool-${this.tool} ${this.disabled ? 'disabled' : ''}"
           width="${this.width}"
           height="${this.height}"
-          @pointerdown=${(e: PointerEvent) => this.handlePointerDown(e)}
-          @pointermove=${(e: PointerEvent) => this.handlePointerMove(e)}
-          @pointerup=${(e: PointerEvent) => this.handlePointerUp(e)}
-          @pointerleave=${(e: PointerEvent) => this.handlePointerUp(e)}>
+          class="draw-canvas tool-${this.tool} ${this.disabled ? 'disabled' : ''}">
         </canvas>
       </div>
     `;
   }
 
   private initCanvas() {
+    this.canvas = this.shadowRoot?.querySelector('canvas') || null;
+
     if (!this.canvas) return;
+
+    // Handle high DPI displays
+    const dpr = window.devicePixelRatio || 1;
+    const rect = this.canvas.getBoundingClientRect();
+
+    // Set canvas buffer size (accounting for DPI)
+    this.canvas.width = this.width * dpr;
+    this.canvas.height = this.height * dpr;
+
+    // Set display size
+    this.canvas.style.width = `${this.width}px`;
+    this.canvas.style.height = `${this.height}px`;
 
     this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
     if (!this.ctx) return;
+
+    // Scale canvas drawing to match DPI
+    this.ctx.scale(dpr, dpr);
+
+    // Enable anti-aliasing for smooth lines
+    this.ctx.imageSmoothingEnabled = true;
+    this.ctx.imageSmoothingQuality = 'high';
 
     // Set background
     this.ctx.fillStyle = this.backgroundColor;
@@ -134,22 +285,22 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
     this.redraw();
   }
 
+  @on('pointerdown', { target: 'canvas' })
   private handlePointerDown(e: PointerEvent) {
     if (this.disabled) return;
 
     e.preventDefault();
-    this.isDrawing = true;
-    this.currentStroke = [];
-    this.undoneStrokes = []; // Clear redo stack
 
     const point = this.getPointerPosition(e);
-    this.lazyBrush.update(point.x, point.y);
+    this.mouseX = point.x;
+    this.mouseY = point.y;
 
-    const brushPos = this.lazyBrush.getBrushCoordinates();
-    this.lastPoint = { x: brushPos.x, y: brushPos.y };
-    this.currentStroke.push(this.lastPoint);
+    // Update brush to pointer position immediately
+    this.drawBrush.update(point, { both: true });
 
-    this.canvas.setPointerCapture(e.pointerId);
+    this.isPressing = true;
+
+    this.canvas?.setPointerCapture(e.pointerId);
 
     this.dispatchEvent(new CustomEvent('@snice/draw-start', {
       detail: { draw: this, point },
@@ -157,31 +308,23 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
     }));
   }
 
+  @on('pointermove', { target: 'canvas' })
   private handlePointerMove(e: PointerEvent) {
-    if (!this.isDrawing || this.disabled) return;
+    if (this.disabled) return;
 
     e.preventDefault();
 
     const point = this.getPointerPosition(e);
-
-    if (this.lazy) {
-      const { x, y, changed } = this.lazyBrush.update(point.x, point.y);
-      if (changed) {
-        this.drawLine({ x, y });
-        this.currentStroke.push({ x, y });
-        this.lastPoint = { x, y };
-      }
-    } else {
-      this.drawLine(point);
-      this.currentStroke.push(point);
-      this.lastPoint = point;
-    }
+    this.mouseX = point.x;
+    this.mouseY = point.y;
   }
 
+  @on('pointerup', { target: 'canvas' })
   private handlePointerUp(e: PointerEvent) {
-    if (!this.isDrawing) return;
+    if (!this.isPressing) return;
 
     e.preventDefault();
+    this.isPressing = false;
     this.isDrawing = false;
 
     if (this.currentStroke.length > 0) {
@@ -202,42 +345,103 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
       }));
     }
 
-    this.canvas.releasePointerCapture(e.pointerId);
+    this.canvas?.releasePointerCapture(e.pointerId);
   }
 
   private getPointerPosition(e: PointerEvent): Point {
+    if (!this.canvas) return { x: 0, y: 0, pressure: 0 };
+
     const rect = this.canvas.getBoundingClientRect();
-    const scaleX = this.canvas.width / rect.width;
-    const scaleY = this.canvas.height / rect.height;
+
+    // Map from screen coordinates to logical canvas coordinates
+    const x = (e.clientX - rect.left) * (this.width / rect.width);
+    const y = (e.clientY - rect.top) * (this.height / rect.height);
 
     return {
-      x: (e.clientX - rect.left) * scaleX,
-      y: (e.clientY - rect.top) * scaleY,
+      x,
+      y,
       pressure: e.pressure
     };
   }
 
-  private drawLine(point: Point) {
-    if (!this.ctx || !this.lastPoint) return;
+  private startLoop() {
+    const loop = () => {
+      this.updateLazyBrush();
+      this.rafId = requestAnimationFrame(loop);
+    };
+    loop();
+  }
 
-    this.ctx.beginPath();
-    this.ctx.moveTo(this.lastPoint.x, this.lastPoint.y);
+  private stopLoop() {
+    if (this.rafId !== null) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = null;
+    }
+  }
 
-    if (this.smoothing > 0 && this.currentStroke.length > 2) {
-      // Quadratic curve for smoothing
-      const cp = this.currentStroke[this.currentStroke.length - 2];
-      const cpx = (this.lastPoint.x + point.x) / 2;
-      const cpy = (this.lastPoint.y + point.y) / 2;
-      this.ctx.quadraticCurveTo(this.lastPoint.x, this.lastPoint.y, cpx, cpy);
-    } else {
-      this.ctx.lineTo(point.x, point.y);
+  private midPointBtw(p1: Point, p2: Point): Point {
+    return {
+      x: p1.x + (p2.x - p1.x) / 2,
+      y: p1.y + (p2.y - p1.y) / 2
+    };
+  }
+
+  private updateLazyBrush() {
+    if (!this.ctx) return;
+
+    const hasChanged = this.drawBrush.update(
+      { x: this.mouseX, y: this.mouseY },
+      { friction: this.isDrawing ? this.friction : 1 }
+    );
+    const isDisabled = !this.drawBrush.isEnabled();
+    const hasMoved = this.drawBrush.brushHasMoved();
+
+    // Start drawing if pressing and not yet drawing
+    if (this.isPressing && !this.isDrawing) {
+      this.isDrawing = true;
+      this.currentStroke = [];
+      this.undoneStrokes = [];
+      this.currentStroke.push(this.drawBrush.getBrushCoordinates());
     }
 
-    this.ctx.strokeStyle = this.tool === 'eraser' ? this.backgroundColor : this.color;
-    this.ctx.lineWidth = this.strokeWidth;
-    this.ctx.lineCap = 'round';
-    this.ctx.lineJoin = 'round';
-    this.ctx.stroke();
+    if (this.isDrawing) {
+      // Clear canvas and fill background
+      this.ctx.fillStyle = this.backgroundColor;
+      this.ctx.fillRect(0, 0, this.width, this.height);
+
+      // Redraw all completed strokes
+      this.strokes.forEach(stroke => {
+        this.drawStroke(stroke);
+      });
+
+      // Add current point
+      this.currentStroke.push(this.drawBrush.getBrushCoordinates());
+
+      // Draw current stroke with smoothing
+      if (this.currentStroke.length > 1) {
+        this.ctx.lineJoin = 'round';
+        this.ctx.lineCap = 'round';
+        this.ctx.strokeStyle = this.tool === 'eraser' ? this.backgroundColor : this.color;
+        this.ctx.lineWidth = this.strokeWidth * 2;
+
+        let p1 = this.currentStroke[0];
+        let p2 = this.currentStroke[1];
+
+        this.ctx.moveTo(p2.x, p2.y);
+        this.ctx.beginPath();
+
+        for (let i = 1, len = this.currentStroke.length; i < len; i++) {
+          const midPoint = this.midPointBtw(p1, p2);
+          this.ctx.quadraticCurveTo(p1.x, p1.y, midPoint.x, midPoint.y);
+          p1 = this.currentStroke[i];
+          p2 = this.currentStroke[i + 1];
+        }
+
+        // Draw last line as straight line while waiting for next point
+        this.ctx.lineTo(p1.x, p1.y);
+        this.ctx.stroke();
+      }
+    }
   }
 
   private redraw() {
@@ -256,26 +460,33 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
   private drawStroke(stroke: DrawStroke) {
     if (!this.ctx || stroke.points.length === 0) return;
 
-    this.ctx.beginPath();
-    this.ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
+    this.ctx.lineJoin = 'round';
+    this.ctx.lineCap = 'round';
+    this.ctx.strokeStyle = stroke.tool === 'eraser' ? this.backgroundColor : stroke.color;
+    this.ctx.lineWidth = stroke.width * 2;
 
-    for (let i = 1; i < stroke.points.length; i++) {
-      const point = stroke.points[i];
-
-      if (this.smoothing > 0 && i > 1) {
-        const prev = stroke.points[i - 1];
-        const cpx = (prev.x + point.x) / 2;
-        const cpy = (prev.y + point.y) / 2;
-        this.ctx.quadraticCurveTo(prev.x, prev.y, cpx, cpy);
-      } else {
-        this.ctx.lineTo(point.x, point.y);
-      }
+    if (stroke.points.length === 1) {
+      // Single point - just draw a dot
+      this.ctx.beginPath();
+      this.ctx.arc(stroke.points[0].x, stroke.points[0].y, stroke.width, 0, Math.PI * 2);
+      this.ctx.fill();
+      return;
     }
 
-    this.ctx.strokeStyle = stroke.tool === 'eraser' ? this.backgroundColor : stroke.color;
-    this.ctx.lineWidth = stroke.width;
-    this.ctx.lineCap = 'round';
-    this.ctx.lineJoin = 'round';
+    let p1 = stroke.points[0];
+    let p2 = stroke.points[1];
+
+    this.ctx.moveTo(p2.x, p2.y);
+    this.ctx.beginPath();
+
+    for (let i = 1, len = stroke.points.length; i < len; i++) {
+      const midPoint = this.midPointBtw(p1, p2);
+      this.ctx.quadraticCurveTo(p1.x, p1.y, midPoint.x, midPoint.y);
+      p1 = stroke.points[i];
+      p2 = stroke.points[i + 1];
+    }
+
+    this.ctx.lineTo(p1.x, p1.y);
     this.ctx.stroke();
   }
 
