@@ -1,0 +1,38 @@
+:host {
+  display: block;
+  contain: layout style;
+}
+
+.list-item {
+  display: flex;
+  align-items: center;
+  gap: var(--snice-spacing-sm, 0.75rem);
+  padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-md, 1rem);
+  cursor: pointer;
+  transition: background-color var(--snice-transition-fast, 150ms) ease;
+  background: transparent;
+  border: none;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left;
+  color: var(--snice-color-text, rgb(23 23 23));
+}
+
+.list-item:hover {
+  background-color: var(--snice-color-background-hover, rgb(243 244 246));
+}
+
+.list-item--selected {
+  background-color: var(--snice-color-primary-light, rgb(219 234 254));
+}
+
+.list-item--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.list-item__content {
+  flex: 1;
+  min-width: 0;
+}

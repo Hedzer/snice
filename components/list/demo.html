@@ -1,22 +1,241 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>List Demo</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snice List Demo</title>
   <link rel="stylesheet" href="../theme/theme.css">
-  <script type="module">
-    import '../../dist/snice.esm.js';
-    import './snice-list.js';
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 40px;
+      line-height: 1.6;
+      background: #f5f5f5;
+    }
 
-    const list = document.getElementById('list');
-    list.items = [
-      { id: '1', label: 'Item 1', description: 'First item', icon: '📄' },
-      { id: '2', label: 'Item 2', description: 'Second item', icon: '📄' },
-      { id: '3', label: 'Item 3', description: 'Third item', icon: '📄' }
-    ];
-  </script>
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      color: #333;
+      border-bottom: 2px solid #e0e0e0;
+      padding-bottom: 10px;
+    }
+
+    h2 {
+      color: #555;
+      margin-top: 30px;
+    }
+
+    .demo-section {
+      margin: 30px 0;
+      padding: 20px;
+      background: #fafafa;
+      border-radius: 4px;
+    }
+
+    .demo-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      margin: 20px 0;
+    }
+
+    snice-list {
+      border: 1px solid #e5e7eb;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+  </style>
 </head>
-<body style="padding:40px">
-  <h2>List Demo</h2>
-  <snice-list id="list" selection-mode="multiple" dividers></snice-list>
+<body>
+  <div class="container">
+    <h1>Snice List Component Demo</h1>
+
+    <div class="demo-section">
+      <h2>Basic List</h2>
+
+      <div class="grid">
+        <div>
+          <span class="demo-label">Simple List</span>
+          <snice-list>
+            <snice-list-item>
+              <span slot="before">📄</span>
+              <div>Item One</div>
+            </snice-list-item>
+            <snice-list-item>
+              <span slot="before">📄</span>
+              <div>Item Two</div>
+            </snice-list-item>
+            <snice-list-item>
+              <span slot="before">📄</span>
+              <div>Item Three</div>
+            </snice-list-item>
+          </snice-list>
+        </div>
+
+        <div>
+          <span class="demo-label">With Dividers</span>
+          <snice-list dividers>
+            <snice-list-item>
+              <span slot="before">📧</span>
+              <div>Messages</div>
+            </snice-list-item>
+            <snice-list-item>
+              <span slot="before">🔔</span>
+              <div>Notifications</div>
+            </snice-list-item>
+            <snice-list-item>
+              <span slot="before">⚙️</span>
+              <div>Settings</div>
+            </snice-list-item>
+          </snice-list>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Searchable Lists</h2>
+
+      <div class="grid">
+        <div>
+          <span class="demo-label">Client-side Search</span>
+          <snice-list searchable id="client-search-list" controller="demo-list-controller">
+            <snice-list-item>
+              <span slot="before">👤</span>
+              <div>
+                <div style="font-weight: 500;">Alice Johnson</div>
+                <div style="font-size: 0.875rem; color: #6b7280;">alice@example.com</div>
+              </div>
+            </snice-list-item>
+            <snice-list-item>
+              <span slot="before">👤</span>
+              <div>
+                <div style="font-weight: 500;">Bob Smith</div>
+                <div style="font-size: 0.875rem; color: #6b7280;">bob@example.com</div>
+              </div>
+            </snice-list-item>
+            <snice-list-item>
+              <span slot="before">👤</span>
+              <div>
+                <div style="font-weight: 500;">Carol Williams</div>
+                <div style="font-size: 0.875rem; color: #6b7280;">carol@example.com</div>
+              </div>
+            </snice-list-item>
+            <div slot="no-results" style="padding: 2rem; text-align: center; color: #6b7280;">
+              <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">😕</div>
+              <div style="font-weight: 500; margin-bottom: 0.25rem;">No contacts found</div>
+              <div style="font-size: 0.875rem;">Try a different search term</div>
+            </div>
+          </snice-list>
+        </div>
+
+        <div>
+          <span class="demo-label">Server-side Search (@request/@respond)</span>
+          <snice-list searchable id="server-search-list" controller="demo-list-controller" skeleton-count="4">
+            <snice-list-item>
+              <span slot="before">🔍</span>
+              <div>Search results will appear here...</div>
+            </snice-list-item>
+          </snice-list>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Infinite Scroll</h2>
+
+      <div class="demo-item">
+        <span class="demo-label">Infinite Loading List (scroll to bottom)</span>
+        <div style="height: 300px; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 4px;">
+          <snice-list infinite id="infinite-list" controller="demo-list-controller">
+            <snice-list-item>
+              <span slot="before">📄</span>
+              <div>Item 1</div>
+            </snice-list-item>
+            <snice-list-item>
+              <span slot="before">📄</span>
+              <div>Item 2</div>
+            </snice-list-item>
+            <snice-list-item>
+              <span slot="before">📄</span>
+              <div>Item 3</div>
+            </snice-list-item>
+          </snice-list>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Different Slots</h2>
+
+      <div class="grid">
+        <div>
+          <span class="demo-label">Before, Content, After</span>
+          <snice-list dividers>
+            <snice-list-item>
+              <span slot="before">📄</span>
+              <div>Document.pdf</div>
+              <span slot="after">2.4 MB</span>
+            </snice-list-item>
+            <snice-list-item>
+              <span slot="before">📊</span>
+              <div>Presentation.pptx</div>
+              <span slot="after">5.1 MB</span>
+            </snice-list-item>
+            <snice-list-item>
+              <span slot="before">📈</span>
+              <div>Budget.xlsx</div>
+              <span slot="after">876 KB</span>
+            </snice-list-item>
+          </snice-list>
+        </div>
+
+        <div>
+          <span class="demo-label">Complex Content</span>
+          <snice-list dividers>
+            <snice-list-item>
+              <span slot="before">✅</span>
+              <div>
+                <div style="font-weight: 500;">Task Completed</div>
+                <div style="font-size: 0.875rem; color: #6b7280;">Finished 2 hours ago</div>
+              </div>
+              <span slot="after" style="color: #10b981;">Done</span>
+            </snice-list-item>
+            <snice-list-item>
+              <span slot="before">⏳</span>
+              <div>
+                <div style="font-weight: 500;">In Progress</div>
+                <div style="font-size: 0.875rem; color: #6b7280;">Due tomorrow</div>
+              </div>
+              <span slot="after" style="color: #f59e0b;">Pending</span>
+            </snice-list-item>
+          </snice-list>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    // Import controller first to register it
+    import './demo-list-controller.ts';
+    // Then import the list components
+    import './snice-list.ts';
+    import './snice-list-item.ts';
+  </script>
 </body>
 </html>

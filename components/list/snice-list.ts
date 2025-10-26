@@ -1,101 +1,194 @@
-import { element, property, watch, dispatch, render, styles, html, css } from 'snice';
+import { element, property, render, styles, request, ready, on, html, css } from 'snice';
 import cssContent from './snice-list.css?inline';
-import type { ListItem, ListSelectionMode, SniceListElement, ListItemSelectDetail } from './snice-list.types';
+import '../skeleton/snice-skeleton.ts';
 
 @element('snice-list')
-export class SniceList extends HTMLElement implements SniceListElement {
-  @property({ type: Array })
-  items: ListItem[] = [];
-
-  @property({ attribute: 'selection-mode' })
-  selectionMode: ListSelectionMode = 'none';
-
-  @property({ type: Array, attribute: 'selected-items' })
-  selectedItems: string[] = [];
-
-  @property({ type: Boolean })
-  hoverable = true;
-
+export class SniceList extends HTMLElement {
   @property({ type: Boolean })
   dividers = false;
 
   @property({ type: Boolean })
-  dense = false;
+  searchable = false;
 
-  private itemMap = new Map<string, ListItem>();
+  @property()
+  search = '';
 
-  @watch('items')
-  handleItemsChange() {
-    this.buildItemMap();
-  }
+  @property({ type: Boolean })
+  infinite = false;
 
-  private buildItemMap() {
-    this.itemMap.clear();
-    for (const item of this.items) {
-      this.itemMap.set(item.id, item);
+  @property({ type: Boolean })
+  loading = false;
+
+  @property({ type: Boolean })
+  noResults = false;
+
+  @property({ type: Number })
+  threshold = 0.5;
+
+  @property({ type: Number })
+  skeletonCount = 5;
+
+  private searchTimeout?: number;
+  private page = 0;
+
+  @ready()
+  init() {
+    // Listen for controller attached event
+    this.addEventListener('@snice/controller-attached', (() => {
+      // Controller is now attached and ready
+    }) as EventListener);
+
+    if (this.infinite) {
+      // Wait for render to complete before setting up infinite scroll
+      requestAnimationFrame(() => {
+        this.setupInfiniteScroll();
+      });
     }
   }
 
-  private handleItemClick(item: ListItem) {
-    if (item.disabled || this.selectionMode === 'none') return;
+  private setupInfiniteScroll() {
+    const scrollParent = this.getScrollParent();
+    if (!scrollParent) return;
 
-    if (this.selectionMode === 'single') {
-      this.selectedItems = [item.id];
-    } else {
-      this.toggleSelection(item.id);
-    }
+    let lastScrollTime = 0;
 
-    this.dispatchSelectEvent(item, this.selectedItems.includes(item.id));
+    // Listen for scroll events
+    scrollParent.addEventListener('scroll', () => {
+      if (this.loading) return;
+
+      lastScrollTime = Date.now();
+
+      const scrollTop = scrollParent.scrollTop;
+      const scrollHeight = scrollParent.scrollHeight;
+      const clientHeight = scrollParent.clientHeight;
+
+      // Check if we're near the bottom (within 100px)
+      const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+      if (distanceFromBottom < 100) {
+        this.loadMore();
+      }
+    });
   }
 
-  @dispatch('@snice/list-item-select', { bubbles: true, composed: true })
-  private dispatchSelectEvent(item: ListItem, selected: boolean): ListItemSelectDetail {
-    return { item, selected, list: this };
+  @on('input', { target: '.list__search-input' })
+  handleSearchInput(e: Event) {
+    const value = (e.target as HTMLInputElement).value;
+    this.search = value;
+
+    clearTimeout(this.searchTimeout);
+    this.searchTimeout = window.setTimeout(() => {
+      this.performSearch(value);
+    }, 300);
+  }
+
+  @request('@snice/list/search')
+  async *performSearch(query: string): any {
+    this.loading = true;
+
+    try {
+      const params = { query, list: this };
+      const response = await (yield params);
+      this.loading = false;
+      return response;
+    } catch (error) {
+      console.error('Error searching list:', error);
+      this.loading = false;
+    }
+  }
+
+  @request('@snice/list/load-more')
+  async *loadMore(): any {
+    if (this.loading) return;
+
+    this.loading = true;
+
+    try {
+      const params = { page: ++this.page, list: this };
+      const response = await (yield params);
+      this.loading = false;
+
+      // Auto-fill viewport on initial load
+      requestAnimationFrame(() => {
+        const scrollParent = this.getScrollParent();
+        if (scrollParent) {
+          const hasScroll = scrollParent.scrollHeight > scrollParent.clientHeight;
+          const scrollTop = scrollParent.scrollTop;
+
+          // Only auto-load if: no scrollbar yet AND user hasn't scrolled
+          if (!hasScroll && scrollTop === 0) {
+            const sentinel = this.shadowRoot?.querySelector('.list__sentinel');
+            if (sentinel) {
+              const rect = sentinel.getBoundingClientRect();
+              const parentRect = scrollParent.getBoundingClientRect();
+              if (rect.top < parentRect.bottom && !this.loading) {
+                this.loadMore();
+              }
+            }
+          }
+        }
+      });
+
+      return response;
+    } catch (error) {
+      console.error('Error loading more items:', error);
+      this.loading = false;
+    }
+  }
+
+  private getScrollParent(): HTMLElement | null {
+    let scrollParent: HTMLElement | null = this.parentElement;
+    while (scrollParent) {
+      const overflow = window.getComputedStyle(scrollParent).overflowY;
+      if (overflow === 'auto' || overflow === 'scroll') {
+        return scrollParent;
+      }
+      scrollParent = scrollParent.parentElement;
+    }
+    return null;
   }
 
   @render()
   render() {
+    // Create skeleton elements
+    const skeletons = [];
+    for (let i = 0; i < this.skeletonCount; i++) {
+      skeletons.push(html`<snice-skeleton height="60px" style="margin: 0.5rem 1rem;"></snice-skeleton>`);
+    }
+
     return html`
       <div class="list" part="container" role="list">
-        ${this.items.map((item, index) => {
-          const itemClasses = [
-            'list__item',
-            this.selectedItems.includes(item.id) ? 'list__item--selected' : '',
-            item.disabled ? 'list__item--disabled' : '',
-            this.dense ? 'list__item--dense' : ''
-          ].filter(Boolean).join(' ');
-
-          return html`
-            <button
-              class="${itemClasses}"
-              part="item"
-              role="listitem"
-              @click="${() => this.handleItemClick(item)}">
-
-              <if ${item.icon || item.iconImage}>
-                <div class="list__item-icon" part="item-icon">
-                  <if ${item.iconImage}>
-                    <img src="${item.iconImage}" alt="" style="width:100%;height:100%;object-fit:contain;" />
-                  </if>
-                  <if ${!item.iconImage && item.icon}>
-                    ${item.icon}
-                  </if>
-                </div>
-              </if>
-
-              <div class="list__item-content" part="item-content">
-                <div class="list__item-label" part="item-label">${item.label}</div>
-                <if ${item.description}>
-                  <div class="list__item-description" part="item-description">${item.description}</div>
-                </if>
-              </div>
-            </button>
-
-            <if ${this.dividers && index < this.items.length - 1}>
-              <div class="list__divider" part="divider"></div>
-            </if>
-          `;
-        })}
+        <if ${this.searchable}>
+          <div class="list__search" part="search">
+            <input
+              type="text"
+              class="list__search-input"
+              placeholder="Search..."
+              .value="${this.search}"
+            />
+          </div>
+        </if>
+        <slot name="before"></slot>
+        <if ${!this.noResults}>
+          <slot></slot>
+        </if>
+        <if ${this.noResults}>
+          <slot name="no-results">
+            <div class="list__no-results" part="no-results">
+              <div class="list__no-results-icon">🔍</div>
+              <div class="list__no-results-title">No results found</div>
+              <div class="list__no-results-message">Try searching for something else</div>
+            </div>
+          </slot>
+        </if>
+        <if ${this.loading}>
+          <div class="list__loading" part="loading">
+            <slot name="loading">
+              ${skeletons}
+            </slot>
+          </div>
+        </if>
+        <slot name="after"></slot>
+        <div class="list__sentinel" part="sentinel"></div>
       </div>
     `;
   }
@@ -103,31 +196,5 @@ export class SniceList extends HTMLElement implements SniceListElement {
   @styles()
   styles() {
     return css/*css*/`${cssContent}`;
-  }
-
-  // Public API
-  selectItem(id: string) {
-    if (this.selectionMode === 'none') return;
-    if (this.selectionMode === 'single') {
-      this.selectedItems = [id];
-    } else if (!this.selectedItems.includes(id)) {
-      this.selectedItems = [...this.selectedItems, id];
-    }
-  }
-
-  deselectItem(id: string) {
-    this.selectedItems = this.selectedItems.filter(itemId => itemId !== id);
-  }
-
-  toggleSelection(id: string) {
-    if (this.selectedItems.includes(id)) {
-      this.deselectItem(id);
-    } else {
-      this.selectItem(id);
-    }
-  }
-
-  getSelectedItems(): ListItem[] {
-    return this.selectedItems.map(id => this.itemMap.get(id)).filter(Boolean) as ListItem[];
   }
 }
