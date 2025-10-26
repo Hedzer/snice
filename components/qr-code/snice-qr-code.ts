@@ -41,11 +41,11 @@ export class SniceQRCode extends HTMLElement implements SniceQRCodeElement {
   @property({ type: Number, attribute: 'center-text-size' })
   centerTextSize: number = 16;
 
-  @property({ type: String, attribute: 'center-text-color' })
-  centerTextColor: string = '#000000';
+  @property({ type: String, attribute: 'text-fill-color' })
+  textFillColor: string = '#000000';
 
-  @property({ type: String, attribute: 'center-text-bg' })
-  centerTextBg: string = '#ffffff';
+  @property({ type: String, attribute: 'text-outline-color' })
+  textOutlineColor: string = '#ffffff';
 
   @query('.qr-container')
   private container?: HTMLElement;
@@ -132,9 +132,7 @@ export class SniceQRCode extends HTMLElement implements SniceQRCodeElement {
         const imgX = (this.size - imgSize) / 2;
         const imgY = (this.size - imgSize) / 2;
 
-        // Draw background for image
-        ctx.fillStyle = this.bgColor;
-        ctx.fillRect(imgX - 4, imgY - 4, imgSize + 8, imgSize + 8);
+        // Draw image directly without background
         ctx.drawImage(img, imgX, imgY, imgSize, imgSize);
 
         // Apply center text after image if both are present
@@ -151,25 +149,22 @@ export class SniceQRCode extends HTMLElement implements SniceQRCodeElement {
 
   private drawCenterText(ctx: CanvasRenderingContext2D) {
     ctx.font = `bold ${this.centerTextSize}px sans-serif`;
-    const textMetrics = ctx.measureText(this.centerText);
-    const textWidth = textMetrics.width;
-    const textHeight = this.centerTextSize;
-
-    const padding = 8;
-    const bgWidth = textWidth + padding * 2;
-    const bgHeight = textHeight + padding * 2;
-    const bgX = (this.size - bgWidth) / 2;
-    const bgY = (this.size - bgHeight) / 2;
-
-    // Background
-    ctx.fillStyle = this.centerTextBg;
-    ctx.fillRect(bgX, bgY, bgWidth, bgHeight);
-
-    // Text
-    ctx.fillStyle = this.centerTextColor;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(this.centerText, this.size / 2, this.size / 2);
+
+    const x = this.size / 2;
+    const y = this.size / 2;
+
+    // Draw text outline (stroke)
+    ctx.strokeStyle = this.textOutlineColor;
+    ctx.lineWidth = 6;
+    ctx.lineJoin = 'round';
+    ctx.miterLimit = 2;
+    ctx.strokeText(this.centerText, x, y);
+
+    // Draw text fill
+    ctx.fillStyle = this.textFillColor;
+    ctx.fillText(this.centerText, x, y);
   }
 
   async toDataURL(type: 'image/png' | 'image/jpeg' | 'image/webp' = 'image/png', quality: number = 0.92): Promise<string> {

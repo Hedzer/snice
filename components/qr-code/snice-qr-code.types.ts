@@ -24,6 +24,10 @@ export interface SniceQRCodeElement extends HTMLElement {
   includeImage: boolean;
   imageUrl: string;
   imageSize: number;
+  centerText: string;
+  centerTextSize: number;
+  textFillColor: string;
+  textOutlineColor: string;
 
   toDataURL(type?: 'image/png' | 'image/jpeg' | 'image/webp', quality?: number): Promise<string>;
   toBlob(type?: 'image/png' | 'image/jpeg' | 'image/webp', quality?: number): Promise<Blob>;
