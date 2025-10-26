@@ -27,8 +27,8 @@ export class SniceStepper extends HTMLElement implements SniceStepperElement {
   }
 
   @styles()
-  componentStyles() {
-    return css`${cssContent}`;
+  styles() {
+    return css/*css*/`${cssContent}`;
   }
 
   private getStepStatus(index: number, step: Step): StepStatus {
@@ -71,7 +71,7 @@ export class SniceStepper extends HTMLElement implements SniceStepperElement {
   }
 
   @render()
-  renderContent() {
+  render() {
     const stepperClasses = [
       'stepper',
       `stepper--${this.orientation}`

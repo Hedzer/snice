@@ -37,7 +37,7 @@ export class SniceModal extends HTMLElement implements SniceModalElement {
   private previousFocus: HTMLElement | null = null;
 
   @render()
-  renderContent() {
+  render() {
     const modalClass = `modal${this.open ? ' modal--open' : ''}`;
     const panelClass = `modal__panel modal__panel--${this.size}`;
     const ariaHidden = this.open ? 'false' : 'true';
@@ -77,7 +77,7 @@ export class SniceModal extends HTMLElement implements SniceModalElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

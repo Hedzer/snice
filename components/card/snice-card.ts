@@ -32,7 +32,7 @@ export class SniceCard extends HTMLElement implements SniceCardElement {
   }
 
   @render()
-  renderContent() {
+  render() {
     const role = this.clickable ? 'button' : 'article';
     const tabindex = this.clickable && !this.disabled ? '0' : '-1';
 
@@ -59,7 +59,7 @@ export class SniceCard extends HTMLElement implements SniceCardElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return cssTag`${cssContent}`;
   }
 

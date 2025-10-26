@@ -41,7 +41,7 @@ export class SniceCellImage extends HTMLElement implements SniceCellElement {
   imageError: boolean = false;
 
   @render()
-  renderContent() {
+  render() {
     const imageSrc = this.src || this.value;
     const imageAlt = this.alt || 'Image';
     const loadingAttr = this.lazy ? 'lazy' : 'eager';
@@ -73,7 +73,7 @@ export class SniceCellImage extends HTMLElement implements SniceCellElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

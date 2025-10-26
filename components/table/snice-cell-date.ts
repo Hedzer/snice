@@ -42,7 +42,7 @@ export class SniceCellDate extends HTMLElement implements SniceCellElement {
   showTime: boolean = false;
 
   @render()
-  renderContent() {
+  render() {
     const formattedValue = this.formatDateValue();
     const dateStyles = this.getDateStyles();
 
@@ -54,7 +54,7 @@ export class SniceCellDate extends HTMLElement implements SniceCellElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

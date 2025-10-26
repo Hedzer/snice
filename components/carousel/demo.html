@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Carousel Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body { padding: 40px; }
+    .slide {
+      height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: bold;
+      color: white;
+    }
+    .slide:nth-child(1) { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .slide:nth-child(2) { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+    .slide:nth-child(3) { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    .slide:nth-child(4) { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+    .slide:nth-child(5) { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+  </style>
+  <script type="module">
+    import '../../dist/snice.esm.js';
+    import './snice-carousel.js';
+  </script>
+</head>
+<body>
+  <h2>Carousel Demo</h2>
+
+  <h3>Basic Carousel</h3>
+  <snice-carousel>
+    <div class="slide">Slide 1</div>
+    <div class="slide">Slide 2</div>
+    <div class="slide">Slide 3</div>
+    <div class="slide">Slide 4</div>
+    <div class="slide">Slide 5</div>
+  </snice-carousel>
+
+  <h3>Autoplay</h3>
+  <snice-carousel autoplay autoplay-interval="2000">
+    <div class="slide">Auto 1</div>
+    <div class="slide">Auto 2</div>
+    <div class="slide">Auto 3</div>
+  </snice-carousel>
+
+  <h3>Multiple Slides Per View</h3>
+  <snice-carousel slides-per-view="3" space-between="20">
+    <div class="slide">1</div>
+    <div class="slide">2</div>
+    <div class="slide">3</div>
+    <div class="slide">4</div>
+    <div class="slide">5</div>
+  </snice-carousel>
+</body>
+</html>

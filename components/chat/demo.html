@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Snice Chat Demo</title>
+    <link rel="stylesheet" href="../theme/theme.css">
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial,
+          sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: #f6f8fa;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        margin: 0 0 30px;
+        color: #24292f;
+      }
+
+      .demo-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 20px;
+      }
+
+      .demo-section {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      .demo-section h2 {
+        margin: 0 0 15px;
+        color: #24292f;
+        font-size: 18px;
+      }
+
+      .demo-section p {
+        margin: 0 0 15px;
+        color: #57606a;
+        font-size: 14px;
+      }
+
+      .controls {
+        margin: 20px 0;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      button {
+        padding: 8px 16px;
+        border: 1px solid #d0d7de;
+        border-radius: 6px;
+        background: #f6f8fa;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background 0.2s;
+      }
+
+      button:hover {
+        background: #e1e4e8;
+      }
+
+      button:active {
+        background: #d0d7de;
+      }
+
+      .user-select {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+        align-items: center;
+      }
+
+      .user-select label {
+        font-size: 14px;
+        color: #24292f;
+      }
+
+      .user-select select {
+        padding: 6px 12px;
+        border: 1px solid #d0d7de;
+        border-radius: 6px;
+        font-size: 14px;
+      }
+
+      snice-chat {
+        --snice-chat-height: 500px;
+      }
+
+      @media (max-width: 900px) {
+        .demo-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Snice Chat Component</h1>
+
+      <div class="demo-grid">
+        <div class="demo-section">
+          <h2>Chat Room 1</h2>
+          <p>Interactive chat with multiple users</p>
+          <div class="user-select">
+            <label>Send as:</label>
+            <select id="user-select-1">
+              <option value="You">You</option>
+              <option value="Alice">Alice</option>
+              <option value="Bob">Bob</option>
+              <option value="Charlie">Charlie</option>
+            </select>
+          </div>
+          <snice-chat id="chat1" current-user="You"></snice-chat>
+          <div class="controls">
+            <button id="add-typing-1">Add Typing (Alice)</button>
+            <button id="remove-typing-1">Remove Typing</button>
+            <button id="clear-1">Clear Messages</button>
+          </div>
+        </div>
+
+        <div class="demo-section">
+          <h2>Chat Room 2</h2>
+          <p>Simple chat interface</p>
+          <div class="user-select">
+            <label>Send as:</label>
+            <select id="user-select-2">
+              <option value="You">You</option>
+              <option value="Diana">Diana</option>
+              <option value="Eve">Eve</option>
+            </select>
+          </div>
+          <snice-chat id="chat2" current-user="You"></snice-chat>
+          <div class="controls">
+            <button id="add-reaction-2">Add Reaction 👍</button>
+            <button id="export-json">Export JSON</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="demo-section">
+        <h2>Features</h2>
+        <div class="controls">
+          <button id="send-text">Send Text Message</button>
+          <button id="send-image">Send Image</button>
+          <button id="send-file">Send File</button>
+          <button id="send-system">Send System Message</button>
+          <button id="toggle-features">Toggle Features</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      const chat1 = document.getElementById('chat1');
+      const chat2 = document.getElementById('chat2');
+      const userSelect1 = document.getElementById('user-select-1');
+      const userSelect2 = document.getElementById('user-select-2');
+
+      // Sample avatars
+      const avatars = {
+        Alice: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alice',
+        Bob: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Bob',
+        Charlie: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Charlie',
+        Diana: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Diana',
+        Eve: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Eve',
+      };
+
+      // Initialize with some messages
+      chat1.addMessage({
+        type: 'system',
+        content: 'Welcome to the chat!',
+        author: 'System',
+        timestamp: new Date(Date.now() - 3600000),
+        formats: [],
+      });
+
+      chat1.addMessage({
+        type: 'text',
+        content: 'Hey everyone! 👋',
+        author: 'Alice',
+        avatar: avatars.Alice,
+        timestamp: new Date(Date.now() - 3000000),
+        formats: [],
+      });
+
+      chat1.addMessage({
+        type: 'text',
+        content: 'Hi Alice! How are you?',
+        author: 'Bob',
+        avatar: avatars.Bob,
+        timestamp: new Date(Date.now() - 2000000),
+        formats: [],
+        reactions: [{ emoji: '👋', count: 2, users: ['Alice', 'Charlie'] }],
+      });
+
+      chat1.addMessage({
+        type: 'text',
+        content: "I'm doing great, thanks!",
+        author: 'Alice',
+        avatar: avatars.Alice,
+        timestamp: new Date(Date.now() - 1000000),
+        formats: [],
+      });
+
+      chat2.addMessage({
+        type: 'text',
+        content: 'Check out this design mockup',
+        author: 'Diana',
+        avatar: avatars.Diana,
+        timestamp: new Date(Date.now() - 500000),
+        formats: [],
+        attachment: {
+          type: 'image',
+          url: 'https://picsum.photos/400/300',
+          name: 'mockup.png',
+        },
+      });
+
+      // Event handlers for chat1
+      chat1.addEventListener('message-send', (e) => {
+        const user = userSelect1.value;
+        if (e.detail.message) {
+          chat1.addMessage({
+            type: 'text',
+            content: e.detail.message,
+            author: user,
+            avatar: avatars[user],
+            timestamp: new Date(),
+            formats: [],
+          });
+        }
+        if (e.detail.attachments) {
+          e.detail.attachments.forEach((file) => {
+            const isImage = file.type.startsWith('image/');
+            chat1.addMessage({
+              type: isImage ? 'image' : 'file',
+              content: '',
+              author: user,
+              avatar: avatars[user],
+              timestamp: new Date(),
+              formats: [],
+              attachment: {
+                type: isImage ? 'image' : 'file',
+                url: URL.createObjectURL(file),
+                name: file.name,
+                size: file.size,
+              },
+            });
+          });
+        }
+      });
+
+      chat1.addEventListener('message-react', (e) => {
+        const message = chat1.messages.find((m) => m.id === e.detail.messageId);
+        if (message) {
+          const reactions = message.reactions || [];
+          const existing = reactions.find((r) => r.emoji === e.detail.emoji);
+          if (existing) {
+            if (existing.users.includes(chat1.currentUser)) {
+              existing.users = existing.users.filter((u) => u !== chat1.currentUser);
+              existing.count--;
+              if (existing.count === 0) {
+                chat1.updateMessage(e.detail.messageId, {
+                  reactions: reactions.filter((r) => r.emoji !== e.detail.emoji),
+                });
+                return;
+              }
+            } else {
+              existing.users.push(chat1.currentUser);
+              existing.count++;
+            }
+          } else {
+            reactions.push({ emoji: e.detail.emoji, count: 1, users: [chat1.currentUser] });
+          }
+          chat1.updateMessage(e.detail.messageId, { reactions });
+        }
+      });
+
+      chat1.addEventListener('message-edit', (e) => {
+        chat1.updateMessage(e.detail.messageId, {
+          content: e.detail.newContent,
+          edited: true,
+        });
+      });
+
+      chat1.addEventListener('message-delete', (e) => {
+        chat1.deleteMessage(e.detail.messageId);
+      });
+
+      // Event handlers for chat2
+      chat2.addEventListener('message-send', (e) => {
+        const user = userSelect2.value;
+        if (e.detail.message) {
+          chat2.addMessage({
+            type: 'text',
+            content: e.detail.message,
+            author: user,
+            avatar: avatars[user],
+            timestamp: new Date(),
+            formats: [],
+          });
+        }
+      });
+
+      chat2.addEventListener('message-react', (e) => {
+        const message = chat2.messages.find((m) => m.id === e.detail.messageId);
+        if (message) {
+          const reactions = message.reactions || [];
+          const existing = reactions.find((r) => r.emoji === e.detail.emoji);
+          if (existing) {
+            if (existing.users.includes(chat2.currentUser)) {
+              existing.users = existing.users.filter((u) => u !== chat2.currentUser);
+              existing.count--;
+              if (existing.count === 0) {
+                chat2.updateMessage(e.detail.messageId, {
+                  reactions: reactions.filter((r) => r.emoji !== e.detail.emoji),
+                });
+                return;
+              }
+            } else {
+              existing.users.push(chat2.currentUser);
+              existing.count++;
+            }
+          } else {
+            reactions.push({ emoji: e.detail.emoji, count: 1, users: [chat2.currentUser] });
+          }
+          chat2.updateMessage(e.detail.messageId, { reactions });
+        }
+      });
+
+      // Control buttons
+      document.getElementById('add-typing-1').addEventListener('click', () => {
+        chat1.addTypingIndicator('Alice');
+      });
+
+      document.getElementById('remove-typing-1').addEventListener('click', () => {
+        chat1.removeTypingIndicator('Alice');
+      });
+
+      document.getElementById('clear-1').addEventListener('click', () => {
+        chat1.clear();
+      });
+
+      document.getElementById('add-reaction-2').addEventListener('click', () => {
+        if (chat2.messages.length > 0) {
+          const lastMessage = chat2.messages[chat2.messages.length - 1];
+          const reactions = lastMessage.reactions || [];
+          reactions.push({ emoji: '👍', count: 1, users: ['You'] });
+          chat2.updateMessage(lastMessage.id, { reactions });
+        }
+      });
+
+      document.getElementById('export-json').addEventListener('click', () => {
+        console.log('Chat 2 messages:', JSON.stringify(chat2.messages, null, 2));
+        alert('Messages exported to console');
+      });
+
+      document.getElementById('send-text').addEventListener('click', () => {
+        chat1.addMessage({
+          type: 'text',
+          content: 'This is a programmatic message',
+          author: 'You',
+          timestamp: new Date(),
+          formats: [],
+        });
+      });
+
+      document.getElementById('send-image').addEventListener('click', () => {
+        chat1.addMessage({
+          type: 'image',
+          content: '',
+          author: 'You',
+          timestamp: new Date(),
+          formats: [],
+          attachment: {
+            type: 'image',
+            url: 'https://picsum.photos/300/200',
+            name: 'random-image.jpg',
+          },
+        });
+      });
+
+      document.getElementById('send-file').addEventListener('click', () => {
+        chat1.addMessage({
+          type: 'file',
+          content: '',
+          author: 'You',
+          timestamp: new Date(),
+          formats: [],
+          attachment: {
+            type: 'file',
+            url: '#',
+            name: 'document.pdf',
+            size: 245760,
+          },
+        });
+      });
+
+      document.getElementById('send-system').addEventListener('click', () => {
+        chat1.addMessage({
+          type: 'system',
+          content: 'A system notification appeared',
+          author: 'System',
+          timestamp: new Date(),
+          formats: [],
+        });
+      });
+
+      let featuresEnabled = true;
+      document.getElementById('toggle-features').addEventListener('click', () => {
+        featuresEnabled = !featuresEnabled;
+        chat1.showAvatars = featuresEnabled;
+        chat1.showTimestamps = featuresEnabled;
+        chat1.showTyping = featuresEnabled;
+        chat1.allowFiles = featuresEnabled;
+      });
+    </script>
+    <script type="module" src="./snice-chat.ts"></script>
+  </body>
+</html>

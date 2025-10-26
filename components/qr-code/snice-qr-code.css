@@ -1,0 +1,31 @@
+:host {
+  display: inline-block;
+  width: fit-content;
+  height: fit-content;
+}
+
+.qr-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--qr-bg, white);
+  border-radius: var(--qr-border-radius, 0);
+  padding: var(--qr-padding, 0);
+}
+
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.qr-image {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 4px;
+  background: white;
+  padding: 4px;
+}

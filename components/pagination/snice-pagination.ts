@@ -30,7 +30,7 @@ export class SnicePagination extends HTMLElement {
   variant: 'default' | 'rounded' | 'text' = 'default';
 
   @render()
-  renderContent() {
+  render() {
     const pages = this.getPageNumbers();
 
     return html/*html*/`
@@ -102,7 +102,7 @@ export class SnicePagination extends HTMLElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`
       :host {
         display: inline-block;

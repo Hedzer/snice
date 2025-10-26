@@ -153,7 +153,7 @@ export class SniceColumn extends HTMLElement implements SniceColumnElement {
   private conditionalFormats: ConditionalFormat[] = [];
 
   @render()
-  renderContent() {
+  render() {
     return html/*html*/`<slot></slot>`;
   }
 

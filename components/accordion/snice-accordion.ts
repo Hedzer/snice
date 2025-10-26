@@ -13,7 +13,7 @@ export class SniceAccordion extends HTMLElement implements SniceAccordionElement
   activeItems: Set<string> = new Set();
 
   @render()
-  renderContent() {
+  render() {
     return html`
       <div class="accordion" @keydown="${(e: KeyboardEvent) => this.handleKeydown(e)}">
         <slot @slotchange="${(e: Event) => this.handleSlotChange(e)}"></slot>
@@ -22,7 +22,7 @@ export class SniceAccordion extends HTMLElement implements SniceAccordionElement
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return cssTag`${cssContent}`;
   }
 

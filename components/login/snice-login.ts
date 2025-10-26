@@ -61,7 +61,7 @@ export class SniceLogin extends HTMLElement implements SniceLoginElement {
   private alertVariant: 'error' | 'success' | '' = '';
 
   @render()
-  renderContent() {
+  render() {
     const loginClasses = ['login', `login--${this.variant}`, `login--${this.size}`].join(' ');
 
     return html/*html*/`
@@ -155,7 +155,7 @@ export class SniceLogin extends HTMLElement implements SniceLoginElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

@@ -35,7 +35,7 @@ export class SniceCellColor extends HTMLElement implements SniceCellElement {
   type: string = 'color';
 
   @render()
-  renderContent() {
+  render() {
     const colorValue = this.color || this.value;
     const swatchHTML = this.showSwatch
       ? `<span class="color-swatch color-swatch--${this.swatchSize}" style="background-color: ${colorValue};"></span>`
@@ -59,7 +59,7 @@ export class SniceCellColor extends HTMLElement implements SniceCellElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

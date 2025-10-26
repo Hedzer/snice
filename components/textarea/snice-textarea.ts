@@ -74,7 +74,7 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
   textarea?: HTMLTextAreaElement;
 
   @render()
-  renderContent() {
+  render() {
     const textareaClasses = [
       'textarea',
       `textarea--${this.size}`,
@@ -142,7 +142,7 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

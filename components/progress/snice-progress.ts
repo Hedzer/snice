@@ -53,7 +53,7 @@ export class SniceProgress extends HTMLElement implements SniceProgressElement {
   private circumference = 0;
 
   @render()
-  renderContent() {
+  render() {
     if (this.variant === 'circular') {
       return this.renderCircular();
     }
@@ -61,7 +61,7 @@ export class SniceProgress extends HTMLElement implements SniceProgressElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return cssTag`${cssContent}`;
   }
 

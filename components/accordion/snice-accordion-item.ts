@@ -22,7 +22,7 @@ export class SniceAccordionItem extends HTMLElement implements SniceAccordionIte
   private isAnimating = false;
 
   @render()
-  renderContent() {
+  render() {
     return html`
       <button
         class="accordion-item__header"
@@ -53,7 +53,7 @@ export class SniceAccordionItem extends HTMLElement implements SniceAccordionIte
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return cssTag`${cssContent}`;
   }
 

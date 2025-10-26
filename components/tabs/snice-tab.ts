@@ -17,7 +17,7 @@ export class SniceTab extends HTMLElement implements SniceTabElement {
   closeButton?: HTMLButtonElement;
 
   @render()
-  renderContent() {
+  render() {
     const tabClasses = `tab${this.disabled ? ' tab--disabled' : ''}`;
 
     return html/*html*/`
@@ -37,7 +37,7 @@ export class SniceTab extends HTMLElement implements SniceTabElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

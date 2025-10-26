@@ -23,12 +23,12 @@ export class SniceColorDisplay extends HTMLElement implements SniceColorDisplayE
   label = '';
 
   @styles()
-  componentStyles() {
-    return css`${cssContent}`;
+  styles() {
+    return css/*css*/`${cssContent}`;
   }
 
   @render()
-  renderContent() {
+  render() {
     const colorValue = this.value;
     const displayText = this.getFormattedColor();
     const labelText = this.label || displayText;

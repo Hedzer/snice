@@ -35,7 +35,7 @@ export class SniceCellLink extends HTMLElement implements SniceCellElement {
   type: string = 'link';
 
   @render()
-  renderContent() {
+  render() {
     const linkHref = this.href || this.value;
     const linkText = this.text || this.value;
     const isExternal = this.external || this.target === '_blank' || linkHref.startsWith('http');
@@ -61,7 +61,7 @@ export class SniceCellLink extends HTMLElement implements SniceCellElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

@@ -137,7 +137,7 @@ export class SniceTable extends HTMLElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`
       :host {
         display: block;
@@ -373,7 +373,7 @@ export class SniceTable extends HTMLElement {
   }
 
   @render()
-  renderContent() {
+  render() {
     // Check if we have slotted rows
     const hasSlottedRows = this.querySelectorAll('snice-row[slot="rows"]').length > 0;
 

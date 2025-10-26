@@ -66,7 +66,7 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
   columns: ColumnDefinition[] = [];
 
   @render()
-  renderContent() {
+  render() {
     return html/*html*/`
       <div class="row-container" part="container" @click=${(e: MouseEvent) => this.handleRowClick(e)} @keydown=${(e: KeyboardEvent) => this.handleKeyDown(e)}>
         <if ${this.selectable}>
@@ -85,7 +85,7 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

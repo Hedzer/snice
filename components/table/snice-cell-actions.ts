@@ -32,7 +32,7 @@ export class SniceCellActions extends HTMLElement implements SniceCellElement {
   type: string = 'actions';
 
   @render()
-  renderContent() {
+  render() {
     if (this.actions.length === 0) {
       return html/*html*/`
         <div class="cell-content cell-content--actions" part="content">
@@ -51,7 +51,7 @@ export class SniceCellActions extends HTMLElement implements SniceCellElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

@@ -3,15 +3,15 @@ import { element, render, styles, html, css } from 'snice';
 @element('snice-menu-divider')
 export class SniceMenuDivider extends HTMLElement {
   @render()
-  renderContent() {
+  render() {
     return html`
       <div class="menu-divider" part="divider" role="separator"></div>
     `;
   }
 
   @styles()
-  componentStyles() {
-    return css`
+  styles() {
+    return css/*css*/`
       :host {
         display: block;
         padding: 0.25rem 0;

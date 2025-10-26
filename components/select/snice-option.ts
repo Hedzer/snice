@@ -19,13 +19,13 @@ export class SniceOption extends HTMLElement implements SniceOptionElement {
   icon = '';
 
   @render()
-  renderContent() {
+  render() {
     // Options are data-only elements, no shadow DOM needed
     return html/*html*/``;
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`:host { display: none; }`;
   }
 

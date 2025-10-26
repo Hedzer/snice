@@ -20,14 +20,14 @@ export class SniceToastContainer extends HTMLElement implements SniceToastContai
   private toasts: Map<string, HTMLElement> = new Map();
 
   @render()
-  renderContent() {
+  render() {
     return html/*html*/`
       <div class="toast-wrapper"></div>
     `;
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`
       :host {
         position: fixed;

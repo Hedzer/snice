@@ -100,7 +100,7 @@ export class SniceMenu extends HTMLElement implements SniceMenuElement {
   }
 
   @render()
-  renderContent() {
+  render() {
     const panelClasses = [
       'menu__panel',
       `menu__panel--${this.placement}`,
@@ -129,8 +129,8 @@ export class SniceMenu extends HTMLElement implements SniceMenuElement {
   }
 
   @styles()
-  componentStyles() {
-    return css`${cssContent}`;
+  styles() {
+    return css/*css*/`${cssContent}`;
   }
 
   // Public API

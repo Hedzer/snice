@@ -1,0 +1,66 @@
+:host {
+  display: block;
+  width: 100%;
+  position: relative;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.draw-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--draw-bg, white);
+  border-radius: var(--draw-border-radius, 0);
+  touch-action: none;
+}
+
+.draw-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+}
+
+.draw-canvas.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.draw-canvas.tool-pen {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2" fill="black"/></svg>') 12 12, crosshair;
+}
+
+.draw-canvas.tool-eraser {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect x="8" y="8" width="8" height="8" fill="white" stroke="black"/></svg>') 12 12, crosshair;
+}
+
+.lazy-brush-point {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border-radius: 50%;
+  background: var(--primary-color, #2196f3);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.lazy-brush-point.active {
+  opacity: 0.6;
+}
+
+.lazy-brush-radius {
+  position: absolute;
+  border: 1px dashed var(--primary-color, #2196f3);
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.lazy-brush-radius.active {
+  opacity: 0.3;
+}

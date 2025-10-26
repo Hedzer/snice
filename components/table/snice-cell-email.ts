@@ -29,7 +29,7 @@ export class SniceCellEmail extends HTMLElement implements SniceCellElement {
   type: string = 'email';
 
   @render()
-  renderContent() {
+  render() {
     const emailAddress = this.email || this.value;
     const displayName = this.displayText || emailAddress;
     const iconHTML = this.showIcon ? '<span class="email-icon">✉</span>' : '';
@@ -53,7 +53,7 @@ export class SniceCellEmail extends HTMLElement implements SniceCellElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

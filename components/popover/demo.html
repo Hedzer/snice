@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Popover Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body { padding: 40px; }
+    .example {
+      margin: 50px 0;
+      padding: 40px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 200px;
+    }
+    .example h4 {
+      position: absolute;
+      top: 10px;
+      left: 20px;
+      margin: 0;
+      color: #666;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    button {
+      padding: 10px 20px;
+      background: #2196f3;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    button:hover {
+      background: #1976d2;
+    }
+    .placement-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      width: 100%;
+      max-width: 600px;
+    }
+    .placement-cell {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+  </style>
+  <script type="module">
+    import '../../dist/snice.esm.js';
+    import './snice-popover.js';
+  </script>
+</head>
+<body>
+  <h2>Popover Component Demo</h2>
+
+  <div class="example" style="position: relative;">
+    <h4>Click Trigger (Default)</h4>
+    <button id="click-button">Click me</button>
+    <snice-popover target-selector="#click-button">
+      This is a popover with some content inside.
+    </snice-popover>
+  </div>
+
+  <div class="example" style="position: relative;">
+    <h4>Hover Trigger</h4>
+    <button id="hover-button">Hover over me</button>
+    <snice-popover target-selector="#hover-button" trigger="hover">
+      This popover appears on hover with a 200ms delay.
+    </snice-popover>
+  </div>
+
+  <div class="example" style="position: relative;">
+    <h4>Focus Trigger</h4>
+    <button id="focus-button">Focus me (Tab key)</button>
+    <snice-popover target-selector="#focus-button" trigger="focus">
+      This popover appears when the button receives focus.
+    </snice-popover>
+  </div>
+
+  <div class="example" style="position: relative;">
+    <h4>No Arrow</h4>
+    <button id="no-arrow-button">No arrow</button>
+    <snice-popover target-selector="#no-arrow-button" show-arrow="false">
+      This popover has no arrow indicator.
+    </snice-popover>
+  </div>
+
+  <div class="example" style="position: relative;">
+    <h4>Custom Distance</h4>
+    <button id="distance-button">Custom distance</button>
+    <snice-popover target-selector="#distance-button" distance="20">
+      This popover is 20px away from the target.
+    </snice-popover>
+  </div>
+
+  <div class="example" style="position: relative; flex-direction: column; gap: 40px;">
+    <h4>All Placements</h4>
+
+    <div class="placement-grid">
+      <!-- Top row -->
+      <div class="placement-cell">
+        <button id="top-start-btn">Top Start</button>
+        <snice-popover target-selector="#top-start-btn" placement="top-start">
+          Top Start
+        </snice-popover>
+      </div>
+      <div class="placement-cell">
+        <button id="top-btn">Top</button>
+        <snice-popover target-selector="#top-btn" placement="top">
+          Top
+        </snice-popover>
+      </div>
+      <div class="placement-cell">
+        <button id="top-end-btn">Top End</button>
+        <snice-popover target-selector="#top-end-btn" placement="top-end">
+          Top End
+        </snice-popover>
+      </div>
+
+      <!-- Middle row -->
+      <div class="placement-cell">
+        <button id="left-btn">Left</button>
+        <snice-popover target-selector="#left-btn" placement="left">
+          Left
+        </snice-popover>
+      </div>
+      <div class="placement-cell">
+        <div style="padding: 20px; border: 2px dashed #ccc; border-radius: 4px;">
+          Target
+        </div>
+      </div>
+      <div class="placement-cell">
+        <button id="right-btn">Right</button>
+        <snice-popover target-selector="#right-btn" placement="right">
+          Right
+        </snice-popover>
+      </div>
+
+      <!-- Bottom row -->
+      <div class="placement-cell">
+        <button id="bottom-start-btn">Bottom Start</button>
+        <snice-popover target-selector="#bottom-start-btn" placement="bottom-start">
+          Bottom Start
+        </snice-popover>
+      </div>
+      <div class="placement-cell">
+        <button id="bottom-btn">Bottom</button>
+        <snice-popover target-selector="#bottom-btn" placement="bottom">
+          Bottom
+        </snice-popover>
+      </div>
+      <div class="placement-cell">
+        <button id="bottom-end-btn">Bottom End</button>
+        <snice-popover target-selector="#bottom-end-btn" placement="bottom-end">
+          Bottom End
+        </snice-popover>
+      </div>
+    </div>
+  </div>
+
+  <div class="example" style="position: relative;">
+    <h4>Rich Content</h4>
+    <button id="rich-button">Show info</button>
+    <snice-popover target-selector="#rich-button" placement="bottom">
+      <div style="max-width: 250px;">
+        <h3 style="margin: 0 0 8px; font-size: 16px;">User Profile</h3>
+        <p style="margin: 0 0 8px; font-size: 14px; color: #666;">
+          This is a rich popover with formatted content including headings, paragraphs, and more.
+        </p>
+        <button style="padding: 6px 12px; font-size: 12px;">View Profile</button>
+      </div>
+    </snice-popover>
+  </div>
+
+  <div class="example" style="position: relative;">
+    <h4>Manual Control</h4>
+    <button id="manual-open">Open</button>
+    <button id="manual-close" style="margin-left: 10px; background: #f44336;">Close</button>
+    <button id="manual-toggle" style="margin-left: 10px; background: #4caf50;">Toggle</button>
+    <snice-popover id="manual-popover" trigger="manual" placement="bottom">
+      Manually controlled popover
+    </snice-popover>
+  </div>
+
+  <script>
+    // Manual control example
+    const manualPopover = document.getElementById('manual-popover');
+    document.getElementById('manual-open').addEventListener('click', () => {
+      manualPopover.show();
+    });
+    document.getElementById('manual-close').addEventListener('click', () => {
+      manualPopover.hide();
+    });
+    document.getElementById('manual-toggle').addEventListener('click', () => {
+      manualPopover.toggle();
+    });
+
+    // Listen to events
+    document.querySelectorAll('snice-popover').forEach(popover => {
+      popover.addEventListener('@snice/popover-show', (e) => {
+        console.log('Popover shown:', e.detail);
+      });
+      popover.addEventListener('@snice/popover-hide', (e) => {
+        console.log('Popover hidden:', e.detail);
+      });
+    });
+  </script>
+</body>
+</html>

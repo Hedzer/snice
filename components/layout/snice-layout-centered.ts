@@ -7,7 +7,7 @@ export class SniceLayoutCentered extends HTMLElement {
   width: 'sm' | 'md' | 'lg' | 'xl' = 'md';
 
   @render()
-  renderContent() {
+  render() {
     return html/*html*/`
       <div class="layout">
         <div class="container">
@@ -18,7 +18,7 @@ export class SniceLayoutCentered extends HTMLElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 }

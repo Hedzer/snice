@@ -16,7 +16,7 @@ export class SniceToast extends HTMLElement implements SniceToastElement {
   icon: boolean = true;
 
   @render()
-  renderContent() {
+  render() {
     return html/*html*/`
       <div class="toast toast--${this.type}" role="alert" aria-live="polite">
         <if ${this.icon}>
@@ -58,7 +58,7 @@ export class SniceToast extends HTMLElement implements SniceToastElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`
       :host {
         pointer-events: auto;

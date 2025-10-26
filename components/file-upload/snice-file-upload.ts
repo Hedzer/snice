@@ -72,7 +72,7 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
   }
 
   @render()
-  renderContent() {
+  render() {
     const wrapperClasses = ['file-upload-wrapper'].filter(Boolean).join(' ');
     const uploadAreaClasses = [
       'upload-area',
@@ -183,7 +183,7 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 
@@ -267,7 +267,6 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
 
     this.updateFormValue();
     this.dispatchChangeEvent();
-    this.requestUpdate();
   }
 
   private handleRemoveFile(index: number) {
@@ -291,11 +290,6 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
     });
 
     this.internals.setFormValue(dataTransfer.files.length > 0 ? dataTransfer.files as any : null);
-  }
-
-  private requestUpdate() {
-    // Trigger re-render
-    this.dispatchEvent(new CustomEvent('_internal-update', { bubbles: false }));
   }
 
   @watch('disabled')
@@ -322,7 +316,6 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
       this.input.value = '';
     }
     this.updateFormValue();
-    this.requestUpdate();
   }
 
   removeFile(index: number) {
@@ -330,7 +323,6 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
       this.selectedFiles.splice(index, 1);
       this.updateFormValue();
       this.dispatchChangeEvent();
-      this.requestUpdate();
     }
   }
 }

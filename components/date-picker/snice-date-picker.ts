@@ -90,12 +90,12 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
   private dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 
   @render()
-  renderContent() {
+  render() {
     const labelClasses = ['label', this.required ? 'label--required' : ''].filter(Boolean).join(' ');
     const inputClasses = [
       'input',
@@ -473,7 +473,7 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
 
   private updateCalendarGrid() {
     // Trigger full re-render instead of manual DOM manipulation
-    this.renderContent();
+    this.render();
   }
 
   private setupCalendarClickOutside() {

@@ -1,0 +1,32 @@
+:host {
+  display: block;
+  height: 400px;
+  overflow: auto;
+  position: relative;
+  font-family: var(--snice-font-family, system-ui, -apple-system, sans-serif);
+}
+
+.scroller {
+  position: relative;
+  width: 100%;
+}
+
+.scroller__spacer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  pointer-events: none;
+}
+
+.scroller__viewport {
+  position: relative;
+  will-change: transform;
+}
+
+.scroller__item {
+  position: absolute;
+  left: 0;
+  right: 0;
+  will-change: transform;
+}

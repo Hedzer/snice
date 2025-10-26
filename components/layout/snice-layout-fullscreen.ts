@@ -7,7 +7,7 @@ export class SniceLayoutFullscreen extends HTMLElement {
   overlay = false;
 
   @render()
-  renderContent() {
+  render() {
     return html/*html*/`
       <div class="layout">
         <div class="background">
@@ -30,7 +30,7 @@ export class SniceLayoutFullscreen extends HTMLElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 }

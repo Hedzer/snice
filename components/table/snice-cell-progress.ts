@@ -29,7 +29,7 @@ export class SniceCellProgress extends HTMLElement implements SniceCellElement {
   contentElement?: HTMLElement;
 
   @render()
-  renderContent() {
+  render() {
     return html/*html*/`
       <div class="cell-content cell-content--progress" part="content">
         <!-- Progress component will be created here -->
@@ -38,7 +38,7 @@ export class SniceCellProgress extends HTMLElement implements SniceCellElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

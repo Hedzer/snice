@@ -26,7 +26,7 @@ export class SniceCellTag extends HTMLElement implements SniceCellElement {
   type: string = 'tag';
 
   @render()
-  renderContent() {
+  render() {
     const tagList = this.tags.length > 0 ? this.tags : this.parseValue();
 
     return html/*html*/`
@@ -39,7 +39,7 @@ export class SniceCellTag extends HTMLElement implements SniceCellElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

@@ -28,7 +28,7 @@ export class SniceCellDuration extends HTMLElement implements SniceCellElement {
   contentElement?: HTMLElement;
 
   @render()
-  renderContent() {
+  render() {
     const content = this.formatDuration();
 
     return html/*html*/`
@@ -39,7 +39,7 @@ export class SniceCellDuration extends HTMLElement implements SniceCellElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

@@ -53,7 +53,7 @@ export class SniceSwitch extends HTMLElement implements SniceSwitchElement {
   offLabel?: HTMLElement;
 
   @render()
-  renderContent() {
+  render() {
     const wrapperClasses = `switch-wrapper${this.disabled ? ' switch-wrapper--disabled' : ''}`;
     const trackClasses = `switch-track switch-track--${this.size}${this.invalid ? ' switch-track--invalid' : ''}`;
     const labelClasses = `switch-label switch-label--${this.size}${this.required ? ' switch-label--required' : ''}`;
@@ -92,7 +92,7 @@ export class SniceSwitch extends HTMLElement implements SniceSwitchElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

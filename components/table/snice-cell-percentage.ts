@@ -35,7 +35,7 @@ export class SniceCellPercentage extends HTMLElement implements SniceCellElement
   colorize: boolean = true;
 
   @render()
-  renderContent() {
+  render() {
     const formattedValue = this.formatPercentageValue();
     const trendArrow = this.getTrendArrow();
     const styles = this.getPercentageStyles();
@@ -49,7 +49,7 @@ export class SniceCellPercentage extends HTMLElement implements SniceCellElement
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

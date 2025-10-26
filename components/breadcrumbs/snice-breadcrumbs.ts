@@ -29,7 +29,7 @@ export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsEle
   private renderTrigger = 0;
 
   @render()
-  renderContent() {
+  render() {
     const allItems = this.getAllItems();
     const visibleItems = this.getVisibleItems(allItems);
     const hasCollapsed = this.maxItems > 0 && allItems.length > this.maxItems && this.collapsed;
@@ -89,7 +89,7 @@ export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsEle
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return cssTag`${cssContent}`;
   }
 

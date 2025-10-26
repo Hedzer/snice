@@ -50,7 +50,7 @@ export class SniceCheckbox extends HTMLElement implements SniceCheckboxElement {
   }
 
   @render()
-  renderContent() {
+  render() {
     const wrapperClasses = `checkbox-wrapper${this.disabled ? ' checkbox-wrapper--disabled' : ''}`;
     const checkboxClasses = `checkbox checkbox--${this.size}${this.invalid ? ' checkbox--invalid' : ''}${this.indeterminate ? ' checkbox--indeterminate' : ''}`;
     const labelClasses = `checkbox-label checkbox-label--${this.size}${this.required ? ' checkbox-label--required' : ''}`;
@@ -111,7 +111,7 @@ export class SniceCheckbox extends HTMLElement implements SniceCheckboxElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

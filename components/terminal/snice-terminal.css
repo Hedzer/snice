@@ -1,0 +1,220 @@
+:host {
+  display: block;
+  width: 100%;
+  height: var(--snice-terminal-height, 400px);
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+  font-size: var(--snice-terminal-font-size, 14px);
+  line-height: 1.5;
+  background: var(--snice-terminal-background, #1e1e1e);
+  color: var(--snice-terminal-foreground, #d4d4d4);
+  border-radius: var(--snice-terminal-border-radius, 4px);
+  overflow: hidden;
+}
+
+.terminal-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 16px;
+  overflow: hidden;
+}
+
+.terminal-output {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  margin-bottom: 8px;
+}
+
+.terminal-output::-webkit-scrollbar {
+  width: 8px;
+}
+
+.terminal-output::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.terminal-output::-webkit-scrollbar-thumb {
+  background: var(--snice-terminal-scrollbar-color, #424242);
+  border-radius: 4px;
+}
+
+.terminal-output::-webkit-scrollbar-thumb:hover {
+  background: var(--snice-terminal-scrollbar-hover-color, #4e4e4e);
+}
+
+.terminal-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 2px 0;
+}
+
+.terminal-line.input {
+  color: var(--snice-terminal-input-color, #d4d4d4);
+}
+
+.terminal-line.output {
+  color: var(--snice-terminal-output-color, #d4d4d4);
+}
+
+.terminal-line.error {
+  color: var(--snice-terminal-error-color, #f48771);
+}
+
+.terminal-line.info {
+  color: var(--snice-terminal-info-color, #75beff);
+}
+
+.terminal-line.success {
+  color: var(--snice-terminal-success-color, #89d185);
+}
+
+.terminal-line.warning {
+  color: var(--snice-terminal-warning-color, #dcdcaa);
+}
+
+.line-timestamp {
+  color: var(--snice-terminal-timestamp-color, #666);
+  font-size: 12px;
+  flex-shrink: 0;
+  min-width: 60px;
+}
+
+.line-content {
+  flex: 1;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.terminal-input-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.terminal-prompt {
+  color: var(--snice-terminal-prompt-color, #89d185);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.terminal-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--snice-terminal-foreground, #d4d4d4);
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  caret-color: var(--snice-terminal-cursor-color, #d4d4d4);
+  padding: 0;
+}
+
+.terminal-input::selection {
+  background: var(--snice-terminal-selection-color, rgba(38, 79, 120, 0.6));
+}
+
+/* Cursor animation */
+@keyframes blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.terminal-input:focus {
+  animation: none;
+}
+
+.terminal-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 1.2em;
+  background: var(--snice-terminal-cursor-color, #d4d4d4);
+  animation: blink 1s step-end infinite;
+  vertical-align: text-bottom;
+}
+
+/* Readonly state */
+:host([readonly]) .terminal-input-line {
+  display: none;
+}
+
+/* ANSI Colors */
+.ansi-black {
+  color: var(--snice-terminal-ansi-black, #000000);
+}
+.ansi-red {
+  color: var(--snice-terminal-ansi-red, #cd3131);
+}
+.ansi-green {
+  color: var(--snice-terminal-ansi-green, #0dbc79);
+}
+.ansi-yellow {
+  color: var(--snice-terminal-ansi-yellow, #e5e510);
+}
+.ansi-blue {
+  color: var(--snice-terminal-ansi-blue, #2472c8);
+}
+.ansi-magenta {
+  color: var(--snice-terminal-ansi-magenta, #bc3fbc);
+}
+.ansi-cyan {
+  color: var(--snice-terminal-ansi-cyan, #11a8cd);
+}
+.ansi-white {
+  color: var(--snice-terminal-ansi-white, #e5e5e5);
+}
+.ansi-bright-black {
+  color: var(--snice-terminal-ansi-bright-black, #666666);
+}
+.ansi-bright-red {
+  color: var(--snice-terminal-ansi-bright-red, #f14c4c);
+}
+.ansi-bright-green {
+  color: var(--snice-terminal-ansi-bright-green, #23d18b);
+}
+.ansi-bright-yellow {
+  color: var(--snice-terminal-ansi-bright-yellow, #f5f543);
+}
+.ansi-bright-blue {
+  color: var(--snice-terminal-ansi-bright-blue, #3b8eea);
+}
+.ansi-bright-magenta {
+  color: var(--snice-terminal-ansi-bright-magenta, #d670d6);
+}
+.ansi-bright-cyan {
+  color: var(--snice-terminal-ansi-bright-cyan, #29b8db);
+}
+.ansi-bright-white {
+  color: var(--snice-terminal-ansi-bright-white, #ffffff);
+}
+
+/* Text styles */
+.ansi-bold {
+  font-weight: 700;
+}
+.ansi-dim {
+  opacity: 0.7;
+}
+.ansi-italic {
+  font-style: italic;
+}
+.ansi-underline {
+  text-decoration: underline;
+}
+
+/* Empty state */
+.empty-hint {
+  color: var(--snice-terminal-hint-color, #666);
+  font-style: italic;
+  margin-bottom: 8px;
+}

@@ -34,7 +34,7 @@ export class SniceTabPanel extends HTMLElement implements SniceTabPanelElement {
   }
 
   @render()
-  renderContent() {
+  render() {
     return html/*html*/`
       <div class="tab-panel" part="base">
         <slot></slot>
@@ -43,7 +43,7 @@ export class SniceTabPanel extends HTMLElement implements SniceTabPanelElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 }

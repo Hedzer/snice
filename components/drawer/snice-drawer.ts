@@ -53,7 +53,7 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
   private boundHandleEscape?: (e: KeyboardEvent) => void;
 
   @render()
-  renderContent() {
+  render() {
     return html`
       <div class="drawer-backdrop" part="backdrop"></div>
 
@@ -87,7 +87,7 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return cssTag`${cssContent}`;
   }
 

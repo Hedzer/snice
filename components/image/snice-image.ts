@@ -47,12 +47,12 @@ export class SniceImage extends HTMLElement implements SniceImageElement {
   private imageLoaded = false;
 
   @styles()
-  componentStyles() {
-    return css`${cssContent}`;
+  styles() {
+    return css/*css*/`${cssContent}`;
   }
 
   @render()
-  renderContent() {
+  render() {
     const imageSrc = this.imageError && this.fallback ? this.fallback : this.src;
     const imageAlt = this.alt || 'Image';
     const loadingAttr = this.lazy ? 'lazy' : 'eager';

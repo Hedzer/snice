@@ -18,7 +18,7 @@ export class SniceRating extends HTMLElement {
   color = '#facc15';
 
   @render()
-  renderContent() {
+  render() {
     const filled = Math.round(this.value);
     const empty = this.max - filled;
 
@@ -28,7 +28,7 @@ export class SniceRating extends HTMLElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`
       :host {
         display: inline-block;

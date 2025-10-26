@@ -4,7 +4,7 @@ import cssContent from './snice-layout-minimal.css?inline';
 @element('snice-layout-minimal')
 export class SniceLayoutMinimal extends HTMLElement {
   @render()
-  renderContent() {
+  render() {
     return html/*html*/`
       <div class="layout">
         <main class="main">
@@ -15,7 +15,7 @@ export class SniceLayoutMinimal extends HTMLElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 }

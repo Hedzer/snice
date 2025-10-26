@@ -73,7 +73,7 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
   }
 
   @render()
-  renderContent() {
+  render() {
     return html/*html*/`
       <div class="tooltip-trigger">
         <slot></slot>
@@ -86,7 +86,7 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

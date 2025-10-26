@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Code Block Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <script type="module">
+    import '../../dist/snice.esm.js';
+    import './snice-code-block.js';
+
+    const jsCode = `function fibonacci(n) {
+  if (n <= 1) return n;
+  return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+console.log(fibonacci(10));`;
+
+    const htmlCode = `<!DOCTYPE html>
+<html>
+<head>
+  <title>Example</title>
+</head>
+<body>
+  <h1>Hello World</h1>
+</body>
+</html>`;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('js-code').code = jsCode;
+      document.getElementById('html-code').code = htmlCode;
+      document.getElementById('numbered-code').code = jsCode;
+      document.getElementById('highlighted-code').code = jsCode;
+    });
+  </script>
+</head>
+<body style="padding:40px">
+  <h2>Code Block Demo</h2>
+
+  <h3>JavaScript</h3>
+  <snice-code-block id="js-code" language="javascript"></snice-code-block>
+
+  <h3>HTML with Filename</h3>
+  <snice-code-block id="html-code" language="html" filename="index.html"></snice-code-block>
+
+  <h3>With Line Numbers</h3>
+  <snice-code-block id="numbered-code" language="javascript" show-line-numbers></snice-code-block>
+
+  <h3>With Highlighted Lines</h3>
+  <snice-code-block id="highlighted-code" language="javascript" show-line-numbers highlight-lines="[2,3,4]"></snice-code-block>
+</body>
+</html>

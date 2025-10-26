@@ -54,7 +54,7 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
   iconElement?: HTMLImageElement;
 
   @render()
-  renderContent() {
+  render() {
     const classes = [
       'button',
       `button--${this.variant || 'default'}`,
@@ -114,7 +114,7 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

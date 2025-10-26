@@ -97,7 +97,7 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
   private showPassword = false;
 
   @render()
-  renderContent() {
+  render() {
     const inputClasses = [
       'input',
       `input--${this.size}`,
@@ -199,7 +199,7 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

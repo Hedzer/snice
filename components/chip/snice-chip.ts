@@ -35,7 +35,7 @@ export class SniceChip extends HTMLElement implements SniceChipElement {
   removeButton?: HTMLButtonElement;
 
   @render()
-  renderContent() {
+  render() {
     const chipClasses = `chip${this.selected ? ' chip--selected' : ''}`;
 
     return html/*html*/`
@@ -69,7 +69,7 @@ export class SniceChip extends HTMLElement implements SniceChipElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

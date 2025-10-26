@@ -58,7 +58,7 @@ export class SniceCellSparkline extends HTMLElement implements SniceCellElement 
   data: number[] = [];
 
   @render()
-  renderContent() {
+  render() {
     return html/*html*/`
       <div class="cell-content cell-content--sparkline" part="content">
         ${unsafeHTML(this.renderSparkline())}
@@ -67,7 +67,7 @@ export class SniceCellSparkline extends HTMLElement implements SniceCellElement 
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

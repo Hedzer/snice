@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Location Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body { padding: 40px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      margin: 20px 0;
+    }
+    .example {
+      border: 1px solid #e0e0e0;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    .example h4 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      color: #666;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  </style>
+  <script type="module">
+    import '../../dist/snice.esm.js';
+    import './snice-location.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Add click event listener
+      document.querySelectorAll('snice-location[clickable]').forEach(loc => {
+        loc.addEventListener('location-click', (e) => {
+          console.log('Location clicked:', e.detail);
+        });
+      });
+    });
+  </script>
+</head>
+<body>
+  <h2>Location Component Demo</h2>
+
+  <h3>Display Modes</h3>
+  <div class="grid">
+    <div class="example">
+      <h4>Full Mode (Default)</h4>
+      <snice-location
+        name="Central Park"
+        address="Central Park"
+        city="New York"
+        state="NY"
+        country="USA"
+        latitude="40.7829"
+        longitude="-73.9654"
+        mode="full">
+      </snice-location>
+    </div>
+
+    <div class="example">
+      <h4>Compact Mode</h4>
+      <snice-location
+        name="Empire State Building"
+        address="350 5th Ave"
+        city="New York"
+        state="NY"
+        zip-code="10118"
+        latitude="40.7484"
+        longitude="-73.9857"
+        mode="compact">
+      </snice-location>
+    </div>
+
+    <div class="example">
+      <h4>Coordinates Only</h4>
+      <snice-location
+        name="Times Square"
+        latitude="40.7580"
+        longitude="-73.9855"
+        mode="coordinates">
+      </snice-location>
+    </div>
+
+    <div class="example">
+      <h4>Address Only</h4>
+      <snice-location
+        name="Brooklyn Bridge"
+        address="Brooklyn Bridge"
+        city="New York"
+        state="NY"
+        mode="address">
+      </snice-location>
+    </div>
+  </div>
+
+  <h3>Custom Icons</h3>
+  <div class="grid">
+    <div class="example">
+      <h4>Emoji Icon</h4>
+      <snice-location
+        name="Office"
+        address="123 Business Blvd"
+        city="San Francisco"
+        state="CA"
+        icon="🏢">
+      </snice-location>
+    </div>
+
+    <div class="example">
+      <h4>No Icon</h4>
+      <snice-location
+        name="Home"
+        address="456 Residential St"
+        city="Portland"
+        state="OR"
+        show-icon="false">
+      </snice-location>
+    </div>
+  </div>
+
+  <h3>Interactive Locations</h3>
+  <div class="grid">
+    <div class="example">
+      <h4>Clickable (Opens Map)</h4>
+      <snice-location
+        name="Golden Gate Bridge"
+        address="Golden Gate Bridge"
+        city="San Francisco"
+        state="CA"
+        latitude="37.8199"
+        longitude="-122.4783"
+        clickable>
+      </snice-location>
+    </div>
+
+    <div class="example">
+      <h4>With Custom Map</h4>
+      <snice-location
+        name="Custom Location"
+        address="789 Custom Ave"
+        latitude="34.0522"
+        longitude="-118.2437"
+        clickable
+        map-url="https://www.openstreetmap.org/?mlat=34.0522&mlon=-118.2437#map=15/34.0522/-118.2437">
+      </snice-location>
+    </div>
+  </div>
+
+  <h3>Various Locations</h3>
+  <div class="grid">
+    <div class="example">
+      <h4>Restaurant</h4>
+      <snice-location
+        name="Blue Hill"
+        address="75 Washington Pl"
+        city="New York"
+        state="NY"
+        zip-code="10011"
+        latitude="40.7308"
+        longitude="-73.9973"
+        icon="🍽️"
+        clickable>
+      </snice-location>
+    </div>
+
+    <div class="example">
+      <h4>Park</h4>
+      <snice-location
+        name="Millennium Park"
+        address="201 E Randolph St"
+        city="Chicago"
+        state="IL"
+        zip-code="60602"
+        latitude="41.8826"
+        longitude="-87.6226"
+        icon="🌳"
+        clickable>
+      </snice-location>
+    </div>
+
+    <div class="example">
+      <h4>Airport</h4>
+      <snice-location
+        name="LAX"
+        address="1 World Way"
+        city="Los Angeles"
+        state="CA"
+        zip-code="90045"
+        latitude="33.9416"
+        longitude="-118.4085"
+        icon="✈️"
+        clickable>
+      </snice-location>
+    </div>
+  </div>
+
+  <h3>With Embedded Map</h3>
+  <div class="example">
+    <snice-location
+      name="Statue of Liberty"
+      address="Liberty Island"
+      city="New York"
+      state="NY"
+      latitude="40.6892"
+      longitude="-74.0445"
+      show-map
+      clickable>
+    </snice-location>
+  </div>
+</body>
+</html>

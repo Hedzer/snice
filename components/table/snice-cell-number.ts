@@ -45,7 +45,7 @@ export class SniceCellNumber extends HTMLElement implements SniceCellElement {
   highlight: boolean = false;
 
   @render()
-  renderContent() {
+  render() {
     const formattedValue = this.formatNumberValue();
     const styles = this.getNumberStyles();
 
@@ -57,7 +57,7 @@ export class SniceCellNumber extends HTMLElement implements SniceCellElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

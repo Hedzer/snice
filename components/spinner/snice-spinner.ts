@@ -17,7 +17,7 @@ export class SniceSpinner extends HTMLElement implements SniceSpinnerElement {
   thickness = 4;
 
   @render()
-  renderContent() {
+  render() {
     const size = this.getSizeValue();
     const strokeWidth = this.thickness;
     const radius = (size - strokeWidth * 2) / 2;
@@ -56,8 +56,8 @@ export class SniceSpinner extends HTMLElement implements SniceSpinnerElement {
   }
 
   @styles()
-  componentStyles() {
-    return css`${cssContent}`;
+  styles() {
+    return css/*css*/`${cssContent}`;
   }
 
   private getSizeValue(): number {

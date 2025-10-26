@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Camera Component Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body { padding: 40px; margin: 0; }
+    .demo-section {
+      margin-bottom: 40px;
+    }
+    .demo-section h3 {
+      margin-bottom: 20px;
+    }
+    .camera-wrapper {
+      max-width: 640px;
+      margin: 0 auto;
+    }
+    .controls {
+      margin: 20px 0;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    select, input {
+      padding: 8px 12px;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    button {
+      padding: 8px 16px;
+      background: #2196f3;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #1976d2;
+    }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+    .gallery-item {
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .gallery-item:hover {
+      transform: scale(1.05);
+    }
+    .gallery-item img {
+      width: 100%;
+      display: block;
+    }
+    .gallery-item-info {
+      padding: 8px;
+      font-size: 12px;
+      color: #666;
+      background: #f5f5f5;
+    }
+  </style>
+  <script type="module">
+    document.addEventListener('DOMContentLoaded', () => {
+      const camera = document.getElementById('main-camera');
+      const gallery = document.getElementById('gallery');
+      const deviceSelect = document.getElementById('device-select');
+      const resolutionSelect = document.getElementById('resolution-select');
+      const facingSelect = document.getElementById('facing-select');
+      const mirrorCheck = document.getElementById('mirror-check');
+
+      let capturedImages = [];
+
+      // Load available devices
+      async function loadDevices() {
+        try {
+          const devices = await camera.getDevices();
+          deviceSelect.innerHTML = '<option value="">Select Device</option>';
+          devices.forEach((device, index) => {
+            const option = document.createElement('option');
+            option.value = device.deviceId;
+            option.textContent = device.label || `Camera ${index + 1}`;
+            deviceSelect.appendChild(option);
+          });
+        } catch (error) {
+          console.error('Failed to load devices:', error);
+        }
+      }
+
+      // Device selection
+      deviceSelect.addEventListener('change', async (e) => {
+        if (e.target.value) {
+          try {
+            await camera.selectDevice(e.target.value);
+          } catch (error) {
+            console.error('Failed to select device:', error);
+          }
+        }
+      });
+
+      // Resolution change
+      resolutionSelect.addEventListener('change', (e) => {
+        camera.resolution = e.target.value;
+      });
+
+      // Facing mode change
+      facingSelect.addEventListener('change', (e) => {
+        camera.facingMode = e.target.value;
+      });
+
+      // Mirror toggle
+      mirrorCheck.addEventListener('change', (e) => {
+        camera.mirror = e.target.checked;
+      });
+
+      // Camera events
+      camera.addEventListener('@snice/camera-start', () => {
+        console.log('Camera started');
+        loadDevices();
+      });
+
+      camera.addEventListener('@snice/camera-capture', (e) => {
+        const image = e.detail.image;
+        capturedImages.unshift(image);
+        updateGallery();
+      });
+
+      camera.addEventListener('@snice/camera-error', (e) => {
+        console.error('Camera error:', e.detail.error);
+        alert('Camera error: ' + e.detail.error.message);
+      });
+
+      // Update gallery
+      function updateGallery() {
+        gallery.innerHTML = '';
+        capturedImages.forEach((image, index) => {
+          const item = document.createElement('div');
+          item.className = 'gallery-item';
+
+          const img = document.createElement('img');
+          img.src = image.dataURL;
+          img.alt = `Captured ${index + 1}`;
+
+          const info = document.createElement('div');
+          info.className = 'gallery-item-info';
+          info.textContent = `${image.width}x${image.height}`;
+
+          item.appendChild(img);
+          item.appendChild(info);
+
+          item.addEventListener('click', () => {
+            const win = window.open('', '_blank');
+            win.document.write(`
+              <html>
+                <head><title>Captured Image</title></head>
+                <body style="margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; background: #000;">
+                  <img src="${image.dataURL}" style="max-width: 100%; max-height: 100%;">
+                </body>
+              </html>
+            `);
+          });
+
+          gallery.appendChild(item);
+        });
+      }
+
+      // Clear gallery
+      document.getElementById('clear-btn').addEventListener('click', () => {
+        capturedImages = [];
+        updateGallery();
+      });
+    });
+  </script>
+</head>
+<body>
+  <h2>Camera Component Demo</h2>
+  <p>Access your device camera with customizable settings and capture functionality.</p>
+
+  <div class="demo-section">
+    <h3>Live Camera Feed</h3>
+    <div class="camera-wrapper">
+      <snice-camera id="main-camera" resolution="hd"></snice-camera>
+    </div>
+
+    <div class="controls">
+      <select id="device-select">
+        <option value="">Select Device</option>
+      </select>
+
+      <select id="resolution-select">
+        <option value="qvga">QVGA (320x240)</option>
+        <option value="vga">VGA (640x480)</option>
+        <option value="hd" selected>HD (1280x720)</option>
+        <option value="full-hd">Full HD (1920x1080)</option>
+        <option value="4k">4K (3840x2160)</option>
+      </select>
+
+      <select id="facing-select">
+        <option value="user" selected>Front Camera</option>
+        <option value="environment">Back Camera</option>
+      </select>
+
+      <label style="display: flex; align-items: center; gap: 8px; padding: 8px 12px;">
+        <input type="checkbox" id="mirror-check" checked>
+        Mirror
+      </label>
+
+      <button id="clear-btn">Clear Gallery</button>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <h3>Captured Photos</h3>
+    <div id="gallery" class="gallery"></div>
+  </div>
+
+  <div style="margin-top: 40px; padding: 20px; background: #f5f5f5; border-radius: 4px;">
+    <h3 style="margin-top: 0;">Features</h3>
+    <ul>
+      <li>Live camera feed access</li>
+      <li>Front/back camera switching</li>
+      <li>Multiple resolution options</li>
+      <li>Photo capture with flash effect</li>
+      <li>Mirror mode for selfies</li>
+      <li>Device selection</li>
+      <li>Built-in camera controls</li>
+      <li>Error handling</li>
+    </ul>
+
+    <h3>Controls</h3>
+    <ul style="list-style: none; padding: 0;">
+      <li>▶️ Start - Start camera feed</li>
+      <li>⚫ Capture - Take photo</li>
+      <li>🔄 Switch - Toggle front/back camera</li>
+      <li>⏹️ Stop - Stop camera feed</li>
+    </ul>
+
+    <h3>Resolution Options</h3>
+    <ul style="list-style: none; padding: 0;">
+      <li>QVGA - 320x240 (low quality, fast)</li>
+      <li>VGA - 640x480 (standard quality)</li>
+      <li>HD - 1280x720 (high quality)</li>
+      <li>Full HD - 1920x1080 (very high quality)</li>
+      <li>4K - 3840x2160 (ultra quality, slow)</li>
+    </ul>
+
+    <h3>Browser Permissions</h3>
+    <p>This component requires camera permissions. Your browser will prompt you to allow camera access.</p>
+    <p><strong>Note:</strong> Camera access only works over HTTPS or localhost for security reasons.</p>
+  </div>
+  <script type="module" src="./snice-camera.ts"></script>
+</body>
+</html>

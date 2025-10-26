@@ -23,7 +23,7 @@ export class SniceSkeleton extends HTMLElement implements SniceSkeletonElement {
   spacing = '8px';
 
   @render()
-  renderContent() {
+  render() {
     const items = Array(this.count).fill(0);
     const skeletonClass = `skeleton skeleton--${this.variant} skeleton--${this.animation}`;
     const inlineStyles = this.getInlineStyles();
@@ -43,7 +43,7 @@ export class SniceSkeleton extends HTMLElement implements SniceSkeletonElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return cssTag`${cssContent}`;
   }
 

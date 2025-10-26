@@ -66,7 +66,7 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
   swatch?: HTMLElement;
 
   @render()
-  renderContent() {
+  render() {
     const wrapperClasses = ['color-picker-wrapper'].filter(Boolean).join(' ');
     const swatchClasses = [
       'color-swatch',
@@ -172,7 +172,7 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

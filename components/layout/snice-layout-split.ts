@@ -10,7 +10,7 @@ export class SniceLayoutSplit extends HTMLElement {
   ratio: '50-50' | '60-40' | '70-30' | '33-67' | '67-33' = '50-50';
 
   @render()
-  renderContent() {
+  render() {
     return html/*html*/`
       <div class="layout">
         <div class="panel panel-left">
@@ -25,7 +25,7 @@ export class SniceLayoutSplit extends HTMLElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 }

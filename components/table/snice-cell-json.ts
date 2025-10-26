@@ -29,7 +29,7 @@ export class SniceCellJson extends HTMLElement implements SniceCellElement {
   type: string = 'json';
 
   @render()
-  renderContent() {
+  render() {
     const jsonValue = typeof this.value === 'string' ? this.tryParseJson(this.value) : this.value;
 
     if (jsonValue === null || jsonValue === undefined) {
@@ -59,7 +59,7 @@ export class SniceCellJson extends HTMLElement implements SniceCellElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

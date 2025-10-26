@@ -25,7 +25,7 @@ export class SniceAlert extends HTMLElement implements SniceAlertElement {
   private isHidden = false;
 
   @render()
-  renderContent() {
+  render() {
     const hasIcon = this.icon ? this.icon !== 'none' : this.shouldShowDefaultIcon();
     const classes = [
       'alert',
@@ -64,7 +64,7 @@ export class SniceAlert extends HTMLElement implements SniceAlertElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

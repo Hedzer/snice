@@ -35,7 +35,7 @@ export class SniceBanner extends HTMLElement implements SniceBannerElement {
   }
 
   @render()
-  renderContent() {
+  render() {
     const bannerClasses = ['banner', `banner--${this.variant}`].filter(Boolean).join(' ');
 
     const defaultIcons = {
@@ -82,7 +82,7 @@ export class SniceBanner extends HTMLElement implements SniceBannerElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

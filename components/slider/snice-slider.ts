@@ -79,7 +79,7 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
   private isDragging = false;
 
   @render()
-  renderContent() {
+  render() {
     const wrapperClasses = ['slider-wrapper', this.vertical ? 'slider-wrapper--vertical' : ''].filter(Boolean).join(' ');
     const containerClasses = ['slider-container', this.vertical ? 'slider-container--vertical' : ''].filter(Boolean).join(' ');
     const trackClasses = [
@@ -184,7 +184,7 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

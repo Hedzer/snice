@@ -31,7 +31,7 @@ export class SniceHeader extends HTMLElement implements SniceHeaderElement {
   someSelected: boolean = false;
 
   @render()
-  renderContent() {
+  render() {
     return html/*html*/`
       <div class="header-container" part="container">
         <if ${this.selectable}>
@@ -43,7 +43,7 @@ export class SniceHeader extends HTMLElement implements SniceHeaderElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

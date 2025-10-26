@@ -21,7 +21,7 @@ export class SniceLayoutSidebar extends HTMLElement implements Layout {
   private currentRoute = '';
 
   @render()
-  renderContent() {
+  render() {
     return html/*html*/`
       <div class="layout">
         <header class="header">
@@ -59,7 +59,7 @@ export class SniceLayoutSidebar extends HTMLElement implements Layout {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

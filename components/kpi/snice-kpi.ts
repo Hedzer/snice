@@ -30,8 +30,8 @@ export class SniceKpi extends HTMLElement implements SniceKpiElement {
   colorValue = false;
 
   @styles()
-  componentStyles() {
-    return css`${cssContent}`;
+  styles() {
+    return css/*css*/`${cssContent}`;
   }
 
   private getTrendIcon(): string {
@@ -65,7 +65,7 @@ export class SniceKpi extends HTMLElement implements SniceKpiElement {
   }
 
   @render()
-  renderContent() {
+  render() {
     const kpiClasses = [
       'kpi',
       `kpi--${this.size}`

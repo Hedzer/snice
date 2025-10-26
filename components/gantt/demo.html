@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gantt Chart Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body { padding: 40px; margin: 0; }
+    .controls {
+      margin: 20px 0;
+      display: flex;
+      gap: 10px;
+    }
+    button {
+      padding: 8px 16px;
+      background: #2196f3;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #1976d2;
+    }
+    snice-gantt {
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      height: 500px;
+    }
+  </style>
+  <script type="module">
+    import '../../dist/snice.esm.js';
+    import './snice-gantt.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const gantt = document.getElementById('gantt-chart');
+
+      // Project tasks
+      gantt.tasks = [
+        {
+          id: 1,
+          name: 'Project Planning',
+          start: new Date(2024, 5, 1),
+          end: new Date(2024, 5, 7),
+          progress: 100,
+          color: '#4caf50'
+        },
+        {
+          id: 2,
+          name: 'Design Phase',
+          start: new Date(2024, 5, 8),
+          end: new Date(2024, 5, 21),
+          progress: 75,
+          color: '#2196f3',
+          dependencies: [1]
+        },
+        {
+          id: 3,
+          name: 'Frontend Development',
+          start: new Date(2024, 5, 15),
+          end: new Date(2024, 6, 15),
+          progress: 40,
+          color: '#ff9800',
+          dependencies: [2]
+        },
+        {
+          id: 4,
+          name: 'Backend Development',
+          start: new Date(2024, 5, 15),
+          end: new Date(2024, 6, 10),
+          progress: 35,
+          color: '#ff9800',
+          dependencies: [2]
+        },
+        {
+          id: 5,
+          name: 'Testing',
+          start: new Date(2024, 6, 16),
+          end: new Date(2024, 6, 31),
+          progress: 0,
+          color: '#9c27b0',
+          dependencies: [3, 4]
+        },
+        {
+          id: 6,
+          name: 'Deployment',
+          start: new Date(2024, 7, 1),
+          end: new Date(2024, 7, 5),
+          progress: 0,
+          color: '#f44336',
+          dependencies: [5]
+        }
+      ];
+
+      // View mode controls
+      document.getElementById('view-day').addEventListener('click', () => {
+        gantt.viewMode = 'day';
+      });
+
+      document.getElementById('view-week').addEventListener('click', () => {
+        gantt.viewMode = 'week';
+      });
+
+      document.getElementById('view-month').addEventListener('click', () => {
+        gantt.viewMode = 'month';
+      });
+
+      // Event listeners
+      gantt.addEventListener('@snice/gantt-task-click', (e) => {
+        console.log('Task clicked:', e.detail.task);
+        alert(`Task: ${e.detail.task.name}\nProgress: ${e.detail.task.progress}%`);
+      });
+    });
+  </script>
+</head>
+<body>
+  <h2>Gantt Chart Demo</h2>
+  <p>Project timeline visualization with task dependencies and progress tracking.</p>
+
+  <div class="controls">
+    <button id="view-day">Day View</button>
+    <button id="view-week">Week View</button>
+    <button id="view-month">Month View</button>
+  </div>
+
+  <snice-gantt id="gantt-chart"></snice-gantt>
+
+  <div style="margin-top: 40px; padding: 20px; background: #f5f5f5; border-radius: 4px;">
+    <h3 style="margin-top: 0;">Features</h3>
+    <ul>
+      <li>Visual timeline with task bars</li>
+      <li>Progress indicators on each task</li>
+      <li>Color-coded tasks</li>
+      <li>Multiple view modes (day, week, month)</li>
+      <li>Click on tasks to see details</li>
+      <li>Today indicator</li>
+    </ul>
+
+    <h3>Project Phases</h3>
+    <ul style="list-style: none; padding: 0;">
+      <li style="margin-bottom: 8px;">
+        <span style="display: inline-block; width: 12px; height: 12px; background: #4caf50; border-radius: 2px; margin-right: 8px;"></span>
+        Planning (100% complete)
+      </li>
+      <li style="margin-bottom: 8px;">
+        <span style="display: inline-block; width: 12px; height: 12px; background: #2196f3; border-radius: 2px; margin-right: 8px;"></span>
+        Design (75% complete)
+      </li>
+      <li style="margin-bottom: 8px;">
+        <span style="display: inline-block; width: 12px; height: 12px; background: #ff9800; border-radius: 2px; margin-right: 8px;"></span>
+        Development (35-40% complete)
+      </li>
+      <li style="margin-bottom: 8px;">
+        <span style="display: inline-block; width: 12px; height: 12px; background: #9c27b0; border-radius: 2px; margin-right: 8px;"></span>
+        Testing (Not started)
+      </li>
+      <li>
+        <span style="display: inline-block; width: 12px; height: 12px; background: #f44336; border-radius: 2px; margin-right: 8px;"></span>
+        Deployment (Not started)
+      </li>
+    </ul>
+  </div>
+</body>
+</html>

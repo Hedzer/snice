@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Draw Component Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body { padding: 40px; margin: 0; }
+    .demo-section {
+      margin-bottom: 40px;
+    }
+    .demo-section h3 {
+      margin-bottom: 20px;
+    }
+    .draw-wrapper {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+    .draw-canvas-container {
+      flex: 1;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .toolbar {
+      width: 200px;
+      padding: 20px;
+      background: #f5f5f5;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .toolbar-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .toolbar-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: #666;
+      text-transform: uppercase;
+    }
+    .tool-buttons {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    .tool-btn {
+      padding: 12px;
+      background: white;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 11px;
+      transition: all 0.2s;
+    }
+    .tool-btn:hover {
+      border-color: #2196f3;
+    }
+    .tool-btn.active {
+      background: #2196f3;
+      border-color: #2196f3;
+      color: white;
+    }
+    .color-input {
+      width: 100%;
+      height: 40px;
+      border-radius: 6px;
+      border: 2px solid #e0e0e0;
+      cursor: pointer;
+    }
+    input[type="range"] {
+      width: 100%;
+    }
+    button {
+      padding: 10px 16px;
+      background: #2196f3;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #1976d2;
+    }
+    button.secondary {
+      background: #757575;
+    }
+    button.secondary:hover {
+      background: #616161;
+    }
+  </style>
+  <script type="module">
+    document.addEventListener('DOMContentLoaded', () => {
+      const draw = document.getElementById('draw');
+      const toolButtons = document.querySelectorAll('.tool-btn');
+      const colorInput = document.getElementById('color-input');
+      const widthInput = document.getElementById('width-input');
+      const widthValue = document.getElementById('width-value');
+      const lazyCheck = document.getElementById('lazy-check');
+      const lazyRadiusInput = document.getElementById('lazy-radius');
+      const smoothingInput = document.getElementById('smoothing');
+
+      // Tool selection
+      toolButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          toolButtons.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          draw.tool = btn.dataset.tool;
+        });
+      });
+
+      // Color
+      colorInput.addEventListener('input', (e) => {
+        draw.color = e.target.value;
+      });
+
+      // Width
+      widthInput.addEventListener('input', (e) => {
+        draw.strokeWidth = parseInt(e.target.value);
+        widthValue.textContent = e.target.value + 'px';
+      });
+
+      // Lazy brush
+      lazyCheck.addEventListener('change', (e) => {
+        draw.lazy = e.target.checked;
+      });
+
+      lazyRadiusInput.addEventListener('input', (e) => {
+        draw.lazyRadius = parseInt(e.target.value);
+      });
+
+      smoothingInput.addEventListener('input', (e) => {
+        draw.smoothing = parseFloat(e.target.value);
+      });
+
+      // Actions
+      document.getElementById('clear-btn').addEventListener('click', () => {
+        if (confirm('Clear the canvas?')) {
+          draw.clear();
+        }
+      });
+
+      document.getElementById('undo-btn').addEventListener('click', () => {
+        draw.undo();
+      });
+
+      document.getElementById('redo-btn').addEventListener('click', () => {
+        draw.redo();
+      });
+
+      document.getElementById('download-btn').addEventListener('click', () => {
+        draw.download('my-drawing.png');
+      });
+
+      // Keyboard shortcuts
+      document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey || e.metaKey) {
+          if (e.key === 'z') {
+            e.preventDefault();
+            if (e.shiftKey) {
+              draw.redo();
+            } else {
+              draw.undo();
+            }
+          }
+        }
+      });
+    });
+  </script>
+</head>
+<body>
+  <h2>Draw Component Demo</h2>
+  <p>Paint and draw with smooth lazy-brush technology.</p>
+
+  <div class="demo-section">
+    <div class="draw-wrapper">
+      <div class="draw-canvas-container">
+        <snice-draw id="draw" width="800" height="600"></snice-draw>
+      </div>
+
+      <div class="toolbar">
+        <div class="toolbar-section">
+          <div class="toolbar-label">Tools</div>
+          <div class="tool-buttons">
+            <div class="tool-btn active" data-tool="pen">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
+                <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
+              </svg>
+              Pen
+            </div>
+            <div class="tool-btn" data-tool="eraser">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 20H7L3 16l9-9 8 8v5z"></path>
+              </svg>
+              Eraser
+            </div>
+          </div>
+        </div>
+
+        <div class="toolbar-section">
+          <div class="toolbar-label">Color</div>
+          <input type="color" id="color-input" class="color-input" value="#000000">
+        </div>
+
+        <div class="toolbar-section">
+          <div class="toolbar-label">Width: <span id="width-value">2px</span></div>
+          <input type="range" id="width-input" min="1" max="50" value="2">
+        </div>
+
+        <div class="toolbar-section">
+          <div class="toolbar-label">Lazy Brush</div>
+          <label style="display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" id="lazy-check" checked>
+            Enable
+          </label>
+          <input type="range" id="lazy-radius" min="0" max="100" value="30" title="Lazy Radius">
+        </div>
+
+        <div class="toolbar-section">
+          <div class="toolbar-label">Smoothing</div>
+          <input type="range" id="smoothing" min="0" max="1" step="0.1" value="0.5">
+        </div>
+
+        <div class="toolbar-section">
+          <button id="undo-btn">Undo (Ctrl+Z)</button>
+          <button id="redo-btn">Redo (Ctrl+Shift+Z)</button>
+        </div>
+
+        <div class="toolbar-section">
+          <button id="download-btn">Download</button>
+          <button id="clear-btn" class="secondary">Clear</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top: 40px; padding: 20px; background: #f5f5f5; border-radius: 4px;">
+    <h3 style="margin-top: 0;">Features</h3>
+    <ul>
+      <li>Smooth lazy-brush drawing</li>
+      <li>Pen and eraser tools</li>
+      <li>Customizable brush width and color</li>
+      <li>Adjustable lazy radius for smoothness</li>
+      <li>Line smoothing with bezier curves</li>
+      <li>Undo/redo functionality</li>
+      <li>Export to PNG/JPEG/WebP</li>
+      <li>Download drawings</li>
+      <li>Keyboard shortcuts (Ctrl+Z, Ctrl+Shift+Z)</li>
+      <li>Touch and pointer support</li>
+    </ul>
+
+    <h3>Lazy Brush</h3>
+    <p>The lazy brush creates smooth, professional-looking lines by making the brush follow your cursor with a slight delay and within a configurable radius. This helps eliminate jitter and creates more organic-looking strokes.</p>
+
+    <h3>Keyboard Shortcuts</h3>
+    <ul style="list-style: none; padding: 0;">
+      <li><kbd>Ctrl+Z</kbd> - Undo</li>
+      <li><kbd>Ctrl+Shift+Z</kbd> - Redo</li>
+    </ul>
+  </div>
+  <script type="module" src="./snice-draw.ts"></script>
+</body>
+</html>

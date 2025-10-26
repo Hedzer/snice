@@ -43,7 +43,7 @@ export class SniceCellBoolean extends HTMLElement implements SniceCellElement {
   falseSymbol: string = '✗';
 
   @render()
-  renderContent() {
+  render() {
     const content = this.formatBooleanContent();
 
     return html/*html*/`
@@ -54,7 +54,7 @@ export class SniceCellBoolean extends HTMLElement implements SniceCellElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

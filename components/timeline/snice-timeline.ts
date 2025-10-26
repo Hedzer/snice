@@ -18,11 +18,11 @@ export class SniceTimeline extends HTMLElement implements SniceTimelineElement {
 
   @styles()
   styles() {
-    return css`${cssContent}`;
+    return css/*css*/`${cssContent}`;
   }
 
   @render()
-  renderContent() {
+  render() {
     const timelineClasses = [
       'timeline',
       `timeline--${this.orientation}`,

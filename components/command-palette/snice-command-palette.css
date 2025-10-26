@@ -1,0 +1,192 @@
+:host {
+  display: contents;
+}
+
+.command-palette {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  display: none;
+}
+
+.command-palette--open {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 15vh;
+}
+
+.command-palette__backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  animation: fadeIn 0.2s ease;
+}
+
+.command-palette__container {
+  position: relative;
+  width: 90%;
+  max-width: 640px;
+  background-color: var(--color-background, #ffffff);
+  border-radius: var(--border-radius-lg, 0.5rem);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  animation: slideDown 0.2s ease;
+  overflow: hidden;
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.command-palette__search {
+  padding: var(--spacing-md, 1rem);
+  border-bottom: 1px solid var(--color-neutral-200, #e5e7eb);
+}
+
+.command-palette__input {
+  width: 100%;
+  padding: var(--spacing-sm, 0.75rem) var(--spacing-md, 1rem);
+  font-size: var(--font-size-base, 1rem);
+  font-family: var(--font-family, system-ui);
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--color-text, #1f2937);
+}
+
+.command-palette__input::placeholder {
+  color: var(--color-text-muted, #9ca3af);
+}
+
+.command-palette__results {
+  overflow-y: auto;
+  max-height: calc(70vh - 80px);
+}
+
+.command-palette__category {
+  padding: var(--spacing-xs, 0.5rem) var(--spacing-md, 1rem);
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: 600;
+  color: var(--color-text-muted, #6b7280);
+  background-color: var(--color-neutral-50, #f9fafb);
+  border-top: 1px solid var(--color-neutral-200, #e5e7eb);
+}
+
+.command-palette__category:first-child {
+  border-top: none;
+}
+
+.command-palette__item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 0.75rem);
+  padding: var(--spacing-sm, 0.75rem) var(--spacing-md, 1rem);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font-family, system-ui);
+}
+
+.command-palette__item:hover {
+  background-color: var(--color-neutral-100, #f3f4f6);
+}
+
+.command-palette__item--active {
+  background-color: var(--color-primary-100, #dbeafe);
+}
+
+.command-palette__item--active:hover {
+  background-color: var(--color-primary-200, #bfdbfe);
+}
+
+.command-palette__item--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.command-palette__item-icon {
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.125rem;
+}
+
+.command-palette__item-icon-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.command-palette__item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.command-palette__item-label {
+  font-size: var(--font-size-base, 1rem);
+  color: var(--color-text, #1f2937);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.command-palette__item-description {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text-muted, #6b7280);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+.command-palette__item-shortcut {
+  flex-shrink: 0;
+  display: flex;
+  gap: 4px;
+  font-size: var(--font-size-xs, 0.75rem);
+  font-family: var(--font-family-mono, monospace);
+  color: var(--color-text-muted, #6b7280);
+  padding: 2px 6px;
+  background-color: var(--color-neutral-100, #f3f4f6);
+  border-radius: var(--border-radius-sm, 0.25rem);
+  border: 1px solid var(--color-neutral-200, #e5e7eb);
+}
+
+.command-palette__empty {
+  padding: var(--spacing-xl, 2rem);
+  text-align: center;
+  color: var(--color-text-muted, #6b7280);
+  font-size: var(--font-size-sm, 0.875rem);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

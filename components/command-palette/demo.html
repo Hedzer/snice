@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Command Palette Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      padding: 40px;
+      font-family: var(--snice-font-family);
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+    }
+
+    .hint {
+      text-align: center;
+      margin: 40px 0;
+      font-size: 1.125rem;
+      color: var(--snice-color-text-secondary);
+    }
+
+    .hint kbd {
+      display: inline-block;
+      padding: 4px 8px;
+      background: var(--snice-color-surface);
+      border: 1px solid var(--snice-color-border);
+      border-radius: 4px;
+      font-family: monospace;
+      margin: 0 4px;
+    }
+
+    .demo-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin: 20px 0;
+    }
+
+    .output {
+      margin-top: 40px;
+      padding: 20px;
+      background: var(--snice-color-surface);
+      border: 1px solid var(--snice-color-border);
+      border-radius: 8px;
+      min-height: 100px;
+    }
+
+    .output h3 {
+      margin-top: 0;
+    }
+  </style>
+  <script type="module">
+    import '../../dist/snice.esm.js';
+    import './snice-command-palette.js';
+
+    const commands = [
+      {
+        id: 'new-file',
+        label: 'New File',
+        description: 'Create a new file',
+        icon: '📄',
+        shortcut: '⌘N',
+        category: 'File',
+        action: () => console.log('New file created')
+      },
+      {
+        id: 'open-file',
+        label: 'Open File',
+        description: 'Open an existing file',
+        icon: '📂',
+        shortcut: '⌘O',
+        category: 'File',
+        action: () => console.log('Open file dialog')
+      },
+      {
+        id: 'save',
+        label: 'Save',
+        description: 'Save the current file',
+        icon: '💾',
+        shortcut: '⌘S',
+        category: 'File',
+        action: () => console.log('File saved')
+      },
+      {
+        id: 'cut',
+        label: 'Cut',
+        description: 'Cut selected text',
+        icon: '✂️',
+        shortcut: '⌘X',
+        category: 'Edit',
+        action: () => console.log('Text cut')
+      },
+      {
+        id: 'copy',
+        label: 'Copy',
+        description: 'Copy selected text',
+        icon: '📋',
+        shortcut: '⌘C',
+        category: 'Edit',
+        action: () => console.log('Text copied')
+      },
+      {
+        id: 'paste',
+        label: 'Paste',
+        description: 'Paste from clipboard',
+        icon: '📄',
+        shortcut: '⌘V',
+        category: 'Edit',
+        action: () => console.log('Text pasted')
+      },
+      {
+        id: 'find',
+        label: 'Find',
+        description: 'Find in document',
+        icon: '🔍',
+        shortcut: '⌘F',
+        category: 'Search',
+        action: () => console.log('Find dialog opened')
+      },
+      {
+        id: 'replace',
+        label: 'Replace',
+        description: 'Find and replace',
+        icon: '🔄',
+        shortcut: '⌘H',
+        category: 'Search',
+        action: () => console.log('Replace dialog opened')
+      },
+      {
+        id: 'settings',
+        label: 'Settings',
+        description: 'Open settings',
+        icon: '⚙️',
+        shortcut: '⌘,',
+        category: 'View',
+        action: () => console.log('Settings opened')
+      },
+      {
+        id: 'theme',
+        label: 'Toggle Theme',
+        description: 'Switch between light and dark theme',
+        icon: '🌓',
+        category: 'View',
+        action: () => console.log('Theme toggled')
+      }
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const palette = document.getElementById('palette');
+      palette.commands = commands;
+
+      palette.addEventListener('@snice/command-execute', (e) => {
+        const output = document.getElementById('output');
+        output.innerHTML = `
+          <h3>Command Executed</h3>
+          <p><strong>Label:</strong> ${e.detail.command.label}</p>
+          <p><strong>Description:</strong> ${e.detail.command.description || 'N/A'}</p>
+          <p><strong>Category:</strong> ${e.detail.command.category || 'N/A'}</p>
+        `;
+      });
+
+      document.getElementById('openBtn').addEventListener('click', () => {
+        palette.show();
+      });
+    });
+  </script>
+</head>
+<body>
+  <h2>Command Palette Demo</h2>
+
+  <div class="hint">
+    Press <kbd>⌘</kbd> + <kbd>K</kbd> (or <kbd>Ctrl</kbd> + <kbd>K</kbd> on Windows) to open the command palette
+  </div>
+
+  <div class="demo-actions">
+    <snice-button id="openBtn">Open Command Palette</snice-button>
+  </div>
+
+  <div class="output" id="output">
+    <h3>Last Command</h3>
+    <p>Execute a command to see details here.</p>
+  </div>
+
+  <snice-command-palette id="palette"></snice-command-palette>
+</body>
+</html>

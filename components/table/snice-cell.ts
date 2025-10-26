@@ -41,7 +41,7 @@ export class SniceCell extends HTMLElement implements SniceCellElement {
   contentElement?: HTMLElement;
 
   @render()
-  renderContent() {
+  render() {
     return html/*html*/`
       <div class="cell-content" part="content">
         ${this.formatValue()}
@@ -50,7 +50,7 @@ export class SniceCell extends HTMLElement implements SniceCellElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

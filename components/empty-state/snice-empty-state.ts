@@ -23,7 +23,7 @@ export class SniceEmptyState extends HTMLElement implements SniceEmptyStateEleme
   actionHref = '';
 
   @render()
-  renderContent() {
+  render() {
     const emptyStateClasses = ['empty-state', `empty-state--${this.size}`].filter(Boolean).join(' ');
 
     return html/*html*/`
@@ -59,7 +59,7 @@ export class SniceEmptyState extends HTMLElement implements SniceEmptyStateEleme
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

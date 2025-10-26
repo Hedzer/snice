@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Kanban Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body { padding: 40px; margin: 0; }
+    h2 { margin-bottom: 10px; }
+    p { color: #666; margin-bottom: 20px; }
+  </style>
+  <script type="module">
+    import '../../dist/snice.esm.js';
+    import './snice-kanban.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const kanban = document.getElementById('kanban-board');
+
+      kanban.columns = [
+        {
+          id: 'todo',
+          title: 'To Do',
+          color: '#f44336',
+          cards: [
+            {
+              id: 1,
+              title: 'Design new landing page',
+              description: 'Create mockups and wireframes for the new homepage',
+              assignee: 'Alice',
+              labels: ['design', 'high-priority'],
+              color: '#f44336'
+            },
+            {
+              id: 2,
+              title: 'Update documentation',
+              description: 'Add examples for new components',
+              assignee: 'Bob',
+              labels: ['docs'],
+              color: '#2196f3'
+            },
+            {
+              id: 3,
+              title: 'Fix bug in login form',
+              description: 'Users cannot reset password',
+              assignee: 'Charlie',
+              labels: ['bug', 'high-priority'],
+              color: '#f44336'
+            }
+          ]
+        },
+        {
+          id: 'in-progress',
+          title: 'In Progress',
+          color: '#ff9800',
+          limit: 3,
+          cards: [
+            {
+              id: 4,
+              title: 'Implement dark mode',
+              description: 'Add theme switcher and dark color scheme',
+              assignee: 'Alice',
+              labels: ['feature', 'ui'],
+              color: '#4caf50'
+            },
+            {
+              id: 5,
+              title: 'API integration',
+              description: 'Connect frontend to new REST API',
+              assignee: 'David',
+              labels: ['backend'],
+              color: '#2196f3'
+            }
+          ]
+        },
+        {
+          id: 'review',
+          title: 'In Review',
+          color: '#9c27b0',
+          cards: [
+            {
+              id: 6,
+              title: 'Add user avatars',
+              description: 'Display profile pictures in comments',
+              assignee: 'Eve',
+              labels: ['feature', 'ui'],
+              color: '#4caf50'
+            }
+          ]
+        },
+        {
+          id: 'done',
+          title: 'Done',
+          color: '#4caf50',
+          cards: [
+            {
+              id: 7,
+              title: 'Set up CI/CD pipeline',
+              description: 'Automated testing and deployment',
+              assignee: 'Frank',
+              labels: ['devops'],
+              color: '#2196f3'
+            },
+            {
+              id: 8,
+              title: 'Create user onboarding',
+              description: 'Welcome tour for new users',
+              assignee: 'Grace',
+              labels: ['feature', 'ux'],
+              color: '#4caf50'
+            }
+          ]
+        }
+      ];
+
+      // Event listeners
+      kanban.addEventListener('@snice/kanban-card-move', (e) => {
+        console.log('Card moved:', e.detail);
+        console.log(`${e.detail.card.title} moved from ${e.detail.fromColumn} to ${e.detail.toColumn}`);
+      });
+
+      kanban.addEventListener('@snice/kanban-card-click', (e) => {
+        console.log('Card clicked:', e.detail.card);
+        alert(`Card: ${e.detail.card.title}\n\n${e.detail.card.description || 'No description'}`);
+      });
+    });
+  </script>
+</head>
+<body>
+  <h2>Kanban Board Demo</h2>
+  <p>Drag and drop cards between columns. Click on a card to see details.</p>
+
+  <snice-kanban id="kanban-board"></snice-kanban>
+
+  <div style="margin-top: 40px; padding: 20px; background: #f5f5f5; border-radius: 4px;">
+    <h3 style="margin-top: 0;">Features</h3>
+    <ul>
+      <li>Drag and drop cards between columns</li>
+      <li>Click on cards to view details</li>
+      <li>Column limits (In Progress has a limit of 3)</li>
+      <li>Card labels and assignees</li>
+      <li>Color-coded cards and columns</li>
+      <li>Card counts per column</li>
+    </ul>
+
+    <h3>Try it out!</h3>
+    <p>Open the browser console to see events when you drag cards or click on them.</p>
+  </div>
+</body>
+</html>

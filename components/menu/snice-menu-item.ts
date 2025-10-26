@@ -34,7 +34,7 @@ export class SniceMenuItem extends HTMLElement implements SniceMenuItemElement {
   }
 
   @render()
-  renderContent() {
+  render() {
     const itemClasses = [
       'menu-item',
       this.selected ? 'menu-item--selected' : '',
@@ -57,7 +57,7 @@ export class SniceMenuItem extends HTMLElement implements SniceMenuItemElement {
   }
 
   @styles()
-  componentStyles() {
-    return css`${cssContent}`;
+  styles() {
+    return css/*css*/`${cssContent}`;
   }
 }

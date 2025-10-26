@@ -41,8 +41,8 @@ export class SniceSparkline extends HTMLElement implements SniceSparklineElement
   max?: number;
 
   @styles()
-  componentStyles() {
-    return css`${cssContent}`;
+  styles() {
+    return css/*css*/`${cssContent}`;
   }
 
   private getMinMax(): { min: number; max: number } {
@@ -171,7 +171,7 @@ export class SniceSparkline extends HTMLElement implements SniceSparklineElement
   }
 
   @render()
-  renderContent() {
+  render() {
     const containerClasses = [
       'sparkline',
       this.customColor ? 'sparkline--custom' : `sparkline--${this.color}`

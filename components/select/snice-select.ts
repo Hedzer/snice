@@ -88,7 +88,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   private focusedIndex = -1;
 
   @render()
-  renderContent() {
+  render() {
     const labelClasses = `select-label select-label--${this.size} ${this.required ? 'select-label--required' : ''}`;
     const triggerClasses = `select-trigger select-trigger--${this.size}`;
     const searchHidden = !this.searchable;
@@ -200,7 +200,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return cssTag`${cssContent}`;
   }
 

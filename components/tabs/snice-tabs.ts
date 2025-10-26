@@ -48,7 +48,7 @@ export class SniceTabs extends HTMLElement {
 
 
   @render()
-  renderContent() {
+  render() {
     return html/*html*/`
       <div class="tabs tabs--${this.placement}" part="base">
         <div class="tabs__nav-container" part="nav-container">
@@ -84,7 +84,7 @@ export class SniceTabs extends HTMLElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

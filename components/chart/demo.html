@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chart Component Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body { padding: 40px; margin: 0; }
+    .demo-section {
+      margin-bottom: 60px;
+    }
+    .demo-section h3 {
+      margin-bottom: 20px;
+    }
+    .controls {
+      margin: 20px 0;
+      display: flex;
+      gap: 10px;
+    }
+    button {
+      padding: 8px 16px;
+      background: #2196f3;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #1976d2;
+    }
+    snice-chart {
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+    .chart-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-top: 20px;
+    }
+  </style>
+  <script type="module">
+    document.addEventListener('DOMContentLoaded', () => {
+      // Line Chart
+      const lineChart = document.getElementById('line-chart');
+      lineChart.datasets = [
+        {
+          label: 'Sales',
+          data: [12, 19, 15, 25, 22, 30, 28],
+          borderColor: '#2196f3',
+          backgroundColor: '#2196f3'
+        },
+        {
+          label: 'Revenue',
+          data: [7, 11, 13, 18, 16, 27, 25],
+          borderColor: '#4caf50',
+          backgroundColor: '#4caf50'
+        }
+      ];
+      lineChart.labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+      // Bar Chart
+      const barChart = document.getElementById('bar-chart');
+      barChart.datasets = [
+        {
+          label: 'Q1',
+          data: [65, 59, 80, 81, 56],
+          backgroundColor: ['#ff6384', '#36a2eb', '#ffce56', '#4bc0c0', '#9966ff']
+        }
+      ];
+      barChart.labels = ['Product A', 'Product B', 'Product C', 'Product D', 'Product E'];
+
+      // Area Chart
+      const areaChart = document.getElementById('area-chart');
+      areaChart.datasets = [
+        {
+          label: 'Users',
+          data: [30, 40, 35, 50, 49, 60, 70],
+          borderColor: '#ff9800',
+          backgroundColor: '#ff9800',
+          fill: true
+        }
+      ];
+      areaChart.labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
+
+      // Pie Chart
+      const pieChart = document.getElementById('pie-chart');
+      pieChart.datasets = [
+        {
+          label: 'Market Share',
+          data: [30, 25, 20, 15, 10],
+          backgroundColor: ['#ff6384', '#36a2eb', '#ffce56', '#4bc0c0', '#9966ff']
+        }
+      ];
+      pieChart.labels = ['Chrome', 'Firefox', 'Safari', 'Edge', 'Other'];
+
+      // Donut Chart
+      const donutChart = document.getElementById('donut-chart');
+      donutChart.datasets = [
+        {
+          label: 'Categories',
+          data: [40, 30, 20, 10],
+          backgroundColor: ['#2196f3', '#4caf50', '#ff9800', '#f44336']
+        }
+      ];
+      donutChart.labels = ['Electronics', 'Clothing', 'Food', 'Books'];
+
+      // Scatter Plot
+      const scatterChart = document.getElementById('scatter-chart');
+      scatterChart.datasets = [
+        {
+          label: 'Dataset 1',
+          data: [
+            { x: 10, y: 20 },
+            { x: 15, y: 25 },
+            { x: 20, y: 22 },
+            { x: 25, y: 30 },
+            { x: 30, y: 28 }
+          ],
+          backgroundColor: '#2196f3'
+        }
+      ];
+
+      // Radar Chart
+      const radarChart = document.getElementById('radar-chart');
+      radarChart.datasets = [
+        {
+          label: 'Team A',
+          data: [80, 90, 70, 85, 75],
+          borderColor: '#2196f3',
+          backgroundColor: '#2196f3'
+        },
+        {
+          label: 'Team B',
+          data: [70, 85, 80, 75, 85],
+          borderColor: '#4caf50',
+          backgroundColor: '#4caf50'
+        }
+      ];
+      radarChart.labels = ['Speed', 'Strength', 'Agility', 'Defense', 'Skill'];
+
+      // Mixed Chart
+      const mixedChart = document.getElementById('mixed-chart');
+      mixedChart.type = 'mixed';
+      mixedChart.datasets = [
+        {
+          label: 'Bar Data',
+          type: 'bar',
+          data: [10, 20, 30, 40, 50],
+          backgroundColor: '#2196f3'
+        },
+        {
+          label: 'Line Data',
+          type: 'line',
+          data: [15, 25, 20, 35, 30],
+          borderColor: '#4caf50',
+          backgroundColor: '#4caf50'
+        }
+      ];
+      mixedChart.labels = ['A', 'B', 'C', 'D', 'E'];
+    });
+  </script>
+</head>
+<body>
+  <h2>Chart Component Demo</h2>
+  <p>Comprehensive charting component with multiple chart types and customization options.</p>
+
+  <div class="demo-section">
+    <h3>Line Chart</h3>
+    <snice-chart id="line-chart" type="line" height="300"></snice-chart>
+  </div>
+
+  <div class="demo-section">
+    <h3>Bar Chart</h3>
+    <snice-chart id="bar-chart" type="bar" height="300"></snice-chart>
+  </div>
+
+  <div class="demo-section">
+    <h3>Area Chart</h3>
+    <snice-chart id="area-chart" type="area" height="300"></snice-chart>
+  </div>
+
+  <div class="chart-grid">
+    <div class="demo-section">
+      <h3>Pie Chart</h3>
+      <snice-chart id="pie-chart" type="pie" height="300"></snice-chart>
+    </div>
+
+    <div class="demo-section">
+      <h3>Donut Chart</h3>
+      <snice-chart id="donut-chart" type="donut" height="300"></snice-chart>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <h3>Scatter Plot</h3>
+    <snice-chart id="scatter-chart" type="scatter" height="300"></snice-chart>
+  </div>
+
+  <div class="demo-section">
+    <h3>Radar Chart</h3>
+    <snice-chart id="radar-chart" type="radar" height="400"></snice-chart>
+  </div>
+
+  <div class="demo-section">
+    <h3>Mixed Chart</h3>
+    <snice-chart id="mixed-chart" height="300"></snice-chart>
+  </div>
+
+  <div style="margin-top: 40px; padding: 20px; background: #f5f5f5; border-radius: 4px;">
+    <h3 style="margin-top: 0;">Features</h3>
+    <ul>
+      <li>Multiple chart types (line, bar, area, pie, donut, scatter, bubble, radar, mixed)</li>
+      <li>Interactive legend with dataset toggling</li>
+      <li>Tooltips on hover</li>
+      <li>Customizable colors and styles</li>
+      <li>Responsive and animated</li>
+      <li>Multiple datasets support</li>
+      <li>SVG export capability</li>
+      <li>Grid and axis customization</li>
+    </ul>
+
+    <h3>Supported Chart Types</h3>
+    <ul style="list-style: none; padding: 0;">
+      <li>✓ Line Chart - Trends over time</li>
+      <li>✓ Bar Chart - Categorical comparisons</li>
+      <li>✓ Horizontal Bar - Alternative bar orientation</li>
+      <li>✓ Area Chart - Filled line charts</li>
+      <li>✓ Pie Chart - Part-to-whole relationships</li>
+      <li>✓ Donut Chart - Pie with center hole</li>
+      <li>✓ Scatter Plot - Point distributions</li>
+      <li>✓ Bubble Chart - 3-dimensional data</li>
+      <li>✓ Radar Chart - Multivariate data</li>
+      <li>✓ Mixed/Combo - Multiple chart types combined</li>
+    </ul>
+  </div>
+  <script type="module" src="./snice-chart.ts"></script>
+</body>
+</html>

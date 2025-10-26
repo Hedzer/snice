@@ -20,12 +20,12 @@ export class SniceStepperPanel extends HTMLElement implements SniceStepperPanelE
   }
 
   @styles()
-  componentStyles() {
-    return css`${cssContent}`;
+  styles() {
+    return css/*css*/`${cssContent}`;
   }
 
   @render()
-  renderContent() {
+  render() {
     return html`
       <div class="panel" part="panel">
         <slot></slot>

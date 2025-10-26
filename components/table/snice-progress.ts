@@ -21,7 +21,7 @@ export class SniceProgress extends HTMLElement {
   showPercentage = false;
 
   @render()
-  renderContent() {
+  render() {
     const percentage = Math.min(100, (this.value / this.max) * 100);
 
     return html/*html*/`
@@ -35,7 +35,7 @@ export class SniceProgress extends HTMLElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`
       :host {
         display: inline-flex;

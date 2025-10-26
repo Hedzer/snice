@@ -10,7 +10,7 @@ export class SniceLayoutCard extends HTMLElement {
   gap: 'sm' | 'md' | 'lg' | 'xl' = 'md';
 
   @render()
-  renderContent() {
+  render() {
     return html/*html*/`
       <div class="layout">
         <header class="header">
@@ -31,7 +31,7 @@ export class SniceLayoutCard extends HTMLElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 }

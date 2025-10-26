@@ -1,0 +1,89 @@
+:host {
+  display: block;
+  position: relative;
+}
+
+.carousel {
+  position: relative;
+  overflow: hidden;
+}
+
+.carousel__viewport {
+  overflow: hidden;
+}
+
+.carousel__container {
+  display: flex;
+  transition: transform 0.3s ease;
+}
+
+.carousel__slide {
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.carousel__controls {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: space-between;
+  padding: 0 var(--spacing-md, 1rem);
+  pointer-events: none;
+}
+
+.carousel__button {
+  pointer-events: auto;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.carousel__button:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.carousel__button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.carousel__indicators {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-xs, 0.5rem);
+  margin-top: var(--spacing-md, 1rem);
+}
+
+.carousel__indicator {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-neutral-300, #d1d5db);
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s;
+}
+
+.carousel__indicator--active {
+  background: var(--color-primary-500, #3b82f6);
+}
+
+.carousel__indicator:hover {
+  background: var(--color-neutral-400, #9ca3af);
+}
+
+.carousel__indicator--active:hover {
+  background: var(--color-primary-600, #2563eb);
+}

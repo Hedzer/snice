@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>List Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <script type="module">
+    import '../../dist/snice.esm.js';
+    import './snice-list.js';
+
+    const list = document.getElementById('list');
+    list.items = [
+      { id: '1', label: 'Item 1', description: 'First item', icon: '📄' },
+      { id: '2', label: 'Item 2', description: 'Second item', icon: '📄' },
+      { id: '3', label: 'Item 3', description: 'Third item', icon: '📄' }
+    ];
+  </script>
+</head>
+<body style="padding:40px">
+  <h2>List Demo</h2>
+  <snice-list id="list" selection-mode="multiple" dividers></snice-list>
+</body>
+</html>

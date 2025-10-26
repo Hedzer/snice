@@ -32,7 +32,7 @@ export class SniceCellStatus extends HTMLElement implements SniceCellElement {
   type: string = 'status';
 
   @render()
-  renderContent() {
+  render() {
     const statusValue = this.status || this.value;
     const statusLabel = this.label || statusValue;
     const statusVariant = this.getStatusVariant(statusValue);
@@ -47,7 +47,7 @@ export class SniceCellStatus extends HTMLElement implements SniceCellElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

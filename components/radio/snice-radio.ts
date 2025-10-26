@@ -43,7 +43,7 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
   wrapper?: HTMLElement;
 
   @render()
-  renderContent() {
+  render() {
     const wrapperClasses = `radio-wrapper${this.disabled ? ' radio-wrapper--disabled' : ''}`;
     const radioClasses = `radio radio--${this.size}${this.invalid ? ' radio--invalid' : ''}`;
     const labelClasses = `radio-label radio-label--${this.size}${this.required ? ' radio-label--required' : ''}`;
@@ -76,7 +76,7 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

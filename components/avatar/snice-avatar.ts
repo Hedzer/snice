@@ -35,7 +35,7 @@ export class SniceAvatar extends HTMLElement implements SniceAvatarElement {
   private imageError = false;
 
   @render()
-  renderContent() {
+  render() {
     const colorClass = this.fallbackBackground ? '' : this.getColorClass(this.name);
     const bgStyle = this.fallbackBackground ? `--avatar-bg: ${this.fallbackBackground}; --avatar-color: ${this.fallbackColor}` : '';
     const initials = this.getInitials(this.name);
@@ -70,7 +70,7 @@ export class SniceAvatar extends HTMLElement implements SniceAvatarElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

@@ -34,7 +34,7 @@ export class SniceCellText extends HTMLElement implements SniceCellElement {
   maxLines?: number;
 
   @render()
-  renderContent() {
+  render() {
     const content = this.formatTextContent();
     const textStyles = this.getTextStyles();
 
@@ -46,7 +46,7 @@ export class SniceCellText extends HTMLElement implements SniceCellElement {
   }
 
   @styles()
-  componentStyles() {
+  styles() {
     return css/*css*/`${cssContent}`;
   }
 

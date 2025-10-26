@@ -1,0 +1,296 @@
+:host {
+  display: block;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial,
+    sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--snice-doc-text-color, #333);
+  background: var(--snice-doc-background, #fff);
+  padding: var(--snice-doc-padding, 40px 20px);
+  min-height: var(--snice-doc-min-height, 400px);
+}
+
+.doc-container {
+  max-width: var(--snice-doc-max-width, 900px);
+  margin: 0 auto;
+}
+
+.doc-block {
+  position: relative;
+  margin: 4px 0;
+  min-height: 1.5em;
+}
+
+.doc-block:hover .block-handle {
+  opacity: 1;
+}
+
+.block-handle {
+  position: absolute;
+  left: -30px;
+  top: 4px;
+  width: 20px;
+  height: 20px;
+  opacity: 0;
+  cursor: grab;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--snice-doc-muted-color, #999);
+  transition: opacity 0.2s;
+}
+
+.block-handle:active {
+  cursor: grabbing;
+}
+
+.block-handle svg {
+  width: 16px;
+  height: 16px;
+}
+
+.block-content {
+  outline: none;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.block-content:empty:before {
+  content: attr(data-placeholder);
+  color: var(--snice-doc-placeholder-color, #999);
+  pointer-events: none;
+}
+
+/* Block types */
+.block-paragraph {
+  margin: 2px 0;
+}
+
+.block-heading-1 .block-content {
+  font-size: 2em;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0.67em 0;
+}
+
+.block-heading-2 .block-content {
+  font-size: 1.5em;
+  font-weight: 700;
+  line-height: 1.3;
+  margin: 0.75em 0;
+}
+
+.block-heading-3 .block-content {
+  font-size: 1.25em;
+  font-weight: 700;
+  line-height: 1.4;
+  margin: 0.83em 0;
+}
+
+.block-bulleted-list {
+  display: flex;
+  align-items: flex-start;
+}
+
+.block-bulleted-list:before {
+  content: '•';
+  margin-right: 8px;
+  margin-top: 2px;
+  color: var(--snice-doc-text-color, #333);
+}
+
+.block-numbered-list {
+  display: flex;
+  align-items: flex-start;
+}
+
+.block-numbered-list:before {
+  content: attr(data-number) '.';
+  margin-right: 8px;
+  margin-top: 2px;
+  min-width: 24px;
+  color: var(--snice-doc-text-color, #333);
+}
+
+.block-todo {
+  display: flex;
+  align-items: flex-start;
+}
+
+.todo-checkbox {
+  margin-right: 8px;
+  margin-top: 4px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.block-todo.checked .block-content {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.block-code .block-content {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+  font-size: 0.9em;
+  background: var(--snice-doc-code-background, #f6f8fa);
+  border: 1px solid var(--snice-doc-code-border, #e1e4e8);
+  border-radius: 6px;
+  padding: 16px;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.block-quote .block-content {
+  border-left: 3px solid var(--snice-doc-quote-border, #e1e4e8);
+  padding-left: 16px;
+  color: var(--snice-doc-muted-color, #666);
+  font-style: italic;
+}
+
+.block-divider {
+  border: none;
+  border-top: 1px solid var(--snice-doc-divider-color, #e1e4e8);
+  margin: 16px 0;
+  height: 1px;
+}
+
+/* Inline formats */
+.format-bold {
+  font-weight: 700;
+}
+
+.format-italic {
+  font-style: italic;
+}
+
+.format-underline {
+  text-decoration: underline;
+}
+
+.format-strikethrough {
+  text-decoration: line-through;
+}
+
+.format-code {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+  font-size: 0.9em;
+  background: var(--snice-doc-inline-code-background, rgba(175, 184, 193, 0.2));
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.format-link {
+  color: var(--snice-doc-link-color, #0969da);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.format-link:hover {
+  opacity: 0.8;
+}
+
+/* Block menu */
+.block-menu {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  background: var(--snice-doc-menu-background, #fff);
+  border: 1px solid var(--snice-doc-menu-border, #e1e4e8);
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1000;
+  min-width: 240px;
+}
+
+.block-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.block-menu-item:hover,
+.block-menu-item.selected {
+  background: var(--snice-doc-menu-hover, #f6f8fa);
+}
+
+.block-menu-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--snice-doc-muted-color, #666);
+}
+
+.block-menu-label {
+  font-size: 14px;
+  color: var(--snice-doc-text-color, #333);
+}
+
+/* Format toolbar */
+.format-toolbar {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--snice-doc-toolbar-background, #1f2328);
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  padding: 4px;
+  display: flex;
+  gap: 2px;
+  z-index: 1000;
+}
+
+.format-button {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--snice-doc-toolbar-text, #fff);
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.format-button:hover {
+  background: var(--snice-doc-toolbar-hover, rgba(255, 255, 255, 0.1));
+}
+
+.format-button.active {
+  background: var(--snice-doc-toolbar-active, rgba(88, 166, 255, 0.3));
+}
+
+.format-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Drag and drop */
+.doc-block.dragging {
+  opacity: 0.5;
+}
+
+.doc-block.drag-over {
+  border-top: 2px solid var(--snice-doc-primary-color, #0969da);
+}
+
+/* Readonly state */
+:host([readonly]) .block-handle,
+:host([readonly]) .format-toolbar,
+:host([readonly]) .block-menu {
+  display: none;
+}
+
+:host([readonly]) .block-content {
+  cursor: default;
+}
+
+:host([readonly]) .todo-checkbox {
+  pointer-events: none;
+}

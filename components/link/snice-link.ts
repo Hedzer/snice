@@ -26,8 +26,8 @@ export class SniceLink extends HTMLElement implements SniceLinkElement {
   hash = false;
 
   @styles()
-  componentStyles() {
-    return css`${cssContent}`;
+  styles() {
+    return css/*css*/`${cssContent}`;
   }
 
   @dispatch('click')
@@ -54,7 +54,7 @@ export class SniceLink extends HTMLElement implements SniceLinkElement {
   }
 
   @render()
-  renderContent() {
+  render() {
     const linkClasses = [
       'link',
       `link--${this.variant}`,

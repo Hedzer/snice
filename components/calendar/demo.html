@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Calendar Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body { padding: 40px; }
+    .example {
+      margin: 30px 0;
+    }
+    .example h3 {
+      margin-bottom: 10px;
+    }
+    .controls {
+      margin: 10px 0;
+      display: flex;
+      gap: 10px;
+    }
+    button {
+      padding: 8px 16px;
+      background: #2196f3;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #1976d2;
+    }
+    .info {
+      margin-top: 10px;
+      padding: 10px;
+      background: #f5f5f5;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+  </style>
+  <script type="module">
+    import '../../dist/snice.esm.js';
+    import './snice-calendar.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Basic calendar
+      const basicCalendar = document.getElementById('basic-calendar');
+      basicCalendar.addEventListener('@snice/calendar-change', (e) => {
+        console.log('Date changed:', e.detail.value);
+        document.getElementById('selected-date').textContent =
+          e.detail.value.toLocaleDateString();
+      });
+
+      // Calendar with events
+      const eventCalendar = document.getElementById('event-calendar');
+      eventCalendar.events = [
+        {
+          id: 1,
+          title: 'Team Meeting',
+          start: new Date(),
+          color: '#2196f3'
+        },
+        {
+          id: 2,
+          title: 'Project Deadline',
+          start: new Date(new Date().setDate(new Date().getDate() + 5)),
+          color: '#f44336'
+        },
+        {
+          id: 3,
+          title: 'Client Call',
+          start: new Date(new Date().setDate(new Date().getDate() + 10)),
+          color: '#4caf50'
+        }
+      ];
+
+      eventCalendar.addEventListener('@snice/calendar-event-click', (e) => {
+        alert(`Event: ${e.detail.event.title}`);
+      });
+
+      // Min/Max calendar
+      const restrictedCalendar = document.getElementById('restricted-calendar');
+      const today = new Date();
+      const minDate = new Date(today.getFullYear(), today.getMonth(), 1);
+      const maxDate = new Date(today.getFullYear(), today.getMonth() + 2, 0);
+
+      restrictedCalendar.minDate = minDate;
+      restrictedCalendar.maxDate = maxDate;
+
+      // Monday first calendar
+      const mondayCalendar = document.getElementById('monday-calendar');
+      mondayCalendar.firstDayOfWeek = 1;
+
+      // Locale calendar
+      const localeCalendar = document.getElementById('locale-calendar');
+      localeCalendar.locale = 'fr-FR';
+    });
+  </script>
+</head>
+<body>
+  <h2>Calendar Component Demo</h2>
+
+  <div class="example">
+    <h3>Basic Calendar</h3>
+    <snice-calendar id="basic-calendar"></snice-calendar>
+    <div class="info">
+      Selected date: <strong id="selected-date">None</strong>
+    </div>
+  </div>
+
+  <div class="example">
+    <h3>Calendar with Events</h3>
+    <p>Events are shown as colored bars. Click on an event to see details.</p>
+    <snice-calendar id="event-calendar"></snice-calendar>
+  </div>
+
+  <div class="example">
+    <h3>Restricted Date Range</h3>
+    <p>This calendar only allows dates in the current and next month.</p>
+    <snice-calendar id="restricted-calendar"></snice-calendar>
+  </div>
+
+  <div class="example">
+    <h3>Week Starting Monday</h3>
+    <snice-calendar id="monday-calendar"></snice-calendar>
+  </div>
+
+  <div class="example">
+    <h3>French Locale</h3>
+    <snice-calendar id="locale-calendar"></snice-calendar>
+  </div>
+
+  <div class="example">
+    <h3>Programmatic Control</h3>
+    <div class="controls">
+      <button onclick="controlCalendar.goToToday()">Go to Today</button>
+      <button onclick="controlCalendar.previousMonth()">Previous Month</button>
+      <button onclick="controlCalendar.nextMonth()">Next Month</button>
+      <button onclick="controlCalendar.goToDate(new Date(2025, 0, 1))">Go to Jan 2025</button>
+    </div>
+    <snice-calendar id="control-calendar"></snice-calendar>
+  </div>
+
+  <script>
+    const controlCalendar = document.getElementById('control-calendar');
+  </script>
+</body>
+</html>

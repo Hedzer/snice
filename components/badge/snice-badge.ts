@@ -38,7 +38,7 @@ export class SniceBadge extends HTMLElement implements SniceBadgeElement {
   badgeElement?: HTMLElement;
 
   @render()
-  renderContent() {
+  render() {
     const displayContent = this.getDisplayContent();
     const showBadge = this.shouldShowBadge();
     const badgeClasses = `badge${this.dot ? ' badge--dot' : ''}${this.pulse ? ' badge--pulse' : ''}`;
@@ -58,8 +58,8 @@ export class SniceBadge extends HTMLElement implements SniceBadgeElement {
   }
 
   @styles()
-  componentStyles() {
-    return css`${cssContent}`;
+  styles() {
+    return css/*css*/`${cssContent}`;
   }
 
   private getDisplayContent(): string {

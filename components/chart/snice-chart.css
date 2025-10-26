@@ -1,0 +1,176 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 400px;
+  position: relative;
+  font-family: var(--font-family, system-ui, -apple-system, sans-serif);
+}
+
+.chart-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-canvas {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+svg {
+  width: 100%;
+  height: 100%;
+}
+
+.chart-legend {
+  display: flex;
+  gap: 16px;
+  padding: 12px;
+  flex-wrap: wrap;
+}
+
+.chart-legend.legend-top {
+  order: -1;
+}
+
+.chart-legend.legend-bottom {
+  order: 1;
+}
+
+.chart-legend.legend-left {
+  flex-direction: column;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.chart-legend.legend-right {
+  flex-direction: column;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+  transition: opacity 0.2s;
+}
+
+.legend-item:hover {
+  opacity: 0.8;
+}
+
+.legend-item.hidden {
+  opacity: 0.5;
+  text-decoration: line-through;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 2px;
+}
+
+.legend-label {
+  font-size: 14px;
+  color: var(--text-color, #333);
+}
+
+.chart-tooltip {
+  position: absolute;
+  background: var(--tooltip-bg, rgba(0, 0, 0, 0.9));
+  color: var(--tooltip-color, white);
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.chart-tooltip.visible {
+  opacity: 1;
+}
+
+.axis-label {
+  font-size: 12px;
+  fill: var(--axis-color, #666);
+}
+
+.axis-line {
+  stroke: var(--axis-color, #666);
+  stroke-width: 1;
+}
+
+.grid-line {
+  stroke: var(--grid-color, #e0e0e0);
+  stroke-width: 1;
+  stroke-dasharray: 2, 2;
+}
+
+.data-point {
+  transition: r 0.2s, opacity 0.2s;
+}
+
+.data-point:hover {
+  r: 6;
+  cursor: pointer;
+}
+
+.chart-path {
+  transition: opacity 0.2s;
+}
+
+.chart-bar {
+  transition: opacity 0.2s;
+}
+
+.chart-slice {
+  transition: opacity 0.2s;
+  cursor: pointer;
+}
+
+.chart-slice:hover {
+  opacity: 0.8;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.animated .chart-path,
+.animated .chart-bar,
+.animated .chart-slice,
+.animated .data-point {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.animated .chart-slice {
+  transform-origin: center;
+  animation: scaleIn 0.5s ease-out;
+}
