@@ -195,6 +195,12 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
   @property({ type: Number })
   smoothing: number = 0.5;
 
+  @property({ type: Boolean, attribute: 'auto-polygon' })
+  autoPolygon: boolean = false;
+
+  @property({ type: Number, attribute: 'polygon-curve-points' })
+  polygonCurvePoints: number = 10;
+
   @property({ type: Boolean })
   disabled: boolean = false;
 
@@ -328,16 +334,24 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
     this.isDrawing = false;
 
     if (this.currentStroke.length > 0) {
+      // Process polygon if auto-polygon is enabled
+      const points = this.autoPolygon
+        ? this.processPolygon([...this.currentStroke])
+        : [...this.currentStroke];
+
       const stroke: DrawStroke = {
         tool: this.tool,
         color: this.color,
         width: this.strokeWidth,
-        points: [...this.currentStroke],
+        points,
         timestamp: Date.now()
       };
 
       this.strokes.push(stroke);
       this.currentStroke = [];
+
+      // Redraw immediately to show the processed polygon
+      this.redraw();
 
       this.dispatchEvent(new CustomEvent('@snice/draw-end', {
         detail: { draw: this, stroke },
@@ -587,6 +601,150 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
     this.strokes = [...strokes];
     this.undoneStrokes = [];
     this.redraw();
+  }
+
+  // Polygon processing methods
+  private processPolygon(points: Point[]): Point[] {
+    if (!this.autoPolygon || points.length < 4) return points;
+
+    // Simplify to line segments (sample every Nth point for performance)
+    const simplified = this.simplifyPoints(points, 5);
+
+    // Check for self-intersection
+    const intersection = this.findFirstIntersection(simplified);
+
+    if (intersection) {
+      // Trim at intersection point
+      return this.trimAtIntersection(points, intersection);
+    } else {
+      // Check if shape should be closed
+      const start = points[0];
+      const end = points[points.length - 1];
+      const distance = Math.sqrt(
+        Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2)
+      );
+
+      // If start and end are far apart (more than 20px), close the shape with a curve
+      if (distance > 20) {
+        const curvePoints = this.createClosingCurve(end, start, this.polygonCurvePoints);
+        return [...points, ...curvePoints];
+      }
+    }
+
+    return points;
+  }
+
+  private simplifyPoints(points: Point[], step: number): Point[] {
+    const simplified: Point[] = [];
+    for (let i = 0; i < points.length; i += step) {
+      simplified.push(points[i]);
+    }
+    // Always include the last point
+    if (simplified[simplified.length - 1] !== points[points.length - 1]) {
+      simplified.push(points[points.length - 1]);
+    }
+    return simplified;
+  }
+
+  private findFirstIntersection(points: Point[]): { i: number; j: number; point: Point } | null {
+    // Check each line segment against all others
+    for (let i = 0; i < points.length - 1; i++) {
+      const p1 = points[i];
+      const p2 = points[i + 1];
+
+      // Start checking from i+2 to avoid adjacent segments
+      for (let j = i + 2; j < points.length - 1; j++) {
+        const p3 = points[j];
+        const p4 = points[j + 1];
+
+        // Don't check the last segment against the first (they should connect)
+        if (i === 0 && j === points.length - 2) continue;
+
+        const intersection = this.lineIntersection(p1, p2, p3, p4);
+        if (intersection) {
+          return { i, j, point: intersection };
+        }
+      }
+    }
+    return null;
+  }
+
+  private lineIntersection(p1: Point, p2: Point, p3: Point, p4: Point): Point | null {
+    const x1 = p1.x, y1 = p1.y;
+    const x2 = p2.x, y2 = p2.y;
+    const x3 = p3.x, y3 = p3.y;
+    const x4 = p4.x, y4 = p4.y;
+
+    const denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+    if (Math.abs(denom) < 0.0001) return null; // Parallel lines
+
+    const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denom;
+    const u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / denom;
+
+    if (t >= 0 && t <= 1 && u >= 0 && u <= 1) {
+      return {
+        x: x1 + t * (x2 - x1),
+        y: y1 + t * (y2 - y1),
+        pressure: 0
+      };
+    }
+
+    return null;
+  }
+
+  private trimAtIntersection(points: Point[], intersection: { i: number; j: number; point: Point }): Point[] {
+    // Find the actual indices in the full point array based on simplified indices
+    const step = 5;
+    const actualI = Math.min(intersection.i * step, points.length - 1);
+
+    // Keep points up to the intersection, add the intersection point, then close
+    return [...points.slice(0, actualI + 1), intersection.point];
+  }
+
+  private createClosingCurve(start: Point, end: Point, numPoints: number): Point[] {
+    if (numPoints < 2) return [end];
+
+    const curvePoints: Point[] = [];
+
+    // Calculate control point for the curve
+    // Use a point perpendicular to the line between start and end
+    const midX = (start.x + end.x) / 2;
+    const midY = (start.y + end.y) / 2;
+
+    // Vector from start to end
+    const dx = end.x - start.x;
+    const dy = end.y - start.y;
+
+    // Perpendicular vector (rotated 90 degrees)
+    const perpX = -dy;
+    const perpY = dx;
+
+    // Control point is offset from midpoint along perpendicular
+    // Offset is proportional to distance to create a natural curve
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    const offset = distance * 0.2; // 20% of distance
+    const controlX = midX + (perpX / distance) * offset;
+    const controlY = midY + (perpY / distance) * offset;
+
+    // Interpolate points along the quadratic Bezier curve
+    for (let i = 1; i <= numPoints; i++) {
+      const t = i / (numPoints + 1);
+
+      // Quadratic Bezier formula: B(t) = (1-t)²P0 + 2(1-t)tP1 + t²P2
+      const x = Math.pow(1 - t, 2) * start.x +
+                2 * (1 - t) * t * controlX +
+                Math.pow(t, 2) * end.x;
+      const y = Math.pow(1 - t, 2) * start.y +
+                2 * (1 - t) * t * controlY +
+                Math.pow(t, 2) * end.y;
+
+      curvePoints.push({ x, y, pressure: 0 });
+    }
+
+    // Add the end point
+    curvePoints.push(end);
+
+    return curvePoints;
   }
 }
 

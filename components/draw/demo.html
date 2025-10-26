@@ -151,6 +151,20 @@
         draw.smoothing = parseFloat(e.target.value);
       });
 
+      // Auto polygon
+      const autoPolygonCheck = document.getElementById('auto-polygon-check');
+      const curvePointsInput = document.getElementById('curve-points');
+      const curvePointsValue = document.getElementById('curve-points-value');
+
+      autoPolygonCheck.addEventListener('change', (e) => {
+        draw.autoPolygon = e.target.checked;
+      });
+
+      curvePointsInput.addEventListener('input', (e) => {
+        draw.polygonCurvePoints = parseInt(e.target.value);
+        curvePointsValue.textContent = e.target.value;
+      });
+
       // Actions
       document.getElementById('clear-btn').addEventListener('click', () => {
         if (confirm('Clear the canvas?')) {
@@ -241,6 +255,16 @@
         <div class="toolbar-section">
           <div class="toolbar-label">Smoothing</div>
           <input type="range" id="smoothing" min="0" max="1" step="0.1" value="0.5">
+        </div>
+
+        <div class="toolbar-section">
+          <div class="toolbar-label">Auto Polygon</div>
+          <label style="display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" id="auto-polygon-check">
+            Enable
+          </label>
+          <div class="toolbar-label" style="margin-top: 8px;">Curve Points: <span id="curve-points-value">10</span></div>
+          <input type="range" id="curve-points" min="2" max="30" value="10">
         </div>
 
         <div class="toolbar-section">
