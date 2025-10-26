@@ -290,7 +290,8 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
     if (points.length === 0) return;
 
     // Draw filled area
-    this.ctx.fillStyle = dataset.backgroundColor || color;
+    const bgColor = dataset.backgroundColor;
+    this.ctx.fillStyle = (Array.isArray(bgColor) ? bgColor[0] : bgColor) || color;
     this.ctx.globalAlpha = 0.3;
     this.ctx.beginPath();
     this.ctx.moveTo(points[0].x, chartHeight);
@@ -351,12 +352,15 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
     const innerRadius = isDonut ? radius * 0.6 : 0;
 
     const dataset = this.datasets[0];
-    const total = dataset.data.reduce((sum, val) => sum + (typeof val === 'number' ? val : 0), 0);
+    const total = dataset.data.reduce((sum: number, val) => {
+      const numVal = typeof val === 'number' ? val : 0;
+      return sum + numVal;
+    }, 0 as number);
     let currentAngle = -Math.PI / 2;
 
     dataset.data.forEach((value, index) => {
       const val = typeof value === 'number' ? value : 0;
-      const angle = (val / total) * 2 * Math.PI;
+      const angle = (total as number) > 0 ? (val / (total as number)) * 2 * Math.PI : 0;
       const endAngle = currentAngle + angle;
 
       const color = Array.isArray(dataset.backgroundColor)
@@ -711,7 +715,7 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
 
   private renderBarChart(horizontal: boolean) {
     // Similar to renderBarDataset but with swapped axes
-    return this.renderCartesianChart();
+    return this.renderCartesianChartSVG();
   }
 
   private renderScatterDataset(dataset: ChartDataset, datasetIndex: number, chartWidth: number, chartHeight: number, yMin: number, yMax: number) {
@@ -773,14 +777,17 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
     const dataset = this.datasets[0];
     if (!dataset) return html`<svg></svg>`;
 
-    const total = dataset.data.reduce((sum, val) => sum + (typeof val === 'number' ? val : 0), 0);
+    const total = dataset.data.reduce((sum: number, val) => {
+      const numVal = typeof val === 'number' ? val : 0;
+      return sum + numVal;
+    }, 0 as number);
     let currentAngle = -Math.PI / 2;
 
     return html`
       <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
         ${dataset.data.map((value, index) => {
           const val = typeof value === 'number' ? value : 0;
-          const angle = (val / total) * 2 * Math.PI;
+          const angle = (total as number) > 0 ? (val / (total as number)) * 2 * Math.PI : 0;
           const endAngle = currentAngle + angle;
 
           const x1 = centerX + Math.cos(currentAngle) * radius;

@@ -1,7 +1,7 @@
 import { element, property, render, styles, query, ready, html, css } from 'snice';
 import type { QRCodeErrorCorrectionLevel, QRCodeRenderMode, QRCodeDotStyle, SniceQRCodeElement } from './snice-qr-code.types';
 import qrCodeStyles from './snice-qr-code.css?inline';
-import { QRCode } from '../../src/lib/qrcode';
+import { QRCode } from './qrcode';
 
 @element('snice-qr-code')
 export class SniceQRCode extends HTMLElement implements SniceQRCodeElement {

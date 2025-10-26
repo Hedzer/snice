@@ -354,7 +354,7 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
       return;
     }
 
-    this.analyser.getByteFrequencyData(this.visualizerData);
+    this.analyser.getByteFrequencyData(this.visualizerData as Uint8Array<ArrayBuffer>);
 
     this.animationFrame = requestAnimationFrame(() => this.updateVisualizer());
   }

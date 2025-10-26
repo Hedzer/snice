@@ -16,7 +16,7 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
   @property({ type: Number, attribute: 'estimated-item-height' })
   estimatedItemHeight = 50;
 
-  @property({ type: Function, attribute: false })
+  @property({ attribute: false })
   renderItem: (item: VirtualScrollerItem, index: number) => string | HTMLElement = (item, index) => {
     return `<div>${JSON.stringify(item.data)}</div>`;
   };
@@ -26,7 +26,7 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
 
   private visibleStart = 0;
   private visibleEnd = 0;
-  private scrollTop = 0;
+  private _scrollTop = 0;
 
   @styles()
   private styles() {
@@ -42,10 +42,10 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
     if (index < 0 || index >= this.items.length) return;
 
     const offset = index * this.itemHeight;
-    this.scrollTop = offset;
+    this._scrollTop = offset;
 
     if (this.scrollerElement) {
-      this.scrollTop = offset;
+      this._scrollTop = offset;
     }
   }
 
@@ -74,7 +74,7 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
 
   private updateVisibleRange() {
     const containerHeight = this.offsetHeight || 400;
-    const scrollTop = this.scrollTop;
+    const scrollTop = this._scrollTop;
 
     const start = Math.floor(scrollTop / this.itemHeight);
     const visibleCount = Math.ceil(containerHeight / this.itemHeight);
@@ -123,12 +123,10 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
   }
 
   connectedCallback() {
-    super.connectedCallback?.();
     this.addEventListener('scroll', this.handleScroll);
   }
 
   disconnectedCallback() {
-    super.disconnectedCallback?.();
     this.removeEventListener('scroll', this.handleScroll);
   }
 }

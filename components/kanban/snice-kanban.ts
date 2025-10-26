@@ -211,7 +211,7 @@ export class SniceKanban extends HTMLElement implements SniceKanbanElement {
                       </if>
                       <if ${card.labels && card.labels.length > 0}>
                         <div class="card__labels">
-                          ${card.labels.map(label => html`
+                          ${card.labels?.map(label => html`
                             <span class="card__label">${label}</span>
                           `)}
                         </div>

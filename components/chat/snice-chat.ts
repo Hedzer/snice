@@ -1,4 +1,4 @@
-import { element, property, render, styles, dispatch, query, watch, html, css } from 'snice';
+import { element, property, render, styles, dispatch, query, watch, ready, dispose, html, css } from 'snice';
 import type {
   ChatMessage,
   MessageType,
@@ -102,13 +102,13 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
     return css/*css*/`${cssContent}`;
   }
 
-  connectedCallback() {
-    super.connectedCallback?.();
+  @ready()
+  init() {
     this.addEventListener('keydown', this.handleKeyDown);
   }
 
-  disconnectedCallback() {
-    super.disconnectedCallback?.();
+  @dispose()
+  cleanup() {
     this.removeEventListener('keydown', this.handleKeyDown);
     if (this.typingTimeout) {
       clearTimeout(this.typingTimeout);

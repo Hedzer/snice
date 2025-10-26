@@ -525,7 +525,7 @@ class QRCodeModel {
     if (row < 0 || this.moduleCount <= row || col < 0 || this.moduleCount <= col) {
       throw new Error(`Invalid position: ${row},${col}`);
     }
-    return this.modules![row][col];
+    return this.modules![row][col] ?? false;
   }
 
   getModuleCount(): number {
@@ -1039,18 +1039,19 @@ export class QRCode {
       typeNumber: 4,
       colorDark: '#000000',
       colorLight: '#ffffff',
-      correctLevel: ErrorLevel.H,
+      correctLevel: 'H' as ErrorCorrectionLevel,
       useSVG: false,
       dotStyle: 'square'
     };
 
-    if (typeof vOption === 'string') {
-      vOption = { text: vOption } as any;
+    let opts = vOption;
+    if (typeof opts === 'string') {
+      opts = { text: opts } as any;
     }
 
-    if (vOption) {
-      for (const i in vOption) {
-        (this.options as any)[i] = (vOption as any)[i];
+    if (opts && typeof opts === 'object') {
+      for (const i in opts) {
+        (this.options as any)[i] = (opts as any)[i];
       }
     }
 

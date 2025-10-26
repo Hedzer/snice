@@ -1,4 +1,4 @@
-import { element, property, render, styles, dispatch, html, css } from 'snice';
+import { element, property, render, styles, dispatch, ready, dispose, html, css } from 'snice';
 import type { SniceActionsElement, ActionButton, ActionButtonSize, ActionButtonVariant } from './snice-actions.types';
 import cssContent from './snice-actions.css?inline';
 
@@ -167,15 +167,14 @@ export class SniceActions extends HTMLElement implements SniceActionsElement {
     `;
   }
 
-  connectedCallback() {
-    super.connectedCallback?.();
-
+  @ready()
+  init() {
     // Close dropdown when clicking outside
     document.addEventListener('click', this.handleOutsideClick);
   }
 
-  disconnectedCallback() {
-    super.disconnectedCallback?.();
+  @dispose()
+  cleanup() {
     document.removeEventListener('click', this.handleOutsideClick);
   }
 

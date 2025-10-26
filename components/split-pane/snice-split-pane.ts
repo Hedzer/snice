@@ -1,4 +1,4 @@
-import { element, property, render, styles, dispatch, query, html, css } from 'snice';
+import { element, property, render, styles, dispatch, query, dispose, html, css } from 'snice';
 import type { SniceResizeElement, SplitDirection, SniceResizeDetail } from './snice-split-pane.types';
 import cssContent from './snice-split-pane.css?inline';
 
@@ -145,8 +145,8 @@ export class SniceResize extends HTMLElement implements SniceResizeElement {
     `;
   }
 
-  disconnectedCallback() {
-    super.disconnectedCallback?.();
+  @dispose()
+  cleanup() {
     document.removeEventListener('mousemove', this.handleMouseMove);
     document.removeEventListener('mouseup', this.handleMouseUp);
   }

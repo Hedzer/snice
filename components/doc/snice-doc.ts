@@ -1,4 +1,4 @@
-import { element, property, render, styles, dispatch, query, watch, html, css } from 'snice';
+import { element, property, render, styles, dispatch, query, watch, ready, dispose, html, css } from 'snice';
 import type {
   DocBlock,
   BlockType,
@@ -123,19 +123,19 @@ export class SniceDoc extends HTMLElement implements SniceDocElement {
     return css/*css*/`${cssContent}`;
   }
 
-  connectedCallback() {
-    super.connectedCallback?.();
+  @ready()
+  init() {
     this.addEventListener('keydown', this.handleKeyDown);
     this.addEventListener('paste', this.handlePaste);
   }
 
-  disconnectedCallback() {
-    super.disconnectedCallback?.();
+  @dispose()
+  cleanup() {
     this.removeEventListener('keydown', this.handleKeyDown);
     this.removeEventListener('paste', this.handlePaste);
   }
 
-  @watch('blocks', { waitUntilFirstUpdate: true })
+  @watch('blocks')
   private blocksChanged() {
     this.emitChange();
   }

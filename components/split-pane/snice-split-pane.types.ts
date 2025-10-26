@@ -3,7 +3,7 @@ export type SplitDirection = 'horizontal' | 'vertical';
 export interface SniceResizeDetail {
   primarySize: number;
   secondarySize: number;
-  splitPane: SniceResize;
+  splitPane: SniceResizeElement;
 }
 
 export interface SniceResizeElement extends HTMLElement {

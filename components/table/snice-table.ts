@@ -501,11 +501,6 @@ export class SniceTable extends HTMLElement {
     ).join('');
   }
 
-  render() {
-    this.renderControls();
-    this.renderHeader();
-    this.renderBody();
-  }
 
   @watch('selector-options')
   handleSelectorOptionsChange() {
