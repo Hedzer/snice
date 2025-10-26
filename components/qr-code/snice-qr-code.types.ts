@@ -2,6 +2,8 @@ export type QRCodeErrorCorrectionLevel = 'L' | 'M' | 'Q' | 'H';
 
 export type QRCodeRenderMode = 'canvas' | 'svg';
 
+export type QRCodeDotStyle = 'square' | 'rounded' | 'dots';
+
 export interface QRCodeOptions {
   errorCorrectionLevel?: QRCodeErrorCorrectionLevel;
   margin?: number;
@@ -18,6 +20,7 @@ export interface SniceQRCodeElement extends HTMLElement {
   size: number;
   errorCorrectionLevel: QRCodeErrorCorrectionLevel;
   renderMode: QRCodeRenderMode;
+  dotStyle: QRCodeDotStyle;
   margin: number;
   fgColor: string;
   bgColor: string;

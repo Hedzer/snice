@@ -111,6 +111,38 @@
   </div>
 
   <div class="demo-section">
+    <h3>Dot Styles</h3>
+    <div class="qr-grid">
+      <div class="qr-item">
+        <snice-qr-code
+          value="https://example.com/square"
+          size="200"
+          dot-style="square">
+        </snice-qr-code>
+        <label>Square (Default)</label>
+      </div>
+
+      <div class="qr-item">
+        <snice-qr-code
+          value="https://example.com/rounded"
+          size="200"
+          dot-style="rounded">
+        </snice-qr-code>
+        <label>Rounded</label>
+      </div>
+
+      <div class="qr-item">
+        <snice-qr-code
+          value="https://example.com/dots"
+          size="200"
+          dot-style="dots">
+        </snice-qr-code>
+        <label>Dots</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="demo-section">
     <h3>Styled Examples</h3>
     <div class="qr-grid">
       <div class="qr-item">
@@ -118,9 +150,10 @@
           value="https://github.com"
           size="200"
           fg-color="#2196f3"
-          bg-color="#e3f2fd">
+          bg-color="#e3f2fd"
+          dot-style="rounded">
         </snice-qr-code>
-        <label>Blue Theme</label>
+        <label>Blue Rounded</label>
       </div>
 
       <div class="qr-item">
@@ -128,9 +161,10 @@
           value="https://example.com/promo"
           size="200"
           fg-color="#4caf50"
-          bg-color="#e8f5e9">
+          bg-color="#e8f5e9"
+          dot-style="dots">
         </snice-qr-code>
-        <label>Green Theme</label>
+        <label>Green Dots</label>
       </div>
 
       <div class="qr-item">
@@ -138,9 +172,10 @@
           value="https://example.com/special"
           size="200"
           fg-color="#9c27b0"
-          bg-color="#f3e5f5">
+          bg-color="#f3e5f5"
+          dot-style="rounded">
         </snice-qr-code>
-        <label>Purple Theme</label>
+        <label>Purple Rounded</label>
       </div>
     </div>
   </div>
@@ -227,6 +262,8 @@
     <ul>
       <li>Generate QR codes from any text or URL</li>
       <li>Customizable size and colors</li>
+      <li><strong>Three dot styles:</strong> square, rounded, or circular dots</li>
+      <li>Text overlay with customizable outline and fill colors</li>
       <li>SVG or Canvas rendering</li>
       <li>Adjustable margin/padding</li>
       <li>Error correction levels (L, M, Q, H)</li>

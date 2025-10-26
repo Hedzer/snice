@@ -2,6 +2,7 @@
 // Supports canvas and SVG rendering modes
 
 type ErrorCorrectionLevel = 'L' | 'M' | 'Q' | 'H';
+type DotStyle = 'square' | 'rounded' | 'dots';
 
 interface QRCodeOptions {
   width?: number;
@@ -11,6 +12,7 @@ interface QRCodeOptions {
   colorLight?: string;
   correctLevel?: ErrorCorrectionLevel;
   useSVG?: boolean;
+  dotStyle?: DotStyle;
 }
 
 // Mode indicators for different data types
@@ -959,25 +961,52 @@ class CanvasDrawing {
         const bIsDark = qrCode.isDark(row, col);
         const nLeft = col * nWidth;
         const nTop = row * nHeight;
+        const color = bIsDark ? opts.colorDark : opts.colorLight;
 
-        ctx.strokeStyle = bIsDark ? opts.colorDark : opts.colorLight;
-        ctx.lineWidth = 1;
-        ctx.fillStyle = bIsDark ? opts.colorDark : opts.colorLight;
-        ctx.fillRect(nLeft, nTop, nWidth, nHeight);
+        ctx.fillStyle = color;
 
-        ctx.strokeRect(
-          Math.floor(nLeft) + 0.5,
-          Math.floor(nTop) + 0.5,
-          nRoundedWidth,
-          nRoundedHeight
-        );
+        if (opts.dotStyle === 'dots') {
+          // Draw circles
+          if (bIsDark) {
+            const centerX = nLeft + nWidth / 2;
+            const centerY = nTop + nHeight / 2;
+            const radius = Math.min(nWidth, nHeight) / 2.2;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            ctx.fill();
+          } else {
+            ctx.fillRect(nLeft, nTop, nWidth, nHeight);
+          }
+        } else if (opts.dotStyle === 'rounded') {
+          // Draw rounded rectangles
+          if (bIsDark) {
+            const radius = Math.min(nWidth, nHeight) / 4;
+            ctx.beginPath();
+            ctx.roundRect(nLeft, nTop, nWidth, nHeight, radius);
+            ctx.fill();
+          } else {
+            ctx.fillRect(nLeft, nTop, nWidth, nHeight);
+          }
+        } else {
+          // Square (default)
+          ctx.fillRect(nLeft, nTop, nWidth, nHeight);
 
-        ctx.strokeRect(
-          Math.ceil(nLeft) - 0.5,
-          Math.ceil(nTop) - 0.5,
-          nRoundedWidth,
-          nRoundedHeight
-        );
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 1;
+          ctx.strokeRect(
+            Math.floor(nLeft) + 0.5,
+            Math.floor(nTop) + 0.5,
+            nRoundedWidth,
+            nRoundedHeight
+          );
+
+          ctx.strokeRect(
+            Math.ceil(nLeft) - 0.5,
+            Math.ceil(nTop) - 0.5,
+            nRoundedWidth,
+            nRoundedHeight
+          );
+        }
       }
     }
 
@@ -1011,7 +1040,8 @@ export class QRCode {
       colorDark: '#000000',
       colorLight: '#ffffff',
       correctLevel: ErrorLevel.H,
-      useSVG: false
+      useSVG: false,
+      dotStyle: 'square'
     };
 
     if (typeof vOption === 'string') {

@@ -1,5 +1,5 @@
 import { element, property, render, styles, query, ready, html, css } from 'snice';
-import type { QRCodeErrorCorrectionLevel, QRCodeRenderMode, SniceQRCodeElement } from './snice-qr-code.types';
+import type { QRCodeErrorCorrectionLevel, QRCodeRenderMode, QRCodeDotStyle, SniceQRCodeElement } from './snice-qr-code.types';
 import qrCodeStyles from './snice-qr-code.css?inline';
 import { QRCode } from '../../src/lib/qrcode';
 
@@ -16,6 +16,9 @@ export class SniceQRCode extends HTMLElement implements SniceQRCodeElement {
 
   @property({ type: String, attribute: 'render-mode' })
   renderMode: QRCodeRenderMode = 'canvas';
+
+  @property({ type: String, attribute: 'dot-style' })
+  dotStyle: QRCodeDotStyle = 'square';
 
   @property({ type: Number })
   margin: number = 4;
@@ -106,7 +109,8 @@ export class SniceQRCode extends HTMLElement implements SniceQRCodeElement {
       colorDark: this.fgColor,
       colorLight: this.bgColor,
       correctLevel: correctLevel,
-      useSVG: this.renderMode === 'svg'
+      useSVG: this.renderMode === 'svg',
+      dotStyle: this.dotStyle
     } as any);
 
     // Apply overlays after QR code is rendered
