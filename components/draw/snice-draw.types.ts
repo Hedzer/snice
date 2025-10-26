@@ -9,6 +9,7 @@ export interface Point {
 }
 
 export interface DrawStroke {
+  id: string;
   tool: DrawTool;
   color: string;
   width: number;

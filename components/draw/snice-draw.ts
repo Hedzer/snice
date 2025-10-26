@@ -340,6 +340,7 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
         : [...this.currentStroke];
 
       const stroke: DrawStroke = {
+        id: this.generateId(),
         tool: this.tool,
         color: this.color,
         width: this.strokeWidth,
@@ -601,6 +602,10 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
     this.strokes = [...strokes];
     this.undoneStrokes = [];
     this.redraw();
+  }
+
+  private generateId(): string {
+    return `stroke-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   }
 
   // Polygon processing methods

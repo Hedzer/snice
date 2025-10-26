@@ -88,4 +88,41 @@ test.describe('Snice Draw', () => {
     });
     expect(toolChanged).toBe(true);
   });
+
+  test('should have auto-polygon checkbox', async ({ page }) => {
+    const autoPolygonCheck = page.locator('input#auto-polygon-check');
+    expect(await autoPolygonCheck.count()).toBe(1);
+    expect(await autoPolygonCheck.isChecked()).toBe(false);
+  });
+
+  test('should enable auto-polygon when checkbox is clicked', async ({ page }) => {
+    const autoPolygonCheck = page.locator('input#auto-polygon-check');
+    await autoPolygonCheck.click();
+    await page.waitForTimeout(50);
+
+    const isEnabled = await page.evaluate(() => {
+      const draw = document.querySelector('snice-draw#draw');
+      return draw?.autoPolygon;
+    });
+    expect(isEnabled).toBe(true);
+  });
+
+  test('should have curve points slider', async ({ page }) => {
+    const curvePointsInput = page.locator('input#curve-points');
+    expect(await curvePointsInput.count()).toBe(1);
+    expect(await curvePointsInput.getAttribute('type')).toBe('range');
+    expect(await curvePointsInput.getAttribute('value')).toBe('10');
+  });
+
+  test('should update polygon curve points', async ({ page }) => {
+    const curvePointsInput = page.locator('input#curve-points');
+    await curvePointsInput.fill('20');
+    await page.waitForTimeout(50);
+
+    const value = await page.evaluate(() => {
+      const draw = document.querySelector('snice-draw#draw');
+      return draw?.polygonCurvePoints;
+    });
+    expect(value).toBe(20);
+  });
 });

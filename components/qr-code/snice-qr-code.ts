@@ -1,109 +1,7 @@
-import { element, property, render, styles, dispatch, html, css } from 'snice';
+import { element, property, render, styles, query, ready, html, css } from 'snice';
 import type { QRCodeErrorCorrectionLevel, QRCodeRenderMode, SniceQRCodeElement } from './snice-qr-code.types';
 import qrCodeStyles from './snice-qr-code.css?inline';
-
-// Simplified QR Code generator
-// Note: In production, use a library like 'qrcode' for full QR code support
-class SimpleQRGenerator {
-  private size: number = 21;
-  private matrix: boolean[][] = [];
-
-  generate(text: string): boolean[][] {
-    // Determine size based on text length
-    const length = text.length;
-    if (length <= 25) this.size = 21;
-    else if (length <= 47) this.size = 25;
-    else if (length <= 77) this.size = 29;
-    else this.size = 33;
-
-    this.matrix = Array(this.size).fill(null).map(() => Array(this.size).fill(false));
-
-    // Add finder patterns (corners)
-    this.addFinderPattern(0, 0);
-    this.addFinderPattern(this.size - 7, 0);
-    this.addFinderPattern(0, this.size - 7);
-
-    // Add timing patterns
-    this.addTimingPatterns();
-
-    // Encode data (simplified - just creates a pattern)
-    this.encodeData(text);
-
-    return this.matrix;
-  }
-
-  private addFinderPattern(row: number, col: number) {
-    for (let i = 0; i < 7; i++) {
-      for (let j = 0; j < 7; j++) {
-        const r = row + i;
-        const c = col + j;
-        if (r < 0 || r >= this.size || c < 0 || c >= this.size) continue;
-
-        if (i === 0 || i === 6 || j === 0 || j === 6) {
-          this.matrix[r][c] = true;
-        } else if (i >= 2 && i <= 4 && j >= 2 && j <= 4) {
-          this.matrix[r][c] = true;
-        }
-      }
-    }
-  }
-
-  private addTimingPatterns() {
-    for (let i = 8; i < this.size - 8; i++) {
-      this.matrix[6][i] = i % 2 === 0;
-      this.matrix[i][6] = i % 2 === 0;
-    }
-  }
-
-  private encodeData(text: string) {
-    // Simplified encoding - convert text to binary pattern
-    const binary = text.split('').map(char => char.charCodeAt(0).toString(2).padStart(8, '0')).join('');
-
-    let bitIndex = 0;
-    let up = true;
-
-    for (let col = this.size - 1; col > 0; col -= 2) {
-      if (col === 6) col--;
-
-      for (let i = 0; i < this.size; i++) {
-        const row = up ? this.size - 1 - i : i;
-
-        for (let c = 0; c < 2; c++) {
-          const currentCol = col - c;
-
-          if (this.isReserved(row, currentCol)) continue;
-
-          if (bitIndex < binary.length) {
-            this.matrix[row][currentCol] = binary[bitIndex] === '1';
-            bitIndex++;
-          }
-        }
-      }
-
-      up = !up;
-    }
-  }
-
-  private isReserved(row: number, col: number): boolean {
-    // Check if position is reserved for finder patterns
-    if ((row < 9 && col < 9) ||
-        (row < 9 && col >= this.size - 8) ||
-        (row >= this.size - 8 && col < 9)) {
-      return true;
-    }
-
-    // Timing patterns
-    if (row === 6 || col === 6) {
-      return true;
-    }
-
-    return false;
-  }
-
-  getSize(): number {
-    return this.size;
-  }
-}
+import { QRCode } from '../../src/lib/qrcode';
 
 @element('snice-qr-code')
 export class SniceQRCode extends HTMLElement implements SniceQRCodeElement {
@@ -117,7 +15,7 @@ export class SniceQRCode extends HTMLElement implements SniceQRCodeElement {
   errorCorrectionLevel: QRCodeErrorCorrectionLevel = 'M';
 
   @property({ type: String, attribute: 'render-mode' })
-  renderMode: QRCodeRenderMode = 'svg';
+  renderMode: QRCodeRenderMode = 'canvas';
 
   @property({ type: Number })
   margin: number = 4;
@@ -137,174 +35,147 @@ export class SniceQRCode extends HTMLElement implements SniceQRCodeElement {
   @property({ type: Number, attribute: 'image-size' })
   imageSize: number = 40;
 
-  private qrMatrix: boolean[][] = [];
-  private qrSize: number = 21;
+  @property({ type: String, attribute: 'center-text' })
+  centerText: string = '';
+
+  @property({ type: Number, attribute: 'center-text-size' })
+  centerTextSize: number = 16;
+
+  @property({ type: String, attribute: 'center-text-color' })
+  centerTextColor: string = '#000000';
+
+  @property({ type: String, attribute: 'center-text-bg' })
+  centerTextBg: string = '#ffffff';
+
+  @query('.qr-container')
+  private container?: HTMLElement;
+
+  @query('canvas')
+  private canvas?: HTMLCanvasElement;
+
+  private qrCode: QRCode | null = null;
 
   @styles()
   styles() {
     return css/*css*/`${qrCodeStyles}`;
   }
 
-  @render()
-  render() {
+  @ready()
+  ready() {
     if (this.value) {
       this.generateQRCode();
     }
+  }
+
+  @render()
+  render() {
+    // Trigger QR code generation after render
+    if (this.value) {
+      requestAnimationFrame(() => {
+        this.generateQRCode();
+      });
+    }
 
     return html`
-      <div class="qr-container">
-        ${this.renderMode === 'svg' ? this.renderSVG() : this.renderCanvas()}
-      </div>
+      <div class="qr-container"></div>
     `;
   }
 
   private generateQRCode() {
-    const generator = new SimpleQRGenerator();
-    this.qrMatrix = generator.generate(this.value);
-    this.qrSize = generator.getSize();
-  }
+    if (!this.value || !this.container) return;
 
-  private renderSVG() {
-    if (!this.qrMatrix.length) return html`<svg></svg>`;
+    // Clear previous QR code
+    if (this.qrCode) {
+      this.qrCode.clear();
+    }
 
-    const cellSize = (this.size - this.margin * 2) / this.qrSize;
-    const totalSize = this.size;
+    // Clear container
+    while (this.container.firstChild) {
+      this.container.removeChild(this.container.firstChild);
+    }
 
-    const rects: any[] = [];
-    this.qrMatrix.forEach((row, y) => {
-      row.forEach((cell, x) => {
-        if (cell) {
-          rects.push(html`
-            <rect
-              x="${this.margin + x * cellSize}"
-              y="${this.margin + y * cellSize}"
-              width="${cellSize}"
-              height="${cellSize}"
-              fill="${this.fgColor}" />
-          `);
-        }
-      });
+    // Map error correction level
+    const ecLevel = this.errorCorrectionLevel;
+    const correctLevel = QRCode.CorrectLevel[ecLevel];
+
+    // Create QR code using the library
+    this.qrCode = new QRCode(this.container, {
+      text: this.value,
+      width: this.size,
+      height: this.size,
+      colorDark: this.fgColor,
+      colorLight: this.bgColor,
+      correctLevel: correctLevel,
+      useSVG: this.renderMode === 'svg'
+    } as any);
+
+    // Apply overlays after QR code is rendered
+    requestAnimationFrame(() => {
+      this.applyOverlays();
     });
-
-    return html`
-      <svg
-        width="${totalSize}"
-        height="${totalSize}"
-        viewBox="0 0 ${totalSize} ${totalSize}"
-        xmlns="http://www.w3.org/2000/svg">
-        <rect width="${totalSize}" height="${totalSize}" fill="${this.bgColor}" />
-        ${rects}
-        ${this.includeImage && this.imageUrl ? this.renderImage() : ''}
-      </svg>
-    `;
   }
 
-  private renderCanvas() {
-    if (!this.qrMatrix.length) return html`<canvas></canvas>`;
+  private applyOverlays() {
+    // Find the canvas element created by the library
+    const canvas = this.container?.querySelector('canvas') as HTMLCanvasElement;
+    if (!canvas) return;
 
-    setTimeout(() => {
-      const canvas = this.shadowRoot?.querySelector('canvas') as HTMLCanvasElement;
-      if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
 
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
+    // Center image overlay
+    if (this.includeImage && this.imageUrl) {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        const imgSize = this.imageSize;
+        const imgX = (this.size - imgSize) / 2;
+        const imgY = (this.size - imgSize) / 2;
 
-      canvas.width = this.size;
-      canvas.height = this.size;
+        // Draw background for image
+        ctx.fillStyle = this.bgColor;
+        ctx.fillRect(imgX - 4, imgY - 4, imgSize + 8, imgSize + 8);
+        ctx.drawImage(img, imgX, imgY, imgSize, imgSize);
 
-      const cellSize = (this.size - this.margin * 2) / this.qrSize;
-
-      // Background
-      ctx.fillStyle = this.bgColor;
-      ctx.fillRect(0, 0, this.size, this.size);
-
-      // QR modules
-      ctx.fillStyle = this.fgColor;
-      this.qrMatrix.forEach((row, y) => {
-        row.forEach((cell, x) => {
-          if (cell) {
-            ctx.fillRect(
-              this.margin + x * cellSize,
-              this.margin + y * cellSize,
-              cellSize,
-              cellSize
-            );
-          }
-        });
-      });
-
-      // Image overlay
-      if (this.includeImage && this.imageUrl) {
-        const img = new Image();
-        img.crossOrigin = 'anonymous';
-        img.onload = () => {
-          const imgSize = this.imageSize;
-          const imgX = (this.size - imgSize) / 2;
-          const imgY = (this.size - imgSize) / 2;
-
-          ctx.fillStyle = this.bgColor;
-          ctx.fillRect(imgX - 4, imgY - 4, imgSize + 8, imgSize + 8);
-
-          ctx.drawImage(img, imgX, imgY, imgSize, imgSize);
-        };
-        img.src = this.imageUrl;
-      }
-    }, 0);
-
-    return html`<canvas width="${this.size}" height="${this.size}"></canvas>`;
+        // Apply center text after image if both are present
+        if (this.centerText) {
+          this.drawCenterText(ctx);
+        }
+      };
+      img.src = this.imageUrl;
+    } else if (this.centerText) {
+      // Center text overlay only
+      this.drawCenterText(ctx);
+    }
   }
 
-  private renderImage() {
-    const imgSize = this.imageSize;
-    const imgX = (this.size - imgSize) / 2;
-    const imgY = (this.size - imgSize) / 2;
+  private drawCenterText(ctx: CanvasRenderingContext2D) {
+    ctx.font = `bold ${this.centerTextSize}px sans-serif`;
+    const textMetrics = ctx.measureText(this.centerText);
+    const textWidth = textMetrics.width;
+    const textHeight = this.centerTextSize;
 
-    return html`
-      <rect
-        x="${imgX - 4}"
-        y="${imgY - 4}"
-        width="${imgSize + 8}"
-        height="${imgSize + 8}"
-        fill="${this.bgColor}"
-        rx="4" />
-      <image
-        x="${imgX}"
-        y="${imgY}"
-        width="${imgSize}"
-        height="${imgSize}"
-        href="${this.imageUrl}"
-        style="border-radius: 4px;" />
-    `;
+    const padding = 8;
+    const bgWidth = textWidth + padding * 2;
+    const bgHeight = textHeight + padding * 2;
+    const bgX = (this.size - bgWidth) / 2;
+    const bgY = (this.size - bgHeight) / 2;
+
+    // Background
+    ctx.fillStyle = this.centerTextBg;
+    ctx.fillRect(bgX, bgY, bgWidth, bgHeight);
+
+    // Text
+    ctx.fillStyle = this.centerTextColor;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(this.centerText, this.size / 2, this.size / 2);
   }
 
   async toDataURL(type: 'image/png' | 'image/jpeg' | 'image/webp' = 'image/png', quality: number = 0.92): Promise<string> {
-    if (this.renderMode === 'svg') {
-      // Convert SVG to canvas, then to data URL
-      const svg = this.shadowRoot?.querySelector('svg');
-      if (!svg) return '';
-
-      const canvas = document.createElement('canvas');
-      canvas.width = this.size;
-      canvas.height = this.size;
-
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return '';
-
-      const svgData = new XMLSerializer().serializeToString(svg);
-      const img = new Image();
-
-      return new Promise((resolve) => {
-        img.onload = () => {
-          ctx.drawImage(img, 0, 0);
-          resolve(canvas.toDataURL(type, quality));
-        };
-        img.src = 'data:image/svg+xml;base64,' + btoa(svgData);
-      });
-    } else {
-      const canvas = this.shadowRoot?.querySelector('canvas');
-      if (!canvas) return '';
-      return canvas.toDataURL(type, quality);
-    }
+    const canvas = this.container?.querySelector('canvas') as HTMLCanvasElement;
+    if (!canvas) return '';
+    return canvas.toDataURL(type, quality);
   }
 
   async toBlob(type: 'image/png' | 'image/jpeg' | 'image/webp' = 'image/png', quality: number = 0.92): Promise<Blob> {

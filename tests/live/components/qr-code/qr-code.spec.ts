@@ -19,12 +19,13 @@ test.describe('Snice QR Code', () => {
     expect(value).toBeTruthy();
   });
 
-  test('should render SVG by default', async ({ page }) => {
-    const hasSVG = await page.evaluate(() => {
+  test('should render canvas in shadow DOM', async ({ page }) => {
+    const hasCanvas = await page.evaluate(() => {
       const qr = document.querySelector('snice-qr-code');
-      return !!qr?.shadowRoot?.querySelector('svg');
+      const container = qr?.shadowRoot?.querySelector('.qr-container');
+      return !!container?.querySelector('canvas');
     });
-    expect(hasSVG).toBe(true);
+    expect(hasCanvas).toBe(true);
   });
 
   test('should have custom colors', async ({ page }) => {

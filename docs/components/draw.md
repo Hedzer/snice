@@ -32,9 +32,12 @@ Canvas drawing with smooth lazy-brush technology.
 | `color` | `string` | `'#000000'` | Brush color |
 | `strokeWidth` | `number` | `2` | Brush width |
 | `backgroundColor` | `string` | `'#ffffff'` | Canvas background |
-| `lazy` | `boolean` | `true` | Enable lazy brush |
-| `lazyRadius` | `number` | `30` | Lazy brush radius |
+| `lazy` | `boolean` | `false` | Enable lazy brush |
+| `lazyRadius` | `number` | `60` | Lazy brush radius |
+| `friction` | `number` | `0.1` | Lazy brush friction |
 | `smoothing` | `number` | `0.5` | Line smoothing (0-1) |
+| `autoPolygon` | `boolean` | `false` | Enable auto-polygon |
+| `polygonCurvePoints` | `number` | `10` | Polygon curve smoothness (2-30) |
 | `disabled` | `boolean` | `false` | Disable drawing |
 
 ## Tools
@@ -142,6 +145,8 @@ draw.download('my-artwork.png');
 
 ### Save and Load
 
+Each stroke has a unique ID for tracking and manipulation:
+
 ```javascript
 // Save drawing
 const strokes = draw.getStrokes();
@@ -150,6 +155,30 @@ localStorage.setItem('drawing', JSON.stringify(strokes));
 // Load drawing
 const saved = JSON.parse(localStorage.getItem('drawing'));
 draw.setStrokes(saved);
+
+// Access individual strokes by ID
+const strokes = draw.getStrokes();
+console.log(strokes[0].id); // e.g., "stroke-1735216842123-x7k9m2p"
+
+// Filter strokes
+const penStrokes = strokes.filter(s => s.tool === 'pen');
+
+// Remove specific stroke
+const filtered = strokes.filter(s => s.id !== 'stroke-id-to-remove');
+draw.setStrokes(filtered);
+```
+
+**Stroke Structure:**
+
+```typescript
+interface DrawStroke {
+  id: string;          // Unique identifier
+  tool: DrawTool;      // 'pen' | 'eraser' | etc
+  color: string;       // Hex color
+  width: number;       // Stroke width
+  points: Point[];     // Array of {x, y, pressure?}
+  timestamp: number;   // Creation time (ms)
+}
 ```
 
 ### Load Background Image
@@ -201,6 +230,68 @@ The lazy brush creates smooth, organic lines by making the brush lag behind your
 - Larger radius = smoother, slower response
 - Smaller radius = more control, less smoothing
 - Disable for pixel-perfect control
+
+## Auto-Polygon
+
+Auto-polygon automatically processes completed strokes into closed shapes. When you finish drawing (release the mouse/pointer), it analyzes the stroke and applies smart shape completion.
+
+**Features:**
+
+1. **Self-Intersection Detection**
+   - Detects when your stroke crosses itself
+   - Automatically trims at the first intersection point
+   - Creates a clean closed shape without excess
+
+2. **Auto-Close Open Shapes**
+   - If start and end points are far apart (>20px)
+   - Connects them with a smooth quadratic curve
+   - Curve adapts to the gap distance
+
+**Properties:**
+
+- `autoPolygon` - Enable/disable the feature (default: `false`)
+- `polygonCurvePoints` - Curve smoothness, 2-30 (default: `10`)
+  - Lower values (2-5): Sharp, direct connection
+  - Medium values (10-15): Balanced smooth curve
+  - Higher values (20-30): Very smooth, organic curve
+
+**Example:**
+
+```javascript
+const draw = document.querySelector('snice-draw');
+
+// Enable auto-polygon
+draw.autoPolygon = true;
+
+// Adjust curve smoothness
+draw.polygonCurvePoints = 15; // Smoother curves
+```
+
+```html
+<snice-draw
+  auto-polygon
+  polygon-curve-points="15">
+</snice-draw>
+```
+
+**Use Cases:**
+
+- Sketching closed shapes quickly
+- Drawing polygons without precision
+- Creating organic forms that auto-complete
+- UI wireframing and mockups
+- Diagram creation
+
+**How It Works:**
+
+The algorithm processes strokes on `pointerup`:
+
+1. Simplify points (sample every 5th point for performance)
+2. Check for self-intersections using line-line intersection
+3. If intersection found: trim and close at that point
+4. If no intersection and gap >20px: generate curve points
+5. Use quadratic Bezier with perpendicular control point
+6. Insert interpolated points for smooth rendering
 
 ## Browser Support
 

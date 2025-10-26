@@ -155,9 +155,23 @@ END:VCARD"
         <snice-qr-code
           value="https://example.com/product/12345"
           size="200"
-          render-mode="canvas">
+          center-text="SCAN"
+          center-text-size="14"
+          center-text-color="#ffffff"
+          center-text-bg="#2196f3">
         </snice-qr-code>
-        <label>Canvas Mode</label>
+        <label>With Center Text</label>
+      </div>
+
+      <div class="qr-item">
+        <snice-qr-code
+          value="https://github.com/example"
+          size="200"
+          include-image
+          image-url="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23ff5722'/%3E%3Ctext x='50' y='50' text-anchor='middle' dy='0.35em' font-size='40' fill='white' font-weight='bold'%3EG%3C/text%3E%3C/svg%3E"
+          image-size="50">
+        </snice-qr-code>
+        <label>With Logo Image</label>
       </div>
     </div>
   </div>

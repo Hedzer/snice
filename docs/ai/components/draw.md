@@ -11,9 +11,12 @@ tool: 'pen'|'eraser'|'line'|'rectangle'|'circle'|'text' = 'pen';
 color: string = '#000000';
 strokeWidth: number = 2;
 backgroundColor: string = '#ffffff';
-lazy: boolean = true;
-lazyRadius: number = 30;
+lazy: boolean = false;
+lazyRadius: number = 60;
+friction: number = 0.1;
 smoothing: number = 0.5;
+autoPolygon: boolean = false;
+polygonCurvePoints: number = 10;
 disabled: boolean = false;
 ```
 
@@ -35,6 +38,7 @@ setStrokes(strokes: DrawStroke[]): void
 
 ```typescript
 interface DrawStroke {
+  id: string;
   tool: DrawTool;
   color: string;
   width: number;
@@ -61,8 +65,13 @@ draw.strokeWidth = 5;
 
 // Lazy brush
 draw.lazy = true;
-draw.lazyRadius = 30;
+draw.lazyRadius = 60;
+draw.friction = 0.1;
 draw.smoothing = 0.5;
+
+// Auto-polygon
+draw.autoPolygon = true;
+draw.polygonCurvePoints = 15; // Smoother curves
 
 // Actions
 draw.clear();
@@ -90,7 +99,10 @@ await draw.loadImage('bg.jpg');
   color="#000000"
   stroke-width="2"
   lazy
-  lazy-radius="30">
+  lazy-radius="60"
+  friction="0.1"
+  auto-polygon
+  polygon-curve-points="10">
 </snice-draw>
 ```
 
@@ -102,10 +114,24 @@ Smooth drawing with cursor lag-following:
 - Reduces jitter and tremor
 - Configurable radius and smoothing
 
+## Auto-Polygon
+
+Automatically processes completed strokes into closed shapes:
+- Detects self-intersections and trims excess
+- Auto-closes open shapes with smooth curves
+- `autoPolygon: boolean` - Enable feature (default: false)
+- `polygonCurvePoints: number` - Curve smoothness 2-30 (default: 10)
+
+Processing happens on stroke completion (pointerup):
+1. If stroke crosses itself, trim at first intersection
+2. If start/end points >20px apart, connect with quadratic curve
+3. Higher curve points = smoother closing arc
+
 ## Features
 
 - Canvas drawing
 - Lazy brush smoothing
+- Auto-polygon processing
 - Pen/eraser tools
 - Undo/redo
 - Export (PNG/JPEG/WebP)
