@@ -1,4 +1,4 @@
-import { element, property, watch, ready, dispatch, render, styles, html, css } from 'snice';
+import { element, property, watch, ready, query, queryAll, dispatch, render, styles, html, css } from 'snice';
 import cssContent from './snice-tree.css?inline';
 import type {
   TreeNode,
@@ -37,6 +37,9 @@ export class SniceTree extends HTMLElement implements SniceTreeElement {
 
   private nodeMap = new Map<string, TreeNode>();
 
+  @queryAll('snice-tree-item')
+  treeItems!: NodeListOf<HTMLElement>;
+
   @ready()
   init() {
     this.buildNodeMap();
@@ -47,12 +50,39 @@ export class SniceTree extends HTMLElement implements SniceTreeElement {
     this.addEventListener('tree-item-select', this.handleItemSelect.bind(this));
     this.addEventListener('tree-item-check', this.handleItemCheck.bind(this));
     this.addEventListener('tree-item-lazy-load', this.handleLazyLoad.bind(this));
+
+    // Set node data on tree items
+    this.updateTreeItems();
   }
 
   @watch('nodes')
   handleNodesChange() {
     this.buildNodeMap();
     this.syncNodeStates();
+    this.updateTreeItems();
+  }
+
+  private updateTreeItems() {
+    // Wait for next frame to ensure elements are rendered
+    requestAnimationFrame(() => {
+      if (!this.treeItems || this.treeItems.length === 0) {
+        // Fallback to manual query if @queryAll hasn't populated yet
+        const items = this.shadowRoot?.querySelectorAll(':scope > .tree > .tree__content > snice-tree-item');
+        if (items) {
+          items.forEach((item, index) => {
+            if (this.nodes[index] && (item as any).setNode) {
+              (item as any).setNode(this.nodes[index], 0);
+            }
+          });
+        }
+      } else {
+        this.treeItems.forEach((item, index) => {
+          if (this.nodes[index] && (item as any).setNode) {
+            (item as any).setNode(this.nodes[index], 0);
+          }
+        });
+      }
+    });
   }
 
   @watch('selectedNodes')
@@ -188,19 +218,12 @@ export class SniceTree extends HTMLElement implements SniceTreeElement {
     return html`
       <div class="${treeClasses}" part="container" role="tree">
         <div class="tree__content" part="content">
-          <if ${this.nodes.length === 0}>
-            <div class="tree__empty" part="empty">No items to display</div>
-          </if>
-          <if ${this.nodes.length > 0}>
-            ${this.nodes.map(node => html`
-              <snice-tree-item
-                .node="${node}"
-                .level="${0}"
-                .showCheckbox="${this.showCheckboxes}"
-                .showIcon="${this.showIcons}">
-              </snice-tree-item>
-            `)}
-          </if>
+          ${this.nodes.map(node => html`
+            <snice-tree-item
+              ?show-checkbox=${this.showCheckboxes}
+              ?show-icon=${this.showIcons}>
+            </snice-tree-item>
+          `)}
         </div>
       </div>
     `;

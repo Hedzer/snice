@@ -6,11 +6,11 @@ import '../checkbox/snice-checkbox';
 
 @element('snice-tree-item')
 export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
-  @property({ type: Object })
-  node: TreeNode = { id: '', label: '' };
+  private _node: TreeNode = { id: '', label: '' };
+  private _level = 0;
 
   @property({ type: Number })
-  level = 0;
+  private _version = 0;
 
   @property({ type: Boolean })
   expanded = false;
@@ -27,22 +27,53 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
   @property({ type: Boolean, attribute: 'show-icon' })
   showIcon = true;
 
-  get hasChildren(): boolean {
-    return !!(this.node.children && this.node.children.length > 0);
+  get node(): TreeNode {
+    return this._node;
   }
 
-  @watch('node')
-  handleNodeChange() {
-    // Sync internal state with node data
-    if (this.node.expanded !== undefined) {
-      this.expanded = this.node.expanded;
+  get level(): number {
+    return this._level;
+  }
+
+  get hasChildren(): boolean {
+    return !!(this._node.children && this._node.children.length > 0);
+  }
+
+  setNode(node: TreeNode, level: number) {
+    this._node = node;
+    this._level = level;
+
+    // Sync internal state
+    if (node.expanded !== undefined) {
+      this.expanded = node.expanded;
     }
-    if (this.node.selected !== undefined) {
-      this.selected = this.node.selected;
+    if (node.selected !== undefined) {
+      this.selected = node.selected;
     }
-    if (this.node.checked !== undefined) {
-      this.checked = this.node.checked;
+    if (node.checked !== undefined) {
+      this.checked = node.checked;
     }
+
+    // Trigger re-render by updating reactive property
+    this._version++;
+
+    // Update child tree items after render completes
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        this.updateChildTreeItems();
+      });
+    });
+  }
+
+  private updateChildTreeItems() {
+    if (!this.shadowRoot || !this.hasChildren) return;
+
+    const childItems = this.shadowRoot.querySelectorAll('.tree-item__children > snice-tree-item');
+    this.node.children?.forEach((child, index) => {
+      if (childItems[index] && (childItems[index] as any).setNode) {
+        (childItems[index] as any).setNode(child, this.level + 1);
+      }
+    });
   }
 
   @dispatch('tree-item-toggle', { bubbles: true, composed: true })
@@ -109,10 +140,10 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
           <if ${this.showCheckbox}>
             <div class="tree-item__checkbox" part="checkbox">
               <snice-checkbox
-                .checked="${this.checked}"
-                .disabled="${this.node.disabled || false}"
+                .checked=${this.checked}
+                .disabled=${this.node.disabled || false}
                 size="small"
-                @change="${(e: CustomEvent) => this.handleCheckboxChange(e)}">
+                @change=${(e: CustomEvent) => this.handleCheckboxChange(e)}>
               </snice-checkbox>
             </div>
           </if>
@@ -139,10 +170,8 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
           <div class="${childrenClasses}" part="children" role="group">
             ${this.node.children?.map(child => html`
               <snice-tree-item
-                .node="${child}"
-                .level="${this.level + 1}"
-                .showCheckbox="${this.showCheckbox}"
-                .showIcon="${this.showIcon}">
+                ?show-checkbox=${this.showCheckbox}
+                ?show-icon=${this.showIcon}>
               </snice-tree-item>
             `)}
           </div>
