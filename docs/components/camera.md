@@ -1,6 +1,6 @@
 # Camera Component
 
-Live camera feed access with capture functionality and device management.
+Live camera feed with built-in mobile-style controls and flexible positioning.
 
 ## Basic Usage
 
@@ -10,7 +10,7 @@ Live camera feed access with capture functionality and device management.
 <script>
   const camera = document.getElementById('camera');
 
-  // Start camera
+  // Auto-starts by default, but you can manually start
   await camera.start();
 
   // Capture photo
@@ -23,21 +23,30 @@ Live camera feed access with capture functionality and device management.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `autoStart` | `boolean` | `false` | Auto-start on load |
-| `facingMode` | `'user' \| 'environment'` | `'user'` | Camera facing mode |
-| `resolution` | `CameraResolution` | `'hd'` | Video resolution |
-| `mirror` | `boolean` | `true` | Mirror video (for selfies) |
-| `showControls` | `boolean` | `true` | Show control buttons |
-| `captureFormat` | `'image/png' \| 'image/jpeg' \| 'image/webp'` | `'image/jpeg'` | Capture image format |
-| `captureQuality` | `number` | `0.92` | Capture quality (0-1) |
+| `autoStart` | `boolean` | `true` | Auto-start camera on load |
+| `facingMode` | `'user' \| 'environment'` | `'user'` | Front or back camera |
+| `mirror` | `boolean` | `true` | Mirror video for front camera |
+| `controlsPosition` | `ControlsPosition` | `'auto'` | Control button positioning |
+| `showControls` | `boolean` | `true` | Show built-in controls |
+| `width` | `number` | `1280` | Video width (resolution) |
+| `height` | `number` | `720` | Video height (resolution) |
+| `aspectRatio` | `string` | `''` | Aspect ratio: `'16:9'`, `'4:3'`, `'1:1'`, `'21:9'` |
 
-## Resolution Options
+## Control Positions
 
-- `'qvga'` - 320x240
-- `'vga'` - 640x480
-- `'hd'` - 1280x720
-- `'full-hd'` - 1920x1080
-- `'4k'` - 3840x2160
+| Position | Description |
+|----------|-------------|
+| `'auto'` | Auto-detect: `bottom-right` (portrait), `right` (landscape) |
+| **Corners** | |
+| `'bottom-left'` | Bottom-left corner |
+| `'bottom-right'` | Bottom-right corner |
+| `'top-left'` | Top-left corner |
+| `'top-right'` | Top-right corner |
+| **Edges** | |
+| `'bottom'` | Bottom edge (centered) |
+| `'right'` | Right edge (centered) |
+| `'left'` | Left edge (centered) |
+| `'top'` | Top edge (centered) |
 
 ## Methods
 
@@ -56,11 +65,11 @@ camera.stop();
 ```
 
 ### `capture(): Promise<CapturedImage>`
-Capture current frame.
+Capture current frame as image.
 
 ```javascript
 const image = await camera.capture();
-// { dataURL, blob, width, height, timestamp }
+// Returns: { dataURL, blob, width, height, timestamp }
 ```
 
 ### `switchCamera(): Promise<void>`
@@ -86,21 +95,25 @@ Get current media stream.
 const stream = camera.getStream();
 ```
 
-### `getDevices(): Promise<MediaDeviceInfo[]>`
-List available cameras.
+### `enterFullscreen(): void`
+Enter fullscreen mode.
 
 ```javascript
-const devices = await camera.getDevices();
-devices.forEach(device => {
-  console.log(device.label, device.deviceId);
-});
+camera.enterFullscreen();
 ```
 
-### `selectDevice(deviceId): Promise<void>`
-Select specific camera.
+### `exitFullscreen(): void`
+Exit fullscreen mode.
 
 ```javascript
-await camera.selectDevice('device-id-here');
+camera.exitFullscreen();
+```
+
+### `toggleFullscreen(): void`
+Toggle fullscreen mode.
+
+```javascript
+camera.toggleFullscreen();
 ```
 
 ## Events
@@ -133,15 +146,6 @@ camera.addEventListener('@snice/camera-capture', (e) => {
 });
 ```
 
-### `@snice/camera-switch`
-Camera switched.
-
-```javascript
-camera.addEventListener('@snice/camera-switch', (e) => {
-  console.log('Switched to', e.detail.facingMode);
-});
-```
-
 ### `@snice/camera-error`
 Camera error occurred.
 
@@ -151,13 +155,28 @@ camera.addEventListener('@snice/camera-error', (e) => {
 });
 ```
 
-## Examples
+## Slots
 
-### Auto-start Camera
+### `controls`
+Custom controls overlay area. Full viewport, positioned absolutely.
 
 ```html
-<snice-camera auto-start></snice-camera>
+<snice-camera>
+  <div slot="controls" style="position: absolute; top: 10px; left: 10px; color: white; background: rgba(0,0,0,0.5); padding: 8px 12px; border-radius: 4px;">
+    LIVE
+  </div>
+</snice-camera>
 ```
+
+## Examples
+
+### Zero Config (Recommended)
+
+```html
+<snice-camera></snice-camera>
+```
+
+Auto-starts camera with controls at bottom-right (portrait) or right (landscape).
 
 ### Back Camera
 
@@ -165,10 +184,17 @@ camera.addEventListener('@snice/camera-error', (e) => {
 <snice-camera facing-mode="environment"></snice-camera>
 ```
 
-### High Resolution
+### Control Positioning
 
 ```html
-<snice-camera resolution="full-hd"></snice-camera>
+<!-- Bottom-left corner -->
+<snice-camera controls-position="bottom-left"></snice-camera>
+
+<!-- Right edge (centered) -->
+<snice-camera controls-position="right"></snice-camera>
+
+<!-- Top-right corner -->
+<snice-camera controls-position="top-right"></snice-camera>
 ```
 
 ### No Mirror
@@ -177,13 +203,42 @@ camera.addEventListener('@snice/camera-error', (e) => {
 <snice-camera mirror="false"></snice-camera>
 ```
 
-### Custom Capture Format
+### Custom Resolution
 
 ```html
-<snice-camera
-  capture-format="image/png"
-  capture-quality="1.0">
-</snice-camera>
+<!-- 4K -->
+<snice-camera width="3840" height="2160"></snice-camera>
+
+<!-- Full HD -->
+<snice-camera width="1920" height="1080"></snice-camera>
+
+<!-- VGA -->
+<snice-camera width="640" height="480"></snice-camera>
+```
+
+### Aspect Ratios
+
+```html
+<!-- 16:9 widescreen -->
+<snice-camera aspect-ratio="16:9"></snice-camera>
+
+<!-- 4:3 classic -->
+<snice-camera aspect-ratio="4:3"></snice-camera>
+
+<!-- 1:1 square -->
+<snice-camera aspect-ratio="1:1" width="1080" height="1080"></snice-camera>
+
+<!-- 21:9 ultra-wide -->
+<snice-camera aspect-ratio="21:9"></snice-camera>
+```
+
+### Fullscreen
+
+```html
+<snice-camera id="cam"></snice-camera>
+<button onclick="document.getElementById('cam').toggleFullscreen()">
+  Fullscreen
+</button>
 ```
 
 ### Save Captured Image
@@ -201,24 +256,6 @@ a.click();
 const formData = new FormData();
 formData.append('photo', image.blob, 'photo.jpg');
 await fetch('/upload', { method: 'POST', body: formData });
-```
-
-### Device Selector
-
-```javascript
-const devices = await camera.getDevices();
-const select = document.createElement('select');
-
-devices.forEach(device => {
-  const option = document.createElement('option');
-  option.value = device.deviceId;
-  option.textContent = device.label;
-  select.appendChild(option);
-});
-
-select.addEventListener('change', async (e) => {
-  await camera.selectDevice(e.target.value);
-});
 ```
 
 ### Photo Gallery
@@ -244,22 +281,87 @@ function displayGallery() {
 }
 ```
 
-### Permissions Check
+### Custom Overlay Controls (With Built-in Controls)
 
-```javascript
-async function checkPermissions() {
-  try {
-    const result = await navigator.permissions.query({ name: 'camera' });
-    console.log('Camera permission:', result.state);
+```html
+<snice-camera>
+  <div slot="controls" class="my-controls">
+    <div class="recording-indicator">● REC</div>
+    <div class="timer">00:00</div>
+  </div>
+</snice-camera>
 
-    result.addEventListener('change', () => {
-      console.log('Permission changed:', result.state);
-    });
-  } catch (error) {
-    console.log('Permissions API not supported');
+<style>
+  .my-controls {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    display: flex;
+    justify-content: space-between;
+    color: white;
+    font-size: 14px;
   }
-}
+
+  .recording-indicator {
+    color: red;
+    animation: blink 1s infinite;
+  }
+</style>
 ```
+
+### Fully Custom Controls (No Built-in Controls)
+
+```html
+<snice-camera id="camera" show-controls="false">
+  <div slot="controls" class="custom-controls">
+    <button class="custom-capture" onclick="document.getElementById('camera').capture()">
+      📷 Take Photo
+    </button>
+    <button class="custom-switch" onclick="document.getElementById('camera').switchCamera()">
+      🔄 Flip
+    </button>
+  </div>
+</snice-camera>
+
+<style>
+  .custom-controls {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+  }
+
+  .custom-capture, .custom-switch {
+    padding: 12px 24px;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+</style>
+```
+
+## Built-in Controls
+
+The camera includes built-in mobile-style controls:
+
+- **Capture button** (56px) - White circle with camera icon, positioned for thumb access
+- **Switch camera button** (40px) - Auto-hides if only one camera available
+
+Controls use Material Design-style icons and are positioned based on `controlsPosition`.
+
+## Technical Details
+
+- **Resolution**: Default 720p HD (1280x720) - configurable via `width`/`height`
+- **Format**: JPEG at 0.92 quality
+- **Mirror**: Automatically mirrors front camera video (can be disabled)
+- **Orientation**: Auto-detects portrait/landscape for control positioning
+- **Aspect Ratios**: Supports 16:9, 4:3, 1:1, 21:9 presets
+- **Fullscreen**: Native browser fullscreen API support
 
 ## Security
 
@@ -271,7 +373,6 @@ async function checkPermissions() {
 ## Accessibility
 
 - Keyboard navigation for controls
-- ARIA labels for buttons
 - Visual feedback for capture
 - Error messaging
 
@@ -280,4 +381,3 @@ async function checkPermissions() {
 - Modern browsers with getUserMedia API
 - Requires camera hardware
 - May not work on some mobile browsers
-- Fallback messaging for unsupported browsers

@@ -1,18 +1,39 @@
 :host {
   display: block;
   width: 100%;
-  max-width: 640px;
+  max-width: 40rem; /* 640px */
   position: relative;
-  background: #000;
-  border-radius: var(--camera-border-radius, 8px);
+  background: rgb(0 0 0);
+  border-radius: var(--snice-border-radius-lg, 0.5rem);
   overflow: hidden;
 }
 
 .camera-container {
   position: relative;
   width: 100%;
-  padding-bottom: 75%; /* 4:3 aspect ratio */
-  background: #000;
+  padding-bottom: var(--aspect-ratio, 75%); /* Default 4:3 aspect ratio */
+  background: rgb(0 0 0);
+}
+
+:host([aspect-ratio="16:9"]) .camera-container {
+  padding-bottom: 56.25%; /* 16:9 */
+}
+
+:host([aspect-ratio="4:3"]) .camera-container {
+  padding-bottom: 75%; /* 4:3 */
+}
+
+:host([aspect-ratio="1:1"]) .camera-container {
+  padding-bottom: 100%; /* Square */
+}
+
+:host([aspect-ratio="21:9"]) .camera-container {
+  padding-bottom: 42.857%; /* Ultra-wide */
+}
+
+.camera-container:fullscreen {
+  padding-bottom: 0;
+  height: 100vh;
 }
 
 video {
@@ -28,93 +49,171 @@ video.mirror {
   transform: scaleX(-1);
 }
 
-.camera-overlay {
+.custom-controls {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   pointer-events: none;
+  z-index: 10;
+}
+
+.custom-controls ::slotted(*) {
+  pointer-events: auto;
 }
 
 .camera-controls {
   position: absolute;
+  display: flex;
+  align-items: center;
+  gap: var(--snice-spacing-sm, 0.75rem);
+  pointer-events: auto;
+  z-index: 5;
+}
+
+/* Edge positions */
+.camera-controls.bottom {
   bottom: 0;
   left: 0;
   right: 0;
-  display: flex;
   justify-content: center;
-  align-items: center;
-  gap: 16px;
-  padding: 20px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
-  pointer-events: auto;
+  flex-direction: row;
+  padding: var(--snice-spacing-xl, 1.875rem) var(--snice-spacing-lg, 1.25rem); /* 30px 20px */
+  background: linear-gradient(to top, rgb(0 0 0 / 0.5), transparent);
+}
+
+.camera-controls.right {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--snice-spacing-lg, 1.25rem) var(--snice-spacing-xl, 1.5rem); /* 20px 24px */
+  background: linear-gradient(to left, rgb(0 0 0 / 0.5), transparent);
+}
+
+.camera-controls.left {
+  top: 0;
+  left: 0;
+  bottom: 0;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--snice-spacing-lg, 1.25rem) var(--snice-spacing-xl, 1.5rem); /* 20px 24px */
+  background: linear-gradient(to right, rgb(0 0 0 / 0.5), transparent);
+}
+
+.camera-controls.top {
+  top: 0;
+  left: 0;
+  right: 0;
+  justify-content: center;
+  flex-direction: row;
+  padding: var(--snice-spacing-xl, 1.875rem) var(--snice-spacing-lg, 1.25rem); /* 30px 20px */
+  background: linear-gradient(to bottom, rgb(0 0 0 / 0.5), transparent);
+}
+
+/* Corner positions */
+.camera-controls.bottom-left {
+  bottom: var(--snice-spacing-lg, 1.25rem); /* 20px */
+  left: var(--snice-spacing-lg, 1.25rem); /* 20px */
+  flex-direction: column;
+  gap: var(--snice-spacing-sm, 0.75rem);
+}
+
+.camera-controls.bottom-right {
+  bottom: var(--snice-spacing-lg, 1.25rem); /* 20px */
+  right: var(--snice-spacing-lg, 1.25rem); /* 20px */
+  flex-direction: column;
+  gap: var(--snice-spacing-sm, 0.75rem);
+}
+
+.camera-controls.top-left {
+  top: var(--snice-spacing-lg, 1.25rem); /* 20px */
+  left: var(--snice-spacing-lg, 1.25rem); /* 20px */
+  flex-direction: column;
+  gap: var(--snice-spacing-sm, 0.75rem);
+}
+
+.camera-controls.top-right {
+  top: var(--snice-spacing-lg, 1.25rem); /* 20px */
+  right: var(--snice-spacing-lg, 1.25rem); /* 20px */
+  flex-direction: column;
+  gap: var(--snice-spacing-sm, 0.75rem);
 }
 
 .camera-btn {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  border: 3px solid white;
-  background: rgba(255, 255, 255, 0.2);
+  width: 3rem; /* 48px */
+  height: 3rem; /* 48px */
+  border-radius: var(--snice-border-radius-circle, 50%);
+  border: none;
+  background: rgb(0 0 0 / 0.4);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
-  color: white;
-  font-size: 24px;
+  transition: all var(--snice-transition-fast, 150ms) ease;
+  color: rgb(255 255 255);
+  backdrop-filter: blur(0.5rem);
+  padding: 0;
 }
 
 .camera-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: scale(1.1);
+  background: rgb(0 0 0 / 0.6);
+  transform: scale(1.05);
 }
 
 .camera-btn:active {
   transform: scale(0.95);
 }
 
+.camera-btn.switch {
+  width: 2.5rem; /* 40px */
+  height: 2.5rem; /* 40px */
+}
+
+.camera-btn.switch svg {
+  width: 1.25rem; /* 20px */
+  height: 1.25rem; /* 20px */
+  opacity: 0.9;
+}
+
 .camera-btn.capture {
-  width: 64px;
-  height: 64px;
-  background: white;
-  border-color: white;
+  width: 3.5rem; /* 56px */
+  height: 3.5rem; /* 56px */
+  background: rgb(255 255 255 / 0.95);
+  color: rgb(51 51 51);
 }
 
 .camera-btn.capture:hover {
-  background: #f0f0f0;
+  background: rgb(255 255 255);
 }
 
-.camera-btn.capture::before {
-  content: '';
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background: white;
-  border: 3px solid #333;
+.camera-btn.capture svg {
+  width: 1.5rem; /* 24px */
+  height: 1.5rem; /* 24px */
 }
 
 .camera-status {
   position: absolute;
-  top: 16px;
-  left: 16px;
-  padding: 8px 12px;
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
-  border-radius: 4px;
-  font-size: 12px;
+  top: var(--snice-spacing-md, 1rem); /* 16px */
+  left: var(--snice-spacing-md, 1rem); /* 16px */
+  padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem); /* 8px 12px */
+  background: rgb(0 0 0 / 0.7);
+  color: rgb(255 255 255);
+  border-radius: var(--snice-border-radius-sm, 0.25rem);
+  font-size: var(--snice-font-size-xs, 0.75rem); /* 12px */
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--snice-spacing-xs, 0.375rem); /* 6px */
 }
 
 .camera-status.active::before {
   content: '';
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #4caf50;
+  width: 0.5rem; /* 8px */
+  height: 0.5rem; /* 8px */
+  border-radius: var(--snice-border-radius-circle, 50%);
+  background: var(--snice-color-success, rgb(76 175 80));
   animation: pulse 2s ease-in-out infinite;
 }
 
@@ -132,10 +231,10 @@ video.mirror {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(244, 67, 54, 0.9);
-  color: white;
-  padding: 16px 24px;
-  border-radius: 8px;
+  background: rgb(244 67 54 / 0.9);
+  color: rgb(255 255 255);
+  padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-xl, 1.5rem); /* 16px 24px */
+  border-radius: var(--snice-border-radius-lg, 0.5rem);
   text-align: center;
   max-width: 80%;
 }
@@ -146,14 +245,14 @@ video.mirror {
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
-  color: white;
+  color: rgb(255 255 255);
   opacity: 0.5;
 }
 
 .camera-placeholder svg {
-  width: 64px;
-  height: 64px;
-  margin-bottom: 12px;
+  width: 4rem; /* 64px */
+  height: 4rem; /* 64px */
+  margin-bottom: var(--snice-spacing-sm, 0.75rem); /* 12px */
 }
 
 .flash-overlay {
@@ -162,10 +261,10 @@ video.mirror {
   left: 0;
   width: 100%;
   height: 100%;
-  background: white;
+  background: rgb(255 255 255);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.1s;
+  transition: opacity var(--snice-transition-fast, 100ms) ease;
 }
 
 .flash-overlay.active {

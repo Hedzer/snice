@@ -4,7 +4,11 @@
   <title>Camera Component Demo</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body { padding: 40px; margin: 0; }
+    body {
+      padding: 20px;
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
     .demo-section {
       margin-bottom: 40px;
     }
@@ -13,45 +17,34 @@
     }
     .camera-wrapper {
       max-width: 640px;
-      margin: 0 auto;
+      margin: 0 auto 20px;
     }
-    .controls {
-      margin: 20px 0;
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: center;
+    .position-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
     }
-    select, input {
-      padding: 8px 12px;
-      border: 1px solid #e0e0e0;
-      border-radius: 4px;
-      font-size: 14px;
+    .position-example {
+      text-align: center;
     }
-    button {
-      padding: 8px 16px;
-      background: #2196f3;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    button:hover {
-      background: #1976d2;
+    .position-example h4 {
+      margin-bottom: 10px;
+      font-size: 13px;
+      color: #666;
+      text-transform: capitalize;
     }
     .gallery {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 16px;
-      margin-top: 20px;
     }
     .gallery-item {
-      border: 1px solid #e0e0e0;
       border-radius: 8px;
       overflow: hidden;
       cursor: pointer;
       transition: transform 0.2s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     .gallery-item:hover {
       transform: scale(1.05);
@@ -60,84 +53,27 @@
       width: 100%;
       display: block;
     }
-    .gallery-item-info {
-      padding: 8px;
-      font-size: 12px;
-      color: #666;
+    .info-section {
+      padding: 20px;
       background: #f5f5f5;
+      border-radius: 8px;
     }
   </style>
   <script type="module">
     document.addEventListener('DOMContentLoaded', () => {
-      const camera = document.getElementById('main-camera');
+      const cameras = document.querySelectorAll('snice-camera');
       const gallery = document.getElementById('gallery');
-      const deviceSelect = document.getElementById('device-select');
-      const resolutionSelect = document.getElementById('resolution-select');
-      const facingSelect = document.getElementById('facing-select');
-      const mirrorCheck = document.getElementById('mirror-check');
-
       let capturedImages = [];
 
-      // Load available devices
-      async function loadDevices() {
-        try {
-          const devices = await camera.getDevices();
-          deviceSelect.innerHTML = '<option value="">Select Device</option>';
-          devices.forEach((device, index) => {
-            const option = document.createElement('option');
-            option.value = device.deviceId;
-            option.textContent = device.label || `Camera ${index + 1}`;
-            deviceSelect.appendChild(option);
-          });
-        } catch (error) {
-          console.error('Failed to load devices:', error);
-        }
-      }
-
-      // Device selection
-      deviceSelect.addEventListener('change', async (e) => {
-        if (e.target.value) {
-          try {
-            await camera.selectDevice(e.target.value);
-          } catch (error) {
-            console.error('Failed to select device:', error);
-          }
-        }
+      // Listen to capture events from all cameras
+      cameras.forEach(camera => {
+        camera.addEventListener('@snice/camera-capture', (e) => {
+          const image = e.detail.image;
+          capturedImages.unshift(image);
+          updateGallery();
+        });
       });
 
-      // Resolution change
-      resolutionSelect.addEventListener('change', (e) => {
-        camera.resolution = e.target.value;
-      });
-
-      // Facing mode change
-      facingSelect.addEventListener('change', (e) => {
-        camera.facingMode = e.target.value;
-      });
-
-      // Mirror toggle
-      mirrorCheck.addEventListener('change', (e) => {
-        camera.mirror = e.target.checked;
-      });
-
-      // Camera events
-      camera.addEventListener('@snice/camera-start', () => {
-        console.log('Camera started');
-        loadDevices();
-      });
-
-      camera.addEventListener('@snice/camera-capture', (e) => {
-        const image = e.detail.image;
-        capturedImages.unshift(image);
-        updateGallery();
-      });
-
-      camera.addEventListener('@snice/camera-error', (e) => {
-        console.error('Camera error:', e.detail.error);
-        alert('Camera error: ' + e.detail.error.message);
-      });
-
-      // Update gallery
       function updateGallery() {
         gallery.innerHTML = '';
         capturedImages.forEach((image, index) => {
@@ -148,12 +84,7 @@
           img.src = image.dataURL;
           img.alt = `Captured ${index + 1}`;
 
-          const info = document.createElement('div');
-          info.className = 'gallery-item-info';
-          info.textContent = `${image.width}x${image.height}`;
-
           item.appendChild(img);
-          item.appendChild(info);
 
           item.addEventListener('click', () => {
             const win = window.open('', '_blank');
@@ -170,49 +101,109 @@
           gallery.appendChild(item);
         });
       }
-
-      // Clear gallery
-      document.getElementById('clear-btn').addEventListener('click', () => {
-        capturedImages = [];
-        updateGallery();
-      });
     });
   </script>
 </head>
 <body>
-  <h2>Camera Component Demo</h2>
-  <p>Access your device camera with customizable settings and capture functionality.</p>
+  <div class="demo-section">
+    <h2>Camera Component</h2>
+    <p>Simple camera with subtle controls and flexible positioning.</p>
+  </div>
 
   <div class="demo-section">
-    <h3>Live Camera Feed</h3>
+    <h3>Auto-Position (Default)</h3>
+    <p>Controls auto-position to bottom-right (portrait) or right (landscape).</p>
     <div class="camera-wrapper">
-      <snice-camera id="main-camera" resolution="hd"></snice-camera>
+      <snice-camera id="main-camera"></snice-camera>
     </div>
+  </div>
 
-    <div class="controls">
-      <select id="device-select">
-        <option value="">Select Device</option>
-      </select>
+  <div class="demo-section">
+    <h3>Corner Positions</h3>
+    <div class="position-grid">
+      <div class="position-example">
+        <h4>Bottom Right</h4>
+        <snice-camera controls-position="bottom-right"></snice-camera>
+      </div>
+      <div class="position-example">
+        <h4>Bottom Left</h4>
+        <snice-camera controls-position="bottom-left"></snice-camera>
+      </div>
+      <div class="position-example">
+        <h4>Top Right</h4>
+        <snice-camera controls-position="top-right"></snice-camera>
+      </div>
+      <div class="position-example">
+        <h4>Top Left</h4>
+        <snice-camera controls-position="top-left"></snice-camera>
+      </div>
+    </div>
+  </div>
 
-      <select id="resolution-select">
-        <option value="qvga">QVGA (320x240)</option>
-        <option value="vga">VGA (640x480)</option>
-        <option value="hd" selected>HD (1280x720)</option>
-        <option value="full-hd">Full HD (1920x1080)</option>
-        <option value="4k">4K (3840x2160)</option>
-      </select>
+  <div class="demo-section">
+    <h3>Edge Positions</h3>
+    <div class="position-grid">
+      <div class="position-example">
+        <h4>Bottom</h4>
+        <snice-camera controls-position="bottom"></snice-camera>
+      </div>
+      <div class="position-example">
+        <h4>Right</h4>
+        <snice-camera controls-position="right"></snice-camera>
+      </div>
+      <div class="position-example">
+        <h4>Left</h4>
+        <snice-camera controls-position="left"></snice-camera>
+      </div>
+      <div class="position-example">
+        <h4>Top</h4>
+        <snice-camera controls-position="top"></snice-camera>
+      </div>
+    </div>
+  </div>
 
-      <select id="facing-select">
-        <option value="user" selected>Front Camera</option>
-        <option value="environment">Back Camera</option>
-      </select>
+  <div class="demo-section">
+    <h3>Custom Controls</h3>
+    <div class="position-grid">
+      <div class="position-example">
+        <h4>Overlay (With Built-in)</h4>
+        <snice-camera>
+          <div slot="controls" style="position: absolute; top: 10px; left: 10px; color: white; background: rgba(0,0,0,0.5); padding: 8px 12px; border-radius: 4px; font-size: 12px;">
+            LIVE
+          </div>
+        </snice-camera>
+      </div>
+      <div class="position-example">
+        <h4>Fully Custom</h4>
+        <snice-camera id="custom-camera" show-controls="false">
+          <div slot="controls" style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px;">
+            <button onclick="document.getElementById('custom-camera').capture()" style="padding: 10px 20px; background: white; border: none; border-radius: 8px; cursor: pointer;">
+              Capture
+            </button>
+            <button onclick="document.getElementById('custom-camera').switchCamera()" style="padding: 10px 20px; background: rgba(255,255,255,0.8); border: none; border-radius: 8px; cursor: pointer;">
+              Flip
+            </button>
+          </div>
+        </snice-camera>
+      </div>
+    </div>
+  </div>
 
-      <label style="display: flex; align-items: center; gap: 8px; padding: 8px 12px;">
-        <input type="checkbox" id="mirror-check" checked>
-        Mirror
-      </label>
-
-      <button id="clear-btn">Clear Gallery</button>
+  <div class="demo-section">
+    <h3>Resolution & Aspect Ratio</h3>
+    <div class="position-grid">
+      <div class="position-example">
+        <h4>16:9 Widescreen</h4>
+        <snice-camera aspect-ratio="16:9"></snice-camera>
+      </div>
+      <div class="position-example">
+        <h4>1:1 Square</h4>
+        <snice-camera aspect-ratio="1:1" width="640" height="640"></snice-camera>
+      </div>
+      <div class="position-example">
+        <h4>4K Resolution</h4>
+        <snice-camera width="3840" height="2160"></snice-camera>
+      </div>
     </div>
   </div>
 
@@ -221,39 +212,52 @@
     <div id="gallery" class="gallery"></div>
   </div>
 
-  <div style="margin-top: 40px; padding: 20px; background: #f5f5f5; border-radius: 4px;">
-    <h3 style="margin-top: 0;">Features</h3>
+  <div class="info-section">
+    <h3>Features</h3>
     <ul>
-      <li>Live camera feed access</li>
-      <li>Front/back camera switching</li>
-      <li>Multiple resolution options</li>
-      <li>Photo capture with flash effect</li>
-      <li>Mirror mode for selfies</li>
-      <li>Device selection</li>
-      <li>Built-in camera controls</li>
-      <li>Error handling</li>
+      <li>Auto-starts camera feed on load</li>
+      <li>Subtle Material Design-style icons</li>
+      <li>Capture button with camera icon (56px)</li>
+      <li>Switch camera button (40px, auto-hides if only one camera)</li>
+      <li>Corner positioning: bottom-left, bottom-right, top-left, top-right</li>
+      <li>Edge positioning: bottom, right, left, top</li>
+      <li>Auto-detect orientation (bottom-right for portrait, right for landscape)</li>
+      <li>Slotted custom controls overlay</li>
+      <li>Configurable resolution (default 720p HD)</li>
+      <li>Aspect ratio presets (16:9, 4:3, 1:1, 21:9)</li>
+      <li>Fullscreen mode support</li>
+      <li>Mirror mode for front camera</li>
     </ul>
 
-    <h3>Controls</h3>
-    <ul style="list-style: none; padding: 0;">
-      <li>▶️ Start - Start camera feed</li>
-      <li>⚫ Capture - Take photo</li>
-      <li>🔄 Switch - Toggle front/back camera</li>
-      <li>⏹️ Stop - Stop camera feed</li>
+    <h3>Usage</h3>
+    <pre>&lt;snice-camera&gt;&lt;/snice-camera&gt;</pre>
+    <p>Zero config - auto-starts with bottom-right controls in portrait mode.</p>
+
+    <h3>Attributes</h3>
+    <ul>
+      <li><code>controls-position</code> - "auto" (default), corners: "bottom-left", "bottom-right", "top-left", "top-right", edges: "bottom", "right", "left", "top"</li>
+      <li><code>show-controls</code> - Boolean, show built-in controls (default: true). Set to false to use only custom slotted controls</li>
+      <li><code>width</code> - Number, video width in pixels (default: 1280)</li>
+      <li><code>height</code> - Number, video height in pixels (default: 720)</li>
+      <li><code>aspect-ratio</code> - String, aspect ratio preset: "16:9", "4:3", "1:1", "21:9"</li>
+      <li><code>facing-mode</code> - "user" (front, default) or "environment" (back)</li>
+      <li><code>mirror</code> - Boolean, mirrors video for front camera (default: true)</li>
+      <li><code>auto-start</code> - Boolean, auto-start on load (default: true)</li>
     </ul>
 
-    <h3>Resolution Options</h3>
-    <ul style="list-style: none; padding: 0;">
-      <li>QVGA - 320x240 (low quality, fast)</li>
-      <li>VGA - 640x480 (standard quality)</li>
-      <li>HD - 1280x720 (high quality)</li>
-      <li>Full HD - 1920x1080 (very high quality)</li>
-      <li>4K - 3840x2160 (ultra quality, slow)</li>
+    <h3>Methods</h3>
+    <ul>
+      <li><code>capture()</code> - Capture current frame as image</li>
+      <li><code>switchCamera()</code> - Toggle between front/back camera</li>
+      <li><code>toggleFullscreen()</code> - Toggle fullscreen mode</li>
+      <li><code>enterFullscreen()</code> - Enter fullscreen mode</li>
+      <li><code>exitFullscreen()</code> - Exit fullscreen mode</li>
     </ul>
 
-    <h3>Browser Permissions</h3>
-    <p>This component requires camera permissions. Your browser will prompt you to allow camera access.</p>
-    <p><strong>Note:</strong> Camera access only works over HTTPS or localhost for security reasons.</p>
+    <h3>Slots</h3>
+    <ul>
+      <li><code>controls</code> - Custom controls overlay area (full viewport positioned absolutely)</li>
+    </ul>
   </div>
   <script type="module" src="./snice-camera.ts"></script>
 </body>

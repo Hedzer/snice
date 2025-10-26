@@ -1,55 +1,62 @@
-import { element, property, render, styles, dispatch, query, html, css } from 'snice';
-import type { CameraFacingMode, CameraResolution, CapturedImage, SniceCameraElement } from './snice-camera.types';
+import { element, property, render, styles, query, html, css } from 'snice';
+import type { CameraFacingMode, CapturedImage, SniceCameraElement, ControlsPosition } from './snice-camera.types';
 import cameraStyles from './snice-camera.css?inline';
-
-const RESOLUTION_MAP: Record<CameraResolution, { width: number; height: number }> = {
-  'qvga': { width: 320, height: 240 },
-  'vga': { width: 640, height: 480 },
-  'hd': { width: 1280, height: 720 },
-  'full-hd': { width: 1920, height: 1080 },
-  '4k': { width: 3840, height: 2160 }
-};
 
 @element('snice-camera')
 export class SniceCamera extends HTMLElement implements SniceCameraElement {
   @property({ type: Boolean, attribute: 'auto-start' })
-  autoStart: boolean = false;
+  autoStart: boolean = true;
 
   @property({ type: String, attribute: 'facing-mode' })
   facingMode: CameraFacingMode = 'user';
 
-  @property({ type: String })
-  resolution: CameraResolution = 'hd';
-
   @property({ type: Boolean })
   mirror: boolean = true;
+
+  @property({ type: String, attribute: 'controls-position' })
+  controlsPosition: ControlsPosition = 'auto';
 
   @property({ type: Boolean, attribute: 'show-controls' })
   showControls: boolean = true;
 
-  @property({ type: String, attribute: 'capture-format' })
-  captureFormat: 'image/png' | 'image/jpeg' | 'image/webp' = 'image/jpeg';
+  @property({ type: Number })
+  width: number = 1280;
 
-  @property({ type: Number, attribute: 'capture-quality' })
-  captureQuality: number = 0.92;
+  @property({ type: Number })
+  height: number = 720;
+
+  @property({ type: String, attribute: 'aspect-ratio' })
+  aspectRatio: string = '';
 
   @query('video')
   private video!: HTMLVideoElement;
 
+  @query('.camera-container')
+  private container!: HTMLElement;
+
   private stream: MediaStream | null = null;
   private active: boolean = false;
-  private errorMessage: string = '';
-  private showFlash: boolean = false;
+  private hasMultipleCameras: boolean = false;
 
   @styles()
   styles() {
     return css/*css*/`${cameraStyles}`;
   }
 
-  connectedCallback() {
+  async connectedCallback() {
     ;
+    // Check for multiple cameras
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoDevices = devices.filter(d => d.kind === 'videoinput');
+      this.hasMultipleCameras = videoDevices.length > 1;
+    } catch (error) {
+      this.hasMultipleCameras = false;
+    }
+
     if (this.autoStart) {
-      this.start();
+      // Small delay to ensure video element is ready
+      requestAnimationFrame(() => this.start());
     }
   }
 
@@ -65,66 +72,56 @@ export class SniceCamera extends HTMLElement implements SniceCameraElement {
         <video
           class="${this.mirror && this.facingMode === 'user' ? 'mirror' : ''}"
           autoplay
-          playsinline>
+          playsinline
+          muted>
         </video>
-
-        ${this.active ? html`
-          <div class="camera-status active">Recording</div>
-        ` : ''}
-
-        ${this.errorMessage ? html`
-          <div class="camera-error">${this.errorMessage}</div>
-        ` : ''}
-
-        ${!this.active && !this.errorMessage ? html`
-          <div class="camera-placeholder">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 15.2c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
-              <path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9z"/>
-            </svg>
-            <div>Camera not started</div>
+        <if value=${this.showControls}>
+          <div class="camera-controls ${this.getControlsPosition()}">
+            <if value=${this.hasMultipleCameras}>
+              <button class="camera-btn switch" @click=${this.switchCamera}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 2L7 5H4C2.9 5 2 5.9 2 7V19C2 20.1 2.9 21 4 21H20C21.1 21 22 20.1 22 19V7C22 5.9 21.1 5 20 5H17L15 2H9Z"/>
+                  <circle cx="12" cy="13" r="3"/>
+                  <path d="M15 7h2v2h-2z"/>
+                </svg>
+              </button>
+            </if>
+            <button class="camera-btn capture" @click=${this.capture}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <circle cx="12" cy="12" r="10" fill="white" stroke="currentColor" stroke-width="2"/>
+                <circle cx="12" cy="12" r="6"/>
+              </svg>
+            </button>
           </div>
-        ` : ''}
-
-        ${this.showControls ? this.renderControls() : ''}
-
-        <div class="flash-overlay ${this.showFlash ? 'active' : ''}"></div>
+        </if>
+        <div class="custom-controls">
+          <slot name="controls"></slot>
+        </div>
       </div>
     `;
   }
 
-  private renderControls() {
-    return html`
-      <div class="camera-controls">
-        ${this.active ? html`
-          <button class="camera-btn" @click=${() => this.switchCamera()} title="Switch camera">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M16 7h-1l-1-1h-4L9 7H8c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zm-4 7c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
-              <path d="M20 4h-3.17l-.59-.59-.58-.58V2h-7.32v.83l-.58.58L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8 13c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/>
-            </svg>
-          </button>
-          <button class="camera-btn capture" @click=${() => this.capture()} title="Capture photo"></button>
-          <button class="camera-btn" @click=${() => this.stop()} title="Stop camera">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-              <rect x="6" y="6" width="12" height="12"/>
-            </svg>
-          </button>
-        ` : html`
-          <button class="camera-btn" @click=${() => this.start()} title="Start camera">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M8 5v14l11-7z"/>
-            </svg>
-          </button>
-        `}
-      </div>
-    `;
+  private getControlsPosition(): string {
+    if (this.controlsPosition !== 'auto') {
+      return this.controlsPosition;
+    }
+
+    // Auto-detect orientation
+    const isPortrait = window.innerHeight > window.innerWidth;
+    return isPortrait ? 'bottom-right' : 'right';
   }
 
   async start(): Promise<void> {
     try {
-      this.errorMessage = '';
+      const constraints: MediaStreamConstraints = {
+        audio: false,
+        video: {
+          width: { ideal: this.width },
+          height: { ideal: this.height },
+          facingMode: this.facingMode
+        } as MediaTrackConstraints
+      };
 
-      const constraints = this.getConstraints();
       this.stream = await navigator.mediaDevices.getUserMedia(constraints);
 
       if (this.video) {
@@ -136,16 +133,13 @@ export class SniceCamera extends HTMLElement implements SniceCameraElement {
       ;
 
       this.dispatchEvent(new CustomEvent('@snice/camera-start', {
-        detail: { camera: this, stream: this.stream },
+        detail: { stream: this.stream },
         bubbles: true
       }));
     } catch (error) {
-      this.errorMessage = error instanceof Error ? error.message : 'Failed to access camera';
-      this.active = false;
-      ;
-
+      console.error('Camera error:', error);
       this.dispatchEvent(new CustomEvent('@snice/camera-error', {
-        detail: { camera: this, error },
+        detail: { error },
         bubbles: true
       }));
     }
@@ -165,7 +159,6 @@ export class SniceCamera extends HTMLElement implements SniceCameraElement {
     ;
 
     this.dispatchEvent(new CustomEvent('@snice/camera-stop', {
-      detail: { camera: this },
       bubbles: true
     }));
   }
@@ -174,14 +167,6 @@ export class SniceCamera extends HTMLElement implements SniceCameraElement {
     if (!this.video || !this.active) {
       throw new Error('Camera not active');
     }
-
-    // Flash effect
-    this.showFlash = true;
-    ;
-    setTimeout(() => {
-      this.showFlash = false;
-      ;
-    }, 100);
 
     const canvas = document.createElement('canvas');
     canvas.width = this.video.videoWidth;
@@ -200,8 +185,8 @@ export class SniceCamera extends HTMLElement implements SniceCameraElement {
       ctx.drawImage(this.video, 0, 0, canvas.width, canvas.height);
     }
 
-    const dataURL = canvas.toDataURL(this.captureFormat, this.captureQuality);
-    const blob = await this.dataURLToBlob(dataURL);
+    const dataURL = canvas.toDataURL('image/jpeg', 0.92);
+    const blob = await (await fetch(dataURL)).blob();
 
     const image: CapturedImage = {
       dataURL,
@@ -212,7 +197,7 @@ export class SniceCamera extends HTMLElement implements SniceCameraElement {
     };
 
     this.dispatchEvent(new CustomEvent('@snice/camera-capture', {
-      detail: { camera: this, image },
+      detail: { image },
       bubbles: true
     }));
 
@@ -221,21 +206,11 @@ export class SniceCamera extends HTMLElement implements SniceCameraElement {
 
   async switchCamera(): Promise<void> {
     const wasActive = this.active;
-
-    if (wasActive) {
-      this.stop();
-    }
+    if (wasActive) this.stop();
 
     this.facingMode = this.facingMode === 'user' ? 'environment' : 'user';
 
-    if (wasActive) {
-      await this.start();
-    }
-
-    this.dispatchEvent(new CustomEvent('@snice/camera-switch', {
-      detail: { camera: this, facingMode: this.facingMode },
-      bubbles: true
-    }));
+    if (wasActive) await this.start();
   }
 
   isActive(): boolean {
@@ -246,57 +221,26 @@ export class SniceCamera extends HTMLElement implements SniceCameraElement {
     return this.stream;
   }
 
-  async getDevices(): Promise<MediaDeviceInfo[]> {
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    return devices.filter(device => device.kind === 'videoinput');
-  }
-
-  async selectDevice(deviceId: string): Promise<void> {
-    const wasActive = this.active;
-
-    if (wasActive) {
-      this.stop();
-    }
-
-    const constraints = this.getConstraints();
-    if (constraints.video && typeof constraints.video === 'object') {
-      constraints.video.deviceId = { exact: deviceId };
-      delete constraints.video.facingMode;
-    }
-
-    try {
-      this.stream = await navigator.mediaDevices.getUserMedia(constraints);
-
-      if (this.video) {
-        this.video.srcObject = this.stream;
-        await this.video.play();
+  enterFullscreen(): void {
+    if (this.container) {
+      if (this.container.requestFullscreen) {
+        this.container.requestFullscreen();
       }
-
-      this.active = true;
-      ;
-    } catch (error) {
-      this.errorMessage = 'Failed to select device';
-      ;
-      throw error;
     }
   }
 
-  private getConstraints() {
-    const res = RESOLUTION_MAP[this.resolution];
-
-    return {
-      audio: false,
-      video: {
-        width: { ideal: res.width },
-        height: { ideal: res.height },
-        facingMode: this.facingMode
-      }
-    };
+  exitFullscreen(): void {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    }
   }
 
-  private async dataURLToBlob(dataURL: string): Promise<Blob> {
-    const response = await fetch(dataURL);
-    return response.blob();
+  toggleFullscreen(): void {
+    if (document.fullscreenElement) {
+      this.exitFullscreen();
+    } else {
+      this.enterFullscreen();
+    }
   }
 }
 

@@ -1,16 +1,15 @@
 export type CameraFacingMode = 'user' | 'environment';
 
-export type CameraResolution = 'qvga' | 'vga' | 'hd' | 'full-hd' | '4k';
-
-export interface CameraConstraints {
-  audio?: boolean;
-  video?: {
-    width?: { ideal?: number; min?: number; max?: number };
-    height?: { ideal?: number; min?: number; max?: number };
-    facingMode?: CameraFacingMode;
-    frameRate?: { ideal?: number; min?: number; max?: number };
-  };
-}
+export type ControlsPosition =
+  | 'auto'
+  | 'bottom'
+  | 'right'
+  | 'left'
+  | 'top'
+  | 'bottom-left'
+  | 'bottom-right'
+  | 'top-left'
+  | 'top-right';
 
 export interface CapturedImage {
   dataURL: string;
@@ -23,11 +22,12 @@ export interface CapturedImage {
 export interface SniceCameraElement extends HTMLElement {
   autoStart: boolean;
   facingMode: CameraFacingMode;
-  resolution: CameraResolution;
   mirror: boolean;
+  controlsPosition: ControlsPosition;
   showControls: boolean;
-  captureFormat: 'image/png' | 'image/jpeg' | 'image/webp';
-  captureQuality: number;
+  width: number;
+  height: number;
+  aspectRatio: string;
 
   start(): Promise<void>;
   stop(): void;
@@ -35,6 +35,7 @@ export interface SniceCameraElement extends HTMLElement {
   switchCamera(): Promise<void>;
   isActive(): boolean;
   getStream(): MediaStream | null;
-  getDevices(): Promise<MediaDeviceInfo[]>;
-  selectDevice(deviceId: string): Promise<void>;
+  enterFullscreen(): void;
+  exitFullscreen(): void;
+  toggleFullscreen(): void;
 }
