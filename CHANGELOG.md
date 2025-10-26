@@ -1,3 +1,29 @@
+# [3.3.0](https://gitlab.com/Hedzer/snice/compare/v3.2.0...v3.3.0) (2025-10-26)
+
+
+### Bug Fixes
+
+* build errors ([0c4aa2d](https://gitlab.com/Hedzer/snice/commit/0c4aa2d4b12c4adbb7d6e31b808ab43989060f3f))
+* carousel rendering ([62899ed](https://gitlab.com/Hedzer/snice/commit/62899ed5c68e18ef5c2b49c3fa32f4dd33025a7a))
+* chart rendering ([71e95e9](https://gitlab.com/Hedzer/snice/commit/71e95e9d8ba12baf0fae92fd461db8e08ab0d33c))
+* draw brush smoothness ([3cf2c5e](https://gitlab.com/Hedzer/snice/commit/3cf2c5e4e59d8a60c5868c907a3ea61f374ad16a))
+* kpi issues ([bec13be](https://gitlab.com/Hedzer/snice/commit/bec13be02db00c83d75d684bebd343ec5bde305b))
+* list rendering ([4883fce](https://gitlab.com/Hedzer/snice/commit/4883fce15ff0e51e67ca5836709f48b3390c17a5))
+* locations rendering ([3be2adb](https://gitlab.com/Hedzer/snice/commit/3be2adbe603d710e557c9d7c4eda102dfc8f5fea))
+* qr code element ([b956b7c](https://gitlab.com/Hedzer/snice/commit/b956b7c8e9534d883cff4f54668dfaa201037344))
+* syntax + new components ([79d99f4](https://gitlab.com/Hedzer/snice/commit/79d99f4d2ee4090a9c44522df951cb145ff0f96d))
+* tree rendering issues ([010c38a](https://gitlab.com/Hedzer/snice/commit/010c38a5e5e3c3904c217b379fff68cc1cdd1294))
+
+
+### Features
+
+* added nav, menu components ([9c3443d](https://gitlab.com/Hedzer/snice/commit/9c3443d6223cce1a8ae94c3623342ea5ea1b90d8))
+* auto-polygon for draw ([a373853](https://gitlab.com/Hedzer/snice/commit/a37385349d680874ccf153466710179ac89d515d))
+* menu tests and docs ([79278fc](https://gitlab.com/Hedzer/snice/commit/79278fc00421d3a0c22c186abe18d3ae22629ce4))
+* newcamera features ([21ba814](https://gitlab.com/Hedzer/snice/commit/21ba814bdcfd101df42719579203685549eed4d5))
+* qr text improvements ([dfc9f70](https://gitlab.com/Hedzer/snice/commit/dfc9f70faffe5bd95ff89a4d7ece7f95da235663))
+* rounded dot style ([043a98e](https://gitlab.com/Hedzer/snice/commit/043a98e0e7cc195c63efb310e7f54d1ed204149c))
+
 # [3.2.0](https://gitlab.com/Hedzer/snice/compare/v3.1.0...v3.2.0) (2025-10-25)
 
 
