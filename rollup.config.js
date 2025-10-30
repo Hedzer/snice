@@ -247,6 +247,21 @@ export default [
           return null;
         }
       },
+      // Plugin to copy standalone theme.css
+      {
+        name: 'copy-theme',
+        generateBundle() {
+          const themeSrc = 'components/theme/theme.css';
+          const themeDest = 'dist/components/theme';
+
+          if (fs.existsSync(themeSrc)) {
+            if (!fs.existsSync(themeDest)) {
+              fs.mkdirSync(themeDest, { recursive: true });
+            }
+            fs.copyFileSync(themeSrc, path.join(themeDest, 'theme.css'));
+          }
+        }
+      },
       typescript({
         tsconfig: './components/tsconfig.json',
         declaration: false,

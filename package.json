@@ -24,6 +24,7 @@
       "require": "./dist/transitions.cjs",
       "types": "./dist/transitions.d.ts"
     },
+    "./components/theme/theme.css": "./dist/components/theme/theme.css",
     "./components/*": {
       "import": "./dist/components/*.js",
       "types": "./dist/components/*.d.ts"

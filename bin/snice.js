@@ -11,27 +11,57 @@ const args = process.argv.slice(2);
 const command = args[0];
 
 if (command === 'create-app') {
-  const projectPath = args[1] || '.';
-  createApp(projectPath);
+  // Parse arguments - separate flags from positional arguments
+  const flags = {};
+  const positional = [];
+
+  for (let i = 1; i < args.length; i++) {
+    const arg = args[i];
+    if (arg.startsWith('--')) {
+      if (arg.includes('=')) {
+        const [key, value] = arg.split('=');
+        flags[key.slice(2)] = value;
+      } else {
+        flags[arg.slice(2)] = true;
+      }
+    } else {
+      positional.push(arg);
+    }
+  }
+
+  const projectPath = positional[0] || '.';
+  const template = flags.template || 'base';
+
+  createApp(projectPath, template);
 } else {
   console.log(`
 Snice CLI
 
 Usage:
-  snice create-app <project-name>  Create a new Snice application
-  snice create-app .               Initialize in current directory
+  snice create-app [options] <project-name>
+  snice create-app [options] .                          Initialize in current directory
+
+Options:
+  --template=<name>                                     Template to use (default: base)
+
+Templates:
+  base    - Minimal starter with counter example (default)
+  social  - Social media sample app showcasing components
 
 Examples:
   snice create-app my-app
-  npx snice create-app my-app
+  snice create-app my-app --template=social
+  snice create-app --template=social my-app
+  npx snice create-app my-app --template=social
 `);
 }
 
-function createApp(projectPath) {
+function createApp(projectPath, template = 'base') {
   const targetDir = resolve(process.cwd(), projectPath);
   const projectName = projectPath === '.' ? basename(process.cwd()) : basename(targetDir);
-  
+
   console.log(`\n🚀 Creating Snice app in ${targetDir}...\n`);
+  console.log(`📦 Using template: ${template}\n`);
 
   // Check if directory exists and is empty
   if (projectPath !== '.') {
@@ -55,18 +85,33 @@ function createApp(projectPath) {
   }
 
   // Path to templates
-  const templateDir = join(__dirname, 'templates', 'base');
-  
+  const templateDir = join(__dirname, 'templates', template);
+
+  // Check if template exists
+  if (!existsSync(templateDir)) {
+    console.error(`❌ Template "${template}" not found!`);
+    console.error(`Available templates: base, social`);
+    process.exit(1);
+  }
+
   // Copy template files
   copyTemplateFiles(templateDir, targetDir, projectName);
 
+  // Copy shared CLAUDE.md
+  const claudeMdPath = join(__dirname, 'templates', 'CLAUDE.md');
+  if (existsSync(claudeMdPath)) {
+    console.log(`  Creating CLAUDE.md...`);
+    const claudeMdContent = readFileSync(claudeMdPath, 'utf8');
+    writeFileSync(join(targetDir, 'CLAUDE.md'), claudeMdContent.replace(/\{\{projectName\}\}/g, projectName));
+  }
+
   console.log(`\n✨ Project created successfully!\n`);
   console.log('Next steps:');
-  
+
   if (projectPath !== '.') {
     console.log(`  cd ${projectPath}`);
   }
-  
+
   console.log('  npm install');
   console.log('  npm run dev\n');
   console.log('Happy coding! 🎉\n');

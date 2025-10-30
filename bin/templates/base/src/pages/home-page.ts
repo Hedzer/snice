@@ -19,14 +19,36 @@ export class HomePage extends HTMLElement {
         <h1>Welcome to {{projectName}}</h1>
         <p>Built with Snice</p>
 
-        <div class="demo-section">
+        <div class="features">
+          <feature-card
+            icon="⚡"
+            title="Fast & Lightweight"
+            description="No virtual DOM overhead. Direct DOM updates with differential rendering.">
+          </feature-card>
+
+          <feature-card
+            icon="🎨"
+            title="Type-Safe"
+            description="Full TypeScript support with decorators for clean, maintainable code.">
+          </feature-card>
+
+          <feature-card
+            icon="🔧"
+            title="Web Standards"
+            description="Built on native Web Components. Works everywhere, no framework lock-in.">
+          </feature-card>
+        </div>
+
+        <snice-card class="demo-section">
           <h2>Interactive Counter Demo</h2>
           <p>This counter persists its state using a controller:</p>
           <counter-button controller="counter"></counter-button>
-        </div>
+        </snice-card>
 
         <div class="nav">
-          <a href="#/about" class="btn">About</a>
+          <snice-button variant="primary" size="medium">
+            <a href="#/about" style="color: inherit; text-decoration: none;">Learn More</a>
+          </snice-button>
         </div>
       </div>
     `;
@@ -59,30 +81,24 @@ export class HomePage extends HTMLElement {
         margin-bottom: 2rem;
       }
       
+      .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin: 3rem 0;
+      }
+
       .demo-section {
         margin: 3rem 0;
-        padding: 2rem;
-        background: rgba(255, 255, 255, 0.5);
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        text-align: center;
       }
-      
+
+      .demo-section h2 {
+        margin-top: 0;
+      }
+
       .nav {
         margin-top: 3rem;
-      }
-      
-      .btn {
-        display: inline-block;
-        padding: 0.75rem 1.5rem;
-        background: var(--primary-color);
-        color: white;
-        text-decoration: none;
-        border-radius: 6px;
-        transition: background 0.3s ease;
-      }
-      
-      .btn:hover {
-        background: var(--secondary-color);
       }
     `;
   }

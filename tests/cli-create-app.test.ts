@@ -123,13 +123,13 @@ describe('CLI create-app command', () => {
   it('should not overwrite existing directory', async () => {
     const appName = 'existing-app';
     const appPath = join(tempDir, appName);
-    
+
     // Create the app first time
     await execAsync(
       `node ${join(process.cwd(), 'bin/snice.js')} create-app ${appName}`,
       { cwd: tempDir }
     );
-    
+
     // Try to create again with same name
     try {
       await execAsync(
@@ -141,4 +141,42 @@ describe('CLI create-app command', () => {
       expect(error.stderr || error.message).toContain('not empty');
     }
   });
+
+  it('should include CLAUDE.md in base template', async () => {
+    const appName = 'test-claude-base';
+    const appPath = join(tempDir, appName);
+
+    await execAsync(
+      `node ${join(process.cwd(), 'bin/snice.js')} create-app ${appName}`,
+      { cwd: tempDir }
+    );
+
+    // Verify CLAUDE.md exists
+    expect(existsSync(join(appPath, 'CLAUDE.md'))).toBe(true);
+
+    // Verify it has content
+    const claudeMd = await readFile(join(appPath, 'CLAUDE.md'), 'utf-8');
+    expect(claudeMd).toContain('Snice Project - AI Assistant Guide');
+    expect(claudeMd).toContain('node_modules/snice/docs/ai/');
+    expect(claudeMd).toContain('Decorators');
+  }, 30000);
+
+  it('should include CLAUDE.md in social template', async () => {
+    const appName = 'test-claude-social';
+    const appPath = join(tempDir, appName);
+
+    await execAsync(
+      `node ${join(process.cwd(), 'bin/snice.js')} create-app ${appName} --template=social`,
+      { cwd: tempDir }
+    );
+
+    // Verify CLAUDE.md exists
+    expect(existsSync(join(appPath, 'CLAUDE.md'))).toBe(true);
+
+    // Verify it has content
+    const claudeMd = await readFile(join(appPath, 'CLAUDE.md'), 'utf-8');
+    expect(claudeMd).toContain('Snice Project - AI Assistant Guide');
+    expect(claudeMd).toContain('node_modules/snice/docs/ai/');
+    expect(claudeMd).toContain('Decorators');
+  }, 30000);
 });

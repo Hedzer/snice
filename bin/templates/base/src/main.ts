@@ -1,11 +1,16 @@
 import { initialize } from './router';
 import './styles/global.css';
 
-// Import a layout
+// Import snice layout
 import 'snice/components/layout/snice-layout';
 
-// Import components
+// Import snice components
+import 'snice/components/button/snice-button';
+import 'snice/components/card/snice-card';
+
+// Import custom components
 import './components/counter-button';
+import './components/feature-card';
 
 // Import controllers
 import './controllers/counter-controller';
