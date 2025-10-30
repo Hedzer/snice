@@ -1021,6 +1021,7 @@ class CanvasDrawing {
   }
 
   clear(): void {
+    if (!this.context) return;
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.painted = false;
   }
