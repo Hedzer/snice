@@ -41,7 +41,7 @@ export class SniceMenuItem extends HTMLElement implements SniceMenuItemElement {
       this.disabled ? 'menu-item--disabled' : ''
     ].filter(Boolean).join(' ');
 
-    return html`
+    return html/*html*/`
       <div class="${itemClasses}" part="item" role="menuitem" aria-disabled="${this.disabled}">
         <span class="menu-item__icon" part="icon">
           <slot name="icon"></slot>

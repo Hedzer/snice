@@ -1,13 +1,14 @@
-import { layout, part } from '../../../src/index';
-import type { Layout, AppContext, Placard, RouteParams } from '../../../src/index';
+import { layout, part, render, styles, html, css } from 'snice';
+import type { Layout, AppContext, Placard, RouteParams } from 'snice';
 
 @layout('app-layout')
 export class AppLayout extends HTMLElement implements Layout {
   private placards: Placard[] = [];
   private currentRoute = '';
 
-  html() {
-    return /*html*/`
+  @render()
+  renderContent() {
+    return html/*html*/`
       <nav class="navbar">
         <div class="nav-container">
           <h1 class="nav-brand">Snice</h1>
@@ -21,8 +22,9 @@ export class AppLayout extends HTMLElement implements Layout {
     `;
   }
 
-  css() {
-    return /*css*/`
+  @styles()
+  componentStyles() {
+    return css/*css*/`
       :host {
         display: block;
         min-height: 100vh;

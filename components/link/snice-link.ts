@@ -74,7 +74,7 @@ export class SniceLink extends HTMLElement implements SniceLinkElement {
       computedHref = '#';
     }
 
-    return html`
+    return html/*html*/`
       <a
         href="${computedHref}"
         target="${linkTarget}"

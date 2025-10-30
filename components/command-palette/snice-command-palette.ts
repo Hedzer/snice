@@ -256,7 +256,7 @@ export class SniceCommandPalette extends HTMLElement implements SniceCommandPale
 
     const categories = Array.from(grouped.keys());
 
-    return html`
+    return html/*html*/`
       <div class="${paletteClasses}">
         <if ${this.open}>
           <div class="command-palette__backdrop" @click="${(e: MouseEvent) => this.handleBackdropClick(e)}"></div>
@@ -283,7 +283,7 @@ export class SniceCommandPalette extends HTMLElement implements SniceCommandPale
               <if ${this.filteredCommands.length > 0}>
                 ${categories.map(category => {
                   const commands = grouped.get(category) || [];
-                  return html`
+                  return html/*html*/`
                     <if ${category}>
                       <div class="command-palette__category" part="category">${category}</div>
                     </if>
@@ -295,7 +295,7 @@ export class SniceCommandPalette extends HTMLElement implements SniceCommandPale
                         command.disabled ? 'command-palette__item--disabled' : ''
                       ].filter(Boolean).join(' ');
 
-                      return html`
+                      return html/*html*/`
                         <button
                           class="${itemClasses}"
                           part="item"

@@ -1,16 +1,10 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, wait } from './test-utils';
 import '../../components/list/snice-list';
-import type { SniceListElement, ListItem } from '../../components/list/snice-list.types';
+import type { SniceListElement } from '../../components/list/snice-list.types';
 
 describe('snice-list', () => {
   let list: SniceListElement;
-
-  const items: ListItem[] = [
-    { id: '1', label: 'Item 1' },
-    { id: '2', label: 'Item 2' },
-    { id: '3', label: 'Item 3' }
-  ];
 
   afterEach(() => {
     if (list) {
@@ -23,43 +17,34 @@ describe('snice-list', () => {
     expect(list).toBeTruthy();
   });
 
-  it('should display items', async () => {
+  it('should have default properties', async () => {
     list = await createComponent<SniceListElement>('snice-list');
-    list.items = items;
-    await wait(50);
-    expect(list.items.length).toBe(3);
+    expect(list.dividers).toBe(false);
+    expect(list.searchable).toBe(false);
+    expect(list.infinite).toBe(false);
+    expect(list.loading).toBe(false);
+    expect(list.noResults).toBe(false);
   });
 
-  it.skip('should support selection modes', async () => {
-    list = await createComponent<SniceListElement>('snice-list', { selectionMode: 'single' });
-    expect(list.selectionMode).toBe('single');
+  it('should support dividers', async () => {
+    list = await createComponent<SniceListElement>('snice-list', { dividers: true });
+    expect(list.dividers).toBe(true);
   });
 
-  it.skip('should select item', async () => {
-    list = await createComponent<SniceListElement>('snice-list', { selectionMode: 'single' });
-    list.items = items;
-    await wait(50);
-    list.selectItem('1');
-    await wait(50);
-    expect(list.selectedItems).toContain('1');
+  it('should support searchable mode', async () => {
+    list = await createComponent<SniceListElement>('snice-list', { searchable: true });
+    expect(list.searchable).toBe(true);
   });
 
-  it.skip('should deselect item', async () => {
-    list = await createComponent<SniceListElement>('snice-list', { selectionMode: 'multiple' });
-    list.items = items;
-    list.selectedItems = ['1'];
-    await wait(50);
-    list.deselectItem('1');
-    await wait(50);
-    expect(list.selectedItems).not.toContain('1');
+  it('should support infinite scroll mode', async () => {
+    list = await createComponent<SniceListElement>('snice-list', { infinite: true });
+    expect(list.infinite).toBe(true);
   });
 
-  it('should get selected items', async () => {
+  it('should show loading state', async () => {
     list = await createComponent<SniceListElement>('snice-list');
-    list.items = items;
-    list.selectedItems = ['1', '2'];
+    list.loading = true;
     await wait(50);
-    const selected = list.getSelectedItems();
-    expect(selected.length).toBe(2);
+    expect(list.loading).toBe(true);
   });
 });

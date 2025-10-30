@@ -1,4 +1,4 @@
-import { Router } from '../../src/router';
+import { Router } from 'snice/router';
 
 const { page, initialize, navigate } = Router({ 
   target: '#app', 

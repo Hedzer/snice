@@ -107,7 +107,7 @@ export class SniceMenu extends HTMLElement implements SniceMenuElement {
       this.open ? 'menu__panel--open' : ''
     ].filter(Boolean).join(' ');
 
-    return html`
+    return html/*html*/`
       <div class="menu">
         <div class="menu__trigger" part="trigger">
           <span class="menu__image-left" part="image-left">

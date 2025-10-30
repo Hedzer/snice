@@ -533,7 +533,7 @@ export class SniceDoc extends HTMLElement implements SniceDocElement {
 
   @render()
   render() {
-    return html`
+    return html/*html*/`
       <div class="doc-container">
         ${this.blocks.map((block, index) => this.renderBlock(block, index))}
         ${this.showBlockMenu ? this.renderBlockMenu() : ''}
@@ -546,7 +546,7 @@ export class SniceDoc extends HTMLElement implements SniceDocElement {
     const isDivider = block.type === 'divider';
 
     if (isDivider) {
-      return html`
+      return html/*html*/`
         <div class="doc-block block-divider" data-block-id="${block.id}">
           <div
             class="block-handle"
@@ -570,7 +570,7 @@ export class SniceDoc extends HTMLElement implements SniceDocElement {
     const isTodo = block.type === 'todo';
     const isNumberedList = block.type === 'numbered-list';
 
-    return html`
+    return html/*html*/`
       <div
         class="doc-block block-${block.type} ${block.checked ? 'checked' : ''} ${this
           .draggedBlock === block.id
@@ -622,7 +622,7 @@ export class SniceDoc extends HTMLElement implements SniceDocElement {
   private renderBlockMenu() {
     const items = this.getFilteredBlockMenuItems();
 
-    return html`
+    return html/*html*/`
       <div class="block-menu">
         ${items.map(
           (item, index) => html`

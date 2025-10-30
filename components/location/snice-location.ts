@@ -141,7 +141,7 @@ export class SniceLocation extends HTMLElement implements SniceLocationElement {
     const fullAddress = this.getFullAddress();
     const mapEmbedUrl = this.showMap ? this.getMapEmbedUrl() : '';
 
-    return html`
+    return html/*html*/`
       <div class="location ${this.clickable ? 'location--clickable' : ''}" @click=${() => this.handleClick()}>
         <if ${this.showIcon}>
           <div class="icon">

@@ -173,7 +173,7 @@ export class SniceGantt extends HTMLElement implements SniceGanttElement {
     const columns = this.getColumns();
     const columnWidth = this.getColumnWidth();
 
-    return html`
+    return html/*html*/`
       <div class="gantt">
         <div class="gantt__sidebar">
           <div class="gantt__header">
@@ -212,7 +212,7 @@ export class SniceGantt extends HTMLElement implements SniceGanttElement {
             ${this.tasks.map(task => {
               const { left, width } = this.getTaskBarPosition(task);
 
-              return html`
+              return html/*html*/`
                 <div class="gantt__row">
                   <div class="gantt__bars">
                     <div

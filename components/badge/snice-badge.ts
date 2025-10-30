@@ -43,7 +43,7 @@ export class SniceBadge extends HTMLElement implements SniceBadgeElement {
     const showBadge = this.shouldShowBadge();
     const badgeClasses = `badge${this.dot ? ' badge--dot' : ''}${this.pulse ? ' badge--pulse' : ''}`;
 
-    return html`
+    return html/*html*/`
       <div class="badge-wrapper">
         <slot></slot>
         <if ${showBadge}>

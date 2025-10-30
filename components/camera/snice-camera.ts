@@ -67,7 +67,7 @@ export class SniceCamera extends HTMLElement implements SniceCameraElement {
 
   @render()
   render() {
-    return html`
+    return html/*html*/`
       <div class="camera-container">
         <video
           class="${this.mirror && this.facingMode === 'user' ? 'mirror' : ''}"

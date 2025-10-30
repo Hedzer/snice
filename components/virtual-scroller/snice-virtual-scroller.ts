@@ -90,7 +90,7 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
     const totalHeight = this.items.length * this.itemHeight;
     const visibleItems = this.items.slice(this.visibleStart, this.visibleEnd);
 
-    return html`
+    return html/*html*/`
       <div class="scroller" @scroll=${this.handleScroll}>
         <div class="scroller__spacer" style="height: ${totalHeight}px;"></div>
         <div class="scroller__viewport" style="transform: translateY(${this.visibleStart * this.itemHeight}px);">
@@ -100,7 +100,7 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
             const top = 0;
 
             if (typeof itemContent === 'string') {
-              return html`
+              return html/*html*/`
                 <div
                   class="scroller__item"
                   style="top: ${idx * this.itemHeight}px; height: ${item.height || this.itemHeight}px;"
@@ -110,7 +110,7 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
               `;
             }
 
-            return html`
+            return html/*html*/`
               <div
                 class="scroller__item"
                 style="top: ${idx * this.itemHeight}px; height: ${item.height || this.itemHeight}px;"

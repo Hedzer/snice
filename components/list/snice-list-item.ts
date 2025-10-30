@@ -15,7 +15,7 @@ export class SniceListItem extends HTMLElement {
     if (this.selected) classes.push('list-item--selected');
     if (this.disabled) classes.push('list-item--disabled');
 
-    return html`
+    return html/*html*/`
       <div class="${classes.join(' ')}">
         <slot name="before"></slot>
         <div class="list-item__content">

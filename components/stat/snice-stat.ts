@@ -54,7 +54,7 @@ export class SniceStat extends HTMLElement implements SniceStatElement {
       this.trend ? `stat__change--${this.trend}` : ''
     ].filter(Boolean).join(' ');
 
-    return html`
+    return html/*html*/`
       <div class="${statClasses}" part="container">
         <if ${this.icon || this.iconImage}>
           <div class="stat__header" part="header">

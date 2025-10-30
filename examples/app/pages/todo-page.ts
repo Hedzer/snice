@@ -1,6 +1,6 @@
 import { page } from '../router';
-import { on, query } from '../../../src';
-import type { Placard } from '../../../src/index';
+import { on, query, render, styles, html, css } from 'snice';
+import type { Placard } from 'snice';
 import '../components/todo-item';
 import '../components/todo-list';
 import '../controllers/todo-controller';
@@ -18,24 +18,25 @@ const placard: Placard = {
 export class TodoPage extends HTMLElement {
   @query('#todo-input')
   todoInput!: HTMLInputElement;
-  
+
   @query('todo-list')
   todoList!: HTMLElement;
-  
-  
-  html() {
-    return /*html*/`
+
+
+  @render()
+  renderContent() {
+    return html/*html*/`
       <div class="todo-wrapper">
         <div class="todo-header">
           <h1>✨ Todo List</h1>
           <p class="todo-subtitle">Stay organized and productive</p>
         </div>
-        
+
         <div class="todo-container">
           <div class="todo-input-section">
-            <input 
-              type="text" 
-              id="todo-input" 
+            <input
+              type="text"
+              id="todo-input"
               placeholder="What needs to be done?"
               class="todo-input"
             >
@@ -44,15 +45,16 @@ export class TodoPage extends HTMLElement {
               Add Task
             </button>
           </div>
-          
+
           <todo-list controller="todo-controller"></todo-list>
         </div>
       </div>
     `;
   }
-  
-  css() {
-    return /*css*/`
+
+  @styles()
+  componentStyles() {
+    return css/*css*/`
       .todo-wrapper {
         min-height: 100vh;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

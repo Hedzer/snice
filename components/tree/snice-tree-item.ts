@@ -117,7 +117,7 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
 
     const chevronIcon = `<svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>`;
 
-    return html`
+    return html/*html*/`
       <div class="tree-item" style="--tree-level: ${this.level}">
         <div
           class="${contentClasses}"

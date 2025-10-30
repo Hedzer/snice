@@ -101,7 +101,7 @@ export class SniceCarousel extends HTMLElement implements SniceCarouselElement {
     const canGoPrev = this.loop || this.activeIndex > 0;
     const canGoNext = this.loop || this.activeIndex < this.slideCount - this.slidesPerView;
 
-    return html`
+    return html/*html*/`
       <div class="carousel" part="container">
         <div class="carousel__viewport" part="viewport">
           <div class="carousel__container" part="slides-container">
@@ -138,7 +138,7 @@ export class SniceCarousel extends HTMLElement implements SniceCarouselElement {
                 index === this.activeIndex ? 'carousel__indicator--active' : ''
               ].filter(Boolean).join(' ');
 
-              return html`
+              return html/*html*/`
                 <button
                   class="${indicatorClasses}"
                   part="indicator"

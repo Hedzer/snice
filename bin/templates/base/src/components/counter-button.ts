@@ -8,7 +8,7 @@ export class CounterButton extends HTMLElement implements ICounterButton {
 
   @render()
   renderContent() {
-    return html`
+    return html/*html*/`
       <div class="counter">
         <button class="btn minus" @click=${this.handleMinus}>-</button>
         <span class="count">${this.count}</span>
@@ -19,7 +19,7 @@ export class CounterButton extends HTMLElement implements ICounterButton {
 
   @styles()
   componentStyles() {
-    return css`
+    return css/*css*/`
       .counter {
         display: inline-flex;
         align-items: center;

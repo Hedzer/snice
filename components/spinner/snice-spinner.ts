@@ -26,7 +26,7 @@ export class SniceSpinner extends HTMLElement implements SniceSpinnerElement {
     const cy = size / 2;
     const viewBox = `0 0 ${size} ${size}`;
 
-    return html`
+    return html/*html*/`
       <div class="spinner" role="status" aria-label="${this.label || 'Loading'}">
         <svg
           class="spinner__circle"

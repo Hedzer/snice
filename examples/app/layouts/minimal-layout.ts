@@ -1,18 +1,20 @@
-import { layout } from '../../../src/index';
-import type { Layout, AppContext, Placard, RouteParams } from '../../../src/index';
+import { layout, render, styles, html, css } from 'snice';
+import type { Layout, AppContext, Placard, RouteParams } from 'snice';
 
 @layout('minimal-layout')
 export class MinimalLayout extends HTMLElement implements Layout {
-  html() {
-    return /*html*/`
+  @render()
+  renderContent() {
+    return html/*html*/`
       <main class="minimal-content">
         <slot name="page"></slot>
       </main>
     `;
   }
 
-  css() {
-    return /*css*/`
+  @styles()
+  componentStyles() {
+    return css/*css*/`
       :host {
         display: block;
         min-height: 100vh;

@@ -215,7 +215,7 @@ export class SniceTree extends HTMLElement implements SniceTreeElement {
       'tree'
     ].filter(Boolean).join(' ');
 
-    return html`
+    return html/*html*/`
       <div class="${treeClasses}" part="container" role="tree">
         <div class="tree__content" part="content">
           ${this.nodes.map(node => html`

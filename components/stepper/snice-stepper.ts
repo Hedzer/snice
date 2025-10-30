@@ -77,7 +77,7 @@ export class SniceStepper extends HTMLElement implements SniceStepperElement {
       `stepper--${this.orientation}`
     ].join(' ');
 
-    return html`
+    return html/*html*/`
       <div class="${stepperClasses}" part="container">
         ${this.steps.map((step: Step, index: number) => {
           const status = this.getStepStatus(index, step);
@@ -87,7 +87,7 @@ export class SniceStepper extends HTMLElement implements SniceStepperElement {
             this.clickable ? 'step--clickable' : ''
           ].filter(Boolean).join(' ');
 
-          return html`
+          return html/*html*/`
             <div
               class="${stepClasses}"
               part="step"

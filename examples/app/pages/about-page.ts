@@ -1,5 +1,6 @@
 import { page } from '../router';
-import type { Placard } from '../../../src/index';
+import { render, styles, html, css } from 'snice';
+import type { Placard } from 'snice';
 
 const placard: Placard = {
   name: 'about',
@@ -12,17 +13,18 @@ const placard: Placard = {
 
 @page({ tag: 'about-page', routes: ['/about'], placard, layout: 'minimal-layout' })
 export class AboutPage extends HTMLElement {
-  html() {
-    return /*html*/`
+  @render()
+  renderContent() {
+    return html/*html*/`
       <div class="container">
         <div class="about-content">
           <h1>About Snice</h1>
-          
+
           <section>
             <h2>What is Snice?</h2>
             <p>Snice is a lightweight TypeScript framework for building web applications using Web Components and decorators. It provides a simple, intuitive API inspired by Lit but with a focus on simplicity.</p>
           </section>
-          
+
           <section>
             <h2>Features</h2>
             <ul>
@@ -34,16 +36,16 @@ export class AboutPage extends HTMLElement {
               <li><strong>Built-in Router</strong> - Simple hash or pushstate routing</li>
             </ul>
           </section>
-          
+
           <section>
             <h2>Why Snice?</h2>
             <p>We built Snice to provide a simpler alternative to existing frameworks while maintaining the power of decorators and TypeScript. No virtual DOM, no complex build steps, just clean, readable code.</p>
           </section>
-          
+
           <section>
             <h2>Get Started</h2>
             <pre><code>npm install snice
-            
+
 @element('my-element')
 class MyElement extends HTMLElement {
   html() {
@@ -56,8 +58,9 @@ class MyElement extends HTMLElement {
     `;
   }
 
-  css() {
-    return /*css*/`
+  @styles()
+  componentStyles() {
+    return css/*css*/`
       .container {
         max-width: 800px;
         margin: 0 auto;

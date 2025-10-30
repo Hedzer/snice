@@ -31,7 +31,7 @@ export class SniceDivider extends HTMLElement implements SniceDividerElement {
   @render()
   render() {
     if (this.text && this.orientation === 'horizontal') {
-      return html`
+      return html/*html*/`
         <div class="divider-container" role="separator" aria-orientation="${this.orientation}">
           <div class="divider divider--before"></div>
           <span class="divider-text">${this.text}</span>
@@ -39,7 +39,7 @@ export class SniceDivider extends HTMLElement implements SniceDividerElement {
         </div>
       `;
     }
-    return html`<div class="divider" role="separator" aria-orientation="${this.orientation}"></div>`;
+    return html/*html*/`<div class="divider" role="separator" aria-orientation="${this.orientation}"></div>`;
   }
 
   @styles()

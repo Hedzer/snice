@@ -71,7 +71,7 @@ export class SniceProgress extends HTMLElement implements SniceProgressElement {
     const progressClass = `progress progress--linear${this.showLabel ? ' progress--with-label' : ''}`;
     const barStyle = this.indeterminate ? '' : `width: ${percentage}%`;
 
-    return html`
+    return html/*html*/`
       <div class="${progressClass}"
            role="progressbar"
            aria-valuenow="${this.value}"
@@ -103,7 +103,7 @@ export class SniceProgress extends HTMLElement implements SniceProgressElement {
     const centerX = size / 2;
     const centerY = size / 2;
 
-    return html`
+    return html/*html*/`
       <div class="progress progress--circular"
            role="progressbar"
            aria-valuenow="${this.value}"

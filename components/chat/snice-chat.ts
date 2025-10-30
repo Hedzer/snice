@@ -353,7 +353,7 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
 
   @render()
   render() {
-    return html`
+    return html/*html*/`
       <div class="chat-container">
         <div class="messages-area">
           ${this.messages.length === 0
@@ -367,7 +367,7 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
   }
 
   private renderEmptyState() {
-    return html`
+    return html/*html*/`
       <div class="empty-state">
         <svg class="empty-state-icon" viewBox="0 0 24 24" fill="currentColor">
           <path
@@ -385,7 +385,7 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
     const isCurrentUser = message.author === this.currentUser;
 
     if (isSystem) {
-      return html`
+      return html/*html*/`
         <div class="message system" data-message-id="${message.id}">
           <div class="message-content">
             <div class="message-text">${message.content}</div>
@@ -394,7 +394,7 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
       `;
     }
 
-    return html`
+    return html/*html*/`
       <div class="message" data-message-id="${message.id}">
         ${this.showAvatars
           ? html`
@@ -466,14 +466,14 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
     if (!attachment) return '';
 
     if (attachment.type === 'image') {
-      return html`
+      return html/*html*/`
         <div class="message-attachment">
           <img src="${attachment.url}" alt="${attachment.name}" />
         </div>
       `;
     }
 
-    return html`
+    return html/*html*/`
       <div class="message-attachment">
         <div class="attachment-file">
           <div class="attachment-icon">
@@ -501,7 +501,7 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
   ) {
     if (!reactions || reactions.length === 0) return '';
 
-    return html`
+    return html/*html*/`
       <div class="message-reactions">
         ${reactions.map(
           (reaction) => html`
@@ -522,7 +522,7 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
     const users = Array.from(this.typingIndicators.values());
     if (users.length === 0) return '';
 
-    return html`
+    return html/*html*/`
       <div class="typing-indicators">
         <div class="typing-indicator">
           <span>${users.map((u) => u.user).join(', ')} ${users.length === 1 ? 'is' : 'are'} typing</span>
@@ -537,7 +537,7 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
   }
 
   private renderInputArea() {
-    return html`
+    return html/*html*/`
       <div class="input-area">
         <div class="input-container">
           <textarea

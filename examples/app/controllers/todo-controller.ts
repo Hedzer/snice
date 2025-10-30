@@ -1,4 +1,4 @@
-import { controller, on } from '../../../src';
+import { controller, on } from 'snice';
 import type { Todo } from '../types/todo';
 import type { TodoListElement } from '../types/todo-list-element';
 

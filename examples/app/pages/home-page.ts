@@ -1,6 +1,7 @@
 import { page } from '../router';
 import { containerStyles } from '../styles/shared';
-import type { Placard, Transition } from '../../../src/index';
+import { render, styles, html, css } from 'snice';
+import type { Placard, Transition } from 'snice';
 
 const placard: Placard = {
   name: 'home',
@@ -21,8 +22,9 @@ const transition: Transition = {
 
 @page({ tag: 'home-page', routes: ['/'], placard, transition })
 export class HomePage extends HTMLElement {
-  html() {
-    return /*html*/`
+  @render()
+  renderContent() {
+    return html/*html*/`
       <div class="hero">
         <h1>Welcome to Snice</h1>
         <p class="subtitle">A simple, decorator-based framework for building web applications</p>
@@ -48,10 +50,11 @@ export class HomePage extends HTMLElement {
     `;
   }
 
-  css() {
+  @styles()
+  componentStyles() {
     return [
       containerStyles,
-      /*css*/`
+      css`
         :host {
           display: block;
           min-height: 100vh;

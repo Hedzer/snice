@@ -248,7 +248,7 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
 
   @render()
   render() {
-    return html`
+    return html/*html*/`
       <div class="draw-container">
         <canvas
           width="${this.width}"

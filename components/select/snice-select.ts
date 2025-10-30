@@ -93,7 +93,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     const triggerClasses = `select-trigger select-trigger--${this.size}`;
     const searchHidden = !this.searchable;
 
-    return html`
+    return html/*html*/`
       <div class="select-wrapper">
         <label class="${labelClasses}" part="label" ?hidden="${!this.label}">
           ${this.label}

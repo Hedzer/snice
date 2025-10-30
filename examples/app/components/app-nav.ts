@@ -1,11 +1,12 @@
-import { element } from '../../../src';
+import { element, render, styles, html, css } from 'snice';
 
 @element('app-nav')
 export class AppNav extends HTMLElement {
-  html() {
+  @render()
+  renderContent() {
     const currentHash = window.location.hash || '#/';
-    
-    return /*html*/`
+
+    return html/*html*/`
       <nav class="navbar">
         <div class="nav-container">
           <h1 class="nav-brand">Snice</h1>
@@ -18,9 +19,10 @@ export class AppNav extends HTMLElement {
       </nav>
     `;
   }
-  
-  css() {
-    return /*css*/`
+
+  @styles()
+  componentStyles() {
+    return css/*css*/`
       .navbar {
         background: white;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);

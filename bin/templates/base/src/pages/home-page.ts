@@ -1,4 +1,5 @@
 import { page } from '../router';
+import { render, styles, html, css } from 'snice';
 import type { Placard } from 'snice';
 
 const placard: Placard = {
@@ -11,18 +12,19 @@ const placard: Placard = {
 
 @page({ tag: 'home-page', routes: ['/'], placard })
 export class HomePage extends HTMLElement {
-  html() {
-    return /*html*/`
+  @render()
+  renderContent() {
+    return html/*html*/`
       <div class="container">
         <h1>Welcome to {{projectName}}</h1>
         <p>Built with Snice</p>
-        
+
         <div class="demo-section">
           <h2>Interactive Counter Demo</h2>
           <p>This counter persists its state using a controller:</p>
           <counter-button controller="counter"></counter-button>
         </div>
-        
+
         <div class="nav">
           <a href="#/about" class="btn">About</a>
         </div>
@@ -30,8 +32,9 @@ export class HomePage extends HTMLElement {
     `;
   }
 
-  css() {
-    return /*css*/`
+  @styles()
+  componentStyles() {
+    return css/*css*/`
       .container {
         padding: 3rem;
         text-align: center;

@@ -4,7 +4,7 @@ import { element, render, styles, html, css } from 'snice';
 export class SniceMenuDivider extends HTMLElement {
   @render()
   render() {
-    return html`
+    return html/*html*/`
       <div class="menu-divider" part="divider" role="separator"></div>
     `;
   }

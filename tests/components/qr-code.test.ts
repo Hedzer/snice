@@ -22,7 +22,7 @@ describe('snice-qr-code', () => {
     expect(qrCode.value).toBe('');
     expect(qrCode.size).toBe(200);
     expect(qrCode.errorCorrectionLevel).toBe('M');
-    expect(qrCode.renderMode).toBe('svg');
+    expect(qrCode.renderMode).toBe('canvas');
     expect(qrCode.margin).toBe(4);
     expect(qrCode.fgColor).toBe('#000000');
     expect(qrCode.bgColor).toBe('#ffffff');

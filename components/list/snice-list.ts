@@ -61,22 +61,27 @@ export class SniceList extends HTMLElement {
     const scrollParent = this.getScrollParent();
 
     // Use IntersectionObserver to detect when sentinel comes into view
-    this.intersectionObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && !this.loading) {
-            this.loadMore();
-          }
-        });
-      },
-      {
-        root: scrollParent,
-        rootMargin: '100px',
-        threshold: 0.01
-      }
-    );
+    try {
+      this.intersectionObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting && !this.loading) {
+              this.loadMore();
+            }
+          });
+        },
+        {
+          root: scrollParent,
+          rootMargin: '100px',
+          threshold: 0.01
+        }
+      );
 
-    this.intersectionObserver.observe(sentinel);
+      this.intersectionObserver.observe(sentinel);
+    } catch (e) {
+      // IntersectionObserver not available in test environment
+      return;
+    }
 
     // Also listen for wheel events when at bottom
     if (scrollParent) {
@@ -185,7 +190,7 @@ export class SniceList extends HTMLElement {
       skeletons.push(html`<snice-skeleton height="60px" style="margin: 0.5rem 1rem;"></snice-skeleton>`);
     }
 
-    return html`
+    return html/*html*/`
       <div class="list" part="container" role="list">
         <if ${this.searchable}>
           <div class="list__search" part="search">

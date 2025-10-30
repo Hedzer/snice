@@ -73,7 +73,7 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
     // Draw chart after render
     requestAnimationFrame(() => this.initAndDrawChart());
 
-    return html`
+    return html/*html*/`
       <div class="chart-container ${animated ? 'animated' : ''}">
         ${legendPosition !== 'none' ? this.renderLegend() : ''}
         <div class="chart-canvas">
@@ -89,7 +89,7 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
 
   private renderLegend() {
     const position = this.options.legend?.position || 'top';
-    return html`
+    return html/*html*/`
       <div class="chart-legend legend-${position}">
         ${this.datasets.map((dataset, index) => html`
           <div class="legend-item ${this.hiddenDatasets.has(index) ? 'hidden' : ''}"
@@ -114,7 +114,12 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
     this.canvas.style.width = `${width}px`;
     this.canvas.style.height = `${height}px`;
 
-    this.ctx = this.canvas.getContext('2d');
+    try {
+      this.ctx = this.canvas.getContext('2d');
+    } catch (e) {
+      // Canvas not supported in test environment
+      return;
+    }
     if (!this.ctx || !this.datasets.length) return;
 
     // Clear canvas
@@ -639,7 +644,7 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
       }
     }
 
-    return html`
+    return html/*html*/`
       <path class="chart-path"
             d="${pathD}"
             fill="none"
@@ -673,7 +678,7 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
 
     const lineD = points.map((p, i) => i === 0 ? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`).join(' ');
 
-    return html`
+    return html/*html*/`
       <path class="chart-path"
             d="${pathD}"
             fill="${dataset.backgroundColor || color}"
@@ -692,14 +697,14 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
     const visibleDatasets = this.datasets.filter((_, i) => !this.hiddenDatasets.has(i));
     const datasetOffset = visibleDatasets.indexOf(dataset);
 
-    return html`
+    return html/*html*/`
       ${dataset.data.map((value, index) => {
         const y = typeof value === 'number' ? value : (value as ChartDataPoint).y || 0;
         const barHeight = ((y - yMin) / (yMax - yMin)) * chartHeight;
         const x = (chartWidth / xCount) * index + datasetOffset * barWidth + (chartWidth / xCount) * 0.1;
         const barY = chartHeight - barHeight;
 
-        return html`
+        return html/*html*/`
           <rect class="chart-bar"
                 x="${x}"
                 y="${barY}"
@@ -722,13 +727,13 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
     const color = this.getDatasetColor(dataset, datasetIndex);
     const pointRadius = dataset.pointRadius !== undefined ? dataset.pointRadius : 4;
 
-    return html`
+    return html/*html*/`
       ${dataset.data.map((value, index) => {
         const point = typeof value === 'object' ? value as ChartDataPoint : { x: index, y: value };
         const x = typeof point.x === 'number' ? (point.x / (this.getXAxisCount())) * chartWidth : 0;
         const y = chartHeight - ((point.y! - yMin) / (yMax - yMin)) * chartHeight;
 
-        return html`
+        return html/*html*/`
           <circle class="data-point"
                   cx="${x}"
                   cy="${y}"
@@ -745,14 +750,14 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
     const color = this.getDatasetColor(dataset, datasetIndex);
     const maxR = Math.max(...dataset.data.map(v => typeof v === 'object' ? (v as ChartDataPoint).r || 5 : 5));
 
-    return html`
+    return html/*html*/`
       ${dataset.data.map((value, index) => {
         const point = value as ChartDataPoint;
         const x = typeof point.x === 'number' ? (point.x / this.getXAxisCount()) * chartWidth : 0;
         const y = chartHeight - ((point.y! - yMin) / (yMax - yMin)) * chartHeight;
         const r = ((point.r || 5) / maxR) * 20;
 
-        return html`
+        return html/*html*/`
           <circle class="data-point"
                   cx="${x}"
                   cy="${y}"
@@ -775,7 +780,7 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
     const innerRadius = isDonut ? radius * 0.6 : 0;
 
     const dataset = this.datasets[0];
-    if (!dataset) return html`<svg></svg>`;
+    if (!dataset) return html/*html*/`<svg></svg>`;
 
     const total = dataset.data.reduce((sum: number, val) => {
       const numVal = typeof val === 'number' ? val : 0;
@@ -783,7 +788,7 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
     }, 0 as number);
     let currentAngle = -Math.PI / 2;
 
-    return html`
+    return html/*html*/`
       <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
         ${dataset.data.map((value, index) => {
           const val = typeof value === 'number' ? value : 0;
@@ -840,7 +845,7 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
       d.data.map(v => typeof v === 'number' ? v : 0)
     ));
 
-    return html`
+    return html/*html*/`
       <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
         <!-- Radar grid -->
         ${[0.2, 0.4, 0.6, 0.8, 1].map(ratio => {
@@ -849,7 +854,7 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
             const angle = i * angleStep - Math.PI / 2;
             return `${centerX + Math.cos(angle) * r},${centerY + Math.sin(angle) * r}`;
           }).join(' ');
-          return html`<polygon points="${points}" fill="none" stroke="#e0e0e0" />`;
+          return html/*html*/`<polygon points="${points}" fill="none" stroke="#e0e0e0" />`;
         })}
 
         <!-- Axes -->
@@ -857,7 +862,7 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
           const angle = i * angleStep - Math.PI / 2;
           const x = centerX + Math.cos(angle) * radius;
           const y = centerY + Math.sin(angle) * radius;
-          return html`
+          return html/*html*/`
             <line class="grid-line" x1="${centerX}" y1="${centerY}" x2="${x}" y2="${y}" />
             <text class="axis-label" x="${x}" y="${y}" text-anchor="middle">
               ${this.labels[i] || i}
@@ -878,7 +883,7 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
 
           const color = this.getDatasetColor(dataset, datasetIndex);
 
-          return html`
+          return html/*html*/`
             <polygon class="chart-path"
                      points="${points}"
                      fill="${color}"

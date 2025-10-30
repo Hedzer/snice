@@ -81,7 +81,7 @@ export class SniceImage extends HTMLElement implements SniceImageElement {
     const inlineStyles = this.getInlineStyles();
 
     if (!this.src) {
-      return html`
+      return html/*html*/`
         <div class="${containerClasses}" part="container">
           <div class="${imageClasses} image--placeholder" part="placeholder" style="${inlineStyles}"></div>
         </div>
@@ -90,7 +90,7 @@ export class SniceImage extends HTMLElement implements SniceImageElement {
 
     const hasPlaceholder = this.placeholder && !this.imageLoaded;
 
-    return html`
+    return html/*html*/`
       <div class="${containerClasses}" part="container">
         <if ${hasPlaceholder}>
           <img

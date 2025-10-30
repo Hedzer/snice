@@ -1,5 +1,5 @@
 // Import all transitions from core
-import { 
+import {
   fadeTransition,
   slideTransition,
   slideRightTransition,

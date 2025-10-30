@@ -190,7 +190,7 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
     const weekdays = this.getWeekdays();
     const currentMonth = this.displayDate.getMonth();
 
-    return html`
+    return html/*html*/`
       <div class="calendar__grid">
         ${weekdays.map(day => html`
           <div class="calendar__weekday">${day}</div>
@@ -211,7 +211,7 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
             isDisabled && 'calendar__day--disabled'
           ].filter(Boolean).join(' ');
 
-          return html`
+          return html/*html*/`
             <div
               class="${classes}"
               @click=${() => this.handleDayClick(date)}>
@@ -244,7 +244,7 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
   template() {
     const monthName = this.displayDate.toLocaleDateString(this.locale, { month: 'long', year: 'numeric' });
 
-    return html`
+    return html/*html*/`
       <div class="calendar calendar--${this.view}">
         <div class="calendar__header">
           <div class="calendar__title">${monthName}</div>

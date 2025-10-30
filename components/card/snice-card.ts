@@ -36,7 +36,7 @@ export class SniceCard extends HTMLElement implements SniceCardElement {
     const role = this.clickable ? 'button' : 'article';
     const tabindex = this.clickable && !this.disabled ? '0' : '-1';
 
-    return html`
+    return html/*html*/`
       <div class="card"
            role="${role}"
            tabindex="${tabindex}"

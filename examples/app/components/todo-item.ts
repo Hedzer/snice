@@ -1,4 +1,4 @@
-import { element, property, on, dispatch, query } from '../../../src';
+import { element, property, on, dispatch, query, render, styles, html, css } from 'snice';
 import type { TodoItemElement } from '../types/todo-item-element';
 
 @element('todo-item')
@@ -8,13 +8,13 @@ export class TodoItem extends HTMLElement implements TodoItemElement {
 
   @property({ type: Boolean, attribute: 'completed' })
   completed = false;
-  
+
   @query('.todo-checkbox')
   checkbox?: HTMLInputElement;
-  
+
   @query('.todo-item')
   todoItem?: HTMLElement;
-  
+
   setCompleted(completed: boolean) {
     this.completed = completed;
     if (this.checkbox) {
@@ -24,15 +24,16 @@ export class TodoItem extends HTMLElement implements TodoItemElement {
       this.todoItem.classList.toggle('completed', completed);
     }
   }
-  
-  html() {
-    return /*html*/`
+
+  @render()
+  renderContent() {
+    return html/*html*/`
       <div class="todo-item ${this.completed ? 'completed' : ''}">
         <label class="checkbox-container">
-          <input 
-            type="checkbox" 
+          <input
+            type="checkbox"
             class="todo-checkbox"
-            ${this.completed ? 'checked' : ''}
+            .checked=${this.completed}
           >
           <span class="checkmark"></span>
         </label>
@@ -45,9 +46,10 @@ export class TodoItem extends HTMLElement implements TodoItemElement {
       </div>
     `;
   }
-  
-  css() {
-    return /*css*/`
+
+  @styles()
+  componentStyles() {
+    return css/*css*/`
       .todo-item {
         display: flex;
         align-items: center;
@@ -57,20 +59,20 @@ export class TodoItem extends HTMLElement implements TodoItemElement {
         transition: background 0.3s ease;
         position: relative;
       }
-      
+
       .todo-item:hover {
         background: #f8f9fa;
       }
-      
+
       .todo-item.completed {
         opacity: 0.6;
       }
-      
+
       .todo-item.completed .todo-text {
         text-decoration: line-through;
         color: #999;
       }
-      
+
       /* Custom checkbox */
       .checkbox-container {
         display: inline-block;
@@ -80,7 +82,7 @@ export class TodoItem extends HTMLElement implements TodoItemElement {
         cursor: pointer;
         user-select: none;
       }
-      
+
       .todo-checkbox {
         position: absolute;
         opacity: 0;
@@ -88,7 +90,7 @@ export class TodoItem extends HTMLElement implements TodoItemElement {
         height: 0;
         width: 0;
       }
-      
+
       .checkmark {
         position: absolute;
         top: -10px;
@@ -99,25 +101,25 @@ export class TodoItem extends HTMLElement implements TodoItemElement {
         border-radius: 6px;
         transition: all 0.3s ease;
       }
-      
+
       .checkbox-container:hover .checkmark {
         background-color: #e0e0e0;
       }
-      
+
       .todo-checkbox:checked ~ .checkmark {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       }
-      
+
       .checkmark:after {
         content: "";
         position: absolute;
         display: none;
       }
-      
+
       .todo-checkbox:checked ~ .checkmark:after {
         display: block;
       }
-      
+
       .checkmark:after {
         left: 8px;
         top: 4px;
@@ -127,14 +129,14 @@ export class TodoItem extends HTMLElement implements TodoItemElement {
         border-width: 0 2px 2px 0;
         transform: rotate(45deg);
       }
-      
+
       .todo-text {
         flex: 1;
         font-size: 1.05rem;
         color: #333;
         transition: all 0.3s ease;
       }
-      
+
       .todo-delete {
         background: none;
         border: none;
@@ -148,11 +150,11 @@ export class TodoItem extends HTMLElement implements TodoItemElement {
         justify-content: center;
         border-radius: 5px;
       }
-      
+
       .todo-item:hover .todo-delete {
         opacity: 1;
       }
-      
+
       .todo-delete:hover {
         background: #fee;
         color: #e53e3e;
@@ -160,7 +162,7 @@ export class TodoItem extends HTMLElement implements TodoItemElement {
       }
     `;
   }
-  
+
   @on('change', '.todo-checkbox')
   @dispatch('todo-toggle')
   handleToggle(event: Event) {
@@ -171,7 +173,7 @@ export class TodoItem extends HTMLElement implements TodoItemElement {
     }
     return { id: this.todoId, completed: checkbox.checked };
   }
-  
+
   @on('click', '.todo-delete')
   @dispatch('todo-delete')
   handleDelete() {

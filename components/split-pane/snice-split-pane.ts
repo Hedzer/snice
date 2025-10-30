@@ -128,7 +128,7 @@ export class SniceResize extends HTMLElement implements SniceResizeElement {
       ? `width: ${this.primarySize}%`
       : `height: ${this.primarySize}%`;
 
-    return html`
+    return html/*html*/`
       <div class="primary" style="${primaryStyle}">
         <slot name="primary"></slot>
       </div>

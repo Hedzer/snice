@@ -26,7 +26,7 @@ export class SniceStepperPanel extends HTMLElement implements SniceStepperPanelE
 
   @render()
   render() {
-    return html`
+    return html/*html*/`
       <div class="panel" part="panel">
         <slot></slot>
       </div>

@@ -54,7 +54,7 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
 
   @render()
   render() {
-    return html`
+    return html/*html*/`
       <div class="drawer-backdrop" part="backdrop"></div>
 
       <div class="drawer" role="dialog" aria-modal="true" tabindex="-1" part="base">

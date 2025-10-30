@@ -79,7 +79,7 @@ export class SniceKpi extends HTMLElement implements SniceKpiElement {
     const hasTrend = this.trendValue !== undefined || this.sentiment !== undefined;
     const hasSparkline = this.showSparkline && this.trendData !== undefined && this.trendData.length > 0;
 
-    return html`
+    return html/*html*/`
       <div class="${kpiClasses}" part="container">
         <div class="kpi__header" part="header">
           <div class="kpi__main" part="main">

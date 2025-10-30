@@ -1,4 +1,5 @@
 import { page } from '../router';
+import { render, styles, html, css } from 'snice';
 import type { Placard } from 'snice';
 
 const placard: Placard = {
@@ -11,13 +12,14 @@ const placard: Placard = {
 
 @page({ tag: 'about-page', routes: ['/about'], placard })
 export class AboutPage extends HTMLElement {
-  html() {
-    return /*html*/`
+  @render()
+  renderContent() {
+    return html/*html*/`
       <div class="container">
         <h1>About</h1>
         <p>This app was built with Snice, a modern web components framework.</p>
         <p>Version 1.0.0</p>
-        
+
         <div class="nav">
           <a href="#/" class="btn">Back to Home</a>
         </div>
@@ -25,8 +27,9 @@ export class AboutPage extends HTMLElement {
     `;
   }
 
-  css() {
-    return /*css*/`
+  @styles()
+  componentStyles() {
+    return css/*css*/`
       .container {
         padding: 3rem;
         max-width: 800px;

@@ -28,7 +28,7 @@ export class SniceSkeleton extends HTMLElement implements SniceSkeletonElement {
     const skeletonClass = `skeleton skeleton--${this.variant} skeleton--${this.animation}`;
     const inlineStyles = this.getInlineStyles();
 
-    return html`
+    return html/*html*/`
       <div class="skeleton-container" style="gap: ${this.spacing}">
         ${items.map(() => html`
           <div class="${skeletonClass}"

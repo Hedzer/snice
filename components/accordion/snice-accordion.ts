@@ -14,7 +14,7 @@ export class SniceAccordion extends HTMLElement implements SniceAccordionElement
 
   @render()
   render() {
-    return html`
+    return html/*html*/`
       <div class="accordion" @keydown="${(e: KeyboardEvent) => this.handleKeydown(e)}">
         <slot @slotchange="${(e: Event) => this.handleSlotChange(e)}"></slot>
       </div>

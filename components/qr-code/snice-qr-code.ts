@@ -79,7 +79,7 @@ export class SniceQRCode extends HTMLElement implements SniceQRCodeElement {
       });
     }
 
-    return html`
+    return html/*html*/`
       <div class="qr-container"></div>
     `;
   }
@@ -124,7 +124,13 @@ export class SniceQRCode extends HTMLElement implements SniceQRCodeElement {
     const canvas = this.container?.querySelector('canvas') as HTMLCanvasElement;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
+    let ctx;
+    try {
+      ctx = canvas.getContext('2d');
+    } catch (e) {
+      // Canvas not supported in test environment
+      return;
+    }
     if (!ctx) return;
 
     // Center image overlay

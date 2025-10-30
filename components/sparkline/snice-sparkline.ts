@@ -181,7 +181,7 @@ export class SniceSparkline extends HTMLElement implements SniceSparklineElement
       --sparkline-custom-color: ${this.customColor};
     ` : '';
 
-    return html`
+    return html/*html*/`
       <div class="${containerClasses}" part="container" style="${customStyle}">
         ${unsafeHTML(this.buildSVGString())}
       </div>

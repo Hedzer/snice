@@ -37,7 +37,7 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
     const lines = this.code.split('\n');
     const showHeader = this.filename || this.copyable;
 
-    return html`
+    return html/*html*/`
       <div class="code-block" part="container">
         <if ${showHeader}>
           <div class="code-block__header" part="header">
@@ -67,7 +67,7 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
               isHighlighted ? 'code-block__line--highlight' : ''
             ].filter(Boolean).join(' ');
 
-            return html`<span class="${lineClasses}"><if ${this.showLineNumbers}><span class="code-block__line-number">${lineNumber}</span></if>${line}
+            return html/*html*/`<span class="${lineClasses}"><if ${this.showLineNumbers}><span class="code-block__line-number">${lineNumber}</span></if>${line}
 </span>`;
           })}</code></pre>
         </div>

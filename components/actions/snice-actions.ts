@@ -102,7 +102,7 @@ export class SniceActions extends HTMLElement implements SniceActionsElement {
     `;
 
     if (action.href) {
-      return html`
+      return html/*html*/`
         <a
           class="${classes}"
           href="${action.href}"
@@ -117,7 +117,7 @@ export class SniceActions extends HTMLElement implements SniceActionsElement {
       `;
     }
 
-    return html`
+    return html/*html*/`
       <button
         class="${classes}"
         ?disabled=${action.disabled}
@@ -131,7 +131,7 @@ export class SniceActions extends HTMLElement implements SniceActionsElement {
   @render()
   template() {
     if (!this.actions || this.actions.length === 0) {
-      return html``;
+      return html/*html*/``;
     }
 
     const visibleActions = this.maxVisible > 0
@@ -142,7 +142,7 @@ export class SniceActions extends HTMLElement implements SniceActionsElement {
       ? this.actions.slice(this.maxVisible)
       : [];
 
-    return html`
+    return html/*html*/`
       <div class="actions">
         ${visibleActions.map(action => this.renderActionButton(action))}
 

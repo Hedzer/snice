@@ -1,4 +1,4 @@
-import { element, on, dispatch, query, queryAll } from '../../../src';
+import { element, on, dispatch, query, queryAll, render, styles, html, css } from 'snice';
 import { TodoItem } from './todo-item';
 import type { Todo } from '../types/todo';
 import type { TodoListElement } from '../types/todo-list-element';
@@ -8,25 +8,26 @@ import type { TodoItemElement } from '../types/todo-item-element';
 export class TodoList extends HTMLElement implements TodoListElement {
   @query('.todo-items')
   todoItemsContainer?: HTMLElement;
-  
+
   @query('.count-number')
   countNumber?: HTMLElement;
-  
+
   @query('.todo-count')
   todoCount?: HTMLElement;
-  
+
   @query('.clear-button')
   clearButton?: HTMLButtonElement;
-  
+
   @queryAll('todo-item[completed="true"]', { light: true })
   completedItems?: NodeListOf<TodoItemElement>;
-  
-  html() {
-    return /*html*/`
+
+  @render()
+  renderContent() {
+    return html/*html*/`
       <div class="todo-items">
         <slot></slot>
       </div>
-      
+
       <div class="todo-footer">
         <span class="todo-count">
           <span class="count-number">0</span> items left
@@ -35,9 +36,10 @@ export class TodoList extends HTMLElement implements TodoListElement {
       </div>
     `;
   }
-  
-  css() {
-    return /*css*/`
+
+  @styles()
+  componentStyles() {
+    return css/*css*/`
       .todo-items {
         min-height: 300px;
         max-height: 500px;

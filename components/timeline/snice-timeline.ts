@@ -32,7 +32,7 @@ export class SniceTimeline extends HTMLElement implements SniceTimelineElement {
 
     const itemsToRender = this.reverse ? [...this.items].reverse() : this.items;
 
-    return html`
+    return html/*html*/`
       <div class="${timelineClasses}" part="container">
         ${itemsToRender.map((item, index) => this.renderItem(item, index))}
       </div>
@@ -48,7 +48,7 @@ export class SniceTimeline extends HTMLElement implements SniceTimelineElement {
       `timeline-item--${variant}`
     ].join(' ');
 
-    return html`
+    return html/*html*/`
       <div class="${itemClasses}" part="item">
         <div class="timeline-item__marker" part="marker">
           <span class="timeline-item__icon" part="icon">${icon}</span>

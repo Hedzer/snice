@@ -35,7 +35,7 @@ export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsEle
     const hasCollapsed = this.maxItems > 0 && allItems.length > this.maxItems && this.collapsed;
     const breadcrumbClass = `breadcrumb${hasCollapsed ? ' breadcrumb--collapsed' : ''}`;
 
-    return html`
+    return html/*html*/`
       <slot style="display: none" @slotchange="${() => this.handleSlotChange()}"></slot>
       <nav aria-label="Breadcrumb" @click="${(e: Event) => this.handleClick(e)}">
         <ol class="${breadcrumbClass}">
@@ -45,7 +45,7 @@ export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsEle
             const isHidden = hasCollapsed && index > 0 && index < visibleItems.length - 2;
             const itemClass = `breadcrumb-item${isActive ? ' breadcrumb-item--active' : ''}${isHidden ? ' breadcrumb-item--hidden' : ''}`;
 
-            return html`
+            return html/*html*/`
               <li class="${itemClass}">
                 <if ${item.href && !isActive}>
                   <a href="${item.href}"
@@ -171,7 +171,7 @@ export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsEle
   }
 
   private renderIcon(item: BreadcrumbItem) {
-    return html`
+    return html/*html*/`
       <if ${item.iconImage}>
         <img class="breadcrumb-icon-image" src="${item.iconImage}" alt="">
       </if>

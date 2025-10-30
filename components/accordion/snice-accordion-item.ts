@@ -23,7 +23,7 @@ export class SniceAccordionItem extends HTMLElement implements SniceAccordionIte
 
   @render()
   render() {
-    return html`
+    return html/*html*/`
       <button
         class="accordion-item__header"
         aria-expanded="${this.open}"

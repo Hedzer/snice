@@ -160,12 +160,12 @@ export class SniceKanban extends HTMLElement implements SniceKanbanElement {
 
   @render()
   template() {
-    return html`
+    return html/*html*/`
       <div class="kanban">
         ${this.columns.map(column => {
           const isOverLimit = column.limit && column.cards.length > column.limit;
 
-          return html`
+          return html/*html*/`
             <div
               class="column ${column.collapsed ? 'column--collapsed' : ''}"
               @dragover=${(e: DragEvent) => this.handleColumnDragOver(e)}

@@ -1,9 +1,11 @@
 import { page } from '../router';
+import { render, styles, html, css } from 'snice';
 
 @page({ tag: 'not-found-page', routes: ['/404'] })
 export class NotFoundPage extends HTMLElement {
-  html() {
-    return /*html*/`
+  @render()
+  renderContent() {
+    return html/*html*/`
       <app-nav></app-nav>
       <div class="container">
         <div class="error-content">
@@ -16,8 +18,9 @@ export class NotFoundPage extends HTMLElement {
     `;
   }
 
-  css() {
-    return /*css*/`
+  @styles()
+  componentStyles() {
+    return css/*css*/`
       .container {
         max-width: 800px;
         margin: 0 auto;

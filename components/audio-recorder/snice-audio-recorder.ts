@@ -59,7 +59,7 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
 
   @render()
   render() {
-    return html`
+    return html/*html*/`
       <div class="recorder-container">
         <div class="recorder-status">
           <div class="recorder-state ${this.state}">
@@ -97,15 +97,15 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
   private renderVisualizer() {
     const bars = Array.from({ length: 32 }, (_, i) => {
       const height = this.getVisualizerHeight(i);
-      return html`<div class="visualizer-bar" style="height: ${height}px;"></div>`;
+      return html/*html*/`<div class="visualizer-bar" style="height: ${height}px;"></div>`;
     });
 
-    return html`<div class="recorder-visualizer">${bars}</div>`;
+    return html/*html*/`<div class="recorder-visualizer">${bars}</div>`;
   }
 
   private renderControls() {
     if (this.state === 'inactive') {
-      return html`
+      return html/*html*/`
         <div class="recorder-controls">
           <button class="recorder-btn record" @click=${() => this.start()} title="Start Recording">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
@@ -117,7 +117,7 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
     }
 
     if (this.state === 'recording') {
-      return html`
+      return html/*html*/`
         <div class="recorder-controls">
           <button class="recorder-btn cancel" @click=${() => this.cancel()} title="Cancel">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -141,7 +141,7 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
     }
 
     if (this.state === 'paused') {
-      return html`
+      return html/*html*/`
         <div class="recorder-controls">
           <button class="recorder-btn cancel" @click=${() => this.cancel()} title="Cancel">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
