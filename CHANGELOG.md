@@ -1,3 +1,10 @@
+# [3.4.0](https://gitlab.com/Hedzer/snice/compare/v3.3.1...v3.4.0) (2025-10-30)
+
+
+### Features
+
+* added social templates & claude.md ([b742211](https://gitlab.com/Hedzer/snice/commit/b742211e43946c801a0a0273d2bb3786c6be1fc5))
+
 ## [3.3.1](https://gitlab.com/Hedzer/snice/compare/v3.3.0...v3.3.1) (2025-10-30)
 
 
