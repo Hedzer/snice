@@ -78,10 +78,13 @@
   },
   "scripts": {
     "dev": "vite",
+    "sync-versions": "node scripts/sync-template-versions.js",
+    "prebuild": "npm run sync-versions",
     "build": "rm -rf dist && rollup -c && npm run build:types",
     "build:types": "tsc --project components/tsconfig.json --emitDeclarationOnly",
     "build:test": "rollup -c rollup.config.test.js",
     "preview": "vite preview",
+    "pretest": "npm run sync-versions",
     "test": "npm run build:test && vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
