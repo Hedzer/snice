@@ -264,17 +264,21 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
 
     if (!this.canvas) return;
 
+    // Get the actual display size from the container
+    const rect = this.canvas.getBoundingClientRect();
+    const displayWidth = rect.width;
+    const displayHeight = rect.height;
+
     // Handle high DPI displays
     const dpr = window.devicePixelRatio || 1;
-    const rect = this.canvas.getBoundingClientRect();
 
     // Set canvas buffer size (accounting for DPI)
-    this.canvas.width = this.width * dpr;
-    this.canvas.height = this.height * dpr;
+    this.canvas.width = displayWidth * dpr;
+    this.canvas.height = displayHeight * dpr;
 
-    // Set display size
-    this.canvas.style.width = `${this.width}px`;
-    this.canvas.style.height = `${this.height}px`;
+    // Store logical dimensions for coordinate mapping
+    this.width = displayWidth;
+    this.height = displayHeight;
 
     this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
     if (!this.ctx) return;
