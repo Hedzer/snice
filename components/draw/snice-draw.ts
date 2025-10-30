@@ -201,6 +201,12 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
   @property({ type: Number, attribute: 'polygon-curve-points' })
   polygonCurvePoints: number = 10;
 
+  @property({ type: Boolean, attribute: 'auto-circle' })
+  autoCircle: boolean = false;
+
+  @property({ type: Number, attribute: 'circle-points' })
+  circlePoints: number = 50;
+
   @property({ type: Boolean })
   disabled: boolean = false;
 
@@ -338,8 +344,8 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
     this.isDrawing = false;
 
     if (this.currentStroke.length > 0) {
-      // Process polygon if auto-polygon is enabled
-      const points = this.autoPolygon
+      // Process polygon/circle if auto-polygon or auto-circle is enabled
+      const points = (this.autoPolygon || this.autoCircle)
         ? this.processPolygon([...this.currentStroke])
         : [...this.currentStroke];
 
@@ -355,7 +361,7 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
       this.strokes.push(stroke);
       this.currentStroke = [];
 
-      // Redraw immediately to show the processed polygon
+      // Redraw immediately to show the processed polygon/circle
       this.redraw();
 
       this.emitDrawEnd(stroke);
@@ -602,6 +608,11 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
 
   // Polygon processing methods
   private processPolygon(points: Point[]): Point[] {
+    // Auto-circle mode takes precedence
+    if (this.autoCircle && points.length >= 4) {
+      return this.createWobblyCircle(points);
+    }
+
     if (!this.autoPolygon || points.length < 4) return points;
 
     // Simplify to line segments (sample every Nth point for performance)
@@ -692,10 +703,11 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
   private trimAtIntersection(points: Point[], intersection: { i: number; j: number; point: Point }): Point[] {
     // Find the actual indices in the full point array based on simplified indices
     const step = 5;
-    const actualI = Math.min(intersection.i * step, points.length - 1);
+    const actualJ = Math.min(intersection.j * step, points.length - 1);
 
-    // Keep points up to the intersection, add the intersection point, then close
-    return [...points.slice(0, actualI + 1), intersection.point];
+    // Keep points from the intersection forward to close the shape properly
+    // This preserves the drawn shape and just adds the intersection point to close it
+    return [...points.slice(0, actualJ + 1), intersection.point];
   }
 
   private createClosingCurve(start: Point, end: Point, numPoints: number): Point[] {
@@ -742,6 +754,128 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
     curvePoints.push(end);
 
     return curvePoints;
+  }
+
+  private createWobblyCircle(points: Point[]): Point[] {
+    if (points.length < 4) return points;
+
+    // Group points into time-based clusters and take median of each cluster
+    // This preserves the shape better than simple downsampling
+    const clusterSize = Math.max(3, Math.floor(points.length / 80)); // Target ~80 clusters
+    let sampled: Point[] = [];
+
+    for (let i = 0; i < points.length; i += clusterSize) {
+      const cluster = points.slice(i, Math.min(i + clusterSize, points.length));
+
+      // Find median point in cluster (centroid)
+      let sumX = 0, sumY = 0;
+      for (const p of cluster) {
+        sumX += p.x;
+        sumY += p.y;
+      }
+      sampled.push({
+        x: sumX / cluster.length,
+        y: sumY / cluster.length,
+        pressure: 0
+      });
+    }
+
+    // Remove points that create sharp angles
+    let filtered = this.removeSharpAngles(sampled, 20); // Remove angles < 20 degrees
+
+    // Close the shape first by connecting end to start
+    const start = filtered[0];
+    const end = filtered[filtered.length - 1];
+    const distance = Math.sqrt(
+      Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2)
+    );
+
+    let closed: Point[];
+    if (distance < 10) {
+      // Already close, just connect directly
+      closed = [...filtered, start];
+    } else {
+      // Add smooth closing curve
+      const curvePoints = this.createClosingCurve(end, start, this.circlePoints);
+      closed = [...filtered, ...curvePoints];
+    }
+
+    // Now apply Chaikin's corner-cutting algorithm to the closed shape
+    let smoothed = closed;
+    const iterations = 4; // Number of smoothing passes
+
+    for (let iter = 0; iter < iterations; iter++) {
+      const newPoints: Point[] = [];
+      const len = smoothed.length;
+
+      // Process as a closed loop
+      for (let i = 0; i < len; i++) {
+        const p0 = smoothed[i];
+        const p1 = smoothed[(i + 1) % len]; // Wrap around for closed shape
+
+        // Create two new points at 1/4 and 3/4 along each segment
+        newPoints.push({
+          x: 0.75 * p0.x + 0.25 * p1.x,
+          y: 0.75 * p0.y + 0.25 * p1.y,
+          pressure: 0
+        });
+        newPoints.push({
+          x: 0.25 * p0.x + 0.75 * p1.x,
+          y: 0.25 * p0.y + 0.75 * p1.y,
+          pressure: 0
+        });
+      }
+
+      smoothed = newPoints;
+    }
+
+    // Ensure the shape is perfectly closed by duplicating the first point at the end
+    if (smoothed.length > 0) {
+      smoothed.push({ ...smoothed[0] });
+    }
+
+    return smoothed;
+  }
+
+  private removeSharpAngles(points: Point[], minAngleDegrees: number): Point[] {
+    if (points.length < 3) return points;
+
+    const filtered: Point[] = [points[0]]; // Always keep first point
+    const minAngleRad = (minAngleDegrees * Math.PI) / 180;
+
+    for (let i = 1; i < points.length - 1; i++) {
+      const prev = points[i - 1];
+      const curr = points[i];
+      const next = points[i + 1];
+
+      // Calculate vectors
+      const v1x = curr.x - prev.x;
+      const v1y = curr.y - prev.y;
+      const v2x = next.x - curr.x;
+      const v2y = next.y - curr.y;
+
+      // Calculate magnitudes
+      const mag1 = Math.sqrt(v1x * v1x + v1y * v1y);
+      const mag2 = Math.sqrt(v2x * v2x + v2y * v2y);
+
+      if (mag1 === 0 || mag2 === 0) {
+        // Skip points that are too close together
+        continue;
+      }
+
+      // Calculate angle using dot product
+      const dot = v1x * v2x + v1y * v2y;
+      const cosAngle = dot / (mag1 * mag2);
+      const angle = Math.acos(Math.max(-1, Math.min(1, cosAngle))); // Clamp to avoid NaN
+
+      // Keep point if angle is large enough (smoother turn)
+      if (angle >= minAngleRad) {
+        filtered.push(curr);
+      }
+    }
+
+    filtered.push(points[points.length - 1]); // Always keep last point
+    return filtered;
   }
 
   @dispatch('@snice/draw-start', { bubbles: true, composed: true })

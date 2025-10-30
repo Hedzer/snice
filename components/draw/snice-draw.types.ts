@@ -32,7 +32,12 @@ export interface SniceDrawElement extends HTMLElement {
   backgroundColor: string;
   lazy: boolean;
   lazyRadius: number;
+  friction: number;
   smoothing: number;
+  autoPolygon: boolean;
+  polygonCurvePoints: number;
+  autoCircle: boolean;
+  circlePoints: number;
   disabled: boolean;
 
   clear(): void;

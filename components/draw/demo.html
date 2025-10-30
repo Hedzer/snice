@@ -158,11 +158,33 @@
 
       autoPolygonCheck.addEventListener('change', (e) => {
         draw.autoPolygon = e.target.checked;
+        if (e.target.checked) {
+          autoCircleCheck.checked = false;
+          draw.autoCircle = false;
+        }
       });
 
       curvePointsInput.addEventListener('input', (e) => {
         draw.polygonCurvePoints = parseInt(e.target.value);
         curvePointsValue.textContent = e.target.value;
+      });
+
+      // Auto circle
+      const autoCircleCheck = document.getElementById('auto-circle-check');
+      const circlePointsInput = document.getElementById('circle-points');
+      const circlePointsValue = document.getElementById('circle-points-value');
+
+      autoCircleCheck.addEventListener('change', (e) => {
+        draw.autoCircle = e.target.checked;
+        if (e.target.checked) {
+          autoPolygonCheck.checked = false;
+          draw.autoPolygon = false;
+        }
+      });
+
+      circlePointsInput.addEventListener('input', (e) => {
+        draw.circlePoints = parseInt(e.target.value);
+        circlePointsValue.textContent = e.target.value;
       });
 
       // Actions
@@ -268,6 +290,16 @@
         </div>
 
         <div class="toolbar-section">
+          <div class="toolbar-label">Auto Circle</div>
+          <label style="display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" id="auto-circle-check">
+            Enable
+          </label>
+          <div class="toolbar-label" style="margin-top: 8px;">Closing Curve: <span id="circle-points-value">50</span></div>
+          <input type="range" id="circle-points" min="5" max="100" value="50">
+        </div>
+
+        <div class="toolbar-section">
           <button id="undo-btn">Undo (Ctrl+Z)</button>
           <button id="redo-btn">Redo (Ctrl+Shift+Z)</button>
         </div>
@@ -288,6 +320,8 @@
       <li>Customizable brush width and color</li>
       <li>Adjustable lazy radius for smoothness</li>
       <li>Line smoothing with bezier curves</li>
+      <li>Auto-polygon: automatically closes drawn shapes with intelligent intersection detection</li>
+      <li>Auto-circle: closes any drawn shape smoothly, preserving natural wobbles</li>
       <li>Undo/redo functionality</li>
       <li>Export to PNG/JPEG/WebP</li>
       <li>Download drawings</li>
@@ -297,6 +331,9 @@
 
     <h3>Lazy Brush</h3>
     <p>The lazy brush creates smooth, professional-looking lines by making the brush follow your cursor with a slight delay and within a configurable radius. This helps eliminate jitter and creates more organic-looking strokes.</p>
+
+    <h3>Auto Circle</h3>
+    <p>When enabled, Auto Circle creates smooth, organic shapes from your rough drawings. It works by: 1) Grouping points into time-based clusters and taking the centroid of each cluster (preserving the natural flow and wobbles from your drawing), 2) Removing sharp angles, 3) Applying Chaikin's corner-cutting algorithm for smoothing, and 4) Closing the shape with a smooth curve. This preserves the character of your drawing while creating flowing, professional-looking shapes. Adjust the closing curve points to control the smoothness of the connection.</p>
 
     <h3>Keyboard Shortcuts</h3>
     <ul style="list-style: none; padding: 0;">
