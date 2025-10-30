@@ -1,3 +1,11 @@
+## [3.3.1](https://gitlab.com/Hedzer/snice/compare/v3.3.0...v3.3.1) (2025-10-30)
+
+
+### Bug Fixes
+
+* converted bin/ & examples to v3 ([09cd3e7](https://gitlab.com/Hedzer/snice/commit/09cd3e77c021b57454fdb6177c6edf7779982cda))
+* qr-code build ([9457f11](https://gitlab.com/Hedzer/snice/commit/9457f1143e64008cb7a64f294c210420fa846503))
+
 # [3.3.0](https://gitlab.com/Hedzer/snice/compare/v3.2.0...v3.3.0) (2025-10-26)
 
 
