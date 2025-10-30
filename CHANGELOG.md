@@ -1,3 +1,10 @@
+## [3.4.1](https://gitlab.com/Hedzer/snice/compare/v3.4.0...v3.4.1) (2025-10-30)
+
+
+### Bug Fixes
+
+* bin/ versions :facepalm: ([1d5ae43](https://gitlab.com/Hedzer/snice/commit/1d5ae438a53ef0b17835d67027380f6e39e07cd2))
+
 # [3.4.0](https://gitlab.com/Hedzer/snice/compare/v3.3.1...v3.4.0) (2025-10-30)
 
 
