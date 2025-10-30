@@ -18,7 +18,8 @@
   padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-lg, 1.25rem);
   background: var(--snice-color-background, white);
   border-bottom: 1px solid var(--snice-color-border, #e5e7eb);
-  z-index: 10;
+  position: relative;
+  z-index: var(--snice-z-index-sticky, 1020);
 }
 
 .header-brand {
@@ -100,6 +101,8 @@
   padding: var(--snice-spacing-lg, 1.25rem);
   overflow-y: auto;
   background: var(--snice-color-background-secondary, #f8fafc);
+  position: relative;
+  z-index: 0;
 }
 
 /* Footer spans full width */

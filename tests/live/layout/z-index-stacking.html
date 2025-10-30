@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Z-Index Stacking Test</title>
+  <script type="module" src="../../../components/layout/snice-layout-sidebar.ts"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+    }
+
+    .test-content {
+      padding: 2rem;
+    }
+
+    .test-box {
+      margin-top: 2rem;
+      padding: 2rem;
+      background: #3b82f6;
+      color: white;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <snice-layout-sidebar brand="Z-Index Test">
+    <nav slot="nav">
+      <a href="/">Home</a>
+    </nav>
+    <div slot="page" class="test-content">
+      <h1>Test Page Content</h1>
+      <p>This content should render below the drawer and header.</p>
+      <div class="test-box">
+        This is a test box that should not overlap the drawer.
+      </div>
+    </div>
+  </snice-layout-sidebar>
+</body>
+</html>
