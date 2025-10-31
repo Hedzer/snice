@@ -306,8 +306,9 @@
       // Lazy loading event handler
       const lazyTree = document.getElementById('tree-lazy');
       lazyTree.addEventListener('@snice/tree-node-lazy-load', async (e) => {
-        const { nodeId, node } = e.detail;
+        const { nodeId, node, tree } = e.detail;
         const status = document.getElementById('lazy-status');
+
         status.textContent = `Loading children for "${node.label}"...`;
 
         // Simulate API call
@@ -323,9 +324,8 @@
           { id: 'photo2', label: 'family.png', icon: '🖼️' }
         ];
 
-        node.children = children;
-        node.lazy = false;
-        lazyTree.nodes = [...lazyTree.nodes];
+        // Use the tree's updateNode method to properly update the node
+        tree.updateNode(nodeId, { children, lazy: false });
 
         status.textContent = `Loaded ${children.length} items for "${node.label}"`;
       });

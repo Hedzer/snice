@@ -43,7 +43,7 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
   }
 
   get hasChildren(): boolean {
-    return !!(this._node.children && this._node.children.length > 0);
+    return !!(this._node.children && this._node.children.length > 0) || !!this._node.lazy;
   }
 
   setNode(node: TreeNode, level: number) {
@@ -338,7 +338,12 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
 
   private handleContentClick(e: MouseEvent) {
     if (this.node.disabled) return;
-    this.select();
+    // Toggle selection instead of always selecting
+    if (this.selected) {
+      this.deselect();
+    } else {
+      this.select();
+    }
   }
 
   private handleKeydown(e: KeyboardEvent) {
@@ -346,7 +351,12 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
 
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      this.select();
+      // Toggle selection instead of always selecting
+      if (this.selected) {
+        this.deselect();
+      } else {
+        this.select();
+      }
     } else if (e.key === 'ArrowRight') {
       e.preventDefault();
       if (this.hasChildren && !this.expanded) {
@@ -420,11 +430,15 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
   select() {
     if (this.node.disabled) return;
     this.selected = true;
+    // Don't modify node.selected here - let the parent tree handle it
+    this.updateSelectedState();
     this.dispatchSelectEvent();
   }
 
   deselect() {
     this.selected = false;
+    // Don't modify node.selected here - let the parent tree handle it
+    this.updateSelectedState();
     this.dispatchSelectEvent();
   }
 

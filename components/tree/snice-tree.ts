@@ -14,6 +14,9 @@ import './snice-tree-item';
 
 @element('snice-tree')
 export class SniceTree extends HTMLElement implements SniceTreeElement {
+  @property({ type: Boolean })
+  selectable = true;
+
   @property({  })
   selectionMode: TreeSelectionMode = 'single';
 
@@ -78,11 +81,61 @@ export class SniceTree extends HTMLElement implements SniceTreeElement {
     `;
   }
 
+  private loadingNodeIds = new Set<string>();
+
   @watch('nodes')
   handleNodesChange() {
     this.buildNodeMap();
     this.syncNodeStates();
+
+    // Track which nodes are currently loading before clearing DOM
+    this.trackLoadingNodes();
+
     this.updateTreeItemsDOM();
+
+    // Restore loading state and finish any completed loads
+    requestAnimationFrame(() => {
+      this.restoreLoadingState();
+      requestAnimationFrame(() => {
+        this.finishLoadingNodes();
+      });
+    });
+  }
+
+  private trackLoadingNodes() {
+    const checkItem = (item: any) => {
+      if (!item || !item.node) return;
+      if (item.loading) {
+        this.loadingNodeIds.add(item.node.id);
+      }
+      if (item.shadowRoot) {
+        const childItems = item.shadowRoot.querySelectorAll('.tree-item__children > snice-tree-item');
+        childItems.forEach((child: any) => checkItem(child));
+      }
+    };
+
+    const rootItems = this.shadowRoot?.querySelectorAll('.tree__content > snice-tree-item');
+    rootItems?.forEach((item: any) => checkItem(item));
+  }
+
+  private restoreLoadingState() {
+    const restoreItem = (item: any) => {
+      if (!item || !item.node) return;
+
+      // Restore loading state if this node was loading
+      if (this.loadingNodeIds.has(item.node.id)) {
+        item.loading = true;
+      }
+
+      // Recursively restore children
+      if (item.shadowRoot) {
+        const childItems = item.shadowRoot.querySelectorAll('.tree-item__children > snice-tree-item');
+        childItems.forEach((child: any) => restoreItem(child));
+      }
+    };
+
+    const rootItems = this.shadowRoot?.querySelectorAll('.tree__content > snice-tree-item');
+    rootItems?.forEach((item: any) => restoreItem(item));
   }
 
   private updateTreeItemsDOM() {
@@ -132,6 +185,10 @@ export class SniceTree extends HTMLElement implements SniceTreeElement {
   @watch('selectedNodes')
   handleSelectedNodesChange() {
     this.syncNodeStates();
+    // Update tree item selected states
+    requestAnimationFrame(() => {
+      this.updateSelectedStatesOnly();
+    });
   }
 
   @watch('checkedNodes')
@@ -191,23 +248,54 @@ export class SniceTree extends HTMLElement implements SniceTreeElement {
 
     if (!node) return;
 
-    if (this.selectionMode === 'none') return;
+    // Check if selection is disabled
+    if (!this.selectable || this.selectionMode === 'none') return;
 
     if (this.selectionMode === 'single') {
-      // Deselect all other nodes
-      this.selectedNodes = selected ? [nodeId] : [];
+      // Deselect all nodes first
+      this.deselectAllNodes();
+
+      // Select only the clicked node if selecting
+      if (selected) {
+        node.selected = true;
+        this.selectedNodes = [nodeId];
+      } else {
+        node.selected = false;
+        this.selectedNodes = [];
+      }
+
+      // Update DOM to reflect changes
+      this.updateSelectedStatesOnly();
     } else {
       // Multiple selection
       if (selected) {
+        node.selected = true;
         if (!this.selectedNodes.includes(nodeId)) {
           this.selectedNodes = [...this.selectedNodes, nodeId];
         }
       } else {
+        node.selected = false;
         this.selectedNodes = this.selectedNodes.filter(id => id !== nodeId);
       }
+
+      // Update DOM
+      this.updateSelectedStatesOnly();
     }
 
     this.dispatchSelectEvent(nodeId, node);
+  }
+
+  private deselectAllNodes() {
+    // Recursively deselect all nodes
+    const deselect = (nodes: TreeNode[]) => {
+      for (const node of nodes) {
+        node.selected = false;
+        if (node.children) {
+          deselect(node.children);
+        }
+      }
+    };
+    deselect(this.nodes);
   }
 
   @on('tree-item-check')
@@ -298,8 +386,68 @@ export class SniceTree extends HTMLElement implements SniceTreeElement {
     };
 
     // Start with root items
-    const rootItems = this.shadowRoot?.querySelectorAll(':scope > .tree > .tree__content > snice-tree-item');
+    const rootItems = this.shadowRoot?.querySelectorAll('.tree__content > snice-tree-item');
     rootItems?.forEach((item: any) => updateItemCheckboxes(item));
+  }
+
+  private updateSelectedStatesOnly() {
+    // Recursively update all tree-item selected states without re-rendering
+    const updateItemSelection = (item: any) => {
+      if (!item || !item.node) return;
+
+      const node = this.nodeMap.get(item.node.id);
+      if (!node) return;
+
+      // Always update the item's selected property and DOM
+      item.selected = node.selected;
+
+      // Force update the DOM class
+      if (item.shadowRoot) {
+        const content = item.shadowRoot.querySelector('.tree-item__content');
+        if (content) {
+          if (node.selected) {
+            content.classList.add('tree-item__content--selected');
+          } else {
+            content.classList.remove('tree-item__content--selected');
+          }
+          content.setAttribute('aria-selected', node.selected.toString());
+        }
+      }
+
+      // Recursively update children
+      if (item.shadowRoot) {
+        const childItems = item.shadowRoot.querySelectorAll('.tree-item__children > snice-tree-item');
+        childItems.forEach((child: any) => updateItemSelection(child));
+      }
+    };
+
+    // Start with root items
+    const rootItems = this.shadowRoot?.querySelectorAll('.tree__content > snice-tree-item');
+    rootItems?.forEach((item: any) => updateItemSelection(item));
+  }
+
+  private finishLoadingNodes() {
+    // Find any tree items with loading state and finish loading if they now have children
+    const finishItem = (item: any) => {
+      if (!item || !item.node) return;
+
+      // If this item is loading and now has children, finish loading
+      if (item.loading && item.node.children && item.node.children.length > 0) {
+        item.finishLoading();
+        // Remove from loading set
+        this.loadingNodeIds.delete(item.node.id);
+      }
+
+      // Check children
+      if (item.shadowRoot) {
+        const childItems = item.shadowRoot.querySelectorAll('.tree-item__children > snice-tree-item');
+        childItems.forEach((child: any) => finishItem(child));
+      }
+    };
+
+    // Start with root items
+    const rootItems = this.shadowRoot?.querySelectorAll('.tree__content > snice-tree-item');
+    rootItems?.forEach((item: any) => finishItem(item));
   }
 
   private findParentNode(nodeId: string): TreeNode | null {
@@ -515,7 +663,7 @@ export class SniceTree extends HTMLElement implements SniceTreeElement {
   }
 
   selectNode(id: string) {
-    if (this.selectionMode === 'none') return;
+    if (!this.selectable || this.selectionMode === 'none') return;
 
     const node = this.nodeMap.get(id);
     if (!node) return;
@@ -584,5 +732,29 @@ export class SniceTree extends HTMLElement implements SniceTreeElement {
 
   getCheckedNodes(): TreeNode[] {
     return this.checkedNodes.map(id => this.nodeMap.get(id)).filter(Boolean) as TreeNode[];
+  }
+
+  updateNode(id: string, updates: Partial<TreeNode>) {
+    // Create a new nodes array with the updated node
+    const updateInTree = (nodes: TreeNode[]): TreeNode[] => {
+      return nodes.map(node => {
+        if (node.id === id) {
+          // Found the node - create a new node with updates
+          return { ...node, ...updates };
+        }
+        if (node.children) {
+          // Recursively update children
+          const newChildren = updateInTree(node.children);
+          if (newChildren !== node.children) {
+            // Children were updated, create new node
+            return { ...node, children: newChildren };
+          }
+        }
+        return node;
+      });
+    };
+
+    // Update and trigger re-render
+    this.nodes = updateInTree(this.nodes);
   }
 }

@@ -88,6 +88,12 @@
   --snice-color-border-hover: rgb(var(--snice-color-gray-300));
   --snice-color-border-focus: rgb(var(--snice-color-blue-500));
 
+  /* Interactive states */
+  --snice-color-background-hover: rgb(var(--snice-color-gray-100));
+  --snice-color-background-active: rgb(var(--snice-color-gray-200));
+  --snice-color-primary-subtle: rgb(var(--snice-color-blue-50));
+  --snice-color-primary-subtle-hover: rgb(var(--snice-color-blue-100));
+
   /* Spacing */
   --snice-spacing-3xs: 0.125rem;  /* 2px */
   --snice-spacing-2xs: 0.25rem;   /* 4px */
@@ -187,6 +193,11 @@
   --snice-color-border-hover: rgb(var(--snice-color-gray-600));
   --snice-color-border-focus: rgb(var(--snice-color-blue-400));
 
+  --snice-color-background-hover: rgb(var(--snice-color-gray-700));
+  --snice-color-background-active: rgb(var(--snice-color-gray-600));
+  --snice-color-primary-subtle: rgb(var(--snice-color-blue-950));
+  --snice-color-primary-subtle-hover: rgb(var(--snice-color-blue-900));
+
   --snice-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.1);
   --snice-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.15), 0 1px 2px -1px rgb(0 0 0 / 0.15);
   --snice-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.15), 0 2px 4px -2px rgb(0 0 0 / 0.15);
@@ -223,6 +234,11 @@
     --snice-color-border: rgb(var(--snice-color-gray-700));
     --snice-color-border-hover: rgb(var(--snice-color-gray-600));
     --snice-color-border-focus: rgb(var(--snice-color-blue-400));
+
+    --snice-color-background-hover: rgb(var(--snice-color-gray-700));
+    --snice-color-background-active: rgb(var(--snice-color-gray-600));
+    --snice-color-primary-subtle: rgb(var(--snice-color-blue-950));
+    --snice-color-primary-subtle-hover: rgb(var(--snice-color-blue-900));
 
     --snice-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.1);
     --snice-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.15), 0 1px 2px -1px rgb(0 0 0 / 0.15);

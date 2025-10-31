@@ -14,27 +14,27 @@
   padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
   padding-left: calc(var(--tree-level, 0) * var(--snice-spacing-xl, 1.5rem) + var(--snice-spacing-sm, 0.75rem));
   cursor: pointer;
-  border-radius: var(--snice-border-radius-sm, 0.25rem);
-  transition: background-color 0.2s ease;
+  border-radius: var(--snice-border-radius-md, 0.25rem);
+  transition: background-color var(--snice-transition-fast, 150ms) ease;
   position: relative;
+  background-color: transparent;
 }
 
 .tree-item__content:hover {
-  background-color: var(--snice-color-background-secondary, rgb(250 250 250));
+  background-color: var(--snice-color-background-hover, rgb(var(--snice-color-gray-100)));
 }
 
 .tree-item__content:focus {
-  outline: 2px solid var(--snice-color-primary, rgb(37 99 235));
+  outline: 2px solid var(--snice-color-primary, rgb(var(--snice-color-blue-600)));
   outline-offset: -2px;
 }
 
 .tree-item__content--selected {
-  background-color: var(--snice-color-primary-light, rgb(219 234 254));
-  color: var(--snice-color-primary, rgb(37 99 235));
+  background-color: var(--snice-color-primary-subtle, rgb(var(--snice-color-blue-50)));
 }
 
 .tree-item__content--selected:hover {
-  background-color: var(--snice-color-primary-lighter, rgb(191 219 254));
+  background-color: var(--snice-color-primary-subtle-hover, rgb(var(--snice-color-blue-100)));
 }
 
 .tree-item__content--disabled {
@@ -69,7 +69,15 @@
 }
 
 .tree-item__checkbox {
+  display: flex;
+  align-items: center;
   flex-shrink: 0;
+  height: 1.25rem;
+}
+
+.tree-item__checkbox snice-checkbox {
+  display: flex;
+  align-items: center;
 }
 
 .tree-item__icon {
@@ -92,6 +100,8 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  line-height: 1.25rem;
+  align-self: center;
 }
 
 .tree-item__children {
