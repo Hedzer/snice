@@ -122,11 +122,6 @@ For each component:
    - [x] Demo page
    - [x] Human docs
    - [x] AI docs
-23. [x] `<snice-actions>` - Action buttons (from table cell)
-   - [x] Implementation (14/14 tests passing, 1 skipped)
-   - [x] Demo page
-   - [x] Human docs
-   - [x] AI docs
 24. [x] `<snice-popover>` - Popover
    - [x] Implementation (13/13 tests passing)
    - [x] Demo page

@@ -1,5 +1,6 @@
 /* Link Cell Base */
 :host {
+  color: var(--snice-color-text);
   display: flex;
   align-items: center;
   min-height: 2.5rem; /* 40px */
@@ -20,24 +21,24 @@
   display: inline-flex;
   align-items: center;
   gap: 0.25rem; /* 4px */
-  color: var(--snice-color-primary, #007bff);
+  color: var(--snice-color-primary);
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 .cell-link:hover {
-  color: var(--snice-color-primary-dark, #0056b3);
+  color: var(--snice-color-primary-dark);
   text-decoration: underline;
 }
 
 .cell-link:focus {
-  outline: 2px solid var(--snice-color-primary, #007bff);
+  outline: 2px solid var(--snice-color-primary);
   outline-offset: 2px;
   border-radius: 2px;
 }
 
 .cell-link:visited {
-  color: var(--snice-color-secondary, #6c757d);
+  color: var(--snice-color-secondary);
 }
 
 .link-icon {
@@ -78,6 +79,7 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   :host {
+  color: var(--snice-color-text);
     font-size: 0.75rem; /* 12px */
     line-height: 1rem; /* 16px */
   }
@@ -92,6 +94,6 @@
   .cell-link::after {
     content: " (" attr(href) ")";
     font-size: 0.75rem;
-    color: #666;
+    color: var(--snice-color-text-secondary);
   }
 }

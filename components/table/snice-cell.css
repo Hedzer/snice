@@ -9,6 +9,7 @@
   flex: 1;
   font-size: 0.875rem; /* 14px */
   line-height: 1.25rem; /* 20px */
+  color: var(--snice-color-text);
 }
 
 .cell-content {
@@ -190,7 +191,7 @@
 /* Empty State */
 :host([value=""]) .cell-content,
 :host(:not([value])) .cell-content {
-  color: #6c757d;
+  color: var(--snice-color-text-secondary);
 }
 
 /* Loading State */
@@ -225,7 +226,7 @@
 
 /* Focus States */
 :host(:focus-within) {
-  outline: 2px solid #007bff;
+  outline: 2px solid var(--snice-color-primary);
   outline-offset: -2px;
 }
 
@@ -238,7 +239,7 @@
 }
 
 .cell-content a {
-  color: #007bff;
+  color: var(--snice-color-primary);
   text-decoration: none;
 }
 

@@ -334,11 +334,13 @@ export class SniceCell extends HTMLElement implements SniceCellElement {
     if (isNaN(rating)) return String(this.value);
 
     let html = '';
+    const primaryColor = format.color || getComputedStyle(this).getPropertyValue('--snice-color-warning').trim();
+    const emptyColor = getComputedStyle(this).getPropertyValue('--snice-color-border').trim();
     for (let i = 0; i < max; i++) {
       if (i < rating) {
-        html += `<span style="color: ${format.color || '#ffc107'}">${symbol}</span>`;
+        html += `<span style="color: ${primaryColor}">${symbol}</span>`;
       } else {
-        html += `<span style="color: #ddd">${emptySymbol}</span>`;
+        html += `<span style="color: ${emptyColor}">${emptySymbol}</span>`;
       }
     }
     return html;
@@ -352,8 +354,8 @@ export class SniceCell extends HTMLElement implements SniceCellElement {
 
     if (isNaN(value)) return String(this.value);
 
-    const color = format.color || '#007bff';
-    const bgColor = format.backgroundColor || '#e9ecef';
+    const color = format.color || getComputedStyle(this).getPropertyValue('--snice-color-primary').trim();
+    const bgColor = format.backgroundColor || getComputedStyle(this).getPropertyValue('--snice-color-border').trim();
     const height = format.height || '1rem'; // Using rem for height
 
     let html = `
@@ -374,15 +376,18 @@ export class SniceCell extends HTMLElement implements SniceCellElement {
     `;
 
     if (format.showPercentage) {
+      const textColor = percentage > 50
+        ? getComputedStyle(this).getPropertyValue('--snice-color-text-inverse').trim()
+        : getComputedStyle(this).getPropertyValue('--snice-color-text').trim();
       html += `
         <span style="
-          position: absolute; 
-          top: 50%; 
-          left: 50%; 
+          position: absolute;
+          top: 50%;
+          left: 50%;
           transform: translate(-50%, -50%);
           font-size: 0.75rem;
           font-weight: bold;
-          color: ${percentage > 50 ? 'white' : 'black'};
+          color: ${textColor};
         ">${Math.round(percentage)}%</span>
       `;
     }
@@ -394,12 +399,12 @@ export class SniceCell extends HTMLElement implements SniceCellElement {
   private formatSparkline(): string {
     const format = this.column.sparklineFormat || {};
     const data = Array.isArray(this.value) ? this.value : [];
-    
+
     if (data.length === 0) return '';
 
     const width = format.width || 60;
     const height = format.height || 20;
-    const color = format.color || '#007bff';
+    const color = format.color || getComputedStyle(this).getPropertyValue('--snice-color-primary').trim();
     const type = format.type || 'line';
 
     const max = Math.max(...data);

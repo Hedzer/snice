@@ -1,5 +1,6 @@
 /* Actions Cell Base */
 :host {
+  color: var(--snice-color-text);
   display: flex;
   align-items: center;
   min-height: 2.5rem; /* 40px */
@@ -41,7 +42,7 @@
 }
 
 .action-button:focus {
-  outline: 2px solid var(--snice-color-primary, #007bff);
+  outline: 2px solid var(--snice-color-primary);
   outline-offset: 2px;
 }
 
@@ -60,7 +61,7 @@
 
 /* Button Variants */
 .action-button--primary {
-  color: var(--snice-color-primary, #007bff);
+  color: var(--snice-color-primary);
 }
 
 .action-button--primary:hover:not(:disabled) {
@@ -68,11 +69,11 @@
 }
 
 .action-button--secondary {
-  color: var(--snice-color-text, #212529);
+  color: var(--snice-color-text);
 }
 
 .action-button--danger {
-  color: var(--snice-color-danger, #dc3545);
+  color: var(--snice-color-danger);
 }
 
 .action-button--danger:hover:not(:disabled) {
@@ -80,7 +81,7 @@
 }
 
 .action-button--success {
-  color: var(--snice-color-success, #28a745);
+  color: var(--snice-color-success);
 }
 
 .action-button--success:hover:not(:disabled) {

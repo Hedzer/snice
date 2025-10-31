@@ -7,6 +7,14 @@
   font-weight: var(--snice-font-weight-semibold);
   font-size: var(--snice-font-size-sm);
   line-height: var(--snice-line-height-dense);
+  color: var(--snice-color-text);
+}
+
+/* Cells Container */
+.cells-container {
+  display: flex;
+  flex: 1;
+  color: var(--snice-color-text);
 }
 
 /* Header Cell Base */
@@ -20,6 +28,7 @@
   position: relative;
   background: var(--snice-color-background-secondary);
   transition: background-color var(--snice-transition-fast) ease;
+  color: var(--snice-color-text);
 }
 
 .header-cell:last-child {
@@ -69,11 +78,11 @@
 }
 
 .header-cell[data-sortable="true"]:hover {
-  background-color: #e9ecef;
+  background-color: var(--snice-color-background-hover);
 }
 
 .header-cell[data-sortable="true"]:focus {
-  outline: 2px solid #007bff;
+  outline: 2px solid var(--snice-color-primary);
   outline-offset: -2px;
 }
 
@@ -81,7 +90,7 @@
 .sort-indicator {
   display: inline-block;
   font-size: 0.75rem; /* 12px */
-  color: #6c757d;
+  color: var(--snice-color-text-secondary);
   transition: color 0.15s ease, transform 0.15s ease;
   line-height: 1;
   min-width: 0.75rem; /* 12px */
@@ -94,7 +103,7 @@
 
 .sort-indicator--ascending,
 .sort-indicator--descending {
-  color: #007bff;
+  color: var(--snice-color-primary);
   opacity: 1;
 }
 
@@ -109,23 +118,23 @@
   justify-content: center;
   width: 1.5rem; /* 24px */
   height: 1.5rem; /* 24px */
-  border: 1px solid #dee2e6;
+  border: 1px solid var(--snice-color-border);
   border-radius: 0.25rem; /* 4px */
-  background: white;
-  color: #6c757d;
+  background: var(--snice-color-background);
+  color: var(--snice-color-text-secondary);
   cursor: pointer;
   font-size: 0.75rem; /* 12px */
   transition: all 0.15s ease;
 }
 
 .filter-button:hover {
-  background: #f8f9fa;
-  border-color: #adb5bd;
-  color: #495057;
+  background: var(--snice-color-background-hover);
+  border-color: var(--snice-color-border);
+  color: var(--snice-color-text);
 }
 
 .filter-button:focus {
-  outline: 2px solid #007bff;
+  outline: 2px solid var(--snice-color-primary);
   outline-offset: -2px;
 }
 
@@ -177,16 +186,18 @@
 
 /* Highlighting */
 .header-cell--highlighted {
-  background-color: #fff3cd !important;
+  background-color: var(--snice-color-warning-light) !important;
   animation: highlight-fade 2s ease-out;
 }
 
 @keyframes highlight-fade {
   0% {
-    background-color: #ffeaa7;
+    background-color: var(--snice-color-warning);
+    opacity: 0.3;
   }
   100% {
-    background-color: #fff3cd;
+    background-color: var(--snice-color-warning-light);
+    opacity: 1;
   }
 }
 
@@ -220,10 +231,10 @@
   .filter-button {
     transition: none;
   }
-  
+
   .header-cell--highlighted {
     animation: none;
-    background-color: #fff3cd !important;
+    background-color: var(--snice-color-warning-light) !important;
   }
 }
 

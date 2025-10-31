@@ -77,8 +77,8 @@ export class SniceCellRating extends HTMLElement implements SniceCellElement {
     rating.max = format.max ?? 5;
     rating.symbol = format.symbol ?? '★';
     rating.emptySymbol = format.emptySymbol ?? '☆';
-    rating.color = format.color ?? '#facc15';
-    
+    rating.color = format.color ?? getComputedStyle(this).getPropertyValue('--snice-color-warning').trim();
+
     this.contentElement.appendChild(rating);
   }
 }

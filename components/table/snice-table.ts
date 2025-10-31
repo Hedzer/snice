@@ -90,7 +90,10 @@ export class SniceTable extends HTMLElement {
     const config = await (yield {});
     this.columns = config.columns || [];
     this.selectorOptions = config.selectorOptions || [];
-    this.render();
+    // Wait for next frame to ensure DOM is updated
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    this.renderHeader();
+    this.renderControls();
     return config;
   }
 
@@ -108,13 +111,17 @@ export class SniceTable extends HTMLElement {
       const response = await (yield params);
       this.data = response.data || [];
       this.loading = false;
-      this.render();
+      // Wait for next frame to ensure DOM is updated
+      await new Promise(resolve => requestAnimationFrame(resolve));
+      this.renderBody();
       return response;
     } catch (error) {
       console.error('Error loading table data:', error);
       this.data = [];
       this.loading = false;
-      this.render();
+      // Wait for next frame to ensure DOM is updated
+      await new Promise(resolve => requestAnimationFrame(resolve));
+      this.renderBody();
     }
   }
 
@@ -343,6 +350,11 @@ export class SniceTable extends HTMLElement {
         border-bottom: 2px solid var(--snice-color-border);
         padding: var(--snice-spacing-sm);
         font-weight: var(--snice-font-weight-semibold);
+        color: var(--snice-color-text);
+      }
+
+      .snice-table--slotted .header-cell {
+        color: var(--snice-color-text);
       }
 
       .snice-table--slotted .table-header::slotted(snice-column) {
@@ -466,6 +478,9 @@ export class SniceTable extends HTMLElement {
 
     // Process slotted columns and rows
     await this.processSlottedContent();
+
+    // Render controls after initial setup
+    this.renderControls();
   }
 
   private async processSlottedContent() {
@@ -541,6 +556,11 @@ export class SniceTable extends HTMLElement {
   @watch('current-sort')
   handleSortChange() {
     this.renderHeader();
+  }
+
+  @watch('searchable', 'filterable')
+  handleControlsChange() {
+    this.renderControls();
   }
 
   renderHeader() {

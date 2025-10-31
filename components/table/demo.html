@@ -21,17 +21,17 @@
         }
         
         h1 {
-            color: #333;
+            color: var(--snice-color-text);
             margin-bottom: 2rem;
         }
-        
+
         .demo-section {
             margin-bottom: 3rem;
         }
-        
+
         .demo-section h2 {
-            color: #555;
-            border-bottom: 2px solid #e9ecef;
+            color: var(--snice-color-text-secondary);
+            border-bottom: 2px solid var(--snice-color-border);
             padding-bottom: 0.5rem;
             margin-bottom: 1.5rem;
         }
@@ -45,25 +45,25 @@
         
         .demo-controls button {
             padding: 0.5rem 1rem;
-            border: 1px solid #007bff;
-            background: #007bff;
-            color: white;
+            border: 1px solid var(--snice-color-primary);
+            background: var(--snice-color-primary);
+            color: var(--snice-color-text-inverse);
             border-radius: 0.25rem;
             cursor: pointer;
             font-size: 0.875rem;
         }
-        
+
         .demo-controls button:hover {
-            background: #0056b3;
+            background: var(--snice-color-primary-hover);
         }
-        
+
         .demo-controls button.secondary {
-            background: white;
-            color: #007bff;
+            background: var(--snice-color-background);
+            color: var(--snice-color-primary);
         }
-        
+
         .demo-controls button.secondary:hover {
-            background: #f8f9fa;
+            background: var(--snice-color-background-secondary);
         }
     </style>
 </head>
@@ -170,279 +170,152 @@
             <h2>Individual Cell Components</h2>
             
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
-                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
-                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Text Cell</h3>
+                <div style="padding: 1rem; border: 1px solid var(--snice-color-border); border-radius: 0.5rem; background: var(--snice-color-background-secondary);">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: var(--snice-color-text-secondary);">Text Cell</h3>
                     <snice-cell-text value="Hello World"></snice-cell-text>
                 </div>
                 
-                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
-                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Number Cell (Basic)</h3>
+                <div style="padding: 1rem; border: 1px solid var(--snice-color-border); border-radius: 0.5rem; background: var(--snice-color-background-secondary);">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: var(--snice-color-text-secondary);">Number Cell (Basic)</h3>
                     <snice-cell-number value="1234.56" thousands-separator="true" decimals="2"></snice-cell-number>
                 </div>
                 
-                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
-                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Number Cell (Currency)</h3>
+                <div style="padding: 1rem; border: 1px solid var(--snice-color-border); border-radius: 0.5rem; background: var(--snice-color-background-secondary);">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: var(--snice-color-text-secondary);">Number Cell (Currency)</h3>
                     <snice-cell-number value="1234.56" prefix="$" thousands-separator="true" decimals="2"></snice-cell-number>
                 </div>
 
-                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
-                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Number Cell (Negative)</h3>
+                <div style="padding: 1rem; border: 1px solid var(--snice-color-border); border-radius: 0.5rem; background: var(--snice-color-background-secondary);">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: var(--snice-color-text-secondary);">Number Cell (Negative)</h3>
                     <snice-cell-number value="-456.78" negative-style="parentheses" thousands-separator="true" decimals="2"></snice-cell-number>
                 </div>
                 
-                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
-                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Date Cell (Short)</h3>
+                <div style="padding: 1rem; border: 1px solid var(--snice-color-border); border-radius: 0.5rem; background: var(--snice-color-background-secondary);">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: var(--snice-color-text-secondary);">Date Cell (Short)</h3>
                     <snice-cell-date value="2023-12-25" date-format="short"></snice-cell-date>
                 </div>
                 
-                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
-                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Date Cell (Long)</h3>
+                <div style="padding: 1rem; border: 1px solid var(--snice-color-border); border-radius: 0.5rem; background: var(--snice-color-background-secondary);">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: var(--snice-color-text-secondary);">Date Cell (Long)</h3>
                     <snice-cell-date value="2023-12-25" date-format="long"></snice-cell-date>
                 </div>
                 
-                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
-                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Date Cell (Custom)</h3>
+                <div style="padding: 1rem; border: 1px solid var(--snice-color-border); border-radius: 0.5rem; background: var(--snice-color-background-secondary);">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: var(--snice-color-text-secondary);">Date Cell (Custom)</h3>
                     <snice-cell-date value="2023-12-25" date-format="custom" custom-format="DD/MM/YYYY"></snice-cell-date>
                 </div>
                 
-                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
-                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Sparkline (Line)</h3>
+                <div style="padding: 1rem; border: 1px solid var(--snice-color-border); border-radius: 0.5rem; background: var(--snice-color-background-secondary);">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: var(--snice-color-text-secondary);">Sparkline (Line)</h3>
                     <snice-cell-sparkline data="10，20，15，25，30，18，22" chart-type="line" width="80" height="30" color="#3b82f6"></snice-cell-sparkline>
                 </div>
                 
-                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
-                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Sparkline (Bar)</h3>
+                <div style="padding: 1rem; border: 1px solid var(--snice-color-border); border-radius: 0.5rem; background: var(--snice-color-background-secondary);">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: var(--snice-color-text-secondary);">Sparkline (Bar)</h3>
                     <snice-cell-sparkline data="10，20，15，25，30，18，22" chart-type="bar" width="80" height="30" color="#10b981"></snice-cell-sparkline>
                 </div>
                 
-                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
-                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Sparkline (Area)</h3>
+                <div style="padding: 1rem; border: 1px solid var(--snice-color-border); border-radius: 0.5rem; background: var(--snice-color-background-secondary);">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: var(--snice-color-text-secondary);">Sparkline (Area)</h3>
                     <snice-cell-sparkline data="10，20，15，25，30，18，22" chart-type="area" width="80" height="30" color="#f59e0b"></snice-cell-sparkline>
                 </div>
                 
-                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
-                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Boolean (Symbols)</h3>
+                <div style="padding: 1rem; border: 1px solid var(--snice-color-border); border-radius: 0.5rem; background: var(--snice-color-background-secondary);">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: var(--snice-color-text-secondary);">Boolean (Symbols)</h3>
                     <snice-cell-boolean value="true" use-symbols="true" true-symbol="✅" false-symbol="❌"></snice-cell-boolean>
                 </div>
                 
-                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
-                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Boolean (Text)</h3>
+                <div style="padding: 1rem; border: 1px solid var(--snice-color-border); border-radius: 0.5rem; background: var(--snice-color-background-secondary);">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: var(--snice-color-text-secondary);">Boolean (Text)</h3>
                     <snice-cell-boolean value="false" use-symbols="false" true-value="Yes" false-value="No"></snice-cell-boolean>
                 </div>
                 
-                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
-                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Rating (4/5 Stars)</h3>
-                    <snice-cell-rating value="4"></snice-cell-rating>
+                <div style="padding: 1rem; border: 1px solid var(--snice-color-border); border-radius: 0.5rem; background: var(--snice-color-background-secondary);">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: var(--snice-color-text-secondary);">Rating (4/5 Stars)</h3>
+                    <snice-cell-rating id="demo-rating-1" value="4"></snice-cell-rating>
                 </div>
-                
-                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
-                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Rating (3/10 Custom)</h3>
-                    <snice-cell-rating value="3"></snice-cell-rating>
+
+                <div style="padding: 1rem; border: 1px solid var(--snice-color-border); border-radius: 0.5rem; background: var(--snice-color-background-secondary);">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: var(--snice-color-text-secondary);">Rating (3/5 Custom)</h3>
+                    <snice-cell-rating id="demo-rating-2" value="3"></snice-cell-rating>
                 </div>
-                
-                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
-                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Progress (75%)</h3>
-                    <snice-cell-progress value="75"></snice-cell-progress>
+
+                <div style="padding: 1rem; border: 1px solid var(--snice-color-border); border-radius: 0.5rem; background: var(--snice-color-background-secondary);">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: var(--snice-color-text-secondary);">Progress (75%)</h3>
+                    <snice-cell-progress id="demo-progress-1" value="75"></snice-cell-progress>
                 </div>
-                
-                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
-                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Progress w/ %</h3>
+
+                <div style="padding: 1rem; border: 1px solid var(--snice-color-border); border-radius: 0.5rem; background: var(--snice-color-background-secondary);">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: var(--snice-color-text-secondary);">Progress w/ %</h3>
                     <snice-cell-progress id="progress-with-percent" value="45"></snice-cell-progress>
                 </div>
                 
-                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
-                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Duration (1h 1m 1s)</h3>
+                <div style="padding: 1rem; border: 1px solid var(--snice-color-border); border-radius: 0.5rem; background: var(--snice-color-background-secondary);">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: var(--snice-color-text-secondary);">Duration (1h 1m 1s)</h3>
                     <snice-cell-duration value="3661"></snice-cell-duration>
                 </div>
                 
-                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
-                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Duration (5m 30s)</h3>
+                <div style="padding: 1rem; border: 1px solid var(--snice-color-border); border-radius: 0.5rem; background: var(--snice-color-background-secondary);">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: var(--snice-color-text-secondary);">Duration (5m 30s)</h3>
                     <snice-cell-duration value="330"></snice-cell-duration>
                 </div>
                 
-                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
-                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">FileSize (2.0 MB)</h3>
+                <div style="padding: 1rem; border: 1px solid var(--snice-color-border); border-radius: 0.5rem; background: var(--snice-color-background-secondary);">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: var(--snice-color-text-secondary);">FileSize (2.0 MB)</h3>
                     <snice-cell-filesize value="2048576"></snice-cell-filesize>
                 </div>
                 
-                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
-                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">FileSize (1.5 GB)</h3>
+                <div style="padding: 1rem; border: 1px solid var(--snice-color-border); border-radius: 0.5rem; background: var(--snice-color-background-secondary);">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: var(--snice-color-text-secondary);">FileSize (1.5 GB)</h3>
                     <snice-cell-filesize value="1610612736"></snice-cell-filesize>
                 </div>
 
                 <!-- Additional cell types -->
-                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
-                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Link Cell</h3>
+                <div style="padding: 1rem; border: 1px solid var(--snice-color-border); border-radius: 0.5rem; background: var(--snice-color-background-secondary);">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: var(--snice-color-text-secondary);">Link Cell</h3>
                     <snice-cell-link value="https://example.com" text="Visit Example" external="true"></snice-cell-link>
                 </div>
 
-                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
-                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Actions Cell</h3>
-                    <snice-cell-actions id="demo-actions"></snice-cell-actions>
-                </div>
-
-                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
-                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Tag Cell</h3>
+                <div style="padding: 1rem; border: 1px solid var(--snice-color-border); border-radius: 0.5rem; background: var(--snice-color-background-secondary);">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: var(--snice-color-text-secondary);">Tag Cell</h3>
                     <snice-cell-tag value="React,TypeScript,Node.js" variant="primary"></snice-cell-tag>
                 </div>
 
-                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
-                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Image Cell</h3>
+                <div style="padding: 1rem; border: 1px solid var(--snice-color-border); border-radius: 0.5rem; background: var(--snice-color-background-secondary);">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: var(--snice-color-text-secondary);">Image Cell</h3>
                     <snice-cell-image value="https://via.placeholder.com/40" alt="Avatar" variant="circle" size="medium"></snice-cell-image>
                 </div>
 
-                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
-                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Email Cell</h3>
+                <div style="padding: 1rem; border: 1px solid var(--snice-color-border); border-radius: 0.5rem; background: var(--snice-color-background-secondary);">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: var(--snice-color-text-secondary);">Email Cell</h3>
                     <snice-cell-email value="john.doe@example.com"></snice-cell-email>
                 </div>
 
-                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
-                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Phone Cell</h3>
+                <div style="padding: 1rem; border: 1px solid var(--snice-color-border); border-radius: 0.5rem; background: var(--snice-color-background-secondary);">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: var(--snice-color-text-secondary);">Phone Cell</h3>
                     <snice-cell-phone value="+1-555-123-4567"></snice-cell-phone>
                 </div>
 
-                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
-                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Status Cell (Online)</h3>
+                <div style="padding: 1rem; border: 1px solid var(--snice-color-border); border-radius: 0.5rem; background: var(--snice-color-background-secondary);">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: var(--snice-color-text-secondary);">Status Cell (Online)</h3>
                     <snice-cell-status value="online" label="Online"></snice-cell-status>
                 </div>
 
-                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
-                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Status Cell (Offline)</h3>
+                <div style="padding: 1rem; border: 1px solid var(--snice-color-border); border-radius: 0.5rem; background: var(--snice-color-background-secondary);">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: var(--snice-color-text-secondary);">Status Cell (Offline)</h3>
                     <snice-cell-status value="offline" label="Offline"></snice-cell-status>
                 </div>
 
-                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
-                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">Color Cell</h3>
+                <div style="padding: 1rem; border: 1px solid var(--snice-color-border); border-radius: 0.5rem; background: var(--snice-color-background-secondary);">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: var(--snice-color-text-secondary);">Color Cell</h3>
                     <snice-cell-color value="#3b82f6"></snice-cell-color>
                 </div>
 
-                <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 0.5rem; background: #f8f9fa;">
-                    <h3 style="margin-top: 0; font-size: 0.875rem; color: #666;">JSON Cell</h3>
+                <div style="padding: 1rem; border: 1px solid var(--snice-color-border); border-radius: 0.5rem; background: var(--snice-color-background-secondary);">
+                    <h3 style="margin-top: 0; font-size: 0.875rem; color: var(--snice-color-text-secondary);">JSON Cell</h3>
                     <snice-cell-json value='{"name":"John","age":30}'></snice-cell-json>
                 </div>
             </div>
-        </div>
-
-        <div class="demo-section">
-            <h2>Complete Table with New Cell Types</h2>
-
-            <snice-table
-                id="complete-table"
-                hoverable
-                sortable
-                striped
-                searchable>
-
-                <snice-column
-                    slot="columns"
-                    key="avatar"
-                    label=""
-                    type="image"
-                    width="60px"
-                    align="center">
-                </snice-column>
-
-                <snice-column
-                    slot="columns"
-                    key="name"
-                    label="Name"
-                    type="text">
-                </snice-column>
-
-                <snice-column
-                    slot="columns"
-                    key="email"
-                    label="Email"
-                    type="email">
-                </snice-column>
-
-                <snice-column
-                    slot="columns"
-                    key="phone"
-                    label="Phone"
-                    type="phone">
-                </snice-column>
-
-                <snice-column
-                    slot="columns"
-                    key="status"
-                    label="Status"
-                    type="status"
-                    align="center">
-                </snice-column>
-
-                <snice-column
-                    slot="columns"
-                    key="skills"
-                    label="Skills"
-                    type="tag">
-                </snice-column>
-
-                <snice-column
-                    slot="columns"
-                    key="salary"
-                    label="Salary"
-                    type="number">
-                </snice-column>
-
-                <snice-column
-                    slot="columns"
-                    key="actions"
-                    label="Actions"
-                    type="actions"
-                    align="center"
-                    width="120px">
-                </snice-column>
-            </snice-table>
-        </div>
-
-        <div class="demo-section">
-            <h2>List Mode (No Vertical Borders)</h2>
-
-            <snice-table
-                id="list-table"
-                list
-                hoverable
-                striped
-                searchable>
-
-                <snice-column
-                    slot="columns"
-                    key="title"
-                    label="Task"
-                    type="text">
-                </snice-column>
-
-                <snice-column
-                    slot="columns"
-                    key="assignee"
-                    label="Assignee"
-                    type="text">
-                </snice-column>
-
-                <snice-column
-                    slot="columns"
-                    key="priority"
-                    label="Priority"
-                    type="tag"
-                    align="center">
-                </snice-column>
-
-                <snice-column
-                    slot="columns"
-                    key="progress"
-                    label="Progress"
-                    type="progress">
-                </snice-column>
-
-                <snice-column
-                    slot="columns"
-                    key="status"
-                    label="Status"
-                    type="status"
-                    align="center">
-                </snice-column>
-            </snice-table>
         </div>
 
     </div>
@@ -545,10 +418,45 @@
             console.log('Row clicked:', e.detail);
         });
         
-        // Configure individual progress cell with percentage
-        const configureProgressCells = async () => {
+        // Configure individual rating and progress cells
+        const configureDemoCells = async () => {
+            await customElements.whenDefined('snice-cell-rating');
             await customElements.whenDefined('snice-cell-progress');
-            
+
+            // Configure rating cells
+            const rating1 = document.getElementById('demo-rating-1');
+            if (rating1) {
+                rating1.column = {
+                    key: 'rating',
+                    label: 'Rating',
+                    type: 'rating',
+                    align: 'center',
+                    ratingFormat: { max: 5 }
+                };
+            }
+
+            const rating2 = document.getElementById('demo-rating-2');
+            if (rating2) {
+                rating2.column = {
+                    key: 'rating',
+                    label: 'Rating',
+                    type: 'rating',
+                    align: 'center',
+                    ratingFormat: { max: 5 }
+                };
+            }
+
+            // Configure progress cells
+            const progress1 = document.getElementById('demo-progress-1');
+            if (progress1) {
+                progress1.column = {
+                    key: 'progress',
+                    label: 'Progress',
+                    type: 'progress',
+                    align: 'left'
+                };
+            }
+
             const progressWithPercent = document.getElementById('progress-with-percent');
             if (progressWithPercent) {
                 progressWithPercent.column = {
@@ -557,115 +465,13 @@
                     type: 'progress',
                     align: 'left',
                     progressFormat: {
-                        showPercentage: true,
-                        color: '#10b981'
-                    }
-                };
-            }
-        };
-        
-        configureProgressCells();
-
-        // Configure demo actions cell
-        const configureDemoActions = async () => {
-            await customElements.whenDefined('snice-cell-actions');
-
-            const actionsCell = document.getElementById('demo-actions');
-            if (actionsCell) {
-                actionsCell.column = {
-                    key: 'actions',
-                    label: 'Actions',
-                    type: 'actions',
-                    align: 'center',
-                    actionsFormat: {
-                        actions: [
-                            { action: 'view', icon: '👁', title: 'View' },
-                            { action: 'edit', icon: '✏️', title: 'Edit' },
-                            { action: 'delete', icon: '🗑️', title: 'Delete', variant: 'danger' }
-                        ]
+                        showPercentage: true
                     }
                 };
             }
         };
 
-        configureDemoActions();
-
-        // Event listeners for new cell types
-        document.addEventListener('@snice/cell-action', (e) => {
-            console.log('Cell action triggered:', e.detail);
-            alert(`Action: ${e.detail.action}\nRow data: ${JSON.stringify(e.detail.rowData, null, 2)}`);
-        });
-
-        // Load data for complete table (wait for table to be ready)
-        setTimeout(() => {
-            const completeTable = document.getElementById('complete-table');
-            if (completeTable) {
-                completeTable.addEventListener('@snice/row-click', (e) => {
-                    console.log('Complete table row clicked:', e.detail);
-                });
-
-                // Load data with new cell types
-                const completeData = [
-                {
-                    avatar: 'https://i.pravatar.cc/40?img=1',
-                    name: 'John Smith',
-                    email: 'john.smith@company.com',
-                    phone: '+1-555-0101',
-                    status: 'online',
-                    skills: 'JavaScript,React,TypeScript',
-                    salary: 95000
-                },
-                {
-                    avatar: 'https://i.pravatar.cc/40?img=5',
-                    name: 'Sarah Johnson',
-                    email: 'sarah.j@company.com',
-                    phone: '+1-555-0102',
-                    status: 'busy',
-                    skills: 'Python,Django,PostgreSQL',
-                    salary: 105000
-                },
-                {
-                    avatar: 'https://i.pravatar.cc/40?img=8',
-                    name: 'Mike Davis',
-                    email: 'mike.davis@company.com',
-                    phone: '+1-555-0103',
-                    status: 'away',
-                    skills: 'Java,Spring,AWS',
-                    salary: 110000
-                },
-                {
-                    avatar: 'https://i.pravatar.cc/40?img=9',
-                    name: 'Emily Chen',
-                    email: 'emily.chen@company.com',
-                    phone: '+1-555-0104',
-                    status: 'offline',
-                    skills: 'Go,Kubernetes,Docker',
-                    salary: 115000
-                }
-            ];
-
-                completeTable.setData(completeData);
-            }
-
-            // Load data for list table
-            const listTable = document.getElementById('list-table');
-            if (listTable) {
-                listTable.addEventListener('@snice/row-click', (e) => {
-                    console.log('List table row clicked:', e.detail);
-                });
-
-                // Load task data for list mode demo
-                const listData = [
-                { title: 'Update user authentication', assignee: 'John Smith', priority: 'High', progress: 75, status: 'online' },
-                { title: 'Fix payment gateway bug', assignee: 'Sarah Johnson', priority: 'Critical', progress: 90, status: 'busy' },
-                { title: 'Design new dashboard', assignee: 'Mike Davis', priority: 'Medium', progress: 45, status: 'away' },
-                { title: 'Write API documentation', assignee: 'Emily Chen', priority: 'Low', progress: 30, status: 'offline' },
-                { title: 'Optimize database queries', assignee: 'John Smith', priority: 'High', progress: 60, status: 'online' }
-            ];
-
-                listTable.setData(listData);
-            }
-        }, 100);
+        configureDemoCells();
 
         // Uncomment to load sample data programmatically:
         // setTimeout(() => {

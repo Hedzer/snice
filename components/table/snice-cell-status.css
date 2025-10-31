@@ -1,5 +1,6 @@
 /* Status Cell Base */
 :host {
+  color: var(--snice-color-text);
   display: flex;
   align-items: center;
   min-height: 2.5rem; /* 40px */
@@ -29,27 +30,27 @@
 
 /* Status variants */
 .status-dot--online {
-  background-color: var(--snice-color-success, #28a745);
+  background-color: var(--snice-color-success);
   box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.2);
 }
 
 .status-dot--offline {
-  background-color: var(--snice-color-gray-400, #6c757d);
+  background-color: var(--snice-color-gray-400);
   box-shadow: 0 0 0 2px rgba(108, 117, 125, 0.2);
 }
 
 .status-dot--busy {
-  background-color: var(--snice-color-danger, #dc3545);
+  background-color: var(--snice-color-danger);
   box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.2);
 }
 
 .status-dot--away {
-  background-color: var(--snice-color-warning, #ffc107);
+  background-color: var(--snice-color-warning);
   box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.2);
 }
 
 .status-dot--custom {
-  background-color: var(--snice-color-info, #17a2b8);
+  background-color: var(--snice-color-info);
   box-shadow: 0 0 0 2px rgba(23, 162, 184, 0.2);
 }
 
@@ -62,7 +63,7 @@
   right: -2px;
   bottom: -2px;
   border-radius: 50%;
-  border: 2px solid var(--snice-color-success, #28a745);
+  border: 2px solid var(--snice-color-success);
   animation: status-pulse 2s ease-in-out infinite;
   opacity: 0;
 }
@@ -85,23 +86,23 @@
 }
 
 .status-label--online {
-  color: var(--snice-color-success, #28a745);
+  color: var(--snice-color-success);
 }
 
 .status-label--offline {
-  color: var(--snice-color-text-secondary, #6c757d);
+  color: var(--snice-color-text-secondary);
 }
 
 .status-label--busy {
-  color: var(--snice-color-danger, #dc3545);
+  color: var(--snice-color-danger);
 }
 
 .status-label--away {
-  color: var(--snice-color-warning, #ffc107);
+  color: var(--snice-color-warning);
 }
 
 .status-label--custom {
-  color: var(--snice-color-text, #212529);
+  color: var(--snice-color-text);
 }
 
 /* Text Alignment */
@@ -120,6 +121,7 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   :host {
+  color: var(--snice-color-text);
     font-size: 0.75rem; /* 12px */
     line-height: 1rem; /* 16px */
   }

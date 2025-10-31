@@ -75,8 +75,8 @@ export class SniceCellProgress extends HTMLElement implements SniceCellElement {
     // Apply format from column
     const format: ProgressFormat = this.column.progressFormat || {};
     progress.max = format.max ?? 100;
-    progress.color = format.color ?? '#3b82f6';
-    progress.backgroundColor = format.backgroundColor ?? '#e5e7eb';
+    progress.color = format.color ?? getComputedStyle(this).getPropertyValue('--snice-color-primary').trim();
+    progress.backgroundColor = format.backgroundColor ?? getComputedStyle(this).getPropertyValue('--snice-color-border').trim();
     progress.height = format.height ?? '0.5rem';
     progress.showPercentage = format.showPercentage ?? false;
     

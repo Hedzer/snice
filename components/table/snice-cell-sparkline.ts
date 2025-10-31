@@ -112,7 +112,7 @@ export class SniceCellSparkline extends HTMLElement implements SniceCellElement 
 
     const data = this.parseData();
     if (data.length === 0) {
-      return '<span style="color: #6c757d; font-style: italic;">No data</span>';
+      return `<span style="color: ${getComputedStyle(this).getPropertyValue('--snice-color-text-secondary').trim()}; font-style: italic;">No data</span>`;
     }
 
     // Use column sparkline format or component properties

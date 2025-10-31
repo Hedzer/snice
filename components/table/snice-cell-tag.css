@@ -1,5 +1,6 @@
 /* Tag Cell Base */
 :host {
+  color: var(--snice-color-text);
   display: flex;
   align-items: center;
   min-height: 2.5rem; /* 40px */
