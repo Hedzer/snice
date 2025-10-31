@@ -247,6 +247,47 @@ For each component:
      - Export annotated image with or without labels
      - Save annotation data separately (shapes, colors, labels, positions)
      - Load saved annotations onto images
+52. [ ] `<snice-time-range-picker>` - Time range/timeslot picker
+   - **Visual Layout:**
+     - Vertically stacked cells representing time intervals for a single day
+     - Grid-like appearance with clear time labels
+     - Each cell represents a time slot (configurable granularity: 15min, 30min, 1hr, etc.)
+   - **Selection Behavior:**
+     - Click and drag to select time range (from cell X to cell Y)
+     - Single click to select individual timeslot
+     - Visual highlight of selected range
+     - Display selected time range (e.g., "9:00 AM - 11:30 AM")
+   - **Granularity Options:**
+     - 5-minute intervals
+     - 15-minute intervals (default)
+     - 30-minute intervals
+     - 1-hour intervals
+     - Custom interval duration
+   - **Features:**
+     - Time range validation (min/max times)
+     - Disabled/blocked time slots (e.g., lunch breaks, unavailable hours)
+     - Multiple selection mode (select multiple non-contiguous ranges)
+     - Read-only mode for displaying existing timeslots
+     - 12-hour or 24-hour time format
+     - Configurable start/end of day (e.g., 6 AM - 10 PM)
+   - **Use Cases:**
+     - Appointment booking
+     - Meeting scheduler
+     - Availability selection
+     - Working hours configuration
+     - Event time selection
+   - **Properties:**
+     - `granularity` - Time interval size (5, 15, 30, 60 minutes)
+     - `start-time` - Day start time (default: "00:00")
+     - `end-time` - Day end time (default: "23:59")
+     - `value` - Selected time range(s)
+     - `disabled-ranges` - Array of unavailable time ranges
+     - `format` - Time format ("12h" | "24h")
+     - `multiple` - Allow multiple range selection
+   - **Events:**
+     - `@snice/time-range-change` - Emitted when selection changes
+     - `@snice/time-range-select` - Emitted when range selection starts
+     - `@snice/time-range-complete` - Emitted when range selection completes
 
 ---
 

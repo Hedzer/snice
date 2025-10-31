@@ -1,4 +1,4 @@
-import { element, property, render, styles, dispatch, query, watch, ready, dispose, html, css } from 'snice';
+import { element, property, styles, dispatch, query, watch, ready, dispose, css } from 'snice';
 import type {
   DocBlock,
   BlockType,
@@ -138,6 +138,102 @@ export class SniceDoc extends HTMLElement implements SniceDocElement {
   @watch('blocks')
   private blocksChanged() {
     this.emitChange();
+  }
+
+  @render()
+  render() {
+    return html`
+      <div class="doc-container">
+        ${this.blocks.map((block, index) => block.type === 'divider' ? html`
+          <div class="doc-block block-divider" data-block-id="${block.id}">
+            <div
+              class="block-handle"
+              draggable="${!this.readonly}"
+              @dragstart=${(e: DragEvent) => this.handleDragStart(block.id, e)}
+              @dragend=${() => this.handleDragEnd()}
+            >
+              <svg viewBox="0 0 16 16" fill="currentColor">
+                <circle cx="3" cy="3" r="1.5" />
+                <circle cx="8" cy="3" r="1.5" />
+                <circle cx="3" cy="8" r="1.5" />
+                <circle cx="8" cy="8" r="1.5" />
+                <circle cx="3" cy="13" r="1.5" />
+                <circle cx="8" cy="13" r="1.5" />
+              </svg>
+            </div>
+          </div>
+        ` : html`
+          <div
+            class="doc-block block-${block.type} ${block.checked ? 'checked' : ''} ${this.draggedBlock === block.id ? 'dragging' : ''}"
+            data-block-id="${block.id}"
+            data-number="${block.type === 'numbered-list' ? index + 1 : ''}"
+            @dragover=${(e: DragEvent) => this.handleDragOver(block.id, e)}
+            @drop=${(e: DragEvent) => this.handleDrop(block.id, e)}
+          >
+            <div
+              class="block-handle"
+              draggable="${!this.readonly}"
+              @dragstart=${(e: DragEvent) => this.handleDragStart(block.id, e)}
+              @dragend=${() => this.handleDragEnd()}
+            >
+              <svg viewBox="0 0 16 16" fill="currentColor">
+                <circle cx="3" cy="3" r="1.5" />
+                <circle cx="8" cy="3" r="1.5" />
+                <circle cx="3" cy="8" r="1.5" />
+                <circle cx="8" cy="8" r="1.5" />
+                <circle cx="3" cy="13" r="1.5" />
+                <circle cx="8" cy="13" r="1.5" />
+              </svg>
+            </div>
+            ${block.type === 'todo'
+              ? html`<input
+                  type="checkbox"
+                  class="block-checkbox"
+                  ?checked=${block.checked}
+                  @change=${() => this.handleTodoToggle(block.id)}
+                />`
+              : ''}
+            <div
+              class="block-content"
+              contenteditable="${!this.readonly}"
+              data-block-id="${block.id}"
+              data-placeholder="${index === 0 && !block.content ? this.placeholder : "Type '/' for commands"}"
+              @input=${(e: Event) => this.handleInput(block.id, e)}
+              @focus=${() => this.handleFocus(block.id)}
+              @blur=${() => this.handleBlur(block.id)}
+            >
+              ${block.content}
+            </div>
+          </div>
+        `)}
+        ${this.showBlockMenu ? this.renderBlockMenu() : ''}
+      </div>
+    `;
+  }
+
+  private renderBlockMenu() {
+    const items = this.getFilteredBlockMenuItems();
+
+    return html`
+      <div class="block-menu">
+        ${items.map(
+          (item, index) => html`
+            <div
+              class="block-menu-item ${index === this.blockMenuSelectedIndex ? 'selected' : ''}"
+              @click=${() => this.handleBlockMenuItemClick(this.blockMenuBlockId, item.type)}
+            >
+              <div class="block-menu-icon">${item.icon}</div>
+              <div class="block-menu-label">${item.label}</div>
+            </div>
+          `
+        )}
+        ${items.length === 0
+          ? html`<div class="block-menu-item">
+              <div class="block-menu-label">No results</div>
+            </div>`
+          : ''}
+      </div>
+    `;
   }
 
   @dispatch('doc-change')
@@ -529,119 +625,6 @@ export class SniceDoc extends HTMLElement implements SniceDocElement {
 
   private handleDragEnd() {
     this.draggedBlock = null;
-  }
-
-  @render()
-  render() {
-    return html/*html*/`
-      <div class="doc-container">
-        ${this.blocks.map((block, index) => this.renderBlock(block, index))}
-        ${this.showBlockMenu ? this.renderBlockMenu() : ''}
-      </div>
-    `;
-  }
-
-  private renderBlock(block: DocBlock, index: number) {
-    const placeholder = index === 0 && !block.content ? this.placeholder : "Type '/' for commands";
-    const isDivider = block.type === 'divider';
-
-    if (isDivider) {
-      return html/*html*/`
-        <div class="doc-block block-divider" data-block-id="${block.id}">
-          <div
-            class="block-handle"
-            draggable="${!this.readonly}"
-            @dragstart=${(e: DragEvent) => this.handleDragStart(block.id, e)}
-            @dragend=${() => this.handleDragEnd()}
-          >
-            <svg viewBox="0 0 16 16" fill="currentColor">
-              <circle cx="3" cy="3" r="1.5" />
-              <circle cx="8" cy="3" r="1.5" />
-              <circle cx="3" cy="8" r="1.5" />
-              <circle cx="8" cy="8" r="1.5" />
-              <circle cx="3" cy="13" r="1.5" />
-              <circle cx="8" cy="13" r="1.5" />
-            </svg>
-          </div>
-        </div>
-      `;
-    }
-
-    const isTodo = block.type === 'todo';
-    const isNumberedList = block.type === 'numbered-list';
-
-    return html/*html*/`
-      <div
-        class="doc-block block-${block.type} ${block.checked ? 'checked' : ''} ${this
-          .draggedBlock === block.id
-          ? 'dragging'
-          : ''}"
-        data-block-id="${block.id}"
-        @dragover=${(e: DragEvent) => this.handleDragOver(block.id, e)}
-        @drop=${(e: DragEvent) => this.handleDrop(block.id, e)}
-        data-number="${isNumberedList ? index + 1 : ''}"
-      >
-        <div
-          class="block-handle"
-          draggable="${!this.readonly}"
-          @dragstart=${(e: DragEvent) => this.handleDragStart(block.id, e)}
-          @dragend=${() => this.handleDragEnd()}
-        >
-          <svg viewBox="0 0 16 16" fill="currentColor">
-            <circle cx="3" cy="3" r="1.5" />
-            <circle cx="8" cy="3" r="1.5" />
-            <circle cx="3" cy="8" r="1.5" />
-            <circle cx="8" cy="8" r="1.5" />
-            <circle cx="3" cy="13" r="1.5" />
-            <circle cx="8" cy="13" r="1.5" />
-          </svg>
-        </div>
-        ${isTodo
-          ? html`<input
-              type="checkbox"
-              class="todo-checkbox"
-              ?checked="${block.checked}"
-              @change=${() => this.handleTodoToggle(block.id)}
-            />`
-          : ''}
-        <div
-          class="block-content"
-          contenteditable="${!this.readonly}"
-          data-block-id="${block.id}"
-          data-placeholder="${placeholder}"
-          @input=${(e: Event) => this.handleInput(block.id, e)}
-          @focus=${() => this.handleFocus(block.id)}
-          @blur=${() => this.handleBlur(block.id)}
-        >
-          ${block.content}
-        </div>
-      </div>
-    `;
-  }
-
-  private renderBlockMenu() {
-    const items = this.getFilteredBlockMenuItems();
-
-    return html/*html*/`
-      <div class="block-menu">
-        ${items.map(
-          (item, index) => html`
-            <div
-              class="block-menu-item ${index === this.blockMenuSelectedIndex ? 'selected' : ''}"
-              @click=${() => this.handleBlockMenuItemClick(this.blockMenuBlockId, item.type)}
-            >
-              <div class="block-menu-icon">${item.icon}</div>
-              <div class="block-menu-label">${item.label}</div>
-            </div>
-          `
-        )}
-        ${items.length === 0
-          ? html`<div class="block-menu-item">
-              <div class="block-menu-label">No results</div>
-            </div>`
-          : ''}
-      </div>
-    `;
   }
 }
 
