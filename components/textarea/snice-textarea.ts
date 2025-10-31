@@ -44,6 +44,9 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
   readonly = false;
 
   @property({ type: Boolean,  })
+  loading = false;
+
+  @property({ type: Boolean,  })
   required = false;
 
   @property({ type: Boolean,  })
@@ -80,7 +83,8 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
       `textarea--${this.size}`,
       `textarea--${this.variant}`,
       `textarea--resize-${this.resize}`,
-      this.invalid ? 'textarea--invalid' : ''
+      this.invalid ? 'textarea--invalid' : '',
+      this.loading ? 'textarea--loading' : ''
     ].filter(Boolean).join(' ');
 
     const labelClasses = ['label', this.required ? 'label--required' : ''].filter(Boolean).join(' ');
@@ -103,7 +107,7 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
             class="${textareaClasses}"
             .value="${this.value}"
             placeholder="${this.placeholder}"
-            ?disabled="${this.disabled}"
+            ?disabled="${this.disabled || this.loading}"
             ?readonly="${this.readonly}"
             ?required="${this.required}"
             rows="${this.rows}"
@@ -118,6 +122,10 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
             @focus=${this.handleFocus}
             @blur=${this.handleBlur}
           ></textarea>
+
+          <if ${this.loading}>
+            <span class="spinner" part="spinner"></span>
+          </if>
         </div>
 
         <if ${showCharCount}>
@@ -162,7 +170,7 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
       if (this.minlength > 0) this.textarea.minLength = this.minlength;
       if (this.placeholder) this.textarea.placeholder = this.placeholder;
       if (this.value) this.textarea.value = this.value;
-      this.textarea.disabled = this.disabled;
+      this.textarea.disabled = this.disabled || this.loading;
       this.textarea.readOnly = this.readonly;
       this.textarea.required = this.required;
 
@@ -234,7 +242,7 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
   @watch('disabled')
   handleDisabledChange() {
     if (this.textarea) {
-      this.textarea.disabled = this.disabled;
+      this.textarea.disabled = this.disabled || this.loading;
     }
   }
 
@@ -242,6 +250,13 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
   handleReadonlyChange() {
     if (this.textarea) {
       this.textarea.readOnly = this.readonly;
+    }
+  }
+
+  @watch('loading')
+  handleLoadingChange() {
+    if (this.textarea) {
+      this.textarea.disabled = this.disabled || this.loading;
     }
   }
 

@@ -89,6 +89,15 @@
   </div>
 
   <div class="section">
+    <h2>Loading States</h2>
+    <div class="picker-group">
+      <snice-color-picker loading label="Loading Color Picker" value="#3b82f6"></snice-color-picker>
+      <snice-color-picker id="simulate-loading-colorpicker" label="Simulate Loading" value="#f59e0b"></snice-color-picker>
+    </div>
+    <button id="loading-btn-colorpicker" style="margin-top: 16px; padding: 8px 16px; cursor: pointer;">Trigger Loading (3s)</button>
+  </div>
+
+  <div class="section">
     <h2>Interactive Demo</h2>
     <snice-color-picker
       id="interactive-picker"
@@ -111,6 +120,22 @@
       output.style.backgroundColor = e.detail.value;
       output.textContent = `Color: ${e.detail.value}`;
       console.log('Color changed:', e.detail.value);
+    });
+
+    // Loading state demo
+    const loadingColorPicker = document.getElementById('simulate-loading-colorpicker');
+    const loadingBtnColorPicker = document.getElementById('loading-btn-colorpicker');
+
+    loadingBtnColorPicker.addEventListener('click', () => {
+      loadingColorPicker.loading = true;
+      loadingBtnColorPicker.disabled = true;
+      loadingBtnColorPicker.textContent = 'Loading...';
+
+      setTimeout(() => {
+        loadingColorPicker.loading = false;
+        loadingBtnColorPicker.disabled = false;
+        loadingBtnColorPicker.textContent = 'Trigger Loading (3s)';
+      }, 3000);
     });
   </script>
 </body>

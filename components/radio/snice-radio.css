@@ -169,3 +169,40 @@
 :host([data-group]) + :host([data-group]) {
   margin-top: var(--radio-group-gap);
 }
+/* Loading State */
+.radio-wrapper--loading {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.radio--loading {
+  cursor: wait;
+}
+
+.radio-spinner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.radio-spinner::after {
+  content: '';
+  display: block;
+  width: 0.75em;
+  height: 0.75em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

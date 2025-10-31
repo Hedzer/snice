@@ -170,17 +170,49 @@
   </div>
 
   <div class="section">
+    <h3>Loading States</h3>
+    <div class="input-group">
+      <snice-input
+        loading
+        placeholder="Processing..."
+        label="Loading Input"
+        helper-text="Input is disabled while loading">
+      </snice-input>
+      <snice-input
+        loading
+        value="Saving changes..."
+        label="Loading with Value">
+      </snice-input>
+      <snice-input
+        id="simulate-loading"
+        placeholder="Click button to simulate loading"
+        label="Simulate Loading"
+        helper-text="Type something and click the button">
+      </snice-input>
+      <button id="loading-btn" style="
+        padding: 10px 20px;
+        background: var(--snice-color-primary);
+        color: white;
+        border: none;
+        border-radius: var(--snice-border-radius-md);
+        cursor: pointer;
+        font-size: var(--snice-font-size-md);
+      ">Trigger Loading (3s)</button>
+    </div>
+  </div>
+
+  <div class="section">
     <h3>Text Length Constraints</h3>
     <div class="input-group">
-      <snice-input 
-        maxlength="10" 
-        placeholder="Max 10 chars" 
+      <snice-input
+        maxlength="10"
+        placeholder="Max 10 chars"
         label="Max Length"
         helper-text="Maximum 10 characters allowed">
       </snice-input>
-      <snice-input 
-        minlength="5" 
-        placeholder="Min 5 chars" 
+      <snice-input
+        minlength="5"
+        placeholder="Min 5 chars"
         label="Min Length"
         helper-text="Minimum 5 characters required">
       </snice-input>
@@ -290,7 +322,23 @@
     input.addEventListener('@snice/input-clear', () => {
       logEvent('clear', {});
     });
-    
+
+    // Loading state example
+    const loadingInput = document.getElementById('simulate-loading');
+    const loadingBtn = document.getElementById('loading-btn');
+
+    loadingBtn.addEventListener('click', () => {
+      loadingInput.loading = true;
+      loadingBtn.disabled = true;
+      loadingBtn.textContent = 'Loading...';
+
+      setTimeout(() => {
+        loadingInput.loading = false;
+        loadingBtn.disabled = false;
+        loadingBtn.textContent = 'Trigger Loading (3s)';
+      }, 3000);
+    });
+
     // Form example
     document.getElementById('demo-form').addEventListener('submit', (e) => {
       e.preventDefault();

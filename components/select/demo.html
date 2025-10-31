@@ -393,6 +393,28 @@
   </div>
 
   <div class="section">
+    <h3>Loading States</h3>
+    <div class="row">
+      <snice-select
+        loading
+        label="Loading Select"
+        placeholder="Loading options...">
+        <snice-option value="1">Option 1</snice-option>
+        <snice-option value="2">Option 2</snice-option>
+      </snice-select>
+      <snice-select
+        id="simulate-loading"
+        label="Simulate Loading"
+        placeholder="Select an option...">
+        <snice-option value="apple">Apple</snice-option>
+        <snice-option value="banana">Banana</snice-option>
+        <snice-option value="cherry">Cherry</snice-option>
+      </snice-select>
+    </div>
+    <button id="loading-btn" style="margin-top: 16px;">Trigger Loading (3s)</button>
+  </div>
+
+  <div class="section">
     <h3>Form Example</h3>
     <form id="demo-form">
       <div class="form-row">
@@ -492,7 +514,23 @@
       const select = document.getElementById(id);
       interactiveOutput.textContent = `Current value: ${select.value || 'none'}`;
     };
-    
+
+    // Loading state demo
+    const loadingSelect = document.getElementById('simulate-loading');
+    const loadingBtn = document.getElementById('loading-btn');
+
+    loadingBtn.addEventListener('click', () => {
+      loadingSelect.loading = true;
+      loadingBtn.disabled = true;
+      loadingBtn.textContent = 'Loading...';
+
+      setTimeout(() => {
+        loadingSelect.loading = false;
+        loadingBtn.disabled = false;
+        loadingBtn.textContent = 'Trigger Loading (3s)';
+      }, 3000);
+    });
+
     // Form submission
     document.getElementById('demo-form').addEventListener('submit', (e) => {
       e.preventDefault();

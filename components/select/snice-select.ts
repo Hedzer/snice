@@ -18,6 +18,9 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   readonly = false;
 
   @property({ type: Boolean,  })
+  loading = false;
+
+  @property({ type: Boolean,  })
   multiple = false;
 
   @property({ type: Boolean,  })
@@ -90,7 +93,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   @render()
   render() {
     const labelClasses = `select-label select-label--${this.size} ${this.required ? 'select-label--required' : ''}`;
-    const triggerClasses = `select-trigger select-trigger--${this.size}`;
+    const triggerClasses = `select-trigger select-trigger--${this.size} ${this.loading ? 'select-trigger--loading' : ''}`;
     const searchHidden = !this.searchable;
 
     return html/*html*/`
@@ -119,11 +122,16 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
                 <path d="M14 1.41L12.59 0L7 5.59L1.41 0L0 1.41L5.59 7L0 12.59L1.41 14L7 8.41L12.59 14L14 12.59L8.41 7L14 1.41Z"/>
               </svg>
             </span>
-            <span class="select-arrow">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
-                <path d="M6 9L1 4h10L6 9z"/>
-              </svg>
-            </span>
+            <if ${this.loading}>
+              <span class="select-spinner" part="spinner"></span>
+            </if>
+            <if ${!this.loading}>
+              <span class="select-arrow">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+                  <path d="M6 9L1 4h10L6 9z"/>
+                </svg>
+              </span>
+            </if>
           </span>
         </button>
 
@@ -554,6 +562,17 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     }
   }
 
+  @watch('loading')
+  handleLoadingChange() {
+    this.updateTriggerState();
+    this.updateNativeSelectAttributes();
+    this.updateClearButton();
+    // Side effect: close dropdown when loading
+    if (this.loading && this.open) {
+      this.closeDropdown();
+    }
+  }
+
   @watch('open')
   handleOpenChange() {
     this.updateDropdownState();
@@ -719,13 +738,14 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
 
   private updateTriggerState() {
     if (!this.trigger) return;
-    
+
     this.trigger.classList.toggle('select-trigger--open', this.open);
     this.trigger.classList.toggle('select-trigger--disabled', this.disabled);
     this.trigger.classList.toggle('select-trigger--readonly', this.readonly);
     this.trigger.classList.toggle('select-trigger--invalid', this.invalid);
+    this.trigger.classList.toggle('select-trigger--loading', this.loading);
     this.trigger.setAttribute('aria-expanded', String(this.open));
-    this.trigger.disabled = this.disabled;
+    this.trigger.disabled = this.disabled || this.loading;
   }
 
   private updateDropdownState() {
@@ -740,8 +760,8 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
 
   private updateNativeSelectAttributes() {
     if (!this.nativeSelect) return;
-    
-    this.nativeSelect.disabled = this.disabled;
+
+    this.nativeSelect.disabled = this.disabled || this.loading;
     this.nativeSelect.required = this.required;
     this.nativeSelect.multiple = this.multiple;
     if (this.name) {

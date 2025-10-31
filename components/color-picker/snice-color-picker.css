@@ -68,9 +68,42 @@
   border-color: var(--snice-color-danger, rgb(220 38 38));
 }
 
+.color-swatch--loading {
+  cursor: wait;
+  opacity: 0.7;
+}
+
 .swatch-inner {
   width: 100%;
   height: 100%;
+}
+
+.swatch-spinner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.swatch-spinner::after {
+  content: '';
+  display: block;
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .color-input-wrapper {
@@ -123,6 +156,10 @@
 .color-input--invalid:focus {
   border-color: var(--snice-color-danger, rgb(220 38 38));
   box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-color-danger-alpha, rgb(239 68 68 / 0.2));
+}
+
+.color-input--loading {
+  cursor: wait;
 }
 
 .native-input {

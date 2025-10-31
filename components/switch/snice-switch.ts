@@ -11,6 +11,9 @@ export class SniceSwitch extends HTMLElement implements SniceSwitchElement {
   disabled = false;
 
   @property({ type: Boolean,  })
+  loading = false;
+
+  @property({ type: Boolean,  })
   required = false;
 
   @property({ type: Boolean,  })
@@ -54,8 +57,8 @@ export class SniceSwitch extends HTMLElement implements SniceSwitchElement {
 
   @render()
   render() {
-    const wrapperClasses = `switch-wrapper${this.disabled ? ' switch-wrapper--disabled' : ''}`;
-    const trackClasses = `switch-track switch-track--${this.size}${this.invalid ? ' switch-track--invalid' : ''}`;
+    const wrapperClasses = `switch-wrapper${this.disabled ? ' switch-wrapper--disabled' : ''}${this.loading ? ' switch-wrapper--loading' : ''}`;
+    const trackClasses = `switch-track switch-track--${this.size}${this.invalid ? ' switch-track--invalid' : ''}${this.loading ? ' switch-track--loading' : ''}`;
     const labelClasses = `switch-label switch-label--${this.size}${this.required ? ' switch-label--required' : ''}`;
 
     return html/*html*/`
@@ -64,7 +67,7 @@ export class SniceSwitch extends HTMLElement implements SniceSwitchElement {
           type="checkbox"
           class="switch-input"
           ?checked="${this.checked}"
-          ?disabled="${this.disabled}"
+          ?disabled="${this.disabled || this.loading}"
           ?required="${this.required}"
           name="${this.name}"
           value="${this.value}"
@@ -75,7 +78,11 @@ export class SniceSwitch extends HTMLElement implements SniceSwitchElement {
         />
 
         <span class="${trackClasses}" part="track">
-          <span class="switch-thumb" part="thumb"></span>
+          <span class="switch-thumb" part="thumb">
+            <if ${this.loading}>
+              <span class="switch-spinner" part="spinner"></span>
+            </if>
+          </span>
           <if ${this.labelOn || this.labelOff}>
             <span class="switch-state-label switch-state-label--on">${this.labelOn}</span>
             <span class="switch-state-label switch-state-label--off">${this.labelOff}</span>

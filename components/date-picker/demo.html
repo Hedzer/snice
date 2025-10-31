@@ -165,6 +165,25 @@
                 </div>
             </div>
         </div>
+
+        <div class="test-section">
+            <h3>Loading States</h3>
+            <div class="form-grid">
+                <div class="form-row">
+                    <snice-date-picker
+                        label="Loading Picker"
+                        loading>
+                    </snice-date-picker>
+
+                    <snice-date-picker
+                        id="simulate-loading-datepicker"
+                        label="Simulate Loading"
+                        value="2024-12-25">
+                    </snice-date-picker>
+                </div>
+            </div>
+            <button id="loading-btn-datepicker" style="margin-top: 16px; padding: 8px 16px; cursor: pointer;">Trigger Loading (3s)</button>
+        </div>
     </div>
 
     <script type="module">
@@ -185,6 +204,22 @@
         
         document.addEventListener('@snice/datepicker-close', (e) => {
             // Handle calendar close
+        });
+
+        // Loading state demo
+        const loadingDatePicker = document.getElementById('simulate-loading-datepicker');
+        const loadingBtnDatePicker = document.getElementById('loading-btn-datepicker');
+
+        loadingBtnDatePicker.addEventListener('click', () => {
+            loadingDatePicker.loading = true;
+            loadingBtnDatePicker.disabled = true;
+            loadingBtnDatePicker.textContent = 'Loading...';
+
+            setTimeout(() => {
+                loadingDatePicker.loading = false;
+                loadingBtnDatePicker.disabled = false;
+                loadingBtnDatePicker.textContent = 'Trigger Loading (3s)';
+            }, 3000);
         });
     </script>
 </body>

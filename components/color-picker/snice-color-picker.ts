@@ -35,6 +35,9 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
   disabled = false;
 
   @property({ type: Boolean,  })
+  loading = false;
+
+  @property({ type: Boolean,  })
   required = false;
 
   @property({ type: Boolean,  })
@@ -72,12 +75,14 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
       'color-swatch',
       `color-swatch--${this.size}`,
       this.disabled ? 'color-swatch--disabled' : '',
-      this.invalid ? 'color-swatch--invalid' : ''
+      this.invalid ? 'color-swatch--invalid' : '',
+      this.loading ? 'color-swatch--loading' : ''
     ].filter(Boolean).join(' ');
     const inputClasses = [
       'color-input',
       `color-input--${this.size}`,
-      this.invalid ? 'color-input--invalid' : ''
+      this.invalid ? 'color-input--invalid' : '',
+      this.loading ? 'color-input--loading' : ''
     ].filter(Boolean).join(' ');
     const labelClasses = ['label', this.required ? 'label--required' : ''].filter(Boolean).join(' ');
 
@@ -95,12 +100,15 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
           <div
             class="${swatchClasses}"
             @click=${this.handleSwatchClick}
-            tabindex="${this.disabled ? -1 : 0}"
+            tabindex="${this.disabled || this.loading ? -1 : 0}"
             role="button"
             aria-label="Choose color"
             @keydown=${this.handleSwatchKeyDown}
           >
             <div class="swatch-inner" style="background-color: ${this.value}"></div>
+            <if ${this.loading}>
+              <span class="swatch-spinner" part="spinner"></span>
+            </if>
           </div>
 
           <if ${this.showInput}>
@@ -109,7 +117,7 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
                 class="${inputClasses}"
                 type="text"
                 .value="${displayValue}"
-                ?disabled="${this.disabled}"
+                ?disabled="${this.disabled || this.loading}"
                 ?required="${this.required}"
                 placeholder="${this.format === 'hex' ? '#000000' : this.format === 'rgb' ? 'rgb(0,0,0)' : 'hsl(0,0%,0%)'}"
                 @input=${this.handleInputChange}

@@ -203,6 +203,16 @@
   </div>
 
   <div class="section">
+    <h3>Loading States</h3>
+    <div class="switch-group">
+      <snice-switch label="Loading switch" loading></snice-switch>
+      <snice-switch label="Loading (checked)" loading checked></snice-switch>
+      <snice-switch id="simulate-loading-switch" label="Simulate loading"></snice-switch>
+    </div>
+    <button id="loading-btn-switch">Trigger Loading (3s)</button>
+  </div>
+
+  <div class="section">
     <h3>Interactive Example</h3>
     <div class="switch-group">
       <snice-switch 
@@ -237,7 +247,23 @@
 
   <script type="module">
     import './snice-switch.ts';
-    
+
+    // Loading state demo
+    const loadingSwitch = document.getElementById('simulate-loading-switch');
+    const loadingBtnSwitch = document.getElementById('loading-btn-switch');
+
+    loadingBtnSwitch.addEventListener('click', () => {
+      loadingSwitch.loading = true;
+      loadingBtnSwitch.disabled = true;
+      loadingBtnSwitch.textContent = 'Loading...';
+
+      setTimeout(() => {
+        loadingSwitch.loading = false;
+        loadingBtnSwitch.disabled = false;
+        loadingBtnSwitch.textContent = 'Trigger Loading (3s)';
+      }, 3000);
+    });
+
     // Settings panel
     window.getSettings = function() {
       const settings = {

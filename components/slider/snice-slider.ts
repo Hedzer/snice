@@ -47,6 +47,9 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
   readonly = false;
 
   @property({ type: Boolean,  })
+  loading = false;
+
+  @property({ type: Boolean,  })
   required = false;
 
   @property({ type: Boolean,  })
@@ -86,7 +89,8 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
       'slider-track',
       `slider-track--${this.size}`,
       this.vertical ? 'slider-track--vertical' : '',
-      this.disabled ? 'slider-track--disabled' : ''
+      this.disabled ? 'slider-track--disabled' : '',
+      this.loading ? 'slider-track--loading' : ''
     ].filter(Boolean).join(' ');
     const fillClasses = [
       'slider-fill',
@@ -99,7 +103,8 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
       `slider-thumb--${this.size}`,
       `slider-thumb--${this.variant}`,
       this.vertical ? 'slider-thumb--vertical' : '',
-      this.isDragging ? 'slider-thumb--dragging' : ''
+      this.isDragging ? 'slider-thumb--dragging' : '',
+      this.loading ? 'slider-thumb--loading' : ''
     ].filter(Boolean).join(' ');
     const labelClasses = ['label', this.required ? 'label--required' : ''].filter(Boolean).join(' ');
     const ticksClasses = ['slider-ticks', this.vertical ? 'slider-ticks--vertical' : ''].filter(Boolean).join(' ');
@@ -131,16 +136,20 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
               class="${thumbClasses}"
               style="${thumbStyle}"
               part="thumb"
-              tabindex="${this.disabled ? -1 : 0}"
+              tabindex="${this.disabled || this.loading ? -1 : 0}"
               role="slider"
               aria-valuemin="${this.min}"
               aria-valuemax="${this.max}"
               aria-valuenow="${this.value}"
-              aria-disabled="${this.disabled}"
+              aria-disabled="${this.disabled || this.loading}"
               @mousedown=${this.handleThumbMouseDown}
               @touchstart=${this.handleThumbTouchStart}
               @keydown=${this.handleKeyDown}
-            ></div>
+            >
+              <if ${this.loading}>
+                <span class="slider-spinner" part="spinner"></span>
+              </if>
+            </div>
 
             <if ${this.showTicks}>
               <div class="${ticksClasses}">
@@ -161,7 +170,7 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
             max="${this.max}"
             step="${this.step}"
             name="${this.name || ''}"
-            ?disabled="${this.disabled}"
+            ?disabled="${this.disabled || this.loading}"
             ?required="${this.required}"
             aria-hidden="true"
             tabindex="-1"
@@ -206,7 +215,7 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
   }
 
   private handleTrackMouseDown(e: MouseEvent) {
-    if (this.disabled || this.readonly) return;
+    if (this.disabled || this.readonly || this.loading) return;
     // Click on track - allow transition
     this.updateValueFromEvent(e);
     // Only start dragging if clicking on track (not thumb)
@@ -218,19 +227,19 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
   }
 
   private handleTrackTouchStart(e: TouchEvent) {
-    if (this.disabled || this.readonly) return;
+    if (this.disabled || this.readonly || this.loading) return;
     this.updateValueFromEvent(e);
     this.startDragging();
   }
 
   private handleThumbMouseDown(e: MouseEvent) {
-    if (this.disabled || this.readonly) return;
+    if (this.disabled || this.readonly || this.loading) return;
     e.stopPropagation();
     this.startDragging();
   }
 
   private handleThumbTouchStart(e: TouchEvent) {
-    if (this.disabled || this.readonly) return;
+    if (this.disabled || this.readonly || this.loading) return;
     e.stopPropagation();
     this.startDragging();
   }
@@ -298,7 +307,7 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
   }
 
   private handleKeyDown(e: KeyboardEvent) {
-    if (this.disabled || this.readonly) return;
+    if (this.disabled || this.readonly || this.loading) return;
 
     let handled = false;
     const largeStep = this.step * 10;
@@ -373,7 +382,14 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
   @watch('disabled')
   handleDisabledChange() {
     if (this.input) {
-      this.input.disabled = this.disabled;
+      this.input.disabled = this.disabled || this.loading;
+    }
+  }
+
+  @watch('loading')
+  handleLoadingChange() {
+    if (this.input) {
+      this.input.disabled = this.disabled || this.loading;
     }
   }
 

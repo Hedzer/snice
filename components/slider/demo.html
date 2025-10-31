@@ -127,6 +127,16 @@
   </div>
 
   <div class="section">
+    <h2>Loading States</h2>
+    <div class="slider-group">
+      <snice-slider label="Loading slider" value="50" loading></snice-slider>
+      <snice-slider label="Loading with value" value="75" loading show-value></snice-slider>
+      <snice-slider id="simulate-loading-slider" label="Simulate loading" value="60"></snice-slider>
+    </div>
+    <button id="loading-btn-slider">Trigger Loading (3s)</button>
+  </div>
+
+  <div class="section">
     <h2>Vertical Sliders</h2>
     <div class="vertical-demo">
       <snice-slider vertical label="Volume" value="60" show-value></snice-slider>
@@ -193,6 +203,22 @@
 
     interactiveSlider.addEventListener('@snice/slider-change', (e) => {
       lastChanged.textContent = e.detail.value;
+    });
+
+    // Loading state demo
+    const loadingSlider = document.getElementById('simulate-loading-slider');
+    const loadingBtnSlider = document.getElementById('loading-btn-slider');
+
+    loadingBtnSlider.addEventListener('click', () => {
+      loadingSlider.loading = true;
+      loadingBtnSlider.disabled = true;
+      loadingBtnSlider.textContent = 'Loading...';
+
+      setTimeout(() => {
+        loadingSlider.loading = false;
+        loadingBtnSlider.disabled = false;
+        loadingBtnSlider.textContent = 'Trigger Loading (3s)';
+      }, 3000);
     });
 
     // Form demo

@@ -44,6 +44,9 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
   readonly = false;
 
   @property({ type: Boolean,  })
+  loading = false;
+
+  @property({ type: Boolean,  })
   required = false;
 
   @property({ type: Boolean,  })
@@ -103,8 +106,9 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
       `input--${this.size}`,
       `input--${this.variant}`,
       this.invalid ? 'input--invalid' : '',
+      this.loading ? 'input--loading' : '',
       this.prefixIcon ? 'input--with-prefix-icon' : '',
-      this.suffixIcon || (this.type === 'password' && this.password) ? 'input--with-suffix-icon' : '',
+      this.suffixIcon || (this.type === 'password' && this.password) || this.loading ? 'input--with-suffix-icon' : '',
       this.clearable ? 'input--clearable' : ''
     ].filter(Boolean).join(' ');
 
@@ -129,7 +133,7 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
             type="${this.type}"
             value="${this.value}"
             placeholder="${this.placeholder}"
-            ?disabled="${this.disabled}"
+            ?disabled="${this.disabled || this.loading}"
             ?readonly="${this.readonly}"
             ?required="${this.required}"
             min="${this.min || ''}"
@@ -160,6 +164,10 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
               <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
             </svg>
           </button>
+
+          <if ${this.loading}>
+            <span class="spinner" part="spinner"></span>
+          </if>
 
           <if ${this.type === 'password' && this.password}>
             <button
@@ -212,7 +220,7 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
 
     // Set initial clear button visibility
     if (this.clearButton && this.clearable) {
-      const shouldShow = this.value && !this.disabled && !this.readonly;
+      const shouldShow = this.value && !this.disabled && !this.readonly && !this.loading;
       this.clearButton.style.display = shouldShow ? '' : 'none';
       this.clearButton.classList.toggle('clear-button--visible', !!shouldShow);
     }
@@ -298,7 +306,7 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
     }
     // Show/hide clear button based on value
     if (this.clearButton && this.clearable) {
-      const shouldShow = this.value && !this.disabled && !this.readonly;
+      const shouldShow = this.value && !this.disabled && !this.readonly && !this.loading;
       this.clearButton.style.display = shouldShow ? '' : 'none';
       this.clearButton.classList.toggle('clear-button--visible', !!shouldShow);
     }
@@ -319,24 +327,37 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
   @watch('disabled')
   handleDisabledChange() {
     if (this.input) {
-      this.input.disabled = this.disabled;
+      this.input.disabled = this.disabled || this.loading;
     }
     // Update clear button visibility
     if (this.clearButton && this.clearable) {
-      const shouldShow = this.value && !this.disabled && !this.readonly;
+      const shouldShow = this.value && !this.disabled && !this.readonly && !this.loading;
       this.clearButton.style.display = shouldShow ? '' : 'none';
       this.clearButton.classList.toggle('clear-button--visible', !!shouldShow);
     }
   }
 
-  @watch('readonly') 
+  @watch('loading')
+  handleLoadingChange() {
+    if (this.input) {
+      this.input.disabled = this.disabled || this.loading;
+    }
+    // Update clear button visibility
+    if (this.clearButton && this.clearable) {
+      const shouldShow = this.value && !this.disabled && !this.readonly && !this.loading;
+      this.clearButton.style.display = shouldShow ? '' : 'none';
+      this.clearButton.classList.toggle('clear-button--visible', !!shouldShow);
+    }
+  }
+
+  @watch('readonly')
   handleReadonlyChange() {
     if (this.input) {
       this.input.readOnly = this.readonly;
     }
     // Update clear button visibility
     if (this.clearButton && this.clearable) {
-      const shouldShow = this.value && !this.disabled && !this.readonly;
+      const shouldShow = this.value && !this.disabled && !this.readonly && !this.loading;
       this.clearButton.style.display = shouldShow ? '' : 'none';
       this.clearButton.classList.toggle('clear-button--visible', !!shouldShow);
     }

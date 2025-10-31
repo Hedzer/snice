@@ -13,6 +13,9 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
   disabled = false;
 
   @property({ type: Boolean,  })
+  loading = false;
+
+  @property({ type: Boolean,  })
   required = false;
 
   @property({ type: Boolean,  })
@@ -44,8 +47,8 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
 
   @render()
   render() {
-    const wrapperClasses = `radio-wrapper${this.disabled ? ' radio-wrapper--disabled' : ''}`;
-    const radioClasses = `radio radio--${this.size}${this.invalid ? ' radio--invalid' : ''}`;
+    const wrapperClasses = `radio-wrapper${this.disabled ? ' radio-wrapper--disabled' : ''}${this.loading ? ' radio-wrapper--loading' : ''}`;
+    const radioClasses = `radio radio--${this.size}${this.invalid ? ' radio--invalid' : ''}${this.loading ? ' radio--loading' : ''}`;
     const labelClasses = `radio-label radio-label--${this.size}${this.required ? ' radio-label--required' : ''}`;
 
     return html/*html*/`
@@ -54,7 +57,7 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
           type="radio"
           class="radio-input"
           ?checked="${this.checked}"
-          ?disabled="${this.disabled}"
+          ?disabled="${this.disabled || this.loading}"
           ?required="${this.required}"
           name="${this.name}"
           value="${this.value}"
@@ -63,7 +66,12 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
         />
 
         <span class="${radioClasses}" part="radio">
-          <span class="radio-dot" part="dot"></span>
+          <if ${!this.loading}>
+            <span class="radio-dot" part="dot"></span>
+          </if>
+          <if ${this.loading}>
+            <span class="radio-spinner" part="spinner"></span>
+          </if>
         </span>
 
         <if ${this.label}>

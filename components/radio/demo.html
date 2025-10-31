@@ -161,6 +161,16 @@
   </div>
 
   <div class="section">
+    <h3>Loading States</h3>
+    <div class="radio-group">
+      <snice-radio name="loading-demo" value="l1" label="Loading radio" loading></snice-radio>
+      <snice-radio name="loading-demo" value="l2" label="Loading (checked)" loading checked></snice-radio>
+      <snice-radio id="simulate-loading-radio" name="simulate" value="s1" label="Simulate loading"></snice-radio>
+    </div>
+    <button id="loading-btn-radio">Trigger Loading (3s)</button>
+  </div>
+
+  <div class="section">
     <h3>Interactive Example</h3>
     <div class="radio-group">
       <snice-radio id="interactive-1" name="interactive" value="option1" label="Option 1"></snice-radio>
@@ -207,7 +217,23 @@
 
   <script type="module">
     import './snice-radio.ts';
-    
+
+    // Loading state demo
+    const loadingRadio = document.getElementById('simulate-loading-radio');
+    const loadingBtnRadio = document.getElementById('loading-btn-radio');
+
+    loadingBtnRadio.addEventListener('click', () => {
+      loadingRadio.loading = true;
+      loadingBtnRadio.disabled = true;
+      loadingBtnRadio.textContent = 'Loading...';
+
+      setTimeout(() => {
+        loadingRadio.loading = false;
+        loadingBtnRadio.disabled = false;
+        loadingBtnRadio.textContent = 'Trigger Loading (3s)';
+      }, 3000);
+    });
+
     // Payment method
     window.getPaymentMethod = function() {
       const radios = document.querySelectorAll('snice-radio[name="payment"]');

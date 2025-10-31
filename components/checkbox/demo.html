@@ -153,6 +153,16 @@
   </div>
 
   <div class="section">
+    <h3>Loading States</h3>
+    <div class="checkbox-group">
+      <snice-checkbox label="Loading checkbox" loading></snice-checkbox>
+      <snice-checkbox label="Loading (checked)" loading checked></snice-checkbox>
+      <snice-checkbox id="simulate-loading-checkbox" label="Simulate loading"></snice-checkbox>
+    </div>
+    <button id="loading-btn-checkbox">Trigger Loading (3s)</button>
+  </div>
+
+  <div class="section">
     <h3>Interactive Example</h3>
     <div class="checkbox-group">
       <snice-checkbox 
@@ -183,7 +193,23 @@
 
   <script type="module">
     import './snice-checkbox.ts';
-    
+
+    // Loading state demo
+    const loadingCheckbox = document.getElementById('simulate-loading-checkbox');
+    const loadingBtn = document.getElementById('loading-btn-checkbox');
+
+    loadingBtn.addEventListener('click', () => {
+      loadingCheckbox.loading = true;
+      loadingBtn.disabled = true;
+      loadingBtn.textContent = 'Loading...';
+
+      setTimeout(() => {
+        loadingCheckbox.loading = false;
+        loadingBtn.disabled = false;
+        loadingBtn.textContent = 'Trigger Loading (3s)';
+      }, 3000);
+    });
+
     // Interactive checkbox events
     const interactiveCheckbox = document.getElementById('interactive-checkbox');
     const eventOutput = document.getElementById('event-output');

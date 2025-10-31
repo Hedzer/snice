@@ -38,6 +38,9 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
   readonly = false;
 
   @property({ type: Boolean,  })
+  loading = false;
+
+  @property({ type: Boolean,  })
   required = false;
 
   @property({ type: Boolean,  })
@@ -102,7 +105,8 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
       `input--${this.size}`,
       `input--${this.variant}`,
       this.invalid ? 'input--invalid' : '',
-      this.clearable ? 'input--clearable' : ''
+      this.clearable ? 'input--clearable' : '',
+      this.loading ? 'input--loading' : ''
     ].filter(Boolean).join(' ');
 
     return html/*html*/`
@@ -119,7 +123,7 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
             type="text"
             value="${this.inputValue || this.getFormattedValue()}"
             placeholder="${this.placeholder || this.getPlaceholderForFormat()}"
-            ?disabled=${this.disabled}
+            ?disabled=${this.disabled || this.loading}
             ?readonly=${this.readonly}
             ?required=${this.required}
             name="${this.name || ''}"
@@ -139,7 +143,7 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
             aria-label="Open calendar"
             tabindex="-1"
             part="calendar-toggle"
-            ?disabled=${this.disabled}
+            ?disabled=${this.disabled || this.loading}
             @click=${(e: Event) => this.handleCalendarToggle(e)}
           >
             <svg viewBox="0 0 24 24" width="18" height="18">
@@ -160,6 +164,10 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
               <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
             </svg>
           </button>
+
+          <if ${this.loading}>
+            <span class="spinner" part="spinner"></span>
+          </if>
 
           <div class="calendar" part="calendar" ?hidden=${!this.showCalendar} @click=${(e: Event) => this.handleCalendarClick(e)}>
             <div class="calendar-header">

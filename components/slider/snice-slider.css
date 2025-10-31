@@ -84,6 +84,11 @@
   cursor: not-allowed;
 }
 
+.slider-track--loading {
+  opacity: 0.7;
+  cursor: wait;
+}
+
 .slider-fill {
   position: absolute;
   top: 0;
@@ -202,6 +207,11 @@
   transition: none !important;
 }
 
+.slider-thumb--loading {
+  cursor: wait;
+  pointer-events: none;
+}
+
 .slider-input {
   position: absolute;
   opacity: 0;
@@ -261,4 +271,33 @@
 
 .error-text {
   color: var(--snice-color-danger, rgb(239 68 68));
+}
+
+/* Loading state */
+.slider-spinner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.slider-spinner::after {
+  content: '';
+  display: block;
+  width: 0.75em;
+  height: 0.75em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
