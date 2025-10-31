@@ -3,98 +3,44 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Snice Doc Demo</title>
+    <title>Snice Doc - Document Editor</title>
     <link rel="stylesheet" href="../theme/theme.css">
     <style>
       body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial,
-          sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
         margin: 0;
-        padding: 20px;
+        padding: 0;
         background: #f6f8fa;
       }
 
       .container {
-        max-width: 1200px;
-        margin: 0 auto;
+        max-width: 1400px;
+        margin: 20px auto;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        height: calc(100vh - 40px);
+        display: flex;
+        flex-direction: column;
       }
 
       h1 {
-        margin: 0 0 30px;
-        color: #24292f;
-      }
-
-      .demo-section {
-        background: white;
-        border-radius: 8px;
-        padding: 20px;
-        margin-bottom: 20px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      }
-
-      .demo-section h2 {
-        margin: 0 0 15px;
-        color: #24292f;
-        font-size: 18px;
-      }
-
-      .controls {
-        margin: 20px 0;
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-      }
-
-      button {
-        padding: 8px 16px;
-        border: 1px solid #d0d7de;
-        border-radius: 6px;
-        background: #f6f8fa;
-        cursor: pointer;
-        font-size: 14px;
-        transition: background 0.2s;
-      }
-
-      button:hover {
-        background: #e1e4e8;
-      }
-
-      button:active {
-        background: #d0d7de;
-      }
-
-      .output {
-        margin-top: 20px;
-        padding: 16px;
-        background: #f6f8fa;
-        border-radius: 6px;
-        border: 1px solid #d0d7de;
-        overflow-x: auto;
-      }
-
-      .output pre {
         margin: 0;
-        white-space: pre-wrap;
-        word-wrap: break-word;
+        padding: 20px;
+        color: #24292f;
+        border-bottom: 1px solid #e1e4e8;
       }
 
       snice-doc {
+        flex: 1;
         --snice-doc-background: #fff;
         --snice-doc-text-color: #24292f;
         --snice-doc-muted-color: #57606a;
         --snice-doc-placeholder-color: #8c959f;
         --snice-doc-primary-color: #0969da;
-        --snice-doc-code-background: #f6f8fa;
-        --snice-doc-code-border: #d0d7de;
-        --snice-doc-quote-border: #d0d7de;
-        --snice-doc-divider-color: #d0d7de;
-        --snice-doc-menu-background: #fff;
-        --snice-doc-menu-border: #d0d7de;
-        --snice-doc-menu-hover: #f6f8fa;
-        --snice-doc-toolbar-background: #24292f;
-        --snice-doc-toolbar-text: #fff;
-        --snice-doc-toolbar-hover: rgba(255, 255, 255, 0.1);
-        --snice-doc-toolbar-active: rgba(88, 166, 255, 0.3);
+        --snice-doc-border: #d0d7de;
+        --snice-doc-sidebar-background: #f6f8fa;
+        --snice-doc-menu-hover: #e8eaed;
         --snice-doc-link-color: #0969da;
         --snice-doc-inline-code-background: rgba(175, 184, 193, 0.2);
       }
@@ -102,137 +48,36 @@
   </head>
   <body>
     <div class="container">
-      <h1>Snice Doc Component</h1>
-
-      <div class="demo-section">
-        <h2>Basic Editor</h2>
-        <p>
-          Type <code>/</code> to open the block menu. Use keyboard shortcuts:
-          <kbd>Ctrl/Cmd+B</kbd> for bold, <kbd>Ctrl/Cmd+I</kbd> for italic, <kbd>Ctrl/Cmd+U</kbd>
-          for underline.
-        </p>
-        <snice-doc id="editor"></snice-doc>
-      </div>
-
-      <div class="demo-section">
-        <h2>Controls</h2>
-        <div class="controls">
-          <button id="get-json">Get JSON</button>
-          <button id="load-sample">Load Sample Document</button>
-          <button id="export-md">Export Markdown</button>
-          <button id="export-html">Export HTML</button>
-          <button id="clear">Clear</button>
-          <button id="toggle-readonly">Toggle Readonly</button>
-        </div>
-        <div id="output" class="output" style="display: none">
-          <pre id="output-content"></pre>
-        </div>
-      </div>
-
-      <div class="demo-section">
-        <h2>Readonly Editor</h2>
-        <snice-doc id="readonly-editor" readonly></snice-doc>
-      </div>
+      <h1>Document Editor</h1>
+      <snice-doc id="editor"></snice-doc>
     </div>
 
     <script type="module">
       import './snice-doc.ts';
+      import '../modal/snice-modal.ts';
+      import '../input/snice-input.ts';
+      import '../button/snice-button.ts';
 
       await customElements.whenDefined('snice-doc');
 
       const editor = document.getElementById('editor');
-      const readonlyEditor = document.getElementById('readonly-editor');
-      const output = document.getElementById('output');
-      const outputContent = document.getElementById('output-content');
 
-      // Sample document
-      const sampleDoc = [
-        { id: '1', type: 'heading-1', content: 'Welcome to Snice Doc', formats: [] },
-        {
-          id: '2',
-          type: 'paragraph',
-          content: 'A Notion-like document editor built with web components.',
-          formats: [],
-        },
-        { id: '3', type: 'heading-2', content: 'Features', formats: [] },
-        { id: '4', type: 'bulleted-list', content: 'Block-based editing', formats: [] },
-        { id: '5', type: 'bulleted-list', content: 'Multiple block types', formats: [] },
-        { id: '6', type: 'bulleted-list', content: 'Keyboard shortcuts', formats: [] },
-        { id: '7', type: 'bulleted-list', content: 'Export to JSON, Markdown, and HTML', formats: [] },
-        { id: '8', type: 'heading-2', content: 'Block Types', formats: [] },
-        { id: '9', type: 'numbered-list', content: 'Headings (H1, H2, H3)', formats: [] },
-        { id: '10', type: 'numbered-list', content: 'Paragraph', formats: [] },
-        { id: '11', type: 'numbered-list', content: 'Bulleted and Numbered Lists', formats: [] },
-        { id: '12', type: 'numbered-list', content: 'To-do Lists', formats: [] },
-        { id: '13', type: 'numbered-list', content: 'Code Blocks', formats: [] },
-        { id: '14', type: 'numbered-list', content: 'Quotes', formats: [] },
-        { id: '15', type: 'numbered-list', content: 'Dividers', formats: [] },
-        { id: '16', type: 'heading-2', content: 'Code Example', formats: [] },
-        {
-          id: '17',
-          type: 'code',
-          content: 'const doc = document.querySelector("snice-doc");\ndoc.setBlocks(myBlocks);',
-          formats: [],
-        },
-        { id: '18', type: 'heading-2', content: 'Quote Example', formats: [] },
-        {
-          id: '19',
-          type: 'quote',
-          content: 'The best way to predict the future is to invent it.',
-          formats: [],
-        },
-        { id: '20', type: 'divider', content: '', formats: [] },
-        { id: '21', type: 'heading-2', content: 'Tasks', formats: [] },
-        { id: '22', type: 'todo', content: 'Write documentation', formats: [], checked: true },
-        { id: '23', type: 'todo', content: 'Add more features', formats: [], checked: false },
-        { id: '24', type: 'todo', content: 'Test the component', formats: [], checked: false },
-      ];
-
-      // Load sample into readonly editor
-      readonlyEditor.setBlocks(sampleDoc);
-
-      // Event handlers
-      editor.addEventListener('doc-change', (e) => {
-        console.log('Document changed:', e.detail.blocks);
-      });
-
-      editor.addEventListener('doc-focus', (e) => {
-        console.log('Block focused:', e.detail.blockId);
-      });
-
-      editor.addEventListener('doc-blur', (e) => {
-        console.log('Block blurred:', e.detail.blockId);
-      });
-
-      // Controls
-      document.getElementById('get-json').addEventListener('click', () => {
-        output.style.display = 'block';
-        outputContent.textContent = editor.toJSON();
-      });
-
-      document.getElementById('load-sample').addEventListener('click', () => {
-        editor.setBlocks(sampleDoc);
-        output.style.display = 'none';
-      });
-
-      document.getElementById('export-md').addEventListener('click', () => {
-        output.style.display = 'block';
-        outputContent.textContent = editor.toMarkdown();
-      });
-
-      document.getElementById('export-html').addEventListener('click', () => {
-        output.style.display = 'block';
-        outputContent.textContent = editor.toHTML();
-      });
-
-      document.getElementById('clear').addEventListener('click', () => {
-        editor.clear();
-        output.style.display = 'none';
-      });
-
-      document.getElementById('toggle-readonly').addEventListener('click', () => {
-        editor.readonly = !editor.readonly;
-      });
+      // Set some initial content
+      editor.setHTML(`
+        <h1>Welcome to the Document Editor!</h1>
+        <p>This is a simple document editor with:</p>
+        <ul>
+          <li><b>Bold</b>, <i>italic</i>, <u>underline</u> formatting</li>
+          <li>Headings (H1, H2, H3)</li>
+          <li>Bullet and numbered lists</li>
+          <li>Images and links</li>
+          <li>Tables</li>
+        </ul>
+        <p>Try typing with <b>bold</b> and hitting Enter - the formatting continues naturally!</p>
+        <h2>Features</h2>
+        <p>Use the toolbar at the top to format your text or insert elements. The sidebar lets you quickly insert images, tables, and dividers.</p>
+        <p>Just start typing anywhere to edit...</p>
+      `);
     </script>
   </body>
 </html>

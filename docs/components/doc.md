@@ -1,15 +1,15 @@
 # snice-doc
 
-A Notion-like document editor component with block-based editing, multiple content types, and rich export capabilities.
+A simple WYSIWYG document editor component with formatting toolbar and content insertion capabilities.
 
 ## Features
 
-- **Block-based editing** - Create and organize content using blocks
-- **Multiple block types** - Headings, paragraphs, lists, code, quotes, dividers, and to-dos
-- **Block menu** - Type `/` to open a searchable block type menu
+- **WYSIWYG editing** - Direct HTML content editing
+- **Formatting toolbar** - Bold, italic, underline, strikethrough, headings, lists
+- **Content insertion** - Links, images, tables, dividers
+- **Sidebar controls** - Quick access to insert images, tables, and dividers
+- **Paste image support** - Paste images directly from clipboard
 - **Keyboard shortcuts** - Ctrl/Cmd+B for bold, Ctrl/Cmd+I for italic, Ctrl/Cmd+U for underline
-- **Drag and drop** - Reorder blocks by dragging the handle
-- **Export formats** - JSON, Markdown, and HTML export
 - **Readonly mode** - Display documents without editing capabilities
 - **Customizable styling** - CSS custom properties for theming
 
@@ -23,173 +23,78 @@ A Notion-like document editor component with block-based editing, multiple conte
 
   const editor = document.getElementById('editor');
 
-  // Listen for changes
-  editor.addEventListener('doc-change', (e) => {
-    console.log('Document changed:', e.detail.blocks);
-  });
+  // Set initial content
+  editor.setHTML('<h1>Welcome</h1><p>Start editing...</p>');
+
+  // Get content
+  const html = editor.getHTML();
+  console.log(html);
 </script>
 ```
 
-## Block Types
-
-The editor supports the following block types:
-
-- `paragraph` - Regular text paragraph
-- `heading-1` - Top-level heading
-- `heading-2` - Second-level heading
-- `heading-3` - Third-level heading
-- `bulleted-list` - Bulleted list item
-- `numbered-list` - Numbered list item
-- `todo` - To-do list item with checkbox
-- `code` - Code block with monospace font
-- `quote` - Blockquote for citations
-- `divider` - Horizontal divider line
-
 ## Properties
 
-| Property      | Attribute     | Type        | Default                       | Description                        |
-| ------------- | ------------- | ----------- | ----------------------------- | ---------------------------------- |
-| `blocks`      | -             | `DocBlock[]` | `[{...}]`                     | Document blocks (property only)    |
-| `placeholder` | `placeholder` | `string`    | `"Type '/' for commands..."` | Placeholder text when empty        |
-| `readonly`    | `readonly`    | `boolean`   | `false`                       | Whether the editor is readonly     |
+| Property      | Attribute     | Type      | Default              | Description                      |
+| ------------- | ------------- | --------- | -------------------- | -------------------------------- |
+| `placeholder` | `placeholder` | `string`  | `"Start typing..."` | Placeholder text when empty      |
+| `readonly`    | `readonly`    | `boolean` | `false`              | Whether the editor is readonly   |
 
 ## Methods
 
-### `getBlocks(): DocBlock[]`
+### `getHTML(): string`
 
-Get a copy of all blocks in the document.
-
-```javascript
-const blocks = editor.getBlocks();
-console.log(blocks);
-```
-
-### `setBlocks(blocks: DocBlock[]): void`
-
-Set the document blocks.
+Get the current HTML content of the editor.
 
 ```javascript
-editor.setBlocks([
-  { id: '1', type: 'heading-1', content: 'Title', formats: [] },
-  { id: '2', type: 'paragraph', content: 'Content', formats: [] },
-]);
-```
-
-### `toJSON(): string`
-
-Export the document as formatted JSON.
-
-```javascript
-const json = editor.toJSON();
-console.log(json);
-```
-
-### `fromJSON(json: string): void`
-
-Import a document from JSON.
-
-```javascript
-const json = '[ {"id": "1", "type": "paragraph", "content": "Hello", "formats": []} ]';
-editor.fromJSON(json);
-```
-
-### `toMarkdown(): string`
-
-Export the document as Markdown.
-
-```javascript
-const markdown = editor.toMarkdown();
-console.log(markdown);
-// # Title
-//
-// Content
-```
-
-### `toHTML(): string`
-
-Export the document as HTML.
-
-```javascript
-const html = editor.toHTML();
+const html = editor.getHTML();
 console.log(html);
-// <h1>Title</h1>
-// <p>Content</p>
 ```
 
-### `focus(): void`
+### `setHTML(html: string): void`
 
-Focus the editor (focuses the first block).
+Set the HTML content of the editor.
 
 ```javascript
-editor.focus();
+editor.setHTML(`
+  <h1>Welcome!</h1>
+  <p>This is a <b>simple</b> document editor.</p>
+`);
 ```
 
 ### `clear(): void`
 
-Clear all content and reset to a single empty paragraph.
+Clear all content and reset to an empty paragraph.
 
 ```javascript
 editor.clear();
 ```
 
-## Events
+## Toolbar Features
 
-### `doc-change`
+The toolbar includes:
 
-Emitted when the document content changes.
+- **B** - Bold text (Ctrl/Cmd+B)
+- **I** - Italic text (Ctrl/Cmd+I)
+- **U** - Underline text (Ctrl/Cmd+U)
+- **S** - Strikethrough text
+- **H1, H2, H3, P** - Heading formats and paragraph
+- **• / 1.** - Bulleted and numbered lists
+- **🔗** - Insert link
+- **🖼** - Insert image
 
-```javascript
-editor.addEventListener('doc-change', (e) => {
-  console.log('Changed blocks:', e.detail.blocks);
-});
-```
+## Sidebar Features
 
-**Detail:**
-- `blocks: DocBlock[]` - The updated blocks array
+The collapsible sidebar provides quick access to:
 
-### `doc-focus`
-
-Emitted when a block receives focus.
-
-```javascript
-editor.addEventListener('doc-focus', (e) => {
-  console.log('Focused block:', e.detail.blockId);
-});
-```
-
-**Detail:**
-- `blockId: string` - The ID of the focused block
-
-### `doc-blur`
-
-Emitted when a block loses focus.
-
-```javascript
-editor.addEventListener('doc-blur', (e) => {
-  console.log('Blurred block:', e.detail.blockId);
-});
-```
-
-**Detail:**
-- `blockId: string` - The ID of the blurred block
+- **Image** - Insert image via URL dialog
+- **Table** - Insert table with custom rows/columns
+- **Divider** - Insert horizontal rule
 
 ## Keyboard Shortcuts
 
-### Editor Shortcuts
-
-- **Enter** - Create new paragraph block
-- **Backspace** (on empty block) - Delete block
-- **Ctrl/Cmd+B** - Toggle bold (planned)
-- **Ctrl/Cmd+I** - Toggle italic (planned)
-- **Ctrl/Cmd+U** - Toggle underline (planned)
-
-### Block Menu Shortcuts
-
-- **/** - Open block menu
-- **ArrowDown** - Navigate down in menu
-- **ArrowUp** - Navigate up in menu
-- **Enter** - Select highlighted block type
-- **Escape** - Close block menu
+- **Ctrl/Cmd+B** - Toggle bold
+- **Ctrl/Cmd+I** - Toggle italic
+- **Ctrl/Cmd+U** - Toggle underline
 
 ## Styling
 
@@ -205,32 +110,19 @@ snice-doc {
   --snice-doc-primary-color: #0969da;
   --snice-doc-link-color: #0969da;
 
-  /* Code blocks */
-  --snice-doc-code-background: #f6f8fa;
-  --snice-doc-code-border: #e1e4e8;
+  /* Code */
   --snice-doc-inline-code-background: rgba(175, 184, 193, 0.2);
 
-  /* Quotes */
-  --snice-doc-quote-border: #e1e4e8;
+  /* Toolbar */
+  --snice-doc-toolbar-background: #f6f8fa;
+  --snice-doc-toolbar-border: #e1e4e8;
 
-  /* Divider */
-  --snice-doc-divider-color: #e1e4e8;
-
-  /* Block menu */
-  --snice-doc-menu-background: #fff;
-  --snice-doc-menu-border: #e1e4e8;
-  --snice-doc-menu-hover: #f6f8fa;
-
-  /* Format toolbar */
-  --snice-doc-toolbar-background: #1f2328;
-  --snice-doc-toolbar-text: #fff;
-  --snice-doc-toolbar-hover: rgba(255, 255, 255, 0.1);
-  --snice-doc-toolbar-active: rgba(88, 166, 255, 0.3);
+  /* Sidebar */
+  --snice-doc-sidebar-background: #f6f8fa;
+  --snice-doc-sidebar-border: #e1e4e8;
 
   /* Spacing */
-  --snice-doc-padding: 40px 20px;
-  --snice-doc-min-height: 400px;
-  --snice-doc-max-width: 900px;
+  --snice-doc-padding: 20px;
 }
 ```
 
@@ -245,58 +137,61 @@ snice-doc {
   import 'snice';
 
   const viewer = document.querySelector('snice-doc');
-  viewer.setBlocks([
-    { id: '1', type: 'heading-1', content: 'Read Only Document', formats: [] },
-    { id: '2', type: 'paragraph', content: 'This document cannot be edited.', formats: [] },
-  ]);
+  viewer.setHTML(`
+    <h1>Read Only Document</h1>
+    <p>This document cannot be edited.</p>
+  `);
 </script>
 ```
 
-### Document with To-do List
+### Rich Content Document
 
 ```html
-<snice-doc id="todos"></snice-doc>
+<snice-doc id="editor"></snice-doc>
 
 <script type="module">
   import 'snice';
 
-  const todos = document.getElementById('todos');
-  todos.setBlocks([
-    { id: '1', type: 'heading-2', content: 'My Tasks', formats: [] },
-    { id: '2', type: 'todo', content: 'Write documentation', formats: [], checked: true },
-    { id: '3', type: 'todo', content: 'Review PRs', formats: [], checked: false },
-    { id: '4', type: 'todo', content: 'Deploy to production', formats: [], checked: false },
-  ]);
+  const editor = document.getElementById('editor');
+  editor.setHTML(`
+    <h1>Welcome to the Document Editor!</h1>
+    <p>This is a simple document editor with:</p>
+    <ul>
+      <li><b>Bold</b>, <i>italic</i>, <u>underline</u> formatting</li>
+      <li>Headings (H1, H2, H3)</li>
+      <li>Bullet and numbered lists</li>
+      <li>Images and links</li>
+      <li>Tables</li>
+    </ul>
+    <p>Try typing with <b>bold</b> and hitting Enter - the formatting continues naturally!</p>
+  `);
 </script>
 ```
 
-### Export to Multiple Formats
+### Save and Load Content
 
 ```html
 <snice-doc id="editor"></snice-doc>
-<button id="export-json">Export JSON</button>
-<button id="export-md">Export Markdown</button>
-<button id="export-html">Export HTML</button>
+<button id="save">Save</button>
+<button id="load">Load</button>
 
 <script type="module">
   import 'snice';
 
   const editor = document.getElementById('editor');
 
-  document.getElementById('export-json').addEventListener('click', () => {
-    const json = editor.toJSON();
-    console.log(json);
-    // Download or copy to clipboard
+  document.getElementById('save').addEventListener('click', () => {
+    const html = editor.getHTML();
+    localStorage.setItem('document', html);
+    console.log('Saved!');
   });
 
-  document.getElementById('export-md').addEventListener('click', () => {
-    const markdown = editor.toMarkdown();
-    console.log(markdown);
-  });
-
-  document.getElementById('export-html').addEventListener('click', () => {
-    const html = editor.toHTML();
-    console.log(html);
+  document.getElementById('load').addEventListener('click', () => {
+    const html = localStorage.getItem('document');
+    if (html) {
+      editor.setHTML(html);
+      console.log('Loaded!');
+    }
   });
 </script>
 ```
@@ -310,48 +205,37 @@ snice-doc {
     --snice-doc-background: #0d1117;
     --snice-doc-muted-color: #7d8590;
     --snice-doc-placeholder-color: #484f58;
-    --snice-doc-code-background: #161b22;
-    --snice-doc-code-border: #30363d;
-    --snice-doc-quote-border: #30363d;
-    --snice-doc-divider-color: #21262d;
+    --snice-doc-toolbar-background: #161b22;
+    --snice-doc-toolbar-border: #30363d;
+    --snice-doc-sidebar-background: #161b22;
+    --snice-doc-sidebar-border: #30363d;
   }
 </style>
 
 <snice-doc class="dark"></snice-doc>
 ```
 
-## Block Data Structure
-
-Each block in the document has the following structure:
-
-```typescript
-interface DocBlock {
-  id: string;              // Unique identifier
-  type: BlockType;         // Block type (see Block Types section)
-  content: string;         // Text content
-  formats: TextRange[];    // Inline formatting (future)
-  checked?: boolean;       // For todo blocks
-  indent?: number;         // For nested lists (future)
-}
-```
-
 ## Accessibility
 
 - Supports keyboard navigation
-- Uses semantic HTML in exports
-- ARIA attributes for better screen reader support (future improvement)
+- Uses contentEditable for native text editing
+- Semantic HTML output
 
 ## Browser Support
 
 Works in all modern browsers that support:
 - Custom Elements v1
 - Shadow DOM
+- contentEditable
 - ES2020+
 
 ## TypeScript
 
-Full TypeScript support with exported types:
+Full TypeScript support:
 
 ```typescript
-import type { DocBlock, BlockType, SniceDocElement } from 'snice/doc';
+import type { SniceDoc } from 'snice/doc';
+
+const editor = document.querySelector<SniceDoc>('snice-doc');
+const html = editor?.getHTML();
 ```

@@ -1,122 +1,21 @@
-import { element, property, styles, dispatch, query, watch, ready, dispose, css } from 'snice';
-import type {
-  DocBlock,
-  BlockType,
-  InlineFormat,
-  EditorSelection,
-  BlockMenuItem,
-  SniceDocElement,
-  SniceDocEventMap,
-} from './snice-doc.types';
+import { element, property, styles, ready, dispose, css } from 'snice';
 import cssContent from './snice-doc.css?inline';
 
 /**
- * Generate unique ID
- */
-function generateId(): string {
-  return Math.random().toString(36).substring(2, 15);
-}
-
-/**
- * Block menu items
- */
-const BLOCK_MENU_ITEMS: BlockMenuItem[] = [
-  {
-    type: 'paragraph',
-    label: 'Paragraph',
-    icon: '¶',
-    keywords: ['text', 'paragraph', 'p'],
-  },
-  {
-    type: 'heading-1',
-    label: 'Heading 1',
-    icon: 'H1',
-    keywords: ['h1', 'heading', 'title'],
-  },
-  {
-    type: 'heading-2',
-    label: 'Heading 2',
-    icon: 'H2',
-    keywords: ['h2', 'heading', 'subtitle'],
-  },
-  {
-    type: 'heading-3',
-    label: 'Heading 3',
-    icon: 'H3',
-    keywords: ['h3', 'heading'],
-  },
-  {
-    type: 'bulleted-list',
-    label: 'Bulleted List',
-    icon: '•',
-    keywords: ['ul', 'list', 'bullet'],
-  },
-  {
-    type: 'numbered-list',
-    label: 'Numbered List',
-    icon: '1.',
-    keywords: ['ol', 'list', 'number'],
-  },
-  {
-    type: 'todo',
-    label: 'To-do List',
-    icon: '☐',
-    keywords: ['todo', 'checkbox', 'task'],
-  },
-  {
-    type: 'code',
-    label: 'Code Block',
-    icon: '</>',
-    keywords: ['code', 'snippet'],
-  },
-  {
-    type: 'quote',
-    label: 'Quote',
-    icon: '"',
-    keywords: ['quote', 'blockquote'],
-  },
-  {
-    type: 'divider',
-    label: 'Divider',
-    icon: '―',
-    keywords: ['divider', 'separator', 'hr'],
-  },
-];
-
-/**
- * snice-doc - Document editor component
- *
- * A Notion-like document editor with block-based editing
- *
- * @element snice-doc
- *
- * @fires {CustomEvent<{ blocks: DocBlock[] }>} doc-change - Fires when document changes
- * @fires {CustomEvent<{ blockId: string }>} doc-focus - Fires when a block receives focus
- * @fires {CustomEvent<{ blockId: string }>} doc-blur - Fires when a block loses focus
+ * snice-doc - Simple document editor
  */
 @element('snice-doc')
-export class SniceDoc extends HTMLElement implements SniceDocElement {
-  @property({ type: Array, attribute: false })
-  blocks: DocBlock[] = [{ id: generateId(), type: 'paragraph', content: '', formats: [] }];
-
+export class SniceDoc extends HTMLElement {
   @property({ type: String })
-  placeholder: string = "Type '/' for commands...";
+  placeholder: string = 'Start typing...';
 
   @property({ type: Boolean })
   readonly: boolean = false;
 
-  @query('.doc-container')
-  private container!: HTMLElement;
-
-  @query('.block-content')
-  private firstBlockElement?: HTMLElement;
-
-  private selection: EditorSelection | null = null;
-  private draggedBlock: string | null = null;
-  private showBlockMenu: boolean = false;
-  private blockMenuFilter: string = '';
-  private blockMenuSelectedIndex: number = 0;
-  private blockMenuBlockId: string = '';
+  private editor!: HTMLDivElement;
+  private showFormatToolbar: boolean = false;
+  private formatToolbarPosition: { top: number; left: number } | null = null;
+  private savedSelection: Range | null = null;
 
   @styles()
   styles() {
@@ -125,506 +24,480 @@ export class SniceDoc extends HTMLElement implements SniceDocElement {
 
   @ready()
   init() {
-    this.addEventListener('keydown', this.handleKeyDown);
-    this.addEventListener('paste', this.handlePaste);
+    this.initializeDOM();
+    document.addEventListener('selectionchange', this.handleSelectionChange);
+
+    // Save selection whenever editor loses focus
+    this.editor.addEventListener('blur', this.saveCurrentSelection);
   }
 
   @dispose()
   cleanup() {
-    this.removeEventListener('keydown', this.handleKeyDown);
-    this.removeEventListener('paste', this.handlePaste);
+    document.removeEventListener('selectionchange', this.handleSelectionChange);
+    this.editor.removeEventListener('blur', this.saveCurrentSelection);
   }
 
-  @watch('blocks')
-  private blocksChanged() {
-    this.emitChange();
+  private initializeDOM() {
+    if (!this.shadowRoot) return;
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'doc-wrapper';
+
+    // Create toolbar
+    const toolbar = this.createToolbar();
+    wrapper.appendChild(toolbar);
+
+    // Create editor
+    this.editor = document.createElement('div');
+    this.editor.className = 'doc-editor';
+    this.editor.contentEditable = String(!this.readonly);
+    this.editor.setAttribute('data-placeholder', this.placeholder);
+
+    // Add default paragraph
+    const p = document.createElement('p');
+    p.innerHTML = '<br>'; // Placeholder for empty paragraph
+    this.editor.appendChild(p);
+
+    this.editor.addEventListener('paste', this.handlePaste);
+    this.editor.addEventListener('keyup', this.saveCurrentSelection);
+    this.editor.addEventListener('mouseup', this.saveCurrentSelection);
+    this.editor.addEventListener('click', this.saveCurrentSelection);
+    wrapper.appendChild(this.editor);
+    this.shadowRoot.appendChild(wrapper);
   }
 
-  @render()
-  render() {
-    return html`
-      <div class="doc-container">
-        ${this.blocks.map((block, index) => block.type === 'divider' ? html`
-          <div class="doc-block block-divider" data-block-id="${block.id}">
-            <div
-              class="block-handle"
-              draggable="${!this.readonly}"
-              @dragstart=${(e: DragEvent) => this.handleDragStart(block.id, e)}
-              @dragend=${() => this.handleDragEnd()}
-            >
-              <svg viewBox="0 0 16 16" fill="currentColor">
-                <circle cx="3" cy="3" r="1.5" />
-                <circle cx="8" cy="3" r="1.5" />
-                <circle cx="3" cy="8" r="1.5" />
-                <circle cx="8" cy="8" r="1.5" />
-                <circle cx="3" cy="13" r="1.5" />
-                <circle cx="8" cy="13" r="1.5" />
-              </svg>
-            </div>
-          </div>
-        ` : html`
-          <div
-            class="doc-block block-${block.type} ${block.checked ? 'checked' : ''} ${this.draggedBlock === block.id ? 'dragging' : ''}"
-            data-block-id="${block.id}"
-            data-number="${block.type === 'numbered-list' ? index + 1 : ''}"
-            @dragover=${(e: DragEvent) => this.handleDragOver(block.id, e)}
-            @drop=${(e: DragEvent) => this.handleDrop(block.id, e)}
-          >
-            <div
-              class="block-handle"
-              draggable="${!this.readonly}"
-              @dragstart=${(e: DragEvent) => this.handleDragStart(block.id, e)}
-              @dragend=${() => this.handleDragEnd()}
-            >
-              <svg viewBox="0 0 16 16" fill="currentColor">
-                <circle cx="3" cy="3" r="1.5" />
-                <circle cx="8" cy="3" r="1.5" />
-                <circle cx="3" cy="8" r="1.5" />
-                <circle cx="8" cy="8" r="1.5" />
-                <circle cx="3" cy="13" r="1.5" />
-                <circle cx="8" cy="13" r="1.5" />
-              </svg>
-            </div>
-            ${block.type === 'todo'
-              ? html`<input
-                  type="checkbox"
-                  class="block-checkbox"
-                  ?checked=${block.checked}
-                  @change=${() => this.handleTodoToggle(block.id)}
-                />`
-              : ''}
-            <div
-              class="block-content"
-              contenteditable="${!this.readonly}"
-              data-block-id="${block.id}"
-              data-placeholder="${index === 0 && !block.content ? this.placeholder : "Type '/' for commands"}"
-              @input=${(e: Event) => this.handleInput(block.id, e)}
-              @focus=${() => this.handleFocus(block.id)}
-              @blur=${() => this.handleBlur(block.id)}
-            >
-              ${block.content}
-            </div>
-          </div>
-        `)}
-        ${this.showBlockMenu ? this.renderBlockMenu() : ''}
-      </div>
-    `;
+  private createToolbar(): HTMLElement {
+    const toolbar = document.createElement('div');
+    toolbar.className = 'toolbar';
+
+    const tools = [
+      { cmd: 'bold', label: 'B', title: 'Bold (Ctrl+B)' },
+      { cmd: 'italic', label: 'I', title: 'Italic (Ctrl+I)' },
+      { cmd: 'underline', label: 'U', title: 'Underline (Ctrl+U)' },
+      { cmd: 'strikeThrough', label: 'S', title: 'Strikethrough' },
+      { cmd: 'divider' },
+      { cmd: 'formatBlock', value: 'h1', label: 'H1', title: 'Heading 1' },
+      { cmd: 'formatBlock', value: 'h2', label: 'H2', title: 'Heading 2' },
+      { cmd: 'formatBlock', value: 'h3', label: 'H3', title: 'Heading 3' },
+      { cmd: 'formatBlock', value: 'p', label: 'P', title: 'Paragraph' },
+      { cmd: 'divider' },
+      { cmd: 'insertUnorderedList', label: '•', title: 'Bullet List' },
+      { cmd: 'insertOrderedList', label: '1.', title: 'Numbered List' },
+      { cmd: 'divider' },
+      { cmd: 'createLink', label: '🔗', title: 'Insert Link' },
+      { cmd: 'insertImage', label: '🖼', title: 'Insert Image' },
+      { cmd: 'insertTable', label: '📊', title: 'Insert Table' },
+      { cmd: 'insertDivider', label: '―', title: 'Insert Divider' },
+    ];
+
+    tools.forEach(tool => {
+      if (tool.cmd === 'divider') {
+        const divider = document.createElement('div');
+        divider.className = 'toolbar-divider';
+        toolbar.appendChild(divider);
+      } else {
+        const btn = document.createElement('button');
+        btn.className = 'toolbar-btn';
+        btn.textContent = tool.label || '';
+        btn.title = tool.title || '';
+        btn.addEventListener('click', () => this.execCommand(tool.cmd, tool.value));
+        toolbar.appendChild(btn);
+      }
+    });
+
+    toolbar.addEventListener('mousedown', this.saveSelectionBeforeAction);
+    return toolbar;
   }
 
-  private renderBlockMenu() {
-    const items = this.getFilteredBlockMenuItems();
+  private execCommand(cmd: string, value?: string) {
+    this.editor.focus();
 
-    return html`
-      <div class="block-menu">
-        ${items.map(
-          (item, index) => html`
-            <div
-              class="block-menu-item ${index === this.blockMenuSelectedIndex ? 'selected' : ''}"
-              @click=${() => this.handleBlockMenuItemClick(this.blockMenuBlockId, item.type)}
-            >
-              <div class="block-menu-icon">${item.icon}</div>
-              <div class="block-menu-label">${item.label}</div>
-            </div>
-          `
-        )}
-        ${items.length === 0
-          ? html`<div class="block-menu-item">
-              <div class="block-menu-label">No results</div>
-            </div>`
-          : ''}
-      </div>
-    `;
+    switch (cmd) {
+      case 'createLink':
+        this.showLinkDialog();
+        break;
+      case 'insertImage':
+        this.insertImage();
+        break;
+      case 'insertTable':
+        this.insertTable();
+        break;
+      case 'insertDivider':
+        this.insertDivider();
+        break;
+      default:
+        document.execCommand(cmd, false, value);
+        break;
+    }
   }
 
-  @dispatch('doc-change')
-  private emitChange(): CustomEvent<{ blocks: DocBlock[] }> {
-    return new CustomEvent('doc-change', {
-      detail: { blocks: this.blocks },
-      bubbles: true,
-      composed: true,
+  private showLinkDialog() {
+    const dialog = document.createElement('snice-modal');
+    dialog.setAttribute('title', 'Insert Link');
+
+    const content = document.createElement('div');
+    content.style.padding = '20px';
+
+    const input = document.createElement('snice-input') as any;
+    input.setAttribute('label', 'URL');
+    input.setAttribute('placeholder', 'https://example.com');
+    input.style.width = '100%';
+    content.appendChild(input);
+
+    const actions = document.createElement('div');
+    actions.style.display = 'flex';
+    actions.style.gap = '10px';
+    actions.style.justifyContent = 'flex-end';
+    actions.style.marginTop = '20px';
+
+    const cancelBtn = document.createElement('snice-button');
+    cancelBtn.textContent = 'Cancel';
+    cancelBtn.setAttribute('variant', 'secondary');
+    cancelBtn.addEventListener('click', () => {
+      dialog.remove();
+    });
+    actions.appendChild(cancelBtn);
+
+    const insertBtn = document.createElement('snice-button');
+    insertBtn.textContent = 'Insert';
+    insertBtn.addEventListener('click', () => {
+      const url = input.value;
+      if (url) {
+        this.restoreSelection();
+        document.execCommand('createLink', false, url);
+      }
+      dialog.remove();
+    });
+    actions.appendChild(insertBtn);
+
+    content.appendChild(actions);
+    dialog.appendChild(content);
+
+    document.body.appendChild(dialog);
+
+    // Wait for components to be ready, then show modal
+    customElements.whenDefined('snice-modal').then(() => {
+      requestAnimationFrame(() => {
+        (dialog as any).show();
+        setTimeout(() => input.focus(), 100);
+      });
     });
   }
 
-  @dispatch('doc-focus')
-  private emitFocus(blockId: string): CustomEvent<{ blockId: string }> {
-    return new CustomEvent('doc-focus', {
-      detail: { blockId },
-      bubbles: true,
-      composed: true,
+  private insertImage() {
+    this.showImageDialog();
+  }
+
+  private showImageDialog() {
+    const dialog = document.createElement('snice-modal');
+    dialog.setAttribute('title', 'Insert Image');
+
+    const content = document.createElement('div');
+    content.style.padding = '20px';
+
+    const input = document.createElement('snice-input') as any;
+    input.setAttribute('label', 'Image URL');
+    input.setAttribute('placeholder', 'https://example.com/image.jpg');
+    input.style.width = '100%';
+    content.appendChild(input);
+
+    const actions = document.createElement('div');
+    actions.style.display = 'flex';
+    actions.style.gap = '10px';
+    actions.style.justifyContent = 'flex-end';
+    actions.style.marginTop = '20px';
+
+    const cancelBtn = document.createElement('snice-button');
+    cancelBtn.textContent = 'Cancel';
+    cancelBtn.setAttribute('variant', 'secondary');
+    cancelBtn.addEventListener('click', () => {
+      dialog.remove();
+    });
+    actions.appendChild(cancelBtn);
+
+    const insertBtn = document.createElement('snice-button');
+    insertBtn.textContent = 'Insert';
+    insertBtn.addEventListener('click', () => {
+      const url = input.value;
+      if (url) {
+        this.doInsertImage(url);
+      }
+      dialog.remove();
+    });
+    actions.appendChild(insertBtn);
+
+    content.appendChild(actions);
+    dialog.appendChild(content);
+
+    document.body.appendChild(dialog);
+
+    // Wait for components to be ready, then show modal
+    customElements.whenDefined('snice-modal').then(() => {
+      requestAnimationFrame(() => {
+        (dialog as any).show();
+        setTimeout(() => input.focus(), 100);
+      });
     });
   }
 
-  @dispatch('doc-blur')
-  private emitBlur(blockId: string): CustomEvent<{ blockId: string }> {
-    return new CustomEvent('doc-blur', {
-      detail: { blockId },
-      bubbles: true,
-      composed: true,
+  private doInsertImage(url: string) {
+    this.restoreSelection();
+    this.editor.focus();
+
+    const img = document.createElement('img');
+    img.src = url;
+    img.style.maxWidth = '100%';
+    img.style.height = 'auto';
+    img.style.display = 'block';
+    img.style.margin = '10px 0';
+
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+
+      if (!this.editor.contains(range.commonAncestorContainer)) {
+        this.editor.appendChild(img);
+      } else {
+        range.insertNode(img);
+        range.setStartAfter(img);
+        range.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+    } else {
+      this.editor.appendChild(img);
+    }
+  }
+
+  private insertTable() {
+    this.showTableDialog();
+  }
+
+  private showTableDialog() {
+    const dialog = document.createElement('snice-modal');
+    dialog.setAttribute('title', 'Insert Table');
+
+    const content = document.createElement('div');
+    content.style.padding = '20px';
+
+    const rowsInput = document.createElement('snice-input') as any;
+    rowsInput.setAttribute('label', 'Rows');
+    rowsInput.setAttribute('type', 'number');
+    rowsInput.setAttribute('value', '3');
+    rowsInput.style.width = '100%';
+    rowsInput.style.marginBottom = '15px';
+    content.appendChild(rowsInput);
+
+    const colsInput = document.createElement('snice-input') as any;
+    colsInput.setAttribute('label', 'Columns');
+    colsInput.setAttribute('type', 'number');
+    colsInput.setAttribute('value', '3');
+    colsInput.style.width = '100%';
+    content.appendChild(colsInput);
+
+    const actions = document.createElement('div');
+    actions.style.display = 'flex';
+    actions.style.gap = '10px';
+    actions.style.justifyContent = 'flex-end';
+    actions.style.marginTop = '20px';
+
+    const cancelBtn = document.createElement('snice-button');
+    cancelBtn.textContent = 'Cancel';
+    cancelBtn.setAttribute('variant', 'secondary');
+    cancelBtn.addEventListener('click', () => {
+      dialog.remove();
+    });
+    actions.appendChild(cancelBtn);
+
+    const insertBtn = document.createElement('snice-button');
+    insertBtn.textContent = 'Insert';
+    insertBtn.addEventListener('click', () => {
+      const rows = parseInt(rowsInput.value) || 3;
+      const cols = parseInt(colsInput.value) || 3;
+      this.doInsertTable(rows, cols);
+      dialog.remove();
+    });
+    actions.appendChild(insertBtn);
+
+    content.appendChild(actions);
+    dialog.appendChild(content);
+
+    document.body.appendChild(dialog);
+
+    // Wait for components to be ready, then show modal
+    customElements.whenDefined('snice-modal').then(() => {
+      // Use connectedCallback to ensure the component is fully initialized
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          (dialog as any).open = true;
+          setTimeout(() => rowsInput.focus(), 100);
+        });
+      });
     });
   }
 
-  /**
-   * Get current blocks
-   */
-  getBlocks(): DocBlock[] {
-    return [...this.blocks];
-  }
+  private doInsertTable(rows: number, cols: number) {
+    this.restoreSelection();
+    this.editor.focus();
 
-  /**
-   * Set blocks
-   */
-  setBlocks(blocks: DocBlock[]): void {
-    this.blocks = blocks.map((b) => ({ ...b }));
-  }
+    const table = document.createElement('table');
+    table.style.borderCollapse = 'collapse';
+    table.style.width = '100%';
+    table.style.margin = '10px 0';
 
-  /**
-   * Export as JSON
-   */
-  toJSON(): string {
-    return JSON.stringify(this.blocks, null, 2);
-  }
-
-  /**
-   * Import from JSON
-   */
-  fromJSON(json: string): void {
-    try {
-      const blocks = JSON.parse(json);
-      if (Array.isArray(blocks)) {
-        this.blocks = blocks;
+    for (let i = 0; i < rows; i++) {
+      const tr = document.createElement('tr');
+      for (let j = 0; j < cols; j++) {
+        const td = document.createElement('td');
+        td.style.border = '1px solid #ddd';
+        td.style.padding = '8px';
+        td.innerHTML = '<br>';
+        tr.appendChild(td);
       }
-    } catch (error) {
-      console.error('Failed to parse JSON:', error);
+      table.appendChild(tr);
+    }
+
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+
+      if (!this.editor.contains(range.commonAncestorContainer)) {
+        this.editor.appendChild(table);
+      } else {
+        range.insertNode(table);
+        range.setStartAfter(table);
+        range.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+    } else {
+      this.editor.appendChild(table);
     }
   }
 
-  /**
-   * Export as Markdown
-   */
-  toMarkdown(): string {
-    return this.blocks
-      .map((block) => {
-        switch (block.type) {
-          case 'heading-1':
-            return `# ${block.content}`;
-          case 'heading-2':
-            return `## ${block.content}`;
-          case 'heading-3':
-            return `### ${block.content}`;
-          case 'bulleted-list':
-            return `- ${block.content}`;
-          case 'numbered-list':
-            return `1. ${block.content}`;
-          case 'todo':
-            return `- [${block.checked ? 'x' : ' '}] ${block.content}`;
-          case 'code':
-            return `\`\`\`\n${block.content}\n\`\`\``;
-          case 'quote':
-            return `> ${block.content}`;
-          case 'divider':
-            return '---';
-          default:
-            return block.content;
-        }
-      })
-      .join('\n\n');
-  }
+  private insertDivider() {
+    this.restoreSelection();
+    this.editor.focus();
 
-  /**
-   * Export as HTML
-   */
-  toHTML(): string {
-    return this.blocks
-      .map((block) => {
-        const content = this.escapeHtml(block.content);
-        switch (block.type) {
-          case 'heading-1':
-            return `<h1>${content}</h1>`;
-          case 'heading-2':
-            return `<h2>${content}</h2>`;
-          case 'heading-3':
-            return `<h3>${content}</h3>`;
-          case 'bulleted-list':
-            return `<ul><li>${content}</li></ul>`;
-          case 'numbered-list':
-            return `<ol><li>${content}</li></ol>`;
-          case 'todo':
-            return `<input type="checkbox" ${block.checked ? 'checked' : ''}>${content}`;
-          case 'code':
-            return `<pre><code>${content}</code></pre>`;
-          case 'quote':
-            return `<blockquote>${content}</blockquote>`;
-          case 'divider':
-            return '<hr>';
-          default:
-            return `<p>${content}</p>`;
-        }
-      })
-      .join('\n');
-  }
+    const hr = document.createElement('hr');
+    hr.style.margin = '20px 0';
+    hr.style.border = 'none';
+    hr.style.borderTop = '1px solid #e1e4e8';
 
-  /**
-   * Focus the editor
-   */
-  focus(): void {
-    this.firstBlockElement?.focus();
-  }
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
 
-  /**
-   * Clear all content
-   */
-  clear(): void {
-    this.blocks = [{ id: generateId(), type: 'paragraph', content: '', formats: [] }];
-  }
-
-  private escapeHtml(text: string): string {
-    return text
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
-  }
-
-  private handleKeyDown = (e: KeyboardEvent) => {
-    if (this.readonly) return;
-
-    const target = e.target as HTMLElement;
-    if (!target.classList.contains('block-content')) return;
-
-    const blockId = target.dataset.blockId!;
-    const block = this.blocks.find((b) => b.id === blockId);
-    if (!block) return;
-
-    // Handle block menu navigation
-    if (this.showBlockMenu) {
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        this.blockMenuSelectedIndex = Math.min(
-          this.blockMenuSelectedIndex + 1,
-          this.getFilteredBlockMenuItems().length - 1
-        );
-        ;
-        return;
+      // Check if the range is within the editor
+      if (!this.editor.contains(range.commonAncestorContainer)) {
+        this.editor.appendChild(hr);
+      } else {
+        range.insertNode(hr);
+        range.setStartAfter(hr);
+        range.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(range);
       }
-      if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        this.blockMenuSelectedIndex = Math.max(this.blockMenuSelectedIndex - 1, 0);
-        ;
-        return;
-      }
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        const items = this.getFilteredBlockMenuItems();
-        if (items[this.blockMenuSelectedIndex]) {
-          this.selectBlockType(this.blockMenuBlockId, items[this.blockMenuSelectedIndex].type);
-        }
-        return;
-      }
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        this.hideBlockMenu();
-        return;
-      }
+    } else {
+      this.editor.appendChild(hr);
     }
-
-    // Enter - create new block
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      this.createNewBlock(blockId);
-      return;
-    }
-
-    // Backspace on empty block - remove block
-    if (e.key === 'Backspace' && block.content === '' && this.blocks.length > 1) {
-      e.preventDefault();
-      this.removeBlock(blockId);
-      return;
-    }
-
-    // Keyboard shortcuts
-    if (e.ctrlKey || e.metaKey) {
-      if (e.key === 'b') {
-        e.preventDefault();
-        this.toggleFormat('bold');
-      } else if (e.key === 'i') {
-        e.preventDefault();
-        this.toggleFormat('italic');
-      } else if (e.key === 'u') {
-        e.preventDefault();
-        this.toggleFormat('underline');
-      }
-    }
-  };
+  }
 
   private handlePaste = (e: ClipboardEvent) => {
     if (this.readonly) return;
-    // Allow default paste behavior for now
-    // Could add special handling for HTML/markdown paste
+
+    const items = e.clipboardData?.items;
+    if (items) {
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image') !== -1) {
+          e.preventDefault();
+          const blob = items[i].getAsFile();
+          if (blob) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+              const dataUrl = (event.target?.result as string) || null;
+              if (!dataUrl) return;
+              const img = document.createElement('img');
+              img.src = dataUrl;
+              img.style.maxWidth = '100%';
+              img.style.height = 'auto';
+
+              const selection = window.getSelection();
+              if (selection && selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                range.insertNode(img);
+                range.setStartAfter(img);
+                range.collapse(true);
+                selection.removeAllRanges();
+                selection.addRange(range);
+              }
+            };
+            reader.readAsDataURL(blob);
+          }
+          return;
+        }
+      }
+    }
   };
 
-  private handleInput(blockId: string, e: Event) {
-    if (this.readonly) return;
-
-    const target = e.target as HTMLElement;
-    const content = target.textContent || '';
-
-    const blockIndex = this.blocks.findIndex((b) => b.id === blockId);
-    if (blockIndex === -1) return;
-
-    // Check for block menu trigger
-    if (content.startsWith('/')) {
-      this.showBlockMenuFor(blockId, content.slice(1));
-    } else {
-      this.hideBlockMenu();
+  private saveCurrentSelection = () => {
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+      // Just save it - we'll validate when restoring
+      this.savedSelection = range.cloneRange();
     }
+  };
 
-    // Update block content
-    this.blocks = this.blocks.map((b) =>
-      b.id === blockId ? { ...b, content: content } : b
-    );
-  }
+  private saveSelectionBeforeAction = (e: MouseEvent) => {
+    // Save selection before clicking toolbar/sidebar buttons
+    this.saveCurrentSelection();
+  };
 
-  private handleFocus(blockId: string) {
-    this.emitFocus(blockId);
-  }
-
-  private handleBlur(blockId: string) {
-    this.emitBlur(blockId);
-  }
-
-  private createNewBlock(afterBlockId: string) {
-    const index = this.blocks.findIndex((b) => b.id === afterBlockId);
-    if (index === -1) return;
-
-    const newBlock: DocBlock = {
-      id: generateId(),
-      type: 'paragraph',
-      content: '',
-      formats: [],
-    };
-
-    this.blocks = [
-      ...this.blocks.slice(0, index + 1),
-      newBlock,
-      ...this.blocks.slice(index + 1),
-    ];
-
-    // Focus new block
-    setTimeout(() => {
-      const el = this.shadowRoot?.querySelector(
-        `[data-block-id="${newBlock.id}"]`
-      ) as HTMLElement;
-      el?.focus();
-    });
-  }
-
-  private removeBlock(blockId: string) {
-    const index = this.blocks.findIndex((b) => b.id === blockId);
-    if (index === -1) return;
-
-    this.blocks = this.blocks.filter((b) => b.id !== blockId);
-
-    // Focus previous block
-    if (index > 0) {
-      setTimeout(() => {
-        const prevBlock = this.blocks[index - 1];
-        const el = this.shadowRoot?.querySelector(
-          `[data-block-id="${prevBlock.id}"]`
-        ) as HTMLElement;
-        el?.focus();
-      });
+  private restoreSelection() {
+    if (this.savedSelection) {
+      const selection = window.getSelection();
+      if (selection) {
+        selection.removeAllRanges();
+        selection.addRange(this.savedSelection);
+      }
     }
   }
 
-  private toggleFormat(format: InlineFormat) {
-    // TODO: Implement inline formatting
-    console.log('Toggle format:', format);
+  private handleSelectionChange = () => {
+    const selection = window.getSelection();
+    if (!selection || selection.isCollapsed || selection.rangeCount === 0) {
+      return;
+    }
+
+    // Check if selection is within our editor
+    const range = selection.getRangeAt(0);
+    if (!this.editor.contains(range.commonAncestorContainer)) {
+      return;
+    }
+
+    // Could add floating toolbar here if desired
+  };
+
+  /**
+   * Get document HTML
+   */
+  getHTML(): string {
+    return this.editor.innerHTML;
   }
 
-  private showBlockMenuFor(blockId: string, filter: string) {
-    this.showBlockMenu = true;
-    this.blockMenuBlockId = blockId;
-    this.blockMenuFilter = filter;
-    this.blockMenuSelectedIndex = 0;
-    ;
+  /**
+   * Set document HTML
+   */
+  setHTML(html: string) {
+    this.editor.innerHTML = html;
   }
 
-  private hideBlockMenu() {
-    this.showBlockMenu = false;
-    this.blockMenuFilter = '';
-    this.blockMenuSelectedIndex = 0;
-    ;
-  }
-
-  private getFilteredBlockMenuItems(): BlockMenuItem[] {
-    if (!this.blockMenuFilter) return BLOCK_MENU_ITEMS;
-    const filter = this.blockMenuFilter.toLowerCase();
-    return BLOCK_MENU_ITEMS.filter(
-      (item) =>
-        item.label.toLowerCase().includes(filter) ||
-        item.keywords.some((k) => k.includes(filter))
-    );
-  }
-
-  private selectBlockType(blockId: string, type: BlockType) {
-    this.blocks = this.blocks.map((b) =>
-      b.id === blockId ? { ...b, type, content: '' } : b
-    );
-    this.hideBlockMenu();
-
-    // Focus the block
-    setTimeout(() => {
-      const el = this.shadowRoot?.querySelector(`[data-block-id="${blockId}"]`) as HTMLElement;
-      el?.focus();
-    });
-  }
-
-  private handleBlockMenuItemClick(blockId: string, type: BlockType) {
-    this.selectBlockType(blockId, type);
-  }
-
-  private handleTodoToggle(blockId: string) {
-    if (this.readonly) return;
-    this.blocks = this.blocks.map((b) =>
-      b.id === blockId ? { ...b, checked: !b.checked } : b
-    );
-  }
-
-  private handleDragStart(blockId: string, e: DragEvent) {
-    if (this.readonly) return;
-    this.draggedBlock = blockId;
-    e.dataTransfer!.effectAllowed = 'move';
-  }
-
-  private handleDragOver(blockId: string, e: DragEvent) {
-    if (this.readonly) return;
-    if (!this.draggedBlock || this.draggedBlock === blockId) return;
-    e.preventDefault();
-    e.dataTransfer!.dropEffect = 'move';
-  }
-
-  private handleDrop(blockId: string, e: DragEvent) {
-    if (this.readonly) return;
-    e.preventDefault();
-
-    if (!this.draggedBlock || this.draggedBlock === blockId) return;
-
-    const draggedIndex = this.blocks.findIndex((b) => b.id === this.draggedBlock);
-    const targetIndex = this.blocks.findIndex((b) => b.id === blockId);
-
-    if (draggedIndex === -1 || targetIndex === -1) return;
-
-    const newBlocks = [...this.blocks];
-    const [draggedBlock] = newBlocks.splice(draggedIndex, 1);
-    newBlocks.splice(targetIndex, 0, draggedBlock);
-
-    this.blocks = newBlocks;
-    this.draggedBlock = null;
-  }
-
-  private handleDragEnd() {
-    this.draggedBlock = null;
+  /**
+   * Clear document
+   */
+  clear() {
+    this.editor.innerHTML = '<p><br></p>';
   }
 }
 
@@ -632,5 +505,4 @@ declare global {
   interface HTMLElementTagNameMap {
     'snice-doc': SniceDoc;
   }
-  interface HTMLElementEventMap extends SniceDocEventMap {}
 }
