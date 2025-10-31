@@ -147,12 +147,7 @@ For each component:
    - [x] Demo page
    - [x] Human docs
    - [x] AI docs
-29. [x] `<snice-gantt>` - Gantt chart
-   - [x] Implementation (11/11 tests passing)
-   - [x] Demo page
-   - [x] Human docs
-   - [x] AI docs
-30. [x] `<snice-chart>` - General-purpose chart component with multiple types:
+29. [x] `<snice-chart>` - General-purpose chart component with multiple types:
    - [x] Implementation (19/19 tests passing, 1 skipped)
    - [x] Demo page
    - [x] Human docs
