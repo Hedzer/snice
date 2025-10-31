@@ -185,12 +185,28 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
     }
 
     if (this.options.xAxis?.grid) {
-      for (let i = 0; i <= xCount; i++) {
-        const x = padding.left + (chartWidth / xCount) * i;
-        this.ctx.beginPath();
-        this.ctx.moveTo(x, padding.top);
-        this.ctx.lineTo(x, padding.top + chartHeight);
-        this.ctx.stroke();
+      const hasBarChart = this.datasets.some(d => (d.type || this.type) === 'bar');
+
+      if (hasBarChart) {
+        // Bar chart: draw grid lines at segment boundaries
+        const numSegments = this.labels.length || xCount;
+        const segmentWidth = chartWidth / numSegments;
+        for (let i = 0; i <= numSegments; i++) {
+          const x = padding.left + segmentWidth * i;
+          this.ctx.beginPath();
+          this.ctx.moveTo(x, padding.top);
+          this.ctx.lineTo(x, padding.top + chartHeight);
+          this.ctx.stroke();
+        }
+      } else {
+        // Line/area chart: grid at data points
+        for (let i = 0; i <= xCount; i++) {
+          const x = padding.left + (chartWidth / xCount) * i;
+          this.ctx.beginPath();
+          this.ctx.moveTo(x, padding.top);
+          this.ctx.lineTo(x, padding.top + chartHeight);
+          this.ctx.stroke();
+        }
       }
     }
   }
@@ -226,16 +242,30 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
       this.ctx.fillText(value.toFixed(1), padding.left - 10, y);
     }
 
-    // X axis labels - align with line chart points
+    // X axis labels
     this.ctx.textAlign = 'center';
     this.ctx.textBaseline = 'top';
     const numLabels = this.labels.length;
     if (numLabels > 0) {
-      const spacing = chartWidth / (numLabels - 1 || 1);
-      for (let i = 0; i < numLabels; i++) {
-        const x = padding.left + spacing * i;
-        const label = this.labels[i] || i.toString();
-        this.ctx.fillText(label, x, padding.top + chartHeight + 10);
+      // Check if we're drawing a bar chart
+      const hasBarChart = this.datasets.some(d => (d.type || this.type) === 'bar');
+
+      if (hasBarChart) {
+        // Bar chart: center labels in equal segments
+        const segmentWidth = chartWidth / numLabels;
+        for (let i = 0; i < numLabels; i++) {
+          const x = padding.left + segmentWidth * i + segmentWidth / 2;
+          const label = this.labels[i] || i.toString();
+          this.ctx.fillText(label, x, padding.top + chartHeight + 10);
+        }
+      } else {
+        // Line/area chart: spread labels edge-to-edge
+        const spacing = chartWidth / (numLabels - 1 || 1);
+        for (let i = 0; i < numLabels; i++) {
+          const x = padding.left + spacing * i;
+          const label = this.labels[i] || i.toString();
+          this.ctx.fillText(label, x, padding.top + chartHeight + 10);
+        }
       }
     }
   }
@@ -320,17 +350,20 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
     const datasetOffset = visibleDatasets.indexOf(dataset);
 
     const numBars = dataset.data.length;
-    const spacing = chartWidth / Math.max(numBars - 1, 1);
-    const maxBarGroupWidth = spacing * 0.6;
-    const barGroupWidth = Math.min(maxBarGroupWidth, 80);
-    const singleBarWidth = barGroupWidth / visibleCount;
+    // For bar charts, divide width into equal segments
+    const segmentWidth = chartWidth / numBars;
+    const maxBarGroupWidth = segmentWidth * 0.8;
+    const singleBarWidth = maxBarGroupWidth / visibleCount;
 
     dataset.data.forEach((value, index) => {
       const y = typeof value === 'number' ? value : (value as ChartDataPoint).y || 0;
       const barHeight = ((y - yMin) / (yMax - yMin)) * chartHeight;
 
-      const labelX = spacing * index;
-      let x = labelX - barGroupWidth / 2 + datasetOffset * singleBarWidth;
+      // Center of this bar's segment
+      const segmentCenter = segmentWidth * index + segmentWidth / 2;
+      // For single dataset, center the bar. For multiple, offset by dataset position
+      let x = segmentCenter - singleBarWidth / 2 + (visibleCount > 1 ? datasetOffset * singleBarWidth - maxBarGroupWidth / 2 + singleBarWidth / 2 : 0);
+
 
       if (x < 0) x = 0;
       if (x + singleBarWidth > chartWidth) x = chartWidth - singleBarWidth;
