@@ -4,7 +4,18 @@
   <title>Calendar Demo</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body { padding: 40px; }
+    body {
+      padding: 40px;
+      background: var(--snice-color-background, rgb(255 255 255));
+      color: var(--snice-color-text, rgb(23 23 23));
+      transition: background-color 200ms ease, color 200ms ease;
+    }
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
     .example {
       margin: 30px 0;
     }
@@ -17,28 +28,34 @@
       gap: 10px;
     }
     button {
-      padding: 8px 16px;
-      background: #2196f3;
-      color: white;
+      padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-md, 1rem);
+      background: var(--snice-color-primary, rgb(37 99 235));
+      color: var(--snice-color-text-inverse, rgb(250 250 250));
       border: none;
-      border-radius: 4px;
+      border-radius: var(--snice-border-radius-md, 0.25rem);
       cursor: pointer;
-      font-size: 14px;
+      font-size: var(--snice-font-size-sm, 0.875rem);
+      font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+      transition: background-color var(--snice-transition-fast, 150ms) ease;
     }
     button:hover {
-      background: #1976d2;
+      background: var(--snice-color-primary-hover, rgb(29 78 216));
+    }
+    button:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
     }
     .info {
       margin-top: 10px;
       padding: 10px;
-      background: #f5f5f5;
+      background: var(--snice-color-background-secondary, rgb(250 250 250));
       border-radius: 4px;
       font-size: 14px;
     }
   </style>
   <script type="module">
-    import '../../dist/snice.esm.js';
-    import './snice-calendar.js';
+    import 'snice';
+    import './snice-calendar.ts';
 
     document.addEventListener('DOMContentLoaded', () => {
       // Basic calendar
@@ -51,6 +68,7 @@
 
       // Calendar with events
       const eventCalendar = document.getElementById('event-calendar');
+      const today = new Date();
       eventCalendar.events = [
         {
           id: 1,
@@ -60,15 +78,23 @@
         },
         {
           id: 2,
-          title: 'Project Deadline',
-          start: new Date(new Date().setDate(new Date().getDate() + 5)),
-          color: '#f44336'
+          title: 'Conference (3 days)',
+          start: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 5),
+          end: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7),
+          color: '#9c27b0'
         },
         {
           id: 3,
-          title: 'Client Call',
-          start: new Date(new Date().setDate(new Date().getDate() + 10)),
-          color: '#4caf50'
+          title: 'Project Deadline',
+          start: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 10),
+          color: '#f44336'
+        },
+        {
+          id: 4,
+          title: 'Vacation',
+          start: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 15),
+          end: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 20),
+          color: '#ff9800'
         }
       ];
 
@@ -78,7 +104,6 @@
 
       // Min/Max calendar
       const restrictedCalendar = document.getElementById('restricted-calendar');
-      const today = new Date();
       const minDate = new Date(today.getFullYear(), today.getMonth(), 1);
       const maxDate = new Date(today.getFullYear(), today.getMonth() + 2, 0);
 
@@ -92,10 +117,20 @@
       // Locale calendar
       const localeCalendar = document.getElementById('locale-calendar');
       localeCalendar.locale = 'fr-FR';
+
+      // Theme toggle
+      const themeToggle = document.getElementById('theme-toggle');
+      themeToggle.addEventListener('click', () => {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        themeToggle.textContent = newTheme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
+      });
     });
   </script>
 </head>
 <body>
+  <button id="theme-toggle" class="theme-toggle">🌙 Dark Mode</button>
   <h2>Calendar Component Demo</h2>
 
   <div class="example">
@@ -108,7 +143,7 @@
 
   <div class="example">
     <h3>Calendar with Events</h3>
-    <p>Events are shown as colored bars. Click on an event to see details.</p>
+    <p>Events are shown as colored bars. Supports both single-day and multi-day events (e.g., Conference spans 3 days, Vacation spans 6 days). Click on an event to see details.</p>
     <snice-calendar id="event-calendar"></snice-calendar>
   </div>
 

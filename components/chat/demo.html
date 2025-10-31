@@ -162,6 +162,10 @@
     </div>
 
     <script type="module">
+      import './snice-chat.ts';
+
+      await customElements.whenDefined('snice-chat');
+
       const chat1 = document.getElementById('chat1');
       const chat2 = document.getElementById('chat2');
       const userSelect1 = document.getElementById('user-select-1');

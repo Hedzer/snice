@@ -102,7 +102,7 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
           @dragleave=${this.handleDragLeave}
           @drop=${this.handleDrop}
         >
-          <div class="${iconClasses}">📁</div>
+          <div class="${iconClasses}">📎</div>
           <div class="upload-text">
             <if ${this.dragDrop}>
               Drag and drop ${this.multiple ? 'files' : 'a file'} here or

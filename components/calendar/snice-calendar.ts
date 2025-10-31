@@ -1,4 +1,4 @@
-import { element, property, render, styles, dispatch, html, css } from 'snice';
+import { element, property, styles, dispatch, ready, watch, css } from 'snice';
 import type { SniceCalendarElement, CalendarView, CalendarEvent } from './snice-calendar.types';
 import cssContent from './snice-calendar.css?inline';
 
@@ -35,6 +35,10 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
   locale = 'en-US';
 
   private displayDate = new Date();
+  private container!: HTMLElement;
+  private header!: HTMLElement;
+  private grid!: HTMLElement;
+  private dayCells: HTMLElement[] = [];
 
   @dispatch('@snice/calendar-change', { bubbles: true, composed: true })
   private dispatchChange() {
@@ -51,40 +55,193 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
     return css/*css*/`${cssContent}`;
   }
 
+  @ready()
+  initialize() {
+    this.createDOM();
+    this.updateView();
+  }
+
+  private createDOM() {
+    const shadow = this.shadowRoot!;
+
+    // Create container
+    this.container = document.createElement('div');
+    this.container.className = `calendar calendar--${this.view}`;
+
+    // Create header
+    this.header = document.createElement('div');
+    this.header.className = 'calendar__header';
+
+    const title = document.createElement('div');
+    title.className = 'calendar__title';
+
+    const nav = document.createElement('div');
+    nav.className = 'calendar__nav';
+
+    const todayBtn = document.createElement('button');
+    todayBtn.className = 'calendar__nav-button';
+    todayBtn.textContent = 'Today';
+    todayBtn.onclick = () => this.goToToday();
+
+    const prevBtn = document.createElement('button');
+    prevBtn.className = 'calendar__nav-button';
+    prevBtn.textContent = '‹';
+    prevBtn.onclick = () => this.previousMonth();
+
+    const nextBtn = document.createElement('button');
+    nextBtn.className = 'calendar__nav-button';
+    nextBtn.textContent = '›';
+    nextBtn.onclick = () => this.nextMonth();
+
+    nav.appendChild(todayBtn);
+    nav.appendChild(prevBtn);
+    nav.appendChild(nextBtn);
+
+    this.header.appendChild(title);
+    this.header.appendChild(nav);
+
+    // Create grid
+    this.grid = document.createElement('div');
+    this.grid.className = 'calendar__grid';
+
+    // Add weekday headers
+    const weekdays = this.getWeekdays();
+    weekdays.forEach(day => {
+      const weekdayEl = document.createElement('div');
+      weekdayEl.className = 'calendar__weekday';
+      weekdayEl.textContent = day;
+      this.grid.appendChild(weekdayEl);
+    });
+
+    // Create 42 day cells
+    for (let i = 0; i < 42; i++) {
+      const dayCell = document.createElement('div');
+      dayCell.className = 'calendar__day';
+
+      const dayNumber = document.createElement('div');
+      dayNumber.className = 'calendar__day-number';
+      dayCell.appendChild(dayNumber);
+
+      const eventsContainer = document.createElement('div');
+      eventsContainer.className = 'calendar__events';
+      eventsContainer.style.display = 'none';
+      dayCell.appendChild(eventsContainer);
+
+      this.grid.appendChild(dayCell);
+      this.dayCells.push(dayCell);
+    }
+
+    this.container.appendChild(this.header);
+    this.container.appendChild(this.grid);
+    shadow.appendChild(this.container);
+  }
+
+  private updateView() {
+    // Update header title
+    const monthName = this.displayDate.toLocaleDateString(this.locale, { month: 'long', year: 'numeric' });
+    const titleEl = this.header.querySelector('.calendar__title') as HTMLElement;
+    if (titleEl) titleEl.textContent = monthName;
+
+    // Update day cells
+    const days = this.getMonthDays();
+    const currentMonth = this.displayDate.getMonth();
+
+    days.forEach((date, i) => {
+      const cell = this.dayCells[i];
+      if (!cell) return;
+
+      const isOtherMonth = date.getMonth() !== currentMonth;
+      const isToday = this.highlightToday && this.isToday(date);
+      const isSelected = this.isSelected(date);
+      const isDisabled = this.isDisabled(date);
+      const dayEvents = this.getEventsForDate(date);
+
+      // Update classes
+      cell.className = 'calendar__day';
+      if (isOtherMonth) cell.classList.add('calendar__day--other-month');
+      if (isToday) cell.classList.add('calendar__day--today');
+      if (isSelected) cell.classList.add('calendar__day--selected');
+      if (isDisabled) cell.classList.add('calendar__day--disabled');
+
+      // Update day number
+      const dayNumber = cell.querySelector('.calendar__day-number') as HTMLElement;
+      if (dayNumber) dayNumber.textContent = String(date.getDate());
+
+      // Update click handler
+      cell.onclick = () => this.handleDayClick(date);
+
+      // Update events
+      const eventsContainer = cell.querySelector('.calendar__events') as HTMLElement;
+      if (eventsContainer) {
+        if (dayEvents.length > 0) {
+          eventsContainer.style.display = '';
+          eventsContainer.innerHTML = '';
+
+          dayEvents.slice(0, 3).forEach(event => {
+            const eventEl = document.createElement('div');
+            eventEl.className = 'calendar__event';
+            if (event.color) eventEl.style.background = event.color;
+            eventEl.textContent = event.title;
+            eventEl.onclick = (e) => this.handleEventClick(event, e);
+            eventsContainer.appendChild(eventEl);
+          });
+
+          if (dayEvents.length > 3) {
+            const moreEl = document.createElement('div');
+            moreEl.className = 'calendar__event';
+            moreEl.style.background = '#999';
+            moreEl.textContent = `+${dayEvents.length - 3} more`;
+            eventsContainer.appendChild(moreEl);
+          }
+        } else {
+          eventsContainer.style.display = 'none';
+        }
+      }
+    });
+  }
+
   goToToday(): void {
     this.displayDate = new Date();
     this.value = new Date();
+    this.updateView();
     this.dispatchChange();
   }
 
   goToDate(date: Date | string): void {
     this.displayDate = typeof date === 'string' ? new Date(date) : date;
     this.value = this.displayDate;
+    this.updateView();
     this.dispatchChange();
   }
 
   previousMonth(): void {
     this.displayDate = new Date(this.displayDate.getFullYear(), this.displayDate.getMonth() - 1);
+    this.updateView();
   }
 
   nextMonth(): void {
     this.displayDate = new Date(this.displayDate.getFullYear(), this.displayDate.getMonth() + 1);
+    this.updateView();
   }
 
   previousWeek(): void {
     this.displayDate = new Date(this.displayDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+    this.updateView();
   }
 
   nextWeek(): void {
     this.displayDate = new Date(this.displayDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+    this.updateView();
   }
 
   previousDay(): void {
     this.displayDate = new Date(this.displayDate.getTime() - 24 * 60 * 60 * 1000);
+    this.updateView();
   }
 
   nextDay(): void {
     this.displayDate = new Date(this.displayDate.getTime() + 24 * 60 * 60 * 1000);
+    this.updateView();
   }
 
   getDisplayedMonth(): { month: number; year: number } {
@@ -96,12 +253,24 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
 
   getEventsForDate(date: Date | string): CalendarEvent[] {
     const targetDate = typeof date === 'string' ? new Date(date) : date;
-    const targetDateStr = this.formatDate(targetDate);
+    const targetTime = targetDate.getTime();
 
     return this.events.filter(event => {
-      const eventStart = typeof event.start === 'string' ? new Date(event.start) : event.start;
-      const eventStartStr = this.formatDate(eventStart);
-      return eventStartStr === targetDateStr;
+      if (!event.start) return false;
+
+      const startDate = typeof event.start === 'string' ? new Date(event.start) : event.start;
+      const startTime = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()).getTime();
+
+      // If no end date, event is single day
+      if (!event.end) {
+        return this.isSameDay(targetDate, startDate);
+      }
+
+      // Multi-day event: check if target date falls between start and end
+      const endDate = typeof event.end === 'string' ? new Date(event.end) : event.end;
+      const endTime = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()).getTime();
+
+      return targetTime >= startTime && targetTime <= endTime;
     });
   }
 
@@ -143,6 +312,7 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
     if (this.isDisabled(date)) return;
 
     this.value = date;
+    this.updateView();
     this.dispatchChange();
   }
 
@@ -185,85 +355,12 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
     return weekdays;
   }
 
-  private renderMonthView() {
-    const days = this.getMonthDays();
-    const weekdays = this.getWeekdays();
-    const currentMonth = this.displayDate.getMonth();
-
-    return html/*html*/`
-      <div class="calendar__grid">
-        ${weekdays.map(day => html`
-          <div class="calendar__weekday">${day}</div>
-        `)}
-
-        ${days.map(date => {
-          const isOtherMonth = date.getMonth() !== currentMonth;
-          const isToday = this.highlightToday && this.isToday(date);
-          const isSelected = this.isSelected(date);
-          const isDisabled = this.isDisabled(date);
-          const dayEvents = this.getEventsForDate(date);
-
-          const classes = [
-            'calendar__day',
-            isOtherMonth && 'calendar__day--other-month',
-            isToday && 'calendar__day--today',
-            isSelected && 'calendar__day--selected',
-            isDisabled && 'calendar__day--disabled'
-          ].filter(Boolean).join(' ');
-
-          return html/*html*/`
-            <div
-              class="${classes}"
-              @click=${() => this.handleDayClick(date)}>
-              <div class="calendar__day-number">${date.getDate()}</div>
-              <if ${dayEvents.length > 0}>
-                <div class="calendar__events">
-                  ${dayEvents.slice(0, 3).map(event => html`
-                    <div
-                      class="calendar__event"
-                      style="${event.color ? `background: ${event.color}` : ''}"
-                      @click=${(e: Event) => this.handleEventClick(event, e)}>
-                      ${event.title}
-                    </div>
-                  `)}
-                  <if ${dayEvents.length > 3}>
-                    <div class="calendar__event" style="background: #999;">
-                      +${dayEvents.length - 3} more
-                    </div>
-                  </if>
-                </div>
-              </if>
-            </div>
-          `;
-        })}
-      </div>
-    `;
-  }
-
-  @render()
-  template() {
-    const monthName = this.displayDate.toLocaleDateString(this.locale, { month: 'long', year: 'numeric' });
-
-    return html/*html*/`
-      <div class="calendar calendar--${this.view}">
-        <div class="calendar__header">
-          <div class="calendar__title">${monthName}</div>
-          <div class="calendar__nav">
-            <button class="calendar__nav-button" @click=${() => this.goToToday()}>
-              Today
-            </button>
-            <button class="calendar__nav-button" @click=${() => this.previousMonth()}>
-              ‹
-            </button>
-            <button class="calendar__nav-button" @click=${() => this.nextMonth()}>
-              ›
-            </button>
-          </div>
-        </div>
-
-        ${this.view === 'month' ? this.renderMonthView() : html``}
-      </div>
-    `;
+  @watch('value')
+  @watch('events')
+  handlePropertyChange() {
+    if (this.grid) {
+      this.updateView();
+    }
   }
 }
 

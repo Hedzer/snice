@@ -136,6 +136,10 @@
     </div>
 
     <script type="module">
+      import './snice-doc.ts';
+
+      await customElements.whenDefined('snice-doc');
+
       const editor = document.getElementById('editor');
       const readonlyEditor = document.getElementById('readonly-editor');
       const output = document.getElementById('output');
@@ -230,6 +234,5 @@
         editor.readonly = !editor.readonly;
       });
     </script>
-    <script type="module" src="./snice-doc.ts"></script>
   </body>
 </html>

@@ -96,7 +96,9 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
         <div class="scroller__viewport" style="transform: translateY(${this.visibleStart * this.itemHeight}px);">
           ${visibleItems.map((item, idx) => {
             const actualIndex = this.visibleStart + idx;
-            const itemContent = this.renderItem(item, actualIndex);
+            const itemContent = typeof this.renderItem === 'function'
+              ? this.renderItem(item, actualIndex)
+              : `<div>${JSON.stringify(item.data)}</div>`;
             const top = 0;
 
             if (typeof itemContent === 'string') {

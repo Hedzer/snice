@@ -551,8 +551,8 @@ export class SniceDoc extends HTMLElement implements SniceDocElement {
           <div
             class="block-handle"
             draggable="${!this.readonly}"
-            @dragstart="${(e: DragEvent) => this.handleDragStart(block.id, e)}"
-            @dragend="${() => this.handleDragEnd()}"
+            @dragstart=${(e: DragEvent) => this.handleDragStart(block.id, e)}
+            @dragend=${() => this.handleDragEnd()}
           >
             <svg viewBox="0 0 16 16" fill="currentColor">
               <circle cx="3" cy="3" r="1.5" />
@@ -577,15 +577,15 @@ export class SniceDoc extends HTMLElement implements SniceDocElement {
           ? 'dragging'
           : ''}"
         data-block-id="${block.id}"
-        @dragover="${(e: DragEvent) => this.handleDragOver(block.id, e)}"
-        @drop="${(e: DragEvent) => this.handleDrop(block.id, e)}"
+        @dragover=${(e: DragEvent) => this.handleDragOver(block.id, e)}
+        @drop=${(e: DragEvent) => this.handleDrop(block.id, e)}
         data-number="${isNumberedList ? index + 1 : ''}"
       >
         <div
           class="block-handle"
           draggable="${!this.readonly}"
-          @dragstart="${(e: DragEvent) => this.handleDragStart(block.id, e)}"
-          @dragend="${() => this.handleDragEnd()}"
+          @dragstart=${(e: DragEvent) => this.handleDragStart(block.id, e)}
+          @dragend=${() => this.handleDragEnd()}
         >
           <svg viewBox="0 0 16 16" fill="currentColor">
             <circle cx="3" cy="3" r="1.5" />
@@ -601,7 +601,7 @@ export class SniceDoc extends HTMLElement implements SniceDocElement {
               type="checkbox"
               class="todo-checkbox"
               ?checked="${block.checked}"
-              @change="${() => this.handleTodoToggle(block.id)}"
+              @change=${() => this.handleTodoToggle(block.id)}
             />`
           : ''}
         <div
@@ -609,9 +609,9 @@ export class SniceDoc extends HTMLElement implements SniceDocElement {
           contenteditable="${!this.readonly}"
           data-block-id="${block.id}"
           data-placeholder="${placeholder}"
-          @input="${(e: Event) => this.handleInput(block.id, e)}"
-          @focus="${() => this.handleFocus(block.id)}"
-          @blur="${() => this.handleBlur(block.id)}"
+          @input=${(e: Event) => this.handleInput(block.id, e)}
+          @focus=${() => this.handleFocus(block.id)}
+          @blur=${() => this.handleBlur(block.id)}
         >
           ${block.content}
         </div>
@@ -628,7 +628,7 @@ export class SniceDoc extends HTMLElement implements SniceDocElement {
           (item, index) => html`
             <div
               class="block-menu-item ${index === this.blockMenuSelectedIndex ? 'selected' : ''}"
-              @click="${() => this.handleBlockMenuItemClick(this.blockMenuBlockId, item.type)}"
+              @click=${() => this.handleBlockMenuItemClick(this.blockMenuBlockId, item.type)}
             >
               <div class="block-menu-icon">${item.icon}</div>
               <div class="block-menu-label">${item.label}</div>

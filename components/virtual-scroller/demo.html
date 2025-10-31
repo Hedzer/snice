@@ -67,12 +67,12 @@
     }
   </style>
   <script type="module">
-    import '../../dist/snice.esm.js';
-    import './snice-virtual-scroller.js';
+    import './snice-virtual-scroller.ts';
 
-    document.addEventListener('DOMContentLoaded', () => {
-      // Simple list
-      const simpleScroller = document.getElementById('simple-scroller');
+    await customElements.whenDefined('snice-virtual-scroller');
+
+    // Simple list
+    const simpleScroller = document.getElementById('simple-scroller');
       simpleScroller.items = Array.from({ length: 10000 }, (_, i) => ({
         id: i,
         data: `Item ${i + 1}`
@@ -140,7 +140,6 @@
           <div style="color: #666; font-size: 13px;">${item.data.content}</div>
         </div>`;
       };
-    });
   </script>
 </head>
 <body>

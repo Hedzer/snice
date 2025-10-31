@@ -74,11 +74,11 @@ export class SniceAvatar extends HTMLElement implements SniceAvatarElement {
     return css/*css*/`${cssContent}`;
   }
 
-  handleImageLoad() {
+  handleImageLoad = () => {
     this.imageError = false;
   }
 
-  handleImageError() {
+  handleImageError = () => {
     this.imageError = true;
   }
 
