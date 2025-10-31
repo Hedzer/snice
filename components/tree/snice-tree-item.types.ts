@@ -6,6 +6,8 @@ export interface SniceTreeItemElement extends HTMLElement {
   expanded: boolean;
   selected: boolean;
   checked: boolean;
+  loading: boolean;
+  indeterminate: boolean;
   showCheckbox: boolean;
   showIcon: boolean;
   hasChildren: boolean;
@@ -17,6 +19,7 @@ export interface SniceTreeItemElement extends HTMLElement {
   deselect(): void;
   check(): void;
   uncheck(): void;
+  finishLoading(): void;
 }
 
 export interface TreeItemToggleDetail {

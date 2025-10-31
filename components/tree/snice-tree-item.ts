@@ -1,8 +1,9 @@
-import { element, property, watch, dispatch, render, styles, html, css, unsafeHTML } from 'snice';
+import { element, property, watch, dispatch, ready } from 'snice';
 import cssContent from './snice-tree-item.css?inline';
 import type { TreeNode } from './snice-tree.types';
 import type { SniceTreeItemElement, TreeItemToggleDetail, TreeItemSelectDetail, TreeItemCheckDetail } from './snice-tree-item.types';
 import '../checkbox/snice-checkbox';
+import '../spinner/snice-spinner';
 
 @element('snice-tree-item')
 export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
@@ -26,6 +27,12 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
 
   @property({ type: Boolean, attribute: 'show-icon' })
   showIcon = true;
+
+  @property({ type: Boolean })
+  loading = false;
+
+  @property({ type: Boolean })
+  indeterminate = false;
 
   get node(): TreeNode {
     return this._node;
@@ -53,9 +60,12 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
     if (node.checked !== undefined) {
       this.checked = node.checked;
     }
+    if (node.indeterminate !== undefined) {
+      this.indeterminate = node.indeterminate;
+    }
 
-    // Trigger re-render by updating reactive property
-    this._version++;
+    // Update DOM
+    this.updateDOM();
 
     // Update child tree items after render completes
     requestAnimationFrame(() => {
@@ -63,6 +73,31 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
         this.updateChildTreeItems();
       });
     });
+  }
+
+  @watch('expanded')
+  handleExpandedChange() {
+    if (this.shadowRoot) this.updateExpandedState();
+  }
+
+  @watch('selected')
+  handleSelectedChange() {
+    if (this.shadowRoot) this.updateSelectedState();
+  }
+
+  @watch('checked')
+  handleCheckedChange() {
+    if (this.shadowRoot) this.updateCheckboxState();
+  }
+
+  @watch('indeterminate')
+  handleIndeterminateChange() {
+    if (this.shadowRoot) this.updateCheckboxState();
+  }
+
+  @watch('loading')
+  handleLoadingChange() {
+    if (this.shadowRoot) this.updateLoadingState();
   }
 
   private updateChildTreeItems() {
@@ -96,98 +131,209 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
     return { nodeId: this.node.id, node: this.node };
   }
 
-  @render()
-  render() {
-    const contentClasses = [
-      'tree-item__content',
-      this.selected ? 'tree-item__content--selected' : '',
-      this.node.disabled ? 'tree-item__content--disabled' : ''
-    ].filter(Boolean).join(' ');
+  // NOTE: We don't use @render() here because it causes full re-renders
+  // which destroys the tree structure when properties change. Instead, we
+  // manually manipulate the shadow DOM for better performance and stability.
 
-    const expanderClasses = [
-      'tree-item__expander',
-      this.expanded ? 'tree-item__expander--expanded' : '',
-      !this.hasChildren ? 'tree-item__expander--hidden' : ''
-    ].filter(Boolean).join(' ');
+  @ready()
+  init() {
+    this.renderTemplate();
+    this.updateDOM();
+  }
 
-    const childrenClasses = [
-      'tree-item__children',
-      this.expanded ? 'tree-item__children--expanded' : ''
-    ].filter(Boolean).join(' ');
-
-    const chevronIcon = `<svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>`;
-
-    return html/*html*/`
-      <div class="tree-item" style="--tree-level: ${this.level}">
+  private renderTemplate() {
+    const template = `
+      <style>${cssContent}</style>
+      <div class="tree-item">
         <div
-          class="${contentClasses}"
+          class="tree-item__content"
           part="content"
           role="treeitem"
-          tabindex="${this.node.disabled ? -1 : 0}"
-          aria-selected="${this.selected}"
-          aria-expanded="${this.hasChildren ? this.expanded : undefined}"
-          aria-disabled="${this.node.disabled || false}"
-          @click="${(e: MouseEvent) => this.handleContentClick(e)}"
-          @keydown="${(e: KeyboardEvent) => this.handleKeydown(e)}">
+          tabindex="0">
 
-          <div
-            class="${expanderClasses}"
-            part="expander"
-            @click="${(e: MouseEvent) => this.handleExpanderClick(e)}">
-            ${unsafeHTML(chevronIcon)}
+          <div class="tree-item__loading" part="loading" style="display: none;">
+            <snice-spinner size="small"></snice-spinner>
           </div>
 
-          <if ${this.showCheckbox}>
-            <div class="tree-item__checkbox" part="checkbox">
-              <snice-checkbox
-                .checked=${this.checked}
-                .disabled=${this.node.disabled || false}
-                size="small"
-                @change=${(e: CustomEvent) => this.handleCheckboxChange(e)}>
-              </snice-checkbox>
-            </div>
-          </if>
+          <div class="tree-item__expander" part="expander">
+            <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+          </div>
 
-          <if ${this.showIcon && (this.node.icon || this.node.iconImage)}>
-            <div class="tree-item__icon" part="icon">
-              <if ${this.node.iconImage}>
-                <img
-                  class="tree-item__icon-image"
-                  src="${this.node.iconImage}"
-                  alt=""
-                  part="icon-image" />
-              </if>
-              <if ${!this.node.iconImage && this.node.icon}>
-                <span part="icon-text">${this.node.icon}</span>
-              </if>
-            </div>
-          </if>
+          <div class="tree-item__checkbox" part="checkbox" style="display: none;">
+            <snice-checkbox size="small"></snice-checkbox>
+          </div>
 
-          <div class="tree-item__label" part="label">${this.node.label}</div>
+          <div class="tree-item__icon" part="icon" style="display: none;"></div>
+
+          <div class="tree-item__label" part="label"></div>
         </div>
 
-        <if ${this.hasChildren}>
-          <div class="${childrenClasses}" part="children" role="group">
-            ${this.node.children?.map(child => html`
-              <snice-tree-item
-                ?show-checkbox=${this.showCheckbox}
-                ?show-icon=${this.showIcon}>
-              </snice-tree-item>
-            `)}
-          </div>
-        </if>
+        <div class="tree-item__children" part="children" role="group"></div>
       </div>
     `;
+
+    if (this.shadowRoot) {
+      this.shadowRoot.innerHTML = template;
+    } else {
+      this.attachShadow({ mode: 'open' }).innerHTML = template;
+    }
+
+    // Attach event listeners
+    const content = this.shadowRoot!.querySelector('.tree-item__content');
+    const expander = this.shadowRoot!.querySelector('.tree-item__expander');
+
+    content?.addEventListener('click', (e) => this.handleContentClick(e as MouseEvent));
+    content?.addEventListener('keydown', (e) => this.handleKeydown(e as KeyboardEvent));
+    expander?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.toggle();
+    });
+
+    // Attach checkbox listener after element is defined
+    requestAnimationFrame(() => {
+      const checkbox = this.shadowRoot!.querySelector('snice-checkbox');
+      checkbox?.addEventListener('@snice/change', (e) => this.handleCheckboxChangeEvent(e as CustomEvent));
+    });
   }
 
-  @styles()
-  styles() {
-    return css/*css*/`${cssContent}`;
+  private updateDOM() {
+    if (!this.shadowRoot) return;
+
+    const container = this.shadowRoot.querySelector('.tree-item');
+    const content = this.shadowRoot.querySelector('.tree-item__content');
+    const label = this.shadowRoot.querySelector('.tree-item__label');
+    const icon = this.shadowRoot.querySelector('.tree-item__icon');
+
+    // Update level
+    if (container) {
+      (container as HTMLElement).style.setProperty('--tree-level', this.level.toString());
+    }
+
+    // Update label
+    if (label) {
+      label.textContent = this.node.label || '';
+    }
+
+    // Update icon
+    if (icon && this.showIcon) {
+      if (this.node.iconImage) {
+        icon.innerHTML = `<img class="tree-item__icon-image" src="${this.node.iconImage}" alt="" part="icon-image">`;
+        (icon as HTMLElement).style.display = '';
+      } else if (this.node.icon) {
+        icon.innerHTML = `<span part="icon-text">${this.node.icon}</span>`;
+        (icon as HTMLElement).style.display = '';
+      } else {
+        (icon as HTMLElement).style.display = 'none';
+      }
+    } else if (icon) {
+      (icon as HTMLElement).style.display = 'none';
+    }
+
+    // Update ARIA attributes
+    if (content) {
+      content.setAttribute('tabindex', this.node.disabled ? '-1' : '0');
+      content.setAttribute('aria-selected', this.selected.toString());
+      content.setAttribute('aria-disabled', (this.node.disabled || false).toString());
+      content.setAttribute('aria-busy', this.loading.toString());
+
+      if (this.hasChildren) {
+        content.setAttribute('aria-expanded', this.expanded.toString());
+      } else {
+        content.removeAttribute('aria-expanded');
+      }
+    }
+
+    this.updateExpandedState();
+    this.updateSelectedState();
+    this.updateCheckboxState();
+    this.updateLoadingState();
+    this.updateChildrenDOM();
   }
 
-  private handleExpanderClick(e: MouseEvent) {
-    e.stopPropagation();
-    this.toggle();
+  private updateExpandedState() {
+    if (!this.shadowRoot) return;
+
+    const expander = this.shadowRoot.querySelector('.tree-item__expander');
+    const children = this.shadowRoot.querySelector('.tree-item__children');
+    const content = this.shadowRoot.querySelector('.tree-item__content');
+
+    if (expander) {
+      expander.classList.toggle('tree-item__expander--expanded', this.expanded);
+      expander.classList.toggle('tree-item__expander--hidden', !this.hasChildren);
+    }
+
+    if (children) {
+      children.classList.toggle('tree-item__children--expanded', this.expanded);
+    }
+
+    if (content && this.hasChildren) {
+      content.setAttribute('aria-expanded', this.expanded.toString());
+    }
+  }
+
+  private updateSelectedState() {
+    if (!this.shadowRoot) return;
+
+    const content = this.shadowRoot.querySelector('.tree-item__content');
+    if (content) {
+      content.classList.toggle('tree-item__content--selected', this.selected);
+      content.setAttribute('aria-selected', this.selected.toString());
+    }
+  }
+
+  private updateCheckboxState() {
+    if (!this.shadowRoot) return;
+
+    const checkboxContainer = this.shadowRoot.querySelector('.tree-item__checkbox') as HTMLElement;
+    const checkbox = this.shadowRoot.querySelector('snice-checkbox') as any;
+
+    if (checkboxContainer) {
+      checkboxContainer.style.display = this.showCheckbox ? '' : 'none';
+    }
+
+    if (checkbox) {
+      // Use requestAnimationFrame to ensure checkbox component is ready
+      requestAnimationFrame(() => {
+        checkbox.checked = this.checked;
+        checkbox.indeterminate = this.indeterminate;
+        checkbox.disabled = this.node.disabled || false;
+      });
+    }
+  }
+
+  private updateLoadingState() {
+    if (!this.shadowRoot) return;
+
+    const loadingContainer = this.shadowRoot.querySelector('.tree-item__loading') as HTMLElement;
+    const expander = this.shadowRoot.querySelector('.tree-item__expander') as HTMLElement;
+
+    if (loadingContainer && expander) {
+      loadingContainer.style.display = this.loading ? '' : 'none';
+      expander.style.display = this.loading ? 'none' : '';
+    }
+  }
+
+  private updateChildrenDOM() {
+    if (!this.shadowRoot || !this.hasChildren) return;
+
+    const childrenContainer = this.shadowRoot.querySelector('.tree-item__children');
+    if (!childrenContainer) return;
+
+    // Clear existing children
+    childrenContainer.innerHTML = '';
+
+    // Create child tree items
+    this.node.children?.forEach(child => {
+      const item = document.createElement('snice-tree-item') as any;
+      if (this.showCheckbox) item.setAttribute('show-checkbox', '');
+      if (this.showIcon) item.setAttribute('show-icon', '');
+      childrenContainer.appendChild(item);
+    });
+
+    // Update child nodes after they're added to DOM
+    requestAnimationFrame(() => {
+      this.updateChildTreeItems();
+    });
   }
 
   private handleContentClick(e: MouseEvent) {
@@ -214,21 +360,45 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
     }
   }
 
-  private handleCheckboxChange(e: CustomEvent) {
+  private handleCheckboxChangeEvent(e: CustomEvent) {
     e.stopPropagation();
-    this.checked = e.detail.checked;
-    this.dispatchCheckEvent();
+    const newChecked = e.detail.checked;
+
+    // Update local state
+    this.checked = newChecked;
+
+    // Update node state
+    this.node.checked = newChecked;
+
+    // Manually dispatch event to parent tree
+    this.dispatchEvent(new CustomEvent('tree-item-check', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        nodeId: this.node.id,
+        checked: this.checked
+      }
+    }));
   }
 
   // Public API
   expand() {
     if (!this.hasChildren || this.expanded) return;
 
-    // If lazy load, dispatch event before expanding
+    // If lazy load, set loading state and dispatch event
     if (this.node.lazy && (!this.node.children || this.node.children.length === 0)) {
+      this.loading = true;
       this.dispatchLazyLoadEvent();
+      // Parent will set loading=false after loading children
+      return;
     }
 
+    this.expanded = true;
+    this.dispatchToggleEvent();
+  }
+
+  finishLoading() {
+    this.loading = false;
     this.expanded = true;
     this.dispatchToggleEvent();
   }

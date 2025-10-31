@@ -105,6 +105,6 @@ test.describe('Tree Component', () => {
     console.log('Label info:', JSON.stringify(labelInfo, null, 2).substring(0, 1000));
 
     expect(treeItemsCount).toBeGreaterThan(0);
-    expect(labelInfo.textContent).toContain('Root');
+    expect(labelInfo.textContent).toContain('project');
   });
 });

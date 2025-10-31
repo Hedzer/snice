@@ -1,4 +1,4 @@
-import { element, property, watch, ready, query, queryAll, dispatch, render, styles, html, css } from 'snice';
+import { element, property, watch, ready, queryAll, dispatch, on } from 'snice';
 import cssContent from './snice-tree.css?inline';
 import type {
   TreeNode,
@@ -40,25 +40,69 @@ export class SniceTree extends HTMLElement implements SniceTreeElement {
   @queryAll('snice-tree-item')
   treeItems!: NodeListOf<HTMLElement>;
 
+  private lastFocusedItem: HTMLElement | null = null;
+
+  // NOTE: We don't use @render() here because it causes full re-renders
+  // which destroys the tree structure when properties change. Instead, we
+  // manually create the initial DOM and update it as needed.
+
   @ready()
   init() {
     this.buildNodeMap();
     this.syncNodeStates();
 
-    // Listen for tree item events
-    this.addEventListener('tree-item-toggle', this.handleItemToggle.bind(this));
-    this.addEventListener('tree-item-select', this.handleItemSelect.bind(this));
-    this.addEventListener('tree-item-check', this.handleItemCheck.bind(this));
-    this.addEventListener('tree-item-lazy-load', this.handleLazyLoad.bind(this));
+    // Create initial DOM structure
+    this.renderTemplate();
+
+    // Set ARIA attributes
+    this.setAttribute('role', 'tree');
+    this.setAttribute('tabindex', '0');
+    if (this.selectionMode === 'multiple') {
+      this.setAttribute('aria-multiselectable', 'true');
+    }
 
     // Set node data on tree items
     this.updateTreeItems();
+  }
+
+  private renderTemplate() {
+    if (!this.shadowRoot) {
+      this.attachShadow({ mode: 'open' });
+    }
+
+    this.shadowRoot!.innerHTML = `
+      <style>${cssContent}</style>
+      <div class="tree" part="container" role="tree">
+        <div class="tree__content" part="content"></div>
+      </div>
+    `;
   }
 
   @watch('nodes')
   handleNodesChange() {
     this.buildNodeMap();
     this.syncNodeStates();
+    this.updateTreeItemsDOM();
+  }
+
+  private updateTreeItemsDOM() {
+    if (!this.shadowRoot) return;
+
+    const content = this.shadowRoot.querySelector('.tree__content');
+    if (!content) return;
+
+    // Clear existing items
+    content.innerHTML = '';
+
+    // Create tree items for root nodes
+    this.nodes.forEach(node => {
+      const item = document.createElement('snice-tree-item');
+      if (this.showCheckboxes) item.setAttribute('show-checkbox', '');
+      if (this.showIcons) item.setAttribute('show-icon', '');
+      content.appendChild(item);
+    });
+
+    // Update items with node data
     this.updateTreeItems();
   }
 
@@ -93,6 +137,10 @@ export class SniceTree extends HTMLElement implements SniceTreeElement {
   @watch('checkedNodes')
   handleCheckedNodesChange() {
     this.syncNodeStates();
+    // Update tree item checkbox states
+    requestAnimationFrame(() => {
+      this.updateCheckboxStatesOnly();
+    });
   }
 
   private buildNodeMap() {
@@ -118,6 +166,7 @@ export class SniceTree extends HTMLElement implements SniceTreeElement {
     }
   }
 
+  @on('tree-item-toggle')
   private handleItemToggle(e: Event) {
     const event = e as CustomEvent;
     const { nodeId, expanded } = event.detail;
@@ -134,6 +183,7 @@ export class SniceTree extends HTMLElement implements SniceTreeElement {
     }
   }
 
+  @on('tree-item-select')
   private handleItemSelect(e: Event) {
     const event = e as CustomEvent;
     const { nodeId, selected } = event.detail;
@@ -160,6 +210,7 @@ export class SniceTree extends HTMLElement implements SniceTreeElement {
     this.dispatchSelectEvent(nodeId, node);
   }
 
+  @on('tree-item-check')
   private handleItemCheck(e: Event) {
     const event = e as CustomEvent;
     const { nodeId, checked } = event.detail;
@@ -167,17 +218,108 @@ export class SniceTree extends HTMLElement implements SniceTreeElement {
 
     if (!node) return;
 
-    if (checked) {
-      if (!this.checkedNodes.includes(nodeId)) {
-        this.checkedNodes = [...this.checkedNodes, nodeId];
-      }
-    } else {
-      this.checkedNodes = this.checkedNodes.filter(id => id !== nodeId);
-    }
+    // Update checked state with cascading
+    this.syncCheckboxes(node, checked);
 
     this.dispatchCheckEvent(nodeId, node, checked);
   }
 
+  private syncCheckboxes(changedNode: TreeNode, checked: boolean) {
+    // Update descendants
+    const updateDescendants = (node: TreeNode, isChecked: boolean) => {
+      node.checked = isChecked;
+      if (isChecked && !this.checkedNodes.includes(node.id)) {
+        this.checkedNodes = [...this.checkedNodes, node.id];
+      } else if (!isChecked) {
+        this.checkedNodes = this.checkedNodes.filter(id => id !== node.id);
+      }
+
+      if (node.children) {
+        for (const child of node.children) {
+          if (!child.disabled) {
+            updateDescendants(child, isChecked);
+          }
+        }
+      }
+    };
+
+    // Update ancestors with indeterminate state
+    const updateAncestors = (node: TreeNode) => {
+      const parent = this.findParentNode(node.id);
+      if (!parent) return;
+
+      const children = parent.children || [];
+      const checkedChildren = children.filter(c => c.checked && !c.disabled);
+      const uncheckedChildren = children.filter(c => !c.checked && !c.disabled && !c.indeterminate);
+
+      const allChecked = checkedChildren.length === children.filter(c => !c.disabled).length;
+      const allUnchecked = uncheckedChildren.length === children.filter(c => !c.disabled).length;
+
+      parent.checked = allChecked;
+      parent.indeterminate = !allChecked && !allUnchecked;
+
+      if (parent.checked && !this.checkedNodes.includes(parent.id)) {
+        this.checkedNodes = [...this.checkedNodes, parent.id];
+      } else if (!parent.checked && !parent.indeterminate) {
+        this.checkedNodes = this.checkedNodes.filter(id => id !== parent.id);
+      }
+
+      updateAncestors(parent);
+    };
+
+    updateDescendants(changedNode, checked);
+    updateAncestors(changedNode);
+
+    // Update checkbox states without re-rendering
+    this.updateCheckboxStatesOnly();
+  }
+
+  private updateCheckboxStatesOnly() {
+    // Recursively update all tree-item checkbox states without re-rendering
+    const updateItemCheckboxes = (item: any) => {
+      if (!item || !item.node) return;
+
+      const node = this.nodeMap.get(item.node.id);
+      if (!node) return;
+
+      // Update the item's properties directly
+      if (item.checked !== node.checked) {
+        item.checked = node.checked;
+      }
+      if (item.indeterminate !== node.indeterminate) {
+        item.indeterminate = node.indeterminate;
+      }
+
+      // Recursively update children
+      if (item.shadowRoot) {
+        const childItems = item.shadowRoot.querySelectorAll('.tree-item__children > snice-tree-item');
+        childItems.forEach((child: any) => updateItemCheckboxes(child));
+      }
+    };
+
+    // Start with root items
+    const rootItems = this.shadowRoot?.querySelectorAll(':scope > .tree > .tree__content > snice-tree-item');
+    rootItems?.forEach((item: any) => updateItemCheckboxes(item));
+  }
+
+  private findParentNode(nodeId: string): TreeNode | null {
+    const findParent = (nodes: TreeNode[], targetId: string): TreeNode | null => {
+      for (const node of nodes) {
+        if (node.children) {
+          if (node.children.some(child => child.id === targetId)) {
+            return node;
+          }
+          const found = findParent(node.children, targetId);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+
+    return findParent(this.nodes, nodeId);
+  }
+
+  @on('tree-item-lazy-load')
   private handleLazyLoad(e: Event) {
     const event = e as CustomEvent;
     const { nodeId, node } = event.detail;
@@ -209,30 +351,110 @@ export class SniceTree extends HTMLElement implements SniceTreeElement {
     return { nodeId, node, tree: this };
   }
 
-  @render()
-  render() {
-    const treeClasses = [
-      'tree'
-    ].filter(Boolean).join(' ');
+  // Keyboard navigation
+  @on('keydown')
+  private handleKeyDown(event: KeyboardEvent) {
+    if (!['ArrowDown', 'ArrowUp', 'ArrowRight', 'ArrowLeft', 'Home', 'End', 'Enter', ' '].includes(event.key)) {
+      return;
+    }
 
-    return html/*html*/`
-      <div class="${treeClasses}" part="container" role="tree">
-        <div class="tree__content" part="content">
-          ${this.nodes.map(node => html`
-            <snice-tree-item
-              ?show-checkbox=${this.showCheckboxes}
-              ?show-icon=${this.showIcons}>
-            </snice-tree-item>
-          `)}
-        </div>
-      </div>
-    `;
+    // Ignore when focus is in a text field
+    const target = event.target as HTMLElement;
+    if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+      return;
+    }
+
+    const items = this.getFocusableItems();
+    if (items.length === 0) return;
+
+    event.preventDefault();
+    const activeIndex = items.findIndex(item => item.matches(':focus'));
+    const activeItem = items[activeIndex];
+
+    const focusItemAt = (index: number) => {
+      const clampedIndex = Math.max(0, Math.min(index, items.length - 1));
+      items[clampedIndex]?.focus();
+    };
+
+    if (event.key === 'ArrowDown') {
+      focusItemAt(activeIndex + 1);
+    } else if (event.key === 'ArrowUp') {
+      focusItemAt(activeIndex - 1);
+    } else if (event.key === 'ArrowRight') {
+      if (activeItem && (activeItem as any).expand) {
+        (activeItem as any).expand();
+      }
+    } else if (event.key === 'ArrowLeft') {
+      if (activeItem && (activeItem as any).collapse) {
+        (activeItem as any).collapse();
+      }
+    } else if (event.key === 'Home') {
+      focusItemAt(0);
+    } else if (event.key === 'End') {
+      focusItemAt(items.length - 1);
+    } else if (event.key === 'Enter' || event.key === ' ') {
+      if (activeItem && (activeItem as any).select) {
+        (activeItem as any).select();
+      }
+    }
   }
 
-  @styles()
-  styles() {
-    return css/*css*/`${cssContent}`;
+  @on('focusin')
+  private handleFocusIn(event: FocusEvent) {
+    const target = event.target as HTMLElement;
+
+    // If tree gets focus, move to last focused item or first item
+    if (target === this) {
+      const items = this.getFocusableItems();
+      const itemToFocus = this.lastFocusedItem || items[0];
+      itemToFocus?.focus();
+      return;
+    }
+
+    // Update roving tabindex
+    if (target.tagName === 'SNICE-TREE-ITEM') {
+      if (this.lastFocusedItem) {
+        this.lastFocusedItem.setAttribute('tabindex', '-1');
+      }
+      this.lastFocusedItem = target;
+      this.setAttribute('tabindex', '-1');
+      target.setAttribute('tabindex', '0');
+    }
   }
+
+  @on('focusout')
+  private handleFocusOut(event: FocusEvent) {
+    const relatedTarget = event.relatedTarget as HTMLElement;
+    if (!relatedTarget || !this.contains(relatedTarget)) {
+      this.setAttribute('tabindex', '0');
+    }
+  }
+
+  private getFocusableItems(): HTMLElement[] {
+    const allItems = Array.from(this.shadowRoot?.querySelectorAll('snice-tree-item') || []) as HTMLElement[];
+    const collapsedItems = new Set<HTMLElement>();
+
+    return allItems.filter(item => {
+      const disabled = (item as any).node?.disabled;
+      if (disabled) return false;
+
+      // Check if parent is collapsed
+      let parent = item.parentElement;
+      while (parent && parent !== this) {
+        if (parent.tagName === 'SNICE-TREE-ITEM') {
+          const parentExpanded = (parent as any).expanded;
+          if (!parentExpanded) {
+            collapsedItems.add(item);
+            return false;
+          }
+        }
+        parent = parent.parentElement;
+      }
+
+      return !collapsedItems.has(item);
+    });
+  }
+
 
   // Public API
   expandNode(id: string) {
