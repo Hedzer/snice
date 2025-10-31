@@ -1,9 +1,17 @@
+export interface KanbanLabel {
+  text: string;
+  color?: string;
+  background?: string;
+  icon?: string; // emoji or text icon
+  iconPosition?: 'left' | 'right';
+}
+
 export interface KanbanCard {
   id: string | number;
   title: string;
   description?: string;
   assignee?: string;
-  labels?: string[];
+  labels?: (string | KanbanLabel)[];
   color?: string;
   data?: any;
 }
@@ -29,4 +37,8 @@ export interface SniceKanbanElement extends HTMLElement {
   moveCard(cardId: string | number, targetColumnId: string | number): void;
   getColumn(id: string | number): KanbanColumn | undefined;
   getCard(id: string | number): KanbanCard | undefined;
+
+  filterByLabels(labels: string[]): void;
+  search(query: string): void;
+  clearFilters(): void;
 }

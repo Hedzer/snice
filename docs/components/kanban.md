@@ -44,6 +44,18 @@ interface KanbanColumn {
 }
 ```
 
+## KanbanLabel Interface
+
+```typescript
+interface KanbanLabel {
+  text: string;
+  color?: string;            // Text color
+  background?: string;       // Background color
+  icon?: string;            // Emoji or text icon
+  iconPosition?: 'left' | 'right';  // Icon placement
+}
+```
+
 ## KanbanCard Interface
 
 ```typescript
@@ -52,7 +64,7 @@ interface KanbanCard {
   title: string;
   description?: string;
   assignee?: string;
-  labels?: string[];
+  labels?: (string | KanbanLabel)[];  // String or full label object
   color?: string;
   data?: any;
 }
@@ -96,11 +108,36 @@ Remove card from board.
 kanban.removeCard(10);
 ```
 
-### `moveCard(cardId: string | number, targetColumnId: string | number): void`
-Move card to different column.
+### `moveCard(cardId: string | number, targetColumnId: string | number, targetIndex?: number): void`
+Move card to different column (and optionally specific position).
 
 ```javascript
+// Move to different column
 kanban.moveCard(1, 'done');
+
+// Move to specific position in column
+kanban.moveCard(1, 'done', 0); // Move to top
+```
+
+### `filterByLabels(labels: string[]): void`
+Filter cards by labels (shows cards with ANY of the specified labels).
+
+```javascript
+kanban.filterByLabels(['bug', 'high-priority']);
+```
+
+### `search(query: string): void`
+Search cards by title or description.
+
+```javascript
+kanban.search('landing page');
+```
+
+### `clearFilters(): void`
+Clear all active filters (labels and search).
+
+```javascript
+kanban.clearFilters();
 ```
 
 ### `getColumn(id: string | number): KanbanColumn | undefined`
@@ -147,6 +184,79 @@ kanban.addEventListener('@snice/kanban-card-click', (e) => {
 
 ## Examples
 
+### Custom Labels with Icons
+
+Labels can be simple strings or rich objects with custom colors and icons:
+
+```javascript
+kanban.columns = [
+  {
+    id: 'todo',
+    title: 'To Do',
+    cards: [
+      {
+        id: 1,
+        title: 'Redesign dashboard',
+        labels: [
+          // Simple string label (uses default theme styling)
+          'feature',
+          // Rich label with custom colors and icon
+          {
+            text: 'High Priority',
+            color: '#dc2626',
+            background: '#fee2e2',
+            icon: '🔥',
+            iconPosition: 'left'
+          }
+        ]
+      },
+      {
+        id: 2,
+        title: 'Analytics dashboard',
+        labels: [
+          {
+            text: 'Analytics',
+            color: '#0891b2',
+            background: '#cffafe',
+            icon: '📊',
+            iconPosition: 'left'
+          },
+          {
+            text: 'Shipped',
+            color: '#16a34a',
+            background: '#dcfce7',
+            icon: '🚀',
+            iconPosition: 'right' // Icon on the right
+          }
+        ]
+      }
+    ]
+  }
+];
+```
+
+### Filtering and Search
+
+Filter cards by labels or search by text:
+
+```javascript
+// Filter by single label
+kanban.filterByLabels(['bug']);
+
+// Filter by multiple labels (shows cards with ANY of these labels)
+kanban.filterByLabels(['bug', 'high-priority']);
+
+// Search by title or description
+kanban.search('landing page');
+
+// Combine filters and search (both apply)
+kanban.filterByLabels(['feature']);
+kanban.search('dashboard');
+
+// Clear all filters
+kanban.clearFilters();
+```
+
 ### Basic Board
 
 ```javascript
@@ -190,7 +300,10 @@ kanban.columns = [
         title: 'Design Landing Page',
         description: 'Create mockups and wireframes',
         assignee: 'Alice',
-        labels: ['design', 'high-priority'],
+        labels: [
+          'design',
+          { text: 'high-priority', color: '#dc2626', background: '#fee2e2', icon: '⚡' }
+        ],
         color: '#f44336'
       }
     ]
@@ -407,4 +520,6 @@ kanban.addEventListener('@snice/kanban-card-move', async (e) => {
 
 - Modern browsers with Custom Elements v1 support
 - HTML5 Drag and Drop API
+- View Transitions API (optional, for smooth animations)
+- Drag and drop between columns and within same column
 - Touch events for mobile (future enhancement)

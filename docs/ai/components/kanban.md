@@ -13,6 +13,14 @@ showCardCount: boolean = true;
 ## Interfaces
 
 ```typescript
+interface KanbanLabel {
+  text: string;
+  color?: string;
+  background?: string;
+  icon?: string; // emoji or text
+  iconPosition?: 'left' | 'right';
+}
+
 interface KanbanColumn {
   id: string | number;
   title: string;
@@ -27,7 +35,7 @@ interface KanbanCard {
   title: string;
   description?: string;
   assignee?: string;
-  labels?: string[];
+  labels?: (string | KanbanLabel)[];
   color?: string;
   data?: any;
 }
@@ -40,9 +48,12 @@ addColumn(column: KanbanColumn): void
 removeColumn(id: string | number): void
 addCard(columnId: string | number, card: KanbanCard): void
 removeCard(cardId: string | number): void
-moveCard(cardId: string | number, targetColumnId: string | number): void
+moveCard(cardId: string | number, targetColumnId: string | number, targetIndex?: number): void
 getColumn(id: string | number): KanbanColumn | undefined
 getCard(id: string | number): KanbanCard | undefined
+filterByLabels(labels: string[]): void
+search(query: string): void
+clearFilters(): void
 ```
 
 ## Events
@@ -58,14 +69,16 @@ kanban.columns = [
     id: 'todo',
     title: 'To Do',
     color: '#f44336',
-    limit: 5,
     cards: [
       {
         id: 1,
         title: 'Task',
         description: 'Details',
         assignee: 'Alice',
-        labels: ['bug', 'high-priority'],
+        labels: [
+          'bug',
+          { text: 'urgent', color: '#dc2626', background: '#fee2e2', icon: '🔥', iconPosition: 'left' }
+        ],
         color: '#f44336'
       }
     ]
@@ -73,10 +86,15 @@ kanban.columns = [
   { id: 'done', title: 'Done', cards: [] }
 ];
 
-// Add/remove
+// Add/remove/move
 kanban.addCard('todo', { id: 2, title: 'New Task' });
 kanban.moveCard(1, 'done');
 kanban.removeCard(2);
+
+// Filter/search
+kanban.filterByLabels(['bug', 'high-priority']);
+kanban.search('landing page');
+kanban.clearFilters();
 
 // Events
 kanban.addEventListener('@snice/kanban-card-move', (e) => {
@@ -91,12 +109,16 @@ kanban.addEventListener('@snice/kanban-card-move', (e) => {
 
 ## Features
 
-- Drag and drop cards between columns
-- WIP limits per column
-- Card labels and assignees
+- Drag and drop cards between columns and within same column
+- Custom labels with colors, backgrounds, and icons
+- Label icon positioning (left/right)
+- Filter by labels
+- Search by title/description
+- Card assignees
 - Color-coded cards and columns
 - Card counts
 - Click handling
-- Programmatic card movement
+- Programmatic card movement with positioning
 - Column management
 - Event dispatching
+- View Transitions API animations

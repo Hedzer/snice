@@ -4,9 +4,140 @@
   <title>Kanban Demo</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body { padding: 40px; margin: 0; }
-    h2 { margin-bottom: 10px; }
-    p { color: #666; margin-bottom: 20px; }
+    body {
+      padding: var(--snice-spacing-2xl, 2.5rem);
+      margin: 0;
+      background: var(--snice-color-background-secondary, rgb(250 250 250));
+      font-family: var(--snice-font-family, system-ui, -apple-system, sans-serif);
+      color: var(--snice-color-text, rgb(23 23 23));
+    }
+
+    h2 {
+      margin-bottom: var(--snice-spacing-sm, 0.75rem);
+      color: var(--snice-color-text, rgb(23 23 23));
+      font-weight: var(--snice-font-weight-semibold, 600);
+    }
+
+    h3 {
+      margin-top: 0;
+      color: var(--snice-color-text, rgb(23 23 23));
+      font-weight: var(--snice-font-weight-semibold, 600);
+    }
+
+    p {
+      color: var(--snice-color-text-secondary, rgb(82 82 82));
+      margin-bottom: var(--snice-spacing-lg, 1.5rem);
+    }
+
+    .filter-section {
+      margin-bottom: var(--snice-spacing-lg, 1.5rem);
+      padding: var(--snice-spacing-lg, 1.5rem);
+      background: var(--snice-color-background, rgb(255 255 255));
+      border-radius: var(--snice-border-radius-md, 0.5rem);
+      border: 1px solid var(--snice-color-border, rgb(226 226 226));
+    }
+
+    .filter-section label {
+      display: block;
+      margin-bottom: var(--snice-spacing-xs, 0.5rem);
+      font-weight: var(--snice-font-weight-semibold, 600);
+      color: var(--snice-color-text, rgb(23 23 23));
+    }
+
+    .filter-section input {
+      padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
+      border: 1px solid var(--snice-color-border, rgb(226 226 226));
+      border-radius: var(--snice-border-radius-sm, 0.375rem);
+      width: 300px;
+      font-size: var(--snice-font-size-sm, 0.875rem);
+      font-family: inherit;
+      background: var(--snice-color-background, rgb(255 255 255));
+      color: var(--snice-color-text, rgb(23 23 23));
+    }
+
+    .filter-section input:focus {
+      outline: none;
+      border-color: var(--snice-color-border-focus, rgb(59 130 246));
+    }
+
+    .filter-group {
+      margin-bottom: var(--snice-spacing-md, 1rem);
+    }
+
+    .filter-buttons {
+      display: flex;
+      gap: var(--snice-spacing-xs, 0.5rem);
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
+      border: 1px solid var(--snice-color-border, rgb(226 226 226));
+      border-radius: var(--snice-border-radius-sm, 0.375rem);
+      background: var(--snice-color-background, rgb(255 255 255));
+      cursor: pointer;
+      font-size: var(--snice-font-size-xs, 0.8125rem);
+      font-family: inherit;
+      color: var(--snice-color-text, rgb(23 23 23));
+      transition: all var(--snice-transition-fast, 150ms);
+    }
+
+    .filter-btn:hover {
+      border-color: var(--snice-color-border-hover, rgb(204 204 204));
+      background: var(--snice-color-background-secondary, rgb(250 250 250));
+    }
+
+    .filter-btn.active {
+      background: var(--snice-color-primary, rgb(37 99 235));
+      color: white;
+      font-weight: var(--snice-font-weight-semibold, 600);
+      border-color: var(--snice-color-primary, rgb(37 99 235));
+    }
+
+    .clear-btn {
+      padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-md, 1rem);
+      border: 1px solid var(--snice-color-border, rgb(226 226 226));
+      border-radius: var(--snice-border-radius-sm, 0.375rem);
+      background: var(--snice-color-background, rgb(255 255 255));
+      cursor: pointer;
+      font-weight: var(--snice-font-weight-semibold, 600);
+      font-family: inherit;
+      color: var(--snice-color-text, rgb(23 23 23));
+      transition: all var(--snice-transition-fast, 150ms);
+    }
+
+    .clear-btn:hover {
+      border-color: var(--snice-color-border-hover, rgb(204 204 204));
+      background: var(--snice-color-background-secondary, rgb(250 250 250));
+    }
+
+    .info-section {
+      margin-top: var(--snice-spacing-2xl, 2.5rem);
+      padding: var(--snice-spacing-lg, 1.5rem);
+      background: var(--snice-color-background, rgb(255 255 255));
+      border-radius: var(--snice-border-radius-md, 0.5rem);
+      border: 1px solid var(--snice-color-border, rgb(226 226 226));
+    }
+
+    .info-section ul {
+      margin: var(--snice-spacing-md, 1rem) 0;
+      padding-left: var(--snice-spacing-lg, 1.5rem);
+    }
+
+    .info-section li {
+      margin-bottom: var(--snice-spacing-xs, 0.5rem);
+      color: var(--snice-color-text, rgb(23 23 23));
+    }
+
+    .info-section pre {
+      background: var(--snice-color-background-tertiary, rgb(241 241 241));
+      color: var(--snice-color-text, rgb(23 23 23));
+      padding: var(--snice-spacing-md, 1rem);
+      border-radius: var(--snice-border-radius-sm, 0.375rem);
+      font-size: var(--snice-font-size-xs, 0.8125rem);
+      overflow-x: auto;
+      border: 1px solid var(--snice-color-border, rgb(226 226 226));
+    }
   </style>
   <script type="module">
     import 'snice';
@@ -51,7 +182,6 @@
           id: 'in-progress',
           title: 'In Progress',
           color: '#ff9800',
-          limit: 3,
           cards: [
             {
               id: 4,
@@ -113,13 +243,48 @@
 
       // Event listeners
       kanban.addEventListener('@snice/kanban-card-move', (e) => {
-        console.log('Card moved:', e.detail);
-        console.log(`${e.detail.card.title} moved from ${e.detail.fromColumn} to ${e.detail.toColumn}`);
+        // Card moved event
       });
 
       kanban.addEventListener('@snice/kanban-card-click', (e) => {
-        console.log('Card clicked:', e.detail.card);
         alert(`Card: ${e.detail.card.title}\n\n${e.detail.card.description || 'No description'}`);
+      });
+
+      // Search functionality
+      const searchInput = document.getElementById('search-input');
+      searchInput.addEventListener('input', (e) => {
+        kanban.search(e.target.value);
+      });
+
+      // Label filter functionality
+      const filterBtns = document.querySelectorAll('.filter-btn');
+      const activeLabels = new Set();
+
+      filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const label = btn.dataset.label;
+
+          if (activeLabels.has(label)) {
+            activeLabels.delete(label);
+            btn.classList.remove('active');
+          } else {
+            activeLabels.add(label);
+            btn.classList.add('active');
+          }
+
+          kanban.filterByLabels(Array.from(activeLabels));
+        });
+      });
+
+      // Clear filters
+      document.getElementById('clear-filters').addEventListener('click', () => {
+        kanban.clearFilters();
+        searchInput.value = '';
+        activeLabels.clear();
+
+        filterBtns.forEach(btn => {
+          btn.classList.remove('active');
+        });
       });
     });
   </script>
@@ -128,21 +293,136 @@
   <h2>Kanban Board Demo</h2>
   <p>Drag and drop cards between columns. Click on a card to see details.</p>
 
+  <div class="filter-section">
+    <h3>Filters</h3>
+
+    <div class="filter-group">
+      <label>Search:</label>
+      <input type="text" id="search-input" placeholder="Search cards...">
+    </div>
+
+    <div class="filter-group">
+      <label>Filter by Label:</label>
+      <div class="filter-buttons">
+        <button class="filter-btn" data-label="design">design</button>
+        <button class="filter-btn" data-label="docs">docs</button>
+        <button class="filter-btn" data-label="bug">bug</button>
+        <button class="filter-btn" data-label="feature">feature</button>
+        <button class="filter-btn" data-label="high-priority">high-priority</button>
+        <button class="filter-btn" data-label="ui">ui</button>
+        <button class="filter-btn" data-label="backend">backend</button>
+        <button class="filter-btn" data-label="devops">devops</button>
+        <button class="filter-btn" data-label="ux">ux</button>
+      </div>
+    </div>
+
+    <button id="clear-filters" class="clear-btn">Clear All Filters</button>
+  </div>
+
   <snice-kanban id="kanban-board"></snice-kanban>
 
-  <div style="margin-top: 40px; padding: 20px; background: #f5f5f5; border-radius: 4px;">
-    <h3 style="margin-top: 0;">Features</h3>
+  <div class="info-section">
+    <h3>Features</h3>
     <ul>
-      <li>Drag and drop cards between columns</li>
+      <li>Drag and drop cards between columns and within the same column</li>
       <li>Click on cards to view details</li>
-      <li>Column limits (In Progress has a limit of 3)</li>
-      <li>Card labels and assignees</li>
+      <li>Card labels with <strong>custom colors</strong> (text + background)</li>
+      <li>Card assignees</li>
       <li>Color-coded cards and columns</li>
       <li>Card counts per column</li>
+      <li><strong>Search cards</strong> by title or description</li>
+      <li><strong>Filter by labels</strong> - can select multiple labels (AND logic)</li>
+      <li><strong>View Transitions API</strong> - smooth animations when moving cards</li>
     </ul>
 
+    <h3>API Usage</h3>
+    <p>Try these in the browser console:</p>
+    <pre>// Search for cards
+kanban.search('landing');
+
+// Filter by labels (show cards with these labels)
+kanban.filterByLabels(['design', 'high-priority']);
+
+// Clear all filters
+kanban.clearFilters();
+
+// Add card with colored labels
+kanban.addCard('todo', {
+  id: 99,
+  title: 'New task',
+  labels: [
+    { text: 'urgent', color: '#dc2626', background: '#fee2e2' },
+    { text: 'backend', color: '#9333ea', background: '#f3e8ff' }
+  ]
+});
+
+// String labels still work (will use default styling)
+kanban.addCard('todo', {
+  id: 100,
+  title: 'Another task',
+  labels: ['feature', 'ui']
+});
+    </pre>
+
     <h3>Try it out!</h3>
-    <p>Open the browser console to see events when you drag cards or click on them.</p>
+    <p>Drag cards between columns or reorder within columns. Use the search and label filters above.</p>
   </div>
+
+  <h2>Custom Labels with Icons</h2>
+  <p>Labels can have custom colors, backgrounds, and emoji icons positioned on left or right.</p>
+
+  <snice-kanban id="kanban-board-labels"></snice-kanban>
+
+  <script type="module">
+    const kanbanLabels = document.getElementById('kanban-board-labels');
+
+    kanbanLabels.columns = [
+      {
+        id: 'backlog',
+        title: 'Backlog',
+        cards: [
+          {
+            id: 101,
+            title: 'Redesign dashboard',
+            assignee: 'Sarah',
+            labels: [
+              { text: 'Design', color: '#6366f1', background: '#eef2ff', icon: '🎨', iconPosition: 'left' },
+              { text: 'High Priority', color: '#dc2626', background: '#fee2e2', icon: '🔥', iconPosition: 'left' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'wip',
+        title: 'In Progress',
+        cards: [
+          {
+            id: 102,
+            title: 'Add dark mode',
+            assignee: 'Jordan',
+            labels: [
+              { text: 'Feature', color: '#16a34a', background: '#dcfce7', icon: '✨', iconPosition: 'left' },
+              { text: 'UI', color: '#6366f1', background: '#eef2ff', icon: '🎭', iconPosition: 'left' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'complete',
+        title: 'Done',
+        cards: [
+          {
+            id: 103,
+            title: 'Analytics dashboard',
+            assignee: 'Riley',
+            labels: [
+              { text: 'Analytics', color: '#0891b2', background: '#cffafe', icon: '📊', iconPosition: 'left' },
+              { text: 'Shipped', color: '#16a34a', background: '#dcfce7', icon: '🚀', iconPosition: 'right' }
+            ]
+          }
+        ]
+      }
+    ];
+  </script>
 </body>
 </html>
