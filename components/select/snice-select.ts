@@ -208,29 +208,34 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   init() {
     // Read options from child snice-option elements
     this.readOptionsFromChildren();
-    
+
     // Initialize selected values
     if (this.multiple && this.value) {
       this.selectedValues = new Set(this.value.split(',').map(v => v.trim()));
     }
-    
+
     // Initialize filtered options
     this.filteredOptions = [...this.options];
-    
-    // Set initial imperative state
-    this.updateTriggerState();
-    this.updateDropdownState();
-    this.updateNativeSelectAttributes();
-    
-    // Now that we have options, update everything
-    this.updateDropdownContent();
-    this.updateNativeSelect();
-    this.updateValueDisplay();
-    this.updateClearButton();
-    
+
+    // Wait for @query decorators to populate shadow DOM elements
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        // Set initial imperative state
+        this.updateTriggerState();
+        this.updateDropdownState();
+        this.updateNativeSelectAttributes();
+
+        // Now that we have options, update everything
+        this.updateDropdownContent();
+        this.updateNativeSelect();
+        this.updateValueDisplay();
+        this.updateClearButton();
+      });
+    });
+
     // Watch for changes to child options
     this.observeChildren();
-    
+
     // Setup global event listeners
     this.setupGlobalListeners();
   }
