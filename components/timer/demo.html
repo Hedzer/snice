@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snice Timer Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      font-family: var(--snice-font-family, system-ui, -apple-system, sans-serif);
+      padding: var(--snice-spacing-2xl, 2.5rem);
+      line-height: 1.6;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      margin: 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: var(--snice-color-text);
+      border-bottom: 2px solid var(--snice-color-border);
+      padding-bottom: var(--snice-spacing-sm, 0.75rem);
+      margin-bottom: var(--snice-spacing-lg, 1.5rem);
+      font-size: var(--snice-font-size-2xl, 1.5rem);
+    }
+
+    h2 {
+      color: var(--snice-color-text);
+      margin-top: var(--snice-spacing-xl, 2rem);
+      margin-bottom: var(--snice-spacing-md, 1rem);
+      font-size: var(--snice-font-size-xl, 1.25rem);
+    }
+
+    h3 {
+      color: var(--snice-color-text-secondary);
+      margin-top: var(--snice-spacing-lg, 1.5rem);
+      margin-bottom: var(--snice-spacing-sm, 0.75rem);
+      font-size: var(--snice-font-size-md, 1rem);
+      font-weight: var(--snice-font-weight-semibold, 600);
+    }
+
+    .demo-section {
+      margin: var(--snice-spacing-lg, 1.5rem) 0;
+      padding: var(--snice-spacing-md, 1rem);
+      background: var(--snice-color-background-secondary);
+      border-radius: var(--snice-border-radius-lg, 8px);
+      border: 1px solid var(--snice-color-border);
+    }
+
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: var(--snice-spacing-lg, 1.5rem);
+    }
+
+    .event-log {
+      margin-top: var(--snice-spacing-md, 1rem);
+      padding: var(--snice-spacing-sm, 0.75rem);
+      background: var(--snice-color-background-element, rgb(252 251 249));
+      border: 1px solid var(--snice-color-border);
+      border-radius: var(--snice-border-radius-md, 4px);
+      font-family: monospace;
+      font-size: var(--snice-font-size-sm, 0.875rem);
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .event-log div {
+      margin: var(--snice-spacing-2xs, 0.25rem) 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Timer Demo</h1>
+    <p>Timer and stopwatch component with start, stop, and reset controls.</p>
+
+    <h3>Stopwatch</h3>
+    <div class="demo-section">
+      <snice-timer id="stopwatch" mode="stopwatch"></snice-timer>
+    </div>
+
+    <h3>Countdown Timer (60 seconds)</h3>
+    <div class="demo-section">
+      <snice-timer id="timer" mode="timer" initial-time="60"></snice-timer>
+    </div>
+
+    <h3>Countdown Timer (5 minutes)</h3>
+    <div class="demo-section">
+      <snice-timer mode="timer" initial-time="300"></snice-timer>
+    </div>
+
+    <h2>Events</h2>
+    <div id="event-log" class="event-log"></div>
+  </div>
+
+  <script type="module">
+    const eventLog = document.getElementById('event-log');
+
+    function logEvent(eventName, detail) {
+      const entry = document.createElement('div');
+      entry.textContent = `${new Date().toLocaleTimeString()}: ${eventName} - time: ${detail.time?.toFixed(1)}s`;
+      eventLog.insertBefore(entry, eventLog.firstChild);
+    }
+
+    document.querySelectorAll('snice-timer').forEach(timer => {
+      timer.addEventListener('@snice/timer-start', (e) => logEvent('timer-start', e.detail));
+      timer.addEventListener('@snice/timer-stop', (e) => logEvent('timer-stop', e.detail));
+      timer.addEventListener('@snice/timer-reset', (e) => logEvent('timer-reset', e.detail));
+      timer.addEventListener('@snice/timer-complete', (e) => logEvent('timer-complete', e.detail));
+    });
+  </script>
+
+  <script type="module" src="./snice-timer.ts"></script>
+</body>
+</html>

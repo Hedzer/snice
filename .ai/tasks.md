@@ -1,10 +1,35 @@
 # Component Implementation Tasks
 
+## CRITICAL: Theme Compliance Checklist
+
+**BEFORE starting ANY component:**
+1. ✅ Read `theme.css` - understand available CSS custom properties
+2. ✅ Read `.ai/THEME_INTEGRATION_GUIDE.md` - understand fallback pattern
+3. ✅ Read `.ai/PIXEL_TO_REM_GUIDE.md` - understand spacing/typography units
+
+**AFTER implementing component:**
+1. ✅ Verify ALL CSS uses `var(--snice-property, fallback)` pattern
+2. ✅ Test in LIGHT mode - check theme.css tokens work
+3. ✅ Test in DARK mode - ensure component is readable/functional
+4. ✅ Verify demo.html uses theme tokens (NOT hard-coded colors/spacing)
+5. ✅ Verify demo.html works in both light AND dark modes
+6. ✅ Run tests to ensure functionality
+
+**NEVER:**
+- ❌ Use hard-coded colors (e.g., `#ffffff`, `rgb(255, 255, 255)` without theme var)
+- ❌ Use hard-coded spacing without theme tokens
+- ❌ Skip fallback values in `var()` calls
+- ❌ Use px for spacing/typography (use rem with proper fallbacks)
+
 ## Implementation Checklist per Component
 For each component:
-- [ ] Component implementation (.ts, .types.ts, .css)
+- [ ] **BEFORE**: Read theme.css, .ai/THEME_INTEGRATION_GUIDE.md, .ai/PIXEL_TO_REM_GUIDE.md
+- [ ] Component implementation (.ts, .types.ts, .css) with theme tokens + fallbacks
 - [ ] Tests (.test.ts)
-- [ ] Demo page (demo.html)
+- [ ] Demo page (demo.html) using theme tokens (not hard-coded values)
+- [ ] **AFTER**: Test in light mode
+- [ ] **AFTER**: Test in dark mode
+- [ ] **AFTER**: Verify demo.html theme compliance
 - [ ] Human documentation (docs/components/)
 - [ ] AI documentation (docs/ai/components/)
 
@@ -287,16 +312,11 @@ For each component:
      - `@snice/time-range-change` - Emitted when selection changes
      - `@snice/time-range-select` - Emitted when range selection starts
      - `@snice/time-range-complete` - Emitted when range selection completes
-53. [ ] `<snice-timer>` - Basic timer/stopwatch component
-   - **Properties:**
-     - `mode` - "stopwatch" | "timer" (default: "stopwatch")
-     - `initial-time` - Starting time in seconds (for timer mode)
-   - **Methods:**
-     - `start()` - Start timer/stopwatch
-     - `stop()` - Stop timer/stopwatch
-     - `reset()` - Reset to initial state
-   - **Events:**
-     - `@snice/timer-complete` - Countdown timer finished
+53. [x] `<snice-timer>` - Basic timer/stopwatch component
+   - [x] Implementation (25/25 tests passing)
+   - [x] Demo page
+   - [x] Human docs
+   - [x] AI docs
 54. [ ] `<snice-qr-reader>` - QR code scanner component
    - **Properties:**
      - `auto-start` - Start camera automatically
