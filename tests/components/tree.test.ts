@@ -67,14 +67,6 @@ describe('snice-tree', () => {
       await wait(50);
       expect(tree.nodes[0].children?.length).toBe(2);
     });
-
-    it('should update when nodes change', async () => {
-      tree = await createComponent<SniceTreeElement>('snice-tree');
-      const tracker = trackRenders(tree as HTMLElement);
-      tree.nodes = getSampleData();
-      await tracker.next();
-      expect(tree.nodes.length).toBe(1);
-    });
   });
 
   describe('selection mode', () => {

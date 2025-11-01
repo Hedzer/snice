@@ -410,7 +410,7 @@ export class SniceTree extends HTMLElement implements SniceTreeElement {
           } else {
             content.classList.remove('tree-item__content--selected');
           }
-          content.setAttribute('aria-selected', node.selected.toString());
+          content.setAttribute('aria-selected', (node.selected ?? false).toString());
         }
       }
 

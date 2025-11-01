@@ -84,7 +84,9 @@ export function on(
       const constructor = this.constructor as any;
 
       // Only initialize once per class, not per instance
-      if (constructor[initKey]) return;
+      if (constructor[initKey]) {
+        return;
+      }
       constructor[initKey] = true;
 
       if (!constructor[ON_HANDLERS]) {
@@ -300,7 +302,10 @@ export function setupEventHandlers(instance: any, targetElement: HTMLElement) {
       // If element has shadow root, listen on both shadow root AND host element
       // to catch events from inside shadow DOM (with correct target) and on host itself
       const shadowRoot = (targetElement as any).shadowRoot;
-      const handledSymbol = Symbol('snice-event-handled');
+      // Use Symbol.for() with method name to ensure symbols are shared across Snice instances
+      // Method names are unique within a class, so this prevents double-firing of the same handler
+      // while allowing multiple different handlers on the same event
+      const handledSymbol = Symbol.for(`snice:event-handled:${handler.methodName}`);
 
       const wrappedMethod = (event: Event) => {
         // Prevent double-triggering when listening on both shadow root and host

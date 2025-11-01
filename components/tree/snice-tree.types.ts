@@ -9,6 +9,7 @@ export interface TreeNode {
   disabled?: boolean;
   selected?: boolean;
   checked?: boolean;
+  indeterminate?: boolean;
   expanded?: boolean;
   lazy?: boolean;
   data?: any;

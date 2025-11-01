@@ -5,7 +5,8 @@ import { RouteParams } from './route-params';
 import { REGISTERED_ELEMENTS, IS_UPDATING, CONTEXT_REGISTER, CONTEXT_UNREGISTER, CONTEXT_NOTIFY_ELEMENT } from '../symbols';
 
 // Symbol for storing the Set of elements
-const REGISTERED_ELEMENTS_SET = Symbol('registered-elements-set');
+// Use Symbol.for() to ensure symbols are shared across multiple Snice instances
+const REGISTERED_ELEMENTS_SET = Symbol.for('snice:registered-elements-set');
 
 // Counter for generating unique context IDs
 let contextIdCounter = 0;

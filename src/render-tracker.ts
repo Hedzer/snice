@@ -1,10 +1,11 @@
 /**
  * Render tracking for testing/debugging
  * Uses symbols and generators to "pull" render events from elements
+ * Use Symbol.for() to ensure symbols are shared across multiple Snice instances
  */
 
-export const RENDER_TRACKER = Symbol('renderTracker');
-export const TRACK_RENDERS = Symbol('trackRenders');
+export const RENDER_TRACKER = Symbol.for('snice:renderTracker');
+export const TRACK_RENDERS = Symbol.for('snice:trackRenders');
 
 /**
  * Generator that yields after each render of an element

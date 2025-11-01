@@ -4,25 +4,24 @@
 import { SniceGlobal } from './types/snice-global';
 
 
-// Initialize or get the global Snice namespace
-function initGlobalNamespace(): SniceGlobal {
-  if (!(globalThis as any).snice) {
-    (globalThis as any).snice = {
-      controllerRegistry: new Map(),
-      controllerIdCounter: 0,
-      symbols: new Map()
-    };
-  }
-  return (globalThis as any).snice;
+// Initialize the global Snice namespace on globalThis
+// This ensures all module instances share the same registry
+if (!(globalThis as any).snice) {
+  (globalThis as any).snice = {
+    controllerRegistry: new Map(),
+    controllerIdCounter: 0,
+    symbols: new Map()
+  };
 }
 
-// Export the global namespace
-export const snice = initGlobalNamespace();
+// Export direct reference to globalThis.snice
+export const snice: SniceGlobal = (globalThis as any).snice;
 
 // Helper function to get or create a global symbol
+// Uses Symbol.for() to ensure symbols are shared across multiple Snice instances
 export function getSymbol(name: string): symbol {
   if (!snice.symbols.has(name)) {
-    snice.symbols.set(name, Symbol(name));
+    snice.symbols.set(name, Symbol.for(`snice:${name}`));
   }
   return snice.symbols.get(name)!;
 }

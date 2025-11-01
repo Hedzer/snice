@@ -4,8 +4,9 @@
  */
 
 // Unique symbols for type checking
-export const HTML_RESULT = Symbol('html-result');
-export const CSS_RESULT = Symbol('css-result');
+// Use Symbol.for() to ensure symbols are shared across multiple Snice instances
+export const HTML_RESULT = Symbol.for('snice:html-result');
+export const CSS_RESULT = Symbol.for('snice:css-result');
 
 /**
  * Result of html`` tagged template
@@ -139,8 +140,9 @@ export function sanitize(value: any): string {
 /**
  * Nothing - represents no value (different from null/undefined)
  * Used to remove content from templates
+ * Use Symbol.for() to ensure symbols are shared across multiple Snice instances
  */
-export const nothing = Symbol('nothing');
+export const nothing = Symbol.for('snice:nothing');
 
 /**
  * Type for template values that represent "no content"
@@ -148,7 +150,8 @@ export const nothing = Symbol('nothing');
 export type Nothing = typeof nothing;
 
 // Unique symbol for unsafe HTML
-const UNSAFE_HTML = Symbol('unsafe-html');
+// Use Symbol.for() to ensure symbols are shared across multiple Snice instances
+const UNSAFE_HTML = Symbol.for('snice:unsafe-html');
 
 /**
  * Wrapper for raw HTML strings that should not be escaped

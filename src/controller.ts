@@ -58,7 +58,12 @@ class ControllerScope {
  */
 export function controller(name: string) {
   return function <T extends ControllerClass>(constructor: T, _context: ClassDecoratorContext) {
-    snice.controllerRegistry.set(name, constructor);
+    // Access globalThis.snice directly to ensure consistency
+    const registry = (globalThis as any).snice?.controllerRegistry;
+    if (!registry) {
+      throw new Error('Snice global registry not initialized');
+    }
+    registry.set(name, constructor);
     // Mark as controller class for channel decorator detection
     (constructor.prototype as any)[IS_CONTROLLER_CLASS] = true;
     return constructor;
@@ -90,9 +95,17 @@ export async function attachController(element: HTMLElement, controllerName: str
   if (existingController) {
     await detachController(element);
   }
-  
-  const ControllerClass = snice.controllerRegistry.get(controllerName);
+
+  // Access globalThis.snice directly to ensure consistency
+  const registry = (globalThis as any).snice?.controllerRegistry;
+  if (!registry) {
+    throw new Error('Snice global registry not initialized');
+  }
+
+  const ControllerClass = registry.get(controllerName);
   if (!ControllerClass) {
+    // Debug: log what's actually in the registry
+    console.error(`Controller "${controllerName}" not found. Available:`, Array.from(registry.keys()));
     throw new Error(`Controller "${controllerName}" not found in registry`);
   }
   

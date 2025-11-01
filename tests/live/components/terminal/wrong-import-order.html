@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terminal - Wrong Import Order Test</title>
+  <link rel="stylesheet" href="/components/theme/theme.css">
+  <script type="module">
+    // Component BEFORE controller (wrong order - tests if bug is fixed)
+    import '/components/terminal/snice-terminal.ts';
+    import '/components/terminal/demo-terminal-controller.ts';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const term = document.getElementById('test-term');
+      term.writeln('Terminal loaded with WRONG import order', 'success');
+      term.writeln('Component imported BEFORE controller', 'info');
+      term.writeln('Type "help" to test if controller works', 'info');
+    });
+  </script>
+</head>
+<body style="max-width: 800px; margin: 40px auto; font-family: var(--snice-font-family);">
+  <h1>Wrong Import Order Test</h1>
+  <p>This page imports component BEFORE controller to test the fix for the import order bug.</p>
+  <p>If the bug is fixed, commands should work regardless of import order.</p>
+
+  <div style="border: 1px solid var(--snice-color-border); border-radius: var(--snice-border-radius-md); overflow: hidden; margin-top: 20px;">
+    <snice-terminal id="test-term" controller="demo-terminal-controller"></snice-terminal>
+  </div>
+</body>
+</html>
