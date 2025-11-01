@@ -1,3 +1,10 @@
+# [3.6.0](https://gitlab.com/Hedzer/snice/compare/v3.5.0...v3.6.0) (2025-11-01)
+
+
+### Features
+
+* audio recorder ([8ca3f72](https://gitlab.com/Hedzer/snice/commit/8ca3f72e2cefa802b5e4edbd34cf29fd6350ed0c))
+
 # [3.5.0](https://gitlab.com/Hedzer/snice/compare/v3.4.1...v3.5.0) (2025-11-01)
 
 
