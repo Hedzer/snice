@@ -2,9 +2,12 @@
 
 A key performance indicator display component for showing metrics with optional trend visualization and sentiment indicators. Perfect for dashboards and analytics interfaces.
 
+> **Note**: The `snice-stat` component has been merged into `snice-kpi`. All stat functionality is now available through KPI.
+
 ## Features
 
 - **Clear Value Display**: Large, prominent metric value
+- **Icon Support**: Optional icon slot for visual branding
 - **Trend Indicators**: Optional trend value with sentiment icons
 - **Sparkline Integration**: Built-in sparkline chart support
 - **Sentiment Colors**: Visual feedback with up/down/neutral states
@@ -31,6 +34,30 @@ A key performance indicator display component for showing metrics with optional 
 | `sentiment` | `KpiSentiment` | `undefined` | Trend sentiment ('up', 'down', 'neutral') |
 | `size` | `KpiSize` | `'medium'` | Component size ('small', 'medium', 'large') |
 | `show-sparkline` | `boolean` | `true` | Whether to show sparkline when data is provided |
+| `color-value` | `boolean` | `false` | Apply sentiment color to main value |
+
+## Slots
+
+| Slot | Description |
+|------|-------------|
+| `before` | Content displayed before the label/value (e.g., icons) |
+| `after` | Content displayed after sparkline (e.g., additional actions) |
+
+## With Icon (Before Slot)
+
+```html
+<snice-kpi
+  label="Total Revenue"
+  value="$45,231"
+  trend-value="+12%"
+  sentiment="up">
+  <div slot="before" style="display: flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; background: var(--snice-color-primary-subtle); border-radius: var(--snice-border-radius-md); margin-bottom: var(--snice-spacing-xs);">
+    <svg style="width: 1.5rem; height: 1.5rem; color: var(--snice-color-primary); fill: currentColor;" viewBox="0 0 24 24">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+    </svg>
+  </div>
+</snice-kpi>
+```
 
 ## With Trend Indicator
 

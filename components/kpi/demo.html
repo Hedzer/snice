@@ -4,36 +4,44 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Snice KPI Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
   <style>
     body {
-      font-family: system-ui, -apple-system, sans-serif;
+      font-family: var(--snice-font-family);
       padding: 40px;
       line-height: 1.6;
-      background: #f5f5f5;
+      background: var(--snice-color-background-secondary);
     }
 
     .container {
       max-width: 1200px;
       margin: 0 auto;
-      background: white;
+      background: var(--snice-color-background);
       padding: 40px;
-      border-radius: 8px;
+      border-radius: var(--snice-border-radius-lg);
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
     h1 {
-      color: #333;
-      border-bottom: 2px solid #e0e0e0;
+      color: var(--snice-color-text);
+      border-bottom: 2px solid var(--snice-color-border);
       padding-bottom: 10px;
+      margin-bottom: 30px;
     }
 
     h2 {
-      color: #555;
-      margin-top: 30px;
+      color: var(--snice-color-text);
+      margin-top: 40px;
+      margin-bottom: 20px;
+      font-size: 1.5em;
     }
 
     .demo-section {
       margin: 30px 0;
+      padding: 20px;
+      background: var(--snice-color-background-tertiary);
+      border-radius: var(--snice-border-radius-md);
+      border: 1px solid var(--snice-color-border);
     }
 
     .demo-grid {
@@ -49,12 +57,18 @@
       flex-wrap: wrap;
       margin: 20px 0;
     }
+
+    .icon {
+      width: 1.5rem;
+      height: 1.5rem;
+      fill: currentColor;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Snice KPI Demo</h1>
-    <p>Key Performance Indicator component for dashboards and analytics.</p>
+    <p>Key Performance Indicator component for dashboards and analytics with sparklines and trend data.</p>
 
     <div class="demo-section">
       <h2>Basic KPIs</h2>
@@ -75,6 +89,38 @@
           id="conversions"
           label="Conversion Rate"
           value="3.24%">
+        </snice-kpi>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>With Icons (Before Slot)</h2>
+      <p>Use the <code>before</code> slot to add icons or other content before the metrics.</p>
+      <div class="demo-grid">
+        <snice-kpi
+          id="revenue-icon"
+          label="Total Revenue"
+          value="$45,231"
+          trend-value="+12%"
+          sentiment="up">
+          <div slot="before" style="display: flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; background: var(--snice-color-primary-subtle); border-radius: var(--snice-border-radius-md); margin-bottom: var(--snice-spacing-xs);">
+            <svg class="icon" style="color: var(--snice-color-primary);" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83-3.12 3.16z"/>
+            </svg>
+          </div>
+        </snice-kpi>
+
+        <snice-kpi
+          id="users-icon"
+          label="Active Users"
+          value="2,345"
+          trend-value="-5%"
+          sentiment="down">
+          <div slot="before" style="display: flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; background: var(--snice-color-primary-subtle); border-radius: var(--snice-border-radius-md); margin-bottom: var(--snice-spacing-xs);">
+            <svg class="icon" style="color: var(--snice-color-primary);" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+            </svg>
+          </div>
         </snice-kpi>
       </div>
     </div>
@@ -199,6 +245,39 @@
     </div>
 
     <div class="demo-section">
+      <h2>Colored Values</h2>
+      <p>Use <code>color-value</code> to apply sentiment colors to the main value.</p>
+      <div class="demo-grid">
+        <snice-kpi
+          id="colored-revenue"
+          label="Sales"
+          value="$12,345"
+          trend-value="+25%"
+          sentiment="up"
+          color-value>
+        </snice-kpi>
+
+        <snice-kpi
+          id="colored-errors"
+          label="Errors"
+          value="127"
+          trend-value="+15"
+          sentiment="down"
+          color-value>
+        </snice-kpi>
+
+        <snice-kpi
+          id="colored-pending"
+          label="Pending"
+          value="45"
+          trend-value="0"
+          sentiment="neutral"
+          color-value>
+        </snice-kpi>
+      </div>
+    </div>
+
+    <div class="demo-section">
       <h2>Complex Examples</h2>
       <div class="demo-grid">
         <snice-kpi
@@ -262,19 +341,33 @@
       return data;
     }
 
-    // Add sparkline data
+    // Add sparkline data for icons section
+    document.getElementById('revenue-icon').trendData = generateTrendData(14, 'up');
+    document.getElementById('users-icon').trendData = generateTrendData(14, 'down');
+    document.getElementById('orders-icon').trendData = generateTrendData(14, 'up');
+    document.getElementById('views-icon').trendData = volatileData(14);
+
+    // Add sparkline data for sparklines section
     document.getElementById('sales-spark').trendData = generateTrendData(14, 'up');
     document.getElementById('traffic-spark').trendData = generateTrendData(30, 'up');
     document.getElementById('errors-spark').trendData = generateTrendData(24, 'down');
 
+    // Add sparkline data for sizes
     document.getElementById('small-kpi').trendData = generateTrendData(10, 'up');
     document.getElementById('medium-kpi').trendData = generateTrendData(10, 'up');
     document.getElementById('large-kpi').trendData = generateTrendData(10, 'up');
 
+    // Add sparkline data for sentiments
     document.getElementById('positive').trendData = generateTrendData(15, 'up');
     document.getElementById('negative').trendData = generateTrendData(15, 'up');
     document.getElementById('stable').trendData = volatileData(15);
 
+    // Add sparkline data for colored values
+    document.getElementById('colored-revenue').trendData = generateTrendData(14, 'up');
+    document.getElementById('colored-errors').trendData = generateTrendData(14, 'up');
+    document.getElementById('colored-pending').trendData = volatileData(14);
+
+    // Add sparkline data for complex examples
     document.getElementById('mrr').trendData = generateTrendData(30, 'up');
     document.getElementById('ltv').trendData = generateTrendData(20, 'up');
     document.getElementById('cac').trendData = generateTrendData(20, 'down');

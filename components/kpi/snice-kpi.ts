@@ -81,6 +81,8 @@ export class SniceKpi extends HTMLElement implements SniceKpiElement {
 
     return html/*html*/`
       <div class="${kpiClasses}" part="container">
+        <slot name="before"></slot>
+
         <div class="kpi__header" part="header">
           <div class="kpi__main" part="main">
             <div class="kpi__label" part="label">${this.label}</div>
@@ -110,6 +112,8 @@ export class SniceKpi extends HTMLElement implements SniceKpiElement {
             </snice-sparkline>
           </div>
         </if>
+
+        <slot name="after"></slot>
       </div>
     `;
   }

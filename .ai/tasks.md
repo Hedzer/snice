@@ -112,11 +112,11 @@ For each component:
    - [x] Demo page
    - [x] Human docs
    - [x] AI docs
-21. [x] `<snice-stat>` - Statistic display
-   - [x] Implementation (6/6 tests passing)
-   - [x] Demo page
-   - [x] Human docs
-   - [x] AI docs
+21. [x] `<snice-stat>` - Statistic display (MERGED INTO KPI)
+   - Functionality merged into `<snice-kpi>` component
+   - KPI now supports icons/iconImages from stat
+   - KPI provides superset of stat features (sparklines, better styling)
+   - Component removed to avoid duplication
 22. [x] `<snice-location>` - Location component (from table cell)
    - [x] Implementation (15/15 tests passing)
    - [x] Demo page

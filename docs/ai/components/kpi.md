@@ -2,6 +2,8 @@
 
 Key performance indicator display with value, label, trend, sparkline, and sentiment.
 
+> **Note**: `snice-stat` component has been merged into `snice-kpi`.
+
 ## Properties
 
 ```typescript
@@ -12,6 +14,14 @@ trendData?: number[]                    // Sparkline data array
 sentiment?: KpiSentiment                // 'up' | 'down' | 'neutral'
 size: KpiSize = 'medium'                // 'small' | 'medium' | 'large'
 showSparkline: boolean = true           // Show sparkline when data provided
+colorValue: boolean = false             // Apply sentiment color to value
+```
+
+## Slots
+
+```typescript
+before  // Content before label/value (e.g., icons)
+after   // Content after sparkline (e.g., actions)
 ```
 
 ## Usage
@@ -19,6 +29,11 @@ showSparkline: boolean = true           // Show sparkline when data provided
 ```html
 <!-- Basic -->
 <snice-kpi label="Revenue" value="$45,231"></snice-kpi>
+
+<!-- With icon (before slot) -->
+<snice-kpi label="Revenue" value="$45,231">
+  <div slot="before">🏆</div>
+</snice-kpi>
 
 <!-- With trend -->
 <snice-kpi
