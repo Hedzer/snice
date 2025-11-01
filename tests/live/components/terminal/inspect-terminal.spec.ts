@@ -45,5 +45,4 @@ test('inspect terminal spacing', async ({ page }) => {
     };
   });
 
-  console.log('Terminal Styles:', JSON.stringify(styles, null, 2));
 });

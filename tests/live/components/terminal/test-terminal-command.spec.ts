@@ -1,8 +1,6 @@
 import { test, expect } from '@playwright/test';
 
 test('terminal command execution', async ({ page }) => {
-  page.on('console', msg => console.log('BROWSER:', msg.text()));
-
   await page.goto('http://localhost:5566/components/terminal/demo.html');
   await page.waitForTimeout(1000);
 
@@ -29,6 +27,5 @@ test('terminal command execution', async ({ page }) => {
     });
   });
 
-  console.log('Terminal output:', output);
   expect(output).toContain('Available commands');
 });

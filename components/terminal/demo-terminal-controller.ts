@@ -1,30 +1,20 @@
 import { controller, respond } from 'snice';
 import type { TerminalCommandRequest, TerminalCommandResponse } from './snice-terminal.types';
 
-console.log('[Terminal] Loading demo-terminal-controller module');
-console.log('[Terminal] controller function:', controller);
-console.log('[Terminal] respond function:', respond);
-
 @controller('demo-terminal-controller')
 export class DemoTerminalController {
   element!: HTMLElement;
 
-  constructor() {
-    console.log('[Terminal] DemoTerminalController constructor called');
-  }
-
   async attach(element: HTMLElement) {
     this.element = element;
-    console.log('Demo Terminal Controller attached to', element.tagName);
   }
 
   async detach(element: HTMLElement) {
-    console.log('Demo Terminal Controller detached from', element.tagName);
+    // Cleanup if needed
   }
 
   @respond('terminal-command')
   async handleCommand(request: TerminalCommandRequest): Promise<TerminalCommandResponse> {
-    console.log('[Controller] Received command:', request);
     const { command, args, cwd } = request;
 
     switch (command) {
@@ -152,7 +142,3 @@ export class DemoTerminalController {
     return files.map(f => f.name).join('  ');
   }
 }
-
-console.log('[Terminal] After class definition');
-console.log('[Terminal] globalThis.snice:', (globalThis as any).snice);
-console.log('[Terminal] Controller registered?:', (globalThis as any).snice?.controllerRegistry?.has('demo-terminal-controller'));

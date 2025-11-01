@@ -1,8 +1,6 @@
 import { test, expect } from '@playwright/test';
 
 test('ANSI color parsing', async ({ page }) => {
-  page.on('console', msg => console.log('BROWSER:', msg.text()));
-
   await page.goto('http://localhost:5566/components/terminal/demo.html');
   await page.waitForTimeout(1000);
 

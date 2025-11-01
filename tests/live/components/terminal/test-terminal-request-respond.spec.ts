@@ -30,7 +30,6 @@ test.describe('Terminal with @request/@respond', () => {
     expect(helpOutput).toContain('echo');
     expect(helpOutput).toContain('ls');
 
-    console.log('✓ Help command works');
 
     // Test echo command
     await term.evaluate((el: any) => {
@@ -50,7 +49,6 @@ test.describe('Terminal with @request/@respond', () => {
     });
 
     expect(echoOutput).toContain('hello world');
-    console.log('✓ Echo command works');
 
     // Test ls command
     await term.evaluate((el: any) => {
@@ -71,7 +69,6 @@ test.describe('Terminal with @request/@respond', () => {
 
     expect(lsOutput).toContain('demo.txt');
     expect(lsOutput).toContain('projects');
-    console.log('✓ ls command works');
 
     // Test invalid command
     await term.evaluate((el: any) => {
@@ -91,7 +88,6 @@ test.describe('Terminal with @request/@respond', () => {
     });
 
     expect(errorOutput).toContain('Command not found');
-    console.log('✓ Error handling works');
   });
 
   test('should support writeLines for streaming', async ({ page }) => {
@@ -127,7 +123,6 @@ test.describe('Terminal with @request/@respond', () => {
     expect(output.hasLine2).toBe(true);
     expect(output.hasLine3).toBe(true);
     expect(output.hasError).toBe(true);
-    console.log('✓ writeLines streaming API works');
   });
 
   test('should clear terminal', async ({ page }) => {
@@ -155,6 +150,5 @@ test.describe('Terminal with @request/@respond', () => {
 
     // Should have very few lines after clear (just the clear command itself)
     expect(lineCount).toBeLessThan(3);
-    console.log('✓ Clear command works');
   });
 });

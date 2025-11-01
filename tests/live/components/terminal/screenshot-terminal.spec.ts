@@ -5,5 +5,4 @@ test('screenshot terminal', async ({ page }) => {
   await page.waitForTimeout(2000);
 
   await page.screenshot({ path: '/tmp/terminal-demo.png', fullPage: true });
-  console.log('Screenshot saved to /tmp/terminal-demo.png');
 });
