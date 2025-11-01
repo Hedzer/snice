@@ -18,18 +18,23 @@ export interface TerminalLine {
 }
 
 /**
- * Command handler result
+ * Terminal command request payload
  */
-export interface CommandResult {
+export interface TerminalCommandRequest {
+  command: string;
+  args: string[];
+  cwd?: string;
+  history?: string[];
+}
+
+/**
+ * Terminal command response
+ */
+export interface TerminalCommandResponse {
   output?: string;
   error?: string;
   exitCode?: number;
 }
-
-/**
- * Command handler function
- */
-export type CommandHandler = (args: string[]) => CommandResult | Promise<CommandResult>;
 
 /**
  * Terminal theme
@@ -71,11 +76,6 @@ export interface SniceTerminalEventMap {
  */
 export interface SniceTerminalElement extends HTMLElement {
   /**
-   * Terminal lines
-   */
-  lines: TerminalLine[];
-
-  /**
    * Terminal prompt
    */
   prompt: string;
@@ -101,14 +101,19 @@ export interface SniceTerminalElement extends HTMLElement {
   showTimestamps: boolean;
 
   /**
-   * Write output to terminal
+   * Write content to terminal (without newline)
    */
   write(content: string, type?: TerminalLineType): void;
 
   /**
-   * Write line to terminal
+   * Write line to terminal (with newline)
    */
   writeln(content: string, type?: TerminalLineType): void;
+
+  /**
+   * Write multiple lines to terminal
+   */
+  writeLines(lines: Array<{ content: string; type?: TerminalLineType }>): void;
 
   /**
    * Write error to terminal
@@ -124,21 +129,6 @@ export interface SniceTerminalElement extends HTMLElement {
    * Focus terminal input
    */
   focus(): void;
-
-  /**
-   * Register a command handler
-   */
-  registerCommand(command: string, handler: CommandHandler): void;
-
-  /**
-   * Unregister a command handler
-   */
-  unregisterCommand(command: string): void;
-
-  /**
-   * Execute a command
-   */
-  executeCommand(command: string): Promise<void>;
 
   /**
    * Get command history

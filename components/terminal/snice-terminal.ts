@@ -1,18 +1,20 @@
-import { element, property, dispatch, render, styles, html, css, query, watch } from 'snice';
+import { element, property, dispatch, request, render, styles, html, css, query, unsafeHTML } from 'snice';
 import cssContent from './snice-terminal.css?inline';
 import type {
   SniceTerminalElement,
   TerminalLine,
   TerminalLineType,
-  CommandHandler,
-  CommandResult,
+  TerminalCommandRequest,
+  TerminalCommandResponse,
   SniceTerminalEventMap
 } from './snice-terminal.types';
 
 @element('snice-terminal')
 export class SniceTerminal extends HTMLElement implements SniceTerminalElement {
-  @property({ type: Array })
-  lines: TerminalLine[] = [];
+  private lines: TerminalLine[] = [];
+
+  @property({ type: Number })
+  private renderTrigger = 0;
 
   @property()
   prompt = '$ ';
@@ -35,7 +37,6 @@ export class SniceTerminal extends HTMLElement implements SniceTerminalElement {
   @query('.terminal-output')
   private outputElement?: HTMLDivElement;
 
-  private commandHandlers = new Map<string, CommandHandler>();
   private commandHistory: string[] = [];
   private historyIndex = -1;
   private currentInput = '';
@@ -56,17 +57,43 @@ export class SniceTerminal extends HTMLElement implements SniceTerminalElement {
   }
 
   connectedCallback() {
-    super.connectedCallback();
-    this.setupDefaultCommands();
     this.dispatchReadyEvent();
   }
 
-  @watch('lines')
-  private handleLinesChange() {
+  @request('terminal-command')
+  async *executeCommand(commandLine: string): any {
+    const parts = commandLine.trim().split(/\s+/);
+    const command = parts[0];
+    const args = parts.slice(1);
+
+    const payload: TerminalCommandRequest = {
+      command,
+      args,
+      cwd: this.cwd,
+      history: [...this.commandHistory]
+    };
+
+    try {
+      const response: TerminalCommandResponse = await (yield payload);
+      return response;
+    } catch (error) {
+      // No handler found or error occurred
+      console.error('[Terminal] Command execution error:', error);
+      return {
+        error: error instanceof Error ? error.message : `Command not found: ${command}`,
+        exitCode: 127
+      };
+    }
+  }
+
+  private updateLines() {
     // Limit lines if needed
     if (this.lines.length > this.maxLines) {
       this.lines = this.lines.slice(-this.maxLines);
     }
+
+    // Trigger re-render by updating a tracked property
+    this.renderTrigger++;
 
     // Scroll to bottom
     requestAnimationFrame(() => {
@@ -118,7 +145,7 @@ export class SniceTerminal extends HTMLElement implements SniceTerminalElement {
         <if ${this.showTimestamps}>
           <span class="line-timestamp" part="timestamp">${timestamp}</span>
         </if>
-        <span class="line-content" part="line-content">${line.content}</span>
+        <span class="line-content" part="line-content">${unsafeHTML(line.content)}</span>
       </div>
     `;
   }
@@ -207,7 +234,7 @@ export class SniceTerminal extends HTMLElement implements SniceTerminalElement {
     // Write input line
     this.writeln(`${this.prompt}${commandLine}`, 'input');
 
-    // Parse command
+    // Parse command for event
     const parts = commandLine.split(/\s+/);
     const command = parts[0];
     const args = parts.slice(1);
@@ -215,40 +242,63 @@ export class SniceTerminal extends HTMLElement implements SniceTerminalElement {
     // Dispatch event
     this.dispatchCommandEvent(command, args);
 
-    // Execute command
-    await this.executeCommand(commandLine);
+    // Execute command via @request
+    const result = await this.executeCommand(commandLine);
+
+    // Handle response
+    if (result.output) {
+      // Check for special clear marker
+      if (result.output === '\x1B[CLEAR]') {
+        this.clear();
+      } else {
+        this.writeln(result.output, 'output');
+      }
+    }
+
+    if (result.error) {
+      this.writeError(result.error);
+    }
   }
 
-  private setupDefaultCommands() {
-    // Clear command
-    this.registerCommand('clear', () => {
-      this.clear();
-      return { exitCode: 0 };
-    });
 
-    // Help command
-    this.registerCommand('help', () => {
-      const commands = Array.from(this.commandHandlers.keys()).sort();
-      return {
-        output: `Available commands:\n${commands.join('\n')}`,
-        exitCode: 0
-      };
-    });
+  // ANSI color parsing
+  private parseAnsiColors(text: string): string {
+    const ansiColorMap: Record<number, string> = {
+      30: '#000000', // Black
+      31: '#ff5555', // Red
+      32: '#50fa7b', // Green
+      33: '#f1fa8c', // Yellow
+      34: '#bd93f9', // Blue
+      35: '#ff79c6', // Magenta
+      36: '#8be9fd', // Cyan
+      37: '#f8f8f2', // White
+      90: '#6272a4', // Bright Black (Gray)
+      91: '#ff6e6e', // Bright Red
+      92: '#69ff94', // Bright Green
+      93: '#ffffa5', // Bright Yellow
+      94: '#d6acff', // Bright Blue
+      95: '#ff92df', // Bright Magenta
+      96: '#a4ffff', // Bright Cyan
+      97: '#ffffff'  // Bright White
+    };
 
-    // Echo command
-    this.registerCommand('echo', (args) => {
-      return {
-        output: args.join(' '),
-        exitCode: 0
-      };
-    });
+    // Replace ANSI escape sequences with HTML spans
+    return text.replace(/\x1b\[([0-9;]+)m/g, (match, codes) => {
+      const codeList = codes.split(';').map(Number);
 
-    // History command
-    this.registerCommand('history', () => {
-      return {
-        output: this.commandHistory.map((cmd, i) => `${i + 1}  ${cmd}`).join('\n'),
-        exitCode: 0
-      };
+      // Handle reset code
+      if (codeList.includes(0)) {
+        return '</span>';
+      }
+
+      // Handle color codes
+      for (const code of codeList) {
+        if (ansiColorMap[code]) {
+          return `<span style="color: ${ansiColorMap[code]}">`;
+        }
+      }
+
+      return '';
     });
   }
 
@@ -256,7 +306,10 @@ export class SniceTerminal extends HTMLElement implements SniceTerminalElement {
   write(content: string, type: TerminalLineType = 'output') {
     if (!content) return;
 
-    const lines = content.split('\n');
+    // Parse ANSI colors
+    const parsedContent = this.parseAnsiColors(content);
+
+    const lines = parsedContent.split('\n');
     const newLines: TerminalLine[] = lines.map(line => ({
       id: crypto.randomUUID(),
       type,
@@ -265,6 +318,7 @@ export class SniceTerminal extends HTMLElement implements SniceTerminalElement {
     }));
 
     this.lines = [...this.lines, ...newLines];
+    this.updateLines();
   }
 
   writeln(content: string, type: TerminalLineType = 'output') {
@@ -277,6 +331,7 @@ export class SniceTerminal extends HTMLElement implements SniceTerminalElement {
 
   clear() {
     this.lines = [];
+    this.updateLines();
     this.dispatchClearEvent();
   }
 
@@ -284,39 +339,16 @@ export class SniceTerminal extends HTMLElement implements SniceTerminalElement {
     this.inputElement?.focus();
   }
 
-  registerCommand(command: string, handler: CommandHandler) {
-    this.commandHandlers.set(command, handler);
-  }
+  writeLines(lines: Array<{ content: string; type?: TerminalLineType }>) {
+    const newLines: TerminalLine[] = lines.map(line => ({
+      id: crypto.randomUUID(),
+      type: line.type || 'output',
+      content: line.content,
+      timestamp: new Date()
+    }));
 
-  unregisterCommand(command: string) {
-    this.commandHandlers.delete(command);
-  }
-
-  async executeCommand(commandLine: string): Promise<void> {
-    const parts = commandLine.split(/\s+/);
-    const command = parts[0];
-    const args = parts.slice(1);
-
-    const handler = this.commandHandlers.get(command);
-
-    if (!handler) {
-      this.writeError(`Command not found: ${command}`);
-      return;
-    }
-
-    try {
-      const result = await handler(args);
-
-      if (result.output) {
-        this.writeln(result.output, 'output');
-      }
-
-      if (result.error) {
-        this.writeError(result.error);
-      }
-    } catch (error) {
-      this.writeError(`Error executing command: ${error instanceof Error ? error.message : String(error)}`);
-    }
+    this.lines = [...this.lines, ...newLines];
+    this.updateLines();
   }
 
   getHistory(): string[] {

@@ -80,11 +80,44 @@ html`
 ## Communication
 
 ```typescript
-@request(channel: string)
-// Send: this.methodName(data) → Promise<response>
+@request(channel: string, options?: { timeout?, discoveryTimeout?, debounce?, throttle?, bubbles?, cancelable? })
+// Request pattern using async generator syntax
+// Method must be async generator that yields payload and receives response
+// Returns Promise<T>
+// Options:
+//   timeout (ms) - response timeout, default 120000 (2 min)
+//   discoveryTimeout (ms) - handler discovery timeout, default 50
+//   debounce (ms) - debounce requests
+//   throttle (ms) - throttle requests
+//   bubbles (bool) - event bubbling, default true
+//   cancelable (bool) - event cancelable, default false
+// Example:
+//   @request('fetch-user')
+//   async *fetchUser(id: string): any {
+//     try {
+//       const user = await (yield { id }); // yield = request, await = response
+//       return user;
+//     } catch (error) {
+//       console.error('Failed:', error);
+//       throw error;
+//     }
+//   }
+//   // Usage: const user = await this.fetchUser('123');
 
-@respond(channel: string)
-// Receive: methodName(request, respond) → respond(data)
+@respond(channel: string, options?: { debounce?, throttle? })
+// Respond to requests from @request decorators
+// Method receives payload and returns response
+// Works in both elements and controllers
+// Only one responder per channel (first wins via stopImmediatePropagation)
+// Options:
+//   debounce (ms) - debounce responses
+//   throttle (ms) - throttle responses
+// Example:
+//   @respond('fetch-user')
+//   async handleFetchUser(payload: { id: string }) {
+//     const user = await fetch(`/api/users/${payload.id}`).then(r => r.json());
+//     return user;
+//   }
 ```
 
 ## Observers

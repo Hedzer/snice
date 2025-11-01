@@ -70,7 +70,8 @@
     }
   </style>
   <script type="module">
-    import 'snice';
+    // Import the controller first, then the terminal component
+    import './demo-terminal-controller.ts';
     import './snice-terminal.ts';
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -78,21 +79,6 @@
       const term1 = document.getElementById('terminal-1');
       term1.writeln('Welcome to snice-terminal!', 'success');
       term1.writeln('Type "help" to see available commands.', 'info');
-
-      // Register custom commands
-      term1.registerCommand('date', () => {
-        return { output: new Date().toString() };
-      });
-
-      term1.registerCommand('whoami', () => {
-        return { output: 'snice-user' };
-      });
-
-      term1.registerCommand('ls', () => {
-        return {
-          output: 'Documents\nDownloads\nPictures\nprojects\nREADME.md'
-        };
-      });
 
       // Terminal with timestamps
       const term2 = document.getElementById('terminal-2');
@@ -108,41 +94,15 @@
 
       // Interactive demo terminal
       const term4 = document.getElementById('terminal-4');
-
-      // Add demo commands
-      term4.registerCommand('greet', (args) => {
-        const name = args[0] || 'stranger';
-        return { output: `Hello, ${name}!` };
-      });
-
-      term4.registerCommand('calc', (args) => {
-        try {
-          const expr = args.join(' ');
-          const result = eval(expr);
-          return { output: `${expr} = ${result}` };
-        } catch (e) {
-          return { error: 'Invalid expression' };
-        }
-      });
-
-      term4.registerCommand('animate', async () => {
-        const frames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
-        for (let i = 0; i < 20; i++) {
-          term4.writeln(`Loading ${frames[i % frames.length]}`, 'info');
-          await new Promise(r => setTimeout(r, 100));
-        }
-        return { output: 'Done!', exitCode: 0 };
-      });
-
       term4.writeln('Interactive terminal ready!', 'success');
-      term4.writeln('Try: greet [name], calc 2 + 2, animate', 'info');
+      term4.writeln('Try: help, ls, cat demo.txt, date, whoami', 'info');
 
       // Listen to command events
       term4.addEventListener('@snice/terminal-command', (e) => {
         console.log('Command executed:', e.detail);
       });
 
-      // Control buttons
+      // Control buttons - demonstrate streaming API
       document.getElementById('write-line').addEventListener('click', () => {
         term4.writeln('This is a custom message!', 'output');
       });
@@ -162,6 +122,27 @@
       document.getElementById('focus-terminal').addEventListener('click', () => {
         term4.focus();
       });
+
+      // Demo: Streaming lines (bulk write)
+      document.getElementById('stream-lines')?.addEventListener('click', () => {
+        term4.writeLines([
+          { content: 'Processing batch operation...', type: 'info' },
+          { content: 'Step 1: Initializing...', type: 'output' },
+          { content: 'Step 2: Processing data...', type: 'output' },
+          { content: 'Step 3: Finalizing...', type: 'output' },
+          { content: 'Batch operation complete!', type: 'success' }
+        ]);
+      });
+
+      document.getElementById('ansi-colors')?.addEventListener('click', () => {
+        term4.writeln('\x1b[31mRed text\x1b[0m');
+        term4.writeln('\x1b[32mGreen text\x1b[0m');
+        term4.writeln('\x1b[33mYellow text\x1b[0m');
+        term4.writeln('\x1b[34mBlue text\x1b[0m');
+        term4.writeln('\x1b[35mMagenta text\x1b[0m');
+        term4.writeln('\x1b[36mCyan text\x1b[0m');
+        term4.writeln('\x1b[91m\x1b[1mBright red bold text\x1b[0m');
+      });
     });
   </script>
 </head>
@@ -173,14 +154,14 @@
     <div class="example">
       <h3>Basic Terminal</h3>
       <div class="terminal-wrapper">
-        <snice-terminal id="terminal-1"></snice-terminal>
+        <snice-terminal id="terminal-1" controller="demo-terminal-controller"></snice-terminal>
       </div>
     </div>
 
     <div class="example">
       <h3>With Timestamps</h3>
       <div class="terminal-wrapper">
-        <snice-terminal id="terminal-2" show-timestamps></snice-terminal>
+        <snice-terminal id="terminal-2" show-timestamps controller="demo-terminal-controller"></snice-terminal>
       </div>
     </div>
 
@@ -192,16 +173,18 @@
     </div>
 
     <div class="example">
-      <h3>Interactive Terminal with Custom Commands</h3>
+      <h3>Interactive Terminal with Commands & Streaming</h3>
       <div class="controls">
         <button id="write-line">Write Line</button>
         <button id="write-error">Write Error</button>
         <button id="write-success">Write Success</button>
+        <button id="stream-lines">Stream Lines</button>
+        <button id="ansi-colors">ANSI Colors</button>
         <button id="clear-terminal">Clear</button>
         <button id="focus-terminal">Focus</button>
       </div>
       <div class="terminal-wrapper">
-        <snice-terminal id="terminal-4" prompt="demo $ "></snice-terminal>
+        <snice-terminal id="terminal-4" prompt="demo $ " controller="demo-terminal-controller"></snice-terminal>
       </div>
     </div>
 
@@ -211,6 +194,7 @@
         <snice-terminal
           id="terminal-5"
           prompt="λ "
+          controller="demo-terminal-controller"
           style="
             --snice-terminal-height: 300px;
             --snice-terminal-background: #0a0e27;

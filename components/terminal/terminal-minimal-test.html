@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Terminal Minimal Test</title>
+  <script type="module">
+    import 'snice';
+    import './snice-terminal.ts';
+    import './demo-terminal-controller.ts';
+
+    window.addEventListener('load', async () => {
+      const term = document.getElementById('term');
+
+      // Wait for controller to attach
+      await new Promise(r => setTimeout(r, 500));
+
+      console.log('Terminal element:', term);
+      console.log('Has controller:', term.hasAttribute('controller'));
+
+      // Try executing a command
+      const input = term.shadowRoot.querySelector('.terminal-input');
+      console.log('Input element:', input);
+
+      input.value = 'help';
+      input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+
+      // Wait and check output
+      setTimeout(() => {
+        const lines = term.shadowRoot.querySelectorAll('.terminal-line');
+        console.log('Lines count:', lines.length);
+        lines.forEach((line, i) => {
+          console.log(`Line ${i}:`, line.textContent, line.className);
+        });
+      }, 1000);
+    });
+  </script>
+</head>
+<body>
+  <snice-terminal id="term" controller="demo-terminal-controller"></snice-terminal>
+</body>
+</html>
