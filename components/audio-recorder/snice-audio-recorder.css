@@ -1,50 +1,54 @@
 :host {
   display: block;
-  width: 100%;
-  max-width: 500px;
-  font-family: var(--font-family, system-ui, -apple-system, sans-serif);
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  contain: layout style paint;
 }
 
 .recorder-container {
-  background: var(--recorder-bg, #f5f5f5);
-  border-radius: var(--recorder-border-radius, 12px);
-  padding: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: var(--snice-color-background-element, rgb(252 251 249));
+  border: 1px solid var(--snice-color-border, rgb(226 226 226));
+  border-radius: var(--snice-border-radius-lg, 8px);
+  padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
+  box-shadow: var(--snice-shadow-sm, 0 1px 2px 0 rgb(0 0 0 / 0.05));
+  display: flex;
+  align-items: center;
+  gap: var(--snice-spacing-sm, 0.75rem);
+  position: relative;
 }
 
 .recorder-status {
-  text-align: center;
-  margin-bottom: 20px;
+  margin: 0;
+  flex-shrink: 0;
 }
 
 .recorder-state {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
+  gap: var(--snice-spacing-2xs, 0.25rem);
+  padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-xs, 0.5rem);
   border-radius: 20px;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: var(--snice-font-size-xs, 0.6875rem);
+  font-weight: var(--snice-font-weight-medium, 500);
 }
 
 .recorder-state.inactive {
-  background: #e0e0e0;
-  color: #666;
+  background: var(--snice-color-background-tertiary, rgb(241 241 241));
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
 }
 
 .recorder-state.recording {
-  background: #f443361a;
-  color: #f44336;
+  background: rgb(var(--snice-color-red-100, 254 226 226));
+  color: var(--snice-color-danger, rgb(220 38 38));
 }
 
 .recorder-state.paused {
-  background: #ff98001a;
-  color: #ff9800;
+  background: rgb(var(--snice-color-yellow-100, 254 249 195));
+  color: var(--snice-color-warning, rgb(202 138 4));
 }
 
 .recorder-state-icon {
-  width: 8px;
-  height: 8px;
+  width: var(--snice-spacing-2xs, 0.25rem);
+  height: var(--snice-spacing-2xs, 0.25rem);
   border-radius: 50%;
   background: currentColor;
 }
@@ -63,55 +67,59 @@
 }
 
 .recorder-timer {
-  font-size: 32px;
-  font-weight: 300;
-  text-align: center;
-  margin: 20px 0;
+  font-size: var(--snice-font-size-md, 1rem);
+  font-weight: var(--snice-font-weight-normal, 400);
+  margin: 0;
+  flex-shrink: 0;
+  min-width: 3.75rem; /* 60px */
   font-variant-numeric: tabular-nums;
-  color: var(--text-color, #333);
+  color: var(--snice-color-text, rgb(23 23 23));
 }
 
 .recorder-visualizer {
-  height: 80px;
+  height: 1.875rem; /* 30px */
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  margin: 20px 0;
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 8px;
-  padding: 10px;
+  gap: 2px; /* Keep px for precise bar spacing */
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: var(--snice-border-radius-md, 4px);
+  padding: var(--snice-spacing-2xs, 0.25rem);
 }
 
 .visualizer-bar {
   flex: 1;
-  max-width: 4px;
-  background: var(--primary-color, #2196f3);
-  border-radius: 2px;
-  transition: height 0.1s ease;
+  max-width: 4px; /* Keep px for crisp bars */
+  background: var(--snice-color-primary, rgb(37 99 235));
+  border-radius: 2px; /* Keep px for consistent corners */
+  transition: height var(--snice-transition-fast, 100ms) ease;
 }
 
 .recorder-controls {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 12px;
-  margin-top: 20px;
+  gap: var(--snice-spacing-2xs, 0.25rem);
+  margin: 0;
+  flex-shrink: 0;
 }
 
 .recorder-btn {
-  width: 56px;
-  height: 56px;
+  width: 2rem; /* 32px */
+  height: 2rem; /* 32px */
   border-radius: 50%;
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
-  color: white;
-  font-size: 20px;
-  background: var(--primary-color, #2196f3);
+  transition: all var(--snice-transition-fast, 150ms);
+  color: var(--snice-color-text-inverse, rgb(250 250 250));
+  font-size: 1rem; /* 16px */
+  background: var(--snice-color-primary, rgb(37 99 235));
 }
 
 .recorder-btn:hover {
@@ -123,48 +131,56 @@
 }
 
 .recorder-btn.record {
-  width: 64px;
-  height: 64px;
-  background: #f44336;
+  width: 2.25rem; /* 36px */
+  height: 2.25rem; /* 36px */
+  background: var(--snice-color-danger, rgb(220 38 38));
 }
 
 .recorder-btn.record:hover {
-  background: #d32f2f;
+  background: var(--snice-color-danger-hover, rgb(185 28 28));
 }
 
 .recorder-btn.pause {
-  background: #ff9800;
+  background: var(--snice-color-warning, rgb(202 138 4));
 }
 
 .recorder-btn.pause:hover {
-  background: #f57c00;
+  background: var(--snice-color-warning-hover, rgb(161 98 7));
+}
+
+.recorder-btn.play {
+  background: var(--snice-color-primary, rgb(37 99 235));
+}
+
+.recorder-btn.play:hover {
+  background: var(--snice-color-primary-hover, rgb(29 78 216));
 }
 
 .recorder-btn.stop {
-  background: #666;
+  background: var(--snice-color-neutral, rgb(82 82 82));
 }
 
 .recorder-btn.stop:hover {
-  background: #555;
+  background: var(--snice-color-neutral-hover, rgb(64 64 64));
 }
 
 .recorder-btn.cancel {
   background: transparent;
-  color: #666;
-  border: 2px solid #e0e0e0;
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
+  border: 2px solid var(--snice-color-border, rgb(226 226 226));
 }
 
 .recorder-btn.cancel:hover {
-  border-color: #666;
-  color: #333;
+  border-color: var(--snice-color-border-hover, rgb(204 204 204));
+  color: var(--snice-color-text, rgb(23 23 23));
 }
 
 .recorder-btn.download {
-  background: #4caf50;
+  background: var(--snice-color-success, rgb(22 163 74));
 }
 
 .recorder-btn.download:hover {
-  background: #45a049;
+  background: var(--snice-color-success-hover, rgb(21 128 61));
 }
 
 .recorder-btn:disabled {
@@ -174,31 +190,39 @@
 }
 
 .recorder-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid #e0e0e0;
-  font-size: 12px;
-  color: #666;
+  display: none;
 }
 
 .recorder-error {
-  margin-top: 12px;
-  padding: 12px;
-  background: #ffebee;
-  color: #c62828;
-  border-radius: 6px;
-  font-size: 14px;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: var(--snice-spacing-2xs, 0.25rem);
+  padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
+  background: rgb(var(--snice-color-red-50, 254 242 242));
+  color: var(--snice-color-danger, rgb(220 38 38));
+  border-radius: var(--snice-border-radius-md, 4px);
+  font-size: var(--snice-font-size-sm, 0.875rem);
   text-align: center;
+  border: 1px solid rgb(var(--snice-color-red-200, 254 202 202));
 }
 
-.recorder-playback {
-  margin-top: 20px;
+.playback-progress {
+  flex: 1;
+  height: 1.875rem;
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: var(--snice-border-radius-md, 4px);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
 }
 
-.recorder-playback audio {
-  width: 100%;
-  border-radius: 8px;
+.playback-progress-fill {
+  height: 100%;
+  background: var(--snice-color-primary, rgb(37 99 235));
+  opacity: 0.2;
+  transition: width 100ms linear;
 }

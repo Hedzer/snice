@@ -193,7 +193,11 @@ For each component:
    - [x] Demo page
    - [x] Human docs
    - [x] AI docs
-37. [ ] `<snice-terminal>` - Shell terminal component
+37. [x] `<snice-terminal>` - Shell terminal component
+   - [x] Implementation (tests passing)
+   - [x] Demo page
+   - [x] Human docs
+   - [x] AI docs
 38. [ ] `<snice-music-player>` - Music player component
 39. [ ] `<snice-video-player>` - Video player with custom controls, quality selection, playback speed, fullscreen, PiP
 41. [ ] `<snice-file-gallery>` - File upload gallery with preview, pausable/resumable uploads, deletable files (use @request/@response decorators)
@@ -283,6 +287,30 @@ For each component:
      - `@snice/time-range-change` - Emitted when selection changes
      - `@snice/time-range-select` - Emitted when range selection starts
      - `@snice/time-range-complete` - Emitted when range selection completes
+53. [ ] `<snice-timer>` - Basic timer/stopwatch component
+   - **Properties:**
+     - `mode` - "stopwatch" | "timer" (default: "stopwatch")
+     - `initial-time` - Starting time in seconds (for timer mode)
+   - **Methods:**
+     - `start()` - Start timer/stopwatch
+     - `stop()` - Stop timer/stopwatch
+     - `reset()` - Reset to initial state
+   - **Events:**
+     - `@snice/timer-complete` - Countdown timer finished
+54. [ ] `<snice-qr-reader>` - QR code scanner component
+   - **Properties:**
+     - `auto-start` - Start camera automatically
+     - `camera` - "front" | "back" (default: "back")
+   - **Methods:**
+     - `start(): Promise<void>` - Start camera and scanning
+     - `stop(): void` - Stop camera
+     - `scanImage(file: File): Promise<string>` - Scan QR from image file
+     - `switchCamera(): void` - Switch between front/back camera
+   - **Events:**
+     - `@snice/qr-scan` - QR code detected and decoded
+     - `@snice/qr-error` - Error during scanning
+     - `@snice/camera-ready` - Camera initialized
+     - `@snice/camera-error` - Camera access denied/failed
 
 ---
 

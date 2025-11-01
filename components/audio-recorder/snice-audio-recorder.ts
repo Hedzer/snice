@@ -1,4 +1,4 @@
-import { element, property, render, styles, dispatch, html, css } from 'snice';
+import { element, property, render, styles, dispatch, ready, dispose, queryAll, query, html, css } from 'snice';
 import type { AudioFormat, RecorderState, AudioRecording, SniceAudioRecorderElement } from './snice-audio-recorder.types';
 import recorderStyles from './snice-audio-recorder.css?inline';
 
@@ -25,71 +25,145 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
   @property({ type: Boolean, attribute: 'show-timer' })
   showTimer: boolean = true;
 
+  @property({ type: Boolean, attribute: 'show-playback' })
+  showPlayback: boolean = true;
+
   private mediaRecorder: MediaRecorder | null = null;
   private stream: MediaStream | null = null;
   private audioChunks: Blob[] = [];
+
+  @property()
   private state: RecorderState = 'inactive';
+
   private startTime: number = 0;
   private pausedTime: number = 0;
   private duration: number = 0;
   private timerInterval: number | null = null;
+
+  @property()
   private errorMessage: string = '';
+
   private audioContext: AudioContext | null = null;
   private analyser: AnalyserNode | null = null;
   private visualizerData: Uint8Array | null = null;
   private animationFrame: number | null = null;
-  private recordedUrl: string = '';
+
+  @property({ type: String })
+  recordedUrl: string = '';
+
+  @property({ type: Boolean })
+  private isPlaying: boolean = false;
+
+  @property({ type: Number })
+  private playbackTime: number = 0;
+
+  private audioElement: HTMLAudioElement | null = null;
+  private playbackInterval: number | null = null;
+
+  @query('.recorder-timer')
+  private timerElement?: HTMLElement;
 
   @styles()
   styles() {
     return css/*css*/`${recorderStyles}`;
   }
 
-  connectedCallback() {
-    ;
+  @ready()
+  init() {
     if (this.autoStart) {
       this.start();
     }
   }
 
-  disconnectedCallback() {
-    ;
-    this.cleanup();
+  @dispose()
+  cleanup() {
+    if (this.stream) {
+      this.stream.getTracks().forEach(track => track.stop());
+      this.stream = null;
+    }
+
+    if (this.audioContext) {
+      this.audioContext.close();
+      this.audioContext = null;
+    }
+
+    if (this.animationFrame !== null) {
+      cancelAnimationFrame(this.animationFrame);
+      this.animationFrame = null;
+    }
+
+    this.analyser = null;
+    this.visualizerData = null;
   }
 
   @render()
   render() {
+    const showingPlayback = this.showPlayback && this.recordedUrl;
+
     return html/*html*/`
       <div class="recorder-container">
-        <div class="recorder-status">
-          <div class="recorder-state ${this.state}">
-            <div class="recorder-state-icon"></div>
-            <span>${this.getStateLabel()}</span>
+        <if ${showingPlayback}>
+          <div class="recorder-status">
+            <div class="recorder-state inactive">
+              <div class="recorder-state-icon" style="background: var(--snice-color-primary, rgb(37 99 235));"></div>
+              <span>Playback</span>
+            </div>
           </div>
-        </div>
 
-        ${this.showTimer ? html`
-          <div class="recorder-timer">${this.formatTime(this.duration)}</div>
-        ` : ''}
+          <div class="recorder-timer">${this.formatTime(this.playbackTime)}</div>
 
-        ${this.showVisualizer ? this.renderVisualizer() : ''}
-
-        ${this.showControls ? this.renderControls() : ''}
-
-        ${this.errorMessage ? html`
-          <div class="recorder-error">${this.errorMessage}</div>
-        ` : ''}
-
-        ${this.recordedUrl ? html`
-          <div class="recorder-playback">
-            <audio src="${this.recordedUrl}" controls></audio>
+          <div class="playback-progress" @click=${(e: MouseEvent) => this.handleSeek(e)}>
+            <div class="playback-progress-fill" style="width: ${this.duration > 0 ? (this.playbackTime / this.duration) * 100 : 0}%"></div>
           </div>
-        ` : ''}
 
-        <div class="recorder-info">
-          <span>Format: ${this.format.split('/')[1].toUpperCase()}</span>
-          <span>Bitrate: ${this.bitrate / 1000}kbps</span>
-        </div>
+          <div class="recorder-controls">
+            <button class="recorder-btn ${this.isPlaying ? 'pause' : 'play'}" @click=${() => this.handleTogglePlayback()} title="${this.isPlaying ? 'Pause' : 'Play'}">
+              <if ${this.isPlaying}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                  <rect x="6" y="4" width="4" height="16"></rect>
+                  <rect x="14" y="4" width="4" height="16"></rect>
+                </svg>
+              </if>
+              <if ${!this.isPlaying}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+              </if>
+            </button>
+            <if ${this.showControls}>
+              <button class="recorder-btn record" @click=${() => this.reset()} title="Record Again">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                  <circle cx="12" cy="12" r="8"/>
+                </svg>
+              </button>
+            </if>
+          </div>
+        </if>
+
+        <if ${!showingPlayback}>
+          <div class="recorder-status">
+            <div class="recorder-state ${this.state}">
+              <div class="recorder-state-icon"></div>
+              <span>${this.getStateLabel()}</span>
+            </div>
+          </div>
+
+          <if ${this.showTimer}>
+            <div class="recorder-timer">${this.formatTime(this.duration)}</div>
+          </if>
+
+          <if ${this.showVisualizer}>
+            ${this.renderVisualizer()}
+          </if>
+
+          <if ${this.showControls}>
+            ${this.renderControls()}
+          </if>
+
+          <if ${this.errorMessage}>
+            <div class="recorder-error">${this.errorMessage}</div>
+          </if>
+        </if>
       </div>
     `;
   }
@@ -181,12 +255,7 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
   }
 
   private getVisualizerHeight(index: number): number {
-    if (!this.visualizerData || this.state !== 'recording') {
-      return 4;
-    }
-
-    const value = this.visualizerData[index * 4] || 0;
-    return 4 + (value / 255) * 60;
+    return 4;
   }
 
   async start(): Promise<void> {
@@ -196,17 +265,6 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
       this.recordedUrl = '';
 
       this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-      // Setup visualizer
-      if (this.showVisualizer) {
-        this.audioContext = new AudioContext();
-        this.analyser = this.audioContext.createAnalyser();
-        const source = this.audioContext.createMediaStreamSource(this.stream);
-        source.connect(this.analyser);
-        this.analyser.fftSize = 256;
-        this.visualizerData = new Uint8Array(this.analyser.frequencyBinCount);
-        this.updateVisualizer();
-      }
 
       const options: MediaRecorderOptions = {
         mimeType: this.format,
@@ -225,10 +283,23 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
         this.handleRecordingComplete();
       };
 
-      this.mediaRecorder.start();
+      // Request data every 1 second to ensure ondataavailable fires
+      this.mediaRecorder.start(1000);
       this.state = 'recording';
       this.startTime = Date.now();
       this.startTimer();
+
+      // Setup visualizer AFTER state is set to 'recording'
+      if (this.showVisualizer) {
+        this.audioContext = new AudioContext();
+        this.analyser = this.audioContext.createAnalyser();
+        const source = this.audioContext.createMediaStreamSource(this.stream);
+        source.connect(this.analyser);
+        this.analyser.fftSize = 128;
+        this.analyser.smoothingTimeConstant = 0.8;
+        this.visualizerData = new Uint8Array(this.analyser.frequencyBinCount);
+        this.updateVisualizer();
+      }
 
       this.emitRecorderStart();
     } catch (error) {
@@ -257,13 +328,13 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
         };
 
         this.recordedUrl = url;
+        this.cleanupMedia(); // Clean up AFTER recording completes
         resolve(recording);
       };
 
       this.mediaRecorder!.addEventListener('stop', resolveWithRecording, { once: true });
       this.mediaRecorder!.stop();
       this.stopTimer();
-      this.cleanup();
       this.state = 'inactive';
     });
   }
@@ -298,7 +369,7 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
 
     this.audioChunks = [];
     this.stopTimer();
-    this.cleanup();
+    this.cleanupMedia();
     this.state = 'inactive';
     this.duration = 0;
 
@@ -328,6 +399,73 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
     a.click();
   }
 
+  reset(): void {
+    this.stopPlayback();
+    this.recordedUrl = '';
+    this.audioChunks = [];
+    this.duration = 0;
+    this.playbackTime = 0;
+    this.state = 'inactive';
+  }
+
+  handleTogglePlayback(): void {
+    if (!this.recordedUrl) return;
+
+    if (!this.audioElement) {
+      this.audioElement = new Audio(this.recordedUrl);
+      this.audioElement.addEventListener('ended', () => {
+        this.isPlaying = false;
+        this.playbackTime = 0;
+        if (this.playbackInterval) {
+          clearInterval(this.playbackInterval);
+          this.playbackInterval = null;
+        }
+      });
+    }
+
+    if (this.isPlaying) {
+      this.audioElement.pause();
+      this.isPlaying = false;
+      if (this.playbackInterval) {
+        clearInterval(this.playbackInterval);
+        this.playbackInterval = null;
+      }
+    } else {
+      this.audioElement.play();
+      this.isPlaying = true;
+      this.playbackInterval = window.setInterval(() => {
+        if (this.audioElement) {
+          this.playbackTime = this.audioElement.currentTime;
+        }
+      }, 100);
+    }
+  }
+
+  private stopPlayback(): void {
+    if (this.audioElement) {
+      this.audioElement.pause();
+      this.audioElement = null;
+    }
+    if (this.playbackInterval) {
+      clearInterval(this.playbackInterval);
+      this.playbackInterval = null;
+    }
+    this.isPlaying = false;
+    this.playbackTime = 0;
+  }
+
+  handleSeek(e: MouseEvent): void {
+    if (!this.audioElement || this.duration === 0) return;
+
+    const progressBar = e.currentTarget as HTMLElement;
+    const rect = progressBar.getBoundingClientRect();
+    const percent = (e.clientX - rect.left) / rect.width;
+    const seekTime = percent * this.duration;
+
+    this.audioElement.currentTime = seekTime;
+    this.playbackTime = seekTime;
+  }
+
   private handleRecordingComplete(): void {
     this.emitRecorderStop();
   }
@@ -335,6 +473,11 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
   private startTimer(): void {
     this.timerInterval = window.setInterval(() => {
       this.duration = (Date.now() - this.startTime) / 1000;
+
+      // Update timer display directly
+      if (this.timerElement) {
+        this.timerElement.textContent = this.formatTime(this.duration);
+      }
 
       if (this.maxDuration > 0 && this.duration >= this.maxDuration) {
         this.stop();
@@ -356,10 +499,30 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
 
     this.analyser.getByteFrequencyData(this.visualizerData as Uint8Array<ArrayBuffer>);
 
+    const bars = this.shadowRoot?.querySelectorAll<HTMLElement>('.visualizer-bar');
+    if (bars && bars.length > 0) {
+      // Focus on lower half of frequencies where speech is
+      const maxIndex = Math.floor(this.visualizerData!.length / 2);
+
+      bars.forEach((bar, i) => {
+        // Map bars to lower frequencies only
+        const start = Math.floor((i / 32) * maxIndex);
+        const end = Math.floor(((i + 1) / 32) * maxIndex);
+        let sum = 0;
+        for (let j = start; j < end; j++) {
+          sum += this.visualizerData![j];
+        }
+        const avg = sum / (end - start);
+        const boosted = Math.min(255, avg * 2);
+        const height = 4 + (boosted / 255) * 60;
+        bar.style.height = `${height}px`;
+      });
+    }
+
     this.animationFrame = requestAnimationFrame(() => this.updateVisualizer());
   }
 
-  private cleanup(): void {
+  private cleanupMedia(): void {
     if (this.stream) {
       this.stream.getTracks().forEach(track => track.stop());
       this.stream = null;

@@ -19,12 +19,14 @@ export interface SniceAudioRecorderElement extends HTMLElement {
   showVisualizer: boolean;
   maxDuration: number;
   showTimer: boolean;
+  showPlayback: boolean;
 
   start(): Promise<void>;
   stop(): Promise<AudioRecording>;
   pause(): void;
   resume(): void;
   cancel(): void;
+  reset(): void;
   getState(): RecorderState;
   getDuration(): number;
   isRecording(): boolean;
