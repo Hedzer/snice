@@ -1,3 +1,29 @@
+# [3.5.0](https://gitlab.com/Hedzer/snice/compare/v3.4.1...v3.5.0) (2025-11-01)
+
+
+### Bug Fixes
+
+* bar chart rendering ([249f8e5](https://gitlab.com/Hedzer/snice/commit/249f8e56ec325839388ca3ffc606a36fd927693d))
+* bug bash, [@on](https://gitlab.com/on) decorator, double snice loading ([b6e7b36](https://gitlab.com/Hedzer/snice/commit/b6e7b36ffc979e477c0335926b0e00ac3dbe16b3))
+* demos & calendar rendering ([4397caf](https://gitlab.com/Hedzer/snice/commit/4397caffe828f424b517c4fe0fe673673a08244c))
+* draw component sizing ([50f2e4b](https://gitlab.com/Hedzer/snice/commit/50f2e4ba840a0f66dc84cd891e67467a58fec134))
+* location component theming ([86ecda6](https://gitlab.com/Hedzer/snice/commit/86ecda6a4359b50fab6b57cc8ba832d2bce03e67))
+* select rendereing issues ([d5d6598](https://gitlab.com/Hedzer/snice/commit/d5d65980f7b65c2ba62dfb9ef44881e79750fb15))
+* split pane styling ([a4b29e1](https://gitlab.com/Hedzer/snice/commit/a4b29e1a1eb72d4146b17f1ef2b435d492ca0d24))
+* style & z-index ([464295b](https://gitlab.com/Hedzer/snice/commit/464295bbd2d48e3c89930932885c357a07f26dcd))
+* table themeing ([3c92139](https://gitlab.com/Hedzer/snice/commit/3c92139e9535ef1b73439e58304d7074b931e339))
+* tree element style, lazy loading & visual fixes ([96f4844](https://gitlab.com/Hedzer/snice/commit/96f48447263cd0fea15779aa8b00f262e9a7e55e))
+
+
+### Features
+
+* added draw 'circle' mode ([c5a115d](https://gitlab.com/Hedzer/snice/commit/c5a115d2e4b030a1246da4851137a7fad15c2d3d))
+* added loading state ([10cbd81](https://gitlab.com/Hedzer/snice/commit/10cbd8179ef4a68bf6041c9499a849019bd974bf))
+* code block with highlighting ([263845b](https://gitlab.com/Hedzer/snice/commit/263845b57b6d50fead093100a7b95738584e5d41))
+* improved demo.html ([83e98fc](https://gitlab.com/Hedzer/snice/commit/83e98fc42ee35c3a215afdb1f2247ee0a7fd0e19))
+* kanban component ([f9f55c1](https://gitlab.com/Hedzer/snice/commit/f9f55c17528ac07ee99f2bc3c8563a381f5c8821))
+* terminal ([df4ec41](https://gitlab.com/Hedzer/snice/commit/df4ec41a584b2d623167054b355857e32ee65c67))
+
 ## [3.4.1](https://gitlab.com/Hedzer/snice/compare/v3.4.0...v3.4.1) (2025-10-30)
 
 
