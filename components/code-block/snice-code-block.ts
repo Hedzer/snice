@@ -1,6 +1,12 @@
-import { element, property, dispatch, render, styles, html, css } from 'snice';
+import { element, property, dispatch, render, styles, html, css, query, ready } from 'snice';
 import cssContent from './snice-code-block.css?inline';
-import type { CodeLanguage, SniceCodeBlockElement, CodeCopyDetail } from './snice-code-block.types';
+import type {
+  CodeLanguage,
+  SniceCodeBlockElement,
+  CodeCopyDetail,
+  CodeHighlightDetail,
+  HighlighterFunction
+} from './snice-code-block.types';
 
 @element('snice-code-block')
 export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement {
@@ -25,16 +31,92 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
   @property({  })
   filename = '';
 
+  public highlighter?: HighlighterFunction;
+
   private copied = false;
+  private highlightedCode = '';
+
+  @query('.code-block__code')
+  private codeElement?: HTMLElement;
+
+  // Global highlighter shared by all instances
+  private static globalHighlighter?: HighlighterFunction;
 
   @dispatch('@snice/code-copy', { bubbles: true, composed: true })
   private dispatchCopyEvent(): CodeCopyDetail {
     return { code: this.code, codeBlock: this };
   }
 
+  @dispatch('@snice/code-before-highlight', { bubbles: true, composed: true })
+  private dispatchBeforeHighlightEvent(): CodeHighlightDetail {
+    return { code: this.code, language: this.language, codeBlock: this };
+  }
+
+  @dispatch('@snice/code-after-highlight', { bubbles: true, composed: true })
+  private dispatchAfterHighlightEvent(): CodeHighlightDetail {
+    return { code: this.code, language: this.language, codeBlock: this };
+  }
+
+  // Static method to set global highlighter
+  static setGlobalHighlighter(highlighter: HighlighterFunction) {
+    SniceCodeBlock.globalHighlighter = highlighter;
+  }
+
+  @ready()
+  async onReady() {
+    // Wait for next frame to ensure DOM is ready
+    await new Promise(resolve => requestAnimationFrame(resolve));
+
+    // Auto-highlight on ready if highlighter is available
+    if (this.code && (this.highlighter || SniceCodeBlock.globalHighlighter)) {
+      await this.highlight();
+    } else if (this.code) {
+      // No highlighter, just display escaped code
+      this.updateCodeDisplay();
+    }
+  }
+
+  private escapeHtml(text: string): string {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  private updateCodeDisplay() {
+    if (!this.codeElement) {
+      console.warn('Code element not found');
+      return;
+    }
+
+    const codeToRender = this.highlightedCode || this.escapeHtml(this.code);
+
+    if (this.showLineNumbers || this.highlightLines.length > 0) {
+      // Split into lines and wrap with line numbers/highlighting
+      const lines = codeToRender.split('\n');
+      const html = lines.map((line, index) => {
+        const lineNumber = this.startLine + index;
+        const isHighlighted = this.highlightLines.includes(lineNumber);
+        const lineClasses = [
+          'code-block__line',
+          isHighlighted ? 'code-block__line--highlight' : ''
+        ].filter(Boolean).join(' ');
+
+        const lineNumberHtml = this.showLineNumbers
+          ? `<span class="code-block__line-number">${lineNumber}</span>`
+          : '';
+
+        return `<span class="${lineClasses}">${lineNumberHtml}${line}\n</span>`;
+      }).join('');
+
+      this.codeElement.innerHTML = html;
+    } else {
+      // No line numbers or highlighting - just set innerHTML directly
+      this.codeElement.innerHTML = codeToRender;
+    }
+  }
+
   @render()
   render() {
-    const lines = this.code.split('\n');
     const showHeader = this.filename || this.copyable;
 
     return html/*html*/`
@@ -59,17 +141,7 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
         </if>
 
         <div class="code-block__content" part="content">
-          <pre class="code-block__pre" part="pre"><code class="code-block__code language-${this.language}" part="code">${lines.map((line, index) => {
-            const lineNumber = this.startLine + index;
-            const isHighlighted = this.highlightLines.includes(lineNumber);
-            const lineClasses = [
-              'code-block__line',
-              isHighlighted ? 'code-block__line--highlight' : ''
-            ].filter(Boolean).join(' ');
-
-            return html/*html*/`<span class="${lineClasses}"><if ${this.showLineNumbers}><span class="code-block__line-number">${lineNumber}</span></if>${line}
-</span>`;
-          })}</code></pre>
+          <pre class="code-block__pre" part="pre"><code class="code-block__code language-${this.language}" part="code" data-language="${this.language}"></code></pre>
         </div>
       </div>
     `;
@@ -92,6 +164,51 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
       }, 2000);
     } catch (err) {
       console.error('Failed to copy code:', err);
+    }
+  }
+
+  /**
+   * Set highlighter for this instance
+   */
+  setHighlighter(highlighter: HighlighterFunction) {
+    this.highlighter = highlighter;
+  }
+
+  /**
+   * Manually trigger syntax highlighting
+   */
+  async highlight() {
+    if (!this.code) return;
+
+    const highlighter = this.highlighter || SniceCodeBlock.globalHighlighter;
+    if (!highlighter) {
+      console.warn('No highlighter configured');
+      return;
+    }
+
+    // Dispatch before event
+    this.dispatchBeforeHighlightEvent();
+
+    try {
+      // Escape HTML entities in the code before highlighting
+      const escapedCode = this.escapeHtml(this.code);
+
+      // Apply highlighting to each line individually to preserve line structure
+      const lines = escapedCode.split('\n');
+      const highlightedLines = await Promise.all(
+        lines.map(line => highlighter(line, this.language))
+      );
+
+      // Join back with newlines
+      this.highlightedCode = highlightedLines.join('\n');
+
+      // Update display with highlighted code
+      this.updateCodeDisplay();
+
+      // Dispatch after event
+      this.dispatchAfterHighlightEvent();
+    } catch (error) {
+      console.error('Syntax highlighting failed:', error);
     }
   }
 }

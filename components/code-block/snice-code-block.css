@@ -85,3 +85,77 @@
   color: var(--color-neutral-500, #6b7280);
   user-select: none;
 }
+
+/* Syntax highlighting token styles */
+/* These work with highlighters like Prism.js and highlight.js */
+.token.keyword {
+  color: var(--code-keyword-color, #c678dd);
+}
+
+.token.function {
+  color: var(--code-function-color, #61afef);
+}
+
+.token.string {
+  color: var(--code-string-color, #98c379);
+}
+
+.token.number {
+  color: var(--code-number-color, #d19a66);
+}
+
+.token.comment {
+  color: var(--code-comment-color, #5c6370);
+  font-style: italic;
+}
+
+.token.operator {
+  color: var(--code-operator-color, #56b6c2);
+}
+
+.token.punctuation {
+  color: var(--code-punctuation-color, #abb2bf);
+}
+
+.token.tag {
+  color: var(--code-tag-color, #e06c75);
+}
+
+.token.attr-name,
+.token.property {
+  color: var(--code-attr-name-color, #d19a66);
+}
+
+.token.attr-value {
+  color: var(--code-attr-value-color, #98c379);
+}
+
+.token.boolean,
+.token.constant {
+  color: var(--code-constant-color, #d19a66);
+}
+
+.token.class-name {
+  color: var(--code-class-color, #e5c07b);
+}
+
+.token.builtin {
+  color: var(--code-builtin-color, #e06c75);
+}
+
+.token.regex {
+  color: var(--code-regex-color, #98c379);
+}
+
+.token.important,
+.token.bold {
+  font-weight: bold;
+}
+
+.token.italic {
+  font-style: italic;
+}
+
+.token.entity {
+  cursor: help;
+}

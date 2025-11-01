@@ -1,11 +1,52 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Code Block Demo</title>
   <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      font-family: var(--snice-font-family);
+      padding: 40px;
+      margin: 0;
+      background: var(--snice-color-background-secondary);
+      color: var(--snice-color-text);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: var(--snice-color-text);
+      border-bottom: 2px solid var(--snice-color-border);
+      padding-bottom: 10px;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      color: var(--snice-color-text);
+      margin-top: 40px;
+      margin-bottom: 20px;
+      font-size: 1.5em;
+    }
+
+    .example {
+      margin: 30px 0;
+    }
+
+    .example h3 {
+      color: var(--snice-color-text);
+      margin-bottom: 10px;
+    }
+
+  </style>
   <script type="module">
     import 'snice';
-    import './snice-code-block.ts';
+    import { SniceCodeBlock } from './snice-code-block.ts';
+    import { highlightCode } from './highlighter.ts';
 
     const jsCode = `function fibonacci(n) {
   if (n <= 1) return n;
@@ -24,27 +65,122 @@ console.log(fibonacci(10));`;
 </body>
 </html>`;
 
+    const pythonCode = `def quicksort(arr):
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quicksort(left) + middle + quicksort(right)
+
+print(quicksort([3, 6, 8, 10, 1, 2, 1]))`;
+
+    const cssCode = `.button {
+  background: var(--primary-color);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.button:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}`;
+
+    // Use the built-in highlighter
+    SniceCodeBlock.setGlobalHighlighter(highlightCode);
+
     document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('js-code').code = jsCode;
       document.getElementById('html-code').code = htmlCode;
       document.getElementById('numbered-code').code = jsCode;
       document.getElementById('highlighted-code').code = jsCode;
+      document.getElementById('python-code').code = pythonCode;
+      document.getElementById('css-code').code = cssCode;
+
+      // Example without highlighter
+      const plainBlock = document.getElementById('plain-code');
+      plainBlock.code = jsCode;
+      plainBlock.setHighlighter(null);
+
+      // Listen to highlight events
+      document.querySelectorAll('snice-code-block').forEach(block => {
+        block.addEventListener('@snice/code-before-highlight', (e) => {
+          console.log('Before highlight:', e.detail);
+        });
+        block.addEventListener('@snice/code-after-highlight', (e) => {
+          console.log('After highlight:', e.detail);
+        });
+      });
     });
   </script>
 </head>
-<body style="padding:40px">
-  <h2>Code Block Demo</h2>
+<body>
+  <div class="container">
+    <h1>Code Block Component Demo</h1>
+    <p>Display code with optional syntax highlighting, line numbers, and copy functionality.</p>
 
-  <h3>JavaScript</h3>
-  <snice-code-block id="js-code" language="javascript"></snice-code-block>
+    <h2>Basic Examples</h2>
 
-  <h3>HTML with Filename</h3>
-  <snice-code-block id="html-code" language="html" filename="index.html"></snice-code-block>
+    <div class="example">
+      <h3>JavaScript with Syntax Highlighting</h3>
+      <snice-code-block id="js-code" language="javascript"></snice-code-block>
+    </div>
 
-  <h3>With Line Numbers</h3>
-  <snice-code-block id="numbered-code" language="javascript" show-line-numbers></snice-code-block>
+    <div class="example">
+      <h3>HTML with Filename</h3>
+      <snice-code-block id="html-code" language="html" filename="index.html"></snice-code-block>
+    </div>
 
-  <h3>With Highlighted Lines</h3>
-  <snice-code-block id="highlighted-code" language="javascript" show-line-numbers highlight-lines="[2,3,4]"></snice-code-block>
+    <div class="example">
+      <h3>Python with Line Numbers</h3>
+      <snice-code-block id="python-code" language="python" show-line-numbers></snice-code-block>
+    </div>
+
+    <div class="example">
+      <h3>CSS with Highlighted Lines</h3>
+      <snice-code-block id="css-code" language="css" show-line-numbers highlight-lines="[2,3,4]"></snice-code-block>
+    </div>
+
+    <h2>Advanced Features</h2>
+
+    <div class="example">
+      <h3>With Line Numbers</h3>
+      <snice-code-block id="numbered-code" language="javascript" show-line-numbers></snice-code-block>
+    </div>
+
+    <div class="example">
+      <h3>With Highlighted Lines (2-4)</h3>
+      <snice-code-block id="highlighted-code" language="javascript" show-line-numbers highlight-lines="[2,3,4]"></snice-code-block>
+    </div>
+
+    <div class="example">
+      <h3>Without Syntax Highlighting</h3>
+      <snice-code-block id="plain-code" language="javascript" show-line-numbers></snice-code-block>
+    </div>
+
+    <h2>Highlighter Options</h2>
+    <div class="example">
+      <p>Code blocks support pluggable syntax highlighting:</p>
+      <ul>
+        <li><strong>Built-in</strong> - Simple highlighter included (JS, TS, HTML, CSS, Python, JSON, Bash)</li>
+        <li><strong>Prism.js</strong> - See <code>components/code-block/highlighters/prism.ts</code></li>
+        <li><strong>highlight.js</strong> - See <code>components/code-block/highlighters/highlight.ts</code></li>
+        <li><strong>Custom</strong> - Implement your own <code>HighlighterFunction</code></li>
+      </ul>
+      <p>Example setup:</p>
+      <pre style="background: var(--snice-color-background); padding: 15px; border-radius: 4px; overflow-x: auto;"><code>import { SniceCodeBlock } from 'snice/components/code-block';
+import { highlightCode } from 'snice/components/code-block/highlighter';
+
+// Use built-in highlighter globally
+SniceCodeBlock.setGlobalHighlighter(highlightCode);
+
+// Or per-instance
+const codeBlock = document.querySelector('snice-code-block');
+codeBlock.setHighlighter(highlightCode);</code></pre>
+    </div>
+  </div>
 </body>
 </html>
