@@ -10,7 +10,7 @@ export class SniceMusicPlayer extends HTMLElement implements SniceMusicPlayerEle
   @property({ type: Number, attribute: 'current-track-index' })
   currentTrackIndex: number = 0;
 
-  @property({ type: String, attribute: 'current-track', reflect: true })
+  @property({ type: String, attribute: 'current-track' })
   currentTrack: string = '';
 
   currentTime: number = 0;
@@ -364,7 +364,7 @@ export class SniceMusicPlayer extends HTMLElement implements SniceMusicPlayerEle
                     </if>
                   </div>
                   <if ${track.duration}>
-                    <div class="player-playlist-item-duration">${this.formatTime(track.duration)}</div>
+                    <div class="player-playlist-item-duration">${this.formatTime(track.duration || 0)}</div>
                   </if>
                 </div>
               `)}

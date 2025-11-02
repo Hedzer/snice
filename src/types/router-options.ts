@@ -1,4 +1,5 @@
 import { Transition } from './transition';
+import type { Fetcher } from '../fetcher';
 
 export interface RouterOptions {
   /**
@@ -36,4 +37,10 @@ export interface RouterOptions {
    * Default layout element tag name for all pages
    */
   layout?: string;
+
+  /**
+   * Optional fetcher for context-aware HTTP requests with middleware support
+   * If not provided, Context.fetch will default to native fetch
+   */
+  fetcher?: Fetcher;
 }

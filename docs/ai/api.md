@@ -147,11 +147,43 @@ html`
 //     ctx.update(); // notify all subscribers
 //   }
 
-Router({ target, context?, layout? })
+Router({ target, context?, layout?, fetcher? })
 // Returns: { page, navigate, initialize }
 // page() - decorator factory
 // navigate(path) - programmatic navigation
 // initialize() - start router
+```
+
+## Fetcher
+
+```typescript
+class ContextAwareFetcher implements Fetcher {
+  use(type: 'request', middleware: RequestMiddleware): void
+  use(type: 'response', middleware: ResponseMiddleware): void
+  create(ctx: Context): typeof globalThis.fetch
+}
+
+type RequestMiddleware = (
+  this: Context,
+  request: Request,
+  next: () => Promise<Response>
+) => Promise<Response>
+
+type ResponseMiddleware = (
+  this: Context,
+  response: Response,
+  next: () => Promise<Response>
+) => Promise<Response>
+```
+
+**Usage:**
+- Create fetcher, add middleware via `.use('request', fn)` and `.use('response', fn)`
+- Request middleware runs before fetch, response middleware after
+- Middleware `this` bound to Context instance
+- Access `this.application` and `this.navigation` in middleware
+- Pass to Router via `fetcher` option
+- Use via `ctx.fetch()` in pages/components
+- Optional - defaults to native fetch if not provided
 ```
 
 ## Templates

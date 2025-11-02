@@ -115,6 +115,53 @@ class UserProfile extends HTMLElement {
 }
 ```
 
+## Fetch with Middleware
+
+```typescript
+import { Router, ContextAwareFetcher } from 'snice';
+
+const fetcher = new ContextAwareFetcher();
+
+// Request middleware - modify request before fetch
+fetcher.use('request', function(request, next) {
+  const token = this.application.user?.token;
+  if (token) {
+    request.headers.set('Authorization', `Bearer ${token}`);
+  }
+  return next();
+});
+
+// Response middleware - handle response after fetch
+fetcher.use('response', async function(response, next) {
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+  return next();
+});
+
+const router = Router({
+  target: '#app',
+  context: { user: null },
+  fetcher
+});
+
+// In pages
+@page({ tag: 'user-page', routes: ['/users/:id'] })
+class UserPage extends HTMLElement {
+  private ctx: Context;
+
+  @context()
+  handleContext(ctx: Context) {
+    this.ctx = ctx;
+  }
+
+  @ready()
+  async load() {
+    const user = await this.ctx.fetch('/api/users/123').then(r => r.json());
+  }
+}
+```
+
 ## Conditional Rendering
 ```typescript
 html`

@@ -41,7 +41,7 @@ export function Router(options: RouterOptions): RouterInstance {
   const context = options.context || {}; // Store context for guards
 
   // Create Context instance for managing router state
-  const navigationContext = new Context(context, [], '', {});
+  const navigationContext = new Context(context, [], '', {}, options.fetcher);
 
   function getCurrentLayoutElement(target: Element): HTMLElement | null {
     const noCurrentLayout = !currentLayoutName || !currentLayoutTimestamp;

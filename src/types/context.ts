@@ -3,6 +3,7 @@ import { NavContext } from './nav-context';
 import { Placard } from './placard';
 import { RouteParams } from './route-params';
 import { REGISTERED_ELEMENTS, IS_UPDATING, CONTEXT_REGISTER, CONTEXT_UNREGISTER, CONTEXT_NOTIFY_ELEMENT } from '../symbols';
+import type { Fetcher } from '../fetcher';
 
 // Symbol for storing the Set of elements
 // Use Symbol.for() to ensure symbols are shared across multiple Snice instances
@@ -34,7 +35,13 @@ export class Context {
    */
   navigation: NavContext;
 
-  constructor(context: AppContext = {}, placards: Placard[] = [], currentRoute = '', routeParams: RouteParams = {}) {
+  /**
+   * Fetch function with optional middleware support
+   * Bound to this Context instance, allowing middleware to access application and navigation state
+   */
+  fetch: typeof globalThis.fetch;
+
+  constructor(context: AppContext = {}, placards: Placard[] = [], currentRoute = '', routeParams: RouteParams = {}, fetcher?: Fetcher) {
     this.id = contextIdCounter++;
     this.application = context;
     this.navigation = {
@@ -42,6 +49,15 @@ export class Context {
       route: currentRoute,
       params: routeParams
     };
+
+    // Initialize fetch with middleware support or fallback to native fetch
+    if (fetcher && typeof fetcher.create === 'function') {
+      this.fetch = fetcher.create(this);
+    } else if (typeof fetch === 'function') {
+      this.fetch = fetch.bind(this);
+    } else {
+      throw new Error('No fetch implementation available');
+    }
   }
 
   /**

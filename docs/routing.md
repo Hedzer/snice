@@ -40,6 +40,7 @@ interface RouterOptions<T = any> {
   transition?: Transition;           // Global transition config
   layout?: string;                   // Default layout for all pages
   context?: T;                       // Router context object (shared state)
+  fetcher?: Fetcher;                 // Optional fetch middleware (see docs/fetcher.md)
 }
 ```
 
@@ -130,6 +131,7 @@ class ProfilePage extends HTMLElement {
     // ctx.application is your router context (AppContext)
     this.appContext = ctx.application;
     // ctx.navigation contains { placards, route, params }
+    // ctx.fetch is available for HTTP requests (with middleware if configured)
     this.requestRender();
   }
 

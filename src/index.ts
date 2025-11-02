@@ -30,6 +30,10 @@ export { debounce, throttle, once, memoize, clearDebounceTimers, clearThrottleTi
 export { context } from './context';
 export type { ContextOptions } from './context';
 
+// Fetch middleware system
+export { ContextAwareFetcher } from './fetcher';
+export type { Fetcher, RequestMiddleware, ResponseMiddleware } from './fetcher';
+
 // Export all types from centralized types module
 export * from './types';
 
