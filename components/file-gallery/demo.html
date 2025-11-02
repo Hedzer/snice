@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>File Gallery Demo</title>
+  <link rel="stylesheet" href="../../theme.css">
+  <style>
+    body {
+      padding: var(--snice-spacing-xl, 2rem);
+      font-family: var(--snice-font-family, system-ui, -apple-system, sans-serif);
+      max-width: 1200px;
+      margin: 0 auto;
+      background: var(--snice-color-background, rgb(255 255 255));
+      color: var(--snice-color-text, rgb(23 23 23));
+      transition: background-color var(--snice-transition-normal, 200ms) ease, color var(--snice-transition-normal, 200ms) ease;
+    }
+
+    h1 {
+      font-size: var(--snice-font-size-3xl, 1.875rem);
+      font-weight: var(--snice-font-weight-bold, 700);
+      margin-bottom: var(--snice-spacing-lg, 1.5rem);
+      color: var(--snice-color-text, rgb(23 23 23));
+    }
+
+    .controls {
+      position: fixed;
+      top: var(--snice-spacing-md, 1rem);
+      right: var(--snice-spacing-md, 1rem);
+      display: flex;
+      gap: var(--snice-spacing-sm, 0.5rem);
+      z-index: 1000;
+    }
+
+    .theme-toggle {
+      padding: var(--snice-spacing-sm, 0.5rem) var(--snice-spacing-md, 1rem);
+      background: var(--snice-color-background-element, rgb(252 251 249));
+      border: 1px solid var(--snice-color-border, rgb(226 226 226));
+      border-radius: var(--snice-border-radius-md, 0.375rem);
+      color: var(--snice-color-text, rgb(23 23 23));
+      cursor: pointer;
+      font-size: var(--snice-font-size-sm, 0.875rem);
+      font-weight: var(--snice-font-weight-medium, 500);
+      transition: all var(--snice-transition-fast, 150ms) ease;
+    }
+
+    .theme-toggle:hover {
+      background: var(--snice-color-background-element-hover, rgb(249 247 245));
+      border-color: var(--snice-color-border-hover, rgb(163 163 163));
+    }
+
+    .section {
+      margin-bottom: var(--snice-spacing-2xl, 3rem);
+      padding: var(--snice-spacing-xl, 2rem);
+      background: var(--snice-color-background-element, rgb(252 251 249));
+      border: 1px solid var(--snice-color-border, rgb(226 226 226));
+      border-radius: var(--snice-border-radius-lg, 0.5rem);
+    }
+
+    h2 {
+      margin-bottom: var(--snice-spacing-md, 1rem);
+      font-size: var(--snice-font-size-xl, 1.25rem);
+      font-weight: var(--snice-font-weight-semibold, 600);
+      color: var(--snice-color-text, rgb(23 23 23));
+    }
+
+    .description {
+      margin-bottom: var(--snice-spacing-lg, 1.5rem);
+      color: var(--snice-color-text-muted, rgb(115 115 115));
+      font-size: var(--snice-font-size-sm, 0.875rem);
+      line-height: 1.5;
+    }
+
+    .gallery-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--snice-spacing-xl, 2rem);
+    }
+
+    .output {
+      margin-top: var(--snice-spacing-lg, 1.5rem);
+      padding: var(--snice-spacing-md, 1rem);
+      background: var(--snice-color-background, rgb(255 255 255));
+      border: 1px solid var(--snice-color-border, rgb(226 226 226));
+      border-radius: var(--snice-border-radius-md, 0.375rem);
+      font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+      font-size: var(--snice-font-size-sm, 0.875rem);
+      color: var(--snice-color-text, rgb(23 23 23));
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .output-title {
+      font-weight: var(--snice-font-weight-semibold, 600);
+      margin-bottom: var(--snice-spacing-xs, 0.25rem);
+      color: var(--snice-color-text, rgb(23 23 23));
+    }
+
+    .button-group {
+      display: flex;
+      gap: var(--snice-spacing-sm, 0.5rem);
+      margin-top: var(--snice-spacing-md, 1rem);
+    }
+
+    button {
+      padding: var(--snice-spacing-sm, 0.5rem) var(--snice-spacing-md, 1rem);
+      background: var(--snice-color-primary, rgb(37 99 235));
+      color: var(--snice-color-text-inverse, rgb(250 250 250));
+      border: none;
+      border-radius: var(--snice-border-radius-md, 0.375rem);
+      cursor: pointer;
+      font-size: var(--snice-font-size-sm, 0.875rem);
+      font-weight: var(--snice-font-weight-medium, 500);
+      transition: background-color var(--snice-transition-fast, 150ms) ease;
+    }
+
+    button:hover {
+      background: var(--snice-color-primary-hover, rgb(29 78 216));
+    }
+
+    button.secondary {
+      background: var(--snice-color-background-element, rgb(252 251 249));
+      color: var(--snice-color-text, rgb(23 23 23));
+      border: 1px solid var(--snice-color-border, rgb(226 226 226));
+    }
+
+    button.secondary:hover {
+      background: var(--snice-color-background-element-hover, rgb(249 247 245));
+    }
+  </style>
+</head>
+<body>
+  <div class="controls">
+    <button class="theme-toggle" onclick="toggleTheme()">Toggle Dark Mode</button>
+  </div>
+
+  <h1>File Gallery Component Demo</h1>
+
+  <div class="section">
+    <h2>Basic File Gallery</h2>
+    <p class="description">
+      Upload files with drag and drop support. Auto-upload is enabled by default.
+    </p>
+    <div class="gallery-group">
+      <snice-file-gallery id="basic-gallery"></snice-file-gallery>
+    </div>
+    <div class="output">
+      <div class="output-title">Events:</div>
+      <div id="basic-output"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Image Gallery</h2>
+    <p class="description">
+      Restricted to image files only with preview thumbnails.
+    </p>
+    <div class="gallery-group">
+      <snice-file-gallery id="image-gallery" accept="image/*"></snice-file-gallery>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Manual Upload Mode</h2>
+    <p class="description">
+      Auto-upload disabled. Files must be uploaded manually using the button.
+    </p>
+    <div class="gallery-group">
+      <snice-file-gallery id="manual-gallery" auto-upload="false"></snice-file-gallery>
+    </div>
+    <div class="button-group">
+      <button onclick="uploadManualFiles()">Upload All Files</button>
+      <button class="secondary" onclick="clearManualFiles()">Clear All</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>File Limits</h2>
+    <p class="description">
+      Maximum 3 files, each up to 2MB in size.
+    </p>
+    <div class="gallery-group">
+      <snice-file-gallery
+        id="limited-gallery"
+        max-files="3"
+        max-size="2097152"
+      ></snice-file-gallery>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>List View</h2>
+    <p class="description">
+      Display files in a list layout instead of grid.
+    </p>
+    <div class="gallery-group">
+      <snice-file-gallery id="list-gallery" view="list"></snice-file-gallery>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Custom Options</h2>
+    <p class="description">
+      Gallery with pause/resume disabled and custom accept types.
+    </p>
+    <div class="gallery-group">
+      <snice-file-gallery
+        id="custom-gallery"
+        accept=".pdf,.doc,.docx,.txt"
+        allow-pause="false"
+      ></snice-file-gallery>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Add Button Mode</h2>
+    <p class="description">
+      Instead of a drop zone, shows an add button tile in the gallery grid. Click the plus tile to add files.
+    </p>
+    <div class="gallery-group">
+      <snice-file-gallery
+        id="add-button-gallery"
+        show-add-button="true"
+        max-files="6"
+      ></snice-file-gallery>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Files with Avatar Badges</h2>
+    <p class="description">
+      Files can have custom badges overlaid on thumbnails (top-left, top-right, bottom-left, bottom-right). Perfect for showing user avatars on collaborative files.
+    </p>
+    <div class="gallery-group">
+      <snice-file-gallery id="badges-gallery"></snice-file-gallery>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Custom Actions with Badges</h2>
+    <p class="description">
+      Use addCustomAction(icon, text) to add custom buttons. Files get badges showing their source.
+    </p>
+    <div class="gallery-group">
+      <snice-file-gallery id="custom-actions-gallery" show-add-button="true" hide-add-button="true"></snice-file-gallery>
+    </div>
+  </div>
+
+  <script type="module">
+    import { respond } from '../../dist/index.esm.js';
+
+    // Simulate upload handler by listening to request events - MUST BE BEFORE COMPONENT IMPORT
+    document.addEventListener('@request/file-gallery-upload', (event) => {
+      const { payload } = event.detail;
+      const { file, fileId, onProgress, signal } = payload;
+
+      console.log('Upload handler called for:', file.name);
+
+      // Signal that we found a handler
+      event.detail.discovery.resolve();
+
+      // Start async upload but respond immediately with Promise
+      const uploadPromise = new Promise((resolve, reject) => {
+        let progress = 0;
+        let currentStep = 0;
+        const baseDelay = 100;
+
+        const uploadStep = () => {
+          if (signal?.aborted) {
+            reject(new Error('Upload cancelled'));
+            return;
+          }
+
+          currentStep++;
+
+          // Faster at start, slower in middle, faster at end (realistic)
+          let stepProgress;
+          if (currentStep < 5) {
+            stepProgress = 0.08; // Fast initial
+          } else if (currentStep < 15) {
+            stepProgress = 0.04; // Slower middle
+          } else {
+            stepProgress = 0.06; // Faster end
+          }
+
+          progress = Math.min(1, progress + stepProgress);
+
+          if (onProgress) {
+            onProgress(progress);
+          }
+
+          if (progress >= 1) {
+            // Always succeed
+            resolve({
+              success: true,
+              fileId,
+              url: `https://example.com/uploads/${file.name}`
+            });
+          } else {
+            // Variable delay for realism
+            const delay = baseDelay + Math.random() * 50;
+            setTimeout(uploadStep, delay);
+          }
+        };
+
+        uploadStep();
+      });
+
+      // Respond with the promise
+      event.detail.data.resolve(uploadPromise);
+    }, { capture: true });
+
+    // Import component AFTER handler is registered
+    await import('../../components/file-gallery/snice-file-gallery.ts');
+
+    // Theme toggle
+    window.toggleTheme = function() {
+      const html = document.documentElement;
+      const currentTheme = html.getAttribute('data-theme');
+      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+      html.setAttribute('data-theme', newTheme);
+    };
+
+    // Basic gallery event logging
+    const basicGallery = document.getElementById('basic-gallery');
+    const basicOutput = document.getElementById('basic-output');
+
+    function logEvent(eventName, detail) {
+      const message = document.createElement('div');
+      message.textContent = `${new Date().toLocaleTimeString()}: ${eventName}`;
+      if (detail.file) {
+        message.textContent += ` - ${detail.file.file.name}`;
+      }
+      if (detail.progress !== undefined) {
+        message.textContent += ` (${detail.progress}%)`;
+      }
+      basicOutput.insertBefore(message, basicOutput.firstChild);
+
+      // Keep only last 10 messages
+      while (basicOutput.children.length > 10) {
+        basicOutput.removeChild(basicOutput.lastChild);
+      }
+    }
+
+    basicGallery.addEventListener('@snice/files-change', (e) => {
+      logEvent('files-change', e.detail);
+    });
+
+    basicGallery.addEventListener('@snice/upload-progress', (e) => {
+      logEvent('upload-progress', e.detail);
+    });
+
+    basicGallery.addEventListener('@snice/upload-complete', (e) => {
+      logEvent('upload-complete', e.detail);
+    });
+
+    basicGallery.addEventListener('@snice/upload-error', (e) => {
+      logEvent('upload-error', e.detail);
+    });
+
+    basicGallery.addEventListener('@snice/error', (e) => {
+      logEvent('error', { message: e.detail.message });
+    });
+
+    // Manual gallery controls
+    const manualGallery = document.getElementById('manual-gallery');
+
+    window.uploadManualFiles = async function() {
+      const files = manualGallery.files;
+      for (const file of files) {
+        if (file.uploadStatus === 'pending') {
+          await manualGallery.resumeUpload?.(file.id);
+        }
+      }
+    };
+
+    window.clearManualFiles = function() {
+      if (confirm('Clear all files?')) {
+        manualGallery.clear();
+      }
+    };
+
+    // Badges gallery - add sample files with avatar badges
+    const badgesGallery = document.getElementById('badges-gallery');
+
+    const users = [
+      { name: 'Alice', initials: 'AJ', color: '#ef4444', position: 'top-right' },
+      { name: 'Bob', initials: 'BM', color: '#3b82f6', position: 'top-left' },
+      { name: 'Charlie', initials: 'CW', color: '#10b981', position: 'bottom-right' },
+      { name: 'Diana', initials: 'DK', color: '#f59e0b', position: 'bottom-left' }
+    ];
+
+    users.forEach((user, index) => {
+      // Create image canvas
+      const canvas = document.createElement('canvas');
+      canvas.width = 800;
+      canvas.height = 600;
+      const ctx = canvas.getContext('2d');
+
+      // Gradient background
+      const gradient = ctx.createLinearGradient(0, 0, 800, 600);
+      gradient.addColorStop(0, '#667eea');
+      gradient.addColorStop(1, '#764ba2');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 800, 600);
+
+      // Add some fake content
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 36px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(`Photo by ${user.name}`, 400, 280);
+      ctx.font = '24px Arial';
+      ctx.fillText(new Date().toLocaleDateString(), 400, 340);
+
+      canvas.toBlob((blob) => {
+        const file = new File([blob], `photo-${user.name.toLowerCase()}.jpg`, { type: 'image/jpeg' });
+        const previewUrl = canvas.toDataURL('image/jpeg');
+        badgesGallery.addFileWithPreview(file, previewUrl);
+
+        setTimeout(() => {
+          const files = badgesGallery.files;
+          const addedFile = files.find(f => f.file.name === file.name);
+          if (addedFile) {
+            // Create avatar badge
+            const avatarHTML = `<div style="
+              width: 40px;
+              height: 40px;
+              border-radius: 50%;
+              background: ${user.color};
+              color: white;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-weight: bold;
+              font-size: 14px;
+              border: 2px solid white;
+              box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            ">${user.initials}</div>`;
+
+            badgesGallery.setFileBadge(addedFile.id, avatarHTML, user.position);
+          }
+        }, 100 + index * 50);
+      }, 'image/jpeg');
+    });
+
+    // Custom actions gallery
+    const customActionsGallery = document.getElementById('custom-actions-gallery');
+
+    // Add camera action
+    const cameraIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="12" cy="13" r="4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></circle></svg>';
+    const cameraActionId = customActionsGallery.addCustomAction(cameraIcon, 'Camera');
+
+    // Add drawing action
+    const drawIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 19l7 2-7-18-7 18 7-2zm0 0v-8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    const drawActionId = customActionsGallery.addCustomAction(drawIcon, 'Draw');
+
+    // Add document action
+    const docIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><polyline points="13 2 13 9 20 9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    const docActionId = customActionsGallery.addCustomAction(docIcon, 'Document');
+
+    // Listen for custom action clicks
+    customActionsGallery.addEventListener('@snice/custom-action-click', (e) => {
+      const actionId = e.detail.actionId;
+      console.log('Custom action clicked:', actionId);
+
+      const canvas = document.createElement('canvas');
+      canvas.width = 800;
+      canvas.height = 600;
+      const ctx = canvas.getContext('2d');
+
+      let fileName, badgeText, badgeVariant, colors;
+
+      if (actionId === cameraActionId) {
+        fileName = `photo-${Date.now()}.png`;
+        badgeText = 'Camera';
+        badgeVariant = 'info';
+        colors = { start: '#4facfe', end: '#00f2fe' };
+      } else if (actionId === drawActionId) {
+        fileName = `drawing-${Date.now()}.png`;
+        badgeText = 'Drawing';
+        badgeVariant = 'warning';
+        colors = { start: '#fa709a', end: '#fee140' };
+      } else if (actionId === docActionId) {
+        fileName = `document-${Date.now()}.png`;
+        badgeText = 'Document';
+        badgeVariant = 'success';
+        colors = { start: '#30cfd0', end: '#330867' };
+      }
+
+      // Create gradient background
+      const gradient = ctx.createLinearGradient(0, 0, 800, 600);
+      gradient.addColorStop(0, colors.start);
+      gradient.addColorStop(1, colors.end);
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 800, 600);
+
+      // Add label
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 48px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(badgeText, 400, 280);
+      ctx.font = 'bold 24px Arial';
+      ctx.fillText(new Date().toLocaleTimeString(), 400, 340);
+
+      canvas.toBlob((blob) => {
+        const file = new File([blob], fileName, { type: 'image/png' });
+        const previewUrl = canvas.toDataURL('image/png');
+        customActionsGallery.addFileWithPreview(file, previewUrl);
+
+        // Add badge after file is added (text badge in bottom-right)
+        setTimeout(() => {
+          const files = customActionsGallery.files;
+          const addedFile = files[files.length - 1];
+          if (addedFile) {
+            const badgeHTML = `<div style="
+              padding: 4px 8px;
+              border-radius: 12px;
+              background: rgba(0,0,0,0.7);
+              color: white;
+              font-size: 11px;
+              font-weight: 600;
+              backdrop-filter: blur(4px);
+            ">${badgeText}</div>`;
+            customActionsGallery.setFileBadge(addedFile.id, badgeHTML, 'bottom-right');
+          }
+        }, 100);
+      }, 'image/png');
+    });
+  </script>
+</body>
+</html>
