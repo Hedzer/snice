@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snice Music Player Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      font-family: var(--snice-font-family, system-ui, -apple-system, sans-serif);
+      padding: 2.5rem;
+      line-height: 1.6;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      margin: 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: var(--snice-color-text);
+      border-bottom: 2px solid var(--snice-color-border);
+      padding-bottom: var(--snice-spacing-sm, 0.75rem);
+      margin-bottom: var(--snice-spacing-lg, 1.5rem);
+      font-size: var(--snice-font-size-2xl, 1.5rem);
+    }
+
+    h2 {
+      color: var(--snice-color-text);
+      margin-top: var(--snice-spacing-xl, 2rem);
+      margin-bottom: var(--snice-spacing-md, 1rem);
+      font-size: var(--snice-font-size-xl, 1.25rem);
+    }
+
+    h3 {
+      color: var(--snice-color-text-secondary);
+      margin-top: var(--snice-spacing-lg, 1.5rem);
+      margin-bottom: var(--snice-spacing-sm, 0.75rem);
+      font-size: var(--snice-font-size-md, 1rem);
+      font-weight: var(--snice-font-weight-semibold, 600);
+    }
+
+    .demo-section {
+      margin: var(--snice-spacing-lg, 1.5rem) 0;
+      padding: var(--snice-spacing-md, 1rem);
+      background: var(--snice-color-background-secondary);
+      border-radius: var(--snice-border-radius-lg, 8px);
+      border: 1px solid var(--snice-color-border);
+    }
+
+    p {
+      color: var(--snice-color-text-secondary);
+      margin-bottom: var(--snice-spacing-md, 1rem);
+    }
+
+    .info-box {
+      padding: var(--snice-spacing-md, 1rem);
+      background: var(--snice-color-primary-subtle, rgb(239 246 255));
+      border-left: 4px solid var(--snice-color-primary, rgb(37 99 235));
+      border-radius: var(--snice-border-radius-md, 4px);
+      margin: var(--snice-spacing-md, 1rem) 0;
+      font-size: var(--snice-font-size-sm, 0.875rem);
+      color: var(--snice-color-text-secondary);
+    }
+
+    .controls {
+      margin-top: var(--snice-spacing-md, 1rem);
+      display: flex;
+      gap: var(--snice-spacing-sm, 0.75rem);
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-md, 1rem);
+      background: var(--snice-color-primary, rgb(37 99 235));
+      color: var(--snice-color-text-inverse, rgb(250 250 250));
+      border: none;
+      border-radius: var(--snice-border-radius-md, 4px);
+      cursor: pointer;
+      font-size: var(--snice-font-size-sm, 0.875rem);
+      font-weight: var(--snice-font-weight-medium, 500);
+      transition: background-color var(--snice-transition-fast, 150ms);
+    }
+
+    button:hover {
+      background: var(--snice-color-primary-hover, rgb(29 78 216));
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  </style>
+  <script type="module">
+    // Sample tracks data
+    const sampleTracks = [
+      {
+        id: 'track-1',
+        title: 'Summer Breeze',
+        artist: 'The Acoustic Collective',
+        album: 'Peaceful Moments',
+        artwork: 'https://picsum.photos/seed/music1/200/200',
+        src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+        duration: 360
+      },
+      {
+        id: 'track-2',
+        title: 'Midnight Jazz',
+        artist: 'Smooth Notes Ensemble',
+        album: 'Late Night Sessions',
+        artwork: 'https://picsum.photos/seed/music2/200/200',
+        src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+        duration: 420
+      },
+      {
+        id: 'track-3',
+        title: 'Electric Dreams',
+        artist: 'Synth Wave Collective',
+        album: 'Neon Nights',
+        artwork: 'https://picsum.photos/seed/music3/200/200',
+        src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
+        duration: 300
+      },
+      {
+        id: 'track-4',
+        title: 'Mountain Echo',
+        artist: 'Folk Harmony',
+        album: 'Nature Sounds',
+        artwork: 'https://picsum.photos/seed/music4/200/200',
+        src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
+        duration: 385
+      },
+      {
+        id: 'track-5',
+        title: 'Urban Rhythm',
+        artist: 'City Beats',
+        album: 'Downtown Vibes',
+        artwork: 'https://picsum.photos/seed/music5/200/200',
+        src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3',
+        duration: 340
+      }
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Set tracks for all players
+      const players = document.querySelectorAll('snice-music-player');
+      players.forEach(player => {
+        player.tracks = sampleTracks;
+      });
+
+      // Programmatic controls
+      const prog = document.getElementById('programmatic');
+      document.getElementById('prog-play').onclick = () => prog.play();
+      document.getElementById('prog-pause').onclick = () => prog.pause();
+      document.getElementById('prog-stop').onclick = () => prog.stop();
+      document.getElementById('prog-next').onclick = () => prog.next();
+      document.getElementById('prog-prev').onclick = () => prog.previous();
+      document.getElementById('prog-shuffle').onclick = () => prog.toggleShuffle();
+
+      // Event listeners
+      const eventLog = document.getElementById('event-log');
+      const logger = document.getElementById('logger');
+
+      function logEvent(name, detail) {
+        const entry = document.createElement('div');
+        entry.style.padding = 'var(--snice-spacing-xs, 0.5rem)';
+        entry.style.borderBottom = '1px solid var(--snice-color-border)';
+        entry.innerHTML = `
+          <strong>${name}</strong>
+          <small style="color: var(--snice-color-text-tertiary); margin-left: var(--snice-spacing-xs, 0.5rem);">
+            ${detail}
+          </small>
+        `;
+        eventLog.insertBefore(entry, eventLog.firstChild);
+
+        // Keep only last 10 events
+        while (eventLog.children.length > 10) {
+          eventLog.removeChild(eventLog.lastChild);
+        }
+      }
+
+      logger.addEventListener('@snice/player-play', (e) => {
+        logEvent('play', e.detail.track?.title || 'Unknown track');
+      });
+
+      logger.addEventListener('@snice/player-pause', (e) => {
+        logEvent('pause', e.detail.track?.title || 'Unknown track');
+      });
+
+      logger.addEventListener('@snice/player-stop', () => {
+        logEvent('stop', '');
+      });
+
+      logger.addEventListener('@snice/player-track-change', (e) => {
+        logEvent('track-change', e.detail.track.title);
+      });
+
+      logger.addEventListener('@snice/player-track-ended', (e) => {
+        logEvent('track-ended', e.detail.track?.title || 'Unknown track');
+      });
+
+      logger.addEventListener('@snice/player-shuffle-change', (e) => {
+        logEvent('shuffle-change', e.detail.shuffle ? 'ON' : 'OFF');
+      });
+
+      logger.addEventListener('@snice/player-repeat-change', (e) => {
+        logEvent('repeat-change', e.detail.repeat);
+      });
+
+      logger.addEventListener('@snice/player-volume-change', (e) => {
+        logEvent('volume-change', Math.round(e.detail.volume * 100) + '%');
+      });
+    });
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>Music Player Demo</h1>
+    <p>A full-featured audio player with playlist support, shuffle, repeat, and volume control.</p>
+
+    <div class="info-box">
+      <strong>Note:</strong> This demo uses sample tracks from SoundHelix. Tracks will load on play.
+    </div>
+
+    <h2>Full Player (Default)</h2>
+    <div class="demo-section">
+      <snice-music-player id="default"></snice-music-player>
+    </div>
+
+    <h2>Compact (No Playlist)</h2>
+    <div class="demo-section">
+      <snice-music-player show-playlist="false"></snice-music-player>
+    </div>
+
+    <h2>Compact Mode</h2>
+    <div class="demo-section">
+      <snice-music-player
+        compact
+        show-playlist="false">
+      </snice-music-player>
+    </div>
+
+    <h2>Minimal (No Artwork or Track Info)</h2>
+    <div class="demo-section">
+      <snice-music-player
+        show-playlist="false"
+        show-artwork="false"
+        show-track-info="false">
+      </snice-music-player>
+    </div>
+
+    <h2>Programmatic Control</h2>
+    <div class="demo-section">
+      <snice-music-player
+        id="programmatic"
+        show-playlist="false">
+      </snice-music-player>
+      <div class="controls">
+        <button id="prog-play">Play</button>
+        <button id="prog-pause">Pause</button>
+        <button id="prog-stop">Stop</button>
+        <button id="prog-prev">Previous</button>
+        <button id="prog-next">Next</button>
+        <button id="prog-shuffle">Toggle Shuffle</button>
+      </div>
+    </div>
+
+    <h2>Event Logging</h2>
+    <div class="demo-section">
+      <snice-music-player
+        id="logger"
+        show-playlist="false">
+      </snice-music-player>
+      <h3>Recent Events:</h3>
+      <div id="event-log" style="
+        margin-top: var(--snice-spacing-sm, 0.75rem);
+        border: 1px solid var(--snice-color-border);
+        border-radius: var(--snice-border-radius-md, 4px);
+        max-height: 15rem;
+        overflow-y: auto;
+        background: var(--snice-color-background, white);
+      "></div>
+    </div>
+
+    <h2>Auto-play</h2>
+    <div class="demo-section">
+      <snice-music-player
+        autoplay
+        show-playlist="false">
+      </snice-music-player>
+      <div class="info-box">
+        Note: Autoplay may be blocked by browser policies. User interaction is usually required.
+      </div>
+    </div>
+  </div>
+  <script type="module" src="./snice-music-player.ts"></script>
+</body>
+</html>

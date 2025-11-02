@@ -1,18 +1,28 @@
 # Playwright Testing Guide
 
+## ⚠️ CRITICAL: .debug/ is ONLY for temporary debugging
+
+**Real tests belong in `tests/` directories, NOT in `.debug/`**
+
+- `.debug/` = Temporary debugging files (delete after use)
+- `tests/components/` = Permanent component unit tests
+- `tests/live/` = Permanent Playwright e2e tests
+
 ## Core Rules
 
 ### 🚫 Never Do:
 - Create testing files in root directory
 - Use screenshots (`--screenshot`, `page.screenshot()`)
 - Run in headed mode (`--headed`)
-- Create persistent test files outside `.debug/`
+- Keep test files in `.debug/` permanently
+- Put real/permanent tests in `.debug/`
 
 ### ✅ Always Do:
-- Put all test files in `.debug/` folder
+- Put temporary debug test files in `.debug/` folder ONLY
 - Run headless only
 - Use console logs and text content for debugging
-- Clean up test files after debugging
+- DELETE debug test files after debugging
+- Put real tests in proper `tests/` directories
 
 ## Testing Pattern
 
