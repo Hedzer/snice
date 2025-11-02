@@ -21,6 +21,6 @@ Read these instead of `/docs/*.md` for faster context loading.
 **IMPORTANT:** Do NOT read all component docs. Only read a component's doc when you need to use or reference it.
 
 **Implemented Components:**
-- accordion, accordion-item, alert, avatar, badge, banner, breadcrumbs, button, card, checkbox, chip, color-display, color-picker, date-picker, divider, drawer, empty-state, file-upload, image, input, login, modal, nav, progress, radio, select, skeleton, slider, spinner, switch, table, tabs, tab, textarea, timeline, tooltip
+- accordion, accordion-item, alert, avatar, badge, banner, breadcrumbs, button, card, checkbox, chip, color-display, color-picker, date-picker, divider, drawer, empty-state, file-gallery, file-upload, image, input, login, modal, nav, progress, qr-code, qr-reader, radio, select, skeleton, slider, spinner, switch, table, tabs, tab, textarea, timeline, tooltip
 
 **To use a component:** Read `docs/ai/components/{component-name}.md` only when needed.

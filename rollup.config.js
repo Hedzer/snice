@@ -262,6 +262,33 @@ export default [
           }
         }
       },
+      // Plugin to copy QR reader static assets
+      {
+        name: 'copy-qr-reader-assets',
+        generateBundle() {
+          const qrReaderSrc = 'components/qr-reader';
+          const qrReaderDest = 'dist/components/qr-reader';
+
+          if (!fs.existsSync(qrReaderSrc)) {
+            return;
+          }
+
+          if (!fs.existsSync(qrReaderDest)) {
+            fs.mkdirSync(qrReaderDest, { recursive: true });
+          }
+
+          // Copy .mjs and .wasm files from qr-reader directory
+          const files = fs.readdirSync(qrReaderSrc);
+          for (const file of files) {
+            if (file.endsWith('.mjs') || file.endsWith('.wasm')) {
+              fs.copyFileSync(
+                path.join(qrReaderSrc, file),
+                path.join(qrReaderDest, file)
+              );
+            }
+          }
+        }
+      },
       typescript({
         tsconfig: './components/tsconfig.json',
         declaration: false,
