@@ -207,13 +207,14 @@ class DashboardPage extends HTMLElement {
 The Context object passed to `@context()` methods has the following structure:
 
 ```typescript
-interface Context<T = any> {
-  application: T;  // Your router context (e.g., AppContext)
+interface Context {
+  application: AppContext;  // Your router context (e.g., { user, theme, config })
   navigation: {
     placards: Placard[];           // All page placards
     route: string;                  // Current route name
     params: Record<string, string>; // Route parameters
   };
+  fetch: typeof globalThis.fetch;  // Fetch function with middleware support
   update(): void;  // Notify all subscribers of changes
 }
 ```
@@ -223,10 +224,10 @@ interface Context<T = any> {
 ```typescript
 @page({ tag: 'user-page', routes: ['/users/:userId'] })
 class UserPage extends HTMLElement {
-  private ctx?: Context<AppContext>;
+  private ctx?: Context;
 
   @context()
-  handleContext(ctx: Context<AppContext>) {
+  handleContext(ctx: Context) {
     this.ctx = ctx;
 
     // Access application state
@@ -250,10 +251,10 @@ When you modify the application context, call `update()` to notify all subscribe
 ```typescript
 @page({ tag: 'settings-page', routes: ['/settings'] })
 class SettingsPage extends HTMLElement {
-  private ctx?: Context<AppContext>;
+  private ctx?: Context;
 
   @context()
-  handleContext(ctx: Context<AppContext>) {
+  handleContext(ctx: Context) {
     this.ctx = ctx;
     this.requestRender();
   }
@@ -1066,7 +1067,7 @@ class DashboardPage extends HTMLElement {
   private appContext?: AppContext;
 
   @context()
-  handleContext(ctx: Context<AppContext>) {
+  handleContext(ctx: Context) {
     this.appContext = ctx.application;
     this.requestRender();
   }
@@ -1093,7 +1094,7 @@ class LoginPage extends HTMLElement {
   private appContext?: AppContext;
 
   @context()
-  handleContext(ctx: Context<AppContext>) {
+  handleContext(ctx: Context) {
     this.appContext = ctx.application;
   }
 

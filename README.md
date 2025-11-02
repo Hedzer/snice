@@ -416,10 +416,10 @@ When you modify the application context, call `update()` to notify all subscribe
 ```typescript
 @page({ tag: 'login-page', routes: ['/login'] })
 class LoginPage extends HTMLElement {
-  private ctx?: Context<AppContext>;
+  private ctx?: Context;
 
   @context()
-  handleContext(ctx: Context<AppContext>) {
+  handleContext(ctx: Context) {
     this.ctx = ctx;
     this.requestRender();
   }

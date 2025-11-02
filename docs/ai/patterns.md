@@ -56,7 +56,7 @@ class UserPage extends HTMLElement {
   private appContext?: AppContext;
 
   @context()
-  handleContext(ctx: Context<AppContext>) {
+  handleContext(ctx: Context) {
     this.appContext = ctx.application;
     this.requestRender();
   }
