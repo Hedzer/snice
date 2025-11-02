@@ -1,3 +1,12 @@
+# [3.9.0](https://gitlab.com/Hedzer/snice/compare/v3.8.0...v3.9.0) (2025-11-02)
+
+
+### Features
+
+* added gitignore for templates ([2165ff1](https://gitlab.com/Hedzer/snice/commit/2165ff113819b6114ed9e821a7e230d161e4a043))
+* qr-reader ([655e188](https://gitlab.com/Hedzer/snice/commit/655e18880734041c52626d815ab5a5f9bbda0de1))
+* upload gallery component ([2eaaf64](https://gitlab.com/Hedzer/snice/commit/2eaaf6486ac2ef0c3ea91f0373bf9d29e40099e8))
+
 # [3.8.0](https://gitlab.com/Hedzer/snice/compare/v3.7.0...v3.8.0) (2025-11-02)
 
 
