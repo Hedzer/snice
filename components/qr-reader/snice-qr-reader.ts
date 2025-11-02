@@ -122,8 +122,21 @@ export class SniceQRReader extends HTMLElement implements SniceQRReaderElement {
                 </svg>
               </if>
               <if ${!this.manualSnap}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M8 5v14l11-7z"/>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <!-- Scan brackets -->
+                  <path d="M2 7V3h4M22 7V3h-4M2 17v4h4M22 17v4h-4"></path>
+                  <!-- QR code pattern -->
+                  <rect x="7" y="7" width="4" height="4" fill="none" stroke="currentColor" stroke-width="1.5"></rect>
+                  <rect x="8" y="8" width="2" height="2" fill="currentColor"></rect>
+                  <rect x="13" y="7" width="4" height="4" fill="none" stroke="currentColor" stroke-width="1.5"></rect>
+                  <rect x="14" y="8" width="2" height="2" fill="currentColor"></rect>
+                  <rect x="7" y="13" width="4" height="4" fill="none" stroke="currentColor" stroke-width="1.5"></rect>
+                  <rect x="8" y="14" width="2" height="2" fill="currentColor"></rect>
+                  <!-- Pattern dots -->
+                  <rect x="13" y="13" width="1.5" height="1.5" fill="currentColor"></rect>
+                  <rect x="15.5" y="13" width="1.5" height="1.5" fill="currentColor"></rect>
+                  <rect x="13" y="15.5" width="1.5" height="1.5" fill="currentColor"></rect>
+                  <rect x="15.5" y="15.5" width="1.5" height="1.5" fill="currentColor"></rect>
                 </svg>
               </if>
             </button>

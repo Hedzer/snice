@@ -139,6 +139,17 @@ html`
 - **Element ↔ Controller:** Request/Response (`@request`, `@respond`)
 - **Global State:** Context (`@context()`)
 
+**IMPORTANT - Event names with @:**
+When event names start with `@` (like `@snice/qr-scan`), use `@@` in templates:
+```typescript
+// Correct:
+html`<el @@snice/qr-scan=${handler}></el>`
+
+// Wrong:
+html`<el @snice/qr-scan=${handler}></el>`
+```
+The first `@` is template syntax for events, second `@` is part of the event name.
+
 ## Common Mistakes
 
 **Controllers are NOT global services.** They attach to elements via `controller="name"`. Use `utils/` for shared logic like API calls, auth, toasts.
