@@ -46,13 +46,12 @@ Options:
 
 Templates:
   base    - Minimal starter with counter example (default)
-  social  - Social media sample app showcasing components
+  pwa     - Progressive Web App with auth, middleware, and live notifications
 
 Examples:
   snice create-app my-app
-  snice create-app my-app --template=social
-  snice create-app --template=social my-app
-  npx snice create-app my-app --template=social
+  snice create-app my-app --template=pwa
+  npx snice create-app my-app --template=pwa
 `);
 }
 
@@ -90,7 +89,7 @@ function createApp(projectPath, template = 'base') {
   // Check if template exists
   if (!existsSync(templateDir)) {
     console.error(`❌ Template "${template}" not found!`);
-    console.error(`Available templates: base, social`);
+    console.error(`Available templates: base, pwa`);
     process.exit(1);
   }
 

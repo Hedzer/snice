@@ -1,0 +1,6 @@
+# Icons directory
+# Replace these with your actual app icons:
+# - icon-192.png (192x192)
+# - icon-512.png (512x512)
+
+# For now, vite-plugin-pwa will generate placeholder icons during build

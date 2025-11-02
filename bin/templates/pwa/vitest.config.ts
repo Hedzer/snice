@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import swc from 'unplugin-swc';
 
 export default defineConfig({
@@ -18,21 +18,16 @@ export default defineConfig({
       },
     }),
   ],
-  build: {
-    target: 'es2015',
-    minify: 'terser',
-    cssMinify: true,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['snice']
-        }
-      }
+  test: {
+    environment: 'happy-dom',
+    globals: true,
+    coverage: {
+      reporter: ['text', 'json', 'html'],
+      exclude: [
+        'node_modules/',
+        'dist/',
+        'tests/**',
+      ],
     },
-    sourcemap: true,
-    chunkSizeWarningLimit: 500
   },
-  esbuild: {
-    drop: process.env.NODE_ENV === 'production' ? ['debugger'] : []
-  }
 });
