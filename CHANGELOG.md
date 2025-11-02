@@ -1,3 +1,15 @@
+# [3.10.0](https://gitlab.com/Hedzer/snice/compare/v3.9.0...v3.10.0) (2025-11-02)
+
+
+### Bug Fixes
+
+* slash events ([695b326](https://gitlab.com/Hedzer/snice/commit/695b32678d07975a44f6a62ca681f0a423dfb73a))
+
+
+### Features
+
+* added tap-start to qr-reader ([5171e79](https://gitlab.com/Hedzer/snice/commit/5171e794e8b6b4e7dc771e034b43470bd66e6978))
+
 # [3.9.0](https://gitlab.com/Hedzer/snice/compare/v3.8.0...v3.9.0) (2025-11-02)
 
 
