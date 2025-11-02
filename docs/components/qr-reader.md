@@ -81,6 +81,16 @@
 <snice-qr-reader scan-speed="10"></snice-qr-reader>
 ```
 
+### `tap-start`
+- **Type**: `boolean`
+- **Default**: `false`
+- **Description**: Enable tap/click interaction on the camera viewport to start/stop scanning. When enabled, clicking or tapping anywhere on the video preview will toggle scanning on/off.
+
+```html
+<!-- Enable tap to start/stop -->
+<snice-qr-reader tap-start></snice-qr-reader>
+```
+
 ## Methods
 
 ### `start()`

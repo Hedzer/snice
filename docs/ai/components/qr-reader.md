@@ -10,6 +10,7 @@ QR code scanner using device camera and ZXing WASM decoder.
 - `pick-first: boolean = false` - Scan at max speed until first hit, then stop and shutdown
 - `manual-snap: boolean = false` - Photo mode: open camera, manually trigger snapshots
 - `scan-speed: number = 3` - Scan speed 1-10 (higher = faster, more CPU). Ignored when pick-first=true
+- `tap-start: boolean = false` - Enable tap/click on viewport to start/stop scanning
 
 ### Methods
 - `start()` - Start camera/scanning
