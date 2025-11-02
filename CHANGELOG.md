@@ -1,3 +1,13 @@
+# [3.7.0](https://gitlab.com/Hedzer/snice/compare/v3.6.0...v3.7.0) (2025-11-02)
+
+
+### Features
+
+* added fetcher feature ([b9c3b84](https://gitlab.com/Hedzer/snice/commit/b9c3b8478b81d142c7af019351f79699eab4547d))
+* added QR scanner ([78f99d1](https://gitlab.com/Hedzer/snice/commit/78f99d15ab7da823b284a08170a50488e3e0968d))
+* added timer component ([fa69bf7](https://gitlab.com/Hedzer/snice/commit/fa69bf7545a679f37aa28db2d1c9cf64b8852dc9))
+* music player component ([47a8802](https://gitlab.com/Hedzer/snice/commit/47a88025fff3c7bb78ef8dd736984afa531efd4d))
+
 # [3.6.0](https://gitlab.com/Hedzer/snice/compare/v3.5.0...v3.6.0) (2025-11-01)
 
 
