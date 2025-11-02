@@ -1,3 +1,16 @@
+# [3.8.0](https://gitlab.com/Hedzer/snice/compare/v3.7.0...v3.8.0) (2025-11-02)
+
+
+### Bug Fixes
+
+* docs, incorrect generic context ([994d1eb](https://gitlab.com/Hedzer/snice/commit/994d1eb3fc58bca4b5cd5a5ea3493f462fd30717))
+* template manifest fixes ([7a4784e](https://gitlab.com/Hedzer/snice/commit/7a4784e3d4f8a0aace6762091cbbe034daa94616))
+
+
+### Features
+
+* pwa template ([bfe5dc6](https://gitlab.com/Hedzer/snice/commit/bfe5dc6550a13684c6c8ee578780a02a06b75fab))
+
 # [3.7.0](https://gitlab.com/Hedzer/snice/compare/v3.6.0...v3.7.0) (2025-11-02)
 
 
