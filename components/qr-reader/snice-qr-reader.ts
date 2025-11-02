@@ -20,6 +20,9 @@ export class SniceQRReader extends HTMLElement implements SniceQRReaderElement {
   @property({ type: Number, attribute: 'scan-speed' })
   scanSpeed: number = 3;
 
+  @property({ type: Boolean, attribute: 'tap-start' })
+  tapStart: boolean = false;
+
   @property({ type: Boolean })
   private scanning: boolean = false;
 
@@ -74,7 +77,7 @@ export class SniceQRReader extends HTMLElement implements SniceQRReaderElement {
   render() {
     return html/*html*/`
       <div class="qr-reader-container">
-        <div class="qr-reader-viewport">
+        <div class="qr-reader-viewport" @click=${this.tapStart ? () => this.handleTap() : null}>
           <video autoplay playsinline muted style="${this.showSnapshot ? 'display: none;' : ''}"></video>
           <canvas style="${this.showSnapshot ? '' : 'display: none;'}"></canvas>
 
@@ -251,6 +254,14 @@ export class SniceQRReader extends HTMLElement implements SniceQRReaderElement {
 
     if (wasScanning) {
       setTimeout(() => this.start(), 100);
+    }
+  }
+
+  private handleTap(): void {
+    if (this.scanning) {
+      this.stop();
+    } else {
+      this.start();
     }
   }
 
