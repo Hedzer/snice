@@ -104,6 +104,14 @@ function createApp(projectPath, template = 'base') {
     writeFileSync(join(targetDir, 'CLAUDE.md'), claudeMdContent.replace(/\{\{projectName\}\}/g, projectName));
   }
 
+  // Copy shared .gitignore
+  const gitignorePath = join(__dirname, 'templates', '.gitignore');
+  if (existsSync(gitignorePath)) {
+    console.log(`  Creating .gitignore...`);
+    const gitignoreContent = readFileSync(gitignorePath, 'utf8');
+    writeFileSync(join(targetDir, '.gitignore'), gitignoreContent);
+  }
+
   console.log(`\n✨ Project created successfully!\n`);
   console.log('Next steps:');
 
