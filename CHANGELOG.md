@@ -1,3 +1,10 @@
+## [3.10.3](https://gitlab.com/Hedzer/snice/compare/v3.10.2...v3.10.3) (2025-11-03)
+
+
+### Bug Fixes
+
+* property init issue ([954edbb](https://gitlab.com/Hedzer/snice/commit/954edbb29ce06ffe2a61f92113b7ae029929e3d1))
+
 ## [3.10.2](https://gitlab.com/Hedzer/snice/compare/v3.10.1...v3.10.2) (2025-11-03)
 
 
