@@ -1,3 +1,11 @@
+## [3.10.4](https://gitlab.com/Hedzer/snice/compare/v3.10.3...v3.10.4) (2025-11-03)
+
+
+### Bug Fixes
+
+* nav warning ([72c4d6e](https://gitlab.com/Hedzer/snice/commit/72c4d6e9be8d6e5393cff621fbcc65c659798e94))
+* updated snice cards to match theming ([ee68dba](https://gitlab.com/Hedzer/snice/commit/ee68dba303040e4b8dc4e8e8cff24386a3c92d1c))
+
 ## [3.10.3](https://gitlab.com/Hedzer/snice/compare/v3.10.2...v3.10.3) (2025-11-03)
 
 
