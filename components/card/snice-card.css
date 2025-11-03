@@ -1,11 +1,11 @@
 :host {
   display: block;
-  --card-padding: 1rem; /* 16px */
-  --card-border-radius: 8px;
-  --card-bg: white;
-  --card-border-color: rgb(var(--snice-color-gray-200, 226 226 226));
-  --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  --card-hover-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --card-padding: var(--snice-spacing-md, 1rem);
+  --card-border-radius: var(--snice-border-radius-lg, 0.5rem);
+  --card-bg: var(--snice-color-background-element, rgb(252 251 249));
+  --card-border-color: var(--snice-color-border, rgb(226 226 226));
+  --card-shadow: var(--snice-shadow-sm, 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1));
+  --card-hover-shadow: var(--snice-shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1));
 }
 
 .card {
@@ -17,6 +17,7 @@
   display: flex;
   flex-direction: column;
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  color: var(--snice-color-text, rgb(23 23 23));
 }
 
 /* Variants */
@@ -33,7 +34,7 @@
 :host([variant="flat"]) .card {
   border: none;
   box-shadow: none;
-  background: rgb(var(--snice-color-gray-50, 250 250 250));
+  background: var(--snice-color-background-secondary, rgb(250 250 250));
 }
 
 /* Clickable state */
@@ -51,11 +52,11 @@
 }
 
 :host([clickable][variant="bordered"]:not([disabled])) .card:hover {
-  border-color: rgb(var(--snice-color-blue-500, 59 130 246));
+  border-color: var(--snice-color-primary, rgb(59 130 246));
 }
 
 :host([clickable][variant="flat"]:not([disabled])) .card:hover {
-  background: rgb(var(--snice-color-gray-100, 241 241 241));
+  background: var(--snice-color-background-tertiary, rgb(241 241 241));
 }
 
 :host([clickable]:not([disabled])) .card:active {
@@ -64,18 +65,18 @@
 
 /* Selected state */
 :host([selected]) .card {
-  border-color: rgb(var(--snice-color-blue-500, 59 130 246));
+  border-color: var(--snice-color-primary, rgb(59 130 246));
 }
 
 :host([selected][variant="elevated"]) .card,
 :host([selected][variant="bordered"]) .card {
   border-width: 2px;
-  border-color: rgb(var(--snice-color-blue-500, 59 130 246));
+  border-color: var(--snice-color-primary, rgb(59 130 246));
 }
 
 :host([selected][variant="flat"]) .card {
-  background: rgb(var(--snice-color-blue-50, 239 246 255));
-  border: 2px solid rgb(var(--snice-color-blue-500, 59 130 246));
+  background: var(--snice-color-primary-subtle, rgb(239 246 255));
+  border: 2px solid var(--snice-color-primary, rgb(59 130 246));
 }
 
 /* Disabled state */
@@ -90,13 +91,13 @@
 
 /* Sizes */
 :host([size="small"]) {
-  --card-padding: 12px;
-  --card-border-radius: 6px;
+  --card-padding: var(--snice-spacing-sm, 0.75rem);
+  --card-border-radius: var(--snice-border-radius-md, 0.25rem);
 }
 
 :host([size="large"]) {
-  --card-padding: 24px;
-  --card-border-radius: 12px;
+  --card-padding: var(--snice-spacing-lg, 1.5rem);
+  --card-border-radius: var(--snice-border-radius-xl, 1rem);
 }
 
 /* Card sections */
@@ -135,6 +136,6 @@
 
 /* Focus state */
 :host([clickable]) .card:focus-visible {
-  outline: 2px solid rgb(var(--snice-color-blue-500, 59 130 246));
-  outline-offset: 2px;
+  outline: var(--snice-focus-ring-width, 2px) solid var(--snice-color-border-focus, rgb(59 130 246));
+  outline-offset: var(--snice-focus-ring-offset, 2px);
 }

@@ -7,10 +7,10 @@
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
     body {
-      font-family: system-ui, -apple-system, sans-serif;
-      padding: 40px;
-      line-height: 1.6;
-      background: #f5f5f5;
+      font-family: var(--snice-font-family);
+      padding: var(--snice-spacing-2xl);
+      line-height: var(--snice-line-height-normal);
+      background: var(--snice-color-background-secondary);
     }
 
     .container {
@@ -19,58 +19,58 @@
     }
 
     h1 {
-      color: #333;
-      border-bottom: 2px solid #e0e0e0;
-      padding-bottom: 10px;
+      color: var(--snice-color-text);
+      border-bottom: 2px solid var(--snice-color-border);
+      padding-bottom: var(--snice-spacing-xs);
     }
 
     h2 {
-      color: #555;
-      margin-top: 30px;
+      color: var(--snice-color-text-secondary);
+      margin-top: var(--snice-spacing-xl);
     }
 
     .demo-section {
-      margin: 30px 0;
+      margin: var(--snice-spacing-xl) 0;
     }
 
     .demo-label {
       display: block;
-      margin-bottom: 16px;
-      font-weight: 500;
-      color: #666;
-      font-size: 14px;
+      margin-bottom: var(--snice-spacing-md);
+      font-weight: var(--snice-font-weight-medium);
+      color: var(--snice-color-text-secondary);
+      font-size: var(--snice-font-size-sm);
     }
 
     .card-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-      margin: 20px 0;
+      gap: var(--snice-spacing-lg);
+      margin: var(--snice-spacing-lg) 0;
     }
 
     .card-row {
       display: flex;
-      gap: 20px;
-      margin: 20px 0;
+      gap: var(--snice-spacing-lg);
+      margin: var(--snice-spacing-lg) 0;
       flex-wrap: wrap;
     }
 
     /* Card content styles */
     .card-title {
-      font-size: 20px;
-      font-weight: 600;
-      margin: 0 0 8px 0;
+      font-size: var(--snice-font-size-xl);
+      font-weight: var(--snice-font-weight-semibold);
+      margin: 0 0 var(--snice-spacing-xs) 0;
     }
 
     .card-subtitle {
-      color: #666;
-      font-size: 14px;
-      margin: 0 0 12px 0;
+      color: var(--snice-color-text-secondary);
+      font-size: var(--snice-font-size-sm);
+      margin: 0 0 var(--snice-spacing-sm) 0;
     }
 
     .card-text {
-      color: #333;
-      line-height: 1.5;
+      color: var(--snice-color-text);
+      line-height: var(--snice-line-height-normal);
       margin: 0;
     }
 
@@ -88,15 +88,15 @@
 
     .card-actions {
       display: flex;
-      gap: 8px;
-      margin-top: 16px;
+      gap: var(--snice-spacing-xs);
+      margin-top: var(--snice-spacing-md);
     }
 
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin: 16px 0;
+      gap: var(--snice-spacing-sm);
+      margin: var(--snice-spacing-md) 0;
     }
 
     .stat-item {
@@ -104,14 +104,14 @@
     }
 
     .stat-value {
-      font-size: 24px;
-      font-weight: 600;
-      color: #333;
+      font-size: var(--snice-font-size-2xl);
+      font-weight: var(--snice-font-weight-semibold);
+      color: var(--snice-color-text);
     }
 
     .stat-label {
-      font-size: 12px;
-      color: #666;
+      font-size: var(--snice-font-size-xs);
+      color: var(--snice-color-text-secondary);
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
@@ -132,55 +132,55 @@
 
     .controls {
       display: flex;
-      gap: 10px;
-      margin: 20px 0;
+      gap: var(--snice-spacing-xs);
+      margin: var(--snice-spacing-lg) 0;
       flex-wrap: wrap;
     }
 
     button {
-      padding: 8px 16px;
-      background: #3b82f6;
-      color: white;
+      padding: var(--snice-spacing-xs) var(--snice-spacing-md);
+      background: var(--snice-color-primary);
+      color: var(--snice-color-text-inverse);
       border: none;
-      border-radius: 4px;
+      border-radius: var(--snice-border-radius-md);
       cursor: pointer;
-      font-size: 14px;
-      transition: background 0.2s;
+      font-size: var(--snice-font-size-sm);
+      transition: background var(--snice-transition-fast);
     }
 
     button:hover {
-      background: #2563eb;
+      background: var(--snice-color-primary-hover);
     }
 
     select {
-      padding: 8px 12px;
-      border: 1px solid #d1d5db;
-      border-radius: 4px;
-      font-size: 14px;
+      padding: var(--snice-spacing-xs) var(--snice-spacing-sm);
+      border: 1px solid var(--snice-color-border);
+      border-radius: var(--snice-border-radius-md);
+      font-size: var(--snice-font-size-sm);
     }
 
     .price-tag {
-      font-size: 24px;
-      font-weight: 600;
-      color: #10b981;
-      margin: 12px 0;
+      font-size: var(--snice-font-size-2xl);
+      font-weight: var(--snice-font-weight-semibold);
+      color: var(--snice-color-success);
+      margin: var(--snice-spacing-sm) 0;
     }
 
     .badge {
       display: inline-block;
-      padding: 4px 8px;
-      background: #fee2e2;
-      color: #991b1b;
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: 600;
-      margin-bottom: 8px;
+      padding: var(--snice-spacing-3xs) var(--snice-spacing-xs);
+      background: rgb(var(--snice-color-red-100));
+      color: rgb(var(--snice-color-red-900));
+      border-radius: var(--snice-border-radius-md);
+      font-size: var(--snice-font-size-xs);
+      font-weight: var(--snice-font-weight-semibold);
+      margin-bottom: var(--snice-spacing-xs);
     }
 
     code {
-      background: #f0f0f0;
-      padding: 2px 6px;
-      border-radius: 3px;
+      background: var(--snice-color-background-tertiary);
+      padding: var(--snice-spacing-3xs) var(--snice-spacing-2xs);
+      border-radius: var(--snice-border-radius-sm);
       font-size: 0.9em;
     }
   </style>
