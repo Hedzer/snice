@@ -150,6 +150,19 @@ html`<el @snice/qr-scan=${handler}></el>`
 ```
 The first `@` is template syntax for events, second `@` is part of the event name.
 
+## Navigation
+
+**Use hash-based URLs, NOT router.navigate():**
+```typescript
+// Correct:
+html`<a href="/#/users/123">View User</a>`
+window.location.hash = '#/users/123'
+
+// Wrong:
+router.navigate('/users/123')
+```
+`router.navigate()` does not change the URL.
+
 ## Common Mistakes
 
 **Controllers are NOT global services.** They attach to elements via `controller="name"`. Use `utils/` for shared logic like API calls, auth, toasts.
