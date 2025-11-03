@@ -1,3 +1,10 @@
+## [3.10.5](https://gitlab.com/Hedzer/snice/compare/v3.10.4...v3.10.5) (2025-11-03)
+
+
+### Bug Fixes
+
+* theming fixes ([82ef1e3](https://gitlab.com/Hedzer/snice/commit/82ef1e3eaecb3169ecf12bdbe8899bb1fb553c72))
+
 ## [3.10.4](https://gitlab.com/Hedzer/snice/compare/v3.10.3...v3.10.4) (2025-11-03)
 
 
