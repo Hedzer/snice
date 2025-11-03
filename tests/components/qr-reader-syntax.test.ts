@@ -88,6 +88,15 @@ describe('snice-qr-reader template syntax', () => {
 
     // Since autoStart is set AFTER @ready, we need to manually start
     // (This is the issue being weeded out - property timing)
+
+    // Listen for camera-ready before starting
+    const cameraReadyPromise = new Promise<void>((resolve) => {
+      qrReader.addEventListener('@snice/camera-ready', () => {
+        cameraReadyHandler();
+        resolve();
+      }, { once: true });
+    });
+
     await qrReader.start();
 
     // Verify camera was requested with correct settings
@@ -98,6 +107,15 @@ describe('snice-qr-reader template syntax', () => {
         height: { ideal: 720 }
       }
     });
+
+    // Wait for video to be ready and event to fire
+    // In test environment, manually trigger loadeddata event
+    const video = qrReader.shadowRoot?.querySelector('video');
+    if (video) {
+      video.dispatchEvent(new Event('loadeddata'));
+    }
+
+    await cameraReadyPromise;
 
     // Verify camera-ready handler was called
     expect(cameraReadyHandler).toHaveBeenCalled();

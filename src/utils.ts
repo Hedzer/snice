@@ -122,6 +122,10 @@ export function valueToAttribute(value: any, propertyOptions: PropertyOptions, i
   const typeToUse = propertyOptions.type || detectType(initialValue);
 
   switch (typeToUse) {
+    case Boolean:
+      // For boolean attributes, return "true" when true
+      // (false is already handled above - returns null to remove attribute)
+      return 'true';
     case Date:
       return value instanceof Date ? value.toISOString() : String(value);
     case BigInt:

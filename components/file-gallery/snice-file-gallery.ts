@@ -442,7 +442,7 @@ export class SniceFileGallery extends HTMLElement implements SniceFileGalleryEle
 
   @styles()
   componentStyles() {
-    return css`${cssContent}`;
+    return css/*css*/`${cssContent}`;
   }
 
   private handleDropZoneClick() {

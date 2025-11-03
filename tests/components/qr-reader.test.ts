@@ -125,7 +125,7 @@ describe('snice-qr-reader', () => {
       reader = await createComponent<SniceQRReaderElement>('snice-qr-reader');
 
       const cameraReadyHandler = vi.fn();
-      reader.addEventListener('snice/camera-ready', cameraReadyHandler);
+      reader.addEventListener('@snice/camera-ready', cameraReadyHandler);
 
       await reader.start();
 
@@ -157,7 +157,7 @@ describe('snice-qr-reader', () => {
       reader = await createComponent<SniceQRReaderElement>('snice-qr-reader');
 
       const errorHandler = vi.fn();
-      reader.addEventListener('snice/camera-error', errorHandler);
+      reader.addEventListener('@snice/camera-error', errorHandler);
 
       // Simulate camera access denied
       mockGetUserMedia.mockRejectedValueOnce(new Error('Camera access denied'));

@@ -161,12 +161,12 @@ describe('CLI create-app command', () => {
     expect(claudeMd).toContain('Decorators');
   }, 30000);
 
-  it('should include CLAUDE.md in social template', async () => {
-    const appName = 'test-claude-social';
+  it('should include CLAUDE.md in pwa template', async () => {
+    const appName = 'test-claude-pwa';
     const appPath = join(tempDir, appName);
 
     await execAsync(
-      `node ${join(process.cwd(), 'bin/snice.js')} create-app ${appName} --template=social`,
+      `node ${join(process.cwd(), 'bin/snice.js')} create-app ${appName} --template=pwa`,
       { cwd: tempDir }
     );
 

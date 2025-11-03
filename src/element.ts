@@ -203,6 +203,11 @@ export function applyElementFunctionality(constructor: any) {
               }
               this[EXPLICITLY_SET_PROPERTIES].add(propName);
 
+              // For boolean attributes, normalize to "true" if they're empty
+              if (propOptions.type === Boolean && attrValue === '') {
+                this.setAttribute(attributeName, 'true');
+              }
+
               this[propName] = parseAttributeValue(attrValue, propOptions);
             }
           }

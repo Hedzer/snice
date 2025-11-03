@@ -34,10 +34,11 @@ describe('snice-file-gallery', () => {
       expect(input?.tagName).toBe('INPUT');
     });
 
-    it('should not render gallery when no files', async () => {
+    it('should render empty gallery when no files', async () => {
       element = await createComponent<SniceFileGalleryElement>('snice-file-gallery');
       const gallery = queryShadow(element as HTMLElement, '.gallery');
-      expect(gallery).toBeNull();
+      expect(gallery).toBeTruthy();
+      expect(gallery?.children.length).toBe(0);
     });
 
     it('should render gallery when files added', async () => {
@@ -244,9 +245,10 @@ describe('snice-file-gallery', () => {
 
   describe('Add Button Mode', () => {
     it('should show add button when showAddButton is true', async () => {
-      element = await createComponent<SniceFileGalleryElement>('snice-file-gallery');
-      element.showAddButton = true;
-      element.autoUpload = false;
+      element = await createComponent<SniceFileGalleryElement>('snice-file-gallery', {
+        'show-add-button': 'true',
+        'auto-upload': 'false'
+      });
       await wait(50);
 
       const addButton = queryShadow(element as HTMLElement, '.gallery-item--add-button');
