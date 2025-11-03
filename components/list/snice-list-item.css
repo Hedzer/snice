@@ -23,7 +23,7 @@
 }
 
 .list-item--selected {
-  background-color: var(--snice-color-primary-light, rgb(219 234 254));
+  background-color: var(--snice-color-primary-subtle, rgb(239 246 255));
 }
 
 .list-item--disabled {

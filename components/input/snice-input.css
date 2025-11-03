@@ -1,12 +1,16 @@
 :host {
   display: inline-block;
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   font-family: var(--snice-font-family);
 }
 
 .input-wrapper {
   position: relative;
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .input-container {
@@ -14,16 +18,19 @@
   display: flex;
   align-items: center;
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   transition: all var(--snice-transition-fast) ease;
 }
 
 /* Base Input Styles */
 .input {
   flex: 1;
-  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   font-family: inherit;
   font-size: var(--snice-font-size-md);
-  background: var(--snice-color-background);
+  background: var(--snice-color-background-input, rgb(248 247 245));
   color: var(--snice-color-text);
   border: 1px solid var(--snice-color-border);
   border-radius: var(--snice-border-radius-md);
@@ -69,7 +76,7 @@
 
 /* Style Variants */
 .input--outlined {
-  background: var(--snice-color-background);
+  background: var(--snice-color-background-input, rgb(248 247 245));
   border: 1px solid var(--snice-color-border);
 }
 

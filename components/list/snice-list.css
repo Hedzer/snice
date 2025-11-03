@@ -4,7 +4,8 @@
 }
 
 .list {
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-background-element, rgb(252 251 249));
+  color: var(--snice-color-text, rgb(23 23 23));
 }
 
 :host([dividers]) ::slotted(snice-list-item) {
@@ -16,18 +17,21 @@
 }
 
 .list__search {
+  display: flex;
   padding: var(--snice-spacing-md, 1rem);
   border-bottom: 1px solid var(--snice-color-border, rgb(229 231 235));
 }
 
 .list__search-input {
-  width: 100%;
+  flex: 1;
+  min-width: 0;
+  box-sizing: border-box;
   padding: var(--snice-spacing-sm, 0.75rem);
   border: 1px solid var(--snice-color-border, rgb(209 213 219));
   border-radius: var(--snice-border-radius-sm, 0.25rem);
   font-size: var(--snice-font-size-md, 1rem);
   font-family: inherit;
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-background-input, rgb(248 247 245));
   color: var(--snice-color-text, rgb(23 23 23));
   transition: border-color var(--snice-transition-fast, 150ms) ease;
 }
