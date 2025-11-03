@@ -1,3 +1,10 @@
+## [3.10.2](https://gitlab.com/Hedzer/snice/compare/v3.10.1...v3.10.2) (2025-11-03)
+
+
+### Bug Fixes
+
+* <if> undefined render bug ([740a48f](https://gitlab.com/Hedzer/snice/commit/740a48f9c3de891baa13fb908e32096cbb7d1d6d))
+
 ## [3.10.1](https://gitlab.com/Hedzer/snice/compare/v3.10.0...v3.10.1) (2025-11-03)
 
 

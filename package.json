@@ -1,6 +1,6 @@
 {
   "name": "snice",
-  "version": "3.10.1",
+  "version": "3.10.2",
   "type": "module",
   "description": "Imperative TypeScript framework for building vanilla web components with decorators, differential rendering, routing, and controllers. No virtual DOM, no build complexity.",
   "main": "dist/index.cjs",
