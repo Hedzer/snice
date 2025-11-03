@@ -814,9 +814,12 @@ export function matchesKeyboardFilter(event: KeyboardEvent, filter: KeyboardFilt
  * ConditionalIfPart handles <if> conditional rendering
  * Removes/inserts DOM nodes based on condition
  */
+// Sentinel value to distinguish "not yet set" from undefined
+const NOT_SET = Symbol('not-set');
+
 export class ConditionalIfPart extends Part {
   private ifElement: HTMLElement;
-  private value: any = undefined;
+  private value: any = NOT_SET;
   private fragment: DocumentFragment | null = null;
 
   constructor(ifElement: Element) {
@@ -862,7 +865,7 @@ export class ConditionalIfPart extends Part {
  */
 export class ConditionalCasePart extends Part {
   private caseElement: Element;
-  private value: any = undefined;
+  private value: any = NOT_SET;
   private childrenMap: Map<string, Element> = new Map();
   private fragments: Map<Element, DocumentFragment> = new Map();
   private defaultChild: Element | null = null;
