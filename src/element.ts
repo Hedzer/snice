@@ -153,6 +153,7 @@ export function applyElementFunctionality(constructor: any) {
     
     
     constructor.prototype.connectedCallback = async function() {
+
       // If ready promise was already created (controller attached before connected), use existing resolve
       // Otherwise create the ready promise now
       if (!this[READY_PROMISE]) {
@@ -213,18 +214,19 @@ export function applyElementFunctionality(constructor: any) {
           }
         }
 
-        // Apply any properties that were set before element was connected
-        // BUT only if they don't have an HTML attribute (don't override HTML attributes)
+        // Clear pre-init values for properties that have HTML attributes
+        // This prevents field initializers from overwriting HTML attributes later
         if (this[PRE_INIT_PROPERTY_VALUES]) {
-          for (const [propName, propValue] of this[PRE_INIT_PROPERTY_VALUES]) {
-            // Remove from map first so getter doesn't return it during setter call
-            this[PRE_INIT_PROPERTY_VALUES].delete(propName);
-
-            // Only apply pre-init value if NO HTML attribute exists
-            // This prevents field initializers from overwriting HTML attributes
+          for (const [propName, propValue] of Array.from((this[PRE_INIT_PROPERTY_VALUES] as Map<string, any>).entries())) {
             const propOptions = properties?.get(propName);
             const attributeName = typeof propOptions?.attribute === 'string' ? propOptions.attribute : propName.toLowerCase();
-            if (!this.hasAttribute(attributeName)) {
+
+            if (this.hasAttribute(attributeName)) {
+              // Attribute exists - remove from PRE_INIT to prevent overwriting
+              this[PRE_INIT_PROPERTY_VALUES].delete(propName);
+            } else {
+              // No attribute - apply the pre-init value
+              this[PRE_INIT_PROPERTY_VALUES].delete(propName);
               this[propName] = propValue;
             }
           }
@@ -488,7 +490,6 @@ export function layout(tagName: string) {
     return constructor;
   };
 }
-
 export function property(options?: PropertyOptions) {
   return function (_value: any, context: ClassFieldDecoratorContext) {
     const propertyKey = context.name as string;
@@ -504,17 +505,20 @@ export function property(options?: PropertyOptions) {
 
     // Return a field initializer function for new decorators
     return function(this: any, initialValue: any) {
+      // Ensure constructor[PROPERTIES] exists
+      const constructor = this.constructor as any;
+      if (!constructor[PROPERTIES]) {
+        constructor[PROPERTIES] = new Map();
+      }
+
       // Detect type from initial value if not explicitly provided
       const finalOptions = { ...options };
       if (!finalOptions.type && initialValue !== undefined) {
         finalOptions.type = detectType(initialValue);
-
-        // Update the metadata with the detected type
-        const constructor = this.constructor as any;
-        if (constructor[PROPERTIES]) {
-          constructor[PROPERTIES].set(propertyKey, finalOptions);
-        }
       }
+
+      // Always store property options on constructor for runtime access
+      constructor[PROPERTIES].set(propertyKey, finalOptions);
 
       // Set up the property descriptor on first access
       if (!Object.hasOwnProperty.call(this.constructor.prototype, propertyKey)) {
@@ -549,7 +553,9 @@ export function property(options?: PropertyOptions) {
             const oldValue = this[propertyKey];
 
             // Check if value actually changed
-            if (oldValue === newValue) return;
+            if (oldValue === newValue) {
+              return;
+            }
 
             // Don't reflect to DOM until connectedCallback has started
             // This prevents field initializers from overwriting HTML attributes
