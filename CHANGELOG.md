@@ -1,3 +1,10 @@
+## [3.10.1](https://gitlab.com/Hedzer/snice/compare/v3.10.0...v3.10.1) (2025-11-03)
+
+
+### Bug Fixes
+
+* test issues ([dab4875](https://gitlab.com/Hedzer/snice/commit/dab4875cce1ef5a18e863d93c1581973b3055cd0))
+
 # [3.10.0](https://gitlab.com/Hedzer/snice/compare/v3.9.0...v3.10.0) (2025-11-02)
 
 
