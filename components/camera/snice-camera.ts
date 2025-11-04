@@ -26,10 +26,10 @@ export class SniceCamera extends HTMLElement implements SniceCameraElement {
   height: number = 720;
 
   @property({ type: String, attribute: 'aspect-ratio' })
-  aspectRatio: string = '';
+  aspectRatio: string = 'auto';
 
   @property({ type: String, attribute: 'object-fit' })
-  objectFit: 'contain' | 'cover' = 'contain';
+  objectFit: 'contain' | 'cover' = 'cover';
 
   @query('video')
   private video!: HTMLVideoElement;

@@ -9,6 +9,10 @@
   overflow: hidden;
 }
 
+:host([aspect-ratio="auto"]) {
+  max-width: none;
+}
+
 :host(:not([aspect-ratio])) {
   height: auto;
 }
@@ -49,6 +53,11 @@
 :host([aspect-ratio="21:9"]:not([style*="height"])) .camera-container {
   padding-bottom: 42.857%; /* Ultra-wide */
   height: 0;
+}
+
+:host([aspect-ratio="auto"]) .camera-container {
+  padding-bottom: 0;
+  height: 100%;
 }
 
 .camera-container:fullscreen {

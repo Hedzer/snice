@@ -238,6 +238,21 @@
   </div>
 
   <div class="demo-section">
+    <h3>Auto-Expand (Resizable)</h3>
+    <p>Camera with <code>aspect-ratio="auto"</code> expands to fill available space.</p>
+    <div style="max-width: 800px; margin: 0 auto;">
+      <div style="height: 500px; border: 2px dashed #ccc; border-radius: 8px; resize: both; overflow: auto;">
+        <snice-camera
+          aspect-ratio="auto"
+          object-fit="cover"
+          style="width: 100%; height: 100%;">
+        </snice-camera>
+      </div>
+      <p style="color: #666; font-size: 14px; margin-top: 10px;">Drag the resize handle in the bottom-right corner to test responsive behavior.</p>
+    </div>
+  </div>
+
+  <div class="demo-section">
     <h3>Captured Photos</h3>
     <div id="gallery" class="gallery"></div>
   </div>
@@ -269,8 +284,8 @@
       <li><code>show-controls</code> - Boolean, show built-in controls (default: true). Set to false to use only custom slotted controls</li>
       <li><code>width</code> - Number, video width in pixels (default: 1280)</li>
       <li><code>height</code> - Number, video height in pixels (default: 720)</li>
-      <li><code>aspect-ratio</code> - String, aspect ratio preset: "16:9", "9:16", "4:3", "1:1", "21:9"</li>
-      <li><code>object-fit</code> - "contain" (default, shows full video) or "cover" (fills frame, may crop)</li>
+      <li><code>aspect-ratio</code> - String, aspect ratio preset: "auto" (default, expands to fill space), "16:9", "9:16", "4:3", "1:1", "21:9"</li>
+      <li><code>object-fit</code> - "cover" (default, fills frame) or "contain" (shows full video, may letterbox)</li>
       <li><code>facing-mode</code> - "user" (front, default) or "environment" (back)</li>
       <li><code>mirror</code> - Boolean, mirrors video for front camera (default: true)</li>
       <li><code>auto-start</code> - Boolean, auto-start on load (default: true)</li>
