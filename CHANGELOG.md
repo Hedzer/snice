@@ -1,3 +1,10 @@
+## [4.0.2](https://gitlab.com/Hedzer/snice/compare/v4.0.1...v4.0.2) (2025-11-04)
+
+
+### Bug Fixes
+
+* removed / sanitization ([6c891e8](https://gitlab.com/Hedzer/snice/commit/6c891e8080dbc107e0b1d1ed794fd67d4b9b59af))
+
 ## [4.0.1](https://gitlab.com/Hedzer/snice/compare/v4.0.0...v4.0.1) (2025-11-04)
 
 
