@@ -9,7 +9,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "snice": "^3.0.0"
+    "snice": "^4.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
