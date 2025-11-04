@@ -1,3 +1,10 @@
+## [4.0.1](https://gitlab.com/Hedzer/snice/compare/v4.0.0...v4.0.1) (2025-11-04)
+
+
+### Bug Fixes
+
+* template versions ([e57385e](https://gitlab.com/Hedzer/snice/commit/e57385ec186705ffb6f80c7098783e67c1576621))
+
 # [4.0.0](https://gitlab.com/Hedzer/snice/compare/v3.11.0...v4.0.0) (2025-11-04)
 
 
