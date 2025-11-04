@@ -1,3 +1,10 @@
+# [4.1.0](https://gitlab.com/Hedzer/snice/compare/v4.0.2...v4.1.0) (2025-11-04)
+
+
+### Features
+
+* made camera auto size ([bf27309](https://gitlab.com/Hedzer/snice/commit/bf273096921fa76276187ca329d2a24d33022a6a))
+
 ## [4.0.2](https://gitlab.com/Hedzer/snice/compare/v4.0.1...v4.0.2) (2025-11-04)
 
 
