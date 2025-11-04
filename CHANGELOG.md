@@ -1,3 +1,30 @@
+# [4.0.0](https://gitlab.com/Hedzer/snice/compare/v3.11.0...v4.0.0) (2025-11-04)
+
+
+*   feat!: migrate events from @snice/ prefix to unprefixed ([136e20a](https://gitlab.com/Hedzer/snice/commit/136e20a8846019630aa4f1ab5e4f4d7b405c487e))
+
+
+### BREAKING CHANGES
+
+* All component events have been migrated from @snice/ prefix to
+  unprefixed (or component-specific names for native conflicts).
+
+  Event name changes:
+  - Most events: @snice/event-name → event-name
+  - Button: @snice/click → button-click
+  - Checkbox: @snice/change → checkbox-change
+  - File Gallery: @snice/error → gallery-error
+  - Split Pane: @snice/resize → pane-resize
+  - Tabs: @snice/close → tab-close
+
+  Template syntax updated:
+  - @@snice/event-name → @event-name
+
+  Migration required:
+  - Update all addEventListener('@snice/...') to addEventListener('...')
+  - Update all template event bindings from @@snice/ to @
+  - See migration guide in documentation
+
 # [3.11.0](https://gitlab.com/Hedzer/snice/compare/v3.10.5...v3.11.0) (2025-11-04)
 
 
