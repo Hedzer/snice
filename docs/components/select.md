@@ -28,7 +28,7 @@ import 'snice/components/select/snice-select';
 import 'snice/components/select/snice-option';
 
 const select = document.querySelector('snice-select');
-select.addEventListener('@snice/select-change', (e) => {
+select.addEventListener('select-change', (e) => {
   console.log('Selected:', e.detail.value);
 });
 ```
@@ -111,7 +111,7 @@ select.blur();
 
 #### Events
 
-##### `@snice/select-change`
+##### `select-change`
 Fired when the selection changes.
 
 **Event Detail:**
@@ -125,13 +125,13 @@ Fired when the selection changes.
 
 **Usage:**
 ```typescript
-select.addEventListener('@snice/select-change', (e) => {
+select.addEventListener('select-change', (e) => {
   const { value, option } = e.detail;
   console.log(`Selected ${option?.label} with value ${value}`);
 });
 ```
 
-##### `@snice/select-open`
+##### `select-open`
 Fired when the dropdown opens.
 
 **Event Detail:**
@@ -141,7 +141,7 @@ Fired when the dropdown opens.
 }
 ```
 
-##### `@snice/select-close`
+##### `select-close`
 Fired when the dropdown closes.
 
 **Event Detail:**
@@ -348,7 +348,7 @@ select.value = 'banana';
 ```typescript
 const select = document.querySelector('snice-select');
 
-select.addEventListener('@snice/select-change', (e) => {
+select.addEventListener('select-change', (e) => {
   const { value, option } = e.detail;
 
   if (option) {
@@ -359,11 +359,11 @@ select.addEventListener('@snice/select-change', (e) => {
   updateDependentFields(value);
 });
 
-select.addEventListener('@snice/select-open', () => {
+select.addEventListener('select-open', () => {
   console.log('Dropdown opened');
 });
 
-select.addEventListener('@snice/select-close', () => {
+select.addEventListener('select-close', () => {
   console.log('Dropdown closed');
 });
 ```
@@ -501,7 +501,7 @@ Selected options will display as removable tags. Click the × on a tag to remove
     import 'snice/components/select/snice-option';
 
     // Handle select changes
-    document.addEventListener('@snice/select-change', (e) => {
+    document.addEventListener('select-change', (e) => {
       console.log('Selection changed:', e.detail);
     });
   </script>

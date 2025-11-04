@@ -77,11 +77,11 @@ interface CommandItem {
 
 ## Events
 
-- `@snice/command-palette-open` - Fired when palette opens
-- `@snice/command-palette-close` - Fired when palette closes
-- `@snice/command-select` - Fired when command is selected (detail: { command, palette })
-- `@snice/command-execute` - Fired when command is executed (detail: { command, palette })
-- `@snice/command-search` - Fired when search changes (detail: { query, results, palette })
+- `command-palette-open` - Fired when palette opens
+- `command-palette-close` - Fired when palette closes
+- `command-select` - Fired when command is selected (detail: { command, palette })
+- `command-execute` - Fired when command is executed (detail: { command, palette })
+- `command-search` - Fired when search changes (detail: { query, results, palette })
 
 ## Keyboard Shortcuts
 
@@ -141,7 +141,7 @@ palette.commands = [
 ### Event Handling
 
 ```javascript
-palette.addEventListener('@snice/command-execute', (e) => {
+palette.addEventListener('command-execute', (e) => {
   console.log('Executed:', e.detail.command.label);
   analytics.track('command_executed', { command: e.detail.command.id });
 });

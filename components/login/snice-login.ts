@@ -198,7 +198,7 @@ export class SniceLogin extends HTMLElement implements SniceLoginElement {
     }
   }
 
-  @dispatch('@snice/login-attempt', { bubbles: true, composed: true })
+  @dispatch('login-attempt', { bubbles: true, composed: true })
   private async handleSubmit(event: Event) {
     event.preventDefault();
 
@@ -252,7 +252,7 @@ export class SniceLogin extends HTMLElement implements SniceLoginElement {
     }
   }
 
-  @dispatch('@snice/login-forgot-password', { bubbles: true, composed: true })
+  @dispatch('login-forgot-password', { bubbles: true, composed: true })
   private handleForgotPassword(event: Event) {
     event.preventDefault();
     return {
@@ -260,12 +260,12 @@ export class SniceLogin extends HTMLElement implements SniceLoginElement {
     };
   }
 
-  @dispatch('@snice/login-success', { bubbles: true, composed: true })
+  @dispatch('login-success', { bubbles: true, composed: true })
   private dispatchLoginSuccess(result: LoginResult) {
     return { timestamp: new Date().toISOString() };
   }
 
-  @dispatch('@snice/login-error', { bubbles: true, composed: true })
+  @dispatch('login-error', { bubbles: true, composed: true })
   private dispatchLoginError(error: string) {
     return {
       error,

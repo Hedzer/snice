@@ -103,17 +103,17 @@ export class SniceBanner extends HTMLElement implements SniceBannerElement {
     }
   }
 
-  @dispatch('@snice/banner-open', { bubbles: true, composed: true })
+  @dispatch('banner-open', { bubbles: true, composed: true })
   private dispatchOpenEvent() {
     return { banner: this };
   }
 
-  @dispatch('@snice/banner-close', { bubbles: true, composed: true })
+  @dispatch('banner-close', { bubbles: true, composed: true })
   private dispatchCloseEvent() {
     return { banner: this };
   }
 
-  @dispatch('@snice/banner-action', { bubbles: true, composed: true })
+  @dispatch('banner-action', { bubbles: true, composed: true })
   private dispatchActionEvent() {
     return { banner: this };
   }

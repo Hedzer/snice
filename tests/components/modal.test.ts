@@ -181,7 +181,7 @@ describe('snice-modal', () => {
     modal = await createComponent<SniceModalElement>('snice-modal');
 
     let eventDetail: any = null;
-    (modal as HTMLElement).addEventListener('@snice/modal-open', (e: Event) => {
+    (modal as HTMLElement).addEventListener('modal-open', (e: Event) => {
       eventDetail = (e as CustomEvent).detail;
     });
 
@@ -200,7 +200,7 @@ describe('snice-modal', () => {
     await tracker.next();
 
     let eventDetail: any = null;
-    (modal as HTMLElement).addEventListener('@snice/modal-close', (e: Event) => {
+    (modal as HTMLElement).addEventListener('modal-close', (e: Event) => {
       eventDetail = (e as CustomEvent).detail;
     });
 

@@ -345,7 +345,7 @@ export class SniceColumn extends HTMLElement implements SniceColumnElement {
 
   private notifyTableOfChange() {
     // Dispatch event to parent table to notify of column definition change
-    this.dispatchEvent(new CustomEvent('@snice/column-changed', {
+    this.dispatchEvent(new CustomEvent('column-changed', {
       detail: { column: this.getColumnDefinition() },
       bubbles: true,
       composed: true

@@ -49,7 +49,7 @@ export class SniceLocation extends HTMLElement implements SniceLocationElement {
   @property({ type: Boolean })
   clickable = false;
 
-  @dispatch('@snice/location-click', { bubbles: true, composed: true })
+  @dispatch('location-click', { bubbles: true, composed: true })
   private dispatchLocationClick() {
     return this.getData();
   }

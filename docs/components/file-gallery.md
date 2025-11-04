@@ -293,68 +293,68 @@ gallery.removeFileBadge('file-id-123');
 
 ## Events
 
-### `@snice/files-change`
+### `files-change`
 Fired when files are added or removed.
 
 **Detail**: `{ files: GalleryFile[] }`
 
 ```typescript
-gallery.addEventListener('@snice/files-change', (e) => {
+gallery.addEventListener('files-change', (e) => {
   console.log('Files:', e.detail.files);
 });
 ```
 
-### `@snice/upload-progress`
+### `upload-progress`
 Fired during upload progress.
 
 **Detail**: `{ file: GalleryFile, progress: number }`
 
 ```typescript
-gallery.addEventListener('@snice/upload-progress', (e) => {
+gallery.addEventListener('upload-progress', (e) => {
   console.log(`${e.detail.file.file.name}: ${e.detail.progress}%`);
 });
 ```
 
-### `@snice/upload-complete`
+### `upload-complete`
 Fired when an upload completes successfully.
 
 **Detail**: `{ file: GalleryFile, url?: string }`
 
 ```typescript
-gallery.addEventListener('@snice/upload-complete', (e) => {
+gallery.addEventListener('upload-complete', (e) => {
   console.log('Upload complete:', e.detail.url);
 });
 ```
 
-### `@snice/upload-error`
+### `upload-error`
 Fired when an upload fails.
 
 **Detail**: `{ file: GalleryFile, error: string }`
 
 ```typescript
-gallery.addEventListener('@snice/upload-error', (e) => {
+gallery.addEventListener('upload-error', (e) => {
   console.error('Upload error:', e.detail.error);
 });
 ```
 
-### `@snice/custom-action-click`
+### `custom-action-click`
 Fired when a custom action button is clicked.
 
 **Detail**: `{ actionId: string }`
 
 ```typescript
-gallery.addEventListener('@snice/custom-action-click', (e) => {
+gallery.addEventListener('custom-action-click', (e) => {
   console.log('Custom action clicked:', e.detail.actionId);
 });
 ```
 
-### `@snice/error`
+### `gallery-error`
 Fired when a validation or general error occurs.
 
 **Detail**: `{ message: string }`
 
 ```typescript
-gallery.addEventListener('@snice/error', (e) => {
+gallery.addEventListener('gallery-error', (e) => {
   console.error('Error:', e.detail.message);
 });
 ```
@@ -514,19 +514,19 @@ async function uploadAll() {
 <script>
 const gallery = document.getElementById('gallery');
 
-gallery.addEventListener('@snice/files-change', (e) => {
+gallery.addEventListener('files-change', (e) => {
   console.log('Files changed:', e.detail.files);
 });
 
-gallery.addEventListener('@snice/upload-progress', (e) => {
+gallery.addEventListener('upload-progress', (e) => {
   console.log(`${e.detail.file.file.name}: ${e.detail.progress}%`);
 });
 
-gallery.addEventListener('@snice/upload-complete', (e) => {
+gallery.addEventListener('upload-complete', (e) => {
   console.log('Upload complete:', e.detail.file.file.name);
 });
 
-gallery.addEventListener('@snice/upload-error', (e) => {
+gallery.addEventListener('upload-error', (e) => {
   console.error('Upload failed:', e.detail.error);
 });
 </script>
@@ -586,7 +586,7 @@ const users = [
   { name: 'Bob Wilson', initials: 'BW', color: '#10b981', position: 'bottom-right' },
 ];
 
-gallery.addEventListener('@snice/files-change', (e) => {
+gallery.addEventListener('files-change', (e) => {
   const newFiles = e.detail.files.filter(f => !f.badge);
 
   newFiles.forEach((file, index) => {
@@ -630,7 +630,7 @@ const cameraIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
 const cameraActionId = gallery.addCustomAction(cameraIcon, 'Camera');
 
 // Handle camera action
-gallery.addEventListener('@snice/custom-action-click', (e) => {
+gallery.addEventListener('custom-action-click', (e) => {
   if (e.detail.actionId === cameraActionId) {
     // Open camera interface
     openCamera().then((imageBlob) => {

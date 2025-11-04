@@ -153,7 +153,7 @@ describe('snice-banner', () => {
       await wait(50);
 
       let eventFired = false;
-      (banner as HTMLElement).addEventListener('@snice/banner-action', () => {
+      (banner as HTMLElement).addEventListener('banner-action', () => {
         eventFired = true;
       });
 
@@ -180,7 +180,7 @@ describe('snice-banner', () => {
       await wait(50);
 
       let eventFired = false;
-      (banner as HTMLElement).addEventListener('@snice/banner-open', () => {
+      (banner as HTMLElement).addEventListener('banner-open', () => {
         eventFired = true;
       });
 
@@ -197,7 +197,7 @@ describe('snice-banner', () => {
       await wait(50);
 
       let eventFired = false;
-      (banner as HTMLElement).addEventListener('@snice/banner-close', () => {
+      (banner as HTMLElement).addEventListener('banner-close', () => {
         eventFired = true;
       });
 

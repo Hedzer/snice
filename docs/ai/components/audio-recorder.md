@@ -43,12 +43,12 @@ interface AudioRecording {
 
 ## Events
 
-- `@snice/recorder-start` - Recording started
-- `@snice/recorder-stop` - Recording stopped
-- `@snice/recorder-pause` - Paused
-- `@snice/recorder-resume` - Resumed
-- `@snice/recorder-cancel` - Cancelled
-- `@snice/recorder-error` - Error
+- `recorder-start` - Recording started
+- `recorder-stop` - Recording stopped
+- `recorder-pause` - Paused
+- `recorder-resume` - Resumed
+- `recorder-cancel` - Cancelled
+- `recorder-error` - Error
 
 ## Usage
 

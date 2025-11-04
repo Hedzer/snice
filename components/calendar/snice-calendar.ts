@@ -40,12 +40,12 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
   private grid!: HTMLElement;
   private dayCells: HTMLElement[] = [];
 
-  @dispatch('@snice/calendar-change', { bubbles: true, composed: true })
+  @dispatch('calendar-change', { bubbles: true, composed: true })
   private dispatchChange() {
     return { value: this.value, calendar: this };
   }
 
-  @dispatch('@snice/calendar-event-click', { bubbles: true, composed: true })
+  @dispatch('calendar-event-click', { bubbles: true, composed: true })
   private dispatchEventClick(event: CalendarEvent) {
     return { event, calendar: this };
   }

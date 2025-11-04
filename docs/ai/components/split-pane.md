@@ -24,7 +24,7 @@ reset(): void
 
 ## Events
 
-- `@snice/resize` - Dispatched on resize (detail: { primarySize, secondarySize, splitPane })
+- `pane-resize` - Dispatched on resize (detail: { primarySize, secondarySize, splitPane })
 
 ## Usage
 

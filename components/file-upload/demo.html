@@ -216,11 +216,11 @@
       updateOutput();
     };
 
-    interactiveUpload.addEventListener('@snice/file-upload-change', () => {
+    interactiveUpload.addEventListener('file-upload-change', () => {
       updateOutput();
     });
 
-    interactiveUpload.addEventListener('@snice/file-upload-error', (e) => {
+    interactiveUpload.addEventListener('file-upload-error', (e) => {
       alert('Error: ' + e.detail.message);
     });
 
@@ -239,10 +239,10 @@
 
     // Event logging for all uploads
     document.querySelectorAll('snice-file-upload').forEach(upload => {
-      upload.addEventListener('@snice/file-upload-change', (e) => {
+      upload.addEventListener('file-upload-change', (e) => {
         console.log('Files changed:', e.detail.files);
       });
-      upload.addEventListener('@snice/file-upload-error', (e) => {
+      upload.addEventListener('file-upload-error', (e) => {
         console.error('Upload error:', e.detail.message);
       });
     });

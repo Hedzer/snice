@@ -150,7 +150,7 @@
       const palette = document.getElementById('palette');
       palette.commands = commands;
 
-      palette.addEventListener('@snice/command-execute', (e) => {
+      palette.addEventListener('command-execute', (e) => {
         const output = document.getElementById('output');
         output.innerHTML = `
           <h3>Command Executed</h3>

@@ -71,10 +71,10 @@ files: FileList | null;
 <snice-file-upload id="upload"></snice-file-upload>
 <script>
 const upload = document.querySelector('#upload');
-upload.addEventListener('@snice/file-upload-change', (e) => {
+upload.addEventListener('file-upload-change', (e) => {
   console.log('Files:', e.detail.files);
 });
-upload.addEventListener('@snice/file-upload-error', (e) => {
+upload.addEventListener('file-upload-error', (e) => {
   console.error('Error:', e.detail.message);
 });
 </script>

@@ -52,7 +52,7 @@ actionHref: string = '';
 <!-- Events -->
 <snice-empty-state id="empty" action-text="Click"></snice-empty-state>
 <script>
-document.querySelector('#empty').addEventListener('@snice/empty-state-action', () => {
+document.querySelector('#empty').addEventListener('empty-state-action', () => {
   console.log('Action clicked');
 });
 </script>

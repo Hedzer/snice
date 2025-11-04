@@ -35,7 +35,7 @@ export class SniceResize extends HTMLElement implements SniceResizeElement {
   private startPosition = 0;
   private startSize = 0;
 
-  @dispatch('@snice/resize', { bubbles: true, composed: true })
+  @dispatch('pane-resize', { bubbles: true, composed: true })
   private dispatchResize(): SniceResizeDetail {
     return {
       primarySize: this.primarySize,

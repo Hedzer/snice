@@ -82,19 +82,19 @@ export class SniceMenu extends HTMLElement implements SniceMenuElement {
     }
   }
 
-  @on('@snice/menu-item-select')
+  @on('menu-item-select')
   handleMenuItemSelect(e: CustomEvent) {
     if (this.closeOnSelect) {
       this.closeMenu();
     }
   }
 
-  @dispatch('@snice/menu-open', { bubbles: true, composed: true })
+  @dispatch('menu-open', { bubbles: true, composed: true })
   private dispatchOpenEvent(): MenuOpenDetail {
     return { menu: this };
   }
 
-  @dispatch('@snice/menu-close', { bubbles: true, composed: true })
+  @dispatch('menu-close', { bubbles: true, composed: true })
   private dispatchCloseEvent(): MenuCloseDetail {
     return { menu: this };
   }

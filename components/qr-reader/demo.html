@@ -114,10 +114,10 @@
     }
 
     document.querySelectorAll('snice-qr-reader').forEach(reader => {
-      reader.addEventListener('@snice/qr-scan', (e) => logEvent('qr-scan', e.detail));
-      reader.addEventListener('@snice/qr-error', (e) => logEvent('qr-error', e.detail));
+      reader.addEventListener('qr-scan', (e) => logEvent('qr-scan', e.detail));
+      reader.addEventListener('qr-error', (e) => logEvent('qr-error', e.detail));
       reader.addEventListener('@snice/camera-ready', (e) => logEvent('camera-ready', e.detail));
-      reader.addEventListener('@snice/camera-error', (e) => logEvent('camera-error', e.detail));
+      reader.addEventListener('camera-error', (e) => logEvent('camera-error', e.detail));
     });
   </script>
 

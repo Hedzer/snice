@@ -54,11 +54,11 @@ splitPane.reset();
 
 ## Events
 
-### `@snice/resize`
+### `pane-resize`
 Dispatched when pane is resized.
 
 ```javascript
-splitPane.addEventListener('@snice/resize', (e) => {
+splitPane.addEventListener('pane-resize', (e) => {
   console.log('Primary:', e.detail.primarySize);
   console.log('Secondary:', e.detail.secondarySize);
 });

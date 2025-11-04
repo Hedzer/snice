@@ -393,12 +393,12 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
     }
   }
 
-  @dispatch('@snice/slider-input', { bubbles: true, composed: true })
+  @dispatch('slider-input', { bubbles: true, composed: true })
   private dispatchInputEvent() {
     return { value: this.value, slider: this };
   }
 
-  @dispatch('@snice/slider-change', { bubbles: true, composed: true })
+  @dispatch('slider-change', { bubbles: true, composed: true })
   private dispatchChangeEvent() {
     return { value: this.value, slider: this };
   }

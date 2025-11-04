@@ -54,10 +54,10 @@ interface CapturedImage {
 
 ## Events
 
-- `@snice/camera-start` - Camera started (detail: { stream })
-- `@snice/camera-stop` - Camera stopped
-- `@snice/camera-capture` - Photo captured (detail: { image })
-- `@snice/camera-error` - Error occurred (detail: { error })
+- `camera-start` - Camera started (detail: { stream })
+- `camera-stop` - Camera stopped
+- `camera-capture` - Photo captured (detail: { image })
+- `camera-error` - Error occurred (detail: { error })
 
 ## Slots
 
@@ -114,7 +114,7 @@ const image = await camera.capture();
 await camera.switchCamera();
 
 // Events
-camera.addEventListener('@snice/camera-capture', (e) => {
+camera.addEventListener('camera-capture', (e) => {
   const img = e.detail.image;
   console.log(img.dataURL);
 });

@@ -56,16 +56,16 @@ interface Track {
 
 ## Events
 
-- `@snice/player-play` - Playback started
-- `@snice/player-pause` - Playback paused
-- `@snice/player-stop` - Playback stopped
-- `@snice/player-track-change` - Track changed
-- `@snice/player-track-ended` - Track ended
-- `@snice/player-shuffle-change` - Shuffle changed
-- `@snice/player-repeat-change` - Repeat mode changed
-- `@snice/player-volume-change` - Volume changed
+- `player-play` - Playback started
+- `player-pause` - Playback paused
+- `player-stop` - Playback stopped
+- `player-track-change` - Track changed
+- `player-track-ended` - Track ended
+- `player-shuffle-change` - Shuffle changed
+- `player-repeat-change` - Repeat mode changed
+- `player-volume-change` - Volume changed
 - `@snice/player-time-update` - Time updated
-- `@snice/player-error` - Error occurred
+- `player-error` - Error occurred
 
 ## Usage
 

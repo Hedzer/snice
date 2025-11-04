@@ -20,7 +20,7 @@ The `<snice-pagination>` component provides a flexible pagination interface for 
 import 'snice/components/pagination/snice-pagination';
 
 const pagination = document.querySelector('snice-pagination');
-pagination.addEventListener('@snice/pagination-change', (e) => {
+pagination.addEventListener('pagination-change', (e) => {
   console.log('Page changed to:', e.detail.page);
 });
 ```
@@ -78,7 +78,7 @@ pagination.lastPage();
 
 ## Events
 
-### `@snice/pagination-change`
+### `pagination-change`
 Fired when the page changes.
 
 **Event Detail:**
@@ -91,7 +91,7 @@ Fired when the page changes.
 
 **Usage:**
 ```typescript
-pagination.addEventListener('@snice/pagination-change', (e) => {
+pagination.addEventListener('pagination-change', (e) => {
   const { page, previousPage } = e.detail;
   console.log(`Changed from page ${previousPage} to ${page}`);
 });
@@ -194,7 +194,7 @@ pagination.lastPage();
 ```typescript
 const pagination = document.querySelector('snice-pagination');
 
-pagination.addEventListener('@snice/pagination-change', (e) => {
+pagination.addEventListener('pagination-change', (e) => {
   const { page } = e.detail;
 
   // Fetch data for the new page
@@ -258,7 +258,7 @@ async function fetchPageData(page: number) {
     }
 
     // Listen for page changes
-    pagination.addEventListener('@snice/pagination-change', (e) => {
+    pagination.addEventListener('pagination-change', (e) => {
       renderPage(e.detail.page);
     });
 

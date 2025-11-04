@@ -462,12 +462,12 @@
     };
     
     // Listen for tab changes
-    document.querySelector('snice-tabs').addEventListener('@snice/tab-change', (e) => {
+    document.querySelector('snice-tabs').addEventListener('tab-change', (e) => {
       console.log('Tab changed:', e.detail);
     });
-    
+
     // Handle closable tabs
-    document.getElementById('closable-tabs').addEventListener('@snice/close', (e) => {
+    document.getElementById('closable-tabs').addEventListener('tab-close', (e) => {
       const tab = e.detail.tab;
       const tabs = tab.parentElement.parentElement;
       const index = Array.from(tabs.querySelectorAll('snice-tab')).indexOf(tab);

@@ -169,7 +169,7 @@ describe('snice-login', () => {
       await wait(50);
 
       let forgotFired = false;
-      (login as HTMLElement).addEventListener('@snice/login-forgot-password', () => {
+      (login as HTMLElement).addEventListener('login-forgot-password', () => {
         forgotFired = true;
       });
 
@@ -280,7 +280,7 @@ describe('snice-login', () => {
       await wait(50);
 
       let attemptFired = false;
-      (login as HTMLElement).addEventListener('@snice/login-attempt', () => {
+      (login as HTMLElement).addEventListener('login-attempt', () => {
         attemptFired = true;
       });
 

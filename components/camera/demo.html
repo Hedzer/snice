@@ -67,7 +67,7 @@
 
       // Listen to capture events from all cameras
       cameras.forEach(camera => {
-        camera.addEventListener('@snice/camera-capture', (e) => {
+        camera.addEventListener('camera-capture', (e) => {
           const image = e.detail.image;
           capturedImages.unshift(image);
           updateGallery();

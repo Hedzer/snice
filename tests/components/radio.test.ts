@@ -76,7 +76,7 @@ describe('snice-radio', () => {
       await wait(10);
 
       let changeEvent: any = null;
-      (radio as HTMLElement).addEventListener('@snice/radio-change', (e: Event) => {
+      (radio as HTMLElement).addEventListener('radio-change', (e: Event) => {
         changeEvent = (e as CustomEvent).detail;
       });
 

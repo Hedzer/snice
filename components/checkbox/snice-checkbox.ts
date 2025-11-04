@@ -108,7 +108,7 @@ export class SniceCheckbox extends HTMLElement implements SniceCheckboxElement {
     this.indeterminate = false; // Clear indeterminate on user interaction
 
     // Dispatch custom event
-    this.dispatchEvent(new CustomEvent('@snice/change', {
+    this.dispatchEvent(new CustomEvent('checkbox-change', {
       bubbles: true,
       composed: true,
       detail: {
@@ -154,7 +154,7 @@ export class SniceCheckbox extends HTMLElement implements SniceCheckboxElement {
   toggle() {
     this.checked = !this.checked;
     this.indeterminate = false;
-    this.dispatchEvent(new CustomEvent('@snice/change', {
+    this.dispatchEvent(new CustomEvent('checkbox-change', {
       bubbles: true,
       composed: true,
       detail: {
@@ -168,7 +168,7 @@ export class SniceCheckbox extends HTMLElement implements SniceCheckboxElement {
   setIndeterminate() {
     this.indeterminate = true;
     this.checked = false;
-    this.dispatchEvent(new CustomEvent('@snice/change', {
+    this.dispatchEvent(new CustomEvent('checkbox-change', {
       bubbles: true,
       composed: true,
       detail: {

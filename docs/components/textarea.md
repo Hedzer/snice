@@ -24,7 +24,7 @@ The `<snice-textarea>` component provides a multi-line text input with validatio
 import 'snice/components/textarea/snice-textarea';
 
 const textarea = document.querySelector('snice-textarea');
-textarea.addEventListener('@snice/textarea-change', (e) => {
+textarea.addEventListener('textarea-change', (e) => {
   console.log('Value:', e.detail.value);
 });
 ```
@@ -99,34 +99,34 @@ textarea.setCustomValidity('This field is required');
 
 ## Events
 
-### `@snice/textarea-input`
+### `textarea-input`
 Fired when the textarea value changes during input.
 
 **Detail**: `{ value: string, textarea: SniceTextareaElement }`
 
 ```typescript
-textarea.addEventListener('@snice/textarea-input', (e) => {
+textarea.addEventListener('textarea-input', (e) => {
   console.log('Input value:', e.detail.value);
 });
 ```
 
-### `@snice/textarea-change`
+### `textarea-change`
 Fired when the textarea value is committed (blur or enter).
 
 **Detail**: `{ value: string, textarea: SniceTextareaElement }`
 
 ```typescript
-textarea.addEventListener('@snice/textarea-change', (e) => {
+textarea.addEventListener('textarea-change', (e) => {
   console.log('Changed to:', e.detail.value);
 });
 ```
 
-### `@snice/textarea-focus`
+### `textarea-focus`
 Fired when the textarea receives focus.
 
 **Detail**: `{ textarea: SniceTextareaElement }`
 
-### `@snice/textarea-blur`
+### `textarea-blur`
 Fired when the textarea loses focus.
 
 **Detail**: `{ textarea: SniceTextareaElement }`

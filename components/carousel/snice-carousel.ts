@@ -87,7 +87,7 @@ export class SniceCarousel extends HTMLElement implements SniceCarouselElement {
     this.container.style.transform = `translateX(${offset}%)`;
   }
 
-  @dispatch('@snice/carousel-slide-change', { bubbles: true, composed: true })
+  @dispatch('carousel-slide-change', { bubbles: true, composed: true })
   private dispatchSlideChange(): CarouselSlideChangeDetail {
     return {
       activeIndex: this.activeIndex,

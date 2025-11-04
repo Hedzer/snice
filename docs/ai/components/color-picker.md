@@ -58,7 +58,7 @@ presets: string[] = [...];
 <snice-color-picker id="picker"></snice-color-picker>
 <script>
 const picker = document.querySelector('#picker');
-picker.addEventListener('@snice/color-picker-change', (e) => {
+picker.addEventListener('color-picker-change', (e) => {
   console.log('Color:', e.detail.value);
 });
 </script>

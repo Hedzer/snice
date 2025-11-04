@@ -279,11 +279,11 @@
     import './snice-modal.ts';
     
     // Listen for modal events
-    document.addEventListener('@snice/modal-open', (e) => {
+    document.addEventListener('modal-open', (e) => {
       console.log('Modal opened:', e.detail.modal);
     });
     
-    document.addEventListener('@snice/modal-close', (e) => {
+    document.addEventListener('modal-close', (e) => {
       console.log('Modal closed:', e.detail.modal);
     });
   </script>

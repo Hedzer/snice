@@ -45,11 +45,11 @@ interface CommandItem {
 
 ## Events
 
-- `@snice/command-palette-open` - Opened (detail: { palette })
-- `@snice/command-palette-close` - Closed (detail: { palette })
-- `@snice/command-select` - Command selected (detail: { command, palette })
-- `@snice/command-execute` - Command executed (detail: { command, palette })
-- `@snice/command-search` - Search changed (detail: { query, results, palette })
+- `command-palette-open` - Opened (detail: { palette })
+- `command-palette-close` - Closed (detail: { palette })
+- `command-select` - Command selected (detail: { command, palette })
+- `command-execute` - Command executed (detail: { command, palette })
+- `command-search` - Search changed (detail: { query, results, palette })
 
 ## Usage
 
@@ -97,7 +97,7 @@ interface CommandItem {
 
 <!-- Events -->
 <script>
-  palette.addEventListener('@snice/command-execute', (e) => {
+  palette.addEventListener('command-execute', (e) => {
     console.log('Executed:', e.detail.command.label);
   });
 </script>

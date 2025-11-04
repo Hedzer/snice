@@ -108,10 +108,10 @@
     }
 
     document.querySelectorAll('snice-timer').forEach(timer => {
-      timer.addEventListener('@snice/timer-start', (e) => logEvent('timer-start', e.detail));
-      timer.addEventListener('@snice/timer-stop', (e) => logEvent('timer-stop', e.detail));
-      timer.addEventListener('@snice/timer-reset', (e) => logEvent('timer-reset', e.detail));
-      timer.addEventListener('@snice/timer-complete', (e) => logEvent('timer-complete', e.detail));
+      timer.addEventListener('timer-start', (e) => logEvent('timer-start', e.detail));
+      timer.addEventListener('timer-stop', (e) => logEvent('timer-stop', e.detail));
+      timer.addEventListener('timer-reset', (e) => logEvent('timer-reset', e.detail));
+      timer.addEventListener('timer-complete', (e) => logEvent('timer-complete', e.detail));
     });
   </script>
 

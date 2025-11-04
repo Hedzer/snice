@@ -88,7 +88,7 @@ describe('snice-pagination', () => {
     pagination = await createComponent<SnicePaginationElement>('snice-pagination', { current: 1, total: 10 });
 
     let eventDetail: any = null;
-    (pagination as HTMLElement).addEventListener('@snice/pagination-change', (e: Event) => {
+    (pagination as HTMLElement).addEventListener('pagination-change', (e: Event) => {
       eventDetail = (e as CustomEvent).detail;
     });
 

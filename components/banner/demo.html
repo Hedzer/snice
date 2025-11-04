@@ -192,21 +192,21 @@
     const interactive = document.getElementById('interactive');
     const output = document.getElementById('output');
 
-    interactive.addEventListener('@snice/banner-open', () => {
+    interactive.addEventListener('banner-open', () => {
       output.innerHTML = '<strong>Status:</strong> Banner opened';
     });
 
-    interactive.addEventListener('@snice/banner-close', () => {
+    interactive.addEventListener('banner-close', () => {
       output.innerHTML = '<strong>Status:</strong> Banner closed';
     });
 
-    interactive.addEventListener('@snice/banner-action', () => {
+    interactive.addEventListener('banner-action', () => {
       output.innerHTML = '<strong>Status:</strong> Action clicked!';
     });
 
     // With action demo
     const withAction = document.getElementById('with-action');
-    withAction.addEventListener('@snice/banner-action', () => {
+    withAction.addEventListener('banner-action', () => {
       alert('Update button clicked!');
       withAction.hide();
     });

@@ -40,7 +40,7 @@ Blur the color picker.
 
 ## Events
 
-### `@snice/color-picker-change`
+### `color-picker-change`
 Fired when color changes.
 
 **Detail**: `{ value: string, colorPicker: SniceColorPickerElement }`

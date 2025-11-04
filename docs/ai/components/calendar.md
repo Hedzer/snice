@@ -47,8 +47,8 @@ getEventsForDate(date: Date | string): CalendarEvent[]
 
 ## Events
 
-- `@snice/calendar-change` - Date selected (detail: { value, calendar })
-- `@snice/calendar-event-click` - Event clicked (detail: { event, calendar })
+- `calendar-change` - Date selected (detail: { value, calendar })
+- `calendar-event-click` - Event clicked (detail: { event, calendar })
 
 ## Usage
 

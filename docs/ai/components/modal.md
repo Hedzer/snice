@@ -24,8 +24,8 @@ close()  // Close modal
 ## Events
 
 ```typescript
-'@snice/modal-open'   // { modal }
-'@snice/modal-close'  // { modal }
+'modal-open'   // { modal }
+'modal-close'  // { modal }
 ```
 
 ## Slots

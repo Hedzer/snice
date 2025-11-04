@@ -27,7 +27,7 @@ The `<snice-slider>` component provides an interactive range slider for selectin
 import 'snice/components/slider/snice-slider';
 
 const slider = document.querySelector('snice-slider');
-slider.addEventListener('@snice/slider-change', (e) => {
+slider.addEventListener('slider-change', (e) => {
   console.log('Value:', e.detail.value);
 });
 ```
@@ -93,24 +93,24 @@ slider.setCustomValidity('Value must be between 10 and 90');
 
 ## Events
 
-### `@snice/slider-input`
+### `slider-input`
 Fired continuously while dragging the slider.
 
 **Detail**: `{ value: number, slider: SniceSliderElement }`
 
 ```typescript
-slider.addEventListener('@snice/slider-input', (e) => {
+slider.addEventListener('slider-input', (e) => {
   console.log('Current value:', e.detail.value);
 });
 ```
 
-### `@snice/slider-change`
+### `slider-change`
 Fired when the slider value is committed (after drag ends or keyboard input).
 
 **Detail**: `{ value: number, slider: SniceSliderElement }`
 
 ```typescript
-slider.addEventListener('@snice/slider-change', (e) => {
+slider.addEventListener('slider-change', (e) => {
   console.log('Final value:', e.detail.value);
 });
 ```
@@ -290,7 +290,7 @@ document.getElementById('settings-form').addEventListener('submit', (e) => {
 const slider = document.getElementById('volume-slider');
 const display = document.getElementById('volume-display');
 
-slider.addEventListener('@snice/slider-input', (e) => {
+slider.addEventListener('slider-input', (e) => {
   display.textContent = `Volume: ${e.detail.value}`;
 });
 </script>

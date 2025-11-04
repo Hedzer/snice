@@ -204,7 +204,7 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
     });
   }
 
-  @dispatch('@snice/radio-change', { bubbles: true, composed: true })
+  @dispatch('radio-change', { bubbles: true, composed: true })
   private dispatchChangeEvent() {
     return {
       checked: this.checked,

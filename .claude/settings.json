@@ -1,0 +1,22 @@
+{
+  "disallowedTools": [
+    "Bash(git checkout:*)",
+    "Bash(git reset:*)",
+    "Bash(git checkout -- *)",
+    "Bash(git reset --hard:*)",
+    "Bash(git clean:*)",
+    "Bash(git add:*)",
+    "Bash(git commit:*)",
+    "Bash(git push:*)",
+    "Bash(git pull:*)",
+    "Bash(git fetch:*)",
+    "Bash(git merge:*)",
+    "Bash(git rebase:*)",
+    "Bash(git cherry-pick:*)",
+    "Bash(git revert:*)",
+    "Bash(git branch -d:*)",
+    "Bash(git branch -D:*)",
+    "Bash(git tag:*)",
+    "Bash(git stash:*)"
+  ]
+}

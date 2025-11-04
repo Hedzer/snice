@@ -116,7 +116,7 @@
     const picker = document.getElementById('interactive-picker');
     const output = document.getElementById('output');
 
-    picker.addEventListener('@snice/color-picker-change', (e) => {
+    picker.addEventListener('color-picker-change', (e) => {
       output.style.backgroundColor = e.detail.value;
       output.textContent = `Color: ${e.detail.value}`;
       console.log('Color changed:', e.detail.value);

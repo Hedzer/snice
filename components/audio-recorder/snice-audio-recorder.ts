@@ -542,32 +542,32 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
     this.visualizerData = null;
   }
 
-  @dispatch('@snice/recorder-start', { bubbles: true, composed: true })
+  @dispatch('recorder-start', { bubbles: true, composed: true })
   private emitRecorderStart() {
     return { recorder: this };
   }
 
-  @dispatch('@snice/recorder-error', { bubbles: true, composed: true })
+  @dispatch('recorder-error', { bubbles: true, composed: true })
   private emitRecorderError(error: any) {
     return { recorder: this, error };
   }
 
-  @dispatch('@snice/recorder-pause', { bubbles: true, composed: true })
+  @dispatch('recorder-pause', { bubbles: true, composed: true })
   private emitRecorderPause() {
     return { recorder: this };
   }
 
-  @dispatch('@snice/recorder-resume', { bubbles: true, composed: true })
+  @dispatch('recorder-resume', { bubbles: true, composed: true })
   private emitRecorderResume() {
     return { recorder: this };
   }
 
-  @dispatch('@snice/recorder-cancel', { bubbles: true, composed: true })
+  @dispatch('recorder-cancel', { bubbles: true, composed: true })
   private emitRecorderCancel() {
     return { recorder: this };
   }
 
-  @dispatch('@snice/recorder-stop', { bubbles: true, composed: true })
+  @dispatch('recorder-stop', { bubbles: true, composed: true })
   private emitRecorderStop() {
     return { recorder: this };
   }

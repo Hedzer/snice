@@ -25,7 +25,7 @@ export class SniceMenuItem extends HTMLElement implements SniceMenuItemElement {
     this.dispatchSelectEvent();
   }
 
-  @dispatch('@snice/menu-item-select', { bubbles: true, composed: true })
+  @dispatch('menu-item-select', { bubbles: true, composed: true })
   private dispatchSelectEvent(): MenuItemSelectDetail {
     return {
       item: this,

@@ -62,7 +62,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       // Add click event listener
       document.querySelectorAll('snice-location[clickable]').forEach(loc => {
-        loc.addEventListener('@snice/location-click', (e) => {
+        loc.addEventListener('location-click', (e) => {
           console.log('Location clicked:', e.detail);
         });
       });

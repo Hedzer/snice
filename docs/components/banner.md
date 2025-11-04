@@ -37,13 +37,13 @@ Toggle banner visibility.
 
 ## Events
 
-### `@snice/banner-open`
+### `banner-open`
 Fired when banner opens.
 
-### `@snice/banner-close`
+### `banner-close`
 Fired when banner closes.
 
-### `@snice/banner-action`
+### `banner-action`
 Fired when action button is clicked.
 
 ## Examples
@@ -67,7 +67,7 @@ Fired when action button is clicked.
 ></snice-banner>
 
 <script>
-document.querySelector('snice-banner').addEventListener('@snice/banner-action', () => {
+document.querySelector('snice-banner').addEventListener('banner-action', () => {
   console.log('Update clicked');
 });
 </script>

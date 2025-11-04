@@ -70,7 +70,7 @@ export class SniceEmptyState extends HTMLElement implements SniceEmptyStateEleme
     this.dispatchActionEvent();
   }
 
-  @dispatch('@snice/empty-state-action', { bubbles: true, composed: true })
+  @dispatch('empty-state-action', { bubbles: true, composed: true })
   private dispatchActionEvent() {
     return { emptyState: this };
   }

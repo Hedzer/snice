@@ -36,7 +36,7 @@ Image/content carousel with autoplay, loop, and navigation controls.
 
 ## Events
 
-- `@snice/carousel-slide-change` - Slide changed (detail: { activeIndex, previousIndex, carousel })
+- `carousel-slide-change` - Slide changed (detail: { activeIndex, previousIndex, carousel })
 
 ## Examples
 

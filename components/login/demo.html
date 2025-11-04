@@ -437,19 +437,19 @@
     }
 
     // Listen for login events on all login components
-    document.addEventListener('@snice/login-attempt', (event) => {
+    document.addEventListener('login-attempt', (event) => {
       logEvent('info', 'Login attempt started', event.detail);
     });
 
-    document.addEventListener('@snice/login-success', (event) => {
+    document.addEventListener('login-success', (event) => {
       logEvent('success', 'Login successful!', event.detail);
     });
 
-    document.addEventListener('@snice/login-error', (event) => {
+    document.addEventListener('login-error', (event) => {
       logEvent('error', 'Login failed', event.detail);
     });
 
-    document.addEventListener('@snice/login-forgot-password', (event) => {
+    document.addEventListener('login-forgot-password', (event) => {
       logEvent('info', 'Forgot password clicked', event.detail);
     });
 

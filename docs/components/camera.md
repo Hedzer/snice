@@ -119,39 +119,39 @@ camera.toggleFullscreen();
 
 ## Events
 
-### `@snice/camera-start`
+### `camera-start`
 Camera started successfully.
 
 ```javascript
-camera.addEventListener('@snice/camera-start', (e) => {
+camera.addEventListener('camera-start', (e) => {
   console.log('Camera on', e.detail.stream);
 });
 ```
 
-### `@snice/camera-stop`
+### `camera-stop`
 Camera stopped.
 
 ```javascript
-camera.addEventListener('@snice/camera-stop', () => {
+camera.addEventListener('camera-stop', () => {
   console.log('Camera off');
 });
 ```
 
-### `@snice/camera-capture`
+### `camera-capture`
 Photo captured.
 
 ```javascript
-camera.addEventListener('@snice/camera-capture', (e) => {
+camera.addEventListener('camera-capture', (e) => {
   const image = e.detail.image;
   console.log(image.dataURL);
 });
 ```
 
-### `@snice/camera-error`
+### `camera-error`
 Camera error occurred.
 
 ```javascript
-camera.addEventListener('@snice/camera-error', (e) => {
+camera.addEventListener('camera-error', (e) => {
   console.error(e.detail.error);
 });
 ```
@@ -286,7 +286,7 @@ await fetch('/upload', { method: 'POST', body: formData });
 ```javascript
 const gallery = [];
 
-camera.addEventListener('@snice/camera-capture', (e) => {
+camera.addEventListener('camera-capture', (e) => {
   gallery.push(e.detail.image);
   displayGallery();
 });

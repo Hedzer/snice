@@ -67,7 +67,7 @@ vertical: boolean = false;
 <snice-slider id="slider"></snice-slider>
 <script>
 const slider = document.querySelector('#slider');
-slider.addEventListener('@snice/slider-change', (e) => {
+slider.addEventListener('slider-change', (e) => {
   console.log('Value:', e.detail.value);
 });
 </script>

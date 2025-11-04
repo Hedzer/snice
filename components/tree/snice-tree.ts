@@ -474,27 +474,27 @@ export class SniceTree extends HTMLElement implements SniceTreeElement {
     this.dispatchLazyLoadEvent(nodeId, node);
   }
 
-  @dispatch('@snice/tree-node-expand', { bubbles: true, composed: true })
+  @dispatch('tree-node-expand', { bubbles: true, composed: true })
   private dispatchExpandEvent(nodeId: string, node: TreeNode): TreeNodeExpandDetail {
     return { nodeId, node, tree: this };
   }
 
-  @dispatch('@snice/tree-node-collapse', { bubbles: true, composed: true })
+  @dispatch('tree-node-collapse', { bubbles: true, composed: true })
   private dispatchCollapseEvent(nodeId: string, node: TreeNode): TreeNodeCollapseDetail {
     return { nodeId, node, tree: this };
   }
 
-  @dispatch('@snice/tree-node-select', { bubbles: true, composed: true })
+  @dispatch('tree-node-select', { bubbles: true, composed: true })
   private dispatchSelectEvent(nodeId: string, node: TreeNode): TreeNodeSelectDetail {
     return { nodeId, node, selectedNodes: this.getSelectedNodes(), tree: this };
   }
 
-  @dispatch('@snice/tree-node-check', { bubbles: true, composed: true })
+  @dispatch('tree-node-check', { bubbles: true, composed: true })
   private dispatchCheckEvent(nodeId: string, node: TreeNode, checked: boolean): TreeNodeCheckDetail {
     return { nodeId, node, checked, checkedNodes: this.getCheckedNodes(), tree: this };
   }
 
-  @dispatch('@snice/tree-node-lazy-load', { bubbles: true, composed: true })
+  @dispatch('tree-node-lazy-load', { bubbles: true, composed: true })
   private dispatchLazyLoadEvent(nodeId: string, node: TreeNode): TreeNodeLazyLoadDetail {
     return { nodeId, node, tree: this };
   }

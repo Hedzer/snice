@@ -36,9 +36,9 @@ blur()                       // Blur and close
 
 **Events:**
 ```typescript
-'@snice/select-change'  // { value, option, select }
-'@snice/select-open'    // { select }
-'@snice/select-close'   // { select }
+'select-change'  // { value, option, select }
+'select-open'    // { select }
+'select-close'   // { select }
 ```
 
 ### snice-option (Option Item)
@@ -66,7 +66,7 @@ optionData  // { value, label, disabled, selected, icon }
 ```
 
 ```typescript
-select.addEventListener('@snice/select-change', (e) => {
+select.addEventListener('select-change', (e) => {
   console.log(e.detail.value);
 });
 

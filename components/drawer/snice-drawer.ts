@@ -281,7 +281,7 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
     this._lastEventTime = now;
 
     // Manually dispatch event
-    this.dispatchEvent(new CustomEvent('@snice/drawer-open', {
+    this.dispatchEvent(new CustomEvent('drawer-open', {
       bubbles: true,
       composed: true,
       detail: { drawer: this }
@@ -298,7 +298,7 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
     this._lastEventTime = now;
 
     // Manually dispatch event
-    this.dispatchEvent(new CustomEvent('@snice/drawer-close', {
+    this.dispatchEvent(new CustomEvent('drawer-close', {
       bubbles: true,
       composed: true,
       detail: { drawer: this }

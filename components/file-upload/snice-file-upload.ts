@@ -299,12 +299,12 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
     }
   }
 
-  @dispatch('@snice/file-upload-change', { bubbles: true, composed: true })
+  @dispatch('file-upload-change', { bubbles: true, composed: true })
   private dispatchChangeEvent() {
     return { files: this.selectedFiles, fileUpload: this };
   }
 
-  @dispatch('@snice/file-upload-error', { bubbles: true, composed: true })
+  @dispatch('file-upload-error', { bubbles: true, composed: true })
   private dispatchErrorEvent(message: string) {
     return { message, fileUpload: this };
   }

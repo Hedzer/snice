@@ -156,7 +156,7 @@ export class SniceTabs extends HTMLElement {
     this.updateIndicator();
   }
 
-  @on('@snice/tab-select')
+  @on('tab-select')
   handleTabSelect(event: CustomEvent<TabSelectDetail>) {
     if (!this.tabs) return;
     const tab = event.detail.tab;
@@ -174,7 +174,7 @@ export class SniceTabs extends HTMLElement {
     });
   }
 
-  @dispatch('@snice/tab-change', { bubbles: true, composed: true })
+  @dispatch('tab-change', { bubbles: true, composed: true })
   selectTab(index: number): TabChangeDetail | undefined {
     if (!this.tabs || !this.panels || index < 0 || index >= this.tabs.length) return;
     

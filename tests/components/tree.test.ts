@@ -313,7 +313,7 @@ describe('snice-tree', () => {
       await wait(50);
 
       let eventFired = false;
-      tree.addEventListener('@snice/tree-node-expand', () => {
+      tree.addEventListener('tree-node-expand', () => {
         eventFired = true;
       });
 
@@ -328,7 +328,7 @@ describe('snice-tree', () => {
       await wait(50);
 
       let eventFired = false;
-      tree.addEventListener('@snice/tree-node-collapse', () => {
+      tree.addEventListener('tree-node-collapse', () => {
         eventFired = true;
       });
 
@@ -343,7 +343,7 @@ describe('snice-tree', () => {
       await wait(50);
 
       let eventDetail: any = null;
-      tree.addEventListener('@snice/tree-node-select', (e: Event) => {
+      tree.addEventListener('tree-node-select', (e: Event) => {
         eventDetail = (e as CustomEvent).detail;
       });
 
@@ -359,7 +359,7 @@ describe('snice-tree', () => {
       await wait(50);
 
       let eventDetail: any = null;
-      tree.addEventListener('@snice/tree-node-check', (e: Event) => {
+      tree.addEventListener('tree-node-check', (e: Event) => {
         eventDetail = (e as CustomEvent).detail;
       });
 

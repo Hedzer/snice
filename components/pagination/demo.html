@@ -149,15 +149,15 @@
       }
       
       // Listen for pagination events
-      basicPagination.addEventListener('@snice/pagination-change', (e) => {
+      basicPagination.addEventListener('pagination-change', (e) => {
         logEvent('Basic', e.detail);
       });
       
-      advancedPagination.addEventListener('@snice/pagination-change', (e) => {
+      advancedPagination.addEventListener('pagination-change', (e) => {
         logEvent('Advanced', e.detail);
       });
       
-      customPagination.addEventListener('@snice/pagination-change', (e) => {
+      customPagination.addEventListener('pagination-change', (e) => {
         logEvent('Custom', e.detail);
         document.getElementById('current-page').textContent = e.detail.page;
       });

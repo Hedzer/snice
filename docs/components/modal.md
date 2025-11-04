@@ -36,7 +36,7 @@ const modal = document.querySelector('snice-modal');
 modal.show();
 
 // Listen for events
-modal.addEventListener('@snice/modal-close', () => {
+modal.addEventListener('modal-close', () => {
   console.log('Modal closed');
 });
 ```
@@ -71,7 +71,7 @@ modal.close();
 
 ## Events
 
-### `@snice/modal-open`
+### `modal-open`
 Fired when the modal opens.
 
 **Event Detail:**
@@ -83,12 +83,12 @@ Fired when the modal opens.
 
 **Usage:**
 ```typescript
-modal.addEventListener('@snice/modal-open', (e) => {
+modal.addEventListener('modal-open', (e) => {
   console.log('Modal opened:', e.detail.modal);
 });
 ```
 
-### `@snice/modal-close`
+### `modal-close`
 Fired when the modal closes.
 
 **Event Detail:**
@@ -100,7 +100,7 @@ Fired when the modal closes.
 
 **Usage:**
 ```typescript
-modal.addEventListener('@snice/modal-close', (e) => {
+modal.addEventListener('modal-close', (e) => {
   console.log('Modal closed:', e.detail.modal);
 });
 ```
@@ -343,12 +343,12 @@ import type { SniceModalElement } from 'snice/components/modal/snice-modal.types
 
 const modal = document.querySelector<SniceModalElement>('snice-modal');
 
-modal.addEventListener('@snice/modal-open', () => {
+modal.addEventListener('modal-open', () => {
   console.log('Modal opened');
   // Pause video, etc.
 });
 
-modal.addEventListener('@snice/modal-close', () => {
+modal.addEventListener('modal-close', () => {
   console.log('Modal closed');
   // Resume video, etc.
 });

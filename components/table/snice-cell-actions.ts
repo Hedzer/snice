@@ -104,7 +104,7 @@ export class SniceCellActions extends HTMLElement implements SniceCellElement {
     this.dispatchAction(action);
   }
 
-  @dispatch('@snice/cell-action', { bubbles: true, composed: true })
+  @dispatch('cell-action', { bubbles: true, composed: true })
   private dispatchAction(action: string) {
     return {
       action,

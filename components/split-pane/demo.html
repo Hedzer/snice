@@ -113,7 +113,7 @@
 
       // Listen to resize events
       document.querySelectorAll('snice-split-pane').forEach(sp => {
-        sp.addEventListener('@snice/resize', (e) => {
+        sp.addEventListener('pane-resize', (e) => {
           console.log('Resize:', {
             primary: e.detail.primarySize,
             secondary: e.detail.secondarySize

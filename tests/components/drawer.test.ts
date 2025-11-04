@@ -233,7 +233,7 @@ describe('snice-drawer', () => {
     drawer = await createComponent<SniceDrawerElement>('snice-drawer');
 
     let eventDetail: any = null;
-    (drawer as HTMLElement).addEventListener('@snice/drawer-open', (e: Event) => {
+    (drawer as HTMLElement).addEventListener('drawer-open', (e: Event) => {
       eventDetail = (e as CustomEvent).detail;
     });
 
@@ -252,7 +252,7 @@ describe('snice-drawer', () => {
     await tracker.next();
 
     let eventDetail: any = null;
-    (drawer as HTMLElement).addEventListener('@snice/drawer-close', (e: Event) => {
+    (drawer as HTMLElement).addEventListener('drawer-close', (e: Event) => {
       eventDetail = (e as CustomEvent).detail;
     });
 

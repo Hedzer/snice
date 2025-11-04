@@ -144,7 +144,7 @@ describe('snice-tabs', () => {
     const tabs = await createTabsStructure();
 
     let eventDetail: any = null;
-    tabs.addEventListener('@snice/tab-change', (e: Event) => {
+    tabs.addEventListener('tab-change', (e: Event) => {
       eventDetail = (e as CustomEvent).detail;
     });
 
@@ -284,7 +284,7 @@ describe('snice-tab', () => {
     tab = await createComponent('snice-tab');
 
     let eventDetail: any = null;
-    (tab as HTMLElement).addEventListener('@snice/tab-select', (e: Event) => {
+    (tab as HTMLElement).addEventListener('tab-select', (e: Event) => {
       eventDetail = (e as CustomEvent).detail;
     });
 
@@ -301,7 +301,7 @@ describe('snice-tab', () => {
     tab = await createComponent('snice-tab', { disabled: true });
 
     let eventFired = false;
-    (tab as HTMLElement).addEventListener('@snice/tab-select', () => {
+    (tab as HTMLElement).addEventListener('tab-select', () => {
       eventFired = true;
     });
 
@@ -316,7 +316,7 @@ describe('snice-tab', () => {
     tab = await createComponent('snice-tab', { closable: true });
 
     let eventDetail: any = null;
-    (tab as HTMLElement).addEventListener('@snice/close', (e: Event) => {
+    (tab as HTMLElement).addEventListener('tab-close', (e: Event) => {
       eventDetail = (e as CustomEvent).detail;
     });
 

@@ -161,7 +161,7 @@ console.log(checked.map(n => n.label));
 
 ## Events
 
-### `@snice/tree-node-expand`
+### `tree-node-expand`
 Fired when a node is expanded.
 
 **Event Detail:**
@@ -173,7 +173,7 @@ Fired when a node is expanded.
 }
 ```
 
-### `@snice/tree-node-collapse`
+### `tree-node-collapse`
 Fired when a node is collapsed.
 
 **Event Detail:**
@@ -185,7 +185,7 @@ Fired when a node is collapsed.
 }
 ```
 
-### `@snice/tree-node-select`
+### `tree-node-select`
 Fired when a node is selected.
 
 **Event Detail:**
@@ -198,7 +198,7 @@ Fired when a node is selected.
 }
 ```
 
-### `@snice/tree-node-check`
+### `tree-node-check`
 Fired when a node checkbox is toggled.
 
 **Event Detail:**
@@ -212,7 +212,7 @@ Fired when a node checkbox is toggled.
 }
 ```
 
-### `@snice/tree-node-lazy-load`
+### `tree-node-lazy-load`
 Fired when a lazy-loading node is expanded.
 
 **Event Detail:**
@@ -289,7 +289,7 @@ interface TreeNode {
     { id: '3', label: 'Item 3' }
   ];
 
-  tree.addEventListener('@snice/tree-node-select', (e) => {
+  tree.addEventListener('tree-node-select', (e) => {
     console.log('Selected:', e.detail.node.label);
   });
 </script>
@@ -308,7 +308,7 @@ interface TreeNode {
     { id: '3', label: 'Item 3' }
   ];
 
-  tree.addEventListener('@snice/tree-node-select', (e) => {
+  tree.addEventListener('tree-node-select', (e) => {
     console.log('Selected nodes:', e.detail.selectedNodes.map(n => n.label));
   });
 </script>
@@ -333,7 +333,7 @@ interface TreeNode {
     }
   ];
 
-  tree.addEventListener('@snice/tree-node-check', (e) => {
+  tree.addEventListener('tree-node-check', (e) => {
     console.log('Checked nodes:', e.detail.checkedNodes.map(n => n.label));
   });
 </script>
@@ -356,7 +356,7 @@ interface TreeNode {
     }
   ];
 
-  tree.addEventListener('@snice/tree-node-lazy-load', async (e) => {
+  tree.addEventListener('tree-node-lazy-load', async (e) => {
     const node = e.detail.node;
 
     // Simulate async data loading

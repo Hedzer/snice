@@ -58,8 +58,8 @@ clearFilters(): void
 
 ## Events
 
-- `@snice/kanban-card-move` - Card moved (detail: { card, fromColumn, toColumn, kanban })
-- `@snice/kanban-card-click` - Card clicked (detail: { card, kanban })
+- `kanban-card-move` - Card moved (detail: { card, fromColumn, toColumn, kanban })
+- `kanban-card-click` - Card clicked (detail: { card, kanban })
 
 ## Usage
 
@@ -97,7 +97,7 @@ kanban.search('landing page');
 kanban.clearFilters();
 
 // Events
-kanban.addEventListener('@snice/kanban-card-move', (e) => {
+kanban.addEventListener('kanban-card-move', (e) => {
   console.log(`Moved ${e.detail.card.title}`);
 });
 ```

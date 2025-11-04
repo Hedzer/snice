@@ -34,7 +34,7 @@ import 'snice/components/tabs/snice-tab';
 import 'snice/components/tabs/snice-tab-panel';
 
 const tabs = document.querySelector('snice-tabs');
-tabs.addEventListener('@snice/tab-change', (e) => {
+tabs.addEventListener('tab-change', (e) => {
   console.log('Tab changed to:', e.detail.index);
 });
 ```
@@ -86,7 +86,7 @@ const panel = tabs.getPanel(0);
 
 #### Events
 
-##### `@snice/tab-change`
+##### `tab-change`
 Fired when the active tab changes.
 
 **Event Detail:**
@@ -101,7 +101,7 @@ Fired when the active tab changes.
 
 **Usage:**
 ```typescript
-tabs.addEventListener('@snice/tab-change', (e) => {
+tabs.addEventListener('tab-change', (e) => {
   const { index, oldIndex, tab, panel } = e.detail;
   console.log(`Changed from tab ${oldIndex} to ${index}`);
 });
@@ -136,7 +136,7 @@ tab.blur();
 
 #### Events
 
-##### `@snice/tab-select`
+##### `tab-select`
 Fired when the tab is clicked (bubbles to parent tabs container).
 
 **Event Detail:**
@@ -146,7 +146,7 @@ Fired when the tab is clicked (bubbles to parent tabs container).
 }
 ```
 
-##### `@snice/close`
+##### `tab-close`
 Fired when the close button is clicked (only if `closable` is true).
 
 **Event Detail:**
@@ -216,7 +216,7 @@ Control where the tab navigation appears relative to the content.
 
   const tabs = document.querySelectorAll('snice-tab');
   tabs.forEach(tab => {
-    tab.addEventListener('@snice/close', (e) => {
+    tab.addEventListener('tab-close', (e) => {
       console.log('Tab closed:', e.detail.tab);
       // Handle tab removal
     });
@@ -302,7 +302,7 @@ const panel = tabs.getPanel(0);
 ```typescript
 const tabs = document.querySelector('snice-tabs');
 
-tabs.addEventListener('@snice/tab-change', (e) => {
+tabs.addEventListener('tab-change', (e) => {
   const { index, oldIndex, tab, panel } = e.detail;
 
   // Load content dynamically
@@ -349,7 +349,7 @@ async function loadPanelContent(index: number, panel: HTMLElement) {
     tabs.appendChild(panel);
 
     // Handle close
-    tab.addEventListener('@snice/close', () => {
+    tab.addEventListener('tab-close', () => {
       const index = Array.from(tabs.querySelectorAll('snice-tab')).indexOf(tab);
       const panelToRemove = tabs.querySelectorAll('snice-tab-panel')[index];
 
@@ -461,13 +461,13 @@ async function loadPanelContent(index: number, panel: HTMLElement) {
     const tabs = document.querySelector('snice-tabs');
 
     // Handle tab changes
-    tabs.addEventListener('@snice/tab-change', (e) => {
+    tabs.addEventListener('tab-change', (e) => {
       console.log('Active tab:', e.detail.index);
     });
 
     // Handle tab close
     document.querySelectorAll('snice-tab[closable]').forEach(tab => {
-      tab.addEventListener('@snice/close', (e) => {
+      tab.addEventListener('tab-close', (e) => {
         if (confirm('Close this tab?')) {
           const index = Array.from(tabs.querySelectorAll('snice-tab')).indexOf(e.detail.tab);
           const panel = tabs.querySelectorAll('snice-tab-panel')[index];

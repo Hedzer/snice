@@ -25,7 +25,7 @@ The `<snice-empty-state>` component provides a consistent way to display empty o
 
 ## Events
 
-### `@snice/empty-state-action`
+### `empty-state-action`
 Fired when action button/link is clicked.
 
 ## Examples

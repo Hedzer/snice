@@ -23,7 +23,7 @@ spaceBetween: number = 0;
 
 ## Events
 
-- `@snice/carousel-slide-change` (detail: { activeIndex, previousIndex, carousel })
+- `carousel-slide-change` (detail: { activeIndex, previousIndex, carousel })
 
 ## Usage
 

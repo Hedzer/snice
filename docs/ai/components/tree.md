@@ -58,11 +58,11 @@ interface TreeNode {
 
 ## Events
 
-- `@snice/tree-node-expand` - Node expanded (detail: { nodeId, node, tree })
-- `@snice/tree-node-collapse` - Node collapsed (detail: { nodeId, node, tree })
-- `@snice/tree-node-select` - Node selected (detail: { nodeId, node, selectedNodes, tree })
-- `@snice/tree-node-check` - Node checked/unchecked (detail: { nodeId, node, checked, checkedNodes, tree })
-- `@snice/tree-node-lazy-load` - Lazy node expanded (detail: { nodeId, node, tree })
+- `tree-node-expand` - Node expanded (detail: { nodeId, node, tree })
+- `tree-node-collapse` - Node collapsed (detail: { nodeId, node, tree })
+- `tree-node-select` - Node selected (detail: { nodeId, node, selectedNodes, tree })
+- `tree-node-check` - Node checked/unchecked (detail: { nodeId, node, checked, checkedNodes, tree })
+- `tree-node-lazy-load` - Lazy node expanded (detail: { nodeId, node, tree })
 
 ## Usage
 
@@ -114,7 +114,7 @@ interface TreeNode {
 <snice-tree id="tree"></snice-tree>
 <script>
   const tree = document.getElementById('tree');
-  tree.addEventListener('@snice/tree-node-select', (e) => {
+  tree.addEventListener('tree-node-select', (e) => {
     console.log('Selected:', e.detail.node.label);
     console.log('All selected:', e.detail.selectedNodes.map(n => n.label));
   });
@@ -134,7 +134,7 @@ interface TreeNode {
     }
   ];
 
-  lazyTree.addEventListener('@snice/tree-node-lazy-load', async (e) => {
+  lazyTree.addEventListener('tree-node-lazy-load', async (e) => {
     const node = e.detail.node;
     const data = await fetch(`/api/nodes/${node.id}`).then(r => r.json());
 

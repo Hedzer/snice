@@ -192,7 +192,7 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
     // Attach checkbox listener after element is defined
     requestAnimationFrame(() => {
       const checkbox = this.shadowRoot!.querySelector('snice-checkbox');
-      checkbox?.addEventListener('@snice/change', (e) => this.handleCheckboxChangeEvent(e as CustomEvent));
+      checkbox?.addEventListener('checkbox-change', (e) => this.handleCheckboxChangeEvent(e as CustomEvent));
     });
   }
 

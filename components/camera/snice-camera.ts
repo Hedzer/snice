@@ -251,22 +251,22 @@ export class SniceCamera extends HTMLElement implements SniceCameraElement {
     }
   }
 
-  @dispatch('@snice/camera-start', { bubbles: true, composed: true })
+  @dispatch('camera-start', { bubbles: true, composed: true })
   private emitCameraStart() {
     return { stream: this.stream };
   }
 
-  @dispatch('@snice/camera-error', { bubbles: true, composed: true })
+  @dispatch('camera-error', { bubbles: true, composed: true })
   private emitCameraError(error: any) {
     return { error };
   }
 
-  @dispatch('@snice/camera-stop', { bubbles: true, composed: true })
+  @dispatch('camera-stop', { bubbles: true, composed: true })
   private emitCameraStop() {
     return {};
   }
 
-  @dispatch('@snice/camera-capture', { bubbles: true, composed: true })
+  @dispatch('camera-capture', { bubbles: true, composed: true })
   private emitCameraCapture(image: CapturedImage) {
     return { image };
   }

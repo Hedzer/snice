@@ -115,7 +115,7 @@ describe('snice-file-gallery', () => {
       element.autoUpload = false;
 
       const eventPromise = new Promise<CustomEvent>((resolve) => {
-        element.addEventListener('@snice/files-change', (e) => resolve(e as CustomEvent), { once: true });
+        element.addEventListener('files-change', (e) => resolve(e as CustomEvent), { once: true });
       });
 
       const file = createMockFile('test.txt', 100, 'text/plain');
@@ -255,18 +255,18 @@ describe('snice-file-gallery', () => {
       expect(addButton).toBeTruthy();
     });
 
-    it('should hide drop zone when showAddButton is true', async () => {
+    it('should hide drop zone when showDropzone is false', async () => {
       element = await createComponent<SniceFileGalleryElement>('snice-file-gallery');
-      element.showAddButton = true;
+      element.showDropzone = false;
       await wait(50);
 
       const dropZone = queryShadow(element as HTMLElement, '.drop-zone');
       expect(dropZone).toBeNull();
     });
 
-    it('should show drop zone when showAddButton is false', async () => {
+    it('should show drop zone when showDropzone is true', async () => {
       element = await createComponent<SniceFileGalleryElement>('snice-file-gallery');
-      element.showAddButton = false;
+      element.showDropzone = true;
       await wait(50);
 
       const dropZone = queryShadow(element as HTMLElement, '.drop-zone');

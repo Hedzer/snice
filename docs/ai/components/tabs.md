@@ -23,7 +23,7 @@ getPanel(index: number)             // Get panel element
 
 **Events:**
 ```typescript
-'@snice/tab-change' // { index, oldIndex, tab, panel }
+'tab-change' // { index, oldIndex, tab, panel }
 ```
 
 ### snice-tab (Tab Button)
@@ -41,8 +41,8 @@ blur()    // Remove focus
 
 **Events:**
 ```typescript
-'@snice/tab-select' // { tab }
-'@snice/close'      // { tab }
+'tab-select' // { tab }
+'tab-close'      // { tab }
 ```
 
 ### snice-tab-panel (Content Panel)
@@ -68,7 +68,7 @@ transitionDuration: number = 300;          // Transition duration (ms)
 ```
 
 ```typescript
-tabs.addEventListener('@snice/tab-change', (e) => {
+tabs.addEventListener('tab-change', (e) => {
   console.log(e.detail.index);
 });
 

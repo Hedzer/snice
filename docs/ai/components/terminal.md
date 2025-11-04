@@ -122,7 +122,7 @@ interface TerminalCommandResponse {
 const terminal = document.querySelector('snice-terminal');
 
 // Listen for commands (event pattern)
-terminal.addEventListener('@snice/terminal-command', (e) => {
+terminal.addEventListener('terminal-command', (e) => {
   console.log('Command:', e.detail.command, e.detail.args);
 });
 

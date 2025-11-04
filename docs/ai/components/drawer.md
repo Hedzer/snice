@@ -28,8 +28,8 @@ toggle()  // Toggle drawer
 ## Events
 
 ```typescript
-'@snice/drawer-open'   // { drawer }
-'@snice/drawer-close'  // { drawer }
+'drawer-open'   // { drawer }
+'drawer-close'  // { drawer }
 ```
 
 ## Slots

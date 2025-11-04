@@ -79,7 +79,7 @@ drawer.toggle();
 
 ## Events
 
-### `@snice/drawer-open`
+### `drawer-open`
 Fired when the drawer opens.
 
 **Event Detail:**
@@ -91,12 +91,12 @@ Fired when the drawer opens.
 
 **Usage:**
 ```typescript
-drawer.addEventListener('@snice/drawer-open', (e) => {
+drawer.addEventListener('drawer-open', (e) => {
   console.log('Drawer opened:', e.detail.drawer);
 });
 ```
 
-### `@snice/drawer-close`
+### `drawer-close`
 Fired when the drawer closes.
 
 **Event Detail:**
@@ -108,7 +108,7 @@ Fired when the drawer closes.
 
 **Usage:**
 ```typescript
-drawer.addEventListener('@snice/drawer-close', (e) => {
+drawer.addEventListener('drawer-close', (e) => {
   console.log('Drawer closed:', e.detail.drawer);
 });
 ```
@@ -397,12 +397,12 @@ import type { SniceDrawerElement } from 'snice/components/drawer/snice-drawer.ty
 
 const drawer = document.querySelector<SniceDrawerElement>('snice-drawer');
 
-drawer.addEventListener('@snice/drawer-open', () => {
+drawer.addEventListener('drawer-open', () => {
   console.log('Drawer opened');
   // Pause video, load content, etc.
 });
 
-drawer.addEventListener('@snice/drawer-close', () => {
+drawer.addEventListener('drawer-close', () => {
   console.log('Drawer closed');
   // Resume video, save state, etc.
 });

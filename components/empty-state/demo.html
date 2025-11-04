@@ -177,7 +177,7 @@
     const interactive = document.getElementById('interactive');
     const output = document.getElementById('output');
 
-    interactive.addEventListener('@snice/empty-state-action', () => {
+    interactive.addEventListener('empty-state-action', () => {
       output.innerHTML = '<strong>Status:</strong> Action clicked! ✅';
       setTimeout(() => {
         output.innerHTML = '<strong>Status:</strong> Waiting for action...';

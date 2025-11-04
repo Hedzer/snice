@@ -17,10 +17,10 @@
 - `getTime()`: Get current time in seconds
 
 ## Events
-- `@snice/timer-start`: { timer, time }
-- `@snice/timer-stop`: { timer, time }
-- `@snice/timer-reset`: { timer, time }
-- `@snice/timer-complete`: { timer } - Countdown reached 0
+- `timer-start`: { timer, time }
+- `timer-stop`: { timer, time }
+- `timer-reset`: { timer, time }
+- `timer-complete`: { timer } - Countdown reached 0
 
 ## Implementation
 - Uses requestAnimationFrame for smooth updates

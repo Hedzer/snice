@@ -212,27 +212,27 @@ export class SniceCommandPalette extends HTMLElement implements SniceCommandPale
     this.close();
   }
 
-  @dispatch('@snice/command-palette-open', { bubbles: true, composed: true })
+  @dispatch('command-palette-open', { bubbles: true, composed: true })
   private dispatchOpenEvent(): CommandPaletteOpenDetail {
     return { palette: this };
   }
 
-  @dispatch('@snice/command-palette-close', { bubbles: true, composed: true })
+  @dispatch('command-palette-close', { bubbles: true, composed: true })
   private dispatchCloseEvent(): CommandPaletteCloseDetail {
     return { palette: this };
   }
 
-  @dispatch('@snice/command-select', { bubbles: true, composed: true })
+  @dispatch('command-select', { bubbles: true, composed: true })
   private dispatchSelectEvent(command: CommandItem): CommandSelectDetail {
     return { command, palette: this };
   }
 
-  @dispatch('@snice/command-execute', { bubbles: true, composed: true })
+  @dispatch('command-execute', { bubbles: true, composed: true })
   private dispatchExecuteEvent(command: CommandItem): CommandExecuteDetail {
     return { command, palette: this };
   }
 
-  @dispatch('@snice/command-search', { bubbles: true, composed: true })
+  @dispatch('command-search', { bubbles: true, composed: true })
   private dispatchSearchEvent(): CommandSearchDetail {
     return { query: this.searchQuery, results: this.filteredCommands, palette: this };
   }

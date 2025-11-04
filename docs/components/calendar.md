@@ -11,7 +11,7 @@ Display and select dates with event support.
 ```javascript
 const calendar = document.querySelector('snice-calendar');
 
-calendar.addEventListener('@snice/calendar-change', (e) => {
+calendar.addEventListener('calendar-change', (e) => {
   console.log('Selected date:', e.detail.value);
 });
 ```
@@ -120,22 +120,22 @@ console.log(`Today has ${events.length} events`);
 
 ## Events
 
-### `@snice/calendar-change`
+### `calendar-change`
 Dispatched when selected date changes.
 
 ```javascript
-calendar.addEventListener('@snice/calendar-change', (e) => {
+calendar.addEventListener('calendar-change', (e) => {
   console.log('Selected:', e.detail.value);
 });
 ```
 
 **Detail:** `{ value: Date, calendar: SniceCalendarElement }`
 
-### `@snice/calendar-event-click`
+### `calendar-event-click`
 Dispatched when event is clicked.
 
 ```javascript
-calendar.addEventListener('@snice/calendar-event-click', (e) => {
+calendar.addEventListener('calendar-event-click', (e) => {
   console.log('Event clicked:', e.detail.event);
 });
 ```
@@ -226,13 +226,13 @@ calendar.nextMonth();
 
 ```javascript
 // Date selection
-calendar.addEventListener('@snice/calendar-change', (e) => {
+calendar.addEventListener('calendar-change', (e) => {
   console.log('Date selected:', e.detail.value);
   updateBookingForm(e.detail.value);
 });
 
 // Event clicks
-calendar.addEventListener('@snice/calendar-event-click', (e) => {
+calendar.addEventListener('calendar-event-click', (e) => {
   showEventDetails(e.detail.event);
 });
 ```
@@ -256,7 +256,7 @@ const fullyBooked = await getFullyBookedDates();
 calendar.disabledDates = fullyBooked;
 
 // Handle new booking
-calendar.addEventListener('@snice/calendar-change', (e) => {
+calendar.addEventListener('calendar-change', (e) => {
   if (hasAvailability(e.detail.value)) {
     showBookingForm(e.detail.value);
   }
@@ -290,7 +290,7 @@ calendar.events = teamMeetings.map(m => ({
 }));
 
 // Click to see meeting details
-calendar.addEventListener('@snice/calendar-event-click', (e) => {
+calendar.addEventListener('calendar-event-click', (e) => {
   const meeting = e.detail.event;
   showModal({
     title: meeting.title,
@@ -312,7 +312,7 @@ calendar.minDate = today;
 calendar.maxDate = new Date(today.getFullYear(), today.getMonth() + 3, 0);
 
 // Handle selection
-calendar.addEventListener('@snice/calendar-change', (e) => {
+calendar.addEventListener('calendar-change', (e) => {
   checkAvailability(e.detail.value).then(slots => {
     if (slots.length > 0) {
       showTimeSlots(slots);
@@ -355,7 +355,7 @@ calendar.events = vacations.map(v => ({
 calendar.disabledDates = companyHolidays;
 
 // Request new vacation
-calendar.addEventListener('@snice/calendar-change', (e) => {
+calendar.addEventListener('calendar-change', (e) => {
   if (canRequestVacation(e.detail.value)) {
     showVacationRequestForm(e.detail.value);
   }

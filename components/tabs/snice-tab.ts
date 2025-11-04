@@ -61,12 +61,12 @@ export class SniceTab extends HTMLElement implements SniceTabElement {
     this.dispatchSelectEvent();
   }
 
-  @dispatch('@snice/close')
+  @dispatch('tab-close')
   private dispatchCloseEvent(): TabCloseDetail {
     return { tab: this } as TabCloseDetail;
   }
 
-  @dispatch('@snice/tab-select')
+  @dispatch('tab-select')
   private dispatchSelectEvent(): TabSelectDetail {
     return { tab: this } as TabSelectDetail;
   }

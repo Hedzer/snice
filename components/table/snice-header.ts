@@ -227,17 +227,17 @@ export class SniceHeader extends HTMLElement implements SniceHeaderElement {
     }
   }
 
-  @dispatch('@snice/header-sort', { bubbles: true, composed: true })
+  @dispatch('header-sort', { bubbles: true, composed: true })
   private dispatchSort(columnKey: string) {
     return { column: columnKey };
   }
 
-  @dispatch('@snice/header-select-all', { bubbles: true, composed: true })
+  @dispatch('header-select-all', { bubbles: true, composed: true })
   private dispatchSelectAll(checked: boolean) {
     return { checked };
   }
 
-  @dispatch('@snice/header-filter', { bubbles: true, composed: true })
+  @dispatch('header-filter', { bubbles: true, composed: true })
   private dispatchFilter(columnKey: string) {
     return { column: columnKey };
   }

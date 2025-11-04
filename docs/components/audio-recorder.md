@@ -11,7 +11,7 @@ Record audio with visualization, pause/resume, and playback.
   const recorder = document.getElementById('recorder');
 
   // Listen for stop event
-  recorder.addEventListener('@snice/recorder-stop', async () => {
+  recorder.addEventListener('recorder-stop', async () => {
     // Recording complete
   });
 </script>
@@ -67,12 +67,12 @@ Download recorded audio.
 
 ## Events
 
-- `@snice/recorder-start` - Recording started
-- `@snice/recorder-stop` - Recording stopped
-- `@snice/recorder-pause` - Recording paused
-- `@snice/recorder-resume` - Recording resumed
-- `@snice/recorder-cancel` - Recording cancelled
-- `@snice/recorder-error` - Error occurred
+- `recorder-start` - Recording started
+- `recorder-stop` - Recording stopped
+- `recorder-pause` - Recording paused
+- `recorder-resume` - Recording resumed
+- `recorder-cancel` - Recording cancelled
+- `recorder-error` - Error occurred
 
 ## Examples
 

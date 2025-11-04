@@ -416,22 +416,22 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
     }
   }
 
-  @dispatch('@snice/color-picker-input', { bubbles: true, composed: true })
+  @dispatch('color-picker-input', { bubbles: true, composed: true })
   private dispatchInputEvent() {
     return { value: this.value, colorPicker: this };
   }
 
-  @dispatch('@snice/color-picker-change', { bubbles: true, composed: true })
+  @dispatch('color-picker-change', { bubbles: true, composed: true })
   private dispatchChangeEvent() {
     return { value: this.value, colorPicker: this };
   }
 
-  @dispatch('@snice/color-picker-focus', { bubbles: true, composed: true })
+  @dispatch('color-picker-focus', { bubbles: true, composed: true })
   private dispatchFocusEvent() {
     return { colorPicker: this };
   }
 
-  @dispatch('@snice/color-picker-blur', { bubbles: true, composed: true })
+  @dispatch('color-picker-blur', { bubbles: true, composed: true })
   private dispatchBlurEvent() {
     return { colorPicker: this };
   }

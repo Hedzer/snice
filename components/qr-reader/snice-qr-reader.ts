@@ -410,12 +410,12 @@ export class SniceQRReader extends HTMLElement implements SniceQRReaderElement {
     }
   }
 
-  @dispatch('@snice/qr-scan', { bubbles: true, composed: true })
+  @dispatch('qr-scan', { bubbles: true, composed: true })
   private emitQRScan(result: QRScanResult) {
     return { reader: this, ...result };
   }
 
-  @dispatch('@snice/qr-error', { bubbles: true, composed: true })
+  @dispatch('qr-error', { bubbles: true, composed: true })
   private emitQRError(error: any) {
     return { reader: this, error };
   }
@@ -425,7 +425,7 @@ export class SniceQRReader extends HTMLElement implements SniceQRReaderElement {
     return { reader: this };
   }
 
-  @dispatch('@snice/camera-error', { bubbles: true, composed: true })
+  @dispatch('camera-error', { bubbles: true, composed: true })
   private emitCameraError(error: any) {
     return { reader: this, error };
   }

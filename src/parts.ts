@@ -627,8 +627,10 @@ export class EventPart extends Part {
 
     // Parse keyboard shortcuts:
     // Supports both dot notation (@keydown.enter) and colon notation (@keydown:Enter) to match @on decorator
+    // Only parse colons for keyboard events, not custom events
+    const isKeyboardEvent = ['keydown', 'keyup', 'keypress'].includes(eventName.split('.')[0].split(':')[0]);
     const dotIndex = eventName.indexOf('.');
-    const colonIndex = eventName.indexOf(':');
+    const colonIndex = isKeyboardEvent ? eventName.indexOf(':') : -1;
 
     // Use whichever delimiter comes first (dot or colon)
     const delimiterIndex = dotIndex > 0 && colonIndex > 0

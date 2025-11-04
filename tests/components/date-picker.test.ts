@@ -243,7 +243,7 @@ describe('snice-date-picker', () => {
       await wait(50);
 
       let changeDetail: any = null;
-      (datePicker as HTMLElement).addEventListener('@snice/datepicker-change', (e: Event) => {
+      (datePicker as HTMLElement).addEventListener('datepicker-change', (e: Event) => {
         changeDetail = (e as CustomEvent).detail;
       });
 
@@ -261,7 +261,7 @@ describe('snice-date-picker', () => {
       await wait(50);
 
       let openFired = false;
-      (datePicker as HTMLElement).addEventListener('@snice/datepicker-open', () => {
+      (datePicker as HTMLElement).addEventListener('datepicker-open', () => {
         openFired = true;
       });
 
@@ -275,7 +275,7 @@ describe('snice-date-picker', () => {
       await wait(50);
 
       let closeFired = false;
-      (datePicker as HTMLElement).addEventListener('@snice/datepicker-close', () => {
+      (datePicker as HTMLElement).addEventListener('datepicker-close', () => {
         closeFired = true;
       });
 

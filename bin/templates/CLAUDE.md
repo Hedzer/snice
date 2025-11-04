@@ -139,16 +139,16 @@ html`
 - **Element ↔ Controller:** Request/Response (`@request`, `@respond`)
 - **Global State:** Context (`@context()`)
 
-**IMPORTANT - Event names with @:**
-When event names start with `@` (like `@snice/qr-scan`), use `@@` in templates:
+**Event Handling:**
+All component events use unprefixed names (e.g., `tab-change`, `menu-open`):
 ```typescript
-// Correct:
-html`<el @@snice/qr-scan=${handler}></el>`
+// Listening to events:
+html`<snice-tabs @tab-change=${handler}></snice-tabs>`
 
-// Wrong:
-html`<el @snice/qr-scan=${handler}></el>`
+// Dispatching events:
+@dispatch('tab-change')
+handleChange() { return { index: 0 }; }
 ```
-The first `@` is template syntax for events, second `@` is part of the event name.
 
 ## Navigation
 

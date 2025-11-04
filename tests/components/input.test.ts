@@ -324,7 +324,7 @@ describe('snice-input', () => {
       await wait(50);
 
       let changeDetail: any = null;
-      (input as HTMLElement).addEventListener('@snice/input-change', (e: Event) => {
+      (input as HTMLElement).addEventListener('input-change', (e: Event) => {
         changeDetail = (e as CustomEvent).detail;
       });
 
@@ -342,7 +342,7 @@ describe('snice-input', () => {
       await wait(50);
 
       let focusFired = false;
-      (input as HTMLElement).addEventListener('@snice/input-focus', () => {
+      (input as HTMLElement).addEventListener('input-focus', () => {
         focusFired = true;
       });
 
@@ -357,7 +357,7 @@ describe('snice-input', () => {
       await wait(50);
 
       let blurFired = false;
-      (input as HTMLElement).addEventListener('@snice/input-blur', () => {
+      (input as HTMLElement).addEventListener('input-blur', () => {
         blurFired = true;
       });
 

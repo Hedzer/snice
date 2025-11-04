@@ -24,7 +24,7 @@ A full-featured audio player with playlist support, shuffle, repeat modes, and v
   ];
 
   // Listen for events
-  player.addEventListener('@snice/player-play', (e) => {
+  player.addEventListener('player-play', (e) => {
     console.log('Playing:', e.detail.track.title);
   });
 </script>
@@ -117,16 +117,16 @@ Get current track.
 
 ## Events
 
-- `@snice/player-play` - Playback started
-- `@snice/player-pause` - Playback paused
-- `@snice/player-stop` - Playback stopped
-- `@snice/player-track-change` - Track changed
-- `@snice/player-track-ended` - Track ended
-- `@snice/player-shuffle-change` - Shuffle changed
-- `@snice/player-repeat-change` - Repeat mode changed
-- `@snice/player-volume-change` - Volume changed
+- `player-play` - Playback started
+- `player-pause` - Playback paused
+- `player-stop` - Playback stopped
+- `player-track-change` - Track changed
+- `player-track-ended` - Track ended
+- `player-shuffle-change` - Shuffle changed
+- `player-repeat-change` - Repeat mode changed
+- `player-volume-change` - Volume changed
 - `@snice/player-time-update` - Playback time updated
-- `@snice/player-error` - Error occurred
+- `player-error` - Error occurred
 
 ## Examples
 
@@ -228,19 +228,19 @@ player.seek(30); // Jump to 30 seconds
 ```javascript
 const player = document.querySelector('snice-music-player');
 
-player.addEventListener('@snice/player-play', (e) => {
+player.addEventListener('player-play', (e) => {
   console.log('Playing:', e.detail.track);
 });
 
-player.addEventListener('@snice/player-pause', (e) => {
+player.addEventListener('player-pause', (e) => {
   console.log('Paused:', e.detail.track);
 });
 
-player.addEventListener('@snice/player-track-change', (e) => {
+player.addEventListener('player-track-change', (e) => {
   console.log('Track changed:', e.detail.track);
 });
 
-player.addEventListener('@snice/player-track-ended', (e) => {
+player.addEventListener('player-track-ended', (e) => {
   console.log('Track ended:', e.detail.track);
 });
 
@@ -248,7 +248,7 @@ player.addEventListener('@snice/player-time-update', (e) => {
   console.log('Time:', e.detail.currentTime, '/', e.detail.duration);
 });
 
-player.addEventListener('@snice/player-error', (e) => {
+player.addEventListener('player-error', (e) => {
   console.error('Error:', e.detail.error);
 });
 ```
@@ -280,7 +280,7 @@ await player.play();
 ```javascript
 // Tracks in playlist are clickable by default
 // Listen for track changes
-player.addEventListener('@snice/player-track-change', (e) => {
+player.addEventListener('player-track-change', (e) => {
   console.log('User selected:', e.detail.track.title);
 });
 ```

@@ -153,7 +153,7 @@ describe('snice-empty-state', () => {
       await wait(50);
 
       let eventFired = false;
-      (emptyState as HTMLElement).addEventListener('@snice/empty-state-action', () => {
+      (emptyState as HTMLElement).addEventListener('empty-state-action', () => {
         eventFired = true;
       });
 

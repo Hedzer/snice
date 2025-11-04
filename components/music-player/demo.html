@@ -182,35 +182,35 @@
         }
       }
 
-      logger.addEventListener('@snice/player-play', (e) => {
+      logger.addEventListener('player-play', (e) => {
         logEvent('play', e.detail.track?.title || 'Unknown track');
       });
 
-      logger.addEventListener('@snice/player-pause', (e) => {
+      logger.addEventListener('player-pause', (e) => {
         logEvent('pause', e.detail.track?.title || 'Unknown track');
       });
 
-      logger.addEventListener('@snice/player-stop', () => {
+      logger.addEventListener('player-stop', () => {
         logEvent('stop', '');
       });
 
-      logger.addEventListener('@snice/player-track-change', (e) => {
+      logger.addEventListener('player-track-change', (e) => {
         logEvent('track-change', e.detail.track.title);
       });
 
-      logger.addEventListener('@snice/player-track-ended', (e) => {
+      logger.addEventListener('player-track-ended', (e) => {
         logEvent('track-ended', e.detail.track?.title || 'Unknown track');
       });
 
-      logger.addEventListener('@snice/player-shuffle-change', (e) => {
+      logger.addEventListener('player-shuffle-change', (e) => {
         logEvent('shuffle-change', e.detail.shuffle ? 'ON' : 'OFF');
       });
 
-      logger.addEventListener('@snice/player-repeat-change', (e) => {
+      logger.addEventListener('player-repeat-change', (e) => {
         logEvent('repeat-change', e.detail.repeat);
       });
 
-      logger.addEventListener('@snice/player-volume-change', (e) => {
+      logger.addEventListener('player-volume-change', (e) => {
         logEvent('volume-change', Math.round(e.detail.volume * 100) + '%');
       });
     });

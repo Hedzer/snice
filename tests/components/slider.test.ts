@@ -240,13 +240,13 @@ describe('snice-slider', () => {
       await wait(50);
 
       let changeDetail: any = null;
-      (slider as HTMLElement).addEventListener('@snice/slider-change', (e: Event) => {
+      (slider as HTMLElement).addEventListener('slider-change', (e: Event) => {
         changeDetail = (e as CustomEvent).detail;
       });
 
       slider.value = 50;
       // Manually trigger change event
-      const event = new CustomEvent('@snice/slider-change', {
+      const event = new CustomEvent('slider-change', {
         detail: { value: 50, slider }
       });
       slider.dispatchEvent(event);

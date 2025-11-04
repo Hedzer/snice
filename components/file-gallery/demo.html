@@ -342,23 +342,23 @@
       }
     }
 
-    basicGallery.addEventListener('@snice/files-change', (e) => {
+    basicGallery.addEventListener('files-change', (e) => {
       logEvent('files-change', e.detail);
     });
 
-    basicGallery.addEventListener('@snice/upload-progress', (e) => {
+    basicGallery.addEventListener('upload-progress', (e) => {
       logEvent('upload-progress', e.detail);
     });
 
-    basicGallery.addEventListener('@snice/upload-complete', (e) => {
+    basicGallery.addEventListener('upload-complete', (e) => {
       logEvent('upload-complete', e.detail);
     });
 
-    basicGallery.addEventListener('@snice/upload-error', (e) => {
+    basicGallery.addEventListener('upload-error', (e) => {
       logEvent('upload-error', e.detail);
     });
 
-    basicGallery.addEventListener('@snice/error', (e) => {
+    basicGallery.addEventListener('gallery-error', (e) => {
       logEvent('error', { message: e.detail.message });
     });
 
@@ -459,7 +459,7 @@
     const docActionId = customActionsGallery.addCustomAction(docIcon, 'Document');
 
     // Listen for custom action clicks
-    customActionsGallery.addEventListener('@snice/custom-action-click', (e) => {
+    customActionsGallery.addEventListener('custom-action-click', (e) => {
       const actionId = e.detail.actionId;
       console.log('Custom action clicked:', actionId);
 

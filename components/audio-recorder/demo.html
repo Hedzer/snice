@@ -113,7 +113,7 @@
       const recordings = [];
 
       // Handle recording completion
-      recorder.addEventListener('@snice/recorder-stop', async () => {
+      recorder.addEventListener('recorder-stop', async () => {
         // Get the recording after stop is complete
         setTimeout(async () => {
           const recordingUrl = recorder.querySelector('audio')?.src;

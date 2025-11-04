@@ -104,7 +104,7 @@ describe('snice-menu', () => {
       menu = await createComponent<SniceMenuElement>('snice-menu');
 
       let eventFired = false;
-      menu.addEventListener('@snice/menu-open', () => {
+      menu.addEventListener('menu-open', () => {
         eventFired = true;
       });
 
@@ -118,7 +118,7 @@ describe('snice-menu', () => {
       menu = await createComponent<SniceMenuElement>('snice-menu', { open: true });
 
       let eventFired = false;
-      menu.addEventListener('@snice/menu-close', () => {
+      menu.addEventListener('menu-close', () => {
         eventFired = true;
       });
 
@@ -253,7 +253,7 @@ describe('snice-menu-item', () => {
     item = await createComponent<SniceMenuItemElement>('snice-menu-item', { value: 'test' });
 
     let eventDetail: any = null;
-    item.addEventListener('@snice/menu-item-select', (e: Event) => {
+    item.addEventListener('menu-item-select', (e: Event) => {
       eventDetail = (e as CustomEvent).detail;
     });
 
@@ -271,7 +271,7 @@ describe('snice-menu-item', () => {
     });
 
     let eventFired = false;
-    item.addEventListener('@snice/menu-item-select', () => {
+    item.addEventListener('menu-item-select', () => {
       eventFired = true;
     });
 

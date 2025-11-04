@@ -49,11 +49,11 @@ interface DrawStroke {
 
 ## Events
 
-- `@snice/draw-start` - Drawing started
-- `@snice/draw-end` - Stroke completed (detail: { stroke })
-- `@snice/draw-clear` - Canvas cleared
-- `@snice/draw-undo` - Undo performed
-- `@snice/draw-redo` - Redo performed
+- `draw-start` - Drawing started
+- `draw-end` - Stroke completed (detail: { stroke })
+- `draw-clear` - Canvas cleared
+- `draw-undo` - Undo performed
+- `draw-redo` - Redo performed
 
 ## Usage
 

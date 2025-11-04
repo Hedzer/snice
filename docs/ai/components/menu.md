@@ -25,8 +25,8 @@ distance: number = 4;
 
 ## Events
 
-- `@snice/menu-open` - Fired when menu opens (detail: { menu: SniceMenuElement })
-- `@snice/menu-close` - Fired when menu closes (detail: { menu: SniceMenuElement })
+- `menu-open` - Fired when menu opens (detail: { menu: SniceMenuElement })
+- `menu-close` - Fired when menu closes (detail: { menu: SniceMenuElement })
 
 ## Usage
 
@@ -95,7 +95,7 @@ selected: boolean = false;
 
 ### Events
 
-- `@snice/menu-item-select` - Fired when item is clicked (detail: { item: SniceMenuItemElement, value: string })
+- `menu-item-select` - Fired when item is clicked (detail: { item: SniceMenuItemElement, value: string })
 
 ## snice-menu-divider
 

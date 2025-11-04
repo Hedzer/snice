@@ -470,7 +470,7 @@ export class SniceTable extends HTMLElement {
     this.addEventListener('@snice/controller-attached', this.onAttached as EventListener);
 
     // Listen for select change events from the filter dropdown
-    this.addEventListener('@snice/select-change', this.handleSelectorChange as EventListener);
+    this.addEventListener('select-change', this.handleSelectorChange as EventListener);
 
     // Wait for snice-column to be defined
     await customElements.whenDefined('snice-column');
@@ -947,7 +947,7 @@ export class SniceTable extends HTMLElement {
     this.debouncedDataRequest(); // Show loading immediately, debounce the actual request
   }
 
-  @dispatch('@snice/table/row-selection-changed', { bubbles: true, composed: true })
+  @dispatch('table-row-selection-changed', { bubbles: true, composed: true })
   private dispatchRowSelectionChanged(rowIndex: number, selected: boolean) {
     return {
       selectedRows: this.selectedRows,
@@ -956,7 +956,7 @@ export class SniceTable extends HTMLElement {
     };
   }
 
-  @dispatch('@snice/table/select-all-changed', { bubbles: true, composed: true })
+  @dispatch('table-select-all-changed', { bubbles: true, composed: true })
   private dispatchSelectAllChanged(allSelected: boolean) {
     return {
       selectedRows: this.selectedRows,

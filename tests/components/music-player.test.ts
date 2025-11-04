@@ -345,7 +345,7 @@ describe('snice-music-player', () => {
       await wait(50);
 
       const eventPromise = new Promise((resolve) => {
-        player.addEventListener('@snice/player-track-change', (e: any) => {
+        player.addEventListener('player-track-change', (e: any) => {
           resolve(e.detail.track);
         });
       });
@@ -360,7 +360,7 @@ describe('snice-music-player', () => {
       await wait(50);
 
       const eventPromise = new Promise((resolve) => {
-        player.addEventListener('@snice/player-shuffle-change', (e: any) => {
+        player.addEventListener('player-shuffle-change', (e: any) => {
           resolve(e.detail.shuffle);
         });
       });
@@ -375,7 +375,7 @@ describe('snice-music-player', () => {
       await wait(50);
 
       const eventPromise = new Promise((resolve) => {
-        player.addEventListener('@snice/player-repeat-change', (e: any) => {
+        player.addEventListener('player-repeat-change', (e: any) => {
           resolve(e.detail.repeat);
         });
       });
@@ -390,7 +390,7 @@ describe('snice-music-player', () => {
       await wait(50);
 
       const eventPromise = new Promise((resolve) => {
-        player.addEventListener('@snice/player-volume-change', (e: any) => {
+        player.addEventListener('player-volume-change', (e: any) => {
           resolve(e.detail.volume);
         });
       });

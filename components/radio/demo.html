@@ -252,7 +252,7 @@
     // Theme selection
     const themeRadios = document.querySelectorAll('snice-radio[name="theme"]');
     themeRadios.forEach(radio => {
-      radio.addEventListener('@snice/radio-change', (e) => {
+      radio.addEventListener('radio-change', (e) => {
         if (e.detail.checked) {
           document.getElementById('theme-output').textContent = 
             `Current theme: ${e.detail.value}`;
@@ -263,7 +263,7 @@
     // Interactive example
     const interactiveRadios = document.querySelectorAll('snice-radio[name="interactive"]');
     interactiveRadios.forEach(radio => {
-      radio.addEventListener('@snice/radio-change', (e) => {
+      radio.addEventListener('radio-change', (e) => {
         document.getElementById('interactive-output').textContent = 
           `Changed: value=${e.detail.value}, checked=${e.detail.checked}`;
       });

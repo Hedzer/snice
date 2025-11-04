@@ -280,14 +280,14 @@
     const interactiveToggle = document.getElementById('interactive-switch');
     const eventOutput = document.getElementById('event-output');
     
-    interactiveToggle.addEventListener('@snice/switch-change', (e) => {
+    interactiveToggle.addEventListener('switch-change', (e) => {
       eventOutput.textContent = `Changed: checked=${e.detail.checked}`;
     });
     
     // Feature flags
     const featureToggles = document.querySelectorAll('[id^="feature-"]');
     featureToggles.forEach(_switch => {
-      _switch.addEventListener('@snice/switch-change', (e) => {
+      _switch.addEventListener('switch-change', (e) => {
         console.log(`Feature ${_switch.id}: ${e.detail.checked ? 'enabled' : 'disabled'}`);
       });
     });

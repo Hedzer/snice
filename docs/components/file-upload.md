@@ -24,7 +24,7 @@ The `<snice-file-upload>` component provides a file upload interface with drag-a
 import 'snice/components/file-upload/snice-file-upload';
 
 const upload = document.querySelector('snice-file-upload');
-upload.addEventListener('@snice/file-upload-change', (e) => {
+upload.addEventListener('file-upload-change', (e) => {
   console.log('Files:', e.detail.files);
 });
 ```
@@ -68,13 +68,13 @@ upload.removeFile(0); // Remove first file
 
 ## Events
 
-### `@snice/file-upload-change`
+### `file-upload-change`
 Fired when files are added or removed.
 
 **Detail**: `{ files: File[], fileUpload: SniceFileUploadElement }`
 
 ```typescript
-upload.addEventListener('@snice/file-upload-change', (e) => {
+upload.addEventListener('file-upload-change', (e) => {
   console.log('Selected files:', e.detail.files);
   e.detail.files.forEach(file => {
     console.log(`- ${file.name} (${file.size} bytes)`);
@@ -82,13 +82,13 @@ upload.addEventListener('@snice/file-upload-change', (e) => {
 });
 ```
 
-### `@snice/file-upload-error`
+### `file-upload-error`
 Fired when file validation fails.
 
 **Detail**: `{ message: string, fileUpload: SniceFileUploadElement }`
 
 ```typescript
-upload.addEventListener('@snice/file-upload-error', (e) => {
+upload.addEventListener('file-upload-error', (e) => {
   console.error('Upload error:', e.detail.message);
 });
 ```
@@ -197,7 +197,7 @@ upload.addEventListener('@snice/file-upload-error', (e) => {
 
 <script>
 const upload = document.querySelector('snice-file-upload');
-upload.addEventListener('@snice/file-upload-error', (e) => {
+upload.addEventListener('file-upload-error', (e) => {
   alert(e.detail.message);
 });
 </script>
@@ -256,7 +256,7 @@ function removeFirst() {
   upload.removeFile(0);
 }
 
-upload.addEventListener('@snice/file-upload-change', (e) => {
+upload.addEventListener('file-upload-change', (e) => {
   console.log(`${e.detail.files.length} file(s) selected`);
 });
 </script>

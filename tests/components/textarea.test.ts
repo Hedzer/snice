@@ -277,7 +277,7 @@ describe('snice-textarea', () => {
       await wait(50);
 
       let changeDetail: any = null;
-      (textarea as HTMLElement).addEventListener('@snice/textarea-change', (e: Event) => {
+      (textarea as HTMLElement).addEventListener('textarea-change', (e: Event) => {
         changeDetail = (e as CustomEvent).detail;
       });
 
@@ -294,7 +294,7 @@ describe('snice-textarea', () => {
       await wait(50);
 
       let focusFired = false;
-      (textarea as HTMLElement).addEventListener('@snice/textarea-focus', () => {
+      (textarea as HTMLElement).addEventListener('textarea-focus', () => {
         focusFired = true;
       });
 
@@ -309,7 +309,7 @@ describe('snice-textarea', () => {
       await wait(50);
 
       let blurFired = false;
-      (textarea as HTMLElement).addEventListener('@snice/textarea-blur', () => {
+      (textarea as HTMLElement).addEventListener('textarea-blur', () => {
         blurFired = true;
       });
 

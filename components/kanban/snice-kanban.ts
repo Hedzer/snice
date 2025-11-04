@@ -20,12 +20,12 @@ export class SniceKanban extends HTMLElement implements SniceKanbanElement {
   private labelFilters: string[] = [];
   private searchQuery: string = '';
 
-  @dispatch('@snice/kanban-card-move', { bubbles: true, composed: true })
+  @dispatch('kanban-card-move', { bubbles: true, composed: true })
   private dispatchCardMove(card: KanbanCard, fromColumn: string | number, toColumn: string | number) {
     return { card, fromColumn, toColumn, kanban: this };
   }
 
-  @dispatch('@snice/kanban-card-click', { bubbles: true, composed: true })
+  @dispatch('kanban-card-click', { bubbles: true, composed: true })
   private dispatchCardClick(card: KanbanCard) {
     return { card, kanban: this };
   }

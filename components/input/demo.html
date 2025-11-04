@@ -303,23 +303,23 @@
       output.innerHTML = eventLog.map(log => `<div>${log}</div>`).join('');
     }
     
-    input.addEventListener('@snice/input-input', (e) => {
+    input.addEventListener('input-input', (e) => {
       logEvent('input', { value: e.detail.value });
     });
     
-    input.addEventListener('@snice/input-change', (e) => {
+    input.addEventListener('input-change', (e) => {
       logEvent('change', { value: e.detail.value });
     });
     
-    input.addEventListener('@snice/input-focus', () => {
+    input.addEventListener('input-focus', () => {
       logEvent('focus', {});
     });
     
-    input.addEventListener('@snice/input-blur', () => {
+    input.addEventListener('input-blur', () => {
       logEvent('blur', {});
     });
     
-    input.addEventListener('@snice/input-clear', () => {
+    input.addEventListener('input-clear', () => {
       logEvent('clear', {});
     });
 

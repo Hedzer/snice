@@ -242,11 +242,11 @@
       ];
 
       // Event listeners
-      kanban.addEventListener('@snice/kanban-card-move', (e) => {
+      kanban.addEventListener('kanban-card-move', (e) => {
         // Card moved event
       });
 
-      kanban.addEventListener('@snice/kanban-card-click', (e) => {
+      kanban.addEventListener('kanban-card-click', (e) => {
         alert(`Card: ${e.detail.card.title}\n\n${e.detail.card.description || 'No description'}`);
       });
 

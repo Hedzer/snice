@@ -115,12 +115,12 @@ terminal.clearHistory();
 
 ## Events
 
-### `@snice/terminal-command`
+### `terminal-command`
 
 Emitted when a command is entered.
 
 ```javascript
-terminal.addEventListener('@snice/terminal-command', (e) => {
+terminal.addEventListener('terminal-command', (e) => {
   console.log('Command:', e.detail.command);
   console.log('Args:', e.detail.args);
 });
@@ -130,22 +130,22 @@ terminal.addEventListener('@snice/terminal-command', (e) => {
 - `command: string` - The command name
 - `args: string[]` - Command arguments
 
-### `@snice/terminal-clear`
+### `terminal-clear`
 
 Emitted when the terminal is cleared.
 
 ```javascript
-terminal.addEventListener('@snice/terminal-clear', () => {
+terminal.addEventListener('terminal-clear', () => {
   console.log('Terminal was cleared');
 });
 ```
 
-### `@snice/terminal-ready`
+### `terminal-ready`
 
 Emitted when the terminal is ready.
 
 ```javascript
-terminal.addEventListener('@snice/terminal-ready', () => {
+terminal.addEventListener('terminal-ready', () => {
   console.log('Terminal is ready');
 });
 ```

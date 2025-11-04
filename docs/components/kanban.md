@@ -158,11 +158,11 @@ console.log(card.title);
 
 ## Events
 
-### `@snice/kanban-card-move`
+### `kanban-card-move`
 Dispatched when card is moved between columns.
 
 ```javascript
-kanban.addEventListener('@snice/kanban-card-move', (e) => {
+kanban.addEventListener('kanban-card-move', (e) => {
   console.log('Card:', e.detail.card);
   console.log('From:', e.detail.fromColumn);
   console.log('To:', e.detail.toColumn);
@@ -171,11 +171,11 @@ kanban.addEventListener('@snice/kanban-card-move', (e) => {
 
 **Detail:** `{ card: KanbanCard, fromColumn: string | number, toColumn: string | number, kanban: SniceKanbanElement }`
 
-### `@snice/kanban-card-click`
+### `kanban-card-click`
 Dispatched when card is clicked.
 
 ```javascript
-kanban.addEventListener('@snice/kanban-card-click', (e) => {
+kanban.addEventListener('kanban-card-click', (e) => {
   showCardDetails(e.detail.card);
 });
 ```
@@ -314,7 +314,7 @@ kanban.columns = [
 ### Event Handling
 
 ```javascript
-kanban.addEventListener('@snice/kanban-card-move', (e) => {
+kanban.addEventListener('kanban-card-move', (e) => {
   // Update backend
   updateCardStatus(e.detail.card.id, e.detail.toColumn);
 
@@ -322,7 +322,7 @@ kanban.addEventListener('@snice/kanban-card-move', (e) => {
   showNotification(`Moved "${e.detail.card.title}" to ${e.detail.toColumn}`);
 });
 
-kanban.addEventListener('@snice/kanban-card-click', (e) => {
+kanban.addEventListener('kanban-card-click', (e) => {
   // Show modal with card details
   showCardModal(e.detail.card);
 });
@@ -492,7 +492,7 @@ kanban.addCard('lead', {
 ### Persist to Backend
 
 ```javascript
-kanban.addEventListener('@snice/kanban-card-move', async (e) => {
+kanban.addEventListener('kanban-card-move', async (e) => {
   try {
     await fetch('/api/cards/' + e.detail.card.id, {
       method: 'PATCH',

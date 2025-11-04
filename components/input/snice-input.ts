@@ -433,27 +433,27 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
     }
   }
 
-  @dispatch('@snice/input-input', { bubbles: true, composed: true })
+  @dispatch('input-input', { bubbles: true, composed: true })
   private dispatchInputEvent() {
     return { value: this.value, input: this };
   }
 
-  @dispatch('@snice/input-change', { bubbles: true, composed: true })
+  @dispatch('input-change', { bubbles: true, composed: true })
   private dispatchChangeEvent() {
     return { value: this.value, input: this };
   }
 
-  @dispatch('@snice/input-focus', { bubbles: true, composed: true })
+  @dispatch('input-focus', { bubbles: true, composed: true })
   private dispatchFocusEvent() {
     return { input: this };
   }
 
-  @dispatch('@snice/input-blur', { bubbles: true, composed: true })
+  @dispatch('input-blur', { bubbles: true, composed: true })
   private dispatchBlurEvent() {
     return { input: this };
   }
 
-  @dispatch('@snice/input-clear', { bubbles: true, composed: true })
+  @dispatch('input-clear', { bubbles: true, composed: true })
   private dispatchClearEvent() {
     return { input: this };
   }

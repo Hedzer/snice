@@ -305,7 +305,7 @@
 
       // Lazy loading event handler
       const lazyTree = document.getElementById('tree-lazy');
-      lazyTree.addEventListener('@snice/tree-node-lazy-load', async (e) => {
+      lazyTree.addEventListener('tree-node-lazy-load', async (e) => {
         const { nodeId, node, tree } = e.detail;
         const status = document.getElementById('lazy-status');
 
@@ -342,19 +342,19 @@
         logContent.innerHTML = message + '<br>' + logContent.innerHTML.split('<br>').slice(0, 5).join('<br>');
       };
 
-      eventTree.addEventListener('@snice/tree-node-expand', (e) => {
+      eventTree.addEventListener('tree-node-expand', (e) => {
         logEvent('EXPAND', { nodeId: e.detail.nodeId, label: e.detail.node.label });
       });
 
-      eventTree.addEventListener('@snice/tree-node-collapse', (e) => {
+      eventTree.addEventListener('tree-node-collapse', (e) => {
         logEvent('COLLAPSE', { nodeId: e.detail.nodeId, label: e.detail.node.label });
       });
 
-      eventTree.addEventListener('@snice/tree-node-select', (e) => {
+      eventTree.addEventListener('tree-node-select', (e) => {
         logEvent('SELECT', { nodeId: e.detail.nodeId, label: e.detail.node.label });
       });
 
-      eventTree.addEventListener('@snice/tree-node-check', (e) => {
+      eventTree.addEventListener('tree-node-check', (e) => {
         logEvent('CHECK', {
           nodeId: e.detail.nodeId,
           checked: e.detail.checked,
@@ -442,7 +442,7 @@
     // Listen for selection changes on multi tree
     document.addEventListener('DOMContentLoaded', () => {
       const multiTree = document.getElementById('tree-multi');
-      multiTree.addEventListener('@snice/tree-node-select', () => {
+      multiTree.addEventListener('tree-node-select', () => {
         const selected = multiTree.getSelectedNodes();
         const labels = selected.map(n => n.label).join(', ');
         document.getElementById('multi-status').textContent =

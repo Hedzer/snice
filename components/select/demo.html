@@ -477,7 +477,7 @@
     import './snice-option.ts';
     
     // Event listeners
-    document.getElementById('country-select').addEventListener('@snice/select-change', (e) => {
+    document.getElementById('country-select').addEventListener('select-change', (e) => {
       const selected = e.detail.option;
       document.getElementById('country-output').textContent = 
         selected ? `Selected: ${selected.label} (${selected.value})` : 'No country selected';
@@ -498,15 +498,15 @@
     const interactiveSelect = document.getElementById('interactive-select');
     const interactiveOutput = document.getElementById('interactive-output');
     
-    interactiveSelect.addEventListener('@snice/select-change', (e) => {
+    interactiveSelect.addEventListener('select-change', (e) => {
       interactiveOutput.textContent = `Changed: value=${e.detail.value}, label=${e.detail.option?.label || 'cleared'}`;
     });
     
-    interactiveSelect.addEventListener('@snice/select-open', () => {
+    interactiveSelect.addEventListener('select-open', () => {
       console.log('Dropdown opened');
     });
     
-    interactiveSelect.addEventListener('@snice/select-close', () => {
+    interactiveSelect.addEventListener('select-close', () => {
       console.log('Dropdown closed');
     });
     

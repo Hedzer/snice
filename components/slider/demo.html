@@ -197,11 +197,11 @@
     const currentValue = document.getElementById('current-value');
     const lastChanged = document.getElementById('last-changed');
 
-    interactiveSlider.addEventListener('@snice/slider-input', (e) => {
+    interactiveSlider.addEventListener('slider-input', (e) => {
       currentValue.textContent = e.detail.value;
     });
 
-    interactiveSlider.addEventListener('@snice/slider-change', (e) => {
+    interactiveSlider.addEventListener('slider-change', (e) => {
       lastChanged.textContent = e.detail.value;
     });
 

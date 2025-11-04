@@ -29,7 +29,7 @@ lastPage()               // Last page
 ## Events
 
 ```typescript
-'@snice/pagination-change' // { page, previousPage }
+'pagination-change' // { page, previousPage }
 ```
 
 ## Usage
@@ -39,7 +39,7 @@ lastPage()               // Last page
 ```
 
 ```typescript
-pagination.addEventListener('@snice/pagination-change', (e) => {
+pagination.addEventListener('pagination-change', (e) => {
   console.log(e.detail.page);
 });
 ```

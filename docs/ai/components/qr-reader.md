@@ -18,17 +18,17 @@ QR code scanner using device camera and ZXing WASM decoder.
 - `snap()` - Take snapshot (manual-snap mode)
 
 ### Events
-- `@snice/qr-scan` - detail: `{data: string, timestamp: number, reader: SniceQRReader}`
-- `@snice/qr-error` - detail: `{error: any, reader: SniceQRReader}`
+- `qr-scan` - detail: `{data: string, timestamp: number, reader: SniceQRReader}`
+- `qr-error` - detail: `{error: any, reader: SniceQRReader}`
 - `@snice/camera-ready` - detail: `{reader: SniceQRReader}`
-- `@snice/camera-error` - detail: `{error: any, reader: SniceQRReader}`
+- `camera-error` - detail: `{error: any, reader: SniceQRReader}`
 
 ## Usage
 
 ```html
 <snice-qr-reader auto-start></snice-qr-reader>
 <script>
-  reader.addEventListener('@snice/qr-scan', e => console.log(e.detail.data));
+  reader.addEventListener('qr-scan', e => console.log(e.detail.data));
 </script>
 ```
 

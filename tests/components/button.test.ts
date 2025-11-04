@@ -129,7 +129,7 @@ describe('snice-button', () => {
       await wait(10);
 
       let eventFired = false;
-      (button as HTMLElement).addEventListener('@snice/click', () => {
+      (button as HTMLElement).addEventListener('button-click', () => {
         eventFired = true;
       });
 
@@ -228,7 +228,7 @@ describe('snice-button', () => {
       await wait(10);
 
       let clickDetail: any = null;
-      (button as HTMLElement).addEventListener('@snice/click', (e: Event) => {
+      (button as HTMLElement).addEventListener('button-click', (e: Event) => {
         clickDetail = (e as CustomEvent).detail;
       });
 

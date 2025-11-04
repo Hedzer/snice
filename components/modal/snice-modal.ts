@@ -187,12 +187,12 @@ export class SniceModal extends HTMLElement implements SniceModalElement {
     }
   }
 
-  @dispatch('@snice/modal-open', { bubbles: true, composed: true })
+  @dispatch('modal-open', { bubbles: true, composed: true })
   private dispatchOpenEvent() {
     return { modal: this };
   }
 
-  @dispatch('@snice/modal-close', { bubbles: true, composed: true })
+  @dispatch('modal-close', { bubbles: true, composed: true })
   private dispatchCloseEvent() {
     return { modal: this };
   }

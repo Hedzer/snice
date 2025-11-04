@@ -33,10 +33,10 @@ The `<snice-timer>` component provides a stopwatch and countdown timer.
 
 | Event | Detail | Description |
 |-------|--------|-------------|
-| `@snice/timer-start` | `{ timer, time }` | Timer started |
-| `@snice/timer-stop` | `{ timer, time }` | Timer stopped |
-| `@snice/timer-reset` | `{ timer, time }` | Timer reset |
-| `@snice/timer-complete` | `{ timer }` | Countdown completed (timer mode only) |
+| `timer-start` | `{ timer, time }` | Timer started |
+| `timer-stop` | `{ timer, time }` | Timer stopped |
+| `timer-reset` | `{ timer, time }` | Timer reset |
+| `timer-complete` | `{ timer }` | Countdown completed (timer mode only) |
 
 ## Examples
 
@@ -63,7 +63,7 @@ The `<snice-timer>` component provides a stopwatch and countdown timer.
 <script>
   const timer = document.getElementById('timer');
 
-  timer.addEventListener('@snice/timer-complete', () => {
+  timer.addEventListener('timer-complete', () => {
     console.log('Time is up!');
   });
 
@@ -83,11 +83,11 @@ The `<snice-timer>` component provides a stopwatch and countdown timer.
 <script>
   const timer = document.getElementById('my-timer');
 
-  timer.addEventListener('@snice/timer-start', (e) => {
+  timer.addEventListener('timer-start', (e) => {
     console.log('Timer started at', e.detail.time);
   });
 
-  timer.addEventListener('@snice/timer-stop', (e) => {
+  timer.addEventListener('timer-stop', (e) => {
     console.log('Timer stopped at', e.detail.time);
   });
 </script>
@@ -101,7 +101,7 @@ The `<snice-timer>` component provides a stopwatch and countdown timer.
 <script>
   const workout = document.getElementById('workout');
 
-  workout.addEventListener('@snice/timer-complete', () => {
+  workout.addEventListener('timer-complete', () => {
     alert('Rest time!');
     // Start rest period
     workout.initialTime = 15;

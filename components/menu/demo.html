@@ -318,21 +318,21 @@
     const eventMenu = document.getElementById('event-menu');
     const eventLog = document.getElementById('event-log');
 
-    eventMenu.addEventListener('@snice/menu-open', (e) => {
+    eventMenu.addEventListener('menu-open', (e) => {
       const entry = document.createElement('div');
       entry.textContent = `[${new Date().toLocaleTimeString()}] Menu opened`;
       entry.style.color = '#22c55e';
       eventLog.prepend(entry);
     });
 
-    eventMenu.addEventListener('@snice/menu-close', (e) => {
+    eventMenu.addEventListener('menu-close', (e) => {
       const entry = document.createElement('div');
       entry.textContent = `[${new Date().toLocaleTimeString()}] Menu closed`;
       entry.style.color = '#ef4444';
       eventLog.prepend(entry);
     });
 
-    eventMenu.addEventListener('@snice/menu-item-select', (e) => {
+    eventMenu.addEventListener('menu-item-select', (e) => {
       const entry = document.createElement('div');
       entry.textContent = `[${new Date().toLocaleTimeString()}] Item selected: ${e.detail.value}`;
       entry.style.color = '#3b82f6';
@@ -340,7 +340,7 @@
     });
 
     const multiSelectMenu = document.getElementById('multi-select-menu');
-    multiSelectMenu.addEventListener('@snice/menu-item-select', (e) => {
+    multiSelectMenu.addEventListener('menu-item-select', (e) => {
       if (e.detail.value === 'close') {
         multiSelectMenu.closeMenu();
       }

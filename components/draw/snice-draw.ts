@@ -878,27 +878,27 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
     return filtered;
   }
 
-  @dispatch('@snice/draw-start', { bubbles: true, composed: true })
+  @dispatch('draw-start', { bubbles: true, composed: true })
   private emitDrawStart(point: Point) {
     return { draw: this, point };
   }
 
-  @dispatch('@snice/draw-end', { bubbles: true, composed: true })
+  @dispatch('draw-end', { bubbles: true, composed: true })
   private emitDrawEnd(stroke: DrawStroke) {
     return { draw: this, stroke };
   }
 
-  @dispatch('@snice/draw-clear', { bubbles: true, composed: true })
+  @dispatch('draw-clear', { bubbles: true, composed: true })
   private emitDrawClear() {
     return { draw: this };
   }
 
-  @dispatch('@snice/draw-undo', { bubbles: true, composed: true })
+  @dispatch('draw-undo', { bubbles: true, composed: true })
   private emitDrawUndo() {
     return { draw: this };
   }
 
-  @dispatch('@snice/draw-redo', { bubbles: true, composed: true })
+  @dispatch('draw-redo', { bubbles: true, composed: true })
   private emitDrawRedo() {
     return { draw: this };
   }

@@ -19,7 +19,7 @@
 <script>
   const reader = document.querySelector('snice-qr-reader');
 
-  reader.addEventListener('@snice/qr-scan', (event) => {
+  reader.addEventListener('qr-scan', (event) => {
     console.log('QR Code:', event.detail.data);
   });
 </script>
@@ -117,7 +117,7 @@ const result = await reader.snap(); // Returns QR data or null
 
 ## Events
 
-### `@snice/qr-scan`
+### `qr-scan`
 Fired when a QR code is successfully detected.
 
 **Detail Properties:**
@@ -126,13 +126,13 @@ Fired when a QR code is successfully detected.
 - `reader` (SniceQRReader): Reference to the component
 
 ```javascript
-reader.addEventListener('@snice/qr-scan', (event) => {
+reader.addEventListener('qr-scan', (event) => {
   console.log('Data:', event.detail.data);
   console.log('Time:', new Date(event.detail.timestamp));
 });
 ```
 
-### `@snice/qr-error`
+### `qr-error`
 Fired when an error occurs during scanning.
 
 **Detail Properties:**
@@ -140,7 +140,7 @@ Fired when an error occurs during scanning.
 - `reader` (SniceQRReader): Reference to the component
 
 ```javascript
-reader.addEventListener('@snice/qr-error', (event) => {
+reader.addEventListener('qr-error', (event) => {
   console.error('Error:', event.detail.error);
 });
 ```
@@ -157,7 +157,7 @@ reader.addEventListener('@snice/camera-ready', (event) => {
 });
 ```
 
-### `@snice/camera-error`
+### `camera-error`
 Fired when camera initialization fails.
 
 **Detail Properties:**
@@ -165,7 +165,7 @@ Fired when camera initialization fails.
 - `reader` (SniceQRReader): Reference to the component
 
 ```javascript
-reader.addEventListener('@snice/camera-error', (event) => {
+reader.addEventListener('camera-error', (event) => {
   console.error('Camera error:', event.detail.error);
 });
 ```
@@ -192,7 +192,7 @@ reader.addEventListener('@snice/camera-error', (event) => {
     reader.stop();
   }
 
-  reader.addEventListener('@snice/qr-scan', (e) => {
+  reader.addEventListener('qr-scan', (e) => {
     result.textContent = `Scanned: ${e.detail.data}`;
   });
 </script>
@@ -206,7 +206,7 @@ reader.addEventListener('@snice/camera-error', (event) => {
 <script>
   const scanner = document.getElementById('scanner');
 
-  scanner.addEventListener('@snice/qr-scan', (e) => {
+  scanner.addEventListener('qr-scan', (e) => {
     // Process the scan
     processQRCode(e.detail.data);
 
@@ -251,7 +251,7 @@ reader.addEventListener('@snice/camera-error', (event) => {
 <script>
   // Useful for self-scanning scenarios
   document.querySelector('snice-qr-reader')
-    .addEventListener('@snice/qr-scan', (e) => {
+    .addEventListener('qr-scan', (e) => {
       validateTicket(e.detail.data);
     });
 </script>
@@ -267,12 +267,12 @@ reader.addEventListener('@snice/camera-error', (event) => {
   const reader = document.getElementById('reader');
   const status = document.getElementById('status');
 
-  reader.addEventListener('@snice/qr-scan', (e) => {
+  reader.addEventListener('qr-scan', (e) => {
     status.textContent = `✓ Scanned: ${e.detail.data}`;
     status.style.color = 'green';
   });
 
-  reader.addEventListener('@snice/qr-error', (e) => {
+  reader.addEventListener('qr-error', (e) => {
     status.textContent = `✗ Error: ${e.detail.error}`;
     status.style.color = 'red';
 

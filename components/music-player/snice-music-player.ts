@@ -638,52 +638,52 @@ export class SniceMusicPlayer extends HTMLElement implements SniceMusicPlayerEle
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   }
 
-  @dispatch('@snice/player-play', { bubbles: true, composed: true })
+  @dispatch('player-play', { bubbles: true, composed: true })
   private emitPlay() {
     return { player: this, track: this.getCurrentTrack() };
   }
 
-  @dispatch('@snice/player-pause', { bubbles: true, composed: true })
+  @dispatch('player-pause', { bubbles: true, composed: true })
   private emitPause() {
     return { player: this, track: this.getCurrentTrack() };
   }
 
-  @dispatch('@snice/player-stop', { bubbles: true, composed: true })
+  @dispatch('player-stop', { bubbles: true, composed: true })
   private emitStop() {
     return { player: this };
   }
 
-  @dispatch('@snice/player-track-change', { bubbles: true, composed: true })
+  @dispatch('player-track-change', { bubbles: true, composed: true })
   private emitTrackChange(track: Track) {
     return { player: this, track };
   }
 
-  @dispatch('@snice/player-track-ended', { bubbles: true, composed: true })
+  @dispatch('player-track-ended', { bubbles: true, composed: true })
   private emitTrackEnded() {
     return { player: this, track: this.getCurrentTrack() };
   }
 
-  @dispatch('@snice/player-seek', { bubbles: true, composed: true })
+  @dispatch('player-seek', { bubbles: true, composed: true })
   private emitSeek(time: number) {
     return { player: this, time };
   }
 
-  @dispatch('@snice/player-volume-change', { bubbles: true, composed: true })
+  @dispatch('player-volume-change', { bubbles: true, composed: true })
   private emitVolumeChange(volume: number) {
     return { player: this, volume };
   }
 
-  @dispatch('@snice/player-shuffle-change', { bubbles: true, composed: true })
+  @dispatch('player-shuffle-change', { bubbles: true, composed: true })
   private emitShuffleChange(shuffle: boolean) {
     return { player: this, shuffle };
   }
 
-  @dispatch('@snice/player-repeat-change', { bubbles: true, composed: true })
+  @dispatch('player-repeat-change', { bubbles: true, composed: true })
   private emitRepeatChange(repeat: RepeatMode) {
     return { player: this, repeat };
   }
 
-  @dispatch('@snice/player-error', { bubbles: true, composed: true })
+  @dispatch('player-error', { bubbles: true, composed: true })
   private emitError(error: Error) {
     return { player: this, error };
   }

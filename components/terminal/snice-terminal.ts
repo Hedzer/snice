@@ -41,17 +41,17 @@ export class SniceTerminal extends HTMLElement implements SniceTerminalElement {
   private historyIndex = -1;
   private currentInput = '';
 
-  @dispatch('@snice/terminal-command', { bubbles: true, composed: true })
+  @dispatch('terminal-command', { bubbles: true, composed: true })
   private dispatchCommandEvent(command: string, args: string[]) {
     return { command, args };
   }
 
-  @dispatch('@snice/terminal-clear', { bubbles: true, composed: true })
+  @dispatch('terminal-clear', { bubbles: true, composed: true })
   private dispatchClearEvent() {
     return {};
   }
 
-  @dispatch('@snice/terminal-ready', { bubbles: true, composed: true })
+  @dispatch('terminal-ready', { bubbles: true, composed: true })
   private dispatchReadyEvent() {
     return {};
   }

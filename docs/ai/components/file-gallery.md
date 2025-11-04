@@ -172,7 +172,7 @@ const icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor">...</sv
 const actionId = gallery.addCustomAction(icon, 'Camera');
 
 // Handle custom action
-gallery.addEventListener('@snice/custom-action-click', (e) => {
+gallery.addEventListener('custom-action-click', (e) => {
   if (e.detail.actionId === actionId) {
     // Handle camera action
     const file = capturePhoto(); // your implementation
@@ -181,10 +181,10 @@ gallery.addEventListener('@snice/custom-action-click', (e) => {
 });
 
 // Other events
-gallery.addEventListener('@snice/files-change', (e) => {
+gallery.addEventListener('files-change', (e) => {
   console.log('Files:', e.detail.files);
 });
-gallery.addEventListener('@snice/upload-complete', (e) => {
+gallery.addEventListener('upload-complete', (e) => {
   console.log('Complete:', e.detail.url);
 });
 

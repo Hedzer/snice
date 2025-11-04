@@ -773,7 +773,7 @@ export class SniceFileGallery extends HTMLElement implements SniceFileGalleryEle
   }
 
   private handleCustomActionClick(actionId: string): void {
-    this.dispatchEvent(new CustomEvent('@snice/custom-action-click', {
+    this.dispatchEvent(new CustomEvent('custom-action-click', {
       detail: { actionId, component: this },
       bubbles: true,
       composed: true
@@ -877,37 +877,37 @@ export class SniceFileGallery extends HTMLElement implements SniceFileGalleryEle
     return `${(bytes / Math.pow(k, i)).toFixed(1)} ${units[i]}`;
   }
 
-  @dispatch('@snice/files-change')
+  @dispatch('files-change')
   private emitFilesChange() {
     return { files: this.files, component: this };
   }
 
-  @dispatch('@snice/file-remove')
+  @dispatch('file-remove')
   private emitFileRemove(file: GalleryFile) {
     return { file, component: this };
   }
 
-  @dispatch('@snice/upload-progress')
+  @dispatch('upload-progress')
   private emitUploadProgress(file: GalleryFile) {
     return { file, progress: file.uploadProgress, component: this };
   }
 
-  @dispatch('@snice/upload-complete')
+  @dispatch('upload-complete')
   private emitUploadComplete(file: GalleryFile, response: UploadResponse) {
     return { file, response, component: this };
   }
 
-  @dispatch('@snice/upload-error')
+  @dispatch('upload-error')
   private emitUploadError(file: GalleryFile, error: Error) {
     return { file, error: error.message, component: this };
   }
 
-  @dispatch('@snice/upload-pause')
+  @dispatch('upload-pause')
   private emitUploadPause(file: GalleryFile) {
     return { file, component: this };
   }
 
-  @dispatch('@snice/error')
+  @dispatch('gallery-error')
   private emitError(message: string) {
     return { message, component: this };
   }

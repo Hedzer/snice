@@ -29,7 +29,7 @@ click()       // Programmatic click
 ## Events
 
 ```typescript
-'@snice/switch-change' // { checked, switch }
+'switch-change' // { checked, switch }
 ```
 
 ## Usage
@@ -39,7 +39,7 @@ click()       // Programmatic click
 ```
 
 ```typescript
-switchEl.addEventListener('@snice/switch-change', (e) => {
+switchEl.addEventListener('switch-change', (e) => {
   console.log(e.detail.checked);
 });
 ```

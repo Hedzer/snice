@@ -20,7 +20,7 @@ The `<snice-switch>` component provides a toggle switch input for boolean select
 import 'snice/components/switch/snice-switch';
 
 const switchEl = document.querySelector('snice-switch');
-switchEl.addEventListener('@snice/switch-change', (e) => {
+switchEl.addEventListener('switch-change', (e) => {
   console.log('Switch is now:', e.detail.checked);
 });
 ```
@@ -72,7 +72,7 @@ switchEl.click();
 
 ## Events
 
-### `@snice/switch-change`
+### `switch-change`
 Fired when the switch state changes.
 
 **Event Detail:**
@@ -85,7 +85,7 @@ Fired when the switch state changes.
 
 **Usage:**
 ```typescript
-switchEl.addEventListener('@snice/switch-change', (e) => {
+switchEl.addEventListener('switch-change', (e) => {
   const { checked } = e.detail;
   console.log(`Switch is ${checked ? 'on' : 'off'}`);
 });
@@ -199,7 +199,7 @@ switchEl.disabled = true;
 ```typescript
 const switchEl = document.querySelector('snice-switch');
 
-switchEl.addEventListener('@snice/switch-change', (e) => {
+switchEl.addEventListener('switch-change', (e) => {
   const { checked, switch: sw } = e.detail;
 
   if (checked) {

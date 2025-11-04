@@ -89,7 +89,7 @@ menu.toggleMenu();
 
 ### Container Events
 
-#### `@snice/menu-open`
+#### `menu-open`
 Fired when the menu is opened.
 
 **Event Detail:**
@@ -101,12 +101,12 @@ Fired when the menu is opened.
 
 **Usage:**
 ```typescript
-menu.addEventListener('@snice/menu-open', (e) => {
+menu.addEventListener('menu-open', (e) => {
   console.log('Menu opened');
 });
 ```
 
-#### `@snice/menu-close`
+#### `menu-close`
 Fired when the menu is closed.
 
 **Event Detail:**
@@ -118,7 +118,7 @@ Fired when the menu is closed.
 
 ### Item Events
 
-#### `@snice/menu-item-select`
+#### `menu-item-select`
 Fired when a menu item is selected.
 
 **Event Detail:**
@@ -131,7 +131,7 @@ Fired when a menu item is selected.
 
 **Usage:**
 ```typescript
-menu.addEventListener('@snice/menu-item-select', (e) => {
+menu.addEventListener('menu-item-select', (e) => {
   console.log('Selected item:', e.detail.value);
 });
 ```
@@ -337,7 +337,7 @@ Keyboard shortcut hint displayed after the label.
 
 <script type="module">
   const menu = document.getElementById('multi-menu');
-  menu.addEventListener('@snice/menu-item-select', (e) => {
+  menu.addEventListener('menu-item-select', (e) => {
     if (e.detail.value === 'done') {
       menu.closeMenu();
     }
@@ -417,7 +417,7 @@ Keyboard shortcut hint displayed after the label.
     menu.openMenu();
   });
 
-  menu.addEventListener('@snice/menu-item-select', (e) => {
+  menu.addEventListener('menu-item-select', (e) => {
     console.log('Context action:', e.detail.value);
   });
 </script>
@@ -430,16 +430,16 @@ import type { SniceMenuElement } from 'snice/components/menu/snice-menu.types';
 
 const menu = document.querySelector<SniceMenuElement>('snice-menu');
 
-menu.addEventListener('@snice/menu-open', () => {
+menu.addEventListener('menu-open', () => {
   console.log('Menu opened');
   // Load dynamic content, track analytics, etc.
 });
 
-menu.addEventListener('@snice/menu-close', () => {
+menu.addEventListener('menu-close', () => {
   console.log('Menu closed');
 });
 
-menu.addEventListener('@snice/menu-item-select', (e) => {
+menu.addEventListener('menu-item-select', (e) => {
   console.log('Selected:', e.detail.value);
 
   switch (e.detail.value) {
@@ -486,7 +486,7 @@ menu.addEventListener('@snice/menu-item-select', (e) => {
     menu.appendChild(item);
   });
 
-  menu.addEventListener('@snice/menu-item-select', (e) => {
+  menu.addEventListener('menu-item-select', (e) => {
     openFile(e.detail.value);
   });
 </script>

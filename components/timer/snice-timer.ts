@@ -144,22 +144,22 @@ export class SniceTimer extends HTMLElement implements SniceTimerElement {
     return `${mins}:${secs.toString().padStart(2, '0')}.${ms}`;
   }
 
-  @dispatch('@snice/timer-start', { bubbles: true, composed: true })
+  @dispatch('timer-start', { bubbles: true, composed: true })
   private emitTimerStart() {
     return { timer: this, time: this.time };
   }
 
-  @dispatch('@snice/timer-stop', { bubbles: true, composed: true })
+  @dispatch('timer-stop', { bubbles: true, composed: true })
   private emitTimerStop() {
     return { timer: this, time: this.time };
   }
 
-  @dispatch('@snice/timer-reset', { bubbles: true, composed: true })
+  @dispatch('timer-reset', { bubbles: true, composed: true })
   private emitTimerReset() {
     return { timer: this, time: this.time };
   }
 
-  @dispatch('@snice/timer-complete', { bubbles: true, composed: true })
+  @dispatch('timer-complete', { bubbles: true, composed: true })
   private emitTimerComplete() {
     return { timer: this };
   }

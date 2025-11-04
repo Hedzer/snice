@@ -132,7 +132,7 @@ describe('snice-switch', () => {
     switchEl = await createComponent<SniceSwitchElement>('snice-switch');
 
     let eventDetail: any = null;
-    (switchEl as HTMLElement).addEventListener('@snice/switch-change', (e: Event) => {
+    (switchEl as HTMLElement).addEventListener('switch-change', (e: Event) => {
       eventDetail = (e as CustomEvent).detail;
     });
 

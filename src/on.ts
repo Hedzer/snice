@@ -191,8 +191,10 @@ export function setupEventHandlers(instance: any, targetElement: HTMLElement) {
 
     // Parse event name for key modifiers
     // Supports both dot notation (@keydown.enter) and colon notation (@keydown:Enter)
+    // Only parse colons for keyboard events, not custom events
+    const isKeyboardEvent = ['keydown', 'keyup', 'keypress'].includes(handler.eventName.split('.')[0].split(':')[0]);
     const dotIndex = handler.eventName.indexOf('.');
-    const colonIndex = handler.eventName.indexOf(':');
+    const colonIndex = isKeyboardEvent ? handler.eventName.indexOf(':') : -1;
 
     const delimiterIndex = dotIndex > 0 && colonIndex > 0
       ? Math.min(dotIndex, colonIndex)

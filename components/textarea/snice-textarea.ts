@@ -295,22 +295,22 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
     }
   }
 
-  @dispatch('@snice/textarea-input', { bubbles: true, composed: true })
+  @dispatch('textarea-input', { bubbles: true, composed: true })
   private dispatchInputEvent() {
     return { value: this.value, textarea: this };
   }
 
-  @dispatch('@snice/textarea-change', { bubbles: true, composed: true })
+  @dispatch('textarea-change', { bubbles: true, composed: true })
   private dispatchChangeEvent() {
     return { value: this.value, textarea: this };
   }
 
-  @dispatch('@snice/textarea-focus', { bubbles: true, composed: true })
+  @dispatch('textarea-focus', { bubbles: true, composed: true })
   private dispatchFocusEvent() {
     return { textarea: this };
   }
 
-  @dispatch('@snice/textarea-blur', { bubbles: true, composed: true })
+  @dispatch('textarea-blur', { bubbles: true, composed: true })
   private dispatchBlurEvent() {
     return { textarea: this };
   }

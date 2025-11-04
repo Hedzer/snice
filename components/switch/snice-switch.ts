@@ -217,7 +217,7 @@ export class SniceSwitch extends HTMLElement implements SniceSwitchElement {
     }
   }
 
-  @dispatch('@snice/switch-change', { bubbles: true, composed: true })
+  @dispatch('switch-change', { bubbles: true, composed: true })
   private dispatchChangeEvent() {
     return {
       checked: this.checked,

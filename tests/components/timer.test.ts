@@ -116,7 +116,7 @@ describe('SniceTimer', () => {
       timer.reset();
 
       const completeSpy = vi.fn();
-      timer.addEventListener('@snice/timer-complete', completeSpy);
+      timer.addEventListener('timer-complete', completeSpy);
 
       timer.start();
 
@@ -142,7 +142,7 @@ describe('SniceTimer', () => {
   describe('Events', () => {
     it('should emit timer-start event', () => {
       const startSpy = vi.fn();
-      timer.addEventListener('@snice/timer-start', startSpy);
+      timer.addEventListener('timer-start', startSpy);
 
       timer.start();
 
@@ -154,7 +154,7 @@ describe('SniceTimer', () => {
 
     it('should emit timer-stop event', () => {
       const stopSpy = vi.fn();
-      timer.addEventListener('@snice/timer-stop', stopSpy);
+      timer.addEventListener('timer-stop', stopSpy);
 
       timer.start();
       timer.stop();
@@ -164,7 +164,7 @@ describe('SniceTimer', () => {
 
     it('should emit timer-reset event', () => {
       const resetSpy = vi.fn();
-      timer.addEventListener('@snice/timer-reset', resetSpy);
+      timer.addEventListener('timer-reset', resetSpy);
 
       timer.reset();
 

@@ -663,7 +663,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     });
   }
 
-  @dispatch('@snice/select-change', { bubbles: true, composed: true })
+  @dispatch('select-change', { bubbles: true, composed: true })
   private dispatchChangeEvent(option?: SelectOption) {
     return {
       value: this.multiple ? Array.from(this.selectedValues) : this.value,
@@ -672,12 +672,12 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     };
   }
 
-  @dispatch('@snice/select-open', { bubbles: true, composed: true })
+  @dispatch('select-open', { bubbles: true, composed: true })
   private dispatchOpenEvent() {
     return { select: this };
   }
 
-  @dispatch('@snice/select-close', { bubbles: true, composed: true })
+  @dispatch('select-close', { bubbles: true, composed: true })
   private dispatchCloseEvent() {
     return { select: this };
   }

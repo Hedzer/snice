@@ -87,7 +87,7 @@ describe('snice-checkbox', () => {
       await wait(10);
 
       let changeEvent: any = null;
-      (checkbox as HTMLElement).addEventListener('@snice/change', (e: Event) => {
+      (checkbox as HTMLElement).addEventListener('checkbox-change', (e: Event) => {
         changeEvent = (e as CustomEvent).detail;
       });
 

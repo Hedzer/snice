@@ -152,7 +152,7 @@ describe('snice-command-palette', () => {
     it('should emit @snice/command-palette-open event', async () => {
       palette = await createComponent<SniceCommandPaletteElement>('snice-command-palette');
       let eventFired = false;
-      palette.addEventListener('@snice/command-palette-open', () => {
+      palette.addEventListener('command-palette-open', () => {
         eventFired = true;
       });
       palette.show();
@@ -166,7 +166,7 @@ describe('snice-command-palette', () => {
       await wait(50);
 
       let eventFired = false;
-      palette.addEventListener('@snice/command-palette-close', () => {
+      palette.addEventListener('command-palette-close', () => {
         eventFired = true;
       });
 

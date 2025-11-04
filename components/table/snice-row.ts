@@ -314,7 +314,7 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
     this.dispatchRowSelect();
   }
 
-  @dispatch('@snice/row-click', { bubbles: true, composed: true })
+  @dispatch('row-click', { bubbles: true, composed: true })
   private dispatchRowClick() {
     return {
       data: this.data,
@@ -323,7 +323,7 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
     };
   }
 
-  @dispatch('@snice/row-select', { bubbles: true, composed: true })
+  @dispatch('row-select', { bubbles: true, composed: true })
   private dispatchRowSelect() {
     return {
       selected: this.selected,
@@ -333,7 +333,7 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
     };
   }
 
-  @dispatch('@snice/row-hover', { bubbles: true, composed: true })
+  @dispatch('row-hover', { bubbles: true, composed: true })
   private dispatchRowHover() {
     return {
       data: this.data,

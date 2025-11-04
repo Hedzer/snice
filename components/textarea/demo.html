@@ -214,10 +214,10 @@
 
     // Event logging
     document.querySelectorAll('snice-textarea').forEach(textarea => {
-      textarea.addEventListener('@snice/textarea-input', (e) => {
+      textarea.addEventListener('textarea-input', (e) => {
         console.log('Input:', e.detail.value);
       });
-      textarea.addEventListener('@snice/textarea-change', (e) => {
+      textarea.addEventListener('textarea-change', (e) => {
         console.log('Change:', e.detail.value);
       });
     });

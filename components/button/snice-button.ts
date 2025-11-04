@@ -106,7 +106,7 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
     }
 
     // Dispatch the custom event
-    this.dispatchEvent(new CustomEvent('@snice/click', {
+    this.dispatchEvent(new CustomEvent('button-click', {
       bubbles: true,
       composed: true,
       detail: { originalEvent: event }

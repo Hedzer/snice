@@ -231,7 +231,7 @@ describe('snice-select', () => {
     const select = await createSelectWithOptions({ optionCount: 3 });
 
     let eventDetail: any = null;
-    (select as HTMLElement).addEventListener('@snice/select-change', (e: Event) => {
+    (select as HTMLElement).addEventListener('select-change', (e: Event) => {
       eventDetail = (e as CustomEvent).detail;
     });
 
@@ -360,7 +360,7 @@ describe('snice-select', () => {
     const select = await createSelectWithOptions();
 
     let eventFired = false;
-    (select as HTMLElement).addEventListener('@snice/select-open', () => {
+    (select as HTMLElement).addEventListener('select-open', () => {
       eventFired = true;
     });
 
@@ -374,7 +374,7 @@ describe('snice-select', () => {
     const select = await createSelectWithOptions();
 
     let eventFired = false;
-    (select as HTMLElement).addEventListener('@snice/select-close', () => {
+    (select as HTMLElement).addEventListener('select-close', () => {
       eventFired = true;
     });
 

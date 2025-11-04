@@ -290,7 +290,7 @@ export class SnicePagination extends HTMLElement {
     }
   }
   
-  @dispatch('@snice/pagination-change', { bubbles: true, composed: true })
+  @dispatch('pagination-change', { bubbles: true, composed: true })
   private changePage(page: number) {
     const oldPage = this.current;
     this.current = page;

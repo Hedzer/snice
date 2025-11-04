@@ -670,12 +670,12 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
     this.updateInputValue();
   }
 
-  @dispatch('@snice/datepicker-input', { bubbles: true, composed: true })
+  @dispatch('datepicker-input', { bubbles: true, composed: true })
   private dispatchInputEvent() {
     return { value: this.value, datePicker: this };
   }
 
-  @dispatch('@snice/datepicker-change', { bubbles: true, composed: true })
+  @dispatch('datepicker-change', { bubbles: true, composed: true })
   private dispatchChangeEvent() {
     return { 
       value: this.value,
@@ -686,32 +686,32 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
     };
   }
 
-  @dispatch('@snice/datepicker-focus', { bubbles: true, composed: true })
+  @dispatch('datepicker-focus', { bubbles: true, composed: true })
   private dispatchFocusEvent() {
     return { datePicker: this };
   }
 
-  @dispatch('@snice/datepicker-blur', { bubbles: true, composed: true })
+  @dispatch('datepicker-blur', { bubbles: true, composed: true })
   private dispatchBlurEvent() {
     return { datePicker: this };
   }
 
-  @dispatch('@snice/datepicker-open', { bubbles: true, composed: true })
+  @dispatch('datepicker-open', { bubbles: true, composed: true })
   private dispatchOpenEvent() {
     return { datePicker: this };
   }
 
-  @dispatch('@snice/datepicker-close', { bubbles: true, composed: true })
+  @dispatch('datepicker-close', { bubbles: true, composed: true })
   private dispatchCloseEvent() {
     return { datePicker: this };
   }
 
-  @dispatch('@snice/datepicker-clear', { bubbles: true, composed: true })
+  @dispatch('datepicker-clear', { bubbles: true, composed: true })
   private dispatchClearEvent() {
     return { datePicker: this };
   }
 
-  @dispatch('@snice/datepicker-select', { bubbles: true, composed: true })
+  @dispatch('datepicker-select', { bubbles: true, composed: true })
   private dispatchSelectEvent(date: Date) {
     return { 
       date,

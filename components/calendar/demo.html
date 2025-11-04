@@ -60,7 +60,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       // Basic calendar
       const basicCalendar = document.getElementById('basic-calendar');
-      basicCalendar.addEventListener('@snice/calendar-change', (e) => {
+      basicCalendar.addEventListener('calendar-change', (e) => {
         console.log('Date changed:', e.detail.value);
         document.getElementById('selected-date').textContent =
           e.detail.value.toLocaleDateString();
@@ -98,7 +98,7 @@
         }
       ];
 
-      eventCalendar.addEventListener('@snice/calendar-event-click', (e) => {
+      eventCalendar.addEventListener('calendar-event-click', (e) => {
         alert(`Event: ${e.detail.event.title}`);
       });
 
