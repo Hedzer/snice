@@ -1,3 +1,11 @@
+# [3.11.0](https://gitlab.com/Hedzer/snice/compare/v3.10.5...v3.11.0) (2025-11-04)
+
+
+### Features
+
+* added file ghallery options ([fa51510](https://gitlab.com/Hedzer/snice/commit/fa51510dacfe6a24d91ee7d5a4034ffa5baf9235))
+* added object-fit for camera ([8436a77](https://gitlab.com/Hedzer/snice/commit/8436a777afaa7f91f64550803dccdd37cdb97b21))
+
 ## [3.10.5](https://gitlab.com/Hedzer/snice/compare/v3.10.4...v3.10.5) (2025-11-03)
 
 
