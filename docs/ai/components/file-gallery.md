@@ -15,8 +15,8 @@ showProgress: boolean = true;
 allowPause: boolean = true;
 allowDelete: boolean = true;
 autoUpload: boolean = true;
-showAddButton: boolean = false; // show add button tile instead of drop zone
-hideAddButton: boolean = false; // hide default add button (show only custom actions)
+showDropzone: boolean = true; // show drop zone for drag & drop
+showAddButton: boolean = false; // show add button tile in gallery
 files: GalleryFile[]; // read-only
 ```
 
@@ -155,8 +155,9 @@ controller.attach?.(document.body);
   allow-pause="false"
 ></snice-file-gallery>
 
-<!-- Add button mode -->
+<!-- Add button mode (hide drop zone, show add tile) -->
 <snice-file-gallery
+  show-dropzone="false"
   show-add-button="true"
   max-files="6"
 ></snice-file-gallery>

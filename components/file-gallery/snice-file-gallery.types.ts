@@ -43,7 +43,6 @@ export interface SniceFileGalleryElement extends HTMLElement {
   allowDelete: boolean;
   autoUpload: boolean;
   showAddButton: boolean;
-  hideAddButton: boolean;
 
   // Getters
   files: GalleryFile[];

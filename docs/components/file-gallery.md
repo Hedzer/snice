@@ -54,8 +54,8 @@ controller.attach?.(document.body);
 | `allowPause` | `boolean` | `true` | Allow pause/resume of uploads |
 | `allowDelete` | `boolean` | `true` | Allow file deletion |
 | `autoUpload` | `boolean` | `true` | Start upload immediately on file add |
-| `showAddButton` | `boolean` | `false` | Show add button tile instead of drop zone |
-| `hideAddButton` | `boolean` | `false` | Hide default add button (only show custom actions) |
+| `showDropzone` | `boolean` | `true` | Show drop zone for drag & drop uploads |
+| `showAddButton` | `boolean` | `false` | Show add button tile in gallery |
 | `files` | `GalleryFile[]` | `[]` | Current files (read-only) |
 
 ## Methods
@@ -498,8 +498,9 @@ async function uploadAll() {
 ### Add Button Mode
 
 ```html
-<!-- Instead of drop zone, shows a plus tile in the gallery -->
+<!-- Hide drop zone and show plus tile in gallery instead -->
 <snice-file-gallery
+  show-dropzone="false"
   show-add-button="true"
   max-files="6"
 ></snice-file-gallery>
@@ -573,7 +574,7 @@ function clearAll() {
 Use badges to show user avatars on files in collaborative scenarios:
 
 ```html
-<snice-file-gallery id="collab-gallery" show-add-button="true"></snice-file-gallery>
+<snice-file-gallery id="collab-gallery" show-dropzone="false" show-add-button="true"></snice-file-gallery>
 
 <script>
 const gallery = document.getElementById('collab-gallery');
@@ -615,7 +616,7 @@ gallery.addEventListener('@snice/files-change', (e) => {
 ### Custom Action Buttons
 
 ```html
-<snice-file-gallery id="gallery" show-add-button="true"></snice-file-gallery>
+<snice-file-gallery id="gallery" show-dropzone="false" show-add-button="true"></snice-file-gallery>
 
 <script>
 const gallery = document.getElementById('gallery');

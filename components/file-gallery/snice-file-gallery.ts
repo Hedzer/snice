@@ -41,11 +41,11 @@ export class SniceFileGallery extends HTMLElement implements SniceFileGalleryEle
   @property({ type: Boolean, attribute: 'auto-upload' })
   autoUpload = true;
 
+  @property({ type: Boolean, attribute: 'show-dropzone' })
+  showDropzone = true;
+
   @property({ type: Boolean, attribute: 'show-add-button' })
   showAddButton = false;
-
-  @property({ type: Boolean, attribute: 'hide-add-button' })
-  hideAddButton = false;
 
   @query('.file-input')
   input?: HTMLInputElement;
@@ -138,8 +138,8 @@ export class SniceFileGallery extends HTMLElement implements SniceFileGalleryEle
       this.galleryContainer.appendChild(elem);
     }
 
-    // Add "add files" button if in that mode (unless explicitly hidden)
-    if (this.showAddButton && !this.hideAddButton) {
+    // Add "add files" button if enabled
+    if (this.showAddButton) {
       const addBtn = this.createAddButton();
       this.galleryContainer.appendChild(addBtn);
     }
@@ -403,7 +403,7 @@ export class SniceFileGallery extends HTMLElement implements SniceFileGalleryEle
           @change=${this.handleFileSelect}
         />
 
-        <if ${!this.showAddButton}>
+        <if ${this.showDropzone}>
           <div
             class="${dropZoneClasses}"
             @click=${() => this.handleDropZoneClick()}

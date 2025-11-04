@@ -21,13 +21,13 @@
 }
 
 .drop-zone:hover:not(.drop-zone--disabled) {
-  border-color: var(--snice-color-primary, rgb(37 99 235));
-  background: var(--snice-color-background-element-hover, rgb(249 247 245));
+  border-color: var(--snice-color-primary);
+  background: var(--snice-color-background-hover);
 }
 
 .drop-zone--drag-over {
-  border-color: var(--snice-color-primary, rgb(37 99 235));
-  background: var(--snice-color-primary-subtle, rgb(219 234 254));
+  border-color: var(--snice-color-primary);
+  background: var(--snice-color-primary-subtle);
 }
 
 .drop-zone--disabled {
@@ -64,7 +64,7 @@
 }
 
 .drop-zone-primary {
-  font-size: var(--snice-font-size-base, 1rem);
+  font-size: var(--snice-font-size-md, 1rem);
   font-weight: var(--snice-font-weight-medium, 500);
   color: var(--snice-color-text, rgb(23 23 23));
 }
@@ -88,7 +88,7 @@
 }
 
 .gallery-title {
-  font-size: var(--snice-font-size-base, 1rem);
+  font-size: var(--snice-font-size-md, 1rem);
   font-weight: var(--snice-font-weight-medium, 500);
   color: var(--snice-color-text, rgb(23 23 23));
 }
@@ -113,8 +113,8 @@
 }
 
 .gallery-action-button:hover {
-  background: var(--snice-color-background-element-hover, rgb(249 247 245));
-  border-color: var(--snice-color-border-hover, rgb(163 163 163));
+  background: var(--snice-color-background-hover);
+  border-color: var(--snice-color-border-hover);
 }
 
 .gallery-action-button svg {
@@ -173,7 +173,7 @@
 .gallery-item-preview {
   position: relative;
   aspect-ratio: 1;
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-background-secondary);
   overflow: hidden;
 }
 
@@ -210,7 +210,7 @@
   left: 0;
   right: 0;
   height: 0.25rem;
-  background: var(--snice-color-background-subtle, rgb(245 245 245));
+  background: var(--snice-color-background-tertiary);
 }
 
 .gallery-item-progress-bar {
@@ -339,7 +339,7 @@
 }
 
 .gallery-item-action:hover {
-  background: var(--snice-color-background-subtle, rgb(245 245 245));
+  background: var(--snice-color-background-hover);
 }
 
 .gallery-item-action--delete {
@@ -347,7 +347,7 @@
 }
 
 .gallery-item-action--delete:hover {
-  background: var(--snice-color-danger-subtle, rgb(254 226 226));
+  background: var(--snice-color-danger-subtle);
 }
 
 .gallery-item-action svg {
@@ -364,8 +364,8 @@
 }
 
 .gallery-item--add-button:hover:not(.gallery-item--disabled) {
-  border-color: var(--snice-color-primary, rgb(37 99 235));
-  background: var(--snice-color-primary-subtle, rgb(219 234 254));
+  border-color: var(--snice-color-primary);
+  background: var(--snice-color-primary-subtle);
 }
 
 .gallery-item--add-button.gallery-item--disabled {
