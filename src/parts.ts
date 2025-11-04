@@ -223,23 +223,6 @@ function prepareTemplate(result: TemplateResult): Template {
   for (let i = 0; i < strings.length; i++) {
     let str = strings[i];
 
-    // Encode slashes in attribute names to prevent browser from splitting them
-    // HTML doesn't allow / in attribute names - browser treats it as whitespace
-    // Replace / with __SLASH__ in attribute context only (before = sign, after last >)
-    if (i < strings.length - 1) {
-      const lastEquals = str.lastIndexOf('=');
-      const lastCloseTag = str.lastIndexOf('>');
-
-      if (lastEquals > lastCloseTag) {
-        // We're in an attribute context - encode slashes in the attribute name
-        const beforeEquals = str.substring(0, lastEquals);
-        const attrStartIdx = beforeEquals.lastIndexOf('>') + 1;
-        const attrPart = beforeEquals.substring(attrStartIdx);
-        const encodedAttrPart = attrPart.replace(/\//g, '__SLASH__');
-        str = beforeEquals.substring(0, attrStartIdx) + encodedAttrPart + str.substring(lastEquals);
-      }
-    }
-
     htmlParts.push(str);
 
     if (i < strings.length - 1) {
@@ -255,9 +238,7 @@ function prepareTemplate(result: TemplateResult): Template {
           attrStart--;
         }
         const attrName = str.substring(attrStart + 1, lastEquals).trim();
-        // Decode the slash encoding to get original name
-        const originalAttrName = attrName.replace(/__SLASH__/g, '/');
-        attrNamesForParts.push(originalAttrName);
+        attrNamesForParts.push(attrName);
         htmlParts.push(marker);
       } else {
         // Check if this is a meta element (<if> or <case>) by looking backwards
