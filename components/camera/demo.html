@@ -208,6 +208,36 @@
   </div>
 
   <div class="demo-section">
+    <h3>Object Fit Modes</h3>
+    <div class="position-grid">
+      <div class="position-example">
+        <h4>Contain (Default) - Shows full video</h4>
+        <snice-camera object-fit="contain"></snice-camera>
+      </div>
+      <div class="position-example">
+        <h4>Cover - Fills frame (may crop)</h4>
+        <snice-camera object-fit="cover"></snice-camera>
+      </div>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <h3>Portrait Mode Example</h3>
+    <p>Tall portrait format with cover mode to fill the frame.</p>
+    <div style="max-width: 400px; margin: 0 auto;">
+      <div style="height: 600px;">
+        <snice-camera
+          object-fit="cover"
+          aspect-ratio="9:16"
+          width="720"
+          height="1280"
+          style="height: 100%; max-width: 100%;">
+        </snice-camera>
+      </div>
+    </div>
+  </div>
+
+  <div class="demo-section">
     <h3>Captured Photos</h3>
     <div id="gallery" class="gallery"></div>
   </div>
@@ -239,7 +269,8 @@
       <li><code>show-controls</code> - Boolean, show built-in controls (default: true). Set to false to use only custom slotted controls</li>
       <li><code>width</code> - Number, video width in pixels (default: 1280)</li>
       <li><code>height</code> - Number, video height in pixels (default: 720)</li>
-      <li><code>aspect-ratio</code> - String, aspect ratio preset: "16:9", "4:3", "1:1", "21:9"</li>
+      <li><code>aspect-ratio</code> - String, aspect ratio preset: "16:9", "9:16", "4:3", "1:1", "21:9"</li>
+      <li><code>object-fit</code> - "contain" (default, shows full video) or "cover" (fills frame, may crop)</li>
       <li><code>facing-mode</code> - "user" (front, default) or "environment" (back)</li>
       <li><code>mirror</code> - Boolean, mirrors video for front camera (default: true)</li>
       <li><code>auto-start</code> - Boolean, auto-start on load (default: true)</li>

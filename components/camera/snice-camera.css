@@ -1,6 +1,7 @@
 :host {
   display: block;
   width: 100%;
+  height: 100%;
   max-width: 40rem; /* 640px */
   position: relative;
   background: rgb(0 0 0);
@@ -8,27 +9,46 @@
   overflow: hidden;
 }
 
+:host(:not([aspect-ratio])) {
+  height: auto;
+}
+
 .camera-container {
   position: relative;
   width: 100%;
-  padding-bottom: var(--aspect-ratio, 75%); /* Default 4:3 aspect ratio */
+  height: 100%;
   background: rgb(0 0 0);
 }
 
-:host([aspect-ratio="16:9"]) .camera-container {
+:host(:not([aspect-ratio])) .camera-container {
+  padding-bottom: 75%; /* Default 4:3 aspect ratio when no aspect-ratio set */
+  height: 0;
+}
+
+/* When no explicit height is set, use padding-bottom technique for aspect ratio */
+:host([aspect-ratio="16:9"]:not([style*="height"])) .camera-container {
   padding-bottom: 56.25%; /* 16:9 */
+  height: 0;
 }
 
-:host([aspect-ratio="4:3"]) .camera-container {
+:host([aspect-ratio="9:16"]:not([style*="height"])) .camera-container {
+  padding-bottom: 177.78%; /* 9:16 Portrait */
+  height: 0;
+}
+
+:host([aspect-ratio="4:3"]:not([style*="height"])) .camera-container {
   padding-bottom: 75%; /* 4:3 */
+  height: 0;
 }
 
-:host([aspect-ratio="1:1"]) .camera-container {
+:host([aspect-ratio="1:1"]:not([style*="height"])) .camera-container {
   padding-bottom: 100%; /* Square */
+  height: 0;
 }
 
-:host([aspect-ratio="21:9"]) .camera-container {
+:host([aspect-ratio="21:9"]:not([style*="height"])) .camera-container {
   padding-bottom: 42.857%; /* Ultra-wide */
+  height: 0;
 }
 
 .camera-container:fullscreen {
@@ -42,7 +62,15 @@ video {
   left: 0;
   width: 100%;
   height: 100%;
+  object-fit: contain;
+}
+
+video.cover {
   object-fit: cover;
+}
+
+video.contain {
+  object-fit: contain;
 }
 
 video.mirror {
@@ -68,6 +96,7 @@ video.mirror {
   display: flex;
   align-items: center;
   gap: var(--snice-spacing-sm, 0.75rem);
+  padding: var(--snice-spacing-md, 1rem);
   pointer-events: auto;
   z-index: 5;
 }

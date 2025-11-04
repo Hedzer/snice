@@ -12,7 +12,8 @@ controlsPosition: ControlsPosition = 'auto';
 showControls: boolean = true;
 width: number = 1280;
 height: number = 720;
-aspectRatio: string = '';  // '16:9', '4:3', '1:1', '21:9'
+aspectRatio: string = '';  // '16:9', '9:16', '4:3', '1:1', '21:9'
+objectFit: 'contain'|'cover' = 'contain';  // contain: full video, cover: fills frame (may crop)
 ```
 
 ## ControlsPosition
@@ -96,6 +97,12 @@ interface CapturedImage {
 
 <!-- Square -->
 <snice-camera aspect-ratio="1:1" width="1080" height="1080"></snice-camera>
+
+<!-- Portrait mode with cover -->
+<snice-camera aspect-ratio="9:16" object-fit="cover" width="720" height="1280"></snice-camera>
+
+<!-- Cover mode (fills container, may crop) -->
+<snice-camera object-fit="cover"></snice-camera>
 ```
 
 ```javascript

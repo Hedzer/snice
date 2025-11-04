@@ -28,6 +28,9 @@ export class SniceCamera extends HTMLElement implements SniceCameraElement {
   @property({ type: String, attribute: 'aspect-ratio' })
   aspectRatio: string = '';
 
+  @property({ type: String, attribute: 'object-fit' })
+  objectFit: 'contain' | 'cover' = 'contain';
+
   @query('video')
   private video!: HTMLVideoElement;
 
@@ -70,7 +73,7 @@ export class SniceCamera extends HTMLElement implements SniceCameraElement {
     return html/*html*/`
       <div class="camera-container">
         <video
-          class="${this.mirror && this.facingMode === 'user' ? 'mirror' : ''}"
+          class="${this.getVideoClass()}"
           autoplay
           playsinline
           muted>
@@ -99,6 +102,22 @@ export class SniceCamera extends HTMLElement implements SniceCameraElement {
         </div>
       </div>
     `;
+  }
+
+  private getVideoClass(): string {
+    const classes: string[] = [];
+
+    if (this.mirror && this.facingMode === 'user') {
+      classes.push('mirror');
+    }
+
+    if (this.objectFit === 'cover') {
+      classes.push('cover');
+    } else {
+      classes.push('contain');
+    }
+
+    return classes.join(' ');
   }
 
   private getControlsPosition(): string {

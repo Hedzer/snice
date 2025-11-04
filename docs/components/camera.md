@@ -30,7 +30,8 @@ Live camera feed with built-in mobile-style controls and flexible positioning.
 | `showControls` | `boolean` | `true` | Show built-in controls |
 | `width` | `number` | `1280` | Video width (resolution) |
 | `height` | `number` | `720` | Video height (resolution) |
-| `aspectRatio` | `string` | `''` | Aspect ratio: `'16:9'`, `'4:3'`, `'1:1'`, `'21:9'` |
+| `aspectRatio` | `string` | `''` | Aspect ratio: `'16:9'`, `'9:16'`, `'4:3'`, `'1:1'`, `'21:9'` |
+| `objectFit` | `'contain' \| 'cover'` | `'contain'` | How video fits container: `contain` (full video) or `cover` (fills frame, may crop) |
 
 ## Control Positions
 
@@ -222,6 +223,9 @@ Auto-starts camera with controls at bottom-right (portrait) or right (landscape)
 <!-- 16:9 widescreen -->
 <snice-camera aspect-ratio="16:9"></snice-camera>
 
+<!-- 9:16 portrait -->
+<snice-camera aspect-ratio="9:16" width="720" height="1280"></snice-camera>
+
 <!-- 4:3 classic -->
 <snice-camera aspect-ratio="4:3"></snice-camera>
 
@@ -230,6 +234,25 @@ Auto-starts camera with controls at bottom-right (portrait) or right (landscape)
 
 <!-- 21:9 ultra-wide -->
 <snice-camera aspect-ratio="21:9"></snice-camera>
+```
+
+### Object Fit Modes
+
+```html
+<!-- Contain (default) - Shows full video with possible letterboxing -->
+<snice-camera object-fit="contain"></snice-camera>
+
+<!-- Cover - Fills entire container, may crop video -->
+<snice-camera object-fit="cover"></snice-camera>
+
+<!-- Portrait with cover for full-screen mobile -->
+<snice-camera
+  aspect-ratio="9:16"
+  object-fit="cover"
+  width="720"
+  height="1280"
+  style="height: 100vh;">
+</snice-camera>
 ```
 
 ### Fullscreen
