@@ -12,8 +12,8 @@ controlsPosition: ControlsPosition = 'auto';
 showControls: boolean = true;
 width: number = 1280;
 height: number = 720;
-aspectRatio: string = '';  // '16:9', '9:16', '4:3', '1:1', '21:9'
-objectFit: 'contain'|'cover' = 'contain';  // contain: full video, cover: fills frame (may crop)
+aspectRatio: string = 'auto';  // 'auto' (fills space), '16:9', '9:16', '4:3', '1:1', '21:9'
+objectFit: 'contain'|'cover' = 'cover';  // cover: fills frame (may crop), contain: full video (may letterbox)
 ```
 
 ## ControlsPosition

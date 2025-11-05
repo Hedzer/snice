@@ -30,8 +30,8 @@ Live camera feed with built-in mobile-style controls and flexible positioning.
 | `showControls` | `boolean` | `true` | Show built-in controls |
 | `width` | `number` | `1280` | Video width (resolution) |
 | `height` | `number` | `720` | Video height (resolution) |
-| `aspectRatio` | `string` | `''` | Aspect ratio: `'16:9'`, `'9:16'`, `'4:3'`, `'1:1'`, `'21:9'` |
-| `objectFit` | `'contain' \| 'cover'` | `'contain'` | How video fits container: `contain` (full video) or `cover` (fills frame, may crop) |
+| `aspectRatio` | `string` | `'auto'` | Aspect ratio: `'auto'` (fills space), `'16:9'`, `'9:16'`, `'4:3'`, `'1:1'`, `'21:9'` |
+| `objectFit` | `'contain' \| 'cover'` | `'cover'` | How video fits container: `cover` (fills frame, may crop) or `contain` (full video, may letterbox) |
 
 ## Control Positions
 

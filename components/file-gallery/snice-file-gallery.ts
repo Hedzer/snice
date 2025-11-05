@@ -47,6 +47,9 @@ export class SniceFileGallery extends HTMLElement implements SniceFileGalleryEle
   @property({ type: Boolean, attribute: 'show-add-button' })
   showAddButton = false;
 
+  @property({ type: Boolean, attribute: 'show-header' })
+  showHeader = true;
+
   @query('.file-input')
   input?: HTMLInputElement;
 
@@ -430,8 +433,10 @@ export class SniceFileGallery extends HTMLElement implements SniceFileGalleryEle
           </div>
         </if>
 
-        <div class="gallery-header">
-        </div>
+        <if ${this.showHeader}>
+          <div class="gallery-header">
+          </div>
+        </if>
 
         <div class="gallery gallery--${this.view}">
         </div>
