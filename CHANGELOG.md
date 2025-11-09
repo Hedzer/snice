@@ -1,3 +1,15 @@
+# [4.2.0](https://gitlab.com/Hedzer/snice/compare/v4.1.0...v4.2.0) (2025-11-09)
+
+
+### Bug Fixes
+
+* login doc mistakes, loader state ([372f1da](https://gitlab.com/Hedzer/snice/commit/372f1dac00e8376bbbb9e785b3f7ba2a0463d79b))
+
+
+### Features
+
+* gallery header control ([ea0c284](https://gitlab.com/Hedzer/snice/commit/ea0c28424a06830f694097ade25bcbd831e2622c))
+
 # [4.1.0](https://gitlab.com/Hedzer/snice/compare/v4.0.2...v4.1.0) (2025-11-04)
 
 
