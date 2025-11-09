@@ -218,6 +218,8 @@ export class SniceLogin extends HTMLElement implements SniceLoginElement {
 
       if (!credentials.username || !credentials.password) {
         this.showAlert('Username and password are required', 'error');
+        this.loading = false;
+        this.updateLoadingState();
         return;
       }
 
@@ -340,6 +342,18 @@ export class SniceLogin extends HTMLElement implements SniceLoginElement {
 
   clearError() {
     this.clearAlert();
+  }
+
+  setCredentials(credentials: Partial<LoginCredentials>) {
+    if (credentials.username !== undefined && this.usernameInput) {
+      this.usernameInput.value = credentials.username;
+    }
+    if (credentials.password !== undefined && this.passwordInput) {
+      this.passwordInput.value = credentials.password;
+    }
+    if (credentials.remember !== undefined && this.rememberInput) {
+      this.rememberInput.checked = credentials.remember;
+    }
   }
 
   reset() {

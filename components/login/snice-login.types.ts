@@ -26,4 +26,5 @@ export interface SniceLoginElement extends HTMLElement {
   reset(): void;
   setError(message: string): void;
   clearError(): void;
+  setCredentials(credentials: Partial<LoginCredentials>): void;
 }

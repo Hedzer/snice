@@ -334,6 +334,23 @@ describe('snice-login', () => {
       expect(alertEl).toBeFalsy();
     });
 
+    it('should support setCredentials method', async () => {
+      login.setCredentials({
+        username: 'testuser',
+        password: 'testpass',
+        remember: true
+      });
+      await wait(50);
+
+      const usernameInput = queryShadow(login as HTMLElement, 'input[name="username"]') as HTMLInputElement;
+      const passwordInput = queryShadow(login as HTMLElement, 'input[name="password"]') as HTMLInputElement;
+      const rememberInput = queryShadow(login as HTMLElement, 'input[name="remember"]') as HTMLInputElement;
+
+      expect(usernameInput.value).toBe('testuser');
+      expect(passwordInput.value).toBe('testpass');
+      expect(rememberInput.checked).toBe(true);
+    });
+
     it('should support reset method', async () => {
       const usernameInput = queryShadow(login as HTMLElement, 'input[name="username"]') as HTMLInputElement;
       const passwordInput = queryShadow(login as HTMLElement, 'input[name="password"]') as HTMLInputElement;
@@ -376,6 +393,143 @@ describe('snice-login', () => {
 
       const slotEl = queryShadow(login as HTMLElement, 'slot[name="footer"]');
       expect(slotEl).toBeTruthy();
+    });
+  });
+
+  describe('button loading state during submission', () => {
+    beforeEach(async () => {
+      login = await createComponent<SniceLoginElement>('snice-login');
+      await wait(50);
+    });
+
+    it('should set button to loading state when form is submitted', async () => {
+      const usernameInput = queryShadow(login as HTMLElement, 'input[name="username"]') as HTMLInputElement;
+      const passwordInput = queryShadow(login as HTMLElement, 'input[name="password"]') as HTMLInputElement;
+
+      usernameInput.value = 'testuser';
+      passwordInput.value = 'testpass';
+
+      // Trigger submit
+      const formEl = queryShadow(login as HTMLElement, '.login__form') as HTMLFormElement;
+      formEl?.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+
+      // Button should be loading immediately after submit
+      await wait(10);
+      expect(login.loading).toBe(true);
+
+      const btnEl = queryShadow(login as HTMLElement, 'snice-button');
+      expect(btnEl?.hasAttribute('loading')).toBe(true);
+    });
+
+    it('should reset loading state after validation failure (empty username)', async () => {
+      const passwordInput = queryShadow(login as HTMLElement, 'input[name="password"]') as HTMLInputElement;
+      passwordInput.value = 'testpass';
+
+      // Username is empty, should fail validation
+      const formEl = queryShadow(login as HTMLElement, '.login__form') as HTMLFormElement;
+      formEl?.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+
+      // Wait for validation to complete
+      await wait(100);
+
+      // Loading state should be reset
+      expect(login.loading).toBe(false);
+
+      const btnEl = queryShadow(login as HTMLElement, 'snice-button');
+      expect(btnEl?.hasAttribute('loading')).toBe(false);
+    });
+
+    it('should reset loading state after validation failure (empty password)', async () => {
+      const usernameInput = queryShadow(login as HTMLElement, 'input[name="username"]') as HTMLInputElement;
+      usernameInput.value = 'testuser';
+
+      // Password is empty, should fail validation
+      const formEl = queryShadow(login as HTMLElement, '.login__form') as HTMLFormElement;
+      formEl?.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+
+      // Wait for validation to complete
+      await wait(100);
+
+      // Loading state should be reset
+      expect(login.loading).toBe(false);
+
+      const btnEl = queryShadow(login as HTMLElement, 'snice-button');
+      expect(btnEl?.hasAttribute('loading')).toBe(false);
+    });
+
+    it('should reset loading state after validation failure (both empty)', async () => {
+      // Both fields empty, should fail validation
+      const formEl = queryShadow(login as HTMLElement, '.login__form') as HTMLFormElement;
+      formEl?.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+
+      // Wait for validation to complete
+      await wait(100);
+
+      // Loading state should be reset
+      expect(login.loading).toBe(false);
+
+      const btnEl = queryShadow(login as HTMLElement, 'snice-button');
+      expect(btnEl?.hasAttribute('loading')).toBe(false);
+
+      // Error alert should be shown
+      const alertEl = queryShadow(login as HTMLElement, 'snice-alert');
+      expect(alertEl?.textContent).toContain('Username and password are required');
+    });
+
+    it('should disable button during loading state', async () => {
+      login.loading = true;
+      await wait(50);
+
+      const btnEl = queryShadow(login as HTMLElement, 'snice-button');
+      expect(btnEl?.hasAttribute('loading')).toBe(true);
+
+      const usernameInput = queryShadow(login as HTMLElement, 'input[name="username"]') as HTMLInputElement;
+      const passwordInput = queryShadow(login as HTMLElement, 'input[name="password"]') as HTMLInputElement;
+
+      expect(usernameInput.disabled).toBe(true);
+      expect(passwordInput.disabled).toBe(true);
+    });
+
+    it('should not process submission when already loading', async () => {
+      const usernameInput = queryShadow(login as HTMLElement, 'input[name="username"]') as HTMLInputElement;
+      const passwordInput = queryShadow(login as HTMLElement, 'input[name="password"]') as HTMLInputElement;
+
+      usernameInput.value = 'testuser';
+      passwordInput.value = 'testpass';
+
+      // Set to loading manually
+      login.loading = true;
+      await wait(10);
+
+      const formEl = queryShadow(login as HTMLElement, '.login__form') as HTMLFormElement;
+
+      // Try to submit while loading
+      formEl?.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+      await wait(100);
+
+      // Should remain in loading state (not change to false then back to true)
+      // The guard in handleSubmit should prevent any state changes
+      expect(login.loading).toBe(true);
+    });
+
+    it('should reset button state when reset() is called', async () => {
+      // Set loading and error state
+      login.loading = true;
+      login.setError('Some error');
+      await wait(50);
+
+      // Reset
+      login.reset();
+      await wait(50);
+
+      // Button should not be loading
+      expect(login.loading).toBe(false);
+      const btnEl = queryShadow(login as HTMLElement, 'snice-button');
+      expect(btnEl?.hasAttribute('loading')).toBe(false);
+
+      // Error should be cleared
+      const alertEl = queryShadow(login as HTMLElement, 'snice-alert');
+      expect(alertEl).toBeFalsy();
     });
   });
 });

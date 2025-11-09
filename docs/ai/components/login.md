@@ -1,109 +1,143 @@
 # snice-login
 
-Login form component with username, password, and optional features.
+Login form with username/password using @request/@respond pattern.
 
 ## Properties
 
 ```typescript
 variant: 'default'|'card'|'minimal' = 'default';
 size: 'small'|'medium'|'large' = 'medium';
-title: string = '';
+title: string = 'Sign In';
 disabled: boolean = false;
 loading: boolean = false;
-showRememberMe: boolean = false;
-showForgotPassword: boolean = false;
-actionText: string = 'Login';
+showRememberMe: boolean = true;
+showForgotPassword: boolean = true;
+actionText: string = 'Sign In';
 ```
 
 ## Methods
 
-- `login(credentials)` - Programmatic login, returns {success, error?, data?}
-- `reset()` - Clear form
-- `setError(message)` - Display error message
-- `clearError()` - Clear error message
+- `login(credentials?: LoginCredentials): Promise<LoginResult>` - Programmatic login via @request/@respond
+- `setCredentials({username?, password?, remember?})` - Set form field values
+- `reset()` - Clear form, alert, loading state
+- `setError(message)` - Display error alert
+- `clearError()` - Clear alert
 
-## Events
+## @Request/@Respond Pattern (Primary)
 
-- `submit` - {username, password, remember}
-- `forgot-password` - User clicked forgot password link
+Component uses `@request('login-user')` to communicate with controller.
+
+**Element request:**
+```typescript
+interface LoginCredentials {
+  username: string;
+  password: string;
+  remember?: boolean;
+}
+```
+
+**Controller response:**
+```typescript
+interface LoginResult {
+  success: boolean;
+  error?: string;
+  data?: any;  // Can include user, token, etc.
+}
+```
+
+**Controller setup:**
+```typescript
+import { controller, respond, IController } from 'snice';
+
+@controller('auth-controller')
+class AuthController implements IController {
+  async attach(element: HTMLElement) {}
+  async detach(element: HTMLElement) {}
+
+  @respond('login-user')
+  async handleLogin(credentials: LoginCredentials): Promise<LoginResult> {
+    // Validate, authenticate, return result
+    return { success: true, data: { user, token } };
+  }
+}
+```
+
+**Usage:**
+```html
+<snice-login controller="auth-controller"></snice-login>
+```
+
+## Events (Fallback)
+
+Dispatched for non-Snice framework consumers.
+
+- `login-attempt` - {username, timestamp} - Form submitted
+- `login-success` - {timestamp} - Login succeeded
+- `login-error` - {error, timestamp} - Login failed
+- `login-forgot-password` - {timestamp} - Forgot password clicked
 
 ## Usage
 
 ```html
-<!-- Basic -->
-<snice-login title="Sign In"></snice-login>
+<!-- With controller (primary) -->
+<snice-login controller="auth-controller"></snice-login>
 
 <!-- Variants -->
 <snice-login variant="card"></snice-login>
 <snice-login variant="minimal"></snice-login>
 
-<!-- With remember me and forgot password -->
-<snice-login show-remember-me show-forgot-password></snice-login>
-
-<!-- Custom action text -->
-<snice-login action-text="Sign In"></snice-login>
-
-<!-- Loading state -->
-<snice-login loading></snice-login>
-
-<!-- Disabled -->
-<snice-login disabled></snice-login>
-
 <!-- Sizes -->
 <snice-login size="small"></snice-login>
-<snice-login size="medium"></snice-login>
 <snice-login size="large"></snice-login>
 
-<!-- Event handling -->
-<snice-login id="login"></snice-login>
+<!-- Options -->
+<snice-login
+  title="Welcome Back"
+  action-text="Sign In"
+  show-remember-me
+  show-forgot-password>
+</snice-login>
+
+<!-- Custom subtitle/footer -->
+<snice-login>
+  <p slot="subtitle">Please sign in to continue</p>
+  <div slot="footer">
+    <a href="/signup">Create account</a>
+  </div>
+</snice-login>
+
+<!-- Event handling (fallback) -->
 <script>
-const login = document.querySelector('#login');
+const login = document.querySelector('snice-login');
 
-login.addEventListener('submit', async (e) => {
-  const {username, password, remember} = e.detail;
-
-  login.loading = true;
-  const result = await fetch('/api/login', {
-    method: 'POST',
-    body: JSON.stringify({username, password})
-  });
-
-  if (!result.ok) {
-    login.setError('Invalid credentials');
-    login.loading = false;
-  } else {
-    window.location = '/dashboard';
-  }
+login.addEventListener('login-success', (e) => {
+  window.location = '/dashboard';
 });
 
-login.addEventListener('forgot-password', () => {
-  window.location = '/forgot-password';
+login.addEventListener('login-error', (e) => {
+  console.error(e.detail.error);
 });
-</script>
-
-<!-- Programmatic login -->
-<script>
-const result = await login.login({
-  username: 'user@example.com',
-  password: 'password123',
-  remember: true
-});
-
-if (result.success) {
-  console.log('Logged in:', result.data);
-} else {
-  console.error('Login failed:', result.error);
-}
 </script>
 ```
 
+## Slots
+
+- `before-header`, `after-header` - Around header
+- `subtitle` - Custom subtitle
+- `before-form`, `after-form` - Around form
+- `form-top` - Top of form
+- `between-fields` - Between username/password
+- `before-submit`, `after-submit` - Around button
+- `footer` - Footer content
+
 ## Features
 
-- 3 visual variants (default/card/minimal)
+- @request/@respond with controllers (primary)
+- Event dispatch fallback
+- 3 visual variants
 - 3 sizes
-- Optional remember me checkbox
-- Optional forgot password link
-- Loading and disabled states
-- Error message display
-- Programmatic and event-based submission
+- Optional remember me
+- Optional forgot password
+- Loading/disabled states
+- Error display via alert component
 - Keyboard accessible (Enter to submit)
