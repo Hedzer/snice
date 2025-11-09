@@ -4,6 +4,7 @@
   max-width: 100%;
   box-sizing: border-box;
   font-family: var(--snice-font-family);
+  color-scheme: light dark;
 }
 
 .input-wrapper {
@@ -116,6 +117,16 @@
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
 }
 
+/* Native Date/Time Picker Icons */
+.input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.input::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
 /* With Icons */
 .input--with-prefix-icon {
   padding-left: 2.25rem; /* 36px */
@@ -171,6 +182,7 @@
   height: 1.25rem; /* 20px */
   color: var(--snice-color-text-secondary);
   pointer-events: none;
+  opacity: 0.7;
 }
 
 .icon--prefix {

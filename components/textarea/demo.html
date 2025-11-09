@@ -4,10 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Textarea Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
   <style>
     body {
       padding: 40px;
-      font-family: system-ui, -apple-system, sans-serif;
+      font-family: var(--snice-font-family);
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
       max-width: 800px;
       margin: 0 auto;
     }
@@ -18,13 +21,14 @@
 
     h2 {
       margin-bottom: 20px;
-      font-size: 1.5rem;
+      font-size: var(--snice-font-size-2xl);
+      color: var(--snice-color-text);
     }
 
     h3 {
       margin-bottom: 16px;
-      font-size: 1.125rem;
-      color: #6b7280;
+      font-size: var(--snice-font-size-lg);
+      color: var(--snice-color-text-secondary);
     }
 
     .textarea-group {

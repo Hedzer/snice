@@ -43,7 +43,7 @@
   padding: var(--snice-spacing-xs, 0.5rem) 3rem var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
   font-size: inherit;
   line-height: var(--snice-line-height-normal, 1.5);
-  background: var(--snice-color-background, white);
+  background: var(--snice-color-background-input);
   color: var(--snice-color-text, #374151);
   transition: border-color var(--snice-transition-fast, 0.15s) ease, box-shadow var(--snice-transition-fast, 0.15s) ease;
 }

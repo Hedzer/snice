@@ -70,13 +70,13 @@
 
 .login__input {
   padding: var(--snice-spacing-sm, 0.75rem);
-  border: 1px solid var(--snice-color-border, rgb(226 226 226));
+  border: 1px solid var(--snice-color-border);
   border-radius: var(--snice-border-radius-md, 0.25rem);
   font-size: var(--snice-font-size-md, 1rem);
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   transition: border-color var(--snice-transition-fast, 150ms) ease;
-  background: var(--snice-color-background, rgb(255 255 255));
-  color: var(--snice-color-text, rgb(23 23 23));
+  background: var(--snice-color-background-input);
+  color: var(--snice-color-text);
 }
 
 .login__input:focus {

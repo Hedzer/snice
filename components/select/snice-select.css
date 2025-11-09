@@ -51,7 +51,7 @@ img[src=""] {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--snice-color-background);
+  background: var(--snice-color-background-input);
   border: 1px solid var(--snice-color-border);
   border-radius: var(--snice-border-radius-md);
   cursor: pointer;
@@ -221,7 +221,7 @@ img[src=""] {
   margin-top: 4px;
   left: 0;
   right: 0;
-  background: var(--snice-color-background);
+  background: var(--snice-color-background-element);
   border: 1px solid var(--snice-color-border);
   border-radius: var(--snice-border-radius-md);
   box-shadow: var(--snice-shadow-lg);
