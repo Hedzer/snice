@@ -1,0 +1,29 @@
+{
+  "name": "@snice/react",
+  "version": "1.0.0",
+  "description": "React adapters for Snice web components",
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js"
+    },
+    "./*": {
+      "types": "./*.d.ts",
+      "import": "./*.js"
+    }
+  },
+  "peerDependencies": {
+    "react": ">=17.0.0",
+    "react-dom": ">=17.0.0"
+  },
+  "keywords": [
+    "snice",
+    "web-components",
+    "react",
+    "react-adapter",
+    "custom-elements"
+  ]
+}

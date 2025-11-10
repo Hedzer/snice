@@ -2,7 +2,11 @@
 
 import { fileURLToPath } from 'url';
 import { dirname, join, resolve, basename } from 'path';
-import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, cpSync } from 'fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, cpSync, statSync } from 'fs';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+
+const execAsync = promisify(exec);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -33,6 +37,38 @@ if (command === 'create-app') {
   const template = flags.template || 'base';
 
   createApp(projectPath, template);
+} else if (command === 'build-component') {
+  // Parse arguments - separate flags from positional arguments
+  const flags = {};
+  const positional = [];
+
+  for (let i = 1; i < args.length; i++) {
+    const arg = args[i];
+    if (arg.startsWith('--')) {
+      if (arg.includes('=')) {
+        const [key, value] = arg.split('=');
+        flags[key.slice(2)] = value;
+      } else {
+        flags[arg.slice(2)] = true;
+      }
+    } else {
+      positional.push(arg);
+    }
+  }
+
+  const componentName = positional[0];
+  const outputDir = flags.output || './dist/standalone';
+  const formats = flags.format ? flags.format.split(',') : ['esm', 'iife'];
+  const minify = flags.minify !== false;
+  const withTheme = flags['with-theme'] === true;
+
+  if (!componentName) {
+    console.error('❌ Error: Component name is required\n');
+    console.log('Usage: snice build-component <component-name> [options]\n');
+    process.exit(1);
+  }
+
+  buildComponent(componentName, { outputDir, formats, minify, withTheme });
 } else {
   console.log(`
 Snice CLI
@@ -40,9 +76,16 @@ Snice CLI
 Usage:
   snice create-app [options] <project-name>
   snice create-app [options] .                          Initialize in current directory
+  snice build-component <component-name> [options]      Build standalone component
 
-Options:
+Create App Options:
   --template=<name>                                     Template to use (default: base)
+
+Build Component Options:
+  --output=<dir>                                        Output directory (default: ./dist/standalone)
+  --format=<formats>                                    Comma-separated formats: esm,umd,iife (default: esm,iife)
+  --minify                                              Minify output (default: true)
+  --with-theme                                          Include theme.css in output
 
 Templates:
   base    - Minimal starter with counter example (default)
@@ -51,7 +94,9 @@ Templates:
 Examples:
   snice create-app my-app
   snice create-app my-app --template=pwa
-  npx snice create-app my-app --template=pwa
+  snice build-component button
+  snice build-component button --output=./standalone --format=esm,umd
+  snice build-component button --with-theme
 `);
 }
 
@@ -126,11 +171,11 @@ function createApp(projectPath, template = 'base') {
 
 function copyTemplateFiles(sourceDir, targetDir, projectName) {
   const files = readdirSync(sourceDir, { withFileTypes: true });
-  
+
   for (const file of files) {
     const sourcePath = join(sourceDir, file.name);
     const targetPath = join(targetDir, file.name);
-    
+
     if (file.isDirectory()) {
       // Create directory and recursively copy contents
       if (!existsSync(targetPath)) {
@@ -140,13 +185,102 @@ function copyTemplateFiles(sourceDir, targetDir, projectName) {
     } else {
       // Read file, replace placeholders, and write to target
       console.log(`  Creating ${file.name}...`);
-      
+
       let content = readFileSync(sourcePath, 'utf8');
-      
+
       // Replace {{projectName}} placeholders
       content = content.replace(/\{\{projectName\}\}/g, projectName);
-      
+
       writeFileSync(targetPath, content);
+    }
+  }
+}
+
+async function buildComponent(componentName, options) {
+  const { outputDir, formats, minify, withTheme } = options;
+
+  console.log(`\n🔨 Building standalone component: ${componentName}\n`);
+
+  // Verify component exists
+  const componentPath = join(process.cwd(), 'components', componentName, `snice-${componentName}.ts`);
+  if (!existsSync(componentPath)) {
+    console.error(`❌ Component not found: ${componentPath}`);
+    console.error('Available components:');
+
+    const componentsDir = join(process.cwd(), 'components');
+    if (existsSync(componentsDir)) {
+      const items = readdirSync(componentsDir);
+      for (const item of items) {
+        const itemPath = join(componentsDir, item);
+        if (statSync(itemPath).isDirectory() && item !== 'theme') {
+          const tsFile = join(itemPath, `snice-${item}.ts`);
+          if (existsSync(tsFile)) {
+            console.error(`  - ${item}`);
+          }
+        }
+      }
+    }
+    process.exit(1);
+  }
+
+  console.log(`📦 Options:`);
+  console.log(`   Output: ${outputDir}`);
+  console.log(`   Formats: ${formats.join(', ')}`);
+  console.log(`   Minify: ${minify}`);
+  console.log(`   Include theme: ${withTheme}\n`);
+
+  // Create a temporary rollup config for this build
+  const configContent = `
+import { createStandaloneBuild } from './rollup.config.standalone.js';
+
+export default createStandaloneBuild('${componentName}', {
+  minify: ${minify},
+  withTheme: ${withTheme},
+  formats: ${JSON.stringify(formats)}
+});
+`;
+
+  const tempConfigPath = join(process.cwd(), '.rollup.config.temp.js');
+  writeFileSync(tempConfigPath, configContent);
+
+  try {
+    // Run rollup with the temporary config
+    console.log('⚙️  Running Rollup...\n');
+    const { stdout, stderr } = await execAsync(`npx rollup -c ${tempConfigPath}`);
+
+    if (stdout) {
+      console.log(stdout);
+    }
+    if (stderr && !stderr.includes('created')) {
+      console.error(stderr);
+    }
+
+    console.log(`\n✨ Build complete!\n`);
+    console.log(`📁 Output: ${outputDir}/${componentName}/\n`);
+
+    // List generated files
+    const outputPath = join(process.cwd(), outputDir, componentName);
+    if (existsSync(outputPath)) {
+      console.log('Generated files:');
+      const files = readdirSync(outputPath);
+      for (const file of files) {
+        const filePath = join(outputPath, file);
+        const stats = statSync(filePath);
+        const sizeKB = (stats.size / 1024).toFixed(2);
+        console.log(`  ${file} (${sizeKB} KB)`);
+      }
+    }
+
+  } catch (error) {
+    console.error('\n❌ Build failed:', error.message);
+    if (error.stdout) console.log(error.stdout);
+    if (error.stderr) console.error(error.stderr);
+    process.exit(1);
+  } finally {
+    // Clean up temp config
+    if (existsSync(tempConfigPath)) {
+      const { unlinkSync } = await import('fs');
+      unlinkSync(tempConfigPath);
     }
   }
 }

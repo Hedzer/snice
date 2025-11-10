@@ -767,6 +767,77 @@ v3.0.0 introduces template-based rendering with differential updates. Key change
 
 See [Migration Guide](./docs/migration-v2-to-v3.md) for detailed migration guide.
 
+## Standalone Builds & React Adapters
+
+### Standalone Component Builds
+
+Build any Snice component as a standalone, tree-shaken, minified bundle ready to use in any project:
+
+```bash
+# Build a single component
+snice build-component button
+
+# Build with custom options
+snice build-component button --output=./standalone --format=esm,umd --with-theme
+
+# Build all components
+npm run build:standalone
+```
+
+**Output formats:**
+- `snice-button.esm.js` - ES Module (recommended for modern bundlers)
+- `snice-button.umd.js` - Universal Module Definition (works in all environments)
+- `snice-button.min.js` - Minified IIFE (for direct browser usage)
+- `README.md` - Usage instructions
+
+**Size:** ~20-40KB minified, ~10-20KB gzipped (includes Snice runtime)
+
+**Usage:**
+```html
+<script src="snice-button.min.js"></script>
+<snice-button variant="primary">Click me</snice-button>
+```
+
+### React Adapters
+
+All Snice components have React adapters for seamless integration with React 17, 18, and 19:
+
+```tsx
+import { Button, Input } from 'snice/react';
+// or from standalone builds:
+import Button from './standalone/button/react';
+
+function MyComponent() {
+  const [value, setValue] = useState('');
+
+  return (
+    <div>
+      <Input
+        value={value}
+        onChange={(e) => setValue(e.detail.value)}
+        placeholder="Enter text..."
+      />
+      <Button variant="primary" onClick={() => alert('Clicked!')}>
+        Submit
+      </Button>
+    </div>
+  );
+}
+```
+
+**Features:**
+- Automatic property mapping (camelCase in React, kebab-case in HTML)
+- Event handling via React callback props
+- Ref forwarding with method exposure
+- Form component integration with `value` and `onChange`
+- TypeScript definitions for all components
+
+**Requirements:**
+All new components MUST:
+1. Support standalone builds (bundle with full Snice runtime)
+2. Have React adapter compatibility
+3. Be tested in both standalone and React usage scenarios
+
 ## Documentation
 
 - [Elements API](./docs/elements.md) - Complete guide to creating elements with properties, queries, and styling

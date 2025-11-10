@@ -13,8 +13,12 @@ out/
 *.js
 *.js.map
 *.d.ts
+*.d.ts.map
 !*.config.js
 !jest.config.js
+!rollup.config.*.js
+!scripts/**/*.js
+!bin/**/*.js
 
 # IDE
 .vscode/
@@ -76,8 +80,3 @@ test-social-app/
 my-app/
 
 .debug
-
-!rollup.config.test.js
-
-
-test-results
