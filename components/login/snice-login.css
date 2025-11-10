@@ -14,7 +14,7 @@
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: var(--snice-border-radius-lg, 0.5rem);
   padding: var(--snice-spacing-xl, 2rem);
-  box-shadow: var(--snice-shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1));
+  box-shadow: var(--snice-shadow-md);
 }
 
 .login--minimal {
@@ -82,7 +82,7 @@
 .login__input:focus {
   outline: none;
   border-color: var(--snice-color-border-focus, rgb(59 130 246));
-  box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+  box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-focus-ring-color);
 }
 
 .login__input:disabled {
@@ -97,7 +97,7 @@
 
 .login__input--error:focus {
   border-color: var(--snice-color-danger, rgb(220 38 38));
-  box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) rgb(239 68 68 / 0.2);
+  box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-color-danger-alpha, rgb(239 68 68 / 0.2));
 }
 
 .login__options {

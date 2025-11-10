@@ -35,6 +35,7 @@
   color: var(--snice-color-text);
   border: 1px solid var(--snice-color-border);
   border-radius: var(--snice-border-radius-md);
+  box-shadow: var(--snice-shadow-inset-sm);
   transition: all var(--snice-transition-fast) ease;
   outline: none;
   -webkit-appearance: none;
@@ -44,7 +45,7 @@
 
 .input:focus {
   border-color: var(--snice-color-primary);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 var(--snice-focus-ring-width) var(--snice-focus-ring-color), var(--snice-shadow-sm);
 }
 
 .input:disabled {
@@ -114,7 +115,7 @@
 
 .input--invalid:focus {
   border-color: var(--snice-color-danger);
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+  box-shadow: 0 0 0 var(--snice-focus-ring-width) var(--snice-color-danger-alpha, hsl(var(--snice-color-red-500) / 0.4)), var(--snice-shadow-sm);
 }
 
 /* Native Date/Time Picker Icons */

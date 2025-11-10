@@ -2,7 +2,7 @@
   --modal-z-index: 1000;
   --modal-backdrop-bg: rgba(0, 0, 0, 0.5);
   --modal-panel-bg: var(--snice-color-background, white);
-  --modal-panel-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --modal-panel-shadow: var(--snice-shadow-2xl);
   --modal-border-radius: var(--snice-border-radius-lg, 8px);
   --modal-padding: var(--snice-spacing-lg, 1.5rem);
   --modal-transition-duration: 200ms;

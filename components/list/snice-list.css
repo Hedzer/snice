@@ -39,7 +39,7 @@
 .list__search-input:focus {
   outline: none;
   border-color: var(--snice-color-primary, rgb(37 99 235));
-  box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+  box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-focus-ring-color);
 }
 
 .list__loading {

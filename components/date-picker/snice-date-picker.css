@@ -51,7 +51,7 @@
 .input:focus {
   outline: none;
   border-color: var(--snice-color-border-focus, #2563eb);
-  box-shadow: 0 0 0 var(--snice-focus-ring-width, 3px) var(--snice-focus-ring-color, rgba(37, 99, 235, 0.1));
+  box-shadow: 0 0 0 var(--snice-focus-ring-width, 3px) var(--snice-focus-ring-color);
 }
 
 .input--small {
@@ -83,7 +83,7 @@
 
 .input--invalid:focus {
   border-color: #ef4444;
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+  box-shadow: 0 0 0 3px var(--snice-color-danger-alpha, rgba(239, 68, 68, 0.1));
 }
 
 .input:disabled {
@@ -170,7 +170,7 @@
   background: var(--snice-color-background-element, rgb(252, 251, 249));
   border: 1px solid var(--snice-color-border, #d1d5db);
   border-radius: var(--snice-border-radius-lg, 8px);
-  box-shadow: var(--snice-shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05));
+  box-shadow: var(--snice-shadow-lg);
   margin-top: var(--snice-spacing-3xs, 0.125rem);
   padding: var(--snice-spacing-md, 1rem);
   min-width: 280px;

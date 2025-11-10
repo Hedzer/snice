@@ -20,6 +20,23 @@
   color: var(--snice-color-text, rgb(23 23 23));
 }
 
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  background: var(--snice-gradient-surface);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.card > * {
+  position: relative;
+  z-index: 1;
+}
+
 /* Variants */
 :host([variant="elevated"]) .card {
   box-shadow: var(--card-shadow);
@@ -35,6 +52,10 @@
   border: none;
   box-shadow: none;
   background: var(--snice-color-background-secondary, rgb(250 250 250));
+}
+
+:host([variant="flat"]) .card::before {
+  display: none;
 }
 
 /* Clickable state */
@@ -57,6 +78,12 @@
 
 :host([clickable][variant="flat"]:not([disabled])) .card:hover {
   background: var(--snice-color-background-tertiary, rgb(241 241 241));
+  transform: none;
+}
+
+:host([clickable][variant="flat"]:not([disabled])) .card:active {
+  background: var(--snice-color-background-active, rgb(235 235 235));
+  transform: none;
 }
 
 :host([clickable]:not([disabled])) .card:active {

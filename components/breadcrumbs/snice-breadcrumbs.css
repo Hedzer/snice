@@ -50,7 +50,7 @@ case, when, default, if {
 }
 
 .breadcrumb-link:focus-visible {
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 0 0 2px var(--snice-focus-ring-color);
 }
 
 .breadcrumb-text {
@@ -110,7 +110,7 @@ case, when, default, if {
 }
 
 .breadcrumb-ellipsis:focus-visible {
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 0 0 2px var(--snice-focus-ring-color);
   outline: none;
 }
 

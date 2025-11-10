@@ -58,7 +58,7 @@
 }
 
 .radio-input:focus-visible ~ .radio {
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
 }
 
 .radio-input:disabled ~ .radio {

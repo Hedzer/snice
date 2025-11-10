@@ -143,12 +143,19 @@
   --snice-border-radius-pill: 9999px;
 
   /* Shadows */
-  --snice-shadow-xs: 0 1px 2px 0 hsl(0 0% 0% / 0.05);
-  --snice-shadow-sm: 0 1px 3px 0 hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
-  --snice-shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.1), 0 2px 4px -2px hsl(0 0% 0% / 0.1);
-  --snice-shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.1), 0 4px 6px -4px hsl(0 0% 0% / 0.1);
-  --snice-shadow-xl: 0 20px 25px -5px hsl(0 0% 0% / 0.1), 0 8px 10px -6px hsl(0 0% 0% / 0.1);
-  --snice-shadow-2xl: 0 25px 50px -12px hsl(0 0% 0% / 0.25);
+  --snice-shadow-xs: 0 1px 3px 0 hsl(0 0% 0% / 0.04), 0 1px 2px 0 hsl(0 0% 0% / 0.06);
+  --snice-shadow-sm: 0 2px 6px 0 hsl(0 0% 0% / 0.04), 0 2px 4px -1px hsl(0 0% 0% / 0.06);
+  --snice-shadow-md: 0 4px 12px 0 hsl(0 0% 0% / 0.05), 0 2px 8px -2px hsl(0 0% 0% / 0.06);
+  --snice-shadow-lg: 0 10px 24px -3px hsl(0 0% 0% / 0.05), 0 4px 12px -4px hsl(0 0% 0% / 0.06);
+  --snice-shadow-xl: 0 20px 32px -5px hsl(0 0% 0% / 0.06), 0 8px 16px -6px hsl(0 0% 0% / 0.08);
+  --snice-shadow-2xl: 0 25px 50px -12px hsl(0 0% 0% / 0.12);
+  --snice-shadow-inset-sm: inset 0 1px 2px 0 hsl(0 0% 0% / 0.05);
+  --snice-shadow-inset-md: inset 0 2px 4px 0 hsl(0 0% 0% / 0.06);
+
+  /* Gradients */
+  --snice-gradient-subtle: linear-gradient(to bottom, hsl(0 0% 100% / 0.03), transparent);
+  --snice-gradient-button: linear-gradient(to bottom, hsl(0 0% 100% / 0.05), transparent);
+  --snice-gradient-surface: linear-gradient(to bottom, hsl(0 0% 100% / 0.02), transparent);
 
   /* Transitions */
   --snice-transition-fast: 150ms;
@@ -212,12 +219,19 @@
   --snice-color-primary-subtle-hover: hsl(var(--snice-color-blue-900));
   --snice-color-danger-subtle: hsl(var(--snice-color-red-950));
 
-  --snice-shadow-xs: 0 1px 2px 0 hsl(0 0% 0% / 0.1);
-  --snice-shadow-sm: 0 1px 3px 0 hsl(0 0% 0% / 0.15), 0 1px 2px -1px hsl(0 0% 0% / 0.15);
-  --snice-shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.15), 0 2px 4px -2px hsl(0 0% 0% / 0.15);
-  --snice-shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.15), 0 4px 6px -4px hsl(0 0% 0% / 0.15);
-  --snice-shadow-xl: 0 20px 25px -5px hsl(0 0% 0% / 0.15), 0 8px 10px -6px hsl(0 0% 0% / 0.15);
-  --snice-shadow-2xl: 0 25px 50px -12px hsl(0 0% 0% / 0.35);
+  --snice-shadow-xs: 0 1px 3px 0 hsl(0 0% 0% / 0.2), 0 1px 2px 0 hsl(0 0% 0% / 0.3);
+  --snice-shadow-sm: 0 2px 6px 0 hsl(0 0% 0% / 0.2), 0 2px 4px -1px hsl(0 0% 0% / 0.3);
+  --snice-shadow-md: 0 4px 12px 0 hsl(0 0% 0% / 0.25), 0 2px 8px -2px hsl(0 0% 0% / 0.3);
+  --snice-shadow-lg: 0 10px 24px -3px hsl(0 0% 0% / 0.25), 0 4px 12px -4px hsl(0 0% 0% / 0.3);
+  --snice-shadow-xl: 0 20px 32px -5px hsl(0 0% 0% / 0.3), 0 8px 16px -6px hsl(0 0% 0% / 0.4);
+  --snice-shadow-2xl: 0 25px 50px -12px hsl(0 0% 0% / 0.5);
+  --snice-shadow-inset-sm: inset 0 1px 2px 0 hsl(0 0% 0% / 0.2);
+  --snice-shadow-inset-md: inset 0 2px 4px 0 hsl(0 0% 0% / 0.3);
+
+  /* Gradients */
+  --snice-gradient-subtle: linear-gradient(to bottom, hsl(0 0% 100% / 0.02), transparent);
+  --snice-gradient-button: linear-gradient(to bottom, hsl(0 0% 100% / 0.04), transparent);
+  --snice-gradient-surface: linear-gradient(to bottom, hsl(0 0% 100% / 0.015), transparent);
 
   /* Color scheme for native controls */
   --snice-color-scheme-filter: invert(1) hue-rotate(180deg);

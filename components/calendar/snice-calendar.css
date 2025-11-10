@@ -50,7 +50,7 @@
 
 .calendar__nav-button:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+  box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-focus-ring-color);
 }
 
 .calendar__grid {

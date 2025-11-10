@@ -24,7 +24,7 @@
 }
 
 .chip:focus-visible {
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 0 0 2px var(--snice-focus-ring-color);
 }
 
 .chip[aria-disabled="true"] {
@@ -63,7 +63,7 @@
 :host(:not([variant])) .chip--selected {
   background: #374151;
   color: white;
-  text-shadow: 0 0 3px rgba(0, 0, 0, 0.6), 0 1px 2px rgba(0, 0, 0, 0.4);
+  text-shadow: var(--snice-shadow-sm);
 }
 
 :host([variant="primary"]) .chip {
@@ -78,7 +78,7 @@
 :host([variant="primary"]) .chip--selected {
   background: #3b82f6;
   color: white;
-  text-shadow: 0 0 3px rgba(0, 0, 0, 0.6), 0 1px 2px rgba(0, 0, 0, 0.4);
+  text-shadow: var(--snice-shadow-sm);
 }
 
 :host([variant="success"]) .chip {
@@ -93,7 +93,7 @@
 :host([variant="success"]) .chip--selected {
   background: #10b981;
   color: white;
-  text-shadow: 0 0 3px rgba(0, 0, 0, 0.6), 0 1px 2px rgba(0, 0, 0, 0.4);
+  text-shadow: var(--snice-shadow-sm);
 }
 
 :host([variant="warning"]) .chip {
@@ -108,7 +108,7 @@
 :host([variant="warning"]) .chip--selected {
   background: #f59e0b;
   color: white;
-  text-shadow: 0 0 3px rgba(0, 0, 0, 0.6), 0 1px 2px rgba(0, 0, 0, 0.4);
+  text-shadow: var(--snice-shadow-sm);
 }
 
 :host([variant="error"]) .chip {
@@ -123,7 +123,7 @@
 :host([variant="error"]) .chip--selected {
   background: #ef4444;
   color: white;
-  text-shadow: 0 0 3px rgba(0, 0, 0, 0.6), 0 1px 2px rgba(0, 0, 0, 0.4);
+  text-shadow: var(--snice-shadow-sm);
 }
 
 :host([variant="info"]) .chip {
@@ -138,7 +138,7 @@
 :host([variant="info"]) .chip--selected {
   background: #6366f1;
   color: white;
-  text-shadow: 0 0 3px rgba(0, 0, 0, 0.6), 0 1px 2px rgba(0, 0, 0, 0.4);
+  text-shadow: var(--snice-shadow-sm);
 }
 
 /* Avatar */

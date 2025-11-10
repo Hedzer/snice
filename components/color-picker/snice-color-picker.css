@@ -140,7 +140,7 @@
 
 .color-input:focus {
   border-color: var(--snice-color-primary, rgb(37 99 235));
-  box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+  box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-focus-ring-color);
 }
 
 .color-input:disabled {
@@ -155,7 +155,7 @@
 
 .color-input--invalid:focus {
   border-color: var(--snice-color-danger, rgb(220 38 38));
-  box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-color-danger-alpha, rgb(239 68 68 / 0.2));
+  box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-color-danger-alpha);
 }
 
 .color-input--loading {
@@ -191,7 +191,7 @@
 
 .preset--selected {
   border-color: var(--snice-color-primary, rgb(37 99 235));
-  box-shadow: 0 0 0 2px var(--snice-color-primary-alpha, rgb(59 130 246 / 0.2));
+  box-shadow: 0 0 0 2px var(--snice-color-primary-alpha);
 }
 
 .helper-text,

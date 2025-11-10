@@ -223,7 +223,7 @@
   background: var(--snice-chat-actions-background, #fff);
   border: 1px solid var(--snice-chat-border-color, #ddd);
   border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--snice-shadow-md);
   display: flex;
   gap: 2px;
   opacity: 0;

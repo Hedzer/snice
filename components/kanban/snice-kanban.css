@@ -74,7 +74,7 @@
   background: var(--snice-color-background, rgb(255 255 255));
   border-radius: var(--snice-border-radius-sm, 0.375rem);
   padding: var(--snice-spacing-sm, 0.75rem);
-  box-shadow: var(--snice-shadow-sm, 0 1px 3px rgb(0 0 0 / 0.1));
+  box-shadow: var(--snice-shadow-sm);
   cursor: pointer;
   transition: all var(--snice-transition-fast, 150ms) ease;
   border-left: 3px solid transparent;
@@ -82,7 +82,7 @@
 }
 
 .card:hover {
-  box-shadow: var(--snice-shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1));
+  box-shadow: var(--snice-shadow-md);
   transform: translateY(-1px);
 }
 
@@ -100,7 +100,7 @@
   height: 3px;
   background: var(--snice-color-primary, rgb(37 99 235));
   border-radius: var(--snice-border-radius-full, 9999px);
-  box-shadow: 0 0 0 3px rgb(37 99 235 / 0.2);
+  box-shadow: 0 0 0 3px var(--snice-color-primary-alpha, rgb(37 99 235 / 0.2));
 }
 
 .card__title {
