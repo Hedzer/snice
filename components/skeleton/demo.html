@@ -7,36 +7,38 @@
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
     body {
-      font-family: system-ui, -apple-system, sans-serif;
+      font-family: var(--snice-font-family);
       padding: 40px;
       line-height: 1.6;
-      background: #f5f5f5;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      transition: background-color var(--snice-transition-medium) ease, color var(--snice-transition-medium) ease;
     }
 
     .container {
       max-width: 900px;
       margin: 0 auto;
-      background: white;
+      background: var(--snice-color-background-element);
       padding: 40px;
       border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      box-shadow: var(--snice-shadow-lg);
     }
 
     h1 {
-      color: #333;
-      border-bottom: 2px solid #e0e0e0;
+      color: var(--snice-color-text);
+      border-bottom: 2px solid var(--snice-color-border);
       padding-bottom: 10px;
     }
 
     h2 {
-      color: #555;
+      color: var(--snice-color-text-secondary);
       margin-top: 30px;
     }
 
     .demo-section {
       margin: 30px 0;
       padding: 20px;
-      background: #fafafa;
+      background: var(--snice-color-background);
       border-radius: 4px;
     }
 
@@ -44,15 +46,15 @@
       display: block;
       margin-bottom: 12px;
       font-weight: 500;
-      color: #666;
+      color: var(--snice-color-text-secondary);
       font-size: 14px;
     }
 
     .skeleton-demo {
       margin: 20px 0;
       padding: 20px;
-      background: white;
-      border: 1px solid #e0e0e0;
+      background: var(--snice-color-background-element);
+      border: 1px solid var(--snice-color-border);
       border-radius: 4px;
     }
 

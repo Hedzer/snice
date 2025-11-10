@@ -4,12 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Empty State Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
   <style>
     body {
       padding: 40px;
       font-family: system-ui, -apple-system, sans-serif;
       max-width: 1200px;
       margin: 0 auto;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      transition: background-color var(--snice-transition-medium) ease, color var(--snice-transition-medium) ease;
     }
     .section {
       margin-bottom: 40px;
@@ -18,7 +22,7 @@
       margin-bottom: 20px;
     }
     .demo-box {
-      border: 2px dashed #e5e7eb;
+      border: 2px dashed var(--snice-color-border);
       border-radius: 8px;
       min-height: 200px;
       margin-bottom: 20px;
@@ -143,10 +147,10 @@
         description="You haven't created any projects yet."
       >
         <div style="margin-top: 1rem; display: flex; gap: 10px; justify-content: center;">
-          <button style="padding: 0.5rem 1rem; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer;">
+          <button style="padding: 0.5rem 1rem; background: var(--snice-color-primary); color: white; border: none; border-radius: 4px; cursor: pointer;">
             Create Project
           </button>
-          <button style="padding: 0.5rem 1rem; background: transparent; color: #3b82f6; border: 1px solid #3b82f6; border-radius: 4px; cursor: pointer;">
+          <button style="padding: 0.5rem 1rem; background: transparent; color: var(--snice-color-primary); border: 1px solid var(--snice-color-primary); border-radius: 4px; cursor: pointer;">
             Import Project
           </button>
         </div>
@@ -165,7 +169,7 @@
         action-text="Get Started"
       ></snice-empty-state>
     </div>
-    <div id="output" style="padding: 10px; background: #f3f4f6; border-radius: 4px; margin-top: 10px;">
+    <div id="output" style="padding: 10px; background: var(--snice-color-background); border-radius: 4px; margin-top: 10px;">
       <strong>Status:</strong> Waiting for action...
     </div>
   </div>

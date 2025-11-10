@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Slider Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
   <style>
     body {
       padding: 40px;
@@ -24,7 +25,7 @@
     h3 {
       margin-bottom: 16px;
       font-size: 1.125rem;
-      color: #6b7280;
+      color: var(--snice-color-text-secondary);
     }
 
     .slider-group {
@@ -156,7 +157,7 @@
       value="50"
       show-value
     ></snice-slider>
-    <div id="output" style="margin-top: 20px; padding: 10px; background: #f3f4f6; border-radius: 4px;">
+    <div id="output" style="margin-top: 20px; padding: 10px; background: var(--snice-color-background); border-radius: 4px;">
       <strong>Current value:</strong> <span id="current-value">50</span><br>
       <strong>Last changed:</strong> <span id="last-changed">-</span>
     </div>

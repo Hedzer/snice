@@ -4,7 +4,13 @@
   <title>Draw Component Demo</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body { padding: 40px; margin: 0; }
+    body {
+      padding: 40px;
+      margin: 0;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      transition: background-color var(--snice-transition-medium) ease, color var(--snice-transition-medium) ease;
+    }
     .demo-section {
       margin-bottom: 40px;
     }
@@ -18,14 +24,14 @@
     }
     .draw-canvas-container {
       flex: 1;
-      border: 2px solid #e0e0e0;
+      border: 2px solid var(--snice-color-border);
       border-radius: 8px;
       overflow: hidden;
     }
     .toolbar {
       width: 200px;
       padding: 20px;
-      background: #f5f5f5;
+      background: var(--snice-color-background);
       border-radius: 8px;
       display: flex;
       flex-direction: column;
@@ -39,7 +45,7 @@
     .toolbar-label {
       font-size: 12px;
       font-weight: 500;
-      color: #666;
+      color: var(--snice-color-text-secondary);
       text-transform: uppercase;
     }
     .tool-buttons {
@@ -49,8 +55,8 @@
     }
     .tool-btn {
       padding: 12px;
-      background: white;
-      border: 2px solid #e0e0e0;
+      background: var(--snice-color-background);
+      border: 2px solid var(--snice-color-border);
       border-radius: 6px;
       cursor: pointer;
       display: flex;
@@ -60,20 +66,21 @@
       gap: 4px;
       font-size: 11px;
       transition: all 0.2s;
+      color: var(--snice-color-text);
     }
     .tool-btn:hover {
-      border-color: #2196f3;
+      border-color: var(--snice-color-primary);
     }
     .tool-btn.active {
-      background: #2196f3;
-      border-color: #2196f3;
+      background: var(--snice-color-primary);
+      border-color: var(--snice-color-primary);
       color: white;
     }
     .color-input {
       width: 100%;
       height: 40px;
       border-radius: 6px;
-      border: 2px solid #e0e0e0;
+      border: 2px solid var(--snice-color-border);
       cursor: pointer;
     }
     input[type="range"] {
@@ -81,7 +88,7 @@
     }
     button {
       padding: 10px 16px;
-      background: #2196f3;
+      background: var(--snice-color-primary);
       color: white;
       border: none;
       border-radius: 6px;
@@ -89,13 +96,13 @@
       font-size: 14px;
     }
     button:hover {
-      background: #1976d2;
+      background: var(--snice-color-primary-hover);
     }
     button.secondary {
-      background: #757575;
+      background: var(--snice-color-text-secondary);
     }
     button.secondary:hover {
-      background: #616161;
+      background: var(--snice-color-text-muted);
     }
   </style>
   <script type="module">
@@ -312,7 +319,7 @@
     </div>
   </div>
 
-  <div style="margin-top: 40px; padding: 20px; background: #f5f5f5; border-radius: 4px;">
+  <div style="margin-top: 40px; padding: 20px; background: var(--snice-color-background); border-radius: 4px;">
     <h3 style="margin-top: 0;">Features</h3>
     <ul>
       <li>Smooth lazy-brush drawing</li>

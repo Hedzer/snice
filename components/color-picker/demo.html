@@ -4,12 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Color Picker Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
   <style>
     body {
       padding: 40px;
       font-family: system-ui, -apple-system, sans-serif;
       max-width: 800px;
       margin: 0 auto;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      transition: background-color var(--snice-transition-medium) ease, color var(--snice-transition-medium) ease;
     }
     .section {
       margin-bottom: 40px;

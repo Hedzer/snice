@@ -10,33 +10,34 @@
       font-family: system-ui, -apple-system, sans-serif;
       padding: 40px;
       line-height: 1.6;
-      background: #f5f5f5;
+      background: var(--snice-color-background);
+      transition: background-color var(--snice-transition-medium) ease, color var(--snice-transition-medium) ease;
     }
 
     .container {
       max-width: 900px;
       margin: 0 auto;
-      background: white;
+      background: var(--snice-color-background-element);
       padding: 40px;
       border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      box-shadow: var(--snice-shadow-lg);
     }
 
     h1 {
-      color: #333;
-      border-bottom: 2px solid #e0e0e0;
+      color: var(--snice-color-text);
+      border-bottom: 2px solid var(--snice-color-border);
       padding-bottom: 10px;
     }
 
     h2 {
-      color: #555;
+      color: var(--snice-color-text-secondary);
       margin-top: 30px;
     }
 
     .demo-section {
       margin: 30px 0;
       padding: 20px;
-      background: #fafafa;
+      background: var(--snice-color-background);
       border-radius: 4px;
     }
 
@@ -44,7 +45,7 @@
       display: block;
       margin-bottom: 8px;
       font-weight: 500;
-      color: #666;
+      color: var(--snice-color-text-secondary);
       font-size: 14px;
     }
 
@@ -61,7 +62,7 @@
       justify-content: center;
       width: 50px;
       height: 50px;
-      background: #3b82f6;
+      background: var(--snice-color-primary);
       color: white;
       border-radius: 8px;
       font-size: 24px;
@@ -71,8 +72,8 @@
       width: 50px;
       height: 50px;
       border-radius: 50%;
-      background: #6366f1;
-      color: white;
+      background: var(--snice-color-primary);
+      color: var(--snice-color-text-inverse);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -81,7 +82,7 @@
 
     .badge-button {
       padding: 10px 20px;
-      background: #3b82f6;
+      background: var(--snice-color-primary);
       color: white;
       border: none;
       border-radius: 6px;
@@ -91,7 +92,7 @@
     }
 
     .badge-button:hover {
-      background: #2563eb;
+      background: var(--snice-color-primary-hover);
     }
 
     .grid {
@@ -117,8 +118,8 @@
 
     button {
       padding: 8px 16px;
-      background: #f3f4f6;
-      border: 1px solid #d1d5db;
+      background: var(--snice-color-background);
+      border: 1px solid var(--snice-color-border);
       border-radius: 4px;
       cursor: pointer;
       font-size: 14px;
@@ -126,19 +127,19 @@
     }
 
     button:hover {
-      background: #e5e7eb;
+      background: var(--snice-color-background);
     }
 
     input[type="number"] {
       width: 80px;
       padding: 8px;
-      border: 1px solid #d1d5db;
+      border: 1px solid var(--snice-color-border);
       border-radius: 4px;
       font-size: 14px;
     }
 
     code {
-      background: #f0f0f0;
+      background: var(--snice-color-background);
       padding: 2px 6px;
       border-radius: 3px;
       font-size: 0.9em;

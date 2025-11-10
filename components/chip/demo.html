@@ -10,33 +10,34 @@
       font-family: system-ui, -apple-system, sans-serif;
       padding: 40px;
       line-height: 1.6;
-      background: #f5f5f5;
+      background: var(--snice-color-background);
+      transition: background-color var(--snice-transition-medium) ease, color var(--snice-transition-medium) ease;
     }
 
     .container {
       max-width: 900px;
       margin: 0 auto;
-      background: white;
+      background: var(--snice-color-background);
       padding: 40px;
       border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      box-shadow: var(--snice-shadow-lg);
     }
 
     h1 {
-      color: #333;
-      border-bottom: 2px solid #e0e0e0;
+      color: var(--snice-color-text);
+      border-bottom: 2px solid var(--snice-color-border);
       padding-bottom: 10px;
     }
 
     h2 {
-      color: #555;
+      color: var(--snice-color-text-secondary);
       margin-top: 30px;
     }
 
     .demo-section {
       margin: 30px 0;
       padding: 20px;
-      background: #fafafa;
+      background: var(--snice-color-background);
       border-radius: 4px;
     }
 
@@ -44,7 +45,7 @@
       display: block;
       margin-bottom: 12px;
       font-weight: 500;
-      color: #666;
+      color: var(--snice-color-text-secondary);
       font-size: 14px;
     }
 
@@ -64,34 +65,35 @@
 
     button {
       padding: 8px 16px;
-      background: #f3f4f6;
-      border: 1px solid #d1d5db;
+      background: var(--snice-color-background-element);
+      border: 1px solid var(--snice-color-border);
       border-radius: 4px;
       cursor: pointer;
       font-size: 14px;
       transition: background 0.2s;
+      color: var(--snice-color-text);
     }
 
     button:hover {
-      background: #e5e7eb;
+      background: var(--snice-color-background-element-hover);
     }
 
     .selected-chips {
       margin-top: 16px;
       padding: 12px;
-      background: #f0f9ff;
-      border: 1px solid #0ea5e9;
+      background: var(--snice-color-background);
+      border: 1px solid var(--snice-color-border);
       border-radius: 4px;
       min-height: 40px;
     }
 
     .selected-chips:empty::after {
       content: 'No chips selected';
-      color: #94a3b8;
+      color: var(--snice-color-text-muted);
     }
 
     code {
-      background: #f0f0f0;
+      background: var(--snice-color-background);
       padding: 2px 6px;
       border-radius: 3px;
       font-size: 0.9em;
@@ -100,8 +102,8 @@
     .event-log {
       margin-top: 16px;
       padding: 12px;
-      background: #fef3c7;
-      border: 1px solid #fbbf24;
+      background: var(--snice-color-background);
+      border: 1px solid var(--snice-color-border);
       border-radius: 4px;
       font-size: 14px;
       font-family: monospace;
@@ -118,9 +120,11 @@
     input[type="text"] {
       flex: 1;
       padding: 8px 12px;
-      border: 1px solid #d1d5db;
+      border: 1px solid var(--snice-color-border);
       border-radius: 4px;
       font-size: 14px;
+      background: var(--snice-color-background-input);
+      color: var(--snice-color-text);
     }
 
     .avatar-chip {

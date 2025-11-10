@@ -4,38 +4,40 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Snice Stepper Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
   <style>
     body {
       font-family: system-ui, -apple-system, sans-serif;
       padding: 40px;
       line-height: 1.6;
-      background: #f5f5f5;
+      background: var(--snice-color-background);
+      transition: background-color var(--snice-transition-medium) ease, color var(--snice-transition-medium) ease;
     }
 
     .container {
       max-width: 1200px;
       margin: 0 auto;
-      background: white;
+      background: var(--snice-color-background);
       padding: 40px;
       border-radius: 8px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
     h1 {
-      color: #333;
-      border-bottom: 2px solid #e0e0e0;
+      color: var(--snice-color-text);
+      border-bottom: 2px solid var(--snice-color-border);
       padding-bottom: 10px;
     }
 
     h2 {
-      color: #555;
+      color: var(--snice-color-text-secondary);
       margin-top: 30px;
     }
 
     .demo-section {
       margin: 30px 0;
       padding: 20px;
-      background: #fafafa;
+      background: var(--snice-color-background);
       border-radius: 4px;
     }
 
@@ -54,7 +56,7 @@
       margin: 5px;
       padding: 8px 16px;
       border: none;
-      background: #2563eb;
+      background: var(--snice-color-primary-hover);
       color: white;
       border-radius: 4px;
       cursor: pointer;
@@ -67,7 +69,7 @@
     .event-log {
       margin-top: 20px;
       padding: 10px;
-      background: #f0f0f0;
+      background: var(--snice-color-background);
       border-radius: 4px;
       font-family: monospace;
       font-size: 12px;
@@ -148,7 +150,7 @@
       <p>Panels automatically show/hide based on active step</p>
       <snice-stepper id="wizard-with-panels" clickable>
         <snice-stepper-panel>
-          <div style="padding: 20px; background: white; border: 1px solid #e0e0e0; border-radius: 4px; margin-top: 20px;">
+          <div style="padding: 20px; background: var(--snice-color-background); border: 1px solid var(--snice-color-border); border-radius: 4px; margin-top: 20px;">
             <h3>Step 1: Account Information</h3>
             <p>Enter your account details to get started.</p>
             <input type="text" placeholder="Email" style="display: block; margin: 10px 0; padding: 8px; width: 100%; max-width: 300px;">
@@ -157,7 +159,7 @@
         </snice-stepper-panel>
 
         <snice-stepper-panel>
-          <div style="padding: 20px; background: white; border: 1px solid #e0e0e0; border-radius: 4px; margin-top: 20px;">
+          <div style="padding: 20px; background: var(--snice-color-background); border: 1px solid var(--snice-color-border); border-radius: 4px; margin-top: 20px;">
             <h3>Step 2: Personal Details</h3>
             <p>Tell us a bit about yourself.</p>
             <input type="text" placeholder="Full Name" style="display: block; margin: 10px 0; padding: 8px; width: 100%; max-width: 300px;">
@@ -166,7 +168,7 @@
         </snice-stepper-panel>
 
         <snice-stepper-panel>
-          <div style="padding: 20px; background: white; border: 1px solid #e0e0e0; border-radius: 4px; margin-top: 20px;">
+          <div style="padding: 20px; background: var(--snice-color-background); border: 1px solid var(--snice-color-border); border-radius: 4px; margin-top: 20px;">
             <h3>Step 3: Preferences</h3>
             <p>Customize your experience.</p>
             <label style="display: block; margin: 10px 0;">
@@ -179,10 +181,10 @@
         </snice-stepper-panel>
 
         <snice-stepper-panel>
-          <div style="padding: 20px; background: white; border: 1px solid #e0e0e0; border-radius: 4px; margin-top: 20px;">
+          <div style="padding: 20px; background: var(--snice-color-background); border: 1px solid var(--snice-color-border); border-radius: 4px; margin-top: 20px;">
             <h3>Step 4: Complete</h3>
             <p>You're all set! Click below to finish.</p>
-            <button style="padding: 10px 20px; background: #2563eb; color: white; border: none; border-radius: 4px; cursor: pointer;">Finish Setup</button>
+            <button style="padding: 10px 20px; background: var(--snice-color-primary-hover); color: white; border: none; border-radius: 4px; cursor: pointer;">Finish Setup</button>
           </div>
         </snice-stepper-panel>
       </snice-stepper>

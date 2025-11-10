@@ -51,27 +51,45 @@
 
 /* Variants */
 :host([variant="info"]) .alert {
-  background: rgb(var(--snice-color-blue-50, 239 246 255));
-  border-color: rgb(var(--snice-color-blue-200, 191 219 254));
-  color: rgb(var(--snice-color-blue-900, 30 58 138));
+  background: hsl(215 100% 96% / 0.6);
+  border-color: var(--snice-color-border);
+  color: var(--snice-color-text);
 }
 
 :host([variant="success"]) .alert {
-  background: rgb(var(--snice-color-green-50, 240 253 244));
-  border-color: rgb(var(--snice-color-green-200, 187 247 208));
-  color: rgb(var(--snice-color-green-900, 20 83 45));
+  background: hsl(140 100% 96% / 0.6);
+  border-color: var(--snice-color-border);
+  color: var(--snice-color-text);
 }
 
 :host([variant="warning"]) .alert {
-  background: rgb(var(--snice-color-yellow-50, 254 252 232));
-  border-color: rgb(var(--snice-color-yellow-200, 254 240 138));
-  color: rgb(var(--snice-color-yellow-900, 113 63 18));
+  background: hsl(45 100% 96% / 0.6);
+  border-color: var(--snice-color-border);
+  color: var(--snice-color-text);
 }
 
 :host([variant="error"]) .alert {
-  background: rgb(var(--snice-color-red-50, 254 242 242));
-  border-color: rgb(var(--snice-color-red-200, 254 202 202));
-  color: rgb(var(--snice-color-red-900, 127 29 29));
+  background: hsl(0 100% 96% / 0.6);
+  border-color: var(--snice-color-border);
+  color: var(--snice-color-text);
+}
+
+@media (prefers-color-scheme: dark) {
+  :host([variant="info"]) .alert {
+    background: hsl(215 100% 20% / 0.3);
+  }
+
+  :host([variant="success"]) .alert {
+    background: hsl(140 100% 20% / 0.3);
+  }
+
+  :host([variant="warning"]) .alert {
+    background: hsl(45 100% 20% / 0.3);
+  }
+
+  :host([variant="error"]) .alert {
+    background: hsl(0 100% 20% / 0.3);
+  }
 }
 
 /* Icon */

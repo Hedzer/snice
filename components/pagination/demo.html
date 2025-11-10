@@ -4,30 +4,31 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Snice Pagination Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
   <style>
     body {
       font-family: system-ui, -apple-system, sans-serif;
       max-width: 1200px;
       margin: 0 auto;
       padding: 40px 20px;
-      background: #f3f4f6;
+      background: var(--snice-color-background);
     }
     
     h1 {
-      color: #111827;
+      color: var(--snice-color-text);
       margin-bottom: 32px;
     }
-    
+
     .demo-section {
-      background: white;
+      background: var(--snice-color-background);
       padding: 24px;
       border-radius: 12px;
       margin-bottom: 32px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      box-shadow: var(--snice-shadow-md);
     }
-    
+
     .demo-section h2 {
-      color: #374151;
+      color: var(--snice-color-text-secondary);
       margin-top: 0;
       margin-bottom: 20px;
       font-size: 20px;
@@ -39,7 +40,7 @@
     
     .demo-label {
       font-size: 14px;
-      color: #6b7280;
+      color: var(--snice-color-text-secondary);
       margin-bottom: 8px;
     }
     
@@ -59,28 +60,31 @@
     
     .demo-control label {
       font-size: 14px;
-      color: #6b7280;
+      color: var(--snice-color-text-secondary);
     }
     
     .demo-control input[type="number"] {
       width: 80px;
       padding: 4px 8px;
-      border: 1px solid #e5e7eb;
+      border: 1px solid var(--snice-color-border);
       border-radius: 4px;
       font-size: 14px;
+      background: var(--snice-color-background-input);
+      color: var(--snice-color-text);
     }
-    
+
     .demo-control select {
       padding: 4px 8px;
-      border: 1px solid #e5e7eb;
+      border: 1px solid var(--snice-color-border);
       border-radius: 4px;
       font-size: 14px;
-      background: white;
+      background: var(--snice-color-background-input);
+      color: var(--snice-color-text);
     }
     
     .demo-button {
       padding: 8px 16px;
-      background: #3b82f6;
+      background: var(--snice-color-primary);
       color: white;
       border: none;
       border-radius: 6px;
@@ -90,32 +94,32 @@
     }
     
     .demo-button:hover {
-      background: #2563eb;
+      background: var(--snice-color-primary-hover);
     }
     
     .event-log {
       margin-top: 16px;
       padding: 12px;
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
+      background: var(--snice-color-background);
+      border: 1px solid var(--snice-color-border);
       border-radius: 6px;
       font-family: monospace;
       font-size: 13px;
       max-height: 200px;
       overflow-y: auto;
     }
-    
+
     .event-log-entry {
       padding: 4px 0;
-      border-bottom: 1px solid #e5e7eb;
+      border-bottom: 1px solid var(--snice-color-border);
     }
-    
+
     .event-log-entry:last-child {
       border-bottom: none;
     }
     
     code {
-      background: #f3f4f6;
+      background: var(--snice-color-background);
       padding: 2px 4px;
       border-radius: 3px;
       font-size: 13px;
@@ -298,7 +302,7 @@
         total="20"
         siblings="1">
       </snice-pagination>
-      <p style="margin-top: 12px; color: #6b7280; font-size: 14px;">
+      <p style="margin-top: 12px; color: var(--snice-color-text-secondary); font-size: 14px;">
         Current page: <strong id="current-page">1</strong>
       </p>
     </div>
@@ -369,7 +373,7 @@
   
   <div class="demo-section">
     <h2>API Methods</h2>
-    <p style="color: #6b7280; font-size: 14px; margin-bottom: 16px;">
+    <p style="color: var(--snice-color-text-secondary); font-size: 14px; margin-bottom: 16px;">
       Use these buttons to test the pagination API methods on the custom pagination above.
     </p>
     
@@ -386,7 +390,7 @@
     <h2>Event Log</h2>
     <div class="demo-label">Listen for <code>@snice/pagination-change</code> events</div>
     <div id="event-log" class="event-log">
-      <div class="event-log-entry" style="color: #6b7280;">
+      <div class="event-log-entry" style="color: var(--snice-color-text-secondary);">
         Pagination events will appear here...
       </div>
     </div>
