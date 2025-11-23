@@ -1,8 +1,9 @@
 # IMMEDIATELY upon reading this file, complete ALL of the following:
 
-1. READ the entire README.md in docs/ai/ (token-efficient version)
-2. FOLLOW ALL links mentioned in any documentation you read
-3. READ all linked files completely before proceeding
+1. READ docs/ai/README.md (token-efficient API reference)
+2. READ docs/ai/DEVELOPMENT.md (token-efficient development guide)
+3. FOLLOW ALL links mentioned in any documentation you read
+4. READ all linked files completely before proceeding
 
 ---
 
@@ -14,7 +15,7 @@
 # - No unnecessary commentary or play-by-play narration.
 
 # Development guidelines:
-# - READ all files in .ai/ folder for development standards and guides
+# - READ docs/ai/DEVELOPMENT.md for build system, testing, component requirements
 # - For API reference, always use docs/ai/ (token-efficient) instead of docs/ (human-friendly)
 
 # Before creating new files or directories, USE Glob to examine the existing repository structure

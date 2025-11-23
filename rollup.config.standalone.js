@@ -29,13 +29,20 @@ export function createStandaloneBuild(componentName, options = {}) {
     formats = ['esm', 'umd', 'iife']
   } = options;
 
-  const componentPath = `components/${componentName}/snice-${componentName}.ts`;
+  // Use pre-compiled JS from dist/components (avoids TypeScript parsing issues)
+  const componentPath = `dist/components/${componentName}/snice-${componentName}.js`;
 
   if (!fs.existsSync(componentPath)) {
-    throw new Error(`Component not found: ${componentPath}`);
+    throw new Error(`Component not found: ${componentPath}. Run build:core first.`);
   }
 
   const outputDir = `dist/standalone/${componentName}`;
+
+  // Convert component name to valid JS identifier (camelCase)
+  const jsIdentifier = 'Snice' + componentName
+    .split('-')
+    .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+    .join('');
 
   // Create base config with all dependencies bundled (no externals)
   const baseConfig = {
@@ -44,7 +51,8 @@ export function createStandaloneBuild(componentName, options = {}) {
     plugins: [
       resolve({
         browser: true,
-        preferBuiltins: false
+        preferBuiltins: false,
+        extensions: ['.js', '.ts']
       }),
       // Plugin to handle CSS imports
       {
@@ -83,27 +91,22 @@ export function createStandaloneBuild(componentName, options = {}) {
           return null;
         }
       },
-      // Plugin to handle Snice core imports - bundle them from src/
+      // Plugin to handle Snice core imports - bundle them from dist/
       {
         name: 'resolve-snice',
         resolveId(id) {
           if (id === 'snice') {
-            return path.resolve('src/index.ts');
+            return path.resolve('dist/index.esm.js');
           }
           if (id === 'snice/symbols') {
-            return path.resolve('src/symbols.ts');
+            return path.resolve('dist/symbols.esm.js');
           }
           if (id === 'snice/transitions') {
-            return path.resolve('src/transitions.ts');
+            return path.resolve('dist/transitions.esm.js');
           }
           return null;
         }
-      },
-      typescript({
-        tsconfig: './tsconfig.src.json',
-        declaration: false,
-        declarationMap: false
-      })
+      }
     ]
   };
 
@@ -143,7 +146,7 @@ export function createStandaloneBuild(componentName, options = {}) {
       output: {
         file: `${outputDir}/snice-${componentName}.umd.js`,
         format: 'umd',
-        name: `Snice${componentName.charAt(0).toUpperCase() + componentName.slice(1)}`,
+        name: jsIdentifier,
         banner,
         sourcemap: true
       }
@@ -156,7 +159,7 @@ export function createStandaloneBuild(componentName, options = {}) {
         output: {
           file: `${outputDir}/snice-${componentName}.umd.min.js`,
           format: 'umd',
-          name: `Snice${componentName.charAt(0).toUpperCase() + componentName.slice(1)}`,
+          name: jsIdentifier,
           banner,
           sourcemap: true,
           plugins: [terser()]
@@ -172,7 +175,7 @@ export function createStandaloneBuild(componentName, options = {}) {
       output: {
         file: `${outputDir}/snice-${componentName}.js`,
         format: 'iife',
-        name: `Snice${componentName.charAt(0).toUpperCase() + componentName.slice(1)}`,
+        name: jsIdentifier,
         banner,
         sourcemap: true
       }
@@ -185,7 +188,7 @@ export function createStandaloneBuild(componentName, options = {}) {
         output: {
           file: `${outputDir}/snice-${componentName}.min.js`,
           format: 'iife',
-          name: `Snice${componentName.charAt(0).toUpperCase() + componentName.slice(1)}`,
+          name: jsIdentifier,
           banner,
           sourcemap: true,
           plugins: [terser()]
@@ -219,7 +222,8 @@ export function createStandaloneBuild(componentName, options = {}) {
   configs[0].plugins.push({
     name: 'generate-readme',
     generateBundle() {
-      const readme = `# Snice ${componentName.charAt(0).toUpperCase() + componentName.slice(1)} - Standalone Build
+      const readableComponentName = componentName.split('-').map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
+      const readme = `# Snice ${readableComponentName} - Standalone Build
 
 This is a standalone build of the Snice ${componentName} component. It includes the full Snice runtime and can be used in any web project without installing the full Snice package.
 
@@ -249,7 +253,7 @@ document.body.innerHTML = '<snice-${componentName}></snice-${componentName}>';
 
 #### UMD (Node.js or browser)
 \`\`\`javascript
-const Snice${componentName.charAt(0).toUpperCase() + componentName.slice(1)} = require('./snice-${componentName}.umd.js');
+const ${jsIdentifier} = require('./snice-${componentName}.umd.js');
 \`\`\`
 
 ## Size

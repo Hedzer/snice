@@ -3,11 +3,15 @@ import React from 'react';
 /**
  * Base props that all Snice React components extend
  */
-export interface SniceBaseProps extends React.HTMLAttributes<HTMLElement> {
+export interface SniceBaseProps {
   /** Ref to the underlying web component element */
   ref?: React.Ref<any>;
   /** Children to render inside the component */
   children?: React.ReactNode;
+  /** Class name for styling */
+  className?: string;
+  /** Inline styles */
+  style?: React.CSSProperties;
 }
 
 /**

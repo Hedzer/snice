@@ -767,45 +767,29 @@ v3.0.0 introduces template-based rendering with differential updates. Key change
 
 See [Migration Guide](./docs/migration-v2-to-v3.md) for detailed migration guide.
 
-## Standalone Builds & React Adapters
+## Using Snice Components in Other Environments
 
-### Standalone Component Builds
+### Standalone Builds
 
-Build any Snice component as a standalone, tree-shaken, minified bundle ready to use in any project:
+Use any Snice component without installing the framework:
 
 ```bash
-# Build a single component
 snice build-component button
-
-# Build with custom options
-snice build-component button --output=./standalone --format=esm,umd --with-theme
-
-# Build all components
-npm run build:standalone
 ```
 
-**Output formats:**
-- `snice-button.esm.js` - ES Module (recommended for modern bundlers)
-- `snice-button.umd.js` - Universal Module Definition (works in all environments)
-- `snice-button.min.js` - Minified IIFE (for direct browser usage)
-- `README.md` - Usage instructions
+Creates standalone bundles (~20-40KB minified) that work anywhere:
 
-**Size:** ~20-40KB minified, ~10-20KB gzipped (includes Snice runtime)
-
-**Usage:**
 ```html
 <script src="snice-button.min.js"></script>
 <snice-button variant="primary">Click me</snice-button>
 ```
 
-### React Adapters
+### React Integration
 
-All Snice components have React adapters for seamless integration with React 17, 18, and 19:
+All components have React adapters (React 17+):
 
 ```tsx
 import { Button, Input } from 'snice/react';
-// or from standalone builds:
-import Button from './standalone/button/react';
 
 function MyComponent() {
   const [value, setValue] = useState('');
@@ -815,7 +799,6 @@ function MyComponent() {
       <Input
         value={value}
         onChange={(e) => setValue(e.detail.value)}
-        placeholder="Enter text..."
       />
       <Button variant="primary" onClick={() => alert('Clicked!')}>
         Submit
@@ -825,21 +808,11 @@ function MyComponent() {
 }
 ```
 
-**Features:**
-- Automatic property mapping (camelCase in React, kebab-case in HTML)
-- Event handling via React callback props
-- Ref forwarding with method exposure
-- Form component integration with `value` and `onChange`
-- TypeScript definitions for all components
-
-**Requirements:**
-All new components MUST:
-1. Support standalone builds (bundle with full Snice runtime)
-2. Have React adapter compatibility
-3. Be tested in both standalone and React usage scenarios
+See [DEVELOPMENT.md](./DEVELOPMENT.md) for build system details
 
 ## Documentation
 
+### User Documentation
 - [Elements API](./docs/elements.md) - Complete guide to creating elements with properties, queries, and styling
 - [Controllers API](./docs/controllers.md) - Data fetching, business logic, and controller patterns
 - [Routing API](./docs/routing.md) - Single-page application routing with transitions
@@ -847,6 +820,9 @@ All new components MUST:
 - [Events API](./docs/events.md) - Event handling, dispatching, and custom events
 - [Request/Response API](./docs/request-response.md) - Bidirectional communication between elements and controllers
 - [Observe API](./docs/observe.md) - Lifecycle-managed observers for external changes
+
+### Developer Documentation
+- [DEVELOPMENT.md](./DEVELOPMENT.md) - Build system, testing, and contributing to Snice
 
 ## License
 

@@ -93,11 +93,11 @@ export async function waitForComponentDefinition(
   timeout = 5000
 ): Promise<void> {
   if (customElements.get(tagName)) {
-    return;
+    return Promise.resolve();
   }
 
   return Promise.race([
-    customElements.whenDefined(tagName),
+    customElements.whenDefined(tagName).then(() => {}),
     new Promise<void>((_, reject) =>
       setTimeout(() => reject(new Error(`Component ${tagName} not defined within ${timeout}ms`)), timeout)
     )
