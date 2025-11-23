@@ -1,17 +1,17 @@
 :host {
-  --accordion-border-color: #e5e7eb;
-  --accordion-border-radius: 8px;
-  --accordion-header-bg: #ffffff;
-  --accordion-header-bg-hover: #f9fafb;
-  --accordion-header-bg-active: #f3f4f6;
-  --accordion-header-color: #111827;
+  --accordion-border-color: var(--snice-color-border, #e5e7eb);
+  --accordion-border-radius: var(--snice-border-radius-lg, 8px);
+  --accordion-header-bg: var(--snice-color-background-element, #ffffff);
+  --accordion-header-bg-hover: var(--snice-color-background-hover, #f9fafb);
+  --accordion-header-bg-active: var(--snice-color-background-active, #f3f4f6);
+  --accordion-header-color: var(--snice-color-text, #111827);
   --accordion-header-padding: 1rem; /* 16px */
-  --accordion-content-bg: #ffffff;
+  --accordion-content-bg: var(--snice-color-background-element, #ffffff);
   --accordion-content-padding: 1rem; /* 16px */
-  --accordion-content-color: #4b5563;
+  --accordion-content-color: var(--snice-color-text-secondary, #4b5563);
   --accordion-icon-size: 1.25rem; /* 20px */
   --accordion-animation-duration: 0.3s;
-  
+
   display: block;
   width: 100%;
 }

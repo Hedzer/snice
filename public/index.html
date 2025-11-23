@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home - Snice</title>
+  <meta name="description" content="TypeScript web components with separation of concerns">
+  <link rel="stylesheet" href="theme/theme.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header>
+    <div class="wrap">
+      <h1><a href="index.html">Snice</a></h1>
+      <nav>
+        <a href="decorators.html">Decorators</a>
+        <a href="components.html">Components</a>
+        <a href="https://gitlab.com/Hedzer/snice">GitLab</a>
+        <button class="theme-btn" onclick="document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark')" title="Toggle theme">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        </button>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap">
+    <section class="hero">
+      <div class="hero-text">
+        <h2>Web components with clear governance</h2>
+        <p>Pages fetch data. Elements render UI. Controllers swap behavior. Keep your code where it belongs.</p>
+        <div class="install">
+          <code>npm install snice</code>
+          <button onclick="navigator.clipboard.writeText('npm install snice')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="hero-code">
+        <pre><code><span class="d">@element</span>(<span class="s">'user-card'</span>)
+<span class="k">class</span> <span class="t">UserCard</span> <span class="k">extends</span> HTMLElement {
+  <span class="d">@property</span>() name = <span class="s">''</span>;
+  <span class="d">@property</span>() role = <span class="s">''</span>;
+
+  <span class="d">@render</span>()
+  <span class="f">template</span>() {
+    <span class="k">return</span> html`
+      &lt;div class="card"&gt;
+        &lt;h3&gt;${this.name}&lt;/h3&gt;
+        &lt;span&gt;${this.role}&lt;/span&gt;
+      &lt;/div&gt;
+    `;
+  }
+}
+<span class="c">// &lt;user-card name="Alice" role="Engineer"&gt;</span></code></pre>
+      </div>
+    </section>
+
+    <div class="pitch">
+      <div class="pitch-item"><strong>Pages</strong><span>Fetch data, understand intent</span></div>
+      <div class="pitch-item"><strong>Elements</strong><span>Pure UI, no business logic</span></div>
+      <div class="pitch-item"><strong>Controllers</strong><span>Swap behavior at runtime</span></div>
+      <div class="pitch-item"><strong>Context</strong><span>Global state, one place</span></div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span>Snice v4.2.0 · MIT</span>
+      <span><a href="https://www.npmjs.com/package/snice">npm</a> · <a href="https://gitlab.com/Hedzer/snice">GitLab</a></span>
+    </div>
+  </footer>
+</body>
+</html>

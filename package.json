@@ -110,7 +110,11 @@
     "test:all": "npm run test:src && npm run test:built && npm run test:standalone && npm run test:react-adapters",
     "prerelease": "npm run build",
     "release": "semantic-release --no-ci",
-    "release:dry": "semantic-release --dry-run --no-ci"
+    "release:dry": "semantic-release --dry-run --no-ci",
+    "website:build": "node scripts/build-website.js",
+    "website:dev": "npm run website:build && cd public && python3 -m http.server 52891",
+    "website:test": "vitest run tests/website.test.ts",
+    "website:test:render": "npm run website:build && cd public && python3 -m http.server 52891 & sleep 2 && npx playwright test tests/website-render.test.ts; kill %1"
   },
   "devDependencies": {
     "@playwright/test": "^1.56.1",

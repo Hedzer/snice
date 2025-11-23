@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Decorators & Patterns - Snice</title>
+  <meta name="description" content="TypeScript web components with separation of concerns">
+  <link rel="stylesheet" href="theme/theme.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header>
+    <div class="wrap">
+      <h1><a href="index.html">Snice</a></h1>
+      <nav>
+        <a href="decorators.html" class="active">Decorators</a>
+        <a href="components.html">Components</a>
+        <a href="https://gitlab.com/Hedzer/snice">GitLab</a>
+        <button class="theme-btn" onclick="document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark')" title="Toggle theme">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        </button>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap">
+    <div class="page-title">
+      <h2>Decorators & Patterns</h2>
+      <p>Everything is declarative. TypeScript decorators for clean, maintainable components.</p>
+    </div>
+
+    <div class="dec-section">
+      <h3><code>@element</code></h3>
+      <p class="desc">Register a custom element. Extends HTMLElement with reactive properties and lifecycle.</p>
+      <pre><code><span class="d">@element</span>(<span class="s">'my-card'</span>)
+<span class="k">class</span> <span class="t">MyCard</span> <span class="k">extends</span> HTMLElement {
+  <span class="d">@property</span>() title = <span class="s">''</span>;
+  <span class="d">@property</span>({ type: Number }) count = 0;
+
+  <span class="d">@render</span>()
+  <span class="f">template</span>() {
+    <span class="k">return</span> html`&lt;h1&gt;${this.title}&lt;/h1&gt;`;
+  }
+}</code></pre>
+      <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/elements.md">Full documentation →</a></p>
+    </div>
+
+    <div class="dec-section">
+      <h3><code>@page</code></h3>
+      <p class="desc">Routable page component with route parameters, guards, and lifecycle hooks.</p>
+      <pre><code><span class="c">// Guard receives context + route params</span>
+<span class="k">const</span> auth: <span class="t">Guard</span>&lt;<span class="t">AppContext</span>&gt; = (ctx, params) => ctx.isAuthenticated();
+
+<span class="d">@page</span>({ tag: <span class="s">'user-page'</span>, routes: [<span class="s">'/users/:id'</span>], guards: [auth] })
+<span class="k">class</span> <span class="t">UserPage</span> <span class="k">extends</span> HTMLElement {
+  <span class="c">// Route param :id auto-binds to this property</span>
+  <span class="d">@property</span>() id = <span class="s">''</span>;
+  <span class="d">@property</span>() user = <span class="k">null</span>;
+
+  <span class="d">@ready</span>()
+  <span class="k">async</span> <span class="f">load</span>() {
+    <span class="c">// this.id is already set from URL</span>
+    this.user = <span class="k">await</span> fetch(`/api/users/${this.id}`).then(r => r.json());
+  }
+}</code></pre>
+      <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/routing.md">Full documentation →</a></p>
+    </div>
+
+    <div class="dec-section">
+      <h3><code>@controller</code></h3>
+      <p class="desc">Swappable behavior that attaches to elements. Switch implementations at runtime.</p>
+      <pre><code><span class="d">@controller</span>(<span class="s">'rest'</span>)
+<span class="k">class</span> <span class="t">RestLoader</span> {
+  <span class="k">async</span> <span class="f">attach</span>(el) {
+    el.data = <span class="k">await</span> fetch(<span class="s">'/api/items'</span>).then(r => r.json());
+  }
+}
+
+<span class="d">@controller</span>(<span class="s">'websocket'</span>)
+<span class="k">class</span> <span class="t">WsLoader</span> {
+  <span class="f">attach</span>(el) {
+    this.ws = <span class="k">new</span> WebSocket(<span class="s">'/ws'</span>);
+    this.ws.onmessage = e => el.data = JSON.parse(e.data);
+  }
+  <span class="f">detach</span>() { this.ws.close(); }
+}
+
+<span class="c">// &lt;my-list controller="rest"&gt; or &lt;my-list controller="websocket"&gt;</span></code></pre>
+      <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/controllers.md">Full documentation →</a></p>
+    </div>
+
+    <div class="dec-section">
+      <h3><code>@property</code> & <code>@watch</code></h3>
+      <p class="desc">Reactive properties that trigger re-renders. Watch for changes.</p>
+      <pre><code><span class="d">@property</span>() name = <span class="s">''</span>;
+<span class="d">@property</span>({ type: Number }) count = 0;
+<span class="d">@property</span>({ type: Boolean, reflect: <span class="k">true</span> }) active = <span class="k">false</span>;
+
+<span class="d">@watch</span>(<span class="s">'count'</span>)
+<span class="f">onCountChange</span>(newVal, oldVal) {
+  console.log(`Count: ${oldVal} → ${newVal}`);
+}</code></pre>
+    </div>
+
+    <div class="dec-section">
+      <h3><code>@render</code> & <code>@styles</code></h3>
+      <p class="desc">Template method with differential rendering. Scoped CSS styles.</p>
+      <pre><code><span class="d">@render</span>()
+<span class="f">template</span>() {
+  <span class="k">return</span> html`
+    &lt;div class="card"&gt;
+      &lt;h3&gt;${this.title}&lt;/h3&gt;
+      &lt;if ${this.expanded}&gt;
+        &lt;p&gt;${this.content}&lt;/p&gt;
+      &lt;/if&gt;
+    &lt;/div&gt;
+  `;
+}
+
+<span class="d">@styles</span>()
+<span class="f">componentStyles</span>() {
+  <span class="k">return</span> css`
+    :host { display: block; }
+    .card { padding: 1rem; border-radius: 8px; }
+  `;
+}</code></pre>
+    </div>
+
+    <div class="dec-section">
+      <h3><code>@ready</code> & <code>@dispose</code></h3>
+      <p class="desc">Lifecycle hooks for initialization and cleanup.</p>
+      <pre><code><span class="d">@ready</span>()
+<span class="f">onMount</span>() {
+  this.interval = setInterval(() => this.tick(), 1000);
+  console.log(<span class="s">'Component connected'</span>);
+}
+
+<span class="d">@dispose</span>()
+<span class="f">cleanup</span>() {
+  clearInterval(this.interval);
+  this.subscription?.unsubscribe();
+}</code></pre>
+    </div>
+
+    <div class="dec-section">
+      <h3><code>@query</code> & <code>@queryAll</code></h3>
+      <p class="desc">DOM element references within shadow DOM.</p>
+      <pre><code><span class="d">@query</span>(<span class="s">'input'</span>) inputEl;
+<span class="d">@queryAll</span>(<span class="s">'.item'</span>) items;
+
+<span class="d">@ready</span>()
+<span class="f">setup</span>() {
+  this.inputEl.focus();
+  console.log(`Found ${this.items.length} items`);
+}</code></pre>
+    </div>
+
+    <div class="dec-section">
+      <h3><code>@on</code> & <code>@dispatch</code></h3>
+      <p class="desc">Event delegation and custom event emission.</p>
+      <pre><code><span class="c">// @on: delegated event listener</span>
+<span class="d">@on</span>(<span class="s">'click'</span>, <span class="s">'button.save'</span>)
+<span class="f">handleSave</span>(e) { this.save(); }
+
+<span class="c">// @dispatch: return value becomes event.detail</span>
+<span class="d">@dispatch</span>(<span class="s">'status-changed'</span>)
+<span class="f">updateStatus</span>(status) {
+  this.status = status;
+  <span class="k">return</span> { status };
+}
+
+<span class="c">// Stacked: DOM event triggers custom event</span>
+<span class="d">@on</span>(<span class="s">'click'</span>, <span class="s">'.item'</span>)
+<span class="d">@dispatch</span>(<span class="s">'item-selected'</span>)
+<span class="f">handleItemClick</span>(e) {
+  <span class="k">return</span> { id: e.target.dataset.id };
+}</code></pre>
+      <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/events.md">Full documentation →</a></p>
+    </div>
+
+    <div class="dec-section">
+      <h3><code>@context</code></h3>
+      <p class="desc">Receive router navigation context updates.</p>
+      <pre><code><span class="c">// Method receives Context on route changes</span>
+<span class="d">@context</span>()
+<span class="f">handleContext</span>(ctx: <span class="t">Context</span>) {
+  this.user = ctx.application.user;
+  this.route = ctx.navigation.route;
+}</code></pre>
+      <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/routing.md">Full documentation →</a></p>
+    </div>
+
+    <div class="dec-section">
+      <h3><code>@request</code> & <code>@respond</code></h3>
+      <p class="desc">Async generator pattern for parent-child communication.</p>
+      <pre><code><span class="c">// Requester: async generator yields payload, awaits response</span>
+<span class="d">@request</span>(<span class="s">'fetch-user'</span>)
+<span class="k">async</span> *<span class="f">fetchUser</span>(id: <span class="t">string</span>) {
+  <span class="k">const</span> user = <span class="k">await</span> (<span class="k">yield</span> { id });
+  <span class="k">return</span> user;
+}
+
+<span class="c">// Responder: receives payload, returns response</span>
+<span class="d">@respond</span>(<span class="s">'fetch-user'</span>)
+<span class="k">async</span> <span class="f">handleFetchUser</span>({ id }) {
+  <span class="k">return await</span> fetch(`/api/users/${id}`).then(r => r.json());
+}
+
+<span class="c">// Usage: const user = await this.fetchUser('123');</span></code></pre>
+      <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/request-response.md">Full documentation →</a></p>
+    </div>
+
+    <div class="dec-section">
+      <h3>Template Syntax</h3>
+      <p class="desc">Property binding, conditionals, loops, and event shortcuts.</p>
+      <pre><code><span class="c">// Property binding</span>
+html`<span class="h">&lt;input</span> .value=${this.text}<span class="h">&gt;</span>`
+
+<span class="c">// Conditionals</span>
+html`<span class="h">&lt;if</span> ${this.loading}<span class="h">&gt;&lt;snice-spinner&gt;&lt;/snice-spinner&gt;&lt;/if&gt;</span>`
+html`<span class="h">&lt;if</span> ${this.error}<span class="h">&gt;&lt;span&gt;</span>${this.error}<span class="h">&lt;/span&gt;&lt;/if&gt;</span>`
+
+<span class="c">// Loops (use .map())</span>
+html`${this.items.map(item =&gt; html`<span class="h">&lt;li</span> key=${item.id}<span class="h">&gt;</span>${item.name}<span class="h">&lt;/li&gt;</span>`)}`
+
+<span class="c">// Keyboard shortcuts</span>
+html`<span class="h">&lt;input</span> <span class="d">@keydown:ctrl+s</span>=${this.save}<span class="h">&gt;</span>`
+html`<span class="h">&lt;div</span> <span class="d">@keydown:escape</span>=${this.close}<span class="h">&gt;</span>`</code></pre>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span>Snice v4.2.0 · MIT</span>
+      <span><a href="https://www.npmjs.com/package/snice">npm</a> · <a href="https://gitlab.com/Hedzer/snice">GitLab</a></span>
+    </div>
+  </footer>
+</body>
+</html>

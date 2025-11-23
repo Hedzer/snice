@@ -11,6 +11,7 @@
   background: var(--qr-bg, white);
   border-radius: var(--qr-border-radius, 0);
   padding: var(--qr-padding, 0);
+  overflow: hidden;
 }
 
 canvas,

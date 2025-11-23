@@ -1,0 +1,291 @@
+:root {
+  /* Color primitives - HSL format (hue saturation% lightness%) */
+  --snice-color-gray-50: 0 0% 98%;
+  --snice-color-gray-100: 0 0% 95%;
+  --snice-color-gray-200: 0 0% 89%;
+  --snice-color-gray-300: 0 0% 82%;
+  --snice-color-gray-400: 0 0% 64%;
+  --snice-color-gray-500: 0 0% 45%;
+  --snice-color-gray-600: 0 0% 32%;
+  --snice-color-gray-700: 0 0% 25%;
+  --snice-color-gray-800: 0 0% 15%;
+  --snice-color-gray-900: 0 0% 9%;
+  --snice-color-gray-950: 0 0% 4%;
+
+  --snice-color-blue-50: 214 100% 97%;
+  --snice-color-blue-100: 214 95% 93%;
+  --snice-color-blue-200: 213 97% 87%;
+  --snice-color-blue-300: 212 96% 78%;
+  --snice-color-blue-400: 213 94% 68%;
+  --snice-color-blue-500: 217 91% 60%;
+  --snice-color-blue-600: 217 83% 53%;
+  --snice-color-blue-700: 217 77% 48%;
+  --snice-color-blue-800: 217 71% 40%;
+  --snice-color-blue-900: 218 65% 33%;
+  --snice-color-blue-950: 221 56% 21%;
+
+  --snice-color-green-50: 138 76% 97%;
+  --snice-color-green-100: 141 84% 93%;
+  --snice-color-green-200: 141 79% 85%;
+  --snice-color-green-300: 142 77% 73%;
+  --snice-color-green-400: 142 69% 58%;
+  --snice-color-green-500: 142 71% 45%;
+  --snice-color-green-600: 142 76% 36%;
+  --snice-color-green-700: 142 72% 29%;
+  --snice-color-green-800: 143 64% 24%;
+  --snice-color-green-900: 144 61% 20%;
+  --snice-color-green-950: 145 80% 10%;
+
+  --snice-color-red-50: 0 86% 97%;
+  --snice-color-red-100: 0 93% 94%;
+  --snice-color-red-200: 0 96% 89%;
+  --snice-color-red-300: 0 94% 82%;
+  --snice-color-red-400: 0 91% 71%;
+  --snice-color-red-500: 0 84% 60%;
+  --snice-color-red-600: 0 72% 51%;
+  --snice-color-red-700: 0 74% 42%;
+  --snice-color-red-800: 0 70% 35%;
+  --snice-color-red-900: 0 63% 31%;
+  --snice-color-red-950: 0 75% 15%;
+
+  --snice-color-yellow-50: 55 92% 95%;
+  --snice-color-yellow-100: 55 97% 88%;
+  --snice-color-yellow-200: 53 98% 77%;
+  --snice-color-yellow-300: 50 98% 64%;
+  --snice-color-yellow-400: 48 96% 53%;
+  --snice-color-yellow-500: 45 93% 47%;
+  --snice-color-yellow-600: 41 96% 40%;
+  --snice-color-yellow-700: 36 88% 33%;
+  --snice-color-yellow-800: 32 81% 29%;
+  --snice-color-yellow-900: 28 73% 26%;
+  --snice-color-yellow-950: 24 71% 14%;
+
+  /* Light theme (default) */
+  --snice-color-primary: hsl(var(--snice-color-blue-600));
+  --snice-color-success: hsl(var(--snice-color-green-600));
+  --snice-color-warning: hsl(var(--snice-color-yellow-600));
+  --snice-color-danger: hsl(var(--snice-color-red-600));
+  --snice-color-neutral: hsl(var(--snice-color-gray-600));
+
+  --snice-color-primary-hover: hsl(var(--snice-color-blue-700));
+  --snice-color-success-hover: hsl(var(--snice-color-green-700));
+  --snice-color-warning-hover: hsl(var(--snice-color-yellow-700));
+  --snice-color-danger-hover: hsl(var(--snice-color-red-700));
+  --snice-color-neutral-hover: hsl(var(--snice-color-gray-700));
+
+  /* Semantic colors */
+  --snice-color-text: hsl(var(--snice-color-gray-900));
+  --snice-color-text-secondary: hsl(var(--snice-color-gray-600));
+  --snice-color-text-tertiary: hsl(var(--snice-color-gray-500));
+  --snice-color-text-inverse: hsl(var(--snice-color-gray-50));
+
+  --snice-color-background: hsl(0 0% 100%);
+  --snice-color-background-secondary: hsl(var(--snice-color-gray-50));
+  --snice-color-background-tertiary: hsl(var(--snice-color-gray-100));
+  --snice-color-background-element: hsl(40 9% 97%);
+  --snice-color-background-input: hsl(0 0% 100%);
+
+  --snice-color-border: hsl(var(--snice-color-gray-300));
+  --snice-color-border-hover: hsl(var(--snice-color-gray-400));
+  --snice-color-border-focus: hsl(var(--snice-color-blue-500));
+
+  /* Interactive states */
+  --snice-color-background-hover: hsl(var(--snice-color-gray-100));
+  --snice-color-background-active: hsl(var(--snice-color-gray-200));
+  --snice-color-background-disabled: hsl(var(--snice-color-gray-100));
+  --snice-color-text-disabled: hsl(var(--snice-color-gray-400));
+
+  --snice-color-primary-subtle: hsl(var(--snice-color-blue-50));
+  --snice-color-primary-subtle-hover: hsl(var(--snice-color-blue-100));
+  --snice-color-danger-subtle: hsl(var(--snice-color-red-50));
+
+  /* Spacing */
+  --snice-spacing-3xs: 0.125rem;  /* 2px */
+  --snice-spacing-2xs: 0.25rem;   /* 4px */
+  --snice-spacing-xs: 0.5rem;     /* 8px */
+  --snice-spacing-sm: 0.75rem;    /* 12px */
+  --snice-spacing-md: 1rem;       /* 16px */
+  --snice-spacing-lg: 1.5rem;     /* 24px */
+  --snice-spacing-xl: 2rem;       /* 32px */
+  --snice-spacing-2xl: 3rem;      /* 48px */
+  --snice-spacing-3xl: 4rem;      /* 64px */
+
+  /* Typography */
+  --snice-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+  --snice-font-family-mono: SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+
+  --snice-font-size-2xs: 0.625rem;   /* 10px */
+  --snice-font-size-xs: 0.75rem;     /* 12px */
+  --snice-font-size-sm: 0.875rem;    /* 14px */
+  --snice-font-size-md: 1rem;        /* 16px */
+  --snice-font-size-lg: 1.125rem;    /* 18px */
+  --snice-font-size-xl: 1.25rem;     /* 20px */
+  --snice-font-size-2xl: 1.5rem;     /* 24px */
+  --snice-font-size-3xl: 1.875rem;   /* 30px */
+  --snice-font-size-4xl: 2.25rem;    /* 36px */
+
+  --snice-font-weight-light: 300;
+  --snice-font-weight-normal: 400;
+  --snice-font-weight-medium: 500;
+  --snice-font-weight-semibold: 600;
+  --snice-font-weight-bold: 700;
+
+  --snice-line-height-dense: 1.25;
+  --snice-line-height-normal: 1.5;
+  --snice-line-height-loose: 1.75;
+
+  /* Border radius */
+  --snice-border-radius-sm: 0.125rem;  /* 2px */
+  --snice-border-radius-md: 0.25rem;   /* 4px */
+  --snice-border-radius-lg: 0.5rem;    /* 8px */
+  --snice-border-radius-xl: 1rem;      /* 16px */
+  --snice-border-radius-circle: 50%;
+  --snice-border-radius-pill: 9999px;
+
+  /* Shadows */
+  --snice-shadow-xs: 0 1px 3px 0 hsl(0 0% 0% / 0.04), 0 1px 2px 0 hsl(0 0% 0% / 0.06);
+  --snice-shadow-sm: 0 2px 6px 0 hsl(0 0% 0% / 0.04), 0 2px 4px -1px hsl(0 0% 0% / 0.06);
+  --snice-shadow-md: 0 4px 12px 0 hsl(0 0% 0% / 0.05), 0 2px 8px -2px hsl(0 0% 0% / 0.06);
+  --snice-shadow-lg: 0 10px 24px -3px hsl(0 0% 0% / 0.05), 0 4px 12px -4px hsl(0 0% 0% / 0.06);
+  --snice-shadow-xl: 0 20px 32px -5px hsl(0 0% 0% / 0.06), 0 8px 16px -6px hsl(0 0% 0% / 0.08);
+  --snice-shadow-2xl: 0 25px 50px -12px hsl(0 0% 0% / 0.12);
+  --snice-shadow-inset-sm: inset 0 1px 2px 0 hsl(0 0% 0% / 0.05);
+  --snice-shadow-inset-md: inset 0 2px 4px 0 hsl(0 0% 0% / 0.06);
+
+  /* Gradients */
+  --snice-gradient-subtle: linear-gradient(to bottom, hsl(0 0% 100% / 0.03), transparent);
+  --snice-gradient-button: linear-gradient(to bottom, hsl(0 0% 100% / 0.05), transparent);
+  --snice-gradient-surface: linear-gradient(to bottom, hsl(0 0% 100% / 0.02), transparent);
+
+  /* Transitions */
+  --snice-transition-fast: 150ms;
+  --snice-transition-medium: 250ms;
+  --snice-transition-slow: 350ms;
+
+  /* Z-index */
+  --snice-z-index-dropdown: 1000;
+  --snice-z-index-sticky: 1020;
+  --snice-z-index-fixed: 1030;
+  --snice-z-index-modal-backdrop: 1040;
+  --snice-z-index-modal: 1050;
+  --snice-z-index-popover: 1060;
+  --snice-z-index-tooltip: 1070;
+
+  /* Focus */
+  --snice-focus-ring-width: 2px;
+  --snice-focus-ring-color: hsl(var(--snice-color-blue-500) / 0.5);
+  --snice-focus-ring-offset: 2px;
+
+  /* Color scheme for native controls */
+  --snice-color-scheme-filter: none;
+  color-scheme: light;
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+  --snice-color-primary: hsl(var(--snice-color-blue-500));
+  --snice-color-success: hsl(var(--snice-color-green-500));
+  --snice-color-warning: hsl(var(--snice-color-yellow-500));
+  --snice-color-danger: hsl(var(--snice-color-red-500));
+  --snice-color-neutral: hsl(var(--snice-color-gray-400));
+
+  --snice-color-primary-hover: hsl(var(--snice-color-blue-400));
+  --snice-color-success-hover: hsl(var(--snice-color-green-400));
+  --snice-color-warning-hover: hsl(var(--snice-color-yellow-400));
+  --snice-color-danger-hover: hsl(var(--snice-color-red-400));
+  --snice-color-neutral-hover: hsl(var(--snice-color-gray-300));
+
+  --snice-color-text: hsl(var(--snice-color-gray-50));
+  --snice-color-text-secondary: hsl(var(--snice-color-gray-300));
+  --snice-color-text-tertiary: hsl(var(--snice-color-gray-400));
+  --snice-color-text-inverse: hsl(var(--snice-color-gray-900));
+
+  --snice-color-background: hsl(var(--snice-color-gray-900));
+  --snice-color-background-secondary: hsl(var(--snice-color-gray-800));
+  --snice-color-background-tertiary: hsl(var(--snice-color-gray-700));
+  --snice-color-background-element: hsl(30 5% 18%);
+  --snice-color-background-input: hsl(0 0% 15%);
+
+  --snice-color-border: hsl(0 0% 35%);
+  --snice-color-border-hover: hsl(var(--snice-color-gray-600));
+  --snice-color-border-focus: hsl(var(--snice-color-blue-400));
+
+  --snice-color-background-hover: hsl(var(--snice-color-gray-700));
+  --snice-color-background-active: hsl(var(--snice-color-gray-600));
+  --snice-color-background-disabled: hsl(var(--snice-color-gray-800));
+  --snice-color-text-disabled: hsl(var(--snice-color-gray-600));
+
+  --snice-color-primary-subtle: hsl(var(--snice-color-blue-950));
+  --snice-color-primary-subtle-hover: hsl(var(--snice-color-blue-900));
+  --snice-color-danger-subtle: hsl(var(--snice-color-red-950));
+
+  --snice-shadow-xs: 0 1px 3px 0 hsl(0 0% 0% / 0.2), 0 1px 2px 0 hsl(0 0% 0% / 0.3);
+  --snice-shadow-sm: 0 2px 6px 0 hsl(0 0% 0% / 0.2), 0 2px 4px -1px hsl(0 0% 0% / 0.3);
+  --snice-shadow-md: 0 4px 12px 0 hsl(0 0% 0% / 0.25), 0 2px 8px -2px hsl(0 0% 0% / 0.3);
+  --snice-shadow-lg: 0 10px 24px -3px hsl(0 0% 0% / 0.25), 0 4px 12px -4px hsl(0 0% 0% / 0.3);
+  --snice-shadow-xl: 0 20px 32px -5px hsl(0 0% 0% / 0.3), 0 8px 16px -6px hsl(0 0% 0% / 0.4);
+  --snice-shadow-2xl: 0 25px 50px -12px hsl(0 0% 0% / 0.5);
+  --snice-shadow-inset-sm: inset 0 1px 2px 0 hsl(0 0% 0% / 0.2);
+  --snice-shadow-inset-md: inset 0 2px 4px 0 hsl(0 0% 0% / 0.3);
+
+  /* Gradients */
+  --snice-gradient-subtle: linear-gradient(to bottom, hsl(0 0% 100% / 0.02), transparent);
+  --snice-gradient-button: linear-gradient(to bottom, hsl(0 0% 100% / 0.04), transparent);
+  --snice-gradient-surface: linear-gradient(to bottom, hsl(0 0% 100% / 0.015), transparent);
+
+  /* Color scheme for native controls */
+  --snice-color-scheme-filter: invert(1) hue-rotate(180deg);
+  color-scheme: dark;
+}
+
+/* Auto dark theme based on system preference */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --snice-color-primary: hsl(var(--snice-color-blue-500));
+    --snice-color-success: hsl(var(--snice-color-green-500));
+    --snice-color-warning: hsl(var(--snice-color-yellow-500));
+    --snice-color-danger: hsl(var(--snice-color-red-500));
+    --snice-color-neutral: hsl(var(--snice-color-gray-400));
+
+    --snice-color-primary-hover: hsl(var(--snice-color-blue-400));
+    --snice-color-success-hover: hsl(var(--snice-color-green-400));
+    --snice-color-warning-hover: hsl(var(--snice-color-yellow-400));
+    --snice-color-danger-hover: hsl(var(--snice-color-red-400));
+    --snice-color-neutral-hover: hsl(var(--snice-color-gray-300));
+
+    --snice-color-text: hsl(var(--snice-color-gray-50));
+    --snice-color-text-secondary: hsl(var(--snice-color-gray-300));
+    --snice-color-text-tertiary: hsl(var(--snice-color-gray-400));
+    --snice-color-text-inverse: hsl(var(--snice-color-gray-900));
+
+    --snice-color-background: hsl(var(--snice-color-gray-900));
+    --snice-color-background-secondary: hsl(var(--snice-color-gray-800));
+    --snice-color-background-tertiary: hsl(var(--snice-color-gray-700));
+    --snice-color-background-element: hsl(30 5% 18%);
+    --snice-color-background-input: hsl(0 0% 15%);
+
+    --snice-color-border: hsl(0 0% 35%);
+    --snice-color-border-hover: hsl(var(--snice-color-gray-600));
+    --snice-color-border-focus: hsl(var(--snice-color-blue-400));
+
+    --snice-color-background-hover: hsl(var(--snice-color-gray-700));
+    --snice-color-background-active: hsl(var(--snice-color-gray-600));
+    --snice-color-background-disabled: hsl(var(--snice-color-gray-800));
+    --snice-color-text-disabled: hsl(var(--snice-color-gray-600));
+
+    --snice-color-primary-subtle: hsl(var(--snice-color-blue-950));
+    --snice-color-primary-subtle-hover: hsl(var(--snice-color-blue-900));
+    --snice-color-danger-subtle: hsl(var(--snice-color-red-950));
+
+    --snice-shadow-xs: 0 1px 2px 0 hsl(0 0% 0% / 0.1);
+    --snice-shadow-sm: 0 1px 3px 0 hsl(0 0% 0% / 0.15), 0 1px 2px -1px hsl(0 0% 0% / 0.15);
+    --snice-shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.15), 0 2px 4px -2px hsl(0 0% 0% / 0.15);
+    --snice-shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.15), 0 4px 6px -4px hsl(0 0% 0% / 0.15);
+    --snice-shadow-xl: 0 20px 25px -5px hsl(0 0% 0% / 0.15), 0 8px 10px -6px hsl(0 0% 0% / 0.15);
+    --snice-shadow-2xl: 0 25px 50px -12px hsl(0 0% 0% / 0.35);
+
+    /* Color scheme for native controls */
+    --snice-color-scheme-filter: invert(1) hue-rotate(180deg);
+    color-scheme: dark;
+  }
+}
