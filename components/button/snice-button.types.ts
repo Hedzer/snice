@@ -1,10 +1,12 @@
 export type ButtonVariant = 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'text';
 export type ButtonSize = 'small' | 'medium' | 'large';
+export type ButtonType = 'button' | 'submit' | 'reset';
 export type IconPlacement = 'start' | 'end';
 
 export interface SniceButtonElement extends HTMLElement {
   variant: ButtonVariant;
   size: ButtonSize;
+  type: ButtonType;
   disabled: boolean;
   loading: boolean;
   outline: boolean;

@@ -1,14 +1,26 @@
 import { element, property, query, render, styles, html, css } from 'snice';
 import cssContent from './snice-button.css?inline';
-import type { ButtonVariant, ButtonSize, IconPlacement, SniceButtonElement } from './snice-button.types';
+import type { ButtonVariant, ButtonSize, ButtonType, IconPlacement, SniceButtonElement } from './snice-button.types';
 
-@element('snice-button')
+@element('snice-button', { formAssociated: true })
 export class SniceButton extends HTMLElement implements SniceButtonElement {
+  internals!: ElementInternals;
+
+  constructor() {
+    super();
+    if (typeof this.attachInternals === 'function') {
+      this.internals = this.attachInternals();
+    }
+  }
+
   @property({  })
   variant: ButtonVariant = 'default';
 
   @property({  })
   size: ButtonSize = 'medium';
+
+  @property({  })
+  type: ButtonType = 'button';
 
   @property({ type: Boolean,  })
   disabled = false;
@@ -69,7 +81,7 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
     ].filter(Boolean).join(' ');
 
     return html/*html*/`
-      <button class="${classes}" type="button" ?disabled="${this.disabled}" part="base" @click="${(e: MouseEvent) => this.handleInternalClick(e)}">
+      <button class="${classes}" type="${this.type}" ?disabled="${this.disabled}" part="base" @click="${(e: MouseEvent) => this.handleInternalClick(e)}">
         <span class="spinner" part="spinner"></span>
         <if ${this.icon && this.iconPlacement === 'start'}>
           <img class="icon" src="${this.icon}" alt="" part="icon" />
@@ -102,6 +114,19 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
         window.open(this.href, this.target);
       } else {
         window.location.href = this.href;
+      }
+    }
+
+    // Handle form submission/reset for form-associated buttons
+    const form = this.internals?.form || this.closest('form');
+    if (form) {
+      switch (this.type) {
+        case 'submit':
+          form.requestSubmit();
+          break;
+        case 'reset':
+          form.reset();
+          break;
       }
     }
 

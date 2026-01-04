@@ -107,6 +107,8 @@
     "test:built": "npm run build:test && TEST_BUILT=true vitest run tests/components tests/channel.test.ts tests/channel-simple.test.ts tests/decorators.test.ts tests/dispatch.test.ts tests/form-associated.test.ts tests/router.test.ts tests/cli-create-app.test.ts",
     "test:standalone": "vitest run tests/standalone-builds.test.ts",
     "test:react-adapters": "vitest run tests/react-adapters",
+    "test:live:components": "npx playwright test tests/live/components --config=tests/playwright.config.ts",
+    "test:live:templates": "npx playwright test tests/live/templates --config=tests/playwright.config.ts",
     "test:all": "npm run test:src && npm run test:built && npm run test:standalone && npm run test:react-adapters",
     "prerelease": "npm run build",
     "release": "semantic-release --no-ci",

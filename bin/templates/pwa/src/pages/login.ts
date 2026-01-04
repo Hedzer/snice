@@ -1,8 +1,9 @@
 import { page } from '../router';
-import { render, styles, html, css, context } from 'snice';
+import { render, styles, respond, context, html, css } from 'snice';
 import type { Placard, Context } from 'snice';
-import type { Principal } from '../types/auth';
 import { login } from '../services/auth';
+import type { Principal } from '../types/auth';
+import 'snice/components/login';
 
 const placard: Placard = {
   name: 'login',
@@ -10,13 +11,21 @@ const placard: Placard = {
   show: false
 };
 
-@page({ tag: 'login-page', routes: ['/login'], placard })
-export class LoginPage extends HTMLElement {
-  email = 'demo@example.com';
-  password = 'demo';
-  error = '';
-  loading = false;
+interface LoginCredentials {
+  username: string;
+  password: string;
+  remember?: boolean;
+}
 
+interface LoginResult {
+  success: boolean;
+  error?: string;
+  user?: { id: string; username: string; email: string };
+  token?: string;
+}
+
+@page({ tag: 'login-page', routes: ['/login'], placard, layout: false })
+export class LoginPage extends HTMLElement {
   private ctx?: Context;
 
   @context()
@@ -24,26 +33,37 @@ export class LoginPage extends HTMLElement {
     this.ctx = ctx;
   }
 
-  async handleSubmit(e: Event) {
-    e.preventDefault();
-    this.error = '';
-    this.loading = true;
-
+  @respond('login-user')
+  async handleLogin(credentials: LoginCredentials): Promise<LoginResult> {
     try {
-      const result = await login({ email: this.email, password: this.password });
+      const result = await login({
+        email: credentials.username,
+        password: credentials.password
+      });
 
-      // Update context with new auth state
       if (this.ctx && this.ctx.application.principal) {
         const principal = this.ctx.application.principal as Principal;
         principal.user = result.user;
         principal.isAuthenticated = true;
+        this.ctx.update();
       }
 
-      window.location.href = '#/dashboard';
-    } catch (err) {
-      this.error = err instanceof Error ? err.message : 'Login failed';
-    } finally {
-      this.loading = false;
+      window.location.hash = '#/dashboard';
+
+      return {
+        success: true,
+        user: {
+          id: result.user.id,
+          username: result.user.email,
+          email: result.user.email
+        },
+        token: result.token
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Login failed'
+      };
     }
   }
 
@@ -51,50 +71,20 @@ export class LoginPage extends HTMLElement {
   renderContent() {
     return html`
       <div class="container">
-        <snice-card class="login-card">
-          <h1>{{projectName}}</h1>
-          <p class="subtitle">Sign in to your account</p>
-
-          <form @submit=${this.handleSubmit}>
-            <snice-input
-              label="Email"
-              type="email"
-              .value=${this.email}
-              @input=${(e: Event) => this.email = (e.target as HTMLInputElement).value}
-              required
-            ></snice-input>
-
-            <snice-input
-              label="Password"
-              type="password"
-              .value=${this.password}
-              @input=${(e: Event) => this.password = (e.target as HTMLInputElement).value}
-              required
-            ></snice-input>
-
-            <if ${this.error}>
-              <snice-alert variant="error" class="error">
-                ${this.error}
-              </snice-alert>
-            </if>
-
-            <snice-button
-              type="submit"
-              variant="primary"
-              size="large"
-              ?loading=${this.loading}
-              full-width
-            >
-              Sign In
-            </snice-button>
-          </form>
-
-          <div class="hint">
-            <p>Demo credentials:</p>
-            <p><strong>Email:</strong> demo@example.com</p>
-            <p><strong>Password:</strong> demo</p>
+        <snice-login
+          variant="card"
+          size="medium"
+          title="{{projectName}}"
+          action-text="Sign In"
+          show-forgot-password="false"
+        >
+          <p slot="subtitle">Sign in to your account</p>
+          <div slot="footer">
+            <p class="hint">Demo credentials:</p>
+            <p class="hint"><strong>Email:</strong> demo@example.com</p>
+            <p class="hint"><strong>Password:</strong> demo</p>
           </div>
-        </snice-card>
+        </snice-login>
       </div>
     `;
   }
@@ -104,7 +94,8 @@ export class LoginPage extends HTMLElement {
     return css`
       :host {
         display: block;
-        min-height: 100vh;
+        height: 100vh;
+        overflow: hidden;
         background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
       }
 
@@ -112,49 +103,21 @@ export class LoginPage extends HTMLElement {
         display: flex;
         align-items: center;
         justify-content: center;
-        min-height: 100vh;
+        height: 100%;
         padding: 2rem;
+        box-sizing: border-box;
       }
 
-      .login-card {
+      snice-login {
         width: 100%;
         max-width: 400px;
-        padding: 2rem;
-      }
-
-      h1 {
-        text-align: center;
-        color: var(--primary-color);
-        margin: 0 0 0.5rem 0;
-      }
-
-      .subtitle {
-        text-align: center;
-        color: var(--text-light);
-        margin: 0 0 2rem 0;
-      }
-
-      form {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-      }
-
-      .error {
-        margin: 0;
       }
 
       .hint {
-        margin-top: 1.5rem;
-        padding-top: 1.5rem;
-        border-top: 1px solid var(--border-color);
-        text-align: center;
+        margin: 0.25rem 0;
         font-size: 0.875rem;
         color: var(--text-light);
-      }
-
-      .hint p {
-        margin: 0.25rem 0;
+        text-align: center;
       }
     `;
   }

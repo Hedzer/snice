@@ -25,6 +25,7 @@ describe('snice-button', () => {
 
       expect(button.variant).toBe('default');
       expect(button.size).toBe('medium');
+      expect(button.type).toBe('button');
       expect(button.disabled).toBe(false);
       expect(button.loading).toBe(false);
       expect(button.outline).toBe(false);
@@ -75,6 +76,111 @@ describe('snice-button', () => {
         const btnEl = queryShadow(button as HTMLElement, '.button');
         expect(btnEl?.classList.contains(`button--${size}`)).toBe(true);
       });
+    });
+  });
+
+  describe('button type', () => {
+    it('should default to type="button"', async () => {
+      button = await createComponent<SniceButtonElement>('snice-button');
+      await wait(10);
+
+      const btnEl = queryShadow(button as HTMLElement, '.button') as HTMLButtonElement;
+      expect(btnEl?.type).toBe('button');
+    });
+
+    it('should support type="submit"', async () => {
+      button = await createComponent<SniceButtonElement>('snice-button', {
+        type: 'submit'
+      });
+      await wait(10);
+
+      const btnEl = queryShadow(button as HTMLElement, '.button') as HTMLButtonElement;
+      expect(btnEl?.type).toBe('submit');
+    });
+
+    it('should support type="reset"', async () => {
+      button = await createComponent<SniceButtonElement>('snice-button', {
+        type: 'reset'
+      });
+      await wait(10);
+
+      const btnEl = queryShadow(button as HTMLElement, '.button') as HTMLButtonElement;
+      expect(btnEl?.type).toBe('reset');
+    });
+
+    it('should update type dynamically', async () => {
+      button = await createComponent<SniceButtonElement>('snice-button');
+      await wait(10);
+
+      let btnEl = queryShadow(button as HTMLElement, '.button') as HTMLButtonElement;
+      expect(btnEl?.type).toBe('button');
+
+      button.type = 'submit';
+      await wait(10);
+
+      btnEl = queryShadow(button as HTMLElement, '.button') as HTMLButtonElement;
+      expect(btnEl?.type).toBe('submit');
+    });
+
+    it('should set type attribute on internal button via property', async () => {
+      button = await createComponent<SniceButtonElement>('snice-button');
+      await wait(10);
+
+      button.setAttribute('type', 'submit');
+      await wait(10);
+
+      const btnEl = queryShadow(button as HTMLElement, '.button') as HTMLButtonElement;
+      expect(btnEl?.type).toBe('submit');
+    });
+
+    it('should trigger form submission when type="submit"', async () => {
+      const form = document.createElement('form');
+      form.id = 'test-form-submit';
+      document.body.appendChild(form);
+
+      button = await createComponent<SniceButtonElement>('snice-button', {
+        type: 'submit'
+      });
+      form.appendChild(button);
+      await wait(10);
+
+      let formSubmitted = false;
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        formSubmitted = true;
+      });
+
+      button.click();
+      await wait(10);
+
+      expect(formSubmitted).toBe(true);
+      form.remove();
+    });
+
+    it('should trigger form reset when type="reset"', async () => {
+      const form = document.createElement('form');
+      form.id = 'test-form-reset';
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.name = 'test';
+      input.defaultValue = '';
+      form.appendChild(input);
+      document.body.appendChild(form);
+
+      button = await createComponent<SniceButtonElement>('snice-button', {
+        type: 'reset'
+      });
+      form.appendChild(button);
+      await wait(10);
+
+      input.value = 'changed';
+      expect(input.value).toBe('changed');
+
+      button.click();
+      await wait(10);
+
+      expect(input.value).toBe('');
+      form.remove();
     });
   });
 
