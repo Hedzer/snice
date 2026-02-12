@@ -5,7 +5,7 @@ import type { SniceBaseProps } from './types';
  * Props for the Terminal component
  */
 export interface TerminalProps extends SniceBaseProps {
-  private?: any;
+  renderTrigger?: any;
   prompt?: any;
   cwd?: any;
   readonly?: any;
@@ -32,7 +32,7 @@ export interface TerminalProps extends SniceBaseProps {
  */
 export const Terminal = createReactAdapter<TerminalProps>({
   tagName: 'snice-terminal',
-  properties: ["private","prompt","cwd","readonly","maxLines","showTimestamps"],
+  properties: ["renderTrigger","prompt","cwd","readonly","maxLines","showTimestamps"],
   events: {},
   formAssociated: false
 });

@@ -7,6 +7,7 @@ import type { SniceBaseProps } from './types';
 export interface ButtonProps extends SniceBaseProps {
   variant?: any;
   size?: any;
+  type?: any;
   disabled?: any;
   loading?: any;
   outline?: any;
@@ -38,7 +39,7 @@ export interface ButtonProps extends SniceBaseProps {
  */
 export const Button = createReactAdapter<ButtonProps>({
   tagName: 'snice-button',
-  properties: ["variant","size","disabled","loading","outline","pill","circle","href","target","download","icon","iconPlacement"],
+  properties: ["variant","size","type","disabled","loading","outline","pill","circle","href","target","download","icon","iconPlacement"],
   events: {},
   formAssociated: false
 });

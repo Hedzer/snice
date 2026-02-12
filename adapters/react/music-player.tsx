@@ -20,7 +20,7 @@ export interface MusicPlayerProps extends SniceBaseProps {
   showArtwork?: any;
   showTrackInfo?: any;
   compact?: any;
-  private?: any;
+  showVolumeSlider?: any;
 
 }
 
@@ -42,7 +42,7 @@ export interface MusicPlayerProps extends SniceBaseProps {
  */
 export const MusicPlayer = createReactAdapter<MusicPlayerProps>({
   tagName: 'snice-music-player',
-  properties: ["tracks","currentTrackIndex","currentTrack","volume","muted","shuffle","repeat","state","autoplay","showPlaylist","showControls","showVolume","showArtwork","showTrackInfo","compact","private"],
+  properties: ["tracks","currentTrackIndex","currentTrack","volume","muted","shuffle","repeat","state","autoplay","showPlaylist","showControls","showVolume","showArtwork","showTrackInfo","compact","showVolumeSlider"],
   events: {},
   formAssociated: false
 });

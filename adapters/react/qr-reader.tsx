@@ -5,16 +5,17 @@ import type { SniceBaseProps } from './types';
  * Props for the QrReader component
  */
 export interface QrReaderProps extends SniceBaseProps {
-  autoStart?: boolean;
-  camera?: 'front' | 'back';
-  pickFirst?: boolean;
-  manualSnap?: boolean;
-  scanSpeed?: number;
-  tapStart?: boolean;
-  onQrScan?: (event: CustomEvent) => void;
-  onQrError?: (event: CustomEvent) => void;
-  onCameraReady?: (event: CustomEvent) => void;
-  onCameraError?: (event: CustomEvent) => void;
+  autoStart?: any;
+  camera?: any;
+  pickFirst?: any;
+  manualSnap?: any;
+  scanSpeed?: any;
+  tapStart?: any;
+  scanning?: any;
+  lastScan?: any;
+  errorMessage?: any;
+  showSnapshot?: any;
+
 }
 
 /**
@@ -35,12 +36,7 @@ export interface QrReaderProps extends SniceBaseProps {
  */
 export const QrReader = createReactAdapter<QrReaderProps>({
   tagName: 'snice-qr-reader',
-  properties: ["autoStart", "camera", "pickFirst", "manualSnap", "scanSpeed", "tapStart"],
-  events: {
-    'qr-scan': 'onQrScan',
-    'qr-error': 'onQrError',
-    'camera-ready': 'onCameraReady',
-    'camera-error': 'onCameraError'
-  },
+  properties: ["autoStart","camera","pickFirst","manualSnap","scanSpeed","tapStart","scanning","lastScan","errorMessage","showSnapshot"],
+  events: {},
   formAssociated: false
 });

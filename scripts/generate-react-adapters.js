@@ -29,8 +29,8 @@ function extractPropertiesFromFile(filePath) {
     const properties = [];
     const events = {};
 
-    // Look for @property decorators
-    const propertyRegex = /@property\(\s*(?:{[^}]*})?\s*\)\s+(\w+)/g;
+    // Look for @property decorators (skip visibility modifiers like private/public/protected and readonly)
+    const propertyRegex = /@property\(\s*(?:{[^}]*})?\s*\)\s+(?:private\s+|public\s+|protected\s+)?(?:readonly\s+)?(\w+)/g;
     let match;
     while ((match = propertyRegex.exec(content)) !== null) {
       properties.push(match[1]);

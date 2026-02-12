@@ -17,8 +17,8 @@ export interface ImageProps extends SniceBaseProps {
   fit?: any;
   width?: any;
   height?: any;
-  private?: any;
-  private?: any;
+  imageError?: any;
+  imageLoaded?: any;
 
 }
 
@@ -40,7 +40,7 @@ export interface ImageProps extends SniceBaseProps {
  */
 export const Image = createReactAdapter<ImageProps>({
   tagName: 'snice-image',
-  properties: ["src","alt","fallback","placeholder","srcset","sizes","variant","size","lazy","fit","width","height","private","private"],
+  properties: ["src","alt","fallback","placeholder","srcset","sizes","variant","size","lazy","fit","width","height","imageError","imageLoaded"],
   events: {},
   formAssociated: false
 });

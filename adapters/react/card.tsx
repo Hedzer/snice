@@ -10,8 +10,8 @@ export interface CardProps extends SniceBaseProps {
   clickable?: any;
   selected?: any;
   disabled?: any;
-  private?: any;
-  private?: any;
+  hasHeader?: any;
+  hasFooter?: any;
 
 }
 
@@ -33,7 +33,7 @@ export interface CardProps extends SniceBaseProps {
  */
 export const Card = createReactAdapter<CardProps>({
   tagName: 'snice-card',
-  properties: ["variant","size","clickable","selected","disabled","private","private"],
+  properties: ["variant","size","clickable","selected","disabled","hasHeader","hasFooter"],
   events: {},
   formAssociated: false
 });

@@ -13,8 +13,8 @@ export interface LoginProps extends SniceBaseProps {
   showRememberMe?: any;
   showForgotPassword?: any;
   actionText?: any;
-  private?: any;
-  private?: any;
+  alertMessage?: any;
+  alertVariant?: any;
 
 }
 
@@ -36,7 +36,7 @@ export interface LoginProps extends SniceBaseProps {
  */
 export const Login = createReactAdapter<LoginProps>({
   tagName: 'snice-login',
-  properties: ["variant","size","title","disabled","loading","showRememberMe","showForgotPassword","actionText","private","private"],
+  properties: ["variant","size","title","disabled","loading","showRememberMe","showForgotPassword","actionText","alertMessage","alertVariant"],
   events: {},
   formAssociated: false
 });
