@@ -15,6 +15,8 @@ export { IS_CONTROLLER_INSTANCE, getSymbol } from './symbols';
 export { html, css, nothing, unsafeHTML } from './template';
 export type { TemplateResult, CSSResult, Nothing, UnsafeHTML } from './template';
 export { render, styles } from './render';
+export { noChange } from './parts';
+export type { NoChange } from './parts';
 export type { RenderOptions } from './render';
 
 // v3.0.0 custom element readiness utilities

@@ -141,10 +141,20 @@ function performRender(element: HTMLElement, options: RenderOptions, precomputed
     // Get or create template instance (differential rendering)
     let instance = (element as any)[RENDER_INSTANCE] as TemplateInstance | undefined;
 
-    if (!instance) {
-      // First render - create shadow root if needed and initial instance
-      if (!element.shadowRoot) {
-        element.attachShadow({ mode: 'open' });
+    // Ensure shadow root exists
+    if (!element.shadowRoot) {
+      element.attachShadow({ mode: 'open' });
+    }
+
+    // Check if we can reuse the existing instance (same template strings)
+    if (instance && instance.isSameTemplate(result.strings)) {
+      // SAME TEMPLATE - just update values (efficient path!)
+      instance.update(result.values);
+    } else {
+      // Different template or first render - create new instance
+      // Clear existing content if this is a template switch
+      if (instance) {
+        element.shadowRoot!.innerHTML = '';
       }
 
       instance = new TemplateInstance(result);
@@ -155,9 +165,6 @@ function performRender(element: HTMLElement, options: RenderOptions, precomputed
       // Append to shadow root first so getRootNode() works in event handlers
       element.shadowRoot!.appendChild(fragment);
       // Now commit values (this binds event handlers with correct host)
-      instance.update(result.values);
-    } else {
-      // Subsequent render - just update the parts (differential rendering!)
       instance.update(result.values);
     }
 

@@ -1,5 +1,5 @@
 
-import { TemplateResult, CSSResult, HTML_RESULT, CSS_RESULT, isTemplateResult, isUnsafeHTML, UnsafeHTML } from './template';
+import { TemplateResult, CSSResult, HTML_RESULT, CSS_RESULT, isTemplateResult, isUnsafeHTML, UnsafeHTML, nothing, Nothing } from './template';
 
 // Unique marker for dynamic parts
 // This parses as a comment node but doesn't get escaped in attributes
@@ -10,6 +10,25 @@ const markerRegex = new RegExp(marker, 'g');
 
 // Template cache - templates with same string array can be reused
 const templateCache = new WeakMap<TemplateStringsArray, Template>();
+
+// Sentinel for "not yet set" - distinct from undefined/null
+const NOT_COMMITTED = Symbol('not-committed');
+
+// noChange sentinel - signals a directive handled the value
+export const noChange = Symbol.for('snice:no-change');
+export type NoChange = typeof noChange;
+
+/**
+ * Check if value is a primitive (can be compared with ===)
+ */
+const isPrimitive = (value: unknown): boolean =>
+  value === null || (typeof value !== 'object' && typeof value !== 'function');
+
+/**
+ * Check if value is iterable (array or has Symbol.iterator)
+ */
+const isIterable = (value: unknown): value is Iterable<unknown> =>
+  Array.isArray(value) || typeof (value as any)?.[Symbol.iterator] === 'function';
 
 /**
  * A prepared template ready for rendering
@@ -94,40 +113,48 @@ class Template {
               // Extract static string segments by splitting on marker
               const attrStrings = value.split(marker);
 
+              // Number of expressions = number of markers = attrStrings.length - 1
+              const expressionCount = attrStrings.length - 1;
+
               if (originalName.startsWith('@')) {
-                // Event binding
+                // Event binding (single value only)
                 this.parts.push({
                   type: 'event',
-                  index: partIndex++,
+                  index: partIndex,
                   name: originalName.slice(1),
                   element
                 });
+                partIndex += 1;
               } else if (originalName.startsWith('.')) {
-                // Property binding - preserve original case for JavaScript properties
+                // Property binding (single value only)
                 this.parts.push({
                   type: 'property',
-                  index: partIndex++,
+                  index: partIndex,
                   name: originalName.slice(1),
                   element
                 });
+                partIndex += 1;
               } else if (originalName.startsWith('?')) {
-                // Boolean attribute
+                // Boolean attribute (single value only)
                 this.parts.push({
                   type: 'boolean-attribute',
-                  index: partIndex++,
+                  index: partIndex,
                   name: originalName.slice(1),
                   element
                 });
+                partIndex += 1;
               } else {
-                // Regular attribute - use lowercased name from DOM
+                // Regular attribute - supports multiple interpolations
                 // Store static string segments for interpolation
                 this.parts.push({
                   type: 'attribute',
-                  index: partIndex++,
+                  index: partIndex,
                   name: attr.name,
                   element,
                   attrStrings
                 });
+                // Increment by number of expressions consumed
+                partIndex += expressionCount;
               }
             }
           }
@@ -207,6 +234,9 @@ interface TemplatePart {
 
 /**
  * Prepare a template for rendering
+ *
+ * Uses state tracking to correctly handle multi-interpolation in attributes.
+ * Tracks whether we're inside a tag and inside a quoted attribute value.
  */
 function prepareTemplate(result: TemplateResult): Template {
   // Check cache first
@@ -220,40 +250,86 @@ function prepareTemplate(result: TemplateResult): Template {
   const htmlParts: string[] = [];
   const attrNamesForParts: string[] = [];
 
-  for (let i = 0; i < strings.length; i++) {
-    let str = strings[i];
+  // State tracking for multi-interpolation support
+  let inTag = false;           // Inside a tag (between < and >)
+  let inAttrValue = false;     // Inside a quoted attribute value
+  let attrQuoteChar = '';      // The quote character (' or ")
+  let currentAttrName = '';    // The current attribute name
 
+  for (let i = 0; i < strings.length; i++) {
+    const str = strings[i];
     htmlParts.push(str);
 
     if (i < strings.length - 1) {
-      // Check if we're in an attribute context
-      // Look backwards for = sign
-      const lastEquals = str.lastIndexOf('=');
-      const lastCloseTag = str.lastIndexOf('>');
+      // Update state by scanning the string
+      for (let j = 0; j < str.length; j++) {
+        const char = str[j];
 
-      if (lastEquals > lastCloseTag) {
-        // We're in an attribute value - extract and preserve the original attribute name (before encoding)
-        let attrStart = lastEquals - 1;
-        while (attrStart >= 0 && /\S/.test(str[attrStart])) {
-          attrStart--;
-        }
-        const attrName = str.substring(attrStart + 1, lastEquals).trim();
-        attrNamesForParts.push(attrName);
-        htmlParts.push(marker);
-      } else {
-        // Check if this is a meta element (<if> or <case>) by looking backwards
-        // Match pattern: <if or <case followed by whitespace or >
-        const metaElementMatch = str.match(/<(if|case)\s*$/);
-
-        if (metaElementMatch) {
-          // This is a meta element - add value attribute
-          attrNamesForParts.push('value');
-          htmlParts.push(`value="${marker}"`);
+        if (!inTag) {
+          // Looking for tag start
+          if (char === '<') {
+            inTag = true;
+          }
+        } else if (!inAttrValue) {
+          // Inside tag, but not in attribute value
+          if (char === '>') {
+            inTag = false;
+          } else if (char === '"' || char === "'") {
+            inAttrValue = true;
+            attrQuoteChar = char;
+          } else if (char === '=') {
+            // Extract attribute name (look backwards for it)
+            let attrStart = j - 1;
+            while (attrStart >= 0 && /[\w\-\.@\?]/.test(str[attrStart])) {
+              attrStart--;
+            }
+            currentAttrName = str.substring(attrStart + 1, j).trim();
+          }
         } else {
-          // We're in node content
-          attrNamesForParts.push(''); // Empty string for node parts
-          htmlParts.push(nodeMarker);
+          // Inside quoted attribute value
+          if (char === attrQuoteChar) {
+            inAttrValue = false;
+            attrQuoteChar = '';
+          }
         }
+      }
+
+      // Now determine what kind of marker to insert based on current state
+      if (inAttrValue) {
+        // We're inside a quoted attribute value - this is an attribute binding
+        // For subsequent interpolations in same attribute, keep using same attr name
+        attrNamesForParts.push(currentAttrName);
+        htmlParts.push(marker);
+      } else if (inTag) {
+        // Inside tag but not in attr value - check for special cases
+        // Check if this is start of attribute value (= at end of string)
+        const trimmed = str.trimEnd();
+        if (trimmed.endsWith('=')) {
+          // Extract attribute name
+          let attrStart = trimmed.length - 2;
+          while (attrStart >= 0 && /[\w\-\.@\?]/.test(trimmed[attrStart])) {
+            attrStart--;
+          }
+          currentAttrName = trimmed.substring(attrStart + 1, trimmed.length - 1).trim();
+          attrNamesForParts.push(currentAttrName);
+          htmlParts.push(marker);
+        } else {
+          // Check if this is a meta element (<if> or <case>)
+          const metaElementMatch = str.match(/<(if|case)\s*$/);
+          if (metaElementMatch) {
+            currentAttrName = 'value';
+            attrNamesForParts.push('value');
+            htmlParts.push(`value="${marker}"`);
+          } else {
+            // Element binding or error
+            attrNamesForParts.push('');
+            htmlParts.push(marker);
+          }
+        }
+      } else {
+        // Outside any tag - this is node content
+        attrNamesForParts.push('');
+        htmlParts.push(nodeMarker);
       }
     }
   }
@@ -274,6 +350,7 @@ function prepareTemplate(result: TemplateResult): Template {
  */
 export class TemplateInstance {
   template: Template;
+  strings: TemplateStringsArray;
   parts: Part[] = [];
   fragment: DocumentFragment | null = null;
   private conditionalParts: Array<{part: Part; index: number}> = []; // if/case parts with their indices
@@ -281,6 +358,15 @@ export class TemplateInstance {
 
   constructor(result: TemplateResult) {
     this.template = prepareTemplate(result);
+    this.strings = result.strings;
+  }
+
+  /**
+   * Check if this instance uses the same template strings
+   * (template identity is based on the strings array reference)
+   */
+  isSameTemplate(strings: TemplateStringsArray): boolean {
+    return this.strings === strings;
   }
 
   renderFragment(): DocumentFragment {
@@ -349,10 +435,11 @@ export class TemplateInstance {
         this.parts.push(part);
 
         // Separate conditional parts from regular parts for optimized update
+        // Use partDef.index (the VALUE index) not i (the part array index)
         if (part instanceof ConditionalIfPart || part instanceof ConditionalCasePart) {
-          this.conditionalParts.push({part, index: i});
+          this.conditionalParts.push({part, index: partDef.index});
         } else {
-          this.regularParts.push({part, index: i});
+          this.regularParts.push({part, index: partDef.index});
         }
       }
     }
@@ -377,8 +464,17 @@ export class TemplateInstance {
     }
 
     // Then process regular parts
+    let i = 0;
     for (const {part, index} of this.regularParts) {
-      part.commit(values[index]);
+      // AttributeParts with interpolation consume multiple values
+      if (part instanceof AttributePart && part.strings !== undefined) {
+        // Pass full values array and starting index for interpolation
+        part.commit(values, index);
+        // The part consumes (strings.length - 1) values
+        // But since we're iterating by template part index, this is handled by the Template
+      } else {
+        part.commit(values[index]);
+      }
     }
   }
 
@@ -399,11 +495,16 @@ export abstract class Part {
 
 /**
  * NodePart handles text content and nested templates
+ *
+ * Lit-HTML style optimizations:
+ * - Reuses TemplateInstance when same template strings are rendered
+ * - Reuses text nodes when updating primitive → primitive
+ * - Reuses child NodeParts when rendering arrays
  */
 export class NodePart extends Part {
   private startNode: Comment;
   private endNode: Comment;
-  private value: any = undefined;
+  private _committedValue: any = NOT_COMMITTED;
 
   constructor(startNode: Comment, endNode: Comment) {
     super();
@@ -412,76 +513,189 @@ export class NodePart extends Part {
   }
 
   commit(value: any): void {
-    if (value === this.value) return;
-    this.value = value;
+    // Handle noChange sentinel
+    if (value === noChange) {
+      return;
+    }
 
-    // Handle arrays
-    if (Array.isArray(value)) {
-      this.commitArray(value);
+    // Handle nothing/null/undefined/empty - clear content
+    if (value === nothing || value == null || value === '') {
+      if (this._committedValue !== nothing) {
+        this._clear();
+      }
+      this._committedValue = nothing;
+      return;
+    }
+
+    // Handle primitives (string, number, boolean, bigint, symbol)
+    if (isPrimitive(value)) {
+      if (value !== this._committedValue) {
+        this._commitText(value);
+      }
       return;
     }
 
     // Handle nested templates
     if (isTemplateResult(value)) {
-      this.commitTemplate(value);
+      this._commitTemplateResult(value);
       return;
     }
 
     // Handle unsafe HTML
     if (isUnsafeHTML(value)) {
-      this.commitUnsafeHTML(value);
+      this._commitUnsafeHTML(value);
       return;
     }
 
-    // Handle primitives
-    this.commitPrimitive(value);
+    // Handle DOM nodes
+    if ((value as Node).nodeType !== undefined) {
+      this._commitNode(value as Node);
+      return;
+    }
+
+    // Handle iterables (arrays, etc.)
+    if (isIterable(value)) {
+      this._commitIterable(value);
+      return;
+    }
+
+    // Fallback: convert to string
+    this._commitText(value);
   }
 
-  private commitPrimitive(value: any): void {
-    this.clear();
-    const text = value === null || value === undefined ? '' : String(value);
-    const textNode = document.createTextNode(text);
-    this.insertBefore(textNode);
-  }
-
-  private commitTemplate(template: TemplateResult): void {
-    this.clear();
-    const instance = new TemplateInstance(template);
-    const fragment = instance.render(template.values);
-    this.insertBefore(fragment);
-  }
-
-  private commitArray(values: any[]): void {
-    this.clear();
-    // Template caching (via prepareTemplate) still provides significant performance benefit
-    for (const value of values) {
-      if (isTemplateResult(value)) {
-        const instance = new TemplateInstance(value);
-        const fragment = instance.render(value.values);
-        this.insertBefore(fragment);
-      } else {
-        const text = value === null || value === undefined ? '' : String(value);
-        const textNode = document.createTextNode(text);
-        this.insertBefore(textNode);
+  /**
+   * Commit a primitive value as text
+   * OPTIMIZATION: Reuses existing text node if previous value was also primitive
+   */
+  private _commitText(value: any): void {
+    // If previous value was primitive, we have a text node we can reuse
+    if (this._committedValue !== NOT_COMMITTED &&
+        this._committedValue !== nothing &&
+        isPrimitive(this._committedValue) &&
+        !Array.isArray(this._committedValue)) {
+      // Reuse existing text node - just update .data
+      const textNode = this.startNode.nextSibling as Text;
+      if (textNode && textNode.nodeType === Node.TEXT_NODE) {
+        textNode.data = String(value);
+        this._committedValue = value;
+        return;
       }
+    }
+
+    // Create new text node
+    this._clear();
+    const textNode = document.createTextNode(String(value));
+    this._insertBefore(textNode);
+    this._committedValue = value;
+  }
+
+  /**
+   * Commit a TemplateResult
+   * OPTIMIZATION: Reuses TemplateInstance if same template strings
+   */
+  private _commitTemplateResult(result: TemplateResult): void {
+    // Check if we can reuse the existing TemplateInstance
+    const committedInstance = this._committedValue as TemplateInstance;
+
+    if (committedInstance instanceof TemplateInstance) {
+      // Check if same template by comparing strings reference
+      const cachedTemplate = templateCache.get(result.strings);
+      if (cachedTemplate && committedInstance.template === cachedTemplate) {
+        // SAME TEMPLATE - just update values (efficient path!)
+        committedInstance.update(result.values);
+        return;
+      }
+    }
+
+    // Different template or first render - create new instance
+    this._clear();
+    const instance = new TemplateInstance(result);
+    const fragment = instance.renderFragment();
+    this._insertBefore(fragment);
+    instance.update(result.values);
+    this._committedValue = instance;
+  }
+
+  /**
+   * Commit an iterable (array, Set, etc.)
+   * OPTIMIZATION: Reuses existing NodeParts for items
+   */
+  private _commitIterable(value: Iterable<unknown>): void {
+    // If previous value wasn't an array of parts, start fresh
+    if (!Array.isArray(this._committedValue) ||
+        !(this._committedValue[0] instanceof NodePart)) {
+      this._clear();
+      this._committedValue = [];
+    }
+
+    const itemParts = this._committedValue as NodePart[];
+    let partIndex = 0;
+
+    for (const item of value) {
+      let itemPart: NodePart;
+
+      if (partIndex >= itemParts.length) {
+        // Need new NodePart - create with markers
+        const startMarker = document.createComment('');
+        const endMarker = document.createComment('');
+        this._insertBefore(startMarker);
+        this._insertBefore(endMarker);
+        itemPart = new NodePart(startMarker, endMarker);
+        itemParts.push(itemPart);
+      } else {
+        // Reuse existing NodePart
+        itemPart = itemParts[partIndex];
+      }
+
+      // Set value on this part (recursively handles templates, text, etc.)
+      itemPart.commit(item);
+      partIndex++;
+    }
+
+    // Cleanup excess parts from previous render
+    if (partIndex < itemParts.length) {
+      // Clear DOM for removed items
+      for (let i = partIndex; i < itemParts.length; i++) {
+        const part = itemParts[i];
+        // Remove the part's content and markers
+        part._clear();
+        // Remove the markers themselves
+        part.startNode.remove();
+        part.endNode.remove();
+      }
+      // Truncate array
+      itemParts.length = partIndex;
     }
   }
 
-  private commitUnsafeHTML(value: UnsafeHTML): void {
-    this.clear();
-    // Create a temporary container to parse the HTML
-    const temp = document.createElement('template');
-    temp.innerHTML = value.html;
-    // Insert all parsed nodes
-    const fragment = temp.content;
-    this.insertBefore(fragment);
+  /**
+   * Commit a DOM node directly
+   */
+  private _commitNode(node: Node): void {
+    if (this._committedValue !== node) {
+      this._clear();
+      this._insertBefore(node);
+      this._committedValue = node;
+    }
   }
 
-  private insertBefore(node: Node): void {
+  /**
+   * Commit unsafe HTML string
+   */
+  private _commitUnsafeHTML(value: UnsafeHTML): void {
+    // Always recreate for unsafe HTML (can't diff arbitrary HTML)
+    this._clear();
+    const temp = document.createElement('template');
+    temp.innerHTML = value.html;
+    this._insertBefore(temp.content);
+    this._committedValue = value;
+  }
+
+  private _insertBefore(node: Node): void {
     this.endNode.parentNode?.insertBefore(node, this.endNode);
   }
 
-  clear(): void {
+  _clear(): void {
     const parent = this.startNode.parentNode;
     if (!parent) return;
 
@@ -491,43 +705,109 @@ export class NodePart extends Part {
       parent.removeChild(node);
       node = next;
     }
+    this._committedValue = nothing;
+  }
+
+  clear(): void {
+    this._clear();
   }
 }
 
 /**
  * AttributePart handles regular attribute updates
+ *
+ * Supports multiple interpolations: class="a ${b} c ${d} e"
+ * Lit-HTML style: tracks each value separately for dirty checking
  */
 export class AttributePart extends Part {
   readonly element: Element;
   readonly name: string;
-  readonly attrStrings?: string[];
-  private value: any = undefined;
+  readonly strings?: readonly string[];  // Static strings for interpolation
+  private _committedValue: unknown | unknown[] = NOT_COMMITTED;
 
-  constructor(element: Element, name: string, attrStrings?: string[]) {
+  constructor(element: Element, name: string, strings?: string[]) {
     super();
     this.element = element;
     this.name = name;
-    this.attrStrings = attrStrings;
+
+    // Determine if this is interpolation or single-value binding
+    if (strings && (strings.length > 2 || strings[0] !== '' || strings[1] !== '')) {
+      // Interpolation case: class="foo ${x} bar ${y}"
+      // strings = ["foo ", " bar ", ""]
+      this._committedValue = new Array(strings.length - 1).fill(NOT_COMMITTED);
+      this.strings = strings;
+    } else {
+      // Single-value case: class="${x}"
+      this._committedValue = NOT_COMMITTED;
+    }
   }
 
-  commit(value: any): void {
-    if (value === this.value) return;
-    this.value = value;
+  /**
+   * Commit value(s) to the attribute
+   *
+   * For single-value binding: commit(value)
+   * For interpolation: commit(values, startIndex) where values is full template values array
+   */
+  commit(value: unknown, valueIndex: number = 0): void {
+    let change = false;
+    let finalValue: unknown;
 
-    if (value === null || value === undefined) {
+    // === SINGLE-VALUE BINDING ===
+    if (this.strings === undefined) {
+      if (value === noChange) return;
+
+      change = !isPrimitive(value) ||
+               (value !== this._committedValue && value !== noChange);
+
+      if (change) {
+        this._committedValue = value;
+        finalValue = value;
+      } else {
+        return; // No change, skip DOM update
+      }
+    }
+    // === INTERPOLATION BINDING ===
+    else {
+      const values = value as unknown[];
+      const committedValues = this._committedValue as unknown[];
+      finalValue = this.strings[0];
+
+      for (let i = 0; i < this.strings.length - 1; i++) {
+        let v = values[valueIndex + i];
+
+        // Handle noChange sentinel
+        if (v === noChange) {
+          v = committedValues[i];
+        }
+
+        // Track if any value changed
+        change = change || !isPrimitive(v) || v !== committedValues[i];
+
+        // Handle nothing sentinel - removes entire attribute
+        if (v === nothing) {
+          finalValue = nothing;
+        } else if (finalValue !== nothing) {
+          finalValue = (finalValue as string) + (v ?? '') + this.strings[i + 1];
+        }
+
+        // Always record each value for future comparison
+        committedValues[i] = v;
+      }
+
+      if (!change) {
+        return; // No change, skip DOM update
+      }
+    }
+
+    // Commit to DOM
+    this._commitValue(finalValue);
+  }
+
+  private _commitValue(value: unknown): void {
+    if (value === nothing || value === null || value === undefined) {
       this.element.removeAttribute(this.name);
     } else {
-      // Inline attribute value computation for performance
-      let finalValue: string;
-      if (!this.attrStrings || this.attrStrings.length === 0) {
-        finalValue = String(value);
-      } else if (this.attrStrings.length === 1) {
-        finalValue = this.attrStrings[0];
-      } else {
-        // Multiple segments: "prefix" + value + "suffix"
-        finalValue = this.attrStrings[0] + String(value) + this.attrStrings[1];
-      }
-      this.element.setAttribute(this.name, finalValue);
+      this.element.setAttribute(this.name, String(value));
     }
   }
 
@@ -537,12 +817,12 @@ export class AttributePart extends Part {
 }
 
 /**
- * PropertyPart handles property bindings
+ * PropertyPart handles property bindings (.property=${value})
  */
 export class PropertyPart extends Part {
   readonly element: Element;
   readonly name: string;
-  private value: any = undefined;
+  private _committedValue: unknown = NOT_COMMITTED;
 
   constructor(element: Element, name: string) {
     super();
@@ -550,24 +830,29 @@ export class PropertyPart extends Part {
     this.name = name;
   }
 
-  commit(value: any): void {
-    if (value === this.value) return;
-    this.value = value;
-    (this.element as any)[this.name] = value;
+  commit(value: unknown): void {
+    if (value === noChange) return;
+
+    // Dirty check - skip if same value
+    if (value === this._committedValue) return;
+
+    this._committedValue = value;
+    (this.element as any)[this.name] = value === nothing ? undefined : value;
   }
 
   clear(): void {
     (this.element as any)[this.name] = undefined;
+    this._committedValue = NOT_COMMITTED;
   }
 }
 
 /**
- * BooleanAttributePart handles boolean attributes
+ * BooleanAttributePart handles boolean attributes (?attribute=${value})
  */
 export class BooleanAttributePart extends Part {
   readonly element: Element;
   readonly name: string;
-  private value: any = undefined;
+  private _committedValue: unknown = NOT_COMMITTED;
 
   constructor(element: Element, name: string) {
     super();
@@ -575,11 +860,18 @@ export class BooleanAttributePart extends Part {
     this.name = name;
   }
 
-  commit(value: any): void {
-    if (value === this.value) return;
-    this.value = value;
+  commit(value: unknown): void {
+    if (value === noChange) return;
 
-    if (value) {
+    // Coerce to boolean
+    const boolValue = !!value && value !== nothing;
+
+    // Dirty check - skip if same boolean value
+    if (boolValue === this._committedValue) return;
+
+    this._committedValue = boolValue;
+
+    if (boolValue) {
       this.element.setAttribute(this.name, '');
     } else {
       this.element.removeAttribute(this.name);
@@ -588,6 +880,7 @@ export class BooleanAttributePart extends Part {
 
   clear(): void {
     this.element.removeAttribute(this.name);
+    this._committedValue = NOT_COMMITTED;
   }
 }
 
@@ -629,7 +922,15 @@ export class EventPart extends Part {
   }
 
   commit(value: any): void {
-    // Skip if same value (but null/undefined always triggers update)
+    // Handle noChange sentinel
+    if (value === noChange) return;
+
+    // Handle nothing sentinel - remove listener
+    if (value === nothing) {
+      value = null;
+    }
+
+    // Skip if same value (but null/undefined always triggers update for cleanup)
     if (value === this.value && value !== null && value !== undefined) return;
 
     // Remove old listener
