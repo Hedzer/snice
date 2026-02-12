@@ -12,6 +12,23 @@ cd my-app
 npm run dev
 ```
 
+### Templates
+
+Choose a template that fits your project:
+
+```bash
+# Base template (default) - minimal setup with routing
+npx snice create-app my-app
+
+# PWA template - auth, guards, middleware, services
+npx snice create-app my-app --template=pwa
+```
+
+| Template | Includes |
+|----------|----------|
+| `base` | Routing, pages, components, controllers |
+| `pwa` | Everything in base + auth flow, guards, middleware, services, JWT handling |
+
 ## Philosophy
 
 Without structure, you'll end up with auth checks mixed in rendering logic, business rules duplicated across components, and data fetching scattered in event handlers. **Snice provides constructs that guide you to put code where it belongs, keeping you productive as your app grows.**
