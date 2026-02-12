@@ -37,7 +37,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--snice-color-background);
+  background: var(--snice-color-background-input);
   border: 2px solid var(--snice-color-border);
   border-radius: var(--snice-border-radius-sm);
   transition: all var(--snice-transition-fast) ease;

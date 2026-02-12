@@ -125,7 +125,7 @@ describe('snice-qr-reader', () => {
       reader = await createComponent<SniceQRReaderElement>('snice-qr-reader');
 
       const cameraReadyHandler = vi.fn();
-      reader.addEventListener('@snice/camera-ready', cameraReadyHandler);
+      reader.addEventListener('camera-ready', cameraReadyHandler);
 
       await reader.start();
 
@@ -139,11 +139,11 @@ describe('snice-qr-reader', () => {
       reader = await createComponent<SniceQRReaderElement>('snice-qr-reader');
 
       const scanHandler = vi.fn();
-      reader.addEventListener('snice/qr-scan', scanHandler);
+      reader.addEventListener('qr-scan', scanHandler);
 
       // Manually trigger scan event (simulating QR detection)
       const scanResult = { data: 'test-qr-data', timestamp: Date.now() };
-      reader.dispatchEvent(new CustomEvent('snice/qr-scan', {
+      reader.dispatchEvent(new CustomEvent('qr-scan', {
         detail: { reader, ...scanResult },
         bubbles: true,
         composed: true
@@ -217,7 +217,7 @@ describe('snice-qr-reader', () => {
         'camera': 'back'
       });
 
-      reader.addEventListener('snice/qr-scan', scanHandler);
+      reader.addEventListener('qr-scan', scanHandler);
 
       await waitFor(() => mockGetUserMedia.mock.calls.length > 0);
 

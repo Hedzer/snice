@@ -20,7 +20,7 @@ QR code scanner using device camera and ZXing WASM decoder.
 ### Events
 - `qr-scan` - detail: `{data: string, timestamp: number, reader: SniceQRReader}`
 - `qr-error` - detail: `{error: any, reader: SniceQRReader}`
-- `@snice/camera-ready` - detail: `{reader: SniceQRReader}`
+- `camera-ready` - detail: `{reader: SniceQRReader}`
 - `camera-error` - detail: `{error: any, reader: SniceQRReader}`
 
 ## Usage

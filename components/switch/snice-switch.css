@@ -54,7 +54,7 @@
   position: absolute;
   top: 2px;
   left: 2px;
-  background: white;
+  background: var(--snice-color-background-input);
   border-radius: 50%;
   box-shadow: var(--snice-shadow-sm);
   transition: transform var(--snice-transition-fast) ease;
@@ -110,7 +110,7 @@
 }
 
 .switch-input:disabled ~ .switch-track .switch-thumb {
-  background: var(--snice-color-background);
+  background: var(--snice-color-background-input);
 }
 
 .switch-input:disabled:checked ~ .switch-track {

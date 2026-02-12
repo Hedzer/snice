@@ -420,7 +420,7 @@ export class SniceQRReader extends HTMLElement implements SniceQRReaderElement {
     return { reader: this, error };
   }
 
-  @dispatch('@snice/camera-ready', { bubbles: true, composed: true })
+  @dispatch('camera-ready', { bubbles: true, composed: true })
   private emitCameraReady() {
     return { reader: this };
   }

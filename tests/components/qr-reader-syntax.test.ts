@@ -60,9 +60,9 @@ describe('snice-qr-reader template syntax', () => {
             .autoStart=${true}
             .pickFirst=${true}
             .camera=${'back'}
-            @snice/qr-scan=${(e: CustomEvent) => this.handleScan(e)}
-            @snice/qr-error=${(e: CustomEvent) => this.handleError(e)}
-            @snice/camera-ready=${() => this.handleCameraReady()}
+            @qr-scan=${(e: CustomEvent) => this.handleScan(e)}
+            @qr-error=${(e: CustomEvent) => this.handleError(e)}
+            @camera-ready=${() => this.handleCameraReady()}
           ></snice-qr-reader>
         `;
       }
@@ -86,15 +86,9 @@ describe('snice-qr-reader template syntax', () => {
     expect(qrReader.pickFirst).toBe(true);
     expect(qrReader.camera).toBe('back');
 
-    // Since autoStart is set AFTER @ready, we need to manually start
-    // (This is the issue being weeded out - property timing)
-
     // Listen for camera-ready before starting
     const cameraReadyPromise = new Promise<void>((resolve) => {
-      qrReader.addEventListener('@snice/camera-ready', () => {
-        cameraReadyHandler();
-        resolve();
-      }, { once: true });
+      qrReader.addEventListener('camera-ready', () => resolve(), { once: true });
     });
 
     await qrReader.start();
@@ -108,8 +102,7 @@ describe('snice-qr-reader template syntax', () => {
       }
     });
 
-    // Wait for video to be ready and event to fire
-    // In test environment, manually trigger loadeddata event
+    // Trigger video loadeddata to fire camera-ready
     const video = qrReader.shadowRoot?.querySelector('video');
     if (video) {
       video.dispatchEvent(new Event('loadeddata'));
@@ -117,11 +110,11 @@ describe('snice-qr-reader template syntax', () => {
 
     await cameraReadyPromise;
 
-    // Verify camera-ready handler was called
+    // Verify camera-ready handler was called via template binding
     expect(cameraReadyHandler).toHaveBeenCalled();
 
     // Simulate a QR scan
-    const scanEvent = new CustomEvent('snice/qr-scan', {
+    const scanEvent = new CustomEvent('qr-scan', {
       detail: { reader: qrReader, data: 'test-data', timestamp: Date.now() },
       bubbles: true,
       composed: true
@@ -135,7 +128,7 @@ describe('snice-qr-reader template syntax', () => {
     );
 
     // Simulate an error
-    const errorEvent = new CustomEvent('snice/qr-error', {
+    const errorEvent = new CustomEvent('qr-error', {
       detail: { reader: qrReader, error: new Error('Test error') },
       bubbles: true,
       composed: true

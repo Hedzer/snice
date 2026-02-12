@@ -253,7 +253,7 @@ img[src=""] {
 .select-search-input {
   width: 100%;
   padding: 6px 10px;
-  background: var(--snice-color-background);
+  background: var(--snice-color-background-input);
   border: 1px solid var(--snice-color-border);
   border-radius: var(--snice-border-radius-sm);
   font-size: var(--snice-font-size-sm);

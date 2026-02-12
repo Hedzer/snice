@@ -145,14 +145,14 @@ reader.addEventListener('qr-error', (event) => {
 });
 ```
 
-### `@snice/camera-ready`
+### `camera-ready`
 Fired when the camera has been successfully initialized and is ready to scan.
 
 **Detail Properties:**
 - `reader` (SniceQRReader): Reference to the component
 
 ```javascript
-reader.addEventListener('@snice/camera-ready', (event) => {
+reader.addEventListener('camera-ready', (event) => {
   console.log('Camera is ready');
 });
 ```

@@ -37,12 +37,12 @@
 }
 
 .terminal-output::-webkit-scrollbar-thumb {
-  background: var(--snice-terminal-scrollbar-color, #424242);
+  background: var(--snice-terminal-scrollbar-color, var(--snice-color-border));
   border-radius: var(--snice-border-radius-sm, 0.125rem);
 }
 
 .terminal-output::-webkit-scrollbar-thumb:hover {
-  background: var(--snice-terminal-scrollbar-hover-color, #4e4e4e);
+  background: var(--snice-terminal-scrollbar-hover-color, var(--snice-color-border-hover));
 }
 
 .terminal-line {
