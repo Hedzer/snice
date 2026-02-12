@@ -1,3 +1,23 @@
+# [4.3.0](https://gitlab.com/Hedzer/snice/compare/v4.2.0...v4.3.0) (2026-02-12)
+
+
+### Bug Fixes
+
+* bi/pwa login & button types ([2405426](https://gitlab.com/Hedzer/snice/commit/24054268ea3d26549affa4d9f4d23d03de140787))
+* demo.html dark modes ([6af74a4](https://gitlab.com/Hedzer/snice/commit/6af74a461172e10b35d5fdef84ae6304181c1e3c))
+* react integration ([c714837](https://gitlab.com/Hedzer/snice/commit/c71483798273008d391a7400b498d22dd0190c48))
+* react wrappers ([a96c7a6](https://gitlab.com/Hedzer/snice/commit/a96c7a6bca15a131067ad9059dbca2f0969a0620))
+* tests, dark mode issues, docs ([cf9b3c5](https://gitlab.com/Hedzer/snice/commit/cf9b3c546ff6a0a5d80ec1fa415ab8775b2ebe78))
+
+
+### Features
+
+* added react support ([5547106](https://gitlab.com/Hedzer/snice/commit/5547106e0d9e52e3e232422bd1aae0d1b2c7774a))
+* lit parity for interpolation ([28eb5f6](https://gitlab.com/Hedzer/snice/commit/28eb5f6c52ab69641c8ead5925056390a2174c41))
+* public website ([f78c61e](https://gitlab.com/Hedzer/snice/commit/f78c61e105733bc7baabe17c372e87fe924f1d37))
+* ux color improvements ([62518b8](https://gitlab.com/Hedzer/snice/commit/62518b8766c0118b4e4da36fde6a8eebbdc79eab))
+* ux shadow/light improvements ([2ea063b](https://gitlab.com/Hedzer/snice/commit/2ea063bf55e67b9bb76420d842be744629bd283b))
+
 # [4.2.0](https://gitlab.com/Hedzer/snice/compare/v4.1.0...v4.2.0) (2025-11-09)
 
 
