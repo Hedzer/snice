@@ -146,19 +146,26 @@ class MyCounter extends HTMLElement {
 - For custom fields (like `user`), extend snice's AppContext:
   ```typescript
   import type { AppContext as SniceAppContext } from 'snice';
-  interface MyAppContext extends SniceAppContext { user: User | null; }
+  export interface MyAppContext extends SniceAppContext { user: User | null; }
   ```
-- In guards/middleware, cast: `(ctx as MyAppContext).user`
-- Or use `any` for simpler typing: `(ctx: any) => ctx.user !== null`
+- Define your context type in router.ts and export it for use in pages/guards
+- Guards receive raw context - cast or use `any`: `(ctx: any) => ctx.user !== null`
 
 **Layouts:**
-- Layout `update()` receives `AppContext` (not Context)
-- Signature: `update(app: AppContext, placards: Placard[], route: string, params: RouteParams)`
-- `@context()` in layouts receives full Context
+- Layout `update()` receives `AppContext` - cast to your type inside:
+  ```typescript
+  update(app: AppContext, placards, route, params) {
+    const myApp = app as MyAppContext;
+    this.user = myApp.user;
+  }
+  ```
+- `@context()` in layouts receives full `Context` (use `ctx.application as MyAppContext`)
 
 **Router:**
 - `type: 'hash' | 'pushstate'` is REQUIRED
 - `Router({ target: '#app', type: 'hash', context: {...}, layout: 'app-shell' })`
+- Router returns `{ page, navigate, initialize }` - NOT Context
+- Context is received via `@context()` decorator, not Router export
 
 ## Available Components
 

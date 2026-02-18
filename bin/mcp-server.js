@@ -419,6 +419,15 @@ ${withStyles ? `
         });
       }
 
+      // Check for importing Context from router file (Router doesn't export Context)
+      if (/import\s*\{[^}]*\bContext\b[^}]*\}\s*from\s*['"]\.\/router['"]/.test(code)) {
+        issues.push({
+          severity: 'error',
+          message: 'Router() does not export Context. Context is received via @context() decorator.',
+          fix: "import type { Context } from 'snice'; then use @context() handleContext(ctx: Context) {}"
+        });
+      }
+
       // Check for property() without @ (Lit syntax)
       if (/\bproperty\s*\(\s*\{/.test(code) && !/@property/.test(code)) {
         issues.push({
