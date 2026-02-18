@@ -56,6 +56,13 @@ claude mcp add snice -- npx snice mcp
 - `@property()` is for attributes from parent AND reactive state in pages
 - Components re-render on any property change (decorated or not)
 
+**Architecture:**
+- **Elements are purely visual** - no fetch(), no API calls, no backend logic
+- Elements receive data via properties, emit events for actions
+- **Pages orchestrate** - handle routing, call APIs, coordinate elements
+- **Controllers add behavior** - attach to elements for reusable non-visual logic
+- Put API calls in pages/controllers/services, not in elements
+
 **Properties:**
 - Boolean attrs: `"false"` string → `false` (not standard HTML)
 - Non-strings need type: `@property({ type: Number })` not just `@property()`

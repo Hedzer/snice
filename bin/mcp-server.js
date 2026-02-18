@@ -428,6 +428,15 @@ ${withStyles ? `
         });
       }
 
+      // Check for fetch() in @element (elements should be purely visual)
+      if (/@element\s*\(/.test(code) && /\bfetch\s*\(/.test(code) && !/@page\s*\(/.test(code)) {
+        issues.push({
+          severity: 'warning',
+          message: 'Elements should be purely visual. Avoid fetch() in @element components.',
+          fix: 'Move API calls to pages, controllers, or services. Elements receive data via properties.'
+        });
+      }
+
       // Check for property() without @ (Lit syntax)
       if (/\bproperty\s*\(\s*\{/.test(code) && !/@property/.test(code)) {
         issues.push({
