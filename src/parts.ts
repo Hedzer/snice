@@ -116,7 +116,16 @@ class Template {
               // Number of expressions = number of markers = attrStrings.length - 1
               const expressionCount = attrStrings.length - 1;
 
-              if (originalName.startsWith('@')) {
+              if (originalName.startsWith('@@')) {
+                // Escaped event binding for events with @ in the name (e.g., @@snice/event -> @snice/event)
+                this.parts.push({
+                  type: 'event',
+                  index: partIndex,
+                  name: originalName.slice(1), // Keep the @ in the event name
+                  element
+                });
+                partIndex += 1;
+              } else if (originalName.startsWith('@')) {
                 // Event binding (single value only)
                 this.parts.push({
                   type: 'event',
@@ -307,7 +316,7 @@ function prepareTemplate(result: TemplateResult): Template {
         if (trimmed.endsWith('=')) {
           // Extract attribute name
           let attrStart = trimmed.length - 2;
-          while (attrStart >= 0 && /[\w\-\.@\?]/.test(trimmed[attrStart])) {
+          while (attrStart >= 0 && /[\w\-\.@\?\/]/.test(trimmed[attrStart])) {
             attrStart--;
           }
           currentAttrName = trimmed.substring(attrStart + 1, trimmed.length - 1).trim();
