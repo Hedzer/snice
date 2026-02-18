@@ -39,7 +39,8 @@
     }
   },
   "bin": {
-    "snice": "./bin/snice.js"
+    "snice": "./bin/snice.js",
+    "snice-mcp": "./bin/mcp-server.js"
   },
   "files": [
     "dist",

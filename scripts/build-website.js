@@ -27,7 +27,7 @@ const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf-8'));
 // Shared CSS
 const css = `/* Snice website styles */
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+/* scroll-behavior: smooth removed - caused unwanted page scroll */
 body {
   font-family: var(--snice-font-family);
   background: var(--snice-color-background);
@@ -132,6 +132,35 @@ header nav a:hover, header nav a.active { color: var(--snice-color-text); }
 }
 .pitch-item strong { display: block; font-size: 0.9rem; margin-bottom: 0.25rem; }
 .pitch-item span { font-size: 0.8rem; color: var(--snice-color-text-secondary); }
+
+.templates-section, .mcp-section {
+  margin: 3rem 0;
+  padding: 2rem;
+  background: var(--snice-color-surface);
+  border: 1px solid var(--snice-color-border);
+  border-radius: 8px;
+}
+.templates-section h3, .mcp-section h3 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
+.templates-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+@media (max-width: 600px) { .templates-grid { grid-template-columns: 1fr; } }
+.template-card {
+  padding: 1.5rem;
+  background: var(--snice-color-background);
+  border: 1px solid var(--snice-color-border);
+  border-radius: 6px;
+}
+.template-card h4 { font-size: 1rem; margin-bottom: 0.5rem; }
+.template-card p { font-size: 0.85rem; color: var(--snice-color-text-secondary); margin-bottom: 1rem; }
+.template-card .install { margin: 0; }
+.template-card .install code { font-size: 0.75rem; }
+.mcp-section p { color: var(--snice-color-text-secondary); margin-bottom: 1rem; font-size: 0.9rem; }
 
 .page-title {
   padding: 3rem 0 2rem;
@@ -304,6 +333,43 @@ ${header('home')}
       <div class="pitch-item"><strong>Controllers</strong><span>Swap behavior at runtime</span></div>
       <div class="pitch-item"><strong>Context</strong><span>Global state, one place</span></div>
     </div>
+
+    <section class="templates-section">
+      <h3>Quick Start</h3>
+      <div class="templates-grid">
+        <div class="template-card">
+          <h4>Base Template</h4>
+          <p>Minimal starter with counter example</p>
+          <div class="install">
+            <code>npx snice create-app my-app</code>
+            <button onclick="navigator.clipboard.writeText('npx snice create-app my-app')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="template-card">
+          <h4>PWA Template</h4>
+          <p>Auth, middleware, live notifications</p>
+          <div class="install">
+            <code>npx snice create-app my-app --template=pwa</code>
+            <button onclick="navigator.clipboard.writeText('npx snice create-app my-app --template=pwa')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mcp-section">
+      <h3>AI-Assisted Development</h3>
+      <p>Use the snice MCP server with Claude Code for intelligent component scaffolding and documentation lookup.</p>
+      <div class="install">
+        <code>claude mcp add snice -- npx snice mcp</code>
+        <button onclick="navigator.clipboard.writeText('claude mcp add snice -- npx snice mcp')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        </button>
+      </div>
+    </section>
   </main>
 ${footer}
 </body>
