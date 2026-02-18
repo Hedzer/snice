@@ -401,6 +401,24 @@ ${withStyles ? `
         });
       }
 
+      // Check for @property({ reflect: true }) - doesn't exist
+      if (/@property\s*\(\s*\{[^}]*reflect\s*:/.test(code)) {
+        issues.push({
+          severity: 'error',
+          message: '@property() does not have a reflect option. This is a Lit concept.',
+          fix: 'Remove reflect option. Attributes sync automatically for :host([attr]) styling.'
+        });
+      }
+
+      // Check for function-based @observe syntax (old/wrong)
+      if (/@observe\s*\(\s*\(\s*\)\s*=>/.test(code)) {
+        issues.push({
+          severity: 'error',
+          message: '@observe uses string-based targets, not function syntax.',
+          fix: "@observe('mutation:childList', '.content') not @observe(() => this.content, {...})"
+        });
+      }
+
       // Check for property() without @ (Lit syntax)
       if (/\bproperty\s*\(\s*\{/.test(code) && !/@property/.test(code)) {
         issues.push({

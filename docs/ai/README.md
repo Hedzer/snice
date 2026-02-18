@@ -60,6 +60,8 @@ claude mcp add snice -- npx snice mcp
 - Boolean attrs: `"false"` string → `false` (not standard HTML)
 - Non-strings need type: `@property({ type: Number })` not just `@property()`
 - Union types use String: `@property() variant: 'a' | 'b' = 'a'` (type hint optional)
+- **No `reflect` option** - `@property({ reflect: true })` does NOT exist (Lit concept, not snice)
+- Attributes sync automatically for styling with `:host([attr])`
 
 **Templates:**
 - `.prop=${val}` for objects/arrays, `attr="${val}"` for strings
@@ -138,6 +140,16 @@ class MyCounter extends HTMLElement {
 - Multiple guards use AND logic, short-circuit on first false
 - Example: `(ctx, params) => ctx.user !== null`
 - Factory: `const hasRole = (role) => (ctx, params) => ctx.user?.role === role`
+
+**Custom AppContext Types:**
+- Snice's `AppContext` interface has: `theme?`, `locale?`, `principal?`, `config?`
+- For custom fields (like `user`), extend snice's AppContext:
+  ```typescript
+  import type { AppContext as SniceAppContext } from 'snice';
+  interface MyAppContext extends SniceAppContext { user: User | null; }
+  ```
+- In guards/middleware, cast: `(ctx as MyAppContext).user`
+- Or use `any` for simpler typing: `(ctx: any) => ctx.user !== null`
 
 **Layouts:**
 - Layout `update()` receives `AppContext` (not Context)

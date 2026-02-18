@@ -284,11 +284,28 @@ class DataViewer extends HTMLElement {
 ```typescript
 @element('resize-detector')
 class ResizeDetector extends HTMLElement {
-  @query('.content') content!: HTMLElement;
-
-  @observe(() => this.content, { childList: true, subtree: true })
+  // Watch for DOM mutations
+  @observe('mutation:childList', '.content')
   handleMutation(mutations: MutationRecord[]) {
     console.log('Content changed', mutations);
+  }
+
+  // Watch for element resize
+  @observe('resize', '.chart')
+  handleResize(entries: ResizeObserverEntry[]) {
+    console.log('Size changed', entries[0].contentRect);
+  }
+
+  // Watch for viewport visibility
+  @observe('intersection', '.lazy', { threshold: 0.1 })
+  handleVisible(entries: IntersectionObserverEntry[]) {
+    if (entries[0].isIntersecting) this.loadContent();
+  }
+
+  // Watch for media query changes
+  @observe('media:(min-width: 768px)')
+  handleMediaChange(matches: boolean) {
+    this.isDesktop = matches;
   }
 }
 ```

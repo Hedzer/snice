@@ -123,9 +123,21 @@ html`
 ## Observers
 
 ```typescript
-@observe(target: () => Node, options?: MutationObserverInit)
+@observe(target: string | string[], selector?: string, options?: ObserveOptions)
+// target types:
+//   'intersection' - IntersectionObserver (viewport visibility)
+//   'resize' - ResizeObserver (element size changes)
+//   'media:(query)' - MediaQueryList (e.g., 'media:(min-width: 768px)')
+//   'mutation:childList' - MutationObserver childList changes
+//   'mutation:attributes' - MutationObserver attribute changes
+//   'mutation:attributes:name' - Watch specific attribute
+// selector: CSS selector for element to observe (optional, defaults to this)
 // Auto-cleanup on disconnect
-// Method called with: (mutations: MutationRecord[])
+// Example:
+//   @observe('mutation:childList', '.content')
+//   handleMutation(mutations: MutationRecord[]) { ... }
+//   @observe('intersection', '.lazy', { threshold: 0.1 })
+//   handleVisible(entries: IntersectionObserverEntry[]) { ... }
 ```
 
 ## Context & Router
@@ -150,10 +162,11 @@ ctx.update(ctx.application, ctx.navigation.placards, ctx.navigation.route, ctx.n
 // Called on: initial load, route change, ctx.update()
 // Layout.update() and @context() both receive updates
 // Example:
-//   @context() handleContext(ctx: Context<MyApp>) {
-//     this.user = ctx.application.user;
-//     ctx.application.theme = 'dark';
-//     ctx.update(); // triggers all @context() handlers
+//   @context() handleContext(ctx: Context) {
+//     const app = ctx.application as MyApp;
+//     this.user = app.user;
+//     app.theme = 'dark';
+//     ctx.update(ctx.application, ctx.navigation.placards, ctx.navigation.route, ctx.navigation.params);
 //   }
 
 Router({ target, context?, layout?, fetcher? })
@@ -198,10 +211,16 @@ type ResponseMiddleware = (
 - Create fetcher, add middleware via `.use('request', fn)` and `.use('response', fn)`
 - Request middleware runs before fetch, response middleware after
 - Middleware `this` bound to Context instance
-- Access `this.application` and `this.navigation` in middleware
+- Cast `this.application` to your type: `const app = this.application as MyAppContext`
 - Pass to Router via `fetcher` option
 - Use via `ctx.fetch()` in pages/components
 - Optional - defaults to native fetch if not provided
+// Example middleware:
+//   fetcher.use('request', function(request, next) {
+//     const app = this.application as MyAppContext;
+//     if (app.user?.token) request.headers.set('Authorization', `Bearer ${app.user.token}`);
+//     return next();
+//   });
 ```
 
 ## Templates
