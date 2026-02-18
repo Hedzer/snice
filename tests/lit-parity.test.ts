@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { element, property, render, html, nothing, noChange } from '../src/index';
+import { element, property, render, html, nothing, noChange, dispatch } from '../src/index';
 
 /**
  * Tests verifying interpolation and reactivity parity with lit-html
@@ -1140,6 +1140,49 @@ describe('lit-html parity - interpolation and reactivity', () => {
       expect(el.mouseDownCount).toBe(1);
       expect(el.mouseUpCount).toBe(1);
     });
+
+    it('should handle @@ escape syntax for events with @ in the name', async () => {
+      @element('test-namespaced-child')
+      class ChildElement extends HTMLElement {
+        @dispatch('@snice/custom-event', { bubbles: true, composed: true })
+        emitNamespacedEvent() {
+          return { data: 'test' };
+        }
+
+        @render()
+        renderContent() {
+          return html`<button @click=${() => this.emitNamespacedEvent()}>Emit</button>`;
+        }
+      }
+
+      @element('test-namespaced-parent')
+      class ParentElement extends HTMLElement {
+        receivedEvent: any = null;
+
+        handleEvent(e: CustomEvent) {
+          this.receivedEvent = e.detail;
+        }
+
+        @render()
+        renderContent() {
+          return html`<test-namespaced-child @@snice/custom-event=${(e: CustomEvent) => this.handleEvent(e)}></test-namespaced-child>`;
+        }
+      }
+
+      const el = document.createElement('test-namespaced-parent') as InstanceType<typeof ParentElement>;
+      container.appendChild(el);
+      await el.ready;
+
+      const child = el.shadowRoot?.querySelector('test-namespaced-child') as InstanceType<typeof ChildElement>;
+      await child.ready;
+
+      const button = child.shadowRoot?.querySelector('button') as HTMLButtonElement;
+      button.click();
+
+      await new Promise(resolve => queueMicrotask(resolve));
+
+      expect(el.receivedEvent).toEqual({ data: 'test' });
+    });
   });
 
   describe('dirty checking', () => {
@@ -1580,6 +1623,147 @@ describe('lit-html parity - interpolation and reactivity', () => {
       el.mode = 3;
       await new Promise(resolve => queueMicrotask(resolve));
       expect(el.shadowRoot?.querySelector('div')?.textContent?.trim()).toBe('');
+    });
+  });
+
+  describe('class list with ternary expressions', () => {
+    it('should handle static class with ternary expression', async () => {
+      const tag = getUniqueTag();
+
+      @element(tag)
+      class TestElement extends HTMLElement {
+        @property({ type: Boolean })
+        isActive = false;
+
+        @render()
+        renderContent() {
+          return html`<div class="base ${this.isActive ? 'active' : 'inactive'}">Content</div>`;
+        }
+      }
+
+      const el = document.createElement(tag) as InstanceType<typeof TestElement>;
+      container.appendChild(el);
+      await el.ready;
+
+      const div = el.shadowRoot?.querySelector('div');
+      expect(div?.className).toBe('base inactive');
+
+      el.isActive = true;
+      await new Promise(resolve => queueMicrotask(resolve));
+
+      expect(div?.className).toBe('base active');
+    });
+
+    it('should handle multiple static classes with ternary expression', async () => {
+      const tag = getUniqueTag();
+
+      @element(tag)
+      class TestElement extends HTMLElement {
+        @property({ type: Boolean })
+        isEnabled = true;
+
+        @render()
+        renderContent() {
+          return html`<div class="btn btn-primary ${this.isEnabled ? 'enabled' : 'disabled'}">Button</div>`;
+        }
+      }
+
+      const el = document.createElement(tag) as InstanceType<typeof TestElement>;
+      container.appendChild(el);
+      await el.ready;
+
+      const div = el.shadowRoot?.querySelector('div');
+      expect(div?.className).toBe('btn btn-primary enabled');
+
+      el.isEnabled = false;
+      await new Promise(resolve => queueMicrotask(resolve));
+
+      expect(div?.className).toBe('btn btn-primary disabled');
+    });
+
+    it('should handle multiple ternary expressions in class list', async () => {
+      const tag = getUniqueTag();
+
+      @element(tag)
+      class TestElement extends HTMLElement {
+        @property({ type: Boolean })
+        isLarge = false;
+
+        @property({ type: Boolean })
+        isPrimary = true;
+
+        @render()
+        renderContent() {
+          return html`<div class="btn ${this.isLarge ? 'large' : 'small'} ${this.isPrimary ? 'primary' : 'secondary'}">Button</div>`;
+        }
+      }
+
+      const el = document.createElement(tag) as InstanceType<typeof TestElement>;
+      container.appendChild(el);
+      await el.ready;
+
+      const div = el.shadowRoot?.querySelector('div');
+      expect(div?.className).toBe('btn small primary');
+
+      el.isLarge = true;
+      el.isPrimary = false;
+      await new Promise(resolve => queueMicrotask(resolve));
+
+      expect(div?.className).toBe('btn large secondary');
+    });
+
+    it('should handle ternary with empty string for conditional class', async () => {
+      const tag = getUniqueTag();
+
+      @element(tag)
+      class TestElement extends HTMLElement {
+        @property({ type: Boolean })
+        showHighlight = false;
+
+        @render()
+        renderContent() {
+          return html`<div class="item ${this.showHighlight ? 'highlighted' : ''}">Item</div>`;
+        }
+      }
+
+      const el = document.createElement(tag) as InstanceType<typeof TestElement>;
+      container.appendChild(el);
+      await el.ready;
+
+      const div = el.shadowRoot?.querySelector('div');
+      expect(div?.className).toBe('item ');
+
+      el.showHighlight = true;
+      await new Promise(resolve => queueMicrotask(resolve));
+
+      expect(div?.className).toBe('item highlighted');
+    });
+
+    it('should handle ternary with multiple classes in each branch', async () => {
+      const tag = getUniqueTag();
+
+      @element(tag)
+      class TestElement extends HTMLElement {
+        @property({ type: Boolean })
+        isError = false;
+
+        @render()
+        renderContent() {
+          return html`<div class="alert ${this.isError ? 'alert-error text-red' : 'alert-info text-blue'}">Message</div>`;
+        }
+      }
+
+      const el = document.createElement(tag) as InstanceType<typeof TestElement>;
+      container.appendChild(el);
+      await el.ready;
+
+      const div = el.shadowRoot?.querySelector('div');
+      expect(div?.className).toBe('alert alert-info text-blue');
+
+      el.isError = true;
+      await new Promise(resolve => queueMicrotask(resolve));
+
+      expect(div?.className).toBe('alert alert-error text-red');
     });
   });
 
