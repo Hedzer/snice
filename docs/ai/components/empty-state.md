@@ -23,12 +23,22 @@ actionHref: string = '';
 <!-- Basic -->
 <snice-empty-state></snice-empty-state>
 
-<!-- Custom -->
+<!-- Custom (icon supports: URL, image files, emoji, text) -->
 <snice-empty-state
   icon="🔍"
   title="No results found"
   description="Try adjusting your search"
 ></snice-empty-state>
+
+<snice-empty-state
+  icon="/icons/empty.svg"
+  title="No items"
+></snice-empty-state>
+
+<snice-empty-state
+  icon="search_off"
+  title="No results"
+></snice-empty-state> <!-- Material Symbols -->
 
 <!-- With action -->
 <snice-empty-state
@@ -65,7 +75,7 @@ document.querySelector('#empty').addEventListener('empty-state-action', () => {
 
 ## Features
 
-- Customizable icon, title, description
+- Customizable icon (URL, image files, emoji, font ligatures), title, description
 - Optional action button or link
 - 3 sizes
 - Slot for custom content

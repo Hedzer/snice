@@ -68,7 +68,7 @@ openMap(): void
 
 - Multiple display modes (full/compact/coordinates/address)
 - Embedded Google Maps support
-- Custom icons (emoji or image)
+- Custom icons (URL, image files, emoji, font ligatures)
 - Clickable to open in maps app
 - Custom map URL support
 - Complete address formatting

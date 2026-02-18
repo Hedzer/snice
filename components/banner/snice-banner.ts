@@ -1,4 +1,5 @@
 import { element, property, watch, dispatch, render, styles, html, css } from 'snice';
+import { renderIcon } from '../utils';
 import cssContent from './snice-banner.css?inline';
 import type { BannerVariant, BannerPosition, SniceBannerElement } from './snice-banner.types';
 
@@ -50,7 +51,7 @@ export class SniceBanner extends HTMLElement implements SniceBannerElement {
     return html/*html*/`
       <div class="${bannerClasses}" role="alert" part="banner">
         <if ${displayIcon}>
-          <span class="banner__icon" part="icon">${displayIcon}</span>
+          ${renderIcon(displayIcon, 'banner__icon')}
         </if>
 
         <span class="banner__message" part="message">${this.message}</span>

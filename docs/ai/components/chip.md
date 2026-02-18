@@ -43,8 +43,10 @@ avatar: string = '';
 <!-- Disabled -->
 <snice-chip label="Disabled" disabled></snice-chip>
 
-<!-- With icon -->
+<!-- With icon (supports: URL, image files, emoji, text) -->
 <snice-chip label="Favorite" icon="★"></snice-chip>
+<snice-chip label="Home" icon="/icons/home.svg"></snice-chip>
+<snice-chip label="Star" icon="star"></snice-chip> <!-- Material Symbols ligature -->
 
 <!-- With avatar -->
 <snice-chip label="John Doe" avatar="/user.jpg"></snice-chip>
@@ -69,5 +71,5 @@ chip.addEventListener('remove', () => chip.remove());
 - 3 sizes
 - Removable with X button
 - Selected state
-- Icon or avatar
+- Icon (URL, image files, emoji, font ligatures) or avatar
 - Click and remove events

@@ -28,7 +28,7 @@ import 'snice/components/chip/snice-chip';
 | `removable` | `boolean` | `false` | Show remove button |
 | `selected` | `boolean` | `false` | Show selected state |
 | `disabled` | `boolean` | `false` | Disable the chip |
-| `icon` | `string` | `''` | Icon text/emoji to display |
+| `icon` | `string` | `''` | Icon (URL, image file, emoji, or font ligature) |
 | `avatar` | `string` | `''` | Avatar image URL |
 
 ## Events
@@ -104,11 +104,24 @@ chip.addEventListener('remove', () => {
 
 ### Chips with Icons
 
+The `icon` property supports multiple formats:
+- **URLs**: Image files (`/icons/star.svg`)
+- **Inline SVG**: `<svg>...</svg>`
+- **Emoji**: `★`, `🏠`, `⚙️`
+- **Font ligatures**: Text for icon fonts like Material Symbols (`star`, `home`)
+
 ```html
+<!-- Emoji icons -->
 <snice-chip label="Favorite" icon="★" variant="warning"></snice-chip>
 <snice-chip label="Home" icon="🏠" variant="primary"></snice-chip>
 <snice-chip label="Settings" icon="⚙️" variant="default"></snice-chip>
-<snice-chip label="Email" icon="📧" variant="info"></snice-chip>
+
+<!-- Image URL -->
+<snice-chip label="Star" icon="/icons/star.svg" variant="warning"></snice-chip>
+
+<!-- Font ligature (Material Symbols) -->
+<snice-chip label="Home" icon="home" variant="primary"></snice-chip>
+<snice-chip label="Settings" icon="settings" variant="default"></snice-chip>
 ```
 
 ### Chips with Avatars

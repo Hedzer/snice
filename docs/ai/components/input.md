@@ -61,9 +61,11 @@ name: string = '';
 <snice-input type="password" label="Password"></snice-input>
 <snice-input type="number" label="Age"></snice-input>
 
-<!-- With icons -->
+<!-- With icons (supports: URL, image files, emoji, text) -->
 <snice-input prefix-icon="🔍" placeholder="Search"></snice-input>
 <snice-input suffix-icon="✉️" type="email"></snice-input>
+<snice-input prefix-icon="/icons/search.svg" placeholder="Search"></snice-input>
+<snice-input prefix-icon="search" placeholder="Search"></snice-input> <!-- Material Symbols -->
 
 <!-- With prefix/suffix text -->
 <snice-input prefix="$" type="number"></snice-input>
@@ -103,7 +105,7 @@ inp.addEventListener('change', (e) => console.log('Change:', e.detail.value));
 - Form-associated custom element
 - 10 input types
 - 3 visual variants
-- Prefix/suffix icons or text
+- Prefix/suffix icons (URL, image files, emoji, font ligatures) or text
 - Clearable with X button
 - Helper and error text
 - Validation (min/max/pattern/length)

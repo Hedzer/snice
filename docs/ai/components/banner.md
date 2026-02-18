@@ -56,12 +56,10 @@ open: boolean = false;
   open
 ></snice-banner>
 
-<!-- Custom icon -->
-<snice-banner
-  icon="🎉"
-  message="Celebration!"
-  open
-></snice-banner>
+<!-- Custom icon (supports: URL, image files, emoji, text) -->
+<snice-banner icon="🎉" message="Celebration!" open></snice-banner>
+<snice-banner icon="/icons/update.svg" message="Update" open></snice-banner>
+<snice-banner icon="update" message="Material icon" open></snice-banner>
 
 <!-- API -->
 <snice-banner id="banner" message="Hello"></snice-banner>

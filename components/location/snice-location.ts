@@ -1,4 +1,5 @@
 import { element, property, render, styles, dispatch, html, css } from 'snice';
+import { renderIcon } from '../utils';
 import type { SniceLocationElement, LocationData, LocationDisplayMode } from './snice-location.types';
 import locationStyles from './snice-location.css?inline';
 
@@ -145,12 +146,7 @@ export class SniceLocation extends HTMLElement implements SniceLocationElement {
       <div class="location ${this.clickable ? 'location--clickable' : ''}" @click=${() => this.handleClick()}>
         <if ${this.showIcon}>
           <div class="icon">
-            <if ${this.iconImage}>
-              <img src="${this.iconImage}" alt="Location icon" />
-            </if>
-            <if ${!this.iconImage}>
-              ${this.icon}
-            </if>
+            ${renderIcon(this.iconImage || this.icon, 'location-icon')}
           </div>
         </if>
 

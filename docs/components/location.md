@@ -30,8 +30,8 @@ Display location information with addresses, coordinates, maps, and custom icons
 | `longitude` | `number \| string` | `''` | Longitude coordinate |
 | `showMap` | `boolean` | `false` | Show embedded map |
 | `showIcon` | `boolean` | `true` | Show location icon |
-| `icon` | `string` | `'📍'` | Text/emoji icon |
-| `iconImage` | `string` | `''` | Icon image URL |
+| `icon` | `string` | `'📍'` | Icon (URL, image file, emoji, or font ligature) |
+| `iconImage` | `string` | `''` | Icon image URL (deprecated, use `icon`) |
 | `mapUrl` | `string` | `''` | Custom map URL |
 | `clickable` | `boolean` | `false` | Make location clickable |
 
