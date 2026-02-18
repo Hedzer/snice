@@ -115,26 +115,31 @@ class AppShell extends HTMLElement implements Layout {
 
 ## Request/Response
 ```typescript
-// Controller
+// Controller responds to requests (receives payload, returns result directly)
 @controller('api')
 class API {
   @respond('fetch-user')
-  async fetchUser(req, respond) {
-    const user = await fetch(`/api/users/${req.id}`).then(r => r.json());
-    respond(user);
+  async handleFetchUser(payload: { id: string }) {
+    const user = await fetch(`/api/users/${payload.id}`).then(r => r.json());
+    return user;  // Direct return, not callback
   }
 }
 
-// Element
+// Element makes requests (async generator: yield sends, await receives)
 @element('user-profile')
 class UserProfile extends HTMLElement {
   @request('fetch-user')
-  fetchUser!: (data: { id: string }) => Promise<User>;
+  async *fetchUser(id: string): any {
+    const user = await (yield { id });  // yield = send request, await = get response
+    return user;
+  }
 
   async loadUser(id: string) {
-    const user = await this.fetchUser({ id });
+    const user = await this.fetchUser(id);  // Returns Promise
   }
 }
+
+// Wiring: <user-profile controller="api"></user-profile>
 ```
 
 ## Fetch with Middleware
