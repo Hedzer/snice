@@ -15,8 +15,13 @@ disabled: boolean = false;
 ## Slots
 
 - `header` - Card header
+- `image` - Card image (top of card)
 - `footer` - Card footer
 - default - Card body content
+
+## Events
+
+- `card-click` - Fired when clickable card is clicked. Detail: `{ selected: boolean }`
 
 ## Usage
 
