@@ -131,27 +131,45 @@ html`
 ## Context & Router
 
 ```typescript
+// Context class (NOT generic - cast application as needed)
+class Context {
+  application: AppContext;  // cast to your type: ctx.application as MyApp
+  navigation: { placards: Placard[], route: string, params: Record<string, string> };
+  fetch: typeof globalThis.fetch;  // middleware-aware fetch
+  // Update notifies all @context() subscribers
+  // Note: requires passing current values back
+  update(app: AppContext, placards: Placard[], route: string, params: Record<string,string>): void;
+}
+
+// To update context and notify subscribers:
+ctx.application.user = newUser;
+ctx.update(ctx.application, ctx.navigation.placards, ctx.navigation.route, ctx.navigation.params);
+
 @context(options?: { debounce?, throttle?, once? })
-// Method decorator: receives Context object on router navigation
-// Method signature: (ctx: Context) => void
-// Context: { application, navigation: { placards, route, params }, update() }
-// Call ctx.update() after modifying ctx.application to notify all subscribers
-// Options:
-//   debounce (ms) - wait for quiet period before calling
-//   throttle (ms) - limit to at most once per period
-//   once - call only once then unregister
+// Method decorator: receives Context on navigation
+// Called on: initial load, route change, ctx.update()
+// Layout.update() and @context() both receive updates
 // Example:
-//   @context() handleContext(ctx) {
-//     this.ctx = ctx;
-//     ctx.application.user = user;
-//     ctx.update(); // notify all subscribers
+//   @context() handleContext(ctx: Context<MyApp>) {
+//     this.user = ctx.application.user;
+//     ctx.application.theme = 'dark';
+//     ctx.update(); // triggers all @context() handlers
 //   }
 
 Router({ target, context?, layout?, fetcher? })
 // Returns: { page, navigate, initialize }
-// page() - decorator factory
-// navigate(path) - programmatic navigation
-// initialize() - start router
+// IMPORTANT: `page` is NOT exported from 'snice'
+// It comes from Router() and must be re-exported
+
+// Module structure for multi-page apps:
+// router.ts:
+export const { page, navigate, initialize } = Router({
+  target: '#app',
+  context: { user: null, theme: 'light' },
+  layout: 'app-shell'
+});
+// pages import `page` from './router' (not 'snice')
+// main.ts imports pages for side-effects, calls initialize()
 ```
 
 ## Fetcher
@@ -219,7 +237,10 @@ interface OnOptions { debounce?, throttle?, preventDefault?, stopPropagation?, o
 interface RenderOptions { debounce?, throttle?, once?, sync? }
 interface Layout { update(context, placards, route, params) }
 interface Placard { name, title, icon?, description?, order?, show?, visibleOn?, parent?, group?, searchTerms?, hotkeys?, breadcrumbs?, tooltip? }
-type Guard<T> = (context: T) => boolean | Promise<boolean>
+// Guards: synchronous only, receive context AND params
+type Guard<T> = (context: T, params: RouteParams) => boolean
+// NO async, NO string redirect - boolean only
+// Multiple guards: AND logic, short-circuits on first false
 ```
 
 ## Exports

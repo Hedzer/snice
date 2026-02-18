@@ -119,6 +119,17 @@ const TOOLS = [
       },
       required: ['query']
     }
+  },
+  {
+    name: 'validate_code',
+    description: 'Validate snice component code for common mistakes and pitfalls',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        code: { type: 'string', description: 'TypeScript/JavaScript component code to validate' }
+      },
+      required: ['code']
+    }
   }
 ];
 
@@ -233,6 +244,178 @@ ${withStyles ? `
         return { content: [{ type: 'text', text: `No results found for "${args.query}"` }] };
       }
       return { content: [{ type: 'text', text: `# Search Results for "${args.query}"\n\n${results.join('\n\n')}` }] };
+    }
+
+    case 'validate_code': {
+      const code = args.code;
+      const issues = [];
+
+      // Check for @state() - doesn't exist
+      if (/@state\s*\(/.test(code)) {
+        issues.push({
+          severity: 'error',
+          message: '@state() does not exist in snice. Use @property() for all reactive state.',
+          fix: 'Replace @state() with @property()'
+        });
+      }
+
+      // Check for camelCase event names in @dispatch
+      const dispatchMatch = code.match(/@dispatch\s*\(\s*['"]([^'"]+)['"]\s*\)/g);
+      if (dispatchMatch) {
+        for (const match of dispatchMatch) {
+          const eventName = match.match(/['"]([^'"]+)['"]/)?.[1];
+          if (eventName && /[A-Z]/.test(eventName)) {
+            issues.push({
+              severity: 'warning',
+              message: `Event "${eventName}" uses camelCase. Use kebab-case instead.`,
+              fix: `Change to "${eventName.replace(/([A-Z])/g, '-$1').toLowerCase()}"`
+            });
+          }
+        }
+      }
+
+      // Check for wrong import syntax
+      if (/import\s*\{\s*\w+\s*\}\s*from\s*['"]snice\/components/.test(code)) {
+        issues.push({
+          severity: 'error',
+          message: 'Wrong import syntax for built-in components. Use side-effect import.',
+          fix: "Use: import 'snice/components/button/snice-button' (no curly braces)"
+        });
+      }
+
+      // Check for experimentalDecorators in tsconfig reference
+      if (/experimentalDecorators.*true/.test(code)) {
+        issues.push({
+          severity: 'error',
+          message: 'experimentalDecorators must be false. Snice uses TC39 stage 3 decorators.',
+          fix: 'Set experimentalDecorators: false in tsconfig.json'
+        });
+      }
+
+      // Check for missing type in @property for non-strings
+      const propMatches = code.match(/@property\s*\(\s*\)\s*\w+\s*[=:]\s*(\d+|true|false|\[|\{)/g);
+      if (propMatches) {
+        issues.push({
+          severity: 'warning',
+          message: 'Non-string property without type hint. Add { type: Number/Boolean/Array/Object }.',
+          fix: '@property({ type: Number }) count = 0'
+        });
+      }
+
+      // Check for direct DOM manipulation that should use templates
+      if (/this\.innerHTML\s*=/.test(code) || /this\.shadowRoot\.innerHTML\s*=/.test(code)) {
+        issues.push({
+          severity: 'warning',
+          message: 'Avoid direct innerHTML assignment. Use @render() with html`` template.',
+          fix: 'Use @render() template() { return html`...`; }'
+        });
+      }
+
+      // Check for connectedCallback without super
+      if (/connectedCallback\s*\(\s*\)\s*\{(?![^}]*super\.connectedCallback)/.test(code)) {
+        issues.push({
+          severity: 'warning',
+          message: 'connectedCallback should call super.connectedCallback() or use @ready() instead.',
+          fix: 'Use @ready() decorator for initialization logic'
+        });
+      }
+
+      // Check for .addEventListener instead of @on
+      if (/this\.addEventListener\s*\(/.test(code)) {
+        issues.push({
+          severity: 'info',
+          message: 'Consider using @on() decorator for event delegation instead of addEventListener.',
+          fix: "@on('click', 'button') handleClick(e) {}"
+        });
+      }
+
+      // Check for Event type instead of CustomEvent in handlers
+      if (/:\s*Event\s*\)/.test(code) && /@on|@event|handle|Handler/.test(code)) {
+        issues.push({
+          severity: 'warning',
+          message: 'Use CustomEvent type for snice event handlers, not Event.',
+          fix: 'Change (e: Event) to (e: CustomEvent) to access e.detail'
+        });
+      }
+
+      // Check for @customElement (Lit syntax)
+      if (/@customElement\s*\(/.test(code)) {
+        issues.push({
+          severity: 'error',
+          message: '@customElement() is Lit syntax. Use @element() in snice.',
+          fix: "Replace @customElement('my-el') with @element('my-el')"
+        });
+      }
+
+      // Check for LitElement extends
+      if (/extends\s+LitElement/.test(code)) {
+        issues.push({
+          severity: 'error',
+          message: 'Do not extend LitElement. Snice components extend HTMLElement.',
+          fix: 'Change extends LitElement to extends HTMLElement'
+        });
+      }
+
+      // Check for imports from 'lit'
+      if (/from\s+['"]lit['"]/.test(code) || /from\s+['"]lit\//.test(code)) {
+        issues.push({
+          severity: 'error',
+          message: 'Do not import from lit. Snice is NOT Lit.',
+          fix: "Import from 'snice' instead: import { element, property, render, html, css } from 'snice'"
+        });
+      }
+
+      // Check for importing page from 'snice'
+      if (/import\s*\{[^}]*\bpage\b[^}]*\}\s*from\s*['"]snice['"]/.test(code)) {
+        issues.push({
+          severity: 'error',
+          message: "page decorator is NOT exported from 'snice'. It comes from Router().",
+          fix: "Create router.ts with: export const { page } = Router({...}); then import { page } from './router'"
+        });
+      }
+
+      // Check for Router() without type property
+      if (/Router\s*\(\s*\{/.test(code) && !/type\s*:\s*['"](?:hash|pushstate)['"]/.test(code)) {
+        issues.push({
+          severity: 'warning',
+          message: "Router() requires type: 'hash' | 'pushstate' property.",
+          fix: "Add type: 'hash' or type: 'pushstate' to Router config"
+        });
+      }
+
+      // Check for async guards (not supported)
+      if (/guards\s*:.*async/.test(code) || /async\s+function\s+\w+Guard/.test(code)) {
+        issues.push({
+          severity: 'error',
+          message: 'Async guards are NOT supported. Guards must be synchronous.',
+          fix: 'Remove async from guard function - return boolean, not Promise<boolean>'
+        });
+      }
+
+      // Check for Context<T> generic usage (Context is not generic)
+      if (/Context\s*</.test(code)) {
+        issues.push({
+          severity: 'error',
+          message: 'Context class is NOT generic. Use type casting instead.',
+          fix: 'Change Context<MyApp> to Context, then cast: ctx.application as MyApp'
+        });
+      }
+
+      // Check for property() without @ (Lit syntax)
+      if (/\bproperty\s*\(\s*\{/.test(code) && !/@property/.test(code)) {
+        issues.push({
+          severity: 'warning',
+          message: 'Missing @ on property decorator.',
+          fix: 'Use @property({ type: ... }) not property({ type: ... })'
+        });
+      }
+
+      if (issues.length === 0) {
+        return { content: [{ type: 'text', text: '✓ No issues found. Code looks good!' }] };
+      }
+
+      const report = issues.map(i => `[${i.severity.toUpperCase()}] ${i.message}\n  Fix: ${i.fix}`).join('\n\n');
+      return { content: [{ type: 'text', text: `# Validation Results\n\nFound ${issues.length} issue(s):\n\n${report}` }] };
     }
 
     default:

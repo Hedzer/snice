@@ -16,7 +16,11 @@ class Counter extends HTMLElement {
 
   @styles()
   componentStyles() {
-    return css`:host { display: block; }`;
+    return css`
+      :host { display: block; }
+      :host([variant="primary"]) { background: blue; }
+      :host([disabled]) { opacity: 0.5; }
+    `;
   }
 }
 ```
@@ -41,15 +45,33 @@ class DataLoader implements IController {
 ```
 
 ## Page + Router
+
+**Module Structure (avoids circular imports):**
 ```typescript
-// main.ts
-const { page, navigate, initialize } = Router({
+// router.ts - creates and exports router pieces
+import { Router } from 'snice';
+
+interface AppContext { user: { name: string } | null; theme: string; }
+
+export const { page, navigate, initialize } = Router({
   target: '#app',
-  context: new AppContext(),
+  context: { user: null, theme: 'light' } as AppContext,
   layout: 'app-shell'
 });
+export type { AppContext };
 
-// page.ts
+// main.ts - imports pages, initializes
+import './pages/home-page';  // side-effect import
+import './pages/user-page';
+import { initialize } from './router';
+initialize();
+
+// pages/user-page.ts - imports page from router
+import { page } from '../router';  // NOT from 'snice'!
+```
+
+**Page with Context:**
+```typescript
 @page({ tag: 'user-page', routes: ['/users/:id'], guards: isAuth })
 class UserPage extends HTMLElement {
   @property() id = '';

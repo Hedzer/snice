@@ -10,11 +10,25 @@ Token-efficient reference docs for AI assistants. Same content as human docs, mi
 
 **Files:**
 - `api.md` - Complete API reference
+- `decorators.md` - Quick decorator reference
 - `patterns.md` - Common usage patterns
 - `architecture.md` - System design
 - `components/*.md` - Component reference (DO NOT read all upfront - read only as needed)
 
 Read these instead of `/docs/*.md` for faster context loading.
+
+## CLI
+
+```bash
+# Create project from template
+npx snice create-app my-app --template=base
+npx snice create-app my-app --template=pwa
+
+# Run MCP server
+npx snice mcp
+```
+
+**Note:** Use `--template=base` (equals), not `--template base` (space).
 
 ## MCP Server
 
@@ -28,10 +42,111 @@ claude mcp add snice -- npx snice mcp
 **Tools provided:**
 - `list_components` - List all UI components
 - `get_component_docs` - Get component documentation
-- `get_decorator_docs` - Get decorator documentation
+- `get_decorator_docs` - Get decorator reference
 - `get_overview` - Framework overview
 - `generate_component` - Scaffold new components
 - `search_docs` - Search documentation
+- `validate_code` - Check code for common mistakes
+
+## Pitfalls
+
+**Decorators:**
+- No `@state()` decorator exists
+- No `@customElement()` - Use `@element('tag-name')`
+- `@property()` is for attributes from parent AND reactive state in pages
+- Components re-render on any property change (decorated or not)
+
+**Properties:**
+- Boolean attrs: `"false"` string → `false` (not standard HTML)
+- Non-strings need type: `@property({ type: Number })` not just `@property()`
+- Union types use String: `@property() variant: 'a' | 'b' = 'a'` (type hint optional)
+
+**Templates:**
+- `.prop=${val}` for objects/arrays, `attr="${val}"` for strings
+- `?attr=${bool}` toggles attribute presence
+- `@event=${fn}` handlers are auto-bound to `this`
+
+**Events:**
+- kebab-case names: `count-changed` not `countChanged`
+- Single words OK: `dismiss`, `select`, `change`
+- Access data via `e.detail.value` not `e.target.value`
+
+**Components:**
+- Side-effect import: `import 'snice/components/button/snice-button'`
+- NOT: `import { Button } from 'snice/components/button'`
+- Import in app entry point (main.ts), not individual pages
+- `?open` toggles attribute; `show()`/`hide()` for imperative control
+
+**Event Types:**
+- Use `CustomEvent` type: `(e: CustomEvent) => void`
+- NOT `Event` - snice events always carry detail payload
+
+**Testing:**
+- `await el.ready` before assertions
+- Use `el.shadowRoot.querySelector()` for shadow DOM
+
+**Manual setup (no template):**
+- Requires bundler: Vite, esbuild, or Rollup (not tsc alone)
+- **Snice is NOT Lit** - Don't import from `lit` or extend `LitElement`
+- tsconfig.json:
+```json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "experimentalDecorators": false,
+    "useDefineForClassFields": false
+  }
+}
+```
+- package.json: `"type": "module"`
+- Minimal component:
+```typescript
+import { element, property, render, styles, html, css } from 'snice';
+
+@element('my-counter')
+class MyCounter extends HTMLElement {
+  @property({ type: Number }) count = 0;
+
+  @styles()
+  componentStyles() {
+    return css`:host { display: block; }`;
+  }
+
+  @render()
+  template() {
+    return html`<button @click=${() => this.count++}>${this.count}</button>`;
+  }
+}
+```
+
+**Pages (router):**
+- `page` decorator comes from `Router()`, NOT from 'snice' exports
+- Create router.ts: `export const { page, navigate, initialize } = Router({...})`
+- Pages import: `import { page } from './router'`
+- Use `@property()` for reactive state, plain fields for non-reactive
+- `@context()` receives Context on navigation and ctx.update() calls
+- ctx.update() requires args: `ctx.update(ctx.application, ctx.navigation.placards, ctx.navigation.route, ctx.navigation.params)`
+
+**Guards:**
+- Signature: `(context: AppContext, params: RouteParams) => boolean`
+- TWO params: context (raw AppContext) and route params
+- Return `true` to allow, `false` renders 403 page
+- NO async guards, NO string redirects (boolean only)
+- Multiple guards use AND logic, short-circuit on first false
+- Example: `(ctx, params) => ctx.user !== null`
+- Factory: `const hasRole = (role) => (ctx, params) => ctx.user?.role === role`
+
+**Layouts:**
+- Layout `update()` receives `AppContext` (not Context)
+- Signature: `update(app: AppContext, placards: Placard[], route: string, params: RouteParams)`
+- `@context()` in layouts receives full Context
+
+**Router:**
+- `type: 'hash' | 'pushstate'` is REQUIRED
+- `Router({ target: '#app', type: 'hash', context: {...}, layout: 'app-shell' })`
 
 ## Available Components
 
