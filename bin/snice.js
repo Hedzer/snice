@@ -37,6 +37,9 @@ if (command === 'create-app') {
   const template = flags.template || 'base';
 
   createApp(projectPath, template);
+} else if (command === 'mcp') {
+  // Start MCP server
+  import('./mcp-server.js');
 } else if (command === 'build-component') {
   // Parse arguments - separate flags from positional arguments
   const flags = {};
@@ -77,6 +80,7 @@ Usage:
   snice create-app [options] <project-name>
   snice create-app [options] .                          Initialize in current directory
   snice build-component <component-name> [options]      Build standalone component
+  snice mcp                                             Start MCP server for AI assistants
 
 Create App Options:
   --template=<name>                                     Template to use (default: base)
@@ -91,12 +95,16 @@ Templates:
   base    - Minimal starter with counter example (default)
   pwa     - Progressive Web App with auth, middleware, and live notifications
 
+MCP Server:
+  Start a Model Context Protocol server for AI-assisted development.
+  Connect in Claude Code: claude mcp add snice -- npx snice mcp
+
 Examples:
   snice create-app my-app
   snice create-app my-app --template=pwa
   snice build-component button
   snice build-component button --output=./standalone --format=esm,umd
-  snice build-component button --with-theme
+  snice mcp
 `);
 }
 

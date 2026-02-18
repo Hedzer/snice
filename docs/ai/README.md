@@ -16,6 +16,23 @@ Token-efficient reference docs for AI assistants. Same content as human docs, mi
 
 Read these instead of `/docs/*.md` for faster context loading.
 
+## MCP Server
+
+Snice includes an MCP server for AI-assisted development.
+
+**Connect in Claude Code:**
+```bash
+claude mcp add snice -- npx snice mcp
+```
+
+**Tools provided:**
+- `list_components` - List all UI components
+- `get_component_docs` - Get component documentation
+- `get_decorator_docs` - Get decorator documentation
+- `get_overview` - Framework overview
+- `generate_component` - Scaffold new components
+- `search_docs` - Search documentation
+
 ## Available Components
 
 **IMPORTANT:** Do NOT read all component docs. Only read a component's doc when you need to use or reference it.
