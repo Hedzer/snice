@@ -24,8 +24,8 @@ close()  // Close modal
 ## Events
 
 ```typescript
-'modal-open'   // { modal }
-'modal-close'  // { modal }
+'modal-open'   // Emitted when modal opens. Detail: { modal }
+'modal-close'  // Emitted when modal closes. Detail: { modal }
 ```
 
 ## Slots
@@ -40,21 +40,31 @@ close()  // Close modal
 
 ## Usage
 
-```html
-<snice-modal id="myModal" label="Confirm">
-  <div slot="header"><h2>Confirm</h2></div>
-  <p>Are you sure?</p>
-  <div slot="footer">
-    <button onclick="this.closest('snice-modal').close()">Cancel</button>
-    <button onclick="this.closest('snice-modal').close()">OK</button>
-  </div>
-</snice-modal>
+**Template syntax:**
+```typescript
+html`
+  <snice-modal
+    ?open=${this.isOpen}
+    label="Confirm Action"
+    @modal-close=${() => this.handleClose()}>
+    <span slot="header">Title</span>
+    <p>Content</p>
+    <div slot="footer">
+      <snice-button @click=${() => this.close()}>Cancel</snice-button>
+    </div>
+  </snice-modal>
+`
 ```
 
+**Imperative:**
 ```typescript
 const modal = document.querySelector('snice-modal');
 modal.show();
 modal.close();
+
+modal.addEventListener('modal-close', (e) => {
+  console.log('Modal closed');
+});
 ```
 
 ## Features

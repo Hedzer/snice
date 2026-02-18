@@ -208,11 +208,6 @@ attr="${val}" // Attribute
 ?attr="${bool}" // Boolean attribute
 @event="${handler}" // Event listener
 @event:modifier="${handler}" // With keyboard modifier
-
-// IMPORTANT: Event names starting with @
-// Use @@ to escape the @ in event names like @snice/qr-scan
-@@snice/qr-scan="${handler}" // Correct - first @ is syntax, second @ is part of name
-@snice/qr-scan="${handler}" // Wrong - treated as @snice event
 ```
 
 ## Types
