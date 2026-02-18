@@ -1,4 +1,5 @@
 import { element, property, watch, query, ready, render, styles, html, css as cssTag } from 'snice';
+import { renderIcon } from '../utils';
 import cssContent from './snice-breadcrumbs.css?inline';
 import type { BreadcrumbItem, BreadcrumbSeparator, BreadcrumbSize, SniceBreadcrumbsElement } from './snice-breadcrumbs.types';
 import type { SniceCrumbElement } from './snice-breadcrumbs.types';
@@ -52,14 +53,14 @@ export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsEle
                      class="breadcrumb-link"
                      aria-current="${isActive ? 'page' : ''}"
                      tabindex="0">
-                    ${this.renderIcon(item)}
+                    ${this.renderItemIcon(item)}
                     ${item.label}
                   </a>
                 </if>
                 <if ${!item.href || isActive}>
                   <span class="breadcrumb-text"
                         aria-current="${isActive ? 'page' : ''}">
-                    ${this.renderIcon(item)}
+                    ${this.renderItemIcon(item)}
                     ${item.label}
                   </span>
                 </if>
@@ -170,14 +171,14 @@ export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsEle
     this.items = items;
   }
 
-  private renderIcon(item: BreadcrumbItem) {
-    return html/*html*/`
-      <if ${item.iconImage}>
-        <img class="breadcrumb-icon-image" src="${item.iconImage}" alt="">
-      </if>
-      <if ${item.icon}>
-        <span class="breadcrumb-icon">${item.icon}</span>
-      </if>
-    `;
+  private renderItemIcon(item: BreadcrumbItem) {
+    // iconImage takes precedence for backwards compatibility
+    if (item.iconImage) {
+      return renderIcon(item.iconImage, 'breadcrumb-icon');
+    }
+    if (item.icon) {
+      return renderIcon(item.icon, 'breadcrumb-icon');
+    }
+    return html``;
   }
 }

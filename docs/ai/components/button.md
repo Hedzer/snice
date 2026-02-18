@@ -52,9 +52,14 @@ iconPlacement: 'start'|'end' = 'start';
 <snice-button pill>Pill</snice-button>
 <snice-button circle icon="×"></snice-button>
 
-<!-- With icon -->
+<!-- With icon (auto-detects: URL, file extension, emoji, text) -->
 <snice-button icon="→">Next</snice-button>
-<snice-button icon="←" icon-placement="start">Back</snice-button>
+<snice-button icon="/icons/save.svg">Save</snice-button>
+<snice-button icon="icon.png">Image file</snice-button>
+<snice-button icon="save">Ligature</snice-button>
+<!-- Scheme overrides: img://, text:// -->
+<snice-button icon="img://filename">Force img</snice-button>
+<snice-button icon="text:///not/a/path">Force text</snice-button>
 
 <!-- As link -->
 <snice-button href="/page">Link</snice-button>
@@ -71,5 +76,5 @@ iconPlacement: 'start'|'end' = 'start';
 - Loading state with spinner
 - Disabled state
 - Link mode (href)
-- Icon support with placement
+- Icon support with placement (URL, image files, emoji, font ligatures)
 - Download attribute support

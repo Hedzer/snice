@@ -1,4 +1,5 @@
 import { element, property, query, render, styles, html, css } from 'snice';
+import { renderIcon } from '../utils';
 import cssContent from './snice-button.css?inline';
 import type { ButtonVariant, ButtonSize, ButtonType, IconPlacement, SniceButtonElement } from './snice-button.types';
 
@@ -84,13 +85,13 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
       <button class="${classes}" type="${this.type}" ?disabled="${this.disabled}" part="base" @click="${(e: MouseEvent) => this.handleInternalClick(e)}">
         <span class="spinner" part="spinner"></span>
         <if ${this.icon && this.iconPlacement === 'start'}>
-          <img class="icon" src="${this.icon}" alt="" part="icon" />
+          ${renderIcon(this.icon, 'icon')}
         </if>
         <span class="label" part="label">
           <slot></slot>
         </span>
         <if ${this.icon && this.iconPlacement === 'end'}>
-          <img class="icon" src="${this.icon}" alt="" part="icon" />
+          ${renderIcon(this.icon, 'icon')}
         </if>
       </button>
     `;

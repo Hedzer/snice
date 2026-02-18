@@ -63,8 +63,8 @@ Individual breadcrumb item.
 interface BreadcrumbItem {
   label: string;        // Display text
   href?: string;        // Link URL (optional)
-  icon?: string;        // Icon text/emoji
-  iconImage?: string;   // Icon image URL
+  icon?: string;        // Icon (URL, image file, emoji, font ligature)
+  iconImage?: string;   // Icon image URL (deprecated, use icon)
   active?: boolean;     // Current/active state
 }
 ```
@@ -75,8 +75,8 @@ interface BreadcrumbItem {
 |----------|------|---------|-------------|
 | `label` | `string` | `''` | Display text |
 | `href` | `string` | `''` | Link URL |
-| `icon` | `string` | `''` | Icon text/emoji |
-| `iconImage` | `string` | `''` | Icon image URL |
+| `icon` | `string` | `''` | Icon (URL, image file, emoji, font ligature) |
+| `iconImage` | `string` | `''` | Icon image URL (deprecated, use `icon` with URL) |
 | `active` | `boolean` | `false` | Current/active state |
 
 ## Methods

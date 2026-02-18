@@ -29,7 +29,7 @@ import 'snice/components/alert/snice-alert';
 | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Alert size |
 | `title` | `string` | `''` | Optional title text |
 | `dismissible` | `boolean` | `false` | Show dismiss button |
-| `icon` | `string` | `''` | Custom icon (or `'none'` to hide default icon) |
+| `icon` | `string` | `''` | Custom icon (URL, image file, emoji, font ligature) or `'none'` to hide |
 
 ## Methods
 
@@ -165,15 +165,30 @@ Fired when the alert is shown.
 
 ### Custom Icons
 
+The `icon` property supports multiple formats:
+- **URLs**: Image files (`/icons/info.svg`)
+- **Inline SVG**: `<svg>...</svg>`
+- **Emoji**: `🎉`, `💡`
+- **Font ligatures**: Text for icon fonts like Material Symbols (`info`, `lightbulb`)
+
 ```html
-<!-- Custom emoji icon -->
+<!-- Emoji icons -->
 <snice-alert variant="success" icon="🎉">
   Congratulations! You've unlocked a new achievement!
 </snice-alert>
 
-<!-- Custom emoji icon -->
 <snice-alert variant="info" icon="💡">
   Pro tip: Save time by using keyboard shortcuts.
+</snice-alert>
+
+<!-- Image URL -->
+<snice-alert variant="info" icon="/icons/info-circle.svg">
+  Custom image icon alert.
+</snice-alert>
+
+<!-- Font ligature (Material Symbols) -->
+<snice-alert variant="info" icon="lightbulb">
+  Font ligature icon alert.
 </snice-alert>
 
 <!-- No icon -->

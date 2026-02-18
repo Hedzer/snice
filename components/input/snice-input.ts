@@ -1,4 +1,5 @@
 import { element, property, query, watch, dispatch, ready, render, styles, html, css } from 'snice';
+import { renderIcon } from '../utils';
 import cssContent from './snice-input.css?inline';
 import type { InputType, InputSize, InputVariant, SniceInputElement } from './snice-input.types';
 
@@ -125,7 +126,7 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
 
         <div class="input-container">
           <if ${this.prefixIcon}>
-            <span class="icon icon--prefix">${this.prefixIcon}</span>
+            ${renderIcon(this.prefixIcon, 'icon icon--prefix')}
           </if>
 
           <input
@@ -187,7 +188,7 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
             </button>
           </if>
           <if ${!(this.type === 'password' && this.password) && this.suffixIcon}>
-            <span class="icon icon--suffix">${this.suffixIcon}</span>
+            ${renderIcon(this.suffixIcon, 'icon icon--suffix')}
           </if>
         </div>
 

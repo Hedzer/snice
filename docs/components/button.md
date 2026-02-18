@@ -32,7 +32,7 @@ import 'snice/components/button/snice-button';
 | `href` | `string` | `''` | URL to navigate to (renders as link) |
 | `target` | `string` | `''` | Link target attribute |
 | `download` | `string` | `''` | Download attribute for file downloads |
-| `icon` | `string` | `''` | Icon image URL |
+| `icon` | `string` | `''` | Icon (URL, image file, emoji, or font ligature) |
 | `iconPlacement` | `'start' \| 'end'` | `'start'` | Icon position relative to label |
 
 ## Methods
@@ -134,26 +134,40 @@ button.click();
 
 ### Buttons with Icons
 
+The `icon` property supports multiple formats:
+- **URLs**: Image files (`/icons/save.svg`, `https://...`)
+- **Inline SVG**: `<svg viewBox="...">...</svg>`
+- **Inline HTML**: `<span class="material-symbols-rounded">save</span>`
+- **Emoji**: Direct emoji characters (`→`, `🔍`)
+- **Font ligatures**: Text for icon fonts like Material Symbols (`save`, `home`)
+
 ```html
-<!-- Icon at start (default) -->
+<!-- Icon URL -->
 <snice-button icon="/icons/arrow-right.svg">Next</snice-button>
+
+<!-- Emoji icon -->
+<snice-button icon="→">Next</snice-button>
+
+<!-- Font ligature (Material Symbols) -->
+<snice-button icon="arrow_forward">Next</snice-button>
+
+<!-- Inline SVG -->
+<snice-button icon="<svg viewBox='0 0 24 24'><path d='M12 2L2 7l10 5 10-5-10-5z'/></svg>">
+  Upload
+</snice-button>
 
 <!-- Icon at end -->
 <snice-button icon="/icons/external-link.svg" icon-placement="end">
   Open Link
 </snice-button>
 
-<!-- Icon only -->
-<snice-button circle icon="/icons/settings.svg"></snice-button>
+<!-- Icon only (circle button) -->
+<snice-button circle icon="⚙️"></snice-button>
+<snice-button circle icon="settings"></snice-button>
 
 <!-- With variants -->
-<snice-button variant="primary" icon="/icons/save.svg">
-  Save
-</snice-button>
-
-<snice-button variant="danger" icon="/icons/trash.svg" outline>
-  Delete
-</snice-button>
+<snice-button variant="primary" icon="💾">Save</snice-button>
+<snice-button variant="danger" icon="🗑️" outline>Delete</snice-button>
 ```
 
 ### Link Buttons

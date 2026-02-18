@@ -48,10 +48,10 @@ icon: string = '';
   Can be closed by user
 </snice-alert>
 
-<!-- Custom icon -->
-<snice-alert icon="🎉">
-  Custom icon alert
-</snice-alert>
+<!-- Custom icon (supports: URL, image files, emoji, text) -->
+<snice-alert icon="🎉">Custom icon alert</snice-alert>
+<snice-alert icon="/icons/info.svg">With image icon</snice-alert>
+<snice-alert icon="info">Material Symbols ligature</snice-alert>
 
 <!-- Sizes -->
 <snice-alert size="small">Small</snice-alert>
@@ -65,7 +65,7 @@ icon: string = '';
 - 3 size options
 - Optional title
 - Optional dismiss button
-- Custom icon support
+- Custom icon support (URL, image files, emoji, font ligatures)
 - Show/hide methods
 - Accessibility: role="alert"
 

@@ -1,4 +1,5 @@
 import { element, property, dispatch, render, styles, html, css } from 'snice';
+import { renderIcon } from '../utils';
 import cssContent from './snice-empty-state.css?inline';
 import type { EmptyStateSize, SniceEmptyStateElement } from './snice-empty-state.types';
 
@@ -28,7 +29,7 @@ export class SniceEmptyState extends HTMLElement implements SniceEmptyStateEleme
 
     return html/*html*/`
       <div class="${emptyStateClasses}" part="container">
-        <div class="empty-state__icon" part="icon">${this.icon}</div>
+        <div class="empty-state__icon-wrapper" part="icon">${renderIcon(this.icon, 'empty-state__icon')}</div>
         <h3 class="empty-state__title" part="title">${this.title}</h3>
         <if ${this.description}>
           <p class="empty-state__description" part="description">${this.description}</p>

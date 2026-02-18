@@ -50,12 +50,13 @@ breadcrumbs.items = [
 <!-- Custom separator -->
 <snice-breadcrumbs separator=">"></snice-breadcrumbs>
 
-<!-- With icons -->
+<!-- With icons (supports: URL, image files, emoji, text) -->
 <snice-breadcrumbs></snice-breadcrumbs>
 <script>
 breadcrumbs.items = [
   { label: 'Home', href: '/', icon: '🏠' },
-  { label: 'Products', href: '/products', icon: '📦' }
+  { label: 'Products', href: '/products', icon: '/icons/box.svg' },
+  { label: 'Details', icon: 'info' } // Material Symbols ligature
 ];
 </script>
 
@@ -69,6 +70,6 @@ breadcrumbs.items = [
 - 5 separator options
 - 3 sizes
 - Max items with collapse
-- Icons support
+- Icons support (URL, image files, emoji, font ligatures)
 - Active state
 - Accessible: nav role, aria-label

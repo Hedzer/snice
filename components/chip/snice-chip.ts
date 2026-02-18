@@ -1,4 +1,5 @@
 import { element, property, watch, query, dispatch, render, styles, html, css } from 'snice';
+import { renderIcon } from '../utils';
 import cssContent from './snice-chip.css?inline';
 import type { ChipVariant, ChipSize, SniceChipElement } from './snice-chip.types';
 
@@ -50,7 +51,7 @@ export class SniceChip extends HTMLElement implements SniceChipElement {
           <img class="chip-avatar" src="${this.avatar}" alt="">
         </if>
         <if ${!this.avatar && this.icon}>
-          <span class="chip-icon">${this.icon}</span>
+          ${renderIcon(this.icon, 'chip-icon')}
         </if>
         <span class="chip-label">${this.label}</span>
         <if ${this.removable && !this.disabled}>

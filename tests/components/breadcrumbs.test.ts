@@ -233,7 +233,8 @@ describe('snice-breadcrumbs', () => {
     breadcrumbs.items = items;
     await tracker.next();
 
-    const iconImage = queryShadow(breadcrumbs as HTMLElement, '.breadcrumb-icon-image') as HTMLImageElement;
+    // iconImage renders as img.breadcrumb-icon
+    const iconImage = queryShadow(breadcrumbs as HTMLElement, 'img.breadcrumb-icon') as HTMLImageElement;
     expect(iconImage).toBeTruthy();
     expect(iconImage?.getAttribute('src')).toBe('/home.png');
   });

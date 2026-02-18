@@ -1,4 +1,5 @@
 import { element, property, query, dispatch, render, styles, html, css } from 'snice';
+import { renderIcon } from '../utils';
 import cssContent from './snice-alert.css?inline';
 import type { AlertVariant, AlertSize, SniceAlertElement } from './snice-alert.types';
 
@@ -41,7 +42,7 @@ export class SniceAlert extends HTMLElement implements SniceAlertElement {
       <div class="${classes}" role="alert" aria-live="polite" @animationend=${this.handleAnimationEnd}>
         <if value="${hasIcon}">
           <div class="${iconClasses}">
-            ${this.icon || ''}
+            ${this.icon ? renderIcon(this.icon, 'alert-icon-content') : ''}
           </div>
         </if>
         <div class="alert-content">
