@@ -71,7 +71,7 @@
   ],
   "author": "hedzer",
   "license": "MIT",
-  "homepage": "https://gitlab.com/Hedzer/snice#readme",
+  "homepage": "https://snice.dev",
   "repository": {
     "type": "git",
     "url": "git@gitlab.com:Hedzer/snice.git"
@@ -114,7 +114,9 @@
     "release": "semantic-release --no-ci",
     "release:dry": "semantic-release --dry-run --no-ci",
     "website:build": "node scripts/build-website.js",
+    "website:build:full": "npm run build:standalone && npm run website:build",
     "website:dev": "npm run website:build && cd public && python3 -m http.server 52891",
+    "website:deploy": "npm run website:build:full && npx wrangler deploy",
     "website:test": "vitest run tests/website.test.ts",
     "website:test:render": "npm run website:build && cd public && python3 -m http.server 52891 & sleep 2 && npx playwright test tests/website-render.test.ts; kill %1"
   },

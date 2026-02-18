@@ -1,0 +1,10 @@
+name = "snice"
+compatibility_date = "2025-01-01"
+
+routes = [
+  { pattern = "snice.dev", custom_domain = true },
+  { pattern = "www.snice.dev", custom_domain = true }
+]
+
+[assets]
+directory = "public"
