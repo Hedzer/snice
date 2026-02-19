@@ -15,7 +15,7 @@ actionHref: string = '';
 
 ## Events
 
-- `action` - {emptyState}
+- `empty-state-action` - {emptyState}
 
 ## Usage
 

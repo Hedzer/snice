@@ -22,9 +22,9 @@ open: boolean = false;
 
 ## Events
 
-- `open` - {banner}
-- `close` - {banner}
-- `action` - {banner}
+- `banner-open` - {banner}
+- `banner-close` - {banner}
+- `banner-action` - {banner}
 
 ## Usage
 

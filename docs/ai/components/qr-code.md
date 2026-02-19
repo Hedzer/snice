@@ -8,13 +8,18 @@ QR code generator with customizable styling and export.
 value: string = '';
 size: number = 200;
 errorCorrectionLevel: 'L'|'M'|'Q'|'H' = 'M';
-renderMode: 'canvas'|'svg' = 'svg';
+renderMode: 'canvas'|'svg' = 'canvas';
 margin: number = 4;
 fgColor: string = '#000000';
 bgColor: string = '#ffffff';
 includeImage: boolean = false;
 imageUrl: string = '';
 imageSize: number = 40;
+dotStyle: 'square'|'rounded'|'dots' = 'square';
+centerText: string = '';
+centerTextSize: number = 16;
+textFillColor: string = '#000000';
+textOutlineColor: string = '#ffffff';
 ```
 
 ## Methods

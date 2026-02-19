@@ -14,6 +14,9 @@ maxItems: number = 0;  // 0 = show all
 **Methods:**
 - `setItems(items)` - Update breadcrumb items
 
+**Events:**
+- `breadcrumb-click` - {item, index, href, label}
+
 **BreadcrumbItem:**
 ```typescript
 interface BreadcrumbItem {

@@ -10,7 +10,7 @@ alt: string = '';
 name: string = '';
 size: 'xs'|'small'|'medium'|'large'|'xl'|'xxl' = 'medium';
 shape: 'circle'|'square'|'rounded' = 'circle';
-fallbackColor: string = '';
+fallbackColor: string = '#ffffff';
 fallbackBackground: string = '';
 ```
 
