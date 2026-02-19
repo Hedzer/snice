@@ -14,6 +14,7 @@ size: 'small'|'medium'|'large' = 'medium';
 name: string = '';
 value: string = 'on';
 label: string = '';
+loading: boolean = false;
 ```
 
 ## Methods
@@ -21,10 +22,12 @@ label: string = '';
 - `focus()` - Focus checkbox
 - `blur()` - Blur checkbox
 - `click()` - Programmatic click
+- `toggle()` - Toggle checked state
+- `setIndeterminate()` - Set indeterminate state
 
 ## Events
 
-- `change` - {checked, indeterminate, checkbox}
+- `checkbox-change` - {checked, indeterminate, checkbox}
 
 ## Usage
 
@@ -58,7 +61,7 @@ label: string = '';
 <!-- Event handling -->
 <snice-checkbox id="cb"></snice-checkbox>
 <script>
-document.querySelector('#cb').addEventListener('change', (e) => {
+document.querySelector('#cb').addEventListener('checkbox-change', (e) => {
   console.log('Checked:', e.detail.checked);
 });
 </script>

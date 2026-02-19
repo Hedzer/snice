@@ -16,6 +16,7 @@ multiple: boolean = false;          // Allow multiple selection
 searchable: boolean = false;        // Show search input
 clearable: boolean = false;         // Show clear button
 open: boolean = false;              // Dropdown open state
+loading: boolean = false;           // Loading state (shows spinner)
 size: 'small'|'medium'|'large' = 'medium';
 name: string = '';                  // Form field name
 label: string = '';                 // Label text

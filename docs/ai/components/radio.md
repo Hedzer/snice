@@ -13,6 +13,7 @@ size: 'small'|'medium'|'large' = 'medium';
 name: string = '';
 value: string = '';
 label: string = '';
+loading: boolean = false;
 ```
 
 ## Methods
@@ -20,10 +21,11 @@ label: string = '';
 - `focus()` - Focus radio
 - `blur()` - Blur radio
 - `click()` - Programmatic click
+- `select()` - Programmatic selection
 
 ## Events
 
-- `change` - {checked, value, radio}
+- `radio-change` - {checked, value, radio}
 
 ## Usage
 
@@ -63,7 +65,7 @@ label: string = '';
 <!-- Event handling -->
 <snice-radio id="rb" name="opt" value="a"></snice-radio>
 <script>
-document.querySelector('#rb').addEventListener('change', (e) => {
+document.querySelector('#rb').addEventListener('radio-change', (e) => {
   console.log('Selected:', e.detail.value);
 });
 </script>

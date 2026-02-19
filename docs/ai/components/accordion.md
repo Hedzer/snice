@@ -20,8 +20,8 @@ multiple: boolean = false;  // Allow multiple items open
 - `closeAll()` - Close all
 
 **Events:**
-- `@snice/accordion-open` - {itemId, item}
-- `@snice/accordion-close` - {itemId, item}
+- `accordion-open` - {itemId, item}
+- `accordion-close` - {itemId, item}
 
 ### snice-accordion-item
 
@@ -101,7 +101,7 @@ accordion.openAll();  // Multiple mode only
 accordion.closeAll();
 
 // Listen for events
-accordion.addEventListener('@snice/accordion-open', (e) => {
+accordion.addEventListener('accordion-open', (e) => {
   console.log('Opened:', e.detail.itemId);
 });
 
@@ -155,7 +155,7 @@ item.collapse();
 
 **Lazy loading:**
 ```typescript
-accordion.addEventListener('@snice/accordion-open', async (e) => {
+accordion.addEventListener('accordion-open', async (e) => {
   if (!loaded[e.detail.itemId]) {
     const data = await fetch(`/api/${e.detail.itemId}`);
     // Update content

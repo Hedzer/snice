@@ -17,6 +17,12 @@ icon: string = '';
 - `show()` - Show alert
 - `hide()` - Hide alert
 
+## Events
+
+- `alert-dismiss` - Fired when dismiss button clicked. Detail: `{ variant, title }`
+- `alert-shown` - Fired when show() is called. Detail: `{ variant, title }`
+- `alert-hidden` - Fired after hide animation completes. Detail: `{ variant, title }`
+
 ## Usage
 
 ```html
