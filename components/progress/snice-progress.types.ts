@@ -1,13 +1,13 @@
 export type ProgressVariant = 'linear' | 'circular';
 export type ProgressSize = 'small' | 'medium' | 'large' | 'xl' | 'xxl' | 'xxxl';
-export type ProgressColor = 'primary' | 'success' | 'warning' | 'error' | 'info';
+export type ProgressColor = 'primary' | 'success' | 'warning' | 'error' | 'info' | (string & {});
 
 export interface SniceProgressElement extends HTMLElement {
   value: number;
   max: number;
   variant: ProgressVariant;
   size: ProgressSize;
-  color: ProgressColor;
+  color: ProgressColor | string;
   indeterminate: boolean;
   showLabel: boolean;
   label: string;

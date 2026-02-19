@@ -17,7 +17,7 @@ export class SniceProgress extends HTMLElement implements SniceProgressElement {
   size: ProgressSize = 'medium';
 
   @property({  })
-  color: ProgressColor = 'primary';
+  color: ProgressColor | string = 'primary';
 
   @property({ type: Boolean,  })
   indeterminate = false;
@@ -142,6 +142,18 @@ export class SniceProgress extends HTMLElement implements SniceProgressElement {
   handleThicknessChange() {
     if (this.variant === 'circular') {
       this.style.setProperty('--progress-spinner-stroke', `${this.thickness}px`);
+    }
+  }
+
+  @watch('color')
+  handleColorChange() {
+    const semanticColors = ['primary', 'success', 'warning', 'error', 'info'];
+    if (!semanticColors.includes(this.color)) {
+      // Custom color value - apply directly via CSS variable
+      this.style.setProperty('--progress-color', this.color);
+    } else {
+      // Semantic color - remove inline style, let CSS handle it
+      this.style.removeProperty('--progress-color');
     }
   }
 

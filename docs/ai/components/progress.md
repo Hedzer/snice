@@ -10,7 +10,7 @@ max: number = 100;
 variant: 'linear'|'circular' = 'linear';
 indeterminate: boolean = false;
 size: 'small'|'medium'|'large'|'xl'|'xxl'|'xxxl' = 'medium';
-color: 'primary'|'success'|'warning'|'error'|'info' = 'primary';
+color: 'primary'|'success'|'warning'|'error'|'info'|string = 'primary';  // semantic or any CSS color
 showLabel: boolean = false;
 label: string = '';
 striped: boolean = false;
@@ -54,7 +54,10 @@ thickness: number = 4;  // Stroke width for circular variant
 <!-- Color variants -->
 <snice-progress value="80" color="primary"></snice-progress>
 <snice-progress value="80" color="success"></snice-progress>
-<snice-progress value="80" color="warning"></snice-progress>
+
+<!-- Custom colors -->
+<snice-progress value="80" color="#3b82f6"></snice-progress>
+<snice-progress value="80" color="rgb(59, 130, 246)"></snice-progress>
 
 <!-- Sizes -->
 <snice-progress value="50" size="small"></snice-progress>

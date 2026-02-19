@@ -104,4 +104,43 @@ describe('snice-progress', () => {
     expect(eventDetail.value).toBe(80);
     expect(eventDetail.percentage).toBe(80);
   });
+
+  it('should support semantic color values', async () => {
+    progress = await createComponent<SniceProgressElement>('snice-progress', { color: 'success' });
+
+    // Semantic colors should not set inline --progress-color
+    expect((progress as HTMLElement).style.getPropertyValue('--progress-color')).toBe('');
+    expect(progress.color).toBe('success');
+  });
+
+  it('should support custom hex color values', async () => {
+    progress = await createComponent<SniceProgressElement>('snice-progress', { color: '#ff5500' });
+
+    // Custom colors should set inline --progress-color
+    expect((progress as HTMLElement).style.getPropertyValue('--progress-color')).toBe('#ff5500');
+  });
+
+  it('should support custom rgb color values', async () => {
+    progress = await createComponent<SniceProgressElement>('snice-progress', { color: 'rgb(255, 85, 0)' });
+
+    expect((progress as HTMLElement).style.getPropertyValue('--progress-color')).toBe('rgb(255, 85, 0)');
+  });
+
+  it('should switch between semantic and custom colors', async () => {
+    progress = await createComponent<SniceProgressElement>('snice-progress', { color: '#ff5500' });
+    const tracker = trackRenders(progress as HTMLElement);
+
+    // Start with custom color
+    expect((progress as HTMLElement).style.getPropertyValue('--progress-color')).toBe('#ff5500');
+
+    // Switch to semantic color
+    progress.color = 'primary';
+    await tracker.next();
+    expect((progress as HTMLElement).style.getPropertyValue('--progress-color')).toBe('');
+
+    // Switch back to custom color
+    progress.color = '#00ff00';
+    await tracker.next();
+    expect((progress as HTMLElement).style.getPropertyValue('--progress-color')).toBe('#00ff00');
+  });
 });
