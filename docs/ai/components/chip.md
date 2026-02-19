@@ -17,8 +17,8 @@ avatar: string = '';
 
 ## Events
 
-- `click` - Chip clicked
-- `remove` - Remove button clicked
+- `chip-click` - Chip clicked. Detail: `{ label, selected }`
+- `chip-remove` - Remove button clicked. Detail: `{ label }`
 
 ## Usage
 
@@ -60,8 +60,8 @@ avatar: string = '';
 <snice-chip id="chip" label="Click me" removable></snice-chip>
 <script>
 const chip = document.querySelector('#chip');
-chip.addEventListener('click', () => console.log('Clicked'));
-chip.addEventListener('remove', () => chip.remove());
+chip.addEventListener('chip-click', (e) => console.log('Clicked', e.detail));
+chip.addEventListener('chip-remove', () => chip.remove());
 </script>
 ```
 

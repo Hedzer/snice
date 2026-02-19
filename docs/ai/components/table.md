@@ -8,7 +8,7 @@ Data table with Excel-like formatting, sorting, pagination, and 15 column types.
 size: 'small'|'medium'|'large' = 'medium';
 variant: 'default'|'striped'|'bordered' = 'default';
 striped: boolean = false;
-hoverable: boolean = false;
+hoverable: boolean = true;
 bordered: boolean = false;
 stickyHeader: boolean = false;
 sortable: boolean = false;
@@ -17,7 +17,7 @@ clickable: boolean = false;
 loading: boolean = false;
 data: any[] = [];
 columns: ColumnDefinition[] = [];
-showSearch: boolean = false;
+searchable: boolean = false;
 showPagination: boolean = false;
 pageSize: number = 10;
 currentPage: number = 1;
@@ -32,10 +32,9 @@ totalItems: number = 0;
 - `goToPage(page)` - Navigate pagination
 
 **Events:**
-- `row-click` - {row, index}
-- `row-select` - {row, selected}
-- `sort` - {column, direction}
-- `page-change` - {page, pageSize}
+- `row-clicked` - {rowData, rowIndex}
+- `table-row-selection-changed` - {selectedRows, rowIndex, selected}
+- `table-select-all-changed` - {selectedRows, allSelected}
 
 ## Column Types
 
@@ -130,8 +129,8 @@ table.data = [
 <!-- With sorting and selection -->
 <snice-table sortable selectable></snice-table>
 
-<!-- With pagination and search -->
-<snice-table show-pagination show-search page-size="20"></snice-table>
+<!-- With search -->
+<snice-table searchable></snice-table>
 
 <!-- Sticky header -->
 <snice-table sticky-header></snice-table>
@@ -195,16 +194,12 @@ table.columns = [
 
 <!-- Event handling -->
 <script>
-table.addEventListener('row-click', (e) => {
-  console.log('Clicked row:', e.detail.row);
+table.addEventListener('row-clicked', (e) => {
+  console.log('Clicked row:', e.detail.rowData);
 });
 
-table.addEventListener('row-select', (e) => {
-  console.log('Selected:', e.detail.selected);
-});
-
-table.addEventListener('sort', (e) => {
-  console.log('Sort by:', e.detail.column, e.detail.direction);
+table.addEventListener('table-row-selection-changed', (e) => {
+  console.log('Selected rows:', e.detail.selectedRows);
 });
 </script>
 ```

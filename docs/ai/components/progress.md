@@ -9,13 +9,23 @@ value: number = 0;
 max: number = 100;
 variant: 'linear'|'circular' = 'linear';
 indeterminate: boolean = false;
-size: 'small'|'medium'|'large' = 'medium';
-color: string = '';
+size: 'small'|'medium'|'large'|'xl'|'xxl'|'xxxl' = 'medium';
+color: 'primary'|'success'|'warning'|'error'|'info' = 'primary';
 showLabel: boolean = false;
 label: string = '';
 striped: boolean = false;
 animated: boolean = false;
+thickness: number = 4;  // Stroke width for circular variant
 ```
+
+## Methods
+
+- `setProgress(value, max?)` - Set progress value
+- `getPercentage()` - Get calculated percentage
+
+## Events
+
+- `progress-change` - {value, max, percentage, indeterminate}
 
 ## Usage
 

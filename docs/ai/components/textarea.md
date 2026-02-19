@@ -24,6 +24,7 @@ maxlength: number = -1;
 autocomplete: string = '';
 name: string = '';
 autoGrow: boolean = false;
+loading: boolean = false;
 ```
 
 ## Methods
@@ -34,10 +35,10 @@ autoGrow: boolean = false;
 
 ## Events
 
-- `input` - {value, textarea}
-- `change` - {value, textarea}
-- `focus` - {textarea}
-- `blur` - {textarea}
+- `textarea-input` - {value, textarea}
+- `textarea-change` - {value, textarea}
+- `textarea-focus` - {textarea}
+- `textarea-blur` - {textarea}
 
 ## Usage
 
