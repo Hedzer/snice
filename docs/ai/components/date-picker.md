@@ -6,18 +6,23 @@ Calendar-based date input with format options and validation.
 
 ```typescript
 value: string = '';
-format: 'YYYY-MM-DD'|'DD/MM/YYYY'|'MM/DD/YYYY'|'DD.MM.YYYY'|'YYYY/MM/DD'|'DD-MM-YYYY'|'MM-DD-YYYY' = 'YYYY-MM-DD';
+format: 'yyyy-mm-dd'|'mm/dd/yyyy'|'dd/mm/yyyy'|'yyyy/mm/dd'|'dd-mm-yyyy'|'mm-dd-yyyy'|'mmmm dd, yyyy' = 'mm/dd/yyyy';
+variant: 'outlined'|'filled'|'underlined' = 'outlined';
 placeholder: string = '';
 disabled: boolean = false;
 required: boolean = false;
 invalid: boolean = false;
 readonly: boolean = false;
-clearable: boolean = true;
-minDate: string = '';
-maxDate: string = '';
+clearable: boolean = false;
+loading: boolean = false;
+min: string = '';              // Min date (ISO format)
+max: string = '';              // Max date (ISO format)
 size: 'small'|'medium'|'large' = 'medium';
 name: string = '';
 label: string = '';
+helperText: string = '';
+errorText: string = '';
+firstDayOfWeek: number = 0;    // 0=Sun, 1=Mon, etc.
 ```
 
 ## Methods
@@ -25,12 +30,20 @@ label: string = '';
 - `focus()` - Focus input
 - `blur()` - Blur input
 - `clear()` - Clear value
-- `showCalendar()` - Open calendar
-- `hideCalendar()` - Close calendar
+- `open()` - Open calendar
+- `close()` - Close calendar
+- `selectDate(date: Date)` - Programmatically select a date
+- `goToMonth(year, month)` - Navigate to specific month
+- `goToToday()` - Navigate to and select today
 
 ## Events
 
-- `change` - {value, datePicker}
+- `datepicker-change` - {value, date, formatted, iso, datePicker}
+- `datepicker-input` - {value, datePicker}
+- `datepicker-open` - {datePicker}
+- `datepicker-close` - {datePicker}
+- `datepicker-clear` - {datePicker}
+- `datepicker-select` - {date, formatted, iso, datePicker}
 
 ## Usage
 
@@ -39,10 +52,10 @@ label: string = '';
 <snice-date-picker label="Select date"></snice-date-picker>
 
 <!-- With format -->
-<snice-date-picker format="DD/MM/YYYY"></snice-date-picker>
+<snice-date-picker format="dd/mm/yyyy"></snice-date-picker>
 
 <!-- With min/max -->
-<snice-date-picker min-date="2024-01-01" max-date="2024-12-31"></snice-date-picker>
+<snice-date-picker min="2024-01-01" max="2024-12-31"></snice-date-picker>
 
 <!-- Clearable -->
 <snice-date-picker value="2024-03-15" clearable></snice-date-picker>
@@ -57,7 +70,7 @@ label: string = '';
 <!-- Event handling -->
 <snice-date-picker id="dp"></snice-date-picker>
 <script>
-document.querySelector('#dp').addEventListener('change', (e) => {
+document.querySelector('#dp').addEventListener('datepicker-change', (e) => {
   console.log('Date:', e.detail.value);
 });
 </script>
@@ -70,6 +83,6 @@ document.querySelector('#dp').addEventListener('change', (e) => {
 - 7 date format options
 - Min/max date validation
 - Clearable with X button
-- 3 sizes
+- 3 sizes, 3 variants
 - Keyboard accessible
 - Invalid state styling

@@ -22,6 +22,7 @@ name: string = '';
 showValue: boolean = false;
 showTicks: boolean = false;
 vertical: boolean = false;
+loading: boolean = false;
 ```
 
 ## Methods
@@ -31,8 +32,8 @@ vertical: boolean = false;
 
 ## Events
 
-- `input` - {value, slider} - During drag
-- `change` - {value, slider} - After drag complete
+- `slider-input` - {value, slider} - During drag
+- `slider-change` - {value, slider} - After drag complete
 
 ## Usage
 

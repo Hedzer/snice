@@ -20,7 +20,7 @@ strictPositioning: boolean = false;   // Disable auto-repositioning
 
 ## Positions
 
-**Main (13 total):**
+**12 positions:**
 - `top`, `bottom`, `left`, `right`
 - `top-start`, `top-end`
 - `bottom-start`, `bottom-end`
@@ -84,7 +84,7 @@ updatePosition()  // Recalculate position
 
 - Portal rendering (appends to body)
 - Smart viewport detection & auto-repositioning
-- 13 position options with alignment
+- 12 position options with alignment
 - 4 trigger modes
 - Show/hide delays
 - Arrow indicator

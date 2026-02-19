@@ -15,6 +15,7 @@ value: string = 'on';           // Form field value when checked
 label: string = '';             // Label text
 labelOn: string = '';           // Label shown when on
 labelOff: string = '';          // Label shown when off
+loading: boolean = false;        // Loading state (shows spinner)
 ```
 
 ## Methods

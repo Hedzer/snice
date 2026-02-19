@@ -30,8 +30,8 @@ files: FileList | null;
 
 ## Events
 
-- `change` - {files, fileUpload}
-- `error` - {message, fileUpload}
+- `file-upload-change` - {files, fileUpload}
+- `file-upload-error` - {message, fileUpload}
 
 ## Usage
 
