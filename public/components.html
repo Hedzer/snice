@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script>if ('scrollRestoration' in history) history.scrollRestoration = 'manual';</script>
   <title>Components - Snice</title>
   <meta name="description" content="TypeScript web components with separation of concerns">
   <link rel="stylesheet" href="theme/theme.css">
@@ -17,7 +16,7 @@
       <nav>
         <a href="decorators.html">Decorators</a>
         <a href="components.html" class="active">Components</a>
-        <a href="https://gitlab.com/Hedzer/snice">Source</a>
+        <a href="https://gitlab.com/Hedzer/snice">GitLab</a>
         <button class="theme-btn" onclick="document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark')" title="Toggle theme">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
         </button>
@@ -243,63 +242,10 @@
           <p style="margin:0;color:var(--snice-color-text-secondary);font-size:0.875rem">Cards with shadow appear to float above the surface.</p>
           <div slot="footer"><snice-button variant="primary" size="small">Action</snice-button></div>
         </snice-card>
-        <snice-card variant="bordered">
-          <h4 slot="header">Bordered Card</h4>
-          <p style="margin:0;color:var(--snice-color-text-secondary);font-size:0.875rem">Bordered cards have a visible border for clean layouts.</p>
+        <snice-card variant="outlined">
+          <h4 slot="header">Outlined Card</h4>
+          <p style="margin:0;color:var(--snice-color-text-secondary);font-size:0.875rem">Outlined cards have a subtle border.</p>
           <div slot="footer"><snice-button variant="default" size="small" outline>Learn More</snice-button></div>
-        </snice-card>
-        <snice-card variant="flat">
-          <h4 slot="header">Flat Card</h4>
-          <p style="margin:0;color:var(--snice-color-text-secondary);font-size:0.875rem">Flat cards have a subtle background for minimal designs.</p>
-          <div slot="footer"><snice-button variant="text" size="small">View Details</snice-button></div>
-        </snice-card>
-      </div>
-      <p class="comp-desc" style="margin-top:1.5rem">Clickable & interactive cards</p>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem">
-        <snice-card variant="elevated" clickable>
-          <h4 style="margin:0 0 0.5rem">Clickable Card</h4>
-          <p style="margin:0;color:var(--snice-color-text-secondary);font-size:0.875rem">Click to select. Lifts on hover.</p>
-        </snice-card>
-        <snice-card variant="bordered" clickable selected>
-          <h4 style="margin:0 0 0.5rem">Selected Card</h4>
-          <p style="margin:0;color:var(--snice-color-text-secondary);font-size:0.875rem">Pre-selected state.</p>
-        </snice-card>
-        <snice-card variant="flat" clickable disabled>
-          <h4 style="margin:0 0 0.5rem">Disabled Card</h4>
-          <p style="margin:0;color:var(--snice-color-text-secondary);font-size:0.875rem">Cannot be clicked.</p>
-        </snice-card>
-      </div>
-      <p class="comp-desc" style="margin-top:1.5rem">Dashboard widgets</p>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem">
-        <snice-card variant="flat">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <div>
-              <p style="margin:0;color:var(--snice-color-text-secondary);font-size:0.8rem">Revenue</p>
-              <p style="margin:4px 0 0;font-size:1.5rem;font-weight:600">$45,231</p>
-              <p style="margin:4px 0 0;color:var(--snice-color-success);font-size:0.8rem">+12%</p>
-            </div>
-            <span style="font-size:2rem">💰</span>
-          </div>
-        </snice-card>
-        <snice-card variant="flat">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <div>
-              <p style="margin:0;color:var(--snice-color-text-secondary);font-size:0.8rem">Users</p>
-              <p style="margin:4px 0 0;font-size:1.5rem;font-weight:600">2,847</p>
-              <p style="margin:4px 0 0;color:var(--snice-color-success);font-size:0.8rem">+8%</p>
-            </div>
-            <span style="font-size:2rem">👥</span>
-          </div>
-        </snice-card>
-        <snice-card variant="flat">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <div>
-              <p style="margin:0;color:var(--snice-color-text-secondary);font-size:0.8rem">Conversion</p>
-              <p style="margin:4px 0 0;font-size:1.5rem;font-weight:600">3.2%</p>
-              <p style="margin:4px 0 0;color:var(--snice-color-danger);font-size:0.8rem">-2%</p>
-            </div>
-            <span style="font-size:2rem">📊</span>
-          </div>
         </snice-card>
       </div>
     </div>
@@ -929,8 +875,8 @@ class MyComponent extends HTMLElement {
 
   <footer>
     <div class="wrap">
-      <span>Snice v4.3.1 · MIT</span>
-      <span><a href="https://www.npmjs.com/package/snice">npm</a> · <a href="https://gitlab.com/Hedzer/snice">Source</a></span>
+      <span>Snice v4.4.0 · MIT</span>
+      <span><a href="https://www.npmjs.com/package/snice">npm</a> · <a href="https://gitlab.com/Hedzer/snice">GitLab</a></span>
     </div>
   </footer>
   <script src="components/snice-button.min.js"></script>

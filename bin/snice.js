@@ -40,6 +40,8 @@ if (command === 'create-app') {
 } else if (command === 'mcp') {
   // Start MCP server
   import('./mcp-server.js');
+} else if (command === 'validate') {
+  validateProject();
 } else if (command === 'build-component') {
   // Parse arguments - separate flags from positional arguments
   const flags = {};
@@ -80,6 +82,7 @@ Usage:
   snice create-app [options] <project-name>
   snice create-app [options] .                          Initialize in current directory
   snice build-component <component-name> [options]      Build standalone component
+  snice validate                                        Check project for common issues
   snice mcp                                             Start MCP server for AI assistants
 
 Create App Options:
@@ -289,6 +292,53 @@ export default createStandaloneBuild('${componentName}', {
     if (existsSync(tempConfigPath)) {
       const { unlinkSync } = await import('fs');
       unlinkSync(tempConfigPath);
+    }
+  }
+}
+
+function validateProject() {
+  console.log('\n🔍 Validating project...\n');
+
+  const warnings = [];
+  const controllersDir = join(process.cwd(), 'controllers');
+
+  if (existsSync(controllersDir)) {
+    const files = readdirSync(controllersDir, { recursive: true });
+
+    for (const file of files) {
+      if (typeof file === 'string' && file.endsWith('.ts')) {
+        const filePath = join(controllersDir, file);
+        const content = readFileSync(filePath, 'utf8');
+
+        // Check for imports from component files (not .types.ts)
+        const importRegex = /from\s+['"].*\/components\/[^'"]+\/snice-[^'"]+(?<!\.types)['"];?/g;
+        const matches = content.match(importRegex);
+
+        if (matches) {
+          for (const match of matches) {
+            // Skip if it's actually a .types import
+            if (!match.includes('.types')) {
+              warnings.push({
+                file: filePath,
+                message: `Controller imports from component file instead of .types.ts`,
+                match: match.trim()
+              });
+            }
+          }
+        }
+      }
+    }
+  }
+
+  if (warnings.length === 0) {
+    console.log('✅ No issues found.\n');
+  } else {
+    console.log(`⚠️  Found ${warnings.length} warning(s):\n`);
+    for (const warning of warnings) {
+      console.log(`  ${warning.file}`);
+      console.log(`    ${warning.message}`);
+      console.log(`    ${warning.match}`);
+      console.log(`    → Use .types.ts imports to avoid circular dependencies\n`);
     }
   }
 }

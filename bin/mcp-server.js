@@ -446,6 +446,22 @@ ${withStyles ? `
         });
       }
 
+      // Check for controller importing from component file instead of .types.ts
+      if (/@controller\s*\(/.test(code) || /class\s+\w+Controller/.test(code)) {
+        const importMatches = code.match(/from\s+['"].*\/components\/[^'"]+\/snice-[^'"]+(?<!\.types)['"]/g);
+        if (importMatches) {
+          for (const match of importMatches) {
+            if (!match.includes('.types')) {
+              issues.push({
+                severity: 'warning',
+                message: `Controller imports from component file instead of .types.ts: ${match}`,
+                fix: 'Import types from .types.ts to avoid circular dependencies. E.g., import type { ... } from "./snice-comp.types"'
+              });
+            }
+          }
+        }
+      }
+
       if (issues.length === 0) {
         return { content: [{ type: 'text', text: '✓ No issues found. Code looks good!' }] };
       }

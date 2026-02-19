@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script>if ('scrollRestoration' in history) history.scrollRestoration = 'manual';</script>
   <title>Home - Snice</title>
   <meta name="description" content="TypeScript web components with separation of concerns">
   <link rel="stylesheet" href="theme/theme.css">
@@ -17,7 +16,7 @@
       <nav>
         <a href="decorators.html">Decorators</a>
         <a href="components.html">Components</a>
-        <a href="https://gitlab.com/Hedzer/snice">Source</a>
+        <a href="https://gitlab.com/Hedzer/snice">GitLab</a>
         <button class="theme-btn" onclick="document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark')" title="Toggle theme">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
         </button>
@@ -37,62 +36,22 @@
         </div>
       </div>
       <div class="hero-code">
-        <div class="code-tabs">
-          <button class="code-tab active" data-tab="declarative">Declarative</button>
-          <button class="code-tab" data-tab="imperative">Imperative</button>
-        </div>
-        <pre class="code-panel active" data-panel="declarative"><code><span class="d">@element</span><span class="p">(</span><span class="s">'user-card'</span><span class="p">)</span>
-<span class="k">class</span> <span class="t">UserCard</span> <span class="k">extends</span> <span class="t">HTMLElement</span> <span class="p">{</span>
-  <span class="d">@property</span><span class="p">()</span> name <span class="p">=</span> <span class="s">''</span><span class="p">;</span>
-  <span class="d">@property</span><span class="p">()</span> role <span class="p">=</span> <span class="s">''</span><span class="p">;</span>
+        <pre><code><span class="d">@element</span>(<span class="s">'user-card'</span>)
+<span class="k">class</span> <span class="t">UserCard</span> <span class="k">extends</span> HTMLElement {
+  <span class="d">@property</span>() name = <span class="s">''</span>;
+  <span class="d">@property</span>() role = <span class="s">''</span>;
 
-  <span class="d">@render</span><span class="p">()</span>
-  <span class="f">template</span><span class="p">()</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="f">html</span><span class="s">`
-      <span class="h">&lt;div</span> <span class="a">class</span>=<span class="s">"card"</span><span class="h">&gt;</span>
-        <span class="h">&lt;h3&gt;</span><span class="i">${</span><span class="v">this</span>.name<span class="i">}</span><span class="h">&lt;/h3&gt;</span>
-        <span class="h">&lt;span&gt;</span><span class="i">${</span><span class="v">this</span>.role<span class="i">}</span><span class="h">&lt;/span&gt;</span>
-      <span class="h">&lt;/div&gt;</span>
-    `</span><span class="p">;</span>
-  <span class="p">}</span>
-<span class="p">}</span>
-<span class="c">// Reactive: auto-renders on property change</span></code></pre>
-        <pre class="code-panel" data-panel="imperative"><code><span class="d">@element</span><span class="p">(</span><span class="s">'user-card'</span><span class="p">)</span>
-<span class="k">class</span> <span class="t">UserCard</span> <span class="k">extends</span> <span class="t">HTMLElement</span> <span class="p">{</span>
-  <span class="d">@property</span><span class="p">()</span> name <span class="p">=</span> <span class="s">''</span><span class="p">;</span>
-  <span class="d">@property</span><span class="p">()</span> role <span class="p">=</span> <span class="s">''</span><span class="p">;</span>
-
-  <span class="d">@query</span><span class="p">(</span><span class="s">'.name'</span><span class="p">)</span> $name<span class="p">!:</span> <span class="t">HTMLElement</span><span class="p">;</span>
-  <span class="d">@query</span><span class="p">(</span><span class="s">'.role'</span><span class="p">)</span> $role<span class="p">!:</span> <span class="t">HTMLElement</span><span class="p">;</span>
-
-  <span class="d">@render</span><span class="p">({</span> once<span class="p">:</span> <span class="k">true</span> <span class="p">})</span>
-  <span class="f">template</span><span class="p">()</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="f">html</span><span class="s">`
-      <span class="h">&lt;div</span> <span class="a">class</span>=<span class="s">"card"</span><span class="h">&gt;</span>
-        <span class="h">&lt;h3</span> <span class="a">class</span>=<span class="s">"name"</span><span class="h">&gt;</span><span class="i">${</span><span class="v">this</span>.name<span class="i">}</span><span class="h">&lt;/h3&gt;</span>
-        <span class="h">&lt;span</span> <span class="a">class</span>=<span class="s">"role"</span><span class="h">&gt;</span><span class="i">${</span><span class="v">this</span>.role<span class="i">}</span><span class="h">&lt;/span&gt;</span>
-      <span class="h">&lt;/div&gt;</span>
-    `</span><span class="p">;</span>
-  <span class="p">}</span>
-
-  <span class="d">@watch</span><span class="p">(</span><span class="s">'name'</span><span class="p">,</span> <span class="s">'role'</span><span class="p">)</span>
-  <span class="f">update</span><span class="p">()</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(!</span><span class="v">this</span>.$name<span class="p">)</span> <span class="k">return</span><span class="p">;</span>
-    <span class="v">this</span>.$name.textContent <span class="p">=</span> <span class="v">this</span>.name<span class="p">;</span>
-    <span class="v">this</span>.$role.textContent <span class="p">=</span> <span class="v">this</span>.role<span class="p">;</span>
-  <span class="p">}</span>
-<span class="p">}</span>
-<span class="c">// Direct DOM: you control updates</span></code></pre>
-        <script>
-          document.querySelectorAll('.code-tab').forEach(tab => {
-            tab.onclick = () => {
-              document.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
-              document.querySelectorAll('.code-panel').forEach(p => p.classList.remove('active'));
-              tab.classList.add('active');
-              document.querySelector(`[data-panel="${tab.dataset.tab}"]`).classList.add('active');
-            };
-          });
-        </script>
+  <span class="d">@render</span>()
+  <span class="f">template</span>() {
+    <span class="k">return</span> html`
+      &lt;div class="card"&gt;
+        &lt;h3&gt;${this.name}&lt;/h3&gt;
+        &lt;span&gt;${this.role}&lt;/span&gt;
+      &lt;/div&gt;
+    `;
+  }
+}
+<span class="c">// &lt;user-card name="Alice" role="Engineer"&gt;</span></code></pre>
       </div>
     </section>
 
@@ -102,12 +61,49 @@
       <div class="pitch-item"><strong>Controllers</strong><span>Swap behavior at runtime</span></div>
       <div class="pitch-item"><strong>Context</strong><span>Global state, one place</span></div>
     </div>
+
+    <section class="templates-section">
+      <h3>Quick Start</h3>
+      <div class="templates-grid">
+        <div class="template-card">
+          <h4>Base Template</h4>
+          <p>Minimal starter with counter example</p>
+          <div class="install">
+            <code>npx snice create-app my-app</code>
+            <button onclick="navigator.clipboard.writeText('npx snice create-app my-app')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="template-card">
+          <h4>PWA Template</h4>
+          <p>Auth, middleware, live notifications</p>
+          <div class="install">
+            <code>npx snice create-app my-app --template=pwa</code>
+            <button onclick="navigator.clipboard.writeText('npx snice create-app my-app --template=pwa')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mcp-section">
+      <h3>AI-Assisted Development</h3>
+      <p>Use the snice MCP server with Claude Code for intelligent component scaffolding and documentation lookup.</p>
+      <div class="install">
+        <code>claude mcp add snice -- npx snice mcp</code>
+        <button onclick="navigator.clipboard.writeText('claude mcp add snice -- npx snice mcp')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        </button>
+      </div>
+    </section>
   </main>
 
   <footer>
     <div class="wrap">
-      <span>Snice v4.3.1 · MIT</span>
-      <span><a href="https://www.npmjs.com/package/snice">npm</a> · <a href="https://gitlab.com/Hedzer/snice">Source</a></span>
+      <span>Snice v4.4.0 · MIT</span>
+      <span><a href="https://www.npmjs.com/package/snice">npm</a> · <a href="https://gitlab.com/Hedzer/snice">GitLab</a></span>
     </div>
   </footer>
 </body>

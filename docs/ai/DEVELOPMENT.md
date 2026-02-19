@@ -42,9 +42,9 @@ npm run test:watch              # Watch mode
 
 ```
 components/my-comp/
-  snice-my-comp.ts              # Component
+  snice-my-comp.ts              # Component class
+  snice-my-comp.types.ts        # Interfaces & types (importable by controllers)
   snice-my-comp.css             # Styles
-  demo.html                     # Demo
 
 adapters/react/
   wrapper.tsx                   # Adapter core
@@ -166,13 +166,15 @@ snice build-component button
 
 ## Component Template
 
+**Component file** (`snice-my-comp.ts`):
 ```typescript
 import { element, property, render, styles } from 'snice';
 import { html, css } from 'snice';
 import componentStyles from './snice-my-comp.css?inline';
+import type { SniceMyCompElement } from './snice-my-comp.types';
 
 @element('snice-my-comp')
-export class SniceMyComp extends HTMLElement {
+export class SniceMyComp extends HTMLElement implements SniceMyCompElement {
   @property() variant = 'default';
   @property() size = 'medium';
 
@@ -184,6 +186,30 @@ export class SniceMyComp extends HTMLElement {
   @styles()
   componentStyles() {
     return css`${componentStyles}`;
+  }
+}
+```
+
+**Types file** (`snice-my-comp.types.ts`):
+```typescript
+export interface SniceMyCompElement extends HTMLElement {
+  variant: 'default' | 'primary' | 'secondary';
+  size: 'small' | 'medium' | 'large';
+}
+
+export interface SniceMyCompEventMap {
+  'my-event': CustomEvent<{ value: string }>;
+}
+```
+
+**Why separate types:** Controllers can import types without importing the component, avoiding circular dependencies. Components import and register themselves; types are pure interfaces.
+
+**VS Code file nesting:** Add to `.vscode/settings.json` or `.devcontainer/devcontainer.json`:
+```json
+{
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "*.ts": "${capture}.types.ts, ${capture}.css"
   }
 }
 ```
