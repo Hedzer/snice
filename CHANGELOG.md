@@ -1,3 +1,10 @@
+# [4.5.0](https://gitlab.com/Hedzer/snice/compare/v4.4.0...v4.5.0) (2026-02-19)
+
+
+### Features
+
+* add validation for component type imports ([a70232d](https://gitlab.com/Hedzer/snice/commit/a70232dfac05689b2de3a9c75927cf2cd515933b))
+
 # [4.4.0](https://gitlab.com/Hedzer/snice/compare/v4.3.0...v4.4.0) (2026-02-19)
 
 
