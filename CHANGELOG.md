@@ -1,3 +1,21 @@
+# [4.4.0](https://gitlab.com/Hedzer/snice/compare/v4.3.0...v4.4.0) (2026-02-19)
+
+
+### Bug Fixes
+
+* add text outline to avatar initials for contrast ([0a8622c](https://gitlab.com/Hedzer/snice/commit/0a8622c955a1f7174df37743f0835afb1b3734d5))
+* warn instead of error on duplicate element registration ([dc8b75b](https://gitlab.com/Hedzer/snice/commit/dc8b75b2ba8007991898bcda3171309c456a20c7))
+
+
+### Features
+
+* add Cloudflare Workers deployment for snice.dev ([db5deab](https://gitlab.com/Hedzer/snice/commit/db5deabca9c6444878958f6482d1c5f25057d8bf))
+* add MCP server and templates section to website ([011e701](https://gitlab.com/Hedzer/snice/commit/011e701cf613a1ab76adc15c4bbb82fe42e0b5a3))
+* add renderIcon utility with auto-detection and scheme overrides ([b3e29c3](https://gitlab.com/Hedzer/snice/commit/b3e29c33c4590759d1994e2b981c4724f45daa8c))
+* progress color accepts semantic names and custom CSS colors ([f066671](https://gitlab.com/Hedzer/snice/commit/f0666711e67d58bcb20e6a63eccdb5d3ef704d10))
+* support @@ escape syntax for namespaced events ([70314dd](https://gitlab.com/Hedzer/snice/commit/70314dd1bec4d0278107f4dec3d1484fe56b084b))
+* website improvements and release automation ([ba1bf2a](https://gitlab.com/Hedzer/snice/commit/ba1bf2a0533d7f96d5b23c63cde30dc79d29c0fc))
+
 # [4.3.0](https://gitlab.com/Hedzer/snice/compare/v4.2.0...v4.3.0) (2026-02-12)
 
 
