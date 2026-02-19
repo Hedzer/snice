@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>if ('scrollRestoration' in history) history.scrollRestoration = 'manual';</script>
   <title>Decorators & Patterns - Snice</title>
   <meta name="description" content="TypeScript web components with separation of concerns">
   <link rel="stylesheet" href="theme/theme.css">
@@ -16,7 +17,7 @@
       <nav>
         <a href="decorators.html" class="active">Decorators</a>
         <a href="components.html">Components</a>
-        <a href="https://gitlab.com/Hedzer/snice">GitLab</a>
+        <a href="https://gitlab.com/Hedzer/snice">Source</a>
         <button class="theme-btn" onclick="document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark')" title="Toggle theme">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
         </button>
@@ -32,16 +33,16 @@
     <div class="dec-section">
       <h3><code>@element</code></h3>
       <p class="desc">Register a custom element. Extends HTMLElement with reactive properties and lifecycle.</p>
-      <pre><code><span class="d">@element</span>(<span class="s">'my-card'</span>)
-<span class="k">class</span> <span class="t">MyCard</span> <span class="k">extends</span> HTMLElement {
-  <span class="d">@property</span>() title = <span class="s">''</span>;
-  <span class="d">@property</span>({ type: Number }) count = 0;
+      <pre><code><span class="d">@element</span><span class="p">(</span><span class="s">'my-card'</span><span class="p">)</span>
+<span class="k">class</span> <span class="t">MyCard</span> <span class="k">extends</span> <span class="t">HTMLElement</span> <span class="p">{</span>
+  <span class="d">@property</span><span class="p">()</span> title <span class="p">=</span> <span class="s">''</span><span class="p">;</span>
+  <span class="d">@property</span><span class="p">({</span> type<span class="p">:</span> <span class="t">Number</span> <span class="p">})</span> count <span class="p">=</span> <span class="t">0</span><span class="p">;</span>
 
-  <span class="d">@render</span>()
-  <span class="f">template</span>() {
-    <span class="k">return</span> html`&lt;h1&gt;${this.title}&lt;/h1&gt;`;
-  }
-}</code></pre>
+  <span class="d">@render</span><span class="p">()</span>
+  <span class="f">template</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="f">html</span><span class="s">`<span class="h">&lt;h1&gt;</span><span class="i">${</span><span class="v">this</span>.title<span class="i">}</span><span class="h">&lt;/h1&gt;</span>`</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
       <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/elements.md">Full documentation →</a></p>
     </div>
 
@@ -92,89 +93,89 @@
     <div class="dec-section">
       <h3><code>@property</code> & <code>@watch</code></h3>
       <p class="desc">Reactive properties that trigger re-renders. Watch for changes.</p>
-      <pre><code><span class="d">@property</span>() name = <span class="s">''</span>;
-<span class="d">@property</span>({ type: Number }) count = 0;
-<span class="d">@property</span>({ type: Boolean, reflect: <span class="k">true</span> }) active = <span class="k">false</span>;
+      <pre><code><span class="d">@property</span><span class="p">()</span> name <span class="p">=</span> <span class="s">''</span><span class="p">;</span>
+<span class="d">@property</span><span class="p">({</span> type<span class="p">:</span> <span class="t">Number</span> <span class="p">})</span> count <span class="p">=</span> <span class="t">0</span><span class="p">;</span>
+<span class="d">@property</span><span class="p">({</span> type<span class="p">:</span> <span class="t">Boolean</span><span class="p">,</span> reflect<span class="p">:</span> <span class="k">true</span> <span class="p">})</span> active <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
 
-<span class="d">@watch</span>(<span class="s">'count'</span>)
-<span class="f">onCountChange</span>(newVal, oldVal) {
-  console.log(`Count: ${oldVal} → ${newVal}`);
-}</code></pre>
+<span class="d">@watch</span><span class="p">(</span><span class="s">'count'</span><span class="p">)</span>
+<span class="f">onCountChange</span><span class="p">(</span>newVal<span class="p">,</span> oldVal<span class="p">)</span> <span class="p">{</span>
+  console.<span class="f">log</span><span class="p">(</span><span class="s">`Count: <span class="i">${</span>oldVal<span class="i">}</span> → <span class="i">${</span>newVal<span class="i">}</span>`</span><span class="p">);</span>
+<span class="p">}</span></code></pre>
     </div>
 
     <div class="dec-section">
       <h3><code>@render</code> & <code>@styles</code></h3>
       <p class="desc">Template method with differential rendering. Scoped CSS styles.</p>
-      <pre><code><span class="d">@render</span>()
-<span class="f">template</span>() {
-  <span class="k">return</span> html`
-    &lt;div class="card"&gt;
-      &lt;h3&gt;${this.title}&lt;/h3&gt;
-      &lt;if ${this.expanded}&gt;
-        &lt;p&gt;${this.content}&lt;/p&gt;
-      &lt;/if&gt;
-    &lt;/div&gt;
-  `;
-}
+      <pre><code><span class="d">@render</span><span class="p">()</span>
+<span class="f">template</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="f">html</span><span class="s">`
+    <span class="h">&lt;div</span> <span class="a">class</span>=<span class="s">"card"</span><span class="h">&gt;</span>
+      <span class="h">&lt;h3&gt;</span><span class="i">${</span><span class="v">this</span>.title<span class="i">}</span><span class="h">&lt;/h3&gt;</span>
+      <span class="h">&lt;if</span> <span class="i">${</span><span class="v">this</span>.expanded<span class="i">}</span><span class="h">&gt;</span>
+        <span class="h">&lt;p&gt;</span><span class="i">${</span><span class="v">this</span>.content<span class="i">}</span><span class="h">&lt;/p&gt;</span>
+      <span class="h">&lt;/if&gt;</span>
+    <span class="h">&lt;/div&gt;</span>
+  `</span><span class="p">;</span>
+<span class="p">}</span>
 
-<span class="d">@styles</span>()
-<span class="f">componentStyles</span>() {
-  <span class="k">return</span> css`
+<span class="d">@styles</span><span class="p">()</span>
+<span class="f">componentStyles</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="f">css</span><span class="s">`
     :host { display: block; }
     .card { padding: 1rem; border-radius: 8px; }
-  `;
-}</code></pre>
+  `</span><span class="p">;</span>
+<span class="p">}</span></code></pre>
     </div>
 
     <div class="dec-section">
       <h3><code>@ready</code> & <code>@dispose</code></h3>
       <p class="desc">Lifecycle hooks for initialization and cleanup.</p>
-      <pre><code><span class="d">@ready</span>()
-<span class="f">onMount</span>() {
-  this.interval = setInterval(() => this.tick(), 1000);
-  console.log(<span class="s">'Component connected'</span>);
-}
+      <pre><code><span class="d">@ready</span><span class="p">()</span>
+<span class="f">onMount</span><span class="p">()</span> <span class="p">{</span>
+  <span class="v">this</span>.interval <span class="p">=</span> <span class="f">setInterval</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="v">this</span>.<span class="f">tick</span><span class="p">(),</span> <span class="t">1000</span><span class="p">);</span>
+  console.<span class="f">log</span><span class="p">(</span><span class="s">'Component connected'</span><span class="p">);</span>
+<span class="p">}</span>
 
-<span class="d">@dispose</span>()
-<span class="f">cleanup</span>() {
-  clearInterval(this.interval);
-  this.subscription?.unsubscribe();
-}</code></pre>
+<span class="d">@dispose</span><span class="p">()</span>
+<span class="f">cleanup</span><span class="p">()</span> <span class="p">{</span>
+  <span class="f">clearInterval</span><span class="p">(</span><span class="v">this</span>.interval<span class="p">);</span>
+  <span class="v">this</span>.subscription<span class="p">?.</span><span class="f">unsubscribe</span><span class="p">();</span>
+<span class="p">}</span></code></pre>
     </div>
 
     <div class="dec-section">
       <h3><code>@query</code> & <code>@queryAll</code></h3>
       <p class="desc">DOM element references within shadow DOM.</p>
-      <pre><code><span class="d">@query</span>(<span class="s">'input'</span>) inputEl;
-<span class="d">@queryAll</span>(<span class="s">'.item'</span>) items;
+      <pre><code><span class="d">@query</span><span class="p">(</span><span class="s">'input'</span><span class="p">)</span> inputEl<span class="p">;</span>
+<span class="d">@queryAll</span><span class="p">(</span><span class="s">'.item'</span><span class="p">)</span> items<span class="p">;</span>
 
-<span class="d">@ready</span>()
-<span class="f">setup</span>() {
-  this.inputEl.focus();
-  console.log(`Found ${this.items.length} items`);
-}</code></pre>
+<span class="d">@ready</span><span class="p">()</span>
+<span class="f">setup</span><span class="p">()</span> <span class="p">{</span>
+  <span class="v">this</span>.inputEl.<span class="f">focus</span><span class="p">();</span>
+  console.<span class="f">log</span><span class="p">(</span><span class="s">`Found <span class="i">${</span><span class="v">this</span>.items.length<span class="i">}</span> items`</span><span class="p">);</span>
+<span class="p">}</span></code></pre>
     </div>
 
     <div class="dec-section">
       <h3><code>@on</code> & <code>@dispatch</code></h3>
       <p class="desc">Event delegation and custom event emission.</p>
       <pre><code><span class="c">// @on: delegated event listener</span>
-<span class="d">@on</span>(<span class="s">'click'</span>, <span class="s">'button.save'</span>)
-<span class="f">handleSave</span>(e) { this.save(); }
+<span class="d">@on</span><span class="p">(</span><span class="s">'click'</span><span class="p">,</span> <span class="s">'button.save'</span><span class="p">)</span>
+<span class="f">handleSave</span><span class="p">(</span>e<span class="p">)</span> <span class="p">{</span> <span class="v">this</span>.<span class="f">save</span><span class="p">();</span> <span class="p">}</span>
 
 <span class="c">// @dispatch: return value becomes event.detail</span>
-<span class="d">@dispatch</span>(<span class="s">'status-changed'</span>)
-<span class="f">updateStatus</span>(status) {
-  this.status = status;
-  <span class="k">return</span> { status };
-}
+<span class="d">@dispatch</span><span class="p">(</span><span class="s">'status-changed'</span><span class="p">)</span>
+<span class="f">updateStatus</span><span class="p">(</span>status<span class="p">)</span> <span class="p">{</span>
+  <span class="v">this</span>.status <span class="p">=</span> status<span class="p">;</span>
+  <span class="k">return</span> <span class="p">{</span> status <span class="p">};</span>
+<span class="p">}</span>
 
 <span class="c">// Stacked: DOM event triggers custom event</span>
-<span class="d">@on</span>(<span class="s">'click'</span>, <span class="s">'.item'</span>)
-<span class="d">@dispatch</span>(<span class="s">'item-selected'</span>)
-<span class="f">handleItemClick</span>(e) {
-  <span class="k">return</span> { id: e.target.dataset.id };
-}</code></pre>
+<span class="d">@on</span><span class="p">(</span><span class="s">'click'</span><span class="p">,</span> <span class="s">'.item'</span><span class="p">)</span>
+<span class="d">@dispatch</span><span class="p">(</span><span class="s">'item-selected'</span><span class="p">)</span>
+<span class="f">handleItemClick</span><span class="p">(</span>e<span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="p">{</span> id<span class="p">:</span> e.target.dataset.id <span class="p">};</span>
+<span class="p">}</span></code></pre>
       <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/events.md">Full documentation →</a></p>
     </div>
 
@@ -214,25 +215,25 @@
       <h3>Template Syntax</h3>
       <p class="desc">Property binding, conditionals, loops, and event shortcuts.</p>
       <pre><code><span class="c">// Property binding</span>
-html`<span class="h">&lt;input</span> .value=${this.text}<span class="h">&gt;</span>`
+<span class="f">html</span><span class="s">`<span class="h">&lt;input</span> <span class="a">.value</span>=<span class="i">${</span><span class="v">this</span>.text<span class="i">}</span><span class="h">&gt;</span>`</span>
 
 <span class="c">// Conditionals</span>
-html`<span class="h">&lt;if</span> ${this.loading}<span class="h">&gt;&lt;snice-spinner&gt;&lt;/snice-spinner&gt;&lt;/if&gt;</span>`
-html`<span class="h">&lt;if</span> ${this.error}<span class="h">&gt;&lt;span&gt;</span>${this.error}<span class="h">&lt;/span&gt;&lt;/if&gt;</span>`
+<span class="f">html</span><span class="s">`<span class="h">&lt;if</span> <span class="i">${</span><span class="v">this</span>.loading<span class="i">}</span><span class="h">&gt;&lt;snice-spinner&gt;&lt;/snice-spinner&gt;&lt;/if&gt;</span>`</span>
+<span class="f">html</span><span class="s">`<span class="h">&lt;if</span> <span class="i">${</span><span class="v">this</span>.error<span class="i">}</span><span class="h">&gt;&lt;span&gt;</span><span class="i">${</span><span class="v">this</span>.error<span class="i">}</span><span class="h">&lt;/span&gt;&lt;/if&gt;</span>`</span>
 
 <span class="c">// Loops (use .map())</span>
-html`${this.items.map(item =&gt; html`<span class="h">&lt;li</span> key=${item.id}<span class="h">&gt;</span>${item.name}<span class="h">&lt;/li&gt;</span>`)}`
+<span class="f">html</span><span class="s">`<span class="i">${</span><span class="v">this</span>.items.<span class="f">map</span>(item =&gt; <span class="f">html</span>`<span class="h">&lt;li</span> <span class="a">key</span>=<span class="i">${</span>item.id<span class="i">}</span><span class="h">&gt;</span><span class="i">${</span>item.name<span class="i">}</span><span class="h">&lt;/li&gt;</span>`)<span class="i">}</span>`</span>
 
 <span class="c">// Keyboard shortcuts</span>
-html`<span class="h">&lt;input</span> <span class="d">@keydown:ctrl+s</span>=${this.save}<span class="h">&gt;</span>`
-html`<span class="h">&lt;div</span> <span class="d">@keydown:escape</span>=${this.close}<span class="h">&gt;</span>`</code></pre>
+<span class="f">html</span><span class="s">`<span class="h">&lt;input</span> <span class="d">@keydown:ctrl+s</span>=<span class="i">${</span><span class="v">this</span>.save<span class="i">}</span><span class="h">&gt;</span>`</span>
+<span class="f">html</span><span class="s">`<span class="h">&lt;div</span> <span class="d">@keydown:escape</span>=<span class="i">${</span><span class="v">this</span>.close<span class="i">}</span><span class="h">&gt;</span>`</span></code></pre>
     </div>
   </main>
 
   <footer>
     <div class="wrap">
-      <span>Snice v4.2.0 · MIT</span>
-      <span><a href="https://www.npmjs.com/package/snice">npm</a> · <a href="https://gitlab.com/Hedzer/snice">GitLab</a></span>
+      <span>Snice v4.3.1 · MIT</span>
+      <span><a href="https://www.npmjs.com/package/snice">npm</a> · <a href="https://gitlab.com/Hedzer/snice">Source</a></span>
     </div>
   </footer>
 </body>

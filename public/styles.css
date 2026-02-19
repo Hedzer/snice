@@ -72,21 +72,71 @@ header nav a:hover, header nav a.active { color: var(--snice-color-text); }
 .hero-code pre {
   background: var(--snice-color-background-tertiary);
   border: 1px solid var(--snice-color-border);
-  border-radius: 8px;
+  border-radius: 0 0 8px 8px;
   padding: 1.5rem;
   font-size: 0.8rem;
   line-height: 1.7;
   overflow-x: auto;
 }
+.code-tabs {
+  display: flex;
+  gap: 0;
+  border: 1px solid var(--snice-color-border);
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  overflow: hidden;
+  background: var(--snice-color-background-secondary);
+}
+.code-tab {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: none;
+  color: var(--snice-color-text-tertiary);
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-family: inherit;
+  transition: background 0.15s, color 0.15s;
+}
+.code-tab:hover {
+  color: var(--snice-color-text-secondary);
+}
+.code-tab.active {
+  background: var(--snice-color-background-tertiary);
+  color: var(--snice-color-text);
+}
+.code-panel {
+  display: none;
+}
+.code-panel.active {
+  display: block;
+}
 
-/* Syntax highlighting */
-.c { color: hsl(var(--snice-color-gray-500)); }
-.k { color: hsl(300 50% 65%); }
-.s { color: hsl(25 70% 60%); }
-.d { color: hsl(50 80% 70%); }
-.t { color: hsl(170 60% 55%); }
-.f { color: hsl(210 80% 75%); }
-.h { color: hsl(355 70% 65%); }
+/* Syntax highlighting - One Dark theme */
+[data-theme="dark"] .c { color: #5c6370; }  /* comments */
+[data-theme="dark"] .k { color: #c678dd; }  /* keywords */
+[data-theme="dark"] .s { color: #98c379; }  /* strings */
+[data-theme="dark"] .d { color: #e5c07b; }  /* decorators */
+[data-theme="dark"] .t { color: #e5c07b; }  /* types */
+[data-theme="dark"] .f { color: #61afef; }  /* functions */
+[data-theme="dark"] .h { color: #e06c75; }  /* html tags */
+[data-theme="dark"] .v { color: #e06c75; }  /* this/variables */
+[data-theme="dark"] .p { color: #abb2bf; }  /* punctuation */
+[data-theme="dark"] .i { color: #56b6c2; }  /* interpolation */
+[data-theme="dark"] .a { color: #d19a66; }  /* attributes */
+
+/* Syntax highlighting - One Light theme */
+[data-theme="light"] .c { color: #a0a1a7; }  /* comments */
+[data-theme="light"] .k { color: #a626a4; }  /* keywords */
+[data-theme="light"] .s { color: #50a14f; }  /* strings */
+[data-theme="light"] .d { color: #c18401; }  /* decorators */
+[data-theme="light"] .t { color: #c18401; }  /* types */
+[data-theme="light"] .f { color: #4078f2; }  /* functions */
+[data-theme="light"] .h { color: #e45649; }  /* html tags */
+[data-theme="light"] .v { color: #e45649; }  /* this/variables */
+[data-theme="light"] .p { color: #383a42; }  /* punctuation */
+[data-theme="light"] .i { color: #0184bc; }  /* interpolation */
+[data-theme="light"] .a { color: #986801; }  /* attributes */
 
 .pitch {
   display: grid;

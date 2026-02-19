@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>if ('scrollRestoration' in history) history.scrollRestoration = 'manual';</script>
   <title>Components - Snice</title>
   <meta name="description" content="TypeScript web components with separation of concerns">
   <link rel="stylesheet" href="theme/theme.css">
@@ -16,7 +17,7 @@
       <nav>
         <a href="decorators.html">Decorators</a>
         <a href="components.html" class="active">Components</a>
-        <a href="https://gitlab.com/Hedzer/snice">GitLab</a>
+        <a href="https://gitlab.com/Hedzer/snice">Source</a>
         <button class="theme-btn" onclick="document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark')" title="Toggle theme">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
         </button>
@@ -25,7 +26,7 @@
   </header>
   <main class="wrap">
     <div class="page-title">
-      <h2>19 Components</h2>
+      <h2>64 Components</h2>
       <p>Pre-built UI components. Use standalone or with React/Vue/Angular.</p>
     </div>
 
@@ -242,10 +243,63 @@
           <p style="margin:0;color:var(--snice-color-text-secondary);font-size:0.875rem">Cards with shadow appear to float above the surface.</p>
           <div slot="footer"><snice-button variant="primary" size="small">Action</snice-button></div>
         </snice-card>
-        <snice-card variant="outlined">
-          <h4 slot="header">Outlined Card</h4>
-          <p style="margin:0;color:var(--snice-color-text-secondary);font-size:0.875rem">Outlined cards have a subtle border.</p>
+        <snice-card variant="bordered">
+          <h4 slot="header">Bordered Card</h4>
+          <p style="margin:0;color:var(--snice-color-text-secondary);font-size:0.875rem">Bordered cards have a visible border for clean layouts.</p>
           <div slot="footer"><snice-button variant="default" size="small" outline>Learn More</snice-button></div>
+        </snice-card>
+        <snice-card variant="flat">
+          <h4 slot="header">Flat Card</h4>
+          <p style="margin:0;color:var(--snice-color-text-secondary);font-size:0.875rem">Flat cards have a subtle background for minimal designs.</p>
+          <div slot="footer"><snice-button variant="text" size="small">View Details</snice-button></div>
+        </snice-card>
+      </div>
+      <p class="comp-desc" style="margin-top:1.5rem">Clickable & interactive cards</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem">
+        <snice-card variant="elevated" clickable>
+          <h4 style="margin:0 0 0.5rem">Clickable Card</h4>
+          <p style="margin:0;color:var(--snice-color-text-secondary);font-size:0.875rem">Click to select. Lifts on hover.</p>
+        </snice-card>
+        <snice-card variant="bordered" clickable selected>
+          <h4 style="margin:0 0 0.5rem">Selected Card</h4>
+          <p style="margin:0;color:var(--snice-color-text-secondary);font-size:0.875rem">Pre-selected state.</p>
+        </snice-card>
+        <snice-card variant="flat" clickable disabled>
+          <h4 style="margin:0 0 0.5rem">Disabled Card</h4>
+          <p style="margin:0;color:var(--snice-color-text-secondary);font-size:0.875rem">Cannot be clicked.</p>
+        </snice-card>
+      </div>
+      <p class="comp-desc" style="margin-top:1.5rem">Dashboard widgets</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem">
+        <snice-card variant="flat">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <p style="margin:0;color:var(--snice-color-text-secondary);font-size:0.8rem">Revenue</p>
+              <p style="margin:4px 0 0;font-size:1.5rem;font-weight:600">$45,231</p>
+              <p style="margin:4px 0 0;color:var(--snice-color-success);font-size:0.8rem">+12%</p>
+            </div>
+            <span style="font-size:2rem">💰</span>
+          </div>
+        </snice-card>
+        <snice-card variant="flat">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <p style="margin:0;color:var(--snice-color-text-secondary);font-size:0.8rem">Users</p>
+              <p style="margin:4px 0 0;font-size:1.5rem;font-weight:600">2,847</p>
+              <p style="margin:4px 0 0;color:var(--snice-color-success);font-size:0.8rem">+8%</p>
+            </div>
+            <span style="font-size:2rem">👥</span>
+          </div>
+        </snice-card>
+        <snice-card variant="flat">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <p style="margin:0;color:var(--snice-color-text-secondary);font-size:0.8rem">Conversion</p>
+              <p style="margin:4px 0 0;font-size:1.5rem;font-weight:600">3.2%</p>
+              <p style="margin:4px 0 0;color:var(--snice-color-danger);font-size:0.8rem">-2%</p>
+            </div>
+            <span style="font-size:2rem">📊</span>
+          </div>
         </snice-card>
       </div>
     </div>
@@ -804,7 +858,7 @@ class MyComponent extends HTMLElement {
 }</code></pre>
     </div>
 
-    <h3 style="margin-top:2rem">All 19 Components</h3>
+    <h3 style="margin-top:2rem">All 64 Components</h3>
     <div class="comp-list">
       <span class="comp-tag">snice-accordion</span>
       <span class="comp-tag">snice-alert</span>
@@ -825,13 +879,58 @@ class MyComponent extends HTMLElement {
       <span class="comp-tag">snice-code-block</span>
       <span class="comp-tag">snice-color-display</span>
       <span class="comp-tag">snice-color-picker</span>
+      <span class="comp-tag">snice-command-palette</span>
+      <span class="comp-tag">snice-date-picker</span>
+      <span class="comp-tag">snice-divider</span>
+      <span class="comp-tag">snice-doc</span>
+      <span class="comp-tag">snice-draw</span>
+      <span class="comp-tag">snice-drawer</span>
+      <span class="comp-tag">snice-empty-state</span>
+      <span class="comp-tag">snice-file-gallery</span>
+      <span class="comp-tag">snice-file-upload</span>
+      <span class="comp-tag">snice-image</span>
+      <span class="comp-tag">snice-input</span>
+      <span class="comp-tag">snice-kanban</span>
+      <span class="comp-tag">snice-kpi</span>
+      <span class="comp-tag">snice-layout</span>
+      <span class="comp-tag">snice-link</span>
+      <span class="comp-tag">snice-list</span>
+      <span class="comp-tag">snice-location</span>
+      <span class="comp-tag">snice-login</span>
+      <span class="comp-tag">snice-menu</span>
+      <span class="comp-tag">snice-modal</span>
+      <span class="comp-tag">snice-music-player</span>
+      <span class="comp-tag">snice-nav</span>
+      <span class="comp-tag">snice-pagination</span>
+      <span class="comp-tag">snice-progress</span>
+      <span class="comp-tag">snice-qr-code</span>
+      <span class="comp-tag">snice-qr-reader</span>
+      <span class="comp-tag">snice-radio</span>
+      <span class="comp-tag">snice-select</span>
+      <span class="comp-tag">snice-skeleton</span>
+      <span class="comp-tag">snice-slider</span>
+      <span class="comp-tag">snice-sparkline</span>
+      <span class="comp-tag">snice-spinner</span>
+      <span class="comp-tag">snice-split-pane</span>
+      <span class="comp-tag">snice-stepper</span>
+      <span class="comp-tag">snice-switch</span>
+      <span class="comp-tag">snice-table</span>
+      <span class="comp-tag">snice-tabs</span>
+      <span class="comp-tag">snice-terminal</span>
+      <span class="comp-tag">snice-textarea</span>
+      <span class="comp-tag">snice-timeline</span>
+      <span class="comp-tag">snice-timer</span>
+      <span class="comp-tag">snice-toast</span>
+      <span class="comp-tag">snice-tooltip</span>
+      <span class="comp-tag">snice-tree</span>
+      <span class="comp-tag">snice-virtual-scroller</span>
     </div>
   </main>
 
   <footer>
     <div class="wrap">
-      <span>Snice v4.2.0 · MIT</span>
-      <span><a href="https://www.npmjs.com/package/snice">npm</a> · <a href="https://gitlab.com/Hedzer/snice">GitLab</a></span>
+      <span>Snice v4.3.1 · MIT</span>
+      <span><a href="https://www.npmjs.com/package/snice">npm</a> · <a href="https://gitlab.com/Hedzer/snice">Source</a></span>
     </div>
   </footer>
   <script src="components/snice-button.min.js"></script>

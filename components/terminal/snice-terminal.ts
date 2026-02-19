@@ -121,7 +121,6 @@ export class SniceTerminal extends HTMLElement implements SniceTerminalElement {
               @keydown="${(e: KeyboardEvent) => this.handleKeyDown(e)}"
               autocomplete="off"
               spellcheck="false"
-              autofocus
             />
           </div>
         </if>
