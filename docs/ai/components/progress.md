@@ -51,8 +51,10 @@ thickness: number = 4;  // Stroke width for circular variant
 <snice-progress value="70" striped></snice-progress>
 <snice-progress value="70" striped animated></snice-progress>
 
-<!-- Custom color -->
-<snice-progress value="80" color="#3b82f6"></snice-progress>
+<!-- Color variants -->
+<snice-progress value="80" color="primary"></snice-progress>
+<snice-progress value="80" color="success"></snice-progress>
+<snice-progress value="80" color="warning"></snice-progress>
 
 <!-- Sizes -->
 <snice-progress value="50" size="small"></snice-progress>
@@ -77,6 +79,6 @@ setInterval(() => {
 - Indeterminate mode for unknown progress
 - Optional percentage label or custom text
 - Striped and animated styles
-- Custom color
-- 3 sizes
+- 5 color variants
+- 6 sizes
 - Reactive value updates
