@@ -105,8 +105,12 @@ export function Router(options: RouterOptions): RouterInstance {
         delete (this as any)[CONTEXT_HANDLER];
       };
       
-      // Define the custom element
-      customElements.define(pageOptions.tag, constructor);
+      // Define the custom element (skip if already registered)
+      if (customElements.get(pageOptions.tag)) {
+        console.warn(`[snice] Page "${pageOptions.tag}" is already registered. Skipping duplicate registration.`);
+      } else {
+        customElements.define(pageOptions.tag, constructor);
+      }
 
       // Register the routes with guards, layout, and placard
       pageOptions.routes.forEach(route => register(route, pageOptions.tag, pageOptions.transition, pageOptions.guards, pageOptions.layout, pageOptions.placard));

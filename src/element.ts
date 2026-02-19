@@ -468,6 +468,12 @@ export function element(tagName: string, options?: ElementOptions) {
 
     applyElementFunctionality(constructor);
 
+    // Check if element is already registered
+    if (customElements.get(tagName)) {
+      console.warn(`[snice] Element "${tagName}" is already registered. Skipping duplicate registration.`);
+      return constructor;
+    }
+
     customElements.define(tagName, constructor);
     return constructor;
   };
@@ -486,6 +492,13 @@ export function layout(tagName: string) {
     }
 
     applyElementFunctionality(constructor);
+
+    // Check if element is already registered
+    if (customElements.get(tagName)) {
+      console.warn(`[snice] Layout "${tagName}" is already registered. Skipping duplicate registration.`);
+      return constructor;
+    }
+
     customElements.define(tagName, constructor);
     return constructor;
   };
