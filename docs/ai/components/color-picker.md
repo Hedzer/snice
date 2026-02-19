@@ -18,6 +18,7 @@ name: string = '';
 showInput: boolean = true;
 showPresets: boolean = false;
 presets: string[] = [...];
+loading: boolean = false;
 ```
 
 ## Methods
@@ -27,10 +28,10 @@ presets: string[] = [...];
 
 ## Events
 
-- `input` - {value, colorPicker}
-- `change` - {value, colorPicker}
-- `focus` - {colorPicker}
-- `blur` - {colorPicker}
+- `color-picker-input` - {value, colorPicker}
+- `color-picker-change` - {value, colorPicker}
+- `color-picker-focus` - {colorPicker}
+- `color-picker-blur` - {colorPicker}
 
 ## Usage
 

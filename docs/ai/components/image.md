@@ -8,6 +8,9 @@ Flexible image component with variants and lazy loading.
 src: string = '';
 alt: string = '';
 fallback: string = '';
+placeholder: string = '';  // Low-res placeholder shown while loading
+srcset: string = '';       // Responsive srcset attribute
+sizes: string = '';        // Responsive sizes attribute
 variant: 'rounded'|'square'|'circle' = 'rounded';
 size: 'small'|'medium'|'large' = 'medium';
 lazy: boolean = true;

@@ -8,7 +8,7 @@ Loading placeholder with animated shimmer effect.
 variant: 'text'|'circular'|'rectangular'|'rounded' = 'text';
 width: string = '';
 height: string = '';
-animation: 'pulse'|'wave'|'none' = 'pulse';
+animation: 'pulse'|'wave'|'none' = 'wave';
 count: number = 1;
 spacing: string = '8px';
 ```

@@ -16,6 +16,8 @@ QR code scanner using device camera and ZXing WASM decoder.
 - `start()` - Start camera/scanning
 - `stop()` - Stop camera/scanning
 - `snap()` - Take snapshot (manual-snap mode)
+- `scanImage(file: File)` - Scan QR code from image file
+- `switchCamera()` - Toggle between front/back camera
 
 ### Events
 - `qr-scan` - detail: `{data: string, timestamp: number, reader: SniceQRReader}`
@@ -62,13 +64,6 @@ private scanFrame() {
 - Scan loop uses requestAnimationFrame
 - QR detection runs in Web Worker (non-blocking)
 - Only emits event if QR data changed
-
-### CSS Tokens
-```css
---qr-reader-border: var(--snice-color-border, #e5e7eb)
---qr-reader-bg: var(--snice-color-bg, #fff)
---qr-reader-text: var(--snice-color-text, #1f2937)
-```
 
 ## License
 - ZXing-C++: Apache 2.0
