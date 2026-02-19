@@ -17,6 +17,7 @@ allowDelete: boolean = true;
 autoUpload: boolean = true;
 showDropzone: boolean = true; // show drop zone for drag & drop
 showAddButton: boolean = false; // show add button tile in gallery
+showHeader: boolean = true; // show gallery header
 files: GalleryFile[]; // read-only
 ```
 
@@ -67,12 +68,14 @@ files: GalleryFile[]; // read-only
 
 ## Events
 
-- `files-change` - {files: GalleryFile[]}
-- `upload-progress` - {file: GalleryFile, progress: number}
-- `upload-complete` - {file: GalleryFile, url?: string}
-- `upload-error` - {file: GalleryFile, error: string}
-- `custom-action-click` - {actionId: string}
-- `error` - {message: string}
+- `files-change` - {files, component}
+- `upload-progress` - {file, progress, component}
+- `upload-complete` - {file, response: UploadResponse, component}
+- `upload-error` - {file, error, component}
+- `upload-pause` - {file, component}
+- `file-remove` - {file, component}
+- `custom-action-click` - {actionId, component}
+- `gallery-error` - {message, component}
 
 ## Types
 
