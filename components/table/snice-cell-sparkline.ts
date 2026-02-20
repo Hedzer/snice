@@ -188,9 +188,18 @@ export class SniceCellSparkline extends HTMLElement implements SniceCellElement 
     // Clear canvas
     ctx.clearRect(0, 0, width, height);
     
+    // Resolve CSS variables for canvas (canvas doesn't understand CSS vars)
+    let resolvedColor = color;
+    if (color.startsWith('var(')) {
+      const match = color.match(/var\(([^)]+)\)/);
+      if (match) {
+        resolvedColor = getComputedStyle(this).getPropertyValue(match[1].split(',')[0].trim()).trim() || '#3b82f6';
+      }
+    }
+
     // Set color and line properties
-    ctx.strokeStyle = color;
-    ctx.fillStyle = color;
+    ctx.strokeStyle = resolvedColor;
+    ctx.fillStyle = resolvedColor;
     ctx.lineWidth = this.strokeWidth;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
