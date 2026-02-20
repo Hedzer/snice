@@ -1,5 +1,6 @@
 :host {
   display: block;
+  width: 100%;
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   contain: layout style paint;
 }
@@ -42,7 +43,7 @@
   position: relative;
   flex: 1;
   height: 6px;
-  background: var(--snice-color-background-secondary, rgb(229 231 235));
+  background: var(--snice-color-background-tertiary, rgb(229 231 235));
   border-radius: var(--snice-border-radius-sm, 0.1875rem);
   cursor: pointer;
 }

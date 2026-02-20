@@ -2,10 +2,10 @@
   display: block;
   --breadcrumb-font-size: 0.875rem; /* 14px */
   --breadcrumb-spacing: 0.5rem; /* 8px */
-  --breadcrumb-color: rgb(var(--snice-color-gray-600, 82 82 82));
-  --breadcrumb-hover-color: rgb(var(--snice-color-blue-600, 37 99 235));
-  --breadcrumb-active-color: rgb(var(--snice-color-gray-900, 23 23 23));
-  --breadcrumb-separator-color: rgb(var(--snice-color-gray-400, 163 163 163));
+  --breadcrumb-color: var(--snice-color-text-secondary, #525252);
+  --breadcrumb-hover-color: var(--snice-color-primary, #2563eb);
+  --breadcrumb-active-color: var(--snice-color-text, #171717);
+  --breadcrumb-separator-color: var(--snice-color-text-tertiary, #a3a3a3);
 }
 
 /* Meta elements should not interfere with layout */
