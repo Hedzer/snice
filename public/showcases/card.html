@@ -4,85 +4,96 @@
       <p class="comp-desc">Content containers with header, footer, and image slots</p>
       <div class="comp-split comp-split-stacked">
         <div class="comp-split-demo demo-col" style="gap:1.25rem">
+          <!-- Blog post cards with gradient headers -->
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;width:100%">
-            <snice-card variant="elevated">
-              <div slot="header" style="display:flex;align-items:center;gap:0.5rem">
-                <span style="font-size:1.5rem">📊</span>
-                <div>
-                  <h4 style="margin:0;font-size:0.875rem">Revenue</h4>
-                  <span style="font-size:0.7rem;color:var(--snice-color-text-tertiary)">This month</span>
-                </div>
+            <snice-card variant="elevated" clickable>
+              <div slot="image" style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);height:100px;display:flex;align-items:center;justify-content:center;color:white;font-weight:600;font-size:0.85rem;letter-spacing:0.05em">
+                <span class="material-symbols-outlined" style="font-size:2rem">code</span>
               </div>
-              <div style="margin:0">
-                <span style="font-size:1.75rem;font-weight:700">$48.2k</span>
-                <span style="font-size:0.75rem;color:var(--snice-color-success);margin-left:0.5rem">↑ 12.5%</span>
-              </div>
-            </snice-card>
-            <snice-card variant="elevated">
-              <div slot="header" style="display:flex;align-items:center;gap:0.5rem">
-                <span style="font-size:1.5rem">👥</span>
-                <div>
-                  <h4 style="margin:0;font-size:0.875rem">Users</h4>
-                  <span style="font-size:0.7rem;color:var(--snice-color-text-tertiary)">Active now</span>
-                </div>
-              </div>
-              <div style="margin:0">
-                <span style="font-size:1.75rem;font-weight:700">2,847</span>
-                <span style="font-size:0.75rem;color:var(--snice-color-success);margin-left:0.5rem">↑ 8.1%</span>
+              <span style="color:#6366f1;font-size:11px;font-weight:600;letter-spacing:0.05em">TECHNOLOGY</span>
+              <h4 style="margin:0.25rem 0 0.35rem;font-size:0.9rem;font-weight:600">The Future of Web Components</h4>
+              <p style="margin:0;color:var(--snice-color-text-secondary);font-size:0.8rem;line-height:1.5">Exploring emerging standards and the rise of framework-free development...</p>
+              <div slot="footer" style="display:flex;justify-content:space-between;align-items:center;color:var(--snice-color-text-tertiary);font-size:0.75rem">
+                <span>5 min read</span>
+                <span>Mar 15, 2025</span>
               </div>
             </snice-card>
-            <snice-card variant="elevated">
-              <div slot="header" style="display:flex;align-items:center;gap:0.5rem">
-                <span style="font-size:1.5rem">⚡</span>
-                <div>
-                  <h4 style="margin:0;font-size:0.875rem">Uptime</h4>
-                  <span style="font-size:0.7rem;color:var(--snice-color-text-tertiary)">Last 30d</span>
-                </div>
+            <snice-card variant="elevated" clickable>
+              <div slot="image" style="background:linear-gradient(135deg,#f093fb 0%,#f5576c 100%);height:100px;display:flex;align-items:center;justify-content:center;color:white;font-weight:600;font-size:0.85rem;letter-spacing:0.05em">
+                <span class="material-symbols-outlined" style="font-size:2rem">palette</span>
               </div>
-              <div style="margin:0">
-                <span style="font-size:1.75rem;font-weight:700">99.98%</span>
-                <span style="font-size:0.75rem;color:var(--snice-color-text-tertiary);margin-left:0.5rem">▸ 0.01%</span>
+              <span style="color:#ec4899;font-size:11px;font-weight:600;letter-spacing:0.05em">DESIGN</span>
+              <h4 style="margin:0.25rem 0 0.35rem;font-size:0.9rem;font-weight:600">UI/UX Best Practices</h4>
+              <p style="margin:0;color:var(--snice-color-text-secondary);font-size:0.8rem;line-height:1.5">Essential design principles for intuitive, beautiful interfaces...</p>
+              <div slot="footer" style="display:flex;justify-content:space-between;align-items:center;color:var(--snice-color-text-tertiary);font-size:0.75rem">
+                <span>8 min read</span>
+                <span>Mar 14, 2025</span>
+              </div>
+            </snice-card>
+            <snice-card variant="elevated" clickable>
+              <div slot="image" style="background:linear-gradient(135deg,#4facfe 0%,#00f2fe 100%);height:100px;display:flex;align-items:center;justify-content:center;color:white;font-weight:600;font-size:0.85rem;letter-spacing:0.05em">
+                <span class="material-symbols-outlined" style="font-size:2rem">rocket_launch</span>
+              </div>
+              <span style="color:#0ea5e9;font-size:11px;font-weight:600;letter-spacing:0.05em">DEVELOPMENT</span>
+              <h4 style="margin:0.25rem 0 0.35rem;font-size:0.9rem;font-weight:600">Building Scalable Apps</h4>
+              <p style="margin:0;color:var(--snice-color-text-secondary);font-size:0.8rem;line-height:1.5">Architect applications that grow with your business needs...</p>
+              <div slot="footer" style="display:flex;justify-content:space-between;align-items:center;color:var(--snice-color-text-tertiary);font-size:0.75rem">
+                <span>12 min read</span>
+                <span>Mar 13, 2025</span>
               </div>
             </snice-card>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;width:100%">
-            <snice-card variant="bordered" clickable>
-              <div slot="header" style="display:flex;justify-content:space-between;align-items:center">
-                <h4 style="margin:0">Getting Started</h4>
-                <snice-chip size="small" variant="success">New</snice-chip>
-              </div>
-              <p style="margin:0;color:var(--snice-color-text-secondary);font-size:0.85rem;line-height:1.5">Build beautiful interfaces with Snice components. Follow our quick-start guide to set up your project in minutes.</p>
-              <div slot="footer" style="display:flex;justify-content:space-between;align-items:center">
-                <span style="font-size:0.75rem;color:var(--snice-color-text-tertiary)">5 min read</span>
-                <snice-button variant="primary" size="small">Read Guide</snice-button>
+          <!-- Dashboard stat cards -->
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;width:100%">
+            <snice-card variant="flat">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <div>
+                  <p style="margin:0;color:var(--snice-color-text-tertiary);font-size:0.75rem">Total Revenue</p>
+                  <p style="margin:4px 0;font-size:1.5rem;font-weight:700">$48.2k</p>
+                  <p style="margin:0;color:var(--snice-color-success);font-size:0.75rem">↑ 12.5% from last month</p>
+                </div>
+                <span class="material-symbols-outlined" style="font-size:2rem;color:#6366f1;background:rgba(99,102,241,0.1);padding:0.5rem;border-radius:8px">payments</span>
               </div>
             </snice-card>
             <snice-card variant="flat">
-              <div slot="header" style="display:flex;justify-content:space-between;align-items:center">
-                <h4 style="margin:0">Quick Actions</h4>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <div>
+                  <p style="margin:0;color:var(--snice-color-text-tertiary);font-size:0.75rem">Active Users</p>
+                  <p style="margin:4px 0;font-size:1.5rem;font-weight:700">2,847</p>
+                  <p style="margin:0;color:var(--snice-color-success);font-size:0.75rem">↑ 8.1% from last week</p>
+                </div>
+                <span class="material-symbols-outlined" style="font-size:2rem;color:#10b981;background:rgba(16,185,129,0.1);padding:0.5rem;border-radius:8px">group</span>
               </div>
-              <div style="display:flex;flex-direction:column;gap:0.5rem">
-                <snice-button variant="default" size="small" style="width:100%;justify-content:flex-start">📁 New Project</snice-button>
-                <snice-button variant="default" size="small" style="width:100%;justify-content:flex-start">🔗 Import Repository</snice-button>
-                <snice-button variant="default" size="small" style="width:100%;justify-content:flex-start">📋 Browse Templates</snice-button>
+            </snice-card>
+            <snice-card variant="flat">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <div>
+                  <p style="margin:0;color:var(--snice-color-text-tertiary);font-size:0.75rem">Conversion Rate</p>
+                  <p style="margin:4px 0;font-size:1.5rem;font-weight:700">3.24%</p>
+                  <p style="margin:0;color:var(--snice-color-danger);font-size:0.75rem">↓ 2% from last month</p>
+                </div>
+                <span class="material-symbols-outlined" style="font-size:2rem;color:#f59e0b;background:rgba(245,158,11,0.1);padding:0.5rem;border-radius:8px">trending_up</span>
               </div>
             </snice-card>
           </div>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <pre><code class="language-html">&lt;!-- Variants: elevated, bordered, flat --&gt;
-&lt;snice-card variant="elevated"&gt;
-  &lt;h4 slot="header"&gt;Title&lt;/h4&gt;
-  &lt;p&gt;Card content here.&lt;/p&gt;
-  &lt;div slot="footer"&gt;
-    &lt;snice-button size="small"&gt;Action&lt;/snice-button&gt;
+          <pre><code class="language-html">&lt;!-- Blog card with gradient image slot --&gt;
+&lt;snice-card variant="elevated" clickable&gt;
+  &lt;div slot="image" style="background:linear-gradient(...)"&gt;
+    &lt;span class="material-symbols-outlined"&gt;code&lt;/span&gt;
   &lt;/div&gt;
+  &lt;h4&gt;Title&lt;/h4&gt;
+  &lt;p&gt;Description...&lt;/p&gt;
+  &lt;div slot="footer"&gt;5 min read&lt;/div&gt;
 &lt;/snice-card&gt;
 
-&lt;!-- Clickable + Sizes: small, medium, large --&gt;
-&lt;snice-card variant="bordered" clickable size="small"&gt;
-  ...
+&lt;!-- Dashboard stat card --&gt;
+&lt;snice-card variant="flat"&gt;
+  &lt;p&gt;Total Revenue&lt;/p&gt;
+  &lt;p style="font-size:1.5rem"&gt;$48.2k&lt;/p&gt;
+  &lt;p style="color:green"&gt;↑ 12.5%&lt;/p&gt;
 &lt;/snice-card&gt;</code></pre>
         </div>
       </div>

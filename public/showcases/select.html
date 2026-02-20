@@ -6,13 +6,13 @@
         <div class="comp-split-demo demo-col" style="gap:1.25rem">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
             <snice-select label="Country" placeholder="Select a country..." searchable clearable style="width:100%">
-              <snice-option value="us">United States</snice-option>
-              <snice-option value="uk">United Kingdom</snice-option>
-              <snice-option value="ca">Canada</snice-option>
-              <snice-option value="au">Australia</snice-option>
-              <snice-option value="de">Germany</snice-option>
-              <snice-option value="fr">France</snice-option>
-              <snice-option value="jp">Japan</snice-option>
+              <snice-option value="us" icon="https://flagcdn.com/w20/us.png">United States</snice-option>
+              <snice-option value="uk" icon="https://flagcdn.com/w20/gb.png">United Kingdom</snice-option>
+              <snice-option value="ca" icon="https://flagcdn.com/w20/ca.png">Canada</snice-option>
+              <snice-option value="au" icon="https://flagcdn.com/w20/au.png">Australia</snice-option>
+              <snice-option value="de" icon="https://flagcdn.com/w20/de.png">Germany</snice-option>
+              <snice-option value="fr" icon="https://flagcdn.com/w20/fr.png">France</snice-option>
+              <snice-option value="jp" icon="https://flagcdn.com/w20/jp.png">Japan</snice-option>
             </snice-select>
             <snice-select label="Department" value="engineering" style="width:100%">
               <snice-option value="engineering">Engineering</snice-option>
@@ -50,7 +50,7 @@
         <div class="comp-split-code">
           <span class="code-lang">html</span>
           <pre><code class="language-html">&lt;snice-select label="Country" searchable clearable&gt;
-  &lt;snice-option value="us"&gt;United States&lt;/snice-option&gt;
+  &lt;snice-option value="us" icon="flags/us.png"&gt;United States&lt;/snice-option&gt;
 &lt;/snice-select&gt;
 
 &lt;snice-select label="Skills" multiple searchable&gt;
