@@ -1,0 +1,50 @@
+<!-- ── 5. Modal ── -->
+    <div class="comp-section">
+      <h3>Modal</h3>
+      <p class="comp-desc">Dialog overlays for focused interactions</p>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-center">
+          <snice-button variant="primary" onclick="document.getElementById('demo-modal').show()">Open Modal</snice-button>
+          <snice-button variant="default" onclick="document.getElementById('form-modal').show()">Form Modal</snice-button>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-modal id="my-modal" label="Confirm"&gt;
+  &lt;h2 slot="header"&gt;Confirm Action&lt;/h2&gt;
+  &lt;p&gt;Are you sure you want to proceed?&lt;/p&gt;
+  &lt;div slot="footer"&gt;
+    &lt;snice-button variant="default"
+      onclick="this.closest('snice-modal').close()"&gt;
+      Cancel&lt;/snice-button&gt;
+    &lt;snice-button variant="primary"
+      onclick="this.closest('snice-modal').close()"&gt;
+      Confirm&lt;/snice-button&gt;
+  &lt;/div&gt;
+&lt;/snice-modal&gt;</code></pre>
+        </div>
+      </div>
+      <snice-modal id="demo-modal" label="Confirm Dialog">
+        <h2 slot="header">Confirm Action</h2>
+        <p style="margin:0">Are you sure you want to proceed? This action cannot be undone.</p>
+        <div slot="footer" style="display:flex;gap:0.5rem;justify-content:flex-end">
+          <snice-button variant="default" onclick="document.getElementById('demo-modal').close()">Cancel</snice-button>
+          <snice-button variant="primary" onclick="document.getElementById('demo-modal').close()">Confirm</snice-button>
+        </div>
+      </snice-modal>
+      <snice-modal id="form-modal" size="large" label="User Form">
+        <h2 slot="header">Edit Profile</h2>
+        <div style="display:grid;gap:1rem">
+          <snice-input label="Name" placeholder="Enter your name"></snice-input>
+          <snice-input label="Email" placeholder="Enter your email" type="email"></snice-input>
+          <snice-textarea label="Bio" placeholder="Tell us about yourself..." rows="3"></snice-textarea>
+        </div>
+        <div slot="footer" style="display:flex;gap:0.5rem;justify-content:flex-end">
+          <snice-button variant="default" onclick="document.getElementById('form-modal').close()">Cancel</snice-button>
+          <snice-button variant="primary" onclick="document.getElementById('form-modal').close()">Save Changes</snice-button>
+        </div>
+      </snice-modal>
+    </div>
+
+    <!-- ════════════════════════════════════════ -->
+    <!-- COMMON                                   -->
+    <!-- ════════════════════════════════════════ -->

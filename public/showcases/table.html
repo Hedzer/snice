@@ -1,0 +1,71 @@
+<!-- ── 10. Table ── -->
+    <div class="comp-section">
+      <h3>Table</h3>
+      <p class="comp-desc">Data tables with 15 column types, sorting, search, selection, and Excel-like formatting</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo demo-col">
+          <snice-table id="demo-table" size="medium" hoverable sortable selectable searchable striped style="width:100%"></snice-table>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">javascript</span>
+          <pre><code class="language-javascript">table.columns = [
+  { key: 'product', label: 'Product', sortable: true },
+  { key: 'revenue', label: 'Revenue', align: 'right',
+    formatter: v =&gt; '$' + Number(v).toLocaleString() },
+  { key: 'growth', label: 'Growth', align: 'right',
+    formatter: v =&gt; (v &gt;= 0 ? '+' : '') + v.toFixed(1) + '%' },
+  { key: 'users', label: 'Users', align: 'right',
+    formatter: v =&gt; Number(v).toLocaleString() },
+  { key: 'trend', label: 'Trend', type: 'sparkline',
+    sparklineFormat: { type: 'line', color: '#3b82f6' } },
+  { key: 'status', label: 'Status' }
+];
+
+// 15 built-in types: text, number, currency, percent,
+// rating, progress, sparkline, boolean, date,
+// duration, filesize, accounting, scientific,
+// fraction, custom</code></pre>
+        </div>
+      </div>
+    </div>
+<script>
+// Initialize table
+    customElements.whenDefined('snice-table').then(() => {
+      const table = document.getElementById('demo-table');
+      if (table) {
+        table.columns = [
+          { key: 'product', label: 'Product', type: 'text', sortable: true },
+          { key: 'revenue', label: 'Revenue', type: 'text', align: 'right', sortable: true },
+          { key: 'growth', label: 'Growth', type: 'text', align: 'right', sortable: true },
+          { key: 'users', label: 'Users', type: 'text', align: 'right', sortable: true },
+          { key: 'trend', label: 'Trend', type: 'sparkline',
+            sparklineFormat: { type: 'line', color: '#3b82f6' } },
+          { key: 'status', label: 'Status', type: 'text', sortable: true }
+        ];
+        table.setData([
+          { product: 'Nebula Pro', revenue: '$284,500', growth: '+12.5%', users: '12,450', trend: [32,35,38,36,42,45,48], status: 'Active' },
+          { product: 'Quantum Core', revenue: '$891,200', growth: '\u22123.2%', users: '45,200', trend: [50,48,45,47,43,42,40], status: 'Active' },
+          { product: 'Luna Shield', revenue: '$156,800', growth: '+28.7%', users: '8,900', trend: [20,28,35,40,52,58,65], status: 'Active' },
+          { product: 'Flux Engine', revenue: '$423,900', growth: '+5.1%', users: '28,100', trend: [40,42,41,43,42,44,43], status: 'Active' },
+          { product: 'Atlas Cloud', revenue: '$1,245,000', growth: '\u22128.4%', users: '67,500', trend: [60,55,50,48,44,40,38], status: 'Paused' },
+          { product: 'Prism Analytics', revenue: '$367,400', growth: '+18.3%', users: '19,800', trend: [25,30,33,38,42,48,52], status: 'Active' },
+          { product: 'Vortex Cache', revenue: '$98,700', growth: '+42.6%', users: '5,200', trend: [10,18,25,30,38,45,55], status: 'Active' },
+          { product: 'Helios API', revenue: '$712,800', growth: '+2.8%', users: '38,400', trend: [44,45,43,46,45,47,46], status: 'Active' }
+        ]);
+        requestAnimationFrame(() => {
+          if (table.renderHeader) table.renderHeader();
+          if (table.renderBody) table.renderBody();
+          // Fix sparkline colors (canvas can't resolve CSS vars during initial render)
+          setTimeout(() => {
+            const root = table.shadowRoot;
+            if (root) {
+              const colors = ['#3b82f6','#ef4444','#22c55e','#f59e0b','#8b5cf6','#06b6d4','#10b981','#ec4899'];
+              root.querySelectorAll('snice-cell-sparkline').forEach((cell, i) => {
+                cell.color = colors[i % colors.length];
+              });
+            }
+          }, 500);
+        });
+      }
+    });
+</script>

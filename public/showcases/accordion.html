@@ -1,0 +1,33 @@
+<div class="comp-section">
+      <h3>Accordion</h3>
+      <p class="comp-desc">Expandable content sections</p>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-col">
+          <snice-accordion>
+            <snice-accordion-item item-id="faq-1" open>
+              <span slot="header">What is Snice?</span>
+              <p style="margin:0;padding:0.5rem 0">A TypeScript web component library with decorators, differential rendering, and separation of concerns.</p>
+            </snice-accordion-item>
+            <snice-accordion-item item-id="faq-2">
+              <span slot="header">How do I install it?</span>
+              <p style="margin:0;padding:0.5rem 0">Run <code>npm install snice</code> to get started. Components are tree-shakeable.</p>
+            </snice-accordion-item>
+            <snice-accordion-item item-id="faq-3">
+              <span slot="header">Is it accessible?</span>
+              <p style="margin:0;padding:0.5rem 0">Yes! All components follow WCAG guidelines with keyboard navigation and ARIA attributes.</p>
+            </snice-accordion-item>
+          </snice-accordion>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-accordion&gt;
+  &lt;snice-accordion-item item-id="faq-1" open&gt;
+    &lt;span slot="header"&gt;Question?&lt;/span&gt;
+    &lt;p&gt;Answer content here.&lt;/p&gt;
+  &lt;/snice-accordion-item&gt;
+&lt;/snice-accordion&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-section">

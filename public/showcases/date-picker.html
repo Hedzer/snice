@@ -1,0 +1,31 @@
+<h3>Date Picker</h3>
+      <p class="comp-desc">Date selection with calendar, formats, and states</p>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-col" style="gap:1rem">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <snice-date-picker label="Start Date" placeholder="Select date" clearable></snice-date-picker>
+            <snice-date-picker label="End Date" placeholder="Select date" clearable></snice-date-picker>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <snice-date-picker label="US Format" format="mm/dd/yyyy" size="small"></snice-date-picker>
+            <snice-date-picker label="ISO Format" format="yyyy-mm-dd" size="small"></snice-date-picker>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-date-picker
+  label="Start Date"
+  placeholder="Select date"
+  format="yyyy-mm-dd"
+  clearable
+&gt;&lt;/snice-date-picker&gt;
+
+&lt;!-- Formats --&gt;
+&lt;snice-date-picker format="mm/dd/yyyy"&gt;&lt;/snice-date-picker&gt;
+&lt;snice-date-picker format="dd/mm/yyyy"&gt;&lt;/snice-date-picker&gt;
+&lt;snice-date-picker format="yyyy-mm-dd"&gt;&lt;/snice-date-picker&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-section">

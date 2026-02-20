@@ -1,0 +1,30 @@
+<div class="comp-section">
+      <h3>Split Pane</h3>
+      <p class="comp-desc">Resizable split layouts</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="height:200px;padding:0">
+          <snice-split-pane direction="horizontal" primary-size="40">
+            <div slot="primary" style="padding:1rem;background:var(--snice-color-background-tertiary);height:100%">
+              <strong>Left Panel</strong>
+              <p style="font-size:0.8rem;color:var(--snice-color-text-secondary)">Drag the divider to resize</p>
+            </div>
+            <div slot="secondary" style="padding:1rem;height:100%">
+              <strong>Right Panel</strong>
+              <p style="font-size:0.8rem;color:var(--snice-color-text-secondary)">Content adjusts automatically</p>
+            </div>
+          </snice-split-pane>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-split-pane
+  direction="horizontal"
+  primary-size="40"
+&gt;
+  &lt;div slot="primary"&gt;Left&lt;/div&gt;
+  &lt;div slot="secondary"&gt;Right&lt;/div&gt;
+&lt;/snice-split-pane&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-section">

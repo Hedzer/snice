@@ -1,0 +1,95 @@
+<!-- ── 13. Breadcrumbs ── -->
+    <div class="comp-section">
+      <h3>Breadcrumbs</h3>
+      <p class="comp-desc">Navigation path indicators with separators, icons, sizes, and collapsible paths</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo demo-col" style="gap:1rem">
+          <div>
+            <span style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--snice-color-text-tertiary);margin-bottom:0.25rem;display:block">Default</span>
+            <snice-breadcrumbs id="demo-bc-default" separator="/"></snice-breadcrumbs>
+          </div>
+          <div>
+            <span style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--snice-color-text-tertiary);margin-bottom:0.25rem;display:block">With Icons</span>
+            <snice-breadcrumbs id="demo-bc-icons" separator="&raquo;"></snice-breadcrumbs>
+          </div>
+          <div>
+            <span style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--snice-color-text-tertiary);margin-bottom:0.25rem;display:block">Collapsible (max-items=3)</span>
+            <snice-breadcrumbs id="demo-bc-collapsed" separator=">" max-items="3"></snice-breadcrumbs>
+          </div>
+          <div style="display:flex;gap:2rem;align-items:center">
+            <div>
+              <span style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--snice-color-text-tertiary);margin-bottom:0.25rem;display:block">Small</span>
+              <snice-breadcrumbs id="demo-bc-small" separator="/" size="small"></snice-breadcrumbs>
+            </div>
+            <div>
+              <span style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--snice-color-text-tertiary);margin-bottom:0.25rem;display:block">Large</span>
+              <snice-breadcrumbs id="demo-bc-large" separator="/" size="large"></snice-breadcrumbs>
+            </div>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;!-- Separators: / &gt; &raquo; &bull; | --&gt;
+&lt;snice-breadcrumbs separator="/"&gt;
+  &lt;snice-crumb href="/" label="Home"&gt;&lt;/snice-crumb&gt;
+  &lt;snice-crumb href="/docs" label="Docs"&gt;&lt;/snice-crumb&gt;
+  &lt;snice-crumb label="API" active&gt;&lt;/snice-crumb&gt;
+&lt;/snice-breadcrumbs&gt;
+
+&lt;!-- With icons --&gt;
+&lt;script&gt;
+  el.items = [
+    { label: 'Home', href: '/', icon: '&#x1F3E0;' },
+    { label: 'Products', href: '/products', icon: '&#x1F4E6;' },
+    { label: 'Details' }
+  ];
+&lt;/script&gt;
+
+&lt;!-- Collapse long paths --&gt;
+&lt;snice-breadcrumbs max-items="3"&gt;...&lt;/snice-breadcrumbs&gt;
+
+&lt;!-- Sizes: small, medium, large --&gt;
+&lt;snice-breadcrumbs size="small"&gt;...&lt;/snice-breadcrumbs&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+<script>
+// Initialize breadcrumbs
+    customElements.whenDefined('snice-breadcrumbs').then(() => {
+      const bcDefault = document.getElementById('demo-bc-default');
+      if (bcDefault) bcDefault.items = [
+        { label: 'Home', href: '#' },
+        { label: 'Products', href: '#' },
+        { label: 'Electronics', href: '#' },
+        { label: 'Laptop' }
+      ];
+      const bcIcons = document.getElementById('demo-bc-icons');
+      if (bcIcons) bcIcons.items = [
+        { label: 'Home', href: '#', icon: '\u{1F3E0}' },
+        { label: 'Shop', href: '#', icon: '\u{1F6D2}' },
+        { label: 'Electronics', href: '#', icon: '\u{1F4BB}' },
+        { label: 'MacBook Pro' }
+      ];
+      const bcCollapsed = document.getElementById('demo-bc-collapsed');
+      if (bcCollapsed) bcCollapsed.items = [
+        { label: 'Home', href: '#' },
+        { label: 'Documents', href: '#' },
+        { label: 'Projects', href: '#' },
+        { label: 'Web Apps', href: '#' },
+        { label: 'Snice', href: '#' },
+        { label: 'Components' }
+      ];
+      const bcSmall = document.getElementById('demo-bc-small');
+      if (bcSmall) bcSmall.items = [
+        { label: 'Home', href: '#' },
+        { label: 'Docs', href: '#' },
+        { label: 'API' }
+      ];
+      const bcLarge = document.getElementById('demo-bc-large');
+      if (bcLarge) bcLarge.items = [
+        { label: 'Home', href: '#' },
+        { label: 'Docs', href: '#' },
+        { label: 'API' }
+      ];
+    });
+</script>

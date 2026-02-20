@@ -1,0 +1,46 @@
+<h3>Command Palette</h3>
+      <p class="comp-desc">Keyboard-driven command search (Ctrl/Cmd+K)</p>
+      <div class="comp-split">
+        <div class="comp-split-demo">
+          <snice-button variant="primary" onclick="document.getElementById('cmd-palette').show()">Open Command Palette</snice-button>
+          <span style="color:var(--snice-color-text-tertiary);font-size:0.8rem">or press Ctrl+K</span>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-command-palette
+  id="cmd"
+  placeholder="Type a command..."
+&gt;&lt;/snice-command-palette&gt;
+&lt;script&gt;
+  cmd.commands = [
+    { id: 'save', label: 'Save', shortcut: 'Ctrl+S' }
+  ];
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+      <snice-command-palette id="cmd-palette" placeholder="Type a command..."></snice-command-palette>
+    </div>
+
+    <div class="comp-section">
+<script>
+// Initialize command palette
+    customElements.whenDefined('snice-command-palette').then(() => {
+      const palette = document.getElementById('cmd-palette');
+      if (palette) {
+        palette.commands = [
+          { id: 'new-file', label: 'New File', shortcut: 'Ctrl+N', category: 'File' },
+          { id: 'open', label: 'Open...', shortcut: 'Ctrl+O', category: 'File' },
+          { id: 'save', label: 'Save', shortcut: 'Ctrl+S', category: 'File' },
+          { id: 'settings', label: 'Settings', shortcut: 'Ctrl+,', category: 'Preferences' },
+          { id: 'theme', label: 'Toggle Theme', category: 'Preferences' }
+        ];
+        // Global keyboard shortcut
+        document.addEventListener('keydown', (e) => {
+          if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            palette.toggle();
+          }
+        });
+      }
+    });
+</script>

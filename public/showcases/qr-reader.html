@@ -1,0 +1,30 @@
+<div class="comp-section">
+      <h3>QR Reader</h3>
+      <p class="comp-desc">QR code scanner (requires camera permission)</p>
+      <div class="comp-split">
+        <div class="comp-split-demo">
+          <snice-button variant="primary" onclick="document.getElementById('qr-reader-modal').show()">Open QR Scanner</snice-button>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-qr-reader
+  auto-start="false"
+&gt;&lt;/snice-qr-reader&gt;</code></pre>
+        </div>
+      </div>
+      <snice-modal id="qr-reader-modal" size="medium" label="QR Scanner">
+        <h3 slot="header">Scan QR Code</h3>
+        <snice-qr-reader id="demo-qr-reader" auto-start="false"></snice-qr-reader>
+        <div slot="footer" style="display:flex;gap:0.5rem;justify-content:flex-end">
+          <snice-button variant="default" onclick="document.getElementById('demo-qr-reader').stop(); document.getElementById('qr-reader-modal').close()">Close</snice-button>
+        </div>
+      </snice-modal>
+    </div>
+
+    <div class="comp-section">
+<script>
+// Start QR reader when modal opens
+    document.getElementById('qr-reader-modal')?.addEventListener('snice-modal-open', () => {
+      document.getElementById('demo-qr-reader')?.start();
+    });
+</script>

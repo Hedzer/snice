@@ -1,0 +1,74 @@
+<div class="comp-section">
+      <h3>Chart &amp; Sparkline</h3>
+      <p class="comp-desc">Line, bar, pie charts and inline mini charts</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo demo-col">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <snice-chart id="line-chart" type="line" height="220"></snice-chart>
+            <snice-chart id="bar-chart" type="bar" height="220"></snice-chart>
+          </div>
+          <div style="display:flex;gap:2rem;margin-top:1rem;align-items:center;flex-wrap:wrap">
+            <div style="display:flex;align-items:center;gap:0.5rem">
+              <span style="font-size:0.9rem">Revenue</span>
+              <snice-sparkline id="spark1" type="line" color="success" width="100" height="28"></snice-sparkline>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.5rem">
+              <span style="font-size:0.9rem">Users</span>
+              <snice-sparkline id="spark2" type="bar" color="primary" width="100" height="28"></snice-sparkline>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.5rem">
+              <span style="font-size:0.9rem">Errors</span>
+              <snice-sparkline id="spark3" type="area" color="danger" width="100" height="28"></snice-sparkline>
+            </div>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-chart id="chart" type="line" height="200"&gt;
+&lt;/snice-chart&gt;
+
+&lt;snice-sparkline
+  type="line"
+  color="success"
+  width="80"
+  height="24"
+&gt;&lt;/snice-sparkline&gt;
+
+&lt;script&gt;
+  chart.labels = ['Jan', 'Feb', 'Mar'];
+  chart.datasets = [{ label: 'Sales', data: [30, 45, 60] }];
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+<script>
+// Initialize charts
+    customElements.whenDefined('snice-chart').then(() => {
+      const lineChart = document.getElementById('line-chart');
+      if (lineChart) {
+        lineChart.labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+        lineChart.datasets = [
+          { label: 'Revenue', data: [30, 45, 35, 50, 40, 60], borderColor: '#3b82f6', fill: false },
+          { label: 'Expenses', data: [20, 30, 25, 35, 30, 40], borderColor: '#ef4444', fill: false }
+        ];
+      }
+      const barChart = document.getElementById('bar-chart');
+      if (barChart) {
+        barChart.labels = ['Q1', 'Q2', 'Q3', 'Q4'];
+        barChart.datasets = [
+          { label: '2023', data: [65, 75, 70, 80], backgroundColor: '#3b82f6' },
+          { label: '2024', data: [75, 85, 80, 95], backgroundColor: '#10b981' }
+        ];
+      }
+    });
+
+// Initialize sparklines
+    customElements.whenDefined('snice-sparkline').then(() => {
+      const s1 = document.getElementById('spark1');
+      const s2 = document.getElementById('spark2');
+      const s3 = document.getElementById('spark3');
+      if (s1) s1.data = [10, 15, 12, 18, 20, 25, 22, 28];
+      if (s2) s2.data = [5, 8, 6, 10, 12, 9, 14, 11];
+      if (s3) s3.data = [3, 5, 2, 4, 6, 3, 5, 4];
+    });
+</script>

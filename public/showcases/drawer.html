@@ -1,0 +1,63 @@
+<!-- ── 17. Drawer ── -->
+    <div class="comp-section">
+      <h3>Drawer</h3>
+      <p class="comp-desc">Slide-out panels from any edge with push, persist, and size options</p>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-center" style="gap:0.5rem;flex-wrap:wrap">
+          <snice-button variant="primary" onclick="document.getElementById('drawer-left').show()">Left</snice-button>
+          <snice-button variant="default" onclick="document.getElementById('drawer-right').show()">Right</snice-button>
+          <snice-button variant="default" onclick="document.getElementById('drawer-top').show()">Top</snice-button>
+          <snice-button variant="default" onclick="document.getElementById('drawer-bottom').show()">Bottom</snice-button>
+          <snice-button variant="success" outline onclick="document.getElementById('drawer-push').show()">Push Content</snice-button>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;!-- Positions --&gt;
+&lt;snice-drawer position="left"&gt;...&lt;/snice-drawer&gt;
+&lt;snice-drawer position="right"&gt;...&lt;/snice-drawer&gt;
+&lt;snice-drawer position="top"&gt;...&lt;/snice-drawer&gt;
+&lt;snice-drawer position="bottom"&gt;...&lt;/snice-drawer&gt;
+
+&lt;!-- Sizes --&gt;
+&lt;snice-drawer size="small"&gt;&lt;/snice-drawer&gt;
+&lt;snice-drawer size="large"&gt;&lt;/snice-drawer&gt;
+&lt;snice-drawer size="full"&gt;&lt;/snice-drawer&gt;
+
+&lt;!-- Features --&gt;
+&lt;snice-drawer push-content&gt;&lt;/snice-drawer&gt;
+&lt;snice-drawer no-backdrop&gt;&lt;/snice-drawer&gt;
+&lt;snice-drawer persistent&gt;&lt;/snice-drawer&gt;</code></pre>
+        </div>
+      </div>
+      <snice-drawer id="drawer-left" position="left" size="medium">
+        <span slot="title">Navigation</span>
+        <div style="padding:1rem;display:flex;flex-direction:column;gap:0.5rem">
+          <snice-button variant="text" style="justify-content:flex-start">Dashboard</snice-button>
+          <snice-button variant="text" style="justify-content:flex-start">Projects</snice-button>
+          <snice-button variant="text" style="justify-content:flex-start">Settings</snice-button>
+        </div>
+      </snice-drawer>
+      <snice-drawer id="drawer-right" position="right" size="medium">
+        <span slot="title">Details Panel</span>
+        <p style="padding:1rem;color:var(--snice-color-text-secondary)">Additional information and actions can go here.</p>
+      </snice-drawer>
+      <snice-drawer id="drawer-top" position="top" size="small">
+        <span slot="title">Notification Bar</span>
+        <div style="text-align:center;padding:1rem">
+          <p style="margin:0">You have 3 new notifications</p>
+        </div>
+      </snice-drawer>
+      <snice-drawer id="drawer-bottom" position="bottom" size="small">
+        <div style="text-align:center;padding:1rem">
+          <h3 style="margin:0 0 0.5rem">Quick Actions</h3>
+          <div style="display:flex;gap:0.5rem;justify-content:center">
+            <snice-button variant="primary">Save</snice-button>
+            <snice-button variant="default">Cancel</snice-button>
+          </div>
+        </div>
+      </snice-drawer>
+      <snice-drawer id="drawer-push" position="left" size="medium" push-content>
+        <span slot="title">Push Content</span>
+        <p style="padding:1rem;color:var(--snice-color-text-secondary)">This drawer pushes the main content instead of overlaying it.</p>
+      </snice-drawer>
+    </div>

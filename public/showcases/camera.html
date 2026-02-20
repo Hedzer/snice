@@ -1,0 +1,31 @@
+<h3>Camera</h3>
+      <p class="comp-desc">Webcam capture (requires permission)</p>
+      <div class="comp-split">
+        <div class="comp-split-demo">
+          <snice-button variant="primary" onclick="document.getElementById('camera-modal').show()">Open Camera</snice-button>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-camera
+  show-controls
+  controls-position="bottom"
+  auto-start="false"
+&gt;&lt;/snice-camera&gt;</code></pre>
+        </div>
+      </div>
+      <snice-modal id="camera-modal" size="large" label="Camera">
+        <h3 slot="header">Camera Capture</h3>
+        <snice-camera id="demo-camera" show-controls controls-position="bottom" auto-start="false"></snice-camera>
+        <div slot="footer" style="display:flex;gap:0.5rem;justify-content:flex-end">
+          <snice-button variant="default" onclick="document.getElementById('demo-camera').stop(); document.getElementById('camera-modal').close()">Close</snice-button>
+        </div>
+      </snice-modal>
+    </div>
+
+    <div class="comp-section">
+<script>
+// Start camera when modal opens
+    document.getElementById('camera-modal')?.addEventListener('snice-modal-open', () => {
+      document.getElementById('demo-camera')?.start();
+    });
+</script>

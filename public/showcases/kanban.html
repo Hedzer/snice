@@ -1,0 +1,50 @@
+<div class="comp-section">
+      <h3>Kanban</h3>
+      <p class="comp-desc">Drag-and-drop kanban board</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="overflow-x:auto;padding:0.75rem">
+          <snice-kanban id="demo-kanban" allow-drag-drop show-card-count></snice-kanban>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-kanban
+  id="kb"
+  allow-drag-drop
+  show-card-count
+&gt;&lt;/snice-kanban&gt;
+&lt;script&gt;
+  kb.columns = [
+    { id: 'todo', title: 'To Do', cards: [
+      { id: '1', title: 'Task', labels: ['Design'] }
+    ]}
+  ];
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-section">
+<script>
+// Initialize kanban
+    customElements.whenDefined('snice-kanban').then(() => {
+      const kanban = document.getElementById('demo-kanban');
+      if (kanban) kanban.columns = [
+        { id: 'todo', title: 'To Do', color: '#f44336', cards: [
+          { id: '1', title: 'Design new landing page', description: 'Create mockups and wireframes', assignee: 'Alice', labels: [{ text: 'Design', color: '#6366f1', background: '#eef2ff', icon: '🎨' }, { text: 'High Priority', color: '#dc2626', background: '#fee2e2', icon: '🔥' }] },
+          { id: '2', title: 'Update documentation', description: 'Add examples for new components', assignee: 'Bob', labels: ['Docs'] },
+          { id: '3', title: 'Fix login bug', description: 'Users cannot reset password', assignee: 'Charlie', labels: ['Bug', 'High Priority'], color: '#f44336' }
+        ]},
+        { id: 'progress', title: 'In Progress', color: '#ff9800', cards: [
+          { id: '4', title: 'Implement dark mode', description: 'Add theme switcher', assignee: 'Alice', labels: [{ text: 'Feature', color: '#16a34a', background: '#dcfce7', icon: '✨' }, 'UI'] },
+          { id: '5', title: 'API integration', description: 'Connect to REST API', assignee: 'David', labels: ['Backend'] }
+        ]},
+        { id: 'review', title: 'In Review', color: '#9c27b0', cards: [
+          { id: '6', title: 'Add user avatars', description: 'Display profile pictures', assignee: 'Eve', labels: ['Feature', 'UI'] }
+        ]},
+        { id: 'done', title: 'Done', color: '#4caf50', cards: [
+          { id: '7', title: 'Set up CI/CD pipeline', assignee: 'Frank', labels: ['DevOps'] },
+          { id: '8', title: 'User onboarding flow', assignee: 'Grace', labels: [{ text: 'Shipped', color: '#16a34a', background: '#dcfce7', icon: '🚀' }] }
+        ]}
+      ];
+    });
+</script>

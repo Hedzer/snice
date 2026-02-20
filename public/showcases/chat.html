@@ -1,0 +1,40 @@
+<div class="comp-section">
+      <h3>Chat</h3>
+      <p class="comp-desc">Real-time messaging interface</p>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="min-height:300px">
+          <snice-chat id="demo-chat" current-user="You" placeholder="Type a message..." show-avatars show-timestamps style="height:300px;width:100%"></snice-chat>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-chat
+  current-user="You"
+  placeholder="Type a message..."
+  show-avatars
+  show-timestamps
+&gt;&lt;/snice-chat&gt;
+
+&lt;script&gt;
+  chat.messages = [
+    { id: '1', type: 'text',
+      content: 'Hello!',
+      author: 'Alice',
+      timestamp: new Date() }
+  ];
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+<script>
+// Initialize chat
+    customElements.whenDefined('snice-chat').then(() => {
+      const chat = document.getElementById('demo-chat');
+      if (chat) {
+        chat.messages = [
+          { id: '1', type: 'text', content: 'Hey! How\'s the project going?', author: 'Alice', timestamp: new Date(Date.now() - 300000) },
+          { id: '2', type: 'text', content: 'Going great! Just finished the new components.', author: 'You', timestamp: new Date(Date.now() - 240000) },
+          { id: '3', type: 'text', content: 'Awesome! Can\'t wait to see them.', author: 'Alice', timestamp: new Date(Date.now() - 180000) }
+        ];
+      }
+    });
+</script>

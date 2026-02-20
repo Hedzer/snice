@@ -1,0 +1,58 @@
+<h3>Carousel</h3>
+      <p class="comp-desc">Image and content slider with controls, autoplay, and multi-slide views</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo demo-col" style="gap:1.25rem">
+          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1rem;position:relative">
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">with controls</span>
+            <snice-carousel show-controls show-indicators loop>
+              <div style="background:linear-gradient(135deg,#667eea,#764ba2);height:220px;display:flex;align-items:center;justify-content:center;color:white;font-size:1.5rem;border-radius:6px">Slide 1</div>
+              <div style="background:linear-gradient(135deg,#f093fb,#f5576c);height:220px;display:flex;align-items:center;justify-content:center;color:white;font-size:1.5rem;border-radius:6px">Slide 2</div>
+              <div style="background:linear-gradient(135deg,#4facfe,#00f2fe);height:220px;display:flex;align-items:center;justify-content:center;color:white;font-size:1.5rem;border-radius:6px">Slide 3</div>
+            </snice-carousel>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem">
+            <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1rem;position:relative">
+              <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">autoplay</span>
+              <snice-carousel autoplay autoplay-interval="2000" show-indicators loop>
+                <div style="background:linear-gradient(135deg,#a18cd1,#fbc2eb);height:140px;display:flex;align-items:center;justify-content:center;color:white;font-size:1.25rem;border-radius:6px">Auto 1</div>
+                <div style="background:linear-gradient(135deg,#fad0c4,#ffd1ff);height:140px;display:flex;align-items:center;justify-content:center;color:#333;font-size:1.25rem;border-radius:6px">Auto 2</div>
+                <div style="background:linear-gradient(135deg,#a1c4fd,#c2e9fb);height:140px;display:flex;align-items:center;justify-content:center;color:#333;font-size:1.25rem;border-radius:6px">Auto 3</div>
+              </snice-carousel>
+            </div>
+            <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1rem;position:relative">
+              <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">multi-slide</span>
+              <snice-carousel slides-per-view="3" spacing="10" show-controls>
+                <div style="background:var(--snice-color-primary);height:80px;display:flex;align-items:center;justify-content:center;color:white;border-radius:6px;font-size:0.9rem">1</div>
+                <div style="background:var(--snice-color-success);height:80px;display:flex;align-items:center;justify-content:center;color:white;border-radius:6px;font-size:0.9rem">2</div>
+                <div style="background:var(--snice-color-warning);height:80px;display:flex;align-items:center;justify-content:center;color:white;border-radius:6px;font-size:0.9rem">3</div>
+                <div style="background:var(--snice-color-danger);height:80px;display:flex;align-items:center;justify-content:center;color:white;border-radius:6px;font-size:0.9rem">4</div>
+                <div style="background:var(--snice-color-primary);height:80px;display:flex;align-items:center;justify-content:center;color:white;border-radius:6px;font-size:0.9rem">5</div>
+              </snice-carousel>
+            </div>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;!-- With controls --&gt;
+&lt;snice-carousel show-controls show-indicators loop&gt;
+  &lt;div&gt;Slide 1&lt;/div&gt;
+  &lt;div&gt;Slide 2&lt;/div&gt;
+&lt;/snice-carousel&gt;
+
+&lt;!-- Autoplay --&gt;
+&lt;snice-carousel
+  autoplay
+  autoplay-interval="2000"
+  loop
+&gt;...&lt;/snice-carousel&gt;
+
+&lt;!-- Multiple slides per view --&gt;
+&lt;snice-carousel
+  slides-per-view="3"
+  spacing="10"
+&gt;...&lt;/snice-carousel&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-section">

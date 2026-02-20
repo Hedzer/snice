@@ -1,0 +1,26 @@
+<!-- ── 18. Tooltip ── -->
+    <div class="comp-section">
+      <h3>Tooltip</h3>
+      <p class="comp-desc">Contextual information on hover or click</p>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-center" style="gap:1.5rem">
+          <snice-tooltip content="Tooltip on top" position="top"><snice-button variant="default">Top</snice-button></snice-tooltip>
+          <snice-tooltip content="Tooltip on right" position="right"><snice-button variant="default">Right</snice-button></snice-tooltip>
+          <snice-tooltip content="Tooltip on bottom" position="bottom"><snice-button variant="default">Bottom</snice-button></snice-tooltip>
+          <snice-tooltip content="Tooltip on left" position="left"><snice-button variant="default">Left</snice-button></snice-tooltip>
+          <snice-tooltip content="Click me to see this!" trigger="click"><snice-button variant="primary">Click Trigger</snice-button></snice-tooltip>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-tooltip content="Tooltip on top" position="top"&gt;
+  &lt;snice-button&gt;Top&lt;/snice-button&gt;
+&lt;/snice-tooltip&gt;
+
+&lt;snice-tooltip content="Click me!" trigger="click"&gt;
+  &lt;snice-button variant="primary"&gt;
+    Click Trigger
+  &lt;/snice-button&gt;
+&lt;/snice-tooltip&gt;</code></pre>
+        </div>
+      </div>
+    </div>

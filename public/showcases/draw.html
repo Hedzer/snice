@@ -1,0 +1,94 @@
+<div class="comp-section">
+      <h3>Draw</h3>
+      <p class="comp-desc">Freehand drawing canvas with tools and brush options</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="padding:0;overflow:hidden">
+          <div style="display:flex;height:400px">
+            <div class="draw-tb" id="draw-toolbar">
+              <span class="draw-tb-label">Tools</span>
+              <button class="dtb active" data-tool="pen" onclick="setDrawTool(this,'pen')" title="Pen">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11.5 1.5l3 3-9 9H2.5v-3z"/></svg>
+              </button>
+              <button class="dtb" data-tool="eraser" onclick="setDrawTool(this,'eraser')" title="Eraser">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 14h7M3.5 12l8-8 3 3-8 8H3.5v-3z"/></svg>
+              </button>
+              <button class="dtb" data-tool="line" onclick="setDrawTool(this,'line')" title="Line">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="3" y1="13" x2="13" y2="3"/></svg>
+              </button>
+              <button class="dtb" data-tool="rectangle" onclick="setDrawTool(this,'rectangle')" title="Rectangle">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="10" rx="1"/></svg>
+              </button>
+              <button class="dtb" data-tool="circle" onclick="setDrawTool(this,'circle')" title="Circle">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="5.5"/></svg>
+              </button>
+              <div class="draw-tb-sep"></div>
+              <span class="draw-tb-label">Color</span>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px">
+                <span class="dsw active" style="--c:#3b82f6" onclick="setDrawColor(this,'#3b82f6')"></span>
+                <span class="dsw" style="--c:#ef4444" onclick="setDrawColor(this,'#ef4444')"></span>
+                <span class="dsw" style="--c:#10b981" onclick="setDrawColor(this,'#10b981')"></span>
+                <span class="dsw" style="--c:#f59e0b" onclick="setDrawColor(this,'#f59e0b')"></span>
+                <span class="dsw" style="--c:#8b5cf6" onclick="setDrawColor(this,'#8b5cf6')"></span>
+                <span class="dsw" style="--c:#ec4899" onclick="setDrawColor(this,'#ec4899')"></span>
+                <span class="dsw" style="--c:#e2e8f0" onclick="setDrawColor(this,'#e2e8f0')"></span>
+                <span class="dsw" style="--c:#1e293b" onclick="setDrawColor(this,'#1e293b')"></span>
+              </div>
+              <div class="draw-tb-sep"></div>
+              <span class="draw-tb-label">Size</span>
+              <input type="range" min="1" max="20" value="3" oninput="document.getElementById('demo-draw').strokeWidth=+this.value" style="width:34px;accent-color:var(--snice-color-primary)" title="Brush size">
+              <div class="draw-tb-sep"></div>
+              <button class="dtb" onclick="document.getElementById('demo-draw').undo()" title="Undo">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6L1 9l3 3"/><path d="M1 9h10a4 4 0 000-8H8"/></svg>
+              </button>
+              <button class="dtb" onclick="document.getElementById('demo-draw').redo()" title="Redo">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 6l3 3-3 3"/><path d="M15 9H5a4 4 0 010-8h3"/></svg>
+              </button>
+              <button class="dtb dtb-danger" onclick="document.getElementById('demo-draw').clear()" title="Clear canvas">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12"/><path d="M5.3 4V2.7h5.4V4"/><path d="M6 7v5M10 7v5"/><path d="M3.3 4l.7 9.3h8l.7-9.3"/></svg>
+              </button>
+            </div>
+            <snice-draw id="demo-draw" width="100%" height="100%" color="#3b82f6" stroke-width="3" style="flex:1;display:block"></snice-draw>
+          </div>
+          <script>
+            function setDrawTool(btn, tool) {
+              document.getElementById('demo-draw').tool = tool;
+              document.getElementById('draw-toolbar').querySelectorAll('.dtb[data-tool]').forEach(b => b.classList.remove('active'));
+              btn.classList.add('active');
+            }
+            function setDrawColor(el, color) {
+              document.getElementById('demo-draw').color = color;
+              document.getElementById('draw-toolbar').querySelectorAll('.dsw').forEach(s => s.classList.remove('active'));
+              el.classList.add('active');
+            }
+          </script>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-draw
+  width="100%" height="300"
+  color="#3b82f6"
+  stroke-width="3"
+  tool="pen"
+&gt;&lt;/snice-draw&gt;
+
+&lt;script&gt;
+  const draw = document.querySelector('snice-draw');
+
+  // Tools: pen, eraser, line, rectangle, circle
+  draw.tool = 'pen';
+
+  // Brush settings
+  draw.color = '#ef4444';
+  draw.strokeWidth = 5;
+
+  // Actions
+  draw.undo();
+  draw.redo();
+  draw.clear();
+  draw.download('art.png');
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-section">

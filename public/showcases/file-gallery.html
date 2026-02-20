@@ -1,0 +1,73 @@
+<div class="comp-section">
+      <h3>File Gallery</h3>
+      <p class="comp-desc">File management with previews and upload progress</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo">
+          <snice-file-gallery id="demo-gallery" accept="image/*" multiple view="grid" show-add-button allow-delete auto-upload="false"></snice-file-gallery>
+          <script>
+            customElements.whenDefined('snice-file-gallery').then(() => {
+              const gallery = document.getElementById('demo-gallery');
+              if (!gallery) return;
+              // Add fake pre-uploaded files
+              const fakeFiles = [
+                { name: 'hero-banner.png', size: 245000, type: 'image/png' },
+                { name: 'product-shot.jpg', size: 182000, type: 'image/jpeg' },
+                { name: 'team-photo.jpg', size: 310000, type: 'image/jpeg' },
+              ];
+              const colors = ['#3b82f6','#22c55e','#f59e0b'];
+              fakeFiles.forEach((meta, i) => {
+                const blob = new Blob([''], { type: meta.type });
+                const file = new File([blob], meta.name, { type: meta.type, lastModified: Date.now() - i * 86400000 });
+                // Create a tiny canvas as preview
+                const c = document.createElement('canvas'); c.width = 120; c.height = 80;
+                const ctx = c.getContext('2d');
+                const g = ctx.createLinearGradient(0,0,120,80);
+                g.addColorStop(0, colors[i]); g.addColorStop(1, colors[(i+1)%3]);
+                ctx.fillStyle = g; ctx.fillRect(0,0,120,80);
+                ctx.fillStyle = 'rgba(255,255,255,0.7)'; ctx.font = '11px sans-serif'; ctx.textAlign = 'center';
+                ctx.fillText(meta.name, 60, 45);
+                gallery.addFileWithPreview?.(file, c.toDataURL());
+              });
+              // Upload handler for new files
+              gallery.addEventListener('request/file-gallery-upload', (e) => {
+                const { file, onProgress, signal } = e.detail;
+                e.preventDefault();
+                let progress = 0;
+                const interval = setInterval(() => {
+                  if (signal?.aborted) { clearInterval(interval); return; }
+                  const bump = progress < 0.3 ? 0.08 : progress < 0.7 ? 0.04 : 0.06;
+                  progress = Math.min(1, progress + bump + Math.random() * 0.03);
+                  onProgress(progress);
+                  if (progress >= 1) clearInterval(interval);
+                }, 100 + Math.random() * 50);
+              });
+            });
+          </script>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-file-gallery
+  accept="image/*"
+  multiple view="grid"
+  show-add-button allow-delete
+&gt;&lt;/snice-file-gallery&gt;
+
+&lt;script&gt;
+  gallery.addEventListener(
+    'request/file-gallery-upload', (e) =&gt; {
+    const { file, onProgress } = e.detail;
+    e.preventDefault();
+    // Simulate upload progress
+    let p = 0;
+    const iv = setInterval(() =&gt; {
+      p = Math.min(1, p + 0.05);
+      onProgress(p);
+      if (p &gt;= 1) clearInterval(iv);
+    }, 100);
+  });
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-section">

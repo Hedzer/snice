@@ -1,0 +1,89 @@
+<!-- ── 4. Card ── -->
+    <div class="comp-section">
+      <h3>Card</h3>
+      <p class="comp-desc">Content containers with header, footer, and image slots</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo demo-col" style="gap:1.25rem">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;width:100%">
+            <snice-card variant="elevated">
+              <div slot="header" style="display:flex;align-items:center;gap:0.5rem">
+                <span style="font-size:1.5rem">📊</span>
+                <div>
+                  <h4 style="margin:0;font-size:0.875rem">Revenue</h4>
+                  <span style="font-size:0.7rem;color:var(--snice-color-text-tertiary)">This month</span>
+                </div>
+              </div>
+              <div style="margin:0">
+                <span style="font-size:1.75rem;font-weight:700">$48.2k</span>
+                <span style="font-size:0.75rem;color:var(--snice-color-success);margin-left:0.5rem">↑ 12.5%</span>
+              </div>
+            </snice-card>
+            <snice-card variant="elevated">
+              <div slot="header" style="display:flex;align-items:center;gap:0.5rem">
+                <span style="font-size:1.5rem">👥</span>
+                <div>
+                  <h4 style="margin:0;font-size:0.875rem">Users</h4>
+                  <span style="font-size:0.7rem;color:var(--snice-color-text-tertiary)">Active now</span>
+                </div>
+              </div>
+              <div style="margin:0">
+                <span style="font-size:1.75rem;font-weight:700">2,847</span>
+                <span style="font-size:0.75rem;color:var(--snice-color-success);margin-left:0.5rem">↑ 8.1%</span>
+              </div>
+            </snice-card>
+            <snice-card variant="elevated">
+              <div slot="header" style="display:flex;align-items:center;gap:0.5rem">
+                <span style="font-size:1.5rem">⚡</span>
+                <div>
+                  <h4 style="margin:0;font-size:0.875rem">Uptime</h4>
+                  <span style="font-size:0.7rem;color:var(--snice-color-text-tertiary)">Last 30d</span>
+                </div>
+              </div>
+              <div style="margin:0">
+                <span style="font-size:1.75rem;font-weight:700">99.98%</span>
+                <span style="font-size:0.75rem;color:var(--snice-color-text-tertiary);margin-left:0.5rem">▸ 0.01%</span>
+              </div>
+            </snice-card>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;width:100%">
+            <snice-card variant="bordered" clickable>
+              <div slot="header" style="display:flex;justify-content:space-between;align-items:center">
+                <h4 style="margin:0">Getting Started</h4>
+                <snice-chip size="small" variant="success">New</snice-chip>
+              </div>
+              <p style="margin:0;color:var(--snice-color-text-secondary);font-size:0.85rem;line-height:1.5">Build beautiful interfaces with Snice components. Follow our quick-start guide to set up your project in minutes.</p>
+              <div slot="footer" style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:0.75rem;color:var(--snice-color-text-tertiary)">5 min read</span>
+                <snice-button variant="primary" size="small">Read Guide</snice-button>
+              </div>
+            </snice-card>
+            <snice-card variant="flat">
+              <div slot="header" style="display:flex;justify-content:space-between;align-items:center">
+                <h4 style="margin:0">Quick Actions</h4>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:0.5rem">
+                <snice-button variant="default" size="small" style="width:100%;justify-content:flex-start">📁 New Project</snice-button>
+                <snice-button variant="default" size="small" style="width:100%;justify-content:flex-start">🔗 Import Repository</snice-button>
+                <snice-button variant="default" size="small" style="width:100%;justify-content:flex-start">📋 Browse Templates</snice-button>
+              </div>
+            </snice-card>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;!-- Variants: elevated, bordered, flat --&gt;
+&lt;snice-card variant="elevated"&gt;
+  &lt;h4 slot="header"&gt;Title&lt;/h4&gt;
+  &lt;p&gt;Card content here.&lt;/p&gt;
+  &lt;div slot="footer"&gt;
+    &lt;snice-button size="small"&gt;Action&lt;/snice-button&gt;
+  &lt;/div&gt;
+&lt;/snice-card&gt;
+
+&lt;!-- Clickable + Sizes: small, medium, large --&gt;
+&lt;snice-card variant="bordered" clickable size="small"&gt;
+  ...
+&lt;/snice-card&gt;</code></pre>
+        </div>
+      </div>
+    </div>

@@ -1,0 +1,65 @@
+<!-- ── 3. Select ── -->
+    <div class="comp-section">
+      <h3>Select</h3>
+      <p class="comp-desc">Searchable, multi-select, and custom dropdowns</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo demo-col" style="gap:1.25rem">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <snice-select label="Country" placeholder="Select a country..." searchable clearable style="width:100%">
+              <snice-option value="us">United States</snice-option>
+              <snice-option value="uk">United Kingdom</snice-option>
+              <snice-option value="ca">Canada</snice-option>
+              <snice-option value="au">Australia</snice-option>
+              <snice-option value="de">Germany</snice-option>
+              <snice-option value="fr">France</snice-option>
+              <snice-option value="jp">Japan</snice-option>
+            </snice-select>
+            <snice-select label="Department" value="engineering" style="width:100%">
+              <snice-option value="engineering">Engineering</snice-option>
+              <snice-option value="design">Design</snice-option>
+              <snice-option value="marketing">Marketing</snice-option>
+              <snice-option value="sales">Sales</snice-option>
+            </snice-select>
+          </div>
+          <snice-select label="Skills" placeholder="Select multiple..." multiple searchable clearable style="width:100%">
+            <snice-option value="js">JavaScript</snice-option>
+            <snice-option value="ts">TypeScript</snice-option>
+            <snice-option value="react">React</snice-option>
+            <snice-option value="vue">Vue</snice-option>
+            <snice-option value="node">Node.js</snice-option>
+            <snice-option value="python">Python</snice-option>
+            <snice-option value="rust">Rust</snice-option>
+            <snice-option value="go">Go</snice-option>
+          </snice-select>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem">
+            <snice-select label="Size: Small" placeholder="Choose..." size="small" style="width:100%">
+              <snice-option value="a">Option A</snice-option>
+              <snice-option value="b">Option B</snice-option>
+              <snice-option value="c">Option C</snice-option>
+            </snice-select>
+            <snice-select label="Disabled" value="locked" disabled style="width:100%">
+              <snice-option value="locked">Locked Value</snice-option>
+            </snice-select>
+            <snice-select label="Size: Large" placeholder="Choose..." size="large" style="width:100%">
+              <snice-option value="x">Option X</snice-option>
+              <snice-option value="y">Option Y</snice-option>
+              <snice-option value="z">Option Z</snice-option>
+            </snice-select>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-select label="Country" searchable clearable&gt;
+  &lt;snice-option value="us"&gt;United States&lt;/snice-option&gt;
+&lt;/snice-select&gt;
+
+&lt;snice-select label="Skills" multiple searchable&gt;
+  &lt;snice-option value="js"&gt;JavaScript&lt;/snice-option&gt;
+&lt;/snice-select&gt;
+
+&lt;!-- Sizes: small, medium (default), large --&gt;
+&lt;snice-select size="small"&gt;...&lt;/snice-select&gt;
+&lt;snice-select disabled&gt;...&lt;/snice-select&gt;</code></pre>
+        </div>
+      </div>
+    </div>

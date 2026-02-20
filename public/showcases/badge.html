@@ -1,0 +1,57 @@
+<!-- ── 11. Badge ── -->
+    <div class="comp-section">
+      <h3>Badge</h3>
+      <p class="comp-desc">Notification indicators and count displays</p>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="gap:2rem">
+          <snice-badge count="5" variant="error">
+            <snice-button variant="default">Messages</snice-button>
+          </snice-badge>
+          <snice-badge dot variant="error" pulse>
+            <snice-button variant="default">Notifications</snice-button>
+          </snice-badge>
+          <snice-badge count="150" max="99" variant="primary">
+            <snice-button variant="default">Updates</snice-button>
+          </snice-badge>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-badge count="5" variant="error"&gt;
+  &lt;snice-button&gt;Messages&lt;/snice-button&gt;
+&lt;/snice-badge&gt;
+
+&lt;snice-badge dot variant="error" pulse&gt;
+  &lt;snice-button&gt;Notifications&lt;/snice-button&gt;
+&lt;/snice-badge&gt;
+
+&lt;snice-badge count="150" max="99" variant="primary"&gt;
+  &lt;snice-button&gt;Updates&lt;/snice-button&gt;
+&lt;/snice-badge&gt;</code></pre>
+        </div>
+      </div>
+      <div class="comp-split">
+        <div class="comp-split-demo">
+          <span>Status: <snice-badge inline content="Active" variant="success"></snice-badge></span>
+          <span>Priority: <snice-badge inline content="High" variant="error"></snice-badge></span>
+          <span>Type: <snice-badge inline content="New" variant="primary"></snice-badge></span>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-badge
+  inline
+  content="Active"
+  variant="success"
+&gt;&lt;/snice-badge&gt;
+
+&lt;snice-badge
+  inline
+  content="High"
+  variant="error"
+&gt;&lt;/snice-badge&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════ -->
+    <!-- DELIGHTER SPRINKLE                       -->
+    <!-- ════════════════════════════════════════ -->

@@ -90,7 +90,30 @@
     <!-- ════════════════════════════════════════ -->
     <div class="comp-category">Core</div>
 
-    <!-- ── 1. Button ── -->
+    <!-- ════════════════════════════════════════ -->
+    <!-- COMMON                                   -->
+    <!-- ════════════════════════════════════════ -->
+    <div class="comp-category">Common</div>
+
+    <!-- ════════════════════════════════════════ -->
+    <!-- DELIGHTER SPRINKLE                       -->
+    <!-- ════════════════════════════════════════ -->
+    <div class="comp-category">Delighter</div>
+
+    <!-- ════════════════════════════════════════ -->
+    <!-- NAVIGATION                               -->
+    <!-- ════════════════════════════════════════ -->
+    <div class="comp-category">Navigation</div>
+    <div class="comp-category">Feedback</div>
+    <div class="comp-category">Delighter Sprinkles</div>
+    <div class="comp-category">Data Display</div>
+    <div class="comp-category">Delighter Sprinkles</div>
+    <div class="comp-category">Advanced</div>
+    <div class="comp-category">Delighters</div>
+    <div class="comp-category">Special</div>
+    <div class="comp-category">Media</div>
+    <div class="comp-category">Remaining</div>
+<!-- ── 1. Button ── -->
     <div class="comp-section">
       <h3>Button</h3>
       <p class="comp-desc">All variants, sizes, shapes, and states</p>
@@ -106,9 +129,13 @@
         <div class="comp-split-code">
           <span class="code-lang">html</span>
           <pre><code class="language-html">&lt;snice-button variant="primary"&gt;Primary&lt;/snice-button&gt;
+
 &lt;snice-button variant="success"&gt;Success&lt;/snice-button&gt;
+
 &lt;snice-button variant="danger" outline&gt;Danger&lt;/snice-button&gt;
+
 &lt;snice-button variant="primary" pill&gt;Pill&lt;/snice-button&gt;
+
 &lt;snice-button variant="primary" circle&gt;+&lt;/snice-button&gt;</code></pre>
         </div>
       </div>
@@ -137,9 +164,16 @@
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <pre><code class="language-html">&lt;snice-button variant="primary" size="small"&gt;Small&lt;/snice-button&gt;
-&lt;snice-button variant="primary" size="large"&gt;Large&lt;/snice-button&gt;
+          <pre><code class="language-html">&lt;snice-button variant="primary" size="small"&gt;
+  Small
+&lt;/snice-button&gt;
+
+&lt;snice-button variant="primary" size="large"&gt;
+  Large
+&lt;/snice-button&gt;
+
 &lt;snice-button variant="primary" pill&gt;Pill&lt;/snice-button&gt;
+
 &lt;snice-button variant="primary" circle&gt;+&lt;/snice-button&gt;</code></pre>
         </div>
       </div>
@@ -155,8 +189,7 @@
         </div>
       </div>
     </div>
-
-    <!-- ── 2. Input ── -->
+<!-- ── 2. Input ── -->
     <div class="comp-section">
       <h3>Input</h3>
       <p class="comp-desc">Text fields with types, sizes, variants, and validation</p>
@@ -190,13 +223,12 @@
         </div>
       </div>
     </div>
-
-    <!-- ── 3. Select ── -->
+<!-- ── 3. Select ── -->
     <div class="comp-section">
       <h3>Select</h3>
       <p class="comp-desc">Searchable, multi-select, and custom dropdowns</p>
       <div class="comp-split comp-split-stacked">
-        <div class="comp-split-demo demo-col">
+        <div class="comp-split-demo demo-col" style="gap:1.25rem">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
             <snice-select label="Country" placeholder="Select a country..." searchable clearable style="width:100%">
               <snice-option value="us">United States</snice-option>
@@ -214,65 +246,138 @@
               <snice-option value="sales">Sales</snice-option>
             </snice-select>
           </div>
-          <snice-select label="Skills" placeholder="Select multiple..." multiple searchable clearable style="width:100%;margin-top:1rem">
+          <snice-select label="Skills" placeholder="Select multiple..." multiple searchable clearable style="width:100%">
             <snice-option value="js">JavaScript</snice-option>
             <snice-option value="ts">TypeScript</snice-option>
             <snice-option value="react">React</snice-option>
             <snice-option value="vue">Vue</snice-option>
             <snice-option value="node">Node.js</snice-option>
             <snice-option value="python">Python</snice-option>
+            <snice-option value="rust">Rust</snice-option>
+            <snice-option value="go">Go</snice-option>
           </snice-select>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem">
+            <snice-select label="Size: Small" placeholder="Choose..." size="small" style="width:100%">
+              <snice-option value="a">Option A</snice-option>
+              <snice-option value="b">Option B</snice-option>
+              <snice-option value="c">Option C</snice-option>
+            </snice-select>
+            <snice-select label="Disabled" value="locked" disabled style="width:100%">
+              <snice-option value="locked">Locked Value</snice-option>
+            </snice-select>
+            <snice-select label="Size: Large" placeholder="Choose..." size="large" style="width:100%">
+              <snice-option value="x">Option X</snice-option>
+              <snice-option value="y">Option Y</snice-option>
+              <snice-option value="z">Option Z</snice-option>
+            </snice-select>
+          </div>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
           <pre><code class="language-html">&lt;snice-select label="Country" searchable clearable&gt;
   &lt;snice-option value="us"&gt;United States&lt;/snice-option&gt;
-  &lt;snice-option value="uk"&gt;United Kingdom&lt;/snice-option&gt;
 &lt;/snice-select&gt;
 
 &lt;snice-select label="Skills" multiple searchable&gt;
   &lt;snice-option value="js"&gt;JavaScript&lt;/snice-option&gt;
-  &lt;snice-option value="ts"&gt;TypeScript&lt;/snice-option&gt;
-&lt;/snice-select&gt;</code></pre>
+&lt;/snice-select&gt;
+
+&lt;!-- Sizes: small, medium (default), large --&gt;
+&lt;snice-select size="small"&gt;...&lt;/snice-select&gt;
+&lt;snice-select disabled&gt;...&lt;/snice-select&gt;</code></pre>
         </div>
       </div>
     </div>
-
-    <!-- ── 4. Card ── -->
+<!-- ── 4. Card ── -->
     <div class="comp-section">
       <h3>Card</h3>
       <p class="comp-desc">Content containers with header, footer, and image slots</p>
-      <div class="comp-split">
-        <div class="comp-split-demo">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;width:100%">
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo demo-col" style="gap:1.25rem">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;width:100%">
             <snice-card variant="elevated">
-              <h4 slot="header">Elevated Card</h4>
-              <p style="margin:0;color:var(--snice-color-text-secondary);font-size:0.875rem">Cards with shadow appear to float above the surface.</p>
-              <div slot="footer"><snice-button variant="primary" size="small">Action</snice-button></div>
+              <div slot="header" style="display:flex;align-items:center;gap:0.5rem">
+                <span style="font-size:1.5rem">📊</span>
+                <div>
+                  <h4 style="margin:0;font-size:0.875rem">Revenue</h4>
+                  <span style="font-size:0.7rem;color:var(--snice-color-text-tertiary)">This month</span>
+                </div>
+              </div>
+              <div style="margin:0">
+                <span style="font-size:1.75rem;font-weight:700">$48.2k</span>
+                <span style="font-size:0.75rem;color:var(--snice-color-success);margin-left:0.5rem">↑ 12.5%</span>
+              </div>
             </snice-card>
-            <snice-card variant="bordered">
-              <h4 slot="header">Bordered Card</h4>
-              <p style="margin:0;color:var(--snice-color-text-secondary);font-size:0.875rem">Bordered cards have a subtle border for clean layouts.</p>
-              <div slot="footer"><snice-button variant="default" size="small" outline>Learn More</snice-button></div>
+            <snice-card variant="elevated">
+              <div slot="header" style="display:flex;align-items:center;gap:0.5rem">
+                <span style="font-size:1.5rem">👥</span>
+                <div>
+                  <h4 style="margin:0;font-size:0.875rem">Users</h4>
+                  <span style="font-size:0.7rem;color:var(--snice-color-text-tertiary)">Active now</span>
+                </div>
+              </div>
+              <div style="margin:0">
+                <span style="font-size:1.75rem;font-weight:700">2,847</span>
+                <span style="font-size:0.75rem;color:var(--snice-color-success);margin-left:0.5rem">↑ 8.1%</span>
+              </div>
+            </snice-card>
+            <snice-card variant="elevated">
+              <div slot="header" style="display:flex;align-items:center;gap:0.5rem">
+                <span style="font-size:1.5rem">⚡</span>
+                <div>
+                  <h4 style="margin:0;font-size:0.875rem">Uptime</h4>
+                  <span style="font-size:0.7rem;color:var(--snice-color-text-tertiary)">Last 30d</span>
+                </div>
+              </div>
+              <div style="margin:0">
+                <span style="font-size:1.75rem;font-weight:700">99.98%</span>
+                <span style="font-size:0.75rem;color:var(--snice-color-text-tertiary);margin-left:0.5rem">▸ 0.01%</span>
+              </div>
+            </snice-card>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;width:100%">
+            <snice-card variant="bordered" clickable>
+              <div slot="header" style="display:flex;justify-content:space-between;align-items:center">
+                <h4 style="margin:0">Getting Started</h4>
+                <snice-chip size="small" variant="success">New</snice-chip>
+              </div>
+              <p style="margin:0;color:var(--snice-color-text-secondary);font-size:0.85rem;line-height:1.5">Build beautiful interfaces with Snice components. Follow our quick-start guide to set up your project in minutes.</p>
+              <div slot="footer" style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:0.75rem;color:var(--snice-color-text-tertiary)">5 min read</span>
+                <snice-button variant="primary" size="small">Read Guide</snice-button>
+              </div>
+            </snice-card>
+            <snice-card variant="flat">
+              <div slot="header" style="display:flex;justify-content:space-between;align-items:center">
+                <h4 style="margin:0">Quick Actions</h4>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:0.5rem">
+                <snice-button variant="default" size="small" style="width:100%;justify-content:flex-start">📁 New Project</snice-button>
+                <snice-button variant="default" size="small" style="width:100%;justify-content:flex-start">🔗 Import Repository</snice-button>
+                <snice-button variant="default" size="small" style="width:100%;justify-content:flex-start">📋 Browse Templates</snice-button>
+              </div>
             </snice-card>
           </div>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <pre><code class="language-html">&lt;snice-card variant="elevated"&gt;
-  &lt;h4 slot="header"&gt;Elevated Card&lt;/h4&gt;
+          <pre><code class="language-html">&lt;!-- Variants: elevated, bordered, flat --&gt;
+&lt;snice-card variant="elevated"&gt;
+  &lt;h4 slot="header"&gt;Title&lt;/h4&gt;
   &lt;p&gt;Card content here.&lt;/p&gt;
   &lt;div slot="footer"&gt;
-    &lt;snice-button variant="primary" size="small"&gt;
-      Action
-    &lt;/snice-button&gt;
+    &lt;snice-button size="small"&gt;Action&lt;/snice-button&gt;
   &lt;/div&gt;
+&lt;/snice-card&gt;
+
+&lt;!-- Clickable + Sizes: small, medium, large --&gt;
+&lt;snice-card variant="bordered" clickable size="small"&gt;
+  ...
 &lt;/snice-card&gt;</code></pre>
         </div>
       </div>
     </div>
-
-    <!-- ── 5. Modal ── -->
+<!-- ── 5. Modal ── -->
     <div class="comp-section">
       <h3>Modal</h3>
       <p class="comp-desc">Dialog overlays for focused interactions</p>
@@ -322,9 +427,7 @@
     <!-- ════════════════════════════════════════ -->
     <!-- COMMON                                   -->
     <!-- ════════════════════════════════════════ -->
-    <div class="comp-category">Common</div>
-
-    <!-- ── 6. Alert ── -->
+<!-- ── 6. Alert ── -->
     <div class="comp-section">
       <h3>Alert</h3>
       <p class="comp-desc">Contextual feedback messages</p>
@@ -359,8 +462,7 @@
         </div>
       </div>
     </div>
-
-    <!-- ── 7. Checkbox, Radio, Switch ── -->
+<!-- ── 7. Checkbox, Radio, Switch ── -->
     <div class="comp-section">
       <h3>Checkbox, Radio &amp; Switch</h3>
       <p class="comp-desc">Form toggles, selections, and grouped options</p>
@@ -384,18 +486,26 @@
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <pre><code class="language-html">&lt;snice-checkbox label="Remember me" checked&gt;&lt;/snice-checkbox&gt;
+          <pre><code class="language-html">&lt;snice-checkbox label="Remember me" checked&gt;
+&lt;/snice-checkbox&gt;
+
 &lt;snice-checkbox label="Subscribe"&gt;&lt;/snice-checkbox&gt;
 
-&lt;snice-radio name="plan" label="Free" value="free" checked&gt;&lt;/snice-radio&gt;
-&lt;snice-radio name="plan" label="Pro" value="pro"&gt;&lt;/snice-radio&gt;
+&lt;snice-radio
+  name="plan"
+  label="Free"
+  value="free"
+  checked
+&gt;&lt;/snice-radio&gt;
+
+&lt;snice-radio name="plan" label="Pro" value="pro"&gt;
+&lt;/snice-radio&gt;
 
 &lt;snice-switch checked&gt;Notifications&lt;/snice-switch&gt;</code></pre>
         </div>
       </div>
     </div>
-
-    <!-- ── 8. Textarea ── -->
+<!-- ── 8. Textarea ── -->
     <div class="comp-section">
       <h3>Textarea</h3>
       <p class="comp-desc">Multi-line text input with auto-grow and character count</p>
@@ -423,27 +533,125 @@
         </div>
       </div>
     </div>
-
-    <!-- ── 9. Tabs ── -->
+<!-- ── 9. Tabs ── -->
     <div class="comp-section">
       <h3>Tabs</h3>
-      <p class="comp-desc">Tabbed content navigation with transitions</p>
+      <p class="comp-desc">Tabbed content with transitions and four placement directions</p>
       <div class="comp-split comp-split-stacked">
-        <div class="comp-split-demo demo-col">
-          <snice-tabs transition="fade">
-            <snice-tab slot="nav">Overview</snice-tab>
-            <snice-tab slot="nav">Features</snice-tab>
-            <snice-tab slot="nav">Usage</snice-tab>
-            <snice-tab-panel>
-              <p style="margin:0;padding:0.5rem 0">Snice provides 64 production-ready UI components built with TypeScript and modern web standards.</p>
-            </snice-tab-panel>
-            <snice-tab-panel>
-              <p style="margin:0;padding:0.5rem 0">Decorators, differential rendering, routing, controllers, form association, and more.</p>
-            </snice-tab-panel>
-            <snice-tab-panel>
-              <p style="margin:0;padding:0.5rem 0">Use standalone builds, or import from the full package. Works with React, Vue, and Angular.</p>
-            </snice-tab-panel>
-          </snice-tabs>
+        <div class="comp-split-demo demo-col" style="gap:1.25rem">
+          <!-- Top (default) -->
+          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1.25rem;position:relative">
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">placement: top</span>
+            <snice-tabs transition="fade">
+              <snice-tab slot="nav">Overview</snice-tab>
+              <snice-tab slot="nav">Features</snice-tab>
+              <snice-tab slot="nav">Getting Started</snice-tab>
+              <snice-tab-panel>
+                <div style="padding:1rem 0.25rem">
+                  <h4 style="margin:0 0 0.5rem">Component Library</h4>
+                  <p style="margin:0 0 0.75rem;opacity:0.8;line-height:1.6">Snice ships 64 production-ready web components built entirely with TypeScript. Each component uses Shadow DOM for style encapsulation and works standalone or as part of a larger application.</p>
+                  <p style="margin:0;opacity:0.6;font-size:0.875rem">Framework agnostic &mdash; works with React, Vue, Angular, or vanilla JS.</p>
+                </div>
+              </snice-tab-panel>
+              <snice-tab-panel>
+                <div style="padding:1rem 0.25rem">
+                  <h4 style="margin:0 0 0.75rem">What's Included</h4>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem 1.5rem">
+                    <div style="display:flex;align-items:center;gap:0.5rem"><span style="color:var(--snice-color-success)">&#10003;</span> Differential rendering</div>
+                    <div style="display:flex;align-items:center;gap:0.5rem"><span style="color:var(--snice-color-success)">&#10003;</span> TypeScript decorators</div>
+                    <div style="display:flex;align-items:center;gap:0.5rem"><span style="color:var(--snice-color-success)">&#10003;</span> Client-side routing</div>
+                    <div style="display:flex;align-items:center;gap:0.5rem"><span style="color:var(--snice-color-success)">&#10003;</span> Dark &amp; light themes</div>
+                    <div style="display:flex;align-items:center;gap:0.5rem"><span style="color:var(--snice-color-success)">&#10003;</span> Form validation</div>
+                    <div style="display:flex;align-items:center;gap:0.5rem"><span style="color:var(--snice-color-success)">&#10003;</span> Accessibility built-in</div>
+                  </div>
+                </div>
+              </snice-tab-panel>
+              <snice-tab-panel>
+                <div style="padding:1rem 0.25rem">
+                  <h4 style="margin:0 0 0.5rem">Quick Start</h4>
+                  <p style="margin:0 0 0.75rem;opacity:0.8;line-height:1.6">Install from npm and import only what you need. Each component can also be loaded as a standalone script with zero configuration.</p>
+                  <code style="display:block;padding:0.5rem 0.75rem;border-radius:6px;background:rgba(128,128,128,0.15);font-size:0.85rem">npm install snice</code>
+                </div>
+              </snice-tab-panel>
+            </snice-tabs>
+          </div>
+          <!-- Bottom -->
+          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1.25rem;position:relative">
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">placement: bottom</span>
+            <snice-tabs placement="bottom" transition="slide">
+              <snice-tab slot="nav">Design</snice-tab>
+              <snice-tab slot="nav">Develop</snice-tab>
+              <snice-tab slot="nav">Deploy</snice-tab>
+              <snice-tab-panel>
+                <div style="padding:1rem 0.25rem">
+                  <h4 style="margin:0 0 0.5rem">Design System</h4>
+                  <p style="margin:0 0 0.5rem;opacity:0.8;line-height:1.6">Every component follows a consistent design language with customizable CSS properties. Swap color palettes, adjust spacing, or override individual parts.</p>
+                  <p style="margin:0;opacity:0.6;font-size:0.875rem">Supports <code>::part()</code> selectors for deep customization.</p>
+                </div>
+              </snice-tab-panel>
+              <snice-tab-panel>
+                <div style="padding:1rem 0.25rem">
+                  <h4 style="margin:0 0 0.5rem">Developer Experience</h4>
+                  <p style="margin:0;opacity:0.8;line-height:1.6">TypeScript decorators handle boilerplate: <code>@element</code> registers the component, <code>@property</code> creates reactive attributes, <code>@render</code> defines the template. Less code, fewer bugs.</p>
+                </div>
+              </snice-tab-panel>
+              <snice-tab-panel>
+                <div style="padding:1rem 0.25rem">
+                  <h4 style="margin:0 0 0.5rem">Production Ready</h4>
+                  <p style="margin:0;opacity:0.8;line-height:1.6">Tree-shakeable ESM builds, standalone IIFE scripts, and zero runtime dependencies. Each component is under 50 KB minified. Ship only what you use.</p>
+                </div>
+              </snice-tab-panel>
+            </snice-tabs>
+          </div>
+          <!-- Vertical: Start / End -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem">
+            <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1.25rem;position:relative">
+              <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">placement: start</span>
+              <snice-tabs placement="start">
+                <snice-tab slot="nav">Basics</snice-tab>
+                <snice-tab slot="nav">Props</snice-tab>
+                <snice-tab slot="nav">Events</snice-tab>
+                <snice-tab-panel>
+                  <div style="padding:0.75rem">
+                    <p style="margin:0;line-height:1.6;opacity:0.8">Import the component and add it to your HTML. Attributes map directly to properties.</p>
+                  </div>
+                </snice-tab-panel>
+                <snice-tab-panel>
+                  <div style="padding:0.75rem">
+                    <p style="margin:0;line-height:1.6;opacity:0.8">Use <code>placement</code>, <code>transition</code>, and <code>active</code> to control behavior.</p>
+                  </div>
+                </snice-tab-panel>
+                <snice-tab-panel>
+                  <div style="padding:0.75rem">
+                    <p style="margin:0;line-height:1.6;opacity:0.8">Listen for <code>tab-change</code> to respond when the active tab switches.</p>
+                  </div>
+                </snice-tab-panel>
+              </snice-tabs>
+            </div>
+            <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1.25rem;position:relative">
+              <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">placement: end</span>
+              <snice-tabs placement="end">
+                <snice-tab slot="nav">v4.5</snice-tab>
+                <snice-tab slot="nav">v4.4</snice-tab>
+                <snice-tab slot="nav">v4.3</snice-tab>
+                <snice-tab-panel>
+                  <div style="padding:0.75rem">
+                    <p style="margin:0;line-height:1.6;opacity:0.8">Added component import validation, build improvements, and new standalone output formats.</p>
+                  </div>
+                </snice-tab-panel>
+                <snice-tab-panel>
+                  <div style="padding:0.75rem">
+                    <p style="margin:0;line-height:1.6;opacity:0.8">Duplicate element registration now warns instead of erroring. Improved dev ergonomics.</p>
+                  </div>
+                </snice-tab-panel>
+                <snice-tab-panel>
+                  <div style="padding:0.75rem">
+                    <p style="margin:0;line-height:1.6;opacity:0.8">Website improvements, release automation, and CI pipeline for automatic publishing.</p>
+                  </div>
+                </snice-tab-panel>
+              </snice-tabs>
+            </div>
+          </div>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
@@ -451,48 +659,98 @@
   &lt;snice-tab slot="nav"&gt;Overview&lt;/snice-tab&gt;
   &lt;snice-tab slot="nav"&gt;Features&lt;/snice-tab&gt;
   &lt;snice-tab-panel&gt;
-    &lt;p&gt;Overview content...&lt;/p&gt;
+    &lt;h4&gt;Component Library&lt;/h4&gt;
+    &lt;p&gt;64 production-ready components...&lt;/p&gt;
   &lt;/snice-tab-panel&gt;
   &lt;snice-tab-panel&gt;
-    &lt;p&gt;Features content...&lt;/p&gt;
+    &lt;p&gt;Differential rendering, routing...&lt;/p&gt;
   &lt;/snice-tab-panel&gt;
-&lt;/snice-tabs&gt;</code></pre>
+&lt;/snice-tabs&gt;
+
+&lt;!-- Bottom placement --&gt;
+&lt;snice-tabs placement="bottom"
+            transition="slide"&gt;
+  ...
+&lt;/snice-tabs&gt;
+
+&lt;!-- Vertical --&gt;
+&lt;snice-tabs placement="start"&gt;...&lt;/snice-tabs&gt;
+&lt;snice-tabs placement="end"&gt;...&lt;/snice-tabs&gt;</code></pre>
         </div>
       </div>
     </div>
-
-    <!-- ── 10. Table ── -->
+<!-- ── 10. Table ── -->
     <div class="comp-section">
       <h3>Table</h3>
-      <p class="comp-desc">Data tables with sorting, search, pagination, and rich cell types</p>
+      <p class="comp-desc">Data tables with 15 column types, sorting, search, selection, and Excel-like formatting</p>
       <div class="comp-split comp-split-stacked">
         <div class="comp-split-demo demo-col">
-          <snice-table id="demo-table" size="medium" hoverable sortable striped>
-            <snice-column slot="columns" key="metric" label="Metric" type="text"></snice-column>
-            <snice-column slot="columns" key="value" label="Value" type="number" thousands-separator="true"></snice-column>
-            <snice-column slot="columns" key="progress" label="Progress" type="progress" progress-max="100" show-percentage="true"></snice-column>
-            <snice-row slot="rows" data-metric="Revenue" data-value="125340" data-progress="78"></snice-row>
-            <snice-row slot="rows" data-metric="Users" data-value="8250" data-progress="92"></snice-row>
-            <snice-row slot="rows" data-metric="Conversion" data-value="3.4" data-progress="68"></snice-row>
-            <snice-row slot="rows" data-metric="Retention" data-value="89.2" data-progress="89"></snice-row>
-          </snice-table>
+          <snice-table id="demo-table" size="medium" hoverable sortable selectable searchable striped style="width:100%"></snice-table>
         </div>
         <div class="comp-split-code">
-          <span class="code-lang">html</span>
-          <pre><code class="language-html">&lt;snice-table hoverable sortable striped&gt;
-  &lt;snice-column slot="columns" key="metric"
-    label="Metric" type="text"&gt;&lt;/snice-column&gt;
-  &lt;snice-column slot="columns" key="value"
-    label="Value" type="number"&gt;&lt;/snice-column&gt;
-  &lt;snice-row slot="rows"
-    data-metric="Revenue"
-    data-value="125340"&gt;&lt;/snice-row&gt;
-&lt;/snice-table&gt;</code></pre>
+          <span class="code-lang">javascript</span>
+          <pre><code class="language-javascript">table.columns = [
+  { key: 'product', label: 'Product', sortable: true },
+  { key: 'revenue', label: 'Revenue', align: 'right',
+    formatter: v =&gt; '$' + Number(v).toLocaleString() },
+  { key: 'growth', label: 'Growth', align: 'right',
+    formatter: v =&gt; (v &gt;= 0 ? '+' : '') + v.toFixed(1) + '%' },
+  { key: 'users', label: 'Users', align: 'right',
+    formatter: v =&gt; Number(v).toLocaleString() },
+  { key: 'trend', label: 'Trend', type: 'sparkline',
+    sparklineFormat: { type: 'line', color: '#3b82f6' } },
+  { key: 'status', label: 'Status' }
+];
+
+// 15 built-in types: text, number, currency, percent,
+// rating, progress, sparkline, boolean, date,
+// duration, filesize, accounting, scientific,
+// fraction, custom</code></pre>
         </div>
       </div>
     </div>
-
-    <!-- ── 11. Badge ── -->
+<script>
+// Initialize table
+    customElements.whenDefined('snice-table').then(() => {
+      const table = document.getElementById('demo-table');
+      if (table) {
+        table.columns = [
+          { key: 'product', label: 'Product', type: 'text', sortable: true },
+          { key: 'revenue', label: 'Revenue', type: 'text', align: 'right', sortable: true },
+          { key: 'growth', label: 'Growth', type: 'text', align: 'right', sortable: true },
+          { key: 'users', label: 'Users', type: 'text', align: 'right', sortable: true },
+          { key: 'trend', label: 'Trend', type: 'sparkline',
+            sparklineFormat: { type: 'line', color: '#3b82f6' } },
+          { key: 'status', label: 'Status', type: 'text', sortable: true }
+        ];
+        table.setData([
+          { product: 'Nebula Pro', revenue: '$284,500', growth: '+12.5%', users: '12,450', trend: [32,35,38,36,42,45,48], status: 'Active' },
+          { product: 'Quantum Core', revenue: '$891,200', growth: '\u22123.2%', users: '45,200', trend: [50,48,45,47,43,42,40], status: 'Active' },
+          { product: 'Luna Shield', revenue: '$156,800', growth: '+28.7%', users: '8,900', trend: [20,28,35,40,52,58,65], status: 'Active' },
+          { product: 'Flux Engine', revenue: '$423,900', growth: '+5.1%', users: '28,100', trend: [40,42,41,43,42,44,43], status: 'Active' },
+          { product: 'Atlas Cloud', revenue: '$1,245,000', growth: '\u22128.4%', users: '67,500', trend: [60,55,50,48,44,40,38], status: 'Paused' },
+          { product: 'Prism Analytics', revenue: '$367,400', growth: '+18.3%', users: '19,800', trend: [25,30,33,38,42,48,52], status: 'Active' },
+          { product: 'Vortex Cache', revenue: '$98,700', growth: '+42.6%', users: '5,200', trend: [10,18,25,30,38,45,55], status: 'Active' },
+          { product: 'Helios API', revenue: '$712,800', growth: '+2.8%', users: '38,400', trend: [44,45,43,46,45,47,46], status: 'Active' }
+        ]);
+        requestAnimationFrame(() => {
+          if (table.renderHeader) table.renderHeader();
+          if (table.renderBody) table.renderBody();
+          // Fix sparkline colors (canvas can't resolve CSS vars during initial render)
+          setTimeout(() => {
+            const root = table.shadowRoot;
+            if (root) {
+              const colors = ['#3b82f6','#ef4444','#22c55e','#f59e0b','#8b5cf6','#06b6d4','#10b981','#ec4899'];
+              root.querySelectorAll('snice-cell-sparkline').forEach((cell, i) => {
+                cell.color = colors[i % colors.length];
+              });
+            }
+          }, 500);
+        });
+      }
+    });
+</script>
+<!-- ── 11. Badge ── -->
     <div class="comp-section">
       <h3>Badge</h3>
       <p class="comp-desc">Notification indicators and count displays</p>
@@ -531,10 +789,17 @@
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <pre><code class="language-html">&lt;snice-badge inline content="Active" variant="success"&gt;
-&lt;/snice-badge&gt;
-&lt;snice-badge inline content="High" variant="error"&gt;
-&lt;/snice-badge&gt;</code></pre>
+          <pre><code class="language-html">&lt;snice-badge
+  inline
+  content="Active"
+  variant="success"
+&gt;&lt;/snice-badge&gt;
+
+&lt;snice-badge
+  inline
+  content="High"
+  variant="error"
+&gt;&lt;/snice-badge&gt;</code></pre>
         </div>
       </div>
     </div>
@@ -542,9 +807,7 @@
     <!-- ════════════════════════════════════════ -->
     <!-- DELIGHTER SPRINKLE                       -->
     <!-- ════════════════════════════════════════ -->
-    <div class="comp-category">Delighter</div>
-
-    <!-- ── 12. QR Code ── -->
+<!-- ── 12. QR Code ── -->
     <div class="comp-section">
       <h3>QR Code</h3>
       <p class="comp-desc">Generate QR codes with colors, logos, and dot styles</p>
@@ -577,37 +840,108 @@
     <!-- ════════════════════════════════════════ -->
     <!-- NAVIGATION                               -->
     <!-- ════════════════════════════════════════ -->
-    <div class="comp-category">Navigation</div>
-
-    <!-- ── 13. Breadcrumbs ── -->
+<script>
+// Start QR reader when modal opens
+    document.getElementById('qr-reader-modal')?.addEventListener('snice-modal-open', () => {
+      document.getElementById('demo-qr-reader')?.start();
+    });
+</script>
+<!-- ── 13. Breadcrumbs ── -->
     <div class="comp-section">
       <h3>Breadcrumbs</h3>
-      <p class="comp-desc">Navigation path indicators with collapsible paths</p>
+      <p class="comp-desc">Navigation path indicators with separators, icons, sizes, and collapsible paths</p>
       <div class="comp-split comp-split-stacked">
-        <div class="comp-split-demo demo-col">
-          <snice-breadcrumbs id="demo-breadcrumbs" separator="/"></snice-breadcrumbs>
-          <snice-breadcrumbs id="demo-breadcrumbs-collapsed" separator=">" max-items="3" style="margin-top:0.75rem"></snice-breadcrumbs>
+        <div class="comp-split-demo demo-col" style="gap:1rem">
+          <div>
+            <span style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--snice-color-text-tertiary);margin-bottom:0.25rem;display:block">Default</span>
+            <snice-breadcrumbs id="demo-bc-default" separator="/"></snice-breadcrumbs>
+          </div>
+          <div>
+            <span style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--snice-color-text-tertiary);margin-bottom:0.25rem;display:block">With Icons</span>
+            <snice-breadcrumbs id="demo-bc-icons" separator="&raquo;"></snice-breadcrumbs>
+          </div>
+          <div>
+            <span style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--snice-color-text-tertiary);margin-bottom:0.25rem;display:block">Collapsible (max-items=3)</span>
+            <snice-breadcrumbs id="demo-bc-collapsed" separator=">" max-items="3"></snice-breadcrumbs>
+          </div>
+          <div style="display:flex;gap:2rem;align-items:center">
+            <div>
+              <span style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--snice-color-text-tertiary);margin-bottom:0.25rem;display:block">Small</span>
+              <snice-breadcrumbs id="demo-bc-small" separator="/" size="small"></snice-breadcrumbs>
+            </div>
+            <div>
+              <span style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--snice-color-text-tertiary);margin-bottom:0.25rem;display:block">Large</span>
+              <snice-breadcrumbs id="demo-bc-large" separator="/" size="large"></snice-breadcrumbs>
+            </div>
+          </div>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <pre><code class="language-html">&lt;snice-breadcrumbs separator="/"&gt;
+          <pre><code class="language-html">&lt;!-- Separators: / &gt; &raquo; &bull; | --&gt;
+&lt;snice-breadcrumbs separator="/"&gt;
   &lt;snice-crumb href="/" label="Home"&gt;&lt;/snice-crumb&gt;
-  &lt;snice-crumb href="/products" label="Products"&gt;&lt;/snice-crumb&gt;
-  &lt;snice-crumb label="Laptop" active&gt;&lt;/snice-crumb&gt;
+  &lt;snice-crumb href="/docs" label="Docs"&gt;&lt;/snice-crumb&gt;
+  &lt;snice-crumb label="API" active&gt;&lt;/snice-crumb&gt;
 &lt;/snice-breadcrumbs&gt;
 
-&lt;!-- Or set items via JS --&gt;
+&lt;!-- With icons --&gt;
 &lt;script&gt;
   el.items = [
-    { label: 'Home', href: '/' },
-    { label: 'Laptop' }
+    { label: 'Home', href: '/', icon: '&#x1F3E0;' },
+    { label: 'Products', href: '/products', icon: '&#x1F4E6;' },
+    { label: 'Details' }
   ];
-&lt;/script&gt;</code></pre>
+&lt;/script&gt;
+
+&lt;!-- Collapse long paths --&gt;
+&lt;snice-breadcrumbs max-items="3"&gt;...&lt;/snice-breadcrumbs&gt;
+
+&lt;!-- Sizes: small, medium, large --&gt;
+&lt;snice-breadcrumbs size="small"&gt;...&lt;/snice-breadcrumbs&gt;</code></pre>
         </div>
       </div>
     </div>
-
-    <!-- ── 14. Pagination ── -->
+<script>
+// Initialize breadcrumbs
+    customElements.whenDefined('snice-breadcrumbs').then(() => {
+      const bcDefault = document.getElementById('demo-bc-default');
+      if (bcDefault) bcDefault.items = [
+        { label: 'Home', href: '#' },
+        { label: 'Products', href: '#' },
+        { label: 'Electronics', href: '#' },
+        { label: 'Laptop' }
+      ];
+      const bcIcons = document.getElementById('demo-bc-icons');
+      if (bcIcons) bcIcons.items = [
+        { label: 'Home', href: '#', icon: '\u{1F3E0}' },
+        { label: 'Shop', href: '#', icon: '\u{1F6D2}' },
+        { label: 'Electronics', href: '#', icon: '\u{1F4BB}' },
+        { label: 'MacBook Pro' }
+      ];
+      const bcCollapsed = document.getElementById('demo-bc-collapsed');
+      if (bcCollapsed) bcCollapsed.items = [
+        { label: 'Home', href: '#' },
+        { label: 'Documents', href: '#' },
+        { label: 'Projects', href: '#' },
+        { label: 'Web Apps', href: '#' },
+        { label: 'Snice', href: '#' },
+        { label: 'Components' }
+      ];
+      const bcSmall = document.getElementById('demo-bc-small');
+      if (bcSmall) bcSmall.items = [
+        { label: 'Home', href: '#' },
+        { label: 'Docs', href: '#' },
+        { label: 'API' }
+      ];
+      const bcLarge = document.getElementById('demo-bc-large');
+      if (bcLarge) bcLarge.items = [
+        { label: 'Home', href: '#' },
+        { label: 'Docs', href: '#' },
+        { label: 'API' }
+      ];
+    });
+</script>
+<!-- ── 14. Pagination ── -->
     <div class="comp-section">
       <h3>Pagination</h3>
       <p class="comp-desc">Navigation for paged content</p>
@@ -631,8 +965,7 @@
         </div>
       </div>
     </div>
-
-    <!-- ── 15. Link ── -->
+<!-- ── 15. Link ── -->
     <div class="comp-section">
       <h3>Link</h3>
       <p class="comp-desc">Styled anchor elements with variants</p>
@@ -648,14 +981,16 @@
         <div class="comp-split-code">
           <span class="code-lang">html</span>
           <pre><code class="language-html">&lt;snice-link href="#" variant="primary"&gt;Primary&lt;/snice-link&gt;
+
 &lt;snice-link href="#" underline&gt;Underlined&lt;/snice-link&gt;
+
 &lt;snice-link href="#" external&gt;External&lt;/snice-link&gt;
+
 &lt;snice-link href="#" disabled&gt;Disabled&lt;/snice-link&gt;</code></pre>
         </div>
       </div>
     </div>
-
-    <!-- ── 16. Menu ── -->
+<!-- ── 16. Menu ── -->
     <div class="comp-section">
       <h3>Menu</h3>
       <p class="comp-desc">Dropdown menus with keyboard navigation</p>
@@ -689,41 +1024,54 @@
         </div>
       </div>
     </div>
-
-    <!-- ── 17. Drawer ── -->
+<!-- ── 17. Drawer ── -->
     <div class="comp-section">
       <h3>Drawer</h3>
-      <p class="comp-desc">Slide-out panels from any edge</p>
+      <p class="comp-desc">Slide-out panels from any edge with push, persist, and size options</p>
       <div class="comp-split">
-        <div class="comp-split-demo demo-center" style="gap:0.75rem">
-          <snice-button variant="primary" onclick="document.getElementById('drawer-left').show()">Left Drawer</snice-button>
-          <snice-button variant="default" onclick="document.getElementById('drawer-right').show()">Right Drawer</snice-button>
-          <snice-button variant="default" onclick="document.getElementById('drawer-bottom').show()">Bottom Drawer</snice-button>
+        <div class="comp-split-demo demo-center" style="gap:0.5rem;flex-wrap:wrap">
+          <snice-button variant="primary" onclick="document.getElementById('drawer-left').show()">Left</snice-button>
+          <snice-button variant="default" onclick="document.getElementById('drawer-right').show()">Right</snice-button>
+          <snice-button variant="default" onclick="document.getElementById('drawer-top').show()">Top</snice-button>
+          <snice-button variant="default" onclick="document.getElementById('drawer-bottom').show()">Bottom</snice-button>
+          <snice-button variant="success" outline onclick="document.getElementById('drawer-push').show()">Push Content</snice-button>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <pre><code class="language-html">&lt;snice-drawer id="drawer-left" position="left"
-  size="medium"&gt;
-  &lt;h3&gt;Navigation&lt;/h3&gt;
-  &lt;nav&gt;...&lt;/nav&gt;
-&lt;/snice-drawer&gt;
+          <pre><code class="language-html">&lt;!-- Positions --&gt;
+&lt;snice-drawer position="left"&gt;...&lt;/snice-drawer&gt;
+&lt;snice-drawer position="right"&gt;...&lt;/snice-drawer&gt;
+&lt;snice-drawer position="top"&gt;...&lt;/snice-drawer&gt;
+&lt;snice-drawer position="bottom"&gt;...&lt;/snice-drawer&gt;
 
-&lt;script&gt;
-  document.getElementById('drawer-left').show();
-&lt;/script&gt;</code></pre>
+&lt;!-- Sizes --&gt;
+&lt;snice-drawer size="small"&gt;&lt;/snice-drawer&gt;
+&lt;snice-drawer size="large"&gt;&lt;/snice-drawer&gt;
+&lt;snice-drawer size="full"&gt;&lt;/snice-drawer&gt;
+
+&lt;!-- Features --&gt;
+&lt;snice-drawer push-content&gt;&lt;/snice-drawer&gt;
+&lt;snice-drawer no-backdrop&gt;&lt;/snice-drawer&gt;
+&lt;snice-drawer persistent&gt;&lt;/snice-drawer&gt;</code></pre>
         </div>
       </div>
       <snice-drawer id="drawer-left" position="left" size="medium">
-        <h3 style="margin:0 0 1rem">Navigation</h3>
-        <div style="display:flex;flex-direction:column;gap:0.5rem">
+        <span slot="title">Navigation</span>
+        <div style="padding:1rem;display:flex;flex-direction:column;gap:0.5rem">
           <snice-button variant="text" style="justify-content:flex-start">Dashboard</snice-button>
           <snice-button variant="text" style="justify-content:flex-start">Projects</snice-button>
           <snice-button variant="text" style="justify-content:flex-start">Settings</snice-button>
         </div>
       </snice-drawer>
       <snice-drawer id="drawer-right" position="right" size="medium">
-        <h3 style="margin:0 0 1rem">Details Panel</h3>
-        <p style="color:var(--snice-color-text-secondary)">Additional information and actions can go here.</p>
+        <span slot="title">Details Panel</span>
+        <p style="padding:1rem;color:var(--snice-color-text-secondary)">Additional information and actions can go here.</p>
+      </snice-drawer>
+      <snice-drawer id="drawer-top" position="top" size="small">
+        <span slot="title">Notification Bar</span>
+        <div style="text-align:center;padding:1rem">
+          <p style="margin:0">You have 3 new notifications</p>
+        </div>
       </snice-drawer>
       <snice-drawer id="drawer-bottom" position="bottom" size="small">
         <div style="text-align:center;padding:1rem">
@@ -734,9 +1082,12 @@
           </div>
         </div>
       </snice-drawer>
+      <snice-drawer id="drawer-push" position="left" size="medium" push-content>
+        <span slot="title">Push Content</span>
+        <p style="padding:1rem;color:var(--snice-color-text-secondary)">This drawer pushes the main content instead of overlaying it.</p>
+      </snice-drawer>
     </div>
-
-    <!-- ── 18. Tooltip ── -->
+<!-- ── 18. Tooltip ── -->
     <div class="comp-section">
       <h3>Tooltip</h3>
       <p class="comp-desc">Contextual information on hover or click</p>
@@ -762,12 +1113,7 @@
         </div>
       </div>
     </div>
-
-
-    <div class="comp-category">Feedback</div>
-
-    <div class="comp-section">
-      <h3>Chip</h3>
+<h3>Chip</h3>
       <p class="comp-desc">Tags, filters, and selections</p>
       <div class="comp-split">
         <div class="comp-split-demo">
@@ -785,17 +1131,25 @@
         <div class="comp-split-code">
           <span class="code-lang">html</span>
           <pre><code class="language-html">&lt;snice-chip label="React" variant="primary"&gt;&lt;/snice-chip&gt;
-&lt;snice-chip label="Done" variant="success" selected&gt;&lt;/snice-chip&gt;
+
+&lt;snice-chip
+  label="Done"
+  variant="success"
+  selected
+&gt;&lt;/snice-chip&gt;
+
 &lt;snice-chip label="Remove me" removable&gt;&lt;/snice-chip&gt;
+
 &lt;snice-chip label="Small" size="small"&gt;&lt;/snice-chip&gt;</code></pre>
         </div>
       </div>
     </div>
 
     <div class="comp-section">
+<div class="comp-section">
       <h3>Progress &amp; Spinner</h3>
       <p class="comp-desc">Linear progress bars, circular progress, and spinners</p>
-      <div class="comp-split comp-split-stacked">
+      <div class="comp-split">
         <div class="comp-split-demo demo-col">
           <div style="margin-bottom:0.75rem">
             <small style="color:var(--snice-color-text-secondary)">Download Progress</small>
@@ -823,15 +1177,25 @@
         <div class="comp-split-code">
           <span class="code-lang">html</span>
           <pre><code class="language-html">&lt;snice-progress value="65" show-label&gt;&lt;/snice-progress&gt;
-&lt;snice-progress value="100" color="success"&gt;&lt;/snice-progress&gt;
+
+&lt;snice-progress value="100" color="success"&gt;
+&lt;/snice-progress&gt;
+
 &lt;snice-progress indeterminate&gt;&lt;/snice-progress&gt;
+
 &lt;snice-spinner size="large"&gt;&lt;/snice-spinner&gt;
-&lt;snice-progress variant="circular" value="75" show-label&gt;&lt;/snice-progress&gt;</code></pre>
+
+&lt;snice-progress
+  variant="circular"
+  value="75"
+  show-label
+&gt;&lt;/snice-progress&gt;</code></pre>
         </div>
       </div>
     </div>
 
     <div class="comp-section">
+<div class="comp-section">
       <h3>Toast</h3>
       <p class="comp-desc">Temporary notification messages</p>
       <div class="comp-split">
@@ -855,6 +1219,7 @@
     </div>
 
     <div class="comp-section">
+<div class="comp-section">
       <h3>Banner</h3>
       <p class="comp-desc">Full-width notification banners</p>
       <div class="comp-split">
@@ -873,11 +1238,26 @@
         </div>
       </div>
     </div>
-
-    <div class="comp-category">Delighter Sprinkles</div>
-
-    <div class="comp-section">
-      <h3>Color Picker</h3>
+<script>
+// Banner demo - create dynamically on click
+    window.showDemoBanner = (type) => {
+      const existing = document.getElementById('demo-banner-' + type);
+      if (existing) existing.remove();
+      const banner = document.createElement('snice-banner');
+      banner.id = 'demo-banner-' + type;
+      banner.variant = type;
+      banner.dismissible = true;
+      if (type === 'info') {
+        banner.message = 'New version available! Update to get the latest features.';
+        banner.actionText = 'Update Now';
+      } else {
+        banner.message = 'Your trial expires in 3 days.';
+      }
+      document.body.prepend(banner);
+      requestAnimationFrame(() => banner.show());
+    };
+</script>
+<h3>Color Picker</h3>
       <p class="comp-desc">Interactive color selection</p>
       <div class="comp-split">
         <div class="comp-split-demo">
@@ -895,11 +1275,7 @@
         </div>
       </div>
     </div>
-
-    <div class="comp-category">Data Display</div>
-
-    <div class="comp-section">
-      <h3>Avatar</h3>
+<h3>Avatar</h3>
       <p class="comp-desc">User profile images with fallback initials</p>
       <div class="comp-split">
         <div class="comp-split-demo">
@@ -916,7 +1292,9 @@
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <pre><code class="language-html">&lt;snice-avatar name="Alice Johnson" size="large"&gt;&lt;/snice-avatar&gt;
+          <pre><code class="language-html">&lt;snice-avatar name="Alice Johnson" size="large"&gt;
+&lt;/snice-avatar&gt;
+
 &lt;snice-avatar
   src="https://i.pravatar.cc/100?u=1"
   name="User"
@@ -928,6 +1306,7 @@
     </div>
 
     <div class="comp-section">
+<div class="comp-section">
       <h3>Skeleton</h3>
       <p class="comp-desc">Loading placeholders</p>
       <div class="comp-split">
@@ -941,9 +1320,15 @@
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <pre><code class="language-html">&lt;snice-skeleton variant="circular" width="48px" height="48px"&gt;
+          <pre><code class="language-html">&lt;snice-skeleton
+  variant="circular"
+  width="48px"
+  height="48px"
+&gt;&lt;/snice-skeleton&gt;
+
+&lt;snice-skeleton variant="text" width="40%"&gt;
 &lt;/snice-skeleton&gt;
-&lt;snice-skeleton variant="text" width="40%"&gt;&lt;/snice-skeleton&gt;
+
 &lt;snice-skeleton variant="rectangular" height="200px"&gt;
 &lt;/snice-skeleton&gt;</code></pre>
         </div>
@@ -951,6 +1336,7 @@
     </div>
 
     <div class="comp-section">
+<div class="comp-section">
       <h3>Divider</h3>
       <p class="comp-desc">Content separators in horizontal and vertical orientations</p>
       <div class="comp-split">
@@ -969,16 +1355,19 @@
         <div class="comp-split-code">
           <span class="code-lang">html</span>
           <pre><code class="language-html">&lt;snice-divider text="OR"&gt;&lt;/snice-divider&gt;
+
 &lt;snice-divider orientation="vertical"&gt;&lt;/snice-divider&gt;
+
 &lt;snice-divider variant="dashed"&gt;&lt;/snice-divider&gt;</code></pre>
         </div>
       </div>
     </div>
 
     <div class="comp-section">
+<div class="comp-section">
       <h3>Accordion</h3>
       <p class="comp-desc">Expandable content sections</p>
-      <div class="comp-split comp-split-stacked">
+      <div class="comp-split">
         <div class="comp-split-demo demo-col">
           <snice-accordion>
             <snice-accordion-item item-id="faq-1" open>
@@ -1008,6 +1397,7 @@
     </div>
 
     <div class="comp-section">
+<div class="comp-section">
       <h3>Empty State</h3>
       <p class="comp-desc">Placeholder for empty content areas</p>
       <div class="comp-split comp-split-stacked">
@@ -1031,26 +1421,70 @@
     </div>
 
     <div class="comp-section">
+<div class="comp-section">
       <h3>Timeline</h3>
-      <p class="comp-desc">Chronological event display</p>
+      <p class="comp-desc">Chronological event display with multiple positions and orientations</p>
       <div class="comp-split comp-split-stacked">
-        <div class="comp-split-demo">
-          <snice-timeline id="demo-timeline" position="left"></snice-timeline>
+        <div class="comp-split-demo demo-col" style="gap:1.5rem">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.25rem">
+            <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1rem;position:relative">
+              <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">left</span>
+              <snice-timeline id="demo-timeline-left" position="left"></snice-timeline>
+            </div>
+            <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1rem;position:relative">
+              <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">alternate</span>
+              <snice-timeline id="demo-timeline-alt" position="alternate"></snice-timeline>
+            </div>
+            <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1rem;position:relative">
+              <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">right</span>
+              <snice-timeline id="demo-timeline-right" position="right"></snice-timeline>
+            </div>
+          </div>
+          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1rem;position:relative">
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">horizontal</span>
+            <snice-timeline id="demo-timeline-horiz" orientation="horizontal"></snice-timeline>
+          </div>
         </div>
         <div class="comp-split-code">
-          <span class="code-lang">html</span>
-          <pre><code class="language-html">&lt;snice-timeline id="tl" position="left"&gt;&lt;/snice-timeline&gt;
-&lt;script&gt;
-  tl.items = [
-    { title: 'Started', timestamp: 'Jan 15', variant: 'info' },
-    { title: 'Launched', timestamp: 'Apr 1', variant: 'success' }
-  ];
-&lt;/script&gt;</code></pre>
+          <span class="code-lang">javascript</span>
+          <pre><code class="language-javascript">&lt;!-- Vertical positions --&gt;
+&lt;snice-timeline position="left"&gt;&lt;/snice-timeline&gt;
+&lt;snice-timeline position="alternate"&gt;&lt;/snice-timeline&gt;
+&lt;snice-timeline position="right"&gt;&lt;/snice-timeline&gt;
+
+&lt;!-- Horizontal --&gt;
+&lt;snice-timeline orientation="horizontal"&gt;
+&lt;/snice-timeline&gt;
+
+timeline.items = [
+  { title: 'Started', timestamp: 'Jan',
+    variant: 'info' },
+  { title: 'Testing', timestamp: 'Mar',
+    variant: 'warning' },
+  { title: 'Launched', timestamp: 'Apr',
+    variant: 'success' }
+];</code></pre>
         </div>
       </div>
     </div>
 
     <div class="comp-section">
+<script>
+// Initialize timelines
+    customElements.whenDefined('snice-timeline').then(() => {
+      const items = [
+        { title: 'Project Started', description: 'Initial planning and setup', timestamp: 'Jan 15', variant: 'info' },
+        { title: 'Development', description: 'Core features implemented', timestamp: 'Feb 20', variant: 'default' },
+        { title: 'Testing', description: 'QA and bug fixes', timestamp: 'Mar 10', variant: 'warning' },
+        { title: 'Launch', description: 'Released to production', timestamp: 'Apr 1', variant: 'success' }
+      ];
+      ['demo-timeline-left', 'demo-timeline-alt', 'demo-timeline-right', 'demo-timeline-horiz'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.items = items;
+      });
+    });
+</script>
+<div class="comp-section">
       <h3>Image</h3>
       <p class="comp-desc">Lazy-loaded images with variants</p>
       <div class="comp-split">
@@ -1072,11 +1506,7 @@
         </div>
       </div>
     </div>
-
-    <div class="comp-category">Delighter Sprinkles</div>
-
-    <div class="comp-section">
-      <h3>Command Palette</h3>
+<h3>Command Palette</h3>
       <p class="comp-desc">Keyboard-driven command search (Ctrl/Cmd+K)</p>
       <div class="comp-split">
         <div class="comp-split-demo">
@@ -1100,34 +1530,64 @@
     </div>
 
     <div class="comp-section">
+<script>
+// Initialize command palette
+    customElements.whenDefined('snice-command-palette').then(() => {
+      const palette = document.getElementById('cmd-palette');
+      if (palette) {
+        palette.commands = [
+          { id: 'new-file', label: 'New File', shortcut: 'Ctrl+N', category: 'File' },
+          { id: 'open', label: 'Open...', shortcut: 'Ctrl+O', category: 'File' },
+          { id: 'save', label: 'Save', shortcut: 'Ctrl+S', category: 'File' },
+          { id: 'settings', label: 'Settings', shortcut: 'Ctrl+,', category: 'Preferences' },
+          { id: 'theme', label: 'Toggle Theme', category: 'Preferences' }
+        ];
+        // Global keyboard shortcut
+        document.addEventListener('keydown', (e) => {
+          if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            palette.toggle();
+          }
+        });
+      }
+    });
+</script>
+<div class="comp-section">
       <h3>Chart &amp; Sparkline</h3>
       <p class="comp-desc">Line, bar, pie charts and inline mini charts</p>
       <div class="comp-split comp-split-stacked">
         <div class="comp-split-demo demo-col">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-            <snice-chart id="line-chart" type="line" height="200"></snice-chart>
-            <snice-chart id="bar-chart" type="bar" height="200"></snice-chart>
+            <snice-chart id="line-chart" type="line" height="220"></snice-chart>
+            <snice-chart id="bar-chart" type="bar" height="220"></snice-chart>
           </div>
-          <div style="display:flex;gap:2rem;margin-top:1rem;align-items:center">
+          <div style="display:flex;gap:2rem;margin-top:1rem;align-items:center;flex-wrap:wrap">
             <div style="display:flex;align-items:center;gap:0.5rem">
               <span style="font-size:0.9rem">Revenue</span>
-              <snice-sparkline id="spark1" type="line" color="success" width="80" height="24"></snice-sparkline>
+              <snice-sparkline id="spark1" type="line" color="success" width="100" height="28"></snice-sparkline>
             </div>
             <div style="display:flex;align-items:center;gap:0.5rem">
               <span style="font-size:0.9rem">Users</span>
-              <snice-sparkline id="spark2" type="bar" color="primary" width="80" height="24"></snice-sparkline>
+              <snice-sparkline id="spark2" type="bar" color="primary" width="100" height="28"></snice-sparkline>
             </div>
             <div style="display:flex;align-items:center;gap:0.5rem">
               <span style="font-size:0.9rem">Errors</span>
-              <snice-sparkline id="spark3" type="area" color="danger" width="80" height="24"></snice-sparkline>
+              <snice-sparkline id="spark3" type="area" color="danger" width="100" height="28"></snice-sparkline>
             </div>
           </div>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <pre><code class="language-html">&lt;snice-chart id="chart" type="line" height="200"&gt;&lt;/snice-chart&gt;
-&lt;snice-sparkline type="line" color="success" width="80" height="24"&gt;
-&lt;/snice-sparkline&gt;
+          <pre><code class="language-html">&lt;snice-chart id="chart" type="line" height="200"&gt;
+&lt;/snice-chart&gt;
+
+&lt;snice-sparkline
+  type="line"
+  color="success"
+  width="80"
+  height="24"
+&gt;&lt;/snice-sparkline&gt;
+
 &lt;script&gt;
   chart.labels = ['Jan', 'Feb', 'Mar'];
   chart.datasets = [{ label: 'Sales', data: [30, 45, 60] }];
@@ -1135,16 +1595,49 @@
         </div>
       </div>
     </div>
+<script>
+// Initialize charts
+    customElements.whenDefined('snice-chart').then(() => {
+      const lineChart = document.getElementById('line-chart');
+      if (lineChart) {
+        lineChart.labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+        lineChart.datasets = [
+          { label: 'Revenue', data: [30, 45, 35, 50, 40, 60], borderColor: '#3b82f6', fill: false },
+          { label: 'Expenses', data: [20, 30, 25, 35, 30, 40], borderColor: '#ef4444', fill: false }
+        ];
+      }
+      const barChart = document.getElementById('bar-chart');
+      if (barChart) {
+        barChart.labels = ['Q1', 'Q2', 'Q3', 'Q4'];
+        barChart.datasets = [
+          { label: '2023', data: [65, 75, 70, 80], backgroundColor: '#3b82f6' },
+          { label: '2024', data: [75, 85, 80, 95], backgroundColor: '#10b981' }
+        ];
+      }
+    });
 
-    <div class="comp-category">Advanced</div>
-
-    <div class="comp-section">
-      <h3>Date Picker</h3>
-      <p class="comp-desc">Date selection with calendar</p>
+// Initialize sparklines
+    customElements.whenDefined('snice-sparkline').then(() => {
+      const s1 = document.getElementById('spark1');
+      const s2 = document.getElementById('spark2');
+      const s3 = document.getElementById('spark3');
+      if (s1) s1.data = [10, 15, 12, 18, 20, 25, 22, 28];
+      if (s2) s2.data = [5, 8, 6, 10, 12, 9, 14, 11];
+      if (s3) s3.data = [3, 5, 2, 4, 6, 3, 5, 4];
+    });
+</script>
+<h3>Date Picker</h3>
+      <p class="comp-desc">Date selection with calendar, formats, and states</p>
       <div class="comp-split">
-        <div class="comp-split-demo">
-          <snice-date-picker label="Start Date" placeholder="Select date"></snice-date-picker>
-          <snice-date-picker label="End Date" placeholder="Select date"></snice-date-picker>
+        <div class="comp-split-demo demo-col" style="gap:1rem">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <snice-date-picker label="Start Date" placeholder="Select date" clearable></snice-date-picker>
+            <snice-date-picker label="End Date" placeholder="Select date" clearable></snice-date-picker>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <snice-date-picker label="US Format" format="mm/dd/yyyy" size="small"></snice-date-picker>
+            <snice-date-picker label="ISO Format" format="yyyy-mm-dd" size="small"></snice-date-picker>
+          </div>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
@@ -1153,15 +1646,21 @@
   placeholder="Select date"
   format="yyyy-mm-dd"
   clearable
-&gt;&lt;/snice-date-picker&gt;</code></pre>
+&gt;&lt;/snice-date-picker&gt;
+
+&lt;!-- Formats --&gt;
+&lt;snice-date-picker format="mm/dd/yyyy"&gt;&lt;/snice-date-picker&gt;
+&lt;snice-date-picker format="dd/mm/yyyy"&gt;&lt;/snice-date-picker&gt;
+&lt;snice-date-picker format="yyyy-mm-dd"&gt;&lt;/snice-date-picker&gt;</code></pre>
         </div>
       </div>
     </div>
 
     <div class="comp-section">
+<div class="comp-section">
       <h3>Slider</h3>
       <p class="comp-desc">Range input with variants, ticks, and labels</p>
-      <div class="comp-split comp-split-stacked">
+      <div class="comp-split">
         <div class="comp-split-demo demo-col" style="gap:0.25rem">
           <snice-slider label="Volume" value="75" show-value></snice-slider>
           <snice-slider label="Brightness" value="50" show-value variant="primary"></snice-slider>
@@ -1186,9 +1685,10 @@
     </div>
 
     <div class="comp-section">
+<div class="comp-section">
       <h3>File Upload</h3>
       <p class="comp-desc">Drag-and-drop file selection</p>
-      <div class="comp-split comp-split-stacked">
+      <div class="comp-split">
         <div class="comp-split-demo">
           <snice-file-upload label="Upload files" helper-text="Drag files here or click to browse" accept="image/*,.pdf" multiple drag-drop show-preview max-files="5"></snice-file-upload>
         </div>
@@ -1207,26 +1707,80 @@
     </div>
 
     <div class="comp-section">
+<div class="comp-section">
       <h3>File Gallery</h3>
       <p class="comp-desc">File management with previews and upload progress</p>
       <div class="comp-split comp-split-stacked">
         <div class="comp-split-demo">
-          <snice-file-gallery id="demo-gallery" accept="image/*" multiple view="grid" show-add-button allow-delete></snice-file-gallery>
+          <snice-file-gallery id="demo-gallery" accept="image/*" multiple view="grid" show-add-button allow-delete auto-upload="false"></snice-file-gallery>
+          <script>
+            customElements.whenDefined('snice-file-gallery').then(() => {
+              const gallery = document.getElementById('demo-gallery');
+              if (!gallery) return;
+              // Add fake pre-uploaded files
+              const fakeFiles = [
+                { name: 'hero-banner.png', size: 245000, type: 'image/png' },
+                { name: 'product-shot.jpg', size: 182000, type: 'image/jpeg' },
+                { name: 'team-photo.jpg', size: 310000, type: 'image/jpeg' },
+              ];
+              const colors = ['#3b82f6','#22c55e','#f59e0b'];
+              fakeFiles.forEach((meta, i) => {
+                const blob = new Blob([''], { type: meta.type });
+                const file = new File([blob], meta.name, { type: meta.type, lastModified: Date.now() - i * 86400000 });
+                // Create a tiny canvas as preview
+                const c = document.createElement('canvas'); c.width = 120; c.height = 80;
+                const ctx = c.getContext('2d');
+                const g = ctx.createLinearGradient(0,0,120,80);
+                g.addColorStop(0, colors[i]); g.addColorStop(1, colors[(i+1)%3]);
+                ctx.fillStyle = g; ctx.fillRect(0,0,120,80);
+                ctx.fillStyle = 'rgba(255,255,255,0.7)'; ctx.font = '11px sans-serif'; ctx.textAlign = 'center';
+                ctx.fillText(meta.name, 60, 45);
+                gallery.addFileWithPreview?.(file, c.toDataURL());
+              });
+              // Upload handler for new files
+              gallery.addEventListener('request/file-gallery-upload', (e) => {
+                const { file, onProgress, signal } = e.detail;
+                e.preventDefault();
+                let progress = 0;
+                const interval = setInterval(() => {
+                  if (signal?.aborted) { clearInterval(interval); return; }
+                  const bump = progress < 0.3 ? 0.08 : progress < 0.7 ? 0.04 : 0.06;
+                  progress = Math.min(1, progress + bump + Math.random() * 0.03);
+                  onProgress(progress);
+                  if (progress >= 1) clearInterval(interval);
+                }, 100 + Math.random() * 50);
+              });
+            });
+          </script>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
           <pre><code class="language-html">&lt;snice-file-gallery
   accept="image/*"
-  multiple
-  view="grid"
-  show-add-button
-  allow-delete
-&gt;&lt;/snice-file-gallery&gt;</code></pre>
+  multiple view="grid"
+  show-add-button allow-delete
+&gt;&lt;/snice-file-gallery&gt;
+
+&lt;script&gt;
+  gallery.addEventListener(
+    'request/file-gallery-upload', (e) =&gt; {
+    const { file, onProgress } = e.detail;
+    e.preventDefault();
+    // Simulate upload progress
+    let p = 0;
+    const iv = setInterval(() =&gt; {
+      p = Math.min(1, p + 0.05);
+      onProgress(p);
+      if (p &gt;= 1) clearInterval(iv);
+    }, 100);
+  });
+&lt;/script&gt;</code></pre>
         </div>
       </div>
     </div>
 
     <div class="comp-section">
+<div class="comp-section">
       <h3>Stepper</h3>
       <p class="comp-desc">Multi-step process indicator</p>
       <div class="comp-split comp-split-stacked">
@@ -1239,8 +1793,11 @@
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <pre><code class="language-html">&lt;snice-stepper id="stepper" current-step="1" clickable&gt;
-&lt;/snice-stepper&gt;
+          <pre><code class="language-html">&lt;snice-stepper
+  id="stepper"
+  current-step="1"
+  clickable
+&gt;&lt;/snice-stepper&gt;
 &lt;script&gt;
   stepper.steps = [
     { label: 'Account', description: 'Create account' },
@@ -1251,23 +1808,62 @@
         </div>
       </div>
     </div>
-
-    <div class="comp-category">Delighters</div>
-
-    <div class="comp-section">
-      <h3>Code Block</h3>
+<script>
+// Initialize stepper
+    customElements.whenDefined('snice-stepper').then(() => {
+      const stepper = document.getElementById('demo-stepper');
+      if (stepper) stepper.steps = [
+        { label: 'Account', description: 'Create account' },
+        { label: 'Profile', description: 'Setup profile' },
+        { label: 'Settings', description: 'Configure settings' },
+        { label: 'Complete', description: 'All done!' }
+      ];
+    });
+</script>
+<h3>Code Block</h3>
       <p class="comp-desc">Syntax-highlighted code display</p>
       <div class="comp-split comp-split-stacked">
         <div class="comp-split-demo">
-          <snice-code-block language="typescript" show-line-numbers copyable filename="example.ts" code="import { element, property, render } from 'snice';
+          <snice-code-block language="typescript" show-line-numbers copyable theme="dark" filename="counter.ts" code="import { element, property, render, dispatch } from 'snice';
 
-@element('my-component')
-class MyComponent extends HTMLElement {
-  @property() name = 'World';
+@element('my-counter')
+export class MyCounter extends HTMLElement {
+  @property({ type: Number }) count = 0;
+  @property({ type: Number }) step = 1;
+  @property({ type: Number }) min = 0;
+  @property({ type: Number }) max = 100;
+
+  increment() {
+    this.count = Math.min(this.count + this.step, this.max);
+    this.emitChange();
+  }
+
+  decrement() {
+    this.count = Math.max(this.count - this.step, this.min);
+    this.emitChange();
+  }
+
+  reset() {
+    this.count = 0;
+    this.emitChange();
+  }
+
+  @dispatch('count-change', { bubbles: true })
+  private emitChange() {
+    return { count: this.count, step: this.step };
+  }
 
   @render()
   template() {
-    return html`<h1>Hello, ${this.name}!</h1>`;
+    const pct = ((this.count - this.min) / (this.max - this.min)) * 100;
+    return html`
+      &lt;div class=&quot;counter&quot;&gt;
+        &lt;button @click=&quot;${this.decrement}&quot;&gt;-&lt;/button&gt;
+        &lt;span class=&quot;value&quot;&gt;${this.count}&lt;/span&gt;
+        &lt;button @click=&quot;${this.increment}&quot;&gt;+&lt;/button&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;bar&quot; style=&quot;width:${pct}%&quot;&gt;&lt;/div&gt;
+    `;
   }
 }"></snice-code-block>
         </div>
@@ -1285,11 +1881,12 @@ class MyComponent extends HTMLElement {
     </div>
 
     <div class="comp-section">
+<div class="comp-section">
       <h3>Terminal</h3>
       <p class="comp-desc">Interactive command-line interface</p>
-      <div class="comp-split comp-split-stacked">
+      <div class="comp-split">
         <div class="comp-split-demo">
-          <snice-terminal id="demo-terminal" prompt="$ " style="height:200px"></snice-terminal>
+          <snice-terminal id="demo-terminal" prompt="$ " style="height:280px"></snice-terminal>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
@@ -1303,46 +1900,156 @@ class MyComponent extends HTMLElement {
         </div>
       </div>
     </div>
-
-    <div class="comp-category">Special</div>
-
-    <div class="comp-section">
-      <h3>Carousel</h3>
-      <p class="comp-desc">Image and content slider</p>
+<script>
+// Initialize terminal with boot sequence
+    customElements.whenDefined('snice-terminal').then(() => {
+      const terminal = document.getElementById('demo-terminal');
+      if (terminal) {
+        const bootLines = [
+          ['[boot] Snice OS v4.5.0', 'info'],
+          ['[init] Loading kernel modules...', 'output'],
+          ['[init] ├── snice-core       ✓', 'success'],
+          ['[init] ├── snice-components ✓', 'success'],
+          ['[init] ├── snice-theme      ✓', 'success'],
+          ['[init] └── snice-runtime    ✓', 'success'],
+          ['[net]  Connecting to network... done', 'output'],
+          ['[sys]  Memory: 256MB / 512MB (50%)', 'output'],
+          ['[sys]  CPU: 2 cores @ 3.2GHz', 'output'],
+          ['', 'output'],
+          ['Welcome! Type "help" for commands.', 'info']
+        ];
+        let i = 0;
+        const typeNext = () => {
+          if (i < bootLines.length) {
+            terminal.writeln(bootLines[i][0], bootLines[i][1]);
+            i++;
+            setTimeout(typeNext, 80 + Math.random() * 120);
+          }
+        };
+        setTimeout(typeNext, 300);
+        terminal.addEventListener('terminal-command', (e) => {
+          const { command } = e.detail;
+          if (command === 'help') {
+            terminal.writeln('Commands: help, clear, echo, date, status, version');
+          } else if (command === 'clear') {
+            terminal.clear();
+          } else if (command === 'date') {
+            terminal.writeln(new Date().toLocaleString(), 'success');
+          } else if (command === 'status') {
+            terminal.writeln('All systems operational ✓', 'success');
+          } else if (command === 'version') {
+            terminal.writeln('Snice v4.5.0 (build 63ddcac)', 'info');
+          } else if (command.startsWith('echo ')) {
+            terminal.writeln(command.slice(5));
+          } else {
+            terminal.writeln('Command not found: ' + command, 'error');
+          }
+        });
+      }
+    });
+</script>
+<h3>Carousel</h3>
+      <p class="comp-desc">Image and content slider with controls, autoplay, and multi-slide views</p>
       <div class="comp-split comp-split-stacked">
-        <div class="comp-split-demo">
-          <snice-carousel show-controls show-indicators loop>
-            <div style="background:linear-gradient(135deg,#667eea,#764ba2);height:180px;display:flex;align-items:center;justify-content:center;color:white;font-size:1.5rem">Slide 1</div>
-            <div style="background:linear-gradient(135deg,#f093fb,#f5576c);height:180px;display:flex;align-items:center;justify-content:center;color:white;font-size:1.5rem">Slide 2</div>
-            <div style="background:linear-gradient(135deg,#4facfe,#00f2fe);height:180px;display:flex;align-items:center;justify-content:center;color:white;font-size:1.5rem">Slide 3</div>
-          </snice-carousel>
+        <div class="comp-split-demo demo-col" style="gap:1.25rem">
+          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1rem;position:relative">
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">with controls</span>
+            <snice-carousel show-controls show-indicators loop>
+              <div style="background:linear-gradient(135deg,#667eea,#764ba2);height:220px;display:flex;align-items:center;justify-content:center;color:white;font-size:1.5rem;border-radius:6px">Slide 1</div>
+              <div style="background:linear-gradient(135deg,#f093fb,#f5576c);height:220px;display:flex;align-items:center;justify-content:center;color:white;font-size:1.5rem;border-radius:6px">Slide 2</div>
+              <div style="background:linear-gradient(135deg,#4facfe,#00f2fe);height:220px;display:flex;align-items:center;justify-content:center;color:white;font-size:1.5rem;border-radius:6px">Slide 3</div>
+            </snice-carousel>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem">
+            <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1rem;position:relative">
+              <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">autoplay</span>
+              <snice-carousel autoplay autoplay-interval="2000" show-indicators loop>
+                <div style="background:linear-gradient(135deg,#a18cd1,#fbc2eb);height:140px;display:flex;align-items:center;justify-content:center;color:white;font-size:1.25rem;border-radius:6px">Auto 1</div>
+                <div style="background:linear-gradient(135deg,#fad0c4,#ffd1ff);height:140px;display:flex;align-items:center;justify-content:center;color:#333;font-size:1.25rem;border-radius:6px">Auto 2</div>
+                <div style="background:linear-gradient(135deg,#a1c4fd,#c2e9fb);height:140px;display:flex;align-items:center;justify-content:center;color:#333;font-size:1.25rem;border-radius:6px">Auto 3</div>
+              </snice-carousel>
+            </div>
+            <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1rem;position:relative">
+              <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">multi-slide</span>
+              <snice-carousel slides-per-view="3" spacing="10" show-controls>
+                <div style="background:var(--snice-color-primary);height:80px;display:flex;align-items:center;justify-content:center;color:white;border-radius:6px;font-size:0.9rem">1</div>
+                <div style="background:var(--snice-color-success);height:80px;display:flex;align-items:center;justify-content:center;color:white;border-radius:6px;font-size:0.9rem">2</div>
+                <div style="background:var(--snice-color-warning);height:80px;display:flex;align-items:center;justify-content:center;color:white;border-radius:6px;font-size:0.9rem">3</div>
+                <div style="background:var(--snice-color-danger);height:80px;display:flex;align-items:center;justify-content:center;color:white;border-radius:6px;font-size:0.9rem">4</div>
+                <div style="background:var(--snice-color-primary);height:80px;display:flex;align-items:center;justify-content:center;color:white;border-radius:6px;font-size:0.9rem">5</div>
+              </snice-carousel>
+            </div>
+          </div>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <pre><code class="language-html">&lt;snice-carousel show-controls show-indicators loop&gt;
+          <pre><code class="language-html">&lt;!-- With controls --&gt;
+&lt;snice-carousel show-controls show-indicators loop&gt;
   &lt;div&gt;Slide 1&lt;/div&gt;
   &lt;div&gt;Slide 2&lt;/div&gt;
-  &lt;div&gt;Slide 3&lt;/div&gt;
-&lt;/snice-carousel&gt;</code></pre>
+&lt;/snice-carousel&gt;
+
+&lt;!-- Autoplay --&gt;
+&lt;snice-carousel
+  autoplay
+  autoplay-interval="2000"
+  loop
+&gt;...&lt;/snice-carousel&gt;
+
+&lt;!-- Multiple slides per view --&gt;
+&lt;snice-carousel
+  slides-per-view="3"
+  spacing="10"
+&gt;...&lt;/snice-carousel&gt;</code></pre>
         </div>
       </div>
     </div>
 
     <div class="comp-section">
+<div class="comp-section">
       <h3>Calendar</h3>
-      <p class="comp-desc">Date picker calendar with events</p>
-      <div class="comp-split comp-split-stacked">
-        <div class="comp-split-demo demo-center" style="min-height:320px">
-          <snice-calendar id="demo-calendar" highlight-today></snice-calendar>
+      <p class="comp-desc">Date picker calendar with events and scheduled slots</p>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-center" style="justify-content:center">
+          <snice-calendar id="demo-calendar" highlight-today style="min-width:360px;aspect-ratio:1"></snice-calendar>
         </div>
         <div class="comp-split-code">
-          <span class="code-lang">html</span>
-          <pre><code class="language-html">&lt;snice-calendar highlight-today&gt;&lt;/snice-calendar&gt;</code></pre>
+          <span class="code-lang">javascript</span>
+          <pre><code class="language-javascript">&lt;snice-calendar
+  id="cal"
+  highlight-today
+&gt;&lt;/snice-calendar&gt;
+
+&lt;script&gt;
+  cal.events = [
+    { date: '2026-02-20', label: 'Sprint Review',
+      color: '#3b82f6' },
+    { date: '2026-02-25', label: 'Release',
+      color: '#22c55e' },
+    { date: '2026-03-01', label: 'Planning',
+      color: '#f59e0b' }
+  ];
+&lt;/script&gt;</code></pre>
         </div>
       </div>
     </div>
 
     <div class="comp-section">
+<script>
+// Initialize calendar with events
+    customElements.whenDefined('snice-calendar').then(() => {
+      const cal = document.getElementById('demo-calendar');
+      if (cal) {
+        cal.events = [
+          { id: 1, title: 'Sprint Review', start: '2026-02-20', color: '#3b82f6' },
+          { id: 2, title: 'Release v4.6', start: '2026-02-25', color: '#22c55e' },
+          { id: 3, title: 'Planning', start: '2026-03-01', color: '#f59e0b' },
+          { id: 4, title: 'Demo Day', start: '2026-02-28', color: '#8b5cf6' }
+        ];
+      }
+    });
+</script>
+<div class="comp-section">
       <h3>Split Pane</h3>
       <p class="comp-desc">Resizable split layouts</p>
       <div class="comp-split comp-split-stacked">
@@ -1360,7 +2067,10 @@ class MyComponent extends HTMLElement {
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <pre><code class="language-html">&lt;snice-split-pane direction="horizontal" primary-size="40"&gt;
+          <pre><code class="language-html">&lt;snice-split-pane
+  direction="horizontal"
+  primary-size="40"
+&gt;
   &lt;div slot="primary"&gt;Left&lt;/div&gt;
   &lt;div slot="secondary"&gt;Right&lt;/div&gt;
 &lt;/snice-split-pane&gt;</code></pre>
@@ -1369,30 +2079,101 @@ class MyComponent extends HTMLElement {
     </div>
 
     <div class="comp-section">
+<div class="comp-section">
       <h3>Draw</h3>
-      <p class="comp-desc">Freehand drawing canvas</p>
+      <p class="comp-desc">Freehand drawing canvas with tools and brush options</p>
       <div class="comp-split comp-split-stacked">
-        <div class="comp-split-demo demo-col">
-          <snice-draw id="demo-draw" width="100%" height="200" color="#3b82f6" stroke-width="3" style="border:1px solid var(--snice-color-border);border-radius:6px"></snice-draw>
-          <div style="margin-top:0.5rem;display:flex;gap:0.5rem">
-            <snice-button size="small" variant="default" onclick="document.getElementById('demo-draw').clear()">Clear</snice-button>
-            <snice-button size="small" variant="default" onclick="document.getElementById('demo-draw').undo()">Undo</snice-button>
-            <snice-button size="small" variant="primary" onclick="document.getElementById('demo-draw').download('drawing.png')">Download</snice-button>
+        <div class="comp-split-demo" style="padding:0;overflow:hidden">
+          <div style="display:flex;height:400px">
+            <div class="draw-tb" id="draw-toolbar">
+              <span class="draw-tb-label">Tools</span>
+              <button class="dtb active" data-tool="pen" onclick="setDrawTool(this,'pen')" title="Pen">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11.5 1.5l3 3-9 9H2.5v-3z"/></svg>
+              </button>
+              <button class="dtb" data-tool="eraser" onclick="setDrawTool(this,'eraser')" title="Eraser">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 14h7M3.5 12l8-8 3 3-8 8H3.5v-3z"/></svg>
+              </button>
+              <button class="dtb" data-tool="line" onclick="setDrawTool(this,'line')" title="Line">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="3" y1="13" x2="13" y2="3"/></svg>
+              </button>
+              <button class="dtb" data-tool="rectangle" onclick="setDrawTool(this,'rectangle')" title="Rectangle">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="10" rx="1"/></svg>
+              </button>
+              <button class="dtb" data-tool="circle" onclick="setDrawTool(this,'circle')" title="Circle">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="5.5"/></svg>
+              </button>
+              <div class="draw-tb-sep"></div>
+              <span class="draw-tb-label">Color</span>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px">
+                <span class="dsw active" style="--c:#3b82f6" onclick="setDrawColor(this,'#3b82f6')"></span>
+                <span class="dsw" style="--c:#ef4444" onclick="setDrawColor(this,'#ef4444')"></span>
+                <span class="dsw" style="--c:#10b981" onclick="setDrawColor(this,'#10b981')"></span>
+                <span class="dsw" style="--c:#f59e0b" onclick="setDrawColor(this,'#f59e0b')"></span>
+                <span class="dsw" style="--c:#8b5cf6" onclick="setDrawColor(this,'#8b5cf6')"></span>
+                <span class="dsw" style="--c:#ec4899" onclick="setDrawColor(this,'#ec4899')"></span>
+                <span class="dsw" style="--c:#e2e8f0" onclick="setDrawColor(this,'#e2e8f0')"></span>
+                <span class="dsw" style="--c:#1e293b" onclick="setDrawColor(this,'#1e293b')"></span>
+              </div>
+              <div class="draw-tb-sep"></div>
+              <span class="draw-tb-label">Size</span>
+              <input type="range" min="1" max="20" value="3" oninput="document.getElementById('demo-draw').strokeWidth=+this.value" style="width:34px;accent-color:var(--snice-color-primary)" title="Brush size">
+              <div class="draw-tb-sep"></div>
+              <button class="dtb" onclick="document.getElementById('demo-draw').undo()" title="Undo">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6L1 9l3 3"/><path d="M1 9h10a4 4 0 000-8H8"/></svg>
+              </button>
+              <button class="dtb" onclick="document.getElementById('demo-draw').redo()" title="Redo">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 6l3 3-3 3"/><path d="M15 9H5a4 4 0 010-8h3"/></svg>
+              </button>
+              <button class="dtb dtb-danger" onclick="document.getElementById('demo-draw').clear()" title="Clear canvas">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12"/><path d="M5.3 4V2.7h5.4V4"/><path d="M6 7v5M10 7v5"/><path d="M3.3 4l.7 9.3h8l.7-9.3"/></svg>
+              </button>
+            </div>
+            <snice-draw id="demo-draw" width="100%" height="100%" color="#3b82f6" stroke-width="3" style="flex:1;display:block"></snice-draw>
           </div>
+          <script>
+            function setDrawTool(btn, tool) {
+              document.getElementById('demo-draw').tool = tool;
+              document.getElementById('draw-toolbar').querySelectorAll('.dtb[data-tool]').forEach(b => b.classList.remove('active'));
+              btn.classList.add('active');
+            }
+            function setDrawColor(el, color) {
+              document.getElementById('demo-draw').color = color;
+              document.getElementById('draw-toolbar').querySelectorAll('.dsw').forEach(s => s.classList.remove('active'));
+              el.classList.add('active');
+            }
+          </script>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
           <pre><code class="language-html">&lt;snice-draw
-  width="100%"
-  height="200"
+  width="100%" height="300"
   color="#3b82f6"
   stroke-width="3"
-&gt;&lt;/snice-draw&gt;</code></pre>
+  tool="pen"
+&gt;&lt;/snice-draw&gt;
+
+&lt;script&gt;
+  const draw = document.querySelector('snice-draw');
+
+  // Tools: pen, eraser, line, rectangle, circle
+  draw.tool = 'pen';
+
+  // Brush settings
+  draw.color = '#ef4444';
+  draw.strokeWidth = 5;
+
+  // Actions
+  draw.undo();
+  draw.redo();
+  draw.clear();
+  draw.download('art.png');
+&lt;/script&gt;</code></pre>
         </div>
       </div>
     </div>
 
     <div class="comp-section">
+<div class="comp-section">
       <h3>Color Display</h3>
       <p class="comp-desc">Color swatch with label</p>
       <div class="comp-split">
@@ -1415,6 +2196,7 @@ class MyComponent extends HTMLElement {
     </div>
 
     <div class="comp-section">
+<div class="comp-section">
       <h3>Kanban</h3>
       <p class="comp-desc">Drag-and-drop kanban board</p>
       <div class="comp-split comp-split-stacked">
@@ -1423,8 +2205,11 @@ class MyComponent extends HTMLElement {
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <pre><code class="language-html">&lt;snice-kanban id="kb" allow-drag-drop show-card-count&gt;
-&lt;/snice-kanban&gt;
+          <pre><code class="language-html">&lt;snice-kanban
+  id="kb"
+  allow-drag-drop
+  show-card-count
+&gt;&lt;/snice-kanban&gt;
 &lt;script&gt;
   kb.columns = [
     { id: 'todo', title: 'To Do', cards: [
@@ -1437,29 +2222,71 @@ class MyComponent extends HTMLElement {
     </div>
 
     <div class="comp-section">
+<script>
+// Initialize kanban
+    customElements.whenDefined('snice-kanban').then(() => {
+      const kanban = document.getElementById('demo-kanban');
+      if (kanban) kanban.columns = [
+        { id: 'todo', title: 'To Do', color: '#f44336', cards: [
+          { id: '1', title: 'Design new landing page', description: 'Create mockups and wireframes', assignee: 'Alice', labels: [{ text: 'Design', color: '#6366f1', background: '#eef2ff', icon: '🎨' }, { text: 'High Priority', color: '#dc2626', background: '#fee2e2', icon: '🔥' }] },
+          { id: '2', title: 'Update documentation', description: 'Add examples for new components', assignee: 'Bob', labels: ['Docs'] },
+          { id: '3', title: 'Fix login bug', description: 'Users cannot reset password', assignee: 'Charlie', labels: ['Bug', 'High Priority'], color: '#f44336' }
+        ]},
+        { id: 'progress', title: 'In Progress', color: '#ff9800', cards: [
+          { id: '4', title: 'Implement dark mode', description: 'Add theme switcher', assignee: 'Alice', labels: [{ text: 'Feature', color: '#16a34a', background: '#dcfce7', icon: '✨' }, 'UI'] },
+          { id: '5', title: 'API integration', description: 'Connect to REST API', assignee: 'David', labels: ['Backend'] }
+        ]},
+        { id: 'review', title: 'In Review', color: '#9c27b0', cards: [
+          { id: '6', title: 'Add user avatars', description: 'Display profile pictures', assignee: 'Eve', labels: ['Feature', 'UI'] }
+        ]},
+        { id: 'done', title: 'Done', color: '#4caf50', cards: [
+          { id: '7', title: 'Set up CI/CD pipeline', assignee: 'Frank', labels: ['DevOps'] },
+          { id: '8', title: 'User onboarding flow', assignee: 'Grace', labels: [{ text: 'Shipped', color: '#16a34a', background: '#dcfce7', icon: '🚀' }] }
+        ]}
+      ];
+    });
+</script>
+<div class="comp-section">
       <h3>Chat</h3>
       <p class="comp-desc">Real-time messaging interface</p>
-      <div class="comp-split comp-split-stacked">
-        <div class="comp-split-demo">
-          <snice-chat id="demo-chat" current-user="You" placeholder="Type a message..." show-avatars show-timestamps style="height:300px"></snice-chat>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="min-height:300px">
+          <snice-chat id="demo-chat" current-user="You" placeholder="Type a message..." show-avatars show-timestamps style="height:300px;width:100%"></snice-chat>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
           <pre><code class="language-html">&lt;snice-chat
-  id="chat"
   current-user="You"
   placeholder="Type a message..."
   show-avatars
   show-timestamps
-&gt;&lt;/snice-chat&gt;</code></pre>
+&gt;&lt;/snice-chat&gt;
+
+&lt;script&gt;
+  chat.messages = [
+    { id: '1', type: 'text',
+      content: 'Hello!',
+      author: 'Alice',
+      timestamp: new Date() }
+  ];
+&lt;/script&gt;</code></pre>
         </div>
       </div>
     </div>
-
-    <div class="comp-category">Media</div>
-
-    <div class="comp-section">
-      <h3>Camera</h3>
+<script>
+// Initialize chat
+    customElements.whenDefined('snice-chat').then(() => {
+      const chat = document.getElementById('demo-chat');
+      if (chat) {
+        chat.messages = [
+          { id: '1', type: 'text', content: 'Hey! How\'s the project going?', author: 'Alice', timestamp: new Date(Date.now() - 300000) },
+          { id: '2', type: 'text', content: 'Going great! Just finished the new components.', author: 'You', timestamp: new Date(Date.now() - 240000) },
+          { id: '3', type: 'text', content: 'Awesome! Can\'t wait to see them.', author: 'Alice', timestamp: new Date(Date.now() - 180000) }
+        ];
+      }
+    });
+</script>
+<h3>Camera</h3>
       <p class="comp-desc">Webcam capture (requires permission)</p>
       <div class="comp-split">
         <div class="comp-split-demo">
@@ -1484,6 +2311,13 @@ class MyComponent extends HTMLElement {
     </div>
 
     <div class="comp-section">
+<script>
+// Start camera when modal opens
+    document.getElementById('camera-modal')?.addEventListener('snice-modal-open', () => {
+      document.getElementById('demo-camera')?.start();
+    });
+</script>
+<div class="comp-section">
       <h3>QR Reader</h3>
       <p class="comp-desc">QR code scanner (requires camera permission)</p>
       <div class="comp-split">
@@ -1507,6 +2341,13 @@ class MyComponent extends HTMLElement {
     </div>
 
     <div class="comp-section">
+<script>
+// Start QR reader when modal opens
+    document.getElementById('qr-reader-modal')?.addEventListener('snice-modal-open', () => {
+      document.getElementById('demo-qr-reader')?.start();
+    });
+</script>
+<div class="comp-section">
       <h3>Audio Recorder</h3>
       <p class="comp-desc">Voice recording (requests mic permission on record)</p>
       <div class="comp-split">
@@ -1526,33 +2367,46 @@ class MyComponent extends HTMLElement {
     </div>
 
     <div class="comp-section">
+<div class="comp-section">
       <h3>Music Player</h3>
       <p class="comp-desc">Audio playback with playlist</p>
-      <div class="comp-split comp-split-stacked">
-        <div class="comp-split-demo">
-          <snice-music-player id="demo-music" show-playlist show-controls show-volume show-artwork show-track-info></snice-music-player>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="min-height:120px">
+          <snice-music-player id="demo-music" show-playlist show-controls show-volume show-artwork show-track-info style="width:100%"></snice-music-player>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
           <pre><code class="language-html">&lt;snice-music-player
-  id="player"
   show-playlist
   show-controls
   show-volume
+  show-artwork
+  show-track-info
 &gt;&lt;/snice-music-player&gt;
+
 &lt;script&gt;
   player.tracks = [
-    { id: '1', title: 'Song', artist: 'Artist', src: 'url' }
+    { id: '1', title: 'Song',
+      artist: 'Artist', src: 'url' }
   ];
 &lt;/script&gt;</code></pre>
         </div>
       </div>
     </div>
-
-    <div class="comp-category">Remaining</div>
-
-    <div class="comp-section">
-      <h3>Location</h3>
+<script>
+// Initialize music player
+    customElements.whenDefined('snice-music-player').then(() => {
+      const player = document.getElementById('demo-music');
+      if (player) {
+        player.tracks = [
+          { id: '1', title: 'Morning Vibes', artist: 'Demo Artist', src: '' },
+          { id: '2', title: 'Sunset Dreams', artist: 'Demo Artist', src: '' },
+          { id: '3', title: 'Night Owl', artist: 'Demo Artist', src: '' }
+        ];
+      }
+    });
+</script>
+<h3>Location</h3>
       <p class="comp-desc">Address and coordinate display</p>
       <div class="comp-split">
         <div class="comp-split-demo" style="flex-wrap:wrap">
@@ -1574,6 +2428,7 @@ class MyComponent extends HTMLElement {
     </div>
 
     <div class="comp-section">
+<div class="comp-section">
       <h3>Timer</h3>
       <p class="comp-desc">Countdown and stopwatch timers</p>
       <div class="comp-split">
@@ -1585,12 +2440,15 @@ class MyComponent extends HTMLElement {
         <div class="comp-split-code">
           <span class="code-lang">html</span>
           <pre><code class="language-html">&lt;snice-timer mode="stopwatch"&gt;&lt;/snice-timer&gt;
-&lt;snice-timer mode="timer" initial-time="60"&gt;&lt;/snice-timer&gt;</code></pre>
+
+&lt;snice-timer mode="timer" initial-time="60"&gt;
+&lt;/snice-timer&gt;</code></pre>
         </div>
       </div>
     </div>
 
     <div class="comp-section">
+<div class="comp-section">
       <h3>Standalone Build</h3>
       <p class="comp-desc">Use any component without the full framework</p>
       <pre><code>npx snice build-component button
@@ -1601,6 +2459,7 @@ class MyComponent extends HTMLElement {
     </div>
 
     <div class="comp-section">
+<div class="comp-section">
       <h3>React Adapter</h3>
       <p class="comp-desc">First-class React 17+ support</p>
       <pre><code><span class="k">import</span> { Button, Input, Alert } <span class="k">from</span> <span class="s">'snice/react'</span>;
@@ -1759,185 +2618,12 @@ class MyComponent extends HTMLElement {
   <script src="components/snice-location.min.js"></script>
   <script src="components/snice-timer.min.js"></script>
 
-  <script>
-    // Banner demo - create dynamically on click
-    window.showDemoBanner = (type) => {
-      const existing = document.getElementById('demo-banner-' + type);
-      if (existing) existing.remove();
-      const banner = document.createElement('snice-banner');
-      banner.id = 'demo-banner-' + type;
-      banner.variant = type;
-      banner.dismissible = true;
-      if (type === 'info') {
-        banner.message = 'New version available! Update to get the latest features.';
-        banner.actionText = 'Update Now';
-      } else {
-        banner.message = 'Your trial expires in 3 days.';
-      }
-      document.body.prepend(banner);
-      requestAnimationFrame(() => banner.show());
-    };
 
-    // Initialize breadcrumbs
-    customElements.whenDefined('snice-breadcrumbs').then(() => {
-      const bc = document.getElementById('demo-breadcrumbs');
-      if (bc) bc.items = [
-        { label: 'Home', href: '#' },
-        { label: 'Products', href: '#' },
-        { label: 'Electronics', href: '#' },
-        { label: 'Laptop' }
-      ];
-    });
-
-    // Initialize stepper
-    customElements.whenDefined('snice-stepper').then(() => {
-      const stepper = document.getElementById('demo-stepper');
-      if (stepper) stepper.steps = [
-        { label: 'Account', description: 'Create account' },
-        { label: 'Profile', description: 'Setup profile' },
-        { label: 'Settings', description: 'Configure settings' },
-        { label: 'Complete', description: 'All done!' }
-      ];
-    });
-
-    // Initialize charts
-    customElements.whenDefined('snice-chart').then(() => {
-      const lineChart = document.getElementById('line-chart');
-      if (lineChart) {
-        lineChart.labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-        lineChart.datasets = [
-          { label: 'Revenue', data: [30, 45, 35, 50, 40, 60], borderColor: '#3b82f6', fill: false },
-          { label: 'Expenses', data: [20, 30, 25, 35, 30, 40], borderColor: '#ef4444', fill: false }
-        ];
-      }
-      const barChart = document.getElementById('bar-chart');
-      if (barChart) {
-        barChart.labels = ['Q1', 'Q2', 'Q3', 'Q4'];
-        barChart.datasets = [
-          { label: '2023', data: [65, 75, 70, 80], backgroundColor: '#3b82f6' },
-          { label: '2024', data: [75, 85, 80, 95], backgroundColor: '#10b981' }
-        ];
-      }
-    });
-
-    // Initialize sparklines
-    customElements.whenDefined('snice-sparkline').then(() => {
-      const s1 = document.getElementById('spark1');
-      const s2 = document.getElementById('spark2');
-      const s3 = document.getElementById('spark3');
-      if (s1) s1.data = [10, 15, 12, 18, 20, 25, 22, 28];
-      if (s2) s2.data = [5, 8, 6, 10, 12, 9, 14, 11];
-      if (s3) s3.data = [3, 5, 2, 4, 6, 3, 5, 4];
-    });
-
-    // Initialize timeline
-    customElements.whenDefined('snice-timeline').then(() => {
-      const timeline = document.getElementById('demo-timeline');
-      if (timeline) timeline.items = [
-        { title: 'Project Started', description: 'Initial planning and setup', timestamp: 'Jan 15', variant: 'info' },
-        { title: 'Development', description: 'Core features implemented', timestamp: 'Feb 20', variant: 'default' },
-        { title: 'Testing', description: 'QA and bug fixes', timestamp: 'Mar 10', variant: 'warning' },
-        { title: 'Launch', description: 'Released to production', timestamp: 'Apr 1', variant: 'success' }
-      ];
-    });
-
-    // Initialize kanban
-    customElements.whenDefined('snice-kanban').then(() => {
-      const kanban = document.getElementById('demo-kanban');
-      if (kanban) kanban.columns = [
-        { id: 'todo', title: 'To Do', cards: [
-          { id: '1', title: 'Design mockups', labels: ['Design'] },
-          { id: '2', title: 'API integration', labels: ['Backend'] }
-        ]},
-        { id: 'progress', title: 'In Progress', cards: [
-          { id: '3', title: 'User authentication', labels: ['Frontend', 'Backend'] }
-        ]},
-        { id: 'done', title: 'Done', cards: [
-          { id: '4', title: 'Project setup', labels: ['DevOps'] }
-        ]}
-      ];
-    });
-
-    // Initialize command palette
-    customElements.whenDefined('snice-command-palette').then(() => {
-      const palette = document.getElementById('cmd-palette');
-      if (palette) {
-        palette.commands = [
-          { id: 'new-file', label: 'New File', shortcut: 'Ctrl+N', category: 'File' },
-          { id: 'open', label: 'Open...', shortcut: 'Ctrl+O', category: 'File' },
-          { id: 'save', label: 'Save', shortcut: 'Ctrl+S', category: 'File' },
-          { id: 'settings', label: 'Settings', shortcut: 'Ctrl+,', category: 'Preferences' },
-          { id: 'theme', label: 'Toggle Theme', category: 'Preferences' }
-        ];
-        // Global keyboard shortcut
-        document.addEventListener('keydown', (e) => {
-          if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-            e.preventDefault();
-            palette.toggle();
-          }
-        });
-      }
-    });
-
-    // Initialize terminal
-    customElements.whenDefined('snice-terminal').then(() => {
-      const terminal = document.getElementById('demo-terminal');
-      if (terminal) {
-        terminal.writeln('Welcome to Snice Terminal!', 'info');
-        terminal.writeln('Type "help" for available commands.', 'info');
-        terminal.addEventListener('terminal-command', (e) => {
-          const { command } = e.detail;
-          if (command === 'help') {
-            terminal.writeln('Available commands: help, clear, echo, date');
-          } else if (command === 'clear') {
-            terminal.clear();
-          } else if (command === 'date') {
-            terminal.writeln(new Date().toLocaleString(), 'success');
-          } else if (command.startsWith('echo ')) {
-            terminal.writeln(command.slice(5));
-          } else {
-            terminal.writeln('Command not found: ' + command, 'error');
-          }
-        });
-      }
-    });
-
-    // Initialize chat
-    customElements.whenDefined('snice-chat').then(() => {
-      const chat = document.getElementById('demo-chat');
-      if (chat) {
-        chat.messages = [
-          { id: '1', type: 'text', content: 'Hey! How\'s the project going?', author: 'Alice', timestamp: new Date(Date.now() - 300000) },
-          { id: '2', type: 'text', content: 'Going great! Just finished the new components.', author: 'You', timestamp: new Date(Date.now() - 240000) },
-          { id: '3', type: 'text', content: 'Awesome! Can\'t wait to see them.', author: 'Alice', timestamp: new Date(Date.now() - 180000) }
-        ];
-      }
-    });
-
-    // Initialize music player
-    customElements.whenDefined('snice-music-player').then(() => {
-      const player = document.getElementById('demo-music');
-      if (player) {
-        player.tracks = [
-          { id: '1', title: 'Morning Vibes', artist: 'Demo Artist', src: '' },
-          { id: '2', title: 'Sunset Dreams', artist: 'Demo Artist', src: '' },
-          { id: '3', title: 'Night Owl', artist: 'Demo Artist', src: '' }
-        ];
-      }
-    });
-
-    // Start camera when modal opens
-    document.getElementById('camera-modal')?.addEventListener('snice-modal-open', () => {
-      document.getElementById('demo-camera')?.start();
-    });
-
-    // Start QR reader when modal opens
-    document.getElementById('qr-reader-modal')?.addEventListener('snice-modal-open', () => {
-      document.getElementById('demo-qr-reader')?.start();
-    });
-  </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
   <style>
     /* Override Prism backgrounds to blend with comp-split-code */
     .comp-split-code pre[class*="language-"] {

@@ -1,0 +1,146 @@
+<!-- ── 9. Tabs ── -->
+    <div class="comp-section">
+      <h3>Tabs</h3>
+      <p class="comp-desc">Tabbed content with transitions and four placement directions</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo demo-col" style="gap:1.25rem">
+          <!-- Top (default) -->
+          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1.25rem;position:relative">
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">placement: top</span>
+            <snice-tabs transition="fade">
+              <snice-tab slot="nav">Overview</snice-tab>
+              <snice-tab slot="nav">Features</snice-tab>
+              <snice-tab slot="nav">Getting Started</snice-tab>
+              <snice-tab-panel>
+                <div style="padding:1rem 0.25rem">
+                  <h4 style="margin:0 0 0.5rem">Component Library</h4>
+                  <p style="margin:0 0 0.75rem;opacity:0.8;line-height:1.6">Snice ships 64 production-ready web components built entirely with TypeScript. Each component uses Shadow DOM for style encapsulation and works standalone or as part of a larger application.</p>
+                  <p style="margin:0;opacity:0.6;font-size:0.875rem">Framework agnostic &mdash; works with React, Vue, Angular, or vanilla JS.</p>
+                </div>
+              </snice-tab-panel>
+              <snice-tab-panel>
+                <div style="padding:1rem 0.25rem">
+                  <h4 style="margin:0 0 0.75rem">What's Included</h4>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem 1.5rem">
+                    <div style="display:flex;align-items:center;gap:0.5rem"><span style="color:var(--snice-color-success)">&#10003;</span> Differential rendering</div>
+                    <div style="display:flex;align-items:center;gap:0.5rem"><span style="color:var(--snice-color-success)">&#10003;</span> TypeScript decorators</div>
+                    <div style="display:flex;align-items:center;gap:0.5rem"><span style="color:var(--snice-color-success)">&#10003;</span> Client-side routing</div>
+                    <div style="display:flex;align-items:center;gap:0.5rem"><span style="color:var(--snice-color-success)">&#10003;</span> Dark &amp; light themes</div>
+                    <div style="display:flex;align-items:center;gap:0.5rem"><span style="color:var(--snice-color-success)">&#10003;</span> Form validation</div>
+                    <div style="display:flex;align-items:center;gap:0.5rem"><span style="color:var(--snice-color-success)">&#10003;</span> Accessibility built-in</div>
+                  </div>
+                </div>
+              </snice-tab-panel>
+              <snice-tab-panel>
+                <div style="padding:1rem 0.25rem">
+                  <h4 style="margin:0 0 0.5rem">Quick Start</h4>
+                  <p style="margin:0 0 0.75rem;opacity:0.8;line-height:1.6">Install from npm and import only what you need. Each component can also be loaded as a standalone script with zero configuration.</p>
+                  <code style="display:block;padding:0.5rem 0.75rem;border-radius:6px;background:rgba(128,128,128,0.15);font-size:0.85rem">npm install snice</code>
+                </div>
+              </snice-tab-panel>
+            </snice-tabs>
+          </div>
+          <!-- Bottom -->
+          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1.25rem;position:relative">
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">placement: bottom</span>
+            <snice-tabs placement="bottom" transition="slide">
+              <snice-tab slot="nav">Design</snice-tab>
+              <snice-tab slot="nav">Develop</snice-tab>
+              <snice-tab slot="nav">Deploy</snice-tab>
+              <snice-tab-panel>
+                <div style="padding:1rem 0.25rem">
+                  <h4 style="margin:0 0 0.5rem">Design System</h4>
+                  <p style="margin:0 0 0.5rem;opacity:0.8;line-height:1.6">Every component follows a consistent design language with customizable CSS properties. Swap color palettes, adjust spacing, or override individual parts.</p>
+                  <p style="margin:0;opacity:0.6;font-size:0.875rem">Supports <code>::part()</code> selectors for deep customization.</p>
+                </div>
+              </snice-tab-panel>
+              <snice-tab-panel>
+                <div style="padding:1rem 0.25rem">
+                  <h4 style="margin:0 0 0.5rem">Developer Experience</h4>
+                  <p style="margin:0;opacity:0.8;line-height:1.6">TypeScript decorators handle boilerplate: <code>@element</code> registers the component, <code>@property</code> creates reactive attributes, <code>@render</code> defines the template. Less code, fewer bugs.</p>
+                </div>
+              </snice-tab-panel>
+              <snice-tab-panel>
+                <div style="padding:1rem 0.25rem">
+                  <h4 style="margin:0 0 0.5rem">Production Ready</h4>
+                  <p style="margin:0;opacity:0.8;line-height:1.6">Tree-shakeable ESM builds, standalone IIFE scripts, and zero runtime dependencies. Each component is under 50 KB minified. Ship only what you use.</p>
+                </div>
+              </snice-tab-panel>
+            </snice-tabs>
+          </div>
+          <!-- Vertical: Start / End -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem">
+            <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1.25rem;position:relative">
+              <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">placement: start</span>
+              <snice-tabs placement="start">
+                <snice-tab slot="nav">Basics</snice-tab>
+                <snice-tab slot="nav">Props</snice-tab>
+                <snice-tab slot="nav">Events</snice-tab>
+                <snice-tab-panel>
+                  <div style="padding:0.75rem">
+                    <p style="margin:0;line-height:1.6;opacity:0.8">Import the component and add it to your HTML. Attributes map directly to properties.</p>
+                  </div>
+                </snice-tab-panel>
+                <snice-tab-panel>
+                  <div style="padding:0.75rem">
+                    <p style="margin:0;line-height:1.6;opacity:0.8">Use <code>placement</code>, <code>transition</code>, and <code>active</code> to control behavior.</p>
+                  </div>
+                </snice-tab-panel>
+                <snice-tab-panel>
+                  <div style="padding:0.75rem">
+                    <p style="margin:0;line-height:1.6;opacity:0.8">Listen for <code>tab-change</code> to respond when the active tab switches.</p>
+                  </div>
+                </snice-tab-panel>
+              </snice-tabs>
+            </div>
+            <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1.25rem;position:relative">
+              <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">placement: end</span>
+              <snice-tabs placement="end">
+                <snice-tab slot="nav">v4.5</snice-tab>
+                <snice-tab slot="nav">v4.4</snice-tab>
+                <snice-tab slot="nav">v4.3</snice-tab>
+                <snice-tab-panel>
+                  <div style="padding:0.75rem">
+                    <p style="margin:0;line-height:1.6;opacity:0.8">Added component import validation, build improvements, and new standalone output formats.</p>
+                  </div>
+                </snice-tab-panel>
+                <snice-tab-panel>
+                  <div style="padding:0.75rem">
+                    <p style="margin:0;line-height:1.6;opacity:0.8">Duplicate element registration now warns instead of erroring. Improved dev ergonomics.</p>
+                  </div>
+                </snice-tab-panel>
+                <snice-tab-panel>
+                  <div style="padding:0.75rem">
+                    <p style="margin:0;line-height:1.6;opacity:0.8">Website improvements, release automation, and CI pipeline for automatic publishing.</p>
+                  </div>
+                </snice-tab-panel>
+              </snice-tabs>
+            </div>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-tabs transition="fade"&gt;
+  &lt;snice-tab slot="nav"&gt;Overview&lt;/snice-tab&gt;
+  &lt;snice-tab slot="nav"&gt;Features&lt;/snice-tab&gt;
+  &lt;snice-tab-panel&gt;
+    &lt;h4&gt;Component Library&lt;/h4&gt;
+    &lt;p&gt;64 production-ready components...&lt;/p&gt;
+  &lt;/snice-tab-panel&gt;
+  &lt;snice-tab-panel&gt;
+    &lt;p&gt;Differential rendering, routing...&lt;/p&gt;
+  &lt;/snice-tab-panel&gt;
+&lt;/snice-tabs&gt;
+
+&lt;!-- Bottom placement --&gt;
+&lt;snice-tabs placement="bottom"
+            transition="slide"&gt;
+  ...
+&lt;/snice-tabs&gt;
+
+&lt;!-- Vertical --&gt;
+&lt;snice-tabs placement="start"&gt;...&lt;/snice-tabs&gt;
+&lt;snice-tabs placement="end"&gt;...&lt;/snice-tabs&gt;</code></pre>
+        </div>
+      </div>
+    </div>

@@ -1,0 +1,38 @@
+<div class="comp-section">
+      <h3>Banner</h3>
+      <p class="comp-desc">Full-width notification banners</p>
+      <div class="comp-split">
+        <div class="comp-split-demo">
+          <snice-button variant="primary" onclick="showDemoBanner('info')">Info Banner</snice-button>
+          <snice-button variant="warning" onclick="showDemoBanner('warning')">Warning Banner</snice-button>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-banner
+  variant="info"
+  message="New version available!"
+  action-text="Update Now"
+  dismissible
+&gt;&lt;/snice-banner&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+<script>
+// Banner demo - create dynamically on click
+    window.showDemoBanner = (type) => {
+      const existing = document.getElementById('demo-banner-' + type);
+      if (existing) existing.remove();
+      const banner = document.createElement('snice-banner');
+      banner.id = 'demo-banner-' + type;
+      banner.variant = type;
+      banner.dismissible = true;
+      if (type === 'info') {
+        banner.message = 'New version available! Update to get the latest features.';
+        banner.actionText = 'Update Now';
+      } else {
+        banner.message = 'Your trial expires in 3 days.';
+      }
+      document.body.prepend(banner);
+      requestAnimationFrame(() => banner.show());
+    };
+</script>

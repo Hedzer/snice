@@ -1,0 +1,40 @@
+<div class="comp-section">
+      <h3>Stepper</h3>
+      <p class="comp-desc">Multi-step process indicator</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo demo-col">
+          <snice-stepper id="demo-stepper" current-step="1" clickable></snice-stepper>
+          <div style="margin-top:1rem;display:flex;gap:0.5rem">
+            <snice-button variant="default" size="small" onclick="document.getElementById('demo-stepper').currentStep = Math.max(0, document.getElementById('demo-stepper').currentStep - 1)">Previous</snice-button>
+            <snice-button variant="primary" size="small" onclick="document.getElementById('demo-stepper').currentStep = Math.min(3, document.getElementById('demo-stepper').currentStep + 1)">Next</snice-button>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-stepper
+  id="stepper"
+  current-step="1"
+  clickable
+&gt;&lt;/snice-stepper&gt;
+&lt;script&gt;
+  stepper.steps = [
+    { label: 'Account', description: 'Create account' },
+    { label: 'Profile', description: 'Setup profile' },
+    { label: 'Complete', description: 'All done!' }
+  ];
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+<script>
+// Initialize stepper
+    customElements.whenDefined('snice-stepper').then(() => {
+      const stepper = document.getElementById('demo-stepper');
+      if (stepper) stepper.steps = [
+        { label: 'Account', description: 'Create account' },
+        { label: 'Profile', description: 'Setup profile' },
+        { label: 'Settings', description: 'Configure settings' },
+        { label: 'Complete', description: 'All done!' }
+      ];
+    });
+</script>

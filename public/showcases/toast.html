@@ -1,0 +1,24 @@
+<div class="comp-section">
+      <h3>Toast</h3>
+      <p class="comp-desc">Temporary notification messages</p>
+      <div class="comp-split">
+        <div class="comp-split-demo">
+          <snice-button variant="success" onclick="document.getElementById('toast-container').show('Changes saved successfully!', {type:'success'})">Success</snice-button>
+          <snice-button variant="danger" onclick="document.getElementById('toast-container').show('Something went wrong', {type:'error'})">Error</snice-button>
+          <snice-button variant="warning" onclick="document.getElementById('toast-container').show('Please review your input', {type:'warning'})">Warning</snice-button>
+          <snice-button variant="primary" onclick="document.getElementById('toast-container').show('New message received', {type:'info'})">Info</snice-button>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-toast-container id="toasts" position="bottom-right"&gt;
+&lt;/snice-toast-container&gt;
+
+&lt;script&gt;
+  toasts.show('Saved!', { type: 'success' });
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+      <snice-toast-container id="toast-container" position="bottom-right"></snice-toast-container>
+    </div>
+
+    <div class="comp-section">

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Components - Snice</title>
+  <meta name="description" content="TypeScript web components with separation of concerns">
+  <link rel="stylesheet" href="theme/theme.css">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <style>
+    /* ─── Custom Prism theme: Snice Dark (One Dark inspired) ─── */
+    [data-theme="dark"] .token.comment,
+    [data-theme="dark"] .token.prolog { color: #5c6370; font-style: italic; }
+    [data-theme="dark"] .token.doctype,
+    [data-theme="dark"] .token.cdata { color: #e5c07b; }
+    [data-theme="dark"] .token.punctuation { color: #abb2bf; }
+    [data-theme="dark"] .token.tag { color: #e06c75; }
+    [data-theme="dark"] .token.attr-name { color: #d19a66; }
+    [data-theme="dark"] .token.attr-value,
+    [data-theme="dark"] .token.attr-value .punctuation,
+    [data-theme="dark"] .token.string { color: #98c379; }
+    [data-theme="dark"] .token.entity { color: #56b6c2; }
+    [data-theme="dark"] .token.keyword { color: #c678dd; }
+    [data-theme="dark"] .token.function { color: #61afef; }
+    [data-theme="dark"] .token.boolean,
+    [data-theme="dark"] .token.number { color: #d19a66; }
+    [data-theme="dark"] .token.operator { color: #56b6c2; }
+    [data-theme="dark"] .token.selector,
+    [data-theme="dark"] .token.important { color: #c678dd; }
+    [data-theme="dark"] .token.atrule { color: #e5c07b; }
+    [data-theme="dark"] .token.regex { color: #56b6c2; }
+
+    /* ─── Custom Prism theme: Snice Light (One Light inspired) ─── */
+    [data-theme="light"] code[class*="language-"],
+    [data-theme="light"] pre[class*="language-"] { color: #383a42; }
+    [data-theme="light"] .token.comment,
+    [data-theme="light"] .token.prolog { color: #a0a1a7; font-style: italic; }
+    [data-theme="light"] .token.doctype,
+    [data-theme="light"] .token.cdata { color: #c18401; }
+    [data-theme="light"] .token.punctuation { color: #383a42; }
+    [data-theme="light"] .token.tag { color: #e45649; }
+    [data-theme="light"] .token.attr-name { color: #986801; }
+    [data-theme="light"] .token.attr-value,
+    [data-theme="light"] .token.attr-value .punctuation,
+    [data-theme="light"] .token.string { color: #50a14f; }
+    [data-theme="light"] .token.entity { color: #0184bc; }
+    [data-theme="light"] .token.keyword { color: #a626a4; }
+    [data-theme="light"] .token.function { color: #4078f2; }
+    [data-theme="light"] .token.boolean,
+    [data-theme="light"] .token.number { color: #986801; }
+    [data-theme="light"] .token.operator { color: #0184bc; }
+    [data-theme="light"] .token.selector,
+    [data-theme="light"] .token.important { color: #a626a4; }
+    [data-theme="light"] .token.atrule { color: #c18401; }
+    [data-theme="light"] .token.regex { color: #0184bc; }
+
+    /* Override Prism's default background for both themes */
+    [data-theme="light"] .comp-split-code pre[class*="language-"],
+    [data-theme="light"] .comp-split-code code[class*="language-"],
+    [data-theme="dark"] .comp-split-code pre[class*="language-"],
+    [data-theme="dark"] .comp-split-code code[class*="language-"] {
+      background: transparent;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="wrap">
+      <h1><a href="index.html">Snice</a></h1>
+      <nav>
+        <a href="decorators.html">Decorators</a>
+        <a href="components.html" class="active">Components</a>
+        <a href="https://gitlab.com/Hedzer/snice">GitLab</a>
+        <button class="theme-btn" onclick="document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark')" title="Toggle theme">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        </button>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap">
+    <div class="page-title">
+      <h2>64 Components</h2>
+      <p>Pre-built UI components. Use standalone or with React/Vue/Angular.</p>
+    </div>

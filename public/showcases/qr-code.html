@@ -1,0 +1,39 @@
+<!-- ── 12. QR Code ── -->
+    <div class="comp-section">
+      <h3>QR Code</h3>
+      <p class="comp-desc">Generate QR codes with colors, logos, and dot styles</p>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-center" style="gap:1.5rem">
+          <snice-qr-code value="https://snice.dev" size="120" dot-style="rounded" fg-color="#2196f3" bg-color="#e3f2fd" style="--qr-border-radius:12px"></snice-qr-code>
+          <snice-qr-code value="npm install snice" size="120" dot-style="dots" fg-color="#4caf50" bg-color="#e8f5e9" style="--qr-border-radius:12px"></snice-qr-code>
+          <snice-qr-code value="https://github.com" size="120" center-text="GH" center-text-size="24" text-fill-color="#9c27b0" dot-style="rounded" fg-color="#9c27b0" bg-color="#f3e5f5" style="--qr-border-radius:12px"></snice-qr-code>
+          <snice-qr-code value="WIFI:T:WPA;S:MyNetwork;P:secret123;;" size="120" center-text="WiFi" center-text-size="18" text-fill-color="#ff9800" fg-color="#ff9800" style="--qr-border-radius:12px"></snice-qr-code>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-qr-code
+  value="https://snice.dev"
+  size="120"
+  dot-style="rounded"
+  fg-color="#2196f3"
+  bg-color="#e3f2fd"&gt;
+&lt;/snice-qr-code&gt;
+
+&lt;snice-qr-code
+  value="WIFI:T:WPA;S:MyNetwork;P:secret;;"
+  center-text="WiFi"
+  fg-color="#ff9800"&gt;
+&lt;/snice-qr-code&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════ -->
+    <!-- NAVIGATION                               -->
+    <!-- ════════════════════════════════════════ -->
+<script>
+// Start QR reader when modal opens
+    document.getElementById('qr-reader-modal')?.addEventListener('snice-modal-open', () => {
+      document.getElementById('demo-qr-reader')?.start();
+    });
+</script>

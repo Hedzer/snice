@@ -1,0 +1,24 @@
+<div class="comp-section">
+      <h3>React Adapter</h3>
+      <p class="comp-desc">First-class React 17+ support</p>
+      <pre><code><span class="k">import</span> { Button, Input, Alert } <span class="k">from</span> <span class="s">'snice/react'</span>;
+
+<span class="k">function</span> <span class="t">LoginForm</span>() {
+  <span class="k">const</span> [email, setEmail] = useState(<span class="s">''</span>);
+
+  <span class="k">return</span> (
+    &lt;&gt;
+      &lt;Input
+        label=<span class="s">"Email"</span>
+        value={email}
+        onChange={(e) =&gt; setEmail(e.detail.value)}
+      /&gt;
+      &lt;Button variant=<span class="s">"primary"</span> onClick={handleSubmit}&gt;
+        Sign In
+      &lt;/Button&gt;
+    &lt;/&gt;
+  );
+}</code></pre>
+    </div>
+
+    <h3 style="margin-top:2rem">All 64 Components</h3>

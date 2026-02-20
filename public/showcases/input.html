@@ -1,0 +1,34 @@
+<!-- ── 2. Input ── -->
+    <div class="comp-section">
+      <h3>Input</h3>
+      <p class="comp-desc">Text fields with types, sizes, variants, and validation</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo demo-col">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <snice-input label="Email" placeholder="Enter your email" type="email"></snice-input>
+            <snice-input label="Password" placeholder="Enter password" type="password" password></snice-input>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-top:1rem">
+            <snice-input size="small" placeholder="Small" label="Small"></snice-input>
+            <snice-input size="medium" placeholder="Medium" label="Medium"></snice-input>
+            <snice-input size="large" placeholder="Large" label="Large"></snice-input>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem">
+            <snice-input variant="filled" placeholder="Filled variant" label="Filled"></snice-input>
+            <snice-input invalid value="invalid@" label="Invalid" error-text="Please enter a valid email"></snice-input>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-input label="Email" type="email"
+  placeholder="Enter your email"&gt;&lt;/snice-input&gt;
+
+&lt;snice-input label="Password" type="password"
+  password placeholder="Enter password"&gt;&lt;/snice-input&gt;
+
+&lt;snice-input size="small" label="Small"&gt;&lt;/snice-input&gt;
+&lt;snice-input variant="filled" label="Filled"&gt;&lt;/snice-input&gt;
+&lt;snice-input invalid error-text="Invalid email"&gt;&lt;/snice-input&gt;</code></pre>
+        </div>
+      </div>
+    </div>

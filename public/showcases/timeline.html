@@ -1,0 +1,63 @@
+<div class="comp-section">
+      <h3>Timeline</h3>
+      <p class="comp-desc">Chronological event display with multiple positions and orientations</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo demo-col" style="gap:1.5rem">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.25rem">
+            <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1rem;position:relative">
+              <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">left</span>
+              <snice-timeline id="demo-timeline-left" position="left"></snice-timeline>
+            </div>
+            <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1rem;position:relative">
+              <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">alternate</span>
+              <snice-timeline id="demo-timeline-alt" position="alternate"></snice-timeline>
+            </div>
+            <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1rem;position:relative">
+              <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">right</span>
+              <snice-timeline id="demo-timeline-right" position="right"></snice-timeline>
+            </div>
+          </div>
+          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1rem;position:relative">
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">horizontal</span>
+            <snice-timeline id="demo-timeline-horiz" orientation="horizontal"></snice-timeline>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">javascript</span>
+          <pre><code class="language-javascript">&lt;!-- Vertical positions --&gt;
+&lt;snice-timeline position="left"&gt;&lt;/snice-timeline&gt;
+&lt;snice-timeline position="alternate"&gt;&lt;/snice-timeline&gt;
+&lt;snice-timeline position="right"&gt;&lt;/snice-timeline&gt;
+
+&lt;!-- Horizontal --&gt;
+&lt;snice-timeline orientation="horizontal"&gt;
+&lt;/snice-timeline&gt;
+
+timeline.items = [
+  { title: 'Started', timestamp: 'Jan',
+    variant: 'info' },
+  { title: 'Testing', timestamp: 'Mar',
+    variant: 'warning' },
+  { title: 'Launched', timestamp: 'Apr',
+    variant: 'success' }
+];</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-section">
+<script>
+// Initialize timelines
+    customElements.whenDefined('snice-timeline').then(() => {
+      const items = [
+        { title: 'Project Started', description: 'Initial planning and setup', timestamp: 'Jan 15', variant: 'info' },
+        { title: 'Development', description: 'Core features implemented', timestamp: 'Feb 20', variant: 'default' },
+        { title: 'Testing', description: 'QA and bug fixes', timestamp: 'Mar 10', variant: 'warning' },
+        { title: 'Launch', description: 'Released to production', timestamp: 'Apr 1', variant: 'success' }
+      ];
+      ['demo-timeline-left', 'demo-timeline-alt', 'demo-timeline-right', 'demo-timeline-horiz'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.items = items;
+      });
+    });
+</script>
