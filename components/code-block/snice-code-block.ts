@@ -1,5 +1,6 @@
 import { element, property, dispatch, render, styles, html, css, query, ready } from 'snice';
 import cssContent from './snice-code-block.css?inline';
+import { highlightCode } from './highlighter';
 import type {
   CodeLanguage,
   SniceCodeBlockElement,
@@ -67,12 +68,8 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
     // Wait for next frame to ensure DOM is ready
     await new Promise(resolve => requestAnimationFrame(resolve));
 
-    // Auto-highlight on ready if highlighter is available
-    if (this.code && (this.highlighter || SniceCodeBlock.globalHighlighter)) {
+    if (this.code) {
       await this.highlight();
-    } else if (this.code) {
-      // No highlighter, just display escaped code
-      this.updateCodeDisplay();
     }
   }
 
@@ -180,27 +177,24 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
   async highlight() {
     if (!this.code) return;
 
-    const highlighter = this.highlighter || SniceCodeBlock.globalHighlighter;
-    if (!highlighter) {
-      console.warn('No highlighter configured');
-      return;
-    }
+    const externalHighlighter = this.highlighter || SniceCodeBlock.globalHighlighter;
 
     // Dispatch before event
     this.dispatchBeforeHighlightEvent();
 
     try {
-      // Escape HTML entities in the code before highlighting
-      const escapedCode = this.escapeHtml(this.code);
-
-      // Apply highlighting to each line individually to preserve line structure
-      const lines = escapedCode.split('\n');
-      const highlightedLines = await Promise.all(
-        lines.map(line => highlighter(line, this.language))
-      );
-
-      // Join back with newlines
-      this.highlightedCode = highlightedLines.join('\n');
+      if (externalHighlighter) {
+        // External highlighters expect escaped HTML
+        const escapedCode = this.escapeHtml(this.code);
+        const lines = escapedCode.split('\n');
+        const highlightedLines = await Promise.all(
+          lines.map(line => externalHighlighter(line, this.language))
+        );
+        this.highlightedCode = highlightedLines.join('\n');
+      } else {
+        // Built-in highlighter handles escaping internally
+        this.highlightedCode = highlightCode(this.code, this.language);
+      }
 
       // Update display with highlighted code
       this.updateCodeDisplay();
