@@ -50,8 +50,14 @@ export class SniceChip extends HTMLElement implements SniceChipElement {
         <if ${this.avatar}>
           <img class="chip-avatar" src="${this.avatar}" alt="">
         </if>
-        <if ${!this.avatar && this.icon}>
-          ${renderIcon(this.icon, 'chip-icon')}
+        <if ${!this.avatar}>
+          <span class="chip-icon-slot" part="icon">
+            <slot name="icon">
+              <if ${this.icon}>
+                ${renderIcon(this.icon, 'chip-icon')}
+              </if>
+            </slot>
+          </span>
         </if>
         <span class="chip-label">${this.label}</span>
         <if ${this.removable && !this.disabled}>

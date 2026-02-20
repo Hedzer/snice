@@ -315,6 +315,21 @@
   }
 }
 
+/* Icon slot styles */
+.icon-slot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1.25em;
+  height: 1.25em;
+  line-height: 1;
+}
+
+.icon-slot:empty {
+  display: none;
+}
+
 /* Icon styles */
 .icon {
   display: inline-flex;
@@ -337,14 +352,39 @@
   height: 100%;
 }
 
+/* Slotted icon styles */
+.icon-slot ::slotted(*) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25em;
+  height: 1.25em;
+  font-size: 1.25em;
+  line-height: 1;
+}
+
+.icon-slot ::slotted(svg) {
+  width: 1.25em;
+  height: 1.25em;
+}
+
+.icon-slot ::slotted(img) {
+  width: 1.25em;
+  height: 1.25em;
+  object-fit: contain;
+}
+
+.button--icon-start .icon-slot,
 .button--icon-start .icon {
   margin-right: 0.5em;
 }
 
+.button--icon-end .icon-slot,
 .button--icon-end .icon {
   margin-left: 0.5em;
 }
 
+.button--circle .icon-slot,
 .button--circle .icon {
   margin: 0;
 }

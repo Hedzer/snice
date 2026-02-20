@@ -7,6 +7,7 @@ export interface BreadcrumbItem {
   icon?: string;
   iconImage?: string;
   active?: boolean;
+  iconNode?: Element;
 }
 
 export interface SniceBreadcrumbsElement extends HTMLElement {

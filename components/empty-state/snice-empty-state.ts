@@ -29,7 +29,11 @@ export class SniceEmptyState extends HTMLElement implements SniceEmptyStateEleme
 
     return html/*html*/`
       <div class="${emptyStateClasses}" part="container">
-        <div class="empty-state__icon-wrapper" part="icon">${renderIcon(this.icon, 'empty-state__icon')}</div>
+        <div class="empty-state__icon-wrapper" part="icon">
+          <slot name="icon">
+            ${renderIcon(this.icon, 'empty-state__icon')}
+          </slot>
+        </div>
         <h3 class="empty-state__title" part="title">${this.title}</h3>
         <if ${this.description}>
           <p class="empty-state__description" part="description">${this.description}</p>

@@ -173,25 +173,72 @@
   color: var(--snice-color-danger);
 }
 
-/* Icons */
-.icon {
+/* Icon slots */
+.icon-slot {
   position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 1.25rem; /* 20px */
-  height: 1.25rem; /* 20px */
+  width: 1.25rem;
+  height: 1.25rem;
   color: var(--snice-color-text-secondary);
   pointer-events: none;
   opacity: 0.7;
 }
 
+.icon-slot:empty {
+  display: none;
+}
+
+.icon-slot--prefix {
+  left: 0.625rem;
+}
+
+.icon-slot--suffix {
+  right: 0.625rem;
+}
+
+/* Icons */
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--snice-color-text-secondary);
+  pointer-events: none;
+}
+
 .icon--prefix {
-  left: 0.625rem; /* 10px */
+  /* Styles applied via parent .icon-slot--prefix */
 }
 
 .icon--suffix {
-  right: 0.625rem; /* 10px */
+  /* Styles applied via parent .icon-slot--suffix */
+}
+
+/* Slotted icon styles */
+.icon-slot ::slotted(*) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.icon-slot ::slotted(svg) {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.icon-slot ::slotted(img) {
+  width: 1.25rem;
+  height: 1.25rem;
+  object-fit: contain;
 }
 
 /* Clear Button */

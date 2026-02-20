@@ -108,6 +108,28 @@
   height: 100%;
 }
 
+/* Slotted icon styles */
+.alert-icon ::slotted(*) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--alert-icon-size);
+  height: var(--alert-icon-size);
+  font-size: var(--alert-icon-size);
+  line-height: 1;
+}
+
+.alert-icon ::slotted(svg) {
+  width: var(--alert-icon-size);
+  height: var(--alert-icon-size);
+}
+
+.alert-icon ::slotted(img) {
+  width: var(--alert-icon-size);
+  height: var(--alert-icon-size);
+  object-fit: contain;
+}
+
 /* Default icons */
 :host([variant="info"]) .alert-icon--default::before {
   content: "ℹ";

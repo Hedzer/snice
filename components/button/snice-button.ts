@@ -1,4 +1,4 @@
-import { element, property, query, render, styles, html, css } from 'snice';
+import { element, property, query, on, render, styles, html, css } from 'snice';
 import { renderIcon } from '../utils';
 import cssContent from './snice-button.css?inline';
 import type { ButtonVariant, ButtonSize, ButtonType, IconPlacement, SniceButtonElement } from './snice-button.types';
@@ -53,6 +53,7 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
   @property({ attribute: 'icon-placement',  })
   iconPlacement: IconPlacement = 'start';
 
+  private hasIconSlot = false;
 
   @query('.button')
   button?: HTMLButtonElement;
@@ -66,8 +67,15 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
   @query('.icon')
   iconElement?: HTMLImageElement;
 
+  @on('slotchange', { target: 'slot[name="icon"]' })
+  handleIconSlotChange() {
+    const slot = this.shadowRoot?.querySelector('slot[name="icon"]') as HTMLSlotElement;
+    this.hasIconSlot = (slot?.assignedNodes().length ?? 0) > 0;
+  }
+
   @render()
   render() {
+    const hasIcon = this.icon || this.hasIconSlot;
     const classes = [
       'button',
       `button--${this.variant || 'default'}`,
@@ -77,21 +85,33 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
       this.circle ? 'button--circle' : '',
       this.loading ? 'button--loading' : '',
       this.disabled ? 'button--disabled' : '',
-      this.icon ? `button--has-icon` : '',
-      this.icon ? `button--icon-${this.iconPlacement}` : ''
+      hasIcon ? `button--has-icon` : '',
+      hasIcon ? `button--icon-${this.iconPlacement}` : ''
     ].filter(Boolean).join(' ');
 
     return html/*html*/`
       <button class="${classes}" type="${this.type}" ?disabled="${this.disabled}" part="base" @click="${(e: MouseEvent) => this.handleInternalClick(e)}">
         <span class="spinner" part="spinner"></span>
-        <if ${this.icon && this.iconPlacement === 'start'}>
-          ${renderIcon(this.icon, 'icon')}
+        <if ${this.iconPlacement === 'start'}>
+          <span class="icon-slot" part="icon">
+            <slot name="icon">
+              <if ${this.icon}>
+                ${renderIcon(this.icon, 'icon')}
+              </if>
+            </slot>
+          </span>
         </if>
         <span class="label" part="label">
           <slot></slot>
         </span>
-        <if ${this.icon && this.iconPlacement === 'end'}>
-          ${renderIcon(this.icon, 'icon')}
+        <if ${this.iconPlacement === 'end'}>
+          <span class="icon-slot" part="icon">
+            <slot name="icon">
+              <if ${this.icon}>
+                ${renderIcon(this.icon, 'icon')}
+              </if>
+            </slot>
+          </span>
         </if>
       </button>
     `;

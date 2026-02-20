@@ -64,7 +64,22 @@ case, when, default, if {
 .breadcrumb-icon {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   font-size: 1.1em;
+  width: 1.2em;
+  height: 1.2em;
+  line-height: 1;
+}
+
+.breadcrumb-icon svg {
+  width: 1.2em;
+  height: 1.2em;
+}
+
+.breadcrumb-icon img {
+  width: 1.2em;
+  height: 1.2em;
+  object-fit: contain;
 }
 
 .breadcrumb-icon-image {

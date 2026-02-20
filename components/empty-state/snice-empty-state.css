@@ -26,21 +26,74 @@
   padding: var(--snice-spacing-3xl, 4rem) var(--snice-spacing-2xl, 2.5rem);
 }
 
+.empty-state__icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--snice-spacing-lg, 1.5rem);
+}
+
 .empty-state__icon {
   font-size: var(--snice-font-size-4xl, 4rem);
-  margin-bottom: var(--snice-spacing-lg, 1.5rem);
   opacity: 0.5;
   line-height: 1;
 }
 
+/* Slotted icon styles */
+.empty-state__icon-wrapper ::slotted(*) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--snice-font-size-4xl, 4rem);
+  opacity: 0.5;
+  line-height: 1;
+}
+
+.empty-state__icon-wrapper ::slotted(svg) {
+  width: var(--snice-font-size-4xl, 4rem);
+  height: var(--snice-font-size-4xl, 4rem);
+}
+
+.empty-state__icon-wrapper ::slotted(img) {
+  width: var(--snice-font-size-4xl, 4rem);
+  height: var(--snice-font-size-4xl, 4rem);
+  object-fit: contain;
+}
+
+.empty-state--small .empty-state__icon-wrapper {
+  margin-bottom: var(--snice-spacing-md, 1rem);
+}
+
 .empty-state--small .empty-state__icon {
   font-size: var(--snice-font-size-3xl, 3rem);
-  margin-bottom: var(--snice-spacing-md, 1rem);
+}
+
+.empty-state--small .empty-state__icon-wrapper ::slotted(*) {
+  font-size: var(--snice-font-size-3xl, 3rem);
+}
+
+.empty-state--small .empty-state__icon-wrapper ::slotted(svg),
+.empty-state--small .empty-state__icon-wrapper ::slotted(img) {
+  width: var(--snice-font-size-3xl, 3rem);
+  height: var(--snice-font-size-3xl, 3rem);
+}
+
+.empty-state--large .empty-state__icon-wrapper {
+  margin-bottom: var(--snice-spacing-xl, 2rem);
 }
 
 .empty-state--large .empty-state__icon {
   font-size: var(--snice-font-size-5xl, 5rem);
-  margin-bottom: var(--snice-spacing-xl, 2rem);
+}
+
+.empty-state--large .empty-state__icon-wrapper ::slotted(*) {
+  font-size: var(--snice-font-size-5xl, 5rem);
+}
+
+.empty-state--large .empty-state__icon-wrapper ::slotted(svg),
+.empty-state--large .empty-state__icon-wrapper ::slotted(img) {
+  width: var(--snice-font-size-5xl, 5rem);
+  height: var(--snice-font-size-5xl, 5rem);
 }
 
 .empty-state__title {

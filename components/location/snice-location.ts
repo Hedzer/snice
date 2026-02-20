@@ -146,7 +146,9 @@ export class SniceLocation extends HTMLElement implements SniceLocationElement {
       <div class="location ${this.clickable ? 'location--clickable' : ''}" @click=${() => this.handleClick()}>
         <if ${this.showIcon}>
           <div class="icon">
-            ${renderIcon(this.iconImage || this.icon, 'location-icon')}
+            <slot name="icon">
+              ${renderIcon(this.iconImage || this.icon, 'location-icon')}
+            </slot>
           </div>
         </if>
 

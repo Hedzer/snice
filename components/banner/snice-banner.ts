@@ -50,9 +50,13 @@ export class SniceBanner extends HTMLElement implements SniceBannerElement {
 
     return html/*html*/`
       <div class="${bannerClasses}" role="alert" part="banner">
-        <if ${displayIcon}>
-          ${renderIcon(displayIcon, 'banner__icon')}
-        </if>
+        <span class="banner__icon-slot" part="icon">
+          <slot name="icon">
+            <if ${displayIcon}>
+              ${renderIcon(displayIcon, 'banner__icon')}
+            </if>
+          </slot>
+        </span>
 
         <span class="banner__message" part="message">${this.message}</span>
 

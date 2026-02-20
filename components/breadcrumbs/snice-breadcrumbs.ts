@@ -150,13 +150,18 @@ export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsEle
       el => el.tagName.toLowerCase() === 'snice-crumb'
     ) as SniceCrumbElement[];
 
-    this.slotItems = crumbs.map(crumb => ({
-      label: crumb.label || crumb.textContent?.trim() || '',
-      href: crumb.href || undefined,
-      icon: crumb.icon || undefined,
-      iconImage: crumb.iconImage || undefined,
-      active: crumb.active || false
-    }));
+    this.slotItems = crumbs.map(crumb => {
+      // Check for slotted icon element
+      const iconElement = crumb.querySelector('[slot="icon"]') as Element | null;
+      return {
+        label: crumb.label || crumb.textContent?.trim() || '',
+        href: crumb.href || undefined,
+        icon: crumb.icon || undefined,
+        iconImage: crumb.iconImage || undefined,
+        active: crumb.active || false,
+        iconNode: iconElement || undefined
+      };
+    });
 
     // Trigger re-render to display slot items by updating a property
     this.renderTrigger++;
@@ -172,6 +177,13 @@ export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsEle
   }
 
   private renderItemIcon(item: BreadcrumbItem) {
+    // Slotted icon node takes precedence
+    if (item.iconNode) {
+      const clone = item.iconNode.cloneNode(true) as Element;
+      clone.classList.add('breadcrumb-icon');
+      clone.removeAttribute('slot');
+      return html`${clone}`;
+    }
     // iconImage takes precedence for backwards compatibility
     if (item.iconImage) {
       return renderIcon(item.iconImage, 'breadcrumb-icon');

@@ -150,14 +150,47 @@
   margin-left: -6px;
 }
 
+/* Icon slot */
+.chip-icon-slot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: -0.25rem;
+}
+
+.chip-icon-slot:empty {
+  display: none;
+}
+
 /* Icon */
 .chip-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 18px;
-  height: 18px;
-  margin-left: -4px;
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+/* Slotted icon styles */
+.chip-icon-slot ::slotted(*) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.125rem;
+  height: 1.125rem;
+  font-size: 1.125rem;
+  line-height: 1;
+}
+
+.chip-icon-slot ::slotted(svg) {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.chip-icon-slot ::slotted(img) {
+  width: 1.125rem;
+  height: 1.125rem;
+  object-fit: contain;
 }
 
 /* Label */

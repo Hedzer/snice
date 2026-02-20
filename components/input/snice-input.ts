@@ -125,9 +125,13 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
         </if>
 
         <div class="input-container">
-          <if ${this.prefixIcon}>
-            ${renderIcon(this.prefixIcon, 'icon icon--prefix')}
-          </if>
+          <span class="icon-slot icon-slot--prefix" part="prefix-icon">
+            <slot name="prefix-icon">
+              <if ${this.prefixIcon}>
+                ${renderIcon(this.prefixIcon, 'icon icon--prefix')}
+              </if>
+            </slot>
+          </span>
 
           <input
             class="${inputClasses}"
@@ -187,8 +191,14 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
               </svg>
             </button>
           </if>
-          <if ${!(this.type === 'password' && this.password) && this.suffixIcon}>
-            ${renderIcon(this.suffixIcon, 'icon icon--suffix')}
+          <if ${!(this.type === 'password' && this.password)}>
+            <span class="icon-slot icon-slot--suffix" part="suffix-icon">
+              <slot name="suffix-icon">
+                <if ${this.suffixIcon}>
+                  ${renderIcon(this.suffixIcon, 'icon icon--suffix')}
+                </if>
+              </slot>
+            </span>
           </if>
         </div>
 
