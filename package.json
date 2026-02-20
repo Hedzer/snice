@@ -94,6 +94,7 @@
     "build:core": "rm -rf dist && rollup -c && npm run build:types",
     "build:types": "tsc --project components/tsconfig.json --emitDeclarationOnly",
     "build:standalone": "rollup -c rollup.config.standalone.js && cp dist/standalone/*/snice-*.min.js public/components/",
+    "build:showcases": "node public/build-showcases.js",
     "build:react": "npm run generate:react-adapters && tsc --project adapters/react/tsconfig.json",
     "build:test": "rollup -c rollup.config.test.js",
     "generate:react-adapters": "node scripts/generate-react-adapters.js",
@@ -117,7 +118,7 @@
     "release:dry": "semantic-release --dry-run --no-ci",
     "website:build": "node scripts/build-website.js",
     "website:build:full": "npm run build:standalone && npm run website:build",
-    "website:dev": "npm run website:build && cd public && python3 -m http.server 52891",
+    "website:dev": "npm run website:build && vite --port 52891",
     "website:deploy": "npm run website:build:full && npx wrangler deploy",
     "website:test": "vitest run tests/website.test.ts",
     "website:test:render": "npm run website:build && cd public && python3 -m http.server 52891 & sleep 2 && npx playwright test tests/website-render.test.ts; kill %1"

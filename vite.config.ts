@@ -1,6 +1,28 @@
 // vite.config.ts
 import { defineConfig } from 'vite';
+import { execSync } from 'child_process';
 import swc from 'unplugin-swc';
+
+function showcaseRebuilder() {
+  return {
+    name: 'showcase-rebuilder',
+    configureServer(server) {
+      server.watcher.on('change', (path) => {
+        if (path.includes('showcases/') && !path.endsWith('components.html')) {
+          console.log(`\n  Showcase fragment changed: ${path.split('/').pop()}`);
+          try {
+            execSync('node public/build-showcases.js', { stdio: 'inherit' });
+          } catch {}
+        }
+      });
+    },
+    buildStart() {
+      try {
+        execSync('node public/build-showcases.js', { stdio: 'inherit' });
+      } catch {}
+    },
+  };
+}
 
 export default defineConfig({
   plugins: [
@@ -18,9 +40,14 @@ export default defineConfig({
         },
       },
     }),
+    showcaseRebuilder(),
   ],
   server: {
     port: 5566,
     strictPort: true,
+  },
+  optimizeDeps: {
+    exclude: ['snice', 'snice/router'],
+    entries: ['public/**/*.html'],
   },
 });
