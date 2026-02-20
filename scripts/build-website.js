@@ -1609,8 +1609,9 @@ ${footer}
 </body>
 </html>`;
 
-writeFileSync(join(out, 'styles.css'), css);
-writeFileSync(join(out, 'index.html'), indexHtml);
+// NOTE: styles.css, index.html, and components.html are hand-maintained
+// styles.css: full version lives in public/styles.css (511 lines with comp-split, code-tabs, etc.)
+// index.html: has imperative/declarative tabs, hand-crafted syntax highlighting
+// components.html: built from public/showcases/ fragments via build-showcases.js
 writeFileSync(join(out, 'decorators.html'), decoratorsHtml);
-writeFileSync(join(out, 'components.html'), componentsHtml);
 console.log('Built to public/ - preview at http://localhost:52891');
