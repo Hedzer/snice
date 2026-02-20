@@ -1160,23 +1160,26 @@
 
     <div class="comp-section">
       <h3>Slider</h3>
-      <p class="comp-desc">Range input with variants and ticks</p>
+      <p class="comp-desc">Range input with variants, ticks, and labels</p>
       <div class="comp-split comp-split-stacked">
-        <div class="comp-split-demo demo-col">
-          <div style="margin-bottom:1rem">
-            <label style="display:block;margin-bottom:0.5rem;font-size:0.875rem;font-weight:500">Volume</label>
-            <snice-slider value="75" show-value></snice-slider>
-          </div>
-          <div>
-            <label style="display:block;margin-bottom:0.5rem;font-size:0.875rem;font-weight:500">Rating (1-5)</label>
-            <snice-slider min="1" max="5" value="4" step="1" show-value show-ticks variant="warning"></snice-slider>
-          </div>
+        <div class="comp-split-demo demo-col" style="gap:0.25rem">
+          <snice-slider label="Volume" value="75" show-value></snice-slider>
+          <snice-slider label="Brightness" value="50" show-value variant="primary"></snice-slider>
+          <snice-slider label="Rating (1-5)" min="1" max="5" value="4" step="1" show-value show-ticks variant="warning"></snice-slider>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <pre><code class="language-html">&lt;snice-slider value="75" show-value&gt;&lt;/snice-slider&gt;
-&lt;snice-slider min="1" max="5" step="1"
-  show-value show-ticks variant="warning"
+          <pre><code class="language-html">&lt;snice-slider
+  label="Volume"
+  value="75"
+  show-value
+&gt;&lt;/snice-slider&gt;
+
+&lt;snice-slider
+  label="Rating (1-5)"
+  min="1" max="5" step="1"
+  show-value show-ticks
+  variant="warning"
 &gt;&lt;/snice-slider&gt;</code></pre>
         </div>
       </div>
