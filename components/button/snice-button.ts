@@ -76,6 +76,8 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
   @render()
   render() {
     const hasIcon = this.icon || this.hasIconSlot;
+    const showIconStart = hasIcon && this.iconPlacement === 'start';
+    const showIconEnd = hasIcon && this.iconPlacement === 'end';
     const classes = [
       'button',
       `button--${this.variant || 'default'}`,
@@ -92,7 +94,7 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
     return html/*html*/`
       <button class="${classes}" type="${this.type}" ?disabled="${this.disabled}" part="base" @click="${(e: MouseEvent) => this.handleInternalClick(e)}">
         <span class="spinner" part="spinner"></span>
-        <if ${this.iconPlacement === 'start'}>
+        <if ${showIconStart}>
           <span class="icon-slot" part="icon">
             <slot name="icon">
               <if ${this.icon}>
@@ -104,7 +106,7 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
         <span class="label" part="label">
           <slot></slot>
         </span>
-        <if ${this.iconPlacement === 'end'}>
+        <if ${showIconEnd}>
           <span class="icon-slot" part="icon">
             <slot name="icon">
               <if ${this.icon}>

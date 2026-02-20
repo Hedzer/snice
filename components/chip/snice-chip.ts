@@ -1,4 +1,4 @@
-import { element, property, watch, query, dispatch, render, styles, html, css } from 'snice';
+import { element, property, watch, query, dispatch, on, render, styles, html, css } from 'snice';
 import { renderIcon } from '../utils';
 import cssContent from './snice-chip.css?inline';
 import type { ChipVariant, ChipSize, SniceChipElement } from './snice-chip.types';
@@ -35,9 +35,18 @@ export class SniceChip extends HTMLElement implements SniceChipElement {
   @query('.chip-remove')
   removeButton?: HTMLButtonElement;
 
+  private hasIconSlot = false;
+
+  @on('slotchange', { target: 'slot[name="icon"]' })
+  handleIconSlotChange() {
+    const slot = this.shadowRoot?.querySelector('slot[name="icon"]') as HTMLSlotElement;
+    this.hasIconSlot = (slot?.assignedNodes().length ?? 0) > 0;
+  }
+
   @render()
   render() {
     const chipClasses = `chip${this.selected ? ' chip--selected' : ''}`;
+    const showIcon = !this.avatar && (this.icon || this.hasIconSlot);
 
     return html/*html*/`
       <div class="${chipClasses}"
@@ -50,7 +59,7 @@ export class SniceChip extends HTMLElement implements SniceChipElement {
         <if ${this.avatar}>
           <img class="chip-avatar" src="${this.avatar}" alt="">
         </if>
-        <if ${!this.avatar}>
+        <if ${showIcon}>
           <span class="chip-icon-slot" part="icon">
             <slot name="icon">
               <if ${this.icon}>
