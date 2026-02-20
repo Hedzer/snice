@@ -78,6 +78,27 @@ header nav a:hover, header nav a.active { color: var(--snice-color-text); }
   line-height: 1.7;
   overflow-x: auto;
 }
+.code-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.code-tab {
+  background: none;
+  border: none;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.7rem;
+  color: var(--snice-color-text-tertiary);
+  cursor: pointer;
+}
+.code-tab:hover { color: var(--snice-color-text-secondary); }
+.code-tab.active {
+  color: var(--snice-color-text-secondary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.code-panel { display: none; }
+.code-panel.active { display: block; }
 
 /* Syntax highlighting */
 .c { color: hsl(var(--snice-color-gray-500)); }
@@ -87,6 +108,7 @@ header nav a:hover, header nav a.active { color: var(--snice-color-text); }
 .t { color: hsl(170 60% 55%); }
 .f { color: hsl(210 80% 75%); }
 .h { color: hsl(355 70% 65%); }
+.i { color: hsl(180 60% 55%); }
 
 .pitch {
   display: grid;
@@ -202,6 +224,54 @@ header nav a:hover, header nav a.active { color: var(--snice-color-text); }
   border-radius: 6px;
   padding: 1rem;
   margin-bottom: 1rem;
+}
+.comp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+.comp-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+.comp-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+@media (max-width: 800px) {
+  .comp-grid-3 { grid-template-columns: repeat(2, 1fr); }
+  .comp-grid-4 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 500px) {
+  .comp-grid-3, .comp-grid-4 { grid-template-columns: 1fr; }
+}
+.comp-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+.comp-split-demo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.comp-split-code {
+  background: var(--snice-color-background-tertiary);
+  border: 1px solid var(--snice-color-border);
+  border-radius: 6px;
+  padding: 1rem;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  overflow-x: auto;
+}
+.comp-split-code code {
+  white-space: pre;
+}
+@media (max-width: 800px) {
+  .comp-split { grid-template-columns: 1fr; }
 }
 .comp-list {
   display: flex;

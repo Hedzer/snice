@@ -36,7 +36,11 @@
         </div>
       </div>
       <div class="hero-code">
-        <pre><code><span class="d">@element</span>(<span class="s">'user-card'</span>)
+        <div class="code-tabs">
+          <button class="code-tab active" data-tab="declarative">Declarative</button>
+          <button class="code-tab" data-tab="imperative">Imperative</button>
+        </div>
+        <pre class="code-panel active" data-panel="declarative"><code><span class="d">@element</span>(<span class="s">'user-card'</span>)
 <span class="k">class</span> <span class="t">UserCard</span> <span class="k">extends</span> HTMLElement {
   <span class="d">@property</span>() name = <span class="s">''</span>;
   <span class="d">@property</span>() role = <span class="s">''</span>;
@@ -45,15 +49,51 @@
   <span class="f">template</span>() {
     <span class="k">return</span> html`
       &lt;div class="card"&gt;
-        &lt;h3&gt;${this.name}&lt;/h3&gt;
-        &lt;span&gt;${this.role}&lt;/span&gt;
+        &lt;h3&gt;<span class="i">${this.name}</span>&lt;/h3&gt;
+        &lt;span&gt;<span class="i">${this.role}</span>&lt;/span&gt;
       &lt;/div&gt;
     `;
   }
 }
 <span class="c">// &lt;user-card name="Alice" role="Engineer"&gt;</span></code></pre>
+        <pre class="code-panel" data-panel="imperative"><code><span class="d">@element</span>(<span class="s">'user-card'</span>)
+<span class="k">class</span> <span class="t">UserCard</span> <span class="k">extends</span> HTMLElement {
+  <span class="d">@property</span>() name = <span class="s">''</span>;
+  <span class="d">@property</span>() role = <span class="s">''</span>;
+
+  <span class="d">@query</span>(<span class="s">'.name'</span>) $name!: HTMLElement;
+  <span class="d">@query</span>(<span class="s">'.role'</span>) $role!: HTMLElement;
+
+  <span class="d">@render</span>({ once: <span class="k">true</span> })
+  <span class="f">template</span>() {
+    <span class="k">return</span> html`
+      &lt;div class="card"&gt;
+        &lt;h3 class="name"&gt;<span class="i">${this.name}</span>&lt;/h3&gt;
+        &lt;span class="role"&gt;<span class="i">${this.role}</span>&lt;/span&gt;
+      &lt;/div&gt;
+    `;
+  }
+
+  <span class="d">@watch</span>(<span class="s">'name'</span>, <span class="s">'role'</span>)
+  <span class="f">update</span>() {
+    <span class="k">if</span> (!this.$name) <span class="k">return</span>;
+    this.$name.textContent = this.name;
+    this.$role.textContent = this.role;
+  }
+}</code></pre>
       </div>
     </section>
+    <script>
+      document.querySelectorAll('.code-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          const target = tab.dataset.tab;
+          document.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+          document.querySelectorAll('.code-panel').forEach(p => p.classList.remove('active'));
+          tab.classList.add('active');
+          document.querySelector(`[data-panel="${target}"]`).classList.add('active');
+        });
+      });
+    </script>
 
     <div class="pitch">
       <div class="pitch-item"><strong>Pages</strong><span>Fetch data, understand intent</span></div>
@@ -102,7 +142,7 @@
 
   <footer>
     <div class="wrap">
-      <span>Snice v4.4.0 · MIT</span>
+      <span>Snice v4.5.0 · MIT</span>
       <span><a href="https://www.npmjs.com/package/snice">npm</a> · <a href="https://gitlab.com/Hedzer/snice">GitLab</a></span>
     </div>
   </footer>
