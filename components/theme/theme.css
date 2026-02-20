@@ -176,6 +176,9 @@
   --snice-focus-ring-color: hsl(var(--snice-color-blue-500) / 0.5);
   --snice-focus-ring-offset: 2px;
 
+  /* Text legibility - subtle shadow for readability on low-contrast backgrounds */
+  --snice-text-shadow: none;
+
   /* Color scheme for native controls */
   --snice-color-scheme-filter: none;
   color-scheme: light;
@@ -233,6 +236,9 @@
   --snice-gradient-button: linear-gradient(to bottom, hsl(0 0% 100% / 0.04), transparent);
   --snice-gradient-surface: linear-gradient(to bottom, hsl(0 0% 100% / 0.015), transparent);
 
+  /* Text legibility */
+  --snice-text-shadow: 0 1px 3px hsl(0 0% 0% / 0.5);
+
   /* Color scheme for native controls */
   --snice-color-scheme-filter: invert(1) hue-rotate(180deg);
   color-scheme: dark;
@@ -283,6 +289,9 @@
     --snice-shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.15), 0 4px 6px -4px hsl(0 0% 0% / 0.15);
     --snice-shadow-xl: 0 20px 25px -5px hsl(0 0% 0% / 0.15), 0 8px 10px -6px hsl(0 0% 0% / 0.15);
     --snice-shadow-2xl: 0 25px 50px -12px hsl(0 0% 0% / 0.35);
+
+    /* Text legibility */
+    --snice-text-shadow: 0 1px 3px hsl(0 0% 0% / 0.5);
 
     /* Color scheme for native controls */
     --snice-color-scheme-filter: invert(1) hue-rotate(180deg);
