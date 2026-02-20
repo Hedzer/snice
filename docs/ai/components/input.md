@@ -31,6 +31,11 @@ autocomplete: string = '';
 name: string = '';
 ```
 
+## Slots
+
+- `prefix-icon` - Custom prefix icon (overrides `prefixIcon` property)
+- `suffix-icon` - Custom suffix icon (overrides `suffixIcon` property)
+
 ## Methods
 
 - `focus()` - Focus input
@@ -98,6 +103,21 @@ const inp = document.querySelector('#inp');
 inp.addEventListener('input', (e) => console.log('Input:', e.detail.value));
 inp.addEventListener('change', (e) => console.log('Change:', e.detail.value));
 </script>
+
+<!-- Icon slots (for external CSS icon fonts like Material Symbols) -->
+<snice-input placeholder="Search">
+  <span slot="prefix-icon" class="material-symbols-outlined">search</span>
+</snice-input>
+
+<snice-input placeholder="Email">
+  <span slot="suffix-icon" class="material-symbols-outlined">mail</span>
+</snice-input>
+
+<!-- Both slots -->
+<snice-input placeholder="Search users">
+  <span slot="prefix-icon" class="material-symbols-outlined">search</span>
+  <span slot="suffix-icon" class="material-symbols-outlined">person</span>
+</snice-input>
 ```
 
 ## Features

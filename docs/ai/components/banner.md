@@ -14,6 +14,10 @@ actionText: string = '';
 open: boolean = false;
 ```
 
+## Slots
+
+- `icon` - Custom icon content (overrides `icon` property and default variant icons)
+
 ## Methods
 
 - `show()` - Show banner
@@ -69,6 +73,11 @@ banner.show();
 banner.hide();
 banner.toggle();
 </script>
+
+<!-- Icon slot (for external CSS icon fonts like Material Symbols) -->
+<snice-banner message="Update available" open>
+  <span slot="icon" class="material-symbols-outlined">update</span>
+</snice-banner>
 ```
 
 ## Features

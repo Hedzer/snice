@@ -5,6 +5,7 @@ The button component provides an interactive element for user actions. It suppor
 ## Table of Contents
 - [Basic Usage](#basic-usage)
 - [Properties](#properties)
+- [Slots](#slots)
 - [Methods](#methods)
 - [Examples](#examples)
 
@@ -34,6 +35,47 @@ import 'snice/components/button/snice-button';
 | `download` | `string` | `''` | Download attribute for file downloads |
 | `icon` | `string` | `''` | Icon (URL, image file, emoji, or font ligature) |
 | `iconPlacement` | `'start' \| 'end'` | `'start'` | Icon position relative to label |
+
+## Slots
+
+| Slot Name | Description |
+|-----------|-------------|
+| `icon` | Custom icon content. Overrides the `icon` property when present. Useful for external CSS icon fonts like Material Symbols or Font Awesome that require specific styling to work inside shadow DOM. |
+| (default) | Button label content |
+
+### Icon Slot Usage
+
+The `icon` slot allows you to use external CSS-based icon fonts (like Material Symbols, Font Awesome) inside the button's shadow DOM. This is necessary because external fonts cannot style content inside shadow DOM boundaries.
+
+```html
+<!-- Material Symbols icon -->
+<snice-button variant="primary">
+  <span slot="icon" class="material-symbols-outlined">save</span>
+  Save Document
+</snice-button>
+
+<!-- Font Awesome icon -->
+<snice-button variant="danger">
+  <i slot="icon" class="fa-solid fa-trash"></i>
+  Delete
+</snice-button>
+
+<!-- SVG icon -->
+<snice-button>
+  <svg slot="icon" viewBox="0 0 24 24" width="20" height="20">
+    <path d="M12 2L2 7l10 5 10-5-10-5z" fill="currentColor"/>
+  </svg>
+  Upload
+</snice-button>
+
+<!-- Icon at end position -->
+<snice-button icon-placement="end">
+  <span slot="icon" class="material-symbols-outlined">arrow_forward</span>
+  Next
+</snice-button>
+```
+
+> **Note**: When using the `icon` slot, the slotted content takes precedence over the `icon` property. The `iconPlacement` property still controls positioning.
 
 ## Methods
 

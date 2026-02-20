@@ -12,6 +12,10 @@ dismissible: boolean = false;
 icon: string = '';
 ```
 
+## Slots
+
+- `icon` - Custom icon content (overrides `icon` property and default icons)
+
 ## Methods
 
 - `show()` - Show alert
@@ -63,6 +67,12 @@ icon: string = '';
 <snice-alert size="small">Small</snice-alert>
 <snice-alert size="medium">Medium</snice-alert>
 <snice-alert size="large">Large</snice-alert>
+
+<!-- Icon slot (for external CSS icon fonts like Material Symbols) -->
+<snice-alert variant="info">
+  <span slot="icon" class="material-symbols-outlined">info</span>
+  Information message
+</snice-alert>
 ```
 
 ## Features

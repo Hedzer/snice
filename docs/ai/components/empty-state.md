@@ -13,6 +13,11 @@ actionText: string = '';
 actionHref: string = '';
 ```
 
+## Slots
+
+- `icon` - Custom icon content (overrides `icon` property)
+- (default) - Custom content below the action button
+
 ## Events
 
 - `empty-state-action` - {emptyState}
@@ -70,6 +75,11 @@ document.querySelector('#empty').addEventListener('empty-state-action', () => {
 <!-- Custom content -->
 <snice-empty-state title="No data">
   <div>Custom HTML content here</div>
+</snice-empty-state>
+
+<!-- Icon slot (for external CSS icon fonts like Material Symbols) -->
+<snice-empty-state title="No results">
+  <span slot="icon" class="material-symbols-outlined" style="font-size: 4rem;">search_off</span>
 </snice-empty-state>
 ```
 

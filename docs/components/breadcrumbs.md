@@ -79,6 +79,43 @@ interface BreadcrumbItem {
 | `iconImage` | `string` | `''` | Icon image URL (deprecated, use `icon` with URL) |
 | `active` | `boolean` | `false` | Current/active state |
 
+## Slots
+
+### Crumb Element Slots
+
+| Slot Name | Description |
+|-----------|-------------|
+| `icon` | Custom icon element inside `<snice-crumb>`. Takes precedence over `icon` and `iconImage` properties. |
+
+### Icon Slot Usage
+
+Use the `icon` slot within `<snice-crumb>` for external CSS-based icon fonts:
+
+```html
+<snice-breadcrumbs>
+  <snice-crumb href="/" label="Home">
+    <span slot="icon" class="material-symbols-outlined">home</span>
+  </snice-crumb>
+  <snice-crumb href="/products" label="Products">
+    <span slot="icon" class="material-symbols-outlined">inventory_2</span>
+  </snice-crumb>
+  <snice-crumb label="Details" active></snice-crumb>
+</snice-breadcrumbs>
+
+<!-- With Font Awesome -->
+<snice-breadcrumbs>
+  <snice-crumb href="/" label="Dashboard">
+    <i slot="icon" class="fa-solid fa-gauge"></i>
+  </snice-crumb>
+  <snice-crumb href="/settings" label="Settings">
+    <i slot="icon" class="fa-solid fa-gear"></i>
+  </snice-crumb>
+  <snice-crumb label="Profile" active></snice-crumb>
+</snice-breadcrumbs>
+```
+
+> **Note**: Icon slots only work when using `<snice-crumb>` elements, not when using the `items` array property. For icons with the `items` array, use the `icon` property.
+
 ## Methods
 
 #### `setItems(items: BreadcrumbItem[]): void`

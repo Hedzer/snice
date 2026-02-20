@@ -23,6 +23,28 @@ The `<snice-empty-state>` component provides a consistent way to display empty o
 | `actionText` | `string` | `''` | Action button text |
 | `actionHref` | `string` | `''` | Action link URL |
 
+## Slots
+
+| Slot Name | Description |
+|-----------|-------------|
+| `icon` | Custom icon content. Overrides the `icon` property. |
+| (default) | Custom content below the action button |
+
+### Icon Slot Usage
+
+Use the `icon` slot for external CSS-based icon fonts:
+
+```html
+<snice-empty-state title="No results">
+  <span slot="icon" class="material-symbols-outlined" style="font-size: 4rem;">search_off</span>
+  <p>Try adjusting your search criteria</p>
+</snice-empty-state>
+
+<snice-empty-state title="No items">
+  <i slot="icon" class="fa-solid fa-box-open fa-4x"></i>
+</snice-empty-state>
+```
+
 ## Events
 
 ### `empty-state-action`

@@ -25,8 +25,13 @@ interface BreadcrumbItem {
   icon?: string;
   iconImage?: string;
   active?: boolean;
+  iconNode?: Element;  // For slotted icons via snice-crumb
 }
 ```
+
+## snice-crumb Slots
+
+- `icon` - Custom icon element (child of snice-crumb with `slot="icon"` attribute)
 
 ## Usage
 
@@ -65,6 +70,17 @@ breadcrumbs.items = [
 
 <!-- Max items (collapse middle) -->
 <snice-breadcrumbs max-items="3"></snice-breadcrumbs>
+
+<!-- Icon slots via snice-crumb (for external CSS icon fonts) -->
+<snice-breadcrumbs>
+  <snice-crumb href="/" label="Home">
+    <span slot="icon" class="material-symbols-outlined">home</span>
+  </snice-crumb>
+  <snice-crumb href="/products" label="Products">
+    <span slot="icon" class="material-symbols-outlined">inventory_2</span>
+  </snice-crumb>
+  <snice-crumb label="Details" active></snice-crumb>
+</snice-breadcrumbs>
 ```
 
 ## Features

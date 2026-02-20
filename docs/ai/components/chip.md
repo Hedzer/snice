@@ -15,6 +15,10 @@ icon: string = '';
 avatar: string = '';
 ```
 
+## Slots
+
+- `icon` - Custom icon content (overrides `icon` property; `avatar` takes precedence)
+
 ## Events
 
 - `chip-click` - Chip clicked. Detail: `{ label, selected }`
@@ -63,6 +67,11 @@ const chip = document.querySelector('#chip');
 chip.addEventListener('chip-click', (e) => console.log('Clicked', e.detail));
 chip.addEventListener('chip-remove', () => chip.remove());
 </script>
+
+<!-- Icon slot (for external CSS icon fonts like Material Symbols) -->
+<snice-chip label="Tag">
+  <span slot="icon" class="material-symbols-outlined">label</span>
+</snice-chip>
 ```
 
 ## Features

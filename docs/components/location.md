@@ -35,6 +35,26 @@ Display location information with addresses, coordinates, maps, and custom icons
 | `mapUrl` | `string` | `''` | Custom map URL |
 | `clickable` | `boolean` | `false` | Make location clickable |
 
+## Slots
+
+| Slot Name | Description |
+|-----------|-------------|
+| `icon` | Custom icon content. Overrides `icon` and `iconImage` properties. |
+
+### Icon Slot Usage
+
+Use the `icon` slot for external CSS-based icon fonts:
+
+```html
+<snice-location name="Office" address="123 Main St">
+  <span slot="icon" class="material-symbols-outlined">business</span>
+</snice-location>
+
+<snice-location name="Restaurant" city="New York" clickable>
+  <i slot="icon" class="fa-solid fa-utensils"></i>
+</snice-location>
+```
+
 ## Methods
 
 ### `getData(): LocationData`

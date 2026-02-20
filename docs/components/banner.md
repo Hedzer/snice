@@ -24,6 +24,27 @@ The `<snice-banner>` component displays fixed-position notification banners at t
 | `actionText` | `string` | `''` | Action button text |
 | `open` | `boolean` | `false` | Banner visibility |
 
+## Slots
+
+| Slot Name | Description |
+|-----------|-------------|
+| `icon` | Custom icon content. Overrides the `icon` property and default variant icons. |
+| (default) | Additional content after the message |
+
+### Icon Slot Usage
+
+Use the `icon` slot for external CSS-based icon fonts:
+
+```html
+<snice-banner message="Update available" open>
+  <span slot="icon" class="material-symbols-outlined">update</span>
+</snice-banner>
+
+<snice-banner variant="success" message="Changes saved" open>
+  <i slot="icon" class="fa-solid fa-check-circle"></i>
+</snice-banner>
+```
+
 ## Methods
 
 ### `show(): void`

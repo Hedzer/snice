@@ -19,6 +19,10 @@ icon: string = '';
 iconPlacement: 'start'|'end' = 'start';
 ```
 
+## Slots
+
+- `icon` - Custom icon content (overrides `icon` property)
+
 ## Methods
 
 - `focus(options?)` - Focus button
@@ -64,6 +68,18 @@ iconPlacement: 'start'|'end' = 'start';
 <!-- As link -->
 <snice-button href="/page">Link</snice-button>
 <snice-button href="/file.pdf" download>Download</snice-button>
+
+<!-- Icon slot (for external CSS icon fonts like Material Symbols) -->
+<snice-button>
+  <span slot="icon" class="material-symbols-outlined">save</span>
+  Save
+</snice-button>
+
+<!-- Icon slot with SVG -->
+<snice-button>
+  <svg slot="icon" viewBox="0 0 24 24"><path d="..."/></svg>
+  Action
+</snice-button>
 ```
 
 ## Features

@@ -31,6 +31,28 @@ import 'snice/components/chip/snice-chip';
 | `icon` | `string` | `''` | Icon (URL, image file, emoji, or font ligature) |
 | `avatar` | `string` | `''` | Avatar image URL |
 
+## Slots
+
+| Slot Name | Description |
+|-----------|-------------|
+| `icon` | Custom icon content. Overrides the `icon` property. Note: `avatar` property takes precedence over icon slot. |
+
+### Icon Slot Usage
+
+Use the `icon` slot for external CSS-based icon fonts:
+
+```html
+<snice-chip label="Tag">
+  <span slot="icon" class="material-symbols-outlined">label</span>
+</snice-chip>
+
+<snice-chip label="Favorite" variant="warning">
+  <i slot="icon" class="fa-solid fa-star"></i>
+</snice-chip>
+```
+
+> **Note**: If `avatar` property is set, the avatar takes precedence and the icon slot will not be displayed.
+
 ## Events
 
 #### `click`

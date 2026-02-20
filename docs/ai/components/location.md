@@ -22,6 +22,10 @@ mapUrl: string = '';
 clickable: boolean = false;
 ```
 
+## Slots
+
+- `icon` - Custom icon content (overrides `icon`/`iconImage` properties)
+
 ## Methods
 
 ```typescript
@@ -61,6 +65,11 @@ openMap(): void
   latitude="40.7580"
   longitude="-73.9855"
   mode="coordinates">
+</snice-location>
+
+<!-- Icon slot (for external CSS icon fonts like Material Symbols) -->
+<snice-location name="Office" address="123 Main St">
+  <span slot="icon" class="material-symbols-outlined">business</span>
 </snice-location>
 ```
 

@@ -31,6 +31,29 @@ import 'snice/components/alert/snice-alert';
 | `dismissible` | `boolean` | `false` | Show dismiss button |
 | `icon` | `string` | `''` | Custom icon (URL, image file, emoji, font ligature) or `'none'` to hide |
 
+## Slots
+
+| Slot Name | Description |
+|-----------|-------------|
+| `icon` | Custom icon content. Overrides the `icon` property and default variant icons. |
+| (default) | Alert message content |
+
+### Icon Slot Usage
+
+Use the `icon` slot for external CSS-based icon fonts (Material Symbols, Font Awesome) that need to work inside shadow DOM:
+
+```html
+<snice-alert variant="info" title="Information">
+  <span slot="icon" class="material-symbols-outlined">info</span>
+  This is an informational message with a Material Symbols icon.
+</snice-alert>
+
+<snice-alert variant="error">
+  <i slot="icon" class="fa-solid fa-circle-exclamation"></i>
+  An error occurred with Font Awesome icon.
+</snice-alert>
+```
+
 ## Methods
 
 #### `show(): void`
