@@ -1,0 +1,65 @@
+    <!-- ── Heatmap ── -->
+    <div class="comp-section">
+      <h3>Heatmap</h3>
+      <p class="comp-desc">GitHub-style contribution heatmap</p>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="width:100%;overflow-x:auto">
+          <snice-heatmap id="demo-heatmap"></snice-heatmap>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html + js</span>
+          <pre><code class="language-html">&lt;snice-heatmap id="heatmap"&gt;&lt;/snice-heatmap&gt;
+
+&lt;script&gt;
+  const heatmap = document.getElementById('heatmap');
+  const data = [];
+  const now = new Date();
+  for (let i = 0; i &lt; 365; i++) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    if (Math.random() &gt; 0.3) {
+      data.push({
+        date: d.toISOString().split('T')[0],
+        value: Math.floor(Math.random() * 10)
+      });
+    }
+  }
+  heatmap.data = data;
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="width:100%;overflow-x:auto;flex-direction:column;gap:1rem">
+          <snice-heatmap id="demo-heatmap-blue" color-scheme="blue" weeks="26"></snice-heatmap>
+          <snice-heatmap id="demo-heatmap-purple" color-scheme="purple" weeks="26"></snice-heatmap>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-heatmap
+  color-scheme="blue"
+  weeks="26"
+&gt;&lt;/snice-heatmap&gt;
+
+&lt;snice-heatmap
+  color-scheme="purple"
+  weeks="26"
+&gt;&lt;/snice-heatmap&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+    <script>
+    customElements.whenDefined('snice-heatmap').then(() => {
+      const data = [];
+      const now = new Date();
+      for (let i = 0; i < 365; i++) {
+        const d = new Date(now);
+        d.setDate(d.getDate() - i);
+        if (Math.random() > 0.3) {
+          data.push({ date: d.toISOString().split('T')[0], value: Math.floor(Math.random() * 10) });
+        }
+      }
+      document.getElementById('demo-heatmap').data = data;
+      document.getElementById('demo-heatmap-blue').data = data;
+      document.getElementById('demo-heatmap-purple').data = data;
+    });
+    </script>
