@@ -66,6 +66,10 @@
     "_cat-remaining.html",
     "location.html",
     "timer.html",
+    "gauge.html",
+    "heatmap.html",
+    "masonry.html",
+    "link-preview.html",
     "standalone-build.html",
     "react-adapter.html",
     "_footer.html"
