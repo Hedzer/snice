@@ -2079,23 +2079,6 @@ export class MyCounter extends HTMLElement {
         <div class="comp-split-demo" style="padding:0;overflow:hidden">
           <div style="display:flex;height:400px">
             <div class="draw-tb" id="draw-toolbar">
-              <span class="draw-tb-label">Tools</span>
-              <button class="dtb active" data-tool="pen" onclick="setDrawTool(this,'pen')" title="Pen">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11.5 1.5l3 3-9 9H2.5v-3z"/></svg>
-              </button>
-              <button class="dtb" data-tool="eraser" onclick="setDrawTool(this,'eraser')" title="Eraser">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 14h7M3.5 12l8-8 3 3-8 8H3.5v-3z"/></svg>
-              </button>
-              <button class="dtb" data-tool="line" onclick="setDrawTool(this,'line')" title="Line">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="3" y1="13" x2="13" y2="3"/></svg>
-              </button>
-              <button class="dtb" data-tool="rectangle" onclick="setDrawTool(this,'rectangle')" title="Rectangle">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="10" rx="1"/></svg>
-              </button>
-              <button class="dtb" data-tool="circle" onclick="setDrawTool(this,'circle')" title="Circle">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="5.5"/></svg>
-              </button>
-              <div class="draw-tb-sep"></div>
               <span class="draw-tb-label">Color</span>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px">
                 <span class="dsw active" style="--c:#3b82f6" onclick="setDrawColor(this,'#3b82f6')"></span>
@@ -2124,11 +2107,6 @@ export class MyCounter extends HTMLElement {
             <snice-draw id="demo-draw" width="100%" height="100%" color="#3b82f6" stroke-width="3" style="flex:1;display:block"></snice-draw>
           </div>
           <script>
-            function setDrawTool(btn, tool) {
-              document.getElementById('demo-draw').tool = tool;
-              document.getElementById('draw-toolbar').querySelectorAll('.dtb[data-tool]').forEach(b => b.classList.remove('active'));
-              btn.classList.add('active');
-            }
             function setDrawColor(el, color) {
               document.getElementById('demo-draw').color = color;
               document.getElementById('draw-toolbar').querySelectorAll('.dsw').forEach(s => s.classList.remove('active'));
@@ -2142,14 +2120,10 @@ export class MyCounter extends HTMLElement {
   width="100%" height="300"
   color="#3b82f6"
   stroke-width="3"
-  tool="pen"
 &gt;&lt;/snice-draw&gt;
 
 &lt;script&gt;
   const draw = document.querySelector('snice-draw');
-
-  // Tools: pen, eraser, line, rectangle, circle
-  draw.tool = 'pen';
 
   // Brush settings
   draw.color = '#ef4444';
@@ -2160,6 +2134,38 @@ export class MyCounter extends HTMLElement {
   draw.redo();
   draw.clear();
   draw.download('art.png');
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+    <div class="comp-section">
+      <h3>Paint</h3>
+      <p class="comp-desc">Self-contained drawing canvas with built-in toolbar</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="padding:0;overflow:hidden">
+          <div style="height:400px">
+            <snice-paint id="demo-paint" style="display:block;width:100%;height:100%"></snice-paint>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-paint&gt;&lt;/snice-paint&gt;
+
+&lt;!-- Custom colors --&gt;
+&lt;snice-paint colors='["#ff0000","#00ff00","#0000ff"]'&gt;&lt;/snice-paint&gt;
+
+&lt;!-- Minimal controls --&gt;
+&lt;snice-paint controls="colors,undo"&gt;&lt;/snice-paint&gt;
+
+&lt;script&gt;
+  const paint = document.querySelector('snice-paint');
+
+  // Export
+  paint.download('artwork.png');
+
+  // Save / load
+  const strokes = paint.getStrokes();
+  paint.setStrokes(strokes);
 &lt;/script&gt;</code></pre>
         </div>
       </div>
