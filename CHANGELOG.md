@@ -1,3 +1,30 @@
+# [4.6.0](https://gitlab.com/Hedzer/snice/compare/v4.5.0...v4.6.0) (2026-02-21)
+
+
+### Bug Fixes
+
+* add text-shadow variable to public theme copy ([f36f671](https://gitlab.com/Hedzer/snice/commit/f36f671e147a446c610594e6e4e11d559bd2d174))
+* component CSS improvements ([2d53b2e](https://gitlab.com/Hedzer/snice/commit/2d53b2eb483ac7205e9751ae41433f0f38de5e1b))
+* conditionally render icon slots in button and chip ([3feda4b](https://gitlab.com/Hedzer/snice/commit/3feda4b1c91a040172b457924101700804fbe4f8))
+* improve text legibility on colored backgrounds ([4ea6d0b](https://gitlab.com/Hedzer/snice/commit/4ea6d0b35b8b345391c8679668bac7beefb2d0d3))
+* remove controller tab and pitch item from homepage ([8906d18](https://gitlab.com/Hedzer/snice/commit/8906d1846c8f474fc79659b78c12efbf67dcf6fc))
+* resolve CSS variables in sparkline canvas rendering ([7dc66f4](https://gitlab.com/Hedzer/snice/commit/7dc66f41331f2b4da437375c9f20a9513f263d60))
+* stop build script from overwriting hand-maintained files ([e667c6e](https://gitlab.com/Hedzer/snice/commit/e667c6ebfe9318d1e840defbe5dd2a49af719a96))
+* update slider demo to use label property ([0aa3d4b](https://gitlab.com/Hedzer/snice/commit/0aa3d4bf9194250af8861dbb6d8c5345bf7f1d14))
+
+
+### Features
+
+* add icon slot support to components ([a2cd3d2](https://gitlab.com/Hedzer/snice/commit/a2cd3d234e067632fec2f736badebc46bf815162))
+* add showcase build system with vite HMR ([52f7696](https://gitlab.com/Hedzer/snice/commit/52f7696ee96a6a66d5054d4cd687a757a32edcc9))
+* improve card and select demos with Material Symbols ([63306cf](https://gitlab.com/Hedzer/snice/commit/63306cf00f5e58789f1eaad8ed110e5fff0b5c53))
+* improve controller and event examples on decorators page ([8de99b2](https://gitlab.com/Hedzer/snice/commit/8de99b2b7d52d2d187ccd8fe6ed7aab8958fe392))
+* overhaul components demo and add showcase pages ([92c086e](https://gitlab.com/Hedzer/snice/commit/92c086e42348d36a7b31aa60d8cb05a00acb6bba))
+* overhaul website styling and components demo ([0c56931](https://gitlab.com/Hedzer/snice/commit/0c56931ec3c6222395fb4d9872a1f46a5b5fe55d))
+* redesign website demo pages ([83b30c7](https://gitlab.com/Hedzer/snice/commit/83b30c7b82064ba46ccb9a5406a9b745aae067ae))
+* restore homepage code tabs with improved syntax highlighting ([cb3db2a](https://gitlab.com/Hedzer/snice/commit/cb3db2ac62662f6b5ed78f97081af1a86286e138))
+* simplify homepage and refine showcase pages ([1d50865](https://gitlab.com/Hedzer/snice/commit/1d5086553eb4745b08b299f0358e4fd8aff3f872))
+
 # [4.5.0](https://gitlab.com/Hedzer/snice/compare/v4.4.0...v4.5.0) (2026-02-19)
 
 
