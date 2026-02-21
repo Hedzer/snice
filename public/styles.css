@@ -215,6 +215,37 @@ header nav a:hover, header nav a.active { color: var(--snice-color-text); }
 .template-card .install code { font-size: 0.75rem; }
 .mcp-section p { color: var(--snice-color-text-secondary); margin-bottom: 1rem; font-size: 0.9rem; }
 
+/* ─── Usage modes grid (index) ─── */
+.usage-modes { margin: 3rem 0; }
+.usage-modes h3 { font-size: 1.25rem; margin-bottom: 1rem; }
+.usage-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--snice-color-border);
+  border: 1px solid var(--snice-color-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+@media (max-width: 700px) { .usage-grid { grid-template-columns: repeat(2, 1fr); } }
+.usage-card {
+  background: var(--snice-color-background);
+  padding: 1.25rem;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  transition: background var(--snice-transition-fast) ease;
+}
+.usage-card:hover { background: var(--snice-color-background-secondary); }
+.usage-card strong { font-size: 0.9rem; color: var(--snice-color-text); }
+.usage-card span { font-size: 0.75rem; color: var(--snice-color-text-secondary); flex: 1; }
+.usage-card code {
+  font-size: 0.65rem; color: var(--snice-color-text-tertiary);
+  margin-top: 0.25rem;
+}
+
 /* ─── Page title (components + decorators pages) ─── */
 .page-title {
   padding: 3rem 0 2rem;

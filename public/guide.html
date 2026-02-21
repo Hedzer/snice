@@ -7,6 +7,36 @@
   <meta name="description" content="Learn to build custom elements with Snice decorators, step by step.">
   <link rel="stylesheet" href="theme/theme.css">
   <link rel="stylesheet" href="styles.css">
+  <style>
+    .guide-sidebar {
+      position: fixed;
+      top: 6rem;
+      left: max(1rem, calc(50% - 550px + 2rem));
+      width: 155px;
+      max-height: calc(100vh - 6rem);
+      overflow-y: auto;
+      font-size: 0.8rem;
+      scrollbar-width: thin;
+      padding: 0.5rem 0;
+    }
+    .guide-content { margin-left: 185px; }
+    @media (max-width: 860px) {
+      .guide-sidebar { display: none; }
+      .guide-content { margin-left: 0; }
+    }
+    .guide-sidebar .nav-group {
+      font-size: 0.65rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--snice-color-text-tertiary);
+      margin-top: 1.25rem; margin-bottom: 0.25rem;
+    }
+    .guide-sidebar .nav-group:first-child { margin-top: 0; }
+    .guide-sidebar a {
+      display: block; padding: 0.2rem 0; color: var(--snice-color-text-secondary);
+      text-decoration: none; line-height: 1.4;
+    }
+    .guide-sidebar a:hover { color: var(--snice-color-text); }
+    .guide-sidebar a.active { color: var(--snice-color-primary); }
+  </style>
 </head>
 <body>
 
@@ -17,7 +47,6 @@
         <a href="guide.html" class="active">Guide</a>
         <a href="decorators.html">Decorators</a>
         <a href="components.html">Components</a>
-        <a href="usage.html">Usage</a>
         <a href="https://gitlab.com/Hedzer/snice">GitLab</a>
         <button class="theme-btn" onclick="document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark')" title="Toggle theme">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
@@ -26,46 +55,153 @@
     </div>
   </header>
   <main class="wrap">
-    <div class="page-title">
-      <h2>Building Elements</h2>
-      <p>A step-by-step guide. Each section adds one concept.</p>
-    </div>
+      <nav class="guide-sidebar">
+        <div class="nav-group">Getting Started</div>
+        <a href="#esm">ESM + Bundler</a>
+        <a href="#standalone">Standalone</a>
+        <a href="#semi-standalone">Semi-Standalone</a>
+        <a href="#react">React Wrappers</a>
 
-    <div class="dec-section">
-      <h3>Getting started</h3>
-      <p class="desc">Pick the integration that fits your project. See the <a href="usage.html">Usage</a> page for full details.</p>
+        <div class="nav-group">Elements</div>
+        <a href="#minimum">Bare minimum</a>
+        <a href="#properties">Properties</a>
+        <a href="#styles">Styles</a>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem">
-        <div style="border:1px solid var(--snice-color-border);border-radius:6px;padding:1rem">
-          <strong style="font-size:0.85rem">ESM + bundler</strong>
-          <p style="font-size:0.8rem;color:var(--snice-color-text-secondary);margin:0.25rem 0 0.5rem">Full framework with Vite, esbuild, or Rollup.</p>
-          <pre style="font-size:0.7rem;margin:0"><code>npm install snice
+        <div class="nav-group">Events</div>
+        <a href="#events">Inline handlers</a>
+        <a href="#dispatch">Emitting events</a>
+        <a href="#keyboard">Keyboard shortcuts</a>
+        <a href="#on">Event delegation</a>
 
-<span class="k">import</span> { element, html } <span class="k">from</span> <span class="s">'snice'</span>;</code></pre>
-        </div>
-        <div style="border:1px solid var(--snice-color-border);border-radius:6px;padding:1rem">
-          <strong style="font-size:0.85rem">Standalone</strong>
-          <p style="font-size:0.8rem;color:var(--snice-color-text-secondary);margin:0.25rem 0 0.5rem">Single script tag, runtime included. ~25KB gzip each.</p>
-          <pre style="font-size:0.7rem;margin:0"><code>&lt;script src=<span class="s">"snice-button.min.js"</span>&gt;&lt;/script&gt;</code></pre>
-        </div>
-        <div style="border:1px solid var(--snice-color-border);border-radius:6px;padding:1rem">
-          <strong style="font-size:0.85rem">Semi-standalone</strong>
-          <p style="font-size:0.8rem;color:var(--snice-color-text-secondary);margin:0.25rem 0 0.5rem">Shared runtime + lightweight components. Best for 3+.</p>
-          <pre style="font-size:0.7rem;margin:0"><code>&lt;script src=<span class="s">"snice-runtime.min.js"</span>&gt;&lt;/script&gt;
-&lt;script src=<span class="s">"snice-button.light.min.js"</span>&gt;&lt;/script&gt;</code></pre>
-        </div>
-        <div style="border:1px solid var(--snice-color-border);border-radius:6px;padding:1rem">
-          <strong style="font-size:0.85rem">React wrappers</strong>
-          <p style="font-size:0.8rem;color:var(--snice-color-text-secondary);margin:0.25rem 0 0.5rem">Props, events, refs, forms. React 17/18/19.</p>
-          <pre style="font-size:0.7rem;margin:0"><code><span class="k">import</span> { Button } <span class="k">from</span> <span class="s">'snice/react'</span>;</code></pre>
-        </div>
-      </div>
-    </div>
+        <div class="nav-group">Templates</div>
+        <a href="#conditionals">Conditionals</a>
+        <a href="#lists">Lists</a>
 
-    <div class="dec-section">
-      <h3>1. The bare minimum</h3>
-      <p class="desc">An element needs a tag name and a template. That's it.</p>
-      <pre><code><span class="k">import</span> { element, render, html } <span class="k">from</span> <span class="s">'snice'</span>;
+        <div class="nav-group">Lifecycle</div>
+        <a href="#watch">Watch changes</a>
+        <a href="#query">Query the DOM</a>
+        <a href="#ready-dispose">Ready &amp; Dispose</a>
+
+        <div class="nav-group">Architecture</div>
+        <a href="#controllers">Controllers</a>
+        <a href="#full">Full example</a>
+      </nav>
+
+      <div class="guide-content">
+
+        <!-- ═══════════════════════════════════════ -->
+        <!-- GETTING STARTED                         -->
+        <!-- ═══════════════════════════════════════ -->
+
+        <div class="dec-section" id="esm">
+          <h3>ESM + Bundler</h3>
+          <p class="desc">Install the package and use with Vite, esbuild, or Rollup. Full framework with decorators, routing, and controllers.</p>
+          <pre><code><span class="c"># Install</span>
+npm install snice
+
+<span class="c"># Or scaffold a full project</span>
+npx snice create-app my-app</code></pre>
+          <pre style="margin-top:0.75rem"><code><span class="k">import</span> { element, property, render, html } <span class="k">from</span> <span class="s">'snice'</span>;
+
+<span class="d">@element</span>(<span class="s">'my-counter'</span>)
+<span class="k">class</span> <span class="t">MyCounter</span> <span class="k">extends</span> <span class="t">HTMLElement</span> {
+  <span class="d">@property</span>({ type: Number }) count = 0;
+
+  <span class="d">@render</span>()
+  <span class="f">template</span>() {
+    <span class="k">return</span> html<span class="s">`&lt;button @click=&dollar;{() =&gt; this.count++}&gt;&dollar;{this.count}&lt;/button&gt;`</span>;
+  }
+}</code></pre>
+          <p class="desc" style="margin-top:0.75rem"><strong>Best for:</strong> Full applications, SPAs, projects using a bundler.</p>
+        </div>
+
+        <div class="dec-section" id="standalone">
+          <h3>Standalone</h3>
+          <p class="desc">Each component is a single file with the Snice runtime bundled in. Drop a <code>&lt;script&gt;</code> tag into any page &mdash; no build step, no dependencies.</p>
+          <pre><code><span class="c">&lt;!-- Single script tag, works anywhere --&gt;</span>
+&lt;script src=<span class="s">"snice-button.min.js"</span>&gt;&lt;/script&gt;
+&lt;snice-button variant=<span class="s">"primary"</span>&gt;Click me&lt;/snice-button&gt;</code></pre>
+          <pre style="margin-top:0.75rem"><code><span class="c"># Build a standalone component</span>
+npx snice build-component button</code></pre>
+          <p class="desc" style="margin-top:0.75rem">Each bundle is ~20&ndash;40KB minified. Since the runtime is included in every file, loading multiple components duplicates it.</p>
+          <p class="desc"><strong>Best for:</strong> 1&ndash;2 components, CMS pages, WordPress, static sites.</p>
+        </div>
+
+        <div class="dec-section" id="semi-standalone">
+          <h3>Semi-Standalone</h3>
+          <p class="desc">Load the Snice runtime once, then load lightweight component builds that reference it. Dramatically reduces total size when using multiple components.</p>
+          <pre><code><span class="c">&lt;!-- Load runtime once --&gt;</span>
+&lt;script src=<span class="s">"snice-runtime.min.js"</span>&gt;&lt;/script&gt;
+
+<span class="c">&lt;!-- Lightweight components --&gt;</span>
+&lt;script src=<span class="s">"snice-button.light.min.js"</span>&gt;&lt;/script&gt;
+&lt;script src=<span class="s">"snice-input.light.min.js"</span>&gt;&lt;/script&gt;
+&lt;script src=<span class="s">"snice-modal.light.min.js"</span>&gt;&lt;/script&gt;</code></pre>
+          <pre style="margin-top:0.75rem"><code><span class="c"># Build a lightweight component</span>
+npx snice build-component button --shared-runtime</code></pre>
+          <div style="margin-top:1rem;border:1px solid var(--snice-color-border);border-radius:6px;overflow:hidden;font-size:0.8rem">
+            <table style="width:100%;border-collapse:collapse">
+              <thead>
+                <tr style="background:var(--snice-color-background-tertiary)">
+                  <th style="padding:0.5rem 0.75rem;text-align:left;border-bottom:1px solid var(--snice-color-border)">Scenario</th>
+                  <th style="padding:0.5rem 0.75rem;text-align:right;border-bottom:1px solid var(--snice-color-border)">Standalone</th>
+                  <th style="padding:0.5rem 0.75rem;text-align:right;border-bottom:1px solid var(--snice-color-border)">Semi-Standalone</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:0.5rem 0.75rem;border-bottom:1px solid var(--snice-color-border)">1 component</td>
+                  <td style="padding:0.5rem 0.75rem;text-align:right;border-bottom:1px solid var(--snice-color-border)">~25KB</td>
+                  <td style="padding:0.5rem 0.75rem;text-align:right;border-bottom:1px solid var(--snice-color-border)">~20KB</td>
+                </tr>
+                <tr>
+                  <td style="padding:0.5rem 0.75rem;border-bottom:1px solid var(--snice-color-border)">3 components</td>
+                  <td style="padding:0.5rem 0.75rem;text-align:right;border-bottom:1px solid var(--snice-color-border)">~75KB</td>
+                  <td style="padding:0.5rem 0.75rem;text-align:right;border-bottom:1px solid var(--snice-color-border)">~27KB</td>
+                </tr>
+                <tr>
+                  <td style="padding:0.5rem 0.75rem">10 components</td>
+                  <td style="padding:0.5rem 0.75rem;text-align:right">~250KB</td>
+                  <td style="padding:0.5rem 0.75rem;text-align:right">~55KB</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="desc" style="margin-top:0.75rem"><strong>Best for:</strong> 3+ components without a bundler, landing pages, dashboards.</p>
+        </div>
+
+        <div class="dec-section" id="react">
+          <h3>React Wrappers</h3>
+          <p class="desc">First-class React adapters with prop mapping, event callbacks, ref forwarding, and form integration. React 17, 18, and 19.</p>
+          <pre><code><span class="k">import</span> { Button, Input, Modal } <span class="k">from</span> <span class="s">'snice/react'</span>;
+
+<span class="k">function</span> <span class="t">App</span>() {
+  <span class="k">const</span> [email, setEmail] = useState(<span class="s">''</span>);
+
+  <span class="k">return</span> (
+    &lt;&gt;
+      &lt;Input
+        label=<span class="s">"Email"</span>
+        value={email}
+        onChange={(e) =&gt; setEmail(e.detail.value)}
+      /&gt;
+      &lt;Button variant=<span class="s">"primary"</span> onClick={handleSubmit}&gt;
+        Submit
+      &lt;/Button&gt;
+    &lt;/&gt;
+  );
+}</code></pre>
+          <p class="desc" style="margin-top:0.75rem"><strong>Best for:</strong> React applications that want Snice UI components with native React DX.</p>
+        </div>
+
+        <!-- ═══════════════════════════════════════ -->
+        <!-- ELEMENTS                                -->
+        <!-- ═══════════════════════════════════════ -->
+
+        <div class="dec-section" id="minimum">
+          <h3>The bare minimum</h3>
+          <p class="desc">An element needs a tag name and a template. That's it.</p>
+          <pre><code><span class="k">import</span> { element, render, html } <span class="k">from</span> <span class="s">'snice'</span>;
 
 <span class="d">@element</span>(<span class="s">'task-item'</span>)
 <span class="k">class</span> <span class="t">TaskItem</span> <span class="k">extends</span> <span class="t">HTMLElement</span> {
@@ -74,13 +210,13 @@
     <span class="k">return</span> html<span class="s">`&lt;span&gt;Buy groceries&lt;/span&gt;`</span>;
   }
 }</code></pre>
-      <p class="desc" style="margin-top:0.75rem"><span class="h">&lt;task-item&gt;&lt;/task-item&gt;</span></p>
-    </div>
+          <p class="desc" style="margin-top:0.75rem"><span class="h">&lt;task-item&gt;&lt;/task-item&gt;</span></p>
+        </div>
 
-    <div class="dec-section">
-      <h3>2. Add properties</h3>
-      <p class="desc">Properties sync with HTML attributes and trigger re-renders automatically.</p>
-      <pre><code><span class="d">@element</span>(<span class="s">'task-item'</span>)
+        <div class="dec-section" id="properties">
+          <h3>Properties</h3>
+          <p class="desc">Properties sync with HTML attributes and trigger re-renders automatically.</p>
+          <pre><code><span class="d">@element</span>(<span class="s">'task-item'</span>)
 <span class="k">class</span> <span class="t">TaskItem</span> <span class="k">extends</span> <span class="t">HTMLElement</span> {
   <span class="d">@property</span>() label = <span class="s">''</span>;
   <span class="d">@property</span>({ type: Boolean }) done = <span class="k">false</span>;
@@ -90,37 +226,30 @@
     <span class="k">return</span> html<span class="s">`&lt;span&gt;${this.label}&lt;/span&gt;`</span>;
   }
 }</code></pre>
-      <p class="desc" style="margin-top:0.75rem"><span class="h">&lt;task-item</span> <span class="a">label</span>=<span class="s">"Buy groceries"</span><span class="h">&gt;&lt;/task-item&gt;</span></p>
-    </div>
+          <p class="desc" style="margin-top:0.75rem"><span class="h">&lt;task-item</span> <span class="a">label</span>=<span class="s">"Buy groceries"</span><span class="h">&gt;&lt;/task-item&gt;</span></p>
+        </div>
 
-    <div class="dec-section">
-      <h3>3. Add styles</h3>
-      <p class="desc">Styles are scoped to the element via shadow DOM. They won't leak out.</p>
-      <pre><code><span class="d">@element</span>(<span class="s">'task-item'</span>)
-<span class="k">class</span> <span class="t">TaskItem</span> <span class="k">extends</span> <span class="t">HTMLElement</span> {
-  <span class="d">@property</span>() label = <span class="s">''</span>;
-  <span class="d">@property</span>({ type: Boolean }) done = <span class="k">false</span>;
-
-  <span class="d">@render</span>()
-  <span class="f">template</span>() {
-    <span class="k">return</span> html<span class="s">`&lt;span&gt;${this.label}&lt;/span&gt;`</span>;
-  }
-
-  <span class="d">@styles</span>()
-  <span class="f">css</span>() {
-    <span class="k">return</span> css<span class="s">`
-      :host { display: flex; align-items: center; padding: 0.5rem; }
-      :host([done]) span { text-decoration: line-through; opacity: 0.5; }
-    `</span>;
-  }
+        <div class="dec-section" id="styles">
+          <h3>Styles</h3>
+          <p class="desc">Styles are scoped to the element via shadow DOM. They won't leak out.</p>
+          <pre><code><span class="d">@styles</span>()
+<span class="f">css</span>() {
+  <span class="k">return</span> css<span class="s">`
+    :host { display: flex; align-items: center; padding: 0.5rem; }
+    :host([done]) span { text-decoration: line-through; opacity: 0.5; }
+  `</span>;
 }</code></pre>
-      <p class="desc" style="margin-top:0.75rem">Use <code>:host</code> to style the element itself. <code>:host([done])</code> targets when the <code>done</code> attribute is present.</p>
-    </div>
+          <p class="desc" style="margin-top:0.75rem">Use <code>:host</code> to style the element itself. <code>:host([done])</code> targets when the <code>done</code> attribute is present.</p>
+        </div>
 
-    <div class="dec-section">
-      <h3>4. Handle events</h3>
-      <p class="desc">Use <code>@event=${handler}</code> in templates. Handlers are auto-bound to <code>this</code>.</p>
-      <pre><code><span class="d">@render</span>()
+        <!-- ═══════════════════════════════════════ -->
+        <!-- EVENTS                                  -->
+        <!-- ═══════════════════════════════════════ -->
+
+        <div class="dec-section" id="events">
+          <h3>Inline handlers</h3>
+          <p class="desc">Use <code>@event=${handler}</code> in templates. Handlers are auto-bound to <code>this</code>.</p>
+          <pre><code><span class="d">@render</span>()
 <span class="f">template</span>() {
   <span class="k">return</span> html<span class="s">`
     &lt;input type="checkbox"
@@ -133,61 +262,59 @@
 <span class="f">toggle</span>() {
   this.done = !this.done;
 }</code></pre>
-      <p class="desc" style="margin-top:0.75rem"><code>.checked=${val}</code> sets the property (not attribute). <code>?disabled=${bool}</code> toggles an attribute.</p>
-    </div>
+          <p class="desc" style="margin-top:0.75rem"><code>.checked=${val}</code> sets the property (not attribute). <code>?disabled=${bool}</code> toggles an attribute.</p>
+        </div>
 
-    <div class="dec-section">
-      <h3>5. Emit events</h3>
-      <p class="desc">Use <code>@dispatch</code> to fire custom events. The return value becomes <code>event.detail</code>.</p>
-      <pre><code><span class="d">@dispatch</span>(<span class="s">'status-changed'</span>)
+        <div class="dec-section" id="dispatch">
+          <h3>Emitting events</h3>
+          <p class="desc">Use <code>@dispatch</code> to fire custom events. The return value becomes <code>event.detail</code>.</p>
+          <pre><code><span class="d">@dispatch</span>(<span class="s">'status-changed'</span>)
 <span class="f">toggle</span>() {
   this.done = !this.done;
   <span class="k">return</span> { label: this.label, done: this.done };
 }</code></pre>
-      <p class="desc" style="margin-top:0.75rem">Parents listen with <code>@status-changed=${handler}</code> or <code>addEventListener('status-changed', ...)</code>.</p>
-    </div>
+          <p class="desc" style="margin-top:0.75rem">Parents listen with <code>@status-changed=${handler}</code> in templates, <code>@on('status-changed')</code> as a decorator, or <code>addEventListener('status-changed', ...)</code>.</p>
+        </div>
 
-    <div class="dec-section">
-      <h3>6. Watch for changes</h3>
-      <p class="desc">Run logic when a specific property changes.</p>
-      <pre><code><span class="d">@watch</span>(<span class="s">'done'</span>)
-<span class="f">onDoneChanged</span>(oldVal, newVal) {
-  console.log(<span class="s">`Task ${this.label}: ${newVal ? 'completed' : 'reopened'}`</span>);
+        <div class="dec-section" id="keyboard">
+          <h3>Keyboard shortcuts</h3>
+          <p class="desc">Filter events by key or key combo directly in the template.</p>
+          <pre><code><span class="d">@render</span>()
+<span class="f">template</span>() {
+  <span class="k">return</span> html<span class="s">`
+    &lt;input
+      placeholder="New task..."
+      @keydown:Enter=${this.addTask}
+      @keydown:Escape=${this.clear} /&gt;
+  `</span>;
 }</code></pre>
-    </div>
+          <p class="desc" style="margin-top:0.75rem">Combos: <code>@keydown:ctrl+s</code>, <code>@keydown:shift+Enter</code>. Works on any element.</p>
+        </div>
 
-    <div class="dec-section">
-      <h3>7. Query the DOM</h3>
-      <p class="desc">Get references to elements inside your shadow DOM.</p>
-      <pre><code><span class="d">@query</span>(<span class="s">'input'</span>) checkbox!: <span class="t">HTMLInputElement</span>;
-
-<span class="d">@ready</span>()
-<span class="f">init</span>() {
-  this.checkbox.focus();
-}</code></pre>
-      <p class="desc" style="margin-top:0.75rem"><code>@ready()</code> runs after the first render, so DOM refs are available.</p>
-    </div>
-
-    <div class="dec-section">
-      <h3>8. Lifecycle</h3>
-      <p class="desc">Setup and teardown.</p>
-      <pre><code><span class="d">@ready</span>()
-<span class="f">onMount</span>() {
-  <span class="c">// Element is rendered and in the DOM</span>
-  this.interval = setInterval(() => this.tick(), 1000);
+        <div class="dec-section" id="on">
+          <h3>Event delegation</h3>
+          <p class="desc">Handle events declaratively with the <code>@on</code> decorator instead of inline handlers.</p>
+          <pre><code><span class="d">@on</span>(<span class="s">'click'</span>, <span class="s">'.delete'</span>)
+<span class="f">handleDelete</span>(e) {
+  <span class="k">const</span> id = e.target.dataset.id;
+  this.items = this.items.filter(i => i.id !== id);
 }
 
-<span class="d">@dispose</span>()
-<span class="f">onUnmount</span>() {
-  <span class="c">// Element is being removed from the DOM</span>
-  clearInterval(this.interval);
+<span class="d">@on</span>(<span class="s">'input'</span>, <span class="s">'input.search'</span>, { debounce: 300 })
+<span class="f">handleSearch</span>(e) {
+  this.filter = e.target.value;
 }</code></pre>
-    </div>
+          <p class="desc" style="margin-top:0.75rem">Delegation works on shadow DOM elements. Built-in <code>debounce</code> and <code>throttle</code> options.</p>
+        </div>
 
-    <div class="dec-section">
-      <h3>9. Conditionals</h3>
-      <p class="desc">Show or hide parts of the template.</p>
-      <pre><code><span class="d">@render</span>()
+        <!-- ═══════════════════════════════════════ -->
+        <!-- TEMPLATES                               -->
+        <!-- ═══════════════════════════════════════ -->
+
+        <div class="dec-section" id="conditionals">
+          <h3>Conditionals</h3>
+          <p class="desc">Show or hide parts of the template.</p>
+          <pre><code><span class="d">@render</span>()
 <span class="f">template</span>() {
   <span class="k">return</span> html<span class="s">`
     &lt;input type="checkbox" .checked=${this.done} @change=${this.toggle} /&gt;
@@ -198,13 +325,13 @@
     &lt;/if&gt;
   `</span>;
 }</code></pre>
-      <p class="desc" style="margin-top:0.75rem"><code>&lt;if&gt;</code> conditionally renders its children. For multi-branch, use <code>&lt;case&gt;</code> / <code>&lt;when&gt;</code>.</p>
-    </div>
+          <p class="desc" style="margin-top:0.75rem"><code>&lt;if&gt;</code> conditionally renders its children. For multi-branch, use <code>&lt;case&gt;</code> / <code>&lt;when&gt;</code>.</p>
+        </div>
 
-    <div class="dec-section">
-      <h3>10. Lists</h3>
-      <p class="desc">Render arrays with <code>.map()</code>. Use <code>key</code> for efficient updates.</p>
-      <pre><code><span class="d">@element</span>(<span class="s">'task-list'</span>)
+        <div class="dec-section" id="lists">
+          <h3>Lists</h3>
+          <p class="desc">Render arrays with <code>.map()</code>. Use <code>key</code> for efficient updates.</p>
+          <pre><code><span class="d">@element</span>(<span class="s">'task-list'</span>)
 <span class="k">class</span> <span class="t">TaskList</span> <span class="k">extends</span> <span class="t">HTMLElement</span> {
   <span class="d">@property</span>({ type: Array }) items = [];
 
@@ -222,71 +349,90 @@
     `</span>;
   }
 }</code></pre>
-    </div>
+        </div>
 
-    <div class="dec-section">
-      <h3>11. Keyboard shortcuts</h3>
-      <p class="desc">Filter events by key or key combo directly in the template.</p>
-      <pre><code><span class="d">@render</span>()
-<span class="f">template</span>() {
-  <span class="k">return</span> html<span class="s">`
-    &lt;input
-      placeholder="New task..."
-      @keydown:Enter=${this.addTask}
-      @keydown:Escape=${this.clear} /&gt;
-  `</span>;
+        <!-- ═══════════════════════════════════════ -->
+        <!-- LIFECYCLE                               -->
+        <!-- ═══════════════════════════════════════ -->
+
+        <div class="dec-section" id="watch">
+          <h3>Watch changes</h3>
+          <p class="desc">Run logic when a specific property changes.</p>
+          <pre><code><span class="d">@watch</span>(<span class="s">'done'</span>)
+<span class="f">onDoneChanged</span>(oldVal, newVal) {
+  console.log(<span class="s">`Task ${this.label}: ${newVal ? 'completed' : 'reopened'}`</span>);
 }</code></pre>
-      <p class="desc" style="margin-top:0.75rem">Combos: <code>@keydown:ctrl+s</code>, <code>@keydown:shift+Enter</code>. Works on any element.</p>
-    </div>
+        </div>
 
-    <div class="dec-section">
-      <h3>12. Event delegation with @on</h3>
-      <p class="desc">Handle events declaratively with the <code>@on</code> decorator instead of inline handlers.</p>
-      <pre><code><span class="d">@on</span>(<span class="s">'click'</span>, <span class="s">'.delete'</span>)
-<span class="f">handleDelete</span>(e) {
-  <span class="k">const</span> id = e.target.dataset.id;
-  this.items = this.items.filter(i => i.id !== id);
+        <div class="dec-section" id="query">
+          <h3>Query the DOM</h3>
+          <p class="desc">Get references to elements inside your shadow DOM.</p>
+          <pre><code><span class="d">@query</span>(<span class="s">'input'</span>) checkbox!: <span class="t">HTMLInputElement</span>;
+
+<span class="d">@ready</span>()
+<span class="f">init</span>() {
+  this.checkbox.focus();
+}</code></pre>
+          <p class="desc" style="margin-top:0.75rem"><code>@ready()</code> runs after the first render, so DOM refs are available.</p>
+          <p class="desc">Snice components export their interfaces from <code>.types.ts</code>, so you can type queries:</p>
+          <pre style="margin-top:0.5rem"><code><span class="k">import</span> type { SniceInput } <span class="k">from</span> <span class="s">'snice/components/input'</span>;
+
+<span class="d">@query</span>(<span class="s">'snice-input'</span>) input!: <span class="t">SniceInput</span>;</code></pre>
+        </div>
+
+        <div class="dec-section" id="ready-dispose">
+          <h3>Ready &amp; Dispose</h3>
+          <p class="desc">Setup and teardown.</p>
+          <pre><code><span class="d">@ready</span>()
+<span class="f">onMount</span>() {
+  <span class="c">// Element is rendered and in the DOM</span>
+  this.interval = setInterval(() => this.tick(), 1000);
 }
 
-<span class="d">@on</span>(<span class="s">'input'</span>, <span class="s">'input.search'</span>, { debounce: 300 })
-<span class="f">handleSearch</span>(e) {
-  this.filter = e.target.value;
+<span class="d">@dispose</span>()
+<span class="f">onUnmount</span>() {
+  <span class="c">// Element is being removed from the DOM</span>
+  clearInterval(this.interval);
 }</code></pre>
-      <p class="desc" style="margin-top:0.75rem">Delegation works on shadow DOM elements. Built-in <code>debounce</code> and <code>throttle</code> options.</p>
-    </div>
+        </div>
 
-    <div class="dec-section">
-      <h3>13. Controllers</h3>
-      <p class="desc">Swap behavior on any element without changing its code. A controller attaches logic from the outside.</p>
-      <pre><code><span class="k">import</span> { controller, on } <span class="k">from</span> <span class="s">'snice'</span>;
+        <!-- ═══════════════════════════════════════ -->
+        <!-- ARCHITECTURE                            -->
+        <!-- ═══════════════════════════════════════ -->
+
+        <div class="dec-section" id="controllers">
+          <h3>Controllers</h3>
+          <p class="desc">Swap behavior on any element without changing its code. A controller attaches logic from the outside.</p>
+          <pre><code><span class="k">import</span> { controller, on } <span class="k">from</span> <span class="s">'snice'</span>;
 
 <span class="d">@controller</span>(<span class="s">'weather'</span>)
 <span class="k">class</span> <span class="t">WeatherController</span> {
   <span class="k">async</span> <span class="f">attach</span>(el) {
     <span class="c">// Called when controller binds to an element</span>
     <span class="k">const</span> data = <span class="k">await</span> fetch(<span class="s">'/api/weather'</span>).then(r => r.json());
+    this.city = data.city;
     el.label = data.city;
-    el.value = <span class="s">`${data.temp}°`</span>;
+    el.value = <span class="s">`${data.temp}&deg;`</span>;
   }
 
   <span class="d">@on</span>(<span class="s">'click'</span>)
-  <span class="f">refresh</span>(e) {
-    <span class="c">// Event handlers work inside controllers too</span>
-    this.attach(e.currentTarget);
+  <span class="f">viewDetails</span>() {
+    <span class="c">// Navigate to the city's weather page</span>
+    navigate(<span class="s">`/weather/${this.city}`</span>);
   }
 
   <span class="f">detach</span>(el) {
     <span class="c">// Cleanup when controller is removed</span>
   }
 }</code></pre>
-      <p class="desc" style="margin-top:0.75rem">Attach by attribute: <span class="h">&lt;stat-card <span class="a">controller</span>=<span class="s">"weather"</span>&gt;&lt;/stat-card&gt;</span></p>
-      <p class="desc">Swap at runtime: change the attribute to <code>"stocks"</code> and the element gets new behavior, same UI.</p>
-    </div>
+          <p class="desc" style="margin-top:0.75rem">Attach by attribute: <span class="h">&lt;stat-card <span class="a">controller</span>=<span class="s">"weather"</span>&gt;&lt;/stat-card&gt;</span></p>
+          <p class="desc">Swap at runtime: change the attribute to <code>"stocks"</code> and the element gets new behavior, same UI.</p>
+        </div>
 
-    <div class="dec-section">
-      <h3>The full picture</h3>
-      <p class="desc">Here's the complete task-item with everything wired together.</p>
-      <pre><code><span class="k">import</span> { element, property, watch, query, render, styles,
+        <div class="dec-section" id="full">
+          <h3>Full example</h3>
+          <p class="desc">Here's the complete task-item with everything wired together.</p>
+          <pre><code><span class="k">import</span> { element, property, watch, query, render, styles,
          dispatch, ready, dispose, html, css } <span class="k">from</span> <span class="s">'snice'</span>;
 
 <span class="d">@element</span>(<span class="s">'task-item'</span>)
@@ -325,15 +471,30 @@
     console.log(this.label, newVal ? <span class="s">'completed'</span> : <span class="s">'reopened'</span>);
   }
 }</code></pre>
-    </div>
+        </div>
 
+      </div>
   </main>
 
   <footer>
     <div class="wrap">
-      <span>Snice v4.6.0 · MIT</span>
-      <span><a href="https://www.npmjs.com/package/snice">npm</a> · <a href="https://gitlab.com/Hedzer/snice">GitLab</a></span>
+      <span>Snice v4.6.0 &middot; MIT</span>
+      <span><a href="https://www.npmjs.com/package/snice">npm</a> &middot; <a href="https://gitlab.com/Hedzer/snice">GitLab</a></span>
     </div>
   </footer>
+
+  <script>
+    // Highlight active sidebar link on scroll
+    const sections = document.querySelectorAll('.dec-section[id]');
+    const navLinks = document.querySelectorAll('.guide-sidebar a');
+    const observer = new IntersectionObserver(entries => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id));
+        }
+      }
+    }, { rootMargin: '-80px 0px -70% 0px' });
+    sections.forEach(s => observer.observe(s));
+  </script>
 </body>
 </html>
