@@ -1,0 +1,51 @@
+{
+  "name": "python",
+  "fileTypes": ["py", "pyw"],
+  "defaultToken": "",
+  "keywords": [
+    "and", "as", "assert", "async", "await", "break", "class", "continue",
+    "def", "del", "elif", "else", "except", "finally", "for", "from",
+    "global", "if", "import", "in", "is", "lambda", "nonlocal", "not", "or",
+    "pass", "raise", "return", "try", "while", "with", "yield"
+  ],
+  "constants": ["True", "False", "None"],
+  "builtins": [
+    "abs", "all", "any", "bin", "bool", "bytes", "callable", "chr", "dict",
+    "dir", "divmod", "enumerate", "eval", "exec", "filter", "float", "format",
+    "getattr", "globals", "hasattr", "hash", "hex", "id", "input", "int",
+    "isinstance", "issubclass", "iter", "len", "list", "locals", "map", "max",
+    "min", "next", "object", "oct", "open", "ord", "pow", "print", "property",
+    "range", "repr", "reversed", "round", "set", "setattr", "slice", "sorted",
+    "staticmethod", "str", "sum", "super", "tuple", "type", "vars", "zip"
+  ],
+  "tokenizer": {
+    "root": [
+      ["\"\"\"", "string", "@triple_double"],
+      ["'''", "string", "@triple_single"],
+      ["#.*$", "comment"],
+      ["\"(?:[^\"\\\\]|\\\\.)*\"", "string"],
+      ["'(?:[^'\\\\]|\\\\.)*'", "string"],
+      ["@[\\w.]+", "tag"],
+      ["\\b(?:True|False|None)\\b", "constant"],
+      ["\\b\\d+\\.?\\d*(?:e[+-]?\\d+)?\\b", "number"],
+      ["\\b0x[0-9a-fA-F]+\\b", "number"],
+      ["\\b[A-Z][\\w]*\\b", "class-name"],
+      ["\\b[\\w]+(?=\\s*\\()", "function"],
+      ["[a-zA-Z_]\\w*", { "cases": { "@keywords": "keyword", "@builtins": "builtin", "@constants": "constant", "@default": "" } }],
+      ["[{}()\\[\\];,.:]+", "punctuation"],
+      ["[+\\-*/%=<>!&|^~@]+", "operator"]
+    ],
+    "triple_double": [
+      ["[^\"\\\\]+", "string"],
+      ["\\\\.", "string"],
+      ["\"\"\"", "string", "@pop"],
+      ["\"", "string"]
+    ],
+    "triple_single": [
+      ["[^'\\\\]+", "string"],
+      ["\\\\.", "string"],
+      ["'''", "string", "@pop"],
+      ["'", "string"]
+    ]
+  }
+}

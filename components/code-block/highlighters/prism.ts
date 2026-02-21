@@ -18,7 +18,6 @@
  * ```
  */
 
-import { SniceCodeBlock } from '../snice-code-block';
 import type { HighlighterFunction } from '../snice-code-block.types';
 
 interface PrismInstance {
@@ -41,10 +40,18 @@ export function createPrismHighlighter(prism: PrismInstance): HighlighterFunctio
 }
 
 /**
- * Setup Prism as the global highlighter for all code blocks
+ * Create a Prism highlighter for use with snice-code-block.
+ * Assign the returned function to a code block's `highlighter` property
+ * or pass it to `setHighlighter()`.
+ *
+ * @example
+ * ```typescript
+ * const highlighter = setupPrismHighlighter(Prism);
+ * codeBlock.setHighlighter(highlighter);
+ * ```
  */
-export function setupPrismHighlighter(prism: PrismInstance) {
-  SniceCodeBlock.setGlobalHighlighter(createPrismHighlighter(prism));
+export function setupPrismHighlighter(prism: PrismInstance): HighlighterFunction {
+  return createPrismHighlighter(prism);
 }
 
 /**

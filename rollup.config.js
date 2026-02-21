@@ -262,6 +262,29 @@ export default [
           }
         }
       },
+      // Plugin to copy code-block grammar JSON files
+      {
+        name: 'copy-grammars',
+        generateBundle() {
+          const grammarSrc = 'components/code-block/grammars';
+          const grammarDest = 'dist/components/code-block/grammars';
+
+          if (fs.existsSync(grammarSrc)) {
+            if (!fs.existsSync(grammarDest)) {
+              fs.mkdirSync(grammarDest, { recursive: true });
+            }
+            const files = fs.readdirSync(grammarSrc);
+            for (const file of files) {
+              if (file.endsWith('.json')) {
+                fs.copyFileSync(
+                  path.join(grammarSrc, file),
+                  path.join(grammarDest, file)
+                );
+              }
+            }
+          }
+        }
+      },
       // Plugin to copy QR reader static assets
       {
         name: 'copy-qr-reader-assets',

@@ -1,3 +1,5 @@
+import type { GrammarDefinition } from './highlighter';
+
 export type CodeLanguage = 'javascript' | 'typescript' | 'html' | 'css' | 'json' | 'python' | 'bash' | 'plaintext' | string;
 
 export type HighlighterFunction = (code: string, language: string) => string | Promise<string>;
@@ -5,6 +7,7 @@ export type HighlighterFunction = (code: string, language: string) => string | P
 export interface SniceCodeBlockElement extends HTMLElement {
   code: string;
   language: CodeLanguage;
+  grammar: GrammarDefinition | string | null;
   showLineNumbers: boolean;
   startLine: number;
   highlightLines: number[];

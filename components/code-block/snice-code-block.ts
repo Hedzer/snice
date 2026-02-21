@@ -1,6 +1,7 @@
 import { element, property, dispatch, render, styles, html, css, query, ready } from 'snice';
 import cssContent from './snice-code-block.css?inline';
 import { highlightCode } from './highlighter';
+import type { GrammarDefinition } from './highlighter';
 import type {
   CodeLanguage,
   SniceCodeBlockElement,
@@ -33,15 +34,14 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
   filename = '';
 
   public highlighter?: HighlighterFunction;
+  public grammar: GrammarDefinition | string | null = null;
 
   private copied = false;
   private highlightedCode = '';
+  private loadedGrammar: GrammarDefinition | null = null;
 
   @query('.code-block__code')
   private codeElement?: HTMLElement;
-
-  // Global highlighter shared by all instances
-  private static globalHighlighter?: HighlighterFunction;
 
   @dispatch('@snice/code-copy', { bubbles: true, composed: true })
   private dispatchCopyEvent(): CodeCopyDetail {
@@ -56,11 +56,6 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
   @dispatch('@snice/code-after-highlight', { bubbles: true, composed: true })
   private dispatchAfterHighlightEvent(): CodeHighlightDetail {
     return { code: this.code, language: this.language, codeBlock: this };
-  }
-
-  // Static method to set global highlighter
-  static setGlobalHighlighter(highlighter: HighlighterFunction) {
-    SniceCodeBlock.globalHighlighter = highlighter;
   }
 
   @ready()
@@ -172,28 +167,58 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
   }
 
   /**
+   * Load a grammar from a URL
+   */
+  private async loadGrammar(url: string): Promise<GrammarDefinition | null> {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        console.error(`Failed to load grammar from ${url}: ${response.status}`);
+        return null;
+      }
+      return await response.json();
+    } catch (error) {
+      console.error(`Failed to load grammar from ${url}:`, error);
+      return null;
+    }
+  }
+
+  /**
+   * Resolve the grammar to use: inline object, fetched URL, or null (use built-in).
+   */
+  private async resolveGrammar(): Promise<GrammarDefinition | null> {
+    if (!this.grammar) return null;
+    if (typeof this.grammar === 'object') return this.grammar;
+
+    // String — treat as URL; cache result
+    if (!this.loadedGrammar) {
+      this.loadedGrammar = await this.loadGrammar(this.grammar);
+    }
+    return this.loadedGrammar;
+  }
+
+  /**
    * Manually trigger syntax highlighting
    */
   async highlight() {
     if (!this.code) return;
 
-    const externalHighlighter = this.highlighter || SniceCodeBlock.globalHighlighter;
-
     // Dispatch before event
     this.dispatchBeforeHighlightEvent();
 
     try {
-      if (externalHighlighter) {
-        // External highlighters expect escaped HTML
+      if (this.highlighter) {
+        // External highlighter (escape hatch)
         const escapedCode = this.escapeHtml(this.code);
         const lines = escapedCode.split('\n');
         const highlightedLines = await Promise.all(
-          lines.map(line => externalHighlighter(line, this.language))
+          lines.map(line => this.highlighter!(line, this.language))
         );
         this.highlightedCode = highlightedLines.join('\n');
       } else {
-        // Built-in highlighter handles escaping internally
-        this.highlightedCode = highlightCode(this.code, this.language);
+        // Resolve grammar: explicit grammar > registered grammar > plaintext
+        const grammarObj = await this.resolveGrammar();
+        this.highlightedCode = highlightCode(this.code, grammarObj || this.language);
       }
 
       // Update display with highlighted code

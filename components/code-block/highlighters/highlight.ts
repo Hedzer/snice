@@ -30,7 +30,6 @@
  * ```
  */
 
-import { SniceCodeBlock } from '../snice-code-block';
 import type { HighlighterFunction } from '../snice-code-block.types';
 
 interface HighlightJsInstance {
@@ -71,14 +70,20 @@ export function createHighlightJsHighlighterWithAuto(hljs: HighlightJsInstance):
 }
 
 /**
- * Setup highlight.js as the global highlighter for all code blocks
+ * Create a highlight.js highlighter for use with snice-code-block.
+ * Assign the returned function to a code block's `highlighter` property
+ * or pass it to `setHighlighter()`.
+ *
+ * @example
+ * ```typescript
+ * const highlighter = setupHighlightJs(hljs);
+ * codeBlock.setHighlighter(highlighter);
+ * ```
  */
-export function setupHighlightJs(hljs: HighlightJsInstance, useAutoDetection = false) {
-  const highlighter = useAutoDetection
+export function setupHighlightJs(hljs: HighlightJsInstance, useAutoDetection = false): HighlighterFunction {
+  return useAutoDetection
     ? createHighlightJsHighlighterWithAuto(hljs)
     : createHighlightJsHighlighter(hljs);
-
-  SniceCodeBlock.setGlobalHighlighter(highlighter);
 }
 
 /**

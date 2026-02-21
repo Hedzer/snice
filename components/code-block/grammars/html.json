@@ -1,0 +1,24 @@
+{
+  "name": "html",
+  "fileTypes": ["html", "htm", "xml", "svg"],
+  "defaultToken": "",
+  "tokenizer": {
+    "root": [
+      ["<!--[\\s\\S]*?-->", "comment"],
+      ["<!DOCTYPE[^>]*>", "keyword"],
+      ["<\\/[\\w-]+\\s*>", "tag"],
+      ["<[\\w-]+", "tag", "@tag"],
+      ["&\\w+;", "constant"]
+    ],
+    "tag": [
+      ["\\s+", ""],
+      ["\\/>", "tag", "@pop"],
+      [">", "tag", "@pop"],
+      ["\"[^\"]*\"", "attr-value"],
+      ["'[^']*'", "attr-value"],
+      ["[\\w-]+(?=\\s*=)", "attr-name"],
+      ["=", "operator"],
+      ["[\\w-]+", "attr-name"]
+    ]
+  }
+}

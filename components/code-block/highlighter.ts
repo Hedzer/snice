@@ -1,12 +1,202 @@
 /**
- * Built-in syntax highlighter for common languages
- * Tokenizer-based approach - no external dependencies
+ * JSON-driven syntax highlighter with Monarch-inspired state machine.
+ * Grammars are JSON-serializable objects with states, transitions, and lookup tables.
  */
+
+// ── Types ──────────────────────────────────────────────────────────────
+
+export interface GrammarRule {
+  0: string;                                    // regex pattern
+  1: string | { cases: Record<string, string> }; // token or conditional
+  2?: string;                                   // optional next state
+}
+
+export interface GrammarInclude {
+  include: string; // "@stateName"
+}
+
+export type GrammarEntry = GrammarRule | GrammarInclude;
+
+export interface Grammar {
+  name: string;
+  fileTypes?: string[];
+  defaultToken?: string;
+  ignoreCase?: boolean;
+  tokenizer: Record<string, GrammarEntry[]>;
+  [key: string]: any; // lookup tables like "keywords", "typeKeywords", etc.
+}
 
 interface Token {
   text: string;
-  type: string | null; // null = plain text
+  type: string | null;
 }
+
+interface CompiledRule {
+  regex: RegExp;
+  token: string | { cases: Record<string, string> };
+  nextState?: string;
+}
+
+interface CompiledGrammar {
+  grammar: Grammar;
+  states: Map<string, CompiledRule[]>;
+}
+
+// ── Grammar compilation ────────────────────────────────────────────────
+
+const compiledCache = new WeakMap<Grammar, CompiledGrammar>();
+
+function compileGrammar(grammar: Grammar): CompiledGrammar {
+  const cached = compiledCache.get(grammar);
+  if (cached) return cached;
+
+  const states = new Map<string, CompiledRule[]>();
+  const flags = grammar.ignoreCase ? 'yi' : 'y';
+
+  for (const [stateName, entries] of Object.entries(grammar.tokenizer)) {
+    const rules = resolveEntries(grammar, entries, new Set());
+    const compiled: CompiledRule[] = rules.map(rule => ({
+      regex: new RegExp(rule[0], flags),
+      token: rule[1],
+      nextState: rule[2],
+    }));
+    states.set(stateName, compiled);
+  }
+
+  const result: CompiledGrammar = { grammar, states };
+  compiledCache.set(grammar, result);
+  return result;
+}
+
+function resolveEntries(
+  grammar: Grammar,
+  entries: GrammarEntry[],
+  visited: Set<string>,
+): GrammarRule[] {
+  const result: GrammarRule[] = [];
+  for (const entry of entries) {
+    if ('include' in entry) {
+      const stateName = entry.include.replace(/^@/, '');
+      if (visited.has(stateName)) continue;
+      visited.add(stateName);
+      const included = grammar.tokenizer[stateName];
+      if (included) {
+        result.push(...resolveEntries(grammar, included, visited));
+      }
+    } else {
+      result.push(entry);
+    }
+  }
+  return result;
+}
+
+// ── Tokenizer engine ───────────────────────────────────────────────────
+
+function resolveToken(
+  grammar: Grammar,
+  tokenDef: string | { cases: Record<string, string> },
+  matchedText: string,
+): string {
+  if (typeof tokenDef === 'string') return tokenDef;
+
+  // Conditional token via cases lookup
+  for (const [pattern, tokenType] of Object.entries(tokenDef.cases)) {
+    if (pattern === '@default') continue;
+    // @tableName — check if matchedText is in the lookup table
+    if (pattern.startsWith('@')) {
+      const tableName = pattern.slice(1);
+      const table = grammar[tableName];
+      if (Array.isArray(table) && table.includes(matchedText)) {
+        return tokenType;
+      }
+    } else if (pattern === matchedText) {
+      return tokenType;
+    }
+  }
+
+  // Fallback to @default
+  if (tokenDef.cases['@default'] !== undefined) {
+    return tokenDef.cases['@default'];
+  }
+  return '';
+}
+
+function tokenizeWithGrammar(code: string, compiled: CompiledGrammar): Token[] {
+  const { grammar, states } = compiled;
+  const tokens: Token[] = [];
+  const stateStack: string[] = ['root'];
+  let pos = 0;
+  const defaultToken = grammar.defaultToken || '';
+
+  // Safety: max iterations to prevent infinite loops on bad grammars
+  const maxIterations = code.length * 10;
+  let iterations = 0;
+
+  while (pos < code.length && iterations < maxIterations) {
+    iterations++;
+    const currentState = stateStack[stateStack.length - 1];
+    const rules = states.get(currentState);
+
+    if (!rules) {
+      // Unknown state — consume one char as default token
+      tokens.push({ text: code[pos], type: defaultToken || null });
+      pos++;
+      continue;
+    }
+
+    let matched = false;
+
+    for (const rule of rules) {
+      rule.regex.lastIndex = pos;
+      const m = rule.regex.exec(code);
+      if (m && m.index === pos && m[0].length > 0) {
+        const tokenType = resolveToken(grammar, rule.token, m[0]);
+        tokens.push({ text: m[0], type: tokenType || null });
+        pos += m[0].length;
+
+        // State transition
+        if (rule.nextState) {
+          if (rule.nextState === '@pop') {
+            if (stateStack.length > 1) stateStack.pop();
+          } else {
+            const target = rule.nextState.replace(/^@/, '');
+            stateStack.push(target);
+          }
+        }
+
+        matched = true;
+        break;
+      }
+    }
+
+    if (!matched) {
+      // No rule matched — consume one char
+      // Try to batch consecutive unmatched chars
+      let end = pos + 1;
+      while (end < code.length) {
+        let anyMatch = false;
+        for (const rule of rules) {
+          rule.regex.lastIndex = end;
+          const m = rule.regex.exec(code);
+          if (m && m.index === end && m[0].length > 0) {
+            anyMatch = true;
+            break;
+          }
+        }
+        if (anyMatch) break;
+        end++;
+        iterations++;
+        if (iterations >= maxIterations) break;
+      }
+      tokens.push({ text: code.slice(pos, end), type: defaultToken || null });
+      pos = end;
+    }
+  }
+
+  return tokens;
+}
+
+// ── HTML rendering ─────────────────────────────────────────────────────
 
 function escapeHtml(text: string): string {
   return text
@@ -17,215 +207,60 @@ function escapeHtml(text: string): string {
 }
 
 function tokensToHtml(tokens: Token[]): string {
-  return tokens.map(t => {
-    const escaped = escapeHtml(t.text);
-    return t.type ? `<span class="token ${t.type}">${escaped}</span>` : escaped;
-  }).join('');
+  return tokens
+    .map(t => {
+      const escaped = escapeHtml(t.text);
+      return t.type ? `<span class="token ${t.type}">${escaped}</span>` : escaped;
+    })
+    .join('');
+}
+
+// ── Grammar registry ───────────────────────────────────────────────────
+
+const customGrammars = new Map<string, Grammar>();
+
+/**
+ * Register a custom grammar.
+ */
+export function registerGrammar(name: string, grammar: Grammar): void {
+  customGrammars.set(name.toLowerCase(), grammar);
 }
 
 /**
- * Tokenize code by applying regex rules in priority order.
- * Each rule consumes matched text; unmatched text becomes plain tokens.
+ * Unregister a custom grammar.
  */
-function tokenize(code: string, rules: Array<{ pattern: RegExp; type: string }>): Token[] {
-  // Build a combined pattern with named groups
-  const combined = rules.map((r, i) => `(?<g${i}>${r.pattern.source})`).join('|');
-  const flags = new Set<string>();
-  for (const r of rules) {
-    for (const f of r.pattern.flags) flags.add(f);
-  }
-  flags.add('g'); // Always global
-  const regex = new RegExp(combined, [...flags].join(''));
-
-  const tokens: Token[] = [];
-  let lastIndex = 0;
-  let match;
-
-  while ((match = regex.exec(code)) !== null) {
-    // Add plain text before this match
-    if (match.index > lastIndex) {
-      tokens.push({ text: code.slice(lastIndex, match.index), type: null });
-    }
-
-    // Find which group matched
-    let type = '';
-    if (match.groups) {
-      for (let i = 0; i < rules.length; i++) {
-        if (match.groups[`g${i}`] !== undefined) {
-          type = rules[i].type;
-          break;
-        }
-      }
-    }
-
-    tokens.push({ text: match[0], type });
-    lastIndex = match.index + match[0].length;
-  }
-
-  // Remaining text
-  if (lastIndex < code.length) {
-    tokens.push({ text: code.slice(lastIndex), type: null });
-  }
-
-  return tokens;
+export function unregisterGrammar(name: string): void {
+  customGrammars.delete(name.toLowerCase());
 }
 
-export function highlightCode(code: string, language: string): string {
-  let tokens: Token[];
+/**
+ * Get a grammar by language name (custom registry only).
+ */
+export function getGrammar(language: string): Grammar | undefined {
+  return customGrammars.get(language.toLowerCase());
+}
 
-  switch (language.toLowerCase()) {
-    case 'javascript':
-    case 'js':
-    case 'typescript':
-    case 'ts':
-      tokens = tokenizeJavaScript(code);
-      break;
+/**
+ * Highlight code using a grammar (by language name or direct Grammar object).
+ */
+export function highlightCode(code: string, language: string | Grammar): string {
+  const grammar = typeof language === 'string' ? getGrammar(language) : language;
+  if (!grammar) return escapeHtml(code);
 
-    case 'html':
-    case 'xml':
-      tokens = tokenizeHTML(code);
-      break;
-
-    case 'css':
-      tokens = tokenizeCSS(code);
-      break;
-
-    case 'json':
-      tokens = tokenizeJSON(code);
-      break;
-
-    case 'python':
-    case 'py':
-      tokens = tokenizePython(code);
-      break;
-
-    case 'bash':
-    case 'sh':
-    case 'shell':
-      tokens = tokenizeBash(code);
-      break;
-
-    default:
-      return escapeHtml(code);
-  }
-
+  const compiled = compileGrammar(grammar);
+  const tokens = tokenizeWithGrammar(code, compiled);
   return tokensToHtml(tokens);
 }
 
-function tokenizeJavaScript(code: string): Token[] {
-  return tokenize(code, [
-    // Multi-line comments
-    { pattern: /\/\*[\s\S]*?\*\//, type: 'comment' },
-    // Single-line comments
-    { pattern: /\/\/.*$/, type: 'comment' },
-    // Template literals (simplified)
-    { pattern: /`(?:[^`\\]|\\.)*`/, type: 'string' },
-    // Strings
-    { pattern: /"(?:[^"\\]|\\.)*"/, type: 'string' },
-    { pattern: /'(?:[^'\\]|\\.)*'/, type: 'string' },
-    // Decorators
-    { pattern: /@[\w]+/, type: 'tag' },
-    // Keywords (JS + TS)
-    { pattern: /\b(?:abstract|as|async|await|break|case|catch|class|const|continue|debugger|declare|default|delete|do|else|enum|export|extends|finally|for|from|function|if|implements|import|in|instanceof|interface|is|keyof|let|module|namespace|new|of|override|private|protected|public|readonly|return|satisfies|static|super|switch|this|throw|try|type|typeof|var|void|while|with|yield)\b/, type: 'keyword' },
-    // Constants
-    { pattern: /\b(?:true|false|null|undefined|NaN|Infinity)\b/, type: 'constant' },
-    // Numbers
-    { pattern: /\b\d+\.?\d*(?:e[+-]?\d+)?\b/, type: 'number' },
-    // Class names (capitalized)
-    { pattern: /\b[A-Z][\w]*\b/, type: 'class-name' },
-    // Function calls
-    { pattern: /\b[\w]+(?=\s*\()/, type: 'function' },
-  ]);
+/**
+ * Tokenize code and return raw tokens (for advanced use).
+ */
+export function tokenize(code: string, language: string | Grammar): Token[] {
+  const grammar = typeof language === 'string' ? getGrammar(language) : language;
+  if (!grammar) return [{ text: code, type: null }];
+
+  const compiled = compileGrammar(grammar);
+  return tokenizeWithGrammar(code, compiled);
 }
 
-function tokenizeHTML(code: string): Token[] {
-  return tokenize(code, [
-    // Comments
-    { pattern: /<!--[\s\S]*?-->/, type: 'comment' },
-    // Tags (opening/closing)
-    { pattern: /<\/?[\w-]+/, type: 'tag' },
-    // Closing bracket
-    { pattern: /\/?>/, type: 'tag' },
-    // Attribute values
-    { pattern: /"[^"]*"/, type: 'attr-value' },
-    { pattern: /'[^']*'/, type: 'attr-value' },
-    // Attribute names
-    { pattern: /[\w-]+(?=\s*=)/, type: 'attr-name' },
-  ]);
-}
-
-function tokenizeCSS(code: string): Token[] {
-  return tokenize(code, [
-    // Comments
-    { pattern: /\/\*[\s\S]*?\*\//, type: 'comment' },
-    // Strings
-    { pattern: /"(?:[^"\\]|\\.)*"/, type: 'string' },
-    { pattern: /'(?:[^'\\]|\\.)*'/, type: 'string' },
-    // !important
-    { pattern: /!important/, type: 'important' },
-    // Numbers with units
-    { pattern: /\b\d+\.?\d*(?:px|em|rem|%|vh|vw|s|ms|deg|fr)?\b/, type: 'number' },
-    // Properties (before colon)
-    { pattern: /[\w-]+(?=\s*:)/, type: 'property' },
-    // Selectors-like (at-rules)
-    { pattern: /@[\w-]+/, type: 'keyword' },
-  ]);
-}
-
-function tokenizeJSON(code: string): Token[] {
-  return tokenize(code, [
-    // Keys
-    { pattern: /"[\w-]+"(?=\s*:)/, type: 'property' },
-    // String values
-    { pattern: /"(?:[^"\\]|\\.)*"/, type: 'string' },
-    // Numbers
-    { pattern: /-?\b\d+\.?\d*(?:e[+-]?\d+)?\b/, type: 'number' },
-    // Constants
-    { pattern: /\b(?:true|false|null)\b/, type: 'constant' },
-  ]);
-}
-
-function tokenizePython(code: string): Token[] {
-  return tokenize(code, [
-    // Triple-quoted strings
-    { pattern: /"""[\s\S]*?"""/, type: 'string' },
-    { pattern: /'''[\s\S]*?'''/, type: 'string' },
-    // Comments
-    { pattern: /#.*$/, type: 'comment' },
-    // Strings
-    { pattern: /"(?:[^"\\]|\\.)*"/, type: 'string' },
-    { pattern: /'(?:[^'\\]|\\.)*'/, type: 'string' },
-    // Decorators
-    { pattern: /@[\w.]+/, type: 'tag' },
-    // Keywords
-    { pattern: /\b(?:and|as|assert|async|await|break|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|while|with|yield)\b/, type: 'keyword' },
-    // Constants
-    { pattern: /\b(?:True|False|None)\b/, type: 'constant' },
-    // Built-ins
-    { pattern: /\b(?:abs|all|any|bin|bool|bytes|callable|chr|dict|dir|divmod|enumerate|eval|exec|filter|float|format|getattr|globals|hasattr|hash|hex|id|input|int|isinstance|issubclass|iter|len|list|locals|map|max|min|next|object|oct|open|ord|pow|print|property|range|repr|reversed|round|set|setattr|slice|sorted|staticmethod|str|sum|super|tuple|type|vars|zip)\b/, type: 'builtin' },
-    // Numbers
-    { pattern: /\b\d+\.?\d*\b/, type: 'number' },
-    // Class names
-    { pattern: /\b[A-Z][\w]*\b/, type: 'class-name' },
-    // Function calls
-    { pattern: /\b[\w]+(?=\s*\()/, type: 'function' },
-  ]);
-}
-
-function tokenizeBash(code: string): Token[] {
-  return tokenize(code, [
-    // Comments
-    { pattern: /#.*$/, type: 'comment' },
-    // Strings
-    { pattern: /"(?:[^"\\]|\\.)*"/, type: 'string' },
-    { pattern: /'[^']*'/, type: 'string' },
-    // Variables
-    { pattern: /\$\{?[\w]+\}?/, type: 'attr-name' },
-    // Keywords
-    { pattern: /\b(?:if|then|else|elif|fi|case|esac|for|select|while|until|do|done|in|function|time)\b/, type: 'keyword' },
-    // Commands
-    { pattern: /\b(?:echo|cd|ls|mkdir|rm|cp|mv|cat|grep|sed|awk|find|chmod|chown|sudo|export|source|npm|npx|node|git|docker|curl|wget)\b/, type: 'builtin' },
-    // Numbers
-    { pattern: /\b\d+\b/, type: 'number' },
-  ]);
-}
+export type { Token, Grammar as GrammarDefinition };

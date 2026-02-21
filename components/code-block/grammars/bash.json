@@ -1,0 +1,43 @@
+{
+  "name": "bash",
+  "fileTypes": ["sh", "bash", "zsh"],
+  "defaultToken": "",
+  "keywords": [
+    "if", "then", "else", "elif", "fi", "case", "esac", "for", "select",
+    "while", "until", "do", "done", "in", "function", "time"
+  ],
+  "builtins": [
+    "echo", "cd", "ls", "mkdir", "rm", "cp", "mv", "cat", "grep", "sed",
+    "awk", "find", "chmod", "chown", "sudo", "export", "source", "npm", "npx",
+    "node", "git", "docker", "curl", "wget", "pip", "python", "ruby", "cargo",
+    "go", "make", "cmake", "apt", "yum", "brew", "ssh", "scp", "rsync",
+    "tar", "gzip", "unzip", "head", "tail", "sort", "uniq", "wc", "tee",
+    "xargs", "kill", "ps", "top", "df", "du", "env", "set", "unset"
+  ],
+  "tokenizer": {
+    "root": [
+      ["#.*$", "comment"],
+      ["\"", "string", "@string_double"],
+      ["'[^']*'", "string"],
+      ["\\$\\{[^}]*\\}", "attr-name"],
+      ["\\$[\\w]+", "attr-name"],
+      ["\\$\\(", "punctuation", "@subshell"],
+      ["\\b\\d+\\b", "number"],
+      ["[a-zA-Z_]\\w*", { "cases": { "@keywords": "keyword", "@builtins": "builtin", "@default": "" } }],
+      ["[|&;()<>]+", "operator"],
+      ["[\\-][\\w-]+", "attr-name"]
+    ],
+    "string_double": [
+      ["\\$\\{[^}]*\\}", "attr-name"],
+      ["\\$[\\w]+", "attr-name"],
+      ["[^\"\\\\$]+", "string"],
+      ["\\\\.", "string"],
+      ["\\$", "string"],
+      ["\"", "string", "@pop"]
+    ],
+    "subshell": [
+      ["\\)", "punctuation", "@pop"],
+      { "include": "@root" }
+    ]
+  }
+}
