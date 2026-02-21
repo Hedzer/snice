@@ -68,24 +68,24 @@
 
     <div class="dec-section">
       <h3><code>@controller</code></h3>
-      <p class="desc">Swappable behavior that attaches to elements. Switch implementations at runtime.</p>
-      <pre><code><span class="d">@controller</span>(<span class="s">'rest'</span>)
-<span class="k">class</span> <span class="t">RestLoader</span> {
+      <p class="desc">Hot-swap logic on any element — keep your UI, change what it does.</p>
+      <pre><code><span class="d">@controller</span>(<span class="s">'weather'</span>)
+<span class="k">class</span> <span class="t">WeatherData</span> {
   <span class="k">async</span> <span class="f">attach</span>(el) {
-    el.data = <span class="k">await</span> fetch(<span class="s">'/api/items'</span>).then(r => r.json());
+    <span class="k">const</span> data = <span class="k">await</span> <span class="f">fetch</span>(<span class="s">'/api/weather'</span>).then(r => r.json());
+    <span class="v">this</span>.city = data.city;
+    el.icon = <span class="s">'cloud'</span>;
+    el.label = data.city;
+    el.value = <span class="s">`${data.temp}°`</span>;
+  }
+
+  <span class="d">@on</span>(<span class="s">'click'</span>)
+  <span class="f">viewDetails</span>() {
+    <span class="f">navigate</span>(<span class="s">`/weather/${this.city}`</span>);
   }
 }
 
-<span class="d">@controller</span>(<span class="s">'websocket'</span>)
-<span class="k">class</span> <span class="t">WsLoader</span> {
-  <span class="f">attach</span>(el) {
-    this.ws = <span class="k">new</span> WebSocket(<span class="s">'/ws'</span>);
-    this.ws.onmessage = e => el.data = JSON.parse(e.data);
-  }
-  <span class="f">detach</span>() { this.ws.close(); }
-}
-
-<span class="c">// &lt;my-list controller="rest"&gt; or &lt;my-list controller="websocket"&gt;</span></code></pre>
+<span class="h">&lt;stat-card</span> <span class="a">controller</span>=<span class="s">"weather"</span><span class="h">&gt;&lt;/stat-card&gt;</span></code></pre>
       <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/controllers.md">Full documentation →</a></p>
     </div>
 
@@ -159,6 +159,12 @@
       <h3><code>@on</code> & <code>@dispatch</code></h3>
       <p class="desc">Event delegation and custom event emission.</p>
       <pre><code><span class="c">// @on: delegated event listener</span>
+<span class="d">@on</span>(<span class="s">'click'</span>, <span class="s">'.entry'</span>)
+<span class="f">editEntry</span>(e) {
+  this.selected = e.target.dataset.id;
+  this.editing = <span class="k">true</span>;
+}
+
 <span class="d">@on</span>(<span class="s">'click'</span>, <span class="s">'button.save'</span>)
 <span class="f">handleSave</span>(e) { this.save(); }
 
