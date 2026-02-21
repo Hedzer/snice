@@ -46,7 +46,8 @@ export function createStandaloneBuild(componentName, options = {}) {
     minify = true,
     withTheme = false,
     formats = ['esm', 'umd', 'iife'],
-    useSharedRuntime = false
+    useSharedRuntime = false,
+    outputSuffix = ''
   } = options;
 
   // Use pre-compiled JS from dist/components (avoids TypeScript parsing issues)
@@ -84,7 +85,7 @@ export function createStandaloneBuild(componentName, options = {}) {
   // Create base config with all dependencies bundled (no externals)
   const baseConfig = {
     input: allComponentPaths.length > 1 ? virtualEntryId : componentPath,
-    external: useSharedRuntime ? ['snice-runtime'] : [], // Use shared runtime or bundle everything
+    external: useSharedRuntime ? ['snice', 'snice/symbols', 'snice/transitions'] : [],
     plugins: [
       // Virtual entry plugin for multi-component bundles
       {
@@ -150,6 +151,11 @@ export function createStandaloneBuild(componentName, options = {}) {
       {
         name: 'resolve-snice',
         resolveId(id) {
+          if (useSharedRuntime) {
+            if (id === 'snice' || id === 'snice/symbols' || id === 'snice/transitions') {
+              return false;
+            }
+          }
           if (id === 'snice') {
             return path.resolve('dist/index.esm.js');
           }
@@ -167,12 +173,16 @@ export function createStandaloneBuild(componentName, options = {}) {
 
   const configs = [];
 
+  const sharedGlobals = useSharedRuntime
+    ? { 'snice': 'Snice', 'snice/symbols': 'Snice', 'snice/transitions': 'Snice' }
+    : {};
+
   // ESM build
   if (formats.includes('esm')) {
     configs.push({
       ...baseConfig,
       output: {
-        file: `${outputDir}/snice-${componentName}.esm.js`,
+        file: `${outputDir}/snice-${componentName}${outputSuffix}.esm.js`,
         format: 'es',
         banner,
         sourcemap: true
@@ -184,7 +194,7 @@ export function createStandaloneBuild(componentName, options = {}) {
       configs.push({
         ...baseConfig,
         output: {
-          file: `${outputDir}/snice-${componentName}.esm.min.js`,
+          file: `${outputDir}/snice-${componentName}${outputSuffix}.esm.min.js`,
           format: 'es',
           banner,
           sourcemap: true,
@@ -199,11 +209,12 @@ export function createStandaloneBuild(componentName, options = {}) {
     configs.push({
       ...baseConfig,
       output: {
-        file: `${outputDir}/snice-${componentName}.umd.js`,
+        file: `${outputDir}/snice-${componentName}${outputSuffix}.umd.js`,
         format: 'umd',
         name: jsIdentifier,
         banner,
-        sourcemap: true
+        sourcemap: true,
+        globals: sharedGlobals
       }
     });
 
@@ -212,11 +223,12 @@ export function createStandaloneBuild(componentName, options = {}) {
       configs.push({
         ...baseConfig,
         output: {
-          file: `${outputDir}/snice-${componentName}.umd.min.js`,
+          file: `${outputDir}/snice-${componentName}${outputSuffix}.umd.min.js`,
           format: 'umd',
           name: jsIdentifier,
           banner,
           sourcemap: true,
+          globals: sharedGlobals,
           plugins: [terser()]
         }
       });
@@ -228,11 +240,12 @@ export function createStandaloneBuild(componentName, options = {}) {
     configs.push({
       ...baseConfig,
       output: {
-        file: `${outputDir}/snice-${componentName}.js`,
+        file: `${outputDir}/snice-${componentName}${outputSuffix}.js`,
         format: 'iife',
         name: jsIdentifier,
         banner,
-        sourcemap: true
+        sourcemap: true,
+        globals: sharedGlobals
       }
     });
 
@@ -241,11 +254,12 @@ export function createStandaloneBuild(componentName, options = {}) {
       configs.push({
         ...baseConfig,
         output: {
-          file: `${outputDir}/snice-${componentName}.min.js`,
+          file: `${outputDir}/snice-${componentName}${outputSuffix}.min.js`,
           format: 'iife',
           name: jsIdentifier,
           banner,
           sourcemap: true,
+          globals: sharedGlobals,
           plugins: [terser()]
         }
       });
@@ -345,12 +359,14 @@ ${packageJson.license}
   return configs;
 }
 
-// Default export for building all components
-export default function buildAllStandalone() {
+/**
+ * Discover all available components in the components directory
+ * @returns {string[]} Array of component names
+ */
+function discoverComponents() {
   const componentsDir = 'components';
   const components = [];
 
-  // Find all components
   const items = fs.readdirSync(componentsDir);
   for (const item of items) {
     const componentDir = path.join(componentsDir, item);
@@ -364,9 +380,15 @@ export default function buildAllStandalone() {
     }
   }
 
+  return components;
+}
+
+// Build all standalone components (full builds with bundled runtime)
+export function buildAllStandalone() {
+  const components = discoverComponents();
+
   console.log(`Building standalone versions for ${components.length} components...`);
 
-  // Build all components
   return components.flatMap(componentName =>
     createStandaloneBuild(componentName, {
       minify: true,
@@ -383,22 +405,33 @@ export default function buildAllStandalone() {
 export function buildSharedRuntime() {
   const outputDir = 'dist/standalone/runtime';
 
-  return [
-    // ESM build
-    {
-      input: 'dist/index.esm.js',
-      output: {
-        file: `${outputDir}/snice-runtime.esm.js`,
-        format: 'es',
-        banner,
-        sourcemap: true
-      },
-      plugins: [
-        resolve({ browser: true, preferBuiltins: false }),
-        {
-          name: 'generate-runtime-readme',
-          generateBundle() {
-            const readme = `# Snice Runtime - Shared Build
+  // Virtual entry that re-exports everything from all snice modules
+  // so window.Snice has all exports (index + symbols + transitions)
+  const runtimeEntryId = '\0virtual:snice-runtime';
+  const runtimeEntryPlugin = {
+    name: 'runtime-entry',
+    resolveId(id) {
+      if (id === runtimeEntryId) return id;
+      return null;
+    },
+    load(id) {
+      if (id === runtimeEntryId) {
+        // Re-export everything from the main entry
+        // Import symbols/transitions for side effects (their exports are covered by index)
+        return [
+          `export * from '${path.resolve('dist/index.esm.js')}';`,
+          `import '${path.resolve('dist/symbols.esm.js')}';`,
+          `import '${path.resolve('dist/transitions.esm.js')}';`
+        ].join('\n');
+      }
+      return null;
+    }
+  };
+
+  const readmePlugin = {
+    name: 'generate-runtime-readme',
+    generateBundle() {
+      const readme = `# Snice Runtime - Shared Build
 
 This is the shared Snice runtime that can be used with lightweight standalone component builds.
 
@@ -442,17 +475,32 @@ import 'snice/standalone/input/snice-input.light.esm.js';
 ## License
 ${packageJson.license}
 `;
-            if (!fs.existsSync(outputDir)) {
-              fs.mkdirSync(outputDir, { recursive: true });
-            }
-            fs.writeFileSync(`${outputDir}/README.md`, readme);
-          }
-        }
+      if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
+      }
+      fs.writeFileSync(`${outputDir}/README.md`, readme);
+    }
+  };
+
+  return [
+    // ESM build
+    {
+      input: runtimeEntryId,
+      output: {
+        file: `${outputDir}/snice-runtime.esm.js`,
+        format: 'es',
+        banner,
+        sourcemap: true
+      },
+      plugins: [
+        runtimeEntryPlugin,
+        resolve({ browser: true, preferBuiltins: false }),
+        readmePlugin
       ]
     },
     // ESM minified
     {
-      input: 'dist/index.esm.js',
+      input: runtimeEntryId,
       output: {
         file: `${outputDir}/snice-runtime.esm.min.js`,
         format: 'es',
@@ -460,11 +508,11 @@ ${packageJson.license}
         sourcemap: true,
         plugins: [terser()]
       },
-      plugins: [resolve({ browser: true, preferBuiltins: false })]
+      plugins: [runtimeEntryPlugin, resolve({ browser: true, preferBuiltins: false })]
     },
     // IIFE build
     {
-      input: 'dist/index.esm.js',
+      input: runtimeEntryId,
       output: {
         file: `${outputDir}/snice-runtime.js`,
         format: 'iife',
@@ -472,11 +520,11 @@ ${packageJson.license}
         banner,
         sourcemap: true
       },
-      plugins: [resolve({ browser: true, preferBuiltins: false })]
+      plugins: [runtimeEntryPlugin, resolve({ browser: true, preferBuiltins: false })]
     },
     // IIFE minified
     {
-      input: 'dist/index.esm.js',
+      input: runtimeEntryId,
       output: {
         file: `${outputDir}/snice-runtime.min.js`,
         format: 'iife',
@@ -485,23 +533,38 @@ ${packageJson.license}
         sourcemap: true,
         plugins: [terser()]
       },
-      plugins: [resolve({ browser: true, preferBuiltins: false })]
+      plugins: [runtimeEntryPlugin, resolve({ browser: true, preferBuiltins: false })]
     }
   ];
 }
 
 /**
  * Build all standalone components with shared runtime support
- * Creates both full standalone builds and lightweight builds that use shared runtime
+ * Creates: shared runtime + full standalone builds + lightweight builds
  */
 export function buildAllWithSharedRuntime() {
   const configs = [];
 
-  // First, build the shared runtime
+  // Build the shared runtime
   configs.push(...buildSharedRuntime());
 
-  // Then build all standalone components (full builds)
+  // Build all standalone components (full builds with bundled runtime)
   configs.push(...buildAllStandalone());
+
+  // Build lightweight versions that use shared runtime
+  const components = discoverComponents();
+  console.log(`Building lightweight versions for ${components.length} components...`);
+  for (const name of components) {
+    configs.push(...createStandaloneBuild(name, {
+      minify: true,
+      formats: ['esm', 'iife'],
+      useSharedRuntime: true,
+      outputSuffix: '.light'
+    }));
+  }
 
   return configs;
 }
+
+// Default export produces everything: full + runtime + lightweight
+export default buildAllWithSharedRuntime;

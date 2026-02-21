@@ -66,6 +66,7 @@ if (command === 'create-app') {
   const formats = flags.format ? flags.format.split(',') : ['esm', 'iife'];
   const minify = flags.minify !== false;
   const withTheme = flags['with-theme'] === true;
+  const useSharedRuntime = flags['shared-runtime'] === true;
 
   if (!componentName) {
     console.error('❌ Error: Component name is required\n');
@@ -73,7 +74,7 @@ if (command === 'create-app') {
     process.exit(1);
   }
 
-  buildComponent(componentName, { outputDir, formats, minify, withTheme });
+  buildComponent(componentName, { outputDir, formats, minify, withTheme, useSharedRuntime });
 } else {
   console.log(`
 Snice CLI
@@ -93,6 +94,7 @@ Build Component Options:
   --format=<formats>                                    Comma-separated formats: esm,umd,iife (default: esm,iife)
   --minify                                              Minify output (default: true)
   --with-theme                                          Include theme.css in output
+  --shared-runtime                                      Build lightweight version (requires snice-runtime.min.js)
 
 Templates:
   base    - Minimal starter with counter example (default)
@@ -208,7 +210,7 @@ function copyTemplateFiles(sourceDir, targetDir, projectName) {
 }
 
 async function buildComponent(componentName, options) {
-  const { outputDir, formats, minify, withTheme } = options;
+  const { outputDir, formats, minify, withTheme, useSharedRuntime } = options;
 
   console.log(`\n🔨 Building standalone component: ${componentName}\n`);
 
@@ -238,7 +240,8 @@ async function buildComponent(componentName, options) {
   console.log(`   Output: ${outputDir}`);
   console.log(`   Formats: ${formats.join(', ')}`);
   console.log(`   Minify: ${minify}`);
-  console.log(`   Include theme: ${withTheme}\n`);
+  console.log(`   Include theme: ${withTheme}`);
+  console.log(`   Shared runtime: ${useSharedRuntime}\n`);
 
   // Create a temporary rollup config for this build
   const configContent = `
@@ -247,7 +250,9 @@ import { createStandaloneBuild } from './rollup.config.standalone.js';
 export default createStandaloneBuild('${componentName}', {
   minify: ${minify},
   withTheme: ${withTheme},
-  formats: ${JSON.stringify(formats)}
+  formats: ${JSON.stringify(formats)},
+  useSharedRuntime: ${useSharedRuntime},
+  outputSuffix: '${useSharedRuntime ? '.light' : ''}'
 });
 `;
 
