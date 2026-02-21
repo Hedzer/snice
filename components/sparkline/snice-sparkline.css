@@ -112,7 +112,7 @@
 }
 
 .sparkline__dot {
-  fill: white;
+  fill: var(--snice-color-background, hsl(0 0% 100%));
 }
 
 .sparkline__bar {

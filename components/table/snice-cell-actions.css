@@ -38,7 +38,7 @@
 }
 
 .action-button:hover {
-  background: rgba(0, 0, 0, 0.05);
+  background: hsl(0 0% 0% / 0.05);
 }
 
 .action-button:focus {
@@ -65,7 +65,7 @@
 }
 
 .action-button--primary:hover:not(:disabled) {
-  background: rgba(0, 123, 255, 0.1);
+  background: hsl(var(--snice-color-blue-500) / 0.1);
 }
 
 .action-button--secondary {
@@ -77,7 +77,7 @@
 }
 
 .action-button--danger:hover:not(:disabled) {
-  background: rgba(220, 53, 69, 0.1);
+  background: hsl(var(--snice-color-red-500) / 0.1);
 }
 
 .action-button--success {
@@ -85,7 +85,7 @@
 }
 
 .action-button--success:hover:not(:disabled) {
-  background: rgba(40, 167, 69, 0.1);
+  background: hsl(var(--snice-color-green-500) / 0.1);
 }
 
 .action-icon {

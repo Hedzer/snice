@@ -81,7 +81,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.8);
+  background: hsl(0 0% 100% / 0.8);
   z-index: 10;
 }
 

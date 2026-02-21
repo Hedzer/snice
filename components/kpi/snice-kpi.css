@@ -83,17 +83,17 @@
 /* Sentiments */
 .kpi__trend--up {
   color: var(--snice-color-success);
-  background: rgb(22 163 74 / 0.1);
+  background: hsl(var(--snice-color-green-500) / 0.1);
 }
 
 .kpi__trend--down {
   color: var(--snice-color-danger);
-  background: rgb(220 38 38 / 0.1);
+  background: hsl(var(--snice-color-red-500) / 0.1);
 }
 
 .kpi__trend--neutral {
   color: var(--snice-color-text-secondary);
-  background: rgb(107 114 128 / 0.1);
+  background: hsl(var(--snice-color-gray-500) / 0.1);
 }
 
 /* Sizes */

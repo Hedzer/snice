@@ -26,10 +26,10 @@
   z-index: 1;
   transition: opacity 0.2s ease;
   box-shadow: var(--snice-shadow-sm);
-  border: 2px solid rgba(255, 255, 255, 0.9);
+  border: 2px solid hsl(0 0% 100% / 0.9);
   box-sizing: border-box;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 0 2px rgba(0, 0, 0, 0.6), 0 0 6px rgba(0, 0, 0, 0.3);
-  -webkit-text-stroke: 0.5px rgba(0, 0, 0, 0.25);
+  text-shadow: 0 1px 3px hsl(0 0% 0% / 0.8), 0 0 2px hsl(0 0% 0% / 0.6), 0 0 6px hsl(0 0% 0% / 0.3);
+  -webkit-text-stroke: 0.5px hsl(0 0% 0% / 0.25);
 }
 
 .badge--dot {
@@ -132,31 +132,31 @@
 /* Variants - using standard colors with emphasized borders */
 :host([variant="default"]) .badge,
 :host(:not([variant])) .badge {
-  background: rgb(var(--snice-color-gray-600));
-  color: white;
+  background: hsl(var(--snice-color-gray-600));
+  color: hsl(0 0% 100%);
 }
 
 :host([variant="primary"]) .badge {
-  background: rgb(var(--snice-color-blue-600));
-  color: white;
+  background: hsl(var(--snice-color-blue-600));
+  color: hsl(0 0% 100%);
 }
 
 :host([variant="success"]) .badge {
-  background: rgb(var(--snice-color-green-600));
-  color: white;
+  background: hsl(var(--snice-color-green-600));
+  color: hsl(0 0% 100%);
 }
 
 :host([variant="warning"]) .badge {
-  background: rgb(var(--snice-color-yellow-600));
-  color: white;
+  background: hsl(var(--snice-color-yellow-600));
+  color: hsl(0 0% 100%);
 }
 
 :host([variant="error"]) .badge {
-  background: rgb(var(--snice-color-red-600));
-  color: white;
+  background: hsl(var(--snice-color-red-600));
+  color: hsl(0 0% 100%);
 }
 
 :host([variant="info"]) .badge {
-  background: rgb(var(--snice-color-blue-600));
-  color: white;
+  background: hsl(var(--snice-color-blue-600));
+  color: hsl(0 0% 100%);
 }

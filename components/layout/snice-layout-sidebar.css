@@ -16,8 +16,8 @@
   align-items: center;
   gap: var(--snice-spacing-md, 1rem);
   padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-lg, 1.25rem);
-  background: var(--snice-color-background, white);
-  border-bottom: 1px solid var(--snice-color-border, #e5e7eb);
+  background: var(--snice-color-background);
+  border-bottom: 1px solid var(--snice-color-border);
   position: relative;
   z-index: var(--snice-z-index-sticky, 1020);
 }
@@ -31,7 +31,7 @@
   margin: 0;
   font-size: var(--snice-font-size-lg, 1.125rem);
   font-weight: var(--snice-font-weight-semibold, 600);
-  color: var(--snice-color-text, #111827);
+  color: var(--snice-color-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -45,7 +45,7 @@
   height: var(--snice-size-control-md, 2rem);
   background: none;
   border: none;
-  color: var(--snice-color-text-secondary, #6b7280);
+  color: var(--snice-color-text-secondary);
   cursor: pointer;
   padding: var(--snice-spacing-xs, 0.5rem);
   border-radius: var(--snice-border-radius-md, 6px);
@@ -58,7 +58,7 @@
 }
 
 .sidebar-toggle:focus-visible {
-  outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color, #3b82f6);
+  outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color);
   outline-offset: var(--snice-focus-ring-offset, 2px);
 }
 
@@ -82,7 +82,7 @@
   display: flex;
   flex: 1;
   overflow: hidden;
-  background: var(--snice-color-background-secondary, #f8fafc);
+  background: var(--snice-color-background-secondary);
 }
 
 .sidebar-drawer {
@@ -100,7 +100,7 @@
   flex: 1;
   padding: var(--snice-spacing-lg, 1.25rem);
   overflow-y: auto;
-  background: var(--snice-color-background-secondary, #f8fafc);
+  background: var(--snice-color-background-secondary);
   position: relative;
   z-index: 0;
 }
@@ -108,8 +108,8 @@
 /* Footer spans full width */
 .footer {
   padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-lg, 1.25rem);
-  background: var(--snice-color-background, white);
-  border-top: 1px solid var(--snice-color-border, #e5e7eb);
+  background: var(--snice-color-background);
+  border-top: 1px solid var(--snice-color-border);
 }
 
 .footer:empty {

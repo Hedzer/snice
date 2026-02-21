@@ -201,14 +201,14 @@
 }
 
 .button--text:hover:not(.button--disabled) {
-  background-color: rgb(59 130 246 / 0.1);
+  background-color: hsl(var(--snice-color-blue-500) / 0.1);
   color: var(--snice-color-primary-hover, rgb(29 78 216));
   box-shadow: none;
   transform: none;
 }
 
 .button--text:active:not(.button--disabled) {
-  background-color: rgb(59 130 246 / 0.15);
+  background-color: hsl(var(--snice-color-blue-500) / 0.15);
   box-shadow: none;
   transform: none;
 }
@@ -248,13 +248,13 @@
 }
 
 .button--outline:hover:not(.button--disabled) {
-  background-color: rgb(115 115 115 / 0.1);
+  background-color: hsl(var(--snice-color-gray-500) / 0.1);
   box-shadow: none;
   transform: none;
 }
 
 .button--outline:active:not(.button--disabled) {
-  background-color: rgb(115 115 115 / 0.15);
+  background-color: hsl(var(--snice-color-gray-500) / 0.15);
   box-shadow: none;
   transform: none;
 }

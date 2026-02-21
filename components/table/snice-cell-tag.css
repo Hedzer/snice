@@ -36,33 +36,33 @@
 }
 
 .tag--default {
-  background: rgba(0, 0, 0, 0.08);
-  color: var(--snice-color-text, #212529);
+  background: hsl(0 0% 0% / 0.08);
+  color: var(--snice-color-text);
 }
 
 .tag--primary {
-  background: rgba(0, 123, 255, 0.1);
-  color: var(--snice-color-primary, #007bff);
+  background: hsl(var(--snice-color-blue-500) / 0.1);
+  color: var(--snice-color-primary);
 }
 
 .tag--success {
-  background: rgba(40, 167, 69, 0.1);
-  color: var(--snice-color-success, #28a745);
+  background: hsl(var(--snice-color-green-500) / 0.1);
+  color: var(--snice-color-success);
 }
 
 .tag--danger {
-  background: rgba(220, 53, 69, 0.1);
-  color: var(--snice-color-danger, #dc3545);
+  background: hsl(var(--snice-color-red-500) / 0.1);
+  color: var(--snice-color-danger);
 }
 
 .tag--warning {
-  background: rgba(255, 193, 7, 0.1);
-  color: var(--snice-color-warning, #ffc107);
+  background: hsl(var(--snice-color-yellow-500) / 0.1);
+  color: var(--snice-color-warning);
 }
 
 .tag--info {
-  background: rgba(23, 162, 184, 0.1);
-  color: var(--snice-color-info, #17a2b8);
+  background: hsl(var(--snice-color-blue-400) / 0.1);
+  color: var(--snice-color-primary);
 }
 
 /* Text Alignment */

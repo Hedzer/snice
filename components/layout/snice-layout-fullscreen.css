@@ -9,7 +9,7 @@
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  background: var(--snice-color-background-dark, #111827);
+  background: var(--snice-color-background-dark, hsl(var(--snice-color-gray-900)));
 }
 
 .background {
@@ -22,7 +22,7 @@
   position: absolute;
   inset: 0;
   z-index: 2;
-  background: rgba(0, 0, 0, 0.5);
+  background: hsl(0 0% 0% / 0.5);
   opacity: 0;
   transition: opacity var(--snice-transition-normal, 0.25s) ease;
   pointer-events: none;
@@ -50,7 +50,7 @@
   right: 0;
   z-index: 4;
   padding: var(--snice-spacing-lg, 2rem);
-  background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+  background: linear-gradient(transparent, hsl(0 0% 0% / 0.8));
   transform: translateY(100%);
   transition: transform var(--snice-transition-normal, 0.25s) ease;
 }
@@ -63,7 +63,7 @@
 @media (max-width: 768px) {
   .controls {
     transform: translateY(0);
-    background: rgba(0, 0, 0, 0.8);
+    background: hsl(0 0% 0% / 0.8);
   }
   
   .content {

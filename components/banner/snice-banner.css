@@ -136,7 +136,7 @@
 }
 
 .banner__action:hover {
-  background: rgb(0 0 0 / 0.05);
+  background: hsl(0 0% 0% / 0.05);
 }
 
 .banner__close {

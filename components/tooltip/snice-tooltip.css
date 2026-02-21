@@ -1,6 +1,6 @@
 :host {
-  --tooltip-bg: #333;
-  --tooltip-color: white;
+  --tooltip-bg: hsl(0 0% 20%);
+  --tooltip-color: hsl(0 0% 100%);
   --tooltip-padding: 0.5rem 0.75rem; /* 8px 12px */
   --tooltip-radius: 6px;
   --tooltip-font-size: 0.875rem; /* 14px */

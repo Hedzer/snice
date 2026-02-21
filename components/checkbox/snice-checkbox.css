@@ -93,7 +93,7 @@
 .checkbox-icon {
   position: absolute;
   display: none;
-  color: white;
+  color: var(--snice-color-text-inverse);
 }
 
 .checkbox-input:checked ~ .checkbox .checkbox-icon--check {

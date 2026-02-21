@@ -14,8 +14,8 @@
   justify-content: space-between;
   width: 100%;
   padding: var(--accordion-header-padding, 1rem); /* 16px */
-  background: var(--accordion-header-bg, #ffffff);
-  color: var(--accordion-header-color, #111827);
+  background: var(--accordion-header-bg, var(--snice-color-background-element));
+  color: var(--accordion-header-color, var(--snice-color-text));
   border: none;
   font-family: inherit;
   font-size: 1rem; /* 16px */
@@ -27,15 +27,15 @@
 }
 
 .accordion-item__header:hover {
-  background: var(--accordion-header-bg-hover, #f9fafb);
+  background: var(--accordion-header-bg-hover, var(--snice-color-background-hover));
 }
 
 .accordion-item__header:active {
-  background: var(--accordion-header-bg-active, #f3f4f6);
+  background: var(--accordion-header-bg-active, var(--snice-color-background-active));
 }
 
 .accordion-item__header:focus-visible {
-  outline: 2px solid #3b82f6;
+  outline: 2px solid var(--snice-color-primary);
   outline-offset: -2px;
 }
 
@@ -60,8 +60,8 @@
 
 .accordion-item__content {
   overflow: hidden;
-  background: var(--accordion-content-bg, #ffffff);
-  color: var(--accordion-content-color, #4b5563);
+  background: var(--accordion-content-bg, var(--snice-color-background-element));
+  color: var(--accordion-content-color, var(--snice-color-text-secondary));
   max-height: 0;
   transition: max-height var(--accordion-animation-duration, 0.3s) cubic-bezier(0.4, 0, 0.2, 1);
   will-change: max-height;

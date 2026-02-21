@@ -220,7 +220,7 @@ video.mirror {
   width: 3.5rem; /* 56px */
   height: 3.5rem; /* 56px */
   background: rgb(255 255 255 / 0.95);
-  color: rgb(51 51 51);
+  color: hsl(0 0% 20%);
 }
 
 .camera-btn.capture:hover {
@@ -269,7 +269,7 @@ video.mirror {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: rgb(244 67 54 / 0.9);
+  background: hsl(var(--snice-color-red-600) / 0.9);
   color: rgb(255 255 255);
   padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-xl, 1.5rem); /* 16px 24px */
   border-radius: var(--snice-border-radius-lg, 0.5rem);

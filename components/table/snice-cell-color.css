@@ -21,7 +21,7 @@
 }
 
 .color-swatch {
-  border: 1px solid var(--snice-color-gray-300);
+  border: 1px solid var(--snice-color-border);
   border-radius: 0.25rem; /* 4px */
   flex-shrink: 0;
   box-shadow: var(--snice-shadow-xs);
@@ -96,7 +96,7 @@
 /* Print Styles */
 @media print {
   .color-swatch {
-    border: 2px solid #000;
+    border: 2px solid var(--snice-color-text);
   }
 
   .color-text {

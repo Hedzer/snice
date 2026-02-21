@@ -8,7 +8,7 @@
   display: grid;
   min-height: 100vh;
   gap: 1px;
-  background: var(--snice-color-border, #d1d5db);
+  background: var(--snice-color-border);
 }
 
 /* Horizontal split (default) */
@@ -69,7 +69,7 @@
 }
 
 .panel {
-  background: var(--snice-color-background, white);
+  background: var(--snice-color-background);
   overflow: auto;
 }
 
@@ -82,7 +82,7 @@
 }
 
 .divider {
-  background: var(--snice-color-border, #d1d5db);
+  background: var(--snice-color-border);
 }
 
 /* Mobile responsive */

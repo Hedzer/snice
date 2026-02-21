@@ -106,11 +106,11 @@
 }
 
 .calendar__day--today {
-  background: rgb(var(--snice-color-blue-100, 219 234 254));
+  background: hsl(var(--snice-color-blue-100));
 }
 
 .calendar__day--today:hover {
-  background: rgb(var(--snice-color-blue-200, 191 219 254));
+  background: hsl(var(--snice-color-blue-200));
 }
 
 .calendar__day--selected {

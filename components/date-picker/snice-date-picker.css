@@ -18,13 +18,13 @@
 /* Label */
 .label {
   font-weight: var(--snice-font-weight-medium, 500);
-  color: var(--snice-color-text, #374151);
+  color: var(--snice-color-text);
   margin-bottom: var(--snice-spacing-2xs, 0.25rem);
 }
 
 .label--required::after {
   content: '*';
-  color: var(--snice-color-danger, #ef4444);
+  color: var(--snice-color-danger);
   margin-left: var(--snice-spacing-2xs, 0.25rem);
 }
 
@@ -38,19 +38,19 @@
 /* Input Styles */
 .input {
   width: 100%;
-  border: 1px solid var(--snice-color-border, #d1d5db);
+  border: 1px solid var(--snice-color-border);
   border-radius: var(--snice-border-radius-lg, 6px);
   padding: var(--snice-spacing-xs, 0.5rem) 3rem var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
   font-size: inherit;
   line-height: var(--snice-line-height-normal, 1.5);
   background: var(--snice-color-background-input);
-  color: var(--snice-color-text, #374151);
+  color: var(--snice-color-text);
   transition: border-color var(--snice-transition-fast, 0.15s) ease, box-shadow var(--snice-transition-fast, 0.15s) ease;
 }
 
 .input:focus {
   outline: none;
-  border-color: var(--snice-color-border-focus, #2563eb);
+  border-color: var(--snice-color-border-focus);
   box-shadow: 0 0 0 var(--snice-focus-ring-width, 3px) var(--snice-focus-ring-color);
 }
 
@@ -65,30 +65,30 @@
 }
 
 .input--filled {
-  background: var(--snice-color-background-secondary, #f9fafb);
+  background: var(--snice-color-background-secondary);
   border: 1px solid transparent;
 }
 
 .input--underlined {
   border: none;
-  border-bottom: 1px solid #d1d5db;
+  border-bottom: 1px solid var(--snice-color-border);
   border-radius: 0;
   background: transparent;
   padding-left: 0;
 }
 
 .input--invalid {
-  border-color: #ef4444;
+  border-color: var(--snice-color-danger);
 }
 
 .input--invalid:focus {
-  border-color: #ef4444;
-  box-shadow: 0 0 0 3px var(--snice-color-danger-alpha, rgba(239, 68, 68, 0.1));
+  border-color: var(--snice-color-danger);
+  box-shadow: 0 0 0 3px var(--snice-color-danger-alpha, hsl(var(--snice-color-red-500) / 0.1));
 }
 
 .input:disabled {
-  background: var(--snice-color-background-secondary, #f9fafb);
-  color: var(--snice-color-text-tertiary, #9ca3af);
+  background: var(--snice-color-background-secondary);
+  color: var(--snice-color-text-tertiary);
   cursor: not-allowed;
 }
 
@@ -104,7 +104,7 @@
   padding: 0.25rem /* 4px */;
   border: none;
   background: transparent;
-  color: #6b7280;
+  color: var(--snice-color-text-secondary);
   cursor: pointer;
   border-radius: 4px;
   transition: color 0.15s ease, background-color 0.15s ease;
@@ -120,8 +120,8 @@
 
 .calendar-toggle:hover,
 .clear-button:hover {
-  color: #374151;
-  background: #f3f4f6;
+  color: var(--snice-color-text);
+  background: var(--snice-color-background-tertiary);
 }
 
 .calendar-toggle:disabled,
@@ -167,8 +167,8 @@
   left: 0;
   right: 0;
   z-index: var(--snice-z-index-dropdown, 1000);
-  background: var(--snice-color-background-element, rgb(252, 251, 249));
-  border: 1px solid var(--snice-color-border, #d1d5db);
+  background: var(--snice-color-background-element);
+  border: 1px solid var(--snice-color-border);
   border-radius: var(--snice-border-radius-lg, 8px);
   box-shadow: var(--snice-shadow-lg);
   margin-top: var(--snice-spacing-3xs, 0.125rem);
@@ -198,7 +198,7 @@
   border: none;
   font-size: var(--snice-font-size-md, 1rem);
   font-weight: var(--snice-font-weight-semibold, 600);
-  color: var(--snice-color-text, #374151);
+  color: var(--snice-color-text);
   cursor: pointer;
   padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-xs, 0.5rem);
   border-radius: var(--snice-border-radius-md, 4px);
@@ -206,7 +206,7 @@
 }
 
 .month-button:hover {
-  background: var(--snice-color-background-tertiary, #f3f4f6);
+  background: var(--snice-color-background-tertiary);
 }
 
 .nav-button {
@@ -214,14 +214,14 @@
   border: none;
   padding: 0.5rem;
   cursor: pointer;
-  color: #6b7280;
+  color: var(--snice-color-text-secondary);
   border-radius: 4px;
   transition: color 0.15s ease, background-color 0.15s ease;
 }
 
 .nav-button:hover {
-  color: #374151;
-  background: #f3f4f6;
+  color: var(--snice-color-text);
+  background: var(--snice-color-background-tertiary);
 }
 
 /* Calendar Grid */
@@ -236,7 +236,7 @@
   text-align: center;
   font-size: 0.75rem;
   font-weight: 600;
-  color: #6b7280;
+  color: var(--snice-color-text-secondary);
   padding: 0.5rem 0.25rem;
 }
 
@@ -254,7 +254,7 @@
   cursor: pointer;
   border-radius: var(--snice-border-radius-md, 4px);
   font-size: var(--snice-font-size-sm, 0.875rem);
-  color: var(--snice-color-text, #374151);
+  color: var(--snice-color-text);
   transition: background-color var(--snice-transition-fast, 0.15s) ease, color var(--snice-transition-fast, 0.15s) ease;
   display: flex;
   align-items: center;
@@ -262,23 +262,23 @@
 }
 
 .day:hover:not(.day--disabled) {
-  background: var(--snice-color-background-tertiary, #f3f4f6);
+  background: var(--snice-color-background-tertiary);
 }
 
 .day--today {
-  background: var(--snice-color-primary-light, #dbeafe);
-  color: var(--snice-color-primary, #2563eb);
+  background: var(--snice-color-primary-subtle);
+  color: var(--snice-color-primary);
   font-weight: var(--snice-font-weight-semibold, 600);
 }
 
 .day--selected {
-  background: var(--snice-color-primary, #2563eb);
-  color: var(--snice-color-text-inverse, white);
+  background: var(--snice-color-primary);
+  color: var(--snice-color-text-inverse);
   font-weight: var(--snice-font-weight-semibold, 600);
 }
 
 .day--disabled {
-  color: #d1d5db;
+  color: var(--snice-color-text-disabled);
   cursor: not-allowed;
 }
 
@@ -290,7 +290,7 @@
 .calendar-footer {
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid var(--snice-color-border);
   display: flex;
   justify-content: center;
 }
@@ -303,11 +303,11 @@
 }
 
 .helper-text {
-  color: var(--snice-color-text-secondary, #6b7280);
+  color: var(--snice-color-text-secondary);
 }
 
 .error-text {
-  color: var(--snice-color-danger, #ef4444);
+  color: var(--snice-color-danger);
 }
 
 /* Size variants */

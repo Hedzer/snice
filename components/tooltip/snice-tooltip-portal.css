@@ -17,7 +17,7 @@
 .snice-tooltip--top-end .snice-tooltip__arrow {
   bottom: -6px;
   border-width: 6px 6px 0;
-  border-top-color: #333;
+  border-top-color: hsl(0 0% 20%);
 }
 
 .snice-tooltip--bottom .snice-tooltip__arrow,
@@ -25,7 +25,7 @@
 .snice-tooltip--bottom-end .snice-tooltip__arrow {
   top: -6px;
   border-width: 0 6px 6px;
-  border-bottom-color: #333;
+  border-bottom-color: hsl(0 0% 20%);
 }
 
 .snice-tooltip--left .snice-tooltip__arrow,
@@ -33,7 +33,7 @@
 .snice-tooltip--left-end .snice-tooltip__arrow {
   right: -6px;
   border-width: 6px 0 6px 6px;
-  border-left-color: #333;
+  border-left-color: hsl(0 0% 20%);
 }
 
 .snice-tooltip--right .snice-tooltip__arrow,
@@ -41,7 +41,7 @@
 .snice-tooltip--right-end .snice-tooltip__arrow {
   left: -6px;
   border-width: 6px 6px 6px 0;
-  border-right-color: #333;
+  border-right-color: hsl(0 0% 20%);
 }
 
 /* Arrow alignment */

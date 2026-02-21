@@ -77,7 +77,7 @@
 }
 
 .line-timestamp {
-  color: var(--snice-terminal-timestamp-color, #666);
+  color: var(--snice-terminal-timestamp-color, hsl(0 0% 40%));
   font-size: var(--snice-font-size-xs, 0.75rem);
   flex-shrink: 0;
   min-width: 3.75rem;
@@ -115,7 +115,7 @@
 }
 
 .terminal-input::selection {
-  background: var(--snice-terminal-selection-color, rgba(38, 79, 120, 0.6));
+  background: var(--snice-terminal-selection-color, hsl(210 52% 31% / 0.6));
 }
 
 /* Cursor animation */
@@ -214,7 +214,7 @@
 
 /* Empty state */
 .empty-hint {
-  color: var(--snice-terminal-hint-color, #666);
+  color: var(--snice-terminal-hint-color, hsl(0 0% 40%));
   font-style: italic;
   margin-bottom: 8px;
 }

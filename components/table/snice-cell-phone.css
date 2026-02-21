@@ -93,7 +93,7 @@
   .phone-link::after {
     content: " (" attr(href) ")";
     font-size: 0.75rem;
-    color: #666;
+    color: var(--snice-color-text-secondary);
   }
 
   .phone-icon {

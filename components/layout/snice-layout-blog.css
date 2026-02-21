@@ -17,8 +17,8 @@
 }
 
 .header {
-  background: var(--snice-color-background, white);
-  border-bottom: 1px solid var(--snice-color-border, #d1d5db);
+  background: var(--snice-color-background);
+  border-bottom: 1px solid var(--snice-color-border);
   padding: var(--snice-spacing-md, 1rem) 0;
 }
 
@@ -32,7 +32,7 @@
   margin: 0;
   font-size: var(--snice-font-size-xl, 1.5rem);
   font-weight: var(--snice-font-weight-bold, 700);
-  color: var(--snice-color-text, #374151);
+  color: var(--snice-color-text);
 }
 
 .nav {
@@ -42,17 +42,17 @@
 
 .nav ::slotted(a) {
   text-decoration: none;
-  color: var(--snice-color-text-secondary, #6b7280);
+  color: var(--snice-color-text-secondary);
   font-weight: var(--snice-font-weight-medium, 500);
   transition: color var(--snice-transition-fast, 0.15s) ease;
 }
 
 .nav ::slotted(a:hover) {
-  color: var(--snice-color-primary, #3b82f6);
+  color: var(--snice-color-primary);
 }
 
 .main {
-  background: var(--snice-color-background, white);
+  background: var(--snice-color-background);
   padding: var(--snice-spacing-xl, 3rem) 0;
 }
 
@@ -68,7 +68,7 @@
 }
 
 .sidebar {
-  background: var(--snice-color-background-secondary, #f8fafc);
+  background: var(--snice-color-background-secondary);
   border-radius: var(--snice-border-radius-lg, 8px);
   padding: var(--snice-spacing-lg, 2rem);
   position: sticky;
@@ -76,8 +76,8 @@
 }
 
 .footer {
-  background: var(--snice-color-background-tertiary, #f1f5f9);
-  border-top: 1px solid var(--snice-color-border, #d1d5db);
+  background: var(--snice-color-background-tertiary);
+  border-top: 1px solid var(--snice-color-border);
   padding: var(--snice-spacing-xl, 3rem) 0;
 }
 
@@ -85,7 +85,7 @@
 .article ::slotted(h1) {
   font-size: var(--snice-font-size-3xl, 2.25rem);
   font-weight: var(--snice-font-weight-bold, 700);
-  color: var(--snice-color-text, #374151);
+  color: var(--snice-color-text);
   line-height: var(--snice-line-height-tight, 1.25);
   margin-bottom: var(--snice-spacing-lg, 2rem);
 }
@@ -93,7 +93,7 @@
 .article ::slotted(h2) {
   font-size: var(--snice-font-size-2xl, 1.875rem);
   font-weight: var(--snice-font-weight-semibold, 600);
-  color: var(--snice-color-text, #374151);
+  color: var(--snice-color-text);
   margin-top: var(--snice-spacing-xl, 3rem);
   margin-bottom: var(--snice-spacing-md, 1rem);
 }
@@ -101,7 +101,7 @@
 .article ::slotted(p) {
   font-size: var(--snice-font-size-base, 1rem);
   line-height: var(--snice-line-height-relaxed, 1.625);
-  color: var(--snice-color-text, #374151);
+  color: var(--snice-color-text);
   margin-bottom: var(--snice-spacing-md, 1rem);
 }
 

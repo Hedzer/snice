@@ -10,15 +10,15 @@
   align-items: center;
   justify-content: center;
   padding: var(--snice-spacing-lg, 2rem);
-  background: var(--snice-color-background-secondary, #f8fafc);
+  background: var(--snice-color-background-secondary);
 }
 
 .container {
   width: 100%;
   max-width: 400px;
-  background: var(--snice-color-background, white);
+  background: var(--snice-color-background);
   border-radius: var(--snice-border-radius-lg, 8px);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--snice-shadow-md);
   padding: var(--snice-spacing-xl, 3rem);
 }
 

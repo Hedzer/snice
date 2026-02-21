@@ -128,22 +128,22 @@
 
 :host(.warning) {
   color: var(--snice-color-warning);
-  background-color: rgb(var(--snice-color-yellow-100));
+  background-color: hsl(var(--snice-color-yellow-100));
 }
 
 :host(.danger) {
   color: var(--snice-color-danger);
-  background-color: rgb(var(--snice-color-red-100));
+  background-color: hsl(var(--snice-color-red-100));
 }
 
 :host(.success) {
   color: var(--snice-color-success);
-  background-color: rgb(var(--snice-color-green-100));
+  background-color: hsl(var(--snice-color-green-100));
 }
 
 :host(.info) {
   color: var(--snice-color-primary);
-  background-color: rgb(var(--snice-color-blue-100));
+  background-color: hsl(var(--snice-color-blue-100));
 }
 
 /* Date-specific styling */
@@ -211,7 +211,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  background: linear-gradient(90deg, transparent, hsl(0 0% 100% / 0.6), transparent);
   animation: cell-shimmer 1.5s infinite;
 }
 
@@ -269,11 +269,11 @@
 /* High Contrast Mode */
 @media (prefers-contrast: high) {
   :host(.positive) {
-    background-color: #d4edda;
+    background-color: hsl(var(--snice-color-green-100));
   }
-  
+
   :host(.negative) {
-    background-color: #f8d7da;
+    background-color: hsl(var(--snice-color-red-100));
   }
   
   .cell-content a {

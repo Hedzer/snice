@@ -1,7 +1,7 @@
 :host {
   --modal-z-index: 1000;
-  --modal-backdrop-bg: rgba(0, 0, 0, 0.5);
-  --modal-panel-bg: var(--snice-color-background, white);
+  --modal-backdrop-bg: hsl(0 0% 0% / 0.5);
+  --modal-panel-bg: var(--snice-color-background, hsl(0 0% 100%));
   --modal-panel-shadow: var(--snice-shadow-2xl);
   --modal-border-radius: var(--snice-border-radius-lg, 8px);
   --modal-padding: var(--snice-spacing-lg, 1.5rem);
@@ -93,7 +93,7 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--modal-padding);
-  border-bottom: 1px solid var(--snice-color-border, #e5e7eb);
+  border-bottom: 1px solid var(--snice-color-border);
 }
 
 .modal__header:empty {
@@ -105,7 +105,7 @@
   margin: 0;
   font-size: var(--snice-font-size-lg, 1.125rem);
   font-weight: 600;
-  color: var(--snice-color-text, #111827);
+  color: var(--snice-color-text);
 }
 
 .modal__close {
@@ -119,7 +119,7 @@
   background: transparent;
   border: none;
   border-radius: var(--snice-border-radius-md, 6px);
-  color: var(--snice-color-text-secondary, #6b7280);
+  color: var(--snice-color-text-secondary);
   cursor: pointer;
   transition: 
     background-color var(--snice-transition-fast) ease,
@@ -127,12 +127,12 @@
 }
 
 .modal__close:hover {
-  background: var(--snice-color-background-hover, #f3f4f6);
-  color: var(--snice-color-text, #111827);
+  background: var(--snice-color-background-hover);
+  color: var(--snice-color-text);
 }
 
 .modal__close:focus-visible {
-  outline: 2px solid var(--snice-color-primary, #3b82f6);
+  outline: 2px solid var(--snice-color-primary);
   outline-offset: 2px;
 }
 
@@ -140,7 +140,7 @@
   flex: 1;
   padding: var(--modal-padding);
   overflow-y: auto;
-  color: var(--snice-color-text, #111827);
+  color: var(--snice-color-text);
 }
 
 .modal__footer {
@@ -149,7 +149,7 @@
   justify-content: flex-end;
   gap: var(--snice-spacing-sm, 0.5rem);
   padding: var(--modal-padding);
-  border-top: 1px solid var(--snice-color-border, #e5e7eb);
+  border-top: 1px solid var(--snice-color-border);
 }
 
 .modal__footer:empty {

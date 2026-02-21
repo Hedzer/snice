@@ -1,6 +1,6 @@
 :host {
   display: block;
-  --divider-color: #e5e7eb;
+  --divider-color: var(--snice-color-border);
   --divider-thickness: 1px;
   --divider-text-bg: transparent;
   --divider-text-padding: 0 1rem; /* 0 16px */
@@ -30,7 +30,7 @@
   flex-shrink: 0;
   padding: var(--divider-text-padding);
   background: var(--divider-text-bg);
-  color: #6b7280;
+  color: var(--snice-color-text-secondary);
   font-size: 0.875rem; /* 14px */
   font-weight: 500;
   white-space: nowrap;

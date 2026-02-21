@@ -37,12 +37,12 @@
 }
 
 .recorder-state.recording {
-  background: rgb(var(--snice-color-red-100, 254 226 226));
+  background: hsl(var(--snice-color-red-100));
   color: var(--snice-color-danger, rgb(220 38 38));
 }
 
 .recorder-state.paused {
-  background: rgb(var(--snice-color-yellow-100, 254 249 195));
+  background: hsl(var(--snice-color-yellow-100));
   color: var(--snice-color-warning, rgb(202 138 4));
 }
 
@@ -85,7 +85,7 @@
   margin: 0;
   flex: 1;
   min-width: 0;
-  background: rgba(0, 0, 0, 0.03);
+  background: hsl(0 0% 0% / 0.03);
   border-radius: var(--snice-border-radius-md, 4px);
   padding: var(--snice-spacing-2xs, 0.25rem);
 }
@@ -200,18 +200,18 @@
   right: 0;
   margin-top: var(--snice-spacing-2xs, 0.25rem);
   padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
-  background: rgb(var(--snice-color-red-50, 254 242 242));
+  background: hsl(var(--snice-color-red-50));
   color: var(--snice-color-danger, rgb(220 38 38));
   border-radius: var(--snice-border-radius-md, 4px);
   font-size: var(--snice-font-size-sm, 0.875rem);
   text-align: center;
-  border: 1px solid rgb(var(--snice-color-red-200, 254 202 202));
+  border: 1px solid hsl(var(--snice-color-red-200));
 }
 
 .playback-progress {
   flex: 1;
   height: 1.875rem;
-  background: rgba(0, 0, 0, 0.03);
+  background: hsl(0 0% 0% / 0.03);
   border-radius: var(--snice-border-radius-md, 4px);
   cursor: pointer;
   position: relative;

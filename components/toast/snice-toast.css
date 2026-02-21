@@ -207,7 +207,7 @@
   bottom: 0;
   left: 0;
   height: 0.1875rem; /* 3px */
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: hsl(0 0% 100% / 0.3);
   border-radius: 0 0 var(--snice-toast-border-radius) var(--snice-toast-border-radius);
   transition: width linear;
 }

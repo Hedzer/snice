@@ -159,7 +159,7 @@ canvas:not([style*="display: none"]) {
 }
 
 .qr-btn.start:hover {
-  background: rgb(29 78 216);
+  background: var(--snice-color-primary-hover, rgb(29 78 216));
 }
 
 .qr-reader-result {

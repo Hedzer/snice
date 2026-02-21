@@ -22,7 +22,7 @@
 .cell-image {
   display: block;
   object-fit: cover;
-  background-color: var(--snice-color-gray-100, #f8f9fa);
+  background-color: hsl(var(--snice-color-gray-100));
 }
 
 /* Size variants */
@@ -56,8 +56,8 @@
 
 /* Placeholder */
 .cell-image--placeholder {
-  background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
-  border: 1px solid var(--snice-color-gray-300, #dee2e6);
+  background: linear-gradient(135deg, hsl(var(--snice-color-gray-200)) 0%, hsl(var(--snice-color-gray-300)) 100%);
+  border: 1px solid hsl(var(--snice-color-gray-300));
   position: relative;
 }
 

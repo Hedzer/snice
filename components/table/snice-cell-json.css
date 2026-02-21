@@ -35,7 +35,7 @@
 }
 
 .json-toggle:hover {
-  background-color: var(--snice-color-gray-100);
+  background-color: var(--snice-color-background-hover);
 }
 
 .json-toggle:focus {

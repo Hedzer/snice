@@ -14,7 +14,7 @@
   grid-template-columns: 250px 1fr 250px;
   min-height: 100vh;
   gap: 1px;
-  background: var(--snice-color-border, #d1d5db);
+  background: var(--snice-color-border);
 }
 
 .header {
@@ -23,15 +23,15 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-lg, 2rem);
-  background: var(--snice-color-background, white);
-  border-bottom: 1px solid var(--snice-color-border, #d1d5db);
+  background: var(--snice-color-background);
+  border-bottom: 1px solid var(--snice-color-border);
 }
 
 .header-start h1 {
   margin: 0;
   font-size: var(--snice-font-size-xl, 1.5rem);
   font-weight: var(--snice-font-weight-semibold, 600);
-  color: var(--snice-color-text, #374151);
+  color: var(--snice-color-text);
 }
 
 .header-center {
@@ -43,13 +43,13 @@
 .nav {
   grid-area: nav;
   padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-lg, 2rem);
-  background: var(--snice-color-background, white);
-  border-bottom: 1px solid var(--snice-color-border, #d1d5db);
+  background: var(--snice-color-background);
+  border-bottom: 1px solid var(--snice-color-border);
 }
 
 .sidebar {
   grid-area: sidebar;
-  background: var(--snice-color-background, white);
+  background: var(--snice-color-background);
   padding: var(--snice-spacing-lg, 2rem);
   overflow-y: auto;
 }
@@ -57,13 +57,13 @@
 .main {
   grid-area: main;
   padding: var(--snice-spacing-lg, 2rem);
-  background: var(--snice-color-background-secondary, #f8fafc);
+  background: var(--snice-color-background-secondary);
   overflow-y: auto;
 }
 
 .right-sidebar {
   grid-area: right-sidebar;
-  background: var(--snice-color-background, white);
+  background: var(--snice-color-background);
   padding: var(--snice-spacing-lg, 2rem);
   overflow-y: auto;
 }

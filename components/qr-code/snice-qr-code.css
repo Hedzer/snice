@@ -8,7 +8,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--qr-bg, white);
+  background: var(--qr-bg, hsl(0 0% 100%));
   border-radius: var(--qr-border-radius, 0);
   padding: var(--qr-padding, 0);
   overflow: hidden;
@@ -27,6 +27,6 @@ svg {
   left: 50%;
   transform: translate(-50%, -50%);
   border-radius: 4px;
-  background: white;
+  background: hsl(0 0% 100%);
   padding: 4px;
 }

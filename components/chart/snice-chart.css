@@ -27,8 +27,8 @@ svg {
 
 .chart-legend {
   display: flex;
-  gap: 16px;
-  padding: 12px;
+  gap: var(--snice-spacing-md, 1rem);
+  padding: var(--snice-spacing-sm, 0.75rem);
   flex-wrap: wrap;
 }
 
@@ -59,7 +59,7 @@ svg {
 .legend-item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--snice-spacing-xs, 0.5rem);
   cursor: pointer;
   user-select: none;
   transition: opacity 0.2s;
@@ -75,23 +75,23 @@ svg {
 }
 
 .legend-color {
-  width: 16px;
-  height: 16px;
-  border-radius: 2px;
+  width: 1rem;
+  height: 1rem;
+  border-radius: var(--snice-border-radius-sm, 0.125rem);
 }
 
 .legend-label {
-  font-size: 14px;
-  color: var(--text-color, #333);
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  color: var(--snice-color-text);
 }
 
 .chart-tooltip {
   position: absolute;
-  background: var(--tooltip-bg, rgba(0, 0, 0, 0.9));
-  color: var(--tooltip-color, white);
-  padding: 8px 12px;
-  border-radius: 4px;
-  font-size: 12px;
+  background: var(--tooltip-bg, hsl(0 0% 0% / 0.9));
+  color: var(--tooltip-color, hsl(0 0% 100%));
+  padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
+  border-radius: var(--snice-border-radius-md, 0.25rem);
+  font-size: var(--snice-font-size-xs, 0.75rem);
   pointer-events: none;
   white-space: nowrap;
   z-index: 1000;
@@ -104,17 +104,17 @@ svg {
 }
 
 .axis-label {
-  font-size: 12px;
-  fill: var(--axis-color, #666);
+  font-size: var(--snice-font-size-xs, 0.75rem);
+  fill: var(--snice-color-text-secondary);
 }
 
 .axis-line {
-  stroke: var(--axis-color, #666);
+  stroke: var(--snice-color-text-secondary);
   stroke-width: 1;
 }
 
 .grid-line {
-  stroke: var(--grid-color, #e0e0e0);
+  stroke: var(--snice-color-border);
   stroke-width: 1;
   stroke-dasharray: 2, 2;
 }

@@ -142,7 +142,7 @@
   padding: var(--snice-spacing-3xs, 0.125rem) var(--snice-spacing-xs, 0.5rem);
   border-radius: var(--snice-border-radius-full, 9999px);
   font-size: var(--snice-font-size-xs, 0.6875rem);
-  background: rgb(37 99 235 / 0.1);
+  background: hsl(var(--snice-color-blue-600) / 0.1);
   color: var(--snice-color-primary, rgb(37 99 235));
   font-weight: var(--snice-font-weight-medium, 500);
   display: inline-flex;
@@ -156,7 +156,7 @@
 }
 
 .column__cards--drag-over {
-  background: rgb(37 99 235 / 0.05);
+  background: hsl(var(--snice-color-blue-600) / 0.05);
   border: 2px dashed var(--snice-color-primary, rgb(37 99 235));
   border-radius: var(--snice-border-radius-sm, 0.25rem);
 }

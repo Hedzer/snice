@@ -29,7 +29,7 @@
   transform: translateY(-50%);
   display: flex;
   justify-content: space-between;
-  padding: 0 var(--spacing-md, 1rem);
+  padding: 0 var(--snice-spacing-md, 1rem);
   pointer-events: none;
 }
 
@@ -39,8 +39,8 @@
   height: 2.5rem;
   border-radius: 50%;
   border: none;
-  background: rgba(0, 0, 0, 0.5);
-  color: white;
+  background: hsl(0 0% 0% / 0.5);
+  color: hsl(0 0% 100%);
   cursor: pointer;
   display: grid;
   place-items: center;
@@ -56,7 +56,7 @@
 }
 
 .carousel__button:hover {
-  background: rgba(0, 0, 0, 0.7);
+  background: hsl(0 0% 0% / 0.7);
 }
 
 .carousel__button:disabled {
@@ -67,8 +67,8 @@
 .carousel__indicators {
   display: flex;
   justify-content: center;
-  gap: var(--spacing-xs, 0.5rem);
-  margin-top: var(--spacing-md, 1rem);
+  gap: var(--snice-spacing-xs, 0.5rem);
+  margin-top: var(--snice-spacing-md, 1rem);
 }
 
 .carousel__indicator {
@@ -76,20 +76,20 @@
   height: 0.5rem;
   border-radius: 50%;
   border: none;
-  background: var(--color-neutral-300, #d1d5db);
+  background: var(--snice-color-border);
   cursor: pointer;
   padding: 0;
   transition: background 0.2s;
 }
 
 .carousel__indicator--active {
-  background: var(--color-primary-500, #3b82f6);
+  background: var(--snice-color-primary);
 }
 
 .carousel__indicator:hover {
-  background: var(--color-neutral-400, #9ca3af);
+  background: var(--snice-color-border-hover);
 }
 
 .carousel__indicator--active:hover {
-  background: var(--color-primary-600, #2563eb);
+  background: var(--snice-color-primary-hover);
 }

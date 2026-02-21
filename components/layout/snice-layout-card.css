@@ -8,12 +8,12 @@
   min-height: 100vh;
   display: grid;
   grid-template-rows: auto 1fr auto;
-  background: var(--snice-color-background-secondary, #f8fafc);
+  background: var(--snice-color-background-secondary);
 }
 
 .header {
-  background: var(--snice-color-background, white);
-  border-bottom: 1px solid var(--snice-color-border, #d1d5db);
+  background: var(--snice-color-background);
+  border-bottom: 1px solid var(--snice-color-border);
   padding: var(--snice-spacing-lg, 2rem);
 }
 
@@ -66,8 +66,8 @@
 }
 
 .footer {
-  background: var(--snice-color-background, white);
-  border-top: 1px solid var(--snice-color-border, #d1d5db);
+  background: var(--snice-color-background);
+  border-top: 1px solid var(--snice-color-border);
   padding: var(--snice-spacing-lg, 2rem);
 }
 

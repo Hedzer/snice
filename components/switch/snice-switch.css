@@ -186,7 +186,7 @@
 
 .switch-state-label--off {
   right: 0.375rem; /* 6px */
-  color: rgba(0, 0, 0, 0.75);
+  color: hsl(0 0% 0% / 0.75);
 }
 
 .switch-track--medium .switch-state-label {

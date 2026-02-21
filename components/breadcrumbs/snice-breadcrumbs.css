@@ -121,7 +121,7 @@ case, when, default, if {
 }
 
 .breadcrumb-ellipsis:hover {
-  background: rgba(0, 0, 0, 0.05);
+  background: hsl(0 0% 0% / 0.05);
 }
 
 .breadcrumb-ellipsis:focus-visible {

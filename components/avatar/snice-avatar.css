@@ -1,8 +1,8 @@
 :host {
   display: inline-block;
   --avatar-size: 2.5rem; /* 40px */
-  --avatar-bg: #6b7280;
-  --avatar-color: #ffffff;
+  --avatar-bg: hsl(var(--snice-color-gray-500));
+  --avatar-color: hsl(0 0% 100%);
 }
 
 /* Meta elements should not interfere with layout */
@@ -92,14 +92,14 @@ case, when, default, if {
   transition: opacity 0.2s ease;
   /* Text outline for contrast */
   text-shadow:
-    -1px -1px 0 rgba(0, 0, 0, 0.4),
-     1px -1px 0 rgba(0, 0, 0, 0.4),
-    -1px  1px 0 rgba(0, 0, 0, 0.4),
-     1px  1px 0 rgba(0, 0, 0, 0.4),
-     0   -1px 0 rgba(0, 0, 0, 0.4),
-     0    1px 0 rgba(0, 0, 0, 0.4),
-    -1px  0   0 rgba(0, 0, 0, 0.4),
-     1px  0   0 rgba(0, 0, 0, 0.4);
+    -1px -1px 0 hsl(0 0% 0% / 0.4),
+     1px -1px 0 hsl(0 0% 0% / 0.4),
+    -1px  1px 0 hsl(0 0% 0% / 0.4),
+     1px  1px 0 hsl(0 0% 0% / 0.4),
+     0   -1px 0 hsl(0 0% 0% / 0.4),
+     0    1px 0 hsl(0 0% 0% / 0.4),
+    -1px  0   0 hsl(0 0% 0% / 0.4),
+     1px  0   0 hsl(0 0% 0% / 0.4);
 }
 
 .avatar-fallback--visible {
@@ -134,7 +134,7 @@ case, when, default, if {
 /* Group avatar support */
 :host(.avatar-group-item) {
   margin-left: -0.5rem; /* -8px */
-  border: 2px solid white; /* Keep px for crisp borders */
+  border: 2px solid var(--snice-color-background);
   border-radius: 50%;
 }
 
@@ -143,5 +143,5 @@ case, when, default, if {
 }
 
 :host(.avatar-group-item) .avatar {
-  border: 2px solid white;
+  border: 2px solid var(--snice-color-background);
 }
