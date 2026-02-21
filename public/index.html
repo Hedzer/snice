@@ -40,6 +40,7 @@
         <div class="code-tabs">
           <button class="code-tab active" data-tab="declarative">Declarative</button>
           <button class="code-tab" data-tab="imperative">Imperative</button>
+          <button class="code-tab" data-tab="controller">Controller</button>
         </div>
         <pre class="code-panel active" data-panel="declarative"><code><span class="d">@element</span><span class="p">(</span><span class="s">'user-card'</span><span class="p">)</span>
 <span class="k">class</span> <span class="t">UserCard</span> <span class="k">extends</span> <span class="t">HTMLElement</span> <span class="p">{</span>
@@ -83,6 +84,25 @@
   <span class="p">}</span>
 <span class="p">}</span>
 <span class="c">// Direct DOM: you control updates</span></code></pre>
+        <pre class="code-panel" data-panel="controller"><code><span class="d">@controller</span><span class="p">(</span><span class="s">'rest'</span><span class="p">)</span>
+<span class="k">class</span> <span class="t">RestLoader</span> <span class="p">{</span>
+  <span class="k">async</span> <span class="f">attach</span><span class="p">(</span>el<span class="p">)</span> <span class="p">{</span>
+    el.data <span class="p">=</span> <span class="k">await</span> <span class="f">fetch</span><span class="p">(</span><span class="s">'/api/items'</span><span class="p">)</span>
+      .then<span class="p">(</span>r <span class="p">=&gt;</span> r.json<span class="p">());</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="d">@controller</span><span class="p">(</span><span class="s">'websocket'</span><span class="p">)</span>
+<span class="k">class</span> <span class="t">WsLoader</span> <span class="p">{</span>
+  <span class="f">attach</span><span class="p">(</span>el<span class="p">)</span> <span class="p">{</span>
+    <span class="v">this</span>.ws <span class="p">=</span> <span class="k">new</span> <span class="t">WebSocket</span><span class="p">(</span><span class="s">'/ws'</span><span class="p">);</span>
+    <span class="v">this</span>.ws.onmessage <span class="p">=</span> e <span class="p">=&gt;</span>
+      el.data <span class="p">=</span> JSON.parse<span class="p">(</span>e.data<span class="p">);</span>
+  <span class="p">}</span>
+  <span class="f">detach</span><span class="p">()</span> <span class="p">{</span> <span class="v">this</span>.ws.close<span class="p">();</span> <span class="p">}</span>
+<span class="p">}</span>
+<span class="c">// &lt;my-list controller="rest"&gt;</span>
+<span class="c">// &lt;my-list controller="websocket"&gt;</span></code></pre>
         <script>
           document.querySelectorAll('.code-tab').forEach(tab => {
             tab.onclick = () => {
