@@ -71,6 +71,7 @@
     <div class="wrap">
       <h1><a href="index.html">Snice</a></h1>
       <nav>
+        <a href="guide.html">Guide</a>
         <a href="decorators.html">Decorators</a>
         <a href="components.html" class="active">Components</a>
         <a href="https://gitlab.com/Hedzer/snice">GitLab</a>
@@ -992,8 +993,8 @@
     <div class="comp-section">
       <h3>Menu</h3>
       <p class="comp-desc">Dropdown menus with keyboard navigation</p>
-      <div class="comp-split">
-        <div class="comp-split-demo demo-center" style="gap:1rem">
+      <div class="comp-split" style="overflow:visible">
+        <div class="comp-split-demo demo-center" style="gap:1rem;min-height:200px;align-items:flex-start;padding-top:2rem">
           <snice-menu>
             <snice-button slot="trigger" variant="primary">Actions Menu</snice-button>
             <snice-menu-item>Edit</snice-menu-item>
@@ -2431,6 +2432,197 @@ export class MyCounter extends HTMLElement {
         </div>
       </div>
     </div>
+    <!-- ── Gauge ── -->
+    <div class="comp-section">
+      <h3>Gauge</h3>
+      <p class="comp-desc">SVG-based gauge/meter for dashboards</p>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-center" style="gap:2rem">
+          <snice-gauge value="75" variant="primary" label="CPU"></snice-gauge>
+          <snice-gauge value="42" variant="success" label="Memory"></snice-gauge>
+          <snice-gauge value="90" variant="error" label="Disk"></snice-gauge>
+          <snice-gauge value="58" variant="warning" label="Network"></snice-gauge>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-gauge value="75" variant="primary" label="CPU"&gt;&lt;/snice-gauge&gt;
+
+&lt;snice-gauge value="42" variant="success" label="Memory"&gt;&lt;/snice-gauge&gt;
+
+&lt;snice-gauge value="90" variant="error" label="Disk"&gt;&lt;/snice-gauge&gt;
+
+&lt;snice-gauge value="58" variant="warning" label="Network"&gt;&lt;/snice-gauge&gt;</code></pre>
+        </div>
+      </div>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-center" style="gap:2rem">
+          <snice-gauge value="30" size="small" variant="info" label="Small"></snice-gauge>
+          <snice-gauge value="60" size="medium" variant="primary" label="Medium"></snice-gauge>
+          <snice-gauge value="85" size="large" variant="success" label="Large"></snice-gauge>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-gauge value="30" size="small" variant="info" label="Small"&gt;&lt;/snice-gauge&gt;
+
+&lt;snice-gauge value="60" size="medium" variant="primary" label="Medium"&gt;&lt;/snice-gauge&gt;
+
+&lt;snice-gauge value="85" size="large" variant="success" label="Large"&gt;&lt;/snice-gauge&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+    <!-- ── Heatmap ── -->
+    <div class="comp-section">
+      <h3>Heatmap</h3>
+      <p class="comp-desc">GitHub-style contribution heatmap</p>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="width:100%;overflow-x:auto">
+          <snice-heatmap id="demo-heatmap"></snice-heatmap>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html + js</span>
+          <pre><code class="language-html">&lt;snice-heatmap id="heatmap"&gt;&lt;/snice-heatmap&gt;
+
+&lt;script&gt;
+  const heatmap = document.getElementById('heatmap');
+  const data = [];
+  const now = new Date();
+  for (let i = 0; i &lt; 365; i++) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    if (Math.random() &gt; 0.3) {
+      data.push({
+        date: d.toISOString().split('T')[0],
+        value: Math.floor(Math.random() * 10)
+      });
+    }
+  }
+  heatmap.data = data;
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="width:100%;overflow-x:auto;flex-direction:column;gap:1rem">
+          <snice-heatmap id="demo-heatmap-blue" color-scheme="blue" weeks="26"></snice-heatmap>
+          <snice-heatmap id="demo-heatmap-purple" color-scheme="purple" weeks="26"></snice-heatmap>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-heatmap
+  color-scheme="blue"
+  weeks="26"
+&gt;&lt;/snice-heatmap&gt;
+
+&lt;snice-heatmap
+  color-scheme="purple"
+  weeks="26"
+&gt;&lt;/snice-heatmap&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+    <script>
+    customElements.whenDefined('snice-heatmap').then(() => {
+      const data = [];
+      const now = new Date();
+      for (let i = 0; i < 365; i++) {
+        const d = new Date(now);
+        d.setDate(d.getDate() - i);
+        if (Math.random() > 0.3) {
+          data.push({ date: d.toISOString().split('T')[0], value: Math.floor(Math.random() * 10) });
+        }
+      }
+      document.getElementById('demo-heatmap').data = data;
+      document.getElementById('demo-heatmap-blue').data = data;
+      document.getElementById('demo-heatmap-purple').data = data;
+    });
+    </script>
+    <!-- ── Masonry ── -->
+    <div class="comp-section">
+      <h3>Masonry</h3>
+      <p class="comp-desc">Pinterest-style grid layout with variable height items</p>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="width:100%">
+          <snice-masonry columns="3" gap="0.75rem">
+            <div style="background: var(--snice-color-primary, rgb(37 99 235)); color: white; padding: 1.5rem; border-radius: 8px; height: 120px; display:flex; align-items:center; justify-content:center; font-weight:600;">Card 1</div>
+            <div style="background: var(--snice-color-success, rgb(22 163 74)); color: white; padding: 1.5rem; border-radius: 8px; height: 180px; display:flex; align-items:center; justify-content:center; font-weight:600;">Card 2</div>
+            <div style="background: var(--snice-color-danger, rgb(220 38 38)); color: white; padding: 1.5rem; border-radius: 8px; height: 100px; display:flex; align-items:center; justify-content:center; font-weight:600;">Card 3</div>
+            <div style="background: hsl(var(--snice-color-yellow-600, 45 93% 47%)); color: white; padding: 1.5rem; border-radius: 8px; height: 160px; display:flex; align-items:center; justify-content:center; font-weight:600;">Card 4</div>
+            <div style="background: hsl(var(--snice-color-purple-600, 271 91% 65%)); color: white; padding: 1.5rem; border-radius: 8px; height: 140px; display:flex; align-items:center; justify-content:center; font-weight:600;">Card 5</div>
+            <div style="background: hsl(var(--snice-color-blue-600, 221 83% 53%)); color: white; padding: 1.5rem; border-radius: 8px; height: 200px; display:flex; align-items:center; justify-content:center; font-weight:600;">Card 6</div>
+            <div style="background: hsl(var(--snice-color-green-600, 142 71% 45%)); color: white; padding: 1.5rem; border-radius: 8px; height: 110px; display:flex; align-items:center; justify-content:center; font-weight:600;">Card 7</div>
+            <div style="background: hsl(var(--snice-color-red-600, 0 72% 51%)); color: white; padding: 1.5rem; border-radius: 8px; height: 170px; display:flex; align-items:center; justify-content:center; font-weight:600;">Card 8</div>
+            <div style="background: var(--snice-color-primary, rgb(37 99 235)); color: white; padding: 1.5rem; border-radius: 8px; height: 130px; display:flex; align-items:center; justify-content:center; font-weight:600;">Card 9</div>
+          </snice-masonry>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-masonry columns="3" gap="0.75rem"&gt;
+  &lt;div class="card" style="height:120px"&gt;Card 1&lt;/div&gt;
+  &lt;div class="card" style="height:180px"&gt;Card 2&lt;/div&gt;
+  &lt;div class="card" style="height:100px"&gt;Card 3&lt;/div&gt;
+  &lt;div class="card" style="height:160px"&gt;Card 4&lt;/div&gt;
+  &lt;!-- ... --&gt;
+&lt;/snice-masonry&gt;
+
+&lt;!-- Auto-responsive columns --&gt;
+&lt;snice-masonry columns="0" min-column-width="250px"&gt;
+  &lt;div class="card"&gt;...&lt;/div&gt;
+&lt;/snice-masonry&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+    <!-- ── Link Preview ── -->
+    <div class="comp-section">
+      <h3>Link Preview</h3>
+      <p class="comp-desc">Social media-style link preview cards</p>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="gap:1rem;flex-direction:column;align-items:stretch">
+          <snice-link-preview
+            title="Snice - Beautiful Decorators for Custom Elements"
+            description="Write clean, reactive web components with TypeScript decorators. No framework. No virtual DOM."
+            image="https://picsum.photos/600/300"
+            site-name="snice.dev"
+            url="https://snice.dev"
+          ></snice-link-preview>
+          <div style="display:flex;gap:1rem">
+            <snice-link-preview
+              variant="horizontal"
+              size="small"
+              title="Getting Started Guide"
+              description="Learn to build elements step by step"
+              site-name="snice.dev"
+              url="https://snice.dev/guide"
+            ></snice-link-preview>
+            <snice-link-preview
+              variant="horizontal"
+              size="small"
+              title="Component Library"
+              description="64+ pre-built UI components"
+              site-name="snice.dev"
+              url="https://snice.dev/components"
+            ></snice-link-preview>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-link-preview
+  title="Snice - Beautiful Decorators"
+  description="Write clean, reactive web components..."
+  image="https://picsum.photos/600/300"
+  site-name="snice.dev"
+  url="https://snice.dev"
+&gt;&lt;/snice-link-preview&gt;
+
+&lt;snice-link-preview
+  variant="horizontal"
+  size="small"
+  title="Getting Started Guide"
+  description="Learn to build elements step by step"
+  site-name="snice.dev"
+  url="https://snice.dev/guide"
+&gt;&lt;/snice-link-preview&gt;</code></pre>
+        </div>
+      </div>
+    </div>
     <div class="comp-section">
       <h3>Standalone Build</h3>
       <p class="comp-desc">Use any component without the full framework</p>
@@ -2494,15 +2686,19 @@ export class MyCounter extends HTMLElement {
       <span class="comp-tag">snice-empty-state</span>
       <span class="comp-tag">snice-file-gallery</span>
       <span class="comp-tag">snice-file-upload</span>
+      <span class="comp-tag">snice-gauge</span>
+      <span class="comp-tag">snice-heatmap</span>
       <span class="comp-tag">snice-image</span>
       <span class="comp-tag">snice-input</span>
       <span class="comp-tag">snice-kanban</span>
       <span class="comp-tag">snice-kpi</span>
       <span class="comp-tag">snice-layout</span>
       <span class="comp-tag">snice-link</span>
+      <span class="comp-tag">snice-link-preview</span>
       <span class="comp-tag">snice-list</span>
       <span class="comp-tag">snice-location</span>
       <span class="comp-tag">snice-login</span>
+      <span class="comp-tag">snice-masonry</span>
       <span class="comp-tag">snice-menu</span>
       <span class="comp-tag">snice-modal</span>
       <span class="comp-tag">snice-music-player</span>
@@ -2599,6 +2795,10 @@ export class MyCounter extends HTMLElement {
   <script src="components/snice-music-player.min.js"></script>
   <script src="components/snice-location.min.js"></script>
   <script src="components/snice-timer.min.js"></script>
+  <script src="components/snice-gauge.min.js"></script>
+  <script src="components/snice-heatmap.min.js"></script>
+  <script src="components/snice-masonry.min.js"></script>
+  <script src="components/snice-link-preview.min.js"></script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
