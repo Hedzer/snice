@@ -1,0 +1,35 @@
+    <!-- ── Masonry ── -->
+    <div class="comp-section">
+      <h3>Masonry</h3>
+      <p class="comp-desc">Pinterest-style grid layout with variable height items</p>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="width:100%">
+          <snice-masonry columns="3" gap="0.75rem">
+            <div style="background: var(--snice-color-primary, rgb(37 99 235)); color: white; padding: 1.5rem; border-radius: 8px; height: 120px; display:flex; align-items:center; justify-content:center; font-weight:600;">Card 1</div>
+            <div style="background: var(--snice-color-success, rgb(22 163 74)); color: white; padding: 1.5rem; border-radius: 8px; height: 180px; display:flex; align-items:center; justify-content:center; font-weight:600;">Card 2</div>
+            <div style="background: var(--snice-color-danger, rgb(220 38 38)); color: white; padding: 1.5rem; border-radius: 8px; height: 100px; display:flex; align-items:center; justify-content:center; font-weight:600;">Card 3</div>
+            <div style="background: hsl(var(--snice-color-yellow-600, 45 93% 47%)); color: white; padding: 1.5rem; border-radius: 8px; height: 160px; display:flex; align-items:center; justify-content:center; font-weight:600;">Card 4</div>
+            <div style="background: hsl(var(--snice-color-purple-600, 271 91% 65%)); color: white; padding: 1.5rem; border-radius: 8px; height: 140px; display:flex; align-items:center; justify-content:center; font-weight:600;">Card 5</div>
+            <div style="background: hsl(var(--snice-color-blue-600, 221 83% 53%)); color: white; padding: 1.5rem; border-radius: 8px; height: 200px; display:flex; align-items:center; justify-content:center; font-weight:600;">Card 6</div>
+            <div style="background: hsl(var(--snice-color-green-600, 142 71% 45%)); color: white; padding: 1.5rem; border-radius: 8px; height: 110px; display:flex; align-items:center; justify-content:center; font-weight:600;">Card 7</div>
+            <div style="background: hsl(var(--snice-color-red-600, 0 72% 51%)); color: white; padding: 1.5rem; border-radius: 8px; height: 170px; display:flex; align-items:center; justify-content:center; font-weight:600;">Card 8</div>
+            <div style="background: var(--snice-color-primary, rgb(37 99 235)); color: white; padding: 1.5rem; border-radius: 8px; height: 130px; display:flex; align-items:center; justify-content:center; font-weight:600;">Card 9</div>
+          </snice-masonry>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-masonry columns="3" gap="0.75rem"&gt;
+  &lt;div class="card" style="height:120px"&gt;Card 1&lt;/div&gt;
+  &lt;div class="card" style="height:180px"&gt;Card 2&lt;/div&gt;
+  &lt;div class="card" style="height:100px"&gt;Card 3&lt;/div&gt;
+  &lt;div class="card" style="height:160px"&gt;Card 4&lt;/div&gt;
+  &lt;!-- ... --&gt;
+&lt;/snice-masonry&gt;
+
+&lt;!-- Auto-responsive columns --&gt;
+&lt;snice-masonry columns="0" min-column-width="250px"&gt;
+  &lt;div class="card"&gt;...&lt;/div&gt;
+&lt;/snice-masonry&gt;</code></pre>
+        </div>
+      </div>
+    </div>

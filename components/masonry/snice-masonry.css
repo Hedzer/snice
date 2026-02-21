@@ -1,0 +1,24 @@
+:host {
+  display: block;
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  contain: layout style;
+  --masonry-gap: 1rem;
+  --masonry-columns: 3;
+  --masonry-column-width: 250px;
+}
+
+.masonry {
+  column-count: var(--masonry-columns);
+  column-gap: var(--masonry-gap);
+}
+
+:host([columns="0"]) .masonry {
+  column-count: auto;
+  column-width: var(--masonry-column-width);
+}
+
+::slotted(*) {
+  break-inside: avoid;
+  margin-bottom: var(--masonry-gap);
+  display: block;
+}
