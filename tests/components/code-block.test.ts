@@ -12,6 +12,7 @@ import cssGrammar from '../../components/code-block/grammars/css.json';
 import jsonGrammar from '../../components/code-block/grammars/json.json';
 import pythonGrammar from '../../components/code-block/grammars/python.json';
 import bashGrammar from '../../components/code-block/grammars/bash.json';
+import sniceGrammar from '../../components/code-block/grammars/snice.json';
 
 describe('snice-code-block', () => {
   let codeBlock: SniceCodeBlockElement;
@@ -463,6 +464,444 @@ describe('highlighter engine', () => {
     it('should return escaped plaintext for unregistered language strings', () => {
       const result = highlightCode('<b>hello</b>', 'unregistered');
       expect(result).toBe('&lt;b&gt;hello&lt;/b&gt;');
+    });
+  });
+
+  describe('Snice grammar', () => {
+    const grammar = sniceGrammar as GrammarDefinition;
+
+    describe('TypeScript base functionality', () => {
+      it('should tokenize TS keywords', () => {
+        const tokens = tokenize('const let var', grammar);
+        const keywords = tokens.filter(t => t.type === 'keyword');
+        expect(keywords.map(t => t.text)).toContain('const');
+        expect(keywords.map(t => t.text)).toContain('let');
+        expect(keywords.map(t => t.text)).toContain('var');
+      });
+
+      it('should tokenize TS strings', () => {
+        const tokens = tokenize('"hello" \'world\'', grammar);
+        const strings = tokens.filter(t => t.type === 'string');
+        expect(strings.length).toBe(2);
+      });
+
+      it('should tokenize decorators', () => {
+        const tokens = tokenize('@element @render @styles', grammar);
+        const tags = tokens.filter(t => t.type === 'tag');
+        expect(tags.map(t => t.text)).toContain('@element');
+        expect(tags.map(t => t.text)).toContain('@render');
+        expect(tags.map(t => t.text)).toContain('@styles');
+      });
+
+      it('should tokenize class names', () => {
+        const tokens = tokenize('HTMLElement MyComponent', grammar);
+        const classNames = tokens.filter(t => t.type === 'class-name');
+        expect(classNames.map(t => t.text)).toContain('HTMLElement');
+        expect(classNames.map(t => t.text)).toContain('MyComponent');
+      });
+
+      it('should tokenize regular template literals', () => {
+        const tokens = tokenize('`hello ${name}`', grammar);
+        const types = tokens.map(t => t.type);
+        expect(types).toContain('string');
+        expect(types).toContain('punctuation');
+      });
+
+      it('should tokenize comments', () => {
+        const tokens = tokenize('// single\n/* multi */', grammar);
+        const comments = tokens.filter(t => t.type === 'comment');
+        expect(comments.length).toBeGreaterThan(0);
+      });
+    });
+
+    describe('html`` tagged template', () => {
+      it('should recognize html` as tag and enter HTML mode', () => {
+        const tokens = tokenize('html`<div>hello</div>`', grammar);
+        // html` is the opening tag token
+        expect(tokens[0].text).toBe('html`');
+        expect(tokens[0].type).toBe('tag');
+        // closing ` is also tag
+        const lastToken = tokens[tokens.length - 1];
+        expect(lastToken.text).toBe('`');
+        expect(lastToken.type).toBe('tag');
+      });
+
+      it('should tokenize HTML tags inside html``', () => {
+        const tokens = tokenize('html`<div class="foo">text</div>`', grammar);
+        const tagTokens = tokens.filter(t => t.type === 'tag');
+        // Should have: html`, <div, >, </div>, `
+        expect(tagTokens.length).toBeGreaterThanOrEqual(4);
+      });
+
+      it('should tokenize HTML attributes', () => {
+        const tokens = tokenize('html`<div class="foo">`', grammar);
+        const attrNames = tokens.filter(t => t.type === 'attr-name');
+        expect(attrNames.map(t => t.text)).toContain('class');
+        const attrValues = tokens.filter(t => t.type === 'attr-value');
+        expect(attrValues.length).toBeGreaterThan(0);
+      });
+
+      it('should tokenize HTML comments', () => {
+        const tokens = tokenize('html`<!-- comment -->`', grammar);
+        const comments = tokens.filter(t => t.type === 'comment');
+        expect(comments.length).toBeGreaterThan(0);
+      });
+
+      it('should tokenize self-closing tags', () => {
+        const tokens = tokenize('html`<br/>`', grammar);
+        const tagTokens = tokens.filter(t => t.type === 'tag');
+        expect(tagTokens.some(t => t.text === '/>')).toBe(true);
+      });
+
+      it('should handle interpolation inside html``', () => {
+        const tokens = tokenize('html`<span>${this.count}</span>`', grammar);
+        // ${  and } are punctuation (interpolation delimiters)
+        const punctTokens = tokens.filter(t => t.type === 'punctuation');
+        expect(punctTokens.some(t => t.text === '${')).toBe(true);
+        expect(punctTokens.some(t => t.text === '}')).toBe(true);
+        // "this" inside interpolation should be a keyword
+        const keywords = tokens.filter(t => t.type === 'keyword');
+        expect(keywords.map(t => t.text)).toContain('this');
+      });
+
+      it('should handle interpolation inside attribute values', () => {
+        const tokens = tokenize('html`<div class="${cls}">`', grammar);
+        const punctTokens = tokens.filter(t => t.type === 'punctuation');
+        expect(punctTokens.some(t => t.text === '${')).toBe(true);
+      });
+
+      it('should handle html/*html*/` pattern', () => {
+        const tokens = tokenize('html/*html*/`<div></div>`', grammar);
+        // The opening html/*html*/` should be a tag token
+        expect(tokens[0].type).toBe('tag');
+        expect(tokens[0].text).toBe('html/*html*/`');
+        // Should still parse HTML inside
+        const tagTokens = tokens.filter(t => t.type === 'tag');
+        expect(tagTokens.length).toBeGreaterThanOrEqual(3);
+      });
+
+      it('should return to TS mode after closing backtick', () => {
+        const tokens = tokenize('html`<div></div>`; const x = 1;', grammar);
+        // After the template, "const" should be a keyword
+        const keywords = tokens.filter(t => t.type === 'keyword');
+        expect(keywords.map(t => t.text)).toContain('const');
+      });
+
+      it('should handle HTML entities', () => {
+        const tokens = tokenize('html`&amp; &lt;`', grammar);
+        const constants = tokens.filter(t => t.type === 'constant');
+        expect(constants.some(t => t.text === '&amp;')).toBe(true);
+        expect(constants.some(t => t.text === '&lt;')).toBe(true);
+      });
+    });
+
+    describe('snice conditional elements', () => {
+      it('should tokenize <if> as keyword', () => {
+        const tokens = tokenize('html`<if ${cond}>content</if>`', grammar);
+        const keywords = tokens.filter(t => t.type === 'keyword');
+        expect(keywords.some(t => t.text === '<if')).toBe(true);
+        expect(keywords.some(t => t.text === '</if>')).toBe(true);
+      });
+
+      it('should tokenize <case> as keyword', () => {
+        const tokens = tokenize('html`<case ${val}><when value="a">A</when><default>B</default></case>`', grammar);
+        const keywords = tokens.filter(t => t.type === 'keyword');
+        const kwTexts = keywords.map(t => t.text);
+        expect(kwTexts).toContain('<case');
+        expect(kwTexts).toContain('<when');
+        expect(kwTexts).toContain('<default');
+        expect(kwTexts).toContain('</case>');
+      });
+
+      it('should tokenize </when> and </default> as keyword', () => {
+        const tokens = tokenize('html`</when></default>`', grammar);
+        const keywords = tokens.filter(t => t.type === 'keyword');
+        expect(keywords.some(t => t.text === '</when>')).toBe(true);
+        expect(keywords.some(t => t.text === '</default>')).toBe(true);
+      });
+
+      it('should not match <iframe> as snice element', () => {
+        const tokens = tokenize('html`<iframe></iframe>`', grammar);
+        const keywords = tokens.filter(t => t.type === 'keyword');
+        // <iframe should be a tag, not keyword
+        expect(keywords.every(t => !t.text.includes('iframe'))).toBe(true);
+        const tagTokens = tokens.filter(t => t.type === 'tag');
+        expect(tagTokens.some(t => t.text === '<iframe')).toBe(true);
+      });
+
+      it('should not match <case-study> as snice element', () => {
+        const tokens = tokenize('html`<case-study></case-study>`', grammar);
+        const tagTokens = tokens.filter(t => t.type === 'tag');
+        expect(tagTokens.some(t => t.text === '<case-study')).toBe(true);
+      });
+
+      it('should handle <if> with interpolation condition', () => {
+        const tokens = tokenize('html`<if ${this.isLoggedIn}><span>Hi</span></if>`', grammar);
+        const keywords = tokens.filter(t => t.type === 'keyword');
+        expect(keywords.some(t => t.text === '<if')).toBe(true);
+        expect(keywords.some(t => t.text === '</if>')).toBe(true);
+        // "this" inside the condition interpolation
+        expect(keywords.some(t => t.text === 'this')).toBe(true);
+      });
+
+      it('should handle <when> with value attribute', () => {
+        const tokens = tokenize('html`<when value="loading">Loading...</when>`', grammar);
+        const keywords = tokens.filter(t => t.type === 'keyword');
+        expect(keywords.some(t => t.text === '<when')).toBe(true);
+        // "value" is an attr-name
+        const attrNames = tokens.filter(t => t.type === 'attr-name');
+        expect(attrNames.some(t => t.text === 'value')).toBe(true);
+      });
+
+      it('should handle <default> with no attributes', () => {
+        const tokens = tokenize('html`<default>Fallback</default>`', grammar);
+        const keywords = tokens.filter(t => t.type === 'keyword');
+        expect(keywords.some(t => t.text === '<default')).toBe(true);
+        expect(keywords.some(t => t.text === '</default>')).toBe(true);
+      });
+    });
+
+    describe('snice binding syntax', () => {
+      it('should tokenize .property binding as property', () => {
+        const tokens = tokenize('html`<input .value=${val}>`', grammar);
+        const props = tokens.filter(t => t.type === 'property');
+        expect(props.some(t => t.text === '.value')).toBe(true);
+      });
+
+      it('should tokenize ?boolean binding as attr-name', () => {
+        const tokens = tokenize('html`<input ?disabled=${bool}>`', grammar);
+        const attrs = tokens.filter(t => t.type === 'attr-name');
+        expect(attrs.some(t => t.text === '?disabled')).toBe(true);
+      });
+
+      it('should tokenize @event binding as function', () => {
+        const tokens = tokenize('html`<button @click=${handler}>`', grammar);
+        const funcs = tokens.filter(t => t.type === 'function');
+        expect(funcs.some(t => t.text === '@click')).toBe(true);
+      });
+
+      it('should tokenize @event:modifier binding', () => {
+        const tokens = tokenize('html`<input @keydown:ctrl+s=${save}>`', grammar);
+        const funcs = tokens.filter(t => t.type === 'function');
+        expect(funcs.some(t => t.text === '@keydown:ctrl+s')).toBe(true);
+      });
+
+      it('should tokenize @event.modifier binding', () => {
+        const tokens = tokenize('html`<input @keydown.enter=${submit}>`', grammar);
+        const funcs = tokens.filter(t => t.type === 'function');
+        expect(funcs.some(t => t.text === '@keydown.enter')).toBe(true);
+      });
+
+      it('should tokenize @event:~wildcard binding', () => {
+        const tokens = tokenize('html`<input @keydown:~enter=${handler}>`', grammar);
+        const funcs = tokens.filter(t => t.type === 'function');
+        expect(funcs.some(t => t.text === '@keydown:~enter')).toBe(true);
+      });
+
+      it('should tokenize regular attributes alongside bindings', () => {
+        const tokens = tokenize('html`<input type="text" .value=${v} ?disabled=${d} @input=${h}>`', grammar);
+        const attrNames = tokens.filter(t => t.type === 'attr-name');
+        expect(attrNames.some(t => t.text === 'type')).toBe(true);
+        expect(attrNames.some(t => t.text === '?disabled')).toBe(true);
+        const props = tokens.filter(t => t.type === 'property');
+        expect(props.some(t => t.text === '.value')).toBe(true);
+        const funcs = tokens.filter(t => t.type === 'function');
+        expect(funcs.some(t => t.text === '@input')).toBe(true);
+      });
+    });
+
+    describe('css`` tagged template', () => {
+      it('should recognize css` as tag and enter CSS mode', () => {
+        const tokens = tokenize('css`:host { display: block; }`', grammar);
+        expect(tokens[0].text).toBe('css`');
+        expect(tokens[0].type).toBe('tag');
+        const lastToken = tokens[tokens.length - 1];
+        expect(lastToken.text).toBe('`');
+        expect(lastToken.type).toBe('tag');
+      });
+
+      it('should tokenize CSS properties', () => {
+        const tokens = tokenize('css`color: red;`', grammar);
+        const props = tokens.filter(t => t.type === 'property');
+        expect(props.map(t => t.text)).toContain('color');
+      });
+
+      it('should tokenize CSS numbers with units', () => {
+        const tokens = tokenize('css`width: 100px; margin: 2rem;`', grammar);
+        const numbers = tokens.filter(t => t.type === 'number');
+        expect(numbers.some(t => t.text === '100px')).toBe(true);
+        expect(numbers.some(t => t.text === '2rem')).toBe(true);
+      });
+
+      it('should tokenize CSS hex colors', () => {
+        const tokens = tokenize('css`color: #ff0000;`', grammar);
+        const numbers = tokens.filter(t => t.type === 'number');
+        expect(numbers.some(t => t.text === '#ff0000')).toBe(true);
+      });
+
+      it('should tokenize CSS class selectors', () => {
+        const tokens = tokenize('css`.active { color: red; }`', grammar);
+        const classNames = tokens.filter(t => t.type === 'class-name');
+        expect(classNames.some(t => t.text === '.active')).toBe(true);
+      });
+
+      it('should tokenize CSS pseudo-classes', () => {
+        const tokens = tokenize('css`:host { display: block; }`', grammar);
+        const tagTokens = tokens.filter(t => t.type === 'tag');
+        expect(tagTokens.some(t => t.text === ':host')).toBe(true);
+      });
+
+      it('should tokenize CSS pseudo-elements', () => {
+        const tokens = tokenize('css`::slotted(div) { color: red; }`', grammar);
+        const tagTokens = tokens.filter(t => t.type === 'tag');
+        expect(tagTokens.some(t => t.text === '::slotted')).toBe(true);
+      });
+
+      it('should tokenize CSS at-rules', () => {
+        const tokens = tokenize('css`@media (max-width: 768px) {}`', grammar);
+        const keywords = tokens.filter(t => t.type === 'keyword');
+        expect(keywords.some(t => t.text === '@media')).toBe(true);
+      });
+
+      it('should tokenize !important', () => {
+        const tokens = tokenize('css`color: red !important;`', grammar);
+        const keywords = tokens.filter(t => t.type === 'keyword');
+        expect(keywords.some(t => t.text === '!important')).toBe(true);
+      });
+
+      it('should tokenize CSS comments', () => {
+        const tokens = tokenize('css`/* comment */`', grammar);
+        const comments = tokens.filter(t => t.type === 'comment');
+        expect(comments.length).toBeGreaterThan(0);
+      });
+
+      it('should tokenize CSS custom properties', () => {
+        const tokens = tokenize('css`--my-color: red;`', grammar);
+        const attrNames = tokens.filter(t => t.type === 'attr-name');
+        expect(attrNames.some(t => t.text === '--my-color')).toBe(true);
+      });
+
+      it('should tokenize CSS functions', () => {
+        const tokens = tokenize('css`color: var(--my-color);`', grammar);
+        const funcs = tokens.filter(t => t.type === 'function');
+        expect(funcs.some(t => t.text === 'var')).toBe(true);
+      });
+
+      it('should handle interpolation inside css``', () => {
+        const tokens = tokenize('css`display: ${isBlock ? "block" : "inline"};`', grammar);
+        const punctTokens = tokens.filter(t => t.type === 'punctuation');
+        expect(punctTokens.some(t => t.text === '${')).toBe(true);
+        expect(punctTokens.some(t => t.text === '}')).toBe(true);
+      });
+
+      it('should handle css/*css*/` pattern', () => {
+        const tokens = tokenize('css/*css*/`:host { display: block; }`', grammar);
+        expect(tokens[0].type).toBe('tag');
+        expect(tokens[0].text).toBe('css/*css*/`');
+      });
+
+      it('should return to TS mode after closing backtick', () => {
+        const tokens = tokenize('css`:host{}`; const x = 1;', grammar);
+        const keywords = tokens.filter(t => t.type === 'keyword');
+        expect(keywords.map(t => t.text)).toContain('const');
+      });
+    });
+
+    describe('real-world snice patterns', () => {
+      it('should handle a complete @render() method', () => {
+        const code = `@render()
+  template() {
+    return html\`<div class="wrapper">
+      <if \${this.label}>
+        <label>\${this.label}</label>
+      </if>
+      <slot></slot>
+    </div>\`;
+  }`;
+        const tokens = tokenize(code, grammar);
+        // @render is a decorator
+        expect(tokens.some(t => t.type === 'tag' && t.text === '@render')).toBe(true);
+        // "return" is a keyword
+        expect(tokens.some(t => t.type === 'keyword' && t.text === 'return')).toBe(true);
+        // html` is a tag
+        expect(tokens.some(t => t.type === 'tag' && t.text === 'html`')).toBe(true);
+        // <if is a keyword
+        expect(tokens.some(t => t.type === 'keyword' && t.text === '<if')).toBe(true);
+        // </if> is a keyword
+        expect(tokens.some(t => t.type === 'keyword' && t.text === '</if>')).toBe(true);
+        // <slot is a regular tag
+        expect(tokens.some(t => t.type === 'tag' && t.text === '<slot')).toBe(true);
+      });
+
+      it('should handle a @styles() method', () => {
+        const code = `@styles()
+  componentStyles() {
+    return css\`:host { display: block; padding: 1rem; }\`;
+  }`;
+        const tokens = tokenize(code, grammar);
+        expect(tokens.some(t => t.type === 'tag' && t.text === '@styles')).toBe(true);
+        expect(tokens.some(t => t.type === 'tag' && t.text === 'css`')).toBe(true);
+        expect(tokens.some(t => t.type === 'tag' && t.text === ':host')).toBe(true);
+        expect(tokens.some(t => t.type === 'property' && t.text === 'display')).toBe(true);
+        expect(tokens.some(t => t.type === 'property' && t.text === 'padding')).toBe(true);
+      });
+
+      it('should handle event handler with arrow function in interpolation', () => {
+        const code = 'html`<button @click=${() => this.count++}>Click</button>`';
+        const tokens = tokenize(code, grammar);
+        const funcs = tokens.filter(t => t.type === 'function');
+        expect(funcs.some(t => t.text === '@click')).toBe(true);
+        // Arrow function keyword
+        const keywords = tokens.filter(t => t.type === 'keyword');
+        expect(keywords.some(t => t.text === '=>')).toBe(true);
+      });
+
+      it('should handle case/when pattern', () => {
+        const code = `html\`<case \${status}>
+          <when value="loading"><span>Loading...</span></when>
+          <when value="error"><span>Error</span></when>
+          <default><span>Ready</span></default>
+        </case>\``;
+        const tokens = tokenize(code, grammar);
+        const keywords = tokens.filter(t => t.type === 'keyword');
+        const kwTexts = keywords.map(t => t.text);
+        expect(kwTexts).toContain('<case');
+        expect(kwTexts).toContain('<when');
+        expect(kwTexts).toContain('<default');
+        expect(kwTexts).toContain('</case>');
+        // "value" attributes on <when>
+        const attrNames = tokens.filter(t => t.type === 'attr-name');
+        expect(attrNames.filter(t => t.text === 'value').length).toBe(2);
+      });
+
+      it('should handle mixed bindings on a single element', () => {
+        const code = 'html`<input type="text" .value=${this.val} ?disabled=${this.off} @input=${this.handle}>`';
+        const tokens = tokenize(code, grammar);
+        // Regular attr
+        const attrs = tokens.filter(t => t.type === 'attr-name');
+        expect(attrs.some(t => t.text === 'type')).toBe(true);
+        expect(attrs.some(t => t.text === '?disabled')).toBe(true);
+        // Property binding
+        const props = tokens.filter(t => t.type === 'property');
+        expect(props.some(t => t.text === '.value')).toBe(true);
+        // Event binding
+        const funcs = tokens.filter(t => t.type === 'function');
+        expect(funcs.some(t => t.text === '@input')).toBe(true);
+        // Attr values
+        const attrVals = tokens.filter(t => t.type === 'attr-value');
+        expect(attrVals.length).toBeGreaterThan(0);
+      });
+
+      it('should handle nested interpolation with html`` inside', () => {
+        const code = 'html`<ul>${items.map(i => html`<li>${i}</li>`)}</ul>`';
+        const tokens = tokenize(code, grammar);
+        // Outer html` and inner html` both exist
+        const tagTokens = tokens.filter(t => t.type === 'tag');
+        const htmlOpeners = tagTokens.filter(t => t.text === 'html`');
+        expect(htmlOpeners.length).toBe(2);
+        // <li and </li> tags exist
+        expect(tagTokens.some(t => t.text === '<li')).toBe(true);
+      });
     });
   });
 });

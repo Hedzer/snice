@@ -54,11 +54,56 @@ Grammars are **external JSON files** loaded on demand — the component ships wi
 | `json.json` | JSON | jsonc |
 | `python.json` | Python | py, pyw |
 | `bash.json` | Bash, Shell | sh, zsh |
+| `snice.json` | Snice (TS + templates) | |
 
 Grammar files are located at:
 - **Source:** `components/code-block/grammars/`
 - **Built:** `dist/components/code-block/grammars/`
 - **Standalone:** serve alongside the component JS file
+
+### Snice Grammar
+
+The `snice.json` grammar extends TypeScript with full awareness of snice's template DSL. Use it to highlight snice component source code.
+
+**What it highlights:**
+
+| Syntax | Token Type | Description |
+|--------|-----------|-------------|
+| `html\`` / `css\`` | `tag` | Tagged template entry (enters HTML/CSS mode) |
+| `<if>`, `<case>`, `<when>`, `<default>` | `keyword` | Snice conditional rendering elements |
+| `.prop=${val}` | `property` | Property bindings |
+| `?attr=${bool}` | `attr-name` | Boolean attribute bindings |
+| `@event=${fn}` | `function` | Event bindings (includes `@event:modifier`, `@event.modifier`) |
+| `${...}` | (TypeScript) | Interpolations return to TS mode |
+| `html/*html*/\`` | `tag` | Editor hint pattern supported |
+
+**Example:**
+
+```html
+<snice-code-block grammar="grammars/snice.json" language="snice" id="code"></snice-code-block>
+<script>
+  document.getElementById('code').code = `
+@element('my-counter')
+class MyCounter extends HTMLElement {
+  @property({ type: Number }) count = 0;
+
+  @render()
+  template() {
+    return html\\\`
+      <if \\\${this.count > 0}>
+        <span>\\\${this.count}</span>
+      </if>
+      <button @click=\\\${() => this.count++}>+</button>
+    \\\`;
+  }
+
+  @styles()
+  componentStyles() {
+    return css\\\`:host { display: block; padding: 1rem; }\\\`;
+  }
+}`;
+</script>
+```
 
 ### Loading a Grammar via URL
 

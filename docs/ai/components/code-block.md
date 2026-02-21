@@ -40,6 +40,19 @@ Load from `components/code-block/grammars/` (or `dist/components/code-block/gram
 - `json.json` — JSON
 - `python.json` — Python
 - `bash.json` — Bash/Shell
+- `snice.json` — Snice (TypeScript + html``/css`` template highlighting)
+
+### Snice Grammar
+
+Extends TypeScript with awareness of snice's template DSL:
+- **`html\``** tagged templates → HTML mode with tag/attribute highlighting
+- **`css\``** tagged templates → CSS mode with property/selector highlighting
+- **`<if>`, `<case>`, `<when>`, `<default>`** → highlighted as keywords (not regular tags)
+- **`.prop=`** property bindings → "property" token
+- **`?attr=`** boolean bindings → "attr-name" token
+- **`@event=`** event bindings → "function" token (includes `@event:modifier` and `@event.modifier`)
+- **`${...}`** interpolations → back to TypeScript mode
+- Handles `html/*html*/\`` editor hint pattern
 
 ### Loading Grammars
 
