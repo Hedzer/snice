@@ -25,13 +25,20 @@
 For each component:
 - [ ] **BEFORE**: Read theme.css, .ai/THEME_INTEGRATION_GUIDE.md, .ai/PIXEL_TO_REM_GUIDE.md
 - [ ] Component implementation (.ts, .types.ts, .css) with theme tokens + fallbacks
-- [ ] Tests (.test.ts)
+- [ ] Tests (.test.ts) — all passing
 - [ ] Demo page (demo.html) using theme tokens (not hard-coded values)
 - [ ] **AFTER**: Test in light mode
 - [ ] **AFTER**: Test in dark mode
 - [ ] **AFTER**: Verify demo.html theme compliance
 - [ ] Human documentation (docs/components/)
 - [ ] AI documentation (docs/ai/components/)
+- [ ] Standalone build — `npm run build:core && npm run build:standalone` (auto-discovered from dist/components/)
+- [ ] React adapter — `npm run generate:react-adapters` (auto-discovered from components/ dir)
+- [ ] Website showcase — fragment in `public/showcases/`, added to `manifest.json`
+- [ ] Website showcase — script tag in `public/showcases/_footer.html`
+- [ ] Website showcase — component tag in `public/showcases/_footer.html` comp-list
+- [ ] Website rebuild — `node public/build-showcases.js`
+- [ ] Copy standalone to public — `node scripts/build-website.js` (copies dist/standalone/ to public/components/)
 
 ## New Components to Implement
 
@@ -223,18 +230,31 @@ For each component:
    - [x] Demo page
    - [x] Human docs
    - [x] AI docs
-38. [ ] `<snice-music-player>` - Music player component
-39. [ ] `<snice-video-player>` - Video player with custom controls, quality selection, playback speed, fullscreen, PiP
-41. [ ] `<snice-file-gallery>` - File upload gallery with preview, pausable/resumable uploads, deletable files (use @request/@response decorators)
-42. [ ] `<snice-link-preview>` - Website thumbnail/preview card (like social media link previews with Open Graph data)
-43. [ ] `<snice-heatmap>` - Heatmap visualization (separate from chart - for calendar-style heatmaps like GitHub contributions)
-44. [ ] `<snice-gauge>` - Gauge/meter chart (semicircle or full circle)
+42. [x] `<snice-link-preview>` - Website thumbnail/preview card (like social media link previews with Open Graph data)
+   - [x] Implementation (31/31 tests passing)
+   - [x] Demo page
+   - [x] Human docs
+   - [x] AI docs
+43. [x] `<snice-heatmap>` - Heatmap visualization (separate from chart - for calendar-style heatmaps like GitHub contributions)
+   - [x] Implementation (13/13 tests passing)
+   - [x] Demo page
+   - [x] Human docs
+   - [x] AI docs
+44. [x] `<snice-gauge>` - Gauge/meter chart (semicircle or full circle)
+   - [x] Implementation (21/21 tests passing)
+   - [x] Demo page
+   - [x] Human docs
+   - [x] AI docs
 45. [ ] `<snice-funnel>` - Funnel chart (for conversion tracking)
 46. [ ] `<snice-treemap>` - Treemap visualization (hierarchical data as nested rectangles)
 47. [ ] `<snice-sankey>` - Sankey diagram (flow visualization)
 48. [ ] `<snice-network-graph>` - Network/relationship graph visualization
 49. [ ] `<snice-candlestick>` - Candlestick/OHLC chart (for financial data)
-50. [ ] `<snice-masonry>` - Masonry layout (Pinterest-style grid with variable height items)
+50. [x] `<snice-masonry>` - Masonry layout (Pinterest-style grid with variable height items)
+   - [x] Implementation (11/11 tests passing)
+   - [x] Demo page
+   - [x] Human docs
+   - [x] AI docs
 51. [ ] `<snice-camera-annotate>` - Image annotation component (combines camera + drawing)
    - Combines `<snice-camera>` and `<snice-draw>` components
    - **Workflow:**
