@@ -1,0 +1,40 @@
+    <div class="comp-section">
+      <h3>Draw + Paint</h3>
+      <p class="comp-desc">Self-contained drawing canvas with built-in toolbar. Uses <code>&lt;snice-draw&gt;</code> under the hood — use it standalone for a bare canvas with your own UI.</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="padding:0;overflow:hidden">
+          <div style="height:400px">
+            <snice-paint id="demo-paint" style="display:block;width:100%;height:100%"></snice-paint>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;!-- All-in-one with built-in toolbar --&gt;
+&lt;snice-paint&gt;&lt;/snice-paint&gt;
+
+&lt;!-- Custom colors &amp; controls --&gt;
+&lt;snice-paint
+  colors='["#ff0000","#00ff00","#0000ff"]'
+  controls="colors,size,undo,redo"
+&gt;&lt;/snice-paint&gt;
+
+&lt;!-- Bare canvas only (bring your own toolbar) --&gt;
+&lt;snice-draw
+  width="800" height="600"
+  color="#3b82f6" stroke-width="3"
+&gt;&lt;/snice-draw&gt;
+
+&lt;script&gt;
+  // Paint: self-contained
+  const paint = document.querySelector('snice-paint');
+  paint.download('artwork.png');
+
+  // Draw: bare canvas, wire up your own UI
+  const draw = document.querySelector('snice-draw');
+  draw.color = '#ef4444';
+  draw.undo();
+  draw.clear();
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
