@@ -2,7 +2,7 @@ import { AppContext } from './app-context';
 import { NavContext } from './nav-context';
 import { Placard } from './placard';
 import { RouteParams } from './route-params';
-import { REGISTERED_ELEMENTS, IS_UPDATING, CONTEXT_REGISTER, CONTEXT_UNREGISTER, CONTEXT_NOTIFY_ELEMENT } from '../symbols';
+import { REGISTERED_ELEMENTS, IS_UPDATING, CONTEXT_REGISTER, CONTEXT_UNREGISTER, CONTEXT_NOTIFY_ELEMENT, CONTEXT_UPDATE } from '../symbols';
 import type { Fetcher } from '../fetcher';
 
 // Symbol for storing the Set of elements
@@ -81,20 +81,31 @@ export class Context {
   /**
    * Update the context and notify all registered elements
    * Prevents infinite loops by tracking update state
+   * @internal Used by Router during navigation
    */
-  update(context: AppContext, placards: Placard[], currentRoute: string, routeParams: RouteParams): void {
+  [CONTEXT_UPDATE](context: AppContext, placards: Placard[], currentRoute: string, routeParams: RouteParams): void {
+    this.application = context;
+    this.navigation.placards = placards;
+    this.navigation.route = currentRoute;
+    this.navigation.params = routeParams;
+    this.notify();
+  }
+
+  /**
+   * Signal all @context() subscribers to re-read context
+   * Does not modify any state — just notifies listeners with current values
+   */
+  update(): void {
+    this.notify();
+  }
+
+  private notify(): void {
     // Prevent infinite loops
     if (this[IS_UPDATING]) {
       return;
     }
 
     this[IS_UPDATING] = true;
-
-    // Update properties (id remains immutable)
-    this.application = context;
-    this.navigation.placards = placards;
-    this.navigation.route = currentRoute;
-    this.navigation.params = routeParams;
 
     // Notify all registered elements by calling their methods directly
     const elementsSet = this[REGISTERED_ELEMENTS_SET] as Set<HTMLElement>;

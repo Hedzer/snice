@@ -1,6 +1,6 @@
 import { Route } from 'pica-route';
 import { applyElementFunctionality } from './element';
-import { ROUTER_CONTEXT, CONTEXT_REQUEST_HANDLER, PAGE_TRANSITION, CREATED_AT, PROPERTIES, CONTEXT_HANDLER } from './symbols';
+import { ROUTER_CONTEXT, CONTEXT_REQUEST_HANDLER, PAGE_TRANSITION, CREATED_AT, PROPERTIES, CONTEXT_HANDLER, CONTEXT_UPDATE } from './symbols';
 import { performTransition as performTransitionUtil } from './transitions';
 import { Transition } from './types/transition';
 import { RouterOptions } from './types/router-options';
@@ -214,7 +214,7 @@ export function Router(options: RouterOptions): RouterInstance {
 
   function emitContextUpdate(target: Element, currentPath: string, routeParams: RouteParams): void {
     // Update the navigation context and notify all registered elements
-    navigationContext.update(context, placards, currentPath, routeParams);
+    navigationContext[CONTEXT_UPDATE](context, placards, currentPath, routeParams);
   }
 
   function updateLayout(layoutElement: HTMLElement, currentPath: string, routeParams: RouteParams): void {

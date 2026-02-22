@@ -128,10 +128,7 @@ class ProfilePage extends HTMLElement {
 
   @context()
   handleContextUpdate(ctx: Context) {
-    // ctx.application is your router context (AppContext)
     this.appContext = ctx.application;
-    // ctx.navigation contains { placards, route, params }
-    // ctx.fetch is available for HTTP requests (with middleware if configured)
     this.requestRender();
   }
 
@@ -215,7 +212,7 @@ interface Context {
     params: Record<string, string>; // Route parameters
   };
   fetch: typeof globalThis.fetch;  // Fetch function with middleware support
-  update(): void;  // Notify all subscribers of changes
+  update(): void;  // Signal all @context subscribers of changes
 }
 ```
 
@@ -246,7 +243,7 @@ class UserPage extends HTMLElement {
 
 ### Triggering Context Updates
 
-When you modify the application context, call `update()` to notify all subscribers:
+When you modify the application context, call `update()` to signal all subscribers:
 
 ```typescript
 @page({ tag: 'settings-page', routes: ['/settings'] })
@@ -263,13 +260,13 @@ class SettingsPage extends HTMLElement {
     // Modify the application context
     this.ctx!.application.theme = theme;
 
-    // Notify all @context subscribers
+    // Signal all @context subscribers
     this.ctx!.update();
   }
 }
 ```
 
-**Note:** The router automatically calls `update()` during navigation. Only call it manually when changing application state outside of navigation (login, logout, theme changes, etc.).
+**Note:** The router automatically signals `@context()` subscribers during navigation. Only call `update()` manually when changing application state outside of navigation (login, logout, theme changes, etc.).
 
 ## Route Configuration
 

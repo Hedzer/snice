@@ -136,8 +136,7 @@ class MyCounter extends HTMLElement {
 - Create router.ts: `export const { page, navigate, initialize } = Router({...})`
 - Pages import: `import { page } from './router'`
 - Use `@property()` for reactive state, plain fields for non-reactive
-- `@context()` receives Context on navigation and ctx.update() calls
-- ctx.update() requires args: `ctx.update(ctx.application, ctx.navigation.placards, ctx.navigation.route, ctx.navigation.params)`
+- `@context()` receives Context on navigation
 
 **Guards:**
 - Signature: `(context: AppContext, params: RouteParams) => boolean`

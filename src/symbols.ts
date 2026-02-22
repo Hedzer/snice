@@ -88,3 +88,4 @@ export const CONTEXT_NOTIFY_ELEMENT = getSymbol('context-notify-element');
 export const CONTEXT_OPTIONS = getSymbol('context-options');
 export const CONTEXT_TIMER = getSymbol('context-timer');
 export const CONTEXT_CALLED = getSymbol('context-called');
+export const CONTEXT_UPDATE = getSymbol('context-update');

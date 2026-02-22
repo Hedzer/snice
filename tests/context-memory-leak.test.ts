@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { Router, context, Context } from '../src';
-import { getSymbol } from '../src/symbols';
+import { getSymbol, CONTEXT_UPDATE } from '../src/symbols';
 
 const NAVIGATION_CONTEXT_INSTANCE = getSymbol('navigation-context-instance');
 const CONTEXT_TIMER = getSymbol('context-timer');
@@ -121,7 +121,7 @@ describe('@context memory leak tests', () => {
     }
 
     // Trigger context update to start debounce timer
-    ctx.update({}, [], '/debounce-cleanup', {});
+    ctx[CONTEXT_UPDATE]({}, [], '/debounce-cleanup', {});
     await waitFor(50);
 
     // Timer should be pending
@@ -275,7 +275,7 @@ describe('@context memory leak tests', () => {
     const afterFirstCall = getRegisteredElementsCount(ctx);
 
     // Trigger context update again
-    ctx.update({}, [], '/once', {});
+    ctx[CONTEXT_UPDATE]({}, [], '/once', {});
     await waitFor(50);
 
     // Handler should still only be called once
@@ -370,7 +370,7 @@ describe('@context memory leak tests', () => {
 
     // Rapidly trigger updates then remove
     for (let i = 0; i < 20; i++) {
-      ctx.update({}, [], '/rapid', {});
+      ctx[CONTEXT_UPDATE]({}, [], '/rapid', {});
     }
 
     // Remove before debounce completes
@@ -414,8 +414,8 @@ describe('@context memory leak tests', () => {
     expect(handler).toHaveBeenCalledTimes(1);
 
     // Trigger more updates
-    ctx.update({}, [], '/throttle', {});
-    ctx.update({}, [], '/throttle', {});
+    ctx[CONTEXT_UPDATE]({}, [], '/throttle', {});
+    ctx[CONTEXT_UPDATE]({}, [], '/throttle', {});
     await waitFor(50);
 
     // Timer value should be set (stores last call timestamp)
@@ -464,9 +464,9 @@ describe('@context memory leak tests', () => {
     await waitFor(50);
 
     // Trigger context updates after removal
-    ctx.update({}, [], '/post-removal', {});
-    ctx.update({}, [], '/post-removal', {});
-    ctx.update({}, [], '/post-removal', {});
+    ctx[CONTEXT_UPDATE]({}, [], '/post-removal', {});
+    ctx[CONTEXT_UPDATE]({}, [], '/post-removal', {});
+    ctx[CONTEXT_UPDATE]({}, [], '/post-removal', {});
     await waitFor(50);
 
     // Handler should not be called after removal
@@ -572,8 +572,8 @@ describe('@context memory leak tests', () => {
     const beforeCount = getRegisteredElementsCount(ctx);
 
     // Trigger updates
-    ctx.update({}, [], '/mixed', {});
-    ctx.update({}, [], '/mixed', {});
+    ctx[CONTEXT_UPDATE]({}, [], '/mixed', {});
+    ctx[CONTEXT_UPDATE]({}, [], '/mixed', {});
     await waitFor(150);
 
     // Remove element

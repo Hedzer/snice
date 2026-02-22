@@ -171,7 +171,7 @@ router.navigate('/users/123')
 
 **Guards receive Context, not AppContext.** Check `ctx.application.property`, not `ctx.property`. Guards: `(ctx: Context) => boolean`
 
-**Context must be mutated then updated.** After changing `ctx.application`, call `ctx.update()` to notify subscribers. Pages need `@context()` to get context reference.
+**Context must be mutated then signaled.** After changing `ctx.application`, call `ctx.update()` to signal subscribers. Pages need `@context()` to get context reference.
 
 **@property is for parent-provided attributes.** Internal component state should be regular properties, not decorated. Only use `@property()` when the value comes from a parent element via attributes.
 

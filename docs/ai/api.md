@@ -150,31 +150,23 @@ html`
 ## Context & Router
 
 ```typescript
-// Context class (NOT generic - cast application as needed)
-class Context {
-  application: AppContext;  // cast to your type: ctx.application as MyApp
-  navigation: { placards: Placard[], route: string, params: Record<string, string> };
-  fetch: typeof globalThis.fetch;  // middleware-aware fetch
-  // Update notifies all @context() subscribers
-  // Note: requires passing current values back
-  update(app: AppContext, placards: Placard[], route: string, params: Record<string,string>): void;
-}
-
-// To update context and notify subscribers:
-ctx.application.user = newUser;
-ctx.update(ctx.application, ctx.navigation.placards, ctx.navigation.route, ctx.navigation.params);
+// Context instance (received via @context decorator)
+// ctx.application - AppContext (your app state)
+// ctx.navigation - { placards, route, params } (read-only, managed by router)
+// ctx.fetch - middleware-aware fetch
+// ctx.update() - signal all @context() subscribers (no args, uses current state)
 
 @context(options?: { debounce?, throttle?, once? })
-// Method decorator: receives Context on navigation
+// Method decorator: receives Context on navigation and ctx.update() calls
 // Called on: initial load, route change, ctx.update()
-// Layout.update() and @context() both receive updates
 // Example:
 //   @context() handleContext(ctx: Context) {
 //     const app = ctx.application as MyApp;
 //     this.user = app.user;
-//     app.theme = 'dark';
-//     ctx.update(ctx.application, ctx.navigation.placards, ctx.navigation.route, ctx.navigation.params);
 //   }
+// To update and signal:
+//   ctx.application.theme = 'dark';
+//   ctx.update();
 
 Router({ target, context?, layout?, fetcher? })
 // Returns: { page, navigate, initialize }
