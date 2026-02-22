@@ -1,0 +1,126 @@
+:host {
+  display: block;
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  contain: layout style paint;
+  width: 100%;
+}
+
+.treemap {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.treemap__svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.treemap__rect {
+  cursor: pointer;
+  transition: opacity var(--snice-transition-fast, 150ms) ease;
+}
+
+.treemap__rect:hover {
+  opacity: 0.85;
+}
+
+.treemap__rect-stroke {
+  fill: none;
+  stroke: var(--snice-color-background, rgb(255 255 255));
+  stroke-width: 2px;
+  pointer-events: none;
+}
+
+.treemap__label {
+  fill: rgb(255 255 255);
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  font-weight: var(--snice-font-weight-medium, 500);
+  pointer-events: none;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.treemap__value {
+  fill: rgb(255 255 255 / 0.85);
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  font-weight: var(--snice-font-weight-medium, 500);
+  pointer-events: none;
+  text-anchor: middle;
+  dominant-baseline: central;
+  font-size: 0.75rem;
+}
+
+/* Breadcrumbs */
+.treemap__breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: var(--snice-spacing-2xs, 0.25rem);
+  padding: var(--snice-spacing-xs, 0.5rem) 0;
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
+  min-height: 2rem;
+}
+
+.treemap__breadcrumb {
+  background: none;
+  border: none;
+  padding: var(--snice-spacing-3xs, 0.125rem) var(--snice-spacing-2xs, 0.25rem);
+  font-family: inherit;
+  font-size: inherit;
+  color: var(--snice-color-primary, rgb(37 99 235));
+  cursor: pointer;
+  border-radius: var(--snice-border-radius-md, 0.25rem);
+  transition: background var(--snice-transition-fast, 150ms) ease;
+}
+
+.treemap__breadcrumb:hover {
+  background: var(--snice-color-background-element, rgb(252 251 249));
+}
+
+.treemap__breadcrumb--current {
+  color: var(--snice-color-text, rgb(23 23 23));
+  cursor: default;
+  font-weight: var(--snice-font-weight-semibold, 600);
+}
+
+.treemap__breadcrumb--current:hover {
+  background: transparent;
+}
+
+.treemap__separator {
+  color: var(--snice-color-text-tertiary, rgb(115 115 115));
+  user-select: none;
+}
+
+/* Tooltip */
+.treemap__tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: var(--snice-color-text, rgb(23 23 23));
+  color: var(--snice-color-text-inverse, rgb(250 250 250));
+  padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-xs, 0.5rem);
+  border-radius: var(--snice-border-radius-md, 0.25rem);
+  font-size: 0.75rem;
+  white-space: nowrap;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity var(--snice-transition-fast, 150ms) ease;
+  box-shadow: var(--snice-shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1));
+  transform: translate(-50%, -100%);
+  margin-top: -0.5rem;
+}
+
+.treemap__tooltip--visible {
+  opacity: 1;
+}
+
+/* Animation */
+:host([animation]) .treemap__rect {
+  transition: x var(--snice-transition-medium, 250ms) ease,
+              y var(--snice-transition-medium, 250ms) ease,
+              width var(--snice-transition-medium, 250ms) ease,
+              height var(--snice-transition-medium, 250ms) ease,
+              opacity var(--snice-transition-fast, 150ms) ease;
+}
