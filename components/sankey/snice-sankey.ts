@@ -1,4 +1,4 @@
-import { element, property, render, styles, dispatch, ready, dispose, html, css } from 'snice';
+import { element, property, render, styles, dispatch, ready, dispose, watch, html, css } from 'snice';
 import cssContent from './snice-sankey.css?inline';
 import type {
   SankeyData, SankeyAlignment, SankeyLayoutNode, SankeyLayoutLink,
@@ -33,6 +33,7 @@ export class SniceSankey extends HTMLElement implements SniceSankeyElement {
   @property({ type: Boolean })
   animation = false;
 
+  private cachedData: SankeyData = { nodes: [], links: [] };
   private layoutNodes: SankeyLayoutNode[] = [];
   private layoutLinks: SankeyLayoutLink[] = [];
   private hoveredNodeId: string | null = null;
@@ -88,9 +89,15 @@ export class SniceSankey extends HTMLElement implements SniceSankeyElement {
     }
   }
 
+  @watch('data')
+  onDataChange() {
+    this.cachedData = this.data;
+    this.computeLayout();
+  }
 
   private computeLayout() {
-    if (!this.data || !this.data.nodes.length || !this.data.links.length) {
+    const data = this.cachedData;
+    if (!data || !data.nodes.length || !data.links.length) {
       this.layoutNodes = [];
       this.layoutLinks = [];
       return;
@@ -105,7 +112,7 @@ export class SniceSankey extends HTMLElement implements SniceSankeyElement {
 
     // Build node map
     const nodeMap = new Map<string, SankeyLayoutNode>();
-    this.data.nodes.forEach((n, i) => {
+    data.nodes.forEach((n, i) => {
       nodeMap.set(n.id, {
         id: n.id,
         label: n.label || n.id,
@@ -121,7 +128,7 @@ export class SniceSankey extends HTMLElement implements SniceSankeyElement {
     });
 
     // Build links
-    const links: SankeyLayoutLink[] = this.data.links.map(l => ({
+    const links: SankeyLayoutLink[] = data.links.map(l => ({
       source: nodeMap.get(l.source)!,
       target: nodeMap.get(l.target)!,
       value: l.value,
@@ -206,6 +213,7 @@ export class SniceSankey extends HTMLElement implements SniceSankeyElement {
 
     this.layoutNodes = nodes;
     this.layoutLinks = links;
+    this.renderTrigger++;
   }
 
   private computeDepths(nodeMap: Map<string, SankeyLayoutNode>) {
@@ -329,14 +337,14 @@ export class SniceSankey extends HTMLElement implements SniceSankeyElement {
   }
 
   private handleNodeClick(node: SankeyLayoutNode) {
-    const originalNode = this.data.nodes.find(n => n.id === node.id);
+    const originalNode = this.cachedData.nodes.find(n => n.id === node.id);
     if (originalNode) {
       this.emitNodeClick(originalNode);
     }
   }
 
   private handleLinkClick(link: SankeyLayoutLink, index: number) {
-    const originalLink = this.data.links[index];
+    const originalLink = this.cachedData.links[index];
     if (originalLink) {
       this.emitLinkClick(originalLink);
     }
@@ -350,7 +358,7 @@ export class SniceSankey extends HTMLElement implements SniceSankeyElement {
       this.tooltipSubtext = `Value: ${node.value.toLocaleString()}`;
       this.updateTooltipPosition(e);
       this.tooltipVisible = true;
-      const originalNode = this.data.nodes.find(n => n.id === node.id);
+      const originalNode = this.cachedData.nodes.find(n => n.id === node.id);
       if (originalNode) {
         this.emitHover({ type: 'node', item: originalNode });
       }
@@ -370,7 +378,7 @@ export class SniceSankey extends HTMLElement implements SniceSankeyElement {
       this.tooltipSubtext = `Value: ${link.value.toLocaleString()}`;
       this.updateTooltipPosition(e);
       this.tooltipVisible = true;
-      const originalLink = this.data.links[index];
+      const originalLink = this.cachedData.links[index];
       if (originalLink) {
         this.emitHover({ type: 'link', item: originalLink });
       }
@@ -421,7 +429,6 @@ export class SniceSankey extends HTMLElement implements SniceSankeyElement {
 
   @render()
   renderContent() {
-    this.computeLayout();
     const hasData = this.layoutNodes.length > 0;
     const isDimmed = this.isDimmed;
 

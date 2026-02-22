@@ -1,4 +1,4 @@
-import { element, property, dispatch, ready, dispose, render, styles, html, css } from 'snice';
+import { element, property, dispatch, ready, dispose, watch, render, styles, html, css } from 'snice';
 import cssContent from './snice-treemap.css?inline';
 import type { TreemapNode, TreemapColorScheme, TreemapRect, SniceTreemapElement } from './snice-treemap.types';
 
@@ -130,7 +130,7 @@ function squarify(
 
 @element('snice-treemap')
 export class SniceTreemap extends HTMLElement implements SniceTreemapElement {
-  @property({ type: Object })
+  @property({ type: Object, attribute: false })
   data: TreemapNode = { label: '', value: 0 };
 
   @property({ type: Boolean, attribute: 'show-labels' })
@@ -149,7 +149,7 @@ export class SniceTreemap extends HTMLElement implements SniceTreemapElement {
   animation = true;
 
   // Private reactive state (using @property to trigger re-renders)
-  @property({ type: Array }) private _drillPathState: TreemapNode[] = [];
+  @property({ type: Array, attribute: false }) private _drillPathState: TreemapNode[] = [];
   @property() private _tooltipText = '';
   @property({ type: Number }) private _tooltipX = 0;
   @property({ type: Number }) private _tooltipY = 0;
@@ -194,6 +194,12 @@ export class SniceTreemap extends HTMLElement implements SniceTreemapElement {
       }
     });
     this._resizeObserver.observe(this);
+  }
+
+  @watch('data')
+  onDataChange() {
+    this._drillPathState = [];
+    this._rects = this.computeRects();
   }
 
   @dispose()

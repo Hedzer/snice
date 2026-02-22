@@ -1,4 +1,4 @@
-import { element, property, dispatch, query, render, styles, ready, dispose, html, css } from 'snice';
+import { element, property, dispatch, query, render, styles, ready, dispose, watch, html, css } from 'snice';
 import cssContent from './snice-network-graph.css?inline';
 import type { NetworkNode, NetworkEdge, NetworkGraphData, LayoutType, SniceNetworkGraphElement } from './snice-network-graph.types';
 
@@ -65,8 +65,7 @@ export class SniceNetworkGraph extends HTMLElement implements SniceNetworkGraphE
   private animFrameId = 0;
   private simAlpha = 1;
   private simRunning = false;
-  private lastDataRef: NetworkGraphData | null = null;
-  private lastLayout: LayoutType | null = null;
+  private simInitialized = false;
 
   // Zoom/pan state
   private zoomScale = 1;
@@ -143,6 +142,21 @@ export class SniceNetworkGraph extends HTMLElement implements SniceNetworkGraphE
       }
     });
     this.resizeObserver.observe(this);
+
+    // Build simulation if data was set before ready
+    if (this.data.nodes.length > 0 && !this.simInitialized) {
+      this.buildSimulation();
+    }
+  }
+
+  @watch('data')
+  onDataChange() {
+    this.buildSimulation();
+  }
+
+  @watch('layout')
+  onLayoutChange() {
+    this.buildSimulation();
   }
 
   @dispose()
@@ -168,16 +182,8 @@ export class SniceNetworkGraph extends HTMLElement implements SniceNetworkGraphE
     return Math.max(6, Math.min(20, 4 + node.degree * 2));
   }
 
-  private ensureSimulation() {
-    const currentData = this.data;
-    const currentLayout = this.layout;
-    if (this.lastDataRef === currentData && this.lastLayout === currentLayout) return;
-    this.lastDataRef = currentData;
-    this.lastLayout = currentLayout;
-    this.buildSimulation();
-  }
-
   private buildSimulation() {
+    this.simInitialized = true;
     this.stopSimulation();
 
     const nodeMap = new Map<string, SimNode>();
@@ -542,9 +548,6 @@ export class SniceNetworkGraph extends HTMLElement implements SniceNetworkGraphE
 
   @render()
   renderContent() {
-    // Rebuild simulation data when data or layout changes
-    this.ensureSimulation();
-
     const w = this.containerWidth || 600;
     const h = this.containerHeight || 400;
     const transform = `translate(${this.panX}, ${this.panY}) scale(${this.zoomScale})`;

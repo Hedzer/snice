@@ -1,4 +1,4 @@
-import { element, property, render, styles, ready, query, html, css } from 'snice';
+import { element, property, render, styles, ready, query, watch, html, css, unsafeHTML } from 'snice';
 import type { SniceVirtualScrollerElement, VirtualScrollerItem } from './snice-virtual-scroller.types';
 import cssContent from './snice-virtual-scroller.css?inline';
 
@@ -24,9 +24,17 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
   @query('.scroller')
   private scrollerElement!: HTMLElement;
 
+  // Cached values to avoid repeated JSON.parse from attribute getter
+  private _cachedItems: VirtualScrollerItem[] = [];
+  private _cachedRenderItem: ((item: VirtualScrollerItem, index: number) => string | HTMLElement) | null = null;
+
   private visibleStart = 0;
   private visibleEnd = 0;
   private _scrollTop = 0;
+
+  // Triggers re-render on scroll
+  @property({ type: Number, attribute: false })
+  private _scrollTick = 0;
 
   @styles()
   private styles() {
@@ -35,19 +43,36 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
 
   @ready()
   initialize() {
+    // Cache initial values if already set
+    if (!this._cachedRenderItem) {
+      this._cachedRenderItem = this.renderItem;
+    }
     this.updateVisibleRange();
   }
 
+  @watch('items')
+  onItemsChange(_old: any, newItems: VirtualScrollerItem[]) {
+    this._cachedItems = newItems || [];
+  }
+
+  @watch('renderItem')
+  onRenderItemChange(_old: any, newFn: any) {
+    if (typeof newFn === 'function') {
+      this._cachedRenderItem = newFn;
+    }
+  }
+
   scrollToIndex(index: number): void {
-    if (index < 0 || index >= this.items.length) return;
+    if (index < 0 || index >= this._cachedItems.length) return;
 
     const offset = index * this.itemHeight;
     this._scrollTop = offset;
     this.scrollTop = offset;
+    this._scrollTick++;
   }
 
   scrollToItem(id: string | number): void {
-    const index = this.items.findIndex(item => item.id === id);
+    const index = this._cachedItems.findIndex(item => item.id === id);
     if (index !== -1) {
       this.scrollToIndex(index);
     }
@@ -55,6 +80,7 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
 
   refresh(): void {
     this.updateVisibleRange();
+    this._scrollTick++;
   }
 
   getVisibleRange(): { start: number; end: number } {
@@ -67,6 +93,7 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
   private handleScroll = () => {
     this._scrollTop = this.scrollTop;
     this.updateVisibleRange();
+    this._scrollTick++;
   };
 
   private updateVisibleRange() {
@@ -77,15 +104,17 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
     const visibleCount = Math.ceil(containerHeight / this.itemHeight);
 
     this.visibleStart = Math.max(0, start - this.bufferSize);
-    this.visibleEnd = Math.min(this.items.length, start + visibleCount + this.bufferSize);
+    this.visibleEnd = Math.min(this._cachedItems.length, start + visibleCount + this.bufferSize);
   }
 
   @render()
   template() {
     this.updateVisibleRange();
 
-    const totalHeight = this.items.length * this.itemHeight;
-    const visibleItems = this.items.slice(this.visibleStart, this.visibleEnd);
+    const items = this._cachedItems;
+    const renderFn = this._cachedRenderItem;
+    const totalHeight = items.length * this.itemHeight;
+    const visibleItems = items.slice(this.visibleStart, this.visibleEnd);
 
     return html/*html*/`
       <div class="scroller" @scroll=${this.handleScroll}>
@@ -93,10 +122,9 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
         <div class="scroller__viewport" style="transform: translateY(${this.visibleStart * this.itemHeight}px);">
           ${visibleItems.map((item, idx) => {
             const actualIndex = this.visibleStart + idx;
-            const itemContent = typeof this.renderItem === 'function'
-              ? this.renderItem(item, actualIndex)
+            const itemContent = typeof renderFn === 'function'
+              ? renderFn(item, actualIndex)
               : `<div>${JSON.stringify(item.data)}</div>`;
-            const top = 0;
 
             if (typeof itemContent === 'string') {
               return html/*html*/`
@@ -104,7 +132,7 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
                   class="scroller__item"
                   style="top: ${idx * this.itemHeight}px; height: ${item.height || this.itemHeight}px;"
                   data-index="${actualIndex}">
-                  ${itemContent}
+                  ${unsafeHTML(itemContent)}
                 </div>
               `;
             }
