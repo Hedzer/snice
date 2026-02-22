@@ -178,6 +178,40 @@
     document.getElementById('comp-count').textContent = document.querySelectorAll('.comp-tag').length;
     // Re-run Prism highlighting after all scripts load
     if (typeof Prism !== 'undefined') Prism.highlightAll();
+
+    // Build sidebar nav from page content
+    (function() {
+      const sidebar = document.getElementById('comp-sidebar');
+      if (!sidebar) return;
+      let html = '';
+      const sections = [];
+      // Walk through categories and component sections in DOM order
+      const els = document.querySelectorAll('.comp-category, .comp-section > h3');
+      els.forEach(el => {
+        if (el.classList.contains('comp-category')) {
+          html += '<div class="nav-group">' + el.textContent.trim() + '</div>';
+        } else {
+          const section = el.closest('.comp-section');
+          const name = el.textContent.trim();
+          const id = 'comp-' + name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '');
+          section.id = id;
+          html += '<a href="#' + id + '">' + name + '</a>';
+          sections.push(section);
+        }
+      });
+      sidebar.innerHTML = html;
+
+      // Scroll highlight with IntersectionObserver
+      const links = sidebar.querySelectorAll('a');
+      const observer = new IntersectionObserver(entries => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id));
+          }
+        }
+      }, { rootMargin: '-80px 0px -70% 0px' });
+      sections.forEach(s => observer.observe(s));
+    })();
   </script>
   <style>
     /* Override Prism backgrounds to blend with comp-split-code */

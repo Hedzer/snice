@@ -63,6 +63,47 @@
     [data-theme="dark"] .comp-split-code code[class*="language-"] {
       background: transparent;
     }
+    /* ─── Component sidebar nav ─── */
+    .comp-sidebar {
+      position: fixed;
+      top: 5rem;
+      left: max(0.5rem, calc(50% - 600px));
+      width: 145px;
+      max-height: calc(100vh - 6rem);
+      overflow-y: auto;
+      font-size: 0.75rem;
+      scrollbar-width: thin;
+      padding: 0.5rem 0;
+      z-index: 50;
+    }
+    .comp-sidebar .nav-group {
+      font-size: 0.6rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--snice-color-text-tertiary, #888);
+      margin-top: 1rem;
+      margin-bottom: 0.2rem;
+    }
+    .comp-sidebar .nav-group:first-child { margin-top: 0; }
+    .comp-sidebar a {
+      display: block;
+      padding: 0.15rem 0;
+      color: var(--snice-color-text-secondary, #aaa);
+      text-decoration: none;
+      line-height: 1.35;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .comp-sidebar a:hover { color: var(--snice-color-text, #eee); }
+    .comp-sidebar a.active { color: var(--snice-color-primary, #2563eb); }
+    @media (min-width: 1100px) {
+      main.wrap { margin-left: max(0px, calc(50% - 600px + 160px)); max-width: 1100px; }
+    }
+    @media (max-width: 1099px) {
+      .comp-sidebar { display: none; }
+    }
   </style>
 </head>
 <body>
@@ -82,6 +123,7 @@
       </nav>
     </div>
   </header>
+  <nav class="comp-sidebar" id="comp-sidebar"></nav>
   <main class="wrap">
     <div class="page-title">
       <h2><span id="comp-count"></span> Components</h2>
@@ -3307,22 +3349,26 @@ const x = 42;
     nodes: [
       { id: 'organic', label: 'Organic' },
       { id: 'paid', label: 'Paid Ads' },
-      { id: 'referral', label: 'Referral' },
-      { id: 'landing', label: 'Landing Page' },
+      { id: 'social', label: 'Social' },
+      { id: 'landing', label: 'Landing' },
+      { id: 'blog', label: 'Blog' },
       { id: 'pricing', label: 'Pricing' },
       { id: 'signup', label: 'Sign Up' },
-      { id: 'trial', label: 'Free Trial' },
-      { id: 'paid-plan', label: 'Paid Plan' }
+      { id: 'download', label: 'Download' },
+      { id: 'purchase', label: 'Purchase' }
     ],
     links: [
-      { source: 'organic', target: 'landing', value: 4000 },
-      { source: 'paid', target: 'landing', value: 3000 },
-      { source: 'referral', target: 'landing', value: 1500 },
-      { source: 'landing', target: 'pricing', value: 5500 },
-      { source: 'landing', target: 'signup', value: 2000 },
-      { source: 'pricing', target: 'signup', value: 3200 },
-      { source: 'signup', target: 'trial', value: 4000 },
-      { source: 'trial', target: 'paid-plan', value: 1800 }
+      { source: 'organic', target: 'landing', value: 3000 },
+      { source: 'organic', target: 'blog', value: 2000 },
+      { source: 'paid', target: 'landing', value: 4000 },
+      { source: 'paid', target: 'pricing', value: 1500 },
+      { source: 'social', target: 'landing', value: 1000 },
+      { source: 'social', target: 'blog', value: 800 },
+      { source: 'landing', target: 'signup', value: 5000 },
+      { source: 'landing', target: 'download', value: 2000 },
+      { source: 'blog', target: 'signup', value: 1500 },
+      { source: 'blog', target: 'download', value: 1000 },
+      { source: 'pricing', target: 'purchase', value: 1500 }
     ]
   };
 &lt;/script&gt;</code></pre>
@@ -3364,22 +3410,26 @@ const x = 42;
         nodes: [
           { id: 'organic', label: 'Organic' },
           { id: 'paid', label: 'Paid Ads' },
-          { id: 'referral', label: 'Referral' },
-          { id: 'landing', label: 'Landing Page' },
+          { id: 'social', label: 'Social' },
+          { id: 'landing', label: 'Landing' },
+          { id: 'blog', label: 'Blog' },
           { id: 'pricing', label: 'Pricing' },
           { id: 'signup', label: 'Sign Up' },
-          { id: 'trial', label: 'Free Trial' },
-          { id: 'paid-plan', label: 'Paid Plan' }
+          { id: 'download', label: 'Download' },
+          { id: 'purchase', label: 'Purchase' }
         ],
         links: [
-          { source: 'organic', target: 'landing', value: 4000 },
-          { source: 'paid', target: 'landing', value: 3000 },
-          { source: 'referral', target: 'landing', value: 1500 },
-          { source: 'landing', target: 'pricing', value: 5500 },
-          { source: 'landing', target: 'signup', value: 2000 },
-          { source: 'pricing', target: 'signup', value: 3200 },
-          { source: 'signup', target: 'trial', value: 4000 },
-          { source: 'trial', target: 'paid-plan', value: 1800 }
+          { source: 'organic', target: 'landing', value: 3000 },
+          { source: 'organic', target: 'blog', value: 2000 },
+          { source: 'paid', target: 'landing', value: 4000 },
+          { source: 'paid', target: 'pricing', value: 1500 },
+          { source: 'social', target: 'landing', value: 1000 },
+          { source: 'social', target: 'blog', value: 800 },
+          { source: 'landing', target: 'signup', value: 5000 },
+          { source: 'landing', target: 'download', value: 2000 },
+          { source: 'blog', target: 'signup', value: 1500 },
+          { source: 'blog', target: 'download', value: 1000 },
+          { source: 'pricing', target: 'purchase', value: 1500 }
         ]
       };
       document.getElementById('demo-sankey-energy').data = {
@@ -3917,6 +3967,40 @@ const x = 42;
     document.getElementById('comp-count').textContent = document.querySelectorAll('.comp-tag').length;
     // Re-run Prism highlighting after all scripts load
     if (typeof Prism !== 'undefined') Prism.highlightAll();
+
+    // Build sidebar nav from page content
+    (function() {
+      const sidebar = document.getElementById('comp-sidebar');
+      if (!sidebar) return;
+      let html = '';
+      const sections = [];
+      // Walk through categories and component sections in DOM order
+      const els = document.querySelectorAll('.comp-category, .comp-section > h3');
+      els.forEach(el => {
+        if (el.classList.contains('comp-category')) {
+          html += '<div class="nav-group">' + el.textContent.trim() + '</div>';
+        } else {
+          const section = el.closest('.comp-section');
+          const name = el.textContent.trim();
+          const id = 'comp-' + name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '');
+          section.id = id;
+          html += '<a href="#' + id + '">' + name + '</a>';
+          sections.push(section);
+        }
+      });
+      sidebar.innerHTML = html;
+
+      // Scroll highlight with IntersectionObserver
+      const links = sidebar.querySelectorAll('a');
+      const observer = new IntersectionObserver(entries => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id));
+          }
+        }
+      }, { rootMargin: '-80px 0px -70% 0px' });
+      sections.forEach(s => observer.observe(s));
+    })();
   </script>
   <style>
     /* Override Prism backgrounds to blend with comp-split-code */

@@ -63,6 +63,47 @@
     [data-theme="dark"] .comp-split-code code[class*="language-"] {
       background: transparent;
     }
+    /* ─── Component sidebar nav ─── */
+    .comp-sidebar {
+      position: fixed;
+      top: 5rem;
+      left: max(0.5rem, calc(50% - 600px));
+      width: 145px;
+      max-height: calc(100vh - 6rem);
+      overflow-y: auto;
+      font-size: 0.75rem;
+      scrollbar-width: thin;
+      padding: 0.5rem 0;
+      z-index: 50;
+    }
+    .comp-sidebar .nav-group {
+      font-size: 0.6rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--snice-color-text-tertiary, #888);
+      margin-top: 1rem;
+      margin-bottom: 0.2rem;
+    }
+    .comp-sidebar .nav-group:first-child { margin-top: 0; }
+    .comp-sidebar a {
+      display: block;
+      padding: 0.15rem 0;
+      color: var(--snice-color-text-secondary, #aaa);
+      text-decoration: none;
+      line-height: 1.35;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .comp-sidebar a:hover { color: var(--snice-color-text, #eee); }
+    .comp-sidebar a.active { color: var(--snice-color-primary, #2563eb); }
+    @media (min-width: 1100px) {
+      main.wrap { margin-left: max(0px, calc(50% - 600px + 160px)); max-width: 1100px; }
+    }
+    @media (max-width: 1099px) {
+      .comp-sidebar { display: none; }
+    }
   </style>
 </head>
 <body>
@@ -82,6 +123,7 @@
       </nav>
     </div>
   </header>
+  <nav class="comp-sidebar" id="comp-sidebar"></nav>
   <main class="wrap">
     <div class="page-title">
       <h2><span id="comp-count"></span> Components</h2>
