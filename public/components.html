@@ -1706,7 +1706,7 @@ timeline.items = [
       <h3>File Gallery</h3>
       <p class="comp-desc">File management with previews and upload progress</p>
       <div class="comp-split comp-split-stacked">
-        <div class="comp-split-demo">
+        <div class="comp-split-demo demo-col">
           <snice-file-gallery id="demo-gallery" accept="image/*" multiple view="grid" show-add-button allow-delete auto-upload="false"></snice-file-gallery>
           <script>
             customElements.whenDefined('snice-file-gallery').then(() => {
@@ -1821,7 +1821,7 @@ timeline.items = [
       <p class="comp-desc">Syntax-highlighted code display</p>
       <div class="comp-split comp-split-stacked">
         <div class="comp-split-demo">
-          <snice-code-block language="typescript" show-line-numbers copyable theme="dark" filename="counter.ts" code="import { element, property, render, dispatch } from 'snice';
+          <snice-code-block language="snice" grammar="components/grammars/snice.json" show-line-numbers copyable theme="dark" filename="counter.ts" code="import { element, property, render, dispatch } from 'snice';
 
 @element('my-counter')
 export class MyCounter extends HTMLElement {
@@ -1867,7 +1867,8 @@ export class MyCounter extends HTMLElement {
         <div class="comp-split-code">
           <span class="code-lang">html</span>
           <pre><code class="language-html">&lt;snice-code-block
-  language="typescript"
+  language="snice"
+  grammar="grammars/snice.json"
   show-line-numbers
   copyable
   filename="example.ts"
@@ -2073,74 +2074,8 @@ export class MyCounter extends HTMLElement {
       </div>
     </div>
     <div class="comp-section">
-      <h3>Draw</h3>
-      <p class="comp-desc">Freehand drawing canvas with tools and brush options</p>
-      <div class="comp-split comp-split-stacked">
-        <div class="comp-split-demo" style="padding:0;overflow:hidden">
-          <div style="display:flex;height:400px">
-            <div class="draw-tb" id="draw-toolbar">
-              <span class="draw-tb-label">Color</span>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px">
-                <span class="dsw active" style="--c:#3b82f6" onclick="setDrawColor(this,'#3b82f6')"></span>
-                <span class="dsw" style="--c:#ef4444" onclick="setDrawColor(this,'#ef4444')"></span>
-                <span class="dsw" style="--c:#10b981" onclick="setDrawColor(this,'#10b981')"></span>
-                <span class="dsw" style="--c:#f59e0b" onclick="setDrawColor(this,'#f59e0b')"></span>
-                <span class="dsw" style="--c:#8b5cf6" onclick="setDrawColor(this,'#8b5cf6')"></span>
-                <span class="dsw" style="--c:#ec4899" onclick="setDrawColor(this,'#ec4899')"></span>
-                <span class="dsw" style="--c:#e2e8f0" onclick="setDrawColor(this,'#e2e8f0')"></span>
-                <span class="dsw" style="--c:#1e293b" onclick="setDrawColor(this,'#1e293b')"></span>
-              </div>
-              <div class="draw-tb-sep"></div>
-              <span class="draw-tb-label">Size</span>
-              <input type="range" min="1" max="20" value="3" oninput="document.getElementById('demo-draw').strokeWidth=+this.value" style="width:34px;accent-color:var(--snice-color-primary)" title="Brush size">
-              <div class="draw-tb-sep"></div>
-              <button class="dtb" onclick="document.getElementById('demo-draw').undo()" title="Undo">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6L1 9l3 3"/><path d="M1 9h10a4 4 0 000-8H8"/></svg>
-              </button>
-              <button class="dtb" onclick="document.getElementById('demo-draw').redo()" title="Redo">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 6l3 3-3 3"/><path d="M15 9H5a4 4 0 010-8h3"/></svg>
-              </button>
-              <button class="dtb dtb-danger" onclick="document.getElementById('demo-draw').clear()" title="Clear canvas">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12"/><path d="M5.3 4V2.7h5.4V4"/><path d="M6 7v5M10 7v5"/><path d="M3.3 4l.7 9.3h8l.7-9.3"/></svg>
-              </button>
-            </div>
-            <snice-draw id="demo-draw" width="100%" height="100%" color="#3b82f6" stroke-width="3" style="flex:1;display:block"></snice-draw>
-          </div>
-          <script>
-            function setDrawColor(el, color) {
-              document.getElementById('demo-draw').color = color;
-              document.getElementById('draw-toolbar').querySelectorAll('.dsw').forEach(s => s.classList.remove('active'));
-              el.classList.add('active');
-            }
-          </script>
-        </div>
-        <div class="comp-split-code">
-          <span class="code-lang">html</span>
-          <pre><code class="language-html">&lt;snice-draw
-  width="100%" height="300"
-  color="#3b82f6"
-  stroke-width="3"
-&gt;&lt;/snice-draw&gt;
-
-&lt;script&gt;
-  const draw = document.querySelector('snice-draw');
-
-  // Brush settings
-  draw.color = '#ef4444';
-  draw.strokeWidth = 5;
-
-  // Actions
-  draw.undo();
-  draw.redo();
-  draw.clear();
-  draw.download('art.png');
-&lt;/script&gt;</code></pre>
-        </div>
-      </div>
-    </div>
-    <div class="comp-section">
-      <h3>Paint</h3>
-      <p class="comp-desc">Self-contained drawing canvas with built-in toolbar</p>
+      <h3>Draw + Paint</h3>
+      <p class="comp-desc">Self-contained drawing canvas with built-in toolbar. Uses <code>&lt;snice-draw&gt;</code> under the hood — use it standalone for a bare canvas with your own UI.</p>
       <div class="comp-split comp-split-stacked">
         <div class="comp-split-demo" style="padding:0;overflow:hidden">
           <div style="height:400px">
@@ -2149,23 +2084,31 @@ export class MyCounter extends HTMLElement {
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <pre><code class="language-html">&lt;snice-paint&gt;&lt;/snice-paint&gt;
+          <pre><code class="language-html">&lt;!-- All-in-one with built-in toolbar --&gt;
+&lt;snice-paint&gt;&lt;/snice-paint&gt;
 
-&lt;!-- Custom colors --&gt;
-&lt;snice-paint colors='["#ff0000","#00ff00","#0000ff"]'&gt;&lt;/snice-paint&gt;
+&lt;!-- Custom colors &amp; controls --&gt;
+&lt;snice-paint
+  colors='["#ff0000","#00ff00","#0000ff"]'
+  controls="colors,size,undo,redo"
+&gt;&lt;/snice-paint&gt;
 
-&lt;!-- Minimal controls --&gt;
-&lt;snice-paint controls="colors,undo"&gt;&lt;/snice-paint&gt;
+&lt;!-- Bare canvas only (bring your own toolbar) --&gt;
+&lt;snice-draw
+  width="800" height="600"
+  color="#3b82f6" stroke-width="3"
+&gt;&lt;/snice-draw&gt;
 
 &lt;script&gt;
+  // Paint: self-contained
   const paint = document.querySelector('snice-paint');
-
-  // Export
   paint.download('artwork.png');
 
-  // Save / load
-  const strokes = paint.getStrokes();
-  paint.setStrokes(strokes);
+  // Draw: bare canvas, wire up your own UI
+  const draw = document.querySelector('snice-draw');
+  draw.color = '#ef4444';
+  draw.undo();
+  draw.clear();
 &lt;/script&gt;</code></pre>
         </div>
       </div>
@@ -2632,13 +2575,13 @@ export class MyCounter extends HTMLElement {
     </div>
     <div class="comp-section">
       <h3>Standalone Build</h3>
-      <p class="comp-desc">Use any component without the full framework</p>
+      <p class="comp-desc">Use any component without the full framework. Each element includes a full copy of Snice.</p>
       <pre><code>npx snice build-component button
 <span class="c"># creates snice-button.min.js (~25kb gzipped)</span>
 
 &lt;script src=<span class="s">"snice-button.min.js"</span>&gt;&lt;/script&gt;
 &lt;snice-button variant=<span class="s">"primary"</span>&gt;Works anywhere&lt;/snice-button&gt;</code></pre>
-      <p class="comp-desc" style="margin-top:0.75rem">Using 3+ components? Load the shared runtime once and use lightweight builds (~2-5KB each). See the <a href="usage.html">Usage</a> page for details.</p>
+      <p class="comp-desc" style="margin-top:0.75rem">Using 3+ components? Load the runtime once and use light builds (~2-5KB each). See the <a href="guide.html#runtime-light">Runtime + Light</a> guide for details.</p>
     </div>
     <div class="comp-section">
       <h3>React Adapter</h3>
@@ -2744,69 +2687,73 @@ export class MyCounter extends HTMLElement {
     </div>
   </footer>
 
-  <!-- Part 1 scripts -->
-  <script src="components/snice-button.min.js"></script>
-  <script src="components/snice-input.min.js"></script>
-  <script src="components/snice-select.min.js"></script>
-  <script src="components/snice-card.min.js"></script>
-  <script src="components/snice-modal.min.js"></script>
-  <script src="components/snice-alert.min.js"></script>
-  <script src="components/snice-checkbox.min.js"></script>
-  <script src="components/snice-radio.min.js"></script>
-  <script src="components/snice-switch.min.js"></script>
-  <script src="components/snice-textarea.min.js"></script>
-  <script src="components/snice-tabs.min.js"></script>
-  <script src="components/snice-table.min.js"></script>
-  <script src="components/snice-badge.min.js"></script>
-  <script src="components/snice-qr-code.min.js"></script>
-  <script src="components/snice-breadcrumbs.min.js"></script>
-  <script src="components/snice-pagination.min.js"></script>
-  <script src="components/snice-link.min.js"></script>
-  <script src="components/snice-menu.min.js"></script>
-  <script src="components/snice-drawer.min.js"></script>
-  <script src="components/snice-tooltip.min.js"></script>
+  <!-- Shared runtime (loaded once) -->
+  <script src="components/snice-runtime.min.js"></script>
 
-  <!-- Part 2 scripts -->
-  <script src="components/snice-chip.min.js"></script>
-  <script src="components/snice-progress.min.js"></script>
-  <script src="components/snice-spinner.min.js"></script>
-  <script src="components/snice-toast.min.js"></script>
-  <script src="components/snice-banner.min.js"></script>
-  <script src="components/snice-color-picker.min.js"></script>
-  <script src="components/snice-avatar.min.js"></script>
-  <script src="components/snice-skeleton.min.js"></script>
-  <script src="components/snice-divider.min.js"></script>
-  <script src="components/snice-accordion.min.js"></script>
-  <script src="components/snice-empty-state.min.js"></script>
-  <script src="components/snice-timeline.min.js"></script>
-  <script src="components/snice-image.min.js"></script>
-  <script src="components/snice-command-palette.min.js"></script>
-  <script src="components/snice-chart.min.js"></script>
-  <script src="components/snice-sparkline.min.js"></script>
-  <script src="components/snice-date-picker.min.js"></script>
-  <script src="components/snice-slider.min.js"></script>
-  <script src="components/snice-file-upload.min.js"></script>
-  <script src="components/snice-file-gallery.min.js"></script>
-  <script src="components/snice-stepper.min.js"></script>
-  <script src="components/snice-code-block.min.js"></script>
-  <script src="components/snice-terminal.min.js"></script>
-  <script src="components/snice-carousel.min.js"></script>
-  <script src="components/snice-calendar.min.js"></script>
-  <script src="components/snice-split-pane.min.js"></script>
-  <script src="components/snice-draw.min.js"></script>
-  <script src="components/snice-color-display.min.js"></script>
-  <script src="components/snice-kanban.min.js"></script>
-  <script src="components/snice-chat.min.js"></script>
-  <script src="components/snice-camera.min.js"></script>
-  <script src="components/snice-qr-reader.min.js"></script>
-  <script src="components/snice-audio-recorder.min.js"></script>
-  <script src="components/snice-music-player.min.js"></script>
-  <script src="components/snice-location.min.js"></script>
-  <script src="components/snice-timer.min.js"></script>
-  <script src="components/snice-gauge.min.js"></script>
-  <script src="components/snice-heatmap.min.js"></script>
-  <script src="components/snice-masonry.min.js"></script>
-  <script src="components/snice-link-preview.min.js"></script>
+  <!-- Part 1 scripts (lightweight, shared runtime) -->
+  <script src="components/snice-button.light.min.js"></script>
+  <script src="components/snice-input.light.min.js"></script>
+  <script src="components/snice-select.light.min.js"></script>
+  <script src="components/snice-card.light.min.js"></script>
+  <script src="components/snice-modal.light.min.js"></script>
+  <script src="components/snice-alert.light.min.js"></script>
+  <script src="components/snice-checkbox.light.min.js"></script>
+  <script src="components/snice-radio.light.min.js"></script>
+  <script src="components/snice-switch.light.min.js"></script>
+  <script src="components/snice-textarea.light.min.js"></script>
+  <script src="components/snice-tabs.light.min.js"></script>
+  <script src="components/snice-table.light.min.js"></script>
+  <script src="components/snice-badge.light.min.js"></script>
+  <script src="components/snice-qr-code.light.min.js"></script>
+  <script src="components/snice-breadcrumbs.light.min.js"></script>
+  <script src="components/snice-pagination.light.min.js"></script>
+  <script src="components/snice-link.light.min.js"></script>
+  <script src="components/snice-menu.light.min.js"></script>
+  <script src="components/snice-drawer.light.min.js"></script>
+  <script src="components/snice-tooltip.light.min.js"></script>
+
+  <!-- Part 2 scripts (lightweight, shared runtime) -->
+  <script src="components/snice-chip.light.min.js"></script>
+  <script src="components/snice-progress.light.min.js"></script>
+  <script src="components/snice-spinner.light.min.js"></script>
+  <script src="components/snice-toast.light.min.js"></script>
+  <script src="components/snice-banner.light.min.js"></script>
+  <script src="components/snice-color-picker.light.min.js"></script>
+  <script src="components/snice-avatar.light.min.js"></script>
+  <script src="components/snice-skeleton.light.min.js"></script>
+  <script src="components/snice-divider.light.min.js"></script>
+  <script src="components/snice-accordion.light.min.js"></script>
+  <script src="components/snice-empty-state.light.min.js"></script>
+  <script src="components/snice-timeline.light.min.js"></script>
+  <script src="components/snice-image.light.min.js"></script>
+  <script src="components/snice-command-palette.light.min.js"></script>
+  <script src="components/snice-chart.light.min.js"></script>
+  <script src="components/snice-sparkline.light.min.js"></script>
+  <script src="components/snice-date-picker.light.min.js"></script>
+  <script src="components/snice-slider.light.min.js"></script>
+  <script src="components/snice-file-upload.light.min.js"></script>
+  <script src="components/snice-file-gallery.light.min.js"></script>
+  <script src="components/snice-stepper.light.min.js"></script>
+  <script src="components/snice-code-block.light.min.js"></script>
+  <script src="components/snice-terminal.light.min.js"></script>
+  <script src="components/snice-carousel.light.min.js"></script>
+  <script src="components/snice-calendar.light.min.js"></script>
+  <script src="components/snice-split-pane.light.min.js"></script>
+  <script src="components/snice-draw.light.min.js"></script>
+  <script src="components/snice-paint.light.min.js"></script>
+  <script src="components/snice-color-display.light.min.js"></script>
+  <script src="components/snice-kanban.light.min.js"></script>
+  <script src="components/snice-chat.light.min.js"></script>
+  <script src="components/snice-camera.light.min.js"></script>
+  <script src="components/snice-qr-reader.light.min.js"></script>
+  <script src="components/snice-audio-recorder.light.min.js"></script>
+  <script src="components/snice-music-player.light.min.js"></script>
+  <script src="components/snice-location.light.min.js"></script>
+  <script src="components/snice-timer.light.min.js"></script>
+  <script src="components/snice-gauge.light.min.js"></script>
+  <script src="components/snice-heatmap.light.min.js"></script>
+  <script src="components/snice-masonry.light.min.js"></script>
+  <script src="components/snice-link-preview.light.min.js"></script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
