@@ -15,6 +15,7 @@ cpSync(join(root, 'components/theme/theme.css'), join(out, 'theme/theme.css'));
 const cdnDir = join(root, 'dist/cdn');
 const componentsOut = join(out, 'components');
 mkdirSync(componentsOut, { recursive: true });
+mkdirSync(cdnDir, { recursive: true });
 
 const components = readdirSync(cdnDir).filter(c => c !== 'runtime').sort();
 for (const comp of components) {

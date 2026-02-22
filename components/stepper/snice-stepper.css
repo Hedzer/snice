@@ -1,5 +1,6 @@
 :host {
   display: block;
+  width: 100%;
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   contain: layout style;
 }
@@ -187,4 +188,13 @@
 .step--clickable.step--active:hover .step__indicator,
 .step--clickable.step--completed:hover .step__indicator {
   opacity: 0.9;
+}
+
+/* Panel visibility controlled from parent via ::slotted */
+::slotted(snice-stepper-panel) {
+  display: none !important;
+}
+
+::slotted(snice-stepper-panel[active]) {
+  display: block !important;
 }

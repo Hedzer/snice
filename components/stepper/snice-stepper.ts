@@ -63,10 +63,15 @@ export class SniceStepper extends HTMLElement implements SniceStepperElement {
 
   @watch('currentStep')
   updatePanels() {
-    // Update all stepper-panel children's active state
+    // Update all stepper-panel children's active state via attributes
+    // (works even if snice-stepper-panel hasn't upgraded yet)
     if (!this.panels) return;
     this.panels.forEach((panel, index) => {
-      panel.active = index === this.currentStep;
+      if (index === this.currentStep) {
+        panel.setAttribute('active', '');
+      } else {
+        panel.removeAttribute('active');
+      }
     });
   }
 

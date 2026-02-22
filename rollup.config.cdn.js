@@ -28,10 +28,10 @@ const COMPONENT_CHILDREN = {
   'toast': ['toast-container'],
   'menu': ['menu-item', 'menu-divider'],
   // Note: These components define children inline or differently, no separate files:
-  // 'tree': ['tree-item'],
-  // 'list': ['list-item'],
+  'tree': ['tree-item'],
+  'list': ['list-item'],
   // 'nav': ['nav-item'],
-  // 'stepper': ['step'],
+  'stepper': ['stepper-panel'],
   // 'timeline': ['timeline-item'],
 };
 
