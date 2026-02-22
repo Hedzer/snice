@@ -1821,7 +1821,7 @@ timeline.items = [
       <p class="comp-desc">Syntax-highlighted code display</p>
       <div class="comp-split comp-split-stacked">
         <div class="comp-split-demo">
-          <snice-code-block language="snice" grammar="components/grammars/snice.json" show-line-numbers copyable theme="dark" filename="counter.ts" code="import { element, property, render, dispatch } from 'snice';
+          <snice-code-block style="width:100%" language="snice" grammar="components/grammars/snice.json" show-line-numbers copyable theme="dark" filename="counter.ts">import { element, property, render, dispatch } from 'snice';
 
 @element('my-counter')
 export class MyCounter extends HTMLElement {
@@ -1862,7 +1862,7 @@ export class MyCounter extends HTMLElement {
       &lt;div class=&quot;bar&quot; style=&quot;width:${pct}%&quot;&gt;&lt;/div&gt;
     `;
   }
-}"></snice-code-block>
+}</snice-code-block>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
@@ -1872,8 +1872,9 @@ export class MyCounter extends HTMLElement {
   show-line-numbers
   copyable
   filename="example.ts"
-  code="const x = 42;"
-&gt;&lt;/snice-code-block&gt;</code></pre>
+&gt;
+const x = 42;
+&lt;/snice-code-block&gt;</code></pre>
         </div>
       </div>
     </div>
@@ -2574,7 +2575,7 @@ export class MyCounter extends HTMLElement {
       </div>
     </div>
     <div class="comp-section">
-      <h3>Standalone Build</h3>
+      <h3>CDN Build</h3>
       <p class="comp-desc">Use any component without the full framework. Load the runtime once, then add components as needed.</p>
       <pre><code>npx snice build-component button
 <span class="c"># creates snice-button.min.js (~2-5kb)</span>
@@ -2692,7 +2693,7 @@ export class MyCounter extends HTMLElement {
   <!-- Shared runtime (loaded once) -->
   <script src="components/snice-runtime.min.js"></script>
 
-  <!-- Part 1 scripts (lightweight, shared runtime) -->
+  <!-- CDN components (part 1) -->
   <script src="components/snice-button.min.js"></script>
   <script src="components/snice-input.min.js"></script>
   <script src="components/snice-select.min.js"></script>
@@ -2714,7 +2715,7 @@ export class MyCounter extends HTMLElement {
   <script src="components/snice-drawer.min.js"></script>
   <script src="components/snice-tooltip.min.js"></script>
 
-  <!-- Part 2 scripts (lightweight, shared runtime) -->
+  <!-- CDN components (part 2) -->
   <script src="components/snice-chip.min.js"></script>
   <script src="components/snice-progress.min.js"></script>
   <script src="components/snice-spinner.min.js"></script>

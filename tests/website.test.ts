@@ -5,7 +5,7 @@ import { join } from 'path';
 
 const root = process.cwd();
 const publicDir = join(root, 'public');
-const standaloneDir = join(root, 'dist/standalone');
+const cdnDir = join(root, 'dist/cdn');
 
 describe('Website Build', () => {
   beforeAll(() => {
@@ -31,26 +31,26 @@ describe('Website Build', () => {
   });
 
   describe('Component Coverage', () => {
-    let standaloneComponents: string[];
+    let cdnComponents: string[];
     let copiedComponents: string[];
     let componentsHtml: string;
 
     beforeAll(() => {
-      standaloneComponents = readdirSync(standaloneDir).sort();
+      cdnComponents = readdirSync(cdnDir).sort();
       copiedComponents = readdirSync(join(publicDir, 'components'))
         .map(f => f.replace('snice-', '').replace('.min.js', ''))
         .sort();
       componentsHtml = readFileSync(join(publicDir, 'components.html'), 'utf-8');
     });
 
-    it('should copy all standalone components', () => {
-      const missing = standaloneComponents.filter(c => !copiedComponents.includes(c));
+    it('should copy all CDN components', () => {
+      const missing = cdnComponents.filter(c => !copiedComponents.includes(c));
       expect(missing).toEqual([]);
     });
 
     it('should list all components in the component list', () => {
       const missingFromList: string[] = [];
-      for (const comp of standaloneComponents) {
+      for (const comp of cdnComponents) {
         if (!componentsHtml.includes(`snice-${comp}<`)) {
           missingFromList.push(comp);
         }

@@ -247,7 +247,7 @@ export default [
           return null;
         }
       },
-      // Plugin to copy standalone theme.css
+      // Plugin to copy theme.css for CDN builds
       {
         name: 'copy-theme',
         generateBundle() {

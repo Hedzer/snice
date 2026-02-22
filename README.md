@@ -794,7 +794,7 @@ Use any Snice component without installing the framework:
 snice build-component button
 ```
 
-Creates standalone bundles (~20-40KB minified) that work anywhere:
+Creates CDN bundles that work anywhere:
 
 ```html
 <script src="snice-button.min.js"></script>

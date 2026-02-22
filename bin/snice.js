@@ -62,11 +62,10 @@ if (command === 'create-app') {
   }
 
   const componentName = positional[0];
-  const outputDir = flags.output || './dist/standalone';
-  const formats = flags.format ? flags.format.split(',') : ['esm', 'iife'];
+  const outputDir = flags.output || './dist/cdn';
+  const formats = flags.format ? flags.format.split(',') : ['iife'];
   const minify = flags.minify !== false;
   const withTheme = flags['with-theme'] === true;
-  const useSharedRuntime = flags['shared-runtime'] === true;
 
   if (!componentName) {
     console.error('❌ Error: Component name is required\n');
@@ -74,7 +73,7 @@ if (command === 'create-app') {
     process.exit(1);
   }
 
-  buildComponent(componentName, { outputDir, formats, minify, withTheme, useSharedRuntime, copyToPublic: flags['copy-to-public'] === true });
+  buildComponent(componentName, { outputDir, formats, minify, withTheme, copyToPublic: flags['copy-to-public'] === true });
 } else {
   console.log(`
 Snice CLI
@@ -82,7 +81,7 @@ Snice CLI
 Usage:
   snice create-app [options] <project-name>
   snice create-app [options] .                          Initialize in current directory
-  snice build-component <component-name> [options]      Build standalone component
+  snice build-component <component-name> [options]      Build CDN component
   snice validate                                        Check project for common issues
   snice mcp                                             Start MCP server for AI assistants
 
@@ -90,11 +89,10 @@ Create App Options:
   --template=<name>                                     Template to use (default: base)
 
 Build Component Options:
-  --output=<dir>                                        Output directory (default: ./dist/standalone)
-  --format=<formats>                                    Comma-separated formats: esm,umd,iife (default: esm,iife)
+  --output=<dir>                                        Output directory (default: ./dist/cdn)
+  --format=<formats>                                    Comma-separated formats: iife (default: iife)
   --minify                                              Minify output (default: true)
   --with-theme                                          Include theme.css in output
-  --shared-runtime                                      Build lightweight version (requires snice-runtime.min.js)
 
 Templates:
   base    - Minimal starter with counter example (default)
@@ -108,7 +106,7 @@ Examples:
   snice create-app my-app
   snice create-app my-app --template=pwa
   snice build-component button
-  snice build-component button --output=./standalone --format=esm,umd
+  snice build-component button --output=./cdn --format=iife
   snice mcp
 `);
 }
@@ -210,9 +208,9 @@ function copyTemplateFiles(sourceDir, targetDir, projectName) {
 }
 
 async function buildComponent(componentName, options) {
-  const { outputDir, formats, minify, withTheme, useSharedRuntime, copyToPublic } = options;
+  const { outputDir, formats, minify, withTheme, copyToPublic } = options;
 
-  console.log(`\n🔨 Building standalone component: ${componentName}\n`);
+  console.log(`\n🔨 Building CDN component: ${componentName}\n`);
 
   // Verify component exists
   const componentPath = join(process.cwd(), 'components', componentName, `snice-${componentName}.ts`);
@@ -236,50 +234,32 @@ async function buildComponent(componentName, options) {
     process.exit(1);
   }
 
-  // Build both full and light versions
-  const builds = [
-    { useSharedRuntime: false, outputSuffix: '', label: 'full' }
-  ];
+  const configContent = `
+import { createCdnBuild } from './rollup.config.cdn.js';
 
-  // Always build light version too unless explicitly using --shared-runtime (manual mode)
-  if (!useSharedRuntime) {
-    builds.push({ useSharedRuntime: true, outputSuffix: '.light', label: 'light' });
-  } else {
-    builds[0] = { useSharedRuntime: true, outputSuffix: '.light', label: 'light' };
-  }
-
-  for (const build of builds) {
-    console.log(`⚙️  Building ${build.label} version...\n`);
-
-    const configContent = `
-import { createStandaloneBuild } from './rollup.config.standalone.js';
-
-export default createStandaloneBuild('${componentName}', {
+export default createCdnBuild('${componentName}', {
   minify: ${minify},
   withTheme: ${withTheme},
-  formats: ${JSON.stringify(formats)},
-  useSharedRuntime: ${build.useSharedRuntime},
-  outputSuffix: '${build.outputSuffix}'
+  formats: ${JSON.stringify(formats)}
 });
 `;
 
-    const tempConfigPath = join(process.cwd(), '.rollup.config.temp.js');
-    writeFileSync(tempConfigPath, configContent);
+  const tempConfigPath = join(process.cwd(), '.rollup.config.temp.js');
+  writeFileSync(tempConfigPath, configContent);
 
-    try {
-      const { stdout, stderr } = await execAsync(`npx rollup -c ${tempConfigPath}`);
-      if (stdout) console.log(stdout);
-      if (stderr && !stderr.includes('created')) console.error(stderr);
-    } catch (error) {
-      console.error(`\n❌ ${build.label} build failed:`, error.message);
-      if (error.stdout) console.log(error.stdout);
-      if (error.stderr) console.error(error.stderr);
-      process.exit(1);
-    } finally {
-      if (existsSync(tempConfigPath)) {
-        const { unlinkSync } = await import('fs');
-        unlinkSync(tempConfigPath);
-      }
+  try {
+    const { stdout, stderr } = await execAsync(`npx rollup -c ${tempConfigPath}`);
+    if (stdout) console.log(stdout);
+    if (stderr && !stderr.includes('created')) console.error(stderr);
+  } catch (error) {
+    console.error(`\n❌ Build failed:`, error.message);
+    if (error.stdout) console.log(error.stdout);
+    if (error.stderr) console.error(error.stderr);
+    process.exit(1);
+  } finally {
+    if (existsSync(tempConfigPath)) {
+      const { unlinkSync } = await import('fs');
+      unlinkSync(tempConfigPath);
     }
   }
 

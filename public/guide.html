@@ -58,7 +58,7 @@
       <nav class="guide-sidebar">
         <div class="nav-group">Getting Started</div>
         <a href="#esm">ESM + Bundler</a>
-        <a href="#standalone">Standalone</a>
+        <a href="#cdn">CDN</a>
         <a href="#react">React Wrappers</a>
 
         <div class="nav-group">Elements</div>
@@ -114,9 +114,9 @@ npx snice create-app my-app</code></pre>
           <p class="desc" style="margin-top:0.75rem"><strong>Best for:</strong> Full applications, SPAs, projects using a bundler.</p>
         </div>
 
-        <div class="dec-section" id="standalone">
-          <h3>Standalone</h3>
-          <p class="desc">Load the Snice runtime once, then add standalone component builds. No bundler needed &mdash; just <code>&lt;script&gt;</code> tags.</p>
+        <div class="dec-section" id="cdn">
+          <h3>CDN</h3>
+          <p class="desc">Load the Snice runtime once, then add CDN component builds. No bundler needed &mdash; just <code>&lt;script&gt;</code> tags.</p>
           <pre><code><span class="c">&lt;!-- Load runtime once --&gt;</span>
 &lt;script src=<span class="s">"snice-runtime.min.js"</span>&gt;&lt;/script&gt;
 
@@ -124,7 +124,7 @@ npx snice create-app my-app</code></pre>
 &lt;script src=<span class="s">"snice-button.min.js"</span>&gt;&lt;/script&gt;
 &lt;script src=<span class="s">"snice-input.min.js"</span>&gt;&lt;/script&gt;
 &lt;script src=<span class="s">"snice-modal.min.js"</span>&gt;&lt;/script&gt;</code></pre>
-          <p class="desc" style="margin-top:0.75rem">The runtime is ~15KB gzipped. Each component adds ~2&ndash;5KB. No duplication regardless of how many components you use.</p>
+          <p class="desc" style="margin-top:0.75rem">The runtime is ~18KB gzipped. Each component adds ~1&ndash;27KB. No duplication regardless of how many components you use.</p>
           <p class="desc"><strong>Best for:</strong> CMS pages, WordPress, static sites, landing pages, dashboards.</p>
         </div>
 

@@ -12,13 +12,13 @@ try { mkdirSync(out, { recursive: true }); } catch {}
 mkdirSync(join(out, 'theme'), { recursive: true });
 cpSync(join(root, 'components/theme/theme.css'), join(out, 'theme/theme.css'));
 
-const standaloneDir = join(root, 'dist/standalone');
+const cdnDir = join(root, 'dist/cdn');
 const componentsOut = join(out, 'components');
 mkdirSync(componentsOut, { recursive: true });
 
-const components = readdirSync(standaloneDir).sort();
+const components = readdirSync(cdnDir).sort();
 for (const comp of components) {
-  const src = join(standaloneDir, comp, `snice-${comp}.min.js`);
+  const src = join(cdnDir, comp, `snice-${comp}.min.js`);
   try { cpSync(src, join(componentsOut, `snice-${comp}.min.js`)); } catch {}
 }
 
@@ -1347,7 +1347,7 @@ class MyComponent extends HTMLElement {
     </div>
 
     <div class="comp-section">
-      <h3>Standalone Build</h3>
+      <h3>CDN Build</h3>
       <p class="comp-desc">Use any component without the full framework</p>
       <pre><code>npx snice build-component button
 <span class="c"># creates snice-button.min.js (~25kb gzipped)</span>

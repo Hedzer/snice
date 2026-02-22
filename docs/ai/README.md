@@ -188,4 +188,4 @@ For framework development (build system, testing, component requirements), see:
 - `DEVELOPMENT.md` (detailed)
 - `docs/ai/DEVELOPMENT.md` (token-efficient)
 
-Includes: standalone builds, React adapters, test generation, component requirements.
+Includes: CDN builds, React adapters, test generation, component requirements.

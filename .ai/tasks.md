@@ -32,13 +32,13 @@ For each component:
 - [ ] **AFTER**: Verify demo.html theme compliance
 - [ ] Human documentation (docs/components/)
 - [ ] AI documentation (docs/ai/components/)
-- [ ] Standalone build — `npm run build:core && npm run build:standalone` (auto-discovered from dist/components/)
+- [ ] CDN build — `npm run build:core && npm run build:cdn` (auto-discovered from dist/components/)
 - [ ] React adapter — `npm run generate:react-adapters` (auto-discovered from components/ dir)
 - [ ] Website showcase — fragment in `public/showcases/`, added to `manifest.json`
 - [ ] Website showcase — script tag in `public/showcases/_footer.html`
 - [ ] Website showcase — component tag in `public/showcases/_footer.html` comp-list
 - [ ] Website rebuild — `node public/build-showcases.js`
-- [ ] Copy standalone to public — `node scripts/build-website.js` (copies dist/standalone/ to public/components/)
+- [ ] Copy CDN builds to public — `node scripts/build-website.js` (copies dist/cdn/ to public/components/)
 
 ## New Components to Implement
 

@@ -10,7 +10,7 @@ Technical reference for developers working on the Snice framework itself. For bu
 - [Component Development](#component-development)
 - [Build System](#build-system)
 - [Testing](#testing)
-- [Standalone Builds](#standalone-builds)
+- [CDN Builds](#cdn-builds)
 - [React Adapters](#react-adapters)
 - [Scripts Reference](#scripts-reference)
 - [Code Organization](#code-organization)
@@ -411,11 +411,10 @@ export interface MyComponentEvent extends CustomEvent {
 - External dependencies: none (fully bundled)
 - TypeScript compilation via `@rollup/plugin-typescript`
 
-**Standalone Build** (`rollup.config.standalone.js`):
-- Builds `dist/standalone/{component}/snice-{component}.{esm,umd,iife}.js`
-- Bundles component + full Snice runtime
-- No externals (everything inlined)
-- Multiple formats with minified versions
+**CDN Build** (`rollup.config.cdn.js`):
+- Builds `dist/cdn/{component}/snice-{component}.{iife}.js`
+- Uses shared runtime (external snice imports)
+- IIFE format with minified versions
 - Generates README per component
 
 **Test Build** (`rollup.config.test.js`):
@@ -462,12 +461,11 @@ dist/
 │   ├── button/snice-button.js
 │   ├── input/snice-input.js
 │   └── ...
-└── standalone/               # Standalone bundles
+└── cdn/                      # CDN bundles
+    ├── runtime/
+    │   ├── snice-runtime.min.js
+    │   └── README.md
     ├── button/
-    │   ├── snice-button.esm.js
-    │   ├── snice-button.esm.min.js
-    │   ├── snice-button.umd.js
-    │   ├── snice-button.umd.min.js
     │   ├── snice-button.js      # IIFE
     │   ├── snice-button.min.js  # IIFE minified
     │   └── README.md
@@ -527,7 +525,7 @@ tests/
 │       ├── button.test.tsx
 │       ├── input.test.tsx
 │       └── ...
-├── standalone-builds.test.ts     # Standalone build verification
+├── cdn-builds.test.ts            # CDN build verification
 ├── channel.test.ts               # Core feature tests
 ├── decorators.test.ts
 ├── dispatch.test.ts
@@ -600,7 +598,7 @@ testComponent({
 npm test                       # All tests
 npm run test:src               # Test source files
 npm run test:built             # Test dist/ output
-npm run test:standalone        # Test standalone bundles
+npm run test:cdn               # Test CDN bundles
 npm run test:react-adapters    # Test React wrappers
 npm run test:watch             # Watch mode
 npm run test:ui                # Vitest UI
@@ -609,16 +607,16 @@ npm run test:coverage          # Generate coverage report
 
 ---
 
-## Standalone Builds
+## CDN Builds
 
 ### Purpose
 
-Bundle any component with full Snice runtime for use without npm install:
+Bundle any component with the Snice runtime for use without npm install:
 
 - Works in any project (vanilla JS, React, Vue, etc.)
 - No Snice dependency required
-- Tree-shaken (~20-40KB minified, ~10-20KB gzipped)
-- Multiple formats (ESM, UMD, IIFE)
+- Runtime ~18KB gzip, components ~1-27KB each
+- IIFE format for script tags
 
 ### CLI Usage
 
@@ -628,42 +626,31 @@ snice build-component button
 
 # With options
 snice build-component button \
-  --output=./standalone \
-  --format=esm,umd,iife \
+  --output=./cdn \
+  --format=iife \
   --minify \
   --with-theme
 
 # Build all components
-npm run build:standalone
+npm run build:cdn
 ```
 
 ### Implementation
 
-**Key file:** `rollup.config.standalone.js`
+**Key file:** `rollup.config.cdn.js`
 
 ```javascript
-export function createStandaloneBuild(componentName, options) {
+export function createCdnBuild(componentName, options) {
   return {
-    input: `components/${componentName}/snice-${componentName}.ts`,
-    external: [],  // Bundle everything
+    input: `dist/components/${componentName}/snice-${componentName}.js`,
+    external: ['snice', 'snice/symbols', 'snice/transitions'],
     plugins: [
-      typescript({ /* ... */ }),
       resolve({ /* ... */ }),
-      // Custom plugin to resolve 'snice' imports from src/
-      {
-        name: 'resolve-snice',
-        resolveId(id) {
-          if (id === 'snice') return path.resolve('src/index.ts');
-          // ...
-        }
-      },
       // CSS inlining plugin
       // README generation plugin
     ],
     output: [
-      { file: `dist/standalone/${componentName}/snice-${componentName}.esm.js`, format: 'es' },
-      { file: `dist/standalone/${componentName}/snice-${componentName}.umd.js`, format: 'umd' },
-      { file: `dist/standalone/${componentName}/snice-${componentName}.js`, format: 'iife' }
+      { file: `dist/cdn/${componentName}/snice-${componentName}.js`, format: 'iife' }
     ]
   };
 }
@@ -826,7 +813,7 @@ npm run sync-versions          # Sync template package.json versions
 npm run build                  # Build everything
 npm run build:core             # Build dist/ (core + components)
 npm run build:types            # Generate .d.ts files
-npm run build:standalone       # Build all standalone bundles
+npm run build:cdn              # Build all CDN bundles
 npm run build:react            # Generate + build React adapters
 npm run build:test             # Build test utilities
 ```
@@ -837,7 +824,7 @@ npm run build:test             # Build test utilities
 npm test                       # Run all test suites
 npm run test:src               # Test source files
 npm run test:built             # Test dist/ output
-npm run test:standalone        # Test standalone bundles
+npm run test:cdn               # Test CDN bundles
 npm run test:react-adapters    # Test React wrappers
 npm run test:watch             # Watch mode
 npm run test:ui                # Vitest UI
@@ -1014,11 +1001,11 @@ npx playwright test --debug
 **Build Debugging:**
 ```bash
 # Check bundle size
-ls -lh dist/standalone/button/
+ls -lh dist/cdn/button/
 du -sh dist/
 
 # Analyze bundle contents
-npx rollup-plugin-visualizer dist/standalone/button/snice-button.esm.js
+npx rollup-plugin-visualizer dist/cdn/button/snice-button.min.js
 ```
 
 ---
@@ -1231,7 +1218,7 @@ grep -r "experimentalDecorators" tsconfig*.json
 ls components/my-component/snice-my-component.ts
 
 # Test config directly
-node rollup.config.standalone.js
+node rollup.config.cdn.js
 ```
 
 ### Test Failures

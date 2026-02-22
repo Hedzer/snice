@@ -5,9 +5,9 @@ For Snice framework development. User docs: [README.md](../../README.md)
 ## Component Requirements
 
 All components MUST:
-1. Support standalone builds (bundle with runtime)
+1. Support CDN builds (bundle with runtime)
 2. Have React adapter (React 17+)
-3. Be tested (standalone + React)
+3. Be tested (CDN + React)
 
 ## Build Commands
 
@@ -15,12 +15,12 @@ All components MUST:
 # Core
 npm run build:core              # dist/ output
 npm run build:types             # .d.ts generation
-npm run build:standalone        # All standalone bundles
+npm run build:cdn               # All CDN bundles
 npm run build:react             # React adapters
 npm run build                   # Everything
 
-# Standalone component
-snice build-component <name> [--output=dir] [--format=esm,umd,iife] [--with-theme]
+# CDN component
+snice build-component <name> [--output=dir] [--format=iife] [--with-theme]
 
 # Generators
 npm run generate:react-adapters  # Generate React wrappers
@@ -33,7 +33,7 @@ npm run generate:react-tests     # Generate test files
 npm test                        # All tests
 npm run test:src                # Source tests
 npm run test:built              # Dist tests
-npm run test:standalone         # Standalone tests
+npm run test:cdn                # CDN tests
 npm run test:react-adapters     # React tests
 npm run test:watch              # Watch mode
 ```
@@ -56,7 +56,7 @@ adapters/react/
 tests/
   components/                   # Component tests
   react-adapters/              # React tests
-  standalone-builds.test.ts    # Standalone tests
+  cdn-builds.test.ts           # CDN tests
 
 scripts/
   generate-react-adapters.js   # Adapter generator
@@ -77,22 +77,22 @@ scripts/
 6. Create docs: `docs/my-comp.md` + `docs/ai/my-comp.md`
 7. Build and test: `npm run build && npm test`
 
-## Standalone Builds
+## CDN Builds
 
-**Config:** `rollup.config.standalone.js`
+**Config:** `rollup.config.cdn.js`
 
-All standalone builds use the shared runtime (external `snice` imports). Load `snice-runtime.min.js` once, then load component builds.
+All CDN builds use the shared runtime (external `snice` imports). Load `snice-runtime.min.js` once, then load component builds.
 
 **Output:**
-- Runtime: `dist/standalone/runtime/snice-runtime.min.js`
-- Components: `dist/standalone/<name>/snice-<name>.min.js`
+- Runtime: `dist/cdn/runtime/snice-runtime.min.js`
+- Components: `dist/cdn/<name>/snice-<name>.min.js`
 - IIFE: `.js` + `.min.js`
 - Sourcemaps + README
 
-**Size:** Runtime ~15KB gzip, components ~2-5KB each
+**Size:** Runtime ~18KB gzip, components ~1-27KB each
 
 **Features:**
-- External snice imports (shared runtime)
+- Shared runtime (external snice imports)
 - Runtime check guard (warns if runtime not loaded)
 - Tree-shaken
 - Multiple formats
@@ -257,15 +257,15 @@ npm run test:coverage        # Coverage report
 ```
 
 **Add build format:**
-1. Update `rollup.config.standalone.js`
+1. Update `rollup.config.cdn.js`
 2. Update CLI in `bin/snice.js`
 3. Update docs
 4. Test
 
 ## Key Implementations
 
-**Standalone bundling:**
-- External snice imports (shared runtime)
+**CDN bundling:**
+- Shared runtime (external snice imports)
 - Runtime check guard on IIFE builds
 - Inline CSS with minification
 - Multiple formats via Rollup

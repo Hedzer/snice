@@ -70,7 +70,7 @@
     "heatmap.html",
     "masonry.html",
     "link-preview.html",
-    "standalone-build.html",
+    "cdn-build.html",
     "react-adapter.html",
     "_footer.html"
   ]

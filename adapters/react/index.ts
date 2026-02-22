@@ -7,8 +7,8 @@
  * @example
  * ```tsx
  * import { Button, Input } from 'snice/react';
- * // or from standalone builds:
- * import Button from './standalone/button/react';
+ * // or from CDN builds:
+ * import Button from './cdn/button/react';
  *
  * function MyComponent() {
  *   const [value, setValue] = useState('');
