@@ -1,3 +1,31 @@
+# [4.7.0](https://gitlab.com/Hedzer/snice/compare/v4.6.0...v4.7.0) (2026-02-22)
+
+
+### Bug Fixes
+
+* include menu-item and menu-divider in standalone build ([8598696](https://gitlab.com/Hedzer/snice/commit/8598696a08a73b553e9c3679b5d6978f394494bf))
+* remove default trigger styles from menu and fix demo overflow ([ecbd815](https://gitlab.com/Hedzer/snice/commit/ecbd81560c4dd1f7f94ea68784189afa570c29b1))
+* set color-picker to full width ([e262366](https://gitlab.com/Hedzer/snice/commit/e2623665a7a95c5cb8a2b52051f890d70e3a54a0))
+* set file-gallery to full width ([58b05ec](https://gitlab.com/Hedzer/snice/commit/58b05ec223f3cb3db3232349e11848949b8dda0a))
+* simplify draw demo and remove tool buttons ([780e713](https://gitlab.com/Hedzer/snice/commit/780e71337697e056a7223f2676fdb8ba9ce63558))
+
+
+### Features
+
+* add gauge component ([2888122](https://gitlab.com/Hedzer/snice/commit/288812286825b025eb636b6223f3a0586638d032))
+* add grammar-based syntax highlighting to code-block ([4689b0c](https://gitlab.com/Hedzer/snice/commit/4689b0c8dd9f50a17fd7a6384766509c2bdc730d))
+* add heatmap component ([265da76](https://gitlab.com/Hedzer/snice/commit/265da768d3d5653cc43e3a86a9190f623715f9a9))
+* add link-preview component ([5067b67](https://gitlab.com/Hedzer/snice/commit/5067b676c0a430d32126225d9a710c2d4797f1b4))
+* add masonry component ([05d3d4a](https://gitlab.com/Hedzer/snice/commit/05d3d4afb3a4511d244bc190f20cf6a65888dc6d))
+* add paint component ([b7b9760](https://gitlab.com/Hedzer/snice/commit/b7b97600f7af88e7c977827812e5b84edd40fc3a))
+* add paint component to website and react adapter ([18ed76d](https://gitlab.com/Hedzer/snice/commit/18ed76dfbfab9090bee19f9fe042c38656c024b7))
+* add shared runtime and lightweight standalone builds ([22dfd64](https://gitlab.com/Hedzer/snice/commit/22dfd641671a5c9764e0bc500fbe858fe661407b))
+* add snice grammar for code-block syntax highlighting ([7903ab0](https://gitlab.com/Hedzer/snice/commit/7903ab0f17875fe6a5e4742bb0bf5f99193a7264))
+* add usage modes section and update guide page ([9fd6057](https://gitlab.com/Hedzer/snice/commit/9fd60576847350b41a766d6f3b64b5194fddc61d))
+* auto-build full and light versions in CLI ([e5a07d5](https://gitlab.com/Hedzer/snice/commit/e5a07d5c10b37ac813c19bd91c409a6d8fb61f1e))
+* integrate new components into website and react adapters ([69267c9](https://gitlab.com/Hedzer/snice/commit/69267c95dbac4487a06e6152a60f26e5a5ab7d82))
+* switch website to light builds with shared runtime ([0e99073](https://gitlab.com/Hedzer/snice/commit/0e99073659a605372a7fca532a6363ca7b3583d5))
+
 # [4.6.0](https://gitlab.com/Hedzer/snice/compare/v4.5.0...v4.6.0) (2026-02-21)
 
 
