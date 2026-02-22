@@ -41,7 +41,7 @@ export interface TimeRangeCompleteDetail {
 }
 
 export interface SniceTimeRangePickerEventMap {
-  '@snice/time-range-change': CustomEvent<TimeRangeChangeDetail>;
-  '@snice/time-range-select': CustomEvent<TimeRangeSelectDetail>;
-  '@snice/time-range-complete': CustomEvent<TimeRangeCompleteDetail>;
+  'time-range-change': CustomEvent<TimeRangeChangeDetail>;
+  'time-range-select': CustomEvent<TimeRangeSelectDetail>;
+  'time-range-complete': CustomEvent<TimeRangeCompleteDetail>;
 }

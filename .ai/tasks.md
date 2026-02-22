@@ -355,6 +355,172 @@ For each component:
      - `@snice/qr-error` - Error during scanning
      - `@snice/camera-ready` - Camera initialized
      - `@snice/camera-error` - Camera access denied/failed
+55. [ ] `<snice-flip-card>` - Flip card with front/back slots
+   - **Layout:**
+     - Two-sided card with CSS 3D transform flip animation
+     - `<slot name="front">` and `<slot name="back">` for content on each side
+     - Preserves dimensions of whichever side is larger
+   - **Flip Behavior:**
+     - Click-to-flip enabled by default (disable with `click-to-flip="false"`)
+     - Programmatic flip via `flip()` method and `flipped` property
+     - Configurable flip direction: horizontal (default) or vertical
+     - Smooth CSS transition with configurable duration
+   - **Properties:**
+     - `flipped` - Boolean, current flip state
+     - `click-to-flip` - Boolean, enable click-to-flip (default: true)
+     - `direction` - `"horizontal"` | `"vertical"` (default: `"horizontal"`)
+     - `duration` - Flip animation duration in ms (default: 600)
+   - **Methods:**
+     - `flip(): void` - Toggle flip state
+     - `flipTo(side: 'front' | 'back'): void` - Flip to specific side
+   - **Events:**
+     - `flip-change` - Emitted when card flips, detail: `{ flipped: boolean, side: 'front' | 'back' }`
+56. [ ] `<snice-podcast-player>` - Podcast player (similar to `<snice-music-player>`)
+   - **Layout:**
+     - Episode artwork/thumbnail display
+     - Episode title, show name, description
+     - Playback controls: play/pause, skip forward/back (15s/30s configurable)
+     - Progress bar with seek, time elapsed/remaining
+     - Playback speed control (0.5x, 1x, 1.25x, 1.5x, 2x)
+     - Volume control
+     - Episode list from RSS feed
+   - **Properties:**
+     - `src` - Audio source URL (direct episode playback)
+     - `from-rss` - RSS feed URL (fetches and displays episode list)
+     - `title` - Episode title
+     - `show` - Show/podcast name
+     - `artwork` - Artwork image URL
+     - `description` - Episode description
+     - `playback-rate` - Current playback speed (default: 1)
+     - `skip-forward` - Skip forward duration in seconds (default: 30)
+     - `skip-back` - Skip back duration in seconds (default: 15)
+     - `current-time` - Current playback position
+     - `duration` - Episode duration (read-only)
+   - **RSS Feed Mode (`from-rss`):**
+     - Parses RSS/XML feed to extract episodes
+     - Auto-populates show name, artwork, episode list from feed metadata
+     - Displays scrollable episode list with title, date, duration
+     - Click episode to load it into the player
+     - Currently playing episode highlighted in list
+   - **Methods:**
+     - `play(): void`, `pause(): void`, `toggle(): void`
+     - `skipForward(): void`, `skipBack(): void`
+     - `seekTo(time: number): void`
+     - `setPlaybackRate(rate: number): void`
+     - `loadEpisode(index: number): void` - Load and play specific episode from feed
+   - **Events:**
+     - `podcast-play`, `podcast-pause`, `podcast-ended`
+     - `podcast-time-update` - Periodic time update
+     - `podcast-rate-change` - Playback speed changed
+     - `podcast-episode-change` - New episode selected from list
+     - `podcast-feed-loaded` - RSS feed parsed successfully
+   - **Features:**
+     - Remember playback position (localStorage)
+     - Chapter markers support (optional)
+     - Playlist/queue support for multiple episodes
+     - Sleep timer
+57. [ ] `<snice-book>` - Book component with page-flip navigation
+   - **Layout:**
+     - Realistic book appearance with cover, spine, pages
+     - CSS 3D page-flip animation when turning pages
+     - Two-page spread view (left/right pages visible simultaneously)
+     - Single-page mode for narrow viewports
+   - **Content:**
+     - Each child element or `<snice-page>` slot becomes a page
+     - Supports HTML content per page (text, images, mixed)
+     - Auto-pagination of long text content (optional)
+   - **Properties:**
+     - `current-page` - Current page number (0-indexed)
+     - `total-pages` - Total page count (read-only)
+     - `mode` - `"single"` | `"spread"` (default: `"spread"`)
+     - `cover-image` - Cover image URL
+     - `title` - Book title
+     - `author` - Book author
+   - **Navigation:**
+     - Click/tap page edges to turn
+     - Swipe gesture support for touch devices
+     - Keyboard: arrow keys for prev/next
+     - Programmatic: `goToPage(n)`, `nextPage()`, `prevPage()`
+   - **Methods:**
+     - `goToPage(page: number): void`
+     - `nextPage(): void`, `prevPage(): void`
+     - `firstPage(): void`, `lastPage(): void`
+   - **Events:**
+     - `page-turn` - Page turned, detail: `{ page: number, direction: 'forward' | 'backward' }`
+     - `page-flip-start` - Flip animation started
+     - `page-flip-end` - Flip animation completed
+58. [ ] `<snice-video-player>` - Video player component
+   - **Layout:**
+     - Video viewport with overlay controls
+     - Controls bar: play/pause, seek bar, time display, volume, fullscreen, PiP
+     - Optional poster image before playback
+   - **Properties:**
+     - `src` - Video source URL
+     - `poster` - Poster image URL
+     - `autoplay` - Boolean, auto-start playback
+     - `muted` - Boolean, muted state
+     - `loop` - Boolean, loop playback
+     - `controls` - Boolean, show controls (default: true)
+     - `playback-rate` - Playback speed
+     - `current-time` - Current position
+     - `duration` - Video duration (read-only)
+     - `volume` - Volume level (0-1)
+     - `variant` - `"default"` | `"minimal"` | `"cinema"`
+   - **Methods:**
+     - `play(): void`, `pause(): void`, `toggle(): void`
+     - `seekTo(time: number): void`
+     - `requestFullscreen(): void`, `exitFullscreen(): void`
+     - `requestPictureInPicture(): void`
+     - `setPlaybackRate(rate: number): void`
+   - **Events:**
+     - `video-play`, `video-pause`, `video-ended`
+     - `video-time-update` - Periodic time update
+     - `video-fullscreen-change` - Fullscreen toggled
+     - `video-volume-change` - Volume changed
+   - **Features:**
+     - Keyboard shortcuts (space=play/pause, f=fullscreen, m=mute, arrows=seek)
+     - Double-click to fullscreen
+     - Playback speed selector (0.5x-2x)
+     - Picture-in-Picture support
+     - Subtitle/caption track support (`<track>` elements via slot)
+     - Responsive controls that adapt to container size
+59. [ ] `<snice-recipe>` - Recipe display component
+   - **Layout:**
+     - Hero image/photo of dish
+     - Recipe title, description, author
+     - Meta info bar: prep time, cook time, total time, servings, difficulty
+     - Two-column layout: ingredients list (left), instructions/steps (right)
+     - Nutrition facts panel (optional)
+   - **Properties:**
+     - `title` - Recipe name
+     - `description` - Short description
+     - `image` - Hero image URL
+     - `author` - Recipe author
+     - `prep-time` - Prep time in minutes
+     - `cook-time` - Cook time in minutes
+     - `servings` - Number of servings (default)
+     - `difficulty` - `"easy"` | `"medium"` | `"hard"`
+     - `cuisine` - Cuisine type tag
+     - `variant` - `"card"` | `"full"` (default: `"full"`)
+   - **Data (via properties or JSON):**
+     - `ingredients` - Array of `{ name, amount, unit, group? }`
+     - `steps` - Array of `{ text, image?, tip? }`
+     - `nutrition` - `{ calories, protein, carbs, fat, fiber?, sodium? }`
+     - `tags` - Array of tags (e.g., `["vegetarian", "gluten-free"]`)
+   - **Interactive Features:**
+     - Serving size adjuster — scales ingredient quantities dynamically
+     - Ingredient checkbox (strike-through when checked)
+     - Step-by-step mode: highlight current step, mark completed
+     - Print-friendly layout via `print()` method
+     - Timer integration: steps with times show inline timer buttons
+   - **Methods:**
+     - `setServings(count: number): void` - Adjust serving size
+     - `print(): void` - Open print-friendly view
+     - `reset(): void` - Uncheck all ingredients/steps
+   - **Events:**
+     - `recipe-serving-change` - Serving size adjusted
+     - `recipe-step-complete` - Step marked complete
+     - `recipe-ingredient-check` - Ingredient checked/unchecked
 
 ---
 
@@ -391,7 +557,7 @@ For each component:
 - ❌ **ANTI-PATTERN**: `this.dispatchEvent(new CustomEvent(name, { detail, bubbles, composed }))`
 - ✅ **USE**: `@dispatch(eventName)` decorator
   ```typescript
-  @dispatch('@snice/my-event', { bubbles: true, composed: true })
+  @dispatch('my-event', { bubbles: true, composed: true })
   private emitMyEvent() {
     return { value: this.value, component: this };
   }

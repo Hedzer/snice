@@ -35,8 +35,8 @@ export interface SniceNetworkGraphElement extends HTMLElement {
 }
 
 export interface SniceNetworkGraphEventMap {
-  '@snice/node-click': CustomEvent<{ node: NetworkNode }>;
-  '@snice/edge-click': CustomEvent<{ edge: NetworkEdge }>;
-  '@snice/node-drag': CustomEvent<{ node: NetworkNode; x: number; y: number }>;
-  '@snice/graph-zoom': CustomEvent<{ scale: number; x: number; y: number }>;
+  'node-click': CustomEvent<{ node: NetworkNode }>;
+  'edge-click': CustomEvent<{ edge: NetworkEdge }>;
+  'node-drag': CustomEvent<{ node: NetworkNode; x: number; y: number }>;
+  'graph-zoom': CustomEvent<{ scale: number; x: number; y: number }>;
 }

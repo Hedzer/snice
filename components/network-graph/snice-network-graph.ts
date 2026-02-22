@@ -113,22 +113,22 @@ export class SniceNetworkGraph extends HTMLElement implements SniceNetworkGraphE
   private containerWidth = 600;
   private containerHeight = 400;
 
-  @dispatch('@snice/node-click', { bubbles: true, composed: true })
+  @dispatch('node-click', { bubbles: true, composed: true })
   private emitNodeClick(node: NetworkNode) {
     return { node };
   }
 
-  @dispatch('@snice/edge-click', { bubbles: true, composed: true })
+  @dispatch('edge-click', { bubbles: true, composed: true })
   private emitEdgeClick(edge: NetworkEdge) {
     return { edge };
   }
 
-  @dispatch('@snice/node-drag', { bubbles: true, composed: true })
+  @dispatch('node-drag', { bubbles: true, composed: true })
   private emitNodeDrag(node: NetworkNode, x: number, y: number) {
     return { node, x, y };
   }
 
-  @dispatch('@snice/graph-zoom', { bubbles: true, composed: true })
+  @dispatch('graph-zoom', { bubbles: true, composed: true })
   private emitGraphZoom(scale: number, x: number, y: number) {
     return { scale, x, y };
   }

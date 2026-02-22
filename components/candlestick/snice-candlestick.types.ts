@@ -28,7 +28,7 @@ export interface SniceCandlestickElement extends HTMLElement {
 }
 
 export interface SniceCandlestickEventMap {
-  '@snice/candle-click': CustomEvent<{ candle: CandleData; index: number }>;
-  '@snice/candle-hover': CustomEvent<{ candle: CandleData; index: number }>;
-  '@snice/crosshair-move': CustomEvent<{ price: number; date: string; x: number; y: number }>;
+  'candle-click': CustomEvent<{ candle: CandleData; index: number }>;
+  'candle-hover': CustomEvent<{ candle: CandleData; index: number }>;
+  'crosshair-move': CustomEvent<{ price: number; date: string; x: number; y: number }>;
 }

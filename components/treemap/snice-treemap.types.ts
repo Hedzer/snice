@@ -31,7 +31,7 @@ export interface SniceTreemapElement extends HTMLElement {
 }
 
 export interface SniceTreemapEventMap {
-  '@snice/treemap-click': CustomEvent<{ node: TreemapNode; depth: number }>;
-  '@snice/treemap-hover': CustomEvent<{ node: TreemapNode; depth: number } | null>;
-  '@snice/treemap-drill': CustomEvent<{ node: TreemapNode; path: TreemapNode[] }>;
+  'treemap-click': CustomEvent<{ node: TreemapNode; depth: number }>;
+  'treemap-hover': CustomEvent<{ node: TreemapNode; depth: number } | null>;
+  'treemap-drill': CustomEvent<{ node: TreemapNode; path: TreemapNode[] }>;
 }

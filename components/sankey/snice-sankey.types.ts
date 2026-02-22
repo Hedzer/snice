@@ -53,7 +53,7 @@ export interface SniceSankeyElement extends HTMLElement {
 }
 
 export interface SniceSankeyEventMap {
-  '@snice/sankey-node-click': CustomEvent<{ node: SankeyNode }>;
-  '@snice/sankey-link-click': CustomEvent<{ link: SankeyLink }>;
-  '@snice/sankey-hover': CustomEvent<{ type: 'node' | 'link'; item: SankeyNode | SankeyLink } | null>;
+  'sankey-node-click': CustomEvent<{ node: SankeyNode }>;
+  'sankey-link-click': CustomEvent<{ link: SankeyLink }>;
+  'sankey-hover': CustomEvent<{ type: 'node' | 'link'; item: SankeyNode | SankeyLink } | null>;
 }

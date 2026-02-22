@@ -28,8 +28,8 @@ element.addEventListener(event, handler)
 
 ### Custom Events
 ```typescript
-// ✅ USE
-@dispatch('@snice/my-event', { bubbles: true, composed: true })
+// ✅ USE — kebab-case: component-action (e.g., timer-start, draw-end, switch-change)
+@dispatch('my-event', { bubbles: true, composed: true })
 private emitMyEvent() {
   return { value: this.value, component: this };
 }

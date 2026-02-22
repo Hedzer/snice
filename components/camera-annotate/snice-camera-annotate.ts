@@ -658,7 +658,7 @@ export class SniceCameraAnnotate extends HTMLElement implements SniceCameraAnnot
 
   // --- Events ---
 
-  @dispatch('@snice/capture', { bubbles: true, composed: true })
+  @dispatch('capture', { bubbles: true, composed: true })
   private emitCapture() {
     return {
       dataURL: this.capturedImageData,
@@ -667,12 +667,12 @@ export class SniceCameraAnnotate extends HTMLElement implements SniceCameraAnnot
     };
   }
 
-  @dispatch('@snice/annotate', { bubbles: true, composed: true })
+  @dispatch('annotate', { bubbles: true, composed: true })
   private emitAnnotate(annotation: Annotation) {
     return { annotation };
   }
 
-  @dispatch('@snice/annotation-change', { bubbles: true, composed: true })
+  @dispatch('annotation-change', { bubbles: true, composed: true })
   private emitAnnotationChange() {
     return { annotations: this.annotations.map(a => ({ ...a })) };
   }

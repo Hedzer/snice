@@ -534,17 +534,17 @@ export class SniceTimeRangePicker extends HTMLElement implements SniceTimeRangeP
 
   // --- Event dispatchers ---
 
-  @dispatch('@snice/time-range-change', { bubbles: true, composed: true })
+  @dispatch('time-range-change', { bubbles: true, composed: true })
   private emitChange() {
     return { ranges: this.getSelectedRanges(), component: this };
   }
 
-  @dispatch('@snice/time-range-select', { bubbles: true, composed: true })
+  @dispatch('time-range-select', { bubbles: true, composed: true })
   private emitSelect() {
     return { start: this.slots[this.dragStartIndex], component: this };
   }
 
-  @dispatch('@snice/time-range-complete', { bubbles: true, composed: true })
+  @dispatch('time-range-complete', { bubbles: true, composed: true })
   private emitComplete(range: TimeRange) {
     return { range, ranges: this.getSelectedRanges(), component: this };
   }

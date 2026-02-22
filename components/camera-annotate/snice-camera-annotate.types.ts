@@ -37,7 +37,7 @@ export interface SniceCameraAnnotateElement extends HTMLElement {
 }
 
 export interface SniceCameraAnnotateEventMap {
-  '@snice/capture': CustomEvent<{ dataURL: string; width: number; height: number }>;
-  '@snice/annotate': CustomEvent<{ annotation: Annotation }>;
-  '@snice/annotation-change': CustomEvent<{ annotations: Annotation[] }>;
+  'capture': CustomEvent<{ dataURL: string; width: number; height: number }>;
+  'annotate': CustomEvent<{ annotation: Annotation }>;
+  'annotation-change': CustomEvent<{ annotations: Annotation[] }>;
 }
