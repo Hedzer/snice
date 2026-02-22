@@ -36,7 +36,7 @@ describe('Website Build', () => {
     let componentsHtml: string;
 
     beforeAll(() => {
-      cdnComponents = readdirSync(cdnDir).sort();
+      cdnComponents = readdirSync(cdnDir).filter(c => c !== 'runtime').sort();
       copiedComponents = readdirSync(join(publicDir, 'components'))
         .map(f => f.replace('snice-', '').replace('.min.js', ''))
         .sort();

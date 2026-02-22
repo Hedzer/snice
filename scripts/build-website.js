@@ -16,7 +16,7 @@ const cdnDir = join(root, 'dist/cdn');
 const componentsOut = join(out, 'components');
 mkdirSync(componentsOut, { recursive: true });
 
-const components = readdirSync(cdnDir).sort();
+const components = readdirSync(cdnDir).filter(c => c !== 'runtime').sort();
 for (const comp of components) {
   const src = join(cdnDir, comp, `snice-${comp}.min.js`);
   try { cpSync(src, join(componentsOut, `snice-${comp}.min.js`)); } catch {}
