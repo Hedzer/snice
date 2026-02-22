@@ -1,3 +1,21 @@
+# [4.8.0](https://gitlab.com/Hedzer/snice/compare/v4.7.0...v4.8.0) (2026-02-22)
+
+
+### Bug Fixes
+
+* add missing paint tag to component list ([1ecb969](https://gitlab.com/Hedzer/snice/commit/1ecb969cf484b837b4e654342878e828427fe7ed))
+* filter runtime directory from CDN component copy ([f2bda32](https://gitlab.com/Hedzer/snice/commit/f2bda327d32e34a4b1780dfe72bdde3ed4374d59))
+* heatmap tooltip reactivity, color-picker input sizing, paint css tag ([61e03b7](https://gitlab.com/Hedzer/snice/commit/61e03b72de5f480b81f193b195a70f2e127b0551))
+* update paint react adapter to match component API ([661912b](https://gitlab.com/Hedzer/snice/commit/661912b653c4853a7a10200cfe1f44760a04dea4))
+* use [@on](https://gitlab.com/on) decorator for slotchange and remove redundant code watcher in code-block ([5551905](https://gitlab.com/Hedzer/snice/commit/555190576c2b4672285b583f2fb65c54b7377bf1))
+
+
+### Features
+
+* add fetchMode, slotted content, and grammar-request event to code-block ([836ca25](https://gitlab.com/Hedzer/snice/commit/836ca2533d21fd9a9759bae0f9b0340e4ec21dbd))
+* add grammar property to code-block react adapter ([a28e529](https://gitlab.com/Hedzer/snice/commit/a28e529f0724ad448bb732584b056c1f0e219500))
+* simplify context update API to no-arg ctx.update() ([aa9ce3f](https://gitlab.com/Hedzer/snice/commit/aa9ce3fee402bcc3db702c598f5822aa4ba964a4))
+
 # [4.7.0](https://gitlab.com/Hedzer/snice/compare/v4.6.0...v4.7.0) (2026-02-22)
 
 
