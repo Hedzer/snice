@@ -1,4 +1,4 @@
-import { element, property, render, styles, dispatch, query, ready, dispose, html, css, unsafeHTML } from 'snice';
+import { element, property, render, styles, dispatch, query, ready, dispose, watch, html, css } from 'snice';
 import cssContent from './snice-candlestick.css?inline';
 import type { CandleData, TimeFormat, YAxisFormat, SniceCandlestickElement } from './snice-candlestick.types';
 
@@ -45,7 +45,16 @@ export class SniceCandlestick extends HTMLElement implements SniceCandlestickEle
   @query('.candlestick__svg')
   private svgEl?: SVGSVGElement;
 
-  // Internal state
+  @query('.candlestick__chart-content')
+  private chartContentEl?: SVGGElement;
+
+  @query('.candlestick__crosshair-group')
+  private crosshairGroupEl?: SVGGElement;
+
+  @query('.candlestick__tooltip')
+  private tooltipEl?: HTMLElement;
+
+  // Internal state — plain fields, no @property
   private viewStart = 0;
   private viewEnd = 0;
   private mouseX = -1;
@@ -58,42 +67,61 @@ export class SniceCandlestick extends HTMLElement implements SniceCandlestickEle
   private svgWidth = 600;
   private svgHeight = 400;
   private lastDataLength = 0;
+  private cachedData: CandleData[] = [];
+  private rafId = 0;
 
-  @property({ type: Number, attribute: false })
-  private renderTick = 0;
-
-  @dispatch('@snice/candle-click', { bubbles: true, composed: true })
+  @dispatch('candle-click', { bubbles: true, composed: true })
   private emitCandleClick(candle: CandleData, index: number) {
     return { candle, index };
   }
 
-  @dispatch('@snice/candle-hover', { bubbles: true, composed: true })
+  @dispatch('candle-hover', { bubbles: true, composed: true })
   private emitCandleHover(candle: CandleData, index: number) {
     return { candle, index };
   }
 
-  @dispatch('@snice/crosshair-move', { bubbles: true, composed: true })
+  @dispatch('crosshair-move', { bubbles: true, composed: true })
   private emitCrosshairMove(price: number, date: string, x: number, y: number) {
     return { price, date, x, y };
   }
 
   @ready()
   init() {
+    this.cachedData = this.data;
     this.viewEnd = this.data.length;
     this.viewStart = Math.max(0, this.viewEnd - 80);
     this.resizeObserver = new ResizeObserver(() => {
       this.measureSize();
-      this.renderTick++;
+      this.rebuildChart();
     });
     if (this.containerEl) {
       this.resizeObserver.observe(this.containerEl);
     }
     this.measureSize();
+    this.rebuildChart();
   }
 
   @dispose()
   cleanup() {
     this.resizeObserver?.disconnect();
+    if (this.rafId) cancelAnimationFrame(this.rafId);
+  }
+
+  @watch('data')
+  onDataChange() {
+    this.cachedData = this.data;
+    const dataLen = this.cachedData.length;
+    if (dataLen > 0 && dataLen !== this.lastDataLength) {
+      this.lastDataLength = dataLen;
+      this.viewEnd = dataLen;
+      this.viewStart = Math.max(0, dataLen - 80);
+    }
+    this.rebuildChart();
+  }
+
+  @watch('showVolume', 'showGrid', 'bullishColor', 'bearishColor', 'timeFormat', 'yAxisFormat', 'animation')
+  onDisplayChange() {
+    this.rebuildChart();
   }
 
   private measureSize() {
@@ -104,7 +132,7 @@ export class SniceCandlestick extends HTMLElement implements SniceCandlestickEle
   }
 
   private get visibleData(): CandleData[] {
-    return this.data.slice(this.viewStart, this.viewEnd);
+    return this.cachedData.slice(this.viewStart, this.viewEnd);
   }
 
   private get chartArea() {
@@ -201,6 +229,35 @@ export class SniceCandlestick extends HTMLElement implements SniceCandlestickEle
     return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
   }
 
+  /** Rebuild the static chart SVG (candles, grid, axes, volume). Does NOT include crosshair. */
+  private rebuildChart() {
+    if (!this.chartContentEl || !this.svgEl) return;
+
+    const visible = this.visibleData;
+    let svg = '';
+    if (visible.length > 0) {
+      svg += this.buildGridLines();
+      svg += this.buildYAxis();
+      svg += this.buildXAxis();
+      svg += this.buildVolumeBars();
+      svg += this.buildCandles();
+    }
+    this.chartContentEl.innerHTML = svg;
+
+    // Update SVG viewBox
+    this.svgEl.setAttribute('viewBox', `0 0 ${this.svgWidth} ${this.svgHeight}`);
+    this.svgEl.setAttribute('aria-label', `Candlestick chart with ${this.cachedData.length} data points`);
+
+    // Update container height
+    if (this.containerEl) {
+      this.containerEl.style.height = `${this.svgHeight}px`;
+    }
+
+    // Update crosshair after chart rebuild
+    this.updateCrosshairDOM();
+    this.updateTooltipDOM();
+  }
+
   private handleMouseMove = (e: MouseEvent) => {
     const svg = this.svgEl;
     if (!svg) return;
@@ -217,9 +274,15 @@ export class SniceCandlestick extends HTMLElement implements SniceCandlestickEle
       let newStart = this.dragStartViewStart + shift;
       let newEnd = this.dragStartViewEnd + shift;
       if (newStart < 0) { newStart = 0; newEnd = viewSize; }
-      if (newEnd > this.data.length) { newEnd = this.data.length; newStart = this.data.length - viewSize; }
-      this.viewStart = Math.max(0, newStart);
-      this.viewEnd = Math.min(this.data.length, newEnd);
+      if (newEnd > this.cachedData.length) { newEnd = this.cachedData.length; newStart = this.cachedData.length - viewSize; }
+      const vs = Math.max(0, newStart);
+      const ve = Math.min(this.cachedData.length, newEnd);
+      if (vs !== this.viewStart || ve !== this.viewEnd) {
+        this.viewStart = vs;
+        this.viewEnd = ve;
+        this.rebuildChart();
+        return;
+      }
     }
 
     if (this.showCrosshair) {
@@ -231,14 +294,20 @@ export class SniceCandlestick extends HTMLElement implements SniceCandlestickEle
       }
     }
 
-    this.renderTick++;
+    // Only update crosshair + tooltip via direct DOM manipulation — no re-render
+    if (this.rafId) cancelAnimationFrame(this.rafId);
+    this.rafId = requestAnimationFrame(() => {
+      this.updateCrosshairDOM();
+      this.updateTooltipDOM();
+    });
   };
 
   private handleMouseLeave = () => {
     this.mouseX = -1;
     this.mouseY = -1;
     this.isDragging = false;
-    this.renderTick++;
+    this.updateCrosshairDOM();
+    this.updateTooltipDOM();
   };
 
   private handleMouseDown = (e: MouseEvent) => {
@@ -259,7 +328,7 @@ export class SniceCandlestick extends HTMLElement implements SniceCandlestickEle
     const viewSize = this.viewEnd - this.viewStart;
     const zoomFactor = e.deltaY > 0 ? 1.1 : 0.9;
     let newSize = Math.round(viewSize * zoomFactor);
-    newSize = Math.max(10, Math.min(this.data.length, newSize));
+    newSize = Math.max(10, Math.min(this.cachedData.length, newSize));
 
     const area = this.chartArea;
     const mouseRatio = (this.mouseX - area.x) / area.width;
@@ -267,36 +336,112 @@ export class SniceCandlestick extends HTMLElement implements SniceCandlestickEle
     let newStart = Math.round(center - newSize * mouseRatio);
     let newEnd = newStart + newSize;
     if (newStart < 0) { newStart = 0; newEnd = newSize; }
-    if (newEnd > this.data.length) { newEnd = this.data.length; newStart = this.data.length - newSize; }
+    if (newEnd > this.cachedData.length) { newEnd = this.cachedData.length; newStart = this.cachedData.length - newSize; }
     this.viewStart = Math.max(0, newStart);
-    this.viewEnd = Math.min(this.data.length, newEnd);
-    this.renderTick++;
+    this.viewEnd = Math.min(this.cachedData.length, newEnd);
+    this.rebuildChart();
   };
 
   resetZoom(): void {
     this.viewStart = 0;
-    this.viewEnd = this.data.length;
-    this.renderTick++;
+    this.viewEnd = this.cachedData.length;
+    this.rebuildChart();
   }
 
   zoomTo(startIndex: number, endIndex: number): void {
     this.viewStart = Math.max(0, startIndex);
-    this.viewEnd = Math.min(this.data.length, endIndex);
-    this.renderTick++;
+    this.viewEnd = Math.min(this.cachedData.length, endIndex);
+    this.rebuildChart();
   }
 
-  private buildSVGContent(): string {
-    const visible = this.visibleData;
-    if (visible.length === 0) return '';
+  /** Update crosshair overlay via direct DOM manipulation — no re-render needed */
+  private updateCrosshairDOM() {
+    const group = this.crosshairGroupEl;
+    if (!group) return;
 
-    let svg = '';
-    svg += this.buildGridLines();
-    svg += this.buildYAxis();
-    svg += this.buildXAxis();
-    svg += this.buildVolumeBars();
-    svg += this.buildCandles();
-    svg += this.buildCrosshair();
-    return svg;
+    if (!this.showCrosshair || this.mouseX < 0 || this.mouseY < 0) {
+      group.innerHTML = '';
+      return;
+    }
+
+    const area = this.chartArea;
+    const totalChartBottom = area.y + area.height + area.volumeHeight;
+    const isInChart = this.mouseX >= area.x && this.mouseX <= area.x + area.width
+      && this.mouseY >= area.y && this.mouseY <= totalChartBottom;
+
+    if (!isInChart) {
+      group.innerHTML = '';
+      return;
+    }
+
+    const price = this.yToPrice(this.mouseY);
+    const idx = this.xToIndex(this.mouseX);
+    const candle = this.visibleData[idx];
+    const snapX = this.indexToX(idx);
+
+    let parts = '';
+
+    // Horizontal line
+    parts += `<line class="candlestick__crosshair-h" x1="${area.x}" y1="${this.mouseY}" x2="${area.x + area.width}" y2="${this.mouseY}" />`;
+
+    // Vertical line
+    parts += `<line class="candlestick__crosshair-v" x1="${snapX}" y1="${area.y}" x2="${snapX}" y2="${totalChartBottom}" />`;
+
+    // Price label
+    const priceLabel = this.formatPrice(price);
+    const labelX = this.svgWidth - PADDING.right + 4;
+    parts += `<rect class="candlestick__crosshair-label-bg" x="${labelX}" y="${this.mouseY - 9}" width="${PADDING.right - 8}" height="18" rx="2" />`;
+    parts += `<text class="candlestick__crosshair-label" x="${labelX + 4}" y="${this.mouseY + 4}">${priceLabel}</text>`;
+
+    // Date label
+    if (candle) {
+      const dateLabel = this.formatDate(candle.date);
+      const dateLabelY = totalChartBottom + 4;
+      parts += `<rect class="candlestick__crosshair-label-bg" x="${snapX - 36}" y="${dateLabelY}" width="72" height="18" rx="2" />`;
+      parts += `<text class="candlestick__crosshair-label" x="${snapX}" y="${dateLabelY + 13}" text-anchor="middle">${dateLabel}</text>`;
+    }
+
+    group.innerHTML = parts;
+  }
+
+  /** Update tooltip via direct DOM manipulation — no re-render needed */
+  private updateTooltipDOM() {
+    const tooltip = this.tooltipEl;
+    if (!tooltip) return;
+
+    const tooltipCandle = this.getTooltipCandle();
+    const hasTooltip = tooltipCandle !== null;
+
+    if (!hasTooltip) {
+      tooltip.classList.remove('candlestick__tooltip--visible');
+      return;
+    }
+
+    const isBullish = tooltipCandle.close >= tooltipCandle.open;
+    const showVolumeInTooltip = this.showVolume && tooltipCandle.volume !== undefined;
+    const tooltipIdx = this.xToIndex(this.mouseX);
+    const tooltipX = this.indexToX(tooltipIdx);
+
+    const tooltipLeft = tooltipX + this.candleWidth + 12;
+    const tooltipFlip = tooltipLeft + 160 > this.svgWidth;
+    const tooltipFinalLeft = tooltipFlip ? tooltipX - this.candleWidth - 170 : tooltipLeft;
+
+    tooltip.style.left = `${Math.max(0, tooltipFinalLeft)}px`;
+    tooltip.style.top = `${PADDING.top}px`;
+    tooltip.classList.add('candlestick__tooltip--visible');
+
+    let rows = '';
+    rows += `<div class="candlestick__tooltip-row"><span class="candlestick__tooltip-label">Date</span><span class="candlestick__tooltip-value">${this.formatDate(tooltipCandle.date)}</span></div>`;
+    rows += `<div class="candlestick__tooltip-row"><span class="candlestick__tooltip-label">Open</span><span class="candlestick__tooltip-value">${this.formatPrice(tooltipCandle.open)}</span></div>`;
+    rows += `<div class="candlestick__tooltip-row"><span class="candlestick__tooltip-label">High</span><span class="candlestick__tooltip-value">${this.formatPrice(tooltipCandle.high)}</span></div>`;
+    rows += `<div class="candlestick__tooltip-row"><span class="candlestick__tooltip-label">Low</span><span class="candlestick__tooltip-value">${this.formatPrice(tooltipCandle.low)}</span></div>`;
+    const closeClass = isBullish ? 'candlestick__tooltip-value--bullish' : 'candlestick__tooltip-value--bearish';
+    rows += `<div class="candlestick__tooltip-row"><span class="candlestick__tooltip-label">Close</span><span class="candlestick__tooltip-value ${closeClass}">${this.formatPrice(tooltipCandle.close)}</span></div>`;
+    if (showVolumeInTooltip) {
+      rows += `<div class="candlestick__tooltip-row"><span class="candlestick__tooltip-label">Volume</span><span class="candlestick__tooltip-value">${tooltipCandle.volume?.toLocaleString() || '0'}</span></div>`;
+    }
+
+    tooltip.innerHTML = rows;
   }
 
   private buildGridLines(): string {
@@ -420,45 +565,6 @@ export class SniceCandlestick extends HTMLElement implements SniceCandlestickEle
     return parts;
   }
 
-  private buildCrosshair(): string {
-    if (!this.showCrosshair || this.mouseX < 0 || this.mouseY < 0) return '';
-
-    const area = this.chartArea;
-    const totalChartBottom = area.y + area.height + area.volumeHeight;
-    const isInChart = this.mouseX >= area.x && this.mouseX <= area.x + area.width
-      && this.mouseY >= area.y && this.mouseY <= totalChartBottom;
-    if (!isInChart) return '';
-
-    const price = this.yToPrice(this.mouseY);
-    const idx = this.xToIndex(this.mouseX);
-    const candle = this.visibleData[idx];
-    const snapX = this.indexToX(idx);
-
-    let parts = '';
-
-    // Horizontal line
-    parts += `<line class="candlestick__crosshair-h" x1="${area.x}" y1="${this.mouseY}" x2="${area.x + area.width}" y2="${this.mouseY}" />`;
-
-    // Vertical line
-    parts += `<line class="candlestick__crosshair-v" x1="${snapX}" y1="${area.y}" x2="${snapX}" y2="${totalChartBottom}" />`;
-
-    // Price label
-    const priceLabel = this.formatPrice(price);
-    const labelX = this.svgWidth - PADDING.right + 4;
-    parts += `<rect class="candlestick__crosshair-label-bg" x="${labelX}" y="${this.mouseY - 9}" width="${PADDING.right - 8}" height="18" rx="2" />`;
-    parts += `<text class="candlestick__crosshair-label" x="${labelX + 4}" y="${this.mouseY + 4}">${priceLabel}</text>`;
-
-    // Date label
-    if (candle) {
-      const dateLabel = this.formatDate(candle.date);
-      const dateLabelY = totalChartBottom + 4;
-      parts += `<rect class="candlestick__crosshair-label-bg" x="${snapX - 36}" y="${dateLabelY}" width="72" height="18" rx="2" />`;
-      parts += `<text class="candlestick__crosshair-label" x="${snapX}" y="${dateLabelY + 13}" text-anchor="middle">${dateLabel}</text>`;
-    }
-
-    return parts;
-  }
-
   private getTooltipCandle(): CandleData | null {
     if (this.mouseX < 0) return null;
     const area = this.chartArea;
@@ -467,29 +573,8 @@ export class SniceCandlestick extends HTMLElement implements SniceCandlestickEle
     return this.visibleData[idx] || null;
   }
 
-  @render()
+  @render({ once: true })
   renderContent() {
-    // Sync view when data changes
-    const dataLen = this.data.length;
-    if (dataLen > 0 && dataLen !== this.lastDataLength) {
-      this.lastDataLength = dataLen;
-      this.viewEnd = dataLen;
-      this.viewStart = Math.max(0, dataLen - 80);
-    }
-
-    const tooltipCandle = this.getTooltipCandle();
-    const hasTooltip = tooltipCandle !== null;
-    const isBullish = tooltipCandle ? tooltipCandle.close >= tooltipCandle.open : false;
-    const showVolumeInTooltip = this.showVolume && tooltipCandle?.volume !== undefined;
-    const tooltipIdx = this.mouseX >= 0 ? this.xToIndex(this.mouseX) : -1;
-    const tooltipX = tooltipIdx >= 0 ? this.indexToX(tooltipIdx) : 0;
-
-    const tooltipLeft = tooltipX + this.candleWidth + 12;
-    const tooltipFlip = tooltipLeft + 160 > this.svgWidth;
-    const tooltipFinalLeft = tooltipFlip ? tooltipX - this.candleWidth - 170 : tooltipLeft;
-
-    const svgContent = this.buildSVGContent();
-
     return html/*html*/`
       <div class="candlestick"
            style="height: ${this.svgHeight}px;"
@@ -498,38 +583,11 @@ export class SniceCandlestick extends HTMLElement implements SniceCandlestickEle
            @mousedown=${this.handleMouseDown}
            @mouseup=${this.handleMouseUp}
            @wheel=${this.handleWheel}>
-        ${unsafeHTML(`<svg class="candlestick__svg" viewBox="0 0 ${this.svgWidth} ${this.svgHeight}" preserveAspectRatio="none" role="img" aria-label="Candlestick chart with ${this.data.length} data points">${svgContent}</svg>`)}
-        <div class="candlestick__tooltip ${hasTooltip ? 'candlestick__tooltip--visible' : ''}"
-             style="left: ${Math.max(0, tooltipFinalLeft)}px; top: ${PADDING.top}px;">
-          <if ${hasTooltip}>
-            <div class="candlestick__tooltip-row">
-              <span class="candlestick__tooltip-label">Date</span>
-              <span class="candlestick__tooltip-value">${tooltipCandle ? this.formatDate(tooltipCandle.date) : ''}</span>
-            </div>
-            <div class="candlestick__tooltip-row">
-              <span class="candlestick__tooltip-label">Open</span>
-              <span class="candlestick__tooltip-value">${tooltipCandle ? this.formatPrice(tooltipCandle.open) : ''}</span>
-            </div>
-            <div class="candlestick__tooltip-row">
-              <span class="candlestick__tooltip-label">High</span>
-              <span class="candlestick__tooltip-value">${tooltipCandle ? this.formatPrice(tooltipCandle.high) : ''}</span>
-            </div>
-            <div class="candlestick__tooltip-row">
-              <span class="candlestick__tooltip-label">Low</span>
-              <span class="candlestick__tooltip-value">${tooltipCandle ? this.formatPrice(tooltipCandle.low) : ''}</span>
-            </div>
-            <div class="candlestick__tooltip-row">
-              <span class="candlestick__tooltip-label">Close</span>
-              <span class="candlestick__tooltip-value ${isBullish ? 'candlestick__tooltip-value--bullish' : 'candlestick__tooltip-value--bearish'}">${tooltipCandle ? this.formatPrice(tooltipCandle.close) : ''}</span>
-            </div>
-            <if ${showVolumeInTooltip}>
-              <div class="candlestick__tooltip-row">
-                <span class="candlestick__tooltip-label">Volume</span>
-                <span class="candlestick__tooltip-value">${tooltipCandle?.volume?.toLocaleString() || '0'}</span>
-              </div>
-            </if>
-          </if>
-        </div>
+        <svg class="candlestick__svg" viewBox="0 0 ${this.svgWidth} ${this.svgHeight}" preserveAspectRatio="none" role="img" aria-label="Candlestick chart with ${this.data.length} data points">
+          <g class="candlestick__chart-content"></g>
+          <g class="candlestick__crosshair-group"></g>
+        </svg>
+        <div class="candlestick__tooltip"></div>
       </div>
     `;
   }

@@ -116,6 +116,9 @@ case, when, default, if {
   margin: -2px -4px;
   cursor: pointer;
   color: var(--breadcrumb-color);
+  background: none;
+  border: none;
+  font: inherit;
   border-radius: 2px;
   transition: background 0.2s ease;
 }
