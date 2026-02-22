@@ -1,13 +1,13 @@
-import type { GrammarDefinition } from './highlighter';
-
 export type CodeLanguage = 'javascript' | 'typescript' | 'html' | 'css' | 'json' | 'python' | 'bash' | 'plaintext' | string;
+
+export const LOAD_GRAMMAR_REQUEST = 'snice/code-block/load-grammar';
 
 export type HighlighterFunction = (code: string, language: string) => string | Promise<string>;
 
 export interface SniceCodeBlockElement extends HTMLElement {
   code: string;
   language: CodeLanguage;
-  grammar: GrammarDefinition | string | null;
+  grammar: string;
   showLineNumbers: boolean;
   startLine: number;
   highlightLines: number[];
@@ -18,6 +18,7 @@ export interface SniceCodeBlockElement extends HTMLElement {
   copy(): Promise<void>;
   highlight(): Promise<void>;
   setHighlighter(highlighter: HighlighterFunction): void;
+  setGrammar(grammar: any): void;
 }
 
 export interface CodeCopyDetail {

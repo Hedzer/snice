@@ -58,8 +58,7 @@ describe('snice-code-block', () => {
     expect(codeBlock.filename).toBe('test.js');
   });
 
-  it('should accept a grammar object', async () => {
-    codeBlock = await createComponent<SniceCodeBlockElement>('snice-code-block');
+  it('should highlight with setGrammar', async () => {
     const grammar: GrammarDefinition = {
       name: 'test',
       tokenizer: {
@@ -68,10 +67,9 @@ describe('snice-code-block', () => {
         ],
       },
     };
-    codeBlock.grammar = grammar;
+    codeBlock = await createComponent<SniceCodeBlockElement>('snice-code-block');
     codeBlock.code = 'foo bar';
-    codeBlock.language = 'plaintext';
-    await codeBlock.highlight();
+    codeBlock.setGrammar(grammar);
     await wait(50);
     const shadow = codeBlock.shadowRoot!;
     const codeEl = shadow.querySelector('.code-block__code');
