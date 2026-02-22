@@ -1,4 +1,4 @@
-import { element, property, render, styles, dispatch, ready, dispose, watch, html, css } from 'snice';
+import { element, property, render, styles, dispatch, ready, dispose, watch, query, html, css } from 'snice';
 import cssContent from './snice-sankey.css?inline';
 import type {
   SankeyData, SankeyAlignment, SankeyLayoutNode, SankeyLayoutLink,
@@ -9,6 +9,10 @@ const DEFAULT_COLORS = [
   '#2196f3', '#4caf50', '#ff9800', '#f44336', '#9c27b0',
   '#00bcd4', '#8bc34a', '#ffc107', '#e91e63', '#673ab7'
 ];
+
+function escapeHTML(str: string): string {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
 
 @element('snice-sankey')
 export class SniceSankey extends HTMLElement implements SniceSankeyElement {
@@ -33,35 +37,32 @@ export class SniceSankey extends HTMLElement implements SniceSankeyElement {
   @property({ type: Boolean })
   animation = false;
 
+  @query('.sankey__chart')
+  private chartEl?: HTMLElement;
+
+  @query('.sankey__tooltip')
+  private tooltipEl?: HTMLElement;
+
   private cachedData: SankeyData = { nodes: [], links: [] };
   private layoutNodes: SankeyLayoutNode[] = [];
   private layoutLinks: SankeyLayoutLink[] = [];
   private hoveredNodeId: string | null = null;
   private hoveredLinkIndex: number | null = null;
-  private tooltipText = '';
-  private tooltipSubtext = '';
-  private tooltipX = 0;
-  private tooltipY = 0;
-  private tooltipVisible = false;
   private chartWidth = 600;
   private chartHeight = 400;
   private resizeObserver: ResizeObserver | null = null;
 
-  @property({ type: Number, attribute: false })
-  private renderTrigger = 0;
-
-
-  @dispatch('@snice/sankey-node-click', { bubbles: true, composed: true })
+  @dispatch('sankey-node-click', { bubbles: true, composed: true })
   private emitNodeClick(node: SankeyNode) {
     return { node };
   }
 
-  @dispatch('@snice/sankey-link-click', { bubbles: true, composed: true })
+  @dispatch('sankey-link-click', { bubbles: true, composed: true })
   private emitLinkClick(link: SankeyLink) {
     return { link };
   }
 
-  @dispatch('@snice/sankey-hover', { bubbles: true, composed: true })
+  @dispatch('sankey-hover', { bubbles: true, composed: true })
   private emitHover(detail: { type: 'node' | 'link'; item: SankeyNode | SankeyLink } | null) {
     return detail;
   }
@@ -71,7 +72,12 @@ export class SniceSankey extends HTMLElement implements SniceSankeyElement {
     const rect = this.getBoundingClientRect();
     if (rect.width > 0) this.chartWidth = rect.width;
     if (rect.height > 0) this.chartHeight = rect.height;
+
+    if (this.cachedData.nodes.length === 0 && this.data.nodes.length > 0) {
+      this.cachedData = this.data;
+    }
     this.computeLayout();
+    this.rebuildChart();
 
     if (typeof ResizeObserver !== 'undefined') {
       this.resizeObserver = new ResizeObserver((entries) => {
@@ -82,6 +88,7 @@ export class SniceSankey extends HTMLElement implements SniceSankeyElement {
             this.chartWidth = width;
             this.chartHeight = height;
             this.computeLayout();
+            this.rebuildChart();
           }
         }
       });
@@ -93,6 +100,13 @@ export class SniceSankey extends HTMLElement implements SniceSankeyElement {
   onDataChange() {
     this.cachedData = this.data;
     this.computeLayout();
+    this.rebuildChart();
+  }
+
+  @watch('showLabels', 'showValues', 'animation', 'alignment')
+  onDisplayChange() {
+    this.computeLayout();
+    this.rebuildChart();
   }
 
   private computeLayout() {
@@ -167,7 +181,6 @@ export class SniceSankey extends HTMLElement implements SniceSankeyElement {
     this.applyAlignment(nodes, maxDepth, width, labelSpace);
 
     // Y positions - compute node heights and stack within each column
-    const totalValue = Math.max(...nodes.map(n => n.value), 1);
     const columns = this.getColumns(nodes);
 
     columns.forEach(column => {
@@ -213,7 +226,6 @@ export class SniceSankey extends HTMLElement implements SniceSankeyElement {
 
     this.layoutNodes = nodes;
     this.layoutLinks = links;
-    this.renderTrigger++;
   }
 
   private computeDepths(nodeMap: Map<string, SankeyLayoutNode>) {
@@ -336,167 +348,238 @@ export class SniceSankey extends HTMLElement implements SniceSankeyElement {
     return `M${x0},${y0} C${xi},${y0} ${xi},${y1} ${x1},${y1}`;
   }
 
-  private handleNodeClick(node: SankeyLayoutNode) {
-    const originalNode = this.cachedData.nodes.find(n => n.id === node.id);
-    if (originalNode) {
-      this.emitNodeClick(originalNode);
-    }
-  }
+  private handleSvgClick(e: MouseEvent) {
+    const target = e.target as SVGElement;
+    const el = target.closest('[data-node-id]') as SVGElement | null;
+    const linkEl = target.closest('[data-link-index]') as SVGElement | null;
 
-  private handleLinkClick(link: SankeyLayoutLink, index: number) {
-    const originalLink = this.cachedData.links[index];
-    if (originalLink) {
-      this.emitLinkClick(originalLink);
-    }
-  }
-
-  private handleNodeHover(node: SankeyLayoutNode | null, e?: MouseEvent) {
-    if (node) {
-      this.hoveredNodeId = node.id;
-      this.hoveredLinkIndex = null;
-      this.tooltipText = node.label;
-      this.tooltipSubtext = `Value: ${node.value.toLocaleString()}`;
-      this.updateTooltipPosition(e);
-      this.tooltipVisible = true;
-      const originalNode = this.cachedData.nodes.find(n => n.id === node.id);
-      if (originalNode) {
-        this.emitHover({ type: 'node', item: originalNode });
-      }
-    } else {
-      this.hoveredNodeId = null;
-      this.tooltipVisible = false;
-      this.emitHover(null);
-    }
-    this.renderTrigger++;
-  }
-
-  private handleLinkHover(link: SankeyLayoutLink | null, index: number, e?: MouseEvent) {
-    if (link) {
-      this.hoveredLinkIndex = index;
-      this.hoveredNodeId = null;
-      this.tooltipText = `${link.source.label} → ${link.target.label}`;
-      this.tooltipSubtext = `Value: ${link.value.toLocaleString()}`;
-      this.updateTooltipPosition(e);
-      this.tooltipVisible = true;
+    if (el) {
+      const nodeId = el.dataset.nodeId!;
+      const originalNode = this.cachedData.nodes.find(n => n.id === nodeId);
+      if (originalNode) this.emitNodeClick(originalNode);
+    } else if (linkEl) {
+      const index = parseInt(linkEl.dataset.linkIndex!, 10);
       const originalLink = this.cachedData.links[index];
-      if (originalLink) {
-        this.emitHover({ type: 'link', item: originalLink });
+      if (originalLink) this.emitLinkClick(originalLink);
+    }
+  }
+
+  private handleSvgMouseMove(e: MouseEvent) {
+    const target = e.target as SVGElement;
+    const nodeEl = target.closest('[data-node-id]') as SVGElement | null;
+    const linkEl = target.closest('[data-link-index]') as SVGElement | null;
+    const tooltip = this.tooltipEl;
+    const chart = this.chartEl;
+
+    if (nodeEl) {
+      const nodeId = nodeEl.dataset.nodeId!;
+      const node = this.layoutNodes.find(n => n.id === nodeId);
+      if (!node) return;
+
+      // Update hover highlight
+      if (this.hoveredNodeId !== nodeId || this.hoveredLinkIndex !== null) {
+        this.hoveredNodeId = nodeId;
+        this.hoveredLinkIndex = null;
+        this.applyHoverClasses();
       }
+
+      // Update tooltip
+      if (tooltip) {
+        tooltip.querySelector('.sankey__tooltip-label')!.textContent = node.label;
+        tooltip.querySelector('.sankey__tooltip-value')!.textContent = `Value: ${node.value.toLocaleString()}`;
+        this.positionTooltip(e);
+        tooltip.classList.add('sankey__tooltip--visible');
+      }
+
+      const originalNode = this.cachedData.nodes.find(n => n.id === nodeId);
+      if (originalNode) this.emitHover({ type: 'node', item: originalNode });
+    } else if (linkEl) {
+      const index = parseInt(linkEl.dataset.linkIndex!, 10);
+      const link = this.layoutLinks[index];
+      if (!link) return;
+
+      // Update hover highlight
+      if (this.hoveredLinkIndex !== index || this.hoveredNodeId !== null) {
+        this.hoveredLinkIndex = index;
+        this.hoveredNodeId = null;
+        this.applyHoverClasses();
+      }
+
+      // Update tooltip
+      if (tooltip) {
+        tooltip.querySelector('.sankey__tooltip-label')!.textContent = `${link.source.label} \u2192 ${link.target.label}`;
+        tooltip.querySelector('.sankey__tooltip-value')!.textContent = `Value: ${link.value.toLocaleString()}`;
+        this.positionTooltip(e);
+        tooltip.classList.add('sankey__tooltip--visible');
+      }
+
+      const originalLink = this.cachedData.links[index];
+      if (originalLink) this.emitHover({ type: 'link', item: originalLink });
     } else {
+      this.clearHover();
+    }
+  }
+
+  private handleSvgMouseLeave() {
+    this.clearHover();
+  }
+
+  private clearHover() {
+    if (this.hoveredNodeId !== null || this.hoveredLinkIndex !== null) {
+      this.hoveredNodeId = null;
       this.hoveredLinkIndex = null;
-      this.tooltipVisible = false;
+      this.applyHoverClasses();
       this.emitHover(null);
     }
-    this.renderTrigger++;
+    const tooltip = this.tooltipEl;
+    if (tooltip) tooltip.classList.remove('sankey__tooltip--visible');
   }
 
-  private updateTooltipPosition(e?: MouseEvent) {
-    if (!e) return;
+  private positionTooltip(e: MouseEvent) {
+    const tooltip = this.tooltipEl;
+    if (!tooltip) return;
     const rect = this.getBoundingClientRect();
-    this.tooltipX = e.clientX - rect.left + 10;
-    this.tooltipY = e.clientY - rect.top - 10;
+    tooltip.style.left = `${e.clientX - rect.left + 10}px`;
+    tooltip.style.top = `${e.clientY - rect.top - 10}px`;
   }
 
-  private isNodeHighlighted(node: SankeyLayoutNode): boolean {
+  private applyHoverClasses() {
+    const chart = this.chartEl;
+    if (!chart) return;
+    const svg = chart.querySelector('svg');
+    if (!svg) return;
+
+    const isDimmed = this.hoveredNodeId !== null || this.hoveredLinkIndex !== null;
+    const container = svg.closest('.sankey') as HTMLElement | null;
+    if (container) {
+      container.classList.toggle('sankey--dimmed', isDimmed);
+    }
+
+    // Update node highlights
+    const nodeGroups = svg.querySelectorAll('[data-node-id]');
+    nodeGroups.forEach(g => {
+      const nodeId = (g as SVGElement).dataset.nodeId!;
+      const highlighted = this.isNodeHighlighted(nodeId);
+      g.classList.toggle('sankey__node--highlighted', highlighted);
+    });
+
+    // Update link highlights
+    const linkGroups = svg.querySelectorAll('[data-link-index]');
+    linkGroups.forEach(g => {
+      const index = parseInt((g as SVGElement).dataset.linkIndex!, 10);
+      const highlighted = this.isLinkHighlighted(index);
+      g.classList.toggle('sankey__link--highlighted', highlighted);
+    });
+  }
+
+  private isNodeHighlighted(nodeId: string): boolean {
     if (this.hoveredNodeId === null && this.hoveredLinkIndex === null) return false;
-    if (this.hoveredNodeId === node.id) return true;
+    if (this.hoveredNodeId === nodeId) return true;
     if (this.hoveredLinkIndex !== null) {
       const link = this.layoutLinks[this.hoveredLinkIndex];
-      return link?.source.id === node.id || link?.target.id === node.id;
+      return link?.source.id === nodeId || link?.target.id === nodeId;
     }
-    // Highlight connected nodes
     if (this.hoveredNodeId) {
       return this.layoutLinks.some(l =>
-        (l.source.id === this.hoveredNodeId && l.target.id === node.id) ||
-        (l.target.id === this.hoveredNodeId && l.source.id === node.id)
+        (l.source.id === this.hoveredNodeId && l.target.id === nodeId) ||
+        (l.target.id === this.hoveredNodeId && l.source.id === nodeId)
       );
     }
     return false;
   }
 
-  private isLinkHighlighted(link: SankeyLayoutLink, index: number): boolean {
+  private isLinkHighlighted(index: number): boolean {
     if (this.hoveredNodeId === null && this.hoveredLinkIndex === null) return false;
     if (this.hoveredLinkIndex === index) return true;
     if (this.hoveredNodeId) {
-      return link.source.id === this.hoveredNodeId || link.target.id === this.hoveredNodeId;
+      const link = this.layoutLinks[index];
+      return link?.source.id === this.hoveredNodeId || link?.target.id === this.hoveredNodeId;
     }
     return false;
   }
 
-  private get isDimmed(): boolean {
-    return this.hoveredNodeId !== null || this.hoveredLinkIndex !== null;
+  private rebuildChart() {
+    const chart = this.chartEl;
+    if (!chart) {
+      requestAnimationFrame(() => this.rebuildChart());
+      return;
+    }
+
+    const hasData = this.layoutNodes.length > 0;
+    if (!hasData) {
+      chart.innerHTML = '';
+      return;
+    }
+
+    chart.innerHTML = this.buildSVG();
   }
 
-  @render()
-  renderContent() {
-    const hasData = this.layoutNodes.length > 0;
-    const isDimmed = this.isDimmed;
+  private buildSVG(): string {
+    const nodes = this.layoutNodes;
+    const links = this.layoutLinks;
 
+    let svg = `<svg class="sankey__svg" viewBox="0 0 ${this.chartWidth} ${this.chartHeight}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Sankey diagram">`;
+
+    // Links
+    svg += `<g class="sankey__links">`;
+    for (let i = 0; i < links.length; i++) {
+      const link = links[i];
+      const path = escapeHTML(this.getLinkPath(link));
+      const color = escapeHTML(link.color);
+      svg += `<g class="sankey__link" data-link-index="${i}">`;
+      svg += `<path d="${path}" stroke="${color}" stroke-width="${Math.max(1, link.width)}"/>`;
+      svg += `</g>`;
+    }
+    svg += `</g>`;
+
+    // Nodes
+    svg += `<g class="sankey__nodes">`;
+    for (let i = 0; i < nodes.length; i++) {
+      const node = nodes[i];
+      const color = escapeHTML(node.color);
+      const nodeId = escapeHTML(node.id);
+      svg += `<g class="sankey__node" data-node-id="${nodeId}">`;
+      svg += `<rect x="${node.x}" y="${node.y}" width="${node.width}" height="${Math.max(node.height, 2)}" fill="${color}"/>`;
+
+      if (this.showLabels) {
+        const label = escapeHTML(node.label);
+        if (node.depth === 0) {
+          svg += `<text class="sankey__label" x="${node.x - 6}" y="${node.y + node.height / 2}" text-anchor="end">${label}</text>`;
+        } else {
+          svg += `<text class="sankey__label" x="${node.x + node.width + 6}" y="${node.y + node.height / 2}" text-anchor="start">${label}</text>`;
+        }
+      }
+
+      if (this.showValues && node.height > 12) {
+        const value = escapeHTML(node.value.toLocaleString());
+        if (node.depth === 0) {
+          svg += `<text class="sankey__value" x="${node.x - 6}" y="${node.y + node.height / 2 + 12}" text-anchor="end">${value}</text>`;
+        } else {
+          svg += `<text class="sankey__value" x="${node.x + node.width + 6}" y="${node.y + node.height / 2 + 12}" text-anchor="start">${value}</text>`;
+        }
+      }
+
+      svg += `</g>`;
+    }
+    svg += `</g>`;
+
+    svg += `</svg>`;
+    return svg;
+  }
+
+  @render({ once: true })
+  renderContent() {
     return html/*html*/`
-      <div class="sankey ${isDimmed ? 'sankey--dimmed' : ''}"
+      <div class="sankey"
            role="img"
            aria-label="Sankey diagram"
-           @mouseleave=${() => { this.handleNodeHover(null); this.handleLinkHover(null, -1); }}>
-        <if ${hasData}>
-          <svg class="sankey__svg"
-               viewBox="0 0 ${this.chartWidth} ${this.chartHeight}"
-               preserveAspectRatio="xMidYMid meet">
-            <g class="sankey__links">
-              ${this.layoutLinks.map((link, i) => html/*html*/`
-                <g class="sankey__link ${this.isLinkHighlighted(link, i) ? 'sankey__link--highlighted' : ''}"
-                   @click=${() => this.handleLinkClick(link, i)}
-                   @mouseenter=${(e: MouseEvent) => this.handleLinkHover(link, i, e)}
-                   @mousemove=${(e: MouseEvent) => this.updateTooltipPosition(e)}
-                   @mouseleave=${() => this.handleLinkHover(null, -1)}>
-                  <path d="${this.getLinkPath(link)}"
-                        stroke="${link.color}"
-                        stroke-width="${Math.max(1, link.width)}" />
-                </g>
-              `)}
-            </g>
-            <g class="sankey__nodes">
-              ${this.layoutNodes.map(node => html/*html*/`
-                <g class="sankey__node ${this.isNodeHighlighted(node) ? 'sankey__node--highlighted' : ''}"
-                   @click=${() => this.handleNodeClick(node)}
-                   @mouseenter=${(e: MouseEvent) => this.handleNodeHover(node, e)}
-                   @mousemove=${(e: MouseEvent) => this.updateTooltipPosition(e)}
-                   @mouseleave=${() => this.handleNodeHover(null)}>
-                  <rect x="${node.x}" y="${node.y}"
-                        width="${node.width}" height="${Math.max(node.height, 2)}"
-                        fill="${node.color}" />
-                  <if ${this.showLabels}>
-                    ${node.depth === 0
-                      ? html/*html*/`<text class="sankey__label"
-                              x="${node.x - 6}"
-                              y="${node.y + node.height / 2}"
-                              text-anchor="end">${node.label}</text>`
-                      : html/*html*/`<text class="sankey__label"
-                              x="${node.x + node.width + 6}"
-                              y="${node.y + node.height / 2}"
-                              text-anchor="start">${node.label}</text>`
-                    }
-                  </if>
-                  <if ${this.showValues && node.height > 12}>
-                    ${node.depth === 0
-                      ? html/*html*/`<text class="sankey__value"
-                              x="${node.x - 6}"
-                              y="${node.y + node.height / 2 + 12}"
-                              text-anchor="end">${node.value.toLocaleString()}</text>`
-                      : html/*html*/`<text class="sankey__value"
-                              x="${node.x + node.width + 6}"
-                              y="${node.y + node.height / 2 + 12}"
-                              text-anchor="start">${node.value.toLocaleString()}</text>`
-                    }
-                  </if>
-                </g>
-              `)}
-            </g>
-          </svg>
-        </if>
-        <div class="sankey__tooltip ${this.tooltipVisible ? 'sankey__tooltip--visible' : ''}"
-             style="left: ${this.tooltipX}px; top: ${this.tooltipY}px;">
-          <div class="sankey__tooltip-label">${this.tooltipText}</div>
-          <div class="sankey__tooltip-value">${this.tooltipSubtext}</div>
+           @click=${(e: MouseEvent) => this.handleSvgClick(e)}
+           @mousemove=${(e: MouseEvent) => this.handleSvgMouseMove(e)}
+           @mouseleave=${() => this.handleSvgMouseLeave()}>
+        <div class="sankey__chart"></div>
+        <div class="sankey__tooltip">
+          <div class="sankey__tooltip-label"></div>
+          <div class="sankey__tooltip-value"></div>
         </div>
       </div>
     `;

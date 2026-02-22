@@ -1,4 +1,4 @@
-import { element, property, dispatch, ready, dispose, watch, render, styles, html, css } from 'snice';
+import { element, property, dispatch, ready, dispose, watch, query, render, styles, html, css } from 'snice';
 import cssContent from './snice-treemap.css?inline';
 import type { TreemapNode, TreemapColorScheme, TreemapRect, SniceTreemapElement } from './snice-treemap.types';
 
@@ -148,39 +148,52 @@ export class SniceTreemap extends HTMLElement implements SniceTreemapElement {
   @property({ type: Boolean })
   animation = true;
 
-  // Private reactive state (using @property to trigger re-renders)
-  @property({ type: Array, attribute: false }) private _drillPathState: TreemapNode[] = [];
-  @property() private _tooltipText = '';
-  @property({ type: Number }) private _tooltipX = 0;
-  @property({ type: Number }) private _tooltipY = 0;
-  @property({ type: Boolean }) private _tooltipVisible = false;
-  @property({ type: Number }) private _width = 600;
-  @property({ type: Number }) private _height = 400;
+  @query('.treemap')
+  private containerEl?: HTMLElement;
 
+  @query('.treemap__chart')
+  private chartEl?: HTMLElement;
+
+  @query('.treemap__tooltip')
+  private tooltipEl?: HTMLElement;
+
+  @query('.treemap__breadcrumbs')
+  private breadcrumbsEl?: HTMLElement;
+
+  // Plain private fields — no @property, no re-renders
+  private _drillPathState: TreemapNode[] = [];
+  private _tooltipText = '';
+  private _tooltipX = 0;
+  private _tooltipY = 0;
+  private _tooltipVisible = false;
+  private _width = 600;
+  private _height = 400;
   private _resizeObserver: ResizeObserver | null = null;
   private _rects: TreemapRect[] = [];
+  private _cachedData: TreemapNode = { label: '', value: 0 };
 
   get drillPath(): TreemapNode[] {
     return this._drillPathState;
   }
 
-  @dispatch('@snice/treemap-click', { bubbles: true, composed: true })
+  @dispatch('treemap-click', { bubbles: true, composed: true })
   private emitClick(node: TreemapNode, depth: number) {
     return { node, depth };
   }
 
-  @dispatch('@snice/treemap-hover', { bubbles: true, composed: true })
+  @dispatch('treemap-hover', { bubbles: true, composed: true })
   private emitHover(detail: { node: TreemapNode; depth: number } | null) {
     return detail;
   }
 
-  @dispatch('@snice/treemap-drill', { bubbles: true, composed: true })
+  @dispatch('treemap-drill', { bubbles: true, composed: true })
   private emitDrill(node: TreemapNode, path: TreemapNode[]) {
     return { node, path };
   }
 
   @ready()
   init() {
+    this._cachedData = this.data;
     this._resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const cr = entry.contentRect;
@@ -192,14 +205,22 @@ export class SniceTreemap extends HTMLElement implements SniceTreemapElement {
           this._height = cr.width * 0.667;
         }
       }
+      this.rebuildChart();
     });
     this._resizeObserver.observe(this);
+    this.rebuildChart();
   }
 
   @watch('data')
   onDataChange() {
+    this._cachedData = this.data;
     this._drillPathState = [];
-    this._rects = this.computeRects();
+    this.rebuildChart();
+  }
+
+  @watch('showLabels', 'showValues', 'colorScheme', 'padding', 'animation')
+  onDisplayChange() {
+    this.rebuildChart();
   }
 
   @dispose()
@@ -212,6 +233,7 @@ export class SniceTreemap extends HTMLElement implements SniceTreemapElement {
     if (node.children && node.children.length > 0) {
       this._drillPathState = [...this._drillPathState, node];
       this.emitDrill(node, this._drillPathState);
+      this.rebuildChart();
     }
   }
 
@@ -220,21 +242,23 @@ export class SniceTreemap extends HTMLElement implements SniceTreemapElement {
       this._drillPathState = this._drillPathState.slice(0, -1);
       const current = this._drillPathState.length > 0
         ? this._drillPathState[this._drillPathState.length - 1]
-        : this.data;
+        : this._cachedData;
       this.emitDrill(current, this._drillPathState);
+      this.rebuildChart();
     }
   }
 
   drillToRoot(): void {
     this._drillPathState = [];
-    this.emitDrill(this.data, []);
+    this.emitDrill(this._cachedData, []);
+    this.rebuildChart();
   }
 
   private getCurrentNode(): TreemapNode {
     if (this._drillPathState.length > 0) {
       return this._drillPathState[this._drillPathState.length - 1];
     }
-    return this.data;
+    return this._cachedData;
   }
 
   private getColor(index: number): string {
@@ -263,7 +287,60 @@ export class SniceTreemap extends HTMLElement implements SniceTreemapElement {
     return Math.min(Math.max(Math.min(maxByWidth, maxByHeight), 8), 16);
   }
 
-  private renderRectGroup(rect: TreemapRect, index: number) {
+  /** Rebuild the entire SVG chart via innerHTML on the chart container */
+  private rebuildChart() {
+    if (!this.chartEl) {
+      requestAnimationFrame(() => this.rebuildChart());
+      return;
+    }
+
+    this._rects = this.computeRects();
+
+    let svg = '';
+    svg += `<svg class="treemap__svg" viewBox="0 0 ${this._width} ${this._height}" preserveAspectRatio="none">`;
+
+    for (let i = 0; i < this._rects.length; i++) {
+      svg += this.buildRectGroup(this._rects[i], i);
+    }
+
+    svg += '</svg>';
+    this.chartEl.innerHTML = svg;
+
+    // Attach event listeners to rects
+    const rectEls = this.chartEl.querySelectorAll('.treemap__rect');
+    rectEls.forEach((el) => {
+      const index = Number((el as HTMLElement).dataset.index);
+      const rect = this._rects[index];
+      if (!rect) return;
+
+      el.addEventListener('click', (e: Event) => {
+        e.stopPropagation();
+        this.emitClick(rect.node, rect.depth);
+        if (rect.node.children && rect.node.children.length > 0) {
+          this.drillDown(rect.node);
+        }
+      });
+
+      el.addEventListener('mouseenter', () => {
+        this._tooltipText = `${rect.node.label}: ${sumValues(rect.node).toLocaleString()}`;
+        this._tooltipX = rect.x + rect.width / 2;
+        this._tooltipY = rect.y;
+        this._tooltipVisible = true;
+        this.updateTooltipDOM();
+        this.emitHover({ node: rect.node, depth: rect.depth });
+      });
+
+      el.addEventListener('mouseleave', () => {
+        this._tooltipVisible = false;
+        this.updateTooltipDOM();
+        this.emitHover(null);
+      });
+    });
+
+    this.rebuildBreadcrumbs();
+  }
+
+  private buildRectGroup(rect: TreemapRect, index: number): string {
     const color = rect.node.color || this.getColor(rect.colorIndex);
     const showLabel = this.showLabels && this.canFitLabel(rect);
     const showValue = this.showValues && this.canFitValue(rect);
@@ -272,120 +349,97 @@ export class SniceTreemap extends HTMLElement implements SniceTreemapElement {
     const labelY = showValue ? rect.y + rect.height / 2 - fontSize * 0.4 : rect.y + rect.height / 2;
     const valueY = showLabel ? rect.y + rect.height / 2 + fontSize * 0.8 : rect.y + rect.height / 2;
 
-    return html`
-      <rect
-        class="treemap__rect"
-        data-index="${index}"
-        x="${rect.x}"
-        y="${rect.y}"
-        width="${rect.width}"
-        height="${rect.height}"
-        fill="${color}"
-        @click=${(e: Event) => {
-          e.stopPropagation();
-          this.emitClick(rect.node, rect.depth);
-          if (rect.node.children && rect.node.children.length > 0) {
-            this.drillDown(rect.node);
-          }
-        }}
-        @mouseenter=${() => {
-          this._tooltipText = `${rect.node.label}: ${sumValues(rect.node).toLocaleString()}`;
-          this._tooltipX = rect.x + rect.width / 2;
-          this._tooltipY = rect.y;
-          this._tooltipVisible = true;
-          this.emitHover({ node: rect.node, depth: rect.depth });
-        }}
-        @mouseleave=${() => {
-          this._tooltipVisible = false;
-          this.emitHover(null);
-        }}
-      />
-      <rect
-        class="treemap__rect-stroke"
-        x="${rect.x}"
-        y="${rect.y}"
-        width="${rect.width}"
-        height="${rect.height}"
-      />
-      ${showLabel ? html`
-        <text
-          class="treemap__label"
-          x="${cx}"
-          y="${labelY}"
-          style="font-size: ${fontSize}px"
-        >${rect.node.label}</text>
-      ` : html``}
-      ${showValue ? html`
-        <text
-          class="treemap__value"
-          x="${cx}"
-          y="${valueY}"
-        >${sumValues(rect.node).toLocaleString()}</text>
-      ` : html``}
-    `;
+    let parts = '';
+
+    parts += `<rect class="treemap__rect" data-index="${index}" x="${rect.x}" y="${rect.y}" width="${rect.width}" height="${rect.height}" fill="${color}" />`;
+    parts += `<rect class="treemap__rect-stroke" x="${rect.x}" y="${rect.y}" width="${rect.width}" height="${rect.height}" />`;
+
+    if (showLabel) {
+      parts += `<text class="treemap__label" x="${cx}" y="${labelY}" style="font-size: ${fontSize}px">${rect.node.label}</text>`;
+    }
+
+    if (showValue) {
+      parts += `<text class="treemap__value" x="${cx}" y="${valueY}">${sumValues(rect.node).toLocaleString()}</text>`;
+    }
+
+    return parts;
   }
 
-  private renderBreadcrumbs() {
-    const hasDrill = this._drillPathState.length > 0;
-    if (!hasDrill) return html``;
+  /** Update tooltip element directly */
+  private updateTooltipDOM() {
+    const tooltip = this.tooltipEl;
+    if (!tooltip) return;
 
-    const items: any[] = [];
+    if (!this._tooltipVisible) {
+      tooltip.classList.remove('treemap__tooltip--visible');
+      return;
+    }
 
-    items.push(html`
-      <button class="treemap__breadcrumb" @click=${() => this.drillToRoot()}>
-        ${this.data.label || 'Root'}
-      </button>
-    `);
+    const tooltipLeft = `${(this._tooltipX / this._width) * 100}%`;
+    const tooltipTop = `${(this._tooltipY / this._height) * 100}%`;
+    tooltip.style.left = tooltipLeft;
+    tooltip.style.top = tooltipTop;
+    tooltip.textContent = this._tooltipText;
+    tooltip.classList.add('treemap__tooltip--visible');
+  }
+
+  /** Rebuild breadcrumbs via innerHTML */
+  private rebuildBreadcrumbs() {
+    const el = this.breadcrumbsEl;
+    if (!el) return;
+
+    if (this._drillPathState.length === 0) {
+      el.innerHTML = '';
+      el.style.display = 'none';
+      return;
+    }
+
+    el.style.display = '';
+    let html = '';
+
+    html += `<button class="treemap__breadcrumb" data-drill-root>${this._cachedData.label || 'Root'}</button>`;
 
     for (let i = 0; i < this._drillPathState.length; i++) {
       const node = this._drillPathState[i];
       const isLast = i === this._drillPathState.length - 1;
 
-      items.push(html`<span class="treemap__separator">/</span>`);
+      html += '<span class="treemap__separator">/</span>';
 
       if (isLast) {
-        items.push(html`
-          <span class="treemap__breadcrumb treemap__breadcrumb--current">
-            ${node.label}
-          </span>
-        `);
+        html += `<span class="treemap__breadcrumb treemap__breadcrumb--current">${node.label}</span>`;
       } else {
-        const drillIndex = i;
-        items.push(html`
-          <button class="treemap__breadcrumb" @click=${() => {
-            this._drillPathState = this._drillPathState.slice(0, drillIndex + 1);
-            this.emitDrill(node, this._drillPathState);
-          }}>
-            ${node.label}
-          </button>
-        `);
+        html += `<button class="treemap__breadcrumb" data-drill-index="${i}">${node.label}</button>`;
       }
     }
 
-    return html`<div class="treemap__breadcrumbs">${items}</div>`;
+    el.innerHTML = html;
+
+    // Attach breadcrumb event listeners
+    const rootBtn = el.querySelector('[data-drill-root]');
+    if (rootBtn) {
+      rootBtn.addEventListener('click', () => this.drillToRoot());
+    }
+
+    el.querySelectorAll('[data-drill-index]').forEach((btn) => {
+      const idx = Number((btn as HTMLElement).dataset.drillIndex);
+      btn.addEventListener('click', () => {
+        const node = this._drillPathState[idx];
+        this._drillPathState = this._drillPathState.slice(0, idx + 1);
+        this.emitDrill(node, this._drillPathState);
+        this.rebuildChart();
+      });
+    });
   }
 
-  @render()
+  @render({ once: true })
   renderContent() {
-    this._rects = this.computeRects();
-
-    const dataLabel = this.data?.label || 'Treemap';
-    const tooltipLeft = `${(this._tooltipX / this._width) * 100}%`;
-    const tooltipTop = `${(this._tooltipY / this._height) * 100}%`;
-    const tooltipClass = this._tooltipVisible ? 'treemap__tooltip treemap__tooltip--visible' : 'treemap__tooltip';
+    const dataLabel = this._cachedData?.label || 'Treemap';
 
     return html/*html*/`
-      ${this.renderBreadcrumbs()}
+      <div class="treemap__breadcrumbs" style="display: none"></div>
       <div class="treemap" role="img" aria-label="${dataLabel}">
-        <svg class="treemap__svg"
-             viewBox="0 0 ${this._width} ${this._height}"
-             preserveAspectRatio="none">
-          ${this._rects.map((rect, i) => this.renderRectGroup(rect, i))}
-        </svg>
-        <div class="${tooltipClass}"
-             style="left: ${tooltipLeft}; top: ${tooltipTop}">
-          ${this._tooltipText}
-        </div>
+        <div class="treemap__chart"></div>
+        <div class="treemap__tooltip"></div>
       </div>
     `;
   }

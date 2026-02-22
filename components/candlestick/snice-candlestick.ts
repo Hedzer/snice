@@ -69,6 +69,7 @@ export class SniceCandlestick extends HTMLElement implements SniceCandlestickEle
   private lastDataLength = 0;
   private cachedData: CandleData[] = [];
   private rafId = 0;
+  private animateNext = true;
 
   @dispatch('candle-click', { bubbles: true, composed: true })
   private emitCandleClick(candle: CandleData, index: number) {
@@ -116,6 +117,7 @@ export class SniceCandlestick extends HTMLElement implements SniceCandlestickEle
       this.viewEnd = dataLen;
       this.viewStart = Math.max(0, dataLen - 80);
     }
+    this.animateNext = true;
     this.rebuildChart();
   }
 
@@ -231,7 +233,10 @@ export class SniceCandlestick extends HTMLElement implements SniceCandlestickEle
 
   /** Rebuild the static chart SVG (candles, grid, axes, volume). Does NOT include crosshair. */
   private rebuildChart() {
-    if (!this.chartContentEl || !this.svgEl) return;
+    if (!this.chartContentEl || !this.svgEl) {
+      requestAnimationFrame(() => this.rebuildChart());
+      return;
+    }
 
     const visible = this.visibleData;
     let svg = '';
@@ -252,6 +257,9 @@ export class SniceCandlestick extends HTMLElement implements SniceCandlestickEle
     if (this.containerEl) {
       this.containerEl.style.height = `${this.svgHeight}px`;
     }
+
+    // Consume animation flag after building candles
+    this.animateNext = false;
 
     // Update crosshair after chart rebuild
     this.updateCrosshairDOM();
@@ -518,9 +526,10 @@ export class SniceCandlestick extends HTMLElement implements SniceCandlestickEle
       const bodyTop = Math.min(openY, closeY);
       const bodyHeight = Math.max(1, Math.abs(closeY - openY));
 
-      const animDelay = this.animation ? `animation-delay: ${i * 8}ms;` : '';
-      const wickAnimClass = this.animation ? ' candlestick__wick--animated' : '';
-      const bodyAnimClass = this.animation ? ' candlestick__body--animated' : '';
+      const shouldAnimate = this.animation && this.animateNext;
+      const animDelay = shouldAnimate ? `animation-delay: ${i * 8}ms;` : '';
+      const wickAnimClass = shouldAnimate ? ' candlestick__wick--animated' : '';
+      const bodyAnimClass = shouldAnimate ? ' candlestick__body--animated' : '';
 
       // Wick (high to low)
       parts += `<line class="candlestick__wick${wickAnimClass}" x1="${x}" y1="${highY}" x2="${x}" y2="${lowY}" stroke="${color}" style="${animDelay}" />`;
@@ -556,8 +565,9 @@ export class SniceCandlestick extends HTMLElement implements SniceCandlestickEle
       const barHeight = (vol / volMax) * area.volumeHeight;
       const barY = area.volumeY + area.volumeHeight - barHeight;
 
-      const animDelay = this.animation ? `animation-delay: ${i * 8}ms;` : '';
-      const animClass = this.animation ? ' candlestick__volume--animated' : '';
+      const shouldAnimate = this.animation && this.animateNext;
+      const animDelay = shouldAnimate ? `animation-delay: ${i * 8}ms;` : '';
+      const animClass = shouldAnimate ? ' candlestick__volume--animated' : '';
 
       parts += `<rect class="candlestick__volume${animClass}" x="${x - halfCw}" y="${barY}" width="${cw}" height="${barHeight}" fill="${color}" style="${animDelay}" />`;
     }

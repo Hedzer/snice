@@ -1,4 +1,4 @@
-import { element, property, dispatch, render, styles, html, css, unsafeHTML } from 'snice';
+import { element, property, dispatch, render, styles, watch, query, ready, html, css } from 'snice';
 import cssContent from './snice-funnel.css?inline';
 import type { FunnelStage, FunnelVariant, FunnelOrientation, SniceFunnelElement } from './snice-funnel.types';
 
@@ -38,11 +38,14 @@ export class SniceFunnel extends HTMLElement implements SniceFunnelElement {
   @property({ type: Boolean })
   animation = false;
 
-  @property() private tooltipText = '';
-  @property() private tooltipSubtext = '';
-  @property({ type: Number }) private tooltipX = 0;
-  @property({ type: Number }) private tooltipY = 0;
-  @property({ type: Boolean }) private tooltipVisible = false;
+  @query('.funnel__chart')
+  private chartEl?: HTMLElement;
+
+  @query('.funnel__tooltip')
+  private tooltipEl?: HTMLElement;
+
+  // Cached data to avoid repeated JSON.parse from @property getter
+  private cachedData: FunnelStage[] = [];
 
   @dispatch('funnel-click', { bubbles: true, composed: true })
   private emitFunnelClick(stage: FunnelStage, index: number) {
@@ -54,20 +57,39 @@ export class SniceFunnel extends HTMLElement implements SniceFunnelElement {
     return { stage, index };
   }
 
+  @watch('data')
+  onDataChange(_old: any, newData: FunnelStage[]) {
+    this.cachedData = newData || [];
+    this.rebuildChart();
+  }
+
+  @watch('variant', 'orientation', 'showLabels', 'showValues', 'showPercentages', 'animation')
+  onDisplayChange() {
+    this.rebuildChart();
+  }
+
+  @ready()
+  init() {
+    if (this.cachedData.length === 0 && this.data.length > 0) {
+      this.cachedData = this.data;
+    }
+    this.rebuildChart();
+  }
+
   private getColor(index: number, stage: FunnelStage): string {
     if (stage.color) return stage.color;
-    if (this.variant === 'gradient' && this.data.length > 0) {
-      const opacity = 1 - (index / this.data.length) * 0.6;
+    if (this.variant === 'gradient' && this.cachedData.length > 0) {
+      const opacity = 1 - (index / this.cachedData.length) * 0.6;
       return `rgba(37, 99, 235, ${opacity})`;
     }
     return DEFAULT_COLORS[index % DEFAULT_COLORS.length];
   }
 
   private getPercentage(index: number): string {
-    if (this.data.length === 0) return '0%';
-    const firstValue = this.data[0].value;
+    if (this.cachedData.length === 0) return '0%';
+    const firstValue = this.cachedData[0].value;
     if (firstValue === 0) return '0%';
-    return `${Math.round((this.data[index].value / firstValue) * 100)}%`;
+    return `${Math.round((this.cachedData[index].value / firstValue) * 100)}%`;
   }
 
   private formatValue(value: number): string {
@@ -81,7 +103,7 @@ export class SniceFunnel extends HTMLElement implements SniceFunnelElement {
     const indexStr = target.dataset?.index ?? target.closest('[data-index]')?.getAttribute('data-index');
     if (indexStr === null || indexStr === undefined) return;
     const index = parseInt(indexStr, 10);
-    const stage = this.data[index];
+    const stage = this.cachedData[index];
     if (!stage) return;
     this.emitFunnelClick(stage, index);
   }
@@ -89,29 +111,27 @@ export class SniceFunnel extends HTMLElement implements SniceFunnelElement {
   private handleSvgMouseMove(e: MouseEvent): void {
     const target = e.target as SVGElement;
     const el = target.dataset?.index !== undefined ? target : target.closest('[data-index]') as SVGElement | null;
+    const tooltip = this.tooltipEl;
     if (!el) {
-      if (this.tooltipVisible) {
-        this.tooltipVisible = false;
-      }
+      if (tooltip) tooltip.style.display = 'none';
       return;
     }
     const index = parseInt(el.dataset.index!, 10);
-    const stage = this.data[index];
-    if (!stage) return;
+    const stage = this.cachedData[index];
+    if (!stage || !tooltip) return;
 
     const rect = el.getBoundingClientRect();
-    this.tooltipText = stage.label;
-    this.tooltipSubtext = `${this.formatValue(stage.value)} (${this.getPercentage(index)})`;
-    this.tooltipX = rect.left + rect.width / 2;
-    this.tooltipY = rect.top - 8;
-    this.tooltipVisible = true;
+    tooltip.querySelector('.funnel__tooltip-label')!.textContent = stage.label;
+    tooltip.querySelector('.funnel__tooltip-value')!.textContent = `${this.formatValue(stage.value)} (${this.getPercentage(index)})`;
+    tooltip.style.left = `${rect.left + rect.width / 2}px`;
+    tooltip.style.top = `${rect.top - 8}px`;
+    tooltip.style.display = '';
     this.emitFunnelHover(stage, index);
   }
 
   private handleSvgMouseLeave(): void {
-    if (this.tooltipVisible) {
-      this.tooltipVisible = false;
-    }
+    const tooltip = this.tooltipEl;
+    if (tooltip) tooltip.style.display = 'none';
   }
 
   private handleSvgKeyDown(e: KeyboardEvent): void {
@@ -121,13 +141,28 @@ export class SniceFunnel extends HTMLElement implements SniceFunnelElement {
     if (indexStr === undefined) return;
     e.preventDefault();
     const index = parseInt(indexStr, 10);
-    const stage = this.data[index];
+    const stage = this.cachedData[index];
     if (!stage) return;
     this.emitFunnelClick(stage, index);
   }
 
+  private rebuildChart() {
+    const chart = this.chartEl;
+    if (!chart) {
+      requestAnimationFrame(() => this.rebuildChart());
+      return;
+    }
+
+    const svgString = this.orientation === 'horizontal'
+      ? this.buildHorizontalSVG()
+      : this.buildVerticalSVG();
+
+    chart.innerHTML = svgString;
+  }
+
   private buildVerticalSVG(): string {
-    const count = this.data.length;
+    const data = this.cachedData;
+    const count = data.length;
     if (count === 0) return '';
 
     const svgWidth = 400;
@@ -137,14 +172,14 @@ export class SniceFunnel extends HTMLElement implements SniceFunnelElement {
     const maxWidth = svgWidth * 0.85;
     const minWidth = maxWidth * 0.25;
     const labelX = svgWidth - 10;
-    const firstValue = this.data[0].value || 1;
+    const firstValue = data[0].value || 1;
 
     let svg = `<svg class="funnel__svg" viewBox="0 0 ${svgWidth} ${svgHeight}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Funnel chart">`;
 
     for (let i = 0; i < count; i++) {
-      const stage = this.data[i];
+      const stage = data[i];
       const ratio = stage.value / firstValue;
-      const topWidth = i === 0 ? maxWidth : minWidth + (maxWidth - minWidth) * (this.data[i - 1].value / firstValue);
+      const topWidth = i === 0 ? maxWidth : minWidth + (maxWidth - minWidth) * (data[i - 1].value / firstValue);
       const bottomWidth = minWidth + (maxWidth - minWidth) * ratio;
       const y = i * (stageHeight + gap);
       const cx = svgWidth / 2;
@@ -182,7 +217,8 @@ export class SniceFunnel extends HTMLElement implements SniceFunnelElement {
   }
 
   private buildHorizontalSVG(): string {
-    const count = this.data.length;
+    const data = this.cachedData;
+    const count = data.length;
     if (count === 0) return '';
 
     const svgWidth = 500;
@@ -190,14 +226,14 @@ export class SniceFunnel extends HTMLElement implements SniceFunnelElement {
     const stageWidth = (svgWidth - (count - 1) * 4) / count;
     const maxHeight = svgHeight * 0.7;
     const minHeight = maxHeight * 0.25;
-    const firstValue = this.data[0].value || 1;
+    const firstValue = data[0].value || 1;
 
     let svg = `<svg class="funnel__svg" viewBox="0 0 ${svgWidth} ${svgHeight}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Funnel chart">`;
 
     for (let i = 0; i < count; i++) {
-      const stage = this.data[i];
+      const stage = data[i];
       const ratio = stage.value / firstValue;
-      const leftHeight = i === 0 ? maxHeight : minHeight + (maxHeight - minHeight) * (this.data[i - 1].value / firstValue);
+      const leftHeight = i === 0 ? maxHeight : minHeight + (maxHeight - minHeight) * (data[i - 1].value / firstValue);
       const rightHeight = minHeight + (maxHeight - minHeight) * ratio;
       const x = i * (stageWidth + 4);
       const cy = svgHeight * 0.45;
@@ -259,25 +295,19 @@ export class SniceFunnel extends HTMLElement implements SniceFunnelElement {
     return canvas.toDataURL('image/png');
   }
 
-  @render()
+  @render({ once: true })
   renderContent() {
-    const svgString = this.orientation === 'horizontal'
-      ? this.buildHorizontalSVG()
-      : this.buildVerticalSVG();
-
     return html/*html*/`
       <div class="funnel"
            @click=${(e: MouseEvent) => this.handleSvgClick(e)}
            @mousemove=${(e: MouseEvent) => this.handleSvgMouseMove(e)}
            @mouseleave=${() => this.handleSvgMouseLeave()}
            @keydown=${(e: KeyboardEvent) => this.handleSvgKeyDown(e)}>
-        ${unsafeHTML(svgString)}
-        <if ${this.tooltipVisible}>
-          <div class="funnel__tooltip" style="left:${this.tooltipX}px;top:${this.tooltipY}px;transform:translate(-50%,-100%)">
-            <div class="funnel__tooltip-label">${this.tooltipText}</div>
-            <div class="funnel__tooltip-value">${this.tooltipSubtext}</div>
-          </div>
-        </if>
+        <div class="funnel__chart"></div>
+        <div class="funnel__tooltip" style="display:none;transform:translate(-50%,-100%)">
+          <div class="funnel__tooltip-label"></div>
+          <div class="funnel__tooltip-value"></div>
+        </div>
       </div>
     `;
   }
