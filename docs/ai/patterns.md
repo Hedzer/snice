@@ -269,6 +269,51 @@ class Editor extends HTMLElement {
 }
 ```
 
+## Imperative Rendering
+
+Render template once, update DOM manually via `@watch` + `@query`.
+
+```typescript
+@element('user-card')
+class UserCard extends HTMLElement {
+  @property() name = '';
+  @property() role = '';
+
+  @query('.name') $name!: HTMLElement;
+  @query('.role') $role!: HTMLElement;
+
+  @render({ once: true })
+  template() {
+    return html`
+      <div class="card">
+        <h3 class="name">${this.name}</h3>
+        <span class="role">${this.role}</span>
+      </div>
+    `;
+  }
+
+  @watch('name', 'role')
+  update() {
+    if (!this.$name) return;
+    this.$name.textContent = this.name;
+    this.$role.textContent = this.role;
+  }
+}
+```
+
+**Key behaviors:**
+- `once: true` → template renders on first connect, all subsequent re-renders blocked
+- `@watch` fires synchronously in property setter, before `requestRender` (which is blocked)
+- `@query` re-queries shadow DOM on each access — never stale
+- Initial render uses interpolated values, so DOM starts correct
+- Guard against missing refs: `if (!this.$name) return` (watcher may fire before first render)
+
+**Use when:**
+- Template structure is fixed — only content changes
+- Updates are expensive (syntax highlighting, canvas, etc.)
+- You need precise control over what changes and when
+- Coordinating async operations without re-render interference
+
 ## Watchers
 ```typescript
 @element('data-viewer')

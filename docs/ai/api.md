@@ -19,6 +19,13 @@
 // differential: false - disables differential rendering, expects string return
 //   Clears shadow root and re-renders from scratch each time
 //   Still honors <if> and <switch>/<case> meta elements
+// once: true - IMPERATIVE RENDERING MODE
+//   Renders template once on first connect, blocks all subsequent auto-renders
+//   Use with @watch + @query to update DOM manually
+//   Property changes fire watchers synchronously but never trigger re-render
+//   @query re-queries shadow DOM on each access (no stale refs)
+//   Timing: setter → attribute reflect → @watch fires → requestRender blocked
+//   Use when: fixed template structure, expensive updates, async coordination
 
 @styles()
 // Returns: CSSResult from css`...`

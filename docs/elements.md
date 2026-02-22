@@ -108,6 +108,66 @@ class SimpleList extends HTMLElement {
 
 **Note:** When `differential: false`, the render method must return a string (not `html\`...\``) and still honors `<if>` and `<switch>/<case>` meta elements.
 
+### Imperative Rendering
+
+Use `@render({ once: true })` with `@watch` and `@query` to render the template once, then update the DOM directly. Property changes fire watchers instead of triggering re-renders.
+
+```typescript
+@element('user-card')
+class UserCard extends HTMLElement {
+  @property() name = '';
+  @property() role = '';
+
+  @query('.name') $name!: HTMLElement;
+  @query('.role') $role!: HTMLElement;
+
+  @render({ once: true })
+  template() {
+    return html`
+      <div class="card">
+        <h3 class="name">${this.name}</h3>
+        <span class="role">${this.role}</span>
+      </div>
+    `;
+  }
+
+  @watch('name', 'role')
+  update() {
+    if (!this.$name) return;
+    this.$name.textContent = this.name;
+    this.$role.textContent = this.role;
+  }
+}
+```
+
+**How it works:**
+
+1. `@render({ once: true })` renders the template on first connect, then blocks all subsequent auto-renders. The initial render uses current property values via normal interpolation, so the DOM starts correct.
+2. `@query` provides getters that re-query the shadow DOM on each access — no stale references.
+3. `@watch` fires **synchronously** in the property setter, before `requestRender` is called. Since `once: true` blocks the render anyway, only the watcher runs.
+
+**Timing on property change:**
+1. Property setter runs
+2. Value reflected to attribute (if applicable)
+3. `@watch` methods fire synchronously
+4. `requestRender()` called but immediately returns (blocked by `once`)
+
+**When to use imperative rendering:**
+
+- The template structure never changes — only content within fixed elements updates
+- Updates are expensive (e.g., syntax highlighting, canvas operations) and you want precise control over what changes
+- You need to coordinate async operations (fetching data, animations) without re-renders interfering
+- Performance-critical components where differential rendering overhead matters
+
+**Compared to declarative rendering:**
+
+| | Declarative (`@render()`) | Imperative (`@render({ once: true })`) |
+|---|---|---|
+| Template re-renders | Automatic on property change | Never (after first render) |
+| DOM updates | Differential (only changed parts) | Manual via `@watch` + `@query` |
+| Boilerplate | Less — just use interpolation | More — explicit update methods |
+| Control | Framework manages updates | You manage updates |
+
 ### @styles() Decorator
 
 Returns CSS using the `css` tagged template, scoped to the element's shadow DOM.

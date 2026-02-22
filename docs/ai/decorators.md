@@ -8,6 +8,7 @@
 
 ## Rendering
 - `@render()` - Template method, returns `html\`...\``
+- `@render({ once: true })` - Imperative mode: render once, update via `@watch` + `@query`
 - `@styles()` - Scoped CSS, returns `css\`...\``
 
 ## Properties
