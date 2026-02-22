@@ -1,0 +1,190 @@
+:host {
+  display: block;
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  contain: layout style paint;
+  width: 100%;
+
+  --trp-bg: var(--snice-color-background, rgb(255 255 255));
+  --trp-text: var(--snice-color-text, rgb(23 23 23));
+  --trp-text-secondary: var(--snice-color-text-secondary, rgb(82 82 82));
+  --trp-border: var(--snice-color-border, rgb(226 226 226));
+  --trp-primary: var(--snice-color-primary, rgb(37 99 235));
+  --trp-primary-hover: var(--snice-color-primary-hover, rgb(29 78 216));
+  --trp-slot-hover: var(--snice-color-background-element, rgb(252 251 249));
+  --trp-disabled-bg: var(--snice-color-background-element, rgb(252 251 249));
+  --trp-disabled-text: var(--snice-color-text-tertiary, rgb(115 115 115));
+  --trp-selected-bg: var(--snice-color-primary, rgb(37 99 235));
+  --trp-selected-text: var(--snice-color-text-inverse, rgb(250 250 250));
+}
+
+:host([disabled]) {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+:host([readonly]) .slot:not(.slot--selected) {
+  cursor: default;
+}
+
+.wrapper {
+  border: 1px solid var(--trp-border);
+  border-radius: var(--snice-border-radius-lg, 0.5rem);
+  overflow: hidden;
+  background: var(--trp-bg);
+}
+
+/* Header with selected range display */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-md, 1rem);
+  border-bottom: 1px solid var(--trp-border);
+  background: var(--trp-bg);
+  min-height: 2.5rem;
+}
+
+.header-label {
+  font-size: var(--snice-font-size-md, 1rem);
+  font-weight: var(--snice-font-weight-medium, 500);
+  color: var(--trp-text);
+}
+
+.header-value {
+  font-size: var(--snice-font-size-md, 1rem);
+  color: var(--trp-primary);
+  font-weight: var(--snice-font-weight-semibold, 600);
+}
+
+.header-value--empty {
+  color: var(--trp-text-secondary);
+  font-weight: var(--snice-font-weight-medium, 500);
+  font-style: italic;
+}
+
+/* Scrollable slot container */
+.slots-container {
+  max-height: 25rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.slots-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.slots-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.slots-container::-webkit-scrollbar-thumb {
+  background: var(--trp-border);
+  border-radius: 3px;
+}
+
+/* Individual time slot */
+.slot {
+  display: flex;
+  align-items: center;
+  padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-md, 1rem);
+  border-bottom: 1px solid var(--trp-border);
+  cursor: pointer;
+  transition: background-color var(--snice-transition-fast, 150ms) ease;
+  user-select: none;
+  -webkit-user-select: none;
+  position: relative;
+  min-height: 2.25rem;
+}
+
+.slot:last-child {
+  border-bottom: none;
+}
+
+.slot:hover:not(.slot--disabled):not(.slot--selected) {
+  background: var(--trp-slot-hover);
+}
+
+.slot--selected {
+  background: var(--trp-selected-bg);
+  color: var(--trp-selected-text);
+}
+
+.slot--selected:hover {
+  background: var(--trp-primary-hover);
+}
+
+.slot--disabled {
+  background: var(--trp-disabled-bg);
+  color: var(--trp-disabled-text);
+  cursor: not-allowed;
+  text-decoration: line-through;
+  opacity: 0.65;
+}
+
+.slot--dragging {
+  background: color-mix(in srgb, var(--trp-selected-bg) 80%, transparent);
+  color: var(--trp-selected-text);
+}
+
+/* Selection edge indicators */
+.slot--range-start {
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+.slot--range-end {
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+/* Time label inside each slot */
+.slot-time {
+  font-size: var(--snice-font-size-md, 1rem);
+  font-weight: var(--snice-font-weight-medium, 500);
+  min-width: 5rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.slot-separator {
+  flex: 1;
+  height: 1px;
+  background: var(--trp-border);
+  margin: 0 var(--snice-spacing-sm, 0.75rem);
+  opacity: 0.5;
+}
+
+.slot--selected .slot-separator,
+.slot--dragging .slot-separator {
+  background: var(--trp-selected-text);
+  opacity: 0.3;
+}
+
+/* Hour marker for visual grouping */
+.slot--hour-start {
+  border-top: 2px solid var(--trp-border);
+}
+
+.slot--hour-start.slot--selected,
+.slot--hour-start.slot--dragging {
+  border-top-color: color-mix(in srgb, var(--trp-selected-text) 30%, transparent);
+}
+
+/* Focus ring for keyboard navigation */
+.slot:focus-visible {
+  outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+  outline-offset: -2px;
+  z-index: 1;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .slot {
+    padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-sm, 0.75rem);
+    min-height: 2rem;
+  }
+
+  .slot-time {
+    font-size: var(--snice-font-size-sm, 0.875rem);
+    min-width: 4rem;
+  }
+}
