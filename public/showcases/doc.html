@@ -1,0 +1,49 @@
+    <!-- ── Doc ── -->
+    <div class="comp-section">
+      <h3>Doc</h3>
+      <p class="comp-desc">Rich text document editor with formatting toolbar, headings, lists, images, links, and tables</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo demo-col">
+          <snice-doc id="demo-doc" style="height:320px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;overflow:hidden"></snice-doc>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-doc id="editor"&gt;&lt;/snice-doc&gt;
+
+&lt;script&gt;
+  const editor = document.querySelector('snice-doc');
+
+  editor.setHTML(`
+    &lt;h1&gt;Welcome!&lt;/h1&gt;
+    &lt;p&gt;Rich text with &lt;b&gt;bold&lt;/b&gt;,
+    &lt;i&gt;italic&lt;/i&gt;, &lt;u&gt;underline&lt;/u&gt;&lt;/p&gt;
+    &lt;ul&gt;
+      &lt;li&gt;Headings (H1, H2, H3)&lt;/li&gt;
+      &lt;li&gt;Bullet and numbered lists&lt;/li&gt;
+      &lt;li&gt;Images, links, and tables&lt;/li&gt;
+    &lt;/ul&gt;
+  `);
+
+  // Read content back
+  const html = editor.getHTML();
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-doc').then(() => {
+      const doc = document.getElementById('demo-doc');
+      if (doc && doc.setHTML) doc.setHTML(`
+        <h2>Document Editor</h2>
+        <p>This is a rich text editor. Try using the toolbar to format text:</p>
+        <ul>
+          <li><b>Bold</b>, <i>italic</i>, <u>underline</u> formatting</li>
+          <li>Headings (H1, H2, H3)</li>
+          <li>Bullet and numbered lists</li>
+          <li>Images, links, and tables</li>
+        </ul>
+        <p>Start typing anywhere to edit this content...</p>
+      `);
+    });
+</script>

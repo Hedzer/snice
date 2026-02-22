@@ -337,7 +337,11 @@ For each component:
    - [x] Demo page
    - [x] Human docs
    - [x] AI docs
-54. [ ] `<snice-qr-reader>` - QR code scanner component
+54. [x] `<snice-qr-reader>` - QR code scanner component
+   - [x] Implementation
+   - [x] Demo page
+   - [x] Human docs
+   - [x] AI docs
    - **Properties:**
      - `auto-start` - Start camera automatically
      - `camera` - "front" | "back" (default: "back")

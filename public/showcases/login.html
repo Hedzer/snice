@@ -1,0 +1,42 @@
+    <!-- ── Login ── -->
+    <div class="comp-section">
+      <h3>Login</h3>
+      <p class="comp-desc">Authentication forms with card, minimal, and default variants, configurable fields</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start">
+          <snice-login
+            variant="card"
+            size="small"
+            title="Welcome Back"
+            action-text="Sign In"
+            show-remember-me
+            show-forgot-password>
+            <p slot="subtitle" style="margin:0;font-size:0.8rem;opacity:0.7">Sign in to your account</p>
+          </snice-login>
+          <snice-login
+            variant="minimal"
+            size="small"
+            title="Quick Sign In"
+            action-text="Continue">
+          </snice-login>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-login
+  variant="card"
+  title="Welcome Back"
+  action-text="Sign In"
+  show-remember-me
+  show-forgot-password
+&gt;
+  &lt;p slot="subtitle"&gt;Sign in to your account&lt;/p&gt;
+  &lt;div slot="footer"&gt;
+    &lt;a href="#"&gt;Sign up here&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/snice-login&gt;
+
+&lt;!-- Variants: default, card, minimal --&gt;
+&lt;!-- Sizes: small, medium, large --&gt;</code></pre>
+        </div>
+      </div>
+    </div>

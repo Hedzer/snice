@@ -1,0 +1,60 @@
+    <!-- ── Virtual Scroller ── -->
+    <div class="comp-section">
+      <h3>Virtual Scroller</h3>
+      <p class="comp-desc">Efficiently renders thousands of items by virtualizing the DOM &mdash; only visible items are rendered</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo demo-col">
+          <div style="display:flex;gap:0.5rem;margin-bottom:0.75rem">
+            <snice-button variant="default" size="small" onclick="document.getElementById('demo-vscroll').scrollToIndex(0)">Top</snice-button>
+            <snice-button variant="default" size="small" onclick="document.getElementById('demo-vscroll').scrollToIndex(2500)">Middle</snice-button>
+            <snice-button variant="default" size="small" onclick="document.getElementById('demo-vscroll').scrollToIndex(4999)">Bottom</snice-button>
+            <span style="font-size:0.8rem;opacity:0.6;align-self:center;margin-left:auto">5,000 items &mdash; only ~15 rendered</span>
+          </div>
+          <snice-virtual-scroller id="demo-vscroll" style="height:300px;border:1px solid rgba(128,128,128,0.2);border-radius:8px" item-height="56"></snice-virtual-scroller>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">javascript</span>
+          <pre><code class="language-javascript">const scroller = document.querySelector(
+  'snice-virtual-scroller'
+);
+
+scroller.items = Array.from({ length: 5000 }, (_, i) =&gt; ({
+  id: i,
+  data: { name: `User ${i + 1}`,
+          email: `user${i + 1}@example.com` }
+}));
+
+scroller.renderItem = (item) =&gt; `
+  &lt;div style="display:flex;align-items:center;
+    gap:10px;padding:12px 16px;
+    border-bottom:1px solid rgba(128,128,128,0.15)"&gt;
+    &lt;div class="avatar"&gt;${item.data.name[0]}&lt;/div&gt;
+    &lt;div&gt;
+      &lt;div&gt;${item.data.name}&lt;/div&gt;
+      &lt;div style="opacity:0.5"&gt;${item.data.email}&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;`;
+
+scroller.scrollToIndex(2500); // jump to any index</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-virtual-scroller').then(() => {
+      const vs = document.getElementById('demo-vscroll');
+      if (!vs) return;
+      const colors = ['#3b82f6','#ef4444','#10b981','#f59e0b','#8b5cf6','#06b6d4','#ec4899','#14b8a6'];
+      vs.items = Array.from({ length: 5000 }, (_, i) => ({
+        id: i,
+        data: { name: `User ${i + 1}`, email: `user${i + 1}@example.com`, color: colors[i % colors.length] }
+      }));
+      vs.renderItem = (item) => {
+        const d = item.data;
+        return `<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid rgba(128,128,128,0.12)">
+          <div style="width:32px;height:32px;border-radius:50%;background:${d.color};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:0.8rem;flex-shrink:0">${d.name.split(' ').map(w=>w[0]).join('')}</div>
+          <div style="min-width:0"><div style="font-weight:500;font-size:0.9rem">${d.name}</div><div style="font-size:0.8rem;opacity:0.5">${d.email}</div></div>
+        </div>`;
+      };
+    });
+</script>

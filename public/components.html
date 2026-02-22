@@ -803,6 +803,75 @@
     <!-- ════════════════════════════════════════ -->
     <!-- DELIGHTER SPRINKLE                       -->
     <!-- ════════════════════════════════════════ -->
+    <!-- ── List ── -->
+    <div class="comp-section">
+      <h3>List</h3>
+      <p class="comp-desc">Structured lists with dividers, search, before/after slots, and rich content</p>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-col">
+          <snice-list dividers style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;overflow:hidden">
+            <snice-list-item>
+              <span slot="before">&#x1f4c4;</span>
+              <div>
+                <div style="font-weight:500">Document.pdf</div>
+                <div style="font-size:0.8rem;opacity:0.6">Updated 2 hours ago</div>
+              </div>
+              <span slot="after">2.4 MB</span>
+            </snice-list-item>
+            <snice-list-item>
+              <span slot="before">&#x1f4ca;</span>
+              <div>
+                <div style="font-weight:500">Presentation.pptx</div>
+                <div style="font-size:0.8rem;opacity:0.6">Updated yesterday</div>
+              </div>
+              <span slot="after">5.1 MB</span>
+            </snice-list-item>
+            <snice-list-item>
+              <span slot="before">&#x1f4c8;</span>
+              <div>
+                <div style="font-weight:500">Budget.xlsx</div>
+                <div style="font-size:0.8rem;opacity:0.6">Updated 3 days ago</div>
+              </div>
+              <span slot="after">876 KB</span>
+            </snice-list-item>
+            <snice-list-item>
+              <span slot="before">&#x2705;</span>
+              <div>
+                <div style="font-weight:500">Task Completed</div>
+                <div style="font-size:0.8rem;opacity:0.6">Finished 2 hours ago</div>
+              </div>
+              <span slot="after" style="color:#10b981">Done</span>
+            </snice-list-item>
+            <snice-list-item>
+              <span slot="before">&#x23f3;</span>
+              <div>
+                <div style="font-weight:500">In Progress</div>
+                <div style="font-size:0.8rem;opacity:0.6">Due tomorrow</div>
+              </div>
+              <span slot="after" style="color:#f59e0b">Pending</span>
+            </snice-list-item>
+          </snice-list>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-list dividers&gt;
+  &lt;snice-list-item&gt;
+    &lt;span slot="before"&gt;&#x1f4c4;&lt;/span&gt;
+    &lt;div&gt;
+      &lt;div style="font-weight:500"&gt;Document.pdf&lt;/div&gt;
+      &lt;div style="font-size:0.8rem"&gt;Updated 2h ago&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;span slot="after"&gt;2.4 MB&lt;/span&gt;
+  &lt;/snice-list-item&gt;
+&lt;/snice-list&gt;
+
+&lt;!-- Searchable list --&gt;
+&lt;snice-list searchable dividers&gt;
+  &lt;snice-list-item&gt;...&lt;/snice-list-item&gt;
+&lt;/snice-list&gt;</code></pre>
+        </div>
+      </div>
+    </div>
 
     <!-- ════════════════════════════════════════ -->
     <!-- DELIGHTER SPRINKLE                       -->
@@ -1024,6 +1093,81 @@
         </div>
       </div>
     </div>
+    <!-- ── Nav ── -->
+    <div class="comp-section">
+      <h3>Nav</h3>
+      <p class="comp-desc">Application navigation with flat, hierarchical, and grouped variants in horizontal or vertical orientations</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo demo-col">
+          <div style="font-size:0.8rem;font-weight:600;margin-bottom:0.5rem;opacity:0.7">Horizontal (flat)</div>
+          <snice-nav id="demo-nav-flat" variant="flat" orientation="horizontal" style="display:block;padding:0.75rem;background:var(--snice-color-surface,rgba(128,128,128,0.05));border:1px solid rgba(128,128,128,0.2);border-radius:8px;margin-bottom:1rem"></snice-nav>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <div>
+              <div style="font-size:0.8rem;font-weight:600;margin-bottom:0.5rem;opacity:0.7">Hierarchical</div>
+              <snice-nav id="demo-nav-hier" variant="hierarchical" orientation="vertical" style="display:block;padding:0.75rem;background:var(--snice-color-surface,rgba(128,128,128,0.05));border:1px solid rgba(128,128,128,0.2);border-radius:8px"></snice-nav>
+            </div>
+            <div>
+              <div style="font-size:0.8rem;font-weight:600;margin-bottom:0.5rem;opacity:0.7">Grouped</div>
+              <snice-nav id="demo-nav-group" variant="grouped" orientation="vertical" style="display:block;padding:0.75rem;background:var(--snice-color-surface,rgba(128,128,128,0.05));border:1px solid rgba(128,128,128,0.2);border-radius:8px"></snice-nav>
+            </div>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">javascript</span>
+          <pre><code class="language-javascript">// Flat navigation
+nav.update(placards, appContext, 'dashboard');
+
+// Hierarchical (parent-child)
+nav.update([
+  { name: 'products', title: 'Products', icon: '\ud83d\udce6' },
+  { name: 'products/list', parent: 'products',
+    title: 'Product List' },
+], ctx, 'products/list');
+
+// Grouped (by category)
+nav.update([
+  { name: 'users', title: 'Users',
+    group: 'Management', icon: '\ud83d\udc65' },
+], ctx, 'settings');
+
+// Variants: flat, hierarchical, grouped
+// Orientation: horizontal, vertical</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-nav').then(() => {
+      const flat = document.getElementById('demo-nav-flat');
+      if (flat) flat.update([
+        { name: 'home', title: 'Home', icon: '\ud83c\udfe0', order: 1 },
+        { name: 'dashboard', title: 'Dashboard', icon: '\ud83d\udcca', order: 2 },
+        { name: 'users', title: 'Users', icon: '\ud83d\udc65', order: 3 },
+        { name: 'settings', title: 'Settings', icon: '\u2699\ufe0f', order: 4 }
+      ], undefined, 'dashboard');
+
+      const hier = document.getElementById('demo-nav-hier');
+      if (hier) hier.update([
+        { name: 'home', title: 'Home', icon: '\ud83c\udfe0', order: 1 },
+        { name: 'products', title: 'Products', icon: '\ud83d\udce6', order: 2 },
+        { name: 'products/list', parent: 'products', title: 'Product List', order: 1 },
+        { name: 'products/create', parent: 'products', title: 'Create Product', order: 2 },
+        { name: 'orders', title: 'Orders', icon: '\ud83d\uded2', order: 3 },
+        { name: 'orders/pending', parent: 'orders', title: 'Pending', order: 1 },
+        { name: 'orders/completed', parent: 'orders', title: 'Completed', order: 2 }
+      ], undefined, 'products/list');
+
+      const group = document.getElementById('demo-nav-group');
+      if (group) group.update([
+        { name: 'home', title: 'Home', icon: '\ud83c\udfe0', group: 'Main', order: 1 },
+        { name: 'dashboard', title: 'Dashboard', icon: '\ud83d\udcca', group: 'Main', order: 2 },
+        { name: 'users', title: 'Users', icon: '\ud83d\udc65', group: 'Management', order: 1 },
+        { name: 'roles', title: 'Roles', icon: '\ud83d\udd11', group: 'Management', order: 2 },
+        { name: 'settings', title: 'Settings', icon: '\u2699\ufe0f', group: 'System', order: 1 },
+        { name: 'logs', title: 'Logs', icon: '\ud83d\udcdd', group: 'System', order: 2 }
+      ], undefined, 'settings');
+    });
+</script>
     <!-- ── 17. Drawer ── -->
     <div class="comp-section">
       <h3>Drawer</h3>
@@ -1257,6 +1401,48 @@
       requestAnimationFrame(() => banner.show());
     };
 </script>
+    <!-- ── Login ── -->
+    <div class="comp-section">
+      <h3>Login</h3>
+      <p class="comp-desc">Authentication forms with card, minimal, and default variants, configurable fields</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start">
+          <snice-login
+            variant="card"
+            size="small"
+            title="Welcome Back"
+            action-text="Sign In"
+            show-remember-me
+            show-forgot-password>
+            <p slot="subtitle" style="margin:0;font-size:0.8rem;opacity:0.7">Sign in to your account</p>
+          </snice-login>
+          <snice-login
+            variant="minimal"
+            size="small"
+            title="Quick Sign In"
+            action-text="Continue">
+          </snice-login>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-login
+  variant="card"
+  title="Welcome Back"
+  action-text="Sign In"
+  show-remember-me
+  show-forgot-password
+&gt;
+  &lt;p slot="subtitle"&gt;Sign in to your account&lt;/p&gt;
+  &lt;div slot="footer"&gt;
+    &lt;a href="#"&gt;Sign up here&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/snice-login&gt;
+
+&lt;!-- Variants: default, card, minimal --&gt;
+&lt;!-- Sizes: small, medium, large --&gt;</code></pre>
+        </div>
+      </div>
+    </div>
 
     <div class="comp-category">Delighter Sprinkles</div>
     <div class="comp-section">
@@ -1396,6 +1582,87 @@
         </div>
       </div>
     </div>
+    <!-- ── Tree ── -->
+    <div class="comp-section">
+      <h3>Tree</h3>
+      <p class="comp-desc">Hierarchical data with expand/collapse, checkboxes, keyboard navigation, and lazy loading</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo demo-col">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <div>
+              <div style="font-size:0.8rem;font-weight:600;margin-bottom:0.5rem;opacity:0.7">File System</div>
+              <snice-tree id="demo-tree-fs" style="max-height:280px"></snice-tree>
+            </div>
+            <div>
+              <div style="font-size:0.8rem;font-weight:600;margin-bottom:0.5rem;opacity:0.7">Checkboxes (cascading)</div>
+              <snice-tree id="demo-tree-check" show-checkboxes selection-mode="multiple" style="max-height:280px"></snice-tree>
+            </div>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">javascript</span>
+          <pre><code class="language-javascript">tree.nodes = [
+  { id: 'src', label: 'src', icon: '\ud83d\udcc1', expanded: true,
+    children: [
+      { id: 'index.ts', label: 'index.ts', icon: '\ud83d\udcc4' },
+      { id: 'app.ts', label: 'app.ts', icon: '\ud83d\udcc4' }
+    ]
+  }
+];
+
+// Checkboxes with cascading selection
+&lt;snice-tree show-checkboxes
+  selection-mode="multiple"
+&gt;&lt;/snice-tree&gt;
+
+// API: expandAll(), collapseAll(), checkNode(id),
+// getCheckedNodes(), selectNode(id)</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-tree').then(() => {
+      const fsTree = document.getElementById('demo-tree-fs');
+      if (fsTree) fsTree.nodes = [
+        { id: 'root', label: 'project', icon: '\ud83d\udcc1', expanded: true, children: [
+          { id: 'src', label: 'src', icon: '\ud83d\udcc1', expanded: true, children: [
+            { id: 'index.ts', label: 'index.ts', icon: '\ud83d\udcc4' },
+            { id: 'app.ts', label: 'app.ts', icon: '\ud83d\udcc4' },
+            { id: 'components', label: 'components', icon: '\ud83d\udcc1', children: [
+              { id: 'Button.ts', label: 'Button.ts', icon: '\ud83d\udcc4' },
+              { id: 'Input.ts', label: 'Input.ts', icon: '\ud83d\udcc4' }
+            ]}
+          ]},
+          { id: 'tests', label: 'tests', icon: '\ud83d\udcc1', children: [
+            { id: 'app.test.ts', label: 'app.test.ts', icon: '\ud83d\udcc4' }
+          ]},
+          { id: 'readme', label: 'README.md', icon: '\ud83d\udcc4' },
+          { id: 'package', label: 'package.json', icon: '\ud83d\udcc4' }
+        ]}
+      ];
+
+      const checkTree = document.getElementById('demo-tree-check');
+      if (checkTree) checkTree.nodes = [
+        { id: 'frontend', label: 'Frontend', expanded: true, children: [
+          { id: 'frameworks', label: 'Frameworks', children: [
+            { id: 'react', label: 'React' },
+            { id: 'vue', label: 'Vue' },
+            { id: 'angular', label: 'Angular' }
+          ]},
+          { id: 'languages', label: 'Languages', children: [
+            { id: 'js', label: 'JavaScript' },
+            { id: 'ts', label: 'TypeScript' }
+          ]}
+        ]},
+        { id: 'backend', label: 'Backend', children: [
+          { id: 'node', label: 'Node.js' },
+          { id: 'python', label: 'Python' },
+          { id: 'java', label: 'Java' }
+        ]}
+      ];
+    });
+</script>
     <div class="comp-section">
       <h3>Empty State</h3>
       <p class="comp-desc">Placeholder for empty content areas</p>
@@ -1502,6 +1769,69 @@ timeline.items = [
       </div>
     </div>
 
+    <!-- ── KPI ── -->
+    <div class="comp-section">
+      <h3>KPI</h3>
+      <p class="comp-desc">Key performance indicators with trends, sparklines, and sentiment colors</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo demo-col">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;width:100%">
+            <snice-kpi id="demo-kpi-revenue" label="Revenue" value="$127,450" trend-value="+22.4%" sentiment="up"></snice-kpi>
+            <snice-kpi id="demo-kpi-users" label="Active Users" value="2,345" trend-value="-5%" sentiment="down"></snice-kpi>
+            <snice-kpi id="demo-kpi-nps" label="NPS Score" value="72" trend-value="+4 pts" sentiment="up"></snice-kpi>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;width:100%;margin-top:1.5rem">
+            <snice-kpi id="demo-kpi-sm" label="Small" value="1,234" trend-value="+5%" sentiment="up" size="small"></snice-kpi>
+            <snice-kpi id="demo-kpi-md" label="Medium" value="5,678" trend-value="+10%" sentiment="up" size="medium"></snice-kpi>
+            <snice-kpi id="demo-kpi-lg" label="Large" value="9,012" trend-value="+15%" sentiment="up" size="large"></snice-kpi>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;width:100%;margin-top:1.5rem">
+            <snice-kpi id="demo-kpi-col-up" label="Sales" value="$12,345" trend-value="+25%" sentiment="up" color-value></snice-kpi>
+            <snice-kpi id="demo-kpi-col-down" label="Errors" value="127" trend-value="+15" sentiment="down" color-value></snice-kpi>
+            <snice-kpi id="demo-kpi-col-neutral" label="Pending" value="45" trend-value="±0%" sentiment="neutral" color-value></snice-kpi>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-kpi
+  label="Revenue"
+  value="$127,450"
+  trend-value="+22.4%"
+  sentiment="up"
+&gt;&lt;/snice-kpi&gt;
+
+&lt;script&gt;
+  kpi.trendData = [30, 45, 35, 50, 40, 60, 55, 70];
+&lt;/script&gt;
+
+&lt;!-- Sizes: small, medium, large --&gt;
+&lt;snice-kpi label="Small" value="1,234"
+  size="small" sentiment="up"&gt;&lt;/snice-kpi&gt;
+
+&lt;!-- color-value applies sentiment to value --&gt;
+&lt;snice-kpi label="Sales" value="$12,345"
+  sentiment="up" color-value&gt;&lt;/snice-kpi&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+// Initialize KPI sparklines
+    customElements.whenDefined('snice-kpi').then(() => {
+      function trendUp(n) { let v=50,d=[]; for(let i=0;i<n;i++){v+=Math.random()*10;v=Math.min(90,v);d.push(v);} return d; }
+      function trendDown(n) { let v=50,d=[]; for(let i=0;i<n;i++){v-=Math.random()*10;v=Math.max(10,v);d.push(v);} return d; }
+      function volatile(n) { let v=50,d=[]; for(let i=0;i<n;i++){v+=(Math.random()-0.5)*20;v=Math.max(20,Math.min(80,v));d.push(v);} return d; }
+      const ids = {
+        'demo-kpi-revenue': trendUp(14), 'demo-kpi-users': trendDown(14), 'demo-kpi-nps': trendUp(12),
+        'demo-kpi-sm': trendUp(10), 'demo-kpi-md': trendUp(10), 'demo-kpi-lg': trendUp(10),
+        'demo-kpi-col-up': trendUp(14), 'demo-kpi-col-down': trendUp(14), 'demo-kpi-col-neutral': volatile(14)
+      };
+      for (const [id, data] of Object.entries(ids)) {
+        const el = document.getElementById(id);
+        if (el) el.trendData = data;
+      }
+    });
+</script>
 
     <div class="comp-category">Delighter Sprinkles</div>
     <div class="comp-section">
@@ -1775,13 +2105,14 @@ timeline.items = [
     </div>
     <div class="comp-section">
       <h3>Stepper</h3>
-      <p class="comp-desc">Multi-step process indicator</p>
+      <p class="comp-desc">Multi-step process indicator with horizontal/vertical orientations, panels, error states, and clickable navigation</p>
       <div class="comp-split comp-split-stacked">
         <div class="comp-split-demo demo-col">
-          <snice-stepper id="demo-stepper" current-step="1" clickable></snice-stepper>
-          <div style="margin-top:1rem;display:flex;gap:0.5rem">
-            <snice-button variant="default" size="small" onclick="document.getElementById('demo-stepper').currentStep = Math.max(0, document.getElementById('demo-stepper').currentStep - 1)">Previous</snice-button>
-            <snice-button variant="primary" size="small" onclick="document.getElementById('demo-stepper').currentStep = Math.min(3, document.getElementById('demo-stepper').currentStep + 1)">Next</snice-button>
+          <div style="font-size:0.8rem;font-weight:600;margin-bottom:0.5rem;opacity:0.7">Horizontal</div>
+          <snice-stepper id="demo-stepper-h" current-step="1" clickable></snice-stepper>
+          <div style="margin-top:0.75rem;display:flex;gap:0.5rem">
+            <snice-button variant="default" size="small" onclick="document.getElementById('demo-stepper-h').currentStep = Math.max(0, document.getElementById('demo-stepper-h').currentStep - 1)">Previous</snice-button>
+            <snice-button variant="primary" size="small" onclick="document.getElementById('demo-stepper-h').currentStep = Math.min(3, document.getElementById('demo-stepper-h').currentStep + 1)">Next</snice-button>
           </div>
         </div>
         <div class="comp-split-code">
@@ -1795,23 +2126,217 @@ timeline.items = [
   stepper.steps = [
     { label: 'Account', description: 'Create account' },
     { label: 'Profile', description: 'Setup profile' },
+    { label: 'Settings', description: 'Configure' },
     { label: 'Complete', description: 'All done!' }
   ];
 &lt;/script&gt;</code></pre>
         </div>
       </div>
+
+      <div class="comp-split">
+        <div class="comp-split-demo demo-col">
+          <div style="font-size:0.8rem;font-weight:600;margin-bottom:0.5rem;opacity:0.7">Vertical</div>
+          <div style="max-width:400px">
+            <snice-stepper id="demo-stepper-v" orientation="vertical" current-step="1" clickable></snice-stepper>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-stepper
+  orientation="vertical"
+  current-step="1"
+  clickable
+&gt;&lt;/snice-stepper&gt;
+
+&lt;!-- Error state --&gt;
+&lt;script&gt;
+  stepper.steps = [
+    { label: 'Upload', status: 'completed' },
+    { label: 'Validate', status: 'error' },
+    { label: 'Process', status: 'pending' }
+  ];
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo demo-col">
+          <div style="font-size:0.8rem;font-weight:600;margin-bottom:0.5rem;opacity:0.7">With Panels</div>
+          <snice-stepper id="demo-stepper-panels" clickable>
+            <snice-stepper-panel>
+              <div style="padding:1.25rem;border:1px solid rgba(128,128,128,0.2);border-radius:8px;margin-top:1rem">
+                <h4 style="margin:0 0 0.5rem">Step 1: Account Info</h4>
+                <p style="margin:0 0 0.75rem;font-size:0.9rem;opacity:0.7">Enter your email and choose a password.</p>
+                <snice-input placeholder="Email" style="display:block;margin-bottom:0.5rem"></snice-input>
+                <snice-input placeholder="Password" type="password" style="display:block"></snice-input>
+              </div>
+            </snice-stepper-panel>
+            <snice-stepper-panel>
+              <div style="padding:1.25rem;border:1px solid rgba(128,128,128,0.2);border-radius:8px;margin-top:1rem">
+                <h4 style="margin:0 0 0.5rem">Step 2: Profile</h4>
+                <p style="margin:0 0 0.75rem;font-size:0.9rem;opacity:0.7">Tell us about yourself.</p>
+                <snice-input placeholder="Full Name" style="display:block;margin-bottom:0.5rem"></snice-input>
+                <snice-input placeholder="Company" style="display:block"></snice-input>
+              </div>
+            </snice-stepper-panel>
+            <snice-stepper-panel>
+              <div style="padding:1.25rem;border:1px solid rgba(128,128,128,0.2);border-radius:8px;margin-top:1rem">
+                <h4 style="margin:0 0 0.5rem">Step 3: Preferences</h4>
+                <p style="margin:0 0 0.75rem;font-size:0.9rem;opacity:0.7">Customize your experience.</p>
+                <snice-checkbox>Email notifications</snice-checkbox>
+                <snice-checkbox style="display:block;margin-top:0.5rem">Weekly digest</snice-checkbox>
+              </div>
+            </snice-stepper-panel>
+            <snice-stepper-panel>
+              <div style="padding:1.25rem;border:1px solid rgba(128,128,128,0.2);border-radius:8px;margin-top:1rem;text-align:center">
+                <h4 style="margin:0 0 0.5rem">All Done!</h4>
+                <p style="margin:0 0 0.75rem;font-size:0.9rem;opacity:0.7">Your account is ready.</p>
+                <snice-button variant="success" size="small">Get Started</snice-button>
+              </div>
+            </snice-stepper-panel>
+          </snice-stepper>
+          <div style="margin-top:0.75rem;display:flex;gap:0.5rem">
+            <snice-button variant="default" size="small" onclick="document.getElementById('demo-stepper-panels').currentStep = Math.max(0, document.getElementById('demo-stepper-panels').currentStep - 1)">Previous</snice-button>
+            <snice-button variant="primary" size="small" onclick="document.getElementById('demo-stepper-panels').currentStep = Math.min(3, document.getElementById('demo-stepper-panels').currentStep + 1)">Next</snice-button>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-stepper id="wizard" clickable&gt;
+  &lt;snice-stepper-panel&gt;
+    &lt;h4&gt;Step 1: Account Info&lt;/h4&gt;
+    &lt;snice-input placeholder="Email"&gt;&lt;/snice-input&gt;
+    &lt;snice-input placeholder="Password"
+      type="password"&gt;&lt;/snice-input&gt;
+  &lt;/snice-stepper-panel&gt;
+
+  &lt;snice-stepper-panel&gt;
+    &lt;h4&gt;Step 2: Profile&lt;/h4&gt;
+    &lt;snice-input placeholder="Full Name"&gt;
+    &lt;/snice-input&gt;
+  &lt;/snice-stepper-panel&gt;
+
+  &lt;!-- Panels auto-show/hide with step --&gt;
+&lt;/snice-stepper&gt;</code></pre>
+        </div>
+      </div>
+
+      <div class="comp-split">
+        <div class="comp-split-demo demo-col">
+          <div style="font-size:0.8rem;font-weight:600;margin-bottom:0.5rem;opacity:0.7">Error State</div>
+          <snice-stepper id="demo-stepper-err"></snice-stepper>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">javascript</span>
+          <pre><code class="language-javascript">stepper.steps = [
+  { label: 'Upload', status: 'completed' },
+  { label: 'Validate', status: 'error' },
+  { label: 'Process', status: 'pending' },
+  { label: 'Complete', status: 'pending' }
+];
+stepper.currentStep = 1;</code></pre>
+        </div>
+      </div>
     </div>
 
 <script>
-// Initialize stepper
     customElements.whenDefined('snice-stepper').then(() => {
-      const stepper = document.getElementById('demo-stepper');
-      if (stepper) stepper.steps = [
+      const h = document.getElementById('demo-stepper-h');
+      if (h) h.steps = [
         { label: 'Account', description: 'Create account' },
         { label: 'Profile', description: 'Setup profile' },
         { label: 'Settings', description: 'Configure settings' },
         { label: 'Complete', description: 'All done!' }
       ];
+
+      const v = document.getElementById('demo-stepper-v');
+      if (v) {
+        v.steps = [
+          { label: 'Account Setup', description: 'Create your credentials' },
+          { label: 'Profile Info', description: 'Personal details' },
+          { label: 'Payment Method', description: 'Billing information' },
+          { label: 'Review & Submit', description: 'Confirm your order' }
+        ];
+      }
+
+      const panels = document.getElementById('demo-stepper-panels');
+      if (panels) panels.steps = [
+        { label: 'Account' },
+        { label: 'Profile' },
+        { label: 'Preferences' },
+        { label: 'Complete' }
+      ];
+
+      const err = document.getElementById('demo-stepper-err');
+      if (err) {
+        err.steps = [
+          { label: 'Upload Files', status: 'completed' },
+          { label: 'Validate', status: 'error' },
+          { label: 'Process', status: 'pending' },
+          { label: 'Complete', status: 'pending' }
+        ];
+        err.currentStep = 1;
+      }
+    });
+</script>
+    <!-- ── Virtual Scroller ── -->
+    <div class="comp-section">
+      <h3>Virtual Scroller</h3>
+      <p class="comp-desc">Efficiently renders thousands of items by virtualizing the DOM &mdash; only visible items are rendered</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo demo-col">
+          <div style="display:flex;gap:0.5rem;margin-bottom:0.75rem">
+            <snice-button variant="default" size="small" onclick="document.getElementById('demo-vscroll').scrollToIndex(0)">Top</snice-button>
+            <snice-button variant="default" size="small" onclick="document.getElementById('demo-vscroll').scrollToIndex(2500)">Middle</snice-button>
+            <snice-button variant="default" size="small" onclick="document.getElementById('demo-vscroll').scrollToIndex(4999)">Bottom</snice-button>
+            <span style="font-size:0.8rem;opacity:0.6;align-self:center;margin-left:auto">5,000 items &mdash; only ~15 rendered</span>
+          </div>
+          <snice-virtual-scroller id="demo-vscroll" style="height:300px;border:1px solid rgba(128,128,128,0.2);border-radius:8px" item-height="56"></snice-virtual-scroller>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">javascript</span>
+          <pre><code class="language-javascript">const scroller = document.querySelector(
+  'snice-virtual-scroller'
+);
+
+scroller.items = Array.from({ length: 5000 }, (_, i) =&gt; ({
+  id: i,
+  data: { name: `User ${i + 1}`,
+          email: `user${i + 1}@example.com` }
+}));
+
+scroller.renderItem = (item) =&gt; `
+  &lt;div style="display:flex;align-items:center;
+    gap:10px;padding:12px 16px;
+    border-bottom:1px solid rgba(128,128,128,0.15)"&gt;
+    &lt;div class="avatar"&gt;${item.data.name[0]}&lt;/div&gt;
+    &lt;div&gt;
+      &lt;div&gt;${item.data.name}&lt;/div&gt;
+      &lt;div style="opacity:0.5"&gt;${item.data.email}&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;`;
+
+scroller.scrollToIndex(2500); // jump to any index</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-virtual-scroller').then(() => {
+      const vs = document.getElementById('demo-vscroll');
+      if (!vs) return;
+      const colors = ['#3b82f6','#ef4444','#10b981','#f59e0b','#8b5cf6','#06b6d4','#ec4899','#14b8a6'];
+      vs.items = Array.from({ length: 5000 }, (_, i) => ({
+        id: i,
+        data: { name: `User ${i + 1}`, email: `user${i + 1}@example.com`, color: colors[i % colors.length] }
+      }));
+      vs.renderItem = (item) => {
+        const d = item.data;
+        return `<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid rgba(128,128,128,0.12)">
+          <div style="width:32px;height:32px;border-radius:50%;background:${d.color};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:0.8rem;flex-shrink:0">${d.name.split(' ').map(w=>w[0]).join('')}</div>
+          <div style="min-width:0"><div style="font-weight:500;font-size:0.9rem">${d.name}</div><div style="font-size:0.8rem;opacity:0.5">${d.email}</div></div>
+        </div>`;
+      };
     });
 </script>
 
@@ -1944,6 +2469,55 @@ const x = 42;
           }
         });
       }
+    });
+</script>
+    <!-- ── Doc ── -->
+    <div class="comp-section">
+      <h3>Doc</h3>
+      <p class="comp-desc">Rich text document editor with formatting toolbar, headings, lists, images, links, and tables</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo demo-col">
+          <snice-doc id="demo-doc" style="height:320px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;overflow:hidden"></snice-doc>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-doc id="editor"&gt;&lt;/snice-doc&gt;
+
+&lt;script&gt;
+  const editor = document.querySelector('snice-doc');
+
+  editor.setHTML(`
+    &lt;h1&gt;Welcome!&lt;/h1&gt;
+    &lt;p&gt;Rich text with &lt;b&gt;bold&lt;/b&gt;,
+    &lt;i&gt;italic&lt;/i&gt;, &lt;u&gt;underline&lt;/u&gt;&lt;/p&gt;
+    &lt;ul&gt;
+      &lt;li&gt;Headings (H1, H2, H3)&lt;/li&gt;
+      &lt;li&gt;Bullet and numbered lists&lt;/li&gt;
+      &lt;li&gt;Images, links, and tables&lt;/li&gt;
+    &lt;/ul&gt;
+  `);
+
+  // Read content back
+  const html = editor.getHTML();
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-doc').then(() => {
+      const doc = document.getElementById('demo-doc');
+      if (doc && doc.setHTML) doc.setHTML(`
+        <h2>Document Editor</h2>
+        <p>This is a rich text editor. Try using the toolbar to format text:</p>
+        <ul>
+          <li><b>Bold</b>, <i>italic</i>, <u>underline</u> formatting</li>
+          <li>Headings (H1, H2, H3)</li>
+          <li>Bullet and numbered lists</li>
+          <li>Images, links, and tables</li>
+        </ul>
+        <p>Start typing anywhere to edit this content...</p>
+      `);
     });
 </script>
 
@@ -2758,6 +3332,13 @@ const x = 42;
   <script src="components/snice-heatmap.min.js"></script>
   <script src="components/snice-masonry.min.js"></script>
   <script src="components/snice-link-preview.min.js"></script>
+  <script src="components/snice-doc.min.js"></script>
+  <script src="components/snice-kpi.min.js"></script>
+  <script src="components/snice-list.min.js"></script>
+  <script src="components/snice-login.min.js"></script>
+  <script src="components/snice-nav.min.js"></script>
+  <script src="components/snice-tree.min.js"></script>
+  <script src="components/snice-virtual-scroller.min.js"></script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>

@@ -1,0 +1,81 @@
+    <!-- ── Tree ── -->
+    <div class="comp-section">
+      <h3>Tree</h3>
+      <p class="comp-desc">Hierarchical data with expand/collapse, checkboxes, keyboard navigation, and lazy loading</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo demo-col">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <div>
+              <div style="font-size:0.8rem;font-weight:600;margin-bottom:0.5rem;opacity:0.7">File System</div>
+              <snice-tree id="demo-tree-fs" style="max-height:280px"></snice-tree>
+            </div>
+            <div>
+              <div style="font-size:0.8rem;font-weight:600;margin-bottom:0.5rem;opacity:0.7">Checkboxes (cascading)</div>
+              <snice-tree id="demo-tree-check" show-checkboxes selection-mode="multiple" style="max-height:280px"></snice-tree>
+            </div>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">javascript</span>
+          <pre><code class="language-javascript">tree.nodes = [
+  { id: 'src', label: 'src', icon: '\ud83d\udcc1', expanded: true,
+    children: [
+      { id: 'index.ts', label: 'index.ts', icon: '\ud83d\udcc4' },
+      { id: 'app.ts', label: 'app.ts', icon: '\ud83d\udcc4' }
+    ]
+  }
+];
+
+// Checkboxes with cascading selection
+&lt;snice-tree show-checkboxes
+  selection-mode="multiple"
+&gt;&lt;/snice-tree&gt;
+
+// API: expandAll(), collapseAll(), checkNode(id),
+// getCheckedNodes(), selectNode(id)</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-tree').then(() => {
+      const fsTree = document.getElementById('demo-tree-fs');
+      if (fsTree) fsTree.nodes = [
+        { id: 'root', label: 'project', icon: '\ud83d\udcc1', expanded: true, children: [
+          { id: 'src', label: 'src', icon: '\ud83d\udcc1', expanded: true, children: [
+            { id: 'index.ts', label: 'index.ts', icon: '\ud83d\udcc4' },
+            { id: 'app.ts', label: 'app.ts', icon: '\ud83d\udcc4' },
+            { id: 'components', label: 'components', icon: '\ud83d\udcc1', children: [
+              { id: 'Button.ts', label: 'Button.ts', icon: '\ud83d\udcc4' },
+              { id: 'Input.ts', label: 'Input.ts', icon: '\ud83d\udcc4' }
+            ]}
+          ]},
+          { id: 'tests', label: 'tests', icon: '\ud83d\udcc1', children: [
+            { id: 'app.test.ts', label: 'app.test.ts', icon: '\ud83d\udcc4' }
+          ]},
+          { id: 'readme', label: 'README.md', icon: '\ud83d\udcc4' },
+          { id: 'package', label: 'package.json', icon: '\ud83d\udcc4' }
+        ]}
+      ];
+
+      const checkTree = document.getElementById('demo-tree-check');
+      if (checkTree) checkTree.nodes = [
+        { id: 'frontend', label: 'Frontend', expanded: true, children: [
+          { id: 'frameworks', label: 'Frameworks', children: [
+            { id: 'react', label: 'React' },
+            { id: 'vue', label: 'Vue' },
+            { id: 'angular', label: 'Angular' }
+          ]},
+          { id: 'languages', label: 'Languages', children: [
+            { id: 'js', label: 'JavaScript' },
+            { id: 'ts', label: 'TypeScript' }
+          ]}
+        ]},
+        { id: 'backend', label: 'Backend', children: [
+          { id: 'node', label: 'Node.js' },
+          { id: 'python', label: 'Python' },
+          { id: 'java', label: 'Java' }
+        ]}
+      ];
+    });
+</script>

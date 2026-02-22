@@ -1,12 +1,13 @@
     <div class="comp-section">
       <h3>Stepper</h3>
-      <p class="comp-desc">Multi-step process indicator</p>
+      <p class="comp-desc">Multi-step process indicator with horizontal/vertical orientations, panels, error states, and clickable navigation</p>
       <div class="comp-split comp-split-stacked">
         <div class="comp-split-demo demo-col">
-          <snice-stepper id="demo-stepper" current-step="1" clickable></snice-stepper>
-          <div style="margin-top:1rem;display:flex;gap:0.5rem">
-            <snice-button variant="default" size="small" onclick="document.getElementById('demo-stepper').currentStep = Math.max(0, document.getElementById('demo-stepper').currentStep - 1)">Previous</snice-button>
-            <snice-button variant="primary" size="small" onclick="document.getElementById('demo-stepper').currentStep = Math.min(3, document.getElementById('demo-stepper').currentStep + 1)">Next</snice-button>
+          <div style="font-size:0.8rem;font-weight:600;margin-bottom:0.5rem;opacity:0.7">Horizontal</div>
+          <snice-stepper id="demo-stepper-h" current-step="1" clickable></snice-stepper>
+          <div style="margin-top:0.75rem;display:flex;gap:0.5rem">
+            <snice-button variant="default" size="small" onclick="document.getElementById('demo-stepper-h').currentStep = Math.max(0, document.getElementById('demo-stepper-h').currentStep - 1)">Previous</snice-button>
+            <snice-button variant="primary" size="small" onclick="document.getElementById('demo-stepper-h').currentStep = Math.min(3, document.getElementById('demo-stepper-h').currentStep + 1)">Next</snice-button>
           </div>
         </div>
         <div class="comp-split-code">
@@ -20,22 +21,156 @@
   stepper.steps = [
     { label: 'Account', description: 'Create account' },
     { label: 'Profile', description: 'Setup profile' },
+    { label: 'Settings', description: 'Configure' },
     { label: 'Complete', description: 'All done!' }
   ];
 &lt;/script&gt;</code></pre>
         </div>
       </div>
+
+      <div class="comp-split">
+        <div class="comp-split-demo demo-col">
+          <div style="font-size:0.8rem;font-weight:600;margin-bottom:0.5rem;opacity:0.7">Vertical</div>
+          <div style="max-width:400px">
+            <snice-stepper id="demo-stepper-v" orientation="vertical" current-step="1" clickable></snice-stepper>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-stepper
+  orientation="vertical"
+  current-step="1"
+  clickable
+&gt;&lt;/snice-stepper&gt;
+
+&lt;!-- Error state --&gt;
+&lt;script&gt;
+  stepper.steps = [
+    { label: 'Upload', status: 'completed' },
+    { label: 'Validate', status: 'error' },
+    { label: 'Process', status: 'pending' }
+  ];
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo demo-col">
+          <div style="font-size:0.8rem;font-weight:600;margin-bottom:0.5rem;opacity:0.7">With Panels</div>
+          <snice-stepper id="demo-stepper-panels" clickable>
+            <snice-stepper-panel>
+              <div style="padding:1.25rem;border:1px solid rgba(128,128,128,0.2);border-radius:8px;margin-top:1rem">
+                <h4 style="margin:0 0 0.5rem">Step 1: Account Info</h4>
+                <p style="margin:0 0 0.75rem;font-size:0.9rem;opacity:0.7">Enter your email and choose a password.</p>
+                <snice-input placeholder="Email" style="display:block;margin-bottom:0.5rem"></snice-input>
+                <snice-input placeholder="Password" type="password" style="display:block"></snice-input>
+              </div>
+            </snice-stepper-panel>
+            <snice-stepper-panel>
+              <div style="padding:1.25rem;border:1px solid rgba(128,128,128,0.2);border-radius:8px;margin-top:1rem">
+                <h4 style="margin:0 0 0.5rem">Step 2: Profile</h4>
+                <p style="margin:0 0 0.75rem;font-size:0.9rem;opacity:0.7">Tell us about yourself.</p>
+                <snice-input placeholder="Full Name" style="display:block;margin-bottom:0.5rem"></snice-input>
+                <snice-input placeholder="Company" style="display:block"></snice-input>
+              </div>
+            </snice-stepper-panel>
+            <snice-stepper-panel>
+              <div style="padding:1.25rem;border:1px solid rgba(128,128,128,0.2);border-radius:8px;margin-top:1rem">
+                <h4 style="margin:0 0 0.5rem">Step 3: Preferences</h4>
+                <p style="margin:0 0 0.75rem;font-size:0.9rem;opacity:0.7">Customize your experience.</p>
+                <snice-checkbox>Email notifications</snice-checkbox>
+                <snice-checkbox style="display:block;margin-top:0.5rem">Weekly digest</snice-checkbox>
+              </div>
+            </snice-stepper-panel>
+            <snice-stepper-panel>
+              <div style="padding:1.25rem;border:1px solid rgba(128,128,128,0.2);border-radius:8px;margin-top:1rem;text-align:center">
+                <h4 style="margin:0 0 0.5rem">All Done!</h4>
+                <p style="margin:0 0 0.75rem;font-size:0.9rem;opacity:0.7">Your account is ready.</p>
+                <snice-button variant="success" size="small">Get Started</snice-button>
+              </div>
+            </snice-stepper-panel>
+          </snice-stepper>
+          <div style="margin-top:0.75rem;display:flex;gap:0.5rem">
+            <snice-button variant="default" size="small" onclick="document.getElementById('demo-stepper-panels').currentStep = Math.max(0, document.getElementById('demo-stepper-panels').currentStep - 1)">Previous</snice-button>
+            <snice-button variant="primary" size="small" onclick="document.getElementById('demo-stepper-panels').currentStep = Math.min(3, document.getElementById('demo-stepper-panels').currentStep + 1)">Next</snice-button>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-stepper id="wizard" clickable&gt;
+  &lt;snice-stepper-panel&gt;
+    &lt;h4&gt;Step 1: Account Info&lt;/h4&gt;
+    &lt;snice-input placeholder="Email"&gt;&lt;/snice-input&gt;
+    &lt;snice-input placeholder="Password"
+      type="password"&gt;&lt;/snice-input&gt;
+  &lt;/snice-stepper-panel&gt;
+
+  &lt;snice-stepper-panel&gt;
+    &lt;h4&gt;Step 2: Profile&lt;/h4&gt;
+    &lt;snice-input placeholder="Full Name"&gt;
+    &lt;/snice-input&gt;
+  &lt;/snice-stepper-panel&gt;
+
+  &lt;!-- Panels auto-show/hide with step --&gt;
+&lt;/snice-stepper&gt;</code></pre>
+        </div>
+      </div>
+
+      <div class="comp-split">
+        <div class="comp-split-demo demo-col">
+          <div style="font-size:0.8rem;font-weight:600;margin-bottom:0.5rem;opacity:0.7">Error State</div>
+          <snice-stepper id="demo-stepper-err"></snice-stepper>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">javascript</span>
+          <pre><code class="language-javascript">stepper.steps = [
+  { label: 'Upload', status: 'completed' },
+  { label: 'Validate', status: 'error' },
+  { label: 'Process', status: 'pending' },
+  { label: 'Complete', status: 'pending' }
+];
+stepper.currentStep = 1;</code></pre>
+        </div>
+      </div>
     </div>
 
 <script>
-// Initialize stepper
     customElements.whenDefined('snice-stepper').then(() => {
-      const stepper = document.getElementById('demo-stepper');
-      if (stepper) stepper.steps = [
+      const h = document.getElementById('demo-stepper-h');
+      if (h) h.steps = [
         { label: 'Account', description: 'Create account' },
         { label: 'Profile', description: 'Setup profile' },
         { label: 'Settings', description: 'Configure settings' },
         { label: 'Complete', description: 'All done!' }
       ];
+
+      const v = document.getElementById('demo-stepper-v');
+      if (v) {
+        v.steps = [
+          { label: 'Account Setup', description: 'Create your credentials' },
+          { label: 'Profile Info', description: 'Personal details' },
+          { label: 'Payment Method', description: 'Billing information' },
+          { label: 'Review & Submit', description: 'Confirm your order' }
+        ];
+      }
+
+      const panels = document.getElementById('demo-stepper-panels');
+      if (panels) panels.steps = [
+        { label: 'Account' },
+        { label: 'Profile' },
+        { label: 'Preferences' },
+        { label: 'Complete' }
+      ];
+
+      const err = document.getElementById('demo-stepper-err');
+      if (err) {
+        err.steps = [
+          { label: 'Upload Files', status: 'completed' },
+          { label: 'Validate', status: 'error' },
+          { label: 'Process', status: 'pending' },
+          { label: 'Complete', status: 'pending' }
+        ];
+        err.currentStep = 1;
+      }
     });
 </script>
