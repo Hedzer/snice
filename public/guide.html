@@ -59,7 +59,7 @@
         <div class="nav-group">Getting Started</div>
         <a href="#esm">ESM + Bundler</a>
         <a href="#standalone">Standalone</a>
-        <a href="#semi-standalone">Semi-Standalone</a>
+        <a href="#runtime-light">Runtime + Light</a>
         <a href="#react">React Wrappers</a>
 
         <div class="nav-group">Elements</div>
@@ -121,14 +121,12 @@ npx snice create-app my-app</code></pre>
           <pre><code><span class="c">&lt;!-- Single script tag, works anywhere --&gt;</span>
 &lt;script src=<span class="s">"snice-button.min.js"</span>&gt;&lt;/script&gt;
 &lt;snice-button variant=<span class="s">"primary"</span>&gt;Click me&lt;/snice-button&gt;</code></pre>
-          <pre style="margin-top:0.75rem"><code><span class="c"># Build a standalone component</span>
-npx snice build-component button</code></pre>
           <p class="desc" style="margin-top:0.75rem">Each bundle is ~20&ndash;40KB minified. Since the runtime is included in every file, loading multiple components duplicates it.</p>
           <p class="desc"><strong>Best for:</strong> 1&ndash;2 components, CMS pages, WordPress, static sites.</p>
         </div>
 
-        <div class="dec-section" id="semi-standalone">
-          <h3>Semi-Standalone</h3>
+        <div class="dec-section" id="runtime-light">
+          <h3>Runtime + Light</h3>
           <p class="desc">Load the Snice runtime once, then load lightweight component builds that reference it. Dramatically reduces total size when using multiple components.</p>
           <pre><code><span class="c">&lt;!-- Load runtime once --&gt;</span>
 &lt;script src=<span class="s">"snice-runtime.min.js"</span>&gt;&lt;/script&gt;
@@ -137,15 +135,13 @@ npx snice build-component button</code></pre>
 &lt;script src=<span class="s">"snice-button.light.min.js"</span>&gt;&lt;/script&gt;
 &lt;script src=<span class="s">"snice-input.light.min.js"</span>&gt;&lt;/script&gt;
 &lt;script src=<span class="s">"snice-modal.light.min.js"</span>&gt;&lt;/script&gt;</code></pre>
-          <pre style="margin-top:0.75rem"><code><span class="c"># Build a lightweight component</span>
-npx snice build-component button --shared-runtime</code></pre>
           <div style="margin-top:1rem;border:1px solid var(--snice-color-border);border-radius:6px;overflow:hidden;font-size:0.8rem">
             <table style="width:100%;border-collapse:collapse">
               <thead>
                 <tr style="background:var(--snice-color-background-tertiary)">
                   <th style="padding:0.5rem 0.75rem;text-align:left;border-bottom:1px solid var(--snice-color-border)">Scenario</th>
                   <th style="padding:0.5rem 0.75rem;text-align:right;border-bottom:1px solid var(--snice-color-border)">Standalone</th>
-                  <th style="padding:0.5rem 0.75rem;text-align:right;border-bottom:1px solid var(--snice-color-border)">Semi-Standalone</th>
+                  <th style="padding:0.5rem 0.75rem;text-align:right;border-bottom:1px solid var(--snice-color-border)">Runtime + Light</th>
                 </tr>
               </thead>
               <tbody>

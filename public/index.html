@@ -109,18 +109,18 @@
       <div class="usage-grid">
         <a href="guide.html#esm" class="usage-card">
           <strong>ESM + Bundler</strong>
-          <span>Full framework with Vite, esbuild, or Rollup. Decorators, routing, controllers.</span>
+          <span>Use what you need, bundle what you need.</span>
           <code>npm install snice</code>
         </a>
         <a href="guide.html#standalone" class="usage-card">
           <strong>Standalone</strong>
-          <span>Single <code>&lt;script&gt;</code> tag, zero dependencies. Each component is self-contained.</span>
+          <span>Single <code>&lt;script&gt;</code> tag, zero dependencies. Each element includes a full copy of Snice.</span>
           <code>&lt;script src="snice-button.min.js"&gt;</code>
         </a>
-        <a href="guide.html#semi-standalone" class="usage-card">
-          <strong>Semi-Standalone</strong>
-          <span>Shared runtime + lightweight components. Best for 3+ components without a bundler.</span>
-          <code>--shared-runtime</code>
+        <a href="guide.html#runtime-light" class="usage-card">
+          <strong>Runtime + Light</strong>
+          <span>Load the runtime once, then lightweight components. Best for 3+ components without a bundler.</span>
+          <code>&lt;script src="snice-runtime.min.js"&gt;<br>&lt;script src="snice-button.light.min.js"&gt;</code>
         </a>
         <a href="guide.html#react" class="usage-card">
           <strong>React Wrappers</strong>
