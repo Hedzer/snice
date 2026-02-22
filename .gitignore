@@ -80,3 +80,4 @@ test-social-app/
 my-app/
 
 .debugpublic/
+public/components/
