@@ -1,4 +1,5 @@
     <!-- ── Nav ── -->
+    <style>snice-nav::part(icon) { font-family: 'Material Symbols Outlined'; font-size: 1.25rem; }</style>
     <div class="comp-section">
       <h3>Nav</h3>
       <p class="comp-desc">Application navigation with flat, hierarchical, and grouped variants in horizontal or vertical orientations</p>
@@ -24,7 +25,7 @@ nav.update(placards, appContext, 'dashboard');
 
 // Hierarchical (parent-child)
 nav.update([
-  { name: 'products', title: 'Products', icon: '\ud83d\udce6' },
+  { name: 'products', title: 'Products', icon: 'inventory_2' },
   { name: 'products/list', parent: 'products',
     title: 'Product List' },
 ], ctx, 'products/list');
@@ -32,7 +33,7 @@ nav.update([
 // Grouped (by category)
 nav.update([
   { name: 'users', title: 'Users',
-    group: 'Management', icon: '\ud83d\udc65' },
+    group: 'Management', icon: 'group' },
 ], ctx, 'settings');
 
 // Variants: flat, hierarchical, grouped
@@ -45,31 +46,31 @@ nav.update([
     customElements.whenDefined('snice-nav').then(() => {
       const flat = document.getElementById('demo-nav-flat');
       if (flat) flat.update([
-        { name: 'home', title: 'Home', icon: '\ud83c\udfe0', order: 1 },
-        { name: 'dashboard', title: 'Dashboard', icon: '\ud83d\udcca', order: 2 },
-        { name: 'users', title: 'Users', icon: '\ud83d\udc65', order: 3 },
-        { name: 'settings', title: 'Settings', icon: '\u2699\ufe0f', order: 4 }
+        { name: 'home', title: 'Home', icon: 'home', order: 1 },
+        { name: 'dashboard', title: 'Dashboard', icon: 'dashboard', order: 2 },
+        { name: 'users', title: 'Users', icon: 'group', order: 3 },
+        { name: 'settings', title: 'Settings', icon: 'settings', order: 4 }
       ], undefined, 'dashboard');
 
       const hier = document.getElementById('demo-nav-hier');
       if (hier) hier.update([
-        { name: 'home', title: 'Home', icon: '\ud83c\udfe0', order: 1 },
-        { name: 'products', title: 'Products', icon: '\ud83d\udce6', order: 2 },
+        { name: 'home', title: 'Home', icon: 'home', order: 1 },
+        { name: 'products', title: 'Products', icon: 'inventory_2', order: 2 },
         { name: 'products/list', parent: 'products', title: 'Product List', order: 1 },
         { name: 'products/create', parent: 'products', title: 'Create Product', order: 2 },
-        { name: 'orders', title: 'Orders', icon: '\ud83d\uded2', order: 3 },
+        { name: 'orders', title: 'Orders', icon: 'shopping_cart', order: 3 },
         { name: 'orders/pending', parent: 'orders', title: 'Pending', order: 1 },
         { name: 'orders/completed', parent: 'orders', title: 'Completed', order: 2 }
       ], undefined, 'products/list');
 
       const group = document.getElementById('demo-nav-group');
       if (group) group.update([
-        { name: 'home', title: 'Home', icon: '\ud83c\udfe0', group: 'Main', order: 1 },
-        { name: 'dashboard', title: 'Dashboard', icon: '\ud83d\udcca', group: 'Main', order: 2 },
-        { name: 'users', title: 'Users', icon: '\ud83d\udc65', group: 'Management', order: 1 },
-        { name: 'roles', title: 'Roles', icon: '\ud83d\udd11', group: 'Management', order: 2 },
-        { name: 'settings', title: 'Settings', icon: '\u2699\ufe0f', group: 'System', order: 1 },
-        { name: 'logs', title: 'Logs', icon: '\ud83d\udcdd', group: 'System', order: 2 }
+        { name: 'home', title: 'Home', icon: 'home', group: 'Main', order: 1 },
+        { name: 'dashboard', title: 'Dashboard', icon: 'dashboard', group: 'Main', order: 2 },
+        { name: 'users', title: 'Users', icon: 'group', group: 'Management', order: 1 },
+        { name: 'roles', title: 'Roles', icon: 'vpn_key', group: 'Management', order: 2 },
+        { name: 'settings', title: 'Settings', icon: 'settings', group: 'System', order: 1 },
+        { name: 'logs', title: 'Logs', icon: 'description', group: 'System', order: 2 }
       ], undefined, 'settings');
     });
 </script>

@@ -5,65 +5,43 @@
       <div class="comp-split">
         <div class="comp-split-demo demo-col">
           <snice-list dividers style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;overflow:hidden">
-            <snice-list-item>
+            <snice-list-item heading="Document.pdf" description="Updated 2 hours ago">
               <span slot="before">&#x1f4c4;</span>
-              <div>
-                <div style="font-weight:500">Document.pdf</div>
-                <div style="font-size:0.8rem;opacity:0.6">Updated 2 hours ago</div>
-              </div>
               <span slot="after">2.4 MB</span>
             </snice-list-item>
-            <snice-list-item>
+            <snice-list-item heading="Presentation.pptx" description="Updated yesterday">
               <span slot="before">&#x1f4ca;</span>
-              <div>
-                <div style="font-weight:500">Presentation.pptx</div>
-                <div style="font-size:0.8rem;opacity:0.6">Updated yesterday</div>
-              </div>
               <span slot="after">5.1 MB</span>
             </snice-list-item>
-            <snice-list-item>
+            <snice-list-item heading="Budget.xlsx" description="Updated 3 days ago">
               <span slot="before">&#x1f4c8;</span>
-              <div>
-                <div style="font-weight:500">Budget.xlsx</div>
-                <div style="font-size:0.8rem;opacity:0.6">Updated 3 days ago</div>
-              </div>
               <span slot="after">876 KB</span>
             </snice-list-item>
-            <snice-list-item>
+            <snice-list-item heading="Task Completed" description="Finished 2 hours ago">
               <span slot="before">&#x2705;</span>
-              <div>
-                <div style="font-weight:500">Task Completed</div>
-                <div style="font-size:0.8rem;opacity:0.6">Finished 2 hours ago</div>
-              </div>
-              <span slot="after" style="color:#10b981">Done</span>
+              <span slot="after" style="color:var(--snice-color-success,#10b981)">Done</span>
             </snice-list-item>
-            <snice-list-item>
+            <snice-list-item heading="In Progress" description="Due tomorrow">
               <span slot="before">&#x23f3;</span>
-              <div>
-                <div style="font-weight:500">In Progress</div>
-                <div style="font-size:0.8rem;opacity:0.6">Due tomorrow</div>
-              </div>
-              <span slot="after" style="color:#f59e0b">Pending</span>
+              <span slot="after" style="color:var(--snice-color-warning,#f59e0b)">Pending</span>
             </snice-list-item>
           </snice-list>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
           <pre><code class="language-html">&lt;snice-list dividers&gt;
-  &lt;snice-list-item&gt;
+  &lt;snice-list-item heading="Document.pdf" description="Updated 2h ago"&gt;
     &lt;span slot="before"&gt;&#x1f4c4;&lt;/span&gt;
-    &lt;div&gt;
-      &lt;div style="font-weight:500"&gt;Document.pdf&lt;/div&gt;
-      &lt;div style="font-size:0.8rem"&gt;Updated 2h ago&lt;/div&gt;
-    &lt;/div&gt;
     &lt;span slot="after"&gt;2.4 MB&lt;/span&gt;
   &lt;/snice-list-item&gt;
 &lt;/snice-list&gt;
 
-&lt;!-- Searchable list --&gt;
-&lt;snice-list searchable dividers&gt;
-  &lt;snice-list-item&gt;...&lt;/snice-list-item&gt;
-&lt;/snice-list&gt;</code></pre>
+&lt;!-- Or use custom slotted content --&gt;
+&lt;snice-list-item&gt;
+  &lt;span slot="before"&gt;&#x1f4c4;&lt;/span&gt;
+  &lt;div&gt;Any custom content here&lt;/div&gt;
+  &lt;span slot="after"&gt;2.4 MB&lt;/span&gt;
+&lt;/snice-list-item&gt;</code></pre>
         </div>
       </div>
     </div>

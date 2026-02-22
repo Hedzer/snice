@@ -84,7 +84,7 @@
   </header>
   <main class="wrap">
     <div class="page-title">
-      <h2>64 Components</h2>
+      <h2><span id="comp-count"></span> Components</h2>
       <p>Pre-built UI components. Use standalone or with React/Vue/Angular.</p>
     </div>
 
@@ -810,65 +810,43 @@
       <div class="comp-split">
         <div class="comp-split-demo demo-col">
           <snice-list dividers style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;overflow:hidden">
-            <snice-list-item>
+            <snice-list-item heading="Document.pdf" description="Updated 2 hours ago">
               <span slot="before">&#x1f4c4;</span>
-              <div>
-                <div style="font-weight:500">Document.pdf</div>
-                <div style="font-size:0.8rem;opacity:0.6">Updated 2 hours ago</div>
-              </div>
               <span slot="after">2.4 MB</span>
             </snice-list-item>
-            <snice-list-item>
+            <snice-list-item heading="Presentation.pptx" description="Updated yesterday">
               <span slot="before">&#x1f4ca;</span>
-              <div>
-                <div style="font-weight:500">Presentation.pptx</div>
-                <div style="font-size:0.8rem;opacity:0.6">Updated yesterday</div>
-              </div>
               <span slot="after">5.1 MB</span>
             </snice-list-item>
-            <snice-list-item>
+            <snice-list-item heading="Budget.xlsx" description="Updated 3 days ago">
               <span slot="before">&#x1f4c8;</span>
-              <div>
-                <div style="font-weight:500">Budget.xlsx</div>
-                <div style="font-size:0.8rem;opacity:0.6">Updated 3 days ago</div>
-              </div>
               <span slot="after">876 KB</span>
             </snice-list-item>
-            <snice-list-item>
+            <snice-list-item heading="Task Completed" description="Finished 2 hours ago">
               <span slot="before">&#x2705;</span>
-              <div>
-                <div style="font-weight:500">Task Completed</div>
-                <div style="font-size:0.8rem;opacity:0.6">Finished 2 hours ago</div>
-              </div>
-              <span slot="after" style="color:#10b981">Done</span>
+              <span slot="after" style="color:var(--snice-color-success,#10b981)">Done</span>
             </snice-list-item>
-            <snice-list-item>
+            <snice-list-item heading="In Progress" description="Due tomorrow">
               <span slot="before">&#x23f3;</span>
-              <div>
-                <div style="font-weight:500">In Progress</div>
-                <div style="font-size:0.8rem;opacity:0.6">Due tomorrow</div>
-              </div>
-              <span slot="after" style="color:#f59e0b">Pending</span>
+              <span slot="after" style="color:var(--snice-color-warning,#f59e0b)">Pending</span>
             </snice-list-item>
           </snice-list>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
           <pre><code class="language-html">&lt;snice-list dividers&gt;
-  &lt;snice-list-item&gt;
+  &lt;snice-list-item heading="Document.pdf" description="Updated 2h ago"&gt;
     &lt;span slot="before"&gt;&#x1f4c4;&lt;/span&gt;
-    &lt;div&gt;
-      &lt;div style="font-weight:500"&gt;Document.pdf&lt;/div&gt;
-      &lt;div style="font-size:0.8rem"&gt;Updated 2h ago&lt;/div&gt;
-    &lt;/div&gt;
     &lt;span slot="after"&gt;2.4 MB&lt;/span&gt;
   &lt;/snice-list-item&gt;
 &lt;/snice-list&gt;
 
-&lt;!-- Searchable list --&gt;
-&lt;snice-list searchable dividers&gt;
-  &lt;snice-list-item&gt;...&lt;/snice-list-item&gt;
-&lt;/snice-list&gt;</code></pre>
+&lt;!-- Or use custom slotted content --&gt;
+&lt;snice-list-item&gt;
+  &lt;span slot="before"&gt;&#x1f4c4;&lt;/span&gt;
+  &lt;div&gt;Any custom content here&lt;/div&gt;
+  &lt;span slot="after"&gt;2.4 MB&lt;/span&gt;
+&lt;/snice-list-item&gt;</code></pre>
         </div>
       </div>
     </div>
@@ -1094,6 +1072,7 @@
       </div>
     </div>
     <!-- ── Nav ── -->
+    <style>snice-nav::part(icon) { font-family: 'Material Symbols Outlined'; font-size: 1.25rem; }</style>
     <div class="comp-section">
       <h3>Nav</h3>
       <p class="comp-desc">Application navigation with flat, hierarchical, and grouped variants in horizontal or vertical orientations</p>
@@ -1119,7 +1098,7 @@ nav.update(placards, appContext, 'dashboard');
 
 // Hierarchical (parent-child)
 nav.update([
-  { name: 'products', title: 'Products', icon: '\ud83d\udce6' },
+  { name: 'products', title: 'Products', icon: 'inventory_2' },
   { name: 'products/list', parent: 'products',
     title: 'Product List' },
 ], ctx, 'products/list');
@@ -1127,7 +1106,7 @@ nav.update([
 // Grouped (by category)
 nav.update([
   { name: 'users', title: 'Users',
-    group: 'Management', icon: '\ud83d\udc65' },
+    group: 'Management', icon: 'group' },
 ], ctx, 'settings');
 
 // Variants: flat, hierarchical, grouped
@@ -1140,31 +1119,31 @@ nav.update([
     customElements.whenDefined('snice-nav').then(() => {
       const flat = document.getElementById('demo-nav-flat');
       if (flat) flat.update([
-        { name: 'home', title: 'Home', icon: '\ud83c\udfe0', order: 1 },
-        { name: 'dashboard', title: 'Dashboard', icon: '\ud83d\udcca', order: 2 },
-        { name: 'users', title: 'Users', icon: '\ud83d\udc65', order: 3 },
-        { name: 'settings', title: 'Settings', icon: '\u2699\ufe0f', order: 4 }
+        { name: 'home', title: 'Home', icon: 'home', order: 1 },
+        { name: 'dashboard', title: 'Dashboard', icon: 'dashboard', order: 2 },
+        { name: 'users', title: 'Users', icon: 'group', order: 3 },
+        { name: 'settings', title: 'Settings', icon: 'settings', order: 4 }
       ], undefined, 'dashboard');
 
       const hier = document.getElementById('demo-nav-hier');
       if (hier) hier.update([
-        { name: 'home', title: 'Home', icon: '\ud83c\udfe0', order: 1 },
-        { name: 'products', title: 'Products', icon: '\ud83d\udce6', order: 2 },
+        { name: 'home', title: 'Home', icon: 'home', order: 1 },
+        { name: 'products', title: 'Products', icon: 'inventory_2', order: 2 },
         { name: 'products/list', parent: 'products', title: 'Product List', order: 1 },
         { name: 'products/create', parent: 'products', title: 'Create Product', order: 2 },
-        { name: 'orders', title: 'Orders', icon: '\ud83d\uded2', order: 3 },
+        { name: 'orders', title: 'Orders', icon: 'shopping_cart', order: 3 },
         { name: 'orders/pending', parent: 'orders', title: 'Pending', order: 1 },
         { name: 'orders/completed', parent: 'orders', title: 'Completed', order: 2 }
       ], undefined, 'products/list');
 
       const group = document.getElementById('demo-nav-group');
       if (group) group.update([
-        { name: 'home', title: 'Home', icon: '\ud83c\udfe0', group: 'Main', order: 1 },
-        { name: 'dashboard', title: 'Dashboard', icon: '\ud83d\udcca', group: 'Main', order: 2 },
-        { name: 'users', title: 'Users', icon: '\ud83d\udc65', group: 'Management', order: 1 },
-        { name: 'roles', title: 'Roles', icon: '\ud83d\udd11', group: 'Management', order: 2 },
-        { name: 'settings', title: 'Settings', icon: '\u2699\ufe0f', group: 'System', order: 1 },
-        { name: 'logs', title: 'Logs', icon: '\ud83d\udcdd', group: 'System', order: 2 }
+        { name: 'home', title: 'Home', icon: 'home', group: 'Main', order: 1 },
+        { name: 'dashboard', title: 'Dashboard', icon: 'dashboard', group: 'Main', order: 2 },
+        { name: 'users', title: 'Users', icon: 'group', group: 'Management', order: 1 },
+        { name: 'roles', title: 'Roles', icon: 'vpn_key', group: 'Management', order: 2 },
+        { name: 'settings', title: 'Settings', icon: 'settings', group: 'System', order: 1 },
+        { name: 'logs', title: 'Logs', icon: 'description', group: 'System', order: 2 }
       ], undefined, 'settings');
     });
 </script>
@@ -3933,6 +3912,12 @@ const x = 42;
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+  <script>
+    // Dynamic component count
+    document.getElementById('comp-count').textContent = document.querySelectorAll('.comp-tag').length;
+    // Re-run Prism highlighting after all scripts load
+    if (typeof Prism !== 'undefined') Prism.highlightAll();
+  </script>
   <style>
     /* Override Prism backgrounds to blend with comp-split-code */
     .comp-split-code pre[class*="language-"] {

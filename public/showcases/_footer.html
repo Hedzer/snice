@@ -173,6 +173,12 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+  <script>
+    // Dynamic component count
+    document.getElementById('comp-count').textContent = document.querySelectorAll('.comp-tag').length;
+    // Re-run Prism highlighting after all scripts load
+    if (typeof Prism !== 'undefined') Prism.highlightAll();
+  </script>
   <style>
     /* Override Prism backgrounds to blend with comp-split-code */
     .comp-split-code pre[class*="language-"] {
