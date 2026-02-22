@@ -74,7 +74,7 @@ if (command === 'create-app') {
     process.exit(1);
   }
 
-  buildComponent(componentName, { outputDir, formats, minify, withTheme, useSharedRuntime });
+  buildComponent(componentName, { outputDir, formats, minify, withTheme, useSharedRuntime, copyToPublic: flags['copy-to-public'] === true });
 } else {
   console.log(`
 Snice CLI
@@ -210,7 +210,7 @@ function copyTemplateFiles(sourceDir, targetDir, projectName) {
 }
 
 async function buildComponent(componentName, options) {
-  const { outputDir, formats, minify, withTheme, useSharedRuntime } = options;
+  const { outputDir, formats, minify, withTheme, useSharedRuntime, copyToPublic } = options;
 
   console.log(`\n🔨 Building standalone component: ${componentName}\n`);
 
@@ -236,67 +236,82 @@ async function buildComponent(componentName, options) {
     process.exit(1);
   }
 
-  console.log(`📦 Options:`);
-  console.log(`   Output: ${outputDir}`);
-  console.log(`   Formats: ${formats.join(', ')}`);
-  console.log(`   Minify: ${minify}`);
-  console.log(`   Include theme: ${withTheme}`);
-  console.log(`   Shared runtime: ${useSharedRuntime}\n`);
+  // Build both full and light versions
+  const builds = [
+    { useSharedRuntime: false, outputSuffix: '', label: 'full' }
+  ];
 
-  // Create a temporary rollup config for this build
-  const configContent = `
+  // Always build light version too unless explicitly using --shared-runtime (manual mode)
+  if (!useSharedRuntime) {
+    builds.push({ useSharedRuntime: true, outputSuffix: '.light', label: 'light' });
+  } else {
+    builds[0] = { useSharedRuntime: true, outputSuffix: '.light', label: 'light' };
+  }
+
+  for (const build of builds) {
+    console.log(`⚙️  Building ${build.label} version...\n`);
+
+    const configContent = `
 import { createStandaloneBuild } from './rollup.config.standalone.js';
 
 export default createStandaloneBuild('${componentName}', {
   minify: ${minify},
   withTheme: ${withTheme},
   formats: ${JSON.stringify(formats)},
-  useSharedRuntime: ${useSharedRuntime},
-  outputSuffix: '${useSharedRuntime ? '.light' : ''}'
+  useSharedRuntime: ${build.useSharedRuntime},
+  outputSuffix: '${build.outputSuffix}'
 });
 `;
 
-  const tempConfigPath = join(process.cwd(), '.rollup.config.temp.js');
-  writeFileSync(tempConfigPath, configContent);
+    const tempConfigPath = join(process.cwd(), '.rollup.config.temp.js');
+    writeFileSync(tempConfigPath, configContent);
 
-  try {
-    // Run rollup with the temporary config
-    console.log('⚙️  Running Rollup...\n');
-    const { stdout, stderr } = await execAsync(`npx rollup -c ${tempConfigPath}`);
-
-    if (stdout) {
-      console.log(stdout);
-    }
-    if (stderr && !stderr.includes('created')) {
-      console.error(stderr);
-    }
-
-    console.log(`\n✨ Build complete!\n`);
-    console.log(`📁 Output: ${outputDir}/${componentName}/\n`);
-
-    // List generated files
-    const outputPath = join(process.cwd(), outputDir, componentName);
-    if (existsSync(outputPath)) {
-      console.log('Generated files:');
-      const files = readdirSync(outputPath);
-      for (const file of files) {
-        const filePath = join(outputPath, file);
-        const stats = statSync(filePath);
-        const sizeKB = (stats.size / 1024).toFixed(2);
-        console.log(`  ${file} (${sizeKB} KB)`);
+    try {
+      const { stdout, stderr } = await execAsync(`npx rollup -c ${tempConfigPath}`);
+      if (stdout) console.log(stdout);
+      if (stderr && !stderr.includes('created')) console.error(stderr);
+    } catch (error) {
+      console.error(`\n❌ ${build.label} build failed:`, error.message);
+      if (error.stdout) console.log(error.stdout);
+      if (error.stderr) console.error(error.stderr);
+      process.exit(1);
+    } finally {
+      if (existsSync(tempConfigPath)) {
+        const { unlinkSync } = await import('fs');
+        unlinkSync(tempConfigPath);
       }
     }
+  }
 
-  } catch (error) {
-    console.error('\n❌ Build failed:', error.message);
-    if (error.stdout) console.log(error.stdout);
-    if (error.stderr) console.error(error.stderr);
-    process.exit(1);
-  } finally {
-    // Clean up temp config
-    if (existsSync(tempConfigPath)) {
-      const { unlinkSync } = await import('fs');
-      unlinkSync(tempConfigPath);
+  const outputPath = join(process.cwd(), outputDir, componentName);
+
+  // Copy .min.js files to public/components/
+  const publicDir = join(process.cwd(), 'public', 'components');
+  if (existsSync(publicDir) && existsSync(outputPath)) {
+    const minFiles = readdirSync(outputPath).filter(f => f.endsWith('.min.js'));
+    for (const file of minFiles) {
+      const src = join(outputPath, file);
+      const dest = join(publicDir, file);
+      const { copyFileSync } = await import('fs');
+      copyFileSync(src, dest);
+    }
+    if (minFiles.length > 0) {
+      console.log(`📋 Copied ${minFiles.length} file(s) to public/components/`);
+    }
+  }
+
+  console.log(`\n✨ Build complete!\n`);
+  console.log(`📁 Output: ${outputDir}/${componentName}/\n`);
+
+  // List generated files
+  if (existsSync(outputPath)) {
+    console.log('Generated files:');
+    const files = readdirSync(outputPath);
+    for (const file of files) {
+      const filePath = join(outputPath, file);
+      const stats = statSync(filePath);
+      const sizeKB = (stats.size / 1024).toFixed(2);
+      console.log(`  ${file} (${sizeKB} KB)`);
     }
   }
 }
