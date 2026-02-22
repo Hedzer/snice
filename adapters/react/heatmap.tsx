@@ -12,6 +12,10 @@ export interface HeatmapProps extends SniceBaseProps {
   cellGap?: any;
   showTooltip?: any;
   weeks?: any;
+  tooltipText?: any;
+  tooltipX?: any;
+  tooltipY?: any;
+  tooltipVisible?: any;
 
 }
 
@@ -33,7 +37,7 @@ export interface HeatmapProps extends SniceBaseProps {
  */
 export const Heatmap = createReactAdapter<HeatmapProps>({
   tagName: 'snice-heatmap',
-  properties: ["data","colorScheme","showLabels","cellSize","cellGap","showTooltip","weeks"],
+  properties: ["data","colorScheme","showLabels","cellSize","cellGap","showTooltip","weeks","tooltipText","tooltipX","tooltipY","tooltipVisible"],
   events: {},
   formAssociated: false
 });

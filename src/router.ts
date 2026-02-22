@@ -214,7 +214,7 @@ export function Router(options: RouterOptions): RouterInstance {
 
   function emitContextUpdate(target: Element, currentPath: string, routeParams: RouteParams): void {
     // Update the navigation context and notify all registered elements
-    navigationContext[CONTEXT_UPDATE](context, placards, currentPath, routeParams);
+    (navigationContext[CONTEXT_UPDATE] as Function)(context, placards, currentPath, routeParams);
   }
 
   function updateLayout(layoutElement: HTMLElement, currentPath: string, routeParams: RouteParams): void {

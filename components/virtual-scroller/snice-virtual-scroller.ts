@@ -43,10 +43,7 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
 
     const offset = index * this.itemHeight;
     this._scrollTop = offset;
-
-    if (this.scrollerElement) {
-      this._scrollTop = offset;
-    }
+    this.scrollTop = offset;
   }
 
   scrollToItem(id: string | number): void {
@@ -68,7 +65,7 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
   }
 
   private handleScroll = () => {
-    this.scrollTop = this.scrollTop;
+    this._scrollTop = this.scrollTop;
     this.updateVisibleRange();
   };
 

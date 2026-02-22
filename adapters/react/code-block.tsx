@@ -5,7 +5,6 @@ import type { SniceBaseProps } from './types';
  * Props for the CodeBlock component
  */
 export interface CodeBlockProps extends SniceBaseProps {
-  code?: any;
   language?: any;
   showLineNumbers?: any;
   startLine?: any;
@@ -35,7 +34,7 @@ export interface CodeBlockProps extends SniceBaseProps {
  */
 export const CodeBlock = createReactAdapter<CodeBlockProps>({
   tagName: 'snice-code-block',
-  properties: ["code","language","showLineNumbers","startLine","highlightLines","copyable","filename","grammar","fetchMode"],
+  properties: ["language","showLineNumbers","startLine","highlightLines","copyable","filename","grammar","fetchMode"],
   events: {},
   formAssociated: false
 });
