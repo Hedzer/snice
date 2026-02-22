@@ -1,4 +1,4 @@
-import { element, property, watch, request, dispatch, styles, render, html, css, query, ready } from 'snice';
+import { element, property, watch, request, dispatch, styles, render, html, css, query, ready, on } from 'snice';
 import { highlightCode } from './highlighter';
 import cssContent from './snice-code-block.css?inline';
 import type { GrammarDefinition } from './highlighter';
@@ -15,7 +15,6 @@ import {
 
 @element('snice-code-block')
 export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement {
-  @property({  })
   code = '';
 
   @property({  })
@@ -91,7 +90,7 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
   @render({ once: true })
   template() {
     return html/*html*/`
-      <slot style="display:none" @slotchange="${() => this.handleSlotChange()}"></slot>
+      <slot style="display:none"></slot>
       <div class="code-block" part="container">
         <div class="code-block__header" part="header">
           <div class="code-block__filename" part="filename">${this.filename}</div>
@@ -125,7 +124,8 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
     }
   }
 
-  private handleSlotChange() {
+  @on('slotchange', { target: 'slot' })
+  handleSlotChange() {
     this.readSlottedContent();
   }
 
@@ -133,6 +133,7 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
     const text = this.textContent?.trim();
     if (text) {
       this.code = text;
+      this.highlight();
     }
   }
 
@@ -152,11 +153,6 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
     if (this.code) {
       this.highlight();
     }
-  }
-
-  @watch('code')
-  onCodeChange() {
-    this.highlight();
   }
 
   @watch('filename', 'copyable')

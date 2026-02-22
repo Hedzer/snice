@@ -85,6 +85,7 @@ describe('snice-code-block', () => {
 
     codeBlock.grammar = 'grammars/typescript.json';
     codeBlock.code = 'const x = 1;';
+    codeBlock.highlight();
 
     const event = await eventPromise;
     expect(event.detail.url).toBe('grammars/typescript.json');

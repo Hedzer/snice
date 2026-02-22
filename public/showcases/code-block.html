@@ -3,7 +3,7 @@
       <p class="comp-desc">Syntax-highlighted code display</p>
       <div class="comp-split comp-split-stacked">
         <div class="comp-split-demo">
-          <snice-code-block language="snice" grammar="components/grammars/snice.json" show-line-numbers copyable theme="dark" filename="counter.ts" code="import { element, property, render, dispatch } from 'snice';
+          <snice-code-block style="width:100%" language="snice" grammar="components/grammars/snice.json" show-line-numbers copyable theme="dark" filename="counter.ts">import { element, property, render, dispatch } from 'snice';
 
 @element('my-counter')
 export class MyCounter extends HTMLElement {
@@ -44,7 +44,7 @@ export class MyCounter extends HTMLElement {
       &lt;div class=&quot;bar&quot; style=&quot;width:${pct}%&quot;&gt;&lt;/div&gt;
     `;
   }
-}"></snice-code-block>
+}</snice-code-block>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
@@ -54,8 +54,9 @@ export class MyCounter extends HTMLElement {
   show-line-numbers
   copyable
   filename="example.ts"
-  code="const x = 42;"
-&gt;&lt;/snice-code-block&gt;</code></pre>
+&gt;
+const x = 42;
+&lt;/snice-code-block&gt;</code></pre>
         </div>
       </div>
     </div>
