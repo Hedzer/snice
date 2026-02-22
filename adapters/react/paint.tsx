@@ -5,7 +5,6 @@ import type { SniceBaseProps } from './types';
  * Props for the Paint component
  */
 export interface PaintProps extends SniceBaseProps {
-  colors?: any;
   color?: any;
   strokeWidth?: any;
   minStrokeWidth?: any;
@@ -13,11 +12,7 @@ export interface PaintProps extends SniceBaseProps {
   controls?: any;
   backgroundColor?: any;
   disabled?: any;
-  onPaintStart?: (e: CustomEvent) => void;
-  onPaintEnd?: (e: CustomEvent) => void;
-  onPaintClear?: (e: CustomEvent) => void;
-  onPaintUndo?: (e: CustomEvent) => void;
-  onPaintRedo?: (e: CustomEvent) => void;
+
 }
 
 /**
@@ -38,13 +33,7 @@ export interface PaintProps extends SniceBaseProps {
  */
 export const Paint = createReactAdapter<PaintProps>({
   tagName: 'snice-paint',
-  properties: ["colors","color","strokeWidth","minStrokeWidth","maxStrokeWidth","controls","backgroundColor","disabled"],
-  events: {
-    'paint-start': 'onPaintStart',
-    'paint-end': 'onPaintEnd',
-    'paint-clear': 'onPaintClear',
-    'paint-undo': 'onPaintUndo',
-    'paint-redo': 'onPaintRedo'
-  },
+  properties: ["color","strokeWidth","minStrokeWidth","maxStrokeWidth","controls","backgroundColor","disabled"],
+  events: {},
   formAssociated: false
 });
