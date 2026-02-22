@@ -1,13 +1,22 @@
 export type CodeLanguage = 'javascript' | 'typescript' | 'html' | 'css' | 'json' | 'python' | 'bash' | 'plaintext' | string;
 
+export type FetchMode = 'native' | 'virtual' | 'event';
+
 export const LOAD_GRAMMAR_REQUEST = 'snice/code-block/load-grammar';
 
 export type HighlighterFunction = (code: string, language: string) => string | Promise<string>;
+
+export interface GrammarRequestDetail {
+  url: string;
+  language: CodeLanguage;
+  codeBlock: SniceCodeBlockElement;
+}
 
 export interface SniceCodeBlockElement extends HTMLElement {
   code: string;
   language: CodeLanguage;
   grammar: string;
+  fetchMode: FetchMode;
   showLineNumbers: boolean;
   startLine: number;
   highlightLines: number[];
@@ -36,4 +45,5 @@ export interface SniceCodeBlockEventMap {
   '@snice/code-copy': CustomEvent<CodeCopyDetail>;
   '@snice/code-before-highlight': CustomEvent<CodeHighlightDetail>;
   '@snice/code-after-highlight': CustomEvent<CodeHighlightDetail>;
+  'grammar-request': CustomEvent<GrammarRequestDetail>;
 }

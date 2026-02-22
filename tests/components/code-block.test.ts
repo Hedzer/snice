@@ -58,6 +58,49 @@ describe('snice-code-block', () => {
     expect(codeBlock.filename).toBe('test.js');
   });
 
+  it('should have default fetchMode of native', async () => {
+    codeBlock = await createComponent<SniceCodeBlockElement>('snice-code-block');
+    expect(codeBlock.fetchMode).toBe('native');
+  });
+
+  it('should accept fetch-mode attribute', async () => {
+    codeBlock = await createComponent<SniceCodeBlockElement>('snice-code-block');
+    codeBlock.setAttribute('fetch-mode', 'virtual');
+    expect(codeBlock.fetchMode).toBe('virtual');
+  });
+
+  it('should accept fetch-mode="event"', async () => {
+    codeBlock = await createComponent<SniceCodeBlockElement>('snice-code-block');
+    codeBlock.setAttribute('fetch-mode', 'event');
+    expect(codeBlock.fetchMode).toBe('event');
+  });
+
+  it('should dispatch grammar-request event in event mode', async () => {
+    codeBlock = await createComponent<SniceCodeBlockElement>('snice-code-block');
+    codeBlock.fetchMode = 'event';
+
+    const eventPromise = new Promise<CustomEvent>((resolve) => {
+      codeBlock.addEventListener('grammar-request', (e) => resolve(e as CustomEvent), { once: true });
+    });
+
+    codeBlock.grammar = 'grammars/typescript.json';
+    codeBlock.code = 'const x = 1;';
+
+    const event = await eventPromise;
+    expect(event.detail.url).toBe('grammars/typescript.json');
+    expect(event.detail.codeBlock).toBe(codeBlock);
+  });
+
+  it('should read code from slotted text content', async () => {
+    const el = document.createElement('snice-code-block') as SniceCodeBlockElement;
+    el.textContent = 'const y = 2;';
+    document.body.appendChild(el);
+    await (el as any).ready;
+    await wait(50);
+    expect(el.code).toBe('const y = 2;');
+    el.remove();
+  });
+
   it('should highlight with setGrammar', async () => {
     const grammar: GrammarDefinition = {
       name: 'test',

@@ -4,10 +4,12 @@ import cssContent from './snice-code-block.css?inline';
 import type { GrammarDefinition } from './highlighter';
 import {
   LOAD_GRAMMAR_REQUEST,
+  type FetchMode,
   type CodeLanguage,
   type SniceCodeBlockElement,
   type CodeCopyDetail,
   type CodeHighlightDetail,
+  type GrammarRequestDetail,
   type HighlighterFunction
 } from './snice-code-block.types';
 
@@ -36,6 +38,9 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
 
   @property({  })
   grammar = '';
+
+  @property({ attribute: 'fetch-mode' })
+  fetchMode: FetchMode = 'native';
 
   public highlighter?: HighlighterFunction;
 
@@ -72,6 +77,11 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
     return { code: this.code, language: this.language, codeBlock: this };
   }
 
+  @dispatch('grammar-request', { bubbles: true, composed: true })
+  private dispatchGrammarRequestEvent(): GrammarRequestDetail {
+    return { url: this.grammar, language: this.language, codeBlock: this };
+  }
+
   @request(LOAD_GRAMMAR_REQUEST)
   async *requestGrammar(url: string): any {
     const grammar: GrammarDefinition = await (yield { url });
@@ -81,6 +91,7 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
   @render({ once: true })
   template() {
     return html/*html*/`
+      <slot style="display:none" @slotchange="${() => this.handleSlotChange()}"></slot>
       <div class="code-block" part="container">
         <div class="code-block__header" part="header">
           <div class="code-block__filename" part="filename">${this.filename}</div>
@@ -106,13 +117,36 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
   @ready()
   async onReady() {
     this.updateHeader();
+    if (!this.code) {
+      this.readSlottedContent();
+    }
     if (this.code) {
       await this.highlight();
     }
   }
 
+  private handleSlotChange() {
+    this.readSlottedContent();
+  }
+
+  private readSlottedContent() {
+    const text = this.textContent?.trim();
+    if (text) {
+      this.code = text;
+    }
+  }
+
   @watch('grammar')
   onGrammarChange() {
+    this.loadedGrammar = null;
+    this.loadedGrammarUrl = null;
+    if (this.code) {
+      this.highlight();
+    }
+  }
+
+  @watch('fetchMode')
+  onFetchModeChange() {
     this.loadedGrammar = null;
     this.loadedGrammarUrl = null;
     if (this.code) {
@@ -208,12 +242,31 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
     if (!this.grammar) return null;
 
     try {
-      const grammar = await this.requestGrammar(this.grammar);
-      if (grammar) {
-        this.loadedGrammar = grammar;
-        this.loadedGrammarUrl = this.grammar;
+      switch (this.fetchMode) {
+        case 'native': {
+          const response = await fetch(this.grammar);
+          const grammar: GrammarDefinition = await response.json();
+          if (grammar) {
+            this.loadedGrammar = grammar;
+            this.loadedGrammarUrl = this.grammar;
+          }
+          return grammar;
+        }
+        case 'virtual': {
+          const grammar = await this.requestGrammar(this.grammar);
+          if (grammar) {
+            this.loadedGrammar = grammar;
+            this.loadedGrammarUrl = this.grammar;
+          }
+          return grammar;
+        }
+        case 'event': {
+          this.dispatchGrammarRequestEvent();
+          return null;
+        }
+        default:
+          return null;
       }
-      return grammar;
     } catch (error) {
       console.error(`Failed to load grammar from ${this.grammar}:`, error);
       return null;
