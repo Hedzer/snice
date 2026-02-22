@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snice Funnel Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 40px;
+      line-height: 1.6;
+      background: var(--snice-color-background);
+      transition: background-color var(--snice-transition-medium) ease, color var(--snice-transition-medium) ease;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: var(--snice-color-background);
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      color: var(--snice-color-text);
+      border-bottom: 2px solid var(--snice-color-border);
+      padding-bottom: 10px;
+    }
+
+    h2 {
+      color: var(--snice-color-text-secondary);
+      margin-top: 30px;
+    }
+
+    .demo-section {
+      margin: 30px 0;
+    }
+
+    .demo-item {
+      margin: 20px 0;
+      padding: 20px;
+      background: var(--snice-color-background);
+      border-radius: 4px;
+      border-left: 4px solid #3b82f6;
+    }
+
+    .demo-label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--snice-color-text);
+    }
+
+    .demo-row {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .demo-col {
+      flex: 1;
+      min-width: 300px;
+    }
+
+    .theme-toggle {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      padding: 8px 16px;
+      cursor: pointer;
+      border: 1px solid var(--snice-color-border);
+      border-radius: 4px;
+      background: var(--snice-color-background-element);
+      color: var(--snice-color-text);
+    }
+
+    #event-log {
+      padding: 10px;
+      background: var(--snice-color-background-element);
+      border: 1px solid var(--snice-color-border);
+      border-radius: 4px;
+      min-height: 40px;
+      font-family: monospace;
+      font-size: 0.875rem;
+      color: var(--snice-color-text);
+    }
+  </style>
+</head>
+<body>
+  <button class="theme-toggle" onclick="document.documentElement.dataset.theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'">Toggle Theme</button>
+
+  <div class="container">
+    <h1>Snice Funnel Component</h1>
+
+    <div class="demo-section">
+      <h2>Basic Funnel</h2>
+      <div class="demo-item">
+        <span class="demo-label">Default conversion funnel</span>
+        <snice-funnel id="basic-funnel" style="max-width:500px"></snice-funnel>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Gradient Variant</h2>
+      <div class="demo-item">
+        <span class="demo-label">Single color with opacity gradient</span>
+        <snice-funnel id="gradient-funnel" variant="gradient" style="max-width:500px"></snice-funnel>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Custom Colors</h2>
+      <div class="demo-item">
+        <span class="demo-label">Each stage with a custom color</span>
+        <snice-funnel id="colored-funnel" style="max-width:500px"></snice-funnel>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Horizontal Orientation</h2>
+      <div class="demo-item">
+        <span class="demo-label">Left-to-right funnel layout</span>
+        <snice-funnel id="horizontal-funnel" orientation="horizontal"></snice-funnel>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>With Animation</h2>
+      <div class="demo-item">
+        <span class="demo-label">Animated on render</span>
+        <snice-funnel id="animated-funnel" animation style="max-width:500px"></snice-funnel>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Minimal (Values Only)</h2>
+      <div class="demo-item">
+        <span class="demo-label">Labels and percentages hidden</span>
+        <snice-funnel id="minimal-funnel" show-labels="false" show-percentages="false" style="max-width:500px"></snice-funnel>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Event Handling</h2>
+      <div class="demo-item">
+        <span class="demo-label">Click a stage to see the event detail</span>
+        <snice-funnel id="event-funnel" style="max-width:500px"></snice-funnel>
+        <div id="event-log">Click a funnel stage...</div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import './snice-funnel';
+
+    const salesData = [
+      { label: 'Visitors', value: 10000 },
+      { label: 'Leads', value: 5000 },
+      { label: 'Opportunities', value: 2000 },
+      { label: 'Proposals', value: 800 },
+      { label: 'Customers', value: 300 },
+    ];
+
+    const coloredData = [
+      { label: 'Awareness', value: 8000, color: 'rgb(37 99 235)' },
+      { label: 'Interest', value: 5500, color: 'rgb(22 163 74)' },
+      { label: 'Decision', value: 2200, color: 'rgb(234 179 8)' },
+      { label: 'Action', value: 900, color: 'rgb(220 38 38)' },
+    ];
+
+    document.getElementById('basic-funnel').data = salesData;
+    document.getElementById('gradient-funnel').data = salesData;
+    document.getElementById('colored-funnel').data = coloredData;
+    document.getElementById('horizontal-funnel').data = salesData;
+    document.getElementById('animated-funnel').data = salesData;
+    document.getElementById('minimal-funnel').data = salesData;
+    document.getElementById('event-funnel').data = salesData;
+
+    const log = document.getElementById('event-log');
+    document.getElementById('event-funnel').addEventListener('funnel-click', (e) => {
+      log.textContent = `Clicked: ${e.detail.stage.label} — value: ${e.detail.stage.value}, index: ${e.detail.index}`;
+    });
+  </script>
+</body>
+</html>

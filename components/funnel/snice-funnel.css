@@ -1,0 +1,104 @@
+:host {
+  display: block;
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  contain: layout style paint;
+  width: 100%;
+}
+
+.funnel {
+  position: relative;
+  width: 100%;
+  min-height: 12.5rem;
+}
+
+.funnel__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Stages */
+.funnel__stage {
+  cursor: pointer;
+  transition: opacity var(--snice-transition-fast, 150ms) ease;
+}
+
+.funnel__stage:hover {
+  opacity: 0.85;
+}
+
+.funnel__stage:focus-visible {
+  outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+  outline-offset: var(--snice-focus-ring-offset, 2px);
+}
+
+/* Labels */
+.funnel__label {
+  fill: var(--snice-color-text, rgb(23 23 23));
+  font-size: 0.875rem;
+  font-weight: var(--snice-font-weight-medium, 500);
+  pointer-events: none;
+}
+
+.funnel__value {
+  fill: var(--snice-color-text-secondary, rgb(82 82 82));
+  font-size: 0.75rem;
+  font-weight: var(--snice-font-weight-medium, 500);
+  pointer-events: none;
+}
+
+.funnel__percentage {
+  fill: var(--snice-color-text-tertiary, rgb(115 115 115));
+  font-size: 0.6875rem;
+  pointer-events: none;
+}
+
+/* Tooltip */
+.funnel__tooltip {
+  position: fixed;
+  z-index: 9999;
+  padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
+  background: var(--snice-color-text, rgb(23 23 23));
+  color: var(--snice-color-text-inverse, rgb(250 250 250));
+  border-radius: 4px;
+  font-size: 0.75rem;
+  line-height: var(--snice-line-height-normal, 1.5);
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: var(--snice-shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1));
+}
+
+.funnel__tooltip-label {
+  font-weight: var(--snice-font-weight-semibold, 600);
+}
+
+.funnel__tooltip-value {
+  margin-top: var(--snice-spacing-3xs, 0.125rem);
+}
+
+/* Animation */
+:host([animation]) .funnel__stage-shape {
+  animation: funnel-grow 600ms ease-out both;
+}
+
+@keyframes funnel-grow {
+  from {
+    opacity: 0;
+    transform: scaleY(0.3);
+  }
+  to {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
+/* Horizontal orientation */
+:host([orientation="horizontal"]) .funnel {
+  min-height: auto;
+}
+
+:host([orientation="horizontal"]) .funnel__label,
+:host([orientation="horizontal"]) .funnel__value,
+:host([orientation="horizontal"]) .funnel__percentage {
+  text-anchor: middle;
+}
