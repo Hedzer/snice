@@ -1,0 +1,99 @@
+    <!-- ── Treemap ── -->
+    <div class="comp-section">
+      <h3>Treemap</h3>
+      <p class="comp-desc">Hierarchical data as nested rectangles with drill-down navigation</p>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="width:100%">
+          <snice-treemap id="demo-treemap" show-labels show-values style="width:100%;height:340px"></snice-treemap>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html + js</span>
+          <pre><code class="language-html">&lt;snice-treemap id="treemap" show-labels show-values&gt;
+&lt;/snice-treemap&gt;
+
+&lt;script&gt;
+  treemap.data = {
+    label: 'Portfolio',
+    value: 0,
+    children: [
+      { label: 'Tech', value: 0, children: [
+        { label: 'AAPL', value: 4200 },
+        { label: 'MSFT', value: 3800 },
+        { label: 'GOOG', value: 2900 },
+        { label: 'NVDA', value: 2100 }
+      ]},
+      { label: 'Finance', value: 0, children: [
+        { label: 'JPM', value: 1800 },
+        { label: 'BAC', value: 1200 }
+      ]},
+      { label: 'Health', value: 0, children: [
+        { label: 'JNJ', value: 1600 },
+        { label: 'PFE', value: 900 }
+      ]}
+    ]
+  };
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="width:100%">
+          <snice-treemap id="demo-treemap-color" show-labels color-scheme="cool" style="width:100%;height:280px"></snice-treemap>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html + js</span>
+          <pre><code class="language-html">&lt;snice-treemap
+  show-labels
+  color-scheme="cool"
+&gt;&lt;/snice-treemap&gt;
+
+&lt;script&gt;
+  treemap.data = {
+    label: 'Disk Usage',
+    value: 0,
+    children: [
+      { label: 'Documents', value: 42 },
+      { label: 'Photos', value: 28 },
+      { label: 'Videos', value: 18 },
+      { label: 'Music', value: 8 },
+      { label: 'Other', value: 4 }
+    ]
+  };
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+    <script>
+    customElements.whenDefined('snice-treemap').then(() => {
+      document.getElementById('demo-treemap').data = {
+        label: 'Portfolio',
+        value: 0,
+        children: [
+          { label: 'Tech', value: 0, children: [
+            { label: 'AAPL', value: 4200 },
+            { label: 'MSFT', value: 3800 },
+            { label: 'GOOG', value: 2900 },
+            { label: 'NVDA', value: 2100 }
+          ]},
+          { label: 'Finance', value: 0, children: [
+            { label: 'JPM', value: 1800 },
+            { label: 'BAC', value: 1200 }
+          ]},
+          { label: 'Health', value: 0, children: [
+            { label: 'JNJ', value: 1600 },
+            { label: 'PFE', value: 900 }
+          ]}
+        ]
+      };
+      document.getElementById('demo-treemap-color').data = {
+        label: 'Disk Usage',
+        value: 0,
+        children: [
+          { label: 'Documents', value: 42 },
+          { label: 'Photos', value: 28 },
+          { label: 'Videos', value: 18 },
+          { label: 'Music', value: 8 },
+          { label: 'Other', value: 4 }
+        ]
+      };
+    });
+    </script>

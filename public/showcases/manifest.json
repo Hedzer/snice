@@ -77,6 +77,13 @@
     "heatmap.html",
     "masonry.html",
     "link-preview.html",
+    "funnel.html",
+    "treemap.html",
+    "sankey.html",
+    "candlestick.html",
+    "network-graph.html",
+    "camera-annotate.html",
+    "time-range-picker.html",
     "cdn-build.html",
     "react-adapter.html",
     "_footer.html"

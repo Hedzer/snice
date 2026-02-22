@@ -1,0 +1,48 @@
+    <!-- ── Time Range Picker ── -->
+    <div class="comp-section">
+      <h3>Time Range Picker</h3>
+      <p class="comp-desc">Vertically stacked time slot picker with click-and-drag range selection</p>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="max-height:320px;overflow-y:auto">
+          <snice-time-range-picker
+            start-time="08:00"
+            end-time="18:00"
+            granularity="30"
+            value='[{"start":"09:00","end":"11:00"}]'
+          ></snice-time-range-picker>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-time-range-picker
+  start-time="08:00"
+  end-time="18:00"
+  granularity="30"
+  value='[{"start":"09:00","end":"11:00"}]'
+&gt;&lt;/snice-time-range-picker&gt;</code></pre>
+        </div>
+      </div>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="max-height:320px;overflow-y:auto">
+          <snice-time-range-picker
+            start-time="06:00"
+            end-time="22:00"
+            granularity="60"
+            format="12h"
+            multiple
+            disabled-ranges='[{"start":"12:00","end":"13:00"}]'
+          ></snice-time-range-picker>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;!-- 12h format, hourly, multiple selection --&gt;
+&lt;snice-time-range-picker
+  start-time="06:00"
+  end-time="22:00"
+  granularity="60"
+  format="12h"
+  multiple
+  disabled-ranges='[{"start":"12:00","end":"13:00"}]'
+&gt;&lt;/snice-time-range-picker&gt;</code></pre>
+        </div>
+      </div>
+    </div>

@@ -1,0 +1,45 @@
+    <!-- ── Camera Annotate ── -->
+    <div class="comp-section">
+      <h3>Camera Annotate</h3>
+      <p class="comp-desc">Image annotation with camera capture, freehand drawing, and labeled annotations</p>
+      <div class="comp-split">
+        <div class="comp-split-demo">
+          <snice-button variant="primary" onclick="document.getElementById('camera-annotate-modal').show()">Open Camera Annotate</snice-button>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-camera-annotate&gt;&lt;/snice-camera-annotate&gt;</code></pre>
+        </div>
+      </div>
+      <div class="comp-split">
+        <div class="comp-split-demo">
+          <snice-button variant="default" onclick="document.getElementById('camera-annotate-nolabels-modal').show()">Without Labels Panel</snice-button>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;!-- Hide the labels sidebar --&gt;
+&lt;snice-camera-annotate
+  show-labels-panel="false"
+&gt;&lt;/snice-camera-annotate&gt;
+
+&lt;!-- Disable auto color rotation --&gt;
+&lt;snice-camera-annotate
+  auto-rotate-colors="false"
+&gt;&lt;/snice-camera-annotate&gt;</code></pre>
+        </div>
+      </div>
+      <snice-modal id="camera-annotate-modal" size="large" label="Camera Annotate">
+        <h3 slot="header">Camera Annotate</h3>
+        <snice-camera-annotate id="demo-camera-annotate" style="height:480px"></snice-camera-annotate>
+        <div slot="footer" style="display:flex;gap:0.5rem;justify-content:flex-end">
+          <snice-button variant="default" onclick="document.getElementById('demo-camera-annotate').clearAnnotations(); document.getElementById('camera-annotate-modal').close()">Close</snice-button>
+        </div>
+      </snice-modal>
+      <snice-modal id="camera-annotate-nolabels-modal" size="large" label="Camera Annotate (No Labels)">
+        <h3 slot="header">Camera Annotate — No Labels Panel</h3>
+        <snice-camera-annotate id="demo-camera-annotate-nolabels" show-labels-panel="false" style="height:480px"></snice-camera-annotate>
+        <div slot="footer" style="display:flex;gap:0.5rem;justify-content:flex-end">
+          <snice-button variant="default" onclick="document.getElementById('camera-annotate-nolabels-modal').close()">Close</snice-button>
+        </div>
+      </snice-modal>
+    </div>

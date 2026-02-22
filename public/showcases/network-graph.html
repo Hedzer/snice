@@ -1,0 +1,122 @@
+    <!-- ── Network Graph ── -->
+    <div class="comp-section">
+      <h3>Network Graph</h3>
+      <p class="comp-desc">Force-directed network/relationship graph visualization</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="width:100%">
+          <snice-network-graph id="demo-network" show-labels style="width:100%;height:360px"></snice-network-graph>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html + js</span>
+          <pre><code class="language-html">&lt;snice-network-graph
+  id="graph"
+  show-labels
+&gt;&lt;/snice-network-graph&gt;
+
+&lt;script&gt;
+  graph.data = {
+    nodes: [
+      { id: 'api', label: 'API Gateway', group: 'infra' },
+      { id: 'web', label: 'Web App', group: 'frontend' },
+      { id: 'db', label: 'Database', group: 'data' },
+    ],
+    edges: [
+      { source: 'web', target: 'api' },
+      { source: 'api', target: 'db' },
+    ],
+  };
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="width:100%">
+          <snice-network-graph id="demo-network-circular" layout="circular" show-labels style="width:100%;height:300px"></snice-network-graph>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;!-- Circular layout with weighted edges --&gt;
+&lt;snice-network-graph
+  id="graph"
+  layout="circular"
+  show-labels
+&gt;&lt;/snice-network-graph&gt;
+
+&lt;script&gt;
+  graph.data = {
+    nodes: [
+      { id: 'alice', label: 'Alice', group: 'eng' },
+      { id: 'bob', label: 'Bob', group: 'eng' },
+      { id: 'carol', label: 'Carol', group: 'design' },
+    ],
+    edges: [
+      { source: 'alice', target: 'bob', weight: 3 },
+      { source: 'bob', target: 'carol', weight: 1 },
+    ],
+  };
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+    <script>
+    customElements.whenDefined('snice-network-graph').then(() => {
+      // Tech stack architecture graph
+      const el = document.getElementById('demo-network');
+      if (el) {
+        el.data = {
+          nodes: [
+            { id: 'web', label: 'Web App', group: 'frontend' },
+            { id: 'mobile', label: 'Mobile App', group: 'frontend' },
+            { id: 'api', label: 'API Gateway', group: 'infra' },
+            { id: 'auth', label: 'Auth Service', group: 'infra' },
+            { id: 'users', label: 'User Service', group: 'backend' },
+            { id: 'orders', label: 'Order Service', group: 'backend' },
+            { id: 'notify', label: 'Notifications', group: 'backend' },
+            { id: 'db', label: 'PostgreSQL', group: 'data' },
+            { id: 'cache', label: 'Redis', group: 'data' },
+            { id: 'queue', label: 'Message Queue', group: 'data' },
+          ],
+          edges: [
+            { source: 'web', target: 'api', weight: 3 },
+            { source: 'mobile', target: 'api', weight: 2 },
+            { source: 'api', target: 'auth' },
+            { source: 'api', target: 'users', weight: 2 },
+            { source: 'api', target: 'orders', weight: 2 },
+            { source: 'users', target: 'db' },
+            { source: 'orders', target: 'db' },
+            { source: 'users', target: 'cache' },
+            { source: 'orders', target: 'queue' },
+            { source: 'queue', target: 'notify' },
+            { source: 'notify', target: 'cache' },
+            { source: 'auth', target: 'cache' },
+          ],
+        };
+      }
+
+      // Team collaboration graph (circular layout)
+      const el2 = document.getElementById('demo-network-circular');
+      if (el2) {
+        el2.data = {
+          nodes: [
+            { id: 'alice', label: 'Alice', group: 'engineering' },
+            { id: 'bob', label: 'Bob', group: 'engineering' },
+            { id: 'carol', label: 'Carol', group: 'design' },
+            { id: 'dave', label: 'Dave', group: 'design' },
+            { id: 'eve', label: 'Eve', group: 'product' },
+            { id: 'frank', label: 'Frank', group: 'product' },
+            { id: 'grace', label: 'Grace', group: 'engineering' },
+          ],
+          edges: [
+            { source: 'alice', target: 'bob', weight: 3 },
+            { source: 'alice', target: 'carol', weight: 2 },
+            { source: 'bob', target: 'grace', weight: 2 },
+            { source: 'carol', target: 'dave', weight: 3 },
+            { source: 'carol', target: 'eve', weight: 1 },
+            { source: 'dave', target: 'eve', weight: 2 },
+            { source: 'eve', target: 'frank', weight: 3 },
+            { source: 'frank', target: 'alice', weight: 1 },
+            { source: 'grace', target: 'carol', weight: 1 },
+          ],
+        };
+      }
+    });
+    </script>

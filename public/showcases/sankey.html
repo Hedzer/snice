@@ -1,0 +1,112 @@
+    <!-- ── Sankey ── -->
+    <div class="comp-section">
+      <h3>Sankey</h3>
+      <p class="comp-desc">Flow diagram showing quantities between categories</p>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="width:100%">
+          <snice-sankey id="demo-sankey" show-labels show-values animation style="width:100%;height:340px"></snice-sankey>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html + js</span>
+          <pre><code class="language-html">&lt;snice-sankey id="sankey" show-labels show-values animation&gt;
+&lt;/snice-sankey&gt;
+
+&lt;script&gt;
+  sankey.data = {
+    nodes: [
+      { id: 'organic', label: 'Organic' },
+      { id: 'paid', label: 'Paid Ads' },
+      { id: 'referral', label: 'Referral' },
+      { id: 'landing', label: 'Landing Page' },
+      { id: 'pricing', label: 'Pricing' },
+      { id: 'signup', label: 'Sign Up' },
+      { id: 'trial', label: 'Free Trial' },
+      { id: 'paid-plan', label: 'Paid Plan' }
+    ],
+    links: [
+      { source: 'organic', target: 'landing', value: 4000 },
+      { source: 'paid', target: 'landing', value: 3000 },
+      { source: 'referral', target: 'landing', value: 1500 },
+      { source: 'landing', target: 'pricing', value: 5500 },
+      { source: 'landing', target: 'signup', value: 2000 },
+      { source: 'pricing', target: 'signup', value: 3200 },
+      { source: 'signup', target: 'trial', value: 4000 },
+      { source: 'trial', target: 'paid-plan', value: 1800 }
+    ]
+  };
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="width:100%">
+          <snice-sankey id="demo-sankey-energy" show-labels show-values style="width:100%;height:300px"></snice-sankey>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html + js</span>
+          <pre><code class="language-html">&lt;snice-sankey show-labels show-values&gt;&lt;/snice-sankey&gt;
+
+&lt;script&gt;
+  sankey.data = {
+    nodes: [
+      { id: 'solar', label: 'Solar', color: 'rgb(250 204 21)' },
+      { id: 'wind', label: 'Wind', color: 'rgb(56 189 248)' },
+      { id: 'gas', label: 'Gas', color: 'rgb(251 146 60)' },
+      { id: 'grid', label: 'Grid', color: 'rgb(163 163 163)' },
+      { id: 'home', label: 'Home', color: 'rgb(74 222 128)' },
+      { id: 'ev', label: 'EV', color: 'rgb(129 140 248)' }
+    ],
+    links: [
+      { source: 'solar', target: 'grid', value: 120 },
+      { source: 'wind', target: 'grid', value: 80 },
+      { source: 'gas', target: 'grid', value: 200 },
+      { source: 'grid', target: 'home', value: 300 },
+      { source: 'grid', target: 'ev', value: 100 }
+    ]
+  };
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+    <script>
+    customElements.whenDefined('snice-sankey').then(() => {
+      document.getElementById('demo-sankey').data = {
+        nodes: [
+          { id: 'organic', label: 'Organic' },
+          { id: 'paid', label: 'Paid Ads' },
+          { id: 'referral', label: 'Referral' },
+          { id: 'landing', label: 'Landing Page' },
+          { id: 'pricing', label: 'Pricing' },
+          { id: 'signup', label: 'Sign Up' },
+          { id: 'trial', label: 'Free Trial' },
+          { id: 'paid-plan', label: 'Paid Plan' }
+        ],
+        links: [
+          { source: 'organic', target: 'landing', value: 4000 },
+          { source: 'paid', target: 'landing', value: 3000 },
+          { source: 'referral', target: 'landing', value: 1500 },
+          { source: 'landing', target: 'pricing', value: 5500 },
+          { source: 'landing', target: 'signup', value: 2000 },
+          { source: 'pricing', target: 'signup', value: 3200 },
+          { source: 'signup', target: 'trial', value: 4000 },
+          { source: 'trial', target: 'paid-plan', value: 1800 }
+        ]
+      };
+      document.getElementById('demo-sankey-energy').data = {
+        nodes: [
+          { id: 'solar', label: 'Solar', color: 'rgb(250 204 21)' },
+          { id: 'wind', label: 'Wind', color: 'rgb(56 189 248)' },
+          { id: 'gas', label: 'Gas', color: 'rgb(251 146 60)' },
+          { id: 'grid', label: 'Grid', color: 'rgb(163 163 163)' },
+          { id: 'home', label: 'Home', color: 'rgb(74 222 128)' },
+          { id: 'ev', label: 'EV', color: 'rgb(129 140 248)' }
+        ],
+        links: [
+          { source: 'solar', target: 'grid', value: 120 },
+          { source: 'wind', target: 'grid', value: 80 },
+          { source: 'gas', target: 'grid', value: 200 },
+          { source: 'grid', target: 'home', value: 300 },
+          { source: 'grid', target: 'ev', value: 100 }
+        ]
+      };
+    });
+    </script>

@@ -3148,6 +3148,580 @@ const x = 42;
         </div>
       </div>
     </div>
+    <!-- ── Funnel ── -->
+    <div class="comp-section">
+      <h3>Funnel</h3>
+      <p class="comp-desc">SVG-based funnel chart for conversion tracking and pipeline visualization</p>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-center" style="width:100%">
+          <snice-funnel id="demo-funnel" animation style="width:100%;height:320px"></snice-funnel>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html + js</span>
+          <pre><code class="language-html">&lt;snice-funnel id="funnel" animation&gt;&lt;/snice-funnel&gt;
+
+&lt;script&gt;
+  funnel.data = [
+    { label: 'Visitors', value: 12000 },
+    { label: 'Signups', value: 5200 },
+    { label: 'Trials', value: 2800 },
+    { label: 'Paid', value: 1100 },
+    { label: 'Enterprise', value: 340 }
+  ];
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-center" style="width:100%">
+          <snice-funnel id="demo-funnel-horiz" variant="gradient" orientation="horizontal" animation style="width:100%;height:220px"></snice-funnel>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html + js</span>
+          <pre><code class="language-html">&lt;snice-funnel
+  variant="gradient"
+  orientation="horizontal"
+  animation
+&gt;&lt;/snice-funnel&gt;
+
+&lt;script&gt;
+  funnel.data = [
+    { label: 'Impressions', value: 50000, color: 'rgb(99 102 241)' },
+    { label: 'Clicks', value: 18000, color: 'rgb(79 70 229)' },
+    { label: 'Leads', value: 6400, color: 'rgb(67 56 202)' },
+    { label: 'Sales', value: 1800, color: 'rgb(55 48 163)' }
+  ];
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+    <script>
+    customElements.whenDefined('snice-funnel').then(() => {
+      document.getElementById('demo-funnel').data = [
+        { label: 'Visitors', value: 12000 },
+        { label: 'Signups', value: 5200 },
+        { label: 'Trials', value: 2800 },
+        { label: 'Paid', value: 1100 },
+        { label: 'Enterprise', value: 340 }
+      ];
+      document.getElementById('demo-funnel-horiz').data = [
+        { label: 'Impressions', value: 50000, color: 'rgb(99 102 241)' },
+        { label: 'Clicks', value: 18000, color: 'rgb(79 70 229)' },
+        { label: 'Leads', value: 6400, color: 'rgb(67 56 202)' },
+        { label: 'Sales', value: 1800, color: 'rgb(55 48 163)' }
+      ];
+    });
+    </script>
+    <!-- ── Treemap ── -->
+    <div class="comp-section">
+      <h3>Treemap</h3>
+      <p class="comp-desc">Hierarchical data as nested rectangles with drill-down navigation</p>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="width:100%">
+          <snice-treemap id="demo-treemap" show-labels show-values style="width:100%;height:340px"></snice-treemap>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html + js</span>
+          <pre><code class="language-html">&lt;snice-treemap id="treemap" show-labels show-values&gt;
+&lt;/snice-treemap&gt;
+
+&lt;script&gt;
+  treemap.data = {
+    label: 'Portfolio',
+    value: 0,
+    children: [
+      { label: 'Tech', value: 0, children: [
+        { label: 'AAPL', value: 4200 },
+        { label: 'MSFT', value: 3800 },
+        { label: 'GOOG', value: 2900 },
+        { label: 'NVDA', value: 2100 }
+      ]},
+      { label: 'Finance', value: 0, children: [
+        { label: 'JPM', value: 1800 },
+        { label: 'BAC', value: 1200 }
+      ]},
+      { label: 'Health', value: 0, children: [
+        { label: 'JNJ', value: 1600 },
+        { label: 'PFE', value: 900 }
+      ]}
+    ]
+  };
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="width:100%">
+          <snice-treemap id="demo-treemap-color" show-labels color-scheme="cool" style="width:100%;height:280px"></snice-treemap>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html + js</span>
+          <pre><code class="language-html">&lt;snice-treemap
+  show-labels
+  color-scheme="cool"
+&gt;&lt;/snice-treemap&gt;
+
+&lt;script&gt;
+  treemap.data = {
+    label: 'Disk Usage',
+    value: 0,
+    children: [
+      { label: 'Documents', value: 42 },
+      { label: 'Photos', value: 28 },
+      { label: 'Videos', value: 18 },
+      { label: 'Music', value: 8 },
+      { label: 'Other', value: 4 }
+    ]
+  };
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+    <script>
+    customElements.whenDefined('snice-treemap').then(() => {
+      document.getElementById('demo-treemap').data = {
+        label: 'Portfolio',
+        value: 0,
+        children: [
+          { label: 'Tech', value: 0, children: [
+            { label: 'AAPL', value: 4200 },
+            { label: 'MSFT', value: 3800 },
+            { label: 'GOOG', value: 2900 },
+            { label: 'NVDA', value: 2100 }
+          ]},
+          { label: 'Finance', value: 0, children: [
+            { label: 'JPM', value: 1800 },
+            { label: 'BAC', value: 1200 }
+          ]},
+          { label: 'Health', value: 0, children: [
+            { label: 'JNJ', value: 1600 },
+            { label: 'PFE', value: 900 }
+          ]}
+        ]
+      };
+      document.getElementById('demo-treemap-color').data = {
+        label: 'Disk Usage',
+        value: 0,
+        children: [
+          { label: 'Documents', value: 42 },
+          { label: 'Photos', value: 28 },
+          { label: 'Videos', value: 18 },
+          { label: 'Music', value: 8 },
+          { label: 'Other', value: 4 }
+        ]
+      };
+    });
+    </script>
+    <!-- ── Sankey ── -->
+    <div class="comp-section">
+      <h3>Sankey</h3>
+      <p class="comp-desc">Flow diagram showing quantities between categories</p>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="width:100%">
+          <snice-sankey id="demo-sankey" show-labels show-values animation style="width:100%;height:340px"></snice-sankey>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html + js</span>
+          <pre><code class="language-html">&lt;snice-sankey id="sankey" show-labels show-values animation&gt;
+&lt;/snice-sankey&gt;
+
+&lt;script&gt;
+  sankey.data = {
+    nodes: [
+      { id: 'organic', label: 'Organic' },
+      { id: 'paid', label: 'Paid Ads' },
+      { id: 'referral', label: 'Referral' },
+      { id: 'landing', label: 'Landing Page' },
+      { id: 'pricing', label: 'Pricing' },
+      { id: 'signup', label: 'Sign Up' },
+      { id: 'trial', label: 'Free Trial' },
+      { id: 'paid-plan', label: 'Paid Plan' }
+    ],
+    links: [
+      { source: 'organic', target: 'landing', value: 4000 },
+      { source: 'paid', target: 'landing', value: 3000 },
+      { source: 'referral', target: 'landing', value: 1500 },
+      { source: 'landing', target: 'pricing', value: 5500 },
+      { source: 'landing', target: 'signup', value: 2000 },
+      { source: 'pricing', target: 'signup', value: 3200 },
+      { source: 'signup', target: 'trial', value: 4000 },
+      { source: 'trial', target: 'paid-plan', value: 1800 }
+    ]
+  };
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="width:100%">
+          <snice-sankey id="demo-sankey-energy" show-labels show-values style="width:100%;height:300px"></snice-sankey>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html + js</span>
+          <pre><code class="language-html">&lt;snice-sankey show-labels show-values&gt;&lt;/snice-sankey&gt;
+
+&lt;script&gt;
+  sankey.data = {
+    nodes: [
+      { id: 'solar', label: 'Solar', color: 'rgb(250 204 21)' },
+      { id: 'wind', label: 'Wind', color: 'rgb(56 189 248)' },
+      { id: 'gas', label: 'Gas', color: 'rgb(251 146 60)' },
+      { id: 'grid', label: 'Grid', color: 'rgb(163 163 163)' },
+      { id: 'home', label: 'Home', color: 'rgb(74 222 128)' },
+      { id: 'ev', label: 'EV', color: 'rgb(129 140 248)' }
+    ],
+    links: [
+      { source: 'solar', target: 'grid', value: 120 },
+      { source: 'wind', target: 'grid', value: 80 },
+      { source: 'gas', target: 'grid', value: 200 },
+      { source: 'grid', target: 'home', value: 300 },
+      { source: 'grid', target: 'ev', value: 100 }
+    ]
+  };
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+    <script>
+    customElements.whenDefined('snice-sankey').then(() => {
+      document.getElementById('demo-sankey').data = {
+        nodes: [
+          { id: 'organic', label: 'Organic' },
+          { id: 'paid', label: 'Paid Ads' },
+          { id: 'referral', label: 'Referral' },
+          { id: 'landing', label: 'Landing Page' },
+          { id: 'pricing', label: 'Pricing' },
+          { id: 'signup', label: 'Sign Up' },
+          { id: 'trial', label: 'Free Trial' },
+          { id: 'paid-plan', label: 'Paid Plan' }
+        ],
+        links: [
+          { source: 'organic', target: 'landing', value: 4000 },
+          { source: 'paid', target: 'landing', value: 3000 },
+          { source: 'referral', target: 'landing', value: 1500 },
+          { source: 'landing', target: 'pricing', value: 5500 },
+          { source: 'landing', target: 'signup', value: 2000 },
+          { source: 'pricing', target: 'signup', value: 3200 },
+          { source: 'signup', target: 'trial', value: 4000 },
+          { source: 'trial', target: 'paid-plan', value: 1800 }
+        ]
+      };
+      document.getElementById('demo-sankey-energy').data = {
+        nodes: [
+          { id: 'solar', label: 'Solar', color: 'rgb(250 204 21)' },
+          { id: 'wind', label: 'Wind', color: 'rgb(56 189 248)' },
+          { id: 'gas', label: 'Gas', color: 'rgb(251 146 60)' },
+          { id: 'grid', label: 'Grid', color: 'rgb(163 163 163)' },
+          { id: 'home', label: 'Home', color: 'rgb(74 222 128)' },
+          { id: 'ev', label: 'EV', color: 'rgb(129 140 248)' }
+        ],
+        links: [
+          { source: 'solar', target: 'grid', value: 120 },
+          { source: 'wind', target: 'grid', value: 80 },
+          { source: 'gas', target: 'grid', value: 200 },
+          { source: 'grid', target: 'home', value: 300 },
+          { source: 'grid', target: 'ev', value: 100 }
+        ]
+      };
+    });
+    </script>
+    <!-- ── Candlestick ── -->
+    <div class="comp-section">
+      <h3>Candlestick</h3>
+      <p class="comp-desc">SVG-based OHLC candlestick chart for financial data</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="width:100%;overflow-x:auto">
+          <snice-candlestick id="demo-candlestick" show-volume y-axis-format="currency" style="width:100%;height:320px"></snice-candlestick>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html + js</span>
+          <pre><code class="language-html">&lt;snice-candlestick
+  id="chart"
+  show-volume
+  y-axis-format="currency"
+&gt;&lt;/snice-candlestick&gt;
+
+&lt;script&gt;
+  chart.data = [
+    { date: '2024-01-02', open: 185.09, high: 188.44, low: 183.89, close: 186.01, volume: 5820000 },
+    { date: '2024-01-03', open: 186.50, high: 187.10, low: 183.42, close: 184.25, volume: 4910000 },
+    // ...more candles
+  ];
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="width:100%;overflow-x:auto">
+          <snice-candlestick id="demo-candlestick-minimal" style="width:100%;height:240px"></snice-candlestick>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;!-- Minimal: no volume, default format --&gt;
+&lt;snice-candlestick id="chart"&gt;
+&lt;/snice-candlestick&gt;
+
+&lt;script&gt;
+  chart.data = [
+    { date: '2024-03-01', open: 170, high: 175,
+      low: 168, close: 173 },
+    { date: '2024-03-04', open: 173, high: 178,
+      low: 171, close: 176 },
+  ];
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+    <script>
+    customElements.whenDefined('snice-candlestick').then(() => {
+      // Generate realistic stock price data
+      function generateStockData(startPrice, days, startDate) {
+        const data = [];
+        let price = startPrice;
+        const date = new Date(startDate);
+        for (let i = 0; i < days; i++) {
+          // Skip weekends
+          while (date.getDay() === 0 || date.getDay() === 6) {
+            date.setDate(date.getDate() + 1);
+          }
+          const volatility = price * 0.025;
+          const open = price + (Math.random() - 0.5) * volatility;
+          const close = open + (Math.random() - 0.48) * volatility * 2;
+          const high = Math.max(open, close) + Math.random() * volatility;
+          const low = Math.min(open, close) - Math.random() * volatility;
+          const volume = Math.floor(3000000 + Math.random() * 7000000);
+          data.push({
+            date: date.toISOString().split('T')[0],
+            open: Math.round(open * 100) / 100,
+            high: Math.round(high * 100) / 100,
+            low: Math.round(low * 100) / 100,
+            close: Math.round(close * 100) / 100,
+            volume: volume
+          });
+          price = close;
+          date.setDate(date.getDate() + 1);
+        }
+        return data;
+      }
+
+      const el = document.getElementById('demo-candlestick');
+      if (el) el.data = generateStockData(185, 40, '2024-01-02');
+
+      const el2 = document.getElementById('demo-candlestick-minimal');
+      if (el2) el2.data = generateStockData(170, 25, '2024-03-01');
+    });
+    </script>
+    <!-- ── Network Graph ── -->
+    <div class="comp-section">
+      <h3>Network Graph</h3>
+      <p class="comp-desc">Force-directed network/relationship graph visualization</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="width:100%">
+          <snice-network-graph id="demo-network" show-labels style="width:100%;height:360px"></snice-network-graph>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html + js</span>
+          <pre><code class="language-html">&lt;snice-network-graph
+  id="graph"
+  show-labels
+&gt;&lt;/snice-network-graph&gt;
+
+&lt;script&gt;
+  graph.data = {
+    nodes: [
+      { id: 'api', label: 'API Gateway', group: 'infra' },
+      { id: 'web', label: 'Web App', group: 'frontend' },
+      { id: 'db', label: 'Database', group: 'data' },
+    ],
+    edges: [
+      { source: 'web', target: 'api' },
+      { source: 'api', target: 'db' },
+    ],
+  };
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="width:100%">
+          <snice-network-graph id="demo-network-circular" layout="circular" show-labels style="width:100%;height:300px"></snice-network-graph>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;!-- Circular layout with weighted edges --&gt;
+&lt;snice-network-graph
+  id="graph"
+  layout="circular"
+  show-labels
+&gt;&lt;/snice-network-graph&gt;
+
+&lt;script&gt;
+  graph.data = {
+    nodes: [
+      { id: 'alice', label: 'Alice', group: 'eng' },
+      { id: 'bob', label: 'Bob', group: 'eng' },
+      { id: 'carol', label: 'Carol', group: 'design' },
+    ],
+    edges: [
+      { source: 'alice', target: 'bob', weight: 3 },
+      { source: 'bob', target: 'carol', weight: 1 },
+    ],
+  };
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+    <script>
+    customElements.whenDefined('snice-network-graph').then(() => {
+      // Tech stack architecture graph
+      const el = document.getElementById('demo-network');
+      if (el) {
+        el.data = {
+          nodes: [
+            { id: 'web', label: 'Web App', group: 'frontend' },
+            { id: 'mobile', label: 'Mobile App', group: 'frontend' },
+            { id: 'api', label: 'API Gateway', group: 'infra' },
+            { id: 'auth', label: 'Auth Service', group: 'infra' },
+            { id: 'users', label: 'User Service', group: 'backend' },
+            { id: 'orders', label: 'Order Service', group: 'backend' },
+            { id: 'notify', label: 'Notifications', group: 'backend' },
+            { id: 'db', label: 'PostgreSQL', group: 'data' },
+            { id: 'cache', label: 'Redis', group: 'data' },
+            { id: 'queue', label: 'Message Queue', group: 'data' },
+          ],
+          edges: [
+            { source: 'web', target: 'api', weight: 3 },
+            { source: 'mobile', target: 'api', weight: 2 },
+            { source: 'api', target: 'auth' },
+            { source: 'api', target: 'users', weight: 2 },
+            { source: 'api', target: 'orders', weight: 2 },
+            { source: 'users', target: 'db' },
+            { source: 'orders', target: 'db' },
+            { source: 'users', target: 'cache' },
+            { source: 'orders', target: 'queue' },
+            { source: 'queue', target: 'notify' },
+            { source: 'notify', target: 'cache' },
+            { source: 'auth', target: 'cache' },
+          ],
+        };
+      }
+
+      // Team collaboration graph (circular layout)
+      const el2 = document.getElementById('demo-network-circular');
+      if (el2) {
+        el2.data = {
+          nodes: [
+            { id: 'alice', label: 'Alice', group: 'engineering' },
+            { id: 'bob', label: 'Bob', group: 'engineering' },
+            { id: 'carol', label: 'Carol', group: 'design' },
+            { id: 'dave', label: 'Dave', group: 'design' },
+            { id: 'eve', label: 'Eve', group: 'product' },
+            { id: 'frank', label: 'Frank', group: 'product' },
+            { id: 'grace', label: 'Grace', group: 'engineering' },
+          ],
+          edges: [
+            { source: 'alice', target: 'bob', weight: 3 },
+            { source: 'alice', target: 'carol', weight: 2 },
+            { source: 'bob', target: 'grace', weight: 2 },
+            { source: 'carol', target: 'dave', weight: 3 },
+            { source: 'carol', target: 'eve', weight: 1 },
+            { source: 'dave', target: 'eve', weight: 2 },
+            { source: 'eve', target: 'frank', weight: 3 },
+            { source: 'frank', target: 'alice', weight: 1 },
+            { source: 'grace', target: 'carol', weight: 1 },
+          ],
+        };
+      }
+    });
+    </script>
+    <!-- ── Camera Annotate ── -->
+    <div class="comp-section">
+      <h3>Camera Annotate</h3>
+      <p class="comp-desc">Image annotation with camera capture, freehand drawing, and labeled annotations</p>
+      <div class="comp-split">
+        <div class="comp-split-demo">
+          <snice-button variant="primary" onclick="document.getElementById('camera-annotate-modal').show()">Open Camera Annotate</snice-button>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-camera-annotate&gt;&lt;/snice-camera-annotate&gt;</code></pre>
+        </div>
+      </div>
+      <div class="comp-split">
+        <div class="comp-split-demo">
+          <snice-button variant="default" onclick="document.getElementById('camera-annotate-nolabels-modal').show()">Without Labels Panel</snice-button>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;!-- Hide the labels sidebar --&gt;
+&lt;snice-camera-annotate
+  show-labels-panel="false"
+&gt;&lt;/snice-camera-annotate&gt;
+
+&lt;!-- Disable auto color rotation --&gt;
+&lt;snice-camera-annotate
+  auto-rotate-colors="false"
+&gt;&lt;/snice-camera-annotate&gt;</code></pre>
+        </div>
+      </div>
+      <snice-modal id="camera-annotate-modal" size="large" label="Camera Annotate">
+        <h3 slot="header">Camera Annotate</h3>
+        <snice-camera-annotate id="demo-camera-annotate" style="height:480px"></snice-camera-annotate>
+        <div slot="footer" style="display:flex;gap:0.5rem;justify-content:flex-end">
+          <snice-button variant="default" onclick="document.getElementById('demo-camera-annotate').clearAnnotations(); document.getElementById('camera-annotate-modal').close()">Close</snice-button>
+        </div>
+      </snice-modal>
+      <snice-modal id="camera-annotate-nolabels-modal" size="large" label="Camera Annotate (No Labels)">
+        <h3 slot="header">Camera Annotate — No Labels Panel</h3>
+        <snice-camera-annotate id="demo-camera-annotate-nolabels" show-labels-panel="false" style="height:480px"></snice-camera-annotate>
+        <div slot="footer" style="display:flex;gap:0.5rem;justify-content:flex-end">
+          <snice-button variant="default" onclick="document.getElementById('camera-annotate-nolabels-modal').close()">Close</snice-button>
+        </div>
+      </snice-modal>
+    </div>
+    <!-- ── Time Range Picker ── -->
+    <div class="comp-section">
+      <h3>Time Range Picker</h3>
+      <p class="comp-desc">Vertically stacked time slot picker with click-and-drag range selection</p>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="max-height:320px;overflow-y:auto">
+          <snice-time-range-picker
+            start-time="08:00"
+            end-time="18:00"
+            granularity="30"
+            value='[{"start":"09:00","end":"11:00"}]'
+          ></snice-time-range-picker>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-time-range-picker
+  start-time="08:00"
+  end-time="18:00"
+  granularity="30"
+  value='[{"start":"09:00","end":"11:00"}]'
+&gt;&lt;/snice-time-range-picker&gt;</code></pre>
+        </div>
+      </div>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="max-height:320px;overflow-y:auto">
+          <snice-time-range-picker
+            start-time="06:00"
+            end-time="22:00"
+            granularity="60"
+            format="12h"
+            multiple
+            disabled-ranges='[{"start":"12:00","end":"13:00"}]'
+          ></snice-time-range-picker>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;!-- 12h format, hourly, multiple selection --&gt;
+&lt;snice-time-range-picker
+  start-time="06:00"
+  end-time="22:00"
+  granularity="60"
+  format="12h"
+  multiple
+  disabled-ranges='[{"start":"12:00","end":"13:00"}]'
+&gt;&lt;/snice-time-range-picker&gt;</code></pre>
+        </div>
+      </div>
+    </div>
     <div class="comp-section">
       <h3>CDN Build</h3>
       <p class="comp-desc">Use any component without the full framework. Load the runtime once, then add components as needed.</p>
@@ -3196,6 +3770,8 @@ const x = 42;
       <span class="comp-tag">snice-button</span>
       <span class="comp-tag">snice-calendar</span>
       <span class="comp-tag">snice-camera</span>
+      <span class="comp-tag">snice-camera-annotate</span>
+      <span class="comp-tag">snice-candlestick</span>
       <span class="comp-tag">snice-card</span>
       <span class="comp-tag">snice-carousel</span>
       <span class="comp-tag">snice-chart</span>
@@ -3214,6 +3790,7 @@ const x = 42;
       <span class="comp-tag">snice-empty-state</span>
       <span class="comp-tag">snice-file-gallery</span>
       <span class="comp-tag">snice-file-upload</span>
+      <span class="comp-tag">snice-funnel</span>
       <span class="comp-tag">snice-gauge</span>
       <span class="comp-tag">snice-heatmap</span>
       <span class="comp-tag">snice-image</span>
@@ -3231,12 +3808,14 @@ const x = 42;
       <span class="comp-tag">snice-modal</span>
       <span class="comp-tag">snice-music-player</span>
       <span class="comp-tag">snice-nav</span>
+      <span class="comp-tag">snice-network-graph</span>
       <span class="comp-tag">snice-pagination</span>
       <span class="comp-tag">snice-paint</span>
       <span class="comp-tag">snice-progress</span>
       <span class="comp-tag">snice-qr-code</span>
       <span class="comp-tag">snice-qr-reader</span>
       <span class="comp-tag">snice-radio</span>
+      <span class="comp-tag">snice-sankey</span>
       <span class="comp-tag">snice-select</span>
       <span class="comp-tag">snice-skeleton</span>
       <span class="comp-tag">snice-slider</span>
@@ -3339,6 +3918,13 @@ const x = 42;
   <script src="components/snice-nav.min.js"></script>
   <script src="components/snice-tree.min.js"></script>
   <script src="components/snice-virtual-scroller.min.js"></script>
+  <script src="components/snice-funnel.min.js"></script>
+  <script src="components/snice-treemap.min.js"></script>
+  <script src="components/snice-sankey.min.js"></script>
+  <script src="components/snice-candlestick.min.js"></script>
+  <script src="components/snice-network-graph.min.js"></script>
+  <script src="components/snice-camera-annotate.min.js"></script>
+  <script src="components/snice-time-range-picker.min.js"></script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>

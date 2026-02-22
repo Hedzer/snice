@@ -1,0 +1,63 @@
+    <!-- ── Funnel ── -->
+    <div class="comp-section">
+      <h3>Funnel</h3>
+      <p class="comp-desc">SVG-based funnel chart for conversion tracking and pipeline visualization</p>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-center" style="width:100%">
+          <snice-funnel id="demo-funnel" animation style="width:100%;height:320px"></snice-funnel>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html + js</span>
+          <pre><code class="language-html">&lt;snice-funnel id="funnel" animation&gt;&lt;/snice-funnel&gt;
+
+&lt;script&gt;
+  funnel.data = [
+    { label: 'Visitors', value: 12000 },
+    { label: 'Signups', value: 5200 },
+    { label: 'Trials', value: 2800 },
+    { label: 'Paid', value: 1100 },
+    { label: 'Enterprise', value: 340 }
+  ];
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-center" style="width:100%">
+          <snice-funnel id="demo-funnel-horiz" variant="gradient" orientation="horizontal" animation style="width:100%;height:220px"></snice-funnel>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html + js</span>
+          <pre><code class="language-html">&lt;snice-funnel
+  variant="gradient"
+  orientation="horizontal"
+  animation
+&gt;&lt;/snice-funnel&gt;
+
+&lt;script&gt;
+  funnel.data = [
+    { label: 'Impressions', value: 50000, color: 'rgb(99 102 241)' },
+    { label: 'Clicks', value: 18000, color: 'rgb(79 70 229)' },
+    { label: 'Leads', value: 6400, color: 'rgb(67 56 202)' },
+    { label: 'Sales', value: 1800, color: 'rgb(55 48 163)' }
+  ];
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+    <script>
+    customElements.whenDefined('snice-funnel').then(() => {
+      document.getElementById('demo-funnel').data = [
+        { label: 'Visitors', value: 12000 },
+        { label: 'Signups', value: 5200 },
+        { label: 'Trials', value: 2800 },
+        { label: 'Paid', value: 1100 },
+        { label: 'Enterprise', value: 340 }
+      ];
+      document.getElementById('demo-funnel-horiz').data = [
+        { label: 'Impressions', value: 50000, color: 'rgb(99 102 241)' },
+        { label: 'Clicks', value: 18000, color: 'rgb(79 70 229)' },
+        { label: 'Leads', value: 6400, color: 'rgb(67 56 202)' },
+        { label: 'Sales', value: 1800, color: 'rgb(55 48 163)' }
+      ];
+    });
+    </script>

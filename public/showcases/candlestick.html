@@ -1,0 +1,85 @@
+    <!-- ── Candlestick ── -->
+    <div class="comp-section">
+      <h3>Candlestick</h3>
+      <p class="comp-desc">SVG-based OHLC candlestick chart for financial data</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="width:100%;overflow-x:auto">
+          <snice-candlestick id="demo-candlestick" show-volume y-axis-format="currency" style="width:100%;height:320px"></snice-candlestick>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html + js</span>
+          <pre><code class="language-html">&lt;snice-candlestick
+  id="chart"
+  show-volume
+  y-axis-format="currency"
+&gt;&lt;/snice-candlestick&gt;
+
+&lt;script&gt;
+  chart.data = [
+    { date: '2024-01-02', open: 185.09, high: 188.44, low: 183.89, close: 186.01, volume: 5820000 },
+    { date: '2024-01-03', open: 186.50, high: 187.10, low: 183.42, close: 184.25, volume: 4910000 },
+    // ...more candles
+  ];
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="width:100%;overflow-x:auto">
+          <snice-candlestick id="demo-candlestick-minimal" style="width:100%;height:240px"></snice-candlestick>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;!-- Minimal: no volume, default format --&gt;
+&lt;snice-candlestick id="chart"&gt;
+&lt;/snice-candlestick&gt;
+
+&lt;script&gt;
+  chart.data = [
+    { date: '2024-03-01', open: 170, high: 175,
+      low: 168, close: 173 },
+    { date: '2024-03-04', open: 173, high: 178,
+      low: 171, close: 176 },
+  ];
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+    <script>
+    customElements.whenDefined('snice-candlestick').then(() => {
+      // Generate realistic stock price data
+      function generateStockData(startPrice, days, startDate) {
+        const data = [];
+        let price = startPrice;
+        const date = new Date(startDate);
+        for (let i = 0; i < days; i++) {
+          // Skip weekends
+          while (date.getDay() === 0 || date.getDay() === 6) {
+            date.setDate(date.getDate() + 1);
+          }
+          const volatility = price * 0.025;
+          const open = price + (Math.random() - 0.5) * volatility;
+          const close = open + (Math.random() - 0.48) * volatility * 2;
+          const high = Math.max(open, close) + Math.random() * volatility;
+          const low = Math.min(open, close) - Math.random() * volatility;
+          const volume = Math.floor(3000000 + Math.random() * 7000000);
+          data.push({
+            date: date.toISOString().split('T')[0],
+            open: Math.round(open * 100) / 100,
+            high: Math.round(high * 100) / 100,
+            low: Math.round(low * 100) / 100,
+            close: Math.round(close * 100) / 100,
+            volume: volume
+          });
+          price = close;
+          date.setDate(date.getDate() + 1);
+        }
+        return data;
+      }
+
+      const el = document.getElementById('demo-candlestick');
+      if (el) el.data = generateStockData(185, 40, '2024-01-02');
+
+      const el2 = document.getElementById('demo-candlestick-minimal');
+      if (el2) el2.data = generateStockData(170, 25, '2024-03-01');
+    });
+    </script>
