@@ -219,10 +219,27 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
     }
 
     if (placard.icon) {
-      const iconSpan = document.createElement('span');
-      iconSpan.className = 'nav__icon';
-      iconSpan.textContent = placard.icon;
-      a.appendChild(iconSpan);
+      const icon = placard.icon;
+      // Match renderIcon() logic from components/utils.ts
+      const isImg = icon.startsWith('img://') ||
+        /^(https?:\/\/|\/|\.\/|\.\.\/|data:)/.test(icon) ||
+        /^[^:]*\w\.(svg|png|jpe?g|jfif|pjp|gif|webp|avif|jxl|ico|cur|bmp|tiff?|heic|heif|apng)$/i.test(icon);
+      const forceText = icon.startsWith('text://');
+
+      if (isImg && !forceText) {
+        const img = document.createElement('img');
+        img.className = 'nav__icon';
+        img.src = icon.startsWith('img://') ? icon.slice(6) : icon;
+        img.alt = '';
+        img.setAttribute('part', 'icon');
+        a.appendChild(img);
+      } else {
+        const iconSpan = document.createElement('span');
+        iconSpan.className = 'nav__icon';
+        iconSpan.setAttribute('part', 'icon');
+        iconSpan.textContent = forceText ? icon.slice(7) : icon;
+        a.appendChild(iconSpan);
+      }
     }
 
     const labelSpan = document.createElement('span');

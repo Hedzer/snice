@@ -1,6 +1,12 @@
 :host {
   display: block;
+  width: 100%;
   contain: layout style;
+}
+
+/* Meta elements should not interfere with layout */
+case, when, default, if {
+  display: contents;
 }
 
 .list-item {
@@ -35,4 +41,32 @@
 .list-item__content {
   flex: 1;
   min-width: 0;
+}
+
+.list-item__heading {
+  font-weight: var(--snice-font-weight-medium, 500);
+  font-size: var(--snice-font-size-md, 1rem);
+  line-height: var(--snice-line-height-normal, 1.5);
+  color: var(--snice-color-text, rgb(23 23 23));
+}
+
+.list-item__description {
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
+  line-height: var(--snice-line-height-normal, 1.5);
+}
+
+/* Slotted before/after styling */
+::slotted([slot="before"]) {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+}
+
+::slotted([slot="after"]) {
+  flex-shrink: 0;
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
 }

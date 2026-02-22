@@ -65,6 +65,12 @@
   font-size: var(--snice-font-size-lg, 1.125rem);
 }
 
+.nav__icon img {
+  width: 1.25em;
+  height: 1.25em;
+  object-fit: contain;
+}
+
 .nav__label {
   white-space: nowrap;
 }
