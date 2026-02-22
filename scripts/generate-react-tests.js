@@ -120,6 +120,39 @@ const componentTestConfig = {
   spinner: {
     properties: [],
     sizes: ['small', 'medium', 'large']
+  },
+
+  // Data visualization components
+  funnel: {
+    properties: ['variant', 'orientation', 'showLabels', 'showValues', 'showPercentages', 'animation'],
+    events: ['onFunnelClick', 'onFunnelHover'],
+    variants: ['default', 'gradient']
+  },
+  treemap: {
+    properties: ['showLabels', 'showValues', 'colorScheme', 'padding', 'animation'],
+    events: ['onTreemapClick', 'onTreemapHover', 'onTreemapDrill']
+  },
+  sankey: {
+    properties: ['nodeWidth', 'nodePadding', 'alignment', 'showLabels', 'showValues', 'animation'],
+    events: ['onSankeyNodeClick', 'onSankeyLinkClick', 'onSankeyHover']
+  },
+  'network-graph': {
+    properties: ['layout', 'chargeStrength', 'linkDistance', 'zoomEnabled', 'dragEnabled', 'showLabels', 'animation'],
+    events: ['onNodeClick', 'onEdgeClick', 'onNodeDrag', 'onGraphZoom']
+  },
+  candlestick: {
+    properties: ['showVolume', 'showGrid', 'showCrosshair', 'bullishColor', 'bearishColor', 'timeFormat', 'yAxisFormat', 'zoomEnabled', 'animation'],
+    events: ['onCandleClick', 'onCandleHover', 'onCrosshairMove']
+  },
+  'camera-annotate': {
+    properties: ['mode', 'autoRotateColors', 'showLabelsPanel'],
+    events: ['onCapture', 'onAnnotate', 'onAnnotationChange']
+  },
+  'time-range-picker': {
+    isForm: true,
+    valueType: 'string',
+    properties: ['granularity', 'startTime', 'endTime', 'disabledRanges', 'format', 'multiple', 'readonly'],
+    events: ['onChange', 'onTimeRangeSelect', 'onTimeRangeComplete']
   }
 };
 
