@@ -59,7 +59,6 @@
         <div class="nav-group">Getting Started</div>
         <a href="#esm">ESM + Bundler</a>
         <a href="#standalone">Standalone</a>
-        <a href="#runtime-light">Runtime + Light</a>
         <a href="#react">React Wrappers</a>
 
         <div class="nav-group">Elements</div>
@@ -117,53 +116,16 @@ npx snice create-app my-app</code></pre>
 
         <div class="dec-section" id="standalone">
           <h3>Standalone</h3>
-          <p class="desc">Each component is a single file with the Snice runtime bundled in. Drop a <code>&lt;script&gt;</code> tag into any page &mdash; no build step, no dependencies.</p>
-          <pre><code><span class="c">&lt;!-- Single script tag, works anywhere --&gt;</span>
-&lt;script src=<span class="s">"snice-button.min.js"</span>&gt;&lt;/script&gt;
-&lt;snice-button variant=<span class="s">"primary"</span>&gt;Click me&lt;/snice-button&gt;</code></pre>
-          <p class="desc" style="margin-top:0.75rem">Each bundle is ~20&ndash;40KB minified. Since the runtime is included in every file, loading multiple components duplicates it.</p>
-          <p class="desc"><strong>Best for:</strong> 1&ndash;2 components, CMS pages, WordPress, static sites.</p>
-        </div>
-
-        <div class="dec-section" id="runtime-light">
-          <h3>Runtime + Light</h3>
-          <p class="desc">Load the Snice runtime once, then load lightweight component builds that reference it. Dramatically reduces total size when using multiple components.</p>
+          <p class="desc">Load the Snice runtime once, then add standalone component builds. No bundler needed &mdash; just <code>&lt;script&gt;</code> tags.</p>
           <pre><code><span class="c">&lt;!-- Load runtime once --&gt;</span>
 &lt;script src=<span class="s">"snice-runtime.min.js"</span>&gt;&lt;/script&gt;
 
-<span class="c">&lt;!-- Lightweight components --&gt;</span>
-&lt;script src=<span class="s">"snice-button.light.min.js"</span>&gt;&lt;/script&gt;
-&lt;script src=<span class="s">"snice-input.light.min.js"</span>&gt;&lt;/script&gt;
-&lt;script src=<span class="s">"snice-modal.light.min.js"</span>&gt;&lt;/script&gt;</code></pre>
-          <div style="margin-top:1rem;border:1px solid var(--snice-color-border);border-radius:6px;overflow:hidden;font-size:0.8rem">
-            <table style="width:100%;border-collapse:collapse">
-              <thead>
-                <tr style="background:var(--snice-color-background-tertiary)">
-                  <th style="padding:0.5rem 0.75rem;text-align:left;border-bottom:1px solid var(--snice-color-border)">Scenario</th>
-                  <th style="padding:0.5rem 0.75rem;text-align:right;border-bottom:1px solid var(--snice-color-border)">Standalone</th>
-                  <th style="padding:0.5rem 0.75rem;text-align:right;border-bottom:1px solid var(--snice-color-border)">Runtime + Light</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style="padding:0.5rem 0.75rem;border-bottom:1px solid var(--snice-color-border)">1 component</td>
-                  <td style="padding:0.5rem 0.75rem;text-align:right;border-bottom:1px solid var(--snice-color-border)">~25KB</td>
-                  <td style="padding:0.5rem 0.75rem;text-align:right;border-bottom:1px solid var(--snice-color-border)">~20KB</td>
-                </tr>
-                <tr>
-                  <td style="padding:0.5rem 0.75rem;border-bottom:1px solid var(--snice-color-border)">3 components</td>
-                  <td style="padding:0.5rem 0.75rem;text-align:right;border-bottom:1px solid var(--snice-color-border)">~75KB</td>
-                  <td style="padding:0.5rem 0.75rem;text-align:right;border-bottom:1px solid var(--snice-color-border)">~27KB</td>
-                </tr>
-                <tr>
-                  <td style="padding:0.5rem 0.75rem">10 components</td>
-                  <td style="padding:0.5rem 0.75rem;text-align:right">~250KB</td>
-                  <td style="padding:0.5rem 0.75rem;text-align:right">~55KB</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <p class="desc" style="margin-top:0.75rem"><strong>Best for:</strong> 3+ components without a bundler, landing pages, dashboards.</p>
+<span class="c">&lt;!-- Add components --&gt;</span>
+&lt;script src=<span class="s">"snice-button.min.js"</span>&gt;&lt;/script&gt;
+&lt;script src=<span class="s">"snice-input.min.js"</span>&gt;&lt;/script&gt;
+&lt;script src=<span class="s">"snice-modal.min.js"</span>&gt;&lt;/script&gt;</code></pre>
+          <p class="desc" style="margin-top:0.75rem">The runtime is ~15KB gzipped. Each component adds ~2&ndash;5KB. No duplication regardless of how many components you use.</p>
+          <p class="desc"><strong>Best for:</strong> CMS pages, WordPress, static sites, landing pages, dashboards.</p>
         </div>
 
         <div class="dec-section" id="react">

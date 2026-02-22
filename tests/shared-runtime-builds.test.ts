@@ -1,8 +1,8 @@
 /**
- * Tests for semi-standalone (shared runtime) component builds
+ * Tests for shared runtime and standalone component builds
  *
- * These tests verify that the shared runtime and lightweight component
- * builds are generated correctly and are functional.
+ * Verifies the shared runtime and standalone component builds are
+ * generated correctly. All components use the shared runtime.
  */
 
 import { describe, it, expect, beforeAll } from 'vitest';
@@ -22,20 +22,17 @@ describe('Shared Runtime Builds', () => {
       expect(typeof config.buildSharedRuntime).toBe('function');
     });
 
-    it('should export buildAllWithSharedRuntime function', async () => {
+    it('should export buildAll function', async () => {
       const config = await import('../rollup.config.standalone.js');
-      expect(config.buildAllWithSharedRuntime).toBeDefined();
-      expect(typeof config.buildAllWithSharedRuntime).toBe('function');
+      expect(config.buildAll).toBeDefined();
+      expect(typeof config.buildAll).toBe('function');
     });
 
-    it('should generate lightweight build configuration', async () => {
+    it('should always have snice as external', async () => {
       const { createStandaloneBuild } = await import('../rollup.config.standalone.js');
 
       const configs = createStandaloneBuild('button', {
         minify: false,
-        formats: ['esm'],
-        useSharedRuntime: true,
-        outputSuffix: '.light'
       });
 
       expect(Array.isArray(configs)).toBe(true);
@@ -47,29 +44,11 @@ describe('Shared Runtime Builds', () => {
       expect(configs[0].external).toContain('snice/transitions');
     });
 
-    it('should use .light suffix in output filenames', async () => {
-      const { createStandaloneBuild } = await import('../rollup.config.standalone.js');
-
-      const configs = createStandaloneBuild('button', {
-        minify: false,
-        formats: ['esm', 'iife'],
-        useSharedRuntime: true,
-        outputSuffix: '.light'
-      });
-
-      const filenames = configs.map(c => c.output.file);
-      expect(filenames.some(f => f.includes('.light.esm.js'))).toBe(true);
-      expect(filenames.some(f => f.includes('.light.js'))).toBe(true);
-    });
-
     it('should set globals for IIFE builds', async () => {
       const { createStandaloneBuild } = await import('../rollup.config.standalone.js');
 
       const configs = createStandaloneBuild('button', {
         minify: false,
-        formats: ['iife'],
-        useSharedRuntime: true,
-        outputSuffix: '.light'
       });
 
       const iifeConfig = configs.find(c => c.output.format === 'iife');
@@ -77,6 +56,28 @@ describe('Shared Runtime Builds', () => {
       expect(iifeConfig.output.globals['snice']).toBe('Snice');
       expect(iifeConfig.output.globals['snice/symbols']).toBe('Snice');
       expect(iifeConfig.output.globals['snice/transitions']).toBe('Snice');
+    });
+
+    it('should not produce .light. suffixed files', async () => {
+      const { createStandaloneBuild } = await import('../rollup.config.standalone.js');
+
+      const configs = createStandaloneBuild('button', {
+        minify: true,
+      });
+
+      const filenames = configs.map(c => c.output.file);
+      expect(filenames.every(f => !f.includes('.light.'))).toBe(true);
+    });
+
+    it('should only produce IIFE format by default', async () => {
+      const { createStandaloneBuild } = await import('../rollup.config.standalone.js');
+
+      const configs = createStandaloneBuild('button', {
+        minify: true,
+      });
+
+      const formats = configs.map(c => c.output.format);
+      expect(formats.every(f => f === 'iife')).toBe(true);
     });
   });
 
@@ -152,109 +153,51 @@ describe('Shared Runtime Builds', () => {
     });
   });
 
-  describe('Lightweight Component Output', () => {
+  describe('Standalone Component Output', () => {
     testComponents.forEach(componentName => {
-      describe(`${componentName} lightweight build`, () => {
+      describe(`${componentName} standalone build`, () => {
         const componentDir = path.join(process.cwd(), outputDir, componentName);
 
-        it('should generate lightweight ESM build', () => {
-          const lightEsmFile = path.join(componentDir, `snice-${componentName}.light.esm.js`);
+        it('should generate IIFE build', () => {
+          const iifeFile = path.join(componentDir, `snice-${componentName}.js`);
           if (fs.existsSync(componentDir)) {
-            expect(fs.existsSync(lightEsmFile)).toBe(true);
+            expect(fs.existsSync(iifeFile)).toBe(true);
           }
         });
 
-        it('should generate lightweight IIFE build', () => {
-          const lightIifeFile = path.join(componentDir, `snice-${componentName}.light.js`);
+        it('should generate minified builds', () => {
+          const minFile = path.join(componentDir, `snice-${componentName}.min.js`);
           if (fs.existsSync(componentDir)) {
-            expect(fs.existsSync(lightIifeFile)).toBe(true);
+            expect(fs.existsSync(minFile)).toBe(true);
           }
         });
 
-        it('should generate lightweight minified builds', () => {
-          const lightMinFile = path.join(componentDir, `snice-${componentName}.light.min.js`);
+        it('should NOT have .light. suffixed files', () => {
           if (fs.existsSync(componentDir)) {
-            expect(fs.existsSync(lightMinFile)).toBe(true);
+            const files = fs.readdirSync(componentDir);
+            const lightFiles = files.filter(f => f.includes('.light.'));
+            expect(lightFiles).toHaveLength(0);
           }
         });
 
-        it('lightweight ESM should have external snice imports', () => {
-          const lightEsmFile = path.join(componentDir, `snice-${componentName}.light.esm.js`);
-          if (fs.existsSync(lightEsmFile)) {
-            const content = fs.readFileSync(lightEsmFile, 'utf-8');
-            // Should reference snice as external import
-            expect(content).toMatch(/from ['"]snice/);
-          }
-        });
-
-        it('lightweight IIFE should reference Snice global', () => {
-          const lightIifeFile = path.join(componentDir, `snice-${componentName}.light.js`);
-          if (fs.existsSync(lightIifeFile)) {
-            const content = fs.readFileSync(lightIifeFile, 'utf-8');
+        it('IIFE should reference Snice global', () => {
+          const iifeFile = path.join(componentDir, `snice-${componentName}.js`);
+          if (fs.existsSync(iifeFile)) {
+            const content = fs.readFileSync(iifeFile, 'utf-8');
             // Should reference the Snice global
             expect(content).toContain('Snice');
           }
         });
 
-        it('lightweight should be much smaller than full standalone', () => {
-          const fullFile = path.join(componentDir, `snice-${componentName}.esm.js`);
-          const lightFile = path.join(componentDir, `snice-${componentName}.light.esm.js`);
-
-          if (fs.existsSync(fullFile) && fs.existsSync(lightFile)) {
-            const fullSize = fs.statSync(fullFile).size;
-            const lightSize = fs.statSync(lightFile).size;
-
-            // Lightweight should be significantly smaller (at least 50% smaller)
-            expect(lightSize).toBeLessThan(fullSize * 0.5);
-
-            const fullKB = (fullSize / 1024).toFixed(2);
-            const lightKB = (lightSize / 1024).toFixed(2);
-            const ratio = ((1 - lightSize / fullSize) * 100).toFixed(0);
-            console.log(`  ${componentName}: full=${fullKB}KB, light=${lightKB}KB (${ratio}% smaller)`);
-          }
-        });
-
-        it('lightweight should NOT bundle the snice runtime', () => {
-          const lightEsmFile = path.join(componentDir, `snice-${componentName}.light.esm.js`);
-          if (fs.existsSync(lightEsmFile)) {
-            const content = fs.readFileSync(lightEsmFile, 'utf-8');
+        it('should NOT bundle the snice runtime', () => {
+          const minFile = path.join(componentDir, `snice-${componentName}.min.js`);
+          if (fs.existsSync(minFile)) {
+            const content = fs.readFileSync(minFile, 'utf-8');
             // Should be small enough that it clearly doesn't include runtime
-            // Full runtime is 100KB+, lightweight should be well under that
             expect(content.length).toBeLessThan(80000);
           }
         });
       });
-    });
-  });
-
-  describe('Full + Lightweight Coexistence', () => {
-    it('should generate both full and lightweight builds side by side', () => {
-      const buttonDir = path.join(process.cwd(), outputDir, 'button');
-      if (fs.existsSync(buttonDir)) {
-        // Full builds
-        expect(fs.existsSync(path.join(buttonDir, 'snice-button.min.js'))).toBe(true);
-        expect(fs.existsSync(path.join(buttonDir, 'snice-button.esm.js'))).toBe(true);
-        // Lightweight builds
-        expect(fs.existsSync(path.join(buttonDir, 'snice-button.light.min.js'))).toBe(true);
-        expect(fs.existsSync(path.join(buttonDir, 'snice-button.light.esm.js'))).toBe(true);
-      }
-    });
-  });
-
-  describe('CLI --shared-runtime Flag', () => {
-    it('CLI should support --shared-runtime flag', () => {
-      const cliPath = path.join(process.cwd(), 'bin', 'snice.js');
-      const content = fs.readFileSync(cliPath, 'utf-8');
-
-      expect(content).toContain('shared-runtime');
-      expect(content).toContain('useSharedRuntime');
-    });
-
-    it('CLI help should document --shared-runtime', () => {
-      const cliPath = path.join(process.cwd(), 'bin', 'snice.js');
-      const content = fs.readFileSync(cliPath, 'utf-8');
-
-      expect(content).toContain('--shared-runtime');
     });
   });
 });

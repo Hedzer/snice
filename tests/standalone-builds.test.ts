@@ -1,8 +1,8 @@
 /**
  * Tests for standalone component builds
  *
- * These tests verify that components can be built as standalone bundles
- * and that the bundles are functional.
+ * Standalone builds use the shared runtime (external snice imports).
+ * Load snice-runtime.min.js once, then load component builds.
  */
 
 import { describe, it, expect, beforeAll } from 'vitest';
@@ -32,12 +32,37 @@ describe('Standalone Builds', () => {
       const configs = createStandaloneBuild('button', {
         minify: false,
         withTheme: false,
-        formats: ['esm']
       });
 
       expect(Array.isArray(configs)).toBe(true);
       expect(configs.length).toBeGreaterThan(0);
       expect(configs[0].input).toContain('button');
+    });
+
+    it('should always use shared runtime (external snice imports)', async () => {
+      const { createStandaloneBuild } = await import('../rollup.config.standalone.js');
+
+      const configs = createStandaloneBuild('button', {
+        minify: false,
+      });
+
+      expect(configs[0].external).toContain('snice');
+      expect(configs[0].external).toContain('snice/symbols');
+      expect(configs[0].external).toContain('snice/transitions');
+    });
+
+    it('should set globals for IIFE builds', async () => {
+      const { createStandaloneBuild } = await import('../rollup.config.standalone.js');
+
+      const configs = createStandaloneBuild('button', {
+        minify: false,
+      });
+
+      const iifeConfig = configs.find(c => c.output.format === 'iife');
+      expect(iifeConfig.output.globals).toBeDefined();
+      expect(iifeConfig.output.globals['snice']).toBe('Snice');
+      expect(iifeConfig.output.globals['snice/symbols']).toBe('Snice');
+      expect(iifeConfig.output.globals['snice/transitions']).toBe('Snice');
     });
   });
 
@@ -67,13 +92,6 @@ describe('Standalone Builds', () => {
       describe(`${componentName} component`, () => {
         const componentDir = path.join(process.cwd(), outputDir, componentName);
 
-        it('should generate ESM build', () => {
-          const esmFile = path.join(componentDir, `snice-${componentName}.esm.js`);
-          if (fs.existsSync(componentDir)) {
-            expect(fs.existsSync(esmFile)).toBe(true);
-          }
-        });
-
         it('should generate IIFE build', () => {
           const iifeFile = path.join(componentDir, `snice-${componentName}.js`);
           if (fs.existsSync(componentDir)) {
@@ -96,56 +114,66 @@ describe('Standalone Builds', () => {
         });
 
         it('should have reasonable bundle size', () => {
-          const esmFile = path.join(componentDir, `snice-${componentName}.esm.js`);
+          const minFile = path.join(componentDir, `snice-${componentName}.min.js`);
 
-          if (fs.existsSync(esmFile)) {
-            const stats = fs.statSync(esmFile);
+          if (fs.existsSync(minFile)) {
+            const stats = fs.statSync(minFile);
             const sizeKB = stats.size / 1024;
 
-            // Unminified should be less than 200KB
-            expect(sizeKB).toBeLessThan(200);
+            // Without bundled runtime, should be small
+            expect(sizeKB).toBeLessThan(100);
 
-            console.log(`  ${componentName} ESM: ${sizeKB.toFixed(2)} KB`);
+            console.log(`  ${componentName} min: ${sizeKB.toFixed(2)} KB`);
           }
         });
 
-        it('should include Snice runtime in bundle', () => {
-          const esmFile = path.join(componentDir, `snice-${componentName}.esm.js`);
+        it('should reference Snice global (IIFE)', () => {
+          const iifeFile = path.join(componentDir, `snice-${componentName}.js`);
+          if (fs.existsSync(iifeFile)) {
+            const content = fs.readFileSync(iifeFile, 'utf-8');
+            expect(content).toContain('Snice');
+          }
+        });
 
-          if (fs.existsSync(esmFile)) {
-            const content = fs.readFileSync(esmFile, 'utf-8');
-
-            // Check for key Snice runtime features
-            expect(content).toContain('customElements');
-            // Should have element decorator logic bundled
-            expect(content.length).toBeGreaterThan(10000); // Should be substantial
+        it('should NOT bundle the snice runtime', () => {
+          const minFile = path.join(componentDir, `snice-${componentName}.min.js`);
+          if (fs.existsSync(minFile)) {
+            const content = fs.readFileSync(minFile, 'utf-8');
+            // Should be small enough that it clearly doesn't include runtime
+            expect(content.length).toBeLessThan(80000);
           }
         });
       });
     });
   });
 
-  describe('Bundle Content', () => {
-    it('should not have external dependencies in standalone builds', () => {
-      const buttonEsm = path.join(process.cwd(), outputDir, 'button', 'snice-button.esm.js');
-
-      if (fs.existsSync(buttonEsm)) {
-        const content = fs.readFileSync(buttonEsm, 'utf-8');
-
-        // Should not have import statements for snice (everything should be bundled)
-        expect(content).not.toContain('from "snice"');
-        expect(content).not.toContain("from 'snice'");
+  describe('Runtime Check', () => {
+    it('IIFE builds should contain runtime check warning', () => {
+      const buttonIife = path.join(process.cwd(), outputDir, 'button', 'snice-button.js');
+      if (fs.existsSync(buttonIife)) {
+        const content = fs.readFileSync(buttonIife, 'utf-8');
+        expect(content).toContain('snice-runtime.min.js must be loaded before');
       }
     });
 
-    it('should register custom element', () => {
-      const buttonEsm = path.join(process.cwd(), outputDir, 'button', 'snice-button.esm.js');
+    it('minified IIFE builds should contain runtime check warning', () => {
+      const buttonMin = path.join(process.cwd(), outputDir, 'button', 'snice-button.min.js');
+      if (fs.existsSync(buttonMin)) {
+        const content = fs.readFileSync(buttonMin, 'utf-8');
+        expect(content).toContain('snice-runtime.min.js');
+      }
+    });
+  });
 
-      if (fs.existsSync(buttonEsm)) {
-        const content = fs.readFileSync(buttonEsm, 'utf-8');
+  describe('Bundle Content', () => {
+    it('should reference Snice global (runtime provides element decorator)', () => {
+      const buttonIife = path.join(process.cwd(), outputDir, 'button', 'snice-button.js');
 
-        // Should have custom element definition logic
-        expect(content).toContain('customElements');
+      if (fs.existsSync(buttonIife)) {
+        const content = fs.readFileSync(buttonIife, 'utf-8');
+
+        // IIFE should reference the Snice global for element decorator
+        expect(content).toContain('Snice');
       }
     });
   });

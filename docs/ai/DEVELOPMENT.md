@@ -81,16 +81,19 @@ scripts/
 
 **Config:** `rollup.config.standalone.js`
 
+All standalone builds use the shared runtime (external `snice` imports). Load `snice-runtime.min.js` once, then load component builds.
+
 **Output:**
-- ESM: `snice-comp.esm.js` + `.min.js`
-- UMD: `snice-comp.umd.js` + `.min.js`
-- IIFE: `snice-comp.js` + `.min.js`
+- Runtime: `dist/standalone/runtime/snice-runtime.min.js`
+- Components: `dist/standalone/<name>/snice-<name>.min.js`
+- IIFE: `.js` + `.min.js`
 - Sourcemaps + README
 
-**Size:** ~20-40KB min, ~10-20KB gzip (includes runtime)
+**Size:** Runtime ~15KB gzip, components ~2-5KB each
 
 **Features:**
-- No externals (all bundled)
+- External snice imports (shared runtime)
+- Runtime check guard (warns if runtime not loaded)
 - Tree-shaken
 - Multiple formats
 
@@ -262,8 +265,8 @@ npm run test:coverage        # Coverage report
 ## Key Implementations
 
 **Standalone bundling:**
-- No externals
-- Resolve Snice imports from `src/`
+- External snice imports (shared runtime)
+- Runtime check guard on IIFE builds
 - Inline CSS with minification
 - Multiple formats via Rollup
 
