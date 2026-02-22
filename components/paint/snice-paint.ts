@@ -57,7 +57,7 @@ export class SnicePaint extends HTMLElement implements SnicePaintElement {
 
   @styles()
   componentStyles() {
-    return css`${paintStyles}`;
+    return css/*css*/`${paintStyles}`;
   }
 
   @ready()

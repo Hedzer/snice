@@ -36,10 +36,10 @@ export class SniceHeatmap extends HTMLElement implements SniceHeatmapElement {
   @property({ type: Number })
   weeks = 52;
 
-  private tooltipText = '';
-  private tooltipX = 0;
-  private tooltipY = 0;
-  private tooltipVisible = false;
+  @property() private tooltipText = '';
+  @property({ type: Number }) private tooltipX = 0;
+  @property({ type: Number }) private tooltipY = 0;
+  @property({ type: Boolean }) private tooltipVisible = false;
 
   @dispatch('cell-click', { bubbles: true, composed: true })
   private dispatchCellClick(date: string, value: number) {
@@ -135,20 +135,11 @@ export class SniceHeatmap extends HTMLElement implements SniceHeatmapElement {
     this.tooltipX = rect.left + rect.width / 2;
     this.tooltipY = rect.top - 8;
     this.tooltipVisible = true;
-    this.requestUpdate();
   }
 
   private handleCellMouseLeave() {
     if (!this.showTooltip) return;
     this.tooltipVisible = false;
-    this.requestUpdate();
-  }
-
-  private requestUpdate() {
-    // Force a re-render by toggling a non-property field
-    // The framework re-renders on property changes; we use a micro-task trick
-    const current = this.showTooltip;
-    this.showTooltip = current;
   }
 
   @render()
