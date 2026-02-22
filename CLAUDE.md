@@ -2,6 +2,7 @@
 
 1. READ docs/ai/README.md (token-efficient API reference)
 2. READ docs/ai/DEVELOPMENT.md (token-efficient development guide)
+3. READ .ai/*.md
 3. FOLLOW ALL links mentioned in any documentation you read
 4. READ all linked files completely before proceeding
 
