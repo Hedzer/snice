@@ -1886,7 +1886,7 @@ stepper.currentStep = 1;</code></pre>
 </script>
     <div class="comp-section">
       <h3>Spreadsheet</h3>
-      <p class="comp-desc">Excel-like grid with cell editing, formulas, sorting, and copy/paste</p>
+      <p class="comp-desc">Excel-like grid with multi-cell selection, formulas, undo/redo, column resize, context menu, and auto-expanding rows/columns</p>
       <div class="comp-split comp-split-stacked">
         <div class="comp-split-demo">
           <snice-spreadsheet id="demo-spreadsheet" style="width:100%"></snice-spreadsheet>
@@ -1908,8 +1908,11 @@ sheet.data = [
    '=SUM(D1:D2)']
 ];
 
-// Formulas: SUM, AVG, COUNT, MIN, MAX
-// Keyboard: arrows, Enter, Tab, Ctrl+C/V</code></pre>
+// Shift+click or drag to select ranges
+// Ctrl+Z/Y for undo/redo
+// Right-click for context menu
+// Drag column edges to resize
+// Click + at bottom/right to add rows/cols</code></pre>
         </div>
       </div>
     </div>
@@ -4281,7 +4284,7 @@ md.addEventListener('link-click',
     customElements.whenDefined('snice-pdf-viewer').then(() => {
       const viewer = document.getElementById('demo-pdf');
       if (viewer) {
-        viewer.src = 'https://raw.githubusercontent.com/nicehash/rest-clients-demo/master/README.pdf';
+        viewer.src = 'https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf';
       }
     });
 </script>
@@ -5609,6 +5612,7 @@ tiles.addEventListener('tile-click',
   <script src="components/snice-nav.min.js"></script>
   <script src="components/snice-tree.min.js"></script>
   <script src="components/snice-virtual-scroller.min.js"></script>
+  <script src="components/snice-infinite-scroll.min.js"></script>
   <script src="components/snice-funnel.min.js"></script>
   <script src="components/snice-treemap.min.js"></script>
   <script src="components/snice-sankey.min.js"></script>
