@@ -1,0 +1,43 @@
+    <div class="comp-section">
+      <h3>Map</h3>
+      <p class="comp-desc">Interactive tile-based map with markers, popups, and zoom controls</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo">
+          <snice-map id="demo-map" zoom="4" style="width:100%;height:350px"></snice-map>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-map zoom="13"&gt;&lt;/snice-map&gt;
+
+&lt;script&gt;
+  const map = document.querySelector(
+    'snice-map');
+  map.center = { lat: 51.505, lng: -0.09 };
+  map.markers = [
+    { id: '1', lat: 51.505,
+      lng: -0.09, label: 'London',
+      popup: 'Hello London!' }
+  ];
+
+  map.addEventListener('marker-click',
+    e =&gt; console.log(e.detail.marker));
+  map.fitBounds();
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-map').then(() => {
+      const map = document.getElementById('demo-map');
+      if (map) {
+        map.center = { lat: 40, lng: -95 };
+        map.markers = [
+          { id: '1', lat: 40.7128, lng: -74.0060, label: 'New York', popup: 'New York City' },
+          { id: '2', lat: 34.0522, lng: -118.2437, label: 'Los Angeles', popup: 'Los Angeles' },
+          { id: '3', lat: 41.8781, lng: -87.6298, label: 'Chicago', popup: 'Chicago' },
+          { id: '4', lat: 29.7604, lng: -95.3698, label: 'Houston', popup: 'Houston' }
+        ];
+      }
+    });
+</script>

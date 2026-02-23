@@ -1,0 +1,46 @@
+    <div class="comp-section">
+      <h3>Gantt</h3>
+      <p class="comp-desc">Project timeline with draggable task bars, zoom levels, and task groups</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo">
+          <snice-gantt id="demo-gantt" zoom="week" style="width:100%"></snice-gantt>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-gantt zoom="week"&gt;&lt;/snice-gantt&gt;
+
+&lt;script&gt;
+  const gantt = document.querySelector(
+    'snice-gantt');
+  gantt.tasks = [
+    { id: '1', name: 'Design',
+      start: '2026-03-01',
+      end: '2026-03-07',
+      progress: 80, group: 'Phase 1' },
+    { id: '2', name: 'Development',
+      start: '2026-03-05',
+      end: '2026-03-15',
+      progress: 30, group: 'Phase 1' }
+  ];
+  gantt.addEventListener('task-click',
+    e =&gt; console.log(e.detail.task));
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-gantt').then(() => {
+      const gantt = document.getElementById('demo-gantt');
+      if (gantt) {
+        gantt.tasks = [
+          { id: '1', name: 'Research', start: '2026-03-01', end: '2026-03-05', progress: 100, group: 'Phase 1', color: '#6366f1' },
+          { id: '2', name: 'Design', start: '2026-03-03', end: '2026-03-10', progress: 75, group: 'Phase 1', color: '#8b5cf6' },
+          { id: '3', name: 'Frontend', start: '2026-03-08', end: '2026-03-20', progress: 40, group: 'Phase 2', color: '#3b82f6' },
+          { id: '4', name: 'Backend', start: '2026-03-10', end: '2026-03-22', progress: 20, group: 'Phase 2', color: '#0ea5e9' },
+          { id: '5', name: 'Testing', start: '2026-03-18', end: '2026-03-25', progress: 0, group: 'Phase 3', color: '#10b981' },
+          { id: '6', name: 'Launch', start: '2026-03-25', end: '2026-03-28', progress: 0, group: 'Phase 3', color: '#f59e0b' }
+        ];
+      }
+    });
+</script>

@@ -529,6 +529,54 @@
         </div>
       </div>
     </div>
+    <div class="comp-section">
+      <h3>Tag Input</h3>
+      <p class="comp-desc">Tag/pill input with autocomplete suggestions and keyboard navigation</p>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="gap:1.5rem">
+          <snice-tag-input id="demo-tag-input" label="Technologies" placeholder="Add a technology..." style="width:100%"></snice-tag-input>
+          <snice-tag-input id="demo-tag-input-max" label="Max 3 tags" placeholder="Type and press Enter..." max-tags="3" style="width:100%"></snice-tag-input>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-tag-input
+  label="Technologies"
+  placeholder="Add a tag..."
+  max-tags="5"
+&gt;&lt;/snice-tag-input&gt;
+
+&lt;script&gt;
+  const input = document.querySelector(
+    'snice-tag-input');
+  input.suggestions = [
+    'JavaScript', 'TypeScript',
+    'Python', 'Rust', 'Go'
+  ];
+  input.value = ['JavaScript'];
+
+  input.addEventListener('tag-add',
+    e =&gt; console.log(e.detail.tag));
+  input.addEventListener('tag-remove',
+    e =&gt; console.log(e.detail.tag));
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-tag-input').then(() => {
+      const input = document.getElementById('demo-tag-input');
+      if (input) {
+        input.value = ['JavaScript', 'TypeScript'];
+        input.suggestions = ['JavaScript', 'TypeScript', 'Python', 'Rust', 'Go', 'Java', 'C++', 'Ruby', 'Swift', 'Kotlin'];
+      }
+      const input2 = document.getElementById('demo-tag-input-max');
+      if (input2) {
+        input2.value = ['React', 'Vue'];
+        input2.suggestions = ['React', 'Vue', 'Angular', 'Svelte', 'Solid'];
+      }
+    });
+</script>
 
     <div class="comp-category">Layout</div>
     <!-- ── 4. Card ── -->
@@ -3306,6 +3354,53 @@ timeline.items = [
     });
 </script>
     <div class="comp-section">
+      <h3>Podcast Player</h3>
+      <p class="comp-desc">Podcast playback with RSS feed support, episode list, speed control, and sleep timer</p>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="min-height:120px">
+          <snice-podcast-player id="demo-podcast" title="Getting Started with Web Components" show="Tech Talk Weekly" description="An intro to building modern UIs with custom elements" style="width:100%"></snice-podcast-player>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;!-- Direct source --&gt;
+&lt;snice-podcast-player
+  src="episode.mp3"
+  title="Episode Title"
+  show="Podcast Name"
+  artwork="cover.jpg"
+  skip-forward="30"
+  skip-back="15"
+&gt;&lt;/snice-podcast-player&gt;
+
+&lt;!-- RSS feed mode --&gt;
+&lt;snice-podcast-player
+  from-rss="https://feed.example.com/rss"
+&gt;&lt;/snice-podcast-player&gt;
+
+&lt;script&gt;
+  const player = document.querySelector(
+    'snice-podcast-player');
+  player.addEventListener('podcast-play',
+    e =&gt; console.log(e.detail));
+  player.setPlaybackRate(1.5);
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-podcast-player').then(() => {
+      const player = document.getElementById('demo-podcast');
+      if (player) {
+        player.episodes = [
+          { title: 'Getting Started with Web Components', src: '', description: 'An introduction to custom elements', pubDate: 'Jan 15, 2026', duration: 1845 },
+          { title: 'Advanced CSS Custom Properties', src: '', description: 'Deep dive into CSS variables', pubDate: 'Jan 8, 2026', duration: 2310 },
+          { title: 'The Future of Frontend', src: '', description: 'Predictions for web development', pubDate: 'Jan 1, 2026', duration: 1560 }
+        ];
+      }
+    });
+</script>
+    <div class="comp-section">
       <h3>File Gallery</h3>
       <p class="comp-desc">File management with previews and upload progress</p>
       <div class="comp-split comp-split-stacked">
@@ -3910,6 +4005,504 @@ const x = 42;
         </div>
       </div>
     </div>
+    <div class="comp-section">
+      <h3>Diff</h3>
+      <p class="comp-desc">Code and text diff viewer with unified and split modes</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo">
+          <snice-diff id="demo-diff" mode="unified" line-numbers context-lines="3" style="width:100%"></snice-diff>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-diff
+  mode="unified"
+  line-numbers
+  context-lines="3"
+&gt;&lt;/snice-diff&gt;
+
+&lt;script&gt;
+  const diff = document.querySelector(
+    'snice-diff');
+  diff.oldText = 'function hello() {\n'
+    + '  return "hello";\n}';
+  diff.newText = 'function hello() {\n'
+    + '  return "hello world";\n}';
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-diff').then(() => {
+      const diff = document.getElementById('demo-diff');
+      if (diff) {
+        diff.oldText = 'function greet(name) {\n  console.log("Hello");\n  return name;\n}\n\nconst x = 1;\nconst y = 2;\nconst z = 3;';
+        diff.newText = 'function greet(name) {\n  console.log("Hello, " + name);\n  return name.toUpperCase();\n}\n\nconst x = 1;\nconst y = 2;\nconst z = 3;\nconst w = 4;';
+      }
+    });
+</script>
+    <div class="comp-section">
+      <h3>Gantt</h3>
+      <p class="comp-desc">Project timeline with draggable task bars, zoom levels, and task groups</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo">
+          <snice-gantt id="demo-gantt" zoom="week" style="width:100%"></snice-gantt>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-gantt zoom="week"&gt;&lt;/snice-gantt&gt;
+
+&lt;script&gt;
+  const gantt = document.querySelector(
+    'snice-gantt');
+  gantt.tasks = [
+    { id: '1', name: 'Design',
+      start: '2026-03-01',
+      end: '2026-03-07',
+      progress: 80, group: 'Phase 1' },
+    { id: '2', name: 'Development',
+      start: '2026-03-05',
+      end: '2026-03-15',
+      progress: 30, group: 'Phase 1' }
+  ];
+  gantt.addEventListener('task-click',
+    e =&gt; console.log(e.detail.task));
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-gantt').then(() => {
+      const gantt = document.getElementById('demo-gantt');
+      if (gantt) {
+        gantt.tasks = [
+          { id: '1', name: 'Research', start: '2026-03-01', end: '2026-03-05', progress: 100, group: 'Phase 1', color: '#6366f1' },
+          { id: '2', name: 'Design', start: '2026-03-03', end: '2026-03-10', progress: 75, group: 'Phase 1', color: '#8b5cf6' },
+          { id: '3', name: 'Frontend', start: '2026-03-08', end: '2026-03-20', progress: 40, group: 'Phase 2', color: '#3b82f6' },
+          { id: '4', name: 'Backend', start: '2026-03-10', end: '2026-03-22', progress: 20, group: 'Phase 2', color: '#0ea5e9' },
+          { id: '5', name: 'Testing', start: '2026-03-18', end: '2026-03-25', progress: 0, group: 'Phase 3', color: '#10b981' },
+          { id: '6', name: 'Launch', start: '2026-03-25', end: '2026-03-28', progress: 0, group: 'Phase 3', color: '#f59e0b' }
+        ];
+      }
+    });
+</script>
+    <div class="comp-section">
+      <h3>Org Chart</h3>
+      <p class="comp-desc">Organizational hierarchy with collapsible nodes and avatar placeholders</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo">
+          <snice-org-chart id="demo-org-chart" direction="top-down" style="width:100%"></snice-org-chart>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-org-chart
+  direction="top-down"
+&gt;&lt;/snice-org-chart&gt;
+
+&lt;script&gt;
+  const chart = document.querySelector(
+    'snice-org-chart');
+  chart.data = {
+    id: '1', name: 'CEO',
+    title: 'Chief Executive',
+    children: [
+      { id: '2', name: 'CTO',
+        title: 'Technology',
+        children: [...] },
+      { id: '3', name: 'CFO',
+        title: 'Finance' }
+    ]
+  };
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-org-chart').then(() => {
+      const chart = document.getElementById('demo-org-chart');
+      if (chart) {
+        chart.data = {
+          id: '1', name: 'Sarah Chen', title: 'CEO',
+          children: [
+            { id: '2', name: 'James Park', title: 'CTO', children: [
+              { id: '5', name: 'Lisa Wang', title: 'Lead Engineer' },
+              { id: '6', name: 'Alex Kim', title: 'Lead Designer' }
+            ]},
+            { id: '3', name: 'Maria Lopez', title: 'CFO', children: [
+              { id: '7', name: 'Tom Baker', title: 'Controller' }
+            ]},
+            { id: '4', name: 'David Lee', title: 'COO', children: [
+              { id: '8', name: 'Emma Davis', title: 'HR Director' },
+              { id: '9', name: 'Ryan Johnson', title: 'Ops Manager' }
+            ]}
+          ]
+        };
+      }
+    });
+</script>
+    <div class="comp-section">
+      <h3>Map</h3>
+      <p class="comp-desc">Interactive tile-based map with markers, popups, and zoom controls</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo">
+          <snice-map id="demo-map" zoom="4" style="width:100%;height:350px"></snice-map>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-map zoom="13"&gt;&lt;/snice-map&gt;
+
+&lt;script&gt;
+  const map = document.querySelector(
+    'snice-map');
+  map.center = { lat: 51.505, lng: -0.09 };
+  map.markers = [
+    { id: '1', lat: 51.505,
+      lng: -0.09, label: 'London',
+      popup: 'Hello London!' }
+  ];
+
+  map.addEventListener('marker-click',
+    e =&gt; console.log(e.detail.marker));
+  map.fitBounds();
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-map').then(() => {
+      const map = document.getElementById('demo-map');
+      if (map) {
+        map.center = { lat: 40, lng: -95 };
+        map.markers = [
+          { id: '1', lat: 40.7128, lng: -74.0060, label: 'New York', popup: 'New York City' },
+          { id: '2', lat: 34.0522, lng: -118.2437, label: 'Los Angeles', popup: 'Los Angeles' },
+          { id: '3', lat: 41.8781, lng: -87.6298, label: 'Chicago', popup: 'Chicago' },
+          { id: '4', lat: 29.7604, lng: -95.3698, label: 'Houston', popup: 'Houston' }
+        ];
+      }
+    });
+</script>
+    <!-- ── Flow ── -->
+    <div class="comp-section">
+      <h3>Flow</h3>
+      <p class="comp-desc">Node-based flow/diagram editor with draggable nodes, ports, and bezier curve edges</p>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="width:100%">
+          <snice-flow id="demo-flow" snap-to-grid minimap style="width:100%;height:450px"></snice-flow>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html + js</span>
+          <pre><code class="language-html">&lt;snice-flow id="flow" snap-to-grid minimap&gt;
+&lt;/snice-flow&gt;
+
+&lt;script&gt;
+  const flow = document.getElementById('flow');
+  flow.nodes = [
+    { id: 'start', x: 50, y: 100, label: 'Start',
+      outputs: [{ id: 'out', label: 'Out' }] },
+    { id: 'process', x: 300, y: 80, label: 'Process',
+      inputs: [{ id: 'in', label: 'In' }],
+      outputs: [{ id: 'out', label: 'Out' }] },
+    { id: 'end', x: 550, y: 100, label: 'End',
+      inputs: [{ id: 'in', label: 'In' }] },
+  ];
+  flow.edges = [
+    { id: 'e1', source: 'start', target: 'process',
+      sourcePort: 'out', targetPort: 'in' },
+    { id: 'e2', source: 'process', target: 'end',
+      sourcePort: 'out', targetPort: 'in' },
+  ];
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+    <script>
+    customElements.whenDefined('snice-flow').then(() => {
+      const el = document.getElementById('demo-flow');
+      if (el) {
+        el.nodes = [
+          {
+            id: 'input', x: 40, y: 40, label: 'User Input', type: 'trigger',
+            color: 'rgb(22 163 74)',
+            outputs: [{ id: 'data', label: 'Data' }, { id: 'meta', label: 'Meta' }],
+          },
+          {
+            id: 'validate', x: 280, y: 20, label: 'Validate', type: 'transform',
+            color: 'rgb(37 99 235)',
+            inputs: [{ id: 'in', label: 'Input' }],
+            outputs: [{ id: 'valid', label: 'Valid' }, { id: 'error', label: 'Error' }],
+          },
+          {
+            id: 'enrich', x: 280, y: 180, label: 'Enrich Data', type: 'transform',
+            color: 'rgb(37 99 235)',
+            inputs: [{ id: 'in', label: 'Input' }],
+            outputs: [{ id: 'out', label: 'Output' }],
+          },
+          {
+            id: 'save', x: 540, y: 60, label: 'Save to DB', type: 'action',
+            color: 'rgb(147 51 234)',
+            inputs: [{ id: 'data', label: 'Data' }],
+            outputs: [{ id: 'result', label: 'Result' }],
+          },
+          {
+            id: 'notify', x: 540, y: 220, label: 'Send Alert', type: 'action',
+            color: 'rgb(234 88 12)',
+            inputs: [{ id: 'msg', label: 'Message' }],
+          },
+          {
+            id: 'log', x: 780, y: 120, label: 'Log Result', type: 'output',
+            color: 'rgb(82 82 82)',
+            inputs: [{ id: 'in', label: 'Input' }],
+          },
+        ];
+        el.edges = [
+          { id: 'e1', source: 'input', target: 'validate', sourcePort: 'data', targetPort: 'in' },
+          { id: 'e2', source: 'input', target: 'enrich', sourcePort: 'meta', targetPort: 'in' },
+          { id: 'e3', source: 'validate', target: 'save', sourcePort: 'valid', targetPort: 'data' },
+          { id: 'e4', source: 'validate', target: 'notify', sourcePort: 'error', targetPort: 'msg', color: 'rgb(220 38 38)', animated: true },
+          { id: 'e5', source: 'enrich', target: 'save', sourcePort: 'out', targetPort: 'data' },
+          { id: 'e6', source: 'save', target: 'log', sourcePort: 'result', targetPort: 'in' },
+        ];
+      }
+    });
+    </script>
+    <div class="comp-section">
+      <h3>Book</h3>
+      <p class="comp-desc">Realistic book with page-flip navigation, spread/single mode, and cover page</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="justify-content:center">
+          <snice-book id="demo-book" title="Web Components" author="Jane Developer" cover-image="https://picsum.photos/seed/bookcover/200/300" style="width:100%">
+            <div style="padding:0.5rem;line-height:1.7;font-size:0.85rem">
+              <h4 style="margin:0 0 0.5rem;font-size:0.95rem">Chapter 1: Introduction</h4>
+              <p style="margin:0">Web Components are a set of web platform APIs that allow you to create new custom, reusable, encapsulated HTML tags.</p>
+            </div>
+            <div style="padding:0.5rem;line-height:1.7;font-size:0.85rem">
+              <h4 style="margin:0 0 0.5rem;font-size:0.95rem">Chapter 2: Custom Elements</h4>
+              <p style="margin:0">Custom Elements let you define your own HTML elements with custom behavior and styling using the CustomElementRegistry.</p>
+            </div>
+            <div style="padding:0.5rem;line-height:1.7;font-size:0.85rem">
+              <h4 style="margin:0 0 0.5rem;font-size:0.95rem">Chapter 3: Shadow DOM</h4>
+              <p style="margin:0">Shadow DOM provides encapsulation. Styles and markup inside a shadow root are isolated from the rest of the page.</p>
+            </div>
+            <div style="padding:0.5rem;line-height:1.7;font-size:0.85rem">
+              <h4 style="margin:0 0 0.5rem;font-size:0.95rem">Chapter 4: Templates</h4>
+              <p style="margin:0">HTML Templates define inert fragments that can be cloned and inserted into the document at runtime.</p>
+            </div>
+            <div style="padding:0.5rem;line-height:1.7;font-size:0.85rem">
+              <h4 style="margin:0 0 0.5rem;font-size:0.95rem">Chapter 5: Conclusion</h4>
+              <p style="margin:0">Web Components work everywhere, without framework lock-in. They are the future of reusable UI development.</p>
+            </div>
+          </snice-book>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-book
+  title="Web Components"
+  author="Jane Developer"
+  cover-image="cover.jpg"
+&gt;
+  &lt;div&gt;Page 1 content...&lt;/div&gt;
+  &lt;div&gt;Page 2 content...&lt;/div&gt;
+  &lt;div&gt;Page 3 content...&lt;/div&gt;
+&lt;/snice-book&gt;
+
+&lt;!-- Single page mode --&gt;
+&lt;snice-book mode="single"&gt;
+  &lt;div&gt;...&lt;/div&gt;
+&lt;/snice-book&gt;
+
+&lt;script&gt;
+  const book = document.querySelector(
+    'snice-book');
+  book.nextPage();
+  book.goToPage(3);
+  book.addEventListener('page-turn',
+    e =&gt; console.log(e.detail));
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+    <div class="comp-section">
+      <h3>Comments</h3>
+      <p class="comp-desc">Threaded comment section with nested replies, likes, avatars, and timestamps</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo">
+          <snice-comments id="demo-comments" current-user="You" style="width:100%"></snice-comments>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-comments
+  current-user="Alice"
+&gt;&lt;/snice-comments&gt;
+
+&lt;script&gt;
+  const el = document.querySelector(
+    'snice-comments');
+  el.comments = [
+    { id: '1', author: 'Bob',
+      avatar: 'avatar.jpg',
+      text: 'Great post!',
+      timestamp: new Date().toISOString(),
+      likes: 3, liked: false,
+      replies: [
+        { id: '2', author: 'Alice',
+          text: 'Thanks!',
+          timestamp: new Date().toISOString()
+        }
+      ]
+    }
+  ];
+  el.addEventListener('comment-add',
+    e =&gt; console.log(e.detail));
+  el.addEventListener('comment-like',
+    e =&gt; console.log(e.detail));
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-comments').then(() => {
+      const el = document.getElementById('demo-comments');
+      if (el) {
+        el.comments = [
+          {
+            id: '1',
+            author: 'Alice Chen',
+            avatar: 'https://i.pravatar.cc/40?u=alice-sc',
+            text: 'Love how clean the component API is. The threaded replies make conversations easy to follow!',
+            timestamp: new Date(Date.now() - 7200000).toISOString(),
+            likes: 5,
+            liked: false,
+            replies: [
+              {
+                id: '2',
+                author: 'Bob Miller',
+                avatar: 'https://i.pravatar.cc/40?u=bob-sc',
+                text: 'Totally agree. The like/unlike toggle is a nice touch too.',
+                timestamp: new Date(Date.now() - 3600000).toISOString(),
+                likes: 2,
+                liked: true
+              }
+            ]
+          },
+          {
+            id: '3',
+            author: 'You',
+            text: 'Try typing a comment above and clicking Post. You can also reply to, like, or delete your own comments!',
+            timestamp: new Date(Date.now() - 1800000).toISOString(),
+            likes: 1,
+            liked: false
+          }
+        ];
+      }
+    });
+</script>
+    <div class="comp-section">
+      <h3>Pricing Table</h3>
+      <p class="comp-desc">Pricing tier comparison with cards/table variants, billing toggle, and highlighted plans</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="flex-direction:column;gap:2rem">
+          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1.25rem;position:relative">
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">cards</span>
+            <snice-pricing-table id="demo-pricing-cards" style="width:100%"></snice-pricing-table>
+          </div>
+          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1.25rem;position:relative">
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">table</span>
+            <snice-pricing-table id="demo-pricing-table" variant="table" style="width:100%"></snice-pricing-table>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-pricing-table&gt;&lt;/snice-pricing-table&gt;
+
+&lt;script&gt;
+  const pt = document.querySelector(
+    'snice-pricing-table');
+  pt.plans = [
+    { name: 'Free', price: 0,
+      features: [
+        { name: '1 user', included: true },
+        { name: 'API', included: false }
+      ],
+      cta: 'Get Started' },
+    { name: 'Pro', price: 29,
+      annualPrice: 24,
+      features: [
+        { name: '10 users', included: true },
+        { name: 'API', included: true }
+      ],
+      cta: 'Start Trial',
+      highlighted: true,
+      badge: 'Popular' }
+  ];
+  // Toggle: variant="table"
+  pt.addEventListener('plan-select',
+    e =&gt; console.log(e.detail));
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-pricing-table').then(() => {
+      const plans = [
+        {
+          name: 'Starter',
+          price: 0,
+          description: 'For individuals',
+          features: [
+            { name: '1 user', included: true },
+            { name: '5 projects', included: true },
+            { name: '1GB storage', included: true },
+            { name: 'API access', included: false },
+            { name: 'Priority support', included: false }
+          ],
+          cta: 'Get Started',
+          ctaVariant: 'outline'
+        },
+        {
+          name: 'Professional',
+          price: 29,
+          annualPrice: 24,
+          description: 'For growing teams',
+          features: [
+            { name: '10 users', included: true },
+            { name: 'Unlimited projects', included: true },
+            { name: '100GB storage', included: true },
+            { name: 'API access', included: true },
+            { name: 'Priority support', included: false }
+          ],
+          cta: 'Start Free Trial',
+          highlighted: true,
+          badge: 'Most Popular'
+        },
+        {
+          name: 'Enterprise',
+          price: 99,
+          annualPrice: 79,
+          description: 'For large orgs',
+          features: [
+            { name: 'Unlimited users', included: true },
+            { name: 'Unlimited projects', included: true },
+            { name: '1TB storage', included: true },
+            { name: 'API access', included: true },
+            { name: 'Priority support', included: true }
+          ],
+          cta: 'Contact Sales',
+          ctaVariant: 'secondary'
+        }
+      ];
+
+      const cards = document.getElementById('demo-pricing-cards');
+      const table = document.getElementById('demo-pricing-table');
+      if (cards) cards.plans = plans;
+      if (table) table.plans = plans;
+    });
+</script>
 
   </main>
 
@@ -4011,6 +4604,16 @@ const x = 42;
   <script src="components/snice-network-graph.min.js"></script>
   <script src="components/snice-camera-annotate.min.js"></script>
   <script src="components/snice-time-range-picker.min.js"></script>
+  <script src="components/snice-podcast-player.min.js"></script>
+  <script src="components/snice-tag-input.min.js"></script>
+  <script src="components/snice-diff.min.js"></script>
+  <script src="components/snice-gantt.min.js"></script>
+  <script src="components/snice-org-chart.min.js"></script>
+  <script src="components/snice-map.min.js"></script>
+  <script src="components/snice-flow.min.js"></script>
+  <script src="components/snice-book.min.js"></script>
+  <script src="components/snice-comments.min.js"></script>
+  <script src="components/snice-pricing-table.min.js"></script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>

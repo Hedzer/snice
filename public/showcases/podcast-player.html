@@ -1,0 +1,47 @@
+    <div class="comp-section">
+      <h3>Podcast Player</h3>
+      <p class="comp-desc">Podcast playback with RSS feed support, episode list, speed control, and sleep timer</p>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="min-height:120px">
+          <snice-podcast-player id="demo-podcast" title="Getting Started with Web Components" show="Tech Talk Weekly" description="An intro to building modern UIs with custom elements" style="width:100%"></snice-podcast-player>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;!-- Direct source --&gt;
+&lt;snice-podcast-player
+  src="episode.mp3"
+  title="Episode Title"
+  show="Podcast Name"
+  artwork="cover.jpg"
+  skip-forward="30"
+  skip-back="15"
+&gt;&lt;/snice-podcast-player&gt;
+
+&lt;!-- RSS feed mode --&gt;
+&lt;snice-podcast-player
+  from-rss="https://feed.example.com/rss"
+&gt;&lt;/snice-podcast-player&gt;
+
+&lt;script&gt;
+  const player = document.querySelector(
+    'snice-podcast-player');
+  player.addEventListener('podcast-play',
+    e =&gt; console.log(e.detail));
+  player.setPlaybackRate(1.5);
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-podcast-player').then(() => {
+      const player = document.getElementById('demo-podcast');
+      if (player) {
+        player.episodes = [
+          { title: 'Getting Started with Web Components', src: '', description: 'An introduction to custom elements', pubDate: 'Jan 15, 2026', duration: 1845 },
+          { title: 'Advanced CSS Custom Properties', src: '', description: 'Deep dive into CSS variables', pubDate: 'Jan 8, 2026', duration: 2310 },
+          { title: 'The Future of Frontend', src: '', description: 'Predictions for web development', pubDate: 'Jan 1, 2026', duration: 1560 }
+        ];
+      }
+    });
+</script>

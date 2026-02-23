@@ -13,6 +13,7 @@
     "time-range-picker.html",
     "color-picker.html",
     "file-upload.html",
+    "tag-input.html",
 
     "_cat-layout.html",
     "card.html",
@@ -73,6 +74,7 @@
     "qr-reader.html",
     "audio-recorder.html",
     "music-player.html",
+    "podcast-player.html",
     "file-gallery.html",
 
     "_cat-specialty.html",
@@ -87,6 +89,14 @@
     "location.html",
     "timer.html",
     "link-preview.html",
+    "diff.html",
+    "gantt.html",
+    "org-chart.html",
+    "map.html",
+    "flow.html",
+    "book.html",
+    "comments.html",
+    "pricing-table.html",
 
     "_footer.html"
   ]

@@ -1,0 +1,84 @@
+    <!-- ── Flow ── -->
+    <div class="comp-section">
+      <h3>Flow</h3>
+      <p class="comp-desc">Node-based flow/diagram editor with draggable nodes, ports, and bezier curve edges</p>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="width:100%">
+          <snice-flow id="demo-flow" snap-to-grid minimap style="width:100%;height:450px"></snice-flow>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html + js</span>
+          <pre><code class="language-html">&lt;snice-flow id="flow" snap-to-grid minimap&gt;
+&lt;/snice-flow&gt;
+
+&lt;script&gt;
+  const flow = document.getElementById('flow');
+  flow.nodes = [
+    { id: 'start', x: 50, y: 100, label: 'Start',
+      outputs: [{ id: 'out', label: 'Out' }] },
+    { id: 'process', x: 300, y: 80, label: 'Process',
+      inputs: [{ id: 'in', label: 'In' }],
+      outputs: [{ id: 'out', label: 'Out' }] },
+    { id: 'end', x: 550, y: 100, label: 'End',
+      inputs: [{ id: 'in', label: 'In' }] },
+  ];
+  flow.edges = [
+    { id: 'e1', source: 'start', target: 'process',
+      sourcePort: 'out', targetPort: 'in' },
+    { id: 'e2', source: 'process', target: 'end',
+      sourcePort: 'out', targetPort: 'in' },
+  ];
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+    <script>
+    customElements.whenDefined('snice-flow').then(() => {
+      const el = document.getElementById('demo-flow');
+      if (el) {
+        el.nodes = [
+          {
+            id: 'input', x: 40, y: 40, label: 'User Input', type: 'trigger',
+            color: 'rgb(22 163 74)',
+            outputs: [{ id: 'data', label: 'Data' }, { id: 'meta', label: 'Meta' }],
+          },
+          {
+            id: 'validate', x: 280, y: 20, label: 'Validate', type: 'transform',
+            color: 'rgb(37 99 235)',
+            inputs: [{ id: 'in', label: 'Input' }],
+            outputs: [{ id: 'valid', label: 'Valid' }, { id: 'error', label: 'Error' }],
+          },
+          {
+            id: 'enrich', x: 280, y: 180, label: 'Enrich Data', type: 'transform',
+            color: 'rgb(37 99 235)',
+            inputs: [{ id: 'in', label: 'Input' }],
+            outputs: [{ id: 'out', label: 'Output' }],
+          },
+          {
+            id: 'save', x: 540, y: 60, label: 'Save to DB', type: 'action',
+            color: 'rgb(147 51 234)',
+            inputs: [{ id: 'data', label: 'Data' }],
+            outputs: [{ id: 'result', label: 'Result' }],
+          },
+          {
+            id: 'notify', x: 540, y: 220, label: 'Send Alert', type: 'action',
+            color: 'rgb(234 88 12)',
+            inputs: [{ id: 'msg', label: 'Message' }],
+          },
+          {
+            id: 'log', x: 780, y: 120, label: 'Log Result', type: 'output',
+            color: 'rgb(82 82 82)',
+            inputs: [{ id: 'in', label: 'Input' }],
+          },
+        ];
+        el.edges = [
+          { id: 'e1', source: 'input', target: 'validate', sourcePort: 'data', targetPort: 'in' },
+          { id: 'e2', source: 'input', target: 'enrich', sourcePort: 'meta', targetPort: 'in' },
+          { id: 'e3', source: 'validate', target: 'save', sourcePort: 'valid', targetPort: 'data' },
+          { id: 'e4', source: 'validate', target: 'notify', sourcePort: 'error', targetPort: 'msg', color: 'rgb(220 38 38)', animated: true },
+          { id: 'e5', source: 'enrich', target: 'save', sourcePort: 'out', targetPort: 'data' },
+          { id: 'e6', source: 'save', target: 'log', sourcePort: 'result', targetPort: 'in' },
+        ];
+      }
+    });
+    </script>

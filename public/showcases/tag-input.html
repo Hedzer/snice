@@ -1,0 +1,48 @@
+    <div class="comp-section">
+      <h3>Tag Input</h3>
+      <p class="comp-desc">Tag/pill input with autocomplete suggestions and keyboard navigation</p>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="gap:1.5rem">
+          <snice-tag-input id="demo-tag-input" label="Technologies" placeholder="Add a technology..." style="width:100%"></snice-tag-input>
+          <snice-tag-input id="demo-tag-input-max" label="Max 3 tags" placeholder="Type and press Enter..." max-tags="3" style="width:100%"></snice-tag-input>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-tag-input
+  label="Technologies"
+  placeholder="Add a tag..."
+  max-tags="5"
+&gt;&lt;/snice-tag-input&gt;
+
+&lt;script&gt;
+  const input = document.querySelector(
+    'snice-tag-input');
+  input.suggestions = [
+    'JavaScript', 'TypeScript',
+    'Python', 'Rust', 'Go'
+  ];
+  input.value = ['JavaScript'];
+
+  input.addEventListener('tag-add',
+    e =&gt; console.log(e.detail.tag));
+  input.addEventListener('tag-remove',
+    e =&gt; console.log(e.detail.tag));
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-tag-input').then(() => {
+      const input = document.getElementById('demo-tag-input');
+      if (input) {
+        input.value = ['JavaScript', 'TypeScript'];
+        input.suggestions = ['JavaScript', 'TypeScript', 'Python', 'Rust', 'Go', 'Java', 'C++', 'Ruby', 'Swift', 'Kotlin'];
+      }
+      const input2 = document.getElementById('demo-tag-input-max');
+      if (input2) {
+        input2.value = ['React', 'Vue'];
+        input2.suggestions = ['React', 'Vue', 'Angular', 'Svelte', 'Solid'];
+      }
+    });
+</script>

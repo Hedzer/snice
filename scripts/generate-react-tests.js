@@ -153,6 +153,18 @@ const componentTestConfig = {
     valueType: 'string',
     properties: ['granularity', 'startTime', 'endTime', 'disabledRanges', 'format', 'multiple', 'readonly'],
     events: ['onChange', 'onTimeRangeSelect', 'onTimeRangeComplete']
+  },
+  book: {
+    properties: ['currentPage', 'mode', 'coverImage', 'title', 'author'],
+    events: ['onPageTurn', 'onPageFlipStart', 'onPageFlipEnd']
+  },
+  comments: {
+    properties: ['currentUser', 'allowReplies', 'allowLikes', 'maxDepth'],
+    events: ['onCommentAdd', 'onCommentReply', 'onCommentDelete', 'onCommentLike']
+  },
+  'pricing-table': {
+    properties: ['variant', 'annual'],
+    events: ['onPlanSelect']
   }
 };
 

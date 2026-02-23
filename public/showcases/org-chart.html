@@ -1,0 +1,55 @@
+    <div class="comp-section">
+      <h3>Org Chart</h3>
+      <p class="comp-desc">Organizational hierarchy with collapsible nodes and avatar placeholders</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo">
+          <snice-org-chart id="demo-org-chart" direction="top-down" style="width:100%"></snice-org-chart>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-org-chart
+  direction="top-down"
+&gt;&lt;/snice-org-chart&gt;
+
+&lt;script&gt;
+  const chart = document.querySelector(
+    'snice-org-chart');
+  chart.data = {
+    id: '1', name: 'CEO',
+    title: 'Chief Executive',
+    children: [
+      { id: '2', name: 'CTO',
+        title: 'Technology',
+        children: [...] },
+      { id: '3', name: 'CFO',
+        title: 'Finance' }
+    ]
+  };
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-org-chart').then(() => {
+      const chart = document.getElementById('demo-org-chart');
+      if (chart) {
+        chart.data = {
+          id: '1', name: 'Sarah Chen', title: 'CEO',
+          children: [
+            { id: '2', name: 'James Park', title: 'CTO', children: [
+              { id: '5', name: 'Lisa Wang', title: 'Lead Engineer' },
+              { id: '6', name: 'Alex Kim', title: 'Lead Designer' }
+            ]},
+            { id: '3', name: 'Maria Lopez', title: 'CFO', children: [
+              { id: '7', name: 'Tom Baker', title: 'Controller' }
+            ]},
+            { id: '4', name: 'David Lee', title: 'COO', children: [
+              { id: '8', name: 'Emma Davis', title: 'HR Director' },
+              { id: '9', name: 'Ryan Johnson', title: 'Ops Manager' }
+            ]}
+          ]
+        };
+      }
+    });
+</script>

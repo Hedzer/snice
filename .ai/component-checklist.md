@@ -39,11 +39,16 @@ Every component must satisfy ALL items before considered complete.
 - [ ] Works with shared runtime (`snice-runtime.min.js`)
 
 ## Documentation
-- [ ] Human docs: `docs/<name>.md` — detailed, with examples and explanations
+- [ ] Human docs: `docs/components/<name>.md` — detailed, with examples and explanations
 - [ ] AI docs: `docs/ai/components/<name>.md` — LOW TOKEN, concise: type signatures, bullets, code over prose, no tutorials, pure reference
 - [ ] Demo page: `components/<name>/demo.html`
 - [ ] Demo uses theme tokens (not hard-coded colors/spacing)
 - [ ] Demo works in both light and dark modes
+
+## MCP Server Catalogue
+- [ ] AI docs file exists at `docs/ai/components/<name>.md` — the MCP server (`bin/mcp-server.js`) auto-discovers components from this directory
+- [ ] Verify component appears in `list_components` tool output
+- [ ] Note: No code changes needed in mcp-server.js — it reads all `.md` files from `docs/ai/components/` at startup
 
 ## Website Integration
 - [ ] Showcase fragment: `public/showcases/<name>.html`

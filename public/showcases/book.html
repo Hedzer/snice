@@ -1,0 +1,56 @@
+    <div class="comp-section">
+      <h3>Book</h3>
+      <p class="comp-desc">Realistic book with page-flip navigation, spread/single mode, and cover page</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="justify-content:center">
+          <snice-book id="demo-book" title="Web Components" author="Jane Developer" cover-image="https://picsum.photos/seed/bookcover/200/300" style="width:100%">
+            <div style="padding:0.5rem;line-height:1.7;font-size:0.85rem">
+              <h4 style="margin:0 0 0.5rem;font-size:0.95rem">Chapter 1: Introduction</h4>
+              <p style="margin:0">Web Components are a set of web platform APIs that allow you to create new custom, reusable, encapsulated HTML tags.</p>
+            </div>
+            <div style="padding:0.5rem;line-height:1.7;font-size:0.85rem">
+              <h4 style="margin:0 0 0.5rem;font-size:0.95rem">Chapter 2: Custom Elements</h4>
+              <p style="margin:0">Custom Elements let you define your own HTML elements with custom behavior and styling using the CustomElementRegistry.</p>
+            </div>
+            <div style="padding:0.5rem;line-height:1.7;font-size:0.85rem">
+              <h4 style="margin:0 0 0.5rem;font-size:0.95rem">Chapter 3: Shadow DOM</h4>
+              <p style="margin:0">Shadow DOM provides encapsulation. Styles and markup inside a shadow root are isolated from the rest of the page.</p>
+            </div>
+            <div style="padding:0.5rem;line-height:1.7;font-size:0.85rem">
+              <h4 style="margin:0 0 0.5rem;font-size:0.95rem">Chapter 4: Templates</h4>
+              <p style="margin:0">HTML Templates define inert fragments that can be cloned and inserted into the document at runtime.</p>
+            </div>
+            <div style="padding:0.5rem;line-height:1.7;font-size:0.85rem">
+              <h4 style="margin:0 0 0.5rem;font-size:0.95rem">Chapter 5: Conclusion</h4>
+              <p style="margin:0">Web Components work everywhere, without framework lock-in. They are the future of reusable UI development.</p>
+            </div>
+          </snice-book>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-book
+  title="Web Components"
+  author="Jane Developer"
+  cover-image="cover.jpg"
+&gt;
+  &lt;div&gt;Page 1 content...&lt;/div&gt;
+  &lt;div&gt;Page 2 content...&lt;/div&gt;
+  &lt;div&gt;Page 3 content...&lt;/div&gt;
+&lt;/snice-book&gt;
+
+&lt;!-- Single page mode --&gt;
+&lt;snice-book mode="single"&gt;
+  &lt;div&gt;...&lt;/div&gt;
+&lt;/snice-book&gt;
+
+&lt;script&gt;
+  const book = document.querySelector(
+    'snice-book');
+  book.nextPage();
+  book.goToPage(3);
+  book.addEventListener('page-turn',
+    e =&gt; console.log(e.detail));
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>

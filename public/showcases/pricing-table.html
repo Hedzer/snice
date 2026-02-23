@@ -1,0 +1,102 @@
+    <div class="comp-section">
+      <h3>Pricing Table</h3>
+      <p class="comp-desc">Pricing tier comparison with cards/table variants, billing toggle, and highlighted plans</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="flex-direction:column;gap:2rem">
+          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1.25rem;position:relative">
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">cards</span>
+            <snice-pricing-table id="demo-pricing-cards" style="width:100%"></snice-pricing-table>
+          </div>
+          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1.25rem;position:relative">
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">table</span>
+            <snice-pricing-table id="demo-pricing-table" variant="table" style="width:100%"></snice-pricing-table>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-pricing-table&gt;&lt;/snice-pricing-table&gt;
+
+&lt;script&gt;
+  const pt = document.querySelector(
+    'snice-pricing-table');
+  pt.plans = [
+    { name: 'Free', price: 0,
+      features: [
+        { name: '1 user', included: true },
+        { name: 'API', included: false }
+      ],
+      cta: 'Get Started' },
+    { name: 'Pro', price: 29,
+      annualPrice: 24,
+      features: [
+        { name: '10 users', included: true },
+        { name: 'API', included: true }
+      ],
+      cta: 'Start Trial',
+      highlighted: true,
+      badge: 'Popular' }
+  ];
+  // Toggle: variant="table"
+  pt.addEventListener('plan-select',
+    e =&gt; console.log(e.detail));
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-pricing-table').then(() => {
+      const plans = [
+        {
+          name: 'Starter',
+          price: 0,
+          description: 'For individuals',
+          features: [
+            { name: '1 user', included: true },
+            { name: '5 projects', included: true },
+            { name: '1GB storage', included: true },
+            { name: 'API access', included: false },
+            { name: 'Priority support', included: false }
+          ],
+          cta: 'Get Started',
+          ctaVariant: 'outline'
+        },
+        {
+          name: 'Professional',
+          price: 29,
+          annualPrice: 24,
+          description: 'For growing teams',
+          features: [
+            { name: '10 users', included: true },
+            { name: 'Unlimited projects', included: true },
+            { name: '100GB storage', included: true },
+            { name: 'API access', included: true },
+            { name: 'Priority support', included: false }
+          ],
+          cta: 'Start Free Trial',
+          highlighted: true,
+          badge: 'Most Popular'
+        },
+        {
+          name: 'Enterprise',
+          price: 99,
+          annualPrice: 79,
+          description: 'For large orgs',
+          features: [
+            { name: 'Unlimited users', included: true },
+            { name: 'Unlimited projects', included: true },
+            { name: '1TB storage', included: true },
+            { name: 'API access', included: true },
+            { name: 'Priority support', included: true }
+          ],
+          cta: 'Contact Sales',
+          ctaVariant: 'secondary'
+        }
+      ];
+
+      const cards = document.getElementById('demo-pricing-cards');
+      const table = document.getElementById('demo-pricing-table');
+      if (cards) cards.plans = plans;
+      if (table) table.plans = plans;
+    });
+</script>

@@ -1,0 +1,36 @@
+    <div class="comp-section">
+      <h3>Diff</h3>
+      <p class="comp-desc">Code and text diff viewer with unified and split modes</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo">
+          <snice-diff id="demo-diff" mode="unified" line-numbers context-lines="3" style="width:100%"></snice-diff>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-diff
+  mode="unified"
+  line-numbers
+  context-lines="3"
+&gt;&lt;/snice-diff&gt;
+
+&lt;script&gt;
+  const diff = document.querySelector(
+    'snice-diff');
+  diff.oldText = 'function hello() {\n'
+    + '  return "hello";\n}';
+  diff.newText = 'function hello() {\n'
+    + '  return "hello world";\n}';
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-diff').then(() => {
+      const diff = document.getElementById('demo-diff');
+      if (diff) {
+        diff.oldText = 'function greet(name) {\n  console.log("Hello");\n  return name;\n}\n\nconst x = 1;\nconst y = 2;\nconst z = 3;';
+        diff.newText = 'function greet(name) {\n  console.log("Hello, " + name);\n  return name.toUpperCase();\n}\n\nconst x = 1;\nconst y = 2;\nconst z = 3;\nconst w = 4;';
+      }
+    });
+</script>

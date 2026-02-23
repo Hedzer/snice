@@ -521,6 +521,131 @@ For each component:
      - `recipe-serving-change` - Serving size adjusted
      - `recipe-step-complete` - Step marked complete
      - `recipe-ingredient-check` - Ingredient checked/unchecked
+60. [ ] `<snice-rating>` - Star/emoji rating component
+   - Configurable icon (stars, hearts, emoji, custom)
+   - Half-star support, readonly mode
+   - `value`, `max`, `icon`, `size`, `readonly`, `precision` ("full" | "half")
+   - Events: `rating-change`
+61. [ ] `<snice-signature>` - Signature capture pad
+   - Smooth drawing optimized for signatures
+   - `stroke-color`, `stroke-width`, `background-color`, `readonly`
+   - Methods: `clear()`, `toDataURL(type?)`, `toBlob()`, `isEmpty()`
+   - Events: `signature-change`, `signature-clear`
+62. [ ] `<snice-cropper>` - Image crop/rotate/zoom tool
+   - Drag to reposition, handles to resize crop area
+   - `src`, `aspect-ratio`, `min-width`, `min-height`, `output-type` ("png" | "jpeg" | "webp")
+   - Methods: `crop(): Promise<Blob>`, `rotate(deg)`, `reset()`, `zoom(level)`
+   - Events: `crop-change`, `crop-complete`
+63. [ ] `<snice-tag-input>` - Tag/pill input with autocomplete
+   - Add tags by typing + Enter/comma, remove with backspace or X button
+   - `value` (array of strings), `suggestions`, `max-tags`, `allow-duplicates`, `placeholder`
+   - Keyboard nav through suggestions dropdown
+   - Events: `tag-add`, `tag-remove`, `tag-change`
+64. [ ] `<snice-sortable>` - Drag-and-drop reorderable list
+   - Drag handle or full-item drag, animated reorder
+   - `direction` ("vertical" | "horizontal"), `handle` (selector), `disabled`, `group` (for cross-list drag)
+   - Ghost element during drag with configurable opacity
+   - Events: `sort-start`, `sort-end`, `sort-change`
+65. [ ] `<snice-markdown>` - Markdown renderer
+   - Renders markdown string to styled HTML in shadow DOM
+   - `content` (markdown string), `sanitize` (boolean, default true), `theme` ("default" | "github")
+   - GFM support: tables, task lists, strikethrough, autolinks
+   - Syntax highlighting for code blocks
+   - Events: `markdown-render`, `link-click`
+66. [ ] `<snice-diff>` - Code/text diff viewer
+   - Side-by-side or unified inline view
+   - `old-text`, `new-text`, `language`, `mode` ("split" | "unified"), `line-numbers`
+   - Syntax highlighting, line-level and word-level diffs
+   - Collapsible unchanged sections
+   - Events: `diff-computed`
+67. [ ] `<snice-pdf-viewer>` - PDF document viewer
+   - Renders PDF pages via canvas (pdf.js-based)
+   - `src` (URL or ArrayBuffer), `page`, `zoom`, `fit` ("width" | "height" | "page")
+   - Toolbar: page nav, zoom, fit controls, download
+   - Methods: `goToPage(n)`, `nextPage()`, `prevPage()`, `print()`, `download()`
+   - Events: `page-change`, `pdf-loaded`, `pdf-error`
+68. [ ] `<snice-countdown>` - Countdown to a date/time
+   - Displays days, hours, minutes, seconds with flip/slide animation
+   - `target` (ISO date string), `format` ("dhms" | "hms" | "ms"), `variant` ("flip" | "simple" | "circular")
+   - Auto-updates every second
+   - Events: `countdown-complete`, `countdown-tick`
+69. [ ] `<snice-comments>` - Threaded comment section
+   - Nested reply threads, author avatar/name/timestamp
+   - `comments` (array of `{ id, author, avatar, text, timestamp, replies?, likes? }`)
+   - Like/upvote per comment, edit/delete own comments
+   - Markdown support in comment text
+   - Events: `comment-add`, `comment-reply`, `comment-delete`, `comment-like`
+70. [ ] `<snice-testimonial>` - Testimonial/review card
+   - Quote text, author name, avatar, role/company, rating
+   - `quote`, `author`, `avatar`, `role`, `company`, `rating`, `variant` ("card" | "minimal" | "featured")
+   - Optional star rating display
+71. [ ] `<snice-gantt>` - Gantt chart for project timelines
+   - Horizontal bar chart with time axis
+   - `tasks` (array of `{ id, name, start, end, progress?, dependencies?, color?, group? }`)
+   - Drag to resize/move tasks, dependency arrows
+   - Zoom levels: day, week, month
+   - Methods: `scrollToDate(date)`, `scrollToTask(id)`
+   - Events: `task-click`, `task-resize`, `task-move`, `task-link`
+72. [ ] `<snice-org-chart>` - Organizational/hierarchy chart
+   - Tree layout with cards for each node, connecting lines
+   - `data` (tree of `{ id, name, title, avatar?, children? }`)
+   - `direction` ("top-down" | "left-right"), `compact` boolean
+   - Zoom/pan, collapse/expand subtrees
+   - Events: `node-click`, `node-expand`, `node-collapse`
+73. [ ] `<snice-flow>` - Node-based flow/diagram editor
+   - Draggable nodes with input/output ports, bezier curve edges
+   - `nodes` (array of `{ id, x, y, type, data }`) , `edges` (array of `{ source, target, sourcePort?, targetPort? }`)
+   - Zoom/pan canvas, snap-to-grid, minimap
+   - Methods: `addNode(node)`, `removeNode(id)`, `addEdge(edge)`, `removeEdge(id)`, `fitView()`
+   - Events: `node-drag`, `edge-connect`, `edge-disconnect`, `node-select`, `canvas-click`
+74. [ ] `<snice-waterfall>` - Waterfall chart
+   - Horizontal or vertical bars showing cumulative effect of sequential values
+   - `data` (array of `{ label, value, type?: 'increase' | 'decrease' | 'total' }`)
+   - Color-coded: green for increase, red for decrease, blue for totals
+   - Connector lines between bars, value labels
+   - Events: `bar-click`, `bar-hover`
+75. [ ] `<snice-infinite-scroll>` - Infinite scroll container
+   - Triggers load callback when scrolling near bottom
+   - `threshold` (px from bottom to trigger, default 200), `loading`, `has-more`, `direction` ("down" | "up")
+   - Slot for loading spinner, slot for end-of-list message
+   - Events: `load-more`
+76. [ ] `<snice-spotlight>` - Feature tour/onboarding spotlight overlay
+   - Highlights elements with cutout overlay, shows tooltip/popover with step info
+   - `steps` (array of `{ target, title, description, position? }`)
+   - Step navigation: next, prev, skip, done
+   - Methods: `start()`, `next()`, `prev()`, `goToStep(n)`, `end()`
+   - Events: `spotlight-start`, `spotlight-step`, `spotlight-end`, `spotlight-skip`
+77. [ ] `<snice-notification-center>` - Bell icon with dropdown notification list
+   - Bell icon with unread count badge
+   - Dropdown panel with notification items (icon, title, message, timestamp, read/unread)
+   - `notifications` (array of `{ id, title, message, timestamp, read?, icon?, type? }`)
+   - Mark as read, mark all read, dismiss individual
+   - Events: `notification-click`, `notification-dismiss`, `notification-read-all`
+78. [ ] `<snice-map>` - Interactive map component
+   - Renders tile-based map (OpenStreetMap tiles by default)
+   - `center` (lat/lng), `zoom`, `min-zoom`, `max-zoom`, `markers` (array of `{ lat, lng, label?, icon? }`)
+   - Pan/zoom with mouse/touch, marker popups
+   - Methods: `setCenter(lat, lng)`, `setZoom(n)`, `addMarker(marker)`, `removeMarker(id)`, `fitBounds(markers)`
+   - Events: `map-click`, `marker-click`, `map-move`, `map-zoom`
+79. [ ] `<snice-spreadsheet>` - Editable spreadsheet grid
+   - Cell selection, multi-select, copy/paste
+   - `data` (2D array), `columns` (column defs with type, width, header), `readonly`
+   - Cell types: text, number, date, boolean, select
+   - Formula support (basic: SUM, AVG, COUNT, MIN, MAX)
+   - Methods: `getCell(row, col)`, `setCell(row, col, value)`, `getData()`, `setData(data)`
+   - Events: `cell-change`, `cell-select`, `row-select`, `column-sort`
+80. [ ] `<snice-pricing-table>` - Pricing tier comparison
+   - Side-by-side plan cards with feature comparison rows
+   - `plans` (array of `{ name, price, period?, currency?, features, cta, highlighted? }`)
+   - `variant` ("cards" | "table"), highlighted/recommended plan emphasis
+   - Toggle for monthly/annual pricing
+   - Events: `plan-select`
+81. [ ] `<snice-weather>` - Weather display widget
+   - Current conditions: temp, icon, description, humidity, wind
+   - `data` (`{ temp, condition, icon?, humidity?, wind?, forecast? }`)
+   - `unit` ("celsius" | "fahrenheit"), `variant` ("compact" | "full")
+   - Optional multi-day forecast row
+   - No built-in API calls — receives data via properties
 
 ---
 

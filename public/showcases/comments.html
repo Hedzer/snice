@@ -1,0 +1,76 @@
+    <div class="comp-section">
+      <h3>Comments</h3>
+      <p class="comp-desc">Threaded comment section with nested replies, likes, avatars, and timestamps</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo">
+          <snice-comments id="demo-comments" current-user="You" style="width:100%"></snice-comments>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-comments
+  current-user="Alice"
+&gt;&lt;/snice-comments&gt;
+
+&lt;script&gt;
+  const el = document.querySelector(
+    'snice-comments');
+  el.comments = [
+    { id: '1', author: 'Bob',
+      avatar: 'avatar.jpg',
+      text: 'Great post!',
+      timestamp: new Date().toISOString(),
+      likes: 3, liked: false,
+      replies: [
+        { id: '2', author: 'Alice',
+          text: 'Thanks!',
+          timestamp: new Date().toISOString()
+        }
+      ]
+    }
+  ];
+  el.addEventListener('comment-add',
+    e =&gt; console.log(e.detail));
+  el.addEventListener('comment-like',
+    e =&gt; console.log(e.detail));
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-comments').then(() => {
+      const el = document.getElementById('demo-comments');
+      if (el) {
+        el.comments = [
+          {
+            id: '1',
+            author: 'Alice Chen',
+            avatar: 'https://i.pravatar.cc/40?u=alice-sc',
+            text: 'Love how clean the component API is. The threaded replies make conversations easy to follow!',
+            timestamp: new Date(Date.now() - 7200000).toISOString(),
+            likes: 5,
+            liked: false,
+            replies: [
+              {
+                id: '2',
+                author: 'Bob Miller',
+                avatar: 'https://i.pravatar.cc/40?u=bob-sc',
+                text: 'Totally agree. The like/unlike toggle is a nice touch too.',
+                timestamp: new Date(Date.now() - 3600000).toISOString(),
+                likes: 2,
+                liked: true
+              }
+            ]
+          },
+          {
+            id: '3',
+            author: 'You',
+            text: 'Try typing a comment above and clicking Post. You can also reply to, like, or delete your own comments!',
+            timestamp: new Date(Date.now() - 1800000).toISOString(),
+            likes: 1,
+            liked: false
+          }
+        ];
+      }
+    });
+</script>
