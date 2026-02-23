@@ -1,3 +1,39 @@
+# [4.9.0](https://gitlab.com/Hedzer/snice/compare/v4.8.0...v4.9.0) (2026-02-23)
+
+
+### Bug Fixes
+
+* candlestick [@watch](https://gitlab.com/watch) reactivity and direct DOM crosshair, breadcrumbs button reset ([67e941c](https://gitlab.com/Hedzer/snice/commit/67e941c146996037eb251341a24bc26b5e04d8b9))
+* candlestick SVG mouse coordinates via getScreenCTM ([c099d9d](https://gitlab.com/Hedzer/snice/commit/c099d9d2760177caeb38eb849de5bd82ef314d39))
+* direct DOM rendering for sankey, treemap, funnel, candlestick ([6dec304](https://gitlab.com/Hedzer/snice/commit/6dec304fe6ca6af9cc4ed12f15b757f6ac96a04d))
+* network-graph direct DOM rendering with render({once: true}) ([ae8fcb2](https://gitlab.com/Hedzer/snice/commit/ae8fcb270ba0cd6dc3ac321c71923cfb0ce5b11d))
+* pagination CSS theming, Material Symbols in list showcase, carousel layout ([21b3c82](https://gitlab.com/Hedzer/snice/commit/21b3c82a639152f3cb0a1a339fd340da79b86d42))
+* stepper panel visibility, CDN build children, component rebuilder ([d2344f0](https://gitlab.com/Hedzer/snice/commit/d2344f082c945e385e4692cb73eaa9867c324a09))
+* update list and nav showcases, dynamic component count ([cfaa8c5](https://gitlab.com/Hedzer/snice/commit/cfaa8c575d5a3189f0b7033fa0142221a13c045a))
+* use [@watch](https://gitlab.com/watch) for data reactivity in visualization components ([5600848](https://gitlab.com/Hedzer/snice/commit/56008484db7dd966eb2476163b41457163278271))
+* virtual-scroller scroll handling, router type cast, react adapter props ([7e37e41](https://gitlab.com/Hedzer/snice/commit/7e37e4191f0d2f4e943086837f3d734c8d5edbee))
+
+
+### Features
+
+* add camera-annotate component ([6cfb4e2](https://gitlab.com/Hedzer/snice/commit/6cfb4e281b11b98312641cdac030b56b1acc526a))
+* add candlestick component ([9947cfe](https://gitlab.com/Hedzer/snice/commit/9947cfe452cc45974a131996d909ef61941d7626))
+* add docs symlink to public directory ([6f1e23b](https://gitlab.com/Hedzer/snice/commit/6f1e23b2c8b1ac4f81219aa464ca8e17d865281e))
+* add favicon, OG meta, logo in header, tweak network-graph and manifest ([258a5ba](https://gitlab.com/Hedzer/snice/commit/258a5bac1a089adfa2f394bd3a07a298c8052b2c))
+* add funnel component ([7c2a18c](https://gitlab.com/Hedzer/snice/commit/7c2a18c44ce184f56de7a2836e8a27bd9e399118))
+* add network-graph component ([af957ea](https://gitlab.com/Hedzer/snice/commit/af957ea102229d6f9f002342788f2656b1ac7b31))
+* add react adapters and tests for new components ([43c8546](https://gitlab.com/Hedzer/snice/commit/43c854610ac51ae67087782db1f0d8b2d9f90f70))
+* add sankey component ([b7562e0](https://gitlab.com/Hedzer/snice/commit/b7562e051ba6dbe9b3642d0d817d80570072f7df))
+* add time-range-picker component ([c49cdcd](https://gitlab.com/Hedzer/snice/commit/c49cdcdce38aa95184fa2d1c482c6009d4725d91))
+* add treemap component ([98d92b3](https://gitlab.com/Hedzer/snice/commit/98d92b3432a400fb92df7443d561b5c95c5a4901))
+* add website showcases and expand stepper demo ([5a89061](https://gitlab.com/Hedzer/snice/commit/5a8906177138e3164480fcbeafdd01a52b63a4b6))
+* add website showcases for new components ([07935f5](https://gitlab.com/Hedzer/snice/commit/07935f50d50670c8f55a95acb21b03d5f886128a))
+* list-item heading/description props, nav image icons, breadcrumbs button reset ([df8fb02](https://gitlab.com/Hedzer/snice/commit/df8fb02f0408331dd5a526367f8d609979777b47))
+* new category fragments, carousel and list showcase redesign, add logo ([176aed6](https://gitlab.com/Hedzer/snice/commit/176aed61f009a70914571cb4ecf8929dfd5893a2))
+* reorganize component categories, redesign carousel and masonry showcases ([c9ccb20](https://gitlab.com/Hedzer/snice/commit/c9ccb2012c281e939e7c88b99db76bf240dea578))
+* terminal demo build/test/deploy loop, guide code formatting, version bump ([de5a40c](https://gitlab.com/Hedzer/snice/commit/de5a40cf8ce5483a670018777cc3f846ef50de50))
+* website sidebar nav, update sankey showcase data ([772eeb5](https://gitlab.com/Hedzer/snice/commit/772eeb5984aa2ac89496d2203cf7c16b7a2552ff))
+
 # [4.8.0](https://gitlab.com/Hedzer/snice/compare/v4.7.0...v4.8.0) (2026-02-22)
 
 
