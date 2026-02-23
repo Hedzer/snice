@@ -853,23 +853,23 @@
         <div class="comp-split-demo demo-col">
           <snice-list dividers style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;overflow:hidden">
             <snice-list-item heading="Document.pdf" description="Updated 2 hours ago">
-              <span slot="before">&#x1f4c4;</span>
+              <span slot="before" class="material-symbols-outlined" style="font-size:20px;color:var(--snice-color-primary,#3b82f6)">description</span>
               <span slot="after">2.4 MB</span>
             </snice-list-item>
             <snice-list-item heading="Presentation.pptx" description="Updated yesterday">
-              <span slot="before">&#x1f4ca;</span>
+              <span slot="before" class="material-symbols-outlined" style="font-size:20px;color:var(--snice-color-warning,#f59e0b)">slideshow</span>
               <span slot="after">5.1 MB</span>
             </snice-list-item>
             <snice-list-item heading="Budget.xlsx" description="Updated 3 days ago">
-              <span slot="before">&#x1f4c8;</span>
+              <span slot="before" class="material-symbols-outlined" style="font-size:20px;color:var(--snice-color-success,#10b981)">table_chart</span>
               <span slot="after">876 KB</span>
             </snice-list-item>
             <snice-list-item heading="Task Completed" description="Finished 2 hours ago">
-              <span slot="before">&#x2705;</span>
+              <span slot="before" class="material-symbols-outlined" style="font-size:20px;color:var(--snice-color-success,#10b981)">check_circle</span>
               <span slot="after" style="color:var(--snice-color-success,#10b981)">Done</span>
             </snice-list-item>
             <snice-list-item heading="In Progress" description="Due tomorrow">
-              <span slot="before">&#x23f3;</span>
+              <span slot="before" class="material-symbols-outlined" style="font-size:20px;color:var(--snice-color-warning,#f59e0b)">schedule</span>
               <span slot="after" style="color:var(--snice-color-warning,#f59e0b)">Pending</span>
             </snice-list-item>
           </snice-list>
@@ -878,14 +878,14 @@
           <span class="code-lang">html</span>
           <pre><code class="language-html">&lt;snice-list dividers&gt;
   &lt;snice-list-item heading="Document.pdf" description="Updated 2h ago"&gt;
-    &lt;span slot="before"&gt;&#x1f4c4;&lt;/span&gt;
+    &lt;span slot="before" class="material-symbols-outlined"&gt;description&lt;/span&gt;
     &lt;span slot="after"&gt;2.4 MB&lt;/span&gt;
   &lt;/snice-list-item&gt;
 &lt;/snice-list&gt;
 
 &lt;!-- Or use custom slotted content --&gt;
 &lt;snice-list-item&gt;
-  &lt;span slot="before"&gt;&#x1f4c4;&lt;/span&gt;
+  &lt;span slot="before" class="material-symbols-outlined"&gt;folder&lt;/span&gt;
   &lt;div&gt;Any custom content here&lt;/div&gt;
   &lt;span slot="after"&gt;2.4 MB&lt;/span&gt;
 &lt;/snice-list-item&gt;</code></pre>
@@ -2556,7 +2556,7 @@ const x = 42;
               <div style="background:linear-gradient(135deg,#4facfe,#00f2fe);height:220px;display:flex;align-items:center;justify-content:center;color:white;font-size:1.5rem;border-radius:6px">Slide 3</div>
             </snice-carousel>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem">
+          <div style="display:grid;grid-template-columns:1fr;gap:1.25rem">
             <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1rem;position:relative">
               <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">autoplay</span>
               <snice-carousel autoplay autoplay-interval="2000" show-indicators loop>
@@ -3020,7 +3020,7 @@ const x = 42;
     <div class="comp-section">
       <h3>Heatmap</h3>
       <p class="comp-desc">GitHub-style contribution heatmap</p>
-      <div class="comp-split">
+      <div class="comp-split comp-split-stacked">
         <div class="comp-split-demo" style="width:100%;overflow-x:auto">
           <snice-heatmap id="demo-heatmap"></snice-heatmap>
         </div>
@@ -3542,7 +3542,7 @@ const x = 42;
       <p class="comp-desc">Force-directed network/relationship graph visualization</p>
       <div class="comp-split comp-split-stacked">
         <div class="comp-split-demo" style="width:100%">
-          <snice-network-graph id="demo-network" show-labels style="width:100%;height:360px"></snice-network-graph>
+          <snice-network-graph id="demo-network" show-labels style="width:100%;height:450px"></snice-network-graph>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html + js</span>
