@@ -1,0 +1,72 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--snice-spacing-2xs, 0.25rem);
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  --rating-color: var(--snice-color-warning, rgb(234 179 8));
+  --rating-color-empty: var(--snice-color-border, rgb(226 226 226));
+  --rating-size: 1.5rem;
+}
+
+:host([size="small"]) {
+  --rating-size: 1rem;
+  gap: var(--snice-spacing-3xs, 0.125rem);
+}
+
+:host([size="large"]) {
+  --rating-size: 2rem;
+  gap: var(--snice-spacing-xs, 0.5rem);
+}
+
+.rating {
+  display: inline-flex;
+  align-items: center;
+  gap: inherit;
+}
+
+.star {
+  position: relative;
+  width: var(--rating-size);
+  height: var(--rating-size);
+  font-size: var(--rating-size);
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+  transition: transform var(--snice-transition-fast, 150ms) ease;
+}
+
+:host([readonly]) .star {
+  cursor: default;
+}
+
+.star:not(:host([readonly]) .star):hover {
+  transform: scale(1.2);
+}
+
+.star-empty,
+.star-full {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.star-empty {
+  color: var(--rating-color-empty);
+}
+
+.star-full {
+  color: var(--rating-color);
+  overflow: hidden;
+}
+
+/* Focus state */
+:host(:focus-visible) {
+  outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+  outline-offset: var(--snice-focus-ring-offset, 2px);
+  border-radius: var(--snice-border-radius-md, 0.25rem);
+}

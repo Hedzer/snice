@@ -1,0 +1,90 @@
+:host {
+  display: block;
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  color: var(--snice-color-text, rgb(23 23 23));
+}
+
+.testimonial {
+  padding: var(--snice-spacing-lg, 1.5rem);
+  border-radius: var(--snice-border-radius-lg, 0.5rem);
+}
+
+/* Card variant (default) */
+:host([variant="card"]) .testimonial,
+:host(:not([variant])) .testimonial {
+  background: var(--snice-color-background-element, rgb(252 251 249));
+  border: 1px solid var(--snice-color-border, rgb(226 226 226));
+  box-shadow: var(--snice-shadow-sm, 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1));
+}
+
+/* Minimal variant */
+:host([variant="minimal"]) .testimonial {
+  padding: var(--snice-spacing-md, 1rem) 0;
+  border-left: 3px solid var(--snice-color-primary, rgb(37 99 235));
+  padding-left: var(--snice-spacing-md, 1rem);
+  border-radius: 0;
+}
+
+/* Featured variant */
+:host([variant="featured"]) .testimonial {
+  background: var(--snice-color-primary, rgb(37 99 235));
+  color: var(--snice-color-text-inverse, rgb(250 250 250));
+  padding: var(--snice-spacing-xl, 2rem);
+}
+
+.quote-icon {
+  font-size: var(--snice-font-size-2xl, 1.5rem);
+  color: var(--snice-color-primary, rgb(37 99 235));
+  line-height: 1;
+  margin-bottom: var(--snice-spacing-xs, 0.5rem);
+}
+
+:host([variant="featured"]) .quote-icon {
+  color: rgb(255 255 255 / 0.6);
+}
+
+.quote {
+  font-size: var(--snice-font-size-md, 1rem);
+  line-height: var(--snice-line-height-normal, 1.5);
+  font-style: italic;
+  margin-bottom: var(--snice-spacing-md, 1rem);
+}
+
+.stars {
+  display: flex;
+  gap: var(--snice-spacing-3xs, 0.125rem);
+  margin-bottom: var(--snice-spacing-sm, 0.75rem);
+  color: var(--snice-color-warning, rgb(234 179 8));
+  font-size: var(--snice-font-size-md, 1rem);
+}
+
+:host([variant="featured"]) .stars {
+  color: rgb(255 255 255 / 0.9);
+}
+
+.author-info {
+  display: flex;
+  align-items: center;
+  gap: var(--snice-spacing-sm, 0.75rem);
+}
+
+.avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.author-name {
+  font-weight: var(--snice-font-weight-semibold, 600);
+  font-size: var(--snice-font-size-md, 1rem);
+}
+
+.author-role {
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
+}
+
+:host([variant="featured"]) .author-role {
+  color: rgb(255 255 255 / 0.7);
+}

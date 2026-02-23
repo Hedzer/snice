@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Book Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      padding: 40px;
+      font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+      background: var(--snice-color-background, rgb(255 255 255));
+      color: var(--snice-color-text, rgb(23 23 23));
+    }
+    h2, h3 {
+      color: var(--snice-color-text, rgb(23 23 23));
+    }
+    .demo-section {
+      margin-bottom: 3rem;
+    }
+    .page-content {
+      padding: 0.5rem;
+      line-height: 1.8;
+      font-size: 0.9rem;
+      color: var(--snice-color-text, rgb(23 23 23));
+    }
+    .page-content h3 {
+      margin-top: 0;
+      font-size: 1.1rem;
+    }
+  </style>
+  <script type="module">
+    import './snice-book.ts';
+  </script>
+</head>
+<body>
+  <h2>Book Demo</h2>
+
+  <div class="demo-section">
+    <h3>Spread Mode (default)</h3>
+    <snice-book title="The Web Component Handbook" author="Jane Developer" cover-image="https://picsum.photos/200/300?random=1">
+      <div class="page-content">
+        <h3>Chapter 1: Introduction</h3>
+        <p>Web Components are a set of web platform APIs that allow you to create new custom, reusable, encapsulated HTML tags to use in web pages and web apps.</p>
+        <p>They are built on four main specifications: Custom Elements, Shadow DOM, HTML Templates, and ES Modules.</p>
+      </div>
+      <div class="page-content">
+        <h3>Chapter 2: Custom Elements</h3>
+        <p>Custom Elements let you define your own HTML elements. Using the CustomElementRegistry, you can register new elements that the browser will recognize and render.</p>
+        <p>The key method is <code>customElements.define()</code> which takes a tag name and a class.</p>
+      </div>
+      <div class="page-content">
+        <h3>Chapter 3: Shadow DOM</h3>
+        <p>Shadow DOM provides encapsulation for your components. Styles and markup inside a shadow root don't leak out, and external styles don't leak in.</p>
+        <p>This is essential for building truly reusable components.</p>
+      </div>
+      <div class="page-content">
+        <h3>Chapter 4: Templates</h3>
+        <p>HTML Templates allow you to define fragments of HTML that aren't rendered when the page loads but can be instantiated later at runtime.</p>
+        <p>Combined with slots, templates provide a powerful content projection system.</p>
+      </div>
+      <div class="page-content">
+        <h3>Chapter 5: ES Modules</h3>
+        <p>ES Modules provide a standard module system for JavaScript. They enable tree-shaking and lazy loading of components.</p>
+      </div>
+      <div class="page-content">
+        <h3>Chapter 6: Conclusion</h3>
+        <p>Web Components represent the future of reusable UI development. By leveraging browser-native APIs, they work everywhere without framework lock-in.</p>
+      </div>
+    </snice-book>
+  </div>
+
+  <div class="demo-section">
+    <h3>Single Page Mode</h3>
+    <snice-book mode="single" title="Short Stories">
+      <div class="page-content">
+        <h3>Story One</h3>
+        <p>Once upon a time, in a land of pure imagination, there lived a developer who dreamed of building the perfect component library...</p>
+      </div>
+      <div class="page-content">
+        <h3>Story Two</h3>
+        <p>The debugging session had been going on for hours. Sarah stared at the console, wondering why the shadow DOM refused to cooperate.</p>
+      </div>
+      <div class="page-content">
+        <h3>Story Three</h3>
+        <p>It was a dark and stormy sprint. The deadline loomed like a mountain of tech debt, but the team pressed on.</p>
+      </div>
+      <div class="page-content">
+        <h3>The End</h3>
+        <p>And they all shipped to production, and lived happily ever after. The end.</p>
+      </div>
+    </snice-book>
+  </div>
+
+  <div class="demo-section">
+    <h3>No Cover - Direct Content</h3>
+    <snice-book>
+      <div class="page-content">
+        <h3>Page 1</h3>
+        <p>This book starts directly with content, no cover page.</p>
+      </div>
+      <div class="page-content">
+        <h3>Page 2</h3>
+        <p>You can still navigate through pages using the controls below or by clicking the edges.</p>
+      </div>
+      <div class="page-content">
+        <h3>Page 3</h3>
+        <p>Arrow keys also work when the book has focus.</p>
+      </div>
+      <div class="page-content">
+        <h3>Page 4</h3>
+        <p>The last page of this mini book.</p>
+      </div>
+    </snice-book>
+  </div>
+</body>
+</html>

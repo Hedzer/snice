@@ -1,0 +1,115 @@
+:host {
+  display: block;
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  color: var(--snice-color-text, rgb(23 23 23));
+}
+
+.weather {
+  background: var(--snice-color-background-element, rgb(252 251 249));
+  border: 1px solid var(--snice-color-border, rgb(226 226 226));
+  border-radius: var(--snice-border-radius-lg, 0.5rem);
+  padding: var(--snice-spacing-lg, 1.5rem);
+}
+
+.current {
+  display: flex;
+  align-items: center;
+  gap: var(--snice-spacing-md, 1rem);
+}
+
+.temp {
+  font-size: 3rem;
+  font-weight: var(--snice-font-weight-bold, 700);
+  line-height: 1;
+}
+
+.icon {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.condition {
+  font-size: var(--snice-font-size-lg, 1.125rem);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
+}
+
+.details {
+  display: flex;
+  gap: var(--snice-spacing-md, 1rem);
+  margin-top: var(--snice-spacing-sm, 0.75rem);
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: var(--snice-spacing-2xs, 0.25rem);
+}
+
+/* Compact variant */
+:host([variant="compact"]) .weather {
+  padding: var(--snice-spacing-sm, 0.75rem);
+}
+
+:host([variant="compact"]) .temp {
+  font-size: 1.5rem;
+}
+
+:host([variant="compact"]) .icon {
+  font-size: 1.5rem;
+}
+
+:host([variant="compact"]) .details {
+  display: none;
+}
+
+:host([variant="compact"]) .forecast {
+  display: none;
+}
+
+/* Forecast */
+.forecast {
+  display: flex;
+  gap: var(--snice-spacing-xs, 0.5rem);
+  margin-top: var(--snice-spacing-md, 1rem);
+  padding-top: var(--snice-spacing-md, 1rem);
+  border-top: 1px solid var(--snice-color-border, rgb(226 226 226));
+  overflow-x: auto;
+}
+
+.forecast-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--snice-spacing-3xs, 0.125rem);
+  min-width: 3.5rem;
+  padding: var(--snice-spacing-xs, 0.5rem);
+  border-radius: var(--snice-border-radius-md, 0.25rem);
+  font-size: var(--snice-font-size-sm, 0.875rem);
+}
+
+.forecast-day-name {
+  font-weight: var(--snice-font-weight-medium, 500);
+  font-size: 0.75rem;
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
+  text-transform: uppercase;
+}
+
+.forecast-icon {
+  font-size: 1.25rem;
+}
+
+.forecast-temps {
+  display: flex;
+  gap: var(--snice-spacing-2xs, 0.25rem);
+  font-size: 0.75rem;
+}
+
+.forecast-high {
+  font-weight: var(--snice-font-weight-semibold, 600);
+}
+
+.forecast-low {
+  color: var(--snice-color-text-tertiary, rgb(115 115 115));
+}

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Flow Component Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      padding: 40px;
+      margin: 0;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      transition: background-color var(--snice-transition-medium) ease, color var(--snice-transition-medium) ease;
+    }
+    .demo-section {
+      margin-bottom: 60px;
+    }
+    .demo-section h3 {
+      margin-bottom: 20px;
+    }
+    .controls {
+      margin: 20px 0;
+      display: flex;
+      gap: 10px;
+    }
+    button {
+      padding: 8px 16px;
+      background: var(--snice-color-primary);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      opacity: 0.9;
+    }
+    .theme-toggle {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <button class="theme-toggle" onclick="document.documentElement.dataset.theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'">Toggle Theme</button>
+
+  <h1>Flow Component</h1>
+
+  <div class="demo-section">
+    <h3>Data Pipeline</h3>
+    <snice-flow id="demo1" snap-to-grid minimap style="height:500px"></snice-flow>
+    <div class="controls">
+      <button onclick="document.getElementById('demo1').fitView()">Fit View</button>
+      <button onclick="addNode()">Add Node</button>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <h3>Simple Flow (No Grid)</h3>
+    <snice-flow id="demo2" minimap style="height:400px"></snice-flow>
+  </div>
+
+  <script type="module">
+    import './snice-flow.ts';
+
+    const flow1 = document.getElementById('demo1');
+    flow1.nodes = [
+      {
+        id: 'input', x: 40, y: 60, label: 'User Input', type: 'trigger',
+        color: 'rgb(22 163 74)',
+        outputs: [{ id: 'data', label: 'Data' }, { id: 'meta', label: 'Metadata' }],
+      },
+      {
+        id: 'validate', x: 300, y: 40, label: 'Validate', type: 'transform',
+        color: 'rgb(37 99 235)',
+        inputs: [{ id: 'in', label: 'Input' }],
+        outputs: [{ id: 'valid', label: 'Valid' }, { id: 'error', label: 'Error' }],
+      },
+      {
+        id: 'enrich', x: 300, y: 220, label: 'Enrich', type: 'transform',
+        color: 'rgb(37 99 235)',
+        inputs: [{ id: 'in', label: 'Input' }],
+        outputs: [{ id: 'out', label: 'Output' }],
+      },
+      {
+        id: 'save', x: 560, y: 60, label: 'Save to DB', type: 'action',
+        color: 'rgb(147 51 234)',
+        inputs: [{ id: 'data', label: 'Data' }],
+        outputs: [{ id: 'result', label: 'Result' }],
+      },
+      {
+        id: 'notify', x: 560, y: 240, label: 'Alert', type: 'action',
+        color: 'rgb(234 88 12)',
+        inputs: [{ id: 'msg', label: 'Message' }],
+      },
+    ];
+    flow1.edges = [
+      { id: 'e1', source: 'input', target: 'validate', sourcePort: 'data', targetPort: 'in' },
+      { id: 'e2', source: 'input', target: 'enrich', sourcePort: 'meta', targetPort: 'in' },
+      { id: 'e3', source: 'validate', target: 'save', sourcePort: 'valid', targetPort: 'data' },
+      { id: 'e4', source: 'validate', target: 'notify', sourcePort: 'error', targetPort: 'msg', color: 'rgb(220 38 38)', animated: true },
+      { id: 'e5', source: 'enrich', target: 'save', sourcePort: 'out', targetPort: 'data' },
+    ];
+
+    flow1.addEventListener('node-select', (e) => console.log('Selected:', e.detail.node));
+    flow1.addEventListener('edge-connect', (e) => console.log('Connected:', e.detail.edge));
+
+    const flow2 = document.getElementById('demo2');
+    flow2.nodes = [
+      { id: 'a', x: 80, y: 100, label: 'Start', outputs: [{ id: 'out', label: 'Next' }] },
+      { id: 'b', x: 350, y: 80, label: 'Step 1', inputs: [{ id: 'in', label: 'In' }], outputs: [{ id: 'out', label: 'Out' }] },
+      { id: 'c', x: 620, y: 100, label: 'End', inputs: [{ id: 'in', label: 'In' }] },
+    ];
+    flow2.edges = [
+      { id: 'e1', source: 'a', target: 'b', sourcePort: 'out', targetPort: 'in' },
+      { id: 'e2', source: 'b', target: 'c', sourcePort: 'out', targetPort: 'in' },
+    ];
+
+    let counter = 0;
+    window.addNode = () => {
+      counter++;
+      flow1.addNode({
+        id: `new-${counter}`, x: 100 + counter * 40, y: 350, label: `New ${counter}`,
+        inputs: [{ id: 'in', label: 'In' }],
+        outputs: [{ id: 'out', label: 'Out' }],
+      });
+    };
+  </script>
+</body>
+</html>

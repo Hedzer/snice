@@ -1,0 +1,120 @@
+:host {
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9998;
+  pointer-events: none;
+}
+
+.overlay[hidden] {
+  display: none;
+}
+
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgb(0 0 0 / 0.5);
+  pointer-events: auto;
+}
+
+.cutout {
+  position: fixed;
+  box-shadow: 0 0 0 9999px rgb(0 0 0 / 0.5);
+  border-radius: 4px;
+  z-index: 9999;
+  pointer-events: none;
+  transition: all var(--snice-transition-medium, 250ms) ease;
+}
+
+.popover {
+  position: fixed;
+  z-index: 10000;
+  background: var(--snice-color-background, rgb(255 255 255));
+  border: 1px solid var(--snice-color-border, rgb(226 226 226));
+  border-radius: var(--snice-border-radius-lg, 0.5rem);
+  box-shadow: var(--snice-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1));
+  padding: var(--snice-spacing-md, 1rem);
+  max-width: 20rem;
+  min-width: 15rem;
+  pointer-events: auto;
+  color: var(--snice-color-text, rgb(23 23 23));
+}
+
+.popover[hidden] {
+  display: none;
+}
+
+.popover-title {
+  font-size: var(--snice-font-size-lg, 1.125rem);
+  font-weight: var(--snice-font-weight-semibold, 600);
+  margin-bottom: var(--snice-spacing-2xs, 0.25rem);
+}
+
+.popover-description {
+  font-size: var(--snice-font-size-md, 1rem);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
+  line-height: var(--snice-line-height-normal, 1.5);
+  margin-bottom: var(--snice-spacing-sm, 0.75rem);
+}
+
+.popover-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--snice-spacing-xs, 0.5rem);
+}
+
+.step-indicator {
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  color: var(--snice-color-text-tertiary, rgb(115 115 115));
+}
+
+.popover-actions {
+  display: flex;
+  gap: var(--snice-spacing-2xs, 0.25rem);
+}
+
+.btn {
+  padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-sm, 0.75rem);
+  border-radius: var(--snice-border-radius-md, 0.25rem);
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  cursor: pointer;
+  border: 1px solid var(--snice-color-border, rgb(226 226 226));
+  background: var(--snice-color-background, rgb(255 255 255));
+  color: var(--snice-color-text, rgb(23 23 23));
+  font-family: inherit;
+}
+
+.btn:hover {
+  background: var(--snice-color-background-element, rgb(252 251 249));
+}
+
+.btn-primary {
+  background: var(--snice-color-primary, rgb(37 99 235));
+  color: var(--snice-color-text-inverse, rgb(250 250 250));
+  border-color: var(--snice-color-primary, rgb(37 99 235));
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+.btn-skip {
+  border: none;
+  background: none;
+  color: var(--snice-color-text-tertiary, rgb(115 115 115));
+  padding: var(--snice-spacing-2xs, 0.25rem);
+}
+
+.btn-skip:hover {
+  color: var(--snice-color-text, rgb(23 23 23));
+}

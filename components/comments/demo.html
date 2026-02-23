@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Comments Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      padding: 40px;
+      max-width: 700px;
+      margin: 0 auto;
+      font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+      background: var(--snice-color-background, rgb(255 255 255));
+      color: var(--snice-color-text, rgb(23 23 23));
+    }
+    h2, h3 {
+      color: var(--snice-color-text, rgb(23 23 23));
+    }
+    .demo-section {
+      margin-bottom: 3rem;
+    }
+  </style>
+  <script type="module">
+    import './snice-comments.ts';
+
+    const comments1 = document.getElementById('comments-threaded');
+    comments1.comments = [
+      {
+        id: '1',
+        author: 'Alice Johnson',
+        avatar: 'https://i.pravatar.cc/40?u=alice',
+        text: 'This is a great feature! I love the threaded replies.',
+        timestamp: new Date(Date.now() - 3600000).toISOString(),
+        likes: 5,
+        liked: false,
+        replies: [
+          {
+            id: '2',
+            author: 'Bob Smith',
+            avatar: 'https://i.pravatar.cc/40?u=bob',
+            text: 'Agreed! The nested threads make conversations much easier to follow.',
+            timestamp: new Date(Date.now() - 1800000).toISOString(),
+            likes: 2,
+            liked: true,
+            replies: [
+              {
+                id: '3',
+                author: 'Alice Johnson',
+                avatar: 'https://i.pravatar.cc/40?u=alice',
+                text: 'Thanks Bob! Feel free to like or reply to any comment.',
+                timestamp: new Date(Date.now() - 600000).toISOString(),
+                likes: 0,
+                liked: false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: '4',
+        author: 'Charlie Dev',
+        text: 'No avatar? No problem - initials are shown instead.',
+        timestamp: new Date(Date.now() - 7200000).toISOString(),
+        likes: 1,
+        liked: false
+      }
+    ];
+    comments1.currentUser = 'Alice Johnson';
+
+    const comments2 = document.getElementById('comments-empty');
+    comments2.currentUser = 'New User';
+
+    // Log events
+    document.querySelectorAll('snice-comments').forEach(el => {
+      el.addEventListener('comment-add', e => console.log('comment-add:', e.detail));
+      el.addEventListener('comment-reply', e => console.log('comment-reply:', e.detail));
+      el.addEventListener('comment-delete', e => console.log('comment-delete:', e.detail));
+      el.addEventListener('comment-like', e => console.log('comment-like:', e.detail));
+    });
+  </script>
+</head>
+<body>
+  <h2>Comments Demo</h2>
+
+  <div class="demo-section">
+    <h3>Threaded Comments</h3>
+    <snice-comments id="comments-threaded"></snice-comments>
+  </div>
+
+  <div class="demo-section">
+    <h3>Empty State</h3>
+    <snice-comments id="comments-empty"></snice-comments>
+  </div>
+
+  <div class="demo-section">
+    <h3>Likes Disabled</h3>
+    <snice-comments id="comments-no-likes" allow-likes="false"></snice-comments>
+  </div>
+</body>
+</html>

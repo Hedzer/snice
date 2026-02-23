@@ -1,0 +1,36 @@
+:host {
+  display: block;
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  contain: layout style paint;
+  width: 100%;
+}
+
+.signature-pad {
+  position: relative;
+  width: 100%;
+  border: 1px solid var(--snice-color-border, rgb(226 226 226));
+  border-radius: var(--snice-border-radius-lg, 0.5rem);
+  overflow: hidden;
+  background: var(--signature-bg, var(--snice-color-background, rgb(255 255 255)));
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+:host([readonly]) canvas {
+  cursor: default;
+}
+
+:host(:not([readonly])) canvas {
+  cursor: crosshair;
+}
+
+/* Focus state */
+.signature-pad:focus-visible {
+  outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+  outline-offset: var(--snice-focus-ring-offset, 2px);
+}

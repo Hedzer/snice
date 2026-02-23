@@ -1,0 +1,184 @@
+:host {
+  display: inline-block;
+  position: relative;
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  color: var(--snice-color-text, rgb(23 23 23));
+}
+
+.bell-button {
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--snice-spacing-xs, 0.5rem);
+  font-size: 1.25rem;
+  color: var(--snice-color-text, rgb(23 23 23));
+  border-radius: var(--snice-border-radius-md, 0.25rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bell-button:hover {
+  background: var(--snice-color-background-element, rgb(252 251 249));
+}
+
+.badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 1.125rem;
+  height: 1.125rem;
+  padding: 0 0.25rem;
+  border-radius: 9999px;
+  background: var(--snice-color-danger, rgb(220 38 38));
+  color: var(--snice-color-text-inverse, rgb(250 250 250));
+  font-size: 0.6875rem;
+  font-weight: var(--snice-font-weight-bold, 700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.badge[hidden] {
+  display: none;
+}
+
+.panel {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: var(--snice-spacing-2xs, 0.25rem);
+  width: 22rem;
+  max-height: 25rem;
+  overflow-y: auto;
+  background: var(--snice-color-background, rgb(255 255 255));
+  border: 1px solid var(--snice-color-border, rgb(226 226 226));
+  border-radius: var(--snice-border-radius-lg, 0.5rem);
+  box-shadow: var(--snice-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1));
+  z-index: 1000;
+}
+
+.panel[hidden] {
+  display: none;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-md, 1rem);
+  border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
+}
+
+.panel-title {
+  font-weight: var(--snice-font-weight-semibold, 600);
+  font-size: var(--snice-font-size-md, 1rem);
+}
+
+.mark-all-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--snice-color-primary, rgb(37 99 235));
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  font-family: inherit;
+  padding: 0;
+}
+
+.mark-all-btn:hover {
+  text-decoration: underline;
+}
+
+.notification-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.notification-item {
+  display: flex;
+  gap: var(--snice-spacing-sm, 0.75rem);
+  padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-md, 1rem);
+  cursor: pointer;
+  border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
+  transition: background var(--snice-transition-fast, 150ms);
+}
+
+.notification-item:last-child {
+  border-bottom: none;
+}
+
+.notification-item:hover {
+  background: var(--snice-color-background-element, rgb(252 251 249));
+}
+
+.notification-item.unread {
+  background: var(--snice-color-primary-subtle, rgb(239 246 255));
+}
+
+.notification-item.unread:hover {
+  background: rgb(229 236 255);
+}
+
+.notification-icon {
+  flex-shrink: 0;
+  font-size: 1.25rem;
+  line-height: 1;
+  margin-top: 0.125rem;
+}
+
+.notification-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.notification-title {
+  font-weight: var(--snice-font-weight-medium, 500);
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  margin-bottom: var(--snice-spacing-3xs, 0.125rem);
+}
+
+.notification-message {
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
+  line-height: var(--snice-line-height-normal, 1.5);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.notification-time {
+  font-size: 0.75rem;
+  color: var(--snice-color-text-tertiary, rgb(115 115 115));
+  margin-top: var(--snice-spacing-3xs, 0.125rem);
+}
+
+.dismiss-btn {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--snice-color-text-tertiary, rgb(115 115 115));
+  font-size: 1rem;
+  padding: 0;
+  line-height: 1;
+  opacity: 0;
+  transition: opacity var(--snice-transition-fast, 150ms);
+}
+
+.notification-item:hover .dismiss-btn {
+  opacity: 1;
+}
+
+.dismiss-btn:hover {
+  color: var(--snice-color-danger, rgb(220 38 38));
+}
+
+.empty-state {
+  padding: var(--snice-spacing-xl, 2rem);
+  text-align: center;
+  color: var(--snice-color-text-tertiary, rgb(115 115 115));
+  font-size: var(--snice-font-size-sm, 0.875rem);
+}

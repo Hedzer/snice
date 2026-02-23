@@ -1,0 +1,397 @@
+:host {
+  display: block;
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  contain: layout style paint;
+  width: 100%;
+}
+
+.video-container {
+  position: relative;
+  background: rgb(0 0 0);
+  border-radius: var(--snice-border-radius-lg, 0.5rem);
+  overflow: hidden;
+  width: 100%;
+}
+
+.video-container:fullscreen,
+.video-container:-webkit-full-screen {
+  border-radius: 0;
+}
+
+/* Video element */
+video {
+  display: block;
+  width: 100%;
+  height: auto;
+  cursor: pointer;
+}
+
+/* Poster overlay */
+.video-poster {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-size: cover;
+  background-position: center;
+  background-color: rgb(0 0 0);
+  cursor: pointer;
+  z-index: 1;
+}
+
+.video-poster-play {
+  width: 4.5rem;
+  height: 4.5rem;
+  background: rgb(0 0 0 / 0.6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--snice-transition-fast, 150ms) ease,
+              background var(--snice-transition-fast, 150ms) ease;
+}
+
+.video-poster-play:hover {
+  transform: scale(1.1);
+  background: rgb(0 0 0 / 0.8);
+}
+
+.video-poster-play svg {
+  color: rgb(255 255 255);
+  margin-left: 0.25rem;
+}
+
+/* Controls overlay */
+.video-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgb(0 0 0 / 0.7));
+  padding: var(--snice-spacing-lg, 1.5rem) var(--snice-spacing-md, 1rem) var(--snice-spacing-sm, 0.75rem);
+  opacity: 0;
+  transition: opacity var(--snice-transition-medium, 250ms) ease;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: var(--snice-spacing-xs, 0.5rem);
+}
+
+.video-container:hover .video-controls,
+.video-container.controls-visible .video-controls {
+  opacity: 1;
+}
+
+.video-container.paused .video-controls {
+  opacity: 1;
+}
+
+/* Progress bar */
+.video-progress-container {
+  width: 100%;
+  height: 0.25rem;
+  cursor: pointer;
+  position: relative;
+  padding: 0.25rem 0;
+}
+
+.video-progress-container:hover {
+  height: 0.375rem;
+}
+
+.video-progress-track {
+  width: 100%;
+  height: 100%;
+  background: rgb(255 255 255 / 0.3);
+  border-radius: 9999px;
+  position: relative;
+  overflow: hidden;
+}
+
+.video-progress-buffered {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: rgb(255 255 255 / 0.4);
+  border-radius: 9999px;
+}
+
+.video-progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: var(--snice-color-primary, rgb(37 99 235));
+  border-radius: 9999px;
+  transition: width 100ms linear;
+}
+
+.video-progress-container:hover .video-progress-bar::after {
+  content: '';
+  position: absolute;
+  right: -0.375rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0.75rem;
+  height: 0.75rem;
+  background: var(--snice-color-primary, rgb(37 99 235));
+  border-radius: 50%;
+}
+
+/* Control buttons row */
+.video-controls-row {
+  display: flex;
+  align-items: center;
+  gap: var(--snice-spacing-xs, 0.5rem);
+}
+
+.video-controls-left {
+  display: flex;
+  align-items: center;
+  gap: var(--snice-spacing-xs, 0.5rem);
+}
+
+.video-controls-right {
+  display: flex;
+  align-items: center;
+  gap: var(--snice-spacing-xs, 0.5rem);
+  margin-left: auto;
+}
+
+/* Control button base */
+.video-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: var(--snice-spacing-2xs, 0.25rem);
+  border-radius: var(--snice-border-radius-md, 0.25rem);
+  color: rgb(255 255 255);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color var(--snice-transition-fast, 150ms) ease;
+  line-height: 0;
+}
+
+.video-btn:hover {
+  background: rgb(255 255 255 / 0.15);
+}
+
+.video-btn:active {
+  background: rgb(255 255 255 / 0.25);
+}
+
+.video-btn:focus-visible {
+  outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+  outline-offset: var(--snice-focus-ring-offset, 2px);
+}
+
+.video-btn svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* Play/pause button */
+.video-btn-play svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+/* Time display */
+.video-time {
+  font-size: var(--snice-font-size-xs, 0.75rem);
+  color: rgb(255 255 255);
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+  white-space: nowrap;
+}
+
+/* Volume controls */
+.video-volume {
+  display: flex;
+  align-items: center;
+  gap: var(--snice-spacing-2xs, 0.25rem);
+}
+
+.video-volume-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 0;
+  height: 0.25rem;
+  background: rgb(255 255 255 / 0.3);
+  border-radius: 9999px;
+  outline: none;
+  cursor: pointer;
+  transition: width var(--snice-transition-fast, 150ms) ease;
+  overflow: hidden;
+}
+
+.video-volume:hover .video-volume-slider,
+.video-volume-slider:focus-visible {
+  width: 4rem;
+}
+
+.video-volume-slider::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 0.25rem;
+  background: transparent;
+  border-radius: 9999px;
+}
+
+.video-volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 0.75rem;
+  height: 0.75rem;
+  background: rgb(255 255 255);
+  border-radius: 50%;
+  cursor: pointer;
+  margin-top: -0.25rem;
+}
+
+.video-volume-slider::-moz-range-track {
+  width: 100%;
+  height: 0.25rem;
+  background: rgb(255 255 255 / 0.3);
+  border-radius: 9999px;
+}
+
+.video-volume-slider::-moz-range-progress {
+  height: 0.25rem;
+  background: rgb(255 255 255);
+  border-radius: 9999px;
+}
+
+.video-volume-slider::-moz-range-thumb {
+  width: 0.75rem;
+  height: 0.75rem;
+  background: rgb(255 255 255);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* Playback rate */
+.video-rate-btn {
+  font-size: var(--snice-font-size-xs, 0.75rem);
+  font-weight: var(--snice-font-weight-medium, 500);
+  min-width: 2rem;
+  text-align: center;
+}
+
+/* Center play overlay (visible when paused) */
+.video-center-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 4rem;
+  height: 4rem;
+  background: rgb(0 0 0 / 0.5);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--snice-transition-fast, 150ms) ease;
+  z-index: 1;
+}
+
+.video-container.paused .video-center-play {
+  opacity: 1;
+}
+
+.video-center-play svg {
+  color: rgb(255 255 255);
+  width: 2rem;
+  height: 2rem;
+  margin-left: 0.25rem;
+}
+
+/* Minimal variant */
+:host([variant="minimal"]) .video-controls {
+  background: rgb(0 0 0 / 0.5);
+  padding: var(--snice-spacing-xs, 0.5rem);
+}
+
+:host([variant="minimal"]) .video-center-play {
+  display: none;
+}
+
+:host([variant="minimal"]) .video-rate-btn,
+:host([variant="minimal"]) .video-btn-pip {
+  display: none;
+}
+
+/* Cinema variant */
+:host([variant="cinema"]) .video-container {
+  border-radius: 0;
+  box-shadow: var(--snice-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1));
+}
+
+:host([variant="cinema"]) .video-controls {
+  padding: var(--snice-spacing-xl, 2rem) var(--snice-spacing-lg, 1.5rem) var(--snice-spacing-md, 1rem);
+}
+
+:host([variant="cinema"]) .video-btn svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+:host([variant="cinema"]) .video-btn-play svg {
+  width: 2rem;
+  height: 2rem;
+}
+
+:host([variant="cinema"]) .video-time {
+  font-size: var(--snice-font-size-sm, 0.875rem);
+}
+
+/* Loading spinner */
+.video-loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+
+.video-loading-spinner {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 3px solid rgb(255 255 255 / 0.3);
+  border-top-color: rgb(255 255 255);
+  border-radius: 50%;
+  animation: video-spin 0.8s linear infinite;
+}
+
+@keyframes video-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive: small containers */
+@container (max-width: 400px) {
+  .video-controls-row {
+    gap: var(--snice-spacing-3xs, 0.125rem);
+  }
+  .video-btn {
+    padding: var(--snice-spacing-3xs, 0.125rem);
+  }
+  .video-btn svg {
+    width: 1rem;
+    height: 1rem;
+  }
+  .video-btn-play svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+  .video-rate-btn {
+    display: none;
+  }
+  .video-time {
+    font-size: 0.625rem;
+  }
+}

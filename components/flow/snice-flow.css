@@ -1,0 +1,244 @@
+:host {
+  display: block;
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  contain: layout style paint;
+  width: 100%;
+}
+
+.flow {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 25rem;
+  overflow: hidden;
+  background: var(--snice-color-background, rgb(255 255 255));
+  border: 1px solid var(--snice-color-border, rgb(226 226 226));
+  border-radius: 4px;
+}
+
+/* Grid pattern */
+.flow__grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* SVG canvas */
+.flow__svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  position: absolute;
+  inset: 0;
+}
+
+.flow__svg:active {
+  cursor: grabbing;
+}
+
+/* Edges */
+.flow__edge {
+  fill: none;
+  stroke: var(--snice-color-border, rgb(226 226 226));
+  stroke-width: 2px;
+  cursor: pointer;
+  transition: stroke var(--snice-transition-fast, 150ms) ease;
+}
+
+.flow__edge:hover {
+  stroke: var(--snice-color-primary, rgb(37 99 235));
+  stroke-width: 3px;
+}
+
+.flow__edge--selected {
+  stroke: var(--snice-color-primary, rgb(37 99 235));
+  stroke-width: 2px;
+}
+
+.flow__edge--animated {
+  stroke-dasharray: 5 5;
+  animation: flow-dash 0.5s linear infinite;
+}
+
+@keyframes flow-dash {
+  to {
+    stroke-dashoffset: -10;
+  }
+}
+
+.flow__edge-label {
+  font-size: 0.6875rem;
+  fill: var(--snice-color-text-secondary, rgb(82 82 82));
+  text-anchor: middle;
+  pointer-events: none;
+  dominant-baseline: central;
+}
+
+/* Edge arrow marker */
+.flow__arrow {
+  fill: var(--snice-color-border, rgb(226 226 226));
+}
+
+/* Dragging edge preview */
+.flow__edge-preview {
+  fill: none;
+  stroke: var(--snice-color-primary, rgb(37 99 235));
+  stroke-width: 2px;
+  stroke-dasharray: 6 3;
+  pointer-events: none;
+}
+
+/* Nodes container */
+.flow__nodes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Node */
+.flow__node {
+  position: absolute;
+  pointer-events: auto;
+  background: var(--snice-color-background-element, rgb(252 251 249));
+  border: 1px solid var(--snice-color-border, rgb(226 226 226));
+  border-radius: 4px;
+  min-width: 8.75rem;
+  box-shadow: var(--snice-shadow-sm, 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1));
+  user-select: none;
+  cursor: grab;
+  transition: box-shadow var(--snice-transition-fast, 150ms) ease,
+              border-color var(--snice-transition-fast, 150ms) ease;
+}
+
+.flow__node:hover {
+  box-shadow: var(--snice-shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1));
+}
+
+.flow__node--selected {
+  border-color: var(--snice-color-primary, rgb(37 99 235));
+  box-shadow: 0 0 0 2px var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+}
+
+.flow__node--dragging {
+  cursor: grabbing;
+  z-index: 10;
+  box-shadow: var(--snice-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1));
+}
+
+.flow__node-header {
+  padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-xs, 0.5rem);
+  border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
+  font-size: 0.75rem;
+  font-weight: var(--snice-font-weight-semibold, 600);
+  color: var(--snice-color-text, rgb(23 23 23));
+  border-radius: 3px 3px 0 0;
+  display: flex;
+  align-items: center;
+  gap: var(--snice-spacing-2xs, 0.25rem);
+}
+
+.flow__node-type {
+  font-size: 0.625rem;
+  color: var(--snice-color-text-tertiary, rgb(115 115 115));
+  font-weight: var(--snice-font-weight-medium, 500);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.flow__node-body {
+  padding: var(--snice-spacing-2xs, 0.25rem) 0;
+  display: flex;
+  justify-content: space-between;
+  gap: var(--snice-spacing-xs, 0.5rem);
+}
+
+.flow__node-inputs,
+.flow__node-outputs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--snice-spacing-3xs, 0.125rem);
+}
+
+.flow__node-outputs {
+  align-items: flex-end;
+}
+
+/* Ports */
+.flow__port {
+  display: flex;
+  align-items: center;
+  gap: var(--snice-spacing-2xs, 0.25rem);
+  padding: var(--snice-spacing-3xs, 0.125rem) var(--snice-spacing-xs, 0.5rem);
+  font-size: 0.6875rem;
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
+  cursor: crosshair;
+  position: relative;
+}
+
+.flow__port-dot {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+  background: var(--snice-color-border, rgb(226 226 226));
+  border: 2px solid var(--snice-color-background, rgb(255 255 255));
+  box-shadow: 0 0 0 1px var(--snice-color-border, rgb(226 226 226));
+  transition: background var(--snice-transition-fast, 150ms) ease,
+              transform var(--snice-transition-fast, 150ms) ease;
+  flex-shrink: 0;
+}
+
+.flow__port:hover .flow__port-dot {
+  background: var(--snice-color-primary, rgb(37 99 235));
+  transform: scale(1.3);
+  box-shadow: 0 0 0 1px var(--snice-color-primary, rgb(37 99 235));
+}
+
+.flow__port--connected .flow__port-dot {
+  background: var(--snice-color-primary, rgb(37 99 235));
+  box-shadow: 0 0 0 1px var(--snice-color-primary, rgb(37 99 235));
+}
+
+.flow__port--output {
+  flex-direction: row-reverse;
+}
+
+/* Minimap */
+.flow__minimap {
+  position: absolute;
+  bottom: var(--snice-spacing-xs, 0.5rem);
+  right: var(--snice-spacing-xs, 0.5rem);
+  width: 9.375rem;
+  height: 6.25rem;
+  background: var(--snice-color-background, rgb(255 255 255));
+  border: 1px solid var(--snice-color-border, rgb(226 226 226));
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: var(--snice-shadow-sm, 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1));
+  opacity: 0.9;
+  z-index: 20;
+}
+
+.flow__minimap-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.flow__minimap-node {
+  fill: var(--snice-color-primary, rgb(37 99 235));
+  opacity: 0.6;
+}
+
+.flow__minimap-edge {
+  stroke: var(--snice-color-border, rgb(226 226 226));
+  stroke-width: 1px;
+  fill: none;
+}
+
+.flow__minimap-viewport {
+  fill: var(--snice-color-primary, rgb(37 99 235));
+  fill-opacity: 0.08;
+  stroke: var(--snice-color-primary, rgb(37 99 235));
+  stroke-width: 1px;
+}

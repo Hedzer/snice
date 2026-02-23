@@ -1,0 +1,320 @@
+:host {
+  display: block;
+  contain: style;
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+
+  --book-bg: var(--snice-color-background-element, rgb(252 251 249));
+  --book-text: var(--snice-color-text, rgb(23 23 23));
+  --book-text-secondary: var(--snice-color-text-secondary, rgb(82 82 82));
+  --book-border: var(--snice-color-border, rgb(226 226 226));
+  --book-primary: var(--snice-color-primary, rgb(37 99 235));
+  --book-shadow: var(--snice-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1));
+  --book-page-bg: rgb(255 253 248);
+  --book-page-line: rgb(220 215 205);
+  --book-spine-bg: rgb(140 120 100);
+  --book-cover-bg: rgb(60 50 70);
+  --book-flip-duration: 0.6s;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.book {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--snice-spacing-md, 1rem);
+  color: var(--book-text);
+  user-select: none;
+}
+
+/* The book body: cover (left) + flip area (right) */
+.book__body {
+  display: flex;
+  box-shadow: var(--book-shadow);
+  border-radius: 4px;
+}
+
+/* Left side: shows the static "left page" or cover */
+.book__left {
+  width: var(--page-width, 20rem);
+  min-height: var(--page-height, 28rem);
+  background: var(--book-page-bg);
+  border-radius: 4px 0 0 4px;
+  position: relative;
+  overflow: hidden;
+  border-right: 1px solid var(--book-border);
+}
+
+.book__left-content {
+  padding: var(--snice-spacing-lg, 1.5rem);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Spine between left and flip area */
+.book__spine {
+  width: 1.5rem;
+  background: var(--book-spine-bg);
+  box-shadow: inset -2px 0 4px rgb(0 0 0 / 0.2), inset 2px 0 4px rgb(0 0 0 / 0.2);
+  flex-shrink: 0;
+}
+
+/* Right side: the 3D flip area where pages turn */
+.book__flip-area {
+  width: var(--page-width, 20rem);
+  min-height: var(--page-height, 28rem);
+  position: relative;
+  perspective: 1500px;
+  background: var(--book-page-bg);
+  border-radius: 0 4px 4px 0;
+  overflow: visible;
+}
+
+/* Each flippable page */
+.book__page {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  transform: rotateY(0deg);
+  transition: transform var(--book-flip-duration) ease-in-out;
+}
+
+/* When a page is flipped, rotate it -180deg */
+.book__page--flipped {
+  transform: rotateY(-180deg);
+}
+
+/* Front face of the page (visible before flip) */
+.book__face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  overflow: auto;
+}
+
+.book__face--front {
+  background: var(--book-page-bg);
+  padding: var(--snice-spacing-lg, 1.5rem);
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+}
+
+/* Back face of the page (visible after flip) */
+.book__face--back {
+  background: var(--book-page-bg);
+  padding: var(--snice-spacing-lg, 1.5rem);
+  display: flex;
+  flex-direction: column;
+  transform: rotateY(180deg);
+  z-index: 0;
+}
+
+/* Page lines effect */
+.book__face--front::before,
+.book__face--back::before,
+.book__left-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    transparent,
+    transparent 1.75rem,
+    var(--book-page-line) 1.75rem,
+    var(--book-page-line) calc(1.75rem + 1px)
+  );
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.book__face--front > *,
+.book__face--back > *,
+.book__left-content > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Page number */
+.book__page-number {
+  position: absolute;
+  bottom: var(--snice-spacing-sm, 0.75rem);
+  font-size: 0.75rem;
+  color: var(--book-text-secondary);
+  z-index: 2;
+}
+
+.book__page-number--left {
+  left: var(--snice-spacing-lg, 1.5rem);
+}
+
+.book__page-number--right {
+  right: var(--snice-spacing-lg, 1.5rem);
+}
+
+/* Click zones on right flip area for navigation */
+.book__click-prev {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 30%;
+  height: 100%;
+  cursor: pointer;
+  z-index: 100;
+}
+
+.book__click-next {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 70%;
+  height: 100%;
+  cursor: pointer;
+  z-index: 100;
+}
+
+.book__click-prev:hover,
+.book__click-next:hover {
+  background: rgb(0 0 0 / 0.02);
+}
+
+.book__click-disabled {
+  pointer-events: none;
+  cursor: default;
+}
+
+.book__click-disabled:hover {
+  background: none;
+}
+
+/* Left page click zone */
+.book__left-click {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.book__left-click:hover {
+  background: rgb(0 0 0 / 0.02);
+}
+
+/* Cover styling */
+.book__cover {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--snice-spacing-md, 1rem);
+  background: var(--book-cover-bg);
+  color: rgb(250 250 250);
+  text-align: center;
+  padding: var(--snice-spacing-xl, 2rem);
+  width: 100%;
+  height: 100%;
+  border-radius: 4px 0 0 4px;
+}
+
+.book__cover-image {
+  max-width: 60%;
+  max-height: 12rem;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.book__cover-title {
+  font-size: var(--snice-font-size-2xl, 1.5rem);
+  font-weight: var(--snice-font-weight-bold, 700);
+  line-height: var(--snice-line-height-normal, 1.5);
+  margin: 0;
+}
+
+.book__cover-author {
+  font-size: var(--snice-font-size-md, 1rem);
+  opacity: 0.8;
+  margin: 0;
+}
+
+/* Navigation controls */
+.book__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--snice-spacing-sm, 0.75rem);
+}
+
+.book__nav-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid var(--book-border);
+  border-radius: 4px;
+  background: var(--book-bg);
+  color: var(--book-text);
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.15s, border-color 0.15s;
+  padding: 0;
+}
+
+.book__nav-button:hover:not(:disabled) {
+  background: var(--snice-color-background, rgb(255 255 255));
+  border-color: var(--book-primary);
+}
+
+.book__nav-button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.book__nav-button:focus-visible {
+  outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+  outline-offset: var(--snice-focus-ring-offset, 2px);
+}
+
+.book__nav-info {
+  font-size: var(--snice-font-size-md, 1rem);
+  color: var(--book-text-secondary);
+  min-width: 5rem;
+  text-align: center;
+}
+
+/* Single-page mode: hide left side and spine */
+:host([mode="single"]) .book__left,
+:host([mode="single"]) .book__spine {
+  display: none;
+}
+
+:host([mode="single"]) .book__flip-area {
+  border-radius: 4px;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  :host {
+    --page-width: 16rem;
+    --page-height: 22rem;
+  }
+
+  .book__spine {
+    width: 1rem;
+  }
+}

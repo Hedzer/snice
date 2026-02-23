@@ -1,0 +1,72 @@
+:host {
+  display: block;
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  perspective: 1000px;
+  --flip-duration: 600ms;
+}
+
+.flip-card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform var(--flip-duration) ease-in-out;
+  transform-style: preserve-3d;
+}
+
+/* Horizontal flip (default) */
+:host([direction="horizontal"]) .flip-card,
+:host(:not([direction])) .flip-card {
+  transform: rotateY(0deg);
+}
+
+:host([direction="horizontal"][flipped]) .flip-card,
+:host(:not([direction])[flipped]) .flip-card {
+  transform: rotateY(180deg);
+}
+
+/* Vertical flip */
+:host([direction="vertical"]) .flip-card {
+  transform: rotateX(0deg);
+}
+
+:host([direction="vertical"][flipped]) .flip-card {
+  transform: rotateX(180deg);
+}
+
+/* Clickable cursor */
+:host([click-to-flip]) .flip-card {
+  cursor: pointer;
+}
+
+.front,
+.back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.front {
+  z-index: 2;
+}
+
+/* Horizontal back */
+:host([direction="horizontal"]) .back,
+:host(:not([direction])) .back {
+  transform: rotateY(180deg);
+}
+
+/* Vertical back */
+:host([direction="vertical"]) .back {
+  transform: rotateX(180deg);
+}
+
+/* Focus state */
+:host(:focus-visible) {
+  outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+  outline-offset: var(--snice-focus-ring-offset, 2px);
+  border-radius: var(--snice-border-radius-md, 0.25rem);
+}
