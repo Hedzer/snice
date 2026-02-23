@@ -9,22 +9,39 @@ function componentRebuilder() {
   return {
     name: 'component-rebuilder',
     configureServer(server: any) {
-      server.watcher.on('change', (path: string) => {
-        if (!(path.includes('/components/') || path.includes('/src/')) ||
-            path.includes('node_modules') || path.includes('/dist/') || path.includes('/public/')) return;
-        if (!path.match(/\.(ts|css)$/)) return;
+      server.watcher.on('change', (changedPath: string) => {
+        if (!(changedPath.includes('/components/') || changedPath.includes('/src/')) ||
+            changedPath.includes('node_modules') || changedPath.includes('/dist/') || changedPath.includes('/public/')) return;
+        if (!changedPath.match(/\.(ts|css)$/)) return;
 
         if (timer) clearTimeout(timer);
         timer = setTimeout(async () => {
           if (building) return;
           building = true;
-          const file = path.split('/').pop();
-          console.log(`\n  Component source changed: ${file} — rebuilding...`);
-          try {
-            execSync('npm run build:core && npm run build:cdn && node scripts/build-website.js', { stdio: 'inherit' });
-            console.log('  ✓ Component rebuild complete');
-          } catch (e) {
-            console.error('  ✗ Component rebuild failed');
+          const file = changedPath.split('/').pop();
+
+          // Extract component name from path like .../components/<name>/...
+          const compMatch = changedPath.match(/\/components\/([^/]+)\//);
+
+          if (compMatch && compMatch[1] !== 'theme') {
+            // Single component change — incremental rebuild
+            const compName = compMatch[1];
+            console.log(`\n  ${file} changed — rebuilding ${compName}...`);
+            try {
+              execSync(`node scripts/rebuild-single-component.mjs ${compName}`, { stdio: 'inherit' });
+              console.log(`  ✓ ${compName} rebuilt`);
+            } catch (e) {
+              console.error(`  ✗ ${compName} rebuild failed`);
+            }
+          } else {
+            // src/ or theme change — full rebuild
+            console.log(`\n  ${file} changed — full rebuild...`);
+            try {
+              execSync('npm run build:core && npm run build:cdn && node scripts/build-website.js', { stdio: 'inherit' });
+              console.log('  ✓ Full rebuild complete');
+            } catch (e) {
+              console.error('  ✗ Full rebuild failed');
+            }
           }
           building = false;
         }, 2000);
