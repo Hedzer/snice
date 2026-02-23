@@ -19,16 +19,44 @@ export class SniceBook extends HTMLElement implements SniceBookElement {
   @property()
   author = '';
 
-  @property({ type: Number })
-  private renderVersion = 0;
-
   @query('slot:not([name])')
   private defaultSlot?: HTMLSlotElement;
 
+  @query('.book__flip-pages')
+  private flipPagesEl?: HTMLElement;
+
+  @query('.book__left-content')
+  private leftContentEl?: HTMLElement;
+
+  @query('.book__page-number--left')
+  private leftPageNumEl?: HTMLElement;
+
+  @query('.book__nav-info')
+  private navInfoEl?: HTMLElement;
+
+  @query('.book__nav-first')
+  private navFirstBtn?: HTMLButtonElement;
+
+  @query('.book__nav-prev')
+  private navPrevBtn?: HTMLButtonElement;
+
+  @query('.book__nav-next')
+  private navNextBtn?: HTMLButtonElement;
+
+  @query('.book__nav-last')
+  private navLastBtn?: HTMLButtonElement;
+
+  @query('.book__click-prev')
+  private clickPrevEl?: HTMLElement;
+
+  @query('.book__click-next')
+  private clickNextEl?: HTMLElement;
+
+  @query('.book__left-click')
+  private leftClickEl?: HTMLElement;
+
   private pages: Element[] = [];
   private flipping = false;
-  private flippingIndex = -1;
-  private flippingDirection: PageTurnDirection | null = null;
   private touchStartX = 0;
   private touchStartY = 0;
 
@@ -52,7 +80,7 @@ export class SniceBook extends HTMLElement implements SniceBookElement {
   init() {
     this.collectPages();
     this.setAttribute('tabindex', '0');
-    queueMicrotask(() => this.projectContent());
+    this.rebuild();
   }
 
   @dispose()
@@ -61,24 +89,22 @@ export class SniceBook extends HTMLElement implements SniceBookElement {
   @on('slotchange', { target: 'slot:not([name])' })
   handleSlotChange() {
     this.collectPages();
-    this.renderVersion++;
-    queueMicrotask(() => this.projectContent());
+    this.rebuild();
   }
 
   @watch('currentPage')
   handlePageChange() {
-    queueMicrotask(() => this.projectContent());
+    if (!this.flipping) this.rebuild();
   }
 
   @watch('mode')
   handleModeChange() {
-    this.renderVersion++;
-    queueMicrotask(() => this.projectContent());
+    this.rebuild();
   }
 
-  @watch('renderVersion')
-  handleRenderVersionChange() {
-    queueMicrotask(() => this.projectContent());
+  @watch('title', 'author', 'coverImage')
+  handleCoverChange() {
+    this.rebuildLeftPage();
   }
 
   @on('keydown')
@@ -139,43 +165,125 @@ export class SniceBook extends HTMLElement implements SniceBookElement {
     return this.currentPage > 0;
   }
 
-  /**
-   * Project slotted content into flip page face elements and left static page.
-   */
-  private projectContent() {
-    if (!this.shadowRoot) return;
-    const isSingle = this.mode === 'single';
-    const currentSpread = this.currentSpread;
-    const numSpreads = this.totalSpreads;
+  // --- Imperative rebuild ---
 
-    // Project left static page content (spread mode only)
-    if (!isSingle) {
-      const leftContent = this.shadowRoot.querySelector('[data-left-content]');
-      if (leftContent) {
-        leftContent.innerHTML = '';
-        const hasCover = !!(this.coverImage || this.title || this.author);
-        const isAtCover = currentSpread === 0 && hasCover;
-        if (!isAtCover && this.pages[this.currentPage]) {
-          leftContent.appendChild(this.pages[this.currentPage].cloneNode(true));
-        }
-      }
+  private rebuild() {
+    if (!this.flipPagesEl) {
+      requestAnimationFrame(() => this.rebuild());
+      return;
+    }
+    this.rebuildPages();
+    this.rebuildLeftPage();
+    this.rebuildNav();
+  }
+
+  private rebuildPages() {
+    const container = this.flipPagesEl;
+    if (!container) return;
+
+    const isSingle = this.mode === 'single';
+    const numSpreads = this.totalSpreads;
+    const currentSpread = this.currentSpread;
+
+    let pagesHtml = '';
+    for (let i = 0; i < numSpreads; i++) {
+      const isFlipped = i < currentSpread;
+      let pageClass = 'book__page';
+      if (isFlipped) pageClass += ' book__page--flipped';
+
+      const zIdx = isFlipped ? (i + 1) : (numSpreads - i);
+      const rightPageNum = isSingle ? (i + 1) : (i * 2 + 2);
+
+      pagesHtml += `<div class="${pageClass}" style="z-index: ${zIdx}" data-page-index="${i}">`;
+      pagesHtml += `<div class="book__face book__face--front">`;
+      pagesHtml += `<div class="book__face-content" data-content="front-${i}"></div>`;
+      pagesHtml += `<span class="book__page-number book__page-number--right">${rightPageNum}</span>`;
+      pagesHtml += `</div>`;
+      pagesHtml += `<div class="book__face book__face--back"></div>`;
+      pagesHtml += `</div>`;
     }
 
-    // Project content into flip page front faces (nearby spreads only)
+    container.innerHTML = pagesHtml;
+
+    // Project content into nearby spread front faces
     const rangeStart = Math.max(0, currentSpread - 2);
     const rangeEnd = Math.min(numSpreads - 1, currentSpread + 2);
 
     for (let i = rangeStart; i <= rangeEnd; i++) {
-      const container = this.shadowRoot.querySelector(`[data-content="front-${i}"]`);
-      if (container) {
-        container.innerHTML = '';
+      const contentEl = container.querySelector(`[data-content="front-${i}"]`);
+      if (contentEl) {
         const contentIdx = isSingle ? i : (i * 2 + 1);
         if (this.pages[contentIdx]) {
-          container.appendChild(this.pages[contentIdx].cloneNode(true));
+          contentEl.appendChild(this.pages[contentIdx].cloneNode(true));
         }
       }
     }
   }
+
+  private rebuildLeftPage() {
+    const leftContent = this.leftContentEl;
+    if (!leftContent) return;
+
+    const hasCover = !!(this.coverImage || this.title || this.author);
+    const isAtCover = this.currentSpread === 0 && hasCover;
+
+    leftContent.innerHTML = '';
+
+    if (isAtCover) {
+      let coverHtml = '<div class="book__cover">';
+      if (this.coverImage) {
+        coverHtml += `<img class="book__cover-image" src="${this.coverImage}" alt="${this.escapeAttr(this.title || 'Book cover')}" />`;
+      }
+      if (this.title) {
+        coverHtml += `<h2 class="book__cover-title">${this.escapeHtml(this.title)}</h2>`;
+      }
+      if (this.author) {
+        coverHtml += `<p class="book__cover-author">${this.escapeHtml(this.author)}</p>`;
+      }
+      coverHtml += '</div>';
+      leftContent.innerHTML = coverHtml;
+    } else if (this.pages[this.currentPage]) {
+      leftContent.appendChild(this.pages[this.currentPage].cloneNode(true));
+    }
+
+    // Page number
+    if (this.leftPageNumEl) {
+      this.leftPageNumEl.style.display = isAtCover ? 'none' : '';
+      this.leftPageNumEl.textContent = String(this.currentPage + 1);
+    }
+  }
+
+  private rebuildNav() {
+    const canPrev = this.canGoPrev();
+    const canNext = this.canGoNext();
+
+    if (this.navFirstBtn) this.navFirstBtn.disabled = !canPrev;
+    if (this.navPrevBtn) this.navPrevBtn.disabled = !canPrev;
+    if (this.navNextBtn) this.navNextBtn.disabled = !canNext;
+    if (this.navLastBtn) this.navLastBtn.disabled = !canNext;
+
+    if (this.navInfoEl) {
+      const displayPage = this.currentPage + 1;
+      const total = this.totalPages;
+      this.navInfoEl.textContent = this.mode === 'single'
+        ? `${displayPage} / ${total}`
+        : `${displayPage}-${Math.min(this.currentPage + 2, total)} / ${total}`;
+    }
+
+    if (this.clickPrevEl) this.clickPrevEl.classList.toggle('book__click-disabled', !canPrev);
+    if (this.clickNextEl) this.clickNextEl.classList.toggle('book__click-disabled', !canNext);
+    if (this.leftClickEl) this.leftClickEl.classList.toggle('book__click-disabled', !canPrev);
+  }
+
+  private escapeHtml(str: string): string {
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  private escapeAttr(str: string): string {
+    return this.escapeHtml(str).replace(/"/g, '&quot;');
+  }
+
+  // --- Flip animation (direct DOM manipulation, no rebuild) ---
 
   private flipToPage(targetPage: number, direction: PageTurnDirection) {
     if (this.flipping) return;
@@ -183,47 +291,46 @@ export class SniceBook extends HTMLElement implements SniceBookElement {
     if (targetPage === this.currentPage) return;
 
     this.flipping = true;
-    const fromPage = this.currentPage;
     const targetSpread = Math.floor(targetPage / this.spreadSize);
+    const flipIdx = direction === 'forward' ? this.currentSpread : targetSpread;
 
-    this.emitFlipStart({ fromPage, toPage: targetPage, direction });
+    this.emitFlipStart({ fromPage: this.currentPage, toPage: targetPage, direction });
 
-    // Set flipping state to trigger animation class in template
-    this.flippingIndex = direction === 'forward' ? this.currentSpread : targetSpread;
-    this.flippingDirection = direction;
-    this.renderVersion++;
+    // Content is already in the DOM from the last rebuild().
+    // Ensure target spread has content (for large jumps).
+    this.projectContentForSpread(targetSpread);
 
-    // Project content for target spread BEFORE animation reveals it
-    requestAnimationFrame(() => {
-      this.projectContentForSpread(targetSpread);
-      // Also ensure current spread content is present
-      this.projectContentForSpread(this.currentSpread);
-    });
+    // Apply animation class and z-index directly — no rebuild, content stays intact
+    const pageEl = this.flipPagesEl?.querySelector(`[data-page-index="${flipIdx}"]`) as HTMLElement;
+    if (pageEl) {
+      pageEl.style.zIndex = String(this.totalSpreads + 1);
+      pageEl.classList.add(`book__page--flipping-${direction}`);
+    }
 
-    // Get flip duration from CSS
     const durationStr = getComputedStyle(this).getPropertyValue('--book-flip-duration').trim() || '0.6s';
     const durationMs = parseFloat(durationStr) * (durationStr.includes('ms') ? 1 : 1000);
 
     // Update left page at animation midpoint
     if (this.mode !== 'single') {
       setTimeout(() => {
-        const leftContent = this.shadowRoot?.querySelector('[data-left-content]');
+        const leftContent = this.leftContentEl;
         if (leftContent) {
           leftContent.innerHTML = '';
           if (this.pages[targetPage]) {
             leftContent.appendChild(this.pages[targetPage].cloneNode(true));
           }
         }
+        if (this.leftPageNumEl) {
+          this.leftPageNumEl.textContent = String(targetPage + 1);
+        }
       }, durationMs * 0.45);
     }
 
-    // Finalize after animation
+    // Finalize — single rebuild to reset all state
     setTimeout(() => {
-      this.flippingIndex = -1;
-      this.flippingDirection = null;
       this.currentPage = targetPage;
       this.flipping = false;
-      this.renderVersion++;
+      this.rebuild();
       this.emitPageTurn({ page: targetPage, direction });
       this.emitFlipEnd({ page: targetPage, direction });
     }, durationMs + 50);
@@ -231,14 +338,14 @@ export class SniceBook extends HTMLElement implements SniceBookElement {
 
   /** Project content into a single spread's face container */
   private projectContentForSpread(spreadIdx: number) {
-    if (!this.shadowRoot) return;
+    const container = this.flipPagesEl;
+    if (!container) return;
     const isSingle = this.mode === 'single';
-    const container = this.shadowRoot.querySelector(`[data-content="front-${spreadIdx}"]`);
-    if (container) {
-      container.innerHTML = '';
+    const contentEl = container.querySelector(`[data-content="front-${spreadIdx}"]`);
+    if (contentEl && !contentEl.hasChildNodes()) {
       const contentIdx = isSingle ? spreadIdx : (spreadIdx * 2 + 1);
       if (this.pages[contentIdx]) {
-        container.appendChild(this.pages[contentIdx].cloneNode(true));
+        contentEl.appendChild(this.pages[contentIdx].cloneNode(true));
       }
     }
   }
@@ -293,117 +400,28 @@ export class SniceBook extends HTMLElement implements SniceBookElement {
     return detail!;
   }
 
-  @render()
+  @render({ once: true })
   renderContent() {
-    const isSingle = this.mode === 'single';
-    const notSingle = !isSingle;
-    const canPrev = this.canGoPrev();
-    const canNext = this.canGoNext();
-    const total = this.totalPages;
-    const displayPage = this.currentPage + 1;
-    const _v = this.renderVersion;
-
-    const hasCover = !!(this.coverImage || this.title || this.author);
-    const isAtCover = this.currentSpread === 0 && hasCover;
-    const notAtCover = !isAtCover;
-    const hasCoverImage = !!this.coverImage;
-    const hasTitle = !!this.title;
-    const hasAuthor = !!this.author;
-    const hasPages = total > 0;
-
-    const navInfo = isSingle
-      ? `${displayPage} / ${total}`
-      : `${displayPage}-${Math.min(this.currentPage + 2, total)} / ${total}`;
-
-    const prevDisabled = canPrev ? '' : 'book__click-disabled';
-    const nextDisabled = canNext ? '' : 'book__click-disabled';
-    const showRightPageNum = this.currentPage + 1 < total;
-
-    // Pre-build flip page templates to avoid nested .map() issue
-    const flipPages: any[] = [];
-    const numSpreads = this.totalSpreads;
-    const currentSpread = this.currentSpread;
-
-    for (let i = 0; i < numSpreads; i++) {
-      const isFlipped = i < currentSpread;
-      const isFlippingFwd = i === this.flippingIndex && this.flippingDirection === 'forward';
-      const isFlippingBwd = i === this.flippingIndex && this.flippingDirection === 'backward';
-
-      let pageClass = 'book__page';
-      if (isFlippingFwd) {
-        pageClass += ' book__page--flipping-forward';
-      } else if (isFlippingBwd) {
-        pageClass += ' book__page--flipping-backward';
-      } else if (isFlipped) {
-        pageClass += ' book__page--flipped';
-      }
-
-      // Z-index: flipping page highest, flipped ascending, unflipped descending
-      let zIdx: number;
-      if (isFlippingFwd || isFlippingBwd) {
-        zIdx = numSpreads + 1;
-      } else if (isFlipped) {
-        zIdx = i + 1;
-      } else {
-        zIdx = numSpreads - i;
-      }
-
-      const rightPageNum = isSingle ? (i + 1) : (i * 2 + 2);
-
-      flipPages.push(html/*html*/`
-        <div class="${pageClass}" style="z-index: ${zIdx}" data-page-index="${i}">
-          <div class="book__face book__face--front">
-            <div class="book__face-content" data-content="front-${i}"></div>
-            <span class="book__page-number book__page-number--right">${rightPageNum}</span>
-          </div>
-          <div class="book__face book__face--back"></div>
-        </div>
-      `);
-    }
-
     return html/*html*/`
       <div class="book" role="document" aria-label="${this.title || 'Book'}" aria-roledescription="book">
         <div class="book__body">
-          <if ${notSingle}>
-            <div class="book__left">
-              <div class="book__left-content">
-                <if ${isAtCover}>
-                  <div class="book__cover">
-                    <if ${hasCoverImage}>
-                      <img class="book__cover-image" src="${this.coverImage}" alt="${this.title || 'Book cover'}" />
-                    </if>
-                    <if ${hasTitle}>
-                      <h2 class="book__cover-title">${this.title}</h2>
-                    </if>
-                    <if ${hasAuthor}>
-                      <p class="book__cover-author">${this.author}</p>
-                    </if>
-                  </div>
-                </if>
-                <if ${notAtCover}>
-                  <div data-left-content></div>
-                </if>
-              </div>
-              <if ${notAtCover}>
-                <span class="book__page-number book__page-number--left">${displayPage}</span>
-              </if>
-              <div class="book__left-click ${prevDisabled}"
-                   @click=${() => this.prevPage()}
-                   role="button"
-                   aria-label="Previous page"></div>
-            </div>
-            <div class="book__spine" part="spine"></div>
-          </if>
-
-          <div class="book__flip-area">
-            <if ${hasPages}>
-              ${flipPages}
-            </if>
-            <div class="book__click-prev ${prevDisabled}"
+          <div class="book__left">
+            <div class="book__left-content"></div>
+            <span class="book__page-number book__page-number--left"></span>
+            <div class="book__left-click"
                  @click=${() => this.prevPage()}
                  role="button"
                  aria-label="Previous page"></div>
-            <div class="book__click-next ${nextDisabled}"
+          </div>
+          <div class="book__spine" part="spine"></div>
+
+          <div class="book__flip-area">
+            <div class="book__flip-pages"></div>
+            <div class="book__click-prev"
+                 @click=${() => this.prevPage()}
+                 role="button"
+                 aria-label="Previous page"></div>
+            <div class="book__click-next"
                  @click=${() => this.nextPage()}
                  role="button"
                  aria-label="Next page"></div>
@@ -411,28 +429,24 @@ export class SniceBook extends HTMLElement implements SniceBookElement {
         </div>
 
         <div class="book__nav" part="nav">
-          <button class="book__nav-button"
+          <button class="book__nav-button book__nav-first"
                   @click=${() => this.firstPage()}
-                  ?disabled=${!canPrev}
                   aria-label="First page">
             <span>&#x21E4;</span>
           </button>
-          <button class="book__nav-button"
+          <button class="book__nav-button book__nav-prev"
                   @click=${() => this.prevPage()}
-                  ?disabled=${!canPrev}
                   aria-label="Previous page">
             <span>&#x2039;</span>
           </button>
-          <span class="book__nav-info">${navInfo}</span>
-          <button class="book__nav-button"
+          <span class="book__nav-info"></span>
+          <button class="book__nav-button book__nav-next"
                   @click=${() => this.nextPage()}
-                  ?disabled=${!canNext}
                   aria-label="Next page">
             <span>&#x203A;</span>
           </button>
-          <button class="book__nav-button"
+          <button class="book__nav-button book__nav-last"
                   @click=${() => this.lastPage()}
-                  ?disabled=${!canNext}
                   aria-label="Last page">
             <span>&#x21E5;</span>
           </button>

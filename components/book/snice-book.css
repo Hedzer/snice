@@ -69,11 +69,18 @@
   width: var(--page-width, 20rem);
   min-height: var(--page-height, 28rem);
   position: relative;
-  perspective: 1500px;
   background: var(--book-page-bg);
   border-radius: 0 4px 4px 0;
   overflow: visible;
   z-index: 2;
+}
+
+/* Container for dynamically built flip pages — holds perspective context */
+.book__flip-pages {
+  position: absolute;
+  inset: 0;
+  perspective: 1500px;
+  overflow: visible;
 }
 
 /* Each flippable page */
@@ -93,7 +100,7 @@
   transform: rotateY(-180deg);
 }
 
-/* Flip animations (keyframes work even if DOM is replaced on re-render) */
+/* Flip animations */
 @keyframes book-flip-forward {
   0% { transform: rotateY(0deg); }
   100% { transform: rotateY(-180deg); }
@@ -132,12 +139,10 @@
   z-index: 1;
 }
 
-/* Back face of the page (visible after flip) */
+/* Back face — transparent so the next page shows through
+   when the flipping page passes 90deg */
 .book__face--back {
-  background: var(--book-page-bg);
-  padding: var(--snice-spacing-lg, 1.5rem);
-  display: flex;
-  flex-direction: column;
+  background: transparent;
   transform: rotateY(180deg);
   z-index: 0;
 }
@@ -151,7 +156,6 @@
 
 /* Page lines effect */
 .book__face--front::before,
-.book__face--back::before,
 .book__left-content::before {
   content: '';
   position: absolute;
@@ -171,7 +175,6 @@
 }
 
 .book__face--front > *,
-.book__face--back > *,
 .book__left-content > * {
   position: relative;
   z-index: 1;
