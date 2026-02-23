@@ -540,3 +540,173 @@ footer a { color: var(--snice-color-text-secondary); text-decoration: none; }
   transition: color var(--snice-transition-fast) ease;
 }
 .install button:hover { color: var(--snice-color-primary); }
+
+/* ─── Mobile polish ─── */
+@media (max-width: 480px) {
+  /* Tighter page padding on small screens */
+  .wrap { padding: 0 1rem; }
+
+  /* Header: tighter spacing, hide external link, ensure touch targets */
+  header { padding: 0.75rem 0; }
+  header h1 { font-size: 1.1rem; }
+  header nav { gap: 0.6rem; }
+  header nav a {
+    font-size: 0.75rem;
+    padding: 0.5rem 0;         /* taller touch target */
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  /* Hide external "Source" link on small mobile — saves space */
+  header nav a[href*="gitlab"],
+  header nav a[href*="github"] { display: none; }
+  .theme-btn {
+    padding: 0.625rem;          /* 44px touch target */
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Hero: smaller heading, less vertical space */
+  .hero { padding: 2rem 0; gap: 1.5rem; }
+  .hero-text h2 { font-size: 1.75rem; }
+  .hero-text p { font-size: 1rem; }
+  .hero-code pre { padding: 1rem; font-size: 0.7rem; }
+
+  /* Pitch / usage grids: single column on narrow screens */
+  .pitch { grid-template-columns: 1fr; }
+  .usage-grid { grid-template-columns: 1fr; }
+
+  /* Templates + MCP sections: less padding */
+  .templates-section, .mcp-section { padding: 1.25rem; margin: 2rem 0; }
+
+  /* Install blocks: allow wrapping, smaller font */
+  .install { font-size: 0.8rem; padding: 0.5rem 0.75rem; gap: 0.5rem; max-width: 100%; }
+  .install code { word-break: break-all; }
+
+  /* Page title: slightly smaller */
+  .page-title { padding: 2rem 0 1.5rem; }
+  .page-title h2 { font-size: 1.5rem; }
+
+  /* Comp-split demos: tighter padding, prevent child overflow */
+  .comp-split-demo { padding: 1rem; overflow-x: auto; }
+  .comp-split-demo > * { max-width: 100%; }
+  .comp-split-code pre { padding: 0.75rem; font-size: 0.7rem; }
+
+  /* Decorator sections: tighter padding, smaller code */
+  .dec-section pre { padding: 0.75rem; font-size: 0.7rem; }
+
+  /* Comp-demo-large: prevent overflow */
+  .comp-demo-large { overflow-x: auto; }
+
+  /* Footer: stack instead of side-by-side */
+  footer .wrap {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+
+  /* Category headers */
+  .comp-category { margin-top: 2rem; }
+
+  /* Usage card code: prevent long commands from overflowing */
+  .usage-card code { font-size: 0.6rem; overflow-wrap: break-word; }
+
+  /* Template card: smaller install commands */
+  .template-card .install code { font-size: 0.65rem; }
+
+  /* ─── Scale down complex/showy components on mobile ─── */
+  /* Zoom the whole .comp-split block so demo + accordion code scale together. */
+
+  /* Data grids & tables */
+  .comp-split:has(snice-spreadsheet) { zoom: 0.55; }
+  .comp-split:has(snice-table) { zoom: 0.6; }
+  .comp-split:has(snice-gantt) { zoom: 0.55; }
+  .comp-split:has(snice-kanban) { zoom: 0.55; }
+  .comp-split:has(snice-tree) { zoom: 0.6; }
+  .comp-split:has(snice-virtual-scroller) { zoom: 0.65; }
+
+  /* Document & code viewers */
+  .comp-split:has(snice-pdf-viewer) { zoom: 0.55; }
+  .comp-split:has(snice-code-block) { zoom: 0.6; }
+  .comp-split:has(snice-doc) { zoom: 0.55; }
+  .comp-split:has(snice-diff) { zoom: 0.55; }
+  .comp-split:has(snice-markdown) { zoom: 0.6; }
+  .comp-split:has(snice-terminal) { zoom: 0.6; }
+
+  /* Canvas & visualization */
+  .comp-split:has(snice-paint) { zoom: 0.5; }
+  .comp-split:has(snice-flow) { zoom: 0.5; }
+  .comp-split:has(snice-network-graph) { zoom: 0.5; }
+  .comp-split:has(snice-org-chart) { zoom: 0.55; }
+  .comp-split:has(snice-map) { zoom: 0.55; }
+  .comp-split:has(snice-heatmap) { zoom: 0.55; }
+  .comp-split:has(snice-sankey) { zoom: 0.55; }
+  .comp-split:has(snice-treemap) { zoom: 0.55; }
+  .comp-split:has(snice-calendar) { zoom: 0.6; }
+
+  /* Layout-heavy components */
+  .comp-split:has(snice-file-gallery) { zoom: 0.6; }
+  .comp-split:has(snice-timeline) { zoom: 0.55; }
+  .comp-split:has(snice-pricing-table) { zoom: 0.45; }
+  .comp-split:has(snice-masonry) { zoom: 0.55; }
+  .comp-split:has(snice-book) { zoom: 0.55; }
+  .comp-split:has(snice-chat) { zoom: 0.6; }
+  .comp-split:has(snice-comments) { zoom: 0.6; }
+  .comp-split:has(snice-music-player) { zoom: 0.65; }
+
+  /* ─── Mobile code accordion ─── */
+  /* Code blocks are wrapped in <details> at runtime by JS below */
+  .comp-split-code { display: none; }
+  details.code-accordion {
+    border-top: 1px solid var(--snice-color-border);
+  }
+  details.code-accordion summary {
+    padding: 0.5rem 1rem;
+    font-size: 0.7rem;
+    font-family: var(--snice-font-family-mono);
+    color: var(--snice-color-text-tertiary);
+    cursor: pointer;
+    background: var(--snice-color-background-tertiary);
+    user-select: none;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  details.code-accordion summary::-webkit-details-marker { display: none; }
+  details.code-accordion summary::before {
+    content: '▸';
+    transition: transform 0.15s ease;
+    display: inline-block;
+  }
+  details.code-accordion[open] summary::before {
+    transform: rotate(90deg);
+  }
+  details.code-accordion .comp-split-code {
+    display: block;
+    border-left: none;
+  }
+}
+
+/* Medium mobile (481-700px) — just a few tweaks */
+@media (max-width: 700px) and (min-width: 481px) {
+  .wrap { padding: 0 1.5rem; }
+  .hero-text h2 { font-size: 2rem; }
+  header nav a {
+    padding: 0.35rem 0;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .theme-btn {
+    padding: 0.5rem;
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

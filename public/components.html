@@ -1273,67 +1273,6 @@ scroller.scrollToIndex(2500); // jump to any index</code></pre>
       };
     });
 </script>
-    <div class="comp-section">
-      <h3>Infinite Scroll</h3>
-      <p class="comp-desc">Container that loads more content as the user scrolls near the bottom</p>
-      <div class="comp-split comp-split-stacked">
-        <div class="comp-split-demo" style="justify-content:center">
-          <snice-infinite-scroll id="demo-infinite" threshold="100" has-more style="width:100%;max-width:400px;height:250px;overflow:auto;border:1px solid rgba(128,128,128,0.2);border-radius:8px">
-            <div id="infinite-items" style="padding:0.5rem"></div>
-          </snice-infinite-scroll>
-        </div>
-        <div class="comp-split-code">
-          <span class="code-lang">html</span>
-          <pre><code class="language-html">&lt;snice-infinite-scroll
-  threshold="200"
-  has-more
-&gt;
-  &lt;!-- scrollable content --&gt;
-&lt;/snice-infinite-scroll&gt;
-
-&lt;script&gt;
-  const scroller = document.querySelector(
-    'snice-infinite-scroll');
-  scroller.addEventListener('load-more',
-    async () =&gt; {
-    scroller.loading = true;
-    const items = await fetchMore();
-    appendItems(items);
-    scroller.loading = false;
-    if (!items.length)
-      scroller.hasMore = false;
-  });
-&lt;/script&gt;</code></pre>
-        </div>
-      </div>
-    </div>
-
-<script>
-    customElements.whenDefined('snice-infinite-scroll').then(() => {
-      const scroller = document.getElementById('demo-infinite');
-      const container = document.getElementById('infinite-items');
-      if (!scroller || !container) return;
-      let batch = 0;
-      function addItems() {
-        for (let i = 0; i < 10; i++) {
-          const item = document.createElement('div');
-          item.textContent = 'Item ' + (batch * 10 + i + 1);
-          item.style.cssText = 'padding:0.6rem 0.75rem;border-bottom:1px solid rgba(128,128,128,0.15);font-size:0.9rem';
-          container.appendChild(item);
-        }
-        batch++;
-      }
-      addItems();
-      scroller.addEventListener('load-more', () => {
-        scroller.loading = true;
-        setTimeout(() => {
-          addItems();
-          scroller.loading = false;
-          if (batch >= 5) scroller.hasMore = false;
-        }, 600);
-      });
-    });
-</script>
 
     <div class="comp-category">Navigation</div>
     <!-- ── 13. Breadcrumbs ── -->
@@ -3622,40 +3561,6 @@ chart.addEventListener('bar-click',
         </div>
       </div>
     </div>
-    <div class="comp-section">
-      <h3>Signature</h3>
-      <p class="comp-desc">Canvas-based signature pad with smooth bezier curves and PNG export</p>
-      <div class="comp-split comp-split-stacked">
-        <div class="comp-split-demo" style="justify-content:center;flex-direction:column;align-items:center;gap:0.75rem">
-          <snice-signature id="demo-signature" stroke-color="rgb(23 23 23)" stroke-width="2" style="width:100%;max-width:450px;height:150px"></snice-signature>
-          <div style="display:flex;gap:0.5rem">
-            <snice-button size="small" variant="default" onclick="document.getElementById('demo-signature').clear()">Clear</snice-button>
-          </div>
-        </div>
-        <div class="comp-split-code">
-          <span class="code-lang">html</span>
-          <pre><code class="language-html">&lt;snice-signature
-  stroke-color="rgb(0 0 128)"
-  stroke-width="3"
-&gt;&lt;/snice-signature&gt;
-
-&lt;script&gt;
-  const sig = document.querySelector(
-    'snice-signature');
-
-  // Check if signed
-  console.log(sig.isEmpty());
-
-  // Export as data URL or Blob
-  const dataUrl = sig.toDataURL();
-  const blob = await sig.toBlob();
-
-  // Clear pad
-  sig.clear();
-&lt;/script&gt;</code></pre>
-        </div>
-      </div>
-    </div>
     <!-- ── 12. QR Code ── -->
     <div class="comp-section">
       <h3>QR Code</h3>
@@ -5303,6 +5208,18 @@ pt.addEventListener('plan-select',
       ];
       const table = document.getElementById('demo-pricing-table');
       if (table) table.plans = plans;
+
+      // Showcase-only: force cards side-by-side on mobile
+      // (override shadow DOM @media query without touching component source)
+      if (window.matchMedia('(max-width: 480px)').matches) {
+        document.querySelectorAll('snice-pricing-table').forEach(el => {
+          if (el.shadowRoot) {
+            const s = document.createElement('style');
+            s.textContent = '.pricing__cards{flex-direction:row!important}.pricing__card{max-width:none!important;width:auto!important}';
+            el.shadowRoot.appendChild(s);
+          }
+        });
+      }
     });
 </script>
     <!-- ── App Tiles ── -->
@@ -5612,7 +5529,6 @@ tiles.addEventListener('tile-click',
   <script src="components/snice-nav.min.js"></script>
   <script src="components/snice-tree.min.js"></script>
   <script src="components/snice-virtual-scroller.min.js"></script>
-  <script src="components/snice-infinite-scroll.min.js"></script>
   <script src="components/snice-funnel.min.js"></script>
   <script src="components/snice-treemap.min.js"></script>
   <script src="components/snice-sankey.min.js"></script>
@@ -5637,7 +5553,6 @@ tiles.addEventListener('tile-click',
   <script src="components/snice-pdf-viewer.min.js"></script>
   <script src="components/snice-rating.min.js"></script>
   <script src="components/snice-recipe.min.js"></script>
-  <script src="components/snice-signature.min.js"></script>
   <script src="components/snice-sortable.min.js"></script>
   <script src="components/snice-spotlight.min.js"></script>
   <script src="components/snice-spreadsheet.min.js"></script>
@@ -5658,6 +5573,20 @@ tiles.addEventListener('tile-click',
     document.getElementById('comp-count').textContent = document.querySelectorAll('.comp-section > h3').length;
     // Re-run Prism highlighting after all scripts load
     if (typeof Prism !== 'undefined') Prism.highlightAll();
+
+    // Mobile: wrap code blocks in collapsible accordion
+    if (window.matchMedia('(max-width: 800px)').matches) {
+      document.querySelectorAll('.comp-split-code').forEach(code => {
+        const lang = code.querySelector('.code-lang')?.textContent || 'Code';
+        const details = document.createElement('details');
+        details.className = 'code-accordion';
+        const summary = document.createElement('summary');
+        summary.textContent = `Show ${lang}`;
+        details.appendChild(summary);
+        code.parentNode.insertBefore(details, code);
+        details.appendChild(code);
+      });
+    }
 
     // Doc slug mapping for edge cases
     const DOC_SLUGS = {

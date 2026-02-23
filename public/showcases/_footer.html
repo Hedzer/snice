@@ -92,7 +92,6 @@
   <script src="components/snice-nav.min.js"></script>
   <script src="components/snice-tree.min.js"></script>
   <script src="components/snice-virtual-scroller.min.js"></script>
-  <script src="components/snice-infinite-scroll.min.js"></script>
   <script src="components/snice-funnel.min.js"></script>
   <script src="components/snice-treemap.min.js"></script>
   <script src="components/snice-sankey.min.js"></script>
@@ -117,7 +116,6 @@
   <script src="components/snice-pdf-viewer.min.js"></script>
   <script src="components/snice-rating.min.js"></script>
   <script src="components/snice-recipe.min.js"></script>
-  <script src="components/snice-signature.min.js"></script>
   <script src="components/snice-sortable.min.js"></script>
   <script src="components/snice-spotlight.min.js"></script>
   <script src="components/snice-spreadsheet.min.js"></script>
@@ -138,6 +136,20 @@
     document.getElementById('comp-count').textContent = document.querySelectorAll('.comp-section > h3').length;
     // Re-run Prism highlighting after all scripts load
     if (typeof Prism !== 'undefined') Prism.highlightAll();
+
+    // Mobile: wrap code blocks in collapsible accordion
+    if (window.matchMedia('(max-width: 800px)').matches) {
+      document.querySelectorAll('.comp-split-code').forEach(code => {
+        const lang = code.querySelector('.code-lang')?.textContent || 'Code';
+        const details = document.createElement('details');
+        details.className = 'code-accordion';
+        const summary = document.createElement('summary');
+        summary.textContent = `Show ${lang}`;
+        details.appendChild(summary);
+        code.parentNode.insertBefore(details, code);
+        details.appendChild(code);
+      });
+    }
 
     // Doc slug mapping for edge cases
     const DOC_SLUGS = {

@@ -126,5 +126,17 @@ pt.addEventListener('plan-select',
       ];
       const table = document.getElementById('demo-pricing-table');
       if (table) table.plans = plans;
+
+      // Showcase-only: force cards side-by-side on mobile
+      // (override shadow DOM @media query without touching component source)
+      if (window.matchMedia('(max-width: 480px)').matches) {
+        document.querySelectorAll('snice-pricing-table').forEach(el => {
+          if (el.shadowRoot) {
+            const s = document.createElement('style');
+            s.textContent = '.pricing__cards{flex-direction:row!important}.pricing__card{max-width:none!important;width:auto!important}';
+            el.shadowRoot.appendChild(s);
+          }
+        });
+      }
     });
 </script>
