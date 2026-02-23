@@ -1,4 +1,4 @@
-import { element, property, render, styles, dispatch, watch, html, css } from 'snice';
+import { element, property, render, styles, dispatch, watch, ready, query, html, css } from 'snice';
 import type { WaterfallDataPoint, WaterfallBarType, SniceWaterfallElement } from './snice-waterfall.types';
 import waterfallStyles from './snice-waterfall.css?inline';
 
@@ -13,7 +13,7 @@ interface ComputedBar {
 
 @element('snice-waterfall')
 export class SniceWaterfall extends HTMLElement implements SniceWaterfallElement {
-  @property({ type: Array }) data: WaterfallDataPoint[] = [];
+  @property({ type: Array, attribute: false }) data: WaterfallDataPoint[] = [];
   @property() orientation: 'vertical' | 'horizontal' = 'vertical';
   @property({ type: Boolean, attribute: 'show-values' }) showValues: boolean = true;
   @property({ type: Boolean, attribute: 'show-connectors' }) showConnectors: boolean = true;
@@ -21,14 +21,29 @@ export class SniceWaterfall extends HTMLElement implements SniceWaterfallElement
 
   private bars: ComputedBar[] = [];
 
+  @query('.waterfall__chart')
+  private chartEl!: HTMLElement;
+
   @styles()
   componentStyles() {
     return css`${waterfallStyles}`;
   }
 
+  @ready()
+  init() {
+    this.computeBars();
+    this.rebuildChart();
+  }
+
   @watch('data')
   handleDataChange() {
     this.computeBars();
+    this.rebuildChart();
+  }
+
+  @watch('showValues', 'showConnectors', 'orientation')
+  handleDisplayChange() {
+    this.rebuildChart();
   }
 
   private computeBars() {
@@ -77,10 +92,15 @@ export class SniceWaterfall extends HTMLElement implements SniceWaterfallElement
     return { item, index };
   }
 
-  @render()
-  renderChart() {
+  private rebuildChart() {
+    if (!this.chartEl) {
+      requestAnimationFrame(() => this.rebuildChart());
+      return;
+    }
+
     if (this.bars.length === 0) {
-      return html`<div class="waterfall"><svg viewBox="0 0 100 100"></svg></div>`;
+      this.chartEl.innerHTML = '';
+      return;
     }
 
     const padding = { top: 20, right: 20, bottom: 40, left: 20 };
@@ -90,7 +110,6 @@ export class SniceWaterfall extends HTMLElement implements SniceWaterfallElement
     const plotWidth = chartWidth - padding.left - padding.right;
     const plotHeight = chartHeight - padding.top - padding.bottom;
 
-    // Find min/max values
     let minVal = 0;
     let maxVal = 0;
     for (const bar of this.bars) {
@@ -98,7 +117,6 @@ export class SniceWaterfall extends HTMLElement implements SniceWaterfallElement
       maxVal = Math.max(maxVal, bar.start, bar.end);
     }
 
-    // Add padding to range
     const range = maxVal - minVal || 1;
     const paddedMin = minVal - range * 0.05;
     const paddedMax = maxVal + range * 0.1;
@@ -110,13 +128,10 @@ export class SniceWaterfall extends HTMLElement implements SniceWaterfallElement
     const toY = (val: number) => padding.top + plotHeight - ((val - paddedMin) / totalRange) * plotHeight;
     const toX = (idx: number) => padding.left + (plotWidth / barCount) * idx + barGap / 2;
 
-    // Zero line position
     const zeroY = toY(0);
 
-    const barElements: string[] = [];
-    const connectorElements: string[] = [];
-    const labelElements: string[] = [];
-    const valueElements: string[] = [];
+    const parts: string[] = [];
+    parts.push(`<line class="waterfall-axis" x1="${padding.left}" y1="${zeroY}" x2="${chartWidth - padding.right}" y2="${zeroY}" />`);
 
     for (let i = 0; i < this.bars.length; i++) {
       const bar = this.bars[i];
@@ -125,41 +140,33 @@ export class SniceWaterfall extends HTMLElement implements SniceWaterfallElement
       const barBottom = toY(Math.min(bar.start, bar.end));
       const barHeight = Math.max(1, barBottom - barTop);
 
-      barElements.push(`<rect class="waterfall-bar-${bar.type}" x="${x}" y="${barTop}" width="${barWidth}" height="${barHeight}" rx="2" data-index="${i}" />`);
-
-      // Connector from previous bar
       if (this.showConnectors && i > 0) {
         const prevBar = this.bars[i - 1];
         const prevX = toX(i - 1) + barWidth;
         const connY = toY(prevBar.end);
-        connectorElements.push(`<line class="waterfall-connector" x1="${prevX}" y1="${connY}" x2="${x}" y2="${connY}" />`);
+        parts.push(`<line class="waterfall-connector" x1="${prevX}" y1="${connY}" x2="${x}" y2="${connY}" />`);
       }
 
-      // Label
-      const labelX = x + barWidth / 2;
-      labelElements.push(`<text class="waterfall-label" x="${labelX}" y="${chartHeight - 5}">${this.escSvg(bar.label)}</text>`);
+      parts.push(`<rect class="waterfall-bar-${bar.type}" x="${x}" y="${barTop}" width="${barWidth}" height="${barHeight}" rx="2" data-index="${i}" />`);
 
-      // Value
+      const labelX = x + barWidth / 2;
+      parts.push(`<text class="waterfall-label" x="${labelX}" y="${chartHeight - 5}">${this.escSvg(bar.label)}</text>`);
+
       if (this.showValues) {
         const valY = barTop - 5;
         const prefix = bar.type === 'total' ? '' : (bar.value >= 0 ? '+' : '');
-        valueElements.push(`<text class="waterfall-value waterfall-value-${bar.type}" x="${labelX}" y="${valY}">${prefix}${this.formatValue(bar.value)}</text>`);
+        parts.push(`<text class="waterfall-value waterfall-value-${bar.type}" x="${labelX}" y="${valY}">${prefix}${this.formatValue(bar.value)}</text>`);
       }
     }
 
-    const svgContent = `
-      <line class="waterfall-axis" x1="${padding.left}" y1="${zeroY}" x2="${chartWidth - padding.right}" y2="${zeroY}" />
-      ${connectorElements.join('')}
-      ${barElements.join('')}
-      ${labelElements.join('')}
-      ${valueElements.join('')}
-    `;
+    this.chartEl.innerHTML = `<svg viewBox="0 0 ${chartWidth} ${chartHeight}" preserveAspectRatio="xMidYMid meet">${parts.join('')}</svg>`;
+  }
 
+  @render({ once: true })
+  renderShell() {
     return html`
       <div class="waterfall" @click=${(e: MouseEvent) => this.handleSvgClick(e)} @mouseover=${(e: MouseEvent) => this.handleSvgHover(e)}>
-        <svg viewBox="0 0 ${chartWidth} ${chartHeight}" preserveAspectRatio="xMidYMid meet">
-          ${html`${svgContent}`}
-        </svg>
+        <div class="waterfall__chart"></div>
       </div>
     `;
   }
