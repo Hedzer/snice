@@ -1,3 +1,30 @@
+# [4.10.0](https://gitlab.com/Hedzer/snice/compare/v4.9.0...v4.10.0) (2026-02-23)
+
+
+### Bug Fixes
+
+* app-tiles badge layout, spotlight containing block offset ([f0312f3](https://gitlab.com/Hedzer/snice/commit/f0312f3104fc380b1f519d8e2167708b9c470012))
+* book, comments, flow, markdown, org-chart, pdf-viewer, spotlight improvements ([c7e34c8](https://gitlab.com/Hedzer/snice/commit/c7e34c850ffb84b60966d8c3acd82c4cccb8b84e))
+* infinite-scroll source rewrite, add CDN script to showcases ([2cc2851](https://gitlab.com/Hedzer/snice/commit/2cc28517b31c8bc2536b72b1a89ef2eafe507103))
+* lazy camera-annotate in modals, timer IDs, tagline update, v4.9.0 ([b28deec](https://gitlab.com/Hedzer/snice/commit/b28deec054293f53ffad8843facb3e4ec124eb48))
+* pdf-viewer worker resolution and state visibility, signature resize cleanup ([2f6489b](https://gitlab.com/Hedzer/snice/commit/2f6489b4d95bbae3c69ad739a465e1cbc321f8e1))
+* refactor book component CSS and rendering ([387cf48](https://gitlab.com/Hedzer/snice/commit/387cf48f9a62d6f0f7d6809708f4809b1def4694))
+* remove internal properties from react adapters ([cf8bb0c](https://gitlab.com/Hedzer/snice/commit/cf8bb0c54e3b2f38d82497f1e0875cb8dfc60f88))
+* simplify book component and showcase ([70c5fb7](https://gitlab.com/Hedzer/snice/commit/70c5fb719c590811d09ca8caa24ed42d10428dd0))
+* spotlight portal rendering, waterfall direct DOM with [@watch](https://gitlab.com/watch) ([28b1f08](https://gitlab.com/Hedzer/snice/commit/28b1f08812c46c2dbd5e8a86b219ad37c9035315))
+
+
+### Features
+
+* add 27 new components ([79f3ea2](https://gitlab.com/Hedzer/snice/commit/79f3ea294e15a610341f2cda306459dd3a1a1714))
+* add app-tiles component with docs and showcase ([63f3f9d](https://gitlab.com/Hedzer/snice/commit/63f3f9dcb838bc3846a69fb4bb155a52922c33cb))
+* add showcases for new components, update tasks and build scripts ([b8981a4](https://gitlab.com/Hedzer/snice/commit/b8981a4d9feeca6cbe351d3aa73ee20379782f0d))
+* add showcases for remaining new components, update manifest and build config ([fb85628](https://gitlab.com/Hedzer/snice/commit/fb856282d53217276a4a945af74e22cb2ccfb478))
+* add tests and react adapters for new components ([72a3a9a](https://gitlab.com/Hedzer/snice/commit/72a3a9a0af4d8be5589bae4e9af6e5dfa40c8b25))
+* incremental single-component rebuild in dev server ([223014b](https://gitlab.com/Hedzer/snice/commit/223014b415b403f02596b03bd91421f9ca059da2))
+* mobile responsive website, collapsible code blocks, pricing-table mobile fix ([3713ad9](https://gitlab.com/Hedzer/snice/commit/3713ad99ca295dcdf3a7f6a8bc2406a77391adc4))
+* spreadsheet multi-cell selection, undo/redo, column resize, context menu ([c310531](https://gitlab.com/Hedzer/snice/commit/c310531c5b9e385228dc3eeaff9ba37a6a3469b1))
+
 # [4.9.0](https://gitlab.com/Hedzer/snice/compare/v4.8.0...v4.9.0) (2026-02-23)
 
 
