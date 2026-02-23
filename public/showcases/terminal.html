@@ -19,50 +19,120 @@
     </div>
 
 <script>
-// Initialize terminal with boot sequence
     customElements.whenDefined('snice-terminal').then(() => {
       const terminal = document.getElementById('demo-terminal');
-      if (terminal) {
-        const bootLines = [
-          ['[boot] Snice OS v4.5.0', 'info'],
-          ['[init] Loading kernel modules...', 'output'],
-          ['[init] ├── snice-core       ✓', 'success'],
-          ['[init] ├── snice-components ✓', 'success'],
-          ['[init] ├── snice-theme      ✓', 'success'],
-          ['[init] └── snice-runtime    ✓', 'success'],
-          ['[net]  Connecting to network... done', 'output'],
-          ['[sys]  Memory: 256MB / 512MB (50%)', 'output'],
-          ['[sys]  CPU: 2 cores @ 3.2GHz', 'output'],
-          ['', 'output'],
-          ['Welcome! Type "help" for commands.', 'info']
-        ];
-        let i = 0;
-        const typeNext = () => {
-          if (i < bootLines.length) {
-            terminal.writeln(bootLines[i][0], bootLines[i][1]);
-            i++;
-            setTimeout(typeNext, 80 + Math.random() * 120);
-          }
-        };
-        setTimeout(typeNext, 300);
-        terminal.addEventListener('terminal-command', (e) => {
-          const { command } = e.detail;
-          if (command === 'help') {
-            terminal.writeln('Commands: help, clear, echo, date, status, version');
-          } else if (command === 'clear') {
-            terminal.clear();
-          } else if (command === 'date') {
-            terminal.writeln(new Date().toLocaleString(), 'success');
-          } else if (command === 'status') {
-            terminal.writeln('All systems operational ✓', 'success');
-          } else if (command === 'version') {
-            terminal.writeln('Snice v4.5.0 (build 63ddcac)', 'info');
-          } else if (command.startsWith('echo ')) {
-            terminal.writeln(command.slice(5));
-          } else {
-            terminal.writeln('Command not found: ' + command, 'error');
-          }
-        });
+      if (!terminal) return;
+
+      let stopped = false;
+      const delay = (ms) => new Promise(r => setTimeout(r, ms));
+      const rnd = (min, max) => min + Math.random() * (max - min);
+
+      async function typeLine(text, type, ms) {
+        if (stopped) return;
+        terminal.writeln(text, type || 'output');
+        await delay(ms || rnd(60, 140));
       }
+
+      async function runBoot() {
+        await typeLine('[boot] Snice OS v4.8.0', 'info', 200);
+        await typeLine('[init] Loading modules...', 'output');
+        const mods = ['snice-core', 'snice-components', 'snice-theme', 'snice-runtime'];
+        for (let i = 0; i < mods.length; i++) {
+          const pfx = i < mods.length - 1 ? '├──' : '└──';
+          await typeLine(`[init] ${pfx} ${mods[i].padEnd(18)} ✓`, 'success');
+        }
+        await typeLine('', 'output', 100);
+      }
+
+      async function runBuild() {
+        await typeLine('$ npm run build', 'output', 300);
+        await typeLine('', 'output', 80);
+        const steps = [
+          ['[build] Compiling TypeScript...', 'output'],
+          ['[build]   src/index.ts → dist/index.js', 'output'],
+          ['[build]   src/decorators.ts → dist/decorators.js', 'output'],
+          ['[build]   src/runtime.ts → dist/runtime.js', 'output'],
+          ['[build] TypeScript compiled (0.8s)', 'success'],
+          ['[build] Bundling components...', 'output'],
+          ['[build]   button    2.1kb  gzip: 0.9kb', 'output'],
+          ['[build]   input     3.4kb  gzip: 1.2kb', 'output'],
+          ['[build]   modal     4.2kb  gzip: 1.8kb', 'output'],
+          ['[build]   table     5.7kb  gzip: 2.3kb', 'output'],
+          ['[build]   terminal  3.8kb  gzip: 1.5kb', 'output'],
+          ['[build] 47 components bundled (1.2s)', 'success'],
+          ['[build] Total: 142kb  gzip: 48kb', 'info'],
+        ];
+        for (const [text, type] of steps) await typeLine(text, type);
+        await typeLine('', 'output', 200);
+      }
+
+      async function runTests() {
+        await typeLine('$ npm test', 'output', 300);
+        await typeLine('', 'output', 80);
+        const suites = [
+          'decorators/element', 'decorators/property', 'decorators/render',
+          'decorators/styles', 'decorators/watch', 'decorators/query',
+          'components/button', 'components/input', 'components/modal',
+          'components/table', 'components/terminal', 'components/chart',
+        ];
+        for (const suite of suites) {
+          if (stopped) return;
+          const passed = Math.floor(rnd(4, 12));
+          await typeLine(`  ✓ ${suite} (${passed} tests, ${Math.floor(rnd(8, 45))}ms)`, 'success');
+        }
+        const total = Math.floor(rnd(87, 104));
+        await typeLine('', 'output', 100);
+        await typeLine(`[test] ${total} tests passed, 0 failed (${(rnd(1.1, 2.4)).toFixed(1)}s)`, 'success');
+        await typeLine('', 'output', 200);
+      }
+
+      async function runDeploy() {
+        await typeLine('$ npx snice deploy --prod', 'output', 300);
+        await typeLine('', 'output', 80);
+        await typeLine('[deploy] Optimizing assets...', 'output');
+        await typeLine('[deploy] Uploading to CDN...', 'output');
+        const bars = ['░░░░░░░░░░', '███░░░░░░░', '██████░░░░', '████████░░', '██████████'];
+        for (const bar of bars) {
+          await typeLine(`[deploy]   [${bar}]`, 'output', rnd(200, 400));
+        }
+        await typeLine('[deploy] Purging cache...', 'output');
+        await typeLine('[deploy] Live at https://snice.dev ✓', 'success');
+        await typeLine('', 'output', 200);
+      }
+
+      async function loop() {
+        await runBoot();
+        while (!stopped) {
+          await runBuild();
+          if (stopped) break;
+          await runTests();
+          if (stopped) break;
+          await runDeploy();
+          if (stopped) break;
+          await typeLine('[sys] Watching for changes...', 'info', 1500);
+          terminal.clear();
+        }
+      }
+
+      loop();
+
+      terminal.addEventListener('terminal-command', (e) => {
+        const { command } = e.detail;
+        if (command === 'help') {
+          terminal.writeln('Commands: help, clear, echo, date, status, version');
+        } else if (command === 'clear') {
+          terminal.clear();
+        } else if (command === 'date') {
+          terminal.writeln(new Date().toLocaleString(), 'success');
+        } else if (command === 'status') {
+          terminal.writeln('All systems operational ✓', 'success');
+        } else if (command === 'version') {
+          terminal.writeln('Snice v4.8.0 (build ea70767)', 'info');
+        } else if (command.startsWith('echo ')) {
+          terminal.writeln(command.slice(5));
+        } else {
+          terminal.writeln('Command not found: ' + command, 'error');
+        }
+      });
     });
 </script>

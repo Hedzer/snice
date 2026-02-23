@@ -108,11 +108,16 @@ npx snice create-app my-app</code></pre>
 
 <span class="d">@element</span>(<span class="s">'my-counter'</span>)
 <span class="k">class</span> <span class="t">MyCounter</span> <span class="k">extends</span> <span class="t">HTMLElement</span> {
-  <span class="d">@property</span>({ type: Number }) count = 0;
+  <span class="d">@property</span>({ type: Number })
+  count = 0;
 
   <span class="d">@render</span>()
   <span class="f">template</span>() {
-    <span class="k">return</span> html<span class="s">`&lt;button @click=&dollar;{() =&gt; this.count++}&gt;&dollar;{this.count}&lt;/button&gt;`</span>;
+    <span class="k">return</span> html<span class="s">`
+      &lt;button @click=&dollar;{() =&gt; this.count++}&gt;
+        &dollar;{this.count}
+      &lt;/button&gt;
+    `</span>;
   }
 }</code></pre>
           <p class="desc" style="margin-top:0.75rem"><strong>Best for:</strong> Full applications, SPAs, projects using a bundler.</p>
@@ -180,12 +185,17 @@ npx snice create-app my-app</code></pre>
           <p class="desc">Properties sync with HTML attributes and trigger re-renders automatically.</p>
           <pre><code><span class="d">@element</span>(<span class="s">'task-item'</span>)
 <span class="k">class</span> <span class="t">TaskItem</span> <span class="k">extends</span> <span class="t">HTMLElement</span> {
-  <span class="d">@property</span>() label = <span class="s">''</span>;
-  <span class="d">@property</span>({ type: Boolean }) done = <span class="k">false</span>;
+  <span class="d">@property</span>()
+  label = <span class="s">''</span>;
+
+  <span class="d">@property</span>({ type: Boolean })
+  done = <span class="k">false</span>;
 
   <span class="d">@render</span>()
   <span class="f">template</span>() {
-    <span class="k">return</span> html<span class="s">`&lt;span&gt;${this.label}&lt;/span&gt;`</span>;
+    <span class="k">return</span> html<span class="s">`
+      &lt;span&gt;${this.label}&lt;/span&gt;
+    `</span>;
   }
 }</code></pre>
           <p class="desc" style="margin-top:0.75rem"><span class="h">&lt;task-item</span> <span class="a">label</span>=<span class="s">"Buy groceries"</span><span class="h">&gt;&lt;/task-item&gt;</span></p>
@@ -197,8 +207,16 @@ npx snice create-app my-app</code></pre>
           <pre><code><span class="d">@styles</span>()
 <span class="f">css</span>() {
   <span class="k">return</span> css<span class="s">`
-    :host { display: flex; align-items: center; padding: 0.5rem; }
-    :host([done]) span { text-decoration: line-through; opacity: 0.5; }
+    :host {
+      display: flex;
+      align-items: center;
+      padding: 0.5rem;
+    }
+
+    :host([done]) span {
+      text-decoration: line-through;
+      opacity: 0.5;
+    }
   `</span>;
 }</code></pre>
           <p class="desc" style="margin-top:0.75rem">Use <code>:host</code> to style the element itself. <code>:host([done])</code> targets when the <code>done</code> attribute is present.</p>
@@ -214,9 +232,11 @@ npx snice create-app my-app</code></pre>
           <pre><code><span class="d">@render</span>()
 <span class="f">template</span>() {
   <span class="k">return</span> html<span class="s">`
-    &lt;input type="checkbox"
+    &lt;input
+      type="checkbox"
       .checked=${this.done}
-      @change=${this.toggle} /&gt;
+      @change=${this.toggle}
+    /&gt;
     &lt;span&gt;${this.label}&lt;/span&gt;
   `</span>;
 }
@@ -247,7 +267,8 @@ npx snice create-app my-app</code></pre>
     &lt;input
       placeholder="New task..."
       @keydown:Enter=${this.addTask}
-      @keydown:Escape=${this.clear} /&gt;
+      @keydown:Escape=${this.clear}
+    /&gt;
   `</span>;
 }</code></pre>
           <p class="desc" style="margin-top:0.75rem">Combos: <code>@keydown:ctrl+s</code>, <code>@keydown:shift+Enter</code>. Works on any element.</p>
@@ -279,7 +300,11 @@ npx snice create-app my-app</code></pre>
           <pre><code><span class="d">@render</span>()
 <span class="f">template</span>() {
   <span class="k">return</span> html<span class="s">`
-    &lt;input type="checkbox" .checked=${this.done} @change=${this.toggle} /&gt;
+    &lt;input
+      type="checkbox"
+      .checked=${this.done}
+      @change=${this.toggle}
+    /&gt;
     &lt;span&gt;${this.label}&lt;/span&gt;
 
     &lt;if ${this.done}&gt;
@@ -300,12 +325,13 @@ npx snice create-app my-app</code></pre>
   <span class="d">@render</span>()
   <span class="f">template</span>() {
     <span class="k">return</span> html<span class="s">`
-      ${this.items.map(item => html`
+      ${this.items.map(item =&gt; html`
         &lt;task-item
           key=${item.id}
           label=${item.label}
           ?done=${item.done}
-          @status-changed=${(e) => this.update(e.detail)}&gt;
+          @status-changed=${(e) =&gt; this.update(e.detail)}
+        &gt;
         &lt;/task-item&gt;
       `)}
     `</span>;
@@ -399,26 +425,48 @@ npx snice create-app my-app</code></pre>
 
 <span class="d">@element</span>(<span class="s">'task-item'</span>)
 <span class="k">class</span> <span class="t">TaskItem</span> <span class="k">extends</span> <span class="t">HTMLElement</span> {
-  <span class="d">@property</span>() label = <span class="s">''</span>;
-  <span class="d">@property</span>({ type: Boolean }) done = <span class="k">false</span>;
+  <span class="d">@property</span>()
+  label = <span class="s">''</span>;
 
-  <span class="d">@query</span>(<span class="s">'input'</span>) checkbox!: <span class="t">HTMLInputElement</span>;
+  <span class="d">@property</span>({ type: Boolean })
+  done = <span class="k">false</span>;
+
+  <span class="d">@query</span>(<span class="s">'input'</span>)
+  checkbox!: <span class="t">HTMLInputElement</span>;
 
   <span class="d">@render</span>()
   <span class="f">template</span>() {
     <span class="k">return</span> html<span class="s">`
-      &lt;input type="checkbox" .checked=${this.done} @change=${this.toggle} /&gt;
+      &lt;input
+        type="checkbox"
+        .checked=${this.done}
+        @change=${this.toggle}
+      /&gt;
       &lt;span&gt;${this.label}&lt;/span&gt;
-      &lt;if ${this.done}&gt;&lt;small&gt;Done&lt;/small&gt;&lt;/if&gt;
+      &lt;if ${this.done}&gt;
+        &lt;small&gt;Done&lt;/small&gt;
+      &lt;/if&gt;
     `</span>;
   }
 
   <span class="d">@styles</span>()
   <span class="f">css</span>() {
     <span class="k">return</span> css<span class="s">`
-      :host { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; }
-      :host([done]) span { text-decoration: line-through; opacity: 0.5; }
-      small { color: green; }
+      :host {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem;
+      }
+
+      :host([done]) span {
+        text-decoration: line-through;
+        opacity: 0.5;
+      }
+
+      small {
+        color: green;
+      }
     `</span>;
   }
 
@@ -440,7 +488,7 @@ npx snice create-app my-app</code></pre>
 
   <footer>
     <div class="wrap">
-      <span>Snice v4.6.0 &middot; MIT</span>
+      <span>Snice v4.8.0 &middot; MIT</span>
       <span><a href="https://www.npmjs.com/package/snice">npm</a> &middot; <a href="https://gitlab.com/Hedzer/snice">Source</a></span>
     </div>
   </footer>
