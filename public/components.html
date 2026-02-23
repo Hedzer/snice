@@ -131,7 +131,7 @@
   <main class="wrap">
     <div class="page-title">
       <h2><span id="comp-count"></span> Components</h2>
-      <p>Pre-built UI components. Use standalone or with React/Vue/Angular.</p>
+      <p>No framework, no virtual DOM — just the platform, made elegant.</p>
     </div>
 
     <!-- ════════════════════════════════════════ -->
@@ -3158,19 +3158,34 @@ timeline.items = [
       </div>
       <snice-modal id="camera-annotate-modal" size="large" label="Camera Annotate">
         <h3 slot="header">Camera Annotate</h3>
-        <snice-camera-annotate id="demo-camera-annotate" style="height:480px"></snice-camera-annotate>
+        <div id="camera-annotate-container" style="height:480px"></div>
         <div slot="footer" style="display:flex;gap:0.5rem;justify-content:flex-end">
-          <snice-button variant="default" onclick="document.getElementById('demo-camera-annotate').clearAnnotations(); document.getElementById('camera-annotate-modal').close()">Close</snice-button>
+          <snice-button variant="default" onclick="document.getElementById('camera-annotate-container').innerHTML=''; document.getElementById('camera-annotate-modal').close()">Close</snice-button>
         </div>
       </snice-modal>
       <snice-modal id="camera-annotate-nolabels-modal" size="large" label="Camera Annotate (No Labels)">
         <h3 slot="header">Camera Annotate — No Labels Panel</h3>
-        <snice-camera-annotate id="demo-camera-annotate-nolabels" show-labels-panel="false" style="height:480px"></snice-camera-annotate>
+        <div id="camera-annotate-nolabels-container" style="height:480px"></div>
         <div slot="footer" style="display:flex;gap:0.5rem;justify-content:flex-end">
-          <snice-button variant="default" onclick="document.getElementById('camera-annotate-nolabels-modal').close()">Close</snice-button>
+          <snice-button variant="default" onclick="document.getElementById('camera-annotate-nolabels-container').innerHTML=''; document.getElementById('camera-annotate-nolabels-modal').close()">Close</snice-button>
         </div>
       </snice-modal>
     </div>
+<script>
+    // Only create camera-annotate elements when modals open (avoids camera permission on page load)
+    document.getElementById('camera-annotate-modal')?.addEventListener('snice-modal-open', () => {
+      const container = document.getElementById('camera-annotate-container');
+      if (container && !container.querySelector('snice-camera-annotate')) {
+        container.innerHTML = '<snice-camera-annotate style="height:480px"></snice-camera-annotate>';
+      }
+    });
+    document.getElementById('camera-annotate-nolabels-modal')?.addEventListener('snice-modal-open', () => {
+      const container = document.getElementById('camera-annotate-nolabels-container');
+      if (container && !container.querySelector('snice-camera-annotate')) {
+        container.innerHTML = '<snice-camera-annotate show-labels-panel="false" style="height:480px"></snice-camera-annotate>';
+      }
+    });
+</script>
     <!-- ── 12. QR Code ── -->
     <div class="comp-section">
       <h3>QR Code</h3>
@@ -3829,9 +3844,9 @@ const x = 42;
       <p class="comp-desc">Countdown and stopwatch timers</p>
       <div class="comp-split">
         <div class="comp-split-demo" style="gap:2rem">
-          <snice-timer mode="stopwatch"></snice-timer>
-          <snice-timer mode="timer" initial-time="60"></snice-timer>
-          <snice-timer mode="timer" initial-time="300"></snice-timer>
+          <snice-timer id="demo-stopwatch" mode="stopwatch"></snice-timer>
+          <snice-timer id="demo-timer-60" mode="timer" initial-time="60"></snice-timer>
+          <snice-timer id="demo-timer-300" mode="timer" initial-time="300"></snice-timer>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
