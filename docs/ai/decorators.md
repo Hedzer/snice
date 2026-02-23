@@ -4,7 +4,7 @@
 - `@element('tag-name')` - Custom element
 - `@page({ tag, routes, guards?, placard? })` - Routable page
 - `@controller('name')` - Swappable behavior
-- `@layout('name')` - Page wrapper
+- `@layout('tag-name')` - Page wrapper for routing system
 
 ## Rendering
 - `@render()` - Template method, returns `html\`...\``
@@ -12,12 +12,14 @@
 - `@styles()` - Scoped CSS, returns `css\`...\``
 
 ## Properties
-- `@property({ type?, attribute?, reflect? })` - Reactive, syncs attrs
-- `@watch('propName')` - React to changes: `(old, new) => void`
+- `@property({ type?, attribute?, converter?, hasChanged? })` - Reactive, syncs attrs
+- `@watch('propName')` - React to changes: `(oldVal, newVal, propertyName) => void`
 
 ## Lifecycle
 - `@ready()` - After first render
 - `@dispose()` - Cleanup on disconnect
+- `@moved(options?: { throttle?, debounce? })` - On adoptedCallback (element moved between documents)
+- `@adopted(options?: { throttle?, debounce? })` - On adoptedCallback (alias for moved)
 
 ## DOM
 - `@query('selector')` - Single element
@@ -26,6 +28,26 @@
 ## Events
 - `@on('event', 'selector?')` - Delegation, auto-bound
 - `@dispatch('event-name')` - Emit CustomEvent, detail = return value
+
+## Communication
+- `@request(channel, options?)` - Async generator request pattern
+- `@respond(channel, options?)` - Handle requests from `@request`
+- `@context(options?)` - Receive router navigation context updates
+
+## Observers
+- `@observe(target, selector?, options?)` - Watch intersection, resize, media query, mutation
+  - `'intersection'` - Viewport visibility (IntersectionObserver)
+  - `'resize'` - Element size changes (ResizeObserver)
+  - `'media:(query)'` - Media query changes (e.g., `'media:(min-width: 768px)'`)
+  - `'mutation:childList'` - DOM child changes (MutationObserver)
+  - `'mutation:attributes'` - Attribute changes
+  - `'mutation:attributes:name'` - Watch specific attribute
+
+## Utility Method Decorators
+- `@debounce(wait?, { leading?, trailing?, maxWait? })` - Delay execution until calls stop
+- `@throttle(wait?, { leading?, trailing? })` - Limit calls to once per interval
+- `@once(perInstance?)` - Execute method only once
+- `@memoize({ keyGenerator?, maxSize?, ttl? })` - Cache return values
 
 ## Template Bindings
 ```

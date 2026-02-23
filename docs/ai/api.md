@@ -35,12 +35,12 @@
 ## Properties
 
 ```typescript
-@property(options?: { type?, attribute?, reflect? })
+@property(options?: { type?, attribute?, converter?, hasChanged? })
 // Syncs with attributes, triggers re-render
 // Types: String (default), Number, Boolean, Object, Array
 
 @watch(...propertyNames: string[])
-// Called on property change: (oldVal, newVal) => void
+// Called on property change: (oldVal, newVal, propertyName) => void
 ```
 
 ## Lifecycle
