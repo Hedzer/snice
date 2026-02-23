@@ -1,29 +1,31 @@
     <div class="comp-section">
       <h3>Book</h3>
-      <p class="comp-desc">Realistic book with page-flip navigation, spread/single mode, and cover page</p>
+      <p class="comp-desc">CSS-only page-flip book with 3D transforms, based on the Foundation book preview CodePen</p>
       <div class="comp-split comp-split-stacked">
         <div class="comp-split-demo" style="justify-content:center">
-          <snice-book id="demo-book" title="Web Components" author="Jane Developer" cover-image="https://picsum.photos/seed/bookcover/200/300" style="width:100%">
-            <div style="padding:0.5rem;line-height:1.7;font-size:0.85rem">
-              <h4 style="margin:0 0 0.5rem;font-size:0.95rem">Chapter 1: Introduction</h4>
-              <p style="margin:0">Web Components are a set of web platform APIs that allow you to create new custom, reusable, encapsulated HTML tags.</p>
-            </div>
-            <div style="padding:0.5rem;line-height:1.7;font-size:0.85rem">
-              <h4 style="margin:0 0 0.5rem;font-size:0.95rem">Chapter 2: Custom Elements</h4>
-              <p style="margin:0">Custom Elements let you define your own HTML elements with custom behavior and styling using the CustomElementRegistry.</p>
-            </div>
-            <div style="padding:0.5rem;line-height:1.7;font-size:0.85rem">
-              <h4 style="margin:0 0 0.5rem;font-size:0.95rem">Chapter 3: Shadow DOM</h4>
-              <p style="margin:0">Shadow DOM provides encapsulation. Styles and markup inside a shadow root are isolated from the rest of the page.</p>
-            </div>
-            <div style="padding:0.5rem;line-height:1.7;font-size:0.85rem">
-              <h4 style="margin:0 0 0.5rem;font-size:0.95rem">Chapter 4: Templates</h4>
-              <p style="margin:0">HTML Templates define inert fragments that can be cloned and inserted into the document at runtime.</p>
-            </div>
-            <div style="padding:0.5rem;line-height:1.7;font-size:0.85rem">
-              <h4 style="margin:0 0 0.5rem;font-size:0.95rem">Chapter 5: Conclusion</h4>
-              <p style="margin:0">Web Components work everywhere, without framework lock-in. They are the future of reusable UI development.</p>
-            </div>
+          <snice-book id="demo-book" title="Web Components" author="Jane Developer" cover-image="https://picsum.photos/seed/bookcover/400/600" style="width:100%">
+            <snice-book-page>
+              <div slot="front" style="padding:var(--book-baseline,12px);height:100%;text-align:center">
+                <h1 style="font-size:calc(var(--book-base-size,14.4px) * 3);font-weight:bold;text-transform:uppercase;letter-spacing:3px;margin-top:calc(var(--book-baseline,12px) * 5)">Web Components</h1>
+                <h2 style="font-size:calc(var(--book-base-size,14.4px) * 1.2);font-weight:100;text-transform:uppercase;border-top:1px solid;border-bottom:1px solid;display:inline-block;padding:6px 2px;margin-bottom:calc(var(--book-baseline,12px) * 6)">Jane Developer</h2>
+              </div>
+              <div slot="back" style="padding:var(--book-baseline,12px);height:100%;text-align:center">
+                <h1 style="font-size:calc(var(--book-base-size,14.4px) * 1);text-transform:uppercase;letter-spacing:1px;margin-top:calc(var(--book-baseline,12px) * 5)">Contents</h1>
+                <table style="width:100%;margin-top:calc(var(--book-baseline,12px) * 2)">
+                  <tr><td align="left">Chapter I</td><td align="left">Custom Elements</td><td align="right">3</td></tr>
+                  <tr><td align="left">Chapter II</td><td align="left">Shadow DOM</td><td align="right">15</td></tr>
+                  <tr><td align="left">Chapter III</td><td align="left">Templates</td><td align="right">27</td></tr>
+                </table>
+              </div>
+            </snice-book-page>
+            <snice-book-page>
+              <div slot="front" style="padding:12px 36px;font-size:calc(var(--book-base-size,14.4px) * 0.67);text-align:justify;text-indent:12px;line-height:1.6">
+                <h4 style="text-align:center;text-transform:uppercase;letter-spacing:1px;margin-bottom:24px">Chapter I: Custom Elements</h4>
+                <p>Web Components are a set of web platform APIs that allow you to create new custom, reusable, encapsulated HTML tags to use in web pages and web apps.</p>
+                <p>Custom Elements let you define your own HTML elements with custom behavior and styling using the CustomElementRegistry.</p>
+                <p>The Custom Elements specification lays the foundation for designing and using new types of DOM elements that are fully-featured and conforming.</p>
+              </div>
+            </snice-book-page>
           </snice-book>
         </div>
         <div class="comp-split-code">
@@ -33,21 +35,20 @@
   author="Jane Developer"
   cover-image="cover.jpg"
 &gt;
-  &lt;div&gt;Page 1 content...&lt;/div&gt;
-  &lt;div&gt;Page 2 content...&lt;/div&gt;
-  &lt;div&gt;Page 3 content...&lt;/div&gt;
-&lt;/snice-book&gt;
-
-&lt;!-- Single page mode --&gt;
-&lt;snice-book mode="single"&gt;
-  &lt;div&gt;...&lt;/div&gt;
+  &lt;snice-book-page&gt;
+    &lt;div slot="front"&gt;Title page&lt;/div&gt;
+    &lt;div slot="back"&gt;Contents&lt;/div&gt;
+  &lt;/snice-book-page&gt;
+  &lt;snice-book-page&gt;
+    &lt;div slot="front"&gt;Chapter 1...&lt;/div&gt;
+  &lt;/snice-book-page&gt;
 &lt;/snice-book&gt;
 
 &lt;script&gt;
   const book = document.querySelector(
     'snice-book');
   book.nextPage();
-  book.goToPage(3);
+  book.goToPage(1);
   book.addEventListener('page-turn',
     e =&gt; console.log(e.detail));
 &lt;/script&gt;</code></pre>
