@@ -147,9 +147,20 @@
   display: block;
 }
 
+/* State visibility — controlled via .is-hidden class */
+.pdf-loading,
+.pdf-error,
+.pdf-empty,
+.pdf-canvas-wrapper {
+  display: none;
+}
+.pdf-loading.is-visible { display: flex; }
+.pdf-error.is-visible { display: flex; }
+.pdf-empty.is-visible { display: flex; }
+.pdf-canvas-wrapper.is-visible { display: block; }
+
 /* Loading state */
-.pdf-loading {
-  display: flex;
+.pdf-loading.is-visible {
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -172,8 +183,7 @@
 }
 
 /* Error state */
-.pdf-error {
-  display: flex;
+.pdf-error.is-visible {
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -190,8 +200,7 @@
 }
 
 /* Empty state */
-.pdf-empty {
-  display: flex;
+.pdf-empty.is-visible {
   flex-direction: column;
   align-items: center;
   justify-content: center;

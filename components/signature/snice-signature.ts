@@ -1,4 +1,4 @@
-import { element, property, query, dispatch, ready, dispose, render, styles, watch, html, css as cssTag } from 'snice';
+import { element, property, query, dispatch, ready, render, styles, watch, observe, html, css as cssTag } from 'snice';
 import cssContent from './snice-signature.css?inline';
 import type { SniceSignatureElement } from './snice-signature.types';
 
@@ -23,8 +23,6 @@ export class SniceSignature extends HTMLElement implements SniceSignatureElement
   private drawing = false;
   private hasStrokes = false;
   private points: Array<{ x: number; y: number }> = [];
-  private resizeObserver: ResizeObserver | null = null;
-
   @dispatch('signature-change', { bubbles: true, composed: true })
   private emitSignatureChange() {
     return { empty: !this.hasStrokes };
@@ -38,13 +36,11 @@ export class SniceSignature extends HTMLElement implements SniceSignatureElement
   @ready()
   init() {
     this.setupCanvas();
-    this.resizeObserver = new ResizeObserver(() => this.handleResize());
-    this.resizeObserver.observe(this.canvas);
   }
 
-  @dispose()
-  cleanup() {
-    this.resizeObserver?.disconnect();
+  @observe('resize', 'canvas')
+  handleCanvasResize() {
+    this.handleResize();
   }
 
   @watch('backgroundColor')
