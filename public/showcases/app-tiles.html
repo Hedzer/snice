@@ -1,0 +1,213 @@
+    <!-- ── App Tiles ── -->
+    <div class="comp-section">
+      <h3>App Tiles</h3>
+      <p class="comp-desc">App launcher grid like Google's app drawer or a phone home screen</p>
+
+      <!-- Grid: Material icons -->
+      <div class="comp-split" style="margin-bottom:1.5rem">
+        <div class="comp-split-demo">
+          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:0.5rem;position:relative;background:var(--snice-color-background,#1a1a2e);width:18rem">
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">material icons</span>
+            <snice-app-tiles columns="3">
+              <snice-app-tile name="Mail" icon="mail" color="rgb(220 38 38)"></snice-app-tile>
+              <snice-app-tile name="Calendar" icon="calendar_today" color="rgb(37 99 235)"></snice-app-tile>
+              <snice-app-tile name="Drive" icon="folder" color="rgb(234 88 12)"></snice-app-tile>
+              <snice-app-tile name="Photos" icon="photo_library" color="rgb(22 163 74)"></snice-app-tile>
+              <snice-app-tile name="Maps" icon="map" color="rgb(14 165 233)"></snice-app-tile>
+              <snice-app-tile name="Videos" icon="play_circle" color="rgb(220 38 38)" badge="5"></snice-app-tile>
+              <snice-app-tile name="Docs" icon="description" color="rgb(37 99 235)"></snice-app-tile>
+              <snice-app-tile name="Meet" icon="video_call" color="rgb(22 163 74)"></snice-app-tile>
+              <snice-app-tile name="Chat" icon="chat" color="rgb(147 51 234)" badge="12"></snice-app-tile>
+            </snice-app-tiles>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-app-tiles columns="3"&gt;
+  &lt;snice-app-tile name="Mail"
+    icon="mail"
+    color="rgb(220 38 38)"&gt;&lt;/snice-app-tile&gt;
+  &lt;snice-app-tile name="Videos"
+    icon="play_circle"
+    badge="5"&gt;&lt;/snice-app-tile&gt;
+&lt;/snice-app-tiles&gt;</code></pre>
+        </div>
+      </div>
+
+      <!-- Grid: Letter fallback -->
+      <div class="comp-split" style="margin-bottom:1.5rem">
+        <div class="comp-split-demo">
+          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:0.5rem;position:relative;background:var(--snice-color-background,#1a1a2e);width:18rem">
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">letter fallback</span>
+            <snice-app-tiles columns="3">
+              <snice-app-tile name="Slack" color="rgb(97 31 105)"></snice-app-tile>
+              <snice-app-tile name="Figma" color="rgb(162 89 255)"></snice-app-tile>
+              <snice-app-tile name="GitHub" color="rgb(82 82 82)"></snice-app-tile>
+              <snice-app-tile name="Notion" color="rgb(55 53 47)"></snice-app-tile>
+              <snice-app-tile name="Linear" color="rgb(99 91 255)"></snice-app-tile>
+              <snice-app-tile name="Vercel" color="rgb(23 23 23)"></snice-app-tile>
+              <snice-app-tile name="AWS" color="rgb(255 153 0)" badge="!"></snice-app-tile>
+              <snice-app-tile name="Docker" color="rgb(29 99 237)"></snice-app-tile>
+              <snice-app-tile name="Stripe" color="rgb(99 91 255)"></snice-app-tile>
+            </snice-app-tiles>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;!-- No icon = colored letter --&gt;
+&lt;snice-app-tiles columns="3"&gt;
+  &lt;snice-app-tile name="Slack"
+    color="rgb(97 31 105)"&gt;
+  &lt;/snice-app-tile&gt;
+  &lt;snice-app-tile name="AWS"
+    color="rgb(255 153 0)"
+    badge="!"&gt;
+  &lt;/snice-app-tile&gt;
+&lt;/snice-app-tiles&gt;</code></pre>
+        </div>
+      </div>
+
+      <!-- List variant -->
+      <div class="comp-split" style="margin-bottom:1.5rem">
+        <div class="comp-split-demo">
+          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:0.5rem;position:relative;background:var(--snice-color-background,#1a1a2e);width:18rem">
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">list variant</span>
+            <snice-app-tiles columns="1" variant="list">
+              <snice-app-tile name="Dashboard" icon="dashboard" color="rgb(37 99 235)"></snice-app-tile>
+              <snice-app-tile name="Analytics" icon="bar_chart" color="rgb(22 163 74)"></snice-app-tile>
+              <snice-app-tile name="Messages" icon="chat" color="rgb(147 51 234)" badge="8"></snice-app-tile>
+              <snice-app-tile name="Calendar" icon="calendar_today" color="rgb(234 88 12)"></snice-app-tile>
+              <snice-app-tile name="Settings" icon="settings" color="rgb(82 82 82)"></snice-app-tile>
+            </snice-app-tiles>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-app-tiles columns="1"
+  variant="list"&gt;
+  &lt;snice-app-tile name="Dashboard"
+    icon="dashboard"
+    color="rgb(37 99 235)"&gt;
+  &lt;/snice-app-tile&gt;
+  &lt;snice-app-tile name="Messages"
+    icon="chat" badge="8"&gt;
+  &lt;/snice-app-tile&gt;
+&lt;/snice-app-tiles&gt;</code></pre>
+        </div>
+      </div>
+
+      <!-- Compact variant (icon left, name right, multi-column) -->
+      <div class="comp-split" style="margin-bottom:1.5rem">
+        <div class="comp-split-demo">
+          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:0.5rem;position:relative;background:var(--snice-color-background,#1a1a2e);width:22rem">
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">compact variant</span>
+            <snice-app-tiles columns="2" variant="compact">
+              <snice-app-tile name="Dashboard" icon="dashboard" color="rgb(37 99 235)"></snice-app-tile>
+              <snice-app-tile name="Analytics" icon="bar_chart" color="rgb(22 163 74)"></snice-app-tile>
+              <snice-app-tile name="Messages" icon="chat" color="rgb(147 51 234)" badge="8"></snice-app-tile>
+              <snice-app-tile name="Calendar" icon="calendar_today" color="rgb(234 88 12)"></snice-app-tile>
+              <snice-app-tile name="Settings" icon="settings" color="rgb(82 82 82)"></snice-app-tile>
+              <snice-app-tile name="Billing" icon="payments" color="rgb(22 163 74)"></snice-app-tile>
+            </snice-app-tiles>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-app-tiles columns="2"
+  variant="compact"&gt;
+  &lt;snice-app-tile name="Dashboard"
+    icon="dashboard"
+    color="rgb(37 99 235)"&gt;
+  &lt;/snice-app-tile&gt;
+  &lt;snice-app-tile name="Messages"
+    icon="chat" badge="8"&gt;
+  &lt;/snice-app-tile&gt;
+&lt;/snice-app-tiles&gt;</code></pre>
+        </div>
+      </div>
+
+      <!-- Sizes -->
+      <div class="comp-split" style="margin-bottom:1.5rem">
+        <div class="comp-split-demo" style="display:flex;gap:1rem">
+          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:0.5rem;position:relative;background:var(--snice-color-background,#1a1a2e);width:10rem">
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">small</span>
+            <snice-app-tiles columns="2" size="sm">
+              <snice-app-tile name="Home" icon="home"></snice-app-tile>
+              <snice-app-tile name="Search" icon="search"></snice-app-tile>
+              <snice-app-tile name="Alerts" icon="notifications" badge="3"></snice-app-tile>
+              <snice-app-tile name="Settings" icon="settings"></snice-app-tile>
+            </snice-app-tiles>
+          </div>
+          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:0.5rem;position:relative;background:var(--snice-color-background,#1a1a2e);width:13rem">
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">large</span>
+            <snice-app-tiles columns="2" size="lg">
+              <snice-app-tile name="Music" icon="music_note" color="rgb(220 38 38)"></snice-app-tile>
+              <snice-app-tile name="Games" icon="sports_esports" color="rgb(22 163 74)"></snice-app-tile>
+              <snice-app-tile name="Videos" icon="movie" color="rgb(37 99 235)"></snice-app-tile>
+              <snice-app-tile name="Books" icon="menu_book" color="rgb(234 88 12)"></snice-app-tile>
+            </snice-app-tiles>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;!-- size: sm, md (default), lg --&gt;
+&lt;snice-app-tiles columns="2"
+  size="sm"&gt;
+  &lt;snice-app-tile name="Home"
+    icon="home"&gt;&lt;/snice-app-tile&gt;
+&lt;/snice-app-tiles&gt;
+
+&lt;snice-app-tiles columns="2"
+  size="lg"&gt;
+  &lt;snice-app-tile name="Music"
+    icon="music_note"
+    color="rgb(220 38 38)"&gt;
+  &lt;/snice-app-tile&gt;
+&lt;/snice-app-tiles&gt;</code></pre>
+        </div>
+      </div>
+
+      <!-- Image icons (imperative) -->
+      <div class="comp-split">
+        <div class="comp-split-demo">
+          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:0.5rem;position:relative;background:var(--snice-color-background,#1a1a2e);width:18rem">
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">image icons</span>
+            <snice-app-tiles id="demo-tiles-images" columns="3"></snice-app-tiles>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">js</span>
+          <pre><code class="language-js">const tiles = document.querySelector(
+  'snice-app-tiles');
+tiles.columns = 3;
+tiles.tiles = [
+  { id: '1', name: 'Chrome',
+    icon: 'https://cdn.../chrome.svg' },
+  { id: '2', name: 'Slack',
+    icon: 'https://cdn.../slack.svg' },
+];
+tiles.addEventListener('tile-click',
+  e =&gt; console.log(e.detail.tile));</code></pre>
+        </div>
+      </div>
+
+    </div>
+
+<script>
+    customElements.whenDefined('snice-app-tiles').then(() => {
+      const el = document.getElementById('demo-tiles-images');
+      if (el) {
+        el.tiles = [
+          { id: '1', name: 'Chrome', icon: 'https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/googlechrome.svg' },
+          { id: '2', name: 'Firefox', icon: 'https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/firefox.svg' },
+          { id: '3', name: 'VS Code', icon: 'https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/visualstudiocode.svg' },
+          { id: '4', name: 'Spotify', icon: 'https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/spotify.svg' },
+          { id: '5', name: 'Twitch', icon: 'https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/twitch.svg' },
+          { id: '6', name: 'Reddit', icon: 'https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/reddit.svg' },
+          { id: '7', name: 'Discord', icon: 'https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/discord.svg' },
+          { id: '8', name: 'Slack', icon: 'https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/slack.svg' },
+          { id: '9', name: 'GitHub', icon: 'https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/github.svg' },
+        ];
+      }
+    });
+</script>

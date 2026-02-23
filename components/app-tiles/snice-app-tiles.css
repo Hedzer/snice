@@ -1,0 +1,247 @@
+:host {
+  display: block;
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(var(--tiles-columns, 4), 1fr);
+  gap: var(--snice-spacing-sm, 0.75rem);
+  padding: var(--snice-spacing-sm, 0.75rem);
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--snice-spacing-2xs, 0.25rem);
+  padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-2xs, 0.25rem);
+  border-radius: var(--snice-border-radius-lg, 0.5rem);
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--snice-color-text, rgb(23 23 23));
+  transition: background var(--snice-transition-fast, 150ms) ease;
+  position: relative;
+  border: none;
+  background: none;
+  font-family: inherit;
+  min-width: 0;
+  overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.tile:hover {
+  background: var(--snice-color-background-element, rgb(252 251 249));
+}
+
+.tile:active {
+  background: var(--snice-color-border, rgb(226 226 226));
+}
+
+.tile:focus-visible {
+  outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+  outline-offset: var(--snice-focus-ring-offset, 2px);
+}
+
+/* Icon container */
+.tile__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--snice-border-radius-lg, 0.5rem);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+/* Icon sizing by host size */
+:host([size="sm"]) .tile__icon {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.tile__icon {
+  width: 3rem;
+  height: 3rem;
+}
+
+:host([size="lg"]) .tile__icon {
+  width: 4rem;
+  height: 4rem;
+}
+
+.tile__icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (prefers-color-scheme: dark) {
+  .tile__icon img {
+    filter: invert(1);
+  }
+}
+
+/* Text icon fallback (first letter) */
+.tile__icon--text {
+  font-size: 1.25rem;
+  font-weight: var(--snice-font-weight-semibold, 600);
+  color: rgb(255 255 255);
+}
+
+:host([size="sm"]) .tile__icon--text {
+  font-size: 1rem;
+}
+
+:host([size="lg"]) .tile__icon--text {
+  font-size: 1.5rem;
+}
+
+/* Emoji icon */
+.tile__icon--emoji {
+  font-size: 1.5rem;
+  background: var(--snice-color-background-element, rgb(252 251 249));
+}
+
+:host([size="sm"]) .tile__icon--emoji {
+  font-size: 1.125rem;
+}
+
+:host([size="lg"]) .tile__icon--emoji {
+  font-size: 2rem;
+}
+
+/* Ligature icon (Material Symbols etc.) */
+.tile__icon--ligature {
+  background: var(--snice-color-background-element, rgb(252 251 249));
+}
+
+.tile__icon--ligature .icon {
+  font-family: 'Material Symbols Outlined', sans-serif;
+  font-size: 1.5rem;
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  color: var(--snice-color-text, rgb(23 23 23));
+}
+
+:host([size="sm"]) .tile__icon--ligature .icon {
+  font-size: 1.25rem;
+}
+
+:host([size="lg"]) .tile__icon--ligature .icon {
+  font-size: 2rem;
+}
+
+/* Label */
+.tile__name {
+  font-size: var(--snice-font-size-xs, 0.75rem);
+  text-align: center;
+  line-height: var(--snice-line-height-tight, 1.25);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+:host([size="lg"]) .tile__name {
+  font-size: var(--snice-font-size-sm, 0.875rem);
+}
+
+/* Badge wrapper — snice-badge sits in grid like a tile */
+snice-badge {
+  display: flex;
+}
+
+/* ── Compact variant (icon left, name right, multi-column grid) ── */
+.tiles--compact .tile {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--snice-spacing-xs, 0.5rem);
+  padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
+}
+
+.tiles--compact .tile__icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--snice-border-radius-md, 0.375rem);
+}
+
+:host([size="sm"]) .tiles--compact .tile__icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+:host([size="lg"]) .tiles--compact .tile__icon {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.tiles--compact .tile__icon--emoji {
+  font-size: 1.125rem;
+}
+
+.tiles--compact .tile__icon--text {
+  font-size: 0.875rem;
+}
+
+.tiles--compact .tile__icon--ligature .icon {
+  font-size: 1.25rem;
+}
+
+.tiles--compact .tile__name {
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  text-align: left;
+}
+
+/* ── List variant ── */
+.tiles--list {
+  gap: var(--snice-spacing-2xs, 0.25rem);
+}
+
+.tiles--list .tile {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--snice-spacing-sm, 0.75rem);
+  padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
+  border-radius: var(--snice-border-radius-md, 0.375rem);
+}
+
+.tiles--list .tile__icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--snice-border-radius-md, 0.375rem);
+}
+
+:host([size="sm"]) .tiles--list .tile__icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+:host([size="lg"]) .tiles--list .tile__icon {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.tiles--list .tile__icon--emoji {
+  font-size: 1.125rem;
+}
+
+.tiles--list .tile__icon--text {
+  font-size: 0.875rem;
+}
+
+.tiles--list .tile__icon--ligature .icon {
+  font-size: 1.25rem;
+}
+
+.tiles--list .tile__name {
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  text-align: left;
+}
