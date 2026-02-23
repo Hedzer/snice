@@ -1,88 +1,20 @@
 
-    <div class="comp-list">
-      <span class="comp-tag">snice-accordion</span>
-      <span class="comp-tag">snice-alert</span>
-      <span class="comp-tag">snice-audio-recorder</span>
-      <span class="comp-tag">snice-avatar</span>
-      <span class="comp-tag">snice-badge</span>
-      <span class="comp-tag">snice-banner</span>
-      <span class="comp-tag">snice-breadcrumbs</span>
-      <span class="comp-tag">snice-button</span>
-      <span class="comp-tag">snice-calendar</span>
-      <span class="comp-tag">snice-camera</span>
-      <span class="comp-tag">snice-camera-annotate</span>
-      <span class="comp-tag">snice-candlestick</span>
-      <span class="comp-tag">snice-card</span>
-      <span class="comp-tag">snice-carousel</span>
-      <span class="comp-tag">snice-chart</span>
-      <span class="comp-tag">snice-chat</span>
-      <span class="comp-tag">snice-checkbox</span>
-      <span class="comp-tag">snice-chip</span>
-      <span class="comp-tag">snice-code-block</span>
-      <span class="comp-tag">snice-color-display</span>
-      <span class="comp-tag">snice-color-picker</span>
-      <span class="comp-tag">snice-command-palette</span>
-      <span class="comp-tag">snice-date-picker</span>
-      <span class="comp-tag">snice-divider</span>
-      <span class="comp-tag">snice-doc</span>
-      <span class="comp-tag">snice-draw</span>
-      <span class="comp-tag">snice-drawer</span>
-      <span class="comp-tag">snice-empty-state</span>
-      <span class="comp-tag">snice-file-gallery</span>
-      <span class="comp-tag">snice-file-upload</span>
-      <span class="comp-tag">snice-funnel</span>
-      <span class="comp-tag">snice-gauge</span>
-      <span class="comp-tag">snice-heatmap</span>
-      <span class="comp-tag">snice-image</span>
-      <span class="comp-tag">snice-input</span>
-      <span class="comp-tag">snice-kanban</span>
-      <span class="comp-tag">snice-kpi</span>
-      <span class="comp-tag">snice-layout</span>
-      <span class="comp-tag">snice-link</span>
-      <span class="comp-tag">snice-link-preview</span>
-      <span class="comp-tag">snice-list</span>
-      <span class="comp-tag">snice-location</span>
-      <span class="comp-tag">snice-login</span>
-      <span class="comp-tag">snice-masonry</span>
-      <span class="comp-tag">snice-menu</span>
-      <span class="comp-tag">snice-modal</span>
-      <span class="comp-tag">snice-music-player</span>
-      <span class="comp-tag">snice-nav</span>
-      <span class="comp-tag">snice-network-graph</span>
-      <span class="comp-tag">snice-pagination</span>
-      <span class="comp-tag">snice-paint</span>
-      <span class="comp-tag">snice-progress</span>
-      <span class="comp-tag">snice-qr-code</span>
-      <span class="comp-tag">snice-qr-reader</span>
-      <span class="comp-tag">snice-radio</span>
-      <span class="comp-tag">snice-sankey</span>
-      <span class="comp-tag">snice-select</span>
-      <span class="comp-tag">snice-skeleton</span>
-      <span class="comp-tag">snice-slider</span>
-      <span class="comp-tag">snice-sparkline</span>
-      <span class="comp-tag">snice-spinner</span>
-      <span class="comp-tag">snice-split-pane</span>
-      <span class="comp-tag">snice-stepper</span>
-      <span class="comp-tag">snice-switch</span>
-      <span class="comp-tag">snice-table</span>
-      <span class="comp-tag">snice-tabs</span>
-      <span class="comp-tag">snice-terminal</span>
-      <span class="comp-tag">snice-textarea</span>
-      <span class="comp-tag">snice-timeline</span>
-      <span class="comp-tag">snice-time-range-picker</span>
-      <span class="comp-tag">snice-timer</span>
-      <span class="comp-tag">snice-toast</span>
-      <span class="comp-tag">snice-tooltip</span>
-      <span class="comp-tag">snice-tree</span>
-      <span class="comp-tag">snice-treemap</span>
-      <span class="comp-tag">snice-virtual-scroller</span>
-    </div>
   </main>
+
+  <!-- Help drawer -->
+  <div class="help-overlay" id="help-overlay" style="display:none"></div>
+  <aside class="help-drawer" id="help-drawer" style="visibility:hidden">
+    <div class="help-drawer-header">
+      <h3 id="help-drawer-title">Help</h3>
+      <button class="help-drawer-close" id="help-drawer-close" aria-label="Close">&times;</button>
+    </div>
+    <div class="help-drawer-body" id="help-drawer-body"></div>
+  </aside>
 
   <footer>
     <div class="wrap">
-      <span>Snice v4.5.0 · MIT</span>
-      <span><a href="https://www.npmjs.com/package/snice">npm</a> · <a href="https://gitlab.com/Hedzer/snice">GitLab</a></span>
+      <span>Snice v4.8.0 &middot; MIT</span>
+      <span><a href="https://www.npmjs.com/package/snice">npm</a> &middot; <a href="https://gitlab.com/Hedzer/snice">Source</a></span>
     </div>
   </footer>
 
@@ -175,9 +107,82 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
   <script>
     // Dynamic component count
-    document.getElementById('comp-count').textContent = document.querySelectorAll('.comp-tag').length;
+    document.getElementById('comp-count').textContent = document.querySelectorAll('.comp-section > h3').length;
     // Re-run Prism highlighting after all scripts load
     if (typeof Prism !== 'undefined') Prism.highlightAll();
+
+    // Doc slug mapping for edge cases
+    const DOC_SLUGS = {
+      'checkbox-radio-switch': ['checkbox', 'radio', 'switch'],
+      'progress-spinner': ['progress', 'spinner'],
+      'chart-sparkline': ['chart', 'sparkline'],
+      'draw-paint': ['draw', 'paint'],
+    };
+
+    // Minimal markdown to HTML
+    function mdToHtml(md) {
+      let html = '';
+      const lines = md.split('\n');
+      let inCode = false, codeLang = '', codeLines = [];
+      let inTable = false, tableRows = [];
+      let inList = false, listItems = [];
+
+      function flushList() {
+        if (inList) { html += '<ul>' + listItems.join('') + '</ul>'; listItems = []; inList = false; }
+      }
+      function flushTable() {
+        if (inTable && tableRows.length) {
+          html += '<table><thead><tr>' + tableRows[0] + '</tr></thead><tbody>';
+          for (let i = 2; i < tableRows.length; i++) html += '<tr>' + tableRows[i] + '</tr>';
+          html += '</tbody></table>';
+          tableRows = []; inTable = false;
+        }
+      }
+      function inline(t) {
+        return t
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+      }
+
+      for (const line of lines) {
+        if (inCode) {
+          if (line.startsWith('```')) { html += '<pre><code class="language-' + codeLang + '">' + codeLines.join('\n').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</code></pre>'; inCode = false; codeLines = []; }
+          else codeLines.push(line);
+          continue;
+        }
+        if (line.startsWith('```')) { flushList(); flushTable(); codeLang = line.slice(3).trim() || 'text'; inCode = true; continue; }
+        if (line.startsWith('|')) {
+          flushList();
+          const cells = line.split('|').slice(1, -1).map(c => c.trim());
+          if (cells.every(c => /^[-:]+$/.test(c))) { inTable = true; tableRows.push(tableRows[tableRows.length-1] || ''); continue; }
+          const tag = !inTable ? 'th' : 'td';
+          if (!inTable && tableRows.length === 0) inTable = false;
+          tableRows.push(cells.map(c => '<' + tag + '>' + inline(c) + '</' + tag + '>').join(''));
+          if (!inTable) inTable = true;
+          continue;
+        }
+        if (inTable) flushTable();
+        if (/^#{1,4}\s/.test(line)) {
+          flushList();
+          const lvl = line.match(/^(#+)/)[1].length;
+          const tag = 'h' + Math.min(lvl + 1, 5);
+          html += '<' + tag + '>' + inline(line.replace(/^#+\s*/, '')) + '</' + tag + '>';
+          continue;
+        }
+        if (/^[-*]\s/.test(line)) {
+          inList = true;
+          listItems.push('<li>' + inline(line.replace(/^[-*]\s*/, '')) + '</li>');
+          continue;
+        }
+        if (inList) flushList();
+        if (line.trim() === '') { html += ''; continue; }
+        html += '<p>' + inline(line) + '</p>';
+      }
+      flushList(); flushTable();
+      return html;
+    }
 
     // Build sidebar nav from page content
     (function() {
@@ -185,7 +190,6 @@
       if (!sidebar) return;
       let html = '';
       const sections = [];
-      // Walk through categories and component sections in DOM order
       const els = document.querySelectorAll('.comp-category, .comp-section > h3');
       els.forEach(el => {
         if (el.classList.contains('comp-category')) {
@@ -197,6 +201,19 @@
           section.id = id;
           html += '<a href="#' + id + '">' + name + '</a>';
           sections.push(section);
+
+          // Add "Read docs" link inline with h3
+          const slug = id.replace('comp-', '');
+          const link = document.createElement('a');
+          link.className = 'help-link';
+          link.href = '#';
+          link.dataset.slug = slug;
+          link.dataset.name = name;
+          link.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Read docs';
+          el.style.display = 'flex';
+          el.style.alignItems = 'baseline';
+          el.style.gap = '0.75rem';
+          el.appendChild(link);
         }
       });
       sidebar.innerHTML = html;
@@ -211,6 +228,64 @@
         }
       }, { rootMargin: '-80px 0px -70% 0px' });
       sections.forEach(s => observer.observe(s));
+    })();
+
+    // Help drawer logic
+    (function() {
+      const overlay = document.getElementById('help-overlay');
+      const drawer = document.getElementById('help-drawer');
+      const body = document.getElementById('help-drawer-body');
+      const title = document.getElementById('help-drawer-title');
+      const closeBtn = document.getElementById('help-drawer-close');
+      const cache = {};
+
+      function openDrawer() { overlay.style.display = ''; drawer.style.visibility = ''; drawer.classList.add('open'); overlay.classList.add('open'); document.body.style.overflow = 'hidden'; }
+      function closeDrawer() { drawer.classList.remove('open'); overlay.classList.remove('open'); document.body.style.overflow = ''; }
+
+      closeBtn.addEventListener('click', closeDrawer);
+      overlay.addEventListener('click', closeDrawer);
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+
+      async function fetchDoc(slug) {
+        if (cache[slug]) return cache[slug];
+        // Try the slug directly first
+        const candidates = DOC_SLUGS[slug] ? DOC_SLUGS[slug] : [slug];
+        let combined = '';
+        for (const name of candidates) {
+          try {
+            const res = await fetch('docs/components/' + name + '.md');
+            if (res.ok) combined += (combined ? '\n\n---\n\n' : '') + await res.text();
+          } catch(e) {}
+        }
+        if (!combined) {
+          // Try ai docs as fallback
+          for (const name of candidates) {
+            try {
+              const res = await fetch('docs/ai/components/' + name + '.md');
+              if (res.ok) combined += (combined ? '\n\n---\n\n' : '') + await res.text();
+            } catch(e) {}
+          }
+        }
+        cache[slug] = combined || null;
+        return cache[slug];
+      }
+
+      document.addEventListener('click', async e => {
+        const btn = e.target.closest('.help-link');
+        if (!btn) return;
+        e.preventDefault();
+        const slug = btn.dataset.slug;
+        const name = btn.dataset.name;
+        title.textContent = name;
+        body.innerHTML = '<p style="opacity:0.5">Loading...</p>';
+        openDrawer();
+        const md = await fetchDoc(slug);
+        if (md) {
+          body.innerHTML = mdToHtml(md);
+        } else {
+          body.innerHTML = '<p style="opacity:0.5">No documentation available yet for this component.</p>';
+        }
+      });
     })();
   </script>
   <style>
@@ -227,6 +302,112 @@
       font-size: 0.75rem;
       line-height: 1.65;
     }
+
+    /* Help docs link */
+    .help-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      color: var(--snice-color-primary, #3b82f6);
+      font-size: 0.8rem;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+      margin-top: 0.15rem;
+    }
+    .help-link:hover {
+      text-decoration: underline;
+    }
+    .help-link svg {
+      opacity: 0.8;
+    }
+
+    /* Help drawer overlay */
+    .help-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 9998;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+      display: none;
+    }
+    .help-overlay.open {
+      display: block;
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Help drawer panel */
+    .help-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: min(50%, 90vw);
+      background: var(--snice-color-background, #1a1a2e);
+      border-left: 1px solid var(--snice-color-border, rgba(128,128,128,0.2));
+      z-index: 9999;
+      transform: translateX(100%);
+      transition: transform 0.25s ease, visibility 0s 0.25s;
+      display: flex;
+      flex-direction: column;
+      visibility: hidden;
+    }
+    .help-drawer.open {
+      transform: translateX(0);
+      visibility: visible;
+      transition: transform 0.25s ease, visibility 0s 0s;
+      box-shadow: -4px 0 24px rgba(0,0,0,0.2);
+    }
+    .help-drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--snice-color-border, rgba(128,128,128,0.2));
+      flex-shrink: 0;
+    }
+    .help-drawer-header h3 {
+      margin: 0;
+      font-size: 1.1rem;
+    }
+    .help-drawer-close {
+      background: none;
+      border: none;
+      color: var(--snice-color-text, #eee);
+      font-size: 1.5rem;
+      cursor: pointer;
+      opacity: 0.6;
+      padding: 0 0.25rem;
+      line-height: 1;
+    }
+    .help-drawer-close:hover { opacity: 1; }
+
+    /* Help drawer content */
+    .help-drawer-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.25rem;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      color: var(--snice-color-text, #ddd);
+    }
+    .help-drawer-body h2 { font-size: 1.15rem; margin: 1.5rem 0 0.5rem; border-bottom: 1px solid var(--snice-color-border, rgba(128,128,128,0.2)); padding-bottom: 0.25rem; }
+    .help-drawer-body h3 { font-size: 1rem; margin: 1.25rem 0 0.4rem; }
+    .help-drawer-body h4 { font-size: 0.9rem; margin: 1rem 0 0.3rem; }
+    .help-drawer-body p { margin: 0.4rem 0; }
+    .help-drawer-body code { background: rgba(128,128,128,0.15); padding: 0.15em 0.35em; border-radius: 3px; font-size: 0.8rem; }
+    .help-drawer-body pre { background: var(--snice-color-background-tertiary, #2a2a3e); padding: 0.75rem 1rem; border-radius: 6px; overflow-x: auto; margin: 0.5rem 0; }
+    .help-drawer-body pre code { background: none; padding: 0; font-size: 0.78rem; }
+    .help-drawer-body table { width: 100%; border-collapse: collapse; margin: 0.5rem 0; font-size: 0.8rem; }
+    .help-drawer-body th, .help-drawer-body td { text-align: left; padding: 0.35rem 0.5rem; border: 1px solid var(--snice-color-border, rgba(128,128,128,0.2)); }
+    .help-drawer-body th { background: rgba(128,128,128,0.1); font-weight: 600; }
+    .help-drawer-body ul { padding-left: 1.25rem; margin: 0.4rem 0; }
+    .help-drawer-body li { margin: 0.15rem 0; }
+    .help-drawer-body a { color: var(--snice-color-primary, #3b82f6); }
+    .help-drawer-body hr { border: none; border-top: 1px solid var(--snice-color-border, rgba(128,128,128,0.2)); margin: 1.5rem 0; }
   </style>
 </body>
 </html>
