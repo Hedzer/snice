@@ -269,9 +269,12 @@ export class SniceCandlestick extends HTMLElement implements SniceCandlestickEle
   private handleMouseMove = (e: MouseEvent) => {
     const svg = this.svgEl;
     if (!svg) return;
-    const rect = svg.getBoundingClientRect();
-    this.mouseX = e.clientX - rect.left;
-    this.mouseY = e.clientY - rect.top;
+    const ctm = svg.getScreenCTM();
+    if (ctm) {
+      const pt = new DOMPoint(e.clientX, e.clientY).matrixTransform(ctm.inverse());
+      this.mouseX = pt.x;
+      this.mouseY = pt.y;
+    }
 
     if (this.isDragging && this.zoomEnabled) {
       const dx = e.clientX - this.dragStartX;
