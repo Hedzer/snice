@@ -13,12 +13,6 @@ export interface NetworkGraphProps extends SniceBaseProps {
   dragEnabled?: any;
   showLabels?: any;
   animation?: any;
-  hoveredNodeId?: any;
-  tooltipText?: any;
-  tooltipX?: any;
-  tooltipY?: any;
-  tooltipVisible?: any;
-  renderTick?: any;
 
 }
 
@@ -40,7 +34,7 @@ export interface NetworkGraphProps extends SniceBaseProps {
  */
 export const NetworkGraph = createReactAdapter<NetworkGraphProps>({
   tagName: 'snice-network-graph',
-  properties: ["data","layout","chargeStrength","linkDistance","zoomEnabled","dragEnabled","showLabels","animation","hoveredNodeId","tooltipText","tooltipX","tooltipY","tooltipVisible","renderTick"],
+  properties: ["data","layout","chargeStrength","linkDistance","zoomEnabled","dragEnabled","showLabels","animation"],
   events: {},
   formAssociated: false
 });

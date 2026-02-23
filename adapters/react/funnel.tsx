@@ -12,11 +12,6 @@ export interface FunnelProps extends SniceBaseProps {
   showValues?: any;
   showPercentages?: any;
   animation?: any;
-  tooltipText?: any;
-  tooltipSubtext?: any;
-  tooltipX?: any;
-  tooltipY?: any;
-  tooltipVisible?: any;
 
 }
 
@@ -38,7 +33,7 @@ export interface FunnelProps extends SniceBaseProps {
  */
 export const Funnel = createReactAdapter<FunnelProps>({
   tagName: 'snice-funnel',
-  properties: ["data","variant","orientation","showLabels","showValues","showPercentages","animation","tooltipText","tooltipSubtext","tooltipX","tooltipY","tooltipVisible"],
+  properties: ["data","variant","orientation","showLabels","showValues","showPercentages","animation"],
   events: {},
   formAssociated: false
 });

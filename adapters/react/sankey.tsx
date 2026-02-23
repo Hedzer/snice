@@ -12,7 +12,6 @@ export interface SankeyProps extends SniceBaseProps {
   showLabels?: any;
   showValues?: any;
   animation?: any;
-  renderTrigger?: any;
 
 }
 
@@ -34,7 +33,7 @@ export interface SankeyProps extends SniceBaseProps {
  */
 export const Sankey = createReactAdapter<SankeyProps>({
   tagName: 'snice-sankey',
-  properties: ["data","nodeWidth","nodePadding","alignment","showLabels","showValues","animation","renderTrigger"],
+  properties: ["data","nodeWidth","nodePadding","alignment","showLabels","showValues","animation"],
   events: {},
   formAssociated: false
 });

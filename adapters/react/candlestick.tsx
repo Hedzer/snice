@@ -15,7 +15,6 @@ export interface CandlestickProps extends SniceBaseProps {
   yAxisFormat?: any;
   zoomEnabled?: any;
   animation?: any;
-  renderTick?: any;
 
 }
 
@@ -37,7 +36,7 @@ export interface CandlestickProps extends SniceBaseProps {
  */
 export const Candlestick = createReactAdapter<CandlestickProps>({
   tagName: 'snice-candlestick',
-  properties: ["data","showVolume","showGrid","showCrosshair","bullishColor","bearishColor","timeFormat","yAxisFormat","zoomEnabled","animation","renderTick"],
+  properties: ["data","showVolume","showGrid","showCrosshair","bullishColor","bearishColor","timeFormat","yAxisFormat","zoomEnabled","animation"],
   events: {},
   formAssociated: false
 });
