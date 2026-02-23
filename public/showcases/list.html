@@ -2,46 +2,86 @@
     <div class="comp-section">
       <h3>List</h3>
       <p class="comp-desc">Structured lists with dividers, search, before/after slots, and rich content</p>
-      <div class="comp-split">
-        <div class="comp-split-demo demo-col">
-          <snice-list dividers style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;overflow:hidden">
-            <snice-list-item heading="Document.pdf" description="Updated 2 hours ago">
-              <span slot="before" class="material-symbols-outlined" style="font-size:20px;color:var(--snice-color-primary,#3b82f6)">description</span>
-              <span slot="after">2.4 MB</span>
-            </snice-list-item>
-            <snice-list-item heading="Presentation.pptx" description="Updated yesterday">
-              <span slot="before" class="material-symbols-outlined" style="font-size:20px;color:var(--snice-color-warning,#f59e0b)">slideshow</span>
-              <span slot="after">5.1 MB</span>
-            </snice-list-item>
-            <snice-list-item heading="Budget.xlsx" description="Updated 3 days ago">
-              <span slot="before" class="material-symbols-outlined" style="font-size:20px;color:var(--snice-color-success,#10b981)">table_chart</span>
-              <span slot="after">876 KB</span>
-            </snice-list-item>
-            <snice-list-item heading="Task Completed" description="Finished 2 hours ago">
-              <span slot="before" class="material-symbols-outlined" style="font-size:20px;color:var(--snice-color-success,#10b981)">check_circle</span>
-              <span slot="after" style="color:var(--snice-color-success,#10b981)">Done</span>
-            </snice-list-item>
-            <snice-list-item heading="In Progress" description="Due tomorrow">
-              <span slot="before" class="material-symbols-outlined" style="font-size:20px;color:var(--snice-color-warning,#f59e0b)">schedule</span>
-              <span slot="after" style="color:var(--snice-color-warning,#f59e0b)">Pending</span>
-            </snice-list-item>
-          </snice-list>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="flex-direction:column;gap:1.25rem;align-items:stretch">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem">
+            <div>
+              <span style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--snice-color-text-tertiary,#888);margin-bottom:0.4rem;display:block">With Icons &amp; Dividers</span>
+              <snice-list dividers style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;overflow:hidden">
+                <snice-list-item heading="Document.pdf" description="Updated 2 hours ago">
+                  <span slot="before" class="material-symbols-outlined" style="font-size:20px;color:var(--snice-color-primary,#3b82f6)">description</span>
+                  <span slot="after">2.4 MB</span>
+                </snice-list-item>
+                <snice-list-item heading="Presentation.pptx" description="Updated yesterday">
+                  <span slot="before" class="material-symbols-outlined" style="font-size:20px;color:var(--snice-color-warning,#f59e0b)">slideshow</span>
+                  <span slot="after">5.1 MB</span>
+                </snice-list-item>
+                <snice-list-item heading="Budget.xlsx" description="Updated 3 days ago">
+                  <span slot="before" class="material-symbols-outlined" style="font-size:20px;color:var(--snice-color-success,#10b981)">table_chart</span>
+                  <span slot="after">876 KB</span>
+                </snice-list-item>
+              </snice-list>
+            </div>
+            <div>
+              <span style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--snice-color-text-tertiary,#888);margin-bottom:0.4rem;display:block">Searchable</span>
+              <snice-list searchable dividers id="demo-search-list" style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;overflow:hidden">
+                <snice-list-item heading="Alice Johnson" description="alice@example.com">
+                  <span slot="before" class="material-symbols-outlined" style="font-size:20px;color:var(--snice-color-primary,#3b82f6)">person</span>
+                </snice-list-item>
+                <snice-list-item heading="Bob Smith" description="bob@example.com">
+                  <span slot="before" class="material-symbols-outlined" style="font-size:20px;color:var(--snice-color-success,#10b981)">person</span>
+                </snice-list-item>
+                <snice-list-item heading="Carol Williams" description="carol@example.com">
+                  <span slot="before" class="material-symbols-outlined" style="font-size:20px;color:var(--snice-color-warning,#f59e0b)">person</span>
+                </snice-list-item>
+                <snice-list-item heading="Dave Chen" description="dave@example.com">
+                  <span slot="before" class="material-symbols-outlined" style="font-size:20px;color:var(--snice-color-danger,#ef4444)">person</span>
+                </snice-list-item>
+              </snice-list>
+            </div>
+          </div>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
           <pre><code class="language-html">&lt;snice-list dividers&gt;
-  &lt;snice-list-item heading="Document.pdf" description="Updated 2h ago"&gt;
-    &lt;span slot="before" class="material-symbols-outlined"&gt;description&lt;/span&gt;
+  &lt;snice-list-item heading="Document.pdf"
+    description="Updated 2h ago"&gt;
+    &lt;span slot="before" class="material-symbols-outlined"&gt;
+      description
+    &lt;/span&gt;
     &lt;span slot="after"&gt;2.4 MB&lt;/span&gt;
   &lt;/snice-list-item&gt;
 &lt;/snice-list&gt;
 
-&lt;!-- Or use custom slotted content --&gt;
-&lt;snice-list-item&gt;
-  &lt;span slot="before" class="material-symbols-outlined"&gt;folder&lt;/span&gt;
-  &lt;div&gt;Any custom content here&lt;/div&gt;
-  &lt;span slot="after"&gt;2.4 MB&lt;/span&gt;
-&lt;/snice-list-item&gt;</code></pre>
+&lt;!-- With search --&gt;
+&lt;snice-list searchable dividers&gt;
+  &lt;snice-list-item heading="Alice"
+    description="alice@example.com"&gt;
+    &lt;span slot="before"&gt;...&lt;/span&gt;
+  &lt;/snice-list-item&gt;
+&lt;/snice-list&gt;</code></pre>
         </div>
       </div>
     </div>
+<script>
+  // Client-side search for demo list
+  customElements.whenDefined('snice-list').then(() => {
+    const list = document.getElementById('demo-search-list');
+    if (!list) return;
+    // Disable the component's built-in @request search (no controller to respond)
+    list.performSearch = () => {};
+    list.addEventListener('input', () => {
+      list.loading = false;
+      const q = (list.search || '').toLowerCase();
+      const items = list.querySelectorAll('snice-list-item');
+      let visible = 0;
+      items.forEach(item => {
+        const text = (item.getAttribute('heading') + ' ' + item.getAttribute('description')).toLowerCase();
+        const show = !q || text.includes(q);
+        item.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+      list.noResults = visible === 0 && q.length > 0;
+    });
+  });
+</script>
