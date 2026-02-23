@@ -1,0 +1,52 @@
+    <div class="comp-section">
+      <h3>Spotlight</h3>
+      <p class="comp-desc">Guided tour overlay that highlights elements with step-by-step instructions</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="justify-content:center;flex-direction:column;gap:1rem;align-items:center">
+          <div style="display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;justify-content:center">
+            <div id="spot-step1" style="padding:0.6rem 1rem;background:rgba(99,102,241,0.1);border-radius:6px;font-size:0.9rem">Search bar</div>
+            <div id="spot-step2" style="padding:0.6rem 1rem;background:rgba(16,185,129,0.1);border-radius:6px;font-size:0.9rem">Notifications</div>
+            <div id="spot-step3" style="padding:0.6rem 1rem;background:rgba(245,158,11,0.1);border-radius:6px;font-size:0.9rem">Settings</div>
+          </div>
+          <snice-button id="spot-start-btn" variant="primary" size="small">Start Tour</snice-button>
+          <snice-spotlight id="demo-spotlight"></snice-spotlight>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-spotlight&gt;&lt;/snice-spotlight&gt;
+
+&lt;script&gt;
+  const spotlight = document.querySelector(
+    'snice-spotlight');
+  spotlight.steps = [
+    { target: '#search',
+      title: 'Search',
+      description: 'Find anything',
+      position: 'bottom' },
+    { target: '#notifs',
+      title: 'Notifications',
+      description: 'Stay updated' },
+    { target: '#settings',
+      title: 'Settings',
+      description: 'Customize your experience' }
+  ];
+  spotlight.start();
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-spotlight').then(() => {
+      const spotlight = document.getElementById('demo-spotlight');
+      const btn = document.getElementById('spot-start-btn');
+      if (spotlight && btn) {
+        spotlight.steps = [
+          { target: '#spot-step1', title: 'Search', description: 'Use the search bar to find components, docs, or examples.', position: 'bottom' },
+          { target: '#spot-step2', title: 'Notifications', description: 'Check alerts and updates from your team.', position: 'bottom' },
+          { target: '#spot-step3', title: 'Settings', description: 'Customize themes, preferences, and account details.', position: 'bottom' }
+        ];
+        btn.addEventListener('click', () => spotlight.start());
+      }
+    });
+</script>

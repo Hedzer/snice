@@ -1,0 +1,49 @@
+    <div class="comp-section">
+      <h3>Spreadsheet</h3>
+      <p class="comp-desc">Excel-like grid with cell editing, formulas, sorting, and copy/paste</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo">
+          <snice-spreadsheet id="demo-spreadsheet" style="width:100%"></snice-spreadsheet>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">javascript</span>
+          <pre><code class="language-javascript">const sheet = document.querySelector(
+  'snice-spreadsheet');
+sheet.columns = [
+  { header: 'Product', type: 'text' },
+  { header: 'Q1', type: 'number', width: 90 },
+  { header: 'Q2', type: 'number', width: 90 },
+  { header: 'Total', type: 'number', width: 90 }
+];
+sheet.data = [
+  ['Widget A', 1200, 1450, '=SUM(B1:C1)'],
+  ['Widget B', 800, 920, '=SUM(B2:C2)'],
+  ['Total', '=SUM(B1:B2)', '=SUM(C1:C2)',
+   '=SUM(D1:D2)']
+];
+
+// Formulas: SUM, AVG, COUNT, MIN, MAX
+// Keyboard: arrows, Enter, Tab, Ctrl+C/V</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-spreadsheet').then(() => {
+      const sheet = document.getElementById('demo-spreadsheet');
+      if (sheet) {
+        sheet.columns = [
+          { header: 'Product', type: 'text' },
+          { header: 'Q1 Sales', type: 'number', width: 100 },
+          { header: 'Q2 Sales', type: 'number', width: 100 },
+          { header: 'Total', type: 'number', width: 100 }
+        ];
+        sheet.data = [
+          ['Widget Alpha', 12500, 14200, '=SUM(B1:C1)'],
+          ['Widget Beta', 8300, 9100, '=SUM(B2:C2)'],
+          ['Widget Gamma', 5600, 7800, '=SUM(B3:C3)'],
+          ['Grand Total', '=SUM(B1:B3)', '=SUM(C1:C3)', '=SUM(D1:D3)']
+        ];
+      }
+    });
+</script>

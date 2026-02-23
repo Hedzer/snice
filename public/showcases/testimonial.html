@@ -1,0 +1,46 @@
+    <div class="comp-section">
+      <h3>Testimonial</h3>
+      <p class="comp-desc">Quote card with author info, avatar, star rating, and multiple variants</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="flex-direction:column;gap:1rem">
+          <snice-testimonial
+            quote="This framework completely transformed our development workflow. We shipped features 3x faster."
+            author="Sarah Chen"
+            role="CTO"
+            company="Nexus Labs"
+            avatar="https://picsum.photos/seed/sarah/80/80"
+            rating="5"
+            variant="card"
+          ></snice-testimonial>
+          <snice-testimonial
+            quote="Outstanding developer experience from start to finish. The component quality is exceptional."
+            author="Marcus Rivera"
+            role="Lead Engineer"
+            company="Streamline"
+            avatar="https://picsum.photos/seed/marcus/80/80"
+            rating="4"
+            variant="minimal"
+          ></snice-testimonial>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-testimonial
+  quote="This framework transformed
+    our workflow."
+  author="Sarah Chen"
+  role="CTO"
+  company="Nexus Labs"
+  avatar="avatar.jpg"
+  rating="5"
+  variant="card"
+&gt;&lt;/snice-testimonial&gt;
+
+&lt;!-- Variants: card, minimal, featured --&gt;
+&lt;snice-testimonial
+  quote="Outstanding experience."
+  author="Marcus Rivera"
+  variant="featured"
+&gt;&lt;/snice-testimonial&gt;</code></pre>
+        </div>
+      </div>
+    </div>

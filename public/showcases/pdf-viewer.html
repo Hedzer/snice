@@ -1,0 +1,41 @@
+    <div class="comp-section">
+      <h3>PDF Viewer</h3>
+      <p class="comp-desc">Document viewer with page navigation, zoom, fit modes, and print/download</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="justify-content:center">
+          <snice-pdf-viewer id="demo-pdf" fit="width" style="width:100%;height:400px"></snice-pdf-viewer>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-pdf-viewer
+  src="/documents/report.pdf"
+  fit="width"
+  zoom="1"
+&gt;&lt;/snice-pdf-viewer&gt;
+
+&lt;script&gt;
+  const viewer = document.querySelector(
+    'snice-pdf-viewer');
+
+  viewer.addEventListener('pdf-loaded',
+    e =&gt; console.log(
+      'Pages:', e.detail.totalPages));
+
+  // Navigation
+  viewer.nextPage();
+  viewer.goToPage(5);
+  viewer.print();
+  viewer.download();
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-pdf-viewer').then(() => {
+      const viewer = document.getElementById('demo-pdf');
+      if (viewer) {
+        viewer.src = 'https://raw.githubusercontent.com/nicehash/rest-clients-demo/master/README.pdf';
+      }
+    });
+</script>

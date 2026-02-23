@@ -1,0 +1,30 @@
+    <div class="comp-section">
+      <h3>Cropper</h3>
+      <p class="comp-desc">Image cropping with drag-to-resize, rotation, zoom, and aspect ratio lock</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="justify-content:center">
+          <snice-cropper id="demo-cropper" src="https://picsum.photos/seed/cropper/600/400" aspect-ratio="1.777" output-type="jpeg" style="width:100%;max-width:500px"></snice-cropper>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-cropper
+  src="/photo.jpg"
+  aspect-ratio="1.777"
+  output-type="jpeg"
+&gt;&lt;/snice-cropper&gt;
+
+&lt;script&gt;
+  const cropper = document.querySelector(
+    'snice-cropper');
+
+  // Get cropped image
+  const blob = await cropper.crop();
+
+  // Rotate and zoom
+  cropper.rotate(90);
+  cropper.zoom(1.5);
+  cropper.reset();
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>

@@ -1,0 +1,67 @@
+    <div class="comp-section">
+      <h3>Markdown</h3>
+      <p class="comp-desc">GFM-compatible markdown renderer with sanitization and syntax highlighting</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="justify-content:center">
+          <snice-markdown id="demo-markdown" theme="github" style="width:100%">
+## Project Status
+
+The build pipeline is **fully operational**. Here's what shipped:
+
+### Features
+
+- [x] GFM tables and task lists
+- [x] Code block syntax highlighting
+- [ ] Image lazy loading
+
+### Code Example
+
+```js
+const greeting = (name) => {
+  return `Hello, ${name}!`;
+};
+```
+
+> *Markdown is rendered safely with built-in sanitization.*
+
+| Component | Status | Size |
+|-----------|--------|------|
+| Button | Stable | 2 KB |
+| Modal | Stable | 4 KB |
+| Table | Beta | 12 KB |
+          </snice-markdown>
+        </div>
+        <div class="comp-split-code">
+          <div class="code-tabs">
+            <button class="code-tab active" data-target="md-decl">Declarative</button>
+            <button class="code-tab" data-target="md-imper">Imperative</button>
+          </div>
+          <div class="code-panel active" id="md-decl">
+            <span class="code-lang">html</span>
+            <pre><code class="language-html">&lt;snice-markdown theme="github"&gt;
+## Hello World
+
+**Bold** and *italic* text.
+
+- Item 1
+- Item 2
+
+| Col A | Col B |
+|-------|-------|
+| One   | Two   |
+&lt;/snice-markdown&gt;</code></pre>
+          </div>
+          <div class="code-panel" id="md-imper">
+            <span class="code-lang">javascript</span>
+            <pre><code class="language-javascript">const md = document.querySelector(
+  'snice-markdown');
+md.setContent('## Dynamic\n\n'
+  + '- Item 1\n- Item 2\n\n'
+  + '**Bold** and *italic*');
+
+md.addEventListener('link-click',
+  e =&gt; console.log(e.detail.href));</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>

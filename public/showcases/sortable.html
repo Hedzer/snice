@@ -1,0 +1,40 @@
+    <div class="comp-section">
+      <h3>Sortable</h3>
+      <p class="comp-desc">Drag-and-drop reorderable list with animated transitions</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="justify-content:center">
+          <snice-sortable id="demo-sortable" style="width:100%;max-width:350px">
+            <div style="padding:0.75rem 1rem;background:rgba(99,102,241,0.08);border-radius:6px;cursor:grab;font-size:0.9rem">Design mockups</div>
+            <div style="padding:0.75rem 1rem;background:rgba(59,130,246,0.08);border-radius:6px;cursor:grab;font-size:0.9rem">Write API endpoints</div>
+            <div style="padding:0.75rem 1rem;background:rgba(16,185,129,0.08);border-radius:6px;cursor:grab;font-size:0.9rem">Set up CI pipeline</div>
+            <div style="padding:0.75rem 1rem;background:rgba(245,158,11,0.08);border-radius:6px;cursor:grab;font-size:0.9rem">Code review</div>
+            <div style="padding:0.75rem 1rem;background:rgba(236,72,153,0.08);border-radius:6px;cursor:grab;font-size:0.9rem">Deploy to staging</div>
+          </snice-sortable>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-sortable&gt;
+  &lt;div&gt;Item 1&lt;/div&gt;
+  &lt;div&gt;Item 2&lt;/div&gt;
+  &lt;div&gt;Item 3&lt;/div&gt;
+&lt;/snice-sortable&gt;
+
+&lt;!-- With drag handle --&gt;
+&lt;snice-sortable handle=".handle"&gt;
+  &lt;div&gt;
+    &lt;span class="handle"&gt;&amp;#9776;&lt;/span&gt;
+    Item A
+  &lt;/div&gt;
+&lt;/snice-sortable&gt;
+
+&lt;script&gt;
+  const sortable = document.querySelector(
+    'snice-sortable');
+  sortable.addEventListener('sort-change',
+    e =&gt; console.log(
+      e.detail.oldIndex,
+      e.detail.newIndex));
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>

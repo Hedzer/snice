@@ -1,0 +1,53 @@
+    <div class="comp-section">
+      <h3>Weather</h3>
+      <p class="comp-desc">Weather display card with current conditions, details, and multi-day forecast</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="justify-content:center;gap:1.5rem;flex-wrap:wrap">
+          <snice-weather id="demo-weather-full" unit="celsius" variant="full" style="max-width:360px;width:100%"></snice-weather>
+          <snice-weather id="demo-weather-compact" unit="celsius" variant="compact"></snice-weather>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">javascript</span>
+          <pre><code class="language-javascript">const weather = document.querySelector(
+  'snice-weather');
+weather.unit = 'celsius';
+weather.variant = 'full';
+weather.data = {
+  temp: 22,
+  condition: 'Partly Cloudy',
+  humidity: 65,
+  wind: 12,
+  forecast: [
+    { day: 'Mon', high: 24, low: 18,
+      condition: 'Sunny' },
+    { day: 'Tue', high: 20, low: 15,
+      condition: 'Rain' },
+    { day: 'Wed', high: 22, low: 16,
+      condition: 'Cloudy' }
+  ]
+};</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-weather').then(() => {
+      const full = document.getElementById('demo-weather-full');
+      const compact = document.getElementById('demo-weather-compact');
+      const weatherData = {
+        temp: 22,
+        condition: 'Partly Cloudy',
+        humidity: 65,
+        wind: 12,
+        forecast: [
+          { day: 'Mon', high: 24, low: 18, condition: 'Sunny' },
+          { day: 'Tue', high: 20, low: 15, condition: 'Rain' },
+          { day: 'Wed', high: 22, low: 16, condition: 'Cloudy' },
+          { day: 'Thu', high: 25, low: 17, condition: 'Sunny' },
+          { day: 'Fri', high: 19, low: 14, condition: 'Thunderstorm' }
+        ]
+      };
+      if (full) full.data = weatherData;
+      if (compact) compact.data = { temp: 22, condition: 'Partly Cloudy' };
+    });
+</script>

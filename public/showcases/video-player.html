@@ -1,0 +1,36 @@
+    <div class="comp-section">
+      <h3>Video Player</h3>
+      <p class="comp-desc">Full-featured player with custom controls, keyboard shortcuts, PiP, and fullscreen</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="justify-content:center">
+          <snice-video-player
+            id="demo-video"
+            src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+            poster="https://picsum.photos/seed/videoposter/640/360"
+            controls
+            style="width:100%"
+          ></snice-video-player>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-video-player
+  src="video.mp4"
+  poster="poster.jpg"
+  controls
+&gt;&lt;/snice-video-player&gt;
+
+&lt;script&gt;
+  const player = document.querySelector(
+    'snice-video-player');
+  player.play();
+  player.seekTo(30);
+  player.setPlaybackRate(1.5);
+  player.requestFullscreen();
+
+  // Keyboard: Space=play/pause,
+  // F=fullscreen, M=mute,
+  // Arrow keys=seek/volume
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>

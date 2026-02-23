@@ -997,6 +997,81 @@
         </div>
       </div>
     </div>
+    <div class="comp-section">
+      <h3>Flip Card</h3>
+      <p class="comp-desc">3D card flip with front and back faces, click or programmatic control</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="justify-content:center;gap:1.5rem;flex-wrap:wrap">
+          <snice-flip-card direction="horizontal" style="width:240px;height:160px">
+            <div slot="front" style="display:flex;align-items:center;justify-content:center;height:100%;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border-radius:8px;font-size:1.1rem;font-weight:600">Click to flip</div>
+            <div slot="back" style="display:flex;align-items:center;justify-content:center;height:100%;background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;border-radius:8px;font-size:1.1rem;font-weight:600">Back side</div>
+          </snice-flip-card>
+          <snice-flip-card direction="vertical" style="width:240px;height:160px">
+            <div slot="front" style="display:flex;align-items:center;justify-content:center;height:100%;background:linear-gradient(135deg,#10b981,#3b82f6);color:#fff;border-radius:8px;font-size:1.1rem;font-weight:600">Vertical flip</div>
+            <div slot="back" style="display:flex;align-items:center;justify-content:center;height:100%;background:linear-gradient(135deg,#ec4899,#8b5cf6);color:#fff;border-radius:8px;font-size:1.1rem;font-weight:600">Other side</div>
+          </snice-flip-card>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-flip-card
+  direction="horizontal"
+  style="width:240px;height:160px"
+&gt;
+  &lt;div slot="front"&gt;Front content&lt;/div&gt;
+  &lt;div slot="back"&gt;Back content&lt;/div&gt;
+&lt;/snice-flip-card&gt;
+
+&lt;script&gt;
+  const card = document.querySelector(
+    'snice-flip-card');
+  card.flip();
+  card.flipTo('back');
+  card.addEventListener('flip-change',
+    e =&gt; console.log(e.detail.side));
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+    <div class="comp-section">
+      <h3>Sortable</h3>
+      <p class="comp-desc">Drag-and-drop reorderable list with animated transitions</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="justify-content:center">
+          <snice-sortable id="demo-sortable" style="width:100%;max-width:350px">
+            <div style="padding:0.75rem 1rem;background:rgba(99,102,241,0.08);border-radius:6px;cursor:grab;font-size:0.9rem">Design mockups</div>
+            <div style="padding:0.75rem 1rem;background:rgba(59,130,246,0.08);border-radius:6px;cursor:grab;font-size:0.9rem">Write API endpoints</div>
+            <div style="padding:0.75rem 1rem;background:rgba(16,185,129,0.08);border-radius:6px;cursor:grab;font-size:0.9rem">Set up CI pipeline</div>
+            <div style="padding:0.75rem 1rem;background:rgba(245,158,11,0.08);border-radius:6px;cursor:grab;font-size:0.9rem">Code review</div>
+            <div style="padding:0.75rem 1rem;background:rgba(236,72,153,0.08);border-radius:6px;cursor:grab;font-size:0.9rem">Deploy to staging</div>
+          </snice-sortable>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-sortable&gt;
+  &lt;div&gt;Item 1&lt;/div&gt;
+  &lt;div&gt;Item 2&lt;/div&gt;
+  &lt;div&gt;Item 3&lt;/div&gt;
+&lt;/snice-sortable&gt;
+
+&lt;!-- With drag handle --&gt;
+&lt;snice-sortable handle=".handle"&gt;
+  &lt;div&gt;
+    &lt;span class="handle"&gt;&amp;#9776;&lt;/span&gt;
+    Item A
+  &lt;/div&gt;
+&lt;/snice-sortable&gt;
+
+&lt;script&gt;
+  const sortable = document.querySelector(
+    'snice-sortable');
+  sortable.addEventListener('sort-change',
+    e =&gt; console.log(
+      e.detail.oldIndex,
+      e.detail.newIndex));
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
     <!-- ── Masonry ── -->
     <div class="comp-section">
       <h3>Masonry</h3>
@@ -1196,6 +1271,67 @@ scroller.scrollToIndex(2500); // jump to any index</code></pre>
           <div style="min-width:0"><div style="font-weight:500;font-size:0.9rem">${d.name}</div><div style="font-size:0.8rem;opacity:0.5">${d.email}</div></div>
         </div>`;
       };
+    });
+</script>
+    <div class="comp-section">
+      <h3>Infinite Scroll</h3>
+      <p class="comp-desc">Container that loads more content as the user scrolls near the bottom</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="justify-content:center">
+          <snice-infinite-scroll id="demo-infinite" threshold="100" has-more style="width:100%;max-width:400px;height:250px;overflow:auto;border:1px solid rgba(128,128,128,0.2);border-radius:8px">
+            <div id="infinite-items" style="padding:0.5rem"></div>
+          </snice-infinite-scroll>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-infinite-scroll
+  threshold="200"
+  has-more
+&gt;
+  &lt;!-- scrollable content --&gt;
+&lt;/snice-infinite-scroll&gt;
+
+&lt;script&gt;
+  const scroller = document.querySelector(
+    'snice-infinite-scroll');
+  scroller.addEventListener('load-more',
+    async () =&gt; {
+    scroller.loading = true;
+    const items = await fetchMore();
+    appendItems(items);
+    scroller.loading = false;
+    if (!items.length)
+      scroller.hasMore = false;
+  });
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-infinite-scroll').then(() => {
+      const scroller = document.getElementById('demo-infinite');
+      const container = document.getElementById('infinite-items');
+      if (!scroller || !container) return;
+      let batch = 0;
+      function addItems() {
+        for (let i = 0; i < 10; i++) {
+          const item = document.createElement('div');
+          item.textContent = 'Item ' + (batch * 10 + i + 1);
+          item.style.cssText = 'padding:0.6rem 0.75rem;border-bottom:1px solid rgba(128,128,128,0.15);font-size:0.9rem';
+          container.appendChild(item);
+        }
+        batch++;
+      }
+      addItems();
+      scroller.addEventListener('load-more', () => {
+        scroller.loading = true;
+        setTimeout(() => {
+          addItems();
+          scroller.loading = false;
+          if (batch >= 5) scroller.hasMore = false;
+        }, 600);
+      });
     });
 </script>
 
@@ -1745,6 +1881,55 @@ stepper.currentStep = 1;</code></pre>
             }
           }, 500);
         });
+      }
+    });
+</script>
+    <div class="comp-section">
+      <h3>Spreadsheet</h3>
+      <p class="comp-desc">Excel-like grid with cell editing, formulas, sorting, and copy/paste</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo">
+          <snice-spreadsheet id="demo-spreadsheet" style="width:100%"></snice-spreadsheet>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">javascript</span>
+          <pre><code class="language-javascript">const sheet = document.querySelector(
+  'snice-spreadsheet');
+sheet.columns = [
+  { header: 'Product', type: 'text' },
+  { header: 'Q1', type: 'number', width: 90 },
+  { header: 'Q2', type: 'number', width: 90 },
+  { header: 'Total', type: 'number', width: 90 }
+];
+sheet.data = [
+  ['Widget A', 1200, 1450, '=SUM(B1:C1)'],
+  ['Widget B', 800, 920, '=SUM(B2:C2)'],
+  ['Total', '=SUM(B1:B2)', '=SUM(C1:C2)',
+   '=SUM(D1:D2)']
+];
+
+// Formulas: SUM, AVG, COUNT, MIN, MAX
+// Keyboard: arrows, Enter, Tab, Ctrl+C/V</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-spreadsheet').then(() => {
+      const sheet = document.getElementById('demo-spreadsheet');
+      if (sheet) {
+        sheet.columns = [
+          { header: 'Product', type: 'text' },
+          { header: 'Q1 Sales', type: 'number', width: 100 },
+          { header: 'Q2 Sales', type: 'number', width: 100 },
+          { header: 'Total', type: 'number', width: 100 }
+        ];
+        sheet.data = [
+          ['Widget Alpha', 12500, 14200, '=SUM(B1:C1)'],
+          ['Widget Beta', 8300, 9100, '=SUM(B2:C2)'],
+          ['Widget Gamma', 5600, 7800, '=SUM(B3:C3)'],
+          ['Grand Total', '=SUM(B1:B3)', '=SUM(C1:C3)', '=SUM(D1:D3)']
+        ];
       }
     });
 </script>
@@ -2314,6 +2499,51 @@ timeline.items = [
       <snice-toast-container id="toast-container" position="bottom-right"></snice-toast-container>
     </div>
     <div class="comp-section">
+      <h3>Notification Center</h3>
+      <p class="comp-desc">Bell icon with unread badge and dropdown notification panel</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="justify-content:center;min-height:60px">
+          <snice-notification-center id="demo-notif"></snice-notification-center>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-notification-center&gt;
+&lt;/snice-notification-center&gt;
+
+&lt;script&gt;
+  const nc = document.querySelector(
+    'snice-notification-center');
+  nc.notifications = [
+    { id: '1', title: 'New message',
+      message: 'You have a new message',
+      timestamp: '2 min ago',
+      type: 'info' },
+    { id: '2', title: 'Deploy complete',
+      message: 'Build v2.4 succeeded',
+      timestamp: '10 min ago',
+      type: 'success', read: true }
+  ];
+  nc.addEventListener('notification-click',
+    e =&gt; console.log(e.detail));
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-notification-center').then(() => {
+      const nc = document.getElementById('demo-notif');
+      if (nc) {
+        nc.notifications = [
+          { id: '1', title: 'New comment', message: 'Alice commented on your pull request', timestamp: '2 min ago', type: 'info' },
+          { id: '2', title: 'Deploy succeeded', message: 'Production build v2.4.1 is live', timestamp: '15 min ago', type: 'success', read: true },
+          { id: '3', title: 'Disk space warning', message: 'Server storage is at 92% capacity', timestamp: '1 hour ago', type: 'warning' },
+          { id: '4', title: 'Build failed', message: 'CI pipeline failed on branch feature/auth', timestamp: '3 hours ago', type: 'error' }
+        ];
+      }
+    });
+</script>
+    <div class="comp-section">
       <h3>Banner</h3>
       <p class="comp-desc">Full-width notification banners</p>
       <div class="comp-split">
@@ -2431,6 +2661,81 @@ timeline.items = [
         </div>
       </div>
     </div>
+    <div class="comp-section">
+      <h3>Rating</h3>
+      <p class="comp-desc">Star rating input with full and half precision, custom icons, and keyboard navigation</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="justify-content:center;flex-direction:column;gap:1rem;align-items:center">
+          <snice-rating value="3.5" max="5" precision="half" size="large"></snice-rating>
+          <snice-rating value="4" max="5" size="medium"></snice-rating>
+          <snice-rating value="3" max="5" readonly size="small"></snice-rating>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-rating
+  value="3.5"
+  max="5"
+  precision="half"
+  size="large"
+&gt;&lt;/snice-rating&gt;
+
+&lt;snice-rating value="4" readonly&gt;
+&lt;/snice-rating&gt;
+
+&lt;script&gt;
+  const rating = document.querySelector(
+    'snice-rating');
+  rating.addEventListener('rating-change',
+    e =&gt; console.log(e.detail.value));
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+    <div class="comp-section">
+      <h3>Countdown</h3>
+      <p class="comp-desc">Countdown timer to a target date with flip, circular, and simple variants</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="justify-content:center;flex-direction:column;gap:1.5rem;align-items:center">
+          <snice-countdown id="demo-countdown-flip" variant="flip" format="dhms"></snice-countdown>
+          <div style="display:flex;gap:2rem;flex-wrap:wrap;justify-content:center">
+            <snice-countdown id="demo-countdown-simple" variant="simple" format="hms"></snice-countdown>
+            <snice-countdown id="demo-countdown-circular" variant="circular" format="hms"></snice-countdown>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-countdown
+  target="2026-12-31T00:00:00Z"
+  format="dhms"
+  variant="flip"
+&gt;&lt;/snice-countdown&gt;
+
+&lt;snice-countdown
+  variant="circular"
+  format="hms"
+&gt;&lt;/snice-countdown&gt;
+
+&lt;script&gt;
+  const cd = document.querySelector(
+    'snice-countdown');
+  cd.addEventListener('countdown-complete',
+    () =&gt; alert('Done!'));
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-countdown').then(() => {
+      const target = new Date();
+      target.setDate(target.getDate() + 45);
+      const iso = target.toISOString();
+      ['demo-countdown-flip', 'demo-countdown-simple', 'demo-countdown-circular'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.target = iso;
+      });
+    });
+</script>
     <!-- ── Login ── -->
     <div class="comp-section">
       <h3>Login</h3>
@@ -3020,6 +3325,56 @@ timeline.items = [
       if (el2) el2.data = generateStockData(170, 25, '2024-03-01');
     });
     </script>
+    <div class="comp-section">
+      <h3>Waterfall</h3>
+      <p class="comp-desc">Bridge chart showing cumulative effect of sequential positive and negative values</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="justify-content:center">
+          <snice-waterfall id="demo-waterfall" show-values show-connectors style="width:100%;height:300px"></snice-waterfall>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">javascript</span>
+          <pre><code class="language-javascript">const chart = document.querySelector(
+  'snice-waterfall');
+chart.data = [
+  { label: 'Revenue',
+    value: 1000, type: 'total' },
+  { label: 'Product Sales',
+    value: 420 },
+  { label: 'Services',
+    value: 250 },
+  { label: 'Refunds',
+    value: -80 },
+  { label: 'Operating Costs',
+    value: -350 },
+  { label: 'Tax',
+    value: -120 },
+  { label: 'Net Profit',
+    value: 1120, type: 'total' }
+];
+
+chart.addEventListener('bar-click',
+  e =&gt; console.log(e.detail.item));</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-waterfall').then(() => {
+      const chart = document.getElementById('demo-waterfall');
+      if (chart) {
+        chart.data = [
+          { label: 'Revenue', value: 1000, type: 'total' },
+          { label: 'Product Sales', value: 420 },
+          { label: 'Services', value: 250 },
+          { label: 'Refunds', value: -80 },
+          { label: 'Operating Costs', value: -350 },
+          { label: 'Tax', value: -120 },
+          { label: 'Net Profit', value: 1120, type: 'total' }
+        ];
+      }
+    });
+</script>
     <!-- ── Network Graph ── -->
     <div class="comp-section">
       <h3>Network Graph</h3>
@@ -3234,6 +3589,70 @@ timeline.items = [
       }
     });
 </script>
+    <div class="comp-section">
+      <h3>Cropper</h3>
+      <p class="comp-desc">Image cropping with drag-to-resize, rotation, zoom, and aspect ratio lock</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="justify-content:center">
+          <snice-cropper id="demo-cropper" src="https://picsum.photos/seed/cropper/600/400" aspect-ratio="1.777" output-type="jpeg" style="width:100%;max-width:500px"></snice-cropper>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-cropper
+  src="/photo.jpg"
+  aspect-ratio="1.777"
+  output-type="jpeg"
+&gt;&lt;/snice-cropper&gt;
+
+&lt;script&gt;
+  const cropper = document.querySelector(
+    'snice-cropper');
+
+  // Get cropped image
+  const blob = await cropper.crop();
+
+  // Rotate and zoom
+  cropper.rotate(90);
+  cropper.zoom(1.5);
+  cropper.reset();
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+    <div class="comp-section">
+      <h3>Signature</h3>
+      <p class="comp-desc">Canvas-based signature pad with smooth bezier curves and PNG export</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="justify-content:center;flex-direction:column;align-items:center;gap:0.75rem">
+          <snice-signature id="demo-signature" stroke-color="rgb(23 23 23)" stroke-width="2" style="width:100%;max-width:450px;height:150px"></snice-signature>
+          <div style="display:flex;gap:0.5rem">
+            <snice-button size="small" variant="default" onclick="document.getElementById('demo-signature').clear()">Clear</snice-button>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-signature
+  stroke-color="rgb(0 0 128)"
+  stroke-width="3"
+&gt;&lt;/snice-signature&gt;
+
+&lt;script&gt;
+  const sig = document.querySelector(
+    'snice-signature');
+
+  // Check if signed
+  console.log(sig.isEmpty());
+
+  // Export as data URL or Blob
+  const dataUrl = sig.toDataURL();
+  const blob = await sig.toBlob();
+
+  // Clear pad
+  sig.clear();
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
     <!-- ── 12. QR Code ── -->
     <div class="comp-section">
       <h3>QR Code</h3>
@@ -3353,6 +3772,42 @@ timeline.items = [
       }
     });
 </script>
+    <div class="comp-section">
+      <h3>Video Player</h3>
+      <p class="comp-desc">Full-featured player with custom controls, keyboard shortcuts, PiP, and fullscreen</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="justify-content:center">
+          <snice-video-player
+            id="demo-video"
+            src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+            poster="https://picsum.photos/seed/videoposter/640/360"
+            controls
+            style="width:100%"
+          ></snice-video-player>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-video-player
+  src="video.mp4"
+  poster="poster.jpg"
+  controls
+&gt;&lt;/snice-video-player&gt;
+
+&lt;script&gt;
+  const player = document.querySelector(
+    'snice-video-player');
+  player.play();
+  player.seekTo(30);
+  player.setPlaybackRate(1.5);
+  player.requestFullscreen();
+
+  // Keyboard: Space=play/pause,
+  // F=fullscreen, M=mute,
+  // Arrow keys=seek/volume
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
     <div class="comp-section">
       <h3>Podcast Player</h3>
       <p class="comp-desc">Podcast playback with RSS feed support, episode list, speed control, and sleep timer</p>
@@ -3720,6 +4175,114 @@ const x = 42;
         </ul>
         <p>Start typing anywhere to edit this content...</p>
       `);
+    });
+</script>
+    <div class="comp-section">
+      <h3>Markdown</h3>
+      <p class="comp-desc">GFM-compatible markdown renderer with sanitization and syntax highlighting</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="justify-content:center">
+          <snice-markdown id="demo-markdown" theme="github" style="width:100%">
+## Project Status
+
+The build pipeline is **fully operational**. Here's what shipped:
+
+### Features
+
+- [x] GFM tables and task lists
+- [x] Code block syntax highlighting
+- [ ] Image lazy loading
+
+### Code Example
+
+```js
+const greeting = (name) => {
+  return `Hello, ${name}!`;
+};
+```
+
+> *Markdown is rendered safely with built-in sanitization.*
+
+| Component | Status | Size |
+|-----------|--------|------|
+| Button | Stable | 2 KB |
+| Modal | Stable | 4 KB |
+| Table | Beta | 12 KB |
+          </snice-markdown>
+        </div>
+        <div class="comp-split-code">
+          <div class="code-tabs">
+            <button class="code-tab active" data-target="md-decl">Declarative</button>
+            <button class="code-tab" data-target="md-imper">Imperative</button>
+          </div>
+          <div class="code-panel active" id="md-decl">
+            <span class="code-lang">html</span>
+            <pre><code class="language-html">&lt;snice-markdown theme="github"&gt;
+## Hello World
+
+**Bold** and *italic* text.
+
+- Item 1
+- Item 2
+
+| Col A | Col B |
+|-------|-------|
+| One   | Two   |
+&lt;/snice-markdown&gt;</code></pre>
+          </div>
+          <div class="code-panel" id="md-imper">
+            <span class="code-lang">javascript</span>
+            <pre><code class="language-javascript">const md = document.querySelector(
+  'snice-markdown');
+md.setContent('## Dynamic\n\n'
+  + '- Item 1\n- Item 2\n\n'
+  + '**Bold** and *italic*');
+
+md.addEventListener('link-click',
+  e =&gt; console.log(e.detail.href));</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="comp-section">
+      <h3>PDF Viewer</h3>
+      <p class="comp-desc">Document viewer with page navigation, zoom, fit modes, and print/download</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="justify-content:center">
+          <snice-pdf-viewer id="demo-pdf" fit="width" style="width:100%;height:400px"></snice-pdf-viewer>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-pdf-viewer
+  src="/documents/report.pdf"
+  fit="width"
+  zoom="1"
+&gt;&lt;/snice-pdf-viewer&gt;
+
+&lt;script&gt;
+  const viewer = document.querySelector(
+    'snice-pdf-viewer');
+
+  viewer.addEventListener('pdf-loaded',
+    e =&gt; console.log(
+      'Pages:', e.detail.totalPages));
+
+  // Navigation
+  viewer.nextPage();
+  viewer.goToPage(5);
+  viewer.print();
+  viewer.download();
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-pdf-viewer').then(() => {
+      const viewer = document.getElementById('demo-pdf');
+      if (viewer) {
+        viewer.src = 'https://raw.githubusercontent.com/nicehash/rest-clients-demo/master/README.pdf';
+      }
     });
 </script>
     <div class="comp-section">
@@ -4330,75 +4893,282 @@ const x = 42;
       <p class="comp-desc">Threaded comment section with nested replies, likes, avatars, and timestamps</p>
       <div class="comp-split comp-split-stacked">
         <div class="comp-split-demo">
-          <snice-comments id="demo-comments" current-user="You" style="width:100%"></snice-comments>
+          <snice-comments id="demo-comments" current-user="You" allow-replies allow-likes style="width:100%">
+            <snice-comment author="Alice Chen" avatar="https://i.pravatar.cc/40?u=alice-sc" timestamp="2025-06-15T10:30:00Z" likes="5">
+              Love how clean the component API is. The threaded replies make conversations easy to follow!
+              <snice-comment author="Bob Miller" avatar="https://i.pravatar.cc/40?u=bob-sc" timestamp="2025-06-15T11:00:00Z" likes="2" liked>
+                Totally agree. The like/unlike toggle is a nice touch too.
+              </snice-comment>
+            </snice-comment>
+            <snice-comment author="You" timestamp="2025-06-15T11:30:00Z" likes="1">
+              Try typing a comment above and clicking Post. You can also reply to, like, or delete your own comments!
+            </snice-comment>
+          </snice-comments>
+        </div>
+        <div class="comp-split-code">
+          <div class="code-tabs">
+            <button class="code-tab active" data-target="comments-decl">Declarative</button>
+            <button class="code-tab" data-target="comments-imper">Imperative</button>
+          </div>
+          <div class="code-panel active" id="comments-decl">
+            <span class="code-lang">html</span>
+            <pre><code class="language-html">&lt;snice-comments current-user="Alice"
+  allow-replies allow-likes&gt;
+  &lt;snice-comment author="Bob"
+    avatar="bob.jpg"
+    timestamp="2025-06-15T10:30:00Z"
+    likes="3"&gt;
+    Great post!
+    &lt;snice-comment author="Alice"
+      timestamp="2025-06-15T11:00:00Z"&gt;
+      Thanks Bob!
+    &lt;/snice-comment&gt;
+  &lt;/snice-comment&gt;
+  &lt;snice-comment author="Charlie"
+    timestamp="2025-06-15T12:00:00Z"&gt;
+    Very informative.
+  &lt;/snice-comment&gt;
+&lt;/snice-comments&gt;</code></pre>
+          </div>
+          <div class="code-panel" id="comments-imper">
+            <span class="code-lang">javascript</span>
+            <pre><code class="language-javascript">const el = document.querySelector(
+  'snice-comments');
+el.comments = [
+  { id: '1', author: 'Bob',
+    avatar: 'avatar.jpg',
+    text: 'Great post!',
+    timestamp: new Date().toISOString(),
+    likes: 3, liked: false,
+    replies: [
+      { id: '2', author: 'Alice',
+        text: 'Thanks!',
+        timestamp: new Date().toISOString()
+      }
+    ]
+  }
+];
+el.addEventListener('comment-add',
+  e =&gt; console.log(e.detail));</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="comp-section">
+      <h3>Recipe</h3>
+      <p class="comp-desc">Interactive recipe card with ingredient scaling, step-by-step progress, and nutrition facts</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="justify-content:center">
+          <snice-recipe id="demo-recipe" style="width:100%"></snice-recipe>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">javascript</span>
+          <pre><code class="language-javascript">recipe.title = 'Pasta Carbonara';
+recipe.prepTime = 10;
+recipe.cookTime = 20;
+recipe.servings = 4;
+recipe.difficulty = 'medium';
+recipe.cuisine = 'Italian';
+recipe.ingredients = [
+  { name: 'Spaghetti', amount: 400, unit: 'g' },
+  { name: 'Pancetta', amount: 200, unit: 'g' },
+  { name: 'Eggs', amount: 4, unit: '' },
+  { name: 'Parmesan', amount: 100, unit: 'g' }
+];
+recipe.steps = [
+  { text: 'Boil pasta in salted water.',
+    time: 10 },
+  { text: 'Fry pancetta until crispy.' },
+  { text: 'Mix eggs and parmesan.' },
+  { text: 'Combine off heat.' }
+];
+recipe.nutrition = {
+  calories: 650, protein: 28,
+  carbs: 72, fat: 24 };</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-recipe').then(() => {
+      const recipe = document.getElementById('demo-recipe');
+      if (recipe) {
+        recipe.title = 'Pasta Carbonara';
+        recipe.description = 'A classic Roman pasta dish with a rich, creamy egg sauce and crispy pancetta.';
+        recipe.image = 'https://picsum.photos/seed/carbonara/800/400';
+        recipe.author = 'Chef Marco';
+        recipe.prepTime = 10;
+        recipe.cookTime = 20;
+        recipe.servings = 4;
+        recipe.difficulty = 'medium';
+        recipe.cuisine = 'Italian';
+        recipe.tags = ['pasta', 'Italian', 'comfort food'];
+        recipe.ingredients = [
+          { name: 'Spaghetti', amount: 400, unit: 'g' },
+          { name: 'Pancetta', amount: 200, unit: 'g' },
+          { name: 'Egg yolks', amount: 4, unit: '', group: 'Sauce' },
+          { name: 'Parmesan', amount: 100, unit: 'g', group: 'Sauce' },
+          { name: 'Black pepper', amount: 2, unit: 'tsp', group: 'Sauce' }
+        ];
+        recipe.steps = [
+          { text: 'Bring a large pot of salted water to boil and cook spaghetti until al dente.', time: 10 },
+          { text: 'Cut pancetta into small cubes and fry in a large pan over medium heat until crispy.', tip: 'Use medium heat to render fat slowly for maximum crispiness.' },
+          { text: 'Whisk egg yolks with grated parmesan and plenty of freshly cracked black pepper.' },
+          { text: 'Drain pasta, reserving 1 cup of pasta water. Toss pasta with pancetta off heat, then stir in egg mixture quickly.', tip: 'The residual heat cooks the eggs without scrambling them.' }
+        ];
+        recipe.nutrition = { calories: 650, protein: 28, carbs: 72, fat: 24, fiber: 3 };
+      }
+    });
+</script>
+    <div class="comp-section">
+      <h3>Testimonial</h3>
+      <p class="comp-desc">Quote card with author info, avatar, star rating, and multiple variants</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="flex-direction:column;gap:1rem">
+          <snice-testimonial
+            quote="This framework completely transformed our development workflow. We shipped features 3x faster."
+            author="Sarah Chen"
+            role="CTO"
+            company="Nexus Labs"
+            avatar="https://picsum.photos/seed/sarah/80/80"
+            rating="5"
+            variant="card"
+          ></snice-testimonial>
+          <snice-testimonial
+            quote="Outstanding developer experience from start to finish. The component quality is exceptional."
+            author="Marcus Rivera"
+            role="Lead Engineer"
+            company="Streamline"
+            avatar="https://picsum.photos/seed/marcus/80/80"
+            rating="4"
+            variant="minimal"
+          ></snice-testimonial>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <pre><code class="language-html">&lt;snice-comments
-  current-user="Alice"
-&gt;&lt;/snice-comments&gt;
+          <pre><code class="language-html">&lt;snice-testimonial
+  quote="This framework transformed
+    our workflow."
+  author="Sarah Chen"
+  role="CTO"
+  company="Nexus Labs"
+  avatar="avatar.jpg"
+  rating="5"
+  variant="card"
+&gt;&lt;/snice-testimonial&gt;
+
+&lt;!-- Variants: card, minimal, featured --&gt;
+&lt;snice-testimonial
+  quote="Outstanding experience."
+  author="Marcus Rivera"
+  variant="featured"
+&gt;&lt;/snice-testimonial&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+    <div class="comp-section">
+      <h3>Spotlight</h3>
+      <p class="comp-desc">Guided tour overlay that highlights elements with step-by-step instructions</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="justify-content:center;flex-direction:column;gap:1rem;align-items:center">
+          <div style="display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;justify-content:center">
+            <div id="spot-step1" style="padding:0.6rem 1rem;background:rgba(99,102,241,0.1);border-radius:6px;font-size:0.9rem">Search bar</div>
+            <div id="spot-step2" style="padding:0.6rem 1rem;background:rgba(16,185,129,0.1);border-radius:6px;font-size:0.9rem">Notifications</div>
+            <div id="spot-step3" style="padding:0.6rem 1rem;background:rgba(245,158,11,0.1);border-radius:6px;font-size:0.9rem">Settings</div>
+          </div>
+          <snice-button id="spot-start-btn" variant="primary" size="small">Start Tour</snice-button>
+          <snice-spotlight id="demo-spotlight"></snice-spotlight>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-spotlight&gt;&lt;/snice-spotlight&gt;
 
 &lt;script&gt;
-  const el = document.querySelector(
-    'snice-comments');
-  el.comments = [
-    { id: '1', author: 'Bob',
-      avatar: 'avatar.jpg',
-      text: 'Great post!',
-      timestamp: new Date().toISOString(),
-      likes: 3, liked: false,
-      replies: [
-        { id: '2', author: 'Alice',
-          text: 'Thanks!',
-          timestamp: new Date().toISOString()
-        }
-      ]
-    }
+  const spotlight = document.querySelector(
+    'snice-spotlight');
+  spotlight.steps = [
+    { target: '#search',
+      title: 'Search',
+      description: 'Find anything',
+      position: 'bottom' },
+    { target: '#notifs',
+      title: 'Notifications',
+      description: 'Stay updated' },
+    { target: '#settings',
+      title: 'Settings',
+      description: 'Customize your experience' }
   ];
-  el.addEventListener('comment-add',
-    e =&gt; console.log(e.detail));
-  el.addEventListener('comment-like',
-    e =&gt; console.log(e.detail));
+  spotlight.start();
 &lt;/script&gt;</code></pre>
         </div>
       </div>
     </div>
 
 <script>
-    customElements.whenDefined('snice-comments').then(() => {
-      const el = document.getElementById('demo-comments');
-      if (el) {
-        el.comments = [
-          {
-            id: '1',
-            author: 'Alice Chen',
-            avatar: 'https://i.pravatar.cc/40?u=alice-sc',
-            text: 'Love how clean the component API is. The threaded replies make conversations easy to follow!',
-            timestamp: new Date(Date.now() - 7200000).toISOString(),
-            likes: 5,
-            liked: false,
-            replies: [
-              {
-                id: '2',
-                author: 'Bob Miller',
-                avatar: 'https://i.pravatar.cc/40?u=bob-sc',
-                text: 'Totally agree. The like/unlike toggle is a nice touch too.',
-                timestamp: new Date(Date.now() - 3600000).toISOString(),
-                likes: 2,
-                liked: true
-              }
-            ]
-          },
-          {
-            id: '3',
-            author: 'You',
-            text: 'Try typing a comment above and clicking Post. You can also reply to, like, or delete your own comments!',
-            timestamp: new Date(Date.now() - 1800000).toISOString(),
-            likes: 1,
-            liked: false
-          }
+    customElements.whenDefined('snice-spotlight').then(() => {
+      const spotlight = document.getElementById('demo-spotlight');
+      const btn = document.getElementById('spot-start-btn');
+      if (spotlight && btn) {
+        spotlight.steps = [
+          { target: '#spot-step1', title: 'Search', description: 'Use the search bar to find components, docs, or examples.', position: 'bottom' },
+          { target: '#spot-step2', title: 'Notifications', description: 'Check alerts and updates from your team.', position: 'bottom' },
+          { target: '#spot-step3', title: 'Settings', description: 'Customize themes, preferences, and account details.', position: 'bottom' }
         ];
+        btn.addEventListener('click', () => spotlight.start());
       }
+    });
+</script>
+    <div class="comp-section">
+      <h3>Weather</h3>
+      <p class="comp-desc">Weather display card with current conditions, details, and multi-day forecast</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="justify-content:center;gap:1.5rem;flex-wrap:wrap">
+          <snice-weather id="demo-weather-full" unit="celsius" variant="full" style="max-width:360px;width:100%"></snice-weather>
+          <snice-weather id="demo-weather-compact" unit="celsius" variant="compact"></snice-weather>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">javascript</span>
+          <pre><code class="language-javascript">const weather = document.querySelector(
+  'snice-weather');
+weather.unit = 'celsius';
+weather.variant = 'full';
+weather.data = {
+  temp: 22,
+  condition: 'Partly Cloudy',
+  humidity: 65,
+  wind: 12,
+  forecast: [
+    { day: 'Mon', high: 24, low: 18,
+      condition: 'Sunny' },
+    { day: 'Tue', high: 20, low: 15,
+      condition: 'Rain' },
+    { day: 'Wed', high: 22, low: 16,
+      condition: 'Cloudy' }
+  ]
+};</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-weather').then(() => {
+      const full = document.getElementById('demo-weather-full');
+      const compact = document.getElementById('demo-weather-compact');
+      const weatherData = {
+        temp: 22,
+        condition: 'Partly Cloudy',
+        humidity: 65,
+        wind: 12,
+        forecast: [
+          { day: 'Mon', high: 24, low: 18, condition: 'Sunny' },
+          { day: 'Tue', high: 20, low: 15, condition: 'Rain' },
+          { day: 'Wed', high: 22, low: 16, condition: 'Cloudy' },
+          { day: 'Thu', high: 25, low: 17, condition: 'Sunny' },
+          { day: 'Fri', high: 19, low: 14, condition: 'Thunderstorm' }
+        ]
+      };
+      if (full) full.data = weatherData;
+      if (compact) compact.data = { temp: 22, condition: 'Partly Cloudy' };
     });
 </script>
     <div class="comp-section">
@@ -4407,42 +5177,85 @@ const x = 42;
       <div class="comp-split comp-split-stacked">
         <div class="comp-split-demo" style="flex-direction:column;gap:2rem">
           <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1.25rem;position:relative">
-            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">cards</span>
-            <snice-pricing-table id="demo-pricing-cards" style="width:100%"></snice-pricing-table>
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">declarative (cards)</span>
+            <snice-pricing-table id="demo-pricing-decl" style="width:100%">
+              <snice-plan name="Starter" price="0" description="For individuals" cta="Get Started" cta-variant="outline">
+                <snice-feature name="1 user" included></snice-feature>
+                <snice-feature name="5 projects" included></snice-feature>
+                <snice-feature name="1GB storage" included></snice-feature>
+                <snice-feature name="API access"></snice-feature>
+                <snice-feature name="Priority support"></snice-feature>
+              </snice-plan>
+              <snice-plan name="Professional" price="29" annual-price="24" description="For growing teams" cta="Start Free Trial" highlighted badge="Most Popular">
+                <snice-feature name="10 users" included></snice-feature>
+                <snice-feature name="Unlimited projects" included></snice-feature>
+                <snice-feature name="100GB storage" included></snice-feature>
+                <snice-feature name="API access" included></snice-feature>
+                <snice-feature name="Priority support"></snice-feature>
+              </snice-plan>
+              <snice-plan name="Enterprise" price="99" annual-price="79" description="For large orgs" cta="Contact Sales" cta-variant="secondary">
+                <snice-feature name="Unlimited users" included></snice-feature>
+                <snice-feature name="Unlimited projects" included></snice-feature>
+                <snice-feature name="1TB storage" included></snice-feature>
+                <snice-feature name="API access" included></snice-feature>
+                <snice-feature name="Priority support" included></snice-feature>
+              </snice-plan>
+            </snice-pricing-table>
           </div>
           <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1.25rem;position:relative">
-            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">table</span>
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">table variant</span>
             <snice-pricing-table id="demo-pricing-table" variant="table" style="width:100%"></snice-pricing-table>
           </div>
         </div>
         <div class="comp-split-code">
-          <span class="code-lang">html</span>
-          <pre><code class="language-html">&lt;snice-pricing-table&gt;&lt;/snice-pricing-table&gt;
-
-&lt;script&gt;
-  const pt = document.querySelector(
-    'snice-pricing-table');
-  pt.plans = [
-    { name: 'Free', price: 0,
-      features: [
-        { name: '1 user', included: true },
-        { name: 'API', included: false }
-      ],
-      cta: 'Get Started' },
-    { name: 'Pro', price: 29,
-      annualPrice: 24,
-      features: [
-        { name: '10 users', included: true },
-        { name: 'API', included: true }
-      ],
-      cta: 'Start Trial',
-      highlighted: true,
-      badge: 'Popular' }
-  ];
-  // Toggle: variant="table"
-  pt.addEventListener('plan-select',
-    e =&gt; console.log(e.detail));
-&lt;/script&gt;</code></pre>
+          <div class="code-tabs">
+            <button class="code-tab active" data-target="pt-decl">Declarative</button>
+            <button class="code-tab" data-target="pt-imper">Imperative</button>
+          </div>
+          <div class="code-panel active" id="pt-decl">
+            <span class="code-lang">html</span>
+            <pre><code class="language-html">&lt;snice-pricing-table&gt;
+  &lt;snice-plan name="Free" price="0"
+    cta="Get Started"&gt;
+    &lt;snice-feature name="1 user"
+      included&gt;&lt;/snice-feature&gt;
+    &lt;snice-feature
+      name="API"&gt;&lt;/snice-feature&gt;
+  &lt;/snice-plan&gt;
+  &lt;snice-plan name="Pro" price="29"
+    annual-price="24" highlighted
+    badge="Popular" cta="Start Trial"&gt;
+    &lt;snice-feature name="10 users"
+      included&gt;&lt;/snice-feature&gt;
+    &lt;snice-feature name="API"
+      included&gt;&lt;/snice-feature&gt;
+  &lt;/snice-plan&gt;
+&lt;/snice-pricing-table&gt;</code></pre>
+          </div>
+          <div class="code-panel" id="pt-imper">
+            <span class="code-lang">javascript</span>
+            <pre><code class="language-javascript">const pt = document.querySelector(
+  'snice-pricing-table');
+pt.plans = [
+  { name: 'Free', price: 0,
+    features: [
+      { name: '1 user', included: true },
+      { name: 'API', included: false }
+    ],
+    cta: 'Get Started' },
+  { name: 'Pro', price: 29,
+    annualPrice: 24,
+    features: [
+      { name: '10 users', included: true },
+      { name: 'API', included: true }
+    ],
+    cta: 'Start Trial',
+    highlighted: true,
+    badge: 'Popular' }
+];
+pt.addEventListener('plan-select',
+  e =&gt; console.log(e.detail));</code></pre>
+          </div>
         </div>
       </div>
     </div>
@@ -4451,9 +5264,7 @@ const x = 42;
     customElements.whenDefined('snice-pricing-table').then(() => {
       const plans = [
         {
-          name: 'Starter',
-          price: 0,
-          description: 'For individuals',
+          name: 'Starter', price: 0, description: 'For individuals',
           features: [
             { name: '1 user', included: true },
             { name: '5 projects', included: true },
@@ -4461,14 +5272,10 @@ const x = 42;
             { name: 'API access', included: false },
             { name: 'Priority support', included: false }
           ],
-          cta: 'Get Started',
-          ctaVariant: 'outline'
+          cta: 'Get Started', ctaVariant: 'outline'
         },
         {
-          name: 'Professional',
-          price: 29,
-          annualPrice: 24,
-          description: 'For growing teams',
+          name: 'Professional', price: 29, annualPrice: 24, description: 'For growing teams',
           features: [
             { name: '10 users', included: true },
             { name: 'Unlimited projects', included: true },
@@ -4476,15 +5283,10 @@ const x = 42;
             { name: 'API access', included: true },
             { name: 'Priority support', included: false }
           ],
-          cta: 'Start Free Trial',
-          highlighted: true,
-          badge: 'Most Popular'
+          cta: 'Start Free Trial', highlighted: true, badge: 'Most Popular'
         },
         {
-          name: 'Enterprise',
-          price: 99,
-          annualPrice: 79,
-          description: 'For large orgs',
+          name: 'Enterprise', price: 99, annualPrice: 79, description: 'For large orgs',
           features: [
             { name: 'Unlimited users', included: true },
             { name: 'Unlimited projects', included: true },
@@ -4492,14 +5294,10 @@ const x = 42;
             { name: 'API access', included: true },
             { name: 'Priority support', included: true }
           ],
-          cta: 'Contact Sales',
-          ctaVariant: 'secondary'
+          cta: 'Contact Sales', ctaVariant: 'secondary'
         }
       ];
-
-      const cards = document.getElementById('demo-pricing-cards');
       const table = document.getElementById('demo-pricing-table');
-      if (cards) cards.plans = plans;
       if (table) table.plans = plans;
     });
 </script>
@@ -4613,6 +5411,22 @@ const x = 42;
   <script src="components/snice-flow.min.js"></script>
   <script src="components/snice-book.min.js"></script>
   <script src="components/snice-comments.min.js"></script>
+  <script src="components/snice-countdown.min.js"></script>
+  <script src="components/snice-cropper.min.js"></script>
+  <script src="components/snice-flip-card.min.js"></script>
+  <script src="components/snice-markdown.min.js"></script>
+  <script src="components/snice-notification-center.min.js"></script>
+  <script src="components/snice-pdf-viewer.min.js"></script>
+  <script src="components/snice-rating.min.js"></script>
+  <script src="components/snice-recipe.min.js"></script>
+  <script src="components/snice-signature.min.js"></script>
+  <script src="components/snice-sortable.min.js"></script>
+  <script src="components/snice-spotlight.min.js"></script>
+  <script src="components/snice-spreadsheet.min.js"></script>
+  <script src="components/snice-testimonial.min.js"></script>
+  <script src="components/snice-video-player.min.js"></script>
+  <script src="components/snice-waterfall.min.js"></script>
+  <script src="components/snice-weather.min.js"></script>
   <script src="components/snice-pricing-table.min.js"></script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>

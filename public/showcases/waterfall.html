@@ -1,0 +1,50 @@
+    <div class="comp-section">
+      <h3>Waterfall</h3>
+      <p class="comp-desc">Bridge chart showing cumulative effect of sequential positive and negative values</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="justify-content:center">
+          <snice-waterfall id="demo-waterfall" show-values show-connectors style="width:100%;height:300px"></snice-waterfall>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">javascript</span>
+          <pre><code class="language-javascript">const chart = document.querySelector(
+  'snice-waterfall');
+chart.data = [
+  { label: 'Revenue',
+    value: 1000, type: 'total' },
+  { label: 'Product Sales',
+    value: 420 },
+  { label: 'Services',
+    value: 250 },
+  { label: 'Refunds',
+    value: -80 },
+  { label: 'Operating Costs',
+    value: -350 },
+  { label: 'Tax',
+    value: -120 },
+  { label: 'Net Profit',
+    value: 1120, type: 'total' }
+];
+
+chart.addEventListener('bar-click',
+  e =&gt; console.log(e.detail.item));</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-waterfall').then(() => {
+      const chart = document.getElementById('demo-waterfall');
+      if (chart) {
+        chart.data = [
+          { label: 'Revenue', value: 1000, type: 'total' },
+          { label: 'Product Sales', value: 420 },
+          { label: 'Services', value: 250 },
+          { label: 'Refunds', value: -80 },
+          { label: 'Operating Costs', value: -350 },
+          { label: 'Tax', value: -120 },
+          { label: 'Net Profit', value: 1120, type: 'total' }
+        ];
+      }
+    });
+</script>

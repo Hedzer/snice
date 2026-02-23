@@ -312,6 +312,33 @@ export default [
           }
         }
       },
+      // Plugin to copy PDF viewer static assets (vendored pdf.js)
+      {
+        name: 'copy-pdf-viewer-assets',
+        generateBundle() {
+          const pdfViewerSrc = 'components/pdf-viewer';
+          const pdfViewerDest = 'dist/components/pdf-viewer';
+
+          if (!fs.existsSync(pdfViewerSrc)) {
+            return;
+          }
+
+          if (!fs.existsSync(pdfViewerDest)) {
+            fs.mkdirSync(pdfViewerDest, { recursive: true });
+          }
+
+          // Copy .mjs files from pdf-viewer directory (pdf.min.mjs, pdf.worker.min.mjs)
+          const files = fs.readdirSync(pdfViewerSrc);
+          for (const file of files) {
+            if (file.endsWith('.mjs')) {
+              fs.copyFileSync(
+                path.join(pdfViewerSrc, file),
+                path.join(pdfViewerDest, file)
+              );
+            }
+          }
+        }
+      },
       typescript({
         tsconfig: './components/tsconfig.json',
         declaration: false,

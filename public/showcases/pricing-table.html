@@ -4,42 +4,85 @@
       <div class="comp-split comp-split-stacked">
         <div class="comp-split-demo" style="flex-direction:column;gap:2rem">
           <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1.25rem;position:relative">
-            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">cards</span>
-            <snice-pricing-table id="demo-pricing-cards" style="width:100%"></snice-pricing-table>
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">declarative (cards)</span>
+            <snice-pricing-table id="demo-pricing-decl" style="width:100%">
+              <snice-plan name="Starter" price="0" description="For individuals" cta="Get Started" cta-variant="outline">
+                <snice-feature name="1 user" included></snice-feature>
+                <snice-feature name="5 projects" included></snice-feature>
+                <snice-feature name="1GB storage" included></snice-feature>
+                <snice-feature name="API access"></snice-feature>
+                <snice-feature name="Priority support"></snice-feature>
+              </snice-plan>
+              <snice-plan name="Professional" price="29" annual-price="24" description="For growing teams" cta="Start Free Trial" highlighted badge="Most Popular">
+                <snice-feature name="10 users" included></snice-feature>
+                <snice-feature name="Unlimited projects" included></snice-feature>
+                <snice-feature name="100GB storage" included></snice-feature>
+                <snice-feature name="API access" included></snice-feature>
+                <snice-feature name="Priority support"></snice-feature>
+              </snice-plan>
+              <snice-plan name="Enterprise" price="99" annual-price="79" description="For large orgs" cta="Contact Sales" cta-variant="secondary">
+                <snice-feature name="Unlimited users" included></snice-feature>
+                <snice-feature name="Unlimited projects" included></snice-feature>
+                <snice-feature name="1TB storage" included></snice-feature>
+                <snice-feature name="API access" included></snice-feature>
+                <snice-feature name="Priority support" included></snice-feature>
+              </snice-plan>
+            </snice-pricing-table>
           </div>
           <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1.25rem;position:relative">
-            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">table</span>
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">table variant</span>
             <snice-pricing-table id="demo-pricing-table" variant="table" style="width:100%"></snice-pricing-table>
           </div>
         </div>
         <div class="comp-split-code">
-          <span class="code-lang">html</span>
-          <pre><code class="language-html">&lt;snice-pricing-table&gt;&lt;/snice-pricing-table&gt;
-
-&lt;script&gt;
-  const pt = document.querySelector(
-    'snice-pricing-table');
-  pt.plans = [
-    { name: 'Free', price: 0,
-      features: [
-        { name: '1 user', included: true },
-        { name: 'API', included: false }
-      ],
-      cta: 'Get Started' },
-    { name: 'Pro', price: 29,
-      annualPrice: 24,
-      features: [
-        { name: '10 users', included: true },
-        { name: 'API', included: true }
-      ],
-      cta: 'Start Trial',
-      highlighted: true,
-      badge: 'Popular' }
-  ];
-  // Toggle: variant="table"
-  pt.addEventListener('plan-select',
-    e =&gt; console.log(e.detail));
-&lt;/script&gt;</code></pre>
+          <div class="code-tabs">
+            <button class="code-tab active" data-target="pt-decl">Declarative</button>
+            <button class="code-tab" data-target="pt-imper">Imperative</button>
+          </div>
+          <div class="code-panel active" id="pt-decl">
+            <span class="code-lang">html</span>
+            <pre><code class="language-html">&lt;snice-pricing-table&gt;
+  &lt;snice-plan name="Free" price="0"
+    cta="Get Started"&gt;
+    &lt;snice-feature name="1 user"
+      included&gt;&lt;/snice-feature&gt;
+    &lt;snice-feature
+      name="API"&gt;&lt;/snice-feature&gt;
+  &lt;/snice-plan&gt;
+  &lt;snice-plan name="Pro" price="29"
+    annual-price="24" highlighted
+    badge="Popular" cta="Start Trial"&gt;
+    &lt;snice-feature name="10 users"
+      included&gt;&lt;/snice-feature&gt;
+    &lt;snice-feature name="API"
+      included&gt;&lt;/snice-feature&gt;
+  &lt;/snice-plan&gt;
+&lt;/snice-pricing-table&gt;</code></pre>
+          </div>
+          <div class="code-panel" id="pt-imper">
+            <span class="code-lang">javascript</span>
+            <pre><code class="language-javascript">const pt = document.querySelector(
+  'snice-pricing-table');
+pt.plans = [
+  { name: 'Free', price: 0,
+    features: [
+      { name: '1 user', included: true },
+      { name: 'API', included: false }
+    ],
+    cta: 'Get Started' },
+  { name: 'Pro', price: 29,
+    annualPrice: 24,
+    features: [
+      { name: '10 users', included: true },
+      { name: 'API', included: true }
+    ],
+    cta: 'Start Trial',
+    highlighted: true,
+    badge: 'Popular' }
+];
+pt.addEventListener('plan-select',
+  e =&gt; console.log(e.detail));</code></pre>
+          </div>
         </div>
       </div>
     </div>
@@ -48,9 +91,7 @@
     customElements.whenDefined('snice-pricing-table').then(() => {
       const plans = [
         {
-          name: 'Starter',
-          price: 0,
-          description: 'For individuals',
+          name: 'Starter', price: 0, description: 'For individuals',
           features: [
             { name: '1 user', included: true },
             { name: '5 projects', included: true },
@@ -58,14 +99,10 @@
             { name: 'API access', included: false },
             { name: 'Priority support', included: false }
           ],
-          cta: 'Get Started',
-          ctaVariant: 'outline'
+          cta: 'Get Started', ctaVariant: 'outline'
         },
         {
-          name: 'Professional',
-          price: 29,
-          annualPrice: 24,
-          description: 'For growing teams',
+          name: 'Professional', price: 29, annualPrice: 24, description: 'For growing teams',
           features: [
             { name: '10 users', included: true },
             { name: 'Unlimited projects', included: true },
@@ -73,15 +110,10 @@
             { name: 'API access', included: true },
             { name: 'Priority support', included: false }
           ],
-          cta: 'Start Free Trial',
-          highlighted: true,
-          badge: 'Most Popular'
+          cta: 'Start Free Trial', highlighted: true, badge: 'Most Popular'
         },
         {
-          name: 'Enterprise',
-          price: 99,
-          annualPrice: 79,
-          description: 'For large orgs',
+          name: 'Enterprise', price: 99, annualPrice: 79, description: 'For large orgs',
           features: [
             { name: 'Unlimited users', included: true },
             { name: 'Unlimited projects', included: true },
@@ -89,14 +121,10 @@
             { name: 'API access', included: true },
             { name: 'Priority support', included: true }
           ],
-          cta: 'Contact Sales',
-          ctaVariant: 'secondary'
+          cta: 'Contact Sales', ctaVariant: 'secondary'
         }
       ];
-
-      const cards = document.getElementById('demo-pricing-cards');
       const table = document.getElementById('demo-pricing-table');
-      if (cards) cards.plans = plans;
       if (table) table.plans = plans;
     });
 </script>

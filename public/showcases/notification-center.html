@@ -1,0 +1,45 @@
+    <div class="comp-section">
+      <h3>Notification Center</h3>
+      <p class="comp-desc">Bell icon with unread badge and dropdown notification panel</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="justify-content:center;min-height:60px">
+          <snice-notification-center id="demo-notif"></snice-notification-center>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-notification-center&gt;
+&lt;/snice-notification-center&gt;
+
+&lt;script&gt;
+  const nc = document.querySelector(
+    'snice-notification-center');
+  nc.notifications = [
+    { id: '1', title: 'New message',
+      message: 'You have a new message',
+      timestamp: '2 min ago',
+      type: 'info' },
+    { id: '2', title: 'Deploy complete',
+      message: 'Build v2.4 succeeded',
+      timestamp: '10 min ago',
+      type: 'success', read: true }
+  ];
+  nc.addEventListener('notification-click',
+    e =&gt; console.log(e.detail));
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-notification-center').then(() => {
+      const nc = document.getElementById('demo-notif');
+      if (nc) {
+        nc.notifications = [
+          { id: '1', title: 'New comment', message: 'Alice commented on your pull request', timestamp: '2 min ago', type: 'info' },
+          { id: '2', title: 'Deploy succeeded', message: 'Production build v2.4.1 is live', timestamp: '15 min ago', type: 'success', read: true },
+          { id: '3', title: 'Disk space warning', message: 'Server storage is at 92% capacity', timestamp: '1 hour ago', type: 'warning' },
+          { id: '4', title: 'Build failed', message: 'CI pipeline failed on branch feature/auth', timestamp: '3 hours ago', type: 'error' }
+        ];
+      }
+    });
+</script>

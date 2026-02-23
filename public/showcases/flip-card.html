@@ -1,0 +1,35 @@
+    <div class="comp-section">
+      <h3>Flip Card</h3>
+      <p class="comp-desc">3D card flip with front and back faces, click or programmatic control</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="justify-content:center;gap:1.5rem;flex-wrap:wrap">
+          <snice-flip-card direction="horizontal" style="width:240px;height:160px">
+            <div slot="front" style="display:flex;align-items:center;justify-content:center;height:100%;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border-radius:8px;font-size:1.1rem;font-weight:600">Click to flip</div>
+            <div slot="back" style="display:flex;align-items:center;justify-content:center;height:100%;background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;border-radius:8px;font-size:1.1rem;font-weight:600">Back side</div>
+          </snice-flip-card>
+          <snice-flip-card direction="vertical" style="width:240px;height:160px">
+            <div slot="front" style="display:flex;align-items:center;justify-content:center;height:100%;background:linear-gradient(135deg,#10b981,#3b82f6);color:#fff;border-radius:8px;font-size:1.1rem;font-weight:600">Vertical flip</div>
+            <div slot="back" style="display:flex;align-items:center;justify-content:center;height:100%;background:linear-gradient(135deg,#ec4899,#8b5cf6);color:#fff;border-radius:8px;font-size:1.1rem;font-weight:600">Other side</div>
+          </snice-flip-card>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <pre><code class="language-html">&lt;snice-flip-card
+  direction="horizontal"
+  style="width:240px;height:160px"
+&gt;
+  &lt;div slot="front"&gt;Front content&lt;/div&gt;
+  &lt;div slot="back"&gt;Back content&lt;/div&gt;
+&lt;/snice-flip-card&gt;
+
+&lt;script&gt;
+  const card = document.querySelector(
+    'snice-flip-card');
+  card.flip();
+  card.flipTo('back');
+  card.addEventListener('flip-change',
+    e =&gt; console.log(e.detail.side));
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </div>
