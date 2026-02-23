@@ -178,7 +178,7 @@
 /* Children container */
 .org-children {
   display: flex;
-  gap: var(--snice-spacing-md, 1rem);
+  gap: 0;
   position: relative;
   padding-top: 1.5rem;
 }
@@ -189,7 +189,7 @@
   padding-left: 1.5rem;
 }
 
-/* Horizontal connector line above children */
+/* Vertical line from parent node down to horizontal connector */
 .org-children::before {
   content: '';
   position: absolute;
@@ -209,43 +209,87 @@
   transform: translateY(-50%);
 }
 
-/* Horizontal line connecting siblings */
-.org-children-line {
-  position: absolute;
-  top: 0;
-  height: 1px;
-  background: var(--snice-color-border, rgb(226 226 226));
-}
-
-.org-tree--left-right .org-children-line {
-  top: auto;
-  left: 0;
-  width: 1px;
-  height: auto;
-}
-
 /* Child branch connector */
 .org-branch {
   display: flex;
   flex-direction: column;
   align-items: center;
   position: relative;
+  padding: 1.5rem 0.5rem 0;
 }
 
+/* Horizontal line connecting siblings at the top of each branch */
 .org-branch::before {
   content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--snice-color-border, rgb(226 226 226));
+}
+
+/* Vertical drop from horizontal line to child node */
+.org-branch::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
   width: 1px;
   height: 1.5rem;
   background: var(--snice-color-border, rgb(226 226 226));
 }
 
+/* First child: horizontal line starts from center */
+.org-branch:first-child::before {
+  left: 50%;
+}
+
+/* Last child: horizontal line ends at center */
+.org-branch:last-child::before {
+  right: 50%;
+}
+
+/* Only child: no horizontal line needed, just vertical drop */
+.org-branch:only-child::before {
+  display: none;
+}
+
+/* Left-right direction */
 .org-tree--left-right .org-branch {
   flex-direction: row;
   align-items: flex-start;
+  padding: 0.5rem 0 0.5rem 1.5rem;
 }
 
 .org-tree--left-right .org-branch::before {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: auto;
+  width: 1px;
+  height: auto;
+}
+
+.org-tree--left-right .org-branch:first-child::before {
+  top: 50%;
+  left: 0;
+}
+
+.org-tree--left-right .org-branch:last-child::before {
+  bottom: 50%;
+  top: 0;
+}
+
+.org-tree--left-right .org-branch:only-child::before {
+  display: none;
+}
+
+.org-tree--left-right .org-branch::after {
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
   width: 1.5rem;
   height: 1px;
-  margin-top: 1.25rem;
 }

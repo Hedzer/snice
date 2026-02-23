@@ -4,6 +4,7 @@ export interface SniceMarkdownElement extends HTMLElement {
   content: string;
   sanitize: boolean;
   theme: MarkdownTheme;
+  setContent(markdown: string): void;
 }
 
 export interface SniceMarkdownEventMap {

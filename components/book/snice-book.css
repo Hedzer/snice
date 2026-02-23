@@ -29,11 +29,12 @@
   user-select: none;
 }
 
-/* The book body: cover (left) + flip area (right) */
+/* The book body: left page + spine + flip area */
 .book__body {
   display: flex;
   box-shadow: var(--book-shadow);
   border-radius: 4px;
+  overflow: visible;
 }
 
 /* Left side: shows the static "left page" or cover */
@@ -45,6 +46,7 @@
   position: relative;
   overflow: hidden;
   border-right: 1px solid var(--book-border);
+  z-index: 1;
 }
 
 .book__left-content {
@@ -71,6 +73,7 @@
   background: var(--book-page-bg);
   border-radius: 0 4px 4px 0;
   overflow: visible;
+  z-index: 2;
 }
 
 /* Each flippable page */
@@ -83,12 +86,30 @@
   transform-origin: left center;
   transform-style: preserve-3d;
   transform: rotateY(0deg);
-  transition: transform var(--book-flip-duration) ease-in-out;
 }
 
 /* When a page is flipped, rotate it -180deg */
 .book__page--flipped {
   transform: rotateY(-180deg);
+}
+
+/* Flip animations (keyframes work even if DOM is replaced on re-render) */
+@keyframes book-flip-forward {
+  0% { transform: rotateY(0deg); }
+  100% { transform: rotateY(-180deg); }
+}
+
+@keyframes book-flip-backward {
+  0% { transform: rotateY(-180deg); }
+  100% { transform: rotateY(0deg); }
+}
+
+.book__page--flipping-forward {
+  animation: book-flip-forward var(--book-flip-duration) ease-in-out forwards;
+}
+
+.book__page--flipping-backward {
+  animation: book-flip-backward var(--book-flip-duration) ease-in-out forwards;
 }
 
 /* Front face of the page (visible before flip) */
@@ -119,6 +140,13 @@
   flex-direction: column;
   transform: rotateY(180deg);
   z-index: 0;
+}
+
+/* Content container inside faces */
+.book__face-content {
+  flex: 1;
+  position: relative;
+  z-index: 1;
 }
 
 /* Page lines effect */

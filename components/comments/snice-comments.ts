@@ -1,6 +1,35 @@
-import { element, property, query, watch, dispatch, ready, render, styles, html, css } from 'snice';
+import { element, property, query, watch, dispatch, ready, on, render, styles, html, css } from 'snice';
 import cssContent from './snice-comments.css?inline';
 import type { SniceCommentsElement, Comment, CommentAddDetail, CommentReplyDetail, CommentDeleteDetail, CommentLikeDetail } from './snice-comments.types';
+
+/**
+ * <snice-comment> — declarative child element for comments.
+ *
+ * Usage:
+ *   <snice-comments current-user="John">
+ *     <snice-comment author="Alice" avatar="alice.jpg" timestamp="2024-01-15T10:30:00Z">
+ *       Great article!
+ *       <snice-comment author="Bob" timestamp="2024-01-15T11:00:00Z">
+ *         Thanks Alice!
+ *       </snice-comment>
+ *     </snice-comment>
+ *   </snice-comments>
+ *
+ * Attributes: author, avatar, timestamp, likes (number), liked (boolean)
+ * Nested <snice-comment> elements become replies.
+ */
+@element('snice-comment')
+export class SniceComment extends HTMLElement {
+  @render()
+  renderContent() {
+    return html`<slot></slot>`;
+  }
+
+  @styles()
+  componentStyles() {
+    return css`:host { display: none; }`;
+  }
+}
 
 @element('snice-comments')
 export class SniceComments extends HTMLElement implements SniceCommentsElement {
@@ -28,7 +57,52 @@ export class SniceComments extends HTMLElement implements SniceCommentsElement {
 
   @ready()
   init() {
-    // Component ready
+    this.collectCommentsFromChildren();
+  }
+
+  @on('slotchange', { target: 'slot' })
+  handleSlotChange() {
+    this.collectCommentsFromChildren();
+  }
+
+  /** Reads <snice-comment> children into the comments array (only if no comments set via property) */
+  private collectCommentsFromChildren() {
+    if (this.comments.length > 0) return;
+
+    const commentEls = Array.from(this.querySelectorAll(':scope > snice-comment'));
+    if (commentEls.length === 0) return;
+
+    this.comments = commentEls.map(el => this.parseCommentElement(el));
+  }
+
+  private parseCommentElement(el: Element): Comment {
+    // Get direct text content (excluding child element text)
+    const text = Array.from(el.childNodes)
+      .filter(n => n.nodeType === Node.TEXT_NODE)
+      .map(n => n.textContent?.trim())
+      .filter(Boolean)
+      .join(' ');
+
+    const comment: Comment = {
+      id: el.getAttribute('id') || `c_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+      author: el.getAttribute('author') || 'Anonymous',
+      text,
+      timestamp: el.getAttribute('timestamp') || new Date().toISOString(),
+      likes: parseInt(el.getAttribute('likes') || '0', 10),
+      liked: el.hasAttribute('liked'),
+    };
+
+    if (el.getAttribute('avatar')) {
+      comment.avatar = el.getAttribute('avatar')!;
+    }
+
+    // Parse nested <snice-comment> as replies
+    const replyEls = Array.from(el.querySelectorAll(':scope > snice-comment'));
+    if (replyEls.length > 0) {
+      comment.replies = replyEls.map(r => this.parseCommentElement(r));
+    }
+
+    return comment;
   }
 
   @watch('comments')

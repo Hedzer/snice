@@ -19,20 +19,16 @@ export class SniceBook extends HTMLElement implements SniceBookElement {
   @property()
   author = '';
 
+  @property({ type: Number })
+  private renderVersion = 0;
+
   @query('slot:not([name])')
   private defaultSlot?: HTMLSlotElement;
 
-  @query('.book__page--left')
-  private leftPageEl?: HTMLElement;
-
-  @query('.book__page--right')
-  private rightPageEl?: HTMLElement;
-
-  @query('.book__page--single')
-  private singlePageEl?: HTMLElement;
-
   private pages: Element[] = [];
   private flipping = false;
+  private flippingIndex = -1;
+  private flippingDirection: PageTurnDirection | null = null;
   private touchStartX = 0;
   private touchStartY = 0;
 
@@ -40,32 +36,49 @@ export class SniceBook extends HTMLElement implements SniceBookElement {
     return this.pages.length;
   }
 
+  private get spreadSize(): number {
+    return this.mode === 'single' ? 1 : 2;
+  }
+
+  private get currentSpread(): number {
+    return Math.floor(this.currentPage / this.spreadSize);
+  }
+
+  private get totalSpreads(): number {
+    return Math.ceil(this.totalPages / this.spreadSize);
+  }
+
   @ready()
   init() {
     this.collectPages();
     this.setAttribute('tabindex', '0');
-    this.projectPages();
+    queueMicrotask(() => this.projectContent());
   }
 
   @dispose()
-  cleanup() {
-    // Cleanup handled by decorators
-  }
+  cleanup() {}
 
   @on('slotchange', { target: 'slot:not([name])' })
   handleSlotChange() {
     this.collectPages();
-    this.projectPages();
+    this.renderVersion++;
+    queueMicrotask(() => this.projectContent());
   }
 
   @watch('currentPage')
   handlePageChange() {
-    queueMicrotask(() => this.projectPages());
+    queueMicrotask(() => this.projectContent());
   }
 
   @watch('mode')
   handleModeChange() {
-    queueMicrotask(() => this.projectPages());
+    this.renderVersion++;
+    queueMicrotask(() => this.projectContent());
+  }
+
+  @watch('renderVersion')
+  handleRenderVersionChange() {
+    queueMicrotask(() => this.projectContent());
   }
 
   @on('keydown')
@@ -102,13 +115,8 @@ export class SniceBook extends HTMLElement implements SniceBookElement {
   handleTouchEnd(e: TouchEvent) {
     const deltaX = e.changedTouches[0].clientX - this.touchStartX;
     const deltaY = e.changedTouches[0].clientY - this.touchStartY;
-
     if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
-      if (deltaX < 0) {
-        this.nextPage();
-      } else {
-        this.prevPage();
-      }
+      deltaX < 0 ? this.nextPage() : this.prevPage();
     }
   }
 
@@ -120,78 +128,53 @@ export class SniceBook extends HTMLElement implements SniceBookElement {
         return;
       }
     }
-    // Fallback: read light DOM children directly (needed for JSDOM/test environments)
     this.pages = Array.from(this.children);
   }
 
-  private projectPages() {
-    if (this.mode === 'single') {
-      this.projectSinglePage();
-    } else {
-      this.projectSpreadPages();
-    }
-  }
-
-  private projectSinglePage() {
-    const container = this.singlePageEl;
-    if (!container) return;
-
-    // Clear existing cloned content
-    const contentEl = container.querySelector('.book__page-inner');
-    if (contentEl) contentEl.innerHTML = '';
-
-    const hasCover = this.coverImage || this.title || this.author;
-    const isAtCover = this.currentPage === 0 && hasCover;
-
-    if (isAtCover) {
-      // Cover is rendered in template, no projection needed
-      return;
-    }
-
-    const page = this.pages[this.currentPage];
-    if (page && contentEl) {
-      contentEl.appendChild(page.cloneNode(true));
-    }
-  }
-
-  private projectSpreadPages() {
-    const leftContainer = this.leftPageEl;
-    const rightContainer = this.rightPageEl;
-    if (!leftContainer || !rightContainer) return;
-
-    const leftContent = leftContainer.querySelector('.book__page-inner');
-    const rightContent = rightContainer.querySelector('.book__page-inner');
-
-    if (leftContent) leftContent.innerHTML = '';
-    if (rightContent) rightContent.innerHTML = '';
-
-    const hasCover = this.coverImage || this.title || this.author;
-    const isAtCover = this.currentPage === 0 && hasCover;
-
-    if (!isAtCover) {
-      const leftPage = this.pages[this.currentPage];
-      if (leftPage && leftContent) {
-        leftContent.appendChild(leftPage.cloneNode(true));
-      }
-    }
-
-    const rightIndex = this.currentPage + 1;
-    const rightPage = this.pages[rightIndex];
-    if (rightPage && rightContent) {
-      rightContent.appendChild(rightPage.cloneNode(true));
-    }
-  }
-
-  private getPageStep(): number {
-    return this.mode === 'spread' ? 2 : 1;
-  }
-
   private canGoNext(): boolean {
-    return this.currentPage + this.getPageStep() < this.totalPages;
+    return this.currentPage + this.spreadSize < this.totalPages;
   }
 
   private canGoPrev(): boolean {
     return this.currentPage > 0;
+  }
+
+  /**
+   * Project slotted content into flip page face elements and left static page.
+   */
+  private projectContent() {
+    if (!this.shadowRoot) return;
+    const isSingle = this.mode === 'single';
+    const currentSpread = this.currentSpread;
+    const numSpreads = this.totalSpreads;
+
+    // Project left static page content (spread mode only)
+    if (!isSingle) {
+      const leftContent = this.shadowRoot.querySelector('[data-left-content]');
+      if (leftContent) {
+        leftContent.innerHTML = '';
+        const hasCover = !!(this.coverImage || this.title || this.author);
+        const isAtCover = currentSpread === 0 && hasCover;
+        if (!isAtCover && this.pages[this.currentPage]) {
+          leftContent.appendChild(this.pages[this.currentPage].cloneNode(true));
+        }
+      }
+    }
+
+    // Project content into flip page front faces (nearby spreads only)
+    const rangeStart = Math.max(0, currentSpread - 2);
+    const rangeEnd = Math.min(numSpreads - 1, currentSpread + 2);
+
+    for (let i = rangeStart; i <= rangeEnd; i++) {
+      const container = this.shadowRoot.querySelector(`[data-content="front-${i}"]`);
+      if (container) {
+        container.innerHTML = '';
+        const contentIdx = isSingle ? i : (i * 2 + 1);
+        if (this.pages[contentIdx]) {
+          container.appendChild(this.pages[contentIdx].cloneNode(true));
+        }
+      }
+    }
   }
 
   private flipToPage(targetPage: number, direction: PageTurnDirection) {
@@ -201,103 +184,63 @@ export class SniceBook extends HTMLElement implements SniceBookElement {
 
     this.flipping = true;
     const fromPage = this.currentPage;
+    const targetSpread = Math.floor(targetPage / this.spreadSize);
 
     this.emitFlipStart({ fromPage, toPage: targetPage, direction });
 
-    // Build the flip overlay with front/back faces
-    const pagesEl = this.shadowRoot?.querySelector('.book__pages');
-    if (!pagesEl) {
+    // Set flipping state to trigger animation class in template
+    this.flippingIndex = direction === 'forward' ? this.currentSpread : targetSpread;
+    this.flippingDirection = direction;
+    this.renderVersion++;
+
+    // Project content for target spread BEFORE animation reveals it
+    requestAnimationFrame(() => {
+      this.projectContentForSpread(targetSpread);
+      // Also ensure current spread content is present
+      this.projectContentForSpread(this.currentSpread);
+    });
+
+    // Get flip duration from CSS
+    const durationStr = getComputedStyle(this).getPropertyValue('--book-flip-duration').trim() || '0.6s';
+    const durationMs = parseFloat(durationStr) * (durationStr.includes('ms') ? 1 : 1000);
+
+    // Update left page at animation midpoint
+    if (this.mode !== 'single') {
+      setTimeout(() => {
+        const leftContent = this.shadowRoot?.querySelector('[data-left-content]');
+        if (leftContent) {
+          leftContent.innerHTML = '';
+          if (this.pages[targetPage]) {
+            leftContent.appendChild(this.pages[targetPage].cloneNode(true));
+          }
+        }
+      }, durationMs * 0.45);
+    }
+
+    // Finalize after animation
+    setTimeout(() => {
+      this.flippingIndex = -1;
+      this.flippingDirection = null;
       this.currentPage = targetPage;
       this.flipping = false;
-      return;
-    }
-
-    const flipContainer = document.createElement('div');
-    flipContainer.className = `book__flip-container book__flip-container--${direction}`;
-    flipContainer.style.setProperty('transform-style', 'preserve-3d');
-
-    // Front face: the page that's visible before the flip
-    const frontFace = document.createElement('div');
-    frontFace.className = 'book__flip-face book__flip-front';
-
-    // Back face: the page revealed after the flip
-    const backFace = document.createElement('div');
-    backFace.className = 'book__flip-face book__flip-back';
-
-    // Clone page content into the flip faces
-    if (direction === 'forward') {
-      // Forward: right page flips over. Front = current right page, back = next left page
-      const isSingle = this.mode === 'single';
-      const frontPageIdx = isSingle ? fromPage : fromPage + 1;
-      const backPageIdx = targetPage;
-      if (this.pages[frontPageIdx]) frontFace.appendChild(this.pages[frontPageIdx].cloneNode(true));
-      if (this.pages[backPageIdx]) backFace.appendChild(this.pages[backPageIdx].cloneNode(true));
-    } else {
-      // Backward: left page flips back. Front = current left page, back = target right page
-      const frontPageIdx = fromPage;
-      const isSingle = this.mode === 'single';
-      const backPageIdx = isSingle ? targetPage : targetPage + 1;
-      if (this.pages[frontPageIdx]) frontFace.appendChild(this.pages[frontPageIdx].cloneNode(true));
-      if (this.pages[backPageIdx]) backFace.appendChild(this.pages[backPageIdx].cloneNode(true));
-    }
-
-    flipContainer.appendChild(frontFace);
-    flipContainer.appendChild(backFace);
-
-    // Shadow overlay on the page beneath
-    const shadow = document.createElement('div');
-    shadow.className = `book__flip-shadow book__flip-shadow--${direction}`;
-
-    pagesEl.appendChild(flipContainer);
-    pagesEl.appendChild(shadow);
-
-    // Get duration from CSS variable
-    const computedStyle = getComputedStyle(this);
-    const durationStr = computedStyle.getPropertyValue('--book-flip-duration').trim() || '600ms';
-    const durationMs = parseFloat(durationStr);
-
-    // Update page at the halfway point so content beneath updates mid-flip
-    const halfwayTimer = setTimeout(() => {
-      this.currentPage = targetPage;
+      this.renderVersion++;
       this.emitPageTurn({ page: targetPage, direction });
-    }, durationMs * 0.5);
-
-    // Clean up after animation completes
-    const cleanupTimer = setTimeout(() => {
-      flipContainer.remove();
-      shadow.remove();
-      this.flipping = false;
-      this.emitFlipEnd({ page: this.currentPage, direction });
+      this.emitFlipEnd({ page: targetPage, direction });
     }, durationMs + 50);
+  }
 
-    // Also clean up if animation ends early
-    flipContainer.addEventListener('animationend', () => {
-      clearTimeout(halfwayTimer);
-      clearTimeout(cleanupTimer);
-      if (this.currentPage !== targetPage) {
-        this.currentPage = targetPage;
-        this.emitPageTurn({ page: targetPage, direction });
+  /** Project content into a single spread's face container */
+  private projectContentForSpread(spreadIdx: number) {
+    if (!this.shadowRoot) return;
+    const isSingle = this.mode === 'single';
+    const container = this.shadowRoot.querySelector(`[data-content="front-${spreadIdx}"]`);
+    if (container) {
+      container.innerHTML = '';
+      const contentIdx = isSingle ? spreadIdx : (spreadIdx * 2 + 1);
+      if (this.pages[contentIdx]) {
+        container.appendChild(this.pages[contentIdx].cloneNode(true));
       }
-      flipContainer.remove();
-      shadow.remove();
-      this.flipping = false;
-      this.emitFlipEnd({ page: this.currentPage, direction });
-    }, { once: true });
-  }
-
-  @dispatch('page-turn', { bubbles: true, composed: true })
-  private emitPageTurn(detail?: PageTurnDetail): PageTurnDetail {
-    return detail!;
-  }
-
-  @dispatch('page-flip-start', { bubbles: true, composed: true })
-  private emitFlipStart(detail?: PageFlipStartDetail): PageFlipStartDetail {
-    return detail!;
-  }
-
-  @dispatch('page-flip-end', { bubbles: true, composed: true })
-  private emitFlipEnd(detail?: PageFlipEndDetail): PageFlipEndDetail {
-    return detail!;
+    }
   }
 
   // --- Public API ---
@@ -311,14 +254,12 @@ export class SniceBook extends HTMLElement implements SniceBookElement {
 
   nextPage(): void {
     if (!this.canGoNext()) return;
-    const step = this.getPageStep();
-    this.flipToPage(this.currentPage + step, 'forward');
+    this.flipToPage(this.currentPage + this.spreadSize, 'forward');
   }
 
   prevPage(): void {
     if (!this.canGoPrev()) return;
-    const step = this.getPageStep();
-    const target = Math.max(0, this.currentPage - step);
+    const target = Math.max(0, this.currentPage - this.spreadSize);
     this.flipToPage(target, 'backward');
   }
 
@@ -335,91 +276,137 @@ export class SniceBook extends HTMLElement implements SniceBookElement {
     this.flipToPage(lastIndex, 'forward');
   }
 
+  // --- Events ---
+
+  @dispatch('page-turn', { bubbles: true, composed: true })
+  private emitPageTurn(detail?: PageTurnDetail): PageTurnDetail {
+    return detail!;
+  }
+
+  @dispatch('page-flip-start', { bubbles: true, composed: true })
+  private emitFlipStart(detail?: PageFlipStartDetail): PageFlipStartDetail {
+    return detail!;
+  }
+
+  @dispatch('page-flip-end', { bubbles: true, composed: true })
+  private emitFlipEnd(detail?: PageFlipEndDetail): PageFlipEndDetail {
+    return detail!;
+  }
+
   @render()
   renderContent() {
     const isSingle = this.mode === 'single';
+    const notSingle = !isSingle;
     const canPrev = this.canGoPrev();
     const canNext = this.canGoNext();
-
-    const displayPage = this.currentPage + 1;
     const total = this.totalPages;
+    const displayPage = this.currentPage + 1;
+    const _v = this.renderVersion;
 
-    const hasCover = this.coverImage || this.title || this.author;
-    const isAtCover = this.currentPage === 0 && hasCover;
+    const hasCover = !!(this.coverImage || this.title || this.author);
+    const isAtCover = this.currentSpread === 0 && hasCover;
+    const notAtCover = !isAtCover;
+    const hasCoverImage = !!this.coverImage;
+    const hasTitle = !!this.title;
+    const hasAuthor = !!this.author;
+    const hasPages = total > 0;
 
     const navInfo = isSingle
       ? `${displayPage} / ${total}`
       : `${displayPage}-${Math.min(this.currentPage + 2, total)} / ${total}`;
 
+    const prevDisabled = canPrev ? '' : 'book__click-disabled';
+    const nextDisabled = canNext ? '' : 'book__click-disabled';
+    const showRightPageNum = this.currentPage + 1 < total;
+
+    // Pre-build flip page templates to avoid nested .map() issue
+    const flipPages: any[] = [];
+    const numSpreads = this.totalSpreads;
+    const currentSpread = this.currentSpread;
+
+    for (let i = 0; i < numSpreads; i++) {
+      const isFlipped = i < currentSpread;
+      const isFlippingFwd = i === this.flippingIndex && this.flippingDirection === 'forward';
+      const isFlippingBwd = i === this.flippingIndex && this.flippingDirection === 'backward';
+
+      let pageClass = 'book__page';
+      if (isFlippingFwd) {
+        pageClass += ' book__page--flipping-forward';
+      } else if (isFlippingBwd) {
+        pageClass += ' book__page--flipping-backward';
+      } else if (isFlipped) {
+        pageClass += ' book__page--flipped';
+      }
+
+      // Z-index: flipping page highest, flipped ascending, unflipped descending
+      let zIdx: number;
+      if (isFlippingFwd || isFlippingBwd) {
+        zIdx = numSpreads + 1;
+      } else if (isFlipped) {
+        zIdx = i + 1;
+      } else {
+        zIdx = numSpreads - i;
+      }
+
+      const rightPageNum = isSingle ? (i + 1) : (i * 2 + 2);
+
+      flipPages.push(html/*html*/`
+        <div class="${pageClass}" style="z-index: ${zIdx}" data-page-index="${i}">
+          <div class="book__face book__face--front">
+            <div class="book__face-content" data-content="front-${i}"></div>
+            <span class="book__page-number book__page-number--right">${rightPageNum}</span>
+          </div>
+          <div class="book__face book__face--back"></div>
+        </div>
+      `);
+    }
+
     return html/*html*/`
       <div class="book" role="document" aria-label="${this.title || 'Book'}" aria-roledescription="book">
-        <div class="book__wrapper">
-          <div class="book__body">
-            <div class="book__spine" part="spine"></div>
-            <div class="book__pages" part="pages">
-
-              <if ${isSingle}>
-                <div class="book__page book__page--single">
-                  <if ${isAtCover}>
-                    <div class="book__cover">
-                      <if ${this.coverImage}>
-                        <img class="book__cover-image" src="${this.coverImage}" alt="${this.title || 'Book cover'}" />
-                      </if>
-                      <if ${this.title}>
-                        <h2 class="book__cover-title">${this.title}</h2>
-                      </if>
-                      <if ${this.author}>
-                        <p class="book__cover-author">${this.author}</p>
-                      </if>
-                    </div>
-                  </if>
-                  <if ${!isAtCover}>
-                    <div class="book__page-inner"></div>
-                  </if>
-                  <if ${!isAtCover}>
-                    <span class="book__page-number book__page-number--right">${displayPage}</span>
-                  </if>
-                </div>
+        <div class="book__body">
+          <if ${notSingle}>
+            <div class="book__left">
+              <div class="book__left-content">
+                <if ${isAtCover}>
+                  <div class="book__cover">
+                    <if ${hasCoverImage}>
+                      <img class="book__cover-image" src="${this.coverImage}" alt="${this.title || 'Book cover'}" />
+                    </if>
+                    <if ${hasTitle}>
+                      <h2 class="book__cover-title">${this.title}</h2>
+                    </if>
+                    <if ${hasAuthor}>
+                      <p class="book__cover-author">${this.author}</p>
+                    </if>
+                  </div>
+                </if>
+                <if ${notAtCover}>
+                  <div data-left-content></div>
+                </if>
+              </div>
+              <if ${notAtCover}>
+                <span class="book__page-number book__page-number--left">${displayPage}</span>
               </if>
-
-              <if ${!isSingle}>
-                <div class="book__page book__page--left">
-                  <if ${isAtCover}>
-                    <div class="book__cover">
-                      <if ${this.coverImage}>
-                        <img class="book__cover-image" src="${this.coverImage}" alt="${this.title || 'Book cover'}" />
-                      </if>
-                      <if ${this.title}>
-                        <h2 class="book__cover-title">${this.title}</h2>
-                      </if>
-                      <if ${this.author}>
-                        <p class="book__cover-author">${this.author}</p>
-                      </if>
-                    </div>
-                  </if>
-                  <if ${!isAtCover}>
-                    <div class="book__page-inner"></div>
-                    <span class="book__page-number book__page-number--left">${displayPage}</span>
-                  </if>
-                </div>
-                <div class="book__divider"></div>
-                <div class="book__page book__page--right">
-                  <div class="book__page-inner"></div>
-                  <if ${this.currentPage + 1 < total}>
-                    <span class="book__page-number book__page-number--right">${this.currentPage + 2}</span>
-                  </if>
-                </div>
-              </if>
-
-              <div class="book__click-zone book__click-zone--prev ${canPrev ? '' : 'book__click-zone--disabled'}"
+              <div class="book__left-click ${prevDisabled}"
                    @click=${() => this.prevPage()}
-                   aria-label="Previous page"
-                   role="button"></div>
-              <div class="book__click-zone book__click-zone--next ${canNext ? '' : 'book__click-zone--disabled'}"
-                   @click=${() => this.nextPage()}
-                   aria-label="Next page"
-                   role="button"></div>
+                   role="button"
+                   aria-label="Previous page"></div>
             </div>
+            <div class="book__spine" part="spine"></div>
+          </if>
+
+          <div class="book__flip-area">
+            <if ${hasPages}>
+              ${flipPages}
+            </if>
+            <div class="book__click-prev ${prevDisabled}"
+                 @click=${() => this.prevPage()}
+                 role="button"
+                 aria-label="Previous page"></div>
+            <div class="book__click-next ${nextDisabled}"
+                 @click=${() => this.nextPage()}
+                 role="button"
+                 aria-label="Next page"></div>
           </div>
         </div>
 

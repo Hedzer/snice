@@ -1,6 +1,6 @@
 import { element, property, dispatch, query, render, styles, ready, dispose, watch, html, css } from 'snice';
 import cssContent from './snice-flow.css?inline';
-import type { FlowNode, FlowEdge, FlowPort, SniceFlowElement } from './snice-flow.types';
+import type { FlowNode, FlowEdge, SniceFlowElement } from './snice-flow.types';
 
 interface PortPosition {
   x: number;
@@ -9,7 +9,6 @@ interface PortPosition {
 
 const DEFAULT_NODE_WIDTH = 160;
 const DEFAULT_NODE_HEIGHT = 80;
-const PORT_SIZE = 10;
 
 @element('snice-flow')
 export class SniceFlow extends HTMLElement implements SniceFlowElement {
@@ -119,6 +118,7 @@ export class SniceFlow extends HTMLElement implements SniceFlowElement {
   }
 
   private initialized = false;
+  private listenersAttached = false;
 
   @ready()
   init() {
@@ -126,13 +126,16 @@ export class SniceFlow extends HTMLElement implements SniceFlowElement {
       for (const entry of entries) {
         this.containerWidth = entry.contentRect.width || 800;
         this.containerHeight = entry.contentRect.height || 500;
+        if (this.initialized) this.rebuild();
       }
     });
     this.resizeObserver.observe(this);
-    this.ensureSvgSetup();
-    this.attachListeners();
-    this.initialized = true;
-    this.rebuild();
+    requestAnimationFrame(() => {
+      this.ensureSvgSetup();
+      this.attachListeners();
+      this.initialized = true;
+      this.rebuild();
+    });
   }
 
   @watch('nodes')
@@ -247,8 +250,11 @@ export class SniceFlow extends HTMLElement implements SniceFlowElement {
   }
 
   private attachListeners() {
+    if (this.listenersAttached) return;
     const svg = this.svgEl;
     if (!svg) return;
+
+    this.listenersAttached = true;
 
     svg.addEventListener('mousedown', (e: MouseEvent) => this.handleSvgMouseDown(e));
     svg.addEventListener('wheel', (e: WheelEvent) => this.handleWheel(e), { passive: false });
@@ -537,6 +543,7 @@ export class SniceFlow extends HTMLElement implements SniceFlowElement {
 
   private rebuild() {
     this.ensureSvgSetup();
+    this.attachListeners();
     this.rebuildTransform();
     this.rebuildEdges();
     this.rebuildNodes();

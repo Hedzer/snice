@@ -1,4 +1,4 @@
-import { element, property, render, styles, dispatch, watch, on, html, css, unsafeHTML } from 'snice';
+import { element, property, render, styles, dispatch, watch, ready, on, html, css, unsafeHTML } from 'snice';
 import type { MarkdownTheme, SniceMarkdownElement } from './snice-markdown.types';
 import markdownStyles from './snice-markdown.css?inline';
 
@@ -155,7 +155,8 @@ function parseMarkdown(md: string): string {
 
 @element('snice-markdown')
 export class SniceMarkdown extends HTMLElement implements SniceMarkdownElement {
-  @property() content: string = '';
+  content: string = '';
+
   @property({ type: Boolean }) sanitize: boolean = true;
   @property() theme: MarkdownTheme = 'default';
 
@@ -166,9 +167,27 @@ export class SniceMarkdown extends HTMLElement implements SniceMarkdownElement {
     return css`${markdownStyles}`;
   }
 
-  @watch('content')
-  handleContentChange() {
-    this.renderMarkdown();
+  @ready()
+  init() {
+    if (!this.content) {
+      this.readSlottedContent();
+    }
+    if (this.content) {
+      this.renderMarkdown();
+    }
+  }
+
+  @on('slotchange', { target: 'slot' })
+  handleSlotChange() {
+    this.readSlottedContent();
+  }
+
+  private readSlottedContent() {
+    const text = this.textContent?.trim();
+    if (text) {
+      this.content = text;
+      this.renderMarkdown();
+    }
   }
 
   @watch('sanitize')
@@ -204,9 +223,18 @@ export class SniceMarkdown extends HTMLElement implements SniceMarkdownElement {
     return { href, text };
   }
 
+  /** Set content programmatically and re-render */
+  setContent(markdown: string) {
+    this.content = markdown;
+    this.renderMarkdown();
+  }
+
   @render()
   renderContent() {
-    return html`<div class="markdown-body">${unsafeHTML(this.renderedHtml)}</div>`;
+    return html/*html*/`
+      <slot style="display:none"></slot>
+      <div class="markdown-body">${unsafeHTML(this.renderedHtml)}</div>
+    `;
   }
 }
 

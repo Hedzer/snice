@@ -2,11 +2,11 @@ import { element, property, render, styles, dispatch, ready, dispose, watch, que
 import type { PdfFitMode, SnicePdfViewerElement } from './snice-pdf-viewer.types';
 import viewerStyles from './snice-pdf-viewer.css?inline';
 
-const PDFJS_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168';
+// @ts-ignore - Vendored pdf.js library (Mozilla Foundation, Apache 2.0)
+import { getDocument, GlobalWorkerOptions } from './pdf.min.mjs';
 
-function getPdfjs(): any {
-  return (window as any).pdfjsLib;
-}
+// Set worker source to vendored local copy
+GlobalWorkerOptions.workerSrc = new URL('./pdf.worker.min.mjs', import.meta.url).href;
 
 @element('snice-pdf-viewer')
 export class SnicePdfViewer extends HTMLElement implements SnicePdfViewerElement {
@@ -21,7 +21,6 @@ export class SnicePdfViewer extends HTMLElement implements SnicePdfViewerElement
   private loading: boolean = false;
   private error: string = '';
   private rendering: boolean = false;
-  private pdfjsLoaded: boolean = false;
 
   @query('.pdf-viewport') private viewport?: HTMLElement;
   @query('.pdf-canvas-wrapper canvas') private canvas?: HTMLCanvasElement;
@@ -33,7 +32,6 @@ export class SnicePdfViewer extends HTMLElement implements SnicePdfViewerElement
 
   @ready()
   async init() {
-    await this.loadPdfJs();
     if (this.src) {
       this.loadDocument();
     }
@@ -49,9 +47,7 @@ export class SnicePdfViewer extends HTMLElement implements SnicePdfViewerElement
 
   @watch('src')
   handleSrcChange() {
-    if (this.pdfjsLoaded) {
-      this.loadDocument();
-    }
+    this.loadDocument();
   }
 
   @watch('page')
@@ -75,60 +71,8 @@ export class SnicePdfViewer extends HTMLElement implements SnicePdfViewerElement
     }
   }
 
-  private async loadPdfJs(): Promise<void> {
-    if (getPdfjs()) {
-      this.pdfjsLoaded = true;
-      return;
-    }
-
-    try {
-      await new Promise<void>((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = `${PDFJS_CDN}/pdf.min.mjs`;
-        script.type = 'module';
-        script.onload = () => {
-          const lib = getPdfjs();
-          if (lib) {
-            lib.GlobalWorkerOptions.workerSrc = `${PDFJS_CDN}/pdf.worker.min.mjs`;
-            resolve();
-          } else {
-            const classicScript = document.createElement('script');
-            classicScript.src = `${PDFJS_CDN}/pdf.min.js`;
-            classicScript.onload = () => {
-              const clib = getPdfjs();
-              if (clib) {
-                clib.GlobalWorkerOptions.workerSrc = `${PDFJS_CDN}/pdf.worker.min.js`;
-              }
-              resolve();
-            };
-            classicScript.onerror = reject;
-            document.head.appendChild(classicScript);
-          }
-        };
-        script.onerror = () => {
-          const classicScript = document.createElement('script');
-          classicScript.src = `${PDFJS_CDN}/pdf.min.js`;
-          classicScript.onload = () => {
-            const clib = getPdfjs();
-            if (clib) {
-              clib.GlobalWorkerOptions.workerSrc = `${PDFJS_CDN}/pdf.worker.min.js`;
-            }
-            resolve();
-          };
-          classicScript.onerror = reject;
-          document.head.appendChild(classicScript);
-        };
-        document.head.appendChild(script);
-      });
-      this.pdfjsLoaded = true;
-    } catch {
-      this.error = 'Failed to load PDF.js library';
-      this.emitError(this.error);
-    }
-  }
-
   private async loadDocument(): Promise<void> {
-    if (!this.src || !this.pdfjsLoaded) return;
+    if (!this.src) return;
 
     this.loading = true;
     this.error = '';
@@ -136,12 +80,7 @@ export class SnicePdfViewer extends HTMLElement implements SnicePdfViewerElement
     this.totalPages = 0;
 
     try {
-      const lib = getPdfjs();
-      if (!lib) {
-        throw new Error('PDF.js not loaded');
-      }
-
-      const loadingTask = lib.getDocument(this.src);
+      const loadingTask = getDocument(this.src);
       this.pdfDoc = await loadingTask.promise;
       this.totalPages = this.pdfDoc.numPages;
       this.loading = false;
