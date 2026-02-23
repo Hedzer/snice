@@ -60,6 +60,14 @@ export class SniceNetworkGraph extends HTMLElement implements SniceNetworkGraphE
   @query('.network-graph__svg')
   private svgElement?: SVGSVGElement;
 
+  @query('.network-graph__tooltip')
+  private tooltipEl?: HTMLElement;
+
+  // Manually created SVG-namespace groups (template engine can't create nested SVG children)
+  private transformGroupEl?: SVGGElement;
+  private edgesGroupEl?: SVGGElement;
+  private nodesGroupEl?: SVGGElement;
+
   private simNodes: SimNode[] = [];
   private simEdges: SimEdge[] = [];
   private animFrameId = 0;
@@ -85,24 +93,7 @@ export class SniceNetworkGraph extends HTMLElement implements SniceNetworkGraphE
   private panStartPanY = 0;
 
   // Hover state
-  @property({ type: String, attribute: false })
   private hoveredNodeId = '';
-
-  @property({ type: String, attribute: false })
-  private tooltipText = '';
-
-  @property({ type: Number, attribute: false })
-  private tooltipX = 0;
-
-  @property({ type: Number, attribute: false })
-  private tooltipY = 0;
-
-  @property({ type: Boolean, attribute: false })
-  private tooltipVisible = false;
-
-  // Force re-render trigger
-  @property({ type: Number, attribute: false })
-  private renderTick = 0;
 
   // Bound handlers for cleanup
   private boundMouseMove = this.handleMouseMove.bind(this);
@@ -139,9 +130,13 @@ export class SniceNetworkGraph extends HTMLElement implements SniceNetworkGraphE
       for (const entry of entries) {
         this.containerWidth = entry.contentRect.width || 600;
         this.containerHeight = entry.contentRect.height || 400;
+        this.updateViewBox();
       }
     });
     this.resizeObserver.observe(this);
+
+    // Attach SVG event listeners
+    this.attachSvgListeners();
 
     // Build simulation if data was set before ready
     if (this.data.nodes.length > 0 && !this.simInitialized) {
@@ -159,6 +154,11 @@ export class SniceNetworkGraph extends HTMLElement implements SniceNetworkGraphE
     this.buildSimulation();
   }
 
+  @watch('showLabels')
+  onDisplayChange() {
+    this.rebuildGraph();
+  }
+
   @dispose()
   cleanup() {
     this.stopSimulation();
@@ -168,6 +168,50 @@ export class SniceNetworkGraph extends HTMLElement implements SniceNetworkGraphE
       this.resizeObserver.disconnect();
       this.resizeObserver = null;
     }
+  }
+
+  private attachSvgListeners() {
+    const svg = this.svgElement;
+    if (!svg) return;
+
+    svg.addEventListener('mousedown', (e: MouseEvent) => this.handleSvgMouseDown(e));
+    svg.addEventListener('wheel', (e: WheelEvent) => this.handleWheel(e), { passive: false });
+
+    // Event delegation for nodes and edges
+    svg.addEventListener('mouseenter', (e: MouseEvent) => {
+      const nodeGroup = (e.target as Element).closest('.network-graph__node');
+      if (nodeGroup) {
+        const nodeId = nodeGroup.getAttribute('data-node-id');
+        if (nodeId) this.handleNodeEnter(nodeId, e);
+      }
+    }, true);
+
+    svg.addEventListener('mouseleave', (e: MouseEvent) => {
+      const nodeGroup = (e.target as Element).closest('.network-graph__node');
+      if (nodeGroup) this.handleNodeLeave();
+    }, true);
+
+    svg.addEventListener('dblclick', (e: MouseEvent) => {
+      const nodeGroup = (e.target as Element).closest('.network-graph__node');
+      if (nodeGroup) {
+        const nodeId = nodeGroup.getAttribute('data-node-id');
+        if (nodeId) this.handleNodeDblClick(e, nodeId);
+      }
+    });
+
+    svg.addEventListener('click', (e: MouseEvent) => {
+      const edgePath = (e.target as Element).closest('.network-graph__edge');
+      if (edgePath) {
+        const edgeIdx = edgePath.getAttribute('data-edge-idx');
+        if (edgeIdx !== null) {
+          const idx = parseInt(edgeIdx);
+          if (this.simEdges[idx]) {
+            e.stopPropagation();
+            this.emitEdgeClick(this.simEdges[idx].edge);
+          }
+        }
+      }
+    });
   }
 
   private getGroupColor(group?: string): string {
@@ -261,6 +305,9 @@ export class SniceNetworkGraph extends HTMLElement implements SniceNetworkGraphE
       this.simAlpha = 1;
       this.simRunning = true;
       this.tickSimulation();
+    } else {
+      // Static layouts: just render once
+      this.rebuildGraph();
     }
   }
 
@@ -333,7 +380,9 @@ export class SniceNetworkGraph extends HTMLElement implements SniceNetworkGraphE
     }
 
     this.simAlpha *= 0.99;
-    this.renderTick++;
+
+    // Rebuild via innerHTML instead of reactive render
+    this.rebuildGraph();
 
     this.animFrameId = requestAnimationFrame(() => this.tickSimulation());
   }
@@ -346,6 +395,105 @@ export class SniceNetworkGraph extends HTMLElement implements SniceNetworkGraphE
     }
   }
 
+  private updateViewBox() {
+    const svg = this.svgElement;
+    if (!svg) return;
+    const w = this.containerWidth || 600;
+    const h = this.containerHeight || 400;
+    svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+  }
+
+  private ensureSvgGroups(): boolean {
+    if (this.edgesGroupEl && this.nodesGroupEl) return true;
+    const svg = this.svgElement;
+    if (!svg) return false;
+    const ns = 'http://www.w3.org/2000/svg';
+    this.transformGroupEl = document.createElementNS(ns, 'g') as SVGGElement;
+    this.transformGroupEl.setAttribute('transform', 'translate(0, 0) scale(1)');
+    this.edgesGroupEl = document.createElementNS(ns, 'g') as SVGGElement;
+    this.nodesGroupEl = document.createElementNS(ns, 'g') as SVGGElement;
+    this.transformGroupEl.appendChild(this.edgesGroupEl);
+    this.transformGroupEl.appendChild(this.nodesGroupEl);
+    svg.appendChild(this.transformGroupEl);
+    return true;
+  }
+
+  private rebuildGraph() {
+    if (!this.ensureSvgGroups()) {
+      requestAnimationFrame(() => this.rebuildGraph());
+      return;
+    }
+
+    // Update transform
+    if (this.transformGroupEl) {
+      this.transformGroupEl.setAttribute('transform', `translate(${this.panX}, ${this.panY}) scale(${this.zoomScale})`);
+    }
+
+    // Update viewBox
+    this.updateViewBox();
+
+    // Build edges
+    this.edgesGroupEl!.innerHTML = this.buildEdges();
+
+    // Build nodes
+    this.nodesGroupEl!.innerHTML = this.buildNodes();
+  }
+
+  private buildEdges(): string {
+    const hasHover = this.hoveredNodeId !== '';
+    let parts = '';
+
+    this.simEdges.forEach((se, idx) => {
+      const connected = this.isEdgeConnected(se);
+      const edgeColor = se.edge.color || '';
+      const weight = se.edge.weight || 1;
+      const path = this.renderEdgePath(se);
+      const strokeAttr = edgeColor ? ` stroke="${edgeColor}"` : '';
+      const cls = ['network-graph__edge'];
+      if (hasHover && connected) cls.push('network-graph__edge--highlighted');
+      if (hasHover && !connected) cls.push('network-graph__edge--dimmed');
+
+      parts += `<path class="${cls.join(' ')}" d="${path}"${strokeAttr} stroke-width="${Math.max(1, weight)}" data-edge-idx="${idx}" />`;
+
+      if (this.showLabels && se.edge.label) {
+        const labelCls = hasHover && !connected ? 'network-graph__edge-label network-graph__edge-label--dimmed' : 'network-graph__edge-label';
+        const mx = (se.source.x + se.target.x) / 2;
+        const my = (se.source.y + se.target.y) / 2;
+        parts += `<text class="${labelCls}" x="${mx}" y="${my}">${se.edge.label}</text>`;
+      }
+    });
+
+    return parts;
+  }
+
+  private buildNodes(): string {
+    const hasHover = this.hoveredNodeId !== '';
+    let parts = '';
+
+    this.simNodes.forEach(node => {
+      const connected = this.isNodeConnected(node.id);
+      const r = this.getNodeRadius(node);
+      const fill = node.color || this.getGroupColor(node.group);
+      const isDragging = this.dragNode === node;
+
+      const cls = ['network-graph__node'];
+      if (!connected) cls.push('network-graph__node--dimmed');
+      if (isDragging) cls.push('network-graph__node--dragging');
+
+      parts += `<g class="${cls.join(' ')}" data-node-id="${node.id}">`;
+      parts += `<circle class="network-graph__node-circle" cx="${node.x}" cy="${node.y}" r="${r}" fill="${fill}" />`;
+
+      if (this.showLabels && (node.label || node.id)) {
+        const labelCls = !connected ? 'network-graph__node-label network-graph__node-label--dimmed' : 'network-graph__node-label';
+        parts += `<text class="${labelCls}" x="${node.x}" y="${node.y + r + 14}">${node.label || node.id}</text>`;
+      }
+
+      parts += `</g>`;
+    });
+
+    return parts;
+  }
+
   private screenToGraph(screenX: number, screenY: number): { x: number; y: number } {
     const svg = this.svgElement;
     if (!svg) return { x: screenX, y: screenY };
@@ -356,15 +504,38 @@ export class SniceNetworkGraph extends HTMLElement implements SniceNetworkGraphE
     };
   }
 
-  private handleNodeMouseDown(e: MouseEvent, node: SimNode) {
-    if (!this.dragEnabled) return;
+  private findNodeById(id: string): SimNode | undefined {
+    return this.simNodes.find(n => n.id === id);
+  }
+
+  private handleSvgMouseDown(e: MouseEvent) {
+    // Check if clicking on a node
+    const nodeGroup = (e.target as Element).closest('.network-graph__node');
+    if (nodeGroup && this.dragEnabled) {
+      e.preventDefault();
+      e.stopPropagation();
+      const nodeId = nodeGroup.getAttribute('data-node-id');
+      if (nodeId) {
+        const node = this.findNodeById(nodeId);
+        if (node) {
+          this.dragNode = node;
+          this.dragStartX = e.clientX;
+          this.dragStartY = e.clientY;
+          document.addEventListener('mousemove', this.boundMouseMove);
+          document.addEventListener('mouseup', this.boundMouseUp);
+          return;
+        }
+      }
+    }
+
+    // Background pan
+    if (!this.zoomEnabled) return;
     e.preventDefault();
-    e.stopPropagation();
-
-    this.dragNode = node;
-    this.dragStartX = e.clientX;
-    this.dragStartY = e.clientY;
-
+    this.isPanning = true;
+    this.panStartX = e.clientX;
+    this.panStartY = e.clientY;
+    this.panStartPanX = this.panX;
+    this.panStartPanY = this.panY;
     document.addEventListener('mousemove', this.boundMouseMove);
     document.addEventListener('mouseup', this.boundMouseUp);
   }
@@ -384,16 +555,17 @@ export class SniceNetworkGraph extends HTMLElement implements SniceNetworkGraphE
           this.simRunning = true;
           this.tickSimulation();
         }
+      } else {
+        this.rebuildGraph();
       }
 
-      this.renderTick++;
       this.emitNodeDrag(this.dragNode, pos.x, pos.y);
     } else if (this.isPanning) {
       const dx = e.clientX - this.panStartX;
       const dy = e.clientY - this.panStartY;
       this.panX = this.panStartPanX + dx;
       this.panY = this.panStartPanY + dy;
-      this.renderTick++;
+      this.rebuildGraph();
     }
   }
 
@@ -409,21 +581,6 @@ export class SniceNetworkGraph extends HTMLElement implements SniceNetworkGraphE
     this.isPanning = false;
     document.removeEventListener('mousemove', this.boundMouseMove);
     document.removeEventListener('mouseup', this.boundMouseUp);
-  }
-
-  private handleSvgMouseDown(e: MouseEvent) {
-    if (!this.zoomEnabled) return;
-    if ((e.target as Element).closest('.network-graph__node')) return;
-
-    e.preventDefault();
-    this.isPanning = true;
-    this.panStartX = e.clientX;
-    this.panStartY = e.clientY;
-    this.panStartPanX = this.panX;
-    this.panStartPanY = this.panY;
-
-    document.addEventListener('mousemove', this.boundMouseMove);
-    document.addEventListener('mouseup', this.boundMouseUp);
   }
 
   private handleWheel(e: WheelEvent) {
@@ -444,13 +601,15 @@ export class SniceNetworkGraph extends HTMLElement implements SniceNetworkGraphE
     this.panY = mouseY - (mouseY - this.panY) * (newScale / this.zoomScale);
     this.zoomScale = newScale;
 
-    this.renderTick++;
+    this.rebuildGraph();
     this.emitGraphZoom(this.zoomScale, this.panX, this.panY);
   }
 
-  private handleNodeDblClick(e: MouseEvent, node: SimNode) {
+  private handleNodeDblClick(e: MouseEvent, nodeId: string) {
     e.preventDefault();
     e.stopPropagation();
+    const node = this.findNodeById(nodeId);
+    if (!node) return;
     // Unpin node
     node.fx = null;
     node.fy = null;
@@ -463,31 +622,37 @@ export class SniceNetworkGraph extends HTMLElement implements SniceNetworkGraphE
     }
   }
 
-  private handleNodeEnter(node: SimNode, e: MouseEvent) {
-    this.hoveredNodeId = node.id;
+  private handleNodeEnter(nodeId: string, e: MouseEvent) {
+    this.hoveredNodeId = nodeId;
+    const node = this.findNodeById(nodeId);
+    if (!node) return;
     const label = node.label || node.id;
     const degree = node.degree;
-    this.tooltipText = `${label} (${degree} connection${degree !== 1 ? 's' : ''})`;
-    this.updateTooltipPosition(e);
-    this.tooltipVisible = true;
+
+    // Update tooltip
+    const tooltip = this.tooltipEl;
+    if (tooltip) {
+      tooltip.textContent = `${label} (${degree} connection${degree !== 1 ? 's' : ''})`;
+      const svg = this.svgElement;
+      if (svg) {
+        const rect = svg.getBoundingClientRect();
+        tooltip.style.left = `${e.clientX - rect.left}px`;
+        tooltip.style.top = `${e.clientY - rect.top}px`;
+      }
+      tooltip.classList.add('network-graph__tooltip--visible');
+    }
+
+    // Rebuild to apply dimming
+    this.rebuildGraph();
   }
 
   private handleNodeLeave() {
     this.hoveredNodeId = '';
-    this.tooltipVisible = false;
-  }
-
-  private handleEdgeClick(e: MouseEvent, edge: NetworkEdge) {
-    e.stopPropagation();
-    this.emitEdgeClick(edge);
-  }
-
-  private updateTooltipPosition(e: MouseEvent) {
-    const svg = this.svgElement;
-    if (!svg) return;
-    const rect = svg.getBoundingClientRect();
-    this.tooltipX = e.clientX - rect.left;
-    this.tooltipY = e.clientY - rect.top;
+    const tooltip = this.tooltipEl;
+    if (tooltip) {
+      tooltip.classList.remove('network-graph__tooltip--visible');
+    }
+    this.rebuildGraph();
   }
 
   private isNodeConnected(nodeId: string): boolean {
@@ -546,70 +711,15 @@ export class SniceNetworkGraph extends HTMLElement implements SniceNetworkGraphE
     return `M ${se.source.x} ${se.source.y} Q ${mx} ${my} ${se.target.x} ${se.target.y}`;
   }
 
-  @render()
+  @render({ once: true })
   renderContent() {
     const w = this.containerWidth || 600;
     const h = this.containerHeight || 400;
-    const transform = `translate(${this.panX}, ${this.panY}) scale(${this.zoomScale})`;
-    const hasHover = this.hoveredNodeId !== '';
 
     return html/*html*/`
       <div class="network-graph" role="img" aria-label="Network graph visualization">
-        <svg class="network-graph__svg"
-             viewBox="0 0 ${w} ${h}"
-             @mousedown=${(e: MouseEvent) => this.handleSvgMouseDown(e)}
-             @wheel=${(e: WheelEvent) => this.handleWheel(e)}>
-          <g transform="${transform}">
-            ${this.simEdges.map(se => {
-              const connected = this.isEdgeConnected(se);
-              const edgeColor = se.edge.color || '';
-              const weight = se.edge.weight || 1;
-              const path = this.renderEdgePath(se);
-
-              return html/*html*/`
-                <path class="network-graph__edge ${hasHover && connected ? 'network-graph__edge--highlighted' : ''} ${hasHover && !connected ? 'network-graph__edge--dimmed' : ''}"
-                      d="${path}"
-                      stroke="${edgeColor}"
-                      stroke-width="${Math.max(1, weight)}"
-                      @click=${(e: MouseEvent) => this.handleEdgeClick(e, se.edge)} />
-                <if ${this.showLabels && se.edge.label}>
-                  <text class="network-graph__edge-label ${hasHover && !connected ? 'network-graph__edge-label--dimmed' : ''}"
-                        x="${(se.source.x + se.target.x) / 2}"
-                        y="${(se.source.y + se.target.y) / 2}">${se.edge.label}</text>
-                </if>
-              `;
-            })}
-            ${this.simNodes.map(node => {
-              const connected = this.isNodeConnected(node.id);
-              const r = this.getNodeRadius(node);
-              const fill = node.color || this.getGroupColor(node.group);
-              const isDragging = this.dragNode === node;
-
-              return html/*html*/`
-                <g class="network-graph__node ${!connected ? 'network-graph__node--dimmed' : ''} ${isDragging ? 'network-graph__node--dragging' : ''}"
-                   @mousedown=${(e: MouseEvent) => this.handleNodeMouseDown(e, node)}
-                   @dblclick=${(e: MouseEvent) => this.handleNodeDblClick(e, node)}
-                   @mouseenter=${(e: MouseEvent) => this.handleNodeEnter(node, e)}
-                   @mouseleave=${() => this.handleNodeLeave()}>
-                  <circle class="network-graph__node-circle"
-                          cx="${node.x}"
-                          cy="${node.y}"
-                          r="${r}"
-                          fill="${fill}" />
-                  <if ${this.showLabels && (node.label || node.id)}>
-                    <text class="network-graph__node-label ${!connected ? 'network-graph__node-label--dimmed' : ''}"
-                          x="${node.x}"
-                          y="${node.y + r + 14}">${node.label || node.id}</text>
-                  </if>
-                </g>
-              `;
-            })}
-          </g>
-        </svg>
-        <div class="network-graph__tooltip ${this.tooltipVisible ? 'network-graph__tooltip--visible' : ''}"
-             style="left: ${this.tooltipX}px; top: ${this.tooltipY}px;">
-          ${this.tooltipText}
-        </div>
+        <svg class="network-graph__svg" viewBox="0 0 ${w} ${h}"></svg>
+        <div class="network-graph__tooltip"></div>
       </div>
     `;
   }
@@ -617,5 +727,11 @@ export class SniceNetworkGraph extends HTMLElement implements SniceNetworkGraphE
   @styles()
   componentStyles() {
     return css/*css*/`${cssContent}`;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'snice-network-graph': SniceNetworkGraph;
   }
 }
