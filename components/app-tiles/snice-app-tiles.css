@@ -26,7 +26,7 @@
   background: none;
   font-family: inherit;
   min-width: 0;
-  overflow: hidden;
+  overflow: visible;
   width: 100%;
   box-sizing: border-box;
 }
@@ -154,9 +154,9 @@
   font-size: var(--snice-font-size-sm, 0.875rem);
 }
 
-/* Badge wrapper — snice-badge sits in grid like a tile */
-snice-badge {
-  display: flex;
+/* Badge wrapper — sits inside tile around just the icon */
+.tile snice-badge {
+  display: inline-flex;
 }
 
 /* ── Compact variant (icon left, name right, multi-column grid) ── */

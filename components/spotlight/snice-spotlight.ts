@@ -20,6 +20,8 @@ export class SniceSpotlight extends HTMLElement implements SniceSpotlightElement
   private popoverEl!: HTMLElement;
 
   private resizeObserver: ResizeObserver | null = null;
+  private _originalParent: Node | null = null;
+  private _originalNextSibling: Node | null = null;
 
   @dispatch('spotlight-start', { bubbles: true, composed: true })
   private emitStart() { return undefined; }
@@ -40,10 +42,37 @@ export class SniceSpotlight extends HTMLElement implements SniceSpotlightElement
   @dispose()
   cleanup() {
     this.resizeObserver?.disconnect();
+    this._returnToOrigin();
+  }
+
+  /**
+   * Move element to document.body to escape any containing blocks
+   * created by ancestor transforms/filters/contain that break position:fixed.
+   */
+  private _teleportToBody() {
+    if (this.parentNode === document.body) return;
+    this._originalParent = this.parentNode;
+    this._originalNextSibling = this.nextSibling;
+    document.body.appendChild(this);
+  }
+
+  /**
+   * Return element to its original DOM position.
+   */
+  private _returnToOrigin() {
+    if (!this._originalParent) return;
+    if (this._originalNextSibling) {
+      this._originalParent.insertBefore(this, this._originalNextSibling);
+    } else {
+      this._originalParent.appendChild(this);
+    }
+    this._originalParent = null;
+    this._originalNextSibling = null;
   }
 
   start() {
     if (this.steps.length === 0) return;
+    this._teleportToBody();
     this.active = true;
     this.currentIndex = 0;
     this.emitStart();
@@ -71,7 +100,10 @@ export class SniceSpotlight extends HTMLElement implements SniceSpotlightElement
   goToStep(index: number) {
     if (index >= 0 && index < this.steps.length) {
       this.currentIndex = index;
-      if (!this.active) this.active = true;
+      if (!this.active) {
+        this._teleportToBody();
+        this.active = true;
+      }
       this.emitStep();
       requestAnimationFrame(() => this.positionElements());
     }
@@ -81,6 +113,7 @@ export class SniceSpotlight extends HTMLElement implements SniceSpotlightElement
     this.active = false;
     this.currentIndex = -1;
     this.emitEnd();
+    this._returnToOrigin();
   }
 
   private skip() {
@@ -94,6 +127,9 @@ export class SniceSpotlight extends HTMLElement implements SniceSpotlightElement
     const step = this.steps[this.currentIndex];
     const target = document.querySelector(step.target);
     if (!target) return;
+
+    // Scroll target into view first
+    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
     const rect = target.getBoundingClientRect();
     const padding = 8;
@@ -111,9 +147,6 @@ export class SniceSpotlight extends HTMLElement implements SniceSpotlightElement
       const position = step.position || 'auto';
       this.positionPopover(rect, position, padding);
     }
-
-    // Scroll target into view
-    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
   private positionPopover(targetRect: DOMRect, position: string, padding: number) {

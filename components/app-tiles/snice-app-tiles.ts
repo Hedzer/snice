@@ -128,21 +128,16 @@ export class SniceAppTiles extends HTMLElement implements SniceAppTilesElement {
       const tile = this.tiles[i];
       const iconHtml = this.buildTileIcon(tile, i);
 
-      let tileInner = '';
-      tileInner += iconHtml;
-      tileInner += `<span class="tile__name">${this.esc(tile.name)}</span>`;
-
+      tilesHtml += `<button class="tile" data-tile-index="${i}" title="${this.escAttr(tile.name)}">`;
       if (tile.badge) {
         tilesHtml += `<snice-badge content="${this.escAttr(tile.badge)}" variant="error" size="small" position="top-right">`;
-        tilesHtml += `<button class="tile" data-tile-index="${i}" title="${this.escAttr(tile.name)}">`;
-        tilesHtml += tileInner;
-        tilesHtml += `</button>`;
+        tilesHtml += iconHtml;
         tilesHtml += `</snice-badge>`;
       } else {
-        tilesHtml += `<button class="tile" data-tile-index="${i}" title="${this.escAttr(tile.name)}">`;
-        tilesHtml += tileInner;
-        tilesHtml += `</button>`;
+        tilesHtml += iconHtml;
       }
+      tilesHtml += `<span class="tile__name">${this.esc(tile.name)}</span>`;
+      tilesHtml += `</button>`;
     }
 
     container.innerHTML = tilesHtml;
