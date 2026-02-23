@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Components - Snice</title>
   <meta name="description" content="TypeScript web components with separation of concerns">
+  <link rel="icon" type="image/png" href="images/snice-logo.png">
+  <meta property="og:title" content="Components - Snice">
+  <meta property="og:description" content="Pre-built UI components. Use standalone or with React/Vue/Angular.">
+  <meta property="og:image" content="images/snice-logo.png">
   <link rel="stylesheet" href="theme/theme.css">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
@@ -110,7 +114,7 @@
 
   <header>
     <div class="wrap">
-      <h1><a href="index.html">Snice</a></h1>
+      <h1><a href="index.html" style="display:inline-flex;align-items:center;gap:0.5rem"><img src="images/snice-logo.png" alt="Snice" width="28" height="28" style="border-radius:50%">Snice</a></h1>
       <nav>
         <a href="guide.html">Guide</a>
         <a href="decorators.html">Decorators</a>
@@ -2972,9 +2976,9 @@ timeline.items = [
     <div class="comp-section">
       <h3>Network Graph</h3>
       <p class="comp-desc">Force-directed network/relationship graph visualization</p>
-      <div class="comp-split comp-split-stacked">
+      <div class="comp-split">
         <div class="comp-split-demo" style="width:100%">
-          <snice-network-graph id="demo-network" show-labels style="width:100%;height:450px"></snice-network-graph>
+          <snice-network-graph id="demo-network" show-labels charge-strength="-2000" link-distance="200" style="width:100%;height:450px"></snice-network-graph>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html + js</span>
@@ -3000,7 +3004,7 @@ timeline.items = [
       </div>
       <div class="comp-split">
         <div class="comp-split-demo" style="width:100%">
-          <snice-network-graph id="demo-network-circular" layout="circular" show-labels style="width:100%;height:300px"></snice-network-graph>
+          <snice-network-graph id="demo-network-circular" layout="circular" show-labels style="width:100%;height:450px"></snice-network-graph>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
@@ -3820,42 +3824,6 @@ const x = 42;
 &gt;&lt;/snice-link-preview&gt;</code></pre>
         </div>
       </div>
-    </div>
-
-    <div class="comp-category">Developer</div>
-    <div class="comp-section">
-      <h3>CDN Build</h3>
-      <p class="comp-desc">Use any component without the full framework. Load the runtime once, then add components as needed.</p>
-      <pre><code>npx snice build-component button
-<span class="c"># creates snice-button.min.js (~2-5kb)</span>
-
-<span class="c">&lt;!-- Load runtime once --&gt;</span>
-&lt;script src=<span class="s">"snice-runtime.min.js"</span>&gt;&lt;/script&gt;
-<span class="c">&lt;!-- Add components --&gt;</span>
-&lt;script src=<span class="s">"snice-button.min.js"</span>&gt;&lt;/script&gt;
-&lt;snice-button variant=<span class="s">"primary"</span>&gt;Works anywhere&lt;/snice-button&gt;</code></pre>
-    </div>
-    <div class="comp-section">
-      <h3>React Adapter</h3>
-      <p class="comp-desc">First-class React 17+ support</p>
-      <pre><code><span class="k">import</span> { Button, Input, Alert } <span class="k">from</span> <span class="s">'snice/react'</span>;
-
-<span class="k">function</span> <span class="t">LoginForm</span>() {
-  <span class="k">const</span> [email, setEmail] = useState(<span class="s">''</span>);
-
-  <span class="k">return</span> (
-    &lt;&gt;
-      &lt;Input
-        label=<span class="s">"Email"</span>
-        value={email}
-        onChange={(e) =&gt; setEmail(e.detail.value)}
-      /&gt;
-      &lt;Button variant=<span class="s">"primary"</span> onClick={handleSubmit}&gt;
-        Sign In
-      &lt;/Button&gt;
-    &lt;/&gt;
-  );
-}</code></pre>
     </div>
 
   </main>
