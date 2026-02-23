@@ -274,6 +274,9 @@ import {
   observe,
   ready, dispose, moved, adopted,
   Router,
-  debounce, throttle, once, memoize
+  debounce, throttle, once, memoize,
+  useNativeElementControllers,   // Enable controller= on native HTML elements
+  cleanupNativeElementControllers,
+  attachController, detachController, getController
 } from 'snice';
 ```

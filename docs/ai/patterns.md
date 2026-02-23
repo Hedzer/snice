@@ -41,7 +41,23 @@ class DataLoader implements IController {
   handleClick(e: Event) {}
 }
 
-// Usage: <my-list controller="data-loader"></my-list>
+// Usage on custom elements:
+// <my-list controller="data-loader"></my-list>
+
+// Usage on native HTML elements (requires opt-in):
+// <div controller="data-loader"></div>
+// <form controller="form-handler"></form>
+// <table controller="table-loader"></table>
+```
+
+**Native element controllers** — attach controllers to any HTML element (div, form, table, etc.):
+```typescript
+import { useNativeElementControllers } from 'snice';
+useNativeElementControllers(); // Call once at app start
+
+// Sets up MutationObserver watching for controller= on non-custom elements
+// Handles add/change/remove of controller attribute dynamically
+// Adds ready promise automatically for non-custom elements
 ```
 
 ## Page + Router
