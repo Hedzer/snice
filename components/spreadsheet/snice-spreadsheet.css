@@ -3,14 +3,67 @@
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   contain: layout style paint;
   width: 100%;
+  --spreadsheet-border: var(--snice-color-border, rgb(226 226 226));
+  --spreadsheet-bg: var(--snice-color-background, rgb(255 255 255));
+  --spreadsheet-bg-element: var(--snice-color-background-element, rgb(252 251 249));
+  --spreadsheet-text: var(--snice-color-text, rgb(23 23 23));
+  --spreadsheet-text-secondary: var(--snice-color-text-secondary, rgb(82 82 82));
+  --spreadsheet-text-tertiary: var(--snice-color-text-tertiary, rgb(115 115 115));
+  --spreadsheet-primary: var(--snice-color-primary, rgb(37 99 235));
+  --spreadsheet-primary-subtle: var(--snice-color-primary-subtle, rgb(239 246 255));
+  --spreadsheet-hover: var(--snice-color-background-hover, rgb(241 241 241));
+  --spreadsheet-grid: rgba(200, 200, 200, 0.5);
 }
 
+/* Formula bar */
+.spreadsheet-formula-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--snice-spacing-xs, 0.5rem);
+  padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-xs, 0.5rem);
+  border: 1px solid var(--spreadsheet-border);
+  border-bottom: none;
+  border-radius: var(--snice-border-radius-lg, 0.5rem) var(--snice-border-radius-lg, 0.5rem) 0 0;
+  background: var(--spreadsheet-bg-element);
+  font-size: var(--snice-font-size-sm, 0.875rem);
+}
+
+.spreadsheet-cell-ref {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--snice-font-weight-semibold, 600);
+  color: var(--spreadsheet-text-secondary);
+  min-width: 3.5rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  font-size: var(--snice-font-size-xs, 0.75rem);
+  padding: var(--snice-spacing-3xs, 0.125rem) var(--snice-spacing-xs, 0.5rem);
+  border: 1px solid var(--spreadsheet-border);
+  border-radius: var(--snice-border-radius-md, 0.25rem);
+  background: var(--spreadsheet-bg);
+  height: 1.5rem;
+}
+
+.spreadsheet-formula-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: inherit;
+  padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-xs, 0.5rem);
+  background: transparent;
+  color: var(--spreadsheet-text);
+}
+
+/* Spreadsheet container */
 .spreadsheet {
-  border: 1px solid var(--snice-color-border, rgb(226 226 226));
-  border-radius: var(--snice-border-radius-lg, 0.5rem);
+  border: 1px solid var(--spreadsheet-border);
+  border-radius: 0 0 var(--snice-border-radius-lg, 0.5rem) var(--snice-border-radius-lg, 0.5rem);
   overflow: auto;
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--spreadsheet-bg);
   position: relative;
+  outline: none;
 }
 
 .spreadsheet-table {
@@ -23,22 +76,31 @@
 
 /* Header */
 .spreadsheet-th {
-  background: var(--snice-color-background-element, rgb(252 251 249));
-  border: 1px solid var(--snice-color-border, rgb(226 226 226));
-  padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
+  background: var(--spreadsheet-bg-element);
+  border-right: 1px solid var(--spreadsheet-grid);
+  border-bottom: 2px solid var(--spreadsheet-border);
+  padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-sm, 0.75rem);
   font-weight: var(--snice-font-weight-semibold, 600);
-  color: var(--snice-color-text, rgb(23 23 23));
+  color: var(--spreadsheet-text);
   text-align: left;
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
   position: sticky;
   top: 0;
-  z-index: 1;
+  z-index: 2;
+  font-size: var(--snice-font-size-xs, 0.75rem);
+  height: 1.75rem;
+  min-width: 5rem;
 }
 
 .spreadsheet-th:hover {
-  background: var(--snice-color-background-hover, rgb(241 241 241));
+  background: var(--spreadsheet-hover);
+}
+
+.spreadsheet-th.col-selected {
+  background: var(--spreadsheet-primary-subtle);
+  color: var(--spreadsheet-primary);
 }
 
 .spreadsheet-th-sort {
@@ -49,98 +111,137 @@
 
 .spreadsheet-th-sort-icon {
   opacity: 0.4;
-  font-size: 0.625rem;
+  font-size: 0.5rem;
 }
 
 .spreadsheet-th-sort-icon.active {
   opacity: 1;
-  color: var(--snice-color-primary, rgb(37 99 235));
+  color: var(--spreadsheet-primary);
+}
+
+/* Resize handle */
+.spreadsheet-resize-handle {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  cursor: col-resize;
+  z-index: 3;
+}
+
+.spreadsheet-resize-handle:hover,
+.spreadsheet-resize-handle.resizing {
+  background: var(--spreadsheet-primary);
 }
 
 /* Row number column */
 .spreadsheet-row-num {
-  background: var(--snice-color-background-element, rgb(252 251 249));
-  border: 1px solid var(--snice-color-border, rgb(226 226 226));
-  padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
+  background: var(--spreadsheet-bg-element);
+  border-right: 1px solid var(--spreadsheet-grid);
+  border-bottom: 1px solid var(--spreadsheet-grid);
+  padding: 0 var(--snice-spacing-xs, 0.5rem);
   font-size: var(--snice-font-size-xs, 0.75rem);
   font-variant-numeric: tabular-nums;
-  color: var(--snice-color-text-tertiary, rgb(115 115 115));
+  color: var(--spreadsheet-text-tertiary);
   text-align: center;
-  width: 3rem;
-  min-width: 3rem;
+  width: 2.75rem;
+  min-width: 2.75rem;
   cursor: pointer;
   user-select: none;
+  position: sticky;
+  left: 0;
+  z-index: 1;
 }
 
 .spreadsheet-row-num:hover {
-  background: var(--snice-color-background-hover, rgb(241 241 241));
+  background: var(--spreadsheet-hover);
 }
 
-.spreadsheet-row-num.selected {
-  background: var(--snice-color-primary-subtle, rgb(239 246 255));
-  color: var(--snice-color-primary, rgb(37 99 235));
+.spreadsheet-row-num.row-selected {
+  background: var(--spreadsheet-primary-subtle);
+  color: var(--spreadsheet-primary);
+  font-weight: var(--snice-font-weight-semibold, 600);
+}
+
+/* Corner cell (top-left) */
+th.spreadsheet-row-num {
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 4;
+  border-bottom: 2px solid var(--spreadsheet-border);
 }
 
 /* Cells */
 .spreadsheet-td {
-  border: 1px solid var(--snice-color-border, rgb(226 226 226));
+  border-right: 1px solid var(--spreadsheet-grid);
+  border-bottom: 1px solid var(--spreadsheet-grid);
   padding: 0;
   position: relative;
   min-width: 5rem;
+  height: 1.75rem;
 }
 
 .spreadsheet-td.selected {
-  outline: 2px solid var(--snice-color-primary, rgb(37 99 235));
+  outline: 2px solid var(--spreadsheet-primary);
   outline-offset: -2px;
   z-index: 1;
 }
 
 .spreadsheet-td.in-range {
-  background: var(--snice-color-primary-subtle, rgb(239 246 255));
+  background: var(--spreadsheet-primary-subtle);
 }
 
 .spreadsheet-cell {
   display: block;
   width: 100%;
-  padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
-  color: var(--snice-color-text, rgb(23 23 23));
+  padding: var(--snice-spacing-3xs, 0.125rem) var(--snice-spacing-xs, 0.5rem);
+  color: var(--spreadsheet-text);
   cursor: cell;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  min-height: 2.25rem;
+  min-height: 1.75rem;
+  line-height: 1.75rem;
   box-sizing: border-box;
+}
+
+/* Row hover */
+.spreadsheet-table tbody tr:hover .spreadsheet-td:not(.selected):not(.in-range) {
+  background: rgba(0, 0, 0, 0.015);
+}
+
+.spreadsheet-table tbody tr:hover .spreadsheet-row-num:not(.row-selected) {
+  background: var(--spreadsheet-hover);
 }
 
 /* Edit mode */
 .spreadsheet-input {
   display: block;
   width: 100%;
-  padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
+  padding: var(--snice-spacing-3xs, 0.125rem) var(--snice-spacing-xs, 0.5rem);
   border: none;
   outline: none;
   font-family: inherit;
   font-size: inherit;
-  color: var(--snice-color-text, rgb(23 23 23));
-  background: var(--snice-color-background, rgb(255 255 255));
+  color: var(--spreadsheet-text);
+  background: rgb(255 255 240);
   box-sizing: border-box;
-  min-height: 2.25rem;
-}
-
-.spreadsheet-input:focus {
-  background: rgb(255 255 230);
+  min-height: 1.75rem;
+  line-height: 1.75rem;
 }
 
 .spreadsheet-select {
   display: block;
   width: 100%;
-  padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-xs, 0.5rem);
+  padding: var(--snice-spacing-3xs, 0.125rem) var(--snice-spacing-2xs, 0.25rem);
   border: none;
   outline: none;
   font-family: inherit;
   font-size: inherit;
-  color: var(--snice-color-text, rgb(23 23 23));
-  background: var(--snice-color-background, rgb(255 255 255));
+  color: var(--spreadsheet-text);
+  background: var(--spreadsheet-bg);
   cursor: pointer;
 }
 
@@ -148,38 +249,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 2.25rem;
-}
-
-/* Formula bar */
-.spreadsheet-formula-bar {
-  display: flex;
-  align-items: center;
-  gap: var(--snice-spacing-xs, 0.5rem);
-  padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-sm, 0.75rem);
-  border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
-  background: var(--snice-color-background-element, rgb(252 251 249));
-  font-size: var(--snice-font-size-sm, 0.875rem);
-}
-
-.spreadsheet-cell-ref {
-  font-weight: var(--snice-font-weight-medium, 500);
-  color: var(--snice-color-text-secondary, rgb(82 82 82));
-  min-width: 3rem;
-  text-align: center;
-  font-variant-numeric: tabular-nums;
-}
-
-.spreadsheet-formula-input {
-  flex: 1;
-  border: none;
-  outline: none;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: inherit;
-  padding: var(--snice-spacing-2xs, 0.25rem);
-  background: var(--snice-color-background, rgb(255 255 255));
-  color: var(--snice-color-text, rgb(23 23 23));
-  border-radius: var(--snice-border-radius-md, 0.25rem);
+  height: 1.75rem;
 }
 
 /* Number alignment */
@@ -190,5 +260,140 @@
 
 /* Boolean display */
 .spreadsheet-cell-boolean {
+  text-align: center;
+}
+
+/* Status bar */
+.spreadsheet-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--snice-spacing-md, 1rem);
+  padding: var(--snice-spacing-3xs, 0.125rem) var(--snice-spacing-sm, 0.75rem);
+  border: 1px solid var(--spreadsheet-border);
+  border-top: none;
+  border-radius: 0 0 var(--snice-border-radius-lg, 0.5rem) var(--snice-border-radius-lg, 0.5rem);
+  background: var(--spreadsheet-bg-element);
+  font-size: var(--snice-font-size-xs, 0.75rem);
+  color: var(--spreadsheet-text-secondary);
+  min-height: 1.375rem;
+}
+
+.spreadsheet-status-item {
+  display: inline-flex;
+  gap: var(--snice-spacing-2xs, 0.25rem);
+}
+
+.spreadsheet-status-label {
+  color: var(--spreadsheet-text-tertiary);
+}
+
+.spreadsheet-status-value {
+  font-weight: var(--snice-font-weight-medium, 500);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Context menu */
+.spreadsheet-context-menu {
+  position: fixed;
+  min-width: 12.5rem;
+  background: var(--spreadsheet-bg);
+  border: 1px solid var(--spreadsheet-border);
+  border-radius: var(--snice-border-radius-md, 0.25rem);
+  box-shadow: var(--snice-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1));
+  padding: var(--snice-spacing-2xs, 0.25rem) 0;
+  z-index: 100;
+  font-size: var(--snice-font-size-sm, 0.875rem);
+}
+
+.spreadsheet-context-item {
+  display: flex;
+  align-items: center;
+  gap: var(--snice-spacing-sm, 0.75rem);
+  padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-sm, 0.75rem);
+  cursor: pointer;
+  color: var(--spreadsheet-text);
+  white-space: nowrap;
+}
+
+.spreadsheet-context-item:hover {
+  background: var(--spreadsheet-primary-subtle);
+}
+
+.spreadsheet-context-item-shortcut {
+  margin-left: auto;
+  color: var(--spreadsheet-text-tertiary);
+  font-size: var(--snice-font-size-xs, 0.75rem);
+}
+
+.spreadsheet-context-separator {
+  height: 1px;
+  background: var(--spreadsheet-border);
+  margin: var(--snice-spacing-2xs, 0.25rem) 0;
+}
+
+/* Add row/column buttons */
+.spreadsheet-add-row {
+  display: flex;
+  align-items: center;
+  height: 1.5rem;
+  cursor: pointer;
+  color: var(--spreadsheet-text-tertiary);
+  font-size: var(--snice-font-size-xs, 0.75rem);
+  user-select: none;
+}
+
+.spreadsheet-add-row:hover {
+  background: var(--spreadsheet-hover);
+  color: var(--spreadsheet-primary);
+}
+
+.spreadsheet-add-row td {
+  padding: 0 var(--snice-spacing-xs, 0.5rem);
+  border-right: 1px solid var(--spreadsheet-grid);
+  border-bottom: 1px solid var(--spreadsheet-grid);
+  height: 1.5rem;
+  line-height: 1.5rem;
+}
+
+.spreadsheet-add-col-header {
+  background: var(--spreadsheet-bg-element);
+  border-right: 1px solid var(--spreadsheet-grid);
+  border-bottom: 2px solid var(--spreadsheet-border);
+  width: 2rem;
+  min-width: 2rem;
+  text-align: center;
+  cursor: pointer;
+  color: var(--spreadsheet-text-tertiary);
+  font-size: var(--snice-font-size-xs, 0.75rem);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  user-select: none;
+}
+
+.spreadsheet-add-col-header:hover {
+  background: var(--spreadsheet-hover);
+  color: var(--spreadsheet-primary);
+}
+
+.spreadsheet-add-col-cell {
+  border-right: 1px solid var(--spreadsheet-grid);
+  border-bottom: 1px solid var(--spreadsheet-grid);
+  width: 2rem;
+  min-width: 2rem;
+}
+
+/* Empty state */
+.spreadsheet-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 8rem;
+  color: var(--spreadsheet-text-tertiary);
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  cursor: default;
+  user-select: none;
+  padding: var(--snice-spacing-lg, 1.5rem);
   text-align: center;
 }

@@ -2,7 +2,7 @@
 
 # Spreadsheet Component
 
-The spreadsheet component provides an Excel-like editable grid with formula support, cell selection, column sorting, copy/paste, and multiple cell types. It supports both reading and editing tabular data with keyboard-driven navigation.
+The spreadsheet component provides an Excel-like editable grid with formula support, multi-cell range selection, undo/redo, column resizing, context menus, copy/paste, and an auto-expanding grid. It supports both reading and editing tabular data with full keyboard-driven navigation.
 
 ## Table of Contents
 - [Basic Usage](#basic-usage)
@@ -10,6 +10,11 @@ The spreadsheet component provides an Excel-like editable grid with formula supp
 - [Methods](#methods)
 - [Events](#events)
 - [Formula Support](#formula-support)
+- [Multi-Cell Selection](#multi-cell-selection)
+- [Column Resizing](#column-resizing)
+- [Context Menu](#context-menu)
+- [Undo/Redo](#undoredo)
+- [Auto-Expanding Grid](#auto-expanding-grid)
 - [Keyboard Shortcuts](#keyboard-shortcuts)
 - [CSS Custom Properties](#css-custom-properties)
 - [Examples](#examples)
@@ -53,6 +58,15 @@ interface CellPosition {
 }
 ```
 
+### CellRange
+
+```typescript
+interface CellRange {
+  start: CellPosition;
+  end: CellPosition;
+}
+```
+
 ## Methods
 
 #### `getCell(row: number, col: number): any`
@@ -63,7 +77,7 @@ const value = spreadsheet.getCell(0, 1); // Get value at row 0, column 1
 ```
 
 #### `setCell(row: number, col: number, value: any): void`
-Set a cell value. Auto-expands the data grid if the position is beyond current bounds.
+Set a cell value. Auto-expands the data grid if the position is beyond current bounds. The change is added to the undo stack.
 
 ```typescript
 spreadsheet.setCell(0, 1, 250);
@@ -150,29 +164,94 @@ Cells starting with `=` are evaluated as formulas. Supported functions:
 
 Cell references use spreadsheet-style notation (A1, B2, etc.) where letters are columns and numbers are rows.
 
+## Multi-Cell Selection
+
+The spreadsheet supports selecting a range of cells, similar to Excel or Google Sheets.
+
+- **Click and drag**: Click a cell and drag to select a range
+- **Shift+Click**: Click a cell, then Shift+Click another to select the range between them
+- **Shift+Arrow keys**: Extend the selection one cell at a time in the arrow direction
+
+When a range is selected:
+- The anchor cell (where selection started) has a thick blue border
+- Other cells in the range have a light blue fill
+- The **status bar** at the bottom shows COUNT, SUM, and AVG of numeric cells in the selection
+
+## Column Resizing
+
+Drag the right edge of any column header to resize it. A blue highlight appears on hover to indicate the resize handle. The minimum column width is 40px.
+
+## Context Menu
+
+Right-click any cell to open the context menu with these options:
+
+| Action | Description |
+|--------|-------------|
+| Cut | Copy selected cell(s) and clear |
+| Copy | Copy selected cell(s) to clipboard |
+| Paste | Paste from clipboard |
+| Insert Row Above | Add empty row above current |
+| Insert Row Below | Add empty row below current |
+| Delete Row | Remove current row |
+| Insert Column Left | Add empty column to the left |
+| Insert Column Right | Add empty column to the right |
+| Delete Column | Remove current column |
+| Clear Cell(s) | Clear selected cell(s) contents |
+
+The context menu closes when clicking outside, pressing Escape, or selecting an action.
+
+## Undo/Redo
+
+The spreadsheet maintains an undo/redo history stack (up to 100 entries) for cell value changes.
+
+- **Ctrl+Z**: Undo the last change
+- **Ctrl+Y** or **Ctrl+Shift+Z**: Redo the last undone change
+
+The undo history tracks the row, column, old value, and new value for each change.
+
+## Auto-Expanding Grid
+
+The grid auto-expands to create an infinite spreadsheet feel:
+
+- **"+" row**: A "+" button row at the bottom appends a new empty row when clicked
+- **"+" column**: A "+" button at the right end of the header appends a new empty column
+- **Tab at last column**: When editing the last column and pressing Tab, a new column is added automatically
+- **Enter at last row**: When editing the last row and pressing Enter, a new row is added automatically
+
+### Empty State
+
+When the data array is empty, the spreadsheet displays a centered message: "Double-click or start typing to add data". Double-clicking the empty state creates the first cell and enters edit mode.
+
 ## Keyboard Shortcuts
 
 | Shortcut | Action |
 |----------|--------|
 | Arrow keys | Navigate between cells |
+| Shift+Arrow keys | Extend selection range |
 | Enter / F2 | Edit selected cell |
-| Tab | Move to next cell (commits edit) |
+| Tab | Move to next cell (commits edit, auto-expands) |
 | Shift+Tab | Move to previous cell (commits edit) |
 | Escape | Cancel current edit |
-| Delete / Backspace | Clear selected cell |
+| Delete / Backspace | Clear selected cell(s) |
 | Ctrl+C | Copy selected cell(s) |
 | Ctrl+V | Paste (supports tab-separated multi-cell paste) |
+| Ctrl+Z | Undo |
+| Ctrl+Y / Ctrl+Shift+Z | Redo |
+| Any printable key | Start editing with that character (type-to-edit) |
 
 ## CSS Custom Properties
 
 | Property | Description | Default |
 |----------|-------------|---------|
-| `--snice-color-border` | Cell border color | `rgb(226 226 226)` |
+| `--snice-color-border` | Grid lines and borders | `rgb(226 226 226)` |
 | `--snice-color-background` | Cell background color | `rgb(255 255 255)` |
 | `--snice-color-background-element` | Header and row-number background | _(theme default)_ |
-| `--snice-color-primary` | Selected cell outline color | `rgb(37 99 235)` |
-| `--snice-color-primary-subtle` | Selected row highlight color | _(theme default)_ |
+| `--snice-color-background-hover` | Row hover and header hover | _(theme default)_ |
+| `--snice-color-primary` | Selected cell border color | `rgb(37 99 235)` |
+| `--snice-color-primary-subtle` | Range selection fill, header highlight | _(theme default)_ |
 | `--snice-color-text` | Cell text color | _(theme default)_ |
+| `--snice-color-text-secondary` | Formula bar cell reference text | _(theme default)_ |
+| `--snice-color-text-tertiary` | Row numbers, status bar labels, add buttons | _(theme default)_ |
 
 ## Examples
 
@@ -304,10 +383,11 @@ Use specialized cell types for dates and checkboxes.
 ## Accessibility
 
 - **Keyboard navigation**: Full keyboard support for navigating, editing, and selecting cells
-- **ARIA roles**: Grid uses `role="grid"` with `role="row"` and `role="gridcell"` for proper screen reader support
-- **Focus management**: Selected cell receives visible focus indicator
+- **Focus management**: Selected cell receives visible focus indicator with 2px blue border
 - **Column sorting**: Sort buttons in headers are keyboard accessible
 - **Edit mode**: Enter/F2 activates cell editing, Escape cancels
+- **Type-to-edit**: Simply start typing to begin editing the selected cell
+- **Undo/Redo**: Ctrl+Z and Ctrl+Y provide full change history navigation
 
 ## Browser Support
 
@@ -322,3 +402,4 @@ Use specialized cell types for dates and checkboxes.
 4. **Pass data as property**: Use `sheet.data = [...]` rather than setting via attribute
 5. **Use readonly for display**: Set `readonly` when the spreadsheet is for viewing only
 6. **Limit data size**: For very large datasets, consider pagination or virtual scrolling
+7. **Leverage undo/redo**: Users can undo up to 100 changes; avoid implementing your own undo logic

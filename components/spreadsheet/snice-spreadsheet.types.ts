@@ -12,6 +12,24 @@ export interface CellPosition {
   col: number;
 }
 
+export interface CellRange {
+  start: CellPosition;
+  end: CellPosition;
+}
+
+export interface UndoEntry {
+  row: number;
+  col: number;
+  oldValue: any;
+  newValue: any;
+}
+
+export interface ContextMenuItem {
+  label: string;
+  action: () => void;
+  separator?: boolean;
+}
+
 export interface SniceSpreadsheetElement extends HTMLElement {
   data: any[][];
   columns: SpreadsheetColumn[];
