@@ -1,3 +1,5 @@
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/alert.md instead)
+
 # Alert Component
 
 The alert component displays notification messages to provide user feedback for informational, success, warning, or error states. It supports customizable variants, sizes, titles, icons, and optional dismissal.

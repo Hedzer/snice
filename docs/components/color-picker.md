@@ -1,3 +1,5 @@
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/color-picker.md instead)
+
 # Color Picker Component
 
 The `<snice-color-picker>` component provides a color selection interface with format conversion and preset colors.
@@ -20,14 +22,14 @@ The `<snice-color-picker>` component provides a color selection interface with f
 | `format` | `'hex' \| 'rgb' \| 'hsl'` | `'hex'` | Display format |
 | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Size variant |
 | `label` | `string` | `''` | Label text |
-| `helperText` | `string` | `''` | Helper text |
-| `errorText` | `string` | `''` | Error message |
+| `helperText` (attr: `helper-text`) | `string` | `''` | Helper text |
+| `errorText` (attr: `error-text`) | `string` | `''` | Error message |
 | `disabled` | `boolean` | `false` | Disabled state |
 | `required` | `boolean` | `false` | Required state |
 | `invalid` | `boolean` | `false` | Invalid state |
 | `name` | `string` | `''` | Form field name |
-| `showInput` | `boolean` | `true` | Show text input |
-| `showPresets` | `boolean` | `false` | Show preset colors |
+| `showInput` (attr: `show-input`) | `boolean` | `true` | Show text input |
+| `showPresets` (attr: `show-presets`) | `boolean` | `false` | Show preset colors |
 | `presets` | `string[]` | `[...]` | Preset color values |
 
 ## Methods

@@ -1,3 +1,5 @@
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/button.md instead)
+
 # Button Component
 
 The button component provides an interactive element for user actions. It supports multiple variants, sizes, states (loading, disabled), styles (outline, pill, circle), icons, and can function as both a button and link.
@@ -25,6 +27,7 @@ import 'snice/components/button/snice-button';
 |----------|------|---------|-------------|
 | `variant` | `'default' \| 'primary' \| 'success' \| 'warning' \| 'danger' \| 'text'` | `'default'` | Visual style variant |
 | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Button size |
+| `type` | `'button' \| 'submit' \| 'reset'` | `'button'` | Button type for form integration |
 | `disabled` | `boolean` | `false` | Disable the button |
 | `loading` | `boolean` | `false` | Show loading spinner |
 | `outline` | `boolean` | `false` | Use outline style |
@@ -76,6 +79,18 @@ The `icon` slot allows you to use external CSS-based icon fonts (like Material S
 ```
 
 > **Note**: When using the `icon` slot, the slotted content takes precedence over the `icon` property. The `iconPlacement` property still controls positioning.
+
+## Events
+
+#### `button-click`
+Fired when the button is clicked.
+
+**Event Detail:**
+```typescript
+{
+  originalEvent: MouseEvent;
+}
+```
 
 ## Methods
 

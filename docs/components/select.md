@@ -1,19 +1,16 @@
-# Select Components
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/select.md instead)
 
-The select components provide a customizable dropdown selection interface. The system consists of two components: `<snice-select>` (the select container) and `<snice-option>` (individual options).
+# Select
+`<snice-select>`
 
-## Table of Contents
-- [Basic Usage](#basic-usage)
-- [Components](#components)
-  - [snice-select](#snice-select)
-  - [snice-option](#snice-option)
-- [Properties](#properties)
-- [Methods](#methods)
-- [Events](#events)
-- [Features](#features)
-- [Examples](#examples)
+A customizable dropdown selection with single/multiple selection, search filtering, and composable options.
 
 ## Basic Usage
+
+```typescript
+import 'snice/components/select/snice-select';
+import 'snice/components/select/snice-option';
+```
 
 ```html
 <snice-select label="Choose a color" name="color">
@@ -23,193 +20,68 @@ The select components provide a customizable dropdown selection interface. The s
 </snice-select>
 ```
 
+## Importing
+
+**ESM (bundler)**
 ```typescript
 import 'snice/components/select/snice-select';
 import 'snice/components/select/snice-option';
-
-const select = document.querySelector('snice-select');
-select.addEventListener('select-change', (e) => {
-  console.log('Selected:', e.detail.value);
-});
 ```
 
-## Components
-
-### snice-select
-
-The main select component that manages the dropdown interface and selection state.
-
-#### Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `value` | `string` | `''` | The selected value (comma-separated for multiple) |
-| `disabled` | `boolean` | `false` | Whether the select is disabled |
-| `required` | `boolean` | `false` | Whether the select is required in a form |
-| `invalid` | `boolean` | `false` | Whether to show invalid state styling |
-| `readonly` | `boolean` | `false` | Whether the select is readonly |
-| `multiple` | `boolean` | `false` | Whether multiple selection is allowed |
-| `searchable` | `boolean` | `false` | Whether to show a search input |
-| `clearable` | `boolean` | `false` | Whether to show a clear button |
-| `open` | `boolean` | `false` | Whether the dropdown is open |
-| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Size variant |
-| `name` | `string` | `''` | Form field name |
-| `label` | `string` | `''` | Label text displayed above select |
-| `placeholder` | `string` | `'Select an option'` | Placeholder text |
-| `maxHeight` | `string` | `'200px'` | Maximum height of dropdown |
-
-#### Methods
-
-##### `selectOption(value: string): void`
-Programmatically select an option by value.
-
-```typescript
-select.selectOption('red');
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-select.min.js"></script>
 ```
 
-##### `clear(): void`
-Clear the current selection.
+## Examples
 
-```typescript
-select.clear();
-```
+### Sizes
 
-##### `openDropdown(): void`
-Open the dropdown.
-
-```typescript
-select.openDropdown();
-```
-
-##### `closeDropdown(): void`
-Close the dropdown.
-
-```typescript
-select.closeDropdown();
-```
-
-##### `toggleDropdown(): void`
-Toggle the dropdown open/closed state.
-
-```typescript
-select.toggleDropdown();
-```
-
-##### `focus(): void`
-Give focus to the select trigger.
-
-```typescript
-select.focus();
-```
-
-##### `blur(): void`
-Remove focus from the select and close dropdown.
-
-```typescript
-select.blur();
-```
-
-#### Events
-
-##### `select-change`
-Fired when the selection changes.
-
-**Event Detail:**
-```typescript
-{
-  value: string | string[];      // Selected value(s)
-  option?: SelectOption;         // The selected option object
-  select: SniceSelectElement;    // Reference to the select element
-}
-```
-
-**Usage:**
-```typescript
-select.addEventListener('select-change', (e) => {
-  const { value, option } = e.detail;
-  console.log(`Selected ${option?.label} with value ${value}`);
-});
-```
-
-##### `select-open`
-Fired when the dropdown opens.
-
-**Event Detail:**
-```typescript
-{
-  select: SniceSelectElement; // Reference to the select element
-}
-```
-
-##### `select-close`
-Fired when the dropdown closes.
-
-**Event Detail:**
-```typescript
-{
-  select: SniceSelectElement; // Reference to the select element
-}
-```
-
-### snice-option
-
-Individual option component. Must be placed inside `<snice-select>`.
-
-#### Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `value` | `string` | `''` | Option value (uses label if not specified) |
-| `label` | `string` | `''` | Option label (uses text content if not specified) |
-| `disabled` | `boolean` | `false` | Whether the option is disabled |
-| `selected` | `boolean` | `false` | Whether the option is initially selected |
-| `icon` | `string` | `''` | URL of an icon to display |
-
-#### Getter
-
-##### `optionData`
-Returns an object containing the option's data.
-
-```typescript
-const data = option.optionData;
-// { value, label, disabled, selected, icon }
-```
-
-## Features
-
-### Single Selection
+Use the `size` attribute to change the select size.
 
 ```html
-<snice-select label="Choose one">
-  <snice-option value="1">Option 1</snice-option>
-  <snice-option value="2">Option 2</snice-option>
-  <snice-option value="3">Option 3</snice-option>
+<snice-select size="small" label="Small">
+  <snice-option value="a">Option A</snice-option>
+  <snice-option value="b">Option B</snice-option>
+</snice-select>
+
+<snice-select size="large" label="Large">
+  <snice-option value="a">Option A</snice-option>
+  <snice-option value="b">Option B</snice-option>
 </snice-select>
 ```
 
 ### Multiple Selection
 
+Set the `multiple` attribute to allow selecting more than one option.
+
 ```html
-<snice-select label="Choose multiple" multiple>
-  <snice-option value="1">Option 1</snice-option>
-  <snice-option value="2">Option 2</snice-option>
-  <snice-option value="3">Option 3</snice-option>
+<snice-select label="Select languages" multiple>
+  <snice-option value="js">JavaScript</snice-option>
+  <snice-option value="ts">TypeScript</snice-option>
+  <snice-option value="py">Python</snice-option>
+  <snice-option value="rs">Rust</snice-option>
 </snice-select>
 ```
 
 ### Searchable
 
+Set the `searchable` attribute to show a search input for filtering options.
+
 ```html
-<snice-select label="Search for option" searchable>
-  <snice-option value="apple">Apple</snice-option>
-  <snice-option value="banana">Banana</snice-option>
-  <snice-option value="cherry">Cherry</snice-option>
-  <snice-option value="date">Date</snice-option>
-  <snice-option value="elderberry">Elderberry</snice-option>
+<snice-select label="Choose a country" searchable>
+  <snice-option value="us">United States</snice-option>
+  <snice-option value="uk">United Kingdom</snice-option>
+  <snice-option value="ca">Canada</snice-option>
+  <snice-option value="au">Australia</snice-option>
+  <snice-option value="de">Germany</snice-option>
 </snice-select>
 ```
 
 ### Clearable
+
+Set the `clearable` attribute to show a clear button.
 
 ```html
 <snice-select label="Clearable select" clearable>
@@ -221,57 +93,21 @@ const data = option.optionData;
 ### Disabled Options
 
 ```html
-<snice-select label="With disabled options">
-  <snice-option value="1">Option 1</snice-option>
-  <snice-option value="2" disabled>Option 2 (disabled)</snice-option>
-  <snice-option value="3">Option 3</snice-option>
+<snice-select label="With disabled option">
+  <snice-option value="active">Active</snice-option>
+  <snice-option value="unavailable" disabled>Unavailable</snice-option>
+  <snice-option value="other">Other</snice-option>
 </snice-select>
 ```
 
 ### With Icons
 
+Use the `icon` attribute on options to display an image.
+
 ```html
-<snice-select label="Select with icons">
+<snice-select label="Select role">
   <snice-option value="user" icon="/icons/user.svg">User</snice-option>
   <snice-option value="admin" icon="/icons/admin.svg">Admin</snice-option>
-  <snice-option value="guest" icon="/icons/guest.svg">Guest</snice-option>
-</snice-select>
-```
-
-## Examples
-
-### Basic Select
-
-```html
-<snice-select
-  label="Favorite fruit"
-  name="fruit"
-  placeholder="Choose a fruit">
-  <snice-option value="apple">Apple</snice-option>
-  <snice-option value="banana">Banana</snice-option>
-  <snice-option value="orange">Orange</snice-option>
-</snice-select>
-```
-
-### Size Variants
-
-```html
-<!-- Small -->
-<snice-select size="small" label="Small select">
-  <snice-option value="1">Option 1</snice-option>
-  <snice-option value="2">Option 2</snice-option>
-</snice-select>
-
-<!-- Medium (default) -->
-<snice-select size="medium" label="Medium select">
-  <snice-option value="1">Option 1</snice-option>
-  <snice-option value="2">Option 2</snice-option>
-</snice-select>
-
-<!-- Large -->
-<snice-select size="large" label="Large select">
-  <snice-option value="1">Option 1</snice-option>
-  <snice-option value="2">Option 2</snice-option>
 </snice-select>
 ```
 
@@ -279,24 +115,11 @@ const data = option.optionData;
 
 ```html
 <form id="userForm">
-  <snice-select
-    name="role"
-    label="User role"
-    required>
+  <snice-select name="role" label="User role" required>
     <snice-option value="user">User</snice-option>
     <snice-option value="admin">Admin</snice-option>
     <snice-option value="moderator">Moderator</snice-option>
   </snice-select>
-
-  <snice-select
-    name="permissions"
-    label="Permissions"
-    multiple>
-    <snice-option value="read">Read</snice-option>
-    <snice-option value="write">Write</snice-option>
-    <snice-option value="delete">Delete</snice-option>
-  </snice-select>
-
   <button type="submit">Submit</button>
 </form>
 
@@ -304,16 +127,9 @@ const data = option.optionData;
   import 'snice/components/select/snice-select';
   import 'snice/components/select/snice-option';
 
-  const form = document.querySelector('#userForm');
-
-  form.addEventListener('submit', (e) => {
+  document.getElementById('userForm').addEventListener('submit', (e) => {
     e.preventDefault();
-
-    const formData = new FormData(form);
-    const data = Object.fromEntries(formData);
-
-    console.log('Form data:', data);
-    // { role: 'admin', permissions: 'read,write' }
+    console.log(Object.fromEntries(new FormData(e.target)));
   });
 </script>
 ```
@@ -321,279 +137,92 @@ const data = option.optionData;
 ### Programmatic Control
 
 ```typescript
-import type { SniceSelectElement } from 'snice/components/select/snice-select.types';
+const select = document.querySelector('snice-select');
 
-const select = document.querySelector<SniceSelectElement>('snice-select');
-
-// Select an option
 select.selectOption('apple');
-
-// Clear selection
 select.clear();
-
-// Open/close dropdown
 select.openDropdown();
 select.closeDropdown();
 select.toggleDropdown();
-
-// Get current value
-console.log(select.value);
-
-// Set value
-select.value = 'banana';
 ```
 
-### With Event Handling
+### Event Handling
 
 ```typescript
 const select = document.querySelector('snice-select');
 
 select.addEventListener('select-change', (e) => {
-  const { value, option } = e.detail;
+  console.log('Selected:', e.detail.value);
+});
 
-  if (option) {
-    console.log(`Selected: ${option.label} (${value})`);
+select.addEventListener('select-open', () => console.log('Opened'));
+select.addEventListener('select-close', () => console.log('Closed'));
+```
+
+### Validation
+
+```html
+<snice-select id="category" name="category" label="Category" required>
+  <snice-option value="tech">Technology</snice-option>
+  <snice-option value="health">Health</snice-option>
+</snice-select>
+
+<script type="module">
+  const select = document.getElementById('category');
+
+  function validate() {
+    select.invalid = !select.value;
+    return !!select.value;
   }
-
-  // Trigger dependent logic
-  updateDependentFields(value);
-});
-
-select.addEventListener('select-open', () => {
-  console.log('Dropdown opened');
-});
-
-select.addEventListener('select-close', () => {
-  console.log('Dropdown closed');
-});
-```
-
-### Dynamic Options
-
-```html
-<snice-select id="dynamicSelect" label="Dynamic options"></snice-select>
-
-<button id="loadOptions">Load Options</button>
-
-<script type="module">
-  import 'snice/components/select/snice-select';
-  import 'snice/components/select/snice-option';
-
-  const select = document.querySelector('#dynamicSelect');
-  const loadBtn = document.querySelector('#loadOptions');
-
-  loadBtn.addEventListener('click', async () => {
-    // Fetch options from API
-    const response = await fetch('/api/options');
-    const options = await response.json();
-
-    // Clear existing options
-    select.innerHTML = '';
-
-    // Add new options
-    options.forEach(opt => {
-      const option = document.createElement('snice-option');
-      option.value = opt.id;
-      option.label = opt.name;
-      if (opt.icon) option.icon = opt.icon;
-      if (opt.disabled) option.disabled = true;
-      select.appendChild(option);
-    });
-  });
 </script>
 ```
 
-### Multiple Selection with Tags
+## Select Properties
 
-```html
-<snice-select
-  label="Select tags"
-  name="tags"
-  multiple
-  clearable
-  placeholder="Choose tags">
-  <snice-option value="javascript">JavaScript</snice-option>
-  <snice-option value="typescript">TypeScript</snice-option>
-  <snice-option value="python">Python</snice-option>
-  <snice-option value="rust">Rust</snice-option>
-  <snice-option value="go">Go</snice-option>
-</snice-select>
-```
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `value` | `string` | `''` | Selected value (comma-separated for multiple) |
+| `disabled` | `boolean` | `false` | Disables the select |
+| `required` | `boolean` | `false` | Required for form validation |
+| `invalid` | `boolean` | `false` | Shows invalid state styling |
+| `readonly` | `boolean` | `false` | Readonly state |
+| `loading` | `boolean` | `false` | Shows loading spinner |
+| `multiple` | `boolean` | `false` | Allow multiple selection |
+| `searchable` | `boolean` | `false` | Show search input |
+| `clearable` | `boolean` | `false` | Show clear button |
+| `open` | `boolean` | `false` | Whether dropdown is open |
+| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Select size |
+| `name` | `string` | `''` | Form field name |
+| `label` | `string` | `''` | Label text |
+| `placeholder` | `string` | `'Select an option'` | Placeholder text |
+| `maxHeight` (attr: `max-height`) | `string` | `'200px'` | Maximum dropdown height |
 
-Selected options will display as removable tags. Click the × on a tag to remove it.
+## Option Properties
 
-### Searchable with Many Options
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `value` | `string` | `''` | Option value (falls back to label) |
+| `label` | `string` | `''` | Option label (falls back to text content) |
+| `disabled` | `boolean` | `false` | Disables the option |
+| `selected` | `boolean` | `false` | Initially selected |
+| `icon` | `string` | `''` | Icon image URL |
 
-```html
-<snice-select
-  label="Choose a country"
-  name="country"
-  searchable
-  max-height="300px">
-  <snice-option value="us">United States</snice-option>
-  <snice-option value="uk">United Kingdom</snice-option>
-  <snice-option value="ca">Canada</snice-option>
-  <snice-option value="au">Australia</snice-option>
-  <snice-option value="de">Germany</snice-option>
-  <snice-option value="fr">France</snice-option>
-  <!-- Many more options... -->
-</snice-select>
-```
+## Events
 
-### Validation Example
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `select-change` | `{ value, option, select }` | Selection changed |
+| `select-open` | `{ select }` | Dropdown opened |
+| `select-close` | `{ select }` | Dropdown closed |
 
-```html
-<form id="validationForm">
-  <snice-select
-    id="categorySelect"
-    name="category"
-    label="Category"
-    required
-    placeholder="Select a category">
-    <snice-option value="tech">Technology</snice-option>
-    <snice-option value="health">Health</snice-option>
-    <snice-option value="finance">Finance</snice-option>
-  </snice-select>
+## Methods
 
-  <button type="submit">Submit</button>
-</form>
-
-<script type="module">
-  import 'snice/components/select/snice-select';
-  import 'snice/components/select/snice-option';
-
-  const form = document.querySelector('#validationForm');
-  const select = document.querySelector('#categorySelect');
-
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    if (!select.value) {
-      select.invalid = true;
-      alert('Please select a category');
-      return;
-    }
-
-    select.invalid = false;
-    // Submit form...
-  });
-</script>
-```
-
-### Complete Example
-
-```html
-<!DOCTYPE html>
-<html>
-<head>
-  <style>
-    .select-demo {
-      max-width: 400px;
-      margin: 2rem auto;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-  </style>
-
-  <script type="module">
-    import 'snice/components/select/snice-select';
-    import 'snice/components/select/snice-option';
-
-    // Handle select changes
-    document.addEventListener('select-change', (e) => {
-      console.log('Selection changed:', e.detail);
-    });
-  </script>
-</head>
-<body>
-  <div class="select-demo">
-    <snice-select
-      label="Single selection"
-      name="single"
-      clearable>
-      <snice-option value="1">Option 1</snice-option>
-      <snice-option value="2">Option 2</snice-option>
-      <snice-option value="3">Option 3</snice-option>
-    </snice-select>
-
-    <snice-select
-      label="Multiple selection"
-      name="multiple"
-      multiple
-      clearable>
-      <snice-option value="a">Choice A</snice-option>
-      <snice-option value="b">Choice B</snice-option>
-      <snice-option value="c">Choice C</snice-option>
-      <snice-option value="d">Choice D</snice-option>
-    </snice-select>
-
-    <snice-select
-      label="Searchable"
-      name="searchable"
-      searchable>
-      <snice-option value="apple">Apple</snice-option>
-      <snice-option value="banana">Banana</snice-option>
-      <snice-option value="cherry">Cherry</snice-option>
-      <snice-option value="date">Date</snice-option>
-      <snice-option value="elderberry">Elderberry</snice-option>
-      <snice-option value="fig">Fig</snice-option>
-      <snice-option value="grape">Grape</snice-option>
-    </snice-select>
-
-    <snice-select
-      label="With disabled option"
-      name="disabled">
-      <snice-option value="1">Enabled</snice-option>
-      <snice-option value="2" disabled>Disabled</snice-option>
-      <snice-option value="3">Enabled</snice-option>
-    </snice-select>
-
-    <snice-select
-      label="Disabled select"
-      name="disabledSelect"
-      disabled>
-      <snice-option value="1">Option 1</snice-option>
-      <snice-option value="2">Option 2</snice-option>
-    </snice-select>
-  </div>
-</body>
-</html>
-```
-
-## Accessibility
-
-The select components include proper ARIA attributes and keyboard support:
-
-- `role="listbox"` on the dropdown
-- `role="option"` on each option
-- `aria-haspopup="listbox"` on the trigger
-- `aria-expanded` reflects the dropdown state
-- `aria-selected` on selected options
-- `aria-disabled` on disabled options
-- `aria-invalid` when invalid state is set
-- Full keyboard navigation support
-
-### Keyboard Support
-
-- **Space/Enter**: Open dropdown (when trigger is focused)
-- **Arrow Down/Up**: Navigate options
-- **Enter/Space**: Select focused option
-- **Escape**: Close dropdown
-- **Type to search**: When searchable, type to filter options
-
-## Form Behavior
-
-The select component works seamlessly with HTML forms:
-
-- Acts like a native `<select>` element
-- Supports `name` and `value` attributes
-- Supports `required` attribute for validation
-- Compatible with FormData API
-- Hidden native `<select>` for form submission
-- Multiple selection values are comma-separated
-
-## Browser Support
-
-- Modern browsers (Chrome, Firefox, Safari, Edge)
-- Requires Custom Elements v1 and Shadow DOM support
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `selectOption()` | `value: string` | Select an option by value |
+| `clear()` | -- | Clear the selection |
+| `openDropdown()` | -- | Open the dropdown |
+| `closeDropdown()` | -- | Close the dropdown |
+| `toggleDropdown()` | -- | Toggle the dropdown |
+| `focus()` | -- | Focus the select trigger |
+| `blur()` | -- | Remove focus and close dropdown |

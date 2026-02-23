@@ -131,39 +131,6 @@ item.collapse();
 - Accessibility: aria-expanded, button roles
 - Smooth animations
 
-## Common Patterns
-
-**FAQ:**
-```html
-<snice-accordion>
-  <snice-accordion-item item-id="q1">
-    <span slot="header">Question?</span>
-    <p>Answer.</p>
-  </snice-accordion-item>
-</snice-accordion>
-```
-
-**Settings:**
-```html
-<snice-accordion multiple>
-  <snice-accordion-item item-id="general">
-    <span slot="header">General</span>
-    <!-- Settings form -->
-  </snice-accordion-item>
-</snice-accordion>
-```
-
-**Lazy loading:**
-```typescript
-accordion.addEventListener('accordion-open', async (e) => {
-  if (!loaded[e.detail.itemId]) {
-    const data = await fetch(`/api/${e.detail.itemId}`);
-    // Update content
-    loaded[e.detail.itemId] = true;
-  }
-});
-```
-
 ## Notes
 
 - Items are light DOM children (not slotted)
@@ -171,4 +138,3 @@ accordion.addEventListener('accordion-open', async (e) => {
 - Item IDs auto-generated if not provided
 - Disabled items cannot be toggled
 - Header slot required for trigger content
-- Full ARIA support for screen readers

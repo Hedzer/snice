@@ -8,9 +8,9 @@ SVG-based funnel chart for conversion tracking and pipeline visualization.
 data: FunnelStage[] = [];           // Array of { label, value, color? }
 variant: 'default'|'gradient' = 'default';
 orientation: 'vertical'|'horizontal' = 'vertical';
-showLabels: boolean = true;         // attribute: show-labels
-showValues: boolean = true;         // attribute: show-values
-showPercentages: boolean = true;    // attribute: show-percentages
+showLabels: boolean = true;          // attribute: show-labels
+showValues: boolean = true;          // attribute: show-values
+showPercentages: boolean = true;     // attribute: show-percentages
 animation: boolean = false;
 ```
 

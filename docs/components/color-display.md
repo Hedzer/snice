@@ -1,3 +1,5 @@
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/color-display.md instead)
+
 # Color Display Component
 
 The `<snice-color-display>` component displays colors with a swatch and formatted label.

@@ -1,43 +1,47 @@
-# Timer
+# snice-timer
 
-```html
-<snice-timer mode="stopwatch"></snice-timer>
-<snice-timer mode="timer" initial-time="60"></snice-timer>
-```
+Stopwatch and countdown timer with start/stop/reset controls.
 
 ## Properties
-- `mode`: 'stopwatch' | 'timer' (default: 'stopwatch')
-- `initial-time`: number (default: 0) - Starting time in seconds for timer mode
-- `running`: boolean (read-only)
 
-## Methods
-- `start()`: Start timer
-- `stop()`: Stop/pause timer
-- `reset()`: Reset to initial state
-- `getTime()`: Get current time in seconds
+```typescript
+mode: 'stopwatch'|'timer' = 'stopwatch';
+initialTime: number = 0;   // attr: initial-time, seconds (for timer mode)
+running: boolean;           // read-only
+```
 
 ## Events
-- `timer-start`: { timer, time }
-- `timer-stop`: { timer, time }
-- `timer-reset`: { timer, time }
-- `timer-complete`: { timer } - Countdown reached 0
 
-## Implementation
-- Uses requestAnimationFrame for smooth updates
-- Direct DOM manipulation for display to avoid re-renders
-- Stopwatch: counts up from 0
-- Timer: counts down from initial-time
-- Auto-stops at 0 in timer mode
+- `timer-start` → `{ timer, time }`
+- `timer-stop` → `{ timer, time }`
+- `timer-reset` → `{ timer, time }`
+- `timer-complete` → `{ timer }` - Countdown reached 0
 
-## Display Format
-- Under 1 hour: `M:SS.D` (e.g., "2:05.3")
-- Over 1 hour: `H:MM:SS` (e.g., "1:05:30")
+## Methods
 
-## Theme Integration
-Uses standard theme tokens:
-- Background: `--snice-color-background-element`
-- Borders: `--snice-color-border`
-- Text: `--snice-color-text`
-- Start button: `--snice-color-success`
-- Pause button: `--snice-color-warning`
-- Reset button: `--snice-color-neutral`
+- `start()` - Start timer
+- `stop()` - Stop/pause timer
+- `reset()` - Reset to initial state
+- `getTime()` - Get current time in seconds
+
+## Usage
+
+```html
+<!-- Stopwatch (counts up) -->
+<snice-timer mode="stopwatch"></snice-timer>
+
+<!-- Countdown (counts down from 60s) -->
+<snice-timer mode="timer" initial-time="60"></snice-timer>
+
+<script>
+  const timer = document.querySelector('snice-timer');
+  timer.start();
+  timer.stop();
+  timer.reset();
+  console.log(timer.getTime());
+
+  timer.addEventListener('timer-complete', () => {
+    console.log('Countdown finished');
+  });
+</script>
+```

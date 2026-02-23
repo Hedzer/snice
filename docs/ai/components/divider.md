@@ -10,7 +10,7 @@ variant: 'solid'|'dashed'|'dotted' = 'solid';
 spacing: 'none'|'small'|'medium'|'large' = 'medium';
 align: 'start'|'center'|'end' = 'center';
 text: string = '';
-textBackground: string = '';
+textBackground: string = '';   // attribute: text-background
 color: string = '';
 capped: boolean = false;
 ```

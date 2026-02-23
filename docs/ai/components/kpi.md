@@ -9,12 +9,12 @@ Key performance indicator display with value, label, trend, sparkline, and senti
 ```typescript
 label: string = ''                      // Metric label/name
 value: string | number = ''             // Main metric value
-trendValue?: string | number            // Trend value (e.g., "+12.5%")
-trendData?: number[]                    // Sparkline data array
+trendValue?: string | number            // attribute: trend-value
+trendData?: number[]                    // Sparkline data array (JS only)
 sentiment?: KpiSentiment                // 'up' | 'down' | 'neutral'
 size: KpiSize = 'medium'                // 'small' | 'medium' | 'large'
-showSparkline: boolean = true           // Show sparkline when data provided
-colorValue: boolean = false             // Apply sentiment color to value
+showSparkline: boolean = true           // attribute: show-sparkline
+colorValue: boolean = false             // attribute: color-value
 ```
 
 ## Slots
@@ -113,55 +113,6 @@ after   // Content after sparkline (e.g., actions)
 ::part(trend-icon)  /* Trend icon (↑↓→) */
 ::part(trend-value) /* Trend value text */
 ::part(sparkline)   /* Sparkline container */
-```
-
-## Styling
-
-```css
---snice-color-background
---snice-color-border
---snice-color-text
---snice-color-text-secondary
---snice-color-success        /* Up sentiment */
---snice-color-danger         /* Down sentiment */
---snice-spacing-xs
---snice-spacing-sm
---snice-spacing-md
---snice-spacing-lg
---snice-font-size-xs
---snice-font-size-sm
---snice-font-size-md
---snice-font-size-2xl
---snice-font-size-3xl
---snice-font-size-4xl
---snice-font-weight-medium
---snice-font-weight-semibold
---snice-font-weight-bold
---snice-border-radius-md
-```
-
-## Common Patterns
-
-```html
-<!-- Financial metrics -->
-<snice-kpi label="Revenue" value="$127K" trend-value="+22%" sentiment="up"></snice-kpi>
-<snice-kpi label="Costs" value="$45K" trend-value="-5%" sentiment="down"></snice-kpi>
-<snice-kpi label="Profit" value="$82K" trend-value="+35%" sentiment="up"></snice-kpi>
-
-<!-- User metrics -->
-<snice-kpi label="Total Users" value="12,345" trend-value="+234" sentiment="up"></snice-kpi>
-<snice-kpi label="Active Users" value="8,901" trend-value="+156" sentiment="up"></snice-kpi>
-<snice-kpi label="Churn Rate" value="2.3%" trend-value="+0.2%" sentiment="down"></snice-kpi>
-
-<!-- Performance metrics -->
-<snice-kpi label="Response Time" value="245ms" trend-value="-23ms" sentiment="down"></snice-kpi>
-<snice-kpi label="Uptime" value="99.9%" trend-value="±0%" sentiment="neutral"></snice-kpi>
-<snice-kpi label="Error Rate" value="0.12%" trend-value="-0.03%" sentiment="down"></snice-kpi>
-
-<!-- Marketing metrics -->
-<snice-kpi label="Conversion Rate" value="3.24%" trend-value="+0.5%" sentiment="up"></snice-kpi>
-<snice-kpi label="CAC" value="$156" trend-value="-$12" sentiment="down"></snice-kpi>
-<snice-kpi label="LTV" value="$1,245" trend-value="+$87" sentiment="up"></snice-kpi>
 ```
 
 ## Notes

@@ -1,3 +1,5 @@
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/code-block.md instead)
+
 # Code Block Component
 
 Display code with syntax highlighting, line numbers, and copy functionality. Uses a JSON-driven tokenizer engine with Monarch-inspired state machine for syntax highlighting.

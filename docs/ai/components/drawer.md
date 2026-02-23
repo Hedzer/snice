@@ -8,12 +8,12 @@ Slide-out panel from any viewport side with focus trap and dismissal options.
 open: boolean = false;                         // Visibility state
 position: 'left'|'right'|'top'|'bottom' = 'left';
 size: 'small'|'medium'|'large'|'xl'|'xxl'|'xxxl'|'full' = 'medium';
-noBackdrop: boolean = false;                   // Hide backdrop overlay
-noBackdropDismiss: boolean = false;            // Prevent backdrop click close
-noEscapeDismiss: boolean = false;              // Prevent Escape key close
-noFocusTrap: boolean = false;                  // Disable focus trapping
+noBackdrop: boolean = false;                   // attribute: no-backdrop
+noBackdropDismiss: boolean = false;            // attribute: no-backdrop-dismiss
+noEscapeDismiss: boolean = false;              // attribute: no-escape-dismiss
+noFocusTrap: boolean = false;                  // attribute: no-focus-trap
 persistent: boolean = false;                   // Hide close button, prevent all dismiss
-pushContent: boolean = false;                  // Push main content instead of overlay
+pushContent: boolean = false;                  // attribute: push-content
 contained: boolean = false;                    // Position relative to parent
 ```
 

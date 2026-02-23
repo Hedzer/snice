@@ -1,3 +1,5 @@
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/badge.md instead)
+
 # Badge Component
 
 The badge component displays notification indicators, status markers, and counts. It can be positioned on other elements or used inline, with support for custom colors, sizes, and animations.

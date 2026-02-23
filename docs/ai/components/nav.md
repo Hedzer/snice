@@ -7,33 +7,31 @@ Navigation menu from placard configurations, integrates with Snice routing.
 ```typescript
 variant: 'flat'|'hierarchical'|'grouped' = 'flat';
 orientation: 'horizontal'|'vertical' = 'horizontal';
-isTopLevel: boolean = false;              // Receive context updates
+isTopLevel: boolean = false;  // attr: is-top-level, receive context updates
 ```
 
 ## Methods
 
-```typescript
-update(placards, appContext?, currentRoute?, routeParams?)  // Update nav with placard data
-```
+- `update(placards, appContext?, currentRoute?, routeParams?)` - Update nav with placard data
 
 ## Placard Structure
 
 ```typescript
 interface Placard {
-  name: string;                    // Route identifier
-  title: string;                   // Display text
-  icon?: string;                   // Icon character
-  order?: number;                  // Sort order
-  parent?: string;                 // Parent name (hierarchical)
-  group?: string;                  // Group name (grouped)
-  show?: boolean;                  // Visibility
-  description?: string;            // Accessible label/tooltip
-  tooltip?: string;                // Hover tooltip
-  hotkeys?: string[];              // Keyboard shortcuts
-  helpUrl?: string;                // Help URL
-  searchTerms?: string[];          // Search keywords
-  attributes?: Record<string, any>; // Custom data attributes
-  visibleOn?: Function | Function[]; // Visibility guards
+  name: string;                      // Route identifier
+  title: string;                     // Display text
+  icon?: string;                     // Icon character
+  order?: number;                    // Sort order
+  parent?: string;                   // Parent name (hierarchical)
+  group?: string;                    // Group name (grouped)
+  show?: boolean;
+  description?: string;              // Accessible label/tooltip
+  tooltip?: string;
+  hotkeys?: string[];
+  helpUrl?: string;
+  searchTerms?: string[];
+  attributes?: Record<string, any>;
+  visibleOn?: Function | Function[];
 }
 ```
 
@@ -41,36 +39,24 @@ interface Placard {
 
 ```html
 <snice-nav id="nav" variant="flat" orientation="horizontal"></snice-nav>
+
+<!-- Auto context integration -->
+<snice-nav is-top-level></snice-nav>
 ```
 
 ```typescript
 const nav = document.querySelector('snice-nav');
-const placards = [
+nav.update([
   { name: 'home', title: 'Home', icon: '🏠', order: 0 },
-  { name: 'products', title: 'Products', icon: '📦', order: 1 },
-];
-nav.update(placards, undefined, 'home');
+  { name: 'products', title: 'Products', order: 1 },
+], undefined, 'home');
 ```
-
-## Variants
-
-- **flat**: Simple list (default)
-- **hierarchical**: Nested with parent-child relationships
-- **grouped**: Organized into labeled groups
-
-## Context Integration
-
-```html
-<snice-nav is-top-level></snice-nav>
-```
-
-Auto-receives placards, routes, and app context from Snice context system.
 
 ## Features
 
-- Active route tracking with `.nav__link--active` class
-- `aria-current="page"` on active links
+- Flat, hierarchical, and grouped variants
+- Active route tracking (`.nav__link--active`, `aria-current="page"`)
 - `role="navigation"` on container
 - Hotkeys via `data-hotkeys` attribute
-- Custom attributes via placard `attributes` property
 - Conditional visibility via `visibleOn` guards
+- Custom attributes via placard `attributes`

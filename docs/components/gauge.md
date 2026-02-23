@@ -1,3 +1,5 @@
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/gauge.md instead)
+
 # Gauge Component
 
 The gauge component renders an SVG-based semicircle gauge/meter chart, ideal for dashboards and data visualization. It displays a value within a range using an animated arc fill with optional label text.

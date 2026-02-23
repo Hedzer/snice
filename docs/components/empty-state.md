@@ -1,3 +1,5 @@
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/empty-state.md instead)
+
 # Empty State Component
 
 The `<snice-empty-state>` component provides a consistent way to display empty or no-data states.

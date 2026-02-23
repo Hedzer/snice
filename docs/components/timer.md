@@ -1,42 +1,36 @@
-# Timer Component
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/timer.md instead)
 
-The `<snice-timer>` component provides a stopwatch and countdown timer.
+# Timer
+`<snice-timer>`
+
+A stopwatch and countdown timer component.
 
 ## Basic Usage
+
+```typescript
+import 'snice/components/timer/snice-timer';
+```
 
 ```html
 <!-- Stopwatch -->
 <snice-timer mode="stopwatch"></snice-timer>
 
-<!-- Countdown Timer -->
+<!-- Countdown -->
 <snice-timer mode="timer" initial-time="60"></snice-timer>
 ```
 
-## Properties
+## Importing
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `mode` | `'stopwatch' \| 'timer'` | `'stopwatch'` | Timer mode |
-| `initial-time` | `number` | `0` | Starting time in seconds (for timer mode) |
-| `running` | `boolean` | `false` | Timer running state (read-only) |
+**ESM (bundler)**
+```typescript
+import 'snice/components/timer/snice-timer';
+```
 
-## Methods
-
-| Method | Returns | Description |
-|--------|---------|-------------|
-| `start()` | `void` | Start the timer |
-| `stop()` | `void` | Stop/pause the timer |
-| `reset()` | `void` | Reset to initial state |
-| `getTime()` | `number` | Get current time in seconds |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `timer-start` | `{ timer, time }` | Timer started |
-| `timer-stop` | `{ timer, time }` | Timer stopped |
-| `timer-reset` | `{ timer, time }` | Timer reset |
-| `timer-complete` | `{ timer }` | Countdown completed (timer mode only) |
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-timer.min.js"></script>
+```
 
 ## Examples
 
@@ -48,7 +42,6 @@ The `<snice-timer>` component provides a stopwatch and countdown timer.
 <script>
   const stopwatch = document.getElementById('stopwatch');
   stopwatch.start();
-
   // Later...
   stopwatch.stop();
   console.log('Elapsed:', stopwatch.getTime(), 'seconds');
@@ -57,16 +50,16 @@ The `<snice-timer>` component provides a stopwatch and countdown timer.
 
 ### Countdown Timer
 
+Set the `initial-time` attribute in seconds for a countdown.
+
 ```html
-<snice-timer id="timer" mode="timer" initial-time="300"></snice-timer>
+<snice-timer id="countdown" mode="timer" initial-time="300"></snice-timer>
 
 <script>
-  const timer = document.getElementById('timer');
-
+  const timer = document.getElementById('countdown');
   timer.addEventListener('timer-complete', () => {
     console.log('Time is up!');
   });
-
   timer.start();
 </script>
 ```
@@ -79,65 +72,30 @@ The `<snice-timer>` component provides a stopwatch and countdown timer.
 <button onclick="document.getElementById('my-timer').start()">Start</button>
 <button onclick="document.getElementById('my-timer').stop()">Stop</button>
 <button onclick="document.getElementById('my-timer').reset()">Reset</button>
-
-<script>
-  const timer = document.getElementById('my-timer');
-
-  timer.addEventListener('timer-start', (e) => {
-    console.log('Timer started at', e.detail.time);
-  });
-
-  timer.addEventListener('timer-stop', (e) => {
-    console.log('Timer stopped at', e.detail.time);
-  });
-</script>
 ```
 
-### Workout Timer
+## Properties
 
-```html
-<snice-timer id="workout" mode="timer" initial-time="45"></snice-timer>
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `mode` | `'stopwatch' \| 'timer'` | `'stopwatch'` | Timer mode |
+| `initialTime` (attr: `initial-time`) | `number` | `0` | Starting time in seconds (timer mode) |
+| `running` | `boolean` | `false` | Whether the timer is running (read-only) |
 
-<script>
-  const workout = document.getElementById('workout');
+## Events
 
-  workout.addEventListener('timer-complete', () => {
-    alert('Rest time!');
-    // Start rest period
-    workout.initialTime = 15;
-    workout.reset();
-    workout.start();
-  });
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `timer-start` | `{ timer, time }` | Timer started |
+| `timer-stop` | `{ timer, time }` | Timer stopped |
+| `timer-reset` | `{ timer, time }` | Timer reset |
+| `timer-complete` | `{ timer }` | Countdown completed (timer mode only) |
 
-  workout.start();
-</script>
-```
+## Methods
 
-## Styling
-
-The timer uses CSS custom properties from the theme system:
-
-```css
-snice-timer {
-  --snice-color-background-element: rgb(252 251 249);
-  --snice-color-border: rgb(226 226 226);
-  --snice-color-text: rgb(23 23 23);
-  --snice-color-success: rgb(22 163 74);
-  --snice-color-warning: rgb(202 138 4);
-  --snice-color-neutral: rgb(82 82 82);
-}
-```
-
-## Accessibility
-
-- Large, readable time display
-- Clear button labels and icons
-- Keyboard accessible controls
-- High contrast buttons
-
-## Best Practices
-
-1. **Choose the right mode**: Use stopwatch for tracking elapsed time, timer for countdowns
-2. **Handle timer-complete**: Listen for completion events in timer mode
-3. **Provide context**: Add labels or descriptions near the timer
-4. **Reset appropriately**: Call `reset()` to return to initial state
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `start()` | -- | Start the timer |
+| `stop()` | -- | Stop/pause the timer |
+| `reset()` | -- | Reset to initial state |
+| `getTime()` | -- | Get current time in seconds, returns `number` |

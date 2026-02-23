@@ -1,3 +1,5 @@
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/image.md instead)
+
 # Image Component
 
 The `<snice-image>` component provides a flexible image display with variants, sizes, lazy loading, and fallback support.

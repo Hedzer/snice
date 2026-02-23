@@ -1,3 +1,5 @@
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/drawer.md instead)
+
 # Drawer Component
 
 The `<snice-drawer>` component provides a slide-out panel that appears from any side of the viewport. It's commonly used for navigation menus, filters, settings panels, or additional content that shouldn't occupy permanent screen space.

@@ -9,8 +9,8 @@ size: 'small'|'medium'|'large' = 'medium';
 icon: string = '📭';
 title: string = 'No data';
 description: string = '';
-actionText: string = '';
-actionHref: string = '';
+actionText: string = '';       // attribute: action-text
+actionHref: string = '';       // attribute: action-href
 ```
 
 ## Slots

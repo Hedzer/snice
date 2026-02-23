@@ -1,3 +1,5 @@
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/breadcrumbs.md instead)
+
 # Breadcrumbs Components
 
 The breadcrumbs components provide navigation trail indicators showing the user's current location within a hierarchy. Supports icons, custom separators, collapsing for long trails, and multiple sizes.

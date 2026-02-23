@@ -1,191 +1,38 @@
-# Textarea Component
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/textarea.md instead)
 
-The `<snice-textarea>` component provides a multi-line text input with validation, character counting, and optional auto-grow functionality.
+# Textarea
+`<snice-textarea>`
 
-## Table of Contents
-- [Basic Usage](#basic-usage)
-- [Properties](#properties)
-- [Methods](#methods)
-- [Events](#events)
-- [Features](#features)
-- [Examples](#examples)
+A multi-line text input with validation, character counting, and optional auto-grow.
 
 ## Basic Usage
 
-```html
-<snice-textarea
-  label="Comments"
-  placeholder="Enter your comments here"
-  rows="5"
-></snice-textarea>
-```
-
 ```typescript
 import 'snice/components/textarea/snice-textarea';
-
-const textarea = document.querySelector('snice-textarea');
-textarea.addEventListener('textarea-change', (e) => {
-  console.log('Value:', e.detail.value);
-});
 ```
 
-## Properties
+```html
+<snice-textarea label="Comments" placeholder="Enter your comments here" rows="5"></snice-textarea>
+```
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `value` | `string` | `''` | The textarea value |
-| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Size variant |
-| `variant` | `'outlined' \| 'filled' \| 'underlined'` | `'outlined'` | Visual style variant |
-| `resize` | `'none' \| 'vertical' \| 'horizontal' \| 'both'` | `'vertical'` | Resize behavior |
-| `placeholder` | `string` | `''` | Placeholder text |
-| `label` | `string` | `''` | Label text |
-| `helperText` | `string` | `''` | Helper text below textarea |
-| `errorText` | `string` | `''` | Error message (shown when invalid) |
-| `disabled` | `boolean` | `false` | Whether textarea is disabled |
-| `readonly` | `boolean` | `false` | Whether textarea is readonly |
-| `required` | `boolean` | `false` | Whether textarea is required |
-| `invalid` | `boolean` | `false` | Whether to show invalid state |
-| `rows` | `number` | `3` | Number of visible rows |
-| `cols` | `number` | `-1` | Number of visible columns |
-| `maxlength` | `number` | `-1` | Maximum character count |
-| `minlength` | `number` | `-1` | Minimum character count |
-| `autocomplete` | `string` | `''` | Autocomplete attribute value |
-| `name` | `string` | `''` | Form field name |
-| `autoGrow` | `boolean` | `false` | Whether to auto-grow height |
+## Importing
 
-## Methods
-
-### `focus(): void`
-Give focus to the textarea.
-
+**ESM (bundler)**
 ```typescript
-textarea.focus();
+import 'snice/components/textarea/snice-textarea';
 ```
 
-### `blur(): void`
-Remove focus from the textarea.
-
-```typescript
-textarea.blur();
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-textarea.min.js"></script>
 ```
-
-### `select(): void`
-Select all text in the textarea.
-
-```typescript
-textarea.select();
-```
-
-### `checkValidity(): boolean`
-Check if the textarea passes validation.
-
-```typescript
-const isValid = textarea.checkValidity();
-```
-
-### `reportValidity(): boolean`
-Report validation status to the user.
-
-```typescript
-textarea.reportValidity();
-```
-
-### `setCustomValidity(message: string): void`
-Set a custom validation message.
-
-```typescript
-textarea.setCustomValidity('This field is required');
-```
-
-## Events
-
-### `textarea-input`
-Fired when the textarea value changes during input.
-
-**Detail**: `{ value: string, textarea: SniceTextareaElement }`
-
-```typescript
-textarea.addEventListener('textarea-input', (e) => {
-  console.log('Input value:', e.detail.value);
-});
-```
-
-### `textarea-change`
-Fired when the textarea value is committed (blur or enter).
-
-**Detail**: `{ value: string, textarea: SniceTextareaElement }`
-
-```typescript
-textarea.addEventListener('textarea-change', (e) => {
-  console.log('Changed to:', e.detail.value);
-});
-```
-
-### `textarea-focus`
-Fired when the textarea receives focus.
-
-**Detail**: `{ textarea: SniceTextareaElement }`
-
-### `textarea-blur`
-Fired when the textarea loses focus.
-
-**Detail**: `{ textarea: SniceTextareaElement }`
-
-## Features
-
-- **Form Integration**: Fully form-associated custom element with validation support
-- **Visual Variants**: Three style options (outlined, filled, underlined)
-- **Auto-grow**: Automatically expand height to fit content
-- **Character Counter**: Shows count when maxlength is set
-- **Resize Control**: Four resize modes (none, vertical, horizontal, both)
-- **Validation**: Built-in HTML5 validation with custom messages
-- **Accessibility**: Full keyboard support and ARIA attributes
 
 ## Examples
 
-### Basic Textarea
+### Variants
 
-```html
-<snice-textarea
-  label="Description"
-  placeholder="Enter description..."
-  rows="4"
-></snice-textarea>
-```
-
-### With Character Counter
-
-```html
-<snice-textarea
-  label="Bio"
-  maxlength="500"
-  helper-text="Share a brief bio"
-></snice-textarea>
-```
-
-### Auto-grow Textarea
-
-```html
-<snice-textarea
-  label="Notes"
-  auto-grow
-  rows="3"
-  placeholder="Type to expand..."
-></snice-textarea>
-```
-
-### Error State
-
-```html
-<snice-textarea
-  label="Message"
-  invalid
-  error-text="This field is required"
-  required
-></snice-textarea>
-```
-
-### Different Variants
+Use the `variant` attribute to change the visual style.
 
 ```html
 <snice-textarea variant="outlined" label="Outlined"></snice-textarea>
@@ -193,7 +40,9 @@ Fired when the textarea loses focus.
 <snice-textarea variant="underlined" label="Underlined"></snice-textarea>
 ```
 
-### Different Sizes
+### Sizes
+
+Use the `size` attribute to change the textarea size.
 
 ```html
 <snice-textarea size="small" label="Small"></snice-textarea>
@@ -201,7 +50,25 @@ Fired when the textarea loses focus.
 <snice-textarea size="large" label="Large"></snice-textarea>
 ```
 
+### With Character Counter
+
+Set the `maxlength` attribute to show a character counter.
+
+```html
+<snice-textarea label="Bio" maxlength="500" helper-text="Share a brief bio"></snice-textarea>
+```
+
+### Auto-grow
+
+Set the `auto-grow` attribute to expand height automatically as content grows.
+
+```html
+<snice-textarea label="Notes" auto-grow rows="3" placeholder="Type to expand..."></snice-textarea>
+```
+
 ### Resize Control
+
+Use the `resize` attribute to control user resize behavior.
 
 ```html
 <snice-textarea resize="none" label="No resize"></snice-textarea>
@@ -210,26 +77,74 @@ Fired when the textarea loses focus.
 <snice-textarea resize="both" label="Both directions"></snice-textarea>
 ```
 
+### Error State
+
+Set the `invalid` attribute with `error-text` to show validation errors.
+
+```html
+<snice-textarea label="Message" invalid error-text="This field is required" required></snice-textarea>
+```
+
 ### In a Form
+
+The textarea is form-associated and participates in form submission.
 
 ```html
 <form id="feedback-form">
-  <snice-textarea
-    name="feedback"
-    label="Your Feedback"
-    required
-    minlength="10"
-    maxlength="1000"
-    helper-text="Please provide at least 10 characters"
-  ></snice-textarea>
+  <snice-textarea name="feedback" label="Your Feedback" required minlength="10" maxlength="1000" helper-text="At least 10 characters"></snice-textarea>
   <button type="submit">Submit</button>
 </form>
-
-<script>
-document.getElementById('feedback-form').addEventListener('submit', (e) => {
-  e.preventDefault();
-  const formData = new FormData(e.target);
-  console.log('Feedback:', formData.get('feedback'));
-});
-</script>
 ```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `value` | `string` | `''` | Textarea value |
+| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Size variant |
+| `variant` | `'outlined' \| 'filled' \| 'underlined'` | `'outlined'` | Visual style |
+| `resize` | `'none' \| 'vertical' \| 'horizontal' \| 'both'` | `'vertical'` | Resize behavior |
+| `placeholder` | `string` | `''` | Placeholder text |
+| `label` | `string` | `''` | Label text |
+| `helperText` (attr: `helper-text`) | `string` | `''` | Helper text below textarea |
+| `errorText` (attr: `error-text`) | `string` | `''` | Error message (shown when invalid) |
+| `disabled` | `boolean` | `false` | Disables the textarea |
+| `readonly` | `boolean` | `false` | Makes the textarea read-only |
+| `required` | `boolean` | `false` | Makes the textarea required |
+| `invalid` | `boolean` | `false` | Shows invalid state |
+| `rows` | `number` | `3` | Number of visible rows |
+| `cols` | `number` | `-1` | Number of visible columns |
+| `maxlength` | `number` | `-1` | Maximum character count |
+| `minlength` | `number` | `-1` | Minimum character count |
+| `autocomplete` | `string` | `''` | Autocomplete attribute |
+| `name` | `string` | `''` | Form field name |
+| `autoGrow` (attr: `auto-grow`) | `boolean` | `false` | Auto-expand height |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `textarea-input` | `{ value: string, textarea: SniceTextareaElement }` | Value changed during input |
+| `textarea-change` | `{ value: string, textarea: SniceTextareaElement }` | Value committed (blur) |
+| `textarea-focus` | `{ textarea: SniceTextareaElement }` | Textarea received focus |
+| `textarea-blur` | `{ textarea: SniceTextareaElement }` | Textarea lost focus |
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `focus()` | `options?: FocusOptions` | Focus the textarea |
+| `blur()` | -- | Remove focus |
+| `select()` | -- | Select all text |
+| `checkValidity()` | -- | Check validation, returns `boolean` |
+| `reportValidity()` | -- | Report validation to user, returns `boolean` |
+| `setCustomValidity()` | `message: string` | Set custom validation message |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `textarea` | The native textarea element |
+| `spinner` | Loading spinner |
+| `error-text` | Error message container |
+| `helper-text` | Helper text container |

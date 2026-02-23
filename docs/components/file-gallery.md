@@ -1,3 +1,5 @@
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/file-gallery.md instead)
+
 # File Gallery Component
 
 The `<snice-file-gallery>` component provides a file upload gallery with drag-and-drop support, image previews, pausable/resumable uploads, and progress tracking.

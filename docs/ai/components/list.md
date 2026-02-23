@@ -1,50 +1,70 @@
 # snice-list
 
-List of items with optional selection, icons, descriptions.
+List container with search, infinite scroll, and composable list items.
 
 ## Properties
 
 ```typescript
-items: ListItem[] = [];
-selectionMode: 'single'|'multiple'|'none' = 'none';
-selectedItems: string[] = [];
-hoverable: boolean = true;
+// snice-list
 dividers: boolean = false;
-dense: boolean = false;
+searchable: boolean = false;
+search: string = '';
+infinite: boolean = false;
+loading: boolean = false;
+noResults: boolean = false;    // attr: no-results
+threshold: number = 0.5;
+skeletonCount: number = 5;     // attr: skeleton-count
+
+// snice-list-item
+heading: string = '';
+description: string = '';
+selected: boolean = false;
+disabled: boolean = false;
 ```
 
-## ListItem
+## Slots (snice-list)
 
-```typescript
-interface ListItem {
-  id: string;
-  label: string;
-  description?: string;
-  icon?: string;
-  iconImage?: string;
-  disabled?: boolean;
-  selected?: boolean;
-  data?: any;
-}
-```
+- `(default)` - List items
+- `before` - Content before items
+- `after` - Content after items
+- `no-results` - Custom empty state
+- `loading` - Custom loading content
 
-## Methods
+## Slots (snice-list-item)
 
-- `selectItem(id)`, `deselectItem(id)`, `toggleSelection(id)`
-- `getSelectedItems(): ListItem[]`
+- `(default)` - Custom content
+- `before` - Icon/avatar area
+- `after` - Badge/metadata area
 
-## Events
+## Requests
 
-- `@snice/list-item-select` (detail: { item, selected, list })
+- `@snice/list/search` → `{ query, list }` - Handle search
+- `@snice/list/load-more` → `{ page, list }` - Infinite scroll
 
 ## Usage
 
 ```html
-<snice-list id="list" selection-mode="single" dividers></snice-list>
-<script>
-  list.items = [
-    { id: '1', label: 'Item 1', description: 'First', icon: '📄' },
-    { id: '2', label: 'Item 2', description: 'Second', icon: '📄' }
-  ];
-</script>
+<!-- Basic with dividers -->
+<snice-list dividers>
+  <snice-list-item heading="Inbox" description="3 unread"></snice-list-item>
+  <snice-list-item heading="Sent" description="Last 2h ago"></snice-list-item>
+</snice-list>
+
+<!-- With icons -->
+<snice-list-item heading="Downloads">
+  <span slot="before">📥</span>
+  <span slot="after">12</span>
+</snice-list-item>
+
+<!-- Searchable -->
+<snice-list searchable dividers></snice-list>
+
+<!-- Infinite scroll (needs scrollable parent) -->
+<div style="height:300px;overflow-y:auto">
+  <snice-list infinite></snice-list>
+</div>
+
+<!-- Loading / empty -->
+<snice-list loading skeleton-count="3"></snice-list>
+<snice-list no-results></snice-list>
 ```

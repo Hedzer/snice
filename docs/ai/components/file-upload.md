@@ -13,13 +13,13 @@ disabled: boolean = false;
 required: boolean = false;
 invalid: boolean = false;
 label: string = '';
-helperText: string = '';
-errorText: string = '';
-maxSize: number = -1; // bytes
-maxFiles: number = -1;
+helperText: string = '';       // attribute: helper-text
+errorText: string = '';        // attribute: error-text
+maxSize: number = -1;          // attribute: max-size, bytes
+maxFiles: number = -1;         // attribute: max-files
 name: string = '';
-dragDrop: boolean = true;
-showPreview: boolean = true;
+dragDrop: boolean = true;      // attribute: drag-drop
+showPreview: boolean = true;   // attribute: show-preview
 files: FileList | null;
 ```
 

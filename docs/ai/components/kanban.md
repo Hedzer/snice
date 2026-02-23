@@ -6,8 +6,8 @@ Drag-and-drop kanban board.
 
 ```typescript
 columns: KanbanColumn[] = [];
-allowDragDrop: boolean = true;
-showCardCount: boolean = true;
+allowDragDrop: boolean = true;   // attribute: allow-drag-drop
+showCardCount: boolean = true;   // attribute: show-card-count
 ```
 
 ## Interfaces

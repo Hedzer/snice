@@ -8,7 +8,7 @@ Dropdown menu with items, dividers, and configurable trigger behavior.
 open: boolean = false;
 placement: 'bottom-start'|'bottom-end'|'top-start'|'top-end'|'right-start'|'right-end'|'left-start'|'left-end' = 'bottom-start';
 trigger: 'click'|'hover'|'manual' = 'click';
-closeOnSelect: boolean = true;
+closeOnSelect: boolean = true;       // attr: close-on-select
 distance: number = 4;
 ```
 
@@ -16,70 +16,22 @@ distance: number = 4;
 
 - `openMenu()` - Open the menu
 - `closeMenu()` - Close the menu
-- `toggleMenu()` - Toggle menu open/closed state
+- `toggleMenu()` - Toggle open/closed
 
-## Slots
+## Slots (menu)
 
-- `trigger` - Element that triggers the menu (required)
-- Default slot - Menu items and dividers
+- `trigger` - Trigger element (required)
+- `image-left` - Image before trigger
+- `image-right` - Image after trigger
+- `(default)` - Menu items and dividers
 
 ## Events
 
-- `menu-open` - Fired when menu opens (detail: { menu: SniceMenuElement })
-- `menu-close` - Fired when menu closes (detail: { menu: SniceMenuElement })
-
-## Usage
-
-```html
-<!-- Basic menu -->
-<snice-menu>
-  <button slot="trigger">Open Menu</button>
-  <snice-menu-item value="new">New File</snice-menu-item>
-  <snice-menu-item value="open">Open</snice-menu-item>
-  <snice-menu-divider></snice-menu-divider>
-  <snice-menu-item value="save">Save</snice-menu-item>
-</snice-menu>
-
-<!-- With icons and shortcuts -->
-<snice-menu>
-  <button slot="trigger">Edit</button>
-  <snice-menu-item value="cut">
-    <span slot="icon">✂️</span>
-    Cut
-    <span slot="shortcut">⌘X</span>
-  </snice-menu-item>
-  <snice-menu-item value="copy">
-    <span slot="icon">📋</span>
-    Copy
-    <span slot="shortcut">⌘C</span>
-  </snice-menu-item>
-  <snice-menu-item value="paste">
-    <span slot="icon">📄</span>
-    Paste
-    <span slot="shortcut">⌘V</span>
-  </snice-menu-item>
-</snice-menu>
-
-<!-- Different placements -->
-<snice-menu placement="top-start">...</snice-menu>
-<snice-menu placement="right-start">...</snice-menu>
-
-<!-- Hover trigger -->
-<snice-menu trigger="hover">...</snice-menu>
-
-<!-- Manual control -->
-<snice-menu trigger="manual" id="my-menu">...</snice-menu>
-<script>
-  document.getElementById('my-menu').openMenu();
-</script>
-
-<!-- Keep open on select -->
-<snice-menu close-on-select="false">...</snice-menu>
-```
+- `menu-open` → `{ menu }`
+- `menu-close` → `{ menu }`
+- `menu-item-select` → `{ item, value }`
 
 ## snice-menu-item
-
-### Properties
 
 ```typescript
 value: string = '';
@@ -87,28 +39,44 @@ disabled: boolean = false;
 selected: boolean = false;
 ```
 
-### Slots
-
-- `icon` - Icon before label
-- Default slot - Item label
-- `shortcut` - Keyboard shortcut text
-
-### Events
-
-- `menu-item-select` - Fired when item is clicked (detail: { item: SniceMenuItemElement, value: string })
+Slots: `icon`, `(default)`, `shortcut`
 
 ## snice-menu-divider
 
-Visual separator between menu items.
+Visual separator between items.
+
+## Usage
+
+```html
+<snice-menu>
+  <button slot="trigger">File</button>
+  <snice-menu-item value="new">New</snice-menu-item>
+  <snice-menu-item value="save">
+    <span slot="icon">💾</span>
+    Save
+    <span slot="shortcut">⌘S</span>
+  </snice-menu-item>
+  <snice-menu-divider></snice-menu-divider>
+  <snice-menu-item value="exit">Exit</snice-menu-item>
+</snice-menu>
+
+<!-- Hover trigger -->
+<snice-menu trigger="hover">...</snice-menu>
+
+<!-- Manual control -->
+<snice-menu trigger="manual" id="m">...</snice-menu>
+<script>document.getElementById('m').openMenu();</script>
+
+<!-- Keep open -->
+<snice-menu close-on-select="false">...</snice-menu>
+```
 
 ## Features
 
 - 8 placement options
-- Click, hover, or manual trigger modes
-- Auto-close on item selection (configurable)
+- Click, hover, or manual trigger
+- Auto-close on select (configurable)
 - Auto-close on outside click
-- Icon and shortcut support
-- Disabled state for items
-- Selected state for items
-- Keyboard accessible (aria roles)
-- Configurable distance from trigger
+- Icon and shortcut slots
+- Disabled/selected item states
+- ARIA roles (menu, menuitem)

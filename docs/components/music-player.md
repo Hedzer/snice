@@ -1,56 +1,145 @@
-# Music Player Component
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/music-player.md instead)
+
+# Music Player
+`<snice-music-player>`
 
 A full-featured audio player with playlist support, shuffle, repeat modes, and volume control.
 
 ## Basic Usage
 
+```typescript
+import 'snice/components/music-player/snice-music-player';
+```
+
 ```html
 <snice-music-player id="player"></snice-music-player>
 
-<script>
-  const player = document.getElementById('player');
-
-  // Set tracks
-  player.tracks = [
-    {
-      id: 'track-1',
-      title: 'Song Title',
-      artist: 'Artist Name',
-      album: 'Album Name',
-      artwork: 'https://example.com/artwork.jpg',
-      src: 'https://example.com/audio.mp3',
-      duration: 180
-    }
+<script type="module">
+  document.getElementById('player').tracks = [
+    { id: '1', title: 'Summer Breeze', artist: 'The Collective', src: '/audio/track1.mp3' }
   ];
-
-  // Listen for events
-  player.addEventListener('player-play', (e) => {
-    console.log('Playing:', e.detail.track.title);
-  });
 </script>
 ```
 
-## Properties
+## Importing
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `tracks` | `Track[]` | `[]` | Array of tracks |
-| `currentTrackIndex` | `number` | `0` | Current track index |
-| `currentTrack` | `string` | `''` | Current track ID (reflected attribute) |
-| `currentTime` | `number` | `0` | Current playback time (read-only, use seek() to set) |
-| `duration` | `number` | `0` | Track duration (seconds) |
-| `volume` | `number` | `1` | Volume (0-1) |
-| `muted` | `boolean` | `false` | Mute state |
-| `shuffle` | `boolean` | `false` | Shuffle mode |
-| `repeat` | `RepeatMode` | `'off'` | Repeat mode |
-| `state` | `PlayerState` | `'stopped'` | Playback state |
-| `autoplay` | `boolean` | `false` | Auto-play on load |
-| `showPlaylist` | `boolean` | `true` | Show playlist |
-| `showControls` | `boolean` | `true` | Show control buttons |
-| `showVolume` | `boolean` | `true` | Show volume control |
-| `showArtwork` | `boolean` | `true` | Show artwork |
-| `showTrackInfo` | `boolean` | `true` | Show track info |
-| `compact` | `boolean` | `false` | Compact mode |
+**ESM (bundler)**
+```typescript
+import 'snice/components/music-player/snice-music-player';
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-music-player.min.js"></script>
+```
+
+## Examples
+
+### Full Player with Playlist
+
+```html
+<snice-music-player id="player"></snice-music-player>
+
+<script type="module">
+  document.getElementById('player').tracks = [
+    {
+      id: '1',
+      title: 'Summer Breeze',
+      artist: 'The Acoustic Collective',
+      album: 'Peaceful Moments',
+      artwork: '/images/album1.jpg',
+      src: '/audio/track1.mp3',
+      duration: 360
+    },
+    {
+      id: '2',
+      title: 'Midnight Jazz',
+      artist: 'Smooth Notes Ensemble',
+      album: 'Late Night Sessions',
+      artwork: '/images/album2.jpg',
+      src: '/audio/track2.mp3',
+      duration: 420
+    }
+  ];
+</script>
+```
+
+### Compact Player
+
+Set the `compact` attribute and hide the playlist for a minimal layout.
+
+```html
+<snice-music-player compact show-playlist="false"></snice-music-player>
+```
+
+### Minimal Player
+
+Hide individual sections using the `show-*` attributes.
+
+```html
+<snice-music-player
+  show-playlist="false"
+  show-artwork="false"
+  show-track-info="false">
+</snice-music-player>
+```
+
+### Autoplay
+
+Set the `autoplay` attribute to start playback automatically (browser policies may block this).
+
+```html
+<snice-music-player autoplay></snice-music-player>
+```
+
+### Shuffle and Repeat
+
+```html
+<snice-music-player shuffle></snice-music-player>
+```
+
+```typescript
+const player = document.querySelector('snice-music-player');
+player.toggleShuffle();
+player.setRepeat('all');  // 'off' | 'all' | 'one'
+```
+
+### Programmatic Control
+
+```typescript
+const player = document.querySelector('snice-music-player');
+
+await player.play();
+player.pause();
+player.stop();
+player.next();
+player.previous();
+player.seek(30);           // Jump to 30 seconds
+player.setVolume(0.5);     // 50% volume
+await player.loadTrack(2); // Load third track
+
+const track = player.getCurrentTrack();
+console.log(track.title);
+```
+
+### Event Handling
+
+```typescript
+const player = document.querySelector('snice-music-player');
+
+player.addEventListener('player-play', (e) => {
+  console.log('Playing:', e.detail.track.title);
+});
+
+player.addEventListener('player-track-change', (e) => {
+  console.log('Track changed:', e.detail.track.title);
+});
+
+player.addEventListener('player-error', (e) => {
+  console.error('Error:', e.detail.error);
+});
+```
 
 ## Track Interface
 
@@ -66,249 +155,55 @@ interface Track {
 }
 ```
 
-## Repeat Modes
+## Properties
 
-- `'off'` - No repeat
-- `'all'` - Repeat all tracks
-- `'one'` - Repeat current track
-
-## Player States
-
-- `'playing'` - Currently playing
-- `'paused'` - Paused
-- `'stopped'` - Stopped
-- `'loading'` - Loading track
-- `'error'` - Error occurred
-
-## Methods
-
-### `play(): Promise<void>`
-Start or resume playback.
-
-### `pause(): void`
-Pause playback.
-
-### `stop(): void`
-Stop playback and reset position.
-
-### `next(): void`
-Skip to next track.
-
-### `previous(): void`
-Skip to previous track.
-
-### `seek(time: number): void`
-Seek to specific time (seconds).
-
-### `setVolume(volume: number): void`
-Set volume (0-1).
-
-### `toggleShuffle(): void`
-Toggle shuffle mode.
-
-### `setRepeat(mode: RepeatMode): void`
-Set repeat mode.
-
-### `loadTrack(index: number): Promise<void>`
-Load track by index.
-
-### `getCurrentTrack(): Track | null`
-Get current track.
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `tracks` | `Track[]` | `[]` | Array of track objects |
+| `currentTrackIndex` | `number` | `0` | Index of the current track |
+| `currentTrack` | `string` | `''` | Current track ID (reflected attribute) |
+| `currentTime` | `number` | `0` | Playback position in seconds (read-only) |
+| `duration` | `number` | `0` | Track duration in seconds |
+| `volume` | `number` | `1` | Volume level (0-1) |
+| `muted` | `boolean` | `false` | Whether audio is muted |
+| `shuffle` | `boolean` | `false` | Shuffle mode enabled |
+| `repeat` | `'off' \| 'all' \| 'one'` | `'off'` | Repeat mode |
+| `state` | `'playing' \| 'paused' \| 'stopped' \| 'loading' \| 'error'` | `'stopped'` | Playback state |
+| `autoplay` | `boolean` | `false` | Auto-play on load |
+| `showPlaylist` (attr: `show-playlist`) | `boolean` | `true` | Show playlist section |
+| `showControls` (attr: `show-controls`) | `boolean` | `true` | Show control buttons |
+| `showVolume` (attr: `show-volume`) | `boolean` | `true` | Show volume control |
+| `showArtwork` (attr: `show-artwork`) | `boolean` | `true` | Show track artwork |
+| `showTrackInfo` (attr: `show-track-info`) | `boolean` | `true` | Show track metadata |
+| `compact` | `boolean` | `false` | Compact layout mode |
 
 ## Events
 
-- `player-play` - Playback started
-- `player-pause` - Playback paused
-- `player-stop` - Playback stopped
-- `player-track-change` - Track changed
-- `player-track-ended` - Track ended
-- `player-shuffle-change` - Shuffle changed
-- `player-repeat-change` - Repeat mode changed
-- `player-volume-change` - Volume changed
-- `@snice/player-time-update` - Playback time updated
-- `player-error` - Error occurred
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `player-play` | `{ track: Track }` | Playback started |
+| `player-pause` | `{ track: Track }` | Playback paused |
+| `player-stop` | `{ track: Track }` | Playback stopped |
+| `player-track-change` | `{ track: Track }` | Track changed |
+| `player-track-ended` | `{ track: Track }` | Track finished playing |
+| `player-shuffle-change` | `{ shuffle: boolean }` | Shuffle mode toggled |
+| `player-repeat-change` | `{ repeat: string }` | Repeat mode changed |
+| `player-volume-change` | `{ volume: number }` | Volume level changed |
+| `@snice/player-time-update` | `{ currentTime: number, duration: number }` | Playback time updated |
+| `player-error` | `{ error: any }` | An error occurred |
 
-## Examples
+## Methods
 
-### Full Player with Playlist
-
-```html
-<snice-music-player id="player"></snice-music-player>
-
-<script>
-  const player = document.getElementById('player');
-
-  player.tracks = [
-    {
-      id: '1',
-      title: 'Summer Breeze',
-      artist: 'The Acoustic Collective',
-      album: 'Peaceful Moments',
-      artwork: 'https://example.com/art1.jpg',
-      src: 'https://example.com/track1.mp3',
-      duration: 360
-    },
-    {
-      id: '2',
-      title: 'Midnight Jazz',
-      artist: 'Smooth Notes Ensemble',
-      album: 'Late Night Sessions',
-      artwork: 'https://example.com/art2.jpg',
-      src: 'https://example.com/track2.mp3',
-      duration: 420
-    }
-  ];
-</script>
-```
-
-### Compact Player (No Playlist)
-
-```html
-<snice-music-player
-  show-playlist="false"
-  compact>
-</snice-music-player>
-```
-
-### Minimal Player
-
-```html
-<snice-music-player
-  show-playlist="false"
-  show-artwork="false"
-  show-track-info="false">
-</snice-music-player>
-```
-
-### Programmatic Control
-
-```javascript
-const player = document.querySelector('snice-music-player');
-
-// Play/Pause
-await player.play();
-player.pause();
-player.stop();
-
-// Navigation
-player.next();
-player.previous();
-
-// Seek
-player.seek(30); // Jump to 30 seconds
-
-// Volume
-player.setVolume(0.5); // 50% volume
-
-// Shuffle
-player.toggleShuffle();
-
-// Repeat
-player.setRepeat('all');
-player.setRepeat('one');
-player.setRepeat('off');
-
-// Load track
-await player.loadTrack(2); // Load third track
-
-// Get current track
-const track = player.getCurrentTrack();
-console.log(track.title, track.artist);
-
-// Get/set via currentTrack attribute
-console.log(player.currentTrack); // Returns track ID
-player.currentTrack = 'track-2'; // Loads track with this ID
-
-// Change time via seek (currentTime is read-only)
-player.seek(30); // Jump to 30 seconds
-```
-
-### Event Handling
-
-```javascript
-const player = document.querySelector('snice-music-player');
-
-player.addEventListener('player-play', (e) => {
-  console.log('Playing:', e.detail.track);
-});
-
-player.addEventListener('player-pause', (e) => {
-  console.log('Paused:', e.detail.track);
-});
-
-player.addEventListener('player-track-change', (e) => {
-  console.log('Track changed:', e.detail.track);
-});
-
-player.addEventListener('player-track-ended', (e) => {
-  console.log('Track ended:', e.detail.track);
-});
-
-player.addEventListener('@snice/player-time-update', (e) => {
-  console.log('Time:', e.detail.currentTime, '/', e.detail.duration);
-});
-
-player.addEventListener('player-error', (e) => {
-  console.error('Error:', e.detail.error);
-});
-```
-
-### Auto-play
-
-```html
-<snice-music-player autoplay></snice-music-player>
-```
-
-**Note:** Autoplay may be blocked by browser policies. User interaction is usually required.
-
-### Dynamic Track Loading
-
-```javascript
-const player = document.querySelector('snice-music-player');
-
-// Load tracks from API
-const response = await fetch('/api/tracks');
-const tracks = await response.json();
-
-player.tracks = tracks;
-await player.loadTrack(0);
-await player.play();
-```
-
-### Playlist Click Handler
-
-```javascript
-// Tracks in playlist are clickable by default
-// Listen for track changes
-player.addEventListener('player-track-change', (e) => {
-  console.log('User selected:', e.detail.track.title);
-});
-```
-
-## Features
-
-- Full-featured audio player with HTML5 Audio API
-- Playlist support with clickable tracks
-- Play, pause, stop, next, previous controls
-- Shuffle mode with randomization
-- Repeat modes: off, all, one
-- Volume control with vertical slider
-- Progress bar with seek support
-- Real-time progress updates
-- Track artwork and metadata display
-- Compact mode for smaller layouts
-- Fully customizable with show/hide options
-- Event-driven architecture
-- TypeScript support
-
-## Browser Support
-
-- Modern browsers with HTML5 Audio support
-- Requires JavaScript enabled
-
-## Accessibility
-
-- Keyboard navigation support
-- ARIA labels on controls
-- Semantic HTML structure
-- Focus indicators
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `play()` | -- | Start or resume playback (async) |
+| `pause()` | -- | Pause playback |
+| `stop()` | -- | Stop playback and reset position |
+| `next()` | -- | Skip to next track |
+| `previous()` | -- | Skip to previous track |
+| `seek()` | `time: number` | Seek to time in seconds |
+| `setVolume()` | `volume: number` | Set volume (0-1) |
+| `toggleShuffle()` | -- | Toggle shuffle mode |
+| `setRepeat()` | `mode: 'off' \| 'all' \| 'one'` | Set repeat mode |
+| `loadTrack()` | `index: number` | Load track by index (async) |
+| `getCurrentTrack()` | -- | Returns the current Track or null |

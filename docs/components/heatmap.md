@@ -1,3 +1,5 @@
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/heatmap.md instead)
+
 # Heatmap Component
 
 The heatmap component displays a GitHub-style contribution calendar heatmap. It visualizes data as a grid of colored cells organized by week and day, with intensity levels indicating the magnitude of each data point.

@@ -111,36 +111,12 @@ chart.datasets = [{
   backgroundColor: '#2196f3'
 }];
 
-// Radar chart
-chart.type = 'radar';
-chart.datasets = [
-  { label: 'Team A', data: [80, 90, 70, 85, 75], borderColor: '#2196f3' },
-  { label: 'Team B', data: [70, 85, 80, 75, 85], borderColor: '#4caf50' }
-];
-chart.labels = ['Speed', 'Strength', 'Agility', 'Defense', 'Skill'];
-
-// Mixed chart
-chart.type = 'mixed';
-chart.datasets = [
-  { label: 'Bar', type: 'bar', data: [10, 20, 30], backgroundColor: '#2196f3' },
-  { label: 'Line', type: 'line', data: [15, 25, 20], borderColor: '#4caf50' }
-];
-
 // Options
 chart.options = {
   legend: { position: 'bottom', clickable: true },
-  tooltip: {
-    trigger: 'hover',
-    format: (value, datasetIndex, pointIndex) => `Value: ${value}`
-  },
   animation: { enabled: true, duration: 1000 },
   yAxis: { min: 0, max: 100, ticks: 5, grid: true }
 };
-
-// Methods
-chart.addDataset({ label: 'New', data: [1, 2, 3] });
-chart.toggleDataset(0);
-const svg = chart.exportImage('svg');
 ```
 
 ```html

@@ -1,3 +1,5 @@
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/chart.md instead)
+
 # Chart Component
 
 General-purpose charting component supporting multiple chart types with animations and interactivity.

@@ -1,3 +1,5 @@
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/funnel.md instead)
+
 # Funnel Component
 
 The funnel component renders an SVG-based funnel/conversion chart, ideal for visualizing pipeline stages, conversion funnels, and drop-off analysis. Each stage is rendered as a trapezoid shape that narrows proportionally to its value.

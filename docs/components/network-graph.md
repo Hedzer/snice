@@ -1,108 +1,64 @@
-# Network Graph Component
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/network-graph.md instead)
 
-The network graph component renders an SVG-based force-directed graph visualization for displaying relationships between nodes. It supports multiple layout algorithms, interactive zoom/pan, draggable nodes, and hover highlighting.
+# Network Graph
+`<snice-network-graph>`
 
-## Table of Contents
-- [Basic Usage](#basic-usage)
-- [Properties](#properties)
-- [Data Format](#data-format)
-- [Events](#events)
-- [Examples](#examples)
-- [Accessibility](#accessibility)
-- [Best Practices](#best-practices)
+An SVG-based force-directed graph visualization for displaying relationships between nodes.
 
 ## Basic Usage
 
+```typescript
+import 'snice/components/network-graph/snice-network-graph';
+```
+
 ```html
-<snice-network-graph id="graph"></snice-network-graph>
+<snice-network-graph id="graph" style="height: 400px;"></snice-network-graph>
 
 <script type="module">
-  import 'snice/components/network-graph/snice-network-graph';
-
-  const graph = document.getElementById('graph');
-  graph.data = {
+  document.getElementById('graph').data = {
     nodes: [
       { id: 'alice', label: 'Alice', group: 'team-a' },
       { id: 'bob', label: 'Bob', group: 'team-b' },
-      { id: 'carol', label: 'Carol', group: 'team-a' },
     ],
     edges: [
       { source: 'alice', target: 'bob', label: 'collaborates' },
-      { source: 'bob', target: 'carol' },
-      { source: 'alice', target: 'carol' },
     ],
   };
 </script>
 ```
 
-## Properties
+## Importing
 
-| Property | Type | Default | Attribute | Description |
-|----------|------|---------|-----------|-------------|
-| `data` | `NetworkGraphData` | `{ nodes: [], edges: [] }` | — | Graph data (set via JS property) |
-| `layout` | `'force' \| 'circular' \| 'grid'` | `'force'` | `layout` | Layout algorithm |
-| `chargeStrength` | `number` | `-300` | `charge-strength` | Repulsion force between nodes (negative = repel) |
-| `linkDistance` | `number` | `80` | `link-distance` | Target distance between connected nodes |
-| `zoomEnabled` | `boolean` | `true` | `zoom-enabled` | Enable mouse wheel zoom and background pan |
-| `dragEnabled` | `boolean` | `true` | `drag-enabled` | Enable dragging nodes |
-| `showLabels` | `boolean` | `true` | `show-labels` | Show text labels on nodes and edges |
-| `animation` | `boolean` | `true` | `animation` | Animate force simulation |
+**ESM (bundler)**
+```typescript
+import 'snice/components/network-graph/snice-network-graph';
+```
 
-## Data Format
-
-### NetworkNode
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `id` | `string` | Yes | Unique identifier |
-| `label` | `string` | No | Display label (falls back to `id`) |
-| `group` | `string` | No | Group for automatic color coding |
-| `size` | `number` | No | Custom circle radius (overrides degree-based sizing) |
-| `color` | `string` | No | Custom fill color (overrides group color) |
-| `x` | `number` | No | Fixed X position (pins node) |
-| `y` | `number` | No | Fixed Y position (pins node) |
-
-### NetworkEdge
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `source` | `string` | Yes | Source node `id` |
-| `target` | `string` | Yes | Target node `id` |
-| `label` | `string` | No | Label displayed at edge midpoint |
-| `weight` | `number` | No | Stroke width (default 1) |
-| `color` | `string` | No | Custom stroke color |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `@snice/node-click` | `{ node: NetworkNode }` | Node clicked |
-| `@snice/edge-click` | `{ edge: NetworkEdge }` | Edge clicked |
-| `@snice/node-drag` | `{ node: NetworkNode, x: number, y: number }` | Node dragged to new position |
-| `@snice/graph-zoom` | `{ scale: number, x: number, y: number }` | Zoom level changed |
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-network-graph.min.js"></script>
+```
 
 ## Examples
 
 ### Layout Types
 
+Use the `layout` attribute to switch between layout algorithms.
+
 ```html
-<!-- Force-directed (default) -->
-<snice-network-graph id="force" layout="force"></snice-network-graph>
-
-<!-- Circular arrangement -->
-<snice-network-graph id="circular" layout="circular"></snice-network-graph>
-
-<!-- Grid arrangement -->
-<snice-network-graph id="grid" layout="grid"></snice-network-graph>
+<snice-network-graph layout="force" style="height: 400px;"></snice-network-graph>
+<snice-network-graph layout="circular" style="height: 400px;"></snice-network-graph>
+<snice-network-graph layout="grid" style="height: 400px;"></snice-network-graph>
 ```
 
 ### Custom Node Sizes and Colors
 
 ```html
-<snice-network-graph id="custom-graph"></snice-network-graph>
+<snice-network-graph id="custom" style="height: 400px;"></snice-network-graph>
 
 <script type="module">
-  document.getElementById('custom-graph').data = {
+  document.getElementById('custom').data = {
     nodes: [
       { id: 'server', label: 'Server', size: 20, color: 'rgb(220 38 38)' },
       { id: 'db', label: 'Database', size: 16, color: 'rgb(37 99 235)' },
@@ -110,7 +66,7 @@ The network graph component renders an SVG-based force-directed graph visualizat
     ],
     edges: [
       { source: 'client', target: 'server', weight: 2 },
-      { source: 'server', target: 'db', label: 'queries', weight: 4, color: 'rgb(37 99 235)' },
+      { source: 'server', target: 'db', label: 'queries', weight: 4 },
     ],
   };
 </script>
@@ -118,9 +74,9 @@ The network graph component renders an SVG-based force-directed graph visualizat
 
 ### Group-Based Coloring
 
-Nodes with the same `group` value are automatically assigned the same color from a 10-color palette.
+Nodes with the same `group` value are automatically assigned the same color.
 
-```javascript
+```typescript
 graph.data = {
   nodes: [
     { id: 'a', group: 'frontend' },
@@ -136,19 +92,18 @@ graph.data = {
 
 ### Tuning the Force Simulation
 
-```html
-<!-- Stronger repulsion, longer links -->
-<snice-network-graph charge-strength="-500" link-distance="120"></snice-network-graph>
+Use `charge-strength` and `link-distance` to adjust node spacing.
 
-<!-- Weaker repulsion, tighter clustering -->
+```html
+<snice-network-graph charge-strength="-500" link-distance="120"></snice-network-graph>
 <snice-network-graph charge-strength="-100" link-distance="50"></snice-network-graph>
 ```
 
 ### Pinned Nodes
 
-Provide `x` and `y` on nodes to pin them at fixed positions. Double-click a dragged node to unpin it.
+Provide `x` and `y` on nodes to pin them at fixed positions.
 
-```javascript
+```typescript
 graph.data = {
   nodes: [
     { id: 'fixed', label: 'Pinned', x: 300, y: 200 },
@@ -158,9 +113,9 @@ graph.data = {
 };
 ```
 
-### Listening to Events
+### Event Handling
 
-```javascript
+```typescript
 graph.addEventListener('@snice/node-click', (e) => {
   console.log('Clicked:', e.detail.node.label);
 });
@@ -174,42 +129,59 @@ graph.addEventListener('@snice/graph-zoom', (e) => {
 });
 ```
 
-### Disabling Interaction
+### Static Display
+
+Disable drag and zoom for a non-interactive view.
 
 ```html
-<!-- Static display, no drag or zoom -->
 <snice-network-graph zoom-enabled="false" drag-enabled="false"></snice-network-graph>
 ```
 
-## Interaction
+## Data Types
 
-- **Drag nodes**: Click and drag any node to reposition it. The node becomes pinned.
-- **Unpin nodes**: Double-click a pinned node to release it back to the simulation.
-- **Pan**: Click and drag on the background to pan the view.
-- **Zoom**: Use the mouse wheel to zoom in/out, centered on the cursor.
-- **Hover**: Hovering a node highlights its connected subgraph and dims unconnected nodes.
-- **Tooltips**: Hovering shows a tooltip with the node label and connection count.
+```typescript
+interface NetworkGraphData {
+  nodes: NetworkNode[];
+  edges: NetworkEdge[];
+}
 
-## Accessibility
+interface NetworkNode {
+  id: string;
+  label?: string;
+  group?: string;   // Auto color-coded
+  size?: number;     // Custom radius
+  color?: string;    // Custom fill color
+  x?: number;        // Fixed X position
+  y?: number;        // Fixed Y position
+}
 
-- Container has `role="img"` with `aria-label="Network graph visualization"`
-- Keyboard navigation is not currently supported (future enhancement)
-- Color is not the sole indicator of grouping when labels are shown
+interface NetworkEdge {
+  source: string;
+  target: string;
+  label?: string;
+  weight?: number;   // Stroke width
+  color?: string;
+}
+```
 
-## Browser Support
+## Properties
 
-- Modern browsers (Chrome, Firefox, Safari, Edge)
-- Requires Custom Elements v1 and Shadow DOM support
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `data` | `NetworkGraphData` | `{ nodes: [], edges: [] }` | Graph data (set via JS) |
+| `layout` | `'force' \| 'circular' \| 'grid'` | `'force'` | Layout algorithm |
+| `chargeStrength` (attr: `charge-strength`) | `number` | `-300` | Node repulsion force |
+| `linkDistance` (attr: `link-distance`) | `number` | `80` | Target distance between connected nodes |
+| `zoomEnabled` (attr: `zoom-enabled`) | `boolean` | `true` | Enable zoom and pan |
+| `dragEnabled` (attr: `drag-enabled`) | `boolean` | `true` | Enable dragging nodes |
+| `showLabels` (attr: `show-labels`) | `boolean` | `true` | Show node and edge labels |
+| `animation` | `boolean` | `true` | Animate force simulation |
 
-## Best Practices
+## Events
 
-1. **Set a height**: The component needs a height set via CSS (e.g., `height: 500px`) since it uses `contain: layout style paint`
-2. **Use groups for automatic coloring**: The 10-color palette handles most use cases
-3. **Label important nodes**: Labels provide context beyond color
-4. **Tune simulation parameters**: Adjust `charge-strength` and `link-distance` for your data density
-5. **Use weight for edge importance**: Heavier edges appear thicker
-6. **Pin key nodes**: Use `x`/`y` to anchor important nodes
-7. **Disable animation for static layouts**: Set `animation="false"` for circular/grid layouts
-8. **Keep graph sizes reasonable**: Performance is best with under 200 nodes
-9. **Listen to events**: Use node-click and edge-click for interactive dashboards
-10. **Test in both themes**: Colors and borders adapt to light/dark mode
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `@snice/node-click` | `{ node: NetworkNode }` | Node clicked |
+| `@snice/edge-click` | `{ edge: NetworkEdge }` | Edge clicked |
+| `@snice/node-drag` | `{ node: NetworkNode, x: number, y: number }` | Node dragged |
+| `@snice/graph-zoom` | `{ scale: number, x: number, y: number }` | Zoom changed |

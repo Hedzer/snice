@@ -1,71 +1,48 @@
 # snice-virtual-scroller
 
-Efficiently render large lists by only displaying visible items.
+Efficiently renders large lists by only displaying visible items.
 
 ## Properties
 
 ```typescript
 items: VirtualScrollerItem[] = [];
-itemHeight: number = 50; // px
-bufferSize: number = 5; // extra items outside viewport
-estimatedItemHeight: number = 50;
+itemHeight: number = 50;              // attr: item-height, px
+bufferSize: number = 5;               // attr: buffer-size
+estimatedItemHeight: number = 50;     // attr: estimated-item-height
 renderItem: (item: VirtualScrollerItem, index: number) => string | HTMLElement;
-```
 
-## VirtualScrollerItem
-
-```typescript
 interface VirtualScrollerItem {
   id: string | number;
   data: any;
-  height?: number; // optional custom height
+  height?: number;
 }
 ```
 
 ## Methods
 
-```typescript
-scrollToIndex(index: number): void
-scrollToItem(id: string | number): void
-refresh(): void
-getVisibleRange(): { start: number; end: number }
-```
+- `scrollToIndex(index)` - Scroll to item at index
+- `scrollToItem(id)` - Scroll to item by ID
+- `refresh()` - Recalculate visible range and re-render
+- `getVisibleRange()` - Returns `{ start, end }`
 
 ## Usage
 
-```javascript
-scroller.items = Array.from({ length: 10000 }, (_, i) => ({
-  id: i,
-  data: `Item ${i}`
-}));
-
-scroller.renderItem = (item, index) => {
-  return `<div>${item.data}</div>`;
-};
-
-// Scroll to item
-scroller.scrollToIndex(500);
-
-// Get visible range
-const range = scroller.getVisibleRange();
-```
-
 ```html
-<snice-virtual-scroller
-  style="height: 400px;"
-  item-height="60"
-  buffer-size="10">
-</snice-virtual-scroller>
+<snice-virtual-scroller id="list" style="height: 400px;" item-height="60"></snice-virtual-scroller>
+
+<script>
+  const scroller = document.getElementById('list');
+
+  scroller.items = Array.from({ length: 10000 }, (_, i) => ({
+    id: i,
+    data: { name: `Item ${i + 1}` }
+  }));
+
+  scroller.renderItem = (item) => {
+    return `<div style="padding: 15px;">${item.data.name}</div>`;
+  };
+
+  scroller.scrollToIndex(500);
+  const range = scroller.getVisibleRange();
+</script>
 ```
-
-## Features
-
-- Only renders visible items + buffer
-- Handles thousands of items efficiently
-- Variable item heights supported
-- Programmatic scrolling
-- Dynamic updates (add/remove/update)
-- Smooth 60fps scrolling
-- Low memory footprint
-- Search and filter support
-- Infinite scroll patterns

@@ -17,6 +17,13 @@ pulse: boolean = false;
 offset: number = 0;
 ```
 
+## Methods
+
+- `setBadgeContent(content)` - Set text content
+- `setBadgeCount(count)` - Set numeric count
+- `showDot()` - Switch to dot mode
+- `hide()` - Clear all content
+
 ## Usage
 
 ```html

@@ -12,6 +12,7 @@ showControls: boolean = true;
 showVisualizer: boolean = true;
 maxDuration: number = 0;
 showTimer: boolean = true;
+showPlayback: boolean = true;
 ```
 
 ## Methods
@@ -26,6 +27,7 @@ getState(): 'inactive'|'recording'|'paused'
 getDuration(): number
 isRecording(): boolean
 download(filename?: string): void
+reset(): void
 ```
 
 ## AudioRecording

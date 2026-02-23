@@ -1,3 +1,5 @@
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/card.md instead)
+
 # Card Component
 
 The card component provides a container for grouped content with support for headers, footers, different visual styles, interactive states, and responsive sizing.

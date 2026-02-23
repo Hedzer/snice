@@ -5,46 +5,44 @@ Pagination navigation component.
 ## Properties
 
 ```typescript
-current: number = 1;         // Active page
-total: number = 1;           // Total pages
-siblings: number = 1;        // Pages shown each side of current
-showFirst: boolean = true;   // Show first button
-showLast: boolean = true;    // Show last button
-showPrev: boolean = true;    // Show previous button
-showNext: boolean = true;    // Show next button
+current: number = 1;
+total: number = 1;
+siblings: number = 1;               // Pages shown each side of current
+showFirst: boolean = true;          // attr: show-first
+showLast: boolean = true;           // attr: show-last
+showPrev: boolean = true;           // attr: show-prev
+showNext: boolean = true;           // attr: show-next
 size: 'small'|'medium'|'large' = 'medium';
 variant: 'default'|'rounded'|'text' = 'default';
 ```
 
 ## Methods
 
-```typescript
-goToPage(page: number)   // Navigate to page
-nextPage()               // Next page
-previousPage()           // Previous page
-firstPage()              // First page
-lastPage()               // Last page
-```
+- `goToPage(page: number)` - Navigate to page
+- `nextPage()` - Next page
+- `previousPage()` - Previous page
+- `firstPage()` - First page
+- `lastPage()` - Last page
 
 ## Events
 
-```typescript
-'pagination-change' // { page, previousPage }
-```
+- `pagination-change` → `{ page, previousPage }`
 
 ## Usage
 
 ```html
 <snice-pagination current="1" total="10"></snice-pagination>
+<snice-pagination total="20" siblings="3" variant="rounded" size="large"></snice-pagination>
 ```
 
 ```typescript
 pagination.addEventListener('pagination-change', (e) => {
   console.log(e.detail.page);
 });
+pagination.goToPage(5);
 ```
 
-## CSS Variables
+## CSS Custom Properties
 
 ```css
 --pagination-gap: 4px;

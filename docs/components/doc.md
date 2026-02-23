@@ -1,3 +1,5 @@
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/doc.md instead)
+
 # snice-doc
 
 A simple WYSIWYG document editor component with formatting toolbar and content insertion capabilities.

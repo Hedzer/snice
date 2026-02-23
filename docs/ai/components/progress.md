@@ -10,78 +10,62 @@ max: number = 100;
 variant: 'linear'|'circular' = 'linear';
 indeterminate: boolean = false;
 size: 'small'|'medium'|'large'|'xl'|'xxl'|'xxxl' = 'medium';
-color: 'primary'|'success'|'warning'|'error'|'info'|string = 'primary';  // semantic or any CSS color
-showLabel: boolean = false;
+color: 'primary'|'success'|'warning'|'error'|'info'|string = 'primary';
+showLabel: boolean = false;       // attr: show-label
 label: string = '';
 striped: boolean = false;
 animated: boolean = false;
-thickness: number = 4;  // Stroke width for circular variant
+thickness: number = 4;            // Stroke width for circular variant
 ```
 
 ## Methods
 
 - `setProgress(value, max?)` - Set progress value
-- `getPercentage()` - Get calculated percentage
+- `getPercentage()` - Get calculated percentage (0-100)
 
 ## Events
 
-- `progress-change` - {value, max, percentage, indeterminate}
+- `progress-change` → `{ value, max, percentage, indeterminate }`
 
 ## Usage
 
 ```html
-<!-- Basic linear -->
+<!-- Linear -->
 <snice-progress value="50"></snice-progress>
 
 <!-- Circular -->
-<snice-progress variant="circular" value="75"></snice-progress>
+<snice-progress variant="circular" value="75" size="xl"></snice-progress>
 
-<!-- Indeterminate (loading) -->
+<!-- Indeterminate -->
 <snice-progress indeterminate></snice-progress>
-<snice-progress variant="circular" indeterminate></snice-progress>
 
 <!-- With label -->
 <snice-progress value="60" show-label></snice-progress>
 <snice-progress value="60" label="Uploading..."></snice-progress>
 
-<!-- Custom max -->
-<snice-progress value="3" max="10"></snice-progress>
-
 <!-- Striped and animated -->
-<snice-progress value="70" striped></snice-progress>
 <snice-progress value="70" striped animated></snice-progress>
 
-<!-- Color variants -->
-<snice-progress value="80" color="primary"></snice-progress>
+<!-- Colors -->
 <snice-progress value="80" color="success"></snice-progress>
-
-<!-- Custom colors -->
 <snice-progress value="80" color="#3b82f6"></snice-progress>
-<snice-progress value="80" color="rgb(59, 130, 246)"></snice-progress>
 
-<!-- Sizes -->
-<snice-progress value="50" size="small"></snice-progress>
-<snice-progress value="50" size="medium"></snice-progress>
-<snice-progress value="50" size="large"></snice-progress>
+<!-- Custom max -->
+<snice-progress value="3" max="10"></snice-progress>
+```
 
-<!-- Dynamic updates -->
-<snice-progress id="prog" value="0"></snice-progress>
-<script>
-const prog = document.querySelector('#prog');
-let val = 0;
-setInterval(() => {
-  val = (val + 10) % 100;
-  prog.value = val;
-}, 500);
-</script>
+```typescript
+const prog = document.querySelector('snice-progress');
+prog.setProgress(75);
+prog.setProgress(3, 10);
+console.log(prog.getPercentage());
 ```
 
 ## Features
 
-- Linear or circular variant
+- Linear and circular variants
 - Indeterminate mode for unknown progress
-- Optional percentage label or custom text
+- Optional percentage or custom label
 - Striped and animated styles
-- 5 color variants
-- 6 sizes
-- Reactive value updates
+- 5 semantic + custom CSS colors
+- 6 sizes (small through xxxl)

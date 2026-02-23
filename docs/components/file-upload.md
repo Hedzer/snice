@@ -1,3 +1,5 @@
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/file-upload.md instead)
+
 # File Upload Component
 
 The `<snice-file-upload>` component provides a file upload interface with drag-and-drop support, file previews, and validation.

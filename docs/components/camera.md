@@ -1,3 +1,5 @@
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/camera.md instead)
+
 # Camera Component
 
 Live camera feed with built-in mobile-style controls and flexible positioning.

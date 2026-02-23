@@ -1,3 +1,5 @@
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/camera-annotate.md instead)
+
 # Camera Annotate Component
 
 The camera annotate component combines camera capture with freehand drawing and labeled annotations. It provides a workflow for taking pictures, drawing shapes on them, and adding descriptive labels to each annotation.

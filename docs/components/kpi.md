@@ -1,3 +1,5 @@
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/kpi.md instead)
+
 # KPI Component
 
 A key performance indicator display component for showing metrics with optional trend visualization and sentiment indicators. Perfect for dashboards and analytics interfaces.

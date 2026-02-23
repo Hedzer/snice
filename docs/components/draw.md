@@ -1,3 +1,5 @@
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/draw.md instead)
+
 # Draw Component
 
 Canvas drawing with smooth lazy-brush technology.

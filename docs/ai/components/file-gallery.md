@@ -8,16 +8,16 @@ File upload gallery with drag-and-drop, preview, pausable/resumable uploads.
 accept: string = '';
 multiple: boolean = true;
 disabled: boolean = false;
-maxSize: number = -1; // bytes, -1 = no limit
-maxFiles: number = -1; // -1 = no limit
+maxSize: number = -1;          // attribute: max-size, bytes, -1 = no limit
+maxFiles: number = -1;         // attribute: max-files, -1 = no limit
 view: 'grid'|'list' = 'grid';
-showProgress: boolean = true;
-allowPause: boolean = true;
-allowDelete: boolean = true;
-autoUpload: boolean = true;
-showDropzone: boolean = true; // show drop zone for drag & drop
-showAddButton: boolean = false; // show add button tile in gallery
-showHeader: boolean = true; // show gallery header
+showProgress: boolean = true;  // attribute: show-progress
+allowPause: boolean = true;    // attribute: allow-pause
+allowDelete: boolean = true;   // attribute: allow-delete
+autoUpload: boolean = true;    // attribute: auto-upload
+showDropzone: boolean = true;  // attribute: show-dropzone
+showAddButton: boolean = false; // attribute: show-add-button
+showHeader: boolean = true;    // attribute: show-header
 files: GalleryFile[]; // read-only
 ```
 
@@ -108,31 +108,7 @@ interface UploadResponse {
 
 ## Upload Handler
 
-Uses `@request/@respond` pattern. Handler required:
-
-```typescript
-import { respond } from 'snice';
-
-class UploadController {
-  @respond('file-gallery-upload')
-  async handleUpload(request: UploadRequest): Promise<UploadResponse> {
-    const { file, fileId, onProgress, signal } = request;
-
-    // Implement upload logic
-    // Use onProgress(0-1) for progress tracking
-    // Check signal.aborted for cancellation
-
-    return {
-      success: true,
-      fileId,
-      url: 'https://example.com/file.jpg'
-    };
-  }
-}
-
-const controller = new UploadController();
-controller.attach?.(document.body);
-```
+Uses `@request/@respond` pattern (`file-gallery-upload`). Handler receives `UploadRequest`, returns `UploadResponse`.
 
 ## Usage
 
@@ -152,59 +128,12 @@ controller.attach?.(document.body);
 <!-- List view -->
 <snice-file-gallery view="list"></snice-file-gallery>
 
-<!-- Custom options -->
-<snice-file-gallery
-  accept=".pdf,.doc,.docx"
-  allow-pause="false"
-></snice-file-gallery>
+<!-- Add button mode -->
+<snice-file-gallery show-dropzone="false" show-add-button="true" max-files="6"></snice-file-gallery>
 
-<!-- Add button mode (hide drop zone, show add tile) -->
-<snice-file-gallery
-  show-dropzone="false"
-  show-add-button="true"
-  max-files="6"
-></snice-file-gallery>
-
-<!-- Custom actions -->
-<snice-file-gallery id="gallery"></snice-file-gallery>
+<!-- Events -->
 <script>
-const gallery = document.querySelector('#gallery');
-
-// Add custom action
-const icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor">...</svg>';
-const actionId = gallery.addCustomAction(icon, 'Camera');
-
-// Handle custom action
-gallery.addEventListener('custom-action-click', (e) => {
-  if (e.detail.actionId === actionId) {
-    // Handle camera action
-    const file = capturePhoto(); // your implementation
-    gallery.addFileWithPreview(file, previewUrl);
-  }
-});
-
-// Other events
-gallery.addEventListener('files-change', (e) => {
-  console.log('Files:', e.detail.files);
-});
-gallery.addEventListener('upload-complete', (e) => {
-  console.log('Complete:', e.detail.url);
-});
-
-// Add custom badge (e.g., user avatar)
-const avatarHTML = `<div style="width:40px;height:40px;border-radius:50%;background:#3b82f6;color:white;display:flex;align-items:center;justify-content:center;font-weight:bold;border:2px solid white;box-shadow:0 2px 4px rgba(0,0,0,0.2)">JD</div>`;
-gallery.setFileBadge(fileId, avatarHTML, 'top-right');
+gallery.addEventListener('files-change', (e) => console.log(e.detail.files));
+gallery.addEventListener('upload-complete', (e) => console.log(e.detail.url));
 </script>
 ```
-
-## Features
-
-- Drag-and-drop with visual feedback
-- Image preview thumbnails
-- Pausable/resumable uploads via AbortController
-- Real-time progress tracking
-- Grid/list view toggle
-- File validation (size, type)
-- Auto or manual upload modes
-- @request/@respond upload pattern
-- Accessible

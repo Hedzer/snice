@@ -1,88 +1,38 @@
-# Paint Component
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/paint.md instead)
 
-Self-contained drawing canvas with a built-in toolbar. Includes color swatches, brush size slider, eraser toggle, undo/redo, and clear — all rendered inside the component's shadow DOM.
+# Paint
+`<snice-paint>`
+
+A self-contained drawing canvas with a built-in toolbar for color selection, brush sizing, eraser, undo/redo, and export.
 
 ## Basic Usage
+
+```typescript
+import 'snice/components/paint/snice-paint';
+```
 
 ```html
 <snice-paint></snice-paint>
 ```
 
-The component renders a vertical toolbar on the left and a drawing canvas filling the remaining space.
+## Importing
 
-## Properties
-
-| Property | Type | Default | Attribute | Description |
-|----------|------|---------|-----------|-------------|
-| `colors` | `string[]` | 8 default colors | `colors` | Color palette (JSON array) |
-| `color` | `string` | `'#3b82f6'` | `color` | Current brush color |
-| `strokeWidth` | `number` | `3` | `stroke-width` | Brush width |
-| `minStrokeWidth` | `number` | `1` | `min-stroke-width` | Min slider value |
-| `maxStrokeWidth` | `number` | `20` | `max-stroke-width` | Max slider value |
-| `controls` | `string` | `'colors,size,eraser,undo,redo,clear'` | `controls` | Visible toolbar controls |
-| `backgroundColor` | `string` | `'#ffffff'` | `background-color` | Canvas background |
-| `disabled` | `boolean` | `false` | `disabled` | Disable all interaction |
-
-## Controls
-
-The `controls` attribute accepts a comma-separated list of toolbar sections to show:
-
-- `colors` — Color swatch grid
-- `size` — Brush size slider
-- `eraser` — Eraser toggle button
-- `undo` — Undo button
-- `redo` — Redo button
-- `clear` — Clear canvas button
-
-### Minimal Toolbar
-
-```html
-<snice-paint controls="colors,undo"></snice-paint>
+**ESM (bundler)**
+```typescript
+import 'snice/components/paint/snice-paint';
 ```
 
-### No Toolbar
-
+**CDN**
 ```html
-<snice-paint controls=""></snice-paint>
+<script src="snice-runtime.min.js"></script>
+<script src="snice-paint.min.js"></script>
 ```
-
-## Methods
-
-### `undo(): void`
-Undo the last stroke.
-
-### `redo(): void`
-Redo the last undone stroke.
-
-### `clear(): void`
-Clear the entire canvas.
-
-### `toDataURL(type?, quality?): string`
-Export as a data URL.
-
-### `toBlob(type?, quality?): Promise<Blob>`
-Export as a Blob.
-
-### `download(filename?): void`
-Download the painting as a PNG file.
-
-### `getStrokes(): PaintStroke[]`
-Get all strokes for serialization.
-
-### `setStrokes(strokes): void`
-Restore strokes from a previous session.
-
-## Events
-
-- `paint-start` — Drawing started (`detail: { point }`)
-- `paint-end` — Stroke completed (`detail: { stroke }`)
-- `paint-clear` — Canvas cleared
-- `paint-undo` — Undo performed
-- `paint-redo` — Redo performed
 
 ## Examples
 
 ### Custom Colors
+
+Use the `colors` attribute with a JSON array to set the palette.
 
 ```html
 <snice-paint colors='["#ff0000","#00ff00","#0000ff","#ffff00"]'></snice-paint>
@@ -90,40 +40,89 @@ Restore strokes from a previous session.
 
 ### Custom Size Range
 
+Use `min-stroke-width` and `max-stroke-width` to control the brush slider range.
+
 ```html
 <snice-paint min-stroke-width="2" max-stroke-width="50" stroke-width="10"></snice-paint>
 ```
 
+### Minimal Toolbar
+
+Use the `controls` attribute with a comma-separated list to show only specific controls.
+
+```html
+<snice-paint controls="colors,undo"></snice-paint>
+```
+
+### No Toolbar
+
+Pass an empty string to hide the toolbar entirely.
+
+```html
+<snice-paint controls=""></snice-paint>
+```
+
+### Disabled
+
+Set the `disabled` attribute to prevent all interaction.
+
+```html
+<snice-paint disabled></snice-paint>
+```
+
+### Custom Background
+
+Use the `background-color` attribute to change the canvas background.
+
+```html
+<snice-paint background-color="#f0f0f0"></snice-paint>
+```
+
 ### Programmatic Control
 
-```javascript
+```typescript
 const paint = document.querySelector('snice-paint');
 
-// Change color
+// Change settings
 paint.color = '#ff6600';
-
-// Change brush size
 paint.strokeWidth = 8;
+
+// Undo / redo / clear
+paint.undo();
+paint.redo();
+paint.clear();
 
 // Export
 paint.download('my-painting.png');
 const dataURL = paint.toDataURL('image/png');
 const blob = await paint.toBlob('image/jpeg', 0.9);
+```
 
-// Save / load
+### Save and Restore Strokes
+
+```typescript
+const paint = document.querySelector('snice-paint');
+
+// Save strokes
 const strokes = paint.getStrokes();
 localStorage.setItem('painting', JSON.stringify(strokes));
 
+// Restore strokes
 const saved = JSON.parse(localStorage.getItem('painting'));
 paint.setStrokes(saved);
 ```
 
 ### Event Handling
 
-```javascript
+```typescript
+const paint = document.querySelector('snice-paint');
+
 paint.addEventListener('paint-end', (e) => {
-  const stroke = e.detail.stroke;
-  console.log(`Stroke with ${stroke.points.length} points`);
+  console.log(`Stroke with ${e.detail.stroke.points.length} points`);
+});
+
+paint.addEventListener('paint-clear', () => {
+  console.log('Canvas cleared');
 });
 ```
 
@@ -131,11 +130,47 @@ paint.addEventListener('paint-end', (e) => {
 
 ```typescript
 interface PaintStroke {
-  id: string;           // Unique identifier
+  id: string;
   tool: 'pen' | 'eraser';
-  color: string;        // Hex color
-  width: number;        // Stroke width
-  points: Point[];      // Array of {x, y}
-  timestamp: number;    // Creation time (ms)
+  color: string;
+  width: number;
+  points: Point[];     // Array of { x, y }
+  timestamp: number;
 }
 ```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `colors` | `string[]` | 8 default colors | Color palette (set via JSON attribute) |
+| `color` | `string` | `'#3b82f6'` | Current brush color |
+| `strokeWidth` (attr: `stroke-width`) | `number` | `3` | Brush stroke width |
+| `minStrokeWidth` (attr: `min-stroke-width`) | `number` | `1` | Minimum slider value |
+| `maxStrokeWidth` (attr: `max-stroke-width`) | `number` | `20` | Maximum slider value |
+| `controls` | `string` | `'colors,size,eraser,undo,redo,clear'` | Visible toolbar sections |
+| `backgroundColor` (attr: `background-color`) | `string` | `'#ffffff'` | Canvas background color |
+| `disabled` | `boolean` | `false` | Disable all interaction |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `paint-start` | `{ point: Point }` | Drawing started |
+| `paint-end` | `{ stroke: PaintStroke }` | Stroke completed |
+| `paint-clear` | -- | Canvas cleared |
+| `paint-undo` | -- | Undo performed |
+| `paint-redo` | -- | Redo performed |
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `undo()` | -- | Undo the last stroke |
+| `redo()` | -- | Redo the last undone stroke |
+| `clear()` | -- | Clear the entire canvas |
+| `toDataURL()` | `type?: string, quality?: number` | Export as data URL |
+| `toBlob()` | `type?: string, quality?: number` | Export as Blob (async) |
+| `download()` | `filename?: string` | Download as PNG file |
+| `getStrokes()` | -- | Get all strokes for serialization |
+| `setStrokes()` | `strokes: PaintStroke[]` | Restore strokes from saved data |

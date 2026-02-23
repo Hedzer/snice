@@ -9,14 +9,14 @@ width: number = 800;
 height: number = 600;
 tool: 'pen'|'eraser'|'line'|'rectangle'|'circle'|'text' = 'pen';
 color: string = '#000000';
-strokeWidth: number = 2;
-backgroundColor: string = '#ffffff';
+strokeWidth: number = 2;           // attribute: stroke-width
+backgroundColor: string = '#ffffff'; // attribute: background-color
 lazy: boolean = false;
-lazyRadius: number = 60;
+lazyRadius: number = 60;           // attribute: lazy-radius
 friction: number = 0.1;
 smoothing: number = 0.5;
-autoPolygon: boolean = false;
-polygonCurvePoints: number = 10;
+autoPolygon: boolean = false;      // attribute: auto-polygon
+polygonCurvePoints: number = 10;   // attribute: polygon-curve-points
 disabled: boolean = false;
 ```
 

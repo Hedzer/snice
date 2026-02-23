@@ -11,7 +11,7 @@ max: number = 100;
 label: string = '';
 variant: 'default'|'primary'|'success'|'warning'|'error'|'info' = 'default';
 size: 'small'|'medium'|'large' = 'medium';
-showValue: boolean = true;
+showValue: boolean = true;     // attribute: show-value
 thickness: number = 8;
 ```
 

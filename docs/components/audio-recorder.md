@@ -1,3 +1,5 @@
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/audio-recorder.md instead)
+
 # Audio Recorder Component
 
 Record audio with visualization, pause/resume, and playback.
@@ -28,6 +30,7 @@ Record audio with visualization, pause/resume, and playback.
 | `showVisualizer` | `boolean` | `true` | Show frequency visualizer |
 | `maxDuration` | `number` | `0` | Max duration (seconds, 0=unlimited) |
 | `showTimer` | `boolean` | `true` | Show recording timer |
+| `showPlayback` | `boolean` | `true` | Show playback controls after recording |
 
 ## Audio Formats
 
@@ -64,6 +67,9 @@ Check if currently recording.
 
 ### `download(filename?): void`
 Download recorded audio.
+
+### `reset(): void`
+Reset recorder state and discard playback.
 
 ## Events
 

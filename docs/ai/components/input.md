@@ -15,17 +15,18 @@ required: boolean = false;
 invalid: boolean = false;
 readonly: boolean = false;
 clearable: boolean = false;
+loading: boolean = false;
+password: boolean = false;
 label: string = '';
-helperText: string = '';
-errorText: string = '';
-prefix: string = '';
-suffix: string = '';
-prefixIcon: string = '';
-suffixIcon: string = '';
+helperText: string = '';       // attribute: helper-text
+errorText: string = '';        // attribute: error-text
+prefixIcon: string = '';       // attribute: prefix-icon
+suffixIcon: string = '';       // attribute: suffix-icon
 min: string = '';
 max: string = '';
-minlength: number = 0;
-maxlength: number = 0;
+step: string = '';
+minlength: number = -1;
+maxlength: number = -1;
 pattern: string = '';
 autocomplete: string = '';
 name: string = '';
@@ -45,10 +46,11 @@ name: string = '';
 
 ## Events
 
-- `input` - {value, input}
-- `change` - {value, input}
-- `focus` - {input}
-- `blur` - {input}
+- `input-input` - {value, input}
+- `input-change` - {value, input}
+- `input-focus` - {input}
+- `input-blur` - {input}
+- `input-clear` - {input}
 
 ## Usage
 
@@ -72,9 +74,8 @@ name: string = '';
 <snice-input prefix-icon="/icons/search.svg" placeholder="Search"></snice-input>
 <snice-input prefix-icon="search" placeholder="Search"></snice-input> <!-- Material Symbols -->
 
-<!-- With prefix/suffix text -->
-<snice-input prefix="$" type="number"></snice-input>
-<snice-input suffix=".com" type="url"></snice-input>
+<!-- Password toggle -->
+<snice-input type="password" password label="Password"></snice-input>
 
 <!-- Clearable -->
 <snice-input value="Text" clearable></snice-input>
@@ -100,8 +101,8 @@ name: string = '';
 <snice-input id="inp"></snice-input>
 <script>
 const inp = document.querySelector('#inp');
-inp.addEventListener('input', (e) => console.log('Input:', e.detail.value));
-inp.addEventListener('change', (e) => console.log('Change:', e.detail.value));
+inp.addEventListener('input-input', (e) => console.log('Input:', e.detail.value));
+inp.addEventListener('input-change', (e) => console.log('Change:', e.detail.value));
 </script>
 
 <!-- Icon slots (for external CSS icon fonts like Material Symbols) -->
@@ -125,7 +126,8 @@ inp.addEventListener('change', (e) => console.log('Change:', e.detail.value));
 - Form-associated custom element
 - 10 input types
 - 3 visual variants
-- Prefix/suffix icons (URL, image files, emoji, font ligatures) or text
+- Prefix/suffix icons (URL, image files, emoji, font ligatures)
+- Password visibility toggle
 - Clearable with X button
 - Helper and error text
 - Validation (min/max/pattern/length)

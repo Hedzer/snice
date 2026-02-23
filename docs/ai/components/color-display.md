@@ -7,9 +7,9 @@ Displays colors with swatch and label.
 ```typescript
 value: string = '';
 format: 'hex'|'rgb'|'hsl' = 'hex';
-showSwatch: boolean = true;
-showLabel: boolean = true;
-swatchSize: 'small'|'medium'|'large' = 'medium';
+showSwatch: boolean = true;      // attribute: show-swatch
+showLabel: boolean = true;       // attribute: show-label
+swatchSize: 'small'|'medium'|'large' = 'medium'; // attribute: swatch-size
 label: string = '';
 ```
 

@@ -1,3 +1,5 @@
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/command-palette.md instead)
+
 # Command Palette Component
 
 A searchable command palette overlay (⌘K) for quick access to application commands and actions.

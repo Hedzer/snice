@@ -2,75 +2,65 @@
 
 QR code scanner using device camera and ZXing WASM decoder.
 
-## API
+## Properties
 
-### Properties
-- `auto-start: boolean = false` - Auto-start scanning on mount
-- `camera: 'front'|'back' = 'back'` - Camera selection
-- `pick-first: boolean = false` - Scan at max speed until first hit, then stop and shutdown
-- `manual-snap: boolean = false` - Photo mode: open camera, manually trigger snapshots
-- `scan-speed: number = 3` - Scan speed 1-10 (higher = faster, more CPU). Ignored when pick-first=true
-- `tap-start: boolean = false` - Enable tap/click on viewport to start/stop scanning
+```typescript
+autoStart: boolean = false;         // attr: auto-start
+camera: 'front'|'back' = 'back';
+pickFirst: boolean = false;         // attr: pick-first, scan until first hit then stop
+manualSnap: boolean = false;        // attr: manual-snap, photo snapshot mode
+scanSpeed: number = 3;              // attr: scan-speed, 1-10 (ignored when pick-first)
+tapStart: boolean = false;          // attr: tap-start, tap viewport to start/stop
+```
 
-### Methods
-- `start()` - Start camera/scanning
-- `stop()` - Stop camera/scanning
-- `snap()` - Take snapshot (manual-snap mode)
+## Methods
+
+- `start()` - Start camera and scanning
+- `stop()` - Stop scanning and release camera
+- `snap()` - Take snapshot (manual-snap mode), returns QR data or null
 - `scanImage(file: File)` - Scan QR code from image file
-- `switchCamera()` - Toggle between front/back camera
+- `switchCamera()` - Toggle front/back camera
 
-### Events
-- `qr-scan` - detail: `{data: string, timestamp: number, reader: SniceQRReader}`
-- `qr-error` - detail: `{error: any, reader: SniceQRReader}`
-- `camera-ready` - detail: `{reader: SniceQRReader}`
-- `camera-error` - detail: `{error: any, reader: SniceQRReader}`
+## Events
+
+- `qr-scan` → `{ data: string, timestamp: number, reader }`
+- `qr-error` → `{ error: any, reader }`
+- `camera-ready` → `{ reader }`
+- `camera-error` → `{ error: any, reader }`
 
 ## Usage
 
 ```html
+<!-- Auto-start continuous scanning -->
 <snice-qr-reader auto-start></snice-qr-reader>
-<script>
-  reader.addEventListener('qr-scan', e => console.log(e.detail.data));
-</script>
+
+<!-- One-shot: scan until first hit -->
+<snice-qr-reader pick-first></snice-qr-reader>
+
+<!-- Manual snapshot mode -->
+<snice-qr-reader manual-snap></snice-qr-reader>
+
+<!-- Tap to start/stop -->
+<snice-qr-reader tap-start></snice-qr-reader>
 ```
 
-## Implementation
+```typescript
+const reader = document.querySelector('snice-qr-reader');
+reader.addEventListener('qr-scan', (e) => console.log(e.detail.data));
+reader.start();
 
-### File Structure
-- `snice-qr-reader.ts` - Main component (camera, scanning loop)
-- `qr-worker.ts` - Web Worker for QR detection
-- `qr-decoder.ts` - ZXing WASM wrapper (legacy)
-- `zxing-reader.mjs` - ZXing ES module
-- `zxing_reader.wasm` - WASM binary
-- `ZXING-LICENSE` - Apache 2.0 + MIT
-
-### QR Detection
-Uses ZXing WASM decoder exclusively for universal browser support.
-
-### Camera Loop
-```ts
-private scanFrame() {
-  ctx.drawImage(video, 0, 0, width, height);
-  const imageData = ctx.getImageData(0, 0, width, height);
-  worker.postMessage({ type: 'decode', imageData });
-  // Worker responds with result in background thread
-  requestAnimationFrame(() => this.scanFrame());
-}
+// Manual snap
+const result = await reader.snap();
 ```
 
-### Lifecycle
-- `@ready` - Init worker, auto-start if enabled
-- `@dispose` - Stop scan, release camera, terminate worker
-- Scan loop uses requestAnimationFrame
-- QR detection runs in Web Worker (non-blocking)
-- Only emits event if QR data changed
+## Features
 
-## License
-- ZXing-C++: Apache 2.0
-- zxing-wasm: MIT
-- See ZXING-LICENSE file
-
-## Browser Requirements
-- getUserMedia API
-- WebAssembly support
-- HTTPS for mobile
+- ZXing WASM decoder (Apache 2.0 + MIT)
+- Web Worker for non-blocking detection
+- Front/back camera switching
+- Configurable scan speed (1-10)
+- Pick-first mode (max speed, auto-stop)
+- Manual snapshot mode
+- Tap-to-start interaction
+- Camera released on stop/dispose
+- HTTPS required for mobile

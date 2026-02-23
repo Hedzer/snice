@@ -47,49 +47,6 @@ Slack-style chat interface with messages, typing indicators, reactions, and file
 - `file` - File attachment
 - `system` - System notification
 
-## CSS Variables
-
-```css
---snice-chat-height
---snice-chat-border-radius
---snice-chat-text-color
---snice-chat-background
---snice-chat-border-color
---snice-chat-author-color
---snice-chat-timestamp-color
---snice-chat-system-color
---snice-chat-placeholder-color
---snice-chat-scrollbar-color
---snice-chat-scrollbar-hover-color
---snice-chat-avatar-background
---snice-chat-avatar-text-color
---snice-chat-attachment-border
---snice-chat-attachment-background
---snice-chat-attachment-icon-background
---snice-chat-attachment-icon-color
---snice-chat-reaction-background
---snice-chat-reaction-border
---snice-chat-reaction-hover-background
---snice-chat-reaction-active-background
---snice-chat-reaction-active-color
---snice-chat-reaction-active-border
---snice-chat-actions-background
---snice-chat-action-color
---snice-chat-action-hover-background
---snice-chat-typing-color
---snice-chat-typing-dot-color
---snice-chat-input-background
---snice-chat-input-container-background
---snice-chat-input-border
---snice-chat-input-focus-border
---snice-chat-button-color
---snice-chat-button-hover-background
---snice-chat-send-color
---snice-chat-send-background
---snice-chat-send-hover-background
---snice-chat-empty-color
-```
-
 ## Types
 
 ```typescript
@@ -123,67 +80,22 @@ interface MessageReaction {
 }
 ```
 
-## Example
+## Usage
 
 ```javascript
 const chat = document.querySelector('snice-chat');
 
 // Add message
 chat.addMessage({
-  type: 'text',
-  content: 'Hello!',
-  author: 'Alice',
-  avatar: 'https://example.com/alice.jpg',
-  timestamp: new Date(),
-  formats: [],
+  type: 'text', content: 'Hello!', author: 'Alice', timestamp: new Date(), formats: [],
 });
 
-// Add image
-chat.addMessage({
-  type: 'image',
-  content: '',
-  author: 'Bob',
-  timestamp: new Date(),
-  formats: [],
-  attachment: {
-    type: 'image',
-    url: 'https://example.com/image.jpg',
-    name: 'photo.jpg',
-  },
-});
-
-// Add reaction
-chat.addEventListener('message-react', (e) => {
-  const message = chat.messages.find((m) => m.id === e.detail.messageId);
-  const reactions = message.reactions || [];
-  reactions.push({ emoji: e.detail.emoji, count: 1, users: [chat.currentUser] });
-  chat.updateMessage(e.detail.messageId, { reactions });
-});
-
-// Typing indicator
-chat.addTypingIndicator('Alice');
-setTimeout(() => chat.removeTypingIndicator('Alice'), 2000);
-
-// Send message
+// Handle send
 chat.addEventListener('message-send', (e) => {
-  chat.addMessage({
-    type: 'text',
-    content: e.detail.message,
-    author: 'You',
-    timestamp: new Date(),
-    formats: [],
-  });
+  chat.addMessage({ type: 'text', content: e.detail.message, author: 'You', timestamp: new Date(), formats: [] });
 });
+
+// Typing indicators
+chat.addTypingIndicator('Alice');
+chat.removeTypingIndicator('Alice');
 ```
-
-## Features
-
-- Text, image, file, system messages
-- Edit, delete, react to messages
-- Typing indicators
-- User avatars with initials fallback
-- Timestamps
-- Auto-scroll to new messages
-- File upload support
-- Emoji reactions with counts
-- Message actions (edit, delete)

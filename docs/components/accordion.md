@@ -1,3 +1,5 @@
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/accordion.md instead)
+
 # Accordion Components
 
 The accordion components provide collapsible sections of content. An `<snice-accordion>` container manages multiple `<snice-accordion-item>` elements, supporting single or multiple open items with keyboard navigation.
@@ -128,7 +130,7 @@ item.collapse(false); // Without animation
 
 ### Container Events
 
-#### `@snice/accordion-open`
+#### `accordion-open`
 Fired when an item is opened.
 
 **Event Detail:**
@@ -141,12 +143,12 @@ Fired when an item is opened.
 
 **Usage:**
 ```typescript
-accordion.addEventListener('@snice/accordion-open', (e) => {
+accordion.addEventListener('accordion-open', (e) => {
   console.log('Item opened:', e.detail.itemId);
 });
 ```
 
-#### `@snice/accordion-close`
+#### `accordion-close`
 Fired when an item is closed.
 
 **Event Detail:**
@@ -331,12 +333,12 @@ import type { SniceAccordionElement } from 'snice/components/accordion/snice-acc
 
 const accordion = document.querySelector<SniceAccordionElement>('snice-accordion');
 
-accordion.addEventListener('@snice/accordion-open', (e) => {
+accordion.addEventListener('accordion-open', (e) => {
   console.log('Opened item:', e.detail.itemId);
   // Track analytics, load content, etc.
 });
 
-accordion.addEventListener('@snice/accordion-close', (e) => {
+accordion.addEventListener('accordion-close', (e) => {
   console.log('Closed item:', e.detail.itemId);
 });
 
@@ -367,7 +369,7 @@ accordion.toggleItem('item-3');
 
   const accordion = document.querySelector('#lazyAccordion');
 
-  accordion.addEventListener('@snice/accordion-open', async (e) => {
+  accordion.addEventListener('accordion-open', async (e) => {
     const contentId = `content-${e.detail.itemId.split('-')[1]}`;
     const contentEl = document.querySelector(`#${contentId}`);
 

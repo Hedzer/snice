@@ -1,78 +1,57 @@
 # snice-treemap
 
-SVG-based treemap visualization for hierarchical data as nested rectangles.
+Hierarchical data as nested rectangles with squarified layout and drill-down.
 
 ## Properties
 
 ```typescript
 data: TreemapNode = { label: '', value: 0 };
-showLabels: boolean = true;       // attribute: show-labels
-showValues: boolean = false;      // attribute: show-values
-colorScheme: TreemapColorScheme = 'default'; // attribute: color-scheme
+showLabels: boolean = true;      // attr: show-labels
+showValues: boolean = false;     // attr: show-values
+colorScheme: 'default'|'blue'|'green'|'purple'|'orange'|'warm'|'cool'|'rainbow' = 'default'; // attr: color-scheme
 padding: number = 2;
 animation: boolean = true;
-drillPath: TreemapNode[];         // read-only, current drill path
-```
+drillPath: TreemapNode[];        // read-only
 
-## Types
-
-```typescript
 interface TreemapNode {
   label: string;
   value: number;
   children?: TreemapNode[];
   color?: string;
 }
-
-type TreemapColorScheme = 'default' | 'blue' | 'green' | 'purple' | 'orange' | 'warm' | 'cool' | 'rainbow';
-```
-
-## Methods
-
-```typescript
-drillDown(node: TreemapNode): void;  // drill into node's children
-drillUp(): void;                      // go back one level
-drillToRoot(): void;                  // reset to root
 ```
 
 ## Events
 
-```typescript
-'@snice/treemap-click': CustomEvent<{ node: TreemapNode; depth: number }>;
-'@snice/treemap-hover': CustomEvent<{ node: TreemapNode; depth: number } | null>;
-'@snice/treemap-drill': CustomEvent<{ node: TreemapNode; path: TreemapNode[] }>;
-```
+- `treemap-click` → `{ node, depth }`
+- `treemap-hover` → `{ node, depth } | null`
+- `treemap-drill` → `{ node, path }`
+
+## Methods
+
+- `drillDown(node)` - Drill into node's children
+- `drillUp()` - Go back one level
+- `drillToRoot()` - Reset to root
 
 ## Usage
 
 ```html
-<!-- Basic -->
-<snice-treemap show-labels show-values></snice-treemap>
-
-<!-- Color scheme -->
-<snice-treemap show-labels color-scheme="blue"></snice-treemap>
-
-<!-- Set data via JS -->
+<snice-treemap id="map" show-labels show-values style="height: 400px;"></snice-treemap>
 <script>
-  treemap.data = {
+  document.getElementById('map').data = {
     label: 'Root',
     value: 0,
     children: [
       { label: 'A', value: 50 },
-      { label: 'B', value: 30 },
-      { label: 'C', value: 20 },
+      { label: 'B', value: 30, color: '#e74c3c' },
+      { label: 'C', value: 20, children: [
+        { label: 'C1', value: 12 },
+        { label: 'C2', value: 8 }
+      ]}
     ]
   };
 </script>
+
+<snice-treemap color-scheme="blue" show-labels></snice-treemap>
+<snice-treemap color-scheme="rainbow" show-labels show-values></snice-treemap>
 ```
-
-## Features
-
-- Squarified treemap layout algorithm for optimal aspect ratios
-- 8 color schemes + custom per-node colors
-- Drill-down into child nodes with breadcrumb navigation
-- Tooltips on hover
-- Labels auto-hide when rectangles are too small
-- Responsive sizing via ResizeObserver
-- Animated transitions
-- Accessible: role="img" with aria-label

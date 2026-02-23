@@ -20,9 +20,10 @@ max: string = '';              // Max date (ISO format)
 size: 'small'|'medium'|'large' = 'medium';
 name: string = '';
 label: string = '';
-helperText: string = '';
-errorText: string = '';
-firstDayOfWeek: number = 0;    // 0=Sun, 1=Mon, etc.
+helperText: string = '';       // attribute: helper-text
+errorText: string = '';        // attribute: error-text
+showCalendar: boolean = false; // attribute: show-calendar
+firstDayOfWeek: number = 0;    // attribute: first-day-of-week, 0=Sun, 1=Mon, etc.
 ```
 
 ## Methods
@@ -35,15 +36,20 @@ firstDayOfWeek: number = 0;    // 0=Sun, 1=Mon, etc.
 - `selectDate(date: Date)` - Programmatically select a date
 - `goToMonth(year, month)` - Navigate to specific month
 - `goToToday()` - Navigate to and select today
+- `checkValidity()` - Check input validity
+- `reportValidity()` - Report input validity
+- `setCustomValidity(message)` - Set custom validation message
 
 ## Events
 
-- `datepicker-change` - {value, date, formatted, iso, datePicker}
-- `datepicker-input` - {value, datePicker}
-- `datepicker-open` - {datePicker}
-- `datepicker-close` - {datePicker}
-- `datepicker-clear` - {datePicker}
-- `datepicker-select` - {date, formatted, iso, datePicker}
+- `datepicker-input` → {value, datePicker}
+- `datepicker-change` → {value, date, formatted, iso, datePicker}
+- `datepicker-focus` → {datePicker}
+- `datepicker-blur` → {datePicker}
+- `datepicker-open` → {datePicker}
+- `datepicker-close` → {datePicker}
+- `datepicker-clear` → {datePicker}
+- `datepicker-select` → {date, formatted, iso, datePicker}
 
 ## Usage
 

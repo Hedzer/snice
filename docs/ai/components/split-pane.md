@@ -6,25 +6,28 @@ Resizable split pane layout.
 
 ```typescript
 direction: 'horizontal'|'vertical' = 'horizontal';
-primarySize: number = 50; // percentage
-minPrimarySize: number = 10; // percentage
-minSecondarySize: number = 10; // percentage
-snapSize: number = 0; // percentage, 0 = no snap
+primarySize: number = 50;         // attr: primary-size, percentage
+minPrimarySize: number = 10;      // attr: min-primary-size, percentage
+minSecondarySize: number = 10;    // attr: min-secondary-size, percentage
+snapSize: number = 0;             // attr: snap-size, percentage, 0 = no snap
 disabled: boolean = false;
 ```
 
-## Methods
+## Slots
 
-```typescript
-getPrimarySize(): number
-getSecondarySize(): number
-setPrimarySize(size: number): void
-reset(): void
-```
+- `primary` - Primary pane content
+- `secondary` - Secondary pane content
 
 ## Events
 
-- `pane-resize` - Dispatched on resize (detail: { primarySize, secondarySize, splitPane })
+- `pane-resize` → `{ primarySize, secondarySize, splitPane }`
+
+## Methods
+
+- `getPrimarySize()` - Get primary pane percentage
+- `getSecondarySize()` - Get secondary pane percentage
+- `setPrimarySize(size)` - Set primary pane percentage
+- `reset()` - Reset to 50/50
 
 ## Usage
 
@@ -34,38 +37,13 @@ reset(): void
   <div slot="secondary">Right pane</div>
 </snice-split-pane>
 
-<!-- Vertical -->
 <snice-split-pane direction="vertical">
   <div slot="primary">Top</div>
   <div slot="secondary">Bottom</div>
 </snice-split-pane>
 
-<!-- Custom size -->
-<snice-split-pane primary-size="30">
+<snice-split-pane primary-size="30" snap-size="10">
   <div slot="primary">30%</div>
   <div slot="secondary">70%</div>
 </snice-split-pane>
-
-<!-- With snap -->
-<snice-split-pane snap-size="10">
-  <div slot="primary">Snaps to 10%</div>
-  <div slot="secondary">Right</div>
-</snice-split-pane>
-
-<!-- Programmatic -->
-<script>
-  splitPane.setPrimarySize(40);
-  splitPane.reset(); // 50/50
-</script>
 ```
-
-## Features
-
-- Horizontal and vertical orientation
-- Drag to resize
-- Minimum sizes for both panes
-- Snap to grid
-- Programmatic control
-- Nested layouts supported
-- Disabled state
-- Event dispatching

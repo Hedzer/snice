@@ -1,3 +1,5 @@
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/candlestick.md instead)
+
 # Candlestick Chart Component
 
 The candlestick chart component renders an SVG-based OHLC (Open-High-Low-Close) financial chart, commonly used for stock market and cryptocurrency price visualization. It supports volume bars, crosshair overlay, zoom/pan, tooltips, and responsive sizing.

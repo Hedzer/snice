@@ -1,3 +1,5 @@
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/calendar.md instead)
+
 # Calendar Component
 
 Display and select dates with event support.

@@ -47,11 +47,3 @@ spacing: string = '8px';
   </div>
 </div>
 ```
-
-## Features
-
-- 4 shape variants (text/circular/rectangular/rounded)
-- 3 animation styles (pulse/wave/none)
-- Custom dimensions
-- Multiple skeleton elements with spacing
-- Mimics loading content shapes

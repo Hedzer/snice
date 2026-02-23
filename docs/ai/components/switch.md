@@ -1,54 +1,47 @@
 # snice-switch
 
-Toggle switch input for boolean selections.
+Toggle switch input for boolean selections. Form-associated.
 
 ## Properties
 
 ```typescript
-checked: boolean = false;        // Switch state
-disabled: boolean = false;       // Disabled state
-required: boolean = false;       // Form required
-invalid: boolean = false;        // Invalid state styling
+checked: boolean = false;
+disabled: boolean = false;
+required: boolean = false;
+invalid: boolean = false;
 size: 'small'|'medium'|'large' = 'medium';
-name: string = '';              // Form field name
-value: string = 'on';           // Form field value when checked
-label: string = '';             // Label text
-labelOn: string = '';           // Label shown when on
-labelOff: string = '';          // Label shown when off
-loading: boolean = false;        // Loading state (shows spinner)
-```
-
-## Methods
-
-```typescript
-toggle()      // Toggle switch state
-focus()       // Focus the switch
-blur()        // Remove focus
-click()       // Programmatic click
+name: string = '';
+value: string = 'on';
+label: string = '';
+labelOn: string = '';           // attr: label-on
+labelOff: string = '';          // attr: label-off
+loading: boolean = false;
 ```
 
 ## Events
 
-```typescript
-'switch-change' // { checked, switch }
-```
+- `switch-change` → `{ checked, switch }`
+
+## Methods
+
+- `toggle()` - Toggle switch state
+- `focus()` - Focus the switch
+- `blur()` - Remove focus
+- `click()` - Programmatic click
+
+## CSS Parts
+
+- `track` - Switch track
+- `thumb` - Switch thumb
+- `label` - Label text
 
 ## Usage
 
 ```html
 <snice-switch label="Enable notifications"></snice-switch>
-```
-
-```typescript
-switchEl.addEventListener('switch-change', (e) => {
-  console.log(e.detail.checked);
-});
-```
-
-## CSS Parts
-
-```css
-::part(track)   // Switch track
-::part(thumb)   // Switch thumb
-::part(label)   // Label text
+<snice-switch checked label="Dark mode"></snice-switch>
+<snice-switch size="small" label="Compact"></snice-switch>
+<snice-switch label-on="On" label-off="Off"></snice-switch>
+<snice-switch loading label="Saving..."></snice-switch>
+<snice-switch disabled></snice-switch>
 ```

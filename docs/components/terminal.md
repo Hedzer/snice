@@ -1,317 +1,68 @@
-# snice-terminal
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/terminal.md instead)
 
-A shell terminal emulator component with command execution, history navigation, ANSI color support, and keyboard shortcuts.
+# Terminal
+`<snice-terminal>`
 
-## Features
-
-- **Command execution** - Execute commands with @request/@respond pattern
-- **Command history** - Navigate with arrow keys (↑/↓)
-- **ANSI colors** - Support for ANSI escape sequences
-- **Keyboard shortcuts** - Ctrl+C, Ctrl+L, Tab (planned)
-- **Readonly mode** - Display-only terminal output
-- **Line management** - Auto-scroll and line limit
-- **Timestamps** - Optional timestamp display
-- **Customizable styling** - CSS custom properties for theming
+A shell terminal emulator with command execution, history navigation, and ANSI color support.
 
 ## Basic Usage
 
+```typescript
+import 'snice/components/terminal/snice-terminal';
+```
+
 ```html
-<snice-terminal id="terminal" prompt="$ " cwd="~"></snice-terminal>
-
-<script type="module">
-  import 'snice';
-
-  const terminal = document.getElementById('terminal');
-
-  // Write to terminal
-  terminal.writeln('Welcome to the terminal!', 'info');
-  terminal.writeln('Type "help" for commands', 'output');
-</script>
+<snice-terminal prompt="$ " cwd="~"></snice-terminal>
 ```
 
-## Properties
+## Importing
 
-| Property          | Attribute          | Type      | Default    | Description                           |
-| ----------------- | ------------------ | --------- | ---------- | ------------------------------------- |
-| `prompt`          | `prompt`           | `string`  | `"$ "`     | Terminal prompt string                |
-| `cwd`             | `cwd`              | `string`  | `"~"`      | Current working directory             |
-| `readonly`        | `readonly`         | `boolean` | `false`    | Disable input (display only)          |
-| `maxLines`        | `max-lines`        | `number`  | `1000`     | Maximum lines to keep in history      |
-| `showTimestamps`  | `show-timestamps`  | `boolean` | `false`    | Show timestamps on each line          |
-
-## Methods
-
-### `write(content: string, type?: TerminalLineType): void`
-
-Write content to terminal without adding a newline.
-
-```javascript
-terminal.write('Loading', 'output');
-terminal.write('...', 'output');
+**ESM (bundler)**
+```typescript
+import 'snice/components/terminal/snice-terminal';
 ```
 
-### `writeln(content: string, type?: TerminalLineType): void`
-
-Write a line to the terminal with a newline.
-
-```javascript
-terminal.writeln('Command completed successfully', 'success');
-terminal.writeln('Warning: Low disk space', 'warning');
-```
-
-### `writeLines(lines: Array<{ content: string; type?: TerminalLineType }>): void`
-
-Write multiple lines at once.
-
-```javascript
-terminal.writeLines([
-  { content: 'File listing:', type: 'info' },
-  { content: 'file1.txt', type: 'output' },
-  { content: 'file2.txt', type: 'output' },
-  { content: 'file3.txt', type: 'output' },
-]);
-```
-
-### `writeError(content: string): void`
-
-Write an error message to the terminal.
-
-```javascript
-terminal.writeError('Error: File not found');
-```
-
-### `clear(): void`
-
-Clear all terminal output.
-
-```javascript
-terminal.clear();
-```
-
-### `focus(): void`
-
-Focus the terminal input.
-
-```javascript
-terminal.focus();
-```
-
-### `getHistory(): string[]`
-
-Get the command history.
-
-```javascript
-const history = terminal.getHistory();
-console.log('Command history:', history);
-```
-
-### `clearHistory(): void`
-
-Clear the command history.
-
-```javascript
-terminal.clearHistory();
-```
-
-## Events
-
-### `terminal-command`
-
-Emitted when a command is entered.
-
-```javascript
-terminal.addEventListener('terminal-command', (e) => {
-  console.log('Command:', e.detail.command);
-  console.log('Args:', e.detail.args);
-});
-```
-
-**Detail:**
-- `command: string` - The command name
-- `args: string[]` - Command arguments
-
-### `terminal-clear`
-
-Emitted when the terminal is cleared.
-
-```javascript
-terminal.addEventListener('terminal-clear', () => {
-  console.log('Terminal was cleared');
-});
-```
-
-### `terminal-ready`
-
-Emitted when the terminal is ready.
-
-```javascript
-terminal.addEventListener('terminal-ready', () => {
-  console.log('Terminal is ready');
-});
-```
-
-## Command Execution Pattern
-
-The terminal uses Snice's `@request`/`@respond` pattern for command execution:
-
-```javascript
-import { element, respond } from 'snice';
-
-@element('terminal-controller')
-class TerminalController extends HTMLElement {
-  @respond('terminal-command')
-  async handleCommand(payload) {
-    const { command, args, cwd, history } = payload;
-
-    // Handle different commands
-    switch (command) {
-      case 'echo':
-        return { output: args.join(' '), exitCode: 0 };
-
-      case 'pwd':
-        return { output: cwd, exitCode: 0 };
-
-      case 'clear':
-        // Special marker to trigger clear
-        return { output: '\x1B[CLEAR]' };
-
-      case 'history':
-        return { output: history.join('\n'), exitCode: 0 };
-
-      default:
-        return {
-          error: `Command not found: ${command}`,
-          exitCode: 127,
-        };
-    }
-  }
-}
-```
-
-## Line Types
-
-The terminal supports different line types for styling:
-
-- `input` - User input echoed back
-- `output` - Standard command output
-- `error` - Error messages (red)
-- `info` - Information messages (blue)
-- `success` - Success messages (green)
-- `warning` - Warning messages (yellow)
-
-```javascript
-terminal.writeln('This is output', 'output');
-terminal.writeln('This is an error', 'error');
-terminal.writeln('This is info', 'info');
-terminal.writeln('This is success', 'success');
-terminal.writeln('This is a warning', 'warning');
-```
-
-## Keyboard Shortcuts
-
-| Key         | Action                     |
-| ----------- | -------------------------- |
-| `Enter`     | Execute command            |
-| `↑`         | Previous command (history) |
-| `↓`         | Next command (history)     |
-| `Ctrl+C`    | Cancel current input       |
-| `Ctrl+L`    | Clear terminal             |
-| `Tab`       | Auto-complete (TODO)       |
-
-## ANSI Color Support
-
-The terminal supports ANSI escape sequences for colored output:
-
-```javascript
-// Standard colors (30-37)
-terminal.writeln('\x1b[31mRed text\x1b[0m', 'output');
-terminal.writeln('\x1b[32mGreen text\x1b[0m', 'output');
-terminal.writeln('\x1b[33mYellow text\x1b[0m', 'output');
-terminal.writeln('\x1b[34mBlue text\x1b[0m', 'output');
-terminal.writeln('\x1b[35mMagenta text\x1b[0m', 'output');
-terminal.writeln('\x1b[36mCyan text\x1b[0m', 'output');
-terminal.writeln('\x1b[37mWhite text\x1b[0m', 'output');
-
-// Bright colors (90-97)
-terminal.writeln('\x1b[91mBright Red\x1b[0m', 'output');
-terminal.writeln('\x1b[92mBright Green\x1b[0m', 'output');
-terminal.writeln('\x1b[93mBright Yellow\x1b[0m', 'output');
-terminal.writeln('\x1b[94mBright Blue\x1b[0m', 'output');
-
-// Reset
-terminal.writeln('\x1b[0mReset to default\x1b[0m', 'output');
-```
-
-**ANSI Color Map:**
-- `30` / `90` - Black / Bright Black
-- `31` / `91` - Red / Bright Red
-- `32` / `92` - Green / Bright Green
-- `33` / `93` - Yellow / Bright Yellow
-- `34` / `94` - Blue / Bright Blue
-- `35` / `95` - Magenta / Bright Magenta
-- `36` / `96` - Cyan / Bright Cyan
-- `37` / `97` - White / Bright White
-- `0` - Reset
-
-## Styling
-
-The component can be styled using CSS custom properties:
-
-```css
-snice-terminal {
-  /* Container */
-  --snice-terminal-background: #1e1e1e;
-  --snice-terminal-foreground: #d4d4d4;
-  --snice-terminal-border: #3c3c3c;
-
-  /* Scrollbar */
-  --snice-terminal-scrollbar: #424242;
-  --snice-terminal-scrollbar-thumb: #686868;
-
-  /* Line types */
-  --snice-terminal-input-color: #d4d4d4;
-  --snice-terminal-output-color: #cccccc;
-  --snice-terminal-error-color: #ff5555;
-  --snice-terminal-info-color: #569cd6;
-  --snice-terminal-success-color: #50fa7b;
-  --snice-terminal-warning-color: #f1fa8c;
-
-  /* Prompt */
-  --snice-terminal-prompt-color: #569cd6;
-
-  /* Selection */
-  --snice-terminal-selection: rgba(255, 255, 255, 0.2);
-}
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-terminal.min.js"></script>
 ```
 
 ## Examples
 
-### Basic Terminal
+### Writing Output
+
+Use the `writeln` method with a line type to display styled output.
+
+```javascript
+const terminal = document.querySelector('snice-terminal');
+terminal.writeln('Welcome!', 'info');
+terminal.writeln('File saved', 'success');
+terminal.writeln('Disk space low', 'warning');
+terminal.writeError('File not found');
+```
+
+### Readonly Log Viewer
+
+Set the `readonly` attribute to disable input and use as a display-only log viewer.
 
 ```html
-<snice-terminal id="terminal"></snice-terminal>
-
-<script type="module">
-  import 'snice';
-
-  const terminal = document.getElementById('terminal');
-
-  terminal.writeln('Welcome to the terminal!', 'info');
-  terminal.writeln('Type commands to get started', 'output');
-</script>
+<snice-terminal readonly show-timestamps></snice-terminal>
 ```
 
 ### With Command Handler
 
+Use the `@request`/`@respond` pattern to handle commands.
+
 ```html
-<terminal-controller></terminal-controller>
-<snice-terminal id="terminal" prompt="myapp $ "></snice-terminal>
+<my-controller></my-controller>
+<snice-terminal prompt="myapp $ "></snice-terminal>
 
 <script type="module">
   import { element, respond } from 'snice';
 
-  @element('terminal-controller')
-  class TerminalController extends HTMLElement {
+  @element('my-controller')
+  class MyController extends HTMLElement {
     @respond('terminal-command')
     async handleCommand(payload) {
       const { command, args } = payload;
@@ -319,133 +70,78 @@ snice-terminal {
       switch (command) {
         case 'hello':
           return { output: `Hello, ${args[0] || 'World'}!`, exitCode: 0 };
-
-        case 'date':
-          return { output: new Date().toString(), exitCode: 0 };
-
-        case 'help':
-          return {
-            output: 'Available commands:\n  hello [name]\n  date\n  help\n  clear',
-            exitCode: 0,
-          };
-
         case 'clear':
           return { output: '\x1B[CLEAR]' };
-
         default:
-          return {
-            error: `Unknown command: ${command}`,
-            exitCode: 1,
-          };
+          return { error: `Unknown: ${command}`, exitCode: 127 };
       }
     }
   }
-
-  const terminal = document.getElementById('terminal');
-  terminal.writeln('Type "help" for available commands', 'info');
 </script>
 ```
 
-### Readonly Terminal
+### ANSI Colors
 
-```html
-<snice-terminal id="log-viewer" readonly show-timestamps></snice-terminal>
+The terminal renders ANSI escape sequences for colored output.
 
-<script type="module">
-  import 'snice';
-
-  const logViewer = document.getElementById('log-viewer');
-
-  // Simulate log streaming
-  setInterval(() => {
-    const logTypes = ['info', 'warning', 'error', 'success'];
-    const type = logTypes[Math.floor(Math.random() * logTypes.length)];
-    const message = `Log entry at ${new Date().toISOString()}`;
-    logViewer.writeln(message, type);
-  }, 2000);
-</script>
+```javascript
+terminal.writeln('\x1b[31mRed text\x1b[0m', 'output');
+terminal.writeln('\x1b[32mGreen text\x1b[0m', 'output');
+terminal.writeln('\x1b[33mYellow text\x1b[0m', 'output');
+terminal.writeln('\x1b[34mBlue text\x1b[0m', 'output');
 ```
 
-### With ANSI Colors
+### Line Types
 
-```html
-<snice-terminal id="terminal"></snice-terminal>
-
-<script type="module">
-  import 'snice';
-
-  const terminal = document.getElementById('terminal');
-
-  terminal.writeln('\x1b[1m\x1b[32mSuccess!\x1b[0m Operation completed', 'output');
-  terminal.writeln('\x1b[31mError:\x1b[0m Something went wrong', 'output');
-  terminal.writeln('\x1b[33mWarning:\x1b[0m Disk space low', 'output');
-  terminal.writeln('\x1b[36mInfo:\x1b[0m Processing...', 'output');
-</script>
+```javascript
+terminal.writeln('User input echoed', 'input');
+terminal.writeln('Standard output', 'output');
+terminal.writeln('Error message', 'error');
+terminal.writeln('Information', 'info');
+terminal.writeln('Success message', 'success');
+terminal.writeln('Warning message', 'warning');
 ```
 
-### Async Command Execution
+## Properties
 
-```html
-<terminal-controller></terminal-controller>
-<snice-terminal id="terminal"></snice-terminal>
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `prompt` | `string` | `'$ '` | Terminal prompt string |
+| `cwd` | `string` | `'~'` | Current working directory display |
+| `readonly` | `boolean` | `false` | Disable input (display only) |
+| `maxLines` (attr: `max-lines`) | `number` | `1000` | Maximum lines in buffer |
+| `showTimestamps` (attr: `show-timestamps`) | `boolean` | `false` | Show timestamps on each line |
 
-<script type="module">
-  import { element, respond } from 'snice';
+## Events
 
-  @element('terminal-controller')
-  class TerminalController extends HTMLElement {
-    @respond('terminal-command')
-    async handleCommand(payload) {
-      const { command, args } = payload;
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `terminal-command` | `{ command: string, args: string[] }` | Command entered |
+| `terminal-clear` | -- | Terminal cleared |
+| `terminal-ready` | -- | Terminal initialized |
 
-      if (command === 'fetch') {
-        const url = args[0];
-        if (!url) {
-          return { error: 'Usage: fetch <url>', exitCode: 1 };
-        }
+## Methods
 
-        try {
-          const response = await fetch(url);
-          const data = await response.json();
-          return { output: JSON.stringify(data, null, 2), exitCode: 0 };
-        } catch (error) {
-          return { error: `Fetch failed: ${error.message}`, exitCode: 1 };
-        }
-      }
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `write()` | `content: string, type?: TerminalLineType` | Write without newline |
+| `writeln()` | `content: string, type?: TerminalLineType` | Write with newline |
+| `writeLines()` | `lines: Array<{ content: string, type?: TerminalLineType }>` | Write multiple lines |
+| `writeError()` | `content: string` | Write error message |
+| `clear()` | -- | Clear terminal output |
+| `focus()` | -- | Focus the input |
+| `getHistory()` | -- | Get command history, returns `string[]` |
+| `clearHistory()` | -- | Clear command history |
 
-      if (command === 'sleep') {
-        const seconds = parseInt(args[0]) || 1;
-        await new Promise((resolve) => setTimeout(resolve, seconds * 1000));
-        return { output: `Slept for ${seconds} seconds`, exitCode: 0 };
-      }
+## CSS Custom Properties
 
-      return { error: `Unknown command: ${command}`, exitCode: 127 };
-    }
-  }
-</script>
-```
-
-## Browser Support
-
-Works in all modern browsers that support:
-- Custom Elements v1
-- Shadow DOM
-- ES2020+
-
-## TypeScript
-
-Full TypeScript support with exported types:
-
-```typescript
-import type {
-  SniceTerminalElement,
-  TerminalLine,
-  TerminalLineType,
-  TerminalCommandRequest,
-  TerminalCommandResponse,
-} from 'snice/terminal';
-```
-
-## Security Note
-
-The terminal uses `unsafeHTML` for rendering ANSI-colored output. Only use trusted content or sanitize user input before displaying.
+| Property | Description | Default |
+|----------|-------------|---------|
+| `--snice-terminal-background` | Terminal background | `#1e1e1e` |
+| `--snice-terminal-foreground` | Default text color | `#d4d4d4` |
+| `--snice-terminal-border` | Border color | `#3c3c3c` |
+| `--snice-terminal-prompt-color` | Prompt color | `#569cd6` |
+| `--snice-terminal-error-color` | Error text | `#ff5555` |
+| `--snice-terminal-info-color` | Info text | `#569cd6` |
+| `--snice-terminal-success-color` | Success text | `#50fa7b` |
+| `--snice-terminal-warning-color` | Warning text | `#f1fa8c` |

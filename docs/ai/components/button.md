@@ -7,6 +7,7 @@ Interactive button with variants and states.
 ```typescript
 variant: 'default'|'primary'|'success'|'warning'|'danger'|'text' = 'default';
 size: 'small'|'medium'|'large' = 'medium';
+type: 'button'|'submit'|'reset' = 'button';
 disabled: boolean = false;
 loading: boolean = false;
 outline: boolean = false;
@@ -22,6 +23,10 @@ iconPlacement: 'start'|'end' = 'start';
 ## Slots
 
 - `icon` - Custom icon content (overrides `icon` property)
+
+## Events
+
+- `button-click` → `{ originalEvent: MouseEvent }`
 
 ## Methods
 

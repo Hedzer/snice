@@ -5,66 +5,49 @@ Dialog overlay with focus trap, backdrop dismiss, and accessibility.
 ## Properties
 
 ```typescript
-open: boolean = false;                        // Visibility state
+open: boolean = false;
 size: 'small'|'medium'|'large'|'fullscreen' = 'medium';
-noBackdropDismiss: boolean = false;           // Prevent backdrop click close
-noEscapeDismiss: boolean = false;             // Prevent Escape key close
-noFocusTrap: boolean = false;                 // Disable focus trapping
-noCloseButton: boolean = false;               // Hide close button
-label: string = '';                           // Accessible label
-```
-
-## Methods
-
-```typescript
-show()   // Open modal
-close()  // Close modal
-```
-
-## Events
-
-```typescript
-'modal-open'   // Emitted when modal opens. Detail: { modal }
-'modal-close'  // Emitted when modal closes. Detail: { modal }
+noBackdropDismiss: boolean = false;  // attr: no-backdrop-dismiss
+noEscapeDismiss: boolean = false;    // attr: no-escape-dismiss
+noFocusTrap: boolean = false;        // attr: no-focus-trap
+noCloseButton: boolean = false;      // attr: no-close-button
+label: string = '';                  // Accessible label
 ```
 
 ## Slots
 
-```html
-<snice-modal>
-  <div slot="header">Title</div>
-  <div>Body content</div>
-  <div slot="footer">Actions</div>
-</snice-modal>
-```
+- `(default)` - Modal body content
+- `header` - Header content (title)
+- `footer` - Footer content (action buttons)
+
+## Events
+
+- `modal-open` → `{ modal: SniceModalElement }`
+- `modal-close` → `{ modal: SniceModalElement }`
+
+## Methods
+
+- `show()` - Open modal
+- `close()` - Close modal
 
 ## Usage
 
-**Template syntax:**
-```typescript
-html`
-  <snice-modal
-    ?open=${this.isOpen}
-    label="Confirm Action"
-    @modal-close=${() => this.handleClose()}>
-    <span slot="header">Title</span>
-    <p>Content</p>
-    <div slot="footer">
-      <snice-button @click=${() => this.close()}>Cancel</snice-button>
-    </div>
-  </snice-modal>
-`
+```html
+<snice-modal label="Confirm Action">
+  <div slot="header"><h2>Confirm</h2></div>
+  <p>Are you sure?</p>
+  <div slot="footer">
+    <button onclick="this.closest('snice-modal').close()">Cancel</button>
+    <button onclick="this.closest('snice-modal').close()">Confirm</button>
+  </div>
+</snice-modal>
 ```
 
-**Imperative:**
 ```typescript
 const modal = document.querySelector('snice-modal');
 modal.show();
 modal.close();
-
-modal.addEventListener('modal-close', (e) => {
-  console.log('Modal closed');
-});
+modal.addEventListener('modal-close', () => console.log('Closed'));
 ```
 
 ## Features

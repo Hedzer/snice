@@ -1,6 +1,6 @@
 # snice-link-preview
 
-Social media-style link preview card. Purely visual -- all data passed via properties.
+Rich URL preview card with image, title, description, and site info.
 
 ## Properties
 
@@ -8,51 +8,42 @@ Social media-style link preview card. Purely visual -- all data passed via prope
 url: string = '';
 title: string = '';
 description: string = '';
-image: string = '';                              // image URL
-siteName: string = '';                           // attribute: site-name
-favicon: string = '';                            // small icon URL
-variant: 'horizontal' | 'vertical' = 'vertical';
-size: 'small' | 'medium' | 'large' = 'medium';
+image: string = '';
+siteName: string = '';  // attr: site-name
+favicon: string = '';
+variant: 'vertical'|'horizontal' = 'vertical';
+size: 'small'|'medium'|'large' = 'medium';
 ```
 
 ## Events
 
-```typescript
-'@snice/link-click': CustomEvent<{ url: string }>  // emitted on click
-```
+- `@snice/link-click` → `{ url: string }`
 
 ## Usage
 
 ```html
 <!-- Vertical (default) -->
 <snice-link-preview
+  url="https://example.com"
   title="Article Title"
-  description="A brief summary of the article content."
-  image="https://example.com/og-image.jpg"
+  description="Brief summary."
+  image="/images/og.jpg"
   site-name="example.com"
-  favicon="https://example.com/favicon.ico"
-  url="https://example.com/article"
-></snice-link-preview>
+  favicon="/icons/favicon.ico">
+</snice-link-preview>
 
 <!-- Horizontal, small -->
-<snice-link-preview
-  variant="horizontal"
-  size="small"
-  title="Quick Link"
-  description="Short description"
-  site-name="example.com"
-  url="https://example.com"
-></snice-link-preview>
+<snice-link-preview variant="horizontal" size="small"
+  url="https://example.com" title="Quick Link" description="Short.">
+</snice-link-preview>
 ```
 
 ## Features
 
 - Vertical (image top) and horizontal (image left) layouts
 - 3 sizes: small, medium, large
-- Image with fallback placeholder
-- Title truncation (2 lines), description truncation (3 lines)
-- Domain extraction from URL
-- Favicon + site name footer
-- Hover shadow effect
-- Click opens URL in new tab
-- Accessible: role="article", keyboard navigable
+- Placeholder icon when no image
+- Title clamped to 2 lines, description to 3
+- Domain extracted from URL
+- Click opens URL in new tab (noopener, noreferrer)
+- Keyboard accessible (Enter/Space)

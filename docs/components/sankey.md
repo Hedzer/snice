@@ -1,25 +1,21 @@
-# Sankey Component
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/sankey.md instead)
 
-The sankey component renders an SVG-based Sankey diagram for visualizing flow between categories. It shows nodes connected by curved links, where link width is proportional to flow value. Ideal for energy flows, budget breakdowns, user journeys, and conversion funnels.
+# Sankey
+`<snice-sankey>`
 
-## Table of Contents
-- [Basic Usage](#basic-usage)
-- [Properties](#properties)
-- [Events](#events)
-- [Types](#types)
-- [Examples](#examples)
-- [Accessibility](#accessibility)
-- [Best Practices](#best-practices)
+An SVG-based Sankey diagram for visualizing flow between categories.
 
 ## Basic Usage
 
+```typescript
+import 'snice/components/sankey/snice-sankey';
+```
+
 ```html
-<snice-sankey id="my-sankey" show-labels show-values></snice-sankey>
+<snice-sankey id="diagram" show-labels show-values style="height: 300px;"></snice-sankey>
 
 <script type="module">
-  import 'snice/components/sankey/snice-sankey';
-
-  document.getElementById('my-sankey').data = {
+  document.getElementById('diagram').data = {
     nodes: [
       { id: 'source', label: 'Source', color: '#2196f3' },
       { id: 'target', label: 'Target', color: '#4caf50' }
@@ -31,46 +27,17 @@ The sankey component renders an SVG-based Sankey diagram for visualizing flow be
 </script>
 ```
 
-## Properties
+## Importing
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `data` | `SankeyData` | `{ nodes: [], links: [] }` | Data containing nodes and links |
-| `nodeWidth` | `number` | `20` | Width of node rectangles in pixels |
-| `nodePadding` | `number` | `10` | Vertical padding between nodes in pixels |
-| `alignment` | `'left' \| 'right' \| 'center' \| 'justify'` | `'justify'` | How leaf nodes are aligned |
-| `showLabels` | `boolean` | `true` | Whether to show node labels |
-| `showValues` | `boolean` | `true` | Whether to show node values |
-| `animation` | `boolean` | `false` | Whether to animate on initial render |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `@snice/sankey-node-click` | `{ node: SankeyNode }` | Fired when a node is clicked |
-| `@snice/sankey-link-click` | `{ link: SankeyLink }` | Fired when a link is clicked |
-| `@snice/sankey-hover` | `{ type: 'node' \| 'link', item: SankeyNode \| SankeyLink } \| null` | Fired when hover state changes |
-
-## Types
-
+**ESM (bundler)**
 ```typescript
-interface SankeyData {
-  nodes: SankeyNode[];
-  links: SankeyLink[];
-}
+import 'snice/components/sankey/snice-sankey';
+```
 
-interface SankeyNode {
-  id: string;        // Unique identifier
-  label?: string;    // Display label (defaults to id)
-  color?: string;    // Node color (auto-assigned if omitted)
-}
-
-interface SankeyLink {
-  source: string;    // Source node id
-  target: string;    // Target node id
-  value: number;     // Flow value (determines link width)
-  color?: string;    // Link color (defaults to source node color)
-}
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-sankey.min.js"></script>
 ```
 
 ## Examples
@@ -121,81 +88,91 @@ interface SankeyLink {
 </script>
 ```
 
-### With Event Handling
+### Alignment Options
+
+Use the `alignment` attribute to control how leaf nodes are positioned.
 
 ```html
-<snice-sankey id="clickable" show-labels style="height: 300px;"></snice-sankey>
-<div id="output"></div>
-
-<script type="module">
-  const sankey = document.getElementById('clickable');
-  const output = document.getElementById('output');
-
-  sankey.data = {
-    nodes: [
-      { id: 'a', label: 'Source A' },
-      { id: 'b', label: 'Source B' },
-      { id: 'c', label: 'Target C' }
-    ],
-    links: [
-      { source: 'a', target: 'c', value: 50 },
-      { source: 'b', target: 'c', value: 30 }
-    ]
-  };
-
-  sankey.addEventListener('@snice/sankey-node-click', (e) => {
-    output.textContent = `Clicked node: ${e.detail.node.label}`;
-  });
-
-  sankey.addEventListener('@snice/sankey-link-click', (e) => {
-    output.textContent = `Clicked link: ${e.detail.link.source} -> ${e.detail.link.target}`;
-  });
-</script>
+<snice-sankey alignment="left" show-labels></snice-sankey>
+<snice-sankey alignment="right" show-labels></snice-sankey>
+<snice-sankey alignment="center" show-labels></snice-sankey>
+<snice-sankey alignment="justify" show-labels></snice-sankey>
 ```
 
 ### Custom Node Width and Padding
 
-```html
-<snice-sankey id="custom" node-width="30" node-padding="20" show-labels style="height: 300px;"></snice-sankey>
-```
-
-### Alignment Options
+Use `node-width` and `node-padding` to adjust the layout.
 
 ```html
-<!-- Left-aligned (sources at left) -->
-<snice-sankey alignment="left" show-labels></snice-sankey>
-
-<!-- Right-aligned (sinks at right) -->
-<snice-sankey alignment="right" show-labels></snice-sankey>
-
-<!-- Center-aligned (isolated nodes centered) -->
-<snice-sankey alignment="center" show-labels></snice-sankey>
-
-<!-- Justified (default, sinks pushed to right) -->
-<snice-sankey alignment="justify" show-labels></snice-sankey>
+<snice-sankey node-width="30" node-padding="20" show-labels style="height: 300px;"></snice-sankey>
 ```
 
-## Accessibility
+### Animation
 
-- **ARIA role**: The diagram container has `role="img"` for screen reader support
-- **ARIA label**: `aria-label="Sankey diagram"` describes the visualization
-- **Keyboard navigation**: Nodes and links are interactive via click events
-- **Hover feedback**: Visual dimming of non-connected elements on hover
-- **Color independence**: Labels and values provide non-color context
+Set the `animation` attribute for animated rendering.
 
-## Browser Support
+```html
+<snice-sankey animation show-labels show-values></snice-sankey>
+```
 
-- Modern browsers (Chrome, Firefox, Safari, Edge)
-- Requires Custom Elements v1, Shadow DOM, and SVG support
-- Uses ResizeObserver for responsive sizing
+### Event Handling
 
-## Best Practices
+```typescript
+const sankey = document.querySelector('snice-sankey');
 
-1. **Set explicit height**: The component needs a defined height (via CSS or style attribute) since it uses `display: block`
-2. **Provide labels**: Always include `label` on nodes for clarity
-3. **Use meaningful colors**: Assign colors that distinguish categories; auto-colors work for quick prototyping
-4. **Keep data manageable**: Sankey diagrams work best with 5-20 nodes and clear flow direction
-5. **Enable animation**: Use `animation` for initial presentation or when data changes
-6. **Handle events**: Use click events for drill-down or detail views
-7. **Responsive layout**: The component automatically resizes via ResizeObserver
-8. **Test dark mode**: The component uses theme variables with fallbacks for both themes
+sankey.addEventListener('@snice/sankey-node-click', (e) => {
+  console.log('Node:', e.detail.node.label);
+});
+
+sankey.addEventListener('@snice/sankey-link-click', (e) => {
+  console.log('Link:', e.detail.link.source, '->', e.detail.link.target);
+});
+
+sankey.addEventListener('@snice/sankey-hover', (e) => {
+  if (e.detail) {
+    console.log('Hovering:', e.detail.type, e.detail.item);
+  }
+});
+```
+
+## Data Types
+
+```typescript
+interface SankeyData {
+  nodes: SankeyNode[];
+  links: SankeyLink[];
+}
+
+interface SankeyNode {
+  id: string;
+  label?: string;   // Defaults to id
+  color?: string;    // Auto-assigned if omitted
+}
+
+interface SankeyLink {
+  source: string;    // Source node id
+  target: string;    // Target node id
+  value: number;     // Flow value (determines width)
+  color?: string;    // Defaults to source color
+}
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `data` | `SankeyData` | `{ nodes: [], links: [] }` | Nodes and links data (set via JS) |
+| `nodeWidth` (attr: `node-width`) | `number` | `20` | Width of node rectangles |
+| `nodePadding` (attr: `node-padding`) | `number` | `10` | Vertical padding between nodes |
+| `alignment` | `'left' \| 'right' \| 'center' \| 'justify'` | `'justify'` | Leaf node alignment |
+| `showLabels` (attr: `show-labels`) | `boolean` | `true` | Show node labels |
+| `showValues` (attr: `show-values`) | `boolean` | `true` | Show node values |
+| `animation` | `boolean` | `false` | Animate on initial render |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `@snice/sankey-node-click` | `{ node: SankeyNode }` | Node clicked |
+| `@snice/sankey-link-click` | `{ link: SankeyLink }` | Link clicked |
+| `@snice/sankey-hover` | `{ type: 'node' \| 'link', item } \| null` | Hover state changed |

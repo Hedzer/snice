@@ -1,3 +1,5 @@
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/chip.md instead)
+
 # Chip Component
 
 The chip component provides compact elements for tags, filters, selections, or categorizations. It supports icons, avatars, removable states, and multiple visual variants.

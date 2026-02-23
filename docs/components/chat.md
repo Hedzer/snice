@@ -1,3 +1,5 @@
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/chat.md instead)
+
 # snice-chat
 
 A Slack-style chat interface component with messages, typing indicators, reactions, and file attachments.

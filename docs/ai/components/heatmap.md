@@ -6,11 +6,11 @@ GitHub-style calendar heatmap visualization.
 
 ```typescript
 data: HeatmapDataPoint[] = [];           // Array of { date: string, value: number }
-colorScheme: 'green'|'blue'|'purple'|'orange'|'red' = 'green';
-showLabels: boolean = true;              // Show day/month labels
-cellSize: number = 12;                   // Cell size in px
-cellGap: number = 3;                     // Gap between cells in px
-showTooltip: boolean = true;             // Tooltip on hover
+colorScheme: 'green'|'blue'|'purple'|'orange'|'red' = 'green'; // attribute: color-scheme
+showLabels: boolean = true;              // attribute: show-labels
+cellSize: number = 12;                   // attribute: cell-size, px
+cellGap: number = 3;                     // attribute: cell-gap, px
+showTooltip: boolean = true;             // attribute: show-tooltip
 weeks: number = 52;                      // Number of weeks to display
 ```
 

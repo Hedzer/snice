@@ -1,3 +1,5 @@
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/banner.md instead)
+
 # Banner Component
 
 The `<snice-banner>` component displays fixed-position notification banners at the top or bottom of the viewport.

@@ -1,3 +1,5 @@
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/checkbox.md instead)
+
 # Checkbox Component
 
 The checkbox component provides a form-associated checkbox input with support for checked, indeterminate, and invalid states, multiple sizes, and full keyboard accessibility.

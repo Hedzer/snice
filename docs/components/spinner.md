@@ -1,25 +1,38 @@
-# Spinner Component
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/spinner.md instead)
 
-The `<snice-spinner>` component provides an animated loading indicator.
+# Spinner
+`<snice-spinner>`
+
+An animated loading indicator.
 
 ## Basic Usage
+
+```typescript
+import 'snice/components/spinner/snice-spinner';
+```
 
 ```html
 <snice-spinner></snice-spinner>
 ```
 
-## Properties
+## Importing
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `size` | `'small' \| 'medium' \| 'large' \| 'xl'` | `'medium'` | Spinner size |
-| `color` | `'primary' \| 'success' \| 'warning' \| 'error' \| 'info'` | `'primary'` | Color variant |
-| `label` | `string` | `''` | Accessible label |
-| `thickness` | `number` | `4` | Stroke thickness |
+**ESM (bundler)**
+```typescript
+import 'snice/components/spinner/snice-spinner';
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-spinner.min.js"></script>
+```
 
 ## Examples
 
 ### Sizes
+
+Use the `size` attribute to change the spinner's size.
 
 ```html
 <snice-spinner size="small"></snice-spinner>
@@ -29,6 +42,8 @@ The `<snice-spinner>` component provides an animated loading indicator.
 ```
 
 ### Colors
+
+Use the `color` attribute to change the spinner's color.
 
 ```html
 <snice-spinner color="primary"></snice-spinner>
@@ -40,20 +55,15 @@ The `<snice-spinner>` component provides an animated loading indicator.
 
 ### With Label
 
+Set the `label` attribute for an accessible description.
+
 ```html
 <snice-spinner label="Loading data..."></snice-spinner>
 ```
 
-### Loading State
+### Inline
 
-```html
-<div style="text-align: center; padding: 2rem;">
-  <snice-spinner size="large" color="primary"></snice-spinner>
-  <p>Loading content...</p>
-</div>
-```
-
-### Inline Spinner
+Use a small spinner inline with text.
 
 ```html
 <button disabled>
@@ -61,3 +71,12 @@ The `<snice-spinner>` component provides an animated loading indicator.
   Processing...
 </button>
 ```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `size` | `'small' \| 'medium' \| 'large' \| 'xl'` | `'medium'` | Spinner size |
+| `color` | `'primary' \| 'success' \| 'warning' \| 'error' \| 'info'` | `'primary'` | Color variant |
+| `label` | `string` | `''` | Accessible label |
+| `thickness` | `number` | `4` | Stroke thickness |

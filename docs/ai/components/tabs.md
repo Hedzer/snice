@@ -1,59 +1,44 @@
 # snice-tabs
 
-Tabbed interface with container, tab buttons, and content panels.
+Tabbed interface with tab buttons and content panels.
 
-## Components
-
-### snice-tabs (Container)
+## snice-tabs (Container)
 
 ```typescript
-selected: number = 0;                              // Active tab index
-placement: 'top'|'bottom'|'start'|'end' = 'top';  // Tab navigation position
-noScrollControls: boolean = false;                 // Hide scroll buttons
-transition: string = 'none';                       // Panel transition effect
+selected: number = 0;
+placement: 'top'|'bottom'|'start'|'end' = 'top';
+noScrollControls: boolean = false;  // attr: no-scroll-controls
+transition: string = 'none';
 ```
 
-**Methods:**
-```typescript
-selectTab(index: number)           // Select tab by index
-show(index: number)                 // Alias for selectTab
-getTab(index: number)               // Get tab element
-getPanel(index: number)             // Get panel element
-```
-
-**Events:**
-```typescript
-'tab-change' // { index, oldIndex, tab, panel }
-```
-
-### snice-tab (Tab Button)
+## snice-tab (Tab Button)
 
 ```typescript
-disabled: boolean = false;   // Disabled state
-closable: boolean = false;   // Show close button
+disabled: boolean = false;
+closable: boolean = false;
 ```
 
-**Methods:**
-```typescript
-focus()   // Focus the tab
-blur()    // Remove focus
-```
-
-**Events:**
-```typescript
-'tab-select' // { tab }
-'tab-close'      // { tab }
-```
-
-### snice-tab-panel (Content Panel)
+## snice-tab-panel (Content Panel)
 
 ```typescript
-name: string = '';                         // Panel identifier
-transitionIn: string = '';                 // Transition when showing
-transitionOut: string = '';                // Transition when hiding
-transitioning: 'in'|'out'|'' = '';        // Transition state
-transitionDuration: number = 300;          // Transition duration (ms)
+name: string = '';
+transitionIn: string = '';        // attr: transition-in
+transitionOut: string = '';       // attr: transition-out
+transitionDuration: number = 300; // attr: transition-duration
 ```
+
+## Events
+
+- `tab-change` → `{ index, oldIndex, tab, panel }` - Tab switched
+- `tab-select` → `{ tab }` - Tab clicked
+- `tab-close` → `{ tab }` - Close button clicked
+
+## Methods
+
+- `selectTab(index)` - Select tab by index
+- `show(index)` - Alias for selectTab
+- `getTab(index)` - Get tab element
+- `getPanel(index)` - Get panel element
 
 ## Usage
 
@@ -61,23 +46,17 @@ transitionDuration: number = 300;          // Transition duration (ms)
 <snice-tabs>
   <snice-tab slot="nav">Tab 1</snice-tab>
   <snice-tab slot="nav">Tab 2</snice-tab>
-
   <snice-tab-panel>Content 1</snice-tab-panel>
   <snice-tab-panel>Content 2</snice-tab-panel>
 </snice-tabs>
+
+<!-- Placement -->
+<snice-tabs placement="bottom">...</snice-tabs>
+<snice-tabs placement="start">...</snice-tabs>
+
+<!-- Closable -->
+<snice-tab slot="nav" closable>Closable Tab</snice-tab>
+
+<!-- Disabled -->
+<snice-tab slot="nav" disabled>Disabled Tab</snice-tab>
 ```
-
-```typescript
-tabs.addEventListener('tab-change', (e) => {
-  console.log(e.detail.index);
-});
-
-tabs.selectTab(1);
-```
-
-## Notes
-
-- Tabs use `slot="nav"` attribute
-- Panels in default slot
-- Automatically manages ARIA attributes
-- Supports keyboard navigation

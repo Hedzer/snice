@@ -1,90 +1,85 @@
-# Virtual Scroller Component
+[//]: # (AI: For a low-token version of this doc, use docs/ai/components/virtual-scroller.md instead)
 
-Efficiently render large lists by only displaying visible items.
+# Virtual Scroller
+`<snice-virtual-scroller>`
+
+Efficiently renders large lists by only displaying visible items.
 
 ## Basic Usage
 
-```javascript
-const scroller = document.querySelector('snice-virtual-scroller');
-
-scroller.items = Array.from({ length: 10000 }, (_, i) => ({
-  id: i,
-  data: `Item ${i}`
-}));
-
-scroller.renderItem = (item, index) => {
-  return `<div>${item.data}</div>`;
-};
-```
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `items` | `VirtualScrollerItem[]` | `[]` | Array of items to render |
-| `itemHeight` | `number` | `50` | Height of each item (px) |
-| `bufferSize` | `number` | `5` | Extra items to render outside viewport |
-| `estimatedItemHeight` | `number` | `50` | Estimated height for variable items |
-| `renderItem` | `Function` | - | Function to render each item |
-
-## VirtualScrollerItem Interface
-
 ```typescript
-interface VirtualScrollerItem {
-  id: string | number;  // Unique identifier
-  data: any;           // Item data
-  height?: number;     // Optional custom height
-}
+import 'snice/components/virtual-scroller/snice-virtual-scroller';
 ```
 
-## Methods
+```html
+<snice-virtual-scroller id="list" style="height: 400px;"></snice-virtual-scroller>
 
-### `scrollToIndex(index: number): void`
-Scroll to specific item index.
+<script>
+  const scroller = document.getElementById('list');
 
-```javascript
-scroller.scrollToIndex(500);
+  scroller.items = Array.from({ length: 10000 }, (_, i) => ({
+    id: i,
+    data: `Item ${i + 1}`
+  }));
+
+  scroller.renderItem = (item) => {
+    return `<div style="padding: 15px; border-bottom: 1px solid #eee;">${item.data}</div>`;
+  };
+</script>
 ```
 
-### `scrollToItem(id: string | number): void`
-Scroll to item by ID.
+## Importing
 
-```javascript
-scroller.scrollToItem('item-123');
+**ESM (bundler)**
+```typescript
+import 'snice/components/virtual-scroller/snice-virtual-scroller';
 ```
 
-### `refresh(): void`
-Recalculate visible range and re-render.
-
-```javascript
-scroller.refresh();
-```
-
-### `getVisibleRange(): { start: number; end: number }`
-Get currently visible item indices.
-
-```javascript
-const range = scroller.getVisibleRange();
-console.log(`Showing items ${range.start} to ${range.end}`);
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-virtual-scroller.min.js"></script>
 ```
 
 ## Examples
 
-### Simple List
+### Custom Item Height
+
+Use the `item-height` attribute to set the height of each item in pixels.
+
+```html
+<snice-virtual-scroller item-height="80" style="height: 600px;"></snice-virtual-scroller>
+```
+
+### Variable Height Items
+
+Set individual `height` values on items for variable row heights.
 
 ```javascript
-const scroller = document.querySelector('snice-virtual-scroller');
-
-scroller.items = Array.from({ length: 10000 }, (_, i) => ({
+scroller.items = Array.from({ length: 1000 }, (_, i) => ({
   id: i,
-  data: `Item ${i + 1}`
+  data: { title: `Post ${i + 1}` },
+  height: i % 2 === 0 ? 60 : 100
 }));
+```
 
-scroller.renderItem = (item) => {
-  return `<div style="padding: 15px; border-bottom: 1px solid #eee;">
-    ${item.data}
-  </div>`;
-};
+### Custom Buffer Size
+
+Use the `buffer-size` attribute to control how many extra items are rendered outside the viewport.
+
+```html
+<snice-virtual-scroller buffer-size="10" style="height: 400px;"></snice-virtual-scroller>
+```
+
+### Programmatic Scrolling
+
+```javascript
+scroller.scrollToIndex(500);          // Scroll to index
+scroller.scrollToItem('item-123');    // Scroll to item by ID
+scroller.refresh();                   // Recalculate layout
+
+const range = scroller.getVisibleRange();
+console.log(`Showing items ${range.start} to ${range.end}`);
 ```
 
 ### User List
@@ -92,207 +87,72 @@ scroller.renderItem = (item) => {
 ```javascript
 scroller.items = Array.from({ length: 5000 }, (_, i) => ({
   id: i,
-  data: {
-    name: `User ${i + 1}`,
-    email: `user${i + 1}@example.com`
-  }
+  data: { name: `User ${i + 1}`, email: `user${i + 1}@example.com` }
 }));
 
 scroller.renderItem = (item) => {
-  return `<div class="user-item">
-    <div class="user-name">${item.data.name}</div>
-    <div class="user-email">${item.data.email}</div>
+  return `<div style="padding: 12px;">
+    <div style="font-weight: 600;">${item.data.name}</div>
+    <div style="color: #666;">${item.data.email}</div>
   </div>`;
 };
 ```
 
-### Variable Height Items
-
-```javascript
-scroller.items = Array.from({ length: 1000 }, (_, i) => ({
-  id: i,
-  data: {
-    title: `Post ${i + 1}`,
-    content: i % 2 === 0 ? 'Short content' : 'Longer content with more text...'
-  },
-  height: i % 2 === 0 ? 60 : 100
-}));
-
-scroller.renderItem = (item) => {
-  return `<div style="padding: 15px;">
-    <h3>${item.data.title}</h3>
-    <p>${item.data.content}</p>
-  </div>`;
-};
-```
-
-### Custom Item Height
-
-```html
-<snice-virtual-scroller
-  style="height: 600px;"
-  item-height="80">
-</snice-virtual-scroller>
-```
-
-### Custom Buffer Size
-
-```html
-<snice-virtual-scroller
-  buffer-size="10"
-  style="height: 400px;">
-</snice-virtual-scroller>
-```
-
-### Programmatic Scrolling
-
-```javascript
-// Scroll to top
-scroller.scrollToIndex(0);
-
-// Scroll to middle
-scroller.scrollToIndex(Math.floor(scroller.items.length / 2));
-
-// Scroll to specific item
-scroller.scrollToItem('item-500');
-```
-
-### With Search
+### Filtering
 
 ```javascript
 const allItems = Array.from({ length: 10000 }, (_, i) => ({
   id: i,
-  data: { name: `Item ${i + 1}`, value: i }
+  data: { name: `Item ${i + 1}` }
 }));
 
 scroller.items = allItems;
 
-// Filter items
 function filterItems(query) {
-  if (!query) {
-    scroller.items = allItems;
-  } else {
-    scroller.items = allItems.filter(item =>
-      item.data.name.toLowerCase().includes(query.toLowerCase())
-    );
-  }
+  scroller.items = query
+    ? allItems.filter(item => item.data.name.toLowerCase().includes(query.toLowerCase()))
+    : allItems;
   scroller.refresh();
 }
-```
-
-### With Sorting
-
-```javascript
-function sortItems(field, order = 'asc') {
-  scroller.items = [...scroller.items].sort((a, b) => {
-    const aVal = a.data[field];
-    const bVal = b.data[field];
-    return order === 'asc' ? aVal - bVal : bVal - aVal;
-  });
-  scroller.refresh();
-}
-```
-
-### Complex Item Rendering
-
-```javascript
-scroller.renderItem = (item, index) => {
-  return `
-    <div class="complex-item" data-id="${item.id}">
-      <div class="item-header">
-        <img src="${item.data.avatar}" alt="${item.data.name}">
-        <span>${item.data.name}</span>
-        <span class="badge">${item.data.status}</span>
-      </div>
-      <div class="item-content">
-        ${item.data.description}
-      </div>
-      <div class="item-footer">
-        <button onclick="handleEdit(${item.id})">Edit</button>
-        <button onclick="handleDelete(${item.id})">Delete</button>
-      </div>
-    </div>
-  `;
-};
-```
-
-### Infinite Scroll
-
-```javascript
-let currentPage = 1;
-const itemsPerPage = 100;
-
-async function loadMore() {
-  const newItems = await fetchItems(currentPage);
-
-  scroller.items = [
-    ...scroller.items,
-    ...newItems
-  ];
-
-  scroller.refresh();
-  currentPage++;
-}
-
-scroller.addEventListener('scroll', (e) => {
-  const { scrollTop, scrollHeight, clientHeight } = e.target;
-
-  // Load more when near bottom
-  if (scrollHeight - scrollTop - clientHeight < 200) {
-    loadMore();
-  }
-});
 ```
 
 ### Dynamic Updates
 
 ```javascript
 // Add item
-function addItem(data) {
-  scroller.items = [
-    ...scroller.items,
-    { id: Date.now(), data }
-  ];
-  scroller.refresh();
-}
+scroller.items = [...scroller.items, { id: Date.now(), data: newData }];
+scroller.refresh();
 
 // Remove item
-function removeItem(id) {
-  scroller.items = scroller.items.filter(item => item.id !== id);
-  scroller.refresh();
-}
+scroller.items = scroller.items.filter(item => item.id !== targetId);
+scroller.refresh();
+```
 
-// Update item
-function updateItem(id, newData) {
-  scroller.items = scroller.items.map(item =>
-    item.id === id ? { ...item, data: { ...item.data, ...newData } } : item
-  );
-  scroller.refresh();
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `items` | `VirtualScrollerItem[]` | `[]` | Array of items to render |
+| `itemHeight` (attr: `item-height`) | `number` | `50` | Default item height (px) |
+| `bufferSize` (attr: `buffer-size`) | `number` | `5` | Extra items rendered outside viewport |
+| `estimatedItemHeight` (attr: `estimated-item-height`) | `number` | `50` | Estimated height for variable items |
+| `renderItem` | `(item: VirtualScrollerItem, index: number) => string` | -- | Function to render each item |
+
+### VirtualScrollerItem Interface
+
+```typescript
+interface VirtualScrollerItem {
+  id: string | number;
+  data: any;
+  height?: number;
 }
 ```
 
-## Performance
+## Methods
 
-Virtual scrolling provides significant performance benefits for large lists:
-
-- **Without virtual scrolling:** 10,000 items = 10,000 DOM elements
-- **With virtual scrolling:** 10,000 items = ~20-30 DOM elements (only visible items)
-
-This results in:
-- Faster initial render
-- Smooth 60fps scrolling
-- Lower memory usage
-- Better overall UX
-
-## Accessibility
-
-- Maintains scroll position
-- Keyboard navigation supported
-- Screen readers can navigate items
-- Supports ARIA attributes in rendered items
-
-## Browser Support
-
-- Modern browsers with Custom Elements v1 support
-- Uses CSS transforms for smooth scrolling
-- Efficient rendering with minimal reflows
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `scrollToIndex()` | `index: number` | Scroll to item at index |
+| `scrollToItem()` | `id: string \| number` | Scroll to item by ID |
+| `refresh()` | -- | Recalculate visible range and re-render |
+| `getVisibleRange()` | -- | Returns `{ start: number, end: number }` |

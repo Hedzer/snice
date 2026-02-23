@@ -11,14 +11,14 @@ address: string = '';
 city: string = '';
 state: string = '';
 country: string = '';
-zipCode: string = '';
+zipCode: string = '';           // attr: zip-code
 latitude: number | string = '';
 longitude: number | string = '';
-showMap: boolean = false;
-showIcon: boolean = true;
+showMap: boolean = false;        // attr: show-map
+showIcon: boolean = true;        // attr: show-icon
 icon: string = '📍';
-iconImage: string = '';
-mapUrl: string = '';
+iconImage: string = '';          // attr: icon-image
+mapUrl: string = '';             // attr: map-url
 clickable: boolean = false;
 ```
 
@@ -28,16 +28,14 @@ clickable: boolean = false;
 
 ## Methods
 
-```typescript
-getData(): LocationData
-getCoordinates(): { latitude: number; longitude: number } | null
-getFullAddress(): string
-openMap(): void
-```
+- `getData()` - Returns LocationData object
+- `getCoordinates()` - Returns `{ latitude, longitude }` or null
+- `getFullAddress()` - Returns formatted address string
+- `openMap()` - Opens location in maps app (new tab)
 
 ## Events
 
-- `location-click` - Dispatched when clicked (detail: LocationData)
+- `location-click` → `LocationData` - Clicked (when clickable)
 
 ## Usage
 
@@ -53,21 +51,12 @@ openMap(): void
 </snice-location>
 
 <!-- With embedded map -->
-<snice-location
-  name="Times Square"
-  latitude="40.7580"
-  longitude="-73.9855"
-  show-map>
-</snice-location>
+<snice-location name="Times Square" latitude="40.7580" longitude="-73.9855" show-map></snice-location>
 
 <!-- Coordinates only -->
-<snice-location
-  latitude="40.7580"
-  longitude="-73.9855"
-  mode="coordinates">
-</snice-location>
+<snice-location latitude="40.7580" longitude="-73.9855" mode="coordinates"></snice-location>
 
-<!-- Icon slot (for external CSS icon fonts like Material Symbols) -->
+<!-- Icon slot -->
 <snice-location name="Office" address="123 Main St">
   <span slot="icon" class="material-symbols-outlined">business</span>
 </snice-location>
@@ -75,10 +64,9 @@ openMap(): void
 
 ## Features
 
-- Multiple display modes (full/compact/coordinates/address)
+- 4 display modes (full/compact/coordinates/address)
 - Embedded Google Maps support
-- Custom icons (URL, image files, emoji, font ligatures)
+- Custom icons (emoji, URL, image, font ligatures, slot)
 - Clickable to open in maps app
 - Custom map URL support
 - Complete address formatting
-- Coordinate validation
