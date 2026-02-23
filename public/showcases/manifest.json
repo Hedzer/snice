@@ -27,7 +27,6 @@
     "masonry.html",
     "carousel.html",
     "virtual-scroller.html",
-    "infinite-scroll.html",
 
     "_cat-nav.html",
     "breadcrumbs.html",
@@ -79,7 +78,6 @@
     "camera.html",
     "camera-annotate.html",
     "cropper.html",
-    "signature.html",
     "qr-code.html",
     "qr-reader.html",
     "audio-recorder.html",
