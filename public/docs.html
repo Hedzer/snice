@@ -74,7 +74,7 @@
 <a href="#controllers-event-handling-in-controllers" class="sub">Event Handling in Controllers</a>
 <a href="#controllers-query-selectors-in-controllers" class="sub">Query Selectors in Controllers</a>
 <a href="#controllers-advanced-patterns" class="sub">Advanced Patterns</a>
-<a href="#controllers-controller-registry" class="sub">Controller Registry</a>
+<a href="#controllers-accessing-controllers" class="sub">Accessing Controllers</a>
 <div class="nav-group">Patterns</div>
 <a href="#observe">Observers</a>
 <a href="#observe-overview" class="sub">Overview</a>
@@ -89,6 +89,7 @@
 <a href="#observe-performance-considerations" class="sub">Performance Considerations</a>
 <a href="#observe-examples" class="sub">Examples</a>
 <a href="#request-response">Request / Response</a>
+<a href="#request-response-why-request-response" class="sub">Why Request/Response?</a>
 <a href="#request-response-basic-concept" class="sub">Basic Concept</a>
 <a href="#request-response-request-response-decorators" class="sub">Request/Response Decorators</a>
 <a href="#request-response-element-side-requests" class="sub">Element-Side Requests</a>
@@ -147,9 +148,11 @@ class MyButton extends HTMLElement {
   }
 }</snice-code-block>
 <h3 id="elements-element-decorator-options">Element Decorator Options</h3>
-<p>The <code>@element</code> decorator accepts a single parameter:</p>
+<p>The <code>@element</code> decorator accepts:</p>
 <ul>
 <li><code>tagName: string</code> - The custom element tag name (must contain a hyphen)</li>
+<li><code>options?: ElementOptions</code> - Optional configuration</li>
+<li><code>formAssociated?: boolean</code> - Enable form association (default: false)</li>
 </ul>
 <h2 id="elements-lifecycle-methods">Lifecycle Methods</h2>
 <h3 id="elements-render-decorator">@render() Decorator</h3>
@@ -210,7 +213,7 @@ class SimpleList extends HTMLElement {
 <li>Avoiding differential rendering issues with dynamic attributes</li>
 <li>Simple components where full re-render is acceptable</li>
 </ul>
-<p><strong>Note:</strong> When <code>differential: false</code>, the render method must return a string (not <code>html\</code>...\`<code>) and still honors </code><if><code> and </code><switch>/<case>` meta elements.</p>
+<p><strong>Note:</strong> When <code>differential: false</code>, the render method must return a string (not <code>html\</code>...\`<code>). Conditional rendering (</code><if><code>, </code><switch>/<case>`) is NOT available — use ternary operators in the string template instead.</p>
 <h3 id="elements-imperative-rendering">Imperative Rendering</h3>
 <p>Use <code>@render({ once: true })</code> with <code>@watch</code> and <code>@query</code> to render the template once, then update the DOM directly. Property changes fire watchers instead of triggering re-renders.</p>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">@element('user-card')
@@ -291,45 +294,49 @@ componentStyles() {
   `;
 }</snice-code-block>
 <h3 id="elements-lifecycle-decorators">Lifecycle Decorators</h3>
-<p><strong>@ready()</strong> - Called after shadow DOM is ready and initial render completes:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">import { element, ready, render, html } from 'snice';
+<p><strong>@ready()</strong> - Called after styles are applied and event handlers are set up. The initial render may still be completing in a microtask — use <code>@query</code> (which re-queries each access) to safely access rendered DOM:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">import { element, ready, query, render, html } from 'snice';
 
-@element('data-loader')
-class DataLoader extends HTMLElement {
-  @ready()
-  async loadData() {
-    // Called after element is fully initialized
-    const data = await fetch('/api/data').then(r =&gt; r.json());
-    this.data = data;
-  }
-
-  @render()
-  renderContent() {
-    return html`&lt;div&gt;Loading...&lt;/div&gt;`;
-  }
-}</snice-code-block>
-<p><strong>@dispose()</strong> - Called when element is removed from DOM:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">@element('polling-element')
-class PollingElement extends HTMLElement {
-  private intervalId?: number;
+@element('auto-resize-textarea')
+class AutoResizeTextarea extends HTMLElement {
+  @query('textarea') textarea?: HTMLTextAreaElement;
 
   @ready()
-  startPolling() {
-    this.intervalId = setInterval(() =&gt; {
-      this.updateData();
-    }, 5000);
-  }
-
-  @dispose()
-  stopPolling() {
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
+  adjustHeight() {
+    if (this.textarea) {
+      this.textarea.style.height = `${this.textarea.scrollHeight}px`;
     }
   }
 
   @render()
   renderContent() {
-    return html`&lt;div&gt;Polling...&lt;/div&gt;`;
+    return html`&lt;textarea @input=${this.adjustHeight}&gt;&lt;/textarea&gt;`;
+  }
+}</snice-code-block>
+<p><strong>@dispose()</strong> - Called when element is removed from DOM:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">@element('animated-element')
+class AnimatedElement extends HTMLElement {
+  private rafId?: number;
+
+  @ready()
+  startAnimation() {
+    const animate = () =&gt; {
+      // Update animation frame
+      this.rafId = requestAnimationFrame(animate);
+    };
+    this.rafId = requestAnimationFrame(animate);
+  }
+
+  @dispose()
+  stopAnimation() {
+    if (this.rafId) {
+      cancelAnimationFrame(this.rafId);
+    }
+  }
+
+  @render()
+  renderContent() {
+    return html`&lt;canvas width=&quot;300&quot; height=&quot;200&quot;&gt;&lt;/canvas&gt;`;
   }
 }</snice-code-block>
 <h3 id="elements-ready-promise">ready Promise</h3>
@@ -339,18 +346,20 @@ document.body.appendChild(el);
 await (el as any).ready; // Wait for element to be ready</snice-code-block>
 <h2 id="elements-shadow-dom">Shadow DOM</h2>
 <p>All elements automatically use Shadow DOM for style encapsulation.</p>
-<h3 id="elements-accessing-shadow-root">Accessing Shadow Root</h3>
+<h3 id="elements-accessing-shadow-dom-elements">Accessing Shadow DOM Elements</h3>
+<p>Use <code>@query</code> instead of manual <code>shadowRoot.querySelector</code>:</p>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">@element('shadow-demo')
 class ShadowDemo extends HTMLElement {
+  @query('#content') content?: HTMLElement;
+
   @render()
   renderContent() {
     return html`&lt;div id=&quot;content&quot;&gt;Hello&lt;/div&gt;`;
   }
 
   updateContent(text: string) {
-    const content = this.shadowRoot?.getElementById('content');
-    if (content) {
-      content.textContent = text;
+    if (this.content) {
+      this.content.textContent = text;
     }
   }
 }</snice-code-block>
@@ -574,25 +583,26 @@ class ScopedStyles extends HTMLElement {
   }
 }</snice-code-block>
 <h3 id="elements-dynamic-styles">Dynamic Styles</h3>
+<p><code>@styles()</code> is called <strong>once</strong> during initialization and does not update on property changes. For dynamic styling, use CSS custom properties set in the template:</p>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">@element('theme-component')
 class ThemeComponent extends HTMLElement {
   @property()
-  primaryColor = '#007bff';
-
-  @property({ type: Number })
-  fontSize = 16;
+  accentColor = '#007bff';
 
   @render()
   renderContent() {
-    return html`&lt;div class=&quot;themed&quot;&gt;Themed content&lt;/div&gt;`;
+    return html`
+      &lt;div class=&quot;themed&quot; style=&quot;--accent: ${this.accentColor}&quot;&gt;
+        Themed content
+      &lt;/div&gt;
+    `;
   }
 
   @styles()
   themeStyles() {
     return css`
       .themed {
-        color: ${this.primaryColor};
-        font-size: ${this.fontSize}px;
+        color: var(--accent);
       }
     `;
   }
@@ -706,33 +716,35 @@ class FormHandler extends HTMLElement {
   }
 }</snice-code-block>
 <h2 id="elements-advanced-examples">Advanced Examples</h2>
-<h3 id="elements-complex-form-component">Complex Form Component</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">import { element, property, query, watch, render, styles, html, css } from 'snice';
+<h3 id="elements-form-component">Form Component</h3>
+<p>Elements handle visual behavior — they render the form and emit events. Business logic (API calls, validation) belongs in controllers:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">import { element, property, query, dispatch, render, styles, html, css } from 'snice';
 
 @element('registration-form')
 class RegistrationForm extends HTMLElement {
   @property({ type: Boolean })
   loading = false;
 
-  @query('form')
-  form?: HTMLFormElement;
+  @query('form') form?: HTMLFormElement;
+
+  @dispatch('register-submit')
+  handleSubmit(event: Event) {
+    event.preventDefault();
+    return Object.fromEntries(new FormData(this.form!));
+  }
 
   @render()
   renderContent() {
     return html`
       &lt;form @submit=${this.handleSubmit}&gt;
-        &lt;h2&gt;Register&lt;/h2&gt;
-
         &lt;div class=&quot;field&quot;&gt;
           &lt;label&gt;Username&lt;/label&gt;
           &lt;input type=&quot;text&quot; name=&quot;username&quot; required&gt;
         &lt;/div&gt;
-
         &lt;div class=&quot;field&quot;&gt;
           &lt;label&gt;Email&lt;/label&gt;
           &lt;input type=&quot;email&quot; name=&quot;email&quot; required&gt;
         &lt;/div&gt;
-
         &lt;button type=&quot;submit&quot; ?disabled=${this.loading}&gt;
           ${this.loading ? 'Registering...' : 'Register'}
         &lt;/button&gt;
@@ -746,40 +758,23 @@ class RegistrationForm extends HTMLElement {
       :host {
         display: block;
         max-width: 400px;
-        margin: 0 auto;
-      }
-
-      form {
-        padding: 20px;
-        background: white;
-        border-radius: 8px;
       }
 
       .field {
-        margin-bottom: 20px;
+        margin-bottom: 1rem;
       }
 
       label {
         display: block;
-        margin-bottom: 5px;
+        margin-bottom: 0.25rem;
         font-weight: bold;
       }
 
       input {
         width: 100%;
-        padding: 8px 12px;
-        border: 1px solid #ddd;
+        padding: 0.5rem;
+        border: 1px solid var(--snice-color-border, #ddd);
         border-radius: 4px;
-      }
-
-      button {
-        width: 100%;
-        padding: 10px;
-        background: #007bff;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
       }
 
       button:disabled {
@@ -787,30 +782,6 @@ class RegistrationForm extends HTMLElement {
         cursor: not-allowed;
       }
     `;
-  }
-
-  async handleSubmit(event: Event) {
-    event.preventDefault();
-
-    this.loading = true;
-
-    try {
-      const formData = new FormData(this.form!);
-
-      // Simulate API call
-      await new Promise(resolve =&gt; setTimeout(resolve, 2000));
-
-      this.dispatchEvent(new CustomEvent('registration-success', {
-        detail: Object.fromEntries(formData),
-        bubbles: true
-      }));
-
-      this.form?.reset();
-    } catch (error) {
-      console.error('Registration failed:', error);
-    } finally {
-      this.loading = false;
-    }
   }
 }</snice-code-block>
 <h3 id="elements-watch-decorator">Watch Decorator</h3>
@@ -853,13 +824,16 @@ class ReactiveComponent extends HTMLElement {
 }</snice-code-block>
 <h3 id="elements-context-decorator">@context() Decorator</h3>
 <p>Receive router context updates. The decorated method is called whenever the router context changes (navigation, app context update, etc.):</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">import { element, context, render, html } from 'snice';
-import type { Context } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json">import { element, context, property, render, html } from 'snice';
+import type { Context, Placard } from 'snice';
 
 @element('nav-bar')
 class NavBar extends HTMLElement {
-  private placards: any[] = [];
-  private currentRoute = '';
+  @property({ type: Array })
+  placards: Placard[] = [];
+
+  @property()
+  currentRoute = '';
 
   @context()
   onContextUpdate(ctx: Context) {
@@ -968,7 +942,8 @@ const { page, initialize } = Router({
 });</snice-code-block>
 <h2 id="routing-page-components">Page Components</h2>
 <h3 id="routing-basic-page">Basic Page</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">import { page, render, html, styles, css } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json">import { render, html, styles, css } from 'snice';
+import { page } from './router'; // page comes from Router(), not from 'snice'
 
 @page({ tag: 'home-page', routes: ['/'] })
 class HomePage extends HTMLElement {
@@ -1007,7 +982,8 @@ class HomePage extends HTMLElement {
 }</snice-code-block>
 <h3 id="routing-page-with-context">Page with Context</h3>
 <p>The <code>@context()</code> decorator is a <strong>method decorator</strong> that receives context updates from the router. The method is called whenever navigation occurs, with a Context object containing application state and navigation data.</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">import { page, context, render, html, Context } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json">import { context, render, html, Context } from 'snice';
+import { page } from './router';
 
 @page({ tag: 'profile-page', routes: ['/profile'] })
 class ProfilePage extends HTMLElement {
@@ -1348,10 +1324,10 @@ const customTransition: Transition = {
   outDuration: 300,
   inDuration: 300,
   out: 'opacity: 0; transform: translateY(-20px)',
-  in: 'opacity: 0; transform: translateY(20px)',
+  in: 'opacity: 1; transform: translateY(0)',
   mode: 'sequential'  // or 'simultaneous'
 };</snice-code-block>
-<p>The <code>out</code> string is applied to the leaving page, <code>in</code> string is the starting state of the entering page (which then transitions to its natural state).</p>
+<p>The <code>out</code> string is the end state of the leaving page. The <code>in</code> string is the end state of the entering page (which starts invisible and transitions to this state).</p>
 <h2 id="routing-route-guards">Route Guards</h2>
 <p>Guards protect routes and can redirect unauthorized access:</p>
 <h3 id="routing-basic-guard">Basic Guard</h3>
@@ -2054,7 +2030,7 @@ class TaskList extends HTMLElement {
 <li>Event delegation with CSS selectors</li>
 <li>Keyboard modifier matching (<code>Enter</code>, <code>ctrl+s</code>, etc.)</li>
 <li>Debounce or throttle</li>
-<li>Multiple events on one handler</li>
+<li>Multiple events on one handler (accepts <code>string[]</code>: <code>@on(['mouseenter', 'focus'])</code>)</li>
 <li>Automatic preventDefault or stopPropagation</li>
 </ul>
 <h3 id="events-basic-controller-usage">Basic Controller Usage</h3>
@@ -2278,34 +2254,62 @@ class StatusIndicator extends HTMLElement {
     };
   }
 }</snice-code-block>
-<h3 id="events-multiple-dispatches">Multiple Dispatches</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">@element('data-manager')
-class DataManager extends HTMLElement {
-  private data: any[] = [];
+<h3 id="events-dispatchoptions">DispatchOptions</h3>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">interface DispatchOptions extends EventInit {
+  dispatchOnUndefined?: boolean; // Skip dispatch when return is undefined (default: true)
+  debounce?: number;             // Debounce dispatch by ms
+  throttle?: number;             // Throttle dispatch by ms
+}</snice-code-block>
+<h3 id="events-debounce-throttle">Debounce/Throttle</h3>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">@element('search-box')
+class SearchBox extends HTMLElement {
+  @render()
+  renderContent() {
+    return html`&lt;input @input=${this.handleInput}&gt;`;
+  }
+
+  handleInput(e: Event) {
+    this.emitSearch((e.target as HTMLInputElement).value);
+  }
+
+  @dispatch('search-query', { debounce: 300 })
+  emitSearch(query: string) {
+    return { query };
+  }
+}</snice-code-block>
+<h3 id="events-async-methods">Async Methods</h3>
+<p><code>@dispatch</code> works with async methods — the event dispatches after the promise resolves:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">@dispatch('validation-complete')
+async validate() {
+  const result = await this.runValidation();
+  return { valid: result.isValid, errors: result.errors };
+}</snice-code-block>
+<h3 id="events-multiple-events">Multiple Events</h3>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">@element('color-picker')
+class ColorPicker extends HTMLElement {
+  @property() color = '#000000';
 
   @render()
   renderContent() {
-    return html`&lt;div&gt;Data Manager&lt;/div&gt;`;
+    return html`
+      &lt;input type=&quot;color&quot; .value=${this.color} @input=${this.handleInput}&gt;
+      &lt;button @click=${this.confirm}&gt;OK&lt;/button&gt;
+    `;
   }
 
-  @dispatch('item-added')
-  addItem(item: any) {
-    this.data.push(item);
-    return { item, total: this.data.length };
+  handleInput(e: Event) {
+    this.changeColor((e.target as HTMLInputElement).value);
   }
 
-  @dispatch('item-removed')
-  removeItem(id: string) {
-    const item = this.data.find(i =&gt; i.id === id);
-    this.data = this.data.filter(i =&gt; i.id !== id);
-    return { id, item, total: this.data.length };
+  @dispatch('color-preview')
+  changeColor(color: string) {
+    this.color = color;
+    return { color };
   }
 
-  @dispatch('data-cleared')
-  clearData() {
-    const count = this.data.length;
-    this.data = [];
-    return { clearedCount: count };
+  @dispatch('color-selected')
+  confirm() {
+    return { color: this.color };
   }
 }</snice-code-block>
 <h2 id="events-custom-events">Custom Events</h2>
@@ -2600,51 +2604,24 @@ useNativeElementControllers();</snice-code-block>
   &lt;input type=&quot;text&quot; name=&quot;username&quot;&gt;
 &lt;/form&gt;</snice-code-block>
 <h3 id="controllers-example-table-controller">Example: Table Controller</h3>
+<p>Controllers provide specific behaviors (data fetching, sorting, filtering) to generic visual components. The component handles rendering — the controller handles data:</p>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">@controller('table-controller')
 class TableController implements IController&lt;HTMLTableElement&gt; {
   element: HTMLTableElement | null = null;
-  private data: any[] = [];
 
   async attach(element: HTMLTableElement) {
-    // Fetch data
-    this.data = await this.fetchData();
+    const data = await fetch('/api/data').then(r =&gt; r.json());
 
-    // Render table
-    this.renderTable();
-  }
-
-  async detach(element: HTMLTableElement) {
-    // Clear table
-    const tbody = element.querySelector('tbody');
-    if (tbody) {
-      tbody.innerHTML = '';
+    // Pass data to the element — if it's a custom element, call its API
+    if ('setData' in element &amp;&amp; typeof (element as any).setData === 'function') {
+      (element as any).setData(data);
     }
   }
 
-  private async fetchData() {
-    const response = await fetch('/api/data');
-    return response.json();
-  }
-
-  private renderTable() {
-    if (!this.element) return;
-
-    const tbody = this.element.querySelector('tbody');
-    if (!tbody) return;
-
-    const esc = (s: string) =&gt; s.replace(/&amp;/g, '&amp;amp;').replace(/&lt;/g, '&amp;lt;').replace(/&gt;/g, '&amp;gt;');
-
-    tbody.innerHTML = this.data.map(row =&gt; `
-      &lt;tr&gt;
-        &lt;td&gt;${esc(String(row.id))}&lt;/td&gt;
-        &lt;td&gt;${esc(row.name)}&lt;/td&gt;
-        &lt;td&gt;${esc(row.status)}&lt;/td&gt;
-      &lt;/tr&gt;
-    `).join('');
-  }
+  async detach() {}
 }</snice-code-block>
 <h2 id="controllers-resource-cleanup">Resource Cleanup</h2>
-<p>Controllers should clean up resources in the <code>detach</code> method:</p>
+<p>The framework auto-cleans <code>@on</code>, <code>@observe</code>, and <code>@respond</code> handlers. Clean up your own resources (WebSockets, timers, manual listeners) in <code>detach</code>:</p>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">import { controller, IController } from 'snice';
 
 @controller('resource-controller')
@@ -2721,65 +2698,39 @@ class FormController implements IController&lt;HTMLFormElement&gt; {
   }
 }</snice-code-block>
 <h2 id="controllers-query-selectors-in-controllers">Query Selectors in Controllers</h2>
-<p>Controllers can use <code>@query</code> and <code>@queryAll</code> to access elements:</p>
+<p>Controllers can use <code>@query</code> and <code>@queryAll</code> to access elements. <strong>Important:</strong> By default, <code>@query</code> searches the shadow DOM. When attached to native elements (no shadow root), use <code>{ light: true }</code>:</p>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">import { controller, query, queryAll, IController } from 'snice';
 
-@controller('dashboard-controller')
-class DashboardController implements IController {
-  element: HTMLElement | null = null;
+@controller('form-validation-controller')
+class FormValidationController implements IController&lt;HTMLFormElement&gt; {
+  element: HTMLFormElement | null = null;
 
-  @query('.status-indicator')
-  statusIndicator?: HTMLElement;
+  // light: true is required — native elements have no shadow root
+  @query('.error-message', { light: true })
+  errorEl?: HTMLElement;
 
-  @query('#refresh-button')
-  refreshButton?: HTMLButtonElement;
+  @queryAll('input[required]', { light: true })
+  requiredInputs?: NodeListOf&lt;HTMLInputElement&gt;;
 
-  @queryAll('.data-card')
-  dataCards?: NodeListOf&lt;HTMLElement&gt;;
+  async attach() {}
+  async detach() {}
 
-  async attach(element: HTMLElement) {
-    // Queries work on the attached element
-    this.updateStatus('Loading...');
+  @on('submit')
+  handleSubmit(event: Event) {
+    const invalid = Array.from(this.requiredInputs || []).filter(i =&gt; !i.value.trim());
 
-    // Fetch and display data
-    await this.loadDashboardData();
-
-    this.updateStatus('Ready');
-  }
-
-  async detach(element: HTMLElement) {
-    this.updateStatus('Offline');
-  }
-
-  private updateStatus(status: string) {
-    if (this.statusIndicator) {
-      this.statusIndicator.textContent = status;
+    if (invalid.length &gt; 0) {
+      event.preventDefault();
+      invalid[0].focus();
+      if (this.errorEl) {
+        this.errorEl.textContent = `${invalid.length} required field(s) missing`;
+      }
     }
-  }
-
-  private async loadDashboardData() {
-    // Load data for each card
-    this.dataCards?.forEach(async (card, index) =&gt; {
-      const data = await this.fetchCardData(index);
-      card.innerHTML = this.renderCard(data);
-    });
-  }
-
-  private async fetchCardData(index: number) {
-    // Simulate API call
-    return { title: `Card ${index + 1}`, value: Math.random() * 100 };
-  }
-
-  private renderCard(data: any) {
-    const esc = (s: string) =&gt; s.replace(/&amp;/g, '&amp;amp;').replace(/&lt;/g, '&amp;lt;').replace(/&gt;/g, '&amp;gt;');
-    return `
-      &lt;h3&gt;${esc(data.title)}&lt;/h3&gt;
-      &lt;p&gt;${data.value.toFixed(2)}&lt;/p&gt;
-    `;
   }
 }</snice-code-block>
 <h2 id="controllers-advanced-patterns">Advanced Patterns</h2>
 <h3 id="controllers-data-fetching-controller">Data Fetching Controller</h3>
+<p>Controllers own data fetching. Pass results to the element via its API or dispatch events — don't manipulate DOM directly:</p>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">@controller('data-fetcher')
 class DataFetcherController implements IController {
   element: HTMLElement | null = null;
@@ -2787,90 +2738,42 @@ class DataFetcherController implements IController {
   private pollingInterval?: number;
 
   async attach(element: HTMLElement) {
-    // Initial data load
-    await this.fetchAndRender();
+    await this.fetchData();
 
-    // Set up polling
-    this.pollingInterval = setInterval(() =&gt; {
-      this.fetchAndRender();
-    }, 30000); // Poll every 30 seconds
+    // Poll every 30 seconds
+    this.pollingInterval = setInterval(() =&gt; this.fetchData(), 30000);
   }
 
-  async detach(element: HTMLElement) {
-    // Cancel any pending requests
+  async detach() {
     this.abortController?.abort();
-
-    // Stop polling
     if (this.pollingInterval) {
       clearInterval(this.pollingInterval);
     }
   }
 
-  private async fetchAndRender() {
+  private async fetchData() {
+    this.abortController?.abort();
+    this.abortController = new AbortController();
+
     try {
-      // Cancel previous request if still pending
-      this.abortController?.abort();
-      this.abortController = new AbortController();
-
-      // Show loading state
-      this.setLoadingState(true);
-
-      // Fetch data with timeout
       const response = await fetch('/api/data', {
         signal: this.abortController.signal
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
       const data = await response.json();
 
-      // Render data
-      this.renderData(data);
-
+      // Pass data to element — let the element handle rendering
+      this.element?.dispatchEvent(new CustomEvent('data-loaded', {
+        detail: data,
+        bubbles: true
+      }));
     } catch (error: any) {
       if (error.name !== 'AbortError') {
-        this.renderError(error.message);
+        this.element?.dispatchEvent(new CustomEvent('data-error', {
+          detail: { message: error.message },
+          bubbles: true
+        }));
       }
-    } finally {
-      this.setLoadingState(false);
     }
-  }
-
-  private setLoadingState(loading: boolean) {
-    if (!this.element) return;
-
-    if (loading) {
-      this.element.classList.add('loading');
-      this.element.setAttribute('aria-busy', 'true');
-    } else {
-      this.element.classList.remove('loading');
-      this.element.setAttribute('aria-busy', 'false');
-    }
-  }
-
-  private renderData(data: any) {
-    if (!this.element) return;
-
-    // Type guard for custom element
-    if ('setData' in this.element &amp;&amp; typeof this.element.setData === 'function') {
-      this.element.setData(data);
-    } else {
-      // Fallback for native elements
-      this.element.textContent = JSON.stringify(data, null, 2);
-    }
-  }
-
-  private renderError(message: string) {
-    if (!this.element) return;
-
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'error';
-    errorDiv.textContent = `Error: ${message}`;
-
-    this.element.innerHTML = '';
-    this.element.appendChild(errorDiv);
   }
 }</snice-code-block>
 <h3 id="controllers-theme-controller">Theme Controller</h3>
@@ -2930,12 +2833,22 @@ class WebSocketController implements IController {
     }
   }
 }</snice-code-block>
-<h2 id="controllers-controller-registry">Controller Registry</h2>
-<p>Controllers are automatically registered when decorated with <code>@controller</code>. Access controller instances via the <code>@snice/controller-attached</code> event:</p>
+<h2 id="controllers-accessing-controllers">Accessing Controllers</h2>
+<h3 id="controllers-via-event">Via Event</h3>
+<p>Listen for attachment on the element itself (the event does <strong>not</strong> bubble):</p>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">element.addEventListener('@snice/controller-attached', (e: CustomEvent) =&gt; {
-  const controller = e.detail.controller;
-  console.log('Controller attached:', controller);
+  console.log('Name:', e.detail.name);           // controller name string
+  console.log('Instance:', e.detail.controller);  // IController instance
 });</snice-code-block>
+<h3 id="controllers-via-getcontroller">Via getController()</h3>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">import { getController } from 'snice';
+
+const ctrl = getController&lt;MyController&gt;(element);
+if (ctrl) {
+  ctrl.doSomething();
+}</snice-code-block>
+<h3 id="controllers-auto-cleanup">Auto-Cleanup</h3>
+<p>The framework automatically cleans up <code>@on</code> handlers, observers, and <code>@respond</code> handlers during detach. Manual cleanup in <code>detach()</code> is only needed for resources you manage yourself (WebSockets, intervals, manual event listeners).</p>
 </section>
 <section class="doc-file" id="observe">
 <h1 id="observe-observe-api-documentation">Observe API Documentation</h1>
@@ -3411,19 +3324,28 @@ class DynamicForm extends HTMLElement {
 </section>
 <section class="doc-file" id="request-response">
 <h1 id="request-response-request-response-api-documentation">Request/Response API Documentation</h1>
-<p>Request/Response provides bidirectional request/response communication between elements and controllers using async generators.</p>
+<p>Request/Response provides request/response communication between elements and controllers using async generators.</p>
+<h2 id="request-response-why-request-response">Why Request/Response?</h2>
+<p>Components are <strong>generic</strong>. A <code><product-card></code> renders a card — it doesn't know or care whether its data comes from a REST API, a GraphQL endpoint, a WebSocket, or a test fixture. Controllers are <strong>specific</strong>. They wire a particular data source, API, or business rule to a generic component.</p>
+<p>The <code>@request</code>/<code>@respond</code> pattern keeps this separation clean:</p>
+<ul>
+<li><strong>The element says <em>what</em> it needs</strong> (e.g., "I need product data for this ID") without knowing <em>how</em> to get it.</li>
+<li><strong>The controller decides <em>how</strong></em> — makes the API call, applies business logic, caches results, whatever is needed.</li>
+<li><strong>Swapping controllers changes behavior without touching the component.</strong> Attach a mock controller for tests, a real API controller in production, or a WebSocket controller for live updates — the element is the same.</li>
+</ul>
+<p>This makes components reusable across projects and testable in isolation. An element with <code>@request('fetch-product')</code> works with <em>any</em> controller that <code>@respond</code>s to <code>'fetch-product'</code> — no imports, no interfaces, no coupling.</p>
 <h2 id="request-response-basic-concept">Basic Concept</h2>
-<p>Request/Response enables a request/response pattern between elements and their controllers:</p>
+<p>Request/Response enables a single request/response round-trip between elements and their controllers:</p>
 <ol>
-<li><strong>Element</strong> sends a request using <code>yield</code></li>
-<li><strong>Controller</strong> receives the request and returns a response</li>
-<li><strong>Element</strong> receives the response and can process it</li>
+<li><strong>Element</strong> yields a request payload — "here's what I need"</li>
+<li><strong>Controller</strong> receives the payload and returns a response — "here's the data"</li>
+<li><strong>Element</strong> receives the response and updates its visual state</li>
 </ol>
-<p>This pattern is implemented using async generators and custom events.</p>
+<p>This pattern is implemented using async generators and custom events. Each <code>@request</code> method supports <strong>one yield</strong> per invocation — the generator yields a request payload, the controller responds, and the generator receives the response.</p>
 <h2 id="request-response-request-response-decorators">Request/Response Decorators</h2>
 <h3 id="request-response-signature">Signature</h3>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">function request(requestName: string, options?: RequestOptions): MethodDecorator
-function response(responseName: string, options?: RespondOptions): MethodDecorator
+function respond(requestName: string, options?: RespondOptions): MethodDecorator
 
 interface RequestOptions extends EventInit {
   timeout?: number;         // Response timeout in ms (default: 120000ms = 2 minutes)
@@ -3438,634 +3360,233 @@ interface RespondOptions {
 }
 
 // Recommended type helper for request generator return types:
-type Response&lt;T&gt; = AsyncGenerator&lt;any, T, any&gt; | Promise&lt;T&gt;;
+type RequestResult&lt;T&gt; = AsyncGenerator&lt;any, T, any&gt; | Promise&lt;T&gt;;
 // Define this in your project — it satisfies both the generator and the caller</snice-code-block>
 <h4 id="request-response-response-debounce-throttle">Response Debounce/Throttle</h4>
-<p>Response handlers can also be debounced or throttled to prevent excessive processing:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">@controller('heavy-processing-controller')
+<p>Response handlers can be debounced or throttled:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">@controller('processing-controller')
 class ProcessingController implements IController {
+  element: HTMLElement | null = null;
+  async attach() {}
+  async detach() {}
 
-  @respond('@api/expensive-calculation', { debounce: 1000 })
-  async calculateResults(params: any) {
-    // Debounced by 1 second - rapid requests will only trigger the latest
-    return await performExpensiveCalculation(params);
+  @respond('search', { debounce: 300 })
+  async handleSearch(query: { term: string }) {
+    return await fetch(`/api/search?q=${encodeURIComponent(query.term)}`).then(r =&gt; r.json());
   }
 
-  @respond('@api/real-time-updates', { throttle: 500 })
-  async handleUpdates(data: any) {
-    // Throttled to max 2 requests per second
-    return await processUpdate(data);
+  @respond('analytics', { throttle: 1000 })
+  async handleAnalytics(event: any) {
+    return await fetch('/api/track', { method: 'POST', body: JSON.stringify(event) });
   }
 }</snice-code-block>
 <h2 id="request-response-element-side-requests">Element-Side Requests</h2>
-<p>Elements use async generators to make requests:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">import { element, request, render, html } from 'snice';
+<p>Elements use async generators to make requests. The element stays visual — it yields data up to the controller and renders the response:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">import { element, request, property, render, html } from 'snice';
 
-type Response&lt;T&gt; = AsyncGenerator&lt;any, T, any&gt; | Promise&lt;T&gt;;
+type RequestResult&lt;T&gt; = AsyncGenerator&lt;any, T, any&gt; | Promise&lt;T&gt;;
 
-@element('user-card')
-class UserCard extends HTMLElement {
-  userId = 123;
+@element('product-card')
+class ProductCard extends HTMLElement {
+  @property() productId = '';
+  @property() name = '';
+  @property() price = '';
+
+  @request('fetch-product')
+  async *loadProduct(): RequestResult&lt;void&gt; {
+    const product = await (yield { id: this.productId });
+    this.name = product.name;
+    this.price = product.price;
+  }
 
   @render()
   renderContent() {
     return html`
-      &lt;div class=&quot;user-info&quot;&gt;
-        &lt;button @click=${this.loadUser}&gt;Load User&lt;/button&gt;
-        &lt;div class=&quot;content&quot;&gt;&lt;/div&gt;
+      &lt;div class=&quot;card&quot;&gt;
+        &lt;h3&gt;${this.name || 'Loading...'}&lt;/h3&gt;
+        &lt;p&gt;${this.price}&lt;/p&gt;
+        &lt;button @click=${this.loadProduct}&gt;Refresh&lt;/button&gt;
       &lt;/div&gt;
     `;
   }
-
-  @request('fetch-user')
-  async *fetchUserData(): Response&lt;{ success: boolean; user: any }&gt; {
-    // Yield sends the request, await waits for response
-    const user = await (yield { userId: this.userId });
-
-    // Process the response
-    this.displayUser(user);
-
-    // Return final value (optional)
-    return { success: true, user };
-  }
-
-  async loadUser() {
-    try {
-      const result = await this.fetchUserData();
-      console.log('Load complete:', result);
-    } catch (error) {
-      console.error('Failed to load user:', error);
-    }
-  }
-
-  displayUser(user: any) {
-    const content = this.shadowRoot?.querySelector('.content');
-    if (content) {
-      content.innerHTML = `
-        &lt;h3&gt;${user.name}&lt;/h3&gt;
-        &lt;p&gt;${user.email}&lt;/p&gt;
-      `;
-    }
-  }
 }</snice-code-block>
-<h3 id="request-response-multiple-yields">Multiple Yields</h3>
-<p>Elements can yield multiple times in a single channel:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">@element('multi-request')
-class MultiRequest extends HTMLElement {
-  @request('multi-data')
-  async *fetchMultipleData() {
-    // First request
-    const userData = await (yield { type: 'user', id: 1 });
-    console.log('Got user:', userData);
-
-    // Second request based on first response
-    const postsData = await (yield { type: 'posts', userId: userData.id });
-    console.log('Got posts:', postsData);
-
-    // Third request
-    const commentsData = await (yield { type: 'comments', postIds: postsData.map((p: any) =&gt; p.id) });
-    console.log('Got comments:', commentsData);
-
-    // Return combined result
-    return {
-      user: userData,
-      posts: postsData,
-      comments: commentsData
-    };
-  }
-
-  @render()
-  renderContent() {
-    return html`&lt;button @click=${this.fetchData}&gt;Fetch All Data&lt;/button&gt;`;
-  }
-
-  async fetchData() {
-    const result = await this.fetchMultipleData();
-    console.log('All data loaded:', result);
-  }
-}</snice-code-block>
+<p><strong>How it works:</strong></p>
+<ol>
+<li><code>yield { id: this.productId }</code> dispatches a bubbling custom event with the payload</li>
+<li>A <code>@respond('fetch-product')</code> handler (typically in a controller) catches it and returns data</li>
+<li><code>await (yield ...)</code> resolves with the response</li>
+<li>The element updates its properties, triggering a re-render</li>
+</ol>
 <h2 id="request-response-controller-side-responses">Controller-Side Responses</h2>
-<p>Controllers handle requests and provide responses:</p>
+<p>Controllers handle requests — this is where business logic, API calls, and data management belong:</p>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">import { controller, respond, IController } from 'snice';
 
-@controller('user-controller')
-class UserController implements IController {
+@controller('product-controller')
+class ProductController implements IController {
   element: HTMLElement | null = null;
+  async attach() {}
+  async detach() {}
 
-  async attach(element: HTMLElement) {
-    console.log('User controller attached');
-  }
-
-  async detach(element: HTMLElement) {
-    console.log('User controller detached');
-  }
-
-  @respond('fetch-user')
-  async handleFetchUser(request: { userId: number }) {
-    // Simulate API call
-    const response = await fetch(`/api/users/${request.userId}`);
-    const user = await response.json();
-
-    // Return response to element
-    return user;
-  }
-
-  @respond('multi-data')
-  async handleMultiData(request: any) {
-    switch (request.type) {
-      case 'user':
-        return await this.fetchUser(request.id);
-      case 'posts':
-        return await this.fetchPosts(request.userId);
-      case 'comments':
-        return await this.fetchComments(request.postIds);
-      default:
-        throw new Error(`Unknown request type: ${request.type}`);
-    }
-  }
-
-  private async fetchUser(id: number) {
-    // Simulate API call
-    return { id, name: 'John Doe', email: 'john@example.com' };
-  }
-
-  private async fetchPosts(userId: number) {
-    // Simulate API call
-    return [
-      { id: 1, userId, title: 'Post 1' },
-      { id: 2, userId, title: 'Post 2' }
-    ];
-  }
-
-  private async fetchComments(postIds: number[]) {
-    // Simulate API call
-    return postIds.flatMap(postId =&gt; [
-      { id: 1, postId, text: 'Comment 1' },
-      { id: 2, postId, text: 'Comment 2' }
-    ]);
+  @respond('fetch-product')
+  async handleFetchProduct(request: { id: string }) {
+    const response = await fetch(`/api/products/${request.id}`);
+    return await response.json();
   }
 }</snice-code-block>
+<p><strong>Architecture:</strong> Elements never call <code>fetch()</code> or manage data directly. They yield requests upward and render whatever comes back. Controllers own the data layer.</p>
 <h2 id="request-response-request-response-options">Request/Response Options</h2>
-<h3 id="request-response-requestoptions">RequestOptions</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">interface RequestOptions extends EventInit {
-  timeout?: number;         // Response timeout in ms (default: 120000ms = 2 minutes)
-  discoveryTimeout?: number; // Handler discovery timeout in ms (default: 50ms)
-  debounce?: number;        // Debounce requests by specified ms
-  throttle?: number;        // Throttle requests by specified ms
-}</snice-code-block>
-<h4 id="request-response-timeout-behavior-important">Timeout Behavior (IMPORTANT)</h4>
-<p>The timeout system has <strong>two separate timeouts</strong> for different phases:</p>
+<h3 id="request-response-timeout-behavior">Timeout Behavior</h3>
+<p>The timeout system has <strong>two separate timeouts</strong>:</p>
 <ul>
-<li><strong>Discovery timeout</strong> (<code>discoveryTimeout</code>): 50ms (default) - Fast timeout to find a handler</li>
-<li><strong>Response timeout</strong> (<code>timeout</code>): 2 minutes (default) - Total time allowed for the request</li>
+<li><strong>Discovery timeout</strong> (<code>discoveryTimeout</code>): 50ms default — finds a handler quickly</li>
+<li><strong>Response timeout</strong> (<code>timeout</code>): 2 minutes default — total time for the response</li>
 </ul>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">@request('@api/heavy-processing', {
-  discoveryTimeout: 50,      // 50ms to find handler (fast)
-  timeout: 30000            // 30s total timeout for processing
+<snice-code-block language="typescript" grammar="grammars/typescript.json">@request('heavy-computation', {
+  discoveryTimeout: 50,   // 50ms to find handler
+  timeout: 30000          // 30s for actual processing
 })
-async *processData() {
-  // Will timeout in 50ms if no handler exists
-  // Will timeout in 30s total if processing takes too long
-  const result = await (yield data);
-  return result;
+async *compute(): RequestResult&lt;any&gt; {
+  return await (yield data);
 }</snice-code-block>
-<p><strong>Why two timeouts?</strong></p>
-<ul>
-<li><strong>Discovery</strong>: Should be very fast (dozens of milliseconds) - just finding if anyone can handle the request</li>
-<li><strong>Response</strong>: Should be human-scale (seconds/minutes) - actual work takes time</li>
-</ul>
-<h4 id="request-response-debounce-support">Debounce Support</h4>
-<p>Prevents rapid successive requests by delaying execution:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">@request('@api/search', { debounce: 300 })
-async *search() {
-  // Debounced by 300ms - rapid calls will cancel previous ones
-  const results = await (yield query);
-  return results;
-}</snice-code-block>
-<h4 id="request-response-throttle-support">Throttle Support</h4>
-<p>Limits request frequency to maximum rate:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">@request('@api/analytics', { throttle: 1000 })
-async *trackEvent() {
-  // Throttled to max 1 request per second
-  const response = await (yield eventData);
-  return response;
-}</snice-code-block>
-<h3 id="request-response-timeout-configuration">Timeout Configuration</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">@element('timeout-example')
-class TimeoutExample extends HTMLElement {
-  // Quick discovery, short total timeout for fast operations
-  @request('quick-data', {
-    discoveryTimeout: 25,  // Very fast discovery
-    timeout: 1000          // 1 second total
-  })
-  async *fetchQuickData() {
-    const data = await (yield { quick: true });
-    return data;
-  }
-
-  // Standard discovery, longer timeout for slow operations
-  @request('slow-data', {
-    discoveryTimeout: 50,  // Default discovery
-    timeout: 30000         // 30 seconds total
-  })
-  async *fetchSlowData() {
-    const data = await (yield { slow: true });
-    return data;
-  }
-
-  // Use defaults (50ms discovery, 2 minutes total)
-  @request('default-data')
-  async *fetchDefaultData() {
-    const data = await (yield { default: true });
-    return data;
-  }
-
-  // Custom event options with timeouts
-  @request('private-data', {
-    discoveryTimeout: 100, // Slower discovery
-    timeout: 60000,        // 1 minute total
-    bubbles: false,        // Don't bubble
-    cancelable: true       // Can be canceled
-  })
-  async *fetchPrivateData() {
-    const data = await (yield { private: true });
-    return data;
-  }
-
-  @render()
-  renderContent() {
-    return html`&lt;div&gt;Timeout examples&lt;/div&gt;`;
-  }
-}</snice-code-block>
-<h2 id="request-response-error-handling">Error Handling</h2>
-<h3 id="request-response-handling-timeouts">Handling Timeouts</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">@element('timeout-handler')
-class TimeoutHandler extends HTMLElement {
-  @request('data', {
-    discoveryTimeout: 50,
-    timeout: 5000
-  })
-  async *fetchData() {
-    try {
-      const data = await (yield { request: 'data' });
-      return { success: true, data };
-    } catch (error: any) {
-      // Handle different types of timeout errors
-      if (error.message.includes('timed out after') &amp;&amp; error.message.includes('no handler found')) {
-        console.error('No handler found for request');
-        return { success: false, error: 'no_handler' };
-      } else if (error.message.includes('timed out after')) {
-        console.error('Request processing timed out');
-        return { success: false, error: 'timeout' };
-      }
-      throw error;
-    }
-  }
-
-  async loadData() {
-    try {
-      const result = await this.fetchData();
-      if (!result.success) {
-        this.showError('Failed to load data');
-      }
-    } catch (error) {
-      this.showError('Unexpected error');
-    }
-  }
-
-  showError(message: string) {
-    console.error(message);
-  }
-
-  @render()
-  renderContent() {
-    return html`&lt;button @click=${this.loadData}&gt;Load Data&lt;/button&gt;`;
-  }
-}</snice-code-block>
-<h3 id="request-response-controller-error-handling">Controller Error Handling</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">@controller('error-controller')
-class ErrorController implements IController {
-  element: HTMLElement | null = null;
-
-  async attach(element: HTMLElement) {}
-  async detach(element: HTMLElement) {}
-
-  @respond('risky-operation')
-  async handleRiskyOperation(request: any) {
-    try {
-      // Validate request
-      if (!request.id) {
-        throw new Error('ID is required');
-      }
-
-      // Perform operation
-      const result = await this.performOperation(request.id);
-
-      return { success: true, result };
-    } catch (error: any) {
-      // Return error info instead of throwing
-      return {
-        success: false,
-        error: error.message,
-        code: error.code || 'UNKNOWN_ERROR'
-      };
-    }
-  }
-
-  private async performOperation(id: string) {
-    // Simulate operation that might fail
-    if (Math.random() &gt; 0.5) {
-      throw new Error('Random failure');
-    }
-    return { id, processed: true };
-  }
-}</snice-code-block>
-<h2 id="request-response-advanced-patterns">Advanced Patterns</h2>
-<h3 id="request-response-authentication-request-response">Authentication Request/Response</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">// Element side
-@element('protected-content')
-class ProtectedContent extends HTMLElement {
-  @request('authenticate')
-  async *authenticate() {
-    // Send credentials
-    const authResult = await (yield {
-      username: 'user@example.com',
-      password: 'secret'
-    });
-
-    if (!authResult.success) {
-      throw new Error(authResult.error);
-    }
-
-    // Store token
-    localStorage.setItem('token', authResult.token);
-
-    return authResult;
-  }
-
-  @request('fetch-protected')
-  async *fetchProtectedData() {
-    const token = localStorage.getItem('token');
-
-    if (!token) {
-      // Need to authenticate first
-      await this.authenticate();
-    }
-
-    // Fetch with token
-    const data = await (yield {
-      resource: 'protected',
-      token: localStorage.getItem('token')
-    });
-
-    return data;
-  }
-
-  @render()
-  renderContent() {
-    return html`&lt;button @click=${this.loadProtected}&gt;Load Protected Data&lt;/button&gt;`;
-  }
-
-  async loadProtected() {
-    try {
-      const data = await this.fetchProtectedData();
-      console.log('Protected data:', data);
-    } catch (error) {
-      console.error('Failed to load:', error);
-    }
-  }
+<h3 id="request-response-debounce-throttle">Debounce/Throttle</h3>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">// Debounce: wait for typing to stop before searching
+@request('search', { debounce: 300 })
+async *search(): RequestResult&lt;any[]&gt; {
+  return await (yield { query: this.searchTerm });
 }
 
-// Controller side
-@controller('auth-controller')
-class AuthController implements IController {
-  element: HTMLElement | null = null;
-  private tokens = new Map&lt;string, any&gt;();
-
-  async attach(element: HTMLElement) {}
-  async detach(element: HTMLElement) {}
-
-  @respond('authenticate')
-  async handleAuth(credentials: any) {
-    // Validate credentials
-    if (credentials.username === 'user@example.com' &amp;&amp;
-        credentials.password === 'secret') {
-
-      const token = this.generateToken();
-      const user = { id: 1, name: 'User' };
-
-      this.tokens.set(token, user);
-
-      return {
-        success: true,
-        token,
-        user
-      };
-    }
-
-    return {
-      success: false,
-      error: 'Invalid credentials'
-    };
-  }
-
-  @respond('fetch-protected')
-  async handleFetchProtected(request: any) {
-    // Validate token
-    const user = this.tokens.get(request.token);
-
-    if (!user) {
-      throw new Error('Invalid or expired token');
-    }
-
-    // Return protected data
-    return {
-      resource: request.resource,
-      data: { secret: 'Protected information' },
-      user
-    };
-  }
-
-  private generateToken() {
-    return Math.random().toString(36).substring(2);
-  }
+// Throttle: limit analytics to 1 per second
+@request('track', { throttle: 1000 })
+async *trackEvent(): RequestResult&lt;void&gt; {
+  await (yield { event: 'scroll', position: window.scrollY });
 }</snice-code-block>
-<h3 id="request-response-streaming-data-request-response">Streaming Data Request/Response</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">// Element side
-@element('data-streamer')
-class DataStreamer extends HTMLElement {
-  private items: any[] = [];
+<h2 id="request-response-error-handling">Error Handling</h2>
+<h3 id="request-response-element-side">Element-Side</h3>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">@element('safe-loader')
+class SafeLoader extends HTMLElement {
+  @property() error = '';
+  @property() data: any = null;
 
-  @request('stream-data')
-  async *streamData() {
-    let hasMore = true;
-    let page = 1;
-
-    while (hasMore) {
-      // Request next page
-      const response = await (yield {
-        page,
-        pageSize: 10
-      });
-
-      // Add items to list
-      this.items.push(...response.items);
-      this.renderItems();
-
-      // Check if more pages available
-      hasMore = response.hasMore;
-      page++;
-    }
-
-    return {
-      totalItems: this.items.length,
-      complete: true
-    };
-  }
-
-  renderItems() {
-    const container = this.shadowRoot?.querySelector('.items');
-    if (container) {
-      container.innerHTML = this.items
-        .map(item =&gt; `&lt;div&gt;${item.name}&lt;/div&gt;`)
-        .join('');
+  @request('load-data', { timeout: 5000 })
+  async *loadData(): RequestResult&lt;void&gt; {
+    try {
+      this.data = await (yield { id: this.dataId });
+      this.error = '';
+    } catch (err: any) {
+      if (err.message.includes('no handler found')) {
+        this.error = 'Service unavailable';
+      } else if (err.message.includes('timed out')) {
+        this.error = 'Request timed out';
+      } else {
+        this.error = err.message;
+      }
     }
   }
 
   @render()
   renderContent() {
     return html`
-      &lt;button @click=${this.loadAllData}&gt;Load All Data&lt;/button&gt;
-      &lt;div class=&quot;items&quot;&gt;&lt;/div&gt;
+      &lt;if ${this.error}&gt;
+        &lt;div class=&quot;error&quot;&gt;${this.error}&lt;/div&gt;
+      &lt;/if&gt;
+      &lt;if ${this.data}&gt;
+        &lt;div class=&quot;content&quot;&gt;${this.data.title}&lt;/div&gt;
+      &lt;/if&gt;
     `;
   }
-
-  async loadAllData() {
-    const result = await this.streamData();
-    console.log(`Loaded ${result.totalItems} items`);
-  }
-}
-
-// Controller side
-@controller('stream-controller')
-class StreamController implements IController {
+}</snice-code-block>
+<h3 id="request-response-controller-side">Controller-Side</h3>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">@controller('resilient-controller')
+class ResilientController implements IController {
   element: HTMLElement | null = null;
-  private allData: any[] = Array.from({ length: 35 }, (_, i) =&gt; ({
-    id: i + 1,
-    name: `Item ${i + 1}`
-  }));
+  async attach() {}
+  async detach() {}
 
-  async attach(element: HTMLElement) {}
-  async detach(element: HTMLElement) {}
+  @respond('load-data')
+  async handleLoadData(request: { id: string }) {
+    if (!request.id) {
+      throw new Error('ID is required');
+    }
 
-  @respond('stream-data')
-  async handleStreamData(request: { page: number; pageSize: number }) {
-    // Simulate delay
-    await new Promise(resolve =&gt; setTimeout(resolve, 500));
+    const response = await fetch(`/api/data/${request.id}`);
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
 
-    // Calculate pagination
-    const start = (request.page - 1) * request.pageSize;
-    const end = start + request.pageSize;
-
-    const items = this.allData.slice(start, end);
-    const hasMore = end &lt; this.allData.length;
-
-    return {
-      items,
-      hasMore,
-      page: request.page,
-      totalPages: Math.ceil(this.allData.length / request.pageSize)
-    };
+    return await response.json();
   }
 }</snice-code-block>
-<h3 id="request-response-cached-request-response">Cached Request/Response</h3>
+<h2 id="request-response-advanced-patterns">Advanced Patterns</h2>
+<h3 id="request-response-cached-responses">Cached Responses</h3>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">@controller('cached-controller')
 class CachedController implements IController {
   element: HTMLElement | null = null;
   private cache = new Map&lt;string, { data: any; timestamp: number }&gt;();
-  private cacheTimeout = 60000; // 1 minute
+  private ttl = 60000; // 1 minute
 
-  async attach(element: HTMLElement) {}
-  async detach(element: HTMLElement) {}
+  async attach() {}
+  async detach() {}
 
   @respond('fetch-cached')
-  async handleFetchCached(request: { key: string; forceRefresh?: boolean }) {
-    const cacheKey = request.key;
-    const cached = this.cache.get(cacheKey);
-
-    // Check cache validity
-    if (!request.forceRefresh &amp;&amp; cached) {
-      const age = Date.now() - cached.timestamp;
-      if (age &lt; this.cacheTimeout) {
-        console.log(`Returning cached data for ${cacheKey}`);
-        return {
-          data: cached.data,
-          fromCache: true,
-          age
-        };
-      }
+  async handleFetch(request: { key: string; forceRefresh?: boolean }) {
+    const cached = this.cache.get(request.key);
+    if (!request.forceRefresh &amp;&amp; cached &amp;&amp; Date.now() - cached.timestamp &lt; this.ttl) {
+      return { data: cached.data, fromCache: true };
     }
 
-    // Fetch fresh data
-    console.log(`Fetching fresh data for ${cacheKey}`);
-    const freshData = await this.fetchFreshData(cacheKey);
-
-    // Update cache
-    this.cache.set(cacheKey, {
-      data: freshData,
-      timestamp: Date.now()
-    });
-
-    return {
-      data: freshData,
-      fromCache: false,
-      age: 0
-    };
-  }
-
-  private async fetchFreshData(key: string) {
-    // Simulate API call
-    await new Promise(resolve =&gt; setTimeout(resolve, 1000));
-    return { key, value: Math.random(), timestamp: Date.now() };
+    const data = await fetch(`/api/${request.key}`).then(r =&gt; r.json());
+    this.cache.set(request.key, { data, timestamp: Date.now() });
+    return { data, fromCache: false };
   }
 }</snice-code-block>
-<h3 id="request-response-multi-step-workflow">Multi-Step Workflow</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">// Element requests a multi-step order process
-@element('order-form')
-class OrderForm extends HTMLElement {
-  @request('place-order')
-  async *placeOrder(): Response&lt;{ orderId: string }&gt; {
-    // Step 1: validate stock
-    const stock = await (yield { action: 'check-stock', items: this.cartItems });
-    if (!stock.available) throw new Error('Out of stock');
+<h3 id="request-response-subscription-pattern">Subscription Pattern</h3>
+<p>Use <code>@request</code> for one-time fetches and <code>@dispatch</code> + <code>@on</code> for ongoing updates:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">// Element: visual, subscribes to updates
+@element('live-ticker')
+class LiveTicker extends HTMLElement {
+  @property() price = '0.00';
+  @property() symbol = 'BTC';
 
-    // Step 2: process payment
-    const payment = await (yield { action: 'charge', amount: stock.total });
-    if (!payment.success) throw new Error('Payment failed');
+  @request('subscribe-ticker')
+  async *subscribe(): RequestResult&lt;void&gt; {
+    await (yield { symbol: this.symbol });
+  }
 
-    // Step 3: confirm order
-    return await (yield { action: 'confirm', paymentId: payment.id });
+  @on('ticker-update')
+  onUpdate(e: CustomEvent) {
+    this.price = e.detail.price;
+  }
+
+  @render()
+  renderContent() {
+    return html`
+      &lt;span class=&quot;symbol&quot;&gt;${this.symbol}&lt;/span&gt;
+      &lt;span class=&quot;price&quot;&gt;${this.price}&lt;/span&gt;
+    `;
   }
 }
 
-// Controller handles each step
-@controller('order-controller')
-class OrderController implements IController {
+// Controller: manages WebSocket, dispatches updates
+@controller('ticker-controller')
+class TickerController implements IController {
   element: HTMLElement | null = null;
+  private ws?: WebSocket;
 
-  async attach(element: HTMLElement) {}
-  async detach(element: HTMLElement) {}
+  async attach() {}
 
-  @respond('place-order')
-  async handleOrder(req: any) {
-    switch (req.action) {
-      case 'check-stock':
-        return { available: true, total: 99.99 };
-      case 'charge':
-        return { success: true, id: 'pay_abc123' };
-      case 'confirm':
-        return { orderId: 'ORD-001' };
-    }
+  async detach() {
+    this.ws?.close();
+  }
+
+  @respond('subscribe-ticker')
+  async handleSubscribe(request: { symbol: string }) {
+    this.ws = new WebSocket(`wss://api.example.com/ticker/${request.symbol}`);
+    this.ws.onmessage = (msg) =&gt; {
+      this.element?.dispatchEvent(new CustomEvent('ticker-update', {
+        detail: JSON.parse(msg.data)
+      }));
+    };
+    return { subscribed: true };
   }
 }</snice-code-block>
 </section>
@@ -4092,7 +3613,7 @@ const fetcher = new ContextAwareFetcher();
 // Attach JWT to outgoing requests
 fetcher.use('request', function(request, next) {
   // `this` is bound to the Context instance
-  const jwt = this.application.auth?.token;
+  const jwt = this.application.principal?.token;
   if (jwt) {
     request.headers.set('Authorization', `Bearer ${jwt}`);
   }
@@ -4157,8 +3678,10 @@ class UserPage extends HTMLElement {
 <li>Request validation</li>
 </ul>
 <p><strong>Example - JWT Bearer Token:</strong></p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">fetcher.use('request', function(request, next) {
-  const jwt = this.application.auth?.token; // &quot;eyJhbG...kpXVCJ9.eyJzdWI...I2MjB9.SflKx...sw5c&quot;
+<p><code>this</code> in middleware is the <code>Context</code> instance. Store auth state in <code>application</code> (your <code>AppContext</code>):</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">// Attach JWT to every request
+fetcher.use('request', function(request, next) {
+  const jwt = this.application.principal?.token;
   if (jwt) {
     request.headers.set('Authorization', `Bearer ${jwt}`);
   }
@@ -4168,7 +3691,7 @@ class UserPage extends HTMLElement {
 // Handle expired tokens — refresh or redirect to login
 fetcher.use('response', async function(response, next) {
   if (response.status === 401) {
-    const refreshToken = this.application.auth?.refreshToken;
+    const refreshToken = this.application.principal?.refreshToken;
     if (refreshToken) {
       const res = await fetch('/api/auth/refresh', {
         method: 'POST',
@@ -4177,15 +3700,16 @@ fetcher.use('response', async function(response, next) {
       });
       if (res.ok) {
         const { token } = await res.json();
-        this.application.auth.token = token;
+        this.application.principal.token = token;
         // Retry original request with new token
-        const retry = new Request(response.url, request);
-        retry.headers.set('Authorization', `Bearer ${token}`);
+        const retry = new Request(response.url, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
         return fetch(retry);
       }
     }
-    this.application.auth = null;
-    this.application.router?.navigate('/login');
+    this.application.principal = null;
+    window.location.hash = '#/login';
     throw new Error('Session expired');
   }
   return next();
@@ -4254,7 +3778,7 @@ fetcher.use('response', async function(response, next) {
   if (response.status === 401) {
     // Unauthorized - clear user and redirect to login
     this.application.user = null;
-    this.application.router?.navigate('/login');
+    window.location.hash = '#/login';
     throw new Error('Authentication required');
   }
 
@@ -4318,7 +3842,7 @@ const fetcher = new ContextAwareFetcher();
 
 // Attach JWT to every request
 fetcher.use('request', function(request, next) {
-  const jwt = this.application.auth?.token;
+  const jwt = this.application.principal?.token;
   if (jwt) {
     request.headers.set('Authorization', `Bearer ${jwt}`);
   }
@@ -4335,8 +3859,8 @@ fetcher.use('request', function(request, next) {
 // Handle 401 — attempt token refresh, then redirect on failure
 fetcher.use('response', async function(response, next) {
   if (response.status === 401) {
-    this.application.auth = undefined;
-    this.application.router?.navigate('/login');
+    this.application.principal = undefined;
+    window.location.hash = '#/login';
     throw new Error('Session expired');
   }
 
@@ -4441,7 +3965,8 @@ interface Fetcher {
 </ul>
 <h2 id="placards-basic-usage">Basic Usage</h2>
 <p>Define a placard for your page using the <code>placard</code> option in the <code>@page</code> decorator:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">import { page, Placard, render, html } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json">import { Placard, render, html } from 'snice';
+import { page } from './router'; // page comes from Router(), not from 'snice'
 
 const placard: Placard&lt;AppContext&gt; = {
   name: 'dashboard',
@@ -4624,7 +4149,7 @@ const settingsPlacard: Placard&lt;AppContext&gt; = {
   name: 'user-settings',
   title: 'Settings',
   parent: 'user-profile'
-  // Breadcrumbs will be auto-resolved: Users &gt; Profile &gt; Settings
+  // Layout can resolve breadcrumbs using parent chain: Users &gt; Profile &gt; Settings
 };
 
 // Explicit breadcrumbs
