@@ -89,7 +89,7 @@ All CDN builds use the shared runtime (external `snice` imports). Load `snice-ru
 - IIFE: `.js` + `.min.js`
 - Sourcemaps + README
 
-**Size:** Runtime ~18KB gzip, components ~1-92KB each
+**Size:** Runtime ~18KB gzip, components ~0-93KB each
 
 **Features:**
 - Shared runtime (external snice imports)
