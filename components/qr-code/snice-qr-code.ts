@@ -110,7 +110,8 @@ export class SniceQRCode extends HTMLElement implements SniceQRCodeElement {
       colorLight: this.bgColor,
       correctLevel: correctLevel,
       useSVG: this.renderMode === 'svg',
-      dotStyle: this.dotStyle
+      dotStyle: this.dotStyle,
+      margin: this.margin
     } as any);
 
     // Apply overlays after QR code is rendered
@@ -120,7 +121,12 @@ export class SniceQRCode extends HTMLElement implements SniceQRCodeElement {
   }
 
   private applyOverlays() {
-    // Find the canvas element created by the library
+    const svg = this.container?.querySelector('svg');
+    if (svg) {
+      this.applySvgOverlays(svg);
+      return;
+    }
+
     const canvas = this.container?.querySelector('canvas') as HTMLCanvasElement;
     if (!canvas) return;
 
@@ -128,10 +134,24 @@ export class SniceQRCode extends HTMLElement implements SniceQRCodeElement {
     try {
       ctx = canvas.getContext('2d');
     } catch (e) {
-      // Canvas not supported in test environment
       return;
     }
     if (!ctx) return;
+
+    // Apply quiet zone margin by re-drawing canvas content inset
+    const m = this.margin;
+    if (m > 0) {
+      const s = this.size;
+      const inner = s - m * 2;
+      const imgData = ctx.getImageData(0, 0, s, s);
+      const off = document.createElement('canvas');
+      off.width = s;
+      off.height = s;
+      off.getContext('2d')!.putImageData(imgData, 0, 0);
+      ctx.fillStyle = this.bgColor;
+      ctx.fillRect(0, 0, s, s);
+      ctx.drawImage(off, 0, 0, s, s, m, m, inner, inner);
+    }
 
     // Center image overlay
     if (this.includeImage && this.imageUrl) {
@@ -141,20 +161,93 @@ export class SniceQRCode extends HTMLElement implements SniceQRCodeElement {
         const imgSize = this.imageSize;
         const imgX = (this.size - imgSize) / 2;
         const imgY = (this.size - imgSize) / 2;
-
-        // Draw image directly without background
         ctx.drawImage(img, imgX, imgY, imgSize, imgSize);
-
-        // Apply center text after image if both are present
         if (this.centerText) {
           this.drawCenterText(ctx);
         }
       };
       img.src = this.imageUrl;
     } else if (this.centerText) {
-      // Center text overlay only
       this.drawCenterText(ctx);
     }
+  }
+
+  private applySvgOverlays(svg: SVGElement) {
+    // Get viewBox dimensions to position overlays in SVG coordinate space
+    const vb = svg.getAttribute('viewBox')?.split(' ').map(Number) || [];
+    const vbSize = vb[2] || 100;
+    const center = vbSize / 2;
+
+    // Scale factor: SVG viewBox units per pixel
+    const scale = vbSize / this.size;
+
+    // Center image overlay
+    if (this.includeImage && this.imageUrl) {
+      const imgSize = this.imageSize * scale;
+      const imgX = center - imgSize / 2;
+      const imgY = center - imgSize / 2;
+
+      // Convert image to data URL for embedding in SVG
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        // Draw to temp canvas to get data URL
+        const off = document.createElement('canvas');
+        off.width = img.naturalWidth;
+        off.height = img.naturalHeight;
+        off.getContext('2d')!.drawImage(img, 0, 0);
+        const dataUrl = off.toDataURL('image/png');
+
+        const svgImg = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+        svgImg.setAttribute('x', String(imgX));
+        svgImg.setAttribute('y', String(imgY));
+        svgImg.setAttribute('width', String(imgSize));
+        svgImg.setAttribute('height', String(imgSize));
+        svgImg.setAttributeNS('http://www.w3.org/1999/xlink', 'href', dataUrl);
+        svg.appendChild(svgImg);
+
+        if (this.centerText) {
+          this.drawSvgCenterText(svg, center, scale);
+        }
+      };
+      img.src = this.imageUrl;
+    } else if (this.centerText) {
+      this.drawSvgCenterText(svg, center, scale);
+    }
+  }
+
+  private drawSvgCenterText(svg: SVGElement, center: number, scale: number) {
+    const fontSize = this.centerTextSize * scale;
+    const strokeWidth = 6 * scale;
+
+    // Outline text
+    const outline = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    outline.setAttribute('x', String(center));
+    outline.setAttribute('y', String(center));
+    outline.setAttribute('text-anchor', 'middle');
+    outline.setAttribute('dominant-baseline', 'central');
+    outline.setAttribute('font-size', String(fontSize));
+    outline.setAttribute('font-weight', 'bold');
+    outline.setAttribute('font-family', 'sans-serif');
+    outline.setAttribute('stroke', this.textOutlineColor);
+    outline.setAttribute('stroke-width', String(strokeWidth));
+    outline.setAttribute('stroke-linejoin', 'round');
+    outline.setAttribute('fill', this.textOutlineColor);
+    outline.textContent = this.centerText;
+    svg.appendChild(outline);
+
+    // Fill text
+    const fill = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    fill.setAttribute('x', String(center));
+    fill.setAttribute('y', String(center));
+    fill.setAttribute('text-anchor', 'middle');
+    fill.setAttribute('dominant-baseline', 'central');
+    fill.setAttribute('font-size', String(fontSize));
+    fill.setAttribute('font-weight', 'bold');
+    fill.setAttribute('font-family', 'sans-serif');
+    fill.setAttribute('fill', this.textFillColor);
+    fill.textContent = this.centerText;
+    svg.appendChild(fill);
   }
 
   private drawCenterText(ctx: CanvasRenderingContext2D) {
@@ -165,32 +258,68 @@ export class SniceQRCode extends HTMLElement implements SniceQRCodeElement {
     const x = this.size / 2;
     const y = this.size / 2;
 
-    // Draw text outline (stroke)
     ctx.strokeStyle = this.textOutlineColor;
     ctx.lineWidth = 6;
     ctx.lineJoin = 'round';
     ctx.miterLimit = 2;
     ctx.strokeText(this.centerText, x, y);
 
-    // Draw text fill
     ctx.fillStyle = this.textFillColor;
     ctx.fillText(this.centerText, x, y);
   }
 
-  async toDataURL(type: 'image/png' | 'image/jpeg' | 'image/webp' = 'image/png', quality: number = 0.92): Promise<string> {
-    const canvas = this.container?.querySelector('canvas') as HTMLCanvasElement;
-    if (!canvas) return '';
-    return canvas.toDataURL(type, quality);
+  toSVGString(): string {
+    const svg = this.container?.querySelector('svg');
+    if (!svg) return '';
+    return new XMLSerializer().serializeToString(svg);
   }
 
-  async toBlob(type: 'image/png' | 'image/jpeg' | 'image/webp' = 'image/png', quality: number = 0.92): Promise<Blob> {
+  async toDataURL(type: 'image/png' | 'image/jpeg' | 'image/webp' | 'image/svg+xml' = 'image/png', quality: number = 0.92): Promise<string> {
+    // SVG export
+    if (type === 'image/svg+xml') {
+      const svgStr = this.toSVGString();
+      if (!svgStr) return '';
+      return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgStr);
+    }
+
+    // Canvas export (rasterize SVG if in SVG mode)
+    const canvas = this.container?.querySelector('canvas') as HTMLCanvasElement;
+    if (canvas) return canvas.toDataURL(type, quality);
+
+    // SVG mode but raster export requested — rasterize to canvas
+    const svg = this.container?.querySelector('svg');
+    if (!svg) return '';
+    const svgStr = new XMLSerializer().serializeToString(svg);
+    const blob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const img = new Image();
+    return new Promise<string>((resolve) => {
+      img.onload = () => {
+        const off = document.createElement('canvas');
+        off.width = this.size;
+        off.height = this.size;
+        off.getContext('2d')!.drawImage(img, 0, 0, this.size, this.size);
+        URL.revokeObjectURL(url);
+        resolve(off.toDataURL(type, quality));
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); resolve(''); };
+      img.src = url;
+    });
+  }
+
+  async toBlob(type: 'image/png' | 'image/jpeg' | 'image/webp' | 'image/svg+xml' = 'image/png', quality: number = 0.92): Promise<Blob> {
+    if (type === 'image/svg+xml') {
+      const svgStr = this.toSVGString();
+      return new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
+    }
     const dataURL = await this.toDataURL(type, quality);
     const response = await fetch(dataURL);
     return response.blob();
   }
 
   async download(filename: string = 'qr-code.png'): Promise<void> {
-    const dataURL = await this.toDataURL();
+    const isSvg = filename.endsWith('.svg');
+    const dataURL = await this.toDataURL(isSvg ? 'image/svg+xml' : 'image/png');
     const a = document.createElement('a');
     a.href = dataURL;
     a.download = filename;

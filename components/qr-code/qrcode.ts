@@ -13,6 +13,7 @@ interface QRCodeOptions {
   correctLevel?: ErrorCorrectionLevel;
   useSVG?: boolean;
   dotStyle?: DotStyle;
+  margin?: number;
 }
 
 // Mode indicators for different data types
@@ -868,11 +869,13 @@ class SVGDrawing {
   draw(qrCode: QRCodeModel): void {
     const opts = this.options;
     const nCount = qrCode.getModuleCount();
+    const margin = opts.margin || 0;
+    const totalSize = nCount + margin * 2;
 
     this.clear();
 
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('viewBox', `0 0 ${nCount} ${nCount}`);
+    svg.setAttribute('viewBox', `0 0 ${totalSize} ${totalSize}`);
     svg.setAttribute('width', '100%');
     svg.setAttribute('height', '100%');
     svg.setAttribute('fill', opts.colorLight);
@@ -897,8 +900,8 @@ class SVGDrawing {
       for (let col = 0; col < nCount; col++) {
         if (qrCode.isDark(row, col)) {
           const use = this.createSVGElement('use', {
-            x: String(col),
-            y: String(row)
+            x: String(margin + col),
+            y: String(margin + row)
           });
           use.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '#template');
           svg.appendChild(use);
@@ -954,20 +957,26 @@ class CanvasDrawing {
 
     const opts = this.options;
     const ctx = this.context;
+    const margin = opts.margin || 0;
 
     const nCount = qrCode.getModuleCount();
-    const nWidth = opts.width / nCount;
-    const nHeight = opts.height / nCount;
+    const drawSize = Math.min(opts.width, opts.height) - margin * 2;
+    const nWidth = drawSize / nCount;
+    const nHeight = drawSize / nCount;
     const nRoundedWidth = Math.round(nWidth);
     const nRoundedHeight = Math.round(nHeight);
 
     this.clear();
 
+    // Fill background including quiet zone
+    ctx.fillStyle = opts.colorLight;
+    ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
     for (let row = 0; row < nCount; row++) {
       for (let col = 0; col < nCount; col++) {
         const bIsDark = qrCode.isDark(row, col);
-        const nLeft = col * nWidth;
-        const nTop = row * nHeight;
+        const nLeft = margin + col * nWidth;
+        const nTop = margin + row * nHeight;
         const color = bIsDark ? opts.colorDark : opts.colorLight;
 
         ctx.fillStyle = color;
@@ -1049,7 +1058,8 @@ export class QRCode {
       colorLight: '#ffffff',
       correctLevel: 'H' as ErrorCorrectionLevel,
       useSVG: false,
-      dotStyle: 'square'
+      dotStyle: 'square',
+      margin: 4
     };
 
     let opts = vOption;

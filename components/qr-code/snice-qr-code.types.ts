@@ -32,7 +32,8 @@ export interface SniceQRCodeElement extends HTMLElement {
   textFillColor: string;
   textOutlineColor: string;
 
-  toDataURL(type?: 'image/png' | 'image/jpeg' | 'image/webp', quality?: number): Promise<string>;
-  toBlob(type?: 'image/png' | 'image/jpeg' | 'image/webp', quality?: number): Promise<Blob>;
+  toSVGString(): string;
+  toDataURL(type?: 'image/png' | 'image/jpeg' | 'image/webp' | 'image/svg+xml', quality?: number): Promise<string>;
+  toBlob(type?: 'image/png' | 'image/jpeg' | 'image/webp' | 'image/svg+xml', quality?: number): Promise<Blob>;
   download(filename?: string): void;
 }
