@@ -1,3 +1,20 @@
+# [4.14.0](https://gitlab.com/Hedzer/snice/compare/v4.13.0...v4.14.0) (2026-02-24)
+
+
+### Bug Fixes
+
+* code-block comment color to VS Code green, improve grammar tokenizers ([75eb503](https://gitlab.com/Hedzer/snice/commit/75eb503ffc0727a76b2570e358f2f915a63ac080))
+* correct events.ts comment, request timeout default to 120s ([5cb7c59](https://gitlab.com/Hedzer/snice/commit/5cb7c5937420013d6a8eda3014dc5bb079582d46))
+* docs content padding, re-stamp asset hashes ([fe0c2dd](https://gitlab.com/Hedzer/snice/commit/fe0c2dd7f1e95cd9eeea5f8dbaff5c20f6c3745a))
+* rebuild docs page, re-stamp asset hashes ([0bb08db](https://gitlab.com/Hedzer/snice/commit/0bb08db127bdf632bf0f2d14065bb4b138310959))
+* slider host display flex, remove contain that breaks stretch ([6c2845c](https://gitlab.com/Hedzer/snice/commit/6c2845c2ad0fa494b55af7332c3f256e489dd265))
+
+
+### Features
+
+* add docs page with sidebar navigation, re-stamp assets, link decorators to docs ([eca3fa8](https://gitlab.com/Hedzer/snice/commit/eca3fa81676a156b2fd2787bbdb5985d78318f38))
+* qr-code SVG overlays, quiet zone margin, SVG export support ([aa16479](https://gitlab.com/Hedzer/snice/commit/aa16479f8b414a03c24822a077b5bcbb6e14a94d))
+
 # [4.13.0](https://gitlab.com/Hedzer/snice/compare/v4.12.0...v4.13.0) (2026-02-24)
 
 
