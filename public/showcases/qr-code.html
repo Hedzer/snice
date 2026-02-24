@@ -4,26 +4,27 @@
       <p class="comp-desc">Generate QR codes with colors, logos, and dot styles</p>
       <div class="comp-split">
         <div class="comp-split-demo demo-center" style="gap:1.5rem">
-          <snice-qr-code value="https://snice.dev" size="120" dot-style="rounded" fg-color="#2196f3" bg-color="#e3f2fd" style="--qr-border-radius:12px"></snice-qr-code>
-          <snice-qr-code value="npm install snice" size="120" dot-style="dots" fg-color="#4caf50" bg-color="#e8f5e9" style="--qr-border-radius:12px"></snice-qr-code>
-          <snice-qr-code value="https://github.com" size="120" center-text="GH" center-text-size="24" text-fill-color="#9c27b0" dot-style="rounded" fg-color="#9c27b0" bg-color="#f3e5f5" style="--qr-border-radius:12px"></snice-qr-code>
-          <snice-qr-code value="WIFI:T:WPA;S:MyNetwork;P:secret123;;" size="120" center-text="WiFi" center-text-size="18" text-fill-color="#ff9800" fg-color="#ff9800" style="--qr-border-radius:12px"></snice-qr-code>
-          <snice-qr-code value="tel:+15551234567" size="120" dot-style="square" fg-color="#e91e63" bg-color="#fce4ec" center-text="Call" center-text-size="18" text-fill-color="#e91e63" style="--qr-border-radius:12px"></snice-qr-code>
-          <snice-qr-code value="mailto:hello@snice.dev" size="120" dot-style="dots" fg-color="#00897b" bg-color="#e0f2f1" center-text="@" center-text-size="28" text-fill-color="#00897b" style="--qr-border-radius:12px"></snice-qr-code>
+          <snice-qr-code value="https://snice.dev" size="120" margin="6" dot-style="rounded" fg-color="#2196f3" bg-color="#e3f2fd" include-image image-url="images/snice-logo.png" image-size="30" style="--qr-border-radius:12px"></snice-qr-code>
+          <snice-qr-code value="npm install snice" size="120" margin="6" dot-style="dots" fg-color="#4caf50" bg-color="#e8f5e9" center-text="npm" center-text-size="16" text-fill-color="#1b5e20" style="--qr-border-radius:12px"></snice-qr-code>
+          <snice-qr-code value="https://github.com" size="120" margin="6" center-text="GH" center-text-size="24" text-fill-color="#ffffff" text-outline-color="#6a1b9a" dot-style="rounded" fg-color="#9c27b0" bg-color="#f3e5f5" style="--qr-border-radius:12px"></snice-qr-code>
+          <snice-qr-code value="WIFI:T:WPA;S:MyNetwork;P:secret123;;" size="120" margin="6" center-text="WiFi" center-text-size="18" text-fill-color="#ffffff" text-outline-color="#e65100" fg-color="#ff9800" style="--qr-border-radius:12px"></snice-qr-code>
+          <snice-qr-code value="tel:+15551234567" size="120" margin="6" dot-style="square" fg-color="#e91e63" bg-color="#fce4ec" center-text="Call" center-text-size="18" text-fill-color="#ffffff" text-outline-color="#880e4f" style="--qr-border-radius:12px"></snice-qr-code>
+          <snice-qr-code value="mailto:hello@snice.dev" size="120" margin="6" dot-style="dots" fg-color="#00897b" bg-color="#e0f2f1" center-text="@" center-text-size="28" text-fill-color="#ffffff" text-outline-color="#004d40" style="--qr-border-radius:12px"></snice-qr-code>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=e716039">&lt;snice-qr-code
+          <snice-code-block language="html" grammar="grammars/html.json?v=fea7a3b">&lt;!-- Logo overlay --&gt;
+&lt;snice-qr-code
   value="https://snice.dev"
-  size="120"
-  dot-style="rounded"
-  fg-color="#2196f3"
-  bg-color="#e3f2fd"&gt;
+  size="120" margin="6"
+  include-image image-url="logo.png" image-size="30"
+  fg-color="#2196f3" bg-color="#e3f2fd"&gt;
 &lt;/snice-qr-code&gt;
 
+&lt;!-- Text with independent color --&gt;
 &lt;snice-qr-code
   value="WIFI:T:WPA;S:MyNetwork;P:secret;;"
-  center-text="WiFi"
+  center-text="WiFi" text-fill-color="#fff"
   fg-color="#ff9800"&gt;
 &lt;/snice-qr-code&gt;</snice-code-block>
         </div>

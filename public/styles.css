@@ -535,6 +535,135 @@ header nav a:hover, header nav a.active { color: var(--snice-color-text); }
   color: var(--snice-color-text-secondary);
 }
 
+/* ─── Docs page ─── */
+.docs-sidebar {
+  position: fixed;
+  top: 4rem;
+  left: max(1rem, calc(50% - 550px + 2rem));
+  width: 180px;
+  max-height: calc(100vh - 5rem);
+  overflow-y: auto;
+  font-size: 0.8rem;
+  scrollbar-width: thin;
+  padding: 0.5rem 0;
+}
+.docs-sidebar .nav-group {
+  font-size: 0.65rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--snice-color-text-tertiary);
+  margin-top: 1.25rem; margin-bottom: 0.25rem;
+}
+.docs-sidebar .nav-group:first-child { margin-top: 0; }
+.docs-sidebar a {
+  display: block; padding: 0.2rem 0; color: var(--snice-color-text-secondary);
+  text-decoration: none; line-height: 1.4;
+}
+.docs-sidebar a.sub {
+  padding-left: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--snice-color-text-tertiary);
+}
+.docs-sidebar a:hover { color: var(--snice-color-text); }
+.docs-sidebar a.active { color: var(--snice-color-primary); }
+.docs-content {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 2rem 4rem 215px;
+}
+@media (max-width: 960px) {
+  .docs-sidebar { display: none; }
+  .docs-content { padding: 0 2rem 4rem; }
+}
+.doc-file {
+  padding: 2.5rem 0;
+  border-bottom: 1px solid var(--snice-color-border);
+}
+.doc-file:last-child { border-bottom: none; }
+.doc-file h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  color: var(--snice-color-primary);
+}
+.doc-file h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--snice-color-border);
+}
+.doc-file h2:first-child { border-top: none; padding-top: 0; margin-top: 0; }
+.doc-file h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.35rem;
+}
+.doc-file h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-top: 1.25rem;
+  margin-bottom: 0.25rem;
+}
+.doc-file p {
+  color: var(--snice-color-text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.7;
+}
+.doc-file p code, .doc-file li code {
+  background: var(--snice-color-background-secondary);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.82rem;
+}
+.doc-file strong { color: var(--snice-color-text); }
+.doc-file a { color: var(--snice-color-primary); }
+.doc-file ul, .doc-file ol {
+  margin: 0.5rem 0 0.75rem 1.5rem;
+  font-size: 0.9rem;
+  color: var(--snice-color-text-secondary);
+  line-height: 1.7;
+}
+.doc-file li { margin-bottom: 0.25rem; }
+.doc-file snice-code-block { margin: 0.75rem 0 1rem; }
+.doc-file hr {
+  border: none;
+  border-top: 1px solid var(--snice-color-border);
+  margin: 2rem 0;
+}
+.doc-table-wrap { overflow-x: auto; margin: 0.75rem 0 1rem; }
+.doc-file table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.doc-file th, .doc-file td {
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--snice-color-border);
+}
+.doc-file th {
+  background: var(--snice-color-background-secondary);
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+.doc-file td { color: var(--snice-color-text-secondary); }
+.doc-file td code {
+  background: var(--snice-color-background-secondary);
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  font-size: 0.8rem;
+}
+.doc-blockquote {
+  border-left: 3px solid var(--snice-color-primary);
+  margin: 0.75rem 0;
+  padding: 0.5rem 1rem;
+  background: var(--snice-color-background-secondary);
+  border-radius: 0 6px 6px 0;
+}
+.doc-blockquote p { margin-bottom: 0.25rem; }
+
 /* ─── Footer ─── */
 footer {
   border-top: 1px solid var(--snice-color-border);
@@ -660,6 +789,12 @@ footer a { color: var(--snice-color-text-secondary); text-decoration: none; }
 
   /* Usage card code: prevent long commands from overflowing */
   .usage-card code { font-size: 0.6rem; overflow-wrap: break-word; }
+
+  /* Docs page: tighter padding */
+  .docs-content { padding: 0 1rem 3rem; }
+  .doc-file h1 { font-size: 1.3rem; }
+  .doc-file h2 { font-size: 1.1rem; }
+  .doc-file h3 { font-size: 0.95rem; }
 
   /* Template card: smaller install commands */
   .template-card .install code { font-size: 0.65rem; }

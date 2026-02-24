@@ -264,6 +264,7 @@ const header = (active) => `
       <h1><a href="index.html" style="display:inline-flex;align-items:center;gap:0.5rem"><img src="images/snice-logo.png" alt="Snice" width="28" height="28" style="border-radius:50%">Snice</a></h1>
       <nav>
         <a href="guide.html"${active === 'guide' ? ' class="active"' : ''}>Guide</a>
+        <a href="docs.html"${active === 'docs' ? ' class="active"' : ''}>Docs</a>
         <a href="decorators.html"${active === 'decorators' ? ' class="active"' : ''}>Decorators</a>
         <a href="components.html"${active === 'components' ? ' class="active"' : ''}>Components</a>
 
@@ -406,7 +407,7 @@ class MyCard extends HTMLElement {
     return html\`&lt;h1&gt;\${this.title}&lt;/h1&gt;\`;
   }
 }</snice-code-block>
-      <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/elements.md">Full documentation →</a></p>
+      <p class="doc-link"><a href="docs.html#elements">Full documentation →</a></p>
     </div>
 
     <div class="dec-section">
@@ -427,7 +428,7 @@ class UserPage extends HTMLElement {
     this.user = await fetch(\`/api/users/\${this.id}\`).then(r =&gt; r.json());
   }
 }</snice-code-block>
-      <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/routing.md">Full documentation →</a></p>
+      <p class="doc-link"><a href="docs.html#routing">Full documentation →</a></p>
     </div>
 
     <div class="dec-section">
@@ -450,7 +451,7 @@ class WeatherData {
 }
 
 &lt;stat-card controller="weather"&gt;&lt;/stat-card&gt;</snice-code-block>
-      <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/controllers.md">Full documentation →</a></p>
+      <p class="doc-link"><a href="docs.html#controllers">Full documentation →</a></p>
     </div>
 
     <div class="dec-section">
@@ -473,7 +474,7 @@ class AppShell extends HTMLElement {
 // Pages reference the layout
 @page({ tag: 'home-page', routes: ['/'], layout: 'app-shell' })
 class HomePage extends HTMLElement { }</snice-code-block>
-      <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/routing.md">Full documentation →</a></p>
+      <p class="doc-link"><a href="docs.html#routing">Full documentation →</a></p>
     </div>
 
     <div class="dec-section">
@@ -584,7 +585,7 @@ updateStatus(status) {
 handleItemClick(e) {
   return { id: e.target.dataset.id };
 }</snice-code-block>
-      <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/events.md">Full documentation →</a></p>
+      <p class="doc-link"><a href="docs.html#events">Full documentation →</a></p>
     </div>
 
     <div class="dec-section">
@@ -596,7 +597,7 @@ handleContext(ctx: Context) {
   this.user = ctx.application.user;
   this.route = ctx.navigation.route;
 }</snice-code-block>
-      <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/routing.md">Full documentation →</a></p>
+      <p class="doc-link"><a href="docs.html#routing">Full documentation →</a></p>
     </div>
 
     <div class="dec-section">
@@ -625,7 +626,7 @@ onDarkMode(matches: boolean) {
 onMutation(records: MutationRecord[]) {
   this.updateCount();
 }</snice-code-block>
-      <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/observers.md">Full documentation →</a></p>
+      <p class="doc-link"><a href="docs.html#observe">Full documentation →</a></p>
     </div>
 
     <div class="dec-section">
@@ -645,7 +646,7 @@ async handleFetchUser({ id }) {
 }
 
 // Usage: const user = await this.fetchUser('123');</snice-code-block>
-      <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/request-response.md">Full documentation →</a></p>
+      <p class="doc-link"><a href="docs.html#request-response">Full documentation →</a></p>
     </div>
 
     <div class="dec-section">
@@ -1096,10 +1097,10 @@ ${header('components')}
       <h3>QR Code</h3>
       <p class="comp-desc">Generate QR codes with colors, logos, and styles</p>
       <div class="comp-demo-row" style="gap:1.5rem;flex-wrap:wrap">
-        <snice-qr-code value="https://snice.dev" size="120" dot-style="rounded" fg-color="#2196f3" bg-color="#e3f2fd" style="--qr-border-radius:12px"></snice-qr-code>
-        <snice-qr-code value="npm install snice" size="120" dot-style="dots" fg-color="#4caf50" bg-color="#e8f5e9" style="--qr-border-radius:12px"></snice-qr-code>
-        <snice-qr-code value="https://github.com" size="120" center-text="GH" center-text-size="24" text-fill-color="#9c27b0" dot-style="rounded" fg-color="#9c27b0" bg-color="#f3e5f5" style="--qr-border-radius:12px"></snice-qr-code>
-        <snice-qr-code value="WIFI:T:WPA;S:MyNetwork;P:secret123;;" size="120" center-text="WiFi" center-text-size="18" text-fill-color="#ff9800" fg-color="#ff9800" style="--qr-border-radius:12px"></snice-qr-code>
+        <snice-qr-code value="https://snice.dev" size="120" margin="6" dot-style="rounded" fg-color="#2196f3" bg-color="#e3f2fd" include-image image-url="images/snice-logo.png" image-size="30" style="--qr-border-radius:12px"></snice-qr-code>
+        <snice-qr-code value="npm install snice" size="120" margin="6" dot-style="dots" fg-color="#4caf50" bg-color="#e8f5e9" center-text="npm" center-text-size="16" text-fill-color="#1b5e20" style="--qr-border-radius:12px"></snice-qr-code>
+        <snice-qr-code value="https://github.com" size="120" margin="6" center-text="GH" center-text-size="24" text-fill-color="#ffffff" text-outline-color="#6a1b9a" dot-style="rounded" fg-color="#9c27b0" bg-color="#f3e5f5" style="--qr-border-radius:12px"></snice-qr-code>
+        <snice-qr-code value="WIFI:T:WPA;S:MyNetwork;P:secret123;;" size="120" margin="6" center-text="WiFi" center-text-size="18" text-fill-color="#ffffff" text-outline-color="#e65100" fg-color="#ff9800" style="--qr-border-radius:12px"></snice-qr-code>
       </div>
     </div>
 
@@ -1738,9 +1739,318 @@ ${footer}
 </body>
 </html>`;
 
+// ─── DOCS PAGE ───────────────────────────────────────────────────────────
+const docsDir = join(root, 'docs');
+
+const docsManifest = [
+  { group: 'Core', docs: [
+    { id: 'elements', file: 'elements.md', title: 'Elements' },
+    { id: 'routing', file: 'routing.md', title: 'Routing' },
+    { id: 'events', file: 'events.md', title: 'Events' },
+    { id: 'controllers', file: 'controllers.md', title: 'Controllers' },
+  ]},
+  { group: 'Patterns', docs: [
+    { id: 'observe', file: 'observe.md', title: 'Observers' },
+    { id: 'request-response', file: 'request-response.md', title: 'Request / Response' },
+    { id: 'fetcher', file: 'fetcher.md', title: 'Fetcher' },
+    { id: 'placards', file: 'placards.md', title: 'Placards' },
+  ]},
+  { group: 'Components', docs: [
+    { id: 'code-block', file: 'code-block.md', title: 'Code Block' },
+  ]},
+  { group: 'Migration', docs: [
+    { id: 'migration-v2-to-v3', file: 'migration-v2-to-v3.md', title: 'v2 → v3' },
+  ]},
+];
+
+// Grammar map: code fence language → grammar file path
+const grammarMap = {
+  typescript: 'grammars/typescript.json',
+  ts: 'grammars/typescript.json',
+  javascript: 'grammars/typescript.json',
+  js: 'grammars/typescript.json',
+  html: 'grammars/html.json',
+  css: 'grammars/css.json',
+  json: 'grammars/json.json',
+  bash: 'grammars/bash.json',
+  sh: 'grammars/bash.json',
+  shell: 'grammars/bash.json',
+  python: 'grammars/python.json',
+};
+
+function slugify(text) {
+  return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function mdToHtml(markdown, docId) {
+  const lines = markdown.split('\n');
+  const result = [];
+  const headings = []; // collected for sidebar
+  let inCodeBlock = false;
+  let codeLines = [];
+  let codeLang = '';
+  let inList = false;
+  let listType = '';
+  let inTable = false;
+  let tableRows = [];
+  let inBlockquote = false;
+  let blockquoteLines = [];
+
+  function flushList() {
+    if (inList) {
+      result.push(listType === 'ol' ? '</ol>' : '</ul>');
+      inList = false;
+    }
+  }
+
+  function flushTable() {
+    if (inTable && tableRows.length > 0) {
+      let html = '<div class="doc-table-wrap"><table>';
+      tableRows.forEach((row, i) => {
+        const tag = i === 0 ? 'th' : 'td';
+        const wrap = i === 0 ? 'thead' : (i === 1 ? 'tbody' : '');
+        if (wrap === 'thead') html += '<thead>';
+        if (wrap === 'tbody') html += '</thead><tbody>';
+        html += '<tr>' + row.map(cell => `<${tag}>${inlineFormat(cell.trim())}</${tag}>`).join('') + '</tr>';
+      });
+      html += '</tbody></table></div>';
+      result.push(html);
+      inTable = false;
+      tableRows = [];
+    }
+  }
+
+  function flushBlockquote() {
+    if (inBlockquote) {
+      result.push('<blockquote class="doc-blockquote">' + blockquoteLines.map(l => `<p>${inlineFormat(l)}</p>`).join('') + '</blockquote>');
+      inBlockquote = false;
+      blockquoteLines = [];
+    }
+  }
+
+  function inlineFormat(text) {
+    // Bold + italic
+    text = text.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
+    // Bold
+    text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    // Italic
+    text = text.replace(/\*(.+?)\*/g, '<em>$1</em>');
+    // Inline code
+    text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+    // Links
+    text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+    return text;
+  }
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+
+    // Code fence
+    if (line.startsWith('```')) {
+      if (!inCodeBlock) {
+        flushList();
+        flushTable();
+        flushBlockquote();
+        inCodeBlock = true;
+        codeLang = line.slice(3).trim();
+        codeLines = [];
+        continue;
+      } else {
+        // End code block
+        inCodeBlock = false;
+        const code = escapeHtml(codeLines.join('\n'));
+        const lang = codeLang || 'typescript';
+        const grammar = grammarMap[lang] || grammarMap['typescript'];
+        result.push(`<snice-code-block language="${lang}" grammar="${grammar}">${code}</snice-code-block>`);
+        continue;
+      }
+    }
+
+    if (inCodeBlock) {
+      codeLines.push(line);
+      continue;
+    }
+
+    // Skip table of contents sections
+    if (/^## Table of Contents$/i.test(line.trim())) {
+      // Skip until next heading or blank line after list
+      i++;
+      while (i < lines.length && (lines[i].startsWith('- [') || lines[i].trim() === '')) {
+        i++;
+      }
+      i--; // back up one since the for loop will increment
+      continue;
+    }
+
+    // Table rows
+    if (line.includes('|') && line.trim().startsWith('|')) {
+      flushList();
+      flushBlockquote();
+      const cells = line.split('|').slice(1, -1); // trim first/last empty
+      // Skip separator row (---|---)
+      if (cells.every(c => /^[\s:-]+$/.test(c))) {
+        continue;
+      }
+      if (!inTable) inTable = true;
+      tableRows.push(cells);
+      continue;
+    } else {
+      flushTable();
+    }
+
+    // Blockquote
+    if (line.startsWith('> ')) {
+      flushList();
+      flushTable();
+      if (!inBlockquote) inBlockquote = true;
+      blockquoteLines.push(line.slice(2));
+      continue;
+    } else {
+      flushBlockquote();
+    }
+
+    // Headings
+    const headingMatch = line.match(/^(#{1,4})\s+(.+)$/);
+    if (headingMatch) {
+      flushList();
+      const level = headingMatch[1].length;
+      const text = headingMatch[2];
+      const id = `${docId}-${slugify(text)}`;
+      if (level <= 2) {
+        headings.push({ level, text, id });
+      }
+      result.push(`<h${level} id="${id}">${inlineFormat(text)}</h${level}>`);
+      continue;
+    }
+
+    // Unordered list
+    if (/^[-*]\s/.test(line.trim())) {
+      flushTable();
+      if (!inList || listType !== 'ul') {
+        flushList();
+        inList = true;
+        listType = 'ul';
+        result.push('<ul>');
+      }
+      result.push(`<li>${inlineFormat(line.trim().replace(/^[-*]\s/, ''))}</li>`);
+      continue;
+    }
+
+    // Ordered list
+    if (/^\d+\.\s/.test(line.trim())) {
+      flushTable();
+      if (!inList || listType !== 'ol') {
+        flushList();
+        inList = true;
+        listType = 'ol';
+        result.push('<ol>');
+      }
+      result.push(`<li>${inlineFormat(line.trim().replace(/^\d+\.\s/, ''))}</li>`);
+      continue;
+    }
+
+    // If we had a list and this isn't a list item, close it
+    flushList();
+
+    // Horizontal rule
+    if (/^---+$/.test(line.trim())) {
+      result.push('<hr>');
+      continue;
+    }
+
+    // Empty line
+    if (line.trim() === '') {
+      continue;
+    }
+
+    // Paragraph
+    result.push(`<p>${inlineFormat(line)}</p>`);
+  }
+
+  // Flush remaining open blocks
+  flushList();
+  flushTable();
+  flushBlockquote();
+
+  return { html: result.join('\n'), headings };
+}
+
+// Build sidebar + content
+let sidebarHtml = '';
+let contentHtml = '';
+
+for (const group of docsManifest) {
+  sidebarHtml += `<div class="nav-group">${group.group}</div>\n`;
+  for (const doc of group.docs) {
+    const mdPath = join(docsDir, doc.file);
+    let md;
+    try { md = readFileSync(mdPath, 'utf-8'); } catch { console.warn(`Docs: skipping ${doc.file} (not found)`); continue; }
+    const { html: docHtml, headings } = mdToHtml(md, doc.id);
+
+    // Sidebar: doc title link
+    sidebarHtml += `<a href="#${doc.id}">${doc.title}</a>\n`;
+    // Sidebar: ## sub-headings
+    for (const h of headings) {
+      if (h.level === 2) {
+        sidebarHtml += `<a href="#${h.id}" class="sub">${h.text}</a>\n`;
+      }
+    }
+
+    // Content section
+    contentHtml += `<section class="doc-file" id="${doc.id}">\n${docHtml}\n</section>\n`;
+  }
+}
+
+const docsPageHtml = `${head('Documentation')}
+  <script>fetch('grammars/typescript.json');</script>
+${header('docs')}
+  <nav class="docs-sidebar" id="docs-sidebar">
+    ${sidebarHtml}
+  </nav>
+  <main class="docs-content">
+    <div class="page-title">
+      <h2>Documentation</h2>
+      <p>Complete API reference for the Snice framework.</p>
+    </div>
+    ${contentHtml}
+  </main>
+${footer}
+  <script>
+    // Highlight active sidebar link on scroll
+    (() => {
+      const sidebar = document.getElementById('docs-sidebar');
+      if (!sidebar) return;
+      const links = [...sidebar.querySelectorAll('a')];
+      const sections = links.map(a => document.getElementById(a.getAttribute('href').slice(1))).filter(Boolean);
+      let ticking = false;
+      function updateActive() {
+        const scrollY = window.scrollY + 120;
+        let active = null;
+        for (const section of sections) {
+          if (section.offsetTop <= scrollY) active = section;
+        }
+        links.forEach(a => a.classList.remove('active'));
+        if (active) {
+          const link = sidebar.querySelector('a[href="#' + active.id + '"]');
+          if (link) link.classList.add('active');
+        }
+        ticking = false;
+      }
+      window.addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(updateActive); } });
+      updateActive();
+    })();
+  </script>
+</body>
+</html>`;
+
 // NOTE: styles.css, index.html, and components.html are hand-maintained
 // styles.css: full version lives in public/styles.css (511 lines with comp-split, code-tabs, etc.)
 // index.html: has imperative/declarative tabs, hand-crafted syntax highlighting
 // components.html: built from public/showcases/ fragments via build-showcases.js
 writeFileSync(join(out, 'decorators.html'), decoratorsHtml);
+writeFileSync(join(out, 'docs.html'), docsPageHtml);
 console.log('Built to public/ - preview at http://localhost:52891');

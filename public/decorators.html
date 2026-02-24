@@ -6,25 +6,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Load runtime + code-block + grammars first to prevent layout shift -->
-  <script src="components/snice-runtime.min.js?v=e716039"></script>
-  <script src="components/snice-code-block.min.js?v=e716039"></script>
-  <script>fetch('grammars/snice.json?v=e716039');</script>
+  <script src="components/snice-runtime.min.js"></script>
+  <script src="components/snice-code-block.min.js"></script>
+  <script>fetch('grammars/snice.json');</script>
   <title>Decorators & Patterns - Snice</title>
   <meta name="description" content="TypeScript web components with separation of concerns">
-  <link rel="icon" type="image/png" href="images/snice-logo.png?v=e716039">
+  <link rel="icon" type="image/png" href="images/snice-logo.png">
   <meta property="og:title" content="Decorators & Patterns - Snice">
   <meta property="og:description" content="TypeScript web components with separation of concerns">
   <meta property="og:image" content="images/snice-logo.png">
-  <link rel="stylesheet" href="theme/theme.css?v=e716039">
-  <link rel="stylesheet" href="styles.css?v=e716039">
+  <link rel="stylesheet" href="theme/theme.css">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
   <header>
     <div class="wrap">
-      <h1><a href="index.html" style="display:inline-flex;align-items:center;gap:0.5rem"><img src="images/snice-logo.png?v=e716039" alt="Snice" width="28" height="28" style="border-radius:50%">Snice</a></h1>
+      <h1><a href="index.html" style="display:inline-flex;align-items:center;gap:0.5rem"><img src="images/snice-logo.png" alt="Snice" width="28" height="28" style="border-radius:50%">Snice</a></h1>
       <nav>
         <a href="guide.html">Guide</a>
+        <a href="docs.html">Docs</a>
         <a href="decorators.html" class="active">Decorators</a>
         <a href="components.html">Components</a>
 
@@ -50,7 +51,7 @@ class MyCard extends HTMLElement {
     return html`&lt;h1&gt;${this.title}&lt;/h1&gt;`;
   }
 }</snice-code-block>
-      <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/elements.md">Full documentation →</a></p>
+      <p class="doc-link"><a href="docs.html#elements">Full documentation →</a></p>
     </div>
 
     <div class="dec-section">
@@ -71,7 +72,7 @@ class UserPage extends HTMLElement {
     this.user = await fetch(`/api/users/${this.id}`).then(r =&gt; r.json());
   }
 }</snice-code-block>
-      <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/routing.md">Full documentation →</a></p>
+      <p class="doc-link"><a href="docs.html#routing">Full documentation →</a></p>
     </div>
 
     <div class="dec-section">
@@ -94,7 +95,7 @@ class WeatherData {
 }
 
 &lt;stat-card controller="weather"&gt;&lt;/stat-card&gt;</snice-code-block>
-      <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/controllers.md">Full documentation →</a></p>
+      <p class="doc-link"><a href="docs.html#controllers">Full documentation →</a></p>
     </div>
 
     <div class="dec-section">
@@ -117,7 +118,7 @@ class AppShell extends HTMLElement {
 // Pages reference the layout
 @page({ tag: 'home-page', routes: ['/'], layout: 'app-shell' })
 class HomePage extends HTMLElement { }</snice-code-block>
-      <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/routing.md">Full documentation →</a></p>
+      <p class="doc-link"><a href="docs.html#routing">Full documentation →</a></p>
     </div>
 
     <div class="dec-section">
@@ -228,7 +229,7 @@ updateStatus(status) {
 handleItemClick(e) {
   return { id: e.target.dataset.id };
 }</snice-code-block>
-      <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/events.md">Full documentation →</a></p>
+      <p class="doc-link"><a href="docs.html#events">Full documentation →</a></p>
     </div>
 
     <div class="dec-section">
@@ -240,7 +241,7 @@ handleContext(ctx: Context) {
   this.user = ctx.application.user;
   this.route = ctx.navigation.route;
 }</snice-code-block>
-      <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/routing.md">Full documentation →</a></p>
+      <p class="doc-link"><a href="docs.html#routing">Full documentation →</a></p>
     </div>
 
     <div class="dec-section">
@@ -269,7 +270,7 @@ onDarkMode(matches: boolean) {
 onMutation(records: MutationRecord[]) {
   this.updateCount();
 }</snice-code-block>
-      <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/observers.md">Full documentation →</a></p>
+      <p class="doc-link"><a href="docs.html#observe">Full documentation →</a></p>
     </div>
 
     <div class="dec-section">
@@ -289,7 +290,7 @@ async handleFetchUser({ id }) {
 }
 
 // Usage: const user = await this.fetchUser('123');</snice-code-block>
-      <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/request-response.md">Full documentation →</a></p>
+      <p class="doc-link"><a href="docs.html#request-response">Full documentation →</a></p>
     </div>
 
     <div class="dec-section">
@@ -359,7 +360,7 @@ html`&lt;div @keydown:escape=${this.close}&gt;`</snice-code-block>
 
   <footer>
     <div class="wrap">
-      <span>Snice v4.12.0 · MIT</span>
+      <span>Snice v4.13.0 · MIT</span>
       <span><a href="https://www.npmjs.com/package/snice">npm</a> · <a href="https://gitlab.com/Hedzer/snice">GitLab</a></span>
     </div>
   </footer>
