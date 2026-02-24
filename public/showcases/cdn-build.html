@@ -1,12 +1,12 @@
     <div class="comp-section">
       <h3>CDN Build</h3>
       <p class="comp-desc">Use any component without the full framework. Load the runtime once, then add components as needed.</p>
-      <pre><code>npx snice build-component button
-<span class="c"># creates snice-button.min.js (~2-5kb)</span>
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">npx snice build-component button
+# creates snice-button.min.js (~2-5kb)
 
-<span class="c">&lt;!-- Load runtime once --&gt;</span>
-&lt;script src=<span class="s">"snice-runtime.min.js"</span>&gt;&lt;/script&gt;
-<span class="c">&lt;!-- Add components --&gt;</span>
-&lt;script src=<span class="s">"snice-button.min.js"</span>&gt;&lt;/script&gt;
-&lt;snice-button variant=<span class="s">"primary"</span>&gt;Works anywhere&lt;/snice-button&gt;</code></pre>
+&lt;!-- Load runtime once --&gt;
+&lt;script src="snice-runtime.min.js?v=e716039"&gt;&lt;/script&gt;
+&lt;!-- Add components --&gt;
+&lt;script src="snice-button.min.js?v=e716039"&gt;&lt;/script&gt;
+&lt;snice-button variant="primary"&gt;Works anywhere&lt;/snice-button&gt;</snice-code-block>
     </div>

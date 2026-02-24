@@ -7,13 +7,13 @@
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <pre><code class="language-html">&lt;snice-terminal id="term" prompt="$ "&gt;&lt;/snice-terminal&gt;
+          <snice-code-block language="html" grammar="grammars/html.json?v=e716039">&lt;snice-terminal id="term" prompt="$ "&gt;&lt;/snice-terminal&gt;
 &lt;script&gt;
   term.writeln('Welcome!', 'info');
   term.addEventListener('terminal-command', (e) =&gt; {
     term.writeln('You typed: ' + e.detail.command);
   });
-&lt;/script&gt;</code></pre>
+&lt;/script&gt;</snice-code-block>
         </div>
       </div>
     </div>

@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
+<script>document.documentElement.setAttribute('data-theme',localStorage.getItem('snice-theme')||'dark')</script>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Load runtime + code-block + grammars first to prevent layout shift -->
-  <script src="components/snice-runtime.min.js?v=58882cc"></script>
-  <script src="components/snice-code-block.min.js?v=58882cc"></script>
-  <script>fetch('grammars/snice.json?v=58882cc');</script>
+  <script src="components/snice-runtime.min.js?v=e716039"></script>
+  <script src="components/snice-code-block.min.js?v=e716039"></script>
+  <script>fetch('grammars/snice.json?v=e716039');</script>
   <title>Guide - Snice</title>
   <meta name="description" content="Learn to build custom elements with Snice decorators, step by step.">
-  <link rel="icon" type="image/png" href="images/snice-logo.png?v=58882cc">
+  <link rel="icon" type="image/png" href="images/snice-logo.png?v=e716039">
   <meta property="og:title" content="Guide - Snice">
   <meta property="og:description" content="Learn to build custom elements with Snice decorators, step by step.">
   <meta property="og:image" content="images/snice-logo.png">
-  <link rel="stylesheet" href="theme/theme.css?v=58882cc">
-  <link rel="stylesheet" href="styles.css?v=58882cc">
+  <link rel="stylesheet" href="theme/theme.css?v=e716039">
+  <link rel="stylesheet" href="styles.css?v=e716039">
   <style>
     .guide-sidebar {
       position: fixed;
@@ -50,13 +51,13 @@
 
   <header>
     <div class="wrap">
-      <h1><a href="index.html" style="display:inline-flex;align-items:center;gap:0.5rem"><img src="images/snice-logo.png?v=58882cc" alt="Snice" width="28" height="28" style="border-radius:50%">Snice</a></h1>
+      <h1><a href="index.html" style="display:inline-flex;align-items:center;gap:0.5rem"><img src="images/snice-logo.png?v=e716039" alt="Snice" width="28" height="28" style="border-radius:50%">Snice</a></h1>
       <nav>
         <a href="guide.html" class="active">Guide</a>
         <a href="decorators.html">Decorators</a>
         <a href="components.html">Components</a>
         <a href="https://gitlab.com/Hedzer/snice">Source</a>
-        <button class="theme-btn" onclick="document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark')" title="Toggle theme">
+        <button class="theme-btn" onclick="var t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',t);localStorage.setItem('snice-theme',t)" title="Toggle theme">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
         </button>
       </nav>
@@ -103,40 +104,40 @@
         <div class="dec-section" id="esm">
           <h3>ESM + Bundler</h3>
           <p class="desc">Install the package and use with Vite, esbuild, or Rollup. Full framework with decorators, routing, and controllers.</p>
-          <pre><code><span class="c"># Install</span>
+          <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039"># Install
 npm install snice
 
-<span class="c"># Or scaffold a full project</span>
-npx snice create-app my-app</code></pre>
-          <pre style="margin-top:0.75rem"><code><span class="k">import</span> { element, property, render, html } <span class="k">from</span> <span class="s">'snice'</span>;
+# Or scaffold a full project
+npx snice create-app my-app</snice-code-block>
+          <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039" style="margin-top:0.75rem">import { element, property, render, html } from 'snice';
 
-<span class="d">@element</span>(<span class="s">'my-counter'</span>)
-<span class="k">class</span> <span class="t">MyCounter</span> <span class="k">extends</span> <span class="t">HTMLElement</span> {
-  <span class="d">@property</span>({ type: Number })
+@element('my-counter')
+class MyCounter extends HTMLElement {
+  @property({ type: Number })
   count = 0;
 
-  <span class="d">@render</span>()
-  <span class="f">template</span>() {
-    <span class="k">return</span> html<span class="s">`
-      &lt;button @click=&dollar;{() =&gt; this.count++}&gt;
-        &dollar;{this.count}
+  @render()
+  template() {
+    return html`
+      &lt;button @click=${() =&gt; this.count++}&gt;
+        ${this.count}
       &lt;/button&gt;
-    `</span>;
+    `;
   }
-}</code></pre>
+}</snice-code-block>
           <p class="desc" style="margin-top:0.75rem"><strong>Best for:</strong> Full applications, SPAs, projects using a bundler.</p>
         </div>
 
         <div class="dec-section" id="cdn">
           <h3>CDN</h3>
           <p class="desc">Load the Snice runtime once, then add CDN component builds. No bundler needed &mdash; just <code>&lt;script&gt;</code> tags.</p>
-          <pre><code><span class="c">&lt;!-- Load runtime once --&gt;</span>
-&lt;script src=<span class="s">"snice-runtime.min.js"</span>&gt;&lt;/script&gt;
+          <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">&lt;!-- Load runtime once --&gt;
+&lt;script src="snice-runtime.min.js?v=e716039"&gt;&lt;/script&gt;
 
-<span class="c">&lt;!-- Add components --&gt;</span>
-&lt;script src=<span class="s">"snice-button.min.js"</span>&gt;&lt;/script&gt;
-&lt;script src=<span class="s">"snice-input.min.js"</span>&gt;&lt;/script&gt;
-&lt;script src=<span class="s">"snice-modal.min.js"</span>&gt;&lt;/script&gt;</code></pre>
+&lt;!-- Add components --&gt;
+&lt;script src="snice-button.min.js?v=e716039"&gt;&lt;/script&gt;
+&lt;script src="snice-input.min.js?v=e716039"&gt;&lt;/script&gt;
+&lt;script src="snice-modal.min.js?v=e716039"&gt;&lt;/script&gt;</snice-code-block>
           <p class="desc" style="margin-top:0.75rem">The runtime is ~18KB gzipped. Each component adds ~1&ndash;93KB. No duplication regardless of how many components you use.</p>
           <p class="desc"><strong>Best for:</strong> CMS pages, WordPress, static sites, landing pages, dashboards.</p>
         </div>
@@ -144,24 +145,24 @@ npx snice create-app my-app</code></pre>
         <div class="dec-section" id="react">
           <h3>React Wrappers</h3>
           <p class="desc">First-class React adapters with prop mapping, event callbacks, ref forwarding, and form integration. React 17, 18, and 19.</p>
-          <pre><code><span class="k">import</span> { Button, Input, Modal } <span class="k">from</span> <span class="s">'snice/react'</span>;
+          <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">import { Button, Input, Modal } from 'snice/react';
 
-<span class="k">function</span> <span class="t">App</span>() {
-  <span class="k">const</span> [email, setEmail] = useState(<span class="s">''</span>);
+function App() {
+  const [email, setEmail] = useState('');
 
-  <span class="k">return</span> (
+  return (
     &lt;&gt;
       &lt;Input
-        label=<span class="s">"Email"</span>
+        label="Email"
         value={email}
         onChange={(e) =&gt; setEmail(e.detail.value)}
       /&gt;
-      &lt;Button variant=<span class="s">"primary"</span> onClick={handleSubmit}&gt;
+      &lt;Button variant="primary" onClick={handleSubmit}&gt;
         Submit
       &lt;/Button&gt;
     &lt;/&gt;
   );
-}</code></pre>
+}</snice-code-block>
           <p class="desc" style="margin-top:0.75rem"><strong>Best for:</strong> React applications that want Snice UI components with native React DX.</p>
         </div>
 
@@ -172,45 +173,45 @@ npx snice create-app my-app</code></pre>
         <div class="dec-section" id="minimum">
           <h3>The bare minimum</h3>
           <p class="desc">An element needs a tag name and a template. That's it.</p>
-          <pre><code><span class="k">import</span> { element, render, html } <span class="k">from</span> <span class="s">'snice'</span>;
+          <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">import { element, render, html } from 'snice';
 
-<span class="d">@element</span>(<span class="s">'task-item'</span>)
-<span class="k">class</span> <span class="t">TaskItem</span> <span class="k">extends</span> <span class="t">HTMLElement</span> {
-  <span class="d">@render</span>()
-  <span class="f">template</span>() {
-    <span class="k">return</span> html<span class="s">`&lt;span&gt;Buy groceries&lt;/span&gt;`</span>;
+@element('task-item')
+class TaskItem extends HTMLElement {
+  @render()
+  template() {
+    return html`&lt;span&gt;Buy groceries&lt;/span&gt;`;
   }
-}</code></pre>
+}</snice-code-block>
           <p class="desc" style="margin-top:0.75rem"><span class="h">&lt;task-item&gt;&lt;/task-item&gt;</span></p>
         </div>
 
         <div class="dec-section" id="properties">
           <h3>Properties</h3>
           <p class="desc">Properties sync with HTML attributes and trigger re-renders automatically.</p>
-          <pre><code><span class="d">@element</span>(<span class="s">'task-item'</span>)
-<span class="k">class</span> <span class="t">TaskItem</span> <span class="k">extends</span> <span class="t">HTMLElement</span> {
-  <span class="d">@property</span>()
-  label = <span class="s">''</span>;
+          <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@element('task-item')
+class TaskItem extends HTMLElement {
+  @property()
+  label = '';
 
-  <span class="d">@property</span>({ type: Boolean })
-  done = <span class="k">false</span>;
+  @property({ type: Boolean })
+  done = false;
 
-  <span class="d">@render</span>()
-  <span class="f">template</span>() {
-    <span class="k">return</span> html<span class="s">`
+  @render()
+  template() {
+    return html`
       &lt;span&gt;${this.label}&lt;/span&gt;
-    `</span>;
+    `;
   }
-}</code></pre>
+}</snice-code-block>
           <p class="desc" style="margin-top:0.75rem"><span class="h">&lt;task-item</span> <span class="a">label</span>=<span class="s">"Buy groceries"</span><span class="h">&gt;&lt;/task-item&gt;</span></p>
         </div>
 
         <div class="dec-section" id="styles">
           <h3>Styles</h3>
           <p class="desc">Styles are scoped to the element via shadow DOM. They won't leak out.</p>
-          <pre><code><span class="d">@styles</span>()
-<span class="f">css</span>() {
-  <span class="k">return</span> css<span class="s">`
+          <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@styles()
+css() {
+  return css`
     :host {
       display: flex;
       align-items: center;
@@ -221,8 +222,8 @@ npx snice create-app my-app</code></pre>
       text-decoration: line-through;
       opacity: 0.5;
     }
-  `</span>;
-}</code></pre>
+  `;
+}</snice-code-block>
           <p class="desc" style="margin-top:0.75rem">Use <code>:host</code> to style the element itself. <code>:host([done])</code> targets when the <code>done</code> attribute is present.</p>
         </div>
 
@@ -233,64 +234,64 @@ npx snice create-app my-app</code></pre>
         <div class="dec-section" id="events">
           <h3>Inline handlers</h3>
           <p class="desc">Use <code>@event=${handler}</code> in templates. Handlers are auto-bound to <code>this</code>.</p>
-          <pre><code><span class="d">@render</span>()
-<span class="f">template</span>() {
-  <span class="k">return</span> html<span class="s">`
+          <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@render()
+template() {
+  return html`
     &lt;input
       type="checkbox"
       .checked=${this.done}
       @change=${this.toggle}
     /&gt;
     &lt;span&gt;${this.label}&lt;/span&gt;
-  `</span>;
+  `;
 }
 
-<span class="f">toggle</span>() {
+toggle() {
   this.done = !this.done;
-}</code></pre>
+}</snice-code-block>
           <p class="desc" style="margin-top:0.75rem"><code>.checked=${val}</code> sets the property (not attribute). <code>?disabled=${bool}</code> toggles an attribute.</p>
         </div>
 
         <div class="dec-section" id="dispatch">
           <h3>Emitting events</h3>
           <p class="desc">Use <code>@dispatch</code> to fire custom events. The return value becomes <code>event.detail</code>.</p>
-          <pre><code><span class="d">@dispatch</span>(<span class="s">'status-changed'</span>)
-<span class="f">toggle</span>() {
+          <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@dispatch('status-changed')
+toggle() {
   this.done = !this.done;
-  <span class="k">return</span> { label: this.label, done: this.done };
-}</code></pre>
+  return { label: this.label, done: this.done };
+}</snice-code-block>
           <p class="desc" style="margin-top:0.75rem">Parents listen with <code>@status-changed=${handler}</code> in templates, <code>@on('status-changed')</code> as a decorator, or <code>addEventListener('status-changed', ...)</code>.</p>
         </div>
 
         <div class="dec-section" id="keyboard">
           <h3>Keyboard shortcuts</h3>
           <p class="desc">Filter events by key or key combo directly in the template.</p>
-          <pre><code><span class="d">@render</span>()
-<span class="f">template</span>() {
-  <span class="k">return</span> html<span class="s">`
+          <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@render()
+template() {
+  return html`
     &lt;input
       placeholder="New task..."
       @keydown:Enter=${this.addTask}
       @keydown:Escape=${this.clear}
     /&gt;
-  `</span>;
-}</code></pre>
+  `;
+}</snice-code-block>
           <p class="desc" style="margin-top:0.75rem">Combos: <code>@keydown:ctrl+s</code>, <code>@keydown:shift+Enter</code>. Works on any element.</p>
         </div>
 
         <div class="dec-section" id="on">
           <h3>Event delegation</h3>
           <p class="desc">Handle events declaratively with the <code>@on</code> decorator instead of inline handlers.</p>
-          <pre><code><span class="d">@on</span>(<span class="s">'click'</span>, <span class="s">'.delete'</span>)
-<span class="f">handleDelete</span>(e) {
-  <span class="k">const</span> id = e.target.dataset.id;
+          <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@on('click', '.delete')
+handleDelete(e) {
+  const id = e.target.dataset.id;
   this.items = this.items.filter(i => i.id !== id);
 }
 
-<span class="d">@on</span>(<span class="s">'input'</span>, <span class="s">'input.search'</span>, { debounce: 300 })
-<span class="f">handleSearch</span>(e) {
+@on('input', 'input.search', { debounce: 300 })
+handleSearch(e) {
   this.filter = e.target.value;
-}</code></pre>
+}</snice-code-block>
           <p class="desc" style="margin-top:0.75rem">Delegation works on shadow DOM elements. Built-in <code>debounce</code> and <code>throttle</code> options.</p>
         </div>
 
@@ -301,9 +302,9 @@ npx snice create-app my-app</code></pre>
         <div class="dec-section" id="conditionals">
           <h3>Conditionals</h3>
           <p class="desc">Show or hide parts of the template.</p>
-          <pre><code><span class="d">@render</span>()
-<span class="f">template</span>() {
-  <span class="k">return</span> html<span class="s">`
+          <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@render()
+template() {
+  return html`
     &lt;input
       type="checkbox"
       .checked=${this.done}
@@ -314,21 +315,21 @@ npx snice create-app my-app</code></pre>
     &lt;if ${this.done}&gt;
       &lt;small&gt;Completed!&lt;/small&gt;
     &lt;/if&gt;
-  `</span>;
-}</code></pre>
+  `;
+}</snice-code-block>
           <p class="desc" style="margin-top:0.75rem"><code>&lt;if&gt;</code> conditionally renders its children. For multi-branch, use <code>&lt;case&gt;</code> / <code>&lt;when&gt;</code>.</p>
         </div>
 
         <div class="dec-section" id="lists">
           <h3>Lists</h3>
           <p class="desc">Render arrays with <code>.map()</code>. Use <code>key</code> for efficient updates.</p>
-          <pre><code><span class="d">@element</span>(<span class="s">'task-list'</span>)
-<span class="k">class</span> <span class="t">TaskList</span> <span class="k">extends</span> <span class="t">HTMLElement</span> {
-  <span class="d">@property</span>({ type: Array }) items = [];
+          <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@element('task-list')
+class TaskList extends HTMLElement {
+  @property({ type: Array }) items = [];
 
-  <span class="d">@render</span>()
-  <span class="f">template</span>() {
-    <span class="k">return</span> html<span class="s">`
+  @render()
+  template() {
+    return html`
       ${this.items.map(item =&gt; html`
         &lt;task-item
           key=${item.id}
@@ -338,9 +339,9 @@ npx snice create-app my-app</code></pre>
         &gt;
         &lt;/task-item&gt;
       `)}
-    `</span>;
+    `;
   }
-}</code></pre>
+}</snice-code-block>
         </div>
 
         <!-- ═══════════════════════════════════════ -->
@@ -350,42 +351,42 @@ npx snice create-app my-app</code></pre>
         <div class="dec-section" id="watch">
           <h3>Watch changes</h3>
           <p class="desc">Run logic when a specific property changes.</p>
-          <pre><code><span class="d">@watch</span>(<span class="s">'done'</span>)
-<span class="f">onDoneChanged</span>(oldVal, newVal) {
-  console.log(<span class="s">`Task ${this.label}: ${newVal ? 'completed' : 'reopened'}`</span>);
-}</code></pre>
+          <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@watch('done')
+onDoneChanged(oldVal, newVal) {
+  console.log(`Task ${this.label}: ${newVal ? 'completed' : 'reopened'}`);
+}</snice-code-block>
         </div>
 
         <div class="dec-section" id="query">
           <h3>Query the DOM</h3>
           <p class="desc">Get references to elements inside your shadow DOM.</p>
-          <pre><code><span class="d">@query</span>(<span class="s">'input'</span>) checkbox!: <span class="t">HTMLInputElement</span>;
+          <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@query('input') checkbox!: HTMLInputElement;
 
-<span class="d">@ready</span>()
-<span class="f">init</span>() {
+@ready()
+init() {
   this.checkbox.focus();
-}</code></pre>
+}</snice-code-block>
           <p class="desc" style="margin-top:0.75rem"><code>@ready()</code> runs after the first render, so DOM refs are available.</p>
           <p class="desc">Snice components export their interfaces from <code>.types.ts</code>, so you can type queries:</p>
-          <pre style="margin-top:0.5rem"><code><span class="k">import</span> type { SniceInput } <span class="k">from</span> <span class="s">'snice/components/input'</span>;
+          <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039" style="margin-top:0.5rem">import type { SniceInput } from 'snice/components/input';
 
-<span class="d">@query</span>(<span class="s">'snice-input'</span>) input!: <span class="t">SniceInput</span>;</code></pre>
+@query('snice-input') input!: SniceInput;</snice-code-block>
         </div>
 
         <div class="dec-section" id="ready-dispose">
           <h3>Ready &amp; Dispose</h3>
           <p class="desc">Setup and teardown.</p>
-          <pre><code><span class="d">@ready</span>()
-<span class="f">onMount</span>() {
-  <span class="c">// Element is rendered and in the DOM</span>
+          <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@ready()
+onMount() {
+  // Element is rendered and in the DOM
   this.interval = setInterval(() => this.tick(), 1000);
 }
 
-<span class="d">@dispose</span>()
-<span class="f">onUnmount</span>() {
-  <span class="c">// Element is being removed from the DOM</span>
+@dispose()
+onUnmount() {
+  // Element is being removed from the DOM
   clearInterval(this.interval);
-}</code></pre>
+}</snice-code-block>
         </div>
 
         <!-- ═══════════════════════════════════════ -->
@@ -395,28 +396,28 @@ npx snice create-app my-app</code></pre>
         <div class="dec-section" id="controllers">
           <h3>Controllers</h3>
           <p class="desc">Swap behavior on any element without changing its code. A controller attaches logic from the outside.</p>
-          <pre><code><span class="k">import</span> { controller, on } <span class="k">from</span> <span class="s">'snice'</span>;
+          <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">import { controller, on } from 'snice';
 
-<span class="d">@controller</span>(<span class="s">'weather'</span>)
-<span class="k">class</span> <span class="t">WeatherController</span> {
-  <span class="k">async</span> <span class="f">attach</span>(el) {
-    <span class="c">// Called when controller binds to an element</span>
-    <span class="k">const</span> data = <span class="k">await</span> fetch(<span class="s">'/api/weather'</span>).then(r => r.json());
+@controller('weather')
+class WeatherController {
+  async attach(el) {
+    // Called when controller binds to an element
+    const data = await fetch('/api/weather').then(r => r.json());
     this.city = data.city;
     el.label = data.city;
-    el.value = <span class="s">`${data.temp}&deg;`</span>;
+    el.value = `${data.temp}&deg;`;
   }
 
-  <span class="d">@on</span>(<span class="s">'click'</span>)
-  <span class="f">viewDetails</span>() {
-    <span class="c">// Navigate to the city's weather page</span>
-    navigate(<span class="s">`/weather/${this.city}`</span>);
+  @on('click')
+  viewDetails() {
+    // Navigate to the city's weather page
+    navigate(`/weather/${this.city}`);
   }
 
-  <span class="f">detach</span>(el) {
-    <span class="c">// Cleanup when controller is removed</span>
+  detach(el) {
+    // Cleanup when controller is removed
   }
-}</code></pre>
+}</snice-code-block>
           <p class="desc" style="margin-top:0.75rem">Attach by attribute: <span class="h">&lt;stat-card <span class="a">controller</span>=<span class="s">"weather"</span>&gt;&lt;/stat-card&gt;</span></p>
           <p class="desc">Swap at runtime: change the attribute to <code>"stocks"</code> and the element gets new behavior, same UI.</p>
         </div>
@@ -424,23 +425,23 @@ npx snice create-app my-app</code></pre>
         <div class="dec-section" id="full">
           <h3>Full example</h3>
           <p class="desc">Here's the complete task-item with everything wired together.</p>
-          <pre><code><span class="k">import</span> { element, property, watch, query, render, styles,
-         dispatch, ready, dispose, html, css } <span class="k">from</span> <span class="s">'snice'</span>;
+          <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">import { element, property, watch, query, render, styles,
+         dispatch, ready, dispose, html, css } from 'snice';
 
-<span class="d">@element</span>(<span class="s">'task-item'</span>)
-<span class="k">class</span> <span class="t">TaskItem</span> <span class="k">extends</span> <span class="t">HTMLElement</span> {
-  <span class="d">@property</span>()
-  label = <span class="s">''</span>;
+@element('task-item')
+class TaskItem extends HTMLElement {
+  @property()
+  label = '';
 
-  <span class="d">@property</span>({ type: Boolean })
-  done = <span class="k">false</span>;
+  @property({ type: Boolean })
+  done = false;
 
-  <span class="d">@query</span>(<span class="s">'input'</span>)
-  checkbox!: <span class="t">HTMLInputElement</span>;
+  @query('input')
+  checkbox!: HTMLInputElement;
 
-  <span class="d">@render</span>()
-  <span class="f">template</span>() {
-    <span class="k">return</span> html<span class="s">`
+  @render()
+  template() {
+    return html`
       &lt;input
         type="checkbox"
         .checked=${this.done}
@@ -450,12 +451,12 @@ npx snice create-app my-app</code></pre>
       &lt;if ${this.done}&gt;
         &lt;small&gt;Done&lt;/small&gt;
       &lt;/if&gt;
-    `</span>;
+    `;
   }
 
-  <span class="d">@styles</span>()
-  <span class="f">css</span>() {
-    <span class="k">return</span> css<span class="s">`
+  @styles()
+  css() {
+    return css`
       :host {
         display: flex;
         align-items: center;
@@ -471,38 +472,25 @@ npx snice create-app my-app</code></pre>
       small {
         color: green;
       }
-    `</span>;
+    `;
   }
 
-  <span class="d">@dispatch</span>(<span class="s">'status-changed'</span>)
-  <span class="f">toggle</span>() {
+  @dispatch('status-changed')
+  toggle() {
     this.done = !this.done;
-    <span class="k">return</span> { label: this.label, done: this.done };
+    return { label: this.label, done: this.done };
   }
 
-  <span class="d">@watch</span>(<span class="s">'done'</span>)
-  <span class="f">onDone</span>(oldVal, newVal) {
-    console.log(this.label, newVal ? <span class="s">'completed'</span> : <span class="s">'reopened'</span>);
+  @watch('done')
+  onDone(oldVal, newVal) {
+    console.log(this.label, newVal ? 'completed' : 'reopened');
   }
-}</code></pre>
+}</snice-code-block>
         </div>
 
       </div>
   </main>
 
-  <script>
-    // Convert all <pre><code> to <snice-code-block> with snice grammar
-    document.querySelectorAll('.dec-section pre > code').forEach(code => {
-      const pre = code.parentElement;
-      const text = code.textContent;
-      const block = document.createElement('snice-code-block');
-      block.setAttribute('language', 'snice');
-      block.setAttribute('grammar', 'grammars/snice.json?v=58882cc');
-      block.copyable = false;
-      block.code = text;
-      pre.replaceWith(block);
-    });
-  </script>
   <script>
     // Highlight active sidebar link on scroll
     const sections = document.querySelectorAll('.dec-section[id]');

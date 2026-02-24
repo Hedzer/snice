@@ -23,14 +23,14 @@
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <pre><code class="language-html">&lt;snice-app-tiles columns="3"&gt;
+          <snice-code-block language="html" grammar="grammars/html.json?v=e716039">&lt;snice-app-tiles columns="3"&gt;
   &lt;snice-app-tile name="Mail"
     icon="mail"
     color="rgb(220 38 38)"&gt;&lt;/snice-app-tile&gt;
   &lt;snice-app-tile name="Videos"
     icon="play_circle"
     badge="5"&gt;&lt;/snice-app-tile&gt;
-&lt;/snice-app-tiles&gt;</code></pre>
+&lt;/snice-app-tiles&gt;</snice-code-block>
         </div>
       </div>
 
@@ -54,7 +54,7 @@
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <pre><code class="language-html">&lt;!-- No icon = colored letter --&gt;
+          <snice-code-block language="html" grammar="grammars/html.json?v=e716039">&lt;!-- No icon = colored letter --&gt;
 &lt;snice-app-tiles columns="3"&gt;
   &lt;snice-app-tile name="Slack"
     color="rgb(97 31 105)"&gt;
@@ -63,7 +63,7 @@
     color="rgb(255 153 0)"
     badge="!"&gt;
   &lt;/snice-app-tile&gt;
-&lt;/snice-app-tiles&gt;</code></pre>
+&lt;/snice-app-tiles&gt;</snice-code-block>
         </div>
       </div>
 
@@ -83,7 +83,7 @@
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <pre><code class="language-html">&lt;snice-app-tiles columns="1"
+          <snice-code-block language="html" grammar="grammars/html.json?v=e716039">&lt;snice-app-tiles columns="1"
   variant="list"&gt;
   &lt;snice-app-tile name="Dashboard"
     icon="dashboard"
@@ -92,7 +92,7 @@
   &lt;snice-app-tile name="Messages"
     icon="chat" badge="8"&gt;
   &lt;/snice-app-tile&gt;
-&lt;/snice-app-tiles&gt;</code></pre>
+&lt;/snice-app-tiles&gt;</snice-code-block>
         </div>
       </div>
 
@@ -113,7 +113,7 @@
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <pre><code class="language-html">&lt;snice-app-tiles columns="2"
+          <snice-code-block language="html" grammar="grammars/html.json?v=e716039">&lt;snice-app-tiles columns="2"
   variant="compact"&gt;
   &lt;snice-app-tile name="Dashboard"
     icon="dashboard"
@@ -122,7 +122,7 @@
   &lt;snice-app-tile name="Messages"
     icon="chat" badge="8"&gt;
   &lt;/snice-app-tile&gt;
-&lt;/snice-app-tiles&gt;</code></pre>
+&lt;/snice-app-tiles&gt;</snice-code-block>
         </div>
       </div>
 
@@ -150,7 +150,7 @@
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <pre><code class="language-html">&lt;!-- size: sm, md (default), lg --&gt;
+          <snice-code-block language="html" grammar="grammars/html.json?v=e716039">&lt;!-- size: sm, md (default), lg --&gt;
 &lt;snice-app-tiles columns="2"
   size="sm"&gt;
   &lt;snice-app-tile name="Home"
@@ -163,7 +163,7 @@
     icon="music_note"
     color="rgb(220 38 38)"&gt;
   &lt;/snice-app-tile&gt;
-&lt;/snice-app-tiles&gt;</code></pre>
+&lt;/snice-app-tiles&gt;</snice-code-block>
         </div>
       </div>
 
@@ -177,7 +177,7 @@
         </div>
         <div class="comp-split-code">
           <span class="code-lang">js</span>
-          <pre><code class="language-js">const tiles = document.querySelector(
+          <snice-code-block language="js" grammar="grammars/typescript.json?v=e716039">const tiles = document.querySelector(
   'snice-app-tiles');
 tiles.columns = 3;
 tiles.tiles = [
@@ -187,7 +187,7 @@ tiles.tiles = [
     icon: 'https://cdn.../slack.svg' },
 ];
 tiles.addEventListener('tile-click',
-  e =&gt; console.log(e.detail.tile));</code></pre>
+  e =&gt; console.log(e.detail.tile));</snice-code-block>
         </div>
       </div>
 

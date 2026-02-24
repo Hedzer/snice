@@ -38,7 +38,7 @@ const greeting = (name) => {
           </div>
           <div class="code-panel active" id="md-decl">
             <span class="code-lang">html</span>
-            <pre><code class="language-html">&lt;snice-markdown theme="github"&gt;
+            <snice-code-block language="html" grammar="grammars/html.json?v=e716039">&lt;snice-markdown theme="github"&gt;
 ## Hello World
 
 **Bold** and *italic* text.
@@ -49,18 +49,18 @@ const greeting = (name) => {
 | Col A | Col B |
 |-------|-------|
 | One   | Two   |
-&lt;/snice-markdown&gt;</code></pre>
+&lt;/snice-markdown&gt;</snice-code-block>
           </div>
           <div class="code-panel" id="md-imper">
             <span class="code-lang">javascript</span>
-            <pre><code class="language-javascript">const md = document.querySelector(
+            <snice-code-block language="javascript" grammar="grammars/typescript.json?v=e716039">const md = document.querySelector(
   'snice-markdown');
 md.setContent('## Dynamic\n\n'
   + '- Item 1\n- Item 2\n\n'
   + '**Bold** and *italic*');
 
 md.addEventListener('link-click',
-  e =&gt; console.log(e.detail.href));</code></pre>
+  e =&gt; console.log(e.detail.href));</snice-code-block>
           </div>
         </div>
       </div>
