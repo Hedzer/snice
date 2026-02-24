@@ -1,0 +1,26 @@
+# Cache-busted assets: immutable, cache forever
+/theme/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/styles.css
+  Cache-Control: public, max-age=31536000, immutable
+
+/components/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/images/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/grammars/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# HTML pages: short cache, always revalidate (they carry versioned asset URLs)
+/
+  Cache-Control: public, max-age=60, must-revalidate
+
+/*.html
+  Cache-Control: public, max-age=60, must-revalidate
+
+# Docs (fetched by help drawer)
+/docs/*
+  Cache-Control: public, max-age=3600

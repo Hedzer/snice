@@ -50,6 +50,22 @@ function componentRebuilder() {
   };
 }
 
+function cacheHeaders() {
+  return {
+    name: 'cache-headers',
+    configureServer(server: any) {
+      server.middlewares.use((req: any, res: any, next: any) => {
+        if (req.url && req.url.includes('?v=')) {
+          res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        } else if (req.url && req.url.endsWith('.html')) {
+          res.setHeader('Cache-Control', 'public, max-age=60, must-revalidate');
+        }
+        next();
+      });
+    },
+  };
+}
+
 function showcaseRebuilder() {
   return {
     name: 'showcase-rebuilder',
@@ -87,6 +103,7 @@ export default defineConfig({
         },
       },
     }),
+    cacheHeaders(),
     showcaseRebuilder(),
     componentRebuilder(),
   ],

@@ -117,9 +117,11 @@
     "release": "semantic-release --no-ci",
     "postrelease": "npm run sync-versions && npm run website:deploy",
     "release:dry": "semantic-release --dry-run --no-ci",
-    "website:build": "node scripts/build-website.js && npm run build:showcases",
+    "website:build": "node scripts/build-website.js && npm run build:showcases && npm run website:stamp",
     "website:build:full": "npm run build:cdn && npm run website:build",
     "website:dev": "npm run website:build && vite --port 52891",
+    "website:stamp": "node scripts/stamp-assets.js",
+    "website:unstamp": "node scripts/stamp-assets.js --clean",
     "website:deploy": "npm run website:build:full && npx wrangler deploy",
     "website:test": "vitest run tests/website.test.ts",
     "website:test:render": "npm run website:build && cd public && python3 -m http.server 52891 & sleep 2 && npx playwright test tests/website-render.test.ts; kill %1"
