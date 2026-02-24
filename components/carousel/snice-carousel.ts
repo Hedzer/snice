@@ -37,6 +37,7 @@ export class SniceCarousel extends HTMLElement implements SniceCarouselElement {
   @query('slot')
   private slotElement?: HTMLSlotElement;
 
+  @property({ type: Number })
   private slideCount = 0;
   private autoplayTimer?: number;
   private previousIndex = 0;
@@ -132,7 +133,7 @@ export class SniceCarousel extends HTMLElement implements SniceCarouselElement {
 
         <if ${this.showIndicators}>
           <div class="carousel__indicators" part="indicators">
-            ${Array.from({ length: this.slideCount - this.slidesPerView + 1 }).map((_, index) => {
+            ${Array.from({ length: Math.max(0, this.slideCount - this.slidesPerView + 1) }).map((_, index) => {
               const indicatorClasses = [
                 'carousel__indicator',
                 index === this.activeIndex ? 'carousel__indicator--active' : ''

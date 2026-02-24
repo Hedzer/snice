@@ -29,7 +29,6 @@ export class SnicePdfViewer extends HTMLElement implements SnicePdfViewerElement
   private loading: boolean = false;
   private error: string = '';
   private rendering: boolean = false;
-  private listenersAttached = false;
 
   @query('.pdf-viewport') private viewportEl?: HTMLElement;
   @query('.pdf-canvas-wrapper canvas') private canvas?: HTMLCanvasElement;
@@ -41,12 +40,6 @@ export class SnicePdfViewer extends HTMLElement implements SnicePdfViewerElement
   @query('.pdf-page-input') private pageInputEl?: HTMLInputElement;
   @query('.pdf-page-total') private pageTotalEl?: HTMLElement;
   @query('.pdf-zoom-info') private zoomInfoEl?: HTMLElement;
-  @query('.pdf-btn-prev') private btnPrev?: HTMLButtonElement;
-  @query('.pdf-btn-next') private btnNext?: HTMLButtonElement;
-  @query('.pdf-btn-zoom-out') private btnZoomOut?: HTMLButtonElement;
-  @query('.pdf-btn-zoom-in') private btnZoomIn?: HTMLButtonElement;
-  @query('.pdf-btn-download') private btnDownload?: HTMLButtonElement;
-  @query('.pdf-btn-print') private btnPrint?: HTMLButtonElement;
   @query('.pdf-fit-select') private fitSelectEl?: HTMLSelectElement;
 
   @styles()
@@ -56,7 +49,6 @@ export class SnicePdfViewer extends HTMLElement implements SnicePdfViewerElement
 
   @ready()
   init() {
-    this.attachListeners();
     this.updateView();
     if (this.src) this.loadDocument();
   }
@@ -191,6 +183,48 @@ export class SnicePdfViewer extends HTMLElement implements SnicePdfViewerElement
   private zoomIn() { this.zoom = Math.min(5, Math.round((this.zoom + 0.25) * 100) / 100); }
   private zoomOut() { this.zoom = Math.max(0.25, Math.round((this.zoom - 0.25) * 100) / 100); }
 
+  // ── Toolbar Event Delegation ──
+  // Uses @on with CSS selectors for event delegation on the shadow root.
+  // This avoids timing issues with @query + manual addEventListener in @ready,
+  // since the shadow DOM render is deferred to a microtask after @ready runs.
+
+  @on('click', '.pdf-btn-prev')
+  private handlePrevClick() { this.prevPage(); }
+
+  @on('click', '.pdf-btn-next')
+  private handleNextClick() { this.nextPage(); }
+
+  @on('click', '.pdf-btn-zoom-out')
+  private handleZoomOutClick() { this.zoomOut(); }
+
+  @on('click', '.pdf-btn-zoom-in')
+  private handleZoomInClick() { this.zoomIn(); }
+
+  @on('click', '.pdf-btn-download')
+  private handleDownloadClick() { this.download(); }
+
+  @on('click', '.pdf-btn-print')
+  private handlePrintClick() { this.print(); }
+
+  @on('change', '.pdf-page-input')
+  private handlePageInputChange(e: Event) {
+    const val = parseInt((e.target as HTMLInputElement).value, 10);
+    if (!isNaN(val)) this.goToPage(val);
+  }
+
+  @on('keydown', '.pdf-page-input')
+  private handlePageInputKeydown(e: KeyboardEvent) {
+    if (e.key === 'Enter') {
+      const val = parseInt((e.target as HTMLInputElement).value, 10);
+      if (!isNaN(val)) this.goToPage(val);
+    }
+  }
+
+  @on('change', '.pdf-fit-select')
+  private handleFitSelectChange(e: Event) {
+    this.fit = (e.target as HTMLSelectElement).value as PdfFitMode;
+  }
+
   @on('keydown')
   handleKeydown(e: KeyboardEvent) {
     switch (e.key) {
@@ -230,39 +264,20 @@ export class SnicePdfViewer extends HTMLElement implements SnicePdfViewerElement
     }
     if (this.pageTotalEl) this.pageTotalEl.textContent = `/ ${this.totalPages || '-'}`;
     if (this.zoomInfoEl) this.zoomInfoEl.textContent = `${Math.round(this.zoom * 100)}%`;
-    if (this.btnPrev) this.btnPrev.disabled = this.page <= 1;
-    if (this.btnNext) this.btnNext.disabled = this.page >= this.totalPages;
-    if (this.btnZoomOut) this.btnZoomOut.disabled = this.zoom <= 0.25;
-    if (this.btnZoomIn) this.btnZoomIn.disabled = this.zoom >= 5;
-    if (this.btnDownload) this.btnDownload.disabled = !this.src;
-    if (this.btnPrint) this.btnPrint.disabled = !this.src;
-  }
 
-  private attachListeners() {
-    if (this.listenersAttached) return;
-    this.listenersAttached = true;
+    const btnPrev = this.shadowRoot?.querySelector('.pdf-btn-prev') as HTMLButtonElement | null;
+    const btnNext = this.shadowRoot?.querySelector('.pdf-btn-next') as HTMLButtonElement | null;
+    const btnZoomOut = this.shadowRoot?.querySelector('.pdf-btn-zoom-out') as HTMLButtonElement | null;
+    const btnZoomIn = this.shadowRoot?.querySelector('.pdf-btn-zoom-in') as HTMLButtonElement | null;
+    const btnDownload = this.shadowRoot?.querySelector('.pdf-btn-download') as HTMLButtonElement | null;
+    const btnPrint = this.shadowRoot?.querySelector('.pdf-btn-print') as HTMLButtonElement | null;
 
-    this.btnPrev?.addEventListener('click', () => this.prevPage());
-    this.btnNext?.addEventListener('click', () => this.nextPage());
-    this.btnZoomOut?.addEventListener('click', () => this.zoomOut());
-    this.btnZoomIn?.addEventListener('click', () => this.zoomIn());
-    this.btnDownload?.addEventListener('click', () => this.download());
-    this.btnPrint?.addEventListener('click', () => this.print());
-
-    this.pageInputEl?.addEventListener('change', (e) => {
-      const val = parseInt((e.target as HTMLInputElement).value, 10);
-      if (!isNaN(val)) this.goToPage(val);
-    });
-    this.pageInputEl?.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        const val = parseInt((e.target as HTMLInputElement).value, 10);
-        if (!isNaN(val)) this.goToPage(val);
-      }
-    });
-
-    this.fitSelectEl?.addEventListener('change', (e) => {
-      this.fit = (e.target as HTMLSelectElement).value as PdfFitMode;
-    });
+    if (btnPrev) btnPrev.disabled = this.page <= 1;
+    if (btnNext) btnNext.disabled = this.page >= this.totalPages;
+    if (btnZoomOut) btnZoomOut.disabled = this.zoom <= 0.25;
+    if (btnZoomIn) btnZoomIn.disabled = this.zoom >= 5;
+    if (btnDownload) btnDownload.disabled = !this.src;
+    if (btnPrint) btnPrint.disabled = !this.src;
   }
 
   // ── Events ──

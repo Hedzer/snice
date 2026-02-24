@@ -182,9 +182,11 @@
 }
 
 :host([theme="github"]) .markdown-body pre {
-  background: rgb(246 248 250);
+  background: var(--snice-color-background-tertiary, rgb(246 248 250));
+  color: var(--snice-color-text, rgb(36 41 47));
 }
 
 :host([theme="github"]) .markdown-body code {
-  background: rgb(246 248 250);
+  background: var(--snice-color-background-tertiary, rgb(246 248 250));
+  color: var(--snice-color-text, rgb(36 41 47));
 }

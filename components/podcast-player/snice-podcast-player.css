@@ -126,7 +126,10 @@
   font-size: 0.5rem;
   font-weight: var(--snice-font-weight-bold, 700);
   color: var(--snice-color-text, rgb(23 23 23));
-  bottom: 0.25rem;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
 }
 
 .podcast-btn-play {
