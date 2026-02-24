@@ -1,3 +1,10 @@
+# [4.13.0](https://gitlab.com/Hedzer/snice/compare/v4.12.0...v4.13.0) (2026-02-24)
+
+
+### Features
+
+* build-website generates snice-code-block markup, theme persistence, new decorator sections ([19226ba](https://gitlab.com/Hedzer/snice/commit/19226baf25de5c3b1412d005482cedefd979046c))
+
 # [4.12.0](https://gitlab.com/Hedzer/snice/compare/v4.11.0...v4.12.0) (2026-02-24)
 
 
