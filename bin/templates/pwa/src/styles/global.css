@@ -25,7 +25,7 @@
     sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  color-scheme: light;
+  color-scheme: light dark;
 }
 
 * {
@@ -43,13 +43,22 @@ body {
   min-height: 100vh;
 }
 
+/* Dark theme via color-scheme or prefers-color-scheme */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([style*="color-scheme: light"]) {
     --bg-primary: #1f2937;
     --bg-secondary: #111827;
     --text-color: #f9fafb;
     --text-light: #9ca3af;
     --border-color: #374151;
-    color-scheme: dark;
   }
+}
+
+/* Forced dark via settings page */
+:root[style*="color-scheme: dark"] {
+  --bg-primary: #1f2937;
+  --bg-secondary: #111827;
+  --text-color: #f9fafb;
+  --text-light: #9ca3af;
+  --border-color: #374151;
 }

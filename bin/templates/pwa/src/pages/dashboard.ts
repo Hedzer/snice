@@ -1,20 +1,24 @@
 import { page } from '../router';
-import { render, styles, html, css, context } from 'snice';
+import { render, styles, html, css, context, observe, ready, dispose } from 'snice';
 import type { Placard, Context } from 'snice';
 import type { Principal } from '../types/auth';
-import { authGuard } from '../guards/auth';
+import { isAuthenticated } from '../guards/auth';
+import { getNotificationsDaemon } from '../daemons/notifications';
 
 const placard: Placard = {
   name: 'dashboard',
   title: 'Dashboard',
-  icon: '📊',
+  icon: '\ud83d\udcca',
   show: true,
   order: 1
 };
 
-@page({ tag: 'dashboard-page', routes: ['/', '/dashboard'], guards: [authGuard], placard })
+@page({ tag: 'dashboard-page', routes: ['/', '/dashboard'], guards: [isAuthenticated], placard })
 export class DashboardPage extends HTMLElement {
   userName = '';
+  notificationCount = 0;
+  isCompact = false;
+  private unsubscribe: (() => void) | null = null;
 
   @context()
   handleContext(ctx: Context) {
@@ -22,29 +26,72 @@ export class DashboardPage extends HTMLElement {
     this.userName = principal?.user?.name || 'User';
   }
 
+  @ready()
+  initialize() {
+    const daemon = getNotificationsDaemon();
+    this.unsubscribe = daemon.subscribe(() => {
+      this.notificationCount++;
+    });
+  }
+
+  @dispose()
+  cleanup() {
+    if (this.unsubscribe) {
+      this.unsubscribe();
+      this.unsubscribe = null;
+    }
+  }
+
+  @observe('media:(max-width: 768px)')
+  handleMediaChange(matches: boolean) {
+    this.isCompact = matches;
+  }
+
   @render()
   renderContent() {
     return html`
       <div class="container">
-        <h1>Welcome, ${this.userName}!</h1>
-        <p class="subtitle">This is your dashboard</p>
+        <div class="welcome">
+          <h1>Welcome, ${this.userName}!</h1>
+          <p class="subtitle">This is your dashboard</p>
+        </div>
+
+        <div class="stats">
+          <snice-card class="stat-card">
+            <span class="stat-value">4</span>
+            <span class="stat-label">Active Pages</span>
+          </snice-card>
+          <snice-card class="stat-card">
+            <span class="stat-value">${this.notificationCount}</span>
+            <span class="stat-label">Notifications</span>
+          </snice-card>
+          <snice-card class="stat-card">
+            <span class="stat-value">3</span>
+            <span class="stat-label">Middleware</span>
+          </snice-card>
+        </div>
 
         <div class="grid">
           <snice-card>
-            <h3>⚡ Features</h3>
+            <h3>Features</h3>
             <ul>
               <li>JWT Authentication</li>
-              <li>Protected Routes</li>
+              <li>Protected Routes with Guards</li>
               <li>Middleware Pattern</li>
-              <li>Service Worker</li>
+              <li>Service Worker (PWA)</li>
               <li>Live Notifications</li>
+              <li>Controllers + Request/Response</li>
+              <li>Theme Switching</li>
+              <li>Debounced Search</li>
             </ul>
           </snice-card>
 
           <snice-card>
-            <h3>🛠️ Architecture</h3>
+            <h3>Architecture</h3>
             <ul>
-              <li><strong>Utils:</strong> Pure functions</li>
+              <li><strong>Pages:</strong> Route orchestrators</li>
+              <li><strong>Components:</strong> Reusable UI</li>
+              <li><strong>Controllers:</strong> Behavior modules</li>
               <li><strong>Services:</strong> Business logic</li>
               <li><strong>Middleware:</strong> Fetch interceptors</li>
               <li><strong>Daemons:</strong> Lifecycle classes</li>
@@ -53,22 +100,28 @@ export class DashboardPage extends HTMLElement {
           </snice-card>
 
           <snice-card>
-            <h3>📦 What's Included</h3>
+            <h3>Decorators Used</h3>
             <ul>
-              <li>TypeScript configuration</li>
-              <li>Vite + SWC setup</li>
-              <li>PWA manifest</li>
-              <li>Mock authentication</li>
-              <li>WebSocket daemon example</li>
+              <li><code>@page</code> - Route pages</li>
+              <li><code>@element</code> - Custom elements</li>
+              <li><code>@controller</code> - Behavior modules</li>
+              <li><code>@context</code> - Global state</li>
+              <li><code>@observe</code> - DOM observers</li>
+              <li><code>@watch</code> - Property watchers</li>
+              <li><code>@on</code> / <code>@dispatch</code> - Events</li>
+              <li><code>@request</code> / <code>@respond</code> - Communication</li>
             </ul>
           </snice-card>
 
           <snice-card>
-            <h3>🚀 Get Started</h3>
+            <h3>Explore</h3>
             <p>Check out the other pages:</p>
             <div class="links">
-              <a href="#/profile">
-                <snice-button variant="secondary">View Profile</snice-button>
+              <a href="#/data">
+                <snice-button variant="secondary">Browse Data</snice-button>
+              </a>
+              <a href="#/settings">
+                <snice-button variant="secondary">Settings</snice-button>
               </a>
               <a href="#/notifications">
                 <snice-button variant="secondary">Notifications</snice-button>
@@ -89,6 +142,10 @@ export class DashboardPage extends HTMLElement {
         margin: 0 auto;
       }
 
+      .welcome {
+        margin-bottom: 2rem;
+      }
+
       h1 {
         color: var(--primary-color);
         margin: 0 0 0.5rem 0;
@@ -96,12 +153,38 @@ export class DashboardPage extends HTMLElement {
 
       .subtitle {
         color: var(--text-light);
-        margin: 0 0 2rem 0;
+        margin: 0;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .stat-card {
+        padding: 1.25rem;
+        text-align: center;
+      }
+
+      .stat-value {
+        display: block;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary-color);
+      }
+
+      .stat-label {
+        display: block;
+        font-size: 0.8125rem;
+        color: var(--text-light);
+        margin-top: 0.25rem;
       }
 
       .grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
         gap: 1.5rem;
       }
 
@@ -124,6 +207,18 @@ export class DashboardPage extends HTMLElement {
         color: var(--text-color);
       }
 
+      code {
+        background: var(--bg-secondary);
+        padding: 0.125rem 0.375rem;
+        border-radius: var(--radius-sm);
+        font-size: 0.8125rem;
+      }
+
+      p {
+        color: var(--text-light);
+        margin: 0 0 0.5rem 0;
+      }
+
       .links {
         display: flex;
         flex-direction: column;
@@ -135,8 +230,14 @@ export class DashboardPage extends HTMLElement {
         text-decoration: none;
       }
 
-      snice-button {
+      .links snice-button {
         width: 100%;
+      }
+
+      @media (max-width: 640px) {
+        .stats {
+          grid-template-columns: 1fr;
+        }
       }
     `;
   }

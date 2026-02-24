@@ -1,5 +1,9 @@
+import { useNativeElementControllers } from 'snice';
 import { initialize } from './router';
 import './styles/global.css';
+
+// Enable controllers on native HTML elements (div, form, etc.)
+useNativeElementControllers();
 
 // Import snice layout and components
 import 'snice/components/layout/snice-layout';
@@ -10,12 +14,27 @@ import 'snice/components/alert/snice-alert';
 import 'snice/components/avatar/snice-avatar';
 import 'snice/components/empty-state/snice-empty-state';
 import 'snice/components/spinner/snice-spinner';
+import 'snice/components/badge/snice-badge';
+import 'snice/components/switch/snice-switch';
+import 'snice/components/divider/snice-divider';
+import 'snice/components/tabs/snice-tabs';
+import 'snice/components/tabs/snice-tab';
+
+// Import components
+import './components/app-header';
+import './components/search-bar';
+import './components/notification-badge';
+
+// Import controllers
+import './controllers/notification-controller';
 
 // Import pages
 import './pages/login';
 import './pages/dashboard';
 import './pages/profile';
 import './pages/notifications';
+import './pages/settings';
+import './pages/data';
 
 // Import and start daemons
 import { getNotificationsDaemon } from './daemons/notifications';

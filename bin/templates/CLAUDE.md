@@ -1,14 +1,33 @@
 # Snice Project - AI Assistant Guide
 
+## IMMEDIATELY: Install the Snice MCP Server
+
+Snice ships an MCP server that gives you access to component docs, decorator reference, code validation, and component scaffolding. Install it before doing any work:
+
+```bash
+claude mcp add snice -- npx snice mcp
+```
+
+This gives you these tools:
+- `list_components` — List all available UI components
+- `get_component_docs` — Get docs for a specific component
+- `get_decorator_docs` — Get decorator reference
+- `get_overview` — Framework overview
+- `generate_component` — Scaffold new components
+- `search_docs` — Search documentation
+- `validate_code` — Check code for common Snice mistakes
+
+**Use these tools instead of guessing.** If you're unsure about a component's API, call `get_component_docs`. If you're writing a new component, call `generate_component` for the scaffold.
+
 ## Documentation Location
 
-AI-optimized docs shipped in: `node_modules/snice/docs/ai/`
+AI-optimized docs are shipped in: `node_modules/snice/docs/ai/`
 
 **Read these files:**
-- `api.md` - Complete API reference
-- `patterns.md` - Usage examples
-- `architecture.md` - System design
-- `components/*.md` - Component docs (read only as needed)
+- `api.md` — Complete API reference
+- `patterns.md` — Usage examples for every feature
+- `architecture.md` — System design
+- `components/*.md` — Component docs (read only as needed)
 
 ## Project Structure
 
@@ -26,154 +45,190 @@ src/
   styles/         # Global CSS
 ```
 
-**Separation of concerns:**
-- **Pages** - Orchestrate elements, handle URLs, most logic happens here
-- **Components** - Pure presentation, no business logic
-- **Controllers** - Attach to elements, add business behavior unsuitable for the page or components
-- **Services** - Stateless business logic, API calls
-- **Daemons** - Lifecycle-managed (WebSocket, P2P, intervals)
-- **Middleware** - Composable functions (auth, retry)
-- **Utils** - Pure helper functions
+## Critical Architecture Rules
 
-## Decorators
+**Separation of concerns — DO NOT violate these:**
+- **Elements** — Pure visual presentation. NO fetch(), NO API calls, NO business logic. Receive data via properties, emit events for actions.
+- **Pages** — Orchestrate elements. Handle routing, call APIs, coordinate data flow. Most app logic lives here.
+- **Controllers** — Attach to elements via `controller="name"`. Add reusable non-visual behavior (data loading, validation). NOT global services.
+- **Services** — Stateless functions for business logic, API calls. Importable anywhere.
+- **Daemons** — Stateful lifecycle classes (WebSocket connections, polling intervals).
+- **Middleware** — Composable fetch middleware (auth headers, retry, error handling).
+
+## Snice is NOT Lit
+
+Do NOT import from `lit` or extend `LitElement`. Snice has its own decorator system:
+- No `@customElement()` — use `@element('tag-name')`
+- No `@state()` — use plain class fields for internal state, `@property()` for attributes
+- No `render()` lifecycle method — use `@render()` decorator
+- No `static styles` — use `@styles()` decorator
+- No `reflect: true` — attributes sync automatically
+
+## Decorators Quick Reference
 
 ```typescript
 // Class decorators
-@page({ tag, routes, guards?, placard? })
-@element('tag-name')
-@controller('name')
-@layout('name')
+@element('tag-name')          // Define custom element
+@page({ tag, routes, guards?, placard? })  // Routable page (from Router(), NOT 'snice')
+@controller('name')           // Behavior module
+@layout('name')               // Page wrapper
 
-// Property/method decorators
-@property() name = 'default'
-@render() fn() { return html`...` }
-@styles() fn() { return css`...` }
-@ready() async fn() { ... }
-@dispose() fn() { ... }
-@watch('name') fn(oldVal, newVal) { ... }
-@query('input') input!: HTMLInputElement
-@queryAll('.item') items!: NodeListOf<HTMLElement>
-@on('click', 'button') fn(e: Event) { ... }
-@dispatch('value-changed') fn(val: string) => Event Detail
-@context() fn(ctx: Context) { ... }
-@request('user') fn(): () => Request
-@respond('user') fn(req) => Response
-@observe(() => this.el, options) fn(mutations) { ... }
+// Properties & reactivity
+@property({ type?, attribute? }) name = 'default'  // Reactive attribute
+@watch('propName')             // React to property changes: (oldVal, newVal, propName)
+@context()                     // Receive router Context on navigation
+
+// Rendering
+@render()                      // Declarative template: return html`...`
+@render({ once: true })        // Imperative: render once, update via @watch + @query
+@styles()                      // Scoped CSS: return css`...`
+
+// DOM
+@query('selector')             // Single shadow DOM element
+@queryAll('selector')          // Multiple shadow DOM elements
+
+// Lifecycle
+@ready()                       // After first render
+@dispose()                     // On disconnect
+
+// Events
+@on('click', 'button')                      // Event listener
+@on('input', 'input', { debounce: 300 })    // Debounced
+@on('keydown:ctrl+s')                        // Keyboard shortcut
+@dispatch('event-name')                      // Fire CustomEvent (detail = return value)
+
+// Communication
+@request('channel')            // Async generator: const result = await (yield payload)
+@respond('channel')            // Handle requests: receives payload, returns response
+
+// Observers
+@observe('resize', '.el')                    // ResizeObserver
+@observe('intersection', '.el')              // IntersectionObserver
+@observe('media:(min-width: 768px)')         // Media query
+@observe('mutation:childList', '.el')        // MutationObserver
 ```
 
-## Quick Examples
+## Router — Common Mistakes
 
-**Element:**
 ```typescript
-@element('my-counter')
-class Counter extends HTMLElement {
-  @property({ type: Number }) count = 0;
+// router.ts — CORRECT setup
+import { Router } from 'snice';
 
-  @render()
-  renderContent() {
-    return html`
-      <div>${this.count}</div>
-      <button @click=${() => this.count++}>+</button>
-    `;
-  }
+export const { page, navigate, initialize } = Router({
+  target: '#app',
+  type: 'hash',        // REQUIRED: 'hash' or 'pushstate'
+  layout: 'app-shell',
+  context: { user: null, theme: 'light' }
+});
 
-  @styles()
-  componentStyles() {
-    return css`:host { display: block; }`;
-  }
-}
+// pages import `page` from './router', NOT from 'snice'
+import { page } from '../router';
 ```
 
-**Page:**
+**Guards signature — TWO parameters:**
 ```typescript
-@page({ tag: 'user-page', routes: ['/users/:id'] })
-class UserPage extends HTMLElement {
-  @property() id = '';
+// CORRECT:
+const isAuthenticated = (context: any, params: any) => context.principal?.isAuthenticated === true;
 
-  @ready()
-  async load() {
-    const user = await fetch(`/api/users/${this.id}`).then(r => r.json());
-  }
-}
+// WRONG:
+const isAuth = (ctx) => ctx.isAuthenticated; // Missing params, wrong property access
 ```
 
-**Controller:**
+**Navigation — use hash URLs:**
 ```typescript
-@controller('data-loader')
-class DataLoader implements IController {
-  element: HTMLElement;
+// CORRECT:
+html`<a href="/#/users/123">View User</a>`
 
-  async attach(el: HTMLElement) {
-    this.element = el;
-  }
-
-  async detach() {}
-
-  @on('click', '.item')
-  handleClick(e: Event) {}
-}
-
-// Usage: <my-list controller="data-loader"></my-list>
+// WRONG:
+navigate('/users/123')  // Does not change the URL
 ```
 
-**Lists:**
+## Native Element Controllers
+
+Controllers work on ANY HTML element, not just custom elements:
+```typescript
+import { useNativeElementControllers } from 'snice';
+useNativeElementControllers(); // Call once in main.ts
+
+// Then use in HTML:
+// <form controller="checkout-form">...</form>
+// <div controller="data-loader">...</div>
+```
+
+## Templates
+
 ```typescript
 html`
-  ${items.map(item => html`
-    <li key=${item.id}>${item.name}</li>
-  `)}
+  <!-- Attribute binding -->
+  <div class="${cls}">
+
+  <!-- Property binding (objects/arrays) -->
+  <my-el .items=${array}>
+
+  <!-- Boolean attribute toggle -->
+  <button ?disabled=${isLoading}>
+
+  <!-- Event handler (auto-bound to this) -->
+  <button @click=${this.handleClick}>
+
+  <!-- Keyboard shortcut -->
+  <input @keydown:Enter=${this.submit}>
+  <input @keydown:ctrl+s=${this.save}>
+
+  <!-- Conditionals -->
+  <if ${isLoggedIn}><span>Welcome</span></if>
+  <case ${status}>
+    <when value="loading"><spinner></spinner></when>
+    <when value="error"><p>Error</p></when>
+    <default><p>Ready</p></default>
+  </case>
+
+  <!-- Lists with keys -->
+  ${items.map(item => html`<li key=${item.id}>${item.name}</li>`)}
 `
 ```
 
-**Conditionals:**
-```typescript
-html`
-  <if ${condition}>Content</if>
-`
-```
-
-## Communication
+## Communication Patterns
 
 - **Parent → Child:** Properties (`.prop=${value}`)
 - **Child → Parent:** Events (`@dispatch`)
-- **Element ↔ Controller:** Request/Response (`@request`, `@respond`)
-- **Global State:** Context (`@context()`)
+- **Element ↔ Controller:** Request/Response (`@request` / `@respond`)
+- **Global State:** Context (`@context()` — receives updates on navigation and `ctx.update()`)
 
-**Event Handling:**
-All component events use unprefixed names (e.g., `tab-change`, `menu-open`):
+**@request uses async generators:**
 ```typescript
-// Listening to events:
-html`<snice-tabs @tab-change=${handler}></snice-tabs>`
-
-// Dispatching events:
-@dispatch('tab-change')
-handleChange() { return { index: 0 }; }
+@request('fetch-user')
+async *fetchUser(id: string): any {
+  const user = await (yield { id });  // yield = send, await = receive
+  return user;
+}
+// Usage: const user = await this.fetchUser('123');
 ```
 
-## Navigation
+## Imperative Rendering
 
-**Use hash-based URLs, NOT router.navigate():**
+For fixed-structure templates where only content changes:
 ```typescript
-// Correct:
-html`<a href="/#/users/123">View User</a>`
-window.location.hash = '#/users/123'
+@render({ once: true })
+template() { return html`<div class="content"></div>`; }
 
-// Wrong:
-router.navigate('/users/123')
+@query('.content') $content!: HTMLElement;
+
+@watch('data')
+updateContent() {
+  if (!this.$content) return;  // Guard: watcher fires before first render
+  this.$content.textContent = this.data;
+}
 ```
-`router.navigate()` does not change the URL.
 
 ## Common Mistakes
 
-**Controllers are NOT global services.** They attach to elements via `controller="name"`. Use `utils/` for shared logic like API calls, auth, toasts.
-
-**@request/@respond is NOT a service bus.** It's for element-to-element or element-to-controller communication only. Use utility functions for app-wide features.
-
-**Guards receive Context, not AppContext.** Check `ctx.application.property`, not `ctx.property`. Guards: `(ctx: Context) => boolean`
-
-**Context must be mutated then signaled.** After changing `ctx.application`, call `ctx.update()` to signal subscribers. Pages need `@context()` to get context reference.
-
-**@property is for parent-provided attributes.** Internal component state should be regular properties, not decorated. Only use `@property()` when the value comes from a parent element via attributes.
+- **Controllers are NOT global services.** They attach to elements. Use `services/` or `utils/` for shared logic.
+- **@request/@respond is NOT a service bus.** Element-to-controller communication only.
+- **Context must be mutated then signaled.** Change `ctx.application.theme = 'dark'`, then call `ctx.update()`.
+- **@property is for parent-provided attributes.** Internal state should be plain class fields.
+- **Events use kebab-case:** `count-changed`, not `countChanged`. Access via `e.detail`.
+- **No `reflect` option.** Attributes sync automatically for `:host([attr])` CSS selectors.
 
 ## Build Commands
 
@@ -181,4 +236,5 @@ router.navigate('/users/123')
 npm run dev        # Dev server
 npm run build      # Production build
 npm run type-check # TypeScript check
+npm run test       # Run tests (if configured)
 ```

@@ -4,14 +4,21 @@ A Progressive Web App (PWA) built with [Snice](https://github.com/sniceio/snice)
 
 ## Features
 
-- ⚡ **JWT Authentication** - Token-based auth with automatic refresh
-- 🔒 **Protected Routes** - Route guards for authenticated pages
-- 🎯 **Middleware Pattern** - Composable fetch middleware (auth, error, retry)
-- 📱 **PWA Ready** - Service worker, offline support, installable
-- 🔔 **Live Notifications** - WebSocket daemon for real-time updates
-- 🎨 **Snice Components** - Pre-built UI components
-- 📦 **Type-Safe** - Full TypeScript support
-- 🚀 **Fast Build** - Vite + SWC for blazing fast dev and builds
+- **JWT Authentication** - Token-based auth with automatic refresh and middleware
+- **Protected Routes** - Guards with `(context, params) => boolean` signature
+- **Middleware Pattern** - Composable fetch middleware (auth headers, error handling, retry)
+- **PWA Ready** - Service worker, offline support, installable
+- **Live Notifications** - WebSocket daemon with real-time updates and badge counter
+- **Theme Switching** - Light, dark, and system theme with persistence
+- **Data Listing** - Filterable table with debounced search
+- **Controllers** - Notification controller with `@respond` pattern
+- **Native Element Controllers** - Attach controllers to any HTML element
+- **Imperative Rendering** - `@render({ once: true })` with `@watch` + `@query`
+- **Observers** - `@observe('resize')`, `@observe('media:(...)')` for responsive behavior
+- **Keyboard Shortcuts** - Ctrl+S to save settings, Ctrl+Backspace to clear notifications, Escape to close menus
+- **Snice Components** - Pre-built UI (cards, alerts, avatars, switches, badges, dividers, tabs)
+- **Type-Safe** - Full TypeScript support
+- **Fast Build** - Vite + SWC
 
 ## Getting Started
 
@@ -41,97 +48,69 @@ npm run type-check
 
 ```
 src/
-  utils/          # Pure helper functions
+  components/     # @element decorated UI components
+    app-header.ts       # Nav bar with user avatar, menu, @context
+    search-bar.ts       # Debounced search with @on('input', { debounce: 300 })
+    notification-badge.ts # Imperative rendering with @render({ once: true })
+  controllers/    # @controller decorated behavior modules
+    notification-controller.ts  # @respond('get-notifications')
+  pages/          # Routable pages (@page decorator)
+    login.ts            # Login form with @respond('login-user')
+    dashboard.ts        # Stats, @observe('media:...'), notification counter
+    profile.ts          # User info, @dispatch, @observe, <case>/<when>
+    notifications.ts    # Live feed, filters, @watch, keyboard shortcuts
+    settings.ts         # Theme toggle, form bindings, @context, Ctrl+S save
+    data.ts             # Data table, search-bar, @observe('resize'), filters
   services/       # Business logic (auth, storage, jwt)
-  middleware/     # Fetch middleware (auth, error, retry)
+  middleware/      # Fetch middleware (auth, error, retry)
   daemons/        # Lifecycle-managed classes (notifications WebSocket)
   guards/         # Route guards (auth)
   types/          # TypeScript types
-  pages/          # Routable pages (@page decorator)
-  styles/         # Global styles
+  styles/         # Global styles with dark/light theme support
 ```
 
-## Architecture Patterns
+## Snice Features Demonstrated
 
-### Context-Aware Fetcher
+### Decorators
 
-Built-in middleware system with context access:
+| Decorator | Used In |
+|-----------|---------|
+| `@page` | All pages |
+| `@element` | app-header, search-bar, notification-badge |
+| `@controller` | notification-controller |
+| `@property` | Multiple components |
+| `@render` | All components |
+| `@render({ once: true })` | notification-badge (imperative) |
+| `@styles` | All components |
+| `@context` | dashboard, profile, settings, app-header |
+| `@watch` | notification-badge, notifications page |
+| `@query` | notification-badge, app-header |
+| `@on` | search-bar, settings, notifications, app-header |
+| `@dispatch` | search-bar, profile, settings, app-header |
+| `@respond` | login page, notification-controller |
+| `@observe` | dashboard (media), profile (media), data (resize) |
+| `@ready` | dashboard, notifications, notification-badge |
+| `@dispose` | dashboard, notifications, notification-badge |
 
-```typescript
-// fetcher.ts - Setup
-import { ContextAwareFetcher } from 'snice';
+### Template Features
 
-const fetcher = new ContextAwareFetcher();
-fetcher.use('request', authMiddleware);
-fetcher.use('response', errorMiddleware);
+| Feature | Used In |
+|---------|---------|
+| `<if>` conditionals | dashboard, notifications, data, app-header |
+| `<case>/<when>/<default>` | profile, notifications, data |
+| `.prop` binding | search-bar, settings |
+| `?attr` boolean binding | settings (switch) |
+| `@event` binding | All components |
+| `@keydown:modifier` | settings (Ctrl+S), app-header (Escape), notifications (Ctrl+Backspace) |
+| `key` attribute | notifications list, data table |
 
-// Middleware with context access
-export async function authMiddleware(
-  this: Context,
-  request: Request,
-  next: () => Promise<Response>
-): Promise<Response> {
-  const token = getToken();
-  if (token) {
-    request.headers.set('Authorization', `Bearer ${token}`);
-  }
-  return next();
-}
+### Architecture Patterns
 
-// Usage in pages via ctx.fetch()
-async loadData() {
-  const response = await this.ctx.fetch('/api/data');
-  const data = await response.json();
-}
-```
-
-### Daemons for Lifecycle Management
-
-Use daemons for resources that need start/stop/dispose:
-
-```typescript
-const daemon = getNotificationsDaemon();
-daemon.start(); // In main.ts
-
-// In component
-const unsubscribe = daemon.subscribe((notification) => {
-  console.log(notification);
-});
-
-// Cleanup
-unsubscribe();
-```
-
-### Route Guards
-
-Protect routes with guards:
-
-```typescript
-import { authGuard } from './guards/auth';
-
-@page({
-  tag: 'dashboard-page',
-  routes: ['/dashboard'],
-  guards: [authGuard]
-})
-export class DashboardPage extends HTMLElement {
-  // ...
-}
-```
-
-### Context for Global State
-
-Access shared state via context:
-
-```typescript
-import type { Principal } from './types/auth';
-
-@context()
-handleContext(ctx: Context) {
-  const principal = ctx.application.principal as Principal | undefined;
-  this.user = principal?.user;
-}
-```
+- **Context-Aware Fetcher** with auth, error, and retry middleware
+- **Daemons** for WebSocket lifecycle management
+- **Guards** with `(context, params) => boolean` signature
+- **Request/Response** for element-to-controller communication
+- **Native Element Controllers** via `useNativeElementControllers()`
 
 ## Customization
 
@@ -146,7 +125,6 @@ export async function login(credentials: LoginCredentials) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(credentials)
   });
-
   const data = await response.json();
   setToken(data.token);
   setUser(data.user);
