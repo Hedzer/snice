@@ -106,9 +106,7 @@ class GrammarController implements IController {
 
 **When to use:** When you need centralized control over grammar loading, such as caching grammars, loading from non-HTTP sources, or applying transformations before use.
 
-#### Breaking Change
-
-If you were previously using `@respond('snice/code-block/load-grammar')` handlers, you must now add `fetch-mode="virtual"` to your code block elements. The default was previously virtual; it is now native.
+**Note:** If using `@respond('snice/code-block/load-grammar')` handlers, add `fetch-mode="virtual"` to your code block elements. The default fetch mode is `native`.
 
 ### Event Mode
 

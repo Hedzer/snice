@@ -62,18 +62,23 @@ interface IController<T extends HTMLElement = HTMLElement> {
 
 1. Controller instance is created
 2. `element` property is set
-3. Element's `ready` promise is awaited
-4. `attach()` method is called
-5. Event and channel handlers are set up
-6. `@snice/controller-attached` event is dispatched
+3. Router context is passed (if available)
+4. Element's `ready` promise is awaited
+5. `attach()` method is called
+6. Observers are set up
+7. Channel/response handlers are set up
+8. Event handlers are set up
+9. `@snice/controller-attached` event is dispatched
 
 ### Detachment Flow
 
 1. `detach()` method is called
 2. `element` property is set to null
-3. Event and channel handlers are cleaned up
-4. Controller scope is cleaned up
-5. `@snice/controller-detached` event is dispatched
+3. Observers are cleaned up
+4. Channel/response handlers are cleaned up
+5. Event handlers are cleaned up
+6. Controller scope is cleaned up
+7. `@snice/controller-detached` event is dispatched
 
 ### Example with Lifecycle Logging
 
@@ -187,11 +192,13 @@ class TableController implements IController<HTMLTableElement> {
     const tbody = this.element.querySelector('tbody');
     if (!tbody) return;
 
+    const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
     tbody.innerHTML = this.data.map(row => `
       <tr>
-        <td>${row.id}</td>
-        <td>${row.name}</td>
-        <td>${row.status}</td>
+        <td>${esc(String(row.id))}</td>
+        <td>${esc(row.name)}</td>
+        <td>${esc(row.status)}</td>
       </tr>
     `).join('');
   }
@@ -339,8 +346,9 @@ class DashboardController implements IController {
   }
 
   private renderCard(data: any) {
+    const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     return `
-      <h3>${data.title}</h3>
+      <h3>${esc(data.title)}</h3>
       <p>${data.value.toFixed(2)}</p>
     `;
   }
@@ -430,7 +438,7 @@ class DataFetcherController implements IController {
       this.element.setData(data);
     } else {
       // Fallback for native elements
-      this.element.innerHTML = JSON.stringify(data, null, 2);
+      this.element.textContent = JSON.stringify(data, null, 2);
     }
   }
 
@@ -447,131 +455,26 @@ class DataFetcherController implements IController {
 }
 ```
 
-### State Management Controller
+### Theme Controller
 
 ```typescript
-interface AppState {
-  user: { id: string; name: string } | null;
-  theme: 'light' | 'dark';
-  notifications: Notification[];
-}
-
-interface Notification {
-  id: string;
-  message: string;
-  type: 'info' | 'warning' | 'error';
-}
-
-@controller('state-controller')
-class StateController implements IController {
+@controller('theme-controller')
+class ThemeController implements IController {
   element: HTMLElement | null = null;
-  private state: AppState = {
-    user: null,
-    theme: 'light',
-    notifications: []
-  };
-
-  private stateListeners = new Set<(state: AppState) => void>();
 
   async attach(element: HTMLElement) {
-    // Load initial state
-    await this.loadState();
-
-    // Subscribe element to state changes
-    const updateElement = (state: AppState) => {
-      this.updateElementWithState(element, state);
-    };
-
-    this.stateListeners.add(updateElement);
-
-    // Initial render
-    updateElement(this.state);
+    const saved = localStorage.getItem('theme') || 'light';
+    element.setAttribute('data-theme', saved);
   }
 
-  async detach(element: HTMLElement) {
-    // Clean up listeners
-    this.stateListeners.clear();
+  async detach(element: HTMLElement) {}
 
-    // Save state
-    await this.saveState();
-  }
-
-  // Public methods for state management
-  setUser(user: AppState['user']) {
-    this.updateState({ ...this.state, user });
-  }
-
-  setTheme(theme: AppState['theme']) {
-    this.updateState({ ...this.state, theme });
-  }
-
-  addNotification(notification: Omit<Notification, 'id'>) {
-    const newNotification: Notification = {
-      ...notification,
-      id: Date.now().toString()
-    };
-
-    this.updateState({
-      ...this.state,
-      notifications: [...this.state.notifications, newNotification]
-    });
-
-    // Auto-remove after 5 seconds
-    setTimeout(() => {
-      this.removeNotification(newNotification.id);
-    }, 5000);
-  }
-
-  removeNotification(id: string) {
-    this.updateState({
-      ...this.state,
-      notifications: this.state.notifications.filter(n => n.id !== id)
-    });
-  }
-
-  private updateState(newState: AppState) {
-    this.state = newState;
-
-    // Notify all listeners
-    this.stateListeners.forEach(listener => listener(this.state));
-
-    // Persist state
-    this.saveState();
-  }
-
-  private updateElementWithState(element: HTMLElement, state: AppState) {
-    // Update element based on state
-    element.setAttribute('data-theme', state.theme);
-
-    // If element has state methods, call them
-    if ('setState' in element && typeof element.setState === 'function') {
-      (element as any).setState(state);
-    }
-
-    // Dispatch state change event
-    element.dispatchEvent(new CustomEvent('state-changed', {
-      detail: state,
-      bubbles: true
-    }));
-  }
-
-  private async loadState() {
-    try {
-      const saved = localStorage.getItem('app-state');
-      if (saved) {
-        this.state = JSON.parse(saved);
-      }
-    } catch (error) {
-      console.error('Failed to load state:', error);
-    }
-  }
-
-  private async saveState() {
-    try {
-      localStorage.setItem('app-state', JSON.stringify(this.state));
-    } catch (error) {
-      console.error('Failed to save state:', error);
-    }
+  @on('click', '[data-set-theme]')
+  handleThemeToggle(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    const theme = target.dataset.setTheme!;
+    this.element?.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
   }
 }
 ```
@@ -579,138 +482,39 @@ class StateController implements IController {
 ### WebSocket Controller
 
 ```typescript
-@controller('websocket-controller')
+@controller('ws-controller')
 class WebSocketController implements IController {
   element: HTMLElement | null = null;
   private ws?: WebSocket;
   private reconnectTimer?: number;
-  private reconnectAttempts = 0;
-  private maxReconnectAttempts = 5;
-  private reconnectDelay = 1000; // Start with 1 second
 
   async attach(element: HTMLElement) {
     this.connect();
   }
 
   async detach(element: HTMLElement) {
-    this.disconnect();
+    if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
+    this.ws?.close();
   }
 
   private connect() {
-    try {
-      this.ws = new WebSocket('ws://localhost:8080');
+    this.ws = new WebSocket('wss://api.example.com/ws');
 
-      this.ws.onopen = () => {
-        console.log('WebSocket connected');
-        this.reconnectAttempts = 0;
-        this.reconnectDelay = 1000;
-        this.onConnected();
-      };
-
-      this.ws.onmessage = (event) => {
-        this.handleMessage(event.data);
-      };
-
-      this.ws.onerror = (error) => {
-        console.error('WebSocket error:', error);
-        this.onError(error);
-      };
-
-      this.ws.onclose = () => {
-        console.log('WebSocket disconnected');
-        this.onDisconnected();
-        this.scheduleReconnect();
-      };
-
-    } catch (error) {
-      console.error('Failed to create WebSocket:', error);
-      this.scheduleReconnect();
-    }
-  }
-
-  private disconnect() {
-    if (this.reconnectTimer) {
-      clearTimeout(this.reconnectTimer);
-      this.reconnectTimer = undefined;
-    }
-
-    if (this.ws) {
-      this.ws.close();
-      this.ws = undefined;
-    }
-  }
-
-  private scheduleReconnect() {
-    if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-      console.error('Max reconnection attempts reached');
-      this.onReconnectFailed();
-      return;
-    }
-
-    this.reconnectAttempts++;
-
-    console.log(`Reconnecting in ${this.reconnectDelay}ms (attempt ${this.reconnectAttempts})`);
-
-    this.reconnectTimer = setTimeout(() => {
-      this.connect();
-    }, this.reconnectDelay);
-
-    // Exponential backoff
-    this.reconnectDelay = Math.min(this.reconnectDelay * 2, 30000);
-  }
-
-  private handleMessage(data: string) {
-    try {
-      const message = JSON.parse(data);
-
-      // Update element with message
-      if (this.element && 'onMessage' in this.element) {
-        (this.element as any).onMessage(message);
-      }
-
-      // Dispatch event
+    this.ws.onmessage = (event) => {
       this.element?.dispatchEvent(new CustomEvent('ws-message', {
-        detail: message,
+        detail: JSON.parse(event.data),
         bubbles: true
       }));
+    };
 
-    } catch (error) {
-      console.error('Failed to parse message:', error);
-    }
+    this.ws.onclose = () => {
+      this.reconnectTimer = setTimeout(() => this.connect(), 3000);
+    };
   }
 
   send(data: any) {
     if (this.ws?.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(data));
-    } else {
-      console.warn('WebSocket not connected, queuing message');
-      // Could implement message queue here
-    }
-  }
-
-  private onConnected() {
-    this.element?.classList.remove('disconnected');
-    this.element?.classList.add('connected');
-  }
-
-  private onDisconnected() {
-    this.element?.classList.remove('connected');
-    this.element?.classList.add('disconnected');
-  }
-
-  private onError(error: Event) {
-    this.element?.classList.add('error');
-  }
-
-  private onReconnectFailed() {
-    this.element?.classList.add('reconnect-failed');
-
-    // Show user notification
-    if (this.element) {
-      const notification = document.createElement('div');
-      notification.className = 'connection-error';
-      notification.textContent = 'Connection lost. Please refresh the page.';
-      this.element.appendChild(notification);
     }
   }
 }
@@ -718,27 +522,12 @@ class WebSocketController implements IController {
 
 ## Controller Registry
 
-Controllers are automatically registered when decorated with `@controller`:
+Controllers are automatically registered when decorated with `@controller`. Access controller instances via the `@snice/controller-attached` event:
 
 ```typescript
-import { getController } from 'snice';
-
-// Get controller instance from an element
-const element = document.querySelector('#my-element');
-const controller = getController(element);
-
-if (controller) {
-  console.log('Controller found:', controller);
-}
+element.addEventListener('@snice/controller-attached', (e: CustomEvent) => {
+  const controller = e.detail.controller;
+  console.log('Controller attached:', controller);
+});
 ```
 
-## Best Practices
-
-1. **Separation of Concerns**: Keep controllers focused on data and business logic
-2. **Cleanup Resources**: Always clean up timers, listeners, and connections
-3. **Error Handling**: Handle errors gracefully in async operations
-4. **Type Safety**: Use TypeScript generics for element types
-5. **State Management**: Consider using a state controller for complex state
-6. **Abort Requests**: Cancel pending requests when detaching
-7. **Memory Management**: Clear references to prevent memory leaks
-8. **Event Delegation**: Use event delegation for dynamic content

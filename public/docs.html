@@ -48,7 +48,6 @@
 <a href="#elements-styling" class="sub">Styling</a>
 <a href="#elements-template-events" class="sub">Template Events</a>
 <a href="#elements-advanced-examples" class="sub">Advanced Examples</a>
-<a href="#elements-best-practices" class="sub">Best Practices</a>
 <a href="#routing">Routing</a>
 <a href="#routing-router-setup" class="sub">Router Setup</a>
 <a href="#routing-page-components" class="sub">Page Components</a>
@@ -59,7 +58,6 @@
 <a href="#routing-route-guards" class="sub">Route Guards</a>
 <a href="#routing-layouts" class="sub">Layouts</a>
 <a href="#routing-advanced-patterns" class="sub">Advanced Patterns</a>
-<a href="#routing-best-practices" class="sub">Best Practices</a>
 <a href="#routing-router-api-reference" class="sub">Router API Reference</a>
 <a href="#events">Events</a>
 <a href="#events-template-event-syntax-preferred-for-elements" class="sub">Template Event Syntax (Preferred for Elements)</a>
@@ -68,8 +66,6 @@
 <a href="#events-custom-events" class="sub">Custom Events</a>
 <a href="#events-event-delegation" class="sub">Event Delegation</a>
 <a href="#events-keyboard-shortcuts" class="sub">Keyboard Shortcuts</a>
-<a href="#events-best-practices" class="sub">Best Practices</a>
-<a href="#events-event-types-reference" class="sub">Event Types Reference</a>
 <a href="#controllers">Controllers</a>
 <a href="#controllers-basic-usage" class="sub">Basic Usage</a>
 <a href="#controllers-controller-lifecycle" class="sub">Controller Lifecycle</a>
@@ -79,7 +75,6 @@
 <a href="#controllers-query-selectors-in-controllers" class="sub">Query Selectors in Controllers</a>
 <a href="#controllers-advanced-patterns" class="sub">Advanced Patterns</a>
 <a href="#controllers-controller-registry" class="sub">Controller Registry</a>
-<a href="#controllers-best-practices" class="sub">Best Practices</a>
 <div class="nav-group">Patterns</div>
 <a href="#observe">Observers</a>
 <a href="#observe-overview" class="sub">Overview</a>
@@ -111,7 +106,7 @@
 <a href="#fetcher-complete-example" class="sub">Complete Example</a>
 <a href="#fetcher-important-notes" class="sub">Important Notes</a>
 <a href="#fetcher-api-reference" class="sub">API Reference</a>
-<a href="#fetcher-best-practices" class="sub">Best Practices</a>
+<a href="#fetcher-notes" class="sub">Notes</a>
 <a href="#placards">Placards</a>
 <a href="#placards-overview" class="sub">Overview</a>
 <a href="#placards-basic-usage" class="sub">Basic Usage</a>
@@ -120,7 +115,6 @@
 <a href="#placards-hierarchical-navigation-example" class="sub">Hierarchical Navigation Example</a>
 <a href="#placards-breadcrumb-resolution" class="sub">Breadcrumb Resolution</a>
 <a href="#placards-layout-integration" class="sub">Layout Integration</a>
-<a href="#placards-best-practices" class="sub">Best Practices</a>
 <div class="nav-group">Components</div>
 <a href="#code-block">Code Block</a>
 <a href="#code-block-basic-usage" class="sub">Basic Usage</a>
@@ -238,7 +232,7 @@ class UserCard extends HTMLElement {
   }
 
   @watch('name', 'role')
-  update() {
+  update(oldVal: any, newVal: any, prop: string) {
     if (!this.$name) return;
     this.$name.textContent = this.name;
     this.$role.textContent = this.role;
@@ -288,20 +282,12 @@ class StyledCard extends HTMLElement {
     `;
   }
 }</snice-code-block>
-<p><strong>Multiple Style Methods:</strong></p>
+<p><strong>Note:</strong> Only one <code>@styles()</code> method is supported per element. If multiple are declared, only the last one is used. Combine all styles in a single method:</p>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">@styles()
-baseStyles() {
+componentStyles() {
   return css`
     :host { display: block; }
-    // ...
-  `;
-}
-
-@styles()
-themeStyles() {
-  return css`
     .card { background: var(--bg-color); }
-    // ...
   `;
 }</snice-code-block>
 <h3 id="elements-lifecycle-decorators">Lifecycle Decorators</h3>
@@ -400,7 +386,7 @@ class UserProfile extends HTMLElement {
 <h3 id="elements-property-options">Property Options</h3>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">interface PropertyOptions {
   type?: String | Number | Boolean | Array | Object | Date | BigInt | SimpleArray;
-  attribute?: string;        // Custom attribute name
+  attribute?: string | boolean;  // Custom attribute name, or false to disable attribute sync
   converter?: PropertyConverter;  // Custom converter
   hasChanged?: (value: any, oldValue: any) =&gt; boolean;
 }</snice-code-block>
@@ -408,10 +394,11 @@ class UserProfile extends HTMLElement {
 <p>All properties automatically:</p>
 <ul>
 <li>Read from DOM attributes when present</li>
-<li>Reflect changes to corresponding attributes</li>
+<li>Reflect property setter changes to corresponding attributes</li>
 <li>Convert between string attributes and typed properties</li>
 <li>Trigger re-renders when changed</li>
 </ul>
+<p><strong>Note:</strong> Initial field values (defaults like <code>name = 'Anonymous'</code>) are NOT reflected to attributes. Only changes made via the property setter are reflected. Set <code>attribute: false</code> to disable attribute sync entirely.</p>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">@element('reflected-props')
 class ReflectedProps extends HTMLElement {
   @property()
@@ -827,7 +814,7 @@ class RegistrationForm extends HTMLElement {
   }
 }</snice-code-block>
 <h3 id="elements-watch-decorator">Watch Decorator</h3>
-<p>Use <code>@watch</code> to react to property changes:</p>
+<p>Use <code>@watch</code> to react to property changes. Handlers receive three arguments: <code>(oldValue, newValue, propertyName)</code>.</p>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">@element('reactive-component')
 class ReactiveComponent extends HTMLElement {
   @property()
@@ -837,8 +824,8 @@ class ReactiveComponent extends HTMLElement {
   score = 0;
 
   @watch('userName')
-  onUserNameChange(oldVal: string, newVal: string) {
-    console.log(`Name changed from ${oldVal} to ${newVal}`);
+  onUserNameChange(oldVal: string, newVal: string, prop: string) {
+    console.log(`${prop} changed from ${oldVal} to ${newVal}`);
   }
 
   @watch('score')
@@ -846,6 +833,12 @@ class ReactiveComponent extends HTMLElement {
     if (newVal &gt; 100) {
       console.log('High score achieved!');
     }
+  }
+
+  // Wildcard watcher — fires on any @property change
+  @watch('*')
+  onAnyChange(oldVal: any, newVal: any, prop: string) {
+    console.log(`${prop}: ${oldVal} → ${newVal}`);
   }
 
   @render()
@@ -858,6 +851,49 @@ class ReactiveComponent extends HTMLElement {
     `;
   }
 }</snice-code-block>
+<h3 id="elements-context-decorator">@context() Decorator</h3>
+<p>Receive router context updates. The decorated method is called whenever the router context changes (navigation, app context update, etc.):</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">import { element, context, render, html } from 'snice';
+import type { Context } from 'snice';
+
+@element('nav-bar')
+class NavBar extends HTMLElement {
+  private placards: any[] = [];
+  private currentRoute = '';
+
+  @context()
+  onContextUpdate(ctx: Context) {
+    this.placards = ctx.navigation.placards;
+    this.currentRoute = ctx.navigation.route;
+  }
+
+  @render()
+  renderContent() {
+    return html`
+      &lt;nav&gt;
+        ${this.placards
+          .filter(p =&gt; p.show !== false)
+          .map(p =&gt; html`
+            &lt;a href=&quot;#/${p.name}&quot; class=&quot;${this.currentRoute === p.name ? 'active' : ''}&quot;&gt;
+              ${p.icon} ${p.title}
+            &lt;/a&gt;
+          `)}
+      &lt;/nav&gt;
+    `;
+  }
+}</snice-code-block>
+<p><strong>Context Options:</strong></p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">@context({ debounce: 300 })   // Wait 300ms after last change
+@context({ throttle: 500 })   // At most once per 500ms
+@context({ once: true })       // Only called once, then auto-unregisters</snice-code-block>
+<p>The <code>Context</code> object provides:</p>
+<ul>
+<li><code>ctx.application</code> — App context (theme, auth, config, etc.)</li>
+<li><code>ctx.navigation.route</code> — Current route path</li>
+<li><code>ctx.navigation.params</code> — Route parameters</li>
+<li><code>ctx.navigation.placards</code> — All registered page placards</li>
+<li><code>ctx.fetch</code> — Fetch with middleware support (see Fetcher docs)</li>
+</ul>
 <h3 id="elements-conditional-rendering">Conditional Rendering</h3>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">@element('conditional-content')
 class ConditionalContent extends HTMLElement {
@@ -882,16 +918,6 @@ class ConditionalContent extends HTMLElement {
     this.isLoggedIn = false;
   }
 }</snice-code-block>
-<h2 id="elements-best-practices">Best Practices</h2>
-<ol>
-<li><strong>Use @render() for templates</strong>: Always return <code>html\</code>...\`` tagged templates</li>
-<li><strong>Use @styles() for CSS</strong>: Always return <code>css\</code>...\`` tagged templates</li>
-<li><strong>Leverage auto-rendering</strong>: Properties automatically trigger re-renders</li>
-<li><strong>Use template events</strong>: Handle events with <code>@event=${handler}</code> in templates</li>
-<li><strong>Clean up resources</strong>: Use @dispose() for cleanup tasks</li>
-<li><strong>Type your queries</strong>: Use proper TypeScript types for queried elements</li>
-<li><strong>Handle errors</strong>: Wrap async operations in try-catch blocks</li>
-</ol>
 </section>
 <section class="doc-file" id="routing">
 <h1 id="routing-routing-api-documentation">Routing API Documentation</h1>
@@ -908,14 +934,14 @@ const router = Router({
 // Destructure router methods
 const { page, initialize, navigate } = router;</snice-code-block>
 <h3 id="routing-router-options">Router Options</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">interface RouterOptions&lt;T = any&gt; {
+<snice-code-block language="typescript" grammar="grammars/typescript.json">interface RouterOptions {
   target: string;                    // Target element selector
   type: 'hash' | 'pushstate';        // Routing type
   window?: Window;                   // Override window object (for testing)
   document?: Document;               // Override document object (for testing)
   transition?: Transition;           // Global transition config
   layout?: string;                   // Default layout for all pages
-  context?: T;                       // Router context object (shared state)
+  context?: any;                     // Router context object (shared state)
   fetcher?: Fetcher;                 // Optional fetch middleware (see docs/fetcher.md)
 }</snice-code-block>
 <h3 id="routing-router-context">Router Context</h3>
@@ -1059,7 +1085,7 @@ class DashboardPage extends HTMLElement {
   application: AppContext;  // Your router context (e.g., { user, theme, config })
   navigation: {
     placards: Placard[];           // All page placards
-    route: string;                  // Current route name
+    route: string;                  // Current path (e.g. '/users/123')
     params: Record&lt;string, string&gt;; // Route parameters
   };
   fetch: typeof globalThis.fetch;  // Fetch function with middleware support
@@ -1109,12 +1135,13 @@ class SettingsPage extends HTMLElement {
 <p><strong>Note:</strong> The router automatically signals <code>@context()</code> subscribers during navigation. Only call <code>update()</code> manually when changing application state outside of navigation (login, logout, theme changes, etc.).</p>
 <h2 id="routing-route-configuration">Route Configuration</h2>
 <h3 id="routing-page-decorator-options">@page Decorator Options</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">interface PageOptions&lt;T = any&gt; {
+<snice-code-block language="typescript" grammar="grammars/typescript.json">interface PageOptions {
   tag: string;                       // Custom element tag name
   routes: string[];                  // Route patterns
   transition?: Transition;           // Page-specific transition
-  guards?: Guard&lt;T&gt; | Guard&lt;T&gt;[];    // Route guards
-  placard?: Placard&lt;T&gt;;              // Page metadata
+  guards?: Guard | Guard[];          // Route guards
+  layout?: string | false;           // Layout tag, or false to disable
+  placard?: Placard | ((ctx: AppContext) =&gt; Placard);  // Page metadata
 }</snice-code-block>
 <h3 id="routing-multiple-routes">Multiple Routes</h3>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">@page({
@@ -1253,23 +1280,18 @@ class CommentPage extends HTMLElement {
   }
 }</snice-code-block>
 <h3 id="routing-query-parameters">Query Parameters</h3>
-<p>Query parameters are not automatically parsed but can be accessed via URL:</p>
+<p>Define query parameters directly in the route pattern — they are extracted as route params automatically:</p>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">@page({
   tag: 'search-page',
-  routes: ['/search']
+  routes: ['/search?q=:query']
 })
 class SearchPage extends HTMLElement {
   @property()
   query = '';
 
-  @property()
-  page = 1;
-
-  @ready()
-  parseQueryParams() {
-    const params = new URLSearchParams(window.location.search);
-    this.query = params.get('q') || '';
-    this.page = parseInt(params.get('page') || '1');
+  @context()
+  handleContext(ctx: Context) {
+    this.query = ctx.navigation.params.query || '';
   }
 
   @render()
@@ -1277,14 +1299,13 @@ class SearchPage extends HTMLElement {
     return html`
       &lt;div&gt;
         &lt;h1&gt;Search Results for: ${this.query}&lt;/h1&gt;
-        &lt;p&gt;Page: ${this.page}&lt;/p&gt;
       &lt;/div&gt;
     `;
   }
 }</snice-code-block>
 <h2 id="routing-page-transitions">Page Transitions</h2>
 <h3 id="routing-global-transitions">Global Transitions</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">import { fadeTransition } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json">import { fadeTransition } from 'snice/transitions';
 
 const router = Router({
   target: '#app',
@@ -1292,7 +1313,7 @@ const router = Router({
   transition: fadeTransition
 });</snice-code-block>
 <h3 id="routing-page-specific-transitions">Page-Specific Transitions</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">import { slideTransition } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json">import { slideTransition } from 'snice/transitions';
 
 @page({
   tag: 'about-page',
@@ -1309,50 +1330,34 @@ class AboutPage extends HTMLElement {
 <snice-code-block language="typescript" grammar="grammars/typescript.json">import {
   fadeTransition,
   slideTransition,
-  slideLeftTransition,
   slideRightTransition,
   slideUpTransition,
   slideDownTransition,
-  scaleTransition
-} from 'snice';</snice-code-block>
+  scaleTransition,
+  rotateTransition,
+  flipTransition,
+  zoomTransition,
+  noneTransition
+} from 'snice/transitions';</snice-code-block>
 <h3 id="routing-custom-transitions">Custom Transitions</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">import { Transition } from 'snice';
+<p>Transitions use inline CSS property strings for <code>out</code> (leaving) and <code>in</code> (entering) states:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">import { Transition } from 'snice/transitions';
 
 const customTransition: Transition = {
   name: 'custom',
-  duration: 500,
-  enterClass: 'page-enter',
-  enterActiveClass: 'page-enter-active',
-  leaveClass: 'page-leave',
-  leaveActiveClass: 'page-leave-active'
-};
-
-// CSS for custom transition
-/*
-.page-enter {
-  opacity: 0;
-  transform: translateY(20px);
-}
-
-.page-enter-active {
-  transition: all 500ms ease-out;
-}
-
-.page-leave {
-  opacity: 1;
-}
-
-.page-leave-active {
-  opacity: 0;
-  transition: all 500ms ease-in;
-}
-*/</snice-code-block>
+  outDuration: 300,
+  inDuration: 300,
+  out: 'opacity: 0; transform: translateY(-20px)',
+  in: 'opacity: 0; transform: translateY(20px)',
+  mode: 'sequential'  // or 'simultaneous'
+};</snice-code-block>
+<p>The <code>out</code> string is applied to the leaving page, <code>in</code> string is the starting state of the entering page (which then transitions to its natural state).</p>
 <h2 id="routing-route-guards">Route Guards</h2>
 <p>Guards protect routes and can redirect unauthorized access:</p>
 <h3 id="routing-basic-guard">Basic Guard</h3>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">import { Guard } from 'snice';
 
-const isAuthenticated: Guard&lt;AppContext&gt; = (ctx) =&gt; {
+const isAuthenticated: Guard&lt;AppContext&gt; = (ctx, params) =&gt; {
   return ctx.getUser() !== null;
 };
 
@@ -1368,7 +1373,7 @@ class DashboardPage extends HTMLElement {
   }
 }</snice-code-block>
 <h3 id="routing-multiple-guards">Multiple Guards</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">const hasAdminRole: Guard&lt;AppContext&gt; = (ctx) =&gt; {
+<snice-code-block language="typescript" grammar="grammars/typescript.json">const hasAdminRole: Guard&lt;AppContext&gt; = (ctx, params) =&gt; {
   const user = ctx.getUser();
   return user?.role === 'admin';
 };
@@ -1385,28 +1390,19 @@ class AdminPage extends HTMLElement {
   }
 }</snice-code-block>
 <h3 id="routing-guard-with-redirect">Guard with Redirect</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">const requiresAuth: Guard&lt;AppContext&gt; = (ctx) =&gt; {
-  const isAuth = ctx.getUser() !== null;
-
-  if (!isAuth) {
-    // Redirect to login page
-    setTimeout(() =&gt; {
-      window.location.hash = '#/login';
-    }, 0);
+<p>When a guard returns <code>false</code>, the router renders the <code>/403</code> page (if registered) or a default 403 message. Guards can also trigger side effects like redirects:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">const isAuthenticated: Guard&lt;AppContext&gt; = (ctx, params) =&gt; {
+  if (!ctx.getUser()) {
+    window.location.hash = '#/login';
+    return false;
   }
-
-  return isAuth;
+  return true;
 };</snice-code-block>
-<h3 id="routing-async-guards">Async Guards</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">const checkPermission: Guard&lt;AppContext&gt; = async (ctx) =&gt; {
+<h3 id="routing-permission-guard">Permission Guard</h3>
+<p>Guards are synchronous — pre-load permissions into context before navigating:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">const hasAdminAccess: Guard&lt;AppContext&gt; = (ctx, params) =&gt; {
   const user = ctx.getUser();
-  if (!user) return false;
-
-  // Check with API
-  const response = await fetch(`/api/permissions/${user.id}`);
-  const permissions = await response.json();
-
-  return permissions.includes('access_dashboard');
+  return user?.role === 'admin';
 };</snice-code-block>
 <h2 id="routing-layouts">Layouts</h2>
 <p>Layouts wrap pages with shared UI like headers, footers, and navigation:</p>
@@ -1523,7 +1519,7 @@ const router = Router({
 @page({
   tag: 'fullscreen-page',
   routes: ['/fullscreen'],
-  layout: null  // Disable layout for this page
+  layout: false  // Disable layout for this page
 })
 class FullscreenPage extends HTMLElement {
   @render()
@@ -1706,36 +1702,10 @@ class NotFoundPage extends HTMLElement {
   @render()
   renderContent() {
     return html`
-      &lt;div class=&quot;not-found&quot;&gt;
+      &lt;div&gt;
         &lt;h1&gt;404 - Page Not Found&lt;/h1&gt;
-        &lt;p&gt;The page you're looking for doesn't exist.&lt;/p&gt;
         &lt;a href=&quot;#/&quot;&gt;Go Home&lt;/a&gt;
       &lt;/div&gt;
-    `;
-  }
-
-  @styles()
-  errorStyles() {
-    return css`
-      .not-found {
-        text-align: center;
-        padding: 4rem;
-      }
-
-      h1 {
-        color: #e74c3c;
-        font-size: 3rem;
-      }
-
-      a {
-        display: inline-block;
-        margin-top: 2rem;
-        padding: 0.5rem 2rem;
-        background: #3498db;
-        color: white;
-        text-decoration: none;
-        border-radius: 4px;
-      }
     `;
   }
 }</snice-code-block>
@@ -1746,11 +1716,6 @@ class AppContext {
 
   setUser(user: User | null) {
     this.user = user;
-
-    // Redirect if logged out
-    if (!user &amp;&amp; window.location.hash.includes('/dashboard')) {
-      window.location.hash = '#/login';
-    }
   }
 
   getUser() {
@@ -1762,8 +1727,8 @@ class AppContext {
   }
 }
 
-// Auth guard
-const isAuthenticated: Guard&lt;AppContext&gt; = (ctx) =&gt; {
+// Auth guard — redirect to login if not authenticated
+const isAuthenticated: Guard&lt;AppContext&gt; = (ctx, params) =&gt; {
   if (!ctx.isAuthenticated()) {
     window.location.hash = '#/login';
     return false;
@@ -1841,40 +1806,30 @@ class LoginPage extends HTMLElement {
     window.location.hash = '#/dashboard';
   }
 }</snice-code-block>
-<h2 id="routing-best-practices">Best Practices</h2>
-<ol>
-<li><strong>Use semantic routes</strong>: <code>/users/123</code> instead of <code>/page?id=123</code></li>
-<li><strong>Leverage route parameters</strong>: Automatically mapped to properties</li>
-<li><strong>Use guards for protection</strong>: Keep auth logic separate from pages</li>
-<li><strong>Implement transitions</strong>: Smooth user experience between pages</li>
-<li><strong>Use layouts efficiently</strong>: Share common UI without duplication</li>
-<li><strong>Handle 404s</strong>: Always include a catch-all route</li>
-<li><strong>Use context for shared state</strong>: Avoid prop drilling</li>
-<li><strong>Lazy load when needed</strong>: Improve initial load time</li>
-<li><strong>Type your guards</strong>: Use TypeScript generics for context</li>
-<li><strong>Test navigation</strong>: Ensure all routes work correctly</li>
-</ol>
 <h2 id="routing-router-api-reference">Router API Reference</h2>
 <h3 id="routing-router">Router()</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">function Router&lt;T = any&gt;(options: RouterOptions&lt;T&gt;): {
-  page: PropertyDecorator;
-  navigate: (path: string) =&gt; void;
+<snice-code-block language="typescript" grammar="grammars/typescript.json">function Router(options: RouterOptions): {
+  page: (pageOptions: PageOptions) =&gt; ClassDecorator;
   initialize: () =&gt; void;
-  getCurrentRoute: () =&gt; string;
-  getRouteParams: () =&gt; Record&lt;string, string&gt;;
+  navigate: (path: string) =&gt; Promise&lt;void&gt;;
+  register: (route: string, tag: string, transition?: Transition, guards?: Guard | Guard[]) =&gt; void;
 }</snice-code-block>
 <h3 id="routing-navigate">navigate()</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">navigate(path: string): void</snice-code-block>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">navigate(path: string): Promise&lt;void&gt;</snice-code-block>
 <p>Navigates to the specified path. Uses hash (#) or pushstate depending on router type.</p>
 <h3 id="routing-initialize">initialize()</h3>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">initialize(): void</snice-code-block>
 <p>Initializes the router and starts listening for route changes. Must be called after all pages are defined.</p>
-<h3 id="routing-getcurrentroute">getCurrentRoute()</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">getCurrentRoute(): string</snice-code-block>
-<p>Returns the current route path.</p>
-<h3 id="routing-getrouteparams">getRouteParams()</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">getRouteParams(): Record&lt;string, string&gt;</snice-code-block>
-<p>Returns current route parameters as an object.</p>
+<h3 id="routing-register">register()</h3>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">register(
+  route: string,
+  tag: string,
+  transition?: Transition,
+  guards?: Guard | Guard[],
+  layout?: string | false,
+  placard?: Placard | ((ctx: AppContext) =&gt; Placard)
+): void</snice-code-block>
+<p>Manually register a route without using the <code>@page</code> decorator.</p>
 </section>
 <section class="doc-file" id="events">
 <h1 id="events-events-api-documentation">Events API Documentation</h1>
@@ -2211,9 +2166,6 @@ class EditorController implements IController {
   // Timing controls
   debounce?: number;           // Debounce the handler by specified milliseconds
   throttle?: number;           // Throttle the handler by specified milliseconds
-
-  // Event delegation
-  target?: string;             // CSS selector to target specific elements within shadow root
 }</snice-code-block>
 <h4 id="events-throttling">Throttling</h4>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">@controller('scroll-controller')
@@ -2309,6 +2261,7 @@ input.addEventListener('value-changed', (e: CustomEvent) =&gt; {
   console.log('New value:', e.detail.value);
 });</snice-code-block>
 <h3 id="events-event-options">Event Options</h3>
+<p>Events dispatched by <code>@dispatch</code> default to <code>bubbles: true</code> and <code>composed: true</code> (crosses shadow DOM boundaries). Override if needed:</p>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">@element('status-indicator')
 class StatusIndicator extends HTMLElement {
   @render()
@@ -2316,7 +2269,8 @@ class StatusIndicator extends HTMLElement {
     return html`&lt;div&gt;Status&lt;/div&gt;`;
   }
 
-  @dispatch('status-changed', { bubbles: true, composed: true })
+  // Defaults: bubbles: true, composed: true
+  @dispatch('status-changed')
   updateStatus(status: string) {
     return {
       status,
@@ -2400,8 +2354,8 @@ class TableController implements IController {
   // Single event listener handles all rows
   @on('click', 'tr')
   handleRowClick(event: MouseEvent) {
-    const row = event.currentTarget as HTMLTableRowElement;
-    console.log('Row clicked:', row.dataset.id);
+    const row = (event.target as HTMLElement).closest('tr');
+    console.log('Row clicked:', row?.dataset.id);
   }
 
   // Handle button clicks in cells
@@ -2523,62 +2477,6 @@ class KeyboardController implements IController {
     console.log('Escape');
   }
 }</snice-code-block>
-<h2 id="events-best-practices">Best Practices</h2>
-<h3 id="events-for-elements">For Elements</h3>
-<ol>
-<li><strong>Prefer template syntax</strong>: Use <code>@event=${handler}</code> in templates</li>
-<li><strong>Use arrow functions for parameters</strong>: <code>@click=${() => this.delete(id)}</code></li>
-<li><strong>Handle events at appropriate level</strong>: Use event delegation for dynamic content</li>
-<li><strong>Prevent default when needed</strong>: Call <code>e.preventDefault()</code> in handlers</li>
-<li><strong>Use keyboard shortcuts</strong>: Leverage <code>@keydown.ctrl+s</code> syntax</li>
-</ol>
-<h3 id="events-for-controllers">For Controllers</h3>
-<ol>
-<li><strong>Use @on decorator</strong>: Controllers should use <code>@on</code> for event handling</li>
-<li><strong>Leverage event delegation</strong>: Use selectors to handle dynamic content</li>
-<li><strong>Throttle/debounce high-frequency events</strong>: Use <code>{ throttle }</code> or <code>{ debounce }</code> options</li>
-<li><strong>Clean up automatically</strong>: Event listeners are cleaned up on detach</li>
-<li><strong>Handle keyboard shortcuts</strong>: Use <code>@on('keydown:Ctrl+S')</code> syntax</li>
-</ol>
-<h3 id="events-general">General</h3>
-<ol>
-<li><strong>Type your events</strong>: Use TypeScript event types for type safety</li>
-<li><strong>Stop propagation carefully</strong>: Only use <code>stopPropagation()</code> when necessary</li>
-<li><strong>Use custom events</strong>: Dispatch custom events for component communication</li>
-<li><strong>Compose events</strong>: Use <code>{ composed: true }</code> for cross-shadow-DOM events</li>
-<li><strong>Test event handlers</strong>: Write tests for all event handling logic</li>
-</ol>
-<h2 id="events-event-types-reference">Event Types Reference</h2>
-<p><strong>Mouse Events:</strong></p>
-<ul>
-<li><code>click</code>, <code>dblclick</code>, <code>mousedown</code>, <code>mouseup</code></li>
-<li><code>mouseenter</code>, <code>mouseleave</code>, <code>mousemove</code>, <code>mouseover</code>, <code>mouseout</code></li>
-<li><code>contextmenu</code></li>
-</ul>
-<p><strong>Keyboard Events:</strong></p>
-<ul>
-<li><code>keydown</code>, <code>keyup</code>, <code>keypress</code></li>
-</ul>
-<p><strong>Form Events:</strong></p>
-<ul>
-<li><code>input</code>, <code>change</code>, <code>submit</code>, <code>reset</code></li>
-<li><code>focus</code>, <code>blur</code>, <code>focusin</code>, <code>focusout</code></li>
-</ul>
-<p><strong>Drag Events:</strong></p>
-<ul>
-<li><code>drag</code>, <code>dragstart</code>, <code>dragend</code></li>
-<li><code>dragenter</code>, <code>dragover</code>, <code>dragleave</code>, <code>drop</code></li>
-</ul>
-<p><strong>Touch Events:</strong></p>
-<ul>
-<li><code>touchstart</code>, <code>touchmove</code>, <code>touchend</code>, <code>touchcancel</code></li>
-</ul>
-<p><strong>Other Events:</strong></p>
-<ul>
-<li><code>scroll</code>, <code>resize</code>, <code>load</code>, <code>error</code></li>
-<li><code>animationstart</code>, <code>animationend</code>, <code>animationiteration</code></li>
-<li><code>transitionstart</code>, <code>transitionend</code></li>
-</ul>
 </section>
 <section class="doc-file" id="controllers">
 <h1 id="controllers-controllers-api-documentation">Controllers API Documentation</h1>
@@ -2619,16 +2517,21 @@ class UserController implements IController&lt;HTMLElement&gt; {
 <ol>
 <li>Controller instance is created</li>
 <li><code>element</code> property is set</li>
+<li>Router context is passed (if available)</li>
 <li>Element's <code>ready</code> promise is awaited</li>
 <li><code>attach()</code> method is called</li>
-<li>Event and channel handlers are set up</li>
+<li>Observers are set up</li>
+<li>Channel/response handlers are set up</li>
+<li>Event handlers are set up</li>
 <li><code>@snice/controller-attached</code> event is dispatched</li>
 </ol>
 <h3 id="controllers-detachment-flow">Detachment Flow</h3>
 <ol>
 <li><code>detach()</code> method is called</li>
 <li><code>element</code> property is set to null</li>
-<li>Event and channel handlers are cleaned up</li>
+<li>Observers are cleaned up</li>
+<li>Channel/response handlers are cleaned up</li>
+<li>Event handlers are cleaned up</li>
 <li>Controller scope is cleaned up</li>
 <li><code>@snice/controller-detached</code> event is dispatched</li>
 </ol>
@@ -2729,11 +2632,13 @@ class TableController implements IController&lt;HTMLTableElement&gt; {
     const tbody = this.element.querySelector('tbody');
     if (!tbody) return;
 
+    const esc = (s: string) =&gt; s.replace(/&amp;/g, '&amp;amp;').replace(/&lt;/g, '&amp;lt;').replace(/&gt;/g, '&amp;gt;');
+
     tbody.innerHTML = this.data.map(row =&gt; `
       &lt;tr&gt;
-        &lt;td&gt;${row.id}&lt;/td&gt;
-        &lt;td&gt;${row.name}&lt;/td&gt;
-        &lt;td&gt;${row.status}&lt;/td&gt;
+        &lt;td&gt;${esc(String(row.id))}&lt;/td&gt;
+        &lt;td&gt;${esc(row.name)}&lt;/td&gt;
+        &lt;td&gt;${esc(row.status)}&lt;/td&gt;
       &lt;/tr&gt;
     `).join('');
   }
@@ -2866,8 +2771,9 @@ class DashboardController implements IController {
   }
 
   private renderCard(data: any) {
+    const esc = (s: string) =&gt; s.replace(/&amp;/g, '&amp;amp;').replace(/&lt;/g, '&amp;lt;').replace(/&gt;/g, '&amp;gt;');
     return `
-      &lt;h3&gt;${data.title}&lt;/h3&gt;
+      &lt;h3&gt;${esc(data.title)}&lt;/h3&gt;
       &lt;p&gt;${data.value.toFixed(2)}&lt;/p&gt;
     `;
   }
@@ -2952,7 +2858,7 @@ class DataFetcherController implements IController {
       this.element.setData(data);
     } else {
       // Fallback for native elements
-      this.element.innerHTML = JSON.stringify(data, null, 2);
+      this.element.textContent = JSON.stringify(data, null, 2);
     }
   }
 
@@ -2967,289 +2873,69 @@ class DataFetcherController implements IController {
     this.element.appendChild(errorDiv);
   }
 }</snice-code-block>
-<h3 id="controllers-state-management-controller">State Management Controller</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">interface AppState {
-  user: { id: string; name: string } | null;
-  theme: 'light' | 'dark';
-  notifications: Notification[];
-}
-
-interface Notification {
-  id: string;
-  message: string;
-  type: 'info' | 'warning' | 'error';
-}
-
-@controller('state-controller')
-class StateController implements IController {
+<h3 id="controllers-theme-controller">Theme Controller</h3>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">@controller('theme-controller')
+class ThemeController implements IController {
   element: HTMLElement | null = null;
-  private state: AppState = {
-    user: null,
-    theme: 'light',
-    notifications: []
-  };
-
-  private stateListeners = new Set&lt;(state: AppState) =&gt; void&gt;();
 
   async attach(element: HTMLElement) {
-    // Load initial state
-    await this.loadState();
-
-    // Subscribe element to state changes
-    const updateElement = (state: AppState) =&gt; {
-      this.updateElementWithState(element, state);
-    };
-
-    this.stateListeners.add(updateElement);
-
-    // Initial render
-    updateElement(this.state);
+    const saved = localStorage.getItem('theme') || 'light';
+    element.setAttribute('data-theme', saved);
   }
 
-  async detach(element: HTMLElement) {
-    // Clean up listeners
-    this.stateListeners.clear();
+  async detach(element: HTMLElement) {}
 
-    // Save state
-    await this.saveState();
-  }
-
-  // Public methods for state management
-  setUser(user: AppState['user']) {
-    this.updateState({ ...this.state, user });
-  }
-
-  setTheme(theme: AppState['theme']) {
-    this.updateState({ ...this.state, theme });
-  }
-
-  addNotification(notification: Omit&lt;Notification, 'id'&gt;) {
-    const newNotification: Notification = {
-      ...notification,
-      id: Date.now().toString()
-    };
-
-    this.updateState({
-      ...this.state,
-      notifications: [...this.state.notifications, newNotification]
-    });
-
-    // Auto-remove after 5 seconds
-    setTimeout(() =&gt; {
-      this.removeNotification(newNotification.id);
-    }, 5000);
-  }
-
-  removeNotification(id: string) {
-    this.updateState({
-      ...this.state,
-      notifications: this.state.notifications.filter(n =&gt; n.id !== id)
-    });
-  }
-
-  private updateState(newState: AppState) {
-    this.state = newState;
-
-    // Notify all listeners
-    this.stateListeners.forEach(listener =&gt; listener(this.state));
-
-    // Persist state
-    this.saveState();
-  }
-
-  private updateElementWithState(element: HTMLElement, state: AppState) {
-    // Update element based on state
-    element.setAttribute('data-theme', state.theme);
-
-    // If element has state methods, call them
-    if ('setState' in element &amp;&amp; typeof element.setState === 'function') {
-      (element as any).setState(state);
-    }
-
-    // Dispatch state change event
-    element.dispatchEvent(new CustomEvent('state-changed', {
-      detail: state,
-      bubbles: true
-    }));
-  }
-
-  private async loadState() {
-    try {
-      const saved = localStorage.getItem('app-state');
-      if (saved) {
-        this.state = JSON.parse(saved);
-      }
-    } catch (error) {
-      console.error('Failed to load state:', error);
-    }
-  }
-
-  private async saveState() {
-    try {
-      localStorage.setItem('app-state', JSON.stringify(this.state));
-    } catch (error) {
-      console.error('Failed to save state:', error);
-    }
+  @on('click', '[data-set-theme]')
+  handleThemeToggle(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    const theme = target.dataset.setTheme!;
+    this.element?.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
   }
 }</snice-code-block>
 <h3 id="controllers-websocket-controller">WebSocket Controller</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">@controller('websocket-controller')
+<snice-code-block language="typescript" grammar="grammars/typescript.json">@controller('ws-controller')
 class WebSocketController implements IController {
   element: HTMLElement | null = null;
   private ws?: WebSocket;
   private reconnectTimer?: number;
-  private reconnectAttempts = 0;
-  private maxReconnectAttempts = 5;
-  private reconnectDelay = 1000; // Start with 1 second
 
   async attach(element: HTMLElement) {
     this.connect();
   }
 
   async detach(element: HTMLElement) {
-    this.disconnect();
+    if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
+    this.ws?.close();
   }
 
   private connect() {
-    try {
-      this.ws = new WebSocket('ws://localhost:8080');
+    this.ws = new WebSocket('wss://api.example.com/ws');
 
-      this.ws.onopen = () =&gt; {
-        console.log('WebSocket connected');
-        this.reconnectAttempts = 0;
-        this.reconnectDelay = 1000;
-        this.onConnected();
-      };
-
-      this.ws.onmessage = (event) =&gt; {
-        this.handleMessage(event.data);
-      };
-
-      this.ws.onerror = (error) =&gt; {
-        console.error('WebSocket error:', error);
-        this.onError(error);
-      };
-
-      this.ws.onclose = () =&gt; {
-        console.log('WebSocket disconnected');
-        this.onDisconnected();
-        this.scheduleReconnect();
-      };
-
-    } catch (error) {
-      console.error('Failed to create WebSocket:', error);
-      this.scheduleReconnect();
-    }
-  }
-
-  private disconnect() {
-    if (this.reconnectTimer) {
-      clearTimeout(this.reconnectTimer);
-      this.reconnectTimer = undefined;
-    }
-
-    if (this.ws) {
-      this.ws.close();
-      this.ws = undefined;
-    }
-  }
-
-  private scheduleReconnect() {
-    if (this.reconnectAttempts &gt;= this.maxReconnectAttempts) {
-      console.error('Max reconnection attempts reached');
-      this.onReconnectFailed();
-      return;
-    }
-
-    this.reconnectAttempts++;
-
-    console.log(`Reconnecting in ${this.reconnectDelay}ms (attempt ${this.reconnectAttempts})`);
-
-    this.reconnectTimer = setTimeout(() =&gt; {
-      this.connect();
-    }, this.reconnectDelay);
-
-    // Exponential backoff
-    this.reconnectDelay = Math.min(this.reconnectDelay * 2, 30000);
-  }
-
-  private handleMessage(data: string) {
-    try {
-      const message = JSON.parse(data);
-
-      // Update element with message
-      if (this.element &amp;&amp; 'onMessage' in this.element) {
-        (this.element as any).onMessage(message);
-      }
-
-      // Dispatch event
+    this.ws.onmessage = (event) =&gt; {
       this.element?.dispatchEvent(new CustomEvent('ws-message', {
-        detail: message,
+        detail: JSON.parse(event.data),
         bubbles: true
       }));
+    };
 
-    } catch (error) {
-      console.error('Failed to parse message:', error);
-    }
+    this.ws.onclose = () =&gt; {
+      this.reconnectTimer = setTimeout(() =&gt; this.connect(), 3000);
+    };
   }
 
   send(data: any) {
     if (this.ws?.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(data));
-    } else {
-      console.warn('WebSocket not connected, queuing message');
-      // Could implement message queue here
-    }
-  }
-
-  private onConnected() {
-    this.element?.classList.remove('disconnected');
-    this.element?.classList.add('connected');
-  }
-
-  private onDisconnected() {
-    this.element?.classList.remove('connected');
-    this.element?.classList.add('disconnected');
-  }
-
-  private onError(error: Event) {
-    this.element?.classList.add('error');
-  }
-
-  private onReconnectFailed() {
-    this.element?.classList.add('reconnect-failed');
-
-    // Show user notification
-    if (this.element) {
-      const notification = document.createElement('div');
-      notification.className = 'connection-error';
-      notification.textContent = 'Connection lost. Please refresh the page.';
-      this.element.appendChild(notification);
     }
   }
 }</snice-code-block>
 <h2 id="controllers-controller-registry">Controller Registry</h2>
-<p>Controllers are automatically registered when decorated with <code>@controller</code>:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">import { getController } from 'snice';
-
-// Get controller instance from an element
-const element = document.querySelector('#my-element');
-const controller = getController(element);
-
-if (controller) {
-  console.log('Controller found:', controller);
-}</snice-code-block>
-<h2 id="controllers-best-practices">Best Practices</h2>
-<ol>
-<li><strong>Separation of Concerns</strong>: Keep controllers focused on data and business logic</li>
-<li><strong>Cleanup Resources</strong>: Always clean up timers, listeners, and connections</li>
-<li><strong>Error Handling</strong>: Handle errors gracefully in async operations</li>
-<li><strong>Type Safety</strong>: Use TypeScript generics for element types</li>
-<li><strong>State Management</strong>: Consider using a state controller for complex state</li>
-<li><strong>Abort Requests</strong>: Cancel pending requests when detaching</li>
-<li><strong>Memory Management</strong>: Clear references to prevent memory leaks</li>
-<li><strong>Event Delegation</strong>: Use event delegation for dynamic content</li>
-</ol>
+<p>Controllers are automatically registered when decorated with <code>@controller</code>. Access controller instances via the <code>@snice/controller-attached</code> event:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">element.addEventListener('@snice/controller-attached', (e: CustomEvent) =&gt; {
+  const controller = e.detail.controller;
+  console.log('Controller attached:', controller);
+});</snice-code-block>
 </section>
 <section class="doc-file" id="observe">
 <h1 id="observe-observe-api-documentation">Observe API Documentation</h1>
@@ -3533,28 +3219,22 @@ class ViewportController implements IController {
   }
 }</snice-code-block>
 <h2 id="observe-options">Options</h2>
-<h3 id="observe-common-options">Common Options</h3>
-<p>All observers support these options:</p>
+<p>All observer types share a single options interface. Pass only the fields relevant to the observer type you're using:</p>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">interface ObserveOptions {
-  throttle?: number;  // Throttle callbacks by milliseconds
-}</snice-code-block>
-<h3 id="observe-specific-options">Specific Options</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">// Intersection Observer
-interface IntersectionOptions extends ObserveOptions {
-  threshold?: number | number[];  // 0-1 visibility threshold
+  // Intersection Observer
+  threshold?: number | number[];  // 0-1 visibility percentage
   rootMargin?: string;            // Margin around root
   root?: Element | null;          // Viewport element
-}
 
-// Resize Observer
-interface ResizeOptions extends ObserveOptions {
+  // Resize Observer
   box?: 'content-box' | 'border-box';  // Box model to observe
-}
 
-// Mutation Observer
-interface MutationOptions extends ObserveOptions {
-  subtree?: boolean;     // Observe descendants
-  maxDepth?: number;     // Limit subtree depth
+  // Mutation Observer
+  subtree?: boolean;     // Observe descendants (use with caution)
+  maxDepth?: number;     // Safety limit for subtree depth
+
+  // All observers
+  throttle?: number;     // Throttle callbacks by milliseconds
 }</snice-code-block>
 <h2 id="observe-best-practices">Best Practices</h2>
 <h3 id="observe-1-be-specific">1. Be Specific</h3>
@@ -3701,14 +3381,9 @@ class Dashboard extends HTMLElement {
     // Adjust logic
   }
 }</snice-code-block>
-<h3 id="observe-form-auto-save">Form Auto-Save</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">@element('auto-save-form')
-class AutoSaveForm extends HTMLElement {
-  @observe('mutation:attributes:value', 'input, textarea', { throttle: 1000 })
-  handleInputChange(mutations: MutationRecord[]) {
-    this.saveFormData();
-  }
-
+<h3 id="observe-dynamic-form-fields">Dynamic Form Fields</h3>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">@element('dynamic-form')
+class DynamicForm extends HTMLElement {
   @observe('mutation:childList', '.dynamic-fields')
   handleFieldsAdded(mutations: MutationRecord[]) {
     mutations.forEach(mutation =&gt; {
@@ -3727,10 +3402,6 @@ class AutoSaveForm extends HTMLElement {
         &lt;div class=&quot;dynamic-fields&quot;&gt;&lt;/div&gt;
       &lt;/form&gt;
     `;
-  }
-
-  saveFormData() {
-    // Save logic
   }
 
   initializeField(field: Element) {
@@ -3766,9 +3437,9 @@ interface RespondOptions {
   throttle?: number;   // Throttle responses by specified ms
 }
 
-// Type helper to eliminate TypeScript warnings in request generators
-// Use this for method signatures - it handles both the generator implementation and promise return
-type Response&lt;T&gt; = AsyncGenerator&lt;any, T, any&gt; | Promise&lt;T&gt;;</snice-code-block>
+// Recommended type helper for request generator return types:
+type Response&lt;T&gt; = AsyncGenerator&lt;any, T, any&gt; | Promise&lt;T&gt;;
+// Define this in your project — it satisfies both the generator and the caller</snice-code-block>
 <h4 id="request-response-response-debounce-throttle">Response Debounce/Throttle</h4>
 <p>Response handlers can also be debounced or throttled to prevent excessive processing:</p>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">@controller('heavy-processing-controller')
@@ -3788,7 +3459,9 @@ class ProcessingController implements IController {
 }</snice-code-block>
 <h2 id="request-response-element-side-requests">Element-Side Requests</h2>
 <p>Elements use async generators to make requests:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">import { element, request, Response, render, html } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json">import { element, request, render, html } from 'snice';
+
+type Response&lt;T&gt; = AsyncGenerator&lt;any, T, any&gt; | Promise&lt;T&gt;;
 
 @element('user-card')
 class UserCard extends HTMLElement {
@@ -4356,154 +4029,43 @@ class CachedController implements IController {
     return { key, value: Math.random(), timestamp: Date.now() };
   }
 }</snice-code-block>
-<h3 id="request-response-bidirectional-updates">Bidirectional Updates</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">// Element that can both request and be updated
-import { element, property, query, request, watch, render, html } from 'snice';
+<h3 id="request-response-multi-step-workflow">Multi-Step Workflow</h3>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">// Element requests a multi-step order process
+@element('order-form')
+class OrderForm extends HTMLElement {
+  @request('place-order')
+  async *placeOrder(): Response&lt;{ orderId: string }&gt; {
+    // Step 1: validate stock
+    const stock = await (yield { action: 'check-stock', items: this.cartItems });
+    if (!stock.available) throw new Error('Out of stock');
 
-@element('live-data')
-class LiveData extends HTMLElement {
-  private updateInterval?: number;
+    // Step 2: process payment
+    const payment = await (yield { action: 'charge', amount: stock.total });
+    if (!payment.success) throw new Error('Payment failed');
 
-  @property()
-  status = 'Disconnected';
-
-  @query('.status')
-  statusDiv?: HTMLElement;
-
-  @query('.data')
-  dataDiv?: HTMLElement;
-
-  @render()
-  renderContent() {
-    return html`
-      &lt;div class=&quot;status&quot;&gt;${this.status}&lt;/div&gt;
-      &lt;div class=&quot;data&quot;&gt;&lt;/div&gt;
-      &lt;button @click=${this.connect}&gt;Connect&lt;/button&gt;
-      &lt;button @click=${this.disconnect}&gt;Disconnect&lt;/button&gt;
-    `;
-  }
-
-  @request('subscribe')
-  async *subscribe() {
-    // Send subscription request
-    const subscription = await (yield {
-      subscribe: true,
-      events: ['update', 'status']
-    });
-
-    if (subscription.success) {
-      this.status = 'Connected';  // @watch will handle UI update
-
-      // Start polling for updates
-      this.startPolling();
-    }
-
-    return subscription;
-  }
-
-  @request('poll-updates')
-  async *pollForUpdates() {
-    const updates = await (yield { poll: true });
-
-    if (updates &amp;&amp; updates.length &gt; 0) {
-      this.processUpdates(updates);
-    }
-
-    return { processed: updates.length };
-  }
-
-  async connect() {
-    await this.subscribe();
-  }
-
-  disconnect() {
-    this.stopPolling();
-    this.status = 'Disconnected';
-  }
-
-  startPolling() {
-    this.updateInterval = setInterval(async () =&gt; {
-      await this.pollForUpdates();
-    }, 2000);
-  }
-
-  stopPolling() {
-    if (this.updateInterval) {
-      clearInterval(this.updateInterval);
-      this.updateInterval = undefined;
-    }
-  }
-
-  processUpdates(updates: any[]) {
-    if (this.dataDiv) {
-      updates.forEach(update =&gt; {
-        const entry = document.createElement('div');
-        entry.textContent = `${update.type}: ${update.value}`;
-        this.dataDiv!.appendChild(entry);
-      });
-    }
-  }
-
-  @watch('status')
-  updateStatus() {
-    if (this.statusDiv) {
-      this.statusDiv.textContent = this.status;
-    }
-  }
-
-  disconnectedCallback() {
-    super.disconnectedCallback?.();
-    this.stopPolling();
+    // Step 3: confirm order
+    return await (yield { action: 'confirm', paymentId: payment.id });
   }
 }
 
-// Controller that manages subscriptions
-@controller('subscription-controller')
-class SubscriptionController implements IController {
+// Controller handles each step
+@controller('order-controller')
+class OrderController implements IController {
   element: HTMLElement | null = null;
-  private subscribers = new Set&lt;string&gt;();
-  private updates: any[] = [];
 
-  async attach(element: HTMLElement) {
-    // Generate updates periodically
-    setInterval(() =&gt; {
-      this.updates.push({
-        type: 'update',
-        value: Math.random(),
-        timestamp: Date.now()
-      });
-    }, 3000);
-  }
+  async attach(element: HTMLElement) {}
+  async detach(element: HTMLElement) {}
 
-  async detach(element: HTMLElement) {
-    this.subscribers.clear();
-  }
-
-  @respond('subscribe')
-  handleSubscribe(request: any) {
-    if (request.subscribe) {
-      const id = Math.random().toString(36);
-      this.subscribers.add(id);
-
-      return {
-        success: true,
-        subscriptionId: id,
-        events: request.events
-      };
+  @respond('place-order')
+  async handleOrder(req: any) {
+    switch (req.action) {
+      case 'check-stock':
+        return { available: true, total: 99.99 };
+      case 'charge':
+        return { success: true, id: 'pay_abc123' };
+      case 'confirm':
+        return { orderId: 'ORD-001' };
     }
-
-    return { success: false };
-  }
-
-  @respond('poll-updates')
-  handlePollUpdates(request: any) {
-    if (!request.poll) return [];
-
-    // Return and clear updates
-    const updates = [...this.updates];
-    this.updates = [];
-
-    return updates;
   }
 }</snice-code-block>
 </section>
@@ -4527,12 +4089,12 @@ class SubscriptionController implements IController {
 // Create a fetcher instance
 const fetcher = new ContextAwareFetcher();
 
-// Add request middleware (runs before fetch)
+// Attach JWT to outgoing requests
 fetcher.use('request', function(request, next) {
   // `this` is bound to the Context instance
-  const token = this.application.user?.token;
-  if (token) {
-    request.headers.set('Authorization', `Bearer ${token}`);
+  const jwt = this.application.auth?.token;
+  if (jwt) {
+    request.headers.set('Authorization', `Bearer ${jwt}`);
   }
   return next();
 });
@@ -4548,7 +4110,7 @@ fetcher.use('response', async function(response, next) {
 // Pass fetcher to Router
 const router = Router({
   target: '#app',
-  context: { user: null },
+  context: { auth: null },
   fetcher
 });
 
@@ -4594,22 +4156,37 @@ class UserPage extends HTMLElement {
 <li>Adding custom headers (CSRF tokens, API keys, etc.)</li>
 <li>Request validation</li>
 </ul>
-<p><strong>Example - Authentication:</strong></p>
+<p><strong>Example - JWT Bearer Token:</strong></p>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">fetcher.use('request', function(request, next) {
-  const token = this.application.auth?.token;
-  if (token) {
-    request.headers.set('Authorization', `Bearer ${token}`);
+  const jwt = this.application.auth?.token; // &quot;eyJhbG...kpXVCJ9.eyJzdWI...I2MjB9.SflKx...sw5c&quot;
+  if (jwt) {
+    request.headers.set('Authorization', `Bearer ${jwt}`);
   }
   return next();
-});</snice-code-block>
-<p><strong>Example - Base URL:</strong></p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">fetcher.use('request', function(request, next) {
-  const url = new URL(request.url);
-  if (!url.hostname) {
-    // Relative URL, add base
-    const baseUrl = this.application.config?.apiBaseUrl || 'https://api.example.com';
-    const newRequest = new Request(`${baseUrl}${request.url}`, request);
-    return next(); // Note: modifying request in place doesn't work, would need to reconstruct
+});
+
+// Handle expired tokens — refresh or redirect to login
+fetcher.use('response', async function(response, next) {
+  if (response.status === 401) {
+    const refreshToken = this.application.auth?.refreshToken;
+    if (refreshToken) {
+      const res = await fetch('/api/auth/refresh', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refreshToken })
+      });
+      if (res.ok) {
+        const { token } = await res.json();
+        this.application.auth.token = token;
+        // Retry original request with new token
+        const retry = new Request(response.url, request);
+        retry.headers.set('Authorization', `Bearer ${token}`);
+        return fetch(retry);
+      }
+    }
+    this.application.auth = null;
+    this.application.router?.navigate('/login');
+    throw new Error('Session expired');
   }
   return next();
 });</snice-code-block>
@@ -4650,18 +4227,19 @@ class UserPage extends HTMLElement {
   return next();
 });</snice-code-block>
 <p><strong>Example - Performance Metrics:</strong></p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">const timings = new WeakMap();
+<snice-code-block language="typescript" grammar="grammars/typescript.json">const timings = new Map&lt;string, number&gt;();
 
 fetcher.use('request', function(request, next) {
-  timings.set(request, Date.now());
+  timings.set(request.url, Date.now());
   return next();
 });
 
 fetcher.use('response', async function(response, next) {
-  const request = timings.get(response); // Note: this won't work as response doesn't reference request
-  // Better approach: use a Map with URL as key
-  const duration = Date.now() - startTime;
-  console.log(`Request took ${duration}ms`);
+  const start = timings.get(response.url);
+  if (start) {
+    console.log(`${response.url} took ${Date.now() - start}ms`);
+    timings.delete(response.url);
+  }
   return next();
 });</snice-code-block>
 <h2 id="fetcher-accessing-context">Accessing Context</h2>
@@ -4729,22 +4307,20 @@ fetcher.use('response', async function(response, next) {
 <snice-code-block language="typescript" grammar="grammars/typescript.json">import { Router, ContextAwareFetcher } from 'snice';
 
 interface AppContext {
-  user?: {
-    token: string;
-    id: string;
-  };
-  config: {
-    apiBaseUrl: string;
+  auth?: {
+    token: string;      // JWT access token
+    refreshToken: string;
+    userId: string;
   };
 }
 
 const fetcher = new ContextAwareFetcher();
 
-// Add authentication token
+// Attach JWT to every request
 fetcher.use('request', function(request, next) {
-  const token = this.application.user?.token;
-  if (token) {
-    request.headers.set('Authorization', `Bearer ${token}`);
+  const jwt = this.application.auth?.token;
+  if (jwt) {
+    request.headers.set('Authorization', `Bearer ${jwt}`);
   }
   return next();
 });
@@ -4756,13 +4332,12 @@ fetcher.use('request', function(request, next) {
   return next();
 });
 
-// Handle errors globally
+// Handle 401 — attempt token refresh, then redirect on failure
 fetcher.use('response', async function(response, next) {
   if (response.status === 401) {
-    // Clear auth and redirect
-    this.application.user = undefined;
-    window.location.href = '/#/login';
-    throw new Error('Authentication required');
+    this.application.auth = undefined;
+    this.application.router?.navigate('/login');
+    throw new Error('Session expired');
   }
 
   if (response.status &gt;= 400) {
@@ -4774,19 +4349,9 @@ fetcher.use('response', async function(response, next) {
   return next();
 });
 
-// Log responses
-fetcher.use('response', async function(response, next) {
-  console.log(`[${this.navigation.route}] Response ${response.status}`);
-  return next();
-});
-
 const router = Router({
   target: '#app',
-  context: {
-    config: {
-      apiBaseUrl: 'https://api.example.com'
-    }
-  },
+  context: {},
   fetcher
 });
 
@@ -4799,22 +4364,12 @@ router.initialize();</snice-code-block>
 <li><code>ctx.fetch</code> is initialized once and reused</li>
 <li>Middleware can safely reference <code>this.application</code> and <code>this.navigation</code> as they update in place</li>
 </ul>
-<h3 id="fetcher-request-objects-are-immutable">Request Objects are Immutable</h3>
-<p>The <code>Request</code> object passed to middleware is immutable. To modify it, you need to create a new Request:</p>
+<h3 id="fetcher-modifying-request-headers">Modifying Request Headers</h3>
+<p>The <code>Request</code> object's <code>headers</code> property is mutable — you can call <code>request.headers.set()</code> directly in middleware:</p>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">fetcher.use('request', function(request, next) {
-  // This won't work - headers are read-only on Request
-  // request.headers.set('X-Custom', 'value');
-
-  // Instead, create a new Request
-  const newRequest = new Request(request, {
-    headers: new Headers(request.headers)
-  });
-  newRequest.headers.set('X-Custom', 'value');
-
-  // But this is complex - better to set headers before creating Request
+  request.headers.set('X-Custom', 'value');
   return next();
 });</snice-code-block>
-<p>In practice, it's better to set headers by modifying the <code>headers</code> property if it exists, or reconstructing the request entirely.</p>
 <h3 id="fetcher-no-fetcher-means-native-fetch">No Fetcher Means Native Fetch</h3>
 <p>If no <code>fetcher</code> is provided to the Router, <code>ctx.fetch</code> defaults to the native <code>fetch</code> function bound to the Context instance:</p>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">// No fetcher provided
@@ -4853,19 +4408,13 @@ interface Fetcher {
   use(type: 'response', middleware: ResponseMiddleware): void;
   create(ctx: Context): typeof globalThis.fetch;
 }</snice-code-block>
-<h2 id="fetcher-best-practices">Best Practices</h2>
-<ol>
-<li><strong>Configure middleware at startup</strong> - Don't add middleware inside pages or components, as this would add duplicate middleware on each navigation.</li>
-</ol>
-<ol>
-<li><strong>Keep middleware focused</strong> - Each middleware should do one thing well (auth, logging, error handling, etc.).</li>
-</ol>
-<ol>
-<li><strong>Use <code>this.application</code> for app state</strong> - Access user, config, and other app-wide state via the Context.</li>
-</ol>
-<ol>
-<li><strong>Clone responses if needed</strong> - If you need to read the response body in middleware, clone it first as streams can only be read once:</li>
-</ol>
+<h2 id="fetcher-notes">Notes</h2>
+<ul>
+<li><strong>Configure middleware at startup</strong> — don't add middleware inside pages, as it would duplicate on each navigation.</li>
+</ul>
+<ul>
+<li><strong>Clone responses before reading</strong> — streams can only be read once:</li>
+</ul>
 <p>   ```typescript</p>
 <p>   fetcher.use('response', async function(response, next) {</p>
 <p>     const clone = response.clone();</p>
@@ -4874,12 +4423,9 @@ interface Fetcher {
 <p>     return next(); // Original response still has readable body</p>
 <p>   });</p>
 <p>   ```</p>
-<ol>
-<li><strong>Handle errors gracefully</strong> - Always consider what should happen when requests fail.</li>
-</ol>
-<ol>
-<li><strong>Call <code>next()</code></strong> - Every middleware must call and return <code>next()</code> to continue the chain.</li>
-</ol>
+<ul>
+<li><strong>Always call <code>next()</code></strong> — every middleware must call and return <code>next()</code> to continue the chain.</li>
+</ul>
 </section>
 <section class="doc-file" id="placards">
 <h1 id="placards-placards-api">Placards API</h1>
@@ -5018,8 +4564,9 @@ class DashboardPage extends HTMLElement {
 <h3 id="placards-dynamic-visibility">Dynamic Visibility</h3>
 <p><strong><code>visibleOn</code></strong> (optional)</p>
 <ul>
-<li>Guard functions that determine if the page should appear in navigation</li>
-<li>Reuses the same guard system as route protection</li>
+<li>Guard functions for layouts to evaluate when building navigation menus</li>
+<li>The router passes all placards to layouts unfiltered — layouts must check <code>visibleOn</code> themselves</li>
+<li>Reuses the same guard type as route protection</li>
 </ul>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">visibleOn: [isAuthenticated, hasAdminRole]</snice-code-block>
 <h3 id="placards-extensibility">Extensibility</h3>
@@ -5227,19 +4774,6 @@ class BreadcrumbLayout extends HTMLElement implements Layout {
     return trail;
   }
 }</snice-code-block>
-<h2 id="placards-best-practices">Best Practices</h2>
-<ol>
-<li><strong>Use consistent naming</strong>: Use kebab-case for placard names</li>
-<li><strong>Provide helpful icons</strong>: Visual indicators improve navigation UX</li>
-<li><strong>Set meaningful order</strong>: Lower numbers appear first in navigation</li>
-<li><strong>Use groups wisely</strong>: Group related pages for better organization</li>
-<li><strong>Define search terms</strong>: Help users discover features through search</li>
-<li><strong>Leverage guards</strong>: Use visibleOn to show/hide navigation based on permissions</li>
-<li><strong>Explicit when needed</strong>: Use explicit breadcrumbs for complex hierarchies</li>
-<li><strong>Keep titles short</strong>: Navigation labels should be concise</li>
-<li><strong>Provide tooltips</strong>: Add helpful context for ambiguous page names</li>
-<li><strong>Use parent relationships</strong>: Build hierarchical navigation automatically</li>
-</ol>
 </section>
 <section class="doc-file" id="code-block">
 <h1 id="code-block-code-block-component-documentation">Code Block Component Documentation</h1>

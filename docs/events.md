@@ -1,10 +1,10 @@
 # Events API Documentation
 
-Event handling in Snice provides two powerful approaches: **template event syntax** and the **`@on` decorator** (fully restored from v2.5.4!). The `@on` decorator now works in **both elements AND controllers** with full event delegation, keyboard modifiers, debounce/throttle, and more. Additionally, the `@dispatch` decorator enables automatic custom event dispatching.
+Event handling in Snice provides two powerful approaches: **template event syntax** and the **`@on` decorator**. The `@on` decorator works in **both elements AND controllers** with full event delegation, keyboard modifiers, debounce/throttle, and more. Additionally, the `@dispatch` decorator enables automatic custom event dispatching.
 
 ## Table of Contents
 - [Template Event Syntax](#template-event-syntax)
-- [@on Decorator (v2.5.4 RESTORED!)](#on-decorator-v254-restored)
+- [@on Decorator](#on-decorator)
 - [@dispatch Decorator](#dispatch-decorator)
 - [Custom Events](#custom-events)
 - [Event Delegation](#event-delegation)
@@ -247,9 +247,9 @@ class TaskList extends HTMLElement {
 }
 ```
 
-## @on Decorator (v2.5.4 RESTORED!)
+## @on Decorator
 
-The `@on` decorator is **fully restored from v2.5.4** and now works in **both elements AND controllers**! It provides powerful event delegation, keyboard modifiers, debounce/throttle, and automatic event handling features.
+The `@on` decorator works in **both elements AND controllers**. It provides powerful event delegation, keyboard modifiers, debounce/throttle, and automatic event handling features.
 
 **Use `@on` when you need:**
 - Event delegation with CSS selectors
@@ -378,12 +378,9 @@ interface OnOptions {
   preventDefault?: boolean;    // Automatically call preventDefault on the event
   stopPropagation?: boolean;   // Automatically call stopPropagation on the event
 
-  // Timing controls (v3.0.0 enhancements!)
+  // Timing controls
   debounce?: number;           // Debounce the handler by specified milliseconds
   throttle?: number;           // Throttle the handler by specified milliseconds
-
-  // Event delegation
-  target?: string;             // CSS selector to target specific elements within shadow root
 }
 ```
 
@@ -437,8 +434,8 @@ While template syntax is preferred, `@on` can also be used in elements:
 ```typescript
 import { element, on, render, html } from 'snice';
 
-@element('legacy-button')
-class LegacyButton extends HTMLElement {
+@element('my-button')
+class MyButton extends HTMLElement {
   @render()
   renderContent() {
     return html`<button class="btn">Click me</button>`;
@@ -505,6 +502,8 @@ input.addEventListener('value-changed', (e: CustomEvent) => {
 
 ### Event Options
 
+Events dispatched by `@dispatch` default to `bubbles: true` and `composed: true` (crosses shadow DOM boundaries). Override if needed:
+
 ```typescript
 @element('status-indicator')
 class StatusIndicator extends HTMLElement {
@@ -513,7 +512,8 @@ class StatusIndicator extends HTMLElement {
     return html`<div>Status</div>`;
   }
 
-  @dispatch('status-changed', { bubbles: true, composed: true })
+  // Defaults: bubbles: true, composed: true
+  @dispatch('status-changed')
   updateStatus(status: string) {
     return {
       status,
@@ -615,8 +615,8 @@ class TableController implements IController {
   // Single event listener handles all rows
   @on('click', 'tr')
   handleRowClick(event: MouseEvent) {
-    const row = event.currentTarget as HTMLTableRowElement;
-    console.log('Row clicked:', row.dataset.id);
+    const row = (event.target as HTMLElement).closest('tr');
+    console.log('Row clicked:', row?.dataset.id);
   }
 
   // Handle button clicks in cells
@@ -754,54 +754,4 @@ class KeyboardController implements IController {
 }
 ```
 
-## Best Practices
 
-### For Elements
-
-1. **Prefer template syntax**: Use `@event=${handler}` in templates
-2. **Use arrow functions for parameters**: `@click=${() => this.delete(id)}`
-3. **Handle events at appropriate level**: Use event delegation for dynamic content
-4. **Prevent default when needed**: Call `e.preventDefault()` in handlers
-5. **Use keyboard shortcuts**: Leverage `@keydown.ctrl+s` syntax
-
-### For Controllers
-
-1. **Use @on decorator**: Controllers should use `@on` for event handling
-2. **Leverage event delegation**: Use selectors to handle dynamic content
-3. **Throttle/debounce high-frequency events**: Use `{ throttle }` or `{ debounce }` options
-4. **Clean up automatically**: Event listeners are cleaned up on detach
-5. **Handle keyboard shortcuts**: Use `@on('keydown:Ctrl+S')` syntax
-
-### General
-
-1. **Type your events**: Use TypeScript event types for type safety
-2. **Stop propagation carefully**: Only use `stopPropagation()` when necessary
-3. **Use custom events**: Dispatch custom events for component communication
-4. **Compose events**: Use `{ composed: true }` for cross-shadow-DOM events
-5. **Test event handlers**: Write tests for all event handling logic
-
-## Event Types Reference
-
-**Mouse Events:**
-- `click`, `dblclick`, `mousedown`, `mouseup`
-- `mouseenter`, `mouseleave`, `mousemove`, `mouseover`, `mouseout`
-- `contextmenu`
-
-**Keyboard Events:**
-- `keydown`, `keyup`, `keypress`
-
-**Form Events:**
-- `input`, `change`, `submit`, `reset`
-- `focus`, `blur`, `focusin`, `focusout`
-
-**Drag Events:**
-- `drag`, `dragstart`, `dragend`
-- `dragenter`, `dragover`, `dragleave`, `drop`
-
-**Touch Events:**
-- `touchstart`, `touchmove`, `touchend`, `touchcancel`
-
-**Other Events:**
-- `scroll`, `resize`, `load`, `error`
-- `animationstart`, `animationend`, `animationiteration`
-- `transitionstart`, `transitionend`

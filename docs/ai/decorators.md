@@ -9,10 +9,10 @@
 ## Rendering
 - `@render()` - Template method, returns `html\`...\``
 - `@render({ once: true })` - Imperative mode: render once, update via `@watch` + `@query`
-- `@styles()` - Scoped CSS, returns `css\`...\``
+- `@styles()` - Scoped CSS, returns `css\`...\``. Only one per element (last wins).
 
 ## Properties
-- `@property({ type?, attribute?, converter?, hasChanged? })` - Reactive, syncs attrs
+- `@property({ type?, attribute?: string|boolean, converter?, hasChanged? })` - Reactive, syncs attrs. Initial defaults NOT reflected to attrs.
 - `@watch('propName')` - React to changes: `(oldVal, newVal, propertyName) => void`
 
 ## Lifecycle

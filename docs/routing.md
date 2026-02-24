@@ -32,14 +32,14 @@ const { page, initialize, navigate } = router;
 ### Router Options
 
 ```typescript
-interface RouterOptions<T = any> {
+interface RouterOptions {
   target: string;                    // Target element selector
   type: 'hash' | 'pushstate';        // Routing type
   window?: Window;                   // Override window object (for testing)
   document?: Document;               // Override document object (for testing)
   transition?: Transition;           // Global transition config
   layout?: string;                   // Default layout for all pages
-  context?: T;                       // Router context object (shared state)
+  context?: any;                     // Router context object (shared state)
   fetcher?: Fetcher;                 // Optional fetch middleware (see docs/fetcher.md)
 }
 ```
@@ -208,7 +208,7 @@ interface Context {
   application: AppContext;  // Your router context (e.g., { user, theme, config })
   navigation: {
     placards: Placard[];           // All page placards
-    route: string;                  // Current route name
+    route: string;                  // Current path (e.g. '/users/123')
     params: Record<string, string>; // Route parameters
   };
   fetch: typeof globalThis.fetch;  // Fetch function with middleware support
@@ -273,12 +273,13 @@ class SettingsPage extends HTMLElement {
 ### @page Decorator Options
 
 ```typescript
-interface PageOptions<T = any> {
+interface PageOptions {
   tag: string;                       // Custom element tag name
   routes: string[];                  // Route patterns
   transition?: Transition;           // Page-specific transition
-  guards?: Guard<T> | Guard<T>[];    // Route guards
-  placard?: Placard<T>;              // Page metadata
+  guards?: Guard | Guard[];          // Route guards
+  layout?: string | false;           // Layout tag, or false to disable
+  placard?: Placard | ((ctx: AppContext) => Placard);  // Page metadata
 }
 ```
 
@@ -455,25 +456,20 @@ class CommentPage extends HTMLElement {
 
 ### Query Parameters
 
-Query parameters are not automatically parsed but can be accessed via URL:
+Define query parameters directly in the route pattern — they are extracted as route params automatically:
 
 ```typescript
 @page({
   tag: 'search-page',
-  routes: ['/search']
+  routes: ['/search?q=:query']
 })
 class SearchPage extends HTMLElement {
   @property()
   query = '';
 
-  @property()
-  page = 1;
-
-  @ready()
-  parseQueryParams() {
-    const params = new URLSearchParams(window.location.search);
-    this.query = params.get('q') || '';
-    this.page = parseInt(params.get('page') || '1');
+  @context()
+  handleContext(ctx: Context) {
+    this.query = ctx.navigation.params.query || '';
   }
 
   @render()
@@ -481,7 +477,6 @@ class SearchPage extends HTMLElement {
     return html`
       <div>
         <h1>Search Results for: ${this.query}</h1>
-        <p>Page: ${this.page}</p>
       </div>
     `;
   }
@@ -493,7 +488,7 @@ class SearchPage extends HTMLElement {
 ### Global Transitions
 
 ```typescript
-import { fadeTransition } from 'snice';
+import { fadeTransition } from 'snice/transitions';
 
 const router = Router({
   target: '#app',
@@ -505,7 +500,7 @@ const router = Router({
 ### Page-Specific Transitions
 
 ```typescript
-import { slideTransition } from 'snice';
+import { slideTransition } from 'snice/transitions';
 
 @page({
   tag: 'about-page',
@@ -526,49 +521,35 @@ class AboutPage extends HTMLElement {
 import {
   fadeTransition,
   slideTransition,
-  slideLeftTransition,
   slideRightTransition,
   slideUpTransition,
   slideDownTransition,
-  scaleTransition
-} from 'snice';
+  scaleTransition,
+  rotateTransition,
+  flipTransition,
+  zoomTransition,
+  noneTransition
+} from 'snice/transitions';
 ```
 
 ### Custom Transitions
 
+Transitions use inline CSS property strings for `out` (leaving) and `in` (entering) states:
+
 ```typescript
-import { Transition } from 'snice';
+import { Transition } from 'snice/transitions';
 
 const customTransition: Transition = {
   name: 'custom',
-  duration: 500,
-  enterClass: 'page-enter',
-  enterActiveClass: 'page-enter-active',
-  leaveClass: 'page-leave',
-  leaveActiveClass: 'page-leave-active'
+  outDuration: 300,
+  inDuration: 300,
+  out: 'opacity: 0; transform: translateY(-20px)',
+  in: 'opacity: 0; transform: translateY(20px)',
+  mode: 'sequential'  // or 'simultaneous'
 };
-
-// CSS for custom transition
-/*
-.page-enter {
-  opacity: 0;
-  transform: translateY(20px);
-}
-
-.page-enter-active {
-  transition: all 500ms ease-out;
-}
-
-.page-leave {
-  opacity: 1;
-}
-
-.page-leave-active {
-  opacity: 0;
-  transition: all 500ms ease-in;
-}
-*/
 ```
+
+The `out` string is applied to the leaving page, `in` string is the starting state of the entering page (which then transitions to its natural state).
 
 ## Route Guards
 
@@ -579,7 +560,7 @@ Guards protect routes and can redirect unauthorized access:
 ```typescript
 import { Guard } from 'snice';
 
-const isAuthenticated: Guard<AppContext> = (ctx) => {
+const isAuthenticated: Guard<AppContext> = (ctx, params) => {
   return ctx.getUser() !== null;
 };
 
@@ -599,7 +580,7 @@ class DashboardPage extends HTMLElement {
 ### Multiple Guards
 
 ```typescript
-const hasAdminRole: Guard<AppContext> = (ctx) => {
+const hasAdminRole: Guard<AppContext> = (ctx, params) => {
   const user = ctx.getUser();
   return user?.role === 'admin';
 };
@@ -619,33 +600,26 @@ class AdminPage extends HTMLElement {
 
 ### Guard with Redirect
 
+When a guard returns `false`, the router renders the `/403` page (if registered) or a default 403 message. Guards can also trigger side effects like redirects:
+
 ```typescript
-const requiresAuth: Guard<AppContext> = (ctx) => {
-  const isAuth = ctx.getUser() !== null;
-
-  if (!isAuth) {
-    // Redirect to login page
-    setTimeout(() => {
-      window.location.hash = '#/login';
-    }, 0);
+const isAuthenticated: Guard<AppContext> = (ctx, params) => {
+  if (!ctx.getUser()) {
+    window.location.hash = '#/login';
+    return false;
   }
-
-  return isAuth;
+  return true;
 };
 ```
 
-### Async Guards
+### Permission Guard
+
+Guards are synchronous — pre-load permissions into context before navigating:
 
 ```typescript
-const checkPermission: Guard<AppContext> = async (ctx) => {
+const hasAdminAccess: Guard<AppContext> = (ctx, params) => {
   const user = ctx.getUser();
-  if (!user) return false;
-
-  // Check with API
-  const response = await fetch(`/api/permissions/${user.id}`);
-  const permissions = await response.json();
-
-  return permissions.includes('access_dashboard');
+  return user?.role === 'admin';
 };
 ```
 
@@ -781,7 +755,7 @@ const router = Router({
 @page({
   tag: 'fullscreen-page',
   routes: ['/fullscreen'],
-  layout: null  // Disable layout for this page
+  layout: false  // Disable layout for this page
 })
 class FullscreenPage extends HTMLElement {
   @render()
@@ -985,36 +959,10 @@ class NotFoundPage extends HTMLElement {
   @render()
   renderContent() {
     return html`
-      <div class="not-found">
+      <div>
         <h1>404 - Page Not Found</h1>
-        <p>The page you're looking for doesn't exist.</p>
         <a href="#/">Go Home</a>
       </div>
-    `;
-  }
-
-  @styles()
-  errorStyles() {
-    return css`
-      .not-found {
-        text-align: center;
-        padding: 4rem;
-      }
-
-      h1 {
-        color: #e74c3c;
-        font-size: 3rem;
-      }
-
-      a {
-        display: inline-block;
-        margin-top: 2rem;
-        padding: 0.5rem 2rem;
-        background: #3498db;
-        color: white;
-        text-decoration: none;
-        border-radius: 4px;
-      }
     `;
   }
 }
@@ -1029,11 +977,6 @@ class AppContext {
 
   setUser(user: User | null) {
     this.user = user;
-
-    // Redirect if logged out
-    if (!user && window.location.hash.includes('/dashboard')) {
-      window.location.hash = '#/login';
-    }
   }
 
   getUser() {
@@ -1045,8 +988,8 @@ class AppContext {
   }
 }
 
-// Auth guard
-const isAuthenticated: Guard<AppContext> = (ctx) => {
+// Auth guard — redirect to login if not authenticated
+const isAuthenticated: Guard<AppContext> = (ctx, params) => {
   if (!ctx.isAuthenticated()) {
     window.location.hash = '#/login';
     return false;
@@ -1126,37 +1069,24 @@ class LoginPage extends HTMLElement {
 }
 ```
 
-## Best Practices
-
-1. **Use semantic routes**: `/users/123` instead of `/page?id=123`
-2. **Leverage route parameters**: Automatically mapped to properties
-3. **Use guards for protection**: Keep auth logic separate from pages
-4. **Implement transitions**: Smooth user experience between pages
-5. **Use layouts efficiently**: Share common UI without duplication
-6. **Handle 404s**: Always include a catch-all route
-7. **Use context for shared state**: Avoid prop drilling
-8. **Lazy load when needed**: Improve initial load time
-9. **Type your guards**: Use TypeScript generics for context
-10. **Test navigation**: Ensure all routes work correctly
 
 ## Router API Reference
 
 ### Router()
 
 ```typescript
-function Router<T = any>(options: RouterOptions<T>): {
-  page: PropertyDecorator;
-  navigate: (path: string) => void;
+function Router(options: RouterOptions): {
+  page: (pageOptions: PageOptions) => ClassDecorator;
   initialize: () => void;
-  getCurrentRoute: () => string;
-  getRouteParams: () => Record<string, string>;
+  navigate: (path: string) => Promise<void>;
+  register: (route: string, tag: string, transition?: Transition, guards?: Guard | Guard[]) => void;
 }
 ```
 
 ### navigate()
 
 ```typescript
-navigate(path: string): void
+navigate(path: string): Promise<void>
 ```
 
 Navigates to the specified path. Uses hash (#) or pushstate depending on router type.
@@ -1169,18 +1099,17 @@ initialize(): void
 
 Initializes the router and starts listening for route changes. Must be called after all pages are defined.
 
-### getCurrentRoute()
+### register()
 
 ```typescript
-getCurrentRoute(): string
+register(
+  route: string,
+  tag: string,
+  transition?: Transition,
+  guards?: Guard | Guard[],
+  layout?: string | false,
+  placard?: Placard | ((ctx: AppContext) => Placard)
+): void
 ```
 
-Returns the current route path.
-
-### getRouteParams()
-
-```typescript
-getRouteParams(): Record<string, string>
-```
-
-Returns current route parameters as an object.
+Manually register a route without using the `@page` decorator.

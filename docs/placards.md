@@ -151,8 +151,9 @@ parent: 'users'  // Child of the 'users' page
 ### Dynamic Visibility
 
 **`visibleOn`** (optional)
-- Guard functions that determine if the page should appear in navigation
-- Reuses the same guard system as route protection
+- Guard functions for layouts to evaluate when building navigation menus
+- The router passes all placards to layouts unfiltered — layouts must check `visibleOn` themselves
+- Reuses the same guard type as route protection
 
 ```typescript
 visibleOn: [isAuthenticated, hasAdminRole]
@@ -387,15 +388,3 @@ class BreadcrumbLayout extends HTMLElement implements Layout {
 }
 ```
 
-## Best Practices
-
-1. **Use consistent naming**: Use kebab-case for placard names
-2. **Provide helpful icons**: Visual indicators improve navigation UX
-3. **Set meaningful order**: Lower numbers appear first in navigation
-4. **Use groups wisely**: Group related pages for better organization
-5. **Define search terms**: Help users discover features through search
-6. **Leverage guards**: Use visibleOn to show/hide navigation based on permissions
-7. **Explicit when needed**: Use explicit breadcrumbs for complex hierarchies
-8. **Keep titles short**: Navigation labels should be concise
-9. **Provide tooltips**: Add helpful context for ambiguous page names
-10. **Use parent relationships**: Build hierarchical navigation automatically

@@ -336,35 +336,24 @@ class ViewportController implements IController {
 
 ## Options
 
-### Common Options
-
-All observers support these options:
+All observer types share a single options interface. Pass only the fields relevant to the observer type you're using:
 
 ```typescript
 interface ObserveOptions {
-  throttle?: number;  // Throttle callbacks by milliseconds
-}
-```
-
-### Specific Options
-
-```typescript
-// Intersection Observer
-interface IntersectionOptions extends ObserveOptions {
-  threshold?: number | number[];  // 0-1 visibility threshold
+  // Intersection Observer
+  threshold?: number | number[];  // 0-1 visibility percentage
   rootMargin?: string;            // Margin around root
   root?: Element | null;          // Viewport element
-}
 
-// Resize Observer
-interface ResizeOptions extends ObserveOptions {
+  // Resize Observer
   box?: 'content-box' | 'border-box';  // Box model to observe
-}
 
-// Mutation Observer
-interface MutationOptions extends ObserveOptions {
-  subtree?: boolean;     // Observe descendants
-  maxDepth?: number;     // Limit subtree depth
+  // Mutation Observer
+  subtree?: boolean;     // Observe descendants (use with caution)
+  maxDepth?: number;     // Safety limit for subtree depth
+
+  // All observers
+  throttle?: number;     // Throttle callbacks by milliseconds
 }
 ```
 
@@ -547,16 +536,11 @@ class Dashboard extends HTMLElement {
 }
 ```
 
-### Form Auto-Save
+### Dynamic Form Fields
 
 ```typescript
-@element('auto-save-form')
-class AutoSaveForm extends HTMLElement {
-  @observe('mutation:attributes:value', 'input, textarea', { throttle: 1000 })
-  handleInputChange(mutations: MutationRecord[]) {
-    this.saveFormData();
-  }
-
+@element('dynamic-form')
+class DynamicForm extends HTMLElement {
   @observe('mutation:childList', '.dynamic-fields')
   handleFieldsAdded(mutations: MutationRecord[]) {
     mutations.forEach(mutation => {
@@ -575,10 +559,6 @@ class AutoSaveForm extends HTMLElement {
         <div class="dynamic-fields"></div>
       </form>
     `;
-  }
-
-  saveFormData() {
-    // Save logic
   }
 
   initializeField(field: Element) {

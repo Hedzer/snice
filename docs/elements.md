@@ -10,7 +10,7 @@ Elements are the core building blocks of Snice components. They define custom HT
 - [Queries](#queries)
 - [Styling](#styling)
 - [Template Events](#template-events)
-- [Advanced Examples](#advanced-examples)
+- [Advanced Examples](#advanced-examples) (Watch, Context, Conditionals)
 
 ## Basic Usage
 
@@ -132,7 +132,7 @@ class UserCard extends HTMLElement {
   }
 
   @watch('name', 'role')
-  update() {
+  update(oldVal: any, newVal: any, prop: string) {
     if (!this.$name) return;
     this.$name.textContent = this.name;
     this.$role.textContent = this.role;
@@ -195,21 +195,14 @@ class StyledCard extends HTMLElement {
 }
 ```
 
-**Multiple Style Methods:**
+**Note:** Only one `@styles()` method is supported per element. If multiple are declared, only the last one is used. Combine all styles in a single method:
+
 ```typescript
 @styles()
-baseStyles() {
+componentStyles() {
   return css`
     :host { display: block; }
-    // ...
-  `;
-}
-
-@styles()
-themeStyles() {
-  return css`
     .card { background: var(--bg-color); }
-    // ...
   `;
 }
 ```
@@ -341,7 +334,7 @@ Usage:
 ```typescript
 interface PropertyOptions {
   type?: String | Number | Boolean | Array | Object | Date | BigInt | SimpleArray;
-  attribute?: string;        // Custom attribute name
+  attribute?: string | boolean;  // Custom attribute name, or false to disable attribute sync
   converter?: PropertyConverter;  // Custom converter
   hasChanged?: (value: any, oldValue: any) => boolean;
 }
@@ -351,9 +344,11 @@ interface PropertyOptions {
 
 All properties automatically:
 - Read from DOM attributes when present
-- Reflect changes to corresponding attributes
+- Reflect property setter changes to corresponding attributes
 - Convert between string attributes and typed properties
 - Trigger re-renders when changed
+
+**Note:** Initial field values (defaults like `name = 'Anonymous'`) are NOT reflected to attributes. Only changes made via the property setter are reflected. Set `attribute: false` to disable attribute sync entirely.
 
 ```typescript
 @element('reflected-props')
@@ -835,7 +830,7 @@ class RegistrationForm extends HTMLElement {
 
 ### Watch Decorator
 
-Use `@watch` to react to property changes:
+Use `@watch` to react to property changes. Handlers receive three arguments: `(oldValue, newValue, propertyName)`.
 
 ```typescript
 @element('reactive-component')
@@ -847,8 +842,8 @@ class ReactiveComponent extends HTMLElement {
   score = 0;
 
   @watch('userName')
-  onUserNameChange(oldVal: string, newVal: string) {
-    console.log(`Name changed from ${oldVal} to ${newVal}`);
+  onUserNameChange(oldVal: string, newVal: string, prop: string) {
+    console.log(`${prop} changed from ${oldVal} to ${newVal}`);
   }
 
   @watch('score')
@@ -856,6 +851,12 @@ class ReactiveComponent extends HTMLElement {
     if (newVal > 100) {
       console.log('High score achieved!');
     }
+  }
+
+  // Wildcard watcher — fires on any @property change
+  @watch('*')
+  onAnyChange(oldVal: any, newVal: any, prop: string) {
+    console.log(`${prop}: ${oldVal} → ${newVal}`);
   }
 
   @render()
@@ -869,6 +870,57 @@ class ReactiveComponent extends HTMLElement {
   }
 }
 ```
+
+### @context() Decorator
+
+Receive router context updates. The decorated method is called whenever the router context changes (navigation, app context update, etc.):
+
+```typescript
+import { element, context, render, html } from 'snice';
+import type { Context } from 'snice';
+
+@element('nav-bar')
+class NavBar extends HTMLElement {
+  private placards: any[] = [];
+  private currentRoute = '';
+
+  @context()
+  onContextUpdate(ctx: Context) {
+    this.placards = ctx.navigation.placards;
+    this.currentRoute = ctx.navigation.route;
+  }
+
+  @render()
+  renderContent() {
+    return html`
+      <nav>
+        ${this.placards
+          .filter(p => p.show !== false)
+          .map(p => html`
+            <a href="#/${p.name}" class="${this.currentRoute === p.name ? 'active' : ''}">
+              ${p.icon} ${p.title}
+            </a>
+          `)}
+      </nav>
+    `;
+  }
+}
+```
+
+**Context Options:**
+
+```typescript
+@context({ debounce: 300 })   // Wait 300ms after last change
+@context({ throttle: 500 })   // At most once per 500ms
+@context({ once: true })       // Only called once, then auto-unregisters
+```
+
+The `Context` object provides:
+- `ctx.application` — App context (theme, auth, config, etc.)
+- `ctx.navigation.route` — Current route path
+- `ctx.navigation.params` — Route parameters
+- `ctx.navigation.placards` — All registered page placards
+- `ctx.fetch` — Fetch with middleware support (see Fetcher docs)
 
 ### Conditional Rendering
 
@@ -898,13 +950,4 @@ class ConditionalContent extends HTMLElement {
 }
 ```
 
-## Best Practices
-
-1. **Use @render() for templates**: Always return `html\`...\`` tagged templates
-2. **Use @styles() for CSS**: Always return `css\`...\`` tagged templates
-3. **Leverage auto-rendering**: Properties automatically trigger re-renders
-4. **Use template events**: Handle events with `@event=${handler}` in templates
-5. **Clean up resources**: Use @dispose() for cleanup tasks
-6. **Type your queries**: Use proper TypeScript types for queried elements
-7. **Handle errors**: Wrap async operations in try-catch blocks
 

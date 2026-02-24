@@ -22,12 +22,12 @@ import { Router, ContextAwareFetcher } from 'snice';
 // Create a fetcher instance
 const fetcher = new ContextAwareFetcher();
 
-// Add request middleware (runs before fetch)
+// Attach JWT to outgoing requests
 fetcher.use('request', function(request, next) {
   // `this` is bound to the Context instance
-  const token = this.application.user?.token;
-  if (token) {
-    request.headers.set('Authorization', `Bearer ${token}`);
+  const jwt = this.application.auth?.token;
+  if (jwt) {
+    request.headers.set('Authorization', `Bearer ${jwt}`);
   }
   return next();
 });
@@ -43,7 +43,7 @@ fetcher.use('response', async function(response, next) {
 // Pass fetcher to Router
 const router = Router({
   target: '#app',
-  context: { user: null },
+  context: { auth: null },
   fetcher
 });
 
@@ -101,26 +101,38 @@ type RequestMiddleware = (
 - Adding custom headers (CSRF tokens, API keys, etc.)
 - Request validation
 
-**Example - Authentication:**
+**Example - JWT Bearer Token:**
 ```typescript
 fetcher.use('request', function(request, next) {
-  const token = this.application.auth?.token;
-  if (token) {
-    request.headers.set('Authorization', `Bearer ${token}`);
+  const jwt = this.application.auth?.token; // "eyJhbG...kpXVCJ9.eyJzdWI...I2MjB9.SflKx...sw5c"
+  if (jwt) {
+    request.headers.set('Authorization', `Bearer ${jwt}`);
   }
   return next();
 });
-```
 
-**Example - Base URL:**
-```typescript
-fetcher.use('request', function(request, next) {
-  const url = new URL(request.url);
-  if (!url.hostname) {
-    // Relative URL, add base
-    const baseUrl = this.application.config?.apiBaseUrl || 'https://api.example.com';
-    const newRequest = new Request(`${baseUrl}${request.url}`, request);
-    return next(); // Note: modifying request in place doesn't work, would need to reconstruct
+// Handle expired tokens — refresh or redirect to login
+fetcher.use('response', async function(response, next) {
+  if (response.status === 401) {
+    const refreshToken = this.application.auth?.refreshToken;
+    if (refreshToken) {
+      const res = await fetch('/api/auth/refresh', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refreshToken })
+      });
+      if (res.ok) {
+        const { token } = await res.json();
+        this.application.auth.token = token;
+        // Retry original request with new token
+        const retry = new Request(response.url, request);
+        retry.headers.set('Authorization', `Bearer ${token}`);
+        return fetch(retry);
+      }
+    }
+    this.application.auth = null;
+    this.application.router?.navigate('/login');
+    throw new Error('Session expired');
   }
   return next();
 });
@@ -177,18 +189,19 @@ fetcher.use('response', async function(response, next) {
 
 **Example - Performance Metrics:**
 ```typescript
-const timings = new WeakMap();
+const timings = new Map<string, number>();
 
 fetcher.use('request', function(request, next) {
-  timings.set(request, Date.now());
+  timings.set(request.url, Date.now());
   return next();
 });
 
 fetcher.use('response', async function(response, next) {
-  const request = timings.get(response); // Note: this won't work as response doesn't reference request
-  // Better approach: use a Map with URL as key
-  const duration = Date.now() - startTime;
-  console.log(`Request took ${duration}ms`);
+  const start = timings.get(response.url);
+  if (start) {
+    console.log(`${response.url} took ${Date.now() - start}ms`);
+    timings.delete(response.url);
+  }
   return next();
 });
 ```
@@ -269,22 +282,20 @@ Here's a complete example with authentication, error handling, and logging:
 import { Router, ContextAwareFetcher } from 'snice';
 
 interface AppContext {
-  user?: {
-    token: string;
-    id: string;
-  };
-  config: {
-    apiBaseUrl: string;
+  auth?: {
+    token: string;      // JWT access token
+    refreshToken: string;
+    userId: string;
   };
 }
 
 const fetcher = new ContextAwareFetcher();
 
-// Add authentication token
+// Attach JWT to every request
 fetcher.use('request', function(request, next) {
-  const token = this.application.user?.token;
-  if (token) {
-    request.headers.set('Authorization', `Bearer ${token}`);
+  const jwt = this.application.auth?.token;
+  if (jwt) {
+    request.headers.set('Authorization', `Bearer ${jwt}`);
   }
   return next();
 });
@@ -296,13 +307,12 @@ fetcher.use('request', function(request, next) {
   return next();
 });
 
-// Handle errors globally
+// Handle 401 — attempt token refresh, then redirect on failure
 fetcher.use('response', async function(response, next) {
   if (response.status === 401) {
-    // Clear auth and redirect
-    this.application.user = undefined;
-    window.location.href = '/#/login';
-    throw new Error('Authentication required');
+    this.application.auth = undefined;
+    this.application.router?.navigate('/login');
+    throw new Error('Session expired');
   }
 
   if (response.status >= 400) {
@@ -314,19 +324,9 @@ fetcher.use('response', async function(response, next) {
   return next();
 });
 
-// Log responses
-fetcher.use('response', async function(response, next) {
-  console.log(`[${this.navigation.route}] Response ${response.status}`);
-  return next();
-});
-
 const router = Router({
   target: '#app',
-  context: {
-    config: {
-      apiBaseUrl: 'https://api.example.com'
-    }
-  },
+  context: {},
   fetcher
 });
 
@@ -343,27 +343,16 @@ The `Context` instance is created once per Router and persists for the entire ap
 - `ctx.fetch` is initialized once and reused
 - Middleware can safely reference `this.application` and `this.navigation` as they update in place
 
-### Request Objects are Immutable
+### Modifying Request Headers
 
-The `Request` object passed to middleware is immutable. To modify it, you need to create a new Request:
+The `Request` object's `headers` property is mutable — you can call `request.headers.set()` directly in middleware:
 
 ```typescript
 fetcher.use('request', function(request, next) {
-  // This won't work - headers are read-only on Request
-  // request.headers.set('X-Custom', 'value');
-
-  // Instead, create a new Request
-  const newRequest = new Request(request, {
-    headers: new Headers(request.headers)
-  });
-  newRequest.headers.set('X-Custom', 'value');
-
-  // But this is complex - better to set headers before creating Request
+  request.headers.set('X-Custom', 'value');
   return next();
 });
 ```
-
-In practice, it's better to set headers by modifying the `headers` property if it exists, or reconstructing the request entirely.
 
 ### No Fetcher Means Native Fetch
 
@@ -424,15 +413,11 @@ interface Fetcher {
 }
 ```
 
-## Best Practices
+## Notes
 
-1. **Configure middleware at startup** - Don't add middleware inside pages or components, as this would add duplicate middleware on each navigation.
+- **Configure middleware at startup** — don't add middleware inside pages, as it would duplicate on each navigation.
 
-2. **Keep middleware focused** - Each middleware should do one thing well (auth, logging, error handling, etc.).
-
-3. **Use `this.application` for app state** - Access user, config, and other app-wide state via the Context.
-
-4. **Clone responses if needed** - If you need to read the response body in middleware, clone it first as streams can only be read once:
+- **Clone responses before reading** — streams can only be read once:
    ```typescript
    fetcher.use('response', async function(response, next) {
      const clone = response.clone();
@@ -442,6 +427,4 @@ interface Fetcher {
    });
    ```
 
-5. **Handle errors gracefully** - Always consider what should happen when requests fail.
-
-6. **Call `next()`** - Every middleware must call and return `next()` to continue the chain.
+- **Always call `next()`** — every middleware must call and return `next()` to continue the chain.

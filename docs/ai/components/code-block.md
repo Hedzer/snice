@@ -44,7 +44,7 @@ Controls how grammar JSON is loaded when `grammar` is a URL string.
 - **`virtual`** — Uses `@request/@respond` pattern (`snice/code-block/load-grammar`). Requires a `@respond` handler.
 - **`event`** — Dispatches `grammar-request` CustomEvent with `{ url, language, codeBlock }` detail. Listener calls `codeBlock.setGrammar()` to provide grammar.
 
-**Breaking change:** Anyone relying on `@respond('snice/code-block/load-grammar')` must add `fetch-mode="virtual"` to their code blocks. Default was previously virtual; now native.
+**Note:** If using `@respond('snice/code-block/load-grammar')`, add `fetch-mode="virtual"`. Default is `native`.
 
 ### Native (default)
 

@@ -41,9 +41,9 @@ interface RespondOptions {
   throttle?: number;   // Throttle responses by specified ms
 }
 
-// Type helper to eliminate TypeScript warnings in request generators
-// Use this for method signatures - it handles both the generator implementation and promise return
+// Recommended type helper for request generator return types:
 type Response<T> = AsyncGenerator<any, T, any> | Promise<T>;
+// Define this in your project — it satisfies both the generator and the caller
 ```
 
 #### Response Debounce/Throttle
@@ -73,7 +73,9 @@ class ProcessingController implements IController {
 Elements use async generators to make requests:
 
 ```typescript
-import { element, request, Response, render, html } from 'snice';
+import { element, request, render, html } from 'snice';
+
+type Response<T> = AsyncGenerator<any, T, any> | Promise<T>;
 
 @element('user-card')
 class UserCard extends HTMLElement {
@@ -697,156 +699,45 @@ class CachedController implements IController {
 }
 ```
 
-### Bidirectional Updates
+### Multi-Step Workflow
 
 ```typescript
-// Element that can both request and be updated
-import { element, property, query, request, watch, render, html } from 'snice';
+// Element requests a multi-step order process
+@element('order-form')
+class OrderForm extends HTMLElement {
+  @request('place-order')
+  async *placeOrder(): Response<{ orderId: string }> {
+    // Step 1: validate stock
+    const stock = await (yield { action: 'check-stock', items: this.cartItems });
+    if (!stock.available) throw new Error('Out of stock');
 
-@element('live-data')
-class LiveData extends HTMLElement {
-  private updateInterval?: number;
+    // Step 2: process payment
+    const payment = await (yield { action: 'charge', amount: stock.total });
+    if (!payment.success) throw new Error('Payment failed');
 
-  @property()
-  status = 'Disconnected';
-
-  @query('.status')
-  statusDiv?: HTMLElement;
-
-  @query('.data')
-  dataDiv?: HTMLElement;
-
-  @render()
-  renderContent() {
-    return html`
-      <div class="status">${this.status}</div>
-      <div class="data"></div>
-      <button @click=${this.connect}>Connect</button>
-      <button @click=${this.disconnect}>Disconnect</button>
-    `;
-  }
-
-  @request('subscribe')
-  async *subscribe() {
-    // Send subscription request
-    const subscription = await (yield {
-      subscribe: true,
-      events: ['update', 'status']
-    });
-
-    if (subscription.success) {
-      this.status = 'Connected';  // @watch will handle UI update
-
-      // Start polling for updates
-      this.startPolling();
-    }
-
-    return subscription;
-  }
-
-  @request('poll-updates')
-  async *pollForUpdates() {
-    const updates = await (yield { poll: true });
-
-    if (updates && updates.length > 0) {
-      this.processUpdates(updates);
-    }
-
-    return { processed: updates.length };
-  }
-
-  async connect() {
-    await this.subscribe();
-  }
-
-  disconnect() {
-    this.stopPolling();
-    this.status = 'Disconnected';
-  }
-
-  startPolling() {
-    this.updateInterval = setInterval(async () => {
-      await this.pollForUpdates();
-    }, 2000);
-  }
-
-  stopPolling() {
-    if (this.updateInterval) {
-      clearInterval(this.updateInterval);
-      this.updateInterval = undefined;
-    }
-  }
-
-  processUpdates(updates: any[]) {
-    if (this.dataDiv) {
-      updates.forEach(update => {
-        const entry = document.createElement('div');
-        entry.textContent = `${update.type}: ${update.value}`;
-        this.dataDiv!.appendChild(entry);
-      });
-    }
-  }
-
-  @watch('status')
-  updateStatus() {
-    if (this.statusDiv) {
-      this.statusDiv.textContent = this.status;
-    }
-  }
-
-  disconnectedCallback() {
-    super.disconnectedCallback?.();
-    this.stopPolling();
+    // Step 3: confirm order
+    return await (yield { action: 'confirm', paymentId: payment.id });
   }
 }
 
-// Controller that manages subscriptions
-@controller('subscription-controller')
-class SubscriptionController implements IController {
+// Controller handles each step
+@controller('order-controller')
+class OrderController implements IController {
   element: HTMLElement | null = null;
-  private subscribers = new Set<string>();
-  private updates: any[] = [];
 
-  async attach(element: HTMLElement) {
-    // Generate updates periodically
-    setInterval(() => {
-      this.updates.push({
-        type: 'update',
-        value: Math.random(),
-        timestamp: Date.now()
-      });
-    }, 3000);
-  }
+  async attach(element: HTMLElement) {}
+  async detach(element: HTMLElement) {}
 
-  async detach(element: HTMLElement) {
-    this.subscribers.clear();
-  }
-
-  @respond('subscribe')
-  handleSubscribe(request: any) {
-    if (request.subscribe) {
-      const id = Math.random().toString(36);
-      this.subscribers.add(id);
-
-      return {
-        success: true,
-        subscriptionId: id,
-        events: request.events
-      };
+  @respond('place-order')
+  async handleOrder(req: any) {
+    switch (req.action) {
+      case 'check-stock':
+        return { available: true, total: 99.99 };
+      case 'charge':
+        return { success: true, id: 'pay_abc123' };
+      case 'confirm':
+        return { orderId: 'ORD-001' };
     }
-
-    return { success: false };
-  }
-
-  @respond('poll-updates')
-  handlePollUpdates(request: any) {
-    if (!request.poll) return [];
-
-    // Return and clear updates
-    const updates = [...this.updates];
-    this.updates = [];
-
-    return updates;
   }
 }
 ```
