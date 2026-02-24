@@ -1,0 +1,59 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --snice-color-primary: rgb(99 102 241);
+  --snice-color-primary-hover: rgb(79 70 229);
+  --snice-color-success: rgb(34 197 94);
+  --snice-color-danger: rgb(239 68 68);
+  --snice-color-warning: rgb(245 158 11);
+  --snice-color-text: rgb(15 23 42);
+  --snice-color-text-secondary: rgb(100 116 139);
+  --snice-color-text-tertiary: rgb(148 163 184);
+  --snice-color-background: rgb(248 250 252);
+  --snice-color-background-element: rgb(255 255 255);
+  --snice-color-border: rgb(226 232 240);
+  --snice-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --snice-border-radius-md: 6px;
+  --snice-border-radius-lg: 10px;
+  --snice-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --snice-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --snice-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+[data-theme='dark'] {
+  --snice-color-text: rgb(226 232 240);
+  --snice-color-text-secondary: rgb(148 163 184);
+  --snice-color-text-tertiary: rgb(100 116 139);
+  --snice-color-background: rgb(15 23 42);
+  --snice-color-background-element: rgb(30 41 59);
+  --snice-color-border: rgb(51 65 85);
+}
+
+html,
+body {
+  height: 100%;
+  font-family: var(--snice-font-family);
+  background: var(--snice-color-background);
+  color: var(--snice-color-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#app {
+  height: 100%;
+}
+
+a {
+  color: var(--snice-color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
