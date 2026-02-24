@@ -247,7 +247,7 @@ describe('MCP validate_code tool', () => {
 
     it('should warn against async function guards', async () => {
       const { text } = await validateCode(`
-        async function authGuard(ctx) {
+        async function isAuthenticated(ctx) {
           return ctx.isLoggedIn;
         }
       `);

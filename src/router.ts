@@ -199,6 +199,7 @@ export function Router(options: RouterOptions): RouterInstance {
   }
 
   function collectPlacards(): void {
+    const seen = new Set<string>();
     placards = routes
       .filter(route => route.placard)
       .map(route => {
@@ -206,6 +207,11 @@ export function Router(options: RouterOptions): RouterInstance {
         return typeof placard === 'function'
           ? placard(context as AppContext)
           : placard;
+      })
+      .filter(p => {
+        if (seen.has(p.name)) return false;
+        seen.add(p.name);
+        return true;
       });
   }
 

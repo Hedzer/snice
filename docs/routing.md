@@ -1046,7 +1046,7 @@ class AppContext {
 }
 
 // Auth guard
-const requireAuth: Guard<AppContext> = (ctx) => {
+const isAuthenticated: Guard<AppContext> = (ctx) => {
   if (!ctx.isAuthenticated()) {
     window.location.hash = '#/login';
     return false;
@@ -1058,7 +1058,7 @@ const requireAuth: Guard<AppContext> = (ctx) => {
 @page({
   tag: 'dashboard-page',
   routes: ['/dashboard'],
-  guards: requireAuth
+  guards: isAuthenticated
 })
 class DashboardPage extends HTMLElement {
   private appContext?: AppContext;

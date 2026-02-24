@@ -104,7 +104,7 @@ describe('Router Guards', () => {
       permissions: string[];
     }
 
-    const permissionGuard: Guard<AppContext> = (ctx, _params) => {
+    const hasPermission: Guard<AppContext> = (ctx, _params) => {
       // Guards now execute synchronously
       return ctx.userId === 123 && ctx.permissions.includes('view-protected');
     };
@@ -120,7 +120,7 @@ describe('Router Guards', () => {
     @page({
       tag: uniqueName,
       routes: ['/context-protected'],
-      guards: permissionGuard
+      guards: hasPermission
     })
     class ContextProtectedPage extends HTMLElement {
       @render()
@@ -284,7 +284,7 @@ describe('Router Guards', () => {
     const uniqueName = `no-context-page-${Date.now()}`;
     
     // Guard that doesn't use context or params
-    const alwaysAllowGuard: Guard = (ctx, _params) => true;
+    const isAlwaysAllowed: Guard = (ctx, _params) => true;
     
     router = Router({
       target: '#app',
@@ -297,7 +297,7 @@ describe('Router Guards', () => {
     @page({ 
       tag: uniqueName, 
       routes: ['/always-allowed'],
-      guards: alwaysAllowGuard
+      guards: isAlwaysAllowed
     })
     class AlwaysAllowedPage extends HTMLElement {
       @render()
@@ -320,7 +320,7 @@ describe('Router Guards', () => {
       homeAccess: boolean;
     }
     
-    const homeGuard: Guard<AppContext> = (ctx, _params) => ctx.homeAccess;
+    const hasHomeAccess: Guard<AppContext> = (ctx, _params) => ctx.homeAccess;
     
     router = Router({
       target: '#app',
@@ -333,7 +333,7 @@ describe('Router Guards', () => {
     @page({ 
       tag: homeName, 
       routes: ['/'],
-      guards: homeGuard
+      guards: hasHomeAccess
     })
     class HomePage extends HTMLElement {
       @render()

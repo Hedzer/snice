@@ -746,7 +746,7 @@ describe('Fetcher Router Integration', () => {
         return next();
       });
 
-      const authGuard = (context: any) => !!context.user;
+      const isAuthenticated = (context: any) => !!context.user;
 
       const router = Router({
         target: '#app',
@@ -758,7 +758,7 @@ describe('Fetcher Router Integration', () => {
       @router.page({
         tag: 'guarded-page',
         routes: ['/protected'],
-        guards: authGuard
+        guards: isAuthenticated
       })
       class GuardedPage extends HTMLElement {
         private ctx?: Context;

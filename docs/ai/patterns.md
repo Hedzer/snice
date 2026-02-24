@@ -88,7 +88,7 @@ import { page } from '../router';  // NOT from 'snice'!
 
 **Page with Context:**
 ```typescript
-@page({ tag: 'user-page', routes: ['/users/:id'], guards: isAuth })
+@page({ tag: 'user-page', routes: ['/users/:id'], guards: [isAuthenticated] })
 class UserPage extends HTMLElement {
   @property() id = '';
   private appContext?: AppContext;
