@@ -1,0 +1,27 @@
+{
+  "name": "css",
+  "fileTypes": ["css", "scss", "less"],
+  "defaultToken": "",
+  "tokenizer": {
+    "root": [
+      ["\\/\\*", "comment", "@comment"],
+      ["\"(?:[^\"\\\\]|\\\\.)*\"", "string"],
+      ["'(?:[^'\\\\]|\\\\.)*'", "string"],
+      ["!important", "keyword"],
+      ["@[\\w-]+", "keyword"],
+      ["#[0-9a-fA-F]{3,8}\\b", "number"],
+      ["\\b\\d+\\.?\\d*(?:px|em|rem|%|vh|vw|vmin|vmax|s|ms|deg|fr|ch|ex)?\\b", "number"],
+      ["[\\w-]+(?=\\s*:)", "property"],
+      ["::[\\w-]+", "tag"],
+      [":[\\w-]+", "tag"],
+      ["\\.[\\w-]+", "class-name"],
+      ["#[\\w-]+", "tag"],
+      ["[{}();,]", "punctuation"]
+    ],
+    "comment": [
+      ["[^*]+", "comment"],
+      ["\\*\\/", "comment", "@pop"],
+      ["[*]", "comment"]
+    ]
+  }
+}

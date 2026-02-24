@@ -1,0 +1,134 @@
+{
+  "name": "snice",
+  "fileTypes": ["ts", "tsx", "js", "jsx"],
+  "defaultToken": "",
+  "keywords": [
+    "abstract", "as", "async", "await", "break", "case", "catch", "class",
+    "const", "continue", "debugger", "declare", "default", "delete", "do",
+    "else", "enum", "export", "extends", "finally", "for", "from", "function",
+    "if", "implements", "import", "in", "instanceof", "interface", "is",
+    "keyof", "let", "module", "namespace", "new", "of", "override", "private",
+    "protected", "public", "readonly", "return", "satisfies", "static",
+    "super", "switch", "this", "throw", "try", "type", "typeof", "var",
+    "void", "while", "with", "yield"
+  ],
+  "typeKeywords": [
+    "string", "number", "boolean", "symbol", "bigint", "any", "unknown",
+    "never", "void", "object", "undefined", "null"
+  ],
+  "constants": ["true", "false", "null", "undefined", "NaN", "Infinity"],
+  "tokenizer": {
+    "root": [
+      ["\\/\\/.*$", "comment"],
+      ["\\/\\*", "comment", "@comment"],
+      ["\\bhtml(?:\\/\\*\\w*\\*\\/)?`", "tag", "@htmlTemplate"],
+      ["\\bcss(?:\\/\\*\\w*\\*\\/)?`", "tag", "@cssTemplate"],
+      ["`", "string", "@template"],
+      ["\"(?:[^\"\\\\]|\\\\.)*\"", "string"],
+      ["'(?:[^'\\\\]|\\\\.)*'", "string"],
+      ["@[a-zA-Z_]\\w*", "tag"],
+      ["\\b(?:true|false|null|undefined|NaN|Infinity)\\b", "constant"],
+      ["\\b\\d+\\.?\\d*(?:e[+-]?\\d+)?\\b", "number"],
+      ["\\b0x[0-9a-fA-F]+\\b", "number"],
+      ["\\b[A-Z][\\w]*\\b", "class-name"],
+      ["\\b[\\w]+(?=\\s*\\()", "function"],
+      ["[a-zA-Z_$][\\w$]*", { "cases": { "@keywords": "keyword", "@typeKeywords": "class-name", "@constants": "constant", "@default": "" } }],
+      ["=>", "keyword"],
+      ["[{}()\\[\\];,.]", "punctuation"],
+      ["[+\\-*/%=<>!&|^~?:]+", "operator"]
+    ],
+
+    "comment": [
+      ["[^*]+", "comment"],
+      ["\\*\\/", "comment", "@pop"],
+      ["[*]", "comment"]
+    ],
+
+    "template": [
+      ["\\$\\{", "punctuation", "@interpolation"],
+      ["[^`$\\\\]+", "string"],
+      ["\\\\.", "string"],
+      ["\\$", "string"],
+      ["`", "string", "@pop"]
+    ],
+
+    "interpolation": [
+      ["\\}", "punctuation", "@pop"],
+      { "include": "@root" }
+    ],
+
+    "htmlTemplate": [
+      ["\\$\\{", "punctuation", "@interpolation"],
+      ["<!--[\\s\\S]*?-->", "comment"],
+      ["<(if|case|when|default)(?=[\\s>\\/>])", "keyword", "@htmlTag"],
+      ["<\\/(if|case|when|default)\\s*>", "keyword"],
+      ["<\\/[\\w-]+\\s*>", "tag"],
+      ["<[\\w-]+", "tag", "@htmlTag"],
+      ["&\\w+;", "constant"],
+      ["[^`$<&\\\\]+", ""],
+      ["\\\\.", ""],
+      ["\\$", ""],
+      ["<", ""],
+      ["`", "tag", "@pop"]
+    ],
+
+    "htmlTag": [
+      ["\\.[\\w-]+(?=\\s*=)", "property"],
+      ["\\?[\\w-]+(?=\\s*=)", "attr-name"],
+      ["@[\\w-]+(?:[:.][-~\\w+]*)*(?=\\s*=)", "function"],
+      ["[\\w-]+(?=\\s*=)", "attr-name"],
+      ["[\\w-]+", "attr-name"],
+      ["\"", "attr-value", "@htmlAttrDouble"],
+      ["'", "attr-value", "@htmlAttrSingle"],
+      ["\\$\\{", "punctuation", "@interpolation"],
+      ["=", "operator"],
+      ["\\s+", ""],
+      ["\\/>", "tag", "@pop"],
+      [">", "tag", "@pop"]
+    ],
+
+    "htmlAttrDouble": [
+      ["\\$\\{", "punctuation", "@interpolation"],
+      ["[^\"$\\\\]+", "attr-value"],
+      ["\\\\.", "attr-value"],
+      ["\\$", "attr-value"],
+      ["\"", "attr-value", "@pop"]
+    ],
+
+    "htmlAttrSingle": [
+      ["\\$\\{", "punctuation", "@interpolation"],
+      ["[^'$\\\\]+", "attr-value"],
+      ["\\\\.", "attr-value"],
+      ["\\$", "attr-value"],
+      ["'", "attr-value", "@pop"]
+    ],
+
+    "cssTemplate": [
+      ["\\$\\{", "punctuation", "@interpolation"],
+      ["\\/\\*", "comment", "@cssComment"],
+      ["\"(?:[^\"\\\\]|\\\\.)*\"", "string"],
+      ["'(?:[^'\\\\]|\\\\.)*'", "string"],
+      ["@[\\w-]+", "keyword"],
+      ["!important", "keyword"],
+      ["#[0-9a-fA-F]{3,8}(?![\\w-])", "number"],
+      ["\\b\\d+\\.?\\d*(?:px|em|rem|%|vh|vw|vmin|vmax|s|ms|deg|fr|ch|ex)?\\b", "number"],
+      ["\\b[\\w-]+(?=\\()", "function"],
+      ["--[\\w-]+", "attr-name"],
+      ["[\\w-]+(?=\\s*:)", "property"],
+      ["::[\\w-]+", "tag"],
+      [":[\\w-]+", "tag"],
+      ["\\.[\\w-]+", "class-name"],
+      ["#[\\w-]+", "tag"],
+      ["[{}()\\[\\];,:]", "punctuation"],
+      ["[^`$\\/\"'@!#.:;{}()\\[\\],:\\s]+", ""],
+      ["\\s+", ""],
+      ["`", "tag", "@pop"]
+    ],
+
+    "cssComment": [
+      ["[^*]+", "comment"],
+      ["\\*\\/", "comment", "@pop"],
+      ["[*]", "comment"]
+    ]
+  }
+}

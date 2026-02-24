@@ -1,0 +1,55 @@
+{
+  "name": "typescript",
+  "fileTypes": ["ts", "tsx", "js", "jsx"],
+  "defaultToken": "",
+  "keywords": [
+    "abstract", "as", "async", "await", "break", "case", "catch", "class",
+    "const", "continue", "debugger", "declare", "default", "delete", "do",
+    "else", "enum", "export", "extends", "finally", "for", "from", "function",
+    "if", "implements", "import", "in", "instanceof", "interface", "is",
+    "keyof", "let", "module", "namespace", "new", "of", "override", "private",
+    "protected", "public", "readonly", "return", "satisfies", "static",
+    "super", "switch", "this", "throw", "try", "type", "typeof", "var",
+    "void", "while", "with", "yield"
+  ],
+  "typeKeywords": [
+    "string", "number", "boolean", "symbol", "bigint", "any", "unknown",
+    "never", "void", "object", "undefined", "null"
+  ],
+  "constants": ["true", "false", "null", "undefined", "NaN", "Infinity"],
+  "tokenizer": {
+    "root": [
+      ["\\/\\/.*$", "comment"],
+      ["\\/\\*", "comment", "@comment"],
+      ["`", "string", "@template"],
+      ["\"(?:[^\"\\\\]|\\\\.)*\"", "string"],
+      ["'(?:[^'\\\\]|\\\\.)*'", "string"],
+      ["@[a-zA-Z_]\\w*", "tag"],
+      ["\\b(?:true|false|null|undefined|NaN|Infinity)\\b", "constant"],
+      ["\\b\\d+\\.?\\d*(?:e[+-]?\\d+)?\\b", "number"],
+      ["\\b0x[0-9a-fA-F]+\\b", "number"],
+      ["\\b[A-Z][\\w]*\\b", "class-name"],
+      ["\\b[\\w]+(?=\\s*\\()", "function"],
+      ["[a-zA-Z_$][\\w$]*", { "cases": { "@keywords": "keyword", "@typeKeywords": "class-name", "@constants": "constant", "@default": "" } }],
+      ["=>", "keyword"],
+      ["[{}()\\[\\];,.]", "punctuation"],
+      ["[+\\-*/%=<>!&|^~?:]+", "operator"]
+    ],
+    "comment": [
+      ["[^*]+", "comment"],
+      ["\\*\\/", "comment", "@pop"],
+      ["[*]", "comment"]
+    ],
+    "template": [
+      ["\\$\\{", "punctuation", "@interpolation"],
+      ["[^`$\\\\]+", "string"],
+      ["\\\\.", "string"],
+      ["\\$", "string"],
+      ["`", "string", "@pop"]
+    ],
+    "interpolation": [
+      ["\\}", "punctuation", "@pop"],
+      { "include": "@root" }
+    ]
+  }
+}

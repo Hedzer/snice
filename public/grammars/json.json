@@ -1,0 +1,20 @@
+{
+  "name": "json",
+  "fileTypes": ["json", "jsonc"],
+  "defaultToken": "",
+  "tokenizer": {
+    "root": [
+      ["\"(?:[^\"\\\\]|\\\\.)*\"(?=\\s*:)", "property"],
+      ["\"", "string", "@string"],
+      ["-?\\b\\d+\\.?\\d*(?:e[+-]?\\d+)?\\b", "number"],
+      ["\\b(?:true|false)\\b", "constant"],
+      ["\\bnull\\b", "constant"],
+      ["[{}\\[\\],:]", "punctuation"]
+    ],
+    "string": [
+      ["[^\"\\\\]+", "string"],
+      ["\\\\.", "string"],
+      ["\"", "string", "@pop"]
+    ]
+  }
+}
