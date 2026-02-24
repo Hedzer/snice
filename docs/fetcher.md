@@ -25,7 +25,7 @@ const fetcher = new ContextAwareFetcher();
 // Attach JWT to outgoing requests
 fetcher.use('request', function(request, next) {
   // `this` is bound to the Context instance
-  const jwt = this.application.auth?.token;
+  const jwt = this.application.principal?.token;
   if (jwt) {
     request.headers.set('Authorization', `Bearer ${jwt}`);
   }
@@ -102,9 +102,13 @@ type RequestMiddleware = (
 - Request validation
 
 **Example - JWT Bearer Token:**
+
+`this` in middleware is the `Context` instance. Store auth state in `application` (your `AppContext`):
+
 ```typescript
+// Attach JWT to every request
 fetcher.use('request', function(request, next) {
-  const jwt = this.application.auth?.token; // "eyJhbG...kpXVCJ9.eyJzdWI...I2MjB9.SflKx...sw5c"
+  const jwt = this.application.principal?.token;
   if (jwt) {
     request.headers.set('Authorization', `Bearer ${jwt}`);
   }
@@ -114,7 +118,7 @@ fetcher.use('request', function(request, next) {
 // Handle expired tokens — refresh or redirect to login
 fetcher.use('response', async function(response, next) {
   if (response.status === 401) {
-    const refreshToken = this.application.auth?.refreshToken;
+    const refreshToken = this.application.principal?.refreshToken;
     if (refreshToken) {
       const res = await fetch('/api/auth/refresh', {
         method: 'POST',
@@ -123,15 +127,16 @@ fetcher.use('response', async function(response, next) {
       });
       if (res.ok) {
         const { token } = await res.json();
-        this.application.auth.token = token;
+        this.application.principal.token = token;
         // Retry original request with new token
-        const retry = new Request(response.url, request);
-        retry.headers.set('Authorization', `Bearer ${token}`);
+        const retry = new Request(response.url, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
         return fetch(retry);
       }
     }
-    this.application.auth = null;
-    this.application.router?.navigate('/login');
+    this.application.principal = null;
+    window.location.hash = '#/login';
     throw new Error('Session expired');
   }
   return next();
@@ -220,7 +225,7 @@ fetcher.use('response', async function(response, next) {
   if (response.status === 401) {
     // Unauthorized - clear user and redirect to login
     this.application.user = null;
-    this.application.router?.navigate('/login');
+    window.location.hash = '#/login';
     throw new Error('Authentication required');
   }
 
@@ -293,7 +298,7 @@ const fetcher = new ContextAwareFetcher();
 
 // Attach JWT to every request
 fetcher.use('request', function(request, next) {
-  const jwt = this.application.auth?.token;
+  const jwt = this.application.principal?.token;
   if (jwt) {
     request.headers.set('Authorization', `Bearer ${jwt}`);
   }
@@ -310,8 +315,8 @@ fetcher.use('request', function(request, next) {
 // Handle 401 — attempt token refresh, then redirect on failure
 fetcher.use('response', async function(response, next) {
   if (response.status === 401) {
-    this.application.auth = undefined;
-    this.application.router?.navigate('/login');
+    this.application.principal = undefined;
+    window.location.hash = '#/login';
     throw new Error('Session expired');
   }
 

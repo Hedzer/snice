@@ -17,7 +17,8 @@ The Placard system allows pages to declare metadata that describes their purpose
 Define a placard for your page using the `placard` option in the `@page` decorator:
 
 ```typescript
-import { page, Placard, render, html } from 'snice';
+import { Placard, render, html } from 'snice';
+import { page } from './router'; // page comes from Router(), not from 'snice'
 
 const placard: Placard<AppContext> = {
   name: 'dashboard',
@@ -224,7 +225,7 @@ const settingsPlacard: Placard<AppContext> = {
   name: 'user-settings',
   title: 'Settings',
   parent: 'user-profile'
-  // Breadcrumbs will be auto-resolved: Users > Profile > Settings
+  // Layout can resolve breadcrumbs using parent chain: Users > Profile > Settings
 };
 
 // Explicit breadcrumbs

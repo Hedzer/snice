@@ -76,7 +76,8 @@ const { page, initialize } = Router({
 ### Basic Page
 
 ```typescript
-import { page, render, html, styles, css } from 'snice';
+import { render, html, styles, css } from 'snice';
+import { page } from './router'; // page comes from Router(), not from 'snice'
 
 @page({ tag: 'home-page', routes: ['/'] })
 class HomePage extends HTMLElement {
@@ -120,7 +121,8 @@ class HomePage extends HTMLElement {
 The `@context()` decorator is a **method decorator** that receives context updates from the router. The method is called whenever navigation occurs, with a Context object containing application state and navigation data.
 
 ```typescript
-import { page, context, render, html, Context } from 'snice';
+import { context, render, html, Context } from 'snice';
+import { page } from './router';
 
 @page({ tag: 'profile-page', routes: ['/profile'] })
 class ProfilePage extends HTMLElement {
@@ -544,12 +546,12 @@ const customTransition: Transition = {
   outDuration: 300,
   inDuration: 300,
   out: 'opacity: 0; transform: translateY(-20px)',
-  in: 'opacity: 0; transform: translateY(20px)',
+  in: 'opacity: 1; transform: translateY(0)',
   mode: 'sequential'  // or 'simultaneous'
 };
 ```
 
-The `out` string is applied to the leaving page, `in` string is the starting state of the entering page (which then transitions to its natural state).
+The `out` string is the end state of the leaving page. The `in` string is the end state of the entering page (which starts invisible and transitions to this state).
 
 ## Route Guards
 

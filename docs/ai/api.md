@@ -18,7 +18,7 @@
 // Supports differential updates by default
 // differential: false - disables differential rendering, expects string return
 //   Clears shadow root and re-renders from scratch each time
-//   Still honors <if> and <switch>/<case> meta elements
+//   <if> and <switch>/<case> NOT available — use ternary operators in string
 // once: true - IMPERATIVE RENDERING MODE
 //   Renders template once on first connect, blocks all subsequent auto-renders
 //   Use with @watch + @query to update DOM manually

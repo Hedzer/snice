@@ -130,6 +130,12 @@ class AppShell extends HTMLElement implements Layout {
 ```
 
 ## Request/Response
+
+Components are generic (visual). Controllers are specific (data/logic).
+`@request`/`@respond` keeps them decoupled — element says *what* it needs,
+controller decides *how*. Swap controllers to change behavior without touching the component.
+Mock controller for tests, real API controller in production — same element.
+
 ```typescript
 // Controller responds to requests (receives payload, returns result directly)
 @controller('api')
@@ -167,7 +173,7 @@ const fetcher = new ContextAwareFetcher();
 
 // Request middleware - modify request before fetch
 fetcher.use('request', function(request, next) {
-  const token = this.application.user?.token;
+  const token = this.application.principal?.token;
   if (token) {
     request.headers.set('Authorization', `Bearer ${token}`);
   }
@@ -335,13 +341,18 @@ class UserCard extends HTMLElement {
 @element('data-viewer')
 class DataViewer extends HTMLElement {
   @property() userId = '';
-  @property() data = null;
+  @property() label = '';
 
+  // Handlers receive (oldValue, newValue, propertyName)
   @watch('userId')
-  async onUserIdChange(oldId, newId) {
-    if (newId) {
-      this.data = await fetch(`/api/users/${newId}`).then(r => r.json());
-    }
+  onUserIdChange(oldId: string, newId: string, prop: string) {
+    console.log(`${prop} changed: ${oldId} → ${newId}`);
+  }
+
+  // Wildcard watches all @property changes
+  @watch('*')
+  onAnyChange(oldVal: any, newVal: any, prop: string) {
+    console.log(`${prop} updated`);
   }
 }
 ```

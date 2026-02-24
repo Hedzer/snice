@@ -159,55 +159,29 @@ This allows you to attach controllers to any HTML element:
 
 ### Example: Table Controller
 
+Controllers provide specific behaviors (data fetching, sorting, filtering) to generic visual components. The component handles rendering — the controller handles data:
+
 ```typescript
 @controller('table-controller')
 class TableController implements IController<HTMLTableElement> {
   element: HTMLTableElement | null = null;
-  private data: any[] = [];
 
   async attach(element: HTMLTableElement) {
-    // Fetch data
-    this.data = await this.fetchData();
+    const data = await fetch('/api/data').then(r => r.json());
 
-    // Render table
-    this.renderTable();
-  }
-
-  async detach(element: HTMLTableElement) {
-    // Clear table
-    const tbody = element.querySelector('tbody');
-    if (tbody) {
-      tbody.innerHTML = '';
+    // Pass data to the element — if it's a custom element, call its API
+    if ('setData' in element && typeof (element as any).setData === 'function') {
+      (element as any).setData(data);
     }
   }
 
-  private async fetchData() {
-    const response = await fetch('/api/data');
-    return response.json();
-  }
-
-  private renderTable() {
-    if (!this.element) return;
-
-    const tbody = this.element.querySelector('tbody');
-    if (!tbody) return;
-
-    const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-
-    tbody.innerHTML = this.data.map(row => `
-      <tr>
-        <td>${esc(String(row.id))}</td>
-        <td>${esc(row.name)}</td>
-        <td>${esc(row.status)}</td>
-      </tr>
-    `).join('');
-  }
+  async detach() {}
 }
 ```
 
 ## Resource Cleanup
 
-Controllers should clean up resources in the `detach` method:
+The framework auto-cleans `@on`, `@observe`, and `@respond` handlers. Clean up your own resources (WebSockets, timers, manual listeners) in `detach`:
 
 ```typescript
 import { controller, IController } from 'snice';
@@ -294,63 +268,36 @@ class FormController implements IController<HTMLFormElement> {
 
 ## Query Selectors in Controllers
 
-Controllers can use `@query` and `@queryAll` to access elements:
+Controllers can use `@query` and `@queryAll` to access elements. **Important:** By default, `@query` searches the shadow DOM. When attached to native elements (no shadow root), use `{ light: true }`:
 
 ```typescript
 import { controller, query, queryAll, IController } from 'snice';
 
-@controller('dashboard-controller')
-class DashboardController implements IController {
-  element: HTMLElement | null = null;
+@controller('form-validation-controller')
+class FormValidationController implements IController<HTMLFormElement> {
+  element: HTMLFormElement | null = null;
 
-  @query('.status-indicator')
-  statusIndicator?: HTMLElement;
+  // light: true is required — native elements have no shadow root
+  @query('.error-message', { light: true })
+  errorEl?: HTMLElement;
 
-  @query('#refresh-button')
-  refreshButton?: HTMLButtonElement;
+  @queryAll('input[required]', { light: true })
+  requiredInputs?: NodeListOf<HTMLInputElement>;
 
-  @queryAll('.data-card')
-  dataCards?: NodeListOf<HTMLElement>;
+  async attach() {}
+  async detach() {}
 
-  async attach(element: HTMLElement) {
-    // Queries work on the attached element
-    this.updateStatus('Loading...');
+  @on('submit')
+  handleSubmit(event: Event) {
+    const invalid = Array.from(this.requiredInputs || []).filter(i => !i.value.trim());
 
-    // Fetch and display data
-    await this.loadDashboardData();
-
-    this.updateStatus('Ready');
-  }
-
-  async detach(element: HTMLElement) {
-    this.updateStatus('Offline');
-  }
-
-  private updateStatus(status: string) {
-    if (this.statusIndicator) {
-      this.statusIndicator.textContent = status;
+    if (invalid.length > 0) {
+      event.preventDefault();
+      invalid[0].focus();
+      if (this.errorEl) {
+        this.errorEl.textContent = `${invalid.length} required field(s) missing`;
+      }
     }
-  }
-
-  private async loadDashboardData() {
-    // Load data for each card
-    this.dataCards?.forEach(async (card, index) => {
-      const data = await this.fetchCardData(index);
-      card.innerHTML = this.renderCard(data);
-    });
-  }
-
-  private async fetchCardData(index: number) {
-    // Simulate API call
-    return { title: `Card ${index + 1}`, value: Math.random() * 100 };
-  }
-
-  private renderCard(data: any) {
-    const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    return `
-      <h3>${esc(data.title)}</h3>
-      <p>${data.value.toFixed(2)}</p>
-    `;
   }
 }
 ```
@@ -358,6 +305,8 @@ class DashboardController implements IController {
 ## Advanced Patterns
 
 ### Data Fetching Controller
+
+Controllers own data fetching. Pass results to the element via its API or dispatch events — don't manipulate DOM directly:
 
 ```typescript
 @controller('data-fetcher')
@@ -367,90 +316,42 @@ class DataFetcherController implements IController {
   private pollingInterval?: number;
 
   async attach(element: HTMLElement) {
-    // Initial data load
-    await this.fetchAndRender();
+    await this.fetchData();
 
-    // Set up polling
-    this.pollingInterval = setInterval(() => {
-      this.fetchAndRender();
-    }, 30000); // Poll every 30 seconds
+    // Poll every 30 seconds
+    this.pollingInterval = setInterval(() => this.fetchData(), 30000);
   }
 
-  async detach(element: HTMLElement) {
-    // Cancel any pending requests
+  async detach() {
     this.abortController?.abort();
-
-    // Stop polling
     if (this.pollingInterval) {
       clearInterval(this.pollingInterval);
     }
   }
 
-  private async fetchAndRender() {
+  private async fetchData() {
+    this.abortController?.abort();
+    this.abortController = new AbortController();
+
     try {
-      // Cancel previous request if still pending
-      this.abortController?.abort();
-      this.abortController = new AbortController();
-
-      // Show loading state
-      this.setLoadingState(true);
-
-      // Fetch data with timeout
       const response = await fetch('/api/data', {
         signal: this.abortController.signal
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
       const data = await response.json();
 
-      // Render data
-      this.renderData(data);
-
+      // Pass data to element — let the element handle rendering
+      this.element?.dispatchEvent(new CustomEvent('data-loaded', {
+        detail: data,
+        bubbles: true
+      }));
     } catch (error: any) {
       if (error.name !== 'AbortError') {
-        this.renderError(error.message);
+        this.element?.dispatchEvent(new CustomEvent('data-error', {
+          detail: { message: error.message },
+          bubbles: true
+        }));
       }
-    } finally {
-      this.setLoadingState(false);
     }
-  }
-
-  private setLoadingState(loading: boolean) {
-    if (!this.element) return;
-
-    if (loading) {
-      this.element.classList.add('loading');
-      this.element.setAttribute('aria-busy', 'true');
-    } else {
-      this.element.classList.remove('loading');
-      this.element.setAttribute('aria-busy', 'false');
-    }
-  }
-
-  private renderData(data: any) {
-    if (!this.element) return;
-
-    // Type guard for custom element
-    if ('setData' in this.element && typeof this.element.setData === 'function') {
-      this.element.setData(data);
-    } else {
-      // Fallback for native elements
-      this.element.textContent = JSON.stringify(data, null, 2);
-    }
-  }
-
-  private renderError(message: string) {
-    if (!this.element) return;
-
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'error';
-    errorDiv.textContent = `Error: ${message}`;
-
-    this.element.innerHTML = '';
-    this.element.appendChild(errorDiv);
   }
 }
 ```
@@ -520,14 +421,31 @@ class WebSocketController implements IController {
 }
 ```
 
-## Controller Registry
+## Accessing Controllers
 
-Controllers are automatically registered when decorated with `@controller`. Access controller instances via the `@snice/controller-attached` event:
+### Via Event
+
+Listen for attachment on the element itself (the event does **not** bubble):
 
 ```typescript
 element.addEventListener('@snice/controller-attached', (e: CustomEvent) => {
-  const controller = e.detail.controller;
-  console.log('Controller attached:', controller);
+  console.log('Name:', e.detail.name);           // controller name string
+  console.log('Instance:', e.detail.controller);  // IController instance
 });
 ```
+
+### Via getController()
+
+```typescript
+import { getController } from 'snice';
+
+const ctrl = getController<MyController>(element);
+if (ctrl) {
+  ctrl.doSomething();
+}
+```
+
+### Auto-Cleanup
+
+The framework automatically cleans up `@on` handlers, observers, and `@respond` handlers during detach. Manual cleanup in `detach()` is only needed for resources you manage yourself (WebSockets, intervals, manual event listeners).
 

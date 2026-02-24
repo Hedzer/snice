@@ -1,8 +1,9 @@
 # Request/Response API Documentation
 
-Request/Response provides bidirectional request/response communication between elements and controllers using async generators.
+Request/Response provides request/response communication between elements and controllers using async generators.
 
 ## Table of Contents
+- [Why Request/Response?](#why-requestresponse)
 - [Basic Concept](#basic-concept)
 - [Request/Response Decorators](#requestresponse-decorators)
 - [Element-Side Requests](#element-side-requests)
@@ -11,15 +12,27 @@ Request/Response provides bidirectional request/response communication between e
 - [Error Handling](#error-handling)
 - [Advanced Patterns](#advanced-patterns)
 
+## Why Request/Response?
+
+Components are **generic**. A `<product-card>` renders a card — it doesn't know or care whether its data comes from a REST API, a GraphQL endpoint, a WebSocket, or a test fixture. Controllers are **specific**. They wire a particular data source, API, or business rule to a generic component.
+
+The `@request`/`@respond` pattern keeps this separation clean:
+
+- **The element says *what* it needs** (e.g., "I need product data for this ID") without knowing *how* to get it.
+- **The controller decides *how*** — makes the API call, applies business logic, caches results, whatever is needed.
+- **Swapping controllers changes behavior without touching the component.** Attach a mock controller for tests, a real API controller in production, or a WebSocket controller for live updates — the element is the same.
+
+This makes components reusable across projects and testable in isolation. An element with `@request('fetch-product')` works with *any* controller that `@respond`s to `'fetch-product'` — no imports, no interfaces, no coupling.
+
 ## Basic Concept
 
-Request/Response enables a request/response pattern between elements and their controllers:
+Request/Response enables a single request/response round-trip between elements and their controllers:
 
-1. **Element** sends a request using `yield`
-2. **Controller** receives the request and returns a response
-3. **Element** receives the response and can process it
+1. **Element** yields a request payload — "here's what I need"
+2. **Controller** receives the payload and returns a response — "here's the data"
+3. **Element** receives the response and updates its visual state
 
-This pattern is implemented using async generators and custom events.
+This pattern is implemented using async generators and custom events. Each `@request` method supports **one yield** per invocation — the generator yields a request payload, the controller responds, and the generator receives the response.
 
 ## Request/Response Decorators
 
@@ -27,7 +40,7 @@ This pattern is implemented using async generators and custom events.
 
 ```typescript
 function request(requestName: string, options?: RequestOptions): MethodDecorator
-function response(responseName: string, options?: RespondOptions): MethodDecorator
+function respond(requestName: string, options?: RespondOptions): MethodDecorator
 
 interface RequestOptions extends EventInit {
   timeout?: number;         // Response timeout in ms (default: 120000ms = 2 minutes)
@@ -42,702 +55,276 @@ interface RespondOptions {
 }
 
 // Recommended type helper for request generator return types:
-type Response<T> = AsyncGenerator<any, T, any> | Promise<T>;
+type RequestResult<T> = AsyncGenerator<any, T, any> | Promise<T>;
 // Define this in your project — it satisfies both the generator and the caller
 ```
 
 #### Response Debounce/Throttle
 
-Response handlers can also be debounced or throttled to prevent excessive processing:
+Response handlers can be debounced or throttled:
 
 ```typescript
-@controller('heavy-processing-controller')
+@controller('processing-controller')
 class ProcessingController implements IController {
+  element: HTMLElement | null = null;
+  async attach() {}
+  async detach() {}
 
-  @respond('@api/expensive-calculation', { debounce: 1000 })
-  async calculateResults(params: any) {
-    // Debounced by 1 second - rapid requests will only trigger the latest
-    return await performExpensiveCalculation(params);
+  @respond('search', { debounce: 300 })
+  async handleSearch(query: { term: string }) {
+    return await fetch(`/api/search?q=${encodeURIComponent(query.term)}`).then(r => r.json());
   }
 
-  @respond('@api/real-time-updates', { throttle: 500 })
-  async handleUpdates(data: any) {
-    // Throttled to max 2 requests per second
-    return await processUpdate(data);
+  @respond('analytics', { throttle: 1000 })
+  async handleAnalytics(event: any) {
+    return await fetch('/api/track', { method: 'POST', body: JSON.stringify(event) });
   }
 }
 ```
 
 ## Element-Side Requests
 
-Elements use async generators to make requests:
+Elements use async generators to make requests. The element stays visual — it yields data up to the controller and renders the response:
 
 ```typescript
-import { element, request, render, html } from 'snice';
+import { element, request, property, render, html } from 'snice';
 
-type Response<T> = AsyncGenerator<any, T, any> | Promise<T>;
+type RequestResult<T> = AsyncGenerator<any, T, any> | Promise<T>;
 
-@element('user-card')
-class UserCard extends HTMLElement {
-  userId = 123;
+@element('product-card')
+class ProductCard extends HTMLElement {
+  @property() productId = '';
+  @property() name = '';
+  @property() price = '';
+
+  @request('fetch-product')
+  async *loadProduct(): RequestResult<void> {
+    const product = await (yield { id: this.productId });
+    this.name = product.name;
+    this.price = product.price;
+  }
 
   @render()
   renderContent() {
     return html`
-      <div class="user-info">
-        <button @click=${this.loadUser}>Load User</button>
-        <div class="content"></div>
+      <div class="card">
+        <h3>${this.name || 'Loading...'}</h3>
+        <p>${this.price}</p>
+        <button @click=${this.loadProduct}>Refresh</button>
       </div>
     `;
   }
-
-  @request('fetch-user')
-  async *fetchUserData(): Response<{ success: boolean; user: any }> {
-    // Yield sends the request, await waits for response
-    const user = await (yield { userId: this.userId });
-
-    // Process the response
-    this.displayUser(user);
-
-    // Return final value (optional)
-    return { success: true, user };
-  }
-
-  async loadUser() {
-    try {
-      const result = await this.fetchUserData();
-      console.log('Load complete:', result);
-    } catch (error) {
-      console.error('Failed to load user:', error);
-    }
-  }
-
-  displayUser(user: any) {
-    const content = this.shadowRoot?.querySelector('.content');
-    if (content) {
-      content.innerHTML = `
-        <h3>${user.name}</h3>
-        <p>${user.email}</p>
-      `;
-    }
-  }
 }
 ```
 
-### Multiple Yields
-
-Elements can yield multiple times in a single channel:
-
-```typescript
-@element('multi-request')
-class MultiRequest extends HTMLElement {
-  @request('multi-data')
-  async *fetchMultipleData() {
-    // First request
-    const userData = await (yield { type: 'user', id: 1 });
-    console.log('Got user:', userData);
-
-    // Second request based on first response
-    const postsData = await (yield { type: 'posts', userId: userData.id });
-    console.log('Got posts:', postsData);
-
-    // Third request
-    const commentsData = await (yield { type: 'comments', postIds: postsData.map((p: any) => p.id) });
-    console.log('Got comments:', commentsData);
-
-    // Return combined result
-    return {
-      user: userData,
-      posts: postsData,
-      comments: commentsData
-    };
-  }
-
-  @render()
-  renderContent() {
-    return html`<button @click=${this.fetchData}>Fetch All Data</button>`;
-  }
-
-  async fetchData() {
-    const result = await this.fetchMultipleData();
-    console.log('All data loaded:', result);
-  }
-}
-```
+**How it works:**
+1. `yield { id: this.productId }` dispatches a bubbling custom event with the payload
+2. A `@respond('fetch-product')` handler (typically in a controller) catches it and returns data
+3. `await (yield ...)` resolves with the response
+4. The element updates its properties, triggering a re-render
 
 ## Controller-Side Responses
 
-Controllers handle requests and provide responses:
+Controllers handle requests — this is where business logic, API calls, and data management belong:
 
 ```typescript
 import { controller, respond, IController } from 'snice';
 
-@controller('user-controller')
-class UserController implements IController {
+@controller('product-controller')
+class ProductController implements IController {
   element: HTMLElement | null = null;
+  async attach() {}
+  async detach() {}
 
-  async attach(element: HTMLElement) {
-    console.log('User controller attached');
-  }
-
-  async detach(element: HTMLElement) {
-    console.log('User controller detached');
-  }
-
-  @respond('fetch-user')
-  async handleFetchUser(request: { userId: number }) {
-    // Simulate API call
-    const response = await fetch(`/api/users/${request.userId}`);
-    const user = await response.json();
-
-    // Return response to element
-    return user;
-  }
-
-  @respond('multi-data')
-  async handleMultiData(request: any) {
-    switch (request.type) {
-      case 'user':
-        return await this.fetchUser(request.id);
-      case 'posts':
-        return await this.fetchPosts(request.userId);
-      case 'comments':
-        return await this.fetchComments(request.postIds);
-      default:
-        throw new Error(`Unknown request type: ${request.type}`);
-    }
-  }
-
-  private async fetchUser(id: number) {
-    // Simulate API call
-    return { id, name: 'John Doe', email: 'john@example.com' };
-  }
-
-  private async fetchPosts(userId: number) {
-    // Simulate API call
-    return [
-      { id: 1, userId, title: 'Post 1' },
-      { id: 2, userId, title: 'Post 2' }
-    ];
-  }
-
-  private async fetchComments(postIds: number[]) {
-    // Simulate API call
-    return postIds.flatMap(postId => [
-      { id: 1, postId, text: 'Comment 1' },
-      { id: 2, postId, text: 'Comment 2' }
-    ]);
+  @respond('fetch-product')
+  async handleFetchProduct(request: { id: string }) {
+    const response = await fetch(`/api/products/${request.id}`);
+    return await response.json();
   }
 }
 ```
+
+**Architecture:** Elements never call `fetch()` or manage data directly. They yield requests upward and render whatever comes back. Controllers own the data layer.
 
 ## Request/Response Options
 
-### RequestOptions
+### Timeout Behavior
+
+The timeout system has **two separate timeouts**:
+
+- **Discovery timeout** (`discoveryTimeout`): 50ms default — finds a handler quickly
+- **Response timeout** (`timeout`): 2 minutes default — total time for the response
 
 ```typescript
-interface RequestOptions extends EventInit {
-  timeout?: number;         // Response timeout in ms (default: 120000ms = 2 minutes)
-  discoveryTimeout?: number; // Handler discovery timeout in ms (default: 50ms)
-  debounce?: number;        // Debounce requests by specified ms
-  throttle?: number;        // Throttle requests by specified ms
-}
-```
-
-#### Timeout Behavior (IMPORTANT)
-
-The timeout system has **two separate timeouts** for different phases:
-
-- **Discovery timeout** (`discoveryTimeout`): 50ms (default) - Fast timeout to find a handler
-- **Response timeout** (`timeout`): 2 minutes (default) - Total time allowed for the request
-
-```typescript
-@request('@api/heavy-processing', {
-  discoveryTimeout: 50,      // 50ms to find handler (fast)
-  timeout: 30000            // 30s total timeout for processing
+@request('heavy-computation', {
+  discoveryTimeout: 50,   // 50ms to find handler
+  timeout: 30000          // 30s for actual processing
 })
-async *processData() {
-  // Will timeout in 50ms if no handler exists
-  // Will timeout in 30s total if processing takes too long
-  const result = await (yield data);
-  return result;
+async *compute(): RequestResult<any> {
+  return await (yield data);
 }
 ```
 
-**Why two timeouts?**
-- **Discovery**: Should be very fast (dozens of milliseconds) - just finding if anyone can handle the request
-- **Response**: Should be human-scale (seconds/minutes) - actual work takes time
-
-#### Debounce Support
-
-Prevents rapid successive requests by delaying execution:
+### Debounce/Throttle
 
 ```typescript
-@request('@api/search', { debounce: 300 })
-async *search() {
-  // Debounced by 300ms - rapid calls will cancel previous ones
-  const results = await (yield query);
-  return results;
+// Debounce: wait for typing to stop before searching
+@request('search', { debounce: 300 })
+async *search(): RequestResult<any[]> {
+  return await (yield { query: this.searchTerm });
 }
-```
 
-#### Throttle Support
-
-Limits request frequency to maximum rate:
-
-```typescript
-@request('@api/analytics', { throttle: 1000 })
-async *trackEvent() {
-  // Throttled to max 1 request per second
-  const response = await (yield eventData);
-  return response;
-}
-```
-
-### Timeout Configuration
-
-```typescript
-@element('timeout-example')
-class TimeoutExample extends HTMLElement {
-  // Quick discovery, short total timeout for fast operations
-  @request('quick-data', {
-    discoveryTimeout: 25,  // Very fast discovery
-    timeout: 1000          // 1 second total
-  })
-  async *fetchQuickData() {
-    const data = await (yield { quick: true });
-    return data;
-  }
-
-  // Standard discovery, longer timeout for slow operations
-  @request('slow-data', {
-    discoveryTimeout: 50,  // Default discovery
-    timeout: 30000         // 30 seconds total
-  })
-  async *fetchSlowData() {
-    const data = await (yield { slow: true });
-    return data;
-  }
-
-  // Use defaults (50ms discovery, 2 minutes total)
-  @request('default-data')
-  async *fetchDefaultData() {
-    const data = await (yield { default: true });
-    return data;
-  }
-
-  // Custom event options with timeouts
-  @request('private-data', {
-    discoveryTimeout: 100, // Slower discovery
-    timeout: 60000,        // 1 minute total
-    bubbles: false,        // Don't bubble
-    cancelable: true       // Can be canceled
-  })
-  async *fetchPrivateData() {
-    const data = await (yield { private: true });
-    return data;
-  }
-
-  @render()
-  renderContent() {
-    return html`<div>Timeout examples</div>`;
-  }
+// Throttle: limit analytics to 1 per second
+@request('track', { throttle: 1000 })
+async *trackEvent(): RequestResult<void> {
+  await (yield { event: 'scroll', position: window.scrollY });
 }
 ```
 
 ## Error Handling
 
-### Handling Timeouts
+### Element-Side
 
 ```typescript
-@element('timeout-handler')
-class TimeoutHandler extends HTMLElement {
-  @request('data', {
-    discoveryTimeout: 50,
-    timeout: 5000
-  })
-  async *fetchData() {
-    try {
-      const data = await (yield { request: 'data' });
-      return { success: true, data };
-    } catch (error: any) {
-      // Handle different types of timeout errors
-      if (error.message.includes('timed out after') && error.message.includes('no handler found')) {
-        console.error('No handler found for request');
-        return { success: false, error: 'no_handler' };
-      } else if (error.message.includes('timed out after')) {
-        console.error('Request processing timed out');
-        return { success: false, error: 'timeout' };
-      }
-      throw error;
-    }
-  }
+@element('safe-loader')
+class SafeLoader extends HTMLElement {
+  @property() error = '';
+  @property() data: any = null;
 
-  async loadData() {
+  @request('load-data', { timeout: 5000 })
+  async *loadData(): RequestResult<void> {
     try {
-      const result = await this.fetchData();
-      if (!result.success) {
-        this.showError('Failed to load data');
+      this.data = await (yield { id: this.dataId });
+      this.error = '';
+    } catch (err: any) {
+      if (err.message.includes('no handler found')) {
+        this.error = 'Service unavailable';
+      } else if (err.message.includes('timed out')) {
+        this.error = 'Request timed out';
+      } else {
+        this.error = err.message;
       }
-    } catch (error) {
-      this.showError('Unexpected error');
     }
-  }
-
-  showError(message: string) {
-    console.error(message);
   }
 
   @render()
   renderContent() {
-    return html`<button @click=${this.loadData}>Load Data</button>`;
+    return html`
+      <if ${this.error}>
+        <div class="error">${this.error}</div>
+      </if>
+      <if ${this.data}>
+        <div class="content">${this.data.title}</div>
+      </if>
+    `;
   }
 }
 ```
 
-### Controller Error Handling
+### Controller-Side
 
 ```typescript
-@controller('error-controller')
-class ErrorController implements IController {
+@controller('resilient-controller')
+class ResilientController implements IController {
   element: HTMLElement | null = null;
+  async attach() {}
+  async detach() {}
 
-  async attach(element: HTMLElement) {}
-  async detach(element: HTMLElement) {}
-
-  @respond('risky-operation')
-  async handleRiskyOperation(request: any) {
-    try {
-      // Validate request
-      if (!request.id) {
-        throw new Error('ID is required');
-      }
-
-      // Perform operation
-      const result = await this.performOperation(request.id);
-
-      return { success: true, result };
-    } catch (error: any) {
-      // Return error info instead of throwing
-      return {
-        success: false,
-        error: error.message,
-        code: error.code || 'UNKNOWN_ERROR'
-      };
+  @respond('load-data')
+  async handleLoadData(request: { id: string }) {
+    if (!request.id) {
+      throw new Error('ID is required');
     }
-  }
 
-  private async performOperation(id: string) {
-    // Simulate operation that might fail
-    if (Math.random() > 0.5) {
-      throw new Error('Random failure');
+    const response = await fetch(`/api/data/${request.id}`);
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
     }
-    return { id, processed: true };
+
+    return await response.json();
   }
 }
 ```
 
 ## Advanced Patterns
 
-### Authentication Request/Response
-
-```typescript
-// Element side
-@element('protected-content')
-class ProtectedContent extends HTMLElement {
-  @request('authenticate')
-  async *authenticate() {
-    // Send credentials
-    const authResult = await (yield {
-      username: 'user@example.com',
-      password: 'secret'
-    });
-
-    if (!authResult.success) {
-      throw new Error(authResult.error);
-    }
-
-    // Store token
-    localStorage.setItem('token', authResult.token);
-
-    return authResult;
-  }
-
-  @request('fetch-protected')
-  async *fetchProtectedData() {
-    const token = localStorage.getItem('token');
-
-    if (!token) {
-      // Need to authenticate first
-      await this.authenticate();
-    }
-
-    // Fetch with token
-    const data = await (yield {
-      resource: 'protected',
-      token: localStorage.getItem('token')
-    });
-
-    return data;
-  }
-
-  @render()
-  renderContent() {
-    return html`<button @click=${this.loadProtected}>Load Protected Data</button>`;
-  }
-
-  async loadProtected() {
-    try {
-      const data = await this.fetchProtectedData();
-      console.log('Protected data:', data);
-    } catch (error) {
-      console.error('Failed to load:', error);
-    }
-  }
-}
-
-// Controller side
-@controller('auth-controller')
-class AuthController implements IController {
-  element: HTMLElement | null = null;
-  private tokens = new Map<string, any>();
-
-  async attach(element: HTMLElement) {}
-  async detach(element: HTMLElement) {}
-
-  @respond('authenticate')
-  async handleAuth(credentials: any) {
-    // Validate credentials
-    if (credentials.username === 'user@example.com' &&
-        credentials.password === 'secret') {
-
-      const token = this.generateToken();
-      const user = { id: 1, name: 'User' };
-
-      this.tokens.set(token, user);
-
-      return {
-        success: true,
-        token,
-        user
-      };
-    }
-
-    return {
-      success: false,
-      error: 'Invalid credentials'
-    };
-  }
-
-  @respond('fetch-protected')
-  async handleFetchProtected(request: any) {
-    // Validate token
-    const user = this.tokens.get(request.token);
-
-    if (!user) {
-      throw new Error('Invalid or expired token');
-    }
-
-    // Return protected data
-    return {
-      resource: request.resource,
-      data: { secret: 'Protected information' },
-      user
-    };
-  }
-
-  private generateToken() {
-    return Math.random().toString(36).substring(2);
-  }
-}
-```
-
-### Streaming Data Request/Response
-
-```typescript
-// Element side
-@element('data-streamer')
-class DataStreamer extends HTMLElement {
-  private items: any[] = [];
-
-  @request('stream-data')
-  async *streamData() {
-    let hasMore = true;
-    let page = 1;
-
-    while (hasMore) {
-      // Request next page
-      const response = await (yield {
-        page,
-        pageSize: 10
-      });
-
-      // Add items to list
-      this.items.push(...response.items);
-      this.renderItems();
-
-      // Check if more pages available
-      hasMore = response.hasMore;
-      page++;
-    }
-
-    return {
-      totalItems: this.items.length,
-      complete: true
-    };
-  }
-
-  renderItems() {
-    const container = this.shadowRoot?.querySelector('.items');
-    if (container) {
-      container.innerHTML = this.items
-        .map(item => `<div>${item.name}</div>`)
-        .join('');
-    }
-  }
-
-  @render()
-  renderContent() {
-    return html`
-      <button @click=${this.loadAllData}>Load All Data</button>
-      <div class="items"></div>
-    `;
-  }
-
-  async loadAllData() {
-    const result = await this.streamData();
-    console.log(`Loaded ${result.totalItems} items`);
-  }
-}
-
-// Controller side
-@controller('stream-controller')
-class StreamController implements IController {
-  element: HTMLElement | null = null;
-  private allData: any[] = Array.from({ length: 35 }, (_, i) => ({
-    id: i + 1,
-    name: `Item ${i + 1}`
-  }));
-
-  async attach(element: HTMLElement) {}
-  async detach(element: HTMLElement) {}
-
-  @respond('stream-data')
-  async handleStreamData(request: { page: number; pageSize: number }) {
-    // Simulate delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-
-    // Calculate pagination
-    const start = (request.page - 1) * request.pageSize;
-    const end = start + request.pageSize;
-
-    const items = this.allData.slice(start, end);
-    const hasMore = end < this.allData.length;
-
-    return {
-      items,
-      hasMore,
-      page: request.page,
-      totalPages: Math.ceil(this.allData.length / request.pageSize)
-    };
-  }
-}
-```
-
-### Cached Request/Response
+### Cached Responses
 
 ```typescript
 @controller('cached-controller')
 class CachedController implements IController {
   element: HTMLElement | null = null;
   private cache = new Map<string, { data: any; timestamp: number }>();
-  private cacheTimeout = 60000; // 1 minute
+  private ttl = 60000; // 1 minute
 
-  async attach(element: HTMLElement) {}
-  async detach(element: HTMLElement) {}
+  async attach() {}
+  async detach() {}
 
   @respond('fetch-cached')
-  async handleFetchCached(request: { key: string; forceRefresh?: boolean }) {
-    const cacheKey = request.key;
-    const cached = this.cache.get(cacheKey);
-
-    // Check cache validity
-    if (!request.forceRefresh && cached) {
-      const age = Date.now() - cached.timestamp;
-      if (age < this.cacheTimeout) {
-        console.log(`Returning cached data for ${cacheKey}`);
-        return {
-          data: cached.data,
-          fromCache: true,
-          age
-        };
-      }
+  async handleFetch(request: { key: string; forceRefresh?: boolean }) {
+    const cached = this.cache.get(request.key);
+    if (!request.forceRefresh && cached && Date.now() - cached.timestamp < this.ttl) {
+      return { data: cached.data, fromCache: true };
     }
 
-    // Fetch fresh data
-    console.log(`Fetching fresh data for ${cacheKey}`);
-    const freshData = await this.fetchFreshData(cacheKey);
-
-    // Update cache
-    this.cache.set(cacheKey, {
-      data: freshData,
-      timestamp: Date.now()
-    });
-
-    return {
-      data: freshData,
-      fromCache: false,
-      age: 0
-    };
-  }
-
-  private async fetchFreshData(key: string) {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    return { key, value: Math.random(), timestamp: Date.now() };
+    const data = await fetch(`/api/${request.key}`).then(r => r.json());
+    this.cache.set(request.key, { data, timestamp: Date.now() });
+    return { data, fromCache: false };
   }
 }
 ```
 
-### Multi-Step Workflow
+### Subscription Pattern
+
+Use `@request` for one-time fetches and `@dispatch` + `@on` for ongoing updates:
 
 ```typescript
-// Element requests a multi-step order process
-@element('order-form')
-class OrderForm extends HTMLElement {
-  @request('place-order')
-  async *placeOrder(): Response<{ orderId: string }> {
-    // Step 1: validate stock
-    const stock = await (yield { action: 'check-stock', items: this.cartItems });
-    if (!stock.available) throw new Error('Out of stock');
+// Element: visual, subscribes to updates
+@element('live-ticker')
+class LiveTicker extends HTMLElement {
+  @property() price = '0.00';
+  @property() symbol = 'BTC';
 
-    // Step 2: process payment
-    const payment = await (yield { action: 'charge', amount: stock.total });
-    if (!payment.success) throw new Error('Payment failed');
+  @request('subscribe-ticker')
+  async *subscribe(): RequestResult<void> {
+    await (yield { symbol: this.symbol });
+  }
 
-    // Step 3: confirm order
-    return await (yield { action: 'confirm', paymentId: payment.id });
+  @on('ticker-update')
+  onUpdate(e: CustomEvent) {
+    this.price = e.detail.price;
+  }
+
+  @render()
+  renderContent() {
+    return html`
+      <span class="symbol">${this.symbol}</span>
+      <span class="price">${this.price}</span>
+    `;
   }
 }
 
-// Controller handles each step
-@controller('order-controller')
-class OrderController implements IController {
+// Controller: manages WebSocket, dispatches updates
+@controller('ticker-controller')
+class TickerController implements IController {
   element: HTMLElement | null = null;
+  private ws?: WebSocket;
 
-  async attach(element: HTMLElement) {}
-  async detach(element: HTMLElement) {}
+  async attach() {}
 
-  @respond('place-order')
-  async handleOrder(req: any) {
-    switch (req.action) {
-      case 'check-stock':
-        return { available: true, total: 99.99 };
-      case 'charge':
-        return { success: true, id: 'pay_abc123' };
-      case 'confirm':
-        return { orderId: 'ORD-001' };
-    }
+  async detach() {
+    this.ws?.close();
+  }
+
+  @respond('subscribe-ticker')
+  async handleSubscribe(request: { symbol: string }) {
+    this.ws = new WebSocket(`wss://api.example.com/ticker/${request.symbol}`);
+    this.ws.onmessage = (msg) => {
+      this.element?.dispatchEvent(new CustomEvent('ticker-update', {
+        detail: JSON.parse(msg.data)
+      }));
+    };
+    return { subscribed: true };
   }
 }
 ```

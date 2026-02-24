@@ -30,8 +30,10 @@ class MyButton extends HTMLElement {
 
 ### Element Decorator Options
 
-The `@element` decorator accepts a single parameter:
+The `@element` decorator accepts:
 - `tagName: string` - The custom element tag name (must contain a hyphen)
+- `options?: ElementOptions` - Optional configuration
+  - `formAssociated?: boolean` - Enable form association (default: false)
 
 ## Lifecycle Methods
 
@@ -106,7 +108,7 @@ class SimpleList extends HTMLElement {
 - Avoiding differential rendering issues with dynamic attributes
 - Simple components where full re-render is acceptable
 
-**Note:** When `differential: false`, the render method must return a string (not `html\`...\``) and still honors `<if>` and `<switch>/<case>` meta elements.
+**Note:** When `differential: false`, the render method must return a string (not `html\`...\``). Conditional rendering (`<if>`, `<switch>/<case>`) is NOT available — use ternary operators in the string template instead.
 
 ### Imperative Rendering
 
@@ -209,23 +211,25 @@ componentStyles() {
 
 ### Lifecycle Decorators
 
-**@ready()** - Called after shadow DOM is ready and initial render completes:
+**@ready()** - Called after styles are applied and event handlers are set up. The initial render may still be completing in a microtask — use `@query` (which re-queries each access) to safely access rendered DOM:
 
 ```typescript
-import { element, ready, render, html } from 'snice';
+import { element, ready, query, render, html } from 'snice';
 
-@element('data-loader')
-class DataLoader extends HTMLElement {
+@element('auto-resize-textarea')
+class AutoResizeTextarea extends HTMLElement {
+  @query('textarea') textarea?: HTMLTextAreaElement;
+
   @ready()
-  async loadData() {
-    // Called after element is fully initialized
-    const data = await fetch('/api/data').then(r => r.json());
-    this.data = data;
+  adjustHeight() {
+    if (this.textarea) {
+      this.textarea.style.height = `${this.textarea.scrollHeight}px`;
+    }
   }
 
   @render()
   renderContent() {
-    return html`<div>Loading...</div>`;
+    return html`<textarea @input=${this.adjustHeight}></textarea>`;
   }
 }
 ```
@@ -233,27 +237,29 @@ class DataLoader extends HTMLElement {
 **@dispose()** - Called when element is removed from DOM:
 
 ```typescript
-@element('polling-element')
-class PollingElement extends HTMLElement {
-  private intervalId?: number;
+@element('animated-element')
+class AnimatedElement extends HTMLElement {
+  private rafId?: number;
 
   @ready()
-  startPolling() {
-    this.intervalId = setInterval(() => {
-      this.updateData();
-    }, 5000);
+  startAnimation() {
+    const animate = () => {
+      // Update animation frame
+      this.rafId = requestAnimationFrame(animate);
+    };
+    this.rafId = requestAnimationFrame(animate);
   }
 
   @dispose()
-  stopPolling() {
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
+  stopAnimation() {
+    if (this.rafId) {
+      cancelAnimationFrame(this.rafId);
     }
   }
 
   @render()
   renderContent() {
-    return html`<div>Polling...</div>`;
+    return html`<canvas width="300" height="200"></canvas>`;
   }
 }
 ```
@@ -272,20 +278,23 @@ await (el as any).ready; // Wait for element to be ready
 
 All elements automatically use Shadow DOM for style encapsulation.
 
-### Accessing Shadow Root
+### Accessing Shadow DOM Elements
+
+Use `@query` instead of manual `shadowRoot.querySelector`:
 
 ```typescript
 @element('shadow-demo')
 class ShadowDemo extends HTMLElement {
+  @query('#content') content?: HTMLElement;
+
   @render()
   renderContent() {
     return html`<div id="content">Hello</div>`;
   }
 
   updateContent(text: string) {
-    const content = this.shadowRoot?.getElementById('content');
-    if (content) {
-      content.textContent = text;
+    if (this.content) {
+      this.content.textContent = text;
     }
   }
 }
@@ -563,26 +572,28 @@ class ScopedStyles extends HTMLElement {
 
 ### Dynamic Styles
 
+`@styles()` is called **once** during initialization and does not update on property changes. For dynamic styling, use CSS custom properties set in the template:
+
 ```typescript
 @element('theme-component')
 class ThemeComponent extends HTMLElement {
   @property()
-  primaryColor = '#007bff';
-
-  @property({ type: Number })
-  fontSize = 16;
+  accentColor = '#007bff';
 
   @render()
   renderContent() {
-    return html`<div class="themed">Themed content</div>`;
+    return html`
+      <div class="themed" style="--accent: ${this.accentColor}">
+        Themed content
+      </div>
+    `;
   }
 
   @styles()
   themeStyles() {
     return css`
       .themed {
-        color: ${this.primaryColor};
-        font-size: ${this.fontSize}px;
+        color: var(--accent);
       }
     `;
   }
@@ -717,35 +728,38 @@ class FormHandler extends HTMLElement {
 
 ## Advanced Examples
 
-### Complex Form Component
+### Form Component
+
+Elements handle visual behavior — they render the form and emit events. Business logic (API calls, validation) belongs in controllers:
 
 ```typescript
-import { element, property, query, watch, render, styles, html, css } from 'snice';
+import { element, property, query, dispatch, render, styles, html, css } from 'snice';
 
 @element('registration-form')
 class RegistrationForm extends HTMLElement {
   @property({ type: Boolean })
   loading = false;
 
-  @query('form')
-  form?: HTMLFormElement;
+  @query('form') form?: HTMLFormElement;
+
+  @dispatch('register-submit')
+  handleSubmit(event: Event) {
+    event.preventDefault();
+    return Object.fromEntries(new FormData(this.form!));
+  }
 
   @render()
   renderContent() {
     return html`
       <form @submit=${this.handleSubmit}>
-        <h2>Register</h2>
-
         <div class="field">
           <label>Username</label>
           <input type="text" name="username" required>
         </div>
-
         <div class="field">
           <label>Email</label>
           <input type="email" name="email" required>
         </div>
-
         <button type="submit" ?disabled=${this.loading}>
           ${this.loading ? 'Registering...' : 'Register'}
         </button>
@@ -759,40 +773,23 @@ class RegistrationForm extends HTMLElement {
       :host {
         display: block;
         max-width: 400px;
-        margin: 0 auto;
-      }
-
-      form {
-        padding: 20px;
-        background: white;
-        border-radius: 8px;
       }
 
       .field {
-        margin-bottom: 20px;
+        margin-bottom: 1rem;
       }
 
       label {
         display: block;
-        margin-bottom: 5px;
+        margin-bottom: 0.25rem;
         font-weight: bold;
       }
 
       input {
         width: 100%;
-        padding: 8px 12px;
-        border: 1px solid #ddd;
+        padding: 0.5rem;
+        border: 1px solid var(--snice-color-border, #ddd);
         border-radius: 4px;
-      }
-
-      button {
-        width: 100%;
-        padding: 10px;
-        background: #007bff;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
       }
 
       button:disabled {
@@ -800,30 +797,6 @@ class RegistrationForm extends HTMLElement {
         cursor: not-allowed;
       }
     `;
-  }
-
-  async handleSubmit(event: Event) {
-    event.preventDefault();
-
-    this.loading = true;
-
-    try {
-      const formData = new FormData(this.form!);
-
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      this.dispatchEvent(new CustomEvent('registration-success', {
-        detail: Object.fromEntries(formData),
-        bubbles: true
-      }));
-
-      this.form?.reset();
-    } catch (error) {
-      console.error('Registration failed:', error);
-    } finally {
-      this.loading = false;
-    }
   }
 }
 ```
@@ -876,13 +849,16 @@ class ReactiveComponent extends HTMLElement {
 Receive router context updates. The decorated method is called whenever the router context changes (navigation, app context update, etc.):
 
 ```typescript
-import { element, context, render, html } from 'snice';
-import type { Context } from 'snice';
+import { element, context, property, render, html } from 'snice';
+import type { Context, Placard } from 'snice';
 
 @element('nav-bar')
 class NavBar extends HTMLElement {
-  private placards: any[] = [];
-  private currentRoute = '';
+  @property({ type: Array })
+  placards: Placard[] = [];
+
+  @property()
+  currentRoute = '';
 
   @context()
   onContextUpdate(ctx: Context) {

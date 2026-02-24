@@ -255,7 +255,7 @@ The `@on` decorator works in **both elements AND controllers**. It provides powe
 - Event delegation with CSS selectors
 - Keyboard modifier matching (`Enter`, `ctrl+s`, etc.)
 - Debounce or throttle
-- Multiple events on one handler
+- Multiple events on one handler (accepts `string[]`: `@on(['mouseenter', 'focus'])`)
 - Automatic preventDefault or stopPropagation
 
 ### Basic Controller Usage
@@ -523,36 +523,77 @@ class StatusIndicator extends HTMLElement {
 }
 ```
 
-### Multiple Dispatches
+### DispatchOptions
 
 ```typescript
-@element('data-manager')
-class DataManager extends HTMLElement {
-  private data: any[] = [];
+interface DispatchOptions extends EventInit {
+  dispatchOnUndefined?: boolean; // Skip dispatch when return is undefined (default: true)
+  debounce?: number;             // Debounce dispatch by ms
+  throttle?: number;             // Throttle dispatch by ms
+}
+```
+
+### Debounce/Throttle
+
+```typescript
+@element('search-box')
+class SearchBox extends HTMLElement {
+  @render()
+  renderContent() {
+    return html`<input @input=${this.handleInput}>`;
+  }
+
+  handleInput(e: Event) {
+    this.emitSearch((e.target as HTMLInputElement).value);
+  }
+
+  @dispatch('search-query', { debounce: 300 })
+  emitSearch(query: string) {
+    return { query };
+  }
+}
+```
+
+### Async Methods
+
+`@dispatch` works with async methods — the event dispatches after the promise resolves:
+
+```typescript
+@dispatch('validation-complete')
+async validate() {
+  const result = await this.runValidation();
+  return { valid: result.isValid, errors: result.errors };
+}
+```
+
+### Multiple Events
+
+```typescript
+@element('color-picker')
+class ColorPicker extends HTMLElement {
+  @property() color = '#000000';
 
   @render()
   renderContent() {
-    return html`<div>Data Manager</div>`;
+    return html`
+      <input type="color" .value=${this.color} @input=${this.handleInput}>
+      <button @click=${this.confirm}>OK</button>
+    `;
   }
 
-  @dispatch('item-added')
-  addItem(item: any) {
-    this.data.push(item);
-    return { item, total: this.data.length };
+  handleInput(e: Event) {
+    this.changeColor((e.target as HTMLInputElement).value);
   }
 
-  @dispatch('item-removed')
-  removeItem(id: string) {
-    const item = this.data.find(i => i.id === id);
-    this.data = this.data.filter(i => i.id !== id);
-    return { id, item, total: this.data.length };
+  @dispatch('color-preview')
+  changeColor(color: string) {
+    this.color = color;
+    return { color };
   }
 
-  @dispatch('data-cleared')
-  clearData() {
-    const count = this.data.length;
-    this.data = [];
-    return { clearedCount: count };
+  @dispatch('color-selected')
+  confirm() {
+    return { color: this.color };
   }
 }
 ```
