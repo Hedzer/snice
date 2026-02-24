@@ -1,3 +1,18 @@
+# [4.12.0](https://gitlab.com/Hedzer/snice/compare/v4.11.0...v4.12.0) (2026-02-24)
+
+
+### Bug Fixes
+
+* add slideCount prop to carousel react adapter ([16ded54](https://gitlab.com/Hedzer/snice/commit/16ded54824f7c76eed5ae116bf48ac051482938a))
+* stamp asset URLs, preload code-block in head, showcase tweaks ([7c317c1](https://gitlab.com/Hedzer/snice/commit/7c317c1e2b2daf734de6a55b777f73328f587f46))
+
+
+### Features
+
+* asset cache-busting with git hash stamps, CDN cache headers ([19e178f](https://gitlab.com/Hedzer/snice/commit/19e178f9aa2d7918e6280d9e24782549b600cba6))
+* html grammar with embedded JS/CSS highlighting, add website grammar files ([3e7556c](https://gitlab.com/Hedzer/snice/commit/3e7556c0a869c569cbee684b71aa565bb262a47e))
+* migrate website code samples to snice-code-block, drop manual syntax spans ([70dbdae](https://gitlab.com/Hedzer/snice/commit/70dbdaefaf19fe031947b513a06ec4f452e6fc72))
+
 # [4.11.0](https://gitlab.com/Hedzer/snice/compare/v4.10.0...v4.11.0) (2026-02-24)
 
 
