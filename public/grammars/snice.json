@@ -19,7 +19,7 @@
   "constants": ["true", "false", "null", "undefined", "NaN", "Infinity"],
   "tokenizer": {
     "root": [
-      ["\\/\\/.*$", "comment"],
+      ["\\/\\/.*", "comment"],
       ["\\/\\*", "comment", "@comment"],
       ["\\bhtml(?:\\/\\*\\w*\\*\\/)?`", "tag", "@htmlTemplate"],
       ["\\bcss(?:\\/\\*\\w*\\*\\/)?`", "tag", "@cssTemplate"],

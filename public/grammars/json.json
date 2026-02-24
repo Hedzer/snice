@@ -4,12 +4,19 @@
   "defaultToken": "",
   "tokenizer": {
     "root": [
+      ["\\/\\/.*", "comment"],
+      ["\\/\\*", "comment", "@comment"],
       ["\"(?:[^\"\\\\]|\\\\.)*\"(?=\\s*:)", "property"],
       ["\"", "string", "@string"],
       ["-?\\b\\d+\\.?\\d*(?:e[+-]?\\d+)?\\b", "number"],
       ["\\b(?:true|false)\\b", "constant"],
       ["\\bnull\\b", "constant"],
       ["[{}\\[\\],:]", "punctuation"]
+    ],
+    "comment": [
+      ["[^*]+", "comment"],
+      ["\\*\\/", "comment", "@pop"],
+      ["[*]", "comment"]
     ],
     "string": [
       ["[^\"\\\\]+", "string"],

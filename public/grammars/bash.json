@@ -16,7 +16,7 @@
   ],
   "tokenizer": {
     "root": [
-      ["#.*$", "comment"],
+      ["#.*", "comment"],
       ["\"", "string", "@string_double"],
       ["'[^']*'", "string"],
       ["\\$\\{[^}]*\\}", "attr-name"],

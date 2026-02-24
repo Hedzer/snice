@@ -24,7 +24,7 @@
     ],
     "scriptContent": [
       ["<\\/script\\s*>", "tag", "@pop"],
-      ["\\/\\/.*$", "comment"],
+      ["\\/\\/.*", "comment"],
       ["\\/\\*", "comment", "@blockComment"],
       ["`", "string", "@template"],
       ["\"(?:[^\"\\\\]|\\\\.)*\"", "string"],

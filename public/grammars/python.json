@@ -22,7 +22,7 @@
     "root": [
       ["\"\"\"", "string", "@triple_double"],
       ["'''", "string", "@triple_single"],
-      ["#.*$", "comment"],
+      ["#.*", "comment"],
       ["\"(?:[^\"\\\\]|\\\\.)*\"", "string"],
       ["'(?:[^'\\\\]|\\\\.)*'", "string"],
       ["@[\\w.]+", "tag"],
