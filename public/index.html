@@ -48,48 +48,48 @@
           <button class="code-tab active" data-tab="declarative">Declarative</button>
           <button class="code-tab" data-tab="imperative">Imperative</button>
         </div>
-        <pre class="code-panel active" data-panel="declarative"><code><span class="d">@element</span><span class="p">(</span><span class="s">'user-card'</span><span class="p">)</span>
-<span class="k">class</span> <span class="t">UserCard</span> <span class="k">extends</span> <span class="t">HTMLElement</span> <span class="p">{</span>
-  <span class="d">@property</span><span class="p">()</span> name <span class="p">=</span> <span class="s">''</span><span class="p">;</span>
-  <span class="d">@property</span><span class="p">()</span> role <span class="p">=</span> <span class="s">''</span><span class="p">;</span>
+        <pre class="code-panel active" data-panel="declarative"><code>@element('user-card')
+class UserCard extends HTMLElement {
+  @property() name = '';
+  @property() role = '';
 
-  <span class="d">@render</span><span class="p">()</span>
-  <span class="f">template</span><span class="p">()</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="f">html</span><span class="s">`
-      <span class="h">&lt;div</span> <span class="a">class</span>=<span class="s">"card"</span><span class="h">&gt;</span>
-        <span class="h">&lt;h3&gt;</span><span class="i">${</span><span class="v">this</span>.name<span class="i">}</span><span class="h">&lt;/h3&gt;</span>
-        <span class="h">&lt;span&gt;</span><span class="i">${</span><span class="v">this</span>.role<span class="i">}</span><span class="h">&lt;/span&gt;</span>
-      <span class="h">&lt;/div&gt;</span>
-    `</span><span class="p">;</span>
-  <span class="p">}</span>
-<span class="p">}</span>
-<span class="c">// Reactive: auto-renders on property change</span></code></pre>
-        <pre class="code-panel" data-panel="imperative"><code><span class="d">@element</span><span class="p">(</span><span class="s">'user-card'</span><span class="p">)</span>
-<span class="k">class</span> <span class="t">UserCard</span> <span class="k">extends</span> <span class="t">HTMLElement</span> <span class="p">{</span>
-  <span class="d">@property</span><span class="p">()</span> name <span class="p">=</span> <span class="s">''</span><span class="p">;</span>
-  <span class="d">@property</span><span class="p">()</span> role <span class="p">=</span> <span class="s">''</span><span class="p">;</span>
+  @render()
+  template() {
+    return html`
+      &lt;div class="card"&gt;
+        &lt;h3&gt;${this.name}&lt;/h3&gt;
+        &lt;span&gt;${this.role}&lt;/span&gt;
+      &lt;/div&gt;
+    `;
+  }
+}
+// Reactive: auto-renders on property change</code></pre>
+        <pre class="code-panel" data-panel="imperative"><code>@element('user-card')
+class UserCard extends HTMLElement {
+  @property() name = '';
+  @property() role = '';
 
-  <span class="d">@query</span><span class="p">(</span><span class="s">'.name'</span><span class="p">)</span> $name<span class="p">!:</span> <span class="t">HTMLElement</span><span class="p">;</span>
-  <span class="d">@query</span><span class="p">(</span><span class="s">'.role'</span><span class="p">)</span> $role<span class="p">!:</span> <span class="t">HTMLElement</span><span class="p">;</span>
+  @query('.name') $name!: HTMLElement;
+  @query('.role') $role!: HTMLElement;
 
-  <span class="d">@render</span><span class="p">({</span> once<span class="p">:</span> <span class="k">true</span> <span class="p">})</span>
-  <span class="f">template</span><span class="p">()</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="f">html</span><span class="s">`
-      <span class="h">&lt;div</span> <span class="a">class</span>=<span class="s">"card"</span><span class="h">&gt;</span>
-        <span class="h">&lt;h3</span> <span class="a">class</span>=<span class="s">"name"</span><span class="h">&gt;</span><span class="i">${</span><span class="v">this</span>.name<span class="i">}</span><span class="h">&lt;/h3&gt;</span>
-        <span class="h">&lt;span</span> <span class="a">class</span>=<span class="s">"role"</span><span class="h">&gt;</span><span class="i">${</span><span class="v">this</span>.role<span class="i">}</span><span class="h">&lt;/span&gt;</span>
-      <span class="h">&lt;/div&gt;</span>
-    `</span><span class="p">;</span>
-  <span class="p">}</span>
+  @render({ once: true })
+  template() {
+    return html`
+      &lt;div class="card"&gt;
+        &lt;h3 class="name"&gt;${this.name}&lt;/h3&gt;
+        &lt;span class="role"&gt;${this.role}&lt;/span&gt;
+      &lt;/div&gt;
+    `;
+  }
 
-  <span class="d">@watch</span><span class="p">(</span><span class="s">'name'</span><span class="p">,</span> <span class="s">'role'</span><span class="p">)</span>
-  <span class="f">update</span><span class="p">()</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(!</span><span class="v">this</span>.$name<span class="p">)</span> <span class="k">return</span><span class="p">;</span>
-    <span class="v">this</span>.$name.textContent <span class="p">=</span> <span class="v">this</span>.name<span class="p">;</span>
-    <span class="v">this</span>.$role.textContent <span class="p">=</span> <span class="v">this</span>.role<span class="p">;</span>
-  <span class="p">}</span>
-<span class="p">}</span>
-<span class="c">// Direct DOM: you control updates</span></code></pre>
+  @watch('name', 'role')
+  update() {
+    if (!this.$name) return;
+    this.$name.textContent = this.name;
+    this.$role.textContent = this.role;
+  }
+}
+// Direct DOM: you control updates</code></pre>
         <script>
           document.querySelectorAll('.code-tab').forEach(tab => {
             tab.onclick = () => {
@@ -167,5 +167,22 @@
       </div>
     </section>
   </main>
+
+  <script src="components/snice-runtime.min.js"></script>
+  <script src="components/snice-code-block.min.js"></script>
+  <script>
+    document.querySelectorAll('.hero-code pre.code-panel > code').forEach(code => {
+      const pre = code.parentElement;
+      const text = code.textContent;
+      const block = document.createElement('snice-code-block');
+      block.setAttribute('language', 'snice');
+      block.setAttribute('grammar', 'grammars/snice.json');
+      block.copyable = false;
+      block.code = text;
+      block.className = pre.className;
+      Object.assign(block.dataset, pre.dataset);
+      pre.replaceWith(block);
+    });
+  </script>
 </body>
 </html>

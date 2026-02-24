@@ -26,22 +26,18 @@
     </div>
   </header>
   <main class="wrap">
-    <div class="page-title">
-      <h2>Decorators & Patterns</h2>
-      <p>Everything is declarative. TypeScript decorators for clean, maintainable components.</p>
-    </div>
 
     <div class="dec-section">
       <h3><code>@element</code></h3>
       <p class="desc">Register a custom element. Extends HTMLElement with reactive properties and lifecycle.</p>
-      <pre><code><span class="d">@element</span>(<span class="s">'my-card'</span>)
-<span class="k">class</span> <span class="t">MyCard</span> <span class="k">extends</span> HTMLElement {
-  <span class="d">@property</span>() title = <span class="s">''</span>;
-  <span class="d">@property</span>({ type: Number }) count = 0;
+      <pre><code>@element('my-card')
+class MyCard extends HTMLElement {
+  @property() title = '';
+  @property({ type: Number }) count = 0;
 
-  <span class="d">@render</span>()
-  <span class="f">template</span>() {
-    <span class="k">return</span> html`&lt;h1&gt;${this.title}&lt;/h1&gt;`;
+  @render()
+  template() {
+    return html`&lt;h1&gt;${this.title}&lt;/h1&gt;`;
   }
 }</code></pre>
       <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/elements.md">Full documentation →</a></p>
@@ -50,19 +46,19 @@
     <div class="dec-section">
       <h3><code>@page</code></h3>
       <p class="desc">Routable page component with route parameters, guards, and lifecycle hooks.</p>
-      <pre><code><span class="c">// Guard receives context + route params</span>
-<span class="k">const</span> auth: <span class="t">Guard</span>&lt;<span class="t">AppContext</span>&gt; = (ctx, params) => ctx.isAuthenticated();
+      <pre><code>// Guard receives context + route params
+const auth: Guard&lt;AppContext&gt; = (ctx, params) =&gt; ctx.isAuthenticated();
 
-<span class="d">@page</span>({ tag: <span class="s">'user-page'</span>, routes: [<span class="s">'/users/:id'</span>], guards: [auth] })
-<span class="k">class</span> <span class="t">UserPage</span> <span class="k">extends</span> HTMLElement {
-  <span class="c">// Route param :id auto-binds to this property</span>
-  <span class="d">@property</span>() id = <span class="s">''</span>;
-  <span class="d">@property</span>() user = <span class="k">null</span>;
+@page({ tag: 'user-page', routes: ['/users/:id'], guards: [auth] })
+class UserPage extends HTMLElement {
+  // Route param :id auto-binds to this property
+  @property() id = '';
+  @property() user = null;
 
-  <span class="d">@ready</span>()
-  <span class="k">async</span> <span class="f">load</span>() {
-    <span class="c">// this.id is already set from URL</span>
-    this.user = <span class="k">await</span> fetch(`/api/users/${this.id}`).then(r => r.json());
+  @ready()
+  async load() {
+    // this.id is already set from URL
+    this.user = await fetch(`/api/users/${this.id}`).then(r =&gt; r.json());
   }
 }</code></pre>
       <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/routing.md">Full documentation →</a></p>
@@ -71,35 +67,58 @@
     <div class="dec-section">
       <h3><code>@controller</code></h3>
       <p class="desc">Hot-swap logic on any element — keep your UI, change what it does.</p>
-      <pre><code><span class="d">@controller</span>(<span class="s">'weather'</span>)
-<span class="k">class</span> <span class="t">WeatherData</span> {
-  <span class="k">async</span> <span class="f">attach</span>(el) {
-    <span class="k">const</span> data = <span class="k">await</span> <span class="f">fetch</span>(<span class="s">'/api/weather'</span>).then(r => r.json());
-    <span class="v">this</span>.city = data.city;
-    el.icon = <span class="s">'cloud'</span>;
+      <pre><code>@controller('weather')
+class WeatherData {
+  async attach(el) {
+    const data = await fetch('/api/weather').then(r =&gt; r.json());
+    this.city = data.city;
+    el.icon = 'cloud';
     el.label = data.city;
-    el.value = <span class="s">`${data.temp}°`</span>;
+    el.value = `${data.temp}°`;
   }
 
-  <span class="d">@on</span>(<span class="s">'click'</span>)
-  <span class="f">viewDetails</span>() {
-    <span class="f">navigate</span>(<span class="s">`/weather/${this.city}`</span>);
+  @on('click')
+  viewDetails() {
+    navigate(`/weather/${this.city}`);
   }
 }
 
-<span class="h">&lt;stat-card</span> <span class="a">controller</span>=<span class="s">"weather"</span><span class="h">&gt;&lt;/stat-card&gt;</span></code></pre>
+&lt;stat-card controller="weather"&gt;&lt;/stat-card&gt;</code></pre>
       <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/controllers.md">Full documentation →</a></p>
+    </div>
+
+    <div class="dec-section">
+      <h3><code>@layout</code></h3>
+      <p class="desc">Page wrapper for the routing system. Layouts persist across route changes and wrap page content.</p>
+      <pre><code>@layout('app-shell')
+class AppShell extends HTMLElement {
+  @render()
+  template() {
+    return html`
+      &lt;nav&gt;&lt;a href="/"&gt;Home&lt;/a&gt;&lt;/nav&gt;
+      &lt;main&gt;
+        &lt;slot&gt;&lt;/slot&gt;
+      &lt;/main&gt;
+      &lt;footer&gt;© 2025&lt;/footer&gt;
+    `;
+  }
+}
+
+// Pages reference the layout
+@page({ tag: 'home-page', routes: ['/'], layout: 'app-shell' })
+class HomePage extends HTMLElement { }</code></pre>
+      <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/routing.md">Full documentation →</a></p>
     </div>
 
     <div class="dec-section">
       <h3><code>@property</code> & <code>@watch</code></h3>
       <p class="desc">Reactive properties that trigger re-renders. Watch for changes.</p>
-      <pre><code><span class="d">@property</span>() name = <span class="s">''</span>;
-<span class="d">@property</span>({ type: Number }) count = 0;
-<span class="d">@property</span>({ type: Boolean, reflect: <span class="k">true</span> }) active = <span class="k">false</span>;
+      <pre><code>@property() name = '';
+@property({ type: Number }) count = 0;
+@property({ type: Boolean, reflect: true }) active = false;
 
-<span class="d">@watch</span>(<span class="s">'count'</span>)
-<span class="f">onCountChange</span>(newVal, oldVal) {
+@watch('count')
+onCountChange(newVal, oldVal) {
   console.log(`Count: ${oldVal} → ${newVal}`);
 }</code></pre>
     </div>
@@ -107,9 +126,9 @@
     <div class="dec-section">
       <h3><code>@render</code> & <code>@styles</code></h3>
       <p class="desc">Template method with differential rendering. Scoped CSS styles.</p>
-      <pre><code><span class="d">@render</span>()
-<span class="f">template</span>() {
-  <span class="k">return</span> html`
+      <pre><code>@render()
+template() {
+  return html`
     &lt;div class="card"&gt;
       &lt;h3&gt;${this.title}&lt;/h3&gt;
       &lt;if ${this.expanded}&gt;
@@ -119,9 +138,9 @@
   `;
 }
 
-<span class="d">@styles</span>()
-<span class="f">componentStyles</span>() {
-  <span class="k">return</span> css`
+@styles()
+componentStyles() {
+  return css`
     :host { display: block; }
     .card { padding: 1rem; border-radius: 8px; }
   `;
@@ -131,27 +150,43 @@
     <div class="dec-section">
       <h3><code>@ready</code> & <code>@dispose</code></h3>
       <p class="desc">Lifecycle hooks for initialization and cleanup.</p>
-      <pre><code><span class="d">@ready</span>()
-<span class="f">onMount</span>() {
-  this.interval = setInterval(() => this.tick(), 1000);
-  console.log(<span class="s">'Component connected'</span>);
+      <pre><code>@ready()
+onMount() {
+  this.interval = setInterval(() =&gt; this.tick(), 1000);
+  console.log('Component connected');
 }
 
-<span class="d">@dispose</span>()
-<span class="f">cleanup</span>() {
+@dispose()
+cleanup() {
   clearInterval(this.interval);
   this.subscription?.unsubscribe();
 }</code></pre>
     </div>
 
     <div class="dec-section">
+      <h3><code>@moved</code> & <code>@adopted</code></h3>
+      <p class="desc">Execute when an element is moved between documents (e.g. into an iframe).</p>
+      <pre><code>@moved()
+onMoved() {
+  // Element was moved in the DOM (e.g. reparented)
+  this.recalculateLayout();
+}
+
+@adopted()
+onAdopted() {
+  // Element was adopted into a new document (e.g. iframe)
+  this.reattachStyles();
+}</code></pre>
+    </div>
+
+    <div class="dec-section">
       <h3><code>@query</code> & <code>@queryAll</code></h3>
       <p class="desc">DOM element references within shadow DOM.</p>
-      <pre><code><span class="d">@query</span>(<span class="s">'input'</span>) inputEl;
-<span class="d">@queryAll</span>(<span class="s">'.item'</span>) items;
+      <pre><code>@query('input') inputEl;
+@queryAll('.item') items;
 
-<span class="d">@ready</span>()
-<span class="f">setup</span>() {
+@ready()
+setup() {
   this.inputEl.focus();
   console.log(`Found ${this.items.length} items`);
 }</code></pre>
@@ -160,28 +195,28 @@
     <div class="dec-section">
       <h3><code>@on</code> & <code>@dispatch</code></h3>
       <p class="desc">Event delegation and custom event emission.</p>
-      <pre><code><span class="c">// @on: delegated event listener</span>
-<span class="d">@on</span>(<span class="s">'click'</span>, <span class="s">'.entry'</span>)
-<span class="f">editEntry</span>(e) {
+      <pre><code>// @on: delegated event listener
+@on('click', '.entry')
+editEntry(e) {
   this.selected = e.target.dataset.id;
-  this.editing = <span class="k">true</span>;
+  this.editing = true;
 }
 
-<span class="d">@on</span>(<span class="s">'click'</span>, <span class="s">'button.save'</span>)
-<span class="f">handleSave</span>(e) { this.save(); }
+@on('click', 'button.save')
+handleSave(e) { this.save(); }
 
-<span class="c">// @dispatch: return value becomes event.detail</span>
-<span class="d">@dispatch</span>(<span class="s">'status-changed'</span>)
-<span class="f">updateStatus</span>(status) {
+// @dispatch: return value becomes event.detail
+@dispatch('status-changed')
+updateStatus(status) {
   this.status = status;
-  <span class="k">return</span> { status };
+  return { status };
 }
 
-<span class="c">// Stacked: DOM event triggers custom event</span>
-<span class="d">@on</span>(<span class="s">'click'</span>, <span class="s">'.item'</span>)
-<span class="d">@dispatch</span>(<span class="s">'item-selected'</span>)
-<span class="f">handleItemClick</span>(e) {
-  <span class="k">return</span> { id: e.target.dataset.id };
+// Stacked: DOM event triggers custom event
+@on('click', '.item')
+@dispatch('item-selected')
+handleItemClick(e) {
+  return { id: e.target.dataset.id };
 }</code></pre>
       <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/events.md">Full documentation →</a></p>
     </div>
@@ -189,9 +224,9 @@
     <div class="dec-section">
       <h3><code>@context</code></h3>
       <p class="desc">Receive router navigation context updates.</p>
-      <pre><code><span class="c">// Method receives Context on route changes</span>
-<span class="d">@context</span>()
-<span class="f">handleContext</span>(ctx: <span class="t">Context</span>) {
+      <pre><code>// Method receives Context on route changes
+@context()
+handleContext(ctx: Context) {
   this.user = ctx.application.user;
   this.route = ctx.navigation.route;
 }</code></pre>
@@ -199,49 +234,140 @@
     </div>
 
     <div class="dec-section">
+      <h3><code>@observe</code></h3>
+      <p class="desc">Watch for intersection, resize, media query, or DOM mutation changes.</p>
+      <pre><code>// Fires when element enters/exits viewport
+@observe('self', 'intersection', { threshold: 0.5 })
+onVisible(entry: IntersectionObserverEntry) {
+  this.visible = entry.isIntersecting;
+}
+
+// Fires when element is resized
+@observe('self', 'resize')
+onResize(entry: ResizeObserverEntry) {
+  this.compact = entry.contentRect.width &lt; 400;
+}
+
+// Fires when media query matches/unmatches
+@observe('self', 'media:(prefers-color-scheme: dark)')
+onDarkMode(matches: boolean) {
+  this.darkMode = matches;
+}
+
+// Fires on child DOM mutations
+@observe('self', 'mutation:childList,attributes')
+onMutation(records: MutationRecord[]) {
+  this.updateCount();
+}</code></pre>
+      <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/observers.md">Full documentation →</a></p>
+    </div>
+
+    <div class="dec-section">
       <h3><code>@request</code> & <code>@respond</code></h3>
       <p class="desc">Async generator pattern for parent-child communication.</p>
-      <pre><code><span class="c">// Requester: async generator yields payload, awaits response</span>
-<span class="d">@request</span>(<span class="s">'fetch-user'</span>)
-<span class="k">async</span> *<span class="f">fetchUser</span>(id: <span class="t">string</span>) {
-  <span class="k">const</span> user = <span class="k">await</span> (<span class="k">yield</span> { id });
-  <span class="k">return</span> user;
+      <pre><code>// Requester: async generator yields payload, awaits response
+@request('fetch-user')
+async *fetchUser(id: string) {
+  const user = await (yield { id });
+  return user;
 }
 
-<span class="c">// Responder: receives payload, returns response</span>
-<span class="d">@respond</span>(<span class="s">'fetch-user'</span>)
-<span class="k">async</span> <span class="f">handleFetchUser</span>({ id }) {
-  <span class="k">return await</span> fetch(`/api/users/${id}`).then(r => r.json());
+// Responder: receives payload, returns response
+@respond('fetch-user')
+async handleFetchUser({ id }) {
+  return await fetch(`/api/users/${id}`).then(r =&gt; r.json());
 }
 
-<span class="c">// Usage: const user = await this.fetchUser('123');</span></code></pre>
+// Usage: const user = await this.fetchUser('123');</code></pre>
       <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/request-response.md">Full documentation →</a></p>
+    </div>
+
+    <div class="dec-section">
+      <h3><code>@debounce</code> & <code>@throttle</code></h3>
+      <p class="desc">Rate-limit method execution. Debounce waits for quiet; throttle limits frequency.</p>
+      <pre><code>// Wait 300ms after last call before executing
+@debounce(300)
+onSearchInput(query: string) {
+  this.results = await this.search(query);
+}
+
+// Execute at most once per 100ms
+@throttle(100)
+onScroll(e: Event) {
+  this.scrollY = window.scrollY;
+}
+
+// Works with @on for event-driven debounce
+@on('input', '.search')
+@debounce(250)
+handleSearch(e: Event) {
+  this.query = e.target.value;
+}</code></pre>
+    </div>
+
+    <div class="dec-section">
+      <h3><code>@once</code> & <code>@memoize</code></h3>
+      <p class="desc">Execute a method only once, or cache return values for repeated calls.</p>
+      <pre><code>// Only runs once, subsequent calls are no-ops
+@once()
+initialize() {
+  this.setupWebSocket();
+  this.loadConfig();
+}
+
+// Cache results — same arguments return cached value
+@memoize()
+computeExpensiveValue(input: string) {
+  return heavyComputation(input);
+}
+
+// Per-instance: each element instance runs once
+@once(true)
+onFirstRender() {
+  analytics.track('component-viewed');
+}</code></pre>
     </div>
 
     <div class="dec-section">
       <h3>Template Syntax</h3>
       <p class="desc">Property binding, conditionals, loops, and event shortcuts.</p>
-      <pre><code><span class="c">// Property binding</span>
-html`<span class="h">&lt;input</span> .value=${this.text}<span class="h">&gt;</span>`
+      <pre><code>// Property binding
+html`&lt;input .value=${this.text}&gt;`
 
-<span class="c">// Conditionals</span>
-html`<span class="h">&lt;if</span> ${this.loading}<span class="h">&gt;&lt;snice-spinner&gt;&lt;/snice-spinner&gt;&lt;/if&gt;</span>`
-html`<span class="h">&lt;if</span> ${this.error}<span class="h">&gt;&lt;span&gt;</span>${this.error}<span class="h">&lt;/span&gt;&lt;/if&gt;</span>`
+// Conditionals
+html`&lt;if ${this.loading}&gt;&lt;snice-spinner&gt;&lt;/snice-spinner&gt;&lt;/if&gt;`
+html`&lt;if ${this.error}&gt;&lt;span&gt;${this.error}&lt;/span&gt;&lt;/if&gt;`
 
-<span class="c">// Loops (use .map())</span>
-html`${this.items.map(item =&gt; html`<span class="h">&lt;li</span> key=${item.id}<span class="h">&gt;</span>${item.name}<span class="h">&lt;/li&gt;</span>`)}`
+// Loops (use .map())
+html`${this.items.map(item =&gt; html`&lt;li key=${item.id}&gt;${item.name}&lt;/li&gt;`)}`
 
-<span class="c">// Keyboard shortcuts</span>
-html`<span class="h">&lt;input</span> <span class="d">@keydown:ctrl+s</span>=${this.save}<span class="h">&gt;</span>`
-html`<span class="h">&lt;div</span> <span class="d">@keydown:escape</span>=${this.close}<span class="h">&gt;</span>`</code></pre>
+// Keyboard shortcuts
+html`&lt;input @keydown:ctrl+s=${this.save}&gt;`
+html`&lt;div @keydown:escape=${this.close}&gt;`</code></pre>
     </div>
   </main>
 
   <footer>
     <div class="wrap">
-      <span>Snice v4.10.0 · MIT</span>
+      <span>Snice v4.11.0 · MIT</span>
       <span><a href="https://www.npmjs.com/package/snice">npm</a> · <a href="https://gitlab.com/Hedzer/snice">Source</a></span>
     </div>
   </footer>
+
+  <script src="components/snice-runtime.min.js"></script>
+  <script src="components/snice-code-block.min.js"></script>
+  <script>
+    // Convert all <pre><code> to <snice-code-block> with snice grammar
+    document.querySelectorAll('.dec-section pre > code').forEach(code => {
+      const pre = code.parentElement;
+      const text = code.textContent;
+      const block = document.createElement('snice-code-block');
+      block.setAttribute('language', 'snice');
+      block.setAttribute('grammar', 'grammars/snice.json');
+      block.copyable = false;
+      block.code = text;
+      pre.replaceWith(block);
+    });
+  </script>
 </body>
 </html>

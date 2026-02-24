@@ -1,3 +1,4 @@
+<!-- GENERATED FILE — do not edit directly. Source: public/showcases/ fragments, assembled by public/build-showcases.js -->
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
@@ -11,62 +12,30 @@
   <meta property="og:image" content="images/snice-logo.png">
   <link rel="stylesheet" href="theme/theme.css">
   <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
   <style>
-    /* ─── Custom Prism theme: Snice Dark (One Dark inspired) ─── */
-    [data-theme="dark"] .token.comment,
-    [data-theme="dark"] .token.prolog { color: #5c6370; font-style: italic; }
-    [data-theme="dark"] .token.doctype,
-    [data-theme="dark"] .token.cdata { color: #e5c07b; }
-    [data-theme="dark"] .token.punctuation { color: #abb2bf; }
-    [data-theme="dark"] .token.tag { color: #e06c75; }
-    [data-theme="dark"] .token.attr-name { color: #d19a66; }
-    [data-theme="dark"] .token.attr-value,
-    [data-theme="dark"] .token.attr-value .punctuation,
-    [data-theme="dark"] .token.string { color: #98c379; }
-    [data-theme="dark"] .token.entity { color: #56b6c2; }
-    [data-theme="dark"] .token.keyword { color: #c678dd; }
-    [data-theme="dark"] .token.function { color: #61afef; }
-    [data-theme="dark"] .token.boolean,
-    [data-theme="dark"] .token.number { color: #d19a66; }
-    [data-theme="dark"] .token.operator { color: #56b6c2; }
-    [data-theme="dark"] .token.selector,
-    [data-theme="dark"] .token.important { color: #c678dd; }
-    [data-theme="dark"] .token.atrule { color: #e5c07b; }
-    [data-theme="dark"] .token.regex { color: #56b6c2; }
-
-    /* ─── Custom Prism theme: Snice Light (One Light inspired) ─── */
-    [data-theme="light"] code[class*="language-"],
-    [data-theme="light"] pre[class*="language-"] { color: #383a42; }
-    [data-theme="light"] .token.comment,
-    [data-theme="light"] .token.prolog { color: #a0a1a7; font-style: italic; }
-    [data-theme="light"] .token.doctype,
-    [data-theme="light"] .token.cdata { color: #c18401; }
-    [data-theme="light"] .token.punctuation { color: #383a42; }
-    [data-theme="light"] .token.tag { color: #e45649; }
-    [data-theme="light"] .token.attr-name { color: #986801; }
-    [data-theme="light"] .token.attr-value,
-    [data-theme="light"] .token.attr-value .punctuation,
-    [data-theme="light"] .token.string { color: #50a14f; }
-    [data-theme="light"] .token.entity { color: #0184bc; }
-    [data-theme="light"] .token.keyword { color: #a626a4; }
-    [data-theme="light"] .token.function { color: #4078f2; }
-    [data-theme="light"] .token.boolean,
-    [data-theme="light"] .token.number { color: #986801; }
-    [data-theme="light"] .token.operator { color: #0184bc; }
-    [data-theme="light"] .token.selector,
-    [data-theme="light"] .token.important { color: #a626a4; }
-    [data-theme="light"] .token.atrule { color: #c18401; }
-    [data-theme="light"] .token.regex { color: #0184bc; }
-
-    /* Override Prism's default background for both themes */
-    [data-theme="light"] .comp-split-code pre[class*="language-"],
-    [data-theme="light"] .comp-split-code code[class*="language-"],
-    [data-theme="dark"] .comp-split-code pre[class*="language-"],
-    [data-theme="dark"] .comp-split-code code[class*="language-"] {
+    /* ─── snice-code-block overrides for comp-split-code ─── */
+    .comp-split-code snice-code-block { display: block; }
+    .comp-split-code snice-code-block::part(container) {
       background: transparent;
+      border-radius: 0;
     }
+    .comp-split-code snice-code-block::part(header) { display: none; }
+    .comp-split-code snice-code-block::part(pre) { padding: 1.25rem; }
+    .comp-split-code snice-code-block::part(code) {
+      font-size: 0.75rem;
+      line-height: 1.65;
+    }
+    @media (max-width: 800px) {
+      .comp-split-code snice-code-block::part(pre) { padding: 0.75rem; }
+      .comp-split-code snice-code-block::part(code) { font-size: 0.7rem; }
+    }
+
+    /* ─── snice-code-block in help drawer ─── */
+    .help-drawer-body snice-code-block::part(container) {
+      margin: 0.5rem 0;
+    }
+
     /* ─── Component sidebar nav ─── */
     .comp-sidebar {
       position: fixed;
@@ -5681,14 +5650,30 @@ weather.data = {
   <script src="components/snice-pricing-table.min.js"></script>
   <script src="components/snice-app-tiles.min.js"></script>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
   <script>
-    // Re-run Prism highlighting after all scripts load
-    if (typeof Prism !== 'undefined') Prism.highlightAll();
+    // Convert <pre><code class="language-xxx"> to <snice-code-block>
+    (function() {
+      const GRAMMAR_MAP = {
+        'html': 'grammars/html.json',
+        'javascript': 'grammars/typescript.json',
+        'js': 'grammars/typescript.json',
+        'typescript': 'grammars/typescript.json',
+        'css': 'grammars/css.json',
+        'json': 'grammars/json.json',
+      };
+      document.querySelectorAll('.comp-split-code pre > code[class*="language-"]').forEach(code => {
+        const pre = code.parentElement;
+        const lang = (code.className.match(/language-(\w+)/) || [])[1] || 'plaintext';
+        const text = code.textContent;
+        const block = document.createElement('snice-code-block');
+        block.setAttribute('language', lang);
+        const grammar = GRAMMAR_MAP[lang];
+        if (grammar) block.setAttribute('grammar', grammar);
+        block.copyable = false;
+        block.code = text;
+        pre.replaceWith(block);
+      });
+    })();
 
     // Mobile: wrap code blocks in collapsible accordion
     if (window.matchMedia('(max-width: 800px)').matches) {
@@ -5741,7 +5726,7 @@ weather.data = {
 
       for (const line of lines) {
         if (inCode) {
-          if (line.startsWith('```')) { html += '<pre><code class="language-' + codeLang + '">' + codeLines.join('\n').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</code></pre>'; inCode = false; codeLines = []; }
+          if (line.startsWith('```')) { const gMap = { html:'grammars/html.json', javascript:'grammars/typescript.json', typescript:'grammars/typescript.json', css:'grammars/css.json', json:'grammars/json.json' }; const gAttr = gMap[codeLang] ? ' grammar="' + gMap[codeLang] + '"' : ''; html += '<snice-code-block language="' + codeLang + '"' + gAttr + '>' + codeLines.join('\n').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</snice-code-block>'; inCode = false; codeLines = []; }
           else codeLines.push(line);
           continue;
         }
@@ -6175,20 +6160,6 @@ weather.data = {
     })();
   </script>
   <style>
-    /* Override Prism backgrounds to blend with comp-split-code */
-    .comp-split-code pre[class*="language-"] {
-      background: transparent;
-      font-size: 0.75rem;
-      line-height: 1.65;
-      margin: 0;
-      padding: 1.25rem;
-    }
-    .comp-split-code code[class*="language-"] {
-      background: transparent;
-      font-size: 0.75rem;
-      line-height: 1.65;
-    }
-
     /* Help docs link */
     .help-link {
       display: inline-flex;

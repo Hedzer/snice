@@ -121,14 +121,30 @@
   <script src="components/snice-pricing-table.min.js"></script>
   <script src="components/snice-app-tiles.min.js"></script>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
   <script>
-    // Re-run Prism highlighting after all scripts load
-    if (typeof Prism !== 'undefined') Prism.highlightAll();
+    // Convert <pre><code class="language-xxx"> to <snice-code-block>
+    (function() {
+      const GRAMMAR_MAP = {
+        'html': 'grammars/html.json',
+        'javascript': 'grammars/typescript.json',
+        'js': 'grammars/typescript.json',
+        'typescript': 'grammars/typescript.json',
+        'css': 'grammars/css.json',
+        'json': 'grammars/json.json',
+      };
+      document.querySelectorAll('.comp-split-code pre > code[class*="language-"]').forEach(code => {
+        const pre = code.parentElement;
+        const lang = (code.className.match(/language-(\w+)/) || [])[1] || 'plaintext';
+        const text = code.textContent;
+        const block = document.createElement('snice-code-block');
+        block.setAttribute('language', lang);
+        const grammar = GRAMMAR_MAP[lang];
+        if (grammar) block.setAttribute('grammar', grammar);
+        block.copyable = false;
+        block.code = text;
+        pre.replaceWith(block);
+      });
+    })();
 
     // Mobile: wrap code blocks in collapsible accordion
     if (window.matchMedia('(max-width: 800px)').matches) {
@@ -181,7 +197,7 @@
 
       for (const line of lines) {
         if (inCode) {
-          if (line.startsWith('```')) { html += '<pre><code class="language-' + codeLang + '">' + codeLines.join('\n').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</code></pre>'; inCode = false; codeLines = []; }
+          if (line.startsWith('```')) { const gMap = { html:'grammars/html.json', javascript:'grammars/typescript.json', typescript:'grammars/typescript.json', css:'grammars/css.json', json:'grammars/json.json' }; const gAttr = gMap[codeLang] ? ' grammar="' + gMap[codeLang] + '"' : ''; html += '<snice-code-block language="' + codeLang + '"' + gAttr + '>' + codeLines.join('\n').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</snice-code-block>'; inCode = false; codeLines = []; }
           else codeLines.push(line);
           continue;
         }
@@ -615,20 +631,6 @@
     })();
   </script>
   <style>
-    /* Override Prism backgrounds to blend with comp-split-code */
-    .comp-split-code pre[class*="language-"] {
-      background: transparent;
-      font-size: 0.75rem;
-      line-height: 1.65;
-      margin: 0;
-      padding: 1.25rem;
-    }
-    .comp-split-code code[class*="language-"] {
-      background: transparent;
-      font-size: 0.75rem;
-      line-height: 1.65;
-    }
-
     /* Help docs link */
     .help-link {
       display: inline-flex;
