@@ -4,14 +4,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Load runtime + code-block + grammars first to prevent layout shift -->
+  <script src="components/snice-runtime.min.js?v=58882cc"></script>
+  <script src="components/snice-code-block.min.js?v=58882cc"></script>
+  <script>['html','typescript','css','json','snice'].forEach(g=>fetch('grammars/'+g+'.json?v=58882cc'));</script>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <title>Components - Snice</title>
   <meta name="description" content="TypeScript web components with separation of concerns">
-  <link rel="icon" type="image/png" href="images/snice-logo.png">
+  <link rel="icon" type="image/png" href="images/snice-logo.png?v=58882cc">
   <meta property="og:title" content="Components - Snice">
   <meta property="og:description" content="Pre-built UI components. Use standalone or with React/Vue/Angular.">
   <meta property="og:image" content="images/snice-logo.png">
-  <link rel="stylesheet" href="theme/theme.css">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="theme/theme.css?v=58882cc">
+  <link rel="stylesheet" href="styles.css?v=58882cc">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
   <style>
     /* ─── snice-code-block overrides for comp-split-code ─── */
@@ -170,7 +175,7 @@
 
   <header>
     <div class="wrap">
-      <h1><a href="index.html" style="display:inline-flex;align-items:center;gap:0.5rem"><img src="images/snice-logo.png" alt="Snice" width="28" height="28" style="border-radius:50%">Snice</a></h1>
+      <h1><a href="index.html" style="display:inline-flex;align-items:center;gap:0.5rem"><img src="images/snice-logo.png?v=58882cc" alt="Snice" width="28" height="28" style="border-radius:50%">Snice</a></h1>
       <nav>
         <a href="guide.html">Guide</a>
         <a href="decorators.html">Decorators</a>
@@ -1119,7 +1124,7 @@ tiles.addEventListener('tile-click',
       <div class="comp-split">
         <div class="comp-split-demo demo-col" style="gap:1.25rem">
           <!-- Blog post cards with gradient headers -->
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;width:100%">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;width:100%">
             <snice-card variant="elevated" clickable>
               <div slot="image" style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);height:100px;display:flex;align-items:center;justify-content:center;color:white;font-weight:600;font-size:0.85rem;letter-spacing:0.05em">
                 <span class="material-symbols-outlined" style="font-size:2rem">code</span>
@@ -1156,9 +1161,21 @@ tiles.addEventListener('tile-click',
                 <span>Mar 13, 2025</span>
               </div>
             </snice-card>
+            <snice-card variant="elevated" clickable>
+              <div slot="image" style="background:linear-gradient(135deg,#43e97b 0%,#38f9d7 100%);height:100px;display:flex;align-items:center;justify-content:center;color:white;font-weight:600;font-size:0.85rem;letter-spacing:0.05em">
+                <span class="material-symbols-outlined" style="font-size:2rem">security</span>
+              </div>
+              <span style="color:#10b981;font-size:11px;font-weight:600;letter-spacing:0.05em">SECURITY</span>
+              <h4 style="margin:0.25rem 0 0.35rem;font-size:0.9rem;font-weight:600">Auth Patterns in 2025</h4>
+              <p style="margin:0;color:var(--snice-color-text-secondary);font-size:0.8rem;line-height:1.5">Modern authentication strategies for web applications...</p>
+              <div slot="footer" style="display:flex;justify-content:space-between;align-items:center;color:var(--snice-color-text-tertiary);font-size:0.75rem">
+                <span>7 min read</span>
+                <span>Mar 12, 2025</span>
+              </div>
+            </snice-card>
           </div>
           <!-- Dashboard stat cards -->
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;width:100%">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;width:100%">
             <snice-card variant="flat">
               <div style="display:flex;justify-content:space-between;align-items:center">
                 <div>
@@ -1187,6 +1204,16 @@ tiles.addEventListener('tile-click',
                   <p style="margin:0;color:var(--snice-color-danger);font-size:0.75rem">↓ 2% from last month</p>
                 </div>
                 <span class="material-symbols-outlined" style="font-size:2rem;color:#f59e0b;background:rgba(245,158,11,0.1);padding:0.5rem;border-radius:8px">trending_up</span>
+              </div>
+            </snice-card>
+            <snice-card variant="flat">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <div>
+                  <p style="margin:0;color:var(--snice-color-text-tertiary);font-size:0.75rem">Avg. Response</p>
+                  <p style="margin:4px 0;font-size:1.5rem;font-weight:700">142ms</p>
+                  <p style="margin:0;color:var(--snice-color-success);font-size:0.75rem">↑ 15% faster</p>
+                </div>
+                <span class="material-symbols-outlined" style="font-size:2rem;color:#ef4444;background:rgba(239,68,68,0.1);padding:0.5rem;border-radius:8px">speed</span>
               </div>
             </snice-card>
           </div>
@@ -1249,8 +1276,8 @@ tiles.addEventListener('tile-click',
           <span class="code-lang">html</span>
           <pre><code class="language-html">&lt;!-- With controls --&gt;
 &lt;snice-carousel show-controls show-indicators loop&gt;
-  &lt;img src="photo1.jpg"&gt;
-  &lt;img src="photo2.jpg"&gt;
+  &lt;img src="photo1.jpg?v=58882cc"&gt;
+  &lt;img src="photo2.jpg?v=58882cc"&gt;
 &lt;/snice-carousel&gt;
 
 &lt;!-- Autoplay --&gt;
@@ -1464,7 +1491,7 @@ tiles.addEventListener('tile-click',
       <p class="comp-desc">Syntax-highlighted code display</p>
       <div class="comp-split comp-split-stacked">
         <div class="comp-split-demo">
-          <snice-code-block style="width:100%" language="snice" grammar="components/grammars/snice.json" show-line-numbers copyable theme="dark" filename="counter.ts">import { element, property, render, dispatch } from 'snice';
+          <snice-code-block style="width:100%" language="snice" grammar="components/grammars/snice.json?v=58882cc" show-line-numbers copyable theme="dark" filename="counter.ts">import { element, property, render, dispatch } from 'snice';
 
 @element('my-counter')
 export class MyCounter extends HTMLElement {
@@ -1511,7 +1538,7 @@ export class MyCounter extends HTMLElement {
           <span class="code-lang">html</span>
           <pre><code class="language-html">&lt;snice-code-block
   language="snice"
-  grammar="grammars/snice.json"
+  grammar="grammars/snice.json?v=58882cc"
   show-line-numbers
   copyable
   filename="example.ts"
@@ -1728,7 +1755,7 @@ el.addEventListener('comment-add',
         <div class="comp-split-code">
           <span class="code-lang">html</span>
           <pre><code class="language-html">&lt;snice-cropper
-  src="/photo.jpg"
+  src="/photo.jpg?v=58882cc"
   aspect-ratio="1.777"
   output-type="jpeg"
 &gt;&lt;/snice-cropper&gt;
@@ -2971,7 +2998,7 @@ md.addEventListener('link-click',
           <span class="code-lang">html</span>
           <pre><code class="language-html">&lt;snice-masonry columns="3" gap="0.75rem"&gt;
   &lt;div class="pin-card"&gt;
-    &lt;img src="photo.jpg" class="pin-img"&gt;
+    &lt;img src="photo.jpg?v=58882cc" class="pin-img"&gt;
     &lt;div class="pin-body"&gt;
       &lt;div class="pin-title"&gt;Mountain Retreat&lt;/div&gt;
       &lt;div class="pin-desc"&gt;Minimalist cabin design&lt;/div&gt;
@@ -3760,6 +3787,8 @@ pt.addEventListener('plan-select',
           <snice-qr-code value="npm install snice" size="120" dot-style="dots" fg-color="#4caf50" bg-color="#e8f5e9" style="--qr-border-radius:12px"></snice-qr-code>
           <snice-qr-code value="https://github.com" size="120" center-text="GH" center-text-size="24" text-fill-color="#9c27b0" dot-style="rounded" fg-color="#9c27b0" bg-color="#f3e5f5" style="--qr-border-radius:12px"></snice-qr-code>
           <snice-qr-code value="WIFI:T:WPA;S:MyNetwork;P:secret123;;" size="120" center-text="WiFi" center-text-size="18" text-fill-color="#ff9800" fg-color="#ff9800" style="--qr-border-radius:12px"></snice-qr-code>
+          <snice-qr-code value="tel:+15551234567" size="120" dot-style="square" fg-color="#e91e63" bg-color="#fce4ec" center-text="Call" center-text-size="18" text-fill-color="#e91e63" style="--qr-border-radius:12px"></snice-qr-code>
+          <snice-qr-code value="mailto:hello@snice.dev" size="120" dot-style="dots" fg-color="#00897b" bg-color="#e0f2f1" center-text="@" center-text-size="28" text-fill-color="#00897b" style="--qr-border-radius:12px"></snice-qr-code>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
@@ -5542,124 +5571,122 @@ weather.data = {
   </aside>
 
 
-  <!-- Shared runtime (loaded once) -->
-  <script src="components/snice-runtime.min.js"></script>
-
-  <!-- CDN components (part 1) -->
-  <script src="components/snice-button.min.js"></script>
-  <script src="components/snice-input.min.js"></script>
-  <script src="components/snice-select.min.js"></script>
-  <script src="components/snice-card.min.js"></script>
-  <script src="components/snice-modal.min.js"></script>
-  <script src="components/snice-alert.min.js"></script>
-  <script src="components/snice-checkbox.min.js"></script>
-  <script src="components/snice-radio.min.js"></script>
-  <script src="components/snice-switch.min.js"></script>
-  <script src="components/snice-textarea.min.js"></script>
-  <script src="components/snice-tabs.min.js"></script>
-  <script src="components/snice-table.min.js"></script>
-  <script src="components/snice-badge.min.js"></script>
-  <script src="components/snice-qr-code.min.js"></script>
-  <script src="components/snice-breadcrumbs.min.js"></script>
-  <script src="components/snice-pagination.min.js"></script>
-  <script src="components/snice-link.min.js"></script>
-  <script src="components/snice-menu.min.js"></script>
-  <script src="components/snice-drawer.min.js"></script>
-  <script src="components/snice-tooltip.min.js"></script>
+  <!-- CDN components (part 1) — runtime + code-block already loaded from <head> -->
+  <script defer src="components/snice-button.min.js?v=58882cc"></script>
+  <script defer src="components/snice-input.min.js?v=58882cc"></script>
+  <script defer src="components/snice-select.min.js?v=58882cc"></script>
+  <script defer src="components/snice-card.min.js?v=58882cc"></script>
+  <script defer src="components/snice-modal.min.js?v=58882cc"></script>
+  <script defer src="components/snice-alert.min.js?v=58882cc"></script>
+  <script defer src="components/snice-checkbox.min.js?v=58882cc"></script>
+  <script defer src="components/snice-radio.min.js?v=58882cc"></script>
+  <script defer src="components/snice-switch.min.js?v=58882cc"></script>
+  <script defer src="components/snice-textarea.min.js?v=58882cc"></script>
+  <script defer src="components/snice-tabs.min.js?v=58882cc"></script>
+  <script defer src="components/snice-table.min.js?v=58882cc"></script>
+  <script defer src="components/snice-badge.min.js?v=58882cc"></script>
+  <script defer src="components/snice-qr-code.min.js?v=58882cc"></script>
+  <script defer src="components/snice-breadcrumbs.min.js?v=58882cc"></script>
+  <script defer src="components/snice-pagination.min.js?v=58882cc"></script>
+  <script defer src="components/snice-link.min.js?v=58882cc"></script>
+  <script defer src="components/snice-menu.min.js?v=58882cc"></script>
+  <script defer src="components/snice-drawer.min.js?v=58882cc"></script>
+  <script defer src="components/snice-tooltip.min.js?v=58882cc"></script>
 
   <!-- CDN components (part 2) -->
-  <script src="components/snice-chip.min.js"></script>
-  <script src="components/snice-progress.min.js"></script>
-  <script src="components/snice-spinner.min.js"></script>
-  <script src="components/snice-toast.min.js"></script>
-  <script src="components/snice-banner.min.js"></script>
-  <script src="components/snice-color-picker.min.js"></script>
-  <script src="components/snice-avatar.min.js"></script>
-  <script src="components/snice-skeleton.min.js"></script>
-  <script src="components/snice-divider.min.js"></script>
-  <script src="components/snice-accordion.min.js"></script>
-  <script src="components/snice-empty-state.min.js"></script>
-  <script src="components/snice-timeline.min.js"></script>
-  <script src="components/snice-image.min.js"></script>
-  <script src="components/snice-command-palette.min.js"></script>
-  <script src="components/snice-chart.min.js"></script>
-  <script src="components/snice-sparkline.min.js"></script>
-  <script src="components/snice-date-picker.min.js"></script>
-  <script src="components/snice-slider.min.js"></script>
-  <script src="components/snice-file-upload.min.js"></script>
-  <script src="components/snice-file-gallery.min.js"></script>
-  <script src="components/snice-stepper.min.js"></script>
-  <script src="components/snice-code-block.min.js"></script>
-  <script src="components/snice-terminal.min.js"></script>
-  <script src="components/snice-carousel.min.js"></script>
-  <script src="components/snice-calendar.min.js"></script>
-  <script src="components/snice-split-pane.min.js"></script>
-  <script src="components/snice-draw.min.js"></script>
-  <script src="components/snice-paint.min.js"></script>
-  <script src="components/snice-color-display.min.js"></script>
-  <script src="components/snice-kanban.min.js"></script>
-  <script src="components/snice-chat.min.js"></script>
-  <script src="components/snice-camera.min.js"></script>
-  <script src="components/snice-qr-reader.min.js"></script>
-  <script src="components/snice-audio-recorder.min.js"></script>
-  <script src="components/snice-music-player.min.js"></script>
-  <script src="components/snice-location.min.js"></script>
-  <script src="components/snice-timer.min.js"></script>
-  <script src="components/snice-gauge.min.js"></script>
-  <script src="components/snice-heatmap.min.js"></script>
-  <script src="components/snice-masonry.min.js"></script>
-  <script src="components/snice-link-preview.min.js"></script>
-  <script src="components/snice-doc.min.js"></script>
-  <script src="components/snice-kpi.min.js"></script>
-  <script src="components/snice-list.min.js"></script>
-  <script src="components/snice-login.min.js"></script>
-  <script src="components/snice-nav.min.js"></script>
-  <script src="components/snice-tree.min.js"></script>
-  <script src="components/snice-virtual-scroller.min.js"></script>
-  <script src="components/snice-funnel.min.js"></script>
-  <script src="components/snice-treemap.min.js"></script>
-  <script src="components/snice-sankey.min.js"></script>
-  <script src="components/snice-candlestick.min.js"></script>
-  <script src="components/snice-network-graph.min.js"></script>
-  <script src="components/snice-camera-annotate.min.js"></script>
-  <script src="components/snice-time-range-picker.min.js"></script>
-  <script src="components/snice-podcast-player.min.js"></script>
-  <script src="components/snice-tag-input.min.js"></script>
-  <script src="components/snice-diff.min.js"></script>
-  <script src="components/snice-gantt.min.js"></script>
-  <script src="components/snice-org-chart.min.js"></script>
-  <script src="components/snice-map.min.js"></script>
-  <script src="components/snice-flow.min.js"></script>
-  <script src="components/snice-book.min.js"></script>
-  <script src="components/snice-comments.min.js"></script>
-  <script src="components/snice-countdown.min.js"></script>
-  <script src="components/snice-cropper.min.js"></script>
-  <script src="components/snice-flip-card.min.js"></script>
-  <script src="components/snice-markdown.min.js"></script>
-  <script src="components/snice-notification-center.min.js"></script>
-  <script src="components/snice-pdf-viewer.min.js"></script>
-  <script src="components/snice-rating.min.js"></script>
-  <script src="components/snice-recipe.min.js"></script>
-  <script src="components/snice-sortable.min.js"></script>
-  <script src="components/snice-spotlight.min.js"></script>
-  <script src="components/snice-spreadsheet.min.js"></script>
-  <script src="components/snice-testimonial.min.js"></script>
-  <script src="components/snice-video-player.min.js"></script>
-  <script src="components/snice-waterfall.min.js"></script>
-  <script src="components/snice-weather.min.js"></script>
-  <script src="components/snice-pricing-table.min.js"></script>
-  <script src="components/snice-app-tiles.min.js"></script>
+  <script defer src="components/snice-chip.min.js?v=58882cc"></script>
+  <script defer src="components/snice-progress.min.js?v=58882cc"></script>
+  <script defer src="components/snice-spinner.min.js?v=58882cc"></script>
+  <script defer src="components/snice-toast.min.js?v=58882cc"></script>
+  <script defer src="components/snice-banner.min.js?v=58882cc"></script>
+  <script defer src="components/snice-color-picker.min.js?v=58882cc"></script>
+  <script defer src="components/snice-avatar.min.js?v=58882cc"></script>
+  <script defer src="components/snice-skeleton.min.js?v=58882cc"></script>
+  <script defer src="components/snice-divider.min.js?v=58882cc"></script>
+  <script defer src="components/snice-accordion.min.js?v=58882cc"></script>
+  <script defer src="components/snice-empty-state.min.js?v=58882cc"></script>
+  <script defer src="components/snice-timeline.min.js?v=58882cc"></script>
+  <script defer src="components/snice-image.min.js?v=58882cc"></script>
+  <script defer src="components/snice-command-palette.min.js?v=58882cc"></script>
+  <script defer src="components/snice-chart.min.js?v=58882cc"></script>
+  <script defer src="components/snice-sparkline.min.js?v=58882cc"></script>
+  <script defer src="components/snice-date-picker.min.js?v=58882cc"></script>
+  <script defer src="components/snice-slider.min.js?v=58882cc"></script>
+  <script defer src="components/snice-file-upload.min.js?v=58882cc"></script>
+  <script defer src="components/snice-file-gallery.min.js?v=58882cc"></script>
+  <script defer src="components/snice-stepper.min.js?v=58882cc"></script>
+  <script defer src="components/snice-terminal.min.js?v=58882cc"></script>
+  <script defer src="components/snice-carousel.min.js?v=58882cc"></script>
+  <script defer src="components/snice-calendar.min.js?v=58882cc"></script>
+  <script defer src="components/snice-split-pane.min.js?v=58882cc"></script>
+  <script defer src="components/snice-draw.min.js?v=58882cc"></script>
+  <script defer src="components/snice-paint.min.js?v=58882cc"></script>
+  <script defer src="components/snice-color-display.min.js?v=58882cc"></script>
+  <script defer src="components/snice-kanban.min.js?v=58882cc"></script>
+  <script defer src="components/snice-chat.min.js?v=58882cc"></script>
+  <script defer src="components/snice-camera.min.js?v=58882cc"></script>
+  <script defer src="components/snice-qr-reader.min.js?v=58882cc"></script>
+  <script defer src="components/snice-audio-recorder.min.js?v=58882cc"></script>
+  <script defer src="components/snice-music-player.min.js?v=58882cc"></script>
+  <script defer src="components/snice-location.min.js?v=58882cc"></script>
+  <script defer src="components/snice-timer.min.js?v=58882cc"></script>
+  <script defer src="components/snice-gauge.min.js?v=58882cc"></script>
+  <script defer src="components/snice-heatmap.min.js?v=58882cc"></script>
+  <script defer src="components/snice-masonry.min.js?v=58882cc"></script>
+  <script defer src="components/snice-link-preview.min.js?v=58882cc"></script>
+  <script defer src="components/snice-doc.min.js?v=58882cc"></script>
+  <script defer src="components/snice-kpi.min.js?v=58882cc"></script>
+  <script defer src="components/snice-list.min.js?v=58882cc"></script>
+  <script defer src="components/snice-login.min.js?v=58882cc"></script>
+  <script defer src="components/snice-nav.min.js?v=58882cc"></script>
+  <script defer src="components/snice-tree.min.js?v=58882cc"></script>
+  <script defer src="components/snice-virtual-scroller.min.js?v=58882cc"></script>
+  <script defer src="components/snice-funnel.min.js?v=58882cc"></script>
+  <script defer src="components/snice-treemap.min.js?v=58882cc"></script>
+  <script defer src="components/snice-sankey.min.js?v=58882cc"></script>
+  <script defer src="components/snice-candlestick.min.js?v=58882cc"></script>
+  <script defer src="components/snice-network-graph.min.js?v=58882cc"></script>
+  <script defer src="components/snice-camera-annotate.min.js?v=58882cc"></script>
+  <script defer src="components/snice-time-range-picker.min.js?v=58882cc"></script>
+  <script defer src="components/snice-podcast-player.min.js?v=58882cc"></script>
+  <script defer src="components/snice-tag-input.min.js?v=58882cc"></script>
+  <script defer src="components/snice-diff.min.js?v=58882cc"></script>
+  <script defer src="components/snice-gantt.min.js?v=58882cc"></script>
+  <script defer src="components/snice-org-chart.min.js?v=58882cc"></script>
+  <script defer src="components/snice-map.min.js?v=58882cc"></script>
+  <script defer src="components/snice-flow.min.js?v=58882cc"></script>
+  <script defer src="components/snice-book.min.js?v=58882cc"></script>
+  <script defer src="components/snice-comments.min.js?v=58882cc"></script>
+  <script defer src="components/snice-countdown.min.js?v=58882cc"></script>
+  <script defer src="components/snice-cropper.min.js?v=58882cc"></script>
+  <script defer src="components/snice-flip-card.min.js?v=58882cc"></script>
+  <script defer src="components/snice-markdown.min.js?v=58882cc"></script>
+  <script defer src="components/snice-notification-center.min.js?v=58882cc"></script>
+  <script defer src="components/snice-pdf-viewer.min.js?v=58882cc"></script>
+  <script defer src="components/snice-rating.min.js?v=58882cc"></script>
+  <script defer src="components/snice-recipe.min.js?v=58882cc"></script>
+  <script defer src="components/snice-sortable.min.js?v=58882cc"></script>
+  <script defer src="components/snice-spotlight.min.js?v=58882cc"></script>
+  <script defer src="components/snice-spreadsheet.min.js?v=58882cc"></script>
+  <script defer src="components/snice-testimonial.min.js?v=58882cc"></script>
+  <script defer src="components/snice-video-player.min.js?v=58882cc"></script>
+  <script defer src="components/snice-waterfall.min.js?v=58882cc"></script>
+  <script defer src="components/snice-weather.min.js?v=58882cc"></script>
+  <script defer src="components/snice-pricing-table.min.js?v=58882cc"></script>
+  <script defer src="components/snice-app-tiles.min.js?v=58882cc"></script>
 
   <script>
+    // Runs after deferred scripts have executed
+    document.addEventListener('DOMContentLoaded', function() {
     // Convert <pre><code class="language-xxx"> to <snice-code-block>
     (function() {
       const GRAMMAR_MAP = {
-        'html': 'grammars/html.json',
-        'javascript': 'grammars/typescript.json',
-        'js': 'grammars/typescript.json',
-        'typescript': 'grammars/typescript.json',
-        'css': 'grammars/css.json',
-        'json': 'grammars/json.json',
+        'html': 'grammars/html.json?v=58882cc',
+        'javascript': 'grammars/typescript.json?v=58882cc',
+        'js': 'grammars/typescript.json?v=58882cc',
+        'typescript': 'grammars/typescript.json?v=58882cc',
+        'css': 'grammars/css.json?v=58882cc',
+        'json': 'grammars/json.json?v=58882cc',
       };
       document.querySelectorAll('.comp-split-code pre > code[class*="language-"]').forEach(code => {
         const pre = code.parentElement;
@@ -5726,7 +5753,7 @@ weather.data = {
 
       for (const line of lines) {
         if (inCode) {
-          if (line.startsWith('```')) { const gMap = { html:'grammars/html.json', javascript:'grammars/typescript.json', typescript:'grammars/typescript.json', css:'grammars/css.json', json:'grammars/json.json' }; const gAttr = gMap[codeLang] ? ' grammar="' + gMap[codeLang] + '"' : ''; html += '<snice-code-block language="' + codeLang + '"' + gAttr + '>' + codeLines.join('\n').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</snice-code-block>'; inCode = false; codeLines = []; }
+          if (line.startsWith('```')) { const gMap = { html:'grammars/html.json?v=58882cc', javascript:'grammars/typescript.json?v=58882cc', typescript:'grammars/typescript.json?v=58882cc', css:'grammars/css.json?v=58882cc', json:'grammars/json.json?v=58882cc' }; const gAttr = gMap[codeLang] ? ' grammar="' + gMap[codeLang] + '"' : ''; html += '<snice-code-block language="' + codeLang + '"' + gAttr + '>' + codeLines.join('\n').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</snice-code-block>'; inCode = false; codeLines = []; }
           else codeLines.push(line);
           continue;
         }
@@ -6158,6 +6185,7 @@ weather.data = {
         }
       });
     })();
+    }); // DOMContentLoaded
   </script>
   <style>
     /* Help docs link */

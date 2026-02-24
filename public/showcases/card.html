@@ -5,7 +5,7 @@
       <div class="comp-split">
         <div class="comp-split-demo demo-col" style="gap:1.25rem">
           <!-- Blog post cards with gradient headers -->
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;width:100%">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;width:100%">
             <snice-card variant="elevated" clickable>
               <div slot="image" style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);height:100px;display:flex;align-items:center;justify-content:center;color:white;font-weight:600;font-size:0.85rem;letter-spacing:0.05em">
                 <span class="material-symbols-outlined" style="font-size:2rem">code</span>
@@ -42,9 +42,21 @@
                 <span>Mar 13, 2025</span>
               </div>
             </snice-card>
+            <snice-card variant="elevated" clickable>
+              <div slot="image" style="background:linear-gradient(135deg,#43e97b 0%,#38f9d7 100%);height:100px;display:flex;align-items:center;justify-content:center;color:white;font-weight:600;font-size:0.85rem;letter-spacing:0.05em">
+                <span class="material-symbols-outlined" style="font-size:2rem">security</span>
+              </div>
+              <span style="color:#10b981;font-size:11px;font-weight:600;letter-spacing:0.05em">SECURITY</span>
+              <h4 style="margin:0.25rem 0 0.35rem;font-size:0.9rem;font-weight:600">Auth Patterns in 2025</h4>
+              <p style="margin:0;color:var(--snice-color-text-secondary);font-size:0.8rem;line-height:1.5">Modern authentication strategies for web applications...</p>
+              <div slot="footer" style="display:flex;justify-content:space-between;align-items:center;color:var(--snice-color-text-tertiary);font-size:0.75rem">
+                <span>7 min read</span>
+                <span>Mar 12, 2025</span>
+              </div>
+            </snice-card>
           </div>
           <!-- Dashboard stat cards -->
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;width:100%">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;width:100%">
             <snice-card variant="flat">
               <div style="display:flex;justify-content:space-between;align-items:center">
                 <div>
@@ -73,6 +85,16 @@
                   <p style="margin:0;color:var(--snice-color-danger);font-size:0.75rem">↓ 2% from last month</p>
                 </div>
                 <span class="material-symbols-outlined" style="font-size:2rem;color:#f59e0b;background:rgba(245,158,11,0.1);padding:0.5rem;border-radius:8px">trending_up</span>
+              </div>
+            </snice-card>
+            <snice-card variant="flat">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <div>
+                  <p style="margin:0;color:var(--snice-color-text-tertiary);font-size:0.75rem">Avg. Response</p>
+                  <p style="margin:4px 0;font-size:1.5rem;font-weight:700">142ms</p>
+                  <p style="margin:0;color:var(--snice-color-success);font-size:0.75rem">↑ 15% faster</p>
+                </div>
+                <span class="material-symbols-outlined" style="font-size:2rem;color:#ef4444;background:rgba(239,68,68,0.1);padding:0.5rem;border-radius:8px">speed</span>
               </div>
             </snice-card>
           </div>

@@ -3,14 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Load runtime + code-block + grammars first to prevent layout shift -->
+  <script src="components/snice-runtime.min.js?v=58882cc"></script>
+  <script src="components/snice-code-block.min.js?v=58882cc"></script>
+  <script>fetch('grammars/snice.json?v=58882cc');</script>
   <title>Guide - Snice</title>
   <meta name="description" content="Learn to build custom elements with Snice decorators, step by step.">
-  <link rel="icon" type="image/png" href="images/snice-logo.png">
+  <link rel="icon" type="image/png" href="images/snice-logo.png?v=58882cc">
   <meta property="og:title" content="Guide - Snice">
   <meta property="og:description" content="Learn to build custom elements with Snice decorators, step by step.">
   <meta property="og:image" content="images/snice-logo.png">
-  <link rel="stylesheet" href="theme/theme.css">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="theme/theme.css?v=58882cc">
+  <link rel="stylesheet" href="styles.css?v=58882cc">
   <style>
     .guide-sidebar {
       position: fixed;
@@ -46,7 +50,7 @@
 
   <header>
     <div class="wrap">
-      <h1><a href="index.html" style="display:inline-flex;align-items:center;gap:0.5rem"><img src="images/snice-logo.png" alt="Snice" width="28" height="28" style="border-radius:50%">Snice</a></h1>
+      <h1><a href="index.html" style="display:inline-flex;align-items:center;gap:0.5rem"><img src="images/snice-logo.png?v=58882cc" alt="Snice" width="28" height="28" style="border-radius:50%">Snice</a></h1>
       <nav>
         <a href="guide.html" class="active">Guide</a>
         <a href="decorators.html">Decorators</a>
@@ -486,8 +490,6 @@ npx snice create-app my-app</code></pre>
       </div>
   </main>
 
-  <script src="components/snice-runtime.min.js"></script>
-  <script src="components/snice-code-block.min.js"></script>
   <script>
     // Convert all <pre><code> to <snice-code-block> with snice grammar
     document.querySelectorAll('.dec-section pre > code').forEach(code => {
@@ -495,7 +497,7 @@ npx snice create-app my-app</code></pre>
       const text = code.textContent;
       const block = document.createElement('snice-code-block');
       block.setAttribute('language', 'snice');
-      block.setAttribute('grammar', 'grammars/snice.json');
+      block.setAttribute('grammar', 'grammars/snice.json?v=58882cc');
       block.copyable = false;
       block.code = text;
       pre.replaceWith(block);
