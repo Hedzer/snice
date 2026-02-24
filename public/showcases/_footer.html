@@ -1,4 +1,5 @@
 
+    </div><!-- #comp-sections -->
   </main>
 
   <!-- Help drawer -->
@@ -126,8 +127,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
   <script>
-    // Dynamic component count
-    document.getElementById('comp-count').textContent = document.querySelectorAll('.comp-section > h3').length;
     // Re-run Prism highlighting after all scripts load
     if (typeof Prism !== 'undefined') Prism.highlightAll();
 
@@ -218,25 +217,128 @@
       return html;
     }
 
-    // Build sidebar nav from page content
+    // Popular components ranked by likely use
+    const POPULAR_ORDER = [
+      'Button','Input','Select','Card','Modal','Table','Tabs','Alert',
+      'Badge','Checkbox, Radio & Switch','Textarea','Tooltip','Menu',
+      'Drawer','Pagination','Breadcrumbs','Link','Accordion','Toast',
+      'Chip','Spinner','Progress','Avatar','Stepper','Date Picker',
+      'Tag Input','Command Palette','Slider','Nav','List','Chart',
+      'Sparkline','Carousel','Split Pane','Calendar','Empty State',
+      'Banner','Skeleton','Image','Divider','Timeline','Code Block',
+      'Terminal','File Upload','Color Picker','KPI','Kanban','Chat',
+      'Masonry','Virtual Scroller','Tree','Sortable','Spreadsheet',
+      'Diff','Rating','Markdown','Login','Notification Center',
+      'Time Range Picker','Gauge','Heatmap','Flip Card','Testimonial',
+      'Pricing Table','App Tiles','Comments','Countdown','Timer',
+      'Video Player','Music Player','Podcast Player','QR Code',
+      'QR Reader','Camera','Camera Annotate','Audio Recorder',
+      'Color Display','Draw','Paint','Funnel','Treemap','Sankey',
+      'Candlestick','Network Graph','Org Chart','Gantt','Map','Flow',
+      'Book','Cropper','Doc','Link Preview','PDF Viewer','Recipe',
+      'Spotlight','Waterfall','Weather','Location'
+    ];
+
+    // Component search aliases
+    const SEARCH_ALIASES = {
+      'toggle': ['switch'],
+      'dropdown': ['select', 'menu', 'command palette'],
+      'dialog': ['modal'],
+      'popup': ['modal', 'tooltip', 'drawer'],
+      'popover': ['tooltip', 'drawer'],
+      'form': ['input', 'select', 'checkbox, radio & switch', 'textarea', 'slider', 'date picker', 'tag input', 'file upload'],
+      'notification': ['toast', 'alert', 'banner', 'notification center'],
+      'nav': ['breadcrumbs', 'menu', 'tabs', 'pagination', 'nav', 'stepper'],
+      'navigation': ['breadcrumbs', 'menu', 'tabs', 'pagination', 'nav', 'stepper'],
+      'graph': ['chart', 'sparkline', 'network graph', 'sankey', 'treemap', 'funnel', 'candlestick', 'flow'],
+      'chart': ['chart', 'sparkline', 'sankey', 'treemap', 'funnel', 'candlestick', 'heatmap', 'gauge'],
+      'visualization': ['chart', 'sparkline', 'network graph', 'sankey', 'treemap', 'funnel', 'candlestick', 'heatmap', 'gauge', 'kpi', 'waterfall'],
+      'grid': ['table', 'masonry', 'kanban', 'spreadsheet'],
+      'editor': ['draw', 'paint', 'code block', 'terminal', 'doc', 'markdown'],
+      'text': ['input', 'textarea', 'markdown', 'doc'],
+      'picker': ['color picker', 'date picker', 'time range picker'],
+      'media': ['image', 'video player', 'music player', 'podcast player', 'camera', 'camera annotate', 'audio recorder'],
+      'audio': ['music player', 'podcast player', 'audio recorder'],
+      'video': ['video player', 'camera', 'camera annotate'],
+      'upload': ['file upload', 'file gallery'],
+      'file': ['file upload', 'file gallery', 'pdf viewer'],
+      'list': ['list', 'virtual scroller', 'sortable', 'tree'],
+      'data': ['table', 'spreadsheet', 'chart', 'kpi', 'heatmap', 'virtual scroller'],
+      'layout': ['split pane', 'masonry', 'accordion', 'tabs', 'carousel', 'divider'],
+      'feedback': ['alert', 'toast', 'banner', 'spinner', 'progress', 'skeleton', 'empty state'],
+      'loading': ['spinner', 'progress', 'skeleton'],
+      'scan': ['qr code', 'qr reader', 'camera'],
+      'code': ['code block', 'terminal', 'diff'],
+      'image': ['image', 'carousel', 'cropper', 'masonry', 'file gallery'],
+      'input': ['input', 'textarea', 'select', 'checkbox, radio & switch', 'slider', 'tag input', 'rating'],
+      'tag': ['chip', 'badge', 'tag input'],
+      'label': ['chip', 'badge'],
+      'card': ['card', 'flip card'],
+      'progress': ['progress', 'spinner', 'stepper', 'gauge'],
+      'time': ['timer', 'countdown', 'date picker', 'time range picker', 'calendar'],
+      'date': ['date picker', 'calendar', 'time range picker'],
+      'rich text': ['markdown', 'doc'],
+      'wysiwyg': ['doc'],
+      'map': ['map', 'location'],
+      'location': ['map', 'location', 'weather'],
+      'social': ['comments', 'chat', 'rating', 'testimonial'],
+      'message': ['chat', 'comments', 'toast', 'alert'],
+      'payment': ['pricing table'],
+      'pricing': ['pricing table'],
+      'search': ['command palette', 'spotlight'],
+      'sort': ['sortable', 'table'],
+      'drag': ['sortable', 'kanban'],
+      'dnd': ['sortable', 'kanban'],
+      'tree': ['tree', 'org chart'],
+      'org': ['org chart'],
+      'workflow': ['flow', 'gantt', 'stepper', 'kanban'],
+      'project': ['gantt', 'kanban'],
+      'color': ['color picker', 'color display'],
+      'draw': ['draw', 'paint', 'camera annotate'],
+      'annotate': ['camera annotate', 'draw'],
+      'weather': ['weather'],
+      'book': ['book', 'pdf viewer'],
+      'pdf': ['pdf viewer'],
+      'recipe': ['recipe'],
+      'login': ['login'],
+      'auth': ['login'],
+      'signin': ['login'],
+      'waterfall': ['waterfall'],
+      'compare': ['diff'],
+      'spotlight': ['spotlight', 'command palette'],
+    };
+
+    // Build sidebar nav and sorting
     (function() {
       const sidebar = document.getElementById('comp-sidebar');
-      if (!sidebar) return;
-      let html = '';
-      const sections = [];
-      const els = document.querySelectorAll('.comp-category, .comp-section > h3');
-      els.forEach(el => {
-        if (el.classList.contains('comp-category')) {
-          html += '<div class="nav-group">' + el.textContent.trim() + '</div>';
-        } else {
-          const section = el.closest('.comp-section');
-          const name = el.textContent.trim();
-          const id = 'comp-' + name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '');
-          section.id = id;
-          html += '<a href="#' + id + '">' + name + '</a>';
-          sections.push(section);
+      const sectionsWrap = document.getElementById('comp-sections');
+      if (!sidebar || !sectionsWrap) return;
 
-          // Add "Read docs" link inline with h3
+      // Collect categories from DOM (they have data-cat-index)
+      const categories = [];
+      document.querySelectorAll('.comp-category').forEach(el => {
+        categories.push({ el, name: el.textContent.trim(), index: parseInt(el.dataset.catIndex), sections: [] });
+      });
+      categories.sort((a, b) => a.index - b.index);
+      const catByIndex = {};
+      categories.forEach(c => catByIndex[c.index] = c);
+
+      // Collect all sections (they have data-category, data-cat-index, data-cat-order)
+      const allSections = [];
+      document.querySelectorAll('.comp-section > h3').forEach(el => {
+        const section = el.closest('.comp-section');
+        if (section.style.display === 'none') return; // skip hidden (e.g. spreadsheet)
+        const name = el.textContent.trim();
+        const id = 'comp-' + name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '');
+        section.id = id;
+        const catIndex = parseInt(section.dataset.catIndex);
+        const catOrder = parseInt(section.dataset.catOrder);
+        const entry = { el: section, name, id, catIndex, catOrder, category: section.dataset.category || '' };
+        allSections.push(entry);
+        if (catByIndex[catIndex]) catByIndex[catIndex].sections.push(entry);
+
+        // Add "Read docs" link inline with h3
+        if (!el.querySelector('.help-link')) {
           const slug = id.replace('comp-', '');
           const link = document.createElement('a');
           link.className = 'help-link';
@@ -250,18 +352,208 @@
           el.appendChild(link);
         }
       });
-      sidebar.innerHTML = html;
+      // Sort category sections by their original order
+      categories.forEach(c => c.sections.sort((a, b) => a.catOrder - b.catOrder));
 
-      // Scroll highlight with IntersectionObserver
-      const links = sidebar.querySelectorAll('a');
-      const observer = new IntersectionObserver(entries => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id));
+      // Build reverse alias lookup: component name (lowercase) → set of search terms that match it
+      // Uses partial matching so alias target "switch" matches component "Checkbox, Radio & Switch"
+      const aliasIndex = {};
+      allSections.forEach(s => { aliasIndex[s.name.toLowerCase()] = new Set(); });
+      for (const [term, targets] of Object.entries(SEARCH_ALIASES)) {
+        for (const t of targets) {
+          const tLower = t.toLowerCase();
+          for (const [compName, aliases] of Object.entries(aliasIndex)) {
+            if (compName.includes(tLower) || tLower.includes(compName)) {
+              aliases.add(term);
+            }
           }
         }
-      }, { rootMargin: '-80px 0px -70% 0px' });
-      sections.forEach(s => observer.observe(s));
+      }
+
+      let scrollObserver = null;
+      let currentSort = 'alpha';
+      let currentFilter = null; // null = no filter, Set = matched section ids
+
+      function matchesSearch(section, query) {
+        const q = query.toLowerCase();
+        const name = section.name.toLowerCase();
+        // Direct name match
+        if (name.includes(q)) return true;
+        // Category match
+        if (section.category && section.category.toLowerCase().includes(q)) return true;
+        // Alias match: check if the query matches any alias that targets this component
+        const aliases = aliasIndex[name];
+        if (aliases) {
+          for (const alias of aliases) {
+            if (alias.includes(q) || q.includes(alias)) return true;
+          }
+        }
+        // Forward alias: query is an alias key, check targets with partial match
+        for (const [term, targets] of Object.entries(SEARCH_ALIASES)) {
+          if (term.includes(q) || q.includes(term)) {
+            if (targets.some(t => name.includes(t.toLowerCase()))) return true;
+          }
+        }
+        return false;
+      }
+
+      function applyFilter(query) {
+        if (!query) {
+          currentFilter = null;
+          allSections.forEach(s => { s.el.style.display = ''; });
+          searchCount.classList.remove('visible');
+        } else {
+          currentFilter = new Set();
+          allSections.forEach(s => {
+            if (matchesSearch(s, query)) {
+              currentFilter.add(s.id);
+              s.el.style.display = '';
+            } else {
+              s.el.style.display = 'none';
+            }
+          });
+          searchCount.textContent = currentFilter.size + ' of ' + allSections.length;
+          searchCount.classList.add('visible');
+        }
+        buildSidebar(currentSort);
+      }
+
+      // Reference node: first category or first section
+      const pageTitle = sectionsWrap.querySelector('.page-title');
+
+      // Container for sidebar links (pre-rendered in HTML, enhanced by JS)
+      let linksWrap = document.getElementById('comp-sidebar-links') || document.createElement('div');
+
+      function buildSidebar(mode) {
+        let html = '';
+        const observed = [];
+
+        if (mode === 'category') {
+          categories.forEach(cat => {
+            const visibleInCat = cat.sections.filter(s => !currentFilter || currentFilter.has(s.id));
+            if (currentFilter && visibleInCat.length === 0) return;
+            html += '<div class="nav-group">' + cat.name + '</div>';
+            visibleInCat.forEach(s => {
+              html += '<a href="#' + s.id + '">' + s.name + '</a>';
+              observed.push(s.el);
+            });
+          });
+        } else {
+          let sorted;
+          if (mode === 'alpha') {
+            sorted = [...allSections].sort((a, b) => a.name.localeCompare(b.name));
+          } else {
+            const idx = {};
+            POPULAR_ORDER.forEach((n, i) => idx[n] = i);
+            sorted = [...allSections].sort((a, b) => (idx[a.name] ?? 999) - (idx[b.name] ?? 999));
+          }
+          sorted.forEach(s => {
+            if (currentFilter && !currentFilter.has(s.id)) return;
+            html += '<a href="#' + s.id + '">' + s.name + '</a>';
+            observed.push(s.el);
+          });
+        }
+
+        // Only replace links, not the controls (preserves search focus)
+        linksWrap.innerHTML = html;
+
+        // Re-setup scroll observer
+        if (scrollObserver) scrollObserver.disconnect();
+        const links = linksWrap.querySelectorAll('a[href^="#"]');
+        scrollObserver = new IntersectionObserver(entries => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id));
+            }
+          }
+        }, { rootMargin: '-80px 0px -70% 0px' });
+        observed.forEach(s => scrollObserver.observe(s));
+      }
+
+      function reorderDOM(mode) {
+        if (mode === 'category') {
+          // Show categories, but hide empty ones when filtering
+          let order = 0;
+          categories.forEach(cat => {
+            const hasVisible = !currentFilter || cat.sections.some(s => currentFilter.has(s.id));
+            cat.el.style.display = hasVisible ? '' : 'none';
+            cat.el.style.order = order++;
+            cat.sections.forEach(s => { s.el.style.order = order++; });
+          });
+        } else {
+          let sorted;
+          if (mode === 'alpha') {
+            sorted = [...allSections].sort((a, b) => a.name.localeCompare(b.name));
+          } else {
+            const idx = {};
+            POPULAR_ORDER.forEach((n, i) => idx[n] = i);
+            sorted = [...allSections].sort((a, b) => (idx[a.name] ?? 999) - (idx[b.name] ?? 999));
+          }
+          sorted.forEach((s, i) => { s.el.style.order = i; });
+        }
+      }
+
+      function applySort(mode) {
+        currentSort = mode;
+        reorderDOM(mode);
+        // Re-apply filter visibility after reorder
+        if (currentFilter) {
+          allSections.forEach(s => {
+            s.el.style.display = currentFilter.has(s.id) ? '' : 'none';
+          });
+        }
+        buildSidebar(mode);
+        document.querySelectorAll('.sort-btn').forEach(b => b.classList.toggle('active', b.dataset.sort === mode));
+      }
+
+      // Use pre-rendered DOM elements from _head.html
+      const searchDiv = document.getElementById('comp-search');
+      const searchInput = document.getElementById('comp-search-input');
+      const searchClear = document.getElementById('comp-search-clear');
+      const searchCount = document.getElementById('comp-search-count');
+      const sortDiv = document.getElementById('sort-controls');
+
+      let searchDebounce;
+      searchInput.addEventListener('input', () => {
+        clearTimeout(searchDebounce);
+        const val = searchInput.value.trim();
+        searchDiv.classList.toggle('has-value', val.length > 0);
+        searchDebounce = setTimeout(() => applyFilter(val || null), 120);
+      });
+      searchClear.addEventListener('click', () => {
+        searchInput.value = '';
+        searchDiv.classList.remove('has-value');
+        applyFilter(null);
+        searchInput.focus();
+      });
+
+      // Init with alphabetical sort
+      applySort('alpha');
+
+      // Focus search on load (desktop only)
+      if (window.innerWidth >= 1100) searchInput.focus();
+
+      // Sort button click handlers
+      sortDiv.addEventListener('click', e => {
+        const btn = e.target.closest('.sort-btn');
+        if (!btn || btn.classList.contains('active')) return;
+        applySort(btn.dataset.sort);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      // Keyboard shortcut: / to focus search
+      document.addEventListener('keydown', e => {
+        if (e.key === '/' && !e.ctrlKey && !e.metaKey && document.activeElement !== searchInput && !document.activeElement.closest('[contenteditable]') && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+          e.preventDefault();
+          searchInput.focus();
+        }
+        if (e.key === 'Escape' && document.activeElement === searchInput) {
+          searchInput.value = '';
+          searchDiv.classList.remove('has-value');
+          applyFilter(null);
+          searchInput.blur();
+        }
+      });
     })();
 
     // Help drawer logic

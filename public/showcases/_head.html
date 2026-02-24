@@ -70,14 +70,14 @@
     /* ─── Component sidebar nav ─── */
     .comp-sidebar {
       position: fixed;
-      top: 5rem;
+      top: 4rem;
       left: max(0.5rem, calc(50% - 600px));
-      width: 145px;
-      max-height: calc(100vh - 6rem);
+      width: 170px;
+      max-height: calc(100vh - 5rem);
       overflow-y: auto;
       font-size: 0.75rem;
       scrollbar-width: thin;
-      padding: 0.5rem 0;
+      padding: 0.5rem 0.5rem 0.5rem 0;
       z-index: 50;
     }
     .comp-sidebar .nav-group {
@@ -102,8 +102,95 @@
     }
     .comp-sidebar a:hover { color: var(--snice-color-text, #eee); }
     .comp-sidebar a.active { color: var(--snice-color-primary, #2563eb); }
+
+    /* ─── Search input (sidebar top) ─── */
+    .comp-search {
+      position: relative;
+      margin-bottom: 0.5rem;
+    }
+    .comp-search input {
+      width: 100%;
+      padding: 0.35rem 1.4rem 0.35rem 1.6rem;
+      font-size: 0.7rem;
+      font-family: inherit;
+      background: var(--snice-color-background-secondary, rgba(128,128,128,0.08));
+      border: 1px solid var(--snice-color-border, rgba(128,128,128,0.15));
+      border-radius: 6px;
+      color: var(--snice-color-text, #eee);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .comp-search input::placeholder { color: var(--snice-color-text-tertiary, #666); }
+    .comp-search input:focus { border-color: var(--snice-color-primary, #2563eb); }
+    .comp-search svg {
+      position: absolute;
+      left: 0.45rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 12px;
+      height: 12px;
+      color: var(--snice-color-text-tertiary, #666);
+      pointer-events: none;
+    }
+    .comp-search-clear {
+      position: absolute;
+      right: 0.3rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      border: none;
+      background: none;
+      color: var(--snice-color-text-tertiary, #666);
+      cursor: pointer;
+      padding: 0;
+      display: none;
+      font-size: 0.7rem;
+      line-height: 1;
+    }
+    .comp-search-clear:hover { color: var(--snice-color-text, #eee); }
+    .comp-search.has-value .comp-search-clear { display: block; }
+    .comp-search-count {
+      font-size: 0.6rem;
+      color: var(--snice-color-text-tertiary, #666);
+      padding: 0.15rem 0;
+      display: none;
+    }
+    .comp-search-count.visible { display: block; }
+
+    /* ─── Sort buttons (sidebar top) ─── */
+    .sort-controls {
+      display: flex;
+      gap: 0.5rem;
+      padding: 0 0 0.75rem;
+      margin-bottom: 0.5rem;
+      border-bottom: 1px solid var(--snice-color-border, rgba(128,128,128,0.15));
+    }
+    .sort-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--snice-color-text-tertiary, #666);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      padding: 0;
+    }
+    .sort-btn:hover { color: var(--snice-color-text, #eee); border-color: var(--snice-color-border, rgba(128,128,128,0.3)); }
+    .sort-btn.active {
+      background: var(--snice-color-primary, #2563eb);
+      color: #fff;
+      border-color: var(--snice-color-primary, #2563eb);
+    }
+    .sort-btn svg { width: 14px; height: 14px; }
+
+    #comp-sections { display: flex; flex-direction: column; }
     @media (min-width: 1100px) {
-      main.wrap { margin-left: max(0px, calc(50% - 600px + 160px)); max-width: 1100px; }
+      main.wrap { margin-left: max(0px, calc(50% - 600px + 185px)); max-width: 1100px; }
     }
     @media (max-width: 1099px) {
       .comp-sidebar { display: none; }
@@ -127,12 +214,28 @@
       </nav>
     </div>
   </header>
-  <nav class="comp-sidebar" id="comp-sidebar"></nav>
-  <main class="wrap">
-    <div class="page-title">
-      <h2><span id="comp-count"></span> Components</h2>
-      <p>No framework, no virtual DOM — just the platform, made elegant.</p>
+  <nav class="comp-sidebar" id="comp-sidebar">
+    <div class="comp-search" id="comp-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="comp-search-input" placeholder="Search components..." spellcheck="false" autocomplete="off">
+      <button class="comp-search-clear" id="comp-search-clear" title="Clear">&times;</button>
     </div>
+    <div class="sort-controls" id="sort-controls">
+      <button class="sort-btn active" data-sort="alpha" title="Sort alphabetically">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18h6l-6-8h6"/><path d="M14 10V4l4 6"/><line x1="14" y1="8" x2="18" y2="8"/><line x1="21" y1="12" x2="21" y2="20"/><polyline points="18 17 21 20 24 17"/></svg>
+      </button>
+      <button class="sort-btn" data-sort="category" title="Sort by category">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      </button>
+      <button class="sort-btn" data-sort="popular" title="Sort by likely use">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </button>
+    </div>
+    <div class="comp-search-count" id="comp-search-count"></div>
+    <div class="comp-sidebar-links" id="comp-sidebar-links"></div>
+  </nav>
+  <main class="wrap">
+    <div id="comp-sections">
 
     <!-- ════════════════════════════════════════ -->
     <!-- CORE                                     -->
