@@ -302,6 +302,25 @@ header nav a:hover, header nav a.active { color: var(--snice-color-text); }
   line-height: 1.6;
   overflow-x: auto;
 }
+/* Syntax highlighting for pre-rendered code spans (One Dark) */
+.dec-section code .d { color: #c678dd; } /* decorators */
+.dec-section code .k { color: #c678dd; } /* keywords */
+.dec-section code .s { color: #98c379; } /* strings */
+.dec-section code .t { color: #e5c07b; } /* types */
+.dec-section code .f { color: #61afef; } /* functions */
+.dec-section code .c { color: #5c6370; font-style: italic; } /* comments */
+.dec-section code .h { color: #e06c75; } /* html tags */
+.dec-section code .a { color: #d19a66; } /* attributes */
+.dec-section code .v { color: #e06c75; } /* variables */
+[data-theme="light"] .dec-section code .d { color: #a626a4; }
+[data-theme="light"] .dec-section code .k { color: #a626a4; }
+[data-theme="light"] .dec-section code .s { color: #50a14f; }
+[data-theme="light"] .dec-section code .t { color: #c18401; }
+[data-theme="light"] .dec-section code .f { color: #4078f2; }
+[data-theme="light"] .dec-section code .c { color: #a0a1a7; font-style: italic; }
+[data-theme="light"] .dec-section code .h { color: #e45649; }
+[data-theme="light"] .dec-section code .a { color: #986801; }
+[data-theme="light"] .dec-section code .v { color: #e45649; }
 .dec-section .doc-link {
   margin-top: 0.75rem;
   font-size: 0.8rem;

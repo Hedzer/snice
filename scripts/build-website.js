@@ -261,14 +261,14 @@ footer a { color: var(--snice-color-text-secondary); text-decoration: none; }
 const header = (active) => `
   <header>
     <div class="wrap">
-      <h1><a href="index.html">Snice</a></h1>
+      <h1><a href="index.html" style="display:inline-flex;align-items:center;gap:0.5rem"><img src="images/snice-logo.png" alt="Snice" width="28" height="28" style="border-radius:50%">Snice</a></h1>
       <nav>
         <a href="guide.html"${active === 'guide' ? ' class="active"' : ''}>Guide</a>
         <a href="decorators.html"${active === 'decorators' ? ' class="active"' : ''}>Decorators</a>
         <a href="components.html"${active === 'components' ? ' class="active"' : ''}>Components</a>
 
-        <a href="https://gitlab.com/Hedzer/snice">GitLab</a>
-        <button class="theme-btn" onclick="document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark')" title="Toggle theme">
+        <a href="https://gitlab.com/Hedzer/snice">Source</a>
+        <button class="theme-btn" onclick="var t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',t);localStorage.setItem('snice-theme',t)" title="Toggle theme">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
         </button>
       </nav>
@@ -283,13 +283,23 @@ const footer = `
     </div>
   </footer>`;
 
-const head = (title) => `<!DOCTYPE html>
+const head = (title) => `<!-- GENERATED FILE — do not edit directly. Source: scripts/build-website.js -->
+<!DOCTYPE html>
 <html lang="en" data-theme="dark">
+<script>document.documentElement.setAttribute('data-theme',localStorage.getItem('snice-theme')||'dark')</script>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Load runtime + code-block + grammars first to prevent layout shift -->
+  <script src="components/snice-runtime.min.js"></script>
+  <script src="components/snice-code-block.min.js"></script>
+  <script>fetch('grammars/snice.json');</script>
   <title>${title} - Snice</title>
   <meta name="description" content="TypeScript web components with separation of concerns">
+  <link rel="icon" type="image/png" href="images/snice-logo.png">
+  <meta property="og:title" content="${title} - Snice">
+  <meta property="og:description" content="TypeScript web components with separation of concerns">
+  <meta property="og:image" content="images/snice-logo.png">
   <link rel="stylesheet" href="theme/theme.css">
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -382,90 +392,109 @@ ${footer}
 const decoratorsHtml = `${head('Decorators & Patterns')}
 ${header('decorators')}
   <main class="wrap">
-    <div class="page-title">
-      <h2>Decorators & Patterns</h2>
-      <p>Everything is declarative. TypeScript decorators for clean, maintainable components.</p>
-    </div>
 
     <div class="dec-section">
       <h3><code>@element</code></h3>
       <p class="desc">Register a custom element. Extends HTMLElement with reactive properties and lifecycle.</p>
-      <pre><code><span class="d">@element</span>(<span class="s">'my-card'</span>)
-<span class="k">class</span> <span class="t">MyCard</span> <span class="k">extends</span> HTMLElement {
-  <span class="d">@property</span>() title = <span class="s">''</span>;
-  <span class="d">@property</span>({ type: Number }) count = 0;
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@element('my-card')
+class MyCard extends HTMLElement {
+  @property() title = '';
+  @property({ type: Number }) count = 0;
 
-  <span class="d">@render</span>()
-  <span class="f">template</span>() {
-    <span class="k">return</span> html\`&lt;h1&gt;\${this.title}&lt;/h1&gt;\`;
+  @render()
+  template() {
+    return html\`&lt;h1&gt;\${this.title}&lt;/h1&gt;\`;
   }
-}</code></pre>
+}</snice-code-block>
       <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/elements.md">Full documentation →</a></p>
     </div>
 
     <div class="dec-section">
       <h3><code>@page</code></h3>
       <p class="desc">Routable page component with route parameters, guards, and lifecycle hooks.</p>
-      <pre><code><span class="c">// Guard receives context + route params</span>
-<span class="k">const</span> auth: <span class="t">Guard</span>&lt;<span class="t">AppContext</span>&gt; = (ctx, params) => ctx.isAuthenticated();
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// Guard receives context + route params
+const auth: Guard&lt;AppContext&gt; = (ctx, params) =&gt; ctx.isAuthenticated();
 
-<span class="d">@page</span>({ tag: <span class="s">'user-page'</span>, routes: [<span class="s">'/users/:id'</span>], guards: [auth] })
-<span class="k">class</span> <span class="t">UserPage</span> <span class="k">extends</span> HTMLElement {
-  <span class="c">// Route param :id auto-binds to this property</span>
-  <span class="d">@property</span>() id = <span class="s">''</span>;
-  <span class="d">@property</span>() user = <span class="k">null</span>;
+@page({ tag: 'user-page', routes: ['/users/:id'], guards: [auth] })
+class UserPage extends HTMLElement {
+  // Route param :id auto-binds to this property
+  @property() id = '';
+  @property() user = null;
 
-  <span class="d">@ready</span>()
-  <span class="k">async</span> <span class="f">load</span>() {
-    <span class="c">// this.id is already set from URL</span>
-    this.user = <span class="k">await</span> fetch(\`/api/users/\${this.id}\`).then(r => r.json());
+  @ready()
+  async load() {
+    // this.id is already set from URL
+    this.user = await fetch(\`/api/users/\${this.id}\`).then(r =&gt; r.json());
   }
-}</code></pre>
+}</snice-code-block>
       <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/routing.md">Full documentation →</a></p>
     </div>
 
     <div class="dec-section">
       <h3><code>@controller</code></h3>
       <p class="desc">Hot-swap logic on any element — keep your UI, change what it does.</p>
-      <pre><code><span class="d">@controller</span>(<span class="s">'weather'</span>)
-<span class="k">class</span> <span class="t">WeatherData</span> {
-  <span class="k">async</span> <span class="f">attach</span>(el) {
-    <span class="k">const</span> data = <span class="k">await</span> <span class="f">fetch</span>(<span class="s">'/api/weather'</span>).then(r => r.json());
-    <span class="v">this</span>.city = data.city;
-    el.icon = <span class="s">'cloud'</span>;
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@controller('weather')
+class WeatherData {
+  async attach(el) {
+    const data = await fetch('/api/weather').then(r =&gt; r.json());
+    this.city = data.city;
+    el.icon = 'cloud';
     el.label = data.city;
-    el.value = <span class="s">\`\${data.temp}°\`</span>;
+    el.value = \`\${data.temp}°\`;
   }
 
-  <span class="d">@on</span>(<span class="s">'click'</span>)
-  <span class="f">viewDetails</span>() {
-    <span class="f">navigate</span>(<span class="s">\`/weather/\${this.city}\`</span>);
+  @on('click')
+  viewDetails() {
+    navigate(\`/weather/\${this.city}\`);
   }
 }
 
-<span class="h">&lt;stat-card</span> <span class="a">controller</span>=<span class="s">"weather"</span><span class="h">&gt;&lt;/stat-card&gt;</span></code></pre>
+&lt;stat-card controller="weather"&gt;&lt;/stat-card&gt;</snice-code-block>
       <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/controllers.md">Full documentation →</a></p>
+    </div>
+
+    <div class="dec-section">
+      <h3><code>@layout</code></h3>
+      <p class="desc">Page wrapper for the routing system. Layouts persist across route changes and wrap page content.</p>
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@layout('app-shell')
+class AppShell extends HTMLElement {
+  @render()
+  template() {
+    return html\`
+      &lt;nav&gt;&lt;a href="/"&gt;Home&lt;/a&gt;&lt;/nav&gt;
+      &lt;main&gt;
+        &lt;slot&gt;&lt;/slot&gt;
+      &lt;/main&gt;
+      &lt;footer&gt;© 2025&lt;/footer&gt;
+    \`;
+  }
+}
+
+// Pages reference the layout
+@page({ tag: 'home-page', routes: ['/'], layout: 'app-shell' })
+class HomePage extends HTMLElement { }</snice-code-block>
+      <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/routing.md">Full documentation →</a></p>
     </div>
 
     <div class="dec-section">
       <h3><code>@property</code> & <code>@watch</code></h3>
       <p class="desc">Reactive properties that trigger re-renders. Watch for changes.</p>
-      <pre><code><span class="d">@property</span>() name = <span class="s">''</span>;
-<span class="d">@property</span>({ type: Number }) count = 0;
-<span class="d">@property</span>({ type: Boolean, reflect: <span class="k">true</span> }) active = <span class="k">false</span>;
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@property() name = '';
+@property({ type: Number }) count = 0;
+@property({ type: Boolean, reflect: true }) active = false;
 
-<span class="d">@watch</span>(<span class="s">'count'</span>)
-<span class="f">onCountChange</span>(newVal, oldVal) {
+@watch('count')
+onCountChange(newVal, oldVal) {
   console.log(\`Count: \${oldVal} → \${newVal}\`);
-}</code></pre>
+}</snice-code-block>
     </div>
 
     <div class="dec-section">
       <h3><code>@render</code> & <code>@styles</code></h3>
       <p class="desc">Template method with differential rendering. Scoped CSS styles.</p>
-      <pre><code><span class="d">@render</span>()
-<span class="f">template</span>() {
-  <span class="k">return</span> html\`
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@render()
+template() {
+  return html\`
     &lt;div class="card"&gt;
       &lt;h3&gt;\${this.title}&lt;/h3&gt;
       &lt;if \${this.expanded}&gt;
@@ -475,121 +504,212 @@ ${header('decorators')}
   \`;
 }
 
-<span class="d">@styles</span>()
-<span class="f">componentStyles</span>() {
-  <span class="k">return</span> css\`
+@styles()
+componentStyles() {
+  return css\`
     :host { display: block; }
     .card { padding: 1rem; border-radius: 8px; }
   \`;
-}</code></pre>
+}</snice-code-block>
     </div>
 
     <div class="dec-section">
       <h3><code>@ready</code> & <code>@dispose</code></h3>
       <p class="desc">Lifecycle hooks for initialization and cleanup.</p>
-      <pre><code><span class="d">@ready</span>()
-<span class="f">onMount</span>() {
-  this.interval = setInterval(() => this.tick(), 1000);
-  console.log(<span class="s">'Component connected'</span>);
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@ready()
+onMount() {
+  this.interval = setInterval(() =&gt; this.tick(), 1000);
+  console.log('Component connected');
 }
 
-<span class="d">@dispose</span>()
-<span class="f">cleanup</span>() {
+@dispose()
+cleanup() {
   clearInterval(this.interval);
   this.subscription?.unsubscribe();
-}</code></pre>
+}</snice-code-block>
+    </div>
+
+    <div class="dec-section">
+      <h3><code>@moved</code> & <code>@adopted</code></h3>
+      <p class="desc">Execute when an element is moved between documents (e.g. into an iframe).</p>
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@moved()
+onMoved() {
+  // Element was moved in the DOM (e.g. reparented)
+  this.recalculateLayout();
+}
+
+@adopted()
+onAdopted() {
+  // Element was adopted into a new document (e.g. iframe)
+  this.reattachStyles();
+}</snice-code-block>
     </div>
 
     <div class="dec-section">
       <h3><code>@query</code> & <code>@queryAll</code></h3>
       <p class="desc">DOM element references within shadow DOM.</p>
-      <pre><code><span class="d">@query</span>(<span class="s">'input'</span>) inputEl;
-<span class="d">@queryAll</span>(<span class="s">'.item'</span>) items;
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@query('input') inputEl;
+@queryAll('.item') items;
 
-<span class="d">@ready</span>()
-<span class="f">setup</span>() {
+@ready()
+setup() {
   this.inputEl.focus();
   console.log(\`Found \${this.items.length} items\`);
-}</code></pre>
+}</snice-code-block>
     </div>
 
     <div class="dec-section">
       <h3><code>@on</code> & <code>@dispatch</code></h3>
       <p class="desc">Event delegation and custom event emission.</p>
-      <pre><code><span class="c">// @on: delegated event listener</span>
-<span class="d">@on</span>(<span class="s">'click'</span>, <span class="s">'.entry'</span>)
-<span class="f">editEntry</span>(e) {
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// @on: delegated event listener
+@on('click', '.entry')
+editEntry(e) {
   this.selected = e.target.dataset.id;
-  this.editing = <span class="k">true</span>;
+  this.editing = true;
 }
 
-<span class="d">@on</span>(<span class="s">'click'</span>, <span class="s">'button.save'</span>)
-<span class="f">handleSave</span>(e) { this.save(); }
+@on('click', 'button.save')
+handleSave(e) { this.save(); }
 
-<span class="c">// @dispatch: return value becomes event.detail</span>
-<span class="d">@dispatch</span>(<span class="s">'status-changed'</span>)
-<span class="f">updateStatus</span>(status) {
+// @dispatch: return value becomes event.detail
+@dispatch('status-changed')
+updateStatus(status) {
   this.status = status;
-  <span class="k">return</span> { status };
+  return { status };
 }
 
-<span class="c">// Stacked: DOM event triggers custom event</span>
-<span class="d">@on</span>(<span class="s">'click'</span>, <span class="s">'.item'</span>)
-<span class="d">@dispatch</span>(<span class="s">'item-selected'</span>)
-<span class="f">handleItemClick</span>(e) {
-  <span class="k">return</span> { id: e.target.dataset.id };
-}</code></pre>
+// Stacked: DOM event triggers custom event
+@on('click', '.item')
+@dispatch('item-selected')
+handleItemClick(e) {
+  return { id: e.target.dataset.id };
+}</snice-code-block>
       <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/events.md">Full documentation →</a></p>
     </div>
 
     <div class="dec-section">
       <h3><code>@context</code></h3>
       <p class="desc">Receive router navigation context updates.</p>
-      <pre><code><span class="c">// Method receives Context on route changes</span>
-<span class="d">@context</span>()
-<span class="f">handleContext</span>(ctx: <span class="t">Context</span>) {
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// Method receives Context on route changes
+@context()
+handleContext(ctx: Context) {
   this.user = ctx.application.user;
   this.route = ctx.navigation.route;
-}</code></pre>
+}</snice-code-block>
       <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/routing.md">Full documentation →</a></p>
+    </div>
+
+    <div class="dec-section">
+      <h3><code>@observe</code></h3>
+      <p class="desc">Watch for intersection, resize, media query, or DOM mutation changes.</p>
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// Fires when element enters/exits viewport
+@observe('self', 'intersection', { threshold: 0.5 })
+onVisible(entry: IntersectionObserverEntry) {
+  this.visible = entry.isIntersecting;
+}
+
+// Fires when element is resized
+@observe('self', 'resize')
+onResize(entry: ResizeObserverEntry) {
+  this.compact = entry.contentRect.width &lt; 400;
+}
+
+// Fires when media query matches/unmatches
+@observe('self', 'media:(prefers-color-scheme: dark)')
+onDarkMode(matches: boolean) {
+  this.darkMode = matches;
+}
+
+// Fires on child DOM mutations
+@observe('self', 'mutation:childList,attributes')
+onMutation(records: MutationRecord[]) {
+  this.updateCount();
+}</snice-code-block>
+      <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/observers.md">Full documentation →</a></p>
     </div>
 
     <div class="dec-section">
       <h3><code>@request</code> & <code>@respond</code></h3>
       <p class="desc">Async generator pattern for parent-child communication.</p>
-      <pre><code><span class="c">// Requester: async generator yields payload, awaits response</span>
-<span class="d">@request</span>(<span class="s">'fetch-user'</span>)
-<span class="k">async</span> *<span class="f">fetchUser</span>(id: <span class="t">string</span>) {
-  <span class="k">const</span> user = <span class="k">await</span> (<span class="k">yield</span> { id });
-  <span class="k">return</span> user;
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// Requester: async generator yields payload, awaits response
+@request('fetch-user')
+async *fetchUser(id: string) {
+  const user = await (yield { id });
+  return user;
 }
 
-<span class="c">// Responder: receives payload, returns response</span>
-<span class="d">@respond</span>(<span class="s">'fetch-user'</span>)
-<span class="k">async</span> <span class="f">handleFetchUser</span>({ id }) {
-  <span class="k">return await</span> fetch(\`/api/users/\${id}\`).then(r => r.json());
+// Responder: receives payload, returns response
+@respond('fetch-user')
+async handleFetchUser({ id }) {
+  return await fetch(\`/api/users/\${id}\`).then(r =&gt; r.json());
 }
 
-<span class="c">// Usage: const user = await this.fetchUser('123');</span></code></pre>
+// Usage: const user = await this.fetchUser('123');</snice-code-block>
       <p class="doc-link"><a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/request-response.md">Full documentation →</a></p>
+    </div>
+
+    <div class="dec-section">
+      <h3><code>@debounce</code> & <code>@throttle</code></h3>
+      <p class="desc">Rate-limit method execution. Debounce waits for quiet; throttle limits frequency.</p>
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// Wait 300ms after last call before executing
+@debounce(300)
+onSearchInput(query: string) {
+  this.results = await this.search(query);
+}
+
+// Execute at most once per 100ms
+@throttle(100)
+onScroll(e: Event) {
+  this.scrollY = window.scrollY;
+}
+
+// Works with @on for event-driven debounce
+@on('input', '.search')
+@debounce(250)
+handleSearch(e: Event) {
+  this.query = e.target.value;
+}</snice-code-block>
+    </div>
+
+    <div class="dec-section">
+      <h3><code>@once</code> & <code>@memoize</code></h3>
+      <p class="desc">Execute a method only once, or cache return values for repeated calls.</p>
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// Only runs once, subsequent calls are no-ops
+@once()
+initialize() {
+  this.setupWebSocket();
+  this.loadConfig();
+}
+
+// Cache results — same arguments return cached value
+@memoize()
+computeExpensiveValue(input: string) {
+  return heavyComputation(input);
+}
+
+// Per-instance: each element instance runs once
+@once(true)
+onFirstRender() {
+  analytics.track('component-viewed');
+}</snice-code-block>
     </div>
 
     <div class="dec-section">
       <h3>Template Syntax</h3>
       <p class="desc">Property binding, conditionals, loops, and event shortcuts.</p>
-      <pre><code><span class="c">// Property binding</span>
-html\`<span class="h">&lt;input</span> .value=\${this.text}<span class="h">&gt;</span>\`
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// Property binding
+html\`&lt;input .value=\${this.text}&gt;\`
 
-<span class="c">// Conditionals</span>
-html\`<span class="h">&lt;if</span> \${this.loading}<span class="h">&gt;&lt;snice-spinner&gt;&lt;/snice-spinner&gt;&lt;/if&gt;</span>\`
-html\`<span class="h">&lt;if</span> \${this.error}<span class="h">&gt;&lt;span&gt;</span>\${this.error}<span class="h">&lt;/span&gt;&lt;/if&gt;</span>\`
+// Conditionals
+html\`&lt;if \${this.loading}&gt;&lt;snice-spinner&gt;&lt;/snice-spinner&gt;&lt;/if&gt;\`
+html\`&lt;if \${this.error}&gt;&lt;span&gt;\${this.error}&lt;/span&gt;&lt;/if&gt;\`
 
-<span class="c">// Loops (use .map())</span>
-html\`\${this.items.map(item =&gt; html\`<span class="h">&lt;li</span> key=\${item.id}<span class="h">&gt;</span>\${item.name}<span class="h">&lt;/li&gt;</span>\`)}\`
+// Loops (use .map())
+html\`\${this.items.map(item =&gt; html\`&lt;li key=\${item.id}&gt;\${item.name}&lt;/li&gt;\`)}\`
 
-<span class="c">// Keyboard shortcuts</span>
-html\`<span class="h">&lt;input</span> <span class="d">@keydown:ctrl+s</span>=\${this.save}<span class="h">&gt;</span>\`
-html\`<span class="h">&lt;div</span> <span class="d">@keydown:escape</span>=\${this.close}<span class="h">&gt;</span>\`</code></pre>
+// Keyboard shortcuts
+html\`&lt;input @keydown:ctrl+s=\${this.save}&gt;\`
+html\`&lt;div @keydown:escape=\${this.close}&gt;\`</snice-code-block>
     </div>
   </main>
 ${footer}
