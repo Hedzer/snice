@@ -52,10 +52,11 @@ Every component must satisfy ALL items before considered complete.
 
 ## Website Integration
 - [ ] Showcase fragment: `public/showcases/<name>.html`
-- [ ] Added to `public/showcases/manifest.json`
+- [ ] Fragment starts with `<div class="comp-section">` and has `<h3>Component Name</h3>` as first child
+- [ ] Added to `public/showcases/manifest.json` (under correct category)
 - [ ] Script tag in `public/showcases/_footer.html`
-- [ ] Component tag in `public/showcases/_footer.html` comp-list
-- [ ] Rebuild: `node public/build-showcases.js`
+- [ ] Search aliases added to `SEARCH_ALIASES` in `public/showcases/_footer.html` (e.g. "dropdown" → "select")
+- [ ] Rebuild: `node public/build-showcases.js` (pre-renders sidebar links + injects data attributes)
 - [ ] Copy CDN builds: `node scripts/build-website.js`
 
 ## Final Verification
