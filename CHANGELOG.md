@@ -1,3 +1,20 @@
+# [4.11.0](https://gitlab.com/Hedzer/snice/compare/v4.10.0...v4.11.0) (2026-02-24)
+
+
+### Bug Fixes
+
+* carousel indicator count, markdown theme colors, pdf-viewer event delegation, podcast speed label ([0ffdfc1](https://gitlab.com/Hedzer/snice/commit/0ffdfc1a8132c6d97327e3488de790a9700c5847))
+* deduplicate router placards, rename guards to descriptive predicates ([6632a85](https://gitlab.com/Hedzer/snice/commit/6632a85e6f9ab2932475b3cfde19b6a89ddf7376))
+* react adapter props for book, diff, markdown, org-chart; add app-tiles adapter ([dd2573f](https://gitlab.com/Hedzer/snice/commit/dd2573f69d9dc6dbcec2bb6e46a95529db925314))
+* remove duplicate footer from website pages, adjust guide sidebar offset ([fb5b9f7](https://gitlab.com/Hedzer/snice/commit/fb5b9f77d58e0084c4bd71348bbe2032b8798dcf))
+* showcase fragment tweaks, update component checklist for new build system ([b03d9e5](https://gitlab.com/Hedzer/snice/commit/b03d9e54c1ac8d403d346c11e39376b4be3b9ab4))
+
+
+### Features
+
+* component search, sort by alpha/category/popular, content-visibility optimization ([6d63ae6](https://gitlab.com/Hedzer/snice/commit/6d63ae63d7a6e50b50390ff77dabd7e234e2fbaf))
+* overhaul PWA template with components, controllers, new pages, and MCP guide ([fa7de36](https://gitlab.com/Hedzer/snice/commit/fa7de36392a8f77774d442a07fc643d043c18bae))
+
 # [4.10.0](https://gitlab.com/Hedzer/snice/compare/v4.9.0...v4.10.0) (2026-02-23)
 
 
