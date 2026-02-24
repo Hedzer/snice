@@ -1,6 +1,6 @@
 export interface RequestOptions extends EventInit {
   /**
-   * Timeout for waiting for responses (in ms) - defaults to 5000ms
+   * Timeout for waiting for responses (in ms) - defaults to 120000ms (2 minutes)
    */
   timeout?: number;
   /**

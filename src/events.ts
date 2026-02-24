@@ -1,7 +1,7 @@
 import { DISPATCH_TIMERS } from './symbols';
 import { DispatchOptions } from './types/dispatch-options';
 
-// @on decorator removed in v3.0.0 - use template event syntax instead: @click=${handler}
+// @dispatch decorator - auto-dispatches custom events from method return values
 
 
 /**
