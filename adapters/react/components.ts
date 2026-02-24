@@ -7,6 +7,7 @@
 
 export { Accordion } from './accordion';
 export { Alert } from './alert';
+export { AppTiles } from './app-tiles';
 export { AudioRecorder } from './audio-recorder';
 export { Avatar } from './avatar';
 export { Badge } from './badge';
@@ -109,6 +110,7 @@ export { Weather } from './weather';
 
 export type { AccordionProps } from './accordion';
 export type { AlertProps } from './alert';
+export type { AppTilesProps } from './app-tiles';
 export type { AudioRecorderProps } from './audio-recorder';
 export type { AvatarProps } from './avatar';
 export type { BadgeProps } from './badge';

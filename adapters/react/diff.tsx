@@ -11,6 +11,7 @@ export interface DiffProps extends SniceBaseProps {
   mode?: any;
   lineNumbers?: any;
   contextLines?: any;
+  markers?: any;
 
 }
 
@@ -32,7 +33,7 @@ export interface DiffProps extends SniceBaseProps {
  */
 export const Diff = createReactAdapter<DiffProps>({
   tagName: 'snice-diff',
-  properties: ["oldText","newText","language","mode","lineNumbers","contextLines"],
+  properties: ["oldText","newText","language","mode","lineNumbers","contextLines","markers"],
   events: {},
   formAssociated: false
 });

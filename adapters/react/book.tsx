@@ -6,7 +6,6 @@ import type { SniceBaseProps } from './types';
  */
 export interface BookProps extends SniceBaseProps {
   currentPage?: any;
-  mode?: any;
   coverImage?: any;
   title?: any;
   author?: any;
@@ -31,7 +30,7 @@ export interface BookProps extends SniceBaseProps {
  */
 export const Book = createReactAdapter<BookProps>({
   tagName: 'snice-book',
-  properties: ["currentPage","mode","coverImage","title","author"],
+  properties: ["currentPage","coverImage","title","author"],
   events: {},
   formAssociated: false
 });

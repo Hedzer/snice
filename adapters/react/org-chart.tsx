@@ -8,6 +8,7 @@ export interface OrgChartProps extends SniceBaseProps {
   data?: any;
   direction?: any;
   compact?: any;
+  renderVersion?: any;
 
 }
 
@@ -29,7 +30,7 @@ export interface OrgChartProps extends SniceBaseProps {
  */
 export const OrgChart = createReactAdapter<OrgChartProps>({
   tagName: 'snice-org-chart',
-  properties: ["data","direction","compact"],
+  properties: ["data","direction","compact","renderVersion"],
   events: {},
   formAssociated: false
 });
