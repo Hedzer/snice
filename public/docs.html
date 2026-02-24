@@ -49,7 +49,6 @@
 <a href="#elements-template-events" class="sub">Template Events</a>
 <a href="#elements-advanced-examples" class="sub">Advanced Examples</a>
 <a href="#elements-best-practices" class="sub">Best Practices</a>
-<a href="#elements-removed-in-v3-0-0" class="sub">Removed in v3.0.0</a>
 <a href="#routing">Routing</a>
 <a href="#routing-router-setup" class="sub">Router Setup</a>
 <a href="#routing-page-components" class="sub">Page Components</a>
@@ -64,7 +63,7 @@
 <a href="#routing-router-api-reference" class="sub">Router API Reference</a>
 <a href="#events">Events</a>
 <a href="#events-template-event-syntax-preferred-for-elements" class="sub">Template Event Syntax (Preferred for Elements)</a>
-<a href="#events-on-decorator-v2-5-4-restored" class="sub">@on Decorator (v2.5.4 RESTORED!)</a>
+<a href="#events-on-decorator" class="sub">@on Decorator</a>
 <a href="#events-dispatch-decorator" class="sub">@dispatch Decorator</a>
 <a href="#events-custom-events" class="sub">Custom Events</a>
 <a href="#events-event-delegation" class="sub">Event Delegation</a>
@@ -132,17 +131,6 @@
 <a href="#code-block-grammar-system" class="sub">Grammar System</a>
 <a href="#code-block-highlighter-api" class="sub">Highlighter API</a>
 <a href="#code-block-token-css-classes" class="sub">Token CSS Classes</a>
-<div class="nav-group">Migration</div>
-<a href="#migration-v2-to-v3">v2 → v3</a>
-<a href="#migration-v2-to-v3-breaking-changes-summary" class="sub">Breaking Changes Summary</a>
-<a href="#migration-v2-to-v3-migration-steps" class="sub">Migration Steps</a>
-<a href="#migration-v2-to-v3-render-options" class="sub">Render Options</a>
-<a href="#migration-v2-to-v3-common-patterns" class="sub">Common Patterns</a>
-<a href="#migration-v2-to-v3-typescript-support" class="sub">TypeScript Support</a>
-<a href="#migration-v2-to-v3-testing" class="sub">Testing</a>
-<a href="#migration-v2-to-v3-performance-benefits" class="sub">Performance Benefits</a>
-<a href="#migration-v2-to-v3-need-help" class="sub">Need Help?</a>
-<a href="#migration-v2-to-v3-quick-reference" class="sub">Quick Reference</a>
 
   </nav>
   <main class="docs-content">
@@ -904,12 +892,6 @@ class ConditionalContent extends HTMLElement {
 <li><strong>Type your queries</strong>: Use proper TypeScript types for queried elements</li>
 <li><strong>Handle errors</strong>: Wrap async operations in try-catch blocks</li>
 </ol>
-<h2 id="elements-removed-in-v3-0-0">Removed in v3.0.0</h2>
-<ul>
-<li><strong>@part decorator</strong>: Removed in favor of differential rendering. Use <code>@render()</code> with templates instead.</li>
-<li><strong>html() method</strong>: Replaced with <code>@render()</code> decorator</li>
-<li><strong>css() method</strong>: Replaced with <code>@styles()</code> decorator</li>
-</ul>
 </section>
 <section class="doc-file" id="routing">
 <h1 id="routing-routing-api-documentation">Routing API Documentation</h1>
@@ -1896,7 +1878,7 @@ class LoginPage extends HTMLElement {
 </section>
 <section class="doc-file" id="events">
 <h1 id="events-events-api-documentation">Events API Documentation</h1>
-<p>Event handling in Snice provides two powerful approaches: <strong>template event syntax</strong> and the <strong><code>@on</code> decorator</strong> (fully restored from v2.5.4!). The <code>@on</code> decorator now works in <strong>both elements AND controllers</strong> with full event delegation, keyboard modifiers, debounce/throttle, and more. Additionally, the <code>@dispatch</code> decorator enables automatic custom event dispatching.</p>
+<p>Event handling in Snice provides two powerful approaches: <strong>template event syntax</strong> and the <strong><code>@on</code> decorator</strong>. The <code>@on</code> decorator works in <strong>both elements AND controllers</strong> with full event delegation, keyboard modifiers, debounce/throttle, and more. Additionally, the <code>@dispatch</code> decorator enables automatic custom event dispatching.</p>
 <h2 id="events-template-event-syntax-preferred-for-elements">Template Event Syntax (Preferred for Elements)</h2>
 <p>The recommended way to handle events in elements is using template event syntax with <code>@event=${handler}</code>:</p>
 <h3 id="events-basic-usage">Basic Usage</h3>
@@ -2110,8 +2092,8 @@ class TaskList extends HTMLElement {
     this.tasks = this.tasks.filter(t =&gt; t.id !== id);
   }
 }</snice-code-block>
-<h2 id="events-on-decorator-v2-5-4-restored">@on Decorator (v2.5.4 RESTORED!)</h2>
-<p>The <code>@on</code> decorator is <strong>fully restored from v2.5.4</strong> and now works in <strong>both elements AND controllers</strong>! It provides powerful event delegation, keyboard modifiers, debounce/throttle, and automatic event handling features.</p>
+<h2 id="events-on-decorator">@on Decorator</h2>
+<p>The <code>@on</code> decorator works in <strong>both elements AND controllers</strong>. It provides powerful event delegation, keyboard modifiers, debounce/throttle, and automatic event handling features.</p>
 <p><strong>Use <code>@on</code> when you need:</strong></p>
 <ul>
 <li>Event delegation with CSS selectors</li>
@@ -2226,7 +2208,7 @@ class EditorController implements IController {
   preventDefault?: boolean;    // Automatically call preventDefault on the event
   stopPropagation?: boolean;   // Automatically call stopPropagation on the event
 
-  // Timing controls (v3.0.0 enhancements!)
+  // Timing controls
   debounce?: number;           // Debounce the handler by specified milliseconds
   throttle?: number;           // Throttle the handler by specified milliseconds
 
@@ -2272,8 +2254,8 @@ class SearchController implements IController {
 <p>While template syntax is preferred, <code>@on</code> can also be used in elements:</p>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">import { element, on, render, html } from 'snice';
 
-@element('legacy-button')
-class LegacyButton extends HTMLElement {
+@element('my-button')
+class MyButton extends HTMLElement {
   @render()
   renderContent() {
     return html`&lt;button class=&quot;btn&quot;&gt;Click me&lt;/button&gt;`;
@@ -5316,8 +5298,7 @@ class GrammarController implements IController {
   }
 }</snice-code-block>
 <p><strong>When to use:</strong> When you need centralized control over grammar loading, such as caching grammars, loading from non-HTTP sources, or applying transformations before use.</p>
-<h4 id="code-block-breaking-change">Breaking Change</h4>
-<p>If you were previously using <code>@respond('snice/code-block/load-grammar')</code> handlers, you must now add <code>fetch-mode="virtual"</code> to your code block elements. The default was previously virtual; it is now native.</p>
+<p><strong>Note:</strong> If using <code>@respond('snice/code-block/load-grammar')</code> handlers, add <code>fetch-mode="virtual"</code> to your code block elements. The default fetch mode is <code>native</code>.</p>
 <h3 id="code-block-event-mode">Event Mode</h3>
 <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-code-block id=&quot;cb&quot; grammar=&quot;grammars/typescript.json&quot; fetch-mode=&quot;event&quot; code=&quot;const x = 1&quot;&gt;&lt;/snice-code-block&gt;
 &lt;script&gt;
@@ -5478,467 +5459,6 @@ getGrammar('myLang');</snice-code-block>
 <h2 id="code-block-token-css-classes">Token CSS Classes</h2>
 <p>The following CSS classes are applied to highlighted tokens. Style these in your theme to customize syntax highlighting colors:</p>
 <p><code>keyword</code>, <code>string</code>, <code>comment</code>, <code>tag</code>, <code>function</code>, <code>class-name</code>, <code>number</code>, <code>constant</code>, <code>attr-name</code>, <code>attr-value</code>, <code>property</code>, <code>operator</code>, <code>punctuation</code>, <code>builtin</code>, <code>regex</code></p>
-</section>
-<section class="doc-file" id="migration-v2-to-v3">
-<h1 id="migration-v2-to-v3-migration-guide-snice-v2-x-v3-0-0">Migration Guide: Snice v2.x → v3.0.0</h1>
-<h2 id="migration-v2-to-v3-breaking-changes-summary">Breaking Changes Summary</h2>
-<p>Snice v3.0.0 introduces a complete rewrite of the rendering system with <strong>differential rendering</strong> and <strong>tagged templates</strong>, inspired by lit-html but with a custom implementation. This is a <strong>major breaking change</strong> with no backward compatibility.</p>
-<h3 id="migration-v2-to-v3-removed-apis">Removed APIs</h3>
-<ul>
-<li>❌ <code>html()</code> method</li>
-<li>❌ <code>css()</code> method</li>
-<li>❌ <code>@part</code> decorator</li>
-</ul>
-<h3 id="migration-v2-to-v3-event-handling-with-on">Event Handling with @on</h3>
-<ul>
-<li>✅ <code>@on</code> decorator available</li>
-<li>Works in both elements AND controllers</li>
-<li>Supports event delegation with selectors</li>
-<li>Supports keyboard modifiers (<code>@on('keydown:Enter')</code>)</li>
-<li>Supports debounce and throttle options</li>
-</ul>
-<h3 id="migration-v2-to-v3-new-apis">New APIs</h3>
-<ul>
-<li>✅ <code>html</code>`template literals</li>
-<li>✅ <code>css</code>`template literals</li>
-<li>✅ <code>@render()</code> decorator</li>
-<li>✅ <code>@styles()</code> decorator</li>
-<li>✅ Template event syntax (<code>@click</code>, <code>@input</code>, <code>@keydown:Enter</code>)</li>
-<li>Now supports keyboard modifiers with both <code>.</code> and <code>:</code> notation</li>
-<li>✅ Template property binding (<code>.value</code>)</li>
-<li>✅ Template boolean attributes (<code>?disabled</code>)</li>
-<li>✅ Auto-rendering on property changes</li>
-<li>✅ Differential rendering (only updates changed parts)</li>
-</ul>
-<hr>
-<h2 id="migration-v2-to-v3-migration-steps">Migration Steps</h2>
-<h3 id="migration-v2-to-v3-step-1-update-rendering-methods">Step 1: Update Rendering Methods</h3>
-<p><strong>Before (v2.x):</strong></p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">@element('my-counter')
-class Counter extends HTMLElement {
-  @property({ type: Number })
-  count = 0;
-
-  html() {
-    return `
-      &lt;div class=&quot;counter&quot;&gt;
-        &lt;span&gt;${this.count}&lt;/span&gt;
-        &lt;button&gt;Increment&lt;/button&gt;
-      &lt;/div&gt;
-    `;
-  }
-
-  css() {
-    return `
-      .counter {
-        padding: 1rem;
-        background: #f0f0f0;
-      }
-    `;
-  }
-}</snice-code-block>
-<p><strong>After (v3.0.0):</strong></p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">import { element, property, render, styles, html, css } from 'snice';
-
-@element('my-counter')
-class Counter extends HTMLElement {
-  @property({ type: Number })
-  count = 0;
-
-  @render()
-  renderContent() {
-    return html`
-      &lt;div class=&quot;counter&quot;&gt;
-        &lt;span&gt;${this.count}&lt;/span&gt;
-        &lt;button&gt;Increment&lt;/button&gt;
-      &lt;/div&gt;
-    `;
-  }
-
-  @styles()
-  componentStyles() {
-    return css`
-      .counter {
-        padding: 1rem;
-        background: #f0f0f0;
-      }
-    `;
-  }
-}</snice-code-block>
-<p><strong>Key Changes:</strong></p>
-<ul>
-<li>Import <code>html</code> and <code>css</code> tagged template functions</li>
-<li>Import <code>@render</code> and <code>@styles</code> decorators</li>
-<li>Replace <code>html()</code> with <code>@render()</code> method returning <code>html\</code>...\``</li>
-<li>Replace <code>css()</code> with <code>@styles()</code> method returning <code>css\</code>...\``</li>
-</ul>
-<hr>
-<h3 id="migration-v2-to-v3-step-2-event-handlers-two-options">Step 2: Event Handlers - Two Options!</h3>
-<p><strong>v3.0.0 gives you TWO ways to handle events:</strong></p>
-<h4 id="migration-v2-to-v3-option-a-template-event-syntax-recommended-for-simple-cases">Option A: Template Event Syntax (Recommended for simple cases)</h4>
-<p><strong>Before (v2.x):</strong></p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">@element('my-button')
-class MyButton extends HTMLElement {
-  html() {
-    return `&lt;button&gt;Click me&lt;/button&gt;`;
-  }
-
-  @on('click', 'button')
-  handleClick(event: Event) {
-    console.log('Clicked!', event);
-  }
-}</snice-code-block>
-<p><strong>After (v3.0.0):</strong></p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">import { element, render, html } from 'snice';
-
-@element('my-button')
-class MyButton extends HTMLElement {
-  @render()
-  renderContent() {
-    return html`
-      &lt;button @click=${this.handleClick}&gt;Click me&lt;/button&gt;
-      &lt;input @keydown:Enter=${this.handleEnter} /&gt;
-    `;
-  }
-
-  handleClick(event: Event) {
-    console.log('Clicked!', event);
-  }
-
-  handleEnter(event: KeyboardEvent) {
-    console.log('Enter pressed!');
-  }
-}</snice-code-block>
-<h4 id="migration-v2-to-v3-option-b-on-decorator">Option B: <code>@on</code> Decorator</h4>
-<p><strong>The <code>@on</code> decorator works in both elements and controllers!</strong></p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">import { element, render, html, on } from 'snice';
-
-@element('my-button')
-class MyButton extends HTMLElement {
-  @render()
-  renderContent() {
-    return html`
-      &lt;button&gt;Click me&lt;/button&gt;
-      &lt;input type=&quot;text&quot; placeholder=&quot;Press Enter...&quot; /&gt;
-    `;
-  }
-
-  // Event delegation with selectors
-  @on('click', 'button')
-  handleClick(event: Event) {
-    console.log('Button clicked!', event);
-  }
-
-  // Keyboard modifiers
-  @on('keydown:Enter', 'input')
-  handleEnter(event: KeyboardEvent) {
-    console.log('Enter pressed in input!');
-  }
-
-  // Debounce support
-  @on('input', 'input', { debounce: 300 })
-  handleInput(event: Event) {
-    console.log('Input value:', (event.target as HTMLInputElement).value);
-  }
-}</snice-code-block>
-<p><strong>Key Features:</strong></p>
-<ul>
-<li>✅ Event delegation with CSS selectors</li>
-<li>✅ Keyboard modifiers (<code>keydown:Enter</code>, <code>keydown:ctrl+s</code>)</li>
-<li>✅ Debounce and throttle options</li>
-<li>✅ preventDefault and stopPropagation options</li>
-<li>✅ Works in both elements AND controllers</li>
-</ul>
-<hr>
-<h3 id="migration-v2-to-v3-step-3-automatic-re-rendering">Step 3: Automatic Re-rendering</h3>
-<p><strong>Before (v2.x):</strong></p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">@element('user-profile')
-class UserProfile extends HTMLElement {
-  @property()
-  name = '';
-
-  html() {
-    return `&lt;h1&gt;${this.name}&lt;/h1&gt;`;
-  }
-
-  @on('click', 'button')
-  updateName() {
-    this.name = 'New Name';
-    // Manual re-render required!
-    this.shadowRoot!.innerHTML = this.html();
-  }
-}</snice-code-block>
-<p><strong>After (v3.0.0):</strong></p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">import { element, property, render, html } from 'snice';
-
-@element('user-profile')
-class UserProfile extends HTMLElement {
-  @property()
-  name = '';
-
-  @render()
-  renderContent() {
-    return html`
-      &lt;h1&gt;${this.name}&lt;/h1&gt;
-      &lt;button @click=${this.updateName}&gt;Update&lt;/button&gt;
-    `;
-  }
-
-  updateName() {
-    this.name = 'New Name';
-    // Auto re-renders! No manual render needed!
-  }
-}</snice-code-block>
-<p><strong>Key Changes:</strong></p>
-<ul>
-<li><strong>Automatic re-rendering</strong> when properties change</li>
-<li><strong>Differential rendering</strong> - only updates changed parts</li>
-<li><strong>No manual <code>innerHTML</code> manipulation</strong> needed</li>
-</ul>
-<hr>
-<h3 id="migration-v2-to-v3-step-4-replace-part-with-differential-rendering">Step 4: Replace @part with Differential Rendering</h3>
-<p><strong>Before (v2.x):</strong></p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">@element('todo-list')
-class TodoList extends HTMLElement {
-  todos = ['Task 1', 'Task 2'];
-
-  html() {
-    return `
-      &lt;div&gt;
-        &lt;ul part=&quot;todos&quot;&gt;&lt;/ul&gt;
-        &lt;button&gt;Add&lt;/button&gt;
-      &lt;/div&gt;
-    `;
-  }
-
-  @part('todos')
-  renderTodos() {
-    return this.todos.map(t =&gt; `&lt;li&gt;${t}&lt;/li&gt;`).join('');
-  }
-
-  @on('click', 'button')
-  addTodo() {
-    this.todos.push('New Task');
-    this.renderTodos(); // Manual partial update
-  }
-}</snice-code-block>
-<p><strong>After (v3.0.0):</strong></p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">import { element, render, html } from 'snice';
-
-@element('todo-list')
-class TodoList extends HTMLElement {
-  todos = ['Task 1', 'Task 2'];
-
-  @render()
-  renderContent() {
-    return html`
-      &lt;div&gt;
-        &lt;ul&gt;
-          ${this.todos.map(t =&gt; html`&lt;li&gt;${t}&lt;/li&gt;`)}
-        &lt;/ul&gt;
-        &lt;button @click=${this.addTodo}&gt;Add&lt;/button&gt;
-      &lt;/div&gt;
-    `;
-  }
-
-  addTodo() {
-    this.todos = [...this.todos, 'New Task'];
-    // Differential rendering automatically updates only the new &lt;li&gt;!
-  }
-}</snice-code-block>
-<p><strong>Key Changes:</strong></p>
-<ul>
-<li><strong>Remove <code>@part</code> entirely</strong></li>
-<li>Use <strong>nested templates</strong> with <code>.map()</code></li>
-<li><strong>Differential rendering handles partial updates automatically</strong></li>
-<li>Must <strong>reassign arrays</strong> to trigger render: <code>this.todos = [...]</code></li>
-</ul>
-<hr>
-<h3 id="migration-v2-to-v3-step-5-property-and-boolean-attribute-binding">Step 5: Property and Boolean Attribute Binding</h3>
-<p><strong>New in v3.0.0:</strong></p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">import { element, property, render, html } from 'snice';
-
-@element('custom-input')
-class CustomInput extends HTMLElement {
-  @property()
-  value = '';
-
-  @property({ type: Boolean })
-  disabled = false;
-
-  @render()
-  renderContent() {
-    return html`
-      &lt;input
-        .value=${this.value}
-        ?disabled=${this.disabled}
-        @input=${this.handleInput}
-      /&gt;
-    `;
-  }
-
-  handleInput(e: Event) {
-    this.value = (e.target as HTMLInputElement).value;
-  }
-}</snice-code-block>
-<p><strong>Template Syntax:</strong></p>
-<ul>
-<li><code>.value=${x}</code> - Sets <strong>property</strong>, not attribute (for form inputs)</li>
-<li><code>?disabled=${bool}</code> - <strong>Boolean attribute</strong> (added if true, removed if false)</li>
-<li><code>class=${x}</code> - Sets <strong>attribute</strong> (regular binding)</li>
-</ul>
-<hr>
-<h2 id="migration-v2-to-v3-render-options">Render Options</h2>
-<h3 id="migration-v2-to-v3-debouncing">Debouncing</h3>
-<p>Debounce renders for performance (useful for search inputs):</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">@render({ debounce: 300 })
-renderContent() {
-  return html`&lt;input .value=${this.searchTerm} @input=${this.onSearch} /&gt;`;
-}
-
-onSearch(e: Event) {
-  this.searchTerm = (e.target as HTMLInputElement).value;
-  // Renders only after 300ms of no changes
-}</snice-code-block>
-<h3 id="migration-v2-to-v3-throttling">Throttling</h3>
-<p>Limit render frequency:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">@render({ throttle: 100 })
-renderContent() {
-  return html`&lt;div&gt;Scroll: ${this.scrollY}&lt;/div&gt;`;
-}</snice-code-block>
-<h3 id="migration-v2-to-v3-one-time-rendering">One-time Rendering</h3>
-<p>Disable auto-rendering (manual control):</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">@render({ once: true })
-renderContent() {
-  return html`&lt;div&gt;Static content&lt;/div&gt;`;
-}
-
-updateManually() {
-  this.someData = 'new value';
-  this.renderContent(); // Explicit call to re-render
-}</snice-code-block>
-<h3 id="migration-v2-to-v3-synchronous-rendering">Synchronous Rendering</h3>
-<p>Skip microtask batching (immediate updates):</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">@render({ sync: true })
-renderContent() {
-  return html`&lt;div&gt;${this.count}&lt;/div&gt;`;
-}</snice-code-block>
-<hr>
-<h2 id="migration-v2-to-v3-common-patterns">Common Patterns</h2>
-<h3 id="migration-v2-to-v3-conditional-rendering">Conditional Rendering</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">@render()
-renderContent() {
-  return html`
-    &lt;div&gt;
-      ${this.isLoggedIn
-        ? html`&lt;span&gt;Welcome, ${this.user.name}!&lt;/span&gt;`
-        : html`&lt;a href=&quot;/login&quot;&gt;Login&lt;/a&gt;`
-      }
-    &lt;/div&gt;
-  `;
-}</snice-code-block>
-<h3 id="migration-v2-to-v3-lists-with-keys">Lists with Keys</h3>
-<p>For optimal performance, use unique keys when rendering lists:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">@render()
-renderContent() {
-  return html`
-    &lt;ul&gt;
-      ${this.items.map(item =&gt; html`
-        &lt;li key=${item.id}&gt;
-          ${item.name}
-          &lt;button @click=${() =&gt; this.remove(item.id)}&gt;Remove&lt;/button&gt;
-        &lt;/li&gt;
-      `)}
-    &lt;/ul&gt;
-  `;
-}</snice-code-block>
-<h3 id="migration-v2-to-v3-nested-components">Nested Components</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">@render()
-renderContent() {
-  return html`
-    &lt;div&gt;
-      &lt;user-card userId=${this.userId}&gt;&lt;/user-card&gt;
-      &lt;comment-list postId=${this.postId}&gt;&lt;/comment-list&gt;
-    &lt;/div&gt;
-  `;
-}</snice-code-block>
-<hr>
-<h2 id="migration-v2-to-v3-typescript-support">TypeScript Support</h2>
-<p>Update your imports:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">import {
-  element,
-  property,
-  render,
-  styles,
-  html,
-  css,
-  type TemplateResult,
-  type CSSResult,
-  type RenderOptions
-} from 'snice';</snice-code-block>
-<p>Type your render methods:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">@render()
-renderContent(): TemplateResult {
-  return html`&lt;div&gt;Content&lt;/div&gt;`;
-}
-
-@styles()
-componentStyles(): CSSResult {
-  return css`:host { display: block; }`;
-}</snice-code-block>
-<hr>
-<h2 id="migration-v2-to-v3-testing">Testing</h2>
-<p>Update your tests to work with the new rendering system:</p>
-<p><strong>Before (v2.x):</strong></p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">const el = document.createElement('my-element') as MyElement;
-document.body.appendChild(el);
-expect(el.shadowRoot!.innerHTML).toContain('expected content');</snice-code-block>
-<p><strong>After (v3.0.0):</strong></p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">const el = document.createElement('my-element') as MyElement;
-document.body.appendChild(el);
-
-// Wait for initial render
-await el.ready;
-
-// Check rendered content
-expect(el.shadowRoot!.textContent).toContain('expected content');
-
-// Trigger property change
-el.someProperty = 'new value';
-
-// Wait for next microtask (auto-render)
-await new Promise(resolve =&gt; queueMicrotask(resolve));
-
-// Verify differential update
-expect(el.shadowRoot!.textContent).toContain('new value');</snice-code-block>
-<hr>
-<h2 id="migration-v2-to-v3-performance-benefits">Performance Benefits</h2>
-<h3 id="migration-v2-to-v3-v2-x-manual">v2.x (Manual)</h3>
-<ul>
-<li>❌ Full <code>innerHTML</code> replacement on every update</li>
-<li>❌ All event listeners destroyed and recreated</li>
-<li>❌ Manual <code>@part</code> updates required</li>
-<li>❌ No batching of updates</li>
-</ul>
-<h3 id="migration-v2-to-v3-v3-0-0-differential">v3.0.0 (Differential)</h3>
-<ul>
-<li>✅ <strong>Only changed parts updated</strong></li>
-<li>✅ Event listeners preserved and reused</li>
-<li>✅ <strong>Automatic batching</strong> (microtask queue)</li>
-<li>✅ <strong>Debounce/throttle</strong> built-in</li>
-<li>✅ <strong>10-100x faster</strong> for large components</li>
-</ul>
-<hr>
-<h2 id="migration-v2-to-v3-need-help">Need Help?</h2>
-<ul>
-<li>Check the updated <a href="./README.md">README.md</a> for full examples</li>
-<li>See <a href="./docs/">docs/</a> for detailed API documentation</li>
-<li>Open an issue on GitLab for migration questions</li>
-</ul>
-<hr>
-<h2 id="migration-v2-to-v3-quick-reference">Quick Reference</h2>
-<div class="doc-table-wrap"><table><thead><tr><th>v2.x</th><th>v3.0.0</th></tr></thead><tbody><tr><td><code>html()</code> method</td><td><code>@render()</code> with <code>html\</code>\``</td></tr><tr><td><code>css()</code> method</td><td><code>@styles()</code> with <code>css\</code>\``</td></tr><tr><td><code>@on('click', 'button')</code></td><td><strong>Still works!</strong> OR use <code>@click=${handler}</code> in template</td></tr><tr><td><code>@on('keydown:Enter')</code></td><td><strong>Still works!</strong> OR use <code>@keydown:Enter=${handler}</code> in template</td></tr><tr><td><code>@on('input', { debounce: 300 })</code></td><td><strong>Still works!</strong> (enhanced with throttle too)</td></tr><tr><td><code>@part('name')</code></td><td>Use <code>@render()</code> (differential rendering)</td></tr><tr><td>Manual <code>innerHTML</code> update</td><td>Automatic on property change</td></tr><tr><td><code>this.shadowRoot!.innerHTML = ...</code></td><td>Just update property: <code>this.count++</code></td></tr></tbody></table></div>
-<p><strong>Automatic differential rendering with powerful event handling!</strong> 🚀</p>
 </section>
 
   </main>

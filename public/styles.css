@@ -567,7 +567,7 @@ header nav a:hover, header nav a.active { color: var(--snice-color-text); }
 .docs-content {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 0 2rem 4rem 215px;
+  padding: 0 2rem 4rem 240px;
 }
 @media (max-width: 960px) {
   .docs-sidebar { display: none; }
