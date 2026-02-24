@@ -1758,9 +1758,6 @@ const docsManifest = [
   { group: 'Components', docs: [
     { id: 'code-block', file: 'code-block.md', title: 'Code Block' },
   ]},
-  { group: 'Migration', docs: [
-    { id: 'migration-v2-to-v3', file: 'migration-v2-to-v3.md', title: 'v2 → v3' },
-  ]},
 ];
 
 // Grammar map: code fence language → grammar file path

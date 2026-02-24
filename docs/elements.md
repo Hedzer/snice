@@ -908,8 +908,3 @@ class ConditionalContent extends HTMLElement {
 6. **Type your queries**: Use proper TypeScript types for queried elements
 7. **Handle errors**: Wrap async operations in try-catch blocks
 
-## Removed in v3.0.0
-
-- **@part decorator**: Removed in favor of differential rendering. Use `@render()` with templates instead.
-- **html() method**: Replaced with `@render()` decorator
-- **css() method**: Replaced with `@styles()` decorator
