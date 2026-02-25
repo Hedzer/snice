@@ -29,6 +29,8 @@ enum RouteResult {
  * @returns An object containing the router's API methods.
  */
 export function Router(options: RouterOptions): RouterInstance {
+  const win = options.window ?? window;
+  const doc = options.document ?? document;
   const routes: { route: Route, tag: string, transition?: Transition, guards?: Guard<any> | Guard<any>[], layout?: string | false, placard?: Placard | ((context: AppContext) => Placard) }[] = [];
   let is_sorted = false;
   let placards: Placard[] = []; // Store collected placards
@@ -106,10 +108,10 @@ export function Router(options: RouterOptions): RouterInstance {
       };
       
       // Define the custom element (skip if already registered)
-      if (customElements.get(pageOptions.tag)) {
+      if (win.customElements.get(pageOptions.tag)) {
         console.warn(`[snice] Page "${pageOptions.tag}" is already registered. Skipping duplicate registration.`);
       } else {
-        customElements.define(pageOptions.tag, constructor);
+        win.customElements.define(pageOptions.tag, constructor);
       }
 
       // Register the routes with guards, layout, and placard
@@ -148,24 +150,24 @@ export function Router(options: RouterOptions): RouterInstance {
     const isPushStateType = options.type === 'pushstate';
     
     if (isHashType) {
-      window.addEventListener('hashchange', () => {
-        const targetExists = !!document.querySelector(options.target);
+      win.addEventListener('hashchange', () => {
+        const targetExists = !!doc.querySelector(options.target);
         if (!targetExists) {
           return;
         }
-        
+
         const path = getPath();
         navigate(path);
       });
     }
-    
+
     if (isPushStateType) {
-      window.addEventListener('popstate', () => {
-        const targetExists = !!document.querySelector(options.target);
+      win.addEventListener('popstate', () => {
+        const targetExists = !!doc.querySelector(options.target);
         if (!targetExists) {
           return;
         }
-        
+
         const path = getPath();
         navigate(path);
       });
@@ -178,7 +180,7 @@ export function Router(options: RouterOptions): RouterInstance {
    * initialize();
    */
   function initialize(): void {
-    const target = document.querySelector(options.target);
+    const target = doc.querySelector(options.target);
     if (!target) {
       throw new Error(`Target element not found: ${options.target}`);
     }
@@ -233,9 +235,9 @@ export function Router(options: RouterOptions): RouterInstance {
   function getPath(): string {
     switch (options.type) {
       case 'hash':
-        return window.location.hash.slice(1);
+        return win.location.hash.slice(1);
       case 'pushstate':
-        return window.location.pathname;
+        return win.location.pathname;
     }
   }
   
@@ -244,11 +246,11 @@ export function Router(options: RouterOptions): RouterInstance {
     const has403Page = !!_403;
 
     if (has403Page) {
-      newPageElement = document.createElement(_403);
+      newPageElement = doc.createElement(_403);
       (newPageElement as any)[ROUTER_CONTEXT] = context;
     }
     if (!has403Page) {
-      const div = document.createElement('div');
+      const div = doc.createElement('div');
       div.className = 'default-403';
       div.innerHTML = /*html*/`<h1>403</h1><p>Unauthorized</p>`;
       newPageElement = div;
@@ -278,9 +280,9 @@ export function Router(options: RouterOptions): RouterInstance {
   }
 
   function createHomeElement(): { element: HTMLElement; transition?: Transition; layout?: string | false } {
-    const newPageElement = document.createElement(home);
+    const newPageElement = doc.createElement(home);
     (newPageElement as any)[ROUTER_CONTEXT] = context;
-    const constructor = customElements.get(home);
+    const constructor = win.customElements.get(home);
     const transition = (constructor as any)?.[PAGE_TRANSITION];
     
     const homeRoute = routes.find(r => r.route.match('/'));
@@ -291,14 +293,14 @@ export function Router(options: RouterOptions): RouterInstance {
     const has404Page = !!_404;
     
     if (has404Page) {
-      const newPageElement = document.createElement(_404);
+      const newPageElement = doc.createElement(_404);
       (newPageElement as any)[ROUTER_CONTEXT] = context;
-      const constructor = customElements.get(_404);
+      const constructor = win.customElements.get(_404);
       const transition = (constructor as any)?.[PAGE_TRANSITION];
       return { element: newPageElement, transition, layout: undefined };
     }
     
-    const div = document.createElement('div');
+    const div = doc.createElement('div');
     div.className = 'default-404';
     div.innerHTML = /*html*/`<h1>404</h1><p>Page not found</p>`;
     return { element: div, transition: undefined, layout: undefined };
@@ -317,7 +319,7 @@ export function Router(options: RouterOptions): RouterInstance {
         return { result: RouteResult.GUARDS_FAILED };
       }
 
-      const newPageElement = document.createElement(route.tag);
+      const newPageElement = doc.createElement(route.tag);
       (newPageElement as any)[ROUTER_CONTEXT] = context;
       (newPageElement as any)[CONTEXT_HANDLER] = navigationContext;
       const routeParams = params as RouteParams;
@@ -361,7 +363,7 @@ export function Router(options: RouterOptions): RouterInstance {
       const timestamp = Date.now();
       currentLayoutTimestamp = timestamp;
       
-      const layoutElement = document.createElement(layoutToUse);
+      const layoutElement = doc.createElement(layoutToUse);
       (layoutElement as any)[ROUTER_CONTEXT] = context;
       (layoutElement as any)[CREATED_AT] = timestamp;
       
@@ -425,7 +427,7 @@ export function Router(options: RouterOptions): RouterInstance {
    * navigate('/login');
    */
   async function navigate(path: string): Promise<void> {
-    const target = document.querySelector(options.target);
+    const target = doc.querySelector(options.target);
     if (!target) {
       throw new Error(`Target element not found: ${options.target}`);
     }
@@ -433,7 +435,7 @@ export function Router(options: RouterOptions): RouterInstance {
     // Collect fresh placards before navigation
     collectPlacards();
 
-    window.scrollTo(0, 0);
+    win.scrollTo(0, 0);
 
     const isHomePath = (path?.trim() === '' || path === '/') && !!home;
     
