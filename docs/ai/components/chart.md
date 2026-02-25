@@ -65,7 +65,7 @@ update(datasets: ChartDataset[]): void
 addDataset(dataset: ChartDataset): void
 removeDataset(index: number): void
 toggleDataset(index: number): void
-exportImage(format?: 'png'|'svg'): string
+exportImage(format?: 'svg'): string
 getData(): { datasets: ChartDataset[]; labels: string[] }
 ```
 

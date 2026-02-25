@@ -183,7 +183,7 @@ interface Track {
 |-------|--------|-------------|
 | `player-play` | `{ track: Track }` | Playback started |
 | `player-pause` | `{ track: Track }` | Playback paused |
-| `player-stop` | `{ track: Track }` | Playback stopped |
+| `player-stop` | `{ player: SniceMusicPlayerElement }` | Playback stopped |
 | `player-track-change` | `{ track: Track }` | Track changed |
 | `player-track-ended` | `{ track: Track }` | Track finished playing |
 | `player-shuffle-change` | `{ shuffle: boolean }` | Shuffle mode toggled |

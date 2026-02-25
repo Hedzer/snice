@@ -320,18 +320,40 @@ gallery.addEventListener('upload-progress', (e) => {
 ### `upload-complete`
 Fired when an upload completes successfully.
 
-**Detail**: `{ file: GalleryFile, url?: string }`
+**Detail**: `{ file: GalleryFile, response: UploadResponse, component: SniceFileGalleryElement }`
 
 ```typescript
 gallery.addEventListener('upload-complete', (e) => {
-  console.log('Upload complete:', e.detail.url);
+  console.log('Upload complete:', e.detail.response);
+});
+```
+
+### `upload-pause`
+Fired when an upload is paused.
+
+**Detail**: `{ file: GalleryFile, component: SniceFileGalleryElement }`
+
+```typescript
+gallery.addEventListener('upload-pause', (e) => {
+  console.log('Upload paused:', e.detail.file.file.name);
+});
+```
+
+### `file-remove`
+Fired when a file is removed from the gallery.
+
+**Detail**: `{ file: GalleryFile, component: SniceFileGalleryElement }`
+
+```typescript
+gallery.addEventListener('file-remove', (e) => {
+  console.log('File removed:', e.detail.file.file.name);
 });
 ```
 
 ### `upload-error`
 Fired when an upload fails.
 
-**Detail**: `{ file: GalleryFile, error: string }`
+**Detail**: `{ file: GalleryFile, error: string, component: SniceFileGalleryElement }`
 
 ```typescript
 gallery.addEventListener('upload-error', (e) => {

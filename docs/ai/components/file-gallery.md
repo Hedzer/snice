@@ -134,6 +134,6 @@ Uses `@request/@respond` pattern (`file-gallery-upload`). Handler receives `Uplo
 <!-- Events -->
 <script>
 gallery.addEventListener('files-change', (e) => console.log(e.detail.files));
-gallery.addEventListener('upload-complete', (e) => console.log(e.detail.url));
+gallery.addEventListener('upload-complete', (e) => console.log(e.detail.response));
 </script>
 ```

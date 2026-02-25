@@ -56,7 +56,7 @@ interface Track {
 
 - `player-play` → `{ track }`
 - `player-pause` → `{ track }`
-- `player-stop` → `{ track }`
+- `player-stop` → `{ player }`
 - `player-track-change` → `{ track }`
 - `player-track-ended` → `{ track }`
 - `player-shuffle-change` → `{ shuffle }`
