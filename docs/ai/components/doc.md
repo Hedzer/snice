@@ -7,7 +7,7 @@ Simple WYSIWYG document editor with toolbar and sidebar.
 ```html
 <snice-doc></snice-doc>
 <snice-doc icons="material"></snice-doc>
-<snice-doc icons="fontawesome" icon-stylesheet="/path/to/fa.css"></snice-doc>
+<snice-doc icons="fontawesome"></snice-doc>
 ```
 
 ## Properties
@@ -15,7 +15,6 @@ Simple WYSIWYG document editor with toolbar and sidebar.
 - `placeholder: string` - Placeholder text (default: `"Start typing..."`)
 - `readonly: boolean` - Readonly mode (default: `false`)
 - `icons: 'default' | 'material' | 'fontawesome'` - Toolbar icon set (default: `"default"`)
-- `icon-stylesheet: string` - Custom URL for icon font CSS (overrides built-in defaults)
 
 ## Methods
 
@@ -40,9 +39,9 @@ Simple WYSIWYG document editor with toolbar and sidebar.
 ## Icon Sets
 
 - `default` - Text labels and emoji icons
-- `material` - Google Material Icons (auto-loads from Google Fonts CDN)
-- `fontawesome` - Font Awesome 6 (auto-loads from cdnjs CDN)
-- Use `icon-stylesheet` attribute to provide a custom/self-hosted CSS URL
+- `material` - Material Symbols Outlined (user must load the font in the document)
+- `fontawesome` - Font Awesome 6 solid icons (user must load the font in the document)
+- Fonts cascade from light DOM into shadow DOM — no auto-loading
 
 ## Keyboard Shortcuts
 

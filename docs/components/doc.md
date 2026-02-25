@@ -43,7 +43,6 @@ A simple WYSIWYG document editor component with formatting toolbar and content i
 | `placeholder`     | `placeholder`      | `string`  | `"Start typing..."`  | Placeholder text when empty                      |
 | `readonly`        | `readonly`         | `boolean` | `false`              | Whether the editor is readonly                   |
 | `icons`           | `icons`            | `string`  | `"default"`          | Icon set: `"default"`, `"material"`, `"fontawesome"` |
-| `iconStylesheet`  | `icon-stylesheet`  | `string`  | `""`                 | Custom URL for icon font CSS                     |
 
 ## Methods
 
@@ -128,29 +127,27 @@ The `icons` property controls which icon set the toolbar uses:
 
 Uses text labels (B, I, U, H1, etc.) and emoji for action buttons.
 
-### Material Icons
+### Material Symbols
 
 ```html
+<!-- Load the font in your document -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined">
+
 <snice-doc icons="material"></snice-doc>
 ```
 
-Uses [Google Material Icons](https://fonts.google.com/icons). The stylesheet is auto-loaded from Google Fonts CDN. To use a self-hosted version:
-
-```html
-<snice-doc icons="material" icon-stylesheet="/assets/material-icons.css"></snice-doc>
-```
+Uses [Material Symbols Outlined](https://fonts.google.com/icons). You must load the font stylesheet in your document — the font cascades from light DOM into the shadow DOM automatically.
 
 ### Font Awesome
 
 ```html
+<!-- Load the font in your document -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
 <snice-doc icons="fontawesome"></snice-doc>
 ```
 
-Uses [Font Awesome 6](https://fontawesome.com/icons) solid icons. The stylesheet is auto-loaded from cdnjs. To use a self-hosted version:
-
-```html
-<snice-doc icons="fontawesome" icon-stylesheet="/assets/fontawesome/css/all.min.css"></snice-doc>
-```
+Uses [Font Awesome 6](https://fontawesome.com/icons) solid icons. You must load the Font Awesome stylesheet in your document.
 
 ## Keyboard Shortcuts
 

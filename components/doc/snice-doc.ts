@@ -31,10 +31,6 @@ const ICON_MAP: Record<IconSet, Record<string, string>> = {
   }
 };
 
-const ICON_STYLESHEETS: Record<string, string> = {
-  material: 'https://fonts.googleapis.com/icon?family=Material+Icons',
-  fontawesome: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css'
-};
 
 /**
  * snice-doc - Simple document editor
@@ -49,9 +45,6 @@ export class SniceDoc extends HTMLElement {
 
   @property({ type: String })
   icons: IconSet = 'default';
-
-  @property({ type: String, attribute: 'icon-stylesheet' })
-  iconStylesheet: string = '';
 
   private editor!: HTMLDivElement;
   private showFormatToolbar: boolean = false;
@@ -79,8 +72,6 @@ export class SniceDoc extends HTMLElement {
   private initializeDOM() {
     if (!this.shadowRoot) return;
 
-    this.injectIconStylesheet();
-
     const wrapper = document.createElement('div');
     wrapper.className = 'doc-wrapper';
 
@@ -104,16 +95,6 @@ export class SniceDoc extends HTMLElement {
     this.shadowRoot.appendChild(wrapper);
   }
 
-  private injectIconStylesheet() {
-    if (this.icons === 'default' || !this.shadowRoot) return;
-    const url = this.iconStylesheet || ICON_STYLESHEETS[this.icons];
-    if (!url) return;
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = url;
-    this.shadowRoot.prepend(link);
-  }
-
   private createToolbarButton(icon: string, title: string): HTMLButtonElement {
     const btn = document.createElement('button');
     btn.className = 'toolbar-btn';
@@ -124,12 +105,14 @@ export class SniceDoc extends HTMLElement {
 
     if (this.icons === 'material') {
       const span = document.createElement('span');
-      span.className = 'material-icons';
+      span.className = 'icon--material';
+      span.setAttribute('part', 'icon');
       span.textContent = iconValue;
       btn.appendChild(span);
     } else if (this.icons === 'fontawesome') {
       const i = document.createElement('i');
-      i.className = `fa-solid ${iconValue}`;
+      i.className = `icon--fa fa-solid ${iconValue}`;
+      i.setAttribute('part', 'icon');
       btn.appendChild(i);
     } else {
       btn.textContent = iconValue;
