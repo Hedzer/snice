@@ -3,7 +3,7 @@
 ## Class Decorators
 
 ```typescript
-@element('tag-name') // Define custom element
+@element('tag-name', options?: { formAssociated?: boolean }) // Define custom element
 @page({ tag, routes, guards?, placard? }) // Define routable page
 @controller('name') // Define behavior module
 @layout('name') // Define page wrapper
@@ -30,6 +30,9 @@
 @styles()
 // Returns: CSSResult from css`...`
 // Scoped to shadow DOM
+// Called once during initialization — NOT reactive
+// Only one per element (last wins if multiple declared)
+// For dynamic styles, use CSS custom properties set in template
 ```
 
 ## Properties
@@ -46,7 +49,7 @@
 ## Lifecycle
 
 ```typescript
-@ready() // After initial render
+@ready() // After styles + event handlers set up (render is async microtask, may not be complete)
 @dispose() // On disconnectedCallback
 @moved() // On adoptedCallback
 @adopted() // On adoptedCallback
@@ -55,8 +58,9 @@
 ## DOM Queries
 
 ```typescript
-@query(selector: string) // Single element
-@queryAll(selector: string) // NodeListOf<Element>
+@query(selector: string, options?: { light?: boolean }) // Single element
+@queryAll(selector: string, options?: { light?: boolean }) // NodeListOf<Element>
+// Default: queries shadow DOM. Use { light: true } in controllers on native elements
 ```
 
 ## Events
@@ -80,8 +84,10 @@ html`
 // Keyboard: 'keydown:Enter', 'keydown.escape', 'keydown:ctrl+s', 'keydown:~Space'
 // Supports both ':' and '.' notation
 
-@dispatch(eventName: string)
+@dispatch(eventName: string, options?: { debounce?, throttle?, dispatchOnUndefined? })
 // Fires CustomEvent after method, detail = return value
+// Supports async methods (dispatches after promise resolves)
+// dispatchOnUndefined: false (default) — skips dispatch if method returns undefined
 ```
 
 ## Communication
@@ -265,7 +271,7 @@ type Guard<T> = (context: T, params: RouteParams) => boolean
 
 ```typescript
 import {
-  element, page, controller, layout,
+  element, controller, layout,  // NOTE: `page` comes from Router(), not from 'snice'
   property, watch, context,
   render, styles, html, css,
   query, queryAll,

@@ -1,7 +1,7 @@
 # Decorators
 
 ## Class
-- `@element('tag-name')` - Custom element
+- `@element('tag-name', options?)` - Custom element. Options: `{ formAssociated?: boolean }`
 - `@page({ tag, routes, guards?, placard? })` - Routable page
 - `@controller('name')` - Swappable behavior
 - `@layout('tag-name')` - Page wrapper for routing system
@@ -22,12 +22,12 @@
 - `@adopted(options?: { throttle?, debounce? })` - On adoptedCallback (alias for moved)
 
 ## DOM
-- `@query('selector')` - Single element
-- `@queryAll('selector')` - NodeList
+- `@query('selector', { light? })` - Single element. `{ light: true }` for controllers on native elements
+- `@queryAll('selector', { light? })` - NodeList
 
 ## Events
 - `@on('event', 'selector?')` - Delegation, auto-bound
-- `@dispatch('event-name')` - Emit CustomEvent, detail = return value
+- `@dispatch('event-name', options?)` - Emit CustomEvent, detail = return value. Supports async. Options: `{ debounce?, throttle?, dispatchOnUndefined? }`
 
 ## Communication
 - `@request(channel, options?)` - Async generator request pattern

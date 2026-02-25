@@ -47,6 +47,8 @@ interface RequestOptions extends EventInit {
   discoveryTimeout?: number; // Handler discovery timeout in ms (default: 50ms)
   debounce?: number;        // Debounce requests by specified ms
   throttle?: number;        // Throttle requests by specified ms
+  // Note: `composed` is always forced to `true` (crosses shadow DOM boundaries)
+  // `bubbles` defaults to true, `cancelable` defaults to false
 }
 
 interface RespondOptions {

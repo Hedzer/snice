@@ -345,7 +345,6 @@ interface PropertyOptions {
   type?: String | Number | Boolean | Array | Object | Date | BigInt | SimpleArray;
   attribute?: string | boolean;  // Custom attribute name, or false to disable attribute sync
   converter?: PropertyConverter;  // Custom converter
-  hasChanged?: (value: any, oldValue: any) => boolean;
 }
 ```
 

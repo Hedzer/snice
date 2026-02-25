@@ -5,8 +5,12 @@
 **Separation of concerns:**
 - **Cross-cutting:** Router + global context
 - **Pages:** Orchestrate elements, handle URLs
-- **Elements:** Pure presentation, no business logic
-- **Controllers:** Behavior, data fetching, swappable
+- **Elements:** Generic visual building blocks — no fetch(), no API calls, no business logic
+- **Controllers:** Specific behavior (data, APIs, business rules) — swappable per element
+
+**Generic vs Specific:** Elements say *what* they need, controllers decide *how*.
+Swap controllers to change behavior without touching the component.
+Mock controller for tests, real API controller in production — same element.
 
 **Data flow:**
 - Down: Properties
@@ -125,9 +129,18 @@ onChange() { return { value: this.value }; }
 
 **Element ↔ Controller:** Request/Response
 ```typescript
-// Element requests, controller responds
-@request('channel') method!: (data) => Promise<result>
-@respond('channel') handler(req, respond) { respond(data); }
+// Element requests (async generator: yield sends, await receives)
+@request('fetch-data')
+async *fetchData(): any {
+  return await (yield { id: this.dataId });  // single yield per call
+}
+
+// Controller responds (receives payload, returns result directly)
+@respond('fetch-data')
+async handleFetch(payload: { id: string }) {
+  return await fetch(`/api/${payload.id}`).then(r => r.json());
+}
+// Wiring: <my-element controller="my-controller"></my-element>
 ```
 
 **Global State:** Context
