@@ -44,10 +44,10 @@ interface NetworkEdge {
 
 ## Events
 
-- `@snice/node-click` → `{ node: NetworkNode }`
-- `@snice/edge-click` → `{ edge: NetworkEdge }`
-- `@snice/node-drag` → `{ node: NetworkNode, x: number, y: number }`
-- `@snice/graph-zoom` → `{ scale: number, x: number, y: number }`
+- `node-click` → `{ node: NetworkNode }`
+- `edge-click` → `{ edge: NetworkEdge }`
+- `node-drag` → `{ node: NetworkNode, x: number, y: number }`
+- `graph-zoom` → `{ scale: number, x: number, y: number }`
 
 ## Usage
 
@@ -66,7 +66,7 @@ graph.data = {
   ],
 };
 
-graph.addEventListener('@snice/node-click', (e) => console.log(e.detail.node));
+graph.addEventListener('node-click', (e) => console.log(e.detail.node));
 ```
 
 ## Features

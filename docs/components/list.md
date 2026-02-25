@@ -65,7 +65,7 @@ Use the `before` and `after` slots on list items for icons and metadata.
 
 ### Searchable List
 
-Set the `searchable` attribute to show a search input. Handle queries with the `@snice/list/search` request.
+Set the `searchable` attribute to show a search input. Handle queries with the `list/search` request.
 
 ```html
 <snice-list searchable dividers>
@@ -157,5 +157,5 @@ Set the `no-results` attribute to show an empty state message.
 
 | Request | Params | Description |
 |---------|--------|-------------|
-| `@snice/list/search` | `{ query: string, list }` | Handle search queries |
-| `@snice/list/load-more` | `{ page: number, list }` | Load next page for infinite scroll |
+| `list/search` | `{ query: string, list }` | Handle search queries |
+| `list/load-more` | `{ page: number, list }` | Load next page for infinite scroll |

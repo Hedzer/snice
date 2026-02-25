@@ -17,7 +17,7 @@ size: 'small'|'medium'|'large' = 'medium';
 
 ## Events
 
-- `@snice/link-click` → `{ url: string }`
+- `link-click` → `{ url: string }`
 
 ## Usage
 

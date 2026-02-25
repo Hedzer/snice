@@ -109,7 +109,7 @@ When no image is provided, a placeholder link icon is shown.
 </snice-link-preview>
 
 <script type="module">
-  document.getElementById('preview').addEventListener('@snice/link-click', (e) => {
+  document.getElementById('preview').addEventListener('link-click', (e) => {
     console.log('Link clicked:', e.detail.url);
   });
 </script>
@@ -132,4 +132,4 @@ When no image is provided, a placeholder link icon is shown.
 
 | Event | Detail | Description |
 |-------|--------|-------------|
-| `@snice/link-click` | `{ url: string }` | Fired when the card is clicked |
+| `link-click` | `{ url: string }` | Fired when the card is clicked |

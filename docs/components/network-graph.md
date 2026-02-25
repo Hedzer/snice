@@ -116,15 +116,15 @@ graph.data = {
 ### Event Handling
 
 ```typescript
-graph.addEventListener('@snice/node-click', (e) => {
+graph.addEventListener('node-click', (e) => {
   console.log('Clicked:', e.detail.node.label);
 });
 
-graph.addEventListener('@snice/node-drag', (e) => {
+graph.addEventListener('node-drag', (e) => {
   console.log(`Dragged ${e.detail.node.id} to (${e.detail.x}, ${e.detail.y})`);
 });
 
-graph.addEventListener('@snice/graph-zoom', (e) => {
+graph.addEventListener('graph-zoom', (e) => {
   console.log('Zoom:', e.detail.scale);
 });
 ```
@@ -181,7 +181,7 @@ interface NetworkEdge {
 
 | Event | Detail | Description |
 |-------|--------|-------------|
-| `@snice/node-click` | `{ node: NetworkNode }` | Node clicked |
-| `@snice/edge-click` | `{ edge: NetworkEdge }` | Edge clicked |
-| `@snice/node-drag` | `{ node: NetworkNode, x: number, y: number }` | Node dragged |
-| `@snice/graph-zoom` | `{ scale: number, x: number, y: number }` | Zoom changed |
+| `node-click` | `{ node: NetworkNode }` | Node clicked |
+| `edge-click` | `{ edge: NetworkEdge }` | Edge clicked |
+| `node-drag` | `{ node: NetworkNode, x: number, y: number }` | Node dragged |
+| `graph-zoom` | `{ scale: number, x: number, y: number }` | Zoom changed |

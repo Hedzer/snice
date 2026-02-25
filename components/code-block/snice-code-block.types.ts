@@ -42,8 +42,8 @@ export interface CodeHighlightDetail {
 }
 
 export interface SniceCodeBlockEventMap {
-  '@snice/code-copy': CustomEvent<CodeCopyDetail>;
-  '@snice/code-before-highlight': CustomEvent<CodeHighlightDetail>;
-  '@snice/code-after-highlight': CustomEvent<CodeHighlightDetail>;
+  'code-copy': CustomEvent<CodeCopyDetail>;
+  'code-before-highlight': CustomEvent<CodeHighlightDetail>;
+  'code-after-highlight': CustomEvent<CodeHighlightDetail>;
   'grammar-request': CustomEvent<GrammarRequestDetail>;
 }

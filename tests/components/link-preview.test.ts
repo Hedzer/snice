@@ -159,7 +159,7 @@ describe('snice-link-preview', () => {
       });
 
       const spy = vi.fn();
-      el.addEventListener('@snice/link-click', spy);
+      el.addEventListener('link-click', spy);
 
       // Mock window.open to prevent actual navigation
       const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);

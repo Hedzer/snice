@@ -68,7 +68,7 @@ interface IController<T extends HTMLElement = HTMLElement> {
 6. Observers are set up
 7. Channel/response handlers are set up
 8. Event handlers are set up
-9. `@snice/controller-attached` event is dispatched
+9. `controller-attached` event is dispatched
 
 ### Detachment Flow
 
@@ -78,7 +78,7 @@ interface IController<T extends HTMLElement = HTMLElement> {
 4. Channel/response handlers are cleaned up
 5. Event handlers are cleaned up
 6. Controller scope is cleaned up
-7. `@snice/controller-detached` event is dispatched
+7. `controller-detached` event is dispatched
 
 ### Example with Lifecycle Logging
 
@@ -428,7 +428,7 @@ class WebSocketController implements IController {
 Listen for attachment on the element itself (the event does **not** bubble):
 
 ```typescript
-element.addEventListener('@snice/controller-attached', (e: CustomEvent) => {
+element.addEventListener('controller-attached', (e: CustomEvent) => {
   console.log('Name:', e.detail.name);           // controller name string
   console.log('Instance:', e.detail.controller);  // IController instance
 });

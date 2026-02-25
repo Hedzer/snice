@@ -85,7 +85,7 @@ export class SniceTable extends HTMLElement {
   tbody!: HTMLTableSectionElement;
 
 
-  @request('@snice/table/config')
+  @request('table/config')
   async *getTableConfig(): any {
     const config = await (yield {});
     this.columns = config.columns || [];
@@ -97,7 +97,7 @@ export class SniceTable extends HTMLElement {
     return config;
   }
 
-  @request('@snice/table/data')
+  @request('table/data')
   async *getTableData(): any {
     this.loading = true;
     this.selectedRows = []; // Clear selections when loading new data
@@ -467,7 +467,7 @@ export class SniceTable extends HTMLElement {
   @ready()
   async initialize() {
     // Listen for controller attached event
-    this.addEventListener('@snice/controller-attached', this.onAttached as EventListener);
+    this.addEventListener('controller-attached', this.onAttached as EventListener);
 
     // Listen for select change events from the filter dropdown
     this.addEventListener('select-change', this.handleSelectorChange as EventListener);

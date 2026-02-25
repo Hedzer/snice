@@ -148,7 +148,7 @@ export async function attachController(element: HTMLElement, controllerName: str
   // Setup @on event handlers for controller
   setupEventHandlers(controllerInstance, element);
   
-  element.dispatchEvent(new CustomEvent('@snice/controller-attached', {
+  element.dispatchEvent(new CustomEvent('controller-attached', {
     detail: { name: controllerName, controller: controllerInstance }
   }));
 }
@@ -198,7 +198,7 @@ export async function detachController(element: HTMLElement): Promise<void> {
   delete (element as any)[CONTROLLER_NAME_KEY];
   delete (element as any)[CONTROLLER_OPERATIONS];
   
-  element.dispatchEvent(new CustomEvent('@snice/controller-detached', {
+  element.dispatchEvent(new CustomEvent('controller-detached', {
     detail: { name: controllerName, controller: controllerInstance }
   }));
 }

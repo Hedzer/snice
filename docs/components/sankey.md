@@ -120,15 +120,15 @@ Set the `animation` attribute for animated rendering.
 ```typescript
 const sankey = document.querySelector('snice-sankey');
 
-sankey.addEventListener('@snice/sankey-node-click', (e) => {
+sankey.addEventListener('sankey-node-click', (e) => {
   console.log('Node:', e.detail.node.label);
 });
 
-sankey.addEventListener('@snice/sankey-link-click', (e) => {
+sankey.addEventListener('sankey-link-click', (e) => {
   console.log('Link:', e.detail.link.source, '->', e.detail.link.target);
 });
 
-sankey.addEventListener('@snice/sankey-hover', (e) => {
+sankey.addEventListener('sankey-hover', (e) => {
   if (e.detail) {
     console.log('Hovering:', e.detail.type, e.detail.item);
   }
@@ -173,6 +173,6 @@ interface SankeyLink {
 
 | Event | Detail | Description |
 |-------|--------|-------------|
-| `@snice/sankey-node-click` | `{ node: SankeyNode }` | Node clicked |
-| `@snice/sankey-link-click` | `{ link: SankeyLink }` | Link clicked |
-| `@snice/sankey-hover` | `{ type: 'node' \| 'link', item } \| null` | Hover state changed |
+| `sankey-node-click` | `{ node: SankeyNode }` | Node clicked |
+| `sankey-link-click` | `{ link: SankeyLink }` | Link clicked |
+| `sankey-hover` | `{ type: 'node' \| 'link', item } \| null` | Hover state changed |

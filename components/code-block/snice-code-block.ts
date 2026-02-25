@@ -61,17 +61,17 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
   @query('.code-block__copy')
   private copyBtn!: HTMLButtonElement;
 
-  @dispatch('@snice/code-copy', { bubbles: true, composed: true })
+  @dispatch('code-copy', { bubbles: true, composed: true })
   private dispatchCopyEvent(): CodeCopyDetail {
     return { code: this.code, codeBlock: this };
   }
 
-  @dispatch('@snice/code-before-highlight', { bubbles: true, composed: true })
+  @dispatch('code-before-highlight', { bubbles: true, composed: true })
   private dispatchBeforeHighlightEvent(): CodeHighlightDetail {
     return { code: this.code, language: this.language, codeBlock: this };
   }
 
-  @dispatch('@snice/code-after-highlight', { bubbles: true, composed: true })
+  @dispatch('code-after-highlight', { bubbles: true, composed: true })
   private dispatchAfterHighlightEvent(): CodeHighlightDetail {
     return { code: this.code, language: this.language, codeBlock: this };
   }

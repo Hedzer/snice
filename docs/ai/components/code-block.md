@@ -90,9 +90,9 @@ interface GrammarRequestDetail {
 
 ## Events
 
-- `@snice/code-copy` (detail: { code, codeBlock })
-- `@snice/code-before-highlight` (detail: { code, language, codeBlock })
-- `@snice/code-after-highlight` (detail: { code, language, codeBlock })
+- `code-copy` (detail: { code, codeBlock })
+- `code-before-highlight` (detail: { code, language, codeBlock })
+- `code-after-highlight` (detail: { code, language, codeBlock })
 - `grammar-request` (detail: { url, language, codeBlock }) — only dispatched when `fetch-mode="event"`
 
 ## Grammar System

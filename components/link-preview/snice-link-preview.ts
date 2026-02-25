@@ -44,7 +44,7 @@ export class SniceLinkPreview extends HTMLElement implements SniceLinkPreviewEle
     }
   }
 
-  @dispatch('@snice/link-click', { bubbles: true, composed: true })
+  @dispatch('link-click', { bubbles: true, composed: true })
   private dispatchLinkClick() {
     return { url: this.url };
   }

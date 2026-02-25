@@ -35,7 +35,7 @@ export class SniceList extends HTMLElement {
   @ready()
   init() {
     // Listen for controller attached event
-    this.addEventListener('@snice/controller-attached', (() => {
+    this.addEventListener('controller-attached', (() => {
       // Controller is now attached and ready
     }) as EventListener);
 
@@ -116,7 +116,7 @@ export class SniceList extends HTMLElement {
     }, 300);
   }
 
-  @request('@snice/list/search')
+  @request('list/search')
   async *performSearch(query: string): any {
     this.loading = true;
 
@@ -131,7 +131,7 @@ export class SniceList extends HTMLElement {
     }
   }
 
-  @request('@snice/list/load-more')
+  @request('list/load-more')
   async *loadMore(): any {
     if (this.loading) return;
 

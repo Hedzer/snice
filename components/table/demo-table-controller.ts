@@ -22,7 +22,7 @@ export class DemoTableController implements IController {
     { id: 8, name: 'Frank Miller', email: 'frank.miller@example.com', role: 'Manager', salary: 98000, joinDate: '2022-08-22', active: true }
   ];
 
-  @respond('@snice/table/config')
+  @respond('table/config')
   async getTableConfig() {
     // Return table configuration
     return {
@@ -44,7 +44,7 @@ export class DemoTableController implements IController {
     };
   }
 
-  @respond('@snice/table/data')
+  @respond('table/data')
   async getTableData(params: any) {
     // Add fake delay to see loading skeleton
     await new Promise(resolve => setTimeout(resolve, 100));

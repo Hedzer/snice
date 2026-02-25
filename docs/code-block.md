@@ -189,12 +189,12 @@ codeBlock.setGrammar(grammar);
 
 ## Events
 
-### `@snice/code-copy`
+### `code-copy`
 
 Dispatched when code is copied to the clipboard.
 
 ```typescript
-codeBlock.addEventListener('@snice/code-copy', (e) => {
+codeBlock.addEventListener('code-copy', (e) => {
   console.log('Copied:', e.detail.code);
   console.log('From:', e.detail.codeBlock);
 });
@@ -202,13 +202,13 @@ codeBlock.addEventListener('@snice/code-copy', (e) => {
 
 **Detail:** `{ code: string, codeBlock: SniceCodeBlockElement }`
 
-### `@snice/code-before-highlight`
+### `code-before-highlight`
 
 Dispatched before syntax highlighting runs. Can be used to modify code or language before highlighting.
 
 **Detail:** `{ code: string, language: string, codeBlock: SniceCodeBlockElement }`
 
-### `@snice/code-after-highlight`
+### `code-after-highlight`
 
 Dispatched after syntax highlighting completes.
 

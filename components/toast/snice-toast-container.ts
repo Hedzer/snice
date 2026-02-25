@@ -8,8 +8,8 @@ const TOAST_CONTAINER = getSymbol('@snice/toast', 'container');
 const TOAST_LISTENER_INITIALIZED = getSymbol('@snice/toast', 'listener-initialized');
 
 // Namespaced events
-const TOAST_EVENT_SHOW = '@snice/show-toast';
-const TOAST_EVENT_RESPONSE = '@snice/toast-response';
+const TOAST_EVENT_SHOW = 'show-toast';
+const TOAST_EVENT_RESPONSE = 'toast-response';
 
 @element('snice-toast-container')
 export class SniceToastContainer extends HTMLElement implements SniceToastContainerElement {

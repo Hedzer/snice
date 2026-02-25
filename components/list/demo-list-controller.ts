@@ -13,7 +13,7 @@ export class DemoListController implements IController {
 
   private itemCount = 3;
 
-  @respond('@snice/list/load-more')
+  @respond('list/load-more')
   async loadMore(params: any) {
     // Simulate server delay
     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -37,7 +37,7 @@ export class DemoListController implements IController {
     return { success: true };
   }
 
-  @respond('@snice/list/search')
+  @respond('list/search')
   async search(params: any) {
     const query = params.query.toLowerCase();
     const list = params.list;

@@ -23,9 +23,9 @@ clearAnnotations(): void;
 ## Events
 
 ```typescript
-'@snice/capture'           → { dataURL: string; width: number; height: number }
-'@snice/annotate'          → { annotation: Annotation }
-'@snice/annotation-change' → { annotations: Annotation[] }
+'capture'           → { dataURL: string; width: number; height: number }
+'annotate'          → { annotation: Annotation }
+'annotation-change' → { annotations: Annotation[] }
 ```
 
 ## Types

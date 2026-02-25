@@ -38,8 +38,8 @@ disabled: boolean = false;
 
 ## Requests
 
-- `@snice/list/search` → `{ query, list }` - Handle search
-- `@snice/list/load-more` → `{ page, list }` - Infinite scroll
+- `list/search` → `{ query, list }` - Handle search
+- `list/load-more` → `{ page, list }` - Infinite scroll
 
 ## Usage
 

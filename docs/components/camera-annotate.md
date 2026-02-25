@@ -46,9 +46,9 @@ import 'snice/components/camera-annotate/snice-camera-annotate';
 
 | Event | Detail | Description |
 |-------|--------|-------------|
-| `@snice/capture` | `{ dataURL, width, height }` | Fired when an image is captured from the camera |
-| `@snice/annotate` | `{ annotation }` | Fired when a new annotation (shape) is drawn |
-| `@snice/annotation-change` | `{ annotations }` | Fired when annotations are modified (add, remove, visibility, label) |
+| `capture` | `{ dataURL, width, height }` | Fired when an image is captured from the camera |
+| `annotate` | `{ annotation }` | Fired when a new annotation (shape) is drawn |
+| `annotation-change` | `{ annotations }` | Fired when annotations are modified (add, remove, visibility, label) |
 
 ## Examples
 
@@ -78,15 +78,15 @@ import 'snice/components/camera-annotate/snice-camera-annotate';
 <script type="module">
   const annotator = document.getElementById('annotator');
 
-  annotator.addEventListener('@snice/capture', (e) => {
+  annotator.addEventListener('capture', (e) => {
     console.log('Captured:', e.detail.width, 'x', e.detail.height);
   });
 
-  annotator.addEventListener('@snice/annotate', (e) => {
+  annotator.addEventListener('annotate', (e) => {
     console.log('New annotation:', e.detail.annotation.id);
   });
 
-  annotator.addEventListener('@snice/annotation-change', (e) => {
+  annotator.addEventListener('annotation-change', (e) => {
     console.log('Total annotations:', e.detail.annotations.length);
   });
 </script>

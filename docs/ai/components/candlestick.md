@@ -40,9 +40,9 @@ zoomTo(startIndex: number, endIndex: number): void;  // Zoom to range
 ## Events
 
 ```typescript
-'@snice/candle-click': { candle: CandleData; index: number }
-'@snice/candle-hover': { candle: CandleData; index: number }
-'@snice/crosshair-move': { price: number; date: string; x: number; y: number }
+'candle-click': { candle: CandleData; index: number }
+'candle-hover': { candle: CandleData; index: number }
+'crosshair-move': { price: number; date: string; x: number; y: number }
 ```
 
 ## Usage

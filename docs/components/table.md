@@ -167,7 +167,7 @@ Use the `@request`/`@respond` pattern to load data from an external source.
 
   @element('my-table-controller')
   class MyTableController extends HTMLElement {
-    @respond('@snice/table/config')
+    @respond('table/config')
     getConfig() {
       return {
         columns: [
@@ -177,7 +177,7 @@ Use the `@request`/`@respond` pattern to load data from an external source.
       };
     }
 
-    @respond('@snice/table/data')
+    @respond('table/data')
     async getData(params) {
       const response = await fetch(`/api/users?search=${params.search}`);
       const data = await response.json();

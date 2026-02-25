@@ -69,9 +69,9 @@ interface CandleData {
 
 | Event | Detail | Description |
 |-------|--------|-------------|
-| `@snice/candle-click` | `{ candle: CandleData, index: number }` | A candle was clicked |
-| `@snice/candle-hover` | `{ candle: CandleData, index: number }` | Mouse entered a candle |
-| `@snice/crosshair-move` | `{ price: number, date: string, x: number, y: number }` | Crosshair position changed |
+| `candle-click` | `{ candle: CandleData, index: number }` | A candle was clicked |
+| `candle-hover` | `{ candle: CandleData, index: number }` | Mouse entered a candle |
+| `crosshair-move` | `{ price: number, date: string, x: number, y: number }` | Crosshair position changed |
 
 ## Examples
 
@@ -120,12 +120,12 @@ interface CandleData {
 <snice-candlestick id="chart"></snice-candlestick>
 
 <script>
-  chart.addEventListener('@snice/candle-click', (e) => {
+  chart.addEventListener('candle-click', (e) => {
     console.log('Clicked candle:', e.detail.candle);
     console.log('Index:', e.detail.index);
   });
 
-  chart.addEventListener('@snice/crosshair-move', (e) => {
+  chart.addEventListener('crosshair-move', (e) => {
     console.log('Price at cursor:', e.detail.price);
     console.log('Date at cursor:', e.detail.date);
   });
@@ -193,6 +193,6 @@ snice-candlestick {
 3. **Use appropriate time formats**: Match `time-format` to your data granularity (intraday = `'time'`, daily = `'date'`, monthly = `'month'`)
 4. **Give the chart height**: The component needs an explicit height (set via CSS or a container)
 5. **Limit visible candles**: For large datasets, the chart auto-limits visible candles; use `zoomTo()` for specific ranges
-6. **Handle events**: Use `@snice/candle-click` for drill-down, `@snice/crosshair-move` for real-time price readout
+6. **Handle events**: Use `candle-click` for drill-down, `crosshair-move` for real-time price readout
 7. **Custom colors**: Use `bullish-color` / `bearish-color` or CSS custom properties for theme integration
 8. **Responsive**: The chart uses `ResizeObserver` and redraws on container resize
