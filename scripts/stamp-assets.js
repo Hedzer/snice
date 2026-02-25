@@ -3,7 +3,8 @@
 // Run: node scripts/stamp-assets.js        (stamp)
 //      node scripts/stamp-assets.js --clean (remove stamps)
 import { execSync } from 'child_process';
-import { readFileSync, writeFileSync, readdirSync, statSync } from 'fs';
+import { createHash } from 'crypto';
+import { readFileSync, writeFileSync, readdirSync, statSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -12,7 +13,23 @@ const root = join(__dirname, '..');
 const publicDir = join(root, 'public');
 const clean = process.argv.includes('--clean');
 
-const hash = clean ? null : execSync('git rev-parse --short HEAD', { cwd: root }).toString().trim();
+// Use content hash of all public assets so rebuilds always bust the cache
+function computeContentHash() {
+  const h = createHash('md5');
+  const dirs = [publicDir, join(publicDir, 'components'), join(publicDir, 'grammars')];
+  for (const dir of dirs) {
+    if (!existsSync(dir)) continue;
+    for (const f of readdirSync(dir).sort()) {
+      const fp = join(dir, f);
+      if (statSync(fp).isFile() && /\.(js|css|json|woff2?)$/i.test(f)) {
+        h.update(readFileSync(fp));
+      }
+    }
+  }
+  return h.digest('hex').slice(0, 7);
+}
+
+const hash = clean ? null : computeContentHash();
 
 // Asset extensions to cache-bust
 const ASSET_EXT = /\.(?:css|js|png|jpe?g|gif|svg|ico|webp|json|woff2?)$/i;
