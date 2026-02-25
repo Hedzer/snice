@@ -1,14 +1,14 @@
     <!-- ── Doc ── -->
     <div class="comp-section">
       <h3>Doc</h3>
-      <p class="comp-desc">Rich text document editor with formatting toolbar, headings, lists, images, links, and tables</p>
+      <p class="comp-desc">Rich text document editor with formatting toolbar, headings, lists, images, links, tables, and download as HTML/Markdown/Text</p>
       <div class="comp-split comp-split-stacked">
         <div class="comp-split-demo demo-col">
-          <snice-doc id="demo-doc" style="height:320px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;overflow:hidden"></snice-doc>
+          <snice-doc id="demo-doc" icons="material" style="height:320px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;overflow:hidden"></snice-doc>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=8583f8f">&lt;snice-doc id="editor"&gt;&lt;/snice-doc&gt;
+          <snice-code-block language="html" grammar="grammars/html.json?v=0df9516">&lt;snice-doc icons="material"&gt;&lt;/snice-doc&gt;
 
 &lt;script&gt;
   const editor = document.querySelector('snice-doc');
@@ -24,8 +24,11 @@
     &lt;/ul&gt;
   `);
 
-  // Read content back
-  const html = editor.getHTML();
+  // Export as markdown
+  const md = editor.getMarkdown();
+
+  // Download as file
+  editor.downloadAs('markdown', 'my-doc.md');
 &lt;/script&gt;</snice-code-block>
         </div>
       </div>
@@ -36,14 +39,14 @@
       const doc = document.getElementById('demo-doc');
       if (doc && doc.setHTML) doc.setHTML(`
         <h2>Document Editor</h2>
-        <p>This is a rich text editor. Try using the toolbar to format text:</p>
+        <p>This is a rich text editor with Material Icons. Try the toolbar to format text:</p>
         <ul>
           <li><b>Bold</b>, <i>italic</i>, <u>underline</u> formatting</li>
           <li>Headings (H1, H2, H3)</li>
           <li>Bullet and numbered lists</li>
           <li>Images, links, and tables</li>
         </ul>
-        <p>Start typing anywhere to edit this content...</p>
+        <p>Click the download button to export as HTML, Markdown, or Plain Text.</p>
       `);
     });
 </script>
