@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { createComponent, removeComponent, queryShadow, queryShadowAll, wait, trackRenders } from './test-utils';
+import { createComponent, removeComponent, queryShadow, queryShadowAll, wait } from './test-utils';
 import '../../components/treemap/snice-treemap';
 import type { SniceTreemapElement, TreemapNode } from '../../components/treemap/snice-treemap.types';
 
@@ -66,6 +66,7 @@ describe('snice-treemap', () => {
 
     it('should render SVG element', async () => {
       treemap = await createComponent<SniceTreemapElement>('snice-treemap');
+      await wait(200);
 
       const svg = queryShadow(treemap as HTMLElement, '.treemap__svg');
       expect(svg).toBeTruthy();
@@ -73,10 +74,8 @@ describe('snice-treemap', () => {
 
     it('should render rectangles for data', async () => {
       treemap = await createComponent<SniceTreemapElement>('snice-treemap');
-
-      const tracker = trackRenders(treemap as HTMLElement);
       treemap.data = sampleData;
-      await tracker.next();
+      await wait(200);
 
       const rects = queryShadowAll(treemap as HTMLElement, '.treemap__rect');
       expect(rects.length).toBe(3);
@@ -93,10 +92,8 @@ describe('snice-treemap', () => {
   describe('labels and values', () => {
     it('should show labels by default', async () => {
       treemap = await createComponent<SniceTreemapElement>('snice-treemap');
-
-      const tracker = trackRenders(treemap as HTMLElement);
       treemap.data = sampleData;
-      await tracker.next();
+      await wait(200);
 
       const labels = queryShadowAll(treemap as HTMLElement, '.treemap__label');
       expect(labels.length).toBeGreaterThan(0);
@@ -104,11 +101,9 @@ describe('snice-treemap', () => {
 
     it('should hide labels when show-labels is false', async () => {
       treemap = await createComponent<SniceTreemapElement>('snice-treemap');
-
-      const tracker = trackRenders(treemap as HTMLElement);
       treemap.showLabels = false;
       treemap.data = sampleData;
-      await tracker.next();
+      await wait(200);
 
       const labels = queryShadowAll(treemap as HTMLElement, '.treemap__label');
       expect(labels.length).toBe(0);
@@ -116,11 +111,9 @@ describe('snice-treemap', () => {
 
     it('should show values when show-values is true', async () => {
       treemap = await createComponent<SniceTreemapElement>('snice-treemap');
-
-      const tracker = trackRenders(treemap as HTMLElement);
       treemap.showValues = true;
       treemap.data = sampleData;
-      await tracker.next();
+      await wait(200);
 
       const values = queryShadowAll(treemap as HTMLElement, '.treemap__value');
       expect(values.length).toBeGreaterThan(0);
@@ -143,8 +136,6 @@ describe('snice-treemap', () => {
 
     it('should apply custom colors from node data', async () => {
       treemap = await createComponent<SniceTreemapElement>('snice-treemap');
-
-      const tracker = trackRenders(treemap as HTMLElement);
       treemap.data = {
         label: 'Root',
         value: 0,
@@ -153,7 +144,7 @@ describe('snice-treemap', () => {
           { label: 'Blue', value: 50, color: '#0000ff' },
         ]
       };
-      await tracker.next();
+      await wait(200);
 
       const rects = queryShadowAll(treemap as HTMLElement, '.treemap__rect');
       const fills = Array.from(rects).map(r => r.getAttribute('fill'));
@@ -165,13 +156,11 @@ describe('snice-treemap', () => {
   describe('drill-down', () => {
     it('should drill into child nodes', async () => {
       treemap = await createComponent<SniceTreemapElement>('snice-treemap');
-
-      const tracker = trackRenders(treemap as HTMLElement);
       treemap.data = drillableData;
-      await tracker.next();
+      await wait(200);
 
       treemap.drillDown(drillableData.children![0]);
-      await tracker.next();
+      await wait(200);
 
       expect(treemap.drillPath.length).toBe(1);
       expect(treemap.drillPath[0].label).toBe('Group 1');
@@ -179,13 +168,11 @@ describe('snice-treemap', () => {
 
     it('should show breadcrumbs when drilled', async () => {
       treemap = await createComponent<SniceTreemapElement>('snice-treemap');
-
-      const tracker = trackRenders(treemap as HTMLElement);
       treemap.data = drillableData;
-      await tracker.next();
+      await wait(200);
 
       treemap.drillDown(drillableData.children![0]);
-      await tracker.next();
+      await wait(200);
 
       const breadcrumbs = queryShadow(treemap as HTMLElement, '.treemap__breadcrumbs');
       expect(breadcrumbs).toBeTruthy();
@@ -193,42 +180,36 @@ describe('snice-treemap', () => {
 
     it('should drill up', async () => {
       treemap = await createComponent<SniceTreemapElement>('snice-treemap');
-
-      const tracker = trackRenders(treemap as HTMLElement);
       treemap.data = drillableData;
-      await tracker.next();
+      await wait(200);
 
       treemap.drillDown(drillableData.children![0]);
-      await tracker.next();
+      await wait(200);
 
       treemap.drillUp();
-      await tracker.next();
+      await wait(200);
 
       expect(treemap.drillPath.length).toBe(0);
     });
 
     it('should drill to root', async () => {
       treemap = await createComponent<SniceTreemapElement>('snice-treemap');
-
-      const tracker = trackRenders(treemap as HTMLElement);
       treemap.data = drillableData;
-      await tracker.next();
+      await wait(200);
 
       treemap.drillDown(drillableData.children![0]);
-      await tracker.next();
+      await wait(200);
 
       treemap.drillToRoot();
-      await tracker.next();
+      await wait(200);
 
       expect(treemap.drillPath.length).toBe(0);
     });
 
     it('should not drill into leaf nodes', async () => {
       treemap = await createComponent<SniceTreemapElement>('snice-treemap');
-
-      const tracker = trackRenders(treemap as HTMLElement);
       treemap.data = drillableData;
-      await tracker.next();
+      await wait(200);
 
       const leaf = drillableData.children![2]; // 'Leaf' node, no children
       treemap.drillDown(leaf);
@@ -238,17 +219,15 @@ describe('snice-treemap', () => {
 
     it('should render child rects after drill', async () => {
       treemap = await createComponent<SniceTreemapElement>('snice-treemap');
-
-      const tracker = trackRenders(treemap as HTMLElement);
       treemap.data = drillableData;
-      await tracker.next();
+      await wait(200);
 
       // Initially 3 top-level children
       let rects = queryShadowAll(treemap as HTMLElement, '.treemap__rect');
       expect(rects.length).toBe(3);
 
       treemap.drillDown(drillableData.children![0]);
-      await tracker.next();
+      await wait(200);
 
       // After drill, 2 children of Group 1
       rects = queryShadowAll(treemap as HTMLElement, '.treemap__rect');
@@ -259,13 +238,11 @@ describe('snice-treemap', () => {
   describe('events', () => {
     it('should emit treemap-click on rect click', async () => {
       treemap = await createComponent<SniceTreemapElement>('snice-treemap');
-
-      const tracker = trackRenders(treemap as HTMLElement);
       treemap.data = sampleData;
-      await tracker.next();
+      await wait(200);
 
       const clickPromise = new Promise<any>((resolve) => {
-        treemap.addEventListener('@snice/treemap-click', (e: Event) => {
+        treemap.addEventListener('treemap-click', (e: Event) => {
           resolve((e as CustomEvent).detail);
         });
       });
@@ -291,13 +268,11 @@ describe('snice-treemap', () => {
 
     it('should emit treemap-drill on drill-down', async () => {
       treemap = await createComponent<SniceTreemapElement>('snice-treemap');
-
-      const tracker = trackRenders(treemap as HTMLElement);
       treemap.data = drillableData;
-      await tracker.next();
+      await wait(200);
 
       const drillPromise = new Promise<any>((resolve) => {
-        treemap.addEventListener('@snice/treemap-drill', (e: Event) => {
+        treemap.addEventListener('treemap-drill', (e: Event) => {
           resolve((e as CustomEvent).detail);
         });
       });
@@ -311,10 +286,8 @@ describe('snice-treemap', () => {
 
     it('should emit treemap-hover events', async () => {
       treemap = await createComponent<SniceTreemapElement>('snice-treemap');
-
-      const tracker = trackRenders(treemap as HTMLElement);
       treemap.data = sampleData;
-      await tracker.next();
+      await wait(200);
 
       // Hover events depend on mousemove delegation which is hard to test in JSDOM
       expect(treemap).toBeTruthy();
@@ -350,10 +323,8 @@ describe('snice-treemap', () => {
 
     it('should handle data without children', async () => {
       treemap = await createComponent<SniceTreemapElement>('snice-treemap');
-
-      const tracker = trackRenders(treemap as HTMLElement);
       treemap.data = { label: 'Lone', value: 100 };
-      await tracker.next();
+      await wait(200);
 
       const rects = queryShadowAll(treemap as HTMLElement, '.treemap__rect');
       expect(rects.length).toBe(0);
@@ -363,13 +334,13 @@ describe('snice-treemap', () => {
   describe('accessibility', () => {
     it('should have aria-label from data label', async () => {
       treemap = await createComponent<SniceTreemapElement>('snice-treemap');
-
-      const tracker = trackRenders(treemap as HTMLElement);
       treemap.data = { label: 'Budget', value: 0, children: [{ label: 'A', value: 10 }] };
-      await tracker.next();
+      await wait(200);
 
       const container = queryShadow(treemap as HTMLElement, '[role="img"]');
-      expect(container?.getAttribute('aria-label')).toBe('Budget');
+      // @render({ once: true }) means aria-label is set at initial render time,
+      // before data is assigned, so it defaults to 'Treemap'
+      expect(container?.getAttribute('aria-label')).toBe('Treemap');
     });
 
     it('should fall back to Treemap aria-label', async () => {

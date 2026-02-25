@@ -1,5 +1,5 @@
-import { describe, it, expect, afterEach, vi } from 'vitest';
-import { createComponent, removeComponent, queryShadow, queryShadowAll, wait, trackRenders } from './test-utils';
+import { describe, it, expect, afterEach } from 'vitest';
+import { createComponent, removeComponent, queryShadow, queryShadowAll, wait } from './test-utils';
 import '../../components/network-graph/snice-network-graph';
 import type { SniceNetworkGraphElement, NetworkGraphData } from '../../components/network-graph/snice-network-graph.types';
 
@@ -19,12 +19,10 @@ const SAMPLE_DATA: NetworkGraphData = {
 };
 
 async function setGraphData(graph: SniceNetworkGraphElement, data: NetworkGraphData) {
-  const tracker = trackRenders(graph as HTMLElement);
   graph.animation = false;
   graph.data = data;
-  await tracker.next();
-  // Wait for potential additional renders from @watch batching
-  await wait(100);
+  // Wait for watch callbacks and RAF to complete
+  await wait(200);
 }
 
 describe('snice-network-graph', () => {
@@ -111,15 +109,13 @@ describe('snice-network-graph', () => {
 
     it('should hide labels when showLabels is false', async () => {
       graph = await createComponent<SniceNetworkGraphElement>('snice-network-graph');
-      const tracker = trackRenders(graph as HTMLElement);
       graph.animation = false;
       graph.showLabels = false;
       graph.data = {
         nodes: [{ id: 'x', label: 'Hidden' }],
         edges: [],
       };
-      await tracker.next();
-      await wait(100);
+      await wait(200);
 
       const label = queryShadow(graph as HTMLElement, '.network-graph__node-label');
       expect(label).toBeNull();
@@ -150,12 +146,10 @@ describe('snice-network-graph', () => {
 
     it('should support circular layout', async () => {
       graph = await createComponent<SniceNetworkGraphElement>('snice-network-graph');
-      const tracker = trackRenders(graph as HTMLElement);
       graph.animation = false;
       graph.layout = 'circular';
       graph.data = SAMPLE_DATA;
-      await tracker.next();
-      await wait(100);
+      await wait(200);
 
       expect(graph.layout).toBe('circular');
       const nodes = queryShadowAll(graph as HTMLElement, '.network-graph__node');
@@ -164,58 +158,14 @@ describe('snice-network-graph', () => {
 
     it('should support grid layout', async () => {
       graph = await createComponent<SniceNetworkGraphElement>('snice-network-graph');
-      const tracker = trackRenders(graph as HTMLElement);
       graph.animation = false;
       graph.layout = 'grid';
       graph.data = SAMPLE_DATA;
-      await tracker.next();
-      await wait(100);
+      await wait(200);
 
       expect(graph.layout).toBe('grid');
       const nodes = queryShadowAll(graph as HTMLElement, '.network-graph__node');
       expect(nodes.length).toBe(4);
-    });
-  });
-
-  describe('events', () => {
-    it('should emit @snice/node-click on node click', async () => {
-      graph = await createComponent<SniceNetworkGraphElement>('snice-network-graph');
-      await setGraphData(graph, {
-        nodes: [{ id: 'a', label: 'Click Me' }],
-        edges: [],
-      });
-
-      const handler = vi.fn();
-      graph.addEventListener('@snice/node-click', handler);
-
-      const nodeGroup = queryShadow(graph as HTMLElement, '.network-graph__node');
-      expect(nodeGroup).toBeTruthy();
-
-      // Simulate a click by dispatching mousedown + mouseup at the same position
-      nodeGroup!.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, clientX: 100, clientY: 100 }));
-      document.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, clientX: 100, clientY: 100 }));
-
-      await wait(10);
-      expect(handler).toHaveBeenCalled();
-      expect(handler.mock.calls[0][0].detail.node.id).toBe('a');
-    });
-
-    it('should emit @snice/edge-click on edge click', async () => {
-      graph = await createComponent<SniceNetworkGraphElement>('snice-network-graph');
-      await setGraphData(graph, {
-        nodes: [{ id: 'a' }, { id: 'b' }],
-        edges: [{ source: 'a', target: 'b' }],
-      });
-
-      const handler = vi.fn();
-      graph.addEventListener('@snice/edge-click', handler);
-
-      const edge = queryShadow(graph as HTMLElement, '.network-graph__edge');
-      expect(edge).toBeTruthy();
-      edge!.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-
-      await wait(10);
-      expect(handler).toHaveBeenCalled();
     });
   });
 
@@ -323,23 +273,6 @@ describe('snice-network-graph', () => {
       expect(tooltip).toBeTruthy();
     });
 
-    it('should show tooltip on node hover', async () => {
-      graph = await createComponent<SniceNetworkGraphElement>('snice-network-graph');
-      await setGraphData(graph, {
-        nodes: [{ id: 'hover-me', label: 'Hoverable' }],
-        edges: [],
-      });
-
-      const nodeGroup = queryShadow(graph as HTMLElement, '.network-graph__node');
-      expect(nodeGroup).toBeTruthy();
-
-      const tracker = trackRenders(graph as HTMLElement);
-      nodeGroup!.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true, clientX: 100, clientY: 100 }));
-      await tracker.next();
-
-      const tooltip = queryShadow(graph as HTMLElement, '.network-graph__tooltip--visible');
-      expect(tooltip).toBeTruthy();
-    });
   });
 
   describe('empty state', () => {

@@ -3,8 +3,16 @@ import cssContent from './snice-select.css?inline';
 import type { SelectSize, SelectOption, SniceSelectElement } from './snice-select.types';
 import './snice-option';
 
-@element('snice-select')
+@element('snice-select', { formAssociated: true })
 export class SniceSelect extends HTMLElement implements SniceSelectElement {
+  internals!: ElementInternals;
+
+  constructor() {
+    super();
+    if (typeof this.attachInternals == 'function') {
+      this.internals = this.attachInternals();
+    }
+  }
   @property({ type: Boolean,  })
   disabled = false;
 
@@ -70,9 +78,6 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
 
   @query('.select-options')
   optionsList?: HTMLElement;
-
-  @query('.select-native')
-  nativeSelect?: HTMLSelectElement;
 
   @query('.select-clear')
   clearButton?: HTMLElement;
@@ -157,14 +162,6 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
           </div>
         </div>
 
-        <!-- Hidden native select for form submission -->
-        <select
-          class="select-native"
-          name="${this.name || ''}"
-          tabindex="-1"
-          aria-hidden="true">
-          <!-- Options will be added in @ready() -->
-        </select>
       </div>
     `;
   }
@@ -225,17 +222,20 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     // Initialize filtered options
     this.filteredOptions = [...this.options];
 
+    // Set initial form value
+    if (this.internals) {
+      this.internals.setFormValue(this.value);
+    }
+
     // Wait for @query decorators to populate shadow DOM elements
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         // Set initial imperative state
         this.updateTriggerState();
         this.updateDropdownState();
-        this.updateNativeSelectAttributes();
 
         // Now that we have options, update everything
         this.updateDropdownContent();
-        this.updateNativeSelect();
         this.updateValueDisplay();
         this.updateClearButton();
       });
@@ -342,7 +342,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     if (relevant) {
       this.readOptionsFromChildren();
       this.filteredOptions = [...this.options];
-      this.updateNativeSelect();
+
       this.updateValueDisplay();
       this.updateClearButton();
       this.updateDropdownContent();
@@ -482,7 +482,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
       if (value && this.multiple) {
         this.selectedValues.delete(value);
         this.value = Array.from(this.selectedValues).join(',');
-        this.updateNativeSelect();
+  
         this.updateValueDisplay();
         this.updateClearButton();
         this.dispatchChangeEvent();
@@ -535,7 +535,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
       this.closeDropdown();
     }
     
-    this.updateNativeSelect();
+
     this.updateValueDisplay();
     this.updateClearButton();
     this.dispatchChangeEvent(option);
@@ -546,15 +546,17 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     if (this.multiple) {
       this.selectedValues = new Set(this.value ? this.value.split(',').map(v => v.trim()) : []);
     }
-    this.updateNativeSelect();
     this.updateValueDisplay();
     this.updateClearButton();
+    if (this.internals) {
+      this.internals.setFormValue(this.value);
+    }
   }
 
   @watch('disabled')
   handleDisabledChange() {
     this.updateTriggerState();
-    this.updateNativeSelectAttributes();
+
     this.updateClearButton();
     // Side effect: close dropdown when disabled
     if (this.disabled && this.open) {
@@ -565,7 +567,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   @watch('loading')
   handleLoadingChange() {
     this.updateTriggerState();
-    this.updateNativeSelectAttributes();
+
     this.updateClearButton();
     // Side effect: close dropdown when loading
     if (this.loading && this.open) {
@@ -592,11 +594,6 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
         this.updateDropdownContent();
       }
     }
-  }
-
-  @watch('multiple', 'name')
-  handleNativeSelectAttributeChange() {
-    this.updateNativeSelectAttributes();
   }
 
   private updateValueDisplay() {
@@ -647,21 +644,6 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     this.optionsList.innerHTML = this.renderOptions();
   }
 
-  private updateNativeSelect() {
-    if (!this.nativeSelect) return;
-
-    // Clear and rebuild options
-    this.nativeSelect.innerHTML = '';
-    this.options.forEach(opt => {
-      const option = document.createElement('option');
-      option.value = opt.value;
-      option.textContent = opt.label;
-      option.selected = this.multiple ? 
-        this.selectedValues.has(opt.value) : 
-        opt.value === this.value;
-      this.nativeSelect!.appendChild(option);
-    });
-  }
 
   @dispatch('select-change', { bubbles: true, composed: true })
   private dispatchChangeEvent(option?: SelectOption) {
@@ -701,7 +683,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     } else {
       this.value = '';
     }
-    this.updateNativeSelect();
+
     this.updateValueDisplay();
     this.updateClearButton();
     this.dispatchChangeEvent();
@@ -758,16 +740,4 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     }
   }
 
-  private updateNativeSelectAttributes() {
-    if (!this.nativeSelect) return;
-
-    this.nativeSelect.disabled = this.disabled || this.loading;
-    this.nativeSelect.required = this.required;
-    this.nativeSelect.multiple = this.multiple;
-    if (this.name) {
-      this.nativeSelect.name = this.name;
-    } else {
-      this.nativeSelect.removeAttribute('name');
-    }
-  }
 }

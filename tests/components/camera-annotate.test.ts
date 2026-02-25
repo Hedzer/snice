@@ -196,7 +196,7 @@ describe('snice-camera-annotate', () => {
       el = await createComponent<SniceCameraAnnotateElement>('snice-camera-annotate');
 
       const handler = vi.fn();
-      el.addEventListener('@snice/annotation-change', handler);
+      el.addEventListener('annotation-change', handler);
 
       el.clearAnnotations();
 
@@ -209,7 +209,7 @@ describe('snice-camera-annotate', () => {
       el = await createComponent<SniceCameraAnnotateElement>('snice-camera-annotate');
 
       const handler = vi.fn();
-      el.addEventListener('@snice/annotation-change', handler);
+      el.addEventListener('annotation-change', handler);
 
       el.importAnnotations({
         annotations: [],

@@ -62,7 +62,7 @@ export class SniceMenu extends HTMLElement implements SniceMenuElement {
 
   @on('click', { target: '.menu__trigger' })
   handleTriggerClick(e: MouseEvent) {
-    if (this.trigger === 'click' || this.trigger === 'manual') {
+    if (this.trigger === 'click') {
       e.stopPropagation();
       this.toggleMenu();
     }

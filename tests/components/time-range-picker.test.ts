@@ -286,7 +286,7 @@ describe('snice-time-range-picker', () => {
       await wait(50);
 
       let changeDetail: any = null;
-      (picker as HTMLElement).addEventListener('@snice/time-range-change', (e: Event) => {
+      (picker as HTMLElement).addEventListener('time-range-change', (e: Event) => {
         changeDetail = (e as CustomEvent).detail;
       });
 
@@ -307,7 +307,7 @@ describe('snice-time-range-picker', () => {
       await wait(50);
 
       let changeFired = false;
-      (picker as HTMLElement).addEventListener('@snice/time-range-change', () => {
+      (picker as HTMLElement).addEventListener('time-range-change', () => {
         changeFired = true;
       });
 

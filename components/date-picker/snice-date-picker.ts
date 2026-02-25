@@ -2,8 +2,16 @@ import { element, property, query, watch, dispatch, ready, render, styles, html,
 import cssContent from './snice-date-picker.css?inline';
 import type { DatePickerSize, DatePickerVariant, DateFormat, SniceDatePickerElement, DatePickerValue } from './snice-date-picker.types';
 
-@element('snice-date-picker')
+@element('snice-date-picker', { formAssociated: true })
 export class SniceDatePicker extends HTMLElement implements SniceDatePickerElement {
+  internals!: ElementInternals;
+
+  constructor() {
+    super();
+    if (typeof this.attachInternals == 'function') {
+      this.internals = this.attachInternals();
+    }
+  }
   @property({  })
   size: DatePickerSize = 'medium';
 
@@ -224,6 +232,9 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
   @ready()
   init() {
     this.parseInitialValue();
+    if (this.internals) {
+      this.internals.setFormValue(this.value);
+    }
     // Update clear button after queries are resolved
     queueMicrotask(() => this.updateClearButton());
     this.setupCalendarClickOutside();
@@ -614,6 +625,9 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
     }
     this.updateInputValue();
     this.updateClearButton();
+    if (this.internals) {
+      this.internals.setFormValue(this.value);
+    }
     if (this.showCalendar) {
       this.updateCalendarGrid();
     }

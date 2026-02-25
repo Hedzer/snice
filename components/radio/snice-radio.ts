@@ -106,14 +106,34 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
 
   @on('click')
   handleClick(e: Event) {
-    // Don't handle if disabled
     if (this.disabled) return;
 
-    // Set this radio as checked
     if (!this.checked) {
       this.checked = true;
       this.dispatchChangeEvent();
     }
+  }
+
+  @on('keydown')
+  handleKeydown(e: KeyboardEvent) {
+    if (this.disabled || !this.name) return;
+
+    const isArrowKey = e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === 'ArrowUp' || e.key === 'ArrowLeft';
+    if (!isArrowKey) return;
+
+    e.preventDefault();
+    const radios = Array.from(document.querySelectorAll<SniceRadio>(`snice-radio[name="${this.name}"]:not([disabled])`));
+    if (radios.length < 2) return;
+
+    const currentIndex = radios.indexOf(this);
+    const forward = e.key === 'ArrowDown' || e.key === 'ArrowRight';
+    const nextIndex = forward
+      ? (currentIndex + 1) % radios.length
+      : (currentIndex - 1 + radios.length) % radios.length;
+
+    const next = radios[nextIndex];
+    next.focus();
+    next.select();
   }
 
 

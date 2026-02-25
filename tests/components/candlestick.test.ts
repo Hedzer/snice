@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { createComponent, removeComponent, queryShadow, queryShadowAll, trackRenders } from './test-utils';
+import { createComponent, removeComponent, queryShadow, queryShadowAll, wait } from './test-utils';
 import '../../components/candlestick/snice-candlestick';
 import type { SniceCandlestickElement, CandleData } from '../../components/candlestick/snice-candlestick.types';
 
@@ -79,9 +79,8 @@ describe('snice-candlestick', () => {
   describe('data rendering', () => {
     it('should render candle bodies when data is set', async () => {
       el = await createComponent<SniceCandlestickElement>('snice-candlestick');
-      const tracker = trackRenders(el as HTMLElement);
       el.data = SAMPLE_DATA;
-      await tracker.next();
+      await wait(200);
 
       const bodies = queryShadowAll(el as HTMLElement, '.candlestick__body');
       expect(bodies.length).toBe(SAMPLE_DATA.length);
@@ -89,9 +88,8 @@ describe('snice-candlestick', () => {
 
     it('should render candle wicks when data is set', async () => {
       el = await createComponent<SniceCandlestickElement>('snice-candlestick');
-      const tracker = trackRenders(el as HTMLElement);
       el.data = SAMPLE_DATA;
-      await tracker.next();
+      await wait(200);
 
       const wicks = queryShadowAll(el as HTMLElement, '.candlestick__wick');
       expect(wicks.length).toBe(SAMPLE_DATA.length);
@@ -99,15 +97,14 @@ describe('snice-candlestick', () => {
 
     it('should update when data changes', async () => {
       el = await createComponent<SniceCandlestickElement>('snice-candlestick');
-      const tracker = trackRenders(el as HTMLElement);
 
       el.data = SAMPLE_DATA.slice(0, 3);
-      await tracker.next();
+      await wait(200);
       let bodies = queryShadowAll(el as HTMLElement, '.candlestick__body');
       expect(bodies.length).toBe(3);
 
       el.data = SAMPLE_DATA;
-      await tracker.next();
+      await wait(200);
       bodies = queryShadowAll(el as HTMLElement, '.candlestick__body');
       expect(bodies.length).toBe(5);
     });
@@ -122,9 +119,8 @@ describe('snice-candlestick', () => {
   describe('volume bars', () => {
     it('should not show volume bars by default', async () => {
       el = await createComponent<SniceCandlestickElement>('snice-candlestick');
-      const tracker = trackRenders(el as HTMLElement);
       el.data = SAMPLE_DATA;
-      await tracker.next();
+      await wait(200);
 
       const volumes = queryShadowAll(el as HTMLElement, '.candlestick__volume');
       expect(volumes.length).toBe(0);
@@ -132,10 +128,9 @@ describe('snice-candlestick', () => {
 
     it('should show volume bars when showVolume is true', async () => {
       el = await createComponent<SniceCandlestickElement>('snice-candlestick');
-      const tracker = trackRenders(el as HTMLElement);
       el.showVolume = true;
       el.data = SAMPLE_DATA;
-      await tracker.next();
+      await wait(200);
 
       const volumes = queryShadowAll(el as HTMLElement, '.candlestick__volume');
       expect(volumes.length).toBe(SAMPLE_DATA.length);
@@ -145,9 +140,8 @@ describe('snice-candlestick', () => {
   describe('grid lines', () => {
     it('should show grid lines by default', async () => {
       el = await createComponent<SniceCandlestickElement>('snice-candlestick');
-      const tracker = trackRenders(el as HTMLElement);
       el.data = SAMPLE_DATA;
-      await tracker.next();
+      await wait(200);
 
       const gridLines = queryShadowAll(el as HTMLElement, '.candlestick__grid-line');
       expect(gridLines.length).toBeGreaterThan(0);
@@ -155,10 +149,9 @@ describe('snice-candlestick', () => {
 
     it('should hide grid lines when showGrid is false', async () => {
       el = await createComponent<SniceCandlestickElement>('snice-candlestick');
-      const tracker = trackRenders(el as HTMLElement);
       el.showGrid = false;
       el.data = SAMPLE_DATA;
-      await tracker.next();
+      await wait(200);
 
       const gridLines = queryShadowAll(el as HTMLElement, '.candlestick__grid-line');
       expect(gridLines.length).toBe(0);
@@ -168,9 +161,8 @@ describe('snice-candlestick', () => {
   describe('axis labels', () => {
     it('should render y-axis labels', async () => {
       el = await createComponent<SniceCandlestickElement>('snice-candlestick');
-      const tracker = trackRenders(el as HTMLElement);
       el.data = SAMPLE_DATA;
-      await tracker.next();
+      await wait(200);
 
       const yLabels = queryShadowAll(el as HTMLElement, '.candlestick__axis-label--y');
       expect(yLabels.length).toBeGreaterThan(0);
@@ -178,9 +170,8 @@ describe('snice-candlestick', () => {
 
     it('should render x-axis labels', async () => {
       el = await createComponent<SniceCandlestickElement>('snice-candlestick');
-      const tracker = trackRenders(el as HTMLElement);
       el.data = SAMPLE_DATA;
-      await tracker.next();
+      await wait(200);
 
       const xLabels = queryShadowAll(el as HTMLElement, '.candlestick__axis-label--x');
       expect(xLabels.length).toBeGreaterThan(0);
@@ -190,9 +181,8 @@ describe('snice-candlestick', () => {
   describe('tooltip', () => {
     it('should have tooltip element', async () => {
       el = await createComponent<SniceCandlestickElement>('snice-candlestick');
-      const tracker = trackRenders(el as HTMLElement);
       el.data = SAMPLE_DATA;
-      await tracker.next();
+      await wait(200);
 
       const tooltip = queryShadow(el as HTMLElement, '.candlestick__tooltip');
       expect(tooltip).toBeTruthy();
@@ -200,9 +190,8 @@ describe('snice-candlestick', () => {
 
     it('should not be visible by default', async () => {
       el = await createComponent<SniceCandlestickElement>('snice-candlestick');
-      const tracker = trackRenders(el as HTMLElement);
       el.data = SAMPLE_DATA;
-      await tracker.next();
+      await wait(200);
 
       const tooltip = queryShadow(el as HTMLElement, '.candlestick__tooltip--visible');
       expect(tooltip).toBeNull();
@@ -252,17 +241,16 @@ describe('snice-candlestick', () => {
     it('resetZoom should show all data', async () => {
       el = await createComponent<SniceCandlestickElement>('snice-candlestick');
       const data = generateSampleData(100);
-      const tracker = trackRenders(el as HTMLElement);
       el.data = data;
-      await tracker.next();
+      await wait(200);
 
       el.zoomTo(10, 30);
-      await tracker.next();
+      await wait(200);
       let bodies = queryShadowAll(el as HTMLElement, '.candlestick__body');
       expect(bodies.length).toBe(20);
 
       el.resetZoom();
-      await tracker.next();
+      await wait(200);
       bodies = queryShadowAll(el as HTMLElement, '.candlestick__body');
       expect(bodies.length).toBe(100);
     });
@@ -270,12 +258,11 @@ describe('snice-candlestick', () => {
     it('zoomTo should limit visible range', async () => {
       el = await createComponent<SniceCandlestickElement>('snice-candlestick');
       const data = generateSampleData(50);
-      const tracker = trackRenders(el as HTMLElement);
       el.data = data;
-      await tracker.next();
+      await wait(200);
 
       el.zoomTo(5, 15);
-      await tracker.next();
+      await wait(200);
 
       const bodies = queryShadowAll(el as HTMLElement, '.candlestick__body');
       expect(bodies.length).toBe(10);
@@ -285,9 +272,8 @@ describe('snice-candlestick', () => {
   describe('accessibility', () => {
     it('should have role="img" on SVG', async () => {
       el = await createComponent<SniceCandlestickElement>('snice-candlestick');
-      const tracker = trackRenders(el as HTMLElement);
       el.data = SAMPLE_DATA;
-      await tracker.next();
+      await wait(200);
 
       const svg = queryShadow(el as HTMLElement, 'svg[role="img"]');
       expect(svg).toBeTruthy();
@@ -295,9 +281,8 @@ describe('snice-candlestick', () => {
 
     it('should have aria-label on SVG', async () => {
       el = await createComponent<SniceCandlestickElement>('snice-candlestick');
-      const tracker = trackRenders(el as HTMLElement);
       el.data = SAMPLE_DATA;
-      await tracker.next();
+      await wait(200);
 
       const svg = queryShadow(el as HTMLElement, 'svg');
       expect(svg?.getAttribute('aria-label')).toContain('5');
@@ -308,9 +293,8 @@ describe('snice-candlestick', () => {
     it('should handle 200 data points', async () => {
       el = await createComponent<SniceCandlestickElement>('snice-candlestick');
       const data = generateSampleData(200);
-      const tracker = trackRenders(el as HTMLElement);
       el.data = data;
-      await tracker.next();
+      await wait(200);
 
       // Should show only a window (default 80 candles max on init)
       const bodies = queryShadowAll(el as HTMLElement, '.candlestick__body');
