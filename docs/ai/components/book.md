@@ -1,12 +1,11 @@
 # snice-book
 
-Page-flipping book component with spread/single modes, cover page, touch/keyboard navigation, and animated page turns.
+Page-flipping book component with cover page, keyboard navigation, and animated page turns.
 
 ## Properties
 
 ```ts
 currentPage: number = 0          // attr: current-page
-mode: BookMode = 'spread'        // attr: mode — 'single' | 'spread'
 coverImage: string = ''          // attr: cover-image — URL for cover page image
 title: string = ''               // Book title shown on cover
 author: string = ''              // Author name shown on cover
@@ -25,9 +24,9 @@ readonly totalPages: number      // Getter, count of slotted page elements
 
 ## Methods
 
-- `goToPage(page: number): void` — Navigate to specific page (auto-aligns to spread in spread mode)
-- `nextPage(): void` — Advance by 1 (single) or 2 (spread) pages
-- `prevPage(): void` — Go back by 1 or 2 pages
+- `goToPage(page: number): void` — Navigate to specific page
+- `nextPage(): void` — Advance by 1 page
+- `prevPage(): void` — Go back by 1 page
 - `firstPage(): void` — Jump to page 0
 - `lastPage(): void` — Jump to last page
 
@@ -63,7 +62,7 @@ readonly totalPages: number      // Getter, count of slotted page elements
 ## Usage
 
 ```html
-<snice-book title="My Book" author="Jane Doe" cover-image="/cover.jpg" mode="spread">
+<snice-book title="My Book" author="Jane Doe" cover-image="/cover.jpg">
   <div>Page 1 content</div>
   <div>Page 2 content</div>
   <div>Page 3 content</div>

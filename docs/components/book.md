@@ -34,7 +34,6 @@ import 'snice/components/book/snice-book';
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `currentPage` (attr: `current-page`) | `number` | `0` | Current page number (0-indexed) |
-| `mode` | `'single' \| 'spread'` | `'spread'` | Display mode: single page or two-page spread |
 | `coverImage` (attr: `cover-image`) | `string` | `''` | URL for the cover page image |
 | `title` | `string` | `''` | Book title displayed on the cover |
 | `author` | `string` | `''` | Author name displayed on the cover |
@@ -50,9 +49,9 @@ import 'snice/components/book/snice-book';
 
 | Method | Arguments | Description |
 |--------|-----------|-------------|
-| `goToPage()` | `page: number` | Navigate to a specific page. In spread mode, auto-aligns to the correct spread. |
-| `nextPage()` | -- | Advance forward by 1 page (single mode) or 2 pages (spread mode) |
-| `prevPage()` | -- | Go back by 1 page (single mode) or 2 pages (spread mode) |
+| `goToPage()` | `page: number` | Navigate to a specific page |
+| `nextPage()` | -- | Advance forward by 1 page |
+| `prevPage()` | -- | Go back by 1 page |
 | `firstPage()` | -- | Jump to the first page (page 0) |
 | `lastPage()` | -- | Jump to the last page |
 
