@@ -11,6 +11,8 @@ import './snice-cell-progress.ts';
 import './snice-cell-duration.ts';
 import './snice-cell-filesize.ts';
 import './snice-cell-sparkline.ts';
+import './snice-column.ts';
+import './snice-row.ts';
 
 @element('snice-table')
 export class SniceTable extends HTMLElement {

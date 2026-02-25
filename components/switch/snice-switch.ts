@@ -2,8 +2,17 @@ import { element, property, query, on, watch, dispatch, ready, render, styles, h
 import cssContent from './snice-switch.css?inline';
 import type { SwitchSize, SniceSwitchElement } from './snice-switch.types';
 
-@element('snice-switch')
+@element('snice-switch', { formAssociated: true })
 export class SniceSwitch extends HTMLElement implements SniceSwitchElement {
+  internals!: ElementInternals;
+
+  constructor() {
+    super();
+    if (typeof this.attachInternals == 'function') {
+      this.internals = this.attachInternals();
+    }
+  }
+
   @property({ type: Boolean,  })
   checked = false;
 
@@ -108,7 +117,7 @@ export class SniceSwitch extends HTMLElement implements SniceSwitchElement {
     // Set initial states
     if (this.input) {
       this.input.checked = this.checked;
-      
+
       // Set form value
       if (this.name) {
         this.input.name = this.name;
@@ -117,7 +126,11 @@ export class SniceSwitch extends HTMLElement implements SniceSwitchElement {
         this.input.value = this.value;
       }
     }
-    
+
+    if (this.internals) {
+      this.internals.setFormValue(this.checked ? this.value : null);
+    }
+
     // Update state labels if provided
     this.updateStateLabels();
   }
@@ -146,6 +159,9 @@ export class SniceSwitch extends HTMLElement implements SniceSwitchElement {
     if (this.input) {
       this.input.checked = this.checked;
       this.input.setAttribute('aria-checked', String(this.checked));
+    }
+    if (this.internals) {
+      this.internals.setFormValue(this.checked ? this.value : null);
     }
   }
 

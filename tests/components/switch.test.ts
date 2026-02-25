@@ -258,4 +258,14 @@ describe('snice-switch', () => {
     const input = queryShadow(switchEl as HTMLElement, '.switch-input') as HTMLInputElement;
     expect(input?.value).toBe('updated');
   });
+
+  // Note: happy-dom does not support ElementInternals/attachInternals,
+  // so FormData integration cannot be tested here. The form-associated
+  // setup is verified structurally below.
+
+  it('should be form-associated', async () => {
+    switchEl = await createComponent<SniceSwitchElement>('snice-switch');
+    const ctor = (switchEl as any).constructor;
+    expect(ctor.formAssociated).toBe(true);
+  });
 });
