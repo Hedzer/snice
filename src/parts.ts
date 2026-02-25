@@ -1167,17 +1167,20 @@ export class ConditionalCasePart extends Part {
   constructor(caseElement: Element) {
     super();
     this.caseElement = caseElement;
+    (this.caseElement as HTMLElement).style.display = 'contents';
 
     // Build map and store children in fragments initially
     for (const child of Array.from(this.caseElement.children)) {
       const childTag = child.tagName.toLowerCase();
       if (childTag === 'when') {
+        (child as HTMLElement).style.display = 'contents';
         const whenValue = child.getAttribute('value') || '';
         this.childrenMap.set(whenValue, child);
         const fragment = document.createDocumentFragment();
         fragment.appendChild(child);
         this.fragments.set(child, fragment);
       } else if (childTag === 'default') {
+        (child as HTMLElement).style.display = 'contents';
         this.defaultChild = child;
         const fragment = document.createDocumentFragment();
         fragment.appendChild(child);
