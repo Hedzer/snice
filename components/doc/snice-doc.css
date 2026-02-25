@@ -23,6 +23,7 @@
   background: var(--snice-doc-sidebar-background, #f6f8fa);
   border-bottom: 1px solid var(--snice-doc-border, #e1e4e8);
   flex-wrap: wrap;
+  position: relative;
 }
 
 .toolbar-btn {
@@ -231,6 +232,47 @@
   border-top: 1px solid var(--snice-doc-border, #e1e4e8);
 }
 
+/* Download menu */
+.download-menu {
+  position: absolute;
+  right: 12px;
+  top: 100%;
+  background: var(--snice-doc-background, #fff);
+  border: 1px solid var(--snice-doc-border, #e1e4e8);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  min-width: 160px;
+  padding: 4px;
+}
+
+.download-menu-item {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  font-size: 14px;
+  color: var(--snice-doc-text-color, #333);
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.download-menu-item:hover {
+  background: var(--snice-doc-menu-hover, #e8eaed);
+}
+
+/* Icon font support */
+.toolbar-btn .material-icons {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.toolbar-btn .fa-solid {
+  font-size: 14px;
+}
+
 /* Readonly state */
 :host([readonly]) .toolbar,
 :host([readonly]) .doc-sidebar {
@@ -239,4 +281,20 @@
 
 :host([readonly]) .doc-editor {
   cursor: default;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  :host {
+    --snice-doc-text-color: #e6edf3;
+    --snice-doc-background: #0d1117;
+    --snice-doc-sidebar-background: #161b22;
+    --snice-doc-border: #30363d;
+    --snice-doc-menu-hover: #21262d;
+    --snice-doc-primary-color: #58a6ff;
+    --snice-doc-muted-color: #8b949e;
+    --snice-doc-placeholder-color: #484f58;
+    --snice-doc-inline-code-background: rgba(110, 118, 129, 0.4);
+    --snice-doc-link-color: #58a6ff;
+  }
 }

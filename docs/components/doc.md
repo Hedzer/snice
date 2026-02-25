@@ -9,10 +9,12 @@ A simple WYSIWYG document editor component with formatting toolbar and content i
 - **WYSIWYG editing** - Direct HTML content editing
 - **Formatting toolbar** - Bold, italic, underline, strikethrough, headings, lists
 - **Content insertion** - Links, images, tables, dividers
-- **Sidebar controls** - Quick access to insert images, tables, and dividers
+- **Download/Export** - Save as HTML, Markdown, or Plain Text
+- **Icon sets** - Default text labels, Material Icons, or Font Awesome
 - **Paste image support** - Paste images directly from clipboard
 - **Keyboard shortcuts** - Ctrl/Cmd+B for bold, Ctrl/Cmd+I for italic, Ctrl/Cmd+U for underline
 - **Readonly mode** - Display documents without editing capabilities
+- **Dark mode** - Automatic dark mode via prefers-color-scheme
 - **Customizable styling** - CSS custom properties for theming
 
 ## Basic Usage
@@ -36,10 +38,12 @@ A simple WYSIWYG document editor component with formatting toolbar and content i
 
 ## Properties
 
-| Property      | Attribute     | Type      | Default              | Description                      |
-| ------------- | ------------- | --------- | -------------------- | -------------------------------- |
-| `placeholder` | `placeholder` | `string`  | `"Start typing..."` | Placeholder text when empty      |
-| `readonly`    | `readonly`    | `boolean` | `false`              | Whether the editor is readonly   |
+| Property          | Attribute          | Type      | Default              | Description                                      |
+| ----------------- | ------------------ | --------- | -------------------- | ------------------------------------------------ |
+| `placeholder`     | `placeholder`      | `string`  | `"Start typing..."`  | Placeholder text when empty                      |
+| `readonly`        | `readonly`         | `boolean` | `false`              | Whether the editor is readonly                   |
+| `icons`           | `icons`            | `string`  | `"default"`          | Icon set: `"default"`, `"material"`, `"fontawesome"` |
+| `iconStylesheet`  | `icon-stylesheet`  | `string`  | `""`                 | Custom URL for icon font CSS                     |
 
 ## Methods
 
@@ -49,7 +53,6 @@ Get the current HTML content of the editor.
 
 ```javascript
 const html = editor.getHTML();
-console.log(html);
 ```
 
 ### `setHTML(html: string): void`
@@ -61,6 +64,32 @@ editor.setHTML(`
   <h1>Welcome!</h1>
   <p>This is a <b>simple</b> document editor.</p>
 `);
+```
+
+### `getText(): string`
+
+Get the document content as plain text.
+
+```javascript
+const text = editor.getText();
+```
+
+### `getMarkdown(): string`
+
+Get the document content converted to Markdown. Supports headings, bold, italic, strikethrough, links, images, lists, tables, horizontal rules, and inline code.
+
+```javascript
+const md = editor.getMarkdown();
+```
+
+### `downloadAs(format: 'html' | 'markdown' | 'text', filename?: string): void`
+
+Download the document in the specified format. If no filename is provided, defaults to `document.html`, `document.md`, or `document.txt`.
+
+```javascript
+editor.downloadAs('markdown', 'my-document.md');
+editor.downloadAs('html');
+editor.downloadAs('text', 'notes.txt');
 ```
 
 ### `clear(): void`
@@ -83,14 +112,45 @@ The toolbar includes:
 - **• / 1.** - Bulleted and numbered lists
 - **🔗** - Insert link
 - **🖼** - Insert image
+- **📊** - Insert table
+- **―** - Insert divider
+- **⬇** - Download menu (HTML, Markdown, Plain Text)
 
-## Sidebar Features
+## Icon Sets
 
-The collapsible sidebar provides quick access to:
+The `icons` property controls which icon set the toolbar uses:
 
-- **Image** - Insert image via URL dialog
-- **Table** - Insert table with custom rows/columns
-- **Divider** - Insert horizontal rule
+### Default (text/emoji)
+
+```html
+<snice-doc></snice-doc>
+```
+
+Uses text labels (B, I, U, H1, etc.) and emoji for action buttons.
+
+### Material Icons
+
+```html
+<snice-doc icons="material"></snice-doc>
+```
+
+Uses [Google Material Icons](https://fonts.google.com/icons). The stylesheet is auto-loaded from Google Fonts CDN. To use a self-hosted version:
+
+```html
+<snice-doc icons="material" icon-stylesheet="/assets/material-icons.css"></snice-doc>
+```
+
+### Font Awesome
+
+```html
+<snice-doc icons="fontawesome"></snice-doc>
+```
+
+Uses [Font Awesome 6](https://fontawesome.com/icons) solid icons. The stylesheet is auto-loaded from cdnjs. To use a self-hosted version:
+
+```html
+<snice-doc icons="fontawesome" icon-stylesheet="/assets/fontawesome/css/all.min.css"></snice-doc>
+```
 
 ## Keyboard Shortcuts
 
@@ -128,7 +188,37 @@ snice-doc {
 }
 ```
 
+Dark mode is supported automatically via `prefers-color-scheme: dark`.
+
 ## Examples
+
+### Export and Download
+
+```html
+<snice-doc id="editor"></snice-doc>
+<button id="save-md">Save as Markdown</button>
+<button id="save-html">Save as HTML</button>
+
+<script type="module">
+  import 'snice';
+
+  const editor = document.getElementById('editor');
+
+  document.getElementById('save-md').addEventListener('click', () => {
+    editor.downloadAs('markdown', 'my-doc.md');
+  });
+
+  document.getElementById('save-html').addEventListener('click', () => {
+    editor.downloadAs('html', 'my-doc.html');
+  });
+</script>
+```
+
+### Material Icons
+
+```html
+<snice-doc icons="material"></snice-doc>
+```
 
 ### Readonly Document Viewer
 
@@ -146,30 +236,6 @@ snice-doc {
 </script>
 ```
 
-### Rich Content Document
-
-```html
-<snice-doc id="editor"></snice-doc>
-
-<script type="module">
-  import 'snice';
-
-  const editor = document.getElementById('editor');
-  editor.setHTML(`
-    <h1>Welcome to the Document Editor!</h1>
-    <p>This is a simple document editor with:</p>
-    <ul>
-      <li><b>Bold</b>, <i>italic</i>, <u>underline</u> formatting</li>
-      <li>Headings (H1, H2, H3)</li>
-      <li>Bullet and numbered lists</li>
-      <li>Images and links</li>
-      <li>Tables</li>
-    </ul>
-    <p>Try typing with <b>bold</b> and hitting Enter - the formatting continues naturally!</p>
-  `);
-</script>
-```
-
 ### Save and Load Content
 
 ```html
@@ -183,38 +249,14 @@ snice-doc {
   const editor = document.getElementById('editor');
 
   document.getElementById('save').addEventListener('click', () => {
-    const html = editor.getHTML();
-    localStorage.setItem('document', html);
-    console.log('Saved!');
+    localStorage.setItem('document', editor.getHTML());
   });
 
   document.getElementById('load').addEventListener('click', () => {
     const html = localStorage.getItem('document');
-    if (html) {
-      editor.setHTML(html);
-      console.log('Loaded!');
-    }
+    if (html) editor.setHTML(html);
   });
 </script>
-```
-
-### Custom Styling
-
-```html
-<style>
-  snice-doc.dark {
-    --snice-doc-text-color: #e6edf3;
-    --snice-doc-background: #0d1117;
-    --snice-doc-muted-color: #7d8590;
-    --snice-doc-placeholder-color: #484f58;
-    --snice-doc-toolbar-background: #161b22;
-    --snice-doc-toolbar-border: #30363d;
-    --snice-doc-sidebar-background: #161b22;
-    --snice-doc-sidebar-border: #30363d;
-  }
-</style>
-
-<snice-doc class="dark"></snice-doc>
 ```
 
 ## Accessibility
@@ -240,4 +282,6 @@ import type { SniceDoc } from 'snice/doc';
 
 const editor = document.querySelector<SniceDoc>('snice-doc');
 const html = editor?.getHTML();
+const markdown = editor?.getMarkdown();
+editor?.downloadAs('markdown', 'export.md');
 ```
