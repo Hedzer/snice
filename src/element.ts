@@ -92,10 +92,11 @@ export function applyElementFunctionality(constructor: any) {
       observedAttributes.push('controller');
     }
     
-    // Add all properties to observed attributes (not just reflected ones)
+    // Add all properties to observed attributes (skip attribute: false)
     const properties = constructor[PROPERTIES];
     if (properties) {
       for (const [propName, propOptions] of properties) {
+        if (propOptions.attribute === false) continue;
         const attributeName = typeof propOptions.attribute === 'string' ? propOptions.attribute : propName.toLowerCase();
         if (!observedAttributes.includes(attributeName)) {
           observedAttributes.push(attributeName);
@@ -192,6 +193,8 @@ export function applyElementFunctionality(constructor: any) {
         const properties = constructor[PROPERTIES];
         if (properties) {
           for (const [propName, propOptions] of properties) {
+            // Skip properties that opted out of attribute sync
+            if (propOptions.attribute === false) continue;
             // Check for attribute using proper attribute name
             const attributeName = typeof propOptions.attribute === 'string' ? propOptions.attribute : propName.toLowerCase();
             if (this.hasAttribute(attributeName)) {
@@ -537,6 +540,17 @@ export function property(options?: PropertyOptions) {
       if (!Object.hasOwnProperty.call(this.constructor.prototype, propertyKey)) {
         const descriptor: PropertyDescriptor = {
           get(this: any) {
+            // attribute: false — use internal storage only, no DOM sync
+            if (finalOptions?.attribute === false) {
+              if (this[PROPERTY_VALUES] && propertyKey in this[PROPERTY_VALUES]) {
+                return this[PROPERTY_VALUES][propertyKey];
+              }
+              if (this[PRE_INIT_PROPERTY_VALUES]?.has(propertyKey)) {
+                return this[PRE_INIT_PROPERTY_VALUES].get(propertyKey);
+              }
+              return initialValue;
+            }
+
             // Always read from DOM attribute - no internal state
             const attributeName = typeof finalOptions?.attribute === 'string' ? finalOptions?.attribute : propertyKey.toLowerCase();
             const attrValue = this.getAttribute?.(attributeName);
@@ -581,30 +595,38 @@ export function property(options?: PropertyOptions) {
               return;
             }
 
-            // Reflect to DOM - properties are backed by attributes
-            const attributeName = typeof finalOptions.attribute === 'string' ? finalOptions.attribute : propertyKey.toLowerCase();
-            const attributeValue = valueToAttribute(newValue, finalOptions, initialValue);
-
-            // Mark as explicitly set for boolean handling
-            if (!this[EXPLICITLY_SET_PROPERTIES]) {
-              this[EXPLICITLY_SET_PROPERTIES] = new Set();
-            }
-            this[EXPLICITLY_SET_PROPERTIES].add(propertyKey);
-
-            // Flag to prevent attributeChangedCallback from triggering watchers for this change
-            if (!this._settingFromProperty) this._settingFromProperty = new Set();
-            this._settingFromProperty.add(attributeName.toLowerCase());
-
-            if (attributeValue === null) {
-              this.removeAttribute?.(attributeName);
+            // attribute: false — store internally, skip DOM reflection
+            if (finalOptions?.attribute === false) {
+              if (!this[PROPERTY_VALUES]) {
+                this[PROPERTY_VALUES] = {};
+              }
+              this[PROPERTY_VALUES][propertyKey] = newValue;
             } else {
-              this.setAttribute?.(attributeName, attributeValue);
-            }
+              // Reflect to DOM - properties are backed by attributes
+              const attributeName = typeof finalOptions.attribute === 'string' ? finalOptions.attribute : propertyKey.toLowerCase();
+              const attributeValue = valueToAttribute(newValue, finalOptions, initialValue);
 
-            // Remove the flag after a short delay to allow attributeChangedCallback to run
-            setTimeout(() => {
-              this._settingFromProperty?.delete(attributeName.toLowerCase());
-            }, 0);
+              // Mark as explicitly set for boolean handling
+              if (!this[EXPLICITLY_SET_PROPERTIES]) {
+                this[EXPLICITLY_SET_PROPERTIES] = new Set();
+              }
+              this[EXPLICITLY_SET_PROPERTIES].add(propertyKey);
+
+              // Flag to prevent attributeChangedCallback from triggering watchers for this change
+              if (!this._settingFromProperty) this._settingFromProperty = new Set();
+              this._settingFromProperty.add(attributeName.toLowerCase());
+
+              if (attributeValue === null) {
+                this.removeAttribute?.(attributeName);
+              } else {
+                this.setAttribute?.(attributeName, attributeValue);
+              }
+
+              // Remove the flag after a short delay to allow attributeChangedCallback to run
+              setTimeout(() => {
+                this._settingFromProperty?.delete(attributeName.toLowerCase());
+              }, 0);
+            }
 
             // Trigger watchers directly with proper parsed values
             const constructor = this.constructor as any;
