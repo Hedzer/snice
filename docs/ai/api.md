@@ -258,7 +258,7 @@ attr="${val}" // Attribute
 interface TemplateResult { readonly _$litType$: number; }
 interface CSSResult { cssText: string; }
 interface OnOptions { debounce?, throttle?, preventDefault?, stopPropagation?, once?, capture?, passive?, target? }
-interface RenderOptions { debounce?, throttle?, once?, sync? }
+interface RenderOptions { debounce?, throttle?, once?, sync?, differential? }
 interface Layout { update(context, placards, route, params) }
 interface Placard { name, title, icon?, description?, order?, show?, visibleOn?, parent?, group?, searchTerms?, hotkeys?, breadcrumbs?, tooltip? }
 // Guards: synchronous only, receive context AND params
@@ -281,8 +281,6 @@ import {
   ready, dispose, moved, adopted,
   Router,
   debounce, throttle, once, memoize,
-  useNativeElementControllers,   // Enable controller= on native HTML elements
-  cleanupNativeElementControllers,
-  attachController, detachController, getController
+  useNativeElementControllers    // Enable controller= on native HTML elements
 } from 'snice';
 ```

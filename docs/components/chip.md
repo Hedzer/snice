@@ -57,22 +57,22 @@ Use the `icon` slot for external CSS-based icon fonts:
 
 ## Events
 
-#### `click`
+#### `chip-click`
 Fired when the chip is clicked (not the remove button).
 
 **Usage:**
 ```typescript
-chip.addEventListener('click', () => {
+chip.addEventListener('chip-click', () => {
   console.log('Chip clicked');
 });
 ```
 
-#### `remove`
+#### `chip-remove`
 Fired when the remove button is clicked.
 
 **Usage:**
 ```typescript
-chip.addEventListener('remove', () => {
+chip.addEventListener('chip-remove', () => {
   chip.remove(); // Remove from DOM
 });
 ```

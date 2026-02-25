@@ -434,17 +434,6 @@ element.addEventListener('@snice/controller-attached', (e: CustomEvent) => {
 });
 ```
 
-### Via getController()
-
-```typescript
-import { getController } from 'snice';
-
-const ctrl = getController<MyController>(element);
-if (ctrl) {
-  ctrl.doSomething();
-}
-```
-
 ### Auto-Cleanup
 
 The framework automatically cleans up `@on` handlers, observers, and `@respond` handlers during detach. Manual cleanup in `detach()` is only needed for resources you manage yourself (WebSockets, intervals, manual event listeners).

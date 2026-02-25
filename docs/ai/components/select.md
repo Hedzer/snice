@@ -86,7 +86,7 @@ select.selectOption('1');
 
 ## Notes
 
-- Options must be direct children of select
+- Options can be nested (uses querySelectorAll, not just direct children)
 - Multiple selection values are comma-separated
 - Hidden native select for form submission
 - Dropdown closes outside click

@@ -2,7 +2,7 @@
 
 # Button Component
 
-The button component provides an interactive element for user actions. It supports multiple variants, sizes, states (loading, disabled), styles (outline, pill, circle), icons, and can function as both a button and link.
+The button component provides an interactive element for user actions. It supports multiple variants, sizes, states (loading, disabled), styles (outline, pill, circle), and icons. When `href` is set, clicking navigates via `window.location` (not rendered as an anchor).
 
 ## Table of Contents
 - [Basic Usage](#basic-usage)
@@ -33,7 +33,7 @@ import 'snice/components/button/snice-button';
 | `outline` | `boolean` | `false` | Use outline style |
 | `pill` | `boolean` | `false` | Use pill (fully rounded) shape |
 | `circle` | `boolean` | `false` | Use circle shape (icon only) |
-| `href` | `string` | `''` | URL to navigate to (renders as link) |
+| `href` | `string` | `''` | URL to navigate to (uses window.location, not an anchor tag) |
 | `target` | `string` | `''` | Link target attribute |
 | `download` | `string` | `''` | Download attribute for file downloads |
 | `icon` | `string` | `''` | Icon (URL, image file, emoji, or font ligature) |

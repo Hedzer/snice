@@ -58,7 +58,7 @@ Use the `label-on` and `label-off` attributes for text inside the switch track.
 
 ### In a Form
 
-The switch is form-associated and participates in form submission.
+The switch contains a native `<input type="checkbox">` internally, which participates in form submission when `name` is set.
 
 ```html
 <form id="settings-form">

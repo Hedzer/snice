@@ -9,7 +9,7 @@ App launcher grid like Google's app drawer or a phone home screen.
 tiles: AppTile[] = [];           // Programmatic tile data
 columns: number = 4;             // Grid columns
 size: 'sm' | 'md' | 'lg' = 'md'; // Tile size
-variant: 'grid' | 'list' = 'grid'; // Layout variant
+variant: 'grid' | 'list' | 'compact' = 'grid'; // Layout variant
 
 // AppTile interface
 interface AppTile {

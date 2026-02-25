@@ -65,5 +65,5 @@ radio.addEventListener('radio-change', (e) => {
 - Automatic radio group management by name
 - 3 sizes
 - Loading state with spinner
-- Keyboard accessible (arrow keys navigate group)
-- Form-associated custom element
+- Keyboard accessible (arrow keys navigate group, wraps around)
+- Contains native `<input type="radio">` for form participation

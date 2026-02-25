@@ -5,10 +5,17 @@ Lightweight GFM-compatible markdown renderer with built-in sanitization.
 ## Properties
 
 ```ts
-content: string                          // Markdown source text
 sanitize: boolean                        // Sanitize HTML output (default: true)
 theme: 'default' | 'github'             // Visual theme
 ```
+
+## Methods
+
+- `setContent(markdown: string)` — Set markdown source programmatically
+
+## Input
+
+Content via slotted text or `setContent()`. No `content` attribute/property.
 
 ## Events
 
@@ -47,15 +54,15 @@ theme: 'default' | 'github'             // Visual theme
 ## Usage
 
 ```html
-<snice-markdown
-  content="# Hello\n\nThis is **bold** and *italic*."
-  theme="github"
-></snice-markdown>
+<snice-markdown># Hello
+
+This is **bold** and *italic*.
+</snice-markdown>
 ```
 
 ```js
 const md = document.querySelector('snice-markdown');
-md.content = '## Dynamic Content\n\n- Item 1\n- Item 2';
+md.setContent('## Dynamic Content\n\n- Item 1\n- Item 2');
 
 md.addEventListener('link-click', (e) => {
   console.log('Navigating to:', e.detail.href);

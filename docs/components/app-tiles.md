@@ -125,7 +125,7 @@ Use the `badge` attribute to display a notification badge on a tile.
 | `tiles` | `AppTile[]` | `[]` | Array of tile data objects (programmatic mode) |
 | `columns` | `number` | `4` | Number of grid columns |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Tile size |
-| `variant` | `'grid' \| 'list'` | `'grid'` | Layout variant |
+| `variant` | `'grid' \| 'list' \| 'compact'` | `'grid'` | Layout variant |
 
 ### AppTile Interface
 

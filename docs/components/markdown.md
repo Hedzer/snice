@@ -22,7 +22,7 @@ import 'snice/components/markdown/snice-markdown';
 ```
 
 ```html
-<snice-markdown content="# Hello World"></snice-markdown>
+<snice-markdown># Hello World</snice-markdown>
 ```
 
 ## Importing
@@ -42,7 +42,6 @@ import 'snice/components/markdown/snice-markdown';
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `content` | `string` | `''` | The markdown source text to render |
 | `sanitize` | `boolean` | `true` | Whether to sanitize the HTML output to prevent XSS |
 | `theme` | `'default' \| 'github'` | `'default'` | Visual theme for the rendered output |
 
@@ -88,23 +87,22 @@ The component supports GitHub Flavored Markdown (GFM):
 
 ### Rendering Static Content
 
-Use the `content` attribute to render a markdown string.
+Use slotted text to render markdown:
 
 ```html
-<snice-markdown
-  content="# Welcome
+<snice-markdown># Welcome
 
 This is **bold** and *italic* text.
 
 - Item one
 - Item two
-- Item three"
-></snice-markdown>
+- Item three
+</snice-markdown>
 ```
 
 ### Dynamic Content Updates
 
-Set the `content` property via JavaScript to update the rendered markdown dynamically.
+Use `setContent()` to update the rendered markdown programmatically:
 
 ```html
 <snice-markdown id="preview"></snice-markdown>
@@ -119,11 +117,11 @@ Type some **markdown** and see it render in real time.</textarea>
   const editor = document.getElementById('editor');
 
   // Set initial content
-  preview.content = editor.value;
+  preview.setContent(editor.value);
 
   // Update on input
   editor.addEventListener('input', () => {
-    preview.content = editor.value;
+    preview.setContent(editor.value);
   });
 </script>
 ```
@@ -133,9 +131,7 @@ Type some **markdown** and see it render in real time.</textarea>
 Use the `theme="github"` attribute for GitHub-style markdown rendering.
 
 ```html
-<snice-markdown
-  theme="github"
-  content="# GitHub Style
+<snice-markdown theme="github"># GitHub Style
 
 > This blockquote uses GitHub-style rendering.
 
@@ -143,11 +139,7 @@ Use the `theme="github"` attribute for GitHub-style markdown rendering.
 |---------|-----------|
 | Tables  | Yes       |
 | GFM     | Yes       |
-
-```javascript
-console.log('Syntax highlighting');
-```"
-></snice-markdown>
+</snice-markdown>
 ```
 
 ### Intercepting Link Clicks
@@ -155,10 +147,7 @@ console.log('Syntax highlighting');
 Listen for the `link-click` event to handle navigation within your application instead of following the default link behavior.
 
 ```html
-<snice-markdown
-  id="docs"
-  content="Check out [the documentation](/docs) or visit [our website](https://example.com)."
-></snice-markdown>
+<snice-markdown id="docs">Check out [the documentation](/docs) or visit [our website](https://example.com).</snice-markdown>
 
 <script type="module">
   import 'snice/components/markdown/snice-markdown';
@@ -184,20 +173,9 @@ Listen for the `link-click` event to handle navigation within your application i
 Render markdown that includes fenced code blocks and GFM tables.
 
 ```html
-<snice-markdown
-  content="## API Response
+<snice-markdown>## API Response
 
 The endpoint returns the following JSON:
-
-```json
-{
-  &quot;id&quot;: 1,
-  &quot;name&quot;: &quot;Example&quot;,
-  &quot;active&quot;: true
-}
-```
-
-### Status Codes
 
 | Code | Meaning |
 |------|---------|
@@ -207,8 +185,8 @@ The endpoint returns the following JSON:
 
 - [x] GET endpoint
 - [x] POST endpoint
-- [ ] DELETE endpoint"
-></snice-markdown>
+- [ ] DELETE endpoint
+</snice-markdown>
 ```
 
 ## Accessibility

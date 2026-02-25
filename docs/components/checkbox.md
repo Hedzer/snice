@@ -2,7 +2,7 @@
 
 # Checkbox Component
 
-The checkbox component provides a form-associated checkbox input with support for checked, indeterminate, and invalid states, multiple sizes, and full keyboard accessibility.
+The checkbox component provides a checkbox input with support for checked, indeterminate, and invalid states, multiple sizes, and full keyboard accessibility.
 
 ## Table of Contents
 - [Basic Usage](#basic-usage)
@@ -60,7 +60,7 @@ checkbox.click();
 
 ## Events
 
-#### `change`
+#### `checkbox-change`
 Fired when the checkbox state changes.
 
 **Event Detail:**
@@ -706,7 +706,7 @@ checkbox.addEventListener('change', (e) => {
 
 ## Form Integration
 
-The checkbox component is a form-associated custom element and works seamlessly with standard HTML forms:
+The checkbox component is not form-associated (no `ElementInternals`). Use a hidden input or listen for `checkbox-change` events to integrate with forms:
 
 ```html
 <form>
