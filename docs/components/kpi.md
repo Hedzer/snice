@@ -267,10 +267,9 @@ The component uses these CSS custom properties:
 
 ## Accessibility
 
-- Labels provide context for screen readers
-- Sentiment indicators have clear visual differentiation
+- Labels provide context for displayed values
+- Sentiment indicators have clear visual differentiation (color + icon)
 - Sufficient color contrast for all text elements
-- Keyboard navigation supported through standard focus
 
 ## Performance
 

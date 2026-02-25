@@ -4,7 +4,7 @@
 
 `<snice-pdf-viewer>`
 
-A PDF document viewer with a built-in toolbar for page navigation, zoom control, fit modes, printing, and downloading. Uses PDF.js loaded from CDN for rendering.
+A PDF document viewer with a built-in toolbar for page navigation, zoom control, fit modes, printing, and downloading. Uses a vendored PDF.js bundle included with the component.
 
 ## Table of Contents
 - [Basic Usage](#basic-usage)

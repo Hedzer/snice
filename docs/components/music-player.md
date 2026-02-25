@@ -189,7 +189,8 @@ interface Track {
 | `player-shuffle-change` | `{ shuffle: boolean }` | Shuffle mode toggled |
 | `player-repeat-change` | `{ repeat: string }` | Repeat mode changed |
 | `player-volume-change` | `{ volume: number }` | Volume level changed |
-| `@snice/player-time-update` | `{ currentTime: number, duration: number }` | Playback time updated |
+| `player-seek` | `{ time: number }` | Seeked to a new position |
+| `player-time-update` | `{ currentTime: number, duration: number }` | Playback time updated |
 | `player-error` | `{ error: any }` | An error occurred |
 
 ## Methods

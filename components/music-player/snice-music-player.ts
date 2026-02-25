@@ -106,6 +106,7 @@ export class SniceMusicPlayer extends HTMLElement implements SniceMusicPlayerEle
 
     this.audioElement.addEventListener('timeupdate', () => {
       this.currentTime = this.audioElement!.currentTime;
+      this.emitTimeUpdate();
     });
 
     // Load first track if available
@@ -681,6 +682,11 @@ export class SniceMusicPlayer extends HTMLElement implements SniceMusicPlayerEle
   @dispatch('player-repeat-change', { bubbles: true, composed: true })
   private emitRepeatChange(repeat: RepeatMode) {
     return { player: this, repeat };
+  }
+
+  @dispatch('player-time-update', { bubbles: true, composed: true })
+  private emitTimeUpdate() {
+    return { player: this, currentTime: this.currentTime, duration: this.duration };
   }
 
   @dispatch('player-error', { bubbles: true, composed: true })

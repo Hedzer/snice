@@ -62,7 +62,8 @@ interface Track {
 - `player-shuffle-change` → `{ shuffle }`
 - `player-repeat-change` → `{ repeat }`
 - `player-volume-change` → `{ volume }`
-- `@snice/player-time-update` → `{ currentTime, duration }`
+- `player-seek` → `{ time }`
+- `player-time-update` → `{ currentTime, duration }`
 - `player-error` → `{ error }`
 
 ## Usage

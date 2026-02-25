@@ -1,6 +1,6 @@
 import { element, property, query, watch, dispatch, ready, on, render, styles, html, css } from 'snice';
 import cssContent from './snice-book.css?inline';
-import type { SniceBookElement, PageTurnDirection, PageTurnDetail } from './snice-book.types';
+import type { SniceBookElement, PageTurnDirection, PageTurnDetail, PageFlipStartDetail } from './snice-book.types';
 
 @element('snice-book-page')
 export class SniceBookPage extends HTMLElement {
@@ -150,10 +150,14 @@ export class SniceBook extends HTMLElement implements SniceBookElement {
       radio.addEventListener('change', () => {
         const idx = (radio as HTMLInputElement).dataset.page;
         const old = this.currentPage;
-        this.currentPage = idx !== undefined ? Number(idx) + 1 : 0;
-        if (old !== this.currentPage) {
-          const direction: PageTurnDirection = this.currentPage > old ? 'forward' : 'backward';
-          this.emitPageTurn({ page: this.currentPage, direction });
+        const newPage = idx !== undefined ? Number(idx) + 1 : 0;
+        if (old !== newPage) {
+          const direction: PageTurnDirection = newPage > old ? 'forward' : 'backward';
+          this.emitPageFlipStart({ fromPage: old, toPage: newPage, direction });
+          this.currentPage = newPage;
+          this.emitPageTurn({ page: newPage, direction });
+          const duration = parseFloat(getComputedStyle(this).getPropertyValue('--book-flip-duration') || '0.6') * 1000;
+          setTimeout(() => this.emitPageFlipEnd({ page: newPage, direction }), duration);
         }
       });
     });
@@ -172,9 +176,14 @@ export class SniceBook extends HTMLElement implements SniceBookElement {
 
   goToPage(page: number): void {
     const old = this.currentPage;
-    this.currentPage = Math.max(0, Math.min(page, this.totalPages));
-    if (old !== this.currentPage) {
-      this.emitPageTurn({ page: this.currentPage, direction: this.currentPage > old ? 'forward' : 'backward' });
+    const newPage = Math.max(0, Math.min(page, this.totalPages));
+    if (old !== newPage) {
+      const direction: PageTurnDirection = newPage > old ? 'forward' : 'backward';
+      this.emitPageFlipStart({ fromPage: old, toPage: newPage, direction });
+      this.currentPage = newPage;
+      this.emitPageTurn({ page: newPage, direction });
+      const duration = parseFloat(getComputedStyle(this).getPropertyValue('--book-flip-duration') || '0.6') * 1000;
+      setTimeout(() => this.emitPageFlipEnd({ page: newPage, direction }), duration);
     }
   }
 
@@ -200,6 +209,16 @@ export class SniceBook extends HTMLElement implements SniceBookElement {
 
   @dispatch('page-turn', { bubbles: true, composed: true })
   private emitPageTurn(detail?: PageTurnDetail): PageTurnDetail {
+    return detail!;
+  }
+
+  @dispatch('page-flip-start', { bubbles: true, composed: true })
+  private emitPageFlipStart(detail?: PageFlipStartDetail): PageFlipStartDetail {
+    return detail!;
+  }
+
+  @dispatch('page-flip-end', { bubbles: true, composed: true })
+  private emitPageFlipEnd(detail?: PageTurnDetail): PageTurnDetail {
     return detail!;
   }
 

@@ -509,10 +509,8 @@ chart.labels = ['Q1', 'Q2', 'Q3', 'Q4', 'Q5'];
 
 ## Accessibility
 
-- Keyboard navigation support
-- ARIA labels for chart elements
-- Screen reader friendly data tables
-- High contrast color support
+- Legend items are clickable to toggle dataset visibility
+- Tooltip shows data values on hover
 
 ## Browser Support
 

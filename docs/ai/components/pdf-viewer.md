@@ -1,6 +1,6 @@
 # snice-pdf-viewer
 
-PDF document viewer with toolbar (page navigation, zoom, fit modes, download, print). Uses PDF.js loaded from CDN.
+PDF document viewer with toolbar (page navigation, zoom, fit modes, download, print). Uses a vendored PDF.js bundle.
 
 ## Properties
 

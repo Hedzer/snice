@@ -21,6 +21,14 @@ export interface PageTurnDetail {
   direction: PageTurnDirection;
 }
 
+export interface PageFlipStartDetail {
+  fromPage: number;
+  toPage: number;
+  direction: PageTurnDirection;
+}
+
 export interface SniceBookEventMap {
   'page-turn': CustomEvent<PageTurnDetail>;
+  'page-flip-start': CustomEvent<PageFlipStartDetail>;
+  'page-flip-end': CustomEvent<PageTurnDetail>;
 }
