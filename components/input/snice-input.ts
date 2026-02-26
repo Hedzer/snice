@@ -126,14 +126,14 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
     const clearButtonClasses = ['clear-button', this.suffixIcon || (this.type === 'password' && this.password) ? 'clear-button--with-suffix' : ''].filter(Boolean).join(' ');
 
     return html/*html*/`
-      <div class="input-wrapper">
+      <div class="input-wrapper" part="wrapper">
         <if ${this.label}>
-          <label class="${labelClasses}">
+          <label class="${labelClasses}" part="label">
             ${this.label}
           </label>
         </if>
 
-        <div class="input-container">
+        <div class="input-container" part="container">
           <span class="icon-slot icon-slot--prefix" part="prefix-icon">
             <slot name="prefix-icon">
               <if ${this.prefixIcon}>

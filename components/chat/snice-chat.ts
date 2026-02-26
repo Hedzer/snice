@@ -354,8 +354,8 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
   @render()
   render() {
     return html/*html*/`
-      <div class="chat-container">
-        <div class="messages-area">
+      <div part="base" class="chat-container">
+        <div part="messages" class="messages-area">
           ${this.messages.length === 0
             ? this.renderEmptyState()
             : this.messages.map((msg) => this.renderMessage(msg))}
@@ -538,9 +538,10 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
 
   private renderInputArea() {
     return html/*html*/`
-      <div class="input-area">
-        <div class="input-container">
+      <div part="input-area" class="input-area">
+        <div part="input-container" class="input-container">
           <textarea
+            part="input"
             class="input-field"
             placeholder="${this.placeholder}"
             @input="${() => this.handleInput()}"

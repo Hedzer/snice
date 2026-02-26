@@ -75,12 +75,12 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
   @render()
   render() {
     return html/*html*/`
-      <div class="tooltip-trigger">
+      <div part="trigger" class="tooltip-trigger">
         <slot></slot>
       </div>
-      <div class="tooltip tooltip--${this.position}" role="tooltip" hidden>
-        <div class="tooltip__content">${this.content}</div>
-        <div class="tooltip__arrow"></div>
+      <div part="tooltip" class="tooltip tooltip--${this.position}" role="tooltip" hidden>
+        <div part="content" class="tooltip__content">${this.content}</div>
+        <div part="arrow" class="tooltip__arrow"></div>
       </div>
     `;
   }

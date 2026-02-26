@@ -34,9 +34,10 @@ export class SnicePagination extends HTMLElement {
     const pages = this.getPageNumbers();
 
     return html/*html*/`
-      <nav class="pagination" aria-label="Pagination">
+      <nav part="base" class="pagination" aria-label="Pagination">
         <if ${this.showFirst}>
           <button
+            part="button first-button"
             class="pagination-button pagination-first"
             ?disabled="${this.current === 1}"
             aria-label="First page">
@@ -48,6 +49,7 @@ export class SnicePagination extends HTMLElement {
 
         <if ${this.showPrev}>
           <button
+            part="button prev-button"
             class="pagination-button pagination-prev"
             ?disabled="${this.current === 1}"
             aria-label="Previous page">
@@ -57,12 +59,12 @@ export class SnicePagination extends HTMLElement {
           </button>
         </if>
 
-        <div class="pagination-pages">
+        <div part="pages" class="pagination-pages">
           ${pages.map(page => {
             const pageClasses = ['pagination-button', 'pagination-page', page === this.current ? 'active' : ''].filter(Boolean).join(' ');
             return html/*html*/`
             <if ${page === '...'}>
-              <span class="pagination-ellipsis">...</span>
+              <span part="ellipsis" class="pagination-ellipsis">...</span>
             </if>
             <if ${page !== '...'}>
               <button
@@ -78,6 +80,7 @@ export class SnicePagination extends HTMLElement {
 
         <if ${this.showNext}>
           <button
+            part="button next-button"
             class="pagination-button pagination-next"
             ?disabled="${this.current === this.total}"
             aria-label="Next page">
@@ -89,6 +92,7 @@ export class SnicePagination extends HTMLElement {
 
         <if ${this.showLast}>
           <button
+            part="button last-button"
             class="pagination-button pagination-last"
             ?disabled="${this.current === this.total}"
             aria-label="Last page">

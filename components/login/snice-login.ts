@@ -65,11 +65,11 @@ export class SniceLogin extends HTMLElement implements SniceLoginElement {
     const loginClasses = ['login', `login--${this.variant}`, `login--${this.size}`].join(' ');
 
     return html/*html*/`
-      <div class="${loginClasses}">
+      <div part="base" class="${loginClasses}">
         <slot name="before-header"></slot>
 
-        <div class="login__header">
-          <h1 class="login__title">${this.title}</h1>
+        <div part="header" class="login__header">
+          <h1 part="title" class="login__title">${this.title}</h1>
           <slot name="subtitle">
             <p class="login__subtitle">Enter your credentials to continue</p>
           </slot>
@@ -78,7 +78,7 @@ export class SniceLogin extends HTMLElement implements SniceLoginElement {
         <slot name="after-header"></slot>
         <slot name="before-form"></slot>
 
-        <form class="login__form" @submit=${(e: Event) => this.handleSubmit(e)}>
+        <form part="form" class="login__form" @submit=${(e: Event) => this.handleSubmit(e)}>
           <slot name="form-top"></slot>
 
           <div class="login__field">
@@ -147,7 +147,7 @@ export class SniceLogin extends HTMLElement implements SniceLoginElement {
           <snice-alert variant="${this.alertVariant}">${this.alertMessage}</snice-alert>
         </if>
 
-        <div class="login__footer">
+        <div part="footer" class="login__footer">
           <slot name="footer"></slot>
         </div>
       </div>

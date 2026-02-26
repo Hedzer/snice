@@ -66,18 +66,19 @@ export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
     const hasSuggestions = this.showSuggestions && this.filteredSuggestions.length > 0;
 
     return html/*html*/`
-      <div class="tag-input-wrapper">
+      <div part="base" class="tag-input-wrapper">
         <if ${hasLabel}>
-          <label class="tag-input-label">${this.label}</label>
+          <label part="label" class="tag-input-label">${this.label}</label>
         </if>
 
         <div
+          part="container"
           class="tag-input-container ${isDisabled ? 'tag-input-container--disabled' : ''}"
           @click=${() => this.focus()}
         >
           ${this.value.map((tag, index) => html/*html*/`
-            <span class="tag" key=${tag + index}>
-              <span class="tag-text">${tag}</span>
+            <span part="tag" class="tag" key=${tag + index}>
+              <span part="tag-text" class="tag-text">${tag}</span>
               <if ${!isDisabled && !isReadonly}>
                 <button
                   class="tag-remove"
@@ -96,6 +97,7 @@ export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
 
           <if ${canAdd}>
             <input
+              part="input"
               class="tag-input-field"
               type="text"
               placeholder="${this.value.length === 0 ? this.placeholder : ''}"
@@ -109,7 +111,7 @@ export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
           </if>
 
           <if ${hasSuggestions}>
-            <div class="tag-suggestions">
+            <div part="suggestions" class="tag-suggestions">
               ${this.filteredSuggestions.map((suggestion, i) => html/*html*/`
                 <div
                   class="tag-suggestion-item ${i === this.highlightedIndex ? 'tag-suggestion-item--highlighted' : ''}"

@@ -18,9 +18,9 @@ export class SniceToast extends HTMLElement implements SniceToastElement {
   @render()
   render() {
     return html/*html*/`
-      <div class="toast toast--${this.type}" role="alert" aria-live="polite">
+      <div part="base" class="toast toast--${this.type}" role="alert" aria-live="polite">
         <if ${this.icon}>
-          <span class="toast-icon">
+          <span part="icon" class="toast-icon">
             <case ${this.type}>
               <when value="success">
                 <svg viewBox="0 0 20 20" fill="currentColor">
@@ -45,7 +45,7 @@ export class SniceToast extends HTMLElement implements SniceToastElement {
             </case>
           </span>
         </if>
-        <span class="toast-content">${this.message}</span>
+        <span part="content" class="toast-content">${this.message}</span>
         <if ${this.closable}>
           <button class="toast-close" aria-label="Close" @click=${this.dispatchCloseEvent}>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">

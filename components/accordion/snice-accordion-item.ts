@@ -25,6 +25,7 @@ export class SniceAccordionItem extends HTMLElement implements SniceAccordionIte
   render() {
     return html/*html*/`
       <button
+        part="header"
         class="accordion-item__header"
         aria-expanded="${this.open}"
         aria-controls="content-${this.itemId}"
@@ -32,20 +33,21 @@ export class SniceAccordionItem extends HTMLElement implements SniceAccordionIte
         @click="${(e: Event) => this.handleClick(e)}"
         @keydown="${(e: KeyboardEvent) => this.handleKeydown(e)}"
       >
-        <span class="accordion-item__title">
+        <span part="title" class="accordion-item__title">
           <slot name="header"></slot>
         </span>
-        <svg class="accordion-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg part="icon" class="accordion-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M6 9l6 6 6-6"/>
         </svg>
       </button>
       <div
+        part="content"
         class="accordion-item__content"
         id="content-${this.itemId}"
         role="region"
         aria-labelledby="header-${this.itemId}"
       >
-        <div class="accordion-item__content-inner">
+        <div part="content-inner" class="accordion-item__content-inner">
           <slot></slot>
         </div>
       </div>
