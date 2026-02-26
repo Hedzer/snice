@@ -1,3 +1,11 @@
+# [4.16.0](https://gitlab.com/Hedzer/snice/compare/v4.15.0...v4.16.0) (2026-02-26)
+
+
+### Features
+
+* input align, label-align, and stretch properties for height control ([1acc11d](https://gitlab.com/Hedzer/snice/commit/1acc11dd53444c1e6fe874f357ac1d57903da7db))
+* react adapters for doc icons prop, modal no-header/no-footer ([82f583d](https://gitlab.com/Hedzer/snice/commit/82f583d810d12314ef2d9b8216efe33abad43b99))
+
 # [4.15.0](https://gitlab.com/Hedzer/snice/compare/v4.14.0...v4.15.0) (2026-02-26)
 
 
