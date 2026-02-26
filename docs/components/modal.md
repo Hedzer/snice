@@ -188,6 +188,8 @@ modal.addEventListener('modal-close', () => console.log('Closed'));
 | `noEscapeDismiss` (attr: `no-escape-dismiss`) | `boolean` | `false` | Prevent closing with Escape key |
 | `noFocusTrap` (attr: `no-focus-trap`) | `boolean` | `false` | Disable focus trapping |
 | `noCloseButton` (attr: `no-close-button`) | `boolean` | `false` | Hide the close button |
+| `noHeader` (attr: `no-header`) | `boolean` | `false` | Hide the header section entirely |
+| `noFooter` (attr: `no-footer`) | `boolean` | `false` | Hide the footer section entirely |
 | `label` | `string` | `''` | Accessible label for screen readers |
 
 ## Events

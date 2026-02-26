@@ -11,6 +11,8 @@ noBackdropDismiss: boolean = false;  // attr: no-backdrop-dismiss
 noEscapeDismiss: boolean = false;    // attr: no-escape-dismiss
 noFocusTrap: boolean = false;        // attr: no-focus-trap
 noCloseButton: boolean = false;      // attr: no-close-button
+noHeader: boolean = false;           // attr: no-header — hides header entirely
+noFooter: boolean = false;           // attr: no-footer — hides footer entirely
 label: string = '';                  // Accessible label
 ```
 

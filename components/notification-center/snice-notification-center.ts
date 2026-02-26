@@ -8,7 +8,7 @@ export class SniceNotificationCenter extends HTMLElement implements SniceNotific
   notifications: NotificationItem[] = [];
 
   @property({ type: Boolean })
-  private open = false;
+  open = false;
 
   @dispatch('notification-click', { bubbles: true, composed: true })
   private emitNotificationClick(notification: NotificationItem) {

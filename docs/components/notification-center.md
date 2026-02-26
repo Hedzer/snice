@@ -44,6 +44,7 @@ import 'snice/components/notification-center/snice-notification-center';
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `notifications` | `NotificationItem[]` | `[]` | Array of notification objects to display |
+| `open` | `boolean` | `false` | Whether the dropdown panel is visible |
 
 ## Methods
 

@@ -6,6 +6,7 @@ Bell icon with dropdown notification panel. Shows unread badge, supports dismiss
 
 ```ts
 notifications: NotificationItem[]       // Array of notification objects
+open: boolean                           // Whether the dropdown panel is visible (default: false)
 ```
 
 ### NotificationItem

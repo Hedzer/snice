@@ -22,6 +22,12 @@ export class SniceModal extends HTMLElement implements SniceModalElement {
   @property({ type: Boolean, attribute: 'no-close-button',  })
   noCloseButton = false;
 
+  @property({ type: Boolean, attribute: 'no-header',  })
+  noHeader = false;
+
+  @property({ type: Boolean, attribute: 'no-footer',  })
+  noFooter = false;
+
   @property({  })
   label = '';
 
@@ -52,25 +58,29 @@ export class SniceModal extends HTMLElement implements SniceModalElement {
            @keydown=${this.handleKeydown}>
         <div class="modal__backdrop" part="backdrop"></div>
         <div class="${panelClass}" part="panel">
-          <div class="modal__header" part="header">
-            <slot name="header"></slot>
-            <if ${!this.noCloseButton}>
-              <button class="modal__close"
-                      part="close"
-                      aria-label="Close modal"
-                      @click=${this.handleCloseClick}>
-                <svg viewBox="0 0 24 24" width="20" height="20">
-                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
-                </svg>
-              </button>
-            </if>
-          </div>
+          <if ${!this.noHeader}>
+            <div class="modal__header" part="header">
+              <slot name="header"></slot>
+              <if ${!this.noCloseButton}>
+                <button class="modal__close"
+                        part="close"
+                        aria-label="Close modal"
+                        @click=${this.handleCloseClick}>
+                  <svg viewBox="0 0 24 24" width="20" height="20">
+                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
+                  </svg>
+                </button>
+              </if>
+            </div>
+          </if>
           <div class="modal__body" part="body">
             <slot></slot>
           </div>
-          <div class="modal__footer" part="footer">
-            <slot name="footer"></slot>
-          </div>
+          <if ${!this.noFooter}>
+            <div class="modal__footer" part="footer">
+              <slot name="footer"></slot>
+            </div>
+          </if>
         </div>
       </div>
     `;

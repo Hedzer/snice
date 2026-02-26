@@ -7,6 +7,8 @@ export interface SniceModalElement extends HTMLElement {
   noEscapeDismiss: boolean;
   noFocusTrap: boolean;
   noCloseButton: boolean;
+  noHeader: boolean;
+  noFooter: boolean;
   label: string;
   show(): void;
   close(): void;
