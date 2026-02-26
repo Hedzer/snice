@@ -1,4 +1,18 @@
 {
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash scripts/standards-hook.sh",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  },
   "disallowedTools": [
     "Bash(git checkout:*)",
     "Bash(git reset:*)",

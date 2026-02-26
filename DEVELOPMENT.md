@@ -123,7 +123,7 @@ class MyElement {
 
 ### CSS Custom Properties
 
-**Location:** `components/theme/theme.css` (184 CSS variables)
+**Location:** `components/theme/theme.css` (223 CSS variables)
 
 **Format:** HSL values without `hsl()` wrapper
 
@@ -163,8 +163,8 @@ class MyElement {
 
 **Typography:**
 ```css
---snice-font-family-sans: system-ui, -apple-system, sans-serif;
---snice-font-family-mono: 'Courier New', Courier, monospace;
+--snice-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+--snice-font-family-mono: SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
 --snice-font-size-xs: 0.75rem;   /* 12px */
 --snice-font-size-sm: 0.875rem;  /* 14px */
 --snice-font-size-md: 1rem;      /* 16px */
@@ -173,28 +173,32 @@ class MyElement {
 --snice-font-weight-normal: 400;
 --snice-font-weight-medium: 500;
 --snice-font-weight-bold: 700;
---snice-line-height-tight: 1.25;
+--snice-line-height-dense: 1.25;
 --snice-line-height-normal: 1.5;
---snice-line-height-relaxed: 1.75;
+--snice-line-height-loose: 1.75;
 ```
 
 **Borders & Shadows:**
 ```css
---snice-border-radius-sm: 0.25rem;  /* 4px */
---snice-border-radius-md: 0.375rem; /* 6px */
---snice-border-radius-lg: 0.5rem;   /* 8px */
---snice-border-radius-xl: 0.75rem;  /* 12px */
---snice-border-radius-full: 9999px;
+--snice-border-radius-sm: 0.125rem;  /* 2px */
+--snice-border-radius-md: 0.25rem;   /* 4px */
+--snice-border-radius-lg: 0.5rem;    /* 8px */
+--snice-border-radius-xl: 1rem;      /* 16px */
+--snice-border-radius-circle: 50%;
+--snice-border-radius-pill: 9999px;
 
---snice-shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.05);
---snice-shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.1);
---snice-shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.1);
---snice-shadow-xl: 0 20px 25px -5px hsl(0 0% 0% / 0.1);
+--snice-shadow-xs: 0 1px 3px 0 hsl(0 0% 0% / 0.04), 0 1px 2px 0 hsl(0 0% 0% / 0.06);
+--snice-shadow-sm: 0 2px 6px 0 hsl(0 0% 0% / 0.04), 0 2px 4px -1px hsl(0 0% 0% / 0.06);
+--snice-shadow-md: 0 4px 12px 0 hsl(0 0% 0% / 0.05), 0 2px 8px -2px hsl(0 0% 0% / 0.06);
+--snice-shadow-lg: 0 10px 24px -3px hsl(0 0% 0% / 0.05), 0 4px 12px -4px hsl(0 0% 0% / 0.06);
+--snice-shadow-xl: 0 20px 32px -5px hsl(0 0% 0% / 0.06), 0 8px 16px -6px hsl(0 0% 0% / 0.08);
+--snice-shadow-2xl: 0 25px 50px -12px hsl(0 0% 0% / 0.12);
+--snice-shadow-inset-sm: inset 0 1px 2px 0 hsl(0 0% 0% / 0.05);
+--snice-shadow-inset-md: inset 0 2px 4px 0 hsl(0 0% 0% / 0.06);
 ```
 
 **Z-index Layers:**
 ```css
---snice-z-index-base: 0;
 --snice-z-index-dropdown: 1000;
 --snice-z-index-sticky: 1020;
 --snice-z-index-fixed: 1030;
@@ -538,6 +542,7 @@ tests/
 ```typescript
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { SniceButton } from '../components/button/snice-button';
+import { trackRenders } from 'snice';
 
 describe('snice-button', () => {
   let element: SniceButton;
@@ -557,7 +562,8 @@ describe('snice-button', () => {
 
   it('should update on property change', async () => {
     element.variant = 'primary';
-    await element.updateComplete;  // Wait for render
+    const tracker = trackRenders(element);
+    await tracker.next();  // Wait for render
     expect(element.shadowRoot?.querySelector('.button')?.classList.contains('primary')).toBe(true);
   });
 
@@ -730,7 +736,7 @@ export function createReactAdapter<P>(config: AdapterConfig) {
     const elementRef = useRef<HTMLElement>(null);
 
     // Set properties on element
-    useLayoutEffect(() => {
+    useEffect(() => {
       properties.forEach(prop => {
         if (props[prop] !== undefined) {
           elementRef.current[prop] = props[prop];
@@ -841,7 +847,7 @@ npm run generate:react-tests     # Generate React test files
 ### Development Scripts
 
 ```bash
-npm run dev                    # Vite dev server (port 5173)
+npm run dev                    # Dev orchestration (framework: 5566, website: 52891)
 npm run preview                # Preview production build
 ```
 
@@ -977,11 +983,10 @@ el.getAttribute('variant'); // Attribute access
 **Render Debugging:**
 ```typescript
 // Enable render tracking
-import { RenderTracker } from 'snice/testing';
+import { trackRenders } from 'snice';
 
-const tracker = new RenderTracker(element);
-tracker.renders; // Number of renders
-tracker.lastRender; // Timestamp
+const tracker = trackRenders(element);
+await tracker.next(); // Wait for next render
 ```
 
 **Test Debugging:**
