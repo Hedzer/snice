@@ -28,6 +28,9 @@ export interface InputProps extends SniceBaseProps {
   minlength?: any;
   autocomplete?: any;
   name?: any;
+  align?: any;
+  labelAlign?: any;
+  stretch?: any;
   prefixIcon?: any;
   suffixIcon?: any;
 
@@ -51,7 +54,7 @@ export interface InputProps extends SniceBaseProps {
  */
 export const Input = createReactAdapter<InputProps>({
   tagName: 'snice-input',
-  properties: ["type","size","variant","value","placeholder","label","helperText","errorText","disabled","readonly","loading","required","invalid","clearable","password","min","max","step","pattern","maxlength","minlength","autocomplete","name","prefixIcon","suffixIcon"],
+  properties: ["type","size","variant","value","placeholder","label","helperText","errorText","disabled","readonly","loading","required","invalid","clearable","password","min","max","step","pattern","maxlength","minlength","autocomplete","name","align","labelAlign","stretch","prefixIcon","suffixIcon"],
   events: {},
   formAssociated: false
 });

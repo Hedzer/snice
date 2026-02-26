@@ -223,7 +223,8 @@ inp.addEventListener('input-change', (e) => console.log('Change:', e.detail.valu
 | `name` | `name` | `string` | `''` | Form field name |
 | `prefixIcon` | `prefix-icon` | `string` | `''` | Prefix icon (emoji, URL, or ligature) |
 | `suffixIcon` | `suffix-icon` | `string` | `''` | Suffix icon (emoji, URL, or ligature) |
-| `align` | `align` | `'top' \| 'center' \| 'bottom' \| ''` | `''` | Vertical alignment when host has explicit height (default centers) |
+| `align` | `align` | `'top' \| 'center' \| 'bottom' \| ''` | `''` | Vertical alignment when host has explicit height |
+| `labelAlign` | `label-align` | `'left' \| 'center' \| 'right'` | `'left'` | Label text alignment |
 | `stretch` | `stretch` | `boolean` | `false` | Input fills the full host height |
 
 ## Events

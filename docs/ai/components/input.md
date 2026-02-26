@@ -31,6 +31,7 @@ pattern: string = '';
 autocomplete: string = '';
 name: string = '';
 align: 'top'|'center'|'bottom'|'' = '';  // vertical alignment when host has explicit height
+labelAlign: 'left'|'center'|'right' = 'left';  // attribute: label-align — label text alignment
 stretch: boolean = false;                 // input fills full host height
 ```
 
