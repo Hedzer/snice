@@ -253,6 +253,9 @@ inp.addEventListener('input-change', (e) => console.log('Change:', e.detail.valu
 
 | Part | Description |
 |------|-------------|
+| `wrapper` | The outer wrapper element |
+| `label` | The label element |
+| `container` | The input container (holds input + icons) |
 | `input` | The native input element |
 | `prefix-icon` | The prefix icon container |
 | `suffix-icon` | The suffix icon container |

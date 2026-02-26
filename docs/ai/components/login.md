@@ -60,6 +60,13 @@ interface LoginResult {
 - `before-submit`, `after-submit` - Around button
 - `footer` - Footer content
 
+**CSS Parts:**
+- `base` - Outer login container
+- `header` - Header section
+- `title` - H1 title element
+- `form` - The login form
+- `footer` - Footer section
+
 ## Usage
 
 ```html

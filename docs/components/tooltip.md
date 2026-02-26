@@ -153,6 +153,33 @@ Set the `strict-positioning` attribute to disable automatic repositioning when n
 |------|-------------|
 | (default) | Trigger content the tooltip attaches to |
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `trigger` | `<div>` | Wrapper around the slot/trigger content |
+| `tooltip` | `<div>` | The tooltip popup element |
+| `content` | `<span>` | The text content inside the tooltip |
+| `arrow` | `<div>` | The arrow/caret element pointing to the trigger |
+
+```css
+snice-tooltip::part(tooltip) {
+  background: #1e293b;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+snice-tooltip::part(arrow) {
+  color: #1e293b;
+}
+
+snice-tooltip::part(content) {
+  padding: 8px 14px;
+}
+```
+
 ## Properties
 
 | Property | Type | Default | Description |

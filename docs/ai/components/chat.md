@@ -40,6 +40,13 @@ Slack-style chat interface with messages, typing indicators, reactions, and file
 - `typing-start: CustomEvent<{}>` - User started typing
 - `typing-stop: CustomEvent<{}>` - User stopped typing
 
+**CSS Parts:**
+- `base` - Chat container
+- `messages` - Messages scrollable area
+- `input-area` - Input area wrapper
+- `input-container` - Input + buttons container
+- `input` - Textarea input field
+
 ## Message Types
 
 - `text` - Text message

@@ -11,6 +11,11 @@ closable: boolean = true;
 icon: boolean = true;
 ```
 
+**CSS Parts (snice-toast):**
+- `base` - Outer toast div (has type modifier class)
+- `icon` - Icon span wrapper
+- `content` - Message text span
+
 ## snice-toast-container
 
 ```typescript

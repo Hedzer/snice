@@ -45,6 +45,13 @@ disabled: boolean = false;
 - `header` - Clickable trigger content
 - default - Collapsible content
 
+**CSS Parts:**
+- `header` - The clickable button trigger
+- `title` - Span wrapping the header slot
+- `icon` - The chevron SVG icon
+- `content` - The collapsible content wrapper
+- `content-inner` - Inner div containing the default slot
+
 ## Usage
 
 ```html

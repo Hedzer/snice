@@ -172,6 +172,37 @@ Fired when an item is toggled.
 }
 ```
 
+## CSS Parts
+
+### Accordion Item Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `header` | `<button>` | The clickable header/trigger button |
+| `title` | `<span>` | Wrapper around the header slot content |
+| `icon` | `<svg>` | The chevron expand/collapse icon |
+| `content` | `<div>` | The collapsible content region |
+| `content-inner` | `<div>` | Inner wrapper containing the default slot |
+
+```css
+snice-accordion-item::part(header) {
+  font-weight: 600;
+  padding: 1rem;
+}
+
+snice-accordion-item::part(content) {
+  padding: 1rem;
+  background: #f9fafb;
+}
+
+snice-accordion-item::part(icon) {
+  color: #6b7280;
+  transition: transform 0.2s;
+}
+```
+
 ## Slots
 
 ### Accordion Item Slots

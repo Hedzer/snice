@@ -125,6 +125,34 @@ try {
 | `closable` | `boolean` | `true` | Show close button |
 | `icon` | `boolean` | `true` | Show type icon |
 
+## CSS Parts
+
+### snice-toast
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer toast container (includes type modifier class) |
+| `icon` | `<span>` | Wrapper around the type-specific SVG icon |
+| `content` | `<span>` | The message text element |
+
+```css
+snice-toast::part(base) {
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+snice-toast::part(content) {
+  font-weight: 500;
+}
+
+snice-toast::part(icon) {
+  width: 24px;
+  height: 24px;
+}
+```
+
 ## Events
 
 | Event | Detail | Description |

@@ -132,6 +132,10 @@ inp.addEventListener('input-change', (e) => console.log('Change:', e.detail.valu
 <snice-input style="height:200px" stretch></snice-input>
 ```
 
+## CSS Parts
+
+`wrapper`, `label`, `container`, `input`, `prefix-icon`, `suffix-icon`, `clear`, `spinner`, `password-toggle`, `helper-text`, `error-text`
+
 ## Features
 
 - Form-associated custom element

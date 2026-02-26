@@ -68,6 +68,37 @@ Focus the input field.
 tagInput.focus();
 ```
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The outer wrapper div |
+| `label` | `<label>` | The label element above the input |
+| `container` | `<div>` | Container holding tags and the input field |
+| `tag` | `<span>` | An individual tag chip |
+| `tag-text` | `<span>` | The text content inside a tag |
+| `input` | `<input>` | The text input field |
+| `suggestions` | `<div>` | The autocomplete suggestions dropdown |
+
+```css
+snice-tag-input::part(container) {
+  border-radius: 8px;
+  padding: 0.5rem;
+}
+
+snice-tag-input::part(tag) {
+  background: #e0f2fe;
+  border-radius: 999px;
+  font-weight: 500;
+}
+
+snice-tag-input::part(input) {
+  font-size: 0.875rem;
+}
+```
+
 ## Events
 
 #### `tag-add`

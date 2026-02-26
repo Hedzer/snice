@@ -22,6 +22,12 @@ strictPositioning: boolean = false; // attr: strict-positioning
 
 - `(default)` - Trigger element the tooltip attaches to
 
+**CSS Parts:**
+- `trigger` - Wrapper around the slot/trigger content
+- `tooltip` - The tooltip popup div
+- `content` - Text content inside tooltip
+- `arrow` - Arrow element
+
 ## Methods
 
 - `show()` - Show tooltip

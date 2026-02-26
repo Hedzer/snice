@@ -119,6 +119,36 @@ pagination.lastPage();
 | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Pagination size |
 | `variant` | `'default' \| 'rounded' \| 'text'` | `'default'` | Visual style |
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<nav>` | The outer navigation container |
+| `button` | `<button>` | All navigation buttons (shared) |
+| `first-button` | `<button>` | The "First page" button |
+| `prev-button` | `<button>` | The "Previous page" button |
+| `pages` | `<div>` | Container holding page number buttons |
+| `ellipsis` | `<span>` | The ellipsis indicator between page ranges |
+| `next-button` | `<button>` | The "Next page" button |
+| `last-button` | `<button>` | The "Last page" button |
+
+```css
+snice-pagination::part(base) {
+  gap: 8px;
+}
+
+snice-pagination::part(button) {
+  border-radius: 50%;
+  font-weight: 600;
+}
+
+snice-pagination::part(ellipsis) {
+  color: #9ca3af;
+}
+```
+
 ## Events
 
 | Event | Detail | Description |

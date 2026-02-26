@@ -37,6 +37,15 @@ name: string = ''
 - ArrowUp/ArrowDown: Navigate suggestions
 - Escape: Close suggestions dropdown
 
+**CSS Parts:**
+- `base` - Outer wrapper div
+- `label` - Label element
+- `container` - Tags + input container
+- `tag` - Individual tag span
+- `tag-text` - Tag text content
+- `input` - Text input field
+- `suggestions` - Suggestions dropdown
+
 ## CSS Custom Properties
 
 - `--snice-color-border` - Container border (default: `rgb(226 226 226)`)

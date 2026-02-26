@@ -42,6 +42,16 @@ pagination.addEventListener('pagination-change', (e) => {
 pagination.goToPage(5);
 ```
 
+**CSS Parts:**
+- `base` - Nav container
+- `button` - All navigation buttons (shared)
+- `first-button` - First page button
+- `prev-button` - Previous page button
+- `pages` - Page numbers container
+- `ellipsis` - Ellipsis span
+- `next-button` - Next page button
+- `last-button` - Last page button
+
 ## CSS Custom Properties
 
 ```css

@@ -195,6 +195,34 @@ interface LoginResult {
 | `showForgotPassword` (attr: `show-forgot-password`) | `boolean` | `true` | Show "Forgot password" link |
 | `actionText` (attr: `action-text`) | `string` | `'Sign In'` | Submit button text |
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The outer login container |
+| `header` | `<div>` | The header section containing the title |
+| `title` | `<h1>` | The title heading element |
+| `form` | `<form>` | The login form element |
+| `footer` | `<div>` | The footer section below the form |
+
+```css
+snice-login::part(base) {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+snice-login::part(title) {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+snice-login::part(form) {
+  gap: 1.25rem;
+}
+```
+
 ## Events
 
 | Event | Detail | Description |
