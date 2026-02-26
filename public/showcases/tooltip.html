@@ -23,6 +23,37 @@
 &lt;/snice-tooltip&gt;</snice-code-block>
         </div>
       </div>
+
+      <h4 style="margin-top:2rem;margin-bottom:0.25rem;font-size:1rem;opacity:0.85">Intrinsic Tooltips</h4>
+      <p class="comp-desc">Attribute-based — no wrapper element needed</p>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-center" style="gap:1.5rem">
+          <snice-button variant="default" tooltip="Tooltip on top">Top</snice-button>
+          <snice-button variant="default" tooltip="Tooltip on right" style="--tooltip-position:right">Right</snice-button>
+          <snice-button variant="default" tooltip="Tooltip on bottom" style="--tooltip-position:bottom">Bottom</snice-button>
+          <snice-button variant="default" tooltip="Tooltip on left" style="--tooltip-position:left">Left</snice-button>
+          <snice-button variant="primary" tooltip="Click me to see this!" style="--tooltip-trigger:click">Click Trigger</snice-button>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=0df9516">&lt;button tooltip="Tooltip on top"&gt;Top&lt;/button&gt;
+
+&lt;button tooltip="Tooltip on right"
+  style="--tooltip-position: right"&gt;
+  Right
+&lt;/button&gt;
+
+&lt;button tooltip="Click me!"
+  style="--tooltip-trigger: click"&gt;
+  Click Trigger
+&lt;/button&gt;
+
+&lt;script type="module"&gt;
+  import { useTooltips } from 'snice';
+  useTooltips();
+&lt;/script&gt;</snice-code-block>
+        </div>
+      </div>
     </div>
 
 

@@ -121,6 +121,9 @@
     // Runs after deferred scripts have executed
     document.addEventListener('DOMContentLoaded', function() {
 
+    // Initialize intrinsic tooltips (attribute-based)
+    if (typeof Snice !== 'undefined' && Snice.useTooltips) Snice.useTooltips();
+
     // Mobile: wrap code blocks in collapsible accordion
     if (window.matchMedia('(max-width: 800px)').matches) {
       document.querySelectorAll('.comp-split-code').forEach(code => {
