@@ -974,21 +974,21 @@ tiles.addEventListener('tile-click',
 &gt;&lt;/snice-camera-annotate&gt;</snice-code-block>
         </div>
       </div>
-      <snice-modal id="camera-annotate-modal" size="large" label="Camera Annotate">
-        <h3 slot="header">Camera Annotate</h3>
-        <div id="camera-annotate-container" style="height:480px"></div>
-        <div slot="footer" style="display:flex;gap:0.5rem;justify-content:flex-end">
-          <snice-button variant="default" onclick="document.getElementById('camera-annotate-container').innerHTML=''; document.getElementById('camera-annotate-modal').close()">Close</snice-button>
-        </div>
-      </snice-modal>
-      <snice-modal id="camera-annotate-nolabels-modal" size="large" label="Camera Annotate (No Labels)">
-        <h3 slot="header">Camera Annotate — No Labels Panel</h3>
-        <div id="camera-annotate-nolabels-container" style="height:480px"></div>
-        <div slot="footer" style="display:flex;gap:0.5rem;justify-content:flex-end">
-          <snice-button variant="default" onclick="document.getElementById('camera-annotate-nolabels-container').innerHTML=''; document.getElementById('camera-annotate-nolabels-modal').close()">Close</snice-button>
-        </div>
-      </snice-modal>
     </div>
+    <snice-modal id="camera-annotate-modal" size="large" label="Camera Annotate">
+      <h3 slot="header">Camera Annotate</h3>
+      <div id="camera-annotate-container" style="height:480px"></div>
+      <div slot="footer" style="display:flex;gap:0.5rem;justify-content:flex-end">
+        <snice-button variant="default" onclick="document.getElementById('camera-annotate-container').innerHTML=''; document.getElementById('camera-annotate-modal').close()">Close</snice-button>
+      </div>
+    </snice-modal>
+    <snice-modal id="camera-annotate-nolabels-modal" size="large" label="Camera Annotate (No Labels)">
+      <h3 slot="header">Camera Annotate — No Labels Panel</h3>
+      <div id="camera-annotate-nolabels-container" style="height:480px"></div>
+      <div slot="footer" style="display:flex;gap:0.5rem;justify-content:flex-end">
+        <snice-button variant="default" onclick="document.getElementById('camera-annotate-nolabels-container').innerHTML=''; document.getElementById('camera-annotate-nolabels-modal').close()">Close</snice-button>
+      </div>
+    </snice-modal>
 <script>
     // Only create camera-annotate elements when modals open (avoids camera permission on page load)
     document.getElementById('camera-annotate-modal')?.addEventListener('snice-modal-open', () => {
@@ -1020,14 +1020,14 @@ tiles.addEventListener('tile-click',
 &gt;&lt;/snice-camera&gt;</snice-code-block>
         </div>
       </div>
-      <snice-modal id="camera-modal" size="large" label="Camera">
-        <h3 slot="header">Camera Capture</h3>
-        <snice-camera id="demo-camera" show-controls controls-position="bottom" auto-start="false"></snice-camera>
-        <div slot="footer" style="display:flex;gap:0.5rem;justify-content:flex-end">
-          <snice-button variant="default" onclick="document.getElementById('demo-camera').stop(); document.getElementById('camera-modal').close()">Close</snice-button>
-        </div>
-      </snice-modal>
     </div>
+    <snice-modal id="camera-modal" size="large" label="Camera">
+      <h3 slot="header">Camera Capture</h3>
+      <snice-camera id="demo-camera" show-controls controls-position="bottom" auto-start="false"></snice-camera>
+      <div slot="footer" style="display:flex;gap:0.5rem;justify-content:flex-end">
+        <snice-button variant="default" onclick="document.getElementById('demo-camera').stop(); document.getElementById('camera-modal').close()">Close</snice-button>
+      </div>
+    </snice-modal>
 <script>
 // Start camera when modal opens
     document.getElementById('camera-modal')?.addEventListener('snice-modal-open', () => {
@@ -3344,9 +3344,9 @@ nav.update([
     <div class="comp-section" data-category="Feedback" data-cat-index="4" data-cat-order="2">
       <h3>Notification Center</h3>
       <p class="comp-desc">Bell icon with unread badge and dropdown notification panel</p>
-      <div class="comp-split">
-        <div class="comp-split-demo" style="justify-content:center;min-height:320px;align-items:flex-start;padding-top:0.5rem;position:relative;overflow:visible">
-          <snice-notification-center id="demo-notif" style="z-index:10"></snice-notification-center>
+      <div class="comp-split" style="overflow:visible">
+        <div class="comp-split-demo" style="min-height:420px;align-items:flex-start;align-content:flex-start;padding:0.75rem 1rem 0 0;position:relative;overflow:visible">
+          <snice-notification-center id="demo-notif" open style="position:absolute;top:0.75rem;right:1rem"></snice-notification-center>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>

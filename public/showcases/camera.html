@@ -14,14 +14,14 @@
 &gt;&lt;/snice-camera&gt;</snice-code-block>
         </div>
       </div>
-      <snice-modal id="camera-modal" size="large" label="Camera">
-        <h3 slot="header">Camera Capture</h3>
-        <snice-camera id="demo-camera" show-controls controls-position="bottom" auto-start="false"></snice-camera>
-        <div slot="footer" style="display:flex;gap:0.5rem;justify-content:flex-end">
-          <snice-button variant="default" onclick="document.getElementById('demo-camera').stop(); document.getElementById('camera-modal').close()">Close</snice-button>
-        </div>
-      </snice-modal>
     </div>
+    <snice-modal id="camera-modal" size="large" label="Camera">
+      <h3 slot="header">Camera Capture</h3>
+      <snice-camera id="demo-camera" show-controls controls-position="bottom" auto-start="false"></snice-camera>
+      <div slot="footer" style="display:flex;gap:0.5rem;justify-content:flex-end">
+        <snice-button variant="default" onclick="document.getElementById('demo-camera').stop(); document.getElementById('camera-modal').close()">Close</snice-button>
+      </div>
+    </snice-modal>
 <script>
 // Start camera when modal opens
     document.getElementById('camera-modal')?.addEventListener('snice-modal-open', () => {
