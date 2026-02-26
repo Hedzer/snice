@@ -1,3 +1,23 @@
+# [4.15.0](https://gitlab.com/Hedzer/snice/compare/v4.14.0...v4.15.0) (2026-02-26)
+
+
+### Bug Fixes
+
+* move modals outside comp-section containers, show notification panel open ([9016893](https://gitlab.com/Hedzer/snice/commit/90168934b21f9818eed8844e95582e3d6adcbee1))
+* rebuild docs page, re-stamp asset hashes ([605c3bd](https://gitlab.com/Hedzer/snice/commit/605c3bd9241a44640b51c8cf8886cef5b68eb40f))
+* switch/case/when/default elements use display:contents ([e446fb0](https://gitlab.com/Hedzer/snice/commit/e446fb02dae9a24bf1e790c194ed0e82e070abb0))
+
+
+### Features
+
+* attribute-based tooltips via useTooltips() observer ([9950ba4](https://gitlab.com/Hedzer/snice/commit/9950ba4c2f354b02c15c0df1b66c9c0bff77e9cf))
+* book page-flip-start/end events, music-player time-update dispatch ([8fb32de](https://gitlab.com/Hedzer/snice/commit/8fb32de3e30ab16e89a147e98f8dd3bd32e5a6c3))
+* doc editor icon sets, download/export, markdown conversion, dark mode ([a98e0c7](https://gitlab.com/Hedzer/snice/commit/a98e0c73e49be97e23de6b42162f38dddfe92e09))
+* form association and component improvements ([a231d2d](https://gitlab.com/Hedzer/snice/commit/a231d2ddf75925f030efb67cdfaa3ba2fbc7567b))
+* modal no-header/no-footer props, notification-center public open prop ([b6e9bbf](https://gitlab.com/Hedzer/snice/commit/b6e9bbfdf8813235151412858003d8c1efa3058c))
+* support [@property](https://gitlab.com/property)({ attribute: false }) for internal-only properties ([12456c2](https://gitlab.com/Hedzer/snice/commit/12456c240a43cdf2ed7109fd66fb2f19d071122a))
+* switch formAssociated with ElementInternals, table imports column/row ([dab8a1d](https://gitlab.com/Hedzer/snice/commit/dab8a1dc50a3b5e96eb816938b22b4aadec93939))
+
 # [4.14.0](https://gitlab.com/Hedzer/snice/compare/v4.13.0...v4.14.0) (2026-02-24)
 
 
