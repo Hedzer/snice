@@ -4,6 +4,7 @@ export type { Layout } from './element';
 export { context as contextProperty } from './element'; // Deprecated: use @context method decorator instead
 export { Router } from './router';
 export { controller, useNativeElementControllers } from './controller';
+export { useTooltips, cleanupTooltips } from './tooltip-observer';
 export { dispatch } from './events';
 export { observe } from './observe';
 export { on } from './on';

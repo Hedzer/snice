@@ -177,3 +177,136 @@ Set the `strict-positioning` attribute to disable automatic repositioning when n
 | `hide()` | -- | Hide the tooltip |
 | `toggle()` | -- | Toggle visibility |
 | `updatePosition()` | -- | Recalculate position |
+
+## Attribute-Based Tooltips (`useTooltips`)
+
+Wrapping elements in `<snice-tooltip>` can break parent-child relationships in components that require direct children (accordion, tabs, stepper, breadcrumbs, table, etc.). The attribute-based approach uses a plain `tooltip` attribute on any element, avoiding DOM disruption entirely.
+
+### Setup
+
+Call `useTooltips()` once in your app entry point. It's idempotent — safe to call multiple times.
+
+```typescript
+import { useTooltips } from 'snice';
+useTooltips();
+```
+
+### Basic Usage
+
+```html
+<button tooltip="Save changes">Save</button>
+
+<button tooltip="Below the button" style="--tooltip-position: bottom">
+  Bottom tooltip
+</button>
+
+<button tooltip="With delay" style="--tooltip-delay: 300">
+  Hover and wait
+</button>
+```
+
+### Inside Strict-Children Components
+
+This is the primary use case — adding tooltips without disrupting component structure:
+
+```html
+<snice-tabs>
+  <snice-tab slot="nav" tooltip="User settings">Settings</snice-tab>
+  <snice-tab slot="nav" tooltip="Account info">Profile</snice-tab>
+</snice-tabs>
+
+<snice-accordion>
+  <snice-accordion-item tooltip="Click to expand">
+    <span slot="header">Section 1</span>
+    <p>Content here</p>
+  </snice-accordion-item>
+</snice-accordion>
+
+<snice-breadcrumbs>
+  <a href="/" tooltip="Go to homepage">Home</a>
+  <a href="/docs" tooltip="Documentation">Docs</a>
+</snice-breadcrumbs>
+```
+
+### Scoped Configuration via CSS
+
+Use CSS custom properties to configure tooltips. Properties cascade, so you can scope config with CSS selectors:
+
+```html
+<style>
+  /* All toolbar tooltips appear below with a delay */
+  .toolbar [tooltip] {
+    --tooltip-position: bottom;
+    --tooltip-delay: 200;
+  }
+
+  /* Sidebar tooltips appear to the right */
+  .sidebar [tooltip] {
+    --tooltip-position: right;
+    --tooltip-offset: 16;
+  }
+
+  /* Custom themed tooltips */
+  .dark-section [tooltip] {
+    --tooltip-bg: hsl(220 20% 15%);
+    --tooltip-color: hsl(220 20% 90%);
+    --tooltip-radius: 8px;
+    --tooltip-font-size: 13px;
+  }
+</style>
+
+<div class="toolbar">
+  <button tooltip="Bold (Ctrl+B)"><b>B</b></button>
+  <button tooltip="Italic (Ctrl+I)"><i>I</i></button>
+</div>
+```
+
+### Click Trigger
+
+```html
+<button tooltip="Click to toggle" style="--tooltip-trigger: click">
+  Click me
+</button>
+```
+
+### Focus Trigger
+
+```html
+<input tooltip="Enter your email" style="--tooltip-trigger: focus" type="email">
+```
+
+### Without Arrow
+
+```html
+<button tooltip="No arrow" style="--tooltip-arrow: none">
+  Hover me
+</button>
+```
+
+### CSS Variable Reference
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `--tooltip-position` | `top` | Position: `top`, `top-start`, `top-end`, `bottom`, `bottom-start`, `bottom-end`, `left`, `left-start`, `left-end`, `right`, `right-start`, `right-end` |
+| `--tooltip-trigger` | `hover` | Trigger: `hover`, `click`, `focus` |
+| `--tooltip-delay` | `0` | Show delay in milliseconds |
+| `--tooltip-hide-delay` | `0` | Hide delay in milliseconds |
+| `--tooltip-offset` | `12` | Distance from trigger element in pixels |
+| `--tooltip-arrow` | *(shown)* | Set to `none` to hide the arrow |
+| `--tooltip-max-width` | `250` | Maximum tooltip width in pixels |
+| `--tooltip-z-index` | `10000` | Z-index stacking order |
+| `--tooltip-strict-positioning` | *(false)* | Set to `true` to disable automatic repositioning when near viewport edges |
+| `--tooltip-bg` | `hsl(0 0% 20%)` | Background color |
+| `--tooltip-color` | `white` | Text color |
+| `--tooltip-padding` | `8px 12px` | Content padding |
+| `--tooltip-radius` | `6px` | Border radius |
+| `--tooltip-font-size` | `14px` | Font size |
+
+### Cleanup
+
+To disconnect the observer and remove all tooltip portals:
+
+```typescript
+import { cleanupTooltips } from 'snice';
+cleanupTooltips();
+```

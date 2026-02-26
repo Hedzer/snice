@@ -57,3 +57,57 @@ strictPositioning: boolean = false; // attr: strict-positioning
   <button>Wait</button>
 </snice-tooltip>
 ```
+
+## Attribute-Based Tooltips (`useTooltips`)
+
+Opt-in observer for `tooltip` attribute on any element. No wrapper element — safe inside strict-children components (tabs, accordion, etc.).
+
+### Setup
+
+```typescript
+import { useTooltips } from 'snice';
+useTooltips(); // idempotent
+```
+
+### Usage
+
+```html
+<button tooltip="Save changes">Save</button>
+<button tooltip="Below" style="--tooltip-position: bottom">Bottom</button>
+
+<!-- Inside strict-children components -->
+<snice-tabs>
+  <snice-tab slot="nav" tooltip="User settings">Settings</snice-tab>
+</snice-tabs>
+
+<!-- Scoped config via CSS -->
+<style>
+  .toolbar [tooltip] { --tooltip-position: bottom; --tooltip-delay: 200; }
+</style>
+```
+
+### CSS Variable API
+
+| Variable | Default | Description |
+|---|---|---|
+| `--tooltip-position` | `top` | top/bottom/left/right + -start/-end |
+| `--tooltip-trigger` | `hover` | hover, click, focus |
+| `--tooltip-delay` | `0` | Show delay (ms) |
+| `--tooltip-hide-delay` | `0` | Hide delay (ms) |
+| `--tooltip-offset` | `12` | Distance from trigger (px) |
+| `--tooltip-arrow` | (shown) | `none` to hide |
+| `--tooltip-max-width` | `250` | Max width (px) |
+| `--tooltip-z-index` | `10000` | Z-index |
+| `--tooltip-strict-positioning` | (false) | `true` to disable auto-flip |
+| `--tooltip-bg` | `hsl(0 0% 20%)` | Background color |
+| `--tooltip-color` | `white` | Text color |
+| `--tooltip-padding` | `8px 12px` | Content padding |
+| `--tooltip-radius` | `6px` | Border radius |
+| `--tooltip-font-size` | `14px` | Font size |
+
+### Cleanup
+
+```typescript
+import { cleanupTooltips } from 'snice';
+cleanupTooltips(); // disconnect observer, remove portals
+```
