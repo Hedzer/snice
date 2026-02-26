@@ -11,6 +11,8 @@ export interface ModalProps extends SniceBaseProps {
   noEscapeDismiss?: any;
   noFocusTrap?: any;
   noCloseButton?: any;
+  noHeader?: any;
+  noFooter?: any;
   label?: any;
 
 }
@@ -33,7 +35,7 @@ export interface ModalProps extends SniceBaseProps {
  */
 export const Modal = createReactAdapter<ModalProps>({
   tagName: 'snice-modal',
-  properties: ["open","size","noBackdropDismiss","noEscapeDismiss","noFocusTrap","noCloseButton","label"],
+  properties: ["open","size","noBackdropDismiss","noEscapeDismiss","noFocusTrap","noCloseButton","noHeader","noFooter","label"],
   events: {},
   formAssociated: false
 });

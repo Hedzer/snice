@@ -7,6 +7,7 @@ import type { SniceBaseProps } from './types';
 export interface DocProps extends SniceBaseProps {
   placeholder?: any;
   readonly?: any;
+  icons?: any;
 
 }
 
@@ -28,7 +29,7 @@ export interface DocProps extends SniceBaseProps {
  */
 export const Doc = createReactAdapter<DocProps>({
   tagName: 'snice-doc',
-  properties: ["placeholder","readonly"],
+  properties: ["placeholder","readonly","icons"],
   events: {},
   formAssociated: false
 });
