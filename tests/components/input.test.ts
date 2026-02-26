@@ -368,6 +368,107 @@ describe('snice-input', () => {
     });
   });
 
+  describe('align', () => {
+    it('should default to no align attribute', async () => {
+      input = await createComponent<SniceInputElement>('snice-input');
+      await wait(50);
+
+      expect((input as HTMLElement).hasAttribute('align')).toBe(false);
+    });
+
+    it('should not apply flex layout to wrapper without align', async () => {
+      input = await createComponent<SniceInputElement>('snice-input');
+      await wait(50);
+
+      const wrapper = queryShadow(input as HTMLElement, '.input-wrapper');
+      const style = window.getComputedStyle(wrapper!);
+      expect(style.display).not.toBe('flex');
+    });
+
+    it('should accept align="top"', async () => {
+      input = await createComponent<SniceInputElement>('snice-input', {
+        align: 'top'
+      });
+      await wait(50);
+
+      expect((input as HTMLElement).getAttribute('align')).toBe('top');
+      expect(input.align).toBe('top');
+    });
+
+    it('should accept align="center"', async () => {
+      input = await createComponent<SniceInputElement>('snice-input', {
+        align: 'center'
+      });
+      await wait(50);
+
+      expect((input as HTMLElement).getAttribute('align')).toBe('center');
+      expect(input.align).toBe('center');
+    });
+
+    it('should accept align="bottom"', async () => {
+      input = await createComponent<SniceInputElement>('snice-input', {
+        align: 'bottom'
+      });
+      await wait(50);
+
+      expect((input as HTMLElement).getAttribute('align')).toBe('bottom');
+      expect(input.align).toBe('bottom');
+    });
+
+    it('should update align dynamically', async () => {
+      input = await createComponent<SniceInputElement>('snice-input');
+      await wait(50);
+
+      input.align = 'bottom';
+      await wait(50);
+
+      expect((input as HTMLElement).getAttribute('align')).toBe('bottom');
+    });
+  });
+
+  describe('stretch', () => {
+    it('should default to no stretch', async () => {
+      input = await createComponent<SniceInputElement>('snice-input');
+      await wait(50);
+
+      expect(input.stretch).toBe(false);
+      expect((input as HTMLElement).hasAttribute('stretch')).toBe(false);
+    });
+
+    it('should accept stretch attribute', async () => {
+      input = await createComponent<SniceInputElement>('snice-input', {
+        stretch: true
+      });
+      await wait(50);
+
+      expect(input.stretch).toBe(true);
+      expect((input as HTMLElement).hasAttribute('stretch')).toBe(true);
+    });
+
+    it('should set stretch attribute on host for CSS targeting', async () => {
+      input = await createComponent<SniceInputElement>('snice-input', {
+        stretch: true
+      });
+      await wait(50);
+
+      // CSS uses :host([stretch]) to apply flex:1 to .input-container
+      // and height:100% to .input — verify attribute is present for selector to match
+      expect((input as HTMLElement).hasAttribute('stretch')).toBe(true);
+      const container = queryShadow(input as HTMLElement, '.input-container');
+      expect(container).toBeTruthy();
+    });
+
+    it('should update stretch dynamically', async () => {
+      input = await createComponent<SniceInputElement>('snice-input');
+      await wait(50);
+
+      input.stretch = true;
+      await wait(50);
+
+      expect((input as HTMLElement).hasAttribute('stretch')).toBe(true);
+    });
+  });
+
   describe('API methods', () => {
     it('should support focus method', async () => {
       input = await createComponent<SniceInputElement>('snice-input');

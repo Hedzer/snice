@@ -220,6 +220,25 @@
   </div>
 
   <div class="section">
+    <h3>Vertical Alignment</h3>
+    <p style="margin-bottom:12px;color:var(--snice-color-text-secondary)">Use the <code>align</code> attribute to position the input vertically when the host has an explicit height.</p>
+    <div class="row" style="align-items:stretch">
+      <snice-input align="top" style="height:200px;border:1px dashed rgba(128,128,128,0.3);border-radius:8px" label="Top" placeholder="align=top"></snice-input>
+      <snice-input align="center" style="height:200px;border:1px dashed rgba(128,128,128,0.3);border-radius:8px" label="Center" placeholder="align=center"></snice-input>
+      <snice-input align="bottom" style="height:200px;border:1px dashed rgba(128,128,128,0.3);border-radius:8px" label="Bottom" placeholder="align=bottom"></snice-input>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Stretch</h3>
+    <p style="margin-bottom:12px;color:var(--snice-color-text-secondary)">Use the <code>stretch</code> attribute to make the inner input fill the full host height.</p>
+    <div class="row" style="align-items:stretch">
+      <snice-input style="height:200px;border:1px dashed rgba(128,128,128,0.3);border-radius:8px" label="Default (no stretch)" placeholder="Input stays normal size"></snice-input>
+      <snice-input stretch style="height:200px;border:1px dashed rgba(128,128,128,0.3);border-radius:8px" label="Stretch" placeholder="Input fills full height"></snice-input>
+    </div>
+  </div>
+
+  <div class="section">
     <h3>Interactive Example</h3>
     <div class="input-group">
       <snice-input 

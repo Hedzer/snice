@@ -83,6 +83,15 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
   @property({  })
   name = '';
 
+  @property({  })
+  align: 'top' | 'center' | 'bottom' | '' = '';
+
+  @property({ attribute: 'label-align',  })
+  labelAlign: 'left' | 'center' | 'right' = 'left';
+
+  @property({ type: Boolean,  })
+  stretch = false;
+
   @property({ attribute: 'prefix-icon',  })
   prefixIcon = '';
 

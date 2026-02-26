@@ -25,6 +25,9 @@ export interface SniceInputElement extends HTMLElement {
   minlength: number;
   autocomplete: string;
   name: string;
+  align: 'top' | 'center' | 'bottom' | '';
+  labelAlign: 'left' | 'center' | 'right';
+  stretch: boolean;
   prefixIcon: string;
   suffixIcon: string;
   focus(): void;

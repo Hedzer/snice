@@ -156,6 +156,24 @@ Use `name` and `required` for native form participation.
 </form>
 ```
 
+### Vertical Alignment
+
+When the input has an explicit height, use `align` to control vertical positioning of the inner input field.
+
+```html
+<snice-input style="height: 200px" align="top" label="Top"></snice-input>
+<snice-input style="height: 200px" align="center" label="Center"></snice-input>
+<snice-input style="height: 200px" align="bottom" label="Bottom"></snice-input>
+```
+
+### Stretch
+
+Use the `stretch` attribute to make the inner input fill the full height of the host.
+
+```html
+<snice-input style="height: 200px" stretch label="Stretched"></snice-input>
+```
+
 ### Event Handling
 
 Listen for input events using `input-input` and `input-change`.
@@ -205,6 +223,8 @@ inp.addEventListener('input-change', (e) => console.log('Change:', e.detail.valu
 | `name` | `name` | `string` | `''` | Form field name |
 | `prefixIcon` | `prefix-icon` | `string` | `''` | Prefix icon (emoji, URL, or ligature) |
 | `suffixIcon` | `suffix-icon` | `string` | `''` | Suffix icon (emoji, URL, or ligature) |
+| `align` | `align` | `'top' \| 'center' \| 'bottom' \| ''` | `''` | Vertical alignment when host has explicit height (default centers) |
+| `stretch` | `stretch` | `boolean` | `false` | Input fills the full host height |
 
 ## Events
 

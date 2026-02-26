@@ -30,6 +30,8 @@ maxlength: number = -1;
 pattern: string = '';
 autocomplete: string = '';
 name: string = '';
+align: 'top'|'center'|'bottom'|'' = '';  // vertical alignment when host has explicit height
+stretch: boolean = false;                 // input fills full host height
 ```
 
 ## Slots
@@ -119,6 +121,14 @@ inp.addEventListener('input-change', (e) => console.log('Change:', e.detail.valu
   <span slot="prefix-icon" class="material-symbols-outlined">search</span>
   <span slot="suffix-icon" class="material-symbols-outlined">person</span>
 </snice-input>
+
+<!-- Vertical alignment (when host has explicit height) -->
+<snice-input style="height:200px" align="top"></snice-input>
+<snice-input style="height:200px" align="center"></snice-input>
+<snice-input style="height:200px" align="bottom"></snice-input>
+
+<!-- Stretch input to fill height -->
+<snice-input style="height:200px" stretch></snice-input>
 ```
 
 ## Features
