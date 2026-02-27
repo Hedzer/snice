@@ -248,37 +248,6 @@ export function applyElementFunctionality(constructor: any) {
         // This uses differential rendering with template system
         // Defer initial render to next microtask to allow property bindings
         // from parent to be set first (avoids infinite loops in nested elements)
-        if (this[RENDER_METHOD]) {
-          queueMicrotask(() => {
-            requestRender(this, true);
-            // Setup observers after first render completes so shadow DOM content exists
-            try {
-              setupObservers(this, this);
-            } catch (error) {
-              console.error(`Error setting up observers for ${this.tagName}:`, error);
-            }
-
-            // Mark element as ready after initial render completes
-            if (this[READY_RESOLVE]) {
-              this[READY_RESOLVE]();
-              this[READY_RESOLVE] = null;
-            }
-          });
-        } else {
-          // No render method, setup observers immediately
-          try {
-            setupObservers(this, this);
-          } catch (error) {
-            console.error(`Error setting up observers for ${this.tagName}:`, error);
-          }
-
-          // Mark element as ready immediately if no render method
-          if (this[READY_RESOLVE]) {
-            this[READY_RESOLVE]();
-            this[READY_RESOLVE] = null;
-          }
-        }
-
         // Setup @on event handlers (v2.5.4 compatibility restored!)
         setupEventHandlers(this, this);
 
@@ -296,12 +265,31 @@ export function applyElementFunctionality(constructor: any) {
           originalConnectedCallback.call(this);
         }
       } finally {
-        // Ready is now resolved inside the render microtask (or immediately if no render)
-        // This ensures ready waits for initial render to complete
+        // Ready resolve is handled inside the render/ready microtask below
       }
 
-      // Call @ready handlers after everything is set up and ready promise is resolved
+      // v4.16.1: Render, run @ready handlers, THEN resolve .ready promise
+      // This ensures `await el.ready` waits for both initial render AND all async @ready() methods
+      //
+      // We await a microtask boundary (to defer render for parent property bindings),
+      // then run render + @ready handlers sequentially, then resolve .ready.
       const readyHandlers = constructor[READY_HANDLERS];
+
+      // Await one microtask to defer initial render (allows parent property bindings)
+      await new Promise<void>(r => queueMicrotask(r));
+
+      if (this[RENDER_METHOD]) {
+        requestRender(this, true);
+      }
+
+      // Setup observers after render so shadow DOM content exists
+      try {
+        setupObservers(this, this);
+      } catch (error) {
+        console.error(`Error setting up observers for ${this.tagName}:`, error);
+      }
+
+      // Run @ready handlers serially, awaiting each
       if (readyHandlers) {
         for (const handler of readyHandlers) {
           try {
@@ -310,6 +298,12 @@ export function applyElementFunctionality(constructor: any) {
             console.error(`Error in @ready handler ${handler.methodName}:`, error);
           }
         }
+      }
+
+      // NOW resolve — render done AND all @ready handlers complete
+      if (this[READY_RESOLVE]) {
+        this[READY_RESOLVE]();
+        this[READY_RESOLVE] = null;
       }
     };
     
