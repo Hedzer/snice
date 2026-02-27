@@ -101,6 +101,48 @@
   gap: 3px;
 }
 
+.paint-swatch-select {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px dashed var(--snice-color-text-tertiary, hsl(0 0% 55%));
+  padding: 0;
+  background: transparent;
+  transition: all 0.15s;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.paint-swatch-select::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.paint-swatch-select::-webkit-color-swatch {
+  border: none;
+  border-radius: 50%;
+}
+
+.paint-swatch-select::-moz-color-swatch {
+  border: none;
+  border-radius: 50%;
+}
+
+.paint-swatch-select.used {
+  border: 2px solid transparent;
+}
+
+.paint-swatch-select.active {
+  border-color: var(--snice-color-primary, hsl(207 90% 54%));
+  box-shadow: 0 0 0 1px var(--snice-color-primary, hsl(207 90% 54%));
+}
+
+.paint-swatch-select:hover {
+  transform: scale(1.2);
+}
+
 .paint-size-slider {
   width: 34px;
   accent-color: var(--snice-color-primary, hsl(207 90% 54%));
@@ -136,4 +178,22 @@
 :host([disabled]) .paint-toolbar {
   opacity: 0.5;
   pointer-events: none;
+}
+
+/* Slotted toolbar content */
+::slotted([slot="toolbar-start"]),
+::slotted([slot="toolbar-end"]),
+::slotted([slot="tools"]) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+::slotted([slot="colors"]),
+::slotted([slot="size"]) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
 }

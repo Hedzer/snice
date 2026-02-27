@@ -24,10 +24,15 @@ export class SnicePaint extends HTMLElement implements SnicePaintElement {
   @property({ type: String, attribute: 'background-color' })
   backgroundColor: string = '#ffffff';
 
+  @property({ type: Number, attribute: 'color-selects' })
+  colorSelects: number = 0;
+
   @property({ type: Boolean })
   disabled: boolean = false;
 
   private _colors: string[] = DEFAULT_COLORS;
+  private _customSelectColors: string[] = [];
+  private _customSelectUsed: Set<number> = new Set();
   private _tool: 'pen' | 'eraser' = 'pen';
   private canvas: HTMLCanvasElement | null = null;
   private ctx: CanvasRenderingContext2D | null = null;
@@ -87,38 +92,59 @@ export class SnicePaint extends HTMLElement implements SnicePaintElement {
   @render()
   renderContent() {
     const ctrls = this.activeControls;
-    const hasToolbar = ctrls.size > 0;
+    const hasSlottedToolbar = !!this.querySelector('[slot="toolbar-start"],[slot="colors"],[slot="size"],[slot="tools"],[slot="toolbar-end"]');
+    const hasToolbar = ctrls.size > 0 || hasSlottedToolbar;
 
     return html`
       <div class="paint-container" part="base">
         ${hasToolbar ? html`
           <div class="paint-toolbar" part="toolbar">
-            ${ctrls.has('colors') ? html`
-              <span class="paint-toolbar-label">Color</span>
-              <div class="paint-swatches">
-                ${this._colors.map(c => html`
-                  <span
-                    class="paint-swatch ${c === this.color && this._tool === 'pen' ? 'active' : ''}"
-                    style="--c:${c}"
-                    @click=${() => this.selectColor(c)}
-                  ></span>
-                `)}
-              </div>
-              <div class="paint-toolbar-sep"></div>
-            ` : ''}
-            ${ctrls.has('size') ? html`
-              <span class="paint-toolbar-label">Size</span>
-              <input
-                type="range"
-                class="paint-size-slider"
-                min="${this.minStrokeWidth}"
-                max="${this.maxStrokeWidth}"
-                .value="${String(this.strokeWidth)}"
-                @input=${(e: Event) => { this.strokeWidth = +(e.target as HTMLInputElement).value; }}
-                title="Brush size"
-              >
-              <div class="paint-toolbar-sep"></div>
-            ` : ''}
+            <slot name="toolbar-start"></slot>
+            <slot name="colors">
+              ${ctrls.has('colors') ? html`
+                <span class="paint-toolbar-label">Color</span>
+                <div class="paint-swatches">
+                  ${this._colors.map(c => html`
+                    <span
+                      class="paint-swatch ${c === this.color && this._tool === 'pen' ? 'active' : ''}"
+                      style="--c:${c}"
+                      @click=${() => this.selectColor(c)}
+                    ></span>
+                  `)}
+                  ${Array.from({ length: this.colorSelects }, (_, i) => {
+                    const c = this._customSelectColors[i] || '#cccccc';
+                    const used = this._customSelectUsed.has(i);
+                    const active = used && c === this.color && this._tool === 'pen';
+                    return html`
+                      <input
+                        type="color"
+                        class="paint-swatch-select ${used ? 'used' : ''} ${active ? 'active' : ''}"
+                        .value=${c}
+                        @input=${(e: Event) => this.handleCustomColorInput(i, (e.target as HTMLInputElement).value)}
+                        @change=${(e: Event) => this.handleCustomColorChange(i, (e.target as HTMLInputElement).value)}
+                        title="Custom color ${i + 1}"
+                      >
+                    `;
+                  })}
+                </div>
+                <div class="paint-toolbar-sep"></div>
+              ` : ''}
+            </slot>
+            <slot name="size">
+              ${ctrls.has('size') ? html`
+                <span class="paint-toolbar-label">Size</span>
+                <input
+                  type="range"
+                  class="paint-size-slider"
+                  min="${this.minStrokeWidth}"
+                  max="${this.maxStrokeWidth}"
+                  .value="${String(this.strokeWidth)}"
+                  @input=${(e: Event) => { this.strokeWidth = +(e.target as HTMLInputElement).value; }}
+                  title="Brush size"
+                >
+                <div class="paint-toolbar-sep"></div>
+              ` : ''}
+            </slot>
             ${ctrls.has('eraser') ? html`
               <button
                 class="paint-btn ${this._tool === 'eraser' ? 'active' : ''}"
@@ -127,6 +153,9 @@ export class SnicePaint extends HTMLElement implements SnicePaintElement {
               >
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 14h7M3.5 12l8-8 3 3-8 8H3.5v-3z"/></svg>
               </button>
+            ` : ''}
+            <slot name="tools"></slot>
+            ${ctrls.has('eraser') || this.querySelector('[slot="tools"]') ? html`
               <div class="paint-toolbar-sep"></div>
             ` : ''}
             ${ctrls.has('undo') ? html`
@@ -144,6 +173,7 @@ export class SnicePaint extends HTMLElement implements SnicePaintElement {
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12"/><path d="M5.3 4V2.7h5.4V4"/><path d="M6 7v5M10 7v5"/><path d="M3.3 4l.7 9.3h8l.7-9.3"/></svg>
               </button>
             ` : ''}
+            <slot name="toolbar-end"></slot>
           </div>
         ` : ''}
         <div class="paint-canvas-wrap" part="canvas-wrap">
@@ -323,6 +353,22 @@ export class SnicePaint extends HTMLElement implements SnicePaintElement {
 
     this.ctx.lineTo(p1.x, p1.y);
     this.ctx.stroke();
+  }
+
+  private handleCustomColorInput(index: number, color: string) {
+    this._customSelectColors[index] = color;
+    this._customSelectUsed.add(index);
+    this.color = color;
+    this._tool = 'pen';
+  }
+
+  @dispatch('color-select', { bubbles: true, composed: true })
+  private handleCustomColorChange(index: number, color: string) {
+    this._customSelectColors[index] = color;
+    this._customSelectUsed.add(index);
+    this.color = color;
+    this._tool = 'pen';
+    return { color, index };
   }
 
   private selectColor(c: string) {

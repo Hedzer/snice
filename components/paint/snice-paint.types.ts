@@ -22,6 +22,7 @@ export interface SnicePaintElement extends HTMLElement {
   maxStrokeWidth: number;
   controls: string;
   backgroundColor: string;
+  colorSelects: number;
   disabled: boolean;
 
   undo(): void;
@@ -40,4 +41,5 @@ export interface SnicePaintEventMap {
   'paint-clear': CustomEvent<void>;
   'paint-undo': CustomEvent<void>;
   'paint-redo': CustomEvent<void>;
+  'color-select': CustomEvent<{ color: string; index: number }>;
 }
