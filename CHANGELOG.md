@@ -1,3 +1,20 @@
+# [4.17.0](https://gitlab.com/Hedzer/snice/compare/v4.16.0...v4.17.0) (2026-02-27)
+
+
+### Bug Fixes
+
+* .ready promise now awaits both initial render and all [@ready](https://gitlab.com/ready) handlers ([cd376c0](https://gitlab.com/Hedzer/snice/commit/cd376c049f05cc099fdf8ff84a0cad5b15736de0))
+
+
+### Features
+
+* add CSS ::part() attributes to accordion, chat, input, login, pagination, tag-input, toast, tooltip ([ff11192](https://gitlab.com/Hedzer/snice/commit/ff11192819bfab0ec2fd6b2dce32bf16fd4a88b4))
+* add CSS ::part() attributes to all remaining components ([33fd6e2](https://gitlab.com/Hedzer/snice/commit/33fd6e20ea0b50c89849a360a4da3aa9392d3e1b))
+* add docs-verify hook to validate component documentation on edit ([4b3a47a](https://gitlab.com/Hedzer/snice/commit/4b3a47ad5391dd37f430c7150658a7ce11f922df))
+* dev orchestration script, standards hook, update design tokens docs ([d85b1b8](https://gitlab.com/Hedzer/snice/commit/d85b1b8e5c1237deac22febe65f71a8f49732a8c))
+* input react adapter and docs for align, labelAlign, stretch props ([94ac061](https://gitlab.com/Hedzer/snice/commit/94ac0614a186b461584fbb12bdada139565b6c59))
+* paint custom color picker inputs, toolbar slots, color-select event ([6122dec](https://gitlab.com/Hedzer/snice/commit/6122dec59b953ab9dc859121c44533b991f2bf3d))
+
 # [4.16.0](https://gitlab.com/Hedzer/snice/compare/v4.15.0...v4.16.0) (2026-02-26)
 
 
