@@ -1,9 +1,9 @@
     <div class="comp-section">
       <h3>Code Block</h3>
-      <p class="comp-desc">Syntax-highlighted code display</p>
+      <p class="comp-desc">Syntax-highlighted code display with formatting</p>
       <div class="comp-split comp-split-stacked">
         <div class="comp-split-demo">
-          <snice-code-block style="width:100%" language="snice" grammar="components/grammars/snice.json?v=c8113e9" show-line-numbers copyable theme="dark" filename="counter.ts">import { element, property, render, dispatch } from 'snice';
+          <snice-code-block style="width:100%" language="snice" grammar="components/grammars/snice.json?v=89d245a" format="pretty" show-line-numbers copyable theme="dark" filename="counter.ts">import { element, property, render, dispatch } from 'snice';
 
 @element('my-counter')
 export class MyCounter extends HTMLElement {
@@ -48,15 +48,25 @@ export class MyCounter extends HTMLElement {
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=c8113e9">&lt;snice-code-block
+          <snice-code-block language="html" grammar="grammars/html.json?v=89d245a">&lt;snice-code-block
   language="snice"
-  grammar="grammars/snice.json?v=c8113e9"
+  grammar="grammars/snice.json"
+  format="pretty"
   show-line-numbers
   copyable
   filename="example.ts"
 &gt;
 const x = 42;
-&lt;/snice-code-block&gt;</snice-code-block>
+&lt;/snice-code-block&gt;
+
+&lt;!-- Custom formatter (same pattern as setHighlighter) --&gt;
+&lt;script&gt;
+  const cb = document.querySelector('snice-code-block');
+  cb.setFormatter((code, language) =&gt; {
+    // format → then highlight runs automatically
+    return myPrettier.format(code, { parser: language });
+  });
+&lt;/script&gt;</snice-code-block>
         </div>
       </div>
     </div>
