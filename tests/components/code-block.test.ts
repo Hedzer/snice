@@ -1,9 +1,13 @@
 import { describe, it, expect, afterEach, beforeAll, afterAll } from 'vitest';
 import { createComponent, removeComponent, wait } from './test-utils';
 import '../../components/code-block/snice-code-block';
-import type { SniceCodeBlockElement } from '../../components/code-block/snice-code-block.types';
+import type { SniceCodeBlockElement, FormatterFunction } from '../../components/code-block/snice-code-block.types';
 import { highlightCode, tokenize, registerGrammar, unregisterGrammar, getGrammar } from '../../components/code-block/highlighter';
 import type { GrammarDefinition } from '../../components/code-block/highlighter';
+import { createJsonFormatter } from '../../components/code-block/formatters/json';
+import { createIndentFormatter } from '../../components/code-block/formatters/indent';
+import { formatCode } from '../../components/code-block/formatter';
+import type { FormatRules } from '../../components/code-block/formatter';
 
 // Import grammar JSON files for engine tests
 import typescriptGrammar from '../../components/code-block/grammars/typescript.json';
@@ -90,6 +94,79 @@ describe('snice-code-block', () => {
     const event = await eventPromise;
     expect(event.detail.url).toBe('grammars/typescript.json');
     expect(event.detail.codeBlock).toBe(codeBlock);
+  });
+
+  it('should have default format property', async () => {
+    codeBlock = await createComponent<SniceCodeBlockElement>('snice-code-block');
+    expect(codeBlock.format).toBe('');
+  });
+
+  it('should accept format attribute', async () => {
+    codeBlock = await createComponent<SniceCodeBlockElement>('snice-code-block', { format: 'pretty' });
+    expect(codeBlock.format).toBe('pretty');
+  });
+
+  it('should accept a formatter via setFormatter', async () => {
+    codeBlock = await createComponent<SniceCodeBlockElement>('snice-code-block');
+    const fn: FormatterFunction = (code) => code.toUpperCase();
+    codeBlock.setFormatter(fn);
+  });
+
+  it('should format code when format is set and formatter set', async () => {
+    codeBlock = await createComponent<SniceCodeBlockElement>('snice-code-block');
+    codeBlock.setFormatter((code) => code.toUpperCase());
+    codeBlock.format = 'pretty';
+    codeBlock.code = 'hello world';
+    await codeBlock.highlight();
+    await wait(50);
+    expect(codeBlock.code).toBe('HELLO WORLD');
+  });
+
+  it('should not format code when format is empty', async () => {
+    codeBlock = await createComponent<SniceCodeBlockElement>('snice-code-block');
+    codeBlock.setFormatter((code) => code.toUpperCase());
+    codeBlock.format = '';
+    codeBlock.code = 'hello world';
+    await codeBlock.highlight();
+    await wait(50);
+    expect(codeBlock.code).toBe('hello world');
+  });
+
+  it('should dispatch format events', async () => {
+    codeBlock = await createComponent<SniceCodeBlockElement>('snice-code-block');
+    const events: string[] = [];
+    codeBlock.addEventListener('code-before-format', () => events.push('before'));
+    codeBlock.addEventListener('code-after-format', () => events.push('after'));
+    codeBlock.setFormatter((code) => code);
+    codeBlock.format = 'pretty';
+    codeBlock.code = 'test';
+    await codeBlock.highlight();
+    await wait(50);
+    expect(events).toEqual(['before', 'after']);
+  });
+
+  it('should handle async formatters', async () => {
+    codeBlock = await createComponent<SniceCodeBlockElement>('snice-code-block');
+    codeBlock.setFormatter(async (code) => {
+      await new Promise(r => setTimeout(r, 10));
+      return code.trim() + '\n';
+    });
+    codeBlock.format = 'pretty';
+    codeBlock.code = '  hello  ';
+    await codeBlock.highlight();
+    await wait(50);
+    expect(codeBlock.code).toBe('hello\n');
+  });
+
+  it('should gracefully handle formatter errors', async () => {
+    codeBlock = await createComponent<SniceCodeBlockElement>('snice-code-block');
+    codeBlock.setFormatter(() => { throw new Error('format fail'); });
+    codeBlock.format = 'pretty';
+    codeBlock.code = 'hello';
+    await codeBlock.highlight();
+    await wait(50);
+    // Code should remain unchanged on error
+    expect(codeBlock.code).toBe('hello');
   });
 
   it('should read code from slotted text content', async () => {
@@ -945,5 +1022,276 @@ describe('highlighter engine', () => {
         expect(tagTokens.some(t => t.text === '<li')).toBe(true);
       });
     });
+  });
+});
+
+describe('dedent (whitespace preservation)', () => {
+  let codeBlock: SniceCodeBlockElement;
+
+  afterEach(() => {
+    if (codeBlock) codeBlock.remove();
+  });
+
+  it('should strip common leading indent from slotted content', async () => {
+    const el = document.createElement('snice-code-block') as SniceCodeBlockElement;
+    el.innerHTML = `
+      const x = 1;
+      const y = 2;
+    `;
+    document.body.appendChild(el);
+    await (el as any).ready;
+    await wait(50);
+    expect(el.code).toBe('const x = 1;\nconst y = 2;');
+    codeBlock = el;
+  });
+
+  it('should preserve relative indentation', async () => {
+    const el = document.createElement('snice-code-block') as SniceCodeBlockElement;
+    el.innerHTML = `
+      function foo() {
+        return 1;
+      }
+    `;
+    document.body.appendChild(el);
+    await (el as any).ready;
+    await wait(50);
+    expect(el.code).toBe('function foo() {\n  return 1;\n}');
+    codeBlock = el;
+  });
+
+  it('should handle content with no common indent', async () => {
+    const el = document.createElement('snice-code-block') as SniceCodeBlockElement;
+    el.textContent = 'no indent';
+    document.body.appendChild(el);
+    await (el as any).ready;
+    await wait(50);
+    expect(el.code).toBe('no indent');
+    codeBlock = el;
+  });
+
+  it('should handle content with blank lines', async () => {
+    const el = document.createElement('snice-code-block') as SniceCodeBlockElement;
+    el.innerHTML = `
+      line1
+
+      line3
+    `;
+    document.body.appendChild(el);
+    await (el as any).ready;
+    await wait(50);
+    expect(el.code).toBe('line1\n\nline3');
+    codeBlock = el;
+  });
+});
+
+describe('JSON formatter', () => {
+  it('should format minified JSON', () => {
+    const formatter = createJsonFormatter();
+    const result = formatter('{"a":1,"b":[2,3]}', 'json');
+    expect(result).toBe('{\n  "a": 1,\n  "b": [\n    2,\n    3\n  ]\n}');
+  });
+
+  it('should respect custom indent', () => {
+    const formatter = createJsonFormatter({ indent: 4 });
+    const result = formatter('{"a":1}', 'json');
+    expect(result).toBe('{\n    "a": 1\n}');
+  });
+
+  it('should return original code for non-JSON languages', () => {
+    const formatter = createJsonFormatter();
+    const result = formatter('not json', 'javascript');
+    expect(result).toBe('not json');
+  });
+
+  it('should return original code for invalid JSON', () => {
+    const formatter = createJsonFormatter();
+    const result = formatter('{bad json', 'json');
+    expect(result).toBe('{bad json');
+  });
+});
+
+describe('indent formatter', () => {
+  it('should re-indent collapsed JS code', () => {
+    const formatter = createIndentFormatter({ tabSize: 2 });
+    const code = 'function foo() {\nreturn 1;\n}';
+    const result = formatter(code, 'javascript');
+    expect(result).toBe('function foo() {\n  return 1;\n}');
+  });
+
+  it('should handle nested braces', () => {
+    const formatter = createIndentFormatter({ tabSize: 2 });
+    const code = 'if (true) {\nif (false) {\nx();\n}\n}';
+    const result = formatter(code, 'javascript');
+    expect(result).toBe('if (true) {\n  if (false) {\n    x();\n  }\n}');
+  });
+
+  it('should preserve empty lines', () => {
+    const formatter = createIndentFormatter({ tabSize: 2 });
+    const code = 'a {\n\nb\n}';
+    const result = formatter(code, 'css');
+    expect(result).toBe('a {\n\n  b\n}');
+  });
+
+  it('should support tabs', () => {
+    const formatter = createIndentFormatter({ useTabs: true });
+    const code = '.a {\ncolor: red;\n}';
+    const result = formatter(code, 'css');
+    expect(result).toBe('.a {\n\tcolor: red;\n}');
+  });
+
+  it('should not count braces inside strings', () => {
+    const formatter = createIndentFormatter({ tabSize: 2 });
+    const code = 'const x = "{";\nconst y = 1;';
+    const result = formatter(code, 'javascript');
+    expect(result).toBe('const x = "{";\nconst y = 1;');
+  });
+});
+
+describe('formatCode (declarative rule-based formatter)', () => {
+  it('should format JSON with pretty rules', () => {
+    const rules: FormatRules = {
+      tabSize: 2,
+      newlineAfter: '[{\\[,]',
+      newlineBefore: '[}\\]]',
+      spaceAfter: '[:]',
+      indent: '[{\\[]',
+      dedent: '[}\\]]',
+      skipStrings: true,
+    };
+    const result = formatCode('{"a":1,"b":2}', rules);
+    expect(result).toContain('"a": 1');
+    expect(result).toContain('"b": 2');
+    // Should have indentation
+    const lines = result.split('\n');
+    expect(lines.length).toBeGreaterThan(1);
+    expect(lines.some(l => l.startsWith('  '))).toBe(true);
+  });
+
+  it('should apply newlineAfter rule', () => {
+    const rules: FormatRules = { newlineAfter: '[;]' };
+    const result = formatCode('a;b;c', rules);
+    expect(result).toBe('a;\nb;\nc');
+  });
+
+  it('should apply newlineBefore rule', () => {
+    const rules: FormatRules = { newlineBefore: '[}]', indent: '[{]', dedent: '[}]' };
+    const result = formatCode('{a}', rules);
+    expect(result).toContain('\n}');
+  });
+
+  it('should apply spaceAfter rule', () => {
+    const rules: FormatRules = { spaceAfter: '[:]' };
+    const result = formatCode('a:b', rules);
+    expect(result).toBe('a: b');
+  });
+
+  it('should apply spaceBefore rule', () => {
+    const rules: FormatRules = { spaceBefore: '[{]' };
+    const result = formatCode('a{', rules);
+    expect(result).toBe('a {');
+  });
+
+  it('should apply spaceAround rule', () => {
+    const rules: FormatRules = { spaceAround: '[=]' };
+    const result = formatCode('a=b', rules);
+    expect(result).toBe('a = b');
+  });
+
+  it('should apply indent/dedent rules', () => {
+    const rules: FormatRules = {
+      tabSize: 2,
+      indent: '[{]',
+      dedent: '[}]',
+      newlineAfter: '[{]',
+      newlineBefore: '[}]',
+    };
+    const result = formatCode('{a}', rules);
+    expect(result).toContain('  a');
+  });
+
+  it('should use tabs when useTabs is true', () => {
+    const rules: FormatRules = {
+      useTabs: true,
+      indent: '[{]',
+      dedent: '[}]',
+      newlineAfter: '[{]',
+      newlineBefore: '[}]',
+    };
+    const result = formatCode('{a}', rules);
+    expect(result).toContain('\ta');
+  });
+
+  it('should skip strings when skipStrings is true', () => {
+    const rules: FormatRules = {
+      newlineAfter: '[{]',
+      skipStrings: true,
+    };
+    const result = formatCode('"a{b"', rules);
+    // The { inside the string should not trigger a newline
+    expect(result).toBe('"a{b"');
+  });
+
+  it('should trim trailing whitespace by default', () => {
+    const rules: FormatRules = { newlineAfter: '[;]' };
+    const result = formatCode('a ;  b', rules);
+    const lines = result.split('\n');
+    lines.forEach(l => expect(l).toBe(l.replace(/\s+$/, '')));
+  });
+
+  it('should collapse blank lines', () => {
+    const rules: FormatRules = {
+      collapseBlankLines: 1,
+      newlineAfter: '[;]',
+    };
+    const result = formatCode('a;\n\n\n\nb', rules);
+    const blankRuns = result.match(/\n{3,}/);
+    expect(blankRuns).toBeNull();
+  });
+
+  it('should return empty string for empty input', () => {
+    const rules: FormatRules = { tabSize: 2 };
+    expect(formatCode('', rules)).toBe('');
+  });
+
+  it('should handle CSS formatting rules', () => {
+    const rules: FormatRules = {
+      tabSize: 2,
+      newlineAfter: '[{;]',
+      newlineBefore: '[}]',
+      spaceAfter: '[:]',
+      indent: '[{]',
+      dedent: '[}]',
+      skipStrings: true,
+      skipComments: true,
+    };
+    const result = formatCode('.a{color:red;display:block}', rules);
+    expect(result).toContain('color: red');
+    expect(result).toContain('  color');
+  });
+
+  it('should not format when format name does not match grammar', async () => {
+    let codeBlock: SniceCodeBlockElement;
+    codeBlock = await createComponent<SniceCodeBlockElement>('snice-code-block');
+    codeBlock.format = 'nonexistent';
+    codeBlock.code = '{"a":1}';
+    await codeBlock.highlight();
+    await wait(50);
+    // Code should not be formatted (no matching formatter name)
+    expect(codeBlock.code).toBe('{"a":1}');
+    removeComponent(codeBlock as HTMLElement);
+  });
+
+  it('setFormatter should override grammar-based formatter', async () => {
+    let codeBlock: SniceCodeBlockElement;
+    codeBlock = await createComponent<SniceCodeBlockElement>('snice-code-block');
+    // Set an imperative formatter that uppercases
+    codeBlock.setFormatter((code) => code.toUpperCase());
+    codeBlock.format = 'pretty';
+    codeBlock.code = 'hello';
+    await codeBlock.highlight();
+    await wait(50);
+    // setFormatter wins over grammar-based
+    expect(codeBlock.code).toBe('HELLO');
+    removeComponent(codeBlock as HTMLElement);
   });
 });

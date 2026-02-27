@@ -11,6 +11,7 @@ export interface PaintProps extends SniceBaseProps {
   maxStrokeWidth?: any;
   controls?: any;
   backgroundColor?: any;
+  colorSelects?: any;
   disabled?: any;
 
 }
@@ -33,7 +34,7 @@ export interface PaintProps extends SniceBaseProps {
  */
 export const Paint = createReactAdapter<PaintProps>({
   tagName: 'snice-paint',
-  properties: ["color","strokeWidth","minStrokeWidth","maxStrokeWidth","controls","backgroundColor","disabled"],
+  properties: ["color","strokeWidth","minStrokeWidth","maxStrokeWidth","controls","backgroundColor","colorSelects","disabled"],
   events: {},
   formAssociated: false
 });

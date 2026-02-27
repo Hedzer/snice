@@ -1,5 +1,6 @@
 import { element, property, watch, request, dispatch, styles, render, html, css, query, ready, on } from 'snice';
 import { highlightCode } from './highlighter';
+import { formatCode } from './formatter';
 import cssContent from './snice-code-block.css?inline';
 import type { GrammarDefinition } from './highlighter';
 import {
@@ -9,10 +10,22 @@ import {
   type SniceCodeBlockElement,
   type CodeCopyDetail,
   type CodeHighlightDetail,
+  type CodeFormatDetail,
   type GrammarRequestDetail,
   type HighlighterFunction,
+  type FormatterFunction,
   type GrammarLoadedDetail
 } from './snice-code-block.types';
+
+function dedent(text: string): string {
+  const lines = text.replace(/^\n+/, '').replace(/\n\s*$/, '').split('\n');
+  if (lines.length === 0) return '';
+  const indents = lines.filter(l => l.trim()).map(l => l.match(/^(\s*)/)?.[1].length ?? 0);
+  if (indents.length === 0) return lines.join('\n');
+  const minIndent = Math.min(...indents);
+  if (minIndent === 0) return lines.join('\n');
+  return lines.map(l => l.slice(minIndent)).join('\n');
+}
 
 @element('snice-code-block')
 export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement {
@@ -42,7 +55,11 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
   @property({ attribute: 'fetch-mode' })
   fetchMode: FetchMode = 'native';
 
+  @property({  })
+  format = '';
+
   public highlighter?: HighlighterFunction;
+  private _formatter?: FormatterFunction;
 
   private copied = false;
   private highlightedCode = '';
@@ -74,6 +91,16 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
 
   @dispatch('code-after-highlight', { bubbles: true, composed: true })
   private dispatchAfterHighlightEvent(): CodeHighlightDetail {
+    return { code: this.code, language: this.language, codeBlock: this };
+  }
+
+  @dispatch('code-before-format', { bubbles: true, composed: true })
+  private dispatchBeforeFormatEvent(): CodeFormatDetail {
+    return { code: this.code, language: this.language, codeBlock: this };
+  }
+
+  @dispatch('code-after-format', { bubbles: true, composed: true })
+  private dispatchAfterFormatEvent(): CodeFormatDetail {
     return { code: this.code, language: this.language, codeBlock: this };
   }
 
@@ -136,7 +163,9 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
   }
 
   private readSlottedContent() {
-    const text = this.textContent?.trim();
+    const raw = this.textContent;
+    if (!raw) return;
+    const text = dedent(raw);
     if (text) {
       this.code = text;
       this.highlight();
@@ -156,6 +185,13 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
   onFetchModeChange() {
     this.loadedGrammar = null;
     this.loadedGrammarUrl = null;
+    if (this.code) {
+      this.highlight();
+    }
+  }
+
+  @watch('format')
+  onFormatChange() {
     if (this.code) {
       this.highlight();
     }
@@ -231,6 +267,10 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
     this.highlighter = highlighter;
   }
 
+  setFormatter(formatter: FormatterFunction) {
+    this._formatter = formatter;
+  }
+
   setGrammar(grammar: GrammarDefinition) {
     this.loadedGrammar = grammar;
     this.loadedGrammarUrl = null;
@@ -282,6 +322,29 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
     if (!this.code) return;
 
     const version = ++this.highlightVersion;
+
+    // Resolve formatter: imperative setFormatter() wins, then grammar-based
+    let formatFn = this._formatter;
+    if (!formatFn && this.format) {
+      const grammar = await this.resolveGrammar();
+      if (version !== this.highlightVersion) return;
+      if (grammar?.formatters?.[this.format]) {
+        const rules = grammar.formatters[this.format];
+        formatFn = (code: string) => formatCode(code, rules);
+      }
+    }
+
+    if (formatFn && this.format) {
+      this.dispatchBeforeFormatEvent();
+      try {
+        const formatted = await formatFn(this.code, this.language);
+        if (version !== this.highlightVersion) return;
+        this.code = formatted;
+        this.dispatchAfterFormatEvent();
+      } catch (error) {
+        console.error('Code formatting failed:', error);
+      }
+    }
 
     this.dispatchBeforeHighlightEvent();
 
