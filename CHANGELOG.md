@@ -1,3 +1,11 @@
+# [4.18.0](https://gitlab.com/Hedzer/snice/compare/v4.17.0...v4.18.0) (2026-02-27)
+
+
+### Features
+
+* code-block formatter support, content dedent, paint colorSelects adapter ([b609b9a](https://gitlab.com/Hedzer/snice/commit/b609b9a97a85f3d41599210cbc1d33b8b1d49986))
+* declarative grammar-based code formatter engine with embedded format rules ([b6e2db3](https://gitlab.com/Hedzer/snice/commit/b6e2db3057941b3434c89afd6fdd3b027e7a458c))
+
 # [4.17.0](https://gitlab.com/Hedzer/snice/compare/v4.16.0...v4.17.0) (2026-02-27)
 
 
