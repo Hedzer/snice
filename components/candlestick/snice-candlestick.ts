@@ -589,18 +589,18 @@ export class SniceCandlestick extends HTMLElement implements SniceCandlestickEle
   @render({ once: true })
   renderContent() {
     return html/*html*/`
-      <div class="candlestick"
+      <div class="candlestick" part="base"
            style="height: ${this.svgHeight}px;"
            @mousemove=${this.handleMouseMove}
            @mouseleave=${this.handleMouseLeave}
            @mousedown=${this.handleMouseDown}
            @mouseup=${this.handleMouseUp}
            @wheel=${this.handleWheel}>
-        <svg class="candlestick__svg" viewBox="0 0 ${this.svgWidth} ${this.svgHeight}" preserveAspectRatio="none" role="img" aria-label="Candlestick chart with ${this.data.length} data points">
+        <svg class="candlestick__svg" part="canvas" viewBox="0 0 ${this.svgWidth} ${this.svgHeight}" preserveAspectRatio="none" role="img" aria-label="Candlestick chart with ${this.data.length} data points">
           <g class="candlestick__chart-content"></g>
           <g class="candlestick__crosshair-group"></g>
         </svg>
-        <div class="candlestick__tooltip"></div>
+        <div class="candlestick__tooltip" part="tooltip"></div>
       </div>
     `;
   }

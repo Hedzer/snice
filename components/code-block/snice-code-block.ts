@@ -10,7 +10,8 @@ import {
   type CodeCopyDetail,
   type CodeHighlightDetail,
   type GrammarRequestDetail,
-  type HighlighterFunction
+  type HighlighterFunction,
+  type GrammarLoadedDetail
 } from './snice-code-block.types';
 
 @element('snice-code-block')
@@ -79,6 +80,11 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
   @dispatch('grammar-request', { bubbles: true, composed: true })
   private dispatchGrammarRequestEvent(): GrammarRequestDetail {
     return { url: this.grammar, language: this.language, codeBlock: this };
+  }
+
+  @dispatch('grammar-loaded', { bubbles: true, composed: true })
+  private dispatchGrammarLoadedEvent(grammar: any, url: string): GrammarLoadedDetail {
+    return { grammar, url, language: this.language, codeBlock: this };
   }
 
   @request(LOAD_GRAMMAR_REQUEST)
@@ -228,6 +234,7 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
   setGrammar(grammar: GrammarDefinition) {
     this.loadedGrammar = grammar;
     this.loadedGrammarUrl = null;
+    this.dispatchGrammarLoadedEvent(grammar, '');
     if (this.code) {
       this.highlight();
     }
@@ -245,6 +252,7 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
           if (grammar) {
             this.loadedGrammar = grammar;
             this.loadedGrammarUrl = this.grammar;
+            this.dispatchGrammarLoadedEvent(grammar, this.grammar);
           }
           return grammar;
         }
@@ -253,6 +261,7 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
           if (grammar) {
             this.loadedGrammar = grammar;
             this.loadedGrammarUrl = this.grammar;
+            this.dispatchGrammarLoadedEvent(grammar, this.grammar);
           }
           return grammar;
         }

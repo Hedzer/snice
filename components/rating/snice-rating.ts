@@ -70,7 +70,7 @@ export class SniceRating extends HTMLElement implements SniceRatingElement {
     const stars = Array.from({ length: this.max }, (_, i) => {
       const fill = this.getStarFill(i);
       return html`
-        <span class="star"
+        <span part="star" class="star"
               role="radio"
               aria-checked="${fill > 0 ? 'true' : 'false'}"
               aria-label="${`${i + 1} of ${this.max}`}"
@@ -82,7 +82,7 @@ export class SniceRating extends HTMLElement implements SniceRatingElement {
     });
 
     return html`
-      <div class="rating"
+      <div part="base" class="rating"
            role="radiogroup"
            aria-label="Rating"
            tabindex="${this.readonly ? '-1' : '0'}"

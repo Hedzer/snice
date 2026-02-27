@@ -80,7 +80,7 @@ export class SniceQRCode extends HTMLElement implements SniceQRCodeElement {
     }
 
     return html/*html*/`
-      <div class="qr-container"></div>
+      <div part="base" class="qr-container"></div>
     `;
   }
 

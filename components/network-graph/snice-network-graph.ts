@@ -717,9 +717,9 @@ export class SniceNetworkGraph extends HTMLElement implements SniceNetworkGraphE
     const h = this.containerHeight || 400;
 
     return html/*html*/`
-      <div class="network-graph" role="img" aria-label="Network graph visualization">
-        <svg class="network-graph__svg" viewBox="0 0 ${w} ${h}"></svg>
-        <div class="network-graph__tooltip"></div>
+      <div class="network-graph" part="base" role="img" aria-label="Network graph visualization">
+        <svg class="network-graph__svg" part="canvas" viewBox="0 0 ${w} ${h}"></svg>
+        <div class="network-graph__tooltip" part="tooltip"></div>
       </div>
     `;
   }

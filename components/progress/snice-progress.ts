@@ -72,15 +72,15 @@ export class SniceProgress extends HTMLElement implements SniceProgressElement {
     const barStyle = this.indeterminate ? '' : `width: ${percentage}%`;
 
     return html/*html*/`
-      <div class="${progressClass}"
+      <div part="base" class="${progressClass}"
            role="progressbar"
            aria-valuenow="${this.value}"
            aria-valuemin="0"
            aria-valuemax="${this.max}"
            aria-label="${labelText}">
-        <div class="progress__bar" style="${barStyle}">
+        <div part="bar" class="progress__bar" style="${barStyle}">
           <if ${this.showLabel}>
-            <span class="progress__label">${labelText}</span>
+            <span part="label" class="progress__label">${labelText}</span>
           </if>
         </div>
       </div>
@@ -104,20 +104,22 @@ export class SniceProgress extends HTMLElement implements SniceProgressElement {
     const centerY = size / 2;
 
     return html/*html*/`
-      <div class="progress progress--circular"
+      <div part="base" class="progress progress--circular"
            role="progressbar"
            aria-valuenow="${this.value}"
            aria-valuemin="0"
            aria-valuemax="${this.max}"
            aria-label="${labelText}">
-        <svg class="progress__circle" viewBox="${viewBox}">
+        <svg part="circle" class="progress__circle" viewBox="${viewBox}">
           <circle
+            part="circle-bg"
             class="progress__circle-bg"
             cx="${centerX}"
             cy="${centerY}"
             r="${radius}"
           />
           <circle
+            part="circle-bar"
             class="progress__circle-bar"
             cx="${centerX}"
             cy="${centerY}"
@@ -127,7 +129,7 @@ export class SniceProgress extends HTMLElement implements SniceProgressElement {
           />
         </svg>
         <if ${this.showLabel && !this.indeterminate}>
-          <div class="progress__circle-label">${labelText}</div>
+          <div part="label" class="progress__circle-label">${labelText}</div>
         </if>
       </div>
     `;

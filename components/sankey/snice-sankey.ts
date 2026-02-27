@@ -571,13 +571,14 @@ export class SniceSankey extends HTMLElement implements SniceSankeyElement {
   renderContent() {
     return html/*html*/`
       <div class="sankey"
+           part="base"
            role="img"
            aria-label="Sankey diagram"
            @click=${(e: MouseEvent) => this.handleSvgClick(e)}
            @mousemove=${(e: MouseEvent) => this.handleSvgMouseMove(e)}
            @mouseleave=${() => this.handleSvgMouseLeave()}>
-        <div class="sankey__chart"></div>
-        <div class="sankey__tooltip">
+        <div class="sankey__chart" part="chart"></div>
+        <div class="sankey__tooltip" part="tooltip">
           <div class="sankey__tooltip-label"></div>
           <div class="sankey__tooltip-value"></div>
         </div>

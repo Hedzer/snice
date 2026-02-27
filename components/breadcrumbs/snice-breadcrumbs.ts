@@ -38,8 +38,8 @@ export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsEle
 
     return html/*html*/`
       <slot style="display: none" @slotchange="${() => this.handleSlotChange()}"></slot>
-      <nav aria-label="Breadcrumb" @click="${(e: Event) => this.handleClick(e)}">
-        <ol class="${breadcrumbClass}">
+      <nav part="base" aria-label="Breadcrumb" @click="${(e: Event) => this.handleClick(e)}">
+        <ol part="list" class="${breadcrumbClass}">
           ${visibleItems.map((item, index) => {
             const isLast = index === visibleItems.length - 1;
             const isActive = item.active || isLast;
@@ -49,7 +49,7 @@ export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsEle
             return html/*html*/`
               <li class="${itemClass}">
                 <if ${item.href && !isActive}>
-                  <a href="${item.href}"
+                  <a part="link" href="${item.href}"
                      class="breadcrumb-link"
                      aria-current="${isActive ? 'page' : ''}"
                      tabindex="0">
@@ -65,14 +65,14 @@ export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsEle
                   </span>
                 </if>
                 <if ${!isLast}>
-                  <span class="breadcrumb-separator" aria-hidden="true">
+                  <span part="separator" class="breadcrumb-separator" aria-hidden="true">
                     ${this.separator}
                   </span>
                 </if>
               </li>
               <if ${hasCollapsed && index === 0 && allItems.length > this.maxItems}>
                 <li class="breadcrumb-item">
-                  <button class="breadcrumb-ellipsis"
+                  <button part="ellipsis" class="breadcrumb-ellipsis"
                           aria-label="Show all breadcrumbs"
                           tabindex="0">
                     •••

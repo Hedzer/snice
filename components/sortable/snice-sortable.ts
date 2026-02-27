@@ -140,7 +140,7 @@ export class SniceSortable extends HTMLElement implements SniceSortableElement {
   @render()
   template() {
     return html`
-      <div class="sortable">
+      <div part="base" class="sortable">
         <slot @slotchange=${() => this.setupItems()}></slot>
       </div>
     `;

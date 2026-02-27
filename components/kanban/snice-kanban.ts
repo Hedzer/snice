@@ -324,7 +324,7 @@ export class SniceKanban extends HTMLElement implements SniceKanbanElement {
   @render()
   template() {
     return html/*html*/`
-      <div class="kanban">
+      <div class="kanban" part="base">
         ${this.filteredColumns.map(column => html/*html*/`
             <div
               class="column ${column.collapsed ? 'column--collapsed' : ''}"
@@ -332,7 +332,7 @@ export class SniceKanban extends HTMLElement implements SniceKanbanElement {
               @dragenter=${(e: DragEvent) => this.handleColumnDragEnter(e)}
               @dragleave=${(e: DragEvent) => this.handleColumnDragLeave(e)}
               @drop=${(e: DragEvent) => this.handleColumnDrop(column.id, e)}>
-              <div class="column__header" style="${column.color ? `border-color: ${column.color}` : ''}">
+              <div class="column__header" part="column-header" style="${column.color ? `border-color: ${column.color}` : ''}">
                 <div class="column__title">
                   ${column.title}
                   <if ${this.showCardCount}>
@@ -341,7 +341,7 @@ export class SniceKanban extends HTMLElement implements SniceKanbanElement {
                 </div>
               </div>
 
-              <div class="column__cards ${column.cards.length === 0 ? 'column__cards--empty' : ''}">
+              <div class="column__cards ${column.cards.length === 0 ? 'column__cards--empty' : ''}" part="column-cards">
                 <if ${column.cards.length === 0}>
                   <div>No cards</div>
                 </if>

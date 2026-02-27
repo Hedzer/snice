@@ -215,11 +215,11 @@ export class SniceCropper extends HTMLElement implements SniceCropperElement {
   @render()
   template() {
     return html`
-      <div class="cropper">
-        <div class="image-container">
+      <div class="cropper" part="base">
+        <div class="image-container" part="image-container">
           <img src="${this.src}" alt="Image to crop" @load=${() => this.initCropArea()} />
         </div>
-        <div class="crop-area"
+        <div class="crop-area" part="crop-area"
              @mousedown=${this.onCropAreaMouseDown}>
           <span class="handle handle-nw" data-handle="nw" @mousedown=${this.onCropAreaMouseDown}></span>
           <span class="handle handle-ne" data-handle="ne" @mousedown=${this.onCropAreaMouseDown}></span>

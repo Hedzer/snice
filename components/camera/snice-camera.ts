@@ -71,7 +71,7 @@ export class SniceCamera extends HTMLElement implements SniceCameraElement {
   @render()
   render() {
     return html/*html*/`
-      <div class="camera-container">
+      <div class="camera-container" part="base">
         <video
           class="${this.getVideoClass()}"
           autoplay
@@ -79,7 +79,7 @@ export class SniceCamera extends HTMLElement implements SniceCameraElement {
           muted>
         </video>
         <if value=${this.showControls}>
-          <div class="camera-controls ${this.getControlsPosition()}">
+          <div class="camera-controls ${this.getControlsPosition()}" part="controls">
             <if value=${this.hasMultipleCameras}>
               <button class="camera-btn switch" @click=${this.switchCamera}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

@@ -428,6 +428,7 @@ export class SniceVideoPlayer extends HTMLElement implements SniceVideoPlayerEle
 
     return html`
       <div
+        part="base"
         class="${containerClass}"
         tabindex="0"
         @mousemove=${() => this.handleContainerMouseMove()}
@@ -435,6 +436,7 @@ export class SniceVideoPlayer extends HTMLElement implements SniceVideoPlayerEle
         @fullscreenchange=${() => this.handleFullscreenChange()}
       >
         <video
+          part="video"
           .src=${this.src}
           ?autoplay=${this.autoplay}
           ?muted=${this.muted}
@@ -485,13 +487,13 @@ export class SniceVideoPlayer extends HTMLElement implements SniceVideoPlayerEle
         </if>
 
         <if ${this.controls && this.src}>
-          <div class="video-controls">
+          <div part="controls" class="video-controls">
             <div
               class="video-progress-container"
               @click=${(e: MouseEvent) => this.handleProgressClick(e)}
               @mousedown=${(e: MouseEvent) => this.handleProgressMouseDown(e)}
             >
-              <div class="video-progress-track">
+              <div part="progress" class="video-progress-track">
                 <div class="video-progress-buffered" style="width: ${this.bufferedPercent}%"></div>
                 <div class="video-progress-bar" style="width: ${progress}%"></div>
               </div>

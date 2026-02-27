@@ -40,7 +40,7 @@ export class SniceWeather extends HTMLElement implements SniceWeatherElement {
     const icon = this.data.icon || this.getDefaultIcon(this.data.condition);
 
     const details = html`
-      <div class="details">
+      <div part="details" class="details">
         ${this.data.humidity != null ? html`
           <span class="detail-item">\uD83D\uDCA7 ${this.data.humidity}%</span>
         ` : html``}
@@ -52,7 +52,7 @@ export class SniceWeather extends HTMLElement implements SniceWeatherElement {
 
     const forecast = this.data.forecast && this.data.forecast.length > 0
       ? html`
-        <div class="forecast">
+        <div part="forecast" class="forecast">
           ${this.data.forecast.map(day => html`
             <div class="forecast-day">
               <span class="forecast-day-name">${day.day}</span>
@@ -68,8 +68,8 @@ export class SniceWeather extends HTMLElement implements SniceWeatherElement {
       : html``;
 
     return html`
-      <div class="weather">
-        <div class="current">
+      <div part="base" class="weather">
+        <div part="current" class="current">
           <span class="icon">${icon}</span>
           <div>
             <div class="temp">${this.formatTemp(this.data.temp)}</div>

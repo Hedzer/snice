@@ -31,9 +31,9 @@ export class SniceTimer extends HTMLElement implements SniceTimerElement {
   @render()
   render() {
     return html/*html*/`
-      <div class="timer-container">
-        <div class="timer-display">${this.formatTime(this.time)}</div>
-        <div class="timer-controls">
+      <div part="base" class="timer-container">
+        <div part="display" class="timer-display">${this.formatTime(this.time)}</div>
+        <div part="controls" class="timer-controls">
           <if ${!this.running}>
             <button class="timer-btn start" @click=${() => this.start()} title="Start">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">

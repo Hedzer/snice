@@ -67,14 +67,14 @@ export class SniceTimeRangePicker extends HTMLElement implements SniceTimeRangeP
     const displayValue = this.getDisplayValue();
 
     return html`
-      <div class="wrapper">
-        <div class="header">
+      <div part="base" class="wrapper">
+        <div part="header" class="header">
           <span class="header-label">Time</span>
           <span class="${displayValue ? 'header-value' : 'header-value header-value--empty'}">
             ${displayValue || 'No selection'}
           </span>
         </div>
-        <div class="slots-container"
+        <div part="slots" class="slots-container"
           @mousedown=${(e: MouseEvent) => this.handleMouseDown(e)}
           @touchstart=${(e: TouchEvent) => this.handleTouchStart(e)}>
           ${this.slots.map((time, index) => {

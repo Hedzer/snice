@@ -64,9 +64,9 @@ export class SniceCameraAnnotate extends HTMLElement implements SniceCameraAnnot
   @render()
   template() {
     return html`
-      <div class="ca-layout">
+      <div class="ca-layout" part="base">
         <div class="ca-main">
-          <div class="ca-canvas-area">
+          <div class="ca-canvas-area" part="canvas">
             <video
               class="ca-video mirror ${this.mode === 'annotate' ? 'hidden' : ''}"
               autoplay
@@ -82,7 +82,7 @@ export class SniceCameraAnnotate extends HTMLElement implements SniceCameraAnnot
           </div>
           ${this.renderToolbar()}
         </div>
-        <div class="ca-sidebar ${this.showLabelsPanel ? '' : 'hidden'}">
+        <div class="ca-sidebar ${this.showLabelsPanel ? '' : 'hidden'}" part="sidebar">
           ${this.renderSidebar()}
         </div>
       </div>
@@ -93,7 +93,7 @@ export class SniceCameraAnnotate extends HTMLElement implements SniceCameraAnnot
     const inCamera = this.mode === 'camera';
 
     return html`
-      <div class="ca-toolbar">
+      <div class="ca-toolbar" part="toolbar">
         <button class="ca-btn primary" @click=${inCamera ? this.capture : this.retake}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             ${inCamera

@@ -255,11 +255,12 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
   @render()
   render() {
     return html/*html*/`
-      <div class="draw-container">
+      <div class="draw-container" part="base">
         <canvas
           width="${this.width}"
           height="${this.height}"
-          class="draw-canvas tool-${this.tool} ${this.disabled ? 'disabled' : ''}">
+          class="draw-canvas tool-${this.tool} ${this.disabled ? 'disabled' : ''}"
+          part="canvas">
         </canvas>
       </div>
     `;

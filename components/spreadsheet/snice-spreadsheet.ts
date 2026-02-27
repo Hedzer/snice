@@ -942,13 +942,13 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
   @render({ once: true })
   renderSheet() {
     return html`
-      <div class="spreadsheet-formula-bar">
+      <div class="spreadsheet-formula-bar" part="formula-bar">
         <span class="spreadsheet-cell-ref"></span>
         <input class="spreadsheet-formula-input" />
       </div>
-      <div class="spreadsheet" tabindex="0"></div>
-      <div class="spreadsheet-status-bar"></div>
-      <div class="spreadsheet-context-menu" hidden>
+      <div class="spreadsheet" part="base" tabindex="0"></div>
+      <div class="spreadsheet-status-bar" part="status-bar"></div>
+      <div class="spreadsheet-context-menu" part="context-menu" hidden>
         <div class="spreadsheet-context-item" data-ctx="cut"><span>Cut</span><span class="spreadsheet-context-item-shortcut">Ctrl+X</span></div>
         <div class="spreadsheet-context-item" data-ctx="copy"><span>Copy</span><span class="spreadsheet-context-item-shortcut">Ctrl+C</span></div>
         <div class="spreadsheet-context-item" data-ctx="paste"><span>Paste</span><span class="spreadsheet-context-item-shortcut">Ctrl+V</span></div>

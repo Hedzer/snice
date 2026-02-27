@@ -43,7 +43,7 @@ export class SniceOrgChart extends HTMLElement implements SniceOrgChartElement {
 
     if (!hasData) {
       return html`
-        <div class="org-container">
+        <div class="org-container" part="base">
           <div style="text-align: center; color: var(--snice-color-text-tertiary, rgb(115 115 115)); padding: 2rem;">
             No data provided
           </div>
@@ -55,8 +55,8 @@ export class SniceOrgChart extends HTMLElement implements SniceOrgChartElement {
     const treeHtml = this.buildNodeHtml(this.data!);
 
     return html`
-      <div class="org-container">
-        <div class="org-tree ${isLeftRight ? 'org-tree--left-right' : ''}">
+      <div class="org-container" part="base">
+        <div class="org-tree ${isLeftRight ? 'org-tree--left-right' : ''}" part="tree">
           ${treeHtml}
         </div>
       </div>
@@ -103,7 +103,7 @@ export class SniceOrgChart extends HTMLElement implements SniceOrgChartElement {
 
     return html`
       <div class="org-node-wrapper">
-        <div class="org-node ${isCompact ? 'org-node--compact' : ''}" @click=${() => this.emitNodeClick(node)}>
+        <div class="org-node ${isCompact ? 'org-node--compact' : ''}" part="node" @click=${() => this.emitNodeClick(node)}>
           ${avatarHtml}
           <div class="org-node-info">
             <span class="org-node-name">${node.name}</span>

@@ -56,7 +56,7 @@ export class SniceGauge extends HTMLElement implements SniceGaugeElement {
     const hasLabel = this.label !== '';
 
     return html/*html*/`
-      <div class="gauge" role="meter"
+      <div part="base" class="gauge" role="meter"
            aria-valuenow="${this.value}"
            aria-valuemin="${this.min}"
            aria-valuemax="${this.max}"
@@ -75,11 +75,11 @@ export class SniceGauge extends HTMLElement implements SniceGaugeElement {
                   stroke-dashoffset="${fillOffset}" />
           </svg>
           <if ${this.showValue}>
-            <span class="gauge__value-text">${displayValue}</span>
+            <span part="value" class="gauge__value-text">${displayValue}</span>
           </if>
         </div>
         <if ${hasLabel}>
-          <span class="gauge__label">${this.label}</span>
+          <span part="label" class="gauge__label">${this.label}</span>
         </if>
       </div>
     `;

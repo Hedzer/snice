@@ -96,18 +96,18 @@ export class SniceCountdown extends HTMLElement implements SniceCountdownElement
 
     const items = segments.map((seg, i) => {
       const sep = i < segments.length - 1
-        ? html`<span class="separator">:</span>`
+        ? html`<span part="separator" class="separator">:</span>`
         : html``;
       return html`
-        <div class="segment">
-          <span class="value">${seg.value}</span>
-          <span class="label">${seg.label}</span>
+        <div part="segment" class="segment">
+          <span part="value" class="value">${seg.value}</span>
+          <span part="label" class="label">${seg.label}</span>
         </div>
         ${sep}
       `;
     });
 
-    return html`<div class="countdown">${items}</div>`;
+    return html`<div part="base" class="countdown">${items}</div>`;
   }
 
   @styles()

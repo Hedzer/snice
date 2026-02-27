@@ -101,7 +101,7 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
     const showingPlayback = this.showPlayback && this.recordedUrl;
 
     return html/*html*/`
-      <div class="recorder-container">
+      <div class="recorder-container" part="base">
         <if ${showingPlayback}>
           <div class="recorder-status">
             <div class="recorder-state inactive">
@@ -112,11 +112,11 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
 
           <div class="recorder-timer">${this.formatTime(this.playbackTime)}</div>
 
-          <div class="playback-progress" @click=${(e: MouseEvent) => this.handleSeek(e)}>
+          <div class="playback-progress" part="progress" @click=${(e: MouseEvent) => this.handleSeek(e)}>
             <div class="playback-progress-fill" style="width: ${this.duration > 0 ? (this.playbackTime / this.duration) * 100 : 0}%"></div>
           </div>
 
-          <div class="recorder-controls">
+          <div class="recorder-controls" part="controls">
             <button class="recorder-btn ${this.isPlaying ? 'pause' : 'play'}" @click=${() => this.handleTogglePlayback()} title="${this.isPlaying ? 'Pause' : 'Play'}">
               <if ${this.isPlaying}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
@@ -174,13 +174,13 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
       return html/*html*/`<div class="visualizer-bar" style="height: ${height}px;"></div>`;
     });
 
-    return html/*html*/`<div class="recorder-visualizer">${bars}</div>`;
+    return html/*html*/`<div class="recorder-visualizer" part="visualizer">${bars}</div>`;
   }
 
   private renderControls() {
     if (this.state === 'inactive') {
       return html/*html*/`
-        <div class="recorder-controls">
+        <div class="recorder-controls" part="controls">
           <button class="recorder-btn record" @click=${() => this.start()} title="Start Recording">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
               <circle cx="12" cy="12" r="8"/>
@@ -192,7 +192,7 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
 
     if (this.state === 'recording') {
       return html/*html*/`
-        <div class="recorder-controls">
+        <div class="recorder-controls" part="controls">
           <button class="recorder-btn cancel" @click=${() => this.cancel()} title="Cancel">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -216,7 +216,7 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
 
     if (this.state === 'paused') {
       return html/*html*/`
-        <div class="recorder-controls">
+        <div class="recorder-controls" part="controls">
           <button class="recorder-btn cancel" @click=${() => this.cancel()} title="Cancel">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18"></line>

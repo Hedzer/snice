@@ -64,7 +64,7 @@ export class SniceLinkPreview extends HTMLElement implements SniceLinkPreviewEle
     const hasFooter = this.siteName || this.favicon || domain;
 
     return html/*html*/`
-      <div class="link-preview"
+      <div part="base" class="link-preview"
            role="article"
            tabindex="0"
            aria-label="${this.title || 'Link preview'}">
@@ -82,9 +82,9 @@ export class SniceLinkPreview extends HTMLElement implements SniceLinkPreviewEle
             </div>
           </div>
         </if>
-        <div class="link-preview__content">
+        <div part="content" class="link-preview__content">
           <if ${this.title}>
-            <p class="link-preview__title">${this.title}</p>
+            <p part="title" class="link-preview__title">${this.title}</p>
           </if>
           <if ${this.description}>
             <p class="link-preview__description">${this.description}</p>

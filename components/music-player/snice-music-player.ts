@@ -179,7 +179,7 @@ export class SniceMusicPlayer extends HTMLElement implements SniceMusicPlayerEle
     const progress = this.duration > 0 ? (this.currentTime / this.duration) * 100 : 0;
 
     return html/*html*/`
-      <div class="player-container ${this.compact ? 'player-container--compact' : ''}">
+      <div part="base" class="player-container ${this.compact ? 'player-container--compact' : ''}">
         <if ${this.showArtwork || this.showTrackInfo}>
           <div class="player-info">
             <if ${this.showArtwork}>
@@ -213,7 +213,7 @@ export class SniceMusicPlayer extends HTMLElement implements SniceMusicPlayerEle
         </if>
 
         <if ${this.showControls}>
-          <div class="player-controls">
+          <div part="controls" class="player-controls">
             <div class="player-control-buttons">
               <button
                 class="player-btn player-btn-shuffle ${this.shuffle ? 'active' : ''}"
@@ -345,7 +345,7 @@ export class SniceMusicPlayer extends HTMLElement implements SniceMusicPlayerEle
         </if>
 
         <if ${this.showPlaylist && this.tracks.length > 0}>
-          <div class="player-playlist">
+          <div part="playlist" class="player-playlist">
             <div class="player-playlist-header">Playlist</div>
             <div class="player-playlist-items">
               ${this.tracks.map((track, index) => html/*html*/`

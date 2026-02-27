@@ -27,8 +27,9 @@ export class SniceSpinner extends HTMLElement implements SniceSpinnerElement {
     const viewBox = `0 0 ${size} ${size}`;
 
     return html/*html*/`
-      <div class="spinner" role="status" aria-label="${this.label || 'Loading'}">
+      <div part="base" class="spinner" role="status" aria-label="${this.label || 'Loading'}">
         <svg
+          part="circle"
           class="spinner__circle"
           viewBox="${viewBox}"
           xmlns="http://www.w3.org/2000/svg"
@@ -49,7 +50,7 @@ export class SniceSpinner extends HTMLElement implements SniceSpinnerElement {
           ></circle>
         </svg>
         <if ${this.label}>
-          <span class="spinner__label">${this.label}</span>
+          <span part="label" class="spinner__label">${this.label}</span>
         </if>
       </div>
     `;

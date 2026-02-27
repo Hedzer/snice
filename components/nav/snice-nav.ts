@@ -64,6 +64,7 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
 
     const wrapper = document.createElement('div');
     wrapper.className = 'nav-content';
+    wrapper.setAttribute('part', 'base');
 
     const navItems = this.placards
       .filter(p => !p.parent && p.show !== false && this.isVisible(p))
@@ -89,6 +90,7 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
     const nav = document.createElement('nav');
     nav.className = `nav nav--${this.variant} nav--${this.orientation}`;
     nav.setAttribute('role', 'navigation');
+    nav.setAttribute('part', 'nav');
 
     navItems.forEach(placard => {
       nav.appendChild(this.renderNavItem(placard));
@@ -101,6 +103,7 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
     const nav = document.createElement('nav');
     nav.className = `nav nav--${this.variant} nav--${this.orientation}`;
     nav.setAttribute('role', 'navigation');
+    nav.setAttribute('part', 'nav');
 
     navItems.forEach(placard => {
       const children = this.placards
@@ -133,6 +136,7 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
     const nav = document.createElement('nav');
     nav.className = `nav nav--${this.variant} nav--${this.orientation}`;
     nav.setAttribute('role', 'navigation');
+    nav.setAttribute('part', 'nav');
 
     const groups = new Map<string, Placard[]>();
     navItems.forEach(placard => {
@@ -178,6 +182,7 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
     const href = placard.name === 'home' ? '#/' : `#/${placard.name}`;
     a.href = href;
     a.className = this.isActive(placard) ? 'nav__link nav__link--active' : 'nav__link';
+    a.setAttribute('part', 'link');
 
     // Accessibility
     if (this.isActive(placard)) {

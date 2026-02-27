@@ -165,8 +165,8 @@ export class SniceWaterfall extends HTMLElement implements SniceWaterfallElement
   @render({ once: true })
   renderShell() {
     return html`
-      <div class="waterfall" @click=${(e: MouseEvent) => this.handleSvgClick(e)} @mouseover=${(e: MouseEvent) => this.handleSvgHover(e)}>
-        <div class="waterfall__chart"></div>
+      <div class="waterfall" part="base" @click=${(e: MouseEvent) => this.handleSvgClick(e)} @mouseover=${(e: MouseEvent) => this.handleSvgHover(e)}>
+        <div class="waterfall__chart" part="chart"></div>
       </div>
     `;
   }

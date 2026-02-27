@@ -129,17 +129,18 @@ export class SniceResize extends HTMLElement implements SniceResizeElement {
       : `height: ${this.primarySize}%`;
 
     return html/*html*/`
-      <div class="primary" style="${primaryStyle}">
+      <div part="primary" class="primary" style="${primaryStyle}">
         <slot name="primary"></slot>
       </div>
 
       <div
+        part="divider"
         class="divider ${this.disabled ? 'divider--disabled' : ''}"
         @mousedown=${this.handleDividerMouseDown}>
-        <div class="divider__handle"></div>
+        <div part="handle" class="divider__handle"></div>
       </div>
 
-      <div class="secondary">
+      <div part="secondary" class="secondary">
         <slot name="secondary"></slot>
       </div>
     `;

@@ -436,10 +436,10 @@ export class SniceTreemap extends HTMLElement implements SniceTreemapElement {
     const dataLabel = this._cachedData?.label || 'Treemap';
 
     return html/*html*/`
-      <div class="treemap__breadcrumbs" style="display: none"></div>
-      <div class="treemap" role="img" aria-label="${dataLabel}">
-        <div class="treemap__chart"></div>
-        <div class="treemap__tooltip"></div>
+      <div class="treemap__breadcrumbs" part="breadcrumbs" style="display: none"></div>
+      <div class="treemap" part="base" role="img" aria-label="${dataLabel}">
+        <div class="treemap__chart" part="chart"></div>
+        <div class="treemap__tooltip" part="tooltip"></div>
       </div>
     `;
   }

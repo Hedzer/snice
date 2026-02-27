@@ -225,8 +225,8 @@ export class SniceBook extends HTMLElement implements SniceBookElement {
   @render({ once: true })
   renderContent() {
     return html/*html*/`
-      <div class="cover">
-        <div class="book"></div>
+      <div class="cover" part="base">
+        <div class="book" part="book"></div>
       </div>
       <div hidden><slot></slot></div>
     `;

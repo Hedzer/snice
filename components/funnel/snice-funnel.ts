@@ -298,13 +298,13 @@ export class SniceFunnel extends HTMLElement implements SniceFunnelElement {
   @render({ once: true })
   renderContent() {
     return html/*html*/`
-      <div class="funnel"
+      <div class="funnel" part="base"
            @click=${(e: MouseEvent) => this.handleSvgClick(e)}
            @mousemove=${(e: MouseEvent) => this.handleSvgMouseMove(e)}
            @mouseleave=${() => this.handleSvgMouseLeave()}
            @keydown=${(e: KeyboardEvent) => this.handleSvgKeyDown(e)}>
-        <div class="funnel__chart"></div>
-        <div class="funnel__tooltip" style="display:none;transform:translate(-50%,-100%)">
+        <div class="funnel__chart" part="chart"></div>
+        <div class="funnel__tooltip" part="tooltip" style="display:none;transform:translate(-50%,-100%)">
           <div class="funnel__tooltip-label"></div>
           <div class="funnel__tooltip-value"></div>
         </div>

@@ -90,9 +90,9 @@ export class SnicePaint extends HTMLElement implements SnicePaintElement {
     const hasToolbar = ctrls.size > 0;
 
     return html`
-      <div class="paint-container">
+      <div class="paint-container" part="base">
         ${hasToolbar ? html`
-          <div class="paint-toolbar">
+          <div class="paint-toolbar" part="toolbar">
             ${ctrls.has('colors') ? html`
               <span class="paint-toolbar-label">Color</span>
               <div class="paint-swatches">
@@ -146,8 +146,8 @@ export class SnicePaint extends HTMLElement implements SnicePaintElement {
             ` : ''}
           </div>
         ` : ''}
-        <div class="paint-canvas-wrap">
-          <canvas class="paint-canvas tool-${this._tool}"></canvas>
+        <div class="paint-canvas-wrap" part="canvas-wrap">
+          <canvas class="paint-canvas tool-${this._tool}" part="canvas"></canvas>
         </div>
       </div>
     `;

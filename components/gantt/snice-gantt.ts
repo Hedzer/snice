@@ -169,17 +169,17 @@ export class SniceGantt extends HTMLElement implements SniceGanttElement {
     }
 
     return html`
-      <div class="gantt-container">
-        <div class="gantt-header">
-          <div class="gantt-zoom-toggle">
+      <div class="gantt-container" part="base">
+        <div class="gantt-header" part="header">
+          <div class="gantt-zoom-toggle" part="controls">
             <button class="gantt-zoom-btn ${isDay ? 'active' : ''}" @click=${() => { this.zoom = 'day'; }}>Day</button>
             <button class="gantt-zoom-btn ${isWeek ? 'active' : ''}" @click=${() => { this.zoom = 'week'; }}>Week</button>
             <button class="gantt-zoom-btn ${isMonth ? 'active' : ''}" @click=${() => { this.zoom = 'month'; }}>Month</button>
           </div>
         </div>
 
-        <div class="gantt-body">
-          <div class="gantt-task-list">
+        <div class="gantt-body" part="body">
+          <div class="gantt-task-list" part="task-list">
             <div class="gantt-task-list-header">Task</div>
             ${orderedItems.map(item => {
               if ('__group' in item) {
@@ -191,7 +191,7 @@ export class SniceGantt extends HTMLElement implements SniceGanttElement {
             })}
           </div>
 
-          <div class="gantt-timeline">
+          <div class="gantt-timeline" part="timeline">
             <div class="gantt-timeline-header" style="width: ${totalWidth}px">
               ${headerCells.map(cell => html`
                 <div

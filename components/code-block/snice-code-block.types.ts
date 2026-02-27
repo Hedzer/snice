@@ -12,6 +12,13 @@ export interface GrammarRequestDetail {
   codeBlock: SniceCodeBlockElement;
 }
 
+export interface GrammarLoadedDetail {
+  grammar: any;
+  url: string;
+  language: CodeLanguage;
+  codeBlock: SniceCodeBlockElement;
+}
+
 export interface SniceCodeBlockElement extends HTMLElement {
   code: string;
   language: CodeLanguage;
@@ -46,4 +53,5 @@ export interface SniceCodeBlockEventMap {
   'code-before-highlight': CustomEvent<CodeHighlightDetail>;
   'code-after-highlight': CustomEvent<CodeHighlightDetail>;
   'grammar-request': CustomEvent<GrammarRequestDetail>;
+  'grammar-loaded': CustomEvent<GrammarLoadedDetail>;
 }

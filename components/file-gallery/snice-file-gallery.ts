@@ -396,7 +396,7 @@ export class SniceFileGallery extends HTMLElement implements SniceFileGalleryEle
     ].filter(Boolean).join(' ');
 
     return html`
-      <div class="file-gallery">
+      <div class="file-gallery" part="base">
         <input
           type="file"
           class="file-input"
@@ -408,7 +408,7 @@ export class SniceFileGallery extends HTMLElement implements SniceFileGalleryEle
 
         <if ${this.showDropzone}>
           <div
-            class="${dropZoneClasses}"
+            class="${dropZoneClasses}" part="dropzone"
             @click=${() => this.handleDropZoneClick()}
             @dragenter=${this.handleDragEnter}
             @dragleave=${this.handleDragLeave}
@@ -438,7 +438,7 @@ export class SniceFileGallery extends HTMLElement implements SniceFileGalleryEle
           </div>
         </if>
 
-        <div class="gallery gallery--${this.view}">
+        <div class="gallery gallery--${this.view}" part="gallery">
         </div>
       </div>
     `;

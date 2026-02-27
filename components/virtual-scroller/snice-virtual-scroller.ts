@@ -117,7 +117,7 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
     const visibleItems = items.slice(this.visibleStart, this.visibleEnd);
 
     return html/*html*/`
-      <div class="scroller" @scroll=${this.handleScroll}>
+      <div part="base" class="scroller" @scroll=${this.handleScroll}>
         <div class="scroller__spacer" style="height: ${totalHeight}px;"></div>
         <div class="scroller__viewport" style="transform: translateY(${this.visibleStart * this.itemHeight}px);">
           ${visibleItems.map((item, idx) => {

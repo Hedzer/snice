@@ -184,8 +184,8 @@ export class SnicePodcastPlayer extends HTMLElement implements SnicePodcastPlaye
     const isHighVolume = !this.muted && this.volume > 0.5;
 
     return html/*html*/`
-      <div class="podcast-container">
-        <div class="podcast-info">
+      <div part="base" class="podcast-container">
+        <div part="info" class="podcast-info">
           <div class="podcast-artwork">
             <if ${displayArtwork}>
               <img src="${displayArtwork}" alt="${displayTitle}" />
@@ -213,7 +213,7 @@ export class SnicePodcastPlayer extends HTMLElement implements SnicePodcastPlaye
           </div>
         </div>
 
-        <div class="podcast-controls">
+        <div part="controls" class="podcast-controls">
           <div class="podcast-control-buttons">
             <button
               class="podcast-btn podcast-btn-speed ${rateIsNotOne ? 'active' : ''}"

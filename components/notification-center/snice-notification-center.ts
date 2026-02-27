@@ -90,12 +90,12 @@ export class SniceNotificationCenter extends HTMLElement implements SniceNotific
     `);
 
     return html`
-      <button class="bell-button" aria-label="Notifications" @click=${() => this.togglePanel()}>
+      <button part="trigger" class="bell-button" aria-label="Notifications" @click=${() => this.togglePanel()}>
         \uD83D\uDD14
-        <span class="badge" ?hidden=${unread === 0}>${unread}</span>
+        <span part="badge" class="badge" ?hidden=${unread === 0}>${unread}</span>
       </button>
-      <div class="panel" ?hidden=${!this.open}>
-        <div class="panel-header">
+      <div part="panel" class="panel" ?hidden=${!this.open}>
+        <div part="panel-header" class="panel-header">
           <span class="panel-title">Notifications</span>
           <button class="mark-all-btn" @click=${() => this.markAllAsRead()}>Mark all read</button>
         </div>

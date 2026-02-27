@@ -53,8 +53,8 @@ export class SniceDiff extends HTMLElement implements SniceDiffElement {
     const showLineNums = this.lineNumbers;
 
     return html/*html*/`
-      <div class="diff-container">
-        <div class="diff-header">
+      <div part="base" class="diff-container">
+        <div part="header" class="diff-header">
           <span class="diff-stat-add">+${this.additions}</span>
           <span class="diff-stat-del">-${this.deletions}</span>
           <div class="diff-mode-toggle">
@@ -68,7 +68,7 @@ export class SniceDiff extends HTMLElement implements SniceDiffElement {
             >Split</button>
           </div>
         </div>
-        <div class="diff-content">
+        <div part="content" class="diff-content">
           <if ${isSplit}>
             ${this.renderSplitView(showLineNums)}
           </if>

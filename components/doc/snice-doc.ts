@@ -74,12 +74,14 @@ export class SniceDoc extends HTMLElement {
 
     const wrapper = document.createElement('div');
     wrapper.className = 'doc-wrapper';
+    wrapper.setAttribute('part', 'base');
 
     const toolbar = this.createToolbar();
     wrapper.appendChild(toolbar);
 
     this.editor = document.createElement('div');
     this.editor.className = 'doc-editor';
+    this.editor.setAttribute('part', 'editor');
     this.editor.contentEditable = String(!this.readonly);
     this.editor.setAttribute('data-placeholder', this.placeholder);
 
@@ -124,6 +126,7 @@ export class SniceDoc extends HTMLElement {
   private createToolbar(): HTMLElement {
     const toolbar = document.createElement('div');
     toolbar.className = 'toolbar';
+    toolbar.setAttribute('part', 'toolbar');
 
     const tools: ToolDef[] = [
       { cmd: 'bold', icon: 'bold', title: 'Bold (Ctrl+B)' },

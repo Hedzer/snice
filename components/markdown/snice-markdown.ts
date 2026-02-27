@@ -233,7 +233,7 @@ export class SniceMarkdown extends HTMLElement implements SniceMarkdownElement {
   renderContent() {
     return html/*html*/`
       <slot style="display:none"></slot>
-      <div class="markdown-body">${unsafeHTML(this.renderedHtml)}</div>
+      <div class="markdown-body" part="base">${unsafeHTML(this.renderedHtml)}</div>
     `;
   }
 }

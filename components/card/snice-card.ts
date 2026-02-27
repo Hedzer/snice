@@ -37,7 +37,7 @@ export class SniceCard extends HTMLElement implements SniceCardElement {
     const tabindex = this.clickable && !this.disabled ? '0' : '-1';
 
     return html/*html*/`
-      <div class="card"
+      <div part="base" class="card"
            role="${role}"
            tabindex="${tabindex}"
            aria-selected="${this.selected}"
@@ -45,13 +45,13 @@ export class SniceCard extends HTMLElement implements SniceCardElement {
            @click="${(e: MouseEvent) => this.handleClick(e)}"
            @keydown="${(e: KeyboardEvent) => this.handleKeydown(e)}">
         <slot name="image" class="card-image-slot"></slot>
-        <div class="card-header" ?hidden="${!this.hasHeader}">
+        <div part="header" class="card-header" ?hidden="${!this.hasHeader}">
           <slot name="header" @slotchange="${() => this.checkSlots()}"></slot>
         </div>
-        <div class="card-body">
+        <div part="body" class="card-body">
           <slot></slot>
         </div>
-        <div class="card-footer" ?hidden="${!this.hasFooter}">
+        <div part="footer" class="card-footer" ?hidden="${!this.hasFooter}">
           <slot name="footer" @slotchange="${() => this.checkSlots()}"></slot>
         </div>
       </div>

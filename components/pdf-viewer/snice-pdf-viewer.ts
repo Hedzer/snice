@@ -296,8 +296,8 @@ export class SnicePdfViewer extends HTMLElement implements SnicePdfViewerElement
   @render({ once: true })
   renderViewer() {
     return html`
-      <div class="pdf-container" tabindex="0">
-        <div class="pdf-toolbar">
+      <div class="pdf-container" part="base" tabindex="0">
+        <div class="pdf-toolbar" part="toolbar">
           <div class="pdf-toolbar-group">
             <button class="pdf-btn pdf-btn-prev" title="Previous page">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
@@ -334,7 +334,7 @@ export class SnicePdfViewer extends HTMLElement implements SnicePdfViewerElement
             </button>
           </div>
         </div>
-        <div class="pdf-viewport">
+        <div class="pdf-viewport" part="viewport">
           <div class="pdf-loading">
             <div class="pdf-loading-spinner"></div>
             <span>Loading PDF...</span>

@@ -143,16 +143,16 @@ export class SniceLocation extends HTMLElement implements SniceLocationElement {
     const mapEmbedUrl = this.showMap ? this.getMapEmbedUrl() : '';
 
     return html/*html*/`
-      <div class="location ${this.clickable ? 'location--clickable' : ''}" @click=${() => this.handleClick()}>
+      <div class="location ${this.clickable ? 'location--clickable' : ''}" part="base" @click=${() => this.handleClick()}>
         <if ${this.showIcon}>
-          <div class="icon">
+          <div class="icon" part="icon">
             <slot name="icon">
               ${renderIcon(this.iconImage || this.icon, 'location-icon')}
             </slot>
           </div>
         </if>
 
-        <div class="content">
+        <div class="content" part="content">
           <if ${this.name && (this.mode === 'full' || this.mode === 'compact' || this.mode === 'address')}>
             <div class="name">${this.name}</div>
           </if>
@@ -166,7 +166,7 @@ export class SniceLocation extends HTMLElement implements SniceLocationElement {
           </if>
 
           <if ${this.showMap && mapEmbedUrl}>
-            <div class="map-container">
+            <div class="map-container" part="map">
               <iframe src="${mapEmbedUrl}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
           </if>

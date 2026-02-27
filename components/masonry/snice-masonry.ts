@@ -16,7 +16,7 @@ export class SniceMasonry extends HTMLElement implements SniceMasonryElement {
   @render()
   renderContent() {
     return html/*html*/`
-      <div class="masonry" role="list">
+      <div class="masonry" part="base" role="list">
         <slot></slot>
       </div>
     `;

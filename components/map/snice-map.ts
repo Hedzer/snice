@@ -71,13 +71,14 @@ export class SniceMap extends HTMLElement implements SniceMapElement {
     return html`
       <div
         class="map-container"
+        part="base"
         @mousedown=${(e: MouseEvent) => this.handleMouseDown(e)}
         @mousemove=${(e: MouseEvent) => this.handleMouseMove(e)}
         @mouseup=${() => this.handleMouseUp()}
         @mouseleave=${() => this.handleMouseUp()}
         @click=${(e: MouseEvent) => this.handleMapClick(e)}
       >
-        <div class="map-tiles">
+        <div class="map-tiles" part="tiles">
           ${tiles.map(tile => html`
             <div class="map-tile" style="left: ${tile.pixelX}px; top: ${tile.pixelY}px">
               <img src="${this.getTileUrl(tile.x, tile.y, tile.z)}" alt="" loading="lazy" />
@@ -85,7 +86,7 @@ export class SniceMap extends HTMLElement implements SniceMapElement {
           `)}
         </div>
 
-        <div class="map-markers">
+        <div class="map-markers" part="markers">
           ${markerPositions.map(mp => {
             const showPopup = hasPopup && this.activePopupId === mp.marker.id;
             const popupContent = mp.marker.popup || mp.marker.label || '';
@@ -110,7 +111,7 @@ export class SniceMap extends HTMLElement implements SniceMapElement {
           })}
         </div>
 
-        <div class="map-controls">
+        <div class="map-controls" part="controls">
           <button class="map-control-btn" @click=${(e: Event) => { e.stopPropagation(); this.setZoom(Math.min(this.zoom + 1, this.maxZoom)); }}>+</button>
           <button class="map-control-btn" @click=${(e: Event) => { e.stopPropagation(); this.setZoom(Math.max(this.zoom - 1, this.minZoom)); }}>-</button>
         </div>

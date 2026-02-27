@@ -74,9 +74,9 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
     requestAnimationFrame(() => this.initAndDrawChart());
 
     return html/*html*/`
-      <div class="chart-container ${animated ? 'animated' : ''}">
+      <div class="chart-container ${animated ? 'animated' : ''}" part="base">
         ${legendPosition !== 'none' ? this.renderLegend() : ''}
-        <div class="chart-canvas">
+        <div class="chart-canvas" part="canvas">
           <canvas class="chart-render-canvas"></canvas>
         </div>
         <div class="chart-tooltip ${this.tooltipVisible ? 'visible' : ''}"
@@ -90,7 +90,7 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
   private renderLegend() {
     const position = this.options.legend?.position || 'top';
     return html/*html*/`
-      <div class="chart-legend legend-${position}">
+      <div class="chart-legend legend-${position}" part="legend">
         ${this.datasets.map((dataset, index) => html`
           <div class="legend-item ${this.hiddenDatasets.has(index) ? 'hidden' : ''}"
                @click=${() => this.handleLegendClick(index)}>

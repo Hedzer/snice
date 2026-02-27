@@ -15,9 +15,9 @@ export class SniceLayout extends HTMLElement implements Layout {
   @render()
   render() {
     return html/*html*/`
-      <div class="layout">
-        <header class="header">
-          <div class="brand">
+      <div class="layout" part="base">
+        <header class="header" part="header">
+          <div class="brand" part="brand">
             <slot name="brand">
               <h1>App</h1>
             </slot>
@@ -25,11 +25,11 @@ export class SniceLayout extends HTMLElement implements Layout {
           <snice-nav class="nav" variant="flat" orientation="horizontal"></snice-nav>
         </header>
 
-        <main class="main">
+        <main class="main" part="main">
           <slot name="page"></slot>
         </main>
 
-        <footer class="footer">
+        <footer class="footer" part="footer">
           <slot name="footer">
           </slot>
         </footer>

@@ -151,8 +151,8 @@ export class SniceHeatmap extends HTMLElement implements SniceHeatmapElement {
     const gridStyle = `grid-template-columns: repeat(${totalWeeks}, var(--cell-size))`;
 
     return html/*html*/`
-      <div class="heatmap">
-        <div class="heatmap__grid-area">
+      <div class="heatmap" part="base">
+        <div class="heatmap__grid-area" part="grid-area">
           <if ${this.showLabels}>
             <div class="heatmap__day-labels">
               ${DAY_LABELS.map((label, i) =>
@@ -166,7 +166,7 @@ export class SniceHeatmap extends HTMLElement implements SniceHeatmapElement {
                 ${this.renderMonthLabels(monthLabels, totalWeeks)}
               </div>
             </if>
-            <div class="heatmap__grid">
+            <div class="heatmap__grid" part="grid">
               ${cells.map(cell =>
                 html`<button
                   class="heatmap__cell heatmap__cell--level-${cell.level}"
@@ -180,7 +180,7 @@ export class SniceHeatmap extends HTMLElement implements SniceHeatmapElement {
           </div>
         </div>
         <if ${this.tooltipVisible && this.showTooltip}>
-          <div class="heatmap__tooltip" style="left:${this.tooltipX}px;top:${this.tooltipY}px;transform:translate(-50%,-100%)">
+          <div class="heatmap__tooltip" part="tooltip" style="left:${this.tooltipX}px;top:${this.tooltipY}px;transform:translate(-50%,-100%)">
             ${this.tooltipText}
           </div>
         </if>

@@ -31,7 +31,7 @@ export class SniceTestimonial extends HTMLElement implements SniceTestimonialEle
     const stars = Array.from({ length: 5 }, (_, i) =>
       i < filled ? '\u2605' : '\u2606'
     );
-    return html`<div class="stars">${stars.join('')}</div>`;
+    return html`<div part="stars" class="stars">${stars.join('')}</div>`;
   }
 
   private renderAvatar() {
@@ -50,11 +50,11 @@ export class SniceTestimonial extends HTMLElement implements SniceTestimonialEle
   @render()
   template() {
     return html`
-      <div class="testimonial">
+      <div part="base" class="testimonial">
         <div class="quote-icon">\u201C</div>
         ${this.renderStars()}
-        <div class="quote">${this.quote}</div>
-        <div class="author-info">
+        <div part="quote" class="quote">${this.quote}</div>
+        <div part="author" class="author-info">
           ${this.renderAvatar()}
           <div>
             <div class="author-name">${this.author}</div>

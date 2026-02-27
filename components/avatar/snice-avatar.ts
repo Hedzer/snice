@@ -44,16 +44,16 @@ export class SniceAvatar extends HTMLElement implements SniceAvatarElement {
     const fallbackClasses = ['avatar-fallback', !this.src || this.imageError ? 'avatar-fallback--visible' : ''].filter(Boolean).join(' ');
 
     return html/*html*/`
-      <div class="${avatarClasses}" style="${bgStyle}">
+      <div part="base" class="${avatarClasses}" style="${bgStyle}">
         <if ${this.src}>
-          <img class="${imageClasses}"
+          <img part="image" class="${imageClasses}"
                src="${this.src}"
                alt="${this.alt || this.name}"
                loading="lazy"
                @load=${this.handleImageLoad}
                @error=${this.handleImageError}>
         </if>
-        <div class="${fallbackClasses}">
+        <div part="fallback" class="${fallbackClasses}">
           <case ${initials}>
             <when value="">
               <svg class="avatar-icon" viewBox="0 0 24 24" fill="currentColor">

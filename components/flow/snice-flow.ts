@@ -743,11 +743,11 @@ export class SniceFlow extends HTMLElement implements SniceFlowElement {
   @render({ once: true })
   renderContent() {
     return html/*html*/`
-      <div class="flow">
+      <div class="flow" part="base">
         <div class="flow__grid"></div>
-        <svg class="flow__svg"></svg>
-        <div class="flow__nodes"></div>
-        <div class="flow__minimap" style="${this.minimap ? '' : 'display:none'}">
+        <svg class="flow__svg" part="canvas"></svg>
+        <div class="flow__nodes" part="nodes"></div>
+        <div class="flow__minimap" part="minimap" style="${this.minimap ? '' : 'display:none'}">
           <svg class="flow__minimap-svg"></svg>
         </div>
       </div>

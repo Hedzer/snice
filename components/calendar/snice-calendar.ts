@@ -67,10 +67,12 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
     // Create container
     this.container = document.createElement('div');
     this.container.className = `calendar calendar--${this.view}`;
+    this.container.setAttribute('part', 'base');
 
     // Create header
     this.header = document.createElement('div');
     this.header.className = 'calendar__header';
+    this.header.setAttribute('part', 'header');
 
     const title = document.createElement('div');
     title.className = 'calendar__title';
@@ -103,6 +105,7 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
     // Create grid
     this.grid = document.createElement('div');
     this.grid.className = 'calendar__grid';
+    this.grid.setAttribute('part', 'grid');
 
     // Add weekday headers
     const weekdays = this.getWeekdays();
