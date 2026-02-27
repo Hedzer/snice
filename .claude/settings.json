@@ -8,6 +8,11 @@
             "type": "command",
             "command": "bash scripts/standards-hook.sh",
             "timeout": 30
+          },
+          {
+            "type": "command",
+            "command": "bash scripts/docs-verify-hook.sh",
+            "timeout": 60
           }
         ]
       }
