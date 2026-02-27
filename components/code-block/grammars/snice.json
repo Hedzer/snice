@@ -2,6 +2,20 @@
   "name": "snice",
   "fileTypes": ["ts", "tsx", "js", "jsx"],
   "defaultToken": "",
+  "formatters": {
+    "pretty": {
+      "tabSize": 2,
+      "useTabs": false,
+      "newlineAfter": "[{;]",
+      "newlineBefore": "[}]",
+      "spaceAfter": "[,]",
+      "spaceAround": "[=]",
+      "indent": "[{]",
+      "dedent": "[}]",
+      "skipStrings": true,
+      "skipComments": true
+    }
+  },
   "keywords": [
     "abstract", "as", "async", "await", "break", "case", "catch", "class",
     "const", "continue", "debugger", "declare", "default", "delete", "do",

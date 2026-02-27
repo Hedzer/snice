@@ -23,6 +23,7 @@ export interface Grammar {
   defaultToken?: string;
   ignoreCase?: boolean;
   tokenizer: Record<string, GrammarEntry[]>;
+  formatters?: Record<string, import('./formatter').FormatRules>;
   [key: string]: any; // lookup tables like "keywords", "typeKeywords", etc.
 }
 

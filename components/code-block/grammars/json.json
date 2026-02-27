@@ -2,6 +2,19 @@
   "name": "json",
   "fileTypes": ["json", "jsonc"],
   "defaultToken": "",
+  "formatters": {
+    "pretty": {
+      "tabSize": 2,
+      "useTabs": false,
+      "newlineAfter": "[{\\[,]",
+      "newlineBefore": "[}\\]]",
+      "spaceAfter": "[:]",
+      "indent": "[{\\[]",
+      "dedent": "[}\\]]",
+      "skipStrings": true,
+      "skipComments": true
+    }
+  },
   "tokenizer": {
     "root": [
       ["\"(?:[^\"\\\\]|\\\\.)*\"(?=\\s*:)", "property"],

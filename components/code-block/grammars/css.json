@@ -2,6 +2,19 @@
   "name": "css",
   "fileTypes": ["css", "scss", "less"],
   "defaultToken": "",
+  "formatters": {
+    "pretty": {
+      "tabSize": 2,
+      "useTabs": false,
+      "newlineAfter": "[{;]",
+      "newlineBefore": "[}]",
+      "spaceAfter": "[:]",
+      "indent": "[{]",
+      "dedent": "[}]",
+      "skipStrings": true,
+      "skipComments": true
+    }
+  },
   "tokenizer": {
     "root": [
       ["\\/\\*", "comment", "@comment"],
