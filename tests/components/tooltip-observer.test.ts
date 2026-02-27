@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach, beforeEach, vi } from 'vitest';
 import { wait, waitFor } from './test-utils';
-import { useTooltips, cleanupTooltips } from '../../src/tooltip-observer';
+import { useTooltips, cleanupTooltips } from '../../components/tooltip/tooltip-observer';
 
 function cleanupPortals() {
   document.querySelectorAll('.snice-tooltip').forEach(p => p.remove());

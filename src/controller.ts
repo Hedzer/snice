@@ -236,45 +236,41 @@ export function useNativeElementControllers() {
   // Process elements that already have controller attribute
   function processElement(element: Element) {
     if (!(element instanceof HTMLElement)) return;
-    
-    // Skip custom elements (they handle controllers themselves)
     if (element.tagName.includes('-')) return;
-    
-    // Skip elements that are @element decorated (they have their own controller handling)
     if ((element as any)[IS_ELEMENT_CLASS]) return;
-    
+
     const controllerName = element.getAttribute('controller');
     const currentControllerName = (element as any)[NATIVE_CONTROLLER];
-    
-    if (controllerName && controllerName !== currentControllerName) {
-      // Controller added or changed
-      (element as any)[NATIVE_CONTROLLER] = controllerName;
-      
-      // For non-custom elements, we need to add the ready promise
-      if (!(element as any).ready) {
-        (element as any).ready = Promise.resolve();
-      }
-      
-      // Detach old controller if exists (don't await - let it run async)
-      if (currentControllerName) {
-        detachController(element as HTMLElement).catch(error => {
-          console.error(`Failed to detach old controller from native element:`, error);
-        });
-      }
-      
-      // Attach the new controller
-      attachController(element as HTMLElement, controllerName).catch(error => {
-        console.error(`Failed to attach controller "${controllerName}" to native element:`, error);
-      });
-    } else if (!controllerName && currentControllerName) {
-      // Controller was removed
+
+    // No change
+    if (controllerName === currentControllerName) return;
+
+    // Controller removed
+    if (!controllerName) {
       delete (element as any)[NATIVE_CONTROLLER];
-      // Clear the controller name immediately to allow re-attachment
       delete (element as any)[CONTROLLER_NAME_KEY];
       detachController(element as HTMLElement).catch(error => {
         console.error(`Failed to detach controller from native element:`, error);
       });
+      return;
     }
+
+    // Controller added or changed
+    (element as any)[NATIVE_CONTROLLER] = controllerName;
+
+    if (!(element as any).ready) {
+      (element as any).ready = Promise.resolve();
+    }
+
+    if (currentControllerName) {
+      detachController(element as HTMLElement).catch(error => {
+        console.error(`Failed to detach old controller from native element:`, error);
+      });
+    }
+
+    attachController(element as HTMLElement, controllerName).catch(error => {
+      console.error(`Failed to attach controller "${controllerName}" to native element:`, error);
+    });
   }
 
   // Set up MutationObserver to watch for controller attributes
@@ -296,30 +292,20 @@ export function useNativeElementControllers() {
     }
   });
 
-  // Start observing when DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      // Process existing elements (excluding custom elements)
-      document.querySelectorAll('[controller]:not([class*="-"])').forEach(processElement);
-      
-      // Start observing
-      observer.observe(document.body, {
-        attributes: true,
-        attributeFilter: ['controller'],
-        childList: true,
-        subtree: true
-      });
-    });
-  } else {
-    // DOM already loaded
+  function startObserving() {
     document.querySelectorAll('[controller]:not([class*="-"])').forEach(processElement);
-    
     observer.observe(document.body, {
       attributes: true,
       attributeFilter: ['controller'],
       childList: true,
       subtree: true
     });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startObserving);
+  } else {
+    startObserving();
   }
 
   // Store observer reference for cleanup if needed

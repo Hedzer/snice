@@ -136,50 +136,44 @@ export function throttle(
       const timerKey = methodName;
       const now = Date.now();
 
+      // First call
       if (!timers[timerKey]) {
-        // First call
-        if (leading) {
-          originalMethod.apply(this, args);
-        }
+        if (leading) originalMethod.apply(this, args);
 
-        timers[timerKey] = {
-          lastInvoke: now,
-          timeout: null,
-          lastArgs: args,
-        };
+        timers[timerKey] = { lastInvoke: now, timeout: null, lastArgs: args };
 
         if (trailing && !leading) {
-          // If no leading edge, set up trailing
           timers[timerKey].timeout = setTimeout(() => {
             originalMethod.apply(this, timers[timerKey].lastArgs);
             delete timers[timerKey];
           }, wait);
         }
-      } else {
-        // Subsequent calls
-        const timeSinceLastInvoke = now - timers[timerKey].lastInvoke;
+        return;
+      }
 
-        // Update last args
-        timers[timerKey].lastArgs = args;
+      // Subsequent calls
+      const timeSinceLastInvoke = now - timers[timerKey].lastInvoke;
+      timers[timerKey].lastArgs = args;
 
-        // Clear any pending trailing call
-        if (timers[timerKey].timeout) {
-          clearTimeout(timers[timerKey].timeout);
-        }
+      if (timers[timerKey].timeout) {
+        clearTimeout(timers[timerKey].timeout);
+      }
 
-        if (timeSinceLastInvoke >= wait) {
-          // Enough time has passed, invoke immediately
-          originalMethod.apply(this, args);
-          timers[timerKey].lastInvoke = now;
-        } else if (trailing) {
-          // Set up trailing call
-          const remaining = wait - timeSinceLastInvoke;
-          timers[timerKey].timeout = setTimeout(() => {
-            originalMethod.apply(this, timers[timerKey].lastArgs);
-            timers[timerKey].lastInvoke = Date.now();
-            timers[timerKey].timeout = null;
-          }, remaining);
-        }
+      // Enough time passed — invoke immediately
+      if (timeSinceLastInvoke >= wait) {
+        originalMethod.apply(this, args);
+        timers[timerKey].lastInvoke = now;
+        return;
+      }
+
+      // Set up trailing call
+      if (trailing) {
+        const remaining = wait - timeSinceLastInvoke;
+        timers[timerKey].timeout = setTimeout(() => {
+          originalMethod.apply(this, timers[timerKey].lastArgs);
+          timers[timerKey].lastInvoke = Date.now();
+          timers[timerKey].timeout = null;
+        }, remaining);
       }
     };
   };
@@ -213,11 +207,9 @@ export function once(perInstance = true) {
     const methodName = context.name as string;
 
     return function (this: any, ...args: any[]) {
+      // Per-instance tracking
       if (perInstance) {
-        // Per-instance tracking
-        if (!this[ONCE_CALLED]) {
-          this[ONCE_CALLED] = {};
-        }
+        if (!this[ONCE_CALLED]) this[ONCE_CALLED] = {};
 
         if (!this[ONCE_CALLED][methodName]) {
           this[ONCE_CALLED][methodName] = {
@@ -227,15 +219,15 @@ export function once(perInstance = true) {
         }
 
         return this[ONCE_CALLED][methodName].result;
-      } else {
-        // Global tracking
-        if (!globalCalled) {
-          globalCalled = true;
-          globalResult = originalMethod.apply(this, args);
-        }
-
-        return globalResult;
       }
+
+      // Global tracking
+      if (!globalCalled) {
+        globalCalled = true;
+        globalResult = originalMethod.apply(this, args);
+      }
+
+      return globalResult;
     };
   };
 }
@@ -289,15 +281,10 @@ export function memoize(
       // Check if cached
       if (cache.has(key)) {
         const cached = cache.get(key);
+        const expired = ttl !== undefined && (Date.now() - cached.timestamp) > ttl;
 
-        // Check TTL
-        if (ttl !== undefined) {
-          const age = Date.now() - cached.timestamp;
-          if (age > ttl) {
-            cache.delete(key);
-          } else {
-            return cached.value;
-          }
+        if (expired) {
+          cache.delete(key);
         } else {
           return cached.value;
         }

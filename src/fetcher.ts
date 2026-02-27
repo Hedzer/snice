@@ -72,9 +72,9 @@ export class ContextAwareFetcher implements Fetcher {
   use(type: 'request' | 'response', middleware: RequestMiddleware | ResponseMiddleware): void {
     if (type === 'request') {
       this.requestMiddlewares.push(middleware as RequestMiddleware);
-    } else {
-      this.responseMiddlewares.push(middleware as ResponseMiddleware);
+      return;
     }
+    this.responseMiddlewares.push(middleware as ResponseMiddleware);
   }
 
   /**

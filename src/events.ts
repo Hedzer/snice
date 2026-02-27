@@ -56,23 +56,30 @@ export function dispatch(eventName: string, options?: DispatchOptions) {
         if (options?.debounce) {
           clearTimeout(timers.debounceTimeout);
           timers.debounceTimeout = setTimeout(() => doDispatch(detail), options.debounce);
-        } else if (options?.throttle) {
-          const now = Date.now();
-          const remaining = options.throttle - (now - timers.throttleLastCall);
+          return;
+        }
 
-          if (remaining <= 0) {
-            clearTimeout(timers.throttleTimeout);
-            timers.throttleLastCall = now;
-            doDispatch(detail);
-          } else if (!timers.throttleTimeout) {
-            timers.throttleTimeout = setTimeout(() => {
-              timers.throttleLastCall = Date.now();
-              timers.throttleTimeout = null;
-              doDispatch(detail);
-            }, remaining);
-          }
-        } else {
+        if (!options?.throttle) {
           doDispatch(detail);
+          return;
+        }
+
+        const now = Date.now();
+        const remaining = options.throttle - (now - timers.throttleLastCall);
+
+        if (remaining <= 0) {
+          clearTimeout(timers.throttleTimeout);
+          timers.throttleLastCall = now;
+          doDispatch(detail);
+          return;
+        }
+
+        if (!timers.throttleTimeout) {
+          timers.throttleTimeout = setTimeout(() => {
+            timers.throttleLastCall = Date.now();
+            timers.throttleTimeout = null;
+            doDispatch(detail);
+          }, remaining);
         }
       };
       

@@ -1,14 +1,7 @@
-type TooltipPosition =
-  | 'top' | 'bottom' | 'left' | 'right'
-  | 'top-start' | 'top-end'
-  | 'bottom-start' | 'bottom-end'
-  | 'left-start' | 'left-end'
-  | 'right-start' | 'right-end';
+import type { TooltipPosition } from './snice-tooltip.types';
+import { ensurePortalStyles, calculatePosition } from './tooltip-positioning';
 
 type TooltipTrigger = 'hover' | 'click' | 'focus';
-
-// Portal CSS inlined (from snice-tooltip-portal.css)
-const portalCss = `.snice-tooltip--visible{opacity:1!important;transform:scale(1)!important}.snice-tooltip__arrow{position:absolute;width:0;height:0;border-style:solid;border-color:transparent}.snice-tooltip--top .snice-tooltip__arrow,.snice-tooltip--top-start .snice-tooltip__arrow,.snice-tooltip--top-end .snice-tooltip__arrow{bottom:-6px;border-width:6px 6px 0;border-top-color:hsl(0 0% 20%)}.snice-tooltip--bottom .snice-tooltip__arrow,.snice-tooltip--bottom-start .snice-tooltip__arrow,.snice-tooltip--bottom-end .snice-tooltip__arrow{top:-6px;border-width:0 6px 6px;border-bottom-color:hsl(0 0% 20%)}.snice-tooltip--left .snice-tooltip__arrow,.snice-tooltip--left-start .snice-tooltip__arrow,.snice-tooltip--left-end .snice-tooltip__arrow{right:-6px;border-width:6px 0 6px 6px;border-left-color:hsl(0 0% 20%)}.snice-tooltip--right .snice-tooltip__arrow,.snice-tooltip--right-start .snice-tooltip__arrow,.snice-tooltip--right-end .snice-tooltip__arrow{left:-6px;border-width:6px 6px 6px 0;border-right-color:hsl(0 0% 20%)}.snice-tooltip--top .snice-tooltip__arrow,.snice-tooltip--bottom .snice-tooltip__arrow{left:50%;transform:translateX(-50%)}.snice-tooltip--top-start .snice-tooltip__arrow,.snice-tooltip--bottom-start .snice-tooltip__arrow{left:16px}.snice-tooltip--top-end .snice-tooltip__arrow,.snice-tooltip--bottom-end .snice-tooltip__arrow{right:16px}.snice-tooltip--left .snice-tooltip__arrow,.snice-tooltip--right .snice-tooltip__arrow{top:50%;transform:translateY(-50%)}.snice-tooltip--left-start .snice-tooltip__arrow,.snice-tooltip--right-start .snice-tooltip__arrow{top:16px}.snice-tooltip--left-end .snice-tooltip__arrow,.snice-tooltip--right-end .snice-tooltip__arrow{bottom:16px;top:auto}`;
 
 interface TooltipConfig {
   position: TooltipPosition;
@@ -37,26 +30,6 @@ interface TooltipState {
 
 const stateMap = new WeakMap<HTMLElement, TooltipState>();
 
-let portalStylesInjected = false;
-
-function ensurePortalStyles() {
-  if (portalStylesInjected) return;
-  try {
-    if ('adoptedStyleSheets' in document && 'CSSStyleSheet' in window) {
-      const sheet = new CSSStyleSheet();
-      sheet.replaceSync(portalCss);
-      document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
-    } else {
-      const style = document.createElement('style');
-      style.textContent = portalCss;
-      document.head.appendChild(style);
-    }
-    portalStylesInjected = true;
-  } catch (error) {
-    console.warn('Failed to inject tooltip portal styles:', error);
-  }
-}
-
 function readConfig(el: HTMLElement): TooltipConfig {
   const cs = getComputedStyle(el);
   const get = (name: string, fallback: string) => cs.getPropertyValue(name).trim() || fallback;
@@ -76,134 +49,6 @@ function readConfig(el: HTMLElement): TooltipConfig {
     radius: get('--tooltip-radius', '6px'),
     fontSize: get('--tooltip-font-size', '14px'),
   };
-}
-
-// --- Positioning (ported from snice-tooltip.ts) ---
-
-function getPositionCoordinates(
-  triggerRect: DOMRect,
-  tooltipRect: DOMRect,
-  position: TooltipPosition,
-  offset: number,
-  arrowSize: number
-) {
-  let left = 0;
-  let top = 0;
-  const centerX = triggerRect.left + triggerRect.width / 2;
-  const centerY = triggerRect.top + triggerRect.height / 2;
-  const verticalOffset = offset;
-  const horizontalOffset = offset + arrowSize;
-
-  switch (position) {
-    case 'top':
-      left = centerX - tooltipRect.width / 2;
-      top = triggerRect.top - tooltipRect.height - verticalOffset;
-      break;
-    case 'top-start':
-      left = triggerRect.left;
-      top = triggerRect.top - tooltipRect.height - verticalOffset;
-      break;
-    case 'top-end':
-      left = triggerRect.right - tooltipRect.width;
-      top = triggerRect.top - tooltipRect.height - verticalOffset;
-      break;
-    case 'bottom':
-      left = centerX - tooltipRect.width / 2;
-      top = triggerRect.bottom + verticalOffset;
-      break;
-    case 'bottom-start':
-      left = triggerRect.left;
-      top = triggerRect.bottom + verticalOffset;
-      break;
-    case 'bottom-end':
-      left = triggerRect.right - tooltipRect.width;
-      top = triggerRect.bottom + verticalOffset;
-      break;
-    case 'left':
-      left = triggerRect.left - tooltipRect.width - horizontalOffset;
-      top = centerY - tooltipRect.height / 2;
-      break;
-    case 'left-start':
-      left = triggerRect.left - tooltipRect.width - horizontalOffset;
-      top = triggerRect.top;
-      break;
-    case 'left-end':
-      left = triggerRect.left - tooltipRect.width - horizontalOffset;
-      top = triggerRect.bottom - tooltipRect.height;
-      break;
-    case 'right':
-      left = triggerRect.right + horizontalOffset;
-      top = centerY - tooltipRect.height / 2;
-      break;
-    case 'right-start':
-      left = triggerRect.right + horizontalOffset;
-      top = triggerRect.top;
-      break;
-    case 'right-end':
-      left = triggerRect.right + horizontalOffset;
-      top = triggerRect.bottom - tooltipRect.height;
-      break;
-  }
-  return { left, top };
-}
-
-function getAlternativePositions(position: TooltipPosition): TooltipPosition[] {
-  const opposites: Record<string, TooltipPosition[]> = {
-    'top': ['bottom', 'left', 'right'],
-    'top-start': ['bottom-start', 'left', 'right'],
-    'top-end': ['bottom-end', 'left', 'right'],
-    'bottom': ['top', 'left', 'right'],
-    'bottom-start': ['top-start', 'left', 'right'],
-    'bottom-end': ['top-end', 'left', 'right'],
-    'left': ['right', 'top', 'bottom'],
-    'left-start': ['right-start', 'top', 'bottom'],
-    'left-end': ['right-end', 'top', 'bottom'],
-    'right': ['left', 'top', 'bottom'],
-    'right-start': ['left-start', 'top', 'bottom'],
-    'right-end': ['left-end', 'top', 'bottom'],
-  };
-  return opposites[position] || ['top', 'bottom', 'left', 'right'];
-}
-
-function calculatePosition(
-  triggerRect: DOMRect,
-  tooltipRect: DOMRect,
-  position: TooltipPosition,
-  offset: number,
-  arrowSize: number,
-  strictPositioning: boolean
-) {
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
-
-  let pos = position;
-  let coords = getPositionCoordinates(triggerRect, tooltipRect, pos, offset, arrowSize);
-
-  if (!strictPositioning) {
-    const fits =
-      coords.left >= 0 &&
-      coords.top >= 0 &&
-      coords.left + tooltipRect.width <= vw &&
-      coords.top + tooltipRect.height <= vh;
-
-    if (!fits) {
-      for (const alt of getAlternativePositions(pos)) {
-        const altCoords = getPositionCoordinates(triggerRect, tooltipRect, alt, offset, arrowSize);
-        if (
-          altCoords.left >= 0 &&
-          altCoords.top >= 0 &&
-          altCoords.left + tooltipRect.width <= vw &&
-          altCoords.top + tooltipRect.height <= vh
-        ) {
-          pos = alt;
-          coords = altCoords;
-          break;
-        }
-      }
-    }
-  }
-
-  return { left: coords.left, top: coords.top, adjustedPosition: pos };
 }
 
 // --- Portal creation ---
@@ -276,18 +121,15 @@ function showTooltip(el: HTMLElement) {
     p.style.fontSize = config.fontSize;
     p.style.maxWidth = `${config.maxWidth}px`;
 
-    // Update arrow — CSS handles color via class-based rules, but we need
-    // the arrow element to exist/not-exist
-    let arrow = p.querySelector('.snice-tooltip__arrow') as HTMLElement | null;
+    // Update arrow element
+    const arrow = p.querySelector('.snice-tooltip__arrow') as HTMLElement | null;
     if (config.arrow && !arrow) {
-      arrow = document.createElement('div');
-      arrow.className = 'snice-tooltip__arrow';
-      arrow.style.cssText = 'position:absolute;width:0;height:0;border-style:solid;';
-      p.appendChild(arrow);
-    } else if (!config.arrow && arrow) {
-      arrow.style.display = 'none';
-    } else if (config.arrow && arrow) {
-      arrow.style.display = '';
+      const newArrow = document.createElement('div');
+      newArrow.className = 'snice-tooltip__arrow';
+      newArrow.style.cssText = 'position:absolute;width:0;height:0;border-style:solid;';
+      p.appendChild(newArrow);
+    } else if (arrow) {
+      arrow.style.display = config.arrow ? '' : 'none';
     }
   }
 
@@ -373,7 +215,6 @@ function clearTimeouts(state: TooltipState) {
 // --- Attach / Detach ---
 
 function attachTooltip(el: HTMLElement) {
-  // Skip if already attached
   if (stateMap.has(el)) return;
 
   const config = readConfig(el);
@@ -436,10 +277,8 @@ function detachTooltip(el: HTMLElement) {
 
 function processElement(el: Element) {
   if (!(el instanceof HTMLElement)) return;
-  const tooltip = el.getAttribute('tooltip');
-  if (tooltip) {
-    attachTooltip(el);
-  }
+  if (!el.hasAttribute('tooltip')) return;
+  attachTooltip(el);
 }
 
 /**
@@ -456,30 +295,25 @@ export function useTooltips() {
     for (const mutation of mutations) {
       if (mutation.type === 'attributes' && mutation.attributeName === 'tooltip') {
         const el = mutation.target as HTMLElement;
-        if (el.hasAttribute('tooltip')) {
-          // Attribute added or changed — detach old, re-attach
-          detachTooltip(el);
-          attachTooltip(el);
-        } else {
-          // Attribute removed
-          detachTooltip(el);
-        }
-      } else if (mutation.type === 'childList') {
-        mutation.addedNodes.forEach(node => {
-          if (node instanceof HTMLElement) {
-            processElement(node);
-            node.querySelectorAll('[tooltip]').forEach(processElement);
-          }
-        });
-        mutation.removedNodes.forEach(node => {
-          if (node instanceof HTMLElement) {
-            detachTooltip(node);
-            node.querySelectorAll('[tooltip]').forEach(child => {
-              if (child instanceof HTMLElement) detachTooltip(child);
-            });
-          }
-        });
+        detachTooltip(el);
+        if (el.hasAttribute('tooltip')) attachTooltip(el);
+        continue;
       }
+
+      if (mutation.type !== 'childList') continue;
+
+      mutation.addedNodes.forEach(node => {
+        if (!(node instanceof HTMLElement)) return;
+        processElement(node);
+        node.querySelectorAll('[tooltip]').forEach(processElement);
+      });
+      mutation.removedNodes.forEach(node => {
+        if (!(node instanceof HTMLElement)) return;
+        detachTooltip(node);
+        node.querySelectorAll('[tooltip]').forEach(child => {
+          if (child instanceof HTMLElement) detachTooltip(child);
+        });
+      });
     }
   });
 
@@ -517,4 +351,9 @@ export function cleanupTooltips() {
   });
 
   (globalThis as any).sniceTooltipsInitialized = false;
+}
+
+// Auto-enable in browser environments
+if (typeof document !== 'undefined') {
+  useTooltips();
 }

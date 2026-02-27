@@ -59,6 +59,9 @@ export const OBSERVERS = getSymbol('observers');
 export const PARTS = getSymbol('parts');
 export const PART_TIMERS = getSymbol('part-timers');
 
+// Property setter flag (prevents attributeChangedCallback re-triggering watchers)
+export const SETTING_FROM_PROPERTY = getSymbol('setting-from-property');
+
 // Lifecycle callback timers
 export const MOVED_TIMERS = getSymbol('moved-timers');
 export const ADOPTED_TIMERS = getSymbol('adopted-timers');
@@ -70,7 +73,6 @@ export const DISPATCH_TIMERS = getSymbol('dispatch-timers');
 export const RENDER_METHOD = getSymbol('render-method');
 export const RENDER_OPTIONS = getSymbol('render-options');
 export const RENDER_INSTANCE = getSymbol('render-instance');
-export const RENDER_SCHEDULED = getSymbol('render-scheduled');
 export const RENDER_TIMERS = getSymbol('render-timers');
 export const RENDER_CALLBACKS = getSymbol('render-callbacks');
 export const STYLES_METHOD = getSymbol('styles-method');

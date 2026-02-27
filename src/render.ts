@@ -5,7 +5,7 @@
 
 import { TemplateResult, CSSResult, isTemplateResult, isCSSResult } from './template';
 import { TemplateInstance } from './parts';
-import { RENDER_METHOD, RENDER_OPTIONS, RENDER_INSTANCE, RENDER_SCHEDULED, RENDER_TIMERS, RENDER_CALLBACKS, STYLES_METHOD, STYLES_APPLIED } from './symbols';
+import { RENDER_METHOD, RENDER_OPTIONS, RENDER_INSTANCE, RENDER_TIMERS, RENDER_CALLBACKS, STYLES_METHOD, STYLES_APPLIED } from './symbols';
 
 /**
  * Options for @render decorator
@@ -88,6 +88,14 @@ class RenderScheduler {
 
 const renderScheduler = new RenderScheduler();
 
+function flushRenderCallbacks(element: HTMLElement): void {
+  const callbacks = (element as any)[RENDER_CALLBACKS];
+  if (!callbacks || callbacks.length === 0) return;
+  const cbs = [...callbacks];
+  (element as any)[RENDER_CALLBACKS] = [];
+  cbs.forEach(cb => cb());
+}
+
 /**
  * Perform the actual render of an element
  */
@@ -101,83 +109,43 @@ function performRender(element: HTMLElement, options: RenderOptions, precomputed
   }
 
   try {
-    // Use precomputed result if provided, otherwise call the render method
     const result = precomputedResult !== undefined ? precomputedResult : renderMethod.call(element);
 
-    // Check if differential rendering is disabled (expects string)
-    const differential = options.differential !== false;
+    if (!element.shadowRoot) element.attachShadow({ mode: 'open' });
 
-    if (!differential) {
-      // Non-differential expects string
+    // Non-differential rendering (string)
+    if (options.differential === false) {
       if (typeof result !== 'string') {
         console.warn('Render method with differential: false must return a string');
         return;
       }
-
-      // Simple string rendering
-      if (!element.shadowRoot) {
-        element.attachShadow({ mode: 'open' });
-      }
       element.shadowRoot!.innerHTML = result;
-
-      // Mark scheduled flag as false
-      (element as any)[RENDER_SCHEDULED] = false;
-
-      // Call all registered render callbacks
-      const callbacks = (element as any)[RENDER_CALLBACKS];
-      if (callbacks && callbacks.length > 0) {
-        const cbs = [...callbacks];
-        (element as any)[RENDER_CALLBACKS] = [];
-        cbs.forEach(cb => cb());
-      }
+      flushRenderCallbacks(element);
       return;
     }
 
+    // Differential rendering (template)
     if (!isTemplateResult(result)) {
       console.warn('Render method must return html`` template result');
       return;
     }
 
-    // Get or create template instance (differential rendering)
     let instance = (element as any)[RENDER_INSTANCE] as TemplateInstance | undefined;
 
-    // Ensure shadow root exists
-    if (!element.shadowRoot) {
-      element.attachShadow({ mode: 'open' });
-    }
-
-    // Check if we can reuse the existing instance (same template strings)
     if (instance && instance.isSameTemplate(result.strings)) {
-      // SAME TEMPLATE - just update values (efficient path!)
       instance.update(result.values);
-    } else {
-      // Different template or first render - create new instance
-      // Clear existing content if this is a template switch
-      if (instance) {
-        element.shadowRoot!.innerHTML = '';
-      }
-
-      instance = new TemplateInstance(result);
-      (element as any)[RENDER_INSTANCE] = instance;
-
-      // Create the fragment but don't commit values yet
-      const fragment = instance.renderFragment();
-      // Append to shadow root first so getRootNode() works in event handlers
-      element.shadowRoot!.appendChild(fragment);
-      // Now commit values (this binds event handlers with correct host)
-      instance.update(result.values);
+      flushRenderCallbacks(element);
+      return;
     }
 
-    // Mark scheduled flag as false
-    (element as any)[RENDER_SCHEDULED] = false;
+    // Different template or first render
+    if (instance) element.shadowRoot!.innerHTML = '';
 
-    // Call all registered render callbacks (for testing/debugging)
-    const callbacks = (element as any)[RENDER_CALLBACKS];
-    if (callbacks && callbacks.length > 0) {
-      const cbs = [...callbacks];
-      (element as any)[RENDER_CALLBACKS] = [];
-      cbs.forEach(cb => cb());
-    }
+    instance = new TemplateInstance(result);
+    (element as any)[RENDER_INSTANCE] = instance;
+    element.shadowRoot!.appendChild(instance.renderFragment());
+    instance.update(result.values);
+    flushRenderCallbacks(element);
   } catch (error) {
     console.error('Error rendering element:', error);
   }
@@ -227,16 +195,16 @@ export function requestRender(element: HTMLElement, immediate = false): void {
     if (timers.lastThrottle === 0 || now - timers.lastThrottle >= options.throttle) {
       timers.lastThrottle = now;
       renderScheduler.schedule(element, options);
-    } else {
-      // Schedule for later if not already scheduled
-      if (!timers.throttleTimer) {
-        const remaining = options.throttle - (now - timers.lastThrottle);
-        timers.throttleTimer = setTimeout(() => {
-          timers.throttleTimer = null;
-          timers.lastThrottle = Date.now();
-          renderScheduler.schedule(element, options);
-        }, remaining);
-      }
+      return;
+    }
+
+    if (!timers.throttleTimer) {
+      const remaining = options.throttle - (now - timers.lastThrottle);
+      timers.throttleTimer = setTimeout(() => {
+        timers.throttleTimer = null;
+        timers.lastThrottle = Date.now();
+        renderScheduler.schedule(element, options);
+      }, remaining);
     }
     return;
   }
@@ -357,15 +325,18 @@ export function applyStyles(element: HTMLElement): void {
     const baseStyleSheet = new CSSStyleSheet();
     baseStyleSheet.replaceSync('if, case { display: contents; }');
 
-    // Try to use constructable stylesheets for better performance
-    if (element.shadowRoot && result.styleSheet && 'adoptedStyleSheets' in element.shadowRoot) {
+    if (!element.shadowRoot) return;
+
+    // Prefer constructable stylesheets
+    if (result.styleSheet && 'adoptedStyleSheets' in element.shadowRoot) {
       element.shadowRoot.adoptedStyleSheets = [baseStyleSheet, result.styleSheet];
-    } else if (element.shadowRoot) {
-      // Fallback to <style> tag
-      const style = document.createElement('style');
-      style.textContent = 'if, case { display: contents; }\n' + result.cssText;
-      element.shadowRoot.appendChild(style);
+      return;
     }
+
+    // Fallback to <style> tag
+    const style = document.createElement('style');
+    style.textContent = 'if, case { display: contents; }\n' + result.cssText;
+    element.shadowRoot.appendChild(style);
   } catch (error) {
     console.error('Error applying styles:', error);
   }

@@ -109,50 +109,42 @@ export function request<T = any>(requestName: string, options?: RequestOptions) 
       }
       }; // Close actualRequest function
       
-      // Apply debounce or throttle if specified
+      // Debounce
       if (options?.debounce) {
         return new Promise((resolve, reject) => {
           clearTimeout(debounceTimeout);
           debounceTimeout = setTimeout(async () => {
-            try {
-              const result = await actualRequest();
-              resolve(result);
-            } catch (error) {
-              reject(error);
-            }
+            try { resolve(await actualRequest()); }
+            catch (error) { reject(error); }
           }, options.debounce);
         });
       }
-      
-      if (options?.throttle) {
-        const now = Date.now();
-        const remaining = options.throttle - (now - throttleLastCall);
-        
-        if (remaining <= 0) {
-          clearTimeout(throttleTimeout);
-          throttleLastCall = now;
-          return actualRequest();
-        } else if (!throttleTimeout) {
-          return new Promise((resolve, reject) => {
-            throttleTimeout = setTimeout(async () => {
-              throttleLastCall = Date.now();
-              throttleTimeout = null;
-              try {
-                const result = await actualRequest();
-                resolve(result);
-              } catch (error) {
-                reject(error);
-              }
-            }, remaining);
-          });
-        }
-        
-        // If throttled and timeout already exists, return empty promise
-        return Promise.resolve();
+
+      // No throttle — execute immediately
+      if (!options?.throttle) return actualRequest();
+
+      // Throttle: time elapsed — invoke now
+      const now = Date.now();
+      const remaining = options.throttle - (now - throttleLastCall);
+
+      if (remaining <= 0) {
+        clearTimeout(throttleTimeout);
+        throttleLastCall = now;
+        return actualRequest();
       }
-      
-      // No timing applied, execute immediately
-      return actualRequest();
+
+      // Throttle: already has pending timeout
+      if (throttleTimeout) return Promise.resolve();
+
+      // Throttle: schedule trailing call
+      return new Promise((resolve, reject) => {
+        throttleTimeout = setTimeout(async () => {
+          throttleLastCall = Date.now();
+          throttleTimeout = null;
+          try { resolve(await actualRequest()); }
+          catch (error) { reject(error); }
+        }, remaining);
+      });
     };
   };
 }
@@ -212,51 +204,38 @@ export function setupResponseHandlers(instance: any, element: HTMLElement) {
     // Create wrapped method with timing if needed
     const createTimedMethod = (originalMethod: Function) => {
       if (handler.options?.debounce) {
-        return (...args: any[]) => {
-          return new Promise((resolve, reject) => {
-            clearTimeout(debounceTimeout);
-            debounceTimeout = setTimeout(async () => {
-              try {
-                const result = await originalMethod(...args);
-                resolve(result);
-              } catch (error) {
-                reject(error);
-              }
-            }, handler.options.debounce);
-          });
-        };
+        return (...args: any[]) => new Promise((resolve, reject) => {
+          clearTimeout(debounceTimeout);
+          debounceTimeout = setTimeout(async () => {
+            try { resolve(await originalMethod(...args)); }
+            catch (error) { reject(error); }
+          }, handler.options.debounce);
+        });
       }
-      
-      if (handler.options?.throttle) {
-        return (...args: any[]) => {
-          const now = Date.now();
-          const remaining = handler.options.throttle! - (now - throttleLastCall);
-          
-          if (remaining <= 0) {
-            clearTimeout(throttleTimeout);
-            throttleLastCall = now;
-            return originalMethod(...args);
-          } else if (!throttleTimeout) {
-            return new Promise((resolve, reject) => {
-              throttleTimeout = setTimeout(async () => {
-                throttleLastCall = Date.now();
-                throttleTimeout = null;
-                try {
-                  const result = await originalMethod(...args);
-                  resolve(result);
-                } catch (error) {
-                  reject(error);
-                }
-              }, remaining);
-            });
-          }
-          
-          // If throttled and timeout already exists, return cached/empty response
-          return Promise.resolve(undefined);
-        };
-      }
-      
-      return originalMethod;
+
+      if (!handler.options?.throttle) return originalMethod;
+
+      return (...args: any[]) => {
+        const now = Date.now();
+        const remaining = handler.options.throttle! - (now - throttleLastCall);
+
+        if (remaining <= 0) {
+          clearTimeout(throttleTimeout);
+          throttleLastCall = now;
+          return originalMethod(...args);
+        }
+
+        if (throttleTimeout) return Promise.resolve(undefined);
+
+        return new Promise((resolve, reject) => {
+          throttleTimeout = setTimeout(async () => {
+            throttleLastCall = Date.now();
+            throttleTimeout = null;
+            try { resolve(await originalMethod(...args)); }
+            catch (error) { reject(error); }
+          }, remaining);
+        });
+      };
     };
     
     const timedMethod = createTimedMethod(boundMethod);

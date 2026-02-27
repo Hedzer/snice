@@ -4,7 +4,12 @@ export type { Layout } from './element';
 export { context as contextProperty } from './element'; // Deprecated: use @context method decorator instead
 export { Router } from './router';
 export { controller, useNativeElementControllers } from './controller';
-export { useTooltips, cleanupTooltips } from './tooltip-observer';
+import { useNativeElementControllers } from './controller';
+
+// Auto-enable native element controllers in browser environments
+if (typeof document !== 'undefined') {
+  useNativeElementControllers();
+}
 export { dispatch } from './events';
 export { observe } from './observe';
 export { on } from './on';

@@ -3,13 +3,11 @@ import { setupObservers, cleanupObservers } from './observe';
 import { setupResponseHandlers, cleanupResponseHandlers } from './request-response';
 import { setupEventHandlers, cleanupEventHandlers } from './on';
 import { setupContextHandler, cleanupContextHandler } from './context';
-import { parseAttributeValue, detectType, valueToAttribute } from './utils';
+import { parseAttributeValue, detectType, valueToAttribute, getAttrName, ensureSet, ensureObj, invokeWatchers } from './utils';
 import { requestRender, applyStyles } from './render';
-import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, RENDERED_PROMISE, RENDERED_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PRE_INIT_PROPERTY_VALUES, PROPERTY_WATCHERS, EXPLICITLY_SET_PROPERTIES, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD } from './symbols';
+import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, RENDERED_PROMISE, RENDERED_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PRE_INIT_PROPERTY_VALUES, PROPERTY_WATCHERS, EXPLICITLY_SET_PROPERTIES, SETTING_FROM_PROPERTY, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD } from './symbols';
 import { QueryOptions } from './types/query-options';
 import { PropertyOptions } from './types/property-options';
-import { MovedOptions } from './types/moved-options';
-import { AdoptedOptions } from './types/adopted-options';
 import { ElementOptions } from './types/element-options';
 import { AppContext } from './types/app-context';
 import { Placard } from './types/placard';
@@ -80,11 +78,11 @@ export interface Layout {
 export function applyElementFunctionality(constructor: any) {
   // Mark as element class for channel decorator detection
   (constructor.prototype as any)[IS_ELEMENT_CLASS] = true;
-    
-    // Add controller property to all elements
-    const originalConnectedCallback = constructor.prototype.connectedCallback;
-    const originalDisconnectedCallback = constructor.prototype.disconnectedCallback;
-    const originalAttributeChangedCallback = constructor.prototype.attributeChangedCallback;
+
+  // Add controller property to all elements
+  const originalConnectedCallback = constructor.prototype.connectedCallback;
+  const originalDisconnectedCallback = constructor.prototype.disconnectedCallback;
+  const originalAttributeChangedCallback = constructor.prototype.attributeChangedCallback;
     
     // Add 'controller' and all reflected properties to observed attributes
     const observedAttributes = constructor.observedAttributes || [];
@@ -97,7 +95,7 @@ export function applyElementFunctionality(constructor: any) {
     if (properties) {
       for (const [propName, propOptions] of properties) {
         if (propOptions.attribute === false) continue;
-        const attributeName = typeof propOptions.attribute === 'string' ? propOptions.attribute : propName.toLowerCase();
+        const attributeName = getAttrName(propOptions, propName);
         if (!observedAttributes.includes(attributeName)) {
           observedAttributes.push(attributeName);
         }
@@ -136,13 +134,16 @@ export function applyElementFunctionality(constructor: any) {
       set(value: string) {
         const oldValue = this[CONTROLLER];
         this[CONTROLLER] = value;
-        if (value !== oldValue && value) {
-          // Attach controller asynchronously
+        if (value === oldValue) return;
+
+        if (value) {
           attachController(this, value).catch(error => {
             console.error(`Failed to attach controller "${value}":`, error);
           });
-        } else if (!value && oldValue) {
-          // Detach controller asynchronously
+          return;
+        }
+
+        if (oldValue) {
           detachController(this).catch(error => {
             console.error(`Failed to detach controller:`, error);
           });
@@ -184,90 +185,54 @@ export function applyElementFunctionality(constructor: any) {
         return;
       }
 
-      try {
-        // Mark that properties are being initialized from attributes
-        // This allows property setters to work during initialization
-        this[PROPERTIES_INITIALIZED] = true;
+      // Mark that properties are being initialized from attributes
+      // This allows property setters to work during initialization
+      this[PROPERTIES_INITIALIZED] = true;
 
-        // Initialize properties from attributes before rendering
-        const properties = constructor[PROPERTIES];
-        if (properties) {
-          for (const [propName, propOptions] of properties) {
-            // Skip properties that opted out of attribute sync
-            if (propOptions.attribute === false) continue;
-            // Check for attribute using proper attribute name
-            const attributeName = typeof propOptions.attribute === 'string' ? propOptions.attribute : propName.toLowerCase();
-            if (this.hasAttribute(attributeName)) {
-              // Attribute exists, parse and set the property value
-              const attrValue = this.getAttribute(attributeName);
+      // Initialize properties from attributes before rendering
+      const properties = constructor[PROPERTIES];
+      if (properties) {
+        for (const [propName, propOptions] of properties) {
+          if (propOptions.attribute === false) continue;
+          const attributeName = getAttrName(propOptions, propName);
+          if (!this.hasAttribute(attributeName)) continue;
 
-              // Mark as explicitly set since it came from an attribute
-              if (!this[EXPLICITLY_SET_PROPERTIES]) {
-                this[EXPLICITLY_SET_PROPERTIES] = new Set();
-              }
-              this[EXPLICITLY_SET_PROPERTIES].add(propName);
+          const attrValue = this.getAttribute(attributeName);
+          ensureSet(this, EXPLICITLY_SET_PROPERTIES).add(propName);
 
-              // For boolean attributes, normalize to "true" if they're empty
-              if (propOptions.type === Boolean && attrValue === '') {
-                this.setAttribute(attributeName, 'true');
-              }
-
-              this[propName] = parseAttributeValue(attrValue, propOptions);
-            }
+          if (propOptions.type === Boolean && attrValue === '') {
+            this.setAttribute(attributeName, 'true');
           }
+
+          this[propName] = parseAttributeValue(attrValue, propOptions);
         }
-
-        // Clear pre-init values for properties that have HTML attributes
-        // This prevents field initializers from overwriting HTML attributes later
-        if (this[PRE_INIT_PROPERTY_VALUES]) {
-          for (const [propName, propValue] of Array.from((this[PRE_INIT_PROPERTY_VALUES] as Map<string, any>).entries())) {
-            const propOptions = properties?.get(propName);
-            const attributeName = typeof propOptions?.attribute === 'string' ? propOptions.attribute : propName.toLowerCase();
-
-            if (this.hasAttribute(attributeName)) {
-              // Attribute exists - remove from PRE_INIT to prevent overwriting
-              this[PRE_INIT_PROPERTY_VALUES].delete(propName);
-            } else {
-              // No attribute - apply the pre-init value
-              this[PRE_INIT_PROPERTY_VALUES].delete(propName);
-              this[propName] = propValue;
-            }
-          }
-          // Clear the pre-init values map
-          delete this[PRE_INIT_PROPERTY_VALUES];
-        }
-
-        // Properties are now stateless and read from DOM attributes only
-        // Initial values are not automatically reflected
-
-        // v3.0.0: Apply @styles decorator if present
-        // This creates the shadow root and applies styles
-        applyStyles(this);
-
-        // v3.0.0: Perform initial @render if present
-        // This uses differential rendering with template system
-        // Defer initial render to next microtask to allow property bindings
-        // from parent to be set first (avoids infinite loops in nested elements)
-        // Setup @on event handlers (v2.5.4 compatibility restored!)
-        setupEventHandlers(this, this);
-
-        // Setup @respond handlers for elements
-        setupResponseHandlers(this, this);
-
-        // Setup @context handler for elements
-        setupContextHandler(this);
-
-        // Mark as initialized
-        this[INITIALIZED] = true;
-
-        // NOW call the original user-defined connectedCallback after shadow DOM is set up
-        if (originalConnectedCallback) {
-          originalConnectedCallback.call(this);
-        }
-      } finally {
-        // Ready resolve is handled inside the render/ready microtask below
       }
 
+      // Clear pre-init values for properties that have HTML attributes
+      if (this[PRE_INIT_PROPERTY_VALUES]) {
+        for (const [propName, propValue] of Array.from((this[PRE_INIT_PROPERTY_VALUES] as Map<string, any>).entries())) {
+          const propOptions = properties?.get(propName);
+          const attributeName = getAttrName(propOptions || {}, propName);
+          this[PRE_INIT_PROPERTY_VALUES].delete(propName);
+
+          if (!this.hasAttribute(attributeName)) {
+            this[propName] = propValue;
+          }
+        }
+        delete this[PRE_INIT_PROPERTY_VALUES];
+      }
+
+      applyStyles(this);
+
+      setupEventHandlers(this, this);
+      setupResponseHandlers(this, this);
+      setupContextHandler(this);
+
+      this[INITIALIZED] = true;
+
+      if (originalConnectedCallback) {
+        originalConnectedCallback.call(this);
+      }
       // v4.16.1: Render, run @ready handlers, THEN resolve .ready promise
       // This ensures `await el.ready` waits for both initial render AND all async @ready() methods
       //
@@ -341,76 +306,34 @@ export function applyElementFunctionality(constructor: any) {
     
     constructor.prototype.attributeChangedCallback = function(name: string, oldValue: string, newValue: string) {
       originalAttributeChangedCallback?.call(this, name, oldValue, newValue);
+
       if (name === 'controller') {
         this.controller = newValue;
-      } else {
-        // Handle all properties (not just reflected ones)
-        const properties = constructor[PROPERTIES];
-        if (properties) {
-          for (const [propName, propOptions] of properties) {
-            const attributeName = typeof propOptions.attribute === 'string' ? propOptions.attribute : propName.toLowerCase();
-            if (attributeName.toLowerCase() === name.toLowerCase()) {
-              // Check if the current property value already matches to avoid feedback loops
-              const currentValue = this[PROPERTY_VALUES]?.[propName];
-              
-              // Parse the new value based on type
-              const parsedValue = parseAttributeValue(newValue, propOptions, currentValue, undefined);
-              
-              // Only update if the value actually changed and avoid infinite loops
-              if (currentValue !== parsedValue) {
-                // Mark as explicitly set since it came from an attribute change
-                if (!this[EXPLICITLY_SET_PROPERTIES]) {
-                  this[EXPLICITLY_SET_PROPERTIES] = new Set();
-                }
-                this[EXPLICITLY_SET_PROPERTIES].add(propName);
+        return;
+      }
 
-                // Set the property value directly in the storage to avoid triggering setter
-                if (!this[PROPERTY_VALUES]) {
-                  this[PROPERTY_VALUES] = {};
-                }
-                this[PROPERTY_VALUES][propName] = parsedValue;
+      const properties = constructor[PROPERTIES];
+      if (!properties) return;
 
-                // Only call watchers if this attribute change didn't originate from a property setter
-                const isFromPropertySetter = this._settingFromProperty?.has(name.toLowerCase());
-                if (!isFromPropertySetter) {
-                  // Call watchers manually since we bypassed the setter
-                  const watchers = constructor[PROPERTY_WATCHERS];
-                  if (watchers) {
-                    // Call specific property watchers
-                    if (watchers.has(propName)) {
-                      const propertyWatchers = watchers.get(propName);
-                      for (const watcher of propertyWatchers) {
-                        try {
-                          watcher.method.call(this, currentValue, parsedValue, propName);
-                        } catch (error) {
-                          console.error(`Error in @watch('${propName}') method ${watcher.methodName}:`, error);
-                        }
-                      }
-                    }
+      for (const [propName, propOptions] of properties) {
+        const attributeName = getAttrName(propOptions, propName);
+        if (attributeName.toLowerCase() !== name.toLowerCase()) continue;
 
-                    // Call wildcard watchers (watching "*")
-                    if (watchers.has('*')) {
-                      const wildcardWatchers = watchers.get('*');
-                      for (const watcher of wildcardWatchers) {
-                        try {
-                          watcher.method.call(this, currentValue, parsedValue, propName);
-                        } catch (error) {
-                          console.error(`Error in @watch('*') method ${watcher.methodName}:`, error);
-                        }
-                      }
-                    }
-                  }
+        const currentValue = this[PROPERTY_VALUES]?.[propName];
+        const parsedValue = parseAttributeValue(newValue, propOptions, currentValue, undefined);
+        if (currentValue === parsedValue) break;
 
-                  // Trigger auto-render on attribute change (same as property setter)
-                  if (this[RENDER_METHOD] && this[INITIALIZED]) {
-                    requestRender(this);
-                  }
-                }
-              }
-              break;
-            }
+        ensureSet(this, EXPLICITLY_SET_PROPERTIES).add(propName);
+        ensureObj(this, PROPERTY_VALUES)[propName] = parsedValue;
+
+        if (!this[SETTING_FROM_PROPERTY]?.has(name.toLowerCase())) {
+          invokeWatchers(this, constructor, propName, currentValue, parsedValue);
+
+          if (this[RENDER_METHOD] && this[INITIALIZED]) {
+            requestRender(this);
           }
         }
+        break;
       }
     };
 
@@ -445,59 +368,32 @@ export function applyElementFunctionality(constructor: any) {
     };
 }
 
+function defineElement(tagName: string, constructor: any, context: ClassDecoratorContext, options?: ElementOptions) {
+  if (context.metadata && (context.metadata as any)[PROPERTIES]) {
+    if (!constructor[PROPERTIES]) constructor[PROPERTIES] = new Map();
+    for (const [key, value] of (context.metadata as any)[PROPERTIES]) {
+      constructor[PROPERTIES].set(key, value);
+    }
+  }
+  if (options?.formAssociated) constructor.formAssociated = true;
+  applyElementFunctionality(constructor);
+  if (customElements.get(tagName)) {
+    console.warn(`[snice] "${tagName}" is already registered. Skipping.`);
+    return constructor;
+  }
+  customElements.define(tagName, constructor);
+  return constructor;
+}
+
 export function element(tagName: string, options?: ElementOptions) {
   return function (constructor: any, context: ClassDecoratorContext) {
-    // Transfer metadata from context to constructor
-    if (context.metadata && (context.metadata as any)[PROPERTIES]) {
-      if (!constructor[PROPERTIES]) {
-        constructor[PROPERTIES] = new Map();
-      }
-      for (const [key, value] of (context.metadata as any)[PROPERTIES]) {
-        constructor[PROPERTIES].set(key, value);
-      }
-    }
-
-    // Set up form association if requested via options
-    // MUST be done BEFORE applyElementFunctionality and customElements.define
-    if (options?.formAssociated === true) {
-      constructor.formAssociated = true;
-    }
-
-    applyElementFunctionality(constructor);
-
-    // Check if element is already registered
-    if (customElements.get(tagName)) {
-      console.warn(`[snice] Element "${tagName}" is already registered. Skipping duplicate registration.`);
-      return constructor;
-    }
-
-    customElements.define(tagName, constructor);
-    return constructor;
+    return defineElement(tagName, constructor, context, options);
   };
 }
 
 export function layout(tagName: string) {
   return function (constructor: any, context: ClassDecoratorContext) {
-    // Transfer metadata from context to constructor
-    if (context.metadata && (context.metadata as any)[PROPERTIES]) {
-      if (!constructor[PROPERTIES]) {
-        constructor[PROPERTIES] = new Map();
-      }
-      for (const [key, value] of (context.metadata as any)[PROPERTIES]) {
-        constructor[PROPERTIES].set(key, value);
-      }
-    }
-
-    applyElementFunctionality(constructor);
-
-    // Check if element is already registered
-    if (customElements.get(tagName)) {
-      console.warn(`[snice] Layout "${tagName}" is already registered. Skipping duplicate registration.`);
-      return constructor;
-    }
-
-    customElements.define(tagName, constructor);
-    return constructor;
+    return defineElement(tagName, constructor, context);
   };
 }
 export function property(options?: PropertyOptions) {
@@ -531,7 +427,7 @@ export function property(options?: PropertyOptions) {
       constructor[PROPERTIES].set(propertyKey, finalOptions);
 
       // Set up the property descriptor on first access
-      if (!Object.hasOwnProperty.call(this.constructor.prototype, propertyKey)) {
+      if (!Object.hasOwn(this.constructor.prototype, propertyKey)) {
         const descriptor: PropertyDescriptor = {
           get(this: any) {
             // attribute: false — use internal storage only, no DOM sync
@@ -546,7 +442,7 @@ export function property(options?: PropertyOptions) {
             }
 
             // Always read from DOM attribute - no internal state
-            const attributeName = typeof finalOptions?.attribute === 'string' ? finalOptions?.attribute : propertyKey.toLowerCase();
+            const attributeName = getAttrName(finalOptions || {}, propertyKey);
             const attrValue = this.getAttribute?.(attributeName);
 
             // If attribute exists, parse it
@@ -570,45 +466,25 @@ export function property(options?: PropertyOptions) {
             return initialValue;
           },
           set(this: any, newValue: any) {
-            // Get old value by calling the getter (which reads from attribute)
             const oldValue = this[propertyKey];
+            if (oldValue === newValue) return;
 
-            // Check if value actually changed
-            if (oldValue === newValue) {
-              return;
-            }
-
-            // Don't reflect to DOM until connectedCallback has started
-            // This prevents field initializers from overwriting HTML attributes
+            // Pre-init: store for later, don't reflect to DOM yet
             if (!this[PROPERTIES_INITIALIZED]) {
-              // Store value for later application when element is connected
-              if (!this[PRE_INIT_PROPERTY_VALUES]) {
-                this[PRE_INIT_PROPERTY_VALUES] = new Map();
-              }
+              if (!this[PRE_INIT_PROPERTY_VALUES]) this[PRE_INIT_PROPERTY_VALUES] = new Map();
               this[PRE_INIT_PROPERTY_VALUES].set(propertyKey, newValue);
               return;
             }
 
             // attribute: false — store internally, skip DOM reflection
             if (finalOptions?.attribute === false) {
-              if (!this[PROPERTY_VALUES]) {
-                this[PROPERTY_VALUES] = {};
-              }
-              this[PROPERTY_VALUES][propertyKey] = newValue;
+              ensureObj(this, PROPERTY_VALUES)[propertyKey] = newValue;
             } else {
-              // Reflect to DOM - properties are backed by attributes
-              const attributeName = typeof finalOptions.attribute === 'string' ? finalOptions.attribute : propertyKey.toLowerCase();
+              const attributeName = getAttrName(finalOptions, propertyKey);
               const attributeValue = valueToAttribute(newValue, finalOptions, initialValue);
 
-              // Mark as explicitly set for boolean handling
-              if (!this[EXPLICITLY_SET_PROPERTIES]) {
-                this[EXPLICITLY_SET_PROPERTIES] = new Set();
-              }
-              this[EXPLICITLY_SET_PROPERTIES].add(propertyKey);
-
-              // Flag to prevent attributeChangedCallback from triggering watchers for this change
-              if (!this._settingFromProperty) this._settingFromProperty = new Set();
-              this._settingFromProperty.add(attributeName.toLowerCase());
+              ensureSet(this, EXPLICITLY_SET_PROPERTIES).add(propertyKey);
+              ensureSet(this, SETTING_FROM_PROPERTY).add(attributeName.toLowerCase());
 
               if (attributeValue === null) {
                 this.removeAttribute?.(attributeName);
@@ -616,43 +492,13 @@ export function property(options?: PropertyOptions) {
                 this.setAttribute?.(attributeName, attributeValue);
               }
 
-              // Remove the flag after a short delay to allow attributeChangedCallback to run
               setTimeout(() => {
-                this._settingFromProperty?.delete(attributeName.toLowerCase());
+                this[SETTING_FROM_PROPERTY]?.delete(attributeName.toLowerCase());
               }, 0);
             }
 
-            // Trigger watchers directly with proper parsed values
-            const constructor = this.constructor as any;
-            const watchers = constructor[PROPERTY_WATCHERS];
-            if (watchers) {
-              if (watchers.has(propertyKey)) {
-                const propertyWatchers = watchers.get(propertyKey);
-                for (const watcher of propertyWatchers) {
-                  try {
-                    watcher.method.call(this, oldValue, newValue, propertyKey);
-                  } catch (error) {
-                    console.error(`Error in @watch('${propertyKey}') method ${watcher.methodName}:`, error);
-                  }
-                }
-              }
+            invokeWatchers(this, this.constructor, propertyKey, oldValue, newValue);
 
-              if (watchers.has('*')) {
-                const wildcardWatchers = watchers.get('*');
-                for (const watcher of wildcardWatchers) {
-                  try {
-                    watcher.method.call(this, oldValue, newValue, propertyKey);
-                  } catch (error) {
-                    console.error(`Error in @watch('*') method ${watcher.methodName}:`, error);
-                  }
-                }
-              }
-            }
-
-            // v3.0.0: Trigger auto-render on property change
-            // This respects @render options (debounce, throttle, once, sync)
-            // Only trigger renders after element is fully initialized to avoid
-            // infinite loops during initial setup
             if (this[RENDER_METHOD] && this[INITIALIZED]) {
               requestRender(this);
             }
@@ -665,56 +511,38 @@ export function property(options?: PropertyOptions) {
       }
 
       // Initialize the property value
-      if (!this[PROPERTY_VALUES]) {
-        this[PROPERTY_VALUES] = {};
-      }
-      this[PROPERTY_VALUES][propertyKey] = initialValue;
+      ensureObj(this, PROPERTY_VALUES)[propertyKey] = initialValue;
       return initialValue;
     };
   };
 }
 
 
+function getQueryRoot(instance: any): any {
+  const isController = instance[IS_CONTROLLER_INSTANCE] === true;
+  return isController && instance.element ? instance.element : instance;
+}
+
 export function query(selector: string, options: QueryOptions = {}) {
   return function (_value: any, context: ClassFieldDecoratorContext) {
-    // Default to shadow DOM only
     const { light = false, shadow = true } = options;
     const propertyKey = context.name as string;
 
-
-    // Return a field initializer function for new decorators
     return function(this: any, initialValue: any) {
-      // Set up the property descriptor on first access
-      if (!Object.hasOwnProperty.call(this.constructor.prototype, propertyKey)) {
-        const descriptor: PropertyDescriptor = {
+      if (!Object.hasOwn(this.constructor.prototype, propertyKey)) {
+        Object.defineProperty(this.constructor.prototype, propertyKey, {
           get() {
-            // Check if this is a controller using the symbol
-            const isController = (this as any)[IS_CONTROLLER_INSTANCE] === true;
-            const root = isController && (this as any).element ? (this as any).element : this;
-
-            // Query in specified contexts
+            const root = getQueryRoot(this);
             let result = null;
-
-            if (shadow && root.shadowRoot) {
-              result = root.shadowRoot.querySelector(selector);
-            }
-
-            if (!result && light) {
-              result = root.querySelector(selector);
-            }
-
+            if (shadow && root.shadowRoot) result = root.shadowRoot.querySelector(selector);
+            if (!result && light) result = root.querySelector(selector);
             return result || null;
           },
-          set() {
-            // Query results are read-only
-          },
+          set() {},
           configurable: true,
           enumerable: true
-        };
-
-        Object.defineProperty(this.constructor.prototype, propertyKey, descriptor);
+        });
       }
-
       return initialValue;
     };
   };
@@ -722,46 +550,24 @@ export function query(selector: string, options: QueryOptions = {}) {
 
 export function queryAll(selector: string, options: QueryOptions = {}) {
   return function (_value: any, context: ClassFieldDecoratorContext) {
-    // Default to shadow DOM only
     const { light = false, shadow = true } = options;
     const propertyKey = context.name as string;
 
-    // Return a field initializer function for new decorators
     return function(this: any, initialValue: any) {
-      // Set up the property descriptor on first access
-      if (!Object.hasOwnProperty.call(this.constructor.prototype, propertyKey)) {
-        const descriptor: PropertyDescriptor = {
+      if (!Object.hasOwn(this.constructor.prototype, propertyKey)) {
+        Object.defineProperty(this.constructor.prototype, propertyKey, {
           get() {
-            // Check if this is a controller using the symbol
-            const isController = (this as any)[IS_CONTROLLER_INSTANCE] === true;
-            const root = isController && (this as any).element ? (this as any).element : this;
-
-            // Query in specified contexts and combine results
+            const root = getQueryRoot(this);
             const results: Element[] = [];
-
-            if (shadow && root.shadowRoot) {
-              const shadowResults = root.shadowRoot.querySelectorAll(selector);
-              results.push(...shadowResults);
-            }
-
-            if (light) {
-              const lightResults = root.querySelectorAll(selector);
-              results.push(...lightResults);
-            }
-
-            // Return a static NodeList-like object
+            if (shadow && root.shadowRoot) results.push(...root.shadowRoot.querySelectorAll(selector));
+            if (light) results.push(...root.querySelectorAll(selector));
             return results as any as NodeListOf<Element>;
           },
-          set() {
-            // Query results are read-only
-          },
+          set() {},
           configurable: true,
           enumerable: true
-        };
-
-        Object.defineProperty(this.constructor.prototype, propertyKey, descriptor);
+        });
       }
-
       return initialValue;
     };
   };
@@ -812,48 +618,40 @@ export function context() {
     // Return a field initializer function for new decorators
     return function(this: any, initialValue: any) {
       // Set up the property descriptor on first access
-      if (!Object.hasOwnProperty.call(this.constructor.prototype, propertyKey)) {
+      if (!Object.hasOwn(this.constructor.prototype, propertyKey)) {
         const descriptor: PropertyDescriptor = {
           get() {
-            // First check if context is stored directly on this element
+            // Cached context
             if ((this as any)[ROUTER_CONTEXT] !== undefined) {
               return (this as any)[ROUTER_CONTEXT];
             }
 
-            // Otherwise, request context from parent page via event
-            const detail: any = { target: this };
-            const event = new CustomEvent('@context/request', {
-              bubbles: true,
-              cancelable: true,
-              detail
-            });
-
-            // Dispatch event and wait for response
-            // Check if this is a controller using the symbol
+            // Resolve dispatch target
             const isController = (this as any)[IS_CONTROLLER_INSTANCE] === true;
             let targetElement = isController && (this as any).element ? (this as any).element : this;
 
-            // If element is null (e.g., controller was detached), can't get context
-            if (!targetElement || !targetElement.dispatchEvent) {
-              return undefined;
-            }
+            // Controller was detached
+            if (!targetElement || !targetElement.dispatchEvent) return undefined;
 
-            // If we're in shadow DOM, dispatch on the host element to ensure proper bubbling
+            // Shadow DOM: dispatch on host for proper bubbling
             if (targetElement.getRootNode && targetElement.getRootNode() instanceof ShadowRoot) {
-              const shadowRoot = targetElement.getRootNode() as ShadowRoot;
-              targetElement = shadowRoot.host as HTMLElement;
+              targetElement = (targetElement.getRootNode() as ShadowRoot).host as HTMLElement;
             }
 
-            targetElement.dispatchEvent(event);
+            // Request context from parent page
+            const detail: any = { target: this };
+            targetElement.dispatchEvent(new CustomEvent('@context/request', {
+              bubbles: true,
+              cancelable: true,
+              detail
+            }));
 
-            // Check if context was provided via the event
-            if (detail.context !== undefined) {
-              // Cache it for future use
-              (this as any)[ROUTER_CONTEXT] = detail.context;
-              return detail.context;
-            }
+            // No context provided
+            if (detail.context === undefined) return undefined;
 
-            return undefined;
+            // Cache and return
+            (this as any)[ROUTER_CONTEXT] = detail.context;
+            return detail.context;
           },
           set() {
             // Context is read-only
@@ -870,234 +668,74 @@ export function context() {
   };
 }
 
-/**
- * Decorator for methods that should run when element is ready
- * Runs after shadow DOM, controller attachment, and event setup
- * Supports async methods
- */
+function registerHandler(symbol: symbol, prefix: string, target: any, context: ClassMethodDecoratorContext, extra?: any) {
+  const methodName = context.name as string;
+  const initKey = `__${prefix}_init_${methodName}`;
+  context.addInitializer(function(this: any) {
+    const constructor = this.constructor as any;
+    if (constructor[initKey]) return;
+    constructor[initKey] = true;
+    if (!constructor[symbol]) constructor[symbol] = [];
+    constructor[symbol].push({ methodName, method: target, ...extra });
+  });
+}
+
 export function ready() {
   return function (target: any, context: ClassMethodDecoratorContext) {
-    const methodName = context.name as string;
-    const initKey = `__ready_init_${methodName}`;
-
-    context.addInitializer(function(this: any) {
-      const constructor = this.constructor as any;
-
-      if (constructor[initKey]) return;
-      constructor[initKey] = true;
-
-      if (!constructor[READY_HANDLERS]) {
-        constructor[READY_HANDLERS] = [];
-      }
-
-      constructor[READY_HANDLERS].push({
-        methodName,
-        method: target
-      });
-    });
+    registerHandler(READY_HANDLERS, 'ready', target, context);
   };
 }
 
-/**
- * Decorator for methods that should run when element is being disposed
- * Used for cleanup tasks when element is removed from DOM
- */
 export function dispose() {
   return function (target: any, context: ClassMethodDecoratorContext) {
-    const methodName = context.name as string;
-    const initKey = `__dispose_init_${methodName}`;
-
-    context.addInitializer(function(this: any) {
-      const constructor = this.constructor as any;
-
-      if (constructor[initKey]) return;
-      constructor[initKey] = true;
-
-      if (!constructor[DISPOSE_HANDLERS]) {
-        constructor[DISPOSE_HANDLERS] = [];
-      }
-
-      constructor[DISPOSE_HANDLERS].push({
-        methodName,
-        method: target
-      });
-    });
+    registerHandler(DISPOSE_HANDLERS, 'dispose', target, context);
   };
 }
 
-/**
- * Decorator for methods that should run when element is moved within DOM
- * Supports debounce and throttle options to control execution timing
- */
-export function moved(options: MovedOptions = {}) {
-  return function (originalMethod: any, context: ClassMethodDecoratorContext) {
-    const methodName = context.name as string;
-    const initKey = `__moved_init_${methodName}`;
+function createLifecycleDecorator(handlersSymbol: symbol, timersSymbol: symbol, prefix: string) {
+  return function (options: any = {}) {
+    return function (originalMethod: any, context: ClassMethodDecoratorContext) {
+      registerHandler(handlersSymbol, prefix, originalMethod, context, { options });
 
-    context.addInitializer(function(this: any) {
-      const constructor = this.constructor as any;
+      const methodName = context.name as string;
 
-      if (constructor[initKey]) return;
-      constructor[initKey] = true;
+      return function (this: HTMLElement, ...args: any[]) {
+        if (!(this as any)[timersSymbol]) (this as any)[timersSymbol] = new Map();
+        if (!(this as any)[timersSymbol].has(methodName)) {
+          (this as any)[timersSymbol].set(methodName, { throttleTimer: null, debounceTimer: null, lastThrottleCall: 0 });
+        }
 
-      if (!constructor[MOVED_HANDLERS]) {
-        constructor[MOVED_HANDLERS] = [];
-      }
+        const timers = (this as any)[timersSymbol].get(methodName);
+        const exec = (...a: any[]) => originalMethod.apply(this, a);
 
-      constructor[MOVED_HANDLERS].push({
-        methodName,
-        method: originalMethod,
-        options
-      });
-    });
-
-    // Return wrapped method that handles timing options
-    return function (this: HTMLElement, ...args: any[]) {
-      // Initialize timers storage if not present
-      if (!(this as any)[MOVED_TIMERS]) {
-        (this as any)[MOVED_TIMERS] = new Map();
-      }
-
-      // Get or create timers for this specific method
-      if (!(this as any)[MOVED_TIMERS].has(methodName)) {
-        (this as any)[MOVED_TIMERS].set(methodName, {
-          throttleTimer: null,
-          debounceTimer: null,
-          lastThrottleCall: 0
-        });
-      }
-
-      const timers = (this as any)[MOVED_TIMERS].get(methodName);
-
-      // Helper function to execute method
-      const executeMethod = (...methodArgs: any[]) => {
-        return originalMethod.apply(this, methodArgs);
-      };
-
-      const hasDebounce = options.debounce !== undefined && options.debounce > 0;
-      const hasThrottle = options.throttle !== undefined && options.throttle > 0;
-
-      // Handle timing based on priority: debounce > throttle > immediate
-      switch (true) {
-        case hasDebounce: {
+        if (options.debounce > 0) {
           clearTimeout(timers.debounceTimer);
-          timers.debounceTimer = setTimeout(() => executeMethod(...args), options.debounce!);
+          timers.debounceTimer = setTimeout(() => exec(...args), options.debounce);
           return undefined;
         }
 
-        case hasThrottle: {
-          const throttleMs = options.throttle!;
+        if (options.throttle > 0) {
           const now = Date.now();
-          const canExecuteImmediately = timers.lastThrottleCall === 0 || now - timers.lastThrottleCall >= throttleMs;
-
-          if (canExecuteImmediately) {
+          if (timers.lastThrottleCall === 0 || now - timers.lastThrottleCall >= options.throttle) {
             timers.lastThrottleCall = now;
-            return executeMethod(...args);
+            return exec(...args);
           }
-
-          const hasScheduledTimer = !!timers.throttleTimer;
-          if (!hasScheduledTimer) {
-            const remainingTime = throttleMs - (now - timers.lastThrottleCall);
+          if (!timers.throttleTimer) {
+            const remaining = options.throttle - (now - timers.lastThrottleCall);
             timers.throttleTimer = setTimeout(() => {
               timers.throttleTimer = null;
               timers.lastThrottleCall = Date.now();
-              executeMethod(...args);
-            }, remainingTime);
+              exec(...args);
+            }, remaining);
           }
           return undefined;
         }
 
-        default:
-          return executeMethod(...args);
-      }
+        return exec(...args);
+      };
     };
   };
 }
 
-/**
- * Decorator for methods that should run when element is adopted to new document
- * Supports debounce and throttle options to control execution timing
- */
-export function adopted(options: AdoptedOptions = {}) {
-  return function (originalMethod: any, context: ClassMethodDecoratorContext) {
-    const methodName = context.name as string;
-
-    context.addInitializer(function(this: any) {
-      const constructor = this.constructor as any;
-
-      if (!constructor[ADOPTED_HANDLERS]) {
-        constructor[ADOPTED_HANDLERS] = [];
-      }
-
-      constructor[ADOPTED_HANDLERS].push({
-        methodName,
-        method: originalMethod,
-        options
-      });
-    });
-
-    // Return wrapped method that handles timing options
-    return function (this: HTMLElement, ...args: any[]) {
-      // Initialize timers storage if not present
-      if (!(this as any)[ADOPTED_TIMERS]) {
-        (this as any)[ADOPTED_TIMERS] = new Map();
-      }
-
-      // Get or create timers for this specific method
-      if (!(this as any)[ADOPTED_TIMERS].has(methodName)) {
-        (this as any)[ADOPTED_TIMERS].set(methodName, {
-          throttleTimer: null,
-          debounceTimer: null,
-          lastThrottleCall: 0
-        });
-      }
-
-      const timers = (this as any)[ADOPTED_TIMERS].get(methodName);
-
-      // Helper function to execute method
-      const executeMethod = (...methodArgs: any[]) => {
-        return originalMethod.apply(this, methodArgs);
-      };
-
-      const hasDebounce = options.debounce !== undefined && options.debounce > 0;
-      const hasThrottle = options.throttle !== undefined && options.throttle > 0;
-
-      // Handle timing based on priority: debounce > throttle > immediate
-      switch (true) {
-        case hasDebounce: {
-          clearTimeout(timers.debounceTimer);
-          timers.debounceTimer = setTimeout(() => executeMethod(...args), options.debounce!);
-          return undefined;
-        }
-
-        case hasThrottle: {
-          const throttleMs = options.throttle!;
-          const now = Date.now();
-          const canExecuteImmediately = timers.lastThrottleCall === 0 || now - timers.lastThrottleCall >= throttleMs;
-
-          if (canExecuteImmediately) {
-            timers.lastThrottleCall = now;
-            return executeMethod(...args);
-          }
-
-          const hasScheduledTimer = !!timers.throttleTimer;
-          if (!hasScheduledTimer) {
-            const remainingTime = throttleMs - (now - timers.lastThrottleCall);
-            timers.throttleTimer = setTimeout(() => {
-              timers.throttleTimer = null;
-              timers.lastThrottleCall = Date.now();
-              executeMethod(...args);
-            }, remainingTime);
-          }
-          return undefined;
-        }
-
-        default:
-          return executeMethod(...args);
-      }
-    };
-  };
-}
-
-// @part decorator removed in v3.0.0
-// Use @render with differential rendering instead
+export const moved = createLifecycleDecorator(MOVED_HANDLERS, MOVED_TIMERS, 'moved');
+export const adopted = createLifecycleDecorator(ADOPTED_HANDLERS, ADOPTED_TIMERS, 'adopted');

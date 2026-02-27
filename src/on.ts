@@ -7,6 +7,7 @@ import { CLEANUP } from './symbols';
 import { getSymbol } from './symbols';
 import type { OnOptions } from './types/on-options';
 import { parseKeyboardFilter, matchesKeyboardFilter, type KeyboardFilter } from './parts';
+import { createDebounced, createThrottled } from './utils';
 
 // Re-export OnOptions for public API
 export type { OnOptions } from './types/on-options';
@@ -65,15 +66,12 @@ export function on(
   let opts: OnOptions = {};
 
   if (typeof selectorOrOptions === 'string') {
-    // With selector: (eventName, selector, options)
     selector = selectorOrOptions;
     opts = options || {};
-  } else if (selectorOrOptions === null && options) {
-    // With null selector: (eventName, null, options)
-    opts = options;
   } else if (selectorOrOptions && typeof selectorOrOptions === 'object') {
-    // Without selector: (eventName, options)
     opts = selectorOrOptions;
+  } else if (selectorOrOptions === null && options) {
+    opts = options;
   }
 
   return function (originalMethod: any, context: ClassMethodDecoratorContext) {
@@ -110,38 +108,16 @@ export function on(
   };
 }
 
-/**
- * Create a debounced version of a function
- */
-function debounce<T extends (...args: any[]) => any>(fn: T, delay: number): T {
-  let timeoutId: ReturnType<typeof setTimeout> | null = null;
-
-  return function (this: any, ...args: any[]) {
-    if (timeoutId !== null) {
-      clearTimeout(timeoutId);
-    }
-    timeoutId = setTimeout(() => {
-      fn.apply(this, args);
-      timeoutId = null;
-    }, delay);
-  } as T;
-}
-
-/**
- * Create a throttled version of a function (leading edge only)
- */
+// Note: on.ts uses leading-edge-only throttle (no trailing call).
+// createThrottled from utils has leading+trailing, so we keep a local leading-only variant.
 function throttle<T extends (...args: any[]) => any>(fn: T, delay: number): T {
   let lastCall = 0;
-
   return function (this: any, ...args: any[]) {
     const now = Date.now();
-    const timeSinceLastCall = now - lastCall;
-
-    if (timeSinceLastCall >= delay) {
+    if (now - lastCall >= delay) {
       lastCall = now;
       fn.apply(this, args);
     }
-    // Events within the throttle window are simply ignored (leading edge only)
   } as T;
 }
 
@@ -208,13 +184,10 @@ export function setupEventHandlers(instance: any, targetElement: HTMLElement) {
       ? handler.eventName.substring(delimiterIndex + 1)
       : null;
 
-    // Apply debounce if specified
+    // Apply debounce (takes precedence over throttle)
     if (handlerOptions.debounce && handlerOptions.debounce > 0) {
-      boundMethod = debounce(boundMethod, handlerOptions.debounce);
-    }
-
-    // Apply throttle if specified (debounce takes precedence)
-    else if (handlerOptions.throttle && handlerOptions.throttle > 0) {
+      boundMethod = createDebounced(boundMethod, handlerOptions.debounce);
+    } else if (handlerOptions.throttle && handlerOptions.throttle > 0) {
       boundMethod = throttle(boundMethod, handlerOptions.throttle);
     }
 
@@ -248,34 +221,23 @@ export function setupEventHandlers(instance: any, targetElement: HTMLElement) {
 
       const delegatedHandler = (event: Event) => {
         const target = event.target as HTMLElement;
-        let matchingElement: Element | null = null;
+        const matchingElement =
+          (target.matches && target.matches(handler.selector) && target) ||
+          (target.closest && target.closest(handler.selector)) ||
+          null;
 
-        // Check if target itself matches the selector
-        if (target.matches && target.matches(handler.selector)) {
-          matchingElement = target;
+        if (!matchingElement) return;
+
+        if (handlerOptions.preventDefault) event.preventDefault();
+        if (handlerOptions.stopPropagation) {
+          event.stopPropagation();
+          event.stopImmediatePropagation();
         }
-        // Check if any parent matches the selector (event delegation)
-        else if (target.closest) {
-          matchingElement = target.closest(handler.selector);
-        }
 
-        // Only handle if we found a match
-        // Note: No need to check contains() since the event bubbled to eventRoot
-        if (matchingElement) {
-          // Apply automatic preventDefault/stopPropagation
-          if (handlerOptions.preventDefault) {
-            event.preventDefault();
-          }
-          if (handlerOptions.stopPropagation) {
-            event.stopPropagation();
-            event.stopImmediatePropagation();
-          }
-
-          try {
-            keyModifierMethod(event);
-          } catch (error) {
-            console.error(`Error in event handler ${handler.methodName}:`, error);
-          }
+        try {
+          keyModifierMethod(event);
+        } catch (error) {
+          console.error(`Error in event handler ${handler.methodName}:`, error);
         }
       };
 
@@ -310,21 +272,13 @@ export function setupEventHandlers(instance: any, targetElement: HTMLElement) {
       const handledSymbol = Symbol.for(`snice:event-handled:${handler.methodName}`);
 
       const wrappedMethod = (event: Event) => {
-        // Prevent double-triggering when listening on both shadow root and host
-        if ((event as any)[handledSymbol]) {
-          return;
-        }
+        if ((event as any)[handledSymbol]) return;
         (event as any)[handledSymbol] = true;
 
-        try {
-          // Apply automatic preventDefault/stopPropagation
-          if (handlerOptions.preventDefault) {
-            event.preventDefault();
-          }
-          if (handlerOptions.stopPropagation) {
-            event.stopPropagation();
-          }
+        if (handlerOptions.preventDefault) event.preventDefault();
+        if (handlerOptions.stopPropagation) event.stopPropagation();
 
+        try {
           keyModifierMethod(event);
         } catch (error) {
           console.error(`Error in event handler ${handler.methodName}:`, error);

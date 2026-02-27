@@ -1,5 +1,6 @@
 import { OBSERVERS, CLEANUP, IS_CONTROLLER_INSTANCE } from './symbols';
 import { ObserveOptions } from './types/observe-options';
+import { createThrottled } from './utils';
 
 
 interface ObserverMetadata {
@@ -14,8 +15,6 @@ interface ObserverMetadata {
 // Global cache for MediaQueryList objects
 const mediaQueryCache = new Map<string, MediaQueryList>();
 
-// Global WeakMap to track observer instances for reuse
-const intersectionObservers = new WeakMap<object, IntersectionObserver>();
 
 /**
  * Decorator for observing external changes like viewport intersection, resize, media queries, and DOM mutations
@@ -88,8 +87,8 @@ export function setupObservers(instance: any, element: HTMLElement) {
     const method = observer.method.bind(instance);
     
     // Apply throttling if specified
-    const callback = observer.options?.throttle 
-      ? createThrottledCallback(method, observer.options.throttle)
+    const callback = observer.options?.throttle
+      ? createThrottled(method, observer.options.throttle)
       : method;
     
     switch (observer.type) {
@@ -123,15 +122,11 @@ function setupIntersectionObserver(
     root: observer.options?.root ?? null
   };
   
-  // Create a key for reusing observers with same options
-  const optionsKey = JSON.stringify(options);
-  
   // Wrap callback to handle return value
   const wrappedCallback = (entries: IntersectionObserverEntry[]) => {
     for (const entry of entries) {
       try {
         const result = callback(entry);
-        // If callback returns false, stop observing that element
         if (result === false && io) {
           io.unobserve(entry.target);
         }
@@ -140,19 +135,13 @@ function setupIntersectionObserver(
       }
     }
   };
-  
-  // Check if IntersectionObserver is available
+
   if (typeof IntersectionObserver === 'undefined') {
     console.warn('IntersectionObserver is not available in this environment');
     return;
   }
-  
-  // Create or reuse IntersectionObserver
-  let io = intersectionObservers.get({ instance, options: optionsKey });
-  if (!io) {
-    io = new IntersectionObserver(wrappedCallback, options);
-    intersectionObservers.set({ instance, options: optionsKey }, io);
-  }
+
+  const io = new IntersectionObserver(wrappedCallback, options);
   
   // Find target elements
   const targets = observer.selector 
@@ -311,29 +300,28 @@ function setupMutationObserver(
     }
   }
   
-  // Wrap callback with error handling
+  // Wrap callback with error handling and optional depth filtering
+  const needsDepthFilter = !!(observer.options?.maxDepth && observer.options.subtree);
   const wrappedCallback = (mutations: MutationRecord[]) => {
     try {
-      // Filter mutations if maxDepth is specified (simplified version)
-      if (observer.options?.maxDepth && observer.options.subtree) {
-        const maxDepth = observer.options!.maxDepth!;
-        const filtered = mutations.filter(mutation => {
-          // Simple depth check (could be more sophisticated)
-          let depth = 0;
-          let current = mutation.target as Node;
-          const root = element.shadowRoot || element;
-          while (current && current !== root && depth < maxDepth) {
-            current = current.parentNode!;
-            depth++;
-          }
-          return depth < maxDepth;
-        });
-        if (filtered.length > 0) {
-          callback(filtered);
-        }
-      } else {
+      if (!needsDepthFilter) {
         callback(mutations);
+        return;
       }
+
+      const maxDepth = observer.options!.maxDepth!;
+      const root = element.shadowRoot || element;
+      const filtered = mutations.filter(mutation => {
+        let depth = 0;
+        let current = mutation.target as Node;
+        while (current && current !== root && depth < maxDepth) {
+          current = current.parentNode!;
+          depth++;
+        }
+        return depth < maxDepth;
+      });
+
+      if (filtered.length > 0) callback(filtered);
     } catch (error) {
       console.error(`Error in mutation observer ${observer.methodName}:`, error);
     }
@@ -363,33 +351,6 @@ function setupMutationObserver(
   instance[CLEANUP].observers.push(() => {
     mo.disconnect();
   });
-}
-
-function createThrottledCallback(callback: Function, delay: number): Function {
-  let lastCall = 0;
-  let timeout: any = null;
-  
-  return function(this: any, ...args: any[]) {
-    const now = Date.now();
-    const remaining = delay - (now - lastCall);
-    
-    if (remaining <= 0) {
-      // Enough time has passed, execute immediately
-      if (timeout) {
-        clearTimeout(timeout);
-        timeout = null;
-      }
-      lastCall = now;
-      return callback.apply(this, args);
-    } else if (!timeout) {
-      // Schedule for later
-      timeout = setTimeout(() => {
-        lastCall = Date.now();
-        timeout = null;
-        callback.apply(this, args);
-      }, remaining);
-    }
-  };
 }
 
 // Helper to cleanup observers

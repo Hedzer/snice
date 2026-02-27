@@ -577,12 +577,14 @@ export class NodePart extends Part {
    * OPTIMIZATION: Reuses existing text node if previous value was also primitive
    */
   private _commitText(value: any): void {
-    // If previous value was primitive, we have a text node we can reuse
-    if (this._committedValue !== NOT_COMMITTED &&
-        this._committedValue !== nothing &&
-        isPrimitive(this._committedValue) &&
-        !Array.isArray(this._committedValue)) {
-      // Reuse existing text node - just update .data
+    // Try to reuse existing text node
+    const canReuse =
+      this._committedValue !== NOT_COMMITTED &&
+      this._committedValue !== nothing &&
+      isPrimitive(this._committedValue) &&
+      !Array.isArray(this._committedValue);
+
+    if (canReuse) {
       const textNode = this.startNode.nextSibling as Text;
       if (textNode && textNode.nodeType === Node.TEXT_NODE) {
         textNode.data = String(value);
@@ -591,10 +593,8 @@ export class NodePart extends Part {
       }
     }
 
-    // Create new text node
     this._clear();
-    const textNode = document.createTextNode(String(value));
-    this._insertBefore(textNode);
+    this._insertBefore(document.createTextNode(String(value)));
     this._committedValue = value;
   }
 
@@ -955,34 +955,22 @@ export class EventPart extends Part {
       return;
     }
 
-    if (typeof value === 'function') {
-      // Auto-bind to host element (the custom element with shadow root)
-      // Cache host lookup for performance
-      if (!this.host) {
-        const rootNode = this.element.getRootNode();
-        this.host = (rootNode as ShadowRoot).host || null;
-      }
+    if (typeof value !== 'function') return;
 
-      // Create a wrapper that calls the handler with the host as context
-      if (this.host) {
-        const host = this.host; // Capture for closure
-        this.listener = ((event: Event) => {
-          if (this.keyFilter && !matchesKeyboardFilter(event as KeyboardEvent, this.keyFilter)) {
-            return;
-          }
-          value.call(host, event);
-        }) as EventListener;
-      } else {
-        this.listener = ((event: Event) => {
-          if (this.keyFilter && !matchesKeyboardFilter(event as KeyboardEvent, this.keyFilter)) {
-            return;
-          }
-          value.call(null, event);
-        }) as EventListener;
-      }
-
-      this.element.addEventListener(this.eventName, this.listener);
+    // Auto-bind to host element (the custom element with shadow root)
+    if (!this.host) {
+      const rootNode = this.element.getRootNode();
+      this.host = (rootNode as ShadowRoot).host || null;
     }
+
+    const context = this.host || null;
+    const keyFilter = this.keyFilter;
+    this.listener = ((event: Event) => {
+      if (keyFilter && !matchesKeyboardFilter(event as KeyboardEvent, keyFilter)) return;
+      value.call(context, event);
+    }) as EventListener;
+
+    this.element.addEventListener(this.eventName, this.listener);
   }
 
   clear(): void {

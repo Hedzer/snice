@@ -110,24 +110,23 @@ export function setupContextHandler(element: HTMLElement) {
         }
       };
 
-      // Handle debounce
       if (options.debounce) {
         clearTimeout((element as any)[CONTEXT_TIMER]);
         (element as any)[CONTEXT_TIMER] = setTimeout(callMethod, options.debounce);
+        return;
       }
-      // Handle throttle
-      else if (options.throttle) {
+
+      if (options.throttle) {
         const now = Date.now();
         const lastCall = (element as any)[CONTEXT_TIMER] || 0;
         if (now - lastCall >= options.throttle) {
           (element as any)[CONTEXT_TIMER] = now;
           callMethod();
         }
+        return;
       }
-      // No timing options - call immediately
-      else {
-        callMethod();
-      }
+
+      callMethod();
     };
 
     // Register with the Context using the wrapped method name

@@ -25,6 +25,40 @@ function parseStyles(styleString: string): Record<string, string> {
 /**
  * Perform a transition between two elements
  */
+const enum TransitionMode {
+  SEQUENTIAL = 'sequential',
+  SIMULTANEOUS = 'simultaneous'
+}
+
+function applyBaseTransitionStyles(el: HTMLElement, isSlotted: boolean, duration: number, prop: string) {
+  el.style.position = 'absolute';
+  el.style.width = '100%';
+
+  if (isSlotted) {
+    el.style.height = '100%';
+    el.style.transition = `opacity ${duration}ms ease-in-out`;
+    return;
+  }
+
+  el.style.top = '0';
+  el.style.left = '0';
+  el.style.transition = `${prop} ${duration}ms ease-in-out`;
+}
+
+function resetTransitionStyles(el: HTMLElement, isSlotted: boolean) {
+  el.style.position = '';
+  el.style.width = '';
+  el.style.transition = '';
+
+  if (isSlotted) {
+    el.style.height = '';
+    return;
+  }
+
+  el.style.top = '';
+  el.style.left = '';
+}
+
 export async function performTransition(
   container: Element,
   oldElement: HTMLElement,
@@ -33,100 +67,52 @@ export async function performTransition(
 ): Promise<void> {
   const outDuration = transition.outDuration || 300;
   const inDuration = transition.inDuration || 300;
-  const mode = transition.mode || 'sequential';
+  const mode = (transition.mode || 'sequential') as TransitionMode;
 
-  // Default transitions
   const outStyles = transition.out ? parseStyles(transition.out) : { opacity: '0' };
-  const inStartStyles = { opacity: '0' }; // Always start invisible
+  const inStartStyles = { opacity: '0' };
   const inEndStyles = transition.in ? parseStyles(transition.in) : { opacity: '1' };
 
-  // Set container to relative positioning to allow absolute positioning
-  // Skip for layout elements to avoid jumpy transitions
   const containerStyle = (container as HTMLElement).style;
   const originalPosition = containerStyle.position;
   const isLayoutElement = container.tagName.includes('-') && container.shadowRoot;
-  
-  if (!isLayoutElement) {
-    containerStyle.position = 'relative';
-  }
 
-  // Check if elements are slotted (inside a layout)
-  const isSlottedTransition = oldElement.hasAttribute('slot') || newElement.hasAttribute('slot');
-  
-  if (isSlottedTransition) {
-    // For slotted elements, use absolute with width/height for crossfade
-    oldElement.style.position = 'absolute';
-    oldElement.style.width = '100%';
-    oldElement.style.height = '100%';
-    oldElement.style.transition = `opacity ${outDuration}ms ease-in-out`;
-    
-    newElement.style.position = 'absolute';
-    newElement.style.width = '100%';
-    newElement.style.height = '100%';
-    newElement.style.transition = `opacity ${inDuration}ms ease-in-out`;
-  } else {
-    // Original absolute positioning for non-slotted elements
-    oldElement.style.position = 'absolute';
-    oldElement.style.top = '0';
-    oldElement.style.left = '0';
-    oldElement.style.width = '100%';
-    oldElement.style.transition = `all ${outDuration}ms ease-in-out`;
+  if (!isLayoutElement) containerStyle.position = 'relative';
 
-    newElement.style.position = 'absolute';
-    newElement.style.top = '0';
-    newElement.style.left = '0';
-    newElement.style.width = '100%';
-  }
+  const isSlotted = oldElement.hasAttribute('slot') || newElement.hasAttribute('slot');
+
+  applyBaseTransitionStyles(oldElement, isSlotted, outDuration, 'all');
+  applyBaseTransitionStyles(newElement, isSlotted, inDuration, 'all');
   Object.assign(newElement.style, inStartStyles);
-  newElement.style.transition = `all ${inDuration}ms ease-in-out`;
 
-  // Add new element to container
   container.appendChild(newElement);
-
-  // Force browser to calculate styles
   void newElement.offsetHeight;
 
-  if (mode === 'simultaneous') {
-    // Start both transitions at once
-    Object.assign(oldElement.style, outStyles);
-    Object.assign(newElement.style, inEndStyles);
-    
-    // Wait for both transitions to complete
-    await new Promise(resolve => setTimeout(resolve, Math.max(outDuration, inDuration)));
-  } else {
-    // Sequential: transition out old, then transition in new
-    Object.assign(oldElement.style, outStyles);
-    await new Promise(resolve => setTimeout(resolve, outDuration));
-    
-    Object.assign(newElement.style, inEndStyles);
-    await new Promise(resolve => setTimeout(resolve, inDuration));
+  // Animate
+  switch (mode) {
+    case TransitionMode.SIMULTANEOUS:
+      Object.assign(oldElement.style, outStyles);
+      Object.assign(newElement.style, inEndStyles);
+      await new Promise(resolve => setTimeout(resolve, Math.max(outDuration, inDuration)));
+      break;
+
+    case TransitionMode.SEQUENTIAL:
+      Object.assign(oldElement.style, outStyles);
+      await new Promise(resolve => setTimeout(resolve, outDuration));
+      Object.assign(newElement.style, inEndStyles);
+      await new Promise(resolve => setTimeout(resolve, inDuration));
+      break;
   }
 
   // Cleanup
   oldElement.remove();
-  
-  if (isSlottedTransition) {
-    // Cleanup for slotted elements
-    newElement.style.position = '';
-    newElement.style.width = '';
-    newElement.style.height = '';
-    newElement.style.transition = '';
-  } else {
-    // Cleanup for non-slotted elements
-    newElement.style.position = '';
-    newElement.style.top = '';
-    newElement.style.left = '';
-    newElement.style.width = '';
-    newElement.style.transition = '';
-  }
-  
-  // Reset any transition styles
+  resetTransitionStyles(newElement, isSlotted);
+
   Object.keys({...inStartStyles, ...inEndStyles}).forEach(prop => {
     newElement.style[prop as any] = '';
   });
-  if (!isLayoutElement) {
-    containerStyle.position = originalPosition;
-  }
+
+  if (!isLayoutElement) containerStyle.position = originalPosition;
 }
 
 /**

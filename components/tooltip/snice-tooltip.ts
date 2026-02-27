@@ -1,11 +1,12 @@
 import { element, property, query, on, watch, ready, dispose, render, styles, html, css } from 'snice';
 import cssContent from './snice-tooltip.css?inline';
-import portalCss from './snice-tooltip-portal.css?inline';
 import type { TooltipPosition, TooltipTrigger, SniceTooltipElement } from './snice-tooltip.types';
+import { ensurePortalStyles, calculatePosition } from './tooltip-positioning';
+// Side effect: auto-enable attribute-based tooltips
+import './tooltip-observer';
 
 @element('snice-tooltip')
 export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
-  private static portalStylesInjected = false;
   @property({  })
   content: string = '';
 
@@ -50,28 +51,6 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
   private activePosition: TooltipPosition = 'top';
   private portalElement?: HTMLElement;
 
-  private static ensurePortalStyles() {
-    if (SniceTooltip.portalStylesInjected) return;
-    
-    try {
-      // Use Constructable Stylesheets if supported
-      if ('adoptedStyleSheets' in document && 'CSSStyleSheet' in window) {
-        const sheet = new CSSStyleSheet();
-        sheet.replaceSync(portalCss);
-        document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
-      } else {
-        // Fallback for older browsers
-        const style = document.createElement('style');
-        style.textContent = portalCss;
-        document.head.appendChild(style);
-      }
-      
-      SniceTooltip.portalStylesInjected = true;
-    } catch (error) {
-      console.warn('Failed to inject tooltip portal styles:', error);
-    }
-  }
-
   @render()
   render() {
     return html/*html*/`
@@ -96,7 +75,7 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
       this.tooltipElement.style.setProperty('--tooltip-max-width', `${this.maxWidth}px`);
       this.tooltipElement.style.setProperty('--tooltip-z-index', `${this.zIndex}`);
     }
-    
+
     if (this.open && this.trigger === 'manual') {
       this.show();
     }
@@ -222,10 +201,8 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
   show() {
     if (!this.content) return;
 
-    // Ensure portal styles are injected
-    SniceTooltip.ensurePortalStyles();
+    ensurePortalStyles();
 
-    // Create portal element if it doesn't exist
     if (!this.portalElement) {
       this.portalElement = this.createPortalElement();
       this.updateArrowStyles(this.position);
@@ -233,15 +210,13 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
 
     this.portalElement.style.display = 'block';
     this.updatePortalContent();
-    
-    // Force reflow before adding visible class
+
     void this.portalElement.offsetHeight;
-    
+
     this.updatePosition();
     this.portalElement.classList.add('snice-tooltip--visible');
 
     if (this.trigger === 'click') {
-      // Add click outside listener
       setTimeout(() => {
         document.addEventListener('click', this.handleClickOutside);
       }, 0);
@@ -252,12 +227,12 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
     if (!this.portalElement) return;
 
     this.portalElement.classList.remove('snice-tooltip--visible');
-    
+
     setTimeout(() => {
       if (this.portalElement) {
         this.portalElement.style.display = 'none';
       }
-    }, 200); // Match transition duration
+    }, 200);
 
     if (this.trigger === 'click') {
       document.removeEventListener('click', this.handleClickOutside);
@@ -276,42 +251,37 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
   updatePosition() {
     if (!this.portalElement) return;
 
-    // Make sure tooltip is visible but off-screen to get accurate dimensions
     this.portalElement.style.visibility = 'hidden';
     this.portalElement.style.left = '-9999px';
     this.portalElement.style.top = '-9999px';
-    
+
     const triggerRect = this.getBoundingClientRect();
     const tooltipRect = this.portalElement.getBoundingClientRect();
-    
-    // Restore visibility
+
     this.portalElement.style.visibility = '';
-    
-    // Calculate position with smart viewport detection
-    const position = this.calculatePosition(triggerRect, tooltipRect);
-    
-    // Update tooltip position class if it changed
+
+    const arrowSize = this.arrow ? 6 : 0;
+    const position = calculatePosition(
+      triggerRect, tooltipRect, this.position, this.offset, arrowSize, this.strictPositioning
+    );
+
     if (position.adjustedPosition !== this.activePosition) {
       this.portalElement.classList.remove(`snice-tooltip--${this.activePosition}`);
       this.portalElement.classList.add(`snice-tooltip--${position.adjustedPosition}`);
       this.activePosition = position.adjustedPosition;
-      
-      // Update arrow styles for new position
       this.updateArrowStyles(position.adjustedPosition);
     }
 
-    // Apply calculated position
     this.portalElement.style.left = `${position.left}px`;
     this.portalElement.style.top = `${position.top}px`;
   }
-  
+
   private updateArrowStyles(position: TooltipPosition) {
     if (!this.portalElement || !this.arrow) return;
-    
+
     const arrow = this.portalElement.querySelector('.snice-tooltip__arrow') as HTMLElement;
     if (!arrow) return;
-    
-    // Reset styles - set to explicit values instead of empty strings
+
     arrow.style.top = 'auto';
     arrow.style.bottom = 'auto';
     arrow.style.left = 'auto';
@@ -321,8 +291,7 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
     arrow.style.borderBottomColor = 'transparent';
     arrow.style.borderLeftColor = 'transparent';
     arrow.style.borderRightColor = 'transparent';
-    
-    // Apply position-specific styles
+
     switch (position) {
       case 'top':
       case 'top-start':
@@ -341,7 +310,7 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
           arrow.style.right = '16px';
         }
         break;
-        
+
       case 'bottom':
       case 'bottom-start':
       case 'bottom-end':
@@ -359,7 +328,7 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
           arrow.style.right = '16px';
         }
         break;
-        
+
       case 'left':
       case 'left-start':
       case 'left-end':
@@ -377,7 +346,7 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
           arrow.style.bottom = '16px';
         }
         break;
-        
+
       case 'right':
       case 'right-start':
       case 'right-end':
@@ -396,142 +365,6 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
         }
         break;
     }
-  }
-
-  private calculatePosition(triggerRect: DOMRect, tooltipRect: DOMRect) {
-    const viewport = {
-      width: window.innerWidth,
-      height: window.innerHeight,
-      scrollX: window.scrollX,
-      scrollY: window.scrollY
-    };
-
-    let position = this.position;
-    let left = 0;
-    let top = 0;
-
-    // Calculate base position
-    const positions = this.getPositionCoordinates(triggerRect, tooltipRect, position);
-    left = positions.left;
-    top = positions.top;
-
-    // If strict positioning is disabled, check if tooltip fits in viewport
-    if (!this.strictPositioning) {
-      const fitsInViewport = 
-        left >= 0 && 
-        top >= 0 && 
-        left + tooltipRect.width <= viewport.width &&
-        top + tooltipRect.height <= viewport.height;
-
-      // If it doesn't fit, try alternative positions
-      if (!fitsInViewport) {
-        const alternativePositions = this.getAlternativePositions(position);
-        
-        for (const altPosition of alternativePositions) {
-          const altCoords = this.getPositionCoordinates(triggerRect, tooltipRect, altPosition);
-          
-          if (
-            altCoords.left >= 0 &&
-            altCoords.top >= 0 &&
-            altCoords.left + tooltipRect.width <= viewport.width &&
-            altCoords.top + tooltipRect.height <= viewport.height
-          ) {
-            position = altPosition;
-            left = altCoords.left;
-            top = altCoords.top;
-            break;
-          }
-        }
-      }
-    }
-
-    return { left, top, adjustedPosition: position };
-  }
-
-  private getPositionCoordinates(triggerRect: DOMRect, tooltipRect: DOMRect, position: TooltipPosition) {
-    let left = 0;
-    let top = 0;
-
-    const centerX = triggerRect.left + triggerRect.width / 2;
-    const centerY = triggerRect.top + triggerRect.height / 2;
-    
-    // Different offsets for different directions
-    // Left/right need more spacing, top/bottom need less
-    const arrowSize = this.arrow ? 6 : 0;
-    const verticalOffset = this.offset;  // Just base offset for top/bottom
-    const horizontalOffset = this.offset + arrowSize;  // More offset for left/right
-
-    switch (position) {
-      case 'top':
-        left = centerX - tooltipRect.width / 2;
-        top = triggerRect.top - tooltipRect.height - verticalOffset;
-        break;
-      case 'top-start':
-        left = triggerRect.left;
-        top = triggerRect.top - tooltipRect.height - verticalOffset;
-        break;
-      case 'top-end':
-        left = triggerRect.right - tooltipRect.width;
-        top = triggerRect.top - tooltipRect.height - verticalOffset;
-        break;
-      case 'bottom':
-        left = centerX - tooltipRect.width / 2;
-        top = triggerRect.bottom + verticalOffset;
-        break;
-      case 'bottom-start':
-        left = triggerRect.left;
-        top = triggerRect.bottom + verticalOffset;
-        break;
-      case 'bottom-end':
-        left = triggerRect.right - tooltipRect.width;
-        top = triggerRect.bottom + verticalOffset;
-        break;
-      case 'left':
-        left = triggerRect.left - tooltipRect.width - horizontalOffset;
-        top = centerY - tooltipRect.height / 2;
-        break;
-      case 'left-start':
-        left = triggerRect.left - tooltipRect.width - horizontalOffset;
-        top = triggerRect.top;
-        break;
-      case 'left-end':
-        left = triggerRect.left - tooltipRect.width - horizontalOffset;
-        top = triggerRect.bottom - tooltipRect.height;
-        break;
-      case 'right':
-        left = triggerRect.right + horizontalOffset;
-        top = centerY - tooltipRect.height / 2;
-        break;
-      case 'right-start':
-        left = triggerRect.right + horizontalOffset;
-        top = triggerRect.top;
-        break;
-      case 'right-end':
-        left = triggerRect.right + horizontalOffset;
-        top = triggerRect.bottom - tooltipRect.height;
-        break;
-    }
-
-    return { left, top };
-  }
-
-  private getAlternativePositions(position: TooltipPosition): TooltipPosition[] {
-    const opposites: Record<string, TooltipPosition[]> = {
-      'top': ['bottom', 'left', 'right'],
-      'top-start': ['bottom-start', 'left', 'right'],
-      'top-end': ['bottom-end', 'left', 'right'],
-      'bottom': ['top', 'left', 'right'],
-      'bottom-start': ['top-start', 'left', 'right'],
-      'bottom-end': ['top-end', 'left', 'right'],
-      'left': ['right', 'top', 'bottom'],
-      'left-start': ['right-start', 'top', 'bottom'],
-      'left-end': ['right-end', 'top', 'bottom'],
-      'right': ['left', 'top', 'bottom'],
-      'right-start': ['left-start', 'top', 'bottom'],
-      'right-end': ['left-end', 'top', 'bottom']
-    };
-
-    return opposites[position] || ['top', 'bottom', 'left', 'right'];
   }
 
   private handleClickOutside = (e: MouseEvent) => {
@@ -562,13 +395,11 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
       display: none;
     `;
-    
-    // Create content element
+
     const content = document.createElement('div');
     content.className = 'snice-tooltip__content';
     portal.appendChild(content);
-    
-    // Create arrow element if needed
+
     if (this.arrow) {
       const arrow = document.createElement('div');
       arrow.className = 'snice-tooltip__arrow';
@@ -580,25 +411,21 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
       `;
       portal.appendChild(arrow);
     }
-    
-    // Add to body
+
     document.body.appendChild(portal);
-    
     return portal;
   }
 
   private updatePortalContent() {
     if (!this.portalElement) return;
-    
+
     const content = this.portalElement.querySelector('.snice-tooltip__content');
     if (content) {
       content.textContent = this.content;
     }
-    
-    // Update or create arrow if needed
+
     let arrow = this.portalElement.querySelector('.snice-tooltip__arrow') as HTMLElement;
     if (this.arrow && !arrow) {
-      // Create arrow if it doesn't exist but should
       arrow = document.createElement('div');
       arrow.className = 'snice-tooltip__arrow';
       arrow.style.cssText = `
