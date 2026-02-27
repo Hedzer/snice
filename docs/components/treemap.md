@@ -153,3 +153,26 @@ interface TreemapNode {
 | `drillToRoot()` | -- | Reset to root level |
 
 The `drillPath` getter returns the current drill-down path as `TreemapNode[]`.
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `breadcrumbs` | `<div>` | Breadcrumb navigation for drill-down |
+| `base` | `<div>` | The main treemap container |
+| `chart` | `<div>` | The chart rendering area |
+| `tooltip` | `<div>` | The hover tooltip element |
+
+```css
+snice-treemap::part(base) {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+snice-treemap::part(breadcrumbs) {
+  padding: 0.5rem;
+  font-size: 0.875rem;
+}
+```

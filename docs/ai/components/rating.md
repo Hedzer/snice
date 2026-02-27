@@ -36,6 +36,10 @@ precision: 'full' | 'half'              // Click precision (default: 'full')
 --snice-focus-ring-offset
 ```
 
+**CSS Parts:**
+- `base` - Outer rating container
+- `star` - Individual star/icon element
+
 ## Accessibility
 
 Uses `role="radiogroup"` with individual `role="radio"` stars. Keyboard accessible when not readonly.

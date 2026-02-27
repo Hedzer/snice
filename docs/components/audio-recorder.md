@@ -133,6 +133,29 @@ formData.append('audio', recording.blob, 'recording.webm');
 await fetch('/upload', { method: 'POST', body: formData });
 ```
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer recorder container |
+| `controls` | `<div>` | Recording and playback control buttons |
+| `visualizer` | `<div>` | Audio frequency visualizer bar container |
+| `progress` | `<div>` | Playback progress bar (visible after recording) |
+
+```css
+snice-audio-recorder::part(base) {
+  border-radius: 12px;
+  background: #1e293b;
+  color: white;
+}
+
+snice-audio-recorder::part(visualizer) {
+  height: 80px;
+}
+```
+
 ## AudioRecording Interface
 
 ```typescript

@@ -144,6 +144,27 @@ Track the crop area position and dimensions in real time.
 </script>
 ```
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer cropper container |
+| `image-container` | `<div>` | Image display area |
+| `crop-area` | `<div>` | Draggable/resizable crop region with handles |
+
+```css
+snice-cropper::part(base) {
+  border: 2px solid #ccc;
+  border-radius: 12px;
+}
+
+snice-cropper::part(crop-area) {
+  border-color: #3b82f6;
+}
+```
+
 ## Accessibility
 
 - **Drag interaction**: The crop area can be repositioned by dragging, and resized via 8 corner and edge handles

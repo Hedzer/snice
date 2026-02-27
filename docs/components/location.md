@@ -200,3 +200,31 @@ location.addEventListener('location-click', (e) => {
 | `getCoordinates()` | -- | Returns `{ latitude, longitude }` or null |
 | `getFullAddress()` | -- | Returns formatted address string |
 | `openMap()` | -- | Opens location in maps (new tab) |
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The outer location container |
+| `icon` | `<div>` | The icon container |
+| `content` | `<div>` | The content area with name, address, and coordinates |
+| `map` | `<div>` | The embedded map container (visible when `show-map` is set) |
+
+```css
+snice-location::part(base) {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+snice-location::part(icon) {
+  font-size: 1.5rem;
+}
+
+snice-location::part(map) {
+  border-radius: 4px;
+  overflow: hidden;
+}
+```

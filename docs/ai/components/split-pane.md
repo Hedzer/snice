@@ -29,6 +29,13 @@ disabled: boolean = false;
 - `setPrimarySize(size)` - Set primary pane percentage
 - `reset()` - Reset to 50/50
 
+## CSS Parts
+
+- `primary` - The primary pane container
+- `divider` - The draggable divider bar
+- `handle` - The visual handle inside the divider
+- `secondary` - The secondary pane container
+
 ## Usage
 
 ```html

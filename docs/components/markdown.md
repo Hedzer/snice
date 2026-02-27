@@ -70,6 +70,21 @@ import 'snice/components/markdown/snice-markdown';
 | `--snice-border-radius-lg` | Border radius for code blocks |
 | `--snice-font-weight-semibold` | Font weight for headings and bold text |
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The rendered markdown body container |
+
+```css
+snice-markdown::part(base) {
+  padding: 1rem;
+  max-width: 65ch;
+}
+```
+
 ## Supported Syntax
 
 The component supports GitHub Flavored Markdown (GFM):

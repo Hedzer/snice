@@ -507,6 +507,27 @@ chart.datasets = [
 chart.labels = ['Q1', 'Q2', 'Q3', 'Q4', 'Q5'];
 ```
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer chart container |
+| `canvas` | `<div>` | Chart canvas rendering area |
+| `legend` | `<div>` | Legend container |
+
+```css
+snice-chart::part(base) {
+  border: 1px solid #e2e2e2;
+  border-radius: 8px;
+}
+
+snice-chart::part(legend) {
+  padding: 0.5rem;
+}
+```
+
 ## Accessibility
 
 - Legend items are clickable to toggle dataset visibility

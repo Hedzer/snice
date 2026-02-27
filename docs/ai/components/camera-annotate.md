@@ -69,6 +69,12 @@ interface AnnotationStroke {
 <snice-camera-annotate auto-rotate-colors="false"></snice-camera-annotate>
 ```
 
+**CSS Parts:**
+- `base` - Outer layout container div
+- `canvas` - Canvas area containing video and drawing surface
+- `toolbar` - Toolbar with capture/retake, undo, clear, export buttons
+- `sidebar` - Sidebar panel with color palette and annotation labels
+
 ## Features
 
 - Camera capture → freehand draw → label workflow

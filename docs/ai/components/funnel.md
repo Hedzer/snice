@@ -70,6 +70,11 @@ data = [
 <snice-funnel animation></snice-funnel>
 ```
 
+**CSS Parts:**
+- `base` - Outer funnel container div
+- `chart` - SVG chart rendering area
+- `tooltip` - Hover tooltip element
+
 ## Features
 
 - SVG trapezoid shapes per stage

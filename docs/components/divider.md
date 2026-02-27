@@ -121,6 +121,27 @@ Set the `capped` attribute for rounded line ends.
 | `color` | `color` | `string` | `''` | Custom divider color |
 | `capped` | `capped` | `boolean` | `false` | Rounded line ends |
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer divider container |
+| `line` | `<div>` | The divider line(s) |
+| `text` | `<span>` | Optional text label |
+
+```css
+snice-divider::part(line) {
+  border-color: #3b82f6;
+}
+
+snice-divider::part(text) {
+  font-weight: 600;
+  color: #374151;
+}
+```
+
 ## CSS Custom Properties
 
 | Property | Description | Default |

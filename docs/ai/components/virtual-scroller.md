@@ -25,6 +25,10 @@ interface VirtualScrollerItem {
 - `refresh()` - Recalculate visible range and re-render
 - `getVisibleRange()` - Returns `{ start, end }`
 
+## CSS Parts
+
+- `base` - The outer scroller container
+
 ## Usage
 
 ```html

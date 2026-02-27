@@ -81,11 +81,23 @@ import 'snice/components/book/snice-book';
 
 ## CSS Parts
 
-| Part | Description |
-|------|-------------|
-| `spine` | The book spine element |
-| `pages` | The pages container |
-| `nav` | The navigation controls bar |
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The outer cover container |
+| `book` | `<div>` | The inner book element |
+
+```css
+snice-book::part(base) {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+snice-book::part(book) {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+```
 
 ## Examples
 

@@ -177,6 +177,29 @@ Listen for task interactions to update your application state or sync with a bac
 </script>
 ```
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer Gantt container |
+| `header` | `<div>` | Top header bar with zoom controls |
+| `controls` | `<div>` | Zoom toggle button group (Day/Week/Month) |
+| `body` | `<div>` | Main content area containing task list and timeline |
+| `task-list` | `<div>` | Left sidebar with task names and groups |
+| `timeline` | `<div>` | Right scrollable timeline with task bars |
+
+```css
+snice-gantt::part(header) {
+  background: #f8fafc;
+}
+
+snice-gantt::part(task-list) {
+  min-width: 200px;
+}
+```
+
 ## Accessibility
 
 - **Draggable tasks**: Task bars can be dragged to move their dates and resized via left/right edge handles

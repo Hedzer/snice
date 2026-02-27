@@ -37,6 +37,9 @@ minColumnWidth: string = '250px';     // attr: min-column-width, min width when 
 </snice-masonry>
 ```
 
+**CSS Parts:**
+- `base` - The masonry layout container
+
 ## Features
 
 - CSS columns-based layout (no JS measurement)

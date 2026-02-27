@@ -53,6 +53,29 @@ Fired when the rating value changes.
 | `--rating-color-empty` | Empty star color | `var(--snice-color-border)` |
 | `--rating-size` | Star size (set automatically by `size` property) | `1.5rem` (medium) |
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer rating container |
+| `star` | `<span>` | Individual star/icon element |
+
+```css
+snice-rating::part(star) {
+  transition: transform 0.2s ease;
+}
+
+snice-rating::part(star):hover {
+  transform: scale(1.2);
+}
+
+snice-rating::part(base) {
+  gap: 0.25rem;
+}
+```
+
 ## Examples
 
 ### Basic Rating

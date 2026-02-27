@@ -204,6 +204,31 @@ Fired when volume or mute state changes.
 | `--snice-focus-ring-width` | Focus ring width for control buttons | _(theme default)_ |
 | `--snice-focus-ring-color` | Focus ring color for control buttons | _(theme default)_ |
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer container element |
+| `video` | `<video>` | The native video element |
+| `controls` | `<div>` | Control bar container |
+| `progress` | `<div>` | Progress track element |
+
+```css
+snice-video-player::part(base) {
+  border-radius: 1rem;
+}
+
+snice-video-player::part(controls) {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+snice-video-player::part(progress) {
+  height: 6px;
+}
+```
+
 ## Examples
 
 ### Basic Video Player

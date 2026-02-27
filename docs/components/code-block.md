@@ -42,6 +42,7 @@ function hello() {
 - `code-before-highlight` - Before highlighting (detail: `{ code, language, codeBlock }`)
 - `code-after-highlight` - After highlighting (detail: `{ code, language, codeBlock }`)
 - `grammar-request` - Grammar fetch requested (detail: `{ url, language, codeBlock }`). Only dispatched when `fetch-mode="event"`.
+- `grammar-loaded` - Grammar successfully loaded (detail: `{ grammar, url, language, codeBlock }`). Fired after grammar is fetched (native/virtual), received via event mode, or set programmatically with `setGrammar()`.
 
 ## Grammar Files
 

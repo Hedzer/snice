@@ -8,6 +8,7 @@ The testimonial component displays a quote or review card with author informatio
 - [Basic Usage](#basic-usage)
 - [Properties](#properties)
 - [CSS Custom Properties](#css-custom-properties)
+- [CSS Parts](#css-parts)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
 
@@ -58,6 +59,32 @@ import 'snice/components/testimonial/snice-testimonial';
 | `--snice-shadow-sm` | Card shadow | _(theme default)_ |
 | `--snice-spacing-lg` | Card padding | `1.5rem` |
 | `--snice-border-radius-lg` | Card border radius | `0.5rem` |
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The outer testimonial container |
+| `quote` | `<div>` | The quote text element |
+| `author` | `<div>` | The author info container (avatar, name, role) |
+| `stars` | `<div>` | The star rating element |
+
+```css
+snice-testimonial::part(base) {
+  border: 2px solid #e2e8f0;
+}
+
+snice-testimonial::part(quote) {
+  font-style: italic;
+  font-size: 1.125rem;
+}
+
+snice-testimonial::part(stars) {
+  color: #f59e0b;
+}
+```
 
 ## Examples
 

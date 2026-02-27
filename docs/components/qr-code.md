@@ -172,6 +172,23 @@ qr.download('my-qr-code.png');
 | `textFillColor` (attr: `text-fill-color`) | `string` | `'#000000'` | Center text fill color |
 | `textOutlineColor` (attr: `text-outline-color`) | `string` | `'#ffffff'` | Center text outline color |
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | QR code container holding the generated canvas or SVG |
+
+```css
+snice-qr-code::part(base) {
+  padding: 16px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+```
+
 ## Methods
 
 | Method | Arguments | Description |

@@ -82,3 +82,27 @@ layout.update(appContext, placards, currentRoute, routeParams);
 | Method | Arguments | Description |
 |--------|-----------|-------------|
 | `update()` | `appContext: AppContext, placards: Placard[], currentRoute: string, routeParams: RouteParams` | Updates navigation from router state |
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer layout container |
+| `header` | `<header>` | Header element with navigation |
+| `brand` | `<div>` | Brand/logo area within header |
+| `main` | `<main>` | Main content area |
+| `footer` | `<footer>` | Footer element |
+
+```css
+snice-layout::part(header) {
+  background: #1a1a2e;
+  color: white;
+}
+
+snice-layout::part(footer) {
+  border-top: 1px solid #e2e2e2;
+  padding: 1rem;
+}
+```

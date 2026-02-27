@@ -94,6 +94,7 @@ interface GrammarRequestDetail {
 - `code-before-highlight` (detail: { code, language, codeBlock })
 - `code-after-highlight` (detail: { code, language, codeBlock })
 - `grammar-request` (detail: { url, language, codeBlock }) — only dispatched when `fetch-mode="event"`
+- `grammar-loaded` (detail: { grammar, url, language, codeBlock }) — fired after grammar is successfully loaded (any fetch mode) or set via `setGrammar()`
 
 ## Grammar System
 

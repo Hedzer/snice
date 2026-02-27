@@ -90,6 +90,29 @@ When the `icon` property is omitted on either the main data or forecast days, th
 | `--snice-border-radius-lg` | Card border radius | `0.5rem` |
 | `--snice-spacing-lg` | Card padding | `1.5rem` |
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer weather card container |
+| `current` | `<div>` | Current conditions section with icon, temperature, and condition text |
+| `details` | `<div>` | Details row showing humidity and wind speed |
+| `forecast` | `<div>` | Multi-day forecast section with day columns |
+
+```css
+snice-weather::part(base) {
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+snice-weather::part(forecast) {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 1rem;
+}
+```
+
 ## Examples
 
 ### Full Weather Display

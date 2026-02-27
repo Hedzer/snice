@@ -123,6 +123,10 @@ camera.addEventListener('camera-capture', (e) => {
 camera.toggleFullscreen();
 ```
 
+**CSS Parts:**
+- `base` - Outer camera container div
+- `controls` - Built-in control buttons area (capture, switch camera)
+
 ## Features
 
 - Auto-starts on load (default)

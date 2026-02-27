@@ -54,6 +54,11 @@ capped: boolean = false;
 <snice-divider capped></snice-divider>
 ```
 
+**CSS Parts:**
+- `base` - Outer divider container
+- `line` - The divider line(s)
+- `text` - Optional text label
+
 ## Features
 
 - Horizontal or vertical

@@ -174,3 +174,24 @@ interface Placard {
 | Method | Arguments | Description |
 |--------|-----------|-------------|
 | `update()` | `placards, appContext?, currentRoute?, routeParams?` | Update navigation with placard data |
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The outer content wrapper |
+| `nav` | `<nav>` | The navigation element |
+| `link` | `<a>` | An individual navigation link |
+
+```css
+snice-nav::part(nav) {
+  gap: 0.5rem;
+}
+
+snice-nav::part(link) {
+  font-weight: 500;
+  text-decoration: none;
+}
+```

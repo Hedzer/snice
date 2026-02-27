@@ -49,6 +49,11 @@ interface SankeyLink { source: string; target: string; value: number; color?: st
 </script>
 ```
 
+**CSS Parts:**
+- `base` - The outer Sankey container
+- `chart` - The SVG chart area
+- `tooltip` - The hover tooltip element
+
 ## Features
 
 - SVG rendering with curved bezier link paths

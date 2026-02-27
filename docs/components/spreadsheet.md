@@ -239,6 +239,29 @@ When the data array is empty, the spreadsheet displays a centered message: "Doub
 | Ctrl+Y / Ctrl+Shift+Z | Redo |
 | Any printable key | Start editing with that character (type-to-edit) |
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `formula-bar` | `<div>` | The formula bar with cell reference and input field |
+| `base` | `<div>` | The main spreadsheet grid area |
+| `status-bar` | `<div>` | The bottom status bar showing selection statistics |
+| `context-menu` | `<div>` | The right-click context menu |
+
+```css
+snice-spreadsheet::part(formula-bar) {
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+snice-spreadsheet::part(status-bar) {
+  font-size: 0.75rem;
+  background: #f9fafb;
+}
+```
+
 ## CSS Custom Properties
 
 | Property | Description | Default |

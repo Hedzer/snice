@@ -91,6 +91,27 @@ Set the `initial-time` attribute in seconds for a countdown.
 | `timer-reset` | `{ timer, time }` | Timer reset |
 | `timer-complete` | `{ timer }` | Countdown completed (timer mode only) |
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The outer timer container |
+| `display` | `<div>` | The time display element |
+| `controls` | `<div>` | The start/stop/reset button container |
+
+```css
+snice-timer::part(display) {
+  font-size: 3rem;
+  font-family: monospace;
+}
+
+snice-timer::part(controls) {
+  gap: 1rem;
+}
+```
+
 ## Methods
 
 | Method | Arguments | Description |

@@ -24,6 +24,12 @@ running: boolean;           // read-only
 - `reset()` - Reset to initial state
 - `getTime()` - Get current time in seconds
 
+## CSS Parts
+
+- `base` - The outer timer container
+- `display` - The time display element
+- `controls` - The start/stop/reset button container
+
 ## Usage
 
 ```html

@@ -266,6 +266,28 @@ Use methods to control which branches of the tree are visible.
 </script>
 ```
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The outer chart container |
+| `tree` | `<div>` | The tree layout wrapper with connecting lines |
+| `node` | `<div>` | Individual node cards (repeated for each node) |
+
+```css
+snice-org-chart::part(base) {
+  padding: 2rem;
+  overflow: auto;
+}
+
+snice-org-chart::part(node) {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+```
+
 ## Accessibility
 
 - Node cards are interactive and clickable

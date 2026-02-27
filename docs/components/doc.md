@@ -187,6 +187,33 @@ snice-doc {
 
 Dark mode is supported automatically via `prefers-color-scheme: dark`.
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The outer document wrapper |
+| `editor` | `<div>` | The editable content area |
+| `toolbar` | `<div>` | The formatting toolbar |
+
+```css
+snice-doc::part(base) {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+snice-doc::part(toolbar) {
+  padding: 0.5rem;
+  background: #f6f8fa;
+}
+
+snice-doc::part(editor) {
+  min-height: 300px;
+  padding: 1.5rem;
+}
+```
+
 ## Examples
 
 ### Export and Download

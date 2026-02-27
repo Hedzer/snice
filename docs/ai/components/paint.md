@@ -59,6 +59,12 @@ interface PaintStroke {
 - `paint-undo` — Undo performed
 - `paint-redo` — Redo performed
 
+**CSS Parts:**
+- `base` - The outer paint container
+- `toolbar` - The toolbar with controls
+- `canvas-wrap` - The canvas wrapper element
+- `canvas` - The drawing canvas element
+
 ## Usage
 
 ```html

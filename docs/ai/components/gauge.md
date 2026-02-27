@@ -44,6 +44,11 @@ thickness: number = 8;
 <snice-gauge value="50" showValue="false"></snice-gauge>
 ```
 
+**CSS Parts:**
+- `base` - Outer gauge container div with role="meter"
+- `value` - Numeric value text span
+- `label` - Label text span below the gauge
+
 ## Features
 
 - SVG semicircle arc with animated fill

@@ -141,6 +141,28 @@ import 'snice/components/gauge/snice-gauge';
 </script>
 ```
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer gauge container with `role="meter"` |
+| `value` | `<span>` | Numeric value text displayed inside the gauge |
+| `label` | `<span>` | Label text displayed below the gauge |
+
+```css
+snice-gauge::part(value) {
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+snice-gauge::part(label) {
+  color: #64748b;
+  font-size: 0.875rem;
+}
+```
+
 ## Accessibility
 
 - **ARIA role**: The gauge has `role="meter"` for screen reader support

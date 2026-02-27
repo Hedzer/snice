@@ -165,6 +165,26 @@ The gradient variant uses decreasing opacity of the primary color for a smoother
 </script>
 ```
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer funnel container |
+| `chart` | `<div>` | SVG chart rendering area |
+| `tooltip` | `<div>` | Hover tooltip element |
+
+```css
+snice-funnel::part(base) {
+  padding: 1rem;
+}
+
+snice-funnel::part(tooltip) {
+  font-size: 0.875rem;
+}
+```
+
 ## Accessibility
 
 - **ARIA role**: The SVG has `role="img"` with `aria-label="Funnel chart"`

@@ -511,6 +511,27 @@ kanban.addEventListener('kanban-card-move', async (e) => {
 });
 ```
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer kanban board container |
+| `column-header` | `<div>` | Column header with title and card count |
+| `column-cards` | `<div>` | Card list area within a column |
+
+```css
+snice-kanban::part(column-header) {
+  font-weight: 600;
+  padding: 0.75rem;
+}
+
+snice-kanban::part(column-cards) {
+  min-height: 100px;
+}
+```
+
 ## Accessibility
 
 - Keyboard navigation for cards

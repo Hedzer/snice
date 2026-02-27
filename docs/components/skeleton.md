@@ -87,6 +87,25 @@ Use the `spacing` attribute to control the gap between multiple skeleton lines.
 | `count` | `number` | `1` | Number of skeleton lines to render |
 | `spacing` | `string` | `'8px'` | Gap between multiple skeleton lines |
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer skeleton container |
+| `bone` | `<div>` | Individual skeleton placeholder element |
+
+```css
+snice-skeleton::part(bone) {
+  border-radius: 0.5rem;
+}
+
+snice-skeleton::part(base) {
+  padding: 0.5rem;
+}
+```
+
 ## CSS Custom Properties
 
 | Property | Description | Default |

@@ -51,6 +51,9 @@ const blob = await qr.toBlob('image/png');
 qr.download('qr-code.png');
 ```
 
+**CSS Parts:**
+- `base` - QR code container div
+
 ## Common Data Formats
 
 ```typescript

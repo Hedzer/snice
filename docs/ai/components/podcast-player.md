@@ -64,6 +64,11 @@ interface PodcastChapter {
 - `podcast-episode-change` -> `{ player, episode, index }` -- Episode switched
 - `podcast-feed-loaded` -> `{ player, feed: RSSFeedData }` -- RSS feed parsed
 
+**CSS Parts:**
+- `base` - Outer player container div
+- `info` - Artwork and metadata section
+- `controls` - Playback controls and progress bar section
+
 ## Usage
 
 ```html

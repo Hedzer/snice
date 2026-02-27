@@ -81,6 +81,26 @@ Fired when the mouse enters a bar.
 | `--snice-transition-fast` | Bar hover transition speed | `150ms` |
 | `--snice-font-weight-medium` | Value text font weight | _(theme default)_ |
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The main waterfall container |
+| `chart` | `<div>` | The chart rendering area |
+
+```css
+snice-waterfall::part(base) {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+snice-waterfall::part(chart) {
+  padding: 1rem;
+}
+```
+
 ## Examples
 
 ### Profit & Loss Waterfall

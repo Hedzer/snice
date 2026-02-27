@@ -65,6 +65,29 @@ interface DiffHunk {
 | `--snice-diff-added-word-bg` | Word-level highlight color for added text |
 | `--snice-diff-removed-word-bg` | Word-level highlight color for removed text |
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer diff container |
+| `header` | `<div>` | Header with addition/deletion stats and mode toggle buttons |
+| `content` | `<div>` | Diff content area containing the diff table(s) |
+
+```css
+snice-diff::part(base) {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+snice-diff::part(header) {
+  padding: 8px 12px;
+  background: #f8fafc;
+}
+```
+
 ## Examples
 
 ### Unified Diff View

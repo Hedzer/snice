@@ -87,6 +87,11 @@ doc.downloadAs('html');
 doc.downloadAs('text');
 ```
 
+**CSS Parts:**
+- `base` - Outer document wrapper
+- `editor` - Editable content area
+- `toolbar` - Formatting toolbar
+
 ## Features
 
 - WYSIWYG contentEditable editing

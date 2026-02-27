@@ -40,6 +40,9 @@ Content via slotted text or `setContent()`. No `content` attribute/property.
 --snice-font-weight-semibold
 ```
 
+**CSS Parts:**
+- `base` - The rendered markdown body container
+
 ## Supported Markdown
 
 - Headings (h1-h6)

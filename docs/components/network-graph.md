@@ -185,3 +185,24 @@ interface NetworkEdge {
 | `edge-click` | `{ edge: NetworkEdge }` | Edge clicked |
 | `node-drag` | `{ node: NetworkNode, x: number, y: number }` | Node dragged |
 | `graph-zoom` | `{ scale: number, x: number, y: number }` | Zoom changed |
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The outer graph container |
+| `canvas` | `<svg>` | The SVG element where nodes and edges are rendered |
+| `tooltip` | `<div>` | The hover tooltip showing node label and degree |
+
+```css
+snice-network-graph::part(base) {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+snice-network-graph::part(tooltip) {
+  font-size: 0.875rem;
+}
+```

@@ -56,6 +56,12 @@ When `icon` is omitted, mapped from `condition` string:
 - `--snice-border-radius-lg` - Card border radius (default: `0.5rem`)
 - `--snice-spacing-lg` - Card padding (default: `1.5rem`)
 
+**CSS Parts:**
+- `base` - Outer weather card div
+- `current` - Current conditions section (icon + temp + condition)
+- `details` - Details row (humidity and wind)
+- `forecast` - Multi-day forecast section
+
 ## Usage
 
 ```html

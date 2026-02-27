@@ -87,6 +87,28 @@ import 'snice/components/podcast-player/snice-podcast-player';
 | `podcast-episode-change` | `{ player, episode, index }` | Fired when a different episode is selected |
 | `podcast-feed-loaded` | `{ player, feed: RSSFeedData }` | Fired when an RSS feed has been parsed successfully |
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer player container |
+| `info` | `<div>` | Artwork and episode metadata section |
+| `controls` | `<div>` | Playback controls, skip buttons, and progress bar |
+
+```css
+snice-podcast-player::part(base) {
+  border-radius: 12px;
+  background: #1a1a2e;
+  color: white;
+}
+
+snice-podcast-player::part(controls) {
+  padding: 1rem;
+}
+```
+
 ## Types
 
 ### PodcastEpisode

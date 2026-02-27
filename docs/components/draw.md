@@ -218,6 +218,26 @@ document.addEventListener('keydown', (e) => {
 });
 ```
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer draw container |
+| `canvas` | `<canvas>` | Drawing canvas element |
+
+```css
+snice-draw::part(base) {
+  border: 1px solid #e2e2e2;
+  border-radius: 8px;
+}
+
+snice-draw::part(canvas) {
+  cursor: crosshair;
+}
+```
+
 ## Lazy Brush
 
 The lazy brush creates smooth, organic lines by making the brush lag behind your cursor within a configurable radius. This eliminates jitter and produces professional-looking strokes.

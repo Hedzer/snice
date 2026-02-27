@@ -148,6 +148,21 @@ interface VirtualScrollerItem {
 }
 ```
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The outer scroller container |
+
+```css
+snice-virtual-scroller::part(base) {
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 transparent;
+}
+```
+
 ## Methods
 
 | Method | Arguments | Description |

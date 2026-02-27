@@ -107,6 +107,11 @@ kanban.addEventListener('kanban-card-move', (e) => {
 <snice-kanban allow-drag-drop="false"></snice-kanban>
 ```
 
+**CSS Parts:**
+- `base` - Outer kanban board container div
+- `column-header` - Column header with title and card count
+- `column-cards` - Card list area within a column
+
 ## Features
 
 - Drag and drop cards between columns and within same column

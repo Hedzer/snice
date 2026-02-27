@@ -141,6 +141,28 @@ Set the `disabled` attribute to prevent resizing.
 |-------|--------|-------------|
 | `pane-resize` | `{ primarySize: number, secondarySize: number, splitPane: SniceResizeElement }` | Fired when pane is resized |
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `primary` | `<div>` | The primary pane container |
+| `divider` | `<div>` | The draggable divider bar |
+| `handle` | `<div>` | The visual handle inside the divider |
+| `secondary` | `<div>` | The secondary pane container |
+
+```css
+snice-split-pane::part(divider) {
+  background: #e2e8f0;
+}
+
+snice-split-pane::part(handle) {
+  background: #94a3b8;
+  border-radius: 4px;
+}
+```
+
 ## Methods
 
 | Method | Arguments | Description |

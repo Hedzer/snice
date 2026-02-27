@@ -141,6 +141,29 @@ player.addEventListener('player-error', (e) => {
 });
 ```
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer player container |
+| `controls` | `<div>` | Playback controls, progress bar, and volume section |
+| `playlist` | `<div>` | Playlist section with track listing |
+
+```css
+snice-music-player::part(base) {
+  border-radius: 12px;
+  background: #0f172a;
+  color: white;
+}
+
+snice-music-player::part(playlist) {
+  max-height: 300px;
+  overflow-y: auto;
+}
+```
+
 ## Track Interface
 
 ```typescript

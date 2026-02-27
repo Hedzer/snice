@@ -526,6 +526,26 @@ badge.hide();
 </div>
 ```
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer wrapper element |
+| `badge` | `<span>` | The badge indicator element |
+
+```css
+snice-badge::part(badge) {
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+snice-badge::part(base) {
+  display: inline-flex;
+}
+```
+
 ## Accessibility
 
 - **ARIA role**: Badge has `role="status"` for screen reader announcements

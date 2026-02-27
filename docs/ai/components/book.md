@@ -48,9 +48,8 @@ readonly totalPages: number      // Getter, count of slotted page elements
 
 ## CSS Parts
 
-- `spine` — The book spine element
-- `pages` — The pages container
-- `nav` — Navigation controls bar
+- `base` - Outer cover container
+- `book` - Inner book element
 
 ## Keyboard
 

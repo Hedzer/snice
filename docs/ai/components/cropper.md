@@ -32,6 +32,11 @@ outputType: CropperOutputType = 'png'         // attr: output-type — 'png' | '
 --snice-border-radius-lg          /* Container radius */
 ```
 
+**CSS Parts:**
+- `base` - Outer cropper container div
+- `image-container` - Image display area
+- `crop-area` - Draggable/resizable crop region
+
 ## Behavior
 
 - Crop area is draggable (move) and resizable via 8 corner/edge handles

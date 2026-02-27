@@ -66,6 +66,27 @@ import 'snice/components/pdf-viewer/snice-pdf-viewer';
 | `pdf-loaded` | `{ totalPages: number }` | Fired when the PDF document has been loaded successfully |
 | `pdf-error` | `{ error: string }` | Fired when an error occurs during loading or rendering |
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The outer viewer container |
+| `toolbar` | `<div>` | The navigation and zoom toolbar |
+| `viewport` | `<div>` | The PDF page display area |
+
+```css
+snice-pdf-viewer::part(toolbar) {
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+snice-pdf-viewer::part(viewport) {
+  background: #e5e7eb;
+}
+```
+
 ## Keyboard Shortcuts
 
 | Key | Action |

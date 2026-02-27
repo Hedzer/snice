@@ -121,3 +121,17 @@ Use the `gap` attribute with any CSS length value.
 | `columns` | `number` | `3` | Number of columns (0 for auto based on `minColumnWidth`) |
 | `gap` | `string` | `'1rem'` | Gap between items (any CSS length) |
 | `minColumnWidth` (attr: `min-column-width`) | `string` | `'250px'` | Minimum column width when `columns` is 0 |
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The masonry layout container |
+
+```css
+snice-masonry::part(base) {
+  padding: 1rem;
+}
+```

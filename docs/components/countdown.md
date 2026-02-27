@@ -54,6 +54,34 @@ The countdown component uses standard Snice design tokens:
 | `--snice-color-primary` | Circular variant ring color |
 | `--snice-color-success` | Completed state color |
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer countdown container |
+| `segment` | `<div>` | Individual time segment (days, hours, etc.) |
+| `value` | `<span>` | Digit value within a segment |
+| `label` | `<span>` | Text label within a segment (e.g. "Days") |
+| `separator` | `<span>` | Colon separator between segments |
+
+```css
+snice-countdown::part(value) {
+  font-size: 3rem;
+  font-weight: 800;
+}
+
+snice-countdown::part(label) {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+snice-countdown::part(separator) {
+  color: #9ca3af;
+}
+```
+
 ## Examples
 
 ### Simple Countdown

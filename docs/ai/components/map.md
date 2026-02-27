@@ -46,6 +46,12 @@ interface MapMarker {
 - `removeMarker(id: string): void` — Remove marker by ID
 - `fitBounds(markers?: MapMarker[]): void` — Auto-zoom/center to fit markers (defaults to all)
 
+**CSS Parts:**
+- `base` - The outer map container
+- `tiles` - The tile layer container
+- `markers` - The markers layer container
+- `controls` - The zoom controls container
+
 ## Behavior
 
 - Mouse drag to pan, scroll wheel to zoom

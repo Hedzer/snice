@@ -10,6 +10,7 @@ The sortable component provides a drag-and-drop container that allows users to r
 - [Slots](#slots)
 - [Events](#events)
 - [CSS Custom Properties](#css-custom-properties)
+- [CSS Parts](#css-parts)
 - [CSS Classes on Items](#css-classes-on-items)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
@@ -77,6 +78,21 @@ Fired when the order of items actually changes (item dropped in a new position).
   oldIndex: number;    // Original index of the item
   newIndex: number;    // New index of the item
   item: HTMLElement;   // The dragged element
+}
+```
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The outer sortable container |
+
+```css
+snice-sortable::part(base) {
+  gap: 0.5rem;
+  padding: 0.5rem;
 }
 ```
 

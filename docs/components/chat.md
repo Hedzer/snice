@@ -224,6 +224,33 @@ chat.addEventListener('typing-stop', () => {
 });
 ```
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The chat container |
+| `messages` | `<div>` | The scrollable messages area |
+| `input-area` | `<div>` | The input area wrapper |
+| `input-container` | `<div>` | Container holding the input and buttons |
+| `input` | `<textarea>` | The message input field |
+
+```css
+snice-chat::part(base) {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+snice-chat::part(messages) {
+  padding: 1rem;
+}
+
+snice-chat::part(input) {
+  font-size: 0.875rem;
+}
+```
+
 ## Message Types
 
 The chat supports different message types:

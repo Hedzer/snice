@@ -32,6 +32,13 @@ Uses standard snice design tokens:
 --snice-color-success      /* Complete state color */
 ```
 
+**CSS Parts:**
+- `base` - Outer countdown container
+- `segment` - Individual time segment (days, hours, etc.)
+- `value` - Digit value within a segment
+- `label` - Text label within a segment (e.g. "Days")
+- `separator` - Colon separator between segments
+
 ## Behavior
 
 - Ticks every second, auto-stops on completion

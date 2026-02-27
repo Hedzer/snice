@@ -26,6 +26,11 @@ readonly totalPages: number              // Total pages in document
 - `pdf-loaded` -> `{ totalPages: number }` -- Document loaded successfully
 - `pdf-error` -> `{ error: string }` -- Loading or rendering error
 
+**CSS Parts:**
+- `base` - The outer viewer container
+- `toolbar` - The navigation and zoom toolbar
+- `viewport` - The PDF page display area
+
 ## Keyboard Shortcuts
 
 - `ArrowRight` / `PageDown` -- Next page

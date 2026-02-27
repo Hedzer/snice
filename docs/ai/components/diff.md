@@ -43,6 +43,11 @@ interface DiffHunk {
 --snice-diff-removed-word-bg   /* Word-level removed highlight */
 ```
 
+**CSS Parts:**
+- `base` - Outer diff container div
+- `header` - Header with stats and mode toggle buttons
+- `content` - Diff content area containing the diff table(s)
+
 ## Behavior
 
 - LCS-based diff algorithm computes on `oldText`/`newText`/`contextLines` change

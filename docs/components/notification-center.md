@@ -13,6 +13,7 @@ A bell icon with a dropdown notification panel. Displays an unread count badge, 
 - [Events](#events)
 - [Types](#types)
 - [CSS Custom Properties](#css-custom-properties)
+- [CSS Parts](#css-parts)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
 
@@ -75,6 +76,33 @@ interface NotificationItem {
   read?: boolean;                                    // Whether the notification has been read
   icon?: string;                                     // Emoji or text icon (auto-set by type if omitted)
   type?: 'info' | 'success' | 'warning' | 'error';  // Notification type (determines default icon)
+}
+```
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `trigger` | `<button>` | The bell icon button |
+| `badge` | `<span>` | The unread count badge |
+| `panel` | `<div>` | The dropdown notification panel |
+| `panel-header` | `<div>` | The panel header with title and mark-all-read action |
+
+```css
+snice-notification-center::part(trigger) {
+  font-size: 1.5rem;
+}
+
+snice-notification-center::part(badge) {
+  background: #ef4444;
+  color: white;
+}
+
+snice-notification-center::part(panel) {
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 ```
 

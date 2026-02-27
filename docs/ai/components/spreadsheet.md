@@ -102,6 +102,12 @@ When data is empty, shows "Double-click or start typing to add data"
 - Column headers: sticky top
 - Corner cell (top-left): sticky both directions
 
+**CSS Parts:**
+- `formula-bar` - The formula bar with cell reference and input
+- `base` - The main spreadsheet grid area
+- `status-bar` - The bottom status bar showing selection stats
+- `context-menu` - The right-click context menu
+
 ## CSS Custom Properties
 
 - `--snice-color-border` - Grid lines (default: `rgb(226 226 226)`)

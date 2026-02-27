@@ -541,6 +541,34 @@ breadcrumbs.addEventListener('breadcrumb-click', (e) => {
 </script>
 ```
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<nav>` | The navigation container |
+| `list` | `<ol>` | The breadcrumb ordered list |
+| `link` | `<a>` | Individual breadcrumb links |
+| `separator` | `<span>` | Separator characters between items |
+| `ellipsis` | `<button>` | Collapse ellipsis button |
+
+```css
+snice-breadcrumbs::part(link) {
+  color: #3b82f6;
+  font-weight: 500;
+}
+
+snice-breadcrumbs::part(separator) {
+  color: #9ca3af;
+  margin: 0 0.75rem;
+}
+
+snice-breadcrumbs::part(ellipsis) {
+  background: transparent;
+}
+```
+
 ## Accessibility
 
 - **Semantic HTML**: Uses `<nav>` with `aria-label="Breadcrumb"`

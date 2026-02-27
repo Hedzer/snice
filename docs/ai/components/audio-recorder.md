@@ -87,6 +87,12 @@ await fetch('/upload', { method: 'POST', body: formData });
 </snice-audio-recorder>
 ```
 
+**CSS Parts:**
+- `base` - Outer recorder container div
+- `controls` - Recording and playback control buttons
+- `visualizer` - Audio frequency visualizer bar container
+- `progress` - Playback progress bar
+
 ## Features
 
 - MediaRecorder API

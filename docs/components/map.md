@@ -194,6 +194,28 @@ Use the `tile-url` attribute to load tiles from a different provider.
 ></snice-map>
 ```
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The outer map container |
+| `tiles` | `<div>` | The tile layer container |
+| `markers` | `<div>` | The markers layer container |
+| `controls` | `<div>` | The zoom controls container |
+
+```css
+snice-map::part(base) {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+snice-map::part(controls) {
+  opacity: 0.8;
+}
+```
+
 ## Accessibility
 
 - The map supports mouse drag to pan and scroll wheel to zoom

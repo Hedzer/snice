@@ -33,6 +33,13 @@ variant: 'card' | 'minimal' | 'featured' = 'card'
 - `--snice-spacing-lg` - Card padding (default: `1.5rem`)
 - `--snice-border-radius-lg` - Card border radius (default: `0.5rem`)
 
+## CSS Parts
+
+- `base` - The outer testimonial container
+- `quote` - The quote text element
+- `author` - The author info container (avatar, name, role)
+- `stars` - The star rating element
+
 ## Usage
 
 ```html

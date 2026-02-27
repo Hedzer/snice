@@ -55,3 +55,9 @@ interface TreemapNode {
 <snice-treemap color-scheme="blue" show-labels></snice-treemap>
 <snice-treemap color-scheme="rainbow" show-labels show-values></snice-treemap>
 ```
+
+**CSS Parts:**
+- `breadcrumbs` - Breadcrumb navigation for drill-down
+- `base` - Main treemap container
+- `chart` - Chart rendering area
+- `tooltip` - Hover tooltip element

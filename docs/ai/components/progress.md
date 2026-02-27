@@ -61,6 +61,18 @@ prog.setProgress(3, 10);
 console.log(prog.getPercentage());
 ```
 
+**CSS Parts (linear):**
+- `base` - Outer progress container
+- `bar` - The progress bar fill
+- `label` - Percentage or custom label text
+
+**CSS Parts (circular):**
+- `base` - Outer progress container
+- `circle` - The SVG element
+- `circle-bg` - Background circle stroke
+- `circle-bar` - Foreground progress arc
+- `label` - Percentage or custom label text
+
 ## Features
 
 - Linear and circular variants

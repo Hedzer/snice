@@ -83,6 +83,13 @@ breadcrumbs.items = [
 </snice-breadcrumbs>
 ```
 
+**CSS Parts:**
+- `base` - The `<nav>` container
+- `list` - The `<ol>` breadcrumb list
+- `link` - Individual breadcrumb `<a>` links
+- `separator` - Separator characters between items
+- `ellipsis` - Collapse ellipsis button
+
 ## Features
 
 - Item array or crumb elements

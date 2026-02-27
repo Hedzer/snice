@@ -86,6 +86,33 @@ card.addEventListener('card-click', (e) => {
 });
 ```
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer card container |
+| `header` | `<div>` | Card header section |
+| `body` | `<div>` | Card body section |
+| `footer` | `<div>` | Card footer section |
+
+```css
+snice-card::part(header) {
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+snice-card::part(footer) {
+  border-top: 1px solid #e5e7eb;
+  padding: 0.75rem 1rem;
+}
+
+snice-card::part(base) {
+  border-radius: 1rem;
+}
+```
+
 ## Examples
 
 ### Basic Cards

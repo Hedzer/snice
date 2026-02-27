@@ -174,3 +174,25 @@ interface PaintStroke {
 | `download()` | `filename?: string` | Download as PNG file |
 | `getStrokes()` | -- | Get all strokes for serialization |
 | `setStrokes()` | `strokes: PaintStroke[]` | Restore strokes from saved data |
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The outer paint container |
+| `toolbar` | `<div>` | The toolbar with color swatches, size slider, and action buttons |
+| `canvas-wrap` | `<div>` | The wrapper around the drawing canvas |
+| `canvas` | `<canvas>` | The drawing canvas element |
+
+```css
+snice-paint::part(toolbar) {
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+snice-paint::part(canvas) {
+  border-radius: 0 0 8px 8px;
+}
+```

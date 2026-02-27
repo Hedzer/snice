@@ -383,6 +383,27 @@ gallery.addEventListener('gallery-error', (e) => {
 });
 ```
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer gallery container |
+| `dropzone` | `<div>` | Drag-and-drop upload zone |
+| `gallery` | `<div>` | File thumbnails grid/list area |
+
+```css
+snice-file-gallery::part(dropzone) {
+  border-style: dashed;
+  border-color: #3b82f6;
+}
+
+snice-file-gallery::part(gallery) {
+  gap: 1rem;
+}
+```
+
 ## Upload Handler
 
 The file gallery uses the `@request/@respond` pattern for uploads. You must implement an upload handler:

@@ -31,6 +31,12 @@ interface TimeRange { start: string; end: string; }
 - `clearSelection()` - Clear all selections
 - `isSlotDisabled(time)` - Check if time slot is disabled
 
+## CSS Parts
+
+- `base` - The outer wrapper container
+- `header` - The header with label and selected value display
+- `slots` - The time slots container
+
 ## Usage
 
 ```html

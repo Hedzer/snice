@@ -80,6 +80,11 @@ calendar.goToDate(new Date(2024, 5, 15));
 </script>
 ```
 
+**CSS Parts:**
+- `base` - Main calendar container
+- `header` - Header with title and navigation buttons
+- `grid` - Day cells grid
+
 ## Features
 
 - Month/week/day views

@@ -35,6 +35,11 @@ interface OrgChartNode {
 - `node-expand` -> `{ node: OrgChartNode }` -- Node expanded
 - `node-collapse` -> `{ node: OrgChartNode }` -- Node collapsed
 
+**CSS Parts:**
+- `base` - The outer chart container
+- `tree` - The tree layout wrapper
+- `node` - Individual node cards
+
 ## Usage
 
 ```html

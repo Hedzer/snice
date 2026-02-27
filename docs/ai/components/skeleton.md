@@ -13,6 +13,10 @@ count: number = 1;
 spacing: string = '8px';
 ```
 
+**CSS Parts:**
+- `base` - Outer skeleton container
+- `bone` - Individual skeleton placeholder element
+
 ## Usage
 
 ```html

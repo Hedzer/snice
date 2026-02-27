@@ -11,6 +11,12 @@ label: string = '';
 thickness: number = 4;
 ```
 
+## CSS Parts
+
+- `base` - The outer spinner container
+- `circle` - The SVG spinner circle
+- `label` - The label text element
+
 ## Usage
 
 ```html

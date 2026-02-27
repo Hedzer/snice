@@ -65,6 +65,10 @@ offset: number = 0;
 <snice-badge dot pulse variant="error"></snice-badge>
 ```
 
+**CSS Parts:**
+- `base` - Outer wrapper element
+- `badge` - The badge indicator element
+
 ## Features
 
 - 6 color variants

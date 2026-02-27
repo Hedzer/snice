@@ -106,6 +106,11 @@ interface UploadResponse {
 }
 ```
 
+**CSS Parts:**
+- `base` - Outer gallery container div
+- `dropzone` - Drag-and-drop upload zone
+- `gallery` - File thumbnails grid/list area
+
 ## Upload Handler
 
 Uses `@request/@respond` pattern (`file-gallery-upload`). Handler receives `UploadRequest`, returns `UploadResponse`.

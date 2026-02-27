@@ -52,6 +52,11 @@ nav.update([
 ], undefined, 'home');
 ```
 
+**CSS Parts:**
+- `base` - Outer content wrapper
+- `nav` - Navigation element
+- `link` - Individual nav link
+
 ## Features
 
 - Flat, hierarchical, and grouped variants

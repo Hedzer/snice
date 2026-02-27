@@ -73,6 +73,11 @@ zoomTo(startIndex: number, endIndex: number): void;  // Zoom to range
 - Entrance animation with staggered delays
 - Accessible: role="img" with aria-label
 
+**CSS Parts:**
+- `base` - Outer chart container div
+- `canvas` - SVG element containing the candlestick chart
+- `tooltip` - OHLC tooltip overlay div
+
 ## CSS Custom Properties
 
 - `--snice-candlestick-bullish` — bullish candle color (default: green)

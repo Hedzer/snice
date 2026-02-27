@@ -66,6 +66,11 @@ interface Track {
 - `player-time-update` → `{ currentTime, duration }`
 - `player-error` → `{ error }`
 
+**CSS Parts:**
+- `base` - Outer player container div
+- `controls` - Playback controls and progress bar section
+- `playlist` - Playlist section with track list
+
 ## Usage
 
 ```html

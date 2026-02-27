@@ -66,6 +66,12 @@ readonly duration: number      // read-only, set from video metadata
 - `--snice-focus-ring-width` - Button focus ring width
 - `--snice-focus-ring-color` - Button focus ring color
 
+**CSS Parts:**
+- `base` - Outer container element
+- `video` - The `<video>` element
+- `controls` - Control bar container
+- `progress` - Progress track element
+
 ## Usage
 
 ```html

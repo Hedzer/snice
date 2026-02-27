@@ -370,6 +370,26 @@ function displayGallery() {
 </style>
 ```
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer camera container holding the video feed |
+| `controls` | `<div>` | Built-in control buttons area (capture and switch camera) |
+
+```css
+snice-camera::part(base) {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+snice-camera::part(controls) {
+  padding: 1rem;
+}
+```
+
 ## Built-in Controls
 
 The camera includes built-in mobile-style controls:

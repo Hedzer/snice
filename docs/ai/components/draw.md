@@ -106,6 +106,10 @@ await draw.loadImage('bg.jpg');
 </snice-draw>
 ```
 
+**CSS Parts:**
+- `base` - Outer draw container div
+- `canvas` - Drawing canvas element
+
 ## Lazy Brush
 
 Smooth drawing with cursor lag-following:

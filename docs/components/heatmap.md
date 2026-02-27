@@ -141,6 +141,27 @@ heatmap.addEventListener('cell-click', (e: CustomEvent) => {
 </script>
 ```
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer heatmap container |
+| `grid-area` | `<div>` | Grid area containing labels and cells |
+| `grid` | `<div>` | Cell grid container |
+| `tooltip` | `<div>` | Hover tooltip showing date and value |
+
+```css
+snice-heatmap::part(base) {
+  padding: 1rem;
+}
+
+snice-heatmap::part(tooltip) {
+  font-size: 0.75rem;
+}
+```
+
 ## Intensity Levels
 
 Cell colors are calculated based on quartiles of the maximum value in the dataset:

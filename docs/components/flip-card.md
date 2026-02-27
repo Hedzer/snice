@@ -11,6 +11,7 @@ The flip card component creates a two-sided card with a CSS 3D flip animation. C
 - [Methods](#methods)
 - [Events](#events)
 - [CSS Custom Properties](#css-custom-properties)
+- [CSS Parts](#css-parts)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
 
@@ -61,6 +62,30 @@ import 'snice/components/flip-card/snice-flip-card';
 | Property | Description |
 |----------|-------------|
 | `--flip-duration` | Animation duration (automatically set from the `duration` property) |
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The outer flip card container |
+| `front` | `<div>` | The front face container |
+| `back` | `<div>` | The back face container |
+
+```css
+snice-flip-card::part(base) {
+  border-radius: 1rem;
+}
+
+snice-flip-card::part(front) {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+snice-flip-card::part(back) {
+  background: linear-gradient(135deg, #f093fb, #f5576c);
+}
+```
 
 ## Examples
 

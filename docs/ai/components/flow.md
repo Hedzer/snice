@@ -88,6 +88,12 @@ flow.edges = [
 ];
 ```
 
+**CSS Parts:**
+- `base` - Outer flow container div
+- `canvas` - SVG edge/connection layer
+- `nodes` - Node elements container
+- `minimap` - Minimap overview panel
+
 ## Features
 
 - Draggable nodes with snap-to-grid

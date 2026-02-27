@@ -128,6 +128,28 @@ When no image is provided, a placeholder link icon is shown.
 | `variant` | `'vertical' \| 'horizontal'` | `'vertical'` | Card layout direction |
 | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Card size |
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The outer preview card container |
+| `content` | `<div>` | The text content area (title, description, footer) |
+| `title` | `<p>` | The title text element |
+
+```css
+snice-link-preview::part(base) {
+  border-radius: 1rem;
+  border: 2px solid #e2e8f0;
+}
+
+snice-link-preview::part(title) {
+  font-weight: 700;
+  color: #1e293b;
+}
+```
+
 ## Events
 
 | Event | Detail | Description |

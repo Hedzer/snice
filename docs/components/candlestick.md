@@ -158,6 +158,29 @@ interface CandleData {
 </script>
 ```
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer chart container with mouse event handlers |
+| `canvas` | `<svg>` | SVG element containing the candlestick chart, grid, and axes |
+| `tooltip` | `<div>` | OHLC data tooltip overlay shown on hover |
+
+```css
+snice-candlestick::part(base) {
+  border-radius: 8px;
+  background: #0f172a;
+}
+
+snice-candlestick::part(tooltip) {
+  background: rgba(15, 23, 42, 0.95);
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+```
+
 ## CSS Custom Properties
 
 | Property | Default | Description |

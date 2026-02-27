@@ -141,6 +141,29 @@ import 'snice/components/camera-annotate/snice-camera-annotate';
 </script>
 ```
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer layout container |
+| `canvas` | `<div>` | Canvas area containing the video feed and drawing surface |
+| `toolbar` | `<div>` | Toolbar with capture/retake, undo, clear, and export buttons |
+| `sidebar` | `<div>` | Sidebar panel with color palette and annotation labels |
+
+```css
+snice-camera-annotate::part(base) {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+snice-camera-annotate::part(sidebar) {
+  background: #1e293b;
+  color: white;
+}
+```
+
 ## Annotation Workflow
 
 1. **Camera Mode**: The component starts showing a live camera feed

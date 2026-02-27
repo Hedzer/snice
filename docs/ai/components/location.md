@@ -62,6 +62,12 @@ clickable: boolean = false;
 </snice-location>
 ```
 
+**CSS Parts:**
+- `base` - The outer location container
+- `icon` - The icon container
+- `content` - The content area with name, address, coordinates
+- `map` - The embedded map container
+
 ## Features
 
 - 4 display modes (full/compact/coordinates/address)

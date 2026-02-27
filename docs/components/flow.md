@@ -203,6 +203,28 @@ interface FlowEdge {
 - **Select edge**: Click an edge to select it.
 - **Deselect**: Click on the canvas background.
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer flow container |
+| `canvas` | `<svg>` | SVG layer for edges and connections |
+| `nodes` | `<div>` | Container for all node elements |
+| `minimap` | `<div>` | Minimap overview panel |
+
+```css
+snice-flow::part(base) {
+  border: 1px solid #e2e2e2;
+  border-radius: 8px;
+}
+
+snice-flow::part(minimap) {
+  opacity: 0.8;
+}
+```
+
 ## CSS Custom Properties
 
 The component uses standard snice theme tokens with fallbacks. Override with custom properties on the host element.

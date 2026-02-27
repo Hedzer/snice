@@ -56,6 +56,12 @@ disabled: boolean = false;
 <snice-card clickable disabled>Disabled</snice-card>
 ```
 
+**CSS Parts:**
+- `base` - Outer card container
+- `header` - Card header section
+- `body` - Card body section
+- `footer` - Card footer section
+
 ## Features
 
 - 3 style variants (elevated/bordered/flat)

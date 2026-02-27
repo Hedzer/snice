@@ -37,6 +37,14 @@ interface GanttTask {
 - `scrollToDate(date: string): void` — Scroll timeline to center on a date
 - `scrollToTask(id: string): void` — Scroll to a task's start date
 
+**CSS Parts:**
+- `base` - Outer Gantt container div
+- `header` - Top header bar with zoom controls
+- `controls` - Zoom toggle button group
+- `body` - Main content area (task list + timeline)
+- `task-list` - Left sidebar with task names
+- `timeline` - Right scrollable timeline area
+
 ## Behavior
 
 - Left sidebar shows task names (grouped if `group` set)

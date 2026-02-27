@@ -52,6 +52,11 @@ fallbackBackground: string = '';
 </snice-avatar>
 ```
 
+**CSS Parts:**
+- `base` - Outer avatar container
+- `image` - The `<img>` element (when image is loaded)
+- `fallback` - Initials or default icon container
+
 ## Features
 
 - 6 size options (xs to xxl)

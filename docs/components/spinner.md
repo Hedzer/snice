@@ -72,6 +72,27 @@ Use a small spinner inline with text.
 </button>
 ```
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The outer spinner container |
+| `circle` | `<svg>` | The SVG spinner circle |
+| `label` | `<span>` | The label text element |
+
+```css
+snice-spinner::part(base) {
+  gap: 0.75rem;
+}
+
+snice-spinner::part(label) {
+  font-size: 0.875rem;
+  color: #64748b;
+}
+```
+
 ## Properties
 
 | Property | Type | Default | Description |

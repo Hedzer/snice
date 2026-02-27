@@ -38,6 +38,12 @@ size: 'small'|'medium'|'large' = 'medium';
 </snice-link-preview>
 ```
 
+## CSS Parts
+
+- `base` - The outer preview card container
+- `content` - The text content area (title, description, footer)
+- `title` - The title text element
+
 ## Features
 
 - Vertical (image top) and horizontal (image left) layouts

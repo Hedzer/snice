@@ -21,6 +21,10 @@ group: string = ''            // group name for cross-container sorting
 - `sort-end` -> `{ oldIndex: number; newIndex: number; item: HTMLElement }`
 - `sort-change` -> `{ oldIndex: number; newIndex: number; item: HTMLElement }`
 
+## CSS Parts
+
+- `base` - The outer sortable container
+
 ## CSS Custom Properties
 
 - `--snice-spacing-xs` - Gap between items (default: `0.5rem`)

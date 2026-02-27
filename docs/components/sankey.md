@@ -176,3 +176,25 @@ interface SankeyLink {
 | `sankey-node-click` | `{ node: SankeyNode }` | Node clicked |
 | `sankey-link-click` | `{ link: SankeyLink }` | Link clicked |
 | `sankey-hover` | `{ type: 'node' \| 'link', item } \| null` | Hover state changed |
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The outer Sankey container |
+| `chart` | `<div>` | The SVG chart area |
+| `tooltip` | `<div>` | The hover tooltip showing node/link details |
+
+```css
+snice-sankey::part(base) {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+snice-sankey::part(tooltip) {
+  font-size: 0.875rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+```

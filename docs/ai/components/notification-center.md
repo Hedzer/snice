@@ -35,6 +35,13 @@ interface NotificationItem {
 - `notification-dismiss` -> `{ id: string }` -- Notification dismissed
 - `notification-read-all` -> `void` -- All marked as read
 
+## CSS Parts
+
+- `trigger` - The bell icon button
+- `badge` - The unread count badge
+- `panel` - The dropdown notification panel
+- `panel-header` - The panel header with title and mark-all-read action
+
 ## CSS Custom Properties
 
 ```css

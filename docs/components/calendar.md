@@ -144,6 +144,32 @@ calendar.addEventListener('calendar-event-click', (e) => {
 
 **Detail:** `{ event: CalendarEvent, calendar: SniceCalendarElement }`
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The main calendar container |
+| `header` | `<div>` | The header with month title and navigation buttons |
+| `grid` | `<div>` | The day cells grid |
+
+```css
+snice-calendar::part(base) {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+snice-calendar::part(header) {
+  padding: 1rem;
+  font-weight: 600;
+}
+
+snice-calendar::part(grid) {
+  gap: 2px;
+}
+```
+
 ## Examples
 
 ### Basic Calendar

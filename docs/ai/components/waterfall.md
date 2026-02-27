@@ -54,3 +54,7 @@ chart.addEventListener('bar-click', (e) => {
   console.log(`Clicked: ${e.detail.item.label} (${e.detail.item.value})`);
 });
 ```
+
+**CSS Parts:**
+- `base` - Main waterfall container
+- `chart` - Chart rendering area

@@ -28,6 +28,13 @@ Application layout with header navigation, main content area, and footer.
 </snice-layout>
 ```
 
+**CSS Parts:**
+- `base` - Outer layout container div
+- `header` - Header element with navigation
+- `brand` - Brand/logo area within header
+- `main` - Main content area
+- `footer` - Footer element
+
 ## Features
 
 - Grid layout: header, main, footer

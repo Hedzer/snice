@@ -38,6 +38,12 @@ weeks: number = 52;                      // Number of weeks to display
 </script>
 ```
 
+**CSS Parts:**
+- `base` - Outer heatmap container div
+- `grid-area` - Grid area with labels and cells
+- `grid` - Cell grid container
+- `tooltip` - Hover tooltip element
+
 ## Features
 
 - 5 color schemes (green, blue, purple, orange, red)

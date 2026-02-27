@@ -155,6 +155,42 @@ console.log(progress.getPercentage()); // 75
 | `animated` | `boolean` | `false` | Animate striped pattern |
 | `thickness` | `number` | `4` | Stroke width for circular variant |
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+### Linear variant
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer progress container |
+| `bar` | `<div>` | The progress bar fill |
+| `label` | `<span>` | Percentage or custom label text |
+
+### Circular variant
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer progress container |
+| `circle` | `<svg>` | The SVG element |
+| `circle-bg` | `<circle>` | Background circle stroke |
+| `circle-bar` | `<circle>` | Foreground progress arc |
+| `label` | `<div>` | Percentage or custom label text |
+
+```css
+snice-progress::part(bar) {
+  border-radius: 0;
+}
+
+snice-progress::part(label) {
+  font-weight: 700;
+}
+
+snice-progress::part(circle-bar) {
+  filter: drop-shadow(0 0 4px currentColor);
+}
+```
+
 ## Events
 
 | Event | Detail | Description |

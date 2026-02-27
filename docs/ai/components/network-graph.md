@@ -69,6 +69,11 @@ graph.data = {
 graph.addEventListener('node-click', (e) => console.log(e.detail.node));
 ```
 
+**CSS Parts:**
+- `base` - The outer graph container
+- `canvas` - The SVG element
+- `tooltip` - The hover tooltip element
+
 ## Features
 
 - Force-directed, circular, and grid layouts

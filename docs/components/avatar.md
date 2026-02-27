@@ -209,9 +209,27 @@ Use small avatars alongside user-generated content.
 
 ## CSS Parts
 
-| Part | Description |
-|------|-------------|
-| — | No exported parts |
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer avatar container |
+| `image` | `<img>` | The profile image element (when loaded) |
+| `fallback` | `<div>` | Initials or default icon container |
+
+```css
+snice-avatar::part(base) {
+  border: 2px solid #3b82f6;
+}
+
+snice-avatar::part(image) {
+  filter: grayscale(50%);
+}
+
+snice-avatar::part(fallback) {
+  font-weight: 700;
+}
+```
 
 ## Size Reference
 

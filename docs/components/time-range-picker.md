@@ -142,6 +142,28 @@ picker.isSlotDisabled('12:00'); // true if disabled
 | `time-range-select` | `{ start: string, component }` | Drag selection started |
 | `time-range-complete` | `{ range: TimeRange, ranges: TimeRange[], component }` | Drag selection completed |
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The outer wrapper container |
+| `header` | `<div>` | The header with label and selected value display |
+| `slots` | `<div>` | The time slots container |
+
+```css
+snice-time-range-picker::part(header) {
+  font-weight: 600;
+  padding: 0.75rem;
+}
+
+snice-time-range-picker::part(slots) {
+  max-height: 400px;
+  overflow-y: auto;
+}
+```
+
 ## Methods
 
 | Method | Arguments | Description |

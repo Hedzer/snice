@@ -31,6 +31,12 @@ duration: number = 600                   // attr: duration — Flip animation du
 --flip-duration   /* Animation duration, set automatically from duration property */
 ```
 
+## CSS Parts
+
+- `base` - The outer flip card container
+- `front` - The front face container
+- `back` - The back face container
+
 ## Keyboard
 
 When `click-to-flip` is enabled:

@@ -123,6 +123,11 @@ chart.options = {
 <snice-chart type="line" height="400"></snice-chart>
 ```
 
+**CSS Parts:**
+- `base` - Outer chart container div
+- `canvas` - Chart canvas rendering area
+- `legend` - Legend container
+
 ## Features
 
 - 10 chart types (line, bar, area, pie, donut, scatter, bubble, radar, horizontal-bar, mixed)
