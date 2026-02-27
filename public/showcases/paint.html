@@ -4,19 +4,22 @@
       <div class="comp-split comp-split-stacked">
         <div class="comp-split-demo" style="padding:0;overflow:hidden">
           <div style="height:400px">
-            <snice-paint id="demo-paint" style="display:block;width:100%;height:100%"></snice-paint>
+            <snice-paint id="demo-paint" color-selects="2" style="display:block;width:100%;height:100%"></snice-paint>
           </div>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=d02cb59">&lt;!-- All-in-one with built-in toolbar --&gt;
+          <snice-code-block language="html" grammar="grammars/html.json?v=c8113e9">&lt;!-- All-in-one with built-in toolbar --&gt;
 &lt;snice-paint&gt;&lt;/snice-paint&gt;
 
-&lt;!-- Custom colors &amp; controls --&gt;
-&lt;snice-paint
-  colors='["#ff0000","#00ff00","#0000ff"]'
-  controls="colors,size,undo,redo"
-&gt;&lt;/snice-paint&gt;
+&lt;!-- With 2 custom color pickers --&gt;
+&lt;snice-paint color-selects="2"&gt;&lt;/snice-paint&gt;
+
+&lt;!-- Custom tools via slots --&gt;
+&lt;snice-paint&gt;
+  &lt;button slot="tools"&gt;🔲 Rect&lt;/button&gt;
+  &lt;button slot="toolbar-end"&gt;💾 Save&lt;/button&gt;
+&lt;/snice-paint&gt;
 
 &lt;!-- Bare canvas only (bring your own toolbar) --&gt;
 &lt;snice-draw
@@ -25,15 +28,10 @@
 &gt;&lt;/snice-draw&gt;
 
 &lt;script&gt;
-  // Paint: self-contained
   const paint = document.querySelector('snice-paint');
-  paint.download('artwork.png');
-
-  // Draw: bare canvas, wire up your own UI
-  const draw = document.querySelector('snice-draw');
-  draw.color = '#ef4444';
-  draw.undo();
-  draw.clear();
+  paint.addEventListener('color-select', (e) =&gt; {
+    console.log('Custom color:', e.detail.color);
+  });
 &lt;/script&gt;</snice-code-block>
         </div>
       </div>
