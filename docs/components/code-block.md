@@ -29,20 +29,145 @@ function hello() {
 | `highlightLines` | `number[]` | `[]` | Lines to highlight |
 | `copyable` | `boolean` | `true` | Show copy button |
 | `filename` | `string` | `''` | File name to display |
+| `format` | `string` | `''` | Formatter name from grammar (e.g. `"pretty"`), or any truthy string with `setFormatter()` |
 
 ## Methods
 
 - `copy()` - Copy code to clipboard
 - `highlight()` - Manually trigger syntax highlighting
 - `setHighlighter(fn)` - Set an external highlighter function for this instance
+- `setFormatter(fn)` - Set a code formatter function for this instance
 
 ## Events
 
 - `code-copy` - Code copied (detail: `{ code, codeBlock }`)
+- `code-before-format` - Before formatting (detail: `{ code, language, codeBlock }`)
+- `code-after-format` - After formatting (detail: `{ code, language, codeBlock }`)
 - `code-before-highlight` - Before highlighting (detail: `{ code, language, codeBlock }`)
 - `code-after-highlight` - After highlighting (detail: `{ code, language, codeBlock }`)
 - `grammar-request` - Grammar fetch requested (detail: `{ url, language, codeBlock }`). Only dispatched when `fetch-mode="event"`.
 - `grammar-loaded` - Grammar successfully loaded (detail: `{ grammar, url, language, codeBlock }`). Fired after grammar is fetched (native/virtual), received via event mode, or set programmatically with `setGrammar()`.
+
+## Code Formatters
+
+Formatters transform code before syntax highlighting — useful for pretty-printing minified or poorly-indented code.
+
+### Grammar-Based Formatters (Declarative)
+
+Grammars can include a `formatters` section with named declarative rule sets. Set `format` to the formatter name to use it:
+
+```html
+<snice-code-block grammar="grammars/json.json" format="pretty" code='{"a":1,"b":[2,3]}'></snice-code-block>
+```
+
+The grammar's `"pretty"` formatter will automatically format the code before highlighting. No JavaScript needed.
+
+**Grammars with built-in `"pretty"` formatters:** `json.json`, `typescript.json`, `css.json`, `snice.json`.
+
+#### Grammar Formatter Rules
+
+Each named formatter is a set of declarative rules defined in the grammar JSON:
+
+```json
+{
+  "formatters": {
+    "pretty": {
+      "tabSize": 2,
+      "useTabs": false,
+      "newlineAfter": "[{\\[,]",
+      "newlineBefore": "[}\\]]",
+      "spaceAfter": "[:]",
+      "indent": "[{\\[]",
+      "dedent": "[}\\]]",
+      "skipStrings": true,
+      "skipComments": true
+    }
+  }
+}
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `tabSize` | `number` | `2` | Indent width |
+| `useTabs` | `boolean` | `false` | Use tabs instead of spaces |
+| `newlineAfter` | `string` (regex) | — | Insert newline after these chars |
+| `newlineBefore` | `string` (regex) | — | Insert newline before these chars |
+| `spaceAfter` | `string` (regex) | — | Insert space after these chars |
+| `spaceBefore` | `string` (regex) | — | Insert space before these chars |
+| `spaceAround` | `string` (regex) | — | Insert space on both sides |
+| `indent` | `string` (regex) | — | Chars that increase indent level |
+| `dedent` | `string` (regex) | — | Chars that decrease indent level |
+| `trimTrailing` | `boolean` | `true` | Remove trailing whitespace per line |
+| `collapseBlankLines` | `number` | — | Max consecutive blank lines |
+| `skipStrings` | `boolean` | `true` | Don't apply rules inside string literals |
+| `skipComments` | `boolean` | `true` | Don't apply rules inside comments |
+
+### Imperative Formatters
+
+For cases requiring JavaScript logic, `setFormatter(fn)` still works. When both are present, `setFormatter()` takes priority over grammar-based formatters.
+
+```typescript
+type FormatterFunction = (code: string, language: string) => string | Promise<string>;
+```
+
+### JSON Formatter
+
+Zero-dependency formatter that pretty-prints JSON using `JSON.parse()` + `JSON.stringify()`:
+
+```typescript
+import { createJsonFormatter } from 'snice/components/code-block/formatters/json';
+
+const formatter = createJsonFormatter({ indent: 2 });
+codeBlock.setFormatter(formatter);
+codeBlock.format = 'pretty';
+codeBlock.code = '{"name":"snice","version":"4.0.0"}';
+```
+
+### Indent Formatter
+
+Zero-dependency indent normalizer that re-indents code by tracking brace/bracket/paren nesting depth:
+
+```typescript
+import { createIndentFormatter } from 'snice/components/code-block/formatters/indent';
+
+const formatter = createIndentFormatter({ tabSize: 2, useTabs: false });
+codeBlock.setFormatter(formatter);
+codeBlock.format = 'pretty';
+```
+
+### Prettier Formatter
+
+Adapter for Prettier (requires `prettier` as a dependency):
+
+```typescript
+import * as prettier from 'prettier/standalone';
+import parserBabel from 'prettier/plugins/babel';
+import parserEstree from 'prettier/plugins/estree';
+import { setupPrettierFormatter } from 'snice/components/code-block/formatters/prettier';
+
+const formatter = setupPrettierFormatter(prettier, [parserBabel, parserEstree], {
+  tabWidth: 2,
+  singleQuote: true,
+});
+codeBlock.setFormatter(formatter);
+codeBlock.format = 'pretty';
+```
+
+### Whitespace Handling
+
+Slotted content is automatically **dedented** — common leading indentation from HTML nesting is stripped while preserving relative indentation. This means code inside deeply nested HTML stays clean:
+
+```html
+<div class="container">
+  <snice-code-block language="javascript">
+    function hello() {
+      console.log("world");
+    }
+  </snice-code-block>
+</div>
+```
+
+The 4-space indent from HTML nesting is stripped, but the 2-space relative indent inside the function is preserved.
 
 ## Grammar Files
 
@@ -178,6 +303,7 @@ interface Grammar {
   defaultToken?: string;       // Token type for unmatched text
   ignoreCase?: boolean;        // Case-insensitive regex matching
   tokenizer: Record<string, GrammarEntry[]>;  // Named states
+  formatters?: Record<string, FormatRules>;    // Named declarative formatters
   [key: string]: any;          // Lookup tables (keywords, builtins, etc.)
 }
 ```

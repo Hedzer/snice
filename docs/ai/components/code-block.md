@@ -30,6 +30,7 @@ startLine: number = 1;
 highlightLines: number[] = [];
 copyable: boolean = true;
 filename: string = '';
+format: string = '';             // Formatter name from grammar (e.g. "pretty"), or any truthy string with setFormatter()
 ```
 
 ## Fetch Mode
@@ -86,15 +87,85 @@ interface GrammarRequestDetail {
 - `copy()` - Copy code to clipboard
 - `highlight()` - Manually trigger syntax highlighting
 - `setHighlighter(fn)` - Set external highlighter for this instance
+- `setFormatter(fn)` - Set formatter function for this instance
 - `setGrammar(grammar)` - Provide grammar object directly (used with `fetch-mode="event"`)
 
 ## Events
 
 - `code-copy` (detail: { code, codeBlock })
+- `code-before-format` (detail: { code, language, codeBlock })
+- `code-after-format` (detail: { code, language, codeBlock })
 - `code-before-highlight` (detail: { code, language, codeBlock })
 - `code-after-highlight` (detail: { code, language, codeBlock })
 - `grammar-request` (detail: { url, language, codeBlock }) — only dispatched when `fetch-mode="event"`
 - `grammar-loaded` (detail: { grammar, url, language, codeBlock }) — fired after grammar is successfully loaded (any fetch mode) or set via `setGrammar()`
+
+## Formatters
+
+Code formatters run as a pre-step before highlighting. Set `format` to a formatter name.
+
+### Grammar-Based Formatters (Declarative)
+
+Grammars can include a `formatters` section with named rule sets. Use `format="name"` to select one:
+
+```html
+<snice-code-block grammar="grammars/json.json" format="pretty" code='{"a":1}'></snice-code-block>
+```
+
+Grammars with `"pretty"` formatters: `json.json`, `typescript.json`, `css.json`, `snice.json`.
+
+```typescript
+interface FormatRules {
+  tabSize?: number;          // Indent width (default 2)
+  useTabs?: boolean;         // Tabs instead of spaces
+  newlineAfter?: string;     // Regex char class — newline after these chars
+  newlineBefore?: string;    // Regex char class — newline before these chars
+  spaceAfter?: string;       // Regex char class — space after
+  spaceBefore?: string;      // Regex char class — space before
+  spaceAround?: string;      // Regex char class — space both sides
+  indent?: string;           // Regex char class — increase indent
+  dedent?: string;           // Regex char class — decrease indent
+  trimTrailing?: boolean;    // Trim trailing whitespace (default true)
+  collapseBlankLines?: number; // Max consecutive blank lines
+  skipStrings?: boolean;     // Skip rules inside strings (default true)
+  skipComments?: boolean;    // Skip rules inside comments (default true)
+}
+```
+
+### Imperative Formatters
+
+`setFormatter(fn)` overrides grammar-based formatters when both are present.
+
+```typescript
+type FormatterFunction = (code: string, language: string) => string | Promise<string>;
+```
+
+**`formatters/json.ts`** — JSON pretty-printer (zero-dependency):
+```typescript
+import { createJsonFormatter } from 'snice/components/code-block/formatters/json';
+codeBlock.setFormatter(createJsonFormatter({ indent: 2 }));
+codeBlock.format = 'pretty';
+```
+
+**`formatters/indent.ts`** — Indent normalizer (zero-dependency):
+```typescript
+import { createIndentFormatter } from 'snice/components/code-block/formatters/indent';
+codeBlock.setFormatter(createIndentFormatter({ tabSize: 2, useTabs: false }));
+codeBlock.format = 'pretty';
+```
+
+**`formatters/prettier.ts`** — Prettier adapter:
+```typescript
+import { setupPrettierFormatter } from 'snice/components/code-block/formatters/prettier';
+import * as prettier from 'prettier/standalone';
+import parserBabel from 'prettier/plugins/babel';
+codeBlock.setFormatter(setupPrettierFormatter(prettier, [parserBabel]));
+codeBlock.format = 'pretty';
+```
+
+### Whitespace Handling
+
+Slotted content is automatically dedented — common leading indentation from HTML nesting is stripped while preserving relative indentation.
 
 ## Grammar System
 
