@@ -12,6 +12,7 @@ minStrokeWidth: number = 1;
 maxStrokeWidth: number = 20;
 controls: string = 'colors,size,eraser,undo,redo,clear';
 backgroundColor: string = '#ffffff';
+colorSelects: number = 0; // extra color-picker dots in palette
 disabled: boolean = false;
 ```
 
@@ -58,6 +59,19 @@ interface PaintStroke {
 - `paint-clear` — Canvas cleared
 - `paint-undo` — Undo performed
 - `paint-redo` — Redo performed
+- `color-select` — Custom color picked (detail: { color, index })
+
+## Slots
+
+| Slot | Behavior | Description |
+|------|----------|-------------|
+| `toolbar-start` | Additive | Content prepended above default controls |
+| `colors` | Replaces default | Replaces built-in color swatches |
+| `size` | Replaces default | Replaces built-in size slider |
+| `tools` | Additive | Custom tool buttons (between eraser and undo/redo) |
+| `toolbar-end` | Additive | Content appended below default controls |
+
+Toolbar auto-shows when any slot has content, even if `controls=""`.
 
 **CSS Parts:**
 - `base` - The outer paint container
@@ -90,4 +104,25 @@ const url = paint.toDataURL();
 // Save/load
 const strokes = paint.getStrokes();
 paint.setStrokes(strokes);
+```
+
+```html
+<!-- Custom color pickers in palette -->
+<snice-paint color-selects="2"></snice-paint>
+
+<!-- Custom tools -->
+<snice-paint>
+  <button slot="tools" onclick="...">Rectangle</button>
+  <button slot="tools" onclick="...">Circle</button>
+</snice-paint>
+
+<!-- Replace color picker -->
+<snice-paint>
+  <input slot="colors" type="color" onchange="this.closest('snice-paint').color = this.value">
+</snice-paint>
+
+<!-- Add save button -->
+<snice-paint>
+  <button slot="toolbar-end" onclick="this.closest('snice-paint').download()">Save</button>
+</snice-paint>
 ```

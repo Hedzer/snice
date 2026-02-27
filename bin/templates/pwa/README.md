@@ -12,7 +12,7 @@ A Progressive Web App (PWA) built with [Snice](https://github.com/sniceio/snice)
 - **Theme Switching** - Light, dark, and system theme with persistence
 - **Data Listing** - Filterable table with debounced search
 - **Controllers** - Notification controller with `@respond` pattern
-- **Native Element Controllers** - Attach controllers to any HTML element
+- **Native Element Controllers** - Controllers work on any HTML element automatically
 - **Imperative Rendering** - `@render({ once: true })` with `@watch` + `@query`
 - **Observers** - `@observe('resize')`, `@observe('media:(...)')` for responsive behavior
 - **Keyboard Shortcuts** - Ctrl+S to save settings, Ctrl+Backspace to clear notifications, Escape to close menus
@@ -110,7 +110,7 @@ src/
 - **Daemons** for WebSocket lifecycle management
 - **Guards** with `(context, params) => boolean` signature
 - **Request/Response** for element-to-controller communication
-- **Native Element Controllers** via `useNativeElementControllers()`
+- **Native Element Controllers** enabled automatically on load
 
 ## Customization
 

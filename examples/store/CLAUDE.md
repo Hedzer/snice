@@ -145,14 +145,11 @@ navigate('/users/123')  // Does not change the URL
 
 ## Native Element Controllers
 
-Controllers work on ANY HTML element, not just custom elements:
-```typescript
-import { useNativeElementControllers } from 'snice';
-useNativeElementControllers(); // Call once in main.ts
-
-// Then use in HTML:
-// <form controller="checkout-form">...</form>
-// <div controller="data-loader">...</div>
+Controllers work on ANY HTML element, not just custom elements. Enabled automatically on load — no setup needed:
+```html
+<!-- Just use controller= on any element -->
+<form controller="checkout-form">...</form>
+<div controller="data-loader">...</div>
 ```
 
 ## Templates

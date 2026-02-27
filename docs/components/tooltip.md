@@ -205,18 +205,11 @@ snice-tooltip::part(content) {
 | `toggle()` | -- | Toggle visibility |
 | `updatePosition()` | -- | Recalculate position |
 
-## Attribute-Based Tooltips (`useTooltips`)
+## Attribute-Based Tooltips
 
 Wrapping elements in `<snice-tooltip>` can break parent-child relationships in components that require direct children (accordion, tabs, stepper, breadcrumbs, table, etc.). The attribute-based approach uses a plain `tooltip` attribute on any element, avoiding DOM disruption entirely.
 
-### Setup
-
-Call `useTooltips()` once in your app entry point. It's idempotent — safe to call multiple times.
-
-```typescript
-import { useTooltips } from 'snice';
-useTooltips();
-```
+The tooltip observer activates automatically when any tooltip component is loaded — no setup needed.
 
 ### Basic Usage
 
@@ -331,9 +324,4 @@ Use CSS custom properties to configure tooltips. Properties cascade, so you can 
 
 ### Cleanup
 
-To disconnect the observer and remove all tooltip portals:
-
-```typescript
-import { cleanupTooltips } from 'snice';
-cleanupTooltips();
-```
+The tooltip observer is managed automatically by the tooltip component. It activates as a side effect when any `<snice-tooltip>` component is loaded and cleans up when no longer needed.

@@ -64,16 +64,9 @@ strictPositioning: boolean = false; // attr: strict-positioning
 </snice-tooltip>
 ```
 
-## Attribute-Based Tooltips (`useTooltips`)
+## Attribute-Based Tooltips
 
-Opt-in observer for `tooltip` attribute on any element. No wrapper element — safe inside strict-children components (tabs, accordion, etc.).
-
-### Setup
-
-```typescript
-import { useTooltips } from 'snice';
-useTooltips(); // idempotent
-```
+Observer for `tooltip` attribute on any element. No wrapper element — safe inside strict-children components (tabs, accordion, etc.). Auto-activates when the tooltip component is loaded.
 
 ### Usage
 
@@ -113,7 +106,4 @@ useTooltips(); // idempotent
 
 ### Cleanup
 
-```typescript
-import { cleanupTooltips } from 'snice';
-cleanupTooltips(); // disconnect observer, remove portals
-```
+The tooltip observer is managed automatically by the tooltip component. It activates as a side effect when any `<snice-tooltip>` component is loaded and cleans up when no longer needed.

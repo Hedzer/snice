@@ -42,7 +42,7 @@ Controllers can be attached via the `controller` attribute:
 <!-- Custom element -->
 <user-list controller="user-controller"></user-list>
 
-<!-- Native element (requires useNativeElementControllers()) -->
+<!-- Native element (works automatically) -->
 <div controller="user-controller"></div>
 ```
 
@@ -132,16 +132,9 @@ class LifecycleController implements IController {
 
 ## Native Element Controllers
 
-Enable controller support for native HTML elements:
+Native element controllers are enabled automatically when Snice loads in a browser environment. No setup is required.
 
-```typescript
-import { useNativeElementControllers } from 'snice';
-
-// Enable at application start
-useNativeElementControllers();
-```
-
-This allows you to attach controllers to any HTML element:
+You can attach controllers to any HTML element:
 
 ```html
 <div controller="content-controller">

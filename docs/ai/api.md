@@ -281,6 +281,6 @@ import {
   ready, dispose, moved, adopted,
   Router,
   debounce, throttle, once, memoize,
-  useNativeElementControllers    // Enable controller= on native HTML elements
+  useNativeElementControllers    // controller= on native HTML elements (auto-called on load, idempotent)
 } from 'snice';
 ```

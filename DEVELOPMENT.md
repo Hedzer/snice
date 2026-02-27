@@ -621,7 +621,7 @@ Bundle any component with the Snice runtime for use without npm install:
 
 - Works in any project (vanilla JS, React, Vue, etc.)
 - No Snice dependency required
-- Runtime ~20KB gzip, components ~1-93KB each
+- Runtime ~17KB gzip, components ~1-93KB each
 - IIFE format for script tags
 
 ### CLI Usage

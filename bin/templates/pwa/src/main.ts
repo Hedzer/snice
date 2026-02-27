@@ -1,9 +1,5 @@
-import { useNativeElementControllers } from 'snice';
 import { initialize } from './router';
 import './styles/global.css';
-
-// Enable controllers on native HTML elements (div, form, etc.)
-useNativeElementControllers();
 
 // Import snice layout and components
 import 'snice/components/layout/snice-layout';
