@@ -1,6 +1,7 @@
 import { element, property, query, queryAll, watch, dispatch, ready, dispose, render, styles, html, css as cssTag } from 'snice';
 import cssContent from './snice-select.css?inline';
 import type { SelectSize, SelectOption, SniceSelectElement } from './snice-select.types';
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import './snice-option';
 
 @element('snice-select', { formAssociated: true })
@@ -36,6 +37,9 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
 
   @property({ type: Boolean,  })
   clearable = false;
+
+  @property({ type: Boolean, attribute: 'allow-free-text' })
+  allowFreeText = false;
 
   @property({ type: Boolean,  })
   open = false;

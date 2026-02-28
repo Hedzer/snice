@@ -1,8 +1,8 @@
 :host {
-  display: block;
+  display: flex;
+  align-items: center;
   width: 100%;
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
-  contain: layout style paint;
 }
 
 .range-slider {
@@ -170,6 +170,8 @@
   display: flex;
   flex-direction: column;
   width: 100%;
+  padding-top: 0.75rem;
+  padding-bottom: 0.25rem;
 }
 
 .range-slider--vertical .range-slider__wrapper {

@@ -49,6 +49,7 @@ export class SniceTable extends HTMLElement {
   data: any[] = [];
 
   setData(data: any[]) {
+    this._unsortedData = [...data];
     this.data = data;
     this.render();
   }
@@ -127,6 +128,8 @@ export class SniceTable extends HTMLElement {
     }
   }
 
+  private _hasController = false;
+  private _unsortedData: any[] = [];
   private dataRequestTimeout: any = null;
   
   private debouncedDataRequest() {
@@ -851,6 +854,7 @@ export class SniceTable extends HTMLElement {
   }
 
   private onAttached = () => {
+    this._hasController = true;
     this.getTableConfig();
     this.getTableData();
   }
@@ -946,7 +950,31 @@ export class SniceTable extends HTMLElement {
     }
 
     this.renderHeader(); // Update sort indicators immediately
-    this.debouncedDataRequest(); // Show loading immediately, debounce the actual request
+    if (this._hasController) {
+      this.debouncedDataRequest(); // Delegate to controller for server-side sort
+    } else {
+      this.sortLocalData(); // Sort in-memory data
+    }
+  }
+
+  private sortLocalData() {
+    if (!this._unsortedData.length) {
+      this._unsortedData = [...this.data];
+    }
+    if (this.currentSort.length === 0) {
+      this.data = [...this._unsortedData];
+    } else {
+      this.data = [...this._unsortedData].sort((a, b) => {
+        for (const { column, direction } of this.currentSort) {
+          const aVal = a[column] ?? '';
+          const bVal = b[column] ?? '';
+          const cmp = String(aVal).localeCompare(String(bVal), undefined, { numeric: true });
+          if (cmp !== 0) return direction === 'asc' ? cmp : -cmp;
+        }
+        return 0;
+      });
+    }
+    this.renderBody();
   }
 
   @dispatch('table-row-selection-changed', { bubbles: true, composed: true })
