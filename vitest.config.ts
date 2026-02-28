@@ -35,7 +35,8 @@ export default defineConfig({
       'examples',
       'tests/live',
       'rollup.config.test.js',
-      '.debug'
+      '.debug',
+      '.claude/worktrees'
     ],
   },
 });

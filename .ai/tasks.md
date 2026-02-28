@@ -318,6 +318,54 @@ For each component:
 
 ---
 
+## Missing vs Other Libraries (deduped)
+
+Add components that other major libraries provide but Snice does not. Keep implementations minimal and avoid duplicating existing components.
+
+102. [ ] `<snice-combobox>` - Editable input + dropdown
+   - Diff: `snice-select` is selection-only (non-editable).
+
+103. [ ] `<snice-popover>` - Anchored overlay container
+   - Diff: `snice-tooltip` is content-only; `snice-menu` is action-only.
+
+104. [ ] `<snice-segmented-control>` - Multi-option switcher
+   - Diff: `snice-switch` is binary; `snice-tabs` is for content panes.
+
+105. [ ] `<snice-split-button>` - Primary action + dropdown action
+   - Diff: `snice-button` has no split action; `snice-menu` is separate.
+
+106. [ ] `<snice-step-input>` - Numeric stepper control
+   - Diff: `snice-input type="number"` lacks stepper UI.
+
+107. [ ] `<snice-range-slider>` - Two-handle slider
+   - Diff: `snice-slider` is single-handle.
+
+108. [ ] `<snice-progress-ring>` - Determinate circular progress
+   - Diff: `snice-progress` is linear; `snice-spinner` is indeterminate.
+
+109. [ ] `<snice-icon>` - Icon element + registry
+   - Diff: no icon component exists.
+
+110. [ ] `<snice-tag>` - Display-only tag/token
+   - Diff: `snice-chip` is close but not token-specific; `snice-tag-input` is input.
+
+111. [ ] `<snice-form-layout>` - Form layout/grid
+   - Diff: no form layout component exists.
+
+112. [ ] `<snice-time-picker>` - Time-only picker
+   - Diff: `snice-time-range-picker` is range; `snice-date-picker` is date-only.
+
+113. [ ] `<snice-date-time-picker>` - Combined date+time picker
+   - Diff: no combined date-time control exists.
+
+114. [ ] `<snice-avatar-group>` - Grouped avatar stack
+   - Diff: only `snice-avatar` exists.
+
+115. [ ] `<snice-message-strip>` - Inline message bar
+   - Diff: `snice-alert`/`snice-banner`/`snice-toast` are different patterns.
+
+---
+
 ## SNICE DECORATOR PATTERNS - REQUIRED FOR ALL COMPONENTS
 
 ### DOM Queries
