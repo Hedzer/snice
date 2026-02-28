@@ -1,182 +1,191 @@
 [//]: # (AI: For a low-token version of this doc, use docs/ai/components/leaderboard.md instead)
 
-# Leaderboard
+# Leaderboard Component
 
-`<snice-leaderboard>`
+The leaderboard component displays a ranked list of entries with optional avatars, change indicators, and podium highlighting. It supports a **dual API**: declarative child elements (`<snice-leaderboard-entry>`) and an imperative `setEntries()` method.
 
-A ranked list component displaying positions, avatars, scores, and change indicators with optional podium styling for the top 3.
+## Table of Contents
+- [Basic Usage](#basic-usage)
+- [Declarative API (Child Elements)](#declarative-api-child-elements)
+- [Imperative API (setEntries)](#imperative-api-setentries)
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [Variants](#variants)
+- [CSS Custom Properties](#css-custom-properties)
+- [Accessibility](#accessibility)
 
 ## Basic Usage
 
+```html
+<snice-leaderboard title="Top Players">
+  <snice-leaderboard-entry rank="1" name="Alice" score="2500"></snice-leaderboard-entry>
+  <snice-leaderboard-entry rank="2" name="Bob" score="2100"></snice-leaderboard-entry>
+</snice-leaderboard>
+```
+
 ```typescript
 import 'snice/components/leaderboard/snice-leaderboard';
 ```
 
-```html
-<snice-leaderboard id="board" metric-label="Points"></snice-leaderboard>
+## Declarative API (Child Elements)
 
-<script>
-  document.getElementById('board').entries = [
-    { rank: 1, name: 'Alice Johnson', score: 2850, change: 2 },
-    { rank: 2, name: 'Bob Smith', score: 2720, change: -1 },
-    { rank: 3, name: 'Carol Williams', score: 2680, change: 1 }
-  ];
-</script>
-```
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/leaderboard/snice-leaderboard';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-leaderboard.min.js"></script>
-```
-
-## Examples
-
-### List Variant
-
-The default list variant shows a table-like ranked list with headers.
+Use `<snice-leaderboard-entry>` elements as children of `<snice-leaderboard>`. Each entry is a data container that the parent reads and renders.
 
 ```html
-<snice-leaderboard id="list-board" metric-label="Points"></snice-leaderboard>
-
-<script>
-  document.getElementById('list-board').entries = [
-    { rank: 1, name: 'Alice Johnson', score: 2850, change: 2 },
-    { rank: 2, name: 'Bob Smith', score: 2720, change: -1 },
-    { rank: 3, name: 'Carol Williams', score: 2680, change: 1 },
-    { rank: 4, name: 'David Brown', score: 2510, change: 0 },
-    { rank: 5, name: 'Eve Davis', score: 2340, change: -2 }
-  ];
-</script>
+<snice-leaderboard variant="podium" title="Season Rankings">
+  <snice-leaderboard-entry
+    rank="1"
+    name="Alice"
+    score="2,500"
+    avatar="alice.jpg"
+    change="3"
+    highlighted>
+  </snice-leaderboard-entry>
+  <snice-leaderboard-entry
+    rank="2"
+    name="Bob"
+    score="2,100"
+    change="-1">
+  </snice-leaderboard-entry>
+  <snice-leaderboard-entry
+    rank="3"
+    name="Charlie"
+    score="1,800"
+    change="2">
+  </snice-leaderboard-entry>
+</snice-leaderboard>
 ```
 
-### Podium Variant
+### Entry Attributes
 
-Use the `variant="podium"` attribute to display the top 3 entries with medal-styled podium cards. Remaining entries appear as a list below.
+| Attribute | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `rank` | `number` | `0` | Position/rank number |
+| `name` | `string` | `''` | Display name |
+| `score` | `string` | `''` | Score to display |
+| `avatar` | `string` | `''` | URL to avatar image (optional) |
+| `change` | `number` | `0` | Rank change indicator (positive = up, negative = down) |
+| `highlighted` | `boolean` | `false` | Highlight this entry |
 
-```html
-<snice-leaderboard id="podium-board" variant="podium" metric-label="Points"></snice-leaderboard>
+## Imperative API (setEntries)
+
+For dynamic data (e.g., fetched from an API), use the `setEntries()` method.
+
+```javascript
+const leaderboard = document.querySelector('snice-leaderboard');
+
+leaderboard.setEntries([
+  { rank: 1, name: 'Alice', score: 2500, avatar: 'alice.jpg', change: 3, highlighted: true },
+  { rank: 2, name: 'Bob', score: 2100, change: -1 },
+  { rank: 3, name: 'Charlie', score: 1800, change: 2 },
+  { rank: 4, name: 'Diana', score: 1500 },
+]);
 ```
 
-### Highlighting Current User
+### Dual API Precedence
 
-Set `highlighted: true` on an entry to visually distinguish it (e.g., the current user's row).
-
-```html
-<script>
-  el.entries = [
-    { rank: 1, name: 'Alice Johnson', score: 2850, change: 2 },
-    { rank: 2, name: 'You', score: 2720, change: 3, highlighted: true },
-    { rank: 3, name: 'Carol Williams', score: 2680, change: -1 }
-  ];
-</script>
-```
-
-### With Avatars
-
-Provide an `avatar` URL to display a profile image. Without one, initials are generated from the name.
-
-```html
-<script>
-  el.entries = [
-    { rank: 1, name: 'Alice Johnson', avatar: '/avatars/alice.jpg', score: 2850, change: 2 },
-    { rank: 2, name: 'Bob Smith', score: 2720, change: -1 }  // Shows "BS" initials
-  ];
-</script>
-```
-
-### Change Indicators
-
-The `change` property shows position movement with colored arrows. Positive values show green up arrows, negative show red down arrows, and zero shows a dash.
-
-```html
-<script>
-  el.entries = [
-    { rank: 1, name: 'Alice', score: 100, change: 3 },   // +3 (green, up)
-    { rank: 2, name: 'Bob', score: 90, change: -1 },      // -1 (red, down)
-    { rank: 3, name: 'Carol', score: 80, change: 0 }      // -- (neutral)
-  ];
-</script>
-```
-
-### Handling Clicks
-
-Listen for the `entry-click` event to handle row clicks.
-
-```html
-<snice-leaderboard id="clickable-board"></snice-leaderboard>
-
-<script>
-  document.getElementById('clickable-board').addEventListener('entry-click', e => {
-    console.log('Clicked:', e.detail.entry.name, 'at index', e.detail.index);
-  });
-</script>
-```
+When **both** child elements and `setEntries()` are used:
+- Child elements (`<snice-leaderboard-entry>`) take precedence
+- `setEntries()` calls are ignored while child elements are present
+- When all children are removed, `setEntries()` becomes active again
 
 ## Properties
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `entries` | `LeaderboardEntry[]` | `[]` | Array of ranked entries |
-| `variant` | `'list' \| 'podium'` | `'list'` | Visual layout variant |
-| `metricLabel` (attr: `metric-label`) | `string` | `'Score'` | Label for the score column header |
+| `variant` | `'default' \| 'podium' \| 'compact'` | `'default'` | Display variant |
+| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Entry size |
+| `title` | `string` | `''` | Optional title displayed above the list |
 
-### LeaderboardEntry Interface
+## Methods
+
+### `setEntries(entries: LeaderboardEntry[]): void`
+
+Set leaderboard entries imperatively. Each entry is an object with these fields:
 
 ```typescript
 interface LeaderboardEntry {
-  rank: number;              // Position number
-  name: string;              // Display name
-  avatar?: string;           // Avatar image URL
-  score: number | string;    // Score value
-  change?: number;           // Position change (+2, -1, 0)
-  highlighted?: boolean;     // Highlight this row (e.g., current user)
+  rank: number;         // Position number
+  name: string;         // Display name
+  score: number | string; // Score value
+  avatar?: string;      // Avatar image URL
+  change?: number;      // Rank change (positive = up, negative = down)
+  highlighted?: boolean; // Highlight this entry
 }
 ```
 
 ## Events
 
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `entry-click` | `{ entry: LeaderboardEntry, index: number }` | Fired when an entry is clicked |
+### `entry-click`
 
-## CSS Parts
+Fired when a leaderboard entry is clicked.
 
-| Part | Description |
-|------|-------------|
-| `base` | Root container |
-| `entry` | Individual entry row or podium card |
-| `list` | List container |
-| `podium` | Podium container (podium variant) |
-
-```css
-snice-leaderboard::part(entry) {
-  border-radius: 0.5rem;
-}
-
-snice-leaderboard::part(podium) {
-  gap: 2rem;
+**Event Detail:**
+```typescript
+{
+  entry: LeaderboardEntry; // The clicked entry data
+  index: number;           // Index of the entry
 }
 ```
 
+**Example:**
+```javascript
+leaderboard.addEventListener('entry-click', (e) => {
+  console.log('Clicked:', e.detail.entry.name);
+});
+```
+
+## Variants
+
+### Default
+A flat list of ranked entries.
+
+```html
+<snice-leaderboard>...</snice-leaderboard>
+```
+
+### Podium
+The top 3 entries are displayed in a podium layout (2nd, 1st, 3rd). Remaining entries appear as a regular list below.
+
+```html
+<snice-leaderboard variant="podium">...</snice-leaderboard>
+```
+
+### Compact
+Tighter spacing with smaller avatars, suitable for sidebars or smaller containers.
+
+```html
+<snice-leaderboard variant="compact">...</snice-leaderboard>
+```
+
+## CSS Custom Properties
+
+| Property | Description | Default |
+|----------|-------------|---------|
+| `--leaderboard-bg` | Background color | `var(--snice-color-background)` |
+| `--leaderboard-text` | Primary text color | `var(--snice-color-text)` |
+| `--leaderboard-text-secondary` | Secondary text color | `var(--snice-color-text-secondary)` |
+| `--leaderboard-border` | Border color | `var(--snice-color-border)` |
+| `--leaderboard-primary` | Highlight/accent color | `var(--snice-color-primary)` |
+| `--leaderboard-success` | Positive change color | `var(--snice-color-success)` |
+| `--leaderboard-danger` | Negative change color | `var(--snice-color-danger)` |
+| `--leaderboard-bg-element` | Element background | `var(--snice-color-background-element)` |
+| `--leaderboard-radius` | Border radius | `var(--snice-border-radius-lg)` |
+
+### CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `base` | The outer leaderboard container |
+| `title` | The title heading |
+| `list` | The entries list |
+| `empty` | The empty state message |
+
 ## Accessibility
 
-- Each entry has `role="button"` and is keyboard accessible
-- Press Enter or Space to activate an entry
-- Medal badges use semantic gradient colors for visual distinction
-- Change indicators use green/red color coding with directional arrows
-
-## Best Practices
-
-1. Keep entries sorted by rank before passing to the component
-2. Use the `highlighted` flag to mark the current user's position
-3. Use the `podium` variant for gaming or competition contexts
-4. Provide `avatar` URLs for a more personal display
-5. Set a descriptive `metric-label` for the score column
+- Entries are rendered as `<li>` inside an `<ol>` list
+- Rank numbers are visible and styled for top-3 positions (gold, silver, bronze)
+- Change indicators use up/down arrows for visual clarity
+- Avatar placeholders show the first initial when no image is provided
+- Entries are clickable and emit `entry-click` events

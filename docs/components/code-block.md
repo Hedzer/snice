@@ -30,6 +30,7 @@ function hello() {
 | `copyable` | `boolean` | `true` | Show copy button |
 | `filename` | `string` | `''` | File name to display |
 | `format` | `string` | `''` | Formatter name from grammar (e.g. `"pretty"`), or any truthy string with `setFormatter()` |
+| `theme` | `'' \| 'dark' \| 'light'` | `''` | Force a specific color theme; empty string auto-detects from page or OS |
 
 ## Methods
 
@@ -395,6 +396,55 @@ unregisterGrammar('myLang');
 // Look up a registered grammar (returns undefined if not found)
 const grammar = getGrammar('typescript');
 ```
+
+## Theming (Light / Dark Mode)
+
+The code block automatically follows the page's theme. It detects:
+
+1. **`data-theme` attribute** on the page (snice theme system): `[data-theme="dark"]` or `[data-theme="light"]`
+2. **OS preference** via `prefers-color-scheme` media query (fallback when no `data-theme` is set)
+
+### Forcing a Theme
+
+Use the `theme` attribute to override auto-detection:
+
+```html
+<!-- Always dark, even on a light-themed page -->
+<snice-code-block theme="dark" language="javascript">
+const x = 1;
+</snice-code-block>
+
+<!-- Always light, even on a dark-themed page -->
+<snice-code-block theme="light" language="javascript">
+const x = 1;
+</snice-code-block>
+```
+
+### Customizing Colors
+
+Override structural colors with CSS custom properties:
+
+```css
+snice-code-block {
+  --code-block-bg: #1e1e2e;
+  --code-block-text: #cdd6f4;
+  --code-block-header-bg: #181825;
+}
+```
+
+Override individual token colors:
+
+```css
+snice-code-block {
+  --code-keyword-color: #cba6f7;
+  --code-function-color: #89b4fa;
+  --code-string-color: #a6e3a1;
+  --code-number-color: #fab387;
+  --code-comment-color: #6c7086;
+}
+```
+
+All available token color variables: `--code-keyword-color`, `--code-function-color`, `--code-string-color`, `--code-number-color`, `--code-comment-color`, `--code-operator-color`, `--code-punctuation-color`, `--code-tag-color`, `--code-attr-name-color`, `--code-attr-value-color`, `--code-constant-color`, `--code-class-color`, `--code-builtin-color`, `--code-regex-color`.
 
 ## Token CSS Classes
 

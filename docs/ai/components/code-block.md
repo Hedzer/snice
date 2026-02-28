@@ -31,6 +31,7 @@ highlightLines: number[] = [];
 copyable: boolean = true;
 filename: string = '';
 format: string = '';             // Formatter name from grammar (e.g. "pretty"), or any truthy string with setFormatter()
+theme: '' | 'dark' | 'light' = '';  // Force theme; empty = auto-detect from page/OS
 ```
 
 ## Fetch Mode
@@ -166,6 +167,17 @@ codeBlock.format = 'pretty';
 ### Whitespace Handling
 
 Slotted content is automatically dedented — common leading indentation from HTML nesting is stripped while preserving relative indentation.
+
+## Theming
+
+Auto-follows `data-theme` attribute on page or OS `prefers-color-scheme`. Dark (One Dark) and light (One Light) built-in.
+
+- No attribute / `theme=""` → auto-detect from `[data-theme]` or OS preference
+- `theme="dark"` → force One Dark regardless of page theme
+- `theme="light"` → force One Light regardless of page theme
+
+Override individual colors: `--code-keyword-color`, `--code-function-color`, etc.
+Override structural colors: `--code-block-bg`, `--code-block-text`, `--code-block-header-bg`.
 
 ## Grammar System
 

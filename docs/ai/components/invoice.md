@@ -1,6 +1,26 @@
 # snice-invoice
 
-Professional invoice document with 5 variants, deep theming, QR support, and print styles.
+Professional invoice document with 5 variants, deep theming, QR support, print styles, and dual API (declarative + imperative).
+
+## Child Elements
+
+**`<snice-invoice-party>`** — Data container for from/to addresses (no shadow DOM).
+```typescript
+name: string = ''        // Party name
+address: string = ''     // Address
+email: string = ''       // Email
+phone: string = ''       // Phone
+logo: string = ''        // Logo URL
+```
+
+**`<snice-invoice-item>`** — Data container for line items (no shadow DOM).
+```typescript
+description: string = ''        // Item description
+quantity: number = 0             // Quantity
+unitPrice: number = 0            // attribute: unit-price — Unit price
+amount: number | undefined       // Optional override for quantity * unitPrice
+tax: number | undefined          // Optional per-item tax %
+```
 
 ## Properties
 
@@ -12,14 +32,22 @@ status: InvoiceStatus = 'draft'         // 'draft' | 'sent' | 'paid' | 'overdue'
 currency: string = 'USD'               // ISO 4217 currency code
 taxRate: number = 0                     // attribute: tax-rate — percentage (e.g., 10 = 10%)
 discount: number = 0                    // Discount percentage
-from: InvoiceParty = { name: '' }      // Sender info (JS only)
-to: InvoiceParty = { name: '' }        // Recipient info (JS only)
-items: InvoiceItem[] = []               // Line items (JS only)
+from: InvoiceParty = { name: '' }      // Sender info (use setFrom() or <snice-invoice-party slot="from">)
+to: InvoiceParty = { name: '' }        // Recipient info (use setTo() or <snice-invoice-party slot="to">)
+items: InvoiceItem[] = []               // Line items (use setItems() or <snice-invoice-item>)
 notes: string = ''                      // Footer notes/terms
 variant: InvoiceVariant = 'standard'   // 'standard' | 'modern' | 'classic' | 'minimal' | 'detailed'
 showQr: boolean = false                 // attribute: show-qr — show QR code area
 qrData: string = ''                     // attribute: qr-data — data to encode
 qrPosition: QrPosition = 'bottom-right' // attribute: qr-position — 'top-right' | 'bottom-right' | 'bottom-left' | 'footer'
+```
+
+## Setter Functions
+
+```typescript
+setFrom(party: InvoiceParty): void    // Set sender info imperatively
+setTo(party: InvoiceParty): void      // Set recipient info imperatively
+setItems(items: InvoiceItem[]): void  // Set line items imperatively (copies data)
 ```
 
 ## Types
@@ -33,6 +61,13 @@ interface InvoiceItem {
 }
 ```
 
+## Dual API
+
+- **Declarative**: Use `<snice-invoice-party>` and `<snice-invoice-item>` child elements
+- **Imperative**: Use `setFrom()`, `setTo()`, `setItems()` setter functions
+- Slot children take precedence over imperative data
+- MutationObserver detects child add/remove/attribute changes
+
 ## Variants
 
 - `standard` — Clean corporate grid layout
@@ -43,18 +78,25 @@ interface InvoiceItem {
 
 ## Events
 
-- `invoice-item-change` → `{ items, subtotal, tax, total }`
-- `invoice-status-change` → `{ oldStatus, newStatus }`
+- `invoice-item-change` -> `{ items, subtotal, tax, total }`
+- `invoice-status-change` -> `{ oldStatus, newStatus }`
 
 ## Methods
 
+- `setFrom(party)` - Set sender party data
+- `setTo(party)` - Set recipient party data
+- `setItems(items)` - Set line items (creates copies)
 - `print()` - Triggers window.print() with @media print styles
 - `toJSON()` - Returns full invoice data with computed totals + variant/QR fields
 
 ## Slots
 
-- `(default)` - Extra content at bottom of invoice
+- `from` - `<snice-invoice-party>` for sender (hidden, data read by parent)
+- `to` - `<snice-invoice-party>` for recipient (hidden, data read by parent)
+- `(default)` - `<snice-invoice-item>` elements (hidden, data read by parent)
 - `qr` - Custom QR code content (shown when show-qr is set)
+- `notes` - Rich HTML notes content (alternative to `notes` attribute)
+- `footer` - Footer content
 
 ## CSS Parts
 
@@ -78,7 +120,6 @@ interface InvoiceItem {
 ::part(summary-row)    /* Individual summary row */
 ::part(summary-label)  /* Summary row label */
 ::part(summary-value)  /* Summary row value */
-::part(subtotal)       /* Subtotal row (alias for first summary-row) */
 ::part(discount-row)   /* Discount row */
 ::part(tax-row)        /* Tax row */
 ::part(total)          /* Grand total row */
@@ -132,32 +173,25 @@ interface InvoiceItem {
 
 ## Usage
 
+### Declarative (recommended)
 ```html
-<snice-invoice
-  invoice-number="INV-001"
-  date="2026-01-15"
-  due-date="2026-02-15"
-  status="sent"
-  variant="modern"
-  currency="USD"
-  tax-rate="10"
-  discount="5"
-  show-qr
-  qr-data="https://pay.example.com/inv-001"
-  qr-position="footer"
-  notes="Payment due within 30 days">
-  <snice-qr-code slot="qr" value="https://pay.example.com/inv-001"></snice-qr-code>
+<snice-invoice invoice-number="INV-001" date="2026-01-15" status="sent" tax-rate="10">
+  <snice-invoice-party slot="from" name="Acme Corp" address="123 Main St" email="billing@acme.com"></snice-invoice-party>
+  <snice-invoice-party slot="to" name="Client Inc" address="456 Oak Ave"></snice-invoice-party>
+  <snice-invoice-item description="Web Development" quantity="40" unit-price="150"></snice-invoice-item>
+  <snice-invoice-item description="Design Services" quantity="10" unit-price="120"></snice-invoice-item>
 </snice-invoice>
+```
 
-<script>
-  const inv = document.querySelector('snice-invoice');
-  inv.from = { name: 'Acme Corp', address: '123 Main St', email: 'billing@acme.com', logo: 'logo.png' };
-  inv.to = { name: 'Client Inc', address: '456 Oak Ave' };
-  inv.items = [
-    { description: 'Web Development', quantity: 40, unitPrice: 150 },
-    { description: 'Design Services', quantity: 10, unitPrice: 120 }
-  ];
-</script>
+### Imperative (setter functions)
+```javascript
+const inv = document.querySelector('snice-invoice');
+inv.setFrom({ name: 'Acme Corp', address: '123 Main St' });
+inv.setTo({ name: 'Client Inc', address: '456 Oak Ave' });
+inv.setItems([
+  { description: 'Web Development', quantity: 40, unitPrice: 150 },
+  { description: 'Design Services', quantity: 10, unitPrice: 120 }
+]);
 ```
 
 ## Notes
@@ -166,8 +200,7 @@ interface InvoiceItem {
 - Discount applied before tax
 - Currency formatting via `Intl.NumberFormat`
 - `detailed` variant shows line numbers and per-item tax
-- `modern` variant: accent-colored header, card sections, shadow
-- `classic` variant: serif font, double-ruled lines, formal
-- `minimal` variant: no borders, lightweight typography, whitespace-driven
+- Slot children take precedence over imperative data
+- MutationObserver auto-detects child element changes
 - Print styles: high contrast, no shadows/backgrounds, page break management
 - QR `<slot name="qr">` renders placeholder box when no content slotted

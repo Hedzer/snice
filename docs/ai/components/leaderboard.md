@@ -1,72 +1,81 @@
 # snice-leaderboard
 
-Ranked list with position indicators, avatars, scores, and change tracking.
+Ranked list with podium variant, avatars, change indicators. Dual API: declarative children or imperative setter.
 
 ## Properties
 
-```typescript
-entries: LeaderboardEntry[] = [];
-variant: 'list'|'podium' = 'list';
-metricLabel: string = 'Score';  // attr: metric-label
+```ts
+variant: 'default' | 'podium' | 'compact'  // Display variant (default: 'default')
+size: 'small' | 'medium' | 'large'         // Size (default: 'medium')
+title: string                               // Optional header title (default: '')
 ```
 
-## Types
+## Methods
 
-```typescript
+```ts
+setEntries(entries: LeaderboardEntry[]): void  // Set entries imperatively
+```
+
+### LeaderboardEntry
+
+```ts
 interface LeaderboardEntry {
   rank: number;
   name: string;
-  avatar?: string;
   score: number | string;
+  avatar?: string;
   change?: number;
   highlighted?: boolean;
 }
 ```
 
+## Child Elements
+
+### `<snice-leaderboard-entry>`
+
+Data container element. Attributes: `rank` (Number), `name` (String), `score` (String), `avatar` (String, optional), `change` (Number, optional), `highlighted` (Boolean).
+
+**Slot children take precedence over `setEntries()`.** When all children removed, falls back to imperative mode.
+
 ## Events
 
-- `entry-click` -> `{ entry: LeaderboardEntry, index: number }`
+- `entry-click` -> `{ entry: LeaderboardEntry, index: number }` -- Entry clicked
 
-## CSS Parts
+## Variants
 
-- `base` - Root container
-- `entry` - Individual entry row/card
-- `list` - List container
-- `podium` - Podium container (podium variant only)
+- `default` -- Flat list
+- `podium` -- Top 3 shown as podium, rest as list
+- `compact` -- Tighter spacing, smaller avatars
+
+## CSS Custom Properties
+
+```css
+--leaderboard-bg          /* Background (default: --snice-color-background) */
+--leaderboard-text        /* Text color (default: --snice-color-text) */
+--leaderboard-border      /* Border color (default: --snice-color-border) */
+--leaderboard-primary     /* Primary accent (default: --snice-color-primary) */
+--leaderboard-success     /* Up change color (default: --snice-color-success) */
+--leaderboard-danger      /* Down change color (default: --snice-color-danger) */
+--leaderboard-radius      /* Border radius (default: --snice-border-radius-lg) */
+```
+
+**CSS Parts:** `base`, `title`, `list`, `empty`
 
 ## Usage
 
 ```html
-<snice-leaderboard metric-label="Points"></snice-leaderboard>
-
-<script>
-  const el = document.querySelector('snice-leaderboard');
-  el.entries = [
-    { rank: 1, name: 'Alice Johnson', score: 2850, change: 2 },
-    { rank: 2, name: 'Bob Smith', score: 2720, change: -1 },
-    { rank: 3, name: 'Carol Williams', score: 2680, change: 1 },
-    { rank: 4, name: 'David Brown', score: 2510, change: 0, highlighted: true },
-    { rank: 5, name: 'Eve Davis', score: 2340, change: -2 }
-  ];
-</script>
-
-<!-- Podium variant (medal styling for top 3) -->
-<snice-leaderboard variant="podium"></snice-leaderboard>
-
-<!-- With avatars -->
-<script>
-  el.entries = [
-    { rank: 1, name: 'Alice', avatar: '/alice.jpg', score: 2850, change: 2 }
-  ];
-</script>
+<!-- Declarative -->
+<snice-leaderboard variant="podium" title="Top Players">
+  <snice-leaderboard-entry rank="1" name="Alice" score="2500" change="3" highlighted></snice-leaderboard-entry>
+  <snice-leaderboard-entry rank="2" name="Bob" score="2100" change="-1"></snice-leaderboard-entry>
+</snice-leaderboard>
 ```
 
-## Features
-
-- Gold/silver/bronze medal badges for top 3
-- Podium variant reorders top 3 as 2nd-1st-3rd
-- Change indicator arrows (+N/-N)
-- Highlighted row for current user
-- Auto-generated initials when no avatar provided
-- Remaining entries shown as list below podium
-- Keyboard accessible
+```js
+// Imperative
+const lb = document.querySelector('snice-leaderboard');
+lb.setEntries([
+  { rank: 1, name: 'Alice', score: 2500, avatar: 'alice.jpg', change: 3, highlighted: true },
+  { rank: 2, name: 'Bob', score: 2100, change: -1 },
+]);
+```
