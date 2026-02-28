@@ -1,4 +1,6 @@
-export type ProductCardVariant = 'vertical' | 'horizontal' | 'compact';
+export type ProductCardVariant = 'vertical' | 'horizontal' | 'compact' | 'featured' | 'minimal' | 'grid';
+
+export type BadgeVariant = 'sale' | 'new' | 'featured';
 
 export interface ProductVariant {
   type: string;
@@ -16,6 +18,11 @@ export interface SniceProductCardElement extends HTMLElement {
   variants: ProductVariant[];
   inStock: boolean;
   variant: ProductCardVariant;
+  badge: string;
+  badgeVariant: BadgeVariant;
+  loading: boolean;
+  favorite: boolean;
+  stockCount: number;
 }
 
 export interface AddToCartDetail {
@@ -35,8 +42,14 @@ export interface ImageClickDetail {
   src: string;
 }
 
+export interface FavoriteDetail {
+  favorited: boolean;
+}
+
 export interface SniceProductCardEventMap {
   'add-to-cart': CustomEvent<AddToCartDetail>;
   'variant-select': CustomEvent<VariantSelectDetail>;
   'image-click': CustomEvent<ImageClickDetail>;
+  'favorite': CustomEvent<FavoriteDetail>;
+  'quick-view': CustomEvent<void>;
 }
