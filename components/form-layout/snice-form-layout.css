@@ -1,0 +1,114 @@
+:host {
+  display: block;
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  contain: layout style paint;
+  width: 100%;
+}
+
+/* Base layout */
+.form-layout {
+  display: grid;
+  grid-template-columns: repeat(var(--form-columns, 1), 1fr);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Gap variants */
+.form-layout--gap-small {
+  gap: var(--snice-spacing-xs, 0.5rem);
+}
+
+.form-layout--gap-medium {
+  gap: var(--snice-spacing-md, 1rem);
+}
+
+.form-layout--gap-large {
+  gap: var(--snice-spacing-lg, 1.5rem);
+}
+
+/* Variant: default */
+.form-layout--default {
+  /* Standard spacing, no special modifications */
+}
+
+/* Variant: compact */
+.form-layout--compact {
+  gap: var(--snice-spacing-2xs, 0.25rem);
+}
+
+.form-layout--compact.form-layout--gap-small {
+  gap: var(--snice-spacing-3xs, 0.125rem);
+}
+
+.form-layout--compact.form-layout--gap-medium {
+  gap: var(--snice-spacing-2xs, 0.25rem);
+}
+
+.form-layout--compact.form-layout--gap-large {
+  gap: var(--snice-spacing-xs, 0.5rem);
+}
+
+/* Variant: inline */
+.form-layout--inline {
+  grid-template-columns: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.form-layout--inline.form-layout--gap-small {
+  gap: var(--snice-spacing-xs, 0.5rem);
+}
+
+.form-layout--inline.form-layout--gap-medium {
+  gap: var(--snice-spacing-md, 1rem);
+}
+
+.form-layout--inline.form-layout--gap-large {
+  gap: var(--snice-spacing-lg, 1.5rem);
+}
+
+/* Label position: left — slotted children get horizontal layout */
+.form-layout--labels-left ::slotted(*) {
+  --snice-form-field-direction: row;
+  --snice-form-label-width: var(--form-label-width, 8rem);
+  --snice-form-label-align: right;
+  --snice-form-label-margin: 0 var(--snice-spacing-sm, 0.75rem) 0 0;
+}
+
+/* Label position: right */
+.form-layout--labels-right ::slotted(*) {
+  --snice-form-field-direction: row-reverse;
+  --snice-form-label-width: var(--form-label-width, 8rem);
+  --snice-form-label-align: left;
+  --snice-form-label-margin: 0 0 0 var(--snice-spacing-sm, 0.75rem);
+}
+
+/* Label position: top (default) */
+.form-layout--labels-top ::slotted(*) {
+  --snice-form-field-direction: column;
+  --snice-form-label-width: auto;
+  --snice-form-label-align: left;
+  --snice-form-label-margin: 0 0 var(--snice-spacing-2xs, 0.25rem) 0;
+}
+
+/* Responsive: collapse to single column on small screens */
+@media (max-width: 640px) {
+  .form-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  .form-layout--inline {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* Labels go on top on mobile regardless of setting */
+  .form-layout--labels-left ::slotted(*),
+  .form-layout--labels-right ::slotted(*) {
+    --snice-form-field-direction: column;
+    --snice-form-label-width: auto;
+    --snice-form-label-align: left;
+    --snice-form-label-margin: 0 0 var(--snice-spacing-2xs, 0.25rem) 0;
+  }
+}

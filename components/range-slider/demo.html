@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Range Slider Demo</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 2rem;
+      max-width: 600px;
+      margin: 0 auto;
+      color: var(--snice-color-text, rgb(23 23 23));
+      background: var(--snice-color-background, rgb(255 255 255));
+    }
+    h1 { font-size: 1.5rem; margin-bottom: 2rem; }
+    section { margin-bottom: 2rem; }
+    h2 { font-size: 1rem; margin-bottom: 0.75rem; color: var(--snice-color-text-secondary, rgb(82 82 82)); }
+    .vertical-container { height: 200px; display: flex; justify-content: center; }
+  </style>
+</head>
+<body>
+  <h1>Range Slider</h1>
+
+  <section>
+    <h2>Basic</h2>
+    <snice-range-slider value-low="20" value-high="80"></snice-range-slider>
+  </section>
+
+  <section>
+    <h2>With Tooltips</h2>
+    <snice-range-slider show-tooltip value-low="25" value-high="75"></snice-range-slider>
+  </section>
+
+  <section>
+    <h2>With Labels</h2>
+    <snice-range-slider show-labels min="0" max="500" value-low="100" value-high="400"></snice-range-slider>
+  </section>
+
+  <section>
+    <h2>Custom Step</h2>
+    <snice-range-slider min="0" max="100" step="10" value-low="20" value-high="70" show-tooltip></snice-range-slider>
+  </section>
+
+  <section>
+    <h2>Vertical</h2>
+    <div class="vertical-container">
+      <snice-range-slider orientation="vertical" value-low="30" value-high="70" show-tooltip></snice-range-slider>
+    </div>
+  </section>
+
+  <section>
+    <h2>Disabled</h2>
+    <snice-range-slider disabled value-low="20" value-high="60"></snice-range-slider>
+  </section>
+
+  <section>
+    <h2>Events</h2>
+    <snice-range-slider id="event-demo" min="0" max="100" value-low="25" value-high="75" show-tooltip></snice-range-slider>
+    <p id="event-output">Range: 25 - 75</p>
+  </section>
+
+  <script type="module">
+    import './snice-range-slider';
+
+    document.getElementById('event-demo').addEventListener('range-change', (e) => {
+      document.getElementById('event-output').textContent =
+        `Range: ${e.detail.valueLow} - ${e.detail.valueHigh}`;
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snice User Card Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      font-family: var(--snice-font-family);
+      padding: var(--snice-spacing-2xl);
+      line-height: var(--snice-line-height-normal);
+      background: var(--snice-color-background);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: var(--snice-color-text);
+      border-bottom: 2px solid var(--snice-color-border);
+      padding-bottom: var(--snice-spacing-xs);
+    }
+
+    h2 {
+      color: var(--snice-color-text-secondary);
+      margin-top: var(--snice-spacing-xl);
+    }
+
+    .demo-section {
+      margin: var(--snice-spacing-xl) 0;
+    }
+
+    .demo-label {
+      display: block;
+      margin-bottom: var(--snice-spacing-md);
+      font-weight: var(--snice-font-weight-medium);
+      color: var(--snice-color-text-secondary);
+      font-size: var(--snice-font-size-sm);
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--snice-spacing-lg);
+      margin: var(--snice-spacing-lg) 0;
+    }
+
+    .card-row {
+      display: flex;
+      gap: var(--snice-spacing-lg);
+      margin: var(--snice-spacing-lg) 0;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: var(--snice-spacing-xs) var(--snice-spacing-md);
+      background: var(--snice-color-primary);
+      color: var(--snice-color-text-inverse);
+      border: none;
+      border-radius: var(--snice-border-radius-md);
+      cursor: pointer;
+      font-size: var(--snice-font-size-sm);
+      transition: background var(--snice-transition-fast);
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    button.secondary {
+      background: var(--snice-color-background-secondary);
+      color: var(--snice-color-text);
+      border: 1px solid var(--snice-color-border);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Snice User Card Component Demo</h1>
+
+    <div class="demo-section">
+      <h2>Card Variant (Default)</h2>
+      <div class="card-grid">
+        <snice-user-card
+          name="Sarah Johnson"
+          role="Software Engineer"
+          company="Acme Corp"
+          email="sarah@acme.com"
+          phone="+1 555-0123"
+          location="San Francisco, CA"
+          status="online"
+          id="card1"
+        ></snice-user-card>
+
+        <snice-user-card
+          name="James Wilson"
+          avatar="https://i.pravatar.cc/150?u=james"
+          role="Product Manager"
+          company="TechStartup"
+          email="james@techstartup.io"
+          status="away"
+          id="card2"
+        ></snice-user-card>
+
+        <snice-user-card
+          name="Emily Chen"
+          avatar="https://i.pravatar.cc/150?u=emily"
+          role="UX Designer"
+          company="DesignStudio"
+          email="emily@designstudio.com"
+          location="New York, NY"
+          status="busy"
+          id="card3"
+        ></snice-user-card>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Horizontal Variant</h2>
+      <div style="max-width: 500px;">
+        <snice-user-card
+          variant="horizontal"
+          name="Alex Rivera"
+          avatar="https://i.pravatar.cc/150?u=alex"
+          role="CTO"
+          company="Innovate Inc"
+          email="alex@innovate.com"
+          phone="+1 555-0456"
+          location="Austin, TX"
+          status="online"
+          id="card4"
+        >
+          <button>Message</button>
+          <button class="secondary">Profile</button>
+        </snice-user-card>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Compact Variant</h2>
+      <div style="max-width: 400px; display: flex; flex-direction: column; gap: var(--snice-spacing-sm);">
+        <snice-user-card
+          variant="compact"
+          name="Lisa Park"
+          avatar="https://i.pravatar.cc/150?u=lisa"
+          role="Developer"
+          status="online"
+        ></snice-user-card>
+
+        <snice-user-card
+          variant="compact"
+          name="Mark Thompson"
+          avatar="https://i.pravatar.cc/150?u=mark"
+          role="Designer"
+          status="away"
+        ></snice-user-card>
+
+        <snice-user-card
+          variant="compact"
+          name="Rachel Kim"
+          role="Manager"
+          status="offline"
+        ></snice-user-card>
+
+        <snice-user-card
+          variant="compact"
+          name="David Brown"
+          avatar="https://i.pravatar.cc/150?u=david"
+          role="Engineer"
+          status="busy"
+        ></snice-user-card>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>With Social Links</h2>
+      <div class="card-grid">
+        <snice-user-card
+          name="Jordan Lee"
+          avatar="https://i.pravatar.cc/150?u=jordan"
+          role="Full Stack Developer"
+          company="OpenSource Co"
+          email="jordan@opensource.dev"
+          status="online"
+          id="card-social"
+        >
+          <button>Follow</button>
+        </snice-user-card>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Status Indicators</h2>
+      <div class="card-row">
+        <snice-user-card variant="compact" name="Online User" status="online" role="Active now"></snice-user-card>
+        <snice-user-card variant="compact" name="Away User" status="away" role="Idle for 5m"></snice-user-card>
+        <snice-user-card variant="compact" name="Busy User" status="busy" role="In a meeting"></snice-user-card>
+        <snice-user-card variant="compact" name="Offline User" status="offline" role="Last seen 2h ago"></snice-user-card>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import './snice-user-card.ts';
+
+    // Set social links programmatically (array property)
+    const socialCard = document.getElementById('card-social');
+    socialCard.social = [
+      { platform: 'github', url: 'https://github.com/jordanlee' },
+      { platform: 'twitter', url: 'https://twitter.com/jordanlee' },
+      { platform: 'linkedin', url: 'https://linkedin.com/in/jordanlee' },
+      { platform: 'website', url: 'https://jordanlee.dev' }
+    ];
+
+    // Set social links for card1 too
+    const card1 = document.getElementById('card1');
+    card1.social = [
+      { platform: 'github', url: 'https://github.com/sarahjohnson' },
+      { platform: 'linkedin', url: 'https://linkedin.com/in/sarahjohnson' }
+    ];
+
+    // Listen for social-click events
+    document.addEventListener('social-click', (e) => {
+      console.log('Social clicked:', e.detail);
+    });
+
+    // Listen for action-click events
+    document.addEventListener('action-click', (e) => {
+      console.log('Action clicked:', e.detail);
+    });
+  </script>
+</body>
+</html>

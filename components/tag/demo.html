@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snice Tag Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 40px;
+      line-height: 1.6;
+      background: var(--snice-color-background);
+      transition: background-color var(--snice-transition-medium) ease, color var(--snice-transition-medium) ease;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: var(--snice-color-background-element);
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: var(--snice-shadow-lg);
+    }
+
+    h1 {
+      color: var(--snice-color-text);
+      border-bottom: 2px solid var(--snice-color-border);
+      padding-bottom: 10px;
+    }
+
+    h2 {
+      color: var(--snice-color-text-secondary);
+      margin-top: 30px;
+    }
+
+    .demo-section {
+      margin: 30px 0;
+      padding: 20px;
+      background: var(--snice-color-background);
+      border-radius: 4px;
+    }
+
+    .demo-label {
+      display: block;
+      margin-bottom: 12px;
+      font-weight: 500;
+      color: var(--snice-color-text-secondary);
+      font-size: 14px;
+    }
+
+    .tag-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 16px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Snice Tag Component Demo</h1>
+
+    <div class="demo-section">
+      <h2>Variants</h2>
+      <div class="tag-group">
+        <snice-tag>Default</snice-tag>
+        <snice-tag variant="primary">Primary</snice-tag>
+        <snice-tag variant="success">Success</snice-tag>
+        <snice-tag variant="warning">Warning</snice-tag>
+        <snice-tag variant="danger">Danger</snice-tag>
+        <snice-tag variant="info">Info</snice-tag>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Outline Variants</h2>
+      <div class="tag-group">
+        <snice-tag outline>Default</snice-tag>
+        <snice-tag variant="primary" outline>Primary</snice-tag>
+        <snice-tag variant="success" outline>Success</snice-tag>
+        <snice-tag variant="warning" outline>Warning</snice-tag>
+        <snice-tag variant="danger" outline>Danger</snice-tag>
+        <snice-tag variant="info" outline>Info</snice-tag>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Sizes</h2>
+      <div class="tag-group">
+        <snice-tag size="small" variant="primary">Small</snice-tag>
+        <snice-tag size="medium" variant="primary">Medium</snice-tag>
+        <snice-tag size="large" variant="primary">Large</snice-tag>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Pill Shape</h2>
+      <div class="tag-group">
+        <snice-tag pill>Default</snice-tag>
+        <snice-tag pill variant="primary">Primary</snice-tag>
+        <snice-tag pill variant="success">Success</snice-tag>
+        <snice-tag pill variant="danger">Danger</snice-tag>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Removable Tags</h2>
+      <div class="tag-group" id="removable-tags">
+        <snice-tag removable variant="primary">JavaScript</snice-tag>
+        <snice-tag removable variant="success">TypeScript</snice-tag>
+        <snice-tag removable variant="warning">Python</snice-tag>
+        <snice-tag removable variant="danger">Rust</snice-tag>
+        <snice-tag removable variant="info">Go</snice-tag>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>With Icons</h2>
+      <div class="tag-group">
+        <snice-tag variant="success"><span slot="icon">✓</span>Approved</snice-tag>
+        <snice-tag variant="danger"><span slot="icon">✕</span>Rejected</snice-tag>
+        <snice-tag variant="warning"><span slot="icon">⚠</span>Pending</snice-tag>
+        <snice-tag variant="primary"><span slot="icon">★</span>Featured</snice-tag>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Real-world Examples</h2>
+
+      <span class="demo-label">Article Categories</span>
+      <div class="tag-group">
+        <snice-tag pill variant="primary" size="small">Technology</snice-tag>
+        <snice-tag pill variant="success" size="small">Science</snice-tag>
+        <snice-tag pill variant="info" size="small">Design</snice-tag>
+      </div>
+
+      <span class="demo-label">Status Labels</span>
+      <div class="tag-group">
+        <snice-tag variant="success">Active</snice-tag>
+        <snice-tag variant="warning">Draft</snice-tag>
+        <snice-tag variant="danger">Archived</snice-tag>
+        <snice-tag outline>Inactive</snice-tag>
+      </div>
+
+      <span class="demo-label">Priority Levels</span>
+      <div class="tag-group">
+        <snice-tag variant="danger" size="small">Critical</snice-tag>
+        <snice-tag variant="warning" size="small">High</snice-tag>
+        <snice-tag variant="primary" size="small">Medium</snice-tag>
+        <snice-tag size="small">Low</snice-tag>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import './snice-tag.ts';
+
+    document.getElementById('removable-tags').addEventListener('tag-remove', (e) => {
+      e.target.remove();
+    });
+  </script>
+</body>
+</html>

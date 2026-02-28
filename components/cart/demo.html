@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cart Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      padding: 40px;
+      font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+      background: var(--snice-color-background, rgb(255 255 255));
+      color: var(--snice-color-text, rgb(23 23 23));
+    }
+    h2, h3 {
+      color: var(--snice-color-text, rgb(23 23 23));
+    }
+    .demo-section {
+      margin-bottom: 4rem;
+      max-width: 500px;
+    }
+    .demo-controls {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .demo-controls button {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--snice-color-border, #e2e2e2);
+      border-radius: 0.25rem;
+      background: var(--snice-color-background, white);
+      cursor: pointer;
+      font-family: inherit;
+    }
+  </style>
+  <script type="module">
+    import './snice-cart.ts';
+
+    const cart = document.getElementById('cart-demo');
+    cart.items = [
+      { id: '1', name: 'Premium Running Shoes', image: 'https://picsum.photos/seed/shoe1/100/100', price: 89.99, quantity: 1, variant: 'Size: M, Color: Black' },
+      { id: '2', name: 'Classic Watch', image: 'https://picsum.photos/seed/watch1/100/100', price: 249.00, quantity: 1 },
+      { id: '3', name: 'Wireless Earbuds', image: 'https://picsum.photos/seed/earbuds/100/100', price: 59.99, quantity: 2 }
+    ];
+    cart.taxRate = 8.5;
+
+    // Empty cart
+    const emptyCart = document.getElementById('empty-cart');
+    emptyCart.items = [];
+
+    // Cart with discount
+    const discountCart = document.getElementById('discount-cart');
+    discountCart.items = [
+      { id: '1', name: 'Laptop Stand', price: 45.00, quantity: 1 },
+      { id: '2', name: 'USB-C Hub', price: 35.00, quantity: 1 }
+    ];
+    discountCart.discount = 10;
+    discountCart.couponCode = 'SAVE10';
+    discountCart.taxRate = 5;
+
+    // Event listeners
+    document.querySelectorAll('snice-cart').forEach(el => {
+      el.addEventListener('checkout', e => {
+        console.log('Checkout:', e.detail);
+        alert(`Checkout: ${e.detail.items.length} items, Total: $${e.detail.total.toFixed(2)}`);
+      });
+      el.addEventListener('quantity-change', e => {
+        console.log('Quantity changed:', e.detail);
+      });
+      el.addEventListener('item-remove', e => {
+        console.log('Item removed:', e.detail);
+      });
+      el.addEventListener('coupon-apply', e => {
+        console.log('Coupon applied:', e.detail);
+      });
+    });
+
+    // Add item button
+    document.getElementById('add-item').addEventListener('click', () => {
+      cart.addItem({
+        id: 'new-' + Date.now(),
+        name: 'New Product',
+        price: 19.99,
+        quantity: 1
+      });
+    });
+
+    document.getElementById('clear-cart').addEventListener('click', () => {
+      cart.clear();
+    });
+  </script>
+</head>
+<body>
+  <h2>Cart Demo</h2>
+
+  <div class="demo-section">
+    <h3>Full Cart with Tax</h3>
+    <snice-cart id="cart-demo"></snice-cart>
+    <div class="demo-controls">
+      <button id="add-item">Add Item</button>
+      <button id="clear-cart">Clear Cart</button>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <h3>Empty Cart</h3>
+    <snice-cart id="empty-cart"></snice-cart>
+  </div>
+
+  <div class="demo-section">
+    <h3>Cart with Discount</h3>
+    <snice-cart id="discount-cart"></snice-cart>
+  </div>
+</body>
+</html>

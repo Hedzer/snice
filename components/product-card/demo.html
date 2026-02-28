@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Product Card Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      padding: 40px;
+      font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+      background: var(--snice-color-background, rgb(255 255 255));
+      color: var(--snice-color-text, rgb(23 23 23));
+    }
+    h2, h3 {
+      color: var(--snice-color-text, rgb(23 23 23));
+    }
+    .demo-section {
+      margin-bottom: 4rem;
+    }
+    .demo-grid {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .demo-grid snice-product-card {
+      width: 300px;
+    }
+    .demo-grid--horizontal snice-product-card {
+      width: 500px;
+    }
+  </style>
+  <script type="module">
+    import './snice-product-card.ts';
+
+    // Vertical cards
+    const card1 = document.getElementById('card1');
+    card1.images = [
+      'https://picsum.photos/seed/shoe1/400/300',
+      'https://picsum.photos/seed/shoe2/400/300',
+      'https://picsum.photos/seed/shoe3/400/300'
+    ];
+    card1.variants = [
+      { type: 'Size', options: ['S', 'M', 'L', 'XL'] },
+      { type: 'Color', options: ['#1a1a2e', '#e94560', '#0f3460', '#16213e'] }
+    ];
+
+    const card2 = document.getElementById('card2');
+    card2.images = ['https://picsum.photos/seed/watch1/400/300'];
+    card2.variants = [
+      { type: 'Band', options: ['Leather', 'Metal', 'Silicone'] }
+    ];
+
+    const card3 = document.getElementById('card3');
+    card3.images = ['https://picsum.photos/seed/bag1/400/300'];
+
+    // Horizontal card
+    const hCard = document.getElementById('hcard');
+    hCard.images = [
+      'https://picsum.photos/seed/laptop1/400/300',
+      'https://picsum.photos/seed/laptop2/400/300'
+    ];
+    hCard.variants = [
+      { type: 'Storage', options: ['256GB', '512GB', '1TB'] },
+      { type: 'Color', options: ['#c0c0c0', '#1a1a1a', '#d4a574'] }
+    ];
+
+    // Compact cards
+    const cCard1 = document.getElementById('ccard1');
+    cCard1.images = ['https://picsum.photos/seed/earbuds/200/200'];
+
+    const cCard2 = document.getElementById('ccard2');
+    cCard2.images = ['https://picsum.photos/seed/charger/200/200'];
+
+    // Event listeners
+    document.querySelectorAll('snice-product-card').forEach(el => {
+      el.addEventListener('add-to-cart', e => {
+        console.log('Add to cart:', e.detail);
+        alert(`Added: ${e.detail.name} - ${JSON.stringify(e.detail.selectedVariants)}`);
+      });
+      el.addEventListener('variant-select', e => {
+        console.log('Variant selected:', e.detail);
+      });
+      el.addEventListener('image-click', e => {
+        console.log('Image clicked:', e.detail);
+      });
+    });
+  </script>
+</head>
+<body>
+  <h2>Product Card Demo</h2>
+
+  <div class="demo-section">
+    <h3>Vertical Variant (default)</h3>
+    <div class="demo-grid">
+      <snice-product-card
+        id="card1"
+        name="Premium Running Shoes"
+        price="129.99"
+        sale-price="89.99"
+        rating="4.5"
+        review-count="342">
+      </snice-product-card>
+
+      <snice-product-card
+        id="card2"
+        name="Classic Watch"
+        price="249.00"
+        rating="4.8"
+        review-count="128">
+      </snice-product-card>
+
+      <snice-product-card
+        id="card3"
+        name="Vintage Leather Bag"
+        price="79.99"
+        in-stock="false"
+        rating="3.5"
+        review-count="56">
+      </snice-product-card>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <h3>Horizontal Variant</h3>
+    <div class="demo-grid demo-grid--horizontal">
+      <snice-product-card
+        id="hcard"
+        variant="horizontal"
+        name="MacBook Pro 16-inch"
+        price="2499.00"
+        sale-price="2199.00"
+        rating="4.9"
+        review-count="1024">
+      </snice-product-card>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <h3>Compact Variant</h3>
+    <div class="demo-grid" style="flex-direction: column; max-width: 400px;">
+      <snice-product-card
+        id="ccard1"
+        variant="compact"
+        name="Wireless Earbuds"
+        price="59.99"
+        sale-price="39.99"
+        rating="4.2"
+        review-count="89">
+      </snice-product-card>
+
+      <snice-product-card
+        id="ccard2"
+        variant="compact"
+        name="USB-C Fast Charger"
+        price="24.99"
+        rating="4.0"
+        review-count="203">
+      </snice-product-card>
+    </div>
+  </div>
+</body>
+</html>

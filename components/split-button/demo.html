@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Split Button Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      padding: 40px;
+      font-family: var(--snice-font-family);
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .section { margin-bottom: 40px; }
+    h2 { color: var(--snice-color-text); margin-bottom: 20px; font-size: var(--snice-font-size-2xl); }
+    h3 { color: var(--snice-color-text-secondary); margin-bottom: 16px; font-size: var(--snice-font-size-lg); }
+    .row { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; }
+    .output {
+      padding: 10px;
+      background: var(--snice-color-background);
+      border-radius: var(--snice-border-radius-md);
+      font-family: monospace;
+      font-size: var(--snice-font-size-sm);
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Split Button Demo</h2>
+
+  <div class="section">
+    <h3>Basic</h3>
+    <snice-split-button id="basic" label="Save"></snice-split-button>
+    <div id="basic-output" class="output">Click to see events...</div>
+  </div>
+
+  <div class="section">
+    <h3>Variants</h3>
+    <div class="row">
+      <snice-split-button id="v-default" label="Default" variant="default"></snice-split-button>
+      <snice-split-button id="v-primary" label="Primary" variant="primary"></snice-split-button>
+      <snice-split-button id="v-success" label="Success" variant="success"></snice-split-button>
+      <snice-split-button id="v-danger" label="Danger" variant="danger"></snice-split-button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Sizes</h3>
+    <div class="row">
+      <snice-split-button id="s-small" label="Small" size="small"></snice-split-button>
+      <snice-split-button id="s-medium" label="Medium" size="medium"></snice-split-button>
+      <snice-split-button id="s-large" label="Large" size="large"></snice-split-button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Disabled</h3>
+    <snice-split-button id="disabled" label="Disabled" disabled></snice-split-button>
+  </div>
+
+  <div class="section">
+    <h3>Email Example</h3>
+    <snice-split-button id="email" label="Send" variant="primary"></snice-split-button>
+    <div id="email-output" class="output">Compose your email...</div>
+  </div>
+
+  <script type="module">
+    import './snice-split-button.ts';
+
+    const saveActions = [
+      { value: 'save-draft', label: 'Save as Draft' },
+      { value: 'save-template', label: 'Save as Template' },
+      { value: 'save-copy', label: 'Save a Copy' },
+    ];
+
+    const emailActions = [
+      { value: 'send-later', label: 'Send Later' },
+      { value: 'schedule', label: 'Schedule Send' },
+      { value: 'save-draft', label: 'Save as Draft' },
+    ];
+
+    // Set actions on all split buttons
+    document.querySelectorAll('snice-split-button').forEach(btn => {
+      if (btn.id === 'email') {
+        btn.actions = emailActions;
+      } else {
+        btn.actions = saveActions;
+      }
+    });
+
+    // Basic events
+    const basicBtn = document.getElementById('basic');
+    const basicOutput = document.getElementById('basic-output');
+
+    basicBtn.addEventListener('primary-click', () => {
+      basicOutput.textContent = 'Primary action: Save';
+    });
+
+    basicBtn.addEventListener('action-click', (e) => {
+      basicOutput.textContent = `Action: ${e.detail.action.label} (${e.detail.value})`;
+    });
+
+    // Email events
+    const emailBtn = document.getElementById('email');
+    const emailOutput = document.getElementById('email-output');
+
+    emailBtn.addEventListener('primary-click', () => {
+      emailOutput.textContent = 'Email sent!';
+    });
+
+    emailBtn.addEventListener('action-click', (e) => {
+      emailOutput.textContent = `Action: ${e.detail.action.label}`;
+    });
+  </script>
+</body>
+</html>

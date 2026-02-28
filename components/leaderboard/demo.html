@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Leaderboard Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      padding: 40px;
+      font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+      background: var(--snice-color-background, rgb(255 255 255));
+      color: var(--snice-color-text, rgb(23 23 23));
+    }
+    h2, h3 {
+      color: var(--snice-color-text, rgb(23 23 23));
+    }
+    .demo-section {
+      margin-bottom: 4rem;
+      max-width: 600px;
+    }
+  </style>
+  <script type="module">
+    import './snice-leaderboard.ts';
+
+    const entries = [
+      { rank: 1, name: 'Alice Johnson', score: 2850, change: 2 },
+      { rank: 2, name: 'Bob Smith', score: 2720, change: -1 },
+      { rank: 3, name: 'Carol Williams', score: 2680, change: 1 },
+      { rank: 4, name: 'David Brown', score: 2510, change: 0, highlighted: true },
+      { rank: 5, name: 'Eve Davis', score: 2340, change: -2 },
+      { rank: 6, name: 'Frank Miller', score: 2100, change: 3 },
+      { rank: 7, name: 'Grace Wilson', score: 1980, change: -1 }
+    ];
+
+    document.getElementById('list-demo').entries = entries;
+    document.getElementById('podium-demo').entries = entries;
+
+    document.querySelectorAll('snice-leaderboard').forEach(el => {
+      el.addEventListener('entry-click', e => {
+        console.log('Entry clicked:', e.detail);
+      });
+    });
+  </script>
+</head>
+<body>
+  <h2>Leaderboard Demo</h2>
+
+  <div class="demo-section">
+    <h3>List Variant (default)</h3>
+    <snice-leaderboard id="list-demo" metric-label="Points"></snice-leaderboard>
+  </div>
+
+  <div class="demo-section">
+    <h3>Podium Variant</h3>
+    <snice-leaderboard id="podium-demo" variant="podium" metric-label="Points"></snice-leaderboard>
+  </div>
+</body>
+</html>

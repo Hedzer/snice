@@ -1,0 +1,275 @@
+:host {
+  display: block;
+  width: 100%;
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  contain: layout style;
+}
+
+.flow {
+  display: flex;
+  width: 100%;
+  overflow: visible;
+}
+
+.flow--horizontal {
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.flow--vertical {
+  flex-direction: column;
+}
+
+/* Step */
+.step {
+  display: flex;
+  flex: 1;
+  position: relative;
+  overflow: visible;
+}
+
+.flow--horizontal .step {
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.flow--vertical .step {
+  flex-direction: row;
+  align-items: flex-start;
+  flex: 0 0 auto;
+  padding-bottom: var(--snice-spacing-lg, 1.5rem);
+}
+
+.flow--vertical .step:last-child {
+  padding-bottom: 0;
+}
+
+/* Avatar */
+.step__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  font-weight: var(--snice-font-weight-semibold, 600);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  transition: border-color var(--snice-transition-fast, 150ms) ease,
+              background-color var(--snice-transition-fast, 150ms) ease;
+  overflow: hidden;
+  text-transform: uppercase;
+}
+
+.step__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+/* Content */
+.step__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--snice-spacing-3xs, 0.125rem);
+}
+
+.flow--horizontal .step__content {
+  margin-top: var(--snice-spacing-xs, 0.5rem);
+  max-width: 10rem;
+}
+
+.flow--vertical .step__content {
+  margin-left: var(--snice-spacing-sm, 0.75rem);
+  flex: 1;
+}
+
+.step__name {
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  font-weight: var(--snice-font-weight-semibold, 600);
+  color: var(--snice-color-text, rgb(23 23 23));
+  margin: 0;
+}
+
+.step__role {
+  font-size: var(--snice-font-size-xs, 0.75rem);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
+  margin: 0;
+}
+
+.step__status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--snice-spacing-2xs, 0.25rem);
+  font-size: var(--snice-font-size-xs, 0.75rem);
+  font-weight: var(--snice-font-weight-medium, 500);
+  padding: var(--snice-spacing-3xs, 0.125rem) var(--snice-spacing-xs, 0.5rem);
+  border-radius: 9999px;
+  margin-top: var(--snice-spacing-2xs, 0.25rem);
+  width: fit-content;
+}
+
+.step__comment {
+  font-size: var(--snice-font-size-xs, 0.75rem);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
+  font-style: italic;
+  margin-top: var(--snice-spacing-2xs, 0.25rem);
+  line-height: var(--snice-line-height-normal, 1.5);
+}
+
+.step__timestamp {
+  font-size: var(--snice-font-size-xs, 0.75rem);
+  color: var(--snice-color-text-tertiary, rgb(115 115 115));
+  margin-top: var(--snice-spacing-3xs, 0.125rem);
+}
+
+/* Connector line */
+.step__connector {
+  position: absolute;
+  background: var(--snice-color-border, rgb(226 226 226));
+  transition: background-color var(--snice-transition-fast, 150ms) ease;
+}
+
+.flow--horizontal .step__connector {
+  top: 1.25rem;
+  left: calc(50% + 1.25rem);
+  right: calc(-50% + 1.25rem);
+  height: 2px;
+}
+
+.flow--horizontal .step:last-child .step__connector {
+  display: none;
+}
+
+.flow--vertical .step__connector {
+  top: 2.5rem;
+  left: 1.1875rem;
+  bottom: 0;
+  width: 2px;
+}
+
+.flow--vertical .step:last-child .step__connector {
+  display: none;
+}
+
+/* Actions row */
+.step__actions {
+  display: flex;
+  gap: var(--snice-spacing-xs, 0.5rem);
+  margin-top: var(--snice-spacing-xs, 0.5rem);
+}
+
+.step__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 4px;
+  padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-sm, 0.75rem);
+  font-size: var(--snice-font-size-xs, 0.75rem);
+  font-weight: var(--snice-font-weight-medium, 500);
+  cursor: pointer;
+  transition: opacity var(--snice-transition-fast, 150ms) ease;
+  font-family: inherit;
+}
+
+.step__btn:hover {
+  opacity: 0.85;
+}
+
+.step__btn--approve {
+  background: var(--snice-color-success, rgb(22 163 74));
+  color: var(--snice-color-text-inverse, rgb(255 255 255));
+}
+
+.step__btn--reject {
+  background: var(--snice-color-danger, rgb(220 38 38));
+  color: var(--snice-color-text-inverse, rgb(255 255 255));
+}
+
+/* Status: pending */
+.step--pending .step__avatar {
+  background: var(--snice-color-background, rgb(255 255 255));
+  border: 2px solid var(--snice-color-border, rgb(226 226 226));
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
+}
+
+.step--pending .step__status {
+  background: rgb(226 226 226 / 0.3);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
+}
+
+/* Status: approved */
+.step--approved .step__avatar {
+  background: var(--snice-color-success, rgb(22 163 74));
+  border: 2px solid var(--snice-color-success, rgb(22 163 74));
+  color: var(--snice-color-text-inverse, rgb(255 255 255));
+}
+
+.step--approved .step__status {
+  background: rgb(22 163 74 / 0.1);
+  color: var(--snice-color-success, rgb(22 163 74));
+}
+
+.step--approved .step__connector {
+  background: var(--snice-color-success, rgb(22 163 74));
+}
+
+/* Status: rejected */
+.step--rejected .step__avatar {
+  background: var(--snice-color-danger, rgb(220 38 38));
+  border: 2px solid var(--snice-color-danger, rgb(220 38 38));
+  color: var(--snice-color-text-inverse, rgb(255 255 255));
+}
+
+.step--rejected .step__status {
+  background: rgb(220 38 38 / 0.1);
+  color: var(--snice-color-danger, rgb(220 38 38));
+}
+
+/* Status: skipped */
+.step--skipped .step__avatar {
+  background: var(--snice-color-background-element, rgb(252 251 249));
+  border: 2px dashed var(--snice-color-border, rgb(226 226 226));
+  color: var(--snice-color-text-tertiary, rgb(115 115 115));
+}
+
+.step--skipped .step__status {
+  background: rgb(226 226 226 / 0.2);
+  color: var(--snice-color-text-tertiary, rgb(115 115 115));
+}
+
+.step--skipped .step__name {
+  color: var(--snice-color-text-tertiary, rgb(115 115 115));
+  text-decoration: line-through;
+}
+
+/* Current step highlight */
+.step--current .step__avatar {
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+}
+
+.step--current .step__name {
+  color: var(--snice-color-primary, rgb(37 99 235));
+}
+
+/* Horizontal centering for status badges */
+.flow--horizontal .step__status {
+  align-self: center;
+}
+
+.flow--horizontal .step__comment {
+  text-align: center;
+}
+
+.flow--horizontal .step__timestamp {
+  text-align: center;
+}
+
+.flow--horizontal .step__actions {
+  justify-content: center;
+}

@@ -1,0 +1,852 @@
+/* ═══════════════════════════════════════════════════════════════
+   snice-work-order — CSS
+   ═══════════════════════════════════════════════════════════════ */
+
+:host {
+  display: block;
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  color: var(--snice-color-text, rgb(23 23 23));
+  contain: layout style paint;
+
+  /* ── Two-tier CSS custom properties ── */
+  --wo-max-width: 50rem;
+  --wo-bg: var(--snice-color-background, rgb(255 255 255));
+  --wo-bg-element: var(--snice-color-background-element, rgb(252 251 249));
+  --wo-text: var(--snice-color-text, rgb(23 23 23));
+  --wo-text-secondary: var(--snice-color-text-secondary, rgb(82 82 82));
+  --wo-text-tertiary: var(--snice-color-text-tertiary, rgb(115 115 115));
+  --wo-border: var(--snice-color-border, rgb(226 226 226));
+  --wo-accent: var(--snice-color-primary, rgb(37 99 235));
+  --wo-success: var(--snice-color-success, rgb(22 163 74));
+  --wo-danger: var(--snice-color-danger, rgb(220 38 38));
+
+  /* Priority badge colors */
+  --wo-priority-low-bg: rgb(59 130 246 / 0.1);
+  --wo-priority-low-text: rgb(37 99 235);
+  --wo-priority-medium-bg: rgb(245 158 11 / 0.1);
+  --wo-priority-medium-text: rgb(217 119 6);
+  --wo-priority-high-bg: rgb(249 115 22 / 0.1);
+  --wo-priority-high-text: rgb(234 88 12);
+  --wo-priority-urgent-bg: rgb(220 38 38 / 0.1);
+  --wo-priority-urgent-text: rgb(220 38 38);
+
+  /* Status badge colors */
+  --wo-status-open-bg: rgb(59 130 246 / 0.1);
+  --wo-status-open-text: rgb(37 99 235);
+  --wo-status-in-progress-bg: rgb(245 158 11 / 0.1);
+  --wo-status-in-progress-text: rgb(217 119 6);
+  --wo-status-completed-bg: rgb(22 163 74 / 0.1);
+  --wo-status-completed-text: rgb(22 163 74);
+  --wo-status-cancelled-bg: rgb(107 114 128 / 0.1);
+  --wo-status-cancelled-text: rgb(107 114 128);
+
+  /* Task styling */
+  --wo-task-checkbox-size: 1.25rem;
+  --wo-task-completed-text: var(--wo-text-tertiary);
+
+  /* Signature */
+  --wo-signature-line-color: var(--wo-border);
+
+  /* QR */
+  --wo-qr-size: 5rem;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* ═══════════════════════════════════════════════
+   Base container
+   ═══════════════════════════════════════════════ */
+
+.wo {
+  background: var(--wo-bg);
+  border: 1px solid var(--wo-border);
+  border-radius: var(--snice-border-radius-lg, 0.5rem);
+  max-width: var(--wo-max-width);
+  overflow: hidden;
+  position: relative;
+}
+
+/* ═══════════════════════════════════════════════
+   Header
+   ═══════════════════════════════════════════════ */
+
+.wo__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: var(--snice-spacing-lg, 1.5rem);
+  border-bottom: 1px solid var(--wo-border);
+  gap: var(--snice-spacing-md, 1rem);
+  flex-wrap: wrap;
+  position: relative;
+}
+
+.wo__header-left {
+  display: flex;
+  flex-direction: column;
+  gap: var(--snice-spacing-2xs, 0.25rem);
+}
+
+.wo__title {
+  font-size: 0.6875rem;
+  font-weight: var(--snice-font-weight-semibold, 600);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--wo-accent);
+  margin: 0 0 var(--snice-spacing-3xs, 0.125rem) 0;
+}
+
+.wo__number {
+  font-size: var(--snice-font-size-2xl, 1.5rem);
+  font-weight: var(--snice-font-weight-bold, 700);
+  color: var(--wo-text);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.wo__dates {
+  display: flex;
+  gap: var(--snice-spacing-md, 1rem);
+  margin-top: var(--snice-spacing-3xs, 0.125rem);
+}
+
+.wo__date-item {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.wo__date-label {
+  font-size: 0.625rem;
+  font-weight: var(--snice-font-weight-medium, 500);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--wo-text-tertiary);
+}
+
+.wo__date-value {
+  font-size: 0.875rem;
+  color: var(--wo-text-secondary);
+}
+
+.wo__header-right {
+  display: flex;
+  gap: var(--snice-spacing-xs, 0.5rem);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* ═══════════════════════════════════════════════
+   Badges (priority + status)
+   ═══════════════════════════════════════════════ */
+
+.wo__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--snice-spacing-3xs, 0.125rem) var(--snice-spacing-sm, 0.75rem);
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: var(--snice-font-weight-semibold, 600);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.wo__priority--low {
+  background: var(--wo-priority-low-bg);
+  color: var(--wo-priority-low-text);
+}
+
+.wo__priority--medium {
+  background: var(--wo-priority-medium-bg);
+  color: var(--wo-priority-medium-text);
+}
+
+.wo__priority--high {
+  background: var(--wo-priority-high-bg);
+  color: var(--wo-priority-high-text);
+}
+
+.wo__priority--urgent {
+  background: var(--wo-priority-urgent-bg);
+  color: var(--wo-priority-urgent-text);
+}
+
+.wo__status--open {
+  background: var(--wo-status-open-bg);
+  color: var(--wo-status-open-text);
+}
+
+.wo__status--in-progress {
+  background: var(--wo-status-in-progress-bg);
+  color: var(--wo-status-in-progress-text);
+}
+
+.wo__status--completed {
+  background: var(--wo-status-completed-bg);
+  color: var(--wo-status-completed-text);
+}
+
+.wo__status--cancelled {
+  background: var(--wo-status-cancelled-bg);
+  color: var(--wo-status-cancelled-text);
+}
+
+/* ═══════════════════════════════════════════════
+   QR Code
+   ═══════════════════════════════════════════════ */
+
+.wo__qr {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--wo-qr-size);
+  height: var(--wo-qr-size);
+  flex-shrink: 0;
+}
+
+.wo__qr--top-right {
+  position: absolute;
+  top: var(--snice-spacing-lg, 1.5rem);
+  right: var(--snice-spacing-lg, 1.5rem);
+}
+
+.wo__qr--header {
+  margin-left: auto;
+}
+
+.wo__qr--footer {
+  margin-top: var(--snice-spacing-sm, 0.75rem);
+}
+
+/* ═══════════════════════════════════════════════
+   Sections (shared)
+   ═══════════════════════════════════════════════ */
+
+.wo__section {
+  padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-lg, 1.5rem);
+  border-bottom: 1px solid var(--wo-border);
+}
+
+.wo__section:last-child {
+  border-bottom: none;
+}
+
+.wo__section-title {
+  font-size: 0.6875rem;
+  font-weight: var(--snice-font-weight-semibold, 600);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--wo-text-tertiary);
+  margin: 0 0 var(--snice-spacing-sm, 0.75rem) 0;
+}
+
+/* ═══════════════════════════════════════════════
+   Customer
+   ═══════════════════════════════════════════════ */
+
+.wo__customer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-lg, 1.5rem);
+}
+
+.wo__customer-field {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.wo__customer-label {
+  font-size: 0.6875rem;
+  color: var(--wo-text-tertiary);
+  font-weight: var(--snice-font-weight-medium, 500);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.wo__customer-value {
+  font-size: 0.875rem;
+  color: var(--wo-text);
+  line-height: var(--snice-line-height-normal, 1.5);
+}
+
+/* ═══════════════════════════════════════════════
+   Description
+   ═══════════════════════════════════════════════ */
+
+.wo__description {
+  font-size: 0.875rem;
+  color: var(--wo-text-secondary);
+  line-height: var(--snice-line-height-normal, 1.5);
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* ═══════════════════════════════════════════════
+   Asset (maintenance variant)
+   ═══════════════════════════════════════════════ */
+
+.wo__asset {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-lg, 1.5rem);
+}
+
+.wo__asset-field {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.wo__asset-label {
+  font-size: 0.6875rem;
+  color: var(--wo-text-tertiary);
+  font-weight: var(--snice-font-weight-medium, 500);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.wo__asset-value {
+  font-size: 0.875rem;
+  color: var(--wo-text);
+  font-weight: var(--snice-font-weight-medium, 500);
+}
+
+/* ═══════════════════════════════════════════════
+   Tasks
+   ═══════════════════════════════════════════════ */
+
+.wo__tasks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--snice-spacing-2xs, 0.25rem);
+}
+
+.wo__task {
+  display: flex;
+  align-items: center;
+  gap: var(--snice-spacing-sm, 0.75rem);
+  padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
+  border-radius: var(--snice-border-radius-md, 0.25rem);
+  transition: background var(--snice-transition-fast, 150ms);
+}
+
+.wo__task:hover {
+  background: var(--wo-bg-element);
+}
+
+.wo__task-checkbox {
+  flex-shrink: 0;
+  width: var(--wo-task-checkbox-size);
+  height: var(--wo-task-checkbox-size);
+  border: 2px solid var(--wo-border);
+  border-radius: 3px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--wo-bg);
+  transition: all var(--snice-transition-fast, 150ms);
+  padding: 0;
+  color: rgb(255 255 255);
+}
+
+.wo__task-checkbox:hover {
+  border-color: var(--wo-accent);
+}
+
+.wo__task-checkbox:focus-visible {
+  outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+  outline-offset: var(--snice-focus-ring-offset, 2px);
+}
+
+.wo__task-checkbox--checked {
+  background: var(--wo-success);
+  border-color: var(--wo-success);
+}
+
+.wo__task-checkbox--checked svg {
+  display: block;
+}
+
+.wo__task-checkbox svg {
+  display: none;
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.wo__task-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.wo__task-description {
+  font-size: 0.875rem;
+  color: var(--wo-text);
+}
+
+.wo__task--completed .wo__task-description {
+  text-decoration: line-through;
+  color: var(--wo-task-completed-text);
+}
+
+.wo__task-meta {
+  display: flex;
+  gap: var(--snice-spacing-sm, 0.75rem);
+  margin-top: 1px;
+  font-size: 0.75rem;
+  color: var(--wo-text-tertiary);
+}
+
+.wo__task-assignee {
+  font-weight: var(--snice-font-weight-medium, 500);
+}
+
+.wo__task-hours {
+  white-space: nowrap;
+}
+
+/* ═══════════════════════════════════════════════
+   Parts table
+   ═══════════════════════════════════════════════ */
+
+.wo__parts-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.wo__parts-table th {
+  text-align: left;
+  padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
+  border-bottom: 2px solid var(--wo-border);
+  font-weight: var(--snice-font-weight-semibold, 600);
+  color: var(--wo-text-secondary);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.wo__parts-table td {
+  padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
+  border-bottom: 1px solid var(--wo-border);
+  color: var(--wo-text);
+}
+
+.wo__parts-table th:nth-child(n+3),
+.wo__parts-table td:nth-child(n+3) {
+  text-align: right;
+}
+
+.wo__parts-table tr:last-child td {
+  border-bottom: none;
+}
+
+.wo__parts-total {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--snice-spacing-md, 1rem);
+  padding-top: var(--snice-spacing-sm, 0.75rem);
+  margin-top: var(--snice-spacing-xs, 0.5rem);
+  border-top: 2px solid var(--wo-border);
+  font-weight: var(--snice-font-weight-semibold, 600);
+  font-size: 0.875rem;
+  color: var(--wo-text);
+}
+
+/* ═══════════════════════════════════════════════
+   Labor / Time tracking
+   ═══════════════════════════════════════════════ */
+
+.wo__labor {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-lg, 1.5rem);
+}
+
+.wo__labor-field {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.wo__labor-label {
+  font-size: 0.6875rem;
+  color: var(--wo-text-tertiary);
+  font-weight: var(--snice-font-weight-medium, 500);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.wo__labor-value {
+  font-size: 0.875rem;
+  color: var(--wo-text);
+  font-weight: var(--snice-font-weight-semibold, 600);
+}
+
+/* ═══════════════════════════════════════════════
+   Notes
+   ═══════════════════════════════════════════════ */
+
+.wo__notes {
+  font-size: 0.875rem;
+  color: var(--wo-text-secondary);
+  line-height: var(--snice-line-height-normal, 1.5);
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* ═══════════════════════════════════════════════
+   Costs summary
+   ═══════════════════════════════════════════════ */
+
+.wo__costs {
+  display: flex;
+  justify-content: flex-end;
+  padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-lg, 1.5rem);
+  background: var(--wo-bg-element);
+}
+
+.wo__costs-table {
+  display: flex;
+  flex-direction: column;
+  gap: var(--snice-spacing-2xs, 0.25rem);
+  min-width: 14rem;
+}
+
+.wo__cost-row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--snice-spacing-lg, 1.5rem);
+  font-size: 0.875rem;
+  color: var(--wo-text-secondary);
+}
+
+.wo__cost-row--grand {
+  border-top: 2px solid var(--wo-border);
+  padding-top: var(--snice-spacing-xs, 0.5rem);
+  margin-top: var(--snice-spacing-2xs, 0.25rem);
+  font-weight: var(--snice-font-weight-bold, 700);
+  font-size: var(--snice-font-size-lg, 1.125rem);
+  color: var(--wo-text);
+}
+
+/* ═══════════════════════════════════════════════
+   Signature
+   ═══════════════════════════════════════════════ */
+
+.wo__signature {
+  display: flex;
+  flex-direction: column;
+  gap: var(--snice-spacing-sm, 0.75rem);
+}
+
+.wo__signature-lines {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--snice-spacing-lg, 1.5rem);
+  margin-top: var(--snice-spacing-md, 1rem);
+}
+
+.wo__signature-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--snice-spacing-2xs, 0.25rem);
+}
+
+.wo__signature-line {
+  border-bottom: 1px solid var(--wo-signature-line-color);
+  min-height: 2rem;
+}
+
+.wo__signature-label {
+  font-size: 0.6875rem;
+  color: var(--wo-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.wo__sign-btn {
+  align-self: flex-start;
+  padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-md, 1rem);
+  border: 1px solid var(--wo-accent);
+  border-radius: var(--snice-border-radius-md, 0.25rem);
+  background: transparent;
+  color: var(--wo-accent);
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: var(--snice-font-weight-medium, 500);
+  cursor: pointer;
+  transition: background var(--snice-transition-fast, 150ms), color var(--snice-transition-fast, 150ms);
+}
+
+.wo__sign-btn:hover {
+  background: var(--wo-accent);
+  color: rgb(255 255 255);
+}
+
+.wo__sign-btn:focus-visible {
+  outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+  outline-offset: var(--snice-focus-ring-offset, 2px);
+}
+
+/* ═══════════════════════════════════════════════
+   Footer
+   ═══════════════════════════════════════════════ */
+
+.wo__footer {
+  padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-lg, 1.5rem);
+  border-top: 1px solid var(--wo-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  color: var(--wo-text-tertiary);
+}
+
+/* ═══════════════════════════════════════════════
+   VARIANT: compact
+   Reduced spacing, smaller typography
+   ═══════════════════════════════════════════════ */
+
+:host([variant="compact"]) .wo {
+  font-size: 0.8125rem;
+}
+
+:host([variant="compact"]) .wo__header {
+  padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-md, 1rem);
+}
+
+:host([variant="compact"]) .wo__number {
+  font-size: var(--snice-font-size-lg, 1.125rem);
+}
+
+:host([variant="compact"]) .wo__section {
+  padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-md, 1rem);
+}
+
+:host([variant="compact"]) .wo__section-title {
+  font-size: 0.625rem;
+  margin-bottom: var(--snice-spacing-xs, 0.5rem);
+}
+
+:host([variant="compact"]) .wo__task {
+  padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-xs, 0.5rem);
+}
+
+:host([variant="compact"]) .wo__parts-table th,
+:host([variant="compact"]) .wo__parts-table td {
+  padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-xs, 0.5rem);
+  font-size: 0.8125rem;
+}
+
+:host([variant="compact"]) .wo__costs {
+  padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-md, 1rem);
+}
+
+:host([variant="compact"]) .wo__footer {
+  padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-md, 1rem);
+}
+
+/* ═══════════════════════════════════════════════
+   VARIANT: field-service
+   Big checkboxes, bold task list, signature area
+   ═══════════════════════════════════════════════ */
+
+:host([variant="field-service"]) {
+  --wo-task-checkbox-size: 1.75rem;
+}
+
+:host([variant="field-service"]) .wo__task {
+  padding: var(--snice-spacing-sm, 0.75rem);
+  border: 1px solid var(--wo-border);
+  border-radius: var(--snice-border-radius-md, 0.25rem);
+  margin-bottom: var(--snice-spacing-2xs, 0.25rem);
+}
+
+:host([variant="field-service"]) .wo__task-description {
+  font-size: 1rem;
+  font-weight: var(--snice-font-weight-medium, 500);
+}
+
+:host([variant="field-service"]) .wo__task-checkbox svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+:host([variant="field-service"]) .wo__signature-lines {
+  margin-top: var(--snice-spacing-lg, 1.5rem);
+}
+
+:host([variant="field-service"]) .wo__signature-line {
+  min-height: 3rem;
+}
+
+/* ═══════════════════════════════════════════════
+   VARIANT: maintenance
+   Equipment-focused with asset section emphasis
+   ═══════════════════════════════════════════════ */
+
+:host([variant="maintenance"]) .wo__asset {
+  background: var(--wo-bg-element);
+  padding: var(--snice-spacing-sm, 0.75rem);
+  border-radius: var(--snice-border-radius-md, 0.25rem);
+  border: 1px solid var(--wo-border);
+}
+
+:host([variant="maintenance"]) .wo__asset-value {
+  font-weight: var(--snice-font-weight-semibold, 600);
+  color: var(--wo-accent);
+}
+
+/* ═══════════════════════════════════════════════
+   VARIANT: detailed
+   Full accounting: labor breakdown per task,
+   part numbers emphasized, cost summary
+   ═══════════════════════════════════════════════ */
+
+:host([variant="detailed"]) .wo__task-meta {
+  font-size: 0.8125rem;
+}
+
+:host([variant="detailed"]) .wo__task-hours {
+  font-weight: var(--snice-font-weight-semibold, 600);
+  color: var(--wo-text-secondary);
+}
+
+:host([variant="detailed"]) .wo__parts-table td:nth-child(2) {
+  font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
+  font-size: 0.8125rem;
+  color: var(--wo-text-tertiary);
+}
+
+:host([variant="detailed"]) .wo__costs-table {
+  min-width: 18rem;
+}
+
+:host([variant="detailed"]) .wo__cost-row {
+  padding: var(--snice-spacing-2xs, 0.25rem) 0;
+}
+
+/* ═══════════════════════════════════════════════
+   Print styles
+   ═══════════════════════════════════════════════ */
+
+@media print {
+  .wo {
+    border: none;
+    box-shadow: none;
+    max-width: none;
+  }
+
+  .wo__sign-btn {
+    display: none;
+  }
+
+  /* Empty checkbox squares for print */
+  .wo__task-checkbox {
+    border: 2px solid rgb(0 0 0) !important;
+    background: transparent !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .wo__task-checkbox--checked {
+    background: rgb(0 0 0) !important;
+    border-color: rgb(0 0 0) !important;
+    color: rgb(255 255 255) !important;
+  }
+
+  .wo__task-checkbox--checked svg {
+    display: block;
+  }
+
+  /* Priority badge: border instead of bg */
+  .wo__badge {
+    background: transparent !important;
+    border: 1px solid currentColor;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  /* Signature lines print clearly */
+  .wo__signature-line {
+    border-bottom: 1px solid rgb(0 0 0);
+    min-height: 2.5rem;
+  }
+
+  /* Parts table borders */
+  .wo__parts-table th,
+  .wo__parts-table td {
+    border-color: rgb(0 0 0 / 0.2);
+  }
+
+  /* No hover effects */
+  .wo__task:hover {
+    background: transparent;
+  }
+
+  /* Page break management */
+  .wo__section {
+    break-inside: avoid;
+  }
+
+  .wo__parts-table {
+    break-inside: auto;
+  }
+
+  .wo__parts-table tr {
+    break-inside: avoid;
+  }
+
+  .wo__costs {
+    break-inside: avoid;
+  }
+
+  .wo__footer {
+    break-inside: avoid;
+  }
+
+  /* QR should print */
+  .wo__qr {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   Responsive
+   ═══════════════════════════════════════════════ */
+
+@media (max-width: 480px) {
+  .wo__header {
+    flex-direction: column;
+  }
+
+  .wo__customer {
+    grid-template-columns: 1fr;
+  }
+
+  .wo__labor {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .wo__parts-table {
+    font-size: 0.8125rem;
+  }
+
+  .wo__signature-lines {
+    grid-template-columns: 1fr;
+  }
+
+  .wo__qr--top-right {
+    position: static;
+    margin-bottom: var(--snice-spacing-sm, 0.75rem);
+  }
+}

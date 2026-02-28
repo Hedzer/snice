@@ -1,0 +1,287 @@
+:host {
+  display: block;
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  contain: layout style paint;
+}
+
+/* Meta elements should not interfere with layout */
+case, when, default, if {
+  display: contents;
+}
+
+.user-card {
+  background: var(--snice-color-background-element, rgb(252 251 249));
+  border: 1px solid var(--snice-color-border, rgb(226 226 226));
+  border-radius: var(--snice-border-radius-lg, 0.5rem);
+  overflow: hidden;
+  color: var(--snice-color-text, rgb(23 23 23));
+  position: relative;
+}
+
+/* ===== Card variant (default) ===== */
+:host([variant="card"]) .user-card,
+:host(:not([variant])) .user-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--snice-spacing-lg, 1.5rem);
+}
+
+/* ===== Horizontal variant ===== */
+:host([variant="horizontal"]) .user-card {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: var(--snice-spacing-lg, 1.5rem);
+  padding: var(--snice-spacing-lg, 1.5rem);
+  text-align: left;
+}
+
+:host([variant="horizontal"]) .user-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ===== Compact variant ===== */
+:host([variant="compact"]) .user-card {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--snice-spacing-md, 1rem);
+  padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-md, 1rem);
+  text-align: left;
+}
+
+:host([variant="compact"]) .user-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+:host([variant="compact"]) .user-card-contact,
+:host([variant="compact"]) .user-card-social {
+  display: none;
+}
+
+:host([variant="compact"]) .user-card-role {
+  margin-bottom: 0;
+}
+
+/* ===== Avatar area ===== */
+.user-card-avatar-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+:host([variant="card"]) .user-card-avatar-wrapper,
+:host(:not([variant])) .user-card-avatar-wrapper {
+  margin-bottom: var(--snice-spacing-md, 1rem);
+}
+
+.user-card-avatar {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--snice-color-background-secondary, rgb(240 240 240));
+  display: block;
+}
+
+:host([variant="compact"]) .user-card-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.user-card-avatar-fallback {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  background: var(--snice-color-primary, rgb(37 99 235));
+  color: var(--snice-color-text-inverse, rgb(250 250 250));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: var(--snice-font-weight-semibold, 600);
+  user-select: none;
+}
+
+:host([variant="compact"]) .user-card-avatar-fallback {
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 0.875rem;
+}
+
+/* ===== Status indicator ===== */
+.user-card-status {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 50%;
+  border: 2px solid var(--snice-color-background-element, rgb(252 251 249));
+}
+
+:host([variant="compact"]) .user-card-status {
+  width: 0.625rem;
+  height: 0.625rem;
+  bottom: 0;
+  right: 0;
+}
+
+:host([status="online"]) .user-card-status {
+  background: var(--snice-color-success, rgb(22 163 74));
+}
+
+:host([status="away"]) .user-card-status {
+  background: rgb(234 179 8);
+}
+
+:host([status="offline"]) .user-card-status {
+  background: var(--snice-color-text-tertiary, rgb(115 115 115));
+}
+
+:host([status="busy"]) .user-card-status {
+  background: var(--snice-color-danger, rgb(220 38 38));
+}
+
+/* ===== Name ===== */
+.user-card-name {
+  font-size: var(--snice-font-size-lg, 1.125rem);
+  font-weight: var(--snice-font-weight-semibold, 600);
+  color: var(--snice-color-text, rgb(23 23 23));
+  margin: 0;
+  line-height: var(--snice-line-height-normal, 1.5);
+}
+
+:host([variant="compact"]) .user-card-name {
+  font-size: var(--snice-font-size-md, 1rem);
+}
+
+/* ===== Role / Company ===== */
+.user-card-role {
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
+  margin: var(--snice-spacing-3xs, 0.125rem) 0 var(--snice-spacing-md, 1rem) 0;
+  line-height: var(--snice-line-height-normal, 1.5);
+}
+
+:host([variant="compact"]) .user-card-role {
+  font-size: var(--snice-font-size-xs, 0.75rem);
+  margin: 0;
+}
+
+/* ===== Contact info ===== */
+.user-card-contact {
+  display: flex;
+  flex-direction: column;
+  gap: var(--snice-spacing-xs, 0.5rem);
+  width: 100%;
+  margin-bottom: var(--snice-spacing-md, 1rem);
+}
+
+.user-card-contact-item {
+  display: flex;
+  align-items: center;
+  gap: var(--snice-spacing-xs, 0.5rem);
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
+}
+
+:host([variant="card"]) .user-card-contact-item,
+:host(:not([variant])) .user-card-contact-item {
+  justify-content: center;
+}
+
+.user-card-contact-icon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  color: var(--snice-color-text-tertiary, rgb(115 115 115));
+}
+
+.user-card-contact-link {
+  color: var(--snice-color-primary, rgb(37 99 235));
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-card-contact-link:hover {
+  text-decoration: underline;
+}
+
+.user-card-contact-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ===== Social links ===== */
+.user-card-social {
+  display: flex;
+  gap: var(--snice-spacing-xs, 0.5rem);
+  flex-wrap: wrap;
+}
+
+:host([variant="card"]) .user-card-social,
+:host(:not([variant])) .user-card-social {
+  justify-content: center;
+}
+
+.user-card-social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--snice-color-background-secondary, rgb(240 240 240));
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
+  text-decoration: none;
+  transition: background var(--snice-transition-fast, 150ms) ease, color var(--snice-transition-fast, 150ms) ease;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  font-size: 0;
+}
+
+.user-card-social-link:hover {
+  background: var(--snice-color-primary, rgb(37 99 235));
+  color: var(--snice-color-text-inverse, rgb(250 250 250));
+}
+
+.user-card-social-link:focus-visible {
+  outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+  outline-offset: var(--snice-focus-ring-offset, 2px);
+}
+
+.user-card-social-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* ===== Actions slot ===== */
+.user-card-actions {
+  margin-top: var(--snice-spacing-md, 1rem);
+  width: 100%;
+}
+
+:host([variant="card"]) .user-card-actions,
+:host(:not([variant])) .user-card-actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--snice-spacing-xs, 0.5rem);
+}
+
+:host([variant="horizontal"]) .user-card-actions {
+  display: flex;
+  gap: var(--snice-spacing-xs, 0.5rem);
+}
+
+/* ===== Hidden helper ===== */
+[hidden] {
+  display: none !important;
+}

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Progress Ring Demo</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 2rem;
+      max-width: 600px;
+      margin: 0 auto;
+      color: var(--snice-color-text, rgb(23 23 23));
+      background: var(--snice-color-background, rgb(255 255 255));
+    }
+    h1 { font-size: 1.5rem; margin-bottom: 2rem; }
+    section { margin-bottom: 2rem; }
+    h2 { font-size: 1rem; margin-bottom: 0.75rem; color: var(--snice-color-text-secondary, rgb(82 82 82)); }
+    .row { display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+  <h1>Progress Ring</h1>
+
+  <section>
+    <h2>Basic</h2>
+    <div class="row">
+      <snice-progress-ring value="25" show-value></snice-progress-ring>
+      <snice-progress-ring value="50" show-value></snice-progress-ring>
+      <snice-progress-ring value="75" show-value></snice-progress-ring>
+      <snice-progress-ring value="100" show-value></snice-progress-ring>
+    </div>
+  </section>
+
+  <section>
+    <h2>Sizes</h2>
+    <div class="row">
+      <snice-progress-ring value="60" size="small" show-value></snice-progress-ring>
+      <snice-progress-ring value="60" size="medium" show-value></snice-progress-ring>
+      <snice-progress-ring value="60" size="large" show-value></snice-progress-ring>
+    </div>
+  </section>
+
+  <section>
+    <h2>With Labels</h2>
+    <div class="row">
+      <snice-progress-ring value="72" label="CPU" show-value></snice-progress-ring>
+      <snice-progress-ring value="45" label="RAM" show-value></snice-progress-ring>
+      <snice-progress-ring value="88" label="Disk" show-value></snice-progress-ring>
+    </div>
+  </section>
+
+  <section>
+    <h2>Custom Colors</h2>
+    <div class="row">
+      <snice-progress-ring value="80" color="#10b981" show-value></snice-progress-ring>
+      <snice-progress-ring value="40" color="#f59e0b" show-value></snice-progress-ring>
+      <snice-progress-ring value="90" color="#ef4444" show-value></snice-progress-ring>
+    </div>
+  </section>
+
+  <section>
+    <h2>Custom Thickness</h2>
+    <div class="row">
+      <snice-progress-ring value="65" thickness="2" show-value></snice-progress-ring>
+      <snice-progress-ring value="65" thickness="4" show-value></snice-progress-ring>
+      <snice-progress-ring value="65" thickness="8" show-value></snice-progress-ring>
+    </div>
+  </section>
+
+  <section>
+    <h2>Animated Progress</h2>
+    <div class="row">
+      <snice-progress-ring id="animated" value="0" show-value size="large"></snice-progress-ring>
+      <button id="start-btn">Start</button>
+    </div>
+  </section>
+
+  <script type="module">
+    import './snice-progress-ring';
+
+    const ring = document.getElementById('animated');
+    const btn = document.getElementById('start-btn');
+    let interval;
+
+    ring.addEventListener('progress-complete', () => {
+      clearInterval(interval);
+      btn.textContent = 'Reset';
+    });
+
+    btn.addEventListener('click', () => {
+      if (ring.value >= 100) {
+        ring.value = 0;
+        btn.textContent = 'Start';
+        return;
+      }
+      btn.textContent = 'Running...';
+      interval = setInterval(() => {
+        ring.value = Math.min(100, ring.value + 2);
+      }, 50);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,169 @@
+:host {
+  display: block;
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  contain: layout style paint;
+  color: var(--snice-color-text, rgb(23 23 23));
+
+  --mentions-bg: var(--snice-color-background, rgb(255 255 255));
+  --mentions-border: var(--snice-color-border, rgb(226 226 226));
+  --mentions-text: var(--snice-color-text, rgb(23 23 23));
+  --mentions-text-secondary: var(--snice-color-text-secondary, rgb(82 82 82));
+  --mentions-text-tertiary: var(--snice-color-text-tertiary, rgb(115 115 115));
+  --mentions-primary: var(--snice-color-primary, rgb(37 99 235));
+  --mentions-bg-element: var(--snice-color-background-element, rgb(252 251 249));
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.mentions {
+  position: relative;
+}
+
+/* Editor container */
+.mentions__editor {
+  position: relative;
+  min-height: 2.5rem;
+  border: 1px solid var(--mentions-border);
+  border-radius: var(--snice-border-radius-md, 0.25rem);
+  background: var(--mentions-bg);
+  transition: border-color var(--snice-transition-fast, 150ms),
+              box-shadow var(--snice-transition-fast, 150ms);
+}
+
+.mentions__editor:focus-within {
+  border-color: var(--mentions-primary);
+  box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+}
+
+.mentions__editor--readonly {
+  opacity: 0.7;
+  background: var(--mentions-bg-element);
+}
+
+/* Textarea */
+.mentions__textarea {
+  display: block;
+  width: 100%;
+  min-height: 5rem;
+  padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: var(--snice-font-size-md, 1rem);
+  line-height: var(--snice-line-height-normal, 1.5);
+  color: var(--mentions-text);
+  resize: vertical;
+}
+
+.mentions__textarea::placeholder {
+  color: var(--mentions-text-tertiary);
+}
+
+/* Highlighted layer (behind textarea) */
+.mentions__highlights {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
+  font-family: inherit;
+  font-size: var(--snice-font-size-md, 1rem);
+  line-height: var(--snice-line-height-normal, 1.5);
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow: hidden;
+  pointer-events: none;
+  color: transparent;
+}
+
+.mentions__highlight {
+  background: var(--snice-color-primary-subtle, rgb(239 246 255));
+  border-radius: 2px;
+  color: transparent;
+}
+
+/* Dropdown */
+.mentions__dropdown {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background: var(--mentions-bg);
+  border: 1px solid var(--mentions-border);
+  border-radius: var(--snice-border-radius-md, 0.25rem);
+  box-shadow: var(--snice-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1));
+  max-height: 12.5rem;
+  overflow-y: auto;
+  z-index: 100;
+  margin-top: 2px;
+}
+
+.mentions__dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: var(--snice-spacing-xs, 0.5rem);
+  padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
+  cursor: pointer;
+  transition: background var(--snice-transition-fast, 150ms);
+}
+
+.mentions__dropdown-item:hover,
+.mentions__dropdown-item--highlighted {
+  background: var(--snice-color-background-hover, rgb(241 241 241));
+}
+
+.mentions__dropdown-item--highlighted {
+  color: var(--mentions-primary);
+}
+
+.mentions__dropdown-avatar {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--mentions-bg-element);
+  font-size: 0.625rem;
+  font-weight: var(--snice-font-weight-semibold, 600);
+  color: var(--mentions-text-secondary);
+}
+
+.mentions__dropdown-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mentions__dropdown-name {
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  color: var(--mentions-text);
+}
+
+.mentions__dropdown-empty {
+  padding: var(--snice-spacing-sm, 0.75rem);
+  text-align: center;
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  color: var(--mentions-text-tertiary);
+  font-style: italic;
+}
+
+/* Scrollbar */
+.mentions__dropdown::-webkit-scrollbar {
+  width: 0.5rem;
+}
+
+.mentions__dropdown::-webkit-scrollbar-track {
+  background: var(--mentions-bg-element);
+  border-radius: 9999px;
+}
+
+.mentions__dropdown::-webkit-scrollbar-thumb {
+  background: var(--mentions-border);
+  border-radius: 9999px;
+}

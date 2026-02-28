@@ -1,0 +1,626 @@
+/* ══════════════════════════════════════════════════════════════
+   snice-receipt — Host & Custom Properties
+   ══════════════════════════════════════════════════════════════ */
+
+:host {
+  display: block;
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  contain: layout style paint;
+
+  /* ── Layout ── */
+  --receipt-max-width: var(--snice-receipt-max-width, 22rem);
+  --receipt-padding: var(--snice-receipt-padding, 1.5rem);
+
+  /* ── Colors ── */
+  --receipt-bg: var(--snice-receipt-bg, var(--snice-color-background, rgb(255 255 255)));
+  --receipt-text: var(--snice-receipt-text, var(--snice-color-text, rgb(23 23 23)));
+  --receipt-text-secondary: var(--snice-receipt-text-secondary, var(--snice-color-text-secondary, rgb(82 82 82)));
+  --receipt-text-tertiary: var(--snice-receipt-text-tertiary, var(--snice-color-text-tertiary, rgb(115 115 115)));
+  --receipt-border: var(--snice-receipt-border, var(--snice-color-border, rgb(226 226 226)));
+  --receipt-bg-element: var(--snice-receipt-bg-element, var(--snice-color-background-element, rgb(252 251 249)));
+  --receipt-header-bg: var(--snice-receipt-header-bg, transparent);
+  --receipt-accent: var(--snice-receipt-accent, var(--snice-color-primary, rgb(37 99 235)));
+
+  /* ── Typography ── */
+  --receipt-font-family: var(--snice-receipt-font-family, inherit);
+  --receipt-merchant-font-size: var(--snice-receipt-merchant-font-size, 1.25rem);
+  --receipt-item-font-size: var(--snice-receipt-item-font-size, 0.9375rem);
+  --receipt-meta-font-size: var(--snice-receipt-meta-font-size, 0.8125rem);
+  --receipt-total-font-size: var(--snice-receipt-total-font-size, 1.125rem);
+  --receipt-total-font-weight: var(--snice-receipt-total-font-weight, 700);
+  --receipt-footer-font-size: var(--snice-receipt-footer-font-size, 0.8125rem);
+
+  /* ── Dividers ── */
+  --receipt-divider-style: var(--snice-receipt-divider-style, dashed);
+  --receipt-divider-color: var(--snice-receipt-divider-color, var(--receipt-border));
+  --receipt-divider-width: var(--snice-receipt-divider-width, 1px);
+
+  /* ── Borders & Radius ── */
+  --receipt-border-radius: var(--snice-receipt-border-radius, 8px);
+  --receipt-border-color: var(--snice-receipt-border-color, var(--receipt-border));
+  --receipt-shadow: var(--snice-receipt-shadow, none);
+
+  /* ── Thermal variant ── */
+  --receipt-thermal-font: var(--snice-receipt-thermal-font, 'Courier New', Courier, monospace);
+  --receipt-thermal-width: var(--snice-receipt-thermal-width, 18rem);
+  --receipt-thermal-bg: var(--snice-receipt-thermal-bg, rgb(255 255 248));
+
+  /* ── Modern variant ── */
+  --receipt-modern-radius: var(--snice-receipt-modern-radius, 12px);
+  --receipt-modern-shadow: var(--snice-receipt-modern-shadow, 0 4px 24px rgb(0 0 0 / 0.08));
+  --receipt-modern-section-bg: var(--snice-receipt-modern-section-bg, var(--receipt-bg-element));
+  --receipt-modern-section-radius: var(--snice-receipt-modern-section-radius, 8px);
+
+  /* ── QR ── */
+  --receipt-qr-size: var(--snice-receipt-qr-size, 6rem);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Base / Standard variant
+   ══════════════════════════════════════════════════════════════ */
+
+.receipt {
+  background: var(--receipt-bg);
+  border: 1px solid var(--receipt-border-color);
+  border-radius: var(--receipt-border-radius);
+  padding: var(--receipt-padding);
+  color: var(--receipt-text);
+  max-width: var(--receipt-max-width);
+  font-family: var(--receipt-font-family);
+  box-shadow: var(--receipt-shadow);
+  line-height: var(--snice-line-height-normal, 1.5);
+}
+
+/* ── Dividers ── */
+.receipt__divider {
+  border: none;
+  border-top: var(--receipt-divider-width) var(--receipt-divider-style) var(--receipt-divider-color);
+  margin: var(--snice-spacing-sm, 0.75rem) 0;
+}
+
+/* ── Header ── */
+.receipt__header {
+  text-align: center;
+  padding-bottom: var(--snice-spacing-sm, 0.75rem);
+  background: var(--receipt-header-bg);
+}
+
+.receipt__logo {
+  max-height: 3rem;
+  max-width: 10rem;
+  object-fit: contain;
+  margin-bottom: var(--snice-spacing-xs, 0.5rem);
+}
+
+.receipt__merchant-name {
+  font-size: var(--receipt-merchant-font-size);
+  font-weight: var(--snice-font-weight-bold, 700);
+  color: var(--receipt-text);
+  margin: 0;
+  letter-spacing: 0.01em;
+}
+
+.receipt__merchant-address {
+  font-size: var(--receipt-meta-font-size);
+  color: var(--receipt-text-secondary);
+  line-height: var(--snice-line-height-normal, 1.5);
+  white-space: pre-line;
+  margin-top: var(--snice-spacing-3xs, 0.125rem);
+}
+
+.receipt__merchant-contact {
+  font-size: var(--receipt-meta-font-size);
+  color: var(--receipt-text-tertiary);
+  margin-top: var(--snice-spacing-3xs, 0.125rem);
+}
+
+/* ── Meta ── */
+.receipt__meta {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--snice-spacing-xs, 0.5rem);
+  font-size: var(--receipt-meta-font-size);
+  color: var(--receipt-text-secondary);
+}
+
+.receipt__meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.0625rem;
+}
+
+.receipt__meta-label {
+  font-size: 0.6875rem;
+  color: var(--receipt-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: var(--snice-font-weight-medium, 500);
+}
+
+.receipt__meta-value {
+  font-weight: var(--snice-font-weight-medium, 500);
+  color: var(--receipt-text);
+}
+
+/* ── Items ── */
+.receipt__items-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--receipt-text-tertiary);
+  font-weight: var(--snice-font-weight-medium, 500);
+  padding-bottom: var(--snice-spacing-2xs, 0.25rem);
+  border-bottom: 1px solid var(--receipt-divider-color);
+  margin-bottom: var(--snice-spacing-2xs, 0.25rem);
+}
+
+.receipt__items {
+  display: flex;
+  flex-direction: column;
+}
+
+.receipt__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: var(--snice-spacing-2xs, 0.25rem) 0;
+  font-size: var(--receipt-item-font-size);
+  gap: var(--snice-spacing-xs, 0.5rem);
+}
+
+.receipt__item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.receipt__item-name {
+  color: var(--receipt-text);
+  display: block;
+}
+
+.receipt__item-sku {
+  font-size: 0.6875rem;
+  color: var(--receipt-text-tertiary);
+  font-family: var(--receipt-thermal-font);
+}
+
+.receipt__item-note {
+  font-size: 0.75rem;
+  color: var(--receipt-text-tertiary);
+  font-style: italic;
+}
+
+.receipt__item-qty {
+  font-size: 0.8125rem;
+  color: var(--receipt-text-tertiary);
+  white-space: nowrap;
+}
+
+.receipt__item-discount {
+  font-size: 0.75rem;
+  color: var(--snice-color-danger, rgb(220 38 38));
+}
+
+.receipt__item-price {
+  font-weight: var(--snice-font-weight-medium, 500);
+  white-space: nowrap;
+  text-align: right;
+}
+
+/* ── Totals ── */
+.receipt__totals {
+  display: flex;
+  flex-direction: column;
+}
+
+.receipt__total-row {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--snice-spacing-3xs, 0.125rem) 0;
+  font-size: var(--receipt-item-font-size);
+  color: var(--receipt-text-secondary);
+}
+
+.receipt__total-row--discount {
+  color: var(--snice-color-danger, rgb(220 38 38));
+}
+
+.receipt__total-row--grand {
+  border-top: 2px solid var(--receipt-text);
+  margin-top: var(--snice-spacing-xs, 0.5rem);
+  padding-top: var(--snice-spacing-xs, 0.5rem);
+  font-size: var(--receipt-total-font-size);
+  font-weight: var(--receipt-total-font-weight);
+  color: var(--receipt-text);
+}
+
+/* ── Payment ── */
+.receipt__payment {
+  text-align: center;
+  font-size: var(--receipt-meta-font-size);
+  color: var(--receipt-text-secondary);
+}
+
+.receipt__payment-method {
+  font-weight: var(--snice-font-weight-semibold, 600);
+  color: var(--receipt-text);
+}
+
+.receipt__payment-details {
+  font-size: 0.75rem;
+  color: var(--receipt-text-tertiary);
+  margin-top: var(--snice-spacing-3xs, 0.125rem);
+}
+
+/* ── QR ── */
+.receipt__qr {
+  display: flex;
+  justify-content: center;
+  padding: var(--snice-spacing-xs, 0.5rem) 0;
+}
+
+.receipt__qr ::slotted(*) {
+  width: var(--receipt-qr-size);
+  height: var(--receipt-qr-size);
+}
+
+/* ── Barcode Area ── */
+.receipt__barcode {
+  display: flex;
+  justify-content: center;
+  padding: var(--snice-spacing-xs, 0.5rem) 0;
+}
+
+.receipt__barcode ::slotted(*) {
+  max-width: 100%;
+}
+
+/* ── Footer ── */
+.receipt__footer {
+  text-align: center;
+  font-size: var(--receipt-footer-font-size);
+  color: var(--receipt-text-tertiary);
+}
+
+.receipt__thank-you {
+  font-weight: var(--snice-font-weight-medium, 500);
+  color: var(--receipt-text-secondary);
+  margin-bottom: var(--snice-spacing-2xs, 0.25rem);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Thermal variant
+   ══════════════════════════════════════════════════════════════ */
+
+:host([variant="thermal"]) {
+  font-family: var(--receipt-thermal-font);
+}
+
+:host([variant="thermal"]) .receipt {
+  max-width: var(--receipt-thermal-width);
+  border-radius: 0;
+  border: none;
+  background: var(--receipt-thermal-bg);
+  padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-sm, 0.75rem);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.06);
+  font-family: var(--receipt-thermal-font);
+}
+
+:host([variant="thermal"]) .receipt__divider {
+  border-top-style: dotted;
+  border-top-width: 2px;
+  border-color: rgb(0 0 0 / 0.25);
+  margin: var(--snice-spacing-xs, 0.5rem) 0;
+}
+
+:host([variant="thermal"]) .receipt__merchant-name {
+  font-size: var(--snice-font-size-md, 1rem);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+:host([variant="thermal"]) .receipt__merchant-address,
+:host([variant="thermal"]) .receipt__merchant-contact {
+  font-size: 0.75rem;
+}
+
+:host([variant="thermal"]) .receipt__meta {
+  font-size: 0.75rem;
+}
+
+:host([variant="thermal"]) .receipt__items-header {
+  font-size: 0.625rem;
+  border-bottom-style: dotted;
+}
+
+:host([variant="thermal"]) .receipt__item {
+  font-size: 0.8125rem;
+  padding: 0.125rem 0;
+}
+
+:host([variant="thermal"]) .receipt__item-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+:host([variant="thermal"]) .receipt__total-row {
+  font-size: 0.8125rem;
+}
+
+:host([variant="thermal"]) .receipt__total-row--grand {
+  font-size: 0.9375rem;
+  border-top-style: double;
+  border-top-width: 3px;
+}
+
+:host([variant="thermal"]) .receipt__payment {
+  font-size: 0.75rem;
+}
+
+:host([variant="thermal"]) .receipt__footer {
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+}
+
+:host([variant="thermal"]) .receipt__thank-you {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Modern variant
+   ══════════════════════════════════════════════════════════════ */
+
+:host([variant="modern"]) .receipt {
+  border: none;
+  border-radius: var(--receipt-modern-radius);
+  box-shadow: var(--receipt-modern-shadow);
+  padding: var(--snice-spacing-lg, 1.5rem);
+}
+
+:host([variant="modern"]) .receipt__divider {
+  border: none;
+  margin: var(--snice-spacing-md, 1rem) 0;
+}
+
+:host([variant="modern"]) .receipt__header {
+  padding-bottom: var(--snice-spacing-md, 1rem);
+}
+
+:host([variant="modern"]) .receipt__merchant-name {
+  font-size: 1.375rem;
+  letter-spacing: -0.01em;
+}
+
+:host([variant="modern"]) .receipt__meta {
+  background: var(--receipt-modern-section-bg);
+  border-radius: var(--receipt-modern-section-radius);
+  padding: var(--snice-spacing-sm, 0.75rem);
+}
+
+:host([variant="modern"]) .receipt__items {
+  background: var(--receipt-modern-section-bg);
+  border-radius: var(--receipt-modern-section-radius);
+  padding: var(--snice-spacing-sm, 0.75rem);
+}
+
+:host([variant="modern"]) .receipt__items-header {
+  border-bottom-color: var(--receipt-border);
+}
+
+:host([variant="modern"]) .receipt__totals {
+  background: var(--receipt-modern-section-bg);
+  border-radius: var(--receipt-modern-section-radius);
+  padding: var(--snice-spacing-sm, 0.75rem);
+}
+
+:host([variant="modern"]) .receipt__total-row--grand {
+  border-top: 2px solid var(--receipt-accent);
+  color: var(--receipt-accent);
+}
+
+:host([variant="modern"]) .receipt__payment {
+  background: var(--receipt-modern-section-bg);
+  border-radius: var(--receipt-modern-section-radius);
+  padding: var(--snice-spacing-sm, 0.75rem);
+}
+
+:host([variant="modern"]) .receipt__footer {
+  padding-top: var(--snice-spacing-xs, 0.5rem);
+}
+
+:host([variant="modern"]) .receipt__thank-you {
+  color: var(--receipt-accent);
+  font-weight: var(--snice-font-weight-semibold, 600);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Minimal variant
+   ══════════════════════════════════════════════════════════════ */
+
+:host([variant="minimal"]) .receipt {
+  border: none;
+  border-radius: 0;
+  padding: var(--snice-spacing-md, 1rem) 0;
+  box-shadow: none;
+  max-width: 20rem;
+}
+
+:host([variant="minimal"]) .receipt__divider {
+  border-top-style: solid;
+  border-top-color: var(--receipt-border);
+  margin: var(--snice-spacing-md, 1rem) 0;
+}
+
+:host([variant="minimal"]) .receipt__header {
+  padding-bottom: var(--snice-spacing-md, 1rem);
+}
+
+:host([variant="minimal"]) .receipt__logo {
+  display: none;
+}
+
+:host([variant="minimal"]) .receipt__merchant-name {
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-weight: var(--snice-font-weight-medium, 500);
+}
+
+:host([variant="minimal"]) .receipt__merchant-address,
+:host([variant="minimal"]) .receipt__merchant-contact {
+  display: none;
+}
+
+:host([variant="minimal"]) .receipt__meta {
+  font-size: 0.75rem;
+}
+
+:host([variant="minimal"]) .receipt__meta-label {
+  display: none;
+}
+
+:host([variant="minimal"]) .receipt__items-header {
+  display: none;
+}
+
+:host([variant="minimal"]) .receipt__item {
+  font-size: 0.875rem;
+}
+
+:host([variant="minimal"]) .receipt__item-sku,
+:host([variant="minimal"]) .receipt__item-note,
+:host([variant="minimal"]) .receipt__item-discount {
+  display: none;
+}
+
+:host([variant="minimal"]) .receipt__total-row {
+  font-size: 0.875rem;
+}
+
+:host([variant="minimal"]) .receipt__total-row--grand {
+  font-size: 1rem;
+  border-top-width: 1px;
+  border-top-style: solid;
+}
+
+:host([variant="minimal"]) .receipt__payment {
+  font-size: 0.75rem;
+}
+
+:host([variant="minimal"]) .receipt__footer {
+  font-size: 0.75rem;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Detailed variant
+   ══════════════════════════════════════════════════════════════ */
+
+:host([variant="detailed"]) .receipt {
+  max-width: 26rem;
+}
+
+:host([variant="detailed"]) .receipt__header {
+  border-bottom: 2px solid var(--receipt-text);
+  padding-bottom: var(--snice-spacing-md, 1rem);
+}
+
+:host([variant="detailed"]) .receipt__merchant-name {
+  font-size: 1.5rem;
+}
+
+:host([variant="detailed"]) .receipt__merchant-contact {
+  font-size: 0.75rem;
+}
+
+:host([variant="detailed"]) .receipt__meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--snice-spacing-xs, 0.5rem);
+}
+
+:host([variant="detailed"]) .receipt__items-header {
+  display: flex;
+  font-weight: var(--snice-font-weight-semibold, 600);
+  border-bottom: 2px solid var(--receipt-border);
+  padding-bottom: var(--snice-spacing-2xs, 0.25rem);
+}
+
+:host([variant="detailed"]) .receipt__item {
+  border-bottom: 1px solid rgb(0 0 0 / 0.04);
+  padding: var(--snice-spacing-2xs, 0.25rem) 0;
+}
+
+:host([variant="detailed"]) .receipt__item:last-child {
+  border-bottom: none;
+}
+
+:host([variant="detailed"]) .receipt__item-sku {
+  display: block;
+}
+
+:host([variant="detailed"]) .receipt__item-note {
+  display: block;
+}
+
+:host([variant="detailed"]) .receipt__item-discount {
+  display: block;
+}
+
+:host([variant="detailed"]) .receipt__total-row--grand {
+  font-size: 1.25rem;
+  border-top: 2px solid var(--receipt-text);
+}
+
+:host([variant="detailed"]) .receipt__payment-details {
+  font-size: 0.8125rem;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Print Styles
+   ══════════════════════════════════════════════════════════════ */
+
+@media print {
+  :host {
+    contain: none;
+  }
+
+  .receipt {
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+    padding: 0;
+    max-width: none;
+  }
+
+  .receipt__qr ::slotted(*),
+  .receipt__barcode ::slotted(*) {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Thermal prints narrow */
+  :host([variant="thermal"]) .receipt {
+    max-width: var(--receipt-thermal-width);
+    background: white;
+    box-shadow: none;
+  }
+
+  /* Modern removes shadow/bg for clean print */
+  :host([variant="modern"]) .receipt {
+    box-shadow: none;
+  }
+
+  :host([variant="modern"]) .receipt__meta,
+  :host([variant="modern"]) .receipt__items,
+  :host([variant="modern"]) .receipt__totals,
+  :host([variant="modern"]) .receipt__payment {
+    background: transparent;
+    border: 1px solid var(--receipt-border);
+  }
+}

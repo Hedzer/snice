@@ -1,0 +1,264 @@
+:host {
+  display: inline-block;
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  position: relative;
+}
+
+.split-button {
+  display: inline-flex;
+  align-items: stretch;
+  position: relative;
+}
+
+/* Shared button base */
+.split-button__primary,
+.split-button__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  font-family: inherit;
+  font-weight: var(--snice-font-weight-medium, 500);
+  cursor: pointer;
+  transition: all var(--snice-transition-fast, 150ms) ease;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.split-button__primary {
+  border-top-left-radius: var(--snice-border-radius-md, 0.25rem);
+  border-bottom-left-radius: var(--snice-border-radius-md, 0.25rem);
+  border-right: none;
+}
+
+.split-button__toggle {
+  border-top-right-radius: var(--snice-border-radius-md, 0.25rem);
+  border-bottom-right-radius: var(--snice-border-radius-md, 0.25rem);
+  border-left: none;
+  position: relative;
+}
+
+/* Divider between buttons */
+.split-button__divider {
+  width: 1px;
+  align-self: stretch;
+}
+
+/* Size: small */
+.split-button--small .split-button__primary {
+  padding: 0.375rem 0.75rem;
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  min-height: 2rem;
+}
+
+.split-button--small .split-button__toggle {
+  padding: 0.375rem 0.5rem;
+  min-height: 2rem;
+}
+
+/* Size: medium */
+.split-button--medium .split-button__primary {
+  padding: 0.5rem 1rem;
+  font-size: var(--snice-font-size-md, 1rem);
+  min-height: 2.5rem;
+}
+
+.split-button--medium .split-button__toggle {
+  padding: 0.5rem 0.625rem;
+  min-height: 2.5rem;
+}
+
+/* Size: large */
+.split-button--large .split-button__primary {
+  padding: 0.625rem 1.25rem;
+  font-size: var(--snice-font-size-lg, 1.125rem);
+  min-height: 3rem;
+}
+
+.split-button--large .split-button__toggle {
+  padding: 0.625rem 0.75rem;
+  min-height: 3rem;
+}
+
+/* Variant: default */
+.split-button--default .split-button__primary,
+.split-button--default .split-button__toggle {
+  background: var(--snice-color-background, rgb(255 255 255));
+  border-color: var(--snice-color-border, rgb(226 226 226));
+  color: var(--snice-color-text, rgb(23 23 23));
+}
+
+.split-button--default .split-button__primary:hover:not(:disabled),
+.split-button--default .split-button__toggle:hover:not(:disabled) {
+  background: var(--snice-color-background-secondary, rgb(245 245 245));
+}
+
+.split-button--default .split-button__divider {
+  background: var(--snice-color-border, rgb(226 226 226));
+}
+
+/* Variant: primary */
+.split-button--primary .split-button__primary,
+.split-button--primary .split-button__toggle {
+  background: var(--snice-color-primary, rgb(37 99 235));
+  border-color: var(--snice-color-primary, rgb(37 99 235));
+  color: var(--snice-color-text-inverse, rgb(250 250 250));
+}
+
+.split-button--primary .split-button__primary:hover:not(:disabled),
+.split-button--primary .split-button__toggle:hover:not(:disabled) {
+  background: var(--snice-color-primary-hover, rgb(29 78 216));
+}
+
+.split-button--primary .split-button__divider {
+  background: rgb(255 255 255 / 0.3);
+}
+
+/* Variant: success */
+.split-button--success .split-button__primary,
+.split-button--success .split-button__toggle {
+  background: var(--snice-color-success, rgb(22 163 74));
+  border-color: var(--snice-color-success, rgb(22 163 74));
+  color: var(--snice-color-text-inverse, rgb(250 250 250));
+}
+
+.split-button--success .split-button__primary:hover:not(:disabled),
+.split-button--success .split-button__toggle:hover:not(:disabled) {
+  background: var(--snice-color-success-hover, rgb(21 128 61));
+}
+
+.split-button--success .split-button__divider {
+  background: rgb(255 255 255 / 0.3);
+}
+
+/* Variant: danger */
+.split-button--danger .split-button__primary,
+.split-button--danger .split-button__toggle {
+  background: var(--snice-color-danger, rgb(220 38 38));
+  border-color: var(--snice-color-danger, rgb(220 38 38));
+  color: var(--snice-color-text-inverse, rgb(250 250 250));
+}
+
+.split-button--danger .split-button__primary:hover:not(:disabled),
+.split-button--danger .split-button__toggle:hover:not(:disabled) {
+  background: var(--snice-color-danger-hover, rgb(185 28 28));
+}
+
+.split-button--danger .split-button__divider {
+  background: rgb(255 255 255 / 0.3);
+}
+
+/* Focus */
+.split-button__primary:focus-visible,
+.split-button__toggle:focus-visible {
+  outline: 2px solid var(--snice-color-primary, rgb(37 99 235));
+  outline-offset: 2px;
+  z-index: 1;
+}
+
+/* Disabled */
+.split-button__primary:disabled,
+.split-button__toggle:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Toggle arrow */
+.split-button__arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--snice-transition-fast, 150ms) ease;
+}
+
+.split-button__arrow--open {
+  transform: rotate(180deg);
+}
+
+/* Dropdown menu */
+.split-button__menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 4px;
+  min-width: 100%;
+  background: var(--snice-color-background-element, rgb(252 251 249));
+  border: 1px solid var(--snice-color-border, rgb(226 226 226));
+  border-radius: var(--snice-border-radius-md, 0.25rem);
+  box-shadow: var(--snice-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1));
+  z-index: 1000;
+  opacity: 0;
+  transform: translateY(-8px) scaleY(0.95);
+  transform-origin: top right;
+  pointer-events: none;
+  transition: opacity var(--snice-transition-fast, 150ms) ease,
+              transform var(--snice-transition-fast, 150ms) ease;
+  overflow: hidden;
+}
+
+.split-button__menu--open {
+  opacity: 1;
+  transform: translateY(0) scaleY(1);
+  pointer-events: auto;
+}
+
+/* Menu items */
+.split-button__menu-items {
+  padding: 4px;
+}
+
+.split-button__action {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  background: transparent;
+  border: none;
+  border-radius: var(--snice-border-radius-sm, 0.125rem);
+  color: var(--snice-color-text, rgb(23 23 23));
+  font-family: inherit;
+  font-size: var(--snice-font-size-md, 1rem);
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--snice-transition-fast, 150ms) ease;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.split-button__action:hover:not(:disabled) {
+  background: var(--snice-color-background-secondary, rgb(245 245 245));
+}
+
+.split-button__action:focus-visible {
+  outline: 2px solid var(--snice-color-primary, rgb(37 99 235));
+  outline-offset: -2px;
+}
+
+.split-button__action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.split-button__action-icon {
+  width: 1rem;
+  height: 1rem;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.split-button__action-label {
+  flex: 1;
+}
+
+/* Small size actions */
+.split-button--small .split-button__action {
+  padding: 0.375rem 0.625rem;
+  font-size: var(--snice-font-size-sm, 0.875rem);
+}
+
+/* Large size actions */
+.split-button--large .split-button__action {
+  padding: 0.625rem 0.875rem;
+  font-size: var(--snice-font-size-lg, 1.125rem);
+}

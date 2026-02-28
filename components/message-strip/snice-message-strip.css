@@ -1,0 +1,181 @@
+:host {
+  display: block;
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.message-strip {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0.75rem; /* 8px 12px */
+  border-radius: 4px;
+  font-size: 0.875rem; /* 14px */
+  line-height: var(--snice-line-height-normal, 1.5);
+  border-left: 3px solid;
+  gap: 0.5rem; /* 8px */
+  animation: stripSlideIn 0.2s ease;
+}
+
+.message-strip--hidden {
+  display: none;
+}
+
+.message-strip--hiding {
+  animation: stripSlideOut 0.2s ease forwards;
+}
+
+@keyframes stripSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes stripSlideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+}
+
+/* Variants */
+:host([variant="info"]) .message-strip,
+:host(:not([variant])) .message-strip {
+  background: hsl(215 100% 96% / 0.6);
+  border-left-color: hsl(var(--snice-color-blue-500));
+  color: var(--snice-color-text, rgb(23 23 23));
+}
+
+:host([variant="success"]) .message-strip {
+  background: hsl(140 100% 96% / 0.6);
+  border-left-color: hsl(var(--snice-color-green-500));
+  color: var(--snice-color-text, rgb(23 23 23));
+}
+
+:host([variant="warning"]) .message-strip {
+  background: hsl(45 100% 96% / 0.6);
+  border-left-color: hsl(var(--snice-color-yellow-500));
+  color: var(--snice-color-text, rgb(23 23 23));
+}
+
+:host([variant="danger"]) .message-strip {
+  background: hsl(0 100% 96% / 0.6);
+  border-left-color: hsl(var(--snice-color-red-500));
+  color: var(--snice-color-text, rgb(23 23 23));
+}
+
+@media (prefers-color-scheme: dark) {
+  :host([variant="info"]) .message-strip,
+  :host(:not([variant])) .message-strip {
+    background: hsl(215 100% 20% / 0.3);
+  }
+
+  :host([variant="success"]) .message-strip {
+    background: hsl(140 100% 20% / 0.3);
+  }
+
+  :host([variant="warning"]) .message-strip {
+    background: hsl(45 100% 20% / 0.3);
+  }
+
+  :host([variant="danger"]) .message-strip {
+    background: hsl(0 100% 20% / 0.3);
+  }
+}
+
+/* Icon */
+.message-strip-icon {
+  flex-shrink: 0;
+  width: 1.125rem; /* 18px */
+  height: 1.125rem; /* 18px */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.message-strip-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Slotted icon styles */
+.message-strip-icon ::slotted(*) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.125rem; /* 18px */
+  height: 1.125rem; /* 18px */
+  font-size: 1.125rem; /* 18px */
+  line-height: 1;
+}
+
+/* Default icons per variant */
+:host([variant="info"]) .message-strip-icon--default::before,
+:host(:not([variant])) .message-strip-icon--default::before {
+  content: "\2139"; /* ℹ */
+  font-weight: bold;
+}
+
+:host([variant="success"]) .message-strip-icon--default::before {
+  content: "\2713"; /* ✓ */
+  font-weight: bold;
+}
+
+:host([variant="warning"]) .message-strip-icon--default::before {
+  content: "\26A0"; /* ⚠ */
+}
+
+:host([variant="danger"]) .message-strip-icon--default::before {
+  content: "\2715"; /* ✕ */
+  font-weight: bold;
+}
+
+/* Content */
+.message-strip-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Dismiss button */
+.message-strip-dismiss {
+  flex-shrink: 0;
+  padding: 0.125rem; /* 2px */
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity var(--snice-transition-fast, 150ms) ease;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+  margin-left: auto;
+}
+
+.message-strip-dismiss:hover {
+  opacity: 1;
+}
+
+.message-strip-dismiss:focus-visible {
+  outline: 2px solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+  outline-offset: 1px;
+}
+
+.message-strip-dismiss svg {
+  width: 0.875rem; /* 14px */
+  height: 0.875rem; /* 14px */
+}

@@ -1,0 +1,149 @@
+:host {
+  display: inline-block;
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  contain: layout style paint;
+}
+
+.step-input {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--snice-color-border, rgb(226 226 226));
+  border-radius: var(--snice-border-radius-md, 0.25rem);
+  background: var(--snice-color-background, rgb(255 255 255));
+  overflow: hidden;
+}
+
+.step-input:focus-within {
+  border-color: var(--snice-color-primary, rgb(37 99 235));
+  box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+}
+
+/* Buttons */
+.step-input__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: var(--snice-color-background-element, rgb(252 251 249));
+  color: var(--snice-color-text, rgb(23 23 23));
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background var(--snice-transition-fast, 150ms) ease,
+              color var(--snice-transition-fast, 150ms) ease;
+  user-select: none;
+  -webkit-user-select: none;
+  line-height: 1;
+  padding: 0;
+}
+
+.step-input__button:hover:not(:disabled) {
+  background: var(--snice-color-background-hover, rgb(243 244 246));
+  color: var(--snice-color-primary, rgb(37 99 235));
+}
+
+.step-input__button:active:not(:disabled) {
+  background: var(--snice-color-background-tertiary, rgb(229 231 235));
+}
+
+.step-input__button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.step-input__button svg {
+  display: block;
+}
+
+.step-input__button--decrement {
+  border-right: 1px solid var(--snice-color-border, rgb(226 226 226));
+}
+
+.step-input__button--increment {
+  border-left: 1px solid var(--snice-color-border, rgb(226 226 226));
+}
+
+/* Input */
+.step-input__input {
+  border: none;
+  outline: none;
+  background: transparent;
+  text-align: center;
+  font-family: inherit;
+  color: var(--snice-color-text, rgb(23 23 23));
+  min-width: 0;
+  -moz-appearance: textfield;
+}
+
+.step-input__input::-webkit-inner-spin-button,
+.step-input__input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.step-input__input:disabled {
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.step-input__input:read-only {
+  cursor: default;
+}
+
+/* Disabled state */
+:host([disabled]) .step-input {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Sizes */
+.step-input--small .step-input__button {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.step-input--small .step-input__input {
+  width: 2.5rem;
+  height: 1.75rem;
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  padding: 0 var(--snice-spacing-2xs, 0.25rem);
+}
+
+.step-input--small .step-input__button svg {
+  width: 14px;
+  height: 14px;
+}
+
+.step-input--medium .step-input__button {
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
+.step-input--medium .step-input__input {
+  width: 3.5rem;
+  height: 2.25rem;
+  font-size: var(--snice-font-size-md, 1rem);
+  padding: 0 var(--snice-spacing-xs, 0.5rem);
+}
+
+.step-input--medium .step-input__button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.step-input--large .step-input__button {
+  width: 2.75rem;
+  height: 2.75rem;
+}
+
+.step-input--large .step-input__input {
+  width: 4.5rem;
+  height: 2.75rem;
+  font-size: var(--snice-font-size-lg, 1.125rem);
+  padding: 0 var(--snice-spacing-xs, 0.5rem);
+}
+
+.step-input--large .step-input__button svg {
+  width: 18px;
+  height: 18px;
+}

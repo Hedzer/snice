@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Scheduler Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      padding: 40px;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text, rgb(23 23 23));
+      transition: background-color 200ms ease, color 200ms ease;
+    }
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+    .example {
+      margin: 30px 0;
+    }
+    .example h3 {
+      margin-bottom: 10px;
+    }
+    button {
+      padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-md, 1rem);
+      background: var(--snice-color-primary, rgb(37 99 235));
+      color: var(--snice-color-text-inverse, rgb(250 250 250));
+      border: none;
+      border-radius: var(--snice-border-radius-md, 0.25rem);
+      cursor: pointer;
+      font-size: var(--snice-font-size-sm, 0.875rem);
+      font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+    }
+    .info {
+      margin-top: 10px;
+      padding: 10px;
+      background: var(--snice-color-background-secondary, rgb(250 250 250));
+      border-radius: 4px;
+      font-size: 14px;
+    }
+  </style>
+  <script type="module">
+    import 'snice';
+    import './snice-scheduler.ts';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const scheduler = document.getElementById('main-scheduler');
+
+      const today = new Date();
+      const todayStr = today.toISOString().split('T')[0];
+
+      scheduler.resources = [
+        { id: '1', name: 'Dr. Smith', color: '#2196f3' },
+        { id: '2', name: 'Dr. Johnson', color: '#4caf50' },
+        { id: '3', name: 'Room A', color: '#ff9800' },
+        { id: '4', name: 'Room B', color: '#9c27b0' },
+      ];
+
+      const makeDate = (dayOffset, hour, minute = 0) => {
+        const d = new Date(today);
+        d.setDate(d.getDate() + dayOffset);
+        d.setHours(hour, minute, 0, 0);
+        return d;
+      };
+
+      scheduler.events = [
+        { id: '1', resourceId: '1', start: makeDate(0, 9), end: makeDate(0, 10, 30), title: 'Patient Consultation', color: '#2196f3' },
+        { id: '2', resourceId: '1', start: makeDate(0, 14), end: makeDate(0, 15), title: 'Follow-up', color: '#4caf50' },
+        { id: '3', resourceId: '2', start: makeDate(0, 10), end: makeDate(0, 11), title: 'Surgery Prep', color: '#f44336' },
+        { id: '4', resourceId: '3', start: makeDate(1, 9), end: makeDate(1, 12), title: 'Conference', color: '#ff9800' },
+        { id: '5', resourceId: '4', start: makeDate(2, 13), end: makeDate(2, 15), title: 'Team Meeting', color: '#9c27b0' },
+      ];
+
+      scheduler.addEventListener('event-click', (e) => {
+        document.getElementById('event-info').textContent =
+          `Clicked: ${e.detail.event.title}`;
+      });
+
+      scheduler.addEventListener('slot-click', (e) => {
+        document.getElementById('event-info').textContent =
+          `Slot: Resource ${e.detail.resourceId}, ${e.detail.start.toLocaleTimeString()} - ${e.detail.end.toLocaleTimeString()}`;
+      });
+
+      scheduler.addEventListener('event-move', (e) => {
+        document.getElementById('event-info').textContent =
+          `Moved: ${e.detail.event.title}`;
+      });
+
+      // Business hours scheduler
+      const bizScheduler = document.getElementById('biz-scheduler');
+      bizScheduler.resources = [
+        { id: '1', name: 'Alice', color: '#e91e63' },
+        { id: '2', name: 'Bob', color: '#00bcd4' },
+      ];
+      bizScheduler.events = [
+        { id: '1', resourceId: '1', start: makeDate(0, 9), end: makeDate(0, 10), title: 'Standup', color: '#e91e63' },
+        { id: '2', resourceId: '2', start: makeDate(0, 11), end: makeDate(0, 12), title: 'Review', color: '#00bcd4' },
+      ];
+
+      // Theme toggle
+      document.getElementById('theme-toggle').addEventListener('click', () => {
+        const current = document.documentElement.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+      });
+    });
+  </script>
+</head>
+<body>
+  <button id="theme-toggle" class="theme-toggle">Toggle Theme</button>
+  <h2>Scheduler Component Demo</h2>
+
+  <div class="example">
+    <h3>Multi-Resource Scheduler</h3>
+    <p>Drag events to move, resize handles on edges. Click empty slots to create events.</p>
+    <snice-scheduler id="main-scheduler" start-hour="8" end-hour="18"></snice-scheduler>
+    <div class="info" id="event-info">Click an event or slot to see details</div>
+  </div>
+
+  <div class="example">
+    <h3>Business Hours (30-min granularity)</h3>
+    <snice-scheduler id="biz-scheduler" start-hour="9" end-hour="17" granularity="30" view="day"></snice-scheduler>
+  </div>
+</body>
+</html>

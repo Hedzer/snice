@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Metric Table Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      padding: 40px;
+      font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+      background: var(--snice-color-background, rgb(255 255 255));
+      color: var(--snice-color-text, rgb(23 23 23));
+    }
+    h2, h3 {
+      color: var(--snice-color-text, rgb(23 23 23));
+    }
+    .demo-section {
+      margin-bottom: 4rem;
+    }
+  </style>
+  <script type="module">
+    import './snice-metric-table.ts';
+
+    const columns = [
+      { key: 'name', label: 'Metric', type: 'text' },
+      { key: 'value', label: 'Value', type: 'number' },
+      { key: 'change', label: 'Change', type: 'percent' },
+      { key: 'revenue', label: 'Revenue', type: 'currency' },
+      { key: 'trend', label: 'Trend (7d)', sparkline: true }
+    ];
+
+    const data = [
+      { name: 'Page Views', value: 124500, change: 12.3, revenue: 4521.50, trend: [100, 120, 115, 130, 125, 140, 150] },
+      { name: 'Unique Visitors', value: 45200, change: 8.1, revenue: 2310.00, trend: [40, 42, 38, 45, 43, 48, 52] },
+      { name: 'Bounce Rate', value: 34.2, change: -2.5, revenue: null, trend: [40, 38, 36, 35, 37, 34, 33] },
+      { name: 'Avg Session', value: 245, change: -0.8, revenue: null, trend: [260, 255, 250, 248, 245, 244, 242] },
+      { name: 'Conversions', value: 1823, change: 15.7, revenue: 89450.00, trend: [1200, 1400, 1350, 1500, 1600, 1750, 1823] },
+      { name: 'Cart Abandonment', value: 68.4, change: -5.2, revenue: -12300.00, trend: [75, 73, 72, 70, 69, 68, 67] }
+    ];
+
+    const table = document.getElementById('metric-demo');
+    table.columns = columns;
+    table.data = data;
+    table.sortBy = 'value';
+
+    table.addEventListener('sort-change', e => {
+      console.log('Sort changed:', e.detail);
+    });
+
+    table.addEventListener('row-click', e => {
+      console.log('Row clicked:', e.detail);
+    });
+  </script>
+</head>
+<body>
+  <h2>Metric Table Demo</h2>
+
+  <div class="demo-section">
+    <h3>Full Featured</h3>
+    <snice-metric-table id="metric-demo"></snice-metric-table>
+  </div>
+</body>
+</html>

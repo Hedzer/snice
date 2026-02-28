@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Stat Group Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      padding: 40px;
+      font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+      background: var(--snice-color-background, rgb(255 255 255));
+      color: var(--snice-color-text, rgb(23 23 23));
+    }
+    h2, h3 {
+      color: var(--snice-color-text, rgb(23 23 23));
+    }
+    .demo-section {
+      margin-bottom: 4rem;
+    }
+  </style>
+  <script type="module">
+    import './snice-stat-group.ts';
+
+    const stats = [
+      { label: 'Revenue', value: '$45,231', trend: 'up', trendValue: '+12.5%', icon: '$', color: 'rgb(22 163 74)' },
+      { label: 'Users', value: '2,338', trend: 'up', trendValue: '+8.2%', icon: '\u{1F464}' },
+      { label: 'Orders', value: '1,245', trend: 'down', trendValue: '-3.1%', icon: '\u{1F4E6}' },
+      { label: 'Conversion', value: '3.24%', trend: 'neutral', trendValue: '0.0%' }
+    ];
+
+    document.getElementById('card-demo').stats = stats;
+    document.getElementById('minimal-demo').stats = stats;
+    document.getElementById('bordered-demo').stats = stats;
+    document.getElementById('columns-demo').stats = stats;
+
+    document.querySelectorAll('snice-stat-group').forEach(el => {
+      el.addEventListener('stat-click', e => {
+        console.log('Stat clicked:', e.detail);
+      });
+    });
+  </script>
+</head>
+<body>
+  <h2>Stat Group Demo</h2>
+
+  <div class="demo-section">
+    <h3>Card Variant (default)</h3>
+    <snice-stat-group id="card-demo"></snice-stat-group>
+  </div>
+
+  <div class="demo-section">
+    <h3>Minimal Variant</h3>
+    <snice-stat-group id="minimal-demo" variant="minimal"></snice-stat-group>
+  </div>
+
+  <div class="demo-section">
+    <h3>Bordered Variant</h3>
+    <snice-stat-group id="bordered-demo" variant="bordered"></snice-stat-group>
+  </div>
+
+  <div class="demo-section">
+    <h3>Fixed 2 Columns</h3>
+    <snice-stat-group id="columns-demo" columns="2"></snice-stat-group>
+  </div>
+</body>
+</html>

@@ -1,0 +1,60 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem; /* 24px */
+  height: 1.5rem; /* 24px */
+  color: currentColor;
+  contain: layout style paint;
+  vertical-align: middle;
+  line-height: 0;
+}
+
+/* Sizes */
+:host([size="small"]) {
+  width: 1rem; /* 16px */
+  height: 1rem; /* 16px */
+}
+
+:host([size="medium"]) {
+  width: 1.5rem; /* 24px */
+  height: 1.5rem; /* 24px */
+}
+
+:host([size="large"]) {
+  width: 2rem; /* 32px */
+  height: 2rem; /* 32px */
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.icon svg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
+.icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Screen reader only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
