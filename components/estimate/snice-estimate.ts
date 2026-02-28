@@ -180,44 +180,49 @@ export class SniceEstimate extends HTMLElement implements SniceEstimateElement {
   private renderParty(party: EstimateParty | null, label: string): unknown {
     if (!party) return '';
 
+    const address = party.address ? html/*html*/`<span class="est__party-detail" part="party-detail">${party.address}</span>` : '';
+    const phone = party.phone ? html/*html*/`<span class="est__party-detail" part="party-detail">${party.phone}</span>` : '';
+    const email = party.email ? html/*html*/`<span class="est__party-detail" part="party-detail">${party.email}</span>` : '';
+
     return html/*html*/`
       <div class="est__party" part="party">
         <span class="est__party-label" part="party-label">${label}</span>
         <span class="est__party-name" part="party-name">${party.name}</span>
-        <if ${party.address}>
-          <span class="est__party-detail" part="party-detail">${party.address}</span>
-        </if>
-        <if ${party.phone}>
-          <span class="est__party-detail" part="party-detail">${party.phone}</span>
-        </if>
-        <if ${party.email}>
-          <span class="est__party-detail" part="party-detail">${party.email}</span>
-        </if>
+        ${address}
+        ${phone}
+        ${email}
       </div>
     `;
   }
 
-  private renderHeader(): unknown {
-    const isTopRight = this.showQr && this.qrPosition === 'top-right';
+  private renderHeaderQr(): unknown {
+    if (!this.showQr || this.qrPosition !== 'top-right') return '';
+    return this.renderQr('top-right');
+  }
 
+  private renderDate(): unknown {
+    if (!this.date) return '';
+    return html/*html*/`<span class="est__meta" part="meta">${this.date}</span>`;
+  }
+
+  private renderExpiry(): unknown {
+    if (!this.expiryDate) return '';
+    return html/*html*/`<span class="est__expiry" part="expiry">Valid until <span class="est__expiry-date" part="expiry-date">${this.expiryDate}</span></span>`;
+  }
+
+  private renderHeader(): unknown {
     return html/*html*/`
       <div class="est__header" part="header">
         <div class="est__header-left">
           <slot name="logo" part="logo" class="est__logo"></slot>
           <h2 class="est__title" part="title">Estimate ${this.estimateNumber ? '#' + this.estimateNumber : ''}</h2>
-          <if ${this.date}>
-            <span class="est__meta" part="meta">${this.date}</span>
-          </if>
+          ${this.renderDate()}
         </div>
         <div class="est__header-right">
           <span class="est__badge est__status--${this.status}" part="status">${this.status}</span>
-          <if ${this.expiryDate}>
-            <span class="est__expiry" part="expiry">Valid until <span class="est__expiry-date" part="expiry-date">${this.expiryDate}</span></span>
-          </if>
+          ${this.renderExpiry()}
         </div>
-        <if ${isTopRight}>
-          ${this.renderQr('top-right')}
-        </if>
+        ${this.renderHeaderQr()}
       </div>
     `;
   }
@@ -396,44 +401,46 @@ export class SniceEstimate extends HTMLElement implements SniceEstimateElement {
     `;
   }
 
-  private renderStandardView(): unknown {
-    const isBottomRight = this.showQr && this.qrPosition === 'bottom-right';
-    const isFooterQr = this.showQr && this.qrPosition === 'footer';
+  private renderComparisonSection(): unknown {
+    if (this.variant !== 'comparison') return '';
+    return this.renderComparisonView();
+  }
 
-    return html/*html*/`
-      ${this.renderTable()}
-      ${this.renderSummary()}
-      ${this.renderNotes()}
-      ${this.renderTerms()}
-      ${this.renderActions()}
-      <if ${isBottomRight}>
-        ${this.renderQr('bottom-right')}
-      </if>
-      <if ${isFooterQr}>
-        ${this.renderQr('footer')}
-      </if>
-      ${this.renderFooter()}
-    `;
+  private renderTableSection(): unknown {
+    if (this.variant === 'comparison') return '';
+    return this.renderTable();
+  }
+
+  private renderQrBottom(): unknown {
+    if (!this.showQr || this.qrPosition !== 'bottom-right' || this.variant === 'comparison') return '';
+    return this.renderQr('bottom-right');
+  }
+
+  private renderQrFooter(): unknown {
+    if (!this.showQr || this.qrPosition !== 'footer' || this.variant === 'comparison') return '';
+    return this.renderQr('footer');
+  }
+
+  private renderSummarySection(): unknown {
+    if (this.variant === 'comparison') return '';
+    return this.renderSummary();
   }
 
   @render()
   renderContent() {
-    const isComparison = this.variant === 'comparison';
-
     return html/*html*/`
       <div class="est" part="base">
         ${this.renderHeader()}
         ${this.renderParties()}
-        <if ${isComparison}>
-          ${this.renderComparisonView()}
-          ${this.renderNotes()}
-          ${this.renderTerms()}
-          ${this.renderActions()}
-          ${this.renderFooter()}
-        </if>
-        <if ${!isComparison}>
-          ${this.renderStandardView()}
-        </if>
+        ${this.renderComparisonSection()}
+        ${this.renderTableSection()}
+        ${this.renderSummarySection()}
+        ${this.renderNotes()}
+        ${this.renderTerms()}
+        ${this.renderActions()}
+        ${this.renderQrBottom()}
+        ${this.renderQrFooter()}
+        ${this.renderFooter()}
       </div>
     `;
   }
