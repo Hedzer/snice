@@ -66,20 +66,18 @@ export class SniceAvatarGroup extends HTMLElement implements SniceAvatarGroupEle
     }
   }
 
-  @observe(() => document.createElement('div'), { childList: true })
-  handleChildrenChange() {
-    this.detectMode();
+  private _childObserver: MutationObserver | null = null;
+
+  @ready()
+  setupChildObserver() {
+    this._childObserver = new MutationObserver(() => this.detectMode());
+    this._childObserver.observe(this, { childList: true });
   }
 
-  connectedCallback() {
-    // Re-detect when children change (observe needs the element itself)
-    const mo = new MutationObserver(() => this.detectMode());
-    mo.observe(this, { childList: true });
-    (this as any)._childObserver = mo;
-  }
-
-  disconnectedCallback() {
-    (this as any)._childObserver?.disconnect();
+  @dispose()
+  cleanupChildObserver() {
+    this._childObserver?.disconnect();
+    this._childObserver = null;
   }
 
   private applySlottedStyles() {
