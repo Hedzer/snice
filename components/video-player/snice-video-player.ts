@@ -37,7 +37,7 @@ export class SniceVideoPlayer extends HTMLElement implements SniceVideoPlayerEle
 
   @styles()
   componentStyles() {
-    return css`${playerStyles}`;
+    return css/*css*/`${playerStyles}`;
   }
 
   @ready()

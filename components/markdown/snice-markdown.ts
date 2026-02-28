@@ -164,7 +164,7 @@ export class SniceMarkdown extends HTMLElement implements SniceMarkdownElement {
 
   @styles()
   componentStyles() {
-    return css`${markdownStyles}`;
+    return css/*css*/`${markdownStyles}`;
   }
 
   @ready()

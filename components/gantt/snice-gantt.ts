@@ -24,7 +24,7 @@ export class SniceGantt extends HTMLElement implements SniceGanttElement {
 
   @styles()
   componentStyles() {
-    return css`${ganttStyles}`;
+    return css/*css*/`${ganttStyles}`;
   }
 
   @watch('tasks')

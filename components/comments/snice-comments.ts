@@ -27,7 +27,7 @@ export class SniceComment extends HTMLElement {
 
   @styles()
   componentStyles() {
-    return css`:host { display: none; }`;
+    return css/*css*/`:host { display: none; }`;
   }
 }
 
@@ -422,6 +422,6 @@ export class SniceComments extends HTMLElement implements SniceCommentsElement {
 
   @styles()
   componentStyles() {
-    return css`${cssContent}`;
+    return css/*css*/`${cssContent}`;
   }
 }

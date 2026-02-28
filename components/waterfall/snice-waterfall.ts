@@ -26,7 +26,7 @@ export class SniceWaterfall extends HTMLElement implements SniceWaterfallElement
 
   @styles()
   componentStyles() {
-    return css`${waterfallStyles}`;
+    return css/*css*/`${waterfallStyles}`;
   }
 
   @ready()

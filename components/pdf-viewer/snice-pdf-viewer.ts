@@ -44,7 +44,7 @@ export class SnicePdfViewer extends HTMLElement implements SnicePdfViewerElement
 
   @styles()
   componentStyles() {
-    return css`${viewerStyles}`;
+    return css/*css*/`${viewerStyles}`;
   }
 
   @ready()

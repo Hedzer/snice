@@ -11,7 +11,7 @@ export class SniceBookPage extends HTMLElement {
 
   @styles()
   componentStyles() {
-    return css`:host { display: none; }`;
+    return css/*css*/`:host { display: none; }`;
   }
 }
 
@@ -234,6 +234,6 @@ export class SniceBook extends HTMLElement implements SniceBookElement {
 
   @styles()
   componentStyles() {
-    return css`${cssContent}`;
+    return css/*css*/`${cssContent}`;
   }
 }

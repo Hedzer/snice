@@ -23,7 +23,7 @@ export class SniceAppTile extends HTMLElement {
 
   @styles()
   componentStyles() {
-    return css`:host { display: none; }`;
+    return css/*css*/`:host { display: none; }`;
   }
 }
 
@@ -205,6 +205,6 @@ export class SniceAppTiles extends HTMLElement implements SniceAppTilesElement {
 
   @styles()
   componentStyles() {
-    return css`${cssContent}`;
+    return css/*css*/`${cssContent}`;
   }
 }

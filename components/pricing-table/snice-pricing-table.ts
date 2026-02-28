@@ -27,7 +27,7 @@ export class SnicePlan extends HTMLElement {
 
   @styles()
   componentStyles() {
-    return css`:host { display: none; }`;
+    return css/*css*/`:host { display: none; }`;
   }
 }
 
@@ -40,7 +40,7 @@ export class SniceFeature extends HTMLElement {
 
   @styles()
   componentStyles() {
-    return css`:host { display: none; }`;
+    return css/*css*/`:host { display: none; }`;
   }
 }
 
@@ -347,6 +347,6 @@ export class SnicePricingTable extends HTMLElement implements SnicePricingTableE
 
   @styles()
   componentStyles() {
-    return css`${cssContent}`;
+    return css/*css*/`${cssContent}`;
   }
 }

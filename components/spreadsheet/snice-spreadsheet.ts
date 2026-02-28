@@ -46,7 +46,7 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
 
   @styles()
   componentStyles() {
-    return css`${sheetStyles}`;
+    return css/*css*/`${sheetStyles}`;
   }
 
   @ready()

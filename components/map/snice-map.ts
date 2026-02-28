@@ -37,7 +37,7 @@ export class SniceMap extends HTMLElement implements SniceMapElement {
 
   @styles()
   componentStyles() {
-    return css`${mapStyles}`;
+    return css/*css*/`${mapStyles}`;
   }
 
   @ready()

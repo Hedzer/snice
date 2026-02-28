@@ -31,7 +31,7 @@ export class SniceOrgChart extends HTMLElement implements SniceOrgChartElement {
 
   @styles()
   componentStyles() {
-    return css`${chartStyles}`;
+    return css/*css*/`${chartStyles}`;
   }
 
   @render()
