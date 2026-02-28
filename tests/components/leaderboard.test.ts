@@ -1,180 +1,485 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { createComponent, removeComponent, wait, queryShadow, queryShadowAll } from './test-utils';
+import { createComponent, removeComponent, wait } from './test-utils';
 import '../../components/leaderboard/snice-leaderboard';
-import type { SniceLeaderboardElement, LeaderboardEntry } from '../../components/leaderboard/snice-leaderboard.types';
-
-const sampleEntries: LeaderboardEntry[] = [
-  { rank: 1, name: 'Alice Johnson', score: 2850, change: 2 },
-  { rank: 2, name: 'Bob Smith', score: 2720, change: -1 },
-  { rank: 3, name: 'Carol Williams', score: 2680, change: 1 },
-  { rank: 4, name: 'David Brown', score: 2510, change: 0, highlighted: true },
-  { rank: 5, name: 'Eve Davis', score: 2340, change: -2 }
-];
+import '../../components/leaderboard/snice-leaderboard-entry';
+import type { SniceLeaderboardElement, SniceLeaderboardEntryElement } from '../../components/leaderboard/snice-leaderboard.types';
 
 describe('snice-leaderboard', () => {
-  let el: SniceLeaderboardElement;
+  let leaderboard: SniceLeaderboardElement;
 
   afterEach(() => {
-    if (el) {
-      removeComponent(el as HTMLElement);
+    if (leaderboard) {
+      removeComponent(leaderboard as HTMLElement);
     }
   });
 
-  it('should render', async () => {
-    el = await createComponent<SniceLeaderboardElement>('snice-leaderboard');
-    expect(el).toBeTruthy();
-    expect(el.shadowRoot).toBeTruthy();
+  it('should render leaderboard element', async () => {
+    leaderboard = await createComponent<SniceLeaderboardElement>('snice-leaderboard');
+    expect(leaderboard).toBeTruthy();
+    expect(leaderboard.shadowRoot).toBeTruthy();
   });
 
-  it('should have default properties', async () => {
-    el = await createComponent<SniceLeaderboardElement>('snice-leaderboard');
-    expect(el.entries).toEqual([]);
-    expect(el.variant).toBe('list');
-    expect(el.metricLabel).toBe('Score');
+  it('should have default property values', async () => {
+    leaderboard = await createComponent<SniceLeaderboardElement>('snice-leaderboard');
+    expect(leaderboard.variant).toBe('default');
+    expect(leaderboard.size).toBe('medium');
+    expect(leaderboard.title).toBe('');
   });
 
-  it('should render list rows', async () => {
-    el = await createComponent<SniceLeaderboardElement>('snice-leaderboard');
-    el.entries = sampleEntries;
+  it('should accept variant attribute', async () => {
+    leaderboard = await createComponent<SniceLeaderboardElement>('snice-leaderboard', { variant: 'podium' });
+    expect(leaderboard.variant).toBe('podium');
+  });
+
+  it('should accept size attribute', async () => {
+    leaderboard = await createComponent<SniceLeaderboardElement>('snice-leaderboard', { size: 'large' });
+    expect(leaderboard.size).toBe('large');
+  });
+
+  it('should show empty state when no entries', async () => {
+    leaderboard = await createComponent<SniceLeaderboardElement>('snice-leaderboard');
     await wait(50);
-    const rows = queryShadowAll(el as HTMLElement, '.lb__row');
-    expect(rows.length).toBe(5);
+
+    const empty = leaderboard.shadowRoot!.querySelector('.leaderboard__empty');
+    expect(empty).toBeTruthy();
+    expect(empty!.textContent).toContain('No entries');
   });
 
-  it('should render entry names', async () => {
-    el = await createComponent<SniceLeaderboardElement>('snice-leaderboard');
-    el.entries = sampleEntries;
-    await wait(50);
-    const names = queryShadowAll(el as HTMLElement, '.lb__name');
-    expect(names.length).toBe(5);
-    expect(names[0].textContent).toBe('Alice Johnson');
-  });
+  describe('setEntries() imperative API', () => {
+    it('should render entries via setEntries()', async () => {
+      leaderboard = await createComponent<SniceLeaderboardElement>('snice-leaderboard');
+      await wait(50);
 
-  it('should render entry scores', async () => {
-    el = await createComponent<SniceLeaderboardElement>('snice-leaderboard');
-    el.entries = sampleEntries;
-    await wait(50);
-    const scores = queryShadowAll(el as HTMLElement, '.lb__score');
-    expect(scores.length).toBe(5);
-    expect(scores[0].textContent).toBe('2850');
-  });
+      leaderboard.setEntries([
+        { rank: 1, name: 'Alice', score: 2500 },
+        { rank: 2, name: 'Bob', score: 2100 },
+        { rank: 3, name: 'Charlie', score: 1800 },
+      ]);
+      await wait(100);
 
-  it('should render medals for top 3', async () => {
-    el = await createComponent<SniceLeaderboardElement>('snice-leaderboard');
-    el.entries = sampleEntries;
-    await wait(50);
-    const goldMedal = queryShadow(el as HTMLElement, '.lb__medal--gold');
-    const silverMedal = queryShadow(el as HTMLElement, '.lb__medal--silver');
-    const bronzeMedal = queryShadow(el as HTMLElement, '.lb__medal--bronze');
-    expect(goldMedal).toBeTruthy();
-    expect(silverMedal).toBeTruthy();
-    expect(bronzeMedal).toBeTruthy();
-  });
-
-  it('should render rank numbers for entries below top 3', async () => {
-    el = await createComponent<SniceLeaderboardElement>('snice-leaderboard');
-    el.entries = sampleEntries;
-    await wait(50);
-    const rankNumbers = queryShadowAll(el as HTMLElement, '.lb__rank-number');
-    expect(rankNumbers.length).toBe(2);
-    expect(rankNumbers[0].textContent).toBe('#4');
-  });
-
-  it('should render change indicators', async () => {
-    el = await createComponent<SniceLeaderboardElement>('snice-leaderboard');
-    el.entries = sampleEntries;
-    await wait(50);
-    const upChanges = queryShadowAll(el as HTMLElement, '.lb__change--up');
-    const downChanges = queryShadowAll(el as HTMLElement, '.lb__change--down');
-    expect(upChanges.length).toBeGreaterThan(0);
-    expect(downChanges.length).toBeGreaterThan(0);
-  });
-
-  it('should highlight current user row', async () => {
-    el = await createComponent<SniceLeaderboardElement>('snice-leaderboard');
-    el.entries = sampleEntries;
-    await wait(50);
-    const highlighted = queryShadow(el as HTMLElement, '.lb__row--highlighted');
-    expect(highlighted).toBeTruthy();
-  });
-
-  it('should render avatar initials when no avatar URL', async () => {
-    el = await createComponent<SniceLeaderboardElement>('snice-leaderboard');
-    el.entries = sampleEntries;
-    await wait(50);
-    const initials = queryShadow(el as HTMLElement, '.lb__avatar--initials');
-    expect(initials).toBeTruthy();
-    expect(initials!.textContent).toBe('AJ');
-  });
-
-  it('should render avatar image when provided', async () => {
-    el = await createComponent<SniceLeaderboardElement>('snice-leaderboard');
-    el.entries = [{ rank: 1, name: 'Test', score: 100, avatar: 'https://example.com/avatar.jpg' }];
-    await wait(50);
-    const img = queryShadow(el as HTMLElement, 'img.lb__avatar');
-    expect(img).toBeTruthy();
-    expect(img!.getAttribute('src')).toBe('https://example.com/avatar.jpg');
-  });
-
-  it('should emit entry-click event', async () => {
-    el = await createComponent<SniceLeaderboardElement>('snice-leaderboard');
-    el.entries = sampleEntries;
-    await wait(50);
-    let detail: any = null;
-    (el as HTMLElement).addEventListener('entry-click', (e: Event) => {
-      detail = (e as CustomEvent).detail;
+      const entries = leaderboard.shadowRoot!.querySelectorAll('.leaderboard__entry');
+      expect(entries.length).toBe(3);
     });
-    const rows = queryShadowAll(el as HTMLElement, '.lb__row');
-    (rows[0] as HTMLElement).click();
-    await wait(50);
-    expect(detail).toBeTruthy();
-    expect(detail.entry.name).toBe('Alice Johnson');
-    expect(detail.index).toBe(0);
+
+    it('should display name and score', async () => {
+      leaderboard = await createComponent<SniceLeaderboardElement>('snice-leaderboard');
+      await wait(50);
+
+      leaderboard.setEntries([
+        { rank: 1, name: 'Alice', score: 2500 },
+      ]);
+      await wait(100);
+
+      const name = leaderboard.shadowRoot!.querySelector('.leaderboard__name');
+      expect(name!.textContent).toContain('Alice');
+
+      const score = leaderboard.shadowRoot!.querySelector('.leaderboard__score');
+      expect(score!.textContent).toContain('2500');
+    });
+
+    it('should render avatar image when provided', async () => {
+      leaderboard = await createComponent<SniceLeaderboardElement>('snice-leaderboard');
+      await wait(50);
+
+      leaderboard.setEntries([
+        { rank: 1, name: 'Alice', score: 2500, avatar: 'alice.jpg' },
+      ]);
+      await wait(100);
+
+      const avatar = leaderboard.shadowRoot!.querySelector('.leaderboard__avatar') as HTMLImageElement;
+      expect(avatar).toBeTruthy();
+      expect(avatar.src).toContain('alice.jpg');
+    });
+
+    it('should render avatar placeholder when no avatar', async () => {
+      leaderboard = await createComponent<SniceLeaderboardElement>('snice-leaderboard');
+      await wait(50);
+
+      leaderboard.setEntries([
+        { rank: 1, name: 'Alice', score: 2500 },
+      ]);
+      await wait(100);
+
+      const placeholder = leaderboard.shadowRoot!.querySelector('.leaderboard__avatar-placeholder');
+      expect(placeholder).toBeTruthy();
+      expect(placeholder!.textContent).toContain('A');
+    });
+
+    it('should render change indicators', async () => {
+      leaderboard = await createComponent<SniceLeaderboardElement>('snice-leaderboard');
+      await wait(50);
+
+      leaderboard.setEntries([
+        { rank: 1, name: 'Alice', score: 2500, change: 3 },
+        { rank: 2, name: 'Bob', score: 2100, change: -2 },
+      ]);
+      await wait(100);
+
+      const upChange = leaderboard.shadowRoot!.querySelector('.leaderboard__change--up');
+      expect(upChange).toBeTruthy();
+
+      const downChange = leaderboard.shadowRoot!.querySelector('.leaderboard__change--down');
+      expect(downChange).toBeTruthy();
+    });
+
+    it('should render highlighted entries', async () => {
+      leaderboard = await createComponent<SniceLeaderboardElement>('snice-leaderboard');
+      await wait(50);
+
+      leaderboard.setEntries([
+        { rank: 1, name: 'Alice', score: 2500, highlighted: true },
+        { rank: 2, name: 'Bob', score: 2100 },
+      ]);
+      await wait(100);
+
+      const highlighted = leaderboard.shadowRoot!.querySelectorAll('.leaderboard__entry--highlighted');
+      expect(highlighted.length).toBe(1);
+    });
+
+    it('should clear entries when setEntries is called with empty array', async () => {
+      leaderboard = await createComponent<SniceLeaderboardElement>('snice-leaderboard');
+      await wait(50);
+
+      leaderboard.setEntries([
+        { rank: 1, name: 'Alice', score: 2500 },
+      ]);
+      await wait(100);
+
+      let entries = leaderboard.shadowRoot!.querySelectorAll('.leaderboard__entry');
+      expect(entries.length).toBe(1);
+
+      leaderboard.setEntries([]);
+      await wait(100);
+
+      entries = leaderboard.shadowRoot!.querySelectorAll('.leaderboard__entry');
+      expect(entries.length).toBe(0);
+
+      const empty = leaderboard.shadowRoot!.querySelector('.leaderboard__empty');
+      expect(empty).toBeTruthy();
+    });
   });
 
-  it('should render podium variant', async () => {
-    el = await createComponent<SniceLeaderboardElement>('snice-leaderboard');
-    el.variant = 'podium';
-    el.entries = sampleEntries;
-    await wait(50);
-    const podium = queryShadow(el as HTMLElement, '.lb__podium');
-    expect(podium).toBeTruthy();
+  describe('declarative child element usage', () => {
+    it('should render from <snice-leaderboard-entry> children', async () => {
+      leaderboard = document.createElement('snice-leaderboard') as SniceLeaderboardElement;
+
+      const entry1 = document.createElement('snice-leaderboard-entry');
+      entry1.setAttribute('rank', '1');
+      entry1.setAttribute('name', 'Alice');
+      entry1.setAttribute('score', '2500');
+
+      const entry2 = document.createElement('snice-leaderboard-entry');
+      entry2.setAttribute('rank', '2');
+      entry2.setAttribute('name', 'Bob');
+      entry2.setAttribute('score', '2100');
+
+      leaderboard.appendChild(entry1);
+      leaderboard.appendChild(entry2);
+      document.body.appendChild(leaderboard);
+
+      await (leaderboard as any).ready;
+      await wait(100);
+
+      const rendered = leaderboard.shadowRoot!.querySelectorAll('.leaderboard__entry');
+      expect(rendered.length).toBe(2);
+
+      const name = leaderboard.shadowRoot!.querySelector('.leaderboard__name');
+      expect(name!.textContent).toContain('Alice');
+    });
+
+    it('should read avatar attribute from children', async () => {
+      leaderboard = document.createElement('snice-leaderboard') as SniceLeaderboardElement;
+
+      const entry = document.createElement('snice-leaderboard-entry');
+      entry.setAttribute('rank', '1');
+      entry.setAttribute('name', 'Alice');
+      entry.setAttribute('score', '2500');
+      entry.setAttribute('avatar', 'alice.jpg');
+
+      leaderboard.appendChild(entry);
+      document.body.appendChild(leaderboard);
+
+      await (leaderboard as any).ready;
+      await wait(100);
+
+      const avatar = leaderboard.shadowRoot!.querySelector('.leaderboard__avatar') as HTMLImageElement;
+      expect(avatar).toBeTruthy();
+      expect(avatar.src).toContain('alice.jpg');
+    });
+
+    it('should read highlighted attribute from children', async () => {
+      leaderboard = document.createElement('snice-leaderboard') as SniceLeaderboardElement;
+
+      const entry = document.createElement('snice-leaderboard-entry');
+      entry.setAttribute('rank', '1');
+      entry.setAttribute('name', 'Alice');
+      entry.setAttribute('score', '2500');
+      entry.setAttribute('highlighted', '');
+
+      leaderboard.appendChild(entry);
+      document.body.appendChild(leaderboard);
+
+      await (leaderboard as any).ready;
+      await wait(100);
+
+      const highlighted = leaderboard.shadowRoot!.querySelectorAll('.leaderboard__entry--highlighted');
+      expect(highlighted.length).toBe(1);
+    });
+
+    it('should read change attribute from children', async () => {
+      leaderboard = document.createElement('snice-leaderboard') as SniceLeaderboardElement;
+
+      const entry = document.createElement('snice-leaderboard-entry');
+      entry.setAttribute('rank', '1');
+      entry.setAttribute('name', 'Alice');
+      entry.setAttribute('score', '2500');
+      entry.setAttribute('change', '3');
+
+      leaderboard.appendChild(entry);
+      document.body.appendChild(leaderboard);
+
+      await (leaderboard as any).ready;
+      await wait(100);
+
+      const change = leaderboard.shadowRoot!.querySelector('.leaderboard__change--up');
+      expect(change).toBeTruthy();
+    });
   });
 
-  it('should render podium items for top 3', async () => {
-    el = await createComponent<SniceLeaderboardElement>('snice-leaderboard');
-    el.variant = 'podium';
-    el.entries = sampleEntries;
-    await wait(50);
-    const podiumItems = queryShadowAll(el as HTMLElement, '.lb__podium-item');
-    expect(podiumItems.length).toBe(3);
+  describe('slot children take precedence', () => {
+    it('should use slot children over setEntries()', async () => {
+      leaderboard = document.createElement('snice-leaderboard') as SniceLeaderboardElement;
+
+      const entry = document.createElement('snice-leaderboard-entry');
+      entry.setAttribute('rank', '1');
+      entry.setAttribute('name', 'SlotAlice');
+      entry.setAttribute('score', '9999');
+
+      leaderboard.appendChild(entry);
+      document.body.appendChild(leaderboard);
+
+      await (leaderboard as any).ready;
+      await wait(100);
+
+      // Now try to override with setEntries — should be ignored
+      leaderboard.setEntries([
+        { rank: 1, name: 'ImperativeBob', score: 1111 },
+        { rank: 2, name: 'ImperativeCharlie', score: 2222 },
+      ]);
+      await wait(100);
+
+      // Should still show slot data, not imperative
+      const rendered = leaderboard.shadowRoot!.querySelectorAll('.leaderboard__entry');
+      expect(rendered.length).toBe(1);
+
+      const name = leaderboard.shadowRoot!.querySelector('.leaderboard__name');
+      expect(name!.textContent).toContain('SlotAlice');
+    });
   });
 
-  it('should render remaining entries below podium', async () => {
-    el = await createComponent<SniceLeaderboardElement>('snice-leaderboard');
-    el.variant = 'podium';
-    el.entries = sampleEntries;
-    await wait(50);
-    const belowPodium = queryShadow(el as HTMLElement, '.lb__list--below-podium');
-    expect(belowPodium).toBeTruthy();
-    const rows = queryShadowAll(el as HTMLElement, '.lb__list--below-podium .lb__row');
-    expect(rows.length).toBe(2);
+  describe('MutationObserver reacts to child changes', () => {
+    it('should update when children are added', async () => {
+      leaderboard = document.createElement('snice-leaderboard') as SniceLeaderboardElement;
+      document.body.appendChild(leaderboard);
+
+      await (leaderboard as any).ready;
+      await wait(50);
+
+      // Initially empty
+      let rendered = leaderboard.shadowRoot!.querySelectorAll('.leaderboard__entry');
+      expect(rendered.length).toBe(0);
+
+      // Add a child
+      const entry = document.createElement('snice-leaderboard-entry');
+      entry.setAttribute('rank', '1');
+      entry.setAttribute('name', 'DynamicAlice');
+      entry.setAttribute('score', '5000');
+      leaderboard.appendChild(entry);
+
+      await wait(200);
+
+      rendered = leaderboard.shadowRoot!.querySelectorAll('.leaderboard__entry');
+      expect(rendered.length).toBe(1);
+
+      const name = leaderboard.shadowRoot!.querySelector('.leaderboard__name');
+      expect(name!.textContent).toContain('DynamicAlice');
+    });
+
+    it('should update when children are removed', async () => {
+      leaderboard = document.createElement('snice-leaderboard') as SniceLeaderboardElement;
+
+      const entry1 = document.createElement('snice-leaderboard-entry');
+      entry1.setAttribute('rank', '1');
+      entry1.setAttribute('name', 'Alice');
+      entry1.setAttribute('score', '2500');
+
+      const entry2 = document.createElement('snice-leaderboard-entry');
+      entry2.setAttribute('rank', '2');
+      entry2.setAttribute('name', 'Bob');
+      entry2.setAttribute('score', '2100');
+
+      leaderboard.appendChild(entry1);
+      leaderboard.appendChild(entry2);
+      document.body.appendChild(leaderboard);
+
+      await (leaderboard as any).ready;
+      await wait(100);
+
+      let rendered = leaderboard.shadowRoot!.querySelectorAll('.leaderboard__entry');
+      expect(rendered.length).toBe(2);
+
+      // Remove one child
+      leaderboard.removeChild(entry2);
+      await wait(200);
+
+      rendered = leaderboard.shadowRoot!.querySelectorAll('.leaderboard__entry');
+      expect(rendered.length).toBe(1);
+    });
+
+    it('should fall back to imperative mode when all children removed', async () => {
+      leaderboard = document.createElement('snice-leaderboard') as SniceLeaderboardElement;
+
+      const entry = document.createElement('snice-leaderboard-entry');
+      entry.setAttribute('rank', '1');
+      entry.setAttribute('name', 'Alice');
+      entry.setAttribute('score', '2500');
+
+      leaderboard.appendChild(entry);
+      document.body.appendChild(leaderboard);
+
+      await (leaderboard as any).ready;
+      await wait(100);
+
+      // Remove all children — should leave slot mode
+      leaderboard.removeChild(entry);
+      await wait(200);
+
+      // Now setEntries should work
+      leaderboard.setEntries([
+        { rank: 1, name: 'ImperativeBob', score: 3000 },
+      ]);
+      await wait(100);
+
+      const rendered = leaderboard.shadowRoot!.querySelectorAll('.leaderboard__entry');
+      expect(rendered.length).toBe(1);
+
+      const name = leaderboard.shadowRoot!.querySelector('.leaderboard__name');
+      expect(name!.textContent).toContain('ImperativeBob');
+    });
   });
 
-  it('should use custom metric label', async () => {
-    el = await createComponent<SniceLeaderboardElement>('snice-leaderboard');
-    el.metricLabel = 'Points';
-    el.entries = sampleEntries;
-    await wait(50);
-    const header = queryShadow(el as HTMLElement, '.lb__header-score');
-    expect(header?.textContent).toBe('Points');
+  describe('podium variant', () => {
+    it('should render podium for top 3 entries', async () => {
+      leaderboard = await createComponent<SniceLeaderboardElement>('snice-leaderboard', { variant: 'podium' });
+      await wait(50);
+
+      leaderboard.setEntries([
+        { rank: 1, name: 'Alice', score: 2500 },
+        { rank: 2, name: 'Bob', score: 2100 },
+        { rank: 3, name: 'Charlie', score: 1800 },
+        { rank: 4, name: 'Diana', score: 1500 },
+      ]);
+      await wait(100);
+
+      const podium = leaderboard.shadowRoot!.querySelector('.leaderboard__podium');
+      expect(podium).toBeTruthy();
+
+      const podiumEntries = leaderboard.shadowRoot!.querySelectorAll('.leaderboard__podium-entry');
+      expect(podiumEntries.length).toBe(3);
+
+      // 4th entry should be in the list, not the podium
+      const listEntries = leaderboard.shadowRoot!.querySelectorAll('.leaderboard__entry');
+      expect(listEntries.length).toBe(1);
+    });
   });
 
-  it('should render header in list variant', async () => {
-    el = await createComponent<SniceLeaderboardElement>('snice-leaderboard');
-    el.entries = sampleEntries;
-    await wait(50);
-    const header = queryShadow(el as HTMLElement, '.lb__header');
-    expect(header).toBeTruthy();
+  describe('entry-click event', () => {
+    it('should dispatch entry-click event when entry is clicked', async () => {
+      leaderboard = await createComponent<SniceLeaderboardElement>('snice-leaderboard');
+      await wait(50);
+
+      leaderboard.setEntries([
+        { rank: 1, name: 'Alice', score: 2500 },
+      ]);
+      await wait(100);
+
+      let clickedEntry: any = null;
+      leaderboard.addEventListener('entry-click', (e: Event) => {
+        clickedEntry = (e as CustomEvent).detail;
+      });
+
+      const entry = leaderboard.shadowRoot!.querySelector('.leaderboard__entry') as HTMLElement;
+      entry.click();
+      await wait(50);
+
+      expect(clickedEntry).toBeTruthy();
+      expect(clickedEntry.entry.name).toBe('Alice');
+      expect(clickedEntry.index).toBe(0);
+    });
+  });
+});
+
+describe('snice-leaderboard-entry', () => {
+  let entry: SniceLeaderboardEntryElement;
+
+  afterEach(() => {
+    if (entry) {
+      removeComponent(entry as HTMLElement);
+    }
+  });
+
+  it('should register as custom element', async () => {
+    entry = document.createElement('snice-leaderboard-entry') as SniceLeaderboardEntryElement;
+    document.body.appendChild(entry);
+    await (entry as any).ready;
+    expect(entry).toBeTruthy();
+  });
+
+  it('should accept rank attribute', async () => {
+    entry = document.createElement('snice-leaderboard-entry') as SniceLeaderboardEntryElement;
+    entry.setAttribute('rank', '5');
+    document.body.appendChild(entry);
+    await (entry as any).ready;
+    expect(entry.rank).toBe(5);
+  });
+
+  it('should accept name attribute', async () => {
+    entry = document.createElement('snice-leaderboard-entry') as SniceLeaderboardEntryElement;
+    entry.setAttribute('name', 'Alice');
+    document.body.appendChild(entry);
+    await (entry as any).ready;
+    expect(entry.name).toBe('Alice');
+  });
+
+  it('should accept score attribute', async () => {
+    entry = document.createElement('snice-leaderboard-entry') as SniceLeaderboardEntryElement;
+    entry.setAttribute('score', '2500');
+    document.body.appendChild(entry);
+    await (entry as any).ready;
+    expect(entry.score).toBe('2500');
+  });
+
+  it('should accept highlighted boolean attribute', async () => {
+    entry = document.createElement('snice-leaderboard-entry') as SniceLeaderboardEntryElement;
+    entry.setAttribute('highlighted', '');
+    document.body.appendChild(entry);
+    await (entry as any).ready;
+    expect(entry.highlighted).toBe(true);
+  });
+
+  it('should accept change attribute', async () => {
+    entry = document.createElement('snice-leaderboard-entry') as SniceLeaderboardEntryElement;
+    entry.setAttribute('change', '-3');
+    document.body.appendChild(entry);
+    await (entry as any).ready;
+    expect(entry.change).toBe(-3);
+  });
+
+  it('should accept avatar attribute', async () => {
+    entry = document.createElement('snice-leaderboard-entry') as SniceLeaderboardEntryElement;
+    entry.setAttribute('avatar', 'test.jpg');
+    document.body.appendChild(entry);
+    await (entry as any).ready;
+    expect(entry.avatar).toBe('test.jpg');
   });
 });

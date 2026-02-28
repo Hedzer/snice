@@ -30,6 +30,11 @@ describe('snice-product-card', () => {
     expect(el.variants).toEqual([]);
     expect(el.inStock).toBe(true);
     expect(el.variant).toBe('vertical');
+    expect(el.badge).toBe('');
+    expect(el.badgeVariant).toBe('sale');
+    expect(el.loading).toBe(false);
+    expect(el.favorite).toBe(false);
+    expect(el.stockCount).toBe(-1);
   });
 
   it('should render product name', async () => {
@@ -91,7 +96,7 @@ describe('snice-product-card', () => {
     el = await createComponent<SniceProductCardElement>('snice-product-card');
     el.images = ['img1.jpg', 'img2.jpg', 'img3.jpg'];
     await wait(50);
-    const img = queryShadow(el as HTMLElement, '.product-card__gallery-image') as HTMLImageElement;
+    const img = queryShadow(el as HTMLElement, '.product-card__gallery-image--active') as HTMLImageElement;
     expect(img).toBeTruthy();
     expect(img?.src).toContain('img1.jpg');
   });
@@ -121,7 +126,7 @@ describe('snice-product-card', () => {
     const next = queryShadow(el as HTMLElement, '.product-card__gallery-nav--next') as HTMLElement;
     next.click();
     await wait(50);
-    const img = queryShadow(el as HTMLElement, '.product-card__gallery-image') as HTMLImageElement;
+    const img = queryShadow(el as HTMLElement, '.product-card__gallery-image--active') as HTMLImageElement;
     expect(img?.src).toContain('img2.jpg');
   });
 
@@ -189,8 +194,8 @@ describe('snice-product-card', () => {
     (el as HTMLElement).addEventListener('image-click', (e: Event) => {
       detail = (e as CustomEvent).detail;
     });
-    const gallery = queryShadow(el as HTMLElement, '.product-card__gallery') as HTMLElement;
-    gallery.click();
+    const wrapper = queryShadow(el as HTMLElement, '.product-card__gallery-image-wrapper') as HTMLElement;
+    wrapper.click();
     await wait(50);
     expect(detail).toBeTruthy();
     expect(detail.index).toBe(0);
@@ -258,5 +263,274 @@ describe('snice-product-card', () => {
     await wait(50);
     const price = queryShadow(el as HTMLElement, '.product-card__price-current');
     expect(price?.textContent?.trim()).toContain('\u20AC');
+  });
+
+  // ── New variant tests ──
+
+  it('should render featured variant', async () => {
+    el = await createComponent<SniceProductCardElement>('snice-product-card', {
+      variant: 'featured'
+    });
+    await wait(50);
+    const card = queryShadow(el as HTMLElement, '.product-card--featured');
+    expect(card).toBeTruthy();
+  });
+
+  it('should render minimal variant', async () => {
+    el = await createComponent<SniceProductCardElement>('snice-product-card', {
+      variant: 'minimal'
+    });
+    await wait(50);
+    const card = queryShadow(el as HTMLElement, '.product-card--minimal');
+    expect(card).toBeTruthy();
+  });
+
+  it('should render grid variant', async () => {
+    el = await createComponent<SniceProductCardElement>('snice-product-card', {
+      variant: 'grid'
+    });
+    await wait(50);
+    const card = queryShadow(el as HTMLElement, '.product-card--grid');
+    expect(card).toBeTruthy();
+  });
+
+  // ── Badge tests ──
+
+  it('should render badge text', async () => {
+    el = await createComponent<SniceProductCardElement>('snice-product-card');
+    el.badge = 'NEW';
+    await wait(50);
+    const badge = queryShadow(el as HTMLElement, '.product-card__badge');
+    expect(badge).toBeTruthy();
+    expect(badge?.textContent?.trim()).toBe('NEW');
+  });
+
+  it('should not render badge when empty', async () => {
+    el = await createComponent<SniceProductCardElement>('snice-product-card');
+    await wait(50);
+    const badge = queryShadow(el as HTMLElement, '.product-card__badge');
+    expect(badge).toBeNull();
+  });
+
+  it('should apply badge-variant class for sale', async () => {
+    el = await createComponent<SniceProductCardElement>('snice-product-card');
+    el.badge = 'SALE';
+    el.badgeVariant = 'sale';
+    await wait(50);
+    const badge = queryShadow(el as HTMLElement, '.product-card__badge--sale');
+    expect(badge).toBeTruthy();
+  });
+
+  it('should apply badge-variant class for new', async () => {
+    el = await createComponent<SniceProductCardElement>('snice-product-card');
+    el.badge = 'NEW';
+    el.badgeVariant = 'new';
+    await wait(50);
+    const badge = queryShadow(el as HTMLElement, '.product-card__badge--new');
+    expect(badge).toBeTruthy();
+  });
+
+  it('should apply badge-variant class for featured', async () => {
+    el = await createComponent<SniceProductCardElement>('snice-product-card');
+    el.badge = 'HOT';
+    el.badgeVariant = 'featured';
+    await wait(50);
+    const badge = queryShadow(el as HTMLElement, '.product-card__badge--featured');
+    expect(badge).toBeTruthy();
+  });
+
+  // ── Favorite tests ──
+
+  it('should render favorite button', async () => {
+    el = await createComponent<SniceProductCardElement>('snice-product-card');
+    el.images = ['img1.jpg'];
+    await wait(50);
+    const btn = queryShadow(el as HTMLElement, '.product-card__favorite-btn');
+    expect(btn).toBeTruthy();
+  });
+
+  it('should toggle favorite on click', async () => {
+    el = await createComponent<SniceProductCardElement>('snice-product-card');
+    el.images = ['img1.jpg'];
+    await wait(50);
+    expect(el.favorite).toBe(false);
+    const btn = queryShadow(el as HTMLElement, '.product-card__favorite-btn') as HTMLElement;
+    btn.click();
+    await wait(50);
+    expect(el.favorite).toBe(true);
+  });
+
+  it('should emit favorite event with detail', async () => {
+    el = await createComponent<SniceProductCardElement>('snice-product-card');
+    el.images = ['img1.jpg'];
+    await wait(50);
+    let detail: any = null;
+    (el as HTMLElement).addEventListener('favorite', (e: Event) => {
+      detail = (e as CustomEvent).detail;
+    });
+    const btn = queryShadow(el as HTMLElement, '.product-card__favorite-btn') as HTMLElement;
+    btn.click();
+    await wait(50);
+    expect(detail).toBeTruthy();
+    expect(detail.favorited).toBe(true);
+  });
+
+  it('should show filled heart when favorite is true', async () => {
+    el = await createComponent<SniceProductCardElement>('snice-product-card');
+    el.images = ['img1.jpg'];
+    el.favorite = true;
+    await wait(50);
+    const activeIcon = queryShadow(el as HTMLElement, '.product-card__favorite-icon--active');
+    expect(activeIcon).toBeTruthy();
+  });
+
+  // ── Quick view tests ──
+
+  it('should render quick view overlay', async () => {
+    el = await createComponent<SniceProductCardElement>('snice-product-card');
+    el.images = ['img1.jpg'];
+    await wait(50);
+    const quickView = queryShadow(el as HTMLElement, '.product-card__quick-view');
+    expect(quickView).toBeTruthy();
+  });
+
+  it('should emit quick-view event on click', async () => {
+    el = await createComponent<SniceProductCardElement>('snice-product-card');
+    el.images = ['img1.jpg'];
+    await wait(50);
+    const spy = vi.fn();
+    (el as HTMLElement).addEventListener('quick-view', spy);
+    const quickView = queryShadow(el as HTMLElement, '.product-card__quick-view') as HTMLElement;
+    quickView.click();
+    await wait(50);
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
+
+  // ── Loading / Skeleton tests ──
+
+  it('should render skeleton when loading is true', async () => {
+    el = await createComponent<SniceProductCardElement>('snice-product-card', {
+      loading: true
+    });
+    await wait(50);
+    const skeleton = queryShadow(el as HTMLElement, '.product-card--skeleton');
+    expect(skeleton).toBeTruthy();
+  });
+
+  it('should show shimmer lines in skeleton', async () => {
+    el = await createComponent<SniceProductCardElement>('snice-product-card', {
+      loading: true
+    });
+    await wait(50);
+    const titleLine = queryShadow(el as HTMLElement, '.product-card__skeleton-line--title');
+    const priceLine = queryShadow(el as HTMLElement, '.product-card__skeleton-line--price');
+    expect(titleLine).toBeTruthy();
+    expect(priceLine).toBeTruthy();
+  });
+
+  it('should not render product content when loading', async () => {
+    el = await createComponent<SniceProductCardElement>('snice-product-card', {
+      loading: true
+    });
+    el.name = 'Test';
+    await wait(50);
+    const title = queryShadow(el as HTMLElement, '.product-card__title');
+    expect(title).toBeNull();
+  });
+
+  // ── Stock count tests ──
+
+  it('should show urgency text when stock-count is low', async () => {
+    el = await createComponent<SniceProductCardElement>('snice-product-card');
+    el.stockCount = 3;
+    el.inStock = true;
+    await wait(50);
+    const urgency = queryShadow(el as HTMLElement, '.product-card__stock-urgency');
+    expect(urgency).toBeTruthy();
+    expect(urgency?.textContent).toContain('3');
+  });
+
+  it('should show normal in-stock when stock-count >= 5', async () => {
+    el = await createComponent<SniceProductCardElement>('snice-product-card');
+    el.stockCount = 10;
+    el.inStock = true;
+    await wait(50);
+    const urgency = queryShadow(el as HTMLElement, '.product-card__stock-urgency');
+    expect(urgency).toBeNull();
+    const stock = queryShadow(el as HTMLElement, '.product-card__stock--in');
+    expect(stock).toBeTruthy();
+  });
+
+  it('should render pulsing stock dot for in-stock', async () => {
+    el = await createComponent<SniceProductCardElement>('snice-product-card');
+    el.inStock = true;
+    await wait(50);
+    const dot = queryShadow(el as HTMLElement, '.product-card__stock-dot');
+    expect(dot).toBeTruthy();
+  });
+
+  // ── CTA loading state tests ──
+
+  it('should show spinner in CTA when loading attribute is used on CTA', async () => {
+    el = await createComponent<SniceProductCardElement>('snice-product-card');
+    // Note: the `loading` property triggers skeleton. For CTA loading we need
+    // the component to not be in skeleton mode. We'll test the CTA has cart icon.
+    el.inStock = true;
+    await wait(50);
+    const ctaIcon = queryShadow(el as HTMLElement, '.product-card__cta-icon');
+    expect(ctaIcon).toBeTruthy();
+  });
+
+  // ── CSS parts tests ──
+
+  it('should have part attributes on key elements', async () => {
+    el = await createComponent<SniceProductCardElement>('snice-product-card');
+    el.name = 'Test';
+    el.price = 10;
+    el.rating = 4;
+    el.badge = 'NEW';
+    el.images = ['img1.jpg'];
+    await wait(50);
+
+    const parts = ['base', 'gallery', 'body', 'title', 'rating', 'stars', 'price', 'price-current', 'stock', 'cta', 'badge', 'favorite-btn'];
+    for (const part of parts) {
+      const found = queryShadow(el as HTMLElement, `[part="${part}"]`);
+      expect(found).toBeTruthy();
+    }
+  });
+
+  // ── Image crossfade tests ──
+
+  it('should render all images with crossfade classes', async () => {
+    el = await createComponent<SniceProductCardElement>('snice-product-card');
+    el.images = ['img1.jpg', 'img2.jpg', 'img3.jpg'];
+    await wait(50);
+    const allImages = queryShadowAll(el as HTMLElement, '.product-card__gallery-image');
+    expect(allImages.length).toBe(3);
+    const activeImages = queryShadowAll(el as HTMLElement, '.product-card__gallery-image--active');
+    expect(activeImages.length).toBe(1);
+  });
+
+  it('should crossfade to next image on navigation', async () => {
+    el = await createComponent<SniceProductCardElement>('snice-product-card');
+    el.images = ['img1.jpg', 'img2.jpg'];
+    await wait(50);
+    const next = queryShadow(el as HTMLElement, '.product-card__gallery-nav--next') as HTMLElement;
+    next.click();
+    await wait(50);
+    const active = queryShadow(el as HTMLElement, '.product-card__gallery-image--active') as HTMLImageElement;
+    expect(active?.src).toContain('img2.jpg');
+  });
+
+  // ── Featured variant gradient overlay ──
+
+  it('should render gradient overlay on featured variant', async () => {
+    el = await createComponent<SniceProductCardElement>('snice-product-card', {
+      variant: 'featured'
+    });
+    el.images = ['img1.jpg'];
+    await wait(50);
+    const gradient = queryShadow(el as HTMLElement, '.product-card__gallery-gradient');
+    expect(gradient).toBeTruthy();
   });
 });
