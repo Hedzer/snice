@@ -1,48 +1,43 @@
-    <!-- ── Leaderboard ── -->
     <div class="comp-section">
       <h3>Leaderboard</h3>
-      <p class="comp-desc">Ranked lists with podium and change indicators</p>
+      <p class="comp-desc">Ranked list with podium variant, avatars, change indicators, and dual API (declarative children or imperative setter)</p>
       <div class="comp-split">
-        <div class="comp-split-demo" style="width:100%">
-          <snice-leaderboard id="demo-leaderboard" metric-label="Points" style="width:100%"></snice-leaderboard>
+        <div class="comp-split-demo" style="max-width:420px;margin:0 auto">
+          <snice-leaderboard variant="podium" title="Top Players" id="demo-leaderboard">
+            <snice-leaderboard-entry rank="1" name="Alice" score="2,500" change="3" highlighted></snice-leaderboard-entry>
+            <snice-leaderboard-entry rank="2" name="Bob" score="2,100" change="-1"></snice-leaderboard-entry>
+            <snice-leaderboard-entry rank="3" name="Charlie" score="1,800" change="2"></snice-leaderboard-entry>
+            <snice-leaderboard-entry rank="4" name="Diana" score="1,500" change="0"></snice-leaderboard-entry>
+            <snice-leaderboard-entry rank="5" name="Eve" score="1,200" change="-2"></snice-leaderboard-entry>
+          </snice-leaderboard>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=6ced38e">&lt;snice-leaderboard id="lb"
-  metric-label="Points"
-  variant="list"&gt;
+          <snice-code-block language="html" grammar="grammars/html.json?v=c64477e">&lt;!-- Declarative (child elements) --&gt;
+&lt;snice-leaderboard variant="podium"
+  title="Top Players"&gt;
+  &lt;snice-leaderboard-entry
+    rank="1" name="Alice"
+    score="2,500" change="3"
+    highlighted&gt;
+  &lt;/snice-leaderboard-entry&gt;
+  &lt;snice-leaderboard-entry
+    rank="2" name="Bob"
+    score="2,100" change="-1"&gt;
+  &lt;/snice-leaderboard-entry&gt;
 &lt;/snice-leaderboard&gt;
 
+&lt;!-- Imperative (setEntries) --&gt;
 &lt;script&gt;
-  lb.entries = [
-    { rank: 1, name: 'Alice Chen',
-      score: 2840, change: 2 },
-    { rank: 2, name: 'Bob Rivera',
-      score: 2695, change: -1 },
-    { rank: 3, name: 'Carol Kim',
-      score: 2510, change: 0 },
-    { rank: 4, name: 'Dave Patel',
-      score: 2200, change: 1,
-      highlighted: true }
-  ];
-&lt;/script&gt;
-
-&lt;!-- variant="podium" for top-3 podium --&gt;</snice-code-block>
+  const lb = document.querySelector(
+    'snice-leaderboard');
+  lb.setEntries([
+    { rank: 1, name: 'Alice',
+      score: 2500, change: 3 },
+    { rank: 2, name: 'Bob',
+      score: 2100, change: -1 },
+  ]);
+&lt;/script&gt;</snice-code-block>
         </div>
       </div>
     </div>
-
-<script>
-  customElements.whenDefined('snice-leaderboard').then(() => {
-    const lb = document.getElementById('demo-leaderboard');
-    if (lb) {
-      lb.entries = [
-        { rank: 1, name: 'Alice Chen', score: 2840, change: 2 },
-        { rank: 2, name: 'Bob Rivera', score: 2695, change: -1 },
-        { rank: 3, name: 'Carol Kim', score: 2510, change: 0 },
-        { rank: 4, name: 'Dave Patel', score: 2200, change: 1, highlighted: true },
-        { rank: 5, name: 'Eve Martinez', score: 1980, change: -2 }
-      ];
-    }
-  });
-</script>
