@@ -249,6 +249,46 @@ page.on('pageerror', err => console.log('PAGE ERROR:', err.message));
 
 ---
 
+## Container Components: Dual API Pattern
+
+Any component that represents a **collection** (group, list, feed, grid of items) MUST support both:
+
+### 1. Imperative API — JS property with array of objects
+```typescript
+group.avatars = [
+  { name: 'Alice', src: '...' },
+  { name: 'Bob' }
+];
+```
+
+### 2. Declarative API — child elements in the slot
+```html
+<snice-avatar-group>
+  <snice-avatar name="Alice" src="..."></snice-avatar>
+  <snice-avatar name="Bob"></snice-avatar>
+</snice-avatar-group>
+```
+
+### The container must add value
+The container isn't just a wrapper — it provides layout and behavior that individual items don't have on their own:
+- **Layout effects**: overlap/stack, grid arrangement, spacing normalization
+- **Overflow handling**: "+3 more" badge, truncation, expand/collapse
+- **Size normalization**: force consistent sizing on children
+- **Shared context**: pass down variant, size, orientation to children
+- **Aggregate behavior**: select-all, bulk actions, keyboard navigation across items
+
+### Implementation pattern
+- Use `<slot>` for declarative children
+- Use `@observe` to watch for slotted children changes
+- When the array property is set, render items internally
+- When children are slotted, use them as-is but apply container effects
+- Children take precedence if both are provided (slot wins over array)
+
+### Examples of container components
+`avatar-group`, `stat-group`, `activity-feed`, `leaderboard`, `metric-table`, `tag` (as tag-group), `breadcrumbs`, `stepper`, `tabs`, `carousel`, `nav`
+
+---
+
 ## General Dos and Don'ts
 
 ### ✅ DO:
