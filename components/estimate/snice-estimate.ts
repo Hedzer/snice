@@ -9,7 +9,8 @@ import type {
   EstimateJSON,
   EstimateAcceptDetail,
   EstimateDeclineDetail,
-  ItemToggleDetail
+  ItemToggleDetail,
+  QrPosition
 } from './snice-estimate.types';
 
 @element('snice-estimate')
@@ -48,7 +49,19 @@ export class SniceEstimate extends HTMLElement implements SniceEstimateElement {
   notes = '';
 
   @property()
+  terms = '';
+
+  @property()
   variant: EstimateVariant = 'standard';
+
+  @property({ type: Boolean })
+  showQr = false;
+
+  @property()
+  qrData = '';
+
+  @property()
+  qrPosition: QrPosition = 'top-right';
 
   @dispatch('estimate-accept', { bubbles: true, composed: true })
   private emitEstimateAccept(detail?: EstimateAcceptDetail): EstimateAcceptDetail {
@@ -145,6 +158,7 @@ export class SniceEstimate extends HTMLElement implements SniceEstimateElement {
       taxRate: this.taxRate,
       discount: this.discount,
       notes: this.notes,
+      terms: this.terms,
       subtotal: this.getSubtotal(),
       discountAmount: this.getDiscountAmount(),
       taxAmount: this.getTaxAmount(),
@@ -152,41 +166,58 @@ export class SniceEstimate extends HTMLElement implements SniceEstimateElement {
     };
   }
 
+  private renderQr(position: QrPosition): unknown {
+    if (!this.showQr) return '';
+
+    const posClass = `est__qr est__qr--${position}`;
+    return html/*html*/`
+      <div class="${posClass}" part="qr-container">
+        <slot name="qr" part="qr"></slot>
+      </div>
+    `;
+  }
+
   private renderParty(party: EstimateParty | null, label: string): unknown {
     if (!party) return '';
 
     return html/*html*/`
       <div class="est__party" part="party">
-        <span class="est__party-label">${label}</span>
-        <span class="est__party-name">${party.name}</span>
+        <span class="est__party-label" part="party-label">${label}</span>
+        <span class="est__party-name" part="party-name">${party.name}</span>
         <if ${party.address}>
-          <span class="est__party-detail">${party.address}</span>
+          <span class="est__party-detail" part="party-detail">${party.address}</span>
         </if>
         <if ${party.phone}>
-          <span class="est__party-detail">${party.phone}</span>
+          <span class="est__party-detail" part="party-detail">${party.phone}</span>
         </if>
         <if ${party.email}>
-          <span class="est__party-detail">${party.email}</span>
+          <span class="est__party-detail" part="party-detail">${party.email}</span>
         </if>
       </div>
     `;
   }
 
   private renderHeader(): unknown {
+    const isTopRight = this.showQr && this.qrPosition === 'top-right';
+
     return html/*html*/`
       <div class="est__header" part="header">
         <div class="est__header-left">
+          <slot name="logo" part="logo" class="est__logo"></slot>
           <h2 class="est__title" part="title">Estimate ${this.estimateNumber ? '#' + this.estimateNumber : ''}</h2>
           <if ${this.date}>
-            <span class="est__subtitle" part="date">${this.date}</span>
+            <span class="est__meta" part="meta">${this.date}</span>
           </if>
         </div>
         <div class="est__header-right">
           <span class="est__badge est__status--${this.status}" part="status">${this.status}</span>
           <if ${this.expiryDate}>
-            <span class="est__expiry" part="expiry">Valid until ${this.expiryDate}</span>
+            <span class="est__expiry" part="expiry">Valid until <span class="est__expiry-date" part="expiry-date">${this.expiryDate}</span></span>
           </if>
         </div>
+        <if ${isTopRight}>
+          ${this.renderQr('top-right')}
+        </if>
       </div>
     `;
   }
@@ -202,19 +233,19 @@ export class SniceEstimate extends HTMLElement implements SniceEstimateElement {
     `;
   }
 
-  private renderStandardItems(): unknown {
+  private renderTable(): unknown {
     if (this.items.length === 0) return '';
 
     return html/*html*/`
-      <div class="est__section" part="items-section">
-        <table class="est__items-table" part="items-table">
+      <div class="est__table-section" part="table">
+        <table class="est__table">
           <thead>
-            <tr>
-              <th>Description</th>
-              <th>Qty</th>
-              <th>Unit Price</th>
-              <th>Total</th>
-              <th></th>
+            <tr part="table-header">
+              <th class="est__table-header">Description</th>
+              <th class="est__table-header">Qty</th>
+              <th class="est__table-header">Unit Price</th>
+              <th class="est__table-header">Total</th>
+              <th class="est__table-header"></th>
             </tr>
           </thead>
           <tbody>
@@ -222,23 +253,22 @@ export class SniceEstimate extends HTMLElement implements SniceEstimateElement {
               const isOptional = item.optional === true;
               const isIncluded = !isOptional || item.included !== false;
               const rowClasses = [
-                'est__item-row',
-                isOptional ? 'est__item-row--optional' : '',
-                isIncluded ? 'est__item-row--included' : ''
+                isOptional ? 'est__row--optional' : '',
+                isIncluded ? 'est__row--included' : ''
               ].filter(Boolean).join(' ');
 
               return html/*html*/`
-                <tr class="${rowClasses}">
-                  <td>
+                <tr class="${rowClasses}" part="table-row">
+                  <td class="est__table-cell" part="table-cell">
                     ${item.description}
                     <if ${isOptional}>
-                      <span class="est__item-optional-tag">optional</span>
+                      <span class="est__optional-tag">optional</span>
                     </if>
                   </td>
-                  <td>${item.quantity}</td>
-                  <td>${this.formatCurrency(item.unitPrice)}</td>
-                  <td>${this.formatCurrency(item.quantity * item.unitPrice)}</td>
-                  <td>
+                  <td class="est__table-cell" part="table-cell">${item.quantity}</td>
+                  <td class="est__table-cell" part="table-cell">${this.formatCurrency(item.unitPrice)}</td>
+                  <td class="est__table-cell" part="table-cell">${this.formatCurrency(item.quantity * item.unitPrice)}</td>
+                  <td class="est__table-cell" part="table-cell">
                     <if ${isOptional}>
                       <button
                         class="est__toggle ${isIncluded ? 'est__toggle--active' : ''}"
@@ -257,32 +287,32 @@ export class SniceEstimate extends HTMLElement implements SniceEstimateElement {
     `;
   }
 
-  private renderTotals(): unknown {
+  private renderSummary(): unknown {
     const subtotal = this.getSubtotal();
     const discountAmount = this.getDiscountAmount();
     const taxAmount = this.getTaxAmount();
     const total = this.getTotal();
 
     return html/*html*/`
-      <div class="est__totals" part="totals">
-        <div class="est__totals-inner">
-          <div class="est__total-row">
+      <div class="est__summary" part="summary">
+        <div class="est__summary-inner">
+          <div class="est__subtotal-row" part="subtotal">
             <span>Subtotal</span>
             <span>${this.formatCurrency(subtotal)}</span>
           </div>
           <if ${this.discount > 0}>
-            <div class="est__total-row">
+            <div class="est__discount-row" part="discount-row">
               <span>Discount (${this.discount}%)</span>
               <span>-${this.formatCurrency(discountAmount)}</span>
             </div>
           </if>
           <if ${this.taxRate > 0}>
-            <div class="est__total-row">
+            <div class="est__tax-row" part="tax-row">
               <span>Tax (${this.taxRate}%)</span>
               <span>${this.formatCurrency(taxAmount)}</span>
             </div>
           </if>
-          <div class="est__total-row est__total-row--grand">
+          <div class="est__total-row" part="total">
             <span>Total</span>
             <span>${this.formatCurrency(total)}</span>
           </div>
@@ -295,9 +325,20 @@ export class SniceEstimate extends HTMLElement implements SniceEstimateElement {
     if (!this.notes) return '';
 
     return html/*html*/`
-      <div class="est__section" part="notes-section">
-        <h3 class="est__section-title">Notes</h3>
-        <p class="est__notes" part="notes">${this.notes}</p>
+      <div class="est__notes-section" part="notes">
+        <h3 class="est__notes-label" part="notes-label">Notes</h3>
+        <p class="est__notes-content" part="notes-content">${this.notes}</p>
+      </div>
+    `;
+  }
+
+  private renderTerms(): unknown {
+    if (!this.terms) return '';
+
+    return html/*html*/`
+      <div class="est__terms-section" part="terms">
+        <h3 class="est__terms-label">Terms & Conditions</h3>
+        <p class="est__terms-content">${this.terms}</p>
       </div>
     `;
   }
@@ -318,9 +359,16 @@ export class SniceEstimate extends HTMLElement implements SniceEstimateElement {
     `;
   }
 
+  private renderFooter(): unknown {
+    const hasFooterSlot = true; // Always render for slot availability
+    return html/*html*/`
+      <div class="est__footer" part="footer">
+        <slot name="footer"></slot>
+      </div>
+    `;
+  }
+
   private renderComparisonView(): unknown {
-    // In comparison mode, each item is treated as a separate option
-    // Group items by their description prefix or render each as an option card
     return html/*html*/`
       <div class="est__comparison" part="comparison">
         ${this.items.map((item, index) => html/*html*/`
@@ -349,11 +397,22 @@ export class SniceEstimate extends HTMLElement implements SniceEstimateElement {
   }
 
   private renderStandardView(): unknown {
+    const isBottomRight = this.showQr && this.qrPosition === 'bottom-right';
+    const isFooterQr = this.showQr && this.qrPosition === 'footer';
+
     return html/*html*/`
-      ${this.renderStandardItems()}
-      ${this.renderTotals()}
+      ${this.renderTable()}
+      ${this.renderSummary()}
       ${this.renderNotes()}
+      ${this.renderTerms()}
       ${this.renderActions()}
+      <if ${isBottomRight}>
+        ${this.renderQr('bottom-right')}
+      </if>
+      <if ${isFooterQr}>
+        ${this.renderQr('footer')}
+      </if>
+      ${this.renderFooter()}
     `;
   }
 
@@ -367,6 +426,10 @@ export class SniceEstimate extends HTMLElement implements SniceEstimateElement {
         ${this.renderParties()}
         <if ${isComparison}>
           ${this.renderComparisonView()}
+          ${this.renderNotes()}
+          ${this.renderTerms()}
+          ${this.renderActions()}
+          ${this.renderFooter()}
         </if>
         <if ${!isComparison}>
           ${this.renderStandardView()}
