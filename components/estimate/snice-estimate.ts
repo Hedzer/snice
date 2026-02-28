@@ -262,26 +262,27 @@ export class SniceEstimate extends HTMLElement implements SniceEstimateElement {
                 isIncluded ? 'est__row--included' : ''
               ].filter(Boolean).join(' ');
 
+              const optionalTag = isOptional ? html/*html*/`<span class="est__optional-tag">optional</span>` : '';
+              const toggleBtn = isOptional ? html/*html*/`
+                <button
+                  class="est__toggle ${isIncluded ? 'est__toggle--active' : ''}"
+                  @click=${() => this.handleItemToggle(index)}
+                  aria-label="${isIncluded ? 'Exclude item' : 'Include item'}"
+                  part="item-toggle">
+                </button>
+              ` : '';
+
               return html/*html*/`
                 <tr class="${rowClasses}" part="table-row">
                   <td class="est__table-cell" part="table-cell">
                     ${item.description}
-                    <if ${isOptional}>
-                      <span class="est__optional-tag">optional</span>
-                    </if>
+                    ${optionalTag}
                   </td>
                   <td class="est__table-cell" part="table-cell">${item.quantity}</td>
                   <td class="est__table-cell" part="table-cell">${this.formatCurrency(item.unitPrice)}</td>
                   <td class="est__table-cell" part="table-cell">${this.formatCurrency(item.quantity * item.unitPrice)}</td>
                   <td class="est__table-cell" part="table-cell">
-                    <if ${isOptional}>
-                      <button
-                        class="est__toggle ${isIncluded ? 'est__toggle--active' : ''}"
-                        @click=${() => this.handleItemToggle(index)}
-                        aria-label="${isIncluded ? 'Exclude item' : 'Include item'}"
-                        part="item-toggle">
-                      </button>
-                    </if>
+                    ${toggleBtn}
                   </td>
                 </tr>
               `;
@@ -298,6 +299,20 @@ export class SniceEstimate extends HTMLElement implements SniceEstimateElement {
     const taxAmount = this.getTaxAmount();
     const total = this.getTotal();
 
+    const discountRow = this.discount > 0 ? html/*html*/`
+      <div class="est__discount-row" part="discount-row">
+        <span>Discount (${this.discount}%)</span>
+        <span>-${this.formatCurrency(discountAmount)}</span>
+      </div>
+    ` : '';
+
+    const taxRow = this.taxRate > 0 ? html/*html*/`
+      <div class="est__tax-row" part="tax-row">
+        <span>Tax (${this.taxRate}%)</span>
+        <span>${this.formatCurrency(taxAmount)}</span>
+      </div>
+    ` : '';
+
     return html/*html*/`
       <div class="est__summary" part="summary">
         <div class="est__summary-inner">
@@ -305,18 +320,8 @@ export class SniceEstimate extends HTMLElement implements SniceEstimateElement {
             <span>Subtotal</span>
             <span>${this.formatCurrency(subtotal)}</span>
           </div>
-          <if ${this.discount > 0}>
-            <div class="est__discount-row" part="discount-row">
-              <span>Discount (${this.discount}%)</span>
-              <span>-${this.formatCurrency(discountAmount)}</span>
-            </div>
-          </if>
-          <if ${this.taxRate > 0}>
-            <div class="est__tax-row" part="tax-row">
-              <span>Tax (${this.taxRate}%)</span>
-              <span>${this.formatCurrency(taxAmount)}</span>
-            </div>
-          </if>
+          ${discountRow}
+          ${taxRow}
           <div class="est__total-row" part="total">
             <span>Total</span>
             <span>${this.formatCurrency(total)}</span>
