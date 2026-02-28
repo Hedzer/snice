@@ -34,6 +34,7 @@ export interface SniceCodeBlockElement extends HTMLElement {
   copyable: boolean;
   filename: string;
   format: string;
+  theme: '' | 'dark' | 'light';
   highlighter?: HighlighterFunction;
 
   copy(): Promise<void>;

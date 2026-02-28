@@ -58,6 +58,9 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
   @property({  })
   format = '';
 
+  @property({  })
+  theme: '' | 'dark' | 'light' = '';
+
   public highlighter?: HighlighterFunction;
   private _formatter?: FormatterFunction;
 
