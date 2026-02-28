@@ -1,25 +1,31 @@
-export type LeaderboardVariant = 'list' | 'podium';
+export type LeaderboardVariant = 'default' | 'podium' | 'compact';
+export type LeaderboardSize = 'small' | 'medium' | 'large';
 
 export interface LeaderboardEntry {
   rank: number;
   name: string;
-  avatar?: string;
   score: number | string;
+  avatar?: string;
   change?: number;
   highlighted?: boolean;
 }
 
 export interface SniceLeaderboardElement extends HTMLElement {
-  entries: LeaderboardEntry[];
   variant: LeaderboardVariant;
-  metricLabel: string;
+  size: LeaderboardSize;
+  title: string;
+  setEntries(entries: LeaderboardEntry[]): void;
 }
 
-export interface EntryClickDetail {
-  entry: LeaderboardEntry;
-  index: number;
+export interface SniceLeaderboardEntryElement extends HTMLElement {
+  rank: number;
+  name: string;
+  score: string;
+  avatar: string;
+  change: number;
+  highlighted: boolean;
 }
 
 export interface SniceLeaderboardEventMap {
-  'entry-click': CustomEvent<EntryClickDetail>;
+  'entry-click': CustomEvent<{ entry: LeaderboardEntry; index: number }>;
 }
