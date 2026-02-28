@@ -1,0 +1,50 @@
+    <div class="comp-section">
+      <h3>Estimate</h3>
+      <p class="comp-desc">Quote/estimate with optional line items, accept/decline actions, and expiry date</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="justify-content:center">
+          <snice-estimate id="demo-estimate" estimate-number="EST-0042" date="Feb 27, 2026" expiry-date="Mar 15, 2026" status="sent" currency="$" tax-rate="8" notes="This estimate is valid for 15 days. Prices subject to change after expiry." style="max-width:640px;width:100%"></snice-estimate>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">javascript</span>
+          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=20901da">&lt;snice-estimate
+  id="est"
+  estimate-number="EST-0042"
+  date="Feb 27, 2026"
+  expiry-date="Mar 15, 2026"
+  status="sent"
+  currency="$"
+  tax-rate="8"
+&gt;&lt;/snice-estimate&gt;
+
+&lt;script&gt;
+  est.from = { name: 'Design Studio' };
+  est.to = { name: 'Client Corp' };
+  est.items = [
+    { description: 'Brand Identity',
+      quantity: 1, unitPrice: 5000 },
+    { description: 'Social Media Kit',
+      quantity: 1, unitPrice: 2000,
+      optional: true }
+  ];
+  est.addEventListener('estimate-accept',
+    e =&gt; console.log(e.detail));
+&lt;/script&gt;</snice-code-block>
+        </div>
+      </div>
+    </div>
+<script>
+    customElements.whenDefined('snice-estimate').then(() => {
+      const est = document.getElementById('demo-estimate');
+      if (est) {
+        est.from = { name: 'Creative Studio', address: '100 Design Blvd, Austin, TX', email: 'hello@studio.com' };
+        est.to = { name: 'TechStart Inc', address: '200 Innovation Dr, Seattle, WA', email: 'projects@techstart.com' };
+        est.items = [
+          { description: 'Brand Identity Package', quantity: 1, unitPrice: 5000 },
+          { description: 'Website Design (5 pages)', quantity: 1, unitPrice: 8000 },
+          { description: 'Social Media Kit', quantity: 1, unitPrice: 2000, optional: true },
+          { description: 'Motion Graphics', quantity: 1, unitPrice: 3500, optional: true }
+        ];
+      }
+    });
+</script>

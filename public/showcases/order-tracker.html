@@ -1,0 +1,49 @@
+    <div class="comp-section">
+      <h3>Order Tracker</h3>
+      <p class="comp-desc">Order status timeline with tracking info, horizontal and vertical orientations</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo demo-col" style="gap:2rem">
+          <snice-order-tracker id="demo-order-tracker-h" tracking-number="1Z999AA10123456784" carrier="UPS"></snice-order-tracker>
+          <snice-order-tracker id="demo-order-tracker-v" variant="vertical" style="max-width:400px"></snice-order-tracker>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">javascript</span>
+          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=20901da">&lt;snice-order-tracker
+  id="tracker"
+  tracking-number="1Z999AA10123456784"
+  carrier="UPS"
+&gt;&lt;/snice-order-tracker&gt;
+
+&lt;script&gt;
+  tracker.steps = [
+    { label: 'Ordered', status: 'completed',
+      timestamp: 'Feb 20, 2:30 PM' },
+    { label: 'Shipped', status: 'completed',
+      timestamp: 'Feb 21, 9:15 AM' },
+    { label: 'In Transit', status: 'current',
+      description: 'Package in transit' },
+    { label: 'Delivered', status: 'pending' }
+  ];
+&lt;/script&gt;</snice-code-block>
+        </div>
+      </div>
+    </div>
+<script>
+    customElements.whenDefined('snice-order-tracker').then(() => {
+      const h = document.getElementById('demo-order-tracker-h');
+      if (h) h.steps = [
+        { label: 'Ordered', status: 'completed', timestamp: 'Feb 20, 2:30 PM' },
+        { label: 'Confirmed', status: 'completed', timestamp: 'Feb 20, 2:31 PM' },
+        { label: 'Shipped', status: 'completed', timestamp: 'Feb 21, 9:15 AM' },
+        { label: 'In Transit', status: 'current', description: 'Package is on its way' },
+        { label: 'Delivered', status: 'pending' }
+      ];
+      const v = document.getElementById('demo-order-tracker-v');
+      if (v) v.steps = [
+        { label: 'Order Placed', status: 'completed', timestamp: 'Feb 22, 10:00 AM', description: 'Payment confirmed' },
+        { label: 'Processing', status: 'completed', timestamp: 'Feb 22, 11:30 AM' },
+        { label: 'Out for Delivery', status: 'current', description: 'Driver en route' },
+        { label: 'Delivered', status: 'pending' }
+      ];
+    });
+</script>

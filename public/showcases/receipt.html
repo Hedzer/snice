@@ -1,0 +1,53 @@
+    <div class="comp-section">
+      <h3>Receipt</h3>
+      <p class="comp-desc">Transaction receipt with merchant info, line items, totals, and payment method</p>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="gap:1.5rem;flex-wrap:wrap;justify-content:center">
+          <snice-receipt id="demo-receipt" receipt-number="RCT-48291" date="Feb 27, 2026 3:42 PM" currency="USD" tax="4.76" payment-method="Visa ending in 4242" style="max-width:320px;width:100%"></snice-receipt>
+          <snice-receipt id="demo-receipt-thermal" receipt-number="00847" date="02/27/2026 15:42" currency="USD" tax="2.10" payment-method="Cash" variant="thermal" style="max-width:280px;width:100%"></snice-receipt>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">javascript</span>
+          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=20901da">&lt;snice-receipt
+  id="rcpt"
+  receipt-number="RCT-48291"
+  date="Feb 27, 2026 3:42 PM"
+  tax="4.76"
+  payment-method="Visa ending in 4242"
+&gt;&lt;/snice-receipt&gt;
+
+&lt;script&gt;
+  rcpt.merchant = { name: 'Coffee Shop',
+    address: '789 Main St' };
+  rcpt.items = [
+    { name: 'Latte', quantity: 2,
+      price: 5.50 },
+    { name: 'Muffin', quantity: 1,
+      price: 3.95 }
+  ];
+&lt;/script&gt;</snice-code-block>
+        </div>
+      </div>
+    </div>
+<script>
+    customElements.whenDefined('snice-receipt').then(() => {
+      const rcpt = document.getElementById('demo-receipt');
+      if (rcpt) {
+        rcpt.merchant = { name: 'Downtown Coffee', address: '789 Main St, Suite 100' };
+        rcpt.items = [
+          { name: 'Cappuccino', quantity: 2, price: 5.50 },
+          { name: 'Blueberry Muffin', quantity: 1, price: 3.95 },
+          { name: 'Bottled Water', quantity: 1, price: 2.50 }
+        ];
+      }
+      const thermal = document.getElementById('demo-receipt-thermal');
+      if (thermal) {
+        thermal.merchant = { name: 'QUICK MART' };
+        thermal.items = [
+          { name: 'Sandwich', quantity: 1, price: 8.99 },
+          { name: 'Soda', quantity: 2, price: 1.99 },
+          { name: 'Chips', quantity: 1, price: 3.49 }
+        ];
+      }
+    });
+</script>

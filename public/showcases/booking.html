@@ -1,0 +1,72 @@
+    <div class="comp-section">
+      <h3>Booking</h3>
+      <p class="comp-desc">Appointment booking widget with date picker, time slot selection, and confirmation form</p>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="justify-content:center">
+          <snice-booking id="demo-booking" duration="30" variant="stepper" style="max-width:420px;width:100%"></snice-booking>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">javascript</span>
+          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=20901da">&lt;snice-booking
+  id="bk"
+  duration="30"
+  variant="stepper"
+&gt;&lt;/snice-booking&gt;
+
+&lt;script&gt;
+  // Generate available dates
+  const dates = [];
+  for (let i = 1; i &lt;= 14; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() + i);
+    if (d.getDay() !== 0 &amp;&amp; d.getDay() !== 6)
+      dates.push(d.toISOString().slice(0,10));
+  }
+  bk.availableDates = dates;
+
+  bk.availableSlots = dates.flatMap(
+    date =&gt; ['09:00','10:00','11:00',
+      '14:00','15:00','16:00'].map(
+      time =&gt; ({ date, time, duration: 30 })
+  ));
+
+  bk.fields = [
+    { name: 'name', label: 'Full Name',
+      type: 'text', required: true },
+    { name: 'email', label: 'Email',
+      type: 'email', required: true },
+    { name: 'notes', label: 'Notes',
+      type: 'textarea' }
+  ];
+  bk.addEventListener('booking-confirm',
+    e =&gt; console.log(e.detail));
+&lt;/script&gt;</snice-code-block>
+        </div>
+      </div>
+    </div>
+<script>
+    customElements.whenDefined('snice-booking').then(() => {
+      const bk = document.getElementById('demo-booking');
+      if (bk) {
+        const dates = [];
+        for (let i = 1; i <= 21; i++) {
+          const d = new Date();
+          d.setDate(d.getDate() + i);
+          if (d.getDay() !== 0 && d.getDay() !== 6) {
+            const str = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+            dates.push(str);
+          }
+        }
+        bk.availableDates = dates;
+        bk.availableSlots = dates.flatMap(date =>
+          ['09:00','09:30','10:00','10:30','11:00','14:00','14:30','15:00','15:30','16:00'].map(time => ({ date, time, duration: 30 }))
+        );
+        bk.fields = [
+          { name: 'name', label: 'Full Name', type: 'text', required: true, placeholder: 'John Doe' },
+          { name: 'email', label: 'Email', type: 'email', required: true, placeholder: 'john@example.com' },
+          { name: 'phone', label: 'Phone', type: 'tel', placeholder: '(555) 000-0000' },
+          { name: 'notes', label: 'Notes', type: 'textarea', placeholder: 'Any special requests...' }
+        ];
+      }
+    });
+</script>

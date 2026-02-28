@@ -1,0 +1,58 @@
+    <!-- ── Metric Table ── -->
+    <div class="comp-section">
+      <h3>Metric Table</h3>
+      <p class="comp-desc">Compact data table with sparklines, color-coded values, and sorting</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="width:100%">
+          <snice-metric-table id="demo-metric-table" sort-by="revenue" sort-direction="desc" style="width:100%"></snice-metric-table>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=20901da">&lt;snice-metric-table id="mt"
+  sort-by="revenue"
+  sort-direction="desc"&gt;
+&lt;/snice-metric-table&gt;
+
+&lt;script&gt;
+  mt.columns = [
+    { key: 'name', label: 'Product' },
+    { key: 'revenue', label: 'Revenue',
+      type: 'currency' },
+    { key: 'growth', label: 'Growth',
+      type: 'percent' },
+    { key: 'trend', label: 'Trend',
+      sparkline: true }
+  ];
+  mt.data = [
+    { name: 'Widget Pro', revenue: 45200,
+      growth: 12.4,
+      trend: [20,25,22,30,35,40,45] },
+    { name: 'Gadget X', revenue: 32100,
+      growth: -5.2,
+      trend: [40,38,35,30,28,32,30] }
+  ];
+&lt;/script&gt;</snice-code-block>
+        </div>
+      </div>
+    </div>
+
+<script>
+  customElements.whenDefined('snice-metric-table').then(() => {
+    const mt = document.getElementById('demo-metric-table');
+    if (mt) {
+      mt.columns = [
+        { key: 'name', label: 'Product' },
+        { key: 'revenue', label: 'Revenue', type: 'currency' },
+        { key: 'growth', label: 'Growth', type: 'percent' },
+        { key: 'units', label: 'Units', type: 'number' },
+        { key: 'trend', label: '7-Day Trend', sparkline: true }
+      ];
+      mt.data = [
+        { name: 'Widget Pro', revenue: 45200, growth: 12.4, units: 1240, trend: [20,25,22,30,28,35,40,45] },
+        { name: 'Gadget X', revenue: 32100, growth: -5.2, units: 870, trend: [40,38,42,35,30,28,32,30] },
+        { name: 'Tool Suite', revenue: 28750, growth: 8.7, units: 640, trend: [15,18,16,22,25,24,28,30] },
+        { name: 'Sensor Kit', revenue: 19400, growth: -2.1, units: 310, trend: [25,27,24,22,20,21,19,18] }
+      ];
+    }
+  });
+</script>

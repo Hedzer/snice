@@ -1,0 +1,63 @@
+    <div class="comp-section">
+      <h3>Scheduler</h3>
+      <p class="comp-desc">Multi-resource day/week/month scheduler with drag-to-create and event management</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="overflow-x:auto;padding:0.75rem">
+          <snice-scheduler id="demo-scheduler" view="week" granularity="60" start-hour="8" end-hour="18" style="min-height:350px"></snice-scheduler>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">javascript</span>
+          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=20901da">&lt;snice-scheduler
+  id="sched"
+  view="week"
+  granularity="60"
+  start-hour="8"
+  end-hour="18"
+&gt;&lt;/snice-scheduler&gt;
+
+&lt;script&gt;
+  sched.resources = [
+    { id: 'r1', name: 'Room A',
+      color: '#3b82f6' },
+    { id: 'r2', name: 'Room B',
+      color: '#22c55e' }
+  ];
+  sched.events = [
+    { id: 'e1', resourceId: 'r1',
+      title: 'Team Standup',
+      start: '2026-03-02T09:00',
+      end: '2026-03-02T09:30',
+      color: '#3b82f6' }
+  ];
+  sched.addEventListener('event-click',
+    e =&gt; console.log(e.detail));
+&lt;/script&gt;</snice-code-block>
+        </div>
+      </div>
+    </div>
+<script>
+    customElements.whenDefined('snice-scheduler').then(() => {
+      const sched = document.getElementById('demo-scheduler');
+      if (sched) {
+        sched.resources = [
+          { id: 'r1', name: 'Conference A', color: '#3b82f6' },
+          { id: 'r2', name: 'Conference B', color: '#22c55e' },
+          { id: 'r3', name: 'Board Room', color: '#f59e0b' }
+        ];
+        // Generate events relative to current week
+        const now = new Date();
+        const monday = new Date(now);
+        const dayOfWeek = now.getDay();
+        monday.setDate(now.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+        const fmt = (d, h, m) => { const dt = new Date(d); dt.setHours(h, m, 0, 0); return dt; };
+
+        sched.events = [
+          { id: 'e1', resourceId: 'r1', title: 'Team Standup', start: fmt(monday, 9, 0), end: fmt(monday, 9, 30), color: '#3b82f6' },
+          { id: 'e2', resourceId: 'r1', title: 'Sprint Planning', start: fmt(monday, 10, 0), end: fmt(monday, 12, 0), color: '#8b5cf6' },
+          { id: 'e3', resourceId: 'r2', title: 'Client Call', start: fmt(new Date(monday.getTime() + 86400000), 14, 0), end: fmt(new Date(monday.getTime() + 86400000), 15, 0), color: '#22c55e' },
+          { id: 'e4', resourceId: 'r3', title: 'Board Meeting', start: fmt(new Date(monday.getTime() + 2*86400000), 10, 0), end: fmt(new Date(monday.getTime() + 2*86400000), 12, 0), color: '#f59e0b' },
+          { id: 'e5', resourceId: 'r2', title: 'Design Review', start: fmt(new Date(monday.getTime() + 3*86400000), 11, 0), end: fmt(new Date(monday.getTime() + 3*86400000), 12, 0), color: '#ec4899' }
+        ];
+      }
+    });
+</script>

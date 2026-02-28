@@ -1,0 +1,37 @@
+    <!-- ── Form Layout ── -->
+    <div class="comp-section">
+      <h3>Form Layout</h3>
+      <p class="comp-desc">Responsive form grid with configurable columns and label positions</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="padding:1rem">
+          <snice-form-layout columns="2" gap="medium">
+            <snice-input label="First Name" placeholder="Jane"></snice-input>
+            <snice-input label="Last Name" placeholder="Doe"></snice-input>
+            <snice-input label="Email" placeholder="jane@example.com" type="email"></snice-input>
+            <snice-input label="Phone" placeholder="+1 (555) 000-0000"></snice-input>
+          </snice-form-layout>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=20901da">&lt;snice-form-layout columns="2" gap="medium"&gt;
+  &lt;snice-input label="First Name"&gt;&lt;/snice-input&gt;
+  &lt;snice-input label="Last Name"&gt;&lt;/snice-input&gt;
+  &lt;snice-input label="Email"&gt;&lt;/snice-input&gt;
+  &lt;snice-input label="Phone"&gt;&lt;/snice-input&gt;
+&lt;/snice-form-layout&gt;
+
+&lt;!-- Label positions: top (default), left, right --&gt;
+&lt;snice-form-layout label-position="left"&gt;
+  ...
+&lt;/snice-form-layout&gt;
+
+&lt;!-- Gaps: small, medium (default), large --&gt;
+&lt;!-- Variants: default, compact, card --&gt;
+&lt;snice-form-layout
+  columns="3"
+  gap="small"
+  variant="compact"
+&gt;&lt;/snice-form-layout&gt;</snice-code-block>
+        </div>
+      </div>
+    </div>

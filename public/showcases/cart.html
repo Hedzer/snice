@@ -1,0 +1,41 @@
+    <div class="comp-section">
+      <h3>Cart</h3>
+      <p class="comp-desc">Shopping cart with line items, quantity controls, coupon field, and checkout summary</p>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="justify-content:center">
+          <snice-cart id="demo-cart" tax-rate="8.5" style="max-width:420px;width:100%"></snice-cart>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">javascript</span>
+          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=20901da">&lt;snice-cart
+  id="cart"
+  tax-rate="8.5"
+&gt;&lt;/snice-cart&gt;
+
+&lt;script&gt;
+  cart.items = [
+    { id: '1', name: 'Wireless Headphones',
+      price: 99.99, quantity: 1,
+      image: 'headphones.jpg' },
+    { id: '2', name: 'Phone Case',
+      price: 24.99, quantity: 2,
+      variant: 'Midnight Blue' }
+  ];
+  cart.addEventListener('checkout',
+    e =&gt; console.log(e.detail));
+&lt;/script&gt;</snice-code-block>
+        </div>
+      </div>
+    </div>
+<script>
+    customElements.whenDefined('snice-cart').then(() => {
+      const cart = document.getElementById('demo-cart');
+      if (cart) {
+        cart.items = [
+          { id: '1', name: 'Wireless Headphones', price: 99.99, quantity: 1, image: 'https://picsum.photos/seed/cart1/80/80' },
+          { id: '2', name: 'Phone Case', price: 24.99, quantity: 2, variant: 'Midnight Blue' },
+          { id: '3', name: 'USB-C Cable', price: 12.99, quantity: 1, image: 'https://picsum.photos/seed/cart3/80/80' }
+        ];
+      }
+    });
+</script>

@@ -1,0 +1,66 @@
+    <div class="comp-section">
+      <h3>Form Builder</h3>
+      <p class="comp-desc">Drag-and-drop form designer with JSON schema output</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="padding:0.75rem">
+          <snice-form-builder id="demo-form-builder"></snice-form-builder>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=20901da">&lt;snice-form-builder id="fb"&gt;&lt;/snice-form-builder&gt;
+&lt;script&gt;
+  fb.setSchema({
+    title: 'Contact Form',
+    fields: [
+      { id: 'name', type: 'text',
+        label: 'Name', required: true },
+      { id: 'email', type: 'email',
+        label: 'Email', required: true },
+      { id: 'subject', type: 'select',
+        label: 'Subject', options: [
+          { label: 'General', value: 'general' },
+          { label: 'Support', value: 'support' }
+      ]}
+    ]
+  });
+
+  fb.addEventListener('schema-change', e =&gt; {
+    console.log(e.detail.schema);
+  });
+&lt;/script&gt;</snice-code-block>
+        </div>
+      </div>
+    </div>
+<script>
+    customElements.whenDefined('snice-form-builder').then(() => {
+      const fb = document.getElementById('demo-form-builder');
+      if (fb) fb.setSchema({
+        title: 'Event Registration',
+        description: 'Register for our upcoming workshop.',
+        fields: [
+          { id: 's1', type: 'section', label: 'Personal Information' },
+          { id: 'name', type: 'text', label: 'Full Name', required: true, placeholder: 'Enter your full name' },
+          { id: 'email', type: 'email', label: 'Email Address', required: true, placeholder: 'you@example.com' },
+          { id: 'phone', type: 'phone', label: 'Phone Number', placeholder: '+1 (555) 000-0000' },
+          { id: 's2', type: 'section', label: 'Event Details' },
+          { id: 'session', type: 'select', label: 'Preferred Session', options: [
+            { label: 'Morning (9am-12pm)', value: 'morning' },
+            { label: 'Afternoon (1pm-4pm)', value: 'afternoon' },
+            { label: 'Evening (6pm-9pm)', value: 'evening' }
+          ]},
+          { id: 'date', type: 'date', label: 'Preferred Date', required: true },
+          { id: 'topics', type: 'checkbox', label: 'Interested Topics', options: [
+            { label: 'Web Development', value: 'web' },
+            { label: 'Machine Learning', value: 'ml' },
+            { label: 'Cloud Computing', value: 'cloud' }
+          ]},
+          { id: 'exp', type: 'radio', label: 'Experience Level', options: [
+            { label: 'Beginner', value: 'beginner' },
+            { label: 'Intermediate', value: 'intermediate' },
+            { label: 'Advanced', value: 'advanced' }
+          ]},
+          { id: 'p1', type: 'paragraph', content: 'By submitting this form you agree to our terms of service.' }
+        ]
+      });
+    });
+</script>

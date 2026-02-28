@@ -1,0 +1,38 @@
+    <!-- ── Date Time Picker ── -->
+    <div class="comp-section">
+      <h3>Date Time Picker</h3>
+      <p class="comp-desc">Combined date and time selection with calendar and time columns</p>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-col" style="gap:1rem">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <snice-date-time-picker label="Event Start" placeholder="Select date and time"></snice-date-time-picker>
+            <snice-date-time-picker label="12h Format" time-format="12h" date-format="mm/dd/yyyy" placeholder="Select..."></snice-date-time-picker>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <snice-date-time-picker label="With Seconds" show-seconds helper-text="Includes seconds"></snice-date-time-picker>
+            <snice-date-time-picker label="Disabled" value="2026-03-15T10:30" disabled></snice-date-time-picker>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=20901da">&lt;snice-date-time-picker
+  label="Event Start"
+  placeholder="Select date and time"
+&gt;&lt;/snice-date-time-picker&gt;
+
+&lt;!-- 12h + US date format --&gt;
+&lt;snice-date-time-picker
+  time-format="12h"
+  date-format="mm/dd/yyyy"
+&gt;&lt;/snice-date-time-picker&gt;
+
+&lt;!-- With seconds --&gt;
+&lt;snice-date-time-picker show-seconds&gt;&lt;/snice-date-time-picker&gt;
+
+&lt;!-- Pre-set ISO value --&gt;
+&lt;snice-date-time-picker
+  value="2026-03-15T10:30"
+&gt;&lt;/snice-date-time-picker&gt;</snice-code-block>
+        </div>
+      </div>
+    </div>

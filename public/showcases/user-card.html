@@ -1,0 +1,56 @@
+    <div class="comp-section">
+      <h3>User Card</h3>
+      <p class="comp-desc">Profile cards with avatar, contact info, and social links</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="gap:1.5rem">
+          <snice-user-card id="demo-usercard"
+            name="Sarah Chen"
+            avatar="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah"
+            role="Lead Engineer"
+            company="Acme Inc"
+            email="sarah@acme.io"
+            location="San Francisco, CA"
+            status="online"
+          ></snice-user-card>
+          <snice-user-card
+            name="James Wilson"
+            role="Designer"
+            company="Studio"
+            status="away"
+            variant="compact"
+          ></snice-user-card>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=20901da">&lt;snice-user-card
+  name="Sarah Chen"
+  avatar="avatar.png"
+  role="Lead Engineer"
+  company="Acme Inc"
+  email="sarah@acme.io"
+  location="San Francisco, CA"
+  status="online"
+&gt;&lt;/snice-user-card&gt;
+
+&lt;snice-user-card
+  name="James Wilson"
+  role="Designer"
+  status="away"
+  variant="compact"
+&gt;&lt;/snice-user-card&gt;</snice-code-block>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-user-card').then(() => {
+      const card = document.getElementById('demo-usercard');
+      if (card) {
+        card.social = [
+          { platform: 'github', url: 'https://github.com' },
+          { platform: 'linkedin', url: 'https://linkedin.com' },
+          { platform: 'x', url: 'https://x.com' }
+        ];
+      }
+    });
+</script>

@@ -1,0 +1,54 @@
+    <!-- ── Stat Group ── -->
+    <div class="comp-section">
+      <h3>Stat Group</h3>
+      <p class="comp-desc">Coordinated row of KPI stat cards with trends</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo demo-col" style="width:100%">
+          <snice-stat-group id="demo-stat-group" variant="card" style="width:100%"></snice-stat-group>
+          <snice-stat-group id="demo-stat-group-minimal" variant="minimal" style="width:100%;margin-top:1rem"></snice-stat-group>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=20901da">&lt;snice-stat-group id="stats"
+  variant="card"&gt;
+&lt;/snice-stat-group&gt;
+
+&lt;script&gt;
+  stats.stats = [
+    { label: 'Revenue', value: '$48.2K',
+      trend: 'up', trendValue: '+12.5%' },
+    { label: 'Users', value: '2,340',
+      trend: 'up', trendValue: '+8.1%' },
+    { label: 'Bounce', value: '24.3%',
+      trend: 'down', trendValue: '-3.2%' },
+    { label: 'Sessions', value: '18.7K',
+      trend: 'neutral', trendValue: '0%' }
+  ];
+&lt;/script&gt;
+
+&lt;!-- Variants: card, minimal, bordered --&gt;</snice-code-block>
+        </div>
+      </div>
+    </div>
+
+<script>
+  customElements.whenDefined('snice-stat-group').then(() => {
+    const sg = document.getElementById('demo-stat-group');
+    if (sg) {
+      sg.stats = [
+        { label: 'Revenue', value: '$48.2K', trend: 'up', trendValue: '+12.5%' },
+        { label: 'Users', value: '2,340', trend: 'up', trendValue: '+8.1%' },
+        { label: 'Bounce Rate', value: '24.3%', trend: 'down', trendValue: '-3.2%' },
+        { label: 'Sessions', value: '18.7K', trend: 'neutral', trendValue: '0%' }
+      ];
+    }
+    const sgm = document.getElementById('demo-stat-group-minimal');
+    if (sgm) {
+      sgm.stats = [
+        { label: 'Orders', value: '1,205', trend: 'up', trendValue: '+5%' },
+        { label: 'Returns', value: '32', trend: 'down', trendValue: '-10%' },
+        { label: 'Avg. Value', value: '$84', trend: 'up', trendValue: '+2.3%' }
+      ];
+    }
+  });
+</script>

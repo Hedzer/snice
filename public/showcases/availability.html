@@ -1,0 +1,47 @@
+    <div class="comp-section">
+      <h3>Availability</h3>
+      <p class="comp-desc">Weekly availability grid with click/drag selection, presets, and configurable time slots</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="overflow-x:auto;padding:0.75rem">
+          <snice-availability id="demo-availability" granularity="60" start-hour="8" end-hour="20" format="12h" style="width:100%"></snice-availability>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">javascript</span>
+          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=20901da">&lt;snice-availability
+  id="avail"
+  granularity="60"
+  start-hour="8"
+  end-hour="20"
+  format="12h"
+&gt;&lt;/snice-availability&gt;
+
+&lt;script&gt;
+  // Pre-fill with business hours
+  avail.value = [
+    { day: 0, start: '09:00', end: '17:00' },
+    { day: 1, start: '09:00', end: '17:00' },
+    { day: 2, start: '09:00', end: '17:00' },
+    { day: 3, start: '09:00', end: '17:00' },
+    { day: 4, start: '09:00', end: '17:00' }
+  ];
+  avail.addEventListener('availability-change',
+    e =&gt; console.log(e.detail.value));
+&lt;/script&gt;</snice-code-block>
+        </div>
+      </div>
+    </div>
+<script>
+    customElements.whenDefined('snice-availability').then(() => {
+      const avail = document.getElementById('demo-availability');
+      if (avail) {
+        avail.value = [
+          { day: 0, start: '09:00', end: '12:00' },
+          { day: 0, start: '13:00', end: '17:00' },
+          { day: 1, start: '09:00', end: '17:00' },
+          { day: 2, start: '10:00', end: '15:00' },
+          { day: 3, start: '09:00', end: '17:00' },
+          { day: 4, start: '09:00', end: '12:00' }
+        ];
+      }
+    });
+</script>

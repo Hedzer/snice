@@ -1,0 +1,55 @@
+    <div class="comp-section">
+      <h3>Work Order</h3>
+      <p class="comp-desc">Service work order with task checklist, parts list, time tracking, and cost summary</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="justify-content:center">
+          <snice-work-order id="demo-work-order" wo-number="WO-2026-0184" date="Feb 27, 2026" priority="high" status="in-progress" description="HVAC system inspection and filter replacement for main office building. Check all units on floors 2-5." labor-rate="85" notes="Customer requested service between 8 AM - 5 PM only." style="max-width:640px;width:100%"></snice-work-order>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">javascript</span>
+          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=20901da">&lt;snice-work-order
+  id="wo"
+  wo-number="WO-2026-0184"
+  priority="high"
+  status="in-progress"
+  labor-rate="85"
+&gt;&lt;/snice-work-order&gt;
+
+&lt;script&gt;
+  wo.customer = { name: 'Office Park LLC',
+    phone: '(555) 123-4567' };
+  wo.tasks = [
+    { description: 'Inspect units',
+      assignee: 'Mike', hours: 2,
+      completed: true },
+    { description: 'Replace filters',
+      assignee: 'Mike', hours: 3 }
+  ];
+  wo.parts = [
+    { name: 'HVAC Filter 20x25',
+      partNumber: 'HF-2025',
+      quantity: 8, unitCost: 24.99 }
+  ];
+&lt;/script&gt;</snice-code-block>
+        </div>
+      </div>
+    </div>
+<script>
+    customElements.whenDefined('snice-work-order').then(() => {
+      const wo = document.getElementById('demo-work-order');
+      if (wo) {
+        wo.customer = { name: 'Office Park LLC', address: '500 Commerce Dr, Building A', phone: '(555) 123-4567', email: 'facilities@officepark.com' };
+        wo.tasks = [
+          { description: 'Inspect all HVAC units on floors 2-5', assignee: 'Mike T.', hours: 2, completed: true },
+          { description: 'Replace air filters', assignee: 'Mike T.', hours: 3, completed: false },
+          { description: 'Clean condenser coils', assignee: 'Sarah K.', hours: 1.5, completed: false },
+          { description: 'Test thermostat calibration', assignee: 'Sarah K.', hours: 1, completed: false }
+        ];
+        wo.parts = [
+          { name: 'HVAC Filter 20x25', partNumber: 'HF-2025', quantity: 8, unitCost: 24.99 },
+          { name: 'Condenser Coil Cleaner', partNumber: 'CC-500', quantity: 2, unitCost: 18.50 },
+          { name: 'Thermostat Battery', partNumber: 'TB-CR2032', quantity: 4, unitCost: 3.99 }
+        ];
+      }
+    });
+</script>

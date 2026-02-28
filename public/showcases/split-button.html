@@ -1,0 +1,52 @@
+    <div class="comp-section">
+      <h3>Split Button</h3>
+      <p class="comp-desc">Primary action with a dropdown of secondary actions</p>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="gap:1.5rem">
+          <snice-split-button id="demo-split-default" label="Save"></snice-split-button>
+          <snice-split-button id="demo-split-primary" label="Merge" variant="primary"></snice-split-button>
+          <snice-split-button id="demo-split-danger" label="Delete" variant="danger" size="small"></snice-split-button>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">javascript</span>
+          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=20901da">&lt;snice-split-button
+  label="Save"
+  variant="primary"
+&gt;&lt;/snice-split-button&gt;
+
+button.actions = [
+  { label: 'Save as Draft', value: 'draft' },
+  { label: 'Save &amp; Close', value: 'save-close' },
+  { label: 'Discard', value: 'discard' }
+];</snice-code-block>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-split-button').then(() => {
+      const def = document.getElementById('demo-split-default');
+      if (def) {
+        def.actions = [
+          { label: 'Save as Draft', value: 'draft' },
+          { label: 'Save & Close', value: 'save-close' },
+          { label: 'Export', value: 'export' }
+        ];
+      }
+      const pri = document.getElementById('demo-split-primary');
+      if (pri) {
+        pri.actions = [
+          { label: 'Merge & Close', value: 'merge-close' },
+          { label: 'Squash & Merge', value: 'squash' },
+          { label: 'Rebase & Merge', value: 'rebase' }
+        ];
+      }
+      const danger = document.getElementById('demo-split-danger');
+      if (danger) {
+        danger.actions = [
+          { label: 'Move to Trash', value: 'trash' },
+          { label: 'Delete Permanently', value: 'permanent' }
+        ];
+      }
+    });
+</script>

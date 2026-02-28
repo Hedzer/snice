@@ -1,0 +1,39 @@
+    <!-- ── Time Picker ── -->
+    <div class="comp-section">
+      <h3>Time Picker</h3>
+      <p class="comp-desc">Time selection with scrollable hour/minute columns</p>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-col" style="gap:1rem">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <snice-time-picker label="Meeting Time" value="09:30" step="15"></snice-time-picker>
+            <snice-time-picker label="12-Hour Format" value="14:00" format="12h" step="15"></snice-time-picker>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <snice-time-picker label="Business Hours" min-time="08:00" max-time="18:00" step="30" helper-text="8:00 AM - 6:00 PM only"></snice-time-picker>
+            <snice-time-picker label="Disabled" value="12:00" disabled></snice-time-picker>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=20901da">&lt;snice-time-picker
+  label="Meeting Time"
+  value="09:30"
+  step="15"
+&gt;&lt;/snice-time-picker&gt;
+
+&lt;!-- 12-hour format with AM/PM --&gt;
+&lt;snice-time-picker
+  label="12-Hour Format"
+  value="14:00"
+  format="12h"
+&gt;&lt;/snice-time-picker&gt;
+
+&lt;!-- Constrained time range --&gt;
+&lt;snice-time-picker
+  min-time="08:00"
+  max-time="18:00"
+  step="30"
+&gt;&lt;/snice-time-picker&gt;</snice-code-block>
+        </div>
+      </div>
+    </div>

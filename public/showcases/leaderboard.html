@@ -1,0 +1,48 @@
+    <!-- ── Leaderboard ── -->
+    <div class="comp-section">
+      <h3>Leaderboard</h3>
+      <p class="comp-desc">Ranked lists with podium and change indicators</p>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="width:100%">
+          <snice-leaderboard id="demo-leaderboard" metric-label="Points" style="width:100%"></snice-leaderboard>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=20901da">&lt;snice-leaderboard id="lb"
+  metric-label="Points"
+  variant="list"&gt;
+&lt;/snice-leaderboard&gt;
+
+&lt;script&gt;
+  lb.entries = [
+    { rank: 1, name: 'Alice Chen',
+      score: 2840, change: 2 },
+    { rank: 2, name: 'Bob Rivera',
+      score: 2695, change: -1 },
+    { rank: 3, name: 'Carol Kim',
+      score: 2510, change: 0 },
+    { rank: 4, name: 'Dave Patel',
+      score: 2200, change: 1,
+      highlighted: true }
+  ];
+&lt;/script&gt;
+
+&lt;!-- variant="podium" for top-3 podium --&gt;</snice-code-block>
+        </div>
+      </div>
+    </div>
+
+<script>
+  customElements.whenDefined('snice-leaderboard').then(() => {
+    const lb = document.getElementById('demo-leaderboard');
+    if (lb) {
+      lb.entries = [
+        { rank: 1, name: 'Alice Chen', score: 2840, change: 2 },
+        { rank: 2, name: 'Bob Rivera', score: 2695, change: -1 },
+        { rank: 3, name: 'Carol Kim', score: 2510, change: 0 },
+        { rank: 4, name: 'Dave Patel', score: 2200, change: 1, highlighted: true },
+        { rank: 5, name: 'Eve Martinez', score: 1980, change: -2 }
+      ];
+    }
+  });
+</script>

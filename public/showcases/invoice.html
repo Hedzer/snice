@@ -1,0 +1,49 @@
+    <div class="comp-section">
+      <h3>Invoice</h3>
+      <p class="comp-desc">Professional invoice with line items, tax/discount calculations, and status tracking</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="justify-content:center">
+          <snice-invoice id="demo-invoice" invoice-number="INV-2026-001" date="Feb 27, 2026" due-date="Mar 27, 2026" status="sent" currency="USD" tax-rate="10" discount="5" notes="Payment due within 30 days. Late payments subject to 1.5% monthly interest." style="max-width:640px;width:100%"></snice-invoice>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">javascript</span>
+          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=20901da">&lt;snice-invoice
+  id="inv"
+  invoice-number="INV-2026-001"
+  date="Feb 27, 2026"
+  due-date="Mar 27, 2026"
+  status="sent"
+  currency="USD"
+  tax-rate="10"
+  discount="5"
+&gt;&lt;/snice-invoice&gt;
+
+&lt;script&gt;
+  inv.from = { name: 'Acme Corp',
+    address: '123 Business St' };
+  inv.to = { name: 'Client Inc',
+    address: '456 Market Ave' };
+  inv.items = [
+    { description: 'Web Development',
+      quantity: 40, unitPrice: 150 },
+    { description: 'UI Design',
+      quantity: 20, unitPrice: 120 }
+  ];
+&lt;/script&gt;</snice-code-block>
+        </div>
+      </div>
+    </div>
+<script>
+    customElements.whenDefined('snice-invoice').then(() => {
+      const inv = document.getElementById('demo-invoice');
+      if (inv) {
+        inv.from = { name: 'Acme Corp', address: '123 Business St, San Francisco, CA 94102', email: 'billing@acme.com', phone: '(415) 555-0100' };
+        inv.to = { name: 'Client Inc', address: '456 Market Ave, New York, NY 10001', email: 'accounts@client.com' };
+        inv.items = [
+          { description: 'Web Development', quantity: 40, unitPrice: 150 },
+          { description: 'UI/UX Design', quantity: 20, unitPrice: 120 },
+          { description: 'Project Management', quantity: 10, unitPrice: 100 }
+        ];
+      }
+    });
+</script>

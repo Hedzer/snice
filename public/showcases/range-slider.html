@@ -1,0 +1,41 @@
+    <!-- ── Range Slider ── -->
+    <div class="comp-section">
+      <h3>Range Slider</h3>
+      <p class="comp-desc">Dual-handle slider for selecting a value range</p>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-col" style="gap:1.5rem;padding:1rem 0.5rem">
+          <div>
+            <div style="font-size:0.8rem;margin-bottom:0.75rem;color:var(--snice-color-text-secondary,#525252)">Price Range ($0 - $1000)</div>
+            <snice-range-slider min="0" max="1000" value-low="200" value-high="800" step="50" show-tooltip show-labels></snice-range-slider>
+          </div>
+          <div>
+            <div style="font-size:0.8rem;margin-bottom:0.75rem;color:var(--snice-color-text-secondary,#525252)">Age Filter (18 - 65)</div>
+            <snice-range-slider min="18" max="65" value-low="25" value-high="45" show-tooltip show-labels></snice-range-slider>
+          </div>
+          <div>
+            <div style="font-size:0.8rem;margin-bottom:0.75rem;color:var(--snice-color-text-secondary,#525252)">Disabled</div>
+            <snice-range-slider min="0" max="100" value-low="30" value-high="70" disabled show-labels></snice-range-slider>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=20901da">&lt;snice-range-slider
+  min="0"
+  max="1000"
+  value-low="200"
+  value-high="800"
+  step="50"
+  show-tooltip
+  show-labels
+&gt;&lt;/snice-range-slider&gt;
+
+&lt;snice-range-slider
+  min="18" max="65"
+  value-low="25" value-high="45"
+  show-tooltip show-labels
+&gt;&lt;/snice-range-slider&gt;
+
+&lt;snice-range-slider disabled&gt;&lt;/snice-range-slider&gt;</snice-code-block>
+        </div>
+      </div>
+    </div>

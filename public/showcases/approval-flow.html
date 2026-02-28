@@ -1,0 +1,52 @@
+    <div class="comp-section">
+      <h3>Approval Flow</h3>
+      <p class="comp-desc">Visual approval chain with approver avatars, status indicators, and action buttons</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo demo-col" style="gap:2rem">
+          <div style="font-size:0.8rem;font-weight:600;margin-bottom:0.25rem;opacity:0.7">Horizontal</div>
+          <snice-approval-flow id="demo-approval-h" orientation="horizontal" current-step="step-3"></snice-approval-flow>
+          <div style="font-size:0.8rem;font-weight:600;margin-bottom:0.25rem;opacity:0.7">Vertical</div>
+          <snice-approval-flow id="demo-approval-v" orientation="vertical" current-step="step-2" style="max-width:360px"></snice-approval-flow>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">javascript</span>
+          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=20901da">&lt;snice-approval-flow
+  id="flow"
+  orientation="horizontal"
+  current-step="step-3"
+&gt;&lt;/snice-approval-flow&gt;
+
+&lt;script&gt;
+  flow.steps = [
+    { id: 'step-1', approver: 'Alice Chen',
+      role: 'Manager', status: 'approved',
+      timestamp: 'Feb 25, 10:00 AM' },
+    { id: 'step-2', approver: 'Bob Smith',
+      role: 'Director', status: 'approved',
+      comment: 'Looks good' },
+    { id: 'step-3', approver: 'Carol Wu',
+      role: 'VP Finance', status: 'pending' }
+  ];
+  flow.addEventListener('step-approve',
+    e =&gt; console.log(e.detail));
+&lt;/script&gt;</snice-code-block>
+        </div>
+      </div>
+    </div>
+<script>
+    customElements.whenDefined('snice-approval-flow').then(() => {
+      const h = document.getElementById('demo-approval-h');
+      if (h) h.steps = [
+        { id: 'step-1', approver: 'Alice Chen', role: 'Team Lead', status: 'approved', timestamp: 'Feb 25, 10:00 AM' },
+        { id: 'step-2', approver: 'Bob Smith', role: 'Director', status: 'approved', comment: 'Budget approved', timestamp: 'Feb 25, 2:15 PM' },
+        { id: 'step-3', approver: 'Carol Wu', role: 'VP Finance', status: 'pending' },
+        { id: 'step-4', approver: 'Dave Park', role: 'CEO', status: 'pending' }
+      ];
+      const v = document.getElementById('demo-approval-v');
+      if (v) v.steps = [
+        { id: 'step-1', approver: 'Emily Tran', role: 'Requester', status: 'approved', timestamp: 'Feb 26, 9:00 AM' },
+        { id: 'step-2', approver: 'Frank Gomez', role: 'Manager', status: 'pending' },
+        { id: 'step-3', approver: 'Grace Lee', role: 'HR Director', status: 'pending' }
+      ];
+    });
+</script>

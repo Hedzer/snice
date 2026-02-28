@@ -1,0 +1,59 @@
+    <!-- ── Avatar Group ── -->
+    <div class="comp-section">
+      <h3>Avatar Group</h3>
+      <p class="comp-desc">Stacked avatar list with overflow indicator</p>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-col" style="gap:1.5rem">
+          <snice-avatar-group id="demo-avatar-group" max="4" size="medium"></snice-avatar-group>
+          <snice-avatar-group id="demo-avatar-group-lg" max="3" size="large"></snice-avatar-group>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=20901da">&lt;snice-avatar-group id="group"
+  max="4" size="medium"&gt;
+&lt;/snice-avatar-group&gt;
+
+&lt;script&gt;
+  group.avatars = [
+    { name: 'Alice Chen',
+      src: 'https://i.pravatar.cc/80?u=1' },
+    { name: 'Bob Rivera' },
+    { name: 'Carol Kim',
+      src: 'https://i.pravatar.cc/80?u=3' },
+    { name: 'Dave Patel' },
+    { name: 'Eve Martinez' },
+    { name: 'Frank Lee' }
+  ];
+&lt;/script&gt;
+
+&lt;!-- Sizes: small, medium, large --&gt;
+&lt;!-- max: visible count before +N --&gt;</snice-code-block>
+        </div>
+      </div>
+    </div>
+
+<script>
+  customElements.whenDefined('snice-avatar-group').then(() => {
+    const ag = document.getElementById('demo-avatar-group');
+    if (ag) {
+      ag.avatars = [
+        { name: 'Alice Chen', src: 'https://i.pravatar.cc/80?u=a1' },
+        { name: 'Bob Rivera' },
+        { name: 'Carol Kim', src: 'https://i.pravatar.cc/80?u=a3' },
+        { name: 'Dave Patel' },
+        { name: 'Eve Martinez' },
+        { name: 'Frank Lee' }
+      ];
+    }
+    const agl = document.getElementById('demo-avatar-group-lg');
+    if (agl) {
+      agl.avatars = [
+        { name: 'Grace Wu', src: 'https://i.pravatar.cc/100?u=a7' },
+        { name: 'Henry Zhao' },
+        { name: 'Iris Novak', src: 'https://i.pravatar.cc/100?u=a9' },
+        { name: 'Jack Moore' },
+        { name: 'Kate Lin' }
+      ];
+    }
+  });
+</script>

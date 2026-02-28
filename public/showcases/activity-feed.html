@@ -1,0 +1,41 @@
+    <div class="comp-section">
+      <h3>Activity Feed</h3>
+      <p class="comp-desc">Chronological stream of user activities with filtering</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo">
+          <snice-activity-feed id="demo-activity-feed" group-by="date" style="width:100%;max-height:350px;overflow:auto"></snice-activity-feed>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">javascript</span>
+          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=20901da">&lt;snice-activity-feed
+  group-by="date"
+&gt;&lt;/snice-activity-feed&gt;
+
+feed.activities = [
+  { id: '1',
+    actor: { name: 'Alice' },
+    action: 'created',
+    target: 'Project Alpha',
+    type: 'create',
+    timestamp: new Date().toISOString()
+  }
+];</snice-code-block>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-activity-feed').then(() => {
+      const feed = document.getElementById('demo-activity-feed');
+      if (feed) {
+        const now = Date.now();
+        feed.activities = [
+          { id: '1', actor: { name: 'Alice Park' }, action: 'created', target: 'Project Alpha', type: 'create', timestamp: new Date(now - 600000).toISOString() },
+          { id: '2', actor: { name: 'Bob Lee' }, action: 'commented on', target: 'Issue #42', type: 'comment', timestamp: new Date(now - 1800000).toISOString() },
+          { id: '3', actor: { name: 'Carol Diaz' }, action: 'deployed', target: 'v2.1.0 to production', type: 'deploy', timestamp: new Date(now - 3600000).toISOString() },
+          { id: '4', actor: { name: 'Dave Kim' }, action: 'updated', target: 'README.md', type: 'update', timestamp: new Date(now - 86400000).toISOString() },
+          { id: '5', actor: { name: 'Alice Park' }, action: 'deleted', target: 'temp-branch', type: 'delete', timestamp: new Date(now - 90000000).toISOString() }
+        ];
+      }
+    });
+</script>

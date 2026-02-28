@@ -1,0 +1,41 @@
+    <div class="comp-section">
+      <h3>Mentions</h3>
+      <p class="comp-desc">Textarea with @mention autocomplete for users</p>
+      <div class="comp-split">
+        <div class="comp-split-demo">
+          <snice-mentions id="demo-mentions" placeholder="Type @ to mention someone..." style="width:100%"></snice-mentions>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">javascript</span>
+          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=20901da">&lt;snice-mentions
+  placeholder="Type @ to mention..."
+&gt;&lt;/snice-mentions&gt;
+
+mentions.users = [
+  { id: '1', name: 'Alice Park' },
+  { id: '2', name: 'Bob Lee' },
+  { id: '3', name: 'Carol Diaz',
+    avatar: 'carol.png' }
+];
+
+// Listen for mentions
+mentions.addEventListener('mention-add',
+  e =&gt; console.log(e.detail.user));</snice-code-block>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-mentions').then(() => {
+      const mentions = document.getElementById('demo-mentions');
+      if (mentions) {
+        mentions.users = [
+          { id: '1', name: 'Alice Park' },
+          { id: '2', name: 'Bob Lee' },
+          { id: '3', name: 'Carol Diaz' },
+          { id: '4', name: 'Dave Kim' },
+          { id: '5', name: 'Eve Santos' }
+        ];
+      }
+    });
+</script>

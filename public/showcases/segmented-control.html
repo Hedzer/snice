@@ -1,0 +1,43 @@
+    <div class="comp-section">
+      <h3>Segmented Control</h3>
+      <p class="comp-desc">Mutually exclusive option selector with sliding indicator</p>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-col" style="gap:1.5rem">
+          <snice-segmented-control id="demo-segmented" value="weekly"></snice-segmented-control>
+          <snice-segmented-control id="demo-segmented-sm" size="small" value="grid"></snice-segmented-control>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">javascript</span>
+          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=20901da">&lt;snice-segmented-control
+  value="weekly"
+&gt;&lt;/snice-segmented-control&gt;
+
+control.options = [
+  { label: 'Daily', value: 'daily' },
+  { label: 'Weekly', value: 'weekly' },
+  { label: 'Monthly', value: 'monthly' }
+];</snice-code-block>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-segmented-control').then(() => {
+      const seg = document.getElementById('demo-segmented');
+      if (seg) {
+        seg.options = [
+          { label: 'Daily', value: 'daily' },
+          { label: 'Weekly', value: 'weekly' },
+          { label: 'Monthly', value: 'monthly' }
+        ];
+      }
+      const segSm = document.getElementById('demo-segmented-sm');
+      if (segSm) {
+        segSm.options = [
+          { label: 'List', value: 'list' },
+          { label: 'Grid', value: 'grid' },
+          { label: 'Board', value: 'board' }
+        ];
+      }
+    });
+</script>

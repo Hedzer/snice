@@ -1,0 +1,50 @@
+    <!-- ── Data Card ── -->
+    <div class="comp-section">
+      <h3>Data Card</h3>
+      <p class="comp-desc">Key-value detail panels with grouped fields and inline editing</p>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="width:100%">
+          <snice-data-card id="demo-data-card" style="width:100%">
+            <span slot="title">Customer Details</span>
+          </snice-data-card>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=20901da">&lt;snice-data-card id="card"&gt;
+  &lt;span slot="title"&gt;Customer Details&lt;/span&gt;
+&lt;/snice-data-card&gt;
+
+&lt;script&gt;
+  card.fields = [
+    { label: 'Name', value: 'Alice Johnson',
+      group: 'Contact' },
+    { label: 'Email', value: 'alice@acme.co',
+      type: 'link', href: 'mailto:alice@acme.co',
+      group: 'Contact' },
+    { label: 'Status', value: 'Active',
+      type: 'badge', badgeVariant: 'success',
+      group: 'Account' },
+    { label: 'Balance', value: '$12,450',
+      type: 'currency', group: 'Account' }
+  ];
+&lt;/script&gt;</snice-code-block>
+        </div>
+      </div>
+    </div>
+
+<script>
+  customElements.whenDefined('snice-data-card').then(() => {
+    const card = document.getElementById('demo-data-card');
+    if (card) {
+      card.fields = [
+        { label: 'Name', value: 'Alice Johnson', group: 'Contact', editable: true },
+        { label: 'Email', value: 'alice@acme.co', type: 'link', href: 'mailto:alice@acme.co', group: 'Contact' },
+        { label: 'Phone', value: '+1 (555) 123-4567', group: 'Contact', editable: true },
+        { label: 'Status', value: 'Active', type: 'badge', badgeVariant: 'success', group: 'Account' },
+        { label: 'Plan', value: 'Enterprise', type: 'badge', badgeVariant: 'primary', group: 'Account' },
+        { label: 'Balance', value: '$12,450', type: 'currency', group: 'Account' },
+        { label: 'Joined', value: '2024-03-15', type: 'date', group: 'Account' }
+      ];
+    }
+  });
+</script>

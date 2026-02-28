@@ -1,0 +1,52 @@
+    <div class="comp-section">
+      <h3>Product Card</h3>
+      <p class="comp-desc">E-commerce product display with image gallery, ratings, variant selectors, and add-to-cart</p>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="gap:1.5rem;flex-wrap:wrap">
+          <snice-product-card id="demo-product-card" name="Wireless Headphones" price="149.99" sale-price="99.99" currency="$" rating="4.5" review-count="328" in-stock style="max-width:280px"></snice-product-card>
+          <snice-product-card name="Leather Wallet" price="59.00" currency="$" rating="4" review-count="86" variant="compact" style="max-width:280px"></snice-product-card>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">javascript</span>
+          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=20901da">&lt;snice-product-card
+  id="card"
+  name="Wireless Headphones"
+  price="149.99"
+  sale-price="99.99"
+  currency="$"
+  rating="4.5"
+  review-count="328"
+  in-stock
+&gt;&lt;/snice-product-card&gt;
+
+&lt;script&gt;
+  card.images = [
+    'https://picsum.photos/seed/hp1/400/400',
+    'https://picsum.photos/seed/hp2/400/400'
+  ];
+  card.variants = [
+    { type: 'Color', options: ['#000','#fff','#3b82f6'] },
+    { type: 'Size', options: ['S','M','L'] }
+  ];
+  card.addEventListener('add-to-cart',
+    e =&gt; console.log(e.detail));
+&lt;/script&gt;</snice-code-block>
+        </div>
+      </div>
+    </div>
+<script>
+    customElements.whenDefined('snice-product-card').then(() => {
+      const card = document.getElementById('demo-product-card');
+      if (card) {
+        card.images = [
+          'https://picsum.photos/seed/headphones1/400/400',
+          'https://picsum.photos/seed/headphones2/400/400',
+          'https://picsum.photos/seed/headphones3/400/400'
+        ];
+        card.variants = [
+          { type: 'Color', options: ['#000000', '#ffffff', '#3b82f6'] },
+          { type: 'Size', options: ['S', 'M', 'L'] }
+        ];
+      }
+    });
+</script>

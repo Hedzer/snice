@@ -1,0 +1,55 @@
+    <!-- ── Step Input ── -->
+    <div class="comp-section">
+      <h3>Step Input</h3>
+      <p class="comp-desc">Numeric stepper with increment/decrement buttons</p>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-col" style="gap:1rem">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;align-items:end">
+            <div>
+              <div style="font-size:0.8rem;margin-bottom:0.25rem;color:var(--snice-color-text-secondary,#525252)">Quantity</div>
+              <snice-step-input value="1" min="0" max="99"></snice-step-input>
+            </div>
+            <div>
+              <div style="font-size:0.8rem;margin-bottom:0.25rem;color:var(--snice-color-text-secondary,#525252)">Temperature</div>
+              <snice-step-input value="20" min="-10" max="50" step="0.5" size="small"></snice-step-input>
+            </div>
+            <div>
+              <div style="font-size:0.8rem;margin-bottom:0.25rem;color:var(--snice-color-text-secondary,#525252)">Wrapping (1-12)</div>
+              <snice-step-input value="1" min="1" max="12" wrap size="large"></snice-step-input>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;align-items:end">
+            <div>
+              <div style="font-size:0.8rem;margin-bottom:0.25rem;color:var(--snice-color-text-secondary,#525252)">Disabled</div>
+              <snice-step-input value="5" disabled></snice-step-input>
+            </div>
+            <div>
+              <div style="font-size:0.8rem;margin-bottom:0.25rem;color:var(--snice-color-text-secondary,#525252)">Readonly</div>
+              <snice-step-input value="42" readonly></snice-step-input>
+            </div>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=20901da">&lt;snice-step-input
+  value="1"
+  min="0"
+  max="99"
+&gt;&lt;/snice-step-input&gt;
+
+&lt;!-- Decimal step --&gt;
+&lt;snice-step-input
+  value="20" min="-10" max="50" step="0.5"
+&gt;&lt;/snice-step-input&gt;
+
+&lt;!-- Wrap: max rolls to min and vice versa --&gt;
+&lt;snice-step-input
+  value="1" min="1" max="12" wrap
+&gt;&lt;/snice-step-input&gt;
+
+&lt;!-- Sizes: small, medium (default), large --&gt;
+&lt;snice-step-input size="small"&gt;&lt;/snice-step-input&gt;
+&lt;snice-step-input disabled&gt;&lt;/snice-step-input&gt;</snice-code-block>
+        </div>
+      </div>
+    </div>

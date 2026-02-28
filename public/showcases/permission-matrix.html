@@ -1,0 +1,67 @@
+    <div class="comp-section">
+      <h3>Permission Matrix</h3>
+      <p class="comp-desc">Role-permission grid with toggleable checkboxes, grouped permissions, and read-only mode</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="overflow-x:auto;padding:0.75rem">
+          <snice-permission-matrix id="demo-perm-matrix" style="width:100%"></snice-permission-matrix>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">javascript</span>
+          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=20901da">&lt;snice-permission-matrix
+  id="pm"
+&gt;&lt;/snice-permission-matrix&gt;
+
+&lt;script&gt;
+  pm.roles = [
+    { id: 'admin', name: 'Admin' },
+    { id: 'editor', name: 'Editor' },
+    { id: 'viewer', name: 'Viewer' }
+  ];
+  pm.permissions = [
+    { id: 'read', name: 'Read',
+      group: 'Content' },
+    { id: 'write', name: 'Write',
+      group: 'Content' },
+    { id: 'delete', name: 'Delete',
+      group: 'Content' },
+    { id: 'manage', name: 'Manage Users',
+      group: 'Admin' }
+  ];
+  pm.matrix = {
+    admin: ['read','write','delete','manage'],
+    editor: ['read', 'write'],
+    viewer: ['read']
+  };
+  pm.addEventListener('permission-toggle',
+    e =&gt; console.log(e.detail));
+&lt;/script&gt;</snice-code-block>
+        </div>
+      </div>
+    </div>
+<script>
+    customElements.whenDefined('snice-permission-matrix').then(() => {
+      const pm = document.getElementById('demo-perm-matrix');
+      if (pm) {
+        pm.roles = [
+          { id: 'admin', name: 'Admin', description: 'Full system access' },
+          { id: 'manager', name: 'Manager', description: 'Team management' },
+          { id: 'editor', name: 'Editor', description: 'Content editing' },
+          { id: 'viewer', name: 'Viewer', description: 'Read-only access' }
+        ];
+        pm.permissions = [
+          { id: 'read', name: 'Read', group: 'Content', description: 'View content' },
+          { id: 'write', name: 'Write', group: 'Content', description: 'Create and edit' },
+          { id: 'delete', name: 'Delete', group: 'Content', description: 'Remove content' },
+          { id: 'publish', name: 'Publish', group: 'Content', description: 'Make content live' },
+          { id: 'users', name: 'Manage Users', group: 'Admin', description: 'Add/remove users' },
+          { id: 'settings', name: 'Settings', group: 'Admin', description: 'System configuration' }
+        ];
+        pm.matrix = {
+          admin: ['read', 'write', 'delete', 'publish', 'users', 'settings'],
+          manager: ['read', 'write', 'delete', 'publish', 'users'],
+          editor: ['read', 'write', 'publish'],
+          viewer: ['read']
+        };
+      }
+    });
+</script>
