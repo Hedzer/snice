@@ -1,8 +1,8 @@
 :host {
   display: inline-block;
   --avatar-size: 2.5rem; /* 40px */
-  --avatar-bg: hsl(var(--snice-color-gray-500));
-  --avatar-color: hsl(0 0% 100%);
+  --avatar-bg: var(--snice-color-text-tertiary, rgb(115 115 115));
+  --avatar-color: rgb(255 255 255);
 }
 
 /* Meta elements should not interfere with layout */

@@ -1,4 +1,4 @@
-import { element, property, watch, ready, dispatch, render, styles, html, css } from 'snice';
+import { element, property, watch, ready, dispose, dispatch, render, styles, html, css } from 'snice';
 import cssContent from './snice-avatar-group.css?inline';
 import type { AvatarGroupSize, AvatarGroupItem, SniceAvatarGroupElement } from './snice-avatar-group.types';
 
@@ -38,40 +38,65 @@ export class SniceAvatarGroup extends HTMLElement implements SniceAvatarGroupEle
   @property({ type: Number })
   overlap = 8;
 
-  @render()
-  renderContent() {
-    const visible = this.avatars.slice(0, this.max);
-    const remaining = this.avatars.length - this.max;
-
-    return html/*html*/`
-      <div class="avatar-group" part="base" role="group" aria-label="Avatar group">
-        ${visible.map((avatar, index) => this.renderAvatar(avatar, index))}
-        <if ${remaining > 0}>
-          <button class="avatar-item avatar-overflow"
-                  part="overflow"
-                  type="button"
-                  aria-label="${remaining} more"
-                  @click=${() => this.handleOverflowClick()}>
-            +${remaining}
-          </button>
-        </if>
-      </div>
-    `;
-  }
-
-  @styles()
-  componentStyles() {
-    return css/*css*/`${cssContent}`;
-  }
+  private _useSlot = false;
 
   @ready()
   init() {
     this.updateOverlap();
+    this.detectMode();
   }
 
   @watch('overlap')
   updateOverlap() {
     this.style.setProperty('--avatar-group-overlap', `-${this.overlap / 16}rem`);
+  }
+
+  @watch('size')
+  updateChildSizes() {
+    if (this._useSlot) {
+      this.applySlottedStyles();
+    }
+  }
+
+  private detectMode() {
+    const slotted = this.querySelectorAll('snice-avatar');
+    this._useSlot = slotted.length > 0;
+    if (this._useSlot) {
+      this.applySlottedStyles();
+    }
+  }
+
+  @observe(() => document.createElement('div'), { childList: true })
+  handleChildrenChange() {
+    this.detectMode();
+  }
+
+  connectedCallback() {
+    // Re-detect when children change (observe needs the element itself)
+    const mo = new MutationObserver(() => this.detectMode());
+    mo.observe(this, { childList: true });
+    (this as any)._childObserver = mo;
+  }
+
+  disconnectedCallback() {
+    (this as any)._childObserver?.disconnect();
+  }
+
+  private applySlottedStyles() {
+    const children = Array.from(this.querySelectorAll('snice-avatar'));
+    children.forEach((child, i) => {
+      child.classList.add('avatar-group-item');
+      if (this.size) {
+        child.setAttribute('size', this.size);
+      }
+      child.setAttribute('shape', 'circle');
+    });
+
+    // Handle overflow
+    const visible = children.slice(0, this.max);
+    const hidden = children.slice(this.max);
+    visible.forEach(c => (c as HTMLElement).style.display = '');
+    hidden.forEach(c => (c as HTMLElement).style.display = 'none');
   }
 
   private renderAvatar(avatar: AvatarGroupItem, index: number) {
@@ -152,10 +177,59 @@ export class SniceAvatarGroup extends HTMLElement implements SniceAvatarGroupEle
 
   @dispatch('overflow-click', { bubbles: true, composed: true })
   private dispatchOverflowClick() {
+    const remaining = this._useSlot
+      ? this.querySelectorAll('snice-avatar').length - this.max
+      : this.avatars.length - this.max;
+    const avatars = this._useSlot
+      ? []
+      : this.avatars.slice(this.max);
+    return { remaining, avatars };
+  }
+
+  @render()
+  renderContent() {
+    // Slotted mode: use child <snice-avatar> elements
+    if (this._useSlot) {
+      const totalChildren = this.querySelectorAll('snice-avatar').length;
+      const remaining = totalChildren - this.max;
+      return html/*html*/`
+        <div class="avatar-group" part="base" role="group" aria-label="Avatar group">
+          <slot></slot>
+          <if ${remaining > 0}>
+            <button class="avatar-item avatar-overflow"
+                    part="overflow"
+                    type="button"
+                    aria-label="${remaining} more"
+                    @click=${() => this.handleOverflowClick()}>
+              +${remaining}
+            </button>
+          </if>
+        </div>
+      `;
+    }
+
+    // Imperative mode: render from avatars array
+    const visible = this.avatars.slice(0, this.max);
     const remaining = this.avatars.length - this.max;
-    return {
-      remaining,
-      avatars: this.avatars.slice(this.max)
-    };
+
+    return html/*html*/`
+      <div class="avatar-group" part="base" role="group" aria-label="Avatar group">
+        ${visible.map((avatar, index) => this.renderAvatar(avatar, index))}
+        <if ${remaining > 0}>
+          <button class="avatar-item avatar-overflow"
+                  part="overflow"
+                  type="button"
+                  aria-label="${remaining} more"
+                  @click=${() => this.handleOverflowClick()}>
+            +${remaining}
+          </button>
+        </if>
+      </div>
+    `;
+  }
+
+  @styles()
+  componentStyles() {
+    return css/*css*/`${cssContent}`;
   }
 }
