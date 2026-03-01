@@ -95,17 +95,10 @@
   padding: var(--snice-spacing-sm, 0.75rem) 0;
   position: relative;
   cursor: pointer;
-  border-radius: var(--snice-border-radius-md, 0.25rem);
-  transition: background var(--snice-transition-fast, 150ms);
-}
-
-.feed__entry:hover {
-  background: var(--feed-bg-element);
 }
 
 .feed__entry:focus-visible {
-  outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
-  outline-offset: var(--snice-focus-ring-offset, 2px);
+  outline: none;
 }
 
 /* Connector line between entries */
@@ -143,6 +136,23 @@
   flex: 1;
   min-width: 0;
   padding-top: var(--snice-spacing-3xs, 0.125rem);
+  border-radius: var(--snice-border-radius-md, 0.25rem);
+  padding: var(--snice-spacing-3xs, 0.125rem) var(--snice-spacing-xs, 0.5rem);
+  transition: background var(--snice-transition-fast, 150ms);
+}
+
+.feed__entry:hover .feed__content {
+  background: var(--feed-bg-element);
+}
+
+.feed__entry:hover .feed__icon {
+  border-color: var(--feed-primary);
+  background: color-mix(in srgb, var(--feed-primary) 10%, var(--feed-bg));
+}
+
+.feed__entry:focus-visible .feed__content {
+  outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+  outline-offset: var(--snice-focus-ring-offset, 2px);
 }
 
 .feed__description {

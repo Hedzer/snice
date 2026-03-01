@@ -51,44 +51,52 @@
 
 /* Variants */
 :host([variant="info"]) .alert {
-  background: hsl(215 100% 96% / 0.6);
-  border-color: var(--snice-color-border);
-  color: var(--snice-color-text);
+  background: hsl(215 85% 92%);
+  border-color: hsl(215 70% 72%);
+  color: hsl(215 70% 25%);
 }
 
 :host([variant="success"]) .alert {
-  background: hsl(140 100% 96% / 0.6);
-  border-color: var(--snice-color-border);
-  color: var(--snice-color-text);
+  background: hsl(145 60% 90%);
+  border-color: hsl(145 50% 55%);
+  color: hsl(145 60% 22%);
 }
 
 :host([variant="warning"]) .alert {
-  background: hsl(45 100% 96% / 0.6);
-  border-color: var(--snice-color-border);
-  color: var(--snice-color-text);
+  background: hsl(45 90% 88%);
+  border-color: hsl(40 80% 55%);
+  color: hsl(35 80% 22%);
 }
 
 :host([variant="error"]) .alert {
-  background: hsl(0 100% 96% / 0.6);
-  border-color: var(--snice-color-border);
-  color: var(--snice-color-text);
+  background: hsl(0 85% 93%);
+  border-color: hsl(0 65% 65%);
+  color: hsl(0 65% 28%);
 }
 
 @media (prefers-color-scheme: dark) {
   :host([variant="info"]) .alert {
-    background: hsl(215 100% 20% / 0.3);
+    background: hsl(215 50% 18%);
+    border-color: hsl(215 50% 40%);
+    color: hsl(215 80% 80%);
   }
 
   :host([variant="success"]) .alert {
-    background: hsl(140 100% 20% / 0.3);
+    background: hsl(145 40% 16%);
+    border-color: hsl(145 40% 38%);
+    color: hsl(145 60% 75%);
   }
 
   :host([variant="warning"]) .alert {
-    background: hsl(45 100% 20% / 0.3);
+    background: hsl(45 50% 16%);
+    border-color: hsl(40 50% 40%);
+    color: hsl(45 70% 78%);
   }
 
   :host([variant="error"]) .alert {
-    background: hsl(0 100% 20% / 0.3);
+    background: hsl(0 45% 18%);
+    border-color: hsl(0 45% 40%);
+    color: hsl(0 60% 80%);
   }
 }
 
