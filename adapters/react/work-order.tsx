@@ -7,15 +7,20 @@ import type { SniceBaseProps } from './types';
 export interface WorkOrderProps extends SniceBaseProps {
   woNumber?: any;
   date?: any;
+  dueDate?: any;
   priority?: any;
   status?: any;
   customer?: any;
   description?: any;
   tasks?: any;
   parts?: any;
+  asset?: any;
   laborRate?: any;
   notes?: any;
   variant?: any;
+  showQr?: any;
+  qrData?: any;
+  qrPosition?: any;
 
 }
 
@@ -37,7 +42,7 @@ export interface WorkOrderProps extends SniceBaseProps {
  */
 export const WorkOrder = createReactAdapter<WorkOrderProps>({
   tagName: 'snice-work-order',
-  properties: ["woNumber","date","priority","status","customer","description","tasks","parts","laborRate","notes","variant"],
+  properties: ["woNumber","date","dueDate","priority","status","customer","description","tasks","parts","asset","laborRate","notes","variant","showQr","qrData","qrPosition"],
   events: {},
   formAssociated: false
 });

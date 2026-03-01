@@ -17,6 +17,9 @@ export interface InvoiceProps extends SniceBaseProps {
   items?: any;
   notes?: any;
   variant?: any;
+  showQr?: any;
+  qrData?: any;
+  qrPosition?: any;
 
 }
 
@@ -38,7 +41,7 @@ export interface InvoiceProps extends SniceBaseProps {
  */
 export const Invoice = createReactAdapter<InvoiceProps>({
   tagName: 'snice-invoice',
-  properties: ["invoiceNumber","date","dueDate","status","currency","taxRate","discount","from","to","items","notes","variant"],
+  properties: ["invoiceNumber","date","dueDate","status","currency","taxRate","discount","from","to","items","notes","variant","showQr","qrData","qrPosition"],
   events: {},
   formAssociated: false
 });

@@ -15,8 +15,14 @@ export interface ProductCardProps extends SniceBaseProps {
   variants?: any;
   inStock?: any;
   variant?: any;
+  badge?: any;
+  badgeVariant?: any;
+  loading?: any;
+  favorite?: any;
+  stockCount?: any;
   currentImageIndex?: any;
   selectedVariants?: any;
+  heartAnimating?: any;
 
 }
 
@@ -38,7 +44,7 @@ export interface ProductCardProps extends SniceBaseProps {
  */
 export const ProductCard = createReactAdapter<ProductCardProps>({
   tagName: 'snice-product-card',
-  properties: ["name","price","salePrice","currency","images","rating","reviewCount","variants","inStock","variant","currentImageIndex","selectedVariants"],
+  properties: ["name","price","salePrice","currency","images","rating","reviewCount","variants","inStock","variant","badge","badgeVariant","loading","favorite","stockCount","currentImageIndex","selectedVariants","heartAnimating"],
   events: {},
   formAssociated: false
 });

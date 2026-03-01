@@ -14,6 +14,7 @@ export interface CodeBlockProps extends SniceBaseProps {
   grammar?: any;
   fetchMode?: any;
   format?: any;
+  theme?: any;
 
 }
 
@@ -35,7 +36,7 @@ export interface CodeBlockProps extends SniceBaseProps {
  */
 export const CodeBlock = createReactAdapter<CodeBlockProps>({
   tagName: 'snice-code-block',
-  properties: ["language","showLineNumbers","startLine","highlightLines","copyable","filename","grammar","fetchMode","format"],
+  properties: ["language","showLineNumbers","startLine","highlightLines","copyable","filename","grammar","fetchMode","format","theme"],
   events: {},
   formAssociated: false
 });

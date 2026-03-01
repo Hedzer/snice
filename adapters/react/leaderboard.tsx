@@ -5,9 +5,10 @@ import type { SniceBaseProps } from './types';
  * Props for the Leaderboard component
  */
 export interface LeaderboardProps extends SniceBaseProps {
-  entries?: any;
   variant?: any;
-  metricLabel?: any;
+  size?: any;
+  title?: any;
+  entries?: any;
 
 }
 
@@ -29,7 +30,7 @@ export interface LeaderboardProps extends SniceBaseProps {
  */
 export const Leaderboard = createReactAdapter<LeaderboardProps>({
   tagName: 'snice-leaderboard',
-  properties: ["entries","variant","metricLabel"],
+  properties: ["variant","size","title","entries"],
   events: {},
   formAssociated: false
 });

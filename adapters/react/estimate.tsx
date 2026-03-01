@@ -16,7 +16,11 @@ export interface EstimateProps extends SniceBaseProps {
   taxRate?: any;
   discount?: any;
   notes?: any;
+  terms?: any;
   variant?: any;
+  showQr?: any;
+  qrData?: any;
+  qrPosition?: any;
 
 }
 
@@ -38,7 +42,7 @@ export interface EstimateProps extends SniceBaseProps {
  */
 export const Estimate = createReactAdapter<EstimateProps>({
   tagName: 'snice-estimate',
-  properties: ["estimateNumber","date","expiryDate","status","from","to","items","currency","taxRate","discount","notes","variant"],
+  properties: ["estimateNumber","date","expiryDate","status","from","to","items","currency","taxRate","discount","notes","terms","variant","showQr","qrData","qrPosition"],
   events: {},
   formAssociated: false
 });

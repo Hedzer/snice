@@ -8,13 +8,25 @@ export interface ReceiptProps extends SniceBaseProps {
   receiptNumber?: any;
   date?: any;
   currency?: any;
+  locale?: any;
   merchant?: any;
   items?: any;
   tax?: any;
+  taxes?: any;
   subtotal?: any;
   total?: any;
+  tip?: any;
+  discount?: any;
+  discountLabel?: any;
   paymentMethod?: any;
+  paymentDetails?: any;
   variant?: any;
+  showQr?: any;
+  qrData?: any;
+  qrPosition?: any;
+  thankYou?: any;
+  cashier?: any;
+  terminalId?: any;
 
 }
 
@@ -36,7 +48,7 @@ export interface ReceiptProps extends SniceBaseProps {
  */
 export const Receipt = createReactAdapter<ReceiptProps>({
   tagName: 'snice-receipt',
-  properties: ["receiptNumber","date","currency","merchant","items","tax","subtotal","total","paymentMethod","variant"],
+  properties: ["receiptNumber","date","currency","locale","merchant","items","tax","taxes","subtotal","total","tip","discount","discountLabel","paymentMethod","paymentDetails","variant","showQr","qrData","qrPosition","thankYou","cashier","terminalId"],
   events: {},
   formAssociated: false
 });
