@@ -83,3 +83,4 @@ my-app/
 public/components/
 .debug/
 .prd/
+.plans/
