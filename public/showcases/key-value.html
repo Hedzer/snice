@@ -1,0 +1,85 @@
+    <div class="comp-section">
+      <h3>Key Value</h3>
+      <p class="comp-desc">Key-value pair editor for HTTP headers, env vars, and config entries — with edit and view modes</p>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="gap:1.5rem">
+          <snice-key-value id="demo-kv-declarative" label="HTTP Headers" show-copy style="width:100%">
+            <snice-kv-pair key="Content-Type" value="application/json"></snice-kv-pair>
+            <snice-kv-pair key="Authorization" value="Bearer token123"></snice-kv-pair>
+          </snice-key-value>
+          <snice-key-value id="demo-kv-imperative" label="Environment Variables" style="width:100%"></snice-key-value>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=d9ac74f">&lt;!-- Declarative --&gt;
+&lt;snice-key-value label="Headers"&gt;
+  &lt;snice-kv-pair
+    key="Content-Type"
+    value="application/json"
+  &gt;&lt;/snice-kv-pair&gt;
+  &lt;snice-kv-pair
+    key="Authorization"
+    value="Bearer token"
+  &gt;&lt;/snice-kv-pair&gt;
+&lt;/snice-key-value&gt;
+
+&lt;!-- Imperative --&gt;
+&lt;snice-key-value id="kv"
+  label="Env Vars"
+&gt;&lt;/snice-key-value&gt;
+&lt;script&gt;
+  const kv = document.getElementById('kv');
+  kv.setItems([
+    { key: 'NODE_ENV',
+      value: 'production' },
+    { key: 'PORT', value: '3000' }
+  ]);
+  kv.addEventListener('kv-change',
+    e =&gt; console.log(e.detail.items));
+&lt;/script&gt;</snice-code-block>
+        </div>
+      </div>
+
+      <div class="comp-split" style="margin-top:1.5rem">
+        <div class="comp-split-demo" style="gap:1.5rem">
+          <snice-key-value id="demo-kv-view" label="Server Response Headers" mode="view" style="width:100%"></snice-key-value>
+          <snice-key-value id="demo-kv-fixed" label="Fixed Rows (3)" rows="3" style="width:100%"></snice-key-value>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=d9ac74f">&lt;!-- View mode (read-only display) --&gt;
+&lt;snice-key-value
+  label="Response Headers"
+  mode="view"
+&gt;&lt;/snice-key-value&gt;
+
+&lt;!-- Fixed rows --&gt;
+&lt;snice-key-value
+  rows="3"
+  label="Fixed Rows"
+&gt;&lt;/snice-key-value&gt;</snice-code-block>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-key-value').then(() => {
+      const kv = document.getElementById('demo-kv-imperative');
+      if (kv) {
+        kv.setItems([
+          { key: 'NODE_ENV', value: 'production' },
+          { key: 'PORT', value: '3000' },
+          { key: 'DATABASE_URL', value: 'postgres://localhost/mydb' }
+        ]);
+      }
+      const kvView = document.getElementById('demo-kv-view');
+      if (kvView) {
+        kvView.setItems([
+          { key: 'Content-Type', value: 'application/json; charset=utf-8' },
+          { key: 'Cache-Control', value: 'max-age=3600, public' },
+          { key: 'X-Request-Id', value: 'a1b2c3d4-e5f6-7890' },
+          { key: 'X-RateLimit-Remaining', value: '4999' }
+        ]);
+      }
+    });
+</script>
