@@ -7,7 +7,7 @@ const DEFAULT_TILE_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 
 @element('snice-map')
 export class SniceMap extends HTMLElement implements SniceMapElement {
-  @property({ type: Object })
+  @property({ type: Object, attribute: false })
   center: MapCenter = { lat: 51.505, lng: -0.09 };
 
   @property({ type: Number })
@@ -19,7 +19,7 @@ export class SniceMap extends HTMLElement implements SniceMapElement {
   @property({ type: Number, attribute: 'max-zoom' })
   maxZoom: number = 18;
 
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   markers: MapMarker[] = [];
 
   @property({ attribute: 'tile-url' })

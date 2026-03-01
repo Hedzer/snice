@@ -12,7 +12,7 @@ import type {
 
 @element('snice-cart')
 export class SniceCart extends HTMLElement implements SniceCartElement {
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   items: CartItem[] = [];
 
   @property()

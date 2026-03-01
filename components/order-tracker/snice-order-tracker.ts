@@ -9,7 +9,7 @@ import type {
 
 @element('snice-order-tracker')
 export class SniceOrderTracker extends HTMLElement implements SniceOrderTrackerElement {
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   steps: OrderStep[] = [];
 
   @property({ attribute: 'tracking-number' })

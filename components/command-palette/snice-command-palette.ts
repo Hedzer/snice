@@ -15,7 +15,7 @@ export class SniceCommandPalette extends HTMLElement implements SniceCommandPale
   @property({ type: Boolean })
   open = false;
 
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   commands: CommandItem[] = [];
 
   @property({  })

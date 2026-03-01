@@ -25,10 +25,10 @@ export class SniceCellLocation extends HTMLElement implements SniceCellElement {
   @property({ type: Boolean })
   showIcon: boolean = true;
 
-  @property({ type: Object })
+  @property({ type: Object, attribute: false })
   column: ColumnDefinition | null = null;
 
-  @property({ type: Object })
+  @property({ type: Object, attribute: false })
   rowData: any = null;
 
   @property({ type: String })

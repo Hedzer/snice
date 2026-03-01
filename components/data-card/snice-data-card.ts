@@ -4,7 +4,7 @@ import type { DataCardField, DataCardVariant, SniceDataCardElement } from './sni
 
 @element('snice-data-card')
 export class SniceDataCard extends HTMLElement implements SniceDataCardElement {
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   fields: DataCardField[] = [];
 
   @property({ type: Boolean })

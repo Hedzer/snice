@@ -13,7 +13,7 @@ export class SniceCellText extends HTMLElement implements SniceCellElement {
   @property({  })
   value: any = '';
 
-  @property({ type: Object })
+  @property({ type: Object, attribute: false })
   column: ColumnDefinition = {
     key: '',
     label: '',
@@ -21,7 +21,7 @@ export class SniceCellText extends HTMLElement implements SniceCellElement {
     align: 'left'
   };
 
-  @property({ type: Object })
+  @property({ type: Object, attribute: false })
   rowData: any = null;
 
   @query('.cell-content')

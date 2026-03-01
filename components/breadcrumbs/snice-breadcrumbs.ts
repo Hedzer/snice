@@ -6,7 +6,7 @@ import type { SniceCrumbElement } from './snice-breadcrumbs.types';
 
 @element('snice-breadcrumbs')
 export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsElement {
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   items: BreadcrumbItem[] = [];
 
   @property({  })

@@ -7,7 +7,7 @@ export class SniceSegmentedControl extends HTMLElement implements SniceSegmented
   @property()
   value = '';
 
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   options: SegmentedControlOption[] = [];
 
   @property()

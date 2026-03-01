@@ -13,13 +13,13 @@ export interface ActionButton {
 
 @element('snice-cell-actions')
 export class SniceCellActions extends HTMLElement implements SniceCellElement {
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   actions: ActionButton[] = [];
 
-  @property({ type: Object })
+  @property({ type: Object, attribute: false })
   column: ColumnDefinition | null = null;
 
-  @property({ type: Object })
+  @property({ type: Object, attribute: false })
   rowData: any = null;
 
   @property({ type: String })

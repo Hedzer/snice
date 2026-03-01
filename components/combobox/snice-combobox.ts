@@ -16,7 +16,7 @@ export class SniceCombobox extends HTMLElement implements SniceComboboxElement {
   @property()
   value = '';
 
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   options: ComboboxOption[] = [];
 
   @property()

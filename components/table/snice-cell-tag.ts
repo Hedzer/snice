@@ -4,7 +4,7 @@ import type { SniceCellElement, ColumnDefinition } from './snice-table.types';
 
 @element('snice-cell-tag')
 export class SniceCellTag extends HTMLElement implements SniceCellElement {
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   tags: string[] = [];
 
   @property({ type: String })
@@ -13,10 +13,10 @@ export class SniceCellTag extends HTMLElement implements SniceCellElement {
   @property({ type: String })
   variant: string = 'default';
 
-  @property({ type: Object })
+  @property({ type: Object, attribute: false })
   column: ColumnDefinition | null = null;
 
-  @property({ type: Object })
+  @property({ type: Object, attribute: false })
   rowData: any = null;
 
   @property({ type: String })

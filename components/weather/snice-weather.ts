@@ -4,7 +4,7 @@ import type { WeatherData, WeatherUnit, WeatherVariant, SniceWeatherElement } fr
 
 @element('snice-weather')
 export class SniceWeather extends HTMLElement implements SniceWeatherElement {
-  @property({ type: Object })
+  @property({ type: Object, attribute: false })
   data: WeatherData | null = null;
 
   @property()

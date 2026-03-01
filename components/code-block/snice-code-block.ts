@@ -40,7 +40,7 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
   @property({ type: Number, attribute: 'start-line' })
   startLine = 1;
 
-  @property({ type: Array, attribute: 'highlight-lines' })
+  @property({ type: Array, attribute: false })
   highlightLines: number[] = [];
 
   @property({ type: Boolean })

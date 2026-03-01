@@ -12,7 +12,7 @@ export class SniceHeader extends HTMLElement implements SniceHeaderElement {
   @property({ type: Boolean,  })
   sticky: boolean = false;
 
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   columns: ColumnDefinition[] = [];
 
   @property({ type: Boolean,  })
@@ -21,7 +21,7 @@ export class SniceHeader extends HTMLElement implements SniceHeaderElement {
   @property({ type: Boolean,  })
   sortable: boolean = false;
 
-  @property({ type: Object })
+  @property({ type: Object, attribute: false })
   currentSort: TableSort = { column: '', direction: null };
 
   @property({ type: Boolean,  attribute: 'all-selected' })

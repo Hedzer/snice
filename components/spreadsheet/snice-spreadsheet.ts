@@ -4,8 +4,8 @@ import sheetStyles from './snice-spreadsheet.css?inline';
 
 @element('snice-spreadsheet')
 export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetElement {
-  @property({ type: Array }) data: any[][] = [];
-  @property({ type: Array }) columns: SpreadsheetColumn[] = [];
+  @property({ type: Array, attribute: false }) data: any[][] = [];
+  @property({ type: Array, attribute: false }) columns: SpreadsheetColumn[] = [];
   @property({ type: Boolean }) readonly: boolean = false;
 
   private selectedCell: CellPosition | null = null;

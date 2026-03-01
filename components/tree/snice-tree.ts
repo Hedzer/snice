@@ -29,13 +29,13 @@ export class SniceTree extends HTMLElement implements SniceTreeElement {
   @property({ type: Boolean, attribute: 'expand-on-click' })
   expandOnClick = false;
 
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   nodes: TreeNode[] = [];
 
-  @property({ type: Array, attribute: 'selected-nodes' })
+  @property({ type: Array, attribute: false })
   selectedNodes: string[] = [];
 
-  @property({ type: Array, attribute: 'checked-nodes' })
+  @property({ type: Array, attribute: false })
   checkedNodes: string[] = [];
 
   private nodeMap = new Map<string, TreeNode>();

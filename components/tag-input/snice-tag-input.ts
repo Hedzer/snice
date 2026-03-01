@@ -4,10 +4,10 @@ import tagInputStyles from './snice-tag-input.css?inline';
 
 @element('snice-tag-input')
 export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   value: string[] = [];
 
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   suggestions: string[] = [];
 
   @property({ type: Number, attribute: 'max-tags' })

@@ -4,7 +4,7 @@ import type { ApprovalStep, ApprovalOrientation, SniceApprovalFlowElement } from
 
 @element('snice-approval-flow')
 export class SniceApprovalFlow extends HTMLElement implements SniceApprovalFlowElement {
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   steps: ApprovalStep[] = [];
 
   @property()

@@ -4,7 +4,7 @@ import type { SpotlightStep, SniceSpotlightElement } from './snice-spotlight.typ
 
 @element('snice-spotlight')
 export class SniceSpotlight extends HTMLElement implements SniceSpotlightElement {
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   steps: SpotlightStep[] = [];
 
   @property({ type: Number })

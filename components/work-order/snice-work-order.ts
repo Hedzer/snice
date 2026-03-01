@@ -33,19 +33,19 @@ export class SniceWorkOrder extends HTMLElement implements SniceWorkOrderElement
   @property()
   status: WorkOrderStatus = 'open';
 
-  @property({ type: Object })
+  @property({ type: Object, attribute: false })
   customer: WorkOrderCustomer | null = null;
 
   @property()
   description = '';
 
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   tasks: WorkOrderTask[] = [];
 
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   parts: WorkOrderPart[] = [];
 
-  @property({ type: Object })
+  @property({ type: Object, attribute: false })
   asset: WorkOrderAsset | null = null;
 
   @property({ type: Number })

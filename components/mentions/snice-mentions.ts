@@ -17,7 +17,7 @@ export class SniceMentions extends HTMLElement implements SniceMentionsElement {
   @property()
   value = '';
 
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   users: MentionUser[] = [];
 
   @property()

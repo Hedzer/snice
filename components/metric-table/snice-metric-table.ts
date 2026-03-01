@@ -4,10 +4,10 @@ import type { SniceMetricTableElement, MetricColumn, SortDirection, SortChangeDe
 
 @element('snice-metric-table')
 export class SniceMetricTable extends HTMLElement implements SniceMetricTableElement {
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   columns: MetricColumn[] = [];
 
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   data: Record<string, any>[] = [];
 
   @property()

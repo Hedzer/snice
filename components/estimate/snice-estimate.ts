@@ -27,13 +27,13 @@ export class SniceEstimate extends HTMLElement implements SniceEstimateElement {
   @property()
   status: EstimateStatus = 'draft';
 
-  @property({ type: Object })
+  @property({ type: Object, attribute: false })
   from: EstimateParty | null = null;
 
-  @property({ type: Object })
+  @property({ type: Object, attribute: false })
   to: EstimateParty | null = null;
 
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   items: EstimateItem[] = [];
 
   @property()

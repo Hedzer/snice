@@ -4,7 +4,7 @@ import chartStyles from './snice-org-chart.css?inline';
 
 @element('snice-org-chart')
 export class SniceOrgChart extends HTMLElement implements SniceOrgChartElement {
-  @property({ type: Object })
+  @property({ type: Object, attribute: false })
   data: OrgChartNode | null = null;
 
   @property() direction: OrgChartDirection = 'top-down';

@@ -19,10 +19,10 @@ export class SniceCellStatus extends HTMLElement implements SniceCellElement {
   @property({ type: String })
   variant: 'online' | 'offline' | 'busy' | 'away' | 'custom' = 'custom';
 
-  @property({ type: Object })
+  @property({ type: Object, attribute: false })
   column: ColumnDefinition | null = null;
 
-  @property({ type: Object })
+  @property({ type: Object, attribute: false })
   rowData: any = null;
 
   @property({ type: String })

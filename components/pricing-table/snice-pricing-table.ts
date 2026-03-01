@@ -46,7 +46,7 @@ export class SniceFeature extends HTMLElement {
 
 @element('snice-pricing-table')
 export class SnicePricingTable extends HTMLElement implements SnicePricingTableElement {
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   plans: PricingPlan[] = [];
 
   @property()

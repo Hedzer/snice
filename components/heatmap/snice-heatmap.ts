@@ -15,7 +15,7 @@ const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 @element('snice-heatmap')
 export class SniceHeatmap extends HTMLElement implements SniceHeatmapElement {
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   data: HeatmapDataPoint[] = [];
 
   @property({ attribute: 'color-scheme' })

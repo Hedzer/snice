@@ -13,10 +13,10 @@ export class SniceCellPercentage extends HTMLElement implements SniceCellElement
   @property({  })
   value: any = '';
 
-  @property({ type: Object })
+  @property({ type: Object, attribute: false })
   column: ColumnDefinition | null = null;
 
-  @property({ type: Object })
+  @property({ type: Object, attribute: false })
   rowData: any = null;
 
   @query('.cell-content')

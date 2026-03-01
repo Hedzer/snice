@@ -4,7 +4,7 @@ import cssContent from './snice-availability.css?inline';
 
 @element('snice-availability')
 export class SniceAvailability extends HTMLElement implements SniceAvailabilityElement {
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   value: AvailabilityRange[] = [];
 
   @property({ type: Number })

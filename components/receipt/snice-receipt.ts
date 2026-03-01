@@ -23,16 +23,16 @@ export class SniceReceipt extends HTMLElement implements SniceReceiptElement {
   @property()
   locale = '';
 
-  @property({ type: Object })
+  @property({ type: Object, attribute: false })
   merchant: ReceiptMerchant = { name: '' };
 
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   items: ReceiptItem[] = [];
 
   @property({ type: Number })
   tax = 0;
 
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   taxes: ReceiptTaxLine[] = [];
 
   @property({ type: Number })

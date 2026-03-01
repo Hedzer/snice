@@ -39,7 +39,7 @@ export class SnicePodcastPlayer extends HTMLElement implements SnicePodcastPlaye
   @property({ type: Boolean })
   muted: boolean = false;
 
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   episodes: PodcastEpisode[] = [];
 
   @property({ type: Number, attribute: 'current-episode-index' })

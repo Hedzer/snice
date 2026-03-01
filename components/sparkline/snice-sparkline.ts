@@ -4,7 +4,7 @@ import type { SparklineType, SparklineColor, SniceSparklineElement } from './sni
 
 @element('snice-sparkline')
 export class SniceSparkline extends HTMLElement implements SniceSparklineElement {
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   data: number[] = [];
 
   @property({  })

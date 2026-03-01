@@ -59,7 +59,7 @@ export class SniceTable extends HTMLElement {
     this.render();
   }
 
-  @property({ type: Array, attribute: 'current-sort' })
+  @property({ type: Array, attribute: false })
   currentSort: Array<{ column: string, direction: 'asc' | 'desc' }> = [];
 
   // Don't use @property decorator to avoid auto-rendering on searchText change
@@ -69,13 +69,13 @@ export class SniceTable extends HTMLElement {
   @property({ type: String, attribute: 'selector' })
   selector: string = '';
 
-  @property({ type: Array, attribute: 'selector-options' })
+  @property({ type: Array, attribute: false })
   selectorOptions: Array<{value: string, label: string}> = [];
 
   @property({ type: Boolean,  attribute: 'loading' })
   loading: boolean = false;
 
-  @property({ type: Array, attribute: 'selected-rows' })
+  @property({ type: Array, attribute: false })
   selectedRows: number[] = [];
 
   @query('table')

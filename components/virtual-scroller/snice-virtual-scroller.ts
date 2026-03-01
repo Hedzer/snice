@@ -4,7 +4,7 @@ import cssContent from './snice-virtual-scroller.css?inline';
 
 @element('snice-virtual-scroller')
 export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScrollerElement {
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   items: VirtualScrollerItem[] = [];
 
   @property({ type: Number, attribute: 'item-height' })

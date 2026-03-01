@@ -33,7 +33,7 @@ export class SniceComment extends HTMLElement {
 
 @element('snice-comments')
 export class SniceComments extends HTMLElement implements SniceCommentsElement {
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   comments: Comment[] = [];
 
   @property({ attribute: 'current-user' })

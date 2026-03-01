@@ -4,7 +4,7 @@ import type { Activity, ActivityGroupBy, SniceActivityFeedElement, ActivityClick
 
 @element('snice-activity-feed')
 export class SniceActivityFeed extends HTMLElement implements SniceActivityFeedElement {
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   activities: Activity[] = [];
 
   @property()

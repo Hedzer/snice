@@ -22,10 +22,10 @@ export class SniceCellPhone extends HTMLElement implements SniceCellElement {
   @property({ type: String })
   country: string = 'US';
 
-  @property({ type: Object })
+  @property({ type: Object, attribute: false })
   column: ColumnDefinition | null = null;
 
-  @property({ type: Object })
+  @property({ type: Object, attribute: false })
   rowData: any = null;
 
   @property({ type: String })

@@ -14,7 +14,7 @@ export class SniceKpi extends HTMLElement implements SniceKpiElement {
   @property({  })
   trendValue?: string | number;
 
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   trendData?: number[];
 
   @property({  })

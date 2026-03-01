@@ -24,13 +24,13 @@ const DEFAULT_FIELD_TYPES: FormFieldType[] = [
 
 @element('snice-form-builder')
 export class SniceFormBuilder extends HTMLElement implements SniceFormBuilderElement {
-  @property({ type: Object })
+  @property({ type: Object, attribute: false })
   schema: FormSchema = { fields: [] };
 
   @property()
   mode: FormBuilderMode = 'edit';
 
-  @property({ type: Array, attribute: 'field-types' })
+  @property({ type: Array, attribute: false })
   fieldTypes: FormFieldType[] = DEFAULT_FIELD_TYPES;
 
   private selectedFieldId: string | null = null;

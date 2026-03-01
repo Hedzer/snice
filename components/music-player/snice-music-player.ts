@@ -4,7 +4,7 @@ import playerStyles from './snice-music-player.css?inline';
 
 @element('snice-music-player')
 export class SniceMusicPlayer extends HTMLElement implements SniceMusicPlayerElement {
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   tracks: Track[] = [];
 
   @property({ type: Number, attribute: 'current-track-index' })

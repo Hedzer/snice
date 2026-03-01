@@ -6,7 +6,7 @@ const DAY_MS = 86400000;
 
 @element('snice-gantt')
 export class SniceGantt extends HTMLElement implements SniceGanttElement {
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   tasks: GanttTask[] = [];
 
   @property() zoom: GanttZoom = 'week';

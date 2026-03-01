@@ -25,7 +25,7 @@ export class SniceProductCard extends HTMLElement implements SniceProductCardEle
   @property()
   currency = '$';
 
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   images: string[] = [];
 
   @property({ type: Number })
@@ -34,7 +34,7 @@ export class SniceProductCard extends HTMLElement implements SniceProductCardEle
   @property({ type: Number, attribute: 'review-count' })
   reviewCount = 0;
 
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   variants: ProductVariant[] = [];
 
   @property({ type: Boolean, attribute: 'in-stock' })

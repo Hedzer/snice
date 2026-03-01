@@ -58,7 +58,7 @@ function isEmoji(str: string): boolean {
 
 @element('snice-app-tiles')
 export class SniceAppTiles extends HTMLElement implements SniceAppTilesElement {
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   tiles: AppTile[] = [];
 
   @property({ type: Number })

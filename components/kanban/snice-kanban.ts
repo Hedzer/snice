@@ -4,7 +4,7 @@ import cssContent from './snice-kanban.css?inline';
 
 @element('snice-kanban')
 export class SniceKanban extends HTMLElement implements SniceKanbanElement {
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   columns: KanbanColumn[] = [];
 
   @property({ type: Boolean, attribute: 'allow-drag-drop' })

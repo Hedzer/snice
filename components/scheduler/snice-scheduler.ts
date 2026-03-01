@@ -7,10 +7,10 @@ const MIN_MS = 60000;
 
 @element('snice-scheduler')
 export class SniceScheduler extends HTMLElement implements SniceSchedulerElement {
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   resources: SchedulerResource[] = [];
 
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   events: SchedulerEvent[] = [];
 
   @property()

@@ -37,7 +37,7 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
   @property({ type: Boolean,  })
   selectable: boolean = false;
 
-  @property({ type: Object })
+  @property({ type: Object, attribute: false })
   data: any = {};
 
   // Extract data from data-* attributes - pass raw values, let cells handle conversion
@@ -62,7 +62,7 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
   @property({ type: Number,  })
   index: number = 0;
 
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   columns: ColumnDefinition[] = [];
 
   @render()

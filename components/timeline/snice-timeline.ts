@@ -10,7 +10,7 @@ export class SniceTimeline extends HTMLElement implements SniceTimelineElement {
   @property({  })
   position: TimelinePosition = 'left';
 
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   items: TimelineItem[] = [];
 
   @property({ type: Boolean })

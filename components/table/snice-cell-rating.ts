@@ -14,7 +14,7 @@ export class SniceCellRating extends HTMLElement implements SniceCellElement {
   @property({  })
   value: any = 0;
 
-  @property({ type: Object })
+  @property({ type: Object, attribute: false })
   column: ColumnDefinition = {
     key: '',
     label: '',
@@ -22,7 +22,7 @@ export class SniceCellRating extends HTMLElement implements SniceCellElement {
     align: 'center'
   };
 
-  @property({ type: Object })
+  @property({ type: Object, attribute: false })
   rowData: any = null;
 
   @query('.cell-content')

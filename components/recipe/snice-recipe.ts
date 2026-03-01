@@ -34,16 +34,16 @@ export class SniceRecipe extends HTMLElement implements SniceRecipeElement {
   @property()
   variant: RecipeVariant = 'full';
 
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   ingredients: RecipeIngredient[] = [];
 
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   steps: RecipeStep[] = [];
 
-  @property({ type: Object })
+  @property({ type: Object, attribute: false })
   nutrition: RecipeNutrition | null = null;
 
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   tags: string[] = [];
 
   // Internal state

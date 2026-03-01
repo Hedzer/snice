@@ -5,7 +5,7 @@ import type { SniceStepperPanelElement } from './snice-stepper-panel.types';
 
 @element('snice-stepper')
 export class SniceStepper extends HTMLElement implements SniceStepperElement {
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   steps: Step[] = [];
 
   @property({ type: Number })

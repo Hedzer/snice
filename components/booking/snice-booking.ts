@@ -4,10 +4,10 @@ import cssContent from './snice-booking.css?inline';
 
 @element('snice-booking')
 export class SniceBooking extends HTMLElement implements SniceBookingElement {
-  @property({ type: Array, attribute: 'available-dates' })
+  @property({ type: Array, attribute: false })
   availableDates: (Date | string)[] = [];
 
-  @property({ type: Array, attribute: 'available-slots' })
+  @property({ type: Array, attribute: false })
   availableSlots: BookingSlot[] = [];
 
   @property({ type: Number })
@@ -19,7 +19,7 @@ export class SniceBooking extends HTMLElement implements SniceBookingElement {
   @property({ type: Date, attribute: 'max-date' })
   maxDate: Date | string = '';
 
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   fields: BookingField[] = [];
 
   @property()

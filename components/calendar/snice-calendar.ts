@@ -10,7 +10,7 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
   @property({ attribute: 'view' })
   view: CalendarView = 'month';
 
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   events: CalendarEvent[] = [];
 
   @property({ type: Date, attribute: 'min-date' })
@@ -19,7 +19,7 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
   @property({ type: Date, attribute: 'max-date' })
   maxDate: Date | string = '';
 
-  @property({ type: Array, attribute: 'disabled-dates' })
+  @property({ type: Array, attribute: false })
   disabledDates: (Date | string)[] = [];
 
   @property({ type: Boolean, attribute: 'highlight-today' })

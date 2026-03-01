@@ -7,7 +7,7 @@ export class SniceSplitButton extends HTMLElement implements SniceSplitButtonEle
   @property()
   label = '';
 
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   actions: SplitButtonAction[] = [];
 
   @property()

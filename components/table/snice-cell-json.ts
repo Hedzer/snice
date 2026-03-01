@@ -16,10 +16,10 @@ export class SniceCellJson extends HTMLElement implements SniceCellElement {
   @property({ type: Boolean })
   showToggle: boolean = true;
 
-  @property({ type: Object })
+  @property({ type: Object, attribute: false })
   column: ColumnDefinition | null = null;
 
-  @property({ type: Object })
+  @property({ type: Object, attribute: false })
   rowData: any = null;
 
   @property({ type: String })

@@ -4,7 +4,7 @@ import type { SniceStatGroupElement, StatGroupVariant, StatItem, StatClickDetail
 
 @element('snice-stat-group')
 export class SniceStatGroup extends HTMLElement implements SniceStatGroupElement {
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   stats: StatItem[] = [];
 
   @property({ type: Number })

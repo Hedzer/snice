@@ -4,7 +4,7 @@ import type { NotificationItem, SniceNotificationCenterElement } from './snice-n
 
 @element('snice-notification-center')
 export class SniceNotificationCenter extends HTMLElement implements SniceNotificationCenterElement {
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   notifications: NotificationItem[] = [];
 
   @property({ type: Boolean })

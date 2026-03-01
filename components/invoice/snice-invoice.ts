@@ -34,13 +34,13 @@ export class SniceInvoice extends HTMLElement implements SniceInvoiceElement {
   @property({ type: Number })
   discount = 0;
 
-  @property({ type: Object })
+  @property({ type: Object, attribute: false })
   from: InvoiceParty = { name: '' };
 
-  @property({ type: Object })
+  @property({ type: Object, attribute: false })
   to: InvoiceParty = { name: '' };
 
-  @property({ type: Array })
+  @property({ type: Array, attribute: false })
   items: InvoiceItem[] = [];
 
   @property()
