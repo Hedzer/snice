@@ -165,6 +165,12 @@ const componentTestConfig = {
   'pricing-table': {
     properties: ['variant', 'annual'],
     events: ['onPlanSelect']
+  },
+  'key-value': {
+    isForm: true,
+    properties: ['label', 'autoExpand', 'rows', 'showDescription', 'keyPlaceholder', 'valuePlaceholder', 'disabled', 'readonly', 'name', 'mode', 'showCopy'],
+    events: ['onKvAdd', 'onKvRemove', 'onKvChange', 'onKvCopy'],
+    variants: ['default', 'compact']
   }
 };
 
