@@ -13,6 +13,7 @@ Every component must satisfy ALL items before considered complete.
 - [ ] All CSS uses `var(--snice-property, fallback)` pattern
 - [ ] Spacing/typography in rem, borders/shadows in px
 - [ ] Uses snice decorators (`@query`, `@on`, `@dispatch`, `@ready`, `@dispose`, `@observe`, `@watch`)
+- [ ] Responsive design using container queries (not media queries) for layout breakpoints
 - [ ] Exported from `src/index.ts`
 
 ## Testing
