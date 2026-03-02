@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<script>document.documentElement.setAttribute('data-theme',localStorage.getItem('snice-theme')||'dark')</script>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form Alignment Test</title>
+  <script>
+    var comps = ['snice-runtime','snice-input','snice-select','snice-textarea','snice-slider','snice-date-picker','snice-time-picker','snice-date-time-picker','snice-checkbox','snice-switch'];
+    comps.forEach(function(c){var s=document.createElement('script');s.src='components/'+c+'.min.js';document.head.appendChild(s)});
+  </script>
+  <link rel="stylesheet" href="theme/theme.css">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body { padding: 2rem; font-family: var(--snice-font-family, system-ui); }
+    h2 { margin: 2rem 0 1rem; color: var(--snice-color-text); font-size: 1.1rem; border-bottom: 1px solid var(--snice-color-border); padding-bottom: 0.5rem; }
+    h3 { margin: 1.5rem 0 0.75rem; color: var(--snice-color-text-secondary); font-size: 0.9rem; }
+    .row { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1rem; flex-wrap: wrap; }
+    .row > * { flex: 1; min-width: 180px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+    .baseline-row { display: flex; gap: 1rem; align-items: flex-end; margin-bottom: 1rem; background: rgba(128,128,128,0.05); padding: 1rem; border-radius: 8px; }
+    .baseline-row > * { flex: 1; min-width: 150px; }
+    .indicator { border-left: 3px solid var(--snice-color-primary); padding-left: 0.75rem; margin-bottom: 0.5rem; font-size: 0.8rem; color: var(--snice-color-text-secondary); }
+    .theme-toggle { position: fixed; top: 1rem; right: 1rem; z-index: 100; }
+  </style>
+</head>
+<body>
+  <button class="theme-toggle" onclick="var t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',t);localStorage.setItem('snice-theme',t)">Toggle Theme</button>
+
+  <h1 style="color:var(--snice-color-text)">Form Element Alignment Test</h1>
+
+  <h2>1. Side-by-side: Input + Select (most common combo)</h2>
+  <div class="indicator">These should align perfectly — same label height, same input height, same bottom edge</div>
+  <div class="row">
+    <snice-input label="First Name" placeholder="Enter name"></snice-input>
+    <snice-select label="Country">
+      <snice-option value="us">United States</snice-option>
+      <snice-option value="uk">United Kingdom</snice-option>
+      <snice-option value="de">Germany</snice-option>
+    </snice-select>
+    <snice-input label="Email" type="email" placeholder="user@example.com"></snice-input>
+  </div>
+
+  <h2>2. With helper text and error text</h2>
+  <div class="indicator">Helper/error text should not push adjacent elements down when absent</div>
+  <div class="row">
+    <snice-input label="Username" helper-text="3-20 characters" placeholder="Pick a username"></snice-input>
+    <snice-input label="Password" type="password" placeholder="Enter password"></snice-input>
+    <snice-input label="Email" error-text="Email is required" placeholder="user@example.com" invalid></snice-input>
+  </div>
+
+  <h2>3. Input + Textarea side by side</h2>
+  <div class="row">
+    <snice-input label="Subject" placeholder="Enter subject"></snice-input>
+    <snice-textarea label="Description" placeholder="Enter description" rows="3"></snice-textarea>
+  </div>
+
+  <h2>4. Input + Slider</h2>
+  <div class="row">
+    <snice-input label="Price" type="number" placeholder="0.00"></snice-input>
+    <snice-slider label="Quantity" min="0" max="100" value="50" form-align></snice-slider>
+  </div>
+
+  <h2>5. Date/Time pickers alongside inputs</h2>
+  <div class="row">
+    <snice-input label="Event Name" placeholder="Enter name"></snice-input>
+    <snice-date-picker label="Start Date"></snice-date-picker>
+    <snice-time-picker label="Start Time"></snice-time-picker>
+  </div>
+
+  <h2>6. Date-Time picker alongside input</h2>
+  <div class="row">
+    <snice-input label="Location" placeholder="Enter location"></snice-input>
+    <snice-date-time-picker label="When"></snice-date-time-picker>
+  </div>
+
+  <h2>7. All form elements in a grid</h2>
+  <div class="grid">
+    <snice-input label="Input" placeholder="Text input"></snice-input>
+    <snice-select label="Select">
+      <snice-option value="a">Option A</snice-option>
+      <snice-option value="b">Option B</snice-option>
+    </snice-select>
+    <snice-textarea label="Textarea" placeholder="Text area" rows="1"></snice-textarea>
+    <snice-slider label="Slider" min="0" max="100" value="50"></snice-slider>
+    <snice-date-picker label="Date Picker"></snice-date-picker>
+    <snice-time-picker label="Time Picker"></snice-time-picker>
+    <snice-input label="Number" type="number" placeholder="0"></snice-input>
+    <snice-input label="Search" type="search" placeholder="Search..."></snice-input>
+  </div>
+
+  <h2>8. Mixed with/without labels</h2>
+  <div class="row">
+    <snice-input placeholder="No label input"></snice-input>
+    <snice-select>
+      <snice-option value="a">No label select</snice-option>
+    </snice-select>
+    <snice-input label="With label" placeholder="Has label"></snice-input>
+  </div>
+
+  <h2>9. Size variants side by side</h2>
+  <h3>Small</h3>
+  <div class="row">
+    <snice-input label="Small Input" size="small" placeholder="Small"></snice-input>
+    <snice-select label="Small Select" size="small">
+      <snice-option value="a">Option</snice-option>
+    </snice-select>
+  </div>
+  <h3>Medium (default)</h3>
+  <div class="row">
+    <snice-input label="Medium Input" placeholder="Medium"></snice-input>
+    <snice-select label="Medium Select">
+      <snice-option value="a">Option</snice-option>
+    </snice-select>
+  </div>
+  <h3>Large</h3>
+  <div class="row">
+    <snice-input label="Large Input" size="large" placeholder="Large"></snice-input>
+    <snice-select label="Large Select" size="large">
+      <snice-option value="a">Option</snice-option>
+    </snice-select>
+  </div>
+
+  <h2>10. Checkbox, Switch, Radio alongside inputs</h2>
+  <div class="row" style="align-items:center">
+    <snice-input label="Name" placeholder="Enter name"></snice-input>
+    <snice-checkbox label="Active"></snice-checkbox>
+    <snice-switch label="Enabled"></snice-switch>
+  </div>
+
+</body>
+</html>

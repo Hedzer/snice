@@ -24,20 +24,11 @@ img[src=""] {
 .select-label {
   display: block;
   margin-bottom: 0.25rem; /* 4px */
-  color: var(--snice-color-text);
-  font-weight: 500;
-}
-
-.select-label--small {
   font-size: var(--snice-font-size-sm);
-}
-
-.select-label--medium {
-  font-size: var(--snice-font-size-md);
-}
-
-.select-label--large {
-  font-size: var(--snice-font-size-lg);
+  font-weight: 500;
+  line-height: var(--snice-line-height-normal, 1.5);
+  color: var(--snice-color-text);
+  text-align: left;
 }
 
 .select-label--required::after {

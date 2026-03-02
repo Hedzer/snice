@@ -23,6 +23,8 @@ showValue: boolean = false;    // attr: show-value
 showTicks: boolean = false;    // attr: show-ticks
 vertical: boolean = false;
 loading: boolean = false;
+// form-align: CSS-only attribute (no JS property). Gives the slider track area
+// min-height: 2.5rem (40px) so it aligns with input/select fields in form rows.
 ```
 
 ## Events
@@ -44,5 +46,6 @@ loading: boolean = false;
 <snice-slider variant="primary"></snice-slider>
 <snice-slider size="small"></snice-slider>
 <snice-slider vertical></snice-slider>
+<snice-slider label="Qty" form-align></snice-slider> <!-- aligns with inputs in form rows -->
 <snice-slider min="0" max="100" step="5" value="50"></snice-slider>
 ```

@@ -7,12 +7,12 @@
 .textarea-wrapper {
   display: flex;
   flex-direction: column;
-  gap: var(--snice-spacing-xs, 0.5rem);
 }
 
 .label {
   font-size: var(--snice-font-size-sm, 0.875rem);
   font-weight: var(--snice-font-weight-medium, 500);
+  line-height: var(--snice-line-height-normal, 1.5);
   color: var(--snice-color-text, rgb(31 41 55));
   margin-bottom: var(--snice-spacing-2xs, 0.25rem);
 }

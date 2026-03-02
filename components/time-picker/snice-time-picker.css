@@ -14,7 +14,9 @@
 
 /* Label */
 .label {
+  font-size: var(--snice-font-size-sm, 0.875rem);
   font-weight: var(--snice-font-weight-medium, 500);
+  line-height: var(--snice-line-height-normal, 1.5);
   color: var(--snice-color-text, rgb(23 23 23));
   margin-bottom: var(--snice-spacing-2xs, 0.25rem);
 }
@@ -35,6 +37,8 @@
 /* Input */
 .input {
   width: 100%;
+  box-sizing: border-box;
+  min-height: 2.5rem; /* 40px — matches snice-input/snice-select */
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: var(--snice-border-radius-lg, 6px);
   padding: var(--snice-spacing-xs, 0.5rem) 2.75rem var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
@@ -215,7 +219,6 @@
 .error-text {
   font-size: var(--snice-font-size-xs, 0.75rem);
   margin-top: var(--snice-spacing-2xs, 0.25rem);
-  min-height: 1.125rem;
 }
 
 .helper-text {

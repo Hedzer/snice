@@ -96,16 +96,19 @@
 .input--small {
   padding: 0.375rem 0.625rem; /* 6px 10px */
   font-size: var(--snice-font-size-sm);
+  min-height: 2rem; /* 32px — matches select */
 }
 
 .input--medium {
   padding: 0.5rem 0.75rem; /* 8px 12px */
   font-size: var(--snice-font-size-md);
+  min-height: 2.5rem; /* 40px — matches select */
 }
 
 .input--large {
   padding: 0.625rem 0.875rem; /* 10px 14px */
   font-size: var(--snice-font-size-lg);
+  min-height: 3rem; /* 48px — matches select */
 }
 
 /* Style Variants */
@@ -177,9 +180,10 @@
 /* Label */
 .label {
   display: block;
-  margin-bottom: 0.375rem; /* 6px */
+  margin-bottom: 0.25rem; /* 4px — matches select/other form controls */
   font-size: var(--snice-font-size-sm);
   font-weight: 500;
+  line-height: var(--snice-line-height-normal, 1.5);
   color: var(--snice-color-text);
   text-align: left;
 }
@@ -203,7 +207,6 @@
   display: block;
   margin-top: 0.25rem; /* 4px */
   font-size: var(--snice-font-size-xs);
-  min-height: 1.125rem; /* 18px */
 }
 
 .helper-text {

@@ -92,6 +92,17 @@ Set the `invalid` attribute with `error-text` to show validation errors.
 <snice-slider label="Age" min="0" max="120" value="150" invalid error-text="Value must be between 0 and 120"></snice-slider>
 ```
 
+### Form Alignment
+
+When placing a slider alongside text inputs or selects in a form row, add the `form-align` attribute. This gives the slider track area the same height as a standard form field (40px), so the track vertically centers at the same level as adjacent input fields.
+
+```html
+<div style="display: flex; gap: 1rem; align-items: flex-start;">
+  <snice-input label="Price" placeholder="0.00"></snice-input>
+  <snice-slider label="Quantity" min="0" max="100" value="50" form-align></snice-slider>
+</div>
+```
+
 ### In a Form
 
 The slider is form-associated and participates in form submission.
@@ -124,6 +135,7 @@ The slider is form-associated and participates in form submission.
 | `showValue` (attr: `show-value`) | `boolean` | `false` | Display current value |
 | `showTicks` (attr: `show-ticks`) | `boolean` | `false` | Show tick marks |
 | `vertical` | `boolean` | `false` | Vertical orientation |
+| `form-align` | (CSS-only attribute) | -- | Gives the track area `min-height: 2.5rem` to align with input/select fields in form rows |
 
 ## Events
 

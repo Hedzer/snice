@@ -141,9 +141,7 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
           <when value="helper">
             <span class="helper-text" part="helper-text">${this.helperText}</span>
           </when>
-          <default>
-            <span class="helper-text" part="helper-text">&nbsp;</span>
-          </default>
+          <default></default>
         </case>
       </div>
     `;
