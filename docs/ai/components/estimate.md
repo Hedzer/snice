@@ -1,34 +1,31 @@
 # snice-estimate
 
-Professional estimate/quote document with from/to parties, line items, tax, discount, and QR code.
+Professional estimate/quote document with from/to parties, line items, optional items toggle, and QR code.
 
-## Properties (Attributes)
+## Properties
 
-```ts
-estimateNumber: string                  // attribute: estimate-number
-date: string                            // Estimate date
-expiryDate: string                      // attribute: expiry-date
-status: EstimateStatus                  // 'draft' | 'sent' | 'accepted' | 'declined' | 'expired' (default: 'draft')
-currency: string                        // ISO 4217 code (default: 'USD')
-taxRate: number                         // attribute: tax-rate (default: 0)
-discount: number                        // Percentage discount (default: 0)
-notes: string                           // Footer notes
-variant: EstimateVariant                // 'default' | 'compact' | 'detailed' (default: 'default')
-showQr: boolean                         // attribute: show-qr (default: false)
-qrData: string                          // attribute: qr-data
-```
-
-## Setter Functions
-
-```ts
-setFrom(party: EstimateParty): void     // Set the "from" party
-setTo(party: EstimateParty): void       // Set the "to" party
-setItems(items: EstimateItem[]): void   // Set line items
+```typescript
+estimateNumber: string = ''              // attribute: estimate-number
+date: string = ''                        // Estimate date
+expiryDate: string = ''                  // attribute: expiry-date
+status: EstimateStatus = 'draft'         // 'draft' | 'sent' | 'accepted' | 'declined' | 'expired'
+currency: string = '$'                   // Currency symbol
+taxRate: number = 0                      // attribute: tax-rate — percentage
+discount: number = 0                     // Discount percentage
+notes: string = ''                       // Footer notes
+terms: string = ''                       // Terms & conditions
+variant: EstimateVariant = 'standard'    // 'standard' | 'compact' | 'detailed' | 'comparison'
+showQr: boolean = false                  // attribute: show-qr
+qrData: string = ''                      // attribute: qr-data
+qrPosition: QrPosition = 'top-right'     // attribute: qr-position — 'top-right' | 'bottom-right' | 'footer'
+from: EstimateParty | null = null        // Sender party data (JS only)
+to: EstimateParty | null = null          // Recipient party data (JS only)
+items: EstimateItem[] = []               // Line items (JS only)
 ```
 
 ## Types
 
-```ts
+```typescript
 interface EstimateParty {
   name: string;
   address?: string;
@@ -40,60 +37,60 @@ interface EstimateItem {
   description: string;
   quantity: number;
   unitPrice: number;
-  optional?: boolean;                    // Marked as optional line item
-  included?: boolean;                    // Whether optional item is included in total
+  optional?: boolean;     // Item can be toggled on/off
+  included?: boolean;     // Whether optional item is included
 }
 ```
 
-## Child Elements
+## Slots
 
-Supports declarative usage. Slot children win over setter data.
-
-**`<snice-estimate-party>`** — slot: `from` or `to`
-Attributes: `name`, `address`, `email`, `phone`
-
-**`<snice-estimate-item>`** — default slot
-Attributes: `description`, `quantity` (Number), `unit-price` (Number), `optional` (Boolean), `included` (Boolean)
-
-## Named Slots
-
-- `slot="from"` — From party (`<snice-estimate-party>`)
-- `slot="to"` — To party (`<snice-estimate-party>`)
-- Default slot — Line items (`<snice-estimate-item>`)
-- `slot="qr"` — Custom QR code content
-- `slot="footer"` — Footer content
+- `logo` - Custom logo content
+- `qr` - Custom QR code content
+- `footer` - Footer content
 
 ## Events
 
-- `estimate-status-change` -> `{ status: EstimateStatus; previousStatus: EstimateStatus }`
-- `estimate-accept` -> `void`
-- `estimate-decline` -> `void`
-- `estimate-print` -> `void`
+- `estimate-accept` → `{ estimateNumber: string; items: EstimateItem[]; total: number }`
+- `estimate-decline` → `{ estimateNumber: string }`
+- `item-toggle` → `{ index: number; item: EstimateItem; included: boolean }`
 
-## CSS Parts
+## Methods
 
-`base`, `header`, `parties`, `party`, `items`, `totals`, `notes`, `footer`
+- `print()` - Trigger browser print
+- `toJSON()` - Returns full estimate data with computed totals
+
+## Variants
+
+- `standard` - Clean professional layout
+- `compact` - Dense layout with reduced spacing
+- `detailed` - Full accounting details
+- `comparison` - Card-based option selector (one card per item)
 
 ## Usage
 
 ```html
-<!-- Declarative -->
 <snice-estimate estimate-number="EST-001" date="2026-01-15" status="sent" tax-rate="10">
-  <snice-estimate-party slot="from" name="Studio" address="100 Design Blvd" email="hi@studio.com"></snice-estimate-party>
-  <snice-estimate-party slot="to" name="Client Inc" address="200 Innovation Way"></snice-estimate-party>
-  <snice-estimate-item description="Brand Identity" quantity="1" unit-price="5000"></snice-estimate-item>
-  <snice-estimate-item description="Website Design" quantity="1" unit-price="8000"></snice-estimate-item>
-  <snice-estimate-item description="SEO Audit" quantity="1" unit-price="1500" optional></snice-estimate-item>
+  <img slot="logo" src="logo.png" alt="Logo" />
 </snice-estimate>
-```
 
-```js
-// Imperative
+<script>
 const est = document.querySelector('snice-estimate');
-est.setFrom({ name: 'Studio', address: '100 Design Blvd' });
-est.setTo({ name: 'Client', address: '200 Innovation Way' });
-est.setItems([
+est.from = { name: 'Studio', address: '100 Design Blvd', email: 'hi@studio.com' };
+est.to = { name: 'Client Inc', address: '200 Innovation Way' };
+est.items = [
   { description: 'Brand Identity', quantity: 1, unitPrice: 5000 },
   { description: 'SEO Audit', quantity: 1, unitPrice: 1500, optional: true, included: false }
-]);
+];
+est.terms = 'Payment due within 30 days';
+
+est.addEventListener('estimate-accept', e => console.log('Accepted:', e.detail));
+est.addEventListener('item-toggle', e => console.log('Item toggled:', e.detail));
+</script>
+
+<!-- Comparison variant -->
+<snice-estimate variant="comparison"></snice-estimate>
 ```
+
+## CSS Parts
+
+`base`, `header`, `logo`, `title`, `status`, `expiry`, `meta`, `parties`, `party`, `party-label`, `party-name`, `party-detail`, `table`, `table-header`, `table-row`, `table-cell`, `item-toggle`, `summary`, `subtotal`, `discount-row`, `tax-row`, `total`, `notes`, `notes-label`, `notes-content`, `terms`, `actions`, `accept-button`, `decline-button`, `footer`, `qr-container`, `qr`, `comparison`, `option`, `option-button`

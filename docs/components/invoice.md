@@ -1,80 +1,31 @@
-[//]: # (AI: For a low-token version of this doc, use docs/ai/components/invoice.md instead)
-
 # Invoice
-
 `<snice-invoice>`
 
-A professional invoice document component with five visual variants, deep CSS theming, optional QR code support, comprehensive print styles, and a dual API supporting both declarative child elements and imperative setter functions.
-
-## Features
-
-- **Dual API**: Declarative child elements (`<snice-invoice-party>`, `<snice-invoice-item>`) and imperative setter functions (`setFrom()`, `setTo()`, `setItems()`)
-- **Five Variants**: Standard, modern, classic, minimal, and detailed layouts
-- **Line Items Table**: Description, quantity, unit price, and amount columns
-- **Tax & Discount**: Automatic calculations with configurable rates
-- **Party Information**: Bill-from and bill-to address blocks with logo support
-- **Status Badges**: Draft, sent, paid, overdue, and cancelled states
-- **Currency Formatting**: Locale-aware currency display via `Intl.NumberFormat`
-- **QR Code Support**: Optional QR code slot with 4 position options
-- **Print Support**: Comprehensive `@media print` styles with page break management
-- **Deep Theming**: 40+ CSS custom properties for complete visual control
-- **CSS Parts**: Every meaningful element is exposed via `::part()` for external styling
-- **JSON Export**: `toJSON()` returns complete invoice data with computed totals
+A professional invoice component with line items, automatic tax and discount calculations, status tracking, and QR code support. Supports multiple visual variants and customizable layouts.
 
 ## Basic Usage
 
-```typescript
-import 'snice/components/invoice/snice-invoice';
-```
-
-### Declarative (recommended)
-
-Use child elements to define invoice data directly in HTML:
-
 ```html
 <snice-invoice
-  invoice-number="INV-001"
-  date="2026-01-15"
-  due-date="2026-02-15"
+  invoice-number="INV-2026-001"
+  date="Feb 27, 2026"
+  due-date="Mar 27, 2026"
   status="sent"
+  currency="USD"
   tax-rate="10"
-  notes="Payment due within 30 days.">
-
-  <snice-invoice-party slot="from"
-    name="Acme Corp"
-    address="123 Main St, New York, NY 10001"
-    email="billing@acme.com">
-  </snice-invoice-party>
-
-  <snice-invoice-party slot="to"
-    name="Client Inc"
-    address="456 Oak Ave, San Francisco, CA 94102">
-  </snice-invoice-party>
-
-  <snice-invoice-item description="Web Development" quantity="40" unit-price="150"></snice-invoice-item>
-  <snice-invoice-item description="Design Services" quantity="10" unit-price="120"></snice-invoice-item>
+  discount="5">
 </snice-invoice>
-```
-
-### Imperative (setter functions)
-
-Use setter functions for programmatic control:
-
-```html
-<snice-invoice id="inv" invoice-number="INV-001" date="2026-01-15" status="sent"></snice-invoice>
 
 <script>
-  const invoice = document.getElementById('inv');
-  invoice.setFrom({ name: 'Acme Corp', address: '123 Main St\nNew York, NY 10001' });
-  invoice.setTo({ name: 'Client Inc', address: '456 Oak Ave\nSan Francisco, CA 94102' });
-  invoice.setItems([
+  const inv = document.querySelector('snice-invoice');
+  inv.from = { name: 'Acme Corp', address: '123 Business St' };
+  inv.to = { name: 'Client Inc', address: '456 Market Ave' };
+  inv.items = [
     { description: 'Web Development', quantity: 40, unitPrice: 150 },
-    { description: 'Design Services', quantity: 10, unitPrice: 120 }
-  ]);
+    { description: 'UI Design', quantity: 20, unitPrice: 120 }
+  ];
 </script>
 ```
-
-**Note:** When both declarative child elements and imperative data are present, child elements take precedence.
 
 ## Importing
 
@@ -91,336 +42,145 @@ import 'snice/components/invoice/snice-invoice';
 
 ## Examples
 
-### Variants
-
-Use the `variant` attribute to change the invoice's visual style. Each variant has a dramatically different feel.
-
-```html
-<!-- Clean corporate grid layout -->
-<snice-invoice variant="standard" invoice-number="INV-001"></snice-invoice>
-
-<!-- Bold accent header, card sections, shadow -->
-<snice-invoice variant="modern" invoice-number="INV-002"></snice-invoice>
-
-<!-- Serif typography, ruled lines, formal borders -->
-<snice-invoice variant="classic" invoice-number="INV-003"></snice-invoice>
-
-<!-- Ultra-clean, whitespace-driven, no borders -->
-<snice-invoice variant="minimal" invoice-number="INV-004"></snice-invoice>
-
-<!-- Dense accounting-style with line numbers and striped rows -->
-<snice-invoice variant="detailed" invoice-number="INV-005"></snice-invoice>
-```
-
-### Status Badges
-
-Use the `status` attribute to display the invoice state.
-
-```html
-<snice-invoice status="draft" invoice-number="INV-001"></snice-invoice>
-<snice-invoice status="sent" invoice-number="INV-002"></snice-invoice>
-<snice-invoice status="paid" invoice-number="INV-003"></snice-invoice>
-<snice-invoice status="overdue" invoice-number="INV-004"></snice-invoice>
-<snice-invoice status="cancelled" invoice-number="INV-005"></snice-invoice>
-```
-
-### Tax and Discount
-
-Set `tax-rate` and `discount` as percentages. Discount is applied before tax.
+### Basic Invoice
 
 ```html
 <snice-invoice
-  invoice-number="INV-010"
-  tax-rate="8.5"
-  discount="10">
+  id="basic-invoice"
+  invoice-number="INV-001"
+  date="2026-03-01"
+  due-date="2026-03-31"
+  status="sent">
 </snice-invoice>
 
 <script>
-  const inv = document.querySelector('snice-invoice');
-  inv.items = [
-    { description: 'Consulting', quantity: 20, unitPrice: 200 }
+  const invoice = document.getElementById('basic-invoice');
+  invoice.from = { name: 'Your Company', email: 'billing@example.com' };
+  invoice.to = { name: 'Client Name', email: 'client@example.com' };
+  invoice.items = [
+    { description: 'Consulting Services', quantity: 10, unitPrice: 100 }
   ];
-  // Subtotal: $4,000 -> Discount: $400 -> After: $3,600 -> Tax: $306 -> Total: $3,906
 </script>
 ```
 
-### With Company Logo
-
-Pass a `logo` URL in the `from` party object.
-
-```javascript
-invoice.from = {
-  name: 'Acme Corp',
-  address: '123 Main St\nNew York, NY 10001',
-  email: 'billing@acme.com',
-  phone: '+1 (555) 123-4567',
-  logo: 'https://example.com/logo.png'
-};
-```
-
-### QR Code
-
-Set `show-qr` to display a QR code area. Use the `qr` slot to provide custom QR content, or leave empty for a placeholder.
-
-```html
-<!-- With snice-qr-code component -->
-<snice-invoice show-qr qr-position="footer" qr-data="https://pay.example.com/inv-001">
-  <snice-qr-code slot="qr" value="https://pay.example.com/inv-001"></snice-qr-code>
-</snice-invoice>
-```
-
-**QR Positions:**
-- `top-right` — Positioned in the header area (absolute)
-- `bottom-right` — Bottom-right corner of the invoice (absolute)
-- `bottom-left` — Bottom-left corner of the invoice (absolute)
-- `footer` — Inline after the notes section (static flow)
-
-### Detailed Variant with Per-Item Tax
-
-The `detailed` variant shows line numbers and supports per-item tax rates.
-
-```javascript
-invoice.variant = 'detailed';
-invoice.items = [
-  { description: 'Software License', quantity: 1, unitPrice: 999, tax: 10 },
-  { description: 'Support Plan', quantity: 1, unitPrice: 299, tax: 0 }
-];
-```
-
-### Notes / Payment Terms
-
-Use the `notes` attribute for footer text.
+### With Tax and Discount
 
 ```html
 <snice-invoice
-  notes="Payment due within 30 days. Late payments subject to 1.5% monthly interest.">
+  id="tax-invoice"
+  invoice-number="INV-002"
+  currency="EUR"
+  tax-rate="20"
+  discount="10"
+  notes="Thank you for your business!">
 </snice-invoice>
+
+<script>
+  const inv = document.getElementById('tax-invoice');
+  inv.from = { name: 'Euro Corp', address: 'Paris, France' };
+  inv.to = { name: 'Global Client', address: 'Berlin, Germany' };
+  inv.items = [
+    { description: 'Product A', quantity: 5, unitPrice: 50 },
+    { description: 'Product B', quantity: 2, unitPrice: 150, tax: 15 }
+  ];
+</script>
 ```
 
-### Custom Theming with CSS Variables
+### Different Variants
 
-Completely retheme the invoice using CSS custom properties.
+```html
+<!-- Modern variant -->
+<snice-invoice variant="modern" invoice-number="INV-003"></snice-invoice>
 
-```css
-snice-invoice {
-  --invoice-accent: rgb(168 85 247);
-  --invoice-header-bg: rgb(168 85 247);
-  --invoice-header-text: white;
-  --invoice-table-header-bg: rgb(243 232 255);
-  --invoice-border-radius: 1rem;
-  --invoice-shadow: 0 20px 40px rgb(168 85 247 / 0.15);
-}
+<!-- Classic variant -->
+<snice-invoice variant="classic" invoice-number="INV-004"></snice-invoice>
+
+<!-- Minimal variant -->
+<snice-invoice variant="minimal" invoice-number="INV-005"></snice-invoice>
+
+<!-- Detailed variant with line numbers -->
+<snice-invoice variant="detailed" invoice-number="INV-006"></snice-invoice>
 ```
 
-### Custom Styling with CSS Parts
+### With QR Code
 
-Target specific elements using `::part()` selectors.
+```html
+<snice-invoice
+  id="qr-invoice"
+  invoice-number="INV-007"
+  show-qr
+  qr-position="top-right">
+</snice-invoice>
 
-```css
-snice-invoice::part(title) {
-  font-size: 2rem;
-  color: purple;
-}
-
-snice-invoice::part(total) {
-  background: rgb(243 232 255);
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-}
-
-snice-invoice::part(status) {
-  border-radius: 999px;
-}
+<script>
+  const qrInv = document.getElementById('qr-invoice');
+  // Provide your own QR code in the slot
+  qrInv.innerHTML = `
+    <img slot="qr" src="/qr-code.svg" alt="Payment QR" />
+  `;
+</script>
 ```
 
-### Export to JSON
+### Programmatic Updates
 
-```javascript
-const data = invoice.toJSON();
-// { invoiceNumber, date, dueDate, status, currency, taxRate, discount,
-//   from, to, items, notes, variant, showQr, qrData, qrPosition,
-//   subtotal, tax, discount_amount, total }
+```html
+<snice-invoice id="dynamic-invoice"></snice-invoice>
+<button onclick="addItem()">Add Item</button>
+<button onclick="markPaid()">Mark Paid</button>
+
+<script>
+  const invoice = document.getElementById('dynamic-invoice');
+  invoice.from = { name: 'My Company' };
+  invoice.to = { name: 'Customer' };
+  invoice.items = [];
+  
+  function addItem() {
+    invoice.items = [
+      ...invoice.items,
+      { description: 'New Service', quantity: 1, unitPrice: 99 }
+    ];
+  }
+  
+  function markPaid() {
+    invoice.status = 'paid';
+  }
+  
+  invoice.addEventListener('invoice-status-change', (e) => {
+    console.log('Status changed:', e.detail.oldStatus, '→', e.detail.newStatus);
+  });
+</script>
 ```
 
-### Print
+### Print Invoice
 
-The component includes comprehensive `@media print` styles. Simply call `print()`.
-
-```javascript
-invoice.print();
+```html
+<snice-invoice id="printable" invoice-number="INV-008"></snice-invoice>
+<button onclick="document.getElementById('printable').print()">
+  Print Invoice
+</button>
 ```
-
-Print styles automatically:
-- Remove shadows, rounded corners, and background colors for crisp output
-- Ensure high contrast (pure black on white)
-- Convert status badges to bordered outlines
-- Manage page breaks (avoid breaking inside sections)
-- Repeat table headers on new pages
-
-## Child Elements
-
-### `<snice-invoice-party>`
-
-Data container element for from/to addresses. Does not render its own shadow DOM. Attributes are read by the parent `<snice-invoice>`.
-
-| Attribute | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `name` | `string` | `''` | Party name |
-| `address` | `string` | `''` | Address |
-| `email` | `string` | `''` | Email address |
-| `phone` | `string` | `''` | Phone number |
-| `logo` | `string` | `''` | Logo URL |
-
-Use `slot="from"` for the sender and `slot="to"` for the recipient.
-
-### `<snice-invoice-item>`
-
-Data container element for line items. Does not render its own shadow DOM. Attributes are read by the parent `<snice-invoice>`.
-
-| Attribute | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `description` | `string` | `''` | Item description |
-| `quantity` | `number` | `0` | Quantity |
-| `unit-price` | `number` | `0` | Unit price |
-| `amount` | `number` | — | Optional override for quantity x unit-price |
-| `tax` | `number` | — | Optional per-item tax percentage |
-
-## Slots
-
-| Name | Description |
-|------|-------------|
-| `from` | `<snice-invoice-party>` for sender address (hidden, data read by parent) |
-| `to` | `<snice-invoice-party>` for recipient address (hidden, data read by parent) |
-| (default) | `<snice-invoice-item>` elements for line items (hidden, data read by parent) |
-| `qr` | Custom QR code content (rendered when `show-qr` is set) |
-| `notes` | Rich HTML notes content (alternative to `notes` attribute) |
-| `footer` | Footer content |
 
 ## Properties
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `invoiceNumber` (attr: `invoice-number`) | `string` | `''` | Invoice identifier |
-| `date` | `string` | `''` | Invoice date |
-| `dueDate` (attr: `due-date`) | `string` | `''` | Payment due date |
-| `status` | `'draft' \| 'sent' \| 'paid' \| 'overdue' \| 'cancelled'` | `'draft'` | Invoice status |
-| `currency` | `string` | `'USD'` | ISO 4217 currency code |
-| `taxRate` (attr: `tax-rate`) | `number` | `0` | Tax rate percentage |
-| `discount` | `number` | `0` | Discount percentage |
-| `from` | `InvoiceParty` | `{ name: '' }` | Sender information (use `setFrom()` or `<snice-invoice-party slot="from">`) |
-| `to` | `InvoiceParty` | `{ name: '' }` | Recipient information (use `setTo()` or `<snice-invoice-party slot="to">`) |
-| `items` | `InvoiceItem[]` | `[]` | Line items (use `setItems()` or `<snice-invoice-item>`) |
-| `notes` | `string` | `''` | Footer notes or payment terms |
-| `variant` | `'standard' \| 'modern' \| 'classic' \| 'minimal' \| 'detailed'` | `'standard'` | Layout variant |
-| `showQr` (attr: `show-qr`) | `boolean` | `false` | Show QR code area |
-| `qrData` (attr: `qr-data`) | `string` | `''` | Data to encode in QR code |
-| `qrPosition` (attr: `qr-position`) | `'top-right' \| 'bottom-right' \| 'bottom-left' \| 'footer'` | `'bottom-right'` | QR code position |
+| `invoiceNumber` | `string` | `''` | Invoice identifier |
+| `date` | `string` | `''` | Invoice date (displayed as-is) |
+| `dueDate` | `string` | `''` | Due date (displayed as-is) |
+| `status` | `'draft' \| 'sent' \| 'paid' \| 'overdue' \| 'cancelled'` | `'draft'` | Invoice status with visual badge |
+| `currency` | `string` | `'USD'` | Currency code for formatting |
+| `taxRate` | `number` | `0` | Tax rate percentage applied to subtotal |
+| `discount` | `number` | `0` | Discount percentage applied to subtotal |
+| `from` | `InvoiceParty` | `{ name: '' }` | Sender/biller information |
+| `to` | `InvoiceParty` | `{ name: '' }` | Recipient/customer information |
+| `items` | `InvoiceItem[]` | `[]` | Line items for the invoice |
+| `notes` | `string` | `''` | Additional notes section |
+| `variant` | `'standard' \| 'modern' \| 'classic' \| 'minimal' \| 'detailed'` | `'standard'` | Visual style variant |
+| `showQr` | `boolean` | `false` | Display QR code placeholder |
+| `qrData` | `string` | `''` | Data for QR code |
+| `qrPosition` | `'top-right' \| 'bottom-right' \| 'bottom-left' \| 'footer'` | `'bottom-right'` | QR code placement |
 
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `invoice-item-change` | `{ items, subtotal, tax, total }` | Fired when items array changes |
-| `invoice-status-change` | `{ oldStatus, newStatus }` | Fired when status changes |
-
-## Methods
-
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `setFrom(party)` | `InvoiceParty` | Set sender party data imperatively |
-| `setTo(party)` | `InvoiceParty` | Set recipient party data imperatively |
-| `setItems(items)` | `InvoiceItem[]` | Set line items imperatively (creates copies) |
-| `print()` | — | Triggers window.print() with @media print styles |
-| `toJSON()` | — | Returns complete invoice data including computed totals |
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `base` | Main invoice container |
-| `header` | Header section (title, logo, meta, status) |
-| `title` | "Invoice" heading |
-| `status` | Status badge |
-| `logo` | Company logo image |
-| `meta` | Invoice number and dates |
-| `parties` | From/To address section |
-| `party` | Individual party block |
-| `party-label` | "From" / "Bill To" label |
-| `party-name` | Party company name |
-| `party-detail` | Party address, email, phone |
-| `table` | Line items table |
-| `table-header` | Table thead element |
-| `table-row` | Table body row (tr) |
-| `table-cell` | Table body cell (td) |
-| `summary` | Totals section |
-| `summary-row` | Individual summary row |
-| `summary-label` | Summary row label text |
-| `summary-value` | Summary row amount |
-| `discount-row` | Discount summary row |
-| `tax-row` | Tax summary row |
-| `total` | Grand total row |
-| `notes` | Notes container |
-| `notes-label` | "Notes" heading |
-| `notes-content` | Notes text content |
-| `qr` | QR code element |
-| `qr-container` | QR wrapper with positioning |
-| `footer` | Footer slot wrapper |
-
-## CSS Custom Properties
-
-| Property | Description | Default |
-|----------|-------------|---------|
-| `--invoice-max-width` | Maximum width of the invoice | `50rem` |
-| `--invoice-padding` | Inner padding | `var(--snice-spacing-xl, 2rem)` |
-| `--invoice-section-gap` | Gap between major sections | `var(--snice-spacing-xl, 2rem)` |
-| `--invoice-bg` | Background color | `var(--snice-color-background, white)` |
-| `--invoice-text` | Primary text color | `var(--snice-color-text, rgb(23 23 23))` |
-| `--invoice-text-secondary` | Secondary text color | `var(--snice-color-text-secondary, ...)` |
-| `--invoice-text-tertiary` | Tertiary text color | `var(--snice-color-text-tertiary, ...)` |
-| `--invoice-accent` | Accent/brand color | `var(--snice-color-primary, rgb(37 99 235))` |
-| `--invoice-border` | Border color | `var(--snice-color-border, rgb(226 226 226))` |
-| `--invoice-bg-element` | Element background | `var(--snice-color-background-element, ...)` |
-| `--invoice-success` | Success/discount color | `var(--snice-color-success, ...)` |
-| `--invoice-danger` | Danger/overdue color | `var(--snice-color-danger, ...)` |
-| `--invoice-header-bg` | Header background | `transparent` |
-| `--invoice-header-text` | Header text color | `var(--invoice-text)` |
-| `--invoice-header-padding` | Header padding | `0` |
-| `--invoice-header-border` | Header bottom border | `none` |
-| `--invoice-table-header-bg` | Table header background | `transparent` |
-| `--invoice-table-header-text` | Table header text color | `var(--invoice-text-tertiary)` |
-| `--invoice-table-stripe-bg` | Striped row background | `var(--invoice-bg-element)` |
-| `--invoice-table-border` | Table border color | `var(--invoice-border)` |
-| `--invoice-table-cell-padding` | Table cell padding | `0.75rem 0.5rem` |
-| `--invoice-summary-width` | Summary section width | `16rem` |
-| `--invoice-total-border` | Total row top border | `2px solid var(--invoice-border)` |
-| `--invoice-total-font-size` | Total amount font size | `var(--snice-font-size-lg, 1.125rem)` |
-| `--invoice-total-font-weight` | Total amount font weight | `var(--snice-font-weight-bold, 700)` |
-| `--invoice-status-draft-bg` | Draft badge background | `rgb(229 231 235)` |
-| `--invoice-status-draft-text` | Draft badge text | `rgb(55 65 81)` |
-| `--invoice-status-sent-bg` | Sent badge background | `rgb(219 234 254)` |
-| `--invoice-status-sent-text` | Sent badge text | `rgb(29 78 216)` |
-| `--invoice-status-paid-bg` | Paid badge background | `rgb(220 252 231)` |
-| `--invoice-status-paid-text` | Paid badge text | `rgb(21 128 61)` |
-| `--invoice-status-overdue-bg` | Overdue badge background | `rgb(254 226 226)` |
-| `--invoice-status-overdue-text` | Overdue badge text | `rgb(185 28 28)` |
-| `--invoice-status-cancelled-bg` | Cancelled badge background | `rgb(243 244 246)` |
-| `--invoice-status-cancelled-text` | Cancelled badge text | `rgb(107 114 128)` |
-| `--invoice-font-family` | Font family override | `inherit` |
-| `--invoice-title-font-size` | Title font size | `var(--snice-font-size-2xl, 1.5rem)` |
-| `--invoice-title-font-weight` | Title font weight | `var(--snice-font-weight-bold, 700)` |
-| `--invoice-label-font-size` | Label font size | `var(--snice-font-size-sm, 0.875rem)` |
-| `--invoice-body-font-size` | Body text font size | `var(--snice-font-size-md, 1rem)` |
-| `--invoice-notes-bg` | Notes background | `var(--invoice-bg-element)` |
-| `--invoice-notes-border` | Notes border | `none` |
-| `--invoice-notes-padding` | Notes padding | `var(--snice-spacing-md, 1rem)` |
-| `--invoice-qr-size` | QR code container size | `6rem` |
-| `--invoice-qr-border` | QR code border | `1px dashed var(--invoice-border)` |
-| `--invoice-shadow` | Box shadow | `none` |
-| `--invoice-border-width` | Outer border width | `1px` |
-| `--invoice-border-color` | Outer border color | `var(--invoice-border)` |
-| `--invoice-border-radius` | Outer border radius | `var(--snice-border-radius-lg, 0.5rem)` |
-
-## TypeScript Interfaces
+### InvoiceParty Interface
 
 ```typescript
 interface InvoiceParty {
@@ -430,53 +190,87 @@ interface InvoiceParty {
   phone?: string;
   logo?: string;
 }
+```
 
+### InvoiceItem Interface
+
+```typescript
 interface InvoiceItem {
   description: string;
   quantity: number;
   unitPrice: number;
-  amount?: number;  // overrides quantity * unitPrice
-  tax?: number;     // per-item tax % (shown in detailed variant)
+  amount?: number;  // Optional: calculated if not provided
+  tax?: number;     // Optional: item-specific tax rate
 }
-
-interface SniceInvoicePartyElement extends HTMLElement {
-  name: string;
-  address: string;
-  email: string;
-  phone: string;
-  logo: string;
-}
-
-interface SniceInvoiceItemElement extends HTMLElement {
-  description: string;
-  quantity: number;
-  unitPrice: number;
-  amount: number | undefined;
-  tax: number | undefined;
-}
-
-interface SniceInvoiceElement extends HTMLElement {
-  // ... all properties ...
-  setFrom(party: InvoiceParty): void;
-  setTo(party: InvoiceParty): void;
-  setItems(items: InvoiceItem[]): void;
-  print(): void;
-  toJSON(): object;
-}
-
-type InvoiceVariant = 'standard' | 'modern' | 'classic' | 'minimal' | 'detailed';
-type InvoiceStatus = 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
-type QrPosition = 'top-right' | 'bottom-right' | 'bottom-left' | 'footer';
 ```
 
-## Best Practices
+## Slots
 
-1. **Use declarative API**: For static invoices, use `<snice-invoice-party>` and `<snice-invoice-item>` child elements for cleaner, more readable markup
-2. **Use setter functions**: For dynamic invoices, use `setFrom()`, `setTo()`, and `setItems()` instead of setting bare properties
-3. **Discount before tax**: Discount is applied to the subtotal, then tax is calculated on the discounted amount
-4. **Use `amount` override**: For fixed-price line items, set `amount` directly instead of relying on quantity * unitPrice
-5. **Currency codes**: Use ISO 4217 codes (USD, EUR, GBP, JPY, etc.)
-6. **QR slot**: Pair with `<snice-qr-code>` for actual QR rendering; the placeholder is just a visual hint
-7. **Print**: The `print()` method triggers `window.print()` which uses `@media print` CSS for optimal output
-8. **Theming**: Use CSS custom properties for theme-level changes, `::part()` for structural/one-off styling
-9. **Slot precedence**: When both child elements and imperative data are present, child elements always take precedence
+| Slot Name | Description |
+|-----------|-------------|
+| `qr` | QR code content. Use for payment QR codes or links. |
+| (default) | Additional content rendered in the footer area |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `invoice-item-change` | `{ items, subtotal, tax, total }` | Fired when items array changes |
+| `invoice-status-change` | `{ oldStatus, newStatus }` | Fired when status property changes |
+
+## Methods
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `print()` | `void` | Print the invoice |
+| `toJSON()` | `object` | Export invoice data as JSON object including calculated totals |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `base` | Root container |
+| `header` | Invoice header section |
+| `title` | Invoice title element |
+| `status` | Status badge |
+| `logo` | Company logo image |
+| `meta` | Metadata container (invoice #, dates) |
+| `parties` | From/To parties container |
+| `party` | Individual party block |
+| `party-label` | Party label ("From", "Bill To") |
+| `party-name` | Party name |
+| `party-detail` | Party details (address, email, phone) |
+| `table` | Items table |
+| `table-header` | Table header row |
+| `table-row` | Table body rows |
+| `table-cell` | Table cells |
+| `summary` | Summary/totals section |
+| `summary-row` | Summary rows |
+| `summary-label` | Summary labels |
+| `summary-value` | Summary values |
+| `discount-row` | Discount row |
+| `tax-row` | Tax row |
+| `total` | Total row |
+| `notes` | Notes section |
+| `notes-label` | Notes heading |
+| `notes-content` | Notes content |
+| `qr-container` | QR code container |
+| `qr` | QR code element |
+| `footer` | Footer area |
+
+## CSS Custom Properties
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `--invoice-max-width` | `50rem` | Maximum width of invoice |
+| `--invoice-padding` | `2rem` | Internal padding |
+| `--invoice-bg` | `white` | Background color |
+| `--invoice-text` | `rgb(23 23 23)` | Text color |
+| `--invoice-text-secondary` | `rgb(82 82 82)` | Secondary text |
+| `--invoice-accent` | `rgb(37 99 235)` | Accent color |
+| `--invoice-border` | `rgb(226 226 226)` | Border color |
+| `--invoice-border-radius` | `0.5rem` | Border radius |
+| `--invoice-shadow` | `none` | Box shadow |
+| `--invoice-table-header-bg` | `transparent` | Table header background |
+| `--invoice-summary-width` | `16rem` | Summary column width |
+| `--invoice-qr-size` | `6rem` | QR code size |

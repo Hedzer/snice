@@ -1,256 +1,386 @@
-[//]: # (AI: For a low-token version of this doc, use docs/ai/components/estimate.md instead)
+# Estimate
+`<snice-estimate>`
 
-# Estimate Component
-
-The estimate component renders a professional estimate or quote document, complete with from/to party information, itemized line items, tax and discount calculations, notes, and optional QR code. It supports both declarative child elements and imperative setter functions.
-
-## Table of Contents
-- [Basic Usage](#basic-usage)
-- [Properties](#properties)
-- [Setter Functions](#setter-functions)
-- [Child Elements](#child-elements)
-- [Named Slots](#named-slots)
-- [Events](#events)
-- [CSS Parts](#css-parts)
-- [Examples](#examples)
-- [Accessibility](#accessibility)
+A professional estimate/quote component with optional line items, accept/decline actions, expiry dates, and automatic calculations. Supports comparison mode for presenting multiple options.
 
 ## Basic Usage
 
 ```html
-<snice-estimate estimate-number="EST-001" date="2026-01-15" status="sent" tax-rate="10">
-  <snice-estimate-party slot="from" name="Design Studio" address="100 Creative Blvd"></snice-estimate-party>
-  <snice-estimate-party slot="to" name="Startup Inc" address="200 Innovation Way"></snice-estimate-party>
-  <snice-estimate-item description="Brand Identity" quantity="1" unit-price="5000"></snice-estimate-item>
-  <snice-estimate-item description="Website Design" quantity="1" unit-price="8000"></snice-estimate-item>
+<snice-estimate
+  estimate-number="EST-0042"
+  date="Feb 27, 2026"
+  expiry-date="Mar 15, 2026"
+  status="sent"
+  currency="$"
+  tax-rate="8"
+  notes="This estimate is valid for 15 days.">
 </snice-estimate>
+
+<script>
+  const est = document.querySelector('snice-estimate');
+  est.from = { name: 'Design Studio' };
+  est.to = { name: 'Client Corp' };
+  est.items = [
+    { description: 'Brand Identity', quantity: 1, unitPrice: 5000 },
+    { description: 'Social Media Kit', quantity: 1, unitPrice: 2000, optional: true }
+  ];
+</script>
 ```
 
+## Importing
+
+**ESM (bundler)**
 ```typescript
 import 'snice/components/estimate/snice-estimate';
 ```
 
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-estimate.min.js"></script>
+```
+
+## Examples
+
+### Basic Estimate
+
+```html
+<snice-estimate
+  id="basic-est"
+  estimate-number="EST-001"
+  date="2026-03-01"
+  expiry-date="2026-04-01"
+  status="sent">
+</snice-estimate>
+
+<script>
+  const est = document.getElementById('basic-est');
+  est.from = { name: 'Your Business' };
+  est.to = { name: 'Prospective Client' };
+  est.items = [
+    { description: 'Service A', quantity: 1, unitPrice: 1000 },
+    { description: 'Service B', quantity: 2, unitPrice: 500 }
+  ];
+</script>
+```
+
+### With Optional Items
+
+```html
+<snice-estimate
+  id="optional-est"
+  estimate-number="EST-002"
+  currency="$"
+  tax-rate="10">
+</snice-estimate>
+
+<script>
+  const est = document.getElementById('optional-est');
+  est.from = { name: 'Web Agency' };
+  est.to = { name: 'Startup Inc' };
+  est.items = [
+    { description: 'Website Design (required)', quantity: 1, unitPrice: 5000 },
+    { description: 'SEO Package (optional)', quantity: 1, unitPrice: 1500, optional: true },
+    { description: 'Content Writing (optional)', quantity: 10, unitPrice: 100, optional: true }
+  ];
+</script>
+```
+
+### Different Statuses
+
+```html
+<!-- Draft estimate (no action buttons) -->
+<snice-estimate estimate-number="EST-D1" status="draft"></snice-estimate>
+
+<!-- Sent estimate (shows accept/decline buttons) -->
+<snice-estimate estimate-number="EST-S1" status="sent"></snice-estimate>
+
+<!-- Accepted estimate -->
+<snice-estimate estimate-number="EST-A1" status="accepted"></snice-estimate>
+
+<!-- Declined estimate -->
+<snice-estimate estimate-number="EST-X1" status="declined"></snice-estimate>
+
+<!-- Expired estimate -->
+<snice-estimate estimate-number="EST-E1" status="expired"></snice-estimate>
+```
+
+### Comparison Variant
+
+```html
+<snice-estimate
+  id="comparison-est"
+  estimate-number="EST-COMP"
+  variant="comparison">
+</snice-estimate>
+
+<script>
+  const est = document.getElementById('comparison-est');
+  est.items = [
+    { description: 'Basic Package', quantity: 1, unitPrice: 1999 },
+    { description: 'Standard Package', quantity: 1, unitPrice: 3999 },
+    { description: 'Premium Package', quantity: 1, unitPrice: 7999 }
+  ];
+</script>
+```
+
+### With Discount and Tax
+
+```html
+<snice-estimate
+  id="discount-est"
+  estimate-number="EST-DISC"
+  currency="€"
+  tax-rate="19"
+  discount="10"
+  notes="Spring promotion: 10% off all services">
+</snice-estimate>
+
+<script>
+  const est = document.getElementById('discount-est');
+  est.from = { name: 'European Services GmbH' };
+  est.to = { name: 'Client SE' };
+  est.items = [
+    { description: 'Consulting', quantity: 20, unitPrice: 150 },
+    { description: 'Implementation', quantity: 40, unitPrice: 120 }
+  ];
+</script>
+```
+
+### With Terms and Conditions
+
+```html
+<snice-estimate
+  id="terms-est"
+  estimate-number="EST-TERMS"
+  status="sent"
+  notes="Payment terms: Net 30 days upon acceptance."
+  terms="Cancellation policy: 50% refund if cancelled within 5 business days. No refunds after work has commenced.">
+</snice-estimate>
+
+<script>
+  const est = document.getElementById('terms-est');
+  est.from = { name: 'Professional Services' };
+  est.to = { name: 'Corporate Client' };
+  est.items = [{ description: 'Project Work', quantity: 1, unitPrice: 25000 }];
+</script>
+```
+
+### Listening for Events
+
+```html
+<snice-estimate
+  id="event-est"
+  estimate-number="EST-EVT"
+  status="sent">
+</snice-estimate>
+
+<script>
+  const est = document.getElementById('event-est');
+  est.from = { name: 'Vendor' };
+  est.to = { name: 'Customer' };
+  est.items = [
+    { description: 'Item 1', quantity: 1, unitPrice: 500, optional: true },
+    { description: 'Item 2', quantity: 1, unitPrice: 300 }
+  ];
+  
+  est.addEventListener('item-toggle', (e) => {
+    console.log('Item', e.detail.index, 'included:', e.detail.included);
+  });
+  
+  est.addEventListener('estimate-accept', (e) => {
+    console.log('Estimate accepted!', e.detail.estimateNumber);
+    console.log('Total:', e.detail.total);
+    console.log('Items:', e.detail.items);
+  });
+  
+  est.addEventListener('estimate-decline', (e) => {
+    console.log('Estimate declined:', e.detail.estimateNumber);
+  });
+</script>
+```
+
+### With QR Code
+
+```html
+<snice-estimate
+  estimate-number="EST-QR"
+  show-qr
+  qr-position="top-right">
+  <img slot="qr" src="/estimate-qr.svg" alt="Scan to view online" />
+</snice-estimate>
+```
+
+### Different Variants
+
+```html
+<!-- Professional variant -->
+<snice-estimate variant="professional" estimate-number="EST-P1"></snice-estimate>
+
+<!-- Creative variant -->
+<snice-estimate variant="creative" estimate-number="EST-C1"></snice-estimate>
+
+<!-- Minimal variant -->
+<snice-estimate variant="minimal" estimate-number="EST-M1"></snice-estimate>
+```
+
+### Print Estimate
+
+```html
+<snice-estimate id="print-est" estimate-number="EST-PRINT"></snice-estimate>
+<button onclick="document.getElementById('print-est').print()">
+  Print Estimate
+</button>
+```
+
+### Export to JSON
+
+```html
+<snice-estimate id="json-est" estimate-number="EST-JSON"></snice-estimate>
+<button onclick="exportEstimate()">Export JSON</button>
+
+<script>
+  function exportEstimate() {
+    const est = document.getElementById('json-est');
+    const data = est.toJSON();
+    console.log(data);
+    // Contains: estimateNumber, date, expiryDate, status, items, 
+    // subtotal, discountAmount, taxAmount, total, etc.
+  }
+</script>
+```
+
 ## Properties
 
-All scalar properties are set via HTML attributes or JavaScript properties.
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `estimateNumber` | `string` | `''` | Estimate identifier |
+| `date` | `string` | `''` | Estimate date |
+| `expiryDate` | `string` | `''` | Expiration/valid until date |
+| `status` | `'draft' \| 'sent' \| 'accepted' \| 'declined' \| 'expired'` | `'draft'` | Estimate status |
+| `from` | `EstimateParty \| null` | `null` | Sender/business info |
+| `to` | `EstimateParty \| null` | `null` | Recipient/client info |
+| `items` | `EstimateItem[]` | `[]` | Line items |
+| `currency` | `string` | `'$'` | Currency symbol |
+| `taxRate` | `number` | `0` | Tax rate percentage |
+| `discount` | `number` | `0` | Discount percentage |
+| `notes` | `string` | `''` | Additional notes |
+| `terms` | `string` | `''` | Terms and conditions |
+| `variant` | `'standard' \| 'comparison' \| 'professional' \| 'creative' \| 'minimal'` | `'standard'` | Visual style variant |
+| `showQr` | `boolean` | `false` | Show QR code placeholder |
+| `qrData` | `string` | `''` | QR code data |
+| `qrPosition` | `'top-right' \| 'bottom-right' \| 'footer'` | `'top-right'` | QR code placement |
 
-| Property | Attribute | Type | Default | Description |
-|----------|-----------|------|---------|-------------|
-| `estimateNumber` | `estimate-number` | `string` | `''` | Estimate reference number |
-| `date` | `date` | `string` | `''` | Estimate date |
-| `expiryDate` | `expiry-date` | `string` | `''` | Expiration date |
-| `status` | `status` | `EstimateStatus` | `'draft'` | Status badge: `'draft'`, `'sent'`, `'accepted'`, `'declined'`, `'expired'` |
-| `currency` | `currency` | `string` | `'USD'` | ISO 4217 currency code for formatting |
-| `taxRate` | `tax-rate` | `number` | `0` | Tax percentage applied to subtotal |
-| `discount` | `discount` | `number` | `0` | Discount percentage applied to subtotal |
-| `notes` | `notes` | `string` | `''` | Footer notes (e.g. payment terms) |
-| `variant` | `variant` | `EstimateVariant` | `'default'` | Layout variant: `'default'`, `'compact'`, `'detailed'` |
-| `showQr` | `show-qr` | `boolean` | `false` | Whether to show the QR code area |
-| `qrData` | `qr-data` | `string` | `''` | Data to encode in the auto-generated QR code |
-
-## Setter Functions
-
-Complex data (parties and line items) is set via setter functions rather than bare properties. This ensures proper re-rendering.
-
-### `setFrom(party: EstimateParty)`
-
-Set the "from" (sender) party.
-
-### `setTo(party: EstimateParty)`
-
-Set the "to" (recipient) party.
-
-### `setItems(items: EstimateItem[])`
-
-Set the line items.
-
-### Type Interfaces
+### EstimateParty Interface
 
 ```typescript
 interface EstimateParty {
   name: string;
   address?: string;
-  email?: string;
   phone?: string;
+  email?: string;
 }
+```
 
+### EstimateItem Interface
+
+```typescript
 interface EstimateItem {
   description: string;
   quantity: number;
   unitPrice: number;
-  optional?: boolean;    // Mark as optional line item
-  included?: boolean;    // Whether optional item is included in total
+  optional?: boolean;
+  included?: boolean;
 }
 ```
 
-## Child Elements
+## Slots
 
-The estimate component supports a fully declarative API via child elements. When both child elements and setter data are provided, **child elements take priority**.
-
-### `<snice-estimate-party>`
-
-Used with `slot="from"` or `slot="to"` to define the parties.
-
-| Attribute | Type | Description |
-|-----------|------|-------------|
-| `name` | `string` | Party name |
-| `address` | `string` | Address |
-| `email` | `string` | Email address |
-| `phone` | `string` | Phone number |
-
-### `<snice-estimate-item>`
-
-Used in the default slot to define line items.
-
-| Attribute | Type | Description |
-|-----------|------|-------------|
-| `description` | `string` | Item description |
-| `quantity` | `number` | Quantity (default: 1) |
-| `unit-price` | `number` | Unit price |
-| `optional` | `boolean` | Mark as optional |
-| `included` | `boolean` | Whether optional item is included in total |
-
-Both child elements are data containers that don't render visible content (`display: none`).
-
-## Named Slots
-
-| Slot | Description |
-|------|-------------|
-| `from` | From party (`<snice-estimate-party>`) |
-| `to` | To party (`<snice-estimate-party>`) |
-| *(default)* | Line items (`<snice-estimate-item>`) |
-| `qr` | Custom QR code content |
-| `footer` | Footer content |
+| Slot Name | Description |
+|-----------|-------------|
+| `logo` | Company logo image |
+| `qr` | QR code content |
+| `footer` | Additional footer content |
+| (default) | Default slot for extra content |
 
 ## Events
 
-#### `estimate-status-change`
-Fired when the status changes.
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `estimate-accept` | `{ estimateNumber, items, total }` | Fired when accept button is clicked |
+| `estimate-decline` | `{ estimateNumber }` | Fired when decline button is clicked |
+| `item-toggle` | `{ index, item, included }` | Fired when an optional item is toggled |
 
-**Event Detail:**
-```typescript
-{
-  status: EstimateStatus;
-  previousStatus: EstimateStatus;
-}
-```
+## Methods
 
-#### `estimate-accept`
-Fired when the estimate is accepted.
-
-#### `estimate-decline`
-Fired when the estimate is declined.
-
-#### `estimate-print`
-Fired when a print action is triggered.
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `print()` | `void` | Print the estimate |
+| `toJSON()` | `EstimateJSON` | Export all data including calculated totals |
 
 ## CSS Parts
 
 | Part | Description |
 |------|-------------|
-| `base` | The outer container |
-| `header` | Header section with title and meta |
-| `parties` | From/to parties grid |
-| `party` | Individual party block |
-| `items` | Line items table |
-| `totals` | Totals section |
+| `base` | Root container |
+| `header` | Header section |
+| `logo` | Logo slot container |
+| `title` | Estimate title |
+| `meta` | Date meta |
+| `status` | Status badge |
+| `expiry` | Expiry date container |
+| `expiry-date` | Expiry date value |
+| `qr-container` | QR code container |
+| `qr` | QR code element |
+| `parties` | From/To section |
+| `party` | Individual party |
+| `party-label` | Party label ("From", "To") |
+| `party-name` | Party name |
+| `party-detail` | Party details |
+| `table` | Items table |
+| `table-header` | Table header row |
+| `table-row` | Table body rows |
+| `table-cell` | Table cells |
+| `item-toggle` | Optional item toggle button |
+| `summary` | Totals section |
+| `subtotal` | Subtotal row |
+| `discount-row` | Discount row |
+| `tax-row` | Tax row |
+| `total` | Grand total row |
 | `notes` | Notes section |
+| `notes-label` | Notes heading |
+| `notes-content` | Notes text |
+| `terms` | Terms section |
+| `actions` | Action buttons container |
+| `accept-button` | Accept estimate button |
+| `decline-button` | Decline estimate button |
+| `comparison` | Comparison view container |
+| `option` | Comparison option card |
+| `option-button` | Select option button |
 | `footer` | Footer area |
 
-## Examples
+## CSS Custom Properties
 
-### Declarative with All Features
-
-```html
-<snice-estimate
-  estimate-number="EST-2026-001"
-  date="2026-02-28"
-  expiry-date="2026-03-30"
-  status="sent"
-  currency="USD"
-  tax-rate="10"
-  discount="5"
-  notes="Payment due within 30 days. 50% deposit required.">
-  <snice-estimate-party slot="from"
-    name="Creative Studio LLC"
-    address="100 Design Blvd, Suite 300, SF, CA 94102"
-    email="hello@creativestudio.com"
-    phone="+1 (555) 010-0100">
-  </snice-estimate-party>
-  <snice-estimate-party slot="to"
-    name="TechStart Inc"
-    address="200 Innovation Way, Austin, TX 73301"
-    email="projects@techstart.io">
-  </snice-estimate-party>
-  <snice-estimate-item description="Brand Identity Design" quantity="1" unit-price="5000"></snice-estimate-item>
-  <snice-estimate-item description="Website Design" quantity="1" unit-price="8000"></snice-estimate-item>
-  <snice-estimate-item description="Social Media Kit" quantity="1" unit-price="2000" optional included></snice-estimate-item>
-  <snice-estimate-item description="SEO Audit" quantity="1" unit-price="1500" optional></snice-estimate-item>
-</snice-estimate>
-```
-
-### Imperative Usage
-
-```html
-<snice-estimate id="my-estimate" estimate-number="EST-002" date="2026-02-28" currency="EUR" tax-rate="20"></snice-estimate>
-
-<script type="module">
-  import 'snice/components/estimate/snice-estimate';
-
-  const est = document.getElementById('my-estimate');
-  est.setFrom({
-    name: 'Agence Design',
-    address: '42 Rue de Rivoli, Paris',
-    email: 'bonjour@agencedesign.fr'
-  });
-  est.setTo({
-    name: 'Berlin Startup GmbH',
-    address: 'Friedrichstr. 123, Berlin'
-  });
-  est.setItems([
-    { description: 'UX Research', quantity: 1, unitPrice: 4500 },
-    { description: 'UI Redesign', quantity: 1, unitPrice: 12000 },
-    { description: 'Usability Testing', quantity: 2, unitPrice: 1500, optional: true, included: true }
-  ]);
-</script>
-```
-
-### Compact Variant
-
-```html
-<snice-estimate variant="compact" estimate-number="Q-100" date="2026-01-01">
-  <snice-estimate-party slot="from" name="Freelancer" email="me@freelancer.com"></snice-estimate-party>
-  <snice-estimate-party slot="to" name="Client" email="client@co.com"></snice-estimate-party>
-  <snice-estimate-item description="Consulting" quantity="10" unit-price="150"></snice-estimate-item>
-</snice-estimate>
-```
-
-### Dual API Behavior
-
-When both declarative children and imperative setter data are provided, **declarative children always win**. This matches the pattern used by other snice components like `<snice-pricing-table>`.
-
-```javascript
-const est = document.querySelector('snice-estimate');
-
-// If the estimate has <snice-estimate-party slot="from"> in HTML,
-// calling setFrom() will NOT override it.
-est.setFrom({ name: 'This will be ignored' });
-
-// If you want imperative data to take effect,
-// remove the child elements first.
-```
-
-## Accessibility
-
-- **Semantic table**: Line items are rendered in a proper `<table>` element
-- **Status badges**: Color-coded with distinct patterns, not relying on color alone
-- **Print-friendly**: Box shadows and borders are suppressed in print media
-- **Keyboard navigation**: All interactive elements are keyboard accessible
-
-## Best Practices
-
-1. **Use declarative child elements** for static estimates that don't change
-2. **Use setter functions** for dynamic estimates populated from API data
-3. **Set a currency code** appropriate for your locale -- formatting is handled by `Intl.NumberFormat`
-4. **Mark optional items clearly** with the `optional` attribute so clients can see what's extra
-5. **Include notes** with payment terms and conditions
+| Property | Default | Description |
+|----------|---------|-------------|
+| `--estimate-max-width` | `50rem` | Maximum width |
+| `--estimate-bg` | `white` | Background color |
+| `--estimate-bg-element` | `rgb(252 251 249)` | Element background |
+| `--estimate-border` | `rgb(226 226 226)` | Border color |
+| `--estimate-text` | `rgb(23 23 23)` | Text color |
+| `--estimate-text-secondary` | `rgb(82 82 82)` | Secondary text |
+| `--estimate-accent` | `rgb(37 99 235)` | Accent color |
+| `--estimate-header-padding` | `1.5rem` | Header padding |
+| `--estimate-section-padding` | `1rem 1.5rem` | Section padding |
+| `--estimate-radius` | `0.5rem` | Border radius |
+| `--estimate-title-size` | `1.5rem` | Title font size |
+| `--estimate-title-weight` | `700` | Title font weight |
+| `--estimate-accept-bg` | `rgb(22 163 74)` | Accept button background |
+| `--estimate-accept-text` | `white` | Accept button text |
+| `--estimate-decline-bg` | `transparent` | Decline button background |
+| `--estimate-decline-text` | `rgb(220 38 38)` | Decline button text |
+| `--estimate-decline-border` | `rgb(220 38 38)` | Decline button border |
+| `--estimate-total-bg` | `rgb(252 251 249)` | Total row background |
+| `--estimate-total-border` | `rgb(226 226 226)` | Total row border |
+| `--estimate-total-weight` | `700` | Total font weight |
+| `--estimate-qr-size` | `5rem` | QR code size |
