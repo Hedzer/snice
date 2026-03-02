@@ -45,6 +45,7 @@ export type { Fetcher, RequestMiddleware, ResponseMiddleware } from './fetcher';
 // Export all types from centralized types module
 export * from './types';
 
+
 // NOTE: @on decorator works in both elements AND controllers.
 // Supports event delegation, keyboard modifiers, debounce/throttle - see docs/events.md
 // Template event syntax (@click=${handler}) is also available as an alternative.
