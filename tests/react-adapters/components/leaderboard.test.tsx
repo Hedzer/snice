@@ -27,6 +27,15 @@ describe('React Adapter: Leaderboard', () => {
   testComponent({
     name: 'Leaderboard',
     Component: Leaderboard,
+    properties: [
+      { name: 'variant', value: 'default' },
+      { name: 'size', value: 'medium' },
+      { name: 'title', value: 'Top Performers' },
+      { name: 'entries', value: [{ id: '1', name: 'Alice', score: 100 }, { id: '2', name: 'Bob', score: 90 }] }
+    ],
+    events: [],
+    variants: ['default', 'compact', 'cards'],
+    sizes: ['small', 'medium', 'large'],
     defaultProps: {}
   });
 });

@@ -27,6 +27,29 @@ describe('React Adapter: Combobox', () => {
   testComponent({
     name: 'Combobox',
     Component: Combobox,
+    properties: [
+      { name: 'value', value: 'option1' },
+      { name: 'placeholder', value: 'Select an option' },
+      { name: 'allowCustom', value: true },
+      { name: 'filterable', value: true },
+      { name: 'disabled', value: true },
+      { name: 'readonly', value: true },
+      { name: 'required', value: true },
+      { name: 'name', value: 'test-combobox' },
+      { name: 'label', value: 'Test Label' }
+    ],
+    events: [
+      { name: 'onValueChange' },
+      { name: 'onInputChange' },
+      { name: 'onOptionSelect' }
+    ],
+    variants: ['default', 'outlined'],
+    sizes: ['small', 'medium', 'large'],
+    isForm: true,
+    formOptions: {
+      valueType: 'string',
+      defaultValue: ''
+    },
     defaultProps: {}
   });
 });

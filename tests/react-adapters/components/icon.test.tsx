@@ -27,6 +27,14 @@ describe('React Adapter: Icon', () => {
   testComponent({
     name: 'Icon',
     Component: Icon,
+    properties: [
+      { name: 'name', value: 'star' },
+      { name: 'src', value: '/path/to/icon.svg' },
+      { name: 'size', value: 'medium' },
+      { name: 'color', value: 'blue' },
+      { name: 'label', value: 'Star icon' }
+    ],
+    sizes: ['small', 'medium', 'large'],
     defaultProps: {}
   });
 });

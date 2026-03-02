@@ -22,9 +22,13 @@ export async function createComponent<T extends HTMLElement>(
       } else {
         el.removeAttribute(key);
       }
-    } else {
+    } else if (typeof value === 'number') {
+      // For numeric attributes, set attribute as string
       el.setAttribute(key, String(value));
+    } else if (typeof value === 'string') {
+      el.setAttribute(key, value);
     }
+    // Objects/arrays are not set as attributes, will be set as properties after connect
   }
 
   document.body.appendChild(el);
@@ -34,9 +38,19 @@ export async function createComponent<T extends HTMLElement>(
 
   // Now set properties after element is connected and ready
   for (const [key, value] of Object.entries(attributes)) {
-    if (typeof value === 'boolean') {
-      // Convert kebab-case to camelCase and set property
-      const propName = key.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+    // Convert kebab-case to camelCase
+    const propName = key.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+    
+    // Always set the property directly to ensure framework picks up the value
+    // This handles cases where attribute -> property reflection may not work
+    // during initial setup or for complex property types
+    if (typeof value === 'boolean' || typeof value === 'number') {
+      (el as any)[propName] = value;
+    } else if (typeof value === 'string') {
+      // For string properties, set directly (attribute was already set above)
+      (el as any)[propName] = value;
+    } else if (typeof value === 'object' && value !== null) {
+      // Set object/array properties directly (e.g., variants, items)
       (el as any)[propName] = value;
     }
   }
