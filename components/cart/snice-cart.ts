@@ -97,20 +97,8 @@ export class SniceCart extends HTMLElement implements SniceCartElement {
     return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
-  private handleDecrement(item: CartItem) {
-    this.updateQuantity(item.id, item.quantity - 1);
-  }
-
-  private handleIncrement(item: CartItem) {
-    this.updateQuantity(item.id, item.quantity + 1);
-  }
-
   private handleRemove(item: CartItem) {
     this.removeItem(item.id);
-  }
-
-  private handleCouponInput(e: Event) {
-    this.couponInput = (e.target as HTMLInputElement).value;
   }
 
   private handleApplyCoupon() {
@@ -178,17 +166,16 @@ export class SniceCart extends HTMLElement implements SniceCartElement {
           <span class="cart__item-price">${this.currency}${this.formatPrice(item.price)} each</span>
         </div>
         <div class="cart__item-actions">
-          <div class="cart__qty">
-            <button class="cart__qty-btn" @click=${() => this.handleDecrement(item)} aria-label="Decrease quantity">-</button>
-            <span class="cart__qty-value">${item.quantity}</span>
-            <button class="cart__qty-btn" @click=${() => this.handleIncrement(item)} aria-label="Increase quantity">+</button>
-          </div>
+          <snice-step-input
+            class="cart__qty"
+            size="small"
+            min="1"
+            step="1"
+            .value=${item.quantity}
+            @value-change=${(e: CustomEvent) => this.updateQuantity(item.id, e.detail.value)}
+          ></snice-step-input>
           <span class="cart__item-total">${this.currency}${this.formatPrice(lineTotal)}</span>
-          <button class="cart__item-remove" @click=${() => this.handleRemove(item)} aria-label="Remove ${item.name}">
-            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
-            </svg>
-          </button>
+          <snice-button size="small" variant="text" circle @button-click=${() => this.handleRemove(item)} aria-label="Remove ${item.name}">✕</snice-button>
         </div>
       </li>
     `;
@@ -221,13 +208,15 @@ export class SniceCart extends HTMLElement implements SniceCartElement {
           </ul>
 
           <div class="cart__coupon" part="coupon">
-            <input class="cart__coupon-input"
-                   type="text"
-                   placeholder="Coupon code"
-                   .value="${this.couponInput}"
-                   @input=${(e: Event) => this.handleCouponInput(e)}
-                   @keydown=${(e: KeyboardEvent) => { if (e.key === 'Enter') this.handleApplyCoupon(); }} />
-            <button class="cart__coupon-btn" @click=${() => this.handleApplyCoupon()}>Apply</button>
+            <snice-input
+              class="cart__coupon-input"
+              size="small"
+              placeholder="Coupon code"
+              .value="${this.couponInput}"
+              @input-input=${(e: CustomEvent) => { this.couponInput = e.detail.value; }}
+              @keydown=${(e: KeyboardEvent) => { if (e.key === 'Enter') this.handleApplyCoupon(); }}
+            ></snice-input>
+            <snice-button size="small" outline @button-click=${() => this.handleApplyCoupon()}>Apply</snice-button>
           </div>
 
           <div class="cart__summary" part="summary">
@@ -247,7 +236,7 @@ export class SniceCart extends HTMLElement implements SniceCartElement {
                 <span class="cart__summary-value">${this.currency}${this.formatPrice(tax)}</span>
               </div>
             </if>
-            <div class="cart__summary-divider"></div>
+            <snice-divider spacing="small"></snice-divider>
             <div class="cart__summary-row cart__summary-total">
               <span class="cart__summary-label">Total</span>
               <span class="cart__summary-value">${this.currency}${this.formatPrice(total)}</span>
@@ -255,9 +244,9 @@ export class SniceCart extends HTMLElement implements SniceCartElement {
           </div>
 
           <div class="cart__checkout" part="checkout">
-            <button class="cart__checkout-btn" @click=${() => this.handleCheckout()}>
+            <snice-button variant="primary" style="width:100%" @button-click=${() => this.handleCheckout()}>
               Checkout
-            </button>
+            </snice-button>
           </div>
         </if>
       </div>
