@@ -91,7 +91,7 @@
 
 .product-card--compact .product-card__body {
   flex: 1;
-  padding: var(--snice-spacing-sm, 0.75rem);
+  padding: var(--snice-spacing-md, 1rem);
 }
 
 .product-card--compact .product-card__variants,
@@ -225,8 +225,8 @@
 }
 
 .product-card--grid .product-card__body {
-  padding: var(--snice-spacing-sm, 0.75rem);
-  gap: var(--snice-spacing-2xs, 0.25rem);
+  padding: var(--snice-spacing-md, 1rem);
+  gap: var(--snice-spacing-xs, 0.5rem);
 }
 
 .product-card--grid .product-card__title {
@@ -489,10 +489,10 @@
 
 /* ── Body ── */
 .product-card__body {
-  padding: var(--snice-spacing-md, 1rem);
+  padding: var(--snice-spacing-lg, 1.25rem);
   display: flex;
   flex-direction: column;
-  gap: var(--snice-spacing-xs, 0.5rem);
+  gap: var(--snice-spacing-sm, 0.75rem);
 }
 
 .product-card__title {
