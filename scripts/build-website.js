@@ -267,8 +267,10 @@ const header = (active) => `
         <a href="docs.html"${active === 'docs' ? ' class="active"' : ''}>Docs</a>
         <a href="decorators.html"${active === 'decorators' ? ' class="active"' : ''}>Decorators</a>
         <a href="components.html"${active === 'components' ? ' class="active"' : ''}>Components</a>
+        <a href="themes.html"${active === 'themes' ? ' class="active"' : ''}>Themes</a>
 
         <a href="https://gitlab.com/Hedzer/snice">Source</a>
+        <a href="themes.html" id="theme-dot" class="theme-dot" hidden></a>
         <button class="theme-btn" onclick="var t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',t);localStorage.setItem('snice-theme',t)" title="Toggle theme">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
         </button>
@@ -303,6 +305,7 @@ const head = (title) => `<!-- GENERATED FILE — do not edit directly. Source: s
   <meta property="og:image" content="images/snice-logo.png">
   <link rel="stylesheet" href="theme/theme.css">
   <link rel="stylesheet" href="styles.css">
+  <script>(function(){var p=localStorage.getItem('snice-theme-preset');var c=localStorage.getItem('snice-theme-custom');if(p){var s=document.createElement('style');s.id='snice-theme-preset';s.textContent=p;document.head.appendChild(s)}if(c){var s=document.createElement('style');s.id='snice-theme-custom';s.textContent=c;document.head.appendChild(s)}var n=localStorage.getItem('snice-theme-preset-name');if(n&&n!=='default'){document.addEventListener('DOMContentLoaded',function(){var d=document.getElementById('theme-dot');if(d){d.hidden=false;d.title=n.charAt(0).toUpperCase()+n.slice(1)+' theme';d.style.background='var(--snice-color-primary)'}})}})()</script>
 </head>
 <body>`;
 
@@ -2044,10 +2047,99 @@ ${footer}
 </body>
 </html>`;
 
+// THEMES PAGE
+const themeComponents = ['button','input','select','checkbox','switch','slider','alert','badge','chip','card','tabs','color-picker'];
+const themeScripts = themeComponents.map(c => `  <script async src="components/snice-${c}.min.js"></script>`).join('\n');
+const themesHtml = `${head('Themes')}
+${header('themes')}
+  <main class="wrap">
+    <div class="page-title">
+      <h2>Themes</h2>
+      <p>Pre-built color themes and a visual builder to customize every design token.</p>
+    </div>
+
+    <!-- Preset Gallery -->
+    <section class="themes-section">
+      <h3>Presets</h3>
+      <div id="preset-grid" class="preset-grid"></div>
+    </section>
+
+    <!-- Builder + Preview two-column -->
+    <section class="themes-section themes-builder-layout">
+      <div class="themes-builder-controls">
+        <h3>Customize</h3>
+        <!-- All controls rendered dynamically by themes.js -->
+        <div id="builder-controls"></div>
+
+        <!-- Export -->
+        <div class="builder-group" style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--snice-color-border, rgba(128,128,128,0.15))">
+          <label class="builder-label">Export CSS</label>
+          <pre class="export-block"><code id="export-code">/* Default theme — no overrides */</code></pre>
+          <div style="display:flex;gap:0.5rem;margin-top:0.75rem">
+            <snice-button id="copy-css-btn" variant="primary" size="small">Copy CSS</snice-button>
+            <snice-button id="download-css-btn" variant="default" size="small">Download .css</snice-button>
+            <snice-button id="reset-btn" variant="default" size="small" outline>Reset to Default</snice-button>
+          </div>
+        </div>
+      </div>
+      <div class="themes-builder-preview">
+        <div class="theme-preview-sticky">
+          <h3 style="margin:0 0 0.75rem;font-size:0.9rem">Preview</h3>
+          <div class="theme-preview-panel theme-preview-compact">
+            <div class="theme-preview-row">
+              <snice-button variant="primary" size="small">Primary</snice-button>
+              <snice-button variant="success" size="small">Success</snice-button>
+              <snice-button variant="danger" size="small">Danger</snice-button>
+              <snice-button variant="default" size="small" outline>Outline</snice-button>
+            </div>
+            <div class="theme-preview-row">
+              <snice-input placeholder="Input..." size="small" style="flex:1;min-width:100px"></snice-input>
+              <snice-select size="small" style="flex:1;min-width:100px">
+                <snice-option value="a">Option A</snice-option>
+                <snice-option value="b">Option B</snice-option>
+              </snice-select>
+            </div>
+            <div class="theme-preview-row">
+              <snice-checkbox checked></snice-checkbox>
+              <snice-switch checked></snice-switch>
+              <snice-slider value="60" style="flex:1;min-width:80px"></snice-slider>
+            </div>
+            <div class="theme-preview-row">
+              <snice-alert variant="info" size="small" style="flex:1">Info alert</snice-alert>
+            </div>
+            <div class="theme-preview-row">
+              <snice-badge inline content="Badge" variant="primary"></snice-badge>
+              <snice-badge inline content="OK" variant="success"></snice-badge>
+              <snice-badge inline content="Err" variant="error"></snice-badge>
+              <snice-chip label="Chip" variant="primary"></snice-chip>
+            </div>
+            <div class="theme-preview-row">
+              <snice-card variant="elevated" style="flex:1">
+                <h4 slot="header" style="font-size:0.8rem">Card Title</h4>
+                <p style="margin:0;color:var(--snice-color-text-secondary);font-size:0.75rem">Card content with current theme.</p>
+              </snice-card>
+            </div>
+            <div class="theme-preview-row" style="flex-direction:column;gap:0.25rem">
+              <div style="padding:0.5rem 0.75rem;border-radius:var(--snice-border-radius-md);background:var(--snice-color-background-secondary);font-size:0.75rem;color:var(--snice-color-text)">Background secondary</div>
+              <div style="padding:0.5rem 0.75rem;border-radius:var(--snice-border-radius-md);background:var(--snice-color-background-tertiary);font-size:0.75rem;color:var(--snice-color-text-secondary)">Background tertiary</div>
+              <div style="padding:0.5rem 0.75rem;border-radius:var(--snice-border-radius-md);border:1px solid var(--snice-color-border);font-size:0.75rem;color:var(--snice-color-text-tertiary)">Bordered element</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+${footer}
+${themeScripts}
+  <script type="module" src="themes.js"></script>
+</body>
+</html>`;
+
 // NOTE: styles.css, index.html, and components.html are hand-maintained
 // styles.css: full version lives in public/styles.css (511 lines with comp-split, code-tabs, etc.)
 // index.html: has imperative/declarative tabs, hand-crafted syntax highlighting
 // components.html: built from public/showcases/ fragments via build-showcases.js
 writeFileSync(join(out, 'decorators.html'), decoratorsHtml);
 writeFileSync(join(out, 'docs.html'), docsPageHtml);
+writeFileSync(join(out, 'themes.html'), themesHtml);
 console.log('Built to public/ - preview at http://localhost:52891');
