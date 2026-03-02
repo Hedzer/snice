@@ -194,7 +194,6 @@ Apply dark theme to a section of the page.
 | `--snice-z-index-fixed` | `1030` |
 | `--snice-z-index-modal-backdrop` | `1040` |
 | `--snice-z-index-modal` | `1050` |
-| `--snice-z-index-popover` | `1060` |
 | `--snice-z-index-tooltip` | `1070` |
 
 ### Focus

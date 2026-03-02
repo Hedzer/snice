@@ -87,7 +87,7 @@ All form inputs use `--snice-color-background-input`:
 
 ### Elevated Elements
 Use `--snice-color-background-element`:
-- Cards, modals, popovers, select dropdowns, tooltips
+- Cards, modals, select dropdowns, tooltips
 
 ### Borders
 - Default: `--snice-color-border`

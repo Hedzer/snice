@@ -114,7 +114,6 @@
 
 * app-tiles badge layout, spotlight containing block offset ([f0312f3](https://gitlab.com/Hedzer/snice/commit/f0312f3104fc380b1f519d8e2167708b9c470012))
 * book, comments, flow, markdown, org-chart, pdf-viewer, spotlight improvements ([c7e34c8](https://gitlab.com/Hedzer/snice/commit/c7e34c850ffb84b60966d8c3acd82c4cccb8b84e))
-* infinite-scroll source rewrite, add CDN script to showcases ([2cc2851](https://gitlab.com/Hedzer/snice/commit/2cc28517b31c8bc2536b72b1a89ef2eafe507103))
 * lazy camera-annotate in modals, timer IDs, tagline update, v4.9.0 ([b28deec](https://gitlab.com/Hedzer/snice/commit/b28deec054293f53ffad8843facb3e4ec124eb48))
 * pdf-viewer worker resolution and state visibility, signature resize cleanup ([2f6489b](https://gitlab.com/Hedzer/snice/commit/2f6489b4d95bbae3c69ad739a465e1cbc321f8e1))
 * refactor book component CSS and rendering ([387cf48](https://gitlab.com/Hedzer/snice/commit/387cf48f9a62d6f0f7d6809708f4809b1def4694))
