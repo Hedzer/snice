@@ -27,12 +27,14 @@ export interface SniceSelectElement extends HTMLElement {
   searchable: boolean;
   clearable: boolean;
   allowFreeText: boolean;
+  editable: boolean;
   open: boolean;
   size: SelectSize;
   name: string;
   label: string;
   placeholder: string;
   maxHeight: string;
+  options: SelectOption[];
   focus(): void;
   blur(): void;
   clear(): void;

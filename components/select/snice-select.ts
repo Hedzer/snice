@@ -42,6 +42,9 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   allowFreeText = false;
 
   @property({ type: Boolean,  })
+  editable = false;
+
+  @property({ type: Boolean,  })
   open = false;
 
   @property({  })
@@ -62,8 +65,11 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   @property({  attribute: 'max-height' })
   maxHeight = '200px';
 
-  // Options will be read from child snice-option elements
-  private options: SelectOption[] = [];
+  @property({ type: Array, attribute: false })
+  options: SelectOption[] = [];
+
+  // Options read from child snice-option elements
+  private childOptions: SelectOption[] = [];
 
   @query('.select-trigger')
   trigger?: HTMLButtonElement;
@@ -92,18 +98,33 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   @query('.select-search')
   searchContainer?: HTMLElement;
 
+  @query('.select-editable-input')
+  editableInput?: HTMLInputElement;
+
   @queryAll('.select-option')
   optionElements?: HTMLElement[];
 
   private filteredOptions: SelectOption[] = [];
   private selectedValues: Set<string> = new Set();
   private focusedIndex = -1;
+  private editableInputValue = '';
+
+  /** Merged options: programmatic `options` array + child `<snice-option>` elements */
+  private get mergedOptions(): SelectOption[] {
+    // Child options take precedence if both provided (slot wins)
+    if (this.childOptions.length > 0 && this.options.length > 0) {
+      // Merge: children first, then programmatic options not already present
+      const childValues = new Set(this.childOptions.map(o => o.value));
+      return [...this.childOptions, ...this.options.filter(o => !childValues.has(o.value))];
+    }
+    return this.childOptions.length > 0 ? this.childOptions : this.options;
+  }
 
   @render()
   render() {
     const labelClasses = `select-label select-label--${this.size} ${this.required ? 'select-label--required' : ''}`;
-    const triggerClasses = `select-trigger select-trigger--${this.size} ${this.loading ? 'select-trigger--loading' : ''}`;
-    const searchHidden = !this.searchable;
+    const triggerClasses = `select-trigger select-trigger--${this.size} ${this.loading ? 'select-trigger--loading' : ''} ${this.editable ? 'select-trigger--editable' : ''}`;
+    const searchHidden = !this.searchable || this.editable;
 
     return html/*html*/`
       <div class="select-wrapper">
@@ -111,43 +132,75 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
           ${this.label}
         </label>
 
-        <button
-          type="button"
-          class="${triggerClasses}"
-          aria-haspopup="listbox"
-          aria-expanded="false"
-          aria-label="${this.label || 'Select'}"
-          part="trigger"
-          @keydown="${(e: KeyboardEvent) => this.handleTriggerOpen(e)}"
-          @click="${(e: MouseEvent) => this.handleTriggerClick(e)}">
-
-          <div class="select-value" part="value">
-            <span class="select-placeholder">${this.placeholder}</span>
-          </div>
-
-          <span class="select-icons">
-            <span class="select-clear" aria-label="Clear selection" style="display: none;" @click="${(e: MouseEvent) => this.handleClearClick(e)}">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
-                <path d="M14 1.41L12.59 0L7 5.59L1.41 0L0 1.41L5.59 7L0 12.59L1.41 14L7 8.41L12.59 14L14 12.59L8.41 7L14 1.41Z"/>
+        <if ${this.editable}>
+          <div class="select-editable-container">
+            <input
+              type="text"
+              class="select-editable-input select-editable-input--${this.size}"
+              placeholder="${this.placeholder}"
+              ?disabled="${this.disabled}"
+              ?readonly="${this.readonly}"
+              autocomplete="off"
+              role="combobox"
+              aria-expanded="false"
+              aria-autocomplete="list"
+              aria-label="${this.label || 'Select'}"
+              part="input"
+              @input="${(e: Event) => this.handleEditableInput(e)}"
+              @focus="${() => this.handleEditableFocus()}"
+              @blur="${(e: FocusEvent) => this.handleEditableBlur(e)}"
+              @keydown="${(e: KeyboardEvent) => this.handleEditableKeydown(e)}"
+              @click="${() => this.handleEditableClick()}"
+            />
+            <span class="select-editable-arrow" part="arrow"
+                  @mousedown="${(e: MouseEvent) => this.handleEditableArrowClick(e)}">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+                <path d="M6 9L1 4h10L6 9z"/>
               </svg>
             </span>
-            <if ${this.loading}>
-              <span class="select-spinner" part="spinner"></span>
-            </if>
-            <if ${!this.loading}>
-              <span class="select-arrow">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
-                  <path d="M6 9L1 4h10L6 9z"/>
+          </div>
+        </if>
+
+        <if ${!this.editable}>
+          <button
+            type="button"
+            class="${triggerClasses}"
+            aria-haspopup="listbox"
+            aria-expanded="false"
+            aria-label="${this.label || 'Select'}"
+            part="trigger"
+            @keydown="${(e: KeyboardEvent) => this.handleTriggerOpen(e)}"
+            @click="${(e: MouseEvent) => this.handleTriggerClick(e)}">
+
+            <div class="select-value" part="value">
+              <span class="select-placeholder">${this.placeholder}</span>
+            </div>
+
+            <span class="select-icons">
+              <span class="select-clear" aria-label="Clear selection" style="display: none;" @click="${(e: MouseEvent) => this.handleClearClick(e)}">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+                  <path d="M14 1.41L12.59 0L7 5.59L1.41 0L0 1.41L5.59 7L0 12.59L1.41 14L7 8.41L12.59 14L14 12.59L8.41 7L14 1.41Z"/>
                 </svg>
               </span>
-            </if>
-          </span>
-        </button>
+              <if ${this.loading}>
+                <span class="select-spinner" part="spinner"></span>
+              </if>
+              <if ${!this.loading}>
+                <span class="select-arrow">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+                    <path d="M6 9L1 4h10L6 9z"/>
+                  </svg>
+                </span>
+              </if>
+            </span>
+          </button>
+        </if>
 
         <div class="select-dropdown"
              role="listbox"
              aria-label="${this.label || 'Options'}"
              part="dropdown"
+             @mousedown="${(e: MouseEvent) => this.handleDropdownMousedown(e)}"
              @click="${(e: MouseEvent) => this.handleOptionsClick(e)}">
 
           <div class="select-search" part="search" ?hidden="${searchHidden}">
@@ -171,24 +224,24 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   }
 
   private renderOptions(): string {
-    const options = this.searchable ? this.filteredOptions : this.options;
-    
+    const options = (this.searchable || this.editable) ? this.filteredOptions : this.mergedOptions;
+
     if (options.length === 0) {
       return /*html*/`
         <div class="select-no-options">
-          <span class="select-no-options-text" data-search="true" ${!this.searchable || this.filteredOptions.length > 0 ? 'hidden' : ''}>No matches found</span>
-          <span class="select-no-options-text" data-search="false" ${this.searchable && this.filteredOptions.length === 0 ? 'hidden' : ''}>No options available</span>
+          <span class="select-no-options-text" data-search="true" ${!(this.searchable || this.editable) || this.filteredOptions.length > 0 ? 'hidden' : ''}>No matches found</span>
+          <span class="select-no-options-text" data-search="false" ${(this.searchable || this.editable) && this.filteredOptions.length === 0 ? 'hidden' : ''}>No options available</span>
         </div>
       `;
     }
 
     return options.map((opt, index) => {
-      const isSelected = this.multiple ? 
-        this.selectedValues.has(opt.value) : 
+      const isSelected = this.multiple ?
+        this.selectedValues.has(opt.value) :
         opt.value === this.value;
-      
+
       return /*html*/`
-        <div class="select-option 
+        <div class="select-option
           ${isSelected ? 'select-option--selected' : ''}
           ${opt.disabled ? 'select-option--disabled' : ''}
           ${index === this.focusedIndex ? 'select-option--focused' : ''}
@@ -224,7 +277,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     }
 
     // Initialize filtered options
-    this.filteredOptions = [...this.options];
+    this.filteredOptions = [...this.mergedOptions];
 
     // Set initial form value
     if (this.internals) {
@@ -234,14 +287,17 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     // Wait for @query decorators to populate shadow DOM elements
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        // Set initial imperative state
-        this.updateTriggerState();
+        if (this.editable) {
+          this.syncEditableInputToValue();
+          this.updateEditableState();
+        } else {
+          // Set initial imperative state
+          this.updateTriggerState();
+          this.updateValueDisplay();
+          this.updateClearButton();
+        }
         this.updateDropdownState();
-
-        // Now that we have options, update everything
         this.updateDropdownContent();
-        this.updateValueDisplay();
-        this.updateClearButton();
       });
     });
 
@@ -265,13 +321,16 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     // Create bound handlers
     this.outsideClickHandler = (e: MouseEvent) => {
       if (!this.contains(e.target as Node) && this.open) {
+        if (this.editable) {
+          this.commitEditableValue();
+        }
         this.closeDropdown();
       }
     };
-    
+
     this.globalKeyHandler = (e: KeyboardEvent) => {
-      if (!this.open) return;
-      
+      if (!this.open || this.editable) return;
+
       switch (e.key) {
         case 'Escape':
           this.closeDropdown();
@@ -289,7 +348,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
         case ' ':
           e.preventDefault();
           if (this.focusedIndex >= 0) {
-            const options = this.searchable ? this.filteredOptions : this.options;
+            const options = this.searchable ? this.filteredOptions : this.mergedOptions;
             const option = options[this.focusedIndex];
             if (option && !option.disabled) {
               this.handleOptionSelect(option);
@@ -298,12 +357,12 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
           break;
       }
     };
-    
+
     // Add listeners
     document.addEventListener('click', this.outsideClickHandler);
     document.addEventListener('keydown', this.globalKeyHandler);
   }
-  
+
   private removeGlobalListeners() {
     if (this.outsideClickHandler) {
       document.removeEventListener('click', this.outsideClickHandler);
@@ -318,7 +377,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     const observer = new MutationObserver((mutations) => {
       this.handleChildrenChange(mutations);
     });
-    
+
     // Observe the host element (this) for changes to its light DOM children
     observer.observe(this, {
       childList: true,
@@ -326,13 +385,13 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
       attributes: true,
       attributeFilter: ['value', 'label', 'disabled', 'selected']
     });
-    
+
     // Store for cleanup
     this.childObserver = observer;
   }
-  
+
   private childObserver?: MutationObserver;
-  
+
   private handleChildrenChange(mutations: MutationRecord[]) {
     // Check if any of the mutations are relevant (snice-option elements or their attributes)
     const relevant = mutations.some(m => {
@@ -342,13 +401,15 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
       }
       return false;
     });
-    
+
     if (relevant) {
       this.readOptionsFromChildren();
-      this.filteredOptions = [...this.options];
+      this.filteredOptions = [...this.mergedOptions];
 
-      this.updateValueDisplay();
-      this.updateClearButton();
+      if (!this.editable) {
+        this.updateValueDisplay();
+        this.updateClearButton();
+      }
       this.updateDropdownContent();
     }
   }
@@ -357,14 +418,14 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   private readOptionsFromChildren() {
     // Get all snice-option children from light DOM
     const optionElements = Array.from(this.querySelectorAll('snice-option'));
-    
-    this.options = optionElements.map(opt => {
+
+    this.childOptions = optionElements.map(opt => {
       const sniceOption = opt as any;
       // Use the optionData getter if available, otherwise construct from properties
       if (sniceOption.optionData) {
         return sniceOption.optionData;
       }
-      
+
       return {
         value: opt.getAttribute('value') || '',
         label: opt.getAttribute('label') || opt.textContent?.trim() || '',
@@ -373,6 +434,186 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
       };
     });
   }
+
+  // ── Editable mode handlers ──
+
+  private handleEditableInput(e: Event) {
+    const input = e.target as HTMLInputElement;
+    this.editableInputValue = input.value;
+
+    // Filter options as user types
+    this.filterEditableOptions(this.editableInputValue);
+
+    if (!this.open) {
+      this.openDropdown();
+    }
+  }
+
+  private handleEditableFocus() {
+    if (!this.open && !this.readonly) {
+      this.openDropdown();
+    }
+  }
+
+  private handleEditableBlur(e: FocusEvent) {
+    // Delay close to allow option clicks via mousedown
+    setTimeout(() => {
+      if (this.open) {
+        this.commitEditableValue();
+        this.closeDropdown();
+      }
+    }, 200);
+  }
+
+  private handleEditableClick() {
+    if (!this.open && !this.disabled && !this.readonly) {
+      this.openDropdown();
+    }
+  }
+
+  private handleEditableArrowClick(e: MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (this.disabled || this.readonly) return;
+
+    if (this.open) {
+      this.closeDropdown();
+    } else {
+      this.openDropdown();
+      this.editableInput?.focus();
+    }
+  }
+
+  private handleEditableKeydown(e: KeyboardEvent) {
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        if (!this.open) {
+          this.openDropdown();
+        } else {
+          this.focusNextOption();
+        }
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        if (this.open) {
+          this.focusPreviousOption();
+        }
+        break;
+      case 'Enter':
+        e.preventDefault();
+        if (this.open && this.focusedIndex >= 0) {
+          const option = this.filteredOptions[this.focusedIndex];
+          if (option && !option.disabled) {
+            this.handleEditableOptionSelect(option);
+          }
+        } else if (this.open) {
+          this.commitEditableValue();
+          this.closeDropdown();
+        }
+        break;
+      case 'Escape':
+        if (this.open) {
+          this.closeDropdown();
+          this.syncEditableInputToValue();
+        }
+        break;
+      case 'Tab':
+        if (this.open) {
+          this.commitEditableValue();
+          this.closeDropdown();
+        }
+        break;
+    }
+  }
+
+  private handleEditableOptionSelect(option: SelectOption) {
+    this.value = option.value;
+    this.editableInputValue = option.label;
+    if (this.editableInput) {
+      this.editableInput.value = option.label;
+    }
+    this.closeDropdown();
+    this.dispatchChangeEvent(option);
+    this.editableInput?.focus();
+  }
+
+  private commitEditableValue() {
+    if (!this.editableInput) return;
+    const inputText = this.editableInput.value.trim();
+
+    // Try to match an existing option
+    const allOptions = this.mergedOptions;
+    const match = allOptions.find(
+      opt => opt.label.toLowerCase() === inputText.toLowerCase()
+    );
+
+    if (match) {
+      this.value = match.value;
+      this.editableInputValue = match.label;
+      this.editableInput.value = match.label;
+      this.dispatchChangeEvent(match);
+    } else if (this.allowFreeText && inputText) {
+      this.value = inputText;
+      this.editableInputValue = inputText;
+      this.dispatchChangeEvent();
+    } else {
+      // Revert to current value
+      this.syncEditableInputToValue();
+    }
+  }
+
+  private filterEditableOptions(query: string) {
+    const allOptions = this.mergedOptions;
+    if (!query) {
+      this.filteredOptions = [...allOptions];
+    } else {
+      const lower = query.toLowerCase();
+      this.filteredOptions = allOptions.filter(opt =>
+        opt.label.toLowerCase().includes(lower)
+      );
+    }
+    this.focusedIndex = -1;
+    this.updateDropdownContent();
+  }
+
+  private syncEditableInputToValue() {
+    if (!this.editableInput) return;
+
+    if (this.value) {
+      const allOptions = this.mergedOptions;
+      const match = allOptions.find(opt => opt.value === this.value);
+      if (match) {
+        this.editableInput.value = match.label;
+        this.editableInputValue = match.label;
+      } else if (this.allowFreeText) {
+        this.editableInput.value = this.value;
+        this.editableInputValue = this.value;
+      } else {
+        this.editableInput.value = '';
+        this.editableInputValue = '';
+      }
+    } else {
+      this.editableInput.value = '';
+      this.editableInputValue = '';
+    }
+  }
+
+  private updateEditableState() {
+    if (!this.editableInput) return;
+    this.editableInput.setAttribute('aria-expanded', String(this.open));
+    this.editableInput.classList.toggle('select-editable-input--open', this.open);
+  }
+
+  // ── Dropdown mousedown (prevents blur in editable mode) ──
+
+  private handleDropdownMousedown(e: MouseEvent) {
+    if (this.editable) {
+      e.preventDefault();
+    }
+  }
+
+  // ── Standard (non-editable) mode handlers ──
 
   private handleTriggerOpen(e: KeyboardEvent) {
     if (['Enter', ' ', 'ArrowDown', 'ArrowUp'].includes(e.key)) {
@@ -400,7 +641,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
       case 'Enter':
         e.preventDefault();
         if (this.focusedIndex >= 0) {
-          const options = this.searchable ? this.filteredOptions : this.options;
+          const options = this.searchable ? this.filteredOptions : this.mergedOptions;
           const option = options[this.focusedIndex];
           if (option && !option.disabled) {
             this.handleOptionSelect(option);
@@ -411,7 +652,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   }
 
   private focusNextOption() {
-    const options = this.searchable ? this.filteredOptions : this.options;
+    const options = (this.searchable || this.editable) ? this.filteredOptions : this.mergedOptions;
     const enabledOptions = options.filter(opt => !opt.disabled);
     if (enabledOptions.length === 0) return;
 
@@ -429,7 +670,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   }
 
   private focusPreviousOption() {
-    const options = this.searchable ? this.filteredOptions : this.options;
+    const options = (this.searchable || this.editable) ? this.filteredOptions : this.mergedOptions;
     const enabledOptions = options.filter(opt => !opt.disabled);
     if (enabledOptions.length === 0) return;
 
@@ -451,6 +692,11 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
       this.optionElements.forEach((el, index) => {
         el.classList.toggle('select-option--focused', index === this.focusedIndex);
       });
+      // Scroll focused option into view
+      const focusedEl = this.optionElements?.[this.focusedIndex];
+      if (focusedEl) {
+        focusedEl.scrollIntoView({ block: 'nearest' });
+      }
     }
   }
 
@@ -486,7 +732,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
       if (value && this.multiple) {
         this.selectedValues.delete(value);
         this.value = Array.from(this.selectedValues).join(',');
-  
+
         this.updateValueDisplay();
         this.updateClearButton();
         this.dispatchChangeEvent();
@@ -503,9 +749,14 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     const value = optionEl.getAttribute('data-value');
     if (!value) return;
 
-    const option = this.options.find(opt => opt.value === value);
+    const allOptions = this.mergedOptions;
+    const option = allOptions.find(opt => opt.value === value);
     if (option && !option.disabled) {
-      this.handleOptionSelect(option);
+      if (this.editable) {
+        this.handleEditableOptionSelect(option);
+      } else {
+        this.handleOptionSelect(option);
+      }
     }
   }
 
@@ -514,11 +765,11 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     const searchTerm = input.value.toLowerCase();
 
     if (searchTerm) {
-      this.filteredOptions = this.options.filter(opt =>
+      this.filteredOptions = this.mergedOptions.filter(opt =>
         opt.label.toLowerCase().includes(searchTerm)
       );
     } else {
-      this.filteredOptions = [...this.options];
+      this.filteredOptions = [...this.mergedOptions];
     }
 
     this.focusedIndex = -1;
@@ -538,7 +789,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
       this.value = option.value;
       this.closeDropdown();
     }
-    
+
 
     this.updateValueDisplay();
     this.updateClearButton();
@@ -550,18 +801,32 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     if (this.multiple) {
       this.selectedValues = new Set(this.value ? this.value.split(',').map(v => v.trim()) : []);
     }
-    this.updateValueDisplay();
-    this.updateClearButton();
+    if (this.editable) {
+      this.syncEditableInputToValue();
+    } else {
+      this.updateValueDisplay();
+      this.updateClearButton();
+    }
     if (this.internals) {
       this.internals.setFormValue(this.value);
     }
   }
 
+  @watch('options')
+  handleOptionsPropertyChange() {
+    this.filteredOptions = [...this.mergedOptions];
+    this.updateDropdownContent();
+    if (this.editable) {
+      this.syncEditableInputToValue();
+    }
+  }
+
   @watch('disabled')
   handleDisabledChange() {
-    this.updateTriggerState();
-
-    this.updateClearButton();
+    if (!this.editable) {
+      this.updateTriggerState();
+      this.updateClearButton();
+    }
     // Side effect: close dropdown when disabled
     if (this.disabled && this.open) {
       this.closeDropdown();
@@ -570,9 +835,10 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
 
   @watch('loading')
   handleLoadingChange() {
-    this.updateTriggerState();
-
-    this.updateClearButton();
+    if (!this.editable) {
+      this.updateTriggerState();
+      this.updateClearButton();
+    }
     // Side effect: close dropdown when loading
     if (this.loading && this.open) {
       this.closeDropdown();
@@ -582,20 +848,36 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   @watch('open')
   handleOpenChange() {
     this.updateDropdownState();
-    this.updateTriggerState();
 
-    // Side effect: focus search input when opened
-    if (this.open && this.searchable && this.searchInput) {
-      setTimeout(() => this.searchInput?.focus(), 100);
-    }
+    if (this.editable) {
+      this.updateEditableState();
 
-    // Side effect: reset search when closed
-    if (!this.open) {
-      this.focusedIndex = -1;
-      if (this.searchInput) {
-        this.searchInput.value = '';
-        this.filteredOptions = [...this.options];
+      if (this.open) {
+        // Reset filter to show all options when opening
+        this.filteredOptions = [...this.mergedOptions];
+        this.focusedIndex = -1;
         this.updateDropdownContent();
+      }
+
+      if (!this.open) {
+        this.focusedIndex = -1;
+      }
+    } else {
+      this.updateTriggerState();
+
+      // Side effect: focus search input when opened
+      if (this.open && this.searchable && this.searchInput) {
+        setTimeout(() => this.searchInput?.focus(), 100);
+      }
+
+      // Side effect: reset search when closed
+      if (!this.open) {
+        this.focusedIndex = -1;
+        if (this.searchInput) {
+          this.searchInput.value = '';
+          this.filteredOptions = [...this.mergedOptions];
+          this.updateDropdownContent();
+        }
       }
     }
   }
@@ -603,7 +885,8 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   private updateValueDisplay() {
     if (!this.valueDisplay) return;
 
-    const selectedOptions = this.options.filter(opt => 
+    const allOptions = this.mergedOptions;
+    const selectedOptions = allOptions.filter(opt =>
       this.multiple ? this.selectedValues.has(opt.value) : opt.value === this.value
     );
 
@@ -634,11 +917,12 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
 
   private updateClearButton() {
     if (!this.clearButton) return;
-    
-    const selectedOptions = this.options.filter(opt => 
+
+    const allOptions = this.mergedOptions;
+    const selectedOptions = allOptions.filter(opt =>
       this.multiple ? this.selectedValues.has(opt.value) : opt.value === this.value
     );
-    
+
     const shouldShow = this.clearable && selectedOptions.length > 0 && !this.disabled && !this.readonly;
     this.clearButton.style.display = shouldShow ? '' : 'none';
   }
@@ -670,11 +954,19 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
 
   // Public API
   focus() {
-    this.trigger?.focus();
+    if (this.editable) {
+      this.editableInput?.focus();
+    } else {
+      this.trigger?.focus();
+    }
   }
 
   blur() {
-    this.trigger?.blur();
+    if (this.editable) {
+      this.editableInput?.blur();
+    } else {
+      this.trigger?.blur();
+    }
     if (this.open) {
       this.closeDropdown();
     }
@@ -688,8 +980,12 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
       this.value = '';
     }
 
-    this.updateValueDisplay();
-    this.updateClearButton();
+    if (this.editable) {
+      this.syncEditableInputToValue();
+    } else {
+      this.updateValueDisplay();
+      this.updateClearButton();
+    }
     this.dispatchChangeEvent();
   }
 
@@ -716,9 +1012,14 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   }
 
   selectOption(value: string) {
-    const option = this.options.find(opt => opt.value === value);
+    const allOptions = this.mergedOptions;
+    const option = allOptions.find(opt => opt.value === value);
     if (option && !option.disabled) {
-      this.handleOptionSelect(option);
+      if (this.editable) {
+        this.handleEditableOptionSelect(option);
+      } else {
+        this.handleOptionSelect(option);
+      }
     }
   }
 
@@ -736,9 +1037,9 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
 
   private updateDropdownState() {
     if (!this.dropdown) return;
-    
+
     this.dropdown.classList.toggle('select-dropdown--open', this.open);
-    
+
     if (this.arrow) {
       this.arrow.classList.toggle('select-arrow--open', this.open);
     }

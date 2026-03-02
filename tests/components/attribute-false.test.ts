@@ -20,7 +20,7 @@ import '../../components/calendar/snice-calendar';
 import '../../components/cart/snice-cart';
 import '../../components/code-block/snice-code-block';
 import '../../components/color-picker/snice-color-picker';
-import '../../components/combobox/snice-combobox';
+import '../../components/select/snice-select';
 import '../../components/command-palette/snice-command-palette';
 import '../../components/comments/snice-comments';
 import '../../components/data-card/snice-data-card';
@@ -175,9 +175,9 @@ describe('attribute: false — complex properties do not reflect to DOM', () => 
     await assertNoReflect('snice-color-picker', 'presets', ['#ff0000', '#00ff00', '#0000ff']);
   });
 
-  // --- Combobox ---
-  it('snice-combobox: options', async () => {
-    await assertNoReflect('snice-combobox', 'options', [
+  // --- Select (editable options) ---
+  it('snice-select: options', async () => {
+    await assertNoReflect('snice-select', 'options', [
       { label: 'One', value: '1' },
     ]);
   });

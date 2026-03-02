@@ -177,6 +177,42 @@ select.addEventListener('select-close', () => console.log('Closed'));
 </script>
 ```
 
+### Editable Mode
+
+Set the `editable` attribute to render a text input instead of a button. Users can type to filter or enter custom values (with `allow-free-text`). This replaces the need for a separate combobox component.
+
+```html
+<snice-select editable label="Choose a fruit" placeholder="Type or select..."></snice-select>
+```
+
+```typescript
+const select = document.querySelector('snice-select');
+select.options = [
+  { value: 'apple', label: 'Apple' },
+  { value: 'banana', label: 'Banana' },
+  { value: 'cherry', label: 'Cherry' },
+];
+```
+
+#### Allow Custom Values
+
+Set `allow-free-text` alongside `editable` to let users enter values not in the options list.
+
+```html
+<snice-select editable allow-free-text label="Tag" placeholder="Type a tag..."></snice-select>
+```
+
+#### Programmatic Options
+
+Use the `options` property to set options via JavaScript. Works alongside child `<snice-option>` elements (merged at render time, children take precedence).
+
+```typescript
+select.options = [
+  { value: 'us', label: 'United States', icon: '/flags/us.png' },
+  { value: 'uk', label: 'United Kingdom', icon: '/flags/uk.png' },
+];
+```
+
 ## Select Properties
 
 | Property | Type | Default | Description |
@@ -190,12 +226,15 @@ select.addEventListener('select-close', () => console.log('Closed'));
 | `multiple` | `boolean` | `false` | Allow multiple selection |
 | `searchable` | `boolean` | `false` | Show search input |
 | `clearable` | `boolean` | `false` | Show clear button |
+| `editable` | `boolean` | `false` | Render editable text input instead of button trigger |
+| `allowFreeText` (attr: `allow-free-text`) | `boolean` | `false` | Allow values not in the options list |
 | `open` | `boolean` | `false` | Whether dropdown is open |
 | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Select size |
 | `name` | `string` | `''` | Form field name |
 | `label` | `string` | `''` | Label text |
 | `placeholder` | `string` | `'Select an option'` | Placeholder text |
 | `maxHeight` (attr: `max-height`) | `string` | `'200px'` | Maximum dropdown height |
+| `options` | `SelectOption[]` | `[]` | Programmatic options array |
 
 ## Option Properties
 

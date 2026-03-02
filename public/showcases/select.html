@@ -73,4 +73,68 @@
 &lt;/snice-select&gt;</snice-code-block>
         </div>
       </div>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-col" style="gap:1rem">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <snice-select id="demo-select-editable-fruit" editable label="Fruit" placeholder="Type or select..." style="width:100%"></snice-select>
+            <snice-select id="demo-select-editable-country" editable label="Country" placeholder="Search countries..." style="width:100%"></snice-select>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem">
+            <snice-select id="demo-select-editable-custom" editable allow-free-text label="Custom values" placeholder="Type anything..." size="small" style="width:100%"></snice-select>
+            <snice-select id="demo-select-editable-disabled" editable label="Disabled" disabled style="width:100%"></snice-select>
+            <snice-select id="demo-select-editable-large" editable label="Large" placeholder="Choose..." size="large" style="width:100%"></snice-select>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=10a933d">&lt;snice-select editable
+  label="Fruit"
+  placeholder="Type or select..."
+&gt;&lt;/snice-select&gt;
+&lt;script&gt;
+  select.options = [
+    { value: 'apple', label: 'Apple' },
+    { value: 'banana', label: 'Banana' },
+    { value: 'cherry', label: 'Cherry' }
+  ];
+&lt;/script&gt;
+
+&lt;!-- Allow custom typed values --&gt;
+&lt;snice-select editable allow-free-text&gt;&lt;/snice-select&gt;
+
+&lt;!-- Sizes: small, medium (default), large --&gt;
+&lt;snice-select editable size="small"&gt;&lt;/snice-select&gt;
+&lt;snice-select editable disabled&gt;&lt;/snice-select&gt;</snice-code-block>
+        </div>
+      </div>
     </div>
+<script>
+    customElements.whenDefined('snice-select').then(() => {
+      const fruits = [
+        { value: 'apple', label: 'Apple' },
+        { value: 'banana', label: 'Banana' },
+        { value: 'cherry', label: 'Cherry' },
+        { value: 'date', label: 'Date' },
+        { value: 'elderberry', label: 'Elderberry' },
+        { value: 'fig', label: 'Fig' },
+        { value: 'grape', label: 'Grape' },
+      ];
+      const countries = [
+        { value: 'us', label: 'United States', icon: 'https://flagcdn.com/w20/us.png' },
+        { value: 'uk', label: 'United Kingdom', icon: 'https://flagcdn.com/w20/gb.png' },
+        { value: 'ca', label: 'Canada', icon: 'https://flagcdn.com/w20/ca.png' },
+        { value: 'de', label: 'Germany', icon: 'https://flagcdn.com/w20/de.png' },
+        { value: 'jp', label: 'Japan', icon: 'https://flagcdn.com/w20/jp.png' },
+      ];
+      const el1 = document.getElementById('demo-select-editable-fruit');
+      if (el1) el1.options = fruits;
+      const el2 = document.getElementById('demo-select-editable-country');
+      if (el2) el2.options = countries;
+      const el3 = document.getElementById('demo-select-editable-custom');
+      if (el3) el3.options = fruits;
+      const el4 = document.getElementById('demo-select-editable-disabled');
+      if (el4) { el4.options = fruits; el4.value = 'apple'; }
+      const el5 = document.getElementById('demo-select-editable-large');
+      if (el5) el5.options = fruits;
+    });
+</script>

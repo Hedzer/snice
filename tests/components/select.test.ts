@@ -2,7 +2,7 @@ import { describe, it, expect, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, trackRenders } from './test-utils';
 import '../../components/select/snice-select';
 import '../../components/select/snice-option';
-import type { SniceSelectElement } from '../../components/select/snice-select.types';
+import type { SniceSelectElement, SelectOption } from '../../components/select/snice-select.types';
 
 describe('snice-select', () => {
   let container: HTMLElement;
@@ -423,6 +423,128 @@ describe('snice-select', () => {
     await tracker.next();
 
     expect(select.open).toBe(false);
+  });
+});
+
+describe('snice-select editable mode', () => {
+  let container: HTMLElement;
+
+  const defaultOptions: SelectOption[] = [
+    { value: 'apple', label: 'Apple' },
+    { value: 'banana', label: 'Banana' },
+    { value: 'cherry', label: 'Cherry' },
+    { value: 'date', label: 'Date', disabled: true },
+  ];
+
+  async function createEditableSelect(attrs: Record<string, any> = {}) {
+    container = document.createElement('div');
+    document.body.appendChild(container);
+
+    const select = document.createElement('snice-select') as SniceSelectElement;
+    select.editable = true;
+    if (attrs.allowFreeText) select.allowFreeText = true;
+    if (attrs.disabled) select.disabled = true;
+    if (attrs.readonly) select.readonly = true;
+    if (attrs.placeholder) select.placeholder = attrs.placeholder;
+    if (attrs.label) select.label = attrs.label;
+    if (attrs.size) select.size = attrs.size;
+    select.options = attrs.options || defaultOptions;
+
+    container.appendChild(select);
+    await select.ready;
+    await new Promise(resolve => setTimeout(resolve, 50));
+    return select;
+  }
+
+  afterEach(() => {
+    if (container) {
+      removeComponent(container);
+    }
+  });
+
+  it('should render input element in editable mode', async () => {
+    const select = await createEditableSelect();
+    const input = queryShadow(select as HTMLElement, '.select-editable-input');
+    expect(input).toBeTruthy();
+  });
+
+  it('should not render button trigger in editable mode', async () => {
+    const select = await createEditableSelect();
+    const trigger = queryShadow(select as HTMLElement, 'button.select-trigger');
+    expect(trigger).toBeFalsy();
+  });
+
+  it('should have empty value by default', async () => {
+    const select = await createEditableSelect();
+    expect(select.value).toBe('');
+  });
+
+  it('should accept programmatic options array', async () => {
+    const select = await createEditableSelect();
+    expect(select.options).toHaveLength(4);
+  });
+
+  it('should update options dynamically', async () => {
+    const select = await createEditableSelect();
+    const newOptions = [
+      { value: 'x', label: 'X' },
+      { value: 'y', label: 'Y' },
+    ];
+    select.options = newOptions;
+    await new Promise(resolve => setTimeout(resolve, 50));
+    expect(select.options).toHaveLength(2);
+  });
+
+  it('should support disabled state', async () => {
+    const select = await createEditableSelect({ disabled: true });
+    expect(select.disabled).toBe(true);
+    const input = queryShadow(select as HTMLElement, '.select-editable-input') as HTMLInputElement;
+    expect(input?.disabled).toBe(true);
+  });
+
+  it('should support readonly state', async () => {
+    const select = await createEditableSelect({ readonly: true });
+    expect(select.readonly).toBe(true);
+  });
+
+  it('should update value when set programmatically', async () => {
+    const select = await createEditableSelect();
+    const tracker = trackRenders(select as HTMLElement);
+    select.value = 'banana';
+    await tracker.next();
+    expect(select.value).toBe('banana');
+  });
+
+  it('should have focus() method', async () => {
+    const select = await createEditableSelect();
+    expect(typeof select.focus).toBe('function');
+    select.focus();
+  });
+
+  it('should have blur() method', async () => {
+    const select = await createEditableSelect();
+    expect(typeof select.blur).toBe('function');
+    select.blur();
+  });
+
+  it('should support small size', async () => {
+    const select = await createEditableSelect({ size: 'small' });
+    expect(select.size).toBe('small');
+  });
+
+  it('should support large size', async () => {
+    const select = await createEditableSelect({ size: 'large' });
+    expect(select.size).toBe('large');
+  });
+
+  it('should support label property', async () => {
+    const select = await createEditableSelect({ label: 'Choose fruit' });
+    expect(select.label).toBe('Choose fruit');
+  });
+
+  it('should support placeholder property', async () => {
+    const select = await createEditableSelect({ placeholder: 'Type to search' });
+    expect(select.placeholder).toBe('Type to search');
   });
 });
 

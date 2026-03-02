@@ -1,6 +1,6 @@
 # snice-select
 
-Customizable dropdown selection with single/multiple selection, search, and icons.
+Customizable dropdown selection with single/multiple selection, search, editable input, and icons.
 
 ## Components
 
@@ -13,8 +13,10 @@ required: boolean = false;          // Required for form validation
 invalid: boolean = false;           // Invalid state styling
 readonly: boolean = false;          // Readonly state
 multiple: boolean = false;          // Allow multiple selection
-searchable: boolean = false;        // Show search input
+searchable: boolean = false;        // Show search input in dropdown
 clearable: boolean = false;         // Show clear button
+editable: boolean = false;          // Editable text input trigger (replaces button)
+allowFreeText: boolean = false;     // attr: allow-free-text — allow values not in options
 open: boolean = false;              // Dropdown open state
 loading: boolean = false;           // Loading state (shows spinner)
 size: 'small'|'medium'|'large' = 'medium';
@@ -22,6 +24,7 @@ name: string = '';                  // Form field name
 label: string = '';                 // Label text
 placeholder: string = 'Select an option';
 maxHeight: string = '200px';        // Max dropdown height
+options: SelectOption[] = [];       // Programmatic options (works alongside <snice-option> children)
 ```
 
 **Methods:**
@@ -31,7 +34,7 @@ clear()                      // Clear selection
 openDropdown()               // Open dropdown
 closeDropdown()              // Close dropdown
 toggleDropdown()             // Toggle dropdown
-focus()                      // Focus trigger
+focus()                      // Focus trigger (or input in editable mode)
 blur()                       // Blur and close
 ```
 
@@ -60,13 +63,24 @@ optionData  // { value, label, disabled, selected, icon }
 ## Usage
 
 ```html
+<!-- Standard button-trigger select -->
 <snice-select label="Choose" name="choice">
   <snice-option value="1">Option 1</snice-option>
   <snice-option value="2">Option 2</snice-option>
 </snice-select>
+
+<!-- Editable input-trigger select -->
+<snice-select editable label="Fruit" placeholder="Type or select..."></snice-select>
 ```
 
 ```typescript
+// Programmatic options (required for editable mode or in addition to children)
+select.options = [
+  { value: 'apple', label: 'Apple' },
+  { value: 'banana', label: 'Banana', icon: '/icons/banana.svg' },
+  { value: 'cherry', label: 'Cherry', disabled: true },
+];
+
 select.addEventListener('select-change', (e) => {
   console.log(e.detail.value);
 });
@@ -74,20 +88,34 @@ select.addEventListener('select-change', (e) => {
 select.selectOption('1');
 ```
 
+## Editable Mode
+
+When `editable` is set:
+- Renders a text `<input>` instead of a `<button>` trigger
+- Typing filters options in the dropdown
+- Focus opens the dropdown
+- Blur commits the value and closes
+- If no match and `allow-free-text` is set, accepts custom value
+- If no match and no `allow-free-text`, reverts to last valid value
+- Options set via JS `options` property (array), child `<snice-option>` elements, or both (merged)
+
 ## Features
 
 - Single and multiple selection
-- Search filtering
+- Search filtering (in-dropdown or editable input)
+- Editable text input mode (replaces combobox)
 - Keyboard navigation
 - Form integration
 - Icons in options
 - Clearable selection
 - Disabled options
+- Programmatic options array (works alongside child elements)
 
 ## Notes
 
 - Options can be nested (uses querySelectorAll, not just direct children)
 - Multiple selection values are comma-separated
 - Hidden native select for form submission
-- Dropdown closes outside click
-- Search shows in dropdown when open
+- Dropdown closes on outside click
+- Search shows in dropdown when open (non-editable mode)
+- Child `<snice-option>` elements take precedence when both children and programmatic options are provided

@@ -438,6 +438,94 @@ img[src=""] {
   color: var(--snice-color-text-secondary, rgb(82 82 82));
 }
 
+/* ── Editable mode ── */
+.select-editable-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.select-editable-input {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: inherit;
+  background: var(--snice-color-background-input, rgb(248 247 245));
+  color: var(--snice-color-text, rgb(23 23 23));
+  border: 1px solid var(--snice-color-border, rgb(226 226 226));
+  border-radius: var(--snice-border-radius-md, 0.25rem);
+  transition: all var(--snice-transition-fast, 150ms) ease;
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.select-editable-input--small {
+  padding: 0.375rem 2rem 0.375rem 0.625rem;
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  min-height: 2rem;
+}
+
+.select-editable-input--medium {
+  padding: 0.5rem 2.25rem 0.5rem 0.75rem;
+  font-size: var(--snice-font-size-md, 1rem);
+  min-height: 2.5rem;
+}
+
+.select-editable-input--large {
+  padding: 0.625rem 2.5rem 0.625rem 0.875rem;
+  font-size: var(--snice-font-size-lg, 1.125rem);
+  min-height: 3rem;
+}
+
+.select-editable-input:hover:not(:disabled) {
+  border-color: var(--snice-color-border-hover, rgb(180 180 180));
+}
+
+.select-editable-input:focus {
+  border-color: var(--snice-color-primary, rgb(37 99 235));
+  box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+}
+
+.select-editable-input--open {
+  border-color: var(--snice-color-primary, rgb(37 99 235));
+}
+
+.select-editable-input:disabled {
+  background: var(--snice-color-background-secondary, rgb(245 245 245));
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.select-editable-input:read-only {
+  background: var(--snice-color-background-secondary, rgb(245 245 245));
+  cursor: default;
+}
+
+.select-editable-input::placeholder {
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
+  opacity: 0.7;
+}
+
+.select-editable-arrow {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
+  pointer-events: none;
+  transition: transform var(--snice-transition-fast, 150ms) ease;
+}
+
+.select-editable-arrow--open {
+  transform: translateY(-50%) rotate(180deg);
+}
+
 /* Loading indicator in dropdown */
 .select-loading-indicator {
   display: flex;
