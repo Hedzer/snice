@@ -270,10 +270,10 @@ const header = (active) => `
         <a href="themes.html"${active === 'themes' ? ' class="active"' : ''}>Themes</a>
 
         <a href="https://gitlab.com/Hedzer/snice">Source</a>
-        <a href="themes.html" id="theme-dot" class="theme-dot" hidden></a>
         <button class="theme-btn" onclick="var t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',t);localStorage.setItem('snice-theme',t)" title="Toggle theme">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
         </button>
+        <a href="themes.html" id="theme-dot" class="theme-dot" hidden></a>
       </nav>
     </div>
   </header>`;
@@ -2079,45 +2079,77 @@ ${header('themes')}
       </div>
       <div class="themes-builder-preview">
         <div class="theme-preview-sticky">
-          <h3 style="margin:0 0 0.75rem;font-size:0.9rem">Preview</h3>
-          <div class="theme-preview-panel theme-preview-compact">
+          <h3 style="margin:0 0 0.5rem;font-size:0.9rem">Preview</h3>
+          <div class="theme-preview-panel theme-preview-compact theme-preview-scaled">
             <div class="theme-preview-row">
               <snice-button variant="primary" size="small">Primary</snice-button>
               <snice-button variant="success" size="small">Success</snice-button>
+              <snice-button variant="warning" size="small">Warning</snice-button>
               <snice-button variant="danger" size="small">Danger</snice-button>
               <snice-button variant="default" size="small" outline>Outline</snice-button>
             </div>
             <div class="theme-preview-row">
-              <snice-input placeholder="Input..." size="small" style="flex:1;min-width:100px"></snice-input>
-              <snice-select size="small" style="flex:1;min-width:100px">
+              <snice-input placeholder="Input..." size="small" style="flex:1;min-width:80px"></snice-input>
+              <snice-select size="small" style="flex:1;min-width:80px">
                 <snice-option value="a">Option A</snice-option>
-                <snice-option value="b">Option B</snice-option>
               </snice-select>
             </div>
             <div class="theme-preview-row">
               <snice-checkbox checked></snice-checkbox>
               <snice-switch checked></snice-switch>
-              <snice-slider value="60" style="flex:1;min-width:80px"></snice-slider>
+              <snice-radio-group value="a" size="small" style="flex:1"><snice-radio value="a">A</snice-radio><snice-radio value="b">B</snice-radio></snice-radio-group>
+            </div>
+            <div class="theme-preview-row">
+              <snice-slider value="60" style="flex:1" form-align></snice-slider>
+            </div>
+            <div class="theme-preview-row">
+              <snice-progress value="65" size="small" style="flex:1"></snice-progress>
+            </div>
+            <div class="theme-preview-row">
+              <snice-badge inline content="Primary" variant="primary"></snice-badge>
+              <snice-badge inline content="Success" variant="success"></snice-badge>
+              <snice-badge inline content="Warning" variant="warning"></snice-badge>
+              <snice-badge inline content="Error" variant="error"></snice-badge>
+              <snice-chip label="Chip" variant="primary" size="small"></snice-chip>
+              <snice-chip label="Done" variant="success" size="small"></snice-chip>
             </div>
             <div class="theme-preview-row">
               <snice-alert variant="info" size="small" style="flex:1">Info alert</snice-alert>
             </div>
             <div class="theme-preview-row">
-              <snice-badge inline content="Badge" variant="primary"></snice-badge>
-              <snice-badge inline content="OK" variant="success"></snice-badge>
-              <snice-badge inline content="Err" variant="error"></snice-badge>
-              <snice-chip label="Chip" variant="primary"></snice-chip>
+              <snice-alert variant="success" size="small" style="flex:1">Success alert</snice-alert>
             </div>
             <div class="theme-preview-row">
-              <snice-card variant="elevated" style="flex:1">
-                <h4 slot="header" style="font-size:0.8rem">Card Title</h4>
-                <p style="margin:0;color:var(--snice-color-text-secondary);font-size:0.75rem">Card content with current theme.</p>
-              </snice-card>
+              <snice-alert variant="warning" size="small" style="flex:1">Warning alert</snice-alert>
             </div>
-            <div class="theme-preview-row" style="flex-direction:column;gap:0.25rem">
-              <div style="padding:0.5rem 0.75rem;border-radius:var(--snice-border-radius-md);background:var(--snice-color-background-secondary);font-size:0.75rem;color:var(--snice-color-text)">Background secondary</div>
-              <div style="padding:0.5rem 0.75rem;border-radius:var(--snice-border-radius-md);background:var(--snice-color-background-tertiary);font-size:0.75rem;color:var(--snice-color-text-secondary)">Background tertiary</div>
-              <div style="padding:0.5rem 0.75rem;border-radius:var(--snice-border-radius-md);border:1px solid var(--snice-color-border);font-size:0.75rem;color:var(--snice-color-text-tertiary)">Bordered element</div>
+            <div class="theme-preview-row">
+              <snice-alert variant="danger" size="small" style="flex:1">Danger alert</snice-alert>
+            </div>
+            <div class="theme-preview-row">
+              <snice-tabs size="small" style="flex:1">
+                <snice-tab slot="nav" panel="t1" active>Tab 1</snice-tab>
+                <snice-tab slot="nav" panel="t2">Tab 2</snice-tab>
+                <snice-tab slot="nav" panel="t3">Tab 3</snice-tab>
+                <snice-tab-panel name="t1" active><span style="font-size:0.7rem;color:var(--snice-color-text-secondary)">Tab panel content</span></snice-tab-panel>
+              </snice-tabs>
+            </div>
+            <div class="theme-preview-row">
+              <div style="flex:1;padding:0.4rem 0.6rem;border-radius:var(--snice-border-radius-lg);background:var(--snice-color-background-element);border:1px solid var(--snice-color-border)">
+                <div style="font-size:0.75rem;font-weight:600;color:var(--snice-color-text)">Card</div>
+                <div style="font-size:0.65rem;color:var(--snice-color-text-secondary);margin-top:0.1rem">Content with theme.</div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;gap:0.15rem">
+                <div style="padding:0.25rem 0.5rem;border-radius:var(--snice-border-radius-md);background:var(--snice-color-background-secondary);font-size:0.65rem;color:var(--snice-color-text)">BG secondary</div>
+                <div style="padding:0.25rem 0.5rem;border-radius:var(--snice-border-radius-md);background:var(--snice-color-background-tertiary);font-size:0.65rem;color:var(--snice-color-text-secondary)">BG tertiary</div>
+                <div style="padding:0.25rem 0.5rem;border-radius:var(--snice-border-radius-md);border:1px solid var(--snice-color-border);font-size:0.65rem;color:var(--snice-color-text-tertiary)">Border</div>
+              </div>
+            </div>
+            <div class="theme-preview-row" style="gap:0.25rem">
+              <span style="font-size:0.65rem;color:var(--snice-color-text)">Text</span>
+              <span style="font-size:0.65rem;color:var(--snice-color-text-secondary)">Secondary</span>
+              <span style="font-size:0.65rem;color:var(--snice-color-text-tertiary)">Tertiary</span>
+              <span style="font-size:0.65rem;color:var(--snice-color-text-disabled)">Disabled</span>
+              <span style="font-size:0.65rem;padding:0.1rem 0.3rem;border-radius:var(--snice-border-radius-sm);background:var(--snice-color-primary);color:var(--snice-color-text-inverse)">Inverse</span>
             </div>
           </div>
         </div>

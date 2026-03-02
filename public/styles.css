@@ -822,14 +822,16 @@ header nav a:hover, header nav a.active { color: var(--snice-color-text); }
 }
 .theme-preview-sticky h3 { margin: 0 0 0.75rem; font-size: 0.9rem; }
 
-/* Compact preview */
+/* Compact + scaled preview */
 .theme-preview-compact {
-  padding: 1rem;
+  padding: 0.6rem;
+  gap: 0.35rem;
   font-size: 0.85rem;
 }
-.theme-preview-compact .theme-preview-row { gap: 0.5rem; }
-.theme-preview-compact snice-card { font-size: 0.8rem; }
-.theme-preview-compact snice-card::part(container) { padding: 0.6rem; }
+.theme-preview-compact .theme-preview-row { gap: 0.35rem; }
+.theme-preview-scaled {
+  zoom: 0.8;
+}
 
 /* Builder sections */
 .builder-section-header {
