@@ -5552,7 +5552,7 @@ control.options = [
     <div class="comp-section" data-category="Form Controls" data-cat-index="0" data-cat-order="2">
       <h3>Select</h3>
       <p class="comp-desc">Searchable, multi-select, and custom dropdowns</p>
-      <div class="comp-split">
+      <div class="comp-split" style="overflow:visible">
         <div class="comp-split-demo demo-col" style="gap:1.25rem">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
             <snice-select label="Country" placeholder="Select a country..." searchable clearable style="width:100%">
@@ -5612,18 +5612,50 @@ control.options = [
 &lt;snice-select disabled&gt;...&lt;/snice-select&gt;</snice-code-block>
         </div>
       </div>
-      <div class="comp-split">
-        <div class="comp-split-demo">
-          <snice-select label="Loading" placeholder="Fetching options..." loading style="width:100%">
-          </snice-select>
+      <div class="comp-split" style="overflow:visible">
+        <div class="comp-split-demo demo-col" style="gap:1rem">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <snice-select label="Loading" placeholder="Fetching options..." loading style="width:100%">
+            </snice-select>
+            <snice-select id="demo-select-lazy" label="Lazy-loaded" placeholder="Click to load options..." style="width:100%">
+            </snice-select>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <snice-select label="Allow free text" placeholder="Type or pick..." searchable allow-free-text clearable style="width:100%">
+              <snice-option value="red">Red</snice-option>
+              <snice-option value="green">Green</snice-option>
+              <snice-option value="blue">Blue</snice-option>
+            </snice-select>
+            <snice-select label="Readonly" value="locked" readonly style="width:100%">
+              <snice-option value="locked">Locked Value</snice-option>
+            </snice-select>
+          </div>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=1daa665">&lt;snice-select label="Loading" placeholder="Fetching options..." loading&gt;
+          <snice-code-block language="html" grammar="grammars/html.json?v=1daa665">&lt;!-- Loading state --&gt;
+&lt;snice-select label="Loading" loading&gt;&lt;/snice-select&gt;
+
+&lt;!-- Lazy-load options on first open --&gt;
+&lt;snice-select id="lazy" label="Lazy-loaded"&gt;&lt;/snice-select&gt;
+&lt;script&gt;
+  const el = document.getElementById('lazy');
+  el.addEventListener('select-open', async () =&gt; {
+    if (el.options.length) return;
+    el.loading = true;
+    const data = await fetch('/api/options').then(r =&gt; r.json());
+    el.options = data;
+    el.loading = false;
+  });
+&lt;/script&gt;
+
+&lt;!-- Free text entry (type anything, not just listed options) --&gt;
+&lt;snice-select searchable allow-free-text clearable&gt;
+  &lt;snice-option value="red"&gt;Red&lt;/snice-option&gt;
 &lt;/snice-select&gt;</snice-code-block>
         </div>
       </div>
-      <div class="comp-split">
+      <div class="comp-split" style="overflow:visible">
         <div class="comp-split-demo demo-col" style="gap:1rem">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
             <snice-select id="demo-select-editable-fruit" editable label="Fruit" placeholder="Type or select..." style="width:100%"></snice-select>
@@ -5637,7 +5669,8 @@ control.options = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=1daa665">&lt;snice-select editable
+          <snice-code-block language="html" grammar="grammars/html.json?v=1daa665">&lt;!-- Editable: text input trigger instead of button --&gt;
+&lt;snice-select editable
   label="Fruit"
   placeholder="Type or select..."
 &gt;&lt;/snice-select&gt;
@@ -5649,8 +5682,11 @@ control.options = [
   ];
 &lt;/script&gt;
 
-&lt;!-- Allow custom typed values --&gt;
-&lt;snice-select editable allow-free-text&gt;&lt;/snice-select&gt;
+&lt;!-- Editable with custom typed values --&gt;
+&lt;snice-select editable allow-free-text
+  label="Custom values"
+  placeholder="Type anything..."
+&gt;&lt;/snice-select&gt;
 
 &lt;!-- Sizes: small, medium (default), large --&gt;
 &lt;snice-select editable size="small"&gt;&lt;/snice-select&gt;
@@ -5676,6 +5712,7 @@ control.options = [
         { value: 'de', label: 'Germany', icon: 'https://flagcdn.com/w20/de.png' },
         { value: 'jp', label: 'Japan', icon: 'https://flagcdn.com/w20/jp.png' },
       ];
+      // Editable demos
       const el1 = document.getElementById('demo-select-editable-fruit');
       if (el1) el1.options = fruits;
       const el2 = document.getElementById('demo-select-editable-country');
@@ -5686,6 +5723,21 @@ control.options = [
       if (el4) { el4.options = fruits; el4.value = 'apple'; }
       const el5 = document.getElementById('demo-select-editable-large');
       if (el5) el5.options = fruits;
+
+      // Lazy-load demo: simulate fetching options on first open
+      const lazy = document.getElementById('demo-select-lazy');
+      if (lazy) {
+        lazy.addEventListener('select-open', () => {
+          if (lazy.options && lazy.options.length) return;
+          lazy.loading = true;
+          lazy.closeDropdown();
+          setTimeout(() => {
+            lazy.options = countries;
+            lazy.loading = false;
+            lazy.openDropdown();
+          }, 1500);
+        });
+      }
     });
 </script>
     <div class="comp-section" data-category="Data Display" data-cat-index="3" data-cat-order="6">
