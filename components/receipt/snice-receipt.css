@@ -304,6 +304,7 @@
   border-radius: 0;
   border: none;
   background: var(--receipt-thermal-bg);
+  color: rgb(23 23 23);
   padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-sm, 0.75rem);
   box-shadow: 0 2px 8px rgb(0 0 0 / 0.06);
   font-family: var(--receipt-thermal-font);
@@ -312,7 +313,7 @@
 :host([variant="thermal"]) .receipt__divider {
   border-top-style: dotted;
   border-top-width: 2px;
-  border-color: rgb(0 0 0 / 0.25);
+  border-top-color: rgb(0 0 0 / 0.25);
   margin: var(--snice-spacing-xs, 0.5rem) 0;
 }
 
@@ -320,20 +321,32 @@
   font-size: var(--snice-font-size-md, 1rem);
   text-transform: uppercase;
   letter-spacing: 0.12em;
+  color: rgb(23 23 23);
 }
 
 :host([variant="thermal"]) .receipt__merchant-address,
 :host([variant="thermal"]) .receipt__merchant-contact {
   font-size: 0.75rem;
+  color: rgb(82 82 82);
 }
 
 :host([variant="thermal"]) .receipt__meta {
   font-size: 0.75rem;
+  color: rgb(82 82 82);
+}
+
+:host([variant="thermal"]) .receipt__meta-label {
+  color: rgb(115 115 115);
+}
+
+:host([variant="thermal"]) .receipt__meta-value {
+  color: rgb(23 23 23);
 }
 
 :host([variant="thermal"]) .receipt__items-header {
   font-size: 0.625rem;
   border-bottom-style: dotted;
+  color: rgb(115 115 115);
 }
 
 :host([variant="thermal"]) .receipt__item {
@@ -345,31 +358,53 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: rgb(23 23 23);
+}
+
+:host([variant="thermal"]) .receipt__item-qty {
+  color: rgb(115 115 115);
+}
+
+:host([variant="thermal"]) .receipt__item-price {
+  color: rgb(23 23 23);
 }
 
 :host([variant="thermal"]) .receipt__total-row {
   font-size: 0.8125rem;
+  color: rgb(82 82 82);
 }
 
 :host([variant="thermal"]) .receipt__total-row--grand {
   font-size: 0.9375rem;
   border-top-style: double;
   border-top-width: 3px;
+  color: rgb(23 23 23);
 }
 
 :host([variant="thermal"]) .receipt__payment {
   font-size: 0.75rem;
+  color: rgb(82 82 82);
+}
+
+:host([variant="thermal"]) .receipt__payment-method {
+  color: rgb(23 23 23);
+}
+
+:host([variant="thermal"]) .receipt__payment-details {
+  color: rgb(115 115 115);
 }
 
 :host([variant="thermal"]) .receipt__footer {
   font-size: 0.6875rem;
   letter-spacing: 0.04em;
+  color: rgb(115 115 115);
 }
 
 :host([variant="thermal"]) .receipt__thank-you {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-size: 0.75rem;
+  color: rgb(82 82 82);
 }
 
 /* ══════════════════════════════════════════════════════════════
