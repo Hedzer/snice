@@ -64,8 +64,8 @@ export class SniceTree extends HTMLElement implements SniceTreeElement {
       this.setAttribute('aria-multiselectable', 'true');
     }
 
-    // Set node data on tree items
-    this.updateTreeItems();
+    // Create tree items and set node data
+    this.updateTreeItemsDOM();
   }
 
   private renderTemplate() {
@@ -164,7 +164,7 @@ export class SniceTree extends HTMLElement implements SniceTreeElement {
     requestAnimationFrame(() => {
       if (!this.treeItems || this.treeItems.length === 0) {
         // Fallback to manual query if @queryAll hasn't populated yet
-        const items = this.shadowRoot?.querySelectorAll(':scope > .tree > .tree__content > snice-tree-item');
+        const items = this.shadowRoot?.querySelectorAll('.tree > .tree__content > snice-tree-item');
         if (items) {
           items.forEach((item, index) => {
             if (this.nodes[index] && (item as any).setNode) {

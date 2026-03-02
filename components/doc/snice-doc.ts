@@ -1,7 +1,8 @@
 import { element, property, styles, ready, dispose, css } from 'snice';
 import cssContent from './snice-doc.css?inline';
+import type { DocIconSet, DocDownloadFormat } from './snice-doc.types.js';
 
-type IconSet = 'default' | 'material' | 'fontawesome';
+type IconSet = DocIconSet;
 
 interface ToolDef {
   cmd: string;
@@ -600,7 +601,7 @@ export class SniceDoc extends HTMLElement {
   /**
    * Download document in specified format
    */
-  downloadAs(format: 'html' | 'markdown' | 'text', filename?: string) {
+  downloadAs(format: DocDownloadFormat, filename?: string) {
     let content: string;
     let mimeType: string;
     let ext: string;
