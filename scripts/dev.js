@@ -60,6 +60,14 @@ try {
   process.exit(1);
 }
 
+// Kill anything already on dev ports
+for (const port of [5566, 52891]) {
+  try {
+    execSync(`fuser -k ${port}/tcp`, { stdio: 'ignore' });
+    console.log(`\x1b[36m[dev]\x1b[0m Killed existing process on port ${port}`);
+  } catch {}
+}
+
 // Spawn vite servers
 spawnChild('dev', '33', 'npx', ['vite']);
 spawnChild('web', '35', 'npx', ['vite', '--port', '52891']);
