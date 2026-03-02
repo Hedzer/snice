@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snice Map Component Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 40px;
+      line-height: 1.6;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: var(--snice-color-text);
+      border-bottom: 2px solid var(--snice-color-border);
+      padding-bottom: 10px;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      color: var(--snice-color-text);
+      margin-top: 40px;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .demo-section {
+      margin: 30px 0;
+      padding: 20px;
+      background: var(--snice-color-background);
+      border-radius: 8px;
+      border: 1px solid var(--snice-color-border);
+    }
+
+    .demo-label {
+      display: block;
+      margin-bottom: 16px;
+      font-weight: 600;
+      color: var(--snice-color-text-secondary);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+      padding: 16px;
+      background: var(--snice-color-background-secondary);
+      border-radius: 6px;
+      border: 1px solid var(--snice-color-border);
+    }
+
+    .controls button {
+      padding: 10px 16px;
+      background: var(--snice-color-primary);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .controls button:hover {
+      background: var(--snice-color-primary-hover);
+    }
+
+    .controls button.secondary {
+      background: var(--snice-color-neutral);
+    }
+
+    .controls button.secondary:hover {
+      background: var(--snice-color-neutral-hover);
+    }
+
+    .map-container {
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: var(--snice-shadow-md);
+    }
+
+    .info-panel {
+      margin-top: 16px;
+      padding: 12px 16px;
+      background: var(--snice-color-background-secondary);
+      border-radius: 6px;
+      font-size: 14px;
+      color: var(--snice-color-text-secondary);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🗺️ Snice Map Component Demo</h1>
+
+    <div class="demo-section">
+      <h2>Interactive Map</h2>
+      <span class="demo-label">Drag to pan, scroll to zoom, click to place markers</span>
+      
+      <div class="controls">
+        <button id="btn-london">London</button>
+        <button id="btn-paris">Paris</button>
+        <button id="btn-tokyo">Tokyo</button>
+        <button id="btn-ny">New York</button>
+        <button id="btn-sydney">Sydney</button>
+        <button id="btn-fit" class="secondary">Fit All Markers</button>
+        <button id="btn-clear" class="secondary">Clear Markers</button>
+      </div>
+
+      <div class="map-container">
+        <snice-map id="demo-map" style="display: block; height: 500px; width: 100%;"></snice-map>
+      </div>
+
+      <div class="info-panel">
+        <div>Center: <span id="center-info">51.505, -0.09</span></div>
+        <div>Zoom: <span id="zoom-info">13</span></div>
+        <div>Markers: <span id="marker-count">0</span></div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Marker Examples</h2>
+      <span class="demo-label">Click on the map above to add custom markers</span>
+      <p style="color: var(--snice-color-text-secondary);">
+        The map supports interactive markers with popups. Try clicking anywhere on the map to add a marker,
+        or use the buttons above to jump to different cities.
+      </p>
+    </div>
+  </div>
+
+  <script type="module">
+    import './snice-map.ts';
+
+    const map = document.getElementById('demo-map');
+    const centerInfo = document.getElementById('center-info');
+    const zoomInfo = document.getElementById('zoom-info');
+    const markerCount = document.getElementById('marker-count');
+
+    // Predefined locations
+    const locations = {
+      london: { lat: 51.505, lng: -0.09, name: 'London' },
+      paris: { lat: 48.8566, lng: 2.3522, name: 'Paris' },
+      tokyo: { lat: 35.6762, lng: 139.6503, name: 'Tokyo' },
+      ny: { lat: 40.7128, lng: -74.006, name: 'New York' },
+      sydney: { lat: -33.8688, lng: 151.2093, name: 'Sydney' }
+    };
+
+    // Add initial markers
+    const initialMarkers = [
+      { id: 'london', lat: 51.505, lng: -0.09, label: 'London', popup: 'Capital of the UK' },
+      { id: 'paris', lat: 48.8566, lng: 2.3522, label: 'Paris', popup: 'City of Light' }
+    ];
+
+    initialMarkers.forEach(marker => map.addMarker(marker));
+    updateInfo();
+
+    // Button handlers
+    document.getElementById('btn-london').addEventListener('click', () => {
+      map.setCenter(locations.london.lat, locations.london.lng);
+      map.setZoom(13);
+    });
+
+    document.getElementById('btn-paris').addEventListener('click', () => {
+      map.setCenter(locations.paris.lat, locations.paris.lng);
+      map.setZoom(13);
+    });
+
+    document.getElementById('btn-tokyo').addEventListener('click', () => {
+      map.setCenter(locations.tokyo.lat, locations.tokyo.lng);
+      map.setZoom(12);
+    });
+
+    document.getElementById('btn-ny').addEventListener('click', () => {
+      map.setCenter(locations.ny.lat, locations.ny.lng);
+      map.setZoom(13);
+    });
+
+    document.getElementById('btn-sydney').addEventListener('click', () => {
+      map.setCenter(locations.sydney.lat, locations.sydney.lng);
+      map.setZoom(13);
+    });
+
+    document.getElementById('btn-fit').addEventListener('click', () => {
+      map.fitBounds();
+    });
+
+    document.getElementById('btn-clear').addEventListener('click', () => {
+      [...map.markers].forEach(m => map.removeMarker(m.id));
+      updateInfo();
+    });
+
+    // Map event handlers
+    map.addEventListener('map-move', (e) => {
+      updateInfo();
+    });
+
+    map.addEventListener('map-zoom', (e) => {
+      updateInfo();
+    });
+
+    map.addEventListener('map-click', (e) => {
+      const { lat, lng } = e.detail;
+      const id = `marker-${Date.now()}`;
+      map.addMarker({
+        id,
+        lat,
+        lng,
+        label: `${lat.toFixed(4)}, ${lng.toFixed(4)}`,
+        popup: `Marker at ${lat.toFixed(4)}, ${lng.toFixed(4)}`
+      });
+      updateInfo();
+    });
+
+    map.addEventListener('marker-click', (e) => {
+      console.log('Marker clicked:', e.detail.marker);
+    });
+
+    function updateInfo() {
+      centerInfo.textContent = `${map.center.lat.toFixed(4)}, ${map.center.lng.toFixed(4)}`;
+      zoomInfo.textContent = map.zoom;
+      markerCount.textContent = map.markers.length;
+    }
+  </script>
+</body>
+</html>

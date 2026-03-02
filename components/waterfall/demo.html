@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snice Waterfall Chart Component Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 40px;
+      line-height: 1.6;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: var(--snice-color-text);
+      border-bottom: 2px solid var(--snice-color-border);
+      padding-bottom: 10px;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      color: var(--snice-color-text);
+      margin-top: 40px;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .demo-section {
+      margin: 30px 0;
+      padding: 20px;
+      background: var(--snice-color-background);
+      border-radius: 8px;
+      border: 1px solid var(--snice-color-border);
+    }
+
+    .demo-label {
+      display: block;
+      margin-bottom: 16px;
+      font-weight: 600;
+      color: var(--snice-color-text-secondary);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .chart-container {
+      padding: 30px;
+      background: var(--snice-color-background-secondary);
+      border-radius: 8px;
+      border: 1px solid var(--snice-color-border);
+    }
+
+    snice-waterfall {
+      display: block;
+      height: 400px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+      padding: 16px;
+      background: var(--snice-color-background-secondary);
+      border-radius: 6px;
+      border: 1px solid var(--snice-color-border);
+    }
+
+    .controls button {
+      padding: 10px 16px;
+      background: var(--snice-color-primary);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .controls button:hover {
+      background: var(--snice-color-primary-hover);
+    }
+
+    .controls label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .info-panel {
+      margin-top: 16px;
+      padding: 12px 16px;
+      background: var(--snice-color-background-secondary);
+      border-radius: 6px;
+      font-size: 14px;
+      color: var(--snice-color-text-secondary);
+    }
+
+    .legend {
+      display: flex;
+      gap: 24px;
+      margin: 16px 0;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .legend-color {
+      width: 16px;
+      height: 16px;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📊 Snice Waterfall Chart Component Demo</h1>
+
+    <div class="demo-section">
+      <h2>Financial Waterfall Chart</h2>
+      <span class="demo-label">Track changes from starting value to ending value</span>
+      
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-color" style="background: #10b981;"></div>
+          <span>Increase</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background: #ef4444;"></div>
+          <span>Decrease</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background: #3b82f6;"></div>
+          <span>Total</span>
+        </div>
+      </div>
+
+      <div class="chart-container">
+        <snice-waterfall id="waterfall-chart"></snice-waterfall>
+      </div>
+
+      <div class="controls">
+        <button id="btn-revenue">Revenue Breakdown</button>
+        <button id="btn-budget">Budget Analysis</button>
+        <button id="btn-sales">Sales Funnel</button>
+        <label>
+          <input type="checkbox" id="show-values" checked>
+          Show Values
+        </label>
+        <label>
+          <input type="checkbox" id="show-connectors" checked>
+          Show Connectors
+        </label>
+      </div>
+
+      <div class="info-panel" id="chart-info">
+        Hover over bars to see details
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>About Waterfall Charts</h2>
+      <p style="color: var(--snice-color-text-secondary);">
+        Waterfall charts are ideal for showing how an initial value is affected by a series of 
+        positive and negative changes. They're commonly used in financial analysis to show 
+        how revenue flows through to net income, or how a budget is allocated across categories.
+      </p>
+    </div>
+  </div>
+
+  <script type="module">
+    import './snice-waterfall.ts';
+
+    const chart = document.getElementById('waterfall-chart');
+    const infoPanel = document.getElementById('chart-info');
+    const showValuesCheck = document.getElementById('show-values');
+    const showConnectorsCheck = document.getElementById('show-connectors');
+
+    // Sample datasets
+    const datasets = {
+      revenue: [
+        { label: 'Gross Revenue', value: 1000000, type: 'increase' },
+        { label: 'Returns', value: -50000, type: 'decrease' },
+        { label: 'Discounts', value: -100000, type: 'decrease' },
+        { label: 'Net Revenue', value: 850000, type: 'total' },
+        { label: 'COGS', value: -400000, type: 'decrease' },
+        { label: 'Gross Profit', value: 450000, type: 'total' },
+        { label: 'OpEx', value: -200000, type: 'decrease' },
+        { label: 'Net Income', value: 250000, type: 'total' }
+      ],
+      budget: [
+        { label: 'Budget', value: 500000, type: 'increase' },
+        { label: 'Personnel', value: -200000, type: 'decrease' },
+        { label: 'Marketing', value: -100000, type: 'decrease' },
+        { label: 'Operations', value: -80000, type: 'decrease' },
+        { label: 'R&D', value: -70000, type: 'decrease' },
+        { label: 'Remaining', value: 50000, type: 'total' }
+      ],
+      sales: [
+        { label: 'Visitors', value: 10000, type: 'increase' },
+        { label: 'Bounce', value: -4000, type: 'decrease' },
+        { label: 'Engaged', value: 6000, type: 'total' },
+        { label: 'Add to Cart', value: -3000, type: 'decrease' },
+        { label: 'In Cart', value: 3000, type: 'total' },
+        { label: 'Abandon', value: -1500, type: 'decrease' },
+        { label: 'Checkout', value: 1500, type: 'total' },
+        { label: 'Purchase', value: 1200, type: 'total' }
+      ]
+    };
+
+    // Set initial data
+    chart.data = datasets.revenue;
+
+    // Button handlers
+    document.getElementById('btn-revenue').addEventListener('click', () => {
+      chart.data = datasets.revenue;
+      infoPanel.textContent = 'Showing: Revenue Breakdown';
+    });
+
+    document.getElementById('btn-budget').addEventListener('click', () => {
+      chart.data = datasets.budget;
+      infoPanel.textContent = 'Showing: Budget Analysis';
+    });
+
+    document.getElementById('btn-sales').addEventListener('click', () => {
+      chart.data = datasets.sales;
+      infoPanel.textContent = 'Showing: Sales Funnel';
+    });
+
+    // Checkbox handlers
+    showValuesCheck.addEventListener('change', (e) => {
+      chart.showValues = e.target.checked;
+    });
+
+    showConnectorsCheck.addEventListener('change', (e) => {
+      chart.showConnectors = e.target.checked;
+    });
+
+    // Event listeners
+    chart.addEventListener('bar-click', (e) => {
+      const { item, index } = e.detail;
+      infoPanel.textContent = `Clicked: ${item.label} - Value: ${item.value.toLocaleString()}`;
+    });
+
+    chart.addEventListener('bar-hover', (e) => {
+      const { item } = e.detail;
+      console.log('Hover:', item.label);
+    });
+  </script>
+</body>
+</html>

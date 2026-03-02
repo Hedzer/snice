@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snice Invoice Component Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 40px;
+      line-height: 1.6;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: var(--snice-color-text);
+      border-bottom: 2px solid var(--snice-color-border);
+      padding-bottom: 10px;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      color: var(--snice-color-text);
+      margin-top: 40px;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .demo-section {
+      margin: 30px 0;
+      padding: 20px;
+      background: var(--snice-color-background);
+      border-radius: 8px;
+      border: 1px solid var(--snice-color-border);
+    }
+
+    .demo-label {
+      display: block;
+      margin-bottom: 16px;
+      font-weight: 600;
+      color: var(--snice-color-text-secondary);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .invoice-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+      gap: 24px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+      padding: 16px;
+      background: var(--snice-color-background-element);
+      border-radius: 6px;
+      border: 1px solid var(--snice-color-border);
+    }
+
+    .controls label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .controls select, .controls input {
+      padding: 8px 12px;
+      border: 1px solid var(--snice-color-border);
+      border-radius: 4px;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      font-size: 14px;
+    }
+
+    .controls button {
+      padding: 8px 16px;
+      border: 1px solid var(--snice-color-border);
+      border-radius: 4px;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 150ms;
+    }
+
+    .controls button:hover {
+      border-color: var(--snice-color-primary);
+      color: var(--snice-color-primary);
+    }
+
+    .event-log {
+      background: var(--snice-color-background-element);
+      border: 1px solid var(--snice-color-border);
+      border-radius: 6px;
+      padding: 12px;
+      margin-top: 16px;
+      font-family: monospace;
+      font-size: 13px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .event-log:empty::before {
+      content: 'Event log will appear here...';
+      color: var(--snice-color-text-tertiary);
+      font-style: italic;
+    }
+
+    .event-item {
+      padding: 4px 0;
+      border-bottom: 1px solid var(--snice-color-border);
+    }
+
+    .event-item:last-child {
+      border-bottom: none;
+    }
+
+    .example-card {
+      padding: 20px;
+      background: var(--snice-color-background-element);
+      border-radius: 6px;
+      border: 1px solid var(--snice-color-border);
+      margin: 16px 0;
+      overflow-x: auto;
+    }
+
+    .example-card h3 {
+      margin-top: 0;
+      margin-bottom: 16px;
+      font-size: 16px;
+      color: var(--snice-color-text);
+    }
+
+    .qr-placeholder {
+      width: 80px;
+      height: 80px;
+      background: var(--snice-color-background-element);
+      border: 2px dashed var(--snice-color-border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: var(--snice-color-text-tertiary);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧾 Snice Invoice Component Demo</h1>
+
+    <div class="demo-section">
+      <h2>Invoice Variants</h2>
+      <span class="demo-label">Different visual styles</span>
+      
+      <div class="invoice-grid">
+        <div class="example-card">
+          <h3>Standard</h3>
+          <snice-invoice id="invoice-standard"></snice-invoice>
+        </div>
+        
+        <div class="example-card">
+          <h3>Modern</h3>
+          <snice-invoice id="invoice-modern" variant="modern"></snice-invoice>
+        </div>
+        
+        <div class="example-card">
+          <h3>Classic</h3>
+          <snice-invoice id="invoice-classic" variant="classic"></snice-invoice>
+        </div>
+        
+        <div class="example-card">
+          <h3>Minimal</h3>
+          <snice-invoice id="invoice-minimal" variant="minimal"></snice-invoice>
+        </div>
+        
+        <div class="example-card">
+          <h3>Detailed</h3>
+          <snice-invoice id="invoice-detailed" variant="detailed"></snice-invoice>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Status Variations</h2>
+      <span class="demo-label">Different invoice statuses</span>
+      
+      <div class="invoice-grid">
+        <div class="example-card">
+          <h3>Draft</h3>
+          <snice-invoice id="invoice-draft" status="draft"></snice-invoice>
+        </div>
+        
+        <div class="example-card">
+          <h3>Sent</h3>
+          <snice-invoice id="invoice-sent" status="sent"></snice-invoice>
+        </div>
+        
+        <div class="example-card">
+          <h3>Paid</h3>
+          <snice-invoice id="invoice-paid" status="paid"></snice-invoice>
+        </div>
+        
+        <div class="example-card">
+          <h3>Overdue</h3>
+          <snice-invoice id="invoice-overdue" status="overdue"></snice-invoice>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Interactive Demo</h2>
+      <span class="demo-label">Customize invoice properties</span>
+      
+      <div class="controls">
+        <label>
+          Variant:
+          <select id="variant-select">
+            <option value="standard" selected>Standard</option>
+            <option value="modern">Modern</option>
+            <option value="classic">Classic</option>
+            <option value="minimal">Minimal</option>
+            <option value="detailed">Detailed</option>
+          </select>
+        </label>
+        
+        <label>
+          Status:
+          <select id="status-select">
+            <option value="draft">Draft</option>
+            <option value="sent" selected>Sent</option>
+            <option value="paid">Paid</option>
+            <option value="overdue">Overdue</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </label>
+        
+        <label>
+          Currency:
+          <select id="currency-select">
+            <option value="USD" selected>USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="JPY">JPY</option>
+          </select>
+        </label>
+        
+        <label>
+          Tax Rate (%):
+          <input type="number" id="tax-input" value="10" min="0" max="100">
+        </label>
+        
+        <label>
+          Discount (%):
+          <input type="number" id="discount-input" value="5" min="0" max="100">
+        </label>
+        
+        <button id="toggle-qr">Toggle QR Code</button>
+        <button id="print-invoice">Print Invoice</button>
+      </div>
+      
+      <snice-invoice id="interactive-invoice"></snice-invoice>
+      
+      <div class="event-log" id="event-log"></div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Real-world Examples</h2>
+
+      <div class="example-card">
+        <h3>Software Development Services</h3>
+        <snice-invoice id="invoice-software"></snice-invoice>
+      </div>
+
+      <div class="example-card">
+        <h3>Consulting Invoice with QR</h3>
+        <snice-invoice id="invoice-consulting" show-qr="true">
+          <div slot="qr" class="qr-placeholder">QR</div>
+        </snice-invoice>
+      </div>
+
+      <div class="example-card">
+        <h3>Product Purchase (Multiple Items)</h3>
+        <snice-invoice id="invoice-products"></snice-invoice>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import './snice-invoice.ts';
+
+    // Sample data
+    const defaultItems = [
+      { description: 'Web Design', quantity: 1, unitPrice: 2500 },
+      { description: 'Frontend Development', quantity: 40, unitPrice: 150 },
+      { description: 'Backend API Development', quantity: 30, unitPrice: 175 },
+      { description: 'Testing & QA', quantity: 10, unitPrice: 100 }
+    ];
+
+    const sampleFrom = {
+      name: 'Acme Design Studio',
+      address: '123 Creative Ave\nSan Francisco, CA 94102',
+      email: 'billing@acmedesign.com',
+      phone: '+1 (555) 123-4567'
+    };
+
+    const sampleTo = {
+      name: 'TechStart Inc.',
+      address: '456 Innovation Blvd\nPalo Alto, CA 94301',
+      email: 'accounts@techstart.io',
+      phone: '+1 (555) 987-6543'
+    };
+
+    // Initialize variant invoices
+    const variants = ['standard', 'modern', 'classic', 'minimal', 'detailed'];
+    variants.forEach(variant => {
+      const invoice = document.getElementById(`invoice-${variant}`);
+      invoice.invoiceNumber = `INV-2024-${variant.toUpperCase().slice(0, 3)}001`;
+      invoice.date = '2024-01-15';
+      invoice.dueDate = '2024-02-15';
+      invoice.status = 'sent';
+      invoice.currency = 'USD';
+      invoice.taxRate = 10;
+      invoice.discount = 5;
+      invoice.from = sampleFrom;
+      invoice.to = sampleTo;
+      invoice.items = defaultItems;
+      invoice.notes = 'Payment terms: Net 30. Please make checks payable to Acme Design Studio.';
+    });
+
+    // Initialize status invoices
+    const statuses = ['draft', 'sent', 'paid', 'overdue'];
+    statuses.forEach(status => {
+      const invoice = document.getElementById(`invoice-${status}`);
+      invoice.invoiceNumber = `INV-2024-${status.toUpperCase().slice(0, 3)}001`;
+      invoice.date = '2024-01-15';
+      invoice.dueDate = status === 'paid' ? '2024-01-20' : '2024-02-15';
+      invoice.status = status;
+      invoice.currency = 'USD';
+      invoice.taxRate = 10;
+      invoice.from = sampleFrom;
+      invoice.to = sampleTo;
+      invoice.items = defaultItems.slice(0, 3);
+    });
+
+    // Interactive invoice
+    const interactiveInvoice = document.getElementById('interactive-invoice');
+    const eventLog = document.getElementById('event-log');
+
+    function logEvent(message) {
+      const item = document.createElement('div');
+      item.className = 'event-item';
+      const time = new Date().toLocaleTimeString();
+      item.textContent = `[${time}] ${message}`;
+      eventLog.appendChild(item);
+      eventLog.scrollTop = eventLog.scrollHeight;
+    }
+
+    interactiveInvoice.invoiceNumber = 'INV-2024-DEMO001';
+    interactiveInvoice.date = '2024-01-15';
+    interactiveInvoice.dueDate = '2024-02-15';
+    interactiveInvoice.status = 'sent';
+    interactiveInvoice.currency = 'USD';
+    interactiveInvoice.taxRate = 10;
+    interactiveInvoice.discount = 5;
+    interactiveInvoice.from = sampleFrom;
+    interactiveInvoice.to = sampleTo;
+    interactiveInvoice.items = defaultItems;
+    interactiveInvoice.notes = 'Thank you for your business!';
+
+    // Controls
+    document.getElementById('variant-select').addEventListener('change', (e) => {
+      interactiveInvoice.variant = e.target.value;
+      logEvent(`Variant changed to: ${e.target.value}`);
+    });
+
+    document.getElementById('status-select').addEventListener('change', (e) => {
+      interactiveInvoice.status = e.target.value;
+      logEvent(`Status changed to: ${e.target.value}`);
+    });
+
+    document.getElementById('currency-select').addEventListener('change', (e) => {
+      interactiveInvoice.currency = e.target.value;
+      logEvent(`Currency changed to: ${e.target.value}`);
+    });
+
+    document.getElementById('tax-input').addEventListener('change', (e) => {
+      interactiveInvoice.taxRate = parseFloat(e.target.value) || 0;
+      logEvent(`Tax rate changed to: ${e.target.value}%`);
+    });
+
+    document.getElementById('discount-input').addEventListener('change', (e) => {
+      interactiveInvoice.discount = parseFloat(e.target.value) || 0;
+      logEvent(`Discount changed to: ${e.target.value}%`);
+    });
+
+    document.getElementById('toggle-qr').addEventListener('click', () => {
+      interactiveInvoice.showQr = !interactiveInvoice.showQr;
+      logEvent(`QR code ${interactiveInvoice.showQr ? 'shown' : 'hidden'}`);
+    });
+
+    document.getElementById('print-invoice').addEventListener('click', () => {
+      interactiveInvoice.print();
+      logEvent('Print dialog opened');
+    });
+
+    // Event listeners
+    interactiveInvoice.addEventListener('invoice-status-change', (e) => {
+      logEvent(`Status changed from ${e.detail.oldStatus} to ${e.detail.newStatus}`);
+    });
+
+    interactiveInvoice.addEventListener('invoice-item-change', (e) => {
+      logEvent(`Items changed - Subtotal: $${e.detail.subtotal.toFixed(2)}, Total: $${e.detail.total.toFixed(2)}`);
+    });
+
+    // Software development invoice
+    const softwareInvoice = document.getElementById('invoice-software');
+    softwareInvoice.invoiceNumber = 'INV-SWDEV-2024-001';
+    softwareInvoice.date = '2024-01-15';
+    softwareInvoice.dueDate = '2024-02-15';
+    softwareInvoice.status = 'sent';
+    softwareInvoice.currency = 'USD';
+    softwareInvoice.taxRate = 0;
+    softwareInvoice.from = {
+      name: 'DevCraft Solutions',
+      address: '789 Code Street\nSeattle, WA 98101',
+      email: 'invoices@devcraft.io',
+      phone: '+1 (555) 234-5678'
+    };
+    softwareInvoice.to = {
+      name: 'Enterprise Corp',
+      address: '1000 Business Plaza\nNew York, NY 10001',
+      email: 'ap@enterprisecorp.com'
+    };
+    softwareInvoice.items = [
+      { description: 'Sprint 1 Development (2 weeks)', quantity: 80, unitPrice: 150 },
+      { description: 'Sprint 2 Development (2 weeks)', quantity: 80, unitPrice: 150 },
+      { description: 'Code Review & Refactoring', quantity: 20, unitPrice: 150 },
+      { description: 'Technical Documentation', quantity: 10, unitPrice: 125 }
+    ];
+    softwareInvoice.notes = 'Payment due within 15 days. Late payments subject to 1.5% monthly service charge.';
+
+    // Consulting invoice with QR
+    const consultingInvoice = document.getElementById('invoice-consulting');
+    consultingInvoice.invoiceNumber = 'INV-CONS-2024-042';
+    consultingInvoice.date = '2024-01-10';
+    consultingInvoice.dueDate = '2024-02-10';
+    consultingInvoice.status = 'sent';
+    consultingInvoice.currency = 'USD';
+    consultingInvoice.taxRate = 8.5;
+    consultingInvoice.showQr = true;
+    consultingInvoice.qrPosition = 'top-right';
+    consultingInvoice.from = {
+      name: 'Strategic Advisors LLC',
+      address: '555 Consulting Way\nBoston, MA 02101',
+      email: 'billing@strategicadvisors.com'
+    };
+    consultingInvoice.to = {
+      name: 'Growth Startup Ltd',
+      address: '321 Startup Lane\nAustin, TX 78701',
+      email: 'finance@growthstartup.com'
+    };
+    consultingInvoice.items = [
+      { description: 'Strategic Planning Session', quantity: 4, unitPrice: 500 },
+      { description: 'Market Analysis Report', quantity: 1, unitPrice: 3500 },
+      { description: 'Follow-up Consultation', quantity: 2, unitPrice: 500 }
+    ];
+    consultingInvoice.notes = 'Scan QR code for quick payment. Thank you for choosing Strategic Advisors!';
+
+    // Product purchase invoice
+    const productsInvoice = document.getElementById('invoice-products');
+    productsInvoice.invoiceNumber = 'INV-PROD-2024-789';
+    productsInvoice.date = '2024-01-12';
+    productsInvoice.dueDate = '2024-02-12';
+    productsInvoice.status = 'paid';
+    productsInvoice.currency = 'USD';
+    productsInvoice.taxRate = 8;
+    productsInvoice.from = {
+      name: 'Office Supplies Plus',
+      address: '888 Supply Blvd\nChicago, IL 60601',
+      email: 'orders@officesuppliesplus.com'
+    };
+    productsInvoice.to = {
+      name: 'Small Business Co',
+      address: '777 Main Street\nDenver, CO 80202',
+      email: 'purchasing@smallbiz.co'
+    };
+    productsInvoice.items = [
+      { description: 'Ergonomic Office Chair', quantity: 5, unitPrice: 299.99 },
+      { description: 'Standing Desk (48")', quantity: 3, unitPrice: 449.99 },
+      { description: 'Monitor Arm - Dual', quantity: 6, unitPrice: 89.99 },
+      { description: 'Desk Lamp LED', quantity: 5, unitPrice: 45.99 },
+      { description: 'Cable Management Kit', quantity: 10, unitPrice: 24.99 }
+    ];
+    productsInvoice.notes = 'Items delivered on 2024-01-14. Payment received - Thank you!';
+
+    // Log all events
+    document.querySelectorAll('snice-invoice').forEach(invoice => {
+      invoice.addEventListener('invoice-status-change', (e) => {
+        console.log('Invoice status changed:', e.detail);
+      });
+      invoice.addEventListener('invoice-item-change', (e) => {
+        console.log('Invoice items changed:', e.detail);
+      });
+    });
+  </script>
+</body>
+</html>

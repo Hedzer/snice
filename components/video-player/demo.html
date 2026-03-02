@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snice Video Player Component Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 40px;
+      line-height: 1.6;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: var(--snice-color-text);
+      border-bottom: 2px solid var(--snice-color-border);
+      padding-bottom: 10px;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      color: var(--snice-color-text);
+      margin-top: 40px;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .demo-section {
+      margin: 30px 0;
+      padding: 20px;
+      background: var(--snice-color-background);
+      border-radius: 8px;
+      border: 1px solid var(--snice-color-border);
+    }
+
+    .demo-label {
+      display: block;
+      margin-bottom: 16px;
+      font-weight: 600;
+      color: var(--snice-color-text-secondary);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .video-wrapper {
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--snice-shadow-lg);
+      background: #000;
+    }
+
+    snice-video-player {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16/9;
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+      padding: 16px;
+      background: var(--snice-color-background-secondary);
+      border-radius: 6px;
+      border: 1px solid var(--snice-color-border);
+    }
+
+    .controls button {
+      padding: 10px 16px;
+      background: var(--snice-color-primary);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .controls button:hover {
+      background: var(--snice-color-primary-hover);
+    }
+
+    .controls button.secondary {
+      background: var(--snice-color-neutral);
+    }
+
+    .controls button.secondary:hover {
+      background: var(--snice-color-neutral-hover);
+    }
+
+    .controls label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .controls input[type="range"] {
+      width: 100px;
+    }
+
+    .info-panel {
+      margin-top: 16px;
+      padding: 12px 16px;
+      background: var(--snice-color-background-secondary);
+      border-radius: 6px;
+      font-size: 14px;
+      color: var(--snice-color-text-secondary);
+      font-family: monospace;
+    }
+
+    .keyboard-help {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .keyboard-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+
+    .keyboard-key {
+      padding: 4px 8px;
+      background: var(--snice-color-background);
+      border: 1px solid var(--snice-color-border);
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12px;
+      min-width: 24px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎥 Snice Video Player Component Demo</h1>
+
+    <div class="demo-section">
+      <h2>Video Player</h2>
+      <span class="demo-label">Customizable HTML5 video player with controls</span>
+      
+      <div class="video-wrapper">
+        <snice-video-player
+          id="demo-player"
+          src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+          poster="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg">
+        </snice-video-player>
+      </div>
+
+      <div class="controls">
+        <button id="btn-play">Play</button>
+        <button id="btn-pause">Pause</button>
+        <button id="btn-stop" class="secondary">Stop</button>
+        <button id="btn-mute" class="secondary">Toggle Mute</button>
+        <button id="btn-fullscreen" class="secondary">Fullscreen</button>
+        
+        <label>
+          Volume:
+          <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="1">
+        </label>
+        
+        <button id="btn-speed" class="secondary">Speed: 1x</button>
+      </div>
+
+      <div class="info-panel" id="player-info">
+        Status: Ready
+      </div>
+
+      <div class="keyboard-help">
+        <div class="keyboard-item"><span class="keyboard-key">Space</span> Play/Pause</div>
+        <div class="keyboard-item"><span class="keyboard-key">F</span> Fullscreen</div>
+        <div class="keyboard-item"><span class="keyboard-key">M</span> Mute</div>
+        <div class="keyboard-item"><span class="keyboard-key">← →</span> Seek 5s</div>
+        <div class="keyboard-item"><span class="keyboard-key">↑ ↓</span> Volume</div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Features</h2>
+      <ul style="columns: 2; color: var(--snice-color-text-secondary);">
+        <li>Custom controls UI</li>
+        <li>Keyboard shortcuts</li>
+        <li>Fullscreen support</li>
+        <li>Picture-in-Picture</li>
+        <li>Playback speed control</li>
+        <li>Volume control</li>
+        <li>Progress seeking</li>
+        <li>Buffer progress display</li>
+        <li>Poster image support</li>
+        <li>Loading spinner</li>
+      </ul>
+    </div>
+  </div>
+
+  <script type="module">
+    import './snice-video-player.ts';
+
+    const player = document.getElementById('demo-player');
+    const infoPanel = document.getElementById('player-info');
+    const speedBtn = document.getElementById('btn-speed');
+
+    // Button handlers
+    document.getElementById('btn-play').addEventListener('click', () => {
+      player.play();
+    });
+
+    document.getElementById('btn-pause').addEventListener('click', () => {
+      player.pause();
+    });
+
+    document.getElementById('btn-stop').addEventListener('click', () => {
+      player.pause();
+      player.currentTime = 0;
+    });
+
+    document.getElementById('btn-mute').addEventListener('click', () => {
+      player.muted = !player.muted;
+    });
+
+    document.getElementById('btn-fullscreen').addEventListener('click', () => {
+      player.requestFullscreen();
+    });
+
+    document.getElementById('volume-slider').addEventListener('input', (e) => {
+      player.volume = parseFloat(e.target.value);
+    });
+
+    const speeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
+    let speedIndex = 2;
+
+    speedBtn.addEventListener('click', () => {
+      speedIndex = (speedIndex + 1) % speeds.length;
+      const speed = speeds[speedIndex];
+      player.setPlaybackRate(speed);
+      speedBtn.textContent = `Speed: ${speed}x`;
+    });
+
+    // Event listeners
+    player.addEventListener('video-play', () => {
+      updateInfo('Playing');
+    });
+
+    player.addEventListener('video-pause', () => {
+      updateInfo('Paused');
+    });
+
+    player.addEventListener('video-ended', () => {
+      updateInfo('Ended');
+    });
+
+    player.addEventListener('video-time-update', (e) => {
+      const { currentTime, duration } = e.detail;
+      const progress = duration ? Math.round((currentTime / duration) * 100) : 0;
+      updateInfo(`Playing - ${formatTime(currentTime)} / ${formatTime(duration)} (${progress}%)`);
+    });
+
+    player.addEventListener('video-volume-change', (e) => {
+      const { volume, muted } = e.detail;
+      updateInfo(muted ? 'Muted' : `Volume: ${Math.round(volume * 100)}%`);
+    });
+
+    player.addEventListener('video-fullscreen-change', (e) => {
+      const { fullscreen } = e.detail;
+      updateInfo(fullscreen ? 'Fullscreen' : 'Windowed');
+    });
+
+    function updateInfo(status) {
+      infoPanel.textContent = `Status: ${status}`;
+    }
+
+    function formatTime(seconds) {
+      if (!seconds || isNaN(seconds)) return '0:00';
+      const m = Math.floor(seconds / 60);
+      const s = Math.floor(seconds % 60);
+      return `${m}:${s.toString().padStart(2, '0')}`;
+    }
+  </script>
+</body>
+</html>

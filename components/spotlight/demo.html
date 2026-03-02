@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snice Spotlight Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      font-family: var(--snice-font-family, system-ui, -apple-system, sans-serif);
+      padding: var(--snice-spacing-2xl, 2.5rem);
+      line-height: 1.6;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      margin: 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: var(--snice-color-text);
+      border-bottom: 2px solid var(--snice-color-border);
+      padding-bottom: var(--snice-spacing-sm, 0.75rem);
+      margin-bottom: var(--snice-spacing-lg, 1.5rem);
+      font-size: var(--snice-font-size-2xl, 1.5rem);
+    }
+
+    h2 {
+      color: var(--snice-color-text);
+      margin-top: var(--snice-spacing-xl, 2rem);
+      margin-bottom: var(--snice-spacing-md, 1rem);
+      font-size: var(--snice-font-size-xl, 1.25rem);
+    }
+
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--snice-spacing-lg, 1.5rem);
+      margin: var(--snice-spacing-lg, 1.5rem) 0;
+    }
+
+    .demo-card {
+      padding: var(--snice-spacing-md, 1rem);
+      background: var(--snice-color-background-element, rgb(252 251 249));
+      border-radius: var(--snice-border-radius-lg, 8px);
+      border: 1px solid var(--snice-color-border);
+    }
+
+    .demo-card h3 {
+      margin-top: 0;
+      margin-bottom: var(--snice-spacing-sm, 0.75rem);
+      font-size: var(--snice-font-size-md, 1rem);
+      color: var(--snice-color-text-secondary);
+    }
+
+    .controls {
+      display: flex;
+      gap: var(--snice-spacing-sm, 0.75rem);
+      margin: var(--snice-spacing-lg, 1.5rem) 0;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-md, 1rem);
+      background: var(--snice-color-primary, rgb(37 99 235));
+      color: var(--snice-color-text-inverse, rgb(250 250 250));
+      border: none;
+      border-radius: var(--snice-border-radius-md, 4px);
+      cursor: pointer;
+      font-size: var(--snice-font-size-sm, 0.875rem);
+      font-family: inherit;
+      transition: opacity var(--snice-transition-fast, 150ms);
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    button.secondary {
+      background: var(--snice-color-background-element, rgb(252 251 249));
+      color: var(--snice-color-text);
+      border: 1px solid var(--snice-color-border);
+    }
+
+    button.secondary:hover {
+      background: var(--snice-color-border);
+    }
+
+    .feature-box {
+      padding: var(--snice-spacing-lg, 1.5rem);
+      background: var(--snice-color-background);
+      border: 2px solid var(--snice-color-border);
+      border-radius: var(--snice-border-radius-lg, 8px);
+      text-align: center;
+    }
+
+    .feature-box.highlight {
+      border-color: var(--snice-color-primary);
+      background: var(--snice-color-primary-subtle, rgb(239 246 255));
+    }
+
+    .event-log {
+      margin-top: var(--snice-spacing-md, 1rem);
+      padding: var(--snice-spacing-sm, 0.75rem);
+      background: var(--snice-color-background-element, rgb(252 251 249));
+      border: 1px solid var(--snice-color-border);
+      border-radius: var(--snice-border-radius-md, 4px);
+      font-family: monospace;
+      font-size: var(--snice-font-size-sm, 0.875rem);
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .event-log div {
+      margin: var(--snice-spacing-2xs, 0.25rem) 0;
+      padding: var(--snice-spacing-2xs, 0.25rem);
+    }
+
+    .event-log .event-start { color: var(--snice-color-success); }
+    .event-log .event-step { color: var(--snice-color-primary); }
+    .event-log .event-end { color: var(--snice-color-text-secondary); }
+    .event-log .event-skip { color: var(--snice-color-warning); }
+
+    .info-box {
+      padding: var(--snice-spacing-md, 1rem);
+      background: var(--snice-color-primary-subtle, rgb(239 246 255));
+      border-left: 4px solid var(--snice-color-primary);
+      border-radius: var(--snice-border-radius-md, 4px);
+      margin-bottom: var(--snice-spacing-lg, 1.5rem);
+    }
+
+    .info-box p {
+      margin: 0;
+      font-size: var(--snice-font-size-sm, 0.875rem);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Spotlight Demo</h1>
+    
+    <div class="info-box">
+      <p>The Spotlight component creates an interactive onboarding tour that highlights elements on your page with a cutout effect and contextual popovers.</p>
+    </div>
+
+    <div class="controls">
+      <button onclick="startTour()">Start Full Tour</button>
+      <button class="secondary" onclick="startFeatureTour()">Feature Highlights Only</button>
+      <button class="secondary" onclick="goToStep(2)">Jump to Step 3</button>
+    </div>
+
+    <h2>Demo Elements</h2>
+    <div class="demo-grid">
+      <div class="demo-card" id="step-welcome">
+        <h3>👋 Welcome</h3>
+        <p>This is where the tour begins. Users get an introduction to your application.</p>
+      </div>
+      
+      <div class="demo-card" id="step-features">
+        <h3>✨ Features</h3>
+        <p>Highlight key features and explain how they work with contextual guidance.</p>
+      </div>
+      
+      <div class="demo-card" id="step-settings">
+        <h3>⚙️ Settings</h3>
+        <p>Show users where to find important configuration options.</p>
+      </div>
+      
+      <div class="demo-card" id="step-profile">
+        <h3>👤 Profile</h3>
+        <p>Guide users to their profile and account management area.</p>
+      </div>
+    </div>
+
+    <h2>Position Examples</h2>
+    <div class="demo-grid">
+      <div class="feature-box" id="pos-auto">
+        <h3>Auto Position</h3>
+        <p>Automatically chooses top or bottom based on available space.</p>
+      </div>
+      
+      <div class="feature-box" id="pos-left">
+        <h3>Left Position</h3>
+        <p>Popover appears to the left of the target element.</p>
+      </div>
+      
+      <div class="feature-box" id="pos-right">
+        <h3>Right Position</h3>
+        <p>Popover appears to the right of the target element.</p>
+      </div>
+    </div>
+
+    <h2>Events</h2>
+    <div id="event-log" class="event-log">
+      <div style="color: var(--snice-color-text-tertiary);">Events will appear here when you start the tour...</div>
+    </div>
+
+    <h2>Programmatic Control</h2>
+    <div class="controls">
+      <button class="secondary" onclick="spotlight.next()">Next Step</button>
+      <button class="secondary" onclick="spotlight.prev()">Previous Step</button>
+      <button class="secondary" onclick="spotlight.end()">End Tour</button>
+    </div>
+  </div>
+
+  <snice-spotlight id="spotlight"></snice-spotlight>
+
+  <script type="module">
+    import { SniceSpotlight } from './snice-spotlight.ts';
+    
+    const spotlight = document.getElementById('spotlight');
+    const eventLog = document.getElementById('event-log');
+
+    const fullTourSteps = [
+      {
+        target: '#step-welcome',
+        title: 'Welcome to Spotlight',
+        description: 'This is a guided tour component that helps onboard users by highlighting important elements on your page.',
+        position: 'auto'
+      },
+      {
+        target: '#step-features',
+        title: 'Discover Features',
+        description: 'Use spotlight to showcase key features and explain how they work to your users.',
+        position: 'auto'
+      },
+      {
+        target: '#step-settings',
+        title: 'Find Settings',
+        description: 'Guide users to important configuration options so they can customize their experience.',
+        position: 'auto'
+      },
+      {
+        target: '#step-profile',
+        title: 'Manage Profile',
+        description: 'Show users where to find their profile and account settings.',
+        position: 'auto'
+      }
+    ];
+
+    const featureTourSteps = [
+      {
+        target: '#pos-auto',
+        title: 'Auto Positioning',
+        description: 'The popover automatically positions itself based on available viewport space.',
+        position: 'auto'
+      },
+      {
+        target: '#pos-left',
+        title: 'Left Side',
+        description: 'You can explicitly position the popover to the left of the target element.',
+        position: 'left'
+      },
+      {
+        target: '#pos-right',
+        title: 'Right Side',
+        description: 'Or position it to the right side for better visual flow.',
+        position: 'right'
+      }
+    ];
+
+    function logEvent(type, message) {
+      if (eventLog.children[0]?.textContent.includes('Events will appear')) {
+        eventLog.innerHTML = '';
+      }
+      const entry = document.createElement('div');
+      entry.className = `event-${type}`;
+      entry.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+      eventLog.insertBefore(entry, eventLog.firstChild);
+    }
+
+    spotlight.addEventListener('spotlight-start', () => {
+      logEvent('start', 'Tour started');
+    });
+
+    spotlight.addEventListener('spotlight-step', (e) => {
+      logEvent('step', `Step ${e.detail.index + 1}: ${e.detail.step.title}`);
+    });
+
+    spotlight.addEventListener('spotlight-end', () => {
+      logEvent('end', 'Tour ended');
+    });
+
+    spotlight.addEventListener('spotlight-skip', (e) => {
+      logEvent('skip', `Tour skipped at step ${e.detail.index + 1}`);
+    });
+
+    window.startTour = () => {
+      spotlight.steps = fullTourSteps;
+      spotlight.start();
+    };
+
+    window.startFeatureTour = () => {
+      spotlight.steps = featureTourSteps;
+      spotlight.start();
+    };
+
+    window.goToStep = (index) => {
+      spotlight.steps = fullTourSteps;
+      spotlight.goToStep(index);
+    };
+
+    window.spotlight = spotlight;
+  </script>
+</body>
+</html>

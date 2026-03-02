@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snice Activity Feed Component Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 40px;
+      line-height: 1.6;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: var(--snice-color-text);
+      border-bottom: 2px solid var(--snice-color-border);
+      padding-bottom: 10px;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      color: var(--snice-color-text);
+      margin-top: 40px;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .demo-section {
+      margin: 30px 0;
+      padding: 20px;
+      background: var(--snice-color-background);
+      border-radius: 8px;
+      border: 1px solid var(--snice-color-border);
+    }
+
+    .demo-label {
+      display: block;
+      margin-bottom: 16px;
+      font-weight: 600;
+      color: var(--snice-color-text-secondary);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .feed-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 24px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+      padding: 16px;
+      background: var(--snice-color-background-element);
+      border-radius: 6px;
+      border: 1px solid var(--snice-color-border);
+    }
+
+    .controls button {
+      padding: 8px 16px;
+      border: 1px solid var(--snice-color-border);
+      border-radius: 4px;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 150ms;
+    }
+
+    .controls button:hover {
+      border-color: var(--snice-color-primary);
+      color: var(--snice-color-primary);
+    }
+
+    .event-log {
+      background: var(--snice-color-background-element);
+      border: 1px solid var(--snice-color-border);
+      border-radius: 6px;
+      padding: 12px;
+      margin-top: 16px;
+      font-family: monospace;
+      font-size: 13px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .event-log:empty::before {
+      content: 'Event log will appear here...';
+      color: var(--snice-color-text-tertiary);
+      font-style: italic;
+    }
+
+    .event-item {
+      padding: 4px 0;
+      border-bottom: 1px solid var(--snice-color-border);
+    }
+
+    .event-item:last-child {
+      border-bottom: none;
+    }
+
+    .example-card {
+      padding: 20px;
+      background: var(--snice-color-background-element);
+      border-radius: 6px;
+      border: 1px solid var(--snice-color-border);
+      margin: 16px 0;
+    }
+
+    .example-card h3 {
+      margin-top: 0;
+      margin-bottom: 16px;
+      font-size: 16px;
+      color: var(--snice-color-text);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📋 Snice Activity Feed Component Demo</h1>
+
+    <div class="demo-section">
+      <h2>Basic Activity Feed</h2>
+      <span class="demo-label">Default configuration with activities</span>
+      <snice-activity-feed id="basic-feed"></snice-activity-feed>
+    </div>
+
+    <div class="demo-section">
+      <h2>Grouped by Date</h2>
+      <span class="demo-label">Activities grouped by date</span>
+      <snice-activity-feed id="grouped-feed" group-by="date"></snice-activity-feed>
+    </div>
+
+    <div class="demo-section">
+      <h2>Interactive Demo</h2>
+      <span class="demo-label">Add activities dynamically and interact with the feed</span>
+      
+      <div class="controls">
+        <button id="add-activity">Add Activity</button>
+        <button id="clear-filter">Clear Filter</button>
+        <button id="toggle-grouping">Toggle Grouping</button>
+      </div>
+      
+      <snice-activity-feed id="interactive-feed"></snice-activity-feed>
+      
+      <div class="event-log" id="event-log"></div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Real-world Examples</h2>
+
+      <div class="example-card">
+        <h3>Project Activity Feed</h3>
+        <snice-activity-feed id="project-feed"></snice-activity-feed>
+      </div>
+
+      <div class="example-card">
+        <h3>System Audit Log</h3>
+        <snice-activity-feed id="audit-feed"></snice-activity-feed>
+      </div>
+
+      <div class="example-card">
+        <h3>User Activity Stream</h3>
+        <snice-activity-feed id="user-feed"></snice-activity-feed>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import './snice-activity-feed.ts';
+
+    // Sample activities for basic feed
+    const basicActivities = [
+      {
+        id: '1',
+        actor: { name: 'Alice Johnson', avatar: '' },
+        action: 'created',
+        target: 'Project Alpha',
+        timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(), // 5 min ago
+        type: 'create'
+      },
+      {
+        id: '2',
+        actor: { name: 'Bob Smith', avatar: '' },
+        action: 'updated',
+        target: 'Q4 Roadmap',
+        timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(), // 30 min ago
+        type: 'update'
+      },
+      {
+        id: '3',
+        actor: { name: 'Carol White', avatar: '' },
+        action: 'commented on',
+        target: 'Design Review',
+        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2 hours ago
+        type: 'comment'
+      },
+      {
+        id: '4',
+        actor: { name: 'David Lee', avatar: '' },
+        action: 'deployed',
+        target: 'v2.4.0 to production',
+        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(), // 5 hours ago
+        type: 'deploy'
+      },
+      {
+        id: '5',
+        actor: { name: 'Emma Brown', avatar: '' },
+        action: 'uploaded',
+        target: 'Q4_Report.pdf',
+        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), // 1 day ago
+        type: 'upload'
+      }
+    ];
+
+    // Initialize basic feed
+    const basicFeed = document.getElementById('basic-feed');
+    basicFeed.activities = basicActivities;
+
+    // Initialize grouped feed
+    const groupedFeed = document.getElementById('grouped-feed');
+    groupedFeed.activities = [
+      ...basicActivities,
+      {
+        id: '6',
+        actor: { name: 'Frank Miller', avatar: '' },
+        action: 'deleted',
+        target: 'Old Draft',
+        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(), // 2 days ago
+        type: 'delete'
+      },
+      {
+        id: '7',
+        actor: { name: 'Grace Chen', avatar: '' },
+        action: 'logged in',
+        target: '',
+        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 72).toISOString(), // 3 days ago
+        type: 'login'
+      }
+    ];
+
+    // Interactive feed
+    const interactiveFeed = document.getElementById('interactive-feed');
+    const eventLog = document.getElementById('event-log');
+    let activityCounter = 1;
+
+    const sampleActions = [
+      { action: 'created', target: 'New Document', type: 'create' },
+      { action: 'updated', target: 'Settings', type: 'update' },
+      { action: 'commented on', target: 'Issue #123', type: 'comment' },
+      { action: 'deployed', target: 'Feature Branch', type: 'deploy' },
+      { action: 'uploaded', target: 'image.png', type: 'upload' },
+      { action: 'downloaded', target: 'export.csv', type: 'download' },
+      { action: 'deleted', target: 'Temporary File', type: 'delete' }
+    ];
+
+    const sampleUsers = [
+      { name: 'Alice Johnson', avatar: '' },
+      { name: 'Bob Smith', avatar: '' },
+      { name: 'Carol White', avatar: '' },
+      { name: 'David Lee', avatar: '' },
+      { name: 'Emma Brown', avatar: '' }
+    ];
+
+    function logEvent(message) {
+      const item = document.createElement('div');
+      item.className = 'event-item';
+      const time = new Date().toLocaleTimeString();
+      item.textContent = `[${time}] ${message}`;
+      eventLog.appendChild(item);
+      eventLog.scrollTop = eventLog.scrollHeight;
+    }
+
+    // Initialize with some activities
+    interactiveFeed.activities = basicActivities.slice(0, 3);
+
+    // Add activity button
+    document.getElementById('add-activity').addEventListener('click', () => {
+      const action = sampleActions[Math.floor(Math.random() * sampleActions.length)];
+      const user = sampleUsers[Math.floor(Math.random() * sampleUsers.length)];
+      
+      const newActivity = {
+        id: `new-${activityCounter++}`,
+        actor: user,
+        action: action.action,
+        target: action.target,
+        timestamp: new Date().toISOString(),
+        type: action.type
+      };
+      
+      interactiveFeed.addActivity(newActivity);
+      logEvent(`Added activity: ${user.name} ${action.action} ${action.target}`);
+    });
+
+    // Clear filter button
+    document.getElementById('clear-filter').addEventListener('click', () => {
+      interactiveFeed.clearFilter();
+      logEvent('Filter cleared');
+    });
+
+    // Toggle grouping button
+    let isGrouped = false;
+    document.getElementById('toggle-grouping').addEventListener('click', () => {
+      isGrouped = !isGrouped;
+      interactiveFeed.groupBy = isGrouped ? 'date' : 'none';
+      logEvent(`Grouping ${isGrouped ? 'enabled' : 'disabled'}`);
+    });
+
+    // Event listeners
+    interactiveFeed.addEventListener('activity-click', (e) => {
+      logEvent(`Activity clicked: ${e.detail.activity.actor.name} - ${e.detail.activity.action}`);
+    });
+
+    interactiveFeed.addEventListener('load-more', (e) => {
+      logEvent(`Load more requested (current count: ${e.detail.count})`);
+    });
+
+    // Project feed
+    const projectFeed = document.getElementById('project-feed');
+    projectFeed.activities = [
+      {
+        id: 'p1',
+        actor: { name: 'Sarah Parker', avatar: '' },
+        action: 'created milestone',
+        target: 'Q1 Release',
+        timestamp: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
+        type: 'create'
+      },
+      {
+        id: 'p2',
+        actor: { name: 'Mike Johnson', avatar: '' },
+        action: 'completed task',
+        target: 'API Integration',
+        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(),
+        type: 'update'
+      },
+      {
+        id: 'p3',
+        actor: { name: 'Lisa Wong', avatar: '' },
+        action: 'commented on',
+        target: 'UI Mockups',
+        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 6).toISOString(),
+        type: 'comment'
+      },
+      {
+        id: 'p4',
+        actor: { name: 'Tom Wilson', avatar: '' },
+        action: 'deployed',
+        target: 'staging environment',
+        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 8).toISOString(),
+        type: 'deploy'
+      }
+    ];
+
+    // Audit feed
+    const auditFeed = document.getElementById('audit-feed');
+    auditFeed.activities = [
+      {
+        id: 'a1',
+        actor: { name: 'system', avatar: '' },
+        action: 'security scan',
+        target: 'completed - no issues found',
+        timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
+        type: 'update'
+      },
+      {
+        id: 'a2',
+        actor: { name: 'admin@company.com', avatar: '' },
+        action: 'modified permissions for',
+        target: 'developers group',
+        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
+        type: 'update'
+      },
+      {
+        id: 'a3',
+        actor: { name: 'backup-service', avatar: '' },
+        action: 'created backup',
+        target: 'database-2024-01-15',
+        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 4).toISOString(),
+        type: 'create'
+      },
+      {
+        id: 'a4',
+        actor: { name: 'monitoring', avatar: '' },
+        action: 'detected',
+        target: 'high CPU usage on server-03',
+        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 6).toISOString(),
+        type: 'update'
+      }
+    ];
+
+    // User feed
+    const userFeed = document.getElementById('user-feed');
+    userFeed.activities = [
+      {
+        id: 'u1',
+        actor: { name: 'John Doe', avatar: '' },
+        action: 'logged in from',
+        target: 'Chrome on MacOS',
+        timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
+        type: 'login'
+      },
+      {
+        id: 'u2',
+        actor: { name: 'John Doe', avatar: '' },
+        action: 'updated profile',
+        target: 'picture',
+        timestamp: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
+        type: 'update'
+      },
+      {
+        id: 'u3',
+        actor: { name: 'John Doe', avatar: '' },
+        action: 'downloaded',
+        target: 'monthly-report.pdf',
+        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
+        type: 'download'
+      },
+      {
+        id: 'u4',
+        actor: { name: 'John Doe', avatar: '' },
+        action: 'shared',
+        target: 'Project X with team',
+        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
+        type: 'create'
+      }
+    ];
+
+    // Log all activity clicks across all feeds
+    document.querySelectorAll('snice-activity-feed').forEach(feed => {
+      feed.addEventListener('activity-click', (e) => {
+        console.log('Activity clicked:', e.detail.activity);
+      });
+      feed.addEventListener('load-more', (e) => {
+        console.log('Load more:', e.detail);
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snice Receipt Component Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 40px;
+      line-height: 1.6;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: var(--snice-color-text);
+      border-bottom: 2px solid var(--snice-color-border);
+      padding-bottom: 10px;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      color: var(--snice-color-text);
+      margin-top: 40px;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .demo-section {
+      margin: 30px 0;
+      padding: 20px;
+      background: var(--snice-color-background);
+      border-radius: 8px;
+      border: 1px solid var(--snice-color-border);
+    }
+
+    .demo-label {
+      display: block;
+      margin-bottom: 16px;
+      font-weight: 600;
+      color: var(--snice-color-text-secondary);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .receipt-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+      padding: 16px;
+      background: var(--snice-color-background-element);
+      border-radius: 6px;
+      border: 1px solid var(--snice-color-border);
+    }
+
+    .controls label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .controls select, .controls input {
+      padding: 8px 12px;
+      border: 1px solid var(--snice-color-border);
+      border-radius: 4px;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      font-size: 14px;
+    }
+
+    .controls button {
+      padding: 8px 16px;
+      border: 1px solid var(--snice-color-border);
+      border-radius: 4px;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 150ms;
+    }
+
+    .controls button:hover {
+      border-color: var(--snice-color-primary);
+      color: var(--snice-color-primary);
+    }
+
+    .example-card {
+      padding: 20px;
+      background: var(--snice-color-background-element);
+      border-radius: 6px;
+      border: 1px solid var(--snice-color-border);
+      margin: 16px 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    .example-card h3 {
+      margin-top: 0;
+      margin-bottom: 16px;
+      font-size: 16px;
+      color: var(--snice-color-text);
+      width: 100%;
+    }
+
+    .qr-placeholder {
+      width: 80px;
+      height: 80px;
+      background: var(--snice-color-background-element);
+      border: 2px dashed var(--snice-color-border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: var(--snice-color-text-tertiary);
+    }
+
+    .barcode-placeholder {
+      width: 200px;
+      height: 60px;
+      background: repeating-linear-gradient(
+        90deg,
+        var(--snice-color-text) 0px,
+        var(--snice-color-text) 2px,
+        transparent 2px,
+        transparent 4px
+      );
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧾 Snice Receipt Component Demo</h1>
+
+    <div class="demo-section">
+      <h2>Receipt Variants</h2>
+      <span class="demo-label">Different visual styles</span>
+      
+      <div class="receipt-grid">
+        <div class="example-card" style="flex-direction: column;">
+          <h3>Standard</h3>
+          <snice-receipt id="receipt-standard"></snice-receipt>
+        </div>
+        
+        <div class="example-card" style="flex-direction: column;">
+          <h3>Thermal</h3>
+          <snice-receipt id="receipt-thermal" variant="thermal"></snice-receipt>
+        </div>
+        
+        <div class="example-card" style="flex-direction: column;">
+          <h3>Modern</h3>
+          <snice-receipt id="receipt-modern" variant="modern"></snice-receipt>
+        </div>
+        
+        <div class="example-card" style="flex-direction: column;">
+          <h3>Minimal</h3>
+          <snice-receipt id="receipt-minimal" variant="minimal"></snice-receipt>
+        </div>
+        
+        <div class="example-card" style="flex-direction: column;">
+          <h3>Detailed</h3>
+          <snice-receipt id="receipt-detailed" variant="detailed"></snice-receipt>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>QR Code Positions</h2>
+      <span class="demo-label">Different QR code placements</span>
+      
+      <div class="receipt-grid">
+        <div class="example-card" style="flex-direction: column;">
+          <h3>Top Position</h3>
+          <snice-receipt id="receipt-qr-top" show-qr="true" qr-position="top">
+            <div slot="qr" class="qr-placeholder">QR</div>
+          </snice-receipt>
+        </div>
+        
+        <div class="example-card" style="flex-direction: column;">
+          <h3>Bottom Position</h3>
+          <snice-receipt id="receipt-qr-bottom" show-qr="true" qr-position="bottom">
+            <div slot="qr" class="qr-placeholder">QR</div>
+          </snice-receipt>
+        </div>
+        
+        <div class="example-card" style="flex-direction: column;">
+          <h3>Footer Position</h3>
+          <snice-receipt id="receipt-qr-footer" show-qr="true" qr-position="footer">
+            <div slot="qr" class="qr-placeholder">QR</div>
+          </snice-receipt>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Interactive Demo</h2>
+      <span class="demo-label">Customize receipt properties</span>
+      
+      <div class="controls">
+        <label>
+          Variant:
+          <select id="variant-select">
+            <option value="standard" selected>Standard</option>
+            <option value="thermal">Thermal</option>
+            <option value="modern">Modern</option>
+            <option value="minimal">Minimal</option>
+            <option value="detailed">Detailed</option>
+          </select>
+        </label>
+        
+        <label>
+          Currency:
+          <select id="currency-select">
+            <option value="USD" selected>USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="JPY">JPY</option>
+          </select>
+        </label>
+        
+        <label>
+          Payment Method:
+          <select id="payment-select">
+            <option value="Credit Card">Credit Card</option>
+            <option value="Cash">Cash</option>
+            <option value="Digital Wallet">Digital Wallet</option>
+          </select>
+        </label>
+        
+        <button id="toggle-qr">Toggle QR Code</button>
+        <button id="toggle-tip">Toggle Tip</button>
+        <button id="toggle-discount">Toggle Discount</button>
+        <button id="print-receipt">Print Receipt</button>
+      </div>
+      
+      <div class="example-card">
+        <snice-receipt id="interactive-receipt"></snice-receipt>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Real-world Examples</h2>
+
+      <div class="example-card" style="flex-direction: column;">
+        <h3>Restaurant Receipt</h3>
+        <snice-receipt id="receipt-restaurant"></snice-receipt>
+      </div>
+
+      <div class="example-card" style="flex-direction: column;">
+        <h3>Retail Store Receipt</h3>
+        <snice-receipt id="receipt-retail"></snice-receipt>
+      </div>
+
+      <div class="example-card" style="flex-direction: column;">
+        <h3>Gas Station Receipt</h3>
+        <snice-receipt id="receipt-gas"></snice-receipt>
+      </div>
+
+      <div class="example-card" style="flex-direction: column;">
+        <h3>Online Order Receipt with Barcode</h3>
+        <snice-receipt id="receipt-online">
+          <div slot="barcode" class="barcode-placeholder"></div>
+        </snice-receipt>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import './snice-receipt.ts';
+
+    // Sample items
+    const groceryItems = [
+      { name: 'Organic Bananas', quantity: 2, price: 1.49 },
+      { name: 'Whole Milk 1gal', quantity: 1, price: 3.99 },
+      { name: 'Sourdough Bread', quantity: 1, price: 4.49 },
+      { name: 'Free Range Eggs', quantity: 1, price: 5.99 },
+      { name: 'Avocados (3pk)', quantity: 1, price: 3.99 },
+      { name: 'Greek Yogurt', quantity: 2, price: 1.29 }
+    ];
+
+    const sampleMerchant = {
+      name: 'Fresh Market Grocery',
+      address: '123 Main Street\nAnytown, ST 12345',
+      phone: '(555) 123-4567',
+      email: 'support@freshmarket.com',
+      website: 'www.freshmarket.com',
+      taxId: 'TAX-123456789'
+    };
+
+    // Initialize variant receipts
+    const variants = ['standard', 'thermal', 'modern', 'minimal', 'detailed'];
+    variants.forEach(variant => {
+      const receipt = document.getElementById(`receipt-${variant}`);
+      receipt.receiptNumber = `RCP-${variant.toUpperCase().slice(0, 3)}001`;
+      receipt.date = new Date().toLocaleString();
+      receipt.currency = 'USD';
+      receipt.merchant = sampleMerchant;
+      receipt.items = groceryItems;
+      receipt.tax = 2.15;
+      receipt.subtotal = 22.02;
+      receipt.total = 24.17;
+      receipt.paymentMethod = 'Credit Card';
+      receipt.paymentDetails = '**** **** **** 4242';
+      receipt.cashier = 'Sarah';
+      receipt.terminalId = 'T-05';
+      receipt.thankYou = 'Thank you for shopping with us!';
+    });
+
+    // QR position receipts
+    ['top', 'bottom', 'footer'].forEach(pos => {
+      const receipt = document.getElementById(`receipt-qr-${pos}`);
+      receipt.receiptNumber = `RCP-QR-${pos.toUpperCase().slice(0, 3)}001`;
+      receipt.date = new Date().toLocaleString();
+      receipt.currency = 'USD';
+      receipt.merchant = sampleMerchant;
+      receipt.items = groceryItems.slice(0, 3);
+      receipt.tax = 1.08;
+      receipt.subtotal = 11.01;
+      receipt.total = 12.09;
+      receipt.paymentMethod = 'Digital Wallet';
+      receipt.thankYou = 'Scan for digital receipt!';
+    });
+
+    // Interactive receipt
+    const interactiveReceipt = document.getElementById('interactive-receipt');
+
+    interactiveReceipt.receiptNumber = 'RCP-DEMO-001';
+    interactiveReceipt.date = new Date().toLocaleString();
+    interactiveReceipt.currency = 'USD';
+    interactiveReceipt.merchant = sampleMerchant;
+    interactiveReceipt.items = groceryItems;
+    interactiveReceipt.tax = 2.15;
+    interactiveReceipt.subtotal = 22.02;
+    interactiveReceipt.total = 24.17;
+    interactiveReceipt.paymentMethod = 'Credit Card';
+    interactiveReceipt.thankYou = 'Thank you for your purchase!';
+
+    // Controls
+    document.getElementById('variant-select').addEventListener('change', (e) => {
+      interactiveReceipt.variant = e.target.value;
+    });
+
+    document.getElementById('currency-select').addEventListener('change', (e) => {
+      interactiveReceipt.currency = e.target.value;
+    });
+
+    document.getElementById('payment-select').addEventListener('change', (e) => {
+      interactiveReceipt.paymentMethod = e.target.value;
+    });
+
+    let showQr = false;
+    document.getElementById('toggle-qr').addEventListener('click', () => {
+      showQr = !showQr;
+      interactiveReceipt.showQr = showQr;
+    });
+
+    let showTip = false;
+    document.getElementById('toggle-tip').addEventListener('click', () => {
+      showTip = !showTip;
+      interactiveReceipt.tip = showTip ? 4.50 : 0;
+    });
+
+    let showDiscount = false;
+    document.getElementById('toggle-discount').addEventListener('click', () => {
+      showDiscount = !showDiscount;
+      interactiveReceipt.discount = showDiscount ? 2.00 : 0;
+      interactiveReceipt.discountLabel = 'Member Discount';
+    });
+
+    document.getElementById('print-receipt').addEventListener('click', () => {
+      interactiveReceipt.print();
+    });
+
+    // Restaurant receipt
+    const restaurantReceipt = document.getElementById('receipt-restaurant');
+    restaurantReceipt.variant = 'thermal';
+    restaurantReceipt.receiptNumber = 'TBL-12-001';
+    restaurantReceipt.date = new Date().toLocaleString();
+    restaurantReceipt.currency = 'USD';
+    restaurantReceipt.merchant = {
+      name: 'Bistro Central',
+      address: '456 Dining Ave\nFood City, FC 67890',
+      phone: '(555) 987-6543'
+    };
+    restaurantReceipt.items = [
+      { name: 'Caesar Salad', quantity: 1, price: 12.00 },
+      { name: 'Grilled Salmon', quantity: 2, price: 28.00 },
+      { name: 'Garlic Mash', quantity: 1, price: 8.00 },
+      { name: 'House Wine', quantity: 2, price: 10.00 },
+      { name: 'Chocolate Cake', quantity: 1, price: 9.00 }
+    ];
+    restaurantReceipt.taxes = [
+      { label: 'Sales Tax', rate: 8.5, amount: 5.61 },
+      { label: 'Liquor Tax', rate: 10, amount: 2.00 }
+    ];
+    restaurantReceipt.subtotal = 67.00;
+    restaurantReceipt.total = 78.61;
+    restaurantReceipt.tip = 14.00;
+    restaurantReceipt.paymentMethod = 'Visa';
+    restaurantReceipt.paymentDetails = '**** 4242';
+    restaurantReceipt.cashier = 'Mike';
+    restaurantReceipt.thankYou = 'Thank you for dining with us!';
+
+    // Retail receipt
+    const retailReceipt = document.getElementById('receipt-retail');
+    retailReceipt.variant = 'modern';
+    retailReceipt.receiptNumber = 'RT-2024-8842';
+    retailReceipt.date = new Date().toLocaleString();
+    retailReceipt.currency = 'USD';
+    retailReceipt.merchant = {
+      name: 'TechGear Store',
+      address: '789 Electronics Blvd\nSilicon Valley, CA 94025',
+      phone: '(555) 456-7890',
+      website: 'www.techgear.store'
+    };
+    retailReceipt.items = [
+      { name: 'Wireless Headphones', quantity: 1, price: 199.99, sku: 'WH-001' },
+      { name: 'USB-C Cable 6ft', quantity: 2, price: 19.99, sku: 'CB-USBC-6' },
+      { name: 'Phone Case', quantity: 1, price: 34.99, sku: 'PC-14P-BLK', discount: 5.00 },
+      { name: 'Screen Protector', quantity: 1, price: 14.99, sku: 'SP-14P' }
+    ];
+    retailReceipt.tax = 18.69;
+    retailReceipt.subtotal = 274.95;
+    retailReceipt.total = 288.64;
+    retailReceipt.discount = 5.00;
+    retailReceipt.discountLabel = 'Case Discount';
+    retailReceipt.paymentMethod = 'Credit Card';
+    retailReceipt.paymentDetails = 'Apple Pay';
+    retailReceipt.cashier = 'Alex';
+    retailReceipt.terminalId = 'TG-03';
+    retailReceipt.thankYou = 'Thanks for shopping at TechGear!';
+
+    // Gas station receipt
+    const gasReceipt = document.getElementById('receipt-gas');
+    gasReceipt.variant = 'minimal';
+    gasReceipt.receiptNumber = 'PUMP-03-2847';
+    gasReceipt.date = new Date().toLocaleString();
+    gasReceipt.currency = 'USD';
+    gasReceipt.merchant = {
+      name: 'QuickStop Gas',
+      address: '100 Highway Rd'
+    };
+    gasReceipt.items = [
+      { name: 'Regular Unleaded', quantity: 12.5, price: 3.49 }
+    ];
+    gasReceipt.tax = 1.31;
+    gasReceipt.subtotal = 43.63;
+    gasReceipt.total = 44.94;
+    gasReceipt.paymentMethod = 'Credit';
+    gasReceipt.thankYou = 'Have a safe trip!';
+
+    // Online order receipt
+    const onlineReceipt = document.getElementById('receipt-online');
+    onlineReceipt.variant = 'detailed';
+    onlineReceipt.receiptNumber = 'ORD-2024-57392';
+    onlineReceipt.date = new Date().toLocaleString();
+    onlineReceipt.currency = 'USD';
+    onlineReceipt.merchant = {
+      name: 'MegaShop Online',
+      address: '500 Commerce Way\nDistribution Center, DC 10001',
+      phone: '1-800-SHOP-NOW',
+      website: 'www.megashop.com'
+    };
+    onlineReceipt.items = [
+      { name: 'Wireless Keyboard', quantity: 1, price: 79.99, sku: 'KB-WL-001', note: 'Backlit, Mechanical' },
+      { name: 'Mouse Pad XL', quantity: 1, price: 24.99, sku: 'MP-XL-001' },
+      { name: 'Webcam 4K', quantity: 1, price: 129.99, sku: 'CAM-4K-002' },
+      { name: 'Desk Organizer', quantity: 2, price: 19.99, sku: 'ORG-001' }
+    ];
+    onlineReceipt.tax = 22.75;
+    onlineReceipt.subtotal = 274.95;
+    onlineReceipt.total = 297.70;
+    onlineReceipt.paymentMethod = 'Credit Card';
+    onlineReceipt.paymentDetails = 'Mastercard **** 8842';
+    onlineReceipt.thankYou = 'Order #57392 - Track at megashop.com/track';
+
+    // Log all receipts
+    console.log('Receipt demos initialized');
+  </script>
+</body>
+</html>

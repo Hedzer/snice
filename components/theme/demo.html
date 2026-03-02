@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snice Theme System Demo</title>
+  <link rel="stylesheet" href="theme.css">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--snice-font-family);
+      padding: 40px;
+      line-height: 1.6;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: var(--snice-color-text);
+      border-bottom: 2px solid var(--snice-color-border);
+      padding-bottom: 10px;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      color: var(--snice-color-text);
+      margin-top: 40px;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    h3 {
+      color: var(--snice-color-text-secondary);
+      margin-top: 24px;
+      margin-bottom: 12px;
+      font-size: 18px;
+    }
+
+    .demo-section {
+      margin: 30px 0;
+      padding: 24px;
+      background: var(--snice-color-background-secondary);
+      border-radius: 8px;
+      border: 1px solid var(--snice-color-border);
+    }
+
+    .demo-label {
+      display: block;
+      margin-bottom: 16px;
+      font-weight: 600;
+      color: var(--snice-color-text-secondary);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 24px;
+      background: var(--snice-color-primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: var(--snice-shadow-md);
+      z-index: 1000;
+    }
+
+    .theme-toggle:hover {
+      background: var(--snice-color-primary-hover);
+    }
+
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 16px;
+    }
+
+    .color-item {
+      padding: 16px;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .color-item.dark-text {
+      color: #333;
+    }
+
+    .color-item.light-text {
+      color: white;
+    }
+
+    .component-preview {
+      padding: 24px;
+      background: var(--snice-color-background);
+      border: 1px solid var(--snice-color-border);
+      border-radius: 8px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--snice-color-primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--snice-color-primary-hover);
+    }
+
+    .btn-success {
+      background: var(--snice-color-success);
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: var(--snice-color-success-hover);
+    }
+
+    .btn-warning {
+      background: var(--snice-color-warning);
+      color: white;
+    }
+
+    .btn-warning:hover {
+      background: var(--snice-color-warning-hover);
+    }
+
+    .btn-danger {
+      background: var(--snice-color-danger);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: var(--snice-color-danger-hover);
+    }
+
+    .btn-neutral {
+      background: var(--snice-color-neutral);
+      color: white;
+    }
+
+    .btn-neutral:hover {
+      background: var(--snice-color-neutral-hover);
+    }
+
+    .btn-secondary {
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      border: 1px solid var(--snice-color-border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--snice-color-background-hover);
+    }
+
+    .card {
+      padding: 20px;
+      background: var(--snice-color-background);
+      border: 1px solid var(--snice-color-border);
+      border-radius: 8px;
+      box-shadow: var(--snice-shadow-sm);
+    }
+
+    .input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--snice-color-border);
+      border-radius: 6px;
+      background: var(--snice-color-background-input);
+      color: var(--snice-color-text);
+      font-size: 14px;
+    }
+
+    .input:focus {
+      outline: none;
+      border-color: var(--snice-color-border-focus);
+      box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+    }
+
+    .alert {
+      padding: 16px;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .alert-info {
+      background: var(--snice-color-primary-subtle);
+      color: var(--snice-color-text);
+    }
+
+    .alert-danger {
+      background: var(--snice-color-danger-subtle);
+      color: var(--snice-color-text);
+    }
+
+    .spacing-demo {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .spacing-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .spacing-box {
+      background: var(--snice-color-primary);
+      border-radius: 4px;
+    }
+
+    .shadow-demo {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 16px;
+    }
+
+    .shadow-box {
+      padding: 24px;
+      background: var(--snice-color-background);
+      border-radius: 8px;
+      text-align: center;
+      font-size: 12px;
+    }
+
+    .typography-demo p {
+      margin: 8px 0;
+    }
+
+    .font-size-2xs { font-size: var(--snice-font-size-2xs); }
+    .font-size-xs { font-size: var(--snice-font-size-xs); }
+    .font-size-sm { font-size: var(--snice-font-size-sm); }
+    .font-size-md { font-size: var(--snice-font-size-md); }
+    .font-size-lg { font-size: var(--snice-font-size-lg); }
+    .font-size-xl { font-size: var(--snice-font-size-xl); }
+    .font-size-2xl { font-size: var(--snice-font-size-2xl); }
+  </style>
+</head>
+<body>
+  <button class="theme-toggle" id="theme-toggle">🌙 Toggle Theme</button>
+
+  <div class="container">
+    <h1>🎨 Snice Theme System Demo</h1>
+
+    <div class="demo-section">
+      <h2>Theme Overview</h2>
+      <p style="color: var(--snice-color-text-secondary);">
+        The Snice theme system provides a comprehensive set of CSS custom properties for building 
+        consistent, accessible, and themeable interfaces. Click the toggle button in the top-right 
+        corner to switch between light and dark modes.
+      </p>
+    </div>
+
+    <div class="demo-section">
+      <h2>Color Palette</h2>
+      <span class="demo-label">Semantic Colors</span>
+      <div class="color-grid">
+        <div class="color-item light-text" style="background: var(--snice-color-primary);">Primary</div>
+        <div class="color-item light-text" style="background: var(--snice-color-success);">Success</div>
+        <div class="color-item light-text" style="background: var(--snice-color-warning);">Warning</div>
+        <div class="color-item light-text" style="background: var(--snice-color-danger);">Danger</div>
+        <div class="color-item light-text" style="background: var(--snice-color-neutral);">Neutral</div>
+      </div>
+
+      <h3>Background Colors</h3>
+      <div class="color-grid">
+        <div class="color-item dark-text" style="background: var(--snice-color-background);">Background</div>
+        <div class="color-item dark-text" style="background: var(--snice-color-background-secondary);">Secondary</div>
+        <div class="color-item dark-text" style="background: var(--snice-color-background-tertiary);">Tertiary</div>
+        <div class="color-item dark-text" style="background: var(--snice-color-background-element);">Element</div>
+      </div>
+
+      <h3>Text Colors</h3>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <p style="color: var(--snice-color-text); font-size: 18px;">Primary Text</p>
+        <p style="color: var(--snice-color-text-secondary); font-size: 16px;">Secondary Text</p>
+        <p style="color: var(--snice-color-text-tertiary); font-size: 14px;">Tertiary Text</p>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Component Examples</h2>
+      <span class="demo-label">Styled using theme variables</span>
+      
+      <div class="component-preview">
+        <h3>Buttons</h3>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px;">
+          <button class="btn btn-primary">Primary</button>
+          <button class="btn btn-success">Success</button>
+          <button class="btn btn-warning">Warning</button>
+          <button class="btn btn-danger">Danger</button>
+          <button class="btn btn-neutral">Neutral</button>
+          <button class="btn btn-secondary">Secondary</button>
+        </div>
+
+        <h3>Form Elements</h3>
+        <div style="max-width: 400px;">
+          <input type="text" class="input" placeholder="Type something..." style="margin-bottom: 12px;">
+        </div>
+
+        <h3>Alerts</h3>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div class="alert alert-info">
+            <strong>Info:</strong> This is an informational message.
+          </div>
+          <div class="alert alert-danger">
+            <strong>Error:</strong> This is an error message.
+          </div>
+        </div>
+
+        <h3>Card</h3>
+        <div class="card" style="max-width: 400px;">
+          <h4 style="margin: 0 0 8px; color: var(--snice-color-text);">Card Title</h4>
+          <p style="margin: 0; color: var(--snice-color-text-secondary);">
+            This card uses theme variables for its background, border, and shadow.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Spacing Scale</h2>
+      <span class="demo-label">Consistent spacing throughout</span>
+      <div class="spacing-demo">
+        <div class="spacing-item">
+          <div class="spacing-box" style="width: var(--snice-spacing-3xs); height: var(--snice-spacing-3xs);"></div>
+          <code>--snice-spacing-3xs (2px)</code>
+        </div>
+        <div class="spacing-item">
+          <div class="spacing-box" style="width: var(--snice-spacing-2xs); height: var(--snice-spacing-2xs);"></div>
+          <code>--snice-spacing-2xs (4px)</code>
+        </div>
+        <div class="spacing-item">
+          <div class="spacing-box" style="width: var(--snice-spacing-xs); height: var(--snice-spacing-xs);"></div>
+          <code>--snice-spacing-xs (8px)</code>
+        </div>
+        <div class="spacing-item">
+          <div class="spacing-box" style="width: var(--snice-spacing-sm); height: var(--snice-spacing-sm);"></div>
+          <code>--snice-spacing-sm (12px)</code>
+        </div>
+        <div class="spacing-item">
+          <div class="spacing-box" style="width: var(--snice-spacing-md); height: var(--snice-spacing-md);"></div>
+          <code>--snice-spacing-md (16px)</code>
+        </div>
+        <div class="spacing-item">
+          <div class="spacing-box" style="width: var(--snice-spacing-lg); height: var(--snice-spacing-lg);"></div>
+          <code>--snice-spacing-lg (24px)</code>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Shadow Scale</h2>
+      <span class="demo-label">Depth and elevation</span>
+      <div class="shadow-demo">
+        <div class="shadow-box" style="box-shadow: var(--snice-shadow-xs);">XS</div>
+        <div class="shadow-box" style="box-shadow: var(--snice-shadow-sm);">SM</div>
+        <div class="shadow-box" style="box-shadow: var(--snice-shadow-md);">MD</div>
+        <div class="shadow-box" style="box-shadow: var(--snice-shadow-lg);">LG</div>
+        <div class="shadow-box" style="box-shadow: var(--snice-shadow-xl);">XL</div>
+        <div class="shadow-box" style="box-shadow: var(--snice-shadow-2xl);">2XL</div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Typography</h2>
+      <span class="demo-label">Font sizes and weights</span>
+      <div class="typography-demo">
+        <p class="font-size-2xs">2XS - The quick brown fox (10px)</p>
+        <p class="font-size-xs">XS - The quick brown fox (12px)</p>
+        <p class="font-size-sm">SM - The quick brown fox (14px)</p>
+        <p class="font-size-md">MD - The quick brown fox (16px)</p>
+        <p class="font-size-lg">LG - The quick brown fox (18px)</p>
+        <p class="font-size-xl">XL - The quick brown fox (20px)</p>
+        <p class="font-size-2xl">2XL - The quick brown fox (24px)</p>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Border Radius</h2>
+      <span class="demo-label">Rounded corners</span>
+      <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+        <div style="width: 80px; height: 80px; background: var(--snice-color-primary); border-radius: var(--snice-border-radius-sm);"></div>
+        <div style="width: 80px; height: 80px; background: var(--snice-color-primary); border-radius: var(--snice-border-radius-md);"></div>
+        <div style="width: 80px; height: 80px; background: var(--snice-color-primary); border-radius: var(--snice-border-radius-lg);"></div>
+        <div style="width: 80px; height: 80px; background: var(--snice-color-primary); border-radius: var(--snice-border-radius-xl);"></div>
+        <div style="width: 80px; height: 80px; background: var(--snice-color-primary); border-radius: var(--snice-border-radius-circle);"></div>
+        <div style="width: 120px; height: 60px; background: var(--snice-color-primary); border-radius: var(--snice-border-radius-pill);"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const themeToggle = document.getElementById('theme-toggle');
+    const html = document.documentElement;
+
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = html.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', newTheme);
+      themeToggle.textContent = newTheme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
+    });
+  </script>
+</body>
+</html>

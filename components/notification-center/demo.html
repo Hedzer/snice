@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snice Notification Center Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      font-family: var(--snice-font-family, system-ui, -apple-system, sans-serif);
+      padding: var(--snice-spacing-2xl, 2.5rem);
+      line-height: 1.6;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      margin: 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: var(--snice-color-text);
+      border-bottom: 2px solid var(--snice-color-border);
+      padding-bottom: var(--snice-spacing-sm, 0.75rem);
+      margin-bottom: var(--snice-spacing-lg, 1.5rem);
+      font-size: var(--snice-font-size-2xl, 1.5rem);
+    }
+
+    h2 {
+      color: var(--snice-color-text);
+      margin-top: var(--snice-spacing-xl, 2rem);
+      margin-bottom: var(--snice-spacing-md, 1rem);
+      font-size: var(--snice-font-size-xl, 1.25rem);
+    }
+
+    .demo-section {
+      margin: var(--snice-spacing-lg, 1.5rem) 0;
+      padding: var(--snice-spacing-md, 1rem);
+      background: var(--snice-color-background);
+      border-radius: var(--snice-border-radius-lg, 8px);
+      border: 1px solid var(--snice-color-border);
+    }
+
+    .controls {
+      display: flex;
+      gap: var(--snice-spacing-sm, 0.75rem);
+      margin: var(--snice-spacing-md, 1rem) 0;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    button {
+      padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-md, 1rem);
+      background: var(--snice-color-primary, rgb(37 99 235));
+      color: var(--snice-color-text-inverse, rgb(250 250 250));
+      border: none;
+      border-radius: var(--snice-border-radius-md, 4px);
+      cursor: pointer;
+      font-size: var(--snice-font-size-sm, 0.875rem);
+      font-family: inherit;
+      transition: opacity var(--snice-transition-fast, 150ms);
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    button.success {
+      background: var(--snice-color-success, rgb(34 197 94));
+    }
+
+    button.warning {
+      background: var(--snice-color-warning, rgb(245 158 11));
+    }
+
+    button.error {
+      background: var(--snice-color-danger, rgb(220 38 38));
+    }
+
+    button.secondary {
+      background: var(--snice-color-background-element, rgb(252 251 249));
+      color: var(--snice-color-text);
+      border: 1px solid var(--snice-color-border);
+    }
+
+    button.secondary:hover {
+      background: var(--snice-color-border);
+    }
+
+    .notification-center-wrapper {
+      display: flex;
+      justify-content: flex-end;
+      padding: var(--snice-spacing-md, 1rem);
+      background: var(--snice-color-background-element, rgb(252 251 249));
+      border-radius: var(--snice-border-radius-lg, 8px);
+      border: 1px solid var(--snice-color-border);
+    }
+
+    .event-log {
+      margin-top: var(--snice-spacing-md, 1rem);
+      padding: var(--snice-spacing-sm, 0.75rem);
+      background: var(--snice-color-background-element, rgb(252 251 249));
+      border: 1px solid var(--snice-color-border);
+      border-radius: var(--snice-border-radius-md, 4px);
+      font-family: monospace;
+      font-size: var(--snice-font-size-sm, 0.875rem);
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .event-log div {
+      margin: var(--snice-spacing-2xs, 0.25rem) 0;
+      padding: var(--snice-spacing-2xs, 0.25rem);
+    }
+
+    .event-log .event-click { color: var(--snice-color-primary); }
+    .event-log .event-dismiss { color: var(--snice-color-warning); }
+    .event-log .event-read { color: var(--snice-color-success); }
+
+    .info-box {
+      padding: var(--snice-spacing-md, 1rem);
+      background: var(--snice-color-primary-subtle, rgb(239 246 255));
+      border-left: 4px solid var(--snice-color-primary);
+      border-radius: var(--snice-border-radius-md, 4px);
+      margin-bottom: var(--snice-spacing-lg, 1.5rem);
+    }
+
+    .info-box p {
+      margin: 0;
+      font-size: var(--snice-font-size-sm, 0.875rem);
+    }
+
+    .notification-types {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--snice-spacing-md, 1rem);
+      margin-top: var(--snice-spacing-md, 1rem);
+    }
+
+    .type-info {
+      padding: var(--snice-spacing-sm, 0.75rem);
+      background: var(--snice-color-primary-subtle, rgb(239 246 255));
+      border-radius: var(--snice-border-radius-md, 4px);
+      font-size: var(--snice-font-size-sm, 0.875rem);
+    }
+
+    .type-success {
+      padding: var(--snice-spacing-sm, 0.75rem);
+      background: var(--snice-color-success-subtle, rgb(240 253 244));
+      border-radius: var(--snice-border-radius-md, 4px);
+      font-size: var(--snice-font-size-sm, 0.875rem);
+    }
+
+    .type-warning {
+      padding: var(--snice-spacing-sm, 0.75rem);
+      background: var(--snice-color-warning-subtle, rgb(255 251 235));
+      border-radius: var(--snice-border-radius-md, 4px);
+      font-size: var(--snice-font-size-sm, 0.875rem);
+    }
+
+    .type-error {
+      padding: var(--snice-spacing-sm, 0.75rem);
+      background: var(--snice-color-danger-subtle, rgb(254 242 242));
+      border-radius: var(--snice-border-radius-md, 4px);
+      font-size: var(--snice-font-size-sm, 0.875rem);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Notification Center Demo</h1>
+    
+    <div class="info-box">
+      <p>The Notification Center component provides a bell icon with a dropdown panel for displaying and managing notifications. Click the bell to open the notification panel.</p>
+    </div>
+
+    <h2>Live Demo</h2>
+    <div class="demo-section">
+      <div class="notification-center-wrapper">
+        <snice-notification-center id="notification-center"></snice-notification-center>
+      </div>
+    </div>
+
+    <h2>Add Notifications</h2>
+    <div class="demo-section">
+      <div class="controls">
+        <button class="success" onclick="addSuccess()">Add Success</button>
+        <button class="warning" onclick="addWarning()">Add Warning</button>
+        <button class="error" onclick="addError()">Add Error</button>
+        <button onclick="addInfo()">Add Info</button>
+        <button class="secondary" onclick="clearAll()">Clear All</button>
+      </div>
+
+      <div class="notification-types">
+        <div class="type-info">
+          <strong>ℹ️ Info</strong> - Default notification type for general updates
+        </div>
+        <div class="type-success">
+          <strong>✅ Success</strong> - For successful operations and confirmations
+        </div>
+        <div class="type-warning">
+          <strong>⚠️ Warning</strong> - For alerts that require attention
+        </div>
+        <div class="type-error">
+          <strong>❌ Error</strong> - For error messages and failures
+        </div>
+      </div>
+    </div>
+
+    <h2>Programmatic Control</h2>
+    <div class="demo-section">
+      <div class="controls">
+        <button class="secondary" onclick="markAllRead()">Mark All as Read</button>
+        <button class="secondary" onclick="openPanel()">Open Panel</button>
+        <button class="secondary" onclick="closePanel()">Close Panel</button>
+        <button class="secondary" onclick="loadSampleData()">Load Sample Data</button>
+      </div>
+    </div>
+
+    <h2>Events</h2>
+    <div class="demo-section">
+      <div id="event-log" class="event-log">
+        <div style="color: var(--snice-color-text-tertiary);">Events will appear here...</div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    const notificationCenter = document.getElementById('notification-center');
+    const eventLog = document.getElementById('event-log');
+
+    let notificationId = 1;
+
+    const sampleNotifications = [
+      {
+        id: String(notificationId++),
+        title: 'Welcome!',
+        message: 'Thanks for trying out the Notification Center component.',
+        timestamp: 'Just now',
+        read: false,
+        type: 'info'
+      },
+      {
+        id: String(notificationId++),
+        title: 'Profile Updated',
+        message: 'Your profile information has been successfully saved.',
+        timestamp: '5 minutes ago',
+        read: false,
+        type: 'success'
+      },
+      {
+        id: String(notificationId++),
+        title: 'Storage Warning',
+        message: 'You are using 90% of your storage quota.',
+        timestamp: '1 hour ago',
+        read: true,
+        type: 'warning'
+      },
+      {
+        id: String(notificationId++),
+        title: 'Login Failed',
+        message: 'There was an issue with your recent login attempt.',
+        timestamp: '2 hours ago',
+        read: true,
+        type: 'error'
+      }
+    ];
+
+    function logEvent(type, message) {
+      if (eventLog.children[0]?.textContent.includes('Events will appear')) {
+        eventLog.innerHTML = '';
+      }
+      const entry = document.createElement('div');
+      entry.className = `event-${type}`;
+      entry.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+      eventLog.insertBefore(entry, eventLog.firstChild);
+    }
+
+    notificationCenter.addEventListener('notification-click', (e) => {
+      logEvent('click', `Clicked: ${e.detail.notification.title}`);
+    });
+
+    notificationCenter.addEventListener('notification-dismiss', (e) => {
+      logEvent('dismiss', `Dismissed notification: ${e.detail.id}`);
+    });
+
+    notificationCenter.addEventListener('notification-read-all', () => {
+      logEvent('read', 'Marked all notifications as read');
+    });
+
+    window.addSuccess = () => {
+      const newNotification = {
+        id: String(notificationId++),
+        title: 'Operation Successful',
+        message: 'Your changes have been saved successfully.',
+        timestamp: 'Just now',
+        read: false,
+        type: 'success'
+      };
+      notificationCenter.notifications = [newNotification, ...notificationCenter.notifications];
+    };
+
+    window.addWarning = () => {
+      const newNotification = {
+        id: String(notificationId++),
+        title: 'Attention Needed',
+        message: 'Please review your settings before continuing.',
+        timestamp: 'Just now',
+        read: false,
+        type: 'warning'
+      };
+      notificationCenter.notifications = [newNotification, ...notificationCenter.notifications];
+    };
+
+    window.addError = () => {
+      const newNotification = {
+        id: String(notificationId++),
+        title: 'Error Occurred',
+        message: 'Something went wrong. Please try again later.',
+        timestamp: 'Just now',
+        read: false,
+        type: 'error'
+      };
+      notificationCenter.notifications = [newNotification, ...notificationCenter.notifications];
+    };
+
+    window.addInfo = () => {
+      const newNotification = {
+        id: String(notificationId++),
+        title: 'New Update',
+        message: 'A new version is available with exciting features.',
+        timestamp: 'Just now',
+        read: false,
+        type: 'info'
+      };
+      notificationCenter.notifications = [newNotification, ...notificationCenter.notifications];
+    };
+
+    window.clearAll = () => {
+      notificationCenter.notifications = [];
+    };
+
+    window.markAllRead = () => {
+      notificationCenter.markAllAsRead();
+    };
+
+    window.openPanel = () => {
+      notificationCenter.open = true;
+    };
+
+    window.closePanel = () => {
+      notificationCenter.open = false;
+    };
+
+    window.loadSampleData = () => {
+      notificationCenter.notifications = [...sampleNotifications];
+      notificationId = sampleNotifications.length + 1;
+    };
+
+    // Load initial sample data
+    loadSampleData();
+  </script>
+</body>
+</html>

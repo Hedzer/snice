@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snice Approval Flow Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+      padding: var(--snice-spacing-2xl, 2.5rem);
+      margin: 0;
+      background: var(--snice-color-background, rgb(255 255 255));
+      color: var(--snice-color-text, rgb(23 23 23));
+      line-height: var(--snice-line-height-normal, 1.5);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: var(--snice-color-text, rgb(23 23 23));
+      font-weight: var(--snice-font-weight-bold, 700);
+      font-size: var(--snice-font-size-3xl, 1.875rem);
+      margin-bottom: var(--snice-spacing-xs, 0.5rem);
+    }
+
+    h2 {
+      color: var(--snice-color-text-secondary, rgb(82 82 82));
+      font-weight: var(--snice-font-weight-semibold, 600);
+      font-size: var(--snice-font-size-xl, 1.25rem);
+      margin-top: var(--snice-spacing-xl, 1.5rem);
+      margin-bottom: var(--snice-spacing-md, 1rem);
+    }
+
+    p {
+      color: var(--snice-color-text-secondary, rgb(82 82 82));
+      margin-bottom: var(--snice-spacing-lg, 1.5rem);
+    }
+
+    .demo-section {
+      margin: var(--snice-spacing-xl, 1.5rem) 0;
+      padding: var(--snice-spacing-lg, 1.5rem);
+      background: var(--snice-color-background, rgb(255 255 255));
+      border: 1px solid var(--snice-color-border, rgb(226 226 226));
+      border-radius: var(--snice-border-radius-lg, 0.5rem);
+    }
+
+    .demo-section.horizontal {
+      overflow-x: auto;
+    }
+
+    .demo-section.vertical {
+      max-width: 600px;
+    }
+
+    .controls {
+      margin: var(--snice-spacing-lg, 1.5rem) 0;
+      padding: var(--snice-spacing-md, 1rem);
+      background: var(--snice-color-background-secondary, rgb(250 250 250));
+      border: 1px solid var(--snice-color-border, rgb(226 226 226));
+      border-radius: var(--snice-border-radius-md, 0.25rem);
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--snice-spacing-sm, 0.75rem);
+      align-items: center;
+    }
+
+    .controls label {
+      font-weight: var(--snice-font-weight-semibold, 600);
+      color: var(--snice-color-text, rgb(23 23 23));
+      margin-right: var(--snice-spacing-xs, 0.5rem);
+    }
+
+    .controls button {
+      padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-md, 1rem);
+      border: 1px solid var(--snice-color-border, rgb(226 226 226));
+      border-radius: var(--snice-border-radius-md, 0.25rem);
+      background: var(--snice-color-background, rgb(255 255 255));
+      color: var(--snice-color-text, rgb(23 23 23));
+      font-family: inherit;
+      font-size: var(--snice-font-size-sm, 0.875rem);
+      font-weight: var(--snice-font-weight-medium, 500);
+      cursor: pointer;
+      transition: all var(--snice-transition-fast, 150ms) ease;
+    }
+
+    .controls button:hover {
+      border-color: var(--snice-color-primary, rgb(37 99 235));
+      background: var(--snice-color-background-element, rgb(252 251 249));
+    }
+
+    .controls button.primary {
+      background: var(--snice-color-primary, rgb(37 99 235));
+      color: var(--snice-color-text-inverse, rgb(255 255 255));
+      border-color: var(--snice-color-primary, rgb(37 99 235));
+    }
+
+    .controls button.primary:hover {
+      background: var(--snice-color-primary-hover, rgb(29 78 216));
+    }
+
+    .controls button.success {
+      background: var(--snice-color-success, rgb(22 163 74));
+      color: var(--snice-color-text-inverse, rgb(255 255 255));
+      border-color: var(--snice-color-success, rgb(22 163 74));
+    }
+
+    .controls button.success:hover {
+      background: rgb(22 163 74 / 0.9);
+    }
+
+    .controls button.danger {
+      background: var(--snice-color-danger, rgb(220 38 38));
+      color: var(--snice-color-text-inverse, rgb(255 255 255));
+      border-color: var(--snice-color-danger, rgb(220 38 38));
+    }
+
+    .controls button.danger:hover {
+      background: rgb(220 38 38 / 0.9);
+    }
+
+    .event-log {
+      margin-top: var(--snice-spacing-lg, 1.5rem);
+      padding: var(--snice-spacing-md, 1rem);
+      background: var(--snice-color-background-tertiary, rgb(241 241 241));
+      border: 1px solid var(--snice-color-border, rgb(226 226 226));
+      border-radius: var(--snice-border-radius-md, 0.25rem);
+      font-family: var(--snice-font-family-mono, monospace);
+      font-size: var(--snice-font-size-xs, 0.75rem);
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .event-log div {
+      padding: var(--snice-spacing-2xs, 0.25rem) 0;
+      border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
+    }
+
+    .event-log div:last-child {
+      border-bottom: none;
+    }
+
+    .info-box {
+      background: var(--snice-color-info-background, rgb(239 246 255));
+      border: 1px solid var(--snice-color-info-border, rgb(191 219 254));
+      border-radius: var(--snice-border-radius-md, 0.25rem);
+      padding: var(--snice-spacing-md, 1rem);
+      margin-bottom: var(--snice-spacing-lg, 1.5rem);
+    }
+
+    .info-box p {
+      margin: 0;
+      color: var(--snice-color-info-text, rgb(30 64 175));
+    }
+
+    .step-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--snice-spacing-xs, 0.5rem);
+      padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
+      border-radius: var(--snice-border-radius-md, 0.25rem);
+      font-size: var(--snice-font-size-sm, 0.875rem);
+      font-weight: var(--snice-font-weight-medium, 500);
+    }
+
+    .step-indicator.pending {
+      background: rgb(226 226 226 / 0.3);
+      color: var(--snice-color-text-secondary, rgb(82 82 82));
+    }
+
+    .step-indicator.approved {
+      background: rgb(22 163 74 / 0.1);
+      color: var(--snice-color-success, rgb(22 163 74));
+    }
+
+    .step-indicator.rejected {
+      background: rgb(220 38 38 / 0.1);
+      color: var(--snice-color-danger, rgb(220 38 38));
+    }
+
+    .status-legend {
+      display: flex;
+      gap: var(--snice-spacing-md, 1rem);
+      flex-wrap: wrap;
+      margin-bottom: var(--snice-spacing-lg, 1.5rem);
+    }
+
+    snice-approval-flow {
+      --snice-color-primary: var(--snice-color-primary, rgb(37 99 235));
+      --snice-color-success: var(--snice-color-success, rgb(22 163 74));
+      --snice-color-danger: var(--snice-color-danger, rgb(220 38 38));
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Snice Approval Flow Demo</h1>
+    <p>Visual workflow component for displaying and managing approval processes.</p>
+
+    <div class="info-box">
+      <p>💡 <strong>Tip:</strong> Click "Approve" or "Reject" buttons on the current step to see how the flow responds to actions. Use the controls below each example to manipulate the approval state.</p>
+    </div>
+
+    <div class="status-legend">
+      <span class="step-indicator pending">⏳ Pending</span>
+      <span class="step-indicator approved">✓ Approved</span>
+      <span class="step-indicator rejected">✕ Rejected</span>
+    </div>
+
+    <div class="demo-section horizontal">
+      <h2>Horizontal Approval Flow</h2>
+      <p>Standard horizontal layout for top-level process visualization.</p>
+      <snice-approval-flow id="approval-horizontal"></snice-approval-flow>
+
+      <div class="controls">
+        <label>Set Current Step:</label>
+        <button onclick="setCurrentStep('approval-horizontal', 'step1')">Step 1</button>
+        <button onclick="setCurrentStep('approval-horizontal', 'step2')">Step 2</button>
+        <button onclick="setCurrentStep('approval-horizontal', 'step3')">Step 3</button>
+        <button onclick="setCurrentStep('approval-horizontal', 'step4')">Step 4</button>
+      </div>
+
+      <div class="controls">
+        <label>Actions:</label>
+        <button onclick="approveCurrent('approval-horizontal')" class="success">Approve Current</button>
+        <button onclick="rejectCurrent('approval-horizontal')" class="danger">Reject Current</button>
+        <button onclick="resetFlow('approval-horizontal')">Reset Flow</button>
+      </div>
+
+      <div class="event-log" id="horizontal-log">
+        <div><strong>Event Log:</strong></div>
+      </div>
+    </div>
+
+    <div class="demo-section vertical">
+      <h2>Vertical Approval Flow</h2>
+      <p>Vertical layout ideal for sidebar or timeline-style displays.</p>
+      <snice-approval-flow id="approval-vertical" orientation="vertical"></snice-approval-flow>
+
+      <div class="controls">
+        <label>Set Current Step:</label>
+        <button onclick="setCurrentStep('approval-vertical', 'v1')">Manager</button>
+        <button onclick="setCurrentStep('approval-vertical', 'v2')">Finance</button>
+        <button onclick="setCurrentStep('approval-vertical', 'v3')">Director</button>
+      </div>
+    </div>
+
+    <div class="demo-section horizontal">
+      <h2>Purchase Order Workflow</h2>
+      <p>A realistic example of a purchase approval process with mixed statuses.</p>
+      <snice-approval-flow id="approval-purchase"></snice-approval-flow>
+
+      <div class="controls">
+        <label>Simulate Workflow:</label>
+        <button onclick="simulatePurchaseFlow()" class="primary">Run Simulation</button>
+        <button onclick="resetPurchaseFlow()">Reset</button>
+      </div>
+    </div>
+
+    <div class="demo-section horizontal">
+      <h2>With Avatars & Comments</h2>
+      <p>Approval flow with user avatars and approval comments displayed.</p>
+      <snice-approval-flow id="approval-with-avatars"></snice-approval-flow>
+    </div>
+  </div>
+
+  <script type="module">
+    import './snice-approval-flow.ts';
+
+    // Sample approval data
+    const horizontalSteps = [
+      { id: 'step1', approver: 'John Smith', role: 'Team Lead', status: 'approved', timestamp: '2024-01-15 09:30 AM', comment: 'Looks good to me!' },
+      { id: 'step2', approver: 'Sarah Johnson', role: 'Department Manager', status: 'pending' },
+      { id: 'step3', approver: 'Michael Chen', role: 'VP of Engineering', status: 'pending' },
+      { id: 'step4', approver: 'Emily Davis', role: 'CTO', status: 'pending' }
+    ];
+
+    const verticalSteps = [
+      { id: 'v1', approver: 'Alex Thompson', role: 'Line Manager', status: 'approved', timestamp: 'Jan 10, 2:30 PM' },
+      { id: 'v2', approver: 'Maria Garcia', role: 'Finance Lead', status: 'pending' },
+      { id: 'v3', approver: 'David Wilson', role: 'Director', status: 'pending' }
+    ];
+
+    const purchaseSteps = [
+      { id: 'p1', approver: 'Requester', role: 'Employee', status: 'approved', timestamp: '2024-01-14' },
+      { id: 'p2', approver: 'Manager', role: 'Department Head', status: 'approved', timestamp: '2024-01-15', comment: 'Approved within budget' },
+      { id: 'p3', approver: 'Procurement', role: 'Purchasing', status: 'pending' },
+      { id: 'p4', approver: 'CFO', role: 'Finance', status: 'pending' }
+    ];
+
+    const avatarSteps = [
+      { 
+        id: 'a1', 
+        approver: 'Lisa Wong', 
+        role: 'Product Manager', 
+        status: 'approved', 
+        timestamp: '2 hours ago',
+        comment: 'Great proposal, approved for development.',
+        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Lisa'
+      },
+      { 
+        id: 'a2', 
+        approver: 'James Miller', 
+        role: 'Engineering Lead', 
+        status: 'approved', 
+        timestamp: '1 hour ago',
+        comment: 'Technical review passed.',
+        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=James'
+      },
+      { 
+        id: 'a3', 
+        approver: 'Amanda Taylor', 
+        role: 'Design Director', 
+        status: 'pending',
+        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Amanda'
+      },
+      { 
+        id: 'a4', 
+        approver: 'Robert Brown', 
+        role: 'CTO', 
+        status: 'pending',
+        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Robert'
+      }
+    ];
+
+    // Initialize horizontal flow
+    const horizontalFlow = document.getElementById('approval-horizontal');
+    horizontalFlow.steps = [...horizontalSteps];
+    horizontalFlow.currentStep = 'step2';
+
+    horizontalFlow.addEventListener('step-approve', (e) => {
+      logEvent('horizontal-log', `Approved by ${e.detail.step.approver}`);
+      // Update step status in the demo
+      const steps = horizontalFlow.steps.map(s => 
+        s.id === e.detail.step.id ? { ...s, status: 'approved', timestamp: new Date().toLocaleString() } : s
+      );
+      horizontalFlow.steps = steps;
+      // Move to next step
+      const currentIndex = steps.findIndex(s => s.id === horizontalFlow.currentStep);
+      if (currentIndex < steps.length - 1) {
+        horizontalFlow.currentStep = steps[currentIndex + 1].id;
+      }
+    });
+
+    horizontalFlow.addEventListener('step-reject', (e) => {
+      logEvent('horizontal-log', `Rejected by ${e.detail.step.approver}`);
+      const steps = horizontalFlow.steps.map(s => 
+        s.id === e.detail.step.id ? { ...s, status: 'rejected', timestamp: new Date().toLocaleString() } : s
+      );
+      horizontalFlow.steps = steps;
+    });
+
+    // Initialize vertical flow
+    const verticalFlow = document.getElementById('approval-vertical');
+    verticalFlow.steps = [...verticalSteps];
+    verticalFlow.currentStep = 'v2';
+
+    // Initialize purchase flow
+    const purchaseFlow = document.getElementById('approval-purchase');
+    purchaseFlow.steps = [...purchaseSteps];
+    purchaseFlow.currentStep = 'p3';
+
+    // Initialize avatar flow
+    const avatarFlow = document.getElementById('approval-with-avatars');
+    avatarFlow.steps = [...avatarSteps];
+    avatarFlow.currentStep = 'a3';
+
+    // Global functions
+    window.setCurrentStep = (id, stepId) => {
+      const flow = document.getElementById(id);
+      flow.currentStep = stepId;
+    };
+
+    window.approveCurrent = (id) => {
+      const flow = document.getElementById(id);
+      const currentStep = flow.steps.find(s => s.id === flow.currentStep);
+      if (currentStep) {
+        const event = new CustomEvent('step-approve', { 
+          detail: { step: currentStep },
+          bubbles: true,
+          composed: true
+        });
+        flow.dispatchEvent(event);
+      }
+    };
+
+    window.rejectCurrent = (id) => {
+      const flow = document.getElementById(id);
+      const currentStep = flow.steps.find(s => s.id === flow.currentStep);
+      if (currentStep) {
+        const event = new CustomEvent('step-reject', { 
+          detail: { step: currentStep },
+          bubbles: true,
+          composed: true
+        });
+        flow.dispatchEvent(event);
+      }
+    };
+
+    window.resetFlow = (id) => {
+      const flow = document.getElementById(id);
+      flow.steps = horizontalSteps.map(s => ({ ...s, status: s.id === 'step1' ? 'approved' : 'pending', timestamp: undefined, comment: undefined }));
+      flow.currentStep = 'step2';
+      document.getElementById('horizontal-log').innerHTML = '<div><strong>Event Log:</strong></div>';
+    };
+
+    window.simulatePurchaseFlow = () => {
+      const flow = document.getElementById('approval-purchase');
+      let currentIdx = 2; // Start at procurement (pending)
+      
+      const interval = setInterval(() => {
+        if (currentIdx >= flow.steps.length) {
+          clearInterval(interval);
+          return;
+        }
+        
+        const stepId = flow.steps[currentIdx].id;
+        const updatedSteps = flow.steps.map((s, idx) => {
+          if (idx === currentIdx) {
+            return { 
+              ...s, 
+              status: 'approved', 
+              timestamp: new Date().toLocaleDateString(),
+              comment: idx === 2 ? 'Vendor approved' : 'Budget confirmed'
+            };
+          }
+          return s;
+        });
+        
+        flow.steps = updatedSteps;
+        currentIdx++;
+        if (currentIdx < flow.steps.length) {
+          flow.currentStep = flow.steps[currentIdx].id;
+        }
+      }, 1000);
+    };
+
+    window.resetPurchaseFlow = () => {
+      const flow = document.getElementById('approval-purchase');
+      flow.steps = [...purchaseSteps];
+      flow.currentStep = 'p3';
+    };
+
+    function logEvent(logId, message) {
+      const log = document.getElementById(logId);
+      const entry = document.createElement('div');
+      const timestamp = new Date().toLocaleTimeString();
+      entry.textContent = `[${timestamp}] ${message}`;
+      log.appendChild(entry);
+      log.scrollTop = log.scrollHeight;
+    }
+  </script>
+</body>
+</html>

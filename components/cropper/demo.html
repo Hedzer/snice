@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cropper Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      padding: 40px;
+      font-family: var(--snice-font-family);
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .section {
+      margin-bottom: 60px;
+    }
+    h2 {
+      color: var(--snice-color-text);
+      margin-bottom: 20px;
+      font-size: var(--snice-font-size-2xl);
+    }
+    h3 {
+      color: var(--snice-color-text-secondary);
+      margin-bottom: 16px;
+      font-size: var(--snice-font-size-lg);
+    }
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 40px;
+    }
+    .cropper-wrapper {
+      width: 100%;
+      max-width: 400px;
+      aspect-ratio: 1;
+    }
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .controls button {
+      padding: 8px 16px;
+      border: 1px solid var(--snice-color-border);
+      background: var(--snice-color-surface);
+      color: var(--snice-color-text);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: var(--snice-font-size-sm);
+      transition: all 0.2s ease;
+    }
+    .controls button:hover {
+      background: var(--snice-color-primary);
+      color: white;
+      border-color: var(--snice-color-primary);
+    }
+    .controls input[type="file"] {
+      padding: 8px;
+      border: 1px solid var(--snice-color-border);
+      border-radius: 6px;
+      background: var(--snice-color-surface);
+      color: var(--snice-color-text);
+      font-size: var(--snice-font-size-sm);
+    }
+    .controls select {
+      padding: 8px 12px;
+      border: 1px solid var(--snice-color-border);
+      border-radius: 6px;
+      background: var(--snice-color-surface);
+      color: var(--snice-color-text);
+      font-size: var(--snice-font-size-sm);
+    }
+    .output-preview {
+      margin-top: 20px;
+      padding: 20px;
+      border: 1px solid var(--snice-color-border);
+      border-radius: 8px;
+      background: var(--snice-color-surface);
+      min-height: 100px;
+    }
+    .output-preview img {
+      max-width: 100%;
+      max-height: 300px;
+      border-radius: 4px;
+    }
+    .event-log {
+      margin-top: 20px;
+      padding: 16px;
+      border: 1px solid var(--snice-color-border);
+      border-radius: 8px;
+      background: var(--snice-color-surface);
+      font-family: monospace;
+      font-size: var(--snice-font-size-sm);
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .event-log-entry {
+      padding: 4px 0;
+      border-bottom: 1px solid var(--snice-color-border-subtle);
+    }
+    .event-log-entry:last-child {
+      border-bottom: none;
+    }
+    .event-name {
+      color: var(--snice-color-primary);
+      font-weight: bold;
+    }
+    .event-time {
+      color: var(--snice-color-text-secondary);
+      font-size: var(--snice-font-size-xs);
+    }
+  </style>
+</head>
+<body>
+  <h1>Cropper Demo</h1>
+
+  <div class="section">
+    <h2>Basic Crop</h2>
+    <div class="cropper-wrapper">
+      <snice-cropper 
+        id="basic-cropper"
+        src="https://picsum.photos/seed/cropper-basic/600/600"
+        output-type="jpeg"
+        style="width:100%;height:100%">
+      </snice-cropper>
+    </div>
+    <div class="controls">
+      <button onclick="basicCropper.crop()">Crop</button>
+      <button onclick="basicCropper.reset()">Reset</button>
+    </div>
+    <div class="output-preview" id="basic-output">
+      <p style="color: var(--snice-color-text-secondary);">Cropped image will appear here</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>With Rotation & Zoom</h2>
+    <div class="cropper-wrapper">
+      <snice-cropper 
+        id="rotate-cropper"
+        src="https://picsum.photos/seed/cropper-rotate/600/600"
+        output-type="png"
+        style="width:100%;height:100%">
+      </snice-cropper>
+    </div>
+    <div class="controls">
+      <button onclick="rotateCropper.rotate(-90)">Rotate Left</button>
+      <button onclick="rotateCropper.rotate(90)">Rotate Right</button>
+      <button onclick="rotateCropper.zoom(0.5)">Zoom 0.5x</button>
+      <button onclick="rotateCropper.zoom(1)">Zoom 1x</button>
+      <button onclick="rotateCropper.zoom(1.5)">Zoom 1.5x</button>
+      <button onclick="rotateCropper.zoom(2)">Zoom 2x</button>
+      <button onclick="rotateCropper.reset()">Reset</button>
+      <button onclick="rotateCropper.crop()">Crop</button>
+    </div>
+    <div class="output-preview" id="rotate-output">
+      <p style="color: var(--snice-color-text-secondary);">Cropped image will appear here</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Aspect Ratio Lock</h2>
+    <div class="demo-grid">
+      <div>
+        <h3>Square (1:1)</h3>
+        <div class="cropper-wrapper">
+          <snice-cropper 
+            id="square-cropper"
+            src="https://picsum.photos/seed/cropper-square/600/400"
+            aspect-ratio="1"
+            output-type="jpeg"
+            style="width:100%;height:100%">
+          </snice-cropper>
+        </div>
+        <div class="controls">
+          <button onclick="squareCropper.crop()">Crop</button>
+          <button onclick="squareCropper.reset()">Reset</button>
+        </div>
+      </div>
+      <div>
+        <h3>Landscape (16:9)</h3>
+        <div class="cropper-wrapper">
+          <snice-cropper 
+            id="landscape-cropper"
+            src="https://picsum.photos/seed/cropper-landscape/600/400"
+            aspect-ratio="1.777"
+            output-type="jpeg"
+            style="width:100%;height:100%">
+          </snice-cropper>
+        </div>
+        <div class="controls">
+          <button onclick="landscapeCropper.crop()">Crop</button>
+          <button onclick="landscapeCropper.reset()">Reset</button>
+        </div>
+      </div>
+      <div>
+        <h3>Portrait (3:4)</h3>
+        <div class="cropper-wrapper">
+          <snice-cropper 
+            id="portrait-cropper"
+            src="https://picsum.photos/seed/cropper-portrait/600/400"
+            aspect-ratio="0.75"
+            output-type="jpeg"
+            style="width:100%;height:100%">
+          </snice-cropper>
+        </div>
+        <div class="controls">
+          <button onclick="portraitCropper.crop()">Crop</button>
+          <button onclick="portraitCropper.reset()">Reset</button>
+        </div>
+      </div>
+      <div>
+        <h3>Free Form</h3>
+        <div class="cropper-wrapper">
+          <snice-cropper 
+            id="free-cropper"
+            src="https://picsum.photos/seed/cropper-free/600/400"
+            output-type="jpeg"
+            style="width:100%;height:100%">
+          </snice-cropper>
+        </div>
+        <div class="controls">
+          <button onclick="freeCropper.crop()">Crop</button>
+          <button onclick="freeCropper.reset()">Reset</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>File Upload & Dynamic Controls</h2>
+    <div class="cropper-wrapper">
+      <snice-cropper 
+        id="upload-cropper"
+        src="https://picsum.photos/seed/cropper-upload/600/600"
+        output-type="jpeg"
+        style="width:100%;height:100%">
+      </snice-cropper>
+    </div>
+    <div class="controls">
+      <input type="file" id="file-input" accept="image/*">
+      <select id="aspect-select">
+        <option value="0">Free Form</option>
+        <option value="1">Square (1:1)</option>
+        <option value="1.777">Landscape (16:9)</option>
+        <option value="0.75">Portrait (3:4)</option>
+        <option value="1.333">4:3</option>
+        <option value="2.333">21:9</option>
+      </select>
+      <select id="output-select">
+        <option value="jpeg">JPEG</option>
+        <option value="png">PNG</option>
+        <option value="webp">WebP</option>
+      </select>
+      <button onclick="uploadCropper.rotate(-90)">Rotate Left</button>
+      <button onclick="uploadCropper.rotate(90)">Rotate Right</button>
+      <button onclick="uploadCropper.reset()">Reset</button>
+      <button onclick="uploadCropper.crop()">Crop</button>
+    </div>
+    <div class="output-preview" id="upload-output">
+      <p style="color: var(--snice-color-text-secondary);">Cropped image will appear here</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Event Logging</h2>
+    <div class="cropper-wrapper">
+      <snice-cropper 
+        id="event-cropper"
+        src="https://picsum.photos/seed/cropper-events/600/600"
+        aspect-ratio="1"
+        output-type="jpeg"
+        style="width:100%;height:100%">
+      </snice-cropper>
+    </div>
+    <div class="controls">
+      <button onclick="eventCropper.rotate(90)">Rotate</button>
+      <button onclick="eventCropper.zoom(1.5)">Zoom 1.5x</button>
+      <button onclick="eventCropper.reset()">Reset</button>
+      <button onclick="eventCropper.crop()">Crop</button>
+      <button onclick="clearEventLog()">Clear Log</button>
+    </div>
+    <div class="event-log" id="event-log">
+      <div class="event-log-entry">
+        <span class="event-time">Ready</span> - Event logging started
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import './snice-cropper.ts';
+
+    // Get cropper references
+    const basicCropper = document.getElementById('basic-cropper');
+    const rotateCropper = document.getElementById('rotate-cropper');
+    const squareCropper = document.getElementById('square-cropper');
+    const landscapeCropper = document.getElementById('landscape-cropper');
+    const portraitCropper = document.getElementById('portrait-cropper');
+    const freeCropper = document.getElementById('free-cropper');
+    const uploadCropper = document.getElementById('upload-cropper');
+    const eventCropper = document.getElementById('event-cropper');
+
+    // Make available globally for onclick handlers
+    window.basicCropper = basicCropper;
+    window.rotateCropper = rotateCropper;
+    window.squareCropper = squareCropper;
+    window.landscapeCropper = landscapeCropper;
+    window.portraitCropper = portraitCropper;
+    window.freeCropper = freeCropper;
+    window.uploadCropper = uploadCropper;
+    window.eventCropper = eventCropper;
+
+    // Handle crop output for basic cropper
+    basicCropper.addEventListener('crop-complete', (e) => {
+      const output = document.getElementById('basic-output');
+      if (e.detail.blob) {
+        const url = URL.createObjectURL(e.detail.blob);
+        output.innerHTML = `<img src="${url}" alt="Cropped">`;
+      }
+    });
+
+    // Handle crop output for rotate cropper
+    rotateCropper.addEventListener('crop-complete', (e) => {
+      const output = document.getElementById('rotate-output');
+      if (e.detail.blob) {
+        const url = URL.createObjectURL(e.detail.blob);
+        output.innerHTML = `<img src="${url}" alt="Cropped">`;
+      }
+    });
+
+    // Handle crop output for upload cropper
+    uploadCropper.addEventListener('crop-complete', (e) => {
+      const output = document.getElementById('upload-output');
+      if (e.detail.blob) {
+        const url = URL.createObjectURL(e.detail.blob);
+        output.innerHTML = `<img src="${url}" alt="Cropped">`;
+      }
+    });
+
+    // Handle crop output for aspect ratio croppers
+    [squareCropper, landscapeCropper, portraitCropper, freeCropper].forEach(cropper => {
+      cropper.addEventListener('crop-complete', (e) => {
+        if (e.detail.blob) {
+          const url = URL.createObjectURL(e.detail.blob);
+          // Create a modal or notification for the cropped result
+          console.log('Cropped image:', url);
+        }
+      });
+    });
+
+    // File upload handler
+    document.getElementById('file-input').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const url = URL.createObjectURL(file);
+        uploadCropper.src = url;
+      }
+    });
+
+    // Aspect ratio selector
+    document.getElementById('aspect-select').addEventListener('change', (e) => {
+      uploadCropper.aspectRatio = parseFloat(e.target.value);
+    });
+
+    // Output type selector
+    document.getElementById('output-select').addEventListener('change', (e) => {
+      uploadCropper.outputType = e.target.value;
+    });
+
+    // Event logging
+    const eventLog = document.getElementById('event-log');
+
+    function logEvent(name, detail) {
+      const time = new Date().toLocaleTimeString();
+      const entry = document.createElement('div');
+      entry.className = 'event-log-entry';
+      entry.innerHTML = `<span class="event-time">${time}</span> - <span class="event-name">${name}</span>: ${JSON.stringify(detail)}`;
+      eventLog.insertBefore(entry, eventLog.firstChild);
+    }
+
+    window.clearEventLog = () => {
+      eventLog.innerHTML = '<div class="event-log-entry"><span class="event-time">Ready</span> - Event log cleared</div>';
+    };
+
+    eventCropper.addEventListener('crop-change', (e) => {
+      logEvent('crop-change', e.detail);
+    });
+
+    eventCropper.addEventListener('crop-complete', (e) => {
+      logEvent('crop-complete', { blobSize: e.detail.blob?.size || 0 });
+      const output = document.getElementById('upload-output');
+      if (e.detail.blob) {
+        const url = URL.createObjectURL(e.detail.blob);
+        output.innerHTML = `<img src="${url}" alt="Cropped">`;
+      }
+    });
+  </script>
+</body>
+</html>

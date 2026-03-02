@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snice Markdown Component Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 40px;
+      line-height: 1.6;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: var(--snice-color-text);
+      border-bottom: 2px solid var(--snice-color-border);
+      padding-bottom: 10px;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      color: var(--snice-color-text);
+      margin-top: 40px;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .demo-section {
+      margin: 30px 0;
+      padding: 20px;
+      background: var(--snice-color-background);
+      border-radius: 8px;
+      border: 1px solid var(--snice-color-border);
+    }
+
+    .demo-label {
+      display: block;
+      margin-bottom: 16px;
+      font-weight: 600;
+      color: var(--snice-color-text-secondary);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .split-view {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .split-view {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .editor-panel {
+      display: flex;
+      flex-direction: column;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 400px;
+      padding: 16px;
+      border: 1px solid var(--snice-color-border);
+      border-radius: 6px;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      resize: vertical;
+    }
+
+    .preview-panel {
+      border: 1px solid var(--snice-color-border);
+      border-radius: 6px;
+      padding: 20px;
+      background: var(--snice-color-background);
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin: 16px 0;
+      flex-wrap: wrap;
+    }
+
+    .controls label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .example-btn {
+      padding: 8px 12px;
+      background: var(--snice-color-background-secondary);
+      border: 1px solid var(--snice-color-border);
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .example-btn:hover {
+      background: var(--snice-color-border);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📝 Snice Markdown Component Demo</h1>
+
+    <div class="demo-section">
+      <h2>Live Markdown Editor</h2>
+      <span class="demo-label">Type markdown on the left, see rendered output on the right</span>
+      
+      <div class="controls">
+        <label>
+          <input type="checkbox" id="sanitize-check" checked>
+          Sanitize HTML
+        </label>
+        <span style="flex: 1;"></span>
+        <button class="example-btn" data-example="basic">Basic</button>
+        <button class="example-btn" data-example="full">Full Example</button>
+        <button class="example-btn" data-example="code">Code</button>
+        <button class="example-btn" data-example="table">Table</button>
+      </div>
+
+      <div class="split-view">
+        <div class="editor-panel">
+          <textarea id="markdown-input" placeholder="Type your markdown here..."></textarea>
+        </div>
+        <div class="preview-panel">
+          <snice-markdown id="markdown-preview"></snice-markdown>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Supported Markdown Features</h2>
+      <ul style="columns: 2; color: var(--snice-color-text-secondary);">
+        <li>Headers (H1-H6)</li>
+        <li>Bold and italic text</li>
+        <li>Links and images</li>
+        <li>Ordered and unordered lists</li>
+        <li>Code blocks with syntax highlighting</li>
+        <li>Inline code</li>
+        <li>Blockquotes</li>
+        <li>Horizontal rules</li>
+        <li>Tables (GFM)</li>
+        <li>Task lists</li>
+        <li>Strikethrough</li>
+      </ul>
+    </div>
+  </div>
+
+  <script type="module">
+    import './snice-markdown.ts';
+
+    const input = document.getElementById('markdown-input');
+    const preview = document.getElementById('markdown-preview');
+    const sanitizeCheck = document.getElementById('sanitize-check');
+    const exampleBtns = document.querySelectorAll('.example-btn');
+
+    const examples = {
+      basic: `# Welcome
+
+This is a **bold** statement and this is *italic*.
+
+## Lists
+
+- First item
+- Second item
+- Third item
+
+## Links
+
+Visit [OpenStreetMap](https://www.openstreetmap.org) for maps.`,
+
+      full: `# Project Documentation
+
+## Introduction
+
+This is a comprehensive example of **Markdown** rendering with the \`snice-markdown\` component.
+
+### Features
+
+1. *Easy* to use
+2. **Powerful** features
+3. Secure by default
+
+## Code Example
+
+Inline code: \`const x = 42;\`
+
+> Blockquote: This is an important note that stands out.
+
+---
+
+## Getting Started
+
+- Clone the repository
+- Install dependencies
+- Run the dev server
+
+Visit our [documentation](https://example.com) for more details.`,
+
+      code: `# Code Examples
+
+## JavaScript
+
+\`\`\`javascript
+function greet(name) {
+  return \`Hello, \${name}!\`;
+}
+
+console.log(greet('World'));
+\`\`\`
+
+## CSS
+
+\`\`\`css
+.container {
+  display: flex;
+  padding: 1rem;
+  background: #f5f5f5;
+}
+\`\`\`
+
+## Python
+
+\`\`\`python
+def fibonacci(n):
+    if n <= 1:
+        return n
+    return fibonacci(n-1) + fibonacci(n-2)
+
+print(fibonacci(10))
+\`\`\``,
+
+      table: `# Tables
+
+## Comparison
+
+| Feature | Basic | Pro | Enterprise |
+|---------|-------|-----|------------|
+| Users | 5 | 25 | Unlimited |
+| Storage | 10GB | 100GB | 1TB |
+| Support | Email | Priority | 24/7 Phone |
+| Price | Free | $29/mo | $99/mo |
+
+## Task List
+
+- [x] Design the interface
+- [x] Implement core features
+- [ ] Add advanced options
+- [ ] Write documentation`
+    };
+
+    // Set initial content
+    input.value = examples.full;
+    updatePreview();
+
+    // Event listeners
+    input.addEventListener('input', updatePreview);
+
+    sanitizeCheck.addEventListener('change', () => {
+      preview.sanitize = sanitizeCheck.checked;
+    });
+
+    exampleBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const example = btn.dataset.example;
+        input.value = examples[example];
+        updatePreview();
+      });
+    });
+
+    function updatePreview() {
+      preview.setContent(input.value);
+    }
+
+    // Log render events
+    preview.addEventListener('markdown-render', (e) => {
+      console.log('Markdown rendered:', e.detail);
+    });
+  </script>
+</body>
+</html>

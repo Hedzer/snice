@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snice Estimate Component Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 40px;
+      line-height: 1.6;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: var(--snice-color-text);
+      border-bottom: 2px solid var(--snice-color-border);
+      padding-bottom: 10px;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      color: var(--snice-color-text);
+      margin-top: 40px;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .demo-section {
+      margin: 30px 0;
+      padding: 20px;
+      background: var(--snice-color-background);
+      border-radius: 8px;
+      border: 1px solid var(--snice-color-border);
+    }
+
+    .demo-label {
+      display: block;
+      margin-bottom: 16px;
+      font-weight: 600;
+      color: var(--snice-color-text-secondary);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .estimate-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+      gap: 24px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+      padding: 16px;
+      background: var(--snice-color-background-element);
+      border-radius: 6px;
+      border: 1px solid var(--snice-color-border);
+    }
+
+    .controls label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .controls select, .controls input {
+      padding: 8px 12px;
+      border: 1px solid var(--snice-color-border);
+      border-radius: 4px;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      font-size: 14px;
+    }
+
+    .controls button {
+      padding: 8px 16px;
+      border: 1px solid var(--snice-color-border);
+      border-radius: 4px;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 150ms;
+    }
+
+    .controls button:hover {
+      border-color: var(--snice-color-primary);
+      color: var(--snice-color-primary);
+    }
+
+    .event-log {
+      background: var(--snice-color-background-element);
+      border: 1px solid var(--snice-color-border);
+      border-radius: 6px;
+      padding: 12px;
+      margin-top: 16px;
+      font-family: monospace;
+      font-size: 13px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .event-log:empty::before {
+      content: 'Event log will appear here...';
+      color: var(--snice-color-text-tertiary);
+      font-style: italic;
+    }
+
+    .event-item {
+      padding: 4px 0;
+      border-bottom: 1px solid var(--snice-color-border);
+    }
+
+    .event-item:last-child {
+      border-bottom: none;
+    }
+
+    .example-card {
+      padding: 20px;
+      background: var(--snice-color-background-element);
+      border-radius: 6px;
+      border: 1px solid var(--snice-color-border);
+      margin: 16px 0;
+      overflow-x: auto;
+    }
+
+    .example-card h3 {
+      margin-top: 0;
+      margin-bottom: 16px;
+      font-size: 16px;
+      color: var(--snice-color-text);
+    }
+
+    .qr-placeholder {
+      width: 80px;
+      height: 80px;
+      background: var(--snice-color-background-element);
+      border: 2px dashed var(--snice-color-border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: var(--snice-color-text-tertiary);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📋 Snice Estimate Component Demo</h1>
+
+    <div class="demo-section">
+      <h2>Estimate Variants</h2>
+      <span class="demo-label">Different visual styles</span>
+      
+      <div class="estimate-grid">
+        <div class="example-card">
+          <h3>Standard</h3>
+          <snice-estimate id="estimate-standard"></snice-estimate>
+        </div>
+        
+        <div class="example-card">
+          <h3>Professional</h3>
+          <snice-estimate id="estimate-professional" variant="professional"></snice-estimate>
+        </div>
+        
+        <div class="example-card">
+          <h3>Creative</h3>
+          <snice-estimate id="estimate-creative" variant="creative"></snice-estimate>
+        </div>
+        
+        <div class="example-card">
+          <h3>Minimal</h3>
+          <snice-estimate id="estimate-minimal" variant="minimal"></snice-estimate>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Status Variations</h2>
+      <span class="demo-label">Different estimate statuses</span>
+      
+      <div class="estimate-grid">
+        <div class="example-card">
+          <h3>Draft</h3>
+          <snice-estimate id="estimate-draft" status="draft"></snice-estimate>
+        </div>
+        
+        <div class="example-card">
+          <h3>Sent</h3>
+          <snice-estimate id="estimate-sent" status="sent"></snice-estimate>
+        </div>
+        
+        <div class="example-card">
+          <h3>Accepted</h3>
+          <snice-estimate id="estimate-accepted" status="accepted"></snice-estimate>
+        </div>
+        
+        <div class="example-card">
+          <h3>Declined</h3>
+          <snice-estimate id="estimate-declined" status="declined"></snice-estimate>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Comparison Variant</h2>
+      <span class="demo-label">Option comparison layout for choosing between packages</span>
+      
+      <div class="example-card">
+        <snice-estimate id="estimate-comparison" variant="comparison"></snice-estimate>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Interactive Demo</h2>
+      <span class="demo-label">Customize estimate properties and toggle optional items</span>
+      
+      <div class="controls">
+        <label>
+          Variant:
+          <select id="variant-select">
+            <option value="standard" selected>Standard</option>
+            <option value="professional">Professional</option>
+            <option value="creative">Creative</option>
+            <option value="minimal">Minimal</option>
+            <option value="comparison">Comparison</option>
+          </select>
+        </label>
+        
+        <label>
+          Status:
+          <select id="status-select">
+            <option value="draft">Draft</option>
+            <option value="sent" selected>Sent</option>
+            <option value="accepted">Accepted</option>
+            <option value="declined">Declined</option>
+            <option value="expired">Expired</option>
+          </select>
+        </label>
+        
+        <label>
+          Currency:
+          <select id="currency-select">
+            <option value="$" selected>USD ($)</option>
+            <option value="€">EUR (€)</option>
+            <option value="£">GBP (£)</option>
+          </select>
+        </label>
+        
+        <label>
+          Tax Rate (%):
+          <input type="number" id="tax-input" value="8.5" min="0" max="100" step="0.5">
+        </label>
+        
+        <label>
+          Discount (%):
+          <input type="number" id="discount-input" value="10" min="0" max="100">
+        </label>
+        
+        <button id="toggle-qr">Toggle QR Code</button>
+        <button id="print-estimate">Print Estimate</button>
+      </div>
+      
+      <snice-estimate id="interactive-estimate"></snice-estimate>
+      
+      <div class="event-log" id="event-log"></div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Real-world Examples</h2>
+
+      <div class="example-card">
+        <h3>Website Design Estimate</h3>
+        <snice-estimate id="estimate-website"></snice-estimate>
+      </div>
+
+      <div class="example-card">
+        <h3>Home Renovation Estimate</h3>
+        <snice-estimate id="estimate-renovation"></snice-estimate>
+      </div>
+
+      <div class="example-card">
+        <h3>Marketing Package Estimate with QR</h3>
+        <snice-estimate id="estimate-marketing" show-qr="true" qr-position="top-right">
+          <div slot="qr" class="qr-placeholder">QR</div>
+        </snice-estimate>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import './snice-estimate.ts';
+
+    // Sample data
+    const sampleItems = [
+      { description: 'Initial Consultation', quantity: 1, unitPrice: 250 },
+      { description: 'Design & Planning', quantity: 20, unitPrice: 150 },
+      { description: 'Implementation', quantity: 40, unitPrice: 125 },
+      { description: 'Quality Assurance', quantity: 10, unitPrice: 100, optional: true, included: true },
+      { description: 'Training Session', quantity: 4, unitPrice: 200, optional: true, included: false }
+    ];
+
+    const sampleFrom = {
+      name: 'Pro Services Inc.',
+      address: '123 Business Plaza\nSuite 500\nMetropolis, MT 10001',
+      phone: '(555) 123-4567',
+      email: 'estimates@proservices.com'
+    };
+
+    const sampleTo = {
+      name: 'Acme Corporation',
+      address: '456 Corporate Drive\nBusiness District, BD 20002',
+      phone: '(555) 987-6543',
+      email: 'procurement@acme.com'
+    };
+
+    // Initialize variant estimates
+    const variants = ['standard', 'professional', 'creative', 'minimal'];
+    variants.forEach(variant => {
+      const estimate = document.getElementById(`estimate-${variant}`);
+      estimate.estimateNumber = `EST-${variant.toUpperCase().slice(0, 3)}001`;
+      estimate.date = '2024-01-15';
+      estimate.expiryDate = '2024-02-15';
+      estimate.status = 'sent';
+      estimate.currency = '$';
+      estimate.taxRate = 8.5;
+      estimate.discount = 10;
+      estimate.from = sampleFrom;
+      estimate.to = sampleTo;
+      estimate.items = sampleItems;
+      estimate.notes = 'This estimate is valid for 30 days. Payment terms: 50% deposit, 50% on completion.';
+      estimate.terms = 'Work to commence within 2 weeks of signed acceptance. Additional revisions beyond scope will be billed at hourly rate.';
+    });
+
+    // Status estimates
+    const statuses = ['draft', 'sent', 'accepted', 'declined'];
+    statuses.forEach(status => {
+      const estimate = document.getElementById(`estimate-${status}`);
+      estimate.estimateNumber = `EST-${status.toUpperCase().slice(0, 3)}001`;
+      estimate.date = '2024-01-15';
+      estimate.expiryDate = status === 'expired' ? '2024-01-01' : '2024-02-15';
+      estimate.status = status;
+      estimate.currency = '$';
+      estimate.taxRate = 8.5;
+      estimate.from = sampleFrom;
+      estimate.to = sampleTo;
+      estimate.items = sampleItems.slice(0, 3);
+    });
+
+    // Comparison variant
+    const comparisonEstimate = document.getElementById('estimate-comparison');
+    comparisonEstimate.estimateNumber = 'EST-COMP-001';
+    comparisonEstimate.date = '2024-01-15';
+    comparisonEstimate.expiryDate = '2024-02-15';
+    comparisonEstimate.status = 'sent';
+    comparisonEstimate.currency = '$';
+    comparisonEstimate.from = sampleFrom;
+    comparisonEstimate.to = sampleTo;
+    comparisonEstimate.items = [
+      { description: 'Basic Package', quantity: 1, unitPrice: 2500 },
+      { description: 'Standard Package', quantity: 1, unitPrice: 5000 },
+      { description: 'Premium Package', quantity: 1, unitPrice: 8500 }
+    ];
+    comparisonEstimate.notes = 'Choose the package that best fits your needs. All packages include basic support.';
+    comparisonEstimate.terms = 'Upgrades between packages available within 30 days of project start.';
+
+    // Interactive estimate
+    const interactiveEstimate = document.getElementById('interactive-estimate');
+    const eventLog = document.getElementById('event-log');
+
+    function logEvent(message) {
+      const item = document.createElement('div');
+      item.className = 'event-item';
+      const time = new Date().toLocaleTimeString();
+      item.textContent = `[${time}] ${message}`;
+      eventLog.appendChild(item);
+      eventLog.scrollTop = eventLog.scrollHeight;
+    }
+
+    interactiveEstimate.estimateNumber = 'EST-INT-001';
+    interactiveEstimate.date = '2024-01-15';
+    interactiveEstimate.expiryDate = '2024-02-15';
+    interactiveEstimate.status = 'sent';
+    interactiveEstimate.currency = '$';
+    interactiveEstimate.taxRate = 8.5;
+    interactiveEstimate.discount = 10;
+    interactiveEstimate.from = sampleFrom;
+    interactiveEstimate.to = sampleTo;
+    interactiveEstimate.items = sampleItems;
+    interactiveEstimate.notes = 'Toggle optional items to see pricing update. Try the Accept/Decline buttons!';
+    interactiveEstimate.terms = 'This is an interactive demo estimate. Events will be logged below when you interact with it.';
+
+    // Controls
+    document.getElementById('variant-select').addEventListener('change', (e) => {
+      interactiveEstimate.variant = e.target.value;
+      logEvent(`Variant changed to: ${e.target.value}`);
+    });
+
+    document.getElementById('status-select').addEventListener('change', (e) => {
+      interactiveEstimate.status = e.target.value;
+      logEvent(`Status changed to: ${e.target.value}`);
+    });
+
+    document.getElementById('currency-select').addEventListener('change', (e) => {
+      interactiveEstimate.currency = e.target.value;
+      logEvent(`Currency changed to: ${e.target.value}`);
+    });
+
+    document.getElementById('tax-input').addEventListener('change', (e) => {
+      interactiveEstimate.taxRate = parseFloat(e.target.value) || 0;
+      logEvent(`Tax rate changed to: ${e.target.value}%`);
+    });
+
+    document.getElementById('discount-input').addEventListener('change', (e) => {
+      interactiveEstimate.discount = parseFloat(e.target.value) || 0;
+      logEvent(`Discount changed to: ${e.target.value}%`);
+    });
+
+    let showQr = false;
+    document.getElementById('toggle-qr').addEventListener('click', () => {
+      showQr = !showQr;
+      interactiveEstimate.showQr = showQr;
+      logEvent(`QR code ${showQr ? 'shown' : 'hidden'}`);
+    });
+
+    document.getElementById('print-estimate').addEventListener('click', () => {
+      interactiveEstimate.print();
+      logEvent('Print dialog opened');
+    });
+
+    // Event listeners
+    interactiveEstimate.addEventListener('estimate-accept', (e) => {
+      logEvent(`✅ Estimate ${e.detail.estimateNumber} ACCEPTED - Total: $${e.detail.total.toFixed(2)}`);
+      interactiveEstimate.status = 'accepted';
+    });
+
+    interactiveEstimate.addEventListener('estimate-decline', (e) => {
+      logEvent(`❌ Estimate ${e.detail.estimateNumber} DECLINED`);
+      interactiveEstimate.status = 'declined';
+    });
+
+    interactiveEstimate.addEventListener('item-toggle', (e) => {
+      logEvent(`Item "${e.detail.item.description}" ${e.detail.included ? 'included' : 'excluded'}`);
+    });
+
+    // Website design estimate
+    const websiteEstimate = document.getElementById('estimate-website');
+    websiteEstimate.estimateNumber = 'EST-WEB-2024-015';
+    websiteEstimate.date = '2024-01-15';
+    websiteEstimate.expiryDate = '2024-02-15';
+    websiteEstimate.status = 'sent';
+    websiteEstimate.currency = '$';
+    websiteEstimate.taxRate = 0;
+    websiteEstimate.from = {
+      name: 'Creative Digital Agency',
+      address: '789 Design District\nSuite 100\nSan Francisco, CA 94102',
+      phone: '(415) 555-0123',
+      email: 'hello@creativedigital.com'
+    };
+    websiteEstimate.to = {
+      name: 'StartupXYZ',
+      address: '321 Innovation Way\nTech Hub, TH 94025',
+      phone: '(650) 555-0456',
+      email: 'founders@startupxyz.com'
+    };
+    websiteEstimate.items = [
+      { description: 'Discovery & Strategy', quantity: 10, unitPrice: 150 },
+      { description: 'UI/UX Design', quantity: 30, unitPrice: 125 },
+      { description: 'Frontend Development', quantity: 40, unitPrice: 135 },
+      { description: 'CMS Integration', quantity: 15, unitPrice: 125 },
+      { description: 'SEO Optimization', quantity: 8, unitPrice: 100, optional: true, included: true },
+      { description: 'Analytics Setup', quantity: 4, unitPrice: 100, optional: true, included: false }
+    ];
+    websiteEstimate.discount = 5;
+    websiteEstimate.notes = '5% early-bird discount applied. Project timeline: 8-10 weeks from approval.';
+    websiteEstimate.terms = '50% deposit required to begin. Balance due upon launch. Includes 30 days post-launch support.';
+
+    // Home renovation estimate
+    const renovationEstimate = document.getElementById('estimate-renovation');
+    renovationEstimate.estimateNumber = 'EST-RENO-2024-042';
+    renovationEstimate.date = '2024-01-10';
+    renovationEstimate.expiryDate = '2024-03-10';
+    renovationEstimate.status = 'sent';
+    renovationEstimate.variant = 'professional';
+    renovationEstimate.currency = '$';
+    renovationEstimate.taxRate = 8.25;
+    renovationEstimate.from = {
+      name: 'Premium Home Renovations',
+      address: '456 Builder Blvd\nConstruction City, CC 75001',
+      phone: '(214) 555-0789',
+      email: 'estimates@premiumrenovations.com'
+    };
+    renovationEstimate.to = {
+      name: 'John & Mary Smith',
+      address: '123 Oak Street\nResidential Heights, RH 75025',
+      phone: '(214) 555-0321',
+      email: 'jsmith@email.com'
+    };
+    renovationEstimate.items = [
+      { description: 'Kitchen Cabinets (Custom)', quantity: 1, unitPrice: 12500 },
+      { description: 'Countertop Installation', quantity: 45, unitPrice: 85 },
+      { description: 'Plumbing Updates', quantity: 1, unitPrice: 3500 },
+      { description: 'Electrical Work', quantity: 1, unitPrice: 2800 },
+      { description: 'Flooring - Hardwood', quantity: 400, unitPrice: 12 },
+      { description: 'Appliance Installation', quantity: 1, unitPrice: 1500, optional: true, included: true },
+      { description: ' backsplash Tile Work', quantity: 35, unitPrice: 45, optional: true, included: false }
+    ];
+    renovationEstimate.notes = 'Estimate valid for 60 days. All work includes permits and inspections.';
+    renovationEstimate.terms = 'Payment schedule: 25% deposit, 25% at rough-in, 25% at cabinets, 25% on completion. Change orders billed separately.';
+
+    // Marketing package estimate
+    const marketingEstimate = document.getElementById('estimate-marketing');
+    marketingEstimate.estimateNumber = 'EST-MKT-2024-089';
+    marketingEstimate.date = '2024-01-12';
+    marketingEstimate.expiryDate = '2024-02-12';
+    marketingEstimate.status = 'sent';
+    marketingEstimate.currency = '$';
+    marketingEstimate.taxRate = 0;
+    marketingEstimate.showQr = true;
+    marketingEstimate.qrPosition = 'top-right';
+    marketingEstimate.from = {
+      name: 'Growth Marketing Pro',
+      address: '555 Marketing Mile\nSuite 200\nNew York, NY 10001',
+      phone: '(212) 555-0147',
+      email: 'team@growthmarketingpro.com'
+    };
+    marketingEstimate.to = {
+      name: 'Local Business Solutions',
+      address: '888 Commerce St\nBusiness Park, BP 10016',
+      phone: '(212) 555-0987',
+      email: 'marketing@localbiz.com'
+    };
+    marketingEstimate.items = [
+      { description: 'Social Media Management (3 months)', quantity: 3, unitPrice: 1500 },
+      { description: 'Content Creation - Blog Posts', quantity: 12, unitPrice: 200 },
+      { description: 'Email Marketing Campaign', quantity: 1, unitPrice: 2500 },
+      { description: 'PPC Campaign Setup & Management', quantity: 3, unitPrice: 800 },
+      { description: 'Monthly Analytics Report', quantity: 3, unitPrice: 300, optional: true, included: true }
+    ];
+    marketingEstimate.discount = 15;
+    marketingEstimate.discountLabel = 'New Client Discount';
+    marketingEstimate.notes = '15% new client discount applied. Scan QR code to view detailed package breakdown online.';
+    marketingEstimate.terms = '3-month commitment required. Monthly billing. Cancel anytime after initial period with 30 days notice.';
+
+    // Log all events
+    document.querySelectorAll('snice-estimate').forEach(estimate => {
+      estimate.addEventListener('estimate-accept', (e) => {
+        console.log('Estimate accepted:', e.detail);
+      });
+      estimate.addEventListener('estimate-decline', (e) => {
+        console.log('Estimate declined:', e.detail);
+      });
+      estimate.addEventListener('item-toggle', (e) => {
+        console.log('Item toggled:', e.detail);
+      });
+    });
+  </script>
+</body>
+</html>

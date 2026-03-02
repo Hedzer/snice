@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snice Data Card Component Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 40px;
+      line-height: 1.6;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: var(--snice-color-text);
+      border-bottom: 2px solid var(--snice-color-border);
+      padding-bottom: 10px;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      color: var(--snice-color-text);
+      margin-top: 40px;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .demo-section {
+      margin: 30px 0;
+      padding: 20px;
+      background: var(--snice-color-background);
+      border-radius: 8px;
+      border: 1px solid var(--snice-color-border);
+    }
+
+    .demo-label {
+      display: block;
+      margin-bottom: 16px;
+      font-weight: 600;
+      color: var(--snice-color-text-secondary);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .example-card {
+      padding: 20px;
+      background: var(--snice-color-background-element);
+      border-radius: 6px;
+      border: 1px solid var(--snice-color-border);
+      margin: 16px 0;
+    }
+
+    .example-card h3 {
+      margin-top: 0;
+      margin-bottom: 16px;
+      font-size: 16px;
+      color: var(--snice-color-text);
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .output-panel {
+      margin-top: 16px;
+      padding: 16px;
+      background: var(--snice-color-background);
+      border-radius: 6px;
+      border: 1px solid var(--snice-color-border);
+    }
+
+    .output-panel h4 {
+      margin: 0 0 12px 0;
+      font-size: 14px;
+      color: var(--snice-color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .output-content {
+      font-family: monospace;
+      font-size: 13px;
+      color: var(--snice-color-text);
+      white-space: pre-wrap;
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+      padding: 16px;
+      background: var(--snice-color-background-element);
+      border-radius: 6px;
+      border: 1px solid var(--snice-color-border);
+    }
+
+    .controls label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .controls select {
+      padding: 8px 12px;
+      border: 1px solid var(--snice-color-border);
+      border-radius: 4px;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      font-size: 14px;
+    }
+
+    .controls input[type="checkbox"] {
+      cursor: pointer;
+    }
+
+    .controls button {
+      padding: 8px 16px;
+      background: var(--snice-color-primary);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .controls button:hover {
+      opacity: 0.9;
+    }
+
+    .event-log {
+      max-height: 200px;
+      overflow-y: auto;
+      font-family: monospace;
+      font-size: 12px;
+    }
+
+    .event-item {
+      padding: 8px 12px;
+      margin: 4px 0;
+      background: var(--snice-color-background-element);
+      border-radius: 4px;
+      border-left: 3px solid var(--snice-color-primary);
+    }
+
+    .event-item.field-change {
+      border-left-color: var(--snice-color-warning);
+    }
+
+    .event-item.field-save {
+      border-left-color: var(--snice-color-success);
+    }
+
+    .event-time {
+      color: var(--snice-color-text-tertiary);
+      font-size: 11px;
+    }
+
+    .event-type {
+      font-weight: 600;
+      color: var(--snice-color-text-secondary);
+    }
+
+    .info-box {
+      padding: 16px;
+      background: var(--snice-color-info-subtle);
+      border: 1px solid var(--snice-color-info);
+      border-radius: 6px;
+      margin: 16px 0;
+    }
+
+    .info-box p {
+      margin: 0;
+      color: var(--snice-color-text);
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📋 Snice Data Card Component Demo</h1>
+
+    <div class="info-box">
+      <p>A key-value detail panel for displaying structured data with grouped sections, multiple value types, and edit-in-place support.</p>
+    </div>
+
+    <div class="demo-section">
+      <h2>Basic Usage</h2>
+      <span class="demo-label">Simple key-value display</span>
+      <snice-data-card id="basic-card"></snice-data-card>
+    </div>
+
+    <div class="demo-section">
+      <h2>Value Types</h2>
+      <span class="demo-label">Different field types: text, link, badge, date, currency</span>
+      <snice-data-card id="typed-card"></snice-data-card>
+    </div>
+
+    <div class="demo-section">
+      <h2>Grouped Fields</h2>
+      <span class="demo-label">Organize fields into labeled sections with icons</span>
+      <snice-data-card id="grouped-card"></snice-data-card>
+    </div>
+
+    <div class="demo-section">
+      <h2>Edit Mode</h2>
+      <span class="demo-label">Click Edit to modify values inline</span>
+      <snice-data-card id="editable-card" editable></snice-data-card>
+      
+      <div class="output-panel">
+        <h4>Live Value Display</h4>
+        <div class="output-content" id="editable-values">{}</div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Variants</h2>
+      <span class="demo-label">Default, horizontal, and compact layouts</span>
+      
+      <div class="card-grid">
+        <div class="example-card">
+          <h3>Default</h3>
+          <snice-data-card id="variant-default"></snice-data-card>
+        </div>
+        
+        <div class="example-card">
+          <h3>Compact</h3>
+          <snice-data-card id="variant-compact" variant="compact"></snice-data-card>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Interactive Demo</h2>
+      <span class="demo-label">Customize and test the component</span>
+      
+      <div class="controls">
+        <label>
+          <input type="checkbox" id="editable-check">
+          Editable
+        </label>
+        <label>
+          Variant:
+          <select id="variant-select">
+            <option value="default">Default</option>
+            <option value="compact">Compact</option>
+          </select>
+        </label>
+        <button onclick="updateInteractiveValues()">Randomize Values</button>
+        <button onclick="resetInteractiveValues()">Reset</button>
+      </div>
+
+      <snice-data-card id="interactive-card"></snice-data-card>
+
+      <div class="output-panel">
+        <h4>Current Values</h4>
+        <div class="output-content" id="interactive-values">{}</div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Event Log</h2>
+      <span class="demo-label">Real-time events from the editable card</span>
+      
+      <div class="controls">
+        <button onclick="clearEventLog()">Clear Log</button>
+      </div>
+
+      <div class="output-panel">
+        <div class="event-log" id="event-log">
+          <div class="output-content" style="color: var(--snice-color-text-tertiary); font-style: italic;">Events will appear here...</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Real-world Examples</h2>
+
+      <div class="example-card">
+        <h3>👤 User Profile</h3>
+        <snice-data-card id="profile-card"></snice-data-card>
+      </div>
+
+      <div class="example-card">
+        <h3>📦 Order Details</h3>
+        <snice-data-card id="order-card"></snice-data-card>
+      </div>
+
+      <div class="example-card">
+        <h3>🔧 System Information</h3>
+        <snice-data-card id="system-card" variant="compact"></snice-data-card>
+      </div>
+
+      <div class="example-card">
+        <h3>📝 Editable Task Details</h3>
+        <snice-data-card id="task-card" editable></snice-data-card>
+        <div class="output-panel" style="margin-top: 12px;">
+          <h4>Task Data (JSON)</h4>
+          <div class="output-content" id="task-json">{}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import './snice-data-card.ts';
+
+    // Basic card
+    const basicCard = document.getElementById('basic-card');
+    basicCard.fields = [
+      { label: 'Name', value: 'John Doe' },
+      { label: 'Email', value: 'john@example.com' },
+      { label: 'Role', value: 'Administrator' },
+    ];
+
+    // Typed card
+    const typedCard = document.getElementById('typed-card');
+    typedCard.fields = [
+      { label: 'Name', value: 'Jane Doe', type: 'text' },
+      { label: 'Website', value: 'example.com', type: 'link', href: 'https://example.com' },
+      { label: 'Status', value: 'Active', type: 'badge', badgeVariant: 'success' },
+      { label: 'Priority', value: 'High', type: 'badge', badgeVariant: 'danger' },
+      { label: 'Created', value: '2024-01-15', type: 'date' },
+      { label: 'Balance', value: '$1,250.00', type: 'currency' },
+    ];
+
+    // Grouped card
+    const groupedCard = document.getElementById('grouped-card');
+    groupedCard.fields = [
+      { label: 'First Name', value: 'John', group: 'Personal Info', icon: '👤' },
+      { label: 'Last Name', value: 'Doe', group: 'Personal Info', icon: '👤' },
+      { label: 'Email', value: 'john@acme.com', group: 'Contact', icon: '✉️' },
+      { label: 'Phone', value: '555-0123', group: 'Contact', icon: '📞' },
+      { label: 'Address', value: '123 Main St', group: 'Location', icon: '📍' },
+      { label: 'City', value: 'New York', group: 'Location', icon: '🏙️' },
+    ];
+
+    // Editable card
+    const editableCard = document.getElementById('editable-card');
+    editableCard.fields = [
+      { label: 'Project Name', value: 'Website Redesign' },
+      { label: 'Status', value: 'In Progress', type: 'badge', badgeVariant: 'primary', editable: false },
+      { label: 'Budget', value: '$50,000', type: 'currency' },
+      { label: 'Deadline', value: '2024-06-30', type: 'date' },
+      { label: 'Notes', value: 'Click to edit any field' },
+    ];
+
+    function updateEditableValues() {
+      const values = editableCard.getValues();
+      document.getElementById('editable-values').textContent = JSON.stringify(values, null, 2);
+    }
+
+    editableCard.addEventListener('field-change', updateEditableValues);
+    editableCard.addEventListener('field-save', updateEditableValues);
+    updateEditableValues();
+
+    // Variant cards
+    const variantDefault = document.getElementById('variant-default');
+    variantDefault.fields = [
+      { label: 'ID', value: '#12345' },
+      { label: 'Type', value: 'Invoice' },
+      { label: 'Amount', value: '$500.00', type: 'currency' },
+    ];
+
+    const variantCompact = document.getElementById('variant-compact');
+    variantCompact.fields = [
+      { label: 'ID', value: '#12345' },
+      { label: 'Type', value: 'Invoice' },
+      { label: 'Amount', value: '$500.00', type: 'currency' },
+    ];
+
+    // Interactive card
+    const interactiveCard = document.getElementById('interactive-card');
+    const interactiveFields = [
+      { label: 'Product Name', value: 'Premium Widget' },
+      { label: 'SKU', value: 'WDG-001', editable: false },
+      { label: 'Price', value: '$99.99', type: 'currency' },
+      { label: 'Stock', value: '150' },
+      { label: 'Category', value: 'Electronics', type: 'badge', badgeVariant: 'primary' },
+    ];
+    interactiveCard.fields = [...interactiveFields];
+
+    document.getElementById('editable-check').addEventListener('change', (e) => {
+      interactiveCard.editable = e.target.checked;
+    });
+
+    document.getElementById('variant-select').addEventListener('change', (e) => {
+      interactiveCard.variant = e.target.value;
+    });
+
+    function updateInteractiveOutput() {
+      const values = interactiveCard.getValues();
+      document.getElementById('interactive-values').textContent = JSON.stringify(values, null, 2);
+    }
+
+    interactiveCard.addEventListener('field-change', updateInteractiveOutput);
+    interactiveCard.addEventListener('field-save', updateInteractiveOutput);
+
+    window.updateInteractiveValues = function() {
+      const randomValues = {
+        'Product Name': ['Premium Widget', 'Standard Gadget', 'Deluxe Tool', 'Basic Item'][Math.floor(Math.random() * 4)],
+        'Price': `$${(Math.random() * 200 + 50).toFixed(2)}`,
+        'Stock': Math.floor(Math.random() * 500).toString(),
+      };
+      interactiveCard.setValues(randomValues);
+      updateInteractiveOutput();
+    };
+
+    window.resetInteractiveValues = function() {
+      interactiveCard.fields = interactiveFields.map(f => ({...f}));
+      updateInteractiveOutput();
+    };
+
+    updateInteractiveOutput();
+
+    // Event logging
+    const eventLog = document.getElementById('event-log');
+
+    function logEvent(type, detail) {
+      const time = new Date().toLocaleTimeString();
+      const eventItem = document.createElement('div');
+      eventItem.className = `event-item ${type}`;
+      
+      let detailText = '';
+      if (type === 'field-change') {
+        detailText = `${detail.field.label}: "${detail.previousValue}" → "${detail.value}"`;
+      } else if (type === 'field-save') {
+        detailText = `${detail.field.label} = "${detail.value}"`;
+      }
+
+      eventItem.innerHTML = `
+        <div class="event-time">${time}</div>
+        <div><span class="event-type">${type}</span>: ${detailText}</div>
+      `;
+
+      // Remove placeholder if present
+      if (eventLog.querySelector('.output-content')?.textContent === 'Events will appear here...') {
+        eventLog.innerHTML = '';
+      }
+
+      eventLog.insertBefore(eventItem, eventLog.firstChild);
+
+      // Keep only last 20 events
+      while (eventLog.children.length > 20) {
+        eventLog.removeChild(eventLog.lastChild);
+      }
+    }
+
+    window.clearEventLog = function() {
+      eventLog.innerHTML = '<div class="output-content" style="color: var(--snice-color-text-tertiary); font-style: italic;">Events will appear here...</div>';
+    };
+
+    editableCard.addEventListener('field-change', (e) => logEvent('field-change', e.detail));
+    editableCard.addEventListener('field-save', (e) => logEvent('field-save', e.detail));
+
+    // Profile card
+    const profileCard = document.getElementById('profile-card');
+    profileCard.fields = [
+      { label: 'Full Name', value: 'Sarah Johnson', group: 'Personal', icon: '👤' },
+      { label: 'Job Title', value: 'Senior Designer', group: 'Professional', icon: '💼' },
+      { label: 'Department', value: 'Product Design', group: 'Professional', icon: '🏢' },
+      { label: 'Email', value: 'sarah@company.com', group: 'Contact', icon: '✉️', type: 'link', href: 'mailto:sarah@company.com' },
+      { label: 'Phone', value: '+1 (555) 123-4567', group: 'Contact', icon: '📞' },
+      { label: 'Location', value: 'San Francisco, CA', group: 'Contact', icon: '📍' },
+      { label: 'Status', value: 'Active', group: 'Account', icon: '🔵', type: 'badge', badgeVariant: 'success' },
+      { label: 'Member Since', value: '2022-03-15', group: 'Account', icon: '📅', type: 'date' },
+    ];
+
+    // Order card
+    const orderCard = document.getElementById('order-card');
+    orderCard.fields = [
+      { label: 'Order ID', value: '#ORD-2024-001234', type: 'text' },
+      { label: 'Status', value: 'Shipped', type: 'badge', badgeVariant: 'success' },
+      { label: 'Order Date', value: '2024-02-10', type: 'date' },
+      { label: 'Customer', value: 'John Smith' },
+      { label: 'Email', value: 'john@example.com', type: 'link', href: 'mailto:john@example.com' },
+      { label: 'Items', value: '3' },
+      { label: 'Subtotal', value: '$299.97', type: 'currency' },
+      { label: 'Shipping', value: '$15.00', type: 'currency' },
+      { label: 'Tax', value: '$25.20', type: 'currency' },
+      { label: 'Total', value: '$340.17', type: 'currency' },
+    ];
+
+    // System card
+    const systemCard = document.getElementById('system-card');
+    systemCard.fields = [
+      { label: 'OS', value: 'Ubuntu 22.04 LTS' },
+      { label: 'Kernel', value: '5.15.0' },
+      { label: 'CPU', value: '8 cores' },
+      { label: 'Memory', value: '16 GB' },
+      { label: 'Disk', value: '500 GB SSD' },
+      { label: 'Uptime', value: '45 days' },
+      { label: 'Status', value: 'Healthy', type: 'badge', badgeVariant: 'success' },
+    ];
+
+    // Task card
+    const taskCard = document.getElementById('task-card');
+    taskCard.fields = [
+      { label: 'Task Title', value: 'Implement user authentication' },
+      { label: 'Assignee', value: 'Alex Chen' },
+      { label: 'Priority', value: 'High', type: 'badge', badgeVariant: 'danger', editable: false },
+      { label: 'Status', value: 'In Progress', type: 'badge', badgeVariant: 'primary', editable: false },
+      { label: 'Due Date', value: '2024-03-15', type: 'date' },
+      { label: 'Estimated Hours', value: '16' },
+      { label: 'Description', value: 'Add OAuth2 login with Google and GitHub providers' },
+    ];
+
+    function updateTaskJson() {
+      const values = taskCard.getValues();
+      document.getElementById('task-json').textContent = JSON.stringify(values, null, 2);
+    }
+
+    taskCard.addEventListener('field-change', updateTaskJson);
+    taskCard.addEventListener('field-save', updateTaskJson);
+    updateTaskJson();
+  </script>
+</body>
+</html>

@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snice Work Order Component Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 40px;
+      line-height: 1.6;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: var(--snice-color-text);
+      border-bottom: 2px solid var(--snice-color-border);
+      padding-bottom: 10px;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      color: var(--snice-color-text);
+      margin-top: 40px;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .demo-section {
+      margin: 30px 0;
+      padding: 20px;
+      background: var(--snice-color-background);
+      border-radius: 8px;
+      border: 1px solid var(--snice-color-border);
+    }
+
+    .demo-label {
+      display: block;
+      margin-bottom: 16px;
+      font-weight: 600;
+      color: var(--snice-color-text-secondary);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .work-order-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+      gap: 24px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+      padding: 16px;
+      background: var(--snice-color-background-element);
+      border-radius: 6px;
+      border: 1px solid var(--snice-color-border);
+    }
+
+    .controls label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .controls select, .controls input {
+      padding: 8px 12px;
+      border: 1px solid var(--snice-color-border);
+      border-radius: 4px;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      font-size: 14px;
+    }
+
+    .controls button {
+      padding: 8px 16px;
+      border: 1px solid var(--snice-color-border);
+      border-radius: 4px;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 150ms;
+    }
+
+    .controls button:hover {
+      border-color: var(--snice-color-primary);
+      color: var(--snice-color-primary);
+    }
+
+    .event-log {
+      background: var(--snice-color-background-element);
+      border: 1px solid var(--snice-color-border);
+      border-radius: 6px;
+      padding: 12px;
+      margin-top: 16px;
+      font-family: monospace;
+      font-size: 13px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .event-log:empty::before {
+      content: 'Event log will appear here...';
+      color: var(--snice-color-text-tertiary);
+      font-style: italic;
+    }
+
+    .event-item {
+      padding: 4px 0;
+      border-bottom: 1px solid var(--snice-color-border);
+    }
+
+    .event-item:last-child {
+      border-bottom: none;
+    }
+
+    .example-card {
+      padding: 20px;
+      background: var(--snice-color-background-element);
+      border-radius: 6px;
+      border: 1px solid var(--snice-color-border);
+      margin: 16px 0;
+      overflow-x: auto;
+    }
+
+    .example-card h3 {
+      margin-top: 0;
+      margin-bottom: 16px;
+      font-size: 16px;
+      color: var(--snice-color-text);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔧 Snice Work Order Component Demo</h1>
+
+    <div class="demo-section">
+      <h2>Work Order Variants</h2>
+      <span class="demo-label">Different visual styles for different use cases</span>
+      
+      <div class="work-order-grid">
+        <div class="example-card">
+          <h3>Standard</h3>
+          <snice-work-order id="wo-standard"></snice-work-order>
+        </div>
+        
+        <div class="example-card">
+          <h3>Compact</h3>
+          <snice-work-order id="wo-compact" variant="compact"></snice-work-order>
+        </div>
+        
+        <div class="example-card">
+          <h3>Field Service</h3>
+          <snice-work-order id="wo-field" variant="field-service"></snice-work-order>
+        </div>
+        
+        <div class="example-card">
+          <h3>Maintenance</h3>
+          <snice-work-order id="wo-maintenance" variant="maintenance"></snice-work-order>
+        </div>
+        
+        <div class="example-card">
+          <h3>Detailed</h3>
+          <snice-work-order id="wo-detailed" variant="detailed"></snice-work-order>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Priority & Status Combinations</h2>
+      <span class="demo-label">Different priority and status combinations</span>
+      
+      <div class="work-order-grid">
+        <div class="example-card">
+          <h3>Urgent / Open</h3>
+          <snice-work-order id="wo-urgent-open"></snice-work-order>
+        </div>
+        
+        <div class="example-card">
+          <h3>High / In Progress</h3>
+          <snice-work-order id="wo-high-progress"></snice-work-order>
+        </div>
+        
+        <div class="example-card">
+          <h3>Medium / Completed</h3>
+          <snice-work-order id="wo-medium-completed"></snice-work-order>
+        </div>
+        
+        <div class="example-card">
+          <h3>Low / Cancelled</h3>
+          <snice-work-order id="wo-low-cancelled"></snice-work-order>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Interactive Demo</h2>
+      <span class="demo-label">Customize work order properties and interact with tasks</span>
+      
+      <div class="controls">
+        <label>
+          Variant:
+          <select id="variant-select">
+            <option value="standard" selected>Standard</option>
+            <option value="compact">Compact</option>
+            <option value="field-service">Field Service</option>
+            <option value="maintenance">Maintenance</option>
+            <option value="detailed">Detailed</option>
+          </select>
+        </label>
+        
+        <label>
+          Priority:
+          <select id="priority-select">
+            <option value="low">Low</option>
+            <option value="medium" selected>Medium</option>
+            <option value="high">High</option>
+            <option value="urgent">Urgent</option>
+          </select>
+        </label>
+        
+        <label>
+          Status:
+          <select id="status-select">
+            <option value="open" selected>Open</option>
+            <option value="in-progress">In Progress</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </label>
+        
+        <button id="toggle-parts">Toggle Parts</button>
+        <button id="toggle-labor">Toggle Labor</button>
+        <button id="toggle-asset">Toggle Asset</button>
+        <button id="print-wo">Print Work Order</button>
+      </div>
+      
+      <snice-work-order id="interactive-wo"></snice-work-order>
+      
+      <div class="event-log" id="event-log"></div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Real-world Examples</h2>
+
+      <div class="example-card">
+        <h3>HVAC Repair Service</h3>
+        <snice-work-order id="wo-hvac"></snice-work-order>
+      </div>
+
+      <div class="example-card">
+        <h3>IT Support Ticket</h3>
+        <snice-work-order id="wo-it"></snice-work-order>
+      </div>
+
+      <div class="example-card">
+        <h3>Equipment Maintenance</h3>
+        <snice-work-order id="wo-equipment"></snice-work-order>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import './snice-work-order.ts';
+
+    // Sample data
+    const sampleTasks = [
+      { description: 'Inspect equipment for damage', completed: true, assignee: 'John Smith', hours: 0.5 },
+      { description: 'Diagnose issue and identify parts needed', completed: true, assignee: 'John Smith', hours: 1.0 },
+      { description: 'Replace faulty component', completed: false, assignee: 'John Smith', hours: 2.0 },
+      { description: 'Test system functionality', completed: false, assignee: 'John Smith', hours: 0.5 },
+      { description: 'Clean work area and document service', completed: false, assignee: 'John Smith', hours: 0.5 }
+    ];
+
+    const sampleParts = [
+      { name: 'Replacement Filter', partNumber: 'FIL-2024-A', quantity: 2, unitCost: 45.00 },
+      { name: 'O-Ring Set', partNumber: 'ORG-STD-01', quantity: 1, unitCost: 12.50 },
+      { name: 'Sealant Compound', partNumber: 'SEAL-QT', quantity: 1, unitCost: 18.99 }
+    ];
+
+    const sampleCustomer = {
+      name: 'ABC Manufacturing',
+      address: '123 Industrial Way\nManufacturing District, MD 21000',
+      phone: '(555) 123-4567',
+      email: 'maintenance@abcmanufacturing.com'
+    };
+
+    const sampleAsset = {
+      id: 'HVAC-UNIT-003',
+      name: 'Main Building HVAC Unit C',
+      location: 'Building A - Rooftop',
+      serial: 'HVAC-2022-8847-AC',
+      lastService: '2023-08-15'
+    };
+
+    // Initialize variant work orders
+    const variants = ['standard', 'compact', 'field-service', 'maintenance', 'detailed'];
+    variants.forEach(variant => {
+      const wo = document.getElementById(`wo-${variant}`);
+      wo.woNumber = `WO-${variant.toUpperCase().slice(0, 3)}001`;
+      wo.date = '2024-01-15';
+      wo.dueDate = '2024-01-18';
+      wo.priority = 'high';
+      wo.status = 'in-progress';
+      wo.customer = sampleCustomer;
+      wo.description = 'Perform scheduled maintenance and replace worn components. Customer reported unusual noise during operation.';
+      wo.tasks = sampleTasks;
+      wo.parts = sampleParts;
+      wo.asset = sampleAsset;
+      wo.laborRate = 85;
+      wo.notes = 'Customer available 8AM-5PM. Contact before arrival.';
+    });
+
+    // Priority/Status combinations
+    const combinations = [
+      { id: 'wo-urgent-open', priority: 'urgent', status: 'open' },
+      { id: 'wo-high-progress', priority: 'high', status: 'in-progress' },
+      { id: 'wo-medium-completed', priority: 'medium', status: 'completed' },
+      { id: 'wo-low-cancelled', priority: 'low', status: 'cancelled' }
+    ];
+
+    combinations.forEach(combo => {
+      const wo = document.getElementById(combo.id);
+      wo.woNumber = `WO-${combo.priority.toUpperCase().slice(0, 3)}-${combo.status.toUpperCase().slice(0, 3)}001`;
+      wo.date = '2024-01-15';
+      wo.dueDate = combo.priority === 'urgent' ? '2024-01-15' : '2024-01-20';
+      wo.priority = combo.priority;
+      wo.status = combo.status;
+      wo.customer = sampleCustomer;
+      wo.description = 'Sample work order description for demonstration purposes.';
+      wo.tasks = sampleTasks.slice(0, 3).map(t => ({ ...t, completed: combo.status === 'completed' }));
+    });
+
+    // Interactive work order
+    const interactiveWo = document.getElementById('interactive-wo');
+    const eventLog = document.getElementById('event-log');
+
+    function logEvent(message) {
+      const item = document.createElement('div');
+      item.className = 'event-item';
+      const time = new Date().toLocaleTimeString();
+      item.textContent = `[${time}] ${message}`;
+      eventLog.appendChild(item);
+      eventLog.scrollTop = eventLog.scrollHeight;
+    }
+
+    interactiveWo.woNumber = 'WO-INT-001';
+    interactiveWo.date = '2024-01-15';
+    interactiveWo.dueDate = '2024-01-20';
+    interactiveWo.priority = 'medium';
+    interactiveWo.status = 'open';
+    interactiveWo.customer = sampleCustomer;
+    interactiveWo.description = 'Interactive demo work order. Try clicking on tasks to mark them complete!';
+    interactiveWo.tasks = sampleTasks.map(t => ({ ...t, completed: false }));
+    interactiveWo.parts = sampleParts;
+    interactiveWo.asset = sampleAsset;
+    interactiveWo.laborRate = 75;
+    interactiveWo.notes = 'Click tasks to toggle completion status. Watch the events log below!';
+
+    // Controls
+    document.getElementById('variant-select').addEventListener('change', (e) => {
+      interactiveWo.variant = e.target.value;
+      logEvent(`Variant changed to: ${e.target.value}`);
+    });
+
+    document.getElementById('priority-select').addEventListener('change', (e) => {
+      interactiveWo.priority = e.target.value;
+      logEvent(`Priority changed to: ${e.target.value}`);
+    });
+
+    document.getElementById('status-select').addEventListener('change', (e) => {
+      interactiveWo.status = e.target.value;
+      logEvent(`Status changed to: ${e.target.value}`);
+    });
+
+    let showParts = true;
+    document.getElementById('toggle-parts').addEventListener('click', () => {
+      showParts = !showParts;
+      interactiveWo.parts = showParts ? sampleParts : [];
+      logEvent(`Parts ${showParts ? 'shown' : 'hidden'}`);
+    });
+
+    let showLabor = true;
+    document.getElementById('toggle-labor').addEventListener('click', () => {
+      showLabor = !showLabor;
+      interactiveWo.laborRate = showLabor ? 75 : 0;
+      logEvent(`Labor tracking ${showLabor ? 'enabled' : 'disabled'}`);
+    });
+
+    let showAsset = true;
+    document.getElementById('toggle-asset').addEventListener('click', () => {
+      showAsset = !showAsset;
+      interactiveWo.asset = showAsset ? sampleAsset : null;
+      logEvent(`Asset info ${showAsset ? 'shown' : 'hidden'}`);
+    });
+
+    document.getElementById('print-wo').addEventListener('click', () => {
+      interactiveWo.print();
+      logEvent('Print dialog opened');
+    });
+
+    // Event listeners
+    interactiveWo.addEventListener('task-toggle', (e) => {
+      logEvent(`Task ${e.detail.index + 1} ${e.detail.completed ? 'completed' : 'uncompleted'}: ${e.detail.task.description}`);
+    });
+
+    interactiveWo.addEventListener('status-change', (e) => {
+      logEvent(`Status changed from "${e.detail.previousStatus}" to "${e.detail.status}"`);
+    });
+
+    interactiveWo.addEventListener('wo-sign', (e) => {
+      logEvent(`Work order ${e.detail.woNumber} signed at ${new Date(e.detail.timestamp).toLocaleString()}`);
+    });
+
+    // HVAC work order
+    const hvacWo = document.getElementById('wo-hvac');
+    hvacWo.woNumber = 'WO-HVAC-2024-1042';
+    hvacWo.date = '2024-01-15';
+    hvacWo.dueDate = '2024-01-16';
+    hvacWo.priority = 'urgent';
+    hvacWo.status = 'in-progress';
+    hvacWo.customer = {
+      name: 'Metro Office Complex',
+      address: '500 Business Center Dr\nSuite 200\nMetro City, MC 50000',
+      phone: '(555) 789-0123',
+      email: 'facilities@metrooffice.com'
+    };
+    hvacWo.description = 'Unit not cooling properly. Temperature readings 15°F above setpoint. Client reports unit making loud grinding noise.';
+    hvacWo.tasks = [
+      { description: 'Inspect unit and diagnose issue', completed: true, assignee: 'Mike Johnson', hours: 1.0 },
+      { description: 'Replace faulty compressor', completed: true, assignee: 'Mike Johnson', hours: 3.0 },
+      { description: 'Recharge refrigerant system', completed: false, assignee: 'Mike Johnson', hours: 1.5 },
+      { description: 'Test system operation', completed: false, assignee: 'Mike Johnson', hours: 0.5 },
+      { description: 'Complete service report', completed: false, assignee: 'Mike Johnson', hours: 0.5 }
+    ];
+    hvacWo.parts = [
+      { name: 'Compressor Unit 5-ton', partNumber: 'COMP-5T-24000', quantity: 1, unitCost: 1250.00 },
+      { name: 'R-410A Refrigerant', partNumber: 'R410A-25LB', quantity: 1, unitCost: 189.00 },
+      { name: 'Filter Drier', partNumber: 'DRY-78S', quantity: 1, unitCost: 45.00 }
+    ];
+    hvacWo.asset = {
+      id: 'RTU-METRO-05',
+      name: 'Rooftop Unit 5 - West Wing',
+      location: 'Building B Rooftop',
+      serial: 'RTU-2019-5521-MET',
+      lastService: '2023-11-20'
+    };
+    hvacWo.laborRate = 95;
+    hvacWo.notes = 'URGENT: Client has client meetings all day. Must complete by 5PM. After-hours emergency contact: (555) 789-0999';
+
+    // IT Support work order
+    const itWo = document.getElementById('wo-it');
+    itWo.woNumber = 'TKT-IT-2024-08912';
+    itWo.date = '2024-01-15';
+    itWo.dueDate = '2024-01-17';
+    itWo.priority = 'medium';
+    itWo.status = 'open';
+    itWo.customer = {
+      name: 'Sarah Chen',
+      address: 'IT Department\nFloor 3, Desk 342',
+      phone: 'ext. 4321',
+      email: 's.chen@company.com'
+    };
+    itWo.description = 'User reports laptop running very slow, frequent crashes when running design software. Needs diagnosis and potential hardware upgrade.';
+    itWo.tasks = [
+      { description: 'Run diagnostics on laptop', completed: false, assignee: 'IT Support Team', hours: 1 },
+      { description: 'Check RAM usage and storage', completed: false, assignee: 'IT Support Team', hours: 0.5 },
+      { description: 'Upgrade RAM to 32GB', completed: false, assignee: 'IT Support Team', hours: 1 },
+      { description: 'Replace with SSD if needed', completed: false, assignee: 'IT Support Team', hours: 2 },
+      { description: 'Test with design software', completed: false, assignee: 'IT Support Team', hours: 1 }
+    ];
+    itWo.parts = [
+      { name: 'DDR4 16GB RAM Module', partNumber: 'RAM-DDR4-16G', quantity: 2, unitCost: 89.99 },
+      { name: '1TB NVMe SSD', partNumber: 'SSD-NVME-1TB', quantity: 1, unitCost: 129.99 }
+    ];
+    itWo.asset = {
+      id: 'LAPTOP-SC-2022',
+      name: 'Dell Precision 5570',
+      location: 'Floor 3, Desk 342',
+      serial: 'SN-DELL-8847221',
+      lastService: '2023-06-10'
+    };
+    itWo.laborRate = 65;
+    itWo.notes = 'User is a graphic designer - priority on design software performance. Schedule work during lunch break if possible.';
+
+    // Equipment maintenance work order
+    const equipmentWo = document.getElementById('wo-equipment');
+    equipmentWo.woNumber = 'PM-CNC-2024-01';
+    equipmentWo.date = '2024-01-15';
+    equipmentWo.dueDate = '2024-01-22';
+    equipmentWo.priority = 'low';
+    equipmentWo.status = 'open';
+    equipmentWo.customer = {
+      name: 'Precision Manufacturing Inc.',
+      address: '2000 Factory Row\nIndustrial Park, IP 30000',
+      phone: '(555) 456-7890',
+      email: 'maintenance@precisionmfg.com'
+    };
+    equipmentWo.description = 'Quarterly preventive maintenance on CNC Machine #3. Includes lubrication, calibration check, and coolant system service.';
+    equipmentWo.tasks = [
+      { description: 'Inspect all lubrication points', completed: false, assignee: 'Maintenance Team A', hours: 1 },
+      { description: 'Replace lubricant and filters', completed: false, assignee: 'Maintenance Team A', hours: 2 },
+      { description: 'Check and calibrate axis alignment', completed: false, assignee: 'Maintenance Team A', hours: 3 },
+      { description: 'Service coolant system', completed: false, assignee: 'Maintenance Team A', hours: 2 },
+      { description: 'Run test program and verify accuracy', completed: false, assignee: 'Maintenance Team A', hours: 1 },
+      { description: 'Update maintenance log', completed: false, assignee: 'Maintenance Team A', hours: 0.5 }
+    ];
+    equipmentWo.parts = [
+      { name: 'Way Oil ISO 68', partNumber: 'OIL-WAY-68-5G', quantity: 1, unitCost: 78.50 },
+      { name: 'Hydraulic Filter Element', partNumber: 'FIL-HYD-300', quantity: 2, unitCost: 34.25 },
+      { name: 'Coolant Concentrate', partNumber: 'COOL-SYN-5G', quantity: 1, unitCost: 125.00 },
+      { name: 'Spindle Bearing Grease', partNumber: 'GRS-SPL-1LB', quantity: 1, unitCost: 89.00 }
+    ];
+    equipmentWo.asset = {
+      id: 'CNC-HAAS-VF3-003',
+      name: 'Haas VF-3 Vertical Mill',
+      location: 'Machine Shop - Bay 3',
+      serial: 'HAAS-VF3-2018-3341',
+      lastService: '2023-10-15'
+    };
+    equipmentWo.laborRate = 85;
+    equipmentWo.notes = 'Scheduled PM - coordinate with production to minimize downtime. Machine must be cool before service begins.';
+
+    // Log all events
+    document.querySelectorAll('snice-work-order').forEach(wo => {
+      wo.addEventListener('task-toggle', (e) => {
+        console.log('Task toggled:', e.detail);
+      });
+      wo.addEventListener('status-change', (e) => {
+        console.log('Status changed:', e.detail);
+      });
+      wo.addEventListener('wo-sign', (e) => {
+        console.log('Work order signed:', e.detail);
+      });
+    });
+  </script>
+</body>
+</html>

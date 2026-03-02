@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snice Testimonial Component Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 40px;
+      line-height: 1.6;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: var(--snice-color-text);
+      border-bottom: 2px solid var(--snice-color-border);
+      padding-bottom: 10px;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      color: var(--snice-color-text);
+      margin-top: 40px;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .demo-section {
+      margin: 30px 0;
+      padding: 20px;
+      background: var(--snice-color-background);
+      border-radius: 8px;
+      border: 1px solid var(--snice-color-border);
+    }
+
+    .demo-label {
+      display: block;
+      margin-bottom: 16px;
+      font-weight: 600;
+      color: var(--snice-color-text-secondary);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .testimonial-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 24px;
+    }
+
+    .testimonial-card {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 24px;
+      background: var(--snice-color-background);
+      border: 1px solid var(--snice-color-border);
+      border-radius: 12px;
+      box-shadow: var(--snice-shadow-sm);
+    }
+
+    .testimonial-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--snice-color-primary);
+    }
+
+    snice-testimonial {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>⭐ Snice Testimonial Component Demo</h1>
+
+    <div class="demo-section">
+      <h2>Testimonial Cards</h2>
+      <span class="demo-label">Display customer testimonials with ratings</span>
+      
+      <div class="testimonial-grid">
+        <div class="testimonial-card">
+          <span class="testimonial-label">Full Testimonial</span>
+          <snice-testimonial
+            quote="This product completely transformed how our team works. The efficiency gains have been incredible, and customer support is outstanding. Highly recommend to anyone looking to streamline their workflow."
+            author="Sarah Chen"
+            role="Product Manager"
+            company="TechCorp Inc."
+            avatar="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah"
+            rating="5"
+            variant="card">
+          </snice-testimonial>
+        </div>
+
+        <div class="testimonial-card">
+          <span class="testimonial-label">With Rating</span>
+          <snice-testimonial
+            quote="Excellent tool! Easy to use and very powerful. Has all the features we need."
+            author="Michael Rodriguez"
+            role="Developer"
+            company="StartupXYZ"
+            avatar="https://api.dicebear.com/7.x/avataaars/svg?seed=Michael"
+            rating="5">
+          </snice-testimonial>
+        </div>
+
+        <div class="testimonial-card">
+          <span class="testimonial-label">No Avatar</span>
+          <snice-testimonial
+            quote="Great value for money. The integration was seamless and the documentation is top-notch."
+            author="Emily Watson"
+            role="CTO"
+            company="Digital Solutions"
+            rating="4">
+          </snice-testimonial>
+        </div>
+
+        <div class="testimonial-card">
+          <span class="testimonial-label">Minimal</span>
+          <snice-testimonial
+            quote="Simple, effective, and reliable. Exactly what we were looking for."
+            author="David Kim"
+            rating="5"
+            variant="minimal">
+          </snice-testimonial>
+        </div>
+
+        <div class="testimonial-card">
+          <span class="testimonial-label">Featured</span>
+          <snice-testimonial
+            quote="After trying dozens of similar products, this is the one that finally solved our problem. The attention to detail and user experience is unmatched in the industry."
+            author="Alexandra Thompson"
+            role="VP of Engineering"
+            company="Enterprise Co"
+            avatar="https://api.dicebear.com/7.x/avataaars/svg?seed=Alexandra"
+            rating="5"
+            variant="featured">
+          </snice-testimonial>
+        </div>
+
+        <div class="testimonial-card">
+          <span class="testimonial-label">No Rating</span>
+          <snice-testimonial
+            quote="Would definitely recommend to my colleagues. The onboarding process was smooth."
+            author="James Wilson"
+            role="Designer"
+            company="Creative Studio"
+            avatar="https://api.dicebear.com/7.x/avataaars/svg?seed=James">
+          </snice-testimonial>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Interactive Demo</h2>
+      <span class="demo-label">Customize the testimonial below</span>
+      
+      <div class="testimonial-card" style="max-width: 600px;">
+        <snice-testimonial id="demo-testimonial"></snice-testimonial>
+      </div>
+
+      <div style="margin-top: 24px; display: grid; gap: 12px; max-width: 600px;">
+        <input type="text" id="input-quote" placeholder="Quote" style="padding: 10px; border: 1px solid var(--snice-color-border); border-radius: 6px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <input type="text" id="input-author" placeholder="Author Name" style="padding: 10px; border: 1px solid var(--snice-color-border); border-radius: 6px;">
+          <input type="text" id="input-role" placeholder="Role" style="padding: 10px; border: 1px solid var(--snice-color-border); border-radius: 6px;">
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <input type="text" id="input-company" placeholder="Company" style="padding: 10px; border: 1px solid var(--snice-color-border); border-radius: 6px;">
+          <select id="input-rating" style="padding: 10px; border: 1px solid var(--snice-color-border); border-radius: 6px;">
+            <option value="0">No Rating</option>
+            <option value="1">1 Star</option>
+            <option value="2">2 Stars</option>
+            <option value="3">3 Stars</option>
+            <option value="4">4 Stars</option>
+            <option value="5" selected>5 Stars</option>
+          </select>
+        </div>
+        <select id="input-variant" style="padding: 10px; border: 1px solid var(--snice-color-border); border-radius: 6px;">
+          <option value="card">Card Variant</option>
+          <option value="minimal">Minimal Variant</option>
+          <option value="featured">Featured Variant</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import './snice-testimonial.ts';
+
+    const demo = document.getElementById('demo-testimonial');
+    
+    // Set initial demo content
+    demo.quote = 'This is an interactive testimonial. Use the form below to customize it!';
+    demo.author = 'Demo User';
+    demo.role = 'Product Designer';
+    demo.company = 'Example Corp';
+    demo.rating = 5;
+    demo.avatar = 'https://api.dicebear.com/7.x/avataaars/svg?seed=Demo';
+
+    // Form inputs
+    document.getElementById('input-quote').addEventListener('input', (e) => {
+      demo.quote = e.target.value;
+    });
+
+    document.getElementById('input-author').addEventListener('input', (e) => {
+      demo.author = e.target.value;
+    });
+
+    document.getElementById('input-role').addEventListener('input', (e) => {
+      demo.role = e.target.value;
+    });
+
+    document.getElementById('input-company').addEventListener('input', (e) => {
+      demo.company = e.target.value;
+    });
+
+    document.getElementById('input-rating').addEventListener('change', (e) => {
+      demo.rating = parseInt(e.target.value);
+    });
+
+    document.getElementById('input-variant').addEventListener('change', (e) => {
+      demo.variant = e.target.value;
+    });
+  </script>
+</body>
+</html>
