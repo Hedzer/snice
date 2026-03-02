@@ -2053,11 +2053,6 @@ const themeScripts = themeComponents.map(c => `  <script async src="components/s
 const themesHtml = `${head('Themes')}
 ${header('themes')}
   <main class="wrap">
-    <div class="page-title">
-      <h2>Themes</h2>
-      <p>Pre-built color themes and a visual builder to customize every design token.</p>
-    </div>
-
     <!-- Preset Gallery -->
     <section class="themes-section">
       <h3>Presets</h3>

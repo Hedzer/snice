@@ -1,14 +1,14 @@
 /* Snice website styles */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 /* scroll-behavior: smooth removed - caused unwanted page scroll */
-html { overflow-x: hidden; }
+html { overflow-x: clip; }
 body {
   font-family: var(--snice-font-family);
   background: var(--snice-color-background);
   color: var(--snice-color-text);
   line-height: 1.6;
   font-size: 15px;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 a { color: var(--snice-color-primary); }
 code { font-family: var(--snice-font-family-mono); }
@@ -29,7 +29,7 @@ snice-code-block::part(code) {
 @media (max-width: 800px) {
   snice-code-block::part(code) { font-size: 0.7rem; }
 }
-.wrap { max-width: 1100px; margin: 0 auto; padding: 0 2rem; overflow-x: hidden; }
+.wrap { max-width: 1100px; margin: 0 auto; padding: 0 2rem; overflow-x: clip; }
 
 /* ─── Header ─── */
 header {
@@ -800,11 +800,9 @@ header nav a:hover, header nav a.active { color: var(--snice-color-text); }
 }
 
 /* Two-column builder layout */
-/* Override .wrap overflow:hidden which breaks position:sticky */
-main.wrap:has(.themes-builder-layout) { overflow: visible; }
 .themes-builder-layout {
   display: grid;
-  grid-template-columns: 1fr 280px;
+  grid-template-columns: 320px 1fr;
   gap: 2rem;
 }
 @media (max-width: 900px) {
