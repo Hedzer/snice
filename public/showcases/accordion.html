@@ -20,10 +20,39 @@
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=9ce8560">&lt;snice-accordion&gt;
+          <snice-code-block language="html" grammar="grammars/html.json?v=91a24c9">&lt;snice-accordion&gt;
   &lt;snice-accordion-item item-id="faq-1" open&gt;
     &lt;span slot="header"&gt;Question?&lt;/span&gt;
     &lt;p&gt;Answer content here.&lt;/p&gt;
+  &lt;/snice-accordion-item&gt;
+&lt;/snice-accordion&gt;</snice-code-block>
+        </div>
+      </div>
+
+      <div class="comp-split">
+        <div class="comp-split-demo demo-col">
+          <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--snice-color-text-tertiary);margin-bottom:0.5rem">Elevated variant</div>
+          <snice-accordion variant="elevated">
+            <snice-accordion-item item-id="elev-1" open>
+              <span slot="header">Surface elevation</span>
+              <p style="margin:0;padding:0.5rem 0">Items float with shadows instead of borders. Expanded items get higher elevation.</p>
+            </snice-accordion-item>
+            <snice-accordion-item item-id="elev-2">
+              <span slot="header">Material-inspired</span>
+              <p style="margin:0;padding:0.5rem 0">Each item is a standalone card with gap spacing between them.</p>
+            </snice-accordion-item>
+            <snice-accordion-item item-id="elev-3">
+              <span slot="header">Smooth transitions</span>
+              <p style="margin:0;padding:0.5rem 0">Shadow depth transitions smoothly on expand/collapse.</p>
+            </snice-accordion-item>
+          </snice-accordion>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=91a24c9">&lt;snice-accordion variant="elevated"&gt;
+  &lt;snice-accordion-item item-id="elev-1" open&gt;
+    &lt;span slot="header"&gt;Surface elevation&lt;/span&gt;
+    &lt;p&gt;Items float with shadows.&lt;/p&gt;
   &lt;/snice-accordion-item&gt;
 &lt;/snice-accordion&gt;</snice-code-block>
         </div>
