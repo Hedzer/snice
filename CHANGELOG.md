@@ -1,3 +1,10 @@
+## [4.20.1](https://gitlab.com/Hedzer/snice/compare/v4.20.0...v4.20.1) (2026-03-03)
+
+
+### Bug Fixes
+
+* remove dark mode icon invert hack from app-tiles ([bdb3da3](https://gitlab.com/Hedzer/snice/commit/bdb3da3d9c32041a9562dfc6a1edc526bb1facb9))
+
 # [4.20.0](https://gitlab.com/Hedzer/snice/compare/v4.19.0...v4.20.0) (2026-03-03)
 
 
