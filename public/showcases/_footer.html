@@ -611,6 +611,23 @@
       });
     })();
 
+    // Hash scroll: wait for all snice-* elements on the page to be defined, then scroll
+    (function() {
+      const hash = location.hash;
+      if (!hash) return;
+      const tags = new Set();
+      document.querySelectorAll('*').forEach(el => {
+        if (el.tagName.includes('-') && el.tagName.toLowerCase().startsWith('snice-')) {
+          tags.add(el.tagName.toLowerCase());
+        }
+      });
+      if (!tags.size) return;
+      Promise.all([...tags].map(t => customElements.whenDefined(t))).then(() => {
+        const target = document.querySelector(hash);
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
+      });
+    })();
+
     // Help drawer logic
     (function() {
       const overlay = document.getElementById('help-overlay');
