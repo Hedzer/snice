@@ -928,8 +928,8 @@ ${header('components')}
         <snice-avatar name="John Doe" shape="circle"></snice-avatar>
         <snice-avatar name="Jane Doe" shape="rounded"></snice-avatar>
         <snice-avatar name="Jim Doe" shape="square"></snice-avatar>
-        <snice-avatar src="https://i.pravatar.cc/100?u=1" name="User"></snice-avatar>
-        <snice-avatar src="https://i.pravatar.cc/100?u=2" name="User"></snice-avatar>
+        <snice-avatar src="assets/avatars/pravatar-100-1.jpg" name="User"></snice-avatar>
+        <snice-avatar src="assets/avatars/pravatar-100-2.jpg" name="User"></snice-avatar>
       </div>
     </div>
 
@@ -1289,10 +1289,10 @@ ${header('components')}
       <h3>Image</h3>
       <p class="comp-desc">Lazy-loaded images with variants</p>
       <div class="comp-demo-row" style="gap:1rem">
-        <snice-image src="https://picsum.photos/100/100?r=1" alt="Rounded" variant="rounded" size="medium" lazy></snice-image>
-        <snice-image src="https://picsum.photos/100/100?r=2" alt="Circle" variant="circle" size="medium" lazy></snice-image>
-        <snice-image src="https://picsum.photos/100/100?r=3" alt="Square" variant="square" size="medium" lazy></snice-image>
-        <snice-image src="https://picsum.photos/100/100?r=4" alt="Another" variant="rounded" size="medium" lazy></snice-image>
+        <snice-image src="assets/photos/thumb1.jpg" alt="Rounded" variant="rounded" size="medium" lazy></snice-image>
+        <snice-image src="assets/photos/thumb2.jpg" alt="Circle" variant="circle" size="medium" lazy></snice-image>
+        <snice-image src="assets/photos/thumb3.jpg" alt="Square" variant="square" size="medium" lazy></snice-image>
+        <snice-image src="assets/photos/thumb4.jpg" alt="Another" variant="rounded" size="medium" lazy></snice-image>
       </div>
     </div>
 

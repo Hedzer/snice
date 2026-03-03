@@ -6,13 +6,13 @@
         <div class="comp-split-demo demo-col" style="gap:1.25rem">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
             <snice-select label="Country" placeholder="Select a country..." searchable clearable style="width:100%">
-              <snice-option value="us" icon="https://flagcdn.com/w20/us.png">United States</snice-option>
-              <snice-option value="uk" icon="https://flagcdn.com/w20/gb.png">United Kingdom</snice-option>
-              <snice-option value="ca" icon="https://flagcdn.com/w20/ca.png">Canada</snice-option>
-              <snice-option value="au" icon="https://flagcdn.com/w20/au.png">Australia</snice-option>
-              <snice-option value="de" icon="https://flagcdn.com/w20/de.png">Germany</snice-option>
-              <snice-option value="fr" icon="https://flagcdn.com/w20/fr.png">France</snice-option>
-              <snice-option value="jp" icon="https://flagcdn.com/w20/jp.png">Japan</snice-option>
+              <snice-option value="us" icon="assets/flags/us.png">United States</snice-option>
+              <snice-option value="uk" icon="assets/flags/gb.png">United Kingdom</snice-option>
+              <snice-option value="ca" icon="assets/flags/ca.png">Canada</snice-option>
+              <snice-option value="au" icon="assets/flags/au.png">Australia</snice-option>
+              <snice-option value="de" icon="assets/flags/de.png">Germany</snice-option>
+              <snice-option value="fr" icon="assets/flags/fr.png">France</snice-option>
+              <snice-option value="jp" icon="assets/flags/jp.png">Japan</snice-option>
             </snice-select>
             <snice-select label="Department" value="engineering" style="width:100%">
               <snice-option value="engineering">Engineering</snice-option>
@@ -49,7 +49,7 @@
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=9ce8560">&lt;snice-select label="Country" searchable clearable&gt;
+          <snice-code-block language="html" grammar="grammars/html.json?v=91a24c9">&lt;snice-select label="Country" searchable clearable&gt;
   &lt;snice-option value="us" icon="flags/us.png"&gt;United States&lt;/snice-option&gt;
 &lt;/snice-select&gt;
 
@@ -83,7 +83,7 @@
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=9ce8560">&lt;!-- Loading state --&gt;
+          <snice-code-block language="html" grammar="grammars/html.json?v=91a24c9">&lt;!-- Loading state --&gt;
 &lt;snice-select label="Loading" loading&gt;&lt;/snice-select&gt;
 
 &lt;!-- Lazy-load options on first open --&gt;
@@ -119,7 +119,7 @@
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=9ce8560">&lt;!-- Editable: text input trigger instead of button --&gt;
+          <snice-code-block language="html" grammar="grammars/html.json?v=91a24c9">&lt;!-- Editable: text input trigger instead of button --&gt;
 &lt;snice-select editable
   label="Fruit"
   placeholder="Type or select..."
@@ -156,11 +156,11 @@
         { value: 'grape', label: 'Grape' },
       ];
       const countries = [
-        { value: 'us', label: 'United States', icon: 'https://flagcdn.com/w20/us.png' },
-        { value: 'uk', label: 'United Kingdom', icon: 'https://flagcdn.com/w20/gb.png' },
-        { value: 'ca', label: 'Canada', icon: 'https://flagcdn.com/w20/ca.png' },
-        { value: 'de', label: 'Germany', icon: 'https://flagcdn.com/w20/de.png' },
-        { value: 'jp', label: 'Japan', icon: 'https://flagcdn.com/w20/jp.png' },
+        { value: 'us', label: 'United States', icon: 'assets/flags/us.png' },
+        { value: 'uk', label: 'United Kingdom', icon: 'assets/flags/gb.png' },
+        { value: 'ca', label: 'Canada', icon: 'assets/flags/ca.png' },
+        { value: 'de', label: 'Germany', icon: 'assets/flags/de.png' },
+        { value: 'jp', label: 'Japan', icon: 'assets/flags/jp.png' },
       ];
       // Editable demos
       const el1 = document.getElementById('demo-select-editable-fruit');
