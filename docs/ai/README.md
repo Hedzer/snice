@@ -17,6 +17,8 @@ Token-efficient reference docs for AI assistants. Same content as human docs, mi
 
 Read these instead of `/docs/*.md` for faster context loading.
 
+**WIP Components:** Some component folders exist but are not available in builds or MCP output. The source of truth is `components/.wip` (one directory name per line).
+
 ## CLI
 
 ```bash
