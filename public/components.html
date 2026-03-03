@@ -3798,9 +3798,9 @@ md.addEventListener('link-click',
       </div>
       <div class="comp-split" style="overflow:visible">
         <div class="comp-split-demo demo-center" style="gap:1.5rem;min-height:220px;align-items:flex-start;padding-top:2rem">
-          <snice-menu placement="bottom-start">
+          <snice-menu placement="bottom-start" open>
             <div slot="trigger" style="display:inline-flex;align-items:center;gap:0.5rem">
-              <snice-avatar name="Sarah Chen" size="small" shape="circle"></snice-avatar>
+              <snice-avatar name="Sarah Chen" src="https://i.pravatar.cc/80?u=sarah" size="small" shape="circle"></snice-avatar>
               <span style="font-size:0.875rem;font-weight:500;color:var(--snice-color-text)">Sarah Chen</span>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--snice-color-text-tertiary)"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
@@ -8028,6 +8028,23 @@ weather.data = {
           applyFilter(null);
           searchInput.blur();
         }
+      });
+    })();
+
+    // Hash scroll: wait for all snice-* elements on the page to be defined, then scroll
+    (function() {
+      const hash = location.hash;
+      if (!hash) return;
+      const tags = new Set();
+      document.querySelectorAll('*').forEach(el => {
+        if (el.tagName.includes('-') && el.tagName.toLowerCase().startsWith('snice-')) {
+          tags.add(el.tagName.toLowerCase());
+        }
+      });
+      if (!tags.size) return;
+      Promise.all([...tags].map(t => customElements.whenDefined(t))).then(() => {
+        const target = document.querySelector(hash);
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
       });
     })();
 
