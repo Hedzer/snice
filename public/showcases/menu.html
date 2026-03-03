@@ -20,7 +20,7 @@
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=8efd114">&lt;snice-menu&gt;
+          <snice-code-block language="html" grammar="grammars/html.json?v=272da59">&lt;snice-menu&gt;
   &lt;snice-button slot="trigger" variant="primary"&gt;
     Actions Menu
   &lt;/snice-button&gt;
@@ -28,6 +28,43 @@
   &lt;snice-menu-item&gt;Duplicate&lt;/snice-menu-item&gt;
   &lt;snice-menu-divider&gt;&lt;/snice-menu-divider&gt;
   &lt;snice-menu-item variant="danger"&gt;Delete&lt;/snice-menu-item&gt;
+&lt;/snice-menu&gt;</snice-code-block>
+        </div>
+      </div>
+      <div class="comp-split" style="overflow:visible">
+        <div class="comp-split-demo demo-center" style="gap:1.5rem;min-height:220px;align-items:flex-start;padding-top:2rem">
+          <snice-menu placement="bottom-start">
+            <div slot="trigger" style="display:inline-flex;align-items:center;gap:0.5rem">
+              <snice-avatar name="Sarah Chen" size="small" shape="circle"></snice-avatar>
+              <span style="font-size:0.875rem;font-weight:500;color:var(--snice-color-text)">Sarah Chen</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--snice-color-text-tertiary)"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            <snice-menu-item>Profile</snice-menu-item>
+            <snice-menu-item>Settings</snice-menu-item>
+            <snice-menu-item>Billing</snice-menu-item>
+            <snice-menu-divider></snice-menu-divider>
+            <snice-menu-item variant="danger">Sign Out</snice-menu-item>
+          </snice-menu>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=272da59">&lt;!-- Avatar dropdown --&gt;
+&lt;snice-menu&gt;
+  &lt;div slot="trigger" style="display:inline-flex;
+    align-items:center;gap:0.5rem"&gt;
+    &lt;snice-avatar name="Sarah Chen" size="small"
+      shape="circle"&gt;&lt;/snice-avatar&gt;
+    &lt;span&gt;Sarah Chen&lt;/span&gt;
+    &lt;svg width="12" height="12" viewBox="0 0 24 24"
+      fill="none" stroke="currentColor" stroke-width="2.5"
+      stroke-linecap="round" stroke-linejoin="round"&gt;
+      &lt;polyline points="6 9 12 15 18 9"&gt;&lt;/polyline&gt;
+    &lt;/svg&gt;
+  &lt;/div&gt;
+  &lt;snice-menu-item&gt;Profile&lt;/snice-menu-item&gt;
+  &lt;snice-menu-item&gt;Settings&lt;/snice-menu-item&gt;
+  &lt;snice-menu-divider&gt;&lt;/snice-menu-divider&gt;
+  &lt;snice-menu-item variant="danger"&gt;Sign Out&lt;/snice-menu-item&gt;
 &lt;/snice-menu&gt;</snice-code-block>
         </div>
       </div>
