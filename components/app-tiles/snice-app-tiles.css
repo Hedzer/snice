@@ -76,12 +76,6 @@
   object-fit: cover;
 }
 
-@media (prefers-color-scheme: dark) {
-  .tile__icon img {
-    filter: invert(1);
-  }
-}
-
 /* Text icon fallback (first letter) */
 .tile__icon--text {
   font-size: 1.25rem;
