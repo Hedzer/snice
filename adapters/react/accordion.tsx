@@ -6,6 +6,7 @@ import type { SniceBaseProps } from './types';
  */
 export interface AccordionProps extends SniceBaseProps {
   multiple?: any;
+  variant?: any;
 
 }
 
@@ -27,7 +28,7 @@ export interface AccordionProps extends SniceBaseProps {
  */
 export const Accordion = createReactAdapter<AccordionProps>({
   tagName: 'snice-accordion',
-  properties: ["multiple"],
+  properties: ["multiple","variant"],
   events: {},
   formAssociated: false
 });
