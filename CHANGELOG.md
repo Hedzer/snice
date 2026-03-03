@@ -1,3 +1,36 @@
+# [4.19.0](https://gitlab.com/Hedzer/snice/compare/v4.18.0...v4.19.0) (2026-03-03)
+
+
+### Bug Fixes
+
+* activity-feed hover/focus on content area, alert variant colors ([f480592](https://gitlab.com/Hedzer/snice/commit/f480592c7e6300a3e59918dcaf4e1e2bb4ceb3df))
+* add attribute: false to complex Array/Object properties ([2f6459a](https://gitlab.com/Hedzer/snice/commit/2f6459a5cdbe07557607b88385876b0a399e70a3))
+* doc component types, tree querySelector scope ([2fab6b2](https://gitlab.com/Hedzer/snice/commit/2fab6b21c38656b4f3db1de9561d26c91fe279e6))
+* product-card spacing for compact and grid variants ([bd107c9](https://gitlab.com/Hedzer/snice/commit/bd107c9c6ea9deca499492502852a7e78052318d))
+* receipt thermal variant text colors ([c078423](https://gitlab.com/Hedzer/snice/commit/c078423c31684e5fac51dee95e686d85468e196d))
+* standardize form field heights, labels, and alignment across controls ([dbf884b](https://gitlab.com/Hedzer/snice/commit/dbf884b679fa16cc070025151f20491f112c19d8))
+* themes page layout order, use overflow-x clip, remove redundant heading ([6a319e7](https://gitlab.com/Hedzer/snice/commit/6a319e740c9b40d8e977c4452241eb1293487c90))
+
+
+### Features
+
+* add 33 new components (combobox, icon, tag, form-layout, range-slider, etc.) ([de8cd1e](https://gitlab.com/Hedzer/snice/commit/de8cd1e8fc9f42cc31091ba9064e8dcea3fe7342))
+* add demo pages for 25 components ([ab7fcab](https://gitlab.com/Hedzer/snice/commit/ab7fcaba7d288ebe41fc22517b7562fb968a7131))
+* add elevated variant to accordion component ([6c68a48](https://gitlab.com/Hedzer/snice/commit/6c68a4829c2dc69b055b6512f28e10acce8900fe))
+* add key-value component with kv-pair child element ([a752706](https://gitlab.com/Hedzer/snice/commit/a752706479bba9a86cd102dc4ec60e8f0d7f3320))
+* add react adapters for 33 new components, code-block format prop ([3b6e339](https://gitlab.com/Hedzer/snice/commit/3b6e33927f347095919029f48127ed2005e84113))
+* add themes page with preset picker and custom CSS editor ([9d745d8](https://gitlab.com/Hedzer/snice/commit/9d745d8fd2718bec487853bb118a4b9a05270252))
+* add website showcases for 33 new components ([efbb6cb](https://gitlab.com/Hedzer/snice/commit/efbb6cb631fab4df58ebf48a3458f7402b047dbb))
+* add WIP component exclusion system for in-progress builds ([af5cf27](https://gitlab.com/Hedzer/snice/commit/af5cf278c01ae6733f9fbb9114e09a0574e855fa))
+* avatar-group dual API (slot + imperative), avatar CSS token fixes ([9f62161](https://gitlab.com/Hedzer/snice/commit/9f6216172c001f0ae4233eec99c63d7296a0d425))
+* code-block theme property and CSS improvements ([9aeb062](https://gitlab.com/Hedzer/snice/commit/9aeb062ff1069b0ef7ee783abe07a996cf50ebe7))
+* estimate/receipt/work-order QR codes, terms, logo slots, part attributes ([c8e64dc](https://gitlab.com/Hedzer/snice/commit/c8e64dcf01665519ed63beb051e79345059c09e1))
+* expand themes page preview with more component coverage and zoom ([157b8da](https://gitlab.com/Hedzer/snice/commit/157b8da39e54301910eacb7ce750a30d03816b14))
+* leaderboard dual API with snice-leaderboard-entry child element ([58b18b9](https://gitlab.com/Hedzer/snice/commit/58b18b91f8082b6f704d8ac301a8d8d465365fae))
+* product-card variants, wishlist, badges, compare, quick-view ([b2f8718](https://gitlab.com/Hedzer/snice/commit/b2f8718877696f7e94b5ceb10d03b2157b069a33))
+* react adapter updates for new props, add key-value adapter ([343d7cc](https://gitlab.com/Hedzer/snice/commit/343d7cc405bced8fa0fc763d4b7f240d3ddbbb1b))
+* select allowFreeText, table client-side sort, range-slider layout fix ([8306f86](https://gitlab.com/Hedzer/snice/commit/8306f8666b46fb57b8dea63f6e26975b87cd07f0))
+
 # [4.18.0](https://gitlab.com/Hedzer/snice/compare/v4.17.0...v4.18.0) (2026-02-27)
 
 
