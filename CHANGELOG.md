@@ -1,3 +1,15 @@
+# [4.20.0](https://gitlab.com/Hedzer/snice/compare/v4.19.0...v4.20.0) (2026-03-03)
+
+
+### Bug Fixes
+
+* menu demo open by default with avatar src, add hash scroll to footer ([64efc92](https://gitlab.com/Hedzer/snice/commit/64efc9223939bc19972e7459c42b62475f556465))
+
+
+### Features
+
+* add avatar trigger demo to menu showcase ([fbcd213](https://gitlab.com/Hedzer/snice/commit/fbcd2131f5eeae02ce6e1642eec9f0690c8614dd))
+
 # [4.19.0](https://gitlab.com/Hedzer/snice/compare/v4.18.0...v4.19.0) (2026-03-03)
 
 
