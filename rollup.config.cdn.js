@@ -5,6 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import { gzipSync } from 'zlib';
 import CleanCSS from 'clean-css';
+import { getWipComponents } from './scripts/wip-components.js';
 
 const require = createRequire(import.meta.url);
 const packageJson = require('./package.json');
@@ -290,9 +291,11 @@ ${packageJson.license}
 function discoverComponents() {
   const componentsDir = 'components';
   const components = [];
+  const wip = getWipComponents();
 
   const items = fs.readdirSync(componentsDir);
   for (const item of items) {
+    if (wip.has(item)) continue;
     const componentDir = path.join(componentsDir, item);
     const stat = fs.statSync(componentDir);
 

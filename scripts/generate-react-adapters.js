@@ -10,6 +10,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { getWipComponents } from './wip-components.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -131,8 +132,10 @@ function generateAdapters() {
 
   const components = [];
   const items = fs.readdirSync(componentsDir);
+  const wip = getWipComponents();
 
   for (const item of items) {
+    if (wip.has(item)) continue;
     const componentDir = path.join(componentsDir, item);
     const stat = fs.statSync(componentDir);
 

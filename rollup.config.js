@@ -5,6 +5,7 @@ import { createRequire } from 'module';
 import fs from 'fs';
 import path from 'path';
 import CleanCSS from 'clean-css';
+import { getWipComponents } from './scripts/wip-components.js';
 
 const require = createRequire(import.meta.url);
 const packageJson = require('./package.json');
@@ -46,16 +47,18 @@ const createSubmoduleConfig = (name) => ({
 });
 
 // Function to recursively find all TypeScript files in components directory
-function findComponentFiles(dir) {
+function findComponentFiles(dir, isRoot = true) {
   const files = [];
   const items = fs.readdirSync(dir);
+  const wip = isRoot ? getWipComponents() : new Set();
 
   for (const item of items) {
     const fullPath = path.join(dir, item);
     const stat = fs.statSync(fullPath);
 
     if (stat.isDirectory()) {
-      files.push(...findComponentFiles(fullPath));
+      if (isRoot && wip.has(item)) continue;
+      files.push(...findComponentFiles(fullPath, false));
     } else if (item.endsWith('.ts') &&
                !item.endsWith('.d.ts') &&
                !item.endsWith('.types.ts') &&

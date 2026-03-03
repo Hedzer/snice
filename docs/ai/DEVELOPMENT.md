@@ -45,6 +45,7 @@ components/my-comp/
   snice-my-comp.ts              # Component class
   snice-my-comp.types.ts        # Interfaces & types (importable by controllers)
   snice-my-comp.css             # Styles
+components/.wip                 # WIP exclude list (see "WIP Components")
 
 adapters/react/
   wrapper.tsx                   # Adapter core
@@ -61,7 +62,12 @@ tests/
 scripts/
   generate-react-adapters.js   # Adapter generator
   generate-react-tests.js      # Test generator
+  wip-components.js            # Shared .wip parser
 ```
+
+## WIP Components
+
+`components/.wip` — one dir name per line, `#` comments. Excludes from: core build, CDN, React adapters, website. Parsed by `scripts/wip-components.js`. Remove line to un-WIP.
 
 ## Adding Components
 

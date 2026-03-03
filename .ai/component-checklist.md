@@ -5,6 +5,7 @@ Every component must satisfy ALL items before considered complete.
 ## Pre-Implementation
 - [ ] Read `theme.css` — understand available CSS custom properties
 - [ ] Read `.ai/coding-standards.md` — understand patterns, fallbacks, units
+- [ ] If not ready for release, add directory name to `components/.wip` (excludes from all builds)
 
 ## Implementation
 - [ ] Component file: `components/<name>/snice-<name>.ts`
@@ -63,4 +64,5 @@ Every component must satisfy ALL items before considered complete.
 ## Final Verification
 - [ ] `npm run build` — succeeds
 - [ ] `npm test` — all tests pass
+- [ ] Remove from `components/.wip` if previously listed
 - [ ] Update `.ai/tasks.md` — mark component complete

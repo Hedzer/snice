@@ -1,0 +1,14 @@
+# Components listed here are excluded from all builds:
+# npm package, CDN bundles, React adapters, and website.
+#
+# One component name per line. Blank lines and lines starting with # are ignored.
+# Use the directory name (e.g. "my-component"), not the tag name.
+#
+# Example:
+# my-new-component
+# experimental-widget
+
+icon
+form-builder
+mentions
+scheduler
