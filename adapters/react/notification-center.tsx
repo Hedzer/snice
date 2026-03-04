@@ -7,6 +7,7 @@ import type { SniceBaseProps } from './types';
 export interface NotificationCenterProps extends SniceBaseProps {
   notifications?: any;
   open?: any;
+  icon?: any;
 
 }
 
@@ -28,7 +29,7 @@ export interface NotificationCenterProps extends SniceBaseProps {
  */
 export const NotificationCenter = createReactAdapter<NotificationCenterProps>({
   tagName: 'snice-notification-center',
-  properties: ["notifications","open"],
+  properties: ["notifications","open","icon"],
   events: {},
   formAssociated: false
 });

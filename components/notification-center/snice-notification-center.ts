@@ -81,7 +81,7 @@ export class SniceNotificationCenter extends HTMLElement implements SniceNotific
     const items = this.notifications.map(n => html`
       <li class="notification-item ${n.read ? '' : 'unread'}"
           @click=${() => this.handleItemClick(n)}>
-        <span class="notification-icon">${n.icon || this.getDefaultIcon(n.type)}</span>
+        <span class="notification-icon">${n.icon ? renderIcon(n.icon, 'notification-icon-img') : this.getDefaultIcon(n.type)}</span>
         <div class="notification-content">
           <div class="notification-title">${n.title}</div>
           <div class="notification-message">${n.message}</div>
@@ -95,17 +95,18 @@ export class SniceNotificationCenter extends HTMLElement implements SniceNotific
 
     return html`
       <button part="trigger" class="bell-button" aria-label="Notifications" @click=${() => this.togglePanel()}>
-        <span class="bell-icon" part="icon">
-          <slot name="icon">
-            <if ${this.icon}>
-              ${renderIcon(this.icon, 'bell-icon-img')}
-            </if>
-            <if ${!this.icon}>
-              \uD83D\uDD14
-            </if>
-          </slot>
-        </span>
-        <span part="badge" class="badge" ?hidden=${unread === 0}>${unread}</span>
+        <snice-badge count=${unread} variant="error" size="small" position="top-right">
+          <span class="bell-icon" part="icon">
+            <slot name="icon">
+              <if ${this.icon}>
+                ${renderIcon(this.icon, 'bell-icon-img')}
+              </if>
+              <if ${!this.icon}>
+                \uD83D\uDD14
+              </if>
+            </slot>
+          </span>
+        </snice-badge>
       </button>
       <div part="panel" class="panel" ?hidden=${!this.open}>
         <div part="panel-header" class="panel-header">

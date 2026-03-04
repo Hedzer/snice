@@ -20,7 +20,7 @@
 }
 
 .bell-button:hover {
-  background: var(--snice-color-background-element, rgb(252 251 249));
+  background: var(--snice-color-background-hover, rgb(241 241 241));
 }
 
 .bell-icon {
@@ -35,26 +35,13 @@
   display: block;
 }
 
-.badge {
-  position: absolute;
-  top: 2px;
-  right: 2px;
-  min-width: 1.125rem;
-  height: 1.125rem;
-  padding: 0 0.25rem;
-  border-radius: 9999px;
-  background: var(--snice-color-danger, rgb(220 38 38));
-  color: var(--snice-color-text-inverse, rgb(250 250 250));
-  font-size: 0.6875rem;
-  font-weight: var(--snice-font-weight-bold, 700);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
+span.bell-icon-img {
+  width: auto;
+  height: auto;
 }
 
-.badge[hidden] {
-  display: none;
+.bell-button snice-badge {
+  display: inline-flex;
 }
 
 .panel {
@@ -123,7 +110,7 @@
 }
 
 .notification-item:hover {
-  background: var(--snice-color-background-element, rgb(252 251 249));
+  background: var(--snice-color-background-hover, rgb(241 241 241));
 }
 
 .notification-item.unread {
@@ -139,6 +126,17 @@
   font-size: 1.25rem;
   line-height: 1;
   margin-top: 0.125rem;
+}
+
+.notification-icon-img {
+  width: 1.25em;
+  height: 1.25em;
+  display: block;
+}
+
+span.notification-icon-img {
+  width: auto;
+  height: auto;
 }
 
 .notification-content {

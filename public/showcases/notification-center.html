@@ -3,28 +3,28 @@
       <p class="comp-desc">Bell icon with unread badge and dropdown notification panel</p>
       <div class="comp-split" style="overflow:visible">
         <div class="comp-split-demo" style="min-height:420px;align-items:flex-start;align-content:flex-start;padding:0.75rem 1rem 0 0;position:relative;overflow:visible">
-          <snice-notification-center id="demo-notif" open style="position:absolute;top:0.75rem;right:1rem"></snice-notification-center>
+          <style>#demo-notif::part(icon) { font-family: 'Material Symbols Outlined'; }</style>
+          <snice-notification-center id="demo-notif" icon="notifications" open style="position:absolute;top:0.75rem;right:1rem"></snice-notification-center>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=744921f">&lt;snice-notification-center&gt;
+          <snice-code-block language="html" grammar="grammars/html.json?v=dc5f15e">&lt;snice-notification-center
+  icon="notifications"&gt;
 &lt;/snice-notification-center&gt;
 
 &lt;script&gt;
   const nc = document.querySelector(
     'snice-notification-center');
   nc.notifications = [
-    { id: '1', title: 'New message',
-      message: 'You have a new message',
+    { id: '1', title: 'New comment',
+      message: 'Alice commented on your PR',
       timestamp: '2 min ago',
-      type: 'info' },
+      icon: 'chat_bubble' },
     { id: '2', title: 'Deploy complete',
       message: 'Build v2.4 succeeded',
       timestamp: '10 min ago',
-      type: 'success', read: true }
+      icon: 'check_circle', read: true }
   ];
-  nc.addEventListener('notification-click',
-    e =&gt; console.log(e.detail));
 &lt;/script&gt;</snice-code-block>
         </div>
       </div>
@@ -35,10 +35,10 @@
       const nc = document.getElementById('demo-notif');
       if (nc) {
         nc.notifications = [
-          { id: '1', title: 'New comment', message: 'Alice commented on your pull request', timestamp: '2 min ago', type: 'info' },
-          { id: '2', title: 'Deploy succeeded', message: 'Production build v2.4.1 is live', timestamp: '15 min ago', type: 'success', read: true },
-          { id: '3', title: 'Disk space warning', message: 'Server storage is at 92% capacity', timestamp: '1 hour ago', type: 'warning' },
-          { id: '4', title: 'Build failed', message: 'CI pipeline failed on branch feature/auth', timestamp: '3 hours ago', type: 'error' }
+          { id: '1', title: 'New comment', message: 'Alice commented on your pull request', timestamp: '2 min ago', icon: 'chat_bubble', type: 'info' },
+          { id: '2', title: 'Deploy succeeded', message: 'Production build v2.4.1 is live', timestamp: '15 min ago', icon: 'check_circle', type: 'success', read: true },
+          { id: '3', title: 'Disk space warning', message: 'Server storage is at 92% capacity', timestamp: '1 hour ago', icon: 'warning', type: 'warning' },
+          { id: '4', title: 'Build failed', message: 'CI pipeline failed on branch feature/auth', timestamp: '3 hours ago', icon: 'error', type: 'error' }
         ];
       }
     });
