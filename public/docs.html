@@ -6,25 +6,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Load runtime + code-block + grammars first to prevent layout shift -->
-  <script src="components/snice-runtime.min.js?v=4282c34"></script>
-  <script src="components/snice-code-block.min.js?v=4282c34"></script>
-  <script>fetch('grammars/snice.json?v=4282c34');</script>
+  <script src="components/snice-runtime.min.js?v=a9741b5"></script>
+  <script src="components/snice-code-block.min.js?v=a9741b5"></script>
+  <script>fetch('grammars/snice.json?v=a9741b5');</script>
   <title>Documentation - Snice</title>
   <meta name="description" content="TypeScript web components with separation of concerns">
-  <link rel="icon" type="image/png" href="images/snice-logo.png?v=4282c34">
+  <link rel="icon" type="image/png" href="images/snice-logo.png?v=a9741b5">
   <meta property="og:title" content="Documentation - Snice">
   <meta property="og:description" content="TypeScript web components with separation of concerns">
   <meta property="og:image" content="images/snice-logo.png">
-  <link rel="stylesheet" href="theme/theme.css?v=4282c34">
-  <link rel="stylesheet" href="styles.css?v=4282c34">
+  <link rel="stylesheet" href="theme/theme.css?v=a9741b5">
+  <link rel="stylesheet" href="styles.css?v=a9741b5">
   <script>(function(){var p=localStorage.getItem('snice-theme-preset');var c=localStorage.getItem('snice-theme-custom');if(p){var s=document.createElement('style');s.id='snice-theme-preset';s.textContent=p;document.head.appendChild(s)}if(c){var s=document.createElement('style');s.id='snice-theme-custom';s.textContent=c;document.head.appendChild(s)}var n=localStorage.getItem('snice-theme-preset-name');if(n&&n!=='default'){document.addEventListener('DOMContentLoaded',function(){var d=document.getElementById('theme-dot');if(d){d.hidden=false;d.title=n.charAt(0).toUpperCase()+n.slice(1)+' theme';d.style.background='var(--snice-color-primary)'}})}})()</script>
 </head>
 <body>
-  <script>fetch('grammars/typescript.json?v=4282c34');</script>
+  <script>fetch('grammars/typescript.json?v=a9741b5');</script>
 
   <header>
     <div class="wrap">
-      <h1><a href="index.html" style="display:inline-flex;align-items:center;gap:0.5rem"><img src="images/snice-logo.png?v=4282c34" alt="Snice" width="28" height="28" style="border-radius:50%">Snice</a></h1>
+      <h1><a href="index.html" style="display:inline-flex;align-items:center;gap:0.5rem"><img src="images/snice-logo.png?v=a9741b5" alt="Snice" width="28" height="28" style="border-radius:50%">Snice</a></h1>
       <nav>
         <a href="guide.html">Guide</a>
         <a href="docs.html" class="active">Docs</a>
@@ -141,7 +141,7 @@
 <p>Elements are the core building blocks of Snice components. They define custom HTML elements with encapsulated styling and behavior using web components.</p>
 <h2 id="elements-basic-usage">Basic Usage</h2>
 <h3 id="elements-creating-an-element">Creating an Element</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">import { element, render, html } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">import { element, render, html } from 'snice';
 
 @element('my-button')
 class MyButton extends HTMLElement {
@@ -160,7 +160,7 @@ class MyButton extends HTMLElement {
 <h2 id="elements-lifecycle-methods">Lifecycle Methods</h2>
 <h3 id="elements-render-decorator">@render() Decorator</h3>
 <p>Returns a template using the <code>html</code> tagged template. Automatically re-renders when properties change due to differential rendering.</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">import { element, render, html, property } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">import { element, render, html, property } from 'snice';
 
 @element('user-card')
 class UserCard extends HTMLElement {
@@ -185,7 +185,7 @@ class UserCard extends HTMLElement {
 </ul>
 <p><strong>Render Options:</strong></p>
 <p>The <code>@render()</code> decorator accepts an optional configuration object:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@render({
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@render({
   debounce?: number,    // Delay re-render (ms)
   throttle?: number,    // Limit re-render frequency (ms)
   once?: boolean,       // Render once, disable auto-rendering
@@ -194,7 +194,7 @@ class UserCard extends HTMLElement {
 })</snice-code-block>
 <p><strong>Differential Rendering:</strong></p>
 <p>By default, Snice uses differential rendering which only updates changed parts of the DOM. To disable this and re-render from scratch each time:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@element('simple-list')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@element('simple-list')
 class SimpleList extends HTMLElement {
   @property({ type: Array })
   items = [];
@@ -219,7 +219,7 @@ class SimpleList extends HTMLElement {
 <p><strong>Note:</strong> When <code>differential: false</code>, the render method must return a string (not <code>html\</code>...\`<code>). Conditional rendering (</code><if><code>, </code><switch>/<case>`) is NOT available — use ternary operators in the string template instead.</p>
 <h3 id="elements-imperative-rendering">Imperative Rendering</h3>
 <p>Use <code>@render({ once: true })</code> with <code>@watch</code> and <code>@query</code> to render the template once, then update the DOM directly. Property changes fire watchers instead of triggering re-renders.</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@element('user-card')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@element('user-card')
 class UserCard extends HTMLElement {
   @property() name = '';
   @property() role = '';
@@ -268,7 +268,7 @@ class UserCard extends HTMLElement {
 <div class="doc-table-wrap"><table><thead><tr><th></th><th>Declarative (<code>@render()</code>)</th><th>Imperative (<code>@render({ once: true })</code>)</th></tr></thead><tbody><tr><td>Template re-renders</td><td>Automatic on property change</td><td>Never (after first render)</td></tr><tr><td>DOM updates</td><td>Differential (only changed parts)</td><td>Manual via <code>@watch</code> + <code>@query</code></td></tr><tr><td>Boilerplate</td><td>Less — just use interpolation</td><td>More — explicit update methods</td></tr><tr><td>Control</td><td>Framework manages updates</td><td>You manage updates</td></tr></tbody></table></div>
 <h3 id="elements-styles-decorator">@styles() Decorator</h3>
 <p>Returns CSS using the <code>css</code> tagged template, scoped to the element's shadow DOM.</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">import { element, render, styles, html, css } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">import { element, render, styles, html, css } from 'snice';
 
 @element('styled-card')
 class StyledCard extends HTMLElement {
@@ -289,7 +289,7 @@ class StyledCard extends HTMLElement {
   }
 }</snice-code-block>
 <p><strong>Note:</strong> Only one <code>@styles()</code> method is supported per element. If multiple are declared, only the last one is used. Combine all styles in a single method:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@styles()
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@styles()
 componentStyles() {
   return css`
     :host { display: block; }
@@ -298,7 +298,7 @@ componentStyles() {
 }</snice-code-block>
 <h3 id="elements-lifecycle-decorators">Lifecycle Decorators</h3>
 <p><strong>@ready()</strong> - Called after styles are applied and event handlers are set up. The initial render may still be completing in a microtask — use <code>@query</code> (which re-queries each access) to safely access rendered DOM:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">import { element, ready, query, render, html } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">import { element, ready, query, render, html } from 'snice';
 
 @element('auto-resize-textarea')
 class AutoResizeTextarea extends HTMLElement {
@@ -317,7 +317,7 @@ class AutoResizeTextarea extends HTMLElement {
   }
 }</snice-code-block>
 <p><strong>@dispose()</strong> - Called when element is removed from DOM:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@element('animated-element')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@element('animated-element')
 class AnimatedElement extends HTMLElement {
   private rafId?: number;
 
@@ -344,14 +344,14 @@ class AnimatedElement extends HTMLElement {
 }</snice-code-block>
 <h3 id="elements-ready-promise">ready Promise</h3>
 <p>Every element has a <code>ready</code> promise that resolves when fully initialized:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">const el = document.createElement('my-element') as MyElement;
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">const el = document.createElement('my-element') as MyElement;
 document.body.appendChild(el);
 await (el as any).ready; // Wait for element to be ready</snice-code-block>
 <h2 id="elements-shadow-dom">Shadow DOM</h2>
 <p>All elements automatically use Shadow DOM for style encapsulation.</p>
 <h3 id="elements-accessing-shadow-dom-elements">Accessing Shadow DOM Elements</h3>
 <p>Use <code>@query</code> instead of manual <code>shadowRoot.querySelector</code>:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@element('shadow-demo')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@element('shadow-demo')
 class ShadowDemo extends HTMLElement {
   @query('#content') content?: HTMLElement;
 
@@ -369,7 +369,7 @@ class ShadowDemo extends HTMLElement {
 <h2 id="elements-properties">Properties</h2>
 <h3 id="elements-basic-properties">Basic Properties</h3>
 <p>Properties automatically sync with DOM attributes and trigger re-renders:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">import { element, property, render, html } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">import { element, property, render, html } from 'snice';
 
 @element('user-profile')
 class UserProfile extends HTMLElement {
@@ -394,9 +394,9 @@ class UserProfile extends HTMLElement {
   }
 }</snice-code-block>
 <p>Usage:</p>
-<snice-code-block language="html" grammar="grammars/html.json?v=4282c34">&lt;user-profile name=&quot;John Doe&quot; age=&quot;30&quot; verified&gt;&lt;/user-profile&gt;</snice-code-block>
+<snice-code-block language="html" grammar="grammars/html.json?v=a9741b5">&lt;user-profile name=&quot;John Doe&quot; age=&quot;30&quot; verified&gt;&lt;/user-profile&gt;</snice-code-block>
 <h3 id="elements-property-options">Property Options</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">interface PropertyOptions {
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">interface PropertyOptions {
   type?: String | Number | Boolean | Array | Object | Date | BigInt | SimpleArray;
   attribute?: string | boolean;  // Custom attribute name, or false to disable attribute sync
   converter?: PropertyConverter;  // Custom converter
@@ -410,7 +410,7 @@ class UserProfile extends HTMLElement {
 <li>Trigger re-renders when changed</li>
 </ul>
 <p><strong>Note:</strong> Initial field values (defaults like <code>name = 'Anonymous'</code>) are NOT reflected to attributes. Only changes made via the property setter are reflected. Set <code>attribute: false</code> to disable attribute sync entirely.</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@element('reflected-props')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@element('reflected-props')
 class ReflectedProps extends HTMLElement {
   @property()
   theme = 'light';
@@ -424,7 +424,7 @@ class ReflectedProps extends HTMLElement {
   }
 }</snice-code-block>
 <p><strong>Boolean Properties:</strong></p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@property({ type: Boolean })
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@property({ type: Boolean })
 enabled = false;</snice-code-block>
 <ul>
 <li><code><element></code> or <code><element enabled=""></code> → <code>true</code></li>
@@ -433,7 +433,7 @@ enabled = false;</snice-code-block>
 <li>No attribute → <code>false</code></li>
 </ul>
 <h3 id="elements-custom-converters">Custom Converters</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">const dateConverter: PropertyConverter = {
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">const dateConverter: PropertyConverter = {
   fromAttribute(value: string | null): Date | null {
     return value ? new Date(value) : null;
   },
@@ -454,7 +454,7 @@ class DateDisplay extends HTMLElement {
 }</snice-code-block>
 <h3 id="elements-simplearray-type">SimpleArray Type</h3>
 <p>The <code>SimpleArray</code> type enables safe reflection of arrays containing basic types:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">import { element, property, SimpleArray, render, html } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">import { element, property, SimpleArray, render, html } from 'snice';
 
 @element('tag-list')
 class TagList extends HTMLElement {
@@ -471,7 +471,7 @@ class TagList extends HTMLElement {
   }
 }</snice-code-block>
 <p>Usage:</p>
-<snice-code-block language="html" grammar="grammars/html.json?v=4282c34">&lt;tag-list tags=&quot;react，vue，angular&quot;&gt;&lt;/tag-list&gt;</snice-code-block>
+<snice-code-block language="html" grammar="grammars/html.json?v=a9741b5">&lt;tag-list tags=&quot;react，vue，angular&quot;&gt;&lt;/tag-list&gt;</snice-code-block>
 <ul>
 <li>Uses full-width comma (，) as separator</li>
 <li>Supports string, number, and boolean types</li>
@@ -479,7 +479,7 @@ class TagList extends HTMLElement {
 </ul>
 <h2 id="elements-queries">Queries</h2>
 <h3 id="elements-single-element-query">Single Element Query</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">import { element, query, render, html } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">import { element, query, render, html } from 'snice';
 
 @element('form-component')
 class FormComponent extends HTMLElement {
@@ -504,7 +504,7 @@ class FormComponent extends HTMLElement {
   }
 }</snice-code-block>
 <h3 id="elements-multiple-elements-query">Multiple Elements Query</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@element('todo-list')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@element('todo-list')
 class TodoList extends HTMLElement {
   @queryAll('.todo-item')
   todoItems?: NodeListOf&lt;HTMLElement&gt;;
@@ -529,7 +529,7 @@ class TodoList extends HTMLElement {
 }</snice-code-block>
 <h3 id="elements-query-options">Query Options</h3>
 <p>Control where queries search using <code>light</code> and <code>shadow</code> options:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@element('query-options')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@element('query-options')
 class QueryOptions extends HTMLElement {
   // Query only in shadow DOM (default)
   @query('.shadow-only')
@@ -554,7 +554,7 @@ class QueryOptions extends HTMLElement {
 <h2 id="elements-styling">Styling</h2>
 <h3 id="elements-scoped-styles">Scoped Styles</h3>
 <p>Styles are automatically scoped to the component's shadow DOM:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@element('scoped-styles')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@element('scoped-styles')
 class ScopedStyles extends HTMLElement {
   @render()
   renderContent() {
@@ -586,7 +586,7 @@ class ScopedStyles extends HTMLElement {
 }</snice-code-block>
 <h3 id="elements-dynamic-styles">Dynamic Styles</h3>
 <p><code>@styles()</code> is called <strong>once</strong> during initialization and does not update on property changes. For dynamic styling, use CSS custom properties set in the template:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@element('theme-component')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@element('theme-component')
 class ThemeComponent extends HTMLElement {
   @property()
   accentColor = '#007bff';
@@ -610,7 +610,7 @@ class ThemeComponent extends HTMLElement {
   }
 }</snice-code-block>
 <h3 id="elements-host-styling">Host Styling</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@element('host-styled')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@element('host-styled')
 class HostStyled extends HTMLElement {
   @styles()
   hostStyles() {
@@ -641,7 +641,7 @@ class HostStyled extends HTMLElement {
 <h2 id="elements-template-events">Template Events</h2>
 <p>Handle events directly in templates using <code>@event=${handler}</code> syntax:</p>
 <h3 id="elements-basic-event-handling">Basic Event Handling</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@element('click-counter')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@element('click-counter')
 class ClickCounter extends HTMLElement {
   @property({ type: Number })
   count = 0;
@@ -661,7 +661,7 @@ class ClickCounter extends HTMLElement {
 }</snice-code-block>
 <h3 id="elements-keyboard-shortcuts">Keyboard Shortcuts</h3>
 <p>Use dot notation for keyboard shortcuts:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@element('keyboard-handler')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@element('keyboard-handler')
 class KeyboardHandler extends HTMLElement {
   @render()
   renderContent() {
@@ -693,7 +693,7 @@ class KeyboardHandler extends HTMLElement {
 <li><code>@keydown.escape</code>, <code>@keydown.down</code>, etc.</li>
 </ul>
 <h3 id="elements-event-object-access">Event Object Access</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@element('form-handler')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@element('form-handler')
 class FormHandler extends HTMLElement {
   @render()
   renderContent() {
@@ -720,7 +720,7 @@ class FormHandler extends HTMLElement {
 <h2 id="elements-advanced-examples">Advanced Examples</h2>
 <h3 id="elements-form-component">Form Component</h3>
 <p>Elements handle visual behavior — they render the form and emit events. Business logic (API calls, validation) belongs in controllers:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">import { element, property, query, dispatch, render, styles, html, css } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">import { element, property, query, dispatch, render, styles, html, css } from 'snice';
 
 @element('registration-form')
 class RegistrationForm extends HTMLElement {
@@ -788,7 +788,7 @@ class RegistrationForm extends HTMLElement {
 }</snice-code-block>
 <h3 id="elements-watch-decorator">Watch Decorator</h3>
 <p>Use <code>@watch</code> to react to property changes. Handlers receive three arguments: <code>(oldValue, newValue, propertyName)</code>.</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@element('reactive-component')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@element('reactive-component')
 class ReactiveComponent extends HTMLElement {
   @property()
   userName = '';
@@ -826,7 +826,7 @@ class ReactiveComponent extends HTMLElement {
 }</snice-code-block>
 <h3 id="elements-context-decorator">@context() Decorator</h3>
 <p>Receive router context updates. The decorated method is called whenever the router context changes (navigation, app context update, etc.):</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">import { element, context, property, render, html } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">import { element, context, property, render, html } from 'snice';
 import type { Context, Placard } from 'snice';
 
 @element('nav-bar')
@@ -859,7 +859,7 @@ class NavBar extends HTMLElement {
   }
 }</snice-code-block>
 <p><strong>Context Options:</strong></p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@context({ debounce: 300 })   // Wait 300ms after last change
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@context({ debounce: 300 })   // Wait 300ms after last change
 @context({ throttle: 500 })   // At most once per 500ms
 @context({ once: true })       // Only called once, then auto-unregisters</snice-code-block>
 <p>The <code>Context</code> object provides:</p>
@@ -871,7 +871,7 @@ class NavBar extends HTMLElement {
 <li><code>ctx.fetch</code> — Fetch with middleware support (see Fetcher docs)</li>
 </ul>
 <h3 id="elements-conditional-rendering">Conditional Rendering</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@element('conditional-content')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@element('conditional-content')
 class ConditionalContent extends HTMLElement {
   @property({ type: Boolean })
   isLoggedIn = false;
@@ -900,7 +900,7 @@ class ConditionalContent extends HTMLElement {
 <p>Snice provides a powerful routing system for single-page applications with support for hash and pushstate routing, page transitions, route parameters, guards, and layouts.</p>
 <h2 id="routing-router-setup">Router Setup</h2>
 <h3 id="routing-creating-a-router">Creating a Router</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">import { Router } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">import { Router } from 'snice';
 
 const router = Router({
   target: '#app',    // Target element selector
@@ -910,7 +910,7 @@ const router = Router({
 // Destructure router methods
 const { page, initialize, navigate } = router;</snice-code-block>
 <h3 id="routing-router-options">Router Options</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">interface RouterOptions {
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">interface RouterOptions {
   target: string;                    // Target element selector
   type: 'hash' | 'pushstate';        // Routing type
   window?: Window;                   // Override window object (for testing)
@@ -922,7 +922,7 @@ const { page, initialize, navigate } = router;</snice-code-block>
 }</snice-code-block>
 <h3 id="routing-router-context">Router Context</h3>
 <p>The context object provides shared state across all pages and layouts:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">// app-context.ts
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">// app-context.ts
 class AppContext {
   user: User | null = null;
   theme: 'light' | 'dark' = 'light';
@@ -944,7 +944,7 @@ const { page, initialize } = Router({
 });</snice-code-block>
 <h2 id="routing-page-components">Page Components</h2>
 <h3 id="routing-basic-page">Basic Page</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">import { render, html, styles, css } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">import { render, html, styles, css } from 'snice';
 import { page } from './router'; // page comes from Router(), not from 'snice'
 
 @page({ tag: 'home-page', routes: ['/'] })
@@ -984,7 +984,7 @@ class HomePage extends HTMLElement {
 }</snice-code-block>
 <h3 id="routing-page-with-context">Page with Context</h3>
 <p>The <code>@context()</code> decorator is a <strong>method decorator</strong> that receives context updates from the router. The method is called whenever navigation occurs, with a Context object containing application state and navigation data.</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">import { context, render, html, Context } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">import { context, render, html, Context } from 'snice';
 import { page } from './router';
 
 @page({ tag: 'profile-page', routes: ['/profile'] })
@@ -1025,7 +1025,7 @@ class ProfilePage extends HTMLElement {
 }</snice-code-block>
 <h3 id="routing-context-options">Context Options</h3>
 <p>The <code>@context()</code> decorator accepts optional timing and behavior controls:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@page({ tag: 'dashboard-page', routes: ['/dashboard'] })
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@page({ tag: 'dashboard-page', routes: ['/dashboard'] })
 class DashboardPage extends HTMLElement {
   private appContext?: AppContext;
 
@@ -1059,7 +1059,7 @@ class DashboardPage extends HTMLElement {
 }</snice-code-block>
 <h3 id="routing-context-object-structure">Context Object Structure</h3>
 <p>The Context object passed to <code>@context()</code> methods has the following structure:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">interface Context {
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">interface Context {
   application: AppContext;  // Your router context (e.g., { user, theme, config })
   navigation: {
     placards: Placard[];           // All page placards
@@ -1070,7 +1070,7 @@ class DashboardPage extends HTMLElement {
   update(): void;  // Signal all @context subscribers of changes
 }</snice-code-block>
 <p><strong>Example:</strong></p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@page({ tag: 'user-page', routes: ['/users/:userId'] })
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@page({ tag: 'user-page', routes: ['/users/:userId'] })
 class UserPage extends HTMLElement {
   private ctx?: Context;
 
@@ -1092,7 +1092,7 @@ class UserPage extends HTMLElement {
 }</snice-code-block>
 <h3 id="routing-triggering-context-updates">Triggering Context Updates</h3>
 <p>When you modify the application context, call <code>update()</code> to signal all subscribers:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@page({ tag: 'settings-page', routes: ['/settings'] })
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@page({ tag: 'settings-page', routes: ['/settings'] })
 class SettingsPage extends HTMLElement {
   private ctx?: Context;
 
@@ -1113,7 +1113,7 @@ class SettingsPage extends HTMLElement {
 <p><strong>Note:</strong> The router automatically signals <code>@context()</code> subscribers during navigation. Only call <code>update()</code> manually when changing application state outside of navigation (login, logout, theme changes, etc.).</p>
 <h2 id="routing-route-configuration">Route Configuration</h2>
 <h3 id="routing-page-decorator-options">@page Decorator Options</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">interface PageOptions {
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">interface PageOptions {
   tag: string;                       // Custom element tag name
   routes: string[];                  // Route patterns
   transition?: Transition;           // Page-specific transition
@@ -1122,7 +1122,7 @@ class SettingsPage extends HTMLElement {
   placard?: Placard | ((ctx: AppContext) =&gt; Placard);  // Page metadata
 }</snice-code-block>
 <h3 id="routing-multiple-routes">Multiple Routes</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@page({
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@page({
   tag: 'user-page',
   routes: ['/user', '/users', '/profile']
 })
@@ -1133,7 +1133,7 @@ class UserPage extends HTMLElement {
   }
 }</snice-code-block>
 <h3 id="routing-route-with-parameters">Route with Parameters</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@page({
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@page({
   tag: 'user-detail-page',
   routes: ['/users/:userId']
 })
@@ -1152,7 +1152,7 @@ class UserDetailPage extends HTMLElement {
   }
 }</snice-code-block>
 <h3 id="routing-multiple-parameters">Multiple Parameters</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@page({
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@page({
   tag: 'post-detail-page',
   routes: ['/users/:userId/posts/:postId']
 })
@@ -1172,7 +1172,7 @@ class PostDetailPage extends HTMLElement {
 }</snice-code-block>
 <h2 id="routing-navigation">Navigation</h2>
 <h3 id="routing-hash-navigation">Hash Navigation</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">// In templates
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">// In templates
 html`&lt;a href=&quot;#/about&quot;&gt;About&lt;/a&gt;`
 
 // Programmatic navigation
@@ -1181,7 +1181,7 @@ navigate('/about');
 // With parameters
 navigate('/users/123');</snice-code-block>
 <h3 id="routing-pushstate-navigation">Pushstate Navigation</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">// In templates
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">// In templates
 html`&lt;a href=&quot;/about&quot;&gt;About&lt;/a&gt;`
 
 // Programmatic navigation using the router instance
@@ -1192,7 +1192,7 @@ const { navigate } = Router({
 
 navigate('/about');</snice-code-block>
 <h3 id="routing-back-forward-navigation">Back/Forward Navigation</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">// Browser back
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">// Browser back
 window.history.back();
 
 // Browser forward
@@ -1203,7 +1203,7 @@ window.history.go(-2);</snice-code-block>
 <h2 id="routing-route-parameters">Route Parameters</h2>
 <h3 id="routing-accessing-parameters">Accessing Parameters</h3>
 <p>Route parameters are automatically mapped to element properties:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@page({
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@page({
   tag: 'article-page',
   routes: ['/articles/:articleId']
 })
@@ -1224,7 +1224,7 @@ class ArticlePage extends HTMLElement {
   }
 }</snice-code-block>
 <h3 id="routing-multiple-parameters">Multiple Parameters</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@page({
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@page({
   tag: 'comment-page',
   routes: ['/posts/:postId/comments/:commentId']
 })
@@ -1259,7 +1259,7 @@ class CommentPage extends HTMLElement {
 }</snice-code-block>
 <h3 id="routing-query-parameters">Query Parameters</h3>
 <p>Define query parameters directly in the route pattern — they are extracted as route params automatically:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@page({
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@page({
   tag: 'search-page',
   routes: ['/search?q=:query']
 })
@@ -1283,7 +1283,7 @@ class SearchPage extends HTMLElement {
 }</snice-code-block>
 <h2 id="routing-page-transitions">Page Transitions</h2>
 <h3 id="routing-global-transitions">Global Transitions</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">import { fadeTransition } from 'snice/transitions';
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">import { fadeTransition } from 'snice/transitions';
 
 const router = Router({
   target: '#app',
@@ -1291,7 +1291,7 @@ const router = Router({
   transition: fadeTransition
 });</snice-code-block>
 <h3 id="routing-page-specific-transitions">Page-Specific Transitions</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">import { slideTransition } from 'snice/transitions';
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">import { slideTransition } from 'snice/transitions';
 
 @page({
   tag: 'about-page',
@@ -1305,7 +1305,7 @@ class AboutPage extends HTMLElement {
   }
 }</snice-code-block>
 <h3 id="routing-built-in-transitions">Built-in Transitions</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">import {
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">import {
   fadeTransition,
   slideTransition,
   slideRightTransition,
@@ -1319,7 +1319,7 @@ class AboutPage extends HTMLElement {
 } from 'snice/transitions';</snice-code-block>
 <h3 id="routing-custom-transitions">Custom Transitions</h3>
 <p>Transitions use inline CSS property strings for <code>out</code> (leaving) and <code>in</code> (entering) states:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">import { Transition } from 'snice/transitions';
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">import { Transition } from 'snice/transitions';
 
 const customTransition: Transition = {
   name: 'custom',
@@ -1333,7 +1333,7 @@ const customTransition: Transition = {
 <h2 id="routing-route-guards">Route Guards</h2>
 <p>Guards protect routes and can redirect unauthorized access:</p>
 <h3 id="routing-basic-guard">Basic Guard</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">import { Guard } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">import { Guard } from 'snice';
 
 const isAuthenticated: Guard&lt;AppContext&gt; = (ctx, params) =&gt; {
   return ctx.getUser() !== null;
@@ -1351,7 +1351,7 @@ class DashboardPage extends HTMLElement {
   }
 }</snice-code-block>
 <h3 id="routing-multiple-guards">Multiple Guards</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">const hasAdminRole: Guard&lt;AppContext&gt; = (ctx, params) =&gt; {
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">const hasAdminRole: Guard&lt;AppContext&gt; = (ctx, params) =&gt; {
   const user = ctx.getUser();
   return user?.role === 'admin';
 };
@@ -1369,7 +1369,7 @@ class AdminPage extends HTMLElement {
 }</snice-code-block>
 <h3 id="routing-guard-with-redirect">Guard with Redirect</h3>
 <p>When a guard returns <code>false</code>, the router renders the <code>/403</code> page (if registered) or a default 403 message. Guards can also trigger side effects like redirects:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">const isAuthenticated: Guard&lt;AppContext&gt; = (ctx, params) =&gt; {
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">const isAuthenticated: Guard&lt;AppContext&gt; = (ctx, params) =&gt; {
   if (!ctx.getUser()) {
     window.location.hash = '#/login';
     return false;
@@ -1378,14 +1378,14 @@ class AdminPage extends HTMLElement {
 };</snice-code-block>
 <h3 id="routing-permission-guard">Permission Guard</h3>
 <p>Guards are synchronous — pre-load permissions into context before navigating:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">const hasAdminAccess: Guard&lt;AppContext&gt; = (ctx, params) =&gt; {
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">const hasAdminAccess: Guard&lt;AppContext&gt; = (ctx, params) =&gt; {
   const user = ctx.getUser();
   return user?.role === 'admin';
 };</snice-code-block>
 <h2 id="routing-layouts">Layouts</h2>
 <p>Layouts wrap pages with shared UI like headers, footers, and navigation:</p>
 <h3 id="routing-creating-a-layout">Creating a Layout</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">import { layout, render, html, styles, css, Layout } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">import { layout, render, html, styles, css, Layout } from 'snice';
 
 @layout('app-shell')
 class AppShell extends HTMLElement implements Layout {
@@ -1470,14 +1470,14 @@ class AppShell extends HTMLElement implements Layout {
   }
 }</snice-code-block>
 <h3 id="routing-using-a-layout">Using a Layout</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">const router = Router({
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">const router = Router({
   target: '#app',
   type: 'hash',
   layout: 'app-shell',  // Layout tag name
   context: new AppContext()
 });</snice-code-block>
 <h3 id="routing-layout-interface">Layout Interface</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">interface Layout {
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">interface Layout {
   update(
     appContext: any,
     placards: Placard[],
@@ -1487,7 +1487,7 @@ class AppShell extends HTMLElement implements Layout {
 }</snice-code-block>
 <h3 id="routing-conditional-layout">Conditional Layout</h3>
 <p>Different pages can use different layouts or no layout:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">// Router with default layout
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">// Router with default layout
 const router = Router({
   target: '#app',
   layout: 'app-shell'
@@ -1507,7 +1507,7 @@ class FullscreenPage extends HTMLElement {
 }</snice-code-block>
 <h2 id="routing-advanced-patterns">Advanced Patterns</h2>
 <h3 id="routing-lazy-loading-pages">Lazy Loading Pages</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@page({
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@page({
   tag: 'lazy-page',
   routes: ['/lazy']
 })
@@ -1537,7 +1537,7 @@ class LazyPage extends HTMLElement {
   }
 }</snice-code-block>
 <h3 id="routing-nested-routing">Nested Routing</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">// Parent page with sub-navigation
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">// Parent page with sub-navigation
 @page({
   tag: 'settings-page',
   routes: ['/settings', '/settings/:section']
@@ -1577,7 +1577,7 @@ class SettingsPage extends HTMLElement {
   }
 }</snice-code-block>
 <h3 id="routing-route-based-data-loading">Route-Based Data Loading</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@page({
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@page({
   tag: 'product-page',
   routes: ['/products/:productId']
 })
@@ -1635,7 +1635,7 @@ class ProductPage extends HTMLElement {
   }
 }</snice-code-block>
 <h3 id="routing-breadcrumb-navigation">Breadcrumb Navigation</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@page({
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@page({
   tag: 'breadcrumb-page',
   routes: ['/categories/:category/products/:productId'],
   placard: {
@@ -1672,7 +1672,7 @@ class BreadcrumbPage extends HTMLElement {
   }
 }</snice-code-block>
 <h3 id="routing-error-page-404">Error Page (404)</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@page({
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@page({
   tag: 'not-found-page',
   routes: ['/404', '*']  // Catch-all route
 })
@@ -1688,7 +1688,7 @@ class NotFoundPage extends HTMLElement {
   }
 }</snice-code-block>
 <h3 id="routing-protected-route-pattern">Protected Route Pattern</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">// Context with auth state
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">// Context with auth state
 class AppContext {
   private user: User | null = null;
 
@@ -1786,20 +1786,20 @@ class LoginPage extends HTMLElement {
 }</snice-code-block>
 <h2 id="routing-router-api-reference">Router API Reference</h2>
 <h3 id="routing-router">Router()</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">function Router(options: RouterOptions): {
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">function Router(options: RouterOptions): {
   page: (pageOptions: PageOptions) =&gt; ClassDecorator;
   initialize: () =&gt; void;
   navigate: (path: string) =&gt; Promise&lt;void&gt;;
   register: (route: string, tag: string, transition?: Transition, guards?: Guard | Guard[]) =&gt; void;
 }</snice-code-block>
 <h3 id="routing-navigate">navigate()</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">navigate(path: string): Promise&lt;void&gt;</snice-code-block>
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">navigate(path: string): Promise&lt;void&gt;</snice-code-block>
 <p>Navigates to the specified path. Uses hash (#) or pushstate depending on router type.</p>
 <h3 id="routing-initialize">initialize()</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">initialize(): void</snice-code-block>
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">initialize(): void</snice-code-block>
 <p>Initializes the router and starts listening for route changes. Must be called after all pages are defined.</p>
 <h3 id="routing-register">register()</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">register(
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">register(
   route: string,
   tag: string,
   transition?: Transition,
@@ -1815,7 +1815,7 @@ class LoginPage extends HTMLElement {
 <h2 id="events-template-event-syntax-preferred-for-elements">Template Event Syntax (Preferred for Elements)</h2>
 <p>The recommended way to handle events in elements is using template event syntax with <code>@event=${handler}</code>:</p>
 <h3 id="events-basic-usage">Basic Usage</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">import { element, property, render, html } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">import { element, property, render, html } from 'snice';
 
 @element('click-counter')
 class ClickCounter extends HTMLElement {
@@ -1847,7 +1847,7 @@ class ClickCounter extends HTMLElement {
   }
 }</snice-code-block>
 <h3 id="events-event-object-access">Event Object Access</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@element('form-handler')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@element('form-handler')
 class FormHandler extends HTMLElement {
   @render()
   renderContent() {
@@ -1886,7 +1886,7 @@ class FormHandler extends HTMLElement {
   }
 }</snice-code-block>
 <h3 id="events-multiple-event-types">Multiple Event Types</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@element('file-upload')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@element('file-upload')
 class FileUpload extends HTMLElement {
   @property({ type: Boolean })
   dragOver = false;
@@ -1928,7 +1928,7 @@ class FileUpload extends HTMLElement {
 }</snice-code-block>
 <h3 id="events-keyboard-shortcuts-in-templates">Keyboard Shortcuts in Templates</h3>
 <p>Template event syntax supports keyboard shortcuts using dot notation:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@element('keyboard-input')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@element('keyboard-input')
 class KeyboardInput extends HTMLElement {
   @render()
   renderContent() {
@@ -1984,7 +1984,7 @@ class KeyboardInput extends HTMLElement {
 </ul>
 <h3 id="events-arrow-functions-in-templates">Arrow Functions in Templates</h3>
 <p>Use arrow functions for inline event handling or passing parameters:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@element('task-list')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@element('task-list')
 class TaskList extends HTMLElement {
   @property()
   tasks = [
@@ -2036,7 +2036,7 @@ class TaskList extends HTMLElement {
 <li>Automatic preventDefault or stopPropagation</li>
 </ul>
 <h3 id="events-basic-controller-usage">Basic Controller Usage</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">import { controller, on, IController } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">import { controller, on, IController } from 'snice';
 
 @controller('button-controller')
 class ButtonController implements IController {
@@ -2066,7 +2066,7 @@ class ButtonController implements IController {
   }
 }</snice-code-block>
 <h3 id="events-event-delegation-with-selector">Event Delegation with Selector</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@controller('list-controller')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@controller('list-controller')
 class ListController implements IController {
   element: HTMLElement | null = null;
 
@@ -2097,7 +2097,7 @@ class ListController implements IController {
   }
 }</snice-code-block>
 <h3 id="events-keyboard-events-with-on">Keyboard Events with @on</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@controller('editor-controller')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@controller('editor-controller')
 class EditorController implements IController {
   element: HTMLElement | null = null;
 
@@ -2131,7 +2131,7 @@ class EditorController implements IController {
   }
 }</snice-code-block>
 <h3 id="events-on-options">@on Options</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">interface OnOptions {
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">interface OnOptions {
   // Standard event listener options
   capture?: boolean;           // Use capture phase instead of bubble phase
   once?: boolean;              // Remove listener after first trigger
@@ -2149,7 +2149,7 @@ class EditorController implements IController {
   target?: string;             // CSS selector to target specific elements within shadow root
 }</snice-code-block>
 <h4 id="events-throttling">Throttling</h4>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@controller('scroll-controller')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@controller('scroll-controller')
 class ScrollController implements IController {
   element: HTMLElement | null = null;
 
@@ -2164,7 +2164,7 @@ class ScrollController implements IController {
   }
 }</snice-code-block>
 <h4 id="events-debouncing">Debouncing</h4>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@controller('search-controller')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@controller('search-controller')
 class SearchController implements IController {
   element: HTMLElement | null = null;
 
@@ -2185,7 +2185,7 @@ class SearchController implements IController {
 }</snice-code-block>
 <h3 id="events-using-on-in-elements-alternative">Using @on in Elements (Alternative)</h3>
 <p>While template syntax is preferred, <code>@on</code> can also be used in elements:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">import { element, on, render, html } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">import { element, on, render, html } from 'snice';
 
 @element('my-button')
 class MyButton extends HTMLElement {
@@ -2208,7 +2208,7 @@ class MyButton extends HTMLElement {
 <h2 id="events-dispatch-decorator">@dispatch Decorator</h2>
 <p>Auto-dispatch custom events after method execution:</p>
 <h3 id="events-basic-usage">Basic Usage</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">import { element, dispatch, render, html } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">import { element, dispatch, render, html } from 'snice';
 
 @element('value-input')
 class ValueInput extends HTMLElement {
@@ -2237,13 +2237,13 @@ class ValueInput extends HTMLElement {
   }
 }</snice-code-block>
 <p>Usage:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">const input = document.querySelector('value-input');
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">const input = document.querySelector('value-input');
 input.addEventListener('value-changed', (e: CustomEvent) =&gt; {
   console.log('New value:', e.detail.value);
 });</snice-code-block>
 <h3 id="events-event-options">Event Options</h3>
 <p>Events dispatched by <code>@dispatch</code> default to <code>bubbles: true</code> and <code>composed: true</code> (crosses shadow DOM boundaries). Override if needed:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@element('status-indicator')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@element('status-indicator')
 class StatusIndicator extends HTMLElement {
   @render()
   renderContent() {
@@ -2260,13 +2260,13 @@ class StatusIndicator extends HTMLElement {
   }
 }</snice-code-block>
 <h3 id="events-dispatchoptions">DispatchOptions</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">interface DispatchOptions extends EventInit {
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">interface DispatchOptions extends EventInit {
   dispatchOnUndefined?: boolean; // Skip dispatch when return is undefined (default: true)
   debounce?: number;             // Debounce dispatch by ms
   throttle?: number;             // Throttle dispatch by ms
 }</snice-code-block>
 <h3 id="events-debounce-throttle">Debounce/Throttle</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@element('search-box')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@element('search-box')
 class SearchBox extends HTMLElement {
   @render()
   renderContent() {
@@ -2284,13 +2284,13 @@ class SearchBox extends HTMLElement {
 }</snice-code-block>
 <h3 id="events-async-methods">Async Methods</h3>
 <p><code>@dispatch</code> works with async methods — the event dispatches after the promise resolves:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@dispatch('validation-complete')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@dispatch('validation-complete')
 async validate() {
   const result = await this.runValidation();
   return { valid: result.isValid, errors: result.errors };
 }</snice-code-block>
 <h3 id="events-multiple-events">Multiple Events</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@element('color-picker')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@element('color-picker')
 class ColorPicker extends HTMLElement {
   @property() color = '#000000';
 
@@ -2319,7 +2319,7 @@ class ColorPicker extends HTMLElement {
 }</snice-code-block>
 <h2 id="events-custom-events">Custom Events</h2>
 <h3 id="events-dispatching-manually">Dispatching Manually</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@element('manual-dispatcher')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@element('manual-dispatcher')
 class ManualDispatcher extends HTMLElement {
   @render()
   renderContent() {
@@ -2338,7 +2338,7 @@ class ManualDispatcher extends HTMLElement {
   }
 }</snice-code-block>
 <h3 id="events-listening-to-custom-events">Listening to Custom Events</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@element('event-listener')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@element('event-listener')
 class EventListener extends HTMLElement {
   @render()
   renderContent() {
@@ -2353,7 +2353,7 @@ class EventListener extends HTMLElement {
 }</snice-code-block>
 <h2 id="events-event-delegation">Event Delegation</h2>
 <h3 id="events-controller-event-delegation">Controller Event Delegation</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@controller('table-controller')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@controller('table-controller')
 class TableController implements IController {
   element: HTMLElement | null = null;
 
@@ -2385,7 +2385,7 @@ class TableController implements IController {
 }</snice-code-block>
 <h3 id="events-template-event-delegation">Template Event Delegation</h3>
 <p>For dynamic content, use controllers with <code>@on</code> for event delegation, or handle events on a parent element:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@element('dynamic-list')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@element('dynamic-list')
 class DynamicList extends HTMLElement {
   @property()
   items = ['Item 1', 'Item 2', 'Item 3'];
@@ -2425,7 +2425,7 @@ class DynamicList extends HTMLElement {
 }</snice-code-block>
 <h2 id="events-keyboard-shortcuts">Keyboard Shortcuts</h2>
 <h3 id="events-template-syntax-preferred">Template Syntax (Preferred)</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@element('shortcut-handler')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@element('shortcut-handler')
 class ShortcutHandler extends HTMLElement {
   @render()
   renderContent() {
@@ -2463,7 +2463,7 @@ class ShortcutHandler extends HTMLElement {
   }
 }</snice-code-block>
 <h3 id="events-on-decorator-syntax">@on Decorator Syntax</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@controller('keyboard-controller')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@controller('keyboard-controller')
 class KeyboardController implements IController {
   element: HTMLElement | null = null;
 
@@ -2492,7 +2492,7 @@ class KeyboardController implements IController {
 <p>Controllers handle data fetching, business logic, and server communication separately from visual components. They can be attached to any HTML element, including native elements.</p>
 <h2 id="controllers-basic-usage">Basic Usage</h2>
 <h3 id="controllers-creating-a-controller">Creating a Controller</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">import { controller, IController } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">import { controller, IController } from 'snice';
 
 @controller('user-controller')
 class UserController implements IController&lt;HTMLElement&gt; {
@@ -2510,13 +2510,13 @@ class UserController implements IController&lt;HTMLElement&gt; {
 }</snice-code-block>
 <h3 id="controllers-attaching-controllers-to-elements">Attaching Controllers to Elements</h3>
 <p>Controllers can be attached via the <code>controller</code> attribute:</p>
-<snice-code-block language="html" grammar="grammars/html.json?v=4282c34">&lt;!-- Custom element --&gt;
+<snice-code-block language="html" grammar="grammars/html.json?v=a9741b5">&lt;!-- Custom element --&gt;
 &lt;user-list controller=&quot;user-controller&quot;&gt;&lt;/user-list&gt;
 
 &lt;!-- Native element (works automatically) --&gt;
 &lt;div controller=&quot;user-controller&quot;&gt;&lt;/div&gt;</snice-code-block>
 <h3 id="controllers-icontroller-interface">IController Interface</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">interface IController&lt;T extends HTMLElement = HTMLElement&gt; {
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">interface IController&lt;T extends HTMLElement = HTMLElement&gt; {
   element: T | null | undefined;
   attach(element: T): void | Promise&lt;void&gt;;
   detach(element: T): void | Promise&lt;void&gt;;
@@ -2545,7 +2545,7 @@ class UserController implements IController&lt;HTMLElement&gt; {
 <li><code>controller-detached</code> event is dispatched</li>
 </ol>
 <h3 id="controllers-example-with-lifecycle-logging">Example with Lifecycle Logging</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@controller('lifecycle-controller')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@controller('lifecycle-controller')
 class LifecycleController implements IController {
   element: HTMLElement | null = null;
   private intervalId?: number;
@@ -2593,7 +2593,7 @@ class LifecycleController implements IController {
 <h2 id="controllers-native-element-controllers">Native Element Controllers</h2>
 <p>Native element controllers are enabled automatically when Snice loads in a browser environment. No setup is required.</p>
 <p>You can attach controllers to any HTML element:</p>
-<snice-code-block language="html" grammar="grammars/html.json?v=4282c34">&lt;div controller=&quot;content-controller&quot;&gt;
+<snice-code-block language="html" grammar="grammars/html.json?v=a9741b5">&lt;div controller=&quot;content-controller&quot;&gt;
   &lt;p&gt;Content managed by controller&lt;/p&gt;
 &lt;/div&gt;
 
@@ -2606,7 +2606,7 @@ class LifecycleController implements IController {
 &lt;/form&gt;</snice-code-block>
 <h3 id="controllers-example-table-controller">Example: Table Controller</h3>
 <p>Controllers provide specific behaviors (data fetching, sorting, filtering) to generic visual components. The component handles rendering — the controller handles data:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@controller('table-controller')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@controller('table-controller')
 class TableController implements IController&lt;HTMLTableElement&gt; {
   element: HTMLTableElement | null = null;
 
@@ -2623,7 +2623,7 @@ class TableController implements IController&lt;HTMLTableElement&gt; {
 }</snice-code-block>
 <h2 id="controllers-resource-cleanup">Resource Cleanup</h2>
 <p>The framework auto-cleans <code>@on</code>, <code>@observe</code>, and <code>@respond</code> handlers. Clean up your own resources (WebSockets, timers, manual listeners) in <code>detach</code>:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">import { controller, IController } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">import { controller, IController } from 'snice';
 
 @controller('resource-controller')
 class ResourceController implements IController {
@@ -2658,7 +2658,7 @@ class ResourceController implements IController {
 }</snice-code-block>
 <h2 id="controllers-event-handling-in-controllers">Event Handling in Controllers</h2>
 <p>Controllers can use the <code>@on</code> decorator to handle events from their attached element:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">import { controller, on, IController } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">import { controller, on, IController } from 'snice';
 
 @controller('form-controller')
 class FormController implements IController&lt;HTMLFormElement&gt; {
@@ -2700,7 +2700,7 @@ class FormController implements IController&lt;HTMLFormElement&gt; {
 }</snice-code-block>
 <h2 id="controllers-query-selectors-in-controllers">Query Selectors in Controllers</h2>
 <p>Controllers can use <code>@query</code> and <code>@queryAll</code> to access elements. <strong>Important:</strong> By default, <code>@query</code> searches the shadow DOM. When attached to native elements (no shadow root), use <code>{ light: true }</code>:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">import { controller, query, queryAll, IController } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">import { controller, query, queryAll, IController } from 'snice';
 
 @controller('form-validation-controller')
 class FormValidationController implements IController&lt;HTMLFormElement&gt; {
@@ -2732,7 +2732,7 @@ class FormValidationController implements IController&lt;HTMLFormElement&gt; {
 <h2 id="controllers-advanced-patterns">Advanced Patterns</h2>
 <h3 id="controllers-data-fetching-controller">Data Fetching Controller</h3>
 <p>Controllers own data fetching. Pass results to the element via its API or dispatch events — don't manipulate DOM directly:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@controller('data-fetcher')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@controller('data-fetcher')
 class DataFetcherController implements IController {
   element: HTMLElement | null = null;
   private abortController?: AbortController;
@@ -2778,7 +2778,7 @@ class DataFetcherController implements IController {
   }
 }</snice-code-block>
 <h3 id="controllers-theme-controller">Theme Controller</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@controller('theme-controller')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@controller('theme-controller')
 class ThemeController implements IController {
   element: HTMLElement | null = null;
 
@@ -2798,7 +2798,7 @@ class ThemeController implements IController {
   }
 }</snice-code-block>
 <h3 id="controllers-websocket-controller">WebSocket Controller</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@controller('ws-controller')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@controller('ws-controller')
 class WebSocketController implements IController {
   element: HTMLElement | null = null;
   private ws?: WebSocket;
@@ -2837,7 +2837,7 @@ class WebSocketController implements IController {
 <h2 id="controllers-accessing-controllers">Accessing Controllers</h2>
 <h3 id="controllers-via-event">Via Event</h3>
 <p>Listen for attachment on the element itself (the event does <strong>not</strong> bubble):</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">element.addEventListener('controller-attached', (e: CustomEvent) =&gt; {
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">element.addEventListener('controller-attached', (e: CustomEvent) =&gt; {
   console.log('Name:', e.detail.name);           // controller name string
   console.log('Instance:', e.detail.controller);  // IController instance
 });</snice-code-block>
@@ -2849,7 +2849,7 @@ class WebSocketController implements IController {
 <p>The <code>@observe</code> decorator provides lifecycle-managed observation of external changes like viewport intersection, element resize, media queries, and DOM mutations.</p>
 <h2 id="observe-overview">Overview</h2>
 <p>The <code>@observe</code> decorator automatically manages browser observers with proper cleanup, preventing memory leaks and simplifying complex observation patterns.</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">import { element, observe, render, html } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">import { element, observe, render, html } from 'snice';
 
 @element('lazy-image')
 class LazyImage extends HTMLElement {
@@ -2869,7 +2869,7 @@ class LazyImage extends HTMLElement {
 }</snice-code-block>
 <h3 id="observe-array-syntax">Array Syntax</h3>
 <p>You can observe multiple types with a single handler using array syntax:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@element('dynamic-content')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@element('dynamic-content')
 class DynamicContent extends HTMLElement {
   @render()
   renderContent() {
@@ -2902,7 +2902,7 @@ class DynamicContent extends HTMLElement {
 <h2 id="observe-intersection-observer">Intersection Observer</h2>
 <p>Detect when elements enter or leave the viewport. Perfect for lazy loading, infinite scroll, and animations.</p>
 <h3 id="observe-basic-usage">Basic Usage</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@element('scroll-trigger')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@element('scroll-trigger')
 class ScrollTrigger extends HTMLElement {
   @render()
   renderContent() {
@@ -2938,7 +2938,7 @@ class ScrollTrigger extends HTMLElement {
 </ul>
 <h3 id="observe-stopping-observation">Stopping Observation</h3>
 <p>Return <code>false</code> from the handler to stop observing that specific element:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@observe('intersection', '.item')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@observe('intersection', '.item')
 handleItemVisible(entry: IntersectionObserverEntry) {
   if (entry.isIntersecting) {
     this.animateItem(entry.target);
@@ -2952,7 +2952,7 @@ animateItem(target: Element) {
 <h2 id="observe-resize-observer">Resize Observer</h2>
 <p>Monitor element size changes for responsive components.</p>
 <h3 id="observe-basic-usage">Basic Usage</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@element('responsive-chart')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@element('responsive-chart')
 class ResponsiveChart extends HTMLElement {
   @render()
   renderContent() {
@@ -2988,7 +2988,7 @@ class ResponsiveChart extends HTMLElement {
 <h2 id="observe-media-query-observer">Media Query Observer</h2>
 <p>Respond to viewport and user preference changes.</p>
 <h3 id="observe-basic-usage">Basic Usage</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@element('responsive-layout')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@element('responsive-layout')
 class ResponsiveLayout extends HTMLElement {
   isDesktop = false;
   isDarkMode = false;
@@ -3041,7 +3041,7 @@ class ResponsiveLayout extends HTMLElement {
 <h2 id="observe-mutation-observer">Mutation Observer</h2>
 <p>Watch for DOM changes like added/removed nodes or attribute modifications.</p>
 <h3 id="observe-basic-usage">Basic Usage</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@element('dynamic-list')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@element('dynamic-list')
 class DynamicList extends HTMLElement {
   @render()
   renderContent() {
@@ -3094,7 +3094,7 @@ class DynamicList extends HTMLElement {
 </ul>
 <h2 id="observe-using-with-controllers">Using with Controllers</h2>
 <p>Controllers can also use <code>@observe</code> for separation of concerns. When used in controllers, observers operate on the attached element:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@controller('viewport-controller')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@controller('viewport-controller')
 class ViewportController implements IController {
   element: HTMLElement | null = null;
 
@@ -3127,7 +3127,7 @@ class ViewportController implements IController {
 }</snice-code-block>
 <h2 id="observe-options">Options</h2>
 <p>All observer types share a single options interface. Pass only the fields relevant to the observer type you're using:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">interface ObserveOptions {
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">interface ObserveOptions {
   // Intersection Observer
   threshold?: number | number[];  // 0-1 visibility percentage
   rootMargin?: string;            // Margin around root
@@ -3145,13 +3145,13 @@ class ViewportController implements IController {
 }</snice-code-block>
 <h2 id="observe-best-practices">Best Practices</h2>
 <h3 id="observe-1-be-specific">1. Be Specific</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">// Good - specific selector and threshold
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">// Good - specific selector and threshold
 @observe('intersection', '.lazy-image', { threshold: 0.1 })
 
 // Bad - observing everything
 @observe('intersection', '*')</snice-code-block>
 <h3 id="observe-2-use-throttling-for-high-frequency-events">2. Use Throttling for High-Frequency Events</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">// Good - throttled resize observer
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">// Good - throttled resize observer
 @observe('resize', { throttle: 100 })
 handleResize(entry: ResizeObserverEntry) {
   this.expensiveOperation();
@@ -3167,7 +3167,7 @@ expensiveOperation() {
   // Expensive logic
 }</snice-code-block>
 <h3 id="observe-3-stop-observing-when-done">3. Stop Observing When Done</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@observe('intersection', '.load-more')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@observe('intersection', '.load-more')
 handleLoadMore(entry: IntersectionObserverEntry) {
   if (entry.isIntersecting) {
     this.loadMoreContent();
@@ -3179,13 +3179,13 @@ loadMoreContent() {
   // Load more logic
 }</snice-code-block>
 <h3 id="observe-4-avoid-deep-subtree-observation">4. Avoid Deep Subtree Observation</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">// Bad - observing entire subtree
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">// Bad - observing entire subtree
 @observe('mutation:childList', { subtree: true })
 
 // Good - observe specific container
 @observe('mutation:childList', '.list-container')</snice-code-block>
 <h3 id="observe-5-use-media-queries-for-responsive-design">5. Use Media Queries for Responsive Design</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">// Good - declarative responsive behavior
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">// Good - declarative responsive behavior
 @observe('media:(min-width: 768px)')
 handleDesktop(matches: boolean) {
   this.layout = matches ? 'desktop' : 'mobile';
@@ -3203,7 +3203,7 @@ handleDesktop(matches: boolean) {
 <li>Re-established if element is moved in DOM</li>
 </ul>
 <p>No manual cleanup is required - the framework handles everything:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@element('auto-cleanup')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@element('auto-cleanup')
 class AutoCleanup extends HTMLElement {
   // All observers are automatically managed
   @observe('intersection')
@@ -3231,7 +3231,7 @@ class AutoCleanup extends HTMLElement {
 </ol>
 <h2 id="observe-examples">Examples</h2>
 <h3 id="observe-virtual-scrolling">Virtual Scrolling</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@element('virtual-list')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@element('virtual-list')
 class VirtualList extends HTMLElement {
   visibleItems = new Set&lt;Element&gt;();
 
@@ -3260,7 +3260,7 @@ class VirtualList extends HTMLElement {
   }
 }</snice-code-block>
 <h3 id="observe-responsive-dashboard">Responsive Dashboard</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@element('dashboard')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@element('dashboard')
 class Dashboard extends HTMLElement {
   columns = 1;
 
@@ -3289,7 +3289,7 @@ class Dashboard extends HTMLElement {
   }
 }</snice-code-block>
 <h3 id="observe-dynamic-form-fields">Dynamic Form Fields</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@element('dynamic-form')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@element('dynamic-form')
 class DynamicForm extends HTMLElement {
   @observe('mutation:childList', '.dynamic-fields')
   handleFieldsAdded(mutations: MutationRecord[]) {
@@ -3338,7 +3338,7 @@ class DynamicForm extends HTMLElement {
 <p>This pattern is implemented using async generators and custom events. Each <code>@request</code> method supports <strong>one yield</strong> per invocation — the generator yields a request payload, the controller responds, and the generator receives the response.</p>
 <h2 id="request-response-request-response-decorators">Request/Response Decorators</h2>
 <h3 id="request-response-signature">Signature</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">function request(requestName: string, options?: RequestOptions): MethodDecorator
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">function request(requestName: string, options?: RequestOptions): MethodDecorator
 function respond(requestName: string, options?: RespondOptions): MethodDecorator
 
 interface RequestOptions extends EventInit {
@@ -3360,7 +3360,7 @@ type RequestResult&lt;T&gt; = AsyncGenerator&lt;any, T, any&gt; | Promise&lt;T&g
 // Define this in your project — it satisfies both the generator and the caller</snice-code-block>
 <h4 id="request-response-response-debounce-throttle">Response Debounce/Throttle</h4>
 <p>Response handlers can be debounced or throttled:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@controller('processing-controller')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@controller('processing-controller')
 class ProcessingController implements IController {
   element: HTMLElement | null = null;
   async attach() {}
@@ -3378,7 +3378,7 @@ class ProcessingController implements IController {
 }</snice-code-block>
 <h2 id="request-response-element-side-requests">Element-Side Requests</h2>
 <p>Elements use async generators to make requests. The element stays visual — it yields data up to the controller and renders the response:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">import { element, request, property, render, html } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">import { element, request, property, render, html } from 'snice';
 
 type RequestResult&lt;T&gt; = AsyncGenerator&lt;any, T, any&gt; | Promise&lt;T&gt;;
 
@@ -3415,7 +3415,7 @@ class ProductCard extends HTMLElement {
 </ol>
 <h2 id="request-response-controller-side-responses">Controller-Side Responses</h2>
 <p>Controllers handle requests — this is where business logic, API calls, and data management belong:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">import { controller, respond, IController } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">import { controller, respond, IController } from 'snice';
 
 @controller('product-controller')
 class ProductController implements IController {
@@ -3437,7 +3437,7 @@ class ProductController implements IController {
 <li><strong>Discovery timeout</strong> (<code>discoveryTimeout</code>): 50ms default — finds a handler quickly</li>
 <li><strong>Response timeout</strong> (<code>timeout</code>): 2 minutes default — total time for the response</li>
 </ul>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@request('heavy-computation', {
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@request('heavy-computation', {
   discoveryTimeout: 50,   // 50ms to find handler
   timeout: 30000          // 30s for actual processing
 })
@@ -3445,7 +3445,7 @@ async *compute(): RequestResult&lt;any&gt; {
   return await (yield data);
 }</snice-code-block>
 <h3 id="request-response-debounce-throttle">Debounce/Throttle</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">// Debounce: wait for typing to stop before searching
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">// Debounce: wait for typing to stop before searching
 @request('search', { debounce: 300 })
 async *search(): RequestResult&lt;any[]&gt; {
   return await (yield { query: this.searchTerm });
@@ -3458,7 +3458,7 @@ async *trackEvent(): RequestResult&lt;void&gt; {
 }</snice-code-block>
 <h2 id="request-response-error-handling">Error Handling</h2>
 <h3 id="request-response-element-side">Element-Side</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@element('safe-loader')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@element('safe-loader')
 class SafeLoader extends HTMLElement {
   @property() error = '';
   @property() data: any = null;
@@ -3492,7 +3492,7 @@ class SafeLoader extends HTMLElement {
   }
 }</snice-code-block>
 <h3 id="request-response-controller-side">Controller-Side</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@controller('resilient-controller')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@controller('resilient-controller')
 class ResilientController implements IController {
   element: HTMLElement | null = null;
   async attach() {}
@@ -3514,7 +3514,7 @@ class ResilientController implements IController {
 }</snice-code-block>
 <h2 id="request-response-advanced-patterns">Advanced Patterns</h2>
 <h3 id="request-response-cached-responses">Cached Responses</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@controller('cached-controller')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@controller('cached-controller')
 class CachedController implements IController {
   element: HTMLElement | null = null;
   private cache = new Map&lt;string, { data: any; timestamp: number }&gt;();
@@ -3537,7 +3537,7 @@ class CachedController implements IController {
 }</snice-code-block>
 <h3 id="request-response-subscription-pattern">Subscription Pattern</h3>
 <p>Use <code>@request</code> for one-time fetches and <code>@dispatch</code> + <code>@on</code> for ongoing updates:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">// Element: visual, subscribes to updates
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">// Element: visual, subscribes to updates
 @element('live-ticker')
 class LiveTicker extends HTMLElement {
   @property() price = '0.00';
@@ -3601,7 +3601,7 @@ class TickerController implements IController {
 <li>Access application and navigation state in middleware</li>
 </ul>
 <h2 id="fetcher-basic-usage">Basic Usage</h2>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">import { Router, ContextAwareFetcher } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">import { Router, ContextAwareFetcher } from 'snice';
 
 // Create a fetcher instance
 const fetcher = new ContextAwareFetcher();
@@ -3634,7 +3634,7 @@ const router = Router({
 router.initialize();</snice-code-block>
 <h2 id="fetcher-using-context-fetch-in-pages">Using Context.fetch in Pages</h2>
 <p>Once configured, <code>ctx.fetch</code> is available in all pages and components that use the <code>@context</code> decorator:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@page({ tag: 'user-page', routes: ['/users/:id'] })
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@page({ tag: 'user-page', routes: ['/users/:id'] })
 class UserPage extends HTMLElement {
   private ctx: Context;
 
@@ -3660,7 +3660,7 @@ class UserPage extends HTMLElement {
 <h3 id="fetcher-request-middleware">Request Middleware</h3>
 <p>Request middleware runs <strong>before</strong> the actual fetch call. It receives the <code>Request</code> object and can modify it before the request is sent.</p>
 <p><strong>Signature:</strong></p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">type RequestMiddleware = (
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">type RequestMiddleware = (
   this: Context,
   request: Request,
   next: () =&gt; Promise&lt;Response&gt;
@@ -3675,7 +3675,7 @@ class UserPage extends HTMLElement {
 </ul>
 <p><strong>Example - JWT Bearer Token:</strong></p>
 <p><code>this</code> in middleware is the <code>Context</code> instance. Store auth state in <code>application</code> (your <code>AppContext</code>):</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">// Attach JWT to every request
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">// Attach JWT to every request
 fetcher.use('request', function(request, next) {
   const jwt = this.application.principal?.token;
   if (jwt) {
@@ -3711,14 +3711,14 @@ fetcher.use('response', async function(response, next) {
   return next();
 });</snice-code-block>
 <p><strong>Example - Request Logging:</strong></p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">fetcher.use('request', function(request, next) {
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">fetcher.use('request', function(request, next) {
   console.log(`[${this.navigation.route}] ${request.method} ${request.url}`);
   return next();
 });</snice-code-block>
 <h3 id="fetcher-response-middleware">Response Middleware</h3>
 <p>Response middleware runs <strong>after</strong> the fetch call completes. It receives the <code>Response</code> object and can inspect or transform it.</p>
 <p><strong>Signature:</strong></p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">type ResponseMiddleware = (
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">type ResponseMiddleware = (
   this: Context,
   response: Response,
   next: () =&gt; Promise&lt;Response&gt;
@@ -3733,7 +3733,7 @@ fetcher.use('response', async function(response, next) {
 <li>Retry logic</li>
 </ul>
 <p><strong>Example - Error Handling:</strong></p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">fetcher.use('response', async function(response, next) {
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">fetcher.use('response', async function(response, next) {
   if (!response.ok) {
     const error = await response.text();
     console.error(`[${this.navigation.route}] HTTP ${response.status}:`, error);
@@ -3742,12 +3742,12 @@ fetcher.use('response', async function(response, next) {
   return next();
 });</snice-code-block>
 <p><strong>Example - Response Logging:</strong></p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">fetcher.use('response', async function(response, next) {
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">fetcher.use('response', async function(response, next) {
   console.log(`[${this.navigation.route}] Response ${response.status} from ${response.url}`);
   return next();
 });</snice-code-block>
 <p><strong>Example - Performance Metrics:</strong></p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">const timings = new Map&lt;string, number&gt;();
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">const timings = new Map&lt;string, number&gt;();
 
 fetcher.use('request', function(request, next) {
   timings.set(request.url, Date.now());
@@ -3770,7 +3770,7 @@ fetcher.use('response', async function(response, next) {
 <li><code>this.id</code> - Unique context instance ID</li>
 </ul>
 <p><strong>Example - Context-Aware Error Handling:</strong></p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">fetcher.use('response', async function(response, next) {
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">fetcher.use('response', async function(response, next) {
   if (response.status === 401) {
     // Unauthorized - clear user and redirect to login
     this.application.user = null;
@@ -3794,7 +3794,7 @@ fetcher.use('response', async function(response, next) {
 <li>Response middleware runs in registration order</li>
 </ol>
 <p><strong>Example:</strong></p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">const fetcher = new ContextAwareFetcher();
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">const fetcher = new ContextAwareFetcher();
 
 fetcher.use('request', function(request, next) {
   console.log('Request middleware 1');
@@ -3824,7 +3824,7 @@ fetcher.use('response', async function(response, next) {
 // Response middleware 2</snice-code-block>
 <h2 id="fetcher-complete-example">Complete Example</h2>
 <p>Here's a complete example with authentication, error handling, and logging:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">import { Router, ContextAwareFetcher } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">import { Router, ContextAwareFetcher } from 'snice';
 
 interface AppContext {
   auth?: {
@@ -3886,13 +3886,13 @@ router.initialize();</snice-code-block>
 </ul>
 <h3 id="fetcher-modifying-request-headers">Modifying Request Headers</h3>
 <p>The <code>Request</code> object's <code>headers</code> property is mutable — you can call <code>request.headers.set()</code> directly in middleware:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">fetcher.use('request', function(request, next) {
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">fetcher.use('request', function(request, next) {
   request.headers.set('X-Custom', 'value');
   return next();
 });</snice-code-block>
 <h3 id="fetcher-no-fetcher-means-native-fetch">No Fetcher Means Native Fetch</h3>
 <p>If no <code>fetcher</code> is provided to the Router, <code>ctx.fetch</code> defaults to the native <code>fetch</code> function bound to the Context instance:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">// No fetcher provided
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">// No fetcher provided
 const router = Router({
   target: '#app',
   context: {}
@@ -3902,7 +3902,7 @@ const router = Router({
 <h2 id="fetcher-api-reference">API Reference</h2>
 <h3 id="fetcher-contextawarefetcher">ContextAwareFetcher</h3>
 <p><strong>Constructor:</strong></p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">new ContextAwareFetcher()</snice-code-block>
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">new ContextAwareFetcher()</snice-code-block>
 <p><strong>Methods:</strong></p>
 <p><strong><code>use(type: 'request', middleware: RequestMiddleware): void</code></strong></p>
 <p>Add request middleware that runs before the fetch call.</p>
@@ -3911,7 +3911,7 @@ const router = Router({
 <p><strong><code>create(ctx: Context): typeof globalThis.fetch</code></strong></p>
 <p>Create a fetch function bound to the given Context instance. This is called internally by the Router.</p>
 <h3 id="fetcher-type-definitions">Type Definitions</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">type RequestMiddleware = (
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">type RequestMiddleware = (
   this: Context,
   request: Request,
   next: () =&gt; Promise&lt;Response&gt;
@@ -3961,7 +3961,7 @@ interface Fetcher {
 </ul>
 <h2 id="placards-basic-usage">Basic Usage</h2>
 <p>Define a placard for your page using the <code>placard</code> option in the <code>@page</code> decorator:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">import { Placard, render, html } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">import { Placard, render, html } from 'snice';
 import { page } from './router'; // page comes from Router(), not from 'snice'
 
 const placard: Placard&lt;AppContext&gt; = {
@@ -3985,7 +3985,7 @@ class DashboardPage extends HTMLElement {
   }
 }</snice-code-block>
 <h2 id="placards-placard-interface">Placard Interface</h2>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">interface Placard&lt;T = any&gt; {
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">interface Placard&lt;T = any&gt; {
   // Identification
   name: string;
 
@@ -4048,13 +4048,13 @@ class DashboardPage extends HTMLElement {
 <li>Additional keywords for search functionality</li>
 <li>Helps users discover pages through alternate terms</li>
 </ul>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">searchTerms: ['settings', 'preferences', 'config', 'options']</snice-code-block>
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">searchTerms: ['settings', 'preferences', 'config', 'options']</snice-code-block>
 <p><strong><code>hotkeys</code></strong> (optional)</p>
 <ul>
 <li>Keyboard shortcuts to navigate to this page</li>
 <li>Uses standard key notation</li>
 </ul>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">hotkeys: ['ctrl+d', 'cmd+d', 'alt+shift+d']</snice-code-block>
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">hotkeys: ['ctrl+d', 'cmd+d', 'alt+shift+d']</snice-code-block>
 <p><strong><code>helpUrl</code></strong> (optional)</p>
 <ul>
 <li>Link to detailed documentation or help for this page</li>
@@ -4065,13 +4065,13 @@ class DashboardPage extends HTMLElement {
 <li>Logical grouping for navigation organization</li>
 <li>Pages with the same group are displayed together</li>
 </ul>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">group: 'admin'  // Groups with other admin pages</snice-code-block>
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">group: 'admin'  // Groups with other admin pages</snice-code-block>
 <p><strong><code>parent</code></strong> (optional)</p>
 <ul>
 <li>References another placard's <code>name</code> to create hierarchy</li>
 <li>Used for nested navigation and breadcrumb construction</li>
 </ul>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">parent: 'users'  // Child of the 'users' page</snice-code-block>
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">parent: 'users'  // Child of the 'users' page</snice-code-block>
 <p><strong><code>order</code></strong> (optional)</p>
 <ul>
 <li>Numeric sort order within the group or parent</li>
@@ -4089,20 +4089,20 @@ class DashboardPage extends HTMLElement {
 <li>The router passes all placards to layouts unfiltered — layouts must check <code>visibleOn</code> themselves</li>
 <li>Reuses the same guard type as route protection</li>
 </ul>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">visibleOn: [isAuthenticated, hasAdminRole]</snice-code-block>
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">visibleOn: [isAuthenticated, hasAdminRole]</snice-code-block>
 <h3 id="placards-extensibility">Extensibility</h3>
 <p><strong><code>attributes</code></strong> (optional)</p>
 <ul>
 <li>Arbitrary metadata for custom layout needs</li>
 <li>Domain-specific or framework-specific data</li>
 </ul>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">attributes: {
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">attributes: {
   category: 'reporting',
   experimental: true,
   requiredFeatures: ['analytics', 'charts']
 }</snice-code-block>
 <h2 id="placards-hierarchical-navigation-example">Hierarchical Navigation Example</h2>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">// Parent page
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">// Parent page
 const usersPlacard: Placard&lt;AppContext&gt; = {
   name: 'users',
   title: 'Users',
@@ -4140,7 +4140,7 @@ const userEditPlacard: Placard&lt;AppContext&gt; = {
 };</snice-code-block>
 <h2 id="placards-breadcrumb-resolution">Breadcrumb Resolution</h2>
 <p>Breadcrumbs can be automatically resolved using the <code>parent</code> hierarchy or explicitly defined:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">// Automatic breadcrumbs using parent chain
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">// Automatic breadcrumbs using parent chain
 const settingsPlacard: Placard&lt;AppContext&gt; = {
   name: 'user-settings',
   title: 'Settings',
@@ -4162,7 +4162,7 @@ const advancedPlacard: Placard&lt;AppContext&gt; = {
 <li><strong>Navigation Builder</strong> - Helper functions to build nav from placards</li>
 <li><strong>Event System</strong> - Layouts listen for route changes and update UI</li>
 </ol>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">import { layout, render, html, Layout } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">import { layout, render, html, Layout } from 'snice';
 
 @layout('app-shell')
 class AppShell extends HTMLElement implements Layout {
@@ -4200,7 +4200,7 @@ class AppShell extends HTMLElement implements Layout {
   }
 }</snice-code-block>
 <h3 id="placards-building-navigation-from-placards">Building Navigation from Placards</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@layout('sidebar-layout')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@layout('sidebar-layout')
 class SidebarLayout extends HTMLElement implements Layout {
   private placards: Placard[] = [];
   private grouped: Record&lt;string, Placard[]&gt; = {};
@@ -4245,7 +4245,7 @@ class SidebarLayout extends HTMLElement implements Layout {
   }
 }</snice-code-block>
 <h3 id="placards-building-breadcrumbs">Building Breadcrumbs</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">@layout('breadcrumb-layout')
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">@layout('breadcrumb-layout')
 class BreadcrumbLayout extends HTMLElement implements Layout {
   private breadcrumbs: Placard[] = [];
 
@@ -4301,11 +4301,11 @@ class BreadcrumbLayout extends HTMLElement implements Layout {
 <p><code>snice-code-block</code> is a code display component with syntax highlighting, line numbers, and copy-to-clipboard support. It uses a JSON-driven grammar system inspired by Monaco/Monarch for tokenization.</p>
 <h2 id="code-block-basic-usage">Basic Usage</h2>
 <p>The simplest way to use the code block is to put your code directly inside the element as slotted text content:</p>
-<snice-code-block language="html" grammar="grammars/html.json?v=4282c34">&lt;snice-code-block language=&quot;javascript&quot; grammar=&quot;grammars/typescript.json?v=4282c34&quot; show-line-numbers filename=&quot;app.js&quot;&gt;
+<snice-code-block language="html" grammar="grammars/html.json?v=a9741b5">&lt;snice-code-block language=&quot;javascript&quot; grammar=&quot;grammars/typescript.json?v=a9741b5&quot; show-line-numbers filename=&quot;app.js&quot;&gt;
 console.log('hello');
 &lt;/snice-code-block&gt;</snice-code-block>
 <p>The slotted text is hidden and re-rendered with syntax highlighting in the shadow DOM. You can also set code programmatically via the <code>code</code> property:</p>
-<snice-code-block language="html" grammar="grammars/html.json?v=4282c34">&lt;snice-code-block id=&quot;code&quot; language=&quot;javascript&quot;&gt;&lt;/snice-code-block&gt;
+<snice-code-block language="html" grammar="grammars/html.json?v=a9741b5">&lt;snice-code-block id=&quot;code&quot; language=&quot;javascript&quot;&gt;&lt;/snice-code-block&gt;
 &lt;script&gt;
   document.getElementById('code').code = `console.log('hello');`;
 &lt;/script&gt;</snice-code-block>
@@ -4317,7 +4317,7 @@ console.log('hello');
 <h2 id="code-block-fetch-mode">Fetch Mode</h2>
 <p>The <code>fetch-mode</code> attribute controls how the component loads grammar JSON when the <code>grammar</code> property is set to a URL string. There are three modes:</p>
 <h3 id="code-block-native-mode-default">Native Mode (default)</h3>
-<snice-code-block language="html" grammar="grammars/html.json?v=4282c34">&lt;snice-code-block grammar=&quot;grammars/typescript.json?v=4282c34&quot; code=&quot;const x = 1&quot;&gt;&lt;/snice-code-block&gt;</snice-code-block>
+<snice-code-block language="html" grammar="grammars/html.json?v=a9741b5">&lt;snice-code-block grammar=&quot;grammars/typescript.json?v=a9741b5&quot; code=&quot;const x = 1&quot;&gt;&lt;/snice-code-block&gt;</snice-code-block>
 <p>In native mode, the component uses the browser's built-in <code>fetch()</code> API to load the grammar JSON directly from the URL. This is the simplest approach and requires no additional setup.</p>
 <p><strong>How it works:</strong></p>
 <ol>
@@ -4327,7 +4327,7 @@ console.log('hello');
 </ol>
 <p><strong>When to use:</strong> Most cases. This is the right default for standalone usage, CDN builds, and any scenario where the grammar files are accessible via HTTP.</p>
 <h3 id="code-block-virtual-mode">Virtual Mode</h3>
-<snice-code-block language="html" grammar="grammars/html.json?v=4282c34">&lt;snice-code-block grammar=&quot;grammars/typescript.json?v=4282c34&quot; fetch-mode=&quot;virtual&quot; code=&quot;const x = 1&quot;&gt;&lt;/snice-code-block&gt;</snice-code-block>
+<snice-code-block language="html" grammar="grammars/html.json?v=a9741b5">&lt;snice-code-block grammar=&quot;grammars/typescript.json?v=a9741b5&quot; fetch-mode=&quot;virtual&quot; code=&quot;const x = 1&quot;&gt;&lt;/snice-code-block&gt;</snice-code-block>
 <p>In virtual mode, the component uses Snice's <code>@request/@respond</code> pattern to load grammars. It sends a request on the <code>snice/code-block/load-grammar</code> channel, and a controller or page must provide a <code>@respond</code> handler to fulfill the request.</p>
 <p><strong>How it works:</strong></p>
 <ol>
@@ -4337,7 +4337,7 @@ console.log('hello');
 <li>Component receives the grammar and highlights the code</li>
 </ol>
 <p><strong>Example with a controller:</strong></p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">import { controller, respond, IController } from 'snice';
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">import { controller, respond, IController } from 'snice';
 
 @controller('grammar-controller')
 class GrammarController implements IController {
@@ -4355,7 +4355,7 @@ class GrammarController implements IController {
 <p><strong>When to use:</strong> When you need centralized control over grammar loading, such as caching grammars, loading from non-HTTP sources, or applying transformations before use.</p>
 <p><strong>Note:</strong> If using <code>@respond('snice/code-block/load-grammar')</code> handlers, add <code>fetch-mode="virtual"</code> to your code block elements. The default fetch mode is <code>native</code>.</p>
 <h3 id="code-block-event-mode">Event Mode</h3>
-<snice-code-block language="html" grammar="grammars/html.json?v=4282c34">&lt;snice-code-block id=&quot;cb&quot; grammar=&quot;grammars/typescript.json?v=4282c34&quot; fetch-mode=&quot;event&quot; code=&quot;const x = 1&quot;&gt;&lt;/snice-code-block&gt;
+<snice-code-block language="html" grammar="grammars/html.json?v=a9741b5">&lt;snice-code-block id=&quot;cb&quot; grammar=&quot;grammars/typescript.json?v=a9741b5&quot; fetch-mode=&quot;event&quot; code=&quot;const x = 1&quot;&gt;&lt;/snice-code-block&gt;
 &lt;script&gt;
   document.getElementById('cb').addEventListener('grammar-request', async (e) =&gt; {
     const grammar = await fetch(e.detail.url).then(r =&gt; r.json());
@@ -4371,7 +4371,7 @@ class GrammarController implements IController {
 <li>The listener calls <code>e.detail.codeBlock.setGrammar(grammar)</code> to provide it back</li>
 </ol>
 <p><strong>Event detail type:</strong></p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">interface GrammarRequestDetail {
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">interface GrammarRequestDetail {
   url: string;
   language: CodeLanguage;
   codeBlock: SniceCodeBlockElement;
@@ -4382,25 +4382,25 @@ class GrammarController implements IController {
 <h2 id="code-block-methods">Methods</h2>
 <h3 id="code-block-copy-promise-void"><code>copy(): Promise<void></code></h3>
 <p>Copies the current code content to the clipboard.</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">const codeBlock = document.querySelector('snice-code-block');
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">const codeBlock = document.querySelector('snice-code-block');
 await codeBlock.copy();</snice-code-block>
 <h3 id="code-block-highlight-promise-void"><code>highlight(): Promise<void></code></h3>
 <p>Manually triggers syntax highlighting. Normally highlighting runs automatically when <code>code</code>, <code>language</code>, or <code>grammar</code> changes, but you can force a re-highlight if needed.</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">codeBlock.highlight();</snice-code-block>
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">codeBlock.highlight();</snice-code-block>
 <h3 id="code-block-sethighlighter-fn-highlighterfunction-void"><code>setHighlighter(fn: HighlighterFunction): void</code></h3>
 <p>Sets an external highlighter function for this code block instance, overriding the built-in grammar-based highlighter.</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">codeBlock.setHighlighter((code, language) =&gt; {
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">codeBlock.setHighlighter((code, language) =&gt; {
   // Return highlighted HTML string
   return myCustomHighlighter(code, language);
 });</snice-code-block>
 <h3 id="code-block-setgrammar-grammar-grammardefinition-void"><code>setGrammar(grammar: GrammarDefinition): void</code></h3>
 <p>Provides a grammar object directly, bypassing URL-based loading. This is the method called by event listeners in <code>fetch-mode="event"</code>, but it can be used at any time to set a grammar programmatically.</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">const grammar = await fetch('grammars/typescript.json?v=4282c34').then(r =&gt; r.json());
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">const grammar = await fetch('grammars/typescript.json?v=a9741b5').then(r =&gt; r.json());
 codeBlock.setGrammar(grammar);</snice-code-block>
 <h2 id="code-block-events">Events</h2>
 <h3 id="code-block-code-copy"><code>code-copy</code></h3>
 <p>Dispatched when code is copied to the clipboard.</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">codeBlock.addEventListener('code-copy', (e) =&gt; {
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">codeBlock.addEventListener('code-copy', (e) =&gt; {
   console.log('Copied:', e.detail.code);
   console.log('From:', e.detail.codeBlock);
 });</snice-code-block>
@@ -4433,12 +4433,12 @@ codeBlock.setGrammar(grammar);</snice-code-block>
 </ul>
 <h3 id="code-block-loading-grammars">Loading Grammars</h3>
 <p><strong>From a URL (uses fetch mode to resolve):</strong></p>
-<snice-code-block language="html" grammar="grammars/html.json?v=4282c34">&lt;snice-code-block grammar=&quot;grammars/typescript.json?v=4282c34&quot; language=&quot;typescript&quot; id=&quot;cb&quot;&gt;&lt;/snice-code-block&gt;
+<snice-code-block language="html" grammar="grammars/html.json?v=a9741b5">&lt;snice-code-block grammar=&quot;grammars/typescript.json?v=a9741b5&quot; language=&quot;typescript&quot; id=&quot;cb&quot;&gt;&lt;/snice-code-block&gt;
 &lt;script&gt;
   document.getElementById('cb').code = 'const x: number = 42;';
 &lt;/script&gt;</snice-code-block>
 <p><strong>Inline grammar object (set via JavaScript):</strong></p>
-<snice-code-block language="html" grammar="grammars/html.json?v=4282c34">&lt;snice-code-block id=&quot;cb2&quot; language=&quot;custom&quot;&gt;&lt;/snice-code-block&gt;
+<snice-code-block language="html" grammar="grammars/html.json?v=a9741b5">&lt;snice-code-block id=&quot;cb2&quot; language=&quot;custom&quot;&gt;&lt;/snice-code-block&gt;
 &lt;script&gt;
   document.getElementById('cb2').grammar = {
     name: 'custom',
@@ -4456,17 +4456,17 @@ codeBlock.setGrammar(grammar);</snice-code-block>
 &lt;/script&gt;</snice-code-block>
 <h3 id="code-block-programmatic-registration">Programmatic Registration</h3>
 <p>You can register grammars globally so they are available by language name:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">import { registerGrammar, unregisterGrammar, getGrammar } from 'snice/components/code-block/highlighter';
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">import { registerGrammar, unregisterGrammar, getGrammar } from 'snice/components/code-block/highlighter';
 
 // Register so language string lookup works
-const grammar = await fetch('grammars/typescript.json?v=4282c34').then(r =&gt; r.json());
+const grammar = await fetch('grammars/typescript.json?v=a9741b5').then(r =&gt; r.json());
 registerGrammar('typescript', grammar);
 registerGrammar('ts', grammar);  // alias
 
 // Then use by name
 highlightCode(code, 'typescript');</snice-code-block>
 <h3 id="code-block-grammar-format">Grammar Format</h3>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">interface Grammar {
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">interface Grammar {
   name: string;
   fileTypes?: string[];
   defaultToken?: string;
@@ -4492,7 +4492,7 @@ highlightCode(code, 'typescript');</snice-code-block>
 </ul>
 <h2 id="code-block-highlighter-api">Highlighter API</h2>
 <p>For programmatic use outside of the component:</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json?v=4282c34">import { highlightCode, tokenize, registerGrammar, unregisterGrammar, getGrammar } from 'snice/components/code-block/highlighter';
+<snice-code-block language="typescript" grammar="grammars/typescript.json?v=a9741b5">import { highlightCode, tokenize, registerGrammar, unregisterGrammar, getGrammar } from 'snice/components/code-block/highlighter';
 
 // Highlight code using a grammar object directly (returns HTML string)
 highlightCode(code, grammarObject);
@@ -4520,7 +4520,7 @@ getGrammar('myLang');</snice-code-block>
 
   <footer>
     <div class="wrap">
-      <span>Snice v4.20.0 · MIT</span>
+      <span>Snice v4.20.1 · MIT</span>
       <span><a href="https://www.npmjs.com/package/snice">npm</a> · <a href="https://gitlab.com/Hedzer/snice">GitLab</a></span>
     </div>
   </footer>
