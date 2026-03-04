@@ -95,17 +95,27 @@ Use `variant="list"` with `columns="1"` for a vertical list layout.
 
 ### Sizes
 
-Use the `size` attribute to change tile size.
+Use the `size` attribute to change tile size. Available sizes: `sm`, `md` (default), `lg`, `xl`, `2xl`.
 
 ```html
-<snice-app-tiles columns="2" size="sm">
-  <snice-app-tile name="Home" icon="home"></snice-app-tile>
-  <snice-app-tile name="Search" icon="search"></snice-app-tile>
+<snice-app-tiles columns="2" size="xl">
+  <snice-app-tile name="Photos" icon="photo_library" color="rgb(22 163 74)"></snice-app-tile>
+  <snice-app-tile name="Maps" icon="map" color="rgb(14 165 233)"></snice-app-tile>
 </snice-app-tiles>
 
-<snice-app-tiles columns="2" size="lg">
-  <snice-app-tile name="Music" icon="music_note" color="rgb(220 38 38)"></snice-app-tile>
-  <snice-app-tile name="Games" icon="sports_esports" color="rgb(22 163 74)"></snice-app-tile>
+<snice-app-tiles columns="2" size="2xl">
+  <snice-app-tile name="Camera" icon="photo_camera" color="rgb(147 51 234)"></snice-app-tile>
+  <snice-app-tile name="Weather" icon="wb_sunny" color="rgb(234 88 12)"></snice-app-tile>
+</snice-app-tiles>
+```
+
+### Custom Icon Size
+
+Use the `--snice-app-tile-icon-size` CSS variable to set a fully custom icon size.
+
+```html
+<snice-app-tiles columns="3" style="--snice-app-tile-icon-size: 7rem">
+  <snice-app-tile name="Gallery" icon="collections" color="rgb(37 99 235)"></snice-app-tile>
 </snice-app-tiles>
 ```
 
@@ -124,7 +134,7 @@ Use the `badge` attribute to display a notification badge on a tile.
 |----------|------|---------|-------------|
 | `tiles` | `AppTile[]` | `[]` | Array of tile data objects (programmatic mode) |
 | `columns` | `number` | `4` | Number of grid columns |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Tile size |
+| `size` | `'sm' \| 'md' \| 'lg' \| 'xl' \| '2xl'` | `'md'` | Tile size |
 | `variant` | `'grid' \| 'list' \| 'compact'` | `'grid'` | Layout variant |
 
 ### AppTile Interface
@@ -153,6 +163,12 @@ Use the `badge` attribute to display a notification badge on a tile.
 | Event | Detail | Description |
 |-------|--------|-------------|
 | `tile-click` | `{ tile: AppTile, index: number }` | Fired when a tile is clicked |
+
+## CSS Custom Properties
+
+| Variable | Description |
+|----------|-------------|
+| `--snice-app-tile-icon-size` | Override icon container width/height. Takes precedence over the `size` attribute. |
 
 ## Icon Resolution Order
 

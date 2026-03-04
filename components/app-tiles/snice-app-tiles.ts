@@ -65,7 +65,7 @@ export class SniceAppTiles extends HTMLElement implements SniceAppTilesElement {
   columns = 4;
 
   @property()
-  size: 'sm' | 'md' | 'lg' = 'md';
+  size: 'sm' | 'md' | 'lg' | 'xl' | '2xl' = 'md';
 
   @property()
   variant: AppTilesVariant = 'grid';

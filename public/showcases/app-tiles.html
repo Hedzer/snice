@@ -23,7 +23,7 @@
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=a9741b5">&lt;snice-app-tiles columns="3"&gt;
+          <snice-code-block language="html" grammar="grammars/html.json?v=744921f">&lt;snice-app-tiles columns="3"&gt;
   &lt;snice-app-tile name="Mail"
     icon="mail"
     color="rgb(220 38 38)"&gt;&lt;/snice-app-tile&gt;
@@ -54,7 +54,7 @@
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=a9741b5">&lt;!-- No icon = colored letter --&gt;
+          <snice-code-block language="html" grammar="grammars/html.json?v=744921f">&lt;!-- No icon = colored letter --&gt;
 &lt;snice-app-tiles columns="3"&gt;
   &lt;snice-app-tile name="Slack"
     color="rgb(97 31 105)"&gt;
@@ -83,7 +83,7 @@
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=a9741b5">&lt;snice-app-tiles columns="1"
+          <snice-code-block language="html" grammar="grammars/html.json?v=744921f">&lt;snice-app-tiles columns="1"
   variant="list"&gt;
   &lt;snice-app-tile name="Dashboard"
     icon="dashboard"
@@ -113,7 +113,7 @@
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=a9741b5">&lt;snice-app-tiles columns="2"
+          <snice-code-block language="html" grammar="grammars/html.json?v=744921f">&lt;snice-app-tiles columns="2"
   variant="compact"&gt;
   &lt;snice-app-tile name="Dashboard"
     icon="dashboard"
@@ -128,7 +128,7 @@
 
       <!-- Sizes -->
       <div class="comp-split" style="margin-bottom:1.5rem">
-        <div class="comp-split-demo" style="display:flex;gap:1rem">
+        <div class="comp-split-demo" style="display:flex;gap:1rem;flex-wrap:wrap">
           <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:0.5rem;position:relative;background:var(--snice-color-background,#1a1a2e);width:10rem">
             <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">small</span>
             <snice-app-tiles columns="2" size="sm">
@@ -147,21 +147,36 @@
               <snice-app-tile name="Books" icon="menu_book" color="rgb(234 88 12)"></snice-app-tile>
             </snice-app-tiles>
           </div>
+          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:0.5rem;position:relative;background:var(--snice-color-background,#1a1a2e);width:16rem">
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">xl</span>
+            <snice-app-tiles columns="2" size="xl">
+              <snice-app-tile name="Photos" icon="photo_library" color="rgb(22 163 74)"></snice-app-tile>
+              <snice-app-tile name="Maps" icon="map" color="rgb(14 165 233)"></snice-app-tile>
+            </snice-app-tiles>
+          </div>
+          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:0.5rem;position:relative;background:var(--snice-color-background,#1a1a2e);width:18rem">
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">2xl</span>
+            <snice-app-tiles columns="2" size="2xl">
+              <snice-app-tile name="Camera" icon="photo_camera" color="rgb(147 51 234)"></snice-app-tile>
+              <snice-app-tile name="Weather" icon="wb_sunny" color="rgb(234 88 12)"></snice-app-tile>
+            </snice-app-tiles>
+          </div>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=a9741b5">&lt;!-- size: sm, md (default), lg --&gt;
+          <snice-code-block language="html" grammar="grammars/html.json?v=744921f">&lt;!-- size: sm, md, lg, xl, 2xl --&gt;
 &lt;snice-app-tiles columns="2"
-  size="sm"&gt;
-  &lt;snice-app-tile name="Home"
-    icon="home"&gt;&lt;/snice-app-tile&gt;
+  size="xl"&gt;
+  &lt;snice-app-tile name="Photos"
+    icon="photo_library"&gt;
+  &lt;/snice-app-tile&gt;
 &lt;/snice-app-tiles&gt;
 
+&lt;!-- Custom size via CSS variable --&gt;
 &lt;snice-app-tiles columns="2"
-  size="lg"&gt;
-  &lt;snice-app-tile name="Music"
-    icon="music_note"
-    color="rgb(220 38 38)"&gt;
+  style="--snice-app-tile-icon-size:7rem"&gt;
+  &lt;snice-app-tile name="Gallery"
+    icon="collections"&gt;
   &lt;/snice-app-tile&gt;
 &lt;/snice-app-tiles&gt;</snice-code-block>
         </div>
@@ -177,7 +192,7 @@
         </div>
         <div class="comp-split-code">
           <span class="code-lang">js</span>
-          <snice-code-block language="js" grammar="grammars/typescript.json?v=a9741b5">const tiles = document.querySelector(
+          <snice-code-block language="js" grammar="grammars/typescript.json?v=744921f">const tiles = document.querySelector(
   'snice-app-tiles');
 tiles.columns = 3;
 tiles.tiles = [

@@ -8,7 +8,7 @@ App launcher grid like Google's app drawer or a phone home screen.
 // snice-app-tiles
 tiles: AppTile[] = [];           // Programmatic tile data
 columns: number = 4;             // Grid columns
-size: 'sm' | 'md' | 'lg' = 'md'; // Tile size
+size: 'sm' | 'md' | 'lg' | 'xl' | '2xl' = 'md'; // Tile size
 variant: 'grid' | 'list' | 'compact' = 'grid'; // Layout variant
 
 // AppTile interface
@@ -43,6 +43,12 @@ interface AppTile {
 3. Emoji (no ASCII letters) -> emoji display
 4. ASCII text -> Material Symbols ligature
 
+## CSS Custom Properties
+
+| Variable | Description |
+|----------|-------------|
+| `--snice-app-tile-icon-size` | Override icon container size (e.g. `7rem`) |
+
 ## Usage
 
 ```html
@@ -67,6 +73,11 @@ interface AppTile {
 <snice-app-tiles columns="3">
   <snice-app-tile name="Slack" color="rgb(97 31 105)"></snice-app-tile>
   <snice-app-tile name="GitHub" color="rgb(82 82 82)"></snice-app-tile>
+</snice-app-tiles>
+
+<!-- Custom icon size via CSS variable -->
+<snice-app-tiles columns="3" style="--snice-app-tile-icon-size: 7rem">
+  <snice-app-tile name="Gallery" icon="collections" color="rgb(37 99 235)"></snice-app-tile>
 </snice-app-tiles>
 
 <!-- List variant -->
