@@ -136,7 +136,6 @@ They were marked `[ ]` in the old task list but are actually implemented:
 105. [x] `<snice-step-input>` - Numeric stepper control
 106. [x] `<snice-range-slider>` - Two-handle slider
 107. [x] `<snice-progress-ring>` - Determinate circular progress
-108. [x] `<snice-icon>` - Icon element + registry
 109. [x] `<snice-tag>` - Display-only tag/token
 110. [x] `<snice-form-layout>` - Form layout/grid
 111. [x] `<snice-time-picker>` - Time-only picker
