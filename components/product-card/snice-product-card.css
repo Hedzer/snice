@@ -300,24 +300,26 @@
   height: 2rem;
   border-radius: 50%;
   border: none;
-  background: rgb(255 255 255 / 0.85);
+  background: var(--pc-bg);
+  opacity: 0;
   color: var(--pc-text);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 0.875rem;
-  opacity: 0;
+  backdrop-filter: blur(4px);
   transition: opacity var(--snice-transition-fast, 150ms), background var(--snice-transition-fast, 150ms);
   z-index: 3;
 }
 
 .product-card__gallery:hover .product-card__gallery-nav {
-  opacity: 1;
+  opacity: 0.9;
 }
 
 .product-card__gallery-nav:hover {
-  background: rgb(255 255 255);
+  opacity: 1;
+  background: var(--pc-bg);
 }
 
 .product-card__gallery-nav:focus-visible {
@@ -348,15 +350,16 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: rgb(255 255 255 / 0.5);
+  background: var(--pc-bg);
+  opacity: 0.5;
   border: none;
   padding: 0;
   cursor: pointer;
-  transition: background var(--snice-transition-fast, 150ms), transform var(--snice-transition-fast, 150ms);
+  transition: opacity var(--snice-transition-fast, 150ms), transform var(--snice-transition-fast, 150ms);
 }
 
 .product-card__gallery-dot--active {
-  background: rgb(255 255 255);
+  opacity: 1;
   transform: scale(1.3);
 }
 
@@ -398,20 +401,22 @@
   height: 2rem;
   border-radius: 50%;
   border: none;
-  background: rgb(255 255 255 / 0.85);
+  background: var(--pc-bg);
   backdrop-filter: blur(4px);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 3;
-  transition: transform var(--snice-transition-fast, 150ms), background var(--snice-transition-fast, 150ms);
+  opacity: 0.9;
+  transition: transform var(--snice-transition-fast, 150ms), background var(--snice-transition-fast, 150ms), opacity var(--snice-transition-fast, 150ms);
   padding: 0;
 }
 
 .product-card__favorite-btn:hover {
   transform: scale(1.1);
-  background: rgb(255 255 255);
+  opacity: 1;
+  background: var(--pc-bg);
 }
 
 .product-card__favorite-btn:focus-visible {
@@ -469,7 +474,7 @@
   display: flex;
   align-items: center;
   gap: var(--snice-spacing-2xs, 0.25rem);
-  background: rgb(255 255 255 / 0.92);
+  background: var(--pc-bg);
   color: var(--pc-text);
   padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-md, 1rem);
   border-radius: 2rem;
