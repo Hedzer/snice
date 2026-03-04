@@ -23,6 +23,18 @@
   background: var(--snice-color-background-element, rgb(252 251 249));
 }
 
+.bell-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bell-icon-img {
+  width: 1.25em;
+  height: 1.25em;
+  display: block;
+}
+
 .badge {
   position: absolute;
   top: 2px;
@@ -119,7 +131,7 @@
 }
 
 .notification-item.unread:hover {
-  background: rgb(229 236 255);
+  background: var(--snice-color-primary-subtle-hover, rgb(219 234 254));
 }
 
 .notification-icon {

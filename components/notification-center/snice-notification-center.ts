@@ -1,4 +1,5 @@
 import { element, property, dispatch, render, styles, html, css as cssTag } from 'snice';
+import { renderIcon } from '../utils';
 import cssContent from './snice-notification-center.css?inline';
 import type { NotificationItem, SniceNotificationCenterElement } from './snice-notification-center.types';
 
@@ -9,6 +10,9 @@ export class SniceNotificationCenter extends HTMLElement implements SniceNotific
 
   @property({ type: Boolean })
   open = false;
+
+  @property()
+  icon = '';
 
   @dispatch('notification-click', { bubbles: true, composed: true })
   private emitNotificationClick(notification: NotificationItem) {
@@ -91,7 +95,16 @@ export class SniceNotificationCenter extends HTMLElement implements SniceNotific
 
     return html`
       <button part="trigger" class="bell-button" aria-label="Notifications" @click=${() => this.togglePanel()}>
-        \uD83D\uDD14
+        <span class="bell-icon" part="icon">
+          <slot name="icon">
+            <if ${this.icon}>
+              ${renderIcon(this.icon, 'bell-icon-img')}
+            </if>
+            <if ${!this.icon}>
+              \uD83D\uDD14
+            </if>
+          </slot>
+        </span>
         <span part="badge" class="badge" ?hidden=${unread === 0}>${unread}</span>
       </button>
       <div part="panel" class="panel" ?hidden=${!this.open}>

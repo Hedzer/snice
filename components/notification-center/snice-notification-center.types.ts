@@ -11,6 +11,7 @@ export interface NotificationItem {
 export interface SniceNotificationCenterElement extends HTMLElement {
   notifications: NotificationItem[];
   open: boolean;
+  icon: string;
   markAsRead(id: string): void;
   markAllAsRead(): void;
   dismiss(id: string): void;
