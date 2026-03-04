@@ -1,3 +1,12 @@
+# [4.21.0](https://gitlab.com/Hedzer/snice/compare/v4.20.1...v4.21.0) (2026-03-04)
+
+
+### Features
+
+* add custom icon prop and slot to notification-center, use themed hover color ([901c569](https://gitlab.com/Hedzer/snice/commit/901c5690c74c544a64c5bfa3fb70a04c3314f7d0))
+* add xl/2xl sizes and custom icon size CSS variable to app-tiles ([c732f9d](https://gitlab.com/Hedzer/snice/commit/c732f9df379e7c7ead202163e79704c26d687e60))
+* add xl/2xl sizes to app-tiles, document custom icon size variable ([4c5660e](https://gitlab.com/Hedzer/snice/commit/4c5660e917d9f5c8b3d159eeffd20c6e896e5251))
+
 ## [4.20.1](https://gitlab.com/Hedzer/snice/compare/v4.20.0...v4.20.1) (2026-03-03)
 
 
