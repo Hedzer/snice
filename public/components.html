@@ -1628,9 +1628,9 @@ tiles.addEventListener('tile-click',
     { id: '1', name: 'Wireless Headphones',
       price: 99.99, quantity: 1,
       image: 'headphones.jpg' },
-    { id: '2', name: 'Phone Case',
-      price: 24.99, quantity: 2,
-      variant: 'Midnight Blue' }
+    { id: '2', name: 'Yoga Mat Premium',
+      price: 49.99, quantity: 2,
+      variant: 'Sage Green' }
   ];
   cart.addEventListener('checkout',
     e =&gt; console.log(e.detail));
@@ -1643,9 +1643,9 @@ tiles.addEventListener('tile-click',
       const cart = document.getElementById('demo-cart');
       if (cart) {
         cart.items = [
-          { id: '1', name: 'Wireless Headphones', price: 99.99, quantity: 1, image: 'assets/placeholders/cart-headphones.png' },
-          { id: '2', name: 'Phone Case', price: 24.99, quantity: 2, variant: 'Midnight Blue', image: 'assets/placeholders/cart-phone.png' },
-          { id: '3', name: 'USB-C Cable', price: 12.99, quantity: 1, image: 'assets/placeholders/cart-charger.png' }
+          { id: '1', name: 'Wireless Headphones', price: 99.99, quantity: 1, image: 'assets/photos/product-headphones1.jpg' },
+          { id: '2', name: 'Yoga Mat Premium', price: 49.99, quantity: 2, variant: 'Sage Green', image: 'assets/photos/product-yogamat.jpg' },
+          { id: '3', name: 'USB-C Cable', price: 12.99, quantity: 1, image: 'assets/photos/product-cable1.jpg' }
         ];
       }
     });
