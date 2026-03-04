@@ -1,6 +1,7 @@
 import { element, property, render, styles, request, ready, dispose, on, html, css } from 'snice';
 import cssContent from './snice-list.css?inline';
 import '../skeleton/snice-skeleton.ts';
+import '../empty-state/snice-empty-state';
 
 @element('snice-list')
 export class SniceList extends HTMLElement {
@@ -208,10 +209,13 @@ export class SniceList extends HTMLElement {
         </if>
         <if ${this.noResults}>
           <slot name="no-results">
-            <div class="list__no-results" part="no-results">
-              <div class="list__no-results-icon">🔍</div>
-              <div class="list__no-results-title">No results found</div>
-              <div class="list__no-results-message">Try searching for something else</div>
+            <div style="padding: 2rem;">
+              <snice-empty-state 
+                icon="🔍" 
+                title="No results found" 
+                description="Try searching for something else"
+                size="medium">
+              </snice-empty-state>
             </div>
           </slot>
         </if>

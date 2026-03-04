@@ -1,5 +1,6 @@
 import { element, property, dispatch, render, styles, html, css as cssTag } from 'snice';
 import { renderIcon } from '../utils';
+import '../empty-state/snice-empty-state';
 import cssContent from './snice-notification-center.css?inline';
 import type { NotificationItem, SniceNotificationCenterElement } from './snice-notification-center.types';
 
@@ -115,7 +116,7 @@ export class SniceNotificationCenter extends HTMLElement implements SniceNotific
         </div>
         ${this.notifications.length > 0
           ? html`<ul class="notification-list">${items}</ul>`
-          : html`<div class="empty-state">No notifications</div>`
+          : html`<snice-empty-state icon="📭" title="No notifications" size="small" style="padding: 2rem 1rem;"></snice-empty-state>`
         }
       </div>
     `;

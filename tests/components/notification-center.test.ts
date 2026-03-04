@@ -59,10 +59,9 @@ describe('snice-notification-center', () => {
       { id: '2', title: 'Test 2', message: 'msg2', timestamp: 'now', read: true },
     ];
     await new Promise(r => setTimeout(r, 50));
-    const badge = queryShadow(el as HTMLElement, '.badge');
+    const badge = queryShadow(el as HTMLElement, 'snice-badge');
     expect(badge).toBeTruthy();
-    expect(badge!.textContent).toContain('1');
-    expect(badge!.hidden).toBe(false);
+    expect(badge!.getAttribute('count')).toBe('1');
   });
 
   it('hides badge when no unread', async () => {
@@ -71,8 +70,9 @@ describe('snice-notification-center', () => {
       { id: '1', title: 'Test', message: 'msg', timestamp: 'now', read: true },
     ];
     await new Promise(r => setTimeout(r, 50));
-    const badge = queryShadow(el as HTMLElement, '.badge');
-    expect(badge!.hidden).toBe(true);
+    const badge = queryShadow(el as HTMLElement, 'snice-badge');
+    expect(badge).toBeTruthy();
+    expect(badge!.getAttribute('count')).toBe('0');
   });
 
   it('unread hover uses theme variable not hardcoded color', async () => {

@@ -6,6 +6,7 @@ import type {
   SniceChatElement,
   SniceChatEventMap,
 } from './snice-chat.types';
+import '../empty-state/snice-empty-state';
 import cssContent from './snice-chat.css?inline';
 
 /**
@@ -368,14 +369,13 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
 
   private renderEmptyState() {
     return html/*html*/`
-      <div class="empty-state">
-        <svg class="empty-state-icon" viewBox="0 0 24 24" fill="currentColor">
-          <path
-            d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"
-          />
-        </svg>
-        <div>No messages yet</div>
-        <div style="font-size: 13px; margin-top: 4px;">Start the conversation!</div>
+      <div style="padding: 2rem;">
+        <snice-empty-state 
+          icon="💬" 
+          title="No messages yet" 
+          description="Start the conversation!"
+          size="medium">
+        </snice-empty-state>
       </div>
     `;
   }

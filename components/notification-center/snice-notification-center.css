@@ -186,9 +186,4 @@ span.notification-icon-img {
   color: var(--snice-color-danger, rgb(220 38 38));
 }
 
-.empty-state {
-  padding: var(--snice-spacing-xl, 2rem);
-  text-align: center;
-  color: var(--snice-color-text-tertiary, rgb(115 115 115));
-  font-size: var(--snice-font-size-sm, 0.875rem);
-}
+

@@ -57,24 +57,4 @@
   pointer-events: none;
 }
 
-.list__no-results {
-  padding: var(--snice-spacing-2xl, 3rem) var(--snice-spacing-xl, 2rem);
-  text-align: center;
-  color: var(--snice-color-text-secondary, rgb(82 82 82));
-}
 
-.list__no-results-icon {
-  font-size: var(--snice-font-size-3xl, 1.875rem);
-  margin-bottom: var(--snice-spacing-sm, 0.75rem);
-}
-
-.list__no-results-title {
-  font-weight: var(--snice-font-weight-medium, 500);
-  font-size: var(--snice-font-size-md, 1rem);
-  color: var(--snice-color-text, rgb(23 23 23));
-  margin-bottom: var(--snice-spacing-xs, 0.5rem);
-}
-
-.list__no-results-message {
-  font-size: var(--snice-font-size-sm, 0.875rem);
-}
