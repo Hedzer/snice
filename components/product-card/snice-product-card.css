@@ -36,7 +36,6 @@
   background: var(--pc-bg);
   border: 1px solid var(--pc-border);
   border-radius: var(--pc-radius);
-  overflow: hidden;
   transition: box-shadow var(--snice-transition-medium, 250ms), transform var(--snice-transition-medium, 250ms);
   position: relative;
 }
@@ -67,6 +66,7 @@
   width: 40%;
   min-width: 10rem;
   flex-shrink: 0;
+  border-radius: var(--pc-radius) 0 0 var(--pc-radius);
 }
 
 .product-card--horizontal .product-card__body {
@@ -79,6 +79,7 @@
   flex-direction: row;
   align-items: center;
   gap: var(--snice-spacing-sm, 0.75rem);
+  padding: var(--snice-spacing-sm, 0.75rem);
 }
 
 .product-card--compact .product-card__gallery {
@@ -91,7 +92,7 @@
 
 .product-card--compact .product-card__body {
   flex: 1;
-  padding: var(--snice-spacing-md, 1rem);
+  padding: var(--snice-spacing-2xs, 0.25rem) 0;
 }
 
 .product-card--compact .product-card__variants,
@@ -182,7 +183,7 @@
 
 .product-card--minimal .product-card__body {
   padding: var(--snice-spacing-md, 1rem) 0;
-  gap: var(--snice-spacing-2xs, 0.25rem);
+  gap: var(--snice-spacing-md, 1rem);
 }
 
 .product-card--minimal .product-card__title {
@@ -226,7 +227,7 @@
 
 .product-card--grid .product-card__body {
   padding: var(--snice-spacing-md, 1rem);
-  gap: var(--snice-spacing-xs, 0.5rem);
+  gap: var(--snice-spacing-sm, 0.75rem);
 }
 
 .product-card--grid .product-card__title {
@@ -257,6 +258,7 @@
   overflow: hidden;
   background: var(--pc-bg-element);
   cursor: pointer;
+  border-radius: var(--pc-radius) var(--pc-radius) 0 0;
 }
 
 .product-card__gallery-image-wrapper {
@@ -489,10 +491,10 @@
 
 /* ── Body ── */
 .product-card__body {
-  padding: var(--snice-spacing-lg, 1.25rem);
+  padding: var(--snice-spacing-lg, 1.5rem);
   display: flex;
   flex-direction: column;
-  gap: var(--snice-spacing-sm, 0.75rem);
+  gap: var(--snice-spacing-md, 1rem);
 }
 
 .product-card__title {
@@ -618,7 +620,8 @@
 .product-card__variants {
   display: flex;
   flex-direction: column;
-  gap: var(--snice-spacing-xs, 0.5rem);
+  gap: var(--snice-spacing-sm, 0.75rem);
+  padding: var(--snice-spacing-xs, 0.5rem) 0;
 }
 
 .product-card__variant-group {
