@@ -158,24 +158,28 @@ export class SniceCart extends HTMLElement implements SniceCartElement {
             </svg>
           </div>
         </if>
-        <div class="cart__item-details">
-          <h4 class="cart__item-name">${item.name}</h4>
-          <if ${item.variant}>
-            <span class="cart__item-variant">${item.variant}</span>
-          </if>
-          <span class="cart__item-price">${this.currency}${this.formatPrice(item.price)} each</span>
-        </div>
-        <div class="cart__item-actions">
-          <snice-step-input
-            class="cart__qty"
-            size="small"
-            min="1"
-            step="1"
-            .value=${item.quantity}
-            @value-change=${(e: CustomEvent) => this.updateQuantity(item.id, e.detail.value)}
-          ></snice-step-input>
-          <span class="cart__item-total">${this.currency}${this.formatPrice(lineTotal)}</span>
-          <snice-button size="small" variant="text" circle @button-click=${() => this.handleRemove(item)} aria-label="Remove ${item.name}">✕</snice-button>
+        <div class="cart__item-body">
+          <div class="cart__item-header">
+            <div class="cart__item-details">
+              <h4 class="cart__item-name">${item.name}</h4>
+              <if ${item.variant}>
+                <span class="cart__item-variant">${item.variant}</span>
+              </if>
+              <span class="cart__item-price">${this.currency}${this.formatPrice(item.price)} each</span>
+            </div>
+            <snice-button size="small" variant="text" circle @button-click=${() => this.handleRemove(item)} aria-label="Remove ${item.name}">✕</snice-button>
+          </div>
+          <div class="cart__item-actions">
+            <snice-step-input
+              class="cart__qty"
+              size="small"
+              min="1"
+              step="1"
+              value="${item.quantity}"
+              @value-change=${(e: CustomEvent) => this.updateQuantity(item.id, e.detail.value)}
+            ></snice-step-input>
+            <span class="cart__item-total">${this.currency}${this.formatPrice(lineTotal)}</span>
+          </div>
         </div>
       </li>
     `;
