@@ -42,6 +42,16 @@ For each component:
 
 ---
 
+## Pending
+
+### Task 115: Syntax-Highlighted Text Input (`snice-code-input`)
+A single-line (or small multi-line) text input with live syntax highlighting. Like a regular `<input>` or `<textarea>` but with tokenized color highlighting as the user types. Use cases: CSS property editors, search query syntax, inline code expressions, filter/formula bars. Should support configurable language/grammar and integrate with the existing `snice-code-block` grammar system.
+
+### Task 116: Tokenized Input (`snice-token-input`)
+A text input that converts entries into discrete removable chips/tokens. Like email recipient fields, social media @mention tagging, or multi-value tag inputs. Typed text (or selections from a suggestion dropdown) commit into token blocks that can be individually removed. Should support: autocomplete/suggestion list, free-text tokens, typed tokens (e.g. user mentions with avatar + link), keyboard navigation (backspace to remove last token), and a `tokens` array property for programmatic access. A `multiline` boolean property switches between single-line input and textarea mode.
+
+---
+
 ## All tasks 82-114 completed — moved to tasks-finished.md
 
 ---
