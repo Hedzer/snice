@@ -12,7 +12,7 @@ export type AppTilesVariant = 'grid' | 'list' | 'compact';
 export interface SniceAppTilesElement extends HTMLElement {
   tiles: AppTile[];
   columns: number;
-  size: 'sm' | 'md' | 'lg';
+  size: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
   variant: AppTilesVariant;
 }
 

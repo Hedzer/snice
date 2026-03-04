@@ -54,20 +54,30 @@
   flex-shrink: 0;
 }
 
-/* Icon sizing by host size */
+/* Icon sizing by host size — custom var takes precedence */
 :host([size="sm"]) .tile__icon {
-  width: 2.5rem;
-  height: 2.5rem;
+  width: var(--snice-app-tile-icon-size, 2.5rem);
+  height: var(--snice-app-tile-icon-size, 2.5rem);
 }
 
 .tile__icon {
-  width: 3rem;
-  height: 3rem;
+  width: var(--snice-app-tile-icon-size, 3rem);
+  height: var(--snice-app-tile-icon-size, 3rem);
 }
 
 :host([size="lg"]) .tile__icon {
-  width: 4rem;
-  height: 4rem;
+  width: var(--snice-app-tile-icon-size, 4rem);
+  height: var(--snice-app-tile-icon-size, 4rem);
+}
+
+:host([size="xl"]) .tile__icon {
+  width: var(--snice-app-tile-icon-size, 5rem);
+  height: var(--snice-app-tile-icon-size, 5rem);
+}
+
+:host([size="2xl"]) .tile__icon {
+  width: var(--snice-app-tile-icon-size, 6rem);
+  height: var(--snice-app-tile-icon-size, 6rem);
 }
 
 .tile__icon img {
@@ -91,6 +101,14 @@
   font-size: 1.5rem;
 }
 
+:host([size="xl"]) .tile__icon--text {
+  font-size: 2rem;
+}
+
+:host([size="2xl"]) .tile__icon--text {
+  font-size: 2.5rem;
+}
+
 /* Emoji icon */
 .tile__icon--emoji {
   font-size: 1.5rem;
@@ -103,6 +121,14 @@
 
 :host([size="lg"]) .tile__icon--emoji {
   font-size: 2rem;
+}
+
+:host([size="xl"]) .tile__icon--emoji {
+  font-size: 2.5rem;
+}
+
+:host([size="2xl"]) .tile__icon--emoji {
+  font-size: 3rem;
 }
 
 /* Ligature icon (Material Symbols etc.) */
@@ -133,6 +159,14 @@
   font-size: 2rem;
 }
 
+:host([size="xl"]) .tile__icon--ligature .icon {
+  font-size: 2.5rem;
+}
+
+:host([size="2xl"]) .tile__icon--ligature .icon {
+  font-size: 3rem;
+}
+
 /* Label */
 .tile__name {
   font-size: var(--snice-font-size-xs, 0.75rem);
@@ -146,6 +180,11 @@
 
 :host([size="lg"]) .tile__name {
   font-size: var(--snice-font-size-sm, 0.875rem);
+}
+
+:host([size="xl"]) .tile__name,
+:host([size="2xl"]) .tile__name {
+  font-size: var(--snice-font-size-md, 1rem);
 }
 
 /* Badge wrapper — sits inside tile around just the icon */
@@ -175,6 +214,16 @@
 :host([size="lg"]) .tiles--compact .tile__icon {
   width: 2.5rem;
   height: 2.5rem;
+}
+
+:host([size="xl"]) .tiles--compact .tile__icon {
+  width: 3rem;
+  height: 3rem;
+}
+
+:host([size="2xl"]) .tiles--compact .tile__icon {
+  width: 3.5rem;
+  height: 3.5rem;
 }
 
 .tiles--compact .tile__icon--emoji {
@@ -221,6 +270,16 @@
 :host([size="lg"]) .tiles--list .tile__icon {
   width: 2.5rem;
   height: 2.5rem;
+}
+
+:host([size="xl"]) .tiles--list .tile__icon {
+  width: 3rem;
+  height: 3rem;
+}
+
+:host([size="2xl"]) .tiles--list .tile__icon {
+  width: 3.5rem;
+  height: 3.5rem;
 }
 
 .tiles--list .tile__icon--emoji {
