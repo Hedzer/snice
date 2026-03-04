@@ -82,23 +82,23 @@ export class SniceToast extends HTMLElement implements SniceToastElement {
       }
 
       .toast--success {
-        background-color: #10b981;
-        color: white;
+        background-color: var(--snice-color-success, rgb(22 163 74));
+        color: var(--snice-color-text-inverse, rgb(250 250 250));
       }
 
       .toast--error {
-        background-color: #ef4444;
-        color: white;
+        background-color: var(--snice-color-danger, rgb(220 38 38));
+        color: var(--snice-color-text-inverse, rgb(250 250 250));
       }
 
       .toast--warning {
-        background-color: #f59e0b;
-        color: white;
+        background-color: var(--snice-color-warning, rgb(234 179 8));
+        color: var(--snice-color-text, rgb(23 23 23));
       }
 
       .toast--info {
-        background-color: #3b82f6;
-        color: white;
+        background-color: var(--snice-color-primary, rgb(37 99 235));
+        color: var(--snice-color-text-inverse, rgb(250 250 250));
       }
 
       .toast-icon {

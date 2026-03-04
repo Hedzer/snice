@@ -167,7 +167,7 @@
 .command-palette__empty {
   padding: var(--snice-spacing-xl, 2rem);
   text-align: center;
-  color: var(--snice-color-text-secondary);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
   font-size: var(--snice-font-size-sm, 0.875rem);
 }
 

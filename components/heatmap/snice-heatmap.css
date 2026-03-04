@@ -4,6 +4,37 @@
   contain: layout style paint;
   --cell-size: 12px;
   --cell-gap: 3px;
+  
+  /* Heatmap color scales with RGB fallbacks */
+  /* Green scheme (default) - maps to success colors */
+  --heatmap-green-1: var(--snice-color-success-subtle, rgb(220 252 231));
+  --heatmap-green-2: var(--snice-color-success-light, rgb(134 239 172));
+  --heatmap-green-3: var(--snice-color-success, rgb(22 163 74));
+  --heatmap-green-4: var(--snice-color-success-dark, rgb(21 128 61));
+  
+  /* Blue scheme - maps to primary colors */
+  --heatmap-blue-1: var(--snice-color-primary-subtle, rgb(219 234 254));
+  --heatmap-blue-2: var(--snice-color-primary-light, rgb(96 165 250));
+  --heatmap-blue-3: var(--snice-color-primary, rgb(37 99 235));
+  --heatmap-blue-4: var(--snice-color-primary-dark, rgb(29 78 216));
+  
+  /* Purple scheme - uses info as base with variations */
+  --heatmap-purple-1: var(--snice-color-info-subtle, rgb(224 242 254));
+  --heatmap-purple-2: var(--snice-color-info-light, rgb(125 211 252));
+  --heatmap-purple-3: var(--snice-color-info, rgb(14 165 233));
+  --heatmap-purple-4: var(--snice-color-info-dark, rgb(2 132 199));
+  
+  /* Orange scheme - maps to warning colors */
+  --heatmap-orange-1: var(--snice-color-warning-subtle, rgb(254 249 195));
+  --heatmap-orange-2: var(--snice-color-warning-light, rgb(253 224 71));
+  --heatmap-orange-3: var(--snice-color-warning, rgb(234 179 8));
+  --heatmap-orange-4: var(--snice-color-warning-dark, rgb(202 138 4));
+  
+  /* Red scheme - maps to danger/error colors */
+  --heatmap-red-1: var(--snice-color-danger-subtle, rgb(254 226 226));
+  --heatmap-red-2: var(--snice-color-danger-light, rgb(252 165 165));
+  --heatmap-red-3: var(--snice-color-danger, rgb(220 38 38));
+  --heatmap-red-4: var(--snice-color-danger-dark, rgb(185 28 28));
 }
 
 .heatmap {
@@ -91,75 +122,75 @@
 /* ── Green scheme (default) ── */
 :host([color-scheme="green"]) .heatmap__cell--level-1,
 :host(:not([color-scheme])) .heatmap__cell--level-1 {
-  background-color: #9be9a8;
+  background-color: var(--heatmap-green-1);
 }
 :host([color-scheme="green"]) .heatmap__cell--level-2,
 :host(:not([color-scheme])) .heatmap__cell--level-2 {
-  background-color: #40c463;
+  background-color: var(--heatmap-green-2);
 }
 :host([color-scheme="green"]) .heatmap__cell--level-3,
 :host(:not([color-scheme])) .heatmap__cell--level-3 {
-  background-color: #30a14e;
+  background-color: var(--heatmap-green-3);
 }
 :host([color-scheme="green"]) .heatmap__cell--level-4,
 :host(:not([color-scheme])) .heatmap__cell--level-4 {
-  background-color: #216e39;
+  background-color: var(--heatmap-green-4);
 }
 
 /* ── Blue scheme ── */
 :host([color-scheme="blue"]) .heatmap__cell--level-1 {
-  background-color: #9ecae1;
+  background-color: var(--heatmap-blue-1);
 }
 :host([color-scheme="blue"]) .heatmap__cell--level-2 {
-  background-color: #4292c6;
+  background-color: var(--heatmap-blue-2);
 }
 :host([color-scheme="blue"]) .heatmap__cell--level-3 {
-  background-color: #2171b5;
+  background-color: var(--heatmap-blue-3);
 }
 :host([color-scheme="blue"]) .heatmap__cell--level-4 {
-  background-color: #084594;
+  background-color: var(--heatmap-blue-4);
 }
 
 /* ── Purple scheme ── */
 :host([color-scheme="purple"]) .heatmap__cell--level-1 {
-  background-color: #c9b1e0;
+  background-color: var(--heatmap-purple-1);
 }
 :host([color-scheme="purple"]) .heatmap__cell--level-2 {
-  background-color: #9b72cf;
+  background-color: var(--heatmap-purple-2);
 }
 :host([color-scheme="purple"]) .heatmap__cell--level-3 {
-  background-color: #7b4fbf;
+  background-color: var(--heatmap-purple-3);
 }
 :host([color-scheme="purple"]) .heatmap__cell--level-4 {
-  background-color: #5a2d91;
+  background-color: var(--heatmap-purple-4);
 }
 
 /* ── Orange scheme ── */
 :host([color-scheme="orange"]) .heatmap__cell--level-1 {
-  background-color: #fdcc8a;
+  background-color: var(--heatmap-orange-1);
 }
 :host([color-scheme="orange"]) .heatmap__cell--level-2 {
-  background-color: #fc8d59;
+  background-color: var(--heatmap-orange-2);
 }
 :host([color-scheme="orange"]) .heatmap__cell--level-3 {
-  background-color: #e34a33;
+  background-color: var(--heatmap-orange-3);
 }
 :host([color-scheme="orange"]) .heatmap__cell--level-4 {
-  background-color: #b30000;
+  background-color: var(--heatmap-orange-4);
 }
 
 /* ── Red scheme ── */
 :host([color-scheme="red"]) .heatmap__cell--level-1 {
-  background-color: #fcae91;
+  background-color: var(--heatmap-red-1);
 }
 :host([color-scheme="red"]) .heatmap__cell--level-2 {
-  background-color: #fb6a4a;
+  background-color: var(--heatmap-red-2);
 }
 :host([color-scheme="red"]) .heatmap__cell--level-3 {
-  background-color: #de2d26;
+  background-color: var(--heatmap-red-3);
 }
 :host([color-scheme="red"]) .heatmap__cell--level-4 {
-  background-color: #a50f15;
+  background-color: var(--heatmap-red-4);
 }
 
 /* ── Tooltip ── */
