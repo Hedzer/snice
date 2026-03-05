@@ -220,6 +220,7 @@
   display: flex;
   align-items: center;
   width: 100%;
+  box-sizing: border-box;
   padding: var(--snice-spacing-md, 1rem);
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: var(--snice-border-radius-lg, 0.5rem);
