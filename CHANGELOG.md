@@ -1,3 +1,17 @@
+# [4.22.0](https://gitlab.com/Hedzer/snice/compare/v4.21.0...v4.22.0) (2026-03-05)
+
+
+### Bug Fixes
+
+* product-card border-radius on gallery, spacing adjustments, remove overflow hidden ([519bf0a](https://gitlab.com/Hedzer/snice/commit/519bf0a9a70c2f6185e39ce64cf6230dc3353eff))
+* product-card gallery controls use theme background instead of hardcoded white ([d8d16a7](https://gitlab.com/Hedzer/snice/commit/d8d16a757bec60e7e832c1b091cf7e873934cb91))
+* sidebar scroll-spy highlights topmost visible section ([39cea50](https://gitlab.com/Hedzer/snice/commit/39cea50f5c5684d77f9a24d9c7c790e6151d8bc6))
+
+
+### Features
+
+* drawer inline mode, responsive breakpoint, no-header/no-footer options ([a9d7430](https://gitlab.com/Hedzer/snice/commit/a9d7430306248ffd3e98aa451d9a61fd2a42af4c))
+
 # [4.21.0](https://gitlab.com/Hedzer/snice/compare/v4.20.1...v4.21.0) (2026-03-04)
 
 
