@@ -1,6 +1,6 @@
 import { element, property, query, on, watch, dispatch, ready, render, styles, html, css } from 'snice';
 import cssContent from './snice-radio.css?inline';
-import type { RadioSize, SniceRadioElement } from './snice-radio.types';
+import type { RadioSize, RadioVariant, SniceRadioElement } from './snice-radio.types';
 
 @element('snice-radio')
 export class SniceRadio extends HTMLElement implements SniceRadioElement {
@@ -22,6 +22,9 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
   invalid = false;
 
   @property({  })
+  variant: RadioVariant = 'default';
+
+  @property({  })
   size: RadioSize = 'medium';
 
   @property({  })
@@ -32,6 +35,9 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
 
   @property({  })
   label = '';
+
+  @property({  })
+  description = '';
 
   @query('.radio-input')
   input?: HTMLInputElement;
@@ -47,9 +53,11 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
 
   @render()
   render() {
-    const wrapperClasses = `radio-wrapper${this.disabled ? ' radio-wrapper--disabled' : ''}${this.loading ? ' radio-wrapper--loading' : ''}`;
+    const isBlock = this.variant === 'block';
+    const wrapperClasses = `radio-wrapper${isBlock ? ' radio-wrapper--block' : ''}${this.disabled ? ' radio-wrapper--disabled' : ''}${this.loading ? ' radio-wrapper--loading' : ''}`;
     const radioClasses = `radio radio--${this.size}${this.invalid ? ' radio--invalid' : ''}${this.loading ? ' radio--loading' : ''}`;
     const labelClasses = `radio-label radio-label--${this.size}${this.required ? ' radio-label--required' : ''}`;
+    const hasDescription = !!this.description;
 
     return html/*html*/`
       <label class="${wrapperClasses}">
@@ -74,10 +82,28 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
           </if>
         </span>
 
-        <if ${this.label}>
-          <span class="${labelClasses}" part="label">
-            ${this.label}
+        <if ${isBlock}>
+          <span class="radio-content" part="content">
+            <if ${this.label}>
+              <span class="${labelClasses}" part="label">
+                ${this.label}
+              </span>
+            </if>
+            <if ${hasDescription}>
+              <span class="radio-description" part="description">
+                ${this.description}
+              </span>
+            </if>
           </span>
+          <slot name="suffix"></slot>
+        </if>
+
+        <if ${!isBlock}>
+          <if ${this.label}>
+            <span class="${labelClasses}" part="label">
+              ${this.label}
+            </span>
+          </if>
         </if>
       </label>
     `;

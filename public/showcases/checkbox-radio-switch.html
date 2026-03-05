@@ -22,7 +22,7 @@
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=a37f69d">&lt;snice-checkbox label="Remember me" checked&gt;
+          <snice-code-block language="html" grammar="grammars/html.json?v=e817bb8">&lt;snice-checkbox label="Remember me" checked&gt;
 &lt;/snice-checkbox&gt;
 
 &lt;snice-checkbox label="Subscribe"&gt;&lt;/snice-checkbox&gt;
@@ -50,11 +50,59 @@
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=a37f69d">&lt;snice-checkbox label="Loading" loading&gt;&lt;/snice-checkbox&gt;
+          <snice-code-block language="html" grammar="grammars/html.json?v=e817bb8">&lt;snice-checkbox label="Loading" loading&gt;&lt;/snice-checkbox&gt;
 
 &lt;snice-radio label="Loading" loading&gt;&lt;/snice-radio&gt;
 
 &lt;snice-switch loading&gt;Loading&lt;/snice-switch&gt;</snice-code-block>
+        </div>
+      </div>
+      <div class="comp-split">
+        <div class="comp-split-demo">
+          <div style="display:flex;flex-direction:column;gap:0.5rem">
+            <snice-radio variant="block" name="pricing" value="free" label="Free" description="For individuals getting started" checked>
+              <span slot="suffix" style="font-size:0.8125rem;color:var(--snice-color-success,rgb(22 163 74));font-weight:500">Free forever</span>
+            </snice-radio>
+            <snice-radio variant="block" name="pricing" value="pro" label="Pro" description="For growing teams and businesses">
+              <span slot="suffix" style="font-size:0.8125rem;color:var(--snice-color-text-secondary,rgb(82 82 82))">$12/mo</span>
+            </snice-radio>
+            <snice-radio variant="block" name="pricing" value="enterprise" label="Enterprise" description="For large organizations with custom needs">
+              <span slot="suffix" style="font-size:0.8125rem;color:var(--snice-color-text-secondary,rgb(82 82 82))">Contact us</span>
+            </snice-radio>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=e817bb8">&lt;snice-radio
+  variant="block"
+  name="pricing"
+  value="free"
+  label="Free"
+  description="For individuals getting started"
+  checked
+&gt;
+  &lt;span slot="suffix"&gt;Free forever&lt;/span&gt;
+&lt;/snice-radio&gt;
+
+&lt;snice-radio
+  variant="block"
+  name="pricing"
+  value="pro"
+  label="Pro"
+  description="For growing teams and businesses"
+&gt;
+  &lt;span slot="suffix"&gt;$12/mo&lt;/span&gt;
+&lt;/snice-radio&gt;
+
+&lt;snice-radio
+  variant="block"
+  name="pricing"
+  value="enterprise"
+  label="Enterprise"
+  description="For large organizations"
+&gt;
+  &lt;span slot="suffix"&gt;Contact us&lt;/span&gt;
+&lt;/snice-radio&gt;</snice-code-block>
         </div>
       </div>
     </div>

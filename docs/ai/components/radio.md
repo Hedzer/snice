@@ -10,10 +10,12 @@ disabled: boolean = false;
 loading: boolean = false;
 required: boolean = false;
 invalid: boolean = false;
+variant: 'default'|'block' = 'default'; // 'block' = card-style radio
 size: 'small'|'medium'|'large' = 'medium';
 name: string = '';           // Group name for mutual exclusion
 value: string = '';
 label: string = '';
+description: string = '';    // Subtitle text (block variant)
 ```
 
 ## Methods
@@ -27,6 +29,10 @@ label: string = '';
 
 - `radio-change` → `{ checked, value, radio }`
 
+## Slots
+
+- `suffix` - End content for block variant (badges, prices)
+
 ## CSS Parts
 
 - `input` - Hidden radio input
@@ -34,6 +40,8 @@ label: string = '';
 - `dot` - Inner dot indicator
 - `spinner` - Loading spinner
 - `label` - Label text
+- `content` - Content wrapper (block variant)
+- `description` - Description text (block variant)
 
 ## Usage
 
@@ -52,6 +60,14 @@ label: string = '';
 <snice-radio label="Loading" loading></snice-radio>
 <snice-radio label="Invalid" invalid></snice-radio>
 <snice-radio label="Required" required></snice-radio>
+
+<!-- Block variant (card-style) -->
+<snice-radio variant="block" name="plan" value="free" label="Free" description="For individuals" checked>
+  <span slot="suffix">Free forever</span>
+</snice-radio>
+<snice-radio variant="block" name="plan" value="pro" label="Pro" description="For teams">
+  <span slot="suffix">$12/mo</span>
+</snice-radio>
 ```
 
 ```typescript
@@ -64,6 +80,7 @@ radio.addEventListener('radio-change', (e) => {
 
 - Automatic radio group management by name
 - 3 sizes
+- Block variant: card-style layout with description + suffix slot
 - Loading state with spinner
 - Keyboard accessible (arrow keys navigate group, wraps around)
 - Contains native `<input type="radio">` for form participation

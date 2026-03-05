@@ -10,10 +10,12 @@ export interface RadioProps extends SniceBaseProps {
   loading?: any;
   required?: any;
   invalid?: any;
+  variant?: any;
   size?: any;
   name?: any;
   value?: any;
   label?: any;
+  description?: any;
 
 }
 
@@ -35,7 +37,7 @@ export interface RadioProps extends SniceBaseProps {
  */
 export const Radio = createReactAdapter<RadioProps>({
   tagName: 'snice-radio',
-  properties: ["checked","disabled","loading","required","invalid","size","name","value","label"],
+  properties: ["checked","disabled","loading","required","invalid","variant","size","name","value","label","description"],
   events: {},
   formAssociated: false
 });

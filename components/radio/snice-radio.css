@@ -206,3 +206,77 @@
     transform: rotate(360deg);
   }
 }
+
+/* Block variant */
+:host([variant="block"]) {
+  display: block;
+}
+
+:host([variant="block"]) + :host([variant="block"]) {
+  margin-top: var(--snice-spacing-xs, 0.5rem);
+}
+
+.radio-wrapper--block {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: var(--snice-spacing-md, 1rem);
+  border: 1px solid var(--snice-color-border, rgb(226 226 226));
+  border-radius: var(--snice-border-radius-lg, 0.5rem);
+  background: var(--snice-color-background, rgb(255 255 255));
+  gap: var(--snice-spacing-sm, 0.75rem);
+  transition: border-color var(--snice-transition-fast, 150ms) ease,
+              background-color var(--snice-transition-fast, 150ms) ease;
+}
+
+.radio-wrapper--block:not(.radio-wrapper--disabled):hover {
+  border-color: var(--snice-color-primary, rgb(37 99 235));
+  background: color-mix(in srgb, var(--snice-color-primary, rgb(37 99 235)) 4%, var(--snice-color-background, rgb(255 255 255)));
+}
+
+.radio-wrapper--block .radio-input:checked ~ .radio-content,
+.radio-wrapper--block .radio-input:checked ~ ::slotted(*) {
+  /* Siblings get no extra style, border handles it */
+}
+
+/* Checked block border */
+.radio-wrapper--block:has(.radio-input:checked) {
+  border-color: var(--snice-color-primary, rgb(37 99 235));
+  background: color-mix(in srgb, var(--snice-color-primary, rgb(37 99 235)) 4%, var(--snice-color-background, rgb(255 255 255)));
+}
+
+.radio-wrapper--block.radio-wrapper--disabled {
+  background: var(--snice-color-background-secondary, rgb(245 245 245));
+}
+
+/* Block content area */
+.radio-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.radio-content .radio-label {
+  margin-left: 0;
+  font-weight: var(--snice-font-weight-medium, 500);
+}
+
+.radio-description {
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
+  line-height: var(--snice-line-height-normal, 1.5);
+  margin-top: var(--snice-spacing-3xs, 0.125rem);
+}
+
+/* Suffix slot alignment */
+.radio-wrapper--block ::slotted([slot="suffix"]) {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* Focus ring for block variant */
+.radio-wrapper--block .radio-input:focus-visible ~ .radio {
+  outline: 2px solid var(--snice-color-primary, rgb(37 99 235));
+  outline-offset: 2px;
+}

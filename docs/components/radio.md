@@ -97,6 +97,43 @@ Radio buttons with the same `name` automatically form a group where only one can
 </form>
 ```
 
+### Block Variant
+
+Use `variant="block"` to render card-style radio buttons, ideal for plan pickers or option selectors. Add a `description` for subtitle text and use the `suffix` slot for end content like badges or prices.
+
+```html
+<snice-radio
+  variant="block"
+  name="plan"
+  value="free"
+  label="Free"
+  description="For individuals getting started"
+  checked
+>
+  <span slot="suffix">Free forever</span>
+</snice-radio>
+
+<snice-radio
+  variant="block"
+  name="plan"
+  value="pro"
+  label="Pro"
+  description="For growing teams and businesses"
+>
+  <span slot="suffix">$12/mo</span>
+</snice-radio>
+
+<snice-radio
+  variant="block"
+  name="plan"
+  value="enterprise"
+  label="Enterprise"
+  description="For large organizations with custom needs"
+>
+  <span slot="suffix">Contact us</span>
+</snice-radio>
+```
+
 ### Event Handling
 
 ```html
@@ -120,10 +157,18 @@ Radio buttons with the same `name` automatically form a group where only one can
 | `loading` | `boolean` | `false` | Shows spinner instead of dot |
 | `required` | `boolean` | `false` | Marks as required for forms |
 | `invalid` | `boolean` | `false` | Shows invalid state styling |
+| `variant` | `'default' \| 'block'` | `'default'` | Visual variant. `block` renders card-style layout |
 | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Radio button size |
 | `name` | `string` | `''` | Group name for mutual exclusion |
 | `value` | `string` | `''` | Form value when selected |
 | `label` | `string` | `''` | Label text |
+| `description` | `string` | `''` | Description text below the label (block variant) |
+
+## Slots
+
+| Name | Description |
+|------|-------------|
+| `suffix` | End content for block variant (badges, prices, labels) |
 
 ## Events
 
@@ -149,3 +194,5 @@ Radio buttons with the same `name` automatically form a group where only one can
 | `dot` | The inner dot indicator |
 | `spinner` | The loading spinner |
 | `label` | The label text |
+| `content` | The content wrapper (block variant) |
+| `description` | The description text (block variant) |
