@@ -2,7 +2,7 @@
   "name": "snice",
   "version": "4.24.1",
   "type": "module",
-  "description": "Imperative TypeScript framework for building vanilla web components with decorators, differential rendering, routing, and controllers. No virtual DOM, no build complexity.",
+  "description": "A decorator-driven web component library with differential rendering, routing, controllers, and 130+ ready-made UI components. Use as much or as little as you want. Zero dependencies, works anywhere.",
   "main": "dist/index.cjs",
   "module": "dist/index.esm.js",
   "browser": "dist/index.iife.js",

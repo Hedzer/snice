@@ -2,7 +2,7 @@
 
 > **AI Assistants:** For token-efficient documentation, read [docs/ai/](./docs/ai/) instead. Same content, 70% fewer tokens.
 
-A TypeScript framework for building sustainable web applications through clear separation of governance.
+A decorator-driven web component library with differential rendering, routing, controllers, and 130+ ready-made UI components. Use as much or as little as you want. Zero dependencies, works anywhere.
 
 ## Quick Start
 
@@ -29,23 +29,7 @@ npx snice create-app my-app --template=pwa
 | `base` | Routing, pages, components, controllers |
 | `pwa` | Everything in base + auth flow, guards, middleware, services, JWT handling |
 
-## Philosophy
-
-Without structure, you'll end up with auth checks mixed in rendering logic, business rules duplicated across components, and data fetching scattered in event handlers. **Snice provides constructs that guide you to put code where it belongs, keeping you productive as your app grows.**
-
-- **Pages fetch data and assemble UI** - They understand what the user wants to do
-- **Elements handle visuals only** - They don't know or care about business logic
-- **Controllers let you swap behavior** - Same UI, different data sources or logic
-- **Cross-cutting concerns stay separate** - Auth, routing, and global state don't leak into your components
-
-Yes, global state is bad! but you will have a little always, and it should be managed well.
-Usually we see auth/principals, themes, and localization as global state examples.
-
-Each piece hints at where your code should live, preventing the mess that kills velocity on larger teams.
-
-## The Tools
-
-Snice provides decorators and utilities that map directly to these architectural concerns:
+## What's in the Box
 
 
 ### Basic Building Blocks
@@ -250,7 +234,7 @@ Usage - swap behavior without touching presentation:
 
 **Zero Dependencies** - No external runtime dependencies
 
-**Standards-Based** - Built on web components, works with any framework
+**Standards-Based** - Built on web components, works with any library or framework
 
 ## Core APIs
 
@@ -765,30 +749,11 @@ class DashboardPage extends HTMLElement { }
 
 Layouts receive placard data in `update()` and auto-build navigation. See [docs](./docs/placards.md).
 
-## Migrating from v2.x
-
-v3.0.0 introduces template-based rendering with differential updates. Key changes:
-
-- **Use `@render()` instead of `html()` method**
-  Return `html\`...\`` tagged template instead of string
-
-- **Use `@styles()` instead of `css()` method**
-  Return `css\`...\`` tagged template instead of string
-
-- **`@on()` decorator available**
-  Works in both elements AND controllers with full event delegation, keyboard modifiers, and debounce/throttle support.
-  Template event syntax (`@click=${handler}`) is also available as an alternative.
-
-- **`@part` decorator removed**
-  Differential rendering makes selective re-rendering unnecessary
-
-See [Migration Guide](./docs/migration-v2-to-v3.md) for detailed migration guide.
-
 ## Using Snice Components in Other Environments
 
 ### Standalone Builds
 
-Use any Snice component without installing the framework:
+Use any Snice component without installing the library:
 
 ```bash
 snice build-component button
