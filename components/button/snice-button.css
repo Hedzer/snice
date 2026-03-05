@@ -119,8 +119,8 @@
 }
 
 .button--primary:active:not(.button--disabled) {
-  background-color: var(--snice-color-primary-active, rgb(27 76 214));
-  border-color: var(--snice-color-primary-active, rgb(27 76 214));
+  background-color: color-mix(in srgb, var(--snice-color-primary, rgb(37 99 235)) 85%, white);
+  border-color: color-mix(in srgb, var(--snice-color-primary, rgb(37 99 235)) 85%, white);
   box-shadow: var(--snice-shadow-inset-sm);
   transform: translateY(0);
 }
@@ -140,8 +140,8 @@
 }
 
 .button--success:active:not(.button--disabled) {
-  background-color: var(--snice-color-success-active, rgb(19 126 59));
-  border-color: var(--snice-color-success-active, rgb(19 126 59));
+  background-color: color-mix(in srgb, var(--snice-color-success, rgb(22 163 74)) 85%, white);
+  border-color: color-mix(in srgb, var(--snice-color-success, rgb(22 163 74)) 85%, white);
   box-shadow: var(--snice-shadow-inset-sm);
   transform: translateY(0);
 }
@@ -161,8 +161,8 @@
 }
 
 .button--warning:active:not(.button--disabled) {
-  background-color: var(--snice-color-warning-active, rgb(159 96 5));
-  border-color: var(--snice-color-warning-active, rgb(159 96 5));
+  background-color: color-mix(in srgb, var(--snice-color-warning, rgb(202 138 4)) 85%, white);
+  border-color: color-mix(in srgb, var(--snice-color-warning, rgb(202 138 4)) 85%, white);
   box-shadow: var(--snice-shadow-inset-sm);
   transform: translateY(0);
 }
@@ -182,8 +182,8 @@
 }
 
 .button--danger:active:not(.button--disabled) {
-  background-color: var(--snice-color-danger-active, rgb(183 26 26));
-  border-color: var(--snice-color-danger-active, rgb(183 26 26));
+  background-color: color-mix(in srgb, var(--snice-color-danger, rgb(220 38 38)) 85%, white);
+  border-color: color-mix(in srgb, var(--snice-color-danger, rgb(220 38 38)) 85%, white);
   box-shadow: var(--snice-shadow-inset-sm);
   transform: translateY(0);
 }
