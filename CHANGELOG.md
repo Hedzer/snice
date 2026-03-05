@@ -1,3 +1,10 @@
+# [4.24.0](https://gitlab.com/Hedzer/snice/compare/v4.23.0...v4.24.0) (2026-03-05)
+
+
+### Features
+
+* add block variant to radio component with description and suffix slot ([60c689c](https://gitlab.com/Hedzer/snice/commit/60c689c0a8d83d8a7f0af502c74d98d3fe89b868))
+
 # [4.23.0](https://gitlab.com/Hedzer/snice/compare/v4.22.0...v4.23.0) (2026-03-05)
 
 # [4.22.0](https://gitlab.com/Hedzer/snice/compare/v4.21.0...v4.22.0) (2026-03-05)
