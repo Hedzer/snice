@@ -29,3 +29,11 @@
 ## Timers
 
 - Don't auto-start timers in the showcase
+
+## Scroll Spy (components.html sidebar)
+
+- Lives in `public/showcases/_footer.html`
+- Uses `IntersectionObserver` with `rootMargin: '-80px 0px -70% 0px'` as a trigger
+- Active section is determined by finding the last section (in DOM order) whose `getBoundingClientRect().top <= 100` — i.e., the last section whose heading has scrolled past the header
+- Previous bug: picking the "first intersecting" section caused misalignment when tall sections had their tail end still in the observation zone (e.g., Chart & Sparkline highlighted when Chat was visible)
+- Fix: switched to "last section whose top passed the header" logic, which matches user expectation of what they're currently reading
