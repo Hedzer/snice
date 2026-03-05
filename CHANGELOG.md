@@ -1,3 +1,10 @@
+## [4.24.1](https://gitlab.com/Hedzer/snice/compare/v4.24.0...v4.24.1) (2026-03-05)
+
+
+### Bug Fixes
+
+* add box-sizing border-box to radio block variant wrapper ([0d0d0e5](https://gitlab.com/Hedzer/snice/commit/0d0d0e5a50bdf113392b6a7a34707dba2b726a33))
+
 # [4.24.0](https://gitlab.com/Hedzer/snice/compare/v4.23.0...v4.24.0) (2026-03-05)
 
 
