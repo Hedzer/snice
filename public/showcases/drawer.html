@@ -12,7 +12,7 @@
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=b040a21">&lt;!-- Positions --&gt;
+          <snice-code-block language="html" grammar="grammars/html.json?v=baedf03">&lt;!-- Positions --&gt;
 &lt;snice-drawer position="left"&gt;...&lt;/snice-drawer&gt;
 &lt;snice-drawer position="right"&gt;...&lt;/snice-drawer&gt;
 &lt;snice-drawer position="top"&gt;...&lt;/snice-drawer&gt;
@@ -60,4 +60,37 @@
         <span slot="title">Push Content</span>
         <p style="padding:1rem;color:var(--snice-color-text-secondary)">This drawer pushes the main content instead of overlaying it.</p>
       </snice-drawer>
+
+      <h4 style="margin-top:2rem">Inline Mode</h4>
+      <p class="comp-desc">Sits in the document flow as a persistent sidebar. Use <code>breakpoint</code> to auto-switch between inline and overlay.</p>
+      <div class="comp-split-stacked">
+        <div style="display:flex;border:1px solid rgba(128,128,128,0.2);border-radius:8px;overflow:hidden;height:16rem;position:relative">
+          <snice-drawer inline position="left" size="small">
+            <span slot="title">Sidebar</span>
+            <div style="display:flex;flex-direction:column;gap:0.25rem">
+              <snice-button variant="text" size="small" style="justify-content:flex-start">Home</snice-button>
+              <snice-button variant="text" size="small" style="justify-content:flex-start">Explore</snice-button>
+              <snice-button variant="text" size="small" style="justify-content:flex-start">Settings</snice-button>
+            </div>
+          </snice-drawer>
+          <div style="flex:1;padding:1rem;overflow:auto">
+            <h4 style="margin:0 0 0.5rem">Main Content</h4>
+            <p style="margin:0;color:var(--snice-color-text-secondary);font-size:0.875rem">The drawer sits inline alongside the content, no overlay or backdrop.</p>
+          </div>
+        </div>
+        <div class="comp-split-code" style="margin-top:0.5rem">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=baedf03">&lt;!-- Always inline --&gt;
+&lt;snice-drawer inline position="left" size="small"&gt;
+  &lt;span slot="title"&gt;Sidebar&lt;/span&gt;
+  ...
+&lt;/snice-drawer&gt;
+
+&lt;!-- Responsive: inline above 768px, overlay below --&gt;
+&lt;snice-drawer breakpoint="768" position="left" size="small"&gt;
+  &lt;span slot="title"&gt;Sidebar&lt;/span&gt;
+  ...
+&lt;/snice-drawer&gt;</snice-code-block>
+        </div>
+      </div>
     </div>
