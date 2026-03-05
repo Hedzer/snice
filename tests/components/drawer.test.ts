@@ -401,4 +401,91 @@ describe('snice-drawer', () => {
     expect(drawer.size).toBe('large');
     expect(drawer.getAttribute('size')).toBe('large');
   });
+
+  // Inline mode tests
+  it('should not be inline by default', async () => {
+    drawer = await createComponent<SniceDrawerElement>('snice-drawer');
+    expect(drawer.inline).toBe(false);
+  });
+
+  it('should support inline property', async () => {
+    drawer = await createComponent<SniceDrawerElement>('snice-drawer', { inline: true });
+    expect(drawer.inline).toBe(true);
+    expect(drawer.hasAttribute('inline')).toBe(true);
+  });
+
+  it('should have inline attribute when inline is true', async () => {
+    drawer = await createComponent<SniceDrawerElement>('snice-drawer', { inline: true });
+    expect(drawer.hasAttribute('inline')).toBe(true);
+    // CSS hides backdrop via :host([inline]) .drawer-backdrop { display: none }
+  });
+
+  it('should not set up escape handler in inline mode', async () => {
+    drawer = await createComponent<SniceDrawerElement>('snice-drawer', { inline: true });
+
+    drawer.open = true;
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    // Dispatch escape - drawer should remain open since inline skips overlay behaviors
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    expect(drawer.open).toBe(true);
+  });
+
+  // Breakpoint tests
+  it('should default breakpoint to 0', async () => {
+    drawer = await createComponent<SniceDrawerElement>('snice-drawer');
+    expect(drawer.breakpoint).toBe(0);
+  });
+
+  it('should support breakpoint property', async () => {
+    drawer = await createComponent<SniceDrawerElement>('snice-drawer', { breakpoint: 768 });
+    expect(drawer.breakpoint).toBe(768);
+  });
+
+  it('should set inline attribute when viewport exceeds breakpoint', async () => {
+    // In test environment, viewport is typically >= 1024
+    drawer = await createComponent<SniceDrawerElement>('snice-drawer', { breakpoint: 100 });
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    expect(drawer.hasAttribute('inline')).toBe(true);
+  });
+
+  it('should not set inline attribute when viewport is below breakpoint', async () => {
+    // Use an absurdly high breakpoint so the test environment is always below it
+    drawer = await createComponent<SniceDrawerElement>('snice-drawer', { breakpoint: 99999 });
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    expect(drawer.hasAttribute('inline')).toBe(false);
+  });
+
+  // no-header / no-footer tests
+  it('should show header by default', async () => {
+    drawer = await createComponent<SniceDrawerElement>('snice-drawer');
+    expect(drawer.noHeader).toBe(false);
+    const header = queryShadow(drawer as HTMLElement, '.drawer-header');
+    expect(header).toBeTruthy();
+  });
+
+  it('should hide header when noHeader is true', async () => {
+    drawer = await createComponent<SniceDrawerElement>('snice-drawer', { noHeader: true });
+    expect(drawer.noHeader).toBe(true);
+    const header = queryShadow(drawer as HTMLElement, '.drawer-header');
+    expect(header).toBeFalsy();
+  });
+
+  it('should show footer by default', async () => {
+    drawer = await createComponent<SniceDrawerElement>('snice-drawer');
+    expect(drawer.noFooter).toBe(false);
+    const footer = queryShadow(drawer as HTMLElement, '.drawer-footer');
+    expect(footer).toBeTruthy();
+  });
+
+  it('should hide footer when noFooter is true', async () => {
+    drawer = await createComponent<SniceDrawerElement>('snice-drawer', { noFooter: true });
+    expect(drawer.noFooter).toBe(true);
+    const footer = queryShadow(drawer as HTMLElement, '.drawer-footer');
+    expect(footer).toBeFalsy();
+  });
 });

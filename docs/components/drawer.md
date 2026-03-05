@@ -48,6 +48,8 @@ openBtn.addEventListener('click', () => drawer.show());
 | `open` | `boolean` | `false` | Whether the drawer is visible |
 | `position` | `'left' \| 'right' \| 'top' \| 'bottom'` | `'left'` | Side from which the drawer slides in |
 | `size` | `'small' \| 'medium' \| 'large' \| 'xl' \| 'xxl' \| 'xxxl' \| 'full'` | `'medium'` | Width/height of the drawer |
+| `noHeader` | `boolean` | `false` | Hide the header (title + close button) entirely |
+| `noFooter` | `boolean` | `false` | Hide the footer slot entirely |
 | `noBackdrop` | `boolean` | `false` | Hide the backdrop overlay |
 | `noBackdropDismiss` | `boolean` | `false` | Prevent closing when clicking backdrop |
 | `noEscapeDismiss` | `boolean` | `false` | Prevent closing with Escape key |
@@ -55,6 +57,8 @@ openBtn.addEventListener('click', () => drawer.show());
 | `persistent` | `boolean` | `false` | Hide close button and prevent all dismissal |
 | `pushContent` | `boolean` | `false` | Push main content instead of overlaying |
 | `contained` | `boolean` | `false` | Position relative to parent instead of viewport |
+| `inline` | `boolean` | `false` | Render in document flow as a persistent sidebar |
+| `breakpoint` | `number` | `0` | Viewport width (px) above which drawer switches to inline mode |
 
 ## Methods
 
@@ -255,6 +259,67 @@ Content for the drawer footer. Typically used for action buttons.
   <h2 slot="title">Push Content</h2>
   <p>Main content slides over when this opens.</p>
 </snice-drawer>
+```
+
+### Inline Mode
+
+The `inline` attribute renders the drawer directly in the document flow as a persistent sidebar. No overlay, backdrop, focus trap, or escape handler is used. The drawer is always visible and participates in the parent's layout.
+
+```html
+<div style="display: flex; height: 100vh;">
+  <snice-drawer inline position="left" size="small">
+    <span slot="title">Sidebar</span>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/explore">Explore</a>
+      <a href="/settings">Settings</a>
+    </nav>
+  </snice-drawer>
+
+  <main style="flex: 1; padding: 1rem;">
+    <h1>Main Content</h1>
+    <p>The sidebar sits alongside this content.</p>
+  </main>
+</div>
+```
+
+A border separator is automatically applied based on the `position`:
+- `left` → right border
+- `right` → left border
+- `top` → bottom border
+- `bottom` → top border
+
+### Responsive Breakpoint
+
+The `breakpoint` attribute enables responsive behavior: the drawer renders inline when the viewport is at or above the specified width (in pixels), and switches to a standard overlay drawer below it.
+
+```html
+<!-- Inline sidebar on desktop (≥768px), overlay drawer on mobile (<768px) -->
+<snice-drawer breakpoint="768" position="left" size="small">
+  <span slot="title">Navigation</span>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/products">Products</a>
+    <a href="/settings">Settings</a>
+  </nav>
+</snice-drawer>
+```
+
+The breakpoint uses `window.matchMedia` internally. When the viewport crosses the breakpoint:
+- **Above breakpoint**: The `inline` attribute is set automatically. Overlay behaviors (backdrop, focus trap, escape handler) are torn down.
+- **Below breakpoint**: The `inline` attribute is removed. The drawer reverts to standard overlay mode.
+
+You can combine `breakpoint` with `open` to control the overlay state on mobile:
+
+```html
+<snice-drawer id="nav" breakpoint="1024" position="left" size="small">
+  <span slot="title">Menu</span>
+  <nav>...</nav>
+</snice-drawer>
+
+<button onclick="document.getElementById('nav').toggle()">
+  Toggle Menu
+</button>
 ```
 
 ### Filters Panel

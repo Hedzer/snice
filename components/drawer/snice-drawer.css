@@ -505,3 +505,122 @@
 :host([push-content][position="bottom"][open]:not([size])) {
   --drawer-push-amount: calc(-1 * var(--drawer-height-medium));
 }
+
+/* ── Inline mode ── */
+/* Must come after all position/size rules to win at equal specificity */
+
+:host([inline]) {
+  position: static;
+  width: auto;
+  height: auto;
+  pointer-events: auto;
+  contain: layout style;
+}
+
+:host([inline]) .drawer-backdrop {
+  display: none;
+}
+
+:host([inline]) .drawer {
+  position: static;
+  transform: none;
+  opacity: 1;
+  box-shadow: none;
+  z-index: auto;
+  transition: none;
+  border-right: 1px solid var(--snice-color-border, rgb(229 231 235));
+}
+
+:host([inline][position="right"]) .drawer {
+  border-right: none;
+  border-left: 1px solid var(--snice-color-border, rgb(229 231 235));
+}
+
+:host([inline][position="top"]) .drawer {
+  border-right: none;
+  border-bottom: 1px solid var(--snice-color-border, rgb(229 231 235));
+}
+
+:host([inline][position="bottom"]) .drawer {
+  border-right: none;
+  border-top: 1px solid var(--snice-color-border, rgb(229 231 235));
+}
+
+/* Inline sizes — left/right use width, top/bottom use height */
+:host([inline]) .drawer,
+:host([inline][position="left"]) .drawer {
+  width: var(--drawer-width-medium);
+  height: 100%;
+}
+
+:host([inline][position="left"][size="small"]) .drawer,
+:host([inline]:not([position])[size="small"]) .drawer {
+  width: var(--drawer-width-small);
+}
+
+:host([inline][position="left"][size="large"]) .drawer,
+:host([inline]:not([position])[size="large"]) .drawer {
+  width: var(--drawer-width-large);
+}
+
+:host([inline][position="left"][size="xl"]) .drawer,
+:host([inline]:not([position])[size="xl"]) .drawer {
+  width: var(--drawer-width-xl);
+}
+
+:host([inline][position="left"][size="xxl"]) .drawer,
+:host([inline]:not([position])[size="xxl"]) .drawer {
+  width: var(--drawer-width-xxl);
+}
+
+:host([inline][position="left"][size="xxxl"]) .drawer,
+:host([inline]:not([position])[size="xxxl"]) .drawer {
+  width: var(--drawer-width-xxxl);
+}
+
+:host([inline][position="left"][size="full"]) .drawer,
+:host([inline]:not([position])[size="full"]) .drawer {
+  width: 100%;
+}
+
+:host([inline][position="right"]) .drawer {
+  width: var(--drawer-width-medium);
+  height: 100%;
+}
+
+:host([inline][position="right"][size="small"]) .drawer { width: var(--drawer-width-small); }
+:host([inline][position="right"][size="large"]) .drawer { width: var(--drawer-width-large); }
+:host([inline][position="right"][size="xl"]) .drawer { width: var(--drawer-width-xl); }
+:host([inline][position="right"][size="xxl"]) .drawer { width: var(--drawer-width-xxl); }
+:host([inline][position="right"][size="xxxl"]) .drawer { width: var(--drawer-width-xxxl); }
+:host([inline][position="right"][size="full"]) .drawer { width: 100%; }
+
+:host([inline][position="top"]) .drawer {
+  width: 100%;
+  height: var(--drawer-height-medium);
+}
+
+:host([inline][position="top"][size="small"]) .drawer { height: var(--drawer-height-small); }
+:host([inline][position="top"][size="large"]) .drawer { height: var(--drawer-height-large); }
+:host([inline][position="top"][size="xl"]) .drawer { height: var(--drawer-height-xl); }
+:host([inline][position="top"][size="xxl"]) .drawer { height: var(--drawer-height-xxl); }
+:host([inline][position="top"][size="xxxl"]) .drawer { height: var(--drawer-height-xxxl); }
+:host([inline][position="top"][size="full"]) .drawer { height: 100%; }
+
+:host([inline][position="bottom"]) .drawer {
+  width: 100%;
+  height: var(--drawer-height-medium);
+}
+
+:host([inline][position="bottom"][size="small"]) .drawer { height: var(--drawer-height-small); }
+:host([inline][position="bottom"][size="large"]) .drawer { height: var(--drawer-height-large); }
+:host([inline][position="bottom"][size="xl"]) .drawer { height: var(--drawer-height-xl); }
+:host([inline][position="bottom"][size="xxl"]) .drawer { height: var(--drawer-height-xxl); }
+:host([inline][position="bottom"][size="xxxl"]) .drawer { height: var(--drawer-height-xxxl); }
+:host([inline][position="bottom"][size="full"]) .drawer { height: 100%; }
+
+/* Focus trap not needed in inline mode */
+:host([inline]) .focus-trap-start,
+:host([inline]) .focus-trap-end {
+  display: none;
+}

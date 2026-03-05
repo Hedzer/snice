@@ -1,6 +1,6 @@
 # snice-drawer
 
-Slide-out panel from any viewport side with focus trap and dismissal options.
+Slide-out panel from any viewport side with focus trap and dismissal options. Supports inline mode for persistent sidebars and responsive breakpoint switching.
 
 ## Properties
 
@@ -8,6 +8,10 @@ Slide-out panel from any viewport side with focus trap and dismissal options.
 open: boolean = false;                         // Visibility state
 position: 'left'|'right'|'top'|'bottom' = 'left';
 size: 'small'|'medium'|'large'|'xl'|'xxl'|'xxxl'|'full' = 'medium';
+inline: boolean = false;                       // Sit in document flow (no overlay/backdrop/focus-trap)
+breakpoint: number = 0;                        // Viewport px width: above → inline, below → overlay
+noHeader: boolean = false;                      // attribute: no-header — hide header entirely
+noFooter: boolean = false;                      // attribute: no-footer — hide footer entirely
 noBackdrop: boolean = false;                   // attribute: no-backdrop
 noBackdropDismiss: boolean = false;            // attribute: no-backdrop-dismiss
 noEscapeDismiss: boolean = false;              // attribute: no-escape-dismiss
@@ -61,6 +65,42 @@ drawer.hide();
 drawer.toggle();
 ```
 
+## Inline Mode
+
+Renders in document flow — no overlay, backdrop, focus trap, or escape handler. Drawer panel is always visible.
+
+```html
+<!-- Always-visible sidebar -->
+<div style="display:flex; height:100vh">
+  <snice-drawer inline position="left" size="small">
+    <span slot="title">Sidebar</span>
+    <nav>...</nav>
+  </snice-drawer>
+  <main>...</main>
+</div>
+```
+
+- CSS uses border separator instead of box-shadow
+- `open` property is ignored (always visible)
+- Border direction matches `position` (left→border-right, right→border-left, etc.)
+
+## Breakpoint Mode
+
+Responsive switching: inline above the breakpoint, overlay below. Uses `window.matchMedia`.
+
+```html
+<!-- Inline on desktop (≥768px), overlay on mobile (<768px) -->
+<snice-drawer breakpoint="768" position="left" size="small">
+  <span slot="title">Navigation</span>
+  ...
+</snice-drawer>
+```
+
+- Sets/removes the `inline` attribute dynamically via matchMedia listener
+- Crossing the breakpoint while open: overlay behaviors torn down/set up automatically
+- Listener cleaned up on `@dispose()`
+- `@watch('breakpoint')` tears down old listener and sets up new one when value changes
+
 ## Features
 
 - Slides from any edge (left, right, top, bottom)
@@ -71,6 +111,8 @@ drawer.toggle();
 - Escape key to close
 - Push content mode
 - Persistent mode (no close button)
+- Inline mode (persistent sidebar in document flow)
+- Breakpoint mode (responsive inline ↔ overlay switching)
 - ARIA attributes (role, aria-modal, aria-hidden)
 
 ## Notes
@@ -78,3 +120,5 @@ drawer.toggle();
 - Push content targets first `<main>` or `<body>`
 - Contained mode positions relative to parent
 - Default dismissal: close button, backdrop click, Escape key
+- Inline CSS must come after all position/size rules in stylesheet (specificity tie → source order wins)
+- Breakpoint and inline can coexist; breakpoint toggles the `inline` attribute at runtime
