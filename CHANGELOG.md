@@ -1,3 +1,5 @@
+# [4.23.0](https://gitlab.com/Hedzer/snice/compare/v4.22.0...v4.23.0) (2026-03-05)
+
 # [4.22.0](https://gitlab.com/Hedzer/snice/compare/v4.21.0...v4.22.0) (2026-03-05)
 
 
