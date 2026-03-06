@@ -1,7 +1,6 @@
 :host {
   display: inline-block;
   font-family: var(--snice-font-family);
-  contain: layout style paint;
 }
 
 .kpi {

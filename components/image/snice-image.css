@@ -1,7 +1,6 @@
 :host {
   display: inline-block;
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
-  contain: layout style paint;
   content-visibility: auto;
 }
 

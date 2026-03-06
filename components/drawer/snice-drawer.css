@@ -28,9 +28,9 @@
   width: 100vw;
   height: 100vh;
   pointer-events: none;
+  z-index: var(--drawer-z-index);
   isolation: isolate;
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
-  contain: layout style paint;
 }
 
 /* Contained variant - position within parent */
@@ -514,7 +514,6 @@
   width: auto;
   height: auto;
   pointer-events: auto;
-  contain: layout style;
 }
 
 :host([inline]) .drawer-backdrop {

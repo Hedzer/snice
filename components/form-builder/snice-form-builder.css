@@ -1,6 +1,5 @@
 :host {
   display: block;
-  contain: layout style paint;
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   color: var(--snice-color-text, rgb(23 23 23));
   --fb-bg: var(--snice-color-background, rgb(255 255 255));

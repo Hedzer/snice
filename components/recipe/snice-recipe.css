@@ -2,7 +2,6 @@
   display: block;
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   color: var(--snice-color-text, rgb(23 23 23));
-  contain: layout style paint;
   width: 100%;
 
   --recipe-bg: var(--snice-color-background-element, rgb(252 251 249));

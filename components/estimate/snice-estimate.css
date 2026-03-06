@@ -2,7 +2,6 @@
   display: block;
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   color: var(--snice-color-text, rgb(23 23 23));
-  contain: layout style paint;
 
   /* Layout */
   --estimate-max-width: 50rem;

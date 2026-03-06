@@ -6,7 +6,6 @@
   --avatar-group-font-size: 0.875rem;
   --avatar-group-border-color: var(--snice-color-background, rgb(255 255 255));
   --avatar-group-border-width: 2px;
-  contain: layout style;
 }
 
 /* Sizes */
