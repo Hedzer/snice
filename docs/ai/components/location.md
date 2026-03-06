@@ -72,7 +72,7 @@ clickable: boolean = false;
 
 - 4 display modes (full/compact/coordinates/address)
 - Embedded Google Maps support
-- Custom icons (emoji, URL, image, font ligatures, slot)
+- Custom icons (emoji, URL, image). Use slot for icon fonts.
 - Clickable to open in maps app
 - Custom map URL support
 - Complete address formatting

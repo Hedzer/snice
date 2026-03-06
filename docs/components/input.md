@@ -73,26 +73,40 @@ Set the `password` attribute along with `type="password"` to show a visibility t
 
 ### Icons
 
-Use the `prefix-icon` and `suffix-icon` attributes to add icons. Supports emoji, URLs, image files, and Material Symbols ligatures.
+For icon fonts (Material Symbols, Font Awesome, etc.), use the `prefix-icon` and `suffix-icon` **slots**. The `prefix-icon` and `suffix-icon` **attributes** are for emoji, URLs, and image files only.
+
+> **⚠️ `prefix-icon="search"` renders as plain text, not a Material icon.** Use the slot for icon fonts.
+
+#### Icon Slots (for icon fonts and SVGs)
+
+```html
+<!-- Material Symbols -->
+<snice-input placeholder="Search">
+  <span slot="prefix-icon" class="material-symbols-outlined">search</span>
+</snice-input>
+
+<snice-input placeholder="Email">
+  <span slot="suffix-icon" class="material-symbols-outlined">mail</span>
+</snice-input>
+
+<!-- Font Awesome -->
+<snice-input placeholder="Search">
+  <i slot="prefix-icon" class="fa-solid fa-magnifying-glass"></i>
+</snice-input>
+
+<!-- Both prefix and suffix -->
+<snice-input placeholder="Search users">
+  <span slot="prefix-icon" class="material-symbols-outlined">search</span>
+  <span slot="suffix-icon" class="material-symbols-outlined">person</span>
+</snice-input>
+```
+
+#### Icon Attributes (for emoji and image URLs)
 
 ```html
 <snice-input prefix-icon="🔍" placeholder="Search"></snice-input>
 <snice-input suffix-icon="✉️" type="email" label="Email"></snice-input>
 <snice-input prefix-icon="/icons/search.svg" placeholder="Search"></snice-input>
-<snice-input prefix-icon="search" placeholder="Search"></snice-input>
-```
-
-### Icon Slots
-
-Use the `prefix-icon` and `suffix-icon` slots for custom icon content like external icon fonts.
-
-```html
-<snice-input placeholder="Search">
-  <span slot="prefix-icon" class="material-symbols-outlined">search</span>
-</snice-input>
-<snice-input placeholder="Email">
-  <span slot="suffix-icon" class="material-symbols-outlined">mail</span>
-</snice-input>
 ```
 
 ### Clearable

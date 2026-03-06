@@ -47,10 +47,16 @@ avatar: string = '';
 <!-- Disabled -->
 <snice-chip label="Disabled" disabled></snice-chip>
 
-<!-- With icon (supports: URL, image files, emoji, text) -->
+<!-- ⚠️ icon="star" renders as PLAIN TEXT. Use the icon slot for icon fonts. -->
+
+<!-- Icon SLOT — for Material Symbols, Font Awesome, SVGs -->
+<snice-chip label="Tag">
+  <span slot="icon" class="material-symbols-outlined">label</span>
+</snice-chip>
+
+<!-- Icon PROPERTY — for emoji, URLs, image files only -->
 <snice-chip label="Favorite" icon="★"></snice-chip>
 <snice-chip label="Home" icon="/icons/home.svg"></snice-chip>
-<snice-chip label="Star" icon="star"></snice-chip> <!-- Material Symbols ligature -->
 
 <!-- With avatar -->
 <snice-chip label="John Doe" avatar="/user.jpg"></snice-chip>
@@ -67,11 +73,6 @@ const chip = document.querySelector('#chip');
 chip.addEventListener('chip-click', (e) => console.log('Clicked', e.detail));
 chip.addEventListener('chip-remove', () => chip.remove());
 </script>
-
-<!-- Icon slot (for external CSS icon fonts like Material Symbols) -->
-<snice-chip label="Tag">
-  <span slot="icon" class="material-symbols-outlined">label</span>
-</snice-chip>
 ```
 
 ## Features
@@ -80,5 +81,5 @@ chip.addEventListener('chip-remove', () => chip.remove());
 - 3 sizes
 - Removable with X button
 - Selected state
-- Icon (URL, image files, emoji, font ligatures) or avatar
+- Icon (URL, image files, emoji) or avatar. Use slot for icon fonts.
 - Click and remove events

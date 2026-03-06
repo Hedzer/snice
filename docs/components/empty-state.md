@@ -19,7 +19,7 @@ The `<snice-empty-state>` component provides a consistent way to display empty o
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Size variant |
-| `icon` | `string` | `'📭'` | Icon (URL, image file, emoji, or font ligature) |
+| `icon` | `string` | `'📭'` | Icon (URL, image file, emoji). Use slot for icon fonts. |
 | `title` | `string` | `'No data'` | Title text |
 | `description` | `string` | `''` | Description text |
 | `actionText` | `string` | `''` | Action button text |

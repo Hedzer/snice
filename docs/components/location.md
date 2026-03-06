@@ -181,7 +181,7 @@ location.addEventListener('location-click', (e) => {
 | `longitude` | `number \| string` | `''` | Longitude coordinate |
 | `showMap` (attr: `show-map`) | `boolean` | `false` | Show embedded map |
 | `showIcon` (attr: `show-icon`) | `boolean` | `true` | Show location icon |
-| `icon` | `string` | `'📍'` | Icon (emoji, URL, or font ligature) |
+| `icon` | `string` | `'📍'` | Icon (emoji, URL). Use slot for icon fonts. |
 | `iconImage` (attr: `icon-image`) | `string` | `''` | Icon image URL |
 | `mapUrl` (attr: `map-url`) | `string` | `''` | Custom map URL |
 | `clickable` | `boolean` | `false` | Make location clickable |

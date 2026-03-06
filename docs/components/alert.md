@@ -31,7 +31,7 @@ import 'snice/components/alert/snice-alert';
 | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Alert size |
 | `title` | `string` | `''` | Optional title text |
 | `dismissible` | `boolean` | `false` | Show dismiss button |
-| `icon` | `string` | `''` | Custom icon (URL, image file, emoji, font ligature) or `'none'` to hide |
+| `icon` | `string` | `''` | Custom icon (URL, image file, emoji) or `'none'` to hide. Use slot for icon fonts. |
 
 ## Slots
 
@@ -192,9 +192,10 @@ Fired when the alert is shown.
 
 The `icon` property supports multiple formats:
 - **URLs**: Image files (`/icons/info.svg`)
-- **Inline SVG**: `<svg>...</svg>`
 - **Emoji**: `🎉`, `💡`
-- **Font ligatures**: Text for icon fonts like Material Symbols (`info`, `lightbulb`)
+- **Scheme overrides**: `img://filename` forces `<img>`, `text://content` forces text
+
+> **⚠️ Common mistake:** `icon="lightbulb"` or `icon="info"` renders as **plain text**, not a Material icon. Snice does not bundle Material Symbols. Use the `icon` slot instead.
 
 ```html
 <!-- Emoji icons -->
@@ -211,9 +212,10 @@ The `icon` property supports multiple formats:
   Custom image icon alert.
 </snice-alert>
 
-<!-- Font ligature (Material Symbols) -->
-<snice-alert variant="info" icon="lightbulb">
-  Font ligature icon alert.
+<!-- Icon slot for Material Symbols -->
+<snice-alert variant="info">
+  <span slot="icon" class="material-symbols-outlined">lightbulb</span>
+  Font icon alert.
 </snice-alert>
 
 <!-- No icon -->

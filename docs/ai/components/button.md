@@ -61,30 +61,34 @@ iconPlacement: 'start'|'end' = 'start';
 <snice-button pill>Pill</snice-button>
 <snice-button circle icon="×"></snice-button>
 
-<!-- With icon (auto-detects: URL, file extension, emoji, text) -->
-<snice-button icon="→">Next</snice-button>
-<snice-button icon="/icons/save.svg">Save</snice-button>
-<snice-button icon="icon.png">Image file</snice-button>
-<snice-button icon="save">Ligature</snice-button>
-<!-- Scheme overrides: img://, text:// -->
-<snice-button icon="img://filename">Force img</snice-button>
-<snice-button icon="text:///not/a/path">Force text</snice-button>
+<!-- ⚠️ icon="home" renders as PLAIN TEXT. Use the icon slot for icon fonts. -->
 
-<!-- As link -->
-<snice-button href="/page">Link</snice-button>
-<snice-button href="/file.pdf" download>Download</snice-button>
-
-<!-- Icon slot (for external CSS icon fonts like Material Symbols) -->
+<!-- Icon SLOT — for Material Symbols, Font Awesome, SVGs -->
 <snice-button>
   <span slot="icon" class="material-symbols-outlined">save</span>
   Save
 </snice-button>
-
-<!-- Icon slot with SVG -->
+<snice-button>
+  <i slot="icon" class="fa-solid fa-trash"></i>
+  Delete
+</snice-button>
 <snice-button>
   <svg slot="icon" viewBox="0 0 24 24"><path d="..."/></svg>
   Action
 </snice-button>
+
+<!-- Icon PROPERTY — for emoji, URLs, image files only -->
+<snice-button icon="→">Next</snice-button>
+<snice-button icon="🏠">Home</snice-button>
+<snice-button icon="/icons/save.svg">Save</snice-button>
+<snice-button icon="icon.png">Image file</snice-button>
+<!-- Scheme overrides: img://, text:// -->
+<snice-button icon="img://filename">Force img</snice-button>
+<snice-button icon="text://content">Force text</snice-button>
+
+<!-- As link -->
+<snice-button href="/page">Link</snice-button>
+<snice-button href="/file.pdf" download>Download</snice-button>
 ```
 
 ## Features
@@ -97,5 +101,5 @@ iconPlacement: 'start'|'end' = 'start';
 - Loading state with spinner
 - Disabled state
 - Link mode (href)
-- Icon support with placement (URL, image files, emoji, font ligatures)
+- Icon support with placement (URL, image files, emoji). Use slot for icon fonts.
 - Download attribute support

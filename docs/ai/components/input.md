@@ -71,11 +71,24 @@ stretch: boolean = false;                 // input fills full host height
 <snice-input type="password" label="Password"></snice-input>
 <snice-input type="number" label="Age"></snice-input>
 
-<!-- With icons (supports: URL, image files, emoji, text) -->
+<!-- ⚠️ prefix-icon="search" renders as PLAIN TEXT. Use slots for icon fonts. -->
+
+<!-- Icon SLOTS — for Material Symbols, Font Awesome, SVGs -->
+<snice-input placeholder="Search">
+  <span slot="prefix-icon" class="material-symbols-outlined">search</span>
+</snice-input>
+<snice-input placeholder="Email">
+  <span slot="suffix-icon" class="material-symbols-outlined">mail</span>
+</snice-input>
+<snice-input placeholder="Search users">
+  <i slot="prefix-icon" class="fa-solid fa-magnifying-glass"></i>
+  <span slot="suffix-icon" class="material-symbols-outlined">person</span>
+</snice-input>
+
+<!-- Icon ATTRIBUTES — for emoji, URLs, image files only -->
 <snice-input prefix-icon="🔍" placeholder="Search"></snice-input>
 <snice-input suffix-icon="✉️" type="email"></snice-input>
 <snice-input prefix-icon="/icons/search.svg" placeholder="Search"></snice-input>
-<snice-input prefix-icon="search" placeholder="Search"></snice-input> <!-- Material Symbols -->
 
 <!-- Password toggle -->
 <snice-input type="password" password label="Password"></snice-input>
@@ -108,21 +121,6 @@ inp.addEventListener('input-input', (e) => console.log('Input:', e.detail.value)
 inp.addEventListener('input-change', (e) => console.log('Change:', e.detail.value));
 </script>
 
-<!-- Icon slots (for external CSS icon fonts like Material Symbols) -->
-<snice-input placeholder="Search">
-  <span slot="prefix-icon" class="material-symbols-outlined">search</span>
-</snice-input>
-
-<snice-input placeholder="Email">
-  <span slot="suffix-icon" class="material-symbols-outlined">mail</span>
-</snice-input>
-
-<!-- Both slots -->
-<snice-input placeholder="Search users">
-  <span slot="prefix-icon" class="material-symbols-outlined">search</span>
-  <span slot="suffix-icon" class="material-symbols-outlined">person</span>
-</snice-input>
-
 <!-- Vertical alignment (when host has explicit height) -->
 <snice-input style="height:200px" align="top"></snice-input>
 <snice-input style="height:200px" align="center"></snice-input>
@@ -141,7 +139,7 @@ inp.addEventListener('input-change', (e) => console.log('Change:', e.detail.valu
 - Form-associated custom element
 - 10 input types
 - 3 visual variants
-- Prefix/suffix icons (URL, image files, emoji, font ligatures)
+- Prefix/suffix icons (URL, image files, emoji). Use slots for icon fonts.
 - Password visibility toggle
 - Clearable with X button
 - Helper and error text

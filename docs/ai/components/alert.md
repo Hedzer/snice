@@ -58,21 +58,22 @@ icon: string = '';
   Can be closed by user
 </snice-alert>
 
-<!-- Custom icon (supports: URL, image files, emoji, text) -->
+<!-- ⚠️ icon="info" renders as PLAIN TEXT. Use the icon slot for icon fonts. -->
+
+<!-- Icon SLOT — for Material Symbols, Font Awesome, SVGs -->
+<snice-alert variant="info">
+  <span slot="icon" class="material-symbols-outlined">info</span>
+  Information message
+</snice-alert>
+
+<!-- Icon PROPERTY — for emoji, URLs, image files only -->
 <snice-alert icon="🎉">Custom icon alert</snice-alert>
 <snice-alert icon="/icons/info.svg">With image icon</snice-alert>
-<snice-alert icon="info">Material Symbols ligature</snice-alert>
 
 <!-- Sizes -->
 <snice-alert size="small">Small</snice-alert>
 <snice-alert size="medium">Medium</snice-alert>
 <snice-alert size="large">Large</snice-alert>
-
-<!-- Icon slot (for external CSS icon fonts like Material Symbols) -->
-<snice-alert variant="info">
-  <span slot="icon" class="material-symbols-outlined">info</span>
-  Information message
-</snice-alert>
 ```
 
 ## Features
@@ -81,7 +82,7 @@ icon: string = '';
 - 3 size options
 - Optional title
 - Optional dismiss button
-- Custom icon support (URL, image files, emoji, font ligatures)
+- Custom icon support (URL, image files, emoji). Use slot for icon fonts.
 - Show/hide methods
 - Accessibility: role="alert"
 

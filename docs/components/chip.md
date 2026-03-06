@@ -30,7 +30,7 @@ import 'snice/components/chip/snice-chip';
 | `removable` | `boolean` | `false` | Show remove button |
 | `selected` | `boolean` | `false` | Show selected state |
 | `disabled` | `boolean` | `false` | Disable the chip |
-| `icon` | `string` | `''` | Icon (URL, image file, emoji, or font ligature) |
+| `icon` | `string` | `''` | Icon (URL, image file, emoji). Use slot for icon fonts. |
 | `avatar` | `string` | `''` | Avatar image URL |
 
 ## Slots
@@ -130,9 +130,10 @@ chip.addEventListener('chip-remove', () => {
 
 The `icon` property supports multiple formats:
 - **URLs**: Image files (`/icons/star.svg`)
-- **Inline SVG**: `<svg>...</svg>`
 - **Emoji**: `★`, `🏠`, `⚙️`
-- **Font ligatures**: Text for icon fonts like Material Symbols (`star`, `home`)
+- **Scheme overrides**: `img://filename` forces `<img>`, `text://content` forces text
+
+> **⚠️ Common mistake:** `icon="home"` or `icon="settings"` renders as **plain text**, not a Material icon. Snice does not bundle Material Symbols. Use the `icon` slot instead.
 
 ```html
 <!-- Emoji icons -->
@@ -143,9 +144,10 @@ The `icon` property supports multiple formats:
 <!-- Image URL -->
 <snice-chip label="Star" icon="/icons/star.svg" variant="warning"></snice-chip>
 
-<!-- Font ligature (Material Symbols) -->
-<snice-chip label="Home" icon="home" variant="primary"></snice-chip>
-<snice-chip label="Settings" icon="settings" variant="default"></snice-chip>
+<!-- Icon slot for Material Symbols -->
+<snice-chip label="Home" variant="primary">
+  <span slot="icon" class="material-symbols-outlined">home</span>
+</snice-chip>
 ```
 
 ### Chips with Avatars

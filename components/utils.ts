@@ -11,14 +11,18 @@ import { html, TemplateResult } from 'snice';
  * - URLs (http://, https://, /, ./, ../, data:) -> <img>
  * - Image extensions (svg, png, jpg, jpeg, jfif, pjp, gif, webp, avif, jxl,
  *   ico, cur, bmp, tif, tiff, heic, heif, apng) -> <img>
- * - Everything else -> span with text (emoji, font ligatures)
+ * - Everything else -> span with text content (emoji, plain text)
+ *
+ * ⚠️ "home" or "settings" renders as PLAIN TEXT, not a Material icon.
+ * For Material Symbols, use the icon slot instead:
+ * <span slot="icon" class="material-symbols-outlined">home</span>
  *
  * Examples:
  * - "/path/icon.svg" -> <img>
  * - "icon.png" -> <img>
  * - "img://filename" -> <img> (forced)
- * - "home" -> <span> text (Material Symbols ligature)
  * - "🏠" -> <span> text (emoji)
+ * - "home" -> <span> text (plain text, NOT a Material icon)
  * - "text:///not/a/path" -> <span> text (forced)
  */
 export function renderIcon(icon: string, className = 'icon'): TemplateResult {

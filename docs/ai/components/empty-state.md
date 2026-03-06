@@ -35,15 +35,18 @@ actionHref: string = '';       // attribute: action-href
   description="Try adjusting your search"
 ></snice-empty-state>
 
+<!-- ⚠️ icon="search_off" renders as PLAIN TEXT. Use the icon slot for icon fonts. -->
+
+<!-- Icon SLOT — for Material Symbols, Font Awesome, SVGs -->
+<snice-empty-state title="No results">
+  <span slot="icon" class="material-symbols-outlined" style="font-size: 4rem;">search_off</span>
+</snice-empty-state>
+
+<!-- Icon PROPERTY — for emoji, URLs, image files only -->
 <snice-empty-state
   icon="/icons/empty.svg"
   title="No items"
 ></snice-empty-state>
-
-<snice-empty-state
-  icon="search_off"
-  title="No results"
-></snice-empty-state> <!-- Material Symbols -->
 
 <!-- With action -->
 <snice-empty-state
@@ -76,16 +79,11 @@ document.querySelector('#empty').addEventListener('empty-state-action', () => {
 <snice-empty-state title="No data">
   <div>Custom HTML content here</div>
 </snice-empty-state>
-
-<!-- Icon slot (for external CSS icon fonts like Material Symbols) -->
-<snice-empty-state title="No results">
-  <span slot="icon" class="material-symbols-outlined" style="font-size: 4rem;">search_off</span>
-</snice-empty-state>
 ```
 
 ## Features
 
-- Customizable icon (URL, image files, emoji, font ligatures), title, description
+- Customizable icon (URL, image files, emoji), title, description. Use slot for icon fonts.
 - Optional action button or link
 - 3 sizes
 - Slot for custom content

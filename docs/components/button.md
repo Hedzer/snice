@@ -36,7 +36,7 @@ import 'snice/components/button/snice-button';
 | `href` | `string` | `''` | URL to navigate to (uses window.location, not an anchor tag) |
 | `target` | `string` | `''` | Link target attribute |
 | `download` | `string` | `''` | Download attribute for file downloads |
-| `icon` | `string` | `''` | Icon (URL, image file, emoji, or font ligature) |
+| `icon` | `string` | `''` | Icon (URL, image file, emoji). Use slot for icon fonts. |
 | `iconPlacement` | `'start' \| 'end'` | `'start'` | Icon position relative to label |
 
 ## Slots
@@ -48,37 +48,67 @@ import 'snice/components/button/snice-button';
 
 ### Icon Slot Usage
 
-The `icon` slot allows you to use external CSS-based icon fonts (like Material Symbols, Font Awesome) inside the button's shadow DOM. This is necessary because external fonts cannot style content inside shadow DOM boundaries.
+Use the `icon` slot for icon fonts (Material Symbols, Font Awesome, etc.) or inline SVGs. The slot gives you full control over the icon element and its styling.
 
+#### Material Symbols
 ```html
-<!-- Material Symbols icon -->
+<!-- Load the font in your document head -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
 <snice-button variant="primary">
   <span slot="icon" class="material-symbols-outlined">save</span>
-  Save Document
+  Save
 </snice-button>
 
-<!-- Font Awesome icon -->
+<!-- With fill/weight variations -->
+<snice-button>
+  <span slot="icon" class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">favorite</span>
+  Liked
+</snice-button>
+
+<!-- Rounded variant -->
+<snice-button>
+  <span slot="icon" class="material-symbols-rounded">home</span>
+  Home
+</snice-button>
+```
+
+#### Font Awesome
+```html
+<!-- Load Font Awesome in your document head -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+
 <snice-button variant="danger">
   <i slot="icon" class="fa-solid fa-trash"></i>
   Delete
 </snice-button>
 
-<!-- SVG icon -->
+<snice-button>
+  <i slot="icon" class="fa-regular fa-heart"></i>
+  Like
+</snice-button>
+```
+
+#### Inline SVG
+```html
 <snice-button>
   <svg slot="icon" viewBox="0 0 24 24" width="20" height="20">
     <path d="M12 2L2 7l10 5 10-5-10-5z" fill="currentColor"/>
   </svg>
   Upload
 </snice-button>
+```
 
-<!-- Icon at end position -->
+#### Placement
+The `icon-placement` property works with both the slot and the `icon` property:
+```html
 <snice-button icon-placement="end">
   <span slot="icon" class="material-symbols-outlined">arrow_forward</span>
   Next
 </snice-button>
 ```
 
-> **Note**: When using the `icon` slot, the slotted content takes precedence over the `icon` property. The `iconPlacement` property still controls positioning.
+> **Note**: The `icon` slot takes precedence over the `icon` property when both are present.
 
 ## Events
 
@@ -191,40 +221,35 @@ button.click();
 
 ### Buttons with Icons
 
-The `icon` property supports multiple formats:
-- **URLs**: Image files (`/icons/save.svg`, `https://...`)
-- **Inline SVG**: `<svg viewBox="...">...</svg>`
-- **Inline HTML**: `<span class="material-symbols-rounded">save</span>`
-- **Emoji**: Direct emoji characters (`→`, `🔍`)
-- **Font ligatures**: Text for icon fonts like Material Symbols (`save`, `home`)
+For icon fonts (Material Symbols, Font Awesome, etc.), use the `icon` slot — see [Icon Slot Usage](#icon-slot-usage) above.
+
+The `icon` **property** is for simple cases: emoji, image URLs, and image files.
+
+> **⚠️ `icon="home"` renders as plain text, not a Material icon.** Use the `icon` slot for icon fonts.
 
 ```html
-<!-- Icon URL -->
-<snice-button icon="/icons/arrow-right.svg">Next</snice-button>
-
-<!-- Emoji icon -->
+<!-- Emoji -->
 <snice-button icon="→">Next</snice-button>
+<snice-button icon="🏠">Home</snice-button>
+<snice-button icon="💾" variant="primary">Save</snice-button>
 
-<!-- Font ligature (Material Symbols) -->
-<snice-button icon="arrow_forward">Next</snice-button>
+<!-- Image URL -->
+<snice-button icon="/icons/arrow-right.svg">Next</snice-button>
+<snice-button icon="https://example.com/icon.png">External</snice-button>
 
-<!-- Inline SVG -->
-<snice-button icon="<svg viewBox='0 0 24 24'><path d='M12 2L2 7l10 5 10-5-10-5z'/></svg>">
-  Upload
-</snice-button>
+<!-- Image file (auto-detected by extension) -->
+<snice-button icon="logo.svg">Brand</snice-button>
 
-<!-- Icon at end -->
-<snice-button icon="/icons/external-link.svg" icon-placement="end">
-  Open Link
-</snice-button>
+<!-- Icon placement -->
+<snice-button icon="→" icon-placement="end">Next</snice-button>
 
-<!-- Icon only (circle button) -->
+<!-- Icon-only circle button -->
 <snice-button circle icon="⚙️"></snice-button>
-<snice-button circle icon="settings"></snice-button>
+<snice-button circle icon="×"></snice-button>
 
-<!-- With variants -->
-<snice-button variant="primary" icon="💾">Save</snice-button>
-<snice-button variant="danger" icon="🗑️" outline>Delete</snice-button>
+<!-- Scheme overrides (force rendering mode) -->
+<snice-button icon="img://filename">Force as image</snice-button>
+<snice-button icon="text://content">Force as text</snice-button>
 ```
 
 ### Link Buttons

@@ -60,10 +60,16 @@ open: boolean = false;
   open
 ></snice-banner>
 
-<!-- Custom icon (supports: URL, image files, emoji, text) -->
+<!-- ⚠️ icon="update" renders as PLAIN TEXT. Use the icon slot for icon fonts. -->
+
+<!-- Icon SLOT — for Material Symbols, Font Awesome, SVGs -->
+<snice-banner message="Update available" open>
+  <span slot="icon" class="material-symbols-outlined">update</span>
+</snice-banner>
+
+<!-- Icon PROPERTY — for emoji, URLs, image files only -->
 <snice-banner icon="🎉" message="Celebration!" open></snice-banner>
 <snice-banner icon="/icons/update.svg" message="Update" open></snice-banner>
-<snice-banner icon="update" message="Material icon" open></snice-banner>
 
 <!-- API -->
 <snice-banner id="banner" message="Hello"></snice-banner>
@@ -73,11 +79,6 @@ banner.show();
 banner.hide();
 banner.toggle();
 </script>
-
-<!-- Icon slot (for external CSS icon fonts like Material Symbols) -->
-<snice-banner message="Update available" open>
-  <span slot="icon" class="material-symbols-outlined">update</span>
-</snice-banner>
 ```
 
 ## Features
