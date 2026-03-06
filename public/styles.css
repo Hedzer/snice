@@ -319,8 +319,6 @@ header nav a:hover, header nav a.active { color: var(--snice-color-text); }
 .comp-section {
   padding: 2.5rem 0;
   border-bottom: 1px solid var(--snice-color-border);
-  content-visibility: auto;
-  contain-intrinsic-size: auto 600px;
 }
 .comp-section:last-child { border-bottom: none; }
 .comp-section h3 {
@@ -915,18 +913,15 @@ footer .wrap { display: flex; justify-content: space-between; }
 footer a { color: var(--snice-color-text-secondary); text-decoration: none; }
 
 /* ─── Subtle entrance animation for sections ─── */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* NOTE: cannot use transform-based animations here because
+   a non-none transform on .comp-section creates a containing block
+   that traps position:fixed children (modals, drawers, tooltips). */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 .comp-section {
-  animation: fadeInUp 0.3s ease both;
+  animation: fadeIn 0.3s ease both;
 }
 /* Stagger: each section fades in slightly later via scroll */
 @media (prefers-reduced-motion: reduce) {
