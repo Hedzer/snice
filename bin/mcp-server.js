@@ -446,6 +446,38 @@ ${withStyles ? `
         });
       }
 
+      // Check for icon property with plain text that looks like a Material icon name
+      // icon="home" renders as plain text, NOT as a Material icon. Use a slot instead.
+      const iconAttrPattern = /\b(?:icon|prefix-icon|suffix-icon|prefixIcon|suffixIcon)\s*(?:=\s*["']|:\s*["']|=\s*\{?\s*["'])([^"']+)["']/g;
+      let iconMatch;
+      const materialIconNames = [
+        'home', 'search', 'settings', 'menu', 'close', 'delete', 'edit', 'add',
+        'check', 'arrow_back', 'arrow_forward', 'favorite', 'star', 'person',
+        'visibility', 'lock', 'mail', 'phone', 'save', 'share', 'download',
+        'upload', 'refresh', 'info', 'warning', 'error', 'help', 'logout',
+        'login', 'notifications', 'shopping_cart', 'account_circle', 'more_vert',
+        'more_horiz', 'filter_list', 'sort', 'expand_more', 'expand_less',
+        'chevron_right', 'chevron_left', 'calendar_today', 'schedule', 'place',
+        'attach_file', 'link', 'image', 'camera', 'mic', 'send', 'print',
+        'content_copy', 'content_paste', 'undo', 'redo', 'format_bold',
+        'dashboard', 'inventory', 'folder', 'description', 'cloud'
+      ];
+      while ((iconMatch = iconAttrPattern.exec(code)) !== null) {
+        const value = iconMatch[1].trim();
+        // Skip URLs, file paths, emojis, scheme overrides, and single characters
+        if (/^(https?:\/\/|\/|\.\/|\.\.\/|data:|img:\/\/|text:\/\/)/.test(value)) continue;
+        if (/\.\w{2,4}$/.test(value)) continue; // file extension
+        if (value.length <= 2) continue; // emoji or single char like "×" or "→"
+        // Check if it matches a known Material icon name or looks like one (snake_case word)
+        if (materialIconNames.includes(value) || /^[a-z][a-z0-9]*(_[a-z0-9]+)+$/.test(value)) {
+          issues.push({
+            severity: 'error',
+            message: `icon="${value}" renders as plain text, not a Material icon. Snice does not bundle Material Symbols. Use a slot instead.`,
+            fix: `<span slot="icon" class="material-symbols-outlined">${value}</span>\n  Or use an emoji: icon="🏠", a URL: icon="/icons/${value}.svg", or scheme override: icon="img://${value}.svg"\n  See component docs for slot examples.`
+          });
+        }
+      }
+
       // Check for controller importing from component file instead of .types.ts
       if (/@controller\s*\(/.test(code) || /class\s+\w+Controller/.test(code)) {
         const importMatches = code.match(/from\s+['"].*\/components\/[^'"]+\/snice-[^'"]+(?<!\.types)['"]/g);
