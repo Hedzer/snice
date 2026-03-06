@@ -1,3 +1,18 @@
+# [4.25.0](https://gitlab.com/Hedzer/snice/compare/v4.24.1...v4.25.0) (2026-03-06)
+
+
+### Bug Fixes
+
+* drawer push mode applies correct margin for right and bottom positions ([baa5b0c](https://gitlab.com/Hedzer/snice/commit/baa5b0cead52465ecf9ad06d40fcd834d4f9e9a5))
+* increase input icon slot size and padding ([a99ceb0](https://gitlab.com/Hedzer/snice/commit/a99ceb0bc31a9703dc71e1696983e2c46a7c17bd))
+* remove contain layout style paint from component host styles ([8a7da82](https://gitlab.com/Hedzer/snice/commit/8a7da82a95b6a8d336f4470174c08aeedf58e1ef))
+* replace fadeInUp with fadeIn to prevent transform containing block trapping fixed children ([6cd3ac3](https://gitlab.com/Hedzer/snice/commit/6cd3ac36c43f38586fdc50c9e1d26145db790c82))
+
+
+### Features
+
+* add icon property validation to MCP code validator ([09c769e](https://gitlab.com/Hedzer/snice/commit/09c769ee6a8ecd0a27a7a0eef8ea4b8dec6ccc2c))
+
 ## [4.24.1](https://gitlab.com/Hedzer/snice/compare/v4.24.0...v4.24.1) (2026-03-05)
 
 
