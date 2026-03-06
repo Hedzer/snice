@@ -165,16 +165,16 @@
 
 /* With Icons */
 .input--with-prefix-icon {
-  padding-left: 2.25rem; /* 36px */
+  padding-left: 2.5rem; /* 40px */
 }
 
 .input--with-suffix-icon,
 .input--clearable {
-  padding-right: 2.25rem; /* 36px */
+  padding-right: 2.5rem; /* 40px */
 }
 
 .input--with-suffix-icon.input--clearable {
-  padding-right: 3.75rem; /* 60px */
+  padding-right: 4rem; /* 64px */
 }
 
 /* Label */
@@ -225,8 +225,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1.5rem;
+  height: 1.5rem;
   color: var(--snice-color-text-secondary);
   pointer-events: none;
   opacity: 0.7;
@@ -249,8 +249,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  font-size: 1.25rem;
+  line-height: 1;
   color: var(--snice-color-text-secondary);
   pointer-events: none;
 }
@@ -268,20 +270,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1.5rem;
+  height: 1.5rem;
   font-size: 1.25rem;
   line-height: 1;
 }
 
 .icon-slot ::slotted(svg) {
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1.5rem;
+  height: 1.5rem;
 }
 
 .icon-slot ::slotted(img) {
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1.5rem;
+  height: 1.5rem;
   object-fit: contain;
 }
 
