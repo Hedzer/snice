@@ -20,7 +20,7 @@
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=972c64c">&lt;snice-input label="Email" type="email"
+          <snice-code-block language="html" grammar="grammars/html.json?v=e72040e">&lt;snice-input label="Email" type="email"
   placeholder="Enter your email"&gt;&lt;/snice-input&gt;
 
 &lt;snice-input label="Password" type="password"
@@ -31,13 +31,43 @@
 &lt;snice-input invalid error-text="Invalid email"&gt;&lt;/snice-input&gt;</snice-code-block>
         </div>
       </div>
+      <div class="comp-split" style="margin-bottom:1.5rem">
+        <div class="comp-split-demo demo-col">
+          <snice-input label="Search" placeholder="Search..." prefix-icon="search">
+            <span slot="prefix-icon" class="material-symbols-outlined">search</span>
+          </snice-input>
+          <snice-input label="Email" placeholder="you@example.com" prefix-icon="mail" suffix-icon="check_circle">
+            <span slot="prefix-icon" class="material-symbols-outlined">mail</span>
+            <span slot="suffix-icon" class="material-symbols-outlined">check_circle</span>
+          </snice-input>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=e72040e">&lt;snice-input label="Search" placeholder="Search..."
+  prefix-icon="search"&gt;
+  &lt;span slot="prefix-icon"
+    class="material-symbols-outlined"&gt;
+    search&lt;/span&gt;
+&lt;/snice-input&gt;
+
+&lt;snice-input label="Email"
+  prefix-icon="mail" suffix-icon="check_circle"&gt;
+  &lt;span slot="prefix-icon"
+    class="material-symbols-outlined"&gt;
+    mail&lt;/span&gt;
+  &lt;span slot="suffix-icon"
+    class="material-symbols-outlined"&gt;
+    check_circle&lt;/span&gt;
+&lt;/snice-input&gt;</snice-code-block>
+        </div>
+      </div>
       <div class="comp-split">
         <div class="comp-split-demo">
           <snice-input label="Loading" placeholder="Fetching data..." loading></snice-input>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=972c64c">&lt;snice-input label="Loading" placeholder="Fetching data..." loading&gt;&lt;/snice-input&gt;</snice-code-block>
+          <snice-code-block language="html" grammar="grammars/html.json?v=e72040e">&lt;snice-input label="Loading" placeholder="Fetching data..." loading&gt;&lt;/snice-input&gt;</snice-code-block>
         </div>
       </div>
     </div>
