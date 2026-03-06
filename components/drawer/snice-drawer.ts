@@ -350,14 +350,20 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
       if (this.open) {
         // Use CSS custom property that's calculated in CSS based on size/position
         const amount = getComputedStyle(this).getPropertyValue('--drawer-push-amount');
-        const property = this.position === 'left' || this.position === 'right' 
-          ? 'marginLeft' 
-          : 'marginTop';
-        (mainContent as HTMLElement).style[property] = amount || '0px';
+        const propertyMap: Record<string, string> = {
+          left: 'marginLeft',
+          right: 'marginRight',
+          top: 'marginTop',
+          bottom: 'marginBottom'
+        };
+        const property = propertyMap[this.position] || 'marginLeft';
+        (mainContent as HTMLElement).style[property as any] = amount || '0px';
       } else {
         // Reset margins
         (mainContent as HTMLElement).style.marginLeft = '';
+        (mainContent as HTMLElement).style.marginRight = '';
         (mainContent as HTMLElement).style.marginTop = '';
+        (mainContent as HTMLElement).style.marginBottom = '';
       }
     }
   }
