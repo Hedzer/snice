@@ -70,7 +70,8 @@
 }
 
 .calendar__day {
-  height: 5rem; /* 80px */
+  aspect-ratio: 1;
+  min-height: 3rem;
   padding: var(--snice-spacing-xs, 0.5rem);
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-top: none;
