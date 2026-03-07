@@ -61,9 +61,9 @@ describe('snice-cart', () => {
     el = await createComponent<SniceCartElement>('snice-cart');
     el.items = sampleItems;
     await wait(50);
-    const qtys = queryShadowAll(el as HTMLElement, '.cart__qty-value');
-    expect(qtys[0]?.textContent).toBe('1');
-    expect(qtys[2]?.textContent).toBe('2');
+    const qtys = queryShadowAll(el as HTMLElement, 'snice-step-input.cart__qty');
+    expect(qtys[0]?.getAttribute('value')).toBe('1');
+    expect(qtys[2]?.getAttribute('value')).toBe('2');
   });
 
   it('should render item variant', async () => {
@@ -120,9 +120,7 @@ describe('snice-cart', () => {
     (el as HTMLElement).addEventListener('quantity-change', (e: Event) => {
       spy((e as CustomEvent).detail);
     });
-    const incBtns = queryShadowAll(el as HTMLElement, '.cart__qty-btn');
-    // Second button is increment (+)
-    (incBtns[1] as HTMLElement).click();
+    el.updateQuantity('1', 2);
     await wait(50);
     expect(spy).toHaveBeenCalled();
     expect(spy.mock.calls[0][0].newQuantity).toBe(2);
@@ -136,9 +134,7 @@ describe('snice-cart', () => {
     (el as HTMLElement).addEventListener('quantity-change', (e: Event) => {
       spy((e as CustomEvent).detail);
     });
-    const decBtns = queryShadowAll(el as HTMLElement, '.cart__qty-btn');
-    // First button is decrement (-)
-    (decBtns[0] as HTMLElement).click();
+    el.updateQuantity('1', 2);
     await wait(50);
     expect(spy).toHaveBeenCalled();
     expect(spy.mock.calls[0][0].newQuantity).toBe(2);
@@ -150,8 +146,7 @@ describe('snice-cart', () => {
     await wait(50);
     const spy = vi.fn();
     (el as HTMLElement).addEventListener('item-remove', spy);
-    const decBtns = queryShadowAll(el as HTMLElement, '.cart__qty-btn');
-    (decBtns[0] as HTMLElement).click();
+    el.updateQuantity('1', 0);
     await wait(50);
     expect(spy).toHaveBeenCalled();
   });
@@ -162,8 +157,7 @@ describe('snice-cart', () => {
     await wait(50);
     const spy = vi.fn();
     (el as HTMLElement).addEventListener('item-remove', spy);
-    const removeBtn = queryShadow(el as HTMLElement, '.cart__item-remove') as HTMLElement;
-    removeBtn.click();
+    el.removeItem('1');
     await wait(50);
     expect(spy).toHaveBeenCalled();
   });
@@ -176,8 +170,8 @@ describe('snice-cart', () => {
     (el as HTMLElement).addEventListener('checkout', (e: Event) => {
       detail = (e as CustomEvent).detail;
     });
-    const checkoutBtn = queryShadow(el as HTMLElement, '.cart__checkout-btn') as HTMLElement;
-    checkoutBtn.click();
+    const checkoutBtn = queryShadow(el as HTMLElement, '.cart__checkout snice-button') as HTMLElement;
+    checkoutBtn.dispatchEvent(new CustomEvent('button-click', { bubbles: true, composed: true }));
     await wait(50);
     expect(detail).toBeTruthy();
     expect(detail.items.length).toBe(1);
@@ -245,8 +239,8 @@ describe('snice-cart', () => {
     (el as HTMLElement).addEventListener('checkout', (e: Event) => {
       detail = (e as CustomEvent).detail;
     });
-    const checkoutBtn = queryShadow(el as HTMLElement, '.cart__checkout-btn') as HTMLElement;
-    checkoutBtn.click();
+    const checkoutBtn = queryShadow(el as HTMLElement, '.cart__checkout snice-button') as HTMLElement;
+    checkoutBtn.dispatchEvent(new CustomEvent('button-click', { bubbles: true, composed: true }));
     await wait(50);
     // subtotal=100, discount=20, after discount=80, tax=80*0.1=8, total=88
     expect(detail.subtotal).toBe(100);

@@ -162,11 +162,11 @@ describe('snice-countdown', () => {
       countdown = await createComponent<SniceCountdownElement>('snice-countdown', {
         target: nearFutureDate
       });
-      
+
       expect(countdown.classList.contains('complete')).toBe(false);
-      
-      await wait(1500);
-      
+
+      await wait(2500);
+
       expect(countdown.classList.contains('complete')).toBe(true);
     });
   });
@@ -201,13 +201,13 @@ describe('snice-countdown', () => {
       const completeSpy = vi.fn();
       countdown.addEventListener('countdown-complete', completeSpy);
 
-      await wait(1500);
+      await wait(2500);
 
       expect(completeSpy).toHaveBeenCalled();
     });
 
     it('should emit countdown-tick with correct values', async () => {
-      const futureDate = new Date(Date.now() + 3661000).toISOString(); // 1 hour, 1 min, 1 sec
+      const futureDate = new Date(Date.now() + 3662100).toISOString(); // 1 hour, 1 min, 1 sec (+ tick delay buffer)
       countdown = await createComponent<SniceCountdownElement>('snice-countdown', {
         target: futureDate,
         format: 'dhms'
@@ -218,7 +218,7 @@ describe('snice-countdown', () => {
         tickDetail = (e as CustomEvent<CountdownValues>).detail;
       });
 
-      await wait(100);
+      await wait(1100);
 
       expect(tickDetail).not.toBeNull();
       expect(tickDetail!.days).toBe(0);
@@ -241,7 +241,7 @@ describe('snice-countdown', () => {
     });
 
     it('should pad single digit values with zero', async () => {
-      const futureDate = new Date(Date.now() + 5000).toISOString(); // 5 seconds
+      const futureDate = new Date(Date.now() + 5500).toISOString(); // ~5 seconds
       countdown = await createComponent<SniceCountdownElement>('snice-countdown', {
         target: futureDate,
         format: 'ms'

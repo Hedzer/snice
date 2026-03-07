@@ -61,7 +61,7 @@ describe('snice-camera-annotate', () => {
   describe('properties', () => {
     it('should hide sidebar when show-labels-panel is false', async () => {
       el = await createComponent<SniceCameraAnnotateElement>('snice-camera-annotate', {
-        'show-labels-panel': 'false'
+        'show-labels-panel': false
       });
       const sidebar = queryShadow(el as HTMLElement, '.ca-sidebar');
       expect(sidebar?.classList.contains('hidden')).toBe(true);
@@ -69,7 +69,7 @@ describe('snice-camera-annotate', () => {
 
     it('should accept auto-rotate-colors attribute', async () => {
       el = await createComponent<SniceCameraAnnotateElement>('snice-camera-annotate', {
-        'auto-rotate-colors': 'false'
+        'auto-rotate-colors': false
       });
       expect(el.autoRotateColors).toBe(false);
     });
