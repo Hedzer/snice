@@ -1,0 +1,66 @@
+    <div class="comp-section">
+      <h3>Date Range Picker</h3>
+      <p class="comp-desc">Select a date range with calendar, presets, and year picker</p>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-col" style="gap:1rem">
+          <snice-date-range-picker label="Date Range" clearable></snice-date-range-picker>
+          <snice-date-range-picker label="Dual Column" columns="2" clearable></snice-date-range-picker>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-date-range-picker
+  label="Date Range"
+  clearable
+&gt;&lt;/snice-date-range-picker&gt;
+
+&lt;snice-date-range-picker
+  label="Dual Column"
+  columns="2"
+  clearable
+&gt;&lt;/snice-date-range-picker&gt;</snice-code-block>
+        </div>
+      </div>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-col" style="gap:1rem">
+          <snice-date-range-picker id="showcase-preset-picker" label="With Presets" columns="2" clearable></snice-date-range-picker>
+          <snice-date-range-picker label="Long Format" format="mmmm dd, yyyy" clearable></snice-date-range-picker>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-date-range-picker
+  id="preset-picker"
+  label="With Presets"
+  columns="2"
+  clearable
+&gt;&lt;/snice-date-range-picker&gt;
+
+&lt;script&gt;
+  const picker = document.getElementById('preset-picker');
+  const today = new Date();
+  picker.presets = [
+    { label: 'Last 7 days',
+      start: new Date(Date.now() - 7 * 86400000),
+      end: today },
+    { label: 'Last 30 days',
+      start: new Date(Date.now() - 30 * 86400000),
+      end: today },
+    { label: 'This month',
+      start: new Date(today.getFullYear(), today.getMonth(), 1),
+      end: new Date(today.getFullYear(), today.getMonth() + 1, 0) },
+  ];
+&lt;/script&gt;</snice-code-block>
+        </div>
+      </div>
+    </div>
+    <script>
+      (() => {
+        const picker = document.getElementById('showcase-preset-picker');
+        if (!picker) return;
+        const today = new Date();
+        picker.presets = [
+          { label: 'Last 7 days', start: new Date(Date.now() - 7 * 86400000), end: today },
+          { label: 'Last 30 days', start: new Date(Date.now() - 30 * 86400000), end: today },
+          { label: 'This month', start: new Date(today.getFullYear(), today.getMonth(), 1), end: new Date(today.getFullYear(), today.getMonth() + 1, 0) },
+        ];
+      })();
+    </script>

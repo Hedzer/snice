@@ -10,6 +10,7 @@
     "textarea.html",
     "slider.html",
     "date-picker.html",
+    "date-range-picker.html",
     "time-range-picker.html",
     "color-picker.html",
     "file-upload.html",
