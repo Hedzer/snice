@@ -33,6 +33,7 @@
   position: relative;
   display: flex;
   align-items: center;
+  anchor-name: --dp-anchor;
 }
 
 /* Input Styles */
@@ -163,22 +164,54 @@
   }
 }
 
-/* Calendar Popup */
-.calendar {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
+/* Calendar Popup – Popover API (top-layer) */
+.calendar[popover] {
+  position: fixed;
+  inset: auto;
+  margin: 0;
   z-index: var(--snice-z-index-dropdown, 1000);
   background: var(--snice-color-background-element, rgb(252 251 249));
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: var(--snice-border-radius-lg, 8px);
   box-shadow: var(--snice-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1));
-  margin-top: var(--snice-spacing-3xs, 0.125rem);
   padding: var(--snice-spacing-md, 1rem);
   min-width: 280px;
+  pointer-events: none;
+
+  /* Animation */
+  opacity: 0;
+  transform: translateY(-8px) scaleY(0.96);
+  transform-origin: top left;
+  transition: opacity var(--snice-transition-fast, 150ms) ease,
+              transform var(--snice-transition-fast, 150ms) ease,
+              display var(--snice-transition-fast, 150ms) allow-discrete,
+              overlay var(--snice-transition-fast, 150ms) allow-discrete;
 }
 
+.calendar[popover]:popover-open {
+  opacity: 1;
+  transform: translateY(0) scaleY(1);
+  pointer-events: auto;
+}
+
+@starting-style {
+  .calendar[popover]:popover-open {
+    opacity: 0;
+    transform: translateY(-8px) scaleY(0.96);
+  }
+}
+
+/* CSS Anchor Positioning (Chrome/Edge 125+) */
+@supports (position-anchor: --a) {
+  .calendar[popover] {
+    position-anchor: --dp-anchor;
+    top: calc(anchor(bottom) + 4px);
+    left: anchor(left);
+    min-width: anchor-size(width);
+  }
+}
+
+/* Fallback: hidden attribute (non-popover browsers) */
 .calendar[hidden] {
   display: none;
 }

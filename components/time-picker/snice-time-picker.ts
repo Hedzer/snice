@@ -164,7 +164,7 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
           </div>
         </if>
 
-        <div class="dropdown ${isInline ? 'dropdown--inline' : ''}" part="dropdown" ?hidden=${!isInline && !this.showDropdown}>
+        <div class="dropdown ${isInline ? 'dropdown--inline' : ''}" part="dropdown" popover="manual" ?hidden=${!isInline && !this.showDropdown}>
           ${this.renderTimeSelectors()}
         </div>
 
@@ -529,10 +529,19 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
     if (this.dropdown) {
       if (this.showDropdown) {
         this.dropdown.removeAttribute('hidden');
+        this.positionDropdown();
+        this.dropdown.classList.add('dropdown--open');
+        if (typeof this.dropdown.showPopover === 'function') {
+          this.dropdown.showPopover();
+        }
         this.emitOpen();
         // Scroll selected items into view
         queueMicrotask(() => this.scrollSelectedIntoView());
       } else {
+        this.dropdown.classList.remove('dropdown--open');
+        if (typeof this.dropdown.hidePopover === 'function') {
+          this.dropdown.hidePopover();
+        }
         this.dropdown.setAttribute('hidden', '');
         this.emitClose();
       }
@@ -622,6 +631,11 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
       this.showDropdown = true;
       if (this.dropdown) {
         this.dropdown.removeAttribute('hidden');
+        this.positionDropdown();
+        this.dropdown.classList.add('dropdown--open');
+        if (typeof this.dropdown.showPopover === 'function') {
+          this.dropdown.showPopover();
+        }
       }
       this.emitOpen();
     }
@@ -630,9 +644,23 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
   close() {
     this.showDropdown = false;
     if (this.dropdown) {
+      this.dropdown.classList.remove('dropdown--open');
+      if (typeof this.dropdown.hidePopover === 'function') {
+        this.dropdown.hidePopover();
+      }
       this.dropdown.setAttribute('hidden', '');
     }
     this.emitClose();
+  }
+
+  private positionDropdown() {
+    if (!this.dropdown || CSS.supports('position-anchor', '--a')) return;
+    const container = this.shadowRoot?.querySelector('.input-container') as HTMLElement;
+    if (!container) return;
+    const rect = container.getBoundingClientRect();
+    this.dropdown.style.top = `${rect.bottom + 2}px`;
+    this.dropdown.style.left = `${rect.left}px`;
+    this.dropdown.style.minWidth = `${rect.width}px`;
   }
 
   focus() {

@@ -193,7 +193,7 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
             <span class="spinner" part="spinner"></span>
           </if>
 
-          <div class="calendar" part="calendar" ?hidden=${!this.showCalendar}
+          <div class="calendar" part="calendar" popover="manual" ?hidden=${!this.showCalendar}
             @click=${(e: Event) => this.handleCalendarClick(e)}
             @mouseover=${(e: Event) => this.handleDayHover(e)}
             @mouseout=${() => this.handleCalendarMouseOut()}
@@ -823,8 +823,17 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
     if (this.calendarEl) {
       if (this.showCalendar) {
         this.calendarEl.removeAttribute('hidden');
+        this.positionCalendar();
+        this.calendarEl.classList.add('calendar--open');
+        if (typeof (this.calendarEl as any).showPopover === 'function') {
+          (this.calendarEl as any).showPopover();
+        }
         this.dispatchOpenEvent();
       } else {
+        this.calendarEl.classList.remove('calendar--open');
+        if (typeof (this.calendarEl as any).hidePopover === 'function') {
+          (this.calendarEl as any).hidePopover();
+        }
         this.calendarEl.setAttribute('hidden', '');
         this.dispatchCloseEvent();
       }
@@ -919,7 +928,14 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
       this.calendarView = 'days';
       if (this.startDate) this.viewDate = new Date(this.startDate);
       this.updateCalendarGrid();
-      if (this.calendarEl) this.calendarEl.removeAttribute('hidden');
+      if (this.calendarEl) {
+        this.calendarEl.removeAttribute('hidden');
+        this.positionCalendar();
+        this.calendarEl.classList.add('calendar--open');
+        if (typeof (this.calendarEl as any).showPopover === 'function') {
+          (this.calendarEl as any).showPopover();
+        }
+      }
       this.dispatchOpenEvent();
     }
   }
@@ -930,8 +946,24 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
       this.selectionPhase = 'idle';
       this.hoverDate = null;
     }
-    if (this.calendarEl) this.calendarEl.setAttribute('hidden', '');
+    if (this.calendarEl) {
+      this.calendarEl.classList.remove('calendar--open');
+      if (typeof (this.calendarEl as any).hidePopover === 'function') {
+        (this.calendarEl as any).hidePopover();
+      }
+      this.calendarEl.setAttribute('hidden', '');
+    }
     this.dispatchCloseEvent();
+  }
+
+  private positionCalendar() {
+    if (!this.calendarEl || CSS.supports('position-anchor', '--a')) return;
+    const container = this.shadowRoot?.querySelector('.input-container') as HTMLElement;
+    if (!container) return;
+    const rect = container.getBoundingClientRect();
+    this.calendarEl.style.top = `${rect.bottom + 2}px`;
+    this.calendarEl.style.left = `${rect.left}px`;
+    this.calendarEl.style.minWidth = `${rect.width}px`;
   }
 
   selectRange(startDate: Date, endDate: Date) {

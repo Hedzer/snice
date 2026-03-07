@@ -179,7 +179,7 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
             <span class="spinner" part="spinner"></span>
           </if>
 
-          <div class="calendar" part="calendar" ?hidden=${!this.showCalendar} @click=${(e: Event) => this.handleCalendarClick(e)}>
+          <div class="calendar" part="calendar" popover="manual" ?hidden=${!this.showCalendar} @click=${(e: Event) => this.handleCalendarClick(e)}>
             <case ${this.calendarView}>
               <when value="years">
                 <div class="calendar-header">
@@ -696,10 +696,13 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
   // Manual DOM manipulation required since Snice is imperative
   @watch('show-calendar')
   handleShowCalendarChange() {
-    console.log('showCalendar changed:', this.calendar);
     if (this.calendar) {
       if (this.showCalendar) {
         this.calendar.removeAttribute('hidden');
+        this.positionCalendar();
+        if (typeof this.calendar.showPopover === 'function') {
+          this.calendar.showPopover();
+        }
         this.dispatchOpenEvent();
         // Focus selected date or first available date for accessibility
         setTimeout(() => {
@@ -707,6 +710,9 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
         }, 100);
       } else {
         this.calendar.setAttribute('hidden', '');
+        if (typeof this.calendar.hidePopover === 'function') {
+          this.calendar.hidePopover();
+        }
         this.dispatchCloseEvent();
       }
     }
@@ -820,9 +826,13 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
         this.viewDate = new Date(this.selectedDate);
       }
       this.updateCalendarGrid();
-      
+
       if (this.calendar) {
         this.calendar.removeAttribute('hidden');
+        this.positionCalendar();
+        if (typeof this.calendar.showPopover === 'function') {
+          this.calendar.showPopover();
+        }
       }
       this.dispatchOpenEvent();
     }
@@ -830,11 +840,24 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
 
   close() {
     this.showCalendar = false;
-    
+
     if (this.calendar) {
       this.calendar.setAttribute('hidden', '');
+      if (typeof this.calendar.hidePopover === 'function') {
+        this.calendar.hidePopover();
+      }
     }
     this.dispatchCloseEvent();
+  }
+
+  private positionCalendar() {
+    if (!this.calendar || CSS.supports('position-anchor', '--a')) return;
+    const container = this.shadowRoot?.querySelector('.input-container') as HTMLElement;
+    if (!container) return;
+    const rect = container.getBoundingClientRect();
+    this.calendar.style.top = `${rect.bottom + 4}px`;
+    this.calendar.style.left = `${rect.left}px`;
+    this.calendar.style.minWidth = `${rect.width}px`;
   }
 
   selectDate(date: Date) {

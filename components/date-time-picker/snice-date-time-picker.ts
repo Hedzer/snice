@@ -344,6 +344,11 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
     }
     this.setupClickOutside();
     queueMicrotask(() => this.updateClearButton());
+
+    // Set popover attribute for dropdown variant (not inline)
+    if (this.variant !== 'inline' && this.panel) {
+      this.panel.setAttribute('popover', 'manual');
+    }
   }
 
   private parseValue() {
@@ -695,9 +700,16 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
     if (this.panel) {
       if (this.showPanel) {
         this.panel.removeAttribute('hidden');
+        if (typeof (this.panel as any).showPopover === 'function') {
+          (this.panel as any).showPopover();
+        }
+        this.positionPanel();
         this.emitOpen();
       } else {
         this.panel.setAttribute('hidden', '');
+        if (typeof (this.panel as any).hidePopover === 'function') {
+          (this.panel as any).hidePopover();
+        }
         this.emitClose();
       }
     }
@@ -766,6 +778,10 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
       this.showPanel = true;
       if (this.panel) {
         this.panel.removeAttribute('hidden');
+        if (typeof (this.panel as any).showPopover === 'function') {
+          (this.panel as any).showPopover();
+        }
+        this.positionPanel();
       }
       this.emitOpen();
     }
@@ -775,8 +791,21 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
     this.showPanel = false;
     if (this.panel) {
       this.panel.setAttribute('hidden', '');
+      if (typeof (this.panel as any).hidePopover === 'function') {
+        (this.panel as any).hidePopover();
+      }
     }
     this.emitClose();
+  }
+
+  private positionPanel() {
+    if (!this.panel || CSS.supports('position-anchor', '--a')) return;
+    const container = this.shadowRoot?.querySelector('.input-container') as HTMLElement;
+    if (!container) return;
+    const rect = container.getBoundingClientRect();
+    this.panel.style.top = `${rect.bottom + 2}px`;
+    this.panel.style.left = `${rect.left}px`;
+    this.panel.style.minWidth = `${rect.width}px`;
   }
 
   focus() {
