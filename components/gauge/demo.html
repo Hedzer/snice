@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snice Gauge Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 40px;
+      line-height: 1.6;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: var(--snice-color-text);
+      border-bottom: 2px solid var(--snice-color-border);
+      padding-bottom: 10px;
+    }
+
+    h2 {
+      color: var(--snice-color-text-secondary);
+      margin-top: 30px;
+    }
+
+    .demo-section {
+      margin: 30px 0;
+      padding: 20px;
+      background: var(--snice-color-background);
+      border-radius: 8px;
+      border: 1px solid var(--snice-color-border);
+    }
+
+    .demo-label {
+      display: block;
+      margin-bottom: 16px;
+      font-weight: 600;
+      color: var(--snice-color-text-secondary);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .gauge-row {
+      display: flex;
+      gap: 24px;
+      margin: 16px 0;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+
+    .gauge-item {
+      text-align: center;
+    }
+
+    .gauge-item span {
+      display: block;
+      font-size: 12px;
+      color: var(--snice-color-text-secondary);
+      margin-top: 4px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 16px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+      padding: 16px;
+      background: var(--snice-color-background);
+      border-radius: 6px;
+      border: 1px solid var(--snice-color-border);
+      align-items: center;
+    }
+
+    .controls label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .controls select, .controls input[type="range"] {
+      padding: 6px 10px;
+      border: 1px solid var(--snice-color-border);
+      border-radius: 4px;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      font-size: 14px;
+    }
+
+    .controls input[type="range"] {
+      width: 160px;
+    }
+
+    .example-card {
+      padding: 20px;
+      background: var(--snice-color-background);
+      border-radius: 6px;
+      border: 1px solid var(--snice-color-border);
+      margin: 16px 0;
+    }
+
+    .example-card h3 {
+      margin-top: 0;
+      margin-bottom: 16px;
+      font-size: 16px;
+      color: var(--snice-color-text);
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Snice Gauge Component Demo</h1>
+
+    <div class="demo-section">
+      <h2>Gauge Variants</h2>
+      <span class="demo-label">All available color variants</span>
+      <div class="gauge-row">
+        <div class="gauge-item">
+          <snice-gauge value="65" label="Default" variant="default"></snice-gauge>
+          <span>default</span>
+        </div>
+        <div class="gauge-item">
+          <snice-gauge value="72" label="Primary" variant="primary"></snice-gauge>
+          <span>primary</span>
+        </div>
+        <div class="gauge-item">
+          <snice-gauge value="88" label="Success" variant="success"></snice-gauge>
+          <span>success</span>
+        </div>
+        <div class="gauge-item">
+          <snice-gauge value="45" label="Warning" variant="warning"></snice-gauge>
+          <span>warning</span>
+        </div>
+        <div class="gauge-item">
+          <snice-gauge value="23" label="Error" variant="error"></snice-gauge>
+          <span>error</span>
+        </div>
+        <div class="gauge-item">
+          <snice-gauge value="56" label="Info" variant="info"></snice-gauge>
+          <span>info</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Gauge Sizes</h2>
+      <span class="demo-label">Small, Medium, and Large</span>
+      <div class="gauge-row">
+        <div class="gauge-item">
+          <snice-gauge value="75" label="Small" variant="primary" size="small"></snice-gauge>
+          <span>small</span>
+        </div>
+        <div class="gauge-item">
+          <snice-gauge value="75" label="Medium" variant="primary" size="medium"></snice-gauge>
+          <span>medium</span>
+        </div>
+        <div class="gauge-item">
+          <snice-gauge value="75" label="Large" variant="primary" size="large"></snice-gauge>
+          <span>large</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Custom Ranges</h2>
+      <span class="demo-label">Custom min/max values</span>
+      <div class="gauge-row">
+        <div class="gauge-item">
+          <snice-gauge value="37" min="0" max="50" label="Temp (C)" variant="warning"></snice-gauge>
+          <span>0-50</span>
+        </div>
+        <div class="gauge-item">
+          <snice-gauge value="750" min="0" max="1000" label="RPM" variant="info"></snice-gauge>
+          <span>0-1000</span>
+        </div>
+        <div class="gauge-item">
+          <snice-gauge value="-5" min="-20" max="20" label="Pressure" variant="error"></snice-gauge>
+          <span>-20 to 20</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Thickness</h2>
+      <span class="demo-label">Different stroke thicknesses</span>
+      <div class="gauge-row">
+        <div class="gauge-item">
+          <snice-gauge value="60" label="Thin" variant="primary" thickness="4"></snice-gauge>
+          <span>thickness=4</span>
+        </div>
+        <div class="gauge-item">
+          <snice-gauge value="60" label="Default" variant="primary" thickness="8"></snice-gauge>
+          <span>thickness=8</span>
+        </div>
+        <div class="gauge-item">
+          <snice-gauge value="60" label="Thick" variant="primary" thickness="14"></snice-gauge>
+          <span>thickness=14</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Without Value Display</h2>
+      <span class="demo-label">show-value="false" hides the numeric value</span>
+      <div class="gauge-row">
+        <div class="gauge-item">
+          <snice-gauge value="80" label="CPU" variant="success"></snice-gauge>
+          <span>With value</span>
+        </div>
+        <div class="gauge-item">
+          <snice-gauge value="80" label="CPU" variant="success" show-value="false"></snice-gauge>
+          <span>Without value</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Interactive Demo</h2>
+      <span class="demo-label">Customize the gauge</span>
+
+      <div class="controls">
+        <label>
+          Value: <span id="value-display">50</span>
+          <input type="range" id="value-slider" min="0" max="100" value="50">
+        </label>
+        <label>
+          Variant:
+          <select id="variant-select">
+            <option value="default">Default</option>
+            <option value="primary" selected>Primary</option>
+            <option value="success">Success</option>
+            <option value="warning">Warning</option>
+            <option value="error">Error</option>
+            <option value="info">Info</option>
+          </select>
+        </label>
+        <label>
+          Size:
+          <select id="size-select">
+            <option value="small">Small</option>
+            <option value="medium" selected>Medium</option>
+            <option value="large">Large</option>
+          </select>
+        </label>
+        <label>
+          Thickness:
+          <input type="range" id="thickness-slider" min="2" max="20" value="8">
+        </label>
+      </div>
+
+      <div style="display: flex; justify-content: center; padding: 20px;">
+        <snice-gauge id="demo-gauge" value="50" label="Interactive" variant="primary" size="medium"></snice-gauge>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Real-world Examples</h2>
+
+      <div class="example-card">
+        <h3>Server Dashboard</h3>
+        <div class="dashboard-grid">
+          <snice-gauge value="73" label="CPU Usage" variant="warning" size="small"></snice-gauge>
+          <snice-gauge value="45" label="Memory" variant="success" size="small"></snice-gauge>
+          <snice-gauge value="89" label="Disk I/O" variant="error" size="small"></snice-gauge>
+          <snice-gauge value="32" label="Network" variant="info" size="small"></snice-gauge>
+        </div>
+      </div>
+
+      <div class="example-card">
+        <h3>Performance Score</h3>
+        <div style="display: flex; justify-content: center;">
+          <snice-gauge value="92" label="Overall Score" variant="success" size="large" thickness="12"></snice-gauge>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import './snice-gauge.ts';
+
+    const gauge = document.getElementById('demo-gauge');
+
+    document.getElementById('value-slider').addEventListener('input', (e) => {
+      gauge.value = Number(e.target.value);
+      document.getElementById('value-display').textContent = e.target.value;
+    });
+
+    document.getElementById('variant-select').addEventListener('change', (e) => {
+      gauge.variant = e.target.value;
+    });
+
+    document.getElementById('size-select').addEventListener('change', (e) => {
+      gauge.size = e.target.value;
+    });
+
+    document.getElementById('thickness-slider').addEventListener('input', (e) => {
+      gauge.thickness = Number(e.target.value);
+    });
+  </script>
+</body>
+</html>

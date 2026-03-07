@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snice Tag Input Component Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 40px;
+      line-height: 1.6;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      margin: 0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: var(--snice-color-text);
+      border-bottom: 2px solid var(--snice-color-border);
+      padding-bottom: 10px;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      color: var(--snice-color-text);
+      margin-top: 40px;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .demo-section {
+      margin: 30px 0;
+      padding: 20px;
+      background: var(--snice-color-background);
+      border-radius: 8px;
+      border: 1px solid var(--snice-color-border);
+    }
+
+    .demo-label {
+      display: block;
+      margin-bottom: 16px;
+      font-weight: 600;
+      color: var(--snice-color-text-secondary);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .tag-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 12px;
+      margin: 16px 0;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    button {
+      padding: 8px 16px;
+      border: 1px solid var(--snice-color-border);
+      border-radius: 6px;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    button:hover {
+      background: var(--snice-color-background-element, #f0f0f0);
+    }
+
+    snice-tag-input {
+      display: block;
+      width: 100%;
+    }
+
+    .state-display {
+      display: inline-block;
+      padding: 4px 8px;
+      background: var(--snice-color-primary);
+      color: white;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+
+    .event-log {
+      margin-top: 16px;
+      padding: 12px;
+      background: var(--snice-color-background-element, rgb(252 251 249));
+      border: 1px solid var(--snice-color-border);
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 13px;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .event-log div {
+      margin: 4px 0;
+    }
+
+    .example-card {
+      padding: 20px;
+      background: var(--snice-color-background);
+      border-radius: 6px;
+      border: 1px solid var(--snice-color-border);
+      margin: 16px 0;
+    }
+
+    .example-card h3 {
+      margin-top: 0;
+      margin-bottom: 16px;
+      font-size: 16px;
+      color: var(--snice-color-text);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Tag Input Component Demo</h1>
+
+    <div class="demo-section">
+      <h2>Basic Tag Input</h2>
+      <span class="demo-label">Type and press Enter or comma to add tags. Backspace removes the last tag.</span>
+      <snice-tag-input id="basic" label="Tags" placeholder="Add a tag..."></snice-tag-input>
+    </div>
+
+    <div class="demo-section">
+      <h2>With Pre-filled Tags</h2>
+      <span class="demo-label">Tags loaded programmatically</span>
+      <snice-tag-input id="prefilled" label="Technologies"></snice-tag-input>
+    </div>
+
+    <div class="demo-section">
+      <h2>With Suggestions</h2>
+      <span class="demo-label">Start typing to see suggestions, use arrow keys to navigate</span>
+      <snice-tag-input id="suggestions" label="Programming Languages" placeholder="Type a language..."></snice-tag-input>
+    </div>
+
+    <div class="demo-section">
+      <h2>Max Tags Limit</h2>
+      <span class="demo-label">Limited to 3 tags maximum</span>
+      <snice-tag-input id="max-tags" label="Categories" max-tags="3" placeholder="Max 3 tags..."></snice-tag-input>
+      <p style="font-size: 13px; color: var(--snice-color-text-secondary); margin-top: 8px;">
+        Input field disappears when the maximum is reached.
+      </p>
+    </div>
+
+    <div class="demo-section">
+      <h2>Allow Duplicates</h2>
+      <span class="demo-label">Same tag can be added multiple times</span>
+      <snice-tag-input id="duplicates" label="Items" allow-duplicates placeholder="Duplicates allowed..."></snice-tag-input>
+    </div>
+
+    <div class="demo-section">
+      <h2>States</h2>
+      <div class="tag-input-group">
+        <div>
+          <span class="demo-label">Disabled</span>
+          <snice-tag-input id="disabled" label="Disabled" disabled></snice-tag-input>
+        </div>
+        <div>
+          <span class="demo-label">Readonly</span>
+          <snice-tag-input id="readonly-tags" label="Readonly" readonly></snice-tag-input>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Programmatic Controls</h2>
+      <span class="demo-label">Add, remove, and clear tags via JavaScript</span>
+      <snice-tag-input id="api-demo" label="Controlled Tags"></snice-tag-input>
+      <div class="button-row">
+        <button id="btn-add">Add "NewTag"</button>
+        <button id="btn-remove-last">Remove Last</button>
+        <button id="btn-clear">Clear All</button>
+        <button id="btn-focus">Focus Input</button>
+        <button id="btn-get-value">Get Value (console)</button>
+      </div>
+      <div style="margin-top: 12px; font-size: 14px; color: var(--snice-color-text-secondary);">
+        Tags: <span class="state-display" id="tag-count">0</span>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Real-world Examples</h2>
+
+      <div class="example-card">
+        <h3>Blog Post Tags</h3>
+        <snice-tag-input id="blog-tags" label="Post Tags" placeholder="Add tags for your blog post..."></snice-tag-input>
+      </div>
+
+      <div class="example-card">
+        <h3>Email Recipients</h3>
+        <snice-tag-input id="email-tags" label="To" placeholder="Enter email addresses..."></snice-tag-input>
+      </div>
+
+      <div class="example-card">
+        <h3>Skills (with suggestions, max 5)</h3>
+        <snice-tag-input id="skills-tags" label="Skills" placeholder="Type a skill..." max-tags="5"></snice-tag-input>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Events</h2>
+      <div id="event-log" class="event-log">
+        <div>Interact with the tag inputs above to see events...</div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import './snice-tag-input.ts';
+
+    const eventLog = document.getElementById('event-log');
+
+    function logEvent(name, detail) {
+      const entry = document.createElement('div');
+      entry.textContent = `${new Date().toLocaleTimeString()}: ${name} - ${JSON.stringify(detail)}`;
+      eventLog.insertBefore(entry, eventLog.firstChild);
+    }
+
+    // Pre-filled tags
+    const prefilled = document.getElementById('prefilled');
+    prefilled.value = ['JavaScript', 'TypeScript', 'Web Components', 'CSS'];
+
+    // Suggestions
+    const suggestions = document.getElementById('suggestions');
+    suggestions.suggestions = [
+      'JavaScript', 'TypeScript', 'Python', 'Rust', 'Go',
+      'Java', 'C++', 'C#', 'Ruby', 'Swift', 'Kotlin',
+      'PHP', 'Dart', 'Elixir', 'Haskell', 'Scala'
+    ];
+
+    // Disabled and readonly with values
+    const disabled = document.getElementById('disabled');
+    disabled.value = ['Locked', 'Cannot Edit'];
+
+    const readonlyTags = document.getElementById('readonly-tags');
+    readonlyTags.value = ['View Only', 'No Remove'];
+
+    // API demo
+    const apiDemo = document.getElementById('api-demo');
+    apiDemo.value = ['Initial'];
+    let tagCounter = 0;
+
+    document.getElementById('btn-add').addEventListener('click', () => {
+      tagCounter++;
+      apiDemo.addTag(`NewTag${tagCounter}`);
+    });
+
+    document.getElementById('btn-remove-last').addEventListener('click', () => {
+      if (apiDemo.value.length > 0) {
+        apiDemo.removeTag(apiDemo.value.length - 1);
+      }
+    });
+
+    document.getElementById('btn-clear').addEventListener('click', () => {
+      apiDemo.clear();
+    });
+
+    document.getElementById('btn-focus').addEventListener('click', () => {
+      apiDemo.focus();
+    });
+
+    document.getElementById('btn-get-value').addEventListener('click', () => {
+      console.log('Tag input value:', apiDemo.value);
+    });
+
+    // Blog tags suggestions
+    const blogTags = document.getElementById('blog-tags');
+    blogTags.suggestions = ['Technology', 'Design', 'Tutorial', 'Review', 'Opinion', 'News', 'How-to', 'Guide'];
+
+    // Skills suggestions
+    const skillsTags = document.getElementById('skills-tags');
+    skillsTags.suggestions = [
+      'HTML', 'CSS', 'JavaScript', 'React', 'Vue', 'Angular',
+      'Node.js', 'Python', 'SQL', 'Docker', 'Git', 'AWS',
+      'Figma', 'UI Design', 'Testing', 'Agile'
+    ];
+
+    // Track tag count for API demo
+    apiDemo.addEventListener('tag-change', (e) => {
+      document.getElementById('tag-count').textContent = e.detail.value.length;
+    });
+
+    // Events
+    document.querySelectorAll('snice-tag-input').forEach(input => {
+      input.addEventListener('tag-add', (e) => logEvent('tag-add', { tag: e.detail.tag, count: e.detail.value.length }));
+      input.addEventListener('tag-remove', (e) => logEvent('tag-remove', { tag: e.detail.tag, index: e.detail.index }));
+      input.addEventListener('tag-change', (e) => logEvent('tag-change', { count: e.detail.value.length }));
+    });
+  </script>
+</body>
+</html>

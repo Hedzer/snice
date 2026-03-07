@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snice Spreadsheet Component Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 40px;
+      line-height: 1.6;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      margin: 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: var(--snice-color-text);
+      border-bottom: 2px solid var(--snice-color-border);
+      padding-bottom: 10px;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      color: var(--snice-color-text);
+      margin-top: 40px;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .demo-section {
+      margin: 30px 0;
+      padding: 20px;
+      background: var(--snice-color-background);
+      border-radius: 8px;
+      border: 1px solid var(--snice-color-border);
+    }
+
+    .demo-label {
+      display: block;
+      margin-bottom: 16px;
+      font-weight: 600;
+      color: var(--snice-color-text-secondary);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 12px;
+      margin: 16px 0;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    button {
+      padding: 8px 16px;
+      border: 1px solid var(--snice-color-border);
+      border-radius: 6px;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    button:hover {
+      background: var(--snice-color-background-element, #f0f0f0);
+    }
+
+    snice-spreadsheet {
+      display: block;
+      width: 100%;
+      height: 400px;
+    }
+
+    .event-log {
+      margin-top: 16px;
+      padding: 12px;
+      background: var(--snice-color-background-element, rgb(252 251 249));
+      border: 1px solid var(--snice-color-border);
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 13px;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .event-log div {
+      margin: 4px 0;
+    }
+
+    .info-text {
+      font-size: 13px;
+      color: var(--snice-color-text-secondary);
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Spreadsheet Component Demo</h1>
+    <p style="color: var(--snice-color-text-secondary);">
+      Editable spreadsheet with cell selection, formulas, sorting, undo/redo, clipboard support, and context menu.
+    </p>
+
+    <div class="demo-section">
+      <h2>Basic Spreadsheet</h2>
+      <span class="demo-label">Click a cell to select, double-click to edit, type to start editing</span>
+      <snice-spreadsheet id="sheet-basic"></snice-spreadsheet>
+      <p class="info-text">
+        Keyboard: Arrow keys to navigate, Enter/F2 to edit, Tab to move right, Shift+Tab to move left, Ctrl+Z/Y for undo/redo, Delete to clear.
+        Shift+click or Shift+Arrow for multi-select. Right-click for context menu.
+      </p>
+    </div>
+
+    <div class="demo-section">
+      <h2>With Typed Columns</h2>
+      <span class="demo-label">Number, text, boolean, and select column types</span>
+      <snice-spreadsheet id="sheet-typed"></snice-spreadsheet>
+    </div>
+
+    <div class="demo-section">
+      <h2>Formulas</h2>
+      <span class="demo-label">SUM, AVG, COUNT, MIN, MAX with cell ranges</span>
+      <snice-spreadsheet id="sheet-formulas"></snice-spreadsheet>
+      <p class="info-text">
+        Try editing cells A1-A5 and watch the formula results update. Supported: =SUM(A1:A5), =AVG(A1:A5), =COUNT(A1:A5), =MIN(A1:A5), =MAX(A1:A5)
+      </p>
+    </div>
+
+    <div class="demo-section">
+      <h2>Readonly</h2>
+      <span class="demo-label">Data is displayed but cannot be edited</span>
+      <snice-spreadsheet id="sheet-readonly" readonly></snice-spreadsheet>
+    </div>
+
+    <div class="demo-section">
+      <h2>Programmatic Controls</h2>
+      <span class="demo-label">Interact with the spreadsheet via JavaScript</span>
+      <snice-spreadsheet id="sheet-api"></snice-spreadsheet>
+      <div class="button-row">
+        <button id="btn-get-data">Get Data (console)</button>
+        <button id="btn-set-cell">Set A1 = "Hello"</button>
+        <button id="btn-add-row">Add Sample Row</button>
+        <button id="btn-clear-data">Clear All</button>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Events</h2>
+      <div id="event-log" class="event-log">
+        <div>Interact with any spreadsheet above to see events...</div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import './snice-spreadsheet.ts';
+
+    const eventLog = document.getElementById('event-log');
+
+    function logEvent(name, detail) {
+      const entry = document.createElement('div');
+      entry.textContent = `${new Date().toLocaleTimeString()}: ${name} - ${JSON.stringify(detail)}`;
+      eventLog.insertBefore(entry, eventLog.firstChild);
+    }
+
+    // Basic spreadsheet
+    const sheetBasic = document.getElementById('sheet-basic');
+    sheetBasic.columns = [
+      { header: 'Name', width: 150 },
+      { header: 'Email', width: 200 },
+      { header: 'Role', width: 120 },
+      { header: 'Department', width: 140 },
+    ];
+    sheetBasic.data = [
+      ['Alice Johnson', 'alice@example.com', 'Engineer', 'Engineering'],
+      ['Bob Smith', 'bob@example.com', 'Designer', 'Design'],
+      ['Carol White', 'carol@example.com', 'Manager', 'Engineering'],
+      ['Dave Brown', 'dave@example.com', 'Engineer', 'Engineering'],
+      ['Eve Davis', 'eve@example.com', 'Designer', 'Design'],
+    ];
+
+    // Typed columns
+    const sheetTyped = document.getElementById('sheet-typed');
+    sheetTyped.columns = [
+      { header: 'Product', width: 160 },
+      { header: 'Price', width: 100, type: 'number' },
+      { header: 'Quantity', width: 100, type: 'number' },
+      { header: 'In Stock', width: 100, type: 'boolean' },
+      { header: 'Category', width: 140, type: 'select', options: ['Electronics', 'Books', 'Clothing', 'Food'] },
+    ];
+    sheetTyped.data = [
+      ['Laptop', 999.99, 15, true, 'Electronics'],
+      ['Novel', 14.99, 120, true, 'Books'],
+      ['T-Shirt', 29.99, 0, false, 'Clothing'],
+      ['Headphones', 79.99, 45, true, 'Electronics'],
+      ['Coffee Beans', 12.99, 200, true, 'Food'],
+    ];
+
+    // Formulas
+    const sheetFormulas = document.getElementById('sheet-formulas');
+    sheetFormulas.columns = [
+      { header: 'Values', width: 120, type: 'number' },
+      { header: 'Formula', width: 200 },
+      { header: 'Result', width: 120, type: 'number' },
+    ];
+    sheetFormulas.data = [
+      [10, 'SUM(A1:A5)', '=SUM(A1:A5)'],
+      [20, 'AVG(A1:A5)', '=AVG(A1:A5)'],
+      [30, 'COUNT(A1:A5)', '=COUNT(A1:A5)'],
+      [40, 'MIN(A1:A5)', '=MIN(A1:A5)'],
+      [50, 'MAX(A1:A5)', '=MAX(A1:A5)'],
+    ];
+
+    // Readonly
+    const sheetReadonly = document.getElementById('sheet-readonly');
+    sheetReadonly.columns = [
+      { header: 'Month', width: 120 },
+      { header: 'Revenue', width: 120, type: 'number' },
+      { header: 'Expenses', width: 120, type: 'number' },
+      { header: 'Profit', width: 120, type: 'number' },
+    ];
+    sheetReadonly.data = [
+      ['January', 45000, 32000, 13000],
+      ['February', 48000, 33500, 14500],
+      ['March', 52000, 34000, 18000],
+      ['April', 49000, 31000, 18000],
+    ];
+
+    // API demo
+    const sheetApi = document.getElementById('sheet-api');
+    sheetApi.columns = [
+      { header: 'Item', width: 150 },
+      { header: 'Value', width: 120, type: 'number' },
+    ];
+    sheetApi.data = [
+      ['Sample', 42],
+    ];
+
+    let rowCounter = 1;
+
+    document.getElementById('btn-get-data').addEventListener('click', () => {
+      console.log('Spreadsheet data:', sheetApi.getData());
+    });
+
+    document.getElementById('btn-set-cell').addEventListener('click', () => {
+      sheetApi.setCell(0, 0, 'Hello');
+    });
+
+    document.getElementById('btn-add-row').addEventListener('click', () => {
+      rowCounter++;
+      const data = sheetApi.getData();
+      data.push([`Row ${rowCounter}`, Math.round(Math.random() * 100)]);
+      sheetApi.setData(data);
+    });
+
+    document.getElementById('btn-clear-data').addEventListener('click', () => {
+      sheetApi.setData([['', '']]);
+    });
+
+    // Events
+    document.querySelectorAll('snice-spreadsheet').forEach(sheet => {
+      sheet.addEventListener('cell-change', (e) => logEvent('cell-change', e.detail));
+      sheet.addEventListener('cell-select', (e) => logEvent('cell-select', e.detail));
+      sheet.addEventListener('column-sort', (e) => logEvent('column-sort', e.detail));
+    });
+  </script>
+</body>
+</html>

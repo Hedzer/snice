@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snice PDF Viewer Component Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 40px;
+      line-height: 1.6;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      margin: 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: var(--snice-color-text);
+      border-bottom: 2px solid var(--snice-color-border);
+      padding-bottom: 10px;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      color: var(--snice-color-text);
+      margin-top: 40px;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .demo-section {
+      margin: 30px 0;
+      padding: 20px;
+      background: var(--snice-color-background);
+      border-radius: 8px;
+      border: 1px solid var(--snice-color-border);
+    }
+
+    .demo-label {
+      display: block;
+      margin-bottom: 16px;
+      font-weight: 600;
+      color: var(--snice-color-text-secondary);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin: 16px 0;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .controls label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .controls input, .controls select {
+      padding: 8px 12px;
+      border: 1px solid var(--snice-color-border);
+      border-radius: 4px;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      font-size: 14px;
+    }
+
+    button {
+      padding: 8px 16px;
+      border: 1px solid var(--snice-color-border);
+      border-radius: 6px;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    button:hover {
+      background: var(--snice-color-background-element, #f0f0f0);
+    }
+
+    snice-pdf-viewer {
+      width: 100%;
+      height: 600px;
+      display: block;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .event-log {
+      margin-top: 16px;
+      padding: 12px;
+      background: var(--snice-color-background-element, rgb(252 251 249));
+      border: 1px solid var(--snice-color-border);
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 13px;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .event-log div {
+      margin: 4px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>PDF Viewer Component Demo</h1>
+    <p style="color: var(--snice-color-text-secondary);">Provide a PDF URL to load it in the viewer. The toolbar supports page navigation, zoom, fit modes, download, and print.</p>
+
+    <div class="demo-section">
+      <h2>Load a PDF</h2>
+      <span class="demo-label">Enter a URL or use the sample</span>
+      <div class="controls">
+        <label>
+          PDF URL:
+          <input type="text" id="pdf-url-input" placeholder="https://example.com/document.pdf" style="width: 400px;" />
+        </label>
+        <button id="btn-load">Load PDF</button>
+      </div>
+      <snice-pdf-viewer id="viewer-main"></snice-pdf-viewer>
+    </div>
+
+    <div class="demo-section">
+      <h2>Programmatic Controls</h2>
+      <span class="demo-label">Navigate and zoom via JavaScript</span>
+      <div class="controls">
+        <button id="btn-prev">Previous Page</button>
+        <button id="btn-next">Next Page</button>
+        <button id="btn-zoom-in">Zoom In</button>
+        <button id="btn-zoom-out">Zoom Out</button>
+        <label>
+          Go to page:
+          <input type="number" id="page-input" min="1" value="1" style="width: 80px;" />
+        </label>
+        <button id="btn-goto">Go</button>
+      </div>
+      <div id="viewer-info" style="margin-top: 8px; font-size: 14px; color: var(--snice-color-text-secondary);"></div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Fit Modes</h2>
+      <span class="demo-label">Width, height, or full page fit</span>
+      <div class="controls">
+        <label>
+          Fit mode:
+          <select id="fit-select">
+            <option value="width">Fit Width</option>
+            <option value="height">Fit Height</option>
+            <option value="page">Fit Page</option>
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Events</h2>
+      <div id="event-log" class="event-log">
+        <div>Waiting for events...</div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import './snice-pdf-viewer.ts';
+
+    const viewer = document.getElementById('viewer-main');
+    const eventLog = document.getElementById('event-log');
+
+    function logEvent(name, detail) {
+      const entry = document.createElement('div');
+      entry.textContent = `${new Date().toLocaleTimeString()}: ${name} - ${JSON.stringify(detail)}`;
+      eventLog.insertBefore(entry, eventLog.firstChild);
+    }
+
+    // Load PDF
+    document.getElementById('btn-load').addEventListener('click', () => {
+      const url = document.getElementById('pdf-url-input').value.trim();
+      if (url) {
+        viewer.src = url;
+      }
+    });
+
+    // Programmatic controls
+    document.getElementById('btn-prev').addEventListener('click', () => viewer.prevPage());
+    document.getElementById('btn-next').addEventListener('click', () => viewer.nextPage());
+    document.getElementById('btn-zoom-in').addEventListener('click', () => { viewer.zoom = Math.min(5, viewer.zoom + 0.25); });
+    document.getElementById('btn-zoom-out').addEventListener('click', () => { viewer.zoom = Math.max(0.25, viewer.zoom - 0.25); });
+
+    document.getElementById('btn-goto').addEventListener('click', () => {
+      const page = parseInt(document.getElementById('page-input').value, 10);
+      if (!isNaN(page)) viewer.goToPage(page);
+    });
+
+    // Fit mode
+    document.getElementById('fit-select').addEventListener('change', (e) => {
+      viewer.fit = e.target.value;
+    });
+
+    // Events
+    viewer.addEventListener('pdf-loaded', (e) => {
+      logEvent('pdf-loaded', e.detail);
+      document.getElementById('viewer-info').textContent = `Loaded: ${viewer.totalPages} pages, zoom: ${Math.round(viewer.zoom * 100)}%`;
+    });
+
+    viewer.addEventListener('page-change', (e) => {
+      logEvent('page-change', e.detail);
+      document.getElementById('viewer-info').textContent = `Page ${e.detail.page} of ${e.detail.totalPages}, zoom: ${Math.round(viewer.zoom * 100)}%`;
+    });
+
+    viewer.addEventListener('pdf-error', (e) => {
+      logEvent('pdf-error', e.detail);
+    });
+  </script>
+</body>
+</html>

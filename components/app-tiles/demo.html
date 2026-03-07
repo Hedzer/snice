@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snice App Tiles Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 40px;
+      line-height: 1.6;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: var(--snice-color-text);
+      border-bottom: 2px solid var(--snice-color-border);
+      padding-bottom: 10px;
+    }
+
+    h2 {
+      color: var(--snice-color-text-secondary);
+      margin-top: 30px;
+    }
+
+    .demo-section {
+      margin: 30px 0;
+      padding: 20px;
+      background: var(--snice-color-background);
+      border-radius: 8px;
+      border: 1px solid var(--snice-color-border);
+    }
+
+    .demo-label {
+      display: block;
+      margin-bottom: 16px;
+      font-weight: 600;
+      color: var(--snice-color-text-secondary);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+      padding: 16px;
+      background: var(--snice-color-background);
+      border-radius: 6px;
+      border: 1px solid var(--snice-color-border);
+    }
+
+    .controls label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .controls select {
+      padding: 8px 12px;
+      border: 1px solid var(--snice-color-border);
+      border-radius: 4px;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      font-size: 14px;
+    }
+
+    .event-log {
+      margin-top: 16px;
+      padding: 12px;
+      background: var(--snice-color-background);
+      border: 1px solid var(--snice-color-border);
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 13px;
+      max-height: 100px;
+      overflow-y: auto;
+      color: var(--snice-color-text-secondary);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Snice App Tiles Component Demo</h1>
+
+    <div class="demo-section">
+      <h2>Declarative Usage (snice-app-tile children)</h2>
+      <span class="demo-label">Grid variant with emoji icons</span>
+      <snice-app-tiles columns="4">
+        <snice-app-tile name="Gmail" icon="📧"></snice-app-tile>
+        <snice-app-tile name="Calendar" icon="📅"></snice-app-tile>
+        <snice-app-tile name="Drive" icon="💾"></snice-app-tile>
+        <snice-app-tile name="Photos" icon="📷"></snice-app-tile>
+        <snice-app-tile name="Maps" icon="🗺"></snice-app-tile>
+        <snice-app-tile name="Translate" icon="🌐"></snice-app-tile>
+        <snice-app-tile name="News" icon="📰"></snice-app-tile>
+        <snice-app-tile name="Shopping" icon="🛒" badge="3"></snice-app-tile>
+      </snice-app-tiles>
+    </div>
+
+    <div class="demo-section">
+      <h2>Variants</h2>
+
+      <span class="demo-label">Grid (Default)</span>
+      <snice-app-tiles id="variant-grid" variant="grid" columns="5"></snice-app-tiles>
+
+      <span class="demo-label" style="margin-top: 24px;">List</span>
+      <snice-app-tiles id="variant-list" variant="list" columns="5"></snice-app-tiles>
+
+      <span class="demo-label" style="margin-top: 24px;">Compact</span>
+      <snice-app-tiles id="variant-compact" variant="compact" columns="6"></snice-app-tiles>
+    </div>
+
+    <div class="demo-section">
+      <h2>Sizes</h2>
+      <span class="demo-label">Small (sm)</span>
+      <snice-app-tiles id="size-sm" size="sm" columns="6"></snice-app-tiles>
+
+      <span class="demo-label" style="margin-top: 24px;">Medium (md, default)</span>
+      <snice-app-tiles id="size-md" size="md" columns="6"></snice-app-tiles>
+
+      <span class="demo-label" style="margin-top: 24px;">Large (lg)</span>
+      <snice-app-tiles id="size-lg" size="lg" columns="5"></snice-app-tiles>
+
+      <span class="demo-label" style="margin-top: 24px;">Extra Large (xl)</span>
+      <snice-app-tiles id="size-xl" size="xl" columns="4"></snice-app-tiles>
+    </div>
+
+    <div class="demo-section">
+      <h2>With Badges</h2>
+      <span class="demo-label">Notification badges on tiles</span>
+      <snice-app-tiles id="badge-demo" columns="4"></snice-app-tiles>
+    </div>
+
+    <div class="demo-section">
+      <h2>Interactive Demo</h2>
+      <span class="demo-label">Customize the tiles</span>
+
+      <div class="controls">
+        <label>
+          Variant:
+          <select id="variant-select">
+            <option value="grid">Grid</option>
+            <option value="list">List</option>
+            <option value="compact">Compact</option>
+          </select>
+        </label>
+        <label>
+          Size:
+          <select id="size-select">
+            <option value="sm">Small</option>
+            <option value="md" selected>Medium</option>
+            <option value="lg">Large</option>
+            <option value="xl">Extra Large</option>
+            <option value="2xl">2XL</option>
+          </select>
+        </label>
+        <label>
+          Columns:
+          <select id="columns-select">
+            <option value="3">3</option>
+            <option value="4" selected>4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+          </select>
+        </label>
+      </div>
+
+      <snice-app-tiles id="interactive-tiles" columns="4"></snice-app-tiles>
+
+      <div class="event-log" id="event-log">Click a tile to see events here...</div>
+    </div>
+  </div>
+
+  <script type="module">
+    import './snice-app-tiles.ts';
+    import '../badge/snice-badge.ts';
+
+    const sampleTiles = [
+      { id: 'mail', name: 'Mail', icon: '📧', color: 'rgb(220 38 38)' },
+      { id: 'calendar', name: 'Calendar', icon: '📅', color: 'rgb(37 99 235)' },
+      { id: 'drive', name: 'Drive', icon: '💾', color: 'rgb(22 163 74)' },
+      { id: 'photos', name: 'Photos', icon: '📷', color: 'rgb(234 88 12)' },
+      { id: 'maps', name: 'Maps', icon: '🗺', color: 'rgb(147 51 234)' },
+      { id: 'news', name: 'News', icon: '📰', color: 'rgb(14 165 233)' },
+    ];
+
+    const badgeTiles = [
+      { id: 'inbox', name: 'Inbox', icon: '📧', badge: '12' },
+      { id: 'chat', name: 'Chat', icon: '💬', badge: '3' },
+      { id: 'tasks', name: 'Tasks', icon: '✅', badge: '7' },
+      { id: 'notes', name: 'Notes', icon: '📝' },
+    ];
+
+    // Set tiles for variant demos
+    ['variant-grid', 'variant-list', 'variant-compact'].forEach(id => {
+      document.getElementById(id).tiles = sampleTiles;
+    });
+
+    // Set tiles for size demos
+    ['size-sm', 'size-md', 'size-lg', 'size-xl'].forEach(id => {
+      document.getElementById(id).tiles = sampleTiles;
+    });
+
+    // Badge demo
+    document.getElementById('badge-demo').tiles = badgeTiles;
+
+    // Interactive demo
+    const interactive = document.getElementById('interactive-tiles');
+    interactive.tiles = sampleTiles;
+
+    document.getElementById('variant-select').addEventListener('change', (e) => {
+      interactive.variant = e.target.value;
+    });
+    document.getElementById('size-select').addEventListener('change', (e) => {
+      interactive.size = e.target.value;
+    });
+    document.getElementById('columns-select').addEventListener('change', (e) => {
+      interactive.columns = Number(e.target.value);
+    });
+
+    interactive.addEventListener('tile-click', (e) => {
+      const log = document.getElementById('event-log');
+      const detail = e.detail;
+      log.textContent = `tile-click: { tile: "${detail.tile.name}", index: ${detail.index} }`;
+    });
+  </script>
+</body>
+</html>

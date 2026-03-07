@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snice Recipe Component Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 40px;
+      line-height: 1.6;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      margin: 0;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: var(--snice-color-text);
+      border-bottom: 2px solid var(--snice-color-border);
+      padding-bottom: 10px;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      color: var(--snice-color-text);
+      margin-top: 40px;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .demo-section {
+      margin: 30px 0;
+      padding: 20px;
+      background: var(--snice-color-background);
+      border-radius: 8px;
+      border: 1px solid var(--snice-color-border);
+    }
+
+    .demo-label {
+      display: block;
+      margin-bottom: 16px;
+      font-weight: 600;
+      color: var(--snice-color-text-secondary);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .event-log {
+      margin-top: 16px;
+      padding: 12px;
+      background: var(--snice-color-background-element, rgb(252 251 249));
+      border: 1px solid var(--snice-color-border);
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 13px;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .event-log div {
+      margin: 4px 0;
+    }
+
+    snice-recipe {
+      display: block;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Recipe Component Demo</h1>
+
+    <div class="demo-section">
+      <h2>Full Recipe</h2>
+      <span class="demo-label">Complete recipe with ingredients, steps, nutrition, and timers</span>
+      <snice-recipe
+        id="recipe-full"
+        title="Classic Margherita Pizza"
+        description="A simple, authentic Margherita pizza with fresh mozzarella, basil, and San Marzano tomato sauce."
+        author="Chef Demo"
+        prep-time="30"
+        cook-time="15"
+        servings="4"
+        difficulty="medium"
+        cuisine="Italian"
+      ></snice-recipe>
+    </div>
+
+    <div class="demo-section">
+      <h2>Simple Recipe</h2>
+      <span class="demo-label">Minimal recipe with just ingredients and steps</span>
+      <snice-recipe
+        id="recipe-simple"
+        title="Scrambled Eggs"
+        description="Quick and fluffy scrambled eggs."
+        prep-time="5"
+        cook-time="5"
+        servings="2"
+        difficulty="easy"
+      ></snice-recipe>
+    </div>
+
+    <div class="demo-section">
+      <h2>Grouped Ingredients</h2>
+      <span class="demo-label">Recipe with ingredient groups and tags</span>
+      <snice-recipe
+        id="recipe-grouped"
+        title="Chocolate Layer Cake"
+        description="A rich, moist chocolate cake with creamy chocolate frosting."
+        author="Pastry Chef"
+        prep-time="45"
+        cook-time="35"
+        servings="12"
+        difficulty="hard"
+        cuisine="American"
+      ></snice-recipe>
+    </div>
+
+    <div class="demo-section">
+      <h2>Events</h2>
+      <div id="event-log" class="event-log">
+        <div>Interact with the recipes above to see events...</div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import './snice-recipe.ts';
+
+    const eventLog = document.getElementById('event-log');
+
+    function logEvent(name, detail) {
+      const entry = document.createElement('div');
+      entry.textContent = `${new Date().toLocaleTimeString()}: ${name} - ${JSON.stringify(detail)}`;
+      eventLog.insertBefore(entry, eventLog.firstChild);
+    }
+
+    // Full recipe
+    const recipeFull = document.getElementById('recipe-full');
+    recipeFull.ingredients = [
+      { name: 'Pizza dough', amount: 1, unit: 'lb' },
+      { name: 'San Marzano tomatoes', amount: 1, unit: 'can (14oz)' },
+      { name: 'Fresh mozzarella', amount: 8, unit: 'oz' },
+      { name: 'Fresh basil leaves', amount: 10, unit: '' },
+      { name: 'Extra virgin olive oil', amount: 2, unit: 'tbsp' },
+      { name: 'Garlic cloves', amount: 2, unit: '' },
+      { name: 'Salt', amount: 1, unit: 'tsp' },
+      { name: 'Black pepper', amount: 0.5, unit: 'tsp' },
+    ];
+    recipeFull.steps = [
+      { text: 'Preheat oven to 500F (260C). Place a pizza stone or inverted baking sheet in the oven.', time: 30 },
+      { text: 'Crush the San Marzano tomatoes by hand. Mix with minced garlic, a drizzle of olive oil, and salt.', tip: 'Don\'t over-blend the tomatoes - chunky is better.' },
+      { text: 'Stretch the dough into a 12-inch round on a floured surface. Transfer to a piece of parchment paper.' },
+      { text: 'Spread the tomato sauce evenly over the dough, leaving a 1-inch border for the crust.' },
+      { text: 'Tear the fresh mozzarella into pieces and distribute over the pizza.' },
+      { text: 'Slide the pizza (on parchment) onto the hot stone. Bake until the crust is golden and cheese is bubbly.', time: 12 },
+      { text: 'Remove from oven, top with fresh basil leaves and a drizzle of olive oil. Let cool for 2 minutes before slicing.' },
+    ];
+    recipeFull.nutrition = {
+      calories: 320,
+      protein: 14,
+      carbs: 38,
+      fat: 12,
+      fiber: 2,
+      sodium: 680,
+    };
+    recipeFull.tags = ['Vegetarian', 'Classic'];
+
+    // Simple recipe
+    const recipeSimple = document.getElementById('recipe-simple');
+    recipeSimple.ingredients = [
+      { name: 'Large eggs', amount: 4, unit: '' },
+      { name: 'Butter', amount: 1, unit: 'tbsp' },
+      { name: 'Salt', amount: 0.25, unit: 'tsp' },
+      { name: 'Milk', amount: 2, unit: 'tbsp' },
+    ];
+    recipeSimple.steps = [
+      { text: 'Crack eggs into a bowl. Add milk and salt, then whisk until well combined.' },
+      { text: 'Melt butter in a non-stick skillet over medium-low heat.' },
+      { text: 'Pour in the egg mixture. Gently stir with a spatula, pushing eggs from the edges toward the center.', tip: 'Low and slow is the key to creamy eggs.' },
+      { text: 'Remove from heat when eggs are just set but still slightly moist. They will continue cooking from residual heat.' },
+    ];
+
+    // Grouped ingredients recipe
+    const recipeGrouped = document.getElementById('recipe-grouped');
+    recipeGrouped.ingredients = [
+      { name: 'All-purpose flour', amount: 2, unit: 'cups', group: 'Cake' },
+      { name: 'Cocoa powder', amount: 0.75, unit: 'cup', group: 'Cake' },
+      { name: 'Sugar', amount: 2, unit: 'cups', group: 'Cake' },
+      { name: 'Baking soda', amount: 2, unit: 'tsp', group: 'Cake' },
+      { name: 'Eggs', amount: 2, unit: '', group: 'Cake' },
+      { name: 'Buttermilk', amount: 1, unit: 'cup', group: 'Cake' },
+      { name: 'Vegetable oil', amount: 0.5, unit: 'cup', group: 'Cake' },
+      { name: 'Butter (softened)', amount: 1, unit: 'cup', group: 'Frosting' },
+      { name: 'Cocoa powder', amount: 0.5, unit: 'cup', group: 'Frosting' },
+      { name: 'Powdered sugar', amount: 4, unit: 'cups', group: 'Frosting' },
+      { name: 'Heavy cream', amount: 0.25, unit: 'cup', group: 'Frosting' },
+      { name: 'Vanilla extract', amount: 1, unit: 'tsp', group: 'Frosting' },
+    ];
+    recipeGrouped.steps = [
+      { text: 'Preheat oven to 350F (175C). Grease and flour two 9-inch round cake pans.' },
+      { text: 'In a large bowl, whisk together flour, cocoa powder, sugar, and baking soda.' },
+      { text: 'Add eggs, buttermilk, and vegetable oil. Beat until smooth, about 2 minutes.' },
+      { text: 'Divide batter evenly between the prepared pans.' },
+      { text: 'Bake until a toothpick inserted in the center comes out clean.', time: 35 },
+      { text: 'Let cakes cool in pans for 10 minutes, then turn out onto wire racks to cool completely.', time: 10 },
+      { text: 'For frosting: Beat softened butter until fluffy. Add cocoa powder, powdered sugar, heavy cream, and vanilla. Beat until smooth.' },
+      { text: 'Place one cake layer on a plate. Spread frosting on top. Add second layer and frost the top and sides.' },
+    ];
+    recipeGrouped.nutrition = {
+      calories: 480,
+      protein: 5,
+      carbs: 68,
+      fat: 22,
+    };
+    recipeGrouped.tags = ['Dessert', 'Baking', 'Chocolate'];
+
+    // Events
+    document.querySelectorAll('snice-recipe').forEach(recipe => {
+      recipe.addEventListener('recipe-serving-change', (e) => logEvent('recipe-serving-change', e.detail));
+      recipe.addEventListener('recipe-step-complete', (e) => logEvent('recipe-step-complete', e.detail));
+      recipe.addEventListener('recipe-ingredient-check', (e) => logEvent('recipe-ingredient-check', { index: e.detail.ingredientIndex, checked: e.detail.checked }));
+    });
+  </script>
+</body>
+</html>

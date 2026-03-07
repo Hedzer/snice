@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snice Paint Component Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 40px;
+      line-height: 1.6;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      margin: 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: var(--snice-color-text);
+      border-bottom: 2px solid var(--snice-color-border);
+      padding-bottom: 10px;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      color: var(--snice-color-text);
+      margin-top: 40px;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .demo-section {
+      margin: 30px 0;
+      padding: 20px;
+      background: var(--snice-color-background);
+      border-radius: 8px;
+      border: 1px solid var(--snice-color-border);
+    }
+
+    .demo-label {
+      display: block;
+      margin-bottom: 16px;
+      font-weight: 600;
+      color: var(--snice-color-text-secondary);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 12px;
+      margin: 16px 0;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    button {
+      padding: 8px 16px;
+      border: 1px solid var(--snice-color-border);
+      border-radius: 6px;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    button:hover {
+      background: var(--snice-color-background-element, #f0f0f0);
+    }
+
+    snice-paint {
+      width: 100%;
+      height: 400px;
+      display: block;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .event-log {
+      margin-top: 16px;
+      padding: 12px;
+      background: var(--snice-color-background-element, rgb(252 251 249));
+      border: 1px solid var(--snice-color-border);
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 13px;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .event-log div {
+      margin: 4px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Paint Component Demo</h1>
+
+    <div class="demo-section">
+      <h2>Default Paint Canvas</h2>
+      <span class="demo-label">Full toolbar with colors, size, eraser, undo, redo, and clear</span>
+      <snice-paint id="paint-default"></snice-paint>
+    </div>
+
+    <div class="demo-section">
+      <h2>Custom Colors</h2>
+      <span class="demo-label">Custom color palette with color picker slots</span>
+      <snice-paint
+        id="paint-custom"
+        colors='["#ff6b6b","#ffd93d","#6bff6b","#6b6bff","#ff6bff","#6bffff"]'
+        color-selects="2"
+        stroke-width="5"
+      ></snice-paint>
+    </div>
+
+    <div class="demo-section">
+      <h2>Minimal Controls</h2>
+      <span class="demo-label">Only color selection and size</span>
+      <snice-paint controls="colors,size" background-color="#f8f9fa"></snice-paint>
+    </div>
+
+    <div class="demo-section">
+      <h2>No Toolbar</h2>
+      <span class="demo-label">Drawing only, no controls</span>
+      <snice-paint controls="" color="#e74c3c" stroke-width="4" background-color="#1a1a2e" style="height: 250px;"></snice-paint>
+    </div>
+
+    <div class="demo-section">
+      <h2>Interactive Controls</h2>
+      <span class="demo-label">Export and manage the canvas programmatically</span>
+      <snice-paint id="paint-interactive"></snice-paint>
+      <div class="button-row">
+        <button id="btn-download">Download PNG</button>
+        <button id="btn-clear">Clear Canvas</button>
+        <button id="btn-undo">Undo</button>
+        <button id="btn-redo">Redo</button>
+        <button id="btn-count">Stroke Count</button>
+      </div>
+      <div id="stroke-info" style="margin-top: 12px; font-size: 14px; color: var(--snice-color-text-secondary);"></div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Events</h2>
+      <span class="demo-label">Paint events are logged below</span>
+      <snice-paint id="paint-events" style="height: 250px;"></snice-paint>
+      <div id="event-log" class="event-log"></div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Disabled State</h2>
+      <span class="demo-label">Drawing is disabled</span>
+      <snice-paint disabled style="height: 200px;"></snice-paint>
+    </div>
+  </div>
+
+  <script type="module">
+    import './snice-paint.ts';
+
+    // Interactive controls
+    const interactive = document.getElementById('paint-interactive');
+
+    document.getElementById('btn-download').addEventListener('click', () => {
+      interactive.download();
+    });
+
+    document.getElementById('btn-clear').addEventListener('click', () => {
+      interactive.clear();
+    });
+
+    document.getElementById('btn-undo').addEventListener('click', () => {
+      interactive.undo();
+    });
+
+    document.getElementById('btn-redo').addEventListener('click', () => {
+      interactive.redo();
+    });
+
+    document.getElementById('btn-count').addEventListener('click', () => {
+      const strokes = interactive.getStrokes();
+      document.getElementById('stroke-info').textContent = `Total strokes: ${strokes.length}`;
+    });
+
+    // Event logging
+    const eventPaint = document.getElementById('paint-events');
+    const eventLog = document.getElementById('event-log');
+
+    function logEvent(name, detail) {
+      const entry = document.createElement('div');
+      entry.textContent = `${new Date().toLocaleTimeString()}: ${name}`;
+      eventLog.insertBefore(entry, eventLog.firstChild);
+    }
+
+    eventPaint.addEventListener('paint-start', (e) => logEvent('paint-start', e.detail));
+    eventPaint.addEventListener('paint-end', (e) => logEvent('paint-end', e.detail));
+    eventPaint.addEventListener('paint-clear', () => logEvent('paint-clear'));
+    eventPaint.addEventListener('paint-undo', () => logEvent('paint-undo'));
+    eventPaint.addEventListener('paint-redo', () => logEvent('paint-redo'));
+  </script>
+</body>
+</html>

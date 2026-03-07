@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snice Masonry Layout Demo</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 40px;
+      line-height: 1.6;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: var(--snice-color-text);
+      border-bottom: 2px solid var(--snice-color-border);
+      padding-bottom: 10px;
+    }
+
+    h2 {
+      color: var(--snice-color-text-secondary);
+      margin-top: 30px;
+    }
+
+    .demo-section {
+      margin: 30px 0;
+      padding: 20px;
+      background: var(--snice-color-background);
+      border-radius: 8px;
+      border: 1px solid var(--snice-color-border);
+    }
+
+    .demo-label {
+      display: block;
+      margin-bottom: 16px;
+      font-weight: 600;
+      color: var(--snice-color-text-secondary);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .masonry-item {
+      padding: 20px;
+      background: var(--snice-color-background);
+      border: 1px solid var(--snice-color-border);
+      border-radius: 8px;
+      break-inside: avoid;
+    }
+
+    .masonry-item h3 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+      color: var(--snice-color-text);
+    }
+
+    .masonry-item p {
+      margin: 0;
+      font-size: 14px;
+      color: var(--snice-color-text-secondary);
+      line-height: 1.5;
+    }
+
+    .color-block {
+      border-radius: 8px;
+      padding: 24px;
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+      break-inside: avoid;
+    }
+
+    .image-card {
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--snice-color-border);
+      break-inside: avoid;
+    }
+
+    .image-card .image-placeholder {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .image-card .image-card-body {
+      padding: 12px 16px;
+      background: var(--snice-color-background);
+    }
+
+    .image-card .image-card-body h4 {
+      margin: 0 0 4px 0;
+      font-size: 14px;
+      color: var(--snice-color-text);
+    }
+
+    .image-card .image-card-body p {
+      margin: 0;
+      font-size: 12px;
+      color: var(--snice-color-text-secondary);
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+      padding: 16px;
+      background: var(--snice-color-background);
+      border-radius: 6px;
+      border: 1px solid var(--snice-color-border);
+      align-items: center;
+    }
+
+    .controls label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .controls select, .controls input {
+      padding: 6px 10px;
+      border: 1px solid var(--snice-color-border);
+      border-radius: 4px;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      font-size: 14px;
+    }
+
+    button {
+      padding: 8px 16px;
+      background: var(--snice-color-primary);
+      color: var(--snice-color-text-inverse);
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    button:hover {
+      background: var(--snice-color-primary-hover);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Snice Masonry Layout Component Demo</h1>
+
+    <div class="demo-section">
+      <h2>Basic Masonry (3 Columns)</h2>
+      <span class="demo-label">Items of varying heights arranged in a masonry layout</span>
+      <snice-masonry columns="3" gap="1rem">
+        <div class="masonry-item">
+          <h3>Short Note</h3>
+          <p>A brief thought.</p>
+        </div>
+        <div class="masonry-item">
+          <h3>Medium Article</h3>
+          <p>This card has a bit more content to demonstrate how masonry handles different heights. The layout naturally flows items into columns.</p>
+        </div>
+        <div class="masonry-item">
+          <h3>Quick Tip</h3>
+          <p>Use CSS custom properties for theming.</p>
+        </div>
+        <div class="masonry-item">
+          <h3>Long Post</h3>
+          <p>Web Components provide a way to create reusable custom elements with encapsulated functionality. They use Shadow DOM for style isolation and custom elements for defining new HTML tags. This makes them framework-agnostic and future-proof.</p>
+        </div>
+        <div class="masonry-item">
+          <h3>Idea</h3>
+          <p>Build a design system with web components that works everywhere.</p>
+        </div>
+        <div class="masonry-item">
+          <h3>Tutorial Preview</h3>
+          <p>Learn how to build accessible components. Start with semantic HTML, add ARIA attributes where needed, and test with screen readers. Keyboard navigation is essential for all interactive elements.</p>
+        </div>
+        <div class="masonry-item">
+          <h3>Reminder</h3>
+          <p>Ship it!</p>
+        </div>
+        <div class="masonry-item">
+          <h3>Code Snippet</h3>
+          <p>const el = document.createElement('div'); el.textContent = 'Hello Masonry';</p>
+        </div>
+      </snice-masonry>
+    </div>
+
+    <div class="demo-section">
+      <h2>Column Count</h2>
+
+      <span class="demo-label">2 Columns</span>
+      <snice-masonry columns="2" gap="1rem">
+        <div class="color-block" style="background: rgb(37 99 235); height: 100px;">Block 1</div>
+        <div class="color-block" style="background: rgb(147 51 234); height: 150px;">Block 2</div>
+        <div class="color-block" style="background: rgb(22 163 74); height: 80px;">Block 3</div>
+        <div class="color-block" style="background: rgb(234 88 12); height: 120px;">Block 4</div>
+        <div class="color-block" style="background: rgb(220 38 38); height: 90px;">Block 5</div>
+        <div class="color-block" style="background: rgb(14 165 233); height: 140px;">Block 6</div>
+      </snice-masonry>
+
+      <span class="demo-label" style="margin-top: 24px;">4 Columns</span>
+      <snice-masonry columns="4" gap="0.75rem">
+        <div class="color-block" style="background: rgb(37 99 235); height: 100px;">Block 1</div>
+        <div class="color-block" style="background: rgb(147 51 234); height: 150px;">Block 2</div>
+        <div class="color-block" style="background: rgb(22 163 74); height: 80px;">Block 3</div>
+        <div class="color-block" style="background: rgb(234 88 12); height: 120px;">Block 4</div>
+        <div class="color-block" style="background: rgb(220 38 38); height: 90px;">Block 5</div>
+        <div class="color-block" style="background: rgb(14 165 233); height: 140px;">Block 6</div>
+        <div class="color-block" style="background: rgb(161 98 7); height: 110px;">Block 7</div>
+        <div class="color-block" style="background: rgb(82 82 82); height: 70px;">Block 8</div>
+      </snice-masonry>
+    </div>
+
+    <div class="demo-section">
+      <h2>Custom Gap</h2>
+      <span class="demo-label">gap="2rem" for wider spacing</span>
+      <snice-masonry columns="3" gap="2rem">
+        <div class="masonry-item">
+          <h3>Spacious Layout</h3>
+          <p>More breathing room between items.</p>
+        </div>
+        <div class="masonry-item">
+          <h3>Clean Design</h3>
+          <p>Wider gaps create a more open, airy feel that works well for portfolios and galleries.</p>
+        </div>
+        <div class="masonry-item">
+          <h3>Readable</h3>
+          <p>Content is easier to scan.</p>
+        </div>
+        <div class="masonry-item">
+          <h3>Modern</h3>
+          <p>Generous whitespace is a hallmark of contemporary web design.</p>
+        </div>
+      </snice-masonry>
+    </div>
+
+    <div class="demo-section">
+      <h2>Interactive Demo</h2>
+      <span class="demo-label">Adjust columns and gap</span>
+
+      <div class="controls">
+        <label>
+          Columns:
+          <select id="columns-select">
+            <option value="2">2</option>
+            <option value="3" selected>3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
+        </label>
+        <label>
+          Gap:
+          <select id="gap-select">
+            <option value="0.5rem">0.5rem</option>
+            <option value="1rem" selected>1rem</option>
+            <option value="1.5rem">1.5rem</option>
+            <option value="2rem">2rem</option>
+          </select>
+        </label>
+        <button onclick="addCard()">Add Card</button>
+      </div>
+
+      <snice-masonry id="interactive-masonry" columns="3" gap="1rem">
+        <div class="image-card">
+          <div class="image-placeholder" style="height: 120px; background: linear-gradient(135deg, #667eea, #764ba2);">Photo 1</div>
+          <div class="image-card-body">
+            <h4>Mountain Sunrise</h4>
+            <p>Beautiful morning light over the peaks.</p>
+          </div>
+        </div>
+        <div class="image-card">
+          <div class="image-placeholder" style="height: 180px; background: linear-gradient(135deg, #f093fb, #f5576c);">Photo 2</div>
+          <div class="image-card-body">
+            <h4>City Skyline</h4>
+            <p>Downtown at dusk with all the lights on.</p>
+          </div>
+        </div>
+        <div class="image-card">
+          <div class="image-placeholder" style="height: 100px; background: linear-gradient(135deg, #4facfe, #00f2fe);">Photo 3</div>
+          <div class="image-card-body">
+            <h4>Ocean Waves</h4>
+            <p>Calm waters.</p>
+          </div>
+        </div>
+        <div class="image-card">
+          <div class="image-placeholder" style="height: 150px; background: linear-gradient(135deg, #43e97b, #38f9d7);">Photo 4</div>
+          <div class="image-card-body">
+            <h4>Forest Trail</h4>
+            <p>A peaceful walk through ancient trees with sunlight filtering through the canopy.</p>
+          </div>
+        </div>
+        <div class="image-card">
+          <div class="image-placeholder" style="height: 130px; background: linear-gradient(135deg, #fa709a, #fee140);">Photo 5</div>
+          <div class="image-card-body">
+            <h4>Desert Sunset</h4>
+            <p>Golden hour in the canyon.</p>
+          </div>
+        </div>
+        <div class="image-card">
+          <div class="image-placeholder" style="height: 90px; background: linear-gradient(135deg, #a18cd1, #fbc2eb);">Photo 6</div>
+          <div class="image-card-body">
+            <h4>Spring Bloom</h4>
+            <p>Wildflowers everywhere.</p>
+          </div>
+        </div>
+      </snice-masonry>
+    </div>
+
+    <div class="demo-section">
+      <h2>Real-world: Pinterest-style Board</h2>
+      <span class="demo-label">Mixed content types in a masonry grid</span>
+      <snice-masonry columns="3" gap="1rem">
+        <div class="masonry-item" style="background: linear-gradient(135deg, rgb(37 99 235), rgb(147 51 234)); color: white; border: none;">
+          <h3 style="color: white;">Featured Post</h3>
+          <p style="color: rgba(255,255,255,0.85);">This is a highlighted item that stands out from the rest of the grid with a gradient background.</p>
+        </div>
+        <div class="masonry-item">
+          <h3>Recipe: Pasta</h3>
+          <p>Cook pasta al dente. Make sauce from fresh tomatoes, garlic, and basil. Toss together and serve with parmesan. Season with salt and pepper to taste. Serves 4.</p>
+        </div>
+        <div class="masonry-item">
+          <h3>Quote of the Day</h3>
+          <p style="font-style: italic;">"The best way to predict the future is to create it."</p>
+          <p style="font-size: 12px; margin-top: 8px;">- Peter Drucker</p>
+        </div>
+        <div class="masonry-item">
+          <h3>Travel Tip</h3>
+          <p>Pack light. One bag changes everything.</p>
+        </div>
+        <div class="masonry-item">
+          <h3>Book Review</h3>
+          <p>Just finished reading "Designing Data-Intensive Applications" by Martin Kleppmann. An excellent deep dive into distributed systems, databases, and the trade-offs involved in building reliable, scalable applications. Highly recommended for backend engineers.</p>
+        </div>
+        <div class="masonry-item">
+          <h3>CSS Tip</h3>
+          <p>Use <code style="background: var(--snice-color-background); padding: 2px 4px; border-radius: 3px;">column-count</code> for simple masonry layouts without JavaScript.</p>
+        </div>
+        <div class="masonry-item">
+          <h3>Workout Log</h3>
+          <p>Monday: 5x5 Squats, 3x8 Bench Press<br>Wednesday: 5x5 Deadlift, 3x8 OHP<br>Friday: 5x5 Rows, 3x8 Chin-ups</p>
+        </div>
+        <div class="masonry-item">
+          <h3>Todo</h3>
+          <p>Write tests. Deploy to staging. Review PR.</p>
+        </div>
+      </snice-masonry>
+    </div>
+  </div>
+
+  <script type="module">
+    import './snice-masonry.ts';
+
+    const masonry = document.getElementById('interactive-masonry');
+
+    document.getElementById('columns-select').addEventListener('change', (e) => {
+      masonry.columns = Number(e.target.value);
+    });
+
+    document.getElementById('gap-select').addEventListener('change', (e) => {
+      masonry.gap = e.target.value;
+    });
+
+    const gradients = [
+      'linear-gradient(135deg, #667eea, #764ba2)',
+      'linear-gradient(135deg, #f093fb, #f5576c)',
+      'linear-gradient(135deg, #4facfe, #00f2fe)',
+      'linear-gradient(135deg, #43e97b, #38f9d7)',
+      'linear-gradient(135deg, #fa709a, #fee140)',
+      'linear-gradient(135deg, #a18cd1, #fbc2eb)',
+      'linear-gradient(135deg, #fccb90, #d57eeb)',
+      'linear-gradient(135deg, #e0c3fc, #8ec5fc)',
+    ];
+
+    let cardCount = 7;
+    window.addCard = function() {
+      const card = document.createElement('div');
+      card.className = 'image-card';
+      const height = 80 + Math.floor(Math.random() * 120);
+      const grad = gradients[Math.floor(Math.random() * gradients.length)];
+      card.innerHTML = `
+        <div class="image-placeholder" style="height: ${height}px; background: ${grad};">Photo ${cardCount}</div>
+        <div class="image-card-body">
+          <h4>New Photo ${cardCount}</h4>
+          <p>Dynamically added card.</p>
+        </div>
+      `;
+      masonry.appendChild(card);
+      cardCount++;
+    };
+  </script>
+</body>
+</html>
