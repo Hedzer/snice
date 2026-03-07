@@ -91,7 +91,11 @@
   cursor: not-allowed;
 }
 
-.input:not(:disabled):not([readonly]) {
+.input {
+  cursor: default;
+}
+
+:host(:not([disabled]):not([readonly]):not([loading])) .input {
   cursor: pointer;
 }
 
