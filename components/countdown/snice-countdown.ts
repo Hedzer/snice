@@ -1,4 +1,4 @@
-import { element, property, dispatch, ready, dispose, render, styles, html, css as cssTag } from 'snice';
+import { element, property, dispatch, ready, dispose, render, styles, watch, html, css as cssTag } from 'snice';
 import cssContent from './snice-countdown.css?inline';
 import type { CountdownFormat, CountdownValues, CountdownVariant, SniceCountdownElement } from './snice-countdown.types';
 
@@ -21,7 +21,7 @@ export class SniceCountdown extends HTMLElement implements SniceCountdownElement
   @property({ type: Number }) private minutes = 0;
   @property({ type: Number }) private seconds = 0;
 
-  @dispatch('countdown-complete', { bubbles: true, composed: true })
+  @dispatch('countdown-complete', { bubbles: true, composed: true, dispatchOnUndefined: true })
   private emitComplete() {
     return undefined;
   }
@@ -31,8 +31,22 @@ export class SniceCountdown extends HTMLElement implements SniceCountdownElement
     return { days: this.days, hours: this.hours, minutes: this.minutes, seconds: this.seconds, total: this.getRemaining() };
   }
 
+  @watch('target')
+  onTargetChanged() {
+    this.completed = false;
+    this.restartTimer();
+  }
+
   @ready()
   init() {
+    this.restartTimer();
+  }
+
+  private restartTimer() {
+    if (this.timer) {
+      clearInterval(this.timer);
+      this.timer = null;
+    }
     this.tick();
     this.timer = setInterval(() => this.tick(), 1000);
   }
@@ -95,15 +109,13 @@ export class SniceCountdown extends HTMLElement implements SniceCountdownElement
     segments.push({ value: this.pad(this.seconds), label: 'Sec' });
 
     const items = segments.map((seg, i) => {
-      const sep = i < segments.length - 1
-        ? html`<span part="separator" class="separator">:</span>`
-        : html``;
+      const showSep = i < segments.length - 1;
       return html`
         <div part="segment" class="segment">
           <span part="value" class="value">${seg.value}</span>
           <span part="label" class="label">${seg.label}</span>
         </div>
-        ${sep}
+        <if ${showSep}><span part="separator" class="separator">:</span></if>
       `;
     });
 
