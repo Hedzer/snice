@@ -1,0 +1,146 @@
+
+# Data Grid - Aggregation
+Add aggregation functions to the Data Grid to let users combine row values.
+The Data Grid Premium provides tools to give end users the ability to aggregate and compare row values.
+It includes built-in functions to cover common use cases such as sum, average, minimum, and maximum, as well as the means to create custom functions for all other needs.
+End users can aggregate rows through the Data Grid interface by opening the column menu and selecting from the items under Aggregation.
+The aggregated values are rendered in a footer row at the bottom of the Grid.
+This document covers client-side implementation.
+For aggregation on the server side, see Server-side aggregation.
+
+## Structure of the model
+The aggregation model is an object.
+The keys correspond to the columns, and the values are the names of the aggregation functions.
+
+## Initializing aggregation
+To initialize aggregation without controlling its state, provide the model to the initialState prop, as shown below:
+
+## Controlled aggregation
+Use the aggregationModel prop to control aggregation passed to the Data Grid.
+Use the onAggregationModelChange prop to listen to changes to aggregation and update the prop accordingly.
+
+## Disabling aggregation
+
+### For all columns
+To disable aggregation, set the disableAggregation prop to true.
+This will disable all features related to aggregation, even if a model is provided.
+
+### For specific columns
+To disable aggregation on a specific column, set the aggregable property on its column definition (GridColDef) to false.
+In the example below, the Year column is not aggregable since its aggregable property is set to false.
+
+## Aggregating non-aggregable columns
+To apply aggregation programmatically on non-aggregable columns (columns with aggregable: false in the column definition), you can provide the aggregation model in one of the following ways:
+- Pass aggregation.model to the initialState prop. This initializes aggregation with the provided model.
+- Provide the aggregationModel prop. This controls aggregation with the provided model.
+- Call the API method setAggregationModel(). This applies an aggregation with the provided model.
+In the following demo, even though the Year column is not aggregable, it's still aggregated in read-only mode by providing an initial aggregation model as described above.
+
+## Usage with row grouping
+When row grouping is enabled, aggregated values can be displayed in the grouping rows as well as the top-level footer.
+In the example below, the sum and the count of true values for each row group are aggregated and displayed in that group's row, while the total sum and count of true values for all rows are displayed in the footer.
+Rows per page:
+1–100 of 242
+You can use the getAggregationPosition prop to customize this behavior.
+This function takes the current group node as an argument (or null for the root group) and returns the position of the aggregated value.
+The position can be one of three values:
+- "footer"—the Data Grid adds a footer to the group to aggregate its rows.
+- "inline"—the Data Grid disables aggregation on the grouping row.
+- null—the Data Grid doesn't aggregate the group.
+The following snippets build on the demo above to show various use cases for the getAggregationPosition prop:
+The demo below shows the sum aggregation in the footer of each group but not in the top-level footer:
+
+## Usage with tree data
+When working with tree data, aggregated values can be displayed in the footer and in grouping rows.
+If an aggregated value is displayed in a grouping row, it always takes precedence over any existing row data.
+This means that even if the dataset explicitly provides group values, they will be ignored in favor of the aggregated values calculated by the Data Grid.
+In the demo below, the max values of the Last modification column and the sums of the Size column values are displayed in both the grouping rows and the footer:
+
+## Filtering
+By default, aggregation only uses filtered rows.
+To use all rows, set the aggregationRowsScope prop to "all".
+In the example below, the movie Avatar doesn't pass the filters but is still used for the max aggregation of the Gross column:
+
+## Aggregation functions
+
+### Basic structure
+An aggregation function is an object that describes how to combine a given set of values.
+You can find full typing details in the GridAggregationFunction API reference.
+
+### Built-in functions
+The @mui/x-data-grid-premium package comes with a set of built-in aggregation functions to cover common use cases:
+| Name | Behavior | Supported column types | sum | Returns the sum of all values in the group | number | avg | Returns the non-rounded average of all values in the group | number | min | Returns the smallest value of the group | number, date, dateTime | max | Returns the largest value of the group | number, date, dateTime | size | Returns the number of cells in the group | all | size(true) | Returns the number of cells with value true | boolean | size(false) | Returns the number of cells with value false | boolean 
+### Removing a built-in function
+
+#### From all columns
+To remove specific aggregation functions from all columns, pass a filtered object to the aggregationFunctions prop.
+In the example below, the sum function has been removed:
+
+#### From a specific column
+To limit the aggregation options in a given column, pass the availableAggregationFunctions property to the column definition.
+This lets you specify which options are available to the end user:
+In the example below, you can only aggregate the Year column using the max and min functions, whereas all functions are available for the Gross column:
+
+### Creating custom functions
+An aggregation function is an object with the following shape:
+To provide custom aggregation functions, pass them to the aggregationFunctions prop on the Data Grid Premium.
+In the example below, the Grid has two custom functions for string columns: firstAlphabetical and lastAlphabetical:
+
+### Aggregating data from multiple row fields
+By default, the apply method of the aggregation function receives an array of values that represent a single field value from each row.
+In the example below, the sum function receives the values of the gross field.
+The values in the profit column are derived from the gross and budget fields of the row:
+To aggregate the profit column, you would have to calculate the sum of the gross and budget fields separately, and then use the formula from the example above to calculate the aggregated profit value.
+To do this, you can use the getCellValue() callback on the aggregation function to transform the data being passed to the apply() method:
+
+### Custom value formatter
+By default, an aggregated cell uses the value formatter of its corresponding column.
+But for some columns, the format of the aggregated value might differ from that of the column values.
+You can provide a valueFormatter() method to the aggregation function to override the column's default formatting:
+
+### Including pinned rows in the aggregation
+By default, pinned rows are not included in the top-level aggregation calculation.
+The demo below overrides the default aggregation functions to include values from the pinned rows in the top-level total aggreagation.
+
+## Custom rendering
+If the column used to display aggregation has a renderCell() property, then the aggregated cell calls it with a params.aggregation object to let you decide how you want to render it.
+This object contains a hasCellUnit property to indicate whether the current aggregation has the same unit as the rest of the column's data—for instance, if the column is in $, is the aggregated value is also in $?
+In the example below, all the aggregation functions are rendered with the rating UI aside from size, because it's not a valid rating:
+
+## Selectors
+
+### gridAggregationLookupSelectorGet the aggregation results as a lookup.
+
+### gridAggregationModelSelectorGet the aggregation model, containing the aggregation function of each column.
+If a column is not in the model, it is not aggregated.
+
+## API
+- DataGrid
+- DataGridPro
+- DataGridPremium
+- GridAggregationFunction
+Was this page helpful?
+•
+•
+Contents
+- Structure of the model
+- Initializing aggregation
+- Controlled aggregation
+- Disabling aggregationFor all columnsFor specific columns
+- For all columns
+- For specific columns
+- Aggregating non-aggregable columns
+- Usage with row grouping
+- Usage with tree data
+- Filtering
+- Aggregation functionsBasic structureBuilt-in functionsRemoving a built-in functionCreating custom functionsAggregating data from multiple row fieldsCustom value formatterIncluding pinned rows in the aggregation
+- Basic structure
+- Built-in functions
+- Removing a built-in function
+- Creating custom functions
+- Aggregating data from multiple row fields
+- Custom value formatter
+- Including pinned rows in the aggregation
+- Custom rendering
+- Selectors
+- API
