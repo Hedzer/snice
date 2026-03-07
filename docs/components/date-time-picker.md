@@ -23,13 +23,16 @@ import 'snice/components/date-time-picker/snice-date-time-picker';
 | Property | Attribute | Type | Default | Description |
 |----------|-----------|------|---------|-------------|
 | `value` | `value` | `string` | `''` | ISO datetime value (YYYY-MM-DDTHH:MM or YYYY-MM-DDTHH:MM:SS) |
-| `dateFormat` | `date-format` | `string` | `'yyyy-mm-dd'` | Date display format |
+| `dateFormat` | `date-format` | `DateTimePickerDateFormat` | `'yyyy-mm-dd'` | Date display format (`'yyyy-mm-dd'` \| `'mm/dd/yyyy'` \| `'dd/mm/yyyy'` \| `'yyyy/mm/dd'` \| `'dd-mm-yyyy'` \| `'mm-dd-yyyy'` \| `'mmmm dd, yyyy'`) |
 | `timeFormat` | `time-format` | `'12h' \| '24h'` | `'24h'` | Time display format |
+| `size` | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Component size |
 | `min` | `min` | `string` | `''` | Minimum selectable date |
 | `max` | `max` | `string` | `''` | Maximum selectable date |
 | `showSeconds` | `show-seconds` | `boolean` | `false` | Show seconds selector |
 | `disabled` | `disabled` | `boolean` | `false` | Disables the picker |
 | `readonly` | `readonly` | `boolean` | `false` | Makes input read-only |
+| `loading` | `loading` | `boolean` | `false` | Shows loading spinner |
+| `clearable` | `clearable` | `boolean` | `false` | Shows clear button when value is set |
 | `placeholder` | `placeholder` | `string` | `''` | Input placeholder text |
 | `label` | `label` | `string` | `''` | Label text |
 | `helperText` | `helper-text` | `string` | `''` | Helper text below input |
@@ -45,8 +48,12 @@ import 'snice/components/date-time-picker/snice-date-time-picker';
 |--------|-----------|-------------|
 | `open()` | -- | Opens the dropdown panel |
 | `close()` | -- | Closes the dropdown panel |
+| `clear()` | -- | Clears the selected date and time |
 | `focus()` | -- | Focuses the input |
 | `blur()` | -- | Removes focus |
+| `checkValidity()` | -- | Returns input validity |
+| `reportValidity()` | -- | Reports input validity |
+| `setCustomValidity()` | `message: string` | Sets custom validation message |
 
 ## Events
 
@@ -57,6 +64,7 @@ import 'snice/components/date-time-picker/snice-date-time-picker';
 | `datetimepicker-blur` | `{ dateTimePicker }` | Fired on input blur |
 | `datetimepicker-open` | `{ dateTimePicker }` | Fired when panel opens |
 | `datetimepicker-close` | `{ dateTimePicker }` | Fired when panel closes |
+| `datetimepicker-clear` | `{ dateTimePicker }` | Fired when value is cleared |
 
 ## CSS Parts
 
@@ -69,6 +77,8 @@ import 'snice/components/date-time-picker/snice-date-time-picker';
 | `panel` | The dropdown/inline panel |
 | `calendar` | The calendar section |
 | `time` | The time selector section |
+| `clear` | The clear button |
+| `spinner` | The loading spinner |
 | `helper-text` | The helper text element |
 | `error-text` | The error text element |
 
@@ -117,7 +127,38 @@ Use `date-format` to control how the date portion is displayed.
 <snice-date-time-picker date-format="mm/dd/yyyy" label="US Format"></snice-date-time-picker>
 <snice-date-time-picker date-format="dd/mm/yyyy" label="EU Format"></snice-date-time-picker>
 <snice-date-time-picker date-format="yyyy-mm-dd" label="ISO Format"></snice-date-time-picker>
+<snice-date-time-picker date-format="mmmm dd, yyyy" label="Long Format"></snice-date-time-picker>
 ```
+
+### Sizes
+
+Use the `size` attribute to change the picker size.
+
+```html
+<snice-date-time-picker size="small" label="Small"></snice-date-time-picker>
+<snice-date-time-picker size="medium" label="Medium"></snice-date-time-picker>
+<snice-date-time-picker size="large" label="Large"></snice-date-time-picker>
+```
+
+### Loading
+
+Set the `loading` attribute to show a spinner and disable interaction.
+
+```html
+<snice-date-time-picker loading label="Loading"></snice-date-time-picker>
+```
+
+### Clearable
+
+Set the `clearable` attribute to show a clear button when a value is selected.
+
+```html
+<snice-date-time-picker value="2024-12-25T14:30" clearable label="Clearable"></snice-date-time-picker>
+```
+
+### Year Picker
+
+Click the year in the calendar header to open a 12-year grid. Navigate between year ranges with the arrow buttons, then click a year to return to the day view.
 
 ### Min and Max Dates
 
@@ -178,6 +219,23 @@ document.querySelector('#dtp').addEventListener('datetime-change', (e) => {
   console.log('Date:', e.detail.dateString);
   console.log('Time:', e.detail.timeString);
 });
+</script>
+```
+
+### Form Validation
+
+The component supports the Constraint Validation API. Use `checkValidity()`, `reportValidity()`, and `setCustomValidity()` for custom form validation.
+
+```html
+<form>
+  <snice-date-time-picker name="appointment" required label="Appointment"></snice-date-time-picker>
+  <button type="submit">Submit</button>
+</form>
+
+<script>
+const picker = document.querySelector('snice-date-time-picker');
+picker.setCustomValidity('Please select a future date and time');
+picker.reportValidity();
 </script>
 ```
 

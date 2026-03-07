@@ -80,8 +80,11 @@ scripts/
    npm run generate:react-adapters
    npm run generate:react-tests
    ```
-6. Create docs: `docs/my-comp.md` + `docs/ai/my-comp.md`
-7. Build and test: `npm run build && npm test`
+6. Create docs: `docs/components/my-comp.md` + `docs/ai/components/my-comp.md`
+7. Create `components/my-comp/full-showcase.html` — demo ALL features (sizes, variants, states, clearable, loading, etc.)
+8. Create `public/showcases/my-comp.html` — showcase fragment, add to `public/showcases/manifest.json`
+9. Build and test: `npm run build && npm test`
+10. Rebuild showcases: `node public/build-showcases.js`
 
 ## CDN Builds
 
@@ -252,8 +255,11 @@ Format for AI docs:
 **Update component:**
 1. Modify source
 2. Update docs (both)
-3. Regenerate if API changed
-4. Run tests
+3. Update `components/<name>/full-showcase.html` to demo new features
+4. Update `public/showcases/<name>.html` showcase fragment
+5. Regenerate if API changed
+6. Run tests
+7. Rebuild showcases: `node public/build-showcases.js`
 
 **Debug tests:**
 ```bash

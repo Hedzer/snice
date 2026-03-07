@@ -7,12 +7,15 @@ Single time selection with hour/minute/second selectors and AM/PM toggle.
 ```typescript
 value: string = '';                                   // Time string (HH:MM or HH:MM:SS)
 format: '12h'|'24h' = '24h';
+size: 'small'|'medium'|'large' = 'medium';
 step: 1|5|10|15|30 = 15;                             // Minute step
 minTime: string = '';                                 // attribute: min-time
 maxTime: string = '';                                 // attribute: max-time
 showSeconds: boolean = false;                         // attribute: show-seconds
 disabled: boolean = false;
 readonly: boolean = false;
+loading: boolean = false;
+clearable: boolean = false;
 placeholder: string = '';
 label: string = '';
 helperText: string = '';                              // attribute: helper-text
@@ -27,8 +30,10 @@ variant: 'dropdown'|'inline' = 'dropdown';
 
 - `open()` - Open dropdown
 - `close()` - Close dropdown
+- `clear()` - Clear value
 - `focus()` - Focus input
 - `blur()` - Blur input
+- `checkValidity()` / `reportValidity()` / `setCustomValidity(msg)`
 
 ## Events
 
@@ -37,6 +42,7 @@ variant: 'dropdown'|'inline' = 'dropdown';
 - `timepicker-blur` -> `{ timePicker }`
 - `timepicker-open` -> `{ timePicker }`
 - `timepicker-close` -> `{ timePicker }`
+- `timepicker-clear` -> `{ timePicker }`
 
 ## Usage
 
@@ -72,12 +78,20 @@ document.querySelector('#tp').addEventListener('time-change', (e) => {
 </script>
 ```
 
+## CSS Parts
+
+`base`, `label`, `input`, `toggle`, `dropdown`, `hours`, `minutes`, `seconds`, `period`, `clear`, `spinner`, `helper-text`, `error-text`
+
 ## Features
 
 - Form-associated custom element
 - Hour/minute/second scrollable columns
 - AM/PM toggle for 12h format
 - Dropdown or inline variant
+- 3 sizes (small, medium, large)
+- Loading state with spinner
+- Clearable with clear button
 - Min/max time constraints
 - Configurable minute step (1, 5, 10, 15, 30)
+- Constraint Validation API (checkValidity, reportValidity, setCustomValidity)
 - Keyboard accessible

@@ -176,6 +176,10 @@ Use the `first-day-of-week` attribute to set which day starts the week (0 = Sund
 <snice-date-picker first-day-of-week="1" label="Week starts Monday"></snice-date-picker>
 ```
 
+### Year Picker
+
+Click the year in the calendar header to open a 12-year grid. Navigate between year ranges with the arrow buttons, then click a year to return to the day view.
+
 ### Form Integration
 
 Use `name` and `required` for native form participation.

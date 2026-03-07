@@ -24,12 +24,15 @@ import 'snice/components/time-picker/snice-time-picker';
 |----------|-----------|------|---------|-------------|
 | `value` | `value` | `string` | `''` | Time value (HH:MM or HH:MM:SS) |
 | `format` | `format` | `'12h' \| '24h'` | `'24h'` | Display format |
+| `size` | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Component size |
 | `step` | `step` | `1 \| 5 \| 10 \| 15 \| 30` | `15` | Minute step interval |
 | `minTime` | `min-time` | `string` | `''` | Minimum selectable time |
 | `maxTime` | `max-time` | `string` | `''` | Maximum selectable time |
 | `showSeconds` | `show-seconds` | `boolean` | `false` | Show seconds selector |
 | `disabled` | `disabled` | `boolean` | `false` | Disables the picker |
 | `readonly` | `readonly` | `boolean` | `false` | Makes input read-only |
+| `loading` | `loading` | `boolean` | `false` | Shows loading spinner |
+| `clearable` | `clearable` | `boolean` | `false` | Shows clear button when value is set |
 | `placeholder` | `placeholder` | `string` | `''` | Input placeholder text |
 | `label` | `label` | `string` | `''` | Label text |
 | `helperText` | `helper-text` | `string` | `''` | Helper text below input |
@@ -45,8 +48,12 @@ import 'snice/components/time-picker/snice-time-picker';
 |--------|-----------|-------------|
 | `open()` | -- | Opens the dropdown |
 | `close()` | -- | Closes the dropdown |
+| `clear()` | -- | Clears the selected time |
 | `focus()` | -- | Focuses the input |
 | `blur()` | -- | Removes focus |
+| `checkValidity()` | -- | Returns input validity |
+| `reportValidity()` | -- | Reports input validity |
+| `setCustomValidity()` | `message: string` | Sets custom validation message |
 
 ## Events
 
@@ -57,6 +64,7 @@ import 'snice/components/time-picker/snice-time-picker';
 | `timepicker-blur` | `{ timePicker }` | Fired on input blur |
 | `timepicker-open` | `{ timePicker }` | Fired when dropdown opens |
 | `timepicker-close` | `{ timePicker }` | Fired when dropdown closes |
+| `timepicker-clear` | `{ timePicker }` | Fired when value is cleared |
 
 ## CSS Parts
 
@@ -71,6 +79,8 @@ import 'snice/components/time-picker/snice-time-picker';
 | `minutes` | The minutes selector column |
 | `seconds` | The seconds selector column |
 | `period` | The AM/PM selector column |
+| `clear` | The clear button |
+| `spinner` | The loading spinner |
 | `helper-text` | The helper text element |
 | `error-text` | The error text element |
 
@@ -101,6 +111,32 @@ Set the `show-seconds` attribute to include a seconds column.
 
 ```html
 <snice-time-picker show-seconds value="09:15:30" label="Precise Time"></snice-time-picker>
+```
+
+### Sizes
+
+Use the `size` attribute to change the picker size.
+
+```html
+<snice-time-picker size="small" label="Small"></snice-time-picker>
+<snice-time-picker size="medium" label="Medium"></snice-time-picker>
+<snice-time-picker size="large" label="Large"></snice-time-picker>
+```
+
+### Loading
+
+Set the `loading` attribute to show a spinner and disable interaction.
+
+```html
+<snice-time-picker loading label="Loading"></snice-time-picker>
+```
+
+### Clearable
+
+Set the `clearable` attribute to show a clear button when a value is selected.
+
+```html
+<snice-time-picker value="14:30" clearable label="Clearable"></snice-time-picker>
 ```
 
 ### Step Intervals
@@ -159,6 +195,23 @@ Use `name` and `required` for native form participation.
 <form>
   <snice-time-picker name="startTime" required label="Start Time"></snice-time-picker>
 </form>
+```
+
+### Form Validation
+
+The component supports the Constraint Validation API. Use `checkValidity()`, `reportValidity()`, and `setCustomValidity()` for custom form validation.
+
+```html
+<form>
+  <snice-time-picker name="startTime" required label="Start Time"></snice-time-picker>
+  <button type="submit">Submit</button>
+</form>
+
+<script>
+const picker = document.querySelector('snice-time-picker');
+picker.setCustomValidity('Please select a time during business hours');
+picker.reportValidity();
+</script>
 ```
 
 ### Event Handling

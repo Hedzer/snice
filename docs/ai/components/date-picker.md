@@ -86,6 +86,7 @@ document.querySelector('#dp').addEventListener('datepicker-change', (e) => {
 
 - Form-associated custom element
 - Calendar popup with month/year navigation
+- Year picker (click year in header → 12-year grid, navigate ranges, click to select)
 - 7 date format options
 - Min/max date validation
 - Clearable with X button

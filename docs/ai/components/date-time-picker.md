@@ -6,13 +6,16 @@ Combined date and time picker. Calendar for date, scrollable columns for time.
 
 ```typescript
 value: string = '';                                   // ISO datetime (YYYY-MM-DDTHH:MM or YYYY-MM-DDTHH:MM:SS)
-dateFormat: string = 'yyyy-mm-dd';                    // attribute: date-format
+dateFormat: DateTimePickerDateFormat = 'yyyy-mm-dd';   // attribute: date-format — 'yyyy-mm-dd'|'mm/dd/yyyy'|'dd/mm/yyyy'|'yyyy/mm/dd'|'dd-mm-yyyy'|'mm-dd-yyyy'|'mmmm dd, yyyy'
 timeFormat: '12h'|'24h' = '24h';                      // attribute: time-format
+size: 'small'|'medium'|'large' = 'medium';
 min: string = '';                                     // Min date (YYYY-MM-DD)
 max: string = '';                                     // Max date (YYYY-MM-DD)
 showSeconds: boolean = false;                         // attribute: show-seconds
 disabled: boolean = false;
 readonly: boolean = false;
+loading: boolean = false;
+clearable: boolean = false;
 placeholder: string = '';
 label: string = '';
 helperText: string = '';                              // attribute: helper-text
@@ -27,8 +30,10 @@ variant: 'dropdown'|'inline' = 'dropdown';
 
 - `open()` - Open panel
 - `close()` - Close panel
+- `clear()` - Clear value
 - `focus()` - Focus input
 - `blur()` - Blur input
+- `checkValidity()` / `reportValidity()` / `setCustomValidity(msg)`
 
 ## Events
 
@@ -37,6 +42,7 @@ variant: 'dropdown'|'inline' = 'dropdown';
 - `datetimepicker-blur` -> `{ dateTimePicker }`
 - `datetimepicker-open` -> `{ dateTimePicker }`
 - `datetimepicker-close` -> `{ dateTimePicker }`
+- `datetimepicker-clear` -> `{ dateTimePicker }`
 
 ## Usage
 
@@ -70,13 +76,22 @@ document.querySelector('#dtp').addEventListener('datetime-change', (e) => {
 </script>
 ```
 
+## CSS Parts
+
+`base`, `label`, `input`, `toggle`, `panel`, `calendar`, `time`, `clear`, `spinner`, `helper-text`, `error-text`
+
 ## Features
 
 - Form-associated custom element
 - Calendar with month navigation + time selector columns side-by-side
+- Year picker (click year in header → 12-year grid, navigate ranges, click to select)
 - Dropdown or inline variant
 - 12h/24h time format with AM/PM toggle
 - Optional seconds selector
+- 3 sizes (small, medium, large)
+- Loading state with spinner
+- Clearable with clear button
 - Min/max date constraints
 - Configurable date display format
+- Constraint Validation API (checkValidity, reportValidity, setCustomValidity)
 - Responsive: stacks vertically on mobile
