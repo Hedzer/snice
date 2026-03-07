@@ -1,39 +1,68 @@
     <div class="comp-section">
       <h3>Date Picker</h3>
-      <p class="comp-desc">Date selection with calendar, formats, and states</p>
+      <p class="comp-desc">Date selection with calendar, year picker, formats, and states</p>
       <div class="comp-split">
         <div class="comp-split-demo demo-col" style="gap:1rem">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-            <snice-date-picker label="Start Date" placeholder="Select date" clearable></snice-date-picker>
-            <snice-date-picker label="End Date" placeholder="Select date" clearable></snice-date-picker>
+            <snice-date-picker label="Select Date" placeholder="Pick a date" clearable></snice-date-picker>
+            <snice-date-picker label="Pre-filled" value="2026-03-15" clearable></snice-date-picker>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-            <snice-date-picker label="US Format" format="mm/dd/yyyy" size="small"></snice-date-picker>
-            <snice-date-picker label="ISO Format" format="yyyy-mm-dd" size="small"></snice-date-picker>
+            <snice-date-picker label="US Format" format="mm/dd/yyyy" value="2026-03-06" size="small"></snice-date-picker>
+            <snice-date-picker label="Long Format" format="mmmm dd, yyyy" value="2026-03-06" size="small"></snice-date-picker>
           </div>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
           <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-date-picker
-  label="Start Date"
-  placeholder="Select date"
-  format="yyyy-mm-dd"
+  label="Select Date"
   clearable
 &gt;&lt;/snice-date-picker&gt;
 
 &lt;!-- Formats --&gt;
 &lt;snice-date-picker format="mm/dd/yyyy"&gt;&lt;/snice-date-picker&gt;
 &lt;snice-date-picker format="dd/mm/yyyy"&gt;&lt;/snice-date-picker&gt;
-&lt;snice-date-picker format="yyyy-mm-dd"&gt;&lt;/snice-date-picker&gt;</snice-code-block>
+&lt;snice-date-picker format="yyyy-mm-dd"&gt;&lt;/snice-date-picker&gt;
+&lt;snice-date-picker format="mmmm dd, yyyy"&gt;&lt;/snice-date-picker&gt;</snice-code-block>
         </div>
       </div>
       <div class="comp-split">
-        <div class="comp-split-demo">
-          <snice-date-picker label="Loading" placeholder="Fetching date..." loading></snice-date-picker>
+        <div class="comp-split-demo demo-col" style="gap:1rem">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem">
+            <snice-date-picker label="Small" size="small"></snice-date-picker>
+            <snice-date-picker label="Medium" size="medium"></snice-date-picker>
+            <snice-date-picker label="Large" size="large"></snice-date-picker>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <snice-date-picker label="Filled" variant="filled" value="2026-06-15"></snice-date-picker>
+            <snice-date-picker label="Underlined" variant="underlined" value="2026-06-15"></snice-date-picker>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <snice-date-picker label="Disabled" value="2026-03-06" disabled></snice-date-picker>
+            <snice-date-picker label="Readonly" value="2026-03-06" readonly></snice-date-picker>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <snice-date-picker label="Loading" loading></snice-date-picker>
+            <snice-date-picker label="Required" required helper-text="This field is required"></snice-date-picker>
+          </div>
+          <snice-date-picker label="Invalid" invalid error-text="Please select a valid date"></snice-date-picker>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-date-picker label="Loading" placeholder="Fetching date..." loading&gt;&lt;/snice-date-picker&gt;</snice-code-block>
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;!-- Sizes --&gt;
+&lt;snice-date-picker size="small"&gt;&lt;/snice-date-picker&gt;
+&lt;snice-date-picker size="large"&gt;&lt;/snice-date-picker&gt;
+
+&lt;!-- Variants --&gt;
+&lt;snice-date-picker variant="filled"&gt;&lt;/snice-date-picker&gt;
+&lt;snice-date-picker variant="underlined"&gt;&lt;/snice-date-picker&gt;
+
+&lt;!-- States --&gt;
+&lt;snice-date-picker disabled&gt;&lt;/snice-date-picker&gt;
+&lt;snice-date-picker readonly&gt;&lt;/snice-date-picker&gt;
+&lt;snice-date-picker loading&gt;&lt;/snice-date-picker&gt;
+&lt;snice-date-picker required helper-text="Required"&gt;&lt;/snice-date-picker&gt;
+&lt;snice-date-picker invalid error-text="Invalid"&gt;&lt;/snice-date-picker&gt;</snice-code-block>
         </div>
       </div>
     </div>

@@ -10,7 +10,7 @@
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
             <snice-time-picker label="Business Hours" min-time="08:00" max-time="18:00" step="30" helper-text="8:00 AM - 6:00 PM only"></snice-time-picker>
-            <snice-time-picker label="Disabled" value="12:00" disabled></snice-time-picker>
+            <snice-time-picker label="Clearable" value="12:00" clearable></snice-time-picker>
           </div>
         </div>
         <div class="comp-split-code">
@@ -33,7 +33,41 @@
   min-time="08:00"
   max-time="18:00"
   step="30"
-&gt;&lt;/snice-time-picker&gt;</snice-code-block>
+&gt;&lt;/snice-time-picker&gt;
+
+&lt;!-- Clearable --&gt;
+&lt;snice-time-picker clearable value="12:00"&gt;&lt;/snice-time-picker&gt;</snice-code-block>
+        </div>
+      </div>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-col" style="gap:1rem">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem">
+            <snice-time-picker label="Small" size="small" value="09:00"></snice-time-picker>
+            <snice-time-picker label="Medium" size="medium" value="09:00"></snice-time-picker>
+            <snice-time-picker label="Large" size="large" value="09:00"></snice-time-picker>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <snice-time-picker label="Disabled" value="12:00" disabled></snice-time-picker>
+            <snice-time-picker label="Readonly" value="15:30" readonly></snice-time-picker>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <snice-time-picker label="Loading" loading></snice-time-picker>
+            <snice-time-picker label="Required" required helper-text="This field is required"></snice-time-picker>
+          </div>
+          <snice-time-picker label="Invalid" invalid error-text="Please select a valid time"></snice-time-picker>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;!-- Sizes --&gt;
+&lt;snice-time-picker size="small"&gt;&lt;/snice-time-picker&gt;
+&lt;snice-time-picker size="large"&gt;&lt;/snice-time-picker&gt;
+
+&lt;!-- States --&gt;
+&lt;snice-time-picker disabled&gt;&lt;/snice-time-picker&gt;
+&lt;snice-time-picker readonly&gt;&lt;/snice-time-picker&gt;
+&lt;snice-time-picker loading&gt;&lt;/snice-time-picker&gt;
+&lt;snice-time-picker required helper-text="Required"&gt;&lt;/snice-time-picker&gt;
+&lt;snice-time-picker invalid error-text="Invalid"&gt;&lt;/snice-time-picker&gt;</snice-code-block>
         </div>
       </div>
     </div>
