@@ -68,7 +68,7 @@ export class SniceSplitButton extends HTMLElement implements SniceSplitButtonEle
           </span>
         </button>
 
-        <div class="split-button__menu" role="menu" part="menu">
+        <div class="split-button__menu" role="menu" part="menu" popover="manual">
           <div class="split-button__menu-items" part="menu-items"
                @click="${(e: MouseEvent) => this.handleMenuClick(e)}">
             <!-- Actions rendered imperatively -->
@@ -193,7 +193,18 @@ export class SniceSplitButton extends HTMLElement implements SniceSplitButtonEle
 
   private updateMenuState() {
     if (this.menu) {
-      this.menu.classList.toggle('split-button__menu--open', this.isOpen);
+      if (this.isOpen) {
+        this.positionMenu();
+        this.menu.classList.add('split-button__menu--open');
+        if (typeof this.menu.showPopover === 'function') {
+          this.menu.showPopover();
+        }
+      } else {
+        this.menu.classList.remove('split-button__menu--open');
+        if (typeof this.menu.hidePopover === 'function') {
+          this.menu.hidePopover();
+        }
+      }
     }
     if (this.toggleBtn) {
       this.toggleBtn.setAttribute('aria-expanded', String(this.isOpen));
@@ -201,6 +212,16 @@ export class SniceSplitButton extends HTMLElement implements SniceSplitButtonEle
     if (this.arrowEl) {
       this.arrowEl.classList.toggle('split-button__arrow--open', this.isOpen);
     }
+  }
+
+  private positionMenu() {
+    if (!this.menu || CSS.supports('position-anchor', '--a')) return;
+    const base = this.shadowRoot?.querySelector('.split-button') as HTMLElement;
+    if (!base) return;
+    const rect = base.getBoundingClientRect();
+    this.menu.style.top = `${rect.bottom + 4}px`;
+    this.menu.style.right = `${document.documentElement.clientWidth - rect.right}px`;
+    this.menu.style.minWidth = `${rect.width}px`;
   }
 
   private updateMenuContent() {

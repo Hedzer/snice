@@ -175,31 +175,55 @@
   transform: rotate(180deg);
 }
 
-/* Dropdown menu */
-.split-button__menu {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  margin-top: 4px;
-  min-width: 100%;
+/* Anchor for CSS Anchor Positioning */
+.split-button {
+  anchor-name: --sb-anchor;
+}
+
+/* Dropdown menu – Popover API (top-layer) */
+.split-button__menu[popover] {
+  position: fixed;
+  inset: auto;
+  margin: 0;
+  min-width: var(--sb-menu-min-width, 10rem);
   background: var(--snice-color-background-element, rgb(252 251 249));
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: var(--snice-border-radius-md, 0.25rem);
   box-shadow: var(--snice-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1));
-  z-index: 1000;
+  overflow: hidden;
+  pointer-events: none;
+
+  /* Animation */
   opacity: 0;
   transform: translateY(-8px) scaleY(0.95);
   transform-origin: top right;
-  pointer-events: none;
   transition: opacity var(--snice-transition-fast, 150ms) ease,
-              transform var(--snice-transition-fast, 150ms) ease;
-  overflow: hidden;
+              transform var(--snice-transition-fast, 150ms) ease,
+              display var(--snice-transition-fast, 150ms) allow-discrete,
+              overlay var(--snice-transition-fast, 150ms) allow-discrete;
 }
 
-.split-button__menu--open {
+.split-button__menu[popover]:popover-open {
   opacity: 1;
   transform: translateY(0) scaleY(1);
   pointer-events: auto;
+}
+
+@starting-style {
+  .split-button__menu[popover]:popover-open {
+    opacity: 0;
+    transform: translateY(-8px) scaleY(0.95);
+  }
+}
+
+/* CSS Anchor Positioning (Chrome/Edge 125+) */
+@supports (position-anchor: --a) {
+  .split-button__menu[popover] {
+    position-anchor: --sb-anchor;
+    top: calc(anchor(bottom) + 4px);
+    right: anchor(right);
+    min-width: anchor-size(width);
+  }
 }
 
 /* Menu items */
