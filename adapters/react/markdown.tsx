@@ -7,6 +7,7 @@ import type { SniceBaseProps } from './types';
 export interface MarkdownProps extends SniceBaseProps {
   sanitize?: any;
   theme?: any;
+  renderedHtml?: any;
 
 }
 
@@ -28,7 +29,7 @@ export interface MarkdownProps extends SniceBaseProps {
  */
 export const Markdown = createReactAdapter<MarkdownProps>({
   tagName: 'snice-markdown',
-  properties: ["sanitize","theme"],
+  properties: ["sanitize","theme","renderedHtml"],
   events: {},
   formAssociated: false
 });

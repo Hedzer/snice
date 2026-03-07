@@ -5,12 +5,15 @@ import type { SniceBaseProps } from './types';
  * Props for the DateTimePicker component
  */
 export interface DateTimePickerProps extends SniceBaseProps {
+  size?: any;
   value?: any;
   dateFormat?: any;
   timeFormat?: any;
   min?: any;
   max?: any;
   showSeconds?: any;
+  loading?: any;
+  clearable?: any;
   disabled?: any;
   readonly?: any;
   placeholder?: any;
@@ -43,7 +46,7 @@ export interface DateTimePickerProps extends SniceBaseProps {
  */
 export const DateTimePicker = createReactAdapter<DateTimePickerProps>({
   tagName: 'snice-date-time-picker',
-  properties: ["value","dateFormat","timeFormat","min","max","showSeconds","disabled","readonly","placeholder","label","helperText","errorText","required","invalid","name","variant","showPanel"],
+  properties: ["size","value","dateFormat","timeFormat","min","max","showSeconds","loading","clearable","disabled","readonly","placeholder","label","helperText","errorText","required","invalid","name","variant","showPanel"],
   events: {},
   formAssociated: false
 });
