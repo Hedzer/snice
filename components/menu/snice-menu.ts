@@ -25,6 +25,9 @@ export class SniceMenu extends HTMLElement implements SniceMenuElement {
   @query('.menu__trigger')
   triggerElement?: HTMLElement;
 
+  @query('.menu')
+  menuElement?: HTMLElement;
+
   private closeOnOutsideClick = (e: MouseEvent) => {
     if (!this.open) return;
     const path = e.composedPath();
@@ -49,8 +52,19 @@ export class SniceMenu extends HTMLElement implements SniceMenuElement {
   @watch('open')
   handleOpenChange() {
     if (this.open) {
+      if (this.panel) {
+        this.positionMenu();
+        if (typeof this.panel.showPopover === 'function') {
+          this.panel.showPopover();
+        }
+      }
       this.dispatchOpenEvent();
     } else {
+      if (this.panel) {
+        if (typeof this.panel.hidePopover === 'function') {
+          this.panel.hidePopover();
+        }
+      }
       this.dispatchCloseEvent();
     }
   }
@@ -119,7 +133,7 @@ export class SniceMenu extends HTMLElement implements SniceMenuElement {
           </span>
         </div>
 
-        <div class="${panelClasses}" part="panel" role="menu">
+        <div class="${panelClasses}" part="panel" role="menu" popover="manual">
           <div class="menu__content" part="content">
             <slot></slot>
           </div>
@@ -133,16 +147,39 @@ export class SniceMenu extends HTMLElement implements SniceMenuElement {
     return css/*css*/`${cssContent}`;
   }
 
+  private positionMenu() {
+    if (!this.panel || !this.menuElement || CSS.supports('position-anchor', '--a')) return;
+    const rect = this.menuElement.getBoundingClientRect();
+    this.panel.style.top = `${rect.bottom + 4}px`;
+    this.panel.style.left = `${rect.left}px`;
+    this.panel.style.minWidth = `${rect.width}px`;
+  }
+
   // Public API
   openMenu() {
     this.open = true;
+    if (this.panel) {
+      this.positionMenu();
+      if (typeof this.panel.showPopover === 'function') {
+        this.panel.showPopover();
+      }
+    }
   }
 
   closeMenu() {
     this.open = false;
+    if (this.panel) {
+      if (typeof this.panel.hidePopover === 'function') {
+        this.panel.hidePopover();
+      }
+    }
   }
 
   toggleMenu() {
-    this.open = !this.open;
+    if (this.open) {
+      this.closeMenu();
+    } else {
+      this.openMenu();
+    }
   }
 }

@@ -13,6 +13,7 @@
 .menu {
   position: relative;
   display: inline-block;
+  anchor-name: --menu-anchor;
 }
 
 .menu__trigger {
@@ -37,28 +38,53 @@
   display: block;
 }
 
-.menu__panel {
-  position: absolute;
+/* Dropdown panel – Popover API (top-layer) */
+.menu__panel[popover] {
+  position: fixed;
+  inset: auto;
+  margin: 0;
   min-width: var(--menu-min-width);
   background: var(--menu-bg);
   border: 1px solid var(--menu-border);
   border-radius: var(--menu-border-radius);
   box-shadow: var(--menu-shadow);
   z-index: var(--menu-z-index);
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(-0.5rem);
-  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0s linear 0.15s;
   overflow: hidden;
   max-height: 20rem;
   overflow-y: auto;
+  pointer-events: none;
+
+  /* Animation */
+  opacity: 0;
+  transform: translateY(-0.5rem);
+  transition: opacity 0.15s ease,
+              transform 0.15s ease,
+              display 0.15s allow-discrete,
+              overlay 0.15s allow-discrete;
 }
 
+.menu__panel[popover]:popover-open,
 .menu__panel--open {
   opacity: 1;
-  visibility: visible;
   transform: translateY(0);
-  transition: opacity 0.15s ease, transform 0.15s ease;
+  pointer-events: auto;
+}
+
+@starting-style {
+  .menu__panel[popover]:popover-open {
+    opacity: 0;
+    transform: translateY(-0.5rem);
+  }
+}
+
+/* CSS Anchor Positioning (Chrome/Edge 125+) */
+@supports (position-anchor: --a) {
+  .menu__panel[popover] {
+    position-anchor: --menu-anchor;
+    top: calc(anchor(bottom) + 4px);
+    left: anchor(left);
+    min-width: anchor-size(width);
+  }
 }
 
 /* Placement variations */
