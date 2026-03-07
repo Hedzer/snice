@@ -137,7 +137,7 @@ img[src=""] {
   align-items: center;
   gap: 0.25rem; /* 4px */
   padding: 0.125rem 0.375rem; /* 2px 6px */
-  background: var(--snice-color-primary-light, rgb(219 234 254));
+  background: var(--snice-color-primary-subtle, rgb(219 234 254));
   color: var(--snice-color-primary, rgb(37 99 235));
   border-radius: var(--snice-border-radius-sm, 0.125rem);
   font-size: var(--snice-font-size-xs, 0.75rem);
@@ -309,7 +309,7 @@ img[src=""] {
 }
 
 .select-option--selected {
-  background: var(--snice-color-primary-light, rgb(219 234 254));
+  background: var(--snice-color-primary-subtle, rgb(219 234 254));
   color: var(--snice-color-primary, rgb(37 99 235));
   font-weight: 500;
 }

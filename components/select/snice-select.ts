@@ -1,4 +1,4 @@
-import { element, property, query, queryAll, watch, dispatch, ready, dispose, render, styles, html, css as cssTag } from 'snice';
+import { element, property, query, queryAll, watch, dispatch, request, ready, dispose, render, styles, html, css as cssTag } from 'snice';
 import cssContent from './snice-select.css?inline';
 import type { SelectSize, SelectOption, SniceSelectElement } from './snice-select.types';
 /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -43,6 +43,12 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
 
   @property({ type: Boolean,  })
   editable = false;
+
+  @property({ type: Boolean,  })
+  remote = false;
+
+  @property({ type: Number, attribute: 'search-debounce' })
+  searchDebounce = 300;
 
   @property({ type: Boolean,  })
   open = false;
@@ -108,6 +114,8 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   private selectedValues: Set<string> = new Set();
   private focusedIndex = -1;
   private editableInputValue = '';
+  private remoteSearchTimeout = 0;
+  private remoteSearching = false;
 
   /** Merged options: programmatic `options` array + child `<snice-option>` elements */
   private get mergedOptions(): SelectOption[] {
@@ -118,6 +126,32 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
       return [...this.childOptions, ...this.options.filter(o => !childValues.has(o.value))];
     }
     return this.childOptions.length > 0 ? this.childOptions : this.options;
+  }
+
+  @request('select/search')
+  async *performRemoteSearch(query: string): any {
+    this.remoteSearching = true;
+    this.updateDropdownContent();
+
+    try {
+      const params = { query, select: this };
+      const response: SelectOption[] = await (yield params);
+      this.remoteSearching = false;
+      this.filteredOptions = response || [];
+      this.focusedIndex = -1;
+      this.updateDropdownContent();
+    } catch {
+      this.remoteSearching = false;
+      this.filteredOptions = [];
+      this.updateDropdownContent();
+    }
+  }
+
+  private scheduleRemoteSearch(query: string) {
+    clearTimeout(this.remoteSearchTimeout);
+    this.remoteSearchTimeout = window.setTimeout(() => {
+      this.performRemoteSearch(query);
+    }, this.searchDebounce);
   }
 
   @render()
@@ -224,13 +258,22 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   }
 
   private renderOptions(): string {
-    const options = (this.searchable || this.editable) ? this.filteredOptions : this.mergedOptions;
+    if (this.remoteSearching) {
+      return /*html*/`
+        <div class="select-loading-indicator">
+          <span class="select-loading-spinner"></span>
+          <span>Searching...</span>
+        </div>
+      `;
+    }
+
+    const options = (this.searchable || this.editable || this.remote) ? this.filteredOptions : this.mergedOptions;
 
     if (options.length === 0) {
       return /*html*/`
         <div class="select-no-options">
-          <span class="select-no-options-text" data-search="true" ${!(this.searchable || this.editable) || this.filteredOptions.length > 0 ? 'hidden' : ''}>No matches found</span>
-          <span class="select-no-options-text" data-search="false" ${(this.searchable || this.editable) && this.filteredOptions.length === 0 ? 'hidden' : ''}>No options available</span>
+          <span class="select-no-options-text" data-search="true" ${!(this.searchable || this.editable || this.remote) || this.filteredOptions.length > 0 ? 'hidden' : ''}>No matches found</span>
+          <span class="select-no-options-text" data-search="false" ${(this.searchable || this.editable || this.remote) && this.filteredOptions.length === 0 ? 'hidden' : ''}>No options available</span>
         </div>
       `;
     }
@@ -564,6 +607,11 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   }
 
   private filterEditableOptions(query: string) {
+    if (this.remote) {
+      this.scheduleRemoteSearch(query);
+      return;
+    }
+
     const allOptions = this.mergedOptions;
     if (!query) {
       this.filteredOptions = [...allOptions];
@@ -762,11 +810,17 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
 
   private handleSearchInput(e: Event) {
     const input = e.target as HTMLInputElement;
-    const searchTerm = input.value.toLowerCase();
+    const searchTerm = input.value;
 
-    if (searchTerm) {
+    if (this.remote) {
+      this.scheduleRemoteSearch(searchTerm);
+      return;
+    }
+
+    const lower = searchTerm.toLowerCase();
+    if (lower) {
       this.filteredOptions = this.mergedOptions.filter(opt =>
-        opt.label.toLowerCase().includes(searchTerm)
+        opt.label.toLowerCase().includes(lower)
       );
     } else {
       this.filteredOptions = [...this.mergedOptions];
@@ -839,8 +893,8 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
       this.updateTriggerState();
       this.updateClearButton();
     }
-    // Side effect: close dropdown when loading
-    if (this.loading && this.open) {
+    // Side effect: close dropdown when loading (but not for remote search)
+    if (this.loading && this.open && !this.remote) {
       this.closeDropdown();
     }
   }
@@ -853,10 +907,16 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
       this.updateEditableState();
 
       if (this.open) {
-        // Reset filter to show all options when opening
-        this.filteredOptions = [...this.mergedOptions];
-        this.focusedIndex = -1;
-        this.updateDropdownContent();
+        if (this.remote) {
+          // Trigger remote search with current input
+          const query = this.editableInput?.value || '';
+          this.scheduleRemoteSearch(query);
+        } else {
+          // Reset filter to show all options when opening
+          this.filteredOptions = [...this.mergedOptions];
+          this.focusedIndex = -1;
+          this.updateDropdownContent();
+        }
       }
 
       if (!this.open) {
@@ -868,6 +928,12 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
       // Side effect: focus search input when opened
       if (this.open && this.searchable && this.searchInput) {
         setTimeout(() => this.searchInput?.focus(), 100);
+      }
+
+      // Side effect: trigger initial remote search on open
+      if (this.open && this.remote && this.searchable) {
+        const query = this.searchInput?.value || '';
+        this.scheduleRemoteSearch(query);
       }
 
       // Side effect: reset search when closed
