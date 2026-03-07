@@ -186,7 +186,7 @@
         <a href="themes.html">Themes</a>
 
         <a href="https://gitlab.com/Hedzer/snice">Source</a>
-        <button class="theme-btn" onclick="var t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',t);localStorage.setItem('snice-theme',t)" title="Toggle theme">
+        <button class="theme-btn" onclick="var t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',t);localStorage.setItem('snice-theme',t);var f=document.getElementById('help-drawer-iframe');if(f&&f.contentWindow)f.contentWindow.postMessage({type:'snice-theme',theme:t},'*')" title="Toggle theme">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
         </button>
         <a href="themes.html" id="theme-dot" class="theme-dot" hidden></a>
@@ -1214,6 +1214,26 @@ tiles.addEventListener('tile-click',
 &lt;snice-button variant="primary" pill&gt;Pill&lt;/snice-button&gt;
 
 &lt;snice-button variant="primary" circle&gt;+&lt;/snice-button&gt;</snice-code-block>
+        </div>
+      </div>
+      <div class="comp-split">
+        <div class="comp-split-demo">
+          <snice-button variant="primary"><span slot="icon" class="material-symbols-outlined">bolt</span> Icon Start</snice-button>
+          <snice-button variant="success" icon-placement="end"><span slot="icon" class="material-symbols-outlined">check</span> Icon End</snice-button>
+          <snice-button variant="default"><span slot="icon" class="material-symbols-outlined">search</span> Search</snice-button>
+          <snice-button variant="danger" icon-placement="end"><span slot="icon" class="material-symbols-outlined">delete</span> Delete</snice-button>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-button variant="primary"&gt;
+  &lt;span slot="icon" class="material-symbols-outlined"&gt;bolt&lt;/span&gt;
+  Icon Start
+&lt;/snice-button&gt;
+
+&lt;snice-button icon-placement="end"&gt;
+  &lt;span slot="icon" class="material-symbols-outlined"&gt;check&lt;/span&gt;
+  Icon End
+&lt;/snice-button&gt;</snice-code-block>
         </div>
       </div>
       <div class="comp-split">
@@ -6796,7 +6816,7 @@ stepper.currentStep = 1;</snice-code-block>
         } else if (command === 'status') {
           terminal.writeln('All systems operational ✓', 'success');
         } else if (command === 'version') {
-          terminal.writeln('Snice v4.25.0 (build ea70767)', 'info');
+          terminal.writeln('Snice v4.8.0 (build ea70767)', 'info');
         } else if (command.startsWith('echo ')) {
           terminal.writeln(command.slice(5));
         } else {
@@ -7638,7 +7658,7 @@ weather.data = {
       <button class="help-drawer-tab" data-tab="showcase">Full Showcase</button>
     </div>
     <div class="help-drawer-body" id="help-drawer-body"></div>
-    <iframe class="help-drawer-iframe" id="help-drawer-iframe" style="display:none" sandbox="allow-scripts allow-same-origin"></iframe>
+    <iframe class="help-drawer-iframe" id="help-drawer-iframe" style="display:none"></iframe>
   </aside>
 
 
@@ -7837,7 +7857,7 @@ weather.data = {
       }
       function inline(t) {
         return t
-          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/`([^`]+)`/g, (_, code) => '<code>' + code.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</code>')
           .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
           .replace(/\*([^*]+)\*/g, '<em>$1</em>')
           .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
@@ -7865,7 +7885,7 @@ weather.data = {
         // Tables
         if (line.startsWith('|')) {
           flushList();
-          const cells = line.split('|').slice(1, -1).map(c => c.trim());
+          const cells = line.replace(/\\\|/g, '\x00').split('|').slice(1, -1).map(c => c.trim().replace(/\x00/g, '|'));
           // Separator row (|---|---|)
           if (cells.every(c => /^[-:]+$/.test(c))) { hasSeenSeparator = true; continue; }
           if (!inTable) { inTable = true; hasSeenSeparator = false; }
@@ -8362,10 +8382,15 @@ weather.data = {
         }
       }
 
+      const isDev = location.port === '52891' || location.port === '5566';
+
       function loadShowcase(slug) {
         if (currentTab !== 'showcase') return;
         const candidates = DOC_SLUGS[slug] ? DOC_SLUGS[slug] : [slug];
-        const src = 'showcase/' + candidates[0] + '.html';
+        const name = candidates[0];
+        const src = isDev
+          ? '/components/' + name + '/full-showcase.html'
+          : 'showcase/' + name + '.html';
         if (!iframe.src || !iframe.src.endsWith(src)) {
           iframe.src = src;
         }
