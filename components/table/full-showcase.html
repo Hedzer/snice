@@ -73,6 +73,12 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 <h2>List Mode + Striped</h2>
 <snice-table id="list-striped" list striped></snice-table>
 
+<h2>Pagination (Client-Side, 3 per page)</h2>
+<snice-table id="paginated" pagination page-size="3" sortable></snice-table>
+
+<h2>Pagination (5 per page, Striped)</h2>
+<snice-table id="paginated-5" pagination page-size="5" striped></snice-table>
+
 <script type="module">
   import './snice-table.ts';
 
@@ -145,6 +151,25 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   setup('cell-types', typedCols, typedData);
 
   setup('list-striped');
+
+  // Pagination demos — more data to paginate through
+  const paginationData = [
+    { name: 'Alice Johnson', age: 30, department: 'Engineering' },
+    { name: 'Bob Smith', age: 25, department: 'Marketing' },
+    { name: 'Charlie Brown', age: 35, department: 'Sales' },
+    { name: 'Diana Prince', age: 28, department: 'Design' },
+    { name: 'Eve Wilson', age: 32, department: 'Engineering' },
+    { name: 'Frank Miller', age: 27, department: 'Marketing' },
+    { name: 'Grace Lee', age: 40, department: 'Sales' },
+    { name: 'Henry Chen', age: 29, department: 'Engineering' },
+    { name: 'Ivy Taylor', age: 33, department: 'Design' },
+    { name: 'Jack Davis', age: 26, department: 'Marketing' },
+    { name: 'Kate Moore', age: 38, department: 'Engineering' },
+    { name: 'Liam Brown', age: 31, department: 'Sales' },
+  ];
+
+  setup('paginated', columns, paginationData);
+  setup('paginated-5', columns, paginationData);
 </script>
 </body>
 </html>

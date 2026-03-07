@@ -41,6 +41,24 @@ export class SniceTable extends HTMLElement {
   @property({ type: Boolean,  attribute: 'list' })
   list = false;
 
+  @property({ type: Boolean, attribute: 'pagination' })
+  pagination = false;
+
+  @property({ attribute: 'pagination-mode' })
+  paginationMode: 'client' | 'server' = 'client';
+
+  @property({ type: Number, attribute: 'page-size' })
+  pageSize = 10;
+
+  @property({ type: Number, attribute: 'current-page' })
+  currentPage = 1;
+
+  @property({ type: Number, attribute: 'total-items' })
+  totalItems = 0;
+
+  @property({ type: Array, attribute: false })
+  pageSizes: number[] = [10, 25, 50, 100];
+
   @property({ type: Number,  attribute: 'search-debounce' })
   searchDebounce = 500;
 
@@ -106,13 +124,21 @@ export class SniceTable extends HTMLElement {
     this.selectedRows = []; // Clear selections when loading new data
 
     try {
-      const params = {
+      const params: any = {
         search: this.searchText,
         sort: this.currentSort,
         selector: this.selector
       };
+
+      if (this.pagination) {
+        params.page = this.currentPage;
+        params.pageSize = this.pageSize;
+      }
       const response = await (yield params);
       this.data = response.data || [];
+      if (response.totalItems !== undefined) {
+        this.totalItems = response.totalItems;
+      }
       this.loading = false;
       // Wait for next frame to ensure DOM is updated
       await new Promise(resolve => requestAnimationFrame(resolve));
@@ -340,6 +366,109 @@ export class SniceTable extends HTMLElement {
         color: var(--snice-color-text-secondary);
       }
 
+      /* Pagination */
+      .pagination {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--snice-spacing-md, 1rem);
+        padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-md, 1rem);
+        border-top: 1px solid var(--snice-color-border, rgb(226 226 226));
+        background: var(--snice-color-background, rgb(255 255 255));
+        font-size: var(--snice-font-size-sm, 0.875rem);
+        flex-wrap: wrap;
+      }
+
+      .pagination__info {
+        color: var(--snice-color-text-secondary, rgb(82 82 82));
+        white-space: nowrap;
+      }
+
+      .pagination__controls {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+      }
+
+      .pagination__btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 2rem;
+        height: 2rem;
+        padding: 0 var(--snice-spacing-2xs, 0.25rem);
+        border: 1px solid var(--snice-color-border, rgb(226 226 226));
+        border-radius: var(--snice-border-radius-md, 0.25rem);
+        background: var(--snice-color-background, rgb(255 255 255));
+        color: var(--snice-color-text, rgb(23 23 23));
+        font-size: var(--snice-font-size-sm, 0.875rem);
+        cursor: pointer;
+        transition: all var(--snice-transition-fast, 150ms) ease;
+        font-family: inherit;
+        line-height: 1;
+      }
+
+      .pagination__btn:hover:not(:disabled) {
+        background: var(--snice-color-background-secondary, rgb(245 245 245));
+      }
+
+      .pagination__btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+
+      .pagination__btn--active {
+        background: var(--snice-color-primary, rgb(37 99 235));
+        color: var(--snice-color-text-inverse, rgb(250 250 250));
+        border-color: var(--snice-color-primary, rgb(37 99 235));
+      }
+
+      .pagination__btn--active:hover:not(:disabled) {
+        background: var(--snice-color-primary-hover, rgb(29 78 216));
+      }
+
+      .pagination__btn:focus-visible {
+        outline: 2px solid var(--snice-color-primary, rgb(37 99 235));
+        outline-offset: 2px;
+        z-index: 1;
+      }
+
+      .pagination__ellipsis {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 2rem;
+        height: 2rem;
+        color: var(--snice-color-text-secondary, rgb(82 82 82));
+      }
+
+      .pagination__size {
+        display: flex;
+        align-items: center;
+        gap: var(--snice-spacing-xs, 0.5rem);
+        white-space: nowrap;
+      }
+
+      .pagination__size label {
+        color: var(--snice-color-text-secondary, rgb(82 82 82));
+      }
+
+      .pagination__size-select {
+        padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-xs, 0.5rem);
+        border: 1px solid var(--snice-color-border, rgb(226 226 226));
+        border-radius: var(--snice-border-radius-md, 0.25rem);
+        background: var(--snice-color-background, rgb(255 255 255));
+        color: var(--snice-color-text, rgb(23 23 23));
+        font-size: var(--snice-font-size-sm, 0.875rem);
+        font-family: inherit;
+        cursor: pointer;
+      }
+
+      .pagination__size-select:focus-visible {
+        outline: 2px solid var(--snice-color-primary, rgb(37 99 235));
+        outline-offset: 2px;
+      }
+
       /* Slotted table layout */
       .snice-table--slotted {
         border: 1px solid var(--snice-color-border);
@@ -415,6 +544,7 @@ export class SniceTable extends HTMLElement {
             <thead></thead>
             <tbody></tbody>
           </table>
+          <div class="table-pagination-container"></div>
         </div>
       `;
     }
@@ -676,7 +806,17 @@ export class SniceTable extends HTMLElement {
 
     const fragment = document.createDocumentFragment();
 
-    this.data.forEach((rowData, index) => {
+    // Client-side pagination: slice data
+    let displayData = this.data;
+    let startIndex = 0;
+    if (this.pagination && this.paginationMode === 'client') {
+      this.totalItems = this.data.length;
+      startIndex = (this.currentPage - 1) * this.pageSize;
+      displayData = this.data.slice(startIndex, startIndex + this.pageSize);
+    }
+
+    displayData.forEach((rowData, i) => {
+      const index = startIndex + i;
       const tr = document.createElement('tr');
       tr.setAttribute('data-index', String(index));
 
@@ -707,6 +847,133 @@ export class SniceTable extends HTMLElement {
     });
 
     this.tbody.appendChild(fragment);
+
+    // Render pagination after body
+    if (this.pagination) {
+      this.renderPagination();
+    }
+  }
+
+  private get totalPages(): number {
+    const total = this.paginationMode === 'client' ? this.data.length : this.totalItems;
+    return Math.max(1, Math.ceil(total / this.pageSize));
+  }
+
+  goToPage(page: number) {
+    const clamped = Math.max(1, Math.min(page, this.totalPages));
+    if (clamped === this.currentPage) return;
+    this.currentPage = clamped;
+
+    if (this.paginationMode === 'server' && this._hasController) {
+      this.debouncedDataRequest();
+    } else {
+      this.renderBody();
+    }
+
+    this.dispatchPageChange();
+  }
+
+  setPageSize(size: number) {
+    this.pageSize = size;
+    this.currentPage = 1;
+
+    if (this.paginationMode === 'server' && this._hasController) {
+      this.debouncedDataRequest();
+    } else {
+      this.renderBody();
+    }
+
+    this.dispatchPageChange();
+  }
+
+  @dispatch('page-change', { bubbles: true, composed: true })
+  private dispatchPageChange() {
+    return {
+      page: this.currentPage,
+      pageSize: this.pageSize,
+      totalPages: this.totalPages,
+      totalItems: this.paginationMode === 'client' ? this.data.length : this.totalItems
+    };
+  }
+
+  renderPagination() {
+    const container = this.shadowRoot?.querySelector('.table-pagination-container');
+    if (!container) return;
+
+    if (!this.pagination) {
+      container.innerHTML = '';
+      return;
+    }
+
+    const total = this.paginationMode === 'client' ? this.data.length : this.totalItems;
+    const totalPages = this.totalPages;
+    const start = Math.min((this.currentPage - 1) * this.pageSize + 1, total);
+    const end = Math.min(this.currentPage * this.pageSize, total);
+
+    // Build page buttons
+    const pageButtons: string[] = [];
+    const maxVisible = 7;
+
+    if (totalPages <= maxVisible) {
+      for (let i = 1; i <= totalPages; i++) {
+        pageButtons.push(this.pageButton(i));
+      }
+    } else {
+      pageButtons.push(this.pageButton(1));
+      if (this.currentPage > 3) pageButtons.push('<span class="pagination__ellipsis">…</span>');
+
+      const rangeStart = Math.max(2, this.currentPage - 1);
+      const rangeEnd = Math.min(totalPages - 1, this.currentPage + 1);
+      for (let i = rangeStart; i <= rangeEnd; i++) {
+        pageButtons.push(this.pageButton(i));
+      }
+
+      if (this.currentPage < totalPages - 2) pageButtons.push('<span class="pagination__ellipsis">…</span>');
+      pageButtons.push(this.pageButton(totalPages));
+    }
+
+    const pageSizeOptions = this.pageSizes.map(s =>
+      `<option value="${s}" ${s === this.pageSize ? 'selected' : ''}>${s}</option>`
+    ).join('');
+
+    container.innerHTML = `
+      <div class="pagination" part="pagination">
+        <div class="pagination__info">
+          Showing ${start}–${end} of ${total}
+        </div>
+        <div class="pagination__controls">
+          <button class="pagination__btn pagination__first" ${this.currentPage <= 1 ? 'disabled' : ''} data-page="1" aria-label="First page">⟨⟨</button>
+          <button class="pagination__btn pagination__prev" ${this.currentPage <= 1 ? 'disabled' : ''} data-page="${this.currentPage - 1}" aria-label="Previous page">⟨</button>
+          ${pageButtons.join('')}
+          <button class="pagination__btn pagination__next" ${this.currentPage >= totalPages ? 'disabled' : ''} data-page="${this.currentPage + 1}" aria-label="Next page">⟩</button>
+          <button class="pagination__btn pagination__last" ${this.currentPage >= totalPages ? 'disabled' : ''} data-page="${totalPages}" aria-label="Last page">⟩⟩</button>
+        </div>
+        <div class="pagination__size">
+          <label>Rows per page:</label>
+          <select class="pagination__size-select">${pageSizeOptions}</select>
+        </div>
+      </div>
+    `;
+
+    // Bind events
+    container.querySelectorAll('[data-page]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const page = parseInt((btn as HTMLElement).getAttribute('data-page')!);
+        this.goToPage(page);
+      });
+    });
+
+    const sizeSelect = container.querySelector('.pagination__size-select') as HTMLSelectElement;
+    if (sizeSelect) {
+      sizeSelect.addEventListener('change', () => {
+        this.setPageSize(parseInt(sizeSelect.value));
+      });
+    }
+  }
+
+  private pageButton(page: number): string {
+    const active = page === this.currentPage ? ' pagination__btn--active' : '';
+    return `<button class="pagination__btn pagination__page${active}" data-page="${page}">${page}</button>`;
   }
 
   getCellAttributes(column: any, value: any): string {

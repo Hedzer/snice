@@ -208,6 +208,8 @@ export interface TableSort {
   direction: SortDirection;
 }
 
+export type PaginationMode = 'client' | 'server';
+
 export interface SniceTableElement extends HTMLElement {
   size: TableSize;
   variant: TableVariant;
@@ -222,10 +224,15 @@ export interface SniceTableElement extends HTMLElement {
   data: any[];
   columns: ColumnDefinition[];
   showSearch: boolean;
-  showPagination: boolean;
+
+  // Pagination
+  pagination: boolean;
+  paginationMode: PaginationMode;
   pageSize: number;
   currentPage: number;
   totalItems: number;
+  pageSizes: number[];
+
   setData(data: any[]): void;
   sort(column: string): void;
   getSelectedRows(): any[];
