@@ -19,8 +19,11 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
     body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
-    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); margin-top: 2rem; }
     .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .toolbar { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap; }
+    .toolbar button { padding: 0.25rem 0.75rem; border: 1px solid var(--snice-color-border, #555); background: var(--snice-color-background, #1a1a2e); color: var(--snice-color-text, #eee); border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+    .toolbar button:hover { background: var(--snice-color-background-secondary, #2a2a3e); }
   </style>
 </head>
 <body>
@@ -28,56 +31,47 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 <h2>Basic Table</h2>
 <snice-table id="basic"></snice-table>
 
-<h2>Striped</h2>
-<snice-table id="striped" striped></snice-table>
-
-<h2>Hoverable (default: true)</h2>
-<snice-table id="hoverable" hoverable></snice-table>
-
-<h2>Not Hoverable</h2>
-<snice-table id="no-hover"></snice-table>
-
-<h2>Sortable</h2>
-<snice-table id="sortable" sortable></snice-table>
-
-<h2>Searchable</h2>
-<snice-table id="searchable" searchable></snice-table>
-
-<h2>Selectable</h2>
-<snice-table id="selectable" selectable></snice-table>
-
-<h2>Clickable</h2>
-<snice-table id="clickable" clickable></snice-table>
-
-<h2>List Mode (No Vertical Borders)</h2>
-<snice-table id="list-mode" list></snice-table>
-
 <h2>Striped + Sortable + Searchable</h2>
 <snice-table id="combined" striped sortable searchable></snice-table>
 
-<h2>Selectable + Striped + Hoverable</h2>
-<snice-table id="sel-striped" selectable striped hoverable></snice-table>
+<h2>Selectable + Hoverable</h2>
+<snice-table id="selectable" selectable hoverable></snice-table>
 
-<h2>All Boolean Props</h2>
-<snice-table id="all-props" striped searchable sortable selectable hoverable clickable></snice-table>
+<h2>List Mode</h2>
+<snice-table id="list-mode" list hoverable></snice-table>
+
+<h2>Cell Types (Text, Number, Date, Boolean, Rating, Progress)</h2>
+<snice-table id="cell-types" sortable></snice-table>
+
+<h2>Pagination (Client-Side, 3 per page)</h2>
+<snice-table id="paginated" pagination page-size="3" sortable></snice-table>
+
+<h2>Column Resize (drag header edges)</h2>
+<snice-table id="resizable" column-resize sortable></snice-table>
+
+<h2>Density: Compact</h2>
+<snice-table id="density-compact" density="compact" sortable striped></snice-table>
+
+<h2>Density: Comfortable</h2>
+<snice-table id="density-comfy" density="comfortable" sortable striped></snice-table>
+
+<h2>Column Visibility + Pinning</h2>
+<div class="toolbar" id="col-toolbar"></div>
+<snice-table id="col-features" sortable column-resize></snice-table>
+
+<h2>Filtering (Client-Side)</h2>
+<div class="toolbar" id="filter-toolbar"></div>
+<snice-table id="filtered" sortable></snice-table>
+
+<h2>Export</h2>
+<div class="toolbar" id="export-toolbar"></div>
+<snice-table id="exportable" sortable selectable></snice-table>
 
 <h2>Loading State</h2>
 <snice-table id="loading" loading></snice-table>
 
 <h2>Empty Table</h2>
 <snice-table id="empty"></snice-table>
-
-<h2>Cell Types (Text, Number, Date, Boolean, Rating, Progress)</h2>
-<snice-table id="cell-types"></snice-table>
-
-<h2>List Mode + Striped</h2>
-<snice-table id="list-striped" list striped></snice-table>
-
-<h2>Pagination (Client-Side, 3 per page)</h2>
-<snice-table id="paginated" pagination page-size="3" sortable></snice-table>
-
-<h2>Pagination (5 per page, Striped)</h2>
-<snice-table id="paginated-5" pagination page-size="5" striped></snice-table>
 
 <script type="module">
   import './snice-table.ts';
@@ -86,14 +80,22 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     { key: 'name', label: 'Name', type: 'text' },
     { key: 'age', label: 'Age', type: 'number' },
     { key: 'department', label: 'Department', type: 'text' },
+    { key: 'email', label: 'Email', type: 'text' },
   ];
 
   const data = [
-    { name: 'Alice Johnson', age: 30, department: 'Engineering' },
-    { name: 'Bob Smith', age: 25, department: 'Marketing' },
-    { name: 'Charlie Brown', age: 35, department: 'Sales' },
-    { name: 'Diana Prince', age: 28, department: 'Design' },
-    { name: 'Eve Wilson', age: 32, department: 'Engineering' },
+    { name: 'Alice Johnson', age: 30, department: 'Engineering', email: 'alice@example.com' },
+    { name: 'Bob Smith', age: 25, department: 'Marketing', email: 'bob@example.com' },
+    { name: 'Charlie Brown', age: 35, department: 'Sales', email: 'charlie@example.com' },
+    { name: 'Diana Prince', age: 28, department: 'Design', email: 'diana@example.com' },
+    { name: 'Eve Wilson', age: 32, department: 'Engineering', email: 'eve@example.com' },
+    { name: 'Frank Miller', age: 27, department: 'Marketing', email: 'frank@example.com' },
+    { name: 'Grace Lee', age: 40, department: 'Sales', email: 'grace@example.com' },
+    { name: 'Henry Chen', age: 29, department: 'Engineering', email: 'henry@example.com' },
+    { name: 'Ivy Taylor', age: 33, department: 'Design', email: 'ivy@example.com' },
+    { name: 'Jack Davis', age: 26, department: 'Marketing', email: 'jack@example.com' },
+    { name: 'Kate Moore', age: 38, department: 'Engineering', email: 'kate@example.com' },
+    { name: 'Liam Brown', age: 31, department: 'Sales', email: 'liam@example.com' },
   ];
 
   function setup(id, cols, d) {
@@ -103,35 +105,11 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     requestAnimationFrame(() => { el.renderHeader(); el.renderBody(); });
   }
 
+  // Basic
   setup('basic');
-  setup('striped');
-  setup('hoverable');
-
-  // Not hoverable
-  const noHover = document.getElementById('no-hover');
-  noHover.hoverable = false;
-  setup('no-hover');
-
-  setup('sortable');
-  setup('searchable');
-  setup('selectable');
-  setup('clickable');
-  setup('list-mode');
   setup('combined');
-  setup('sel-striped');
-  setup('all-props');
-
-  // Loading
-  const loading = document.getElementById('loading');
-  loading.setColumns(columns);
-  loading.setData([]);
-  requestAnimationFrame(() => { loading.renderHeader(); loading.renderBody(); });
-
-  // Empty
-  const empty = document.getElementById('empty');
-  empty.setColumns(columns);
-  empty.setData([]);
-  requestAnimationFrame(() => { empty.renderHeader(); empty.renderBody(); });
+  setup('selectable');
+  setup('list-mode');
 
   // Cell types
   const typedCols = [
@@ -150,26 +128,110 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   ];
   setup('cell-types', typedCols, typedData);
 
-  setup('list-striped');
+  // Pagination
+  setup('paginated');
 
-  // Pagination demos — more data to paginate through
-  const paginationData = [
-    { name: 'Alice Johnson', age: 30, department: 'Engineering' },
-    { name: 'Bob Smith', age: 25, department: 'Marketing' },
-    { name: 'Charlie Brown', age: 35, department: 'Sales' },
-    { name: 'Diana Prince', age: 28, department: 'Design' },
-    { name: 'Eve Wilson', age: 32, department: 'Engineering' },
-    { name: 'Frank Miller', age: 27, department: 'Marketing' },
-    { name: 'Grace Lee', age: 40, department: 'Sales' },
-    { name: 'Henry Chen', age: 29, department: 'Engineering' },
-    { name: 'Ivy Taylor', age: 33, department: 'Design' },
-    { name: 'Jack Davis', age: 26, department: 'Marketing' },
-    { name: 'Kate Moore', age: 38, department: 'Engineering' },
-    { name: 'Liam Brown', age: 31, department: 'Sales' },
-  ];
+  // Resizable
+  setup('resizable');
 
-  setup('paginated', columns, paginationData);
-  setup('paginated-5', columns, paginationData);
+  // Density
+  setup('density-compact');
+  setup('density-comfy');
+
+  // Column features
+  const colTable = document.getElementById('col-features');
+  colTable.setColumns([
+    { key: 'name', label: 'Name', type: 'text', pinned: 'left' },
+    { key: 'age', label: 'Age', type: 'number' },
+    { key: 'department', label: 'Department', type: 'text' },
+    { key: 'email', label: 'Email', type: 'text' },
+  ]);
+  colTable.setData(data);
+  requestAnimationFrame(() => { colTable.renderHeader(); colTable.renderBody(); });
+
+  // Column toolbar
+  const colToolbar = document.getElementById('col-toolbar');
+  ['age', 'department', 'email'].forEach(key => {
+    const btn = document.createElement('button');
+    btn.textContent = 'Toggle ' + key;
+    btn.onclick = () => {
+      const vis = colTable.getColumnVisibility();
+      colTable.setColumnVisible(key, !vis[key]);
+    };
+    colToolbar.appendChild(btn);
+  });
+  const pinBtn = document.createElement('button');
+  pinBtn.textContent = 'Pin email right';
+  pinBtn.onclick = () => colTable.pinColumn('email', 'right');
+  colToolbar.appendChild(pinBtn);
+  const unpinBtn = document.createElement('button');
+  unpinBtn.textContent = 'Unpin email';
+  unpinBtn.onclick = () => colTable.unpinColumn('email');
+  colToolbar.appendChild(unpinBtn);
+
+  // Filtering
+  const filterTable = document.getElementById('filtered');
+  filterTable.setColumns(columns);
+  filterTable.setData(data);
+  requestAnimationFrame(() => { filterTable.renderHeader(); filterTable.renderBody(); });
+
+  const filterToolbar = document.getElementById('filter-toolbar');
+  const filterInput = document.createElement('input');
+  filterInput.placeholder = 'Quick filter...';
+  filterInput.style.cssText = 'padding:0.25rem 0.5rem;border:1px solid var(--snice-color-border,#555);background:var(--snice-color-background,#1a1a2e);color:var(--snice-color-text,#eee);border-radius:4px;font-size:0.8rem;';
+  filterInput.oninput = () => filterTable.setQuickFilter(filterInput.value);
+  filterToolbar.appendChild(filterInput);
+
+  const engBtn = document.createElement('button');
+  engBtn.textContent = 'Filter: Engineering only';
+  engBtn.onclick = () => filterTable.setColumnFilter('department', 'equals', 'Engineering');
+  filterToolbar.appendChild(engBtn);
+
+  const age30Btn = document.createElement('button');
+  age30Btn.textContent = 'Filter: Age > 30';
+  age30Btn.onclick = () => filterTable.setColumnFilter('age', 'gt', 30);
+  filterToolbar.appendChild(age30Btn);
+
+  const clearBtn = document.createElement('button');
+  clearBtn.textContent = 'Clear filters';
+  clearBtn.onclick = () => { filterTable.clearAllFilters(); filterInput.value = ''; };
+  filterToolbar.appendChild(clearBtn);
+
+  // Export
+  const exportTable = document.getElementById('exportable');
+  exportTable.setColumns(columns);
+  exportTable.setData(data);
+  requestAnimationFrame(() => { exportTable.renderHeader(); exportTable.renderBody(); });
+
+  const exportToolbar = document.getElementById('export-toolbar');
+  const csvBtn = document.createElement('button');
+  csvBtn.textContent = 'Export CSV';
+  csvBtn.onclick = () => exportTable.exportCSV({ filename: 'employees.csv' });
+  exportToolbar.appendChild(csvBtn);
+  const printBtn = document.createElement('button');
+  printBtn.textContent = 'Print';
+  printBtn.onclick = () => exportTable.printTable();
+  exportToolbar.appendChild(printBtn);
+  const copyBtn = document.createElement('button');
+  copyBtn.textContent = 'Copy to clipboard';
+  copyBtn.onclick = async () => {
+    const ok = await exportTable.copyToClipboard();
+    copyBtn.textContent = ok ? 'Copied!' : 'Failed';
+    setTimeout(() => { copyBtn.textContent = 'Copy to clipboard'; }, 2000);
+  };
+  exportToolbar.appendChild(copyBtn);
+
+  // Loading
+  const loading = document.getElementById('loading');
+  loading.setColumns(columns);
+  loading.setData([]);
+  requestAnimationFrame(() => { loading.renderHeader(); loading.renderBody(); });
+
+  // Empty
+  const empty = document.getElementById('empty');
+  empty.setColumns(columns);
+  empty.setData([]);
+  requestAnimationFrame(() => { empty.renderHeader(); empty.renderBody(); });
 </script>
 </body>
 </html>
