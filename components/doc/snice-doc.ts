@@ -48,6 +48,7 @@ export class SniceDoc extends HTMLElement {
   icons: IconSet = 'default';
 
   private editor!: HTMLDivElement;
+  private pendingHTML?: string;
   private showFormatToolbar: boolean = false;
   private formatToolbarPosition: { top: number; left: number } | null = null;
   private savedSelection: Range | null = null;
@@ -96,6 +97,11 @@ export class SniceDoc extends HTMLElement {
     this.editor.addEventListener('click', this.saveCurrentSelection);
     wrapper.appendChild(this.editor);
     this.shadowRoot.appendChild(wrapper);
+
+    if (this.pendingHTML) {
+      this.editor.innerHTML = this.pendingHTML;
+      this.pendingHTML = undefined;
+    }
   }
 
   private createToolbarButton(icon: string, title: string): HTMLButtonElement {
@@ -581,6 +587,10 @@ export class SniceDoc extends HTMLElement {
    * Set document HTML
    */
   setHTML(html: string) {
+    if (!this.editor) {
+      this.pendingHTML = html;
+      return;
+    }
     this.editor.innerHTML = html;
   }
 
