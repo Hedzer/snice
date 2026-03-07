@@ -64,6 +64,26 @@
       </div>
       <div class="comp-split">
         <div class="comp-split-demo">
+          <snice-button variant="primary"><span slot="icon" class="material-symbols-outlined">bolt</span> Icon Start</snice-button>
+          <snice-button variant="success" icon-placement="end"><span slot="icon" class="material-symbols-outlined">check</span> Icon End</snice-button>
+          <snice-button variant="default"><span slot="icon" class="material-symbols-outlined">search</span> Search</snice-button>
+          <snice-button variant="danger" icon-placement="end"><span slot="icon" class="material-symbols-outlined">delete</span> Delete</snice-button>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-button variant="primary"&gt;
+  &lt;span slot="icon" class="material-symbols-outlined"&gt;bolt&lt;/span&gt;
+  Icon Start
+&lt;/snice-button&gt;
+
+&lt;snice-button icon-placement="end"&gt;
+  &lt;span slot="icon" class="material-symbols-outlined"&gt;check&lt;/span&gt;
+  Icon End
+&lt;/snice-button&gt;</snice-code-block>
+        </div>
+      </div>
+      <div class="comp-split">
+        <div class="comp-split-demo">
           <snice-button variant="primary" loading>Loading</snice-button>
           <snice-button variant="primary" disabled>Disabled</snice-button>
         </div>
