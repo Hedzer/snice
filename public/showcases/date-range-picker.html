@@ -8,7 +8,7 @@
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-date-range-picker
+          <snice-code-block language="html" grammar="grammars/html.json?v=e303454">&lt;snice-date-range-picker
   label="Date Range"
   clearable
 &gt;&lt;/snice-date-range-picker&gt;
@@ -27,7 +27,7 @@
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-date-range-picker
+          <snice-code-block language="html" grammar="grammars/html.json?v=e303454">&lt;snice-date-range-picker
   id="preset-picker"
   label="With Presets"
   columns="2"
@@ -49,6 +49,37 @@
       end: new Date(today.getFullYear(), today.getMonth() + 1, 0) },
   ];
 &lt;/script&gt;</snice-code-block>
+        </div>
+      </div>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-col" style="gap:1rem">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem">
+            <snice-date-range-picker label="Small" size="small"></snice-date-range-picker>
+            <snice-date-range-picker label="Medium" size="medium"></snice-date-range-picker>
+            <snice-date-range-picker label="Large" size="large"></snice-date-range-picker>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <snice-date-range-picker label="Disabled" start="2026-03-01" end="2026-03-15" disabled></snice-date-range-picker>
+            <snice-date-range-picker label="Readonly" start="2026-03-01" end="2026-03-15" readonly></snice-date-range-picker>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <snice-date-range-picker label="Loading" loading></snice-date-range-picker>
+            <snice-date-range-picker label="Required" required helper-text="This field is required"></snice-date-range-picker>
+          </div>
+          <snice-date-range-picker label="Invalid" invalid error-text="Please select a valid date range"></snice-date-range-picker>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=e303454">&lt;!-- Sizes --&gt;
+&lt;snice-date-range-picker size="small"&gt;&lt;/snice-date-range-picker&gt;
+&lt;snice-date-range-picker size="large"&gt;&lt;/snice-date-range-picker&gt;
+
+&lt;!-- States --&gt;
+&lt;snice-date-range-picker disabled&gt;&lt;/snice-date-range-picker&gt;
+&lt;snice-date-range-picker readonly&gt;&lt;/snice-date-range-picker&gt;
+&lt;snice-date-range-picker loading&gt;&lt;/snice-date-range-picker&gt;
+&lt;snice-date-range-picker required helper-text="Required"&gt;&lt;/snice-date-range-picker&gt;
+&lt;snice-date-range-picker invalid error-text="Invalid"&gt;&lt;/snice-date-range-picker&gt;</snice-code-block>
         </div>
       </div>
     </div>
