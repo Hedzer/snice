@@ -1,6 +1,8 @@
 // vite.config.ts
 import { defineConfig } from 'vite';
 import { execSync } from 'child_process';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 import swc from 'unplugin-swc';
 
 function componentRebuilder() {
@@ -66,6 +68,32 @@ function cacheHeaders() {
   };
 }
 
+function servePublicIndex() {
+  return {
+    name: 'serve-public-index',
+    configureServer(server: any) {
+      server.middlewares.use((req: any, res: any, next: any) => {
+        if (req.url === '/' || req.url === '/index.html') {
+          try {
+            const html = readFileSync(join(server.config.root, 'public', 'index.html'), 'utf-8');
+            server.transformIndexHtml(req.url, html).then((transformed: string) => {
+              res.setHeader('Content-Type', 'text/html');
+              res.end(transformed);
+            }).catch(() => {
+              res.setHeader('Content-Type', 'text/html');
+              res.end(html);
+            });
+          } catch {
+            next();
+          }
+          return;
+        }
+        next();
+      });
+    },
+  };
+}
+
 function showcaseRebuilder() {
   return {
     name: 'showcase-rebuilder',
@@ -103,6 +131,7 @@ export default defineConfig({
         },
       },
     }),
+    servePublicIndex(),
     cacheHeaders(),
     showcaseRebuilder(),
     componentRebuilder(),
