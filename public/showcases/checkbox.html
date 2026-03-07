@@ -1,0 +1,41 @@
+    <div class="comp-section">
+      <h3>Checkbox</h3>
+      <p class="comp-desc">Toggle selections with checked, indeterminate, and loading states</p>
+      <div class="comp-split">
+        <div class="comp-split-demo">
+          <div style="display:flex;gap:2rem;flex-wrap:wrap;align-items:center">
+            <snice-checkbox label="Remember me" checked></snice-checkbox>
+            <snice-checkbox label="Subscribe"></snice-checkbox>
+            <snice-checkbox label="Indeterminate" indeterminate></snice-checkbox>
+          </div>
+          <div style="display:flex;gap:2rem;flex-wrap:wrap;align-items:center;margin-top:1rem">
+            <snice-checkbox label="Small" size="small" checked></snice-checkbox>
+            <snice-checkbox label="Medium" size="medium" checked></snice-checkbox>
+            <snice-checkbox label="Large" size="large" checked></snice-checkbox>
+          </div>
+          <div style="display:flex;gap:2rem;flex-wrap:wrap;align-items:center;margin-top:1rem">
+            <snice-checkbox label="Disabled" disabled></snice-checkbox>
+            <snice-checkbox label="Disabled checked" disabled checked></snice-checkbox>
+            <snice-checkbox label="Loading" loading></snice-checkbox>
+            <snice-checkbox label="Invalid" invalid></snice-checkbox>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;snice-checkbox label="Remember me" checked&gt;
+&lt;/snice-checkbox&gt;
+
+&lt;snice-checkbox label="Indeterminate" indeterminate&gt;
+&lt;/snice-checkbox&gt;
+
+&lt;!-- Sizes --&gt;
+&lt;snice-checkbox label="Small" size="small"&gt;&lt;/snice-checkbox&gt;
+&lt;snice-checkbox label="Large" size="large"&gt;&lt;/snice-checkbox&gt;
+
+&lt;!-- States --&gt;
+&lt;snice-checkbox label="Disabled" disabled&gt;&lt;/snice-checkbox&gt;
+&lt;snice-checkbox label="Loading" loading&gt;&lt;/snice-checkbox&gt;
+&lt;snice-checkbox label="Invalid" invalid&gt;&lt;/snice-checkbox&gt;</snice-code-block>
+        </div>
+      </div>
+    </div>

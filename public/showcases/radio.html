@@ -1,0 +1,77 @@
+    <div class="comp-section">
+      <h3>Radio</h3>
+      <p class="comp-desc">Single-selection radio buttons with inline and block variants</p>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-col">
+          <div style="display:flex;gap:1rem;align-items:center">
+            <snice-radio name="demo-plan" label="Free" value="free" checked></snice-radio>
+            <snice-radio name="demo-plan" label="Pro" value="pro"></snice-radio>
+            <snice-radio name="demo-plan" label="Enterprise" value="enterprise"></snice-radio>
+          </div>
+          <div style="display:flex;gap:1rem;align-items:center;margin-top:1rem">
+            <snice-radio label="Small" size="small" checked></snice-radio>
+            <snice-radio label="Medium" size="medium"></snice-radio>
+            <snice-radio label="Large" size="large"></snice-radio>
+          </div>
+          <div style="display:flex;gap:1rem;align-items:center;margin-top:1rem">
+            <snice-radio label="Disabled" disabled></snice-radio>
+            <snice-radio label="Loading" loading></snice-radio>
+            <snice-radio label="Invalid" invalid></snice-radio>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;snice-radio name="plan" label="Free" value="free" checked&gt;
+&lt;/snice-radio&gt;
+&lt;snice-radio name="plan" label="Pro" value="pro"&gt;
+&lt;/snice-radio&gt;
+
+&lt;!-- Sizes --&gt;
+&lt;snice-radio label="Small" size="small"&gt;&lt;/snice-radio&gt;
+&lt;snice-radio label="Large" size="large"&gt;&lt;/snice-radio&gt;
+
+&lt;!-- States --&gt;
+&lt;snice-radio label="Disabled" disabled&gt;&lt;/snice-radio&gt;
+&lt;snice-radio label="Loading" loading&gt;&lt;/snice-radio&gt;</snice-code-block>
+        </div>
+      </div>
+
+      <div class="comp-split-stacked" style="margin-top:1rem;">
+        <div class="comp-split-demo">
+          <div style="display:flex;flex-direction:column;gap:0.5rem;max-width:400px">
+            <snice-radio variant="block" name="demo-pricing" value="free" label="Free Plan" description="For individuals and side projects" checked>
+              <span slot="suffix" style="font-size:0.8125rem;color:var(--snice-color-success,rgb(22 163 74));font-weight:500">Free forever</span>
+            </snice-radio>
+            <snice-radio variant="block" name="demo-pricing" value="pro" label="Pro Plan" description="For growing teams and businesses">
+              <span slot="suffix" style="font-size:0.8125rem;color:var(--snice-color-text-secondary,rgb(82 82 82))">$12/mo</span>
+            </snice-radio>
+            <snice-radio variant="block" name="demo-pricing" value="enterprise" label="Enterprise" description="For large organizations with custom needs">
+              <span slot="suffix" style="font-size:0.8125rem;color:var(--snice-color-text-secondary,rgb(82 82 82))">Contact us</span>
+            </snice-radio>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;snice-radio
+  variant="block"
+  name="pricing"
+  value="free"
+  label="Free Plan"
+  description="For individuals and side projects"
+  checked
+&gt;
+  &lt;span slot="suffix"&gt;Free forever&lt;/span&gt;
+&lt;/snice-radio&gt;
+
+&lt;snice-radio
+  variant="block"
+  name="pricing"
+  value="pro"
+  label="Pro Plan"
+  description="For growing teams"
+&gt;
+  &lt;span slot="suffix"&gt;$12/mo&lt;/span&gt;
+&lt;/snice-radio&gt;</snice-code-block>
+        </div>
+      </div>
+    </div>

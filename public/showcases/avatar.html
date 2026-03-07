@@ -8,9 +8,6 @@
           <snice-avatar name="Carol Davis" size="medium"></snice-avatar>
           <snice-avatar name="David Wilson" size="large"></snice-avatar>
           <snice-avatar name="Eve Brown" size="xl"></snice-avatar>
-          <snice-avatar name="John Doe" shape="circle"></snice-avatar>
-          <snice-avatar name="Jane Doe" shape="rounded"></snice-avatar>
-          <snice-avatar name="Jim Doe" shape="square"></snice-avatar>
           <snice-avatar src="assets/avatars/pravatar-100-1.jpg?v=80938d7" name="User"></snice-avatar>
           <snice-avatar src="assets/avatars/pravatar-100-2.jpg?v=80938d7" name="User"></snice-avatar>
         </div>
@@ -20,11 +17,58 @@
 &lt;/snice-avatar&gt;
 
 &lt;snice-avatar
-  src="assets/avatars/pravatar-100-1.jpg?v=80938d7"
+  src="avatar.jpg"
   name="User"
-  shape="circle"
-  status="online"
 &gt;&lt;/snice-avatar&gt;</snice-code-block>
+        </div>
+      </div>
+
+      <div class="comp-split-stacked" style="margin-top:1rem;">
+        <div class="comp-split-demo">
+          <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem;">
+            <snice-avatar shape="circle" size="large" name="Circle"></snice-avatar>
+            <snice-avatar shape="square" size="large" name="Square"></snice-avatar>
+            <snice-avatar shape="rounded" size="large" name="Rounded"></snice-avatar>
+            <snice-avatar shape="circle" size="large" src="assets/avatars/pravatar-100-1.jpg?v=80938d7" name="User"></snice-avatar>
+            <snice-avatar shape="square" size="large" src="assets/avatars/pravatar-100-1.jpg?v=80938d7" name="User"></snice-avatar>
+            <snice-avatar shape="rounded" size="large" src="assets/avatars/pravatar-100-1.jpg?v=80938d7" name="User"></snice-avatar>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem;">
+            <snice-avatar name="Alice"></snice-avatar>
+            <snice-avatar name="Bob"></snice-avatar>
+            <snice-avatar name="Carol"></snice-avatar>
+            <snice-avatar name="David"></snice-avatar>
+            <snice-avatar name="Eve"></snice-avatar>
+            <snice-avatar name="Frank"></snice-avatar>
+            <snice-avatar name="Grace"></snice-avatar>
+            <snice-avatar name="Henry"></snice-avatar>
+            <snice-avatar name="Iris"></snice-avatar>
+            <snice-avatar name="Jack"></snice-avatar>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.75rem;">
+            <snice-avatar name="Red" fallback-background="#dc2626" fallback-color="#fff" size="large"></snice-avatar>
+            <snice-avatar name="Blue" fallback-background="#2563eb" fallback-color="#fff" size="large"></snice-avatar>
+            <snice-avatar name="Green" fallback-background="#16a34a" fallback-color="#fff" size="large"></snice-avatar>
+            <snice-avatar name="Purple" fallback-background="#7c3aed" fallback-color="#fff" size="large"></snice-avatar>
+            <snice-avatar name="Teal" fallback-background="#0d9488" fallback-color="#fff" size="large"></snice-avatar>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;!-- Shapes --&gt;
+&lt;snice-avatar shape="circle" name="Circle"&gt;&lt;/snice-avatar&gt;
+&lt;snice-avatar shape="square" name="Square"&gt;&lt;/snice-avatar&gt;
+&lt;snice-avatar shape="rounded" name="Rounded"&gt;&lt;/snice-avatar&gt;
+
+&lt;!-- Auto-generated colors from name --&gt;
+&lt;snice-avatar name="Alice"&gt;&lt;/snice-avatar&gt;
+&lt;snice-avatar name="Bob"&gt;&lt;/snice-avatar&gt;
+
+&lt;!-- Custom fallback colors --&gt;
+&lt;snice-avatar name="Red"
+  fallback-background="#dc2626"
+  fallback-color="#fff"&gt;
+&lt;/snice-avatar&gt;</snice-code-block>
         </div>
       </div>
     </div>
