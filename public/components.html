@@ -6,18 +6,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Load runtime + code-block + grammars first to prevent layout shift -->
-  <script src="components/snice-runtime.min.js?v=ff60e40"></script>
-  <script src="components/snice-code-block.min.js?v=ff60e40"></script>
-  <script>fetch('grammars/html.json?v=ff60e40');fetch('grammars/typescript.json?v=ff60e40');fetch('grammars/css.json?v=ff60e40');fetch('grammars/json.json?v=ff60e40');fetch('grammars/snice.json?v=ff60e40');</script>
+  <script src="components/snice-runtime.min.js"></script>
+  <script src="components/snice-code-block.min.js"></script>
+  <script>fetch('grammars/html.json');fetch('grammars/typescript.json');fetch('grammars/css.json');fetch('grammars/json.json');fetch('grammars/snice.json');</script>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <title>Components - Snice</title>
   <meta name="description" content="TypeScript web components with separation of concerns">
-  <link rel="icon" type="image/png" href="images/snice-logo.png?v=ff60e40">
+  <link rel="icon" type="image/png" href="images/snice-logo.png">
   <meta property="og:title" content="Components - Snice">
   <meta property="og:description" content="Pre-built UI components. Use standalone or with React/Vue/Angular.">
   <meta property="og:image" content="images/snice-logo.png">
-  <link rel="stylesheet" href="theme/theme.css?v=ff60e40">
-  <link rel="stylesheet" href="styles.css?v=ff60e40">
+  <link rel="stylesheet" href="theme/theme.css">
+  <link rel="stylesheet" href="styles.css">
   <script>(function(){var p=localStorage.getItem('snice-theme-preset');var c=localStorage.getItem('snice-theme-custom');if(p){var s=document.createElement('style');s.id='snice-theme-preset';s.textContent=p;document.head.appendChild(s)}if(c){var s=document.createElement('style');s.id='snice-theme-custom';s.textContent=c;document.head.appendChild(s)}var n=localStorage.getItem('snice-theme-preset-name');if(n&&n!=='default'){document.addEventListener('DOMContentLoaded',function(){var d=document.getElementById('theme-dot');if(d){d.hidden=false;d.title=n.charAt(0).toUpperCase()+n.slice(1)+' theme';d.style.background='var(--snice-color-primary)'}})}})()</script>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
   <style>
@@ -177,7 +177,7 @@
 
   <header>
     <div class="wrap">
-      <h1><a href="index.html" style="display:inline-flex;align-items:center;gap:0.5rem"><img src="images/snice-logo.png?v=ff60e40" alt="Snice" width="28" height="28" style="border-radius:50%">Snice</a></h1>
+      <h1><a href="index.html" style="display:inline-flex;align-items:center;gap:0.5rem"><img src="images/snice-logo.png" alt="Snice" width="28" height="28" style="border-radius:50%">Snice</a></h1>
       <nav>
         <a href="guide.html">Guide</a>
         <a href="docs.html">Docs</a>
@@ -259,7 +259,7 @@
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-accordion&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-accordion&gt;
   &lt;snice-accordion-item item-id="faq-1" open&gt;
     &lt;span slot="header"&gt;Question?&lt;/span&gt;
     &lt;p&gt;Answer content here.&lt;/p&gt;
@@ -288,7 +288,7 @@
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-accordion variant="elevated"&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-accordion variant="elevated"&gt;
   &lt;snice-accordion-item item-id="elev-1" open&gt;
     &lt;span slot="header"&gt;Surface elevation&lt;/span&gt;
     &lt;p&gt;Items float with shadows.&lt;/p&gt;
@@ -306,7 +306,7 @@
         </div>
         <div class="comp-split-code">
           <span class="code-lang">javascript</span>
-          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=ff60e40">&lt;snice-activity-feed
+          <snice-code-block language="javascript" grammar="grammars/typescript.json">&lt;snice-activity-feed
   group-by="date"
 &gt;&lt;/snice-activity-feed&gt;
 
@@ -359,7 +359,7 @@ feed.activities = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-alert variant="info" title="Information" dismissible&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-alert variant="info" title="Information" dismissible&gt;
   This is an informational message.
 &lt;/snice-alert&gt;
 
@@ -398,7 +398,7 @@ feed.activities = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-app-tiles columns="3"&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-app-tiles columns="3"&gt;
   &lt;snice-app-tile name="Mail"
     icon="mail"
     color="rgb(220 38 38)"&gt;&lt;/snice-app-tile&gt;
@@ -429,7 +429,7 @@ feed.activities = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;!-- No icon = colored letter --&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;!-- No icon = colored letter --&gt;
 &lt;snice-app-tiles columns="3"&gt;
   &lt;snice-app-tile name="Slack"
     color="rgb(97 31 105)"&gt;
@@ -458,7 +458,7 @@ feed.activities = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-app-tiles columns="1"
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-app-tiles columns="1"
   variant="list"&gt;
   &lt;snice-app-tile name="Dashboard"
     icon="dashboard"
@@ -488,7 +488,7 @@ feed.activities = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-app-tiles columns="2"
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-app-tiles columns="2"
   variant="compact"&gt;
   &lt;snice-app-tile name="Dashboard"
     icon="dashboard"
@@ -539,7 +539,7 @@ feed.activities = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;!-- size: sm, md, lg, xl, 2xl --&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;!-- size: sm, md, lg, xl, 2xl --&gt;
 &lt;snice-app-tiles columns="2"
   size="xl"&gt;
   &lt;snice-app-tile name="Photos"
@@ -567,7 +567,7 @@ feed.activities = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">js</span>
-          <snice-code-block language="js" grammar="grammars/typescript.json?v=ff60e40">const tiles = document.querySelector(
+          <snice-code-block language="js" grammar="grammars/typescript.json">const tiles = document.querySelector(
   'snice-app-tiles');
 tiles.columns = 3;
 tiles.tiles = [
@@ -618,7 +618,7 @@ tiles.addEventListener('tile-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">javascript</span>
-          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=ff60e40">&lt;snice-approval-flow
+          <snice-code-block language="javascript" grammar="grammars/typescript.json">&lt;snice-approval-flow
   id="flow"
   orientation="horizontal"
   current-step="step-3"
@@ -667,7 +667,7 @@ tiles.addEventListener('tile-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-audio-recorder
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-audio-recorder
   show-controls
   show-visualizer
   show-timer
@@ -685,7 +685,7 @@ tiles.addEventListener('tile-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">javascript</span>
-          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=ff60e40">&lt;snice-availability
+          <snice-code-block language="javascript" grammar="grammars/typescript.json">&lt;snice-availability
   id="avail"
   granularity="60"
   start-hour="8"
@@ -734,7 +734,7 @@ tiles.addEventListener('tile-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-avatar-group id="group"
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-avatar-group id="group"
   max="4" size="medium"&gt;
 &lt;/snice-avatar-group&gt;
 
@@ -795,16 +795,16 @@ tiles.addEventListener('tile-click',
           <snice-avatar name="John Doe" shape="circle"></snice-avatar>
           <snice-avatar name="Jane Doe" shape="rounded"></snice-avatar>
           <snice-avatar name="Jim Doe" shape="square"></snice-avatar>
-          <snice-avatar src="assets/avatars/pravatar-100-1.jpg?v=ff60e40" name="User"></snice-avatar>
-          <snice-avatar src="assets/avatars/pravatar-100-2.jpg?v=ff60e40" name="User"></snice-avatar>
+          <snice-avatar src="assets/avatars/pravatar-100-1.jpg" name="User"></snice-avatar>
+          <snice-avatar src="assets/avatars/pravatar-100-2.jpg" name="User"></snice-avatar>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-avatar name="Alice Johnson" size="large"&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-avatar name="Alice Johnson" size="large"&gt;
 &lt;/snice-avatar&gt;
 
 &lt;snice-avatar
-  src="assets/avatars/pravatar-100-1.jpg?v=ff60e40"
+  src="assets/avatars/pravatar-100-1.jpg"
   name="User"
   shape="circle"
   status="online"
@@ -830,7 +830,7 @@ tiles.addEventListener('tile-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-badge count="5" variant="error"&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-badge count="5" variant="error"&gt;
   &lt;snice-button&gt;Messages&lt;/snice-button&gt;
 &lt;/snice-badge&gt;
 
@@ -851,7 +851,7 @@ tiles.addEventListener('tile-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-badge
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-badge
   inline
   content="Active"
   variant="success"
@@ -879,7 +879,7 @@ tiles.addEventListener('tile-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-banner
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-banner
   variant="info"
   message="New version available!"
   action-text="Update Now"
@@ -960,7 +960,7 @@ tiles.addEventListener('tile-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-book
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-book
   title="Web Components"
   author="Jane Developer"
   cover-image="cover.jpg"
@@ -994,7 +994,7 @@ tiles.addEventListener('tile-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">javascript</span>
-          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=ff60e40">&lt;snice-booking
+          <snice-code-block language="javascript" grammar="grammars/typescript.json">&lt;snice-booking
   id="bk"
   duration="30"
   variant="stepper"
@@ -1088,7 +1088,7 @@ tiles.addEventListener('tile-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;!-- Separators: / &gt; &raquo; &bull; | --&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;!-- Separators: / &gt; &raquo; &bull; | --&gt;
 &lt;snice-breadcrumbs separator="/"&gt;
   &lt;snice-crumb href="/" label="Home"&gt;&lt;/snice-crumb&gt;
   &lt;snice-crumb href="/docs" label="Docs"&gt;&lt;/snice-crumb&gt;
@@ -1167,7 +1167,7 @@ tiles.addEventListener('tile-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-button variant="primary"&gt;Primary&lt;/snice-button&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-button variant="primary"&gt;Primary&lt;/snice-button&gt;
 
 &lt;snice-button variant="success"&gt;Success&lt;/snice-button&gt;
 
@@ -1187,7 +1187,7 @@ tiles.addEventListener('tile-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-button variant="primary" outline&gt;Outline&lt;/snice-button&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-button variant="primary" outline&gt;Outline&lt;/snice-button&gt;
 &lt;snice-button variant="success" outline&gt;Success&lt;/snice-button&gt;</snice-code-block>
         </div>
       </div>
@@ -1203,7 +1203,7 @@ tiles.addEventListener('tile-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-button variant="primary" size="small"&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-button variant="primary" size="small"&gt;
   Small
 &lt;/snice-button&gt;
 
@@ -1223,7 +1223,7 @@ tiles.addEventListener('tile-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-button variant="primary" loading&gt;Loading&lt;/snice-button&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-button variant="primary" loading&gt;Loading&lt;/snice-button&gt;
 &lt;snice-button variant="primary" disabled&gt;Disabled&lt;/snice-button&gt;</snice-code-block>
         </div>
       </div>
@@ -1237,7 +1237,7 @@ tiles.addEventListener('tile-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">javascript</span>
-          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=ff60e40">&lt;snice-calendar
+          <snice-code-block language="javascript" grammar="grammars/typescript.json">&lt;snice-calendar
   id="cal"
   highlight-today
 &gt;&lt;/snice-calendar&gt;
@@ -1279,7 +1279,7 @@ tiles.addEventListener('tile-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-camera-annotate&gt;&lt;/snice-camera-annotate&gt;</snice-code-block>
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-camera-annotate&gt;&lt;/snice-camera-annotate&gt;</snice-code-block>
         </div>
       </div>
       <div class="comp-split">
@@ -1288,7 +1288,7 @@ tiles.addEventListener('tile-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;!-- Hide the labels sidebar --&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;!-- Hide the labels sidebar --&gt;
 &lt;snice-camera-annotate
   show-labels-panel="false"
 &gt;&lt;/snice-camera-annotate&gt;
@@ -1330,7 +1330,7 @@ tiles.addEventListener('tile-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-camera
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-camera
   show-controls
   controls-position="bottom"
   auto-start="false"
@@ -1361,7 +1361,7 @@ tiles.addEventListener('tile-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html + js</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-candlestick
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-candlestick
   id="chart"
   show-volume
   y-axis-format="currency"
@@ -1382,7 +1382,7 @@ tiles.addEventListener('tile-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;!-- Minimal: no volume, default format --&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;!-- Minimal: no volume, default format --&gt;
 &lt;snice-candlestick id="chart"&gt;
 &lt;/snice-candlestick&gt;
 
@@ -1539,7 +1539,7 @@ tiles.addEventListener('tile-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;!-- Blog card with gradient image slot --&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;!-- Blog card with gradient image slot --&gt;
 &lt;snice-card variant="elevated" clickable&gt;
   &lt;div slot="image" style="background:linear-gradient(...)"&gt;
     &lt;span class="material-symbols-outlined"&gt;code&lt;/span&gt;
@@ -1566,37 +1566,37 @@ tiles.addEventListener('tile-click',
           <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1rem;position:relative">
             <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">with controls</span>
             <snice-carousel show-controls show-indicators loop style="width:100%">
-              <img src="assets/photos/slide1.jpg?v=ff60e40" alt="Slide 1" style="width:100%;height:220px;object-fit:cover;display:block">
-              <img src="assets/photos/slide2.jpg?v=ff60e40" alt="Slide 2" style="width:100%;height:220px;object-fit:cover;display:block">
-              <img src="assets/photos/slide3.jpg?v=ff60e40" alt="Slide 3" style="width:100%;height:220px;object-fit:cover;display:block">
+              <img src="assets/photos/slide1.jpg" alt="Slide 1" style="width:100%;height:220px;object-fit:cover;display:block">
+              <img src="assets/photos/slide2.jpg" alt="Slide 2" style="width:100%;height:220px;object-fit:cover;display:block">
+              <img src="assets/photos/slide3.jpg" alt="Slide 3" style="width:100%;height:220px;object-fit:cover;display:block">
             </snice-carousel>
           </div>
           <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1rem;position:relative">
             <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">autoplay</span>
             <snice-carousel autoplay autoplay-interval="2000" show-indicators loop style="width:100%">
-              <img src="assets/photos/auto1.jpg?v=ff60e40" alt="Auto 1" style="width:100%;height:180px;object-fit:cover;display:block">
-              <img src="assets/photos/auto2.jpg?v=ff60e40" alt="Auto 2" style="width:100%;height:180px;object-fit:cover;display:block">
-              <img src="assets/photos/auto3.jpg?v=ff60e40" alt="Auto 3" style="width:100%;height:180px;object-fit:cover;display:block">
+              <img src="assets/photos/auto1.jpg" alt="Auto 1" style="width:100%;height:180px;object-fit:cover;display:block">
+              <img src="assets/photos/auto2.jpg" alt="Auto 2" style="width:100%;height:180px;object-fit:cover;display:block">
+              <img src="assets/photos/auto3.jpg" alt="Auto 3" style="width:100%;height:180px;object-fit:cover;display:block">
             </snice-carousel>
           </div>
           <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1rem;position:relative">
             <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">multi-slide</span>
             <snice-carousel slides-per-view="3" space-between="12" show-controls style="width:100%">
-              <img src="assets/photos/multi1.jpg?v=ff60e40" alt="1" style="flex:0 0 auto;width:calc(33.33% - 8px);height:160px;object-fit:cover;display:block;margin-right:12px">
-              <img src="assets/photos/multi2.jpg?v=ff60e40" alt="2" style="flex:0 0 auto;width:calc(33.33% - 8px);height:160px;object-fit:cover;display:block;margin-right:12px">
-              <img src="assets/photos/multi3.jpg?v=ff60e40" alt="3" style="flex:0 0 auto;width:calc(33.33% - 8px);height:160px;object-fit:cover;display:block;margin-right:12px">
-              <img src="assets/photos/multi4.jpg?v=ff60e40" alt="4" style="flex:0 0 auto;width:calc(33.33% - 8px);height:160px;object-fit:cover;display:block;margin-right:12px">
-              <img src="assets/photos/multi5.jpg?v=ff60e40" alt="5" style="flex:0 0 auto;width:calc(33.33% - 8px);height:160px;object-fit:cover;display:block;margin-right:12px">
-              <img src="assets/photos/multi6.jpg?v=ff60e40" alt="6" style="flex:0 0 auto;width:calc(33.33% - 8px);height:160px;object-fit:cover;display:block">
+              <img src="assets/photos/multi1.jpg" alt="1" style="flex:0 0 auto;width:calc(33.33% - 8px);height:160px;object-fit:cover;display:block;margin-right:12px">
+              <img src="assets/photos/multi2.jpg" alt="2" style="flex:0 0 auto;width:calc(33.33% - 8px);height:160px;object-fit:cover;display:block;margin-right:12px">
+              <img src="assets/photos/multi3.jpg" alt="3" style="flex:0 0 auto;width:calc(33.33% - 8px);height:160px;object-fit:cover;display:block;margin-right:12px">
+              <img src="assets/photos/multi4.jpg" alt="4" style="flex:0 0 auto;width:calc(33.33% - 8px);height:160px;object-fit:cover;display:block;margin-right:12px">
+              <img src="assets/photos/multi5.jpg" alt="5" style="flex:0 0 auto;width:calc(33.33% - 8px);height:160px;object-fit:cover;display:block;margin-right:12px">
+              <img src="assets/photos/multi6.jpg" alt="6" style="flex:0 0 auto;width:calc(33.33% - 8px);height:160px;object-fit:cover;display:block">
             </snice-carousel>
           </div>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;!-- With controls --&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;!-- With controls --&gt;
 &lt;snice-carousel show-controls show-indicators loop&gt;
-  &lt;img src="photo1.jpg?v=ff60e40"&gt;
-  &lt;img src="photo2.jpg?v=ff60e40"&gt;
+  &lt;img src="photo1.jpg"&gt;
+  &lt;img src="photo2.jpg"&gt;
 &lt;/snice-carousel&gt;
 
 &lt;!-- Autoplay --&gt;
@@ -1623,7 +1623,7 @@ tiles.addEventListener('tile-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">javascript</span>
-          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=ff60e40">&lt;snice-cart
+          <snice-code-block language="javascript" grammar="grammars/typescript.json">&lt;snice-cart
   id="cart"
   tax-rate="8.5"
 &gt;&lt;/snice-cart&gt;
@@ -1681,7 +1681,7 @@ tiles.addEventListener('tile-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-chart id="chart" type="line" height="200"&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-chart id="chart" type="line" height="200"&gt;
 &lt;/snice-chart&gt;
 
 &lt;snice-sparkline
@@ -1739,7 +1739,7 @@ tiles.addEventListener('tile-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-chat
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-chat
   current-user="You"
   placeholder="Type a message..."
   show-avatars
@@ -1795,7 +1795,7 @@ tiles.addEventListener('tile-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-checkbox label="Remember me" checked&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-checkbox label="Remember me" checked&gt;
 &lt;/snice-checkbox&gt;
 
 &lt;snice-checkbox label="Subscribe"&gt;&lt;/snice-checkbox&gt;
@@ -1823,7 +1823,7 @@ tiles.addEventListener('tile-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-checkbox label="Loading" loading&gt;&lt;/snice-checkbox&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-checkbox label="Loading" loading&gt;&lt;/snice-checkbox&gt;
 
 &lt;snice-radio label="Loading" loading&gt;&lt;/snice-radio&gt;
 
@@ -1846,7 +1846,7 @@ tiles.addEventListener('tile-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-radio
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-radio
   variant="block"
   name="pricing"
   value="free"
@@ -1897,7 +1897,7 @@ tiles.addEventListener('tile-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-chip label="React" variant="primary"&gt;&lt;/snice-chip&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-chip label="React" variant="primary"&gt;&lt;/snice-chip&gt;
 
 &lt;snice-chip
   label="Done"
@@ -1916,7 +1916,7 @@ tiles.addEventListener('tile-click',
       <p class="comp-desc">Syntax-highlighted code display with formatting</p>
       <div class="comp-split comp-split-stacked">
         <div class="comp-split-demo">
-          <snice-code-block style="width:100%" language="snice" grammar="components/grammars/snice.json?v=ff60e40" format="pretty" show-line-numbers copyable theme="dark" filename="counter.ts">import { element, property, render, dispatch } from 'snice';
+          <snice-code-block style="width:100%" language="snice" grammar="components/grammars/snice.json" format="pretty" show-line-numbers copyable theme="dark" filename="counter.ts">import { element, property, render, dispatch } from 'snice';
 
 @element('my-counter')
 export class MyCounter extends HTMLElement {
@@ -1961,9 +1961,9 @@ export class MyCounter extends HTMLElement {
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-code-block
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-code-block
   language="snice"
-  grammar="grammars/snice.json?v=ff60e40"
+  grammar="grammars/snice.json"
   format="pretty"
   show-line-numbers
   copyable
@@ -1995,7 +1995,7 @@ const x = 42;
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-color-display
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-color-display
   value="#3b82f6"
   label="Primary"
   show-swatch
@@ -2015,7 +2015,7 @@ const x = 42;
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-color-picker
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-color-picker
   value="#3b82f6"
   label="Theme Color"
   show-presets
@@ -2028,7 +2028,7 @@ const x = 42;
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-color-picker value="#3b82f6" loading&gt;&lt;/snice-color-picker&gt;</snice-code-block>
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-color-picker value="#3b82f6" loading&gt;&lt;/snice-color-picker&gt;</snice-code-block>
         </div>
       </div>
     </div>
@@ -2043,7 +2043,7 @@ const x = 42;
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-command-palette
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-command-palette
   id="cmd"
   placeholder="Type a command..."
 &gt;&lt;/snice-command-palette&gt;
@@ -2102,7 +2102,7 @@ const x = 42;
           </div>
           <div class="code-panel active" id="comments-decl">
             <span class="code-lang">html</span>
-            <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-comments current-user="Alice"
+            <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-comments current-user="Alice"
   allow-replies allow-likes&gt;
   &lt;snice-comment author="Bob"
     avatar="bob.jpg"
@@ -2122,7 +2122,7 @@ const x = 42;
           </div>
           <div class="code-panel" id="comments-imper">
             <span class="code-lang">javascript</span>
-            <snice-code-block language="javascript" grammar="grammars/typescript.json?v=ff60e40">const el = document.querySelector(
+            <snice-code-block language="javascript" grammar="grammars/typescript.json">const el = document.querySelector(
   'snice-comments');
 el.comments = [
   { id: '1', author: 'Bob',
@@ -2157,7 +2157,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-countdown
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-countdown
   target="2026-12-31T00:00:00Z"
   format="dhms"
   variant="flip"
@@ -2194,12 +2194,12 @@ el.addEventListener('comment-add',
       <p class="comp-desc">Image cropping with drag-to-resize, rotation, zoom, and aspect ratio lock</p>
       <div class="comp-split">
         <div class="comp-split-demo" style="justify-content:center">
-          <snice-cropper id="demo-cropper" src="assets/photos/cropper.jpg?v=ff60e40" aspect-ratio="1" output-type="jpeg" style="width:100%;max-width:400px;aspect-ratio:1"></snice-cropper>
+          <snice-cropper id="demo-cropper" src="assets/photos/cropper.jpg" aspect-ratio="1" output-type="jpeg" style="width:100%;max-width:400px;aspect-ratio:1"></snice-cropper>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-cropper
-  src="/photo.jpg?v=ff60e40"
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-cropper
+  src="/photo.jpg"
   aspect-ratio="1.777"
   output-type="jpeg"
 &gt;&lt;/snice-cropper&gt;
@@ -2231,7 +2231,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-data-card id="card"&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-data-card id="card"&gt;
   &lt;span slot="title"&gt;Customer Details&lt;/span&gt;
 &lt;/snice-data-card&gt;
 
@@ -2285,7 +2285,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-date-picker
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-date-picker
   label="Start Date"
   placeholder="Select date"
   format="yyyy-mm-dd"
@@ -2304,7 +2304,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-date-picker label="Loading" placeholder="Fetching date..." loading&gt;&lt;/snice-date-picker&gt;</snice-code-block>
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-date-picker label="Loading" placeholder="Fetching date..." loading&gt;&lt;/snice-date-picker&gt;</snice-code-block>
         </div>
       </div>
     </div>
@@ -2318,7 +2318,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-date-range-picker
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-date-range-picker
   label="Date Range"
   clearable
 &gt;&lt;/snice-date-range-picker&gt;
@@ -2337,7 +2337,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-date-range-picker
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-date-range-picker
   id="preset-picker"
   label="With Presets"
   columns="2"
@@ -2391,7 +2391,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-date-time-picker
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-date-time-picker
   label="Event Start"
   placeholder="Select date and time"
 &gt;&lt;/snice-date-time-picker&gt;
@@ -2421,7 +2421,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-diff
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-diff
   mode="unified"
   line-numbers
   context-lines="3"
@@ -2466,7 +2466,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-divider text="OR"&gt;&lt;/snice-divider&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-divider text="OR"&gt;&lt;/snice-divider&gt;
 
 &lt;snice-divider orientation="vertical"&gt;&lt;/snice-divider&gt;
 
@@ -2484,7 +2484,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-doc icons="material"&gt;&lt;/snice-doc&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-doc icons="material"&gt;&lt;/snice-doc&gt;
 
 &lt;script&gt;
   const editor = document.querySelector('snice-doc');
@@ -2540,7 +2540,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;!-- Positions --&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;!-- Positions --&gt;
 &lt;snice-drawer position="left"&gt;...&lt;/snice-drawer&gt;
 &lt;snice-drawer position="right"&gt;...&lt;/snice-drawer&gt;
 &lt;snice-drawer position="top"&gt;...&lt;/snice-drawer&gt;
@@ -2608,7 +2608,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code" style="margin-top:0.5rem">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;!-- Always inline --&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;!-- Always inline --&gt;
 &lt;snice-drawer inline position="left" size="small"&gt;
   &lt;span slot="title"&gt;Sidebar&lt;/span&gt;
   ...
@@ -2636,7 +2636,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-empty-state
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-empty-state
   title="No results found"
   description="Try adjusting your search."
 &gt;
@@ -2660,7 +2660,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">javascript</span>
-          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=ff60e40">&lt;snice-estimate
+          <snice-code-block language="javascript" grammar="grammars/typescript.json">&lt;snice-estimate
   id="est"
   estimate-number="EST-0042"
   date="Feb 27, 2026"
@@ -2749,7 +2749,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-file-gallery
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-file-gallery
   accept="image/*"
   multiple view="grid"
   show-add-button allow-delete
@@ -2781,7 +2781,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-file-upload
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-file-upload
   label="Upload files"
   accept="image/*,.pdf"
   multiple
@@ -2808,7 +2808,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-flip-card
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-flip-card
   direction="horizontal"
   style="width:240px;height:160px"
 &gt;
@@ -2837,7 +2837,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html + js</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-flow id="flow" snap-to-grid minimap&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-flow id="flow" snap-to-grid minimap&gt;
 &lt;/snice-flow&gt;
 
 &lt;script&gt;
@@ -2926,7 +2926,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-form-layout columns="2" gap="medium"&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-form-layout columns="2" gap="medium"&gt;
   &lt;snice-input label="First Name"&gt;&lt;/snice-input&gt;
   &lt;snice-input label="Last Name"&gt;&lt;/snice-input&gt;
   &lt;snice-input label="Email"&gt;&lt;/snice-input&gt;
@@ -2958,7 +2958,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html + js</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-funnel id="funnel" animation&gt;&lt;/snice-funnel&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-funnel id="funnel" animation&gt;&lt;/snice-funnel&gt;
 
 &lt;script&gt;
   funnel.data = [
@@ -2977,7 +2977,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html + js</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-funnel
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-funnel
   variant="gradient"
   orientation="horizontal"
   animation
@@ -3020,7 +3020,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-gantt zoom="week"&gt;&lt;/snice-gantt&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-gantt zoom="week"&gt;&lt;/snice-gantt&gt;
 
 &lt;script&gt;
   const gantt = document.querySelector(
@@ -3070,7 +3070,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-gauge value="75" variant="primary" label="CPU"&gt;&lt;/snice-gauge&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-gauge value="75" variant="primary" label="CPU"&gt;&lt;/snice-gauge&gt;
 
 &lt;snice-gauge value="42" variant="success" label="Memory"&gt;&lt;/snice-gauge&gt;
 
@@ -3087,7 +3087,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-gauge value="30" size="small" variant="info" label="Small"&gt;&lt;/snice-gauge&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-gauge value="30" size="small" variant="info" label="Small"&gt;&lt;/snice-gauge&gt;
 
 &lt;snice-gauge value="60" size="medium" variant="primary" label="Medium"&gt;&lt;/snice-gauge&gt;
 
@@ -3105,7 +3105,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html + js</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-heatmap id="heatmap"&gt;&lt;/snice-heatmap&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-heatmap id="heatmap"&gt;&lt;/snice-heatmap&gt;
 
 &lt;script&gt;
   const heatmap = document.getElementById('heatmap');
@@ -3132,7 +3132,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-heatmap
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-heatmap
   color-scheme="blue"
   weeks="26"
 &gt;&lt;/snice-heatmap&gt;
@@ -3165,15 +3165,15 @@ el.addEventListener('comment-add',
       <p class="comp-desc">Lazy-loaded images with variants</p>
       <div class="comp-split">
         <div class="comp-split-demo">
-          <snice-image src="assets/photos/thumb1.jpg?v=ff60e40" alt="Rounded" variant="rounded" size="medium" lazy></snice-image>
-          <snice-image src="assets/photos/thumb2.jpg?v=ff60e40" alt="Circle" variant="circle" size="medium" lazy></snice-image>
-          <snice-image src="assets/photos/thumb3.jpg?v=ff60e40" alt="Square" variant="square" size="medium" lazy></snice-image>
-          <snice-image src="assets/photos/thumb4.jpg?v=ff60e40" alt="Another" variant="rounded" size="medium" lazy></snice-image>
+          <snice-image src="assets/photos/thumb1.jpg" alt="Rounded" variant="rounded" size="medium" lazy></snice-image>
+          <snice-image src="assets/photos/thumb2.jpg" alt="Circle" variant="circle" size="medium" lazy></snice-image>
+          <snice-image src="assets/photos/thumb3.jpg" alt="Square" variant="square" size="medium" lazy></snice-image>
+          <snice-image src="assets/photos/thumb4.jpg" alt="Another" variant="rounded" size="medium" lazy></snice-image>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-image
-  src="assets/photos/sample-200.jpg?v=ff60e40"
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-image
+  src="assets/photos/sample-200.jpg"
   alt="Photo"
   variant="circle"
   size="medium"
@@ -3205,7 +3205,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-input label="Email" type="email"
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-input label="Email" type="email"
   placeholder="Enter your email"&gt;&lt;/snice-input&gt;
 
 &lt;snice-input label="Password" type="password"
@@ -3228,7 +3228,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-input label="Search" placeholder="Search..."
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-input label="Search" placeholder="Search..."
   prefix-icon="search"&gt;
   &lt;span slot="prefix-icon"
     class="material-symbols-outlined"&gt;
@@ -3252,7 +3252,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-input label="Loading" placeholder="Fetching data..." loading&gt;&lt;/snice-input&gt;</snice-code-block>
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-input label="Loading" placeholder="Fetching data..." loading&gt;&lt;/snice-input&gt;</snice-code-block>
         </div>
       </div>
     </div>
@@ -3265,7 +3265,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">javascript</span>
-          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=ff60e40">&lt;snice-invoice
+          <snice-code-block language="javascript" grammar="grammars/typescript.json">&lt;snice-invoice
   id="inv"
   invoice-number="INV-2026-001"
   date="Feb 27, 2026"
@@ -3314,7 +3314,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-kanban
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-kanban
   id="kb"
   allow-drag-drop
   show-card-count
@@ -3366,7 +3366,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;!-- Declarative --&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;!-- Declarative --&gt;
 &lt;snice-key-value label="Headers"&gt;
   &lt;snice-kv-pair
     key="Content-Type"
@@ -3402,7 +3402,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;!-- View mode (read-only display) --&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;!-- View mode (read-only display) --&gt;
 &lt;snice-key-value
   label="Response Headers"
   mode="view"
@@ -3462,7 +3462,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-kpi
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-kpi
   label="Revenue"
   value="$127,450"
   trend-value="+22.4%"
@@ -3516,7 +3516,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;!-- Declarative (child elements) --&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;!-- Declarative (child elements) --&gt;
 &lt;snice-leaderboard variant="podium"
   title="Top Players"&gt;
   &lt;snice-leaderboard-entry
@@ -3578,7 +3578,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-link-preview
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-link-preview
   title="Snice - Beautiful Decorators"
   description="Write clean, reactive web components..."
   image="assets/photos/link-preview.jpg"
@@ -3612,7 +3612,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-link href="#" variant="primary"&gt;Primary&lt;/snice-link&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-link href="#" variant="primary"&gt;Primary&lt;/snice-link&gt;
 
 &lt;snice-link href="#" underline&gt;Underlined&lt;/snice-link&gt;
 
@@ -3667,7 +3667,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-list dividers&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-list dividers&gt;
   &lt;snice-list-item heading="Document.pdf"
     description="Updated 2h ago"&gt;
     &lt;span slot="before" class="material-symbols-outlined"&gt;
@@ -3719,7 +3719,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-location
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-location
   name="Eiffel Tower"
   address="5 Avenue Anatole France"
   city="Paris"
@@ -3754,7 +3754,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-login
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-login
   variant="card"
   title="Welcome Back"
   action-text="Sign In"
@@ -3781,7 +3781,7 @@ el.addEventListener('comment-add',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-map zoom="13"&gt;&lt;/snice-map&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-map zoom="13"&gt;&lt;/snice-map&gt;
 
 &lt;script&gt;
   const map = document.querySelector(
@@ -3855,7 +3855,7 @@ const greeting = (name) => {
           </div>
           <div class="code-panel active" id="md-decl">
             <span class="code-lang">html</span>
-            <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-markdown theme="github"&gt;
+            <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-markdown theme="github"&gt;
 ## Hello World
 
 **Bold** and *italic* text.
@@ -3870,7 +3870,7 @@ const greeting = (name) => {
           </div>
           <div class="code-panel" id="md-imper">
             <span class="code-lang">javascript</span>
-            <snice-code-block language="javascript" grammar="grammars/typescript.json?v=ff60e40">const md = document.querySelector(
+            <snice-code-block language="javascript" grammar="grammars/typescript.json">const md = document.querySelector(
   'snice-markdown');
 md.setContent('## Dynamic\n\n'
   + '- Item 1\n- Item 2\n\n'
@@ -3901,47 +3901,47 @@ md.addEventListener('link-click',
         <div class="comp-split-demo" style="width:100%">
           <snice-masonry columns="3" gap="0.75rem">
             <div class="pin-card">
-              <img class="pin-img" src="assets/photos/masonry-cabin.jpg?v=ff60e40" alt="Mountain cabin" loading="lazy">
+              <img class="pin-img" src="assets/photos/masonry-cabin.jpg" alt="Mountain cabin" loading="lazy">
               <div class="pin-body"><div class="pin-title">Mountain Retreat</div><div class="pin-desc">Minimalist cabin design in the Alps</div></div>
               <div class="pin-footer"><div class="pin-avatar" style="background:#667eea">JW</div><div class="pin-meta"><span class="material-symbols-outlined" style="font-size:14px">favorite</span> 2.4k</div></div>
             </div>
             <div class="pin-card">
-              <img class="pin-img" src="assets/photos/masonry-sunset.jpg?v=ff60e40" alt="Sunset colors" loading="lazy">
+              <img class="pin-img" src="assets/photos/masonry-sunset.jpg" alt="Sunset colors" loading="lazy">
               <div class="pin-body"><div class="pin-title">Sunset Palette</div><div class="pin-desc">Color inspiration for your next interior project</div></div>
               <div class="pin-footer"><div class="pin-avatar" style="background:#f093fb">AK</div><div class="pin-meta"><span class="material-symbols-outlined" style="font-size:14px">favorite</span> 891</div></div>
             </div>
             <div class="pin-card">
-              <img class="pin-img" src="assets/photos/masonry-garden.jpg?v=ff60e40" alt="Garden" loading="lazy">
+              <img class="pin-img" src="assets/photos/masonry-garden.jpg" alt="Garden" loading="lazy">
               <div class="pin-body"><div class="pin-title">Urban Garden Tips</div></div>
               <div class="pin-footer"><div class="pin-avatar" style="background:#43e97b">ML</div><div class="pin-meta"><span class="material-symbols-outlined" style="font-size:14px">favorite</span> 342</div></div>
             </div>
             <div class="pin-card">
-              <img class="pin-img" src="assets/photos/masonry-dark-ui.jpg?v=ff60e40" alt="Dark UI" loading="lazy">
+              <img class="pin-img" src="assets/photos/masonry-dark-ui.jpg" alt="Dark UI" loading="lazy">
               <div class="pin-body"><div class="pin-title">Dark Mode UI Kit</div><div class="pin-desc">50+ components designed for dark interfaces</div></div>
               <div class="pin-footer"><div class="pin-avatar" style="background:#2c5364">DS</div><div class="pin-meta"><span class="material-symbols-outlined" style="font-size:14px">favorite</span> 5.1k</div></div>
             </div>
             <div class="pin-card">
-              <img class="pin-img" src="assets/photos/masonry-food.jpg?v=ff60e40" alt="Food bowl" loading="lazy">
+              <img class="pin-img" src="assets/photos/masonry-food.jpg" alt="Food bowl" loading="lazy">
               <div class="pin-body"><div class="pin-title">Breakfast Bowl</div><div class="pin-desc">Healthy smoothie recipe with granola topping</div></div>
               <div class="pin-footer"><div class="pin-avatar" style="background:#fa709a">RH</div><div class="pin-meta"><span class="material-symbols-outlined" style="font-size:14px">favorite</span> 1.7k</div></div>
             </div>
             <div class="pin-card">
-              <img class="pin-img" src="assets/photos/masonry-ceramic.jpg?v=ff60e40" alt="Ceramics" loading="lazy">
+              <img class="pin-img" src="assets/photos/masonry-ceramic.jpg" alt="Ceramics" loading="lazy">
               <div class="pin-body"><div class="pin-title">Ceramic Collection</div><div class="pin-desc">Handmade pottery from Japanese artisans</div></div>
               <div class="pin-footer"><div class="pin-avatar" style="background:#a18cd1">YT</div><div class="pin-meta"><span class="material-symbols-outlined" style="font-size:14px">favorite</span> 3.2k</div></div>
             </div>
             <div class="pin-card">
-              <img class="pin-img" src="assets/photos/masonry-type.jpg?v=ff60e40" alt="Typography" loading="lazy">
+              <img class="pin-img" src="assets/photos/masonry-type.jpg" alt="Typography" loading="lazy">
               <div class="pin-body"><div class="pin-title">Typography Trends 2026</div></div>
               <div class="pin-footer"><div class="pin-avatar" style="background:#f5576c">CB</div><div class="pin-meta"><span class="material-symbols-outlined" style="font-size:14px">favorite</span> 567</div></div>
             </div>
             <div class="pin-card">
-              <img class="pin-img" src="assets/photos/masonry-coastal.jpg?v=ff60e40" alt="Coastal room" loading="lazy">
+              <img class="pin-img" src="assets/photos/masonry-coastal.jpg" alt="Coastal room" loading="lazy">
               <div class="pin-body"><div class="pin-title">Coastal Living Room</div><div class="pin-desc">Light and airy beach house inspiration</div></div>
               <div class="pin-footer"><div class="pin-avatar" style="background:#4facfe">NP</div><div class="pin-meta"><span class="material-symbols-outlined" style="font-size:14px">favorite</span> 4.8k</div></div>
             </div>
             <div class="pin-card">
-              <img class="pin-img" src="assets/photos/masonry-desk.jpg?v=ff60e40" alt="Workspace" loading="lazy">
+              <img class="pin-img" src="assets/photos/masonry-desk.jpg" alt="Workspace" loading="lazy">
               <div class="pin-body"><div class="pin-title">Workspace Setup</div><div class="pin-desc">Developer desk organization ideas</div></div>
               <div class="pin-footer"><div class="pin-avatar" style="background:#6a11cb">EP</div><div class="pin-meta"><span class="material-symbols-outlined" style="font-size:14px">favorite</span> 2.1k</div></div>
             </div>
@@ -3949,9 +3949,9 @@ md.addEventListener('link-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-masonry columns="3" gap="0.75rem"&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-masonry columns="3" gap="0.75rem"&gt;
   &lt;div class="pin-card"&gt;
-    &lt;img src="photo.jpg?v=ff60e40" class="pin-img"&gt;
+    &lt;img src="photo.jpg" class="pin-img"&gt;
     &lt;div class="pin-body"&gt;
       &lt;div class="pin-title"&gt;Mountain Retreat&lt;/div&gt;
       &lt;div class="pin-desc"&gt;Minimalist cabin design&lt;/div&gt;
@@ -3989,7 +3989,7 @@ md.addEventListener('link-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-menu&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-menu&gt;
   &lt;snice-button slot="trigger" variant="primary"&gt;
     Actions Menu
   &lt;/snice-button&gt;
@@ -4017,7 +4017,7 @@ md.addEventListener('link-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;!-- Avatar dropdown --&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;!-- Avatar dropdown --&gt;
 &lt;snice-menu&gt;
   &lt;div slot="trigger" style="display:inline-flex;
     align-items:center;gap:0.5rem"&gt;
@@ -4050,7 +4050,7 @@ md.addEventListener('link-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-message-strip variant="info"&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-message-strip variant="info"&gt;
   This is an informational message.
 &lt;/snice-message-strip&gt;
 
@@ -4078,7 +4078,7 @@ md.addEventListener('link-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-metric-table id="mt"
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-metric-table id="mt"
   sort-by="revenue"
   sort-direction="desc"&gt;
 &lt;/snice-metric-table&gt;
@@ -4137,7 +4137,7 @@ md.addEventListener('link-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-modal id="my-modal" label="Confirm"&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-modal id="my-modal" label="Confirm"&gt;
   &lt;h2 slot="header"&gt;Confirm Action&lt;/h2&gt;
   &lt;p&gt;Are you sure you want to proceed?&lt;/p&gt;
   &lt;div slot="footer"&gt;
@@ -4185,7 +4185,7 @@ md.addEventListener('link-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-music-player
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-music-player
   show-playlist
   show-controls
   show-volume
@@ -4238,7 +4238,7 @@ md.addEventListener('link-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">javascript</span>
-          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=ff60e40">// Flat navigation
+          <snice-code-block language="javascript" grammar="grammars/typescript.json">// Flat navigation
 nav.update(placards, appContext, 'dashboard');
 
 // Hierarchical (parent-child)
@@ -4302,7 +4302,7 @@ nav.update([
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html + js</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-network-graph
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-network-graph
   id="graph"
   show-labels
 &gt;&lt;/snice-network-graph&gt;
@@ -4328,7 +4328,7 @@ nav.update([
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;!-- Circular layout with weighted edges --&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;!-- Circular layout with weighted edges --&gt;
 &lt;snice-network-graph
   id="graph"
   layout="circular"
@@ -4424,7 +4424,7 @@ nav.update([
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-notification-center
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-notification-center
   icon="notifications"&gt;
 &lt;/snice-notification-center&gt;
 
@@ -4469,7 +4469,7 @@ nav.update([
         </div>
         <div class="comp-split-code">
           <span class="code-lang">javascript</span>
-          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=ff60e40">&lt;snice-order-tracker
+          <snice-code-block language="javascript" grammar="grammars/typescript.json">&lt;snice-order-tracker
   id="tracker"
   tracking-number="1Z999AA10123456784"
   carrier="UPS"
@@ -4517,7 +4517,7 @@ nav.update([
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-org-chart
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-org-chart
   direction="top-down"
 &gt;&lt;/snice-org-chart&gt;
 
@@ -4575,7 +4575,7 @@ nav.update([
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-pagination current="1" total="10"&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-pagination current="1" total="10"&gt;
 &lt;/snice-pagination&gt;
 
 &lt;snice-pagination current="5" total="20"
@@ -4598,7 +4598,7 @@ nav.update([
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;!-- All-in-one with built-in toolbar --&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;!-- All-in-one with built-in toolbar --&gt;
 &lt;snice-paint&gt;&lt;/snice-paint&gt;
 
 &lt;!-- With 2 custom color pickers --&gt;
@@ -4634,7 +4634,7 @@ nav.update([
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-pdf-viewer
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-pdf-viewer
   src="/documents/report.pdf"
   fit="width"
   zoom="1"
@@ -4675,7 +4675,7 @@ nav.update([
         </div>
         <div class="comp-split-code">
           <span class="code-lang">javascript</span>
-          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=ff60e40">&lt;snice-permission-matrix
+          <snice-code-block language="javascript" grammar="grammars/typescript.json">&lt;snice-permission-matrix
   id="pm"
 &gt;&lt;/snice-permission-matrix&gt;
 
@@ -4742,7 +4742,7 @@ nav.update([
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;!-- Direct source --&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;!-- Direct source --&gt;
 &lt;snice-podcast-player
   src="episode.mp3"
   title="Episode Title"
@@ -4823,7 +4823,7 @@ nav.update([
           </div>
           <div class="code-panel active" id="pt-decl">
             <span class="code-lang">html</span>
-            <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-pricing-table&gt;
+            <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-pricing-table&gt;
   &lt;snice-plan name="Free" price="0"
     cta="Get Started"&gt;
     &lt;snice-feature name="1 user"
@@ -4843,7 +4843,7 @@ nav.update([
           </div>
           <div class="code-panel" id="pt-imper">
             <span class="code-lang">javascript</span>
-            <snice-code-block language="javascript" grammar="grammars/typescript.json?v=ff60e40">const pt = document.querySelector(
+            <snice-code-block language="javascript" grammar="grammars/typescript.json">const pt = document.querySelector(
   'snice-pricing-table');
 pt.plans = [
   { name: 'Free', price: 0,
@@ -4933,7 +4933,7 @@ pt.addEventListener('plan-select',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">javascript</span>
-          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=ff60e40">&lt;snice-product-card
+          <snice-code-block language="javascript" grammar="grammars/typescript.json">&lt;snice-product-card
   variant="featured"
   name="MacBook Pro M4"
   price="2499.00"
@@ -4969,7 +4969,7 @@ pt.addEventListener('plan-select',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;!-- Vertical with badge + low stock --&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;!-- Vertical with badge + low stock --&gt;
 &lt;snice-product-card
   name="Wireless Headphones"
   price="149.99" sale-price="99.99"
@@ -5002,7 +5002,7 @@ pt.addEventListener('plan-select',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;!-- Grid variant: optimized for product grids --&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;!-- Grid variant: optimized for product grids --&gt;
 &lt;div style="display:grid;grid-template-columns:
   repeat(auto-fill,minmax(180px,1fr));gap:1rem"&gt;
   &lt;snice-product-card variant="grid"
@@ -5026,7 +5026,7 @@ pt.addEventListener('plan-select',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;!-- Skeleton loading state --&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;!-- Skeleton loading state --&gt;
 &lt;snice-product-card loading&gt;
 &lt;/snice-product-card&gt;
 
@@ -5105,7 +5105,7 @@ pt.addEventListener('plan-select',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-progress-ring
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-progress-ring
   value="25"
   show-value
   size="small"
@@ -5163,7 +5163,7 @@ pt.addEventListener('plan-select',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-progress value="65" show-label&gt;&lt;/snice-progress&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-progress value="65" show-label&gt;&lt;/snice-progress&gt;
 
 &lt;snice-progress value="100" color="success"&gt;
 &lt;/snice-progress&gt;
@@ -5195,7 +5195,7 @@ pt.addEventListener('plan-select',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;!-- Logo overlay --&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;!-- Logo overlay --&gt;
 &lt;snice-qr-code
   value="https://snice.dev"
   size="120" margin="6"
@@ -5225,7 +5225,7 @@ pt.addEventListener('plan-select',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-qr-reader
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-qr-reader
   auto-start="false"
 &gt;&lt;/snice-qr-reader&gt;</snice-code-block>
         </div>
@@ -5265,7 +5265,7 @@ pt.addEventListener('plan-select',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-range-slider
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-range-slider
   min="0"
   max="1000"
   value-low="200"
@@ -5296,7 +5296,7 @@ pt.addEventListener('plan-select',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-rating
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-rating
   value="3.5"
   max="5"
   precision="half"
@@ -5325,7 +5325,7 @@ pt.addEventListener('plan-select',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">javascript</span>
-          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=ff60e40">&lt;snice-receipt
+          <snice-code-block language="javascript" grammar="grammars/typescript.json">&lt;snice-receipt
   id="rcpt"
   receipt-number="RCT-48291"
   date="Feb 27, 2026 3:42 PM"
@@ -5377,7 +5377,7 @@ pt.addEventListener('plan-select',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">javascript</span>
-          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=ff60e40">recipe.title = 'Pasta Carbonara';
+          <snice-code-block language="javascript" grammar="grammars/typescript.json">recipe.title = 'Pasta Carbonara';
 recipe.prepTime = 10;
 recipe.cookTime = 20;
 recipe.servings = 4;
@@ -5444,7 +5444,7 @@ recipe.nutrition = {
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html + js</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-sankey id="sankey" show-labels show-values animation&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-sankey id="sankey" show-labels show-values animation&gt;
 &lt;/snice-sankey&gt;
 
 &lt;script&gt;
@@ -5483,7 +5483,7 @@ recipe.nutrition = {
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html + js</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-sankey show-labels show-values&gt;&lt;/snice-sankey&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-sankey show-labels show-values&gt;&lt;/snice-sankey&gt;
 
 &lt;script&gt;
   sankey.data = {
@@ -5564,7 +5564,7 @@ recipe.nutrition = {
         </div>
         <div class="comp-split-code">
           <span class="code-lang">javascript</span>
-          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=ff60e40">&lt;snice-segmented-control
+          <snice-code-block language="javascript" grammar="grammars/typescript.json">&lt;snice-segmented-control
   value="weekly"
 &gt;&lt;/snice-segmented-control&gt;
 
@@ -5648,7 +5648,7 @@ control.options = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-select label="Country" searchable clearable&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-select label="Country" searchable clearable&gt;
   &lt;snice-option value="us" icon="flags/us.png"&gt;United States&lt;/snice-option&gt;
 &lt;/snice-select&gt;
 
@@ -5682,7 +5682,7 @@ control.options = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;!-- Loading state --&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;!-- Loading state --&gt;
 &lt;snice-select label="Loading" loading&gt;&lt;/snice-select&gt;
 
 &lt;!-- Lazy-load options on first open --&gt;
@@ -5718,7 +5718,7 @@ control.options = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;!-- Editable: text input trigger instead of button --&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;!-- Editable: text input trigger instead of button --&gt;
 &lt;snice-select editable
   label="Fruit"
   placeholder="Type or select..."
@@ -5803,7 +5803,7 @@ control.options = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-skeleton
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-skeleton
   variant="circular"
   width="48px"
   height="48px"
@@ -5828,7 +5828,7 @@ control.options = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-slider
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-slider
   label="Volume"
   value="75"
   show-value
@@ -5848,7 +5848,7 @@ control.options = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-slider label="Loading" value="50" show-value loading&gt;&lt;/snice-slider&gt;</snice-code-block>
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-slider label="Loading" value="50" show-value loading&gt;&lt;/snice-slider&gt;</snice-code-block>
         </div>
       </div>
     </div>
@@ -5867,7 +5867,7 @@ control.options = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-sortable&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-sortable&gt;
   &lt;div&gt;Item 1&lt;/div&gt;
   &lt;div&gt;Item 2&lt;/div&gt;
   &lt;div&gt;Item 3&lt;/div&gt;
@@ -5903,7 +5903,7 @@ control.options = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">javascript</span>
-          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=ff60e40">&lt;snice-split-button
+          <snice-code-block language="javascript" grammar="grammars/typescript.json">&lt;snice-split-button
   label="Save"
   variant="primary"
 &gt;&lt;/snice-split-button&gt;
@@ -5962,7 +5962,7 @@ button.actions = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-split-pane
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-split-pane
   direction="horizontal"
   primary-size="40"
 &gt;
@@ -5987,7 +5987,7 @@ button.actions = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-spotlight&gt;&lt;/snice-spotlight&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-spotlight&gt;&lt;/snice-spotlight&gt;
 
 &lt;script&gt;
   const spotlight = document.querySelector(
@@ -6033,7 +6033,7 @@ button.actions = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">javascript</span>
-          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=ff60e40">const sheet = document.querySelector(
+          <snice-code-block language="javascript" grammar="grammars/typescript.json">const sheet = document.querySelector(
   'snice-spreadsheet');
 sheet.columns = [
   { header: 'Product', type: 'text' },
@@ -6087,7 +6087,7 @@ sheet.data = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-stat-group id="stats"
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-stat-group id="stats"
   variant="card"&gt;
 &lt;/snice-stat-group&gt;
 
@@ -6163,7 +6163,7 @@ sheet.data = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-step-input
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-step-input
   value="1"
   min="0"
   max="99"
@@ -6199,7 +6199,7 @@ sheet.data = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-stepper
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-stepper
   id="stepper"
   current-step="1"
   clickable
@@ -6224,7 +6224,7 @@ sheet.data = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-stepper
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-stepper
   orientation="vertical"
   current-step="1"
   clickable
@@ -6284,7 +6284,7 @@ sheet.data = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-stepper id="wizard" clickable&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-stepper id="wizard" clickable&gt;
   &lt;snice-stepper-panel&gt;
     &lt;h4&gt;Step 1: Account Info&lt;/h4&gt;
     &lt;snice-input placeholder="Email"&gt;&lt;/snice-input&gt;
@@ -6310,7 +6310,7 @@ sheet.data = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">javascript</span>
-          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=ff60e40">stepper.steps = [
+          <snice-code-block language="javascript" grammar="grammars/typescript.json">stepper.steps = [
   { label: 'Upload', status: 'completed' },
   { label: 'Validate', status: 'error' },
   { label: 'Process', status: 'pending' },
@@ -6371,7 +6371,7 @@ stepper.currentStep = 1;</snice-code-block>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">javascript</span>
-          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=ff60e40">table.columns = [
+          <snice-code-block language="javascript" grammar="grammars/typescript.json">table.columns = [
   { key: 'product', label: 'Product', sortable: true },
   { key: 'revenue', label: 'Revenue', align: 'right',
     formatter: v =&gt; '$' + Number(v).toLocaleString() },
@@ -6554,7 +6554,7 @@ stepper.currentStep = 1;</snice-code-block>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-tabs transition="fade"&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-tabs transition="fade"&gt;
   &lt;snice-tab slot="nav"&gt;Overview&lt;/snice-tab&gt;
   &lt;snice-tab slot="nav"&gt;Features&lt;/snice-tab&gt;
   &lt;snice-tab-panel&gt;
@@ -6588,7 +6588,7 @@ stepper.currentStep = 1;</snice-code-block>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-tag-input
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-tag-input
   label="Technologies"
   placeholder="Add a tag..."
   max-tags="5"
@@ -6646,7 +6646,7 @@ stepper.currentStep = 1;</snice-code-block>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-tag variant="primary"&gt;Primary&lt;/snice-tag&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-tag variant="primary"&gt;Primary&lt;/snice-tag&gt;
 &lt;snice-tag variant="success"&gt;Success&lt;/snice-tag&gt;
 &lt;snice-tag variant="danger"&gt;Danger&lt;/snice-tag&gt;
 
@@ -6676,7 +6676,7 @@ stepper.currentStep = 1;</snice-code-block>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-terminal id="term" prompt="$ "&gt;&lt;/snice-terminal&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-terminal id="term" prompt="$ "&gt;&lt;/snice-terminal&gt;
 &lt;script&gt;
   term.writeln('Welcome!', 'info');
   term.addEventListener('terminal-command', (e) =&gt; {
@@ -6831,7 +6831,7 @@ stepper.currentStep = 1;</snice-code-block>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-testimonial
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-testimonial
   quote="This framework transformed
     our workflow."
   author="Sarah Chen"
@@ -6868,7 +6868,7 @@ stepper.currentStep = 1;</snice-code-block>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-textarea label="Message" rows="3"
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-textarea label="Message" rows="3"
   placeholder="Type your message..."&gt;&lt;/snice-textarea&gt;
 
 &lt;snice-textarea label="Limited" maxlength="100"&gt;
@@ -6884,7 +6884,7 @@ stepper.currentStep = 1;</snice-code-block>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-textarea label="Loading" placeholder="Fetching content..." rows="3" loading&gt;&lt;/snice-textarea&gt;</snice-code-block>
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-textarea label="Loading" placeholder="Fetching content..." rows="3" loading&gt;&lt;/snice-textarea&gt;</snice-code-block>
         </div>
       </div>
     </div>
@@ -6905,7 +6905,7 @@ stepper.currentStep = 1;</snice-code-block>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-time-picker
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-time-picker
   label="Meeting Time"
   value="09:30"
   step="15"
@@ -6942,7 +6942,7 @@ stepper.currentStep = 1;</snice-code-block>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-time-range-picker
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-time-range-picker
   start-time="08:00"
   end-time="18:00"
   granularity="30"
@@ -6963,7 +6963,7 @@ stepper.currentStep = 1;</snice-code-block>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;!-- 12h format, hourly, multiple selection --&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;!-- 12h format, hourly, multiple selection --&gt;
 &lt;snice-time-range-picker
   start-time="06:00"
   end-time="22:00"
@@ -7001,7 +7001,7 @@ stepper.currentStep = 1;</snice-code-block>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">javascript</span>
-          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=ff60e40">&lt;!-- Vertical positions --&gt;
+          <snice-code-block language="javascript" grammar="grammars/typescript.json">&lt;!-- Vertical positions --&gt;
 &lt;snice-timeline position="left"&gt;&lt;/snice-timeline&gt;
 &lt;snice-timeline position="alternate"&gt;&lt;/snice-timeline&gt;
 &lt;snice-timeline position="right"&gt;&lt;/snice-timeline&gt;
@@ -7047,7 +7047,7 @@ timeline.items = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-timer mode="stopwatch"&gt;&lt;/snice-timer&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-timer mode="stopwatch"&gt;&lt;/snice-timer&gt;
 
 &lt;snice-timer mode="timer" initial-time="60"&gt;
 &lt;/snice-timer&gt;</snice-code-block>
@@ -7066,7 +7066,7 @@ timeline.items = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-toast-container id="toasts" position="bottom-right"&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-toast-container id="toasts" position="bottom-right"&gt;
 &lt;/snice-toast-container&gt;
 
 &lt;script&gt;
@@ -7090,7 +7090,7 @@ timeline.items = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-tooltip content="Tooltip on top" position="top"&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-tooltip content="Tooltip on top" position="top"&gt;
   &lt;snice-button&gt;Top&lt;/snice-button&gt;
 &lt;/snice-tooltip&gt;
 
@@ -7114,7 +7114,7 @@ timeline.items = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;button tooltip="Tooltip on top"&gt;Top&lt;/button&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;button tooltip="Tooltip on top"&gt;Top&lt;/button&gt;
 
 &lt;button tooltip="Tooltip on right"
   style="--tooltip-position: right"&gt;
@@ -7151,7 +7151,7 @@ timeline.items = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">javascript</span>
-          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=ff60e40">tree.nodes = [
+          <snice-code-block language="javascript" grammar="grammars/typescript.json">tree.nodes = [
   { id: 'src', label: 'src', icon: '\ud83d\udcc1', expanded: true,
     children: [
       { id: 'index.ts', label: 'index.ts', icon: '\ud83d\udcc4' },
@@ -7223,7 +7223,7 @@ timeline.items = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html + js</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-treemap id="treemap" show-labels show-values&gt;
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-treemap id="treemap" show-labels show-values&gt;
 &lt;/snice-treemap&gt;
 
 &lt;script&gt;
@@ -7256,7 +7256,7 @@ timeline.items = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html + js</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-treemap
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-treemap
   show-labels
   color-scheme="cool"
 &gt;&lt;/snice-treemap&gt;
@@ -7336,7 +7336,7 @@ timeline.items = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-user-card
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-user-card
   name="Sarah Chen"
   avatar="avatar.png"
   role="Lead Engineer"
@@ -7383,7 +7383,7 @@ timeline.items = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=ff60e40">&lt;snice-video-player
+          <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-video-player
   src="video.mp4"
   poster="poster.jpg"
   controls
@@ -7420,7 +7420,7 @@ timeline.items = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">javascript</span>
-          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=ff60e40">const scroller = document.querySelector(
+          <snice-code-block language="javascript" grammar="grammars/typescript.json">const scroller = document.querySelector(
   'snice-virtual-scroller'
 );
 
@@ -7473,7 +7473,7 @@ scroller.scrollToIndex(2500); // jump to any index</snice-code-block>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">javascript</span>
-          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=ff60e40">const chart = document.querySelector(
+          <snice-code-block language="javascript" grammar="grammars/typescript.json">const chart = document.querySelector(
   'snice-waterfall');
 chart.data = [
   { label: 'Revenue',
@@ -7524,7 +7524,7 @@ chart.addEventListener('bar-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">javascript</span>
-          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=ff60e40">const weather = document.querySelector(
+          <snice-code-block language="javascript" grammar="grammars/typescript.json">const weather = document.querySelector(
   'snice-weather');
 weather.unit = 'celsius';
 weather.variant = 'full';
@@ -7576,7 +7576,7 @@ weather.data = {
         </div>
         <div class="comp-split-code">
           <span class="code-lang">javascript</span>
-          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=ff60e40">&lt;snice-work-order
+          <snice-code-block language="javascript" grammar="grammars/typescript.json">&lt;snice-work-order
   id="wo"
   wo-number="WO-2026-0184"
   priority="high"
@@ -7638,143 +7638,143 @@ weather.data = {
 
 
   <!-- CDN components (part 1) — runtime + code-block already loaded from <head> -->
-  <script async src="components/snice-button.min.js?v=ff60e40"></script>
-  <script async src="components/snice-input.min.js?v=ff60e40"></script>
-  <script async src="components/snice-select.min.js?v=ff60e40"></script>
-  <script async src="components/snice-card.min.js?v=ff60e40"></script>
-  <script async src="components/snice-modal.min.js?v=ff60e40"></script>
-  <script async src="components/snice-alert.min.js?v=ff60e40"></script>
-  <script async src="components/snice-checkbox.min.js?v=ff60e40"></script>
-  <script async src="components/snice-radio.min.js?v=ff60e40"></script>
-  <script async src="components/snice-switch.min.js?v=ff60e40"></script>
-  <script async src="components/snice-textarea.min.js?v=ff60e40"></script>
-  <script async src="components/snice-tabs.min.js?v=ff60e40"></script>
-  <script async src="components/snice-table.min.js?v=ff60e40"></script>
-  <script async src="components/snice-badge.min.js?v=ff60e40"></script>
-  <script async src="components/snice-qr-code.min.js?v=ff60e40"></script>
-  <script async src="components/snice-breadcrumbs.min.js?v=ff60e40"></script>
-  <script async src="components/snice-pagination.min.js?v=ff60e40"></script>
-  <script async src="components/snice-link.min.js?v=ff60e40"></script>
-  <script async src="components/snice-menu.min.js?v=ff60e40"></script>
-  <script async src="components/snice-drawer.min.js?v=ff60e40"></script>
-  <script async src="components/snice-tooltip.min.js?v=ff60e40"></script>
+  <script async src="components/snice-button.min.js"></script>
+  <script async src="components/snice-input.min.js"></script>
+  <script async src="components/snice-select.min.js"></script>
+  <script async src="components/snice-card.min.js"></script>
+  <script async src="components/snice-modal.min.js"></script>
+  <script async src="components/snice-alert.min.js"></script>
+  <script async src="components/snice-checkbox.min.js"></script>
+  <script async src="components/snice-radio.min.js"></script>
+  <script async src="components/snice-switch.min.js"></script>
+  <script async src="components/snice-textarea.min.js"></script>
+  <script async src="components/snice-tabs.min.js"></script>
+  <script async src="components/snice-table.min.js"></script>
+  <script async src="components/snice-badge.min.js"></script>
+  <script async src="components/snice-qr-code.min.js"></script>
+  <script async src="components/snice-breadcrumbs.min.js"></script>
+  <script async src="components/snice-pagination.min.js"></script>
+  <script async src="components/snice-link.min.js"></script>
+  <script async src="components/snice-menu.min.js"></script>
+  <script async src="components/snice-drawer.min.js"></script>
+  <script async src="components/snice-tooltip.min.js"></script>
 
   <!-- CDN components (part 2) -->
-  <script async src="components/snice-chip.min.js?v=ff60e40"></script>
-  <script async src="components/snice-progress.min.js?v=ff60e40"></script>
-  <script async src="components/snice-spinner.min.js?v=ff60e40"></script>
-  <script async src="components/snice-toast.min.js?v=ff60e40"></script>
-  <script async src="components/snice-banner.min.js?v=ff60e40"></script>
-  <script async src="components/snice-color-picker.min.js?v=ff60e40"></script>
-  <script async src="components/snice-avatar.min.js?v=ff60e40"></script>
-  <script async src="components/snice-skeleton.min.js?v=ff60e40"></script>
-  <script async src="components/snice-divider.min.js?v=ff60e40"></script>
-  <script async src="components/snice-accordion.min.js?v=ff60e40"></script>
-  <script async src="components/snice-empty-state.min.js?v=ff60e40"></script>
-  <script async src="components/snice-timeline.min.js?v=ff60e40"></script>
-  <script async src="components/snice-image.min.js?v=ff60e40"></script>
-  <script async src="components/snice-command-palette.min.js?v=ff60e40"></script>
-  <script async src="components/snice-chart.min.js?v=ff60e40"></script>
-  <script async src="components/snice-sparkline.min.js?v=ff60e40"></script>
-  <script async src="components/snice-date-picker.min.js?v=ff60e40"></script>
-  <script async src="components/snice-slider.min.js?v=ff60e40"></script>
-  <script async src="components/snice-file-upload.min.js?v=ff60e40"></script>
-  <script async src="components/snice-file-gallery.min.js?v=ff60e40"></script>
-  <script async src="components/snice-stepper.min.js?v=ff60e40"></script>
-  <script async src="components/snice-terminal.min.js?v=ff60e40"></script>
-  <script async src="components/snice-carousel.min.js?v=ff60e40"></script>
-  <script async src="components/snice-calendar.min.js?v=ff60e40"></script>
-  <script async src="components/snice-split-pane.min.js?v=ff60e40"></script>
-  <script async src="components/snice-draw.min.js?v=ff60e40"></script>
-  <script async src="components/snice-paint.min.js?v=ff60e40"></script>
-  <script async src="components/snice-color-display.min.js?v=ff60e40"></script>
-  <script async src="components/snice-kanban.min.js?v=ff60e40"></script>
-  <script async src="components/snice-chat.min.js?v=ff60e40"></script>
-  <script async src="components/snice-camera.min.js?v=ff60e40"></script>
-  <script async src="components/snice-qr-reader.min.js?v=ff60e40"></script>
-  <script async src="components/snice-audio-recorder.min.js?v=ff60e40"></script>
-  <script async src="components/snice-music-player.min.js?v=ff60e40"></script>
-  <script async src="components/snice-location.min.js?v=ff60e40"></script>
-  <script async src="components/snice-timer.min.js?v=ff60e40"></script>
-  <script async src="components/snice-gauge.min.js?v=ff60e40"></script>
-  <script async src="components/snice-heatmap.min.js?v=ff60e40"></script>
-  <script async src="components/snice-masonry.min.js?v=ff60e40"></script>
-  <script async src="components/snice-link-preview.min.js?v=ff60e40"></script>
-  <script async src="components/snice-doc.min.js?v=ff60e40"></script>
-  <script async src="components/snice-kpi.min.js?v=ff60e40"></script>
-  <script async src="components/snice-list.min.js?v=ff60e40"></script>
-  <script async src="components/snice-login.min.js?v=ff60e40"></script>
-  <script async src="components/snice-nav.min.js?v=ff60e40"></script>
-  <script async src="components/snice-tree.min.js?v=ff60e40"></script>
-  <script async src="components/snice-virtual-scroller.min.js?v=ff60e40"></script>
-  <script async src="components/snice-funnel.min.js?v=ff60e40"></script>
-  <script async src="components/snice-treemap.min.js?v=ff60e40"></script>
-  <script async src="components/snice-sankey.min.js?v=ff60e40"></script>
-  <script async src="components/snice-candlestick.min.js?v=ff60e40"></script>
-  <script async src="components/snice-network-graph.min.js?v=ff60e40"></script>
-  <script async src="components/snice-camera-annotate.min.js?v=ff60e40"></script>
-  <script async src="components/snice-time-range-picker.min.js?v=ff60e40"></script>
-  <script async src="components/snice-podcast-player.min.js?v=ff60e40"></script>
-  <script async src="components/snice-tag-input.min.js?v=ff60e40"></script>
-  <script async src="components/snice-key-value.min.js?v=ff60e40"></script>
-  <script async src="components/snice-diff.min.js?v=ff60e40"></script>
-  <script async src="components/snice-gantt.min.js?v=ff60e40"></script>
-  <script async src="components/snice-layout.min.js?v=ff60e40"></script>
-  <script async src="components/snice-org-chart.min.js?v=ff60e40"></script>
-  <script async src="components/snice-map.min.js?v=ff60e40"></script>
-  <script async src="components/snice-flow.min.js?v=ff60e40"></script>
-  <script async src="components/snice-book.min.js?v=ff60e40"></script>
-  <script async src="components/snice-comments.min.js?v=ff60e40"></script>
-  <script async src="components/snice-countdown.min.js?v=ff60e40"></script>
-  <script async src="components/snice-cropper.min.js?v=ff60e40"></script>
-  <script async src="components/snice-flip-card.min.js?v=ff60e40"></script>
-  <script async src="components/snice-markdown.min.js?v=ff60e40"></script>
-  <script async src="components/snice-notification-center.min.js?v=ff60e40"></script>
-  <script async src="components/snice-pdf-viewer.min.js?v=ff60e40"></script>
-  <script async src="components/snice-rating.min.js?v=ff60e40"></script>
-  <script async src="components/snice-recipe.min.js?v=ff60e40"></script>
-  <script async src="components/snice-sortable.min.js?v=ff60e40"></script>
-  <script async src="components/snice-spotlight.min.js?v=ff60e40"></script>
-  <script async src="components/snice-spreadsheet.min.js?v=ff60e40"></script>
-  <script async src="components/snice-testimonial.min.js?v=ff60e40"></script>
-  <script async src="components/snice-video-player.min.js?v=ff60e40"></script>
-  <script async src="components/snice-waterfall.min.js?v=ff60e40"></script>
-  <script async src="components/snice-weather.min.js?v=ff60e40"></script>
-  <script async src="components/snice-pricing-table.min.js?v=ff60e40"></script>
-  <script async src="components/snice-app-tiles.min.js?v=ff60e40"></script>
+  <script async src="components/snice-chip.min.js"></script>
+  <script async src="components/snice-progress.min.js"></script>
+  <script async src="components/snice-spinner.min.js"></script>
+  <script async src="components/snice-toast.min.js"></script>
+  <script async src="components/snice-banner.min.js"></script>
+  <script async src="components/snice-color-picker.min.js"></script>
+  <script async src="components/snice-avatar.min.js"></script>
+  <script async src="components/snice-skeleton.min.js"></script>
+  <script async src="components/snice-divider.min.js"></script>
+  <script async src="components/snice-accordion.min.js"></script>
+  <script async src="components/snice-empty-state.min.js"></script>
+  <script async src="components/snice-timeline.min.js"></script>
+  <script async src="components/snice-image.min.js"></script>
+  <script async src="components/snice-command-palette.min.js"></script>
+  <script async src="components/snice-chart.min.js"></script>
+  <script async src="components/snice-sparkline.min.js"></script>
+  <script async src="components/snice-date-picker.min.js"></script>
+  <script async src="components/snice-slider.min.js"></script>
+  <script async src="components/snice-file-upload.min.js"></script>
+  <script async src="components/snice-file-gallery.min.js"></script>
+  <script async src="components/snice-stepper.min.js"></script>
+  <script async src="components/snice-terminal.min.js"></script>
+  <script async src="components/snice-carousel.min.js"></script>
+  <script async src="components/snice-calendar.min.js"></script>
+  <script async src="components/snice-split-pane.min.js"></script>
+  <script async src="components/snice-draw.min.js"></script>
+  <script async src="components/snice-paint.min.js"></script>
+  <script async src="components/snice-color-display.min.js"></script>
+  <script async src="components/snice-kanban.min.js"></script>
+  <script async src="components/snice-chat.min.js"></script>
+  <script async src="components/snice-camera.min.js"></script>
+  <script async src="components/snice-qr-reader.min.js"></script>
+  <script async src="components/snice-audio-recorder.min.js"></script>
+  <script async src="components/snice-music-player.min.js"></script>
+  <script async src="components/snice-location.min.js"></script>
+  <script async src="components/snice-timer.min.js"></script>
+  <script async src="components/snice-gauge.min.js"></script>
+  <script async src="components/snice-heatmap.min.js"></script>
+  <script async src="components/snice-masonry.min.js"></script>
+  <script async src="components/snice-link-preview.min.js"></script>
+  <script async src="components/snice-doc.min.js"></script>
+  <script async src="components/snice-kpi.min.js"></script>
+  <script async src="components/snice-list.min.js"></script>
+  <script async src="components/snice-login.min.js"></script>
+  <script async src="components/snice-nav.min.js"></script>
+  <script async src="components/snice-tree.min.js"></script>
+  <script async src="components/snice-virtual-scroller.min.js"></script>
+  <script async src="components/snice-funnel.min.js"></script>
+  <script async src="components/snice-treemap.min.js"></script>
+  <script async src="components/snice-sankey.min.js"></script>
+  <script async src="components/snice-candlestick.min.js"></script>
+  <script async src="components/snice-network-graph.min.js"></script>
+  <script async src="components/snice-camera-annotate.min.js"></script>
+  <script async src="components/snice-time-range-picker.min.js"></script>
+  <script async src="components/snice-podcast-player.min.js"></script>
+  <script async src="components/snice-tag-input.min.js"></script>
+  <script async src="components/snice-key-value.min.js"></script>
+  <script async src="components/snice-diff.min.js"></script>
+  <script async src="components/snice-gantt.min.js"></script>
+  <script async src="components/snice-layout.min.js"></script>
+  <script async src="components/snice-org-chart.min.js"></script>
+  <script async src="components/snice-map.min.js"></script>
+  <script async src="components/snice-flow.min.js"></script>
+  <script async src="components/snice-book.min.js"></script>
+  <script async src="components/snice-comments.min.js"></script>
+  <script async src="components/snice-countdown.min.js"></script>
+  <script async src="components/snice-cropper.min.js"></script>
+  <script async src="components/snice-flip-card.min.js"></script>
+  <script async src="components/snice-markdown.min.js"></script>
+  <script async src="components/snice-notification-center.min.js"></script>
+  <script async src="components/snice-pdf-viewer.min.js"></script>
+  <script async src="components/snice-rating.min.js"></script>
+  <script async src="components/snice-recipe.min.js"></script>
+  <script async src="components/snice-sortable.min.js"></script>
+  <script async src="components/snice-spotlight.min.js"></script>
+  <script async src="components/snice-spreadsheet.min.js"></script>
+  <script async src="components/snice-testimonial.min.js"></script>
+  <script async src="components/snice-video-player.min.js"></script>
+  <script async src="components/snice-waterfall.min.js"></script>
+  <script async src="components/snice-weather.min.js"></script>
+  <script async src="components/snice-pricing-table.min.js"></script>
+  <script async src="components/snice-app-tiles.min.js"></script>
 
   <!-- CDN components (new) -->
-  <script async src="components/snice-activity-feed.min.js?v=ff60e40"></script>
-  <script async src="components/snice-approval-flow.min.js?v=ff60e40"></script>
-  <script async src="components/snice-availability.min.js?v=ff60e40"></script>
-  <script async src="components/snice-avatar-group.min.js?v=ff60e40"></script>
-  <script async src="components/snice-booking.min.js?v=ff60e40"></script>
-  <script async src="components/snice-cart.min.js?v=ff60e40"></script>
-  <script async src="components/snice-data-card.min.js?v=ff60e40"></script>
-  <script async src="components/snice-date-time-picker.min.js?v=ff60e40"></script>
-  <script async src="components/snice-estimate.min.js?v=ff60e40"></script>
-  <script async src="components/snice-form-builder.min.js?v=ff60e40"></script>
-  <script async src="components/snice-form-layout.min.js?v=ff60e40"></script>
-  <script async src="components/snice-invoice.min.js?v=ff60e40"></script>
-  <script async src="components/snice-leaderboard.min.js?v=ff60e40"></script>
-  <script async src="components/snice-mentions.min.js?v=ff60e40"></script>
-  <script async src="components/snice-message-strip.min.js?v=ff60e40"></script>
-  <script async src="components/snice-metric-table.min.js?v=ff60e40"></script>
-  <script async src="components/snice-order-tracker.min.js?v=ff60e40"></script>
-  <script async src="components/snice-permission-matrix.min.js?v=ff60e40"></script>
-  <script async src="components/snice-product-card.min.js?v=ff60e40"></script>
-  <script async src="components/snice-progress-ring.min.js?v=ff60e40"></script>
-  <script async src="components/snice-range-slider.min.js?v=ff60e40"></script>
-  <script async src="components/snice-receipt.min.js?v=ff60e40"></script>
-  <script async src="components/snice-scheduler.min.js?v=ff60e40"></script>
-  <script async src="components/snice-segmented-control.min.js?v=ff60e40"></script>
-  <script async src="components/snice-split-button.min.js?v=ff60e40"></script>
-  <script async src="components/snice-stat-group.min.js?v=ff60e40"></script>
-  <script async src="components/snice-step-input.min.js?v=ff60e40"></script>
-  <script async src="components/snice-tag.min.js?v=ff60e40"></script>
-  <script async src="components/snice-time-picker.min.js?v=ff60e40"></script>
-  <script async src="components/snice-user-card.min.js?v=ff60e40"></script>
-  <script async src="components/snice-work-order.min.js?v=ff60e40"></script>
+  <script async src="components/snice-activity-feed.min.js"></script>
+  <script async src="components/snice-approval-flow.min.js"></script>
+  <script async src="components/snice-availability.min.js"></script>
+  <script async src="components/snice-avatar-group.min.js"></script>
+  <script async src="components/snice-booking.min.js"></script>
+  <script async src="components/snice-cart.min.js"></script>
+  <script async src="components/snice-data-card.min.js"></script>
+  <script async src="components/snice-date-time-picker.min.js"></script>
+  <script async src="components/snice-estimate.min.js"></script>
+  <script async src="components/snice-form-builder.min.js"></script>
+  <script async src="components/snice-form-layout.min.js"></script>
+  <script async src="components/snice-invoice.min.js"></script>
+  <script async src="components/snice-leaderboard.min.js"></script>
+  <script async src="components/snice-mentions.min.js"></script>
+  <script async src="components/snice-message-strip.min.js"></script>
+  <script async src="components/snice-metric-table.min.js"></script>
+  <script async src="components/snice-order-tracker.min.js"></script>
+  <script async src="components/snice-permission-matrix.min.js"></script>
+  <script async src="components/snice-product-card.min.js"></script>
+  <script async src="components/snice-progress-ring.min.js"></script>
+  <script async src="components/snice-range-slider.min.js"></script>
+  <script async src="components/snice-receipt.min.js"></script>
+  <script async src="components/snice-scheduler.min.js"></script>
+  <script async src="components/snice-segmented-control.min.js"></script>
+  <script async src="components/snice-split-button.min.js"></script>
+  <script async src="components/snice-stat-group.min.js"></script>
+  <script async src="components/snice-step-input.min.js"></script>
+  <script async src="components/snice-tag.min.js"></script>
+  <script async src="components/snice-time-picker.min.js"></script>
+  <script async src="components/snice-user-card.min.js"></script>
+  <script async src="components/snice-work-order.min.js"></script>
 
   <script>
     // Runs after deferred scripts have executed
@@ -7809,18 +7809,25 @@ weather.data = {
       let html = '';
       const lines = md.split('\n');
       let inCode = false, codeLang = '', codeLines = [];
-      let inTable = false, tableRows = [];
-      let inList = false, listItems = [];
+      let inTable = false, tableRows = [], hasSeenSeparator = false;
+      let inList = false, listItems = [], listType = 'ul';
 
       function flushList() {
-        if (inList) { html += '<ul>' + listItems.join('') + '</ul>'; listItems = []; inList = false; }
+        if (inList) {
+          html += '<' + listType + '>' + listItems.join('') + '</' + listType + '>';
+          listItems = []; inList = false;
+        }
       }
       function flushTable() {
         if (inTable && tableRows.length) {
-          html += '<table><thead><tr>' + tableRows[0] + '</tr></thead><tbody>';
-          for (let i = 2; i < tableRows.length; i++) html += '<tr>' + tableRows[i] + '</tr>';
-          html += '</tbody></table>';
-          tableRows = []; inTable = false;
+          html += '<table><thead><tr>' + tableRows[0] + '</tr></thead>';
+          if (tableRows.length > 1) {
+            html += '<tbody>';
+            for (let i = 1; i < tableRows.length; i++) html += '<tr>' + tableRows[i] + '</tr>';
+            html += '</tbody>';
+          }
+          html += '</table>';
+          tableRows = []; inTable = false; hasSeenSeparator = false;
         }
       }
       function inline(t) {
@@ -7832,23 +7839,38 @@ weather.data = {
       }
 
       for (const line of lines) {
+        // Code blocks
         if (inCode) {
-          if (line.startsWith('```')) { const gMap = { html:'grammars/html.json?v=ff60e40', javascript:'grammars/typescript.json?v=ff60e40', typescript:'grammars/typescript.json?v=ff60e40', css:'grammars/css.json?v=ff60e40', json:'grammars/json.json?v=ff60e40' }; const gAttr = gMap[codeLang] ? ' grammar="' + gMap[codeLang] + '"' : ''; html += '<snice-code-block language="' + codeLang + '"' + gAttr + '>' + codeLines.join('\n').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</snice-code-block>'; inCode = false; codeLines = []; }
-          else codeLines.push(line);
+          if (line.startsWith('```')) {
+            const gMap = { html:'grammars/html.json', javascript:'grammars/typescript.json', typescript:'grammars/typescript.json', css:'grammars/css.json', json:'grammars/json.json' };
+            const gAttr = gMap[codeLang] ? ' grammar="' + gMap[codeLang] + '"' : '';
+            html += '<snice-code-block language="' + codeLang + '"' + gAttr + '>' + codeLines.join('\n').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</snice-code-block>';
+            inCode = false; codeLines = [];
+          } else {
+            codeLines.push(line);
+          }
           continue;
         }
         if (line.startsWith('```')) { flushList(); flushTable(); codeLang = line.slice(3).trim() || 'text'; inCode = true; continue; }
+
+        // Skip markdown comments [//]: # (...) and HTML comments <!-- ... -->
+        if (/^\[\/\/\]: #/.test(line)) continue;
+        if (/^\s*<!--.*-->\s*$/.test(line)) continue;
+
+        // Tables
         if (line.startsWith('|')) {
           flushList();
           const cells = line.split('|').slice(1, -1).map(c => c.trim());
-          if (cells.every(c => /^[-:]+$/.test(c))) { inTable = true; tableRows.push(tableRows[tableRows.length-1] || ''); continue; }
-          const tag = !inTable ? 'th' : 'td';
-          if (!inTable && tableRows.length === 0) inTable = false;
+          // Separator row (|---|---|)
+          if (cells.every(c => /^[-:]+$/.test(c))) { hasSeenSeparator = true; continue; }
+          if (!inTable) { inTable = true; hasSeenSeparator = false; }
+          const tag = hasSeenSeparator ? 'td' : 'th';
           tableRows.push(cells.map(c => '<' + tag + '>' + inline(c) + '</' + tag + '>').join(''));
-          if (!inTable) inTable = true;
           continue;
         }
         if (inTable) flushTable();
+
+        // Headings
         if (/^#{1,4}\s/.test(line)) {
           flushList();
           const lvl = line.match(/^(#+)/)[1].length;
@@ -7856,13 +7878,25 @@ weather.data = {
           html += '<' + tag + '>' + inline(line.replace(/^#+\s*/, '')) + '</' + tag + '>';
           continue;
         }
+
+        // Unordered lists
         if (/^[-*]\s/.test(line)) {
-          inList = true;
+          if (inList && listType !== 'ul') flushList();
+          inList = true; listType = 'ul';
           listItems.push('<li>' + inline(line.replace(/^[-*]\s*/, '')) + '</li>');
           continue;
         }
+
+        // Ordered lists
+        if (/^\d+\.\s/.test(line)) {
+          if (inList && listType !== 'ol') flushList();
+          inList = true; listType = 'ol';
+          listItems.push('<li>' + inline(line.replace(/^\d+\.\s*/, '')) + '</li>');
+          continue;
+        }
+
         if (inList) flushList();
-        if (line.trim() === '') { html += ''; continue; }
+        if (line.trim() === '') continue;
         html += '<p>' + inline(line) + '</p>';
       }
       flushList(); flushTable();
