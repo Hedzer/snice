@@ -46,20 +46,39 @@ for (const entry of readdirSync(componentsDir)) {
     'href="/theme/theme.css"'
   );
 
+  // Rewrite <script type="module" src="./snice-<name>.ts"> → CDN script tags
+  html = html.replace(
+    /<script type="module" src="\.\/snice-([^"]+)\.ts"><\/script>/g,
+    (match, name) => {
+      return '<script src="/components/snice-runtime.min.js"></script>\n  <script src="/components/snice-' + name + '.min.js"></script>';
+    }
+  );
+
   // Rewrite <script type="module"> blocks containing .ts imports → CDN script tags
   html = html.replace(
     /<script type="module">([\s\S]*?)<\/script>/g,
     (match, content) => {
-      // Collect all .ts component imports
+      // Collect all component imports (with or without .ts extension, named or default)
       const imports = new Set();
-      // import './snice-<name>.ts'
-      content.replace(/import\s+['"]\.\/snice-([^'"]+)\.ts['"]/g, (_, name) => { imports.add(name); });
-      // import '../<dir>/snice-<name>.ts'
-      content.replace(/import\s+['"]\.\.\/([^/]+)\/snice-([^'"]+)\.ts['"]/g, (_, dir, name) => { imports.add(name); });
-      // import '../../components/<dir>/snice-<name>.ts'
-      content.replace(/import\s+['"]\.\.\/\.\.\/components\/([^/]+)\/snice-([^'"]+)\.ts['"]/g, (_, dir, name) => { imports.add(name); });
-      // import './snice-<name>-item.ts' etc (sub-components in same dir)
-      content.replace(/import\s+['"]\.\/snice-([^'"]+)\.ts['"]/g, (_, name) => { imports.add(name); });
+      // Match any import that references a snice component path
+      // Patterns: import './snice-X.ts', import './snice-X', import '../X/snice-X.ts',
+      //           import { Y } from './snice-X.ts', import X from './snice-X.ts',
+      //           import '../../components/X/snice-X.ts', import 'snice'
+      const importLines = content.match(/^\s*import\s+.*/gm) || [];
+      for (const line of importLines) {
+        // import 'snice' or import '../../src/index.ts' → skip (runtime handles it)
+        if (/['"]snice['"]/.test(line) || /src\/index/.test(line)) continue;
+        // Extract component name from snice-<name> in the path
+        const m = line.match(/snice-([a-z][-a-z0-9]*)/);
+        if (m) imports.add(m[1]);
+        // import './highlighter.ts' etc → skip (non-component utility)
+      }
+      // Also catch dynamic imports: await import('...snice-X.ts')
+      const dynamicImports = content.match(/import\(['"]([^'"]+)['"]\)/g) || [];
+      for (const di of dynamicImports) {
+        const m = di.match(/snice-([a-z][-a-z0-9]*)/);
+        if (m) imports.add(m[1]);
+      }
 
       if (imports.size === 0) return match;
 
