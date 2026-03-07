@@ -1,371 +1,175 @@
-# snice-table: MUI DataGrid Pro Parity
+# snice-table: DataGrid Pro Feature Parity
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
+> **Research:** `.research/mui-datagrid-distilled.md` — full MUI DataGrid docs for reference
 
-**Goal:** Bring snice-table to feature parity with MUI DataGrid Pro (paid tier).
-
-**Architecture:** Pure web components, shadow DOM, CSS custom properties, no external dependencies. All new features are opt-in via boolean attributes/properties. Server-side support via existing `@request`/`@respond` controller pattern.
-
-**Tech Stack:** TypeScript, snice framework decorators, native browser APIs (Drag & Drop, IntersectionObserver, Clipboard API, Blob API).
+**Goal:** Every feature in MUI DataGrid Pro, done the snice way.
 
 ---
 
-## Current State
+## Features to Build
 
-snice-table has 46 files in `components/table/`. It provides:
-- 25+ cell types (text, number, date, boolean, currency, rating, progress, sparkline, etc.)
-- Multi-column sorting (client + server-side)
-- Row selection (checkbox, select-all with indeterminate)
-- Global search (debounced, server-delegated)
-- Selector-based filtering (via snice-select)
-- Conditional formatting per cell
-- Custom formatters per column
-- Cell action buttons
-- Loading state with spinner
-- Striped/bordered/hoverable/list variants
-- Declarative (`<snice-column>` + `<snice-row>`) and imperative (`setColumns()`/`setData()`) APIs
-- Controller pattern for server-side data (`@request('table/config')`, `@request('table/data')`)
+### Column Features
 
-**Types already declared but NOT implemented:** `showPagination`, `pageSize`, `currentPage`, `totalItems`, `goToPage()` are in `snice-table.types.ts` but have no implementation in `snice-table.ts`.
+1. **Column flex width** — Columns can have proportional widths (`flex`) in addition to fixed `width`. Flex columns share remaining space after fixed columns are measured. `minWidth` and `maxWidth` constrain all modes.
 
-## MUI DataGrid Pro Feature Matrix
+2. **Column resizing** — Drag the right edge of any header to resize. Double-click to auto-fit to content. Per-column `resizable` toggle. Cursor changes to `col-resize`. Fires events during and after resize.
 
-### Community (Free) Features
+3. **Column auto-sizing** — Measure the widest content in a column and resize to fit. Can run on mount or on demand. Works for specific columns or all at once.
 
-| Feature | MUI | snice-table | Gap |
-|---------|-----|-------------|-----|
-| Column definitions | Yes | Yes | None |
-| Column sorting (single) | Yes | Yes (multi by default) | None |
-| Column width | Yes | Yes | None |
-| Column alignment | Yes | Yes | None |
-| Row selection (single/multi/checkbox) | Yes | Yes | None |
-| Loading state | Yes | Yes | None |
-| Custom cell renderers | Yes | Yes (25+ types) | None |
-| Density (compact/standard/comfortable) | Yes | Yes (small/medium/large) | None |
-| Conditional formatting | Yes | Yes | None |
-| Row hover/click | Yes | Yes | None |
-| Pagination | Yes | Types only, no impl | **P0** |
-| Column filtering (basic) | Yes | Global only, no per-column | **P0** |
-| Column visibility toggle | Yes | No | **P1** |
-| Inline cell editing | Yes | No | **P1** |
-| CSV export | Yes | No | **P2** |
-| Keyboard navigation | Yes | No | **P1** |
-| Column auto-sizing | Yes | No | **P2** |
-| Custom toolbar | Yes | Partial (search/filter bar) | **P2** |
-| Value getter/formatter | Yes | Yes (formatter) | None |
+4. **Column visibility** — Show/hide columns via a panel UI (checkbox list). Show All / Hide All buttons. Per-column `hideable` flag to lock columns as always-visible. Controlled via a visibility model.
 
-### Pro (Paid) Features - TARGET PARITY
+5. **Column ordering (drag & drop)** — Drag headers to reorder columns. Per-column `reorderable` flag. Pinned columns stay in place. Visual drop indicator.
 
-| Feature | MUI Pro | snice-table | Gap |
-|---------|---------|-------------|-----|
-| Multi-column sorting | Yes | Yes | None |
-| Column pinning (left/right) | Yes | No | **P1** |
-| Column reordering (drag & drop) | Yes | No | **P2** |
-| Column resizing (drag) | Yes | No | **P1** |
-| Column groups (header groups) | Yes | No | **P2** |
-| Row reordering (drag & drop) | Yes | No | **P2** |
-| Row pinning (top/bottom) | Yes | No | **P3** |
-| Tree data | Yes | No | **P2** |
-| Master-detail (row expansion) | Yes | No | **P2** |
-| Lazy loading (infinite scroll) | Yes | No | **P2** |
-| Row/column virtualization | Yes | No | **P0** |
-| Server-side data source | Yes | Yes (controller pattern) | None |
-| Advanced filtering (multi-filter, custom operators) | Yes | No | **P0** |
-| Cell selection (range) | Yes | No | **P3** |
-| Clipboard copy | Yes | No | **P3** |
-| Excel export | Yes | No | **P3** |
+6. **Column pinning** — Pin columns to left or right edge. Pinned columns stay visible during horizontal scroll via `position: sticky`. Visual separator (border + shadow). Per-column `pinnable` flag. Pin/unpin API.
 
-### Premium (Paid) - NOT in scope but noted
+7. **Column groups** — Multi-level header hierarchy. Group headers span child columns. Nested groups supported. Each group has a label and optional styling.
 
-| Feature | Notes |
-|---------|-------|
-| Row grouping | Group by column values |
-| Aggregation (sum, avg, count, min, max) | Footer/group aggregation |
-| Pivoting | Full pivot table |
-| Clipboard paste | Paste into editable cells |
+8. **Column spanning** — A cell can span multiple columns. Static (always N columns) or dynamic (function of cell value/row data).
+
+### Row Features
+
+9. **Row height** — Fixed height for all rows (default 52px). Per-row height via callback. Dynamic auto-height based on content.
+
+10. **Row spanning** — Consecutive cells in a column with the same value auto-merge vertically. Custom value getter controls merge logic.
+
+11. **Row ordering (drag & drop)** — Drag handle column to reorder rows. Per-row `reorderable` check. Disabled when sorting is active. Drop indicator line.
+
+12. **Row pinning** — Pin specific rows to top or bottom. Pinned rows are immune to sort, filter, and pagination. Visual separator.
+
+13. **Master-detail (row expansion)** — Expand a row to reveal a detail panel below it. Panel content is user-provided (HTML string or element). Lazy: created on expand, destroyed on collapse. Configurable height or auto.
+
+14. **Tree data** — Hierarchical rows with indent levels. Path-based: each row provides a path array. Expand/collapse nodes. Auto-generates gap nodes for missing parents. Configurable default expansion depth. Optional: disable sorting/filtering on children.
+
+### Data Operations
+
+15. **Pagination** — Client-side: slice data by page. Server-side: send page/pageSize to controller, receive totalItems back. Page size selector with configurable options (e.g. [10, 25, 50, 100]). Auto page size (fit to container height). Page navigation: first, prev, numbered, next, last. Info text: "Showing X-Y of Z".
+
+16. **Row virtualization** — Only render visible rows + buffer. Spacer elements maintain scroll height. Fixed row height mode. Buffer size configurable in pixels. Works with pagination, sorting, filtering. Disableable for testing.
+
+17. **Column virtualization** — Only render visible columns + buffer for wide tables. Same approach as row virtualization but horizontal.
+
+18. **Per-column filtering** — Filter panel per column with operators appropriate to the column type:
+    - Text: contains, does not contain, equals, does not equal, starts with, ends with, is empty, is not empty
+    - Number: =, !=, >, >=, <, <=, is empty, is not empty
+    - Date: is, is not, before, on or before, after, on or after, is empty, is not empty
+    - Boolean: is true, is false
+    - Multiple filters with AND/OR logic
+    - Active filter indicator on header
+    - Client-side and server-side modes
+
+19. **Header filters** — Inline filter inputs rendered in a second header row. Quick text/value input per column. Click to open full filter panel.
+
+20. **Quick filter** — Toolbar search that filters across all columns. Splits input by space, matches all terms. Configurable logic (AND/OR). Can exclude hidden columns.
+
+21. **Sorting enhancements** — Custom sort comparator per column. Asymmetric comparator (different logic for asc vs desc). Configurable sort cycle per column (e.g. asc → desc → none). Multi-sort with modifier key mode (shift+click) vs always mode.
+
+22. **Value pipeline** — Per-column data transformation chain:
+    - `valueGetter(value, row)` — derive/transform value (used for sort, filter, display)
+    - `valueFormatter(value, row)` — format for display only (not used for sort/filter)
+    - `valueParser(value, row)` — parse edited input back to data type
+    - `valueSetter(value, row)` — write value back to row object (for editing)
+
+### Editing
+
+23. **Inline cell editing** — Double-click or Enter to edit a cell. Editor type based on column type: text input, number input, date input, checkbox, select dropdown. Enter commits, Escape cancels, Tab moves to next editable cell, click outside commits. Per-column `editable` flag. Conditional editability callback.
+
+24. **Row editing** — Edit all cells in a row at once. Same triggers and commit/cancel as cell editing but applies to the entire row.
+
+25. **Edit validation** — Pre-commit validation per column (sync or async). Returns error message to show on cell. Blocks commit if error. Server-side validation via async `processRowUpdate` callback.
+
+### Selection
+
+26. **Row selection enhancements** — Conditional selectability (per-row callback). Keep selection across page changes (server-side). Select-all only affects current page (when paginated).
+
+27. **Selection propagation** — In tree data: selecting a parent auto-selects all children. Selecting all children auto-selects parent. Configurable independently for parents and descendants.
+
+### Export & Clipboard
+
+28. **CSV export** — Export current data (respecting sort/filter) to CSV. Options: delimiter, filename, include headers, selected rows only, specific columns, UTF-8 BOM. Per-column `exportable` flag. Download via Blob.
+
+29. **Print export** — Open browser print dialog with table content. Print-optimized CSS. Options: hide footer, hide toolbar, include checkboxes, custom page styles.
+
+30. **Clipboard copy** — Ctrl+C copies focused cell or selected rows as tab-separated text. Configurable delimiter. Respects value formatters or raw values.
+
+### Navigation & Accessibility
+
+31. **Keyboard navigation** — Full arrow key navigation between cells. Home/End for first/last in row. Ctrl+Home/End for first/last in grid. Page Up/Down for viewport scrolling. Space for row expansion. Shift+Space for selection toggle. Ctrl+A select all. Enter for edit/commit. Tab navigation modes (none, content, header, all).
+
+32. **ARIA grid pattern** — `role="grid"`, `role="row"`, `role="gridcell"`, `role="columnheader"`. `aria-sort` on sortable headers. `aria-selected` on selected rows. `aria-rowcount`/`aria-colcount` for virtualized grids. `aria-rowindex`/`aria-colindex` for cell positions. Roving tabindex.
+
+33. **Density** — Already have small/medium/large. Add density selector UI in toolbar.
+
+### UI Components
+
+34. **Toolbar** — Configurable toolbar with: search, filter button, column visibility button, density selector, export dropdown. User can replace with custom toolbar via slot.
+
+35. **Column menu** — Right-click or menu icon on header. Options: sort asc/desc, filter, hide column, pin left/right, autosize. Extensible.
+
+36. **Lazy loading** — Load more rows as user scrolls to bottom. Fires event when near scroll end. Throttled requests. Works with virtualization.
+
+37. **Scrolling API** — Programmatic scroll to pixel position or to specific row/column index. Get current scroll position.
+
+38. **List view** — Alternative rendering mode: single-column list layout instead of grid. Custom list item renderer.
 
 ---
 
 ## Implementation Phases
 
-### Phase 1: Pagination + Virtualization (Foundation)
+### Phase 1: Pagination + Virtualization
+Features: 15, 16
 
-These unblock everything else. Without virtualization, large datasets are unusable. Without pagination, server-side workflows are incomplete.
+### Phase 2: Filtering
+Features: 18, 19, 20
 
-#### 1A. Pagination
+### Phase 3: Column Interactions
+Features: 1, 2, 3, 6, 4
 
-Types already exist in `snice-table.types.ts:225-228`. CSS placeholder exists in `snice-table.css`.
+### Phase 4: Editing + Value Pipeline
+Features: 22, 23, 24, 25
 
-**New properties on snice-table:**
-- `pagination: boolean` (attribute) - enables pagination
-- `page-size: number` (attribute, default 25) - rows per page
-- `current-page: number` (attribute, default 0) - zero-indexed
-- `total-items: number` (attribute) - total row count (for server-side)
-- `page-sizes: number[]` (property, default `[10, 25, 50, 100]`) - page size options
-- `show-pagination: boolean` (attribute, alias) - backward compat with types
-
-**New sub-component:** `snice-table-pagination.ts` + `.css`
-- Page navigation: first, prev, page numbers, next, last
-- Page size selector dropdown
-- "Showing X-Y of Z" info text
-- Fires `page-change` event: `{ page, pageSize }`
-
-**Integration:**
-- In `renderBody()`: slice `this.data` by page when no controller
-- In `@request('table/data')`: send `{ page, pageSize }` in params
-- Controller responds with `{ data, totalItems }`
-
-#### 1B. Row Virtualization
-
-Only render visible rows + buffer. Critical for 1000+ row datasets.
-
-**New utility:** `snice-table-virtualizer.ts`
-- Manages a scroll container with spacer elements (top/bottom)
-- Calculates visible range from scroll position + row height
-- Only creates DOM nodes for visible rows + buffer (e.g., 3 rows above/below viewport)
-- Fixed row height mode first (variable height is a later optimization)
-- Uses `scroll` event listener on `.snice-table` wrapper
-
-**New properties:**
-- `virtual-scroll: boolean` (attribute) - enable virtualization
-- `row-height: number` (attribute, default 48) - fixed row height in px
-- `overscan: number` (attribute, default 5) - buffer rows above/below viewport
-
-**Integration:**
-- When `virtual-scroll` is true, `renderBody()` delegates to virtualizer
-- Virtualizer creates/recycles `<tr>` elements as user scrolls
-- Total scroll height = rowCount * rowHeight (via spacer divs)
-- Compatible with pagination (virtualizes current page)
-- Compatible with sorting/filtering (re-renders visible range)
-
-### Phase 2: Per-Column Filtering
-
-The current `ColumnDefinition` already has `filterable: boolean`. Build a proper filter system.
-
-**New types:**
-```typescript
-type FilterOperator = 'contains' | 'equals' | 'startsWith' | 'endsWith' |
-  'isEmpty' | 'isNotEmpty' | 'gt' | 'gte' | 'lt' | 'lte' | 'between' |
-  'is' | 'isNot' | 'before' | 'after';
-
-interface FilterItem {
-  column: string;
-  operator: FilterOperator;
-  value: any;
-  value2?: any; // for 'between' operator
-}
-
-type FilterModel = FilterItem[];
-```
-
-**New properties on snice-table:**
-- `filter-model: FilterModel` (property) - active filters
-
-**New sub-component:** `snice-table-filter-panel.ts` + `.css`
-- Dropdown panel shown per-column (click filter icon in header)
-- Operator selector (varies by column type)
-- Value input (text input, number input, date picker, select - based on column type)
-- Add/remove filter rows
-- Apply/Clear buttons
-- Uses popover API (same pattern as split-button)
-
-**Integration:**
-- Filter icon in header cells (when `filterable` on column)
-- Active filter indicator (dot/badge on header)
-- Client-side: `processLocalData()` applies filters before sort
-- Server-side: pass `filterModel` in `@request('table/data')` params
-- Events: `filter-change` with `{ filterModel }`
-
-### Phase 3: Column Resizing + Pinning
-
-#### 3A. Column Resizing
-
-**New properties:**
-- `resizable: boolean` on snice-table (attribute) - enables for all columns
-- `resizable: boolean` on ColumnDefinition - per-column override
-- `minWidth: string` on ColumnDefinition
-- `maxWidth: string` on ColumnDefinition
-
-**Implementation:**
-- Render drag handle (4px wide div) on right edge of each `<th>`
-- `mousedown` on handle starts resize: track initial width + mouse X
-- `mousemove` calculates delta, updates column width via CSS custom property
-- `mouseup` commits the new width
-- Double-click auto-sizes to content width (measure max cell width)
-- Cursor: `col-resize` on handle, applied to body during drag
-- Events: `column-resize` with `{ column, width }`
-- Store widths in `Map<string, number>` internal state
-
-#### 3B. Column Pinning
-
-**New properties:**
-- `pinned: 'left' | 'right' | undefined` on ColumnDefinition
-- `pinned-columns: { left: string[], right: string[] }` on snice-table (property)
-
-**Implementation:**
-- Pinned columns render with `position: sticky` + calculated `left`/`right` offsets
-- Left-pinned columns get cumulative `left` values
-- Right-pinned columns get cumulative `right` values
-- Higher `z-index` than scrollable columns
-- Visual separator shadow between pinned and scrollable areas
-- Pin/unpin via public API: `pinColumn(key, side)`, `unpinColumn(key)`
-- Events: `column-pin-change` with `{ column, pinned }`
-
-### Phase 4: Inline Cell Editing
-
-**New properties:**
-- `editable: boolean` on snice-table (attribute) - enables editing globally
-- `editable: boolean` on ColumnDefinition - per-column
-- `edit-mode: 'cell' | 'row'` on snice-table (attribute, default 'cell')
-
-**New types:**
-```typescript
-interface CellEditEvent {
-  column: string;
-  rowIndex: number;
-  rowData: any;
-  oldValue: any;
-  newValue: any;
-}
-```
-
-**Implementation:**
-- Double-click (or Enter key) on editable cell enters edit mode
-- Cell renders an appropriate editor based on column type:
-  - text -> `<input type="text">`
-  - number -> `<input type="number">`
-  - date -> `<snice-date-picker inline>`
-  - boolean -> `<input type="checkbox">`
-  - select (via `editorOptions` on ColumnDefinition) -> `<select>`
-- Enter commits edit, Escape cancels
-- Tab moves to next editable cell
-- Events: `cell-edit-start`, `cell-edit-commit`, `cell-edit-cancel`
-- Validation: `validator` callback on ColumnDefinition returns `true` or error message
-- `processRowUpdate` callback for async server-side validation
-
-### Phase 5: Keyboard Navigation + Column Visibility
-
-#### 5A. Keyboard Navigation
-
-- Arrow keys move active cell focus
-- Tab/Shift+Tab move between cells
-- Enter starts editing (if editable), commits edit (if editing)
-- Escape cancels editing
-- Space toggles row selection
-- Home/End: first/last column in row
-- Ctrl+Home/End: first/last cell in table
-- Focus tracking via `aria-activedescendant` or `tabindex` management
-- Visual focus ring on active cell
-
-#### 5B. Column Visibility
-
-**New properties:**
-- `hideable: boolean` on ColumnDefinition (default true)
-- `hidden: boolean` on ColumnDefinition
-- `column-visibility-model: Record<string, boolean>` on snice-table (property)
-
-**New sub-component:** `snice-table-column-panel.ts` + `.css`
-- Checkbox list of all columns
-- Show All / Hide All buttons
-- Popover panel triggered from toolbar button
-- Events: `column-visibility-change` with `{ column, visible }`
+### Phase 5: Keyboard + Accessibility
+Features: 31, 32
 
 ### Phase 6: Master-Detail + Tree Data
+Features: 13, 14, 27
 
-#### 6A. Master-Detail (Row Expansion)
+### Phase 7: Drag & Drop
+Features: 5, 11
 
-**New properties:**
-- `expandable: boolean` on snice-table (attribute)
-- `detail-panel: (row: any) => string | HTMLElement` on snice-table (property)
-- `expanded-rows: Set<number>` (property)
+### Phase 8: Export + Clipboard + Toolbar
+Features: 28, 29, 30, 34, 35
 
-**Implementation:**
-- Expand toggle icon in first column (or dedicated expand column)
-- Expanded row: additional `<tr>` with single `<td colspan="all">` containing detail panel
-- Single-expand or multi-expand mode
-- Lazy rendering: detail panel created on expand, destroyed on collapse
-- Events: `row-expand`, `row-collapse`
-
-#### 6B. Tree Data
-
-**New properties:**
-- `tree-data: boolean` on snice-table (attribute)
-- `get-tree-data-path: (row: any) => string[]` on snice-table (property)
-- `default-expand-depth: number` (attribute, default 0)
-
-**Implementation:**
-- Indent levels in first column with expand/collapse toggle
-- Auto-grouping based on path
-- Parent-child relationships derived from path arrays
-- Expand/collapse nodes
-- Selection propagates to children (optional)
-
-### Phase 7: Drag & Drop (Column Reorder + Row Reorder)
-
-#### 7A. Column Reordering
-
-**New properties:**
-- `reorderable: boolean` on snice-table (attribute)
-
-**Implementation:**
-- Header cells become `draggable`
-- Native Drag & Drop API (`dragstart`, `dragover`, `drop`)
-- Visual: ghost header, drop indicator line
-- Events: `column-reorder` with `{ column, oldIndex, newIndex }`
-- Respects pinned columns (can't reorder across pin boundaries)
-
-#### 7B. Row Reordering
-
-**New properties:**
-- `row-reorderable: boolean` on snice-table (attribute)
-
-**Implementation:**
-- Drag handle column rendered as first column
-- Native Drag & Drop on `<tr>` elements
-- Drop indicator line between rows
-- Events: `row-reorder` with `{ rowData, oldIndex, newIndex }`
-- Updates internal data array on drop
-
-### Phase 8: Export + Clipboard + Polish
-
-#### 8A. CSV Export
-- `exportCsv(options?)` public method
-- Options: `{ fileName, delimiter, includeHeaders, selectedRowsOnly, columns }`
-- Generate CSV from current data (respects active sort/filter)
-- Browser download via `Blob` + `URL.createObjectURL`
-- No external dependencies
-
-#### 8B. Clipboard Copy
-- Ctrl+C copies selected rows as tab-separated text
-- `copyToClipboard()` public method
-- Uses `navigator.clipboard.writeText()`
-
-#### 8C. Column Auto-Sizing
-- `autoSizeColumns()` public method
-- Double-click resize handle auto-sizes column
-- Measures max rendered cell width + padding
-
-#### 8D. Custom Toolbar
-- `<slot name="toolbar">` for user-provided toolbar content
-- Default toolbar with search, filter, column visibility, density, export buttons
-- Toolbar slot replaces default when provided
+### Phase 9: Advanced
+Features: 7, 8, 9, 10, 12, 17, 21, 26, 33, 36, 37, 38
 
 ---
 
-## Architecture Notes
+## Architecture
 
-1. **Backward compatibility:** All new features are opt-in. Existing `setColumns()`/`setData()` API unchanged. New features activated by attributes (`pagination`, `virtual-scroll`, `resizable`, `editable`, etc.)
+- All features opt-in via attributes/properties. Zero breaking changes.
+- Controller pattern extends naturally: new params added to `@request('table/data')`.
+- Sub-components (pagination, filter panel, column panel, toolbar) are internal to the table bundle.
+- Popover panels use `popover="manual"` + CSS anchor positioning.
+- Zero external dependencies. Native Drag & Drop, Clipboard API, Blob API.
+- Virtualization is the performance foundation. All data ops run on arrays, not DOM.
+- CSS custom properties: `--snice-table-*` namespace.
+- Full WAI-ARIA grid pattern for accessibility.
+- All designs follow snice conventions: `@property`, `@query`, `@dispatch`, `@watch`, `@render`, `@styles`, `@ready`, `@dispose`.
 
-2. **Controller pattern extension:** `@request('table/data')` params expand to include `{ search, sort, selector, page, pageSize, filterModel }`. Controllers that don't handle new params continue working.
+## Component Checklist
 
-3. **Sub-components stay internal:** `snice-table-pagination`, `snice-table-filter-panel`, `snice-table-column-panel` are internal to the table bundle. Not registered as standalone custom elements users import separately.
+Each phase must satisfy `.ai/component-checklist.md` before moving on. Key items:
 
-4. **Popover for panels:** Filter panel and column panel use `popover="manual"` + CSS anchor positioning (same pattern as split-button/select/date-picker).
-
-5. **No framework dependencies:** Everything uses native APIs. Drag & Drop uses native HTML5 DnD. Clipboard uses `navigator.clipboard`. Export uses `Blob`.
-
-6. **Performance:** Virtualization is the foundation. All row-level operations (filtering, sorting, pagination) operate on data arrays, not DOM. DOM is only created for visible rows.
-
-7. **CSS custom properties for all new visuals:** `--snice-table-*` namespace. Examples: `--snice-table-row-height`, `--snice-table-pin-shadow`, `--snice-table-resize-handle-color`, `--snice-table-edit-cell-outline`.
-
-8. **Accessibility:** WAI-ARIA grid pattern. `role="grid"`, `role="row"`, `role="gridcell"`. `aria-sort` on sortable headers. `aria-selected` on selected rows. Keyboard navigation follows ARIA grid spec.
+- Types in `snice-table.types.ts`
+- CSS with `var(--snice-*, fallback)`, rem for spacing, px for borders
+- Snice decorators only (`@query`, `@on`, `@dispatch`, `@ready`, `@dispose`, `@observe`, `@watch`)
+- Container queries for responsive layout (not media queries)
+- Unit tests in `tests/components/`
+- React adapter metadata updated + regenerated
+- Docs updated: `docs/components/table.md` + `docs/ai/components/table.md`
+- `components/table/full-showcase.html` demos ALL new features
+- `public/showcases/table.html` showcase fragment updated
+- CDN build, copy to public, stamp assets
+- Light mode, dark mode, no-theme fallbacks all work
+- Focus states visible and accessible
