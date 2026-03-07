@@ -12,11 +12,13 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
 const publicDir = join(root, 'public');
 const clean = process.argv.includes('--clean');
+const dirFlagIdx = process.argv.indexOf('--dir');
+const targetDir = dirFlagIdx !== -1 ? process.argv[dirFlagIdx + 1] : publicDir;
 
 // Use content hash of all public assets so rebuilds always bust the cache
 function computeContentHash() {
   const h = createHash('md5');
-  const dirs = [publicDir, join(publicDir, 'components'), join(publicDir, 'grammars')];
+  const dirs = [targetDir, join(targetDir, 'components'), join(targetDir, 'grammars')];
   for (const dir of dirs) {
     if (!existsSync(dir)) continue;
     for (const f of readdirSync(dir).sort()) {
@@ -76,8 +78,8 @@ function processDir(dir) {
     const fullPath = join(dir, entry);
     const stat = statSync(fullPath);
     if (stat.isDirectory()) {
-      // Only recurse into showcases (for fragments), skip others
-      if (entry === 'showcases') count += processDir(fullPath);
+      // Recurse into showcases and showcase dirs
+      if (entry === 'showcases' || entry === 'showcase') count += processDir(fullPath);
       continue;
     }
     if (!entry.endsWith('.html')) continue;
@@ -91,7 +93,7 @@ function processDir(dir) {
   return count;
 }
 
-const count = processDir(publicDir);
+const count = processDir(targetDir);
 if (clean) {
   console.log(`Cleaned ${count} files`);
 } else {
