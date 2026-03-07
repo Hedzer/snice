@@ -26,161 +26,129 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 
 <section>
   <h2>language="javascript" (slotted content)</h2>
-  <snice-code-block language="javascript">
-function fibonacci(n) {
-  if (n <= 1) return n;
+  <snice-code-block language="javascript">function fibonacci(n) {
+  if (n &lt;= 1) return n;
   return fibonacci(n - 1) + fibonacci(n - 2);
 }
-console.log(fibonacci(10));
-  </snice-code-block>
+console.log(fibonacci(10));</snice-code-block>
 </section>
 
 <section>
   <h2>language="typescript"</h2>
-  <snice-code-block language="typescript">
-interface User {
+  <snice-code-block language="typescript">interface User {
   name: string;
   age: number;
 }
-const greet = (user: User): string => `Hello, ${user.name}!`;
-  </snice-code-block>
+const greet = (user: User): string =&gt; `Hello, ${user.name}!`;</snice-code-block>
 </section>
 
 <section>
   <h2>language="html"</h2>
-  <snice-code-block language="html">
-&lt;!DOCTYPE html&gt;
+  <snice-code-block language="html">&lt;!DOCTYPE html&gt;
 &lt;html&gt;
 &lt;head&gt;&lt;title&gt;Page&lt;/title&gt;&lt;/head&gt;
 &lt;body&gt;&lt;h1&gt;Hello&lt;/h1&gt;&lt;/body&gt;
-&lt;/html&gt;
-  </snice-code-block>
+&lt;/html&gt;</snice-code-block>
 </section>
 
 <section>
   <h2>language="css"</h2>
-  <snice-code-block language="css">
-.button {
+  <snice-code-block language="css">.button {
   background: var(--primary);
   color: white;
   padding: 10px 20px;
   border-radius: 4px;
-}
-  </snice-code-block>
+}</snice-code-block>
 </section>
 
 <section>
   <h2>language="json"</h2>
-  <snice-code-block language="json">
-{
+  <snice-code-block language="json">{
   "name": "snice",
   "version": "4.25.0",
   "dependencies": { "rollup": "^4.0.0" }
-}
-  </snice-code-block>
+}</snice-code-block>
 </section>
 
 <section>
   <h2>language="python"</h2>
-  <snice-code-block language="python">
-def quicksort(arr):
-    if len(arr) <= 1:
+  <snice-code-block language="python">def quicksort(arr):
+    if len(arr) &lt;= 1:
         return arr
     pivot = arr[len(arr) // 2]
-    left = [x for x in arr if x < pivot]
-    return quicksort(left) + [pivot] + quicksort([x for x in arr if x > pivot])
-  </snice-code-block>
+    left = [x for x in arr if x &lt; pivot]
+    return quicksort(left) + [pivot] + quicksort([x for x in arr if x &gt; pivot])</snice-code-block>
 </section>
 
 <section>
   <h2>language="bash"</h2>
-  <snice-code-block language="bash">
-#!/bin/bash
+  <snice-code-block language="bash">#!/bin/bash
 echo "Hello World"
 for i in $(seq 1 5); do
   echo "Count: $i"
-done
-  </snice-code-block>
+done</snice-code-block>
 </section>
 
 <section>
   <h2>language="plaintext"</h2>
-  <snice-code-block language="plaintext">
-This is plain text with no syntax highlighting.
-It just shows raw content as-is.
-  </snice-code-block>
+  <snice-code-block language="plaintext">This is plain text with no syntax highlighting.
+It just shows raw content as-is.</snice-code-block>
 </section>
 
 <section>
   <h2>show-line-numbers</h2>
-  <snice-code-block language="javascript" show-line-numbers>
-const a = 1;
+  <snice-code-block language="javascript" show-line-numbers>const a = 1;
 const b = 2;
 const c = a + b;
-console.log(c);
-  </snice-code-block>
+console.log(c);</snice-code-block>
 </section>
 
 <section>
   <h2>start-line="10" + show-line-numbers</h2>
-  <snice-code-block language="javascript" show-line-numbers start-line="10">
-// Line 10
+  <snice-code-block language="javascript" show-line-numbers start-line="10">// Line 10
 function hello() {
   return 'world';
-}
-  </snice-code-block>
+}</snice-code-block>
 </section>
 
 <section>
   <h2>filename="app.js"</h2>
-  <snice-code-block language="javascript" filename="app.js">
-import express from 'express';
+  <snice-code-block language="javascript" filename="app.js">import express from 'express';
 const app = express();
-app.listen(3000);
-  </snice-code-block>
+app.listen(3000);</snice-code-block>
 </section>
 
 <section>
   <h2>filename + show-line-numbers</h2>
-  <snice-code-block language="typescript" filename="index.ts" show-line-numbers>
-import { element, property, render, html } from 'snice';
+  <snice-code-block language="typescript" filename="index.ts" show-line-numbers>import { element, property, render, html } from 'snice';
 
 @element('my-app')
 class MyApp extends HTMLElement {
   @property() name = 'World';
-}
-  </snice-code-block>
+}</snice-code-block>
 </section>
 
 <section>
   <h2>copyable="false"</h2>
-  <snice-code-block language="javascript" copyable="false">
-// Copy button is hidden
-const secret = 'hidden';
-  </snice-code-block>
+  <snice-code-block language="javascript" copyable="false">// Copy button is hidden
+const secret = 'hidden';</snice-code-block>
 </section>
 
 <section>
   <h2>copyable="false" + no filename (no header)</h2>
-  <snice-code-block language="javascript" copyable="false" filename="">
-const x = 42;
-  </snice-code-block>
+  <snice-code-block language="javascript" copyable="false" filename="">const x = 42;</snice-code-block>
 </section>
 
 <section>
   <h2>theme="dark" (forced)</h2>
-  <snice-code-block language="javascript" theme="dark">
-const dark = true;
-console.log('Always dark theme');
-  </snice-code-block>
+  <snice-code-block language="javascript" theme="dark">const dark = true;
+console.log('Always dark theme');</snice-code-block>
 </section>
 
 <section>
   <h2>theme="light" (forced)</h2>
-  <snice-code-block language="javascript" theme="light">
-const light = true;
-console.log('Always light theme');
-  </snice-code-block>
+  <snice-code-block language="javascript" theme="light">const light = true;
+console.log('Always light theme');</snice-code-block>
 </section>
 
 <section>
@@ -195,9 +163,7 @@ console.log('Always light theme');
 
 <section>
   <h2>Very long line</h2>
-  <snice-code-block language="javascript">
-const veryLongVariableName = 'This is an extremely long string that should trigger horizontal scrolling in the code block to verify overflow handling works correctly without breaking layout';
-  </snice-code-block>
+  <snice-code-block language="javascript">const veryLongVariableName = 'This is an extremely long string that should trigger horizontal scrolling in the code block to verify overflow handling works correctly without breaking layout';</snice-code-block>
 </section>
 
 </body>
