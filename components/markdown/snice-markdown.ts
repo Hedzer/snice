@@ -8,8 +8,10 @@ const DANGEROUS_ATTRS = /^(on\w+|style|srcdoc|action|formaction|data-bind|xmlns)
 const DANGEROUS_PROTOCOLS = /^(javascript|vbscript|data):/i;
 
 function sanitizeHtml(html: string): string {
+  // Pre-strip script/style tags before DOMParser to prevent execution in some environments
+  const preStripped = html.replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi, '').replace(/<(script|style)\b[^>]*\/?>/gi, '');
   const parser = new DOMParser();
-  const doc = parser.parseFromString(html, 'text/html');
+  const doc = parser.parseFromString(preStripped, 'text/html');
 
   const walk = (node: Element) => {
     const children = Array.from(node.children);
@@ -160,7 +162,7 @@ export class SniceMarkdown extends HTMLElement implements SniceMarkdownElement {
   @property({ type: Boolean }) sanitize: boolean = true;
   @property() theme: MarkdownTheme = 'default';
 
-  private renderedHtml: string = '';
+  @property({ attribute: false }) private renderedHtml: string = '';
 
   @styles()
   componentStyles() {
