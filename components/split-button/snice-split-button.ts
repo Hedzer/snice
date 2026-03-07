@@ -1,4 +1,5 @@
 import { element, property, query, watch, dispatch, ready, dispose, render, styles, html, css } from 'snice';
+import { renderIcon } from '../utils';
 import cssContent from './snice-split-button.css?inline';
 import type { SplitButtonVariant, SplitButtonSize, SplitButtonAction, SniceSplitButtonElement } from './snice-split-button.types';
 
@@ -19,6 +20,21 @@ export class SniceSplitButton extends HTMLElement implements SniceSplitButtonEle
   @property({ type: Boolean })
   disabled = false;
 
+  @property({ type: Boolean })
+  loading = false;
+
+  @property({ type: Boolean })
+  outline = false;
+
+  @property({ type: Boolean })
+  pill = false;
+
+  @property({ type: String })
+  icon = '';
+
+  @property({ attribute: 'icon-placement' })
+  iconPlacement: 'start' | 'end' = 'start';
+
   @query('.split-button__menu')
   menu?: HTMLElement;
 
@@ -37,7 +53,17 @@ export class SniceSplitButton extends HTMLElement implements SniceSplitButtonEle
 
   @render()
   render() {
-    const classes = `split-button split-button--${this.variant} split-button--${this.size}`;
+    const classes = [
+      'split-button',
+      `split-button--${this.variant}`,
+      `split-button--${this.size}`,
+      this.outline ? 'split-button--outline' : '',
+      this.pill ? 'split-button--pill' : '',
+      this.loading ? 'split-button--loading' : '',
+    ].filter(Boolean).join(' ');
+
+    const iconHtml = this.icon ? renderIcon(this.icon, 'split-button__icon') : '';
+    const isDisabled = this.disabled || this.loading;
 
     return html/*html*/`
       <div class="${classes}" part="base">
@@ -45,9 +71,18 @@ export class SniceSplitButton extends HTMLElement implements SniceSplitButtonEle
           type="button"
           class="split-button__primary"
           part="primary"
-          ?disabled="${this.disabled}"
+          ?disabled="${isDisabled}"
           @click="${(e: MouseEvent) => this.handlePrimaryClick(e)}">
-          ${this.label}
+          <if ${this.loading}>
+            <span class="split-button__spinner" part="spinner"></span>
+          </if>
+          <if ${!this.loading && this.icon && this.iconPlacement === 'start'}>
+            ${iconHtml}
+          </if>
+          <span class="split-button__label">${this.label}</span>
+          <if ${!this.loading && this.icon && this.iconPlacement === 'end'}>
+            ${iconHtml}
+          </if>
         </button>
 
         <span class="split-button__divider" part="divider"></span>
@@ -59,7 +94,7 @@ export class SniceSplitButton extends HTMLElement implements SniceSplitButtonEle
           aria-haspopup="true"
           aria-expanded="false"
           aria-label="More actions"
-          ?disabled="${this.disabled}"
+          ?disabled="${isDisabled}"
           @click="${(e: MouseEvent) => this.handleToggleClick(e)}">
           <span class="split-button__arrow">
             <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">

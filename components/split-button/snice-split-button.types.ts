@@ -1,4 +1,4 @@
-export type SplitButtonVariant = 'default' | 'primary' | 'success' | 'danger';
+export type SplitButtonVariant = 'default' | 'primary' | 'success' | 'warning' | 'danger';
 export type SplitButtonSize = 'small' | 'medium' | 'large';
 
 export interface SplitButtonAction {
@@ -14,6 +14,11 @@ export interface SniceSplitButtonElement extends HTMLElement {
   variant: SplitButtonVariant;
   size: SplitButtonSize;
   disabled: boolean;
+  loading: boolean;
+  outline: boolean;
+  pill: boolean;
+  icon: string;
+  iconPlacement: 'start' | 'end';
 }
 
 export interface SplitButtonPrimaryClickDetail {

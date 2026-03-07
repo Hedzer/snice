@@ -49,6 +49,24 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 <h2>No Actions (Empty Menu)</h2>
 <div class="row" id="no-actions"></div>
 
+<h2>Warning Variant</h2>
+<div class="row" id="warning"></div>
+
+<h2>Outline</h2>
+<div class="row" id="outline"></div>
+
+<h2>Pill</h2>
+<div class="row" id="pill"></div>
+
+<h2>Loading</h2>
+<div class="row" id="loading"></div>
+
+<h2>With Icon</h2>
+<div class="row" id="icon"></div>
+
+<h2>Icon Placement End</h2>
+<div class="row" id="icon-end"></div>
+
 <script type="module">
   import './snice-split-button.ts';
 
@@ -65,12 +83,17 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     if (props.variant) el.variant = props.variant;
     if (props.size) el.size = props.size;
     if (props.disabled) el.disabled = true;
+    if (props.loading) el.loading = true;
+    if (props.outline) el.outline = true;
+    if (props.pill) el.pill = true;
+    if (props.icon) el.icon = props.icon;
+    if (props.iconPlacement) el.iconPlacement = props.iconPlacement;
     return el;
   }
 
   // Variants
   const variants = document.getElementById('variants');
-  ['default', 'primary', 'success', 'danger'].forEach(v => {
+  ['default', 'primary', 'success', 'warning', 'danger'].forEach(v => {
     variants.appendChild(sb({ variant: v, label: v.charAt(0).toUpperCase() + v.slice(1) }));
   });
 
@@ -133,6 +156,40 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   // No actions
   const noActions = document.getElementById('no-actions');
   noActions.appendChild(sb({ variant: 'default', label: 'No Actions', actions: [] }));
+
+  // Warning
+  const warning = document.getElementById('warning');
+  warning.appendChild(sb({ variant: 'warning', label: 'Warning' }));
+  warning.appendChild(sb({ variant: 'warning', label: 'Warning Outline', outline: true }));
+
+  // Outline
+  const outline = document.getElementById('outline');
+  ['default', 'primary', 'success', 'warning', 'danger'].forEach(v => {
+    outline.appendChild(sb({ variant: v, outline: true, label: v.charAt(0).toUpperCase() + v.slice(1) }));
+  });
+
+  // Pill
+  const pill = document.getElementById('pill');
+  pill.appendChild(sb({ variant: 'primary', pill: true, label: 'Pill' }));
+  pill.appendChild(sb({ variant: 'success', pill: true, outline: true, label: 'Pill Outline' }));
+  pill.appendChild(sb({ variant: 'danger', pill: true, label: 'Pill Danger' }));
+
+  // Loading
+  const loading = document.getElementById('loading');
+  ['default', 'primary', 'success', 'danger'].forEach(v => {
+    loading.appendChild(sb({ variant: v, loading: true, label: v.charAt(0).toUpperCase() + v.slice(1) }));
+  });
+
+  // Icon
+  const icon = document.getElementById('icon');
+  icon.appendChild(sb({ variant: 'primary', icon: '💾', label: 'Save' }));
+  icon.appendChild(sb({ variant: 'success', icon: '✓', label: 'Confirm' }));
+  icon.appendChild(sb({ variant: 'danger', icon: '🗑️', label: 'Delete', outline: true }));
+
+  // Icon end
+  const iconEnd = document.getElementById('icon-end');
+  iconEnd.appendChild(sb({ variant: 'primary', icon: '→', iconPlacement: 'end', label: 'Next' }));
+  iconEnd.appendChild(sb({ variant: 'default', icon: '📤', iconPlacement: 'end', label: 'Export' }));
 </script>
 </body>
 </html>
