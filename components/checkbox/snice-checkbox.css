@@ -11,6 +11,11 @@
   align-self: center;
 }
 
+:host([compact]) {
+  min-height: 0;
+  align-self: center;
+}
+
 .checkbox-wrapper {
   display: inline-flex;
   align-items: center;
