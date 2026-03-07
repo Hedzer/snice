@@ -7,4 +7,4 @@ routes = [
 ]
 
 [assets]
-directory = "public"
+directory = "dist/site"

@@ -14,6 +14,9 @@
 /grammars/*
   Cache-Control: public, max-age=31536000, immutable
 
+/showcase/*
+  Cache-Control: public, max-age=31536000, immutable
+
 # HTML pages: short cache, always revalidate (they carry versioned asset URLs)
 /
   Cache-Control: public, max-age=60, must-revalidate
