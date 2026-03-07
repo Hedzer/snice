@@ -26,3 +26,8 @@
 # When adding or updating documentation, ALWAYS update BOTH versions:
 # - docs/ai/ (token-efficient, concise format for AI consumption)
 # - docs/ (human-friendly, detailed format with examples and explanations)
+
+# jCodeMunch MCP is available for token-efficient code exploration.
+# Use `index_folder` to index this project, then use `search_symbols`, `get_symbol`,
+# `get_file_outline`, and `get_repo_outline` to navigate code by symbol instead of
+# reading entire files. This saves significant tokens on large explorations.
