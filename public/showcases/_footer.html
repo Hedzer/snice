@@ -14,7 +14,7 @@
       <button class="help-drawer-tab" data-tab="showcase">Full Showcase</button>
     </div>
     <div class="help-drawer-body" id="help-drawer-body"></div>
-    <iframe class="help-drawer-iframe" id="help-drawer-iframe" style="display:none" sandbox="allow-scripts allow-same-origin"></iframe>
+    <iframe class="help-drawer-iframe" id="help-drawer-iframe" style="display:none"></iframe>
   </aside>
 
 
@@ -213,7 +213,7 @@
       }
       function inline(t) {
         return t
-          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/`([^`]+)`/g, (_, code) => '<code>' + code.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</code>')
           .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
           .replace(/\*([^*]+)\*/g, '<em>$1</em>')
           .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
@@ -241,7 +241,7 @@
         // Tables
         if (line.startsWith('|')) {
           flushList();
-          const cells = line.split('|').slice(1, -1).map(c => c.trim());
+          const cells = line.replace(/\\\|/g, '\x00').split('|').slice(1, -1).map(c => c.trim().replace(/\x00/g, '|'));
           // Separator row (|---|---|)
           if (cells.every(c => /^[-:]+$/.test(c))) { hasSeenSeparator = true; continue; }
           if (!inTable) { inTable = true; hasSeenSeparator = false; }
@@ -738,10 +738,15 @@
         }
       }
 
+      const isDev = location.port === '52891' || location.port === '5566';
+
       function loadShowcase(slug) {
         if (currentTab !== 'showcase') return;
         const candidates = DOC_SLUGS[slug] ? DOC_SLUGS[slug] : [slug];
-        const src = 'showcase/' + candidates[0] + '.html';
+        const name = candidates[0];
+        const src = isDev
+          ? '/components/' + name + '/full-showcase.html'
+          : 'showcase/' + name + '.html';
         if (!iframe.src || !iframe.src.endsWith(src)) {
           iframe.src = src;
         }
