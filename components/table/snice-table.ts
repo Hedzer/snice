@@ -19,8 +19,16 @@ import { TableFilterEngine } from './table-filter-engine';
 import { TableEditor } from './table-editor';
 import { TableKeyboard } from './table-keyboard';
 import { TableExport } from './table-export';
-import type { ColumnFilter, FilterLogic, FilterModel } from './table-filter-engine';
-import type { ValuePipeline } from './table-editor';
+import { TableMasterDetail } from './table-master-detail';
+import { TableToolbar } from './table-toolbar';
+import { TableTreeData } from './table-tree-data';
+import { TableColumnMenu } from './table-column-menu';
+import { TableRowDnD, TableColumnDnD } from './table-row-dnd';
+import type { FilterModel } from './table-filter-engine';
+import type { DetailPanelOptions } from './table-master-detail';
+import type { ToolbarOptions } from './table-toolbar';
+import type { TreeDataOptions, TreeRow } from './table-tree-data';
+import type { ColumnGroup } from './table-column-manager';
 
 @element('snice-table')
 export class SniceTable extends HTMLElement {
@@ -128,6 +136,21 @@ export class SniceTable extends HTMLElement {
   @property({ type: Boolean, attribute: 'quick-filter' })
   quickFilter = false;
 
+  @property({ type: Boolean, attribute: 'row-reorder' })
+  rowReorder = false;
+
+  @property({ type: Boolean, attribute: 'column-reorder' })
+  columnReorder = false;
+
+  @property({ type: Boolean, attribute: 'column-menu' })
+  columnMenu = false;
+
+  @property({ type: Boolean, attribute: 'lazy-load' })
+  lazyLoad = false;
+
+  @property({ type: Number, attribute: 'lazy-load-threshold' })
+  lazyLoadThreshold = 200; // px from bottom to trigger
+
   @property({ type: Array, attribute: false })
   selectedRows: number[] = [];
 
@@ -138,6 +161,16 @@ export class SniceTable extends HTMLElement {
   private editor = new TableEditor();
   private keyboard = new TableKeyboard();
   private exporter = new TableExport();
+  private masterDetail = new TableMasterDetail();
+  private toolbar = new TableToolbar();
+  private treeData = new TableTreeData();
+  private columnMenuManager = new TableColumnMenu();
+  private rowDnD = new TableRowDnD();
+  private columnDnD = new TableColumnDnD();
+  private pinnedTopRows: any[] = [];
+  private pinnedBottomRows: any[] = [];
+  private lazyLoadHandler: (() => void) | null = null;
+  private rowHeightCallback: ((row: any, index: number) => number) | null = null;
 
   @query('table')
   table!: HTMLTableElement;
@@ -628,6 +661,64 @@ export class SniceTable extends HTMLElement {
         border-color: var(--snice-color-primary, rgb(37 99 235));
       }
 
+      /* Tree data indentation */
+      .tree-toggle {
+        transition: transform 0.15s ease;
+      }
+
+      /* Row pinning */
+      .pinned-row {
+        font-weight: var(--snice-font-weight-medium, 500);
+        border-bottom: 2px solid var(--snice-color-border, rgb(226 226 226));
+      }
+
+      .pinned-row--top {
+        border-bottom: 2px solid var(--snice-color-primary, rgb(37 99 235));
+      }
+
+      .pinned-row--bottom {
+        border-top: 2px solid var(--snice-color-primary, rgb(37 99 235));
+      }
+
+      /* Column group headers */
+      .column-group-row th {
+        text-align: center;
+        font-size: var(--snice-font-size-xs, 0.75rem);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--snice-color-text-secondary, rgb(82 82 82));
+        background: var(--snice-color-background-tertiary, rgb(235 235 235));
+        border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
+      }
+
+      /* DnD */
+      .drag-handle-cell {
+        max-width: 2rem;
+        font-size: 1rem;
+      }
+
+      .drop-indicator {
+        pointer-events: none;
+      }
+
+      tr[draggable="true"]:active {
+        cursor: grabbing;
+      }
+
+      /* Master-detail */
+      .detail-row {
+        background: var(--snice-color-background-secondary, rgb(245 245 245));
+      }
+
+      .detail-cell {
+        padding: var(--snice-spacing-md, 1rem) !important;
+        border-top: none !important;
+      }
+
+      .detail-toggle-cell {
+        max-width: 2rem;
+      }
+
       /* Focus indicator for keyboard nav */
       [data-grid-focus] {
         outline: 2px solid var(--snice-color-primary, rgb(37 99 235));
@@ -772,6 +863,9 @@ export class SniceTable extends HTMLElement {
     // Listen for select change events from the filter dropdown
     this.addEventListener('select-change', this.handleSelectorChange as EventListener);
 
+    // Listen for detail panel toggle
+    this.addEventListener('detail-toggle', () => this.renderBody());
+
     // Wait for snice-column to be defined
     await customElements.whenDefined('snice-column');
     await customElements.whenDefined('snice-row');
@@ -784,11 +878,43 @@ export class SniceTable extends HTMLElement {
 
     // Initialize feature modules
     this.initializeModules();
+    this.initColumnMenu();
+
+    // Setup DnD
+    if (this.rowReorder) this.rowDnD.attach(this);
+    if (this.columnReorder) this.columnDnD.attach(this);
 
     // Setup virtualization if enabled
     if (this.virtualize) {
       requestAnimationFrame(() => this.setupVirtualization());
     }
+
+    // Setup lazy loading
+    if (this.lazyLoad) {
+      requestAnimationFrame(() => this.setupLazyLoading());
+    }
+
+    // Listen for DnD events
+    this.addEventListener('row-reorder', ((e: CustomEvent) => {
+      const { fromIndex, toIndex } = e.detail;
+      const item = this.data.splice(fromIndex, 1)[0];
+      this.data.splice(toIndex, 0, item);
+      this.setData([...this.data]);
+    }) as EventListener);
+
+    this.addEventListener('column-reorder', ((e: CustomEvent) => {
+      const { fromKey, toKey } = e.detail;
+      const fromIdx = this.columns.findIndex(c => c.key === fromKey);
+      const toIdx = this.columns.findIndex(c => c.key === toKey);
+      if (fromIdx >= 0 && toIdx >= 0) {
+        this.columnManager.moveColumn(fromKey, toIdx);
+        this.renderHeader();
+        this.renderBody();
+      }
+    }) as EventListener);
+
+    // Listen for tree toggle
+    this.addEventListener('tree-toggle', () => this.renderBody());
   }
 
   private async processSlottedContent() {
@@ -956,11 +1082,78 @@ export class SniceTable extends HTMLElement {
         th.style.position = 'relative';
       }
 
+      // Column menu (right-click)
+      if (this.columnMenu) {
+        th.addEventListener('contextmenu', (e) => {
+          e.preventDefault();
+          const colState = this.columnManager.getState(column.key);
+          this.columnMenuManager.show(column.key, e.clientX, e.clientY, {
+            sortable: this.sortable && column.sortable !== false,
+            filterable: column.filterable !== false,
+            hideable: colState?.hideable,
+            pinnable: colState?.pinnable,
+            pinned: colState?.pinned,
+          });
+        });
+      }
+
+      // Column DnD
+      if (this.columnReorder && this.columnDnD.isEnabled()) {
+        this.columnDnD.makeHeaderDraggable(th, column.key, column.reorderable !== false);
+      }
+
       headerRow.appendChild(th);
     });
 
     this.thead.innerHTML = '';
+
+    // Column groups header row (if any)
+    const groups = this.columnManager.getColumnGroups();
+    if (groups.length > 0) {
+      const groupRow = document.createElement('tr');
+      groupRow.className = 'column-group-row';
+      groupRow.innerHTML = this.columnManager.renderGroupHeaders();
+      this.thead.appendChild(groupRow);
+    }
+
     this.thead.appendChild(headerRow);
+
+    // Header filter row (if enabled)
+    if (this.headerFilters) {
+      const filterRow = document.createElement('tr');
+      filterRow.className = 'header-filter-row';
+
+      if (this.rowReorder) {
+        const spacer = document.createElement('td');
+        filterRow.appendChild(spacer);
+      }
+      if (this.masterDetail.isEnabled()) {
+        const spacer = document.createElement('td');
+        filterRow.appendChild(spacer);
+      }
+      if (this.selectable) {
+        const spacer = document.createElement('td');
+        filterRow.appendChild(spacer);
+      }
+
+      this.columns.forEach(column => {
+        if (visibleKeys && !visibleKeys.has(column.key)) return;
+        const td = document.createElement('td');
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'header-filter-input';
+        input.placeholder = `Filter ${column.label}...`;
+        input.value = this.filterEngine.getHeaderFilter(column.key);
+        input.addEventListener('input', () => {
+          this.filterEngine.setHeaderFilter(column.key, input.value);
+          this.applyClientFilters();
+        });
+        td.appendChild(input);
+        filterRow.appendChild(td);
+      });
+
+      this.thead.appendChild(filterRow);
+    }
   }
 
   renderSortableHeader(column: any): string {
@@ -1058,10 +1251,45 @@ export class SniceTable extends HTMLElement {
       displayData = filteredData.slice(startIndex, startIndex + this.pageSize);
     }
 
-    displayData.forEach((rowData, i) => {
-      const index = startIndex + i;
-      fragment.appendChild(this.createRow(rowData, index));
-    });
+    const extraCols = (this.selectable ? 1 : 0) + (this.masterDetail.isEnabled() ? 1 : 0) + (this.rowReorder ? 1 : 0);
+    const totalColSpan = this.columns.length + extraCols;
+
+    // Pinned top rows
+    for (const row of this.pinnedTopRows) {
+      const tr = this.createRow(row, -1);
+      tr.classList.add('pinned-row', 'pinned-row--top');
+      tr.style.background = 'var(--snice-color-background-secondary, rgb(245 245 245))';
+      fragment.appendChild(tr);
+    }
+
+    // Tree data mode
+    if (this.treeData.isEnabled()) {
+      const treeRows = this.treeData.processData(displayData);
+      treeRows.forEach((treeRow, i) => {
+        const index = startIndex + i;
+        fragment.appendChild(this.createRow(treeRow.data, index, treeRow));
+      });
+    } else {
+      // Normal rows
+      displayData.forEach((rowData, i) => {
+        const index = startIndex + i;
+        fragment.appendChild(this.createRow(rowData, index));
+
+        // Append detail row if expanded
+        if (this.masterDetail.isEnabled() && this.masterDetail.isExpanded(index)) {
+          const detailRow = this.masterDetail.createDetailRow(rowData, index, totalColSpan);
+          if (detailRow) fragment.appendChild(detailRow);
+        }
+      });
+    }
+
+    // Pinned bottom rows
+    for (const row of this.pinnedBottomRows) {
+      const tr = this.createRow(row, -1);
+      tr.classList.add('pinned-row', 'pinned-row--bottom');
+      tr.style.background = 'var(--snice-color-background-secondary, rgb(245 245 245))';
+      fragment.appendChild(tr);
+    }
 
     this.tbody.appendChild(fragment);
 
@@ -1450,10 +1678,19 @@ export class SniceTable extends HTMLElement {
     } else {
       this.data = [...this._unsortedData].sort((a, b) => {
         for (const { column, direction } of this.currentSort) {
-          const aVal = a[column] ?? '';
-          const bVal = b[column] ?? '';
-          const cmp = String(aVal).localeCompare(String(bVal), undefined, { numeric: true });
-          if (cmp !== 0) return direction === 'asc' ? cmp : -cmp;
+          const colDef = this.columns.find(c => c.key === column);
+          const customComparator = (colDef as any)?.sortComparator;
+
+          if (customComparator) {
+            const cmp = customComparator(a[column], b[column], direction);
+            if (cmp !== 0) return cmp;
+          } else {
+            // Use value pipeline getter if available
+            const aVal = colDef?.valueGetter ? colDef.valueGetter(a[column], a) : (a[column] ?? '');
+            const bVal = colDef?.valueGetter ? colDef.valueGetter(b[column], b) : (b[column] ?? '');
+            const cmp = String(aVal).localeCompare(String(bVal), undefined, { numeric: true });
+            if (cmp !== 0) return direction === 'asc' ? cmp : -cmp;
+          }
         }
         return 0;
       });
@@ -1529,6 +1766,10 @@ export class SniceTable extends HTMLElement {
   cleanup() {
     this.virtualizer.detach();
     this.keyboard.detach();
+    if (this.lazyLoadHandler) {
+      const sc = this.shadowRoot?.querySelector('.snice-table') as HTMLElement;
+      sc?.removeEventListener('scroll', this.lazyLoadHandler);
+    }
   }
 
   // ── Virtualization API ──
@@ -1730,7 +1971,10 @@ export class SniceTable extends HTMLElement {
   // ── Selection helpers ──
 
   private toggleRowSelection(rowIndex: number) {
-    const isSelected = this.selectedRows.includes(rowIndex);
+    // Check conditional selectability
+    if (this.selectabilityCheck && !this.selectabilityCheck(this.data[rowIndex], rowIndex)) return;
+
+    const isSelected = this.selectedRows.includes(rowIndex)
     if (isSelected) {
       this.selectedRows = this.selectedRows.filter(i => i !== rowIndex);
     } else {
@@ -1752,14 +1996,239 @@ export class SniceTable extends HTMLElement {
     this.dispatchSelectAllChanged(this.selectedRows.length === this.data.length);
   }
 
+  // ── Master-Detail API ──
+
+  setDetailPanel(options: DetailPanelOptions) {
+    this.masterDetail.attach(this, options);
+    this.renderBody();
+  }
+
+  expandRow(index: number) {
+    this.masterDetail.expand(index);
+    this.renderBody();
+  }
+
+  collapseRow(index: number) {
+    this.masterDetail.collapse(index);
+    this.renderBody();
+  }
+
+  toggleRowExpansion(index: number) {
+    this.masterDetail.toggle(index);
+    this.renderBody();
+  }
+
+  expandAllRows() {
+    this.masterDetail.expandAll(this.data.length);
+    this.renderBody();
+  }
+
+  collapseAllRows() {
+    this.masterDetail.collapseAll();
+    this.renderBody();
+  }
+
+  // ── Toolbar API ──
+
+  setToolbar(options: ToolbarOptions) {
+    const container = this.shadowRoot?.querySelector('.table-controls-container') as HTMLElement;
+    if (!container) return;
+
+    this.toolbar.attach(this, container, options);
+    this.toolbar.onSearch = (query) => this.setQuickFilter(query);
+    this.toolbar.onDensityChange = (d) => { this.density = d as any; };
+    this.toolbar.onExportCSV = () => this.exportCSV();
+    this.toolbar.onExportPrint = () => this.printTable();
+  }
+
+  // ── Tree Data API ──
+
+  setTreeData(options: TreeDataOptions) {
+    this.treeData.attach(options);
+    this.renderBody();
+  }
+
+  expandTreeNode(key: string) {
+    this.treeData.expand(key);
+    this.renderBody();
+  }
+
+  collapseTreeNode(key: string) {
+    this.treeData.collapse(key);
+    this.renderBody();
+  }
+
+  toggleTreeNode(key: string) {
+    this.treeData.toggle(key);
+    this.renderBody();
+  }
+
+  expandAllTreeNodes() {
+    this.treeData.expandAll(this.data);
+    this.renderBody();
+  }
+
+  collapseAllTreeNodes() {
+    this.treeData.collapseAll();
+    this.renderBody();
+  }
+
+  // ── Column Groups API ──
+
+  setColumnGroups(groups: ColumnGroup[]) {
+    this.columnManager.setColumnGroups(groups);
+    this.renderHeader();
+  }
+
+  // ── Column Menu API ──
+
+  private initColumnMenu() {
+    if (!this.columnMenu) return;
+    this.columnMenuManager.attach(this);
+    this.columnMenuManager.onSortAsc = (col) => {
+      this.currentSort = [{ column: col, direction: 'asc' }];
+      this.renderHeader();
+      if (this._hasController) this.debouncedDataRequest();
+      else this.sortLocalData();
+    };
+    this.columnMenuManager.onSortDesc = (col) => {
+      this.currentSort = [{ column: col, direction: 'desc' }];
+      this.renderHeader();
+      if (this._hasController) this.debouncedDataRequest();
+      else this.sortLocalData();
+    };
+    this.columnMenuManager.onHide = (col) => this.setColumnVisible(col, false);
+    this.columnMenuManager.onPinLeft = (col) => this.pinColumn(col, 'left');
+    this.columnMenuManager.onPinRight = (col) => this.pinColumn(col, 'right');
+    this.columnMenuManager.onUnpin = (col) => this.unpinColumn(col);
+    this.columnMenuManager.onAutoSize = (col) => this.autoSizeColumn(col);
+  }
+
+  // ── Row Pinning API ──
+
+  pinRowTop(row: any) {
+    this.pinnedTopRows.push(row);
+    this.renderBody();
+  }
+
+  pinRowBottom(row: any) {
+    this.pinnedBottomRows.push(row);
+    this.renderBody();
+  }
+
+  unpinRow(row: any) {
+    this.pinnedTopRows = this.pinnedTopRows.filter(r => r !== row);
+    this.pinnedBottomRows = this.pinnedBottomRows.filter(r => r !== row);
+    this.renderBody();
+  }
+
+  clearPinnedRows() {
+    this.pinnedTopRows = [];
+    this.pinnedBottomRows = [];
+    this.renderBody();
+  }
+
+  // ── Row Height API ──
+
+  setRowHeight(height: number) {
+    this.rowHeight = height;
+    this.renderBody();
+  }
+
+  setRowHeightCallback(fn: (row: any, index: number) => number) {
+    this.rowHeightCallback = fn;
+    this.renderBody();
+  }
+
+  // ── Sort Enhancements ──
+
+  setSortComparator(columnKey: string, comparator: (a: any, b: any, direction: 'asc' | 'desc') => number) {
+    const col = this.columns.find(c => c.key === columnKey);
+    if (col) (col as any).sortComparator = comparator;
+  }
+
+  // ── Selection Enhancements ──
+
+  private selectabilityCheck: ((row: any, index: number) => boolean) | null = null;
+
+  setSelectabilityCheck(fn: (row: any, index: number) => boolean) {
+    this.selectabilityCheck = fn;
+  }
+
+  getSelectedData(): any[] {
+    return this.selectedRows.map(i => this.data[i]).filter(Boolean);
+  }
+
+  // ── Lazy Loading ──
+
+  private setupLazyLoading() {
+    if (!this.lazyLoad) return;
+
+    const scrollContainer = this.shadowRoot?.querySelector('.snice-table') as HTMLElement;
+    if (!scrollContainer) return;
+
+    this.lazyLoadHandler = () => {
+      const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
+      if (scrollHeight - scrollTop - clientHeight < this.lazyLoadThreshold) {
+        this.dispatchEvent(new CustomEvent('lazy-load', {
+          detail: { currentCount: this.data.length },
+          bubbles: true,
+          composed: true,
+        }));
+      }
+    };
+
+    scrollContainer.addEventListener('scroll', this.lazyLoadHandler, { passive: true });
+  }
+
+  // ── Scrolling API ──
+
+  scrollToColumn(columnKey: string) {
+    const th = this.shadowRoot?.querySelector(`th[data-key="${columnKey}"]`) as HTMLElement;
+    th?.scrollIntoView({ inline: 'nearest', block: 'nearest' });
+  }
+
+  // ── List View ──
+
+  private listViewRenderer: ((row: any, index: number) => string | HTMLElement) | null = null;
+
+  setListViewRenderer(fn: (row: any, index: number) => string | HTMLElement) {
+    this.listViewRenderer = fn;
+    if (this.list) this.renderBody();
+  }
+
   // ── Row creation helper (used by both regular and virtualized rendering) ──
 
-  private createRow(rowData: any, index: number): HTMLTableRowElement {
+  private createRow(rowData: any, index: number, treeRow?: TreeRow): HTMLTableRowElement {
     const tr = document.createElement('tr');
     tr.setAttribute('data-index', String(index));
 
+    // Row height
+    if (this.rowHeightCallback) {
+      tr.style.height = `${this.rowHeightCallback(rowData, index)}px`;
+    } else if (this.rowHeight !== 48) {
+      tr.style.height = `${this.rowHeight}px`;
+    }
+
     const isSelected = this.selectedRows.includes(index);
     tr.setAttribute('data-selected', String(isSelected));
+
+    // Row DnD handle
+    if (this.rowReorder && this.rowDnD.isEnabled()) {
+      tr.appendChild(this.rowDnD.createDragHandle());
+      this.rowDnD.makeRowDraggable(tr, index);
+    }
+
+    // Master-detail expand/collapse toggle
+    if (this.masterDetail.isEnabled()) {
+      const toggleCell = document.createElement('td');
+      toggleCell.className = 'detail-toggle-cell';
+      toggleCell.style.width = '2rem';
+      toggleCell.style.textAlign = 'center';
+      toggleCell.style.padding = '0.25rem';
+      toggleCell.appendChild(this.masterDetail.createToggleButton(index));
+      tr.appendChild(toggleCell);
+    }
 
     if (this.selectable) {
       const selectCell = document.createElement('td');
@@ -1776,13 +2245,40 @@ export class SniceTable extends HTMLElement {
       ? this.columns.filter(col => visibleCols.some(s => s.key === col.key))
       : this.columns;
 
-    columnsToRender.forEach(column => {
+    let skipColumns = 0;
+    columnsToRender.forEach((column, colIdx) => {
+      // Column spanning: skip cells consumed by a previous span
+      if (skipColumns > 0) {
+        skipColumns--;
+        return;
+      }
+
       const td = document.createElement('td');
       td.setAttribute('data-key', column.key);
       const value = rowData[column.key];
-      const cellTagName = this.getCellTagName(column.type);
-      const attributes = this.getCellAttributes(column, value);
-      td.innerHTML = `<${cellTagName} ${attributes}></${cellTagName}>`;
+
+      // Column span
+      const colSpanDef = (column as any).colSpan;
+      if (colSpanDef) {
+        const span = typeof colSpanDef === 'function' ? colSpanDef(value, rowData) : colSpanDef;
+        if (span > 1) {
+          td.colSpan = span;
+          skipColumns = span - 1;
+        }
+      }
+
+      // Tree data: add indent + toggle on the group column
+      if (treeRow && column.key === this.treeData.getGroupColumn()) {
+        const toggle = this.treeData.createToggle(treeRow);
+        td.appendChild(toggle);
+        const textSpan = document.createElement('span');
+        textSpan.textContent = value == null ? '' : String(value);
+        td.appendChild(textSpan);
+      } else {
+        const cellTagName = this.getCellTagName(column.type);
+        const attributes = this.getCellAttributes(column, value);
+        td.innerHTML = `<${cellTagName} ${attributes}></${cellTagName}>`;
+      }
 
       // Apply column width
       const state = this.columnManager.getState(column.key);
