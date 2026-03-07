@@ -1,6 +1,6 @@
 import { element, property, query, watch, dispatch, ready, render, styles, html, css } from 'snice';
 import cssContent from './snice-date-time-picker.css?inline';
-import type { DateTimePickerVariant, DateTimePickerTimeFormat, SniceDateTimePickerElement } from './snice-date-time-picker.types';
+import type { DateTimePickerVariant, DateTimePickerTimeFormat, DateTimePickerSize, DateTimePickerDateFormat, SniceDateTimePickerElement } from './snice-date-time-picker.types';
 
 @element('snice-date-time-picker', { formAssociated: true })
 export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePickerElement {
@@ -14,10 +14,13 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
   }
 
   @property()
+  size: DateTimePickerSize = 'medium';
+
+  @property()
   value = '';
 
   @property({ attribute: 'date-format' })
-  dateFormat = 'yyyy-mm-dd';
+  dateFormat: DateTimePickerDateFormat = 'yyyy-mm-dd';
 
   @property({ attribute: 'time-format' })
   timeFormat: DateTimePickerTimeFormat = '24h';
@@ -30,6 +33,12 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
 
   @property({ type: Boolean, attribute: 'show-seconds' })
   showSeconds = false;
+
+  @property({ type: Boolean })
+  loading = false;
+
+  @property({ type: Boolean })
+  clearable = false;
 
   @property({ type: Boolean })
   disabled = false;
@@ -70,9 +79,14 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
   @query('.panel')
   panel?: HTMLElement;
 
+  @query('.clear-button')
+  clearButton?: HTMLButtonElement;
+
   // Internal state
   private selectedDate: Date | null = null;
   private viewDate = new Date();
+  private calendarView: 'days' | 'years' = 'days';
+  private yearRangeStart = 0;
   private hours = 0;
   private minutes = 0;
   private seconds = 0;
@@ -93,6 +107,12 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
   @render()
   renderContent() {
     const labelClasses = ['label', this.required ? 'label--required' : ''].filter(Boolean).join(' ');
+    const inputClasses = [
+      'input',
+      `input--${this.size}`,
+      this.invalid ? 'input--invalid' : '',
+      this.loading ? 'input--loading' : ''
+    ].filter(Boolean).join(' ');
     const isInline = this.variant === 'inline';
 
     return html/*html*/`
@@ -104,11 +124,11 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
         <if ${!isInline}>
           <div class="input-container">
             <input
-              class="input ${this.invalid ? 'input--invalid' : ''}"
+              class="${inputClasses}"
               type="text"
               value="${this.getDisplayValue()}"
               placeholder="${this.placeholder || this.getPlaceholder()}"
-              ?disabled=${this.disabled}
+              ?disabled=${this.disabled || this.loading}
               ?readonly=${this.readonly}
               ?required=${this.required}
               name="${this.name || ''}"
@@ -126,13 +146,31 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
               aria-label="Open date and time picker"
               tabindex="-1"
               part="toggle"
-              ?disabled=${this.disabled}
+              ?disabled=${this.disabled || this.loading}
               @click=${this.handleToggle}
             >
               <svg viewBox="0 0 24 24" width="18" height="18">
                 <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z" fill="currentColor"/>
               </svg>
             </button>
+
+            <button
+              class="clear-button"
+              type="button"
+              aria-label="Clear"
+              tabindex="-1"
+              part="clear"
+              style="display: none;"
+              @click=${(e: Event) => this.handleClear(e)}
+            >
+              <svg viewBox="0 0 24 24" width="16" height="16">
+                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
+              </svg>
+            </button>
+
+            <if ${this.loading}>
+              <span class="spinner" part="spinner"></span>
+            </if>
           </div>
         </if>
 
@@ -160,31 +198,58 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
 
   private renderCalendar() {
     return html/*html*/`
-      <div class="calendar-header">
-        <button class="nav-button" type="button" aria-label="Previous month" @click=${this.prevMonth}>
-          <svg viewBox="0 0 24 24" width="20" height="20">
-            <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" fill="currentColor"/>
-          </svg>
-        </button>
+      <case ${this.calendarView}>
+        <when value="years">
+          <div class="calendar-header">
+            <button class="nav-button" type="button" aria-label="Previous years" @click=${this.prevYears}>
+              <svg viewBox="0 0 24 24" width="20" height="20">
+                <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" fill="currentColor"/>
+              </svg>
+            </button>
 
-        <div class="calendar-title">
-          ${this.monthNames[this.viewDate.getMonth()]} ${this.viewDate.getFullYear()}
-        </div>
+            <div class="calendar-title">
+              <span class="month-label">${this.yearRangeStart} — ${this.yearRangeStart + 11}</span>
+            </div>
 
-        <button class="nav-button" type="button" aria-label="Next month" @click=${this.nextMonth}>
-          <svg viewBox="0 0 24 24" width="20" height="20">
-            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" fill="currentColor"/>
-          </svg>
-        </button>
-      </div>
+            <button class="nav-button" type="button" aria-label="Next years" @click=${this.nextYears}>
+              <svg viewBox="0 0 24 24" width="20" height="20">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" fill="currentColor"/>
+              </svg>
+            </button>
+          </div>
 
-      <div class="calendar-weekdays">
-        ${this.dayNames.map(day => html`<div class="weekday">${day}</div>`)}
-      </div>
+          <div class="year-grid" @click=${(e: Event) => this.handleYearClick(e)}>
+            ${this.getYearsGrid()}
+          </div>
+        </when>
+        <default>
+          <div class="calendar-header">
+            <button class="nav-button" type="button" aria-label="Previous month" @click=${this.prevMonth}>
+              <svg viewBox="0 0 24 24" width="20" height="20">
+                <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" fill="currentColor"/>
+              </svg>
+            </button>
 
-      <div class="calendar-days" @click=${(e: Event) => this.handleDayClick(e)}>
-        ${this.getDaysGrid()}
-      </div>
+            <div class="calendar-title">
+              <span class="month-label">${this.monthNames[this.viewDate.getMonth()]} </span><button class="year-button" type="button" @click=${this.showYears}>${this.viewDate.getFullYear()}</button>
+            </div>
+
+            <button class="nav-button" type="button" aria-label="Next month" @click=${this.nextMonth}>
+              <svg viewBox="0 0 24 24" width="20" height="20">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" fill="currentColor"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="calendar-weekdays">
+            ${this.dayNames.map(day => html`<div class="weekday">${day}</div>`)}
+          </div>
+
+          <div class="calendar-days" @click=${(e: Event) => this.handleDayClick(e)}>
+            ${this.getDaysGrid()}
+          </div>
+        </default>
+      </case>
 
       <div class="calendar-footer">
         <button class="today-button" type="button" @click=${this.goToToday}>Today</button>
@@ -278,6 +343,7 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
       this.internals.setFormValue(this.value);
     }
     this.setupClickOutside();
+    queueMicrotask(() => this.updateClearButton());
   }
 
   private parseValue() {
@@ -326,6 +392,7 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
       case 'yyyy/mm/dd': return `${yyyy}/${mm}/${dd}`;
       case 'dd-mm-yyyy': return `${dd}-${mm}-${yyyy}`;
       case 'mm-dd-yyyy': return `${mm}-${dd}-${yyyy}`;
+      case 'mmmm dd, yyyy': return `${this.monthNames[date.getMonth()]} ${dd}, ${yyyy}`;
       case 'yyyy-mm-dd':
       default: return `${yyyy}-${mm}-${dd}`;
     }
@@ -350,7 +417,7 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
   }
 
   private getPlaceholder(): string {
-    const datePh = this.dateFormat.toUpperCase();
+    const datePh = this.dateFormat === 'mmmm dd, yyyy' ? 'Month DD, YYYY' : this.dateFormat.toUpperCase();
     const timePh = this.timeFormat === '12h'
       ? (this.showSeconds ? 'HH:MM:SS AM' : 'HH:MM AM')
       : (this.showSeconds ? 'HH:MM:SS' : 'HH:MM');
@@ -432,6 +499,22 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
     return days;
   }
 
+  private getYearsGrid() {
+    const currentYear = new Date().getFullYear();
+    const selectedYear = this.viewDate.getFullYear();
+    const years = [];
+    for (let i = 0; i < 12; i++) {
+      const year = this.yearRangeStart + i;
+      const classes = ['year-cell'];
+      if (year === currentYear) classes.push('year-cell--current');
+      if (year === selectedYear) classes.push('year-cell--selected');
+      years.push(html`
+        <button class="${classes.join(' ')}" type="button" data-year="${year}">${year}</button>
+      `);
+    }
+    return years;
+  }
+
   // Event handlers
 
   private handleFocus() {
@@ -475,6 +558,42 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
     this.selectedDate = new Date(year, month - 1, day);
     this.viewDate = new Date(this.selectedDate);
     this.updateValue();
+  }
+
+  private handleYearClick(e: Event) {
+    const target = (e.target as HTMLElement).closest('[data-year]');
+    if (!target) return;
+    const year = parseInt(target.getAttribute('data-year')!, 10);
+    this.viewDate = new Date(year, this.viewDate.getMonth(), 1);
+    this.calendarView = 'days';
+    this.renderContent();
+  }
+
+  private handleClear(e: Event) {
+    e.stopPropagation();
+    this.clear();
+  }
+
+  private showYears() {
+    this.yearRangeStart = this.viewDate.getFullYear() - (this.viewDate.getFullYear() % 12);
+    this.calendarView = 'years';
+    this.renderContent();
+  }
+
+  private prevYears() {
+    this.yearRangeStart -= 12;
+    this.renderContent();
+  }
+
+  private nextYears() {
+    this.yearRangeStart += 12;
+    this.renderContent();
+  }
+
+  private updateClearButton() {
+    if (!this.clearButton || !this.clearable) return;
+    const shouldShow = this.selectedDate && !this.disabled && !this.readonly;
+    this.clearButton.style.display = shouldShow ? '' : 'none';
   }
 
   private handleHourClick(e: Event) {
@@ -533,6 +652,7 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
     const today = new Date();
     this.selectedDate = today;
     this.viewDate = new Date(today);
+    this.calendarView = 'days';
     this.updateValue();
   }
 
@@ -544,6 +664,7 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
     if (this.internals) {
       this.internals.setFormValue(this.value);
     }
+    this.updateClearButton();
     this.emitDateTimeChange();
     this.renderContent();
   }
@@ -587,6 +708,7 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
     if (this.input) {
       this.input.disabled = this.disabled;
     }
+    this.updateClearButton();
   }
 
   @watch('invalid')
@@ -595,6 +717,11 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
       this.input.setAttribute('aria-invalid', String(this.invalid));
       this.input.classList.toggle('input--invalid', this.invalid);
     }
+  }
+
+  @dispatch('datetimepicker-clear', { bubbles: true, composed: true })
+  private emitClear() {
+    return { dateTimePicker: this };
   }
 
   // Event dispatchers
@@ -635,6 +762,7 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
 
   open() {
     if (!this.disabled && !this.readonly && this.variant === 'dropdown') {
+      this.calendarView = 'days';
       this.showPanel = true;
       if (this.panel) {
         this.panel.removeAttribute('hidden');
@@ -657,5 +785,33 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
 
   blur() {
     this.input?.blur();
+  }
+
+  clear() {
+    this.selectedDate = null;
+    this.hours = 0;
+    this.minutes = 0;
+    this.seconds = 0;
+    this.period = 'AM';
+    this.value = '';
+    if (this.input) {
+      this.input.value = '';
+    }
+    this.updateClearButton();
+    this.emitClear();
+    this.emitDateTimeChange();
+    this.focus();
+  }
+
+  checkValidity() {
+    return this.input?.checkValidity() ?? true;
+  }
+
+  reportValidity() {
+    return this.input?.reportValidity() ?? true;
+  }
+
+  setCustomValidity(message: string) {
+    this.input?.setCustomValidity(message);
   }
 }

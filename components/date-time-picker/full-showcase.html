@@ -61,6 +61,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <snice-date-time-picker label="mm/dd/yyyy" date-format="mm/dd/yyyy" value="2026-03-06T10:00" style="margin-top:0.5rem"></snice-date-time-picker>
   <snice-date-time-picker label="dd/mm/yyyy" date-format="dd/mm/yyyy" value="2026-03-06T10:00" style="margin-top:0.5rem"></snice-date-time-picker>
   <snice-date-time-picker label="dd-mm-yyyy" date-format="dd-mm-yyyy" value="2026-03-06T10:00" style="margin-top:0.5rem"></snice-date-time-picker>
+  <snice-date-time-picker label="mmmm dd, yyyy" date-format="mmmm dd, yyyy" value="2026-03-06T10:00" style="margin-top:0.5rem"></snice-date-time-picker>
 </section>
 
 <section>
@@ -111,6 +112,30 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 <section>
   <h2>Form: name</h2>
   <snice-date-time-picker label="Event Start" name="event_start" required></snice-date-time-picker>
+</section>
+
+<section>
+  <h2>Sizes</h2>
+  <div class="row">
+    <snice-date-time-picker label="Small" size="small" value="2026-03-06T10:00"></snice-date-time-picker>
+    <snice-date-time-picker label="Medium" size="medium" value="2026-03-06T10:00"></snice-date-time-picker>
+    <snice-date-time-picker label="Large" size="large" value="2026-03-06T10:00"></snice-date-time-picker>
+  </div>
+</section>
+
+<section>
+  <h2>Loading</h2>
+  <snice-date-time-picker label="Loading" loading></snice-date-time-picker>
+</section>
+
+<section>
+  <h2>Clearable</h2>
+  <snice-date-time-picker label="Clearable" clearable value="2026-12-25T14:30"></snice-date-time-picker>
+</section>
+
+<section>
+  <h2>Clearable + disabled (clear hidden)</h2>
+  <snice-date-time-picker label="Disabled clearable" disabled clearable value="2026-12-25T14:30"></snice-date-time-picker>
 </section>
 
 <section>
