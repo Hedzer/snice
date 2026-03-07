@@ -292,13 +292,15 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
     arrow.style.borderLeftColor = 'transparent';
     arrow.style.borderRightColor = 'transparent';
 
+    const tooltipBg = getComputedStyle(this).getPropertyValue('--tooltip-bg').trim() || 'rgb(51 51 51)';
+
     switch (position) {
       case 'top':
       case 'top-start':
       case 'top-end':
         arrow.style.bottom = '-6px';
         arrow.style.borderWidth = '6px 6px 0';
-        arrow.style.borderTopColor = '#333';
+        arrow.style.borderTopColor = tooltipBg;
         arrow.style.borderLeftColor = 'transparent';
         arrow.style.borderRightColor = 'transparent';
         if (position === 'top') {
@@ -316,7 +318,7 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
       case 'bottom-end':
         arrow.style.top = '-6px';
         arrow.style.borderWidth = '0 6px 6px';
-        arrow.style.borderBottomColor = '#333';
+        arrow.style.borderBottomColor = tooltipBg;
         arrow.style.borderLeftColor = 'transparent';
         arrow.style.borderRightColor = 'transparent';
         if (position === 'bottom') {
@@ -334,7 +336,7 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
       case 'left-end':
         arrow.style.right = '-6px';
         arrow.style.borderWidth = '6px 0 6px 6px';
-        arrow.style.borderLeftColor = '#333';
+        arrow.style.borderLeftColor = tooltipBg;
         arrow.style.borderTopColor = 'transparent';
         arrow.style.borderBottomColor = 'transparent';
         if (position === 'left') {
@@ -352,7 +354,7 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
       case 'right-end':
         arrow.style.left = '-6px';
         arrow.style.borderWidth = '6px 6px 6px 0';
-        arrow.style.borderRightColor = '#333';
+        arrow.style.borderRightColor = tooltipBg;
         arrow.style.borderTopColor = 'transparent';
         arrow.style.borderBottomColor = 'transparent';
         if (position === 'right') {
@@ -377,14 +379,17 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
     const portal = document.createElement('div');
     portal.className = `snice-tooltip snice-tooltip--${this.position}`;
     portal.setAttribute('role', 'tooltip');
+    const hostStyles = getComputedStyle(this);
+    const bg = hostStyles.getPropertyValue('--tooltip-bg').trim() || 'rgb(51 51 51)';
+    const color = hostStyles.getPropertyValue('--tooltip-color').trim() || 'rgb(255 255 255)';
     portal.style.cssText = `
       position: fixed;
       z-index: ${this.zIndex};
-      padding: 8px 12px;
-      background: #333;
-      color: white;
+      padding: 0.5rem 0.75rem;
+      background: ${bg};
+      color: ${color};
       border-radius: 6px;
-      font-size: 14px;
+      font-size: 0.875rem;
       line-height: 1.4;
       max-width: ${this.maxWidth}px;
       width: max-content;
@@ -392,7 +397,7 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
       opacity: 0;
       transform: scale(0.95);
       transition: opacity 0.2s, transform 0.2s;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 2px 8px rgb(0 0 0 / 0.15);
       display: none;
     `;
 
