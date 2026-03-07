@@ -1,115 +1,174 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-theme="dark">
 <head>
-  <title>Book Demo</title>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
     body {
-      padding: 40px;
-      font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
-      background: var(--snice-color-background, rgb(255 255 255));
-      color: var(--snice-color-text, rgb(23 23 23));
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 1.5rem;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
     }
-    h2, h3 {
-      color: var(--snice-color-text, rgb(23 23 23));
+    section { margin-bottom: 2rem; }
+    h2 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--snice-color-text-tertiary, #888);
+      margin: 0 0 0.75rem;
     }
-    .demo-section {
-      margin-bottom: 3rem;
+    .row {
+      display: flex;
+      align-items: start;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
     }
     .page-content {
-      padding: 0.5rem;
-      line-height: 1.8;
+      padding: 1.5rem;
       font-size: 0.9rem;
-      color: var(--snice-color-text, rgb(23 23 23));
+      line-height: 1.6;
     }
     .page-content h3 {
-      margin-top: 0;
-      font-size: 1.1rem;
+      margin: 0 0 0.75rem;
     }
   </style>
+</head>
+<body>
+
+  <section>
+    <h2>Default (no cover image)</h2>
+    <snice-book>
+      <snice-book-page>
+        <div slot="front" class="page-content"><h3>Page 1</h3><p>Front of page one.</p></div>
+        <div slot="back" class="page-content"><h3>Page 1 (back)</h3><p>Back of page one.</p></div>
+      </snice-book-page>
+      <snice-book-page>
+        <div slot="front" class="page-content"><h3>Page 2</h3><p>Front of page two.</p></div>
+        <div slot="back" class="page-content"><h3>Page 2 (back)</h3><p>Back of page two.</p></div>
+      </snice-book-page>
+      <snice-book-page>
+        <div slot="front" class="page-content"><h3>Page 3</h3><p>Front of page three.</p></div>
+        <div slot="back" class="page-content"><h3>Page 3 (back)</h3><p>Back of page three.</p></div>
+      </snice-book-page>
+    </snice-book>
+  </section>
+
+  <section>
+    <h2>With cover-image</h2>
+    <snice-book cover-image="https://picsum.photos/300/400?random=1" title="My Book" author="Author Name">
+      <snice-book-page>
+        <div slot="front" class="page-content"><h3>Chapter 1</h3><p>The story begins here.</p></div>
+        <div slot="back" class="page-content"><p>Continued on the next page...</p></div>
+      </snice-book-page>
+      <snice-book-page>
+        <div slot="front" class="page-content"><h3>Chapter 2</h3><p>The plot thickens.</p></div>
+        <div slot="back" class="page-content"><p>To be continued.</p></div>
+      </snice-book-page>
+    </snice-book>
+  </section>
+
+  <section>
+    <h2>With title and author</h2>
+    <snice-book title="The Great Adventure" author="Jane Doe" cover-image="https://picsum.photos/300/400?random=2">
+      <snice-book-page>
+        <div slot="front" class="page-content"><h3>Prologue</h3><p>It was a dark and stormy night...</p></div>
+      </snice-book-page>
+    </snice-book>
+  </section>
+
+  <section>
+    <h2>current-page property (start on page 1)</h2>
+    <snice-book current-page="1" cover-image="https://picsum.photos/300/400?random=3">
+      <snice-book-page>
+        <div slot="front" class="page-content"><h3>Page 1</h3><p>You start here because current-page=1.</p></div>
+        <div slot="back" class="page-content"><p>Back of page 1.</p></div>
+      </snice-book-page>
+      <snice-book-page>
+        <div slot="front" class="page-content"><h3>Page 2</h3><p>Page two content.</p></div>
+        <div slot="back" class="page-content"><p>Back of page 2.</p></div>
+      </snice-book-page>
+    </snice-book>
+  </section>
+
+  <section>
+    <h2>Many pages (5)</h2>
+    <snice-book cover-image="https://picsum.photos/300/400?random=4">
+      <snice-book-page>
+        <div slot="front" class="page-content"><h3>Page 1</h3><p>Content one.</p></div>
+        <div slot="back" class="page-content"><p>Back one.</p></div>
+      </snice-book-page>
+      <snice-book-page>
+        <div slot="front" class="page-content"><h3>Page 2</h3><p>Content two.</p></div>
+        <div slot="back" class="page-content"><p>Back two.</p></div>
+      </snice-book-page>
+      <snice-book-page>
+        <div slot="front" class="page-content"><h3>Page 3</h3><p>Content three.</p></div>
+        <div slot="back" class="page-content"><p>Back three.</p></div>
+      </snice-book-page>
+      <snice-book-page>
+        <div slot="front" class="page-content"><h3>Page 4</h3><p>Content four.</p></div>
+        <div slot="back" class="page-content"><p>Back four.</p></div>
+      </snice-book-page>
+      <snice-book-page>
+        <div slot="front" class="page-content"><h3>Page 5</h3><p>Content five.</p></div>
+        <div slot="back" class="page-content"><p>Back five.</p></div>
+      </snice-book-page>
+    </snice-book>
+  </section>
+
+  <section>
+    <h2>Single page</h2>
+    <snice-book>
+      <snice-book-page>
+        <div slot="front" class="page-content"><h3>Only Page</h3><p>A book with just one page.</p></div>
+      </snice-book-page>
+    </snice-book>
+  </section>
+
+  <section>
+    <h2>Rich content in pages</h2>
+    <snice-book cover-image="https://picsum.photos/300/400?random=5">
+      <snice-book-page>
+        <div slot="front" class="page-content">
+          <h3>Rich Content</h3>
+          <p><strong>Bold text</strong>, <em>italic text</em>, and <a href="#">a link</a>.</p>
+          <ul>
+            <li>List item one</li>
+            <li>List item two</li>
+          </ul>
+        </div>
+        <div slot="back" class="page-content">
+          <img src="https://picsum.photos/250/150?random=6" alt="Sample" style="width: 100%; border-radius: 4px;">
+          <p>An image on the back.</p>
+        </div>
+      </snice-book-page>
+    </snice-book>
+  </section>
+
+  <section>
+    <h2>Edge case: no pages</h2>
+    <snice-book cover-image="https://picsum.photos/300/400?random=7"></snice-book>
+  </section>
+
   <script type="module">
     import './snice-book.ts';
   </script>
-</head>
-<body>
-  <h2>Book Demo</h2>
-
-  <div class="demo-section">
-    <h3>Spread Mode (default)</h3>
-    <snice-book title="The Web Component Handbook" author="Jane Developer" cover-image="https://picsum.photos/200/300?random=1">
-      <div class="page-content">
-        <h3>Chapter 1: Introduction</h3>
-        <p>Web Components are a set of web platform APIs that allow you to create new custom, reusable, encapsulated HTML tags to use in web pages and web apps.</p>
-        <p>They are built on four main specifications: Custom Elements, Shadow DOM, HTML Templates, and ES Modules.</p>
-      </div>
-      <div class="page-content">
-        <h3>Chapter 2: Custom Elements</h3>
-        <p>Custom Elements let you define your own HTML elements. Using the CustomElementRegistry, you can register new elements that the browser will recognize and render.</p>
-        <p>The key method is <code>customElements.define()</code> which takes a tag name and a class.</p>
-      </div>
-      <div class="page-content">
-        <h3>Chapter 3: Shadow DOM</h3>
-        <p>Shadow DOM provides encapsulation for your components. Styles and markup inside a shadow root don't leak out, and external styles don't leak in.</p>
-        <p>This is essential for building truly reusable components.</p>
-      </div>
-      <div class="page-content">
-        <h3>Chapter 4: Templates</h3>
-        <p>HTML Templates allow you to define fragments of HTML that aren't rendered when the page loads but can be instantiated later at runtime.</p>
-        <p>Combined with slots, templates provide a powerful content projection system.</p>
-      </div>
-      <div class="page-content">
-        <h3>Chapter 5: ES Modules</h3>
-        <p>ES Modules provide a standard module system for JavaScript. They enable tree-shaking and lazy loading of components.</p>
-      </div>
-      <div class="page-content">
-        <h3>Chapter 6: Conclusion</h3>
-        <p>Web Components represent the future of reusable UI development. By leveraging browser-native APIs, they work everywhere without framework lock-in.</p>
-      </div>
-    </snice-book>
-  </div>
-
-  <div class="demo-section">
-    <h3>Single Page Mode</h3>
-    <snice-book mode="single" title="Short Stories">
-      <div class="page-content">
-        <h3>Story One</h3>
-        <p>Once upon a time, in a land of pure imagination, there lived a developer who dreamed of building the perfect component library...</p>
-      </div>
-      <div class="page-content">
-        <h3>Story Two</h3>
-        <p>The debugging session had been going on for hours. Sarah stared at the console, wondering why the shadow DOM refused to cooperate.</p>
-      </div>
-      <div class="page-content">
-        <h3>Story Three</h3>
-        <p>It was a dark and stormy sprint. The deadline loomed like a mountain of tech debt, but the team pressed on.</p>
-      </div>
-      <div class="page-content">
-        <h3>The End</h3>
-        <p>And they all shipped to production, and lived happily ever after. The end.</p>
-      </div>
-    </snice-book>
-  </div>
-
-  <div class="demo-section">
-    <h3>No Cover - Direct Content</h3>
-    <snice-book>
-      <div class="page-content">
-        <h3>Page 1</h3>
-        <p>This book starts directly with content, no cover page.</p>
-      </div>
-      <div class="page-content">
-        <h3>Page 2</h3>
-        <p>You can still navigate through pages using the controls below or by clicking the edges.</p>
-      </div>
-      <div class="page-content">
-        <h3>Page 3</h3>
-        <p>Arrow keys also work when the book has focus.</p>
-      </div>
-      <div class="page-content">
-        <h3>Page 4</h3>
-        <p>The last page of this mini book.</p>
-      </div>
-    </snice-book>
-  </div>
 </body>
 </html>

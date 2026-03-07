@@ -1,116 +1,197 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Form Layout Test</title>
-    <link rel="stylesheet" href="../theme/theme.css">
-    <style>
-        body {
-            font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
-            padding: var(--snice-spacing-xl, 2rem);
-            background: var(--snice-color-background);
-            color: var(--snice-color-text, rgb(23 23 23));
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: var(--snice-color-background-element, white);
-            padding: var(--snice-spacing-xl, 2rem);
-            border-radius: var(--snice-border-radius-lg, 8px);
-            box-shadow: var(--snice-shadow-sm, 0 1px 3px rgba(0,0,0,0.1));
-        }
-
-        .test-section {
-            margin-bottom: var(--snice-spacing-xl, 2rem);
-            padding: var(--snice-spacing-lg, 1.5rem);
-            border: 1px solid var(--snice-color-border, rgb(226 226 226));
-            border-radius: var(--snice-border-radius-lg, 6px);
-            background: var(--snice-color-background-secondary, rgb(249 250 251));
-        }
-
-        .test-section h3 {
-            margin: 0 0 var(--snice-spacing-md, 1rem) 0;
-            color: var(--snice-color-text, rgb(23 23 23));
-            font-weight: var(--snice-font-weight-semibold, 600);
-        }
-    </style>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <title>Form Layout</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .box { border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .field { display: flex; flex-direction: column; gap: 0.25rem; }
+    .field label { font-size: 0.875rem; font-weight: 500; color: var(--snice-color-text); }
+    .field input, .field select, .field textarea { padding: 0.5rem; border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 4px; font-size: 0.875rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+  </style>
+  <script type="module">import './snice-form-layout.ts';</script>
 </head>
 <body>
-    <div class="container">
-        <h1>Snice Form Layout Component Test</h1>
 
-        <div class="test-section">
-            <h3>Single Column (Default)</h3>
-            <snice-form-layout>
-                <snice-input label="First Name" placeholder="Enter first name"></snice-input>
-                <snice-input label="Last Name" placeholder="Enter last name"></snice-input>
-                <snice-input label="Email" type="email" placeholder="you@example.com"></snice-input>
-            </snice-form-layout>
-        </div>
+<!-- Columns -->
+<h2>Columns: 1 (default)</h2>
+<div class="box">
+  <snice-form-layout columns="1">
+    <div class="field"><label>First Name</label><input type="text" placeholder="John"></div>
+    <div class="field"><label>Last Name</label><input type="text" placeholder="Doe"></div>
+    <div class="field"><label>Email</label><input type="email" placeholder="john@example.com"></div>
+  </snice-form-layout>
+</div>
 
-        <div class="test-section">
-            <h3>Two Columns</h3>
-            <snice-form-layout columns="2">
-                <snice-input label="First Name" placeholder="Enter first name"></snice-input>
-                <snice-input label="Last Name" placeholder="Enter last name"></snice-input>
-                <snice-input label="Email" type="email" placeholder="you@example.com"></snice-input>
-                <snice-input label="Phone" type="tel" placeholder="+1 (555) 000-0000"></snice-input>
-            </snice-form-layout>
-        </div>
+<h2>Columns: 2</h2>
+<div class="box">
+  <snice-form-layout columns="2">
+    <div class="field"><label>First Name</label><input type="text" placeholder="John"></div>
+    <div class="field"><label>Last Name</label><input type="text" placeholder="Doe"></div>
+    <div class="field"><label>Email</label><input type="email" placeholder="john@example.com"></div>
+    <div class="field"><label>Phone</label><input type="tel" placeholder="(555) 123-4567"></div>
+  </snice-form-layout>
+</div>
 
-        <div class="test-section">
-            <h3>Three Columns with Small Gap</h3>
-            <snice-form-layout columns="3" gap="small">
-                <snice-input label="City" placeholder="City"></snice-input>
-                <snice-input label="State" placeholder="State"></snice-input>
-                <snice-input label="Zip" placeholder="Zip code"></snice-input>
-            </snice-form-layout>
-        </div>
+<h2>Columns: 3</h2>
+<div class="box">
+  <snice-form-layout columns="3">
+    <div class="field"><label>City</label><input type="text" placeholder="New York"></div>
+    <div class="field"><label>State</label><input type="text" placeholder="NY"></div>
+    <div class="field"><label>Zip</label><input type="text" placeholder="10001"></div>
+    <div class="field"><label>Country</label><input type="text" placeholder="USA"></div>
+    <div class="field"><label>Region</label><input type="text" placeholder="Northeast"></div>
+    <div class="field"><label>County</label><input type="text" placeholder="Manhattan"></div>
+  </snice-form-layout>
+</div>
 
-        <div class="test-section">
-            <h3>Labels on Left</h3>
-            <snice-form-layout label-position="left" label-width="10rem">
-                <snice-input label="Username" placeholder="Enter username"></snice-input>
-                <snice-input label="Password" type="password" placeholder="Enter password"></snice-input>
-            </snice-form-layout>
-        </div>
+<h2>Columns: 4</h2>
+<div class="box">
+  <snice-form-layout columns="4">
+    <div class="field"><label>Q1</label><input type="number" placeholder="0"></div>
+    <div class="field"><label>Q2</label><input type="number" placeholder="0"></div>
+    <div class="field"><label>Q3</label><input type="number" placeholder="0"></div>
+    <div class="field"><label>Q4</label><input type="number" placeholder="0"></div>
+  </snice-form-layout>
+</div>
 
-        <div class="test-section">
-            <h3>Compact Variant</h3>
-            <snice-form-layout variant="compact" columns="2">
-                <snice-input label="Field 1" size="small"></snice-input>
-                <snice-input label="Field 2" size="small"></snice-input>
-                <snice-input label="Field 3" size="small"></snice-input>
-                <snice-input label="Field 4" size="small"></snice-input>
-            </snice-form-layout>
-        </div>
+<!-- Label Position -->
+<h2>Label Position: top (default)</h2>
+<div class="box">
+  <snice-form-layout label-position="top" columns="2">
+    <div class="field"><label>Name</label><input type="text"></div>
+    <div class="field"><label>Email</label><input type="email"></div>
+  </snice-form-layout>
+</div>
 
-        <div class="test-section">
-            <h3>Inline Variant</h3>
-            <snice-form-layout variant="inline">
-                <snice-input label="Search" placeholder="Search..." style="flex:1;min-width:200px;"></snice-input>
-                <snice-select label="Category" style="min-width:150px;">
-                </snice-select>
-            </snice-form-layout>
-        </div>
+<h2>Label Position: left</h2>
+<div class="box">
+  <snice-form-layout label-position="left" columns="1">
+    <div class="field"><label>Name</label><input type="text"></div>
+    <div class="field"><label>Email</label><input type="email"></div>
+    <div class="field"><label>Phone</label><input type="tel"></div>
+  </snice-form-layout>
+</div>
 
-        <div class="test-section">
-            <h3>Large Gap</h3>
-            <snice-form-layout gap="large" columns="2">
-                <snice-input label="Start Date" type="date"></snice-input>
-                <snice-input label="End Date" type="date"></snice-input>
-                <snice-textarea label="Description" placeholder="Describe..." style="grid-column: 1 / -1;"></snice-textarea>
-            </snice-form-layout>
-        </div>
-    </div>
+<h2>Label Position: right</h2>
+<div class="box">
+  <snice-form-layout label-position="right" columns="1">
+    <div class="field"><label>Name</label><input type="text"></div>
+    <div class="field"><label>Email</label><input type="email"></div>
+    <div class="field"><label>Phone</label><input type="tel"></div>
+  </snice-form-layout>
+</div>
 
-    <script type="module">
-        import './snice-form-layout.ts';
-        import '../input/snice-input.ts';
-        import '../select/snice-select.ts';
-        import '../textarea/snice-textarea.ts';
-    </script>
+<!-- Label Width -->
+<h2>Label Width: 6rem</h2>
+<div class="box">
+  <snice-form-layout label-position="left" label-width="6rem" columns="1">
+    <div class="field"><label>Name</label><input type="text"></div>
+    <div class="field"><label>Email</label><input type="email"></div>
+  </snice-form-layout>
+</div>
+
+<h2>Label Width: 12rem</h2>
+<div class="box">
+  <snice-form-layout label-position="left" label-width="12rem" columns="1">
+    <div class="field"><label>Full Name</label><input type="text"></div>
+    <div class="field"><label>Email Address</label><input type="email"></div>
+  </snice-form-layout>
+</div>
+
+<!-- Gap -->
+<h2>Gap: small</h2>
+<div class="box">
+  <snice-form-layout gap="small" columns="2">
+    <div class="field"><label>A</label><input type="text"></div>
+    <div class="field"><label>B</label><input type="text"></div>
+    <div class="field"><label>C</label><input type="text"></div>
+    <div class="field"><label>D</label><input type="text"></div>
+  </snice-form-layout>
+</div>
+
+<h2>Gap: medium (default)</h2>
+<div class="box">
+  <snice-form-layout gap="medium" columns="2">
+    <div class="field"><label>A</label><input type="text"></div>
+    <div class="field"><label>B</label><input type="text"></div>
+    <div class="field"><label>C</label><input type="text"></div>
+    <div class="field"><label>D</label><input type="text"></div>
+  </snice-form-layout>
+</div>
+
+<h2>Gap: large</h2>
+<div class="box">
+  <snice-form-layout gap="large" columns="2">
+    <div class="field"><label>A</label><input type="text"></div>
+    <div class="field"><label>B</label><input type="text"></div>
+    <div class="field"><label>C</label><input type="text"></div>
+    <div class="field"><label>D</label><input type="text"></div>
+  </snice-form-layout>
+</div>
+
+<!-- Variant -->
+<h2>Variant: default</h2>
+<div class="box">
+  <snice-form-layout variant="default" columns="2">
+    <div class="field"><label>Name</label><input type="text"></div>
+    <div class="field"><label>Email</label><input type="email"></div>
+  </snice-form-layout>
+</div>
+
+<h2>Variant: compact</h2>
+<div class="box">
+  <snice-form-layout variant="compact" columns="2">
+    <div class="field"><label>Name</label><input type="text"></div>
+    <div class="field"><label>Email</label><input type="email"></div>
+  </snice-form-layout>
+</div>
+
+<h2>Variant: inline</h2>
+<div class="box">
+  <snice-form-layout variant="inline" columns="3">
+    <div class="field"><label>Name</label><input type="text"></div>
+    <div class="field"><label>Email</label><input type="email"></div>
+    <div class="field"><label>Phone</label><input type="tel"></div>
+  </snice-form-layout>
+</div>
+
+<!-- Combinations -->
+<h2>3 Columns + Left Labels + Small Gap + Compact</h2>
+<div class="box">
+  <snice-form-layout columns="3" label-position="left" gap="small" variant="compact" label-width="5rem">
+    <div class="field"><label>City</label><input type="text"></div>
+    <div class="field"><label>State</label><input type="text"></div>
+    <div class="field"><label>Zip</label><input type="text"></div>
+    <div class="field"><label>Country</label><select><option>USA</option><option>Canada</option></select></div>
+    <div class="field"><label>Region</label><input type="text"></div>
+    <div class="field"><label>Notes</label><textarea rows="2"></textarea></div>
+  </snice-form-layout>
+</div>
+
+<h2>2 Columns + Large Gap + Inline Variant</h2>
+<div class="box">
+  <snice-form-layout columns="2" gap="large" variant="inline">
+    <div class="field"><label>First Name</label><input type="text"></div>
+    <div class="field"><label>Last Name</label><input type="text"></div>
+    <div class="field"><label>Email</label><input type="email"></div>
+    <div class="field"><label>Company</label><input type="text"></div>
+  </snice-form-layout>
+</div>
+
 </body>
 </html>

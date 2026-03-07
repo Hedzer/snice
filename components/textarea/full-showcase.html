@@ -1,230 +1,200 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Textarea Demo</title>
+  <title>Textarea</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      padding: 40px;
-      font-family: var(--snice-font-family);
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      max-width: 800px;
-      margin: 0 auto;
-    }
-
-    .section {
-      margin-bottom: 40px;
-    }
-
-    h2 {
-      margin-bottom: 20px;
-      font-size: var(--snice-font-size-2xl);
-      color: var(--snice-color-text);
-    }
-
-    h3 {
-      margin-bottom: 16px;
-      font-size: var(--snice-font-size-lg);
-      color: var(--snice-color-text-secondary);
-    }
-
-    .textarea-group {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      margin-bottom: 20px;
-    }
-
-    .row {
-      display: flex;
-      gap: 20px;
-      align-items: flex-start;
-    }
-
-    .row > * {
-      flex: 1;
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); margin: 2rem 0 0.75rem; }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .col { display: flex; flex-direction: column; gap: 1rem; max-width: 500px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
   </style>
 </head>
 <body>
-  <h1>Textarea Component Demo</h1>
 
-  <div class="section">
-    <h2>Basic</h2>
-    <div class="textarea-group">
-      <snice-textarea label="Default Textarea" placeholder="Enter text..."></snice-textarea>
-      <snice-textarea label="With Value" value="This is some text"></snice-textarea>
-    </div>
+<h2>Variants</h2>
+<div class="grid">
+  <snice-textarea variant="outlined" label="Outlined" placeholder="Outlined variant"></snice-textarea>
+  <snice-textarea variant="filled" label="Filled" placeholder="Filled variant"></snice-textarea>
+  <snice-textarea variant="underlined" label="Underlined" placeholder="Underlined variant"></snice-textarea>
+</div>
+
+<h2>Sizes</h2>
+<div class="grid">
+  <snice-textarea size="small" label="Small" placeholder="Small textarea"></snice-textarea>
+  <snice-textarea size="medium" label="Medium" placeholder="Medium textarea"></snice-textarea>
+  <snice-textarea size="large" label="Large" placeholder="Large textarea"></snice-textarea>
+</div>
+
+<h2>Size x Variant</h2>
+<div class="grid">
+  <snice-textarea size="small" variant="outlined" label="Small Outlined" placeholder="..."></snice-textarea>
+  <snice-textarea size="small" variant="filled" label="Small Filled" placeholder="..."></snice-textarea>
+  <snice-textarea size="small" variant="underlined" label="Small Underlined" placeholder="..."></snice-textarea>
+  <snice-textarea size="medium" variant="outlined" label="Medium Outlined" placeholder="..."></snice-textarea>
+  <snice-textarea size="medium" variant="filled" label="Medium Filled" placeholder="..."></snice-textarea>
+  <snice-textarea size="medium" variant="underlined" label="Medium Underlined" placeholder="..."></snice-textarea>
+  <snice-textarea size="large" variant="outlined" label="Large Outlined" placeholder="..."></snice-textarea>
+  <snice-textarea size="large" variant="filled" label="Large Filled" placeholder="..."></snice-textarea>
+  <snice-textarea size="large" variant="underlined" label="Large Underlined" placeholder="..."></snice-textarea>
+</div>
+
+<h2>Resize Options</h2>
+<div class="grid">
+  <snice-textarea resize="none" label="resize=none" placeholder="Cannot resize"></snice-textarea>
+  <snice-textarea resize="vertical" label="resize=vertical" placeholder="Vertical only (default)"></snice-textarea>
+  <snice-textarea resize="horizontal" label="resize=horizontal" placeholder="Horizontal only"></snice-textarea>
+  <snice-textarea resize="both" label="resize=both" placeholder="Both directions"></snice-textarea>
+</div>
+
+<h2>Rows</h2>
+<div class="grid">
+  <snice-textarea rows="1" label="1 Row"></snice-textarea>
+  <snice-textarea rows="3" label="3 Rows (default)"></snice-textarea>
+  <snice-textarea rows="5" label="5 Rows"></snice-textarea>
+  <snice-textarea rows="10" label="10 Rows"></snice-textarea>
+</div>
+
+<h2>Boolean States</h2>
+<div class="grid">
+  <snice-textarea disabled label="Disabled" value="This textarea is disabled"></snice-textarea>
+  <snice-textarea readonly label="Readonly" value="This textarea is readonly"></snice-textarea>
+  <snice-textarea required label="Required" placeholder="Required field"></snice-textarea>
+  <snice-textarea loading label="Loading" value="Content is loading..."></snice-textarea>
+  <snice-textarea invalid label="Invalid" value="Bad input"></snice-textarea>
+</div>
+
+<h2>Disabled x Variant</h2>
+<div class="grid">
+  <snice-textarea disabled variant="outlined" label="Disabled Outlined" value="Disabled"></snice-textarea>
+  <snice-textarea disabled variant="filled" label="Disabled Filled" value="Disabled"></snice-textarea>
+  <snice-textarea disabled variant="underlined" label="Disabled Underlined" value="Disabled"></snice-textarea>
+</div>
+
+<h2>Invalid x Variant</h2>
+<div class="grid">
+  <snice-textarea invalid variant="outlined" label="Invalid Outlined" value="Error" error-text="Validation failed"></snice-textarea>
+  <snice-textarea invalid variant="filled" label="Invalid Filled" value="Error" error-text="Validation failed"></snice-textarea>
+  <snice-textarea invalid variant="underlined" label="Invalid Underlined" value="Error" error-text="Validation failed"></snice-textarea>
+</div>
+
+<h2>Helper Text</h2>
+<div class="grid">
+  <snice-textarea label="With Helper" helper-text="This is helpful information" placeholder="Type here..."></snice-textarea>
+  <snice-textarea label="Long Helper" helper-text="Please provide detailed information including context, timeline, and expected outcomes for best results"></snice-textarea>
+</div>
+
+<h2>Error Text</h2>
+<div class="grid">
+  <snice-textarea invalid error-text="This field is required" label="Required Error" placeholder="Cannot be empty"></snice-textarea>
+  <snice-textarea invalid error-text="Must be at least 50 characters" label="Minlength Error" value="Too short"></snice-textarea>
+</div>
+
+<h2>Helper vs Error Priority</h2>
+<div class="grid">
+  <snice-textarea label="Helper only" helper-text="Helpful text shown"></snice-textarea>
+  <snice-textarea label="Error only" invalid error-text="Error text shown"></snice-textarea>
+  <snice-textarea label="Both set, error wins" invalid helper-text="This is hidden" error-text="Error takes priority"></snice-textarea>
+</div>
+
+<h2>Character Count (maxlength)</h2>
+<div class="grid">
+  <snice-textarea maxlength="50" label="Max 50 chars" placeholder="Type to see counter..."></snice-textarea>
+  <snice-textarea maxlength="100" label="Max 100 chars" value="Pre-filled text to show the counter with some content already present."></snice-textarea>
+  <snice-textarea maxlength="200" label="Max 200 chars" helper-text="Character counter appears automatically"></snice-textarea>
+</div>
+
+<h2>Minlength</h2>
+<div class="col">
+  <snice-textarea minlength="10" label="Min 10 chars" placeholder="Must enter at least 10 characters"></snice-textarea>
+</div>
+
+<h2>Auto-grow</h2>
+<div class="col">
+  <snice-textarea auto-grow rows="1" label="Auto-grow (1 row start)" placeholder="Type multiple lines to expand..." helper-text="Height adjusts to content"></snice-textarea>
+  <snice-textarea auto-grow rows="3" label="Auto-grow (3 row start)" placeholder="Starts at 3 rows, grows as needed..."></snice-textarea>
+  <snice-textarea auto-grow rows="2" label="Auto-grow with value" value="Line 1&#10;Line 2&#10;Line 3&#10;Line 4&#10;Line 5"></snice-textarea>
+</div>
+
+<h2>Auto-grow x Variant</h2>
+<div class="grid">
+  <snice-textarea auto-grow variant="outlined" label="Auto-grow Outlined" placeholder="Type to grow..."></snice-textarea>
+  <snice-textarea auto-grow variant="filled" label="Auto-grow Filled" placeholder="Type to grow..."></snice-textarea>
+  <snice-textarea auto-grow variant="underlined" label="Auto-grow Underlined" placeholder="Type to grow..."></snice-textarea>
+</div>
+
+<h2>Loading x Variant</h2>
+<div class="grid">
+  <snice-textarea loading variant="outlined" label="Loading Outlined" value="Processing..."></snice-textarea>
+  <snice-textarea loading variant="filled" label="Loading Filled" value="Processing..."></snice-textarea>
+  <snice-textarea loading variant="underlined" label="Loading Underlined" value="Processing..."></snice-textarea>
+</div>
+
+<h2>Placeholder</h2>
+<div class="col">
+  <snice-textarea placeholder="Enter your feedback here..." label="With Placeholder"></snice-textarea>
+  <snice-textarea label="No Placeholder"></snice-textarea>
+</div>
+
+<h2>Value</h2>
+<div class="col">
+  <snice-textarea value="Pre-filled content that the user can edit" label="With Value"></snice-textarea>
+  <snice-textarea value="Long content that spans multiple lines. This text demonstrates how the textarea handles pre-filled content that may overflow the default row count." label="Long Value"></snice-textarea>
+</div>
+
+<h2>Label</h2>
+<div class="grid">
+  <snice-textarea label="Short Label" placeholder="..."></snice-textarea>
+  <snice-textarea label="A Much Longer Descriptive Label for the Field" placeholder="..."></snice-textarea>
+  <snice-textarea placeholder="No label provided"></snice-textarea>
+</div>
+
+<h2>Cols</h2>
+<div class="col">
+  <snice-textarea cols="20" label="cols=20" placeholder="20 columns wide"></snice-textarea>
+  <snice-textarea cols="40" label="cols=40" placeholder="40 columns wide"></snice-textarea>
+  <snice-textarea cols="60" label="cols=60" placeholder="60 columns wide"></snice-textarea>
+</div>
+
+<h2>Autocomplete</h2>
+<div class="col">
+  <snice-textarea autocomplete="on" label="autocomplete=on" placeholder="Browser may suggest"></snice-textarea>
+  <snice-textarea autocomplete="off" label="autocomplete=off" placeholder="No suggestions"></snice-textarea>
+</div>
+
+<h2>Form Integration</h2>
+<form id="demo-form">
+  <div class="col">
+    <snice-textarea name="comments" label="Comments" required minlength="10" maxlength="500" placeholder="Enter comments (min 10, max 500 chars)" helper-text="Form-associated element"></snice-textarea>
+    <button type="submit" style="align-self: flex-start; padding: 0.5rem 1rem;">Submit</button>
   </div>
+</form>
 
-  <div class="section">
-    <h2>Variants</h2>
-    <div class="textarea-group">
-      <snice-textarea variant="outlined" label="Outlined" placeholder="Outlined variant"></snice-textarea>
-      <snice-textarea variant="filled" label="Filled" placeholder="Filled variant"></snice-textarea>
-      <snice-textarea variant="underlined" label="Underlined" placeholder="Underlined variant"></snice-textarea>
-    </div>
-  </div>
+<h2>Edge Cases</h2>
+<div class="grid">
+  <snice-textarea label="Empty" value=""></snice-textarea>
+  <snice-textarea label="All booleans on" disabled readonly required invalid loading value="All states active"></snice-textarea>
+  <snice-textarea label="Max + Auto-grow" maxlength="100" auto-grow placeholder="Counter + auto-grow combined"></snice-textarea>
+  <snice-textarea label="Loading + Required" loading required placeholder="Loading and required"></snice-textarea>
+</div>
 
-  <div class="section">
-    <h2>Sizes</h2>
-    <div class="textarea-group">
-      <snice-textarea size="small" label="Small" placeholder="Small size"></snice-textarea>
-      <snice-textarea size="medium" label="Medium" placeholder="Medium size"></snice-textarea>
-      <snice-textarea size="large" label="Large" placeholder="Large size"></snice-textarea>
-    </div>
-  </div>
-
-  <div class="section">
-    <h2>Rows</h2>
-    <div class="textarea-group">
-      <snice-textarea rows="3" label="3 Rows"></snice-textarea>
-      <snice-textarea rows="5" label="5 Rows"></snice-textarea>
-      <snice-textarea rows="10" label="10 Rows"></snice-textarea>
-    </div>
-  </div>
-
-  <div class="section">
-    <h2>Resize Options</h2>
-    <div class="textarea-group">
-      <snice-textarea resize="none" label="No Resize" placeholder="resize=none"></snice-textarea>
-      <snice-textarea resize="vertical" label="Vertical Resize" placeholder="resize=vertical (default)"></snice-textarea>
-      <snice-textarea resize="horizontal" label="Horizontal Resize" placeholder="resize=horizontal"></snice-textarea>
-      <snice-textarea resize="both" label="Both Directions" placeholder="resize=both"></snice-textarea>
-    </div>
-  </div>
-
-  <div class="section">
-    <h2>Auto-grow</h2>
-    <div class="textarea-group">
-      <snice-textarea auto-grow rows="3" label="Auto-grow" placeholder="Type to expand..." helper-text="Height automatically adjusts to content"></snice-textarea>
-    </div>
-  </div>
-
-  <div class="section">
-    <h2>Character Count</h2>
-    <div class="textarea-group">
-      <snice-textarea maxlength="100" label="Limited to 100 chars" placeholder="Type to see counter..."></snice-textarea>
-      <snice-textarea maxlength="500" value="This textarea has a 500 character limit." label="With initial value"></snice-textarea>
-    </div>
-  </div>
-
-  <div class="section">
-    <h2>Helper Text</h2>
-    <div class="textarea-group">
-      <snice-textarea label="With Helper Text" helper-text="This is some helpful information" placeholder="Type here..."></snice-textarea>
-      <snice-textarea label="Multiple lines of text" helper-text="Please provide detailed information for better results"></snice-textarea>
-    </div>
-  </div>
-
-  <div class="section">
-    <h2>Error State</h2>
-    <div class="textarea-group">
-      <snice-textarea invalid error-text="This field is required" label="Required Field" placeholder="This field cannot be empty"></snice-textarea>
-      <snice-textarea invalid error-text="Must be at least 50 characters" label="Validation Error" value="Too short"></snice-textarea>
-    </div>
-  </div>
-
-  <div class="section">
-    <h2>States</h2>
-    <div class="textarea-group">
-      <snice-textarea disabled label="Disabled" value="This textarea is disabled"></snice-textarea>
-      <snice-textarea readonly label="Readonly" value="This textarea is readonly"></snice-textarea>
-      <snice-textarea required label="Required" placeholder="This field is required"></snice-textarea>
-    </div>
-  </div>
-
-  <div class="section">
-    <h2>Loading States</h2>
-    <div class="textarea-group">
-      <snice-textarea
-        loading
-        label="Loading Textarea"
-        placeholder="Processing..."
-        helper-text="Textarea is disabled while loading">
-      </snice-textarea>
-      <snice-textarea
-        loading
-        value="Saving your content..."
-        label="Loading with Value">
-      </snice-textarea>
-      <snice-textarea
-        id="simulate-loading"
-        label="Simulate Loading"
-        placeholder="Type something and click the button"
-        helper-text="Interactive loading demo">
-      </snice-textarea>
-      <button id="loading-btn" style="
-        padding: 10px 20px;
-        background: #3b82f6;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 1rem;
-      ">Trigger Loading (3s)</button>
-    </div>
-  </div>
-
-  <div class="section">
-    <h2>Form Integration</h2>
-    <form id="demo-form">
-      <div class="textarea-group">
-        <snice-textarea
-          name="comments"
-          label="Comments"
-          required
-          minlength="10"
-          maxlength="500"
-          placeholder="Enter your comments (minimum 10 characters)"
-          helper-text="Share your thoughts with us"
-        ></snice-textarea>
-        <button type="submit">Submit</button>
-      </div>
-    </form>
-    <div id="form-output"></div>
-  </div>
-
-  <script type="module">
-    import './snice-textarea.ts';
-
-    // Loading state example
-    const loadingTextarea = document.getElementById('simulate-loading');
-    const loadingBtn = document.getElementById('loading-btn');
-
-    loadingBtn.addEventListener('click', () => {
-      loadingTextarea.loading = true;
-      loadingBtn.disabled = true;
-      loadingBtn.textContent = 'Loading...';
-
-      setTimeout(() => {
-        loadingTextarea.loading = false;
-        loadingBtn.disabled = false;
-        loadingBtn.textContent = 'Trigger Loading (3s)';
-      }, 3000);
-    });
-
-    // Form demo
-    document.getElementById('demo-form').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const formData = new FormData(e.target);
-      document.getElementById('form-output').innerHTML = `
-        <strong>Submitted:</strong> ${formData.get('comments')}
-      `;
-    });
-
-    // Event logging
-    document.querySelectorAll('snice-textarea').forEach(textarea => {
-      textarea.addEventListener('textarea-input', (e) => {
-        console.log('Input:', e.detail.value);
-      });
-      textarea.addEventListener('textarea-change', (e) => {
-        console.log('Change:', e.detail.value);
-      });
-    });
-  </script>
+<script type="module">
+  import './snice-textarea.ts';
+</script>
 </body>
 </html>

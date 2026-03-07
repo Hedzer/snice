@@ -1,65 +1,164 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-theme="dark">
 <head>
-  <title>Stat Group Demo</title>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stat Group</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      padding: 40px;
-      font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
-      background: var(--snice-color-background, rgb(255 255 255));
-      color: var(--snice-color-text, rgb(23 23 23));
-    }
-    h2, h3 {
-      color: var(--snice-color-text, rgb(23 23 23));
-    }
-    .demo-section {
-      margin-bottom: 4rem;
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
   </style>
-  <script type="module">
-    import './snice-stat-group.ts';
-
-    const stats = [
-      { label: 'Revenue', value: '$45,231', trend: 'up', trendValue: '+12.5%', icon: '$', color: 'rgb(22 163 74)' },
-      { label: 'Users', value: '2,338', trend: 'up', trendValue: '+8.2%', icon: '\u{1F464}' },
-      { label: 'Orders', value: '1,245', trend: 'down', trendValue: '-3.1%', icon: '\u{1F4E6}' },
-      { label: 'Conversion', value: '3.24%', trend: 'neutral', trendValue: '0.0%' }
-    ];
-
-    document.getElementById('card-demo').stats = stats;
-    document.getElementById('minimal-demo').stats = stats;
-    document.getElementById('bordered-demo').stats = stats;
-    document.getElementById('columns-demo').stats = stats;
-
-    document.querySelectorAll('snice-stat-group').forEach(el => {
-      el.addEventListener('stat-click', e => {
-        console.log('Stat clicked:', e.detail);
-      });
-    });
-  </script>
 </head>
 <body>
-  <h2>Stat Group Demo</h2>
 
-  <div class="demo-section">
-    <h3>Card Variant (default)</h3>
-    <snice-stat-group id="card-demo"></snice-stat-group>
-  </div>
+<h2>Variant: Card (default)</h2>
+<snice-stat-group id="card-variant" variant="card"></snice-stat-group>
 
-  <div class="demo-section">
-    <h3>Minimal Variant</h3>
-    <snice-stat-group id="minimal-demo" variant="minimal"></snice-stat-group>
-  </div>
+<h2>Variant: Minimal</h2>
+<snice-stat-group id="minimal-variant" variant="minimal"></snice-stat-group>
 
-  <div class="demo-section">
-    <h3>Bordered Variant</h3>
-    <snice-stat-group id="bordered-demo" variant="bordered"></snice-stat-group>
-  </div>
+<h2>Variant: Bordered</h2>
+<snice-stat-group id="bordered-variant" variant="bordered"></snice-stat-group>
 
-  <div class="demo-section">
-    <h3>Fixed 2 Columns</h3>
-    <snice-stat-group id="columns-demo" columns="2"></snice-stat-group>
-  </div>
+<h2>With Trends (up, down, neutral)</h2>
+<snice-stat-group id="with-trends" variant="card"></snice-stat-group>
+
+<h2>With Trend Values</h2>
+<snice-stat-group id="with-trend-values" variant="card"></snice-stat-group>
+
+<h2>With Icons</h2>
+<snice-stat-group id="with-icons" variant="card"></snice-stat-group>
+
+<h2>With Custom Colors</h2>
+<snice-stat-group id="with-colors" variant="card"></snice-stat-group>
+
+<h2>Custom Columns (2)</h2>
+<snice-stat-group id="cols-2" variant="card" columns="2"></snice-stat-group>
+
+<h2>Custom Columns (3)</h2>
+<snice-stat-group id="cols-3" variant="card" columns="3"></snice-stat-group>
+
+<h2>Custom Columns (4)</h2>
+<snice-stat-group id="cols-4" variant="card" columns="4"></snice-stat-group>
+
+<h2>Single Stat</h2>
+<snice-stat-group id="single-stat" variant="card"></snice-stat-group>
+
+<h2>Many Stats</h2>
+<snice-stat-group id="many-stats" variant="card" columns="3"></snice-stat-group>
+
+<h2>All Trend Directions x Variants</h2>
+<div style="display: flex; flex-direction: column; gap: 1rem;">
+  <snice-stat-group id="trends-card" variant="card"></snice-stat-group>
+  <snice-stat-group id="trends-minimal" variant="minimal"></snice-stat-group>
+  <snice-stat-group id="trends-bordered" variant="bordered"></snice-stat-group>
+</div>
+
+<h2>Icons + Trends + Colors Combined</h2>
+<snice-stat-group id="combined" variant="card"></snice-stat-group>
+
+<script type="module">
+  import './snice-stat-group.ts';
+
+  const baseStats = [
+    { label: 'Revenue', value: '$12,500' },
+    { label: 'Users', value: '1,234' },
+    { label: 'Orders', value: '567' },
+    { label: 'Conversion', value: '4.2%' },
+  ];
+
+  // Card
+  document.getElementById('card-variant').stats = baseStats;
+
+  // Minimal
+  document.getElementById('minimal-variant').stats = baseStats;
+
+  // Bordered
+  document.getElementById('bordered-variant').stats = baseStats;
+
+  // With trends
+  document.getElementById('with-trends').stats = [
+    { label: 'Revenue', value: '$12,500', trend: 'up' },
+    { label: 'Expenses', value: '$8,200', trend: 'down' },
+    { label: 'Users', value: '1,234', trend: 'neutral' },
+    { label: 'Growth', value: '15%', trend: 'up' },
+  ];
+
+  // With trend values
+  document.getElementById('with-trend-values').stats = [
+    { label: 'Revenue', value: '$12,500', trend: 'up', trendValue: '+12.5%' },
+    { label: 'Expenses', value: '$8,200', trend: 'down', trendValue: '-3.2%' },
+    { label: 'Users', value: '1,234', trend: 'neutral', trendValue: '0%' },
+    { label: 'Profit', value: '$4,300', trend: 'up', trendValue: '+28.1%' },
+  ];
+
+  // With icons
+  document.getElementById('with-icons').stats = [
+    { label: 'Revenue', value: '$12,500', icon: '\uD83D\uDCB0' },
+    { label: 'Users', value: '1,234', icon: '\uD83D\uDC65' },
+    { label: 'Orders', value: '567', icon: '\uD83D\uDCE6' },
+    { label: 'Rating', value: '4.8', icon: '\u2B50' },
+  ];
+
+  // With colors
+  document.getElementById('with-colors').stats = [
+    { label: 'Active', value: '1,234', color: '#22c55e' },
+    { label: 'Pending', value: '56', color: '#f59e0b' },
+    { label: 'Errors', value: '3', color: '#ef4444' },
+    { label: 'Total', value: '1,293', color: '#3b82f6' },
+  ];
+
+  // Columns
+  document.getElementById('cols-2').stats = baseStats;
+  document.getElementById('cols-3').stats = baseStats;
+  document.getElementById('cols-4').stats = baseStats;
+
+  // Single stat
+  document.getElementById('single-stat').stats = [
+    { label: 'Total Revenue', value: '$125,000', trend: 'up', trendValue: '+15%' },
+  ];
+
+  // Many stats
+  document.getElementById('many-stats').stats = [
+    { label: 'Revenue', value: '$12.5K' },
+    { label: 'Profit', value: '$4.3K' },
+    { label: 'Users', value: '1,234' },
+    { label: 'Orders', value: '567' },
+    { label: 'Conversion', value: '4.2%' },
+    { label: 'Bounce Rate', value: '32%' },
+  ];
+
+  // All trends x variants
+  const trendStats = [
+    { label: 'Up Trend', value: '100', trend: 'up', trendValue: '+10%' },
+    { label: 'Down Trend', value: '80', trend: 'down', trendValue: '-5%' },
+    { label: 'Neutral', value: '90', trend: 'neutral', trendValue: '0%' },
+  ];
+  document.getElementById('trends-card').stats = trendStats;
+  document.getElementById('trends-minimal').stats = trendStats;
+  document.getElementById('trends-bordered').stats = trendStats;
+
+  // Combined
+  document.getElementById('combined').stats = [
+    { label: 'Revenue', value: '$12,500', trend: 'up', trendValue: '+12%', icon: '\uD83D\uDCB0', color: '#22c55e' },
+    { label: 'Expenses', value: '$8,200', trend: 'down', trendValue: '-3%', icon: '\uD83D\uDCB8', color: '#ef4444' },
+    { label: 'Users', value: '1,234', trend: 'up', trendValue: '+8%', icon: '\uD83D\uDC65', color: '#3b82f6' },
+    { label: 'Rating', value: '4.8', trend: 'neutral', trendValue: '0%', icon: '\u2B50', color: '#f59e0b' },
+  ];
+</script>
 </body>
 </html>

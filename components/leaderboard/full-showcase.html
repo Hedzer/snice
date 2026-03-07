@@ -1,57 +1,148 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-theme="dark">
 <head>
-  <title>Leaderboard Demo</title>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaderboard</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      padding: 40px;
-      font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
-      background: var(--snice-color-background, rgb(255 255 255));
-      color: var(--snice-color-text, rgb(23 23 23));
-    }
-    h2, h3 {
-      color: var(--snice-color-text, rgb(23 23 23));
-    }
-    .demo-section {
-      margin-bottom: 4rem;
-      max-width: 600px;
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
+    snice-leaderboard { max-width: 400px; display: block; }
   </style>
-  <script type="module">
-    import './snice-leaderboard.ts';
-
-    const entries = [
-      { rank: 1, name: 'Alice Johnson', score: 2850, change: 2 },
-      { rank: 2, name: 'Bob Smith', score: 2720, change: -1 },
-      { rank: 3, name: 'Carol Williams', score: 2680, change: 1 },
-      { rank: 4, name: 'David Brown', score: 2510, change: 0, highlighted: true },
-      { rank: 5, name: 'Eve Davis', score: 2340, change: -2 },
-      { rank: 6, name: 'Frank Miller', score: 2100, change: 3 },
-      { rank: 7, name: 'Grace Wilson', score: 1980, change: -1 }
-    ];
-
-    document.getElementById('list-demo').entries = entries;
-    document.getElementById('podium-demo').entries = entries;
-
-    document.querySelectorAll('snice-leaderboard').forEach(el => {
-      el.addEventListener('entry-click', e => {
-        console.log('Entry clicked:', e.detail);
-      });
-    });
-  </script>
 </head>
 <body>
-  <h2>Leaderboard Demo</h2>
 
-  <div class="demo-section">
-    <h3>List Variant (default)</h3>
-    <snice-leaderboard id="list-demo" metric-label="Points"></snice-leaderboard>
-  </div>
+<h2>Variant: default</h2>
+<snice-leaderboard id="lb-default" title="Default Variant"></snice-leaderboard>
 
-  <div class="demo-section">
-    <h3>Podium Variant</h3>
-    <snice-leaderboard id="podium-demo" variant="podium" metric-label="Points"></snice-leaderboard>
-  </div>
+<h2>Variant: podium</h2>
+<snice-leaderboard id="lb-podium" variant="podium" title="Podium Variant"></snice-leaderboard>
+
+<h2>Variant: compact</h2>
+<snice-leaderboard id="lb-compact" variant="compact" title="Compact Variant"></snice-leaderboard>
+
+<h2>Size: small</h2>
+<snice-leaderboard id="lb-sm" size="small" title="Small"></snice-leaderboard>
+
+<h2>Size: medium (default)</h2>
+<snice-leaderboard id="lb-md" size="medium" title="Medium"></snice-leaderboard>
+
+<h2>Size: large</h2>
+<snice-leaderboard id="lb-lg" size="large" title="Large"></snice-leaderboard>
+
+<h2>Variant x Size: podium + small</h2>
+<snice-leaderboard id="lb-podium-sm" variant="podium" size="small" title="Podium Small"></snice-leaderboard>
+
+<h2>Variant x Size: podium + large</h2>
+<snice-leaderboard id="lb-podium-lg" variant="podium" size="large" title="Podium Large"></snice-leaderboard>
+
+<h2>Variant x Size: compact + small</h2>
+<snice-leaderboard id="lb-compact-sm" variant="compact" size="small" title="Compact Small"></snice-leaderboard>
+
+<h2>Variant x Size: compact + large</h2>
+<snice-leaderboard id="lb-compact-lg" variant="compact" size="large" title="Compact Large"></snice-leaderboard>
+
+<h2>No title</h2>
+<snice-leaderboard id="lb-notitle"></snice-leaderboard>
+
+<h2>With change indicators (positive, negative, zero)</h2>
+<snice-leaderboard id="lb-changes" title="Change Indicators"></snice-leaderboard>
+
+<h2>With highlighted entry</h2>
+<snice-leaderboard id="lb-highlight" title="Highlighted Entry"></snice-leaderboard>
+
+<h2>With avatars</h2>
+<snice-leaderboard id="lb-avatars" title="With Avatars"></snice-leaderboard>
+
+<h2>Empty state (no entries)</h2>
+<snice-leaderboard title="No Data"></snice-leaderboard>
+
+<h2>Single entry</h2>
+<snice-leaderboard id="lb-single" title="Single Entry"></snice-leaderboard>
+
+<h2>Declarative API (child elements)</h2>
+<snice-leaderboard variant="default" title="Declarative Children">
+  <snice-leaderboard-entry rank="1" name="Alice" score="2500" change="3" highlighted></snice-leaderboard-entry>
+  <snice-leaderboard-entry rank="2" name="Bob" score="2100" change="-1"></snice-leaderboard-entry>
+  <snice-leaderboard-entry rank="3" name="Charlie" score="1800" change="0"></snice-leaderboard-entry>
+  <snice-leaderboard-entry rank="4" name="Diana" score="1500"></snice-leaderboard-entry>
+</snice-leaderboard>
+
+<h2>Declarative: podium variant</h2>
+<snice-leaderboard variant="podium" title="Declarative Podium">
+  <snice-leaderboard-entry rank="1" name="Gold" score="3000" change="5"></snice-leaderboard-entry>
+  <snice-leaderboard-entry rank="2" name="Silver" score="2500" change="2"></snice-leaderboard-entry>
+  <snice-leaderboard-entry rank="3" name="Bronze" score="2000" change="-3"></snice-leaderboard-entry>
+  <snice-leaderboard-entry rank="4" name="Fourth" score="1800"></snice-leaderboard-entry>
+  <snice-leaderboard-entry rank="5" name="Fifth" score="1600"></snice-leaderboard-entry>
+</snice-leaderboard>
+
+<h2>Many entries (10+)</h2>
+<snice-leaderboard id="lb-many" title="Large List"></snice-leaderboard>
+
+<script type="module">
+  import './snice-leaderboard.ts';
+
+  const sampleEntries = [
+    { rank: 1, name: 'Alice', score: 2500, change: 3 },
+    { rank: 2, name: 'Bob', score: 2100, change: -1 },
+    { rank: 3, name: 'Charlie', score: 1800, change: 0 },
+    { rank: 4, name: 'Diana', score: 1500, change: 2 },
+    { rank: 5, name: 'Eve', score: 1200, change: -2 },
+  ];
+
+  const targets = ['lb-default', 'lb-podium', 'lb-compact', 'lb-sm', 'lb-md', 'lb-lg',
+                    'lb-podium-sm', 'lb-podium-lg', 'lb-compact-sm', 'lb-compact-lg', 'lb-notitle'];
+  targets.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.setEntries(sampleEntries);
+  });
+
+  document.getElementById('lb-changes')?.setEntries([
+    { rank: 1, name: 'Positive', score: 3000, change: 5 },
+    { rank: 2, name: 'Negative', score: 2000, change: -3 },
+    { rank: 3, name: 'No change', score: 1000, change: 0 },
+    { rank: 4, name: 'No indicator', score: 500 },
+  ]);
+
+  document.getElementById('lb-highlight')?.setEntries([
+    { rank: 1, name: 'Normal', score: 3000 },
+    { rank: 2, name: 'Highlighted', score: 2500, highlighted: true },
+    { rank: 3, name: 'Normal', score: 2000 },
+  ]);
+
+  document.getElementById('lb-avatars')?.setEntries([
+    { rank: 1, name: 'Alice', score: 2500, avatar: 'https://i.pravatar.cc/48?u=alice' },
+    { rank: 2, name: 'Bob', score: 2100, avatar: 'https://i.pravatar.cc/48?u=bob' },
+    { rank: 3, name: 'Charlie', score: 1800 },
+  ]);
+
+  document.getElementById('lb-single')?.setEntries([
+    { rank: 1, name: 'Solo Player', score: 9999 },
+  ]);
+
+  const manyEntries = Array.from({ length: 12 }, (_, i) => ({
+    rank: i + 1,
+    name: `Player ${i + 1}`,
+    score: 5000 - i * 300,
+    change: i % 3 === 0 ? 2 : i % 3 === 1 ? -1 : 0,
+    highlighted: i === 4,
+  }));
+  document.getElementById('lb-many')?.setEntries(manyEntries);
+</script>
 </body>
 </html>

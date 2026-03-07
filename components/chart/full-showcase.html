@@ -1,246 +1,218 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Chart Component Demo</title>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <title>Chart</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      padding: 40px;
-      margin: 0;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      transition: background-color var(--snice-transition-medium) ease, color var(--snice-transition-medium) ease;
-    }
-    .demo-section {
-      margin-bottom: 60px;
-    }
-    .demo-section h3 {
-      margin-bottom: 20px;
-    }
-    .controls {
-      margin: 20px 0;
-      display: flex;
-      gap: 10px;
-    }
-    button {
-      padding: 8px 16px;
-      background: var(--snice-color-primary);
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    button:hover {
-      background: var(--snice-color-primary-hover);
-    }
-    snice-chart {
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      margin-bottom: 20px;
-    }
-    .chart-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
-      margin-top: 20px;
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    section { margin-bottom: 2rem; }
+    snice-chart { border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 4px; margin-bottom: 0.5rem; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
   </style>
   <script type="module">
+    import './snice-chart.ts';
     document.addEventListener('DOMContentLoaded', () => {
-      // Line Chart
-      const lineChart = document.getElementById('line-chart');
-      lineChart.datasets = [
-        {
-          label: 'Sales',
-          data: [12, 19, 15, 25, 22, 30, 28],
-          borderColor: '#2196f3',
-          backgroundColor: '#2196f3'
-        },
-        {
-          label: 'Revenue',
-          data: [7, 11, 13, 18, 16, 27, 25],
-          borderColor: '#4caf50',
-          backgroundColor: '#4caf50'
-        }
-      ];
-      lineChart.labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      const labels7 = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+      const labels5 = ['A','B','C','D','E'];
 
-      // Bar Chart
-      const barChart = document.getElementById('bar-chart');
-      barChart.datasets = [
-        {
-          label: 'Q1',
-          data: [65, 59, 80, 81, 56],
-          backgroundColor: ['#ff6384', '#36a2eb', '#ffce56', '#4bc0c0', '#9966ff']
-        }
-      ];
-      barChart.labels = ['Product A', 'Product B', 'Product C', 'Product D', 'Product E'];
+      // Line
+      const line = document.getElementById('line');
+      line.datasets = [{ label: 'Series 1', data: [12,19,15,25,22,30,28], borderColor: '#2196f3', backgroundColor: '#2196f3' }];
+      line.labels = labels7;
 
-      // Area Chart
-      const areaChart = document.getElementById('area-chart');
-      areaChart.datasets = [
-        {
-          label: 'Users',
-          data: [30, 40, 35, 50, 49, 60, 70],
-          borderColor: '#ff9800',
-          backgroundColor: '#ff9800',
-          fill: true
-        }
+      // Line multi-dataset
+      const lineMulti = document.getElementById('line-multi');
+      lineMulti.datasets = [
+        { label: 'Sales', data: [12,19,15,25,22,30,28], borderColor: '#2196f3', backgroundColor: '#2196f3' },
+        { label: 'Revenue', data: [7,11,13,18,16,27,25], borderColor: '#4caf50', backgroundColor: '#4caf50' }
       ];
-      areaChart.labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
+      lineMulti.labels = labels7;
 
-      // Pie Chart
-      const pieChart = document.getElementById('pie-chart');
-      pieChart.datasets = [
-        {
-          label: 'Market Share',
-          data: [30, 25, 20, 15, 10],
-          backgroundColor: ['#ff6384', '#36a2eb', '#ffce56', '#4bc0c0', '#9966ff']
-        }
-      ];
-      pieChart.labels = ['Chrome', 'Firefox', 'Safari', 'Edge', 'Other'];
+      // Bar
+      const bar = document.getElementById('bar');
+      bar.datasets = [{ label: 'Q1', data: [65,59,80,81,56], backgroundColor: ['#ff6384','#36a2eb','#ffce56','#4bc0c0','#9966ff'] }];
+      bar.labels = labels5;
 
-      // Donut Chart
-      const donutChart = document.getElementById('donut-chart');
-      donutChart.datasets = [
-        {
-          label: 'Categories',
-          data: [40, 30, 20, 10],
-          backgroundColor: ['#2196f3', '#4caf50', '#ff9800', '#f44336']
-        }
+      // Bar multi-dataset
+      const barMulti = document.getElementById('bar-multi');
+      barMulti.datasets = [
+        { label: 'Q1', data: [65,59,80,81,56], backgroundColor: '#2196f3' },
+        { label: 'Q2', data: [28,48,40,19,86], backgroundColor: '#ff9800' }
       ];
-      donutChart.labels = ['Electronics', 'Clothing', 'Food', 'Books'];
+      barMulti.labels = labels5;
 
-      // Scatter Plot
-      const scatterChart = document.getElementById('scatter-chart');
-      scatterChart.datasets = [
-        {
-          label: 'Dataset 1',
-          data: [
-            { x: 10, y: 20 },
-            { x: 15, y: 25 },
-            { x: 20, y: 22 },
-            { x: 25, y: 30 },
-            { x: 30, y: 28 }
-          ],
-          backgroundColor: '#2196f3'
-        }
-      ];
+      // Area
+      const area = document.getElementById('area');
+      area.datasets = [{ label: 'Users', data: [30,40,35,50,49,60,70], borderColor: '#ff9800', backgroundColor: '#ff9800', fill: true }];
+      area.labels = labels7;
 
-      // Radar Chart
-      const radarChart = document.getElementById('radar-chart');
-      radarChart.datasets = [
-        {
-          label: 'Team A',
-          data: [80, 90, 70, 85, 75],
-          borderColor: '#2196f3',
-          backgroundColor: '#2196f3'
-        },
-        {
-          label: 'Team B',
-          data: [70, 85, 80, 75, 85],
-          borderColor: '#4caf50',
-          backgroundColor: '#4caf50'
-        }
-      ];
-      radarChart.labels = ['Speed', 'Strength', 'Agility', 'Defense', 'Skill'];
+      // Pie
+      const pie = document.getElementById('pie');
+      pie.datasets = [{ label: 'Market Share', data: [30,25,20,15,10], backgroundColor: ['#ff6384','#36a2eb','#ffce56','#4bc0c0','#9966ff'] }];
+      pie.labels = labels5;
 
-      // Mixed Chart
-      const mixedChart = document.getElementById('mixed-chart');
-      mixedChart.type = 'mixed';
-      mixedChart.datasets = [
-        {
-          label: 'Bar Data',
-          type: 'bar',
-          data: [10, 20, 30, 40, 50],
-          backgroundColor: '#2196f3'
-        },
-        {
-          label: 'Line Data',
-          type: 'line',
-          data: [15, 25, 20, 35, 30],
-          borderColor: '#4caf50',
-          backgroundColor: '#4caf50'
-        }
+      // Donut
+      const donut = document.getElementById('donut');
+      donut.datasets = [{ label: 'Categories', data: [40,30,20,10], backgroundColor: ['#2196f3','#4caf50','#ff9800','#f44336'] }];
+      donut.labels = ['Electronics','Clothing','Food','Books'];
+
+      // Scatter
+      const scatter = document.getElementById('scatter');
+      scatter.datasets = [{
+        label: 'Points',
+        data: [{ x:10, y:20 },{ x:15, y:25 },{ x:20, y:22 },{ x:25, y:30 },{ x:30, y:28 },{ x:35, y:35 }],
+        backgroundColor: '#9c27b0'
+      }];
+
+      // Radar
+      const radar = document.getElementById('radar');
+      radar.datasets = [
+        { label: 'Team A', data: [80,90,70,85,75], borderColor: '#2196f3', backgroundColor: '#2196f3' },
+        { label: 'Team B', data: [70,85,80,75,85], borderColor: '#4caf50', backgroundColor: '#4caf50' }
       ];
-      mixedChart.labels = ['A', 'B', 'C', 'D', 'E'];
+      radar.labels = ['Speed','Strength','Agility','Defense','Skill'];
+
+      // Mixed
+      const mixed = document.getElementById('mixed');
+      mixed.datasets = [
+        { label: 'Bar', type: 'bar', data: [10,20,30,40,50], backgroundColor: '#2196f3' },
+        { label: 'Line', type: 'line', data: [15,25,20,35,30], borderColor: '#4caf50', backgroundColor: '#4caf50' }
+      ];
+      mixed.labels = labels5;
+
+      // No grid
+      const noGrid = document.getElementById('no-grid');
+      noGrid.datasets = [{ label: 'Data', data: [5,10,8,15,12], borderColor: '#e91e63', backgroundColor: '#e91e63' }];
+      noGrid.labels = labels5;
+      noGrid.options = { xAxis: { grid: false }, yAxis: { grid: false } };
+
+      // Legend bottom
+      const legendBottom = document.getElementById('legend-bottom');
+      legendBottom.datasets = [
+        { label: 'A', data: [10,20,30], borderColor: '#f44336', backgroundColor: '#f44336' },
+        { label: 'B', data: [30,20,10], borderColor: '#2196f3', backgroundColor: '#2196f3' }
+      ];
+      legendBottom.labels = ['X','Y','Z'];
+      legendBottom.options = { legend: { position: 'bottom', clickable: true } };
+
+      // Legend none
+      const legendNone = document.getElementById('legend-none');
+      legendNone.datasets = [{ label: 'Hidden Legend', data: [5,15,10,20,18], borderColor: '#673ab7', backgroundColor: '#673ab7' }];
+      legendNone.labels = labels5;
+      legendNone.options = { legend: { position: 'none' } };
+
+      // Custom y-axis range
+      const customY = document.getElementById('custom-y');
+      customY.datasets = [{ label: 'Bounded', data: [25,50,75,60,90], borderColor: '#00bcd4', backgroundColor: '#00bcd4' }];
+      customY.labels = labels5;
+      customY.options = { yAxis: { min: 0, max: 100, ticks: 10 } };
+
+      // Single data point
+      const single = document.getElementById('single');
+      single.datasets = [{ label: 'One', data: [42], backgroundColor: '#ff6384' }];
+      single.labels = ['Only'];
+
+      // Empty
+      document.getElementById('empty').datasets = [];
     });
   </script>
 </head>
 <body>
-  <h2>Chart Component Demo</h2>
-  <p>Comprehensive charting component with multiple chart types and customization options.</p>
 
-  <div class="demo-section">
-    <h3>Line Chart</h3>
-    <snice-chart id="line-chart" type="line" height="300"></snice-chart>
-  </div>
+<section>
+  <h2>type="line" (default)</h2>
+  <snice-chart id="line" type="line" height="250"></snice-chart>
+</section>
 
-  <div class="demo-section">
-    <h3>Bar Chart</h3>
-    <snice-chart id="bar-chart" type="bar" height="300"></snice-chart>
-  </div>
+<section>
+  <h2>type="line" — multiple datasets</h2>
+  <snice-chart id="line-multi" type="line" height="250"></snice-chart>
+</section>
 
-  <div class="demo-section">
-    <h3>Area Chart</h3>
-    <snice-chart id="area-chart" type="area" height="300"></snice-chart>
-  </div>
+<section>
+  <h2>type="bar" — per-bar colors</h2>
+  <snice-chart id="bar" type="bar" height="250"></snice-chart>
+</section>
 
-  <div class="chart-grid">
-    <div class="demo-section">
-      <h3>Pie Chart</h3>
-      <snice-chart id="pie-chart" type="pie" height="300"></snice-chart>
-    </div>
+<section>
+  <h2>type="bar" — grouped (multiple datasets)</h2>
+  <snice-chart id="bar-multi" type="bar" height="250"></snice-chart>
+</section>
 
-    <div class="demo-section">
-      <h3>Donut Chart</h3>
-      <snice-chart id="donut-chart" type="donut" height="300"></snice-chart>
-    </div>
-  </div>
+<section>
+  <h2>type="area"</h2>
+  <snice-chart id="area" type="area" height="250"></snice-chart>
+</section>
 
-  <div class="demo-section">
-    <h3>Scatter Plot</h3>
-    <snice-chart id="scatter-chart" type="scatter" height="300"></snice-chart>
-  </div>
+<div class="grid">
+  <section>
+    <h2>type="pie"</h2>
+    <snice-chart id="pie" type="pie" height="250"></snice-chart>
+  </section>
+  <section>
+    <h2>type="donut"</h2>
+    <snice-chart id="donut" type="donut" height="250"></snice-chart>
+  </section>
+</div>
 
-  <div class="demo-section">
-    <h3>Radar Chart</h3>
-    <snice-chart id="radar-chart" type="radar" height="400"></snice-chart>
-  </div>
+<section>
+  <h2>type="scatter"</h2>
+  <snice-chart id="scatter" type="scatter" height="250"></snice-chart>
+</section>
 
-  <div class="demo-section">
-    <h3>Mixed Chart</h3>
-    <snice-chart id="mixed-chart" height="300"></snice-chart>
-  </div>
+<section>
+  <h2>type="radar"</h2>
+  <snice-chart id="radar" type="radar" height="350"></snice-chart>
+</section>
 
-  <div style="margin-top: 40px; padding: 20px; background: var(--snice-color-background); border-radius: 4px;">
-    <h3 style="margin-top: 0;">Features</h3>
-    <ul>
-      <li>Multiple chart types (line, bar, area, pie, donut, scatter, bubble, radar, mixed)</li>
-      <li>Interactive legend with dataset toggling</li>
-      <li>Tooltips on hover</li>
-      <li>Customizable colors and styles</li>
-      <li>Responsive and animated</li>
-      <li>Multiple datasets support</li>
-      <li>SVG export capability</li>
-      <li>Grid and axis customization</li>
-    </ul>
+<section>
+  <h2>type="mixed" (bar + line)</h2>
+  <snice-chart id="mixed" type="mixed" height="250"></snice-chart>
+</section>
 
-    <h3>Supported Chart Types</h3>
-    <ul style="list-style: none; padding: 0;">
-      <li>✓ Line Chart - Trends over time</li>
-      <li>✓ Bar Chart - Categorical comparisons</li>
-      <li>✓ Horizontal Bar - Alternative bar orientation</li>
-      <li>✓ Area Chart - Filled line charts</li>
-      <li>✓ Pie Chart - Part-to-whole relationships</li>
-      <li>✓ Donut Chart - Pie with center hole</li>
-      <li>✓ Scatter Plot - Point distributions</li>
-      <li>✓ Bubble Chart - 3-dimensional data</li>
-      <li>✓ Radar Chart - Multivariate data</li>
-      <li>✓ Mixed/Combo - Multiple chart types combined</li>
-    </ul>
-  </div>
-  <script type="module" src="./snice-chart.ts"></script>
+<section>
+  <h2>Grid disabled (xAxis.grid=false, yAxis.grid=false)</h2>
+  <snice-chart id="no-grid" type="line" height="200"></snice-chart>
+</section>
+
+<section>
+  <h2>Legend position="bottom", clickable</h2>
+  <snice-chart id="legend-bottom" type="line" height="250"></snice-chart>
+</section>
+
+<section>
+  <h2>Legend position="none"</h2>
+  <snice-chart id="legend-none" type="line" height="200"></snice-chart>
+</section>
+
+<section>
+  <h2>Custom yAxis: min=0, max=100, ticks=10</h2>
+  <snice-chart id="custom-y" type="line" height="250"></snice-chart>
+</section>
+
+<section>
+  <h2>Single data point (bar)</h2>
+  <snice-chart id="single" type="bar" height="200"></snice-chart>
+</section>
+
+<section>
+  <h2>Empty (no datasets)</h2>
+  <snice-chart id="empty" type="line" height="150"></snice-chart>
+</section>
+
+<script type="module" src="./snice-chart.ts"></script>
 </body>
 </html>

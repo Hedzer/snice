@@ -1,454 +1,239 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snice Tree Component Demo</title>
+  <title>Tree</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      font-family: var(--snice-font-family, system-ui, -apple-system, sans-serif);
-      padding: 40px;
-      line-height: 1.6;
-      background: var(--snice-color-background-secondary, rgb(250 250 250));
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      background: var(--snice-color-background);
-      padding: 40px;
-      border-radius: var(--snice-border-radius-lg, 0.5rem);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    h1 {
-      color: var(--snice-color-text, rgb(23 23 23));
-      border-bottom: 2px solid var(--snice-color-border, rgb(226 226 226));
-      padding-bottom: 10px;
-      margin-bottom: 30px;
-    }
-
-    h2 {
-      color: var(--snice-color-text, rgb(23 23 23));
-      margin-top: 40px;
-      margin-bottom: 20px;
-      font-size: 1.5em;
-    }
-
-    .demo-section {
-      margin: 30px 0;
-      padding: 20px;
-      background: var(--snice-color-background-tertiary, rgb(248 248 248));
-      border-radius: var(--snice-border-radius-md, 0.375rem);
-      border: 1px solid var(--snice-color-border, rgb(226 226 226));
-    }
-
-    .controls {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-
-    button {
-      padding: var(--snice-spacing-sm, 0.5rem) var(--snice-spacing-md, 1rem);
-      background: var(--snice-color-primary, rgb(37 99 235));
-      color: var(--snice-color-text-inverse, rgb(250 250 250));
-      border: none;
-      border-radius: var(--snice-border-radius-sm, 0.25rem);
-      cursor: pointer;
-      font-size: var(--snice-font-size-sm, 0.875rem);
-      transition: background-color 0.2s;
-    }
-
-    button:hover {
-      background: var(--snice-color-primary-hover, rgb(29 78 216));
-    }
-
-    button:disabled {
-      background: var(--snice-color-neutral, rgb(156 163 175));
-      cursor: not-allowed;
-    }
-
-    snice-tree {
-      max-height: 400px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-      gap: 20px;
-      margin: 20px 0;
-    }
-
-    code {
-      background: var(--snice-color-background-tertiary, rgb(248 248 248));
-      padding: 2px 6px;
-      border-radius: var(--snice-border-radius-sm, 0.25rem);
-      font-size: 0.9em;
-    }
-
-    .status {
-      margin-top: 20px;
-      padding: var(--snice-spacing-md, 0.75rem);
-      background: var(--snice-color-info-light, rgb(240 249 255));
-      border: 1px solid var(--snice-color-info, rgb(14 165 233));
-      border-radius: var(--snice-border-radius-sm, 0.25rem);
-      color: var(--snice-color-info-dark, rgb(3 105 161));
-      font-family: monospace;
-      font-size: 0.9em;
-    }
-
-    .keyboard-hints {
-      background: var(--snice-color-warning-light, rgb(254 243 199));
-      border: 1px solid var(--snice-color-warning, rgb(245 158 11));
-      padding: var(--snice-spacing-md, 1rem);
-      border-radius: var(--snice-border-radius-md, 0.375rem);
-      margin: 20px 0;
-    }
-
-    .keyboard-hints ul {
-      margin: 10px 0;
-      padding-left: 20px;
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); margin: 2rem 0 0.75rem; }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem; }
+    .box { border: 1px solid var(--snice-color-border); border-radius: 8px; padding: 1rem; }
+    .label { font-size: 0.7rem; color: var(--snice-color-text-tertiary); margin-bottom: 0.5rem; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Snice Tree Component Demo</h1>
 
-    <div class="demo-section">
-      <h2>Basic File System Tree</h2>
-      <p>A hierarchical tree structure with icons showing a file system.</p>
-      <snice-tree id="tree1"></snice-tree>
-    </div>
+<h2>Selection Mode: single (default)</h2>
+<div class="box" style="max-width: 400px;">
+  <snice-tree id="tree-single" selection-mode="single"></snice-tree>
+</div>
 
-    <div class="demo-section">
-      <h2>Tree with Checkboxes (Cascading)</h2>
-      <p>Select parent items to automatically select all children. Notice the indeterminate state when only some children are selected.</p>
+<h2>Selection Mode: multiple</h2>
+<div class="box" style="max-width: 400px;">
+  <snice-tree id="tree-multi" selection-mode="multiple"></snice-tree>
+</div>
 
-      <div class="controls">
-        <button onclick="checkAll()">Check All</button>
-        <button onclick="uncheckAll()">Uncheck All</button>
-        <button onclick="getChecked()">Get Checked Items</button>
-      </div>
+<h2>Selection Mode: none</h2>
+<div class="box" style="max-width: 400px;">
+  <snice-tree id="tree-none" selection-mode="none"></snice-tree>
+</div>
 
-      <snice-tree id="tree-checkbox" show-checkboxes selection-mode="multiple"></snice-tree>
-      <div id="checkbox-status" class="status">No items checked</div>
-    </div>
+<h2>Show Checkboxes</h2>
+<div class="box" style="max-width: 400px;">
+  <snice-tree id="tree-check" show-checkboxes selection-mode="multiple"></snice-tree>
+</div>
 
-    <div class="demo-section">
-      <h2>Lazy Loading Tree</h2>
-      <p>Click the folder to load children asynchronously. Notice the loading spinner.</p>
-
-      <snice-tree id="tree-lazy"></snice-tree>
-      <div id="lazy-status" class="status">Click folders to load content...</div>
-    </div>
-
-    <div class="demo-section">
-      <h2>Programmatic Control</h2>
-      <p>Control the tree via JavaScript API.</p>
-
-      <div class="controls">
-        <button onclick="expandAll()">Expand All</button>
-        <button onclick="collapseAll()">Collapse All</button>
-        <button onclick="selectNode('src')">Select 'src'</button>
-        <button onclick="getSelected()">Get Selected</button>
-      </div>
-
-      <snice-tree id="tree-api"></snice-tree>
-      <div id="api-status" class="status">Use buttons to interact...</div>
-    </div>
-
-    <div class="demo-section">
-      <h2>Multiple Selection</h2>
-      <p>Select multiple items using Ctrl+Click or programmatically.</p>
-
-      <div class="controls">
-        <button onclick="selectMultiple()">Select Multiple Items</button>
-        <button onclick="clearSelection()">Clear Selection</button>
-      </div>
-
-      <snice-tree id="tree-multi" selection-mode="multiple"></snice-tree>
-      <div id="multi-status" class="status">No items selected</div>
-    </div>
-
-    <div class="keyboard-hints">
-      <h2>⌨️ Keyboard Navigation</h2>
-      <p>Try these keyboard shortcuts (focus on any tree first):</p>
-      <ul>
-        <li><code>↓</code> - Move to next visible item</li>
-        <li><code>↑</code> - Move to previous visible item</li>
-        <li><code>→</code> - Expand focused item (if it has children)</li>
-        <li><code>←</code> - Collapse focused item (if expanded)</li>
-        <li><code>Home</code> - Move to first item</li>
-        <li><code>End</code> - Move to last visible item</li>
-        <li><code>Enter</code> or <code>Space</code> - Select focused item</li>
-      </ul>
-    </div>
-
-    <div class="demo-section">
-      <h2>Event Handling</h2>
-      <p>All tree interactions emit events. Watch the log below.</p>
-
-      <snice-tree id="tree-events" show-checkboxes></snice-tree>
-      <div id="event-log" class="status">
-        <strong>Event Log:</strong><br>
-        <span id="log-content">No events yet...</span>
-      </div>
-    </div>
+<h2>Show Icons: true (default) vs false</h2>
+<div class="grid">
+  <div class="box">
+    <div class="label">show-icons (default)</div>
+    <snice-tree id="tree-icons-on" show-icons></snice-tree>
   </div>
+  <div class="box">
+    <div class="label">show-icons=false</div>
+    <snice-tree id="tree-icons-off"></snice-tree>
+  </div>
+</div>
 
-  <script type="module">
-    import './snice-tree.ts';
+<h2>Expand on Click</h2>
+<div class="box" style="max-width: 400px;">
+  <div class="label">expand-on-click (click label to expand/collapse)</div>
+  <snice-tree id="tree-expand-click" expand-on-click></snice-tree>
+</div>
 
-    const fileSystemData = [
-      {
-        id: 'root',
-        label: 'project',
-        icon: '📁',
-        expanded: true,
-        children: [
-          {
-            id: 'src',
-            label: 'src',
-            icon: '📁',
-            expanded: false,
-            children: [
-              { id: 'index.ts', label: 'index.ts', icon: '📄' },
-              { id: 'app.ts', label: 'app.ts', icon: '📄' },
-              {
-                id: 'components',
-                label: 'components',
-                icon: '📁',
-                children: [
-                  { id: 'button.ts', label: 'Button.ts', icon: '📄' },
-                  { id: 'input.ts', label: 'Input.ts', icon: '📄' }
-                ]
-              }
-            ]
-          },
-          {
-            id: 'tests',
-            label: 'tests',
-            icon: '📁',
-            children: [
-              { id: 'app.test.ts', label: 'app.test.ts', icon: '📄' }
-            ]
-          },
-          { id: 'readme', label: 'README.md', icon: '📄' },
-          { id: 'package', label: 'package.json', icon: '📄' }
-        ]
-      }
-    ];
+<h2>Show Checkboxes + Show Icons + Expand on Click</h2>
+<div class="box" style="max-width: 400px;">
+  <snice-tree id="tree-all-opts" show-checkboxes show-icons expand-on-click selection-mode="multiple"></snice-tree>
+</div>
 
-    const checkboxData = [
-      {
-        id: 'frontend',
-        label: 'Frontend Technologies',
-        expanded: true,
-        children: [
-          {
-            id: 'frameworks',
-            label: 'Frameworks',
-            children: [
-              { id: 'react', label: 'React' },
-              { id: 'vue', label: 'Vue' },
-              { id: 'angular', label: 'Angular' }
-            ]
-          },
-          {
-            id: 'languages',
-            label: 'Languages',
-            children: [
-              { id: 'js', label: 'JavaScript' },
-              { id: 'ts', label: 'TypeScript' }
-            ]
-          }
-        ]
-      },
-      {
-        id: 'backend',
-        label: 'Backend Technologies',
-        children: [
-          { id: 'node', label: 'Node.js' },
-          { id: 'python', label: 'Python' },
-          { id: 'java', label: 'Java' }
-        ]
-      }
-    ];
+<h2>Pre-expanded Nodes</h2>
+<div class="box" style="max-width: 400px;">
+  <snice-tree id="tree-expanded"></snice-tree>
+</div>
 
-    const lazyData = [
-      {
-        id: 'docs',
-        label: 'Documents (click to load)',
-        icon: '📁',
-        lazy: true
-      },
-      {
-        id: 'photos',
-        label: 'Photos (click to load)',
-        icon: '📁',
-        lazy: true
-      }
-    ];
+<h2>Disabled Nodes</h2>
+<div class="box" style="max-width: 400px;">
+  <snice-tree id="tree-disabled" show-checkboxes></snice-tree>
+</div>
 
-    // Initialize trees
-    window.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('tree1').nodes = fileSystemData;
-      document.getElementById('tree-checkbox').nodes = checkboxData;
-      document.getElementById('tree-lazy').nodes = lazyData;
-      document.getElementById('tree-api').nodes = JSON.parse(JSON.stringify(fileSystemData));
-      document.getElementById('tree-multi').nodes = JSON.parse(JSON.stringify(fileSystemData));
-      document.getElementById('tree-events').nodes = JSON.parse(JSON.stringify(checkboxData));
+<h2>Custom Icons (emoji)</h2>
+<div class="box" style="max-width: 400px;">
+  <snice-tree id="tree-custom-icons"></snice-tree>
+</div>
 
-      // Lazy loading event handler
-      const lazyTree = document.getElementById('tree-lazy');
-      lazyTree.addEventListener('tree-node-lazy-load', async (e) => {
-        const { nodeId, node, tree } = e.detail;
-        const status = document.getElementById('lazy-status');
+<h2>Deeply Nested (4 levels)</h2>
+<div class="box" style="max-width: 400px;">
+  <snice-tree id="tree-deep"></snice-tree>
+</div>
 
-        status.textContent = `Loading children for "${node.label}"...`;
+<h2>Flat (no children)</h2>
+<div class="box" style="max-width: 400px;">
+  <snice-tree id="tree-flat"></snice-tree>
+</div>
 
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1500));
+<h2>Single Node</h2>
+<div class="box" style="max-width: 400px;">
+  <snice-tree id="tree-single-node"></snice-tree>
+</div>
 
-        // Add children to the node
-        const children = nodeId === 'docs' ? [
-          { id: 'doc1', label: 'Report.pdf', icon: '📄' },
-          { id: 'doc2', label: 'Presentation.pptx', icon: '📄' },
-          { id: 'doc3', label: 'Spreadsheet.xlsx', icon: '📄' }
-        ] : [
-          { id: 'photo1', label: 'vacation.jpg', icon: '🖼️' },
-          { id: 'photo2', label: 'family.png', icon: '🖼️' }
-        ];
+<h2>Lazy Loading</h2>
+<div class="box" style="max-width: 400px;">
+  <div class="label">Expand "Lazy Folder" to trigger lazy-load event</div>
+  <snice-tree id="tree-lazy"></snice-tree>
+</div>
 
-        // Use the tree's updateNode method to properly update the node
-        tree.updateNode(nodeId, { children, lazy: false });
+<h2>Selectable: false</h2>
+<div class="box" style="max-width: 400px;">
+  <div class="label">selectable=false (clicking does not select)</div>
+  <snice-tree id="tree-not-selectable"></snice-tree>
+</div>
 
-        status.textContent = `Loaded ${children.length} items for "${node.label}"`;
-      });
+<script type="module">
+  import './snice-tree.ts';
 
-      // Event logging
-      const eventTree = document.getElementById('tree-events');
-      const logContent = document.getElementById('log-content');
-      let eventCount = 0;
-
-      const logEvent = (name, detail) => {
-        eventCount++;
-        const message = `[${eventCount}] ${name}: ${JSON.stringify(detail).substring(0, 100)}`;
-        console.log(message, detail);
-        logContent.innerHTML = message + '<br>' + logContent.innerHTML.split('<br>').slice(0, 5).join('<br>');
-      };
-
-      eventTree.addEventListener('tree-node-expand', (e) => {
-        logEvent('EXPAND', { nodeId: e.detail.nodeId, label: e.detail.node.label });
-      });
-
-      eventTree.addEventListener('tree-node-collapse', (e) => {
-        logEvent('COLLAPSE', { nodeId: e.detail.nodeId, label: e.detail.node.label });
-      });
-
-      eventTree.addEventListener('tree-node-select', (e) => {
-        logEvent('SELECT', { nodeId: e.detail.nodeId, label: e.detail.node.label });
-      });
-
-      eventTree.addEventListener('tree-node-check', (e) => {
-        logEvent('CHECK', {
-          nodeId: e.detail.nodeId,
-          checked: e.detail.checked,
-          totalChecked: e.detail.checkedNodes.length
-        });
-      });
-    });
-
-    // Checkbox tree controls
-    window.checkAll = function() {
-      const tree = document.getElementById('tree-checkbox');
-      const allNodeIds = getAllNodeIds(tree.nodes);
-      tree.checkedNodes = allNodeIds;
-      getChecked();
-    };
-
-    window.uncheckAll = function() {
-      const tree = document.getElementById('tree-checkbox');
-      tree.checkedNodes = [];
-      document.getElementById('checkbox-status').textContent = 'No items checked';
-    };
-
-    window.getChecked = function() {
-      const tree = document.getElementById('tree-checkbox');
-      const checked = tree.getCheckedNodes();
-      const labels = checked.map(n => n.label).join(', ');
-      document.getElementById('checkbox-status').textContent =
-        checked.length > 0 ? `Checked (${checked.length}): ${labels}` : 'No items checked';
-    };
-
-    function getAllNodeIds(nodes) {
-      let ids = [];
-      for (const node of nodes) {
-        ids.push(node.id);
-        if (node.children) {
-          ids = ids.concat(getAllNodeIds(node.children));
+  const fileTree = [
+    {
+      id: 'src', label: 'src', icon: '\u{1F4C1}', expanded: true,
+      children: [
+        { id: 'index.ts', label: 'index.ts', icon: '\u{1F4C4}' },
+        { id: 'main.ts', label: 'main.ts', icon: '\u{1F4C4}' },
+        {
+          id: 'components', label: 'components', icon: '\u{1F4C1}',
+          children: [
+            { id: 'button.ts', label: 'button.ts', icon: '\u{1F4C4}' },
+            { id: 'input.ts', label: 'input.ts', icon: '\u{1F4C4}' },
+            { id: 'modal.ts', label: 'modal.ts', icon: '\u{1F4C4}' },
+          ]
         }
-      }
-      return ids;
-    }
+      ]
+    },
+    {
+      id: 'tests', label: 'tests', icon: '\u{1F4C1}',
+      children: [
+        { id: 'button.test.ts', label: 'button.test.ts', icon: '\u{1F4C4}' },
+        { id: 'input.test.ts', label: 'input.test.ts', icon: '\u{1F4C4}' },
+      ]
+    },
+    { id: 'package.json', label: 'package.json', icon: '\u{1F4C4}' },
+    { id: 'README.md', label: 'README.md', icon: '\u{1F4C4}' },
+  ];
 
-    // API controls
-    window.expandAll = function() {
-      const tree = document.getElementById('tree-api');
-      tree.expandAll();
-      document.getElementById('api-status').textContent = 'Expanded all nodes';
-    };
+  document.getElementById('tree-single').nodes = fileTree;
+  document.getElementById('tree-multi').nodes = JSON.parse(JSON.stringify(fileTree));
+  document.getElementById('tree-none').nodes = JSON.parse(JSON.stringify(fileTree));
+  document.getElementById('tree-check').nodes = JSON.parse(JSON.stringify(fileTree));
+  document.getElementById('tree-icons-on').nodes = JSON.parse(JSON.stringify(fileTree));
+  document.getElementById('tree-expand-click').nodes = JSON.parse(JSON.stringify(fileTree));
+  document.getElementById('tree-all-opts').nodes = JSON.parse(JSON.stringify(fileTree));
 
-    window.collapseAll = function() {
-      const tree = document.getElementById('tree-api');
-      tree.collapseAll();
-      document.getElementById('api-status').textContent = 'Collapsed all nodes';
-    };
+  // Icons off
+  const noIcons = JSON.parse(JSON.stringify(fileTree));
+  const stripIcons = (nodes) => nodes.forEach(n => { delete n.icon; if (n.children) stripIcons(n.children); });
+  stripIcons(noIcons);
+  document.getElementById('tree-icons-off').nodes = noIcons;
 
-    window.selectNode = function(id) {
-      const tree = document.getElementById('tree-api');
-      tree.selectNode(id);
-      const node = tree.getNode(id);
-      document.getElementById('api-status').textContent = `Selected: ${node?.label || 'Not found'}`;
-    };
+  // Pre-expanded
+  const expanded = JSON.parse(JSON.stringify(fileTree));
+  expanded[0].expanded = true;
+  expanded[0].children[2].expanded = true;
+  expanded[1].expanded = true;
+  document.getElementById('tree-expanded').nodes = expanded;
 
-    window.getSelected = function() {
-      const tree = document.getElementById('tree-api');
-      const selected = tree.getSelectedNodes();
-      const labels = selected.map(n => n.label).join(', ');
-      document.getElementById('api-status').textContent =
-        selected.length > 0 ? `Selected (${selected.length}): ${labels}` : 'No items selected';
-    };
+  // Disabled
+  const disabled = JSON.parse(JSON.stringify(fileTree));
+  disabled[0].children[1].disabled = true;
+  disabled[0].children[2].children[0].disabled = true;
+  document.getElementById('tree-disabled').nodes = disabled;
 
-    // Multiple selection controls
-    window.selectMultiple = function() {
-      const tree = document.getElementById('tree-multi');
-      tree.selectedNodes = ['src', 'tests', 'readme'];
-      const selected = tree.getSelectedNodes();
-      const labels = selected.map(n => n.label).join(', ');
-      document.getElementById('multi-status').textContent = `Selected: ${labels}`;
-    };
+  // Custom icons
+  document.getElementById('tree-custom-icons').nodes = [
+    { id: '1', label: 'Documents', icon: '\u{1F4DA}', expanded: true, children: [
+      { id: '2', label: 'Resume.pdf', icon: '\u{1F4C3}' },
+      { id: '3', label: 'Photo.jpg', icon: '\u{1F5BC}\u{FE0F}' },
+      { id: '4', label: 'Music.mp3', icon: '\u{1F3B5}' },
+    ]},
+    { id: '5', label: 'Settings', icon: '\u{2699}\u{FE0F}', children: [
+      { id: '6', label: 'Profile', icon: '\u{1F464}' },
+      { id: '7', label: 'Security', icon: '\u{1F512}' },
+    ]},
+    { id: '8', label: 'Trash', icon: '\u{1F5D1}\u{FE0F}' },
+  ];
 
-    window.clearSelection = function() {
-      const tree = document.getElementById('tree-multi');
-      tree.selectedNodes = [];
-      document.getElementById('multi-status').textContent = 'No items selected';
-    };
+  // Deeply nested
+  document.getElementById('tree-deep').nodes = [
+    { id: 'l1', label: 'Level 1', icon: '\u{1F4C1}', expanded: true, children: [
+      { id: 'l2', label: 'Level 2', icon: '\u{1F4C1}', expanded: true, children: [
+        { id: 'l3', label: 'Level 3', icon: '\u{1F4C1}', expanded: true, children: [
+          { id: 'l4a', label: 'Level 4 - File A', icon: '\u{1F4C4}' },
+          { id: 'l4b', label: 'Level 4 - File B', icon: '\u{1F4C4}' },
+        ]},
+        { id: 'l3b', label: 'Level 3 sibling', icon: '\u{1F4C4}' },
+      ]},
+    ]},
+  ];
 
-    // Listen for selection changes on multi tree
-    document.addEventListener('DOMContentLoaded', () => {
-      const multiTree = document.getElementById('tree-multi');
-      multiTree.addEventListener('tree-node-select', () => {
-        const selected = multiTree.getSelectedNodes();
-        const labels = selected.map(n => n.label).join(', ');
-        document.getElementById('multi-status').textContent =
-          selected.length > 0 ? `Selected (${selected.length}): ${labels}` : 'No items selected';
+  // Flat
+  document.getElementById('tree-flat').nodes = [
+    { id: 'a', label: 'Item A', icon: '\u{1F4C4}' },
+    { id: 'b', label: 'Item B', icon: '\u{1F4C4}' },
+    { id: 'c', label: 'Item C', icon: '\u{1F4C4}' },
+    { id: 'd', label: 'Item D', icon: '\u{1F4C4}' },
+  ];
+
+  // Single node
+  document.getElementById('tree-single-node').nodes = [
+    { id: 'only', label: 'Only Node', icon: '\u{1F4C4}' },
+  ];
+
+  // Lazy loading
+  const lazyTree = document.getElementById('tree-lazy');
+  lazyTree.nodes = [
+    { id: 'eager', label: 'Eager Folder', icon: '\u{1F4C1}', children: [
+      { id: 'file1', label: 'file1.ts', icon: '\u{1F4C4}' },
+    ]},
+    { id: 'lazy', label: 'Lazy Folder', icon: '\u{1F4C1}', lazy: true, children: [] },
+  ];
+  lazyTree.addEventListener('tree-node-lazy-load', (e) => {
+    setTimeout(() => {
+      lazyTree.updateNode(e.detail.nodeId, {
+        lazy: false,
+        children: [
+          { id: 'loaded1', label: 'Loaded File 1', icon: '\u{1F4C4}' },
+          { id: 'loaded2', label: 'Loaded File 2', icon: '\u{1F4C4}' },
+        ]
       });
-    });
-  </script>
+    }, 1000);
+  });
+
+  // Not selectable
+  const notSelectable = document.getElementById('tree-not-selectable');
+  notSelectable.selectable = false;
+  notSelectable.nodes = JSON.parse(JSON.stringify(fileTree));
+</script>
 </body>
 </html>

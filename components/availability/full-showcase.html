@@ -1,149 +1,125 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-theme="dark">
 <head>
-  <title>Availability Demo</title>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Availability</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
     body {
-      padding: 40px;
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 1.5rem;
       background: var(--snice-color-background);
-      color: var(--snice-color-text, rgb(23 23 23));
-      transition: background-color 200ms ease, color 200ms ease;
+      color: var(--snice-color-text);
     }
-    .theme-toggle {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 1000;
+    section { margin-bottom: 2rem; }
+    h2 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--snice-color-text-tertiary, #888);
+      margin: 0 0 0.75rem;
     }
-    .example {
-      margin: 30px 0;
-    }
-    .example h3 {
-      margin-bottom: 10px;
-    }
-    button {
-      padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-md, 1rem);
-      background: var(--snice-color-primary, rgb(37 99 235));
-      color: var(--snice-color-text-inverse, rgb(250 250 250));
-      border: none;
-      border-radius: var(--snice-border-radius-md, 0.25rem);
-      cursor: pointer;
-      font-size: var(--snice-font-size-sm, 0.875rem);
-      font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
-    }
-    .info {
-      margin-top: 10px;
-      padding: 10px;
-      background: var(--snice-color-background-secondary, rgb(250 250 250));
-      border-radius: 4px;
-      font-size: 14px;
-      white-space: pre-wrap;
+    .side-by-side {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
     }
   </style>
-  <script type="module">
-    import 'snice';
-    import './snice-availability.ts';
-
-    document.addEventListener('DOMContentLoaded', () => {
-      // Basic availability
-      const basic = document.getElementById('basic-availability');
-      basic.addEventListener('availability-change', (e) => {
-        const ranges = e.detail.value;
-        const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-        const text = ranges.map(r => `${dayNames[r.day]}: ${r.start} - ${r.end}`).join('\n');
-        document.getElementById('basic-info').textContent = text || 'No availability set';
-      });
-
-      // Pre-filled
-      const prefilled = document.getElementById('prefilled-availability');
-      prefilled.value = [
-        { day: 0, start: '09:00', end: '12:00' },
-        { day: 0, start: '13:00', end: '17:00' },
-        { day: 1, start: '09:00', end: '17:00' },
-        { day: 2, start: '10:00', end: '16:00' },
-        { day: 3, start: '09:00', end: '17:00' },
-        { day: 4, start: '09:00', end: '15:00' },
-      ];
-
-      // Business hours (30min, 8-18)
-      const bizHours = document.getElementById('biz-availability');
-
-      // Readonly
-      const readonlyAvail = document.getElementById('readonly-availability');
-      readonlyAvail.value = [
-        { day: 0, start: '09:00', end: '17:00' },
-        { day: 1, start: '09:00', end: '17:00' },
-        { day: 2, start: '09:00', end: '17:00' },
-        { day: 3, start: '09:00', end: '17:00' },
-        { day: 4, start: '09:00', end: '17:00' },
-      ];
-
-      // Programmatic control
-      document.getElementById('set-business').addEventListener('click', () => {
-        const ctrl = document.getElementById('control-availability');
-        ctrl.setAvailability([
-          { day: 0, start: '09:00', end: '17:00' },
-          { day: 1, start: '09:00', end: '17:00' },
-          { day: 2, start: '09:00', end: '17:00' },
-          { day: 3, start: '09:00', end: '17:00' },
-          { day: 4, start: '09:00', end: '17:00' },
-        ]);
-      });
-
-      document.getElementById('clear-all').addEventListener('click', () => {
-        document.getElementById('control-availability').clear();
-      });
-
-      document.getElementById('get-value').addEventListener('click', () => {
-        const ranges = document.getElementById('control-availability').getAvailability();
-        const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-        alert(JSON.stringify(ranges.map(r => `${dayNames[r.day]}: ${r.start}-${r.end}`), null, 2));
-      });
-
-      // Theme toggle
-      document.getElementById('theme-toggle').addEventListener('click', () => {
-        const current = document.documentElement.getAttribute('data-theme');
-        const next = current === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', next);
-      });
-    });
-  </script>
 </head>
 <body>
-  <button id="theme-toggle" class="theme-toggle">Toggle Theme</button>
-  <h2>Availability Component Demo</h2>
 
-  <div class="example">
-    <h3>Basic Availability</h3>
-    <p>Click or drag to toggle time slots on/off. Use presets for quick selection.</p>
-    <snice-availability id="basic-availability" start-hour="6" end-hour="22"></snice-availability>
-    <div class="info" id="basic-info">No availability set</div>
-  </div>
+  <section>
+    <h2>Default (24h range, 60min granularity, 12h format)</h2>
+    <snice-availability></snice-availability>
+  </section>
 
-  <div class="example">
-    <h3>Pre-filled Availability</h3>
-    <snice-availability id="prefilled-availability" start-hour="8" end-hour="18"></snice-availability>
-  </div>
+  <section>
+    <h2>Format: 24h</h2>
+    <snice-availability format="24h"></snice-availability>
+  </section>
 
-  <div class="example">
-    <h3>30-Minute Granularity (Business Hours)</h3>
-    <snice-availability id="biz-availability" start-hour="8" end-hour="18" granularity="30" format="24h"></snice-availability>
-  </div>
-
-  <div class="example">
-    <h3>Readonly</h3>
-    <snice-availability id="readonly-availability" start-hour="8" end-hour="18" readonly></snice-availability>
-  </div>
-
-  <div class="example">
-    <h3>Programmatic Control</h3>
-    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-      <button id="set-business">Set Business Hours</button>
-      <button id="clear-all">Clear All</button>
-      <button id="get-value">Get Value</button>
+  <section>
+    <h2>Format: 12h vs 24h side by side</h2>
+    <div class="side-by-side">
+      <div>
+        <h2>12h</h2>
+        <snice-availability format="12h" start-hour="8" end-hour="18"></snice-availability>
+      </div>
+      <div>
+        <h2>24h</h2>
+        <snice-availability format="24h" start-hour="8" end-hour="18"></snice-availability>
+      </div>
     </div>
-    <snice-availability id="control-availability" start-hour="6" end-hour="22"></snice-availability>
-  </div>
+  </section>
+
+  <section>
+    <h2>Granularity: 30 minutes</h2>
+    <snice-availability granularity="30" start-hour="9" end-hour="17"></snice-availability>
+  </section>
+
+  <section>
+    <h2>Granularity: 15 minutes</h2>
+    <snice-availability granularity="15" start-hour="9" end-hour="12"></snice-availability>
+  </section>
+
+  <section>
+    <h2>Custom hour range: start-hour=8, end-hour=18</h2>
+    <snice-availability start-hour="8" end-hour="18"></snice-availability>
+  </section>
+
+  <section>
+    <h2>Narrow range: start-hour=12, end-hour=14</h2>
+    <snice-availability start-hour="12" end-hour="14" granularity="30"></snice-availability>
+  </section>
+
+  <section>
+    <h2>Readonly</h2>
+    <snice-availability id="avail-readonly" readonly start-hour="8" end-hour="18"></snice-availability>
+  </section>
+
+  <section>
+    <h2>Pre-populated with business hours</h2>
+    <snice-availability id="avail-prepop" start-hour="6" end-hour="22"></snice-availability>
+  </section>
+
+  <section>
+    <h2>Full day range (0-24)</h2>
+    <snice-availability start-hour="0" end-hour="24"></snice-availability>
+  </section>
+
+  <script type="module">
+    import './snice-availability.ts';
+
+    // Pre-populate readonly with business hours data
+    const businessHours = [];
+    for (let day = 0; day < 5; day++) {
+      businessHours.push({ day, start: '09:00', end: '17:00' });
+    }
+    document.getElementById('avail-readonly').value = businessHours;
+
+    // Pre-populate with some data
+    document.getElementById('avail-prepop').value = [
+      { day: 0, start: '09:00', end: '12:00' },
+      { day: 0, start: '13:00', end: '17:00' },
+      { day: 1, start: '09:00', end: '17:00' },
+      { day: 2, start: '10:00', end: '16:00' },
+      { day: 3, start: '09:00', end: '17:00' },
+      { day: 4, start: '09:00', end: '15:00' },
+    ];
+  </script>
 </body>
 </html>

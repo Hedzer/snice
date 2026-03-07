@@ -1,55 +1,181 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Carousel Demo</title>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <title>Carousel</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body { padding: 40px; }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    section { margin-bottom: 2rem; }
     .slide {
-      height: 300px;
+      height: 200px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2rem;
+      font-size: 1.5rem;
       font-weight: bold;
       color: white;
+      border-radius: 8px;
     }
-    .slide:nth-child(1) { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-    .slide:nth-child(2) { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-    .slide:nth-child(3) { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-    .slide:nth-child(4) { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
-    .slide:nth-child(5) { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+    .slide:nth-child(1) { background: #6366f1; }
+    .slide:nth-child(2) { background: #ec4899; }
+    .slide:nth-child(3) { background: #14b8a6; }
+    .slide:nth-child(4) { background: #f59e0b; }
+    .slide:nth-child(5) { background: #8b5cf6; }
+    .slide:nth-child(6) { background: #ef4444; }
+    snice-carousel { margin-bottom: 1rem; }
   </style>
-  <script type="module">
-    import './snice-carousel.ts';
-  </script>
+  <script type="module">import './snice-carousel.ts';</script>
 </head>
 <body>
-  <h2>Carousel Demo</h2>
 
-  <h3>Basic Carousel</h3>
+<section>
+  <h2>Default (all defaults: loop, controls, indicators, 1 slide per view)</h2>
   <snice-carousel>
-    <div class="slide">Slide 1</div>
-    <div class="slide">Slide 2</div>
-    <div class="slide">Slide 3</div>
-    <div class="slide">Slide 4</div>
-    <div class="slide">Slide 5</div>
-  </snice-carousel>
-
-  <h3>Autoplay</h3>
-  <snice-carousel autoplay autoplay-interval="2000">
-    <div class="slide">Auto 1</div>
-    <div class="slide">Auto 2</div>
-    <div class="slide">Auto 3</div>
-  </snice-carousel>
-
-  <h3>Multiple Slides Per View</h3>
-  <snice-carousel slides-per-view="3" space-between="20">
     <div class="slide">1</div>
     <div class="slide">2</div>
     <div class="slide">3</div>
     <div class="slide">4</div>
     <div class="slide">5</div>
   </snice-carousel>
+</section>
+
+<section>
+  <h2>show-controls="false"</h2>
+  <snice-carousel show-controls="false">
+    <div class="slide">1</div>
+    <div class="slide">2</div>
+    <div class="slide">3</div>
+  </snice-carousel>
+</section>
+
+<section>
+  <h2>show-indicators="false"</h2>
+  <snice-carousel show-indicators="false">
+    <div class="slide">1</div>
+    <div class="slide">2</div>
+    <div class="slide">3</div>
+  </snice-carousel>
+</section>
+
+<section>
+  <h2>show-controls="false" show-indicators="false"</h2>
+  <snice-carousel show-controls="false" show-indicators="false">
+    <div class="slide">1</div>
+    <div class="slide">2</div>
+    <div class="slide">3</div>
+  </snice-carousel>
+</section>
+
+<section>
+  <h2>loop="false"</h2>
+  <snice-carousel loop="false">
+    <div class="slide">1</div>
+    <div class="slide">2</div>
+    <div class="slide">3</div>
+  </snice-carousel>
+</section>
+
+<section>
+  <h2>active-index="2" (start on slide 3)</h2>
+  <snice-carousel active-index="2">
+    <div class="slide">1</div>
+    <div class="slide">2</div>
+    <div class="slide">3</div>
+    <div class="slide">4</div>
+  </snice-carousel>
+</section>
+
+<section>
+  <h2>autoplay, autoplay-interval="2000", autoplay-direction="forward"</h2>
+  <snice-carousel autoplay autoplay-interval="2000" autoplay-direction="forward">
+    <div class="slide">1</div>
+    <div class="slide">2</div>
+    <div class="slide">3</div>
+  </snice-carousel>
+</section>
+
+<section>
+  <h2>autoplay, autoplay-direction="backward"</h2>
+  <snice-carousel autoplay autoplay-interval="2500" autoplay-direction="backward">
+    <div class="slide">1</div>
+    <div class="slide">2</div>
+    <div class="slide">3</div>
+  </snice-carousel>
+</section>
+
+<section>
+  <h2>slides-per-view="2"</h2>
+  <snice-carousel slides-per-view="2">
+    <div class="slide">1</div>
+    <div class="slide">2</div>
+    <div class="slide">3</div>
+    <div class="slide">4</div>
+    <div class="slide">5</div>
+  </snice-carousel>
+</section>
+
+<section>
+  <h2>slides-per-view="3", space-between="16"</h2>
+  <snice-carousel slides-per-view="3" space-between="16">
+    <div class="slide">1</div>
+    <div class="slide">2</div>
+    <div class="slide">3</div>
+    <div class="slide">4</div>
+    <div class="slide">5</div>
+    <div class="slide">6</div>
+  </snice-carousel>
+</section>
+
+<section>
+  <h2>slides-per-view="4", space-between="8"</h2>
+  <snice-carousel slides-per-view="4" space-between="8">
+    <div class="slide">1</div>
+    <div class="slide">2</div>
+    <div class="slide">3</div>
+    <div class="slide">4</div>
+    <div class="slide">5</div>
+    <div class="slide">6</div>
+  </snice-carousel>
+</section>
+
+<section>
+  <h2>Single slide</h2>
+  <snice-carousel>
+    <div class="slide">Only Slide</div>
+  </snice-carousel>
+</section>
+
+<section>
+  <h2>Two slides, loop="false"</h2>
+  <snice-carousel loop="false">
+    <div class="slide">First</div>
+    <div class="slide">Second</div>
+  </snice-carousel>
+</section>
+
+<section>
+  <h2>slides-per-view="2", space-between="32", autoplay</h2>
+  <snice-carousel slides-per-view="2" space-between="32" autoplay autoplay-interval="3000">
+    <div class="slide">A</div>
+    <div class="slide">B</div>
+    <div class="slide">C</div>
+    <div class="slide">D</div>
+  </snice-carousel>
+</section>
+
 </body>
 </html>

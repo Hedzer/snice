@@ -1,123 +1,136 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Time Picker Test</title>
-    <link rel="stylesheet" href="../theme/theme.css">
-    <style>
-        body {
-            font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
-            padding: var(--snice-spacing-xl, 2rem);
-            background: var(--snice-color-background);
-            color: var(--snice-color-text, rgb(23 23 23));
-        }
-
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: var(--snice-color-background-element, white);
-            padding: var(--snice-spacing-xl, 2rem);
-            border-radius: var(--snice-border-radius-lg, 8px);
-            box-shadow: var(--snice-shadow-sm, 0 1px 3px rgba(0,0,0,0.1));
-        }
-
-        .test-section {
-            margin-bottom: var(--snice-spacing-xl, 2rem);
-            padding: var(--snice-spacing-lg, 1.5rem);
-            border: 1px solid var(--snice-color-border, rgb(226 226 226));
-            border-radius: var(--snice-border-radius-lg, 6px);
-            background: var(--snice-color-background-secondary, rgb(249 250 251));
-        }
-
-        .test-section h3 {
-            margin: 0 0 var(--snice-spacing-md, 1rem) 0;
-            font-weight: var(--snice-font-weight-semibold, 600);
-        }
-
-        .form-grid {
-            display: grid;
-            gap: var(--snice-spacing-md, 1rem);
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: var(--snice-spacing-md, 1rem);
-        }
-    </style>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Time Picker</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); margin: 2rem 0 0.75rem; }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Snice Time Picker Component Test</h1>
 
-        <div class="test-section">
-            <h3>Basic Time Picker (24h)</h3>
-            <div class="form-grid">
-                <snice-time-picker label="Select Time" placeholder="Pick a time"></snice-time-picker>
-            </div>
-        </div>
+<h2>Format: 24h (default) vs 12h</h2>
+<div class="grid">
+  <snice-time-picker label="24-hour format" format="24h" value="14:30"></snice-time-picker>
+  <snice-time-picker label="12-hour format" format="12h" value="14:30"></snice-time-picker>
+</div>
 
-        <div class="test-section">
-            <h3>12-Hour Format</h3>
-            <div class="form-grid">
-                <snice-time-picker label="Meeting Time" format="12h" value="14:30"></snice-time-picker>
-            </div>
-        </div>
+<h2>Variant: dropdown (default) vs inline</h2>
+<div class="grid">
+  <snice-time-picker label="Dropdown" variant="dropdown" value="10:00"></snice-time-picker>
+  <snice-time-picker label="Inline (always visible)" variant="inline" value="10:00"></snice-time-picker>
+</div>
 
-        <div class="test-section">
-            <h3>With Seconds</h3>
-            <div class="form-grid">
-                <snice-time-picker label="Precise Time" show-seconds value="09:15:30"></snice-time-picker>
-            </div>
-        </div>
+<h2>Inline + 12h</h2>
+<snice-time-picker label="Inline 12h" variant="inline" format="12h" value="14:30"></snice-time-picker>
 
-        <div class="test-section">
-            <h3>Step Variants</h3>
-            <div class="form-row">
-                <snice-time-picker label="5-Minute Steps" step="5"></snice-time-picker>
-                <snice-time-picker label="30-Minute Steps" step="30"></snice-time-picker>
-            </div>
-        </div>
+<h2>Show Seconds</h2>
+<div class="grid">
+  <snice-time-picker label="24h with seconds" show-seconds value="09:15:30"></snice-time-picker>
+  <snice-time-picker label="12h with seconds" show-seconds format="12h" value="14:30:45"></snice-time-picker>
+</div>
 
-        <div class="test-section">
-            <h3>Min/Max Time</h3>
-            <div class="form-grid">
-                <snice-time-picker
-                    label="Business Hours"
-                    min-time="09:00"
-                    max-time="17:00"
-                    helper-text="Available: 9 AM - 5 PM">
-                </snice-time-picker>
-            </div>
-        </div>
+<h2>Step Values (minute increments)</h2>
+<div class="grid">
+  <snice-time-picker label="Step 1" step="1" value="10:00"></snice-time-picker>
+  <snice-time-picker label="Step 5" step="5" value="10:00"></snice-time-picker>
+  <snice-time-picker label="Step 10" step="10" value="10:00"></snice-time-picker>
+  <snice-time-picker label="Step 15 (default)" step="15" value="10:00"></snice-time-picker>
+  <snice-time-picker label="Step 30" step="30" value="10:00"></snice-time-picker>
+</div>
 
-        <div class="test-section">
-            <h3>Inline Variant</h3>
-            <div class="form-grid">
-                <snice-time-picker label="Inline Time" variant="inline" value="10:00"></snice-time-picker>
-            </div>
-        </div>
+<h2>Min/Max Time Constraints</h2>
+<div class="grid">
+  <snice-time-picker label="Business hours (09:00-17:00)" min-time="09:00" max-time="17:00" value="12:00"></snice-time-picker>
+  <snice-time-picker label="Morning only (06:00-12:00)" min-time="06:00" max-time="12:00" value="09:00"></snice-time-picker>
+  <snice-time-picker label="Evening (18:00-23:00)" min-time="18:00" max-time="23:00" value="20:00"></snice-time-picker>
+</div>
 
-        <div class="test-section">
-            <h3>States</h3>
-            <div class="form-row">
-                <snice-time-picker label="Disabled" disabled value="12:00"></snice-time-picker>
-                <snice-time-picker label="Readonly" readonly value="15:30"></snice-time-picker>
-            </div>
-            <div class="form-row" style="margin-top: 1rem;">
-                <snice-time-picker label="Required" required></snice-time-picker>
-                <snice-time-picker label="Invalid" invalid error-text="Please select a valid time"></snice-time-picker>
-            </div>
-        </div>
-    </div>
+<h2>Min/Max + 12h Format</h2>
+<div class="grid">
+  <snice-time-picker label="9 AM - 5 PM (12h)" format="12h" min-time="09:00" max-time="17:00" value="12:00"></snice-time-picker>
+</div>
 
-    <script type="module">
-        import './snice-time-picker.ts';
+<h2>Boolean States</h2>
+<div class="grid">
+  <snice-time-picker label="Disabled" disabled value="12:00"></snice-time-picker>
+  <snice-time-picker label="Readonly" readonly value="15:30"></snice-time-picker>
+  <snice-time-picker label="Required" required placeholder="Select a time"></snice-time-picker>
+  <snice-time-picker label="Invalid" invalid error-text="Please select a valid time"></snice-time-picker>
+</div>
 
-        document.addEventListener('time-change', (e) => {
-            console.log('Time changed:', e.detail);
-        });
-    </script>
+<h2>Helper Text</h2>
+<div class="grid">
+  <snice-time-picker label="Appointment" helper-text="Select your preferred time" value="14:00"></snice-time-picker>
+  <snice-time-picker label="Deadline" helper-text="All times are in UTC"></snice-time-picker>
+</div>
+
+<h2>Error Text</h2>
+<div class="grid">
+  <snice-time-picker label="Start Time" invalid error-text="Start time is required"></snice-time-picker>
+  <snice-time-picker label="Meeting Time" invalid error-text="Time must be during business hours" value="22:00"></snice-time-picker>
+</div>
+
+<h2>Placeholder</h2>
+<div class="grid">
+  <snice-time-picker label="Custom Placeholder" placeholder="Pick a time..."></snice-time-picker>
+  <snice-time-picker label="Default Placeholder (24h)"></snice-time-picker>
+  <snice-time-picker label="Default Placeholder (12h)" format="12h"></snice-time-picker>
+  <snice-time-picker label="Default Placeholder (24h+seconds)" show-seconds></snice-time-picker>
+  <snice-time-picker label="Default Placeholder (12h+seconds)" format="12h" show-seconds></snice-time-picker>
+</div>
+
+<h2>With Value</h2>
+<div class="grid">
+  <snice-time-picker label="Midnight" value="00:00"></snice-time-picker>
+  <snice-time-picker label="Noon" value="12:00"></snice-time-picker>
+  <snice-time-picker label="End of day" value="23:59"></snice-time-picker>
+  <snice-time-picker label="With seconds" value="08:30:15" show-seconds></snice-time-picker>
+</div>
+
+<h2>No Label</h2>
+<div class="row">
+  <snice-time-picker value="09:00" placeholder="No label"></snice-time-picker>
+</div>
+
+<h2>Name (form integration)</h2>
+<form>
+  <div class="grid">
+    <snice-time-picker name="start_time" label="Start Time" value="09:00" required></snice-time-picker>
+    <snice-time-picker name="end_time" label="End Time" value="17:00" required></snice-time-picker>
+  </div>
+</form>
+
+<h2>Combination: 12h + seconds + step 5 + inline</h2>
+<snice-time-picker label="Full combo" variant="inline" format="12h" show-seconds step="5" value="14:30:15"></snice-time-picker>
+
+<h2>Edge Cases</h2>
+<div class="grid">
+  <snice-time-picker label="No value"></snice-time-picker>
+  <snice-time-picker label="Disabled + value" disabled value="08:00"></snice-time-picker>
+  <snice-time-picker label="Readonly + 12h" readonly format="12h" value="15:30"></snice-time-picker>
+  <snice-time-picker label="Invalid + helper (error wins)" invalid helper-text="Helper hidden" error-text="Error shown"></snice-time-picker>
+</div>
+
+<script type="module">
+  import './snice-time-picker.ts';
+</script>
 </body>
 </html>

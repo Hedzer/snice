@@ -1,428 +1,126 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Kanban Demo</title>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <title>Kanban</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      padding: var(--snice-spacing-2xl, 2.5rem);
-      margin: 0;
-      background: var(--snice-color-background);
-      font-family: var(--snice-font-family, system-ui, -apple-system, sans-serif);
-      color: var(--snice-color-text, rgb(23 23 23));
-    }
-
-    h2 {
-      margin-bottom: var(--snice-spacing-sm, 0.75rem);
-      color: var(--snice-color-text, rgb(23 23 23));
-      font-weight: var(--snice-font-weight-semibold, 600);
-    }
-
-    h3 {
-      margin-top: 0;
-      color: var(--snice-color-text, rgb(23 23 23));
-      font-weight: var(--snice-font-weight-semibold, 600);
-    }
-
-    p {
-      color: var(--snice-color-text-secondary, rgb(82 82 82));
-      margin-bottom: var(--snice-spacing-lg, 1.5rem);
-    }
-
-    .filter-section {
-      margin-bottom: var(--snice-spacing-lg, 1.5rem);
-      padding: var(--snice-spacing-lg, 1.5rem);
-      background: var(--snice-color-background);
-      border-radius: var(--snice-border-radius-md, 0.5rem);
-      border: 1px solid var(--snice-color-border, rgb(226 226 226));
-    }
-
-    .filter-section label {
-      display: block;
-      margin-bottom: var(--snice-spacing-xs, 0.5rem);
-      font-weight: var(--snice-font-weight-semibold, 600);
-      color: var(--snice-color-text, rgb(23 23 23));
-    }
-
-    .filter-section input {
-      padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
-      border: 1px solid var(--snice-color-border, rgb(226 226 226));
-      border-radius: var(--snice-border-radius-sm, 0.375rem);
-      width: 300px;
-      font-size: var(--snice-font-size-sm, 0.875rem);
-      font-family: inherit;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text, rgb(23 23 23));
-    }
-
-    .filter-section input:focus {
-      outline: none;
-      border-color: var(--snice-color-border-focus, rgb(59 130 246));
-    }
-
-    .filter-group {
-      margin-bottom: var(--snice-spacing-md, 1rem);
-    }
-
-    .filter-buttons {
-      display: flex;
-      gap: var(--snice-spacing-xs, 0.5rem);
-      flex-wrap: wrap;
-    }
-
-    .filter-btn {
-      padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
-      border: 1px solid var(--snice-color-border, rgb(226 226 226));
-      border-radius: var(--snice-border-radius-sm, 0.375rem);
-      background: var(--snice-color-background);
-      cursor: pointer;
-      font-size: var(--snice-font-size-xs, 0.8125rem);
-      font-family: inherit;
-      color: var(--snice-color-text, rgb(23 23 23));
-      transition: all var(--snice-transition-fast, 150ms);
-    }
-
-    .filter-btn:hover {
-      border-color: var(--snice-color-border-hover, rgb(204 204 204));
-      background: var(--snice-color-background-secondary, rgb(250 250 250));
-    }
-
-    .filter-btn.active {
-      background: var(--snice-color-primary, rgb(37 99 235));
-      color: white;
-      font-weight: var(--snice-font-weight-semibold, 600);
-      border-color: var(--snice-color-primary, rgb(37 99 235));
-    }
-
-    .clear-btn {
-      padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-md, 1rem);
-      border: 1px solid var(--snice-color-border, rgb(226 226 226));
-      border-radius: var(--snice-border-radius-sm, 0.375rem);
-      background: var(--snice-color-background);
-      cursor: pointer;
-      font-weight: var(--snice-font-weight-semibold, 600);
-      font-family: inherit;
-      color: var(--snice-color-text, rgb(23 23 23));
-      transition: all var(--snice-transition-fast, 150ms);
-    }
-
-    .clear-btn:hover {
-      border-color: var(--snice-color-border-hover, rgb(204 204 204));
-      background: var(--snice-color-background-secondary, rgb(250 250 250));
-    }
-
-    .info-section {
-      margin-top: var(--snice-spacing-2xl, 2.5rem);
-      padding: var(--snice-spacing-lg, 1.5rem);
-      background: var(--snice-color-background);
-      border-radius: var(--snice-border-radius-md, 0.5rem);
-      border: 1px solid var(--snice-color-border, rgb(226 226 226));
-    }
-
-    .info-section ul {
-      margin: var(--snice-spacing-md, 1rem) 0;
-      padding-left: var(--snice-spacing-lg, 1.5rem);
-    }
-
-    .info-section li {
-      margin-bottom: var(--snice-spacing-xs, 0.5rem);
-      color: var(--snice-color-text, rgb(23 23 23));
-    }
-
-    .info-section pre {
-      background: var(--snice-color-background-tertiary, rgb(241 241 241));
-      color: var(--snice-color-text, rgb(23 23 23));
-      padding: var(--snice-spacing-md, 1rem);
-      border-radius: var(--snice-border-radius-sm, 0.375rem);
-      font-size: var(--snice-font-size-xs, 0.8125rem);
-      overflow-x: auto;
-      border: 1px solid var(--snice-color-border, rgb(226 226 226));
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    snice-kanban { display: block; min-height: 300px; border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 8px; margin-bottom: 1.5rem; }
   </style>
   <script type="module">
-    import 'snice';
     import './snice-kanban.ts';
 
+    const basicColumns = [
+      { id: 'todo', title: 'To Do', cards: [
+        { id: 'c1', title: 'Research competitors', description: 'Analyze top 5 competitors.' },
+        { id: 'c2', title: 'Write user stories', description: 'Document requirements.' },
+      ]},
+      { id: 'progress', title: 'In Progress', cards: [
+        { id: 'c3', title: 'Design mockups', description: 'Create Figma prototypes.', assignee: 'Alice' },
+      ]},
+      { id: 'done', title: 'Done', cards: [
+        { id: 'c4', title: 'Set up repository', description: 'Initialize Git repo and CI.' },
+      ]},
+    ];
+
+    const labelColumns = [
+      { id: 'backlog', title: 'Backlog', color: '#6b7280', cards: [
+        { id: 'l1', title: 'Implement auth', labels: ['Backend', 'Security'], assignee: 'Bob' },
+        { id: 'l2', title: 'Add dark mode', labels: ['Frontend', 'UI'] },
+      ]},
+      { id: 'active', title: 'Active', color: '#2563eb', cards: [
+        { id: 'l3', title: 'API endpoints', labels: [
+          { text: 'Backend', color: '#fff', background: '#2563eb' },
+          { text: 'Priority', color: '#fff', background: '#dc2626', icon: '!', iconPosition: 'left' },
+        ], assignee: 'Carol' },
+      ]},
+      { id: 'review', title: 'Review', color: '#f59e0b', cards: [
+        { id: 'l4', title: 'Code review PR #42', labels: [
+          { text: 'Review', color: '#92400e', background: '#fef3c7' },
+        ]},
+      ]},
+      { id: 'complete', title: 'Complete', color: '#16a34a', cards: [
+        { id: 'l5', title: 'Database schema', labels: ['Backend'], assignee: 'Dave' },
+      ]},
+    ];
+
+    const colorCards = [
+      { id: 'col1', title: 'Sprint', cards: [
+        { id: 'cc1', title: 'Bug fix #123', color: '#dc2626' },
+        { id: 'cc2', title: 'Feature request', color: '#2563eb' },
+        { id: 'cc3', title: 'Refactor', color: '#16a34a' },
+        { id: 'cc4', title: 'Documentation', color: '#9333ea' },
+      ]},
+      { id: 'col2', title: 'Next', cards: [] },
+    ];
+
+    const emptyColumns = [
+      { id: 'e1', title: 'Open', cards: [] },
+      { id: 'e2', title: 'In Progress', cards: [] },
+      { id: 'e3', title: 'Done', cards: [] },
+    ];
+
+    const manyCards = [
+      { id: 'mc1', title: 'Backlog', cards: Array.from({ length: 8 }, (_, i) => ({
+        id: `m${i}`, title: `Task ${i + 1}`, description: `Description for task ${i + 1}.`,
+        assignee: ['Alice', 'Bob', 'Carol', 'Dave'][i % 4],
+        labels: i % 2 === 0 ? ['Important'] : [],
+      }))},
+      { id: 'mc2', title: 'Active', cards: [
+        { id: 'm10', title: 'Current task', assignee: 'Eve' },
+      ]},
+    ];
+
     document.addEventListener('DOMContentLoaded', () => {
-      const kanban = document.getElementById('kanban-board');
-
-      kanban.columns = [
-        {
-          id: 'todo',
-          title: 'To Do',
-          color: '#f44336',
-          cards: [
-            {
-              id: 1,
-              title: 'Design new landing page',
-              description: 'Create mockups and wireframes for the new homepage',
-              assignee: 'Alice',
-              labels: ['design', 'high-priority'],
-              color: '#f44336'
-            },
-            {
-              id: 2,
-              title: 'Update documentation',
-              description: 'Add examples for new components',
-              assignee: 'Bob',
-              labels: ['docs'],
-              color: '#2196f3'
-            },
-            {
-              id: 3,
-              title: 'Fix bug in login form',
-              description: 'Users cannot reset password',
-              assignee: 'Charlie',
-              labels: ['bug', 'high-priority'],
-              color: '#f44336'
-            }
-          ]
-        },
-        {
-          id: 'in-progress',
-          title: 'In Progress',
-          color: '#ff9800',
-          cards: [
-            {
-              id: 4,
-              title: 'Implement dark mode',
-              description: 'Add theme switcher and dark color scheme',
-              assignee: 'Alice',
-              labels: ['feature', 'ui'],
-              color: '#4caf50'
-            },
-            {
-              id: 5,
-              title: 'API integration',
-              description: 'Connect frontend to new REST API',
-              assignee: 'David',
-              labels: ['backend'],
-              color: '#2196f3'
-            }
-          ]
-        },
-        {
-          id: 'review',
-          title: 'In Review',
-          color: '#9c27b0',
-          cards: [
-            {
-              id: 6,
-              title: 'Add user avatars',
-              description: 'Display profile pictures in comments',
-              assignee: 'Eve',
-              labels: ['feature', 'ui'],
-              color: '#4caf50'
-            }
-          ]
-        },
-        {
-          id: 'done',
-          title: 'Done',
-          color: '#4caf50',
-          cards: [
-            {
-              id: 7,
-              title: 'Set up CI/CD pipeline',
-              description: 'Automated testing and deployment',
-              assignee: 'Frank',
-              labels: ['devops'],
-              color: '#2196f3'
-            },
-            {
-              id: 8,
-              title: 'Create user onboarding',
-              description: 'Welcome tour for new users',
-              assignee: 'Grace',
-              labels: ['feature', 'ux'],
-              color: '#4caf50'
-            }
-          ]
-        }
-      ];
-
-      // Event listeners
-      kanban.addEventListener('kanban-card-move', (e) => {
-        // Card moved event
-      });
-
-      kanban.addEventListener('kanban-card-click', (e) => {
-        alert(`Card: ${e.detail.card.title}\n\n${e.detail.card.description || 'No description'}`);
-      });
-
-      // Search functionality
-      const searchInput = document.getElementById('search-input');
-      searchInput.addEventListener('input', (e) => {
-        kanban.search(e.target.value);
-      });
-
-      // Label filter functionality
-      const filterBtns = document.querySelectorAll('.filter-btn');
-      const activeLabels = new Set();
-
-      filterBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-          const label = btn.dataset.label;
-
-          if (activeLabels.has(label)) {
-            activeLabels.delete(label);
-            btn.classList.remove('active');
-          } else {
-            activeLabels.add(label);
-            btn.classList.add('active');
-          }
-
-          kanban.filterByLabels(Array.from(activeLabels));
-        });
-      });
-
-      // Clear filters
-      document.getElementById('clear-filters').addEventListener('click', () => {
-        kanban.clearFilters();
-        searchInput.value = '';
-        activeLabels.clear();
-
-        filterBtns.forEach(btn => {
-          btn.classList.remove('active');
-        });
-      });
+      document.getElementById('k-basic').columns = basicColumns;
+      document.getElementById('k-labels').columns = labelColumns;
+      document.getElementById('k-colors').columns = colorCards;
+      document.getElementById('k-empty').columns = emptyColumns;
+      document.getElementById('k-many').columns = manyCards;
+      document.getElementById('k-nodrag').columns = basicColumns;
+      document.getElementById('k-nocount').columns = basicColumns;
+      document.getElementById('k-nodragcount').columns = basicColumns;
     });
   </script>
 </head>
 <body>
-  <h2>Kanban Board Demo</h2>
-  <p>Drag and drop cards between columns. Click on a card to see details.</p>
 
-  <div class="filter-section">
-    <h3>Filters</h3>
+<h2>Basic Kanban (allow-drag-drop, show-card-count)</h2>
+<snice-kanban id="k-basic"></snice-kanban>
 
-    <div class="filter-group">
-      <label>Search:</label>
-      <input type="text" id="search-input" placeholder="Search cards...">
-    </div>
+<h2>Cards with Labels (string + object labels with colors/icons)</h2>
+<snice-kanban id="k-labels"></snice-kanban>
 
-    <div class="filter-group">
-      <label>Filter by Label:</label>
-      <div class="filter-buttons">
-        <button class="filter-btn" data-label="design">design</button>
-        <button class="filter-btn" data-label="docs">docs</button>
-        <button class="filter-btn" data-label="bug">bug</button>
-        <button class="filter-btn" data-label="feature">feature</button>
-        <button class="filter-btn" data-label="high-priority">high-priority</button>
-        <button class="filter-btn" data-label="ui">ui</button>
-        <button class="filter-btn" data-label="backend">backend</button>
-        <button class="filter-btn" data-label="devops">devops</button>
-        <button class="filter-btn" data-label="ux">ux</button>
-      </div>
-    </div>
+<h2>Card Colors (border-left accent)</h2>
+<snice-kanban id="k-colors"></snice-kanban>
 
-    <button id="clear-filters" class="clear-btn">Clear All Filters</button>
-  </div>
+<h2>allow-drag-drop: false</h2>
+<snice-kanban id="k-nodrag" allow-drag-drop="false"></snice-kanban>
 
-  <snice-kanban id="kanban-board"></snice-kanban>
+<h2>show-card-count: false</h2>
+<snice-kanban id="k-nocount" show-card-count="false"></snice-kanban>
 
-  <div class="info-section">
-    <h3>Features</h3>
-    <ul>
-      <li>Drag and drop cards between columns and within the same column</li>
-      <li>Click on cards to view details</li>
-      <li>Card labels with <strong>custom colors</strong> (text + background)</li>
-      <li>Card assignees</li>
-      <li>Color-coded cards and columns</li>
-      <li>Card counts per column</li>
-      <li><strong>Search cards</strong> by title or description</li>
-      <li><strong>Filter by labels</strong> - can select multiple labels (AND logic)</li>
-      <li><strong>View Transitions API</strong> - smooth animations when moving cards</li>
-    </ul>
+<h2>allow-drag-drop: false + show-card-count: false</h2>
+<snice-kanban id="k-nodragcount" allow-drag-drop="false" show-card-count="false"></snice-kanban>
 
-    <h3>API Usage</h3>
-    <p>Try these in the browser console:</p>
-    <pre>// Search for cards
-kanban.search('landing');
+<h2>Empty Columns</h2>
+<snice-kanban id="k-empty"></snice-kanban>
 
-// Filter by labels (show cards with these labels)
-kanban.filterByLabels(['design', 'high-priority']);
+<h2>Many Cards (overflow)</h2>
+<snice-kanban id="k-many"></snice-kanban>
 
-// Clear all filters
-kanban.clearFilters();
-
-// Add card with colored labels
-kanban.addCard('todo', {
-  id: 99,
-  title: 'New task',
-  labels: [
-    { text: 'urgent', color: '#dc2626', background: '#fee2e2' },
-    { text: 'backend', color: '#9333ea', background: '#f3e8ff' }
-  ]
-});
-
-// String labels still work (will use default styling)
-kanban.addCard('todo', {
-  id: 100,
-  title: 'Another task',
-  labels: ['feature', 'ui']
-});
-    </pre>
-
-    <h3>Try it out!</h3>
-    <p>Drag cards between columns or reorder within columns. Use the search and label filters above.</p>
-  </div>
-
-  <h2>Custom Labels with Icons</h2>
-  <p>Labels can have custom colors, backgrounds, and emoji icons positioned on left or right.</p>
-
-  <snice-kanban id="kanban-board-labels"></snice-kanban>
-
-  <script type="module">
-    const kanbanLabels = document.getElementById('kanban-board-labels');
-
-    kanbanLabels.columns = [
-      {
-        id: 'backlog',
-        title: 'Backlog',
-        cards: [
-          {
-            id: 101,
-            title: 'Redesign dashboard',
-            assignee: 'Sarah',
-            labels: [
-              { text: 'Design', color: '#6366f1', background: '#eef2ff', icon: '🎨', iconPosition: 'left' },
-              { text: 'High Priority', color: '#dc2626', background: '#fee2e2', icon: '🔥', iconPosition: 'left' }
-            ]
-          }
-        ]
-      },
-      {
-        id: 'wip',
-        title: 'In Progress',
-        cards: [
-          {
-            id: 102,
-            title: 'Add dark mode',
-            assignee: 'Jordan',
-            labels: [
-              { text: 'Feature', color: '#16a34a', background: '#dcfce7', icon: '✨', iconPosition: 'left' },
-              { text: 'UI', color: '#6366f1', background: '#eef2ff', icon: '🎭', iconPosition: 'left' }
-            ]
-          }
-        ]
-      },
-      {
-        id: 'complete',
-        title: 'Done',
-        cards: [
-          {
-            id: 103,
-            title: 'Analytics dashboard',
-            assignee: 'Riley',
-            labels: [
-              { text: 'Analytics', color: '#0891b2', background: '#cffafe', icon: '📊', iconPosition: 'left' },
-              { text: 'Shipped', color: '#16a34a', background: '#dcfce7', icon: '🚀', iconPosition: 'right' }
-            ]
-          }
-        ]
-      }
-    ];
-  </script>
 </body>
 </html>

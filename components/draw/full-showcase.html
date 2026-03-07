@@ -1,353 +1,122 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Draw Component Demo</title>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <title>Draw</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      padding: 40px;
-      margin: 0;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      transition: background-color var(--snice-transition-medium) ease, color var(--snice-transition-medium) ease;
-    }
-    .demo-section {
-      margin-bottom: 40px;
-    }
-    .demo-section h3 {
-      margin-bottom: 20px;
-    }
-    .draw-wrapper {
-      display: flex;
-      gap: 20px;
-      align-items: flex-start;
-    }
-    .draw-canvas-container {
-      flex: 1;
-      border: 2px solid var(--snice-color-border);
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    .toolbar {
-      width: 200px;
-      padding: 20px;
-      background: var(--snice-color-background);
-      border-radius: 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-    .toolbar-section {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .toolbar-label {
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--snice-color-text-secondary);
-      text-transform: uppercase;
-    }
-    .tool-buttons {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-    }
-    .tool-btn {
-      padding: 12px;
-      background: var(--snice-color-background);
-      border: 2px solid var(--snice-color-border);
-      border-radius: 6px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      gap: 4px;
-      font-size: 11px;
-      transition: all 0.2s;
-      color: var(--snice-color-text);
-    }
-    .tool-btn:hover {
-      border-color: var(--snice-color-primary);
-    }
-    .tool-btn.active {
-      background: var(--snice-color-primary);
-      border-color: var(--snice-color-primary);
-      color: white;
-    }
-    .color-input {
-      width: 100%;
-      height: 40px;
-      border-radius: 6px;
-      border: 2px solid var(--snice-color-border);
-      cursor: pointer;
-    }
-    input[type="range"] {
-      width: 100%;
-    }
-    button {
-      padding: 10px 16px;
-      background: var(--snice-color-primary);
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    button:hover {
-      background: var(--snice-color-primary-hover);
-    }
-    button.secondary {
-      background: var(--snice-color-text-secondary);
-    }
-    button.secondary:hover {
-      background: var(--snice-color-text-muted);
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .canvas-wrap { border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 8px; overflow: hidden; display: inline-block; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 1.5rem; }
   </style>
-  <script type="module">
-    document.addEventListener('DOMContentLoaded', () => {
-      const draw = document.getElementById('draw');
-      const toolButtons = document.querySelectorAll('.tool-btn');
-      const colorInput = document.getElementById('color-input');
-      const widthInput = document.getElementById('width-input');
-      const widthValue = document.getElementById('width-value');
-      const lazyCheck = document.getElementById('lazy-check');
-      const lazyRadiusInput = document.getElementById('lazy-radius');
-      const lazyRadiusValue = document.getElementById('lazy-radius-value');
-      const frictionInput = document.getElementById('friction');
-      const frictionValue = document.getElementById('friction-value');
-      const smoothingInput = document.getElementById('smoothing');
-
-      // Tool selection
-      toolButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-          toolButtons.forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          draw.tool = btn.dataset.tool;
-        });
-      });
-
-      // Color
-      colorInput.addEventListener('input', (e) => {
-        draw.color = e.target.value;
-      });
-
-      // Width
-      widthInput.addEventListener('input', (e) => {
-        draw.strokeWidth = parseInt(e.target.value);
-        widthValue.textContent = e.target.value + 'px';
-      });
-
-      // Lazy brush
-      lazyCheck.addEventListener('change', (e) => {
-        draw.lazy = e.target.checked;
-      });
-
-      lazyRadiusInput.addEventListener('input', (e) => {
-        draw.lazyRadius = parseInt(e.target.value);
-        lazyRadiusValue.textContent = e.target.value;
-      });
-
-      frictionInput.addEventListener('input', (e) => {
-        draw.friction = parseFloat(e.target.value);
-        frictionValue.textContent = parseFloat(e.target.value).toFixed(2);
-      });
-
-      smoothingInput.addEventListener('input', (e) => {
-        draw.smoothing = parseFloat(e.target.value);
-      });
-
-      // Auto polygon
-      const autoPolygonCheck = document.getElementById('auto-polygon-check');
-      const curvePointsInput = document.getElementById('curve-points');
-      const curvePointsValue = document.getElementById('curve-points-value');
-
-      autoPolygonCheck.addEventListener('change', (e) => {
-        draw.autoPolygon = e.target.checked;
-        if (e.target.checked) {
-          autoCircleCheck.checked = false;
-          draw.autoCircle = false;
-        }
-      });
-
-      curvePointsInput.addEventListener('input', (e) => {
-        draw.polygonCurvePoints = parseInt(e.target.value);
-        curvePointsValue.textContent = e.target.value;
-      });
-
-      // Auto circle
-      const autoCircleCheck = document.getElementById('auto-circle-check');
-      const circlePointsInput = document.getElementById('circle-points');
-      const circlePointsValue = document.getElementById('circle-points-value');
-
-      autoCircleCheck.addEventListener('change', (e) => {
-        draw.autoCircle = e.target.checked;
-        if (e.target.checked) {
-          autoPolygonCheck.checked = false;
-          draw.autoPolygon = false;
-        }
-      });
-
-      circlePointsInput.addEventListener('input', (e) => {
-        draw.circlePoints = parseInt(e.target.value);
-        circlePointsValue.textContent = e.target.value;
-      });
-
-      // Actions
-      document.getElementById('clear-btn').addEventListener('click', () => {
-        if (confirm('Clear the canvas?')) {
-          draw.clear();
-        }
-      });
-
-      document.getElementById('undo-btn').addEventListener('click', () => {
-        draw.undo();
-      });
-
-      document.getElementById('redo-btn').addEventListener('click', () => {
-        draw.redo();
-      });
-
-      document.getElementById('download-btn').addEventListener('click', () => {
-        draw.download('my-drawing.png');
-      });
-
-      // Keyboard shortcuts
-      document.addEventListener('keydown', (e) => {
-        if (e.ctrlKey || e.metaKey) {
-          if (e.key === 'z') {
-            e.preventDefault();
-            if (e.shiftKey) {
-              draw.redo();
-            } else {
-              draw.undo();
-            }
-          }
-        }
-      });
-    });
-  </script>
+  <script type="module">import './snice-draw.ts';</script>
 </head>
 <body>
-  <h2>Draw Component Demo</h2>
-  <p>Paint and draw with smooth lazy-brush technology.</p>
 
-  <div class="demo-section">
-    <div class="draw-wrapper">
-      <div class="draw-canvas-container">
-        <snice-draw id="draw" width="800" height="600"></snice-draw>
-      </div>
+<h2>Tool: pen (default)</h2>
+<div class="canvas-wrap">
+  <snice-draw tool="pen" width="400" height="200" color="#000000" stroke-width="2"></snice-draw>
+</div>
 
-      <div class="toolbar">
-        <div class="toolbar-section">
-          <div class="toolbar-label">Tools</div>
-          <div class="tool-buttons">
-            <div class="tool-btn active" data-tool="pen">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
-                <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
-              </svg>
-              Pen
-            </div>
-            <div class="tool-btn" data-tool="eraser">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 20H7L3 16l9-9 8 8v5z"></path>
-              </svg>
-              Eraser
-            </div>
-          </div>
-        </div>
+<h2>Tool: eraser</h2>
+<div class="canvas-wrap">
+  <snice-draw tool="eraser" width="400" height="200" color="#000000" stroke-width="8"></snice-draw>
+</div>
 
-        <div class="toolbar-section">
-          <div class="toolbar-label">Color</div>
-          <input type="color" id="color-input" class="color-input" value="#000000">
-        </div>
+<h2>Stroke Colors</h2>
+<div class="row">
+  <div class="canvas-wrap"><snice-draw width="200" height="120" color="#e53e3e" stroke-width="3"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="200" height="120" color="#2563eb" stroke-width="3"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="200" height="120" color="#16a34a" stroke-width="3"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="200" height="120" color="#9333ea" stroke-width="3"></snice-draw></div>
+</div>
 
-        <div class="toolbar-section">
-          <div class="toolbar-label">Width: <span id="width-value">2px</span></div>
-          <input type="range" id="width-input" min="1" max="50" value="2">
-        </div>
+<h2>Stroke Widths</h2>
+<div class="row">
+  <div class="canvas-wrap"><snice-draw width="200" height="120" stroke-width="1"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="200" height="120" stroke-width="4"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="200" height="120" stroke-width="10"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="200" height="120" stroke-width="20"></snice-draw></div>
+</div>
 
-        <div class="toolbar-section">
-          <div class="toolbar-label">Lazy Brush</div>
-          <label style="display: flex; align-items: center; gap: 8px;">
-            <input type="checkbox" id="lazy-check">
-            Enable
-          </label>
-          <div class="toolbar-label" style="margin-top: 8px;">Radius: <span id="lazy-radius-value">60</span></div>
-          <input type="range" id="lazy-radius" min="0" max="200" value="60" title="Lazy Radius">
-          <div class="toolbar-label" style="margin-top: 8px;">Friction: <span id="friction-value">0.10</span></div>
-          <input type="range" id="friction" min="0" max="1" step="0.01" value="0.1" title="Friction">
-        </div>
+<h2>Background Colors</h2>
+<div class="row">
+  <div class="canvas-wrap"><snice-draw width="200" height="120" background-color="#ffffff"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="200" height="120" background-color="#1a1a2e" color="#ffffff"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="200" height="120" background-color="#fef3c7" color="#92400e"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="200" height="120" background-color="#ecfdf5" color="#065f46"></snice-draw></div>
+</div>
 
-        <div class="toolbar-section">
-          <div class="toolbar-label">Smoothing</div>
-          <input type="range" id="smoothing" min="0" max="1" step="0.1" value="0.5">
-        </div>
+<h2>Lazy Brush: Enabled</h2>
+<div class="row">
+  <div class="canvas-wrap"><snice-draw width="300" height="150" lazy lazy-radius="30" friction="0.1"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="300" height="150" lazy lazy-radius="60" friction="0.1"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="300" height="150" lazy lazy-radius="120" friction="0.1"></snice-draw></div>
+</div>
 
-        <div class="toolbar-section">
-          <div class="toolbar-label">Auto Polygon</div>
-          <label style="display: flex; align-items: center; gap: 8px;">
-            <input type="checkbox" id="auto-polygon-check">
-            Enable
-          </label>
-          <div class="toolbar-label" style="margin-top: 8px;">Curve Points: <span id="curve-points-value">10</span></div>
-          <input type="range" id="curve-points" min="2" max="30" value="10">
-        </div>
+<h2>Friction Values</h2>
+<div class="row">
+  <div class="canvas-wrap"><snice-draw width="200" height="120" lazy friction="0.05"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="200" height="120" lazy friction="0.3"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="200" height="120" lazy friction="0.6"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="200" height="120" lazy friction="0.9"></snice-draw></div>
+</div>
 
-        <div class="toolbar-section">
-          <div class="toolbar-label">Auto Circle</div>
-          <label style="display: flex; align-items: center; gap: 8px;">
-            <input type="checkbox" id="auto-circle-check">
-            Enable
-          </label>
-          <div class="toolbar-label" style="margin-top: 8px;">Closing Curve: <span id="circle-points-value">50</span></div>
-          <input type="range" id="circle-points" min="5" max="100" value="50">
-        </div>
+<h2>Smoothing Values</h2>
+<div class="row">
+  <div class="canvas-wrap"><snice-draw width="200" height="120" smoothing="0"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="200" height="120" smoothing="0.5"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="200" height="120" smoothing="1"></snice-draw></div>
+</div>
 
-        <div class="toolbar-section">
-          <button id="undo-btn">Undo (Ctrl+Z)</button>
-          <button id="redo-btn">Redo (Ctrl+Shift+Z)</button>
-        </div>
+<h2>Auto Polygon</h2>
+<div class="row">
+  <div class="canvas-wrap"><snice-draw width="300" height="200" auto-polygon polygon-curve-points="5"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="300" height="200" auto-polygon polygon-curve-points="10"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="300" height="200" auto-polygon polygon-curve-points="25"></snice-draw></div>
+</div>
 
-        <div class="toolbar-section">
-          <button id="download-btn">Download</button>
-          <button id="clear-btn" class="secondary">Clear</button>
-        </div>
-      </div>
-    </div>
-  </div>
+<h2>Auto Circle</h2>
+<div class="row">
+  <div class="canvas-wrap"><snice-draw width="300" height="200" auto-circle circle-points="20"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="300" height="200" auto-circle circle-points="50"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="300" height="200" auto-circle circle-points="100"></snice-draw></div>
+</div>
 
-  <div style="margin-top: 40px; padding: 20px; background: var(--snice-color-background); border-radius: 4px;">
-    <h3 style="margin-top: 0;">Features</h3>
-    <ul>
-      <li>Smooth lazy-brush drawing</li>
-      <li>Pen and eraser tools</li>
-      <li>Customizable brush width and color</li>
-      <li>Adjustable lazy radius for smoothness</li>
-      <li>Line smoothing with bezier curves</li>
-      <li>Auto-polygon: automatically closes drawn shapes with intelligent intersection detection</li>
-      <li>Auto-circle: closes any drawn shape smoothly, preserving natural wobbles</li>
-      <li>Undo/redo functionality</li>
-      <li>Export to PNG/JPEG/WebP</li>
-      <li>Download drawings</li>
-      <li>Keyboard shortcuts (Ctrl+Z, Ctrl+Shift+Z)</li>
-      <li>Touch and pointer support</li>
-    </ul>
+<h2>Disabled</h2>
+<div class="canvas-wrap">
+  <snice-draw width="400" height="150" disabled></snice-draw>
+</div>
 
-    <h3>Lazy Brush</h3>
-    <p>The lazy brush creates smooth, professional-looking lines by making the brush follow your cursor with a slight delay and within a configurable radius. This helps eliminate jitter and creates more organic-looking strokes.</p>
+<h2>Custom Dimensions</h2>
+<div class="row">
+  <div class="canvas-wrap"><snice-draw width="150" height="150"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="400" height="100"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="100" height="300"></snice-draw></div>
+</div>
 
-    <h3>Auto Circle</h3>
-    <p>When enabled, Auto Circle creates smooth, organic shapes from your rough drawings. It works by: 1) Grouping points into time-based clusters and taking the centroid of each cluster (preserving the natural flow and wobbles from your drawing), 2) Removing sharp angles, 3) Applying Chaikin's corner-cutting algorithm for smoothing, and 4) Closing the shape with a smooth curve. This preserves the character of your drawing while creating flowing, professional-looking shapes. Adjust the closing curve points to control the smoothness of the connection.</p>
+<h2>Lazy + Auto Polygon Combined</h2>
+<div class="canvas-wrap">
+  <snice-draw width="400" height="250" lazy lazy-radius="40" friction="0.15" auto-polygon polygon-curve-points="15" color="#2563eb" stroke-width="3"></snice-draw>
+</div>
 
-    <h3>Keyboard Shortcuts</h3>
-    <ul style="list-style: none; padding: 0;">
-      <li><kbd>Ctrl+Z</kbd> - Undo</li>
-      <li><kbd>Ctrl+Shift+Z</kbd> - Redo</li>
-    </ul>
-  </div>
-  <script type="module" src="./snice-draw.ts"></script>
+<h2>Lazy + Auto Circle Combined</h2>
+<div class="canvas-wrap">
+  <snice-draw width="400" height="250" lazy lazy-radius="40" friction="0.15" auto-circle circle-points="60" color="#16a34a" stroke-width="3"></snice-draw>
+</div>
+
 </body>
 </html>

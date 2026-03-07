@@ -1,387 +1,157 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snice Chip Demo</title>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <title>Chip</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      padding: 40px;
-      line-height: 1.6;
-      background: var(--snice-color-background);
-      transition: background-color var(--snice-transition-medium) ease, color var(--snice-transition-medium) ease;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      background: var(--snice-color-background);
-      padding: 40px;
-      border-radius: 8px;
-      box-shadow: var(--snice-shadow-lg);
-    }
-
-    h1 {
-      color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: 10px;
-    }
-
-    h2 {
-      color: var(--snice-color-text-secondary);
-      margin-top: 30px;
-    }
-
-    .demo-section {
-      margin: 30px 0;
-      padding: 20px;
-      background: var(--snice-color-background);
-      border-radius: 4px;
-    }
-
-    .demo-label {
-      display: block;
-      margin-bottom: 12px;
-      font-weight: 500;
-      color: var(--snice-color-text-secondary);
-      font-size: 14px;
-    }
-
-    .chip-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin: 16px 0;
-    }
-
-    .controls {
-      display: flex;
-      gap: 10px;
-      margin: 20px 0;
-      flex-wrap: wrap;
-    }
-
-    button {
-      padding: 8px 16px;
-      background: var(--snice-color-background-element);
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: background 0.2s;
-      color: var(--snice-color-text);
-    }
-
-    button:hover {
-      background: var(--snice-color-background-element-hover);
-    }
-
-    .selected-chips {
-      margin-top: 16px;
-      padding: 12px;
-      background: var(--snice-color-background);
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      min-height: 40px;
-    }
-
-    .selected-chips:empty::after {
-      content: 'No chips selected';
-      color: var(--snice-color-text-muted);
-    }
-
-    code {
-      background: var(--snice-color-background);
-      padding: 2px 6px;
-      border-radius: 3px;
-      font-size: 0.9em;
-    }
-
-    .event-log {
-      margin-top: 16px;
-      padding: 12px;
-      background: var(--snice-color-background);
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      font-size: 14px;
-      font-family: monospace;
-      max-height: 200px;
-      overflow-y: auto;
-    }
-
-    .input-group {
-      display: flex;
-      gap: 8px;
-      margin: 16px 0;
-    }
-
-    input[type="text"] {
-      flex: 1;
-      padding: 8px 12px;
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      font-size: 14px;
-      background: var(--snice-color-background-input);
-      color: var(--snice-color-text);
-    }
-
-    .avatar-chip {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      object-fit: cover;
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    section { margin-bottom: 2rem; }
   </style>
+  <script type="module">import './snice-chip.ts';</script>
 </head>
 <body>
-  <div class="container">
-    <h1>Snice Chip Component Demo</h1>
 
-    <div class="demo-section">
-      <h2>Basic Chips</h2>
-      
-      <span class="demo-label">Default Chips</span>
-      <div class="chip-group">
-        <snice-chip label="JavaScript"></snice-chip>
-        <snice-chip label="TypeScript"></snice-chip>
-        <snice-chip label="React"></snice-chip>
-        <snice-chip label="Vue"></snice-chip>
-        <snice-chip label="Angular"></snice-chip>
-      </div>
-
-      <span class="demo-label">Selectable Chips</span>
-      <div class="chip-group">
-        <snice-chip label="Apple" selected></snice-chip>
-        <snice-chip label="Banana"></snice-chip>
-        <snice-chip label="Cherry"></snice-chip>
-        <snice-chip label="Date"></snice-chip>
-        <snice-chip label="Elderberry"></snice-chip>
-      </div>
-    </div>
-
-    <div class="demo-section">
-      <h2>Chip Variants</h2>
-      
-      <div class="chip-group">
-        <snice-chip label="Default" variant="default"></snice-chip>
-        <snice-chip label="Primary" variant="primary"></snice-chip>
-        <snice-chip label="Success" variant="success"></snice-chip>
-        <snice-chip label="Warning" variant="warning"></snice-chip>
-        <snice-chip label="Error" variant="error"></snice-chip>
-        <snice-chip label="Info" variant="info"></snice-chip>
-      </div>
-
-      <span class="demo-label">Selected State in Different Variants</span>
-      <div class="chip-group">
-        <snice-chip label="Default" variant="default" selected></snice-chip>
-        <snice-chip label="Primary" variant="primary" selected></snice-chip>
-        <snice-chip label="Success" variant="success" selected></snice-chip>
-        <snice-chip label="Warning" variant="warning" selected></snice-chip>
-        <snice-chip label="Error" variant="error" selected></snice-chip>
-        <snice-chip label="Info" variant="info" selected></snice-chip>
-      </div>
-    </div>
-
-    <div class="demo-section">
-      <h2>Chip Sizes</h2>
-      
-      <div class="chip-group">
-        <snice-chip label="Small Chip" size="small"></snice-chip>
-        <snice-chip label="Medium Chip" size="medium"></snice-chip>
-        <snice-chip label="Large Chip" size="large"></snice-chip>
-      </div>
-    </div>
-
-    <div class="demo-section">
-      <h2>Removable Chips</h2>
-      
-      <span class="demo-label">Click the X to remove</span>
-      <div class="chip-group" id="removable-chips">
-        <snice-chip label="Remove me" removable></snice-chip>
-        <snice-chip label="Delete this" removable variant="primary"></snice-chip>
-        <snice-chip label="Clear me" removable variant="success"></snice-chip>
-        <snice-chip label="Dismiss" removable variant="warning"></snice-chip>
-        <snice-chip label="Close" removable variant="error"></snice-chip>
-      </div>
-    </div>
-
-    <div class="demo-section">
-      <h2>Chips with Icons</h2>
-      
-      <div class="chip-group">
-        <snice-chip label="Star" icon="⭐"></snice-chip>
-        <snice-chip label="Heart" icon="❤️" variant="error"></snice-chip>
-        <snice-chip label="Check" icon="✓" variant="success"></snice-chip>
-        <snice-chip label="Warning" icon="⚠️" variant="warning"></snice-chip>
-        <snice-chip label="Info" icon="ℹ️" variant="info"></snice-chip>
-        <snice-chip label="Removable" icon="📁" removable></snice-chip>
-      </div>
-    </div>
-
-    <div class="demo-section">
-      <h2>Chips with Avatars</h2>
-      
-      <div class="chip-group">
-        <snice-chip label="John Doe" avatar="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%234f46e5'/%3E%3Ctext x='50' y='50' text-anchor='middle' dy='0.35em' fill='white' font-size='40' font-family='sans-serif'%3EJD%3C/text%3E%3C/svg%3E"></snice-chip>
-        <snice-chip label="Jane Smith" avatar="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23ec4899'/%3E%3Ctext x='50' y='50' text-anchor='middle' dy='0.35em' fill='white' font-size='40' font-family='sans-serif'%3EJS%3C/text%3E%3C/svg%3E" removable></snice-chip>
-        <snice-chip label="Alex Brown" avatar="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%2310b981'/%3E%3Ctext x='50' y='50' text-anchor='middle' dy='0.35em' fill='white' font-size='40' font-family='sans-serif'%3EAB%3C/text%3E%3C/svg%3E"></snice-chip>
-      </div>
-    </div>
-
-    <div class="demo-section">
-      <h2>Disabled State</h2>
-      
-      <div class="chip-group">
-        <snice-chip label="Disabled" disabled></snice-chip>
-        <snice-chip label="Disabled Primary" variant="primary" disabled></snice-chip>
-        <snice-chip label="Disabled Removable" removable disabled></snice-chip>
-        <snice-chip label="Disabled Selected" selected disabled></snice-chip>
-      </div>
-    </div>
-
-    <div class="demo-section">
-      <h2>Interactive Filter Example</h2>
-      
-      <span class="demo-label">Select categories:</span>
-      <div class="chip-group" id="filter-chips">
-        <snice-chip label="Electronics"></snice-chip>
-        <snice-chip label="Clothing"></snice-chip>
-        <snice-chip label="Books"></snice-chip>
-        <snice-chip label="Home & Garden"></snice-chip>
-        <snice-chip label="Sports"></snice-chip>
-        <snice-chip label="Toys"></snice-chip>
-        <snice-chip label="Food"></snice-chip>
-        <snice-chip label="Beauty"></snice-chip>
-      </div>
-      <div class="selected-chips" id="selected-filters"></div>
-    </div>
-
-    <div class="demo-section">
-      <h2>Dynamic Chip Creation</h2>
-      
-      <div class="input-group">
-        <input type="text" id="chip-input" placeholder="Type and press Enter to add chip">
-        <button onclick="addChip()">Add Chip</button>
-      </div>
-      <div class="chip-group" id="dynamic-chips"></div>
-    </div>
-
-    <div class="demo-section">
-      <h2>Events</h2>
-      
-      <span class="demo-label">Interact with these chips and watch the event log:</span>
-      <div class="chip-group" id="event-chips">
-        <snice-chip label="Click me"></snice-chip>
-        <snice-chip label="Remove me" removable></snice-chip>
-        <snice-chip label="Select me"></snice-chip>
-      </div>
-      <div class="event-log" id="event-log">Event log will appear here...</div>
-    </div>
-
-    <div class="demo-section">
-      <h2>Real-world Examples</h2>
-      
-      <span class="demo-label">Email Recipients</span>
-      <div class="chip-group">
-        <snice-chip label="john@example.com" removable variant="primary" avatar="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%234f46e5'/%3E%3Ctext x='50' y='50' text-anchor='middle' dy='0.35em' fill='white' font-size='40' font-family='sans-serif'%3EJ%3C/text%3E%3C/svg%3E"></snice-chip>
-        <snice-chip label="sarah@company.com" removable variant="primary" avatar="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23ec4899'/%3E%3Ctext x='50' y='50' text-anchor='middle' dy='0.35em' fill='white' font-size='40' font-family='sans-serif'%3ES%3C/text%3E%3C/svg%3E"></snice-chip>
-        <snice-chip label="team@startup.io" removable variant="primary" icon="👥"></snice-chip>
-      </div>
-
-      <span class="demo-label">Skills</span>
-      <div class="chip-group">
-        <snice-chip label="JavaScript" icon="💛" variant="warning"></snice-chip>
-        <snice-chip label="Python" icon="🐍" variant="info"></snice-chip>
-        <snice-chip label="React" icon="⚛️" variant="info"></snice-chip>
-        <snice-chip label="Node.js" icon="🟢" variant="success"></snice-chip>
-        <snice-chip label="Docker" icon="🐳" variant="primary"></snice-chip>
-      </div>
-
-      <span class="demo-label">Tags</span>
-      <div class="chip-group">
-        <snice-chip label="New" variant="success" size="small"></snice-chip>
-        <snice-chip label="Hot" variant="error" size="small"></snice-chip>
-        <snice-chip label="Sale" variant="warning" size="small"></snice-chip>
-        <snice-chip label="Limited" variant="info" size="small"></snice-chip>
-      </div>
-    </div>
+<section>
+  <h2>All variants</h2>
+  <div class="row">
+    <snice-chip label="Default" variant="default"></snice-chip>
+    <snice-chip label="Primary" variant="primary"></snice-chip>
+    <snice-chip label="Success" variant="success"></snice-chip>
+    <snice-chip label="Warning" variant="warning"></snice-chip>
+    <snice-chip label="Error" variant="error"></snice-chip>
+    <snice-chip label="Info" variant="info"></snice-chip>
   </div>
+</section>
 
-  <script type="module">
-    import './snice-chip.ts';
+<section>
+  <h2>All variants x Selected</h2>
+  <div class="row">
+    <snice-chip label="Default" variant="default" selected></snice-chip>
+    <snice-chip label="Primary" variant="primary" selected></snice-chip>
+    <snice-chip label="Success" variant="success" selected></snice-chip>
+    <snice-chip label="Warning" variant="warning" selected></snice-chip>
+    <snice-chip label="Error" variant="error" selected></snice-chip>
+    <snice-chip label="Info" variant="info" selected></snice-chip>
+  </div>
+</section>
 
-    // Handle removable chips
-    document.getElementById('removable-chips').addEventListener('chip-remove', (e) => {
-      e.target.remove();
-    });
+<section>
+  <h2>All sizes</h2>
+  <div class="row">
+    <snice-chip label="Small" size="small"></snice-chip>
+    <snice-chip label="Medium" size="medium"></snice-chip>
+    <snice-chip label="Large" size="large"></snice-chip>
+  </div>
+</section>
 
-    // Handle filter chips
-    const filterChips = document.querySelectorAll('#filter-chips snice-chip');
-    const selectedFilters = document.getElementById('selected-filters');
-    
-    filterChips.forEach(chip => {
-      chip.addEventListener('chip-click', (e) => {
-        updateSelectedFilters();
-      });
-    });
+<section>
+  <h2>Sizes x Variants (primary)</h2>
+  <div class="row">
+    <snice-chip label="Small Primary" size="small" variant="primary"></snice-chip>
+    <snice-chip label="Medium Primary" size="medium" variant="primary"></snice-chip>
+    <snice-chip label="Large Primary" size="large" variant="primary"></snice-chip>
+  </div>
+</section>
 
-    function updateSelectedFilters() {
-      const selected = Array.from(filterChips)
-        .filter(chip => chip.selected)
-        .map(chip => chip.label);
-      
-      selectedFilters.textContent = selected.length > 0 
-        ? 'Selected: ' + selected.join(', ')
-        : '';
-    }
+<section>
+  <h2>Removable</h2>
+  <div class="row">
+    <snice-chip label="Default" removable></snice-chip>
+    <snice-chip label="Primary" variant="primary" removable></snice-chip>
+    <snice-chip label="Success" variant="success" removable></snice-chip>
+    <snice-chip label="Warning" variant="warning" removable></snice-chip>
+    <snice-chip label="Error" variant="error" removable></snice-chip>
+    <snice-chip label="Info" variant="info" removable></snice-chip>
+  </div>
+</section>
 
-    // Dynamic chip creation
-    const chipInput = document.getElementById('chip-input');
-    const dynamicChips = document.getElementById('dynamic-chips');
+<section>
+  <h2>Removable x Sizes</h2>
+  <div class="row">
+    <snice-chip label="Small" size="small" removable></snice-chip>
+    <snice-chip label="Medium" size="medium" removable></snice-chip>
+    <snice-chip label="Large" size="large" removable></snice-chip>
+  </div>
+</section>
 
-    window.addChip = function() {
-      const value = chipInput.value.trim();
-      if (value) {
-        const chip = document.createElement('snice-chip');
-        chip.label = value;
-        chip.removable = true;
-        chip.variant = ['default', 'primary', 'success', 'warning', 'error', 'info'][Math.floor(Math.random() * 6)];
-        chip.addEventListener('chip-remove', (e) => {
-          e.target.remove();
-        });
-        dynamicChips.appendChild(chip);
-        chipInput.value = '';
-      }
-    };
+<section>
+  <h2>Disabled</h2>
+  <div class="row">
+    <snice-chip label="Disabled" disabled></snice-chip>
+    <snice-chip label="Disabled Primary" variant="primary" disabled></snice-chip>
+    <snice-chip label="Disabled Removable" removable disabled></snice-chip>
+    <snice-chip label="Disabled Selected" selected disabled></snice-chip>
+  </div>
+</section>
 
-    chipInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        addChip();
-      }
-    });
+<section>
+  <h2>Icon property (emoji)</h2>
+  <div class="row">
+    <snice-chip label="Star" icon="&#11088;"></snice-chip>
+    <snice-chip label="Heart" icon="&#10084;&#65039;" variant="error"></snice-chip>
+    <snice-chip label="Check" icon="&#10003;" variant="success"></snice-chip>
+    <snice-chip label="Warning" icon="&#9888;&#65039;" variant="warning"></snice-chip>
+  </div>
+</section>
 
-    // Event logging
-    const eventChips = document.getElementById('event-chips');
-    const eventLog = document.getElementById('event-log');
-    let logEntries = [];
+<section>
+  <h2>Icon slot (Material Symbols)</h2>
+  <div class="row">
+    <snice-chip label="Label">
+      <span slot="icon" class="material-symbols-outlined" style="font-size:16px">label</span>
+    </snice-chip>
+    <snice-chip label="Home">
+      <span slot="icon" class="material-symbols-outlined" style="font-size:16px">home</span>
+    </snice-chip>
+  </div>
+</section>
 
-    eventChips.addEventListener('chip-click', (e) => {
-      addLogEntry(`Click: "${e.detail.label}" (selected: ${e.detail.selected})`);
-    });
+<section>
+  <h2>Avatar</h2>
+  <div class="row">
+    <snice-chip label="Alice" avatar="https://api.dicebear.com/7.x/avataaars/svg?seed=Alice"></snice-chip>
+    <snice-chip label="Bob" avatar="https://api.dicebear.com/7.x/avataaars/svg?seed=Bob" removable></snice-chip>
+    <snice-chip label="Charlie" avatar="https://api.dicebear.com/7.x/avataaars/svg?seed=Charlie" variant="primary"></snice-chip>
+  </div>
+</section>
 
-    eventChips.addEventListener('chip-remove', (e) => {
-      addLogEntry(`Remove: "${e.detail.label}"`);
-      e.target.remove();
-    });
+<section>
+  <h2>Avatar x Sizes</h2>
+  <div class="row">
+    <snice-chip label="Small" avatar="https://api.dicebear.com/7.x/avataaars/svg?seed=sm" size="small"></snice-chip>
+    <snice-chip label="Medium" avatar="https://api.dicebear.com/7.x/avataaars/svg?seed=md" size="medium"></snice-chip>
+    <snice-chip label="Large" avatar="https://api.dicebear.com/7.x/avataaars/svg?seed=lg" size="large"></snice-chip>
+  </div>
+</section>
 
-    function addLogEntry(message) {
-      const timestamp = new Date().toLocaleTimeString();
-      logEntries.unshift(`[${timestamp}] ${message}`);
-      logEntries = logEntries.slice(0, 10); // Keep last 10 entries
-      eventLog.innerHTML = logEntries.join('<br>');
-    }
-  </script>
+<section>
+  <h2>Edge: long text</h2>
+  <snice-chip label="This is an extremely long chip label that should handle overflow gracefully"></snice-chip>
+</section>
+
+<section>
+  <h2>Edge: single character</h2>
+  <snice-chip label="X"></snice-chip>
+</section>
+
+<section>
+  <h2>Edge: empty label</h2>
+  <snice-chip label=""></snice-chip>
+</section>
+
 </body>
 </html>

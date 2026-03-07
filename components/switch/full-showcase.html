@@ -1,310 +1,137 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Toggle/Switch Demo</title>
+  <title>Switch</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      padding: 40px;
-      font-family: var(--snice-font-family);
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      max-width: 800px;
-      margin: 0 auto;
-    }
-    
-    .section {
-      margin-bottom: 40px;
-    }
-    
-    h2 {
-      color: var(--snice-color-text);
-      margin-bottom: 20px;
-      font-size: var(--snice-font-size-2xl);
-    }
-    
-    h3 {
-      color: var(--snice-color-text-secondary);
-      margin-bottom: 16px;
-      font-size: var(--snice-font-size-lg);
-    }
-    
-    .switch-group {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      margin-bottom: 20px;
-    }
-    
-    .row {
-      display: flex;
-      gap: 20px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    
-    .output {
-      padding: 10px;
-      background: var(--snice-color-background);
-      border-radius: var(--snice-border-radius-md);
-      font-family: monospace;
-      font-size: var(--snice-font-size-sm);
-      margin-top: 10px;
-    }
-    
-    button {
-      padding: 8px 16px;
-      background: var(--snice-color-primary);
-      color: white;
-      border: none;
-      border-radius: var(--snice-border-radius-md);
-      cursor: pointer;
-      font-size: var(--snice-font-size-md);
-      margin-right: 8px;
-    }
-    
-    button:hover {
-      background: var(--snice-color-primary-hover);
-    }
-    
-    .settings-card {
-      background: var(--snice-color-background);
-      border: 1px solid var(--snice-color-border);
-      border-radius: var(--snice-border-radius-lg);
-      padding: 20px;
-      margin-bottom: 20px;
-    }
-    
-    .settings-card h4 {
-      margin-top: 0;
-      margin-bottom: 16px;
-      font-size: var(--snice-font-size-lg);
-    }
-    
-    .setting-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--snice-color-border);
-    }
-    
-    .setting-row:last-child {
-      border-bottom: none;
-    }
-    
-    .setting-info {
-      flex: 1;
-      margin-right: 16px;
-    }
-    
-    .setting-title {
-      font-weight: 500;
-      margin-bottom: 4px;
-    }
-    
-    .setting-description {
-      font-size: var(--snice-font-size-sm);
-      color: var(--snice-color-text-secondary);
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
   </style>
 </head>
 <body>
-  <h2>Toggle/Switch Component Demo</h2>
-  
-  <div class="section">
-    <h3>Basic Toggles</h3>
-    <div class="switch-group">
-      <snice-switch label="Default switch"></snice-switch>
-      <snice-switch label="Pre-checked" checked></snice-switch>
-      <snice-switch label="Without label"></snice-switch>
-      <snice-switch label="Disabled" disabled></snice-switch>
-      <snice-switch label="Disabled checked" disabled checked></snice-switch>
-    </div>
-  </div>
 
-  <div class="section">
-    <h3>Sizes</h3>
-    <div class="switch-group">
-      <snice-switch size="small" label="Small switch"></snice-switch>
-      <snice-switch size="medium" label="Medium switch (default)"></snice-switch>
-      <snice-switch size="large" label="Large switch"></snice-switch>
-    </div>
-  </div>
+<h2>Sizes</h2>
+<div class="row">
+  <snice-switch size="small" label="Small"></snice-switch>
+  <snice-switch size="medium" label="Medium"></snice-switch>
+  <snice-switch size="large" label="Large"></snice-switch>
+</div>
 
-  <div class="section">
-    <h3>With State Labels</h3>
-    <div class="switch-group">
-      <snice-switch size="medium" label="Medium with labels" label-on="ON" label-off="OFF"></snice-switch>
-      <snice-switch size="large" label="Large with labels" label-on="YES" label-off="NO" checked></snice-switch>
-      <snice-switch size="large" label="Enabled/Disabled" label-on="✓" label-off="✗"></snice-switch>
-    </div>
-  </div>
+<h2>Checked State</h2>
+<div class="row">
+  <snice-switch label="Unchecked"></snice-switch>
+  <snice-switch checked label="Checked"></snice-switch>
+</div>
 
-  <div class="section">
-    <h3>States</h3>
-    <div class="switch-group">
-      <snice-switch label="Required field" required></snice-switch>
-      <snice-switch label="Invalid state" invalid></snice-switch>
-      <snice-switch label="Invalid and checked" invalid checked></snice-switch>
-    </div>
-  </div>
+<h2>Sizes x Checked</h2>
+<div class="row">
+  <snice-switch size="small" label="Small off"></snice-switch>
+  <snice-switch size="small" checked label="Small on"></snice-switch>
+  <snice-switch size="medium" label="Medium off"></snice-switch>
+  <snice-switch size="medium" checked label="Medium on"></snice-switch>
+  <snice-switch size="large" label="Large off"></snice-switch>
+  <snice-switch size="large" checked label="Large on"></snice-switch>
+</div>
 
-  <div class="section">
-    <h3>Settings Panel Example</h3>
-    <div class="settings-card">
-      <h4>Notification Settings</h4>
-      
-      <div class="setting-row">
-        <div class="setting-info">
-          <div class="setting-title">Email Notifications</div>
-          <div class="setting-description">Receive email updates about your account</div>
-        </div>
-        <snice-switch id="email-notifications" checked></snice-switch>
-      </div>
-      
-      <div class="setting-row">
-        <div class="setting-info">
-          <div class="setting-title">Push Notifications</div>
-          <div class="setting-description">Get push notifications on your device</div>
-        </div>
-        <snice-switch id="push-notifications"></snice-switch>
-      </div>
-      
-      <div class="setting-row">
-        <div class="setting-info">
-          <div class="setting-title">Marketing Emails</div>
-          <div class="setting-description">Receive promotional content and updates</div>
-        </div>
-        <snice-switch id="marketing-emails"></snice-switch>
-      </div>
-      
-      <div class="setting-row">
-        <div class="setting-info">
-          <div class="setting-title">Dark Mode</div>
-          <div class="setting-description">Use dark theme across the application</div>
-        </div>
-        <snice-switch id="dark-mode" size="large" label-on="🌙" label-off="☀️"></snice-switch>
-      </div>
-    </div>
-    <button onclick="getSettings()">Get Current Settings</button>
-    <div id="settings-output" class="output">Click button to see current settings</div>
-  </div>
+<h2>Disabled</h2>
+<div class="row">
+  <snice-switch disabled label="Disabled off"></snice-switch>
+  <snice-switch disabled checked label="Disabled on"></snice-switch>
+</div>
 
-  <div class="section">
-    <h3>Feature Flags</h3>
-    <div class="switch-group">
-      <snice-switch id="feature-beta" label="Enable Beta Features" label-on="BETA" label-off=""></snice-switch>
-      <snice-switch id="feature-experimental" label="Experimental Mode" label-on="EXP" label-off=""></snice-switch>
-      <snice-switch id="feature-debug" label="Debug Mode" label-on="DBG" label-off=""></snice-switch>
-    </div>
-  </div>
+<h2>Loading</h2>
+<div class="row">
+  <snice-switch loading label="Loading off"></snice-switch>
+  <snice-switch loading checked label="Loading on"></snice-switch>
+</div>
 
-  <div class="section">
-    <h3>Loading States</h3>
-    <div class="switch-group">
-      <snice-switch label="Loading switch" loading></snice-switch>
-      <snice-switch label="Loading (checked)" loading checked></snice-switch>
-      <snice-switch id="simulate-loading-switch" label="Simulate loading"></snice-switch>
-    </div>
-    <button id="loading-btn-switch">Trigger Loading (3s)</button>
-  </div>
+<h2>Required</h2>
+<div class="row">
+  <snice-switch required label="Required"></snice-switch>
+  <snice-switch required checked label="Required (checked)"></snice-switch>
+</div>
 
-  <div class="section">
-    <h3>Interactive Example</h3>
-    <div class="switch-group">
-      <snice-switch 
-        id="interactive-switch"
-        label="Interactive Toggle"
-        size="large"
-        label-on="ON"
-        label-off="OFF">
-      </snice-switch>
-    </div>
-    <div class="row">
-      <button onclick="document.getElementById('interactive-switch').toggle()">Toggle</button>
-      <button onclick="document.getElementById('interactive-switch').focus()">Focus</button>
-      <button onclick="document.getElementById('interactive-switch').checked = true">Turn On</button>
-      <button onclick="document.getElementById('interactive-switch').checked = false">Turn Off</button>
-    </div>
-    <div id="event-output" class="output">Events will appear here...</div>
-  </div>
+<h2>Invalid</h2>
+<div class="row">
+  <snice-switch invalid label="Invalid"></snice-switch>
+  <snice-switch invalid checked label="Invalid (checked)"></snice-switch>
+</div>
 
-  <div class="section">
-    <h3>Form Example</h3>
-    <form id="demo-form">
-      <div class="switch-group">
-        <snice-switch name="terms" label="I accept the terms and conditions" required></snice-switch>
-        <snice-switch name="newsletter" label="Subscribe to newsletter"></snice-switch>
-        <snice-switch name="privacy" label="I accept the privacy policy" required></snice-switch>
-      </div>
-      <button type="submit">Submit</button>
-    </form>
-    <div id="form-output" class="output">Form data will appear here...</div>
-  </div>
+<h2>State Labels (On/Off Text)</h2>
+<div class="row">
+  <snice-switch label-on="ON" label-off="OFF" label="On/Off labels"></snice-switch>
+  <snice-switch label-on="ON" label-off="OFF" checked label="On/Off checked"></snice-switch>
+  <snice-switch label-on="Yes" label-off="No" label="Yes/No labels"></snice-switch>
+  <snice-switch label-on="I" label-off="O" size="large" label="I/O labels"></snice-switch>
+</div>
 
-  <script type="module">
-    import './snice-switch.ts';
+<h2>No Label</h2>
+<div class="row">
+  <snice-switch></snice-switch>
+  <snice-switch checked></snice-switch>
+</div>
 
-    // Loading state demo
-    const loadingSwitch = document.getElementById('simulate-loading-switch');
-    const loadingBtnSwitch = document.getElementById('loading-btn-switch');
+<h2>All States Matrix (Size x State)</h2>
+<div style="display: grid; grid-template-columns: repeat(4, auto); gap: 0.75rem; align-items: center;">
+  <span style="font-size: 0.8rem; color: var(--snice-color-text-secondary);">Normal</span>
+  <snice-switch size="small"></snice-switch>
+  <snice-switch size="medium"></snice-switch>
+  <snice-switch size="large"></snice-switch>
 
-    loadingBtnSwitch.addEventListener('click', () => {
-      loadingSwitch.loading = true;
-      loadingBtnSwitch.disabled = true;
-      loadingBtnSwitch.textContent = 'Loading...';
+  <span style="font-size: 0.8rem; color: var(--snice-color-text-secondary);">Checked</span>
+  <snice-switch size="small" checked></snice-switch>
+  <snice-switch size="medium" checked></snice-switch>
+  <snice-switch size="large" checked></snice-switch>
 
-      setTimeout(() => {
-        loadingSwitch.loading = false;
-        loadingBtnSwitch.disabled = false;
-        loadingBtnSwitch.textContent = 'Trigger Loading (3s)';
-      }, 3000);
-    });
+  <span style="font-size: 0.8rem; color: var(--snice-color-text-secondary);">Disabled</span>
+  <snice-switch size="small" disabled></snice-switch>
+  <snice-switch size="medium" disabled></snice-switch>
+  <snice-switch size="large" disabled></snice-switch>
 
-    // Settings panel
-    window.getSettings = function() {
-      const settings = {
-        emailNotifications: document.getElementById('email-notifications').checked,
-        pushNotifications: document.getElementById('push-notifications').checked,
-        marketingEmails: document.getElementById('marketing-emails').checked,
-        darkMode: document.getElementById('dark-mode').checked
-      };
-      document.getElementById('settings-output').textContent = 
-        `Settings: ${JSON.stringify(settings, null, 2)}`;
-    };
-    
-    // Interactive switch events
-    const interactiveToggle = document.getElementById('interactive-switch');
-    const eventOutput = document.getElementById('event-output');
-    
-    interactiveToggle.addEventListener('switch-change', (e) => {
-      eventOutput.textContent = `Changed: checked=${e.detail.checked}`;
-    });
-    
-    // Feature flags
-    const featureToggles = document.querySelectorAll('[id^="feature-"]');
-    featureToggles.forEach(_switch => {
-      _switch.addEventListener('switch-change', (e) => {
-        console.log(`Feature ${_switch.id}: ${e.detail.checked ? 'enabled' : 'disabled'}`);
-      });
-    });
-    
-    // Form submission
-    document.getElementById('demo-form').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const data = {};
-      const switches = e.target.querySelectorAll('snice-switch');
-      switches.forEach(_switch => {
-        if (_switch.name) {
-          data[_switch.name] = _switch.checked;
-        }
-      });
-      document.getElementById('form-output').textContent = 
-        `Form data: ${JSON.stringify(data, null, 2)}`;
-    });
-  </script>
+  <span style="font-size: 0.8rem; color: var(--snice-color-text-secondary);">Disabled+Checked</span>
+  <snice-switch size="small" disabled checked></snice-switch>
+  <snice-switch size="medium" disabled checked></snice-switch>
+  <snice-switch size="large" disabled checked></snice-switch>
+
+  <span style="font-size: 0.8rem; color: var(--snice-color-text-secondary);">Loading</span>
+  <snice-switch size="small" loading></snice-switch>
+  <snice-switch size="medium" loading></snice-switch>
+  <snice-switch size="large" loading></snice-switch>
+
+  <span style="font-size: 0.8rem; color: var(--snice-color-text-secondary);">Invalid</span>
+  <snice-switch size="small" invalid></snice-switch>
+  <snice-switch size="medium" invalid></snice-switch>
+  <snice-switch size="large" invalid></snice-switch>
+
+  <span style="font-size: 0.8rem; color: var(--snice-color-text-secondary);">Required</span>
+  <snice-switch size="small" required label="Req"></snice-switch>
+  <snice-switch size="medium" required label="Req"></snice-switch>
+  <snice-switch size="large" required label="Req"></snice-switch>
+</div>
+
+<h2>Named (Form Integration)</h2>
+<div class="row">
+  <snice-switch name="notifications" value="enabled" checked label="Notifications (name=notifications)"></snice-switch>
+  <snice-switch name="dark-mode" value="on" label="Dark Mode (name=dark-mode)"></snice-switch>
+</div>
+
+<script type="module">
+  import './snice-switch.ts';
+</script>
 </body>
 </html>

@@ -1,128 +1,158 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-theme="dark">
 <head>
-  <title>Booking Demo</title>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Booking</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
     body {
-      padding: 40px;
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 1.5rem;
       background: var(--snice-color-background);
-      color: var(--snice-color-text, rgb(23 23 23));
-      transition: background-color 200ms ease, color 200ms ease;
+      color: var(--snice-color-text);
     }
-    .theme-toggle {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 1000;
+    section { margin-bottom: 2rem; }
+    h2 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--snice-color-text-tertiary, #888);
+      margin: 0 0 0.75rem;
     }
-    .example {
-      margin: 30px 0;
-      max-width: 600px;
+    .side-by-side {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
     }
-    .example h3 {
-      margin-bottom: 10px;
-    }
-    button {
-      padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-md, 1rem);
-      background: var(--snice-color-primary, rgb(37 99 235));
-      color: var(--snice-color-text-inverse, rgb(250 250 250));
-      border: none;
-      border-radius: var(--snice-border-radius-md, 0.25rem);
-      cursor: pointer;
-      font-size: var(--snice-font-size-sm, 0.875rem);
-      font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
-    }
-    .info {
-      margin-top: 10px;
-      padding: 10px;
-      background: var(--snice-color-background-secondary, rgb(250 250 250));
-      border-radius: 4px;
-      font-size: 14px;
+    snice-booking {
+      max-width: 500px;
     }
   </style>
-  <script type="module">
-    import 'snice';
-    import './snice-booking.ts';
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const booking = document.getElementById('main-booking');
-
-      // Generate available dates (next 30 days, excluding weekends)
-      const availableDates = [];
-      const slots = [];
-      const today = new Date();
-
-      for (let i = 1; i <= 30; i++) {
-        const date = new Date(today);
-        date.setDate(date.getDate() + i);
-        const dayOfWeek = date.getDay();
-        if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-          const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-          availableDates.push(dateStr);
-
-          // Add time slots for each available date
-          const times = ['09:00', '09:30', '10:00', '10:30', '11:00', '14:00', '14:30', '15:00', '15:30', '16:00'];
-          times.forEach(time => {
-            slots.push({ date: dateStr, time, duration: 30 });
-          });
-        }
-      }
-
-      booking.availableDates = availableDates;
-      booking.availableSlots = slots;
-      booking.fields = [
-        { name: 'name', label: 'Full Name', type: 'text', required: true, placeholder: 'John Doe' },
-        { name: 'email', label: 'Email Address', type: 'email', required: true, placeholder: 'john@example.com' },
-        { name: 'phone', label: 'Phone Number', type: 'tel', placeholder: '+1 (555) 123-4567' },
-        { name: 'notes', label: 'Notes', type: 'textarea', placeholder: 'Any special requests...' },
-      ];
-
-      booking.addEventListener('date-select', (e) => {
-        document.getElementById('booking-info').textContent = `Date selected: ${e.detail.date}`;
-      });
-
-      booking.addEventListener('slot-select', (e) => {
-        document.getElementById('booking-info').textContent = `Slot selected: ${e.detail.slot.time} (${e.detail.slot.duration}min)`;
-      });
-
-      booking.addEventListener('booking-confirm', (e) => {
-        document.getElementById('booking-info').textContent = `Booking confirmed: ${e.detail.booking.date} at ${e.detail.booking.slot.time}`;
-      });
-
-      // Inline variant
-      const inlineBooking = document.getElementById('inline-booking');
-      inlineBooking.availableDates = availableDates;
-      inlineBooking.availableSlots = slots;
-      inlineBooking.fields = [
-        { name: 'name', label: 'Name', type: 'text', required: true },
-        { name: 'email', label: 'Email', type: 'email', required: true },
-      ];
-
-      // Theme toggle
-      document.getElementById('theme-toggle').addEventListener('click', () => {
-        const current = document.documentElement.getAttribute('data-theme');
-        const next = current === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', next);
-      });
-    });
-  </script>
 </head>
 <body>
-  <button id="theme-toggle" class="theme-toggle">Toggle Theme</button>
-  <h2>Booking Component Demo</h2>
 
-  <div class="example">
-    <h3>Stepper Booking</h3>
-    <p>Step through date selection, time slot, and confirmation form.</p>
-    <snice-booking id="main-booking"></snice-booking>
-    <div class="info" id="booking-info">Select a date to start</div>
-  </div>
+  <section>
+    <h2>Variant: stepper (default)</h2>
+    <snice-booking id="book-stepper" variant="stepper"></snice-booking>
+  </section>
 
-  <div class="example" style="max-width: 900px;">
-    <h3>Inline Booking</h3>
-    <p>All steps visible at once, side by side.</p>
-    <snice-booking id="inline-booking" variant="inline"></snice-booking>
-  </div>
+  <section>
+    <h2>Variant: inline</h2>
+    <snice-booking id="book-inline" variant="inline"></snice-booking>
+  </section>
+
+  <section>
+    <h2>Both variants side by side</h2>
+    <div class="side-by-side">
+      <div>
+        <h2>stepper</h2>
+        <snice-booking id="book-cmp-stepper" variant="stepper"></snice-booking>
+      </div>
+      <div>
+        <h2>inline</h2>
+        <snice-booking id="book-cmp-inline" variant="inline"></snice-booking>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>With custom fields</h2>
+    <snice-booking id="book-fields" variant="stepper"></snice-booking>
+  </section>
+
+  <section>
+    <h2>With duration=60</h2>
+    <snice-booking id="book-duration" variant="stepper" duration="60"></snice-booking>
+  </section>
+
+  <section>
+    <h2>No available slots (empty)</h2>
+    <snice-booking id="book-empty" variant="stepper"></snice-booking>
+  </section>
+
+  <section>
+    <h2>Many time slots</h2>
+    <snice-booking id="book-many" variant="inline"></snice-booking>
+  </section>
+
+  <script type="module">
+    import './snice-booking.ts';
+
+    const today = new Date();
+    const fmt = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    const dates = Array.from({ length: 14 }, (_, i) => {
+      const d = new Date(today);
+      d.setDate(today.getDate() + i);
+      return fmt(d);
+    });
+
+    const makeSlots = (dateStr, times) => times.map(t => ({ date: dateStr, time: t, duration: 30 }));
+
+    const basicSlots = [];
+    dates.slice(0, 7).forEach(d => {
+      basicSlots.push(...makeSlots(d, ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00']));
+    });
+
+    document.getElementById('book-stepper').availableDates = dates.slice(0, 7);
+    document.getElementById('book-stepper').availableSlots = basicSlots;
+
+    document.getElementById('book-inline').availableDates = dates.slice(0, 7);
+    document.getElementById('book-inline').availableSlots = basicSlots;
+
+    document.getElementById('book-cmp-stepper').availableDates = dates.slice(0, 5);
+    document.getElementById('book-cmp-stepper').availableSlots = basicSlots.slice(0, 12);
+
+    document.getElementById('book-cmp-inline').availableDates = dates.slice(0, 5);
+    document.getElementById('book-cmp-inline').availableSlots = basicSlots.slice(0, 12);
+
+    const fieldBooking = document.getElementById('book-fields');
+    fieldBooking.availableDates = dates.slice(0, 7);
+    fieldBooking.availableSlots = basicSlots;
+    fieldBooking.fields = [
+      { name: 'name', label: 'Full Name', type: 'text', required: true, placeholder: 'John Doe' },
+      { name: 'email', label: 'Email', type: 'email', required: true, placeholder: 'john@example.com' },
+      { name: 'phone', label: 'Phone', type: 'tel', placeholder: '+1 555-0123' },
+      { name: 'notes', label: 'Notes', type: 'textarea', placeholder: 'Any special requirements?' },
+    ];
+
+    const durationBooking = document.getElementById('book-duration');
+    durationBooking.availableDates = dates.slice(0, 5);
+    const hourSlots = [];
+    dates.slice(0, 5).forEach(d => {
+      hourSlots.push(...makeSlots(d, ['09:00', '10:00', '11:00', '13:00', '14:00']).map(s => ({ ...s, duration: 60 })));
+    });
+    durationBooking.availableSlots = hourSlots;
+
+    // Empty: no slots, no dates
+    document.getElementById('book-empty').availableDates = [];
+    document.getElementById('book-empty').availableSlots = [];
+
+    const manyBooking = document.getElementById('book-many');
+    manyBooking.availableDates = dates;
+    const manySlots = [];
+    dates.forEach(d => {
+      const times = [];
+      for (let h = 8; h < 18; h++) {
+        times.push(`${String(h).padStart(2, '0')}:00`);
+        times.push(`${String(h).padStart(2, '0')}:30`);
+      }
+      manySlots.push(...makeSlots(d, times));
+    });
+    manyBooking.availableSlots = manySlots;
+  </script>
 </body>
 </html>

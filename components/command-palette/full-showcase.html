@@ -1,187 +1,147 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Command Palette Demo</title>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <title>Command Palette</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      padding: 40px;
-      font-family: var(--snice-font-family);
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-    }
-
-    .hint {
-      text-align: center;
-      margin: 40px 0;
-      font-size: 1.125rem;
-      color: var(--snice-color-text-secondary);
-    }
-
-    .hint kbd {
-      display: inline-block;
-      padding: 4px 8px;
-      background: var(--snice-color-surface);
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      font-family: monospace;
-      margin: 0 4px;
-    }
-
-    .demo-actions {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      margin: 20px 0;
-    }
-
-    .output {
-      margin-top: 40px;
-      padding: 20px;
-      background: var(--snice-color-surface);
-      border: 1px solid var(--snice-color-border);
-      border-radius: 8px;
-      min-height: 100px;
-    }
-
-    .output h3 {
-      margin-top: 0;
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    section { margin-bottom: 2rem; }
+    button { padding: 0.5rem 1rem; border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 4px; background: var(--snice-color-background); cursor: pointer; font-family: inherit; color: var(--snice-color-text); margin-right: 0.5rem; }
+    .info { color: var(--snice-color-text-secondary, #666); font-size: 0.875rem; margin-bottom: 0.5rem; }
   </style>
   <script type="module">
-    import 'snice';
     import './snice-command-palette.ts';
 
-    const commands = [
-      {
-        id: 'new-file',
-        label: 'New File',
-        description: 'Create a new file',
-        icon: '📄',
-        shortcut: '⌘N',
-        category: 'File',
-        action: () => console.log('New file created')
-      },
-      {
-        id: 'open-file',
-        label: 'Open File',
-        description: 'Open an existing file',
-        icon: '📂',
-        shortcut: '⌘O',
-        category: 'File',
-        action: () => console.log('Open file dialog')
-      },
-      {
-        id: 'save',
-        label: 'Save',
-        description: 'Save the current file',
-        icon: '💾',
-        shortcut: '⌘S',
-        category: 'File',
-        action: () => console.log('File saved')
-      },
-      {
-        id: 'cut',
-        label: 'Cut',
-        description: 'Cut selected text',
-        icon: '✂️',
-        shortcut: '⌘X',
-        category: 'Edit',
-        action: () => console.log('Text cut')
-      },
-      {
-        id: 'copy',
-        label: 'Copy',
-        description: 'Copy selected text',
-        icon: '📋',
-        shortcut: '⌘C',
-        category: 'Edit',
-        action: () => console.log('Text copied')
-      },
-      {
-        id: 'paste',
-        label: 'Paste',
-        description: 'Paste from clipboard',
-        icon: '📄',
-        shortcut: '⌘V',
-        category: 'Edit',
-        action: () => console.log('Text pasted')
-      },
-      {
-        id: 'find',
-        label: 'Find',
-        description: 'Find in document',
-        icon: '🔍',
-        shortcut: '⌘F',
-        category: 'Search',
-        action: () => console.log('Find dialog opened')
-      },
-      {
-        id: 'replace',
-        label: 'Replace',
-        description: 'Find and replace',
-        icon: '🔄',
-        shortcut: '⌘H',
-        category: 'Search',
-        action: () => console.log('Replace dialog opened')
-      },
-      {
-        id: 'settings',
-        label: 'Settings',
-        description: 'Open settings',
-        icon: '⚙️',
-        shortcut: '⌘,',
-        category: 'View',
-        action: () => console.log('Settings opened')
-      },
-      {
-        id: 'theme',
-        label: 'Toggle Theme',
-        description: 'Switch between light and dark theme',
-        icon: '🌓',
-        category: 'View',
-        action: () => console.log('Theme toggled')
-      }
+    await customElements.whenDefined('snice-command-palette');
+
+    // Default palette with all features
+    const pal1 = document.getElementById('pal-default');
+    pal1.commands = [
+      { id: 'new', label: 'New File', description: 'Create a new file', icon: '\uD83D\uDCC4', shortcut: '\u2318N', category: 'File' },
+      { id: 'open', label: 'Open File', description: 'Open existing file', icon: '\uD83D\uDCC2', shortcut: '\u2318O', category: 'File' },
+      { id: 'save', label: 'Save', description: 'Save current file', icon: '\uD83D\uDCBE', shortcut: '\u2318S', category: 'File' },
+      { id: 'cut', label: 'Cut', icon: '\u2702\uFE0F', shortcut: '\u2318X', category: 'Edit' },
+      { id: 'copy', label: 'Copy', icon: '\uD83D\uDCCB', shortcut: '\u2318C', category: 'Edit' },
+      { id: 'paste', label: 'Paste', icon: '\uD83D\uDCC4', shortcut: '\u2318V', category: 'Edit' },
+      { id: 'find', label: 'Find', description: 'Find in document', icon: '\uD83D\uDD0D', shortcut: '\u2318F', category: 'Search' },
+      { id: 'settings', label: 'Settings', description: 'Open settings', icon: '\u2699\uFE0F', shortcut: '\u2318,', category: 'View' },
+      { id: 'theme', label: 'Toggle Theme', icon: '\uD83C\uDF13', category: 'View' },
     ];
 
-    document.addEventListener('DOMContentLoaded', () => {
-      const palette = document.getElementById('palette');
-      palette.commands = commands;
+    // Minimal: no categories, no icons, no shortcuts
+    const pal2 = document.getElementById('pal-minimal');
+    pal2.commands = [
+      { id: 'a', label: 'Action One' },
+      { id: 'b', label: 'Action Two' },
+      { id: 'c', label: 'Action Three' },
+    ];
 
-      palette.addEventListener('command-execute', (e) => {
-        const output = document.getElementById('output');
-        output.innerHTML = `
-          <h3>Command Executed</h3>
-          <p><strong>Label:</strong> ${e.detail.command.label}</p>
-          <p><strong>Description:</strong> ${e.detail.command.description || 'N/A'}</p>
-          <p><strong>Category:</strong> ${e.detail.command.category || 'N/A'}</p>
-        `;
-      });
+    // Disabled items
+    const pal3 = document.getElementById('pal-disabled');
+    pal3.commands = [
+      { id: 'e1', label: 'Enabled', icon: '\u2705', category: 'Status' },
+      { id: 'd1', label: 'Disabled', icon: '\u274C', category: 'Status', disabled: true },
+      { id: 'e2', label: 'Also enabled', icon: '\u2705', category: 'Status' },
+      { id: 'd2', label: 'Also disabled', icon: '\u274C', category: 'Status', disabled: true },
+    ];
 
-      document.getElementById('openBtn').addEventListener('click', () => {
-        palette.show();
+    // Custom placeholder and no-results text
+    const pal4 = document.getElementById('pal-custom-text');
+    pal4.commands = [
+      { id: 'x', label: 'Only one command' },
+    ];
+
+    // Many commands
+    const pal5 = document.getElementById('pal-many');
+    pal5.commands = Array.from({ length: 100 }, (_, i) => ({
+      id: `cmd-${i}`,
+      label: `Command ${i + 1}`,
+      description: `Description for command ${i + 1}`,
+      category: `Category ${Math.floor(i / 10) + 1}`,
+    }));
+
+    // Icon images
+    const pal6 = document.getElementById('pal-icon-images');
+    pal6.commands = [
+      { id: 'img1', label: 'GitHub', iconImage: 'https://github.com/favicon.ico', category: 'Links' },
+      { id: 'img2', label: 'Google', iconImage: 'https://www.google.com/favicon.ico', category: 'Links' },
+      { id: 'emoji', label: 'Emoji icon', icon: '\uD83D\uDE80', category: 'Icons' },
+      { id: 'text', label: 'No icon', category: 'Icons' },
+    ];
+
+    // case-sensitive
+    const pal7 = document.getElementById('pal-case');
+    pal7.commands = [
+      { id: 'upper', label: 'UPPERCASE', description: 'All caps' },
+      { id: 'lower', label: 'lowercase', description: 'All lower' },
+      { id: 'mixed', label: 'MiXeD CaSe', description: 'Mixed case' },
+    ];
+
+    // Wire open buttons
+    document.querySelectorAll('[data-open]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.getElementById(btn.dataset.open).show();
       });
     });
   </script>
 </head>
 <body>
-  <h2>Command Palette Demo</h2>
 
-  <div class="hint">
-    Press <kbd>⌘</kbd> + <kbd>K</kbd> (or <kbd>Ctrl</kbd> + <kbd>K</kbd> on Windows) to open the command palette
-  </div>
+<section>
+  <h2>Default: categories, icons, shortcuts, descriptions</h2>
+  <p class="info">Press Ctrl+K / Cmd+K or click the button</p>
+  <button data-open="pal-default">Open Palette</button>
+  <snice-command-palette id="pal-default"></snice-command-palette>
+</section>
 
-  <div class="demo-actions">
-    <snice-button id="openBtn">Open Command Palette</snice-button>
-  </div>
+<section>
+  <h2>Minimal: no icons, no categories, no shortcuts</h2>
+  <button data-open="pal-minimal">Open Palette</button>
+  <snice-command-palette id="pal-minimal" placeholder="Search actions..."></snice-command-palette>
+</section>
 
-  <div class="output" id="output">
-    <h3>Last Command</h3>
-    <p>Execute a command to see details here.</p>
-  </div>
+<section>
+  <h2>Disabled items</h2>
+  <button data-open="pal-disabled">Open Palette</button>
+  <snice-command-palette id="pal-disabled"></snice-command-palette>
+</section>
 
-  <snice-command-palette id="palette"></snice-command-palette>
+<section>
+  <h2>placeholder + no-results-text customized</h2>
+  <button data-open="pal-custom-text">Open Palette</button>
+  <snice-command-palette id="pal-custom-text" placeholder="Type something unique..." no-results-text="Nothing matches your query"></snice-command-palette>
+</section>
+
+<section>
+  <h2>max-results="10" (100 commands, capped at 10)</h2>
+  <button data-open="pal-many">Open Palette</button>
+  <snice-command-palette id="pal-many" max-results="10"></snice-command-palette>
+</section>
+
+<section>
+  <h2>show-recent-commands="false"</h2>
+  <button data-open="pal-icon-images">Open Palette</button>
+  <snice-command-palette id="pal-icon-images" show-recent-commands="false"></snice-command-palette>
+</section>
+
+<section>
+  <h2>case-sensitive</h2>
+  <button data-open="pal-case">Open Palette</button>
+  <snice-command-palette id="pal-case" case-sensitive></snice-command-palette>
+</section>
+
 </body>
 </html>

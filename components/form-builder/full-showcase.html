@@ -1,364 +1,122 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snice Form Builder Demo</title>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <title>Form Builder</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
-      padding: var(--snice-spacing-2xl, 2.5rem);
-      margin: 0;
-      background: var(--snice-color-background, rgb(255 255 255));
-      color: var(--snice-color-text, rgb(23 23 23));
-      line-height: var(--snice-line-height-normal, 1.5);
-    }
-
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      color: var(--snice-color-text, rgb(23 23 23));
-      font-weight: var(--snice-font-weight-bold, 700);
-      font-size: var(--snice-font-size-3xl, 1.875rem);
-      margin-bottom: var(--snice-spacing-xs, 0.5rem);
-    }
-
-    h2 {
-      color: var(--snice-color-text-secondary, rgb(82 82 82));
-      font-weight: var(--snice-font-weight-semibold, 600);
-      font-size: var(--snice-font-size-xl, 1.25rem);
-      margin-top: var(--snice-spacing-xl, 1.5rem);
-      margin-bottom: var(--snice-spacing-md, 1rem);
-    }
-
-    p {
-      color: var(--snice-color-text-secondary, rgb(82 82 82));
-      margin-bottom: var(--snice-spacing-lg, 1.5rem);
-    }
-
-    .demo-section {
-      margin: var(--snice-spacing-xl, 1.5rem) 0;
-      padding: var(--snice-spacing-lg, 1.5rem);
-      background: var(--snice-color-background, rgb(255 255 255));
-      border: 1px solid var(--snice-color-border, rgb(226 226 226));
-      border-radius: var(--snice-border-radius-lg, 0.5rem);
-    }
-
-    .controls {
-      margin: var(--snice-spacing-lg, 1.5rem) 0;
-      padding: var(--snice-spacing-md, 1rem);
-      background: var(--snice-color-background-secondary, rgb(250 250 250));
-      border: 1px solid var(--snice-color-border, rgb(226 226 226));
-      border-radius: var(--snice-border-radius-md, 0.25rem);
-      display: flex;
-      flex-wrap: wrap;
-      gap: var(--snice-spacing-sm, 0.75rem);
-      align-items: center;
-    }
-
-    .controls label {
-      font-weight: var(--snice-font-weight-semibold, 600);
-      color: var(--snice-color-text, rgb(23 23 23));
-      margin-right: var(--snice-spacing-xs, 0.5rem);
-    }
-
-    .controls button {
-      padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-md, 1rem);
-      border: 1px solid var(--snice-color-border, rgb(226 226 226));
-      border-radius: var(--snice-border-radius-md, 0.25rem);
-      background: var(--snice-color-background, rgb(255 255 255));
-      color: var(--snice-color-text, rgb(23 23 23));
-      font-family: inherit;
-      font-size: var(--snice-font-size-sm, 0.875rem);
-      font-weight: var(--snice-font-weight-medium, 500);
-      cursor: pointer;
-      transition: all var(--snice-transition-fast, 150ms) ease;
-    }
-
-    .controls button:hover {
-      border-color: var(--snice-color-primary, rgb(37 99 235));
-      background: var(--snice-color-background-element, rgb(252 251 249));
-    }
-
-    .controls button.primary {
-      background: var(--snice-color-primary, rgb(37 99 235));
-      color: var(--snice-color-text-inverse, rgb(255 255 255));
-      border-color: var(--snice-color-primary, rgb(37 99 235));
-    }
-
-    .controls button.primary:hover {
-      background: var(--snice-color-primary-hover, rgb(29 78 216));
-    }
-
-    .controls button.danger {
-      color: var(--snice-color-danger, rgb(220 38 38));
-      border-color: var(--snice-color-danger, rgb(220 38 38));
-    }
-
-    .controls button.danger:hover {
-      background: rgb(220 38 38 / 0.1);
-    }
-
-    .controls select {
-      padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
-      border: 1px solid var(--snice-color-border, rgb(226 226 226));
-      border-radius: var(--snice-border-radius-md, 0.25rem);
-      background: var(--snice-color-background, rgb(255 255 255));
-      color: var(--snice-color-text, rgb(23 23 23));
-      font-family: inherit;
-      font-size: var(--snice-font-size-sm, 0.875rem);
-    }
-
-    .event-log {
-      margin-top: var(--snice-spacing-lg, 1.5rem);
-      padding: var(--snice-spacing-md, 1rem);
-      background: var(--snice-color-background-tertiary, rgb(241 241 241));
-      border: 1px solid var(--snice-color-border, rgb(226 226 226));
-      border-radius: var(--snice-border-radius-md, 0.25rem);
-      font-family: var(--snice-font-family-mono, monospace);
-      font-size: var(--snice-font-size-xs, 0.75rem);
-      max-height: 200px;
-      overflow-y: auto;
-    }
-
-    .event-log div {
-      padding: var(--snice-spacing-2xs, 0.25rem) 0;
-      border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
-    }
-
-    .event-log div:last-child {
-      border-bottom: none;
-    }
-
-    .schema-output {
-      margin-top: var(--snice-spacing-lg, 1.5rem);
-      padding: var(--snice-spacing-md, 1rem);
-      background: var(--snice-color-background-tertiary, rgb(241 241 241));
-      border: 1px solid var(--snice-color-border, rgb(226 226 226));
-      border-radius: var(--snice-border-radius-md, 0.25rem);
-    }
-
-    .schema-output pre {
-      margin: 0;
-      font-family: var(--snice-font-family-mono, monospace);
-      font-size: var(--snice-font-size-xs, 0.75rem);
-      overflow-x: auto;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .info-box {
-      background: var(--snice-color-info-background, rgb(239 246 255));
-      border: 1px solid var(--snice-color-info-border, rgb(191 219 254));
-      border-radius: var(--snice-border-radius-md, 0.25rem);
-      padding: var(--snice-spacing-md, 1rem);
-      margin-bottom: var(--snice-spacing-lg, 1.5rem);
-    }
-
-    .info-box p {
-      margin: 0;
-      color: var(--snice-color-info-text, rgb(30 64 175));
-    }
-
-    snice-form-builder {
-      --snice-color-primary: var(--snice-color-primary, rgb(37 99 235));
-      --snice-color-danger: var(--snice-color-danger, rgb(220 38 38));
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    snice-form-builder { display: block; min-height: 400px; border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 8px; margin-bottom: 1.5rem; }
   </style>
-</head>
-<body>
-  <div class="container">
-    <h1>Snice Form Builder Demo</h1>
-    <p>Drag-and-drop form builder with visual editor and live preview.</p>
-
-    <div class="info-box">
-      <p>💡 <strong>Tip:</strong> Drag fields from the palette to the canvas, or click to add. Click a field to edit its properties. Toggle between Edit and Preview modes to see your form.</p>
-    </div>
-
-    <div class="demo-section">
-      <h2>Form Builder with Full Features</h2>
-      <snice-form-builder id="form-builder-full"></snice-form-builder>
-
-      <div class="controls">
-        <label>Actions:</label>
-        <button onclick="setMode('form-builder-full', 'edit')" class="primary">Edit Mode</button>
-        <button onclick="setMode('form-builder-full', 'preview')" class="primary">Preview Mode</button>
-        <button onclick="getSchema('form-builder-full')">Get Schema (JSON)</button>
-        <button onclick="resetForm('form-builder-full')" class="danger">Reset Form</button>
-      </div>
-
-      <div class="controls">
-        <label>Load Preset:</label>
-        <button onclick="loadPreset('contact')">Contact Form</button>
-        <button onclick="loadPreset('survey')">Survey</button>
-        <button onclick="loadPreset('registration')">Registration</button>
-      </div>
-
-      <div class="schema-output" id="schema-output" style="display: none;">
-        <strong>Schema JSON:</strong>
-        <pre id="schema-json"></pre>
-      </div>
-
-      <div class="event-log" id="event-log">
-        <div><strong>Event Log:</strong></div>
-      </div>
-    </div>
-
-    <div class="demo-section">
-      <h2>Pre-filled Registration Form</h2>
-      <p>This example starts with a pre-configured registration form schema.</p>
-      <snice-form-builder id="form-builder-prefilled"></snice-form-builder>
-    </div>
-
-    <div class="demo-section">
-      <h2>Preview Mode Only</h2>
-      <p>This instance starts in preview mode, showing how the form appears to end users.</p>
-      <snice-form-builder id="form-builder-preview"></snice-form-builder>
-    </div>
-  </div>
-
   <script type="module">
     import './snice-form-builder.ts';
 
-    // Sample presets
-    const presets = {
-      contact: {
-        title: 'Contact Us',
-        description: 'We\'d love to hear from you. Send us a message and we\'ll respond as soon as possible.',
+    document.addEventListener('DOMContentLoaded', () => {
+      // Mode: edit (default) - empty
+      // (no setup needed, empty schema)
+
+      // Mode: edit with pre-populated schema
+      const fb2 = document.getElementById('fb-populated');
+      fb2.schema = {
+        title: 'Contact Form',
+        description: 'Fill in your details below.',
         fields: [
-          { id: 'field_1', type: 'section', label: 'Personal Information' },
-          { id: 'field_2', type: 'text', label: 'Full Name', required: true, placeholder: 'Enter your full name' },
-          { id: 'field_3', type: 'email', label: 'Email Address', required: true, placeholder: 'you@example.com' },
-          { id: 'field_4', type: 'phone', label: 'Phone Number', placeholder: '(555) 123-4567' },
-          { id: 'field_5', type: 'section', label: 'Your Message' },
-          { id: 'field_6', type: 'select', label: 'Subject', required: true, options: [
-            { label: 'General Inquiry', value: 'general' },
-            { label: 'Support', value: 'support' },
-            { label: 'Sales', value: 'sales' }
-          ]},
-          { id: 'field_7', type: 'text', label: 'Message', required: true, placeholder: 'How can we help?' }
+          { id: 'f1', type: 'text', label: 'Full Name', required: true, placeholder: 'Enter your name' },
+          { id: 'f2', type: 'email', label: 'Email Address', required: true, helpText: 'We will not share your email.' },
+          { id: 'f3', type: 'phone', label: 'Phone Number', placeholder: '(555) 123-4567' },
+          { id: 'f4', type: 'select', label: 'Subject', options: [{ label: 'General', value: 'general' }, { label: 'Support', value: 'support' }, { label: 'Sales', value: 'sales' }] },
+          { id: 'f5', type: 'paragraph', label: 'Notice', content: 'Please provide accurate information.' },
         ]
-      },
-      survey: {
-        title: 'Product Feedback Survey',
-        description: 'Help us improve by sharing your thoughts on our product.',
+      };
+
+      // Mode: preview
+      const fb3 = document.getElementById('fb-preview');
+      fb3.schema = {
+        title: 'Job Application',
+        description: 'Apply for the open position.',
         fields: [
-          { id: 'field_1', type: 'paragraph', label: 'Introduction', content: 'Please rate your experience with our product. Your feedback is valuable to us.' },
-          { id: 'field_2', type: 'radio', label: 'Overall Satisfaction', required: true, options: [
-            { label: 'Very Satisfied', value: '5' },
-            { label: 'Satisfied', value: '4' },
-            { label: 'Neutral', value: '3' },
-            { label: 'Dissatisfied', value: '2' },
-            { label: 'Very Dissatisfied', value: '1' }
-          ]},
-          { id: 'field_3', type: 'checkbox', label: 'Features Used', options: [
-            { label: 'Dashboard', value: 'dashboard' },
-            { label: 'Reports', value: 'reports' },
-            { label: 'API Integration', value: 'api' },
-            { label: 'Mobile App', value: 'mobile' }
-          ]},
-          { id: 'field_4', type: 'text', label: 'What did you like most?', placeholder: 'Tell us about your favorite feature' },
-          { id: 'field_5', type: 'text', label: 'What can we improve?', placeholder: 'Your suggestions' }
+          { id: 'f1', type: 'text', label: 'Full Name', required: true },
+          { id: 'f2', type: 'email', label: 'Email', required: true },
+          { id: 'f3', type: 'date', label: 'Available Start Date' },
+          { id: 'f4', type: 'radio', label: 'Employment Type', options: [{ label: 'Full-time', value: 'ft' }, { label: 'Part-time', value: 'pt' }, { label: 'Contract', value: 'c' }] },
+          { id: 'f5', type: 'checkbox', label: 'Skills', options: [{ label: 'JavaScript', value: 'js' }, { label: 'Python', value: 'py' }, { label: 'Go', value: 'go' }] },
+          { id: 'f6', type: 'file', label: 'Resume', accept: '.pdf,.doc,.docx', required: true },
+          { id: 'f7', type: 'signature', label: 'Signature', required: true },
         ]
-      },
-      registration: {
-        title: 'Event Registration',
-        description: 'Register for our upcoming conference. Spaces are limited.',
+      };
+
+      // All field types
+      const fb4 = document.getElementById('fb-alltypes');
+      fb4.schema = {
+        title: 'All Field Types',
         fields: [
-          { id: 'field_1', type: 'text', label: 'First Name', required: true, placeholder: 'Enter your first name' },
-          { id: 'field_2', type: 'text', label: 'Last Name', required: true, placeholder: 'Enter your last name' },
-          { id: 'field_3', type: 'email', label: 'Work Email', required: true, placeholder: 'you@company.com' },
-          { id: 'field_4', type: 'select', label: 'Job Role', required: true, options: [
-            { label: 'Developer', value: 'developer' },
-            { label: 'Designer', value: 'designer' },
-            { label: 'Product Manager', value: 'pm' },
-            { label: 'Executive', value: 'executive' },
-            { label: 'Other', value: 'other' }
-          ]},
-          { id: 'field_5', type: 'date', label: 'Preferred Session Date', required: true },
-          { id: 'field_6', type: 'checkbox', label: 'Dietary Requirements', options: [
-            { label: 'Vegetarian', value: 'vegetarian' },
-            { label: 'Vegan', value: 'vegan' },
-            { label: 'Gluten Free', value: 'gluten_free' },
-            { label: 'Nut Allergy', value: 'nut_allergy' }
-          ]},
-          { id: 'field_7', type: 'file', label: 'Upload Your Badge Photo', accept: '.jpg,.png' }
+          { id: 'ft1', type: 'text', label: 'Text Field' },
+          { id: 'ft2', type: 'number', label: 'Number Field', min: 0, max: 100 },
+          { id: 'ft3', type: 'email', label: 'Email Field' },
+          { id: 'ft4', type: 'phone', label: 'Phone Field' },
+          { id: 'ft5', type: 'select', label: 'Select Field', options: [{ label: 'A', value: 'a' }, { label: 'B', value: 'b' }] },
+          { id: 'ft6', type: 'date', label: 'Date Field' },
+          { id: 'ft7', type: 'checkbox', label: 'Checkbox Field', options: [{ label: 'X', value: 'x' }, { label: 'Y', value: 'y' }] },
+          { id: 'ft8', type: 'radio', label: 'Radio Field', options: [{ label: 'M', value: 'm' }, { label: 'N', value: 'n' }] },
+          { id: 'ft9', type: 'file', label: 'File Field' },
+          { id: 'ft10', type: 'signature', label: 'Signature Field' },
+          { id: 'ft11', type: 'section', label: 'Section Divider' },
+          { id: 'ft12', type: 'paragraph', label: 'Paragraph', content: 'Static descriptive text.' },
         ]
-      }
-    };
+      };
 
-    // Full featured form builder
-    const fullBuilder = document.getElementById('form-builder-full');
-    fullBuilder.setSchema(presets.contact);
+      // Custom field types (subset)
+      const fb5 = document.getElementById('fb-subset');
+      fb5.fieldTypes = ['text', 'email', 'select', 'date'];
 
-    fullBuilder.addEventListener('schema-change', (e) => {
-      logEvent('Schema changed: ' + e.detail.schema.fields.length + ' fields');
+      // Field properties: required, placeholder, helpText, width
+      const fb6 = document.getElementById('fb-props');
+      fb6.schema = {
+        title: 'Field Properties Demo',
+        fields: [
+          { id: 'p1', type: 'text', label: 'Required Field', required: true },
+          { id: 'p2', type: 'text', label: 'With Placeholder', placeholder: 'Type something...' },
+          { id: 'p3', type: 'text', label: 'With Help Text', helpText: 'This is helpful information.' },
+          { id: 'p4', type: 'text', label: 'Half Width', width: 'half' },
+          { id: 'p5', type: 'text', label: 'Another Half', width: 'half' },
+          { id: 'p6', type: 'number', label: 'Number with Min/Max', min: 1, max: 100 },
+          { id: 'p7', type: 'file', label: 'File with Accept', accept: '.pdf,.jpg' },
+        ]
+      };
     });
-
-    fullBuilder.addEventListener('field-add', (e) => {
-      logEvent('Field added: ' + e.detail.field.label + ' (' + e.detail.field.type + ')');
-    });
-
-    fullBuilder.addEventListener('field-remove', (e) => {
-      logEvent('Field removed: ' + e.detail.field.label);
-    });
-
-    fullBuilder.addEventListener('field-reorder', (e) => {
-      logEvent(`Field reordered: ${e.detail.field.label} (${e.detail.oldIndex} → ${e.detail.newIndex})`);
-    });
-
-    // Pre-filled registration form
-    const prefilledBuilder = document.getElementById('form-builder-prefilled');
-    prefilledBuilder.setSchema(presets.registration);
-
-    // Preview mode only
-    const previewBuilder = document.getElementById('form-builder-preview');
-    previewBuilder.setSchema(presets.survey);
-    previewBuilder.mode = 'preview';
-
-    // Global functions
-    window.setMode = (id, mode) => {
-      const builder = document.getElementById(id);
-      builder.mode = mode;
-      logEvent(`Mode changed to: ${mode}`);
-    };
-
-    window.getSchema = (id) => {
-      const builder = document.getElementById(id);
-      const schema = builder.getSchema();
-      const output = document.getElementById('schema-output');
-      const json = document.getElementById('schema-json');
-      json.textContent = JSON.stringify(schema, null, 2);
-      output.style.display = 'block';
-      logEvent('Schema exported to JSON');
-    };
-
-    window.resetForm = (id) => {
-      const builder = document.getElementById(id);
-      builder.setSchema({ fields: [] });
-      document.getElementById('schema-output').style.display = 'none';
-      logEvent('Form reset');
-    };
-
-    window.loadPreset = (presetName) => {
-      const builder = document.getElementById('form-builder-full');
-      builder.setSchema(presets[presetName]);
-      document.getElementById('schema-output').style.display = 'none';
-      logEvent(`Loaded preset: ${presetName}`);
-    };
-
-    function logEvent(message) {
-      const log = document.getElementById('event-log');
-      const entry = document.createElement('div');
-      const timestamp = new Date().toLocaleTimeString();
-      entry.textContent = `[${timestamp}] ${message}`;
-      log.appendChild(entry);
-      log.scrollTop = log.scrollHeight;
-    }
   </script>
+</head>
+<body>
+
+<h2>Mode: edit (default, empty schema)</h2>
+<snice-form-builder id="fb-empty"></snice-form-builder>
+
+<h2>Mode: edit (pre-populated schema)</h2>
+<snice-form-builder id="fb-populated" mode="edit"></snice-form-builder>
+
+<h2>Mode: preview</h2>
+<snice-form-builder id="fb-preview" mode="preview"></snice-form-builder>
+
+<h2>All Field Types</h2>
+<snice-form-builder id="fb-alltypes" mode="edit"></snice-form-builder>
+
+<h2>Custom fieldTypes (subset: text, email, select, date)</h2>
+<snice-form-builder id="fb-subset" mode="edit"></snice-form-builder>
+
+<h2>Field Properties: required, placeholder, helpText, width, min/max, accept</h2>
+<snice-form-builder id="fb-props" mode="edit"></snice-form-builder>
+
 </body>
 </html>

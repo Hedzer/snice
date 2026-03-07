@@ -1,322 +1,181 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snice Weather Component Demo</title>
+  <title>Weather</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      padding: 40px;
-      line-height: 1.6;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-    }
-
-    .container {
-      max-width: 1000px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: 10px;
-      margin-bottom: 30px;
-    }
-
-    h2 {
-      color: var(--snice-color-text);
-      margin-top: 40px;
-      margin-bottom: 20px;
-      font-size: 24px;
-    }
-
-    .demo-section {
-      margin: 30px 0;
-      padding: 20px;
-      background: var(--snice-color-background);
-      border-radius: 8px;
-      border: 1px solid var(--snice-color-border);
-    }
-
-    .demo-label {
-      display: block;
-      margin-bottom: 16px;
-      font-weight: 600;
-      color: var(--snice-color-text-secondary);
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .weather-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 24px;
-    }
-
-    .weather-card {
-      padding: 24px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border-radius: 16px;
-      color: white;
-    }
-
-    .weather-card.sunny {
-      background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
-    }
-
-    .weather-card.cloudy {
-      background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-      color: #333;
-    }
-
-    .weather-card.rainy {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-
-    snice-weather {
-      display: block;
-    }
-
-    .controls {
-      display: flex;
-      gap: 12px;
-      margin: 20px 0;
-      flex-wrap: wrap;
-      padding: 16px;
-      background: var(--snice-color-background-secondary);
-      border-radius: 6px;
-      border: 1px solid var(--snice-color-border);
-    }
-
-    .controls button {
-      padding: 10px 16px;
-      background: var(--snice-color-primary);
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    .controls button:hover {
-      background: var(--snice-color-primary-hover);
-    }
-
-    .controls select {
-      padding: 8px 12px;
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      font-size: 14px;
-    }
-
-    .city-selector {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .city-btn {
-      padding: 8px 16px;
-      background: var(--snice-color-background);
-      border: 1px solid var(--snice-color-border);
-      border-radius: 20px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: all 0.2s;
-    }
-
-    .city-btn:hover, .city-btn.active {
-      background: var(--snice-color-primary);
-      color: white;
-      border-color: var(--snice-color-primary);
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); margin: 2rem 0 0.75rem; }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
+    .label { font-size: 0.7rem; color: var(--snice-color-text-tertiary); margin-bottom: 0.25rem; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🌤️ Snice Weather Component Demo</h1>
 
-    <div class="demo-section">
-      <h2>Weather Widget</h2>
-      <span class="demo-label">Display current weather and forecast</span>
-      
-      <div class="weather-card" id="weather-card">
-        <snice-weather id="weather-widget"></snice-weather>
-      </div>
+<h2>Variant: full (default)</h2>
+<div class="grid">
+  <snice-weather id="w-full" variant="full"></snice-weather>
+</div>
 
-      <div class="controls" style="margin-top: 20px;">
-        <div class="city-selector">
-          <button class="city-btn active" data-city="london">London</button>
-          <button class="city-btn" data-city="paris">Paris</button>
-          <button class="city-btn" data-city="tokyo">Tokyo</button>
-          <button class="city-btn" data-city="ny">New York</button>
-          <button class="city-btn" data-city="sydney">Sydney</button>
-        </div>
-        <span style="flex: 1;"></span>
-        <select id="unit-select">
-          <option value="celsius">Celsius (°C)</option>
-          <option value="fahrenheit">Fahrenheit (°F)</option>
-        </select>
-      </div>
-    </div>
+<h2>Variant: compact</h2>
+<div class="grid">
+  <snice-weather id="w-compact" variant="compact"></snice-weather>
+</div>
 
-    <div class="demo-section">
-      <h2>Multiple Locations</h2>
-      <span class="demo-label">Different cities, different weather</span>
-      
-      <div class="weather-grid">
-        <div class="weather-card sunny">
-          <snice-weather id="weather-la"></snice-weather>
-        </div>
-        <div class="weather-card cloudy">
-          <snice-weather id="weather-london"></snice-weather>
-        </div>
-        <div class="weather-card rainy">
-          <snice-weather id="weather-seattle"></snice-weather>
-        </div>
-      </div>
-    </div>
-
-    <div class="demo-section">
-      <h2>Compact Variant</h2>
-      <span class="demo-label">Minimal weather display</span>
-      
-      <div style="display: flex; gap: 16px; flex-wrap: wrap;">
-        <snice-weather id="weather-compact" variant="compact"></snice-weather>
-      </div>
-    </div>
+<h2>Unit: celsius vs fahrenheit</h2>
+<div class="grid">
+  <div>
+    <div class="label">celsius (default)</div>
+    <snice-weather id="w-celsius" unit="celsius"></snice-weather>
   </div>
+  <div>
+    <div class="label">fahrenheit</div>
+    <snice-weather id="w-fahrenheit" unit="fahrenheit"></snice-weather>
+  </div>
+</div>
 
-  <script type="module">
-    import './snice-weather.ts';
+<h2>All Auto-detected Conditions</h2>
+<div class="grid">
+  <snice-weather id="w-sunny"></snice-weather>
+  <snice-weather id="w-clear"></snice-weather>
+  <snice-weather id="w-partly-cloudy"></snice-weather>
+  <snice-weather id="w-cloudy"></snice-weather>
+  <snice-weather id="w-rain"></snice-weather>
+  <snice-weather id="w-snow"></snice-weather>
+  <snice-weather id="w-thunder"></snice-weather>
+  <snice-weather id="w-fog"></snice-weather>
+  <snice-weather id="w-wind"></snice-weather>
+</div>
 
-    const weatherData = {
-      london: {
-        temp: 15,
-        condition: 'Partly Cloudy',
-        humidity: 72,
-        wind: 18,
-        forecast: [
-          { day: 'Mon', high: 16, low: 11, condition: 'Rainy' },
-          { day: 'Tue', high: 18, low: 12, condition: 'Cloudy' },
-          { day: 'Wed', high: 20, low: 13, condition: 'Sunny' },
-          { day: 'Thu', high: 19, low: 12, condition: 'Partly Cloudy' },
-          { day: 'Fri', high: 17, low: 11, condition: 'Rainy' }
-        ]
-      },
-      paris: {
-        temp: 22,
-        condition: 'Sunny',
-        humidity: 55,
-        wind: 12,
-        forecast: [
-          { day: 'Mon', high: 24, low: 16, condition: 'Sunny' },
-          { day: 'Tue', high: 26, low: 17, condition: 'Sunny' },
-          { day: 'Wed', high: 23, low: 15, condition: 'Partly Cloudy' },
-          { day: 'Thu', high: 21, low: 14, condition: 'Cloudy' },
-          { day: 'Fri', high: 22, low: 15, condition: 'Sunny' }
-        ]
-      },
-      tokyo: {
-        temp: 28,
-        condition: 'Clear',
-        humidity: 65,
-        wind: 8,
-        forecast: [
-          { day: 'Mon', high: 30, low: 24, condition: 'Sunny' },
-          { day: 'Tue', high: 31, low: 25, condition: 'Sunny' },
-          { day: 'Wed', high: 29, low: 24, condition: 'Partly Cloudy' },
-          { day: 'Thu', high: 28, low: 23, condition: 'Rainy' },
-          { day: 'Fri', high: 27, low: 22, condition: 'Cloudy' }
-        ]
-      },
-      ny: {
-        temp: 18,
-        condition: 'Cloudy',
-        humidity: 60,
-        wind: 22,
-        forecast: [
-          { day: 'Mon', high: 20, low: 14, condition: 'Cloudy' },
-          { day: 'Tue', high: 22, low: 15, condition: 'Partly Cloudy' },
-          { day: 'Wed', high: 19, low: 13, condition: 'Rainy' },
-          { day: 'Thu', high: 17, low: 12, condition: 'Cloudy' },
-          { day: 'Fri', high: 21, low: 14, condition: 'Sunny' }
-        ]
-      },
-      sydney: {
-        temp: 25,
-        condition: 'Sunny',
-        humidity: 58,
-        wind: 15,
-        forecast: [
-          { day: 'Mon', high: 27, low: 20, condition: 'Sunny' },
-          { day: 'Tue', high: 28, low: 21, condition: 'Sunny' },
-          { day: 'Wed', high: 26, low: 19, condition: 'Partly Cloudy' },
-          { day: 'Thu', high: 24, low: 18, condition: 'Cloudy' },
-          { day: 'Fri', high: 23, low: 17, condition: 'Rainy' }
-        ]
-      }
-    };
+<h2>Custom Icon Override</h2>
+<div class="grid">
+  <snice-weather id="w-custom-icon"></snice-weather>
+</div>
 
-    // Main weather widget
-    const mainWidget = document.getElementById('weather-widget');
-    mainWidget.data = weatherData.london;
+<h2>With Humidity Only</h2>
+<div class="grid">
+  <snice-weather id="w-humidity"></snice-weather>
+</div>
 
-    // City buttons
-    document.querySelectorAll('.city-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.city-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        
-        const city = btn.dataset.city;
-        mainWidget.data = weatherData[city];
-        
-        // Update card styling
-        const card = document.getElementById('weather-card');
-        card.className = 'weather-card';
-        if (city === 'paris' || city === 'sydney') {
-          card.classList.add('sunny');
-        } else if (city === 'london') {
-          card.classList.add('cloudy');
-        } else if (city === 'ny') {
-          card.classList.add('rainy');
-        }
-      });
-    });
+<h2>With Wind Only</h2>
+<div class="grid">
+  <snice-weather id="w-wind-only"></snice-weather>
+</div>
 
-    // Unit selector
-    document.getElementById('unit-select').addEventListener('change', (e) => {
-      mainWidget.unit = e.target.value;
-    });
+<h2>With Humidity + Wind</h2>
+<div class="grid">
+  <snice-weather id="w-both-details"></snice-weather>
+</div>
 
-    // Multiple locations
-    document.getElementById('weather-la').data = {
-      temp: 28,
-      condition: 'Sunny',
-      humidity: 45,
-      wind: 10
-    };
+<h2>No Details (no humidity, no wind)</h2>
+<div class="grid">
+  <snice-weather id="w-no-details"></snice-weather>
+</div>
 
-    document.getElementById('weather-london').data = weatherData.london;
+<h2>With Forecast</h2>
+<div class="grid">
+  <snice-weather id="w-forecast"></snice-weather>
+</div>
 
-    document.getElementById('weather-seattle').data = {
-      temp: 14,
-      condition: 'Rainy',
-      humidity: 85,
-      wind: 20
-    };
+<h2>Forecast with Custom Icons</h2>
+<div class="grid">
+  <snice-weather id="w-forecast-icons"></snice-weather>
+</div>
 
-    // Compact variant
-    document.getElementById('weather-compact').data = {
-      temp: 20,
-      condition: 'Partly Cloudy'
-    };
-  </script>
+<h2>No Forecast</h2>
+<div class="grid">
+  <snice-weather id="w-no-forecast"></snice-weather>
+</div>
+
+<h2>Extreme Temperatures</h2>
+<div class="grid">
+  <snice-weather id="w-hot"></snice-weather>
+  <snice-weather id="w-cold"></snice-weather>
+</div>
+
+<h2>No Data (null)</h2>
+<div class="grid">
+  <snice-weather id="w-null"></snice-weather>
+</div>
+
+<h2>Compact x Fahrenheit</h2>
+<div class="grid">
+  <snice-weather id="w-compact-f" variant="compact" unit="fahrenheit"></snice-weather>
+</div>
+
+<script type="module">
+  import './snice-weather.ts';
+
+  const fullForecast = [
+    { day: 'Mon', high: 24, low: 18, condition: 'Sunny' },
+    { day: 'Tue', high: 20, low: 15, condition: 'Rain' },
+    { day: 'Wed', high: 22, low: 16, condition: 'Cloudy' },
+    { day: 'Thu', high: 25, low: 19, condition: 'Partly Cloudy' },
+    { day: 'Fri', high: 21, low: 14, condition: 'Thunderstorm' },
+  ];
+
+  document.getElementById('w-full').data = { temp: 22, condition: 'Partly Cloudy', humidity: 65, wind: 12, forecast: fullForecast };
+  document.getElementById('w-compact').data = { temp: 22, condition: 'Partly Cloudy', humidity: 65, wind: 12, forecast: fullForecast };
+
+  document.getElementById('w-celsius').data = { temp: 22, condition: 'Sunny', humidity: 40, wind: 8, forecast: fullForecast };
+  document.getElementById('w-fahrenheit').data = { temp: 72, condition: 'Sunny', humidity: 40, wind: 8, forecast: fullForecast };
+
+  // All conditions
+  const conditions = [
+    { id: 'w-sunny', condition: 'Sunny', temp: 28 },
+    { id: 'w-clear', condition: 'Clear', temp: 26 },
+    { id: 'w-partly-cloudy', condition: 'Partly Cloudy', temp: 22 },
+    { id: 'w-cloudy', condition: 'Cloudy', temp: 18 },
+    { id: 'w-rain', condition: 'Rain', temp: 14 },
+    { id: 'w-snow', condition: 'Snow', temp: -2 },
+    { id: 'w-thunder', condition: 'Thunderstorm', temp: 20 },
+    { id: 'w-fog', condition: 'Fog', temp: 10 },
+    { id: 'w-wind', condition: 'Windy', temp: 16 },
+  ];
+  for (const c of conditions) {
+    document.getElementById(c.id).data = { temp: c.temp, condition: c.condition, humidity: 50, wind: 15 };
+  }
+
+  document.getElementById('w-custom-icon').data = { temp: 25, condition: 'Alien Weather', icon: '\u{1F47D}', humidity: 99, wind: 999 };
+
+  document.getElementById('w-humidity').data = { temp: 30, condition: 'Sunny', humidity: 80 };
+  document.getElementById('w-wind-only').data = { temp: 15, condition: 'Windy', wind: 45 };
+  document.getElementById('w-both-details').data = { temp: 22, condition: 'Clear', humidity: 55, wind: 20 };
+  document.getElementById('w-no-details').data = { temp: 20, condition: 'Cloudy' };
+
+  document.getElementById('w-forecast').data = { temp: 22, condition: 'Sunny', humidity: 40, wind: 10, forecast: fullForecast };
+  document.getElementById('w-forecast-icons').data = {
+    temp: 18, condition: 'Cloudy', humidity: 70, wind: 25,
+    forecast: [
+      { day: 'Mon', high: 20, low: 14, condition: 'Sunny', icon: '\u{2600}\u{FE0F}' },
+      { day: 'Tue', high: 18, low: 12, condition: 'Rain', icon: '\u{1F327}\u{FE0F}' },
+      { day: 'Wed', high: 22, low: 15, condition: 'Clear', icon: '\u{1F31E}' },
+    ]
+  };
+  document.getElementById('w-no-forecast').data = { temp: 25, condition: 'Sunny', humidity: 30, wind: 5 };
+
+  document.getElementById('w-hot').data = { temp: 48, condition: 'Clear', humidity: 10, wind: 5 };
+  document.getElementById('w-cold').data = { temp: -35, condition: 'Snow', humidity: 90, wind: 40 };
+
+  // null data handled by component
+  // w-null has no data set
+
+  document.getElementById('w-compact-f').data = { temp: 85, condition: 'Sunny', humidity: 30, wind: 8 };
+</script>
 </body>
 </html>

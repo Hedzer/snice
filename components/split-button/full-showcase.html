@@ -1,119 +1,138 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Split Button Demo</title>
+  <title>Split Button</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      padding: 40px;
-      font-family: var(--snice-font-family);
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      max-width: 800px;
-      margin: 0 auto;
-    }
-    .section { margin-bottom: 40px; }
-    h2 { color: var(--snice-color-text); margin-bottom: 20px; font-size: var(--snice-font-size-2xl); }
-    h3 { color: var(--snice-color-text-secondary); margin-bottom: 16px; font-size: var(--snice-font-size-lg); }
-    .row { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; }
-    .output {
-      padding: 10px;
-      background: var(--snice-color-background);
-      border-radius: var(--snice-border-radius-md);
-      font-family: monospace;
-      font-size: var(--snice-font-size-sm);
-      margin-top: 10px;
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
   </style>
 </head>
 <body>
-  <h2>Split Button Demo</h2>
 
-  <div class="section">
-    <h3>Basic</h3>
-    <snice-split-button id="basic" label="Save"></snice-split-button>
-    <div id="basic-output" class="output">Click to see events...</div>
-  </div>
+<h2>Variants</h2>
+<div class="row" id="variants"></div>
 
-  <div class="section">
-    <h3>Variants</h3>
-    <div class="row">
-      <snice-split-button id="v-default" label="Default" variant="default"></snice-split-button>
-      <snice-split-button id="v-primary" label="Primary" variant="primary"></snice-split-button>
-      <snice-split-button id="v-success" label="Success" variant="success"></snice-split-button>
-      <snice-split-button id="v-danger" label="Danger" variant="danger"></snice-split-button>
-    </div>
-  </div>
+<h2>Sizes</h2>
+<div class="row" id="sizes"></div>
 
-  <div class="section">
-    <h3>Sizes</h3>
-    <div class="row">
-      <snice-split-button id="s-small" label="Small" size="small"></snice-split-button>
-      <snice-split-button id="s-medium" label="Medium" size="medium"></snice-split-button>
-      <snice-split-button id="s-large" label="Large" size="large"></snice-split-button>
-    </div>
-  </div>
+<h2>Variant x Size Matrix</h2>
+<div style="display: grid; grid-template-columns: repeat(3, auto); gap: 0.75rem; align-items: center;" id="matrix"></div>
 
-  <div class="section">
-    <h3>Disabled</h3>
-    <snice-split-button id="disabled" label="Disabled" disabled></snice-split-button>
-  </div>
+<h2>Disabled</h2>
+<div class="row" id="disabled"></div>
 
-  <div class="section">
-    <h3>Email Example</h3>
-    <snice-split-button id="email" label="Send" variant="primary"></snice-split-button>
-    <div id="email-output" class="output">Compose your email...</div>
-  </div>
+<h2>With Disabled Actions</h2>
+<div class="row" id="disabled-actions"></div>
 
-  <script type="module">
-    import './snice-split-button.ts';
+<h2>Many Actions</h2>
+<div class="row" id="many-actions"></div>
 
-    const saveActions = [
-      { value: 'save-draft', label: 'Save as Draft' },
-      { value: 'save-template', label: 'Save as Template' },
-      { value: 'save-copy', label: 'Save a Copy' },
-    ];
+<h2>Single Action</h2>
+<div class="row" id="single-action"></div>
 
-    const emailActions = [
-      { value: 'send-later', label: 'Send Later' },
-      { value: 'schedule', label: 'Schedule Send' },
-      { value: 'save-draft', label: 'Save as Draft' },
-    ];
+<h2>No Actions (Empty Menu)</h2>
+<div class="row" id="no-actions"></div>
 
-    // Set actions on all split buttons
-    document.querySelectorAll('snice-split-button').forEach(btn => {
-      if (btn.id === 'email') {
-        btn.actions = emailActions;
-      } else {
-        btn.actions = saveActions;
-      }
+<script type="module">
+  import './snice-split-button.ts';
+
+  const baseActions = [
+    { label: 'Save as Draft', value: 'draft' },
+    { label: 'Save & Close', value: 'save-close' },
+    { label: 'Save & New', value: 'save-new' },
+  ];
+
+  function sb(props) {
+    const el = document.createElement('snice-split-button');
+    el.label = props.label || 'Save';
+    el.actions = props.actions || baseActions;
+    if (props.variant) el.variant = props.variant;
+    if (props.size) el.size = props.size;
+    if (props.disabled) el.disabled = true;
+    return el;
+  }
+
+  // Variants
+  const variants = document.getElementById('variants');
+  ['default', 'primary', 'success', 'danger'].forEach(v => {
+    variants.appendChild(sb({ variant: v, label: v.charAt(0).toUpperCase() + v.slice(1) }));
+  });
+
+  // Sizes
+  const sizes = document.getElementById('sizes');
+  ['small', 'medium', 'large'].forEach(s => {
+    sizes.appendChild(sb({ size: s, variant: 'primary', label: s.charAt(0).toUpperCase() + s.slice(1) }));
+  });
+
+  // Matrix
+  const matrix = document.getElementById('matrix');
+  ['default', 'primary', 'success', 'danger'].forEach(v => {
+    ['small', 'medium', 'large'].forEach(s => {
+      matrix.appendChild(sb({ variant: v, size: s, label: `${v} ${s}` }));
     });
+  });
 
-    // Basic events
-    const basicBtn = document.getElementById('basic');
-    const basicOutput = document.getElementById('basic-output');
+  // Disabled
+  const disabled = document.getElementById('disabled');
+  ['default', 'primary', 'success', 'danger'].forEach(v => {
+    disabled.appendChild(sb({ variant: v, disabled: true, label: `${v} disabled` }));
+  });
 
-    basicBtn.addEventListener('primary-click', () => {
-      basicOutput.textContent = 'Primary action: Save';
-    });
+  // Disabled actions
+  const disabledActions = document.getElementById('disabled-actions');
+  disabledActions.appendChild(sb({
+    variant: 'primary',
+    label: 'Publish',
+    actions: [
+      { label: 'Publish Now', value: 'now' },
+      { label: 'Schedule', value: 'schedule', disabled: true },
+      { label: 'Preview', value: 'preview' },
+      { label: 'Delete', value: 'delete', disabled: true },
+    ]
+  }));
 
-    basicBtn.addEventListener('action-click', (e) => {
-      basicOutput.textContent = `Action: ${e.detail.action.label} (${e.detail.value})`;
-    });
+  // Many actions
+  const manyActions = document.getElementById('many-actions');
+  manyActions.appendChild(sb({
+    variant: 'primary',
+    label: 'Export',
+    actions: [
+      { label: 'Export as CSV', value: 'csv' },
+      { label: 'Export as JSON', value: 'json' },
+      { label: 'Export as XML', value: 'xml' },
+      { label: 'Export as PDF', value: 'pdf' },
+      { label: 'Export as Excel', value: 'xlsx' },
+      { label: 'Print', value: 'print' },
+    ]
+  }));
 
-    // Email events
-    const emailBtn = document.getElementById('email');
-    const emailOutput = document.getElementById('email-output');
+  // Single action
+  const singleAction = document.getElementById('single-action');
+  singleAction.appendChild(sb({
+    variant: 'success',
+    label: 'Deploy',
+    actions: [{ label: 'Deploy to Staging', value: 'staging' }]
+  }));
 
-    emailBtn.addEventListener('primary-click', () => {
-      emailOutput.textContent = 'Email sent!';
-    });
-
-    emailBtn.addEventListener('action-click', (e) => {
-      emailOutput.textContent = `Action: ${e.detail.action.label}`;
-    });
-  </script>
+  // No actions
+  const noActions = document.getElementById('no-actions');
+  noActions.appendChild(sb({ variant: 'default', label: 'No Actions', actions: [] }));
+</script>
 </body>
 </html>

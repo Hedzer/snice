@@ -1,583 +1,140 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snice Mentions Component Demo</title>
+  <title>Mentions</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      padding: 40px;
-      line-height: 1.6;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-    }
-
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: 10px;
-      margin-bottom: 30px;
-    }
-
-    h2 {
-      color: var(--snice-color-text);
-      margin-top: 40px;
-      margin-bottom: 20px;
-      font-size: 24px;
-    }
-
-    .demo-section {
-      margin: 30px 0;
-      padding: 20px;
-      background: var(--snice-color-background);
-      border-radius: 8px;
-      border: 1px solid var(--snice-color-border);
-    }
-
-    .demo-label {
-      display: block;
-      margin-bottom: 16px;
-      font-weight: 600;
-      color: var(--snice-color-text-secondary);
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .example-card {
-      padding: 20px;
-      background: var(--snice-color-background);
-      border-radius: 6px;
-      border: 1px solid var(--snice-color-border);
-      margin: 16px 0;
-    }
-
-    .example-card h3 {
-      margin-top: 0;
-      margin-bottom: 16px;
-      font-size: 16px;
-      color: var(--snice-color-text);
-    }
-
-    .output-panel {
-      margin-top: 16px;
-      padding: 16px;
-      background: var(--snice-color-background-element);
-      border-radius: 6px;
-      border: 1px solid var(--snice-color-border);
-    }
-
-    .output-panel h4 {
-      margin: 0 0 12px 0;
-      font-size: 14px;
-      color: var(--snice-color-text-secondary);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .output-content {
-      font-family: monospace;
-      font-size: 13px;
-      color: var(--snice-color-text);
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .output-content.empty {
-      color: var(--snice-color-text-tertiary);
-      font-style: italic;
-    }
-
-    .event-log {
-      max-height: 200px;
-      overflow-y: auto;
-      font-family: monospace;
-      font-size: 12px;
-    }
-
-    .event-item {
-      padding: 8px 12px;
-      margin: 4px 0;
-      background: var(--snice-color-background);
-      border-radius: 4px;
-      border-left: 3px solid var(--snice-color-primary);
-    }
-
-    .event-item.mention-add {
-      border-left-color: var(--snice-color-success);
-    }
-
-    .event-item.mention-remove {
-      border-left-color: var(--snice-color-danger);
-    }
-
-    .event-item.value-change {
-      border-left-color: var(--snice-color-primary);
-    }
-
-    .event-time {
-      color: var(--snice-color-text-tertiary);
-      font-size: 11px;
-    }
-
-    .event-type {
-      font-weight: 600;
-      color: var(--snice-color-text-secondary);
-    }
-
-    .controls {
-      display: flex;
-      gap: 12px;
-      margin: 20px 0;
-      flex-wrap: wrap;
-      padding: 16px;
-      background: var(--snice-color-background-element);
-      border-radius: 6px;
-      border: 1px solid var(--snice-color-border);
-    }
-
-    .controls label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 14px;
-    }
-
-    .controls input[type="text"] {
-      padding: 8px 12px;
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      font-size: 14px;
-      width: 200px;
-    }
-
-    .controls input[type="checkbox"] {
-      cursor: pointer;
-    }
-
-    .user-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin: 12px 0;
-    }
-
-    .user-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      background: var(--snice-color-primary-subtle);
-      color: var(--snice-color-primary);
-      border-radius: 9999px;
-      font-size: 12px;
-      font-weight: 500;
-    }
-
-    .user-avatar {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: var(--snice-color-primary);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 10px;
-      font-weight: 600;
-    }
-
-    .info-box {
-      padding: 16px;
-      background: var(--snice-color-info-subtle);
-      border: 1px solid var(--snice-color-info);
-      border-radius: 6px;
-      margin: 16px 0;
-    }
-
-    .info-box p {
-      margin: 0;
-      color: var(--snice-color-text);
-      font-size: 14px;
-    }
-
-    .info-box code {
-      background: var(--snice-color-background);
-      padding: 2px 6px;
-      border-radius: 3px;
-      font-size: 12px;
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
+    snice-mentions { max-width: 500px; display: block; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>💬 Snice Mentions Component Demo</h1>
 
-    <div class="info-box">
-      <p>Type <code>@</code> to trigger the mention autocomplete dropdown. Select a user to insert a mention. 
-      The component stores mentions in a structured format <code>@[Name](id)</code> while displaying them as <code>@Name</code>.</p>
-    </div>
+<h2>Default (empty)</h2>
+<snice-mentions id="m-default"></snice-mentions>
 
-    <div class="demo-section">
-      <h2>Basic Usage</h2>
-      <span class="demo-label">Simple mentions input with users</span>
-      <snice-mentions id="basic-mentions" placeholder="Type @ to mention someone..."></snice-mentions>
-      
-      <div class="output-panel">
-        <h4>Available Users</h4>
-        <div class="user-list" id="basic-users"></div>
-      </div>
-    </div>
+<h2>Custom placeholder</h2>
+<snice-mentions id="m-placeholder" placeholder="Write a comment..."></snice-mentions>
 
-    <div class="demo-section">
-      <h2>With Avatars</h2>
-      <span class="demo-label">Users with profile pictures in the dropdown</span>
-      <snice-mentions id="avatar-mentions" placeholder="Mention team members..."></snice-mentions>
-      
-      <div class="output-panel">
-        <h4>Available Users</h4>
-        <div class="user-list" id="avatar-users"></div>
-      </div>
-    </div>
+<h2>With pre-set value (contains mention markers)</h2>
+<snice-mentions id="m-value"></snice-mentions>
 
-    <div class="demo-section">
-      <h2>Pre-populated Value</h2>
-      <span class="demo-label">Mentions with existing content</span>
-      <snice-mentions id="prepopulated-mentions"></snice-mentions>
-      
-      <div class="output-panel">
-        <h4>Raw Value (with markers)</h4>
-        <div class="output-content" id="prepopulated-raw"></div>
-      </div>
-    </div>
+<h2>Readonly</h2>
+<snice-mentions id="m-readonly" readonly></snice-mentions>
 
-    <div class="demo-section">
-      <h2>Readonly Mode</h2>
-      <span class="demo-label">Display-only, no editing allowed</span>
-      <snice-mentions id="readonly-mentions" readonly></snice-mentions>
-    </div>
+<h2>Custom trigger character (#)</h2>
+<snice-mentions id="m-trigger" trigger="#" placeholder="Type # to tag a channel..."></snice-mentions>
 
-    <div class="demo-section">
-      <h2>Custom Trigger Character</h2>
-      <span class="demo-label">Use # instead of @</span>
-      <snice-mentions id="hash-mentions" trigger="#" placeholder="Type # to mention topics..."></snice-mentions>
-      
-      <div class="output-panel">
-        <h4>Available Topics</h4>
-        <div class="user-list" id="hash-users"></div>
-      </div>
-    </div>
+<h2>Users with avatars</h2>
+<snice-mentions id="m-avatars" placeholder="Type @ to mention (users have avatars)..."></snice-mentions>
 
-    <div class="demo-section">
-      <h2>Interactive Demo</h2>
-      <span class="demo-label">Customize and test the component</span>
-      
-      <div class="controls">
-        <label>
-          <input type="checkbox" id="readonly-check">
-          Readonly
-        </label>
-        <label>
-          Trigger:
-          <input type="text" id="trigger-input" value="@" maxlength="1" style="width: 40px; text-align: center;">
-        </label>
-        <label>
-          Placeholder:
-          <input type="text" id="placeholder-input" value="Type @ to mention someone...">
-        </label>
-      </div>
+<h2>Users without avatars (initials fallback)</h2>
+<snice-mentions id="m-no-avatars" placeholder="Type @ to mention (no avatars)..."></snice-mentions>
 
-      <snice-mentions id="interactive-mentions"></snice-mentions>
+<h2>Many users (large dropdown)</h2>
+<snice-mentions id="m-many" placeholder="Type @ to see many users..."></snice-mentions>
 
-      <div class="output-panel">
-        <h4>Current Value</h4>
-        <div class="output-content" id="current-value">(empty)</div>
-      </div>
+<h2>Single user</h2>
+<snice-mentions id="m-single" placeholder="Type @ (one user available)..."></snice-mentions>
 
-      <div class="output-panel">
-        <h4>Plain Text</h4>
-        <div class="output-content" id="plain-text">(empty)</div>
-      </div>
+<h2>No users (empty list)</h2>
+<snice-mentions id="m-empty" placeholder="Type @ (no users configured)..."></snice-mentions>
 
-      <div class="output-panel">
-        <h4>Mentions Array</h4>
-        <div class="output-content" id="mentions-array">[]</div>
-      </div>
-    </div>
+<h2>Pre-populated with multiple mentions</h2>
+<snice-mentions id="m-multi"></snice-mentions>
 
-    <div class="demo-section">
-      <h2>Event Log</h2>
-      <span class="demo-label">Real-time events from the interactive demo</span>
-      
-      <div class="controls">
-        <button onclick="clearEventLog()" style="padding: 8px 16px; background: var(--snice-color-primary); color: white; border: none; border-radius: 4px; cursor: pointer;">Clear Log</button>
-      </div>
+<h2>Readonly with value</h2>
+<snice-mentions id="m-readonly-val" readonly></snice-mentions>
 
-      <div class="output-panel">
-        <div class="event-log" id="event-log">
-          <div class="output-content empty">Events will appear here...</div>
-        </div>
-      </div>
-    </div>
+<script type="module">
+  import './snice-mentions.ts';
 
-    <div class="demo-section">
-      <h2>Real-world Examples</h2>
+  const users = [
+    { id: 'u1', name: 'Alice Johnson', avatar: 'https://i.pravatar.cc/32?u=alice' },
+    { id: 'u2', name: 'Bob Smith', avatar: 'https://i.pravatar.cc/32?u=bob' },
+    { id: 'u3', name: 'Charlie Brown' },
+    { id: 'u4', name: 'Diana Prince', avatar: 'https://i.pravatar.cc/32?u=diana' },
+    { id: 'u5', name: 'Eve Williams' },
+  ];
 
-      <div class="example-card">
-        <h3>💬 Comment Box</h3>
-        <snice-mentions id="comment-mentions" placeholder="Add a comment and @mention team members..."></snice-mentions>
-        <div class="controls" style="margin-top: 12px; justify-content: flex-end; padding: 0; background: transparent; border: none;">
-          <button onclick="postComment()" style="padding: 8px 16px; background: var(--snice-color-primary); color: white; border: none; border-radius: 4px; cursor: pointer;">Post Comment</button>
-        </div>
-        <div id="posted-comments" style="margin-top: 16px;"></div>
-      </div>
+  const usersNoAvatars = [
+    { id: 'u1', name: 'Alice Johnson' },
+    { id: 'u2', name: 'Bob Smith' },
+    { id: 'u3', name: 'Charlie Brown' },
+  ];
 
-      <div class="example-card">
-        <h3>📝 Task Assignment</h3>
-        <snice-mentions id="task-mentions" placeholder="Describe the task and assign to @team members..."></snice-mentions>
-        <div class="output-panel" style="margin-top: 12px;">
-          <h4>Assigned To</h4>
-          <div class="output-content" id="assigned-users">No one assigned yet</div>
-        </div>
-      </div>
+  const manyUsers = Array.from({ length: 20 }, (_, i) => ({
+    id: `user${i}`,
+    name: `User ${String.fromCharCode(65 + i)}${i > 25 ? i : ''}`,
+    avatar: i % 3 === 0 ? `https://i.pravatar.cc/32?u=user${i}` : undefined,
+  }));
 
-      <div class="example-card">
-        <h3>📧 Email Composer</h3>
-        <snice-mentions id="email-mentions" placeholder="Compose email and @mention recipients to add to CC..."></snice-mentions>
-        <div class="output-panel" style="margin-top: 12px;">
-          <h4>CC Recipients</h4>
-          <div class="output-content" id="cc-recipients">None</div>
-        </div>
-      </div>
-    </div>
-  </div>
+  const channels = [
+    { id: 'c1', name: 'general' },
+    { id: 'c2', name: 'random' },
+    { id: 'c3', name: 'engineering' },
+    { id: 'c4', name: 'design' },
+  ];
 
-  <script type="module">
-    import './snice-mentions.ts';
+  // Default
+  document.getElementById('m-default').users = users;
 
-    // Sample user data
-    const basicUsers = [
-      { id: 'u1', name: 'Alice Johnson' },
-      { id: 'u2', name: 'Bob Smith' },
-      { id: 'u3', name: 'Charlie Davis' },
-      { id: 'u4', name: 'Diana Prince' },
-      { id: 'u5', name: 'Eve Anderson' },
-    ];
+  // Custom placeholder
+  document.getElementById('m-placeholder').users = users;
 
-    const avatarUsers = [
-      { id: 'u1', name: 'Alice Johnson', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alice' },
-      { id: 'u2', name: 'Bob Smith', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Bob' },
-      { id: 'u3', name: 'Charlie Davis', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Charlie' },
-      { id: 'u4', name: 'Diana Prince', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Diana' },
-      { id: 'u5', name: 'Eve Anderson', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Eve' },
-    ];
+  // Pre-set value
+  const mValue = document.getElementById('m-value');
+  mValue.users = users;
+  mValue.value = 'Hey @[Alice Johnson](u1), can you review this?';
 
-    const hashUsers = [
-      { id: 'topic-1', name: 'General' },
-      { id: 'topic-2', name: 'Development' },
-      { id: 'topic-3', name: 'Design' },
-      { id: 'topic-4', name: 'Marketing' },
-      { id: 'topic-5', name: 'Support' },
-    ];
+  // Readonly
+  const mReadonly = document.getElementById('m-readonly');
+  mReadonly.users = users;
+  mReadonly.value = '@[Bob Smith](u2) approved the change.';
 
-    const allTeamUsers = [
-      { id: 'u1', name: 'Alice Johnson', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alice' },
-      { id: 'u2', name: 'Bob Smith', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Bob' },
-      { id: 'u3', name: 'Charlie Davis', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Charlie' },
-      { id: 'u4', name: 'Diana Prince', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Diana' },
-      { id: 'u5', name: 'Eve Anderson', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Eve' },
-      { id: 'u6', name: 'Frank Miller', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Frank' },
-      { id: 'u7', name: 'Grace Hopper', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Grace' },
-    ];
+  // Custom trigger
+  document.getElementById('m-trigger').users = channels;
 
-    // Initialize basic mentions
-    const basicMentions = document.getElementById('basic-mentions');
-    basicMentions.users = basicUsers;
-    renderUserList('basic-users', basicUsers);
+  // With avatars
+  document.getElementById('m-avatars').users = users;
 
-    // Initialize avatar mentions
-    const avatarMentions = document.getElementById('avatar-mentions');
-    avatarMentions.users = avatarUsers;
-    renderUserList('avatar-users', avatarUsers, true);
+  // No avatars
+  document.getElementById('m-no-avatars').users = usersNoAvatars;
 
-    // Initialize prepopulated mentions
-    const prepopulatedMentions = document.getElementById('prepopulated-mentions');
-    prepopulatedMentions.users = basicUsers;
-    prepopulatedMentions.value = 'Hey @[Alice Johnson](u1), can you please review this with @[Bob Smith](u2)?';
-    document.getElementById('prepopulated-raw').textContent = prepopulatedMentions.value;
+  // Many users
+  document.getElementById('m-many').users = manyUsers;
 
-    // Initialize readonly mentions
-    const readonlyMentions = document.getElementById('readonly-mentions');
-    readonlyMentions.users = basicUsers;
-    readonlyMentions.value = 'Thanks @[Charlie Davis](u3) for your help on this project!';
+  // Single user
+  document.getElementById('m-single').users = [{ id: 'u1', name: 'Solo User' }];
 
-    // Initialize hash mentions
-    const hashMentions = document.getElementById('hash-mentions');
-    hashMentions.users = hashUsers;
-    renderUserList('hash-users', hashUsers);
+  // No users
+  document.getElementById('m-empty').users = [];
 
-    // Initialize interactive mentions
-    const interactiveMentions = document.getElementById('interactive-mentions');
-    interactiveMentions.users = allTeamUsers;
+  // Multiple mentions
+  const mMulti = document.getElementById('m-multi');
+  mMulti.users = users;
+  mMulti.value = '@[Alice Johnson](u1) and @[Bob Smith](u2) please check the latest @[Charlie Brown](u3) report.';
 
-    // Interactive demo controls
-    document.getElementById('readonly-check').addEventListener('change', (e) => {
-      interactiveMentions.readonly = e.target.checked;
-    });
-
-    document.getElementById('trigger-input').addEventListener('change', (e) => {
-      interactiveMentions.trigger = e.target.value || '@';
-    });
-
-    document.getElementById('placeholder-input').addEventListener('input', (e) => {
-      interactiveMentions.placeholder = e.target.value;
-    });
-
-    // Update output displays
-    function updateOutput() {
-      const value = interactiveMentions.getValue();
-      const plainText = interactiveMentions.getPlainText();
-      const mentions = interactiveMentions.getMentions();
-
-      document.getElementById('current-value').textContent = value || '(empty)';
-      document.getElementById('current-value').className = value ? 'output-content' : 'output-content empty';
-      
-      document.getElementById('plain-text').textContent = plainText || '(empty)';
-      document.getElementById('plain-text').className = plainText ? 'output-content' : 'output-content empty';
-      
-      document.getElementById('mentions-array').textContent = JSON.stringify(mentions, null, 2);
-    }
-
-    interactiveMentions.addEventListener('value-change', updateOutput);
-    interactiveMentions.addEventListener('input', updateOutput);
-
-    // Event logging
-    const eventLog = document.getElementById('event-log');
-
-    function logEvent(type, detail) {
-      const time = new Date().toLocaleTimeString();
-      const eventItem = document.createElement('div');
-      eventItem.className = `event-item ${type}`;
-      
-      let detailText = '';
-      if (type === 'mention-add') {
-        detailText = `Added @${detail.user.name}`;
-      } else if (type === 'mention-remove') {
-        detailText = `Removed @${detail.user.name}`;
-      } else if (type === 'value-change') {
-        detailText = `Mentions: ${detail.mentions.length}`;
-      }
-
-      eventItem.innerHTML = `
-        <div class="event-time">${time}</div>
-        <div><span class="event-type">${type}</span>: ${detailText}</div>
-      `;
-
-      // Remove "empty" message if present
-      if (eventLog.querySelector('.empty')) {
-        eventLog.innerHTML = '';
-      }
-
-      eventLog.insertBefore(eventItem, eventLog.firstChild);
-
-      // Keep only last 20 events
-      while (eventLog.children.length > 20) {
-        eventLog.removeChild(eventLog.lastChild);
-      }
-    }
-
-    window.clearEventLog = function() {
-      eventLog.innerHTML = '<div class="output-content empty">Events will appear here...</div>';
-    };
-
-    interactiveMentions.addEventListener('mention-add', (e) => logEvent('mention-add', e.detail));
-    interactiveMentions.addEventListener('mention-remove', (e) => logEvent('mention-remove', e.detail));
-    interactiveMentions.addEventListener('value-change', (e) => logEvent('value-change', e.detail));
-
-    // Comment box example
-    const commentMentions = document.getElementById('comment-mentions');
-    commentMentions.users = allTeamUsers;
-
-    window.postComment = function() {
-      const value = commentMentions.getValue();
-      const plainText = commentMentions.getPlainText();
-      const mentions = commentMentions.getMentions();
-
-      if (!value.trim()) return;
-
-      const commentsContainer = document.getElementById('posted-comments');
-      const commentDiv = document.createElement('div');
-      commentDiv.style.cssText = 'padding: 12px; background: var(--snice-color-background-element); border-radius: 6px; margin-bottom: 8px;';
-      
-      const mentionTags = mentions.map(m => 
-        `<span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:var(--snice-color-primary-subtle);color:var(--snice-color-primary);border-radius:9999px;font-size:12px;">@${m.name}</span>`
-      ).join(' ');
-
-      commentDiv.innerHTML = `
-        <div style="font-size:14px;color:var(--snice-color-text);margin-bottom:8px;">${plainText}</div>
-        ${mentions.length ? `<div style="display:flex;gap:4px;flex-wrap:wrap;">${mentionTags}</div>` : ''}
-        <div style="font-size:11px;color:var(--snice-color-text-tertiary);margin-top:8px;">${new Date().toLocaleString()}</div>
-      `;
-
-      commentsContainer.insertBefore(commentDiv, commentsContainer.firstChild);
-      commentMentions.value = '';
-    };
-
-    // Task assignment example
-    const taskMentions = document.getElementById('task-mentions');
-    taskMentions.users = allTeamUsers;
-
-    taskMentions.addEventListener('value-change', (e) => {
-      const mentions = e.detail.mentions;
-      const assignedDiv = document.getElementById('assigned-users');
-      
-      if (mentions.length === 0) {
-        assignedDiv.textContent = 'No one assigned yet';
-        assignedDiv.className = 'output-content empty';
-      } else {
-        assignedDiv.innerHTML = mentions.map(m => 
-          `<span class="user-tag"><span class="user-avatar">${m.name.charAt(0)}</span>${m.name}</span>`
-        ).join('');
-        assignedDiv.className = 'output-content';
-      }
-    });
-
-    // Email composer example
-    const emailMentions = document.getElementById('email-mentions');
-    emailMentions.users = allTeamUsers;
-
-    emailMentions.addEventListener('value-change', (e) => {
-      const mentions = e.detail.mentions;
-      const ccDiv = document.getElementById('cc-recipients');
-      
-      if (mentions.length === 0) {
-        ccDiv.textContent = 'None';
-        ccDiv.className = 'output-content empty';
-      } else {
-        ccDiv.textContent = mentions.map(m => m.name).join(', ');
-        ccDiv.className = 'output-content';
-      }
-    });
-
-    // Helper function to render user list
-    function renderUserList(elementId, users, showAvatars = false) {
-      const container = document.getElementById(elementId);
-      container.innerHTML = users.map(u => {
-        if (showAvatars && u.avatar) {
-          return `<span class="user-tag"><img src="${u.avatar}" alt="" style="width:20px;height:20px;border-radius:50%;">${u.name}</span>`;
-        }
-        return `<span class="user-tag"><span class="user-avatar">${u.name.charAt(0)}</span>${u.name}</span>`;
-      }).join('');
-    }
-  </script>
+  // Readonly with value
+  const mReadonlyVal = document.getElementById('m-readonly-val');
+  mReadonlyVal.users = users;
+  mReadonlyVal.value = 'Assigned to @[Diana Prince](u4) by @[Alice Johnson](u1).';
+</script>
 </body>
 </html>

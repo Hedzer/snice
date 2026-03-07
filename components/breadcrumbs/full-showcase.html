@@ -1,407 +1,231 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snice Breadcrumb Demo</title>
+  <title>Breadcrumbs</title>
   <link rel="stylesheet" href="../theme/theme.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
   <style>
     body {
       font-family: system-ui, -apple-system, sans-serif;
-      padding: 40px;
-      line-height: 1.6;
+      padding: 1.5rem;
       background: var(--snice-color-background);
-      transition: background-color var(--snice-transition-medium) ease, color var(--snice-transition-medium) ease;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      background: var(--snice-color-background);
-      padding: 40px;
-      border-radius: 8px;
-      box-shadow: var(--snice-shadow-lg);
-    }
-
-    h1 {
       color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: 10px;
     }
-
+    section { margin-bottom: 2rem; }
     h2 {
-      color: var(--snice-color-text-secondary);
-      margin-top: 30px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--snice-color-text-tertiary, #888);
+      margin: 0 0 0.75rem;
     }
-
-    .demo-section {
-      margin: 30px 0;
-      padding: 20px;
-      background: var(--snice-color-background);
-      border-radius: 4px;
-    }
-
-    .demo-label {
-      display: block;
-      margin-bottom: 12px;
-      font-weight: 500;
-      color: var(--snice-color-text-secondary);
-      font-size: 14px;
-    }
-
-    .breadcrumb-demo {
-      margin: 16px 0;
-      padding: 16px;
-      background: var(--snice-color-background);
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-    }
-
-    .controls {
+    .row {
       display: flex;
-      gap: 10px;
-      margin: 20px 0;
-      flex-wrap: wrap;
       align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
     }
-
-    button {
-      padding: 8px 16px;
-      background: var(--snice-color-primary);
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: background 0.2s;
-    }
-
-    button:hover {
-      background: var(--snice-color-primary-hover);
-    }
-
-    select, input {
-      padding: 8px 12px;
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      font-size: 14px;
-      background: var(--snice-color-background-input);
-      color: var(--snice-color-text);
-    }
-
-    code {
-      background: var(--snice-color-background);
-      padding: 2px 6px;
-      border-radius: 3px;
-      font-size: 0.9em;
-    }
-
-    .event-log {
-      margin-top: 16px;
-      padding: 12px;
-      background: var(--snice-color-background);
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      font-family: monospace;
-      font-size: 13px;
-      max-height: 150px;
-      overflow-y: auto;
+    .stack {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Snice Breadcrumb Component Demo</h1>
 
-    <div class="demo-section">
-      <h2>Basic Breadcrumb</h2>
-      
-      <span class="demo-label">Using items property</span>
-      <div class="breadcrumb-demo">
-        <snice-breadcrumbs id="basic-breadcrumb"></snice-breadcrumbs>
+  <section>
+    <h2>All separators: / (default), >, &raquo;, &bull;, |</h2>
+    <div class="stack">
+      <snice-breadcrumbs id="sep-slash" separator="/"></snice-breadcrumbs>
+      <snice-breadcrumbs id="sep-gt" separator=">"></snice-breadcrumbs>
+      <snice-breadcrumbs id="sep-raquo" separator="&raquo;"></snice-breadcrumbs>
+      <snice-breadcrumbs id="sep-dot" separator="&bull;"></snice-breadcrumbs>
+      <snice-breadcrumbs id="sep-pipe" separator="|"></snice-breadcrumbs>
+    </div>
+  </section>
+
+  <section>
+    <h2>All sizes</h2>
+    <div class="stack">
+      <snice-breadcrumbs id="size-small" size="small"></snice-breadcrumbs>
+      <snice-breadcrumbs id="size-medium" size="medium"></snice-breadcrumbs>
+      <snice-breadcrumbs id="size-large" size="large"></snice-breadcrumbs>
+    </div>
+  </section>
+
+  <section>
+    <h2>With href links</h2>
+    <snice-breadcrumbs id="bc-links"></snice-breadcrumbs>
+  </section>
+
+  <section>
+    <h2>With icons (emoji)</h2>
+    <snice-breadcrumbs id="bc-icons"></snice-breadcrumbs>
+  </section>
+
+  <section>
+    <h2>With icon images (URL)</h2>
+    <snice-breadcrumbs id="bc-iconimages"></snice-breadcrumbs>
+  </section>
+
+  <section>
+    <h2>max-items (collapsed with ellipsis)</h2>
+    <div class="stack">
+      <div>
+        <h2>max-items=3</h2>
+        <snice-breadcrumbs id="bc-max3" max-items="3"></snice-breadcrumbs>
       </div>
-
-      <span class="demo-label">Using slot with snice-crumb elements (with icons)</span>
-      <div class="breadcrumb-demo">
-        <snice-breadcrumbs separator=">">
-          <snice-crumb href="/" label="Home" icon="🏠"></snice-crumb>
-          <snice-crumb href="/docs" label="Documentation" icon="📚"></snice-crumb>
-          <snice-crumb href="/docs/components" label="Components" icon="🧩"></snice-crumb>
-          <snice-crumb label="Breadcrumbs" active></snice-crumb>
-        </snice-breadcrumbs>
+      <div>
+        <h2>max-items=2</h2>
+        <snice-breadcrumbs id="bc-max2" max-items="2"></snice-breadcrumbs>
       </div>
-
-      <span class="demo-label">With active last item</span>
-      <div class="breadcrumb-demo">
-        <snice-breadcrumbs id="active-breadcrumb"></snice-breadcrumbs>
+      <div>
+        <h2>max-items=0 (no limit, default)</h2>
+        <snice-breadcrumbs id="bc-max0" max-items="0"></snice-breadcrumbs>
       </div>
     </div>
+  </section>
 
-    <div class="demo-section">
-      <h2>Separators</h2>
-      
-      <div class="breadcrumb-demo">
-        <span class="demo-label">Slash (default)</span>
-        <snice-breadcrumbs id="slash-breadcrumb" separator="/"></snice-breadcrumbs>
-      </div>
+  <section>
+    <h2>Declarative API (snice-crumb child elements)</h2>
+    <snice-breadcrumbs>
+      <snice-crumb label="Home" href="#home"></snice-crumb>
+      <snice-crumb label="Products" href="#products"></snice-crumb>
+      <snice-crumb label="Electronics" href="#electronics"></snice-crumb>
+      <snice-crumb label="Phones" active></snice-crumb>
+    </snice-breadcrumbs>
+  </section>
 
-      <div class="breadcrumb-demo">
-        <span class="demo-label">Chevron</span>
-        <snice-breadcrumbs id="chevron-breadcrumb" separator=">"></snice-breadcrumbs>
-      </div>
+  <section>
+    <h2>Single item</h2>
+    <snice-breadcrumbs id="bc-single"></snice-breadcrumbs>
+  </section>
 
-      <div class="breadcrumb-demo">
-        <span class="demo-label">Double Chevron</span>
-        <snice-breadcrumbs id="double-chevron-breadcrumb" separator="»"></snice-breadcrumbs>
-      </div>
+  <section>
+    <h2>Two items</h2>
+    <snice-breadcrumbs id="bc-two"></snice-breadcrumbs>
+  </section>
 
-      <div class="breadcrumb-demo">
-        <span class="demo-label">Dot</span>
-        <snice-breadcrumbs id="dot-breadcrumb" separator="•"></snice-breadcrumbs>
-      </div>
+  <section>
+    <h2>Many items (8)</h2>
+    <snice-breadcrumbs id="bc-many"></snice-breadcrumbs>
+  </section>
 
-      <div class="breadcrumb-demo">
-        <span class="demo-label">Pipe</span>
-        <snice-breadcrumbs id="pipe-breadcrumb" separator="|"></snice-breadcrumbs>
-      </div>
+  <section>
+    <h2>Edge case: very long labels</h2>
+    <snice-breadcrumbs id="bc-long"></snice-breadcrumbs>
+  </section>
+
+  <section>
+    <h2>Edge case: single character labels</h2>
+    <snice-breadcrumbs id="bc-short"></snice-breadcrumbs>
+  </section>
+
+  <section>
+    <h2>Size x Separator matrix</h2>
+    <div class="stack">
+      <snice-breadcrumbs id="mx-s-slash" size="small" separator="/"></snice-breadcrumbs>
+      <snice-breadcrumbs id="mx-m-gt" size="medium" separator=">"></snice-breadcrumbs>
+      <snice-breadcrumbs id="mx-l-raquo" size="large" separator="&raquo;"></snice-breadcrumbs>
     </div>
-
-    <div class="demo-section">
-      <h2>Sizes</h2>
-      
-      <div class="breadcrumb-demo">
-        <span class="demo-label">Small</span>
-        <snice-breadcrumbs id="small-breadcrumb" size="small"></snice-breadcrumbs>
-      </div>
-
-      <div class="breadcrumb-demo">
-        <span class="demo-label">Medium (default)</span>
-        <snice-breadcrumbs id="medium-breadcrumb" size="medium"></snice-breadcrumbs>
-      </div>
-
-      <div class="breadcrumb-demo">
-        <span class="demo-label">Large</span>
-        <snice-breadcrumbs id="large-breadcrumb" size="large"></snice-breadcrumbs>
-      </div>
-    </div>
-
-    <div class="demo-section">
-      <h2>Collapsed Breadcrumbs</h2>
-      
-      <span class="demo-label">Long path with max-items="3" (click ••• to expand)</span>
-      <div class="breadcrumb-demo">
-        <snice-breadcrumbs id="collapsed-breadcrumb" max-items="3"></snice-breadcrumbs>
-      </div>
-
-      <span class="demo-label">Using slots with max-items="2" and external icon images</span>
-      <div class="breadcrumb-demo">
-        <snice-breadcrumbs max-items="2" separator="»">
-          <snice-crumb href="/" label="Root" icon-image="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234f46e5'%3E%3Cpath d='M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z'/%3E%3C/svg%3E"></snice-crumb>
-          <snice-crumb href="/home" label="Home"></snice-crumb>
-          <snice-crumb href="/home/user" label="User"></snice-crumb>
-          <snice-crumb href="/home/user/docs" label="Documents" icon="📁"></snice-crumb>
-          <snice-crumb href="/home/user/docs/projects" label="Projects"></snice-crumb>
-          <snice-crumb label="Current File" icon="📄"></snice-crumb>
-        </snice-breadcrumbs>
-      </div>
-
-      <span class="demo-label">Max 2 items</span>
-      <div class="breadcrumb-demo">
-        <snice-breadcrumbs id="collapsed-2-breadcrumb" max-items="2"></snice-breadcrumbs>
-      </div>
-    </div>
-
-    <div class="demo-section">
-      <h2>Interactive Demo</h2>
-      
-      <div class="controls">
-        <select id="separator-select">
-          <option value="/">Slash (/)</option>
-          <option value=">">Chevron (>)</option>
-          <option value="»">Double Chevron (»)</option>
-          <option value="•">Dot (•)</option>
-          <option value="|">Pipe (|)</option>
-        </select>
-        
-        <select id="size-select">
-          <option value="small">Small</option>
-          <option value="medium" selected>Medium</option>
-          <option value="large">Large</option>
-        </select>
-        
-        <input type="number" id="max-items" placeholder="Max items" min="0" max="10" value="0">
-        
-        <button onclick="addItem()">Add Item</button>
-        <button onclick="removeItem()">Remove Item</button>
-        <button onclick="updateBreadcrumb()">Update</button>
-      </div>
-
-      <div class="breadcrumb-demo">
-        <snice-breadcrumbs id="interactive-breadcrumb"></snice-breadcrumbs>
-      </div>
-
-      <div class="event-log" id="event-log">
-        Event log will appear here...
-      </div>
-    </div>
-
-    <div class="demo-section">
-      <h2>Real-world Examples</h2>
-      
-      <span class="demo-label">E-commerce Category</span>
-      <div class="breadcrumb-demo">
-        <snice-breadcrumbs id="ecommerce-breadcrumb"></snice-breadcrumbs>
-      </div>
-
-      <span class="demo-label">Documentation</span>
-      <div class="breadcrumb-demo">
-        <snice-breadcrumbs id="docs-breadcrumb" separator="»"></snice-breadcrumbs>
-      </div>
-
-      <span class="demo-label">File System</span>
-      <div class="breadcrumb-demo">
-        <snice-breadcrumbs id="filesystem-breadcrumb" max-items="4"></snice-breadcrumbs>
-      </div>
-
-      <span class="demo-label">Admin Dashboard</span>
-      <div class="breadcrumb-demo">
-        <snice-breadcrumbs id="admin-breadcrumb"></snice-breadcrumbs>
-      </div>
-    </div>
-  </div>
+  </section>
 
   <script type="module">
     import './snice-breadcrumbs.ts';
-    import './snice-crumb.ts';
 
-    // Basic breadcrumb
-    document.getElementById('basic-breadcrumb').items = [
-      { label: 'Home', href: '/' },
-      { label: 'Products', href: '/products' },
-      { label: 'Electronics', href: '/products/electronics' },
-      { label: 'Laptops', href: '/products/electronics/laptops' }
+    const basic = [
+      { label: 'Home', href: '#' },
+      { label: 'Products', href: '#products' },
+      { label: 'Electronics', href: '#electronics' },
+      { label: 'Current Page' },
     ];
 
-    // Active breadcrumb
-    document.getElementById('active-breadcrumb').items = [
-      { label: 'Home', href: '/' },
-      { label: 'Blog', href: '/blog' },
-      { label: 'Tech', href: '/blog/tech' },
-      { label: 'Latest Post', active: true }
-    ];
-
-    // Separator examples
-    const separatorItems = [
-      { label: 'Home', href: '/' },
-      { label: 'Category', href: '/category' },
-      { label: 'Subcategory', href: '/category/sub' },
-      { label: 'Item' }
-    ];
-
-    document.getElementById('slash-breadcrumb').items = separatorItems;
-    document.getElementById('chevron-breadcrumb').items = separatorItems;
-    document.getElementById('double-chevron-breadcrumb').items = separatorItems;
-    document.getElementById('dot-breadcrumb').items = separatorItems;
-    document.getElementById('pipe-breadcrumb').items = separatorItems;
-
-    // Size examples
-    const sizeItems = [
-      { label: 'Dashboard', href: '/' },
-      { label: 'Analytics', href: '/analytics' },
-      { label: 'Reports', href: '/analytics/reports' }
-    ];
-
-    document.getElementById('small-breadcrumb').items = sizeItems;
-    document.getElementById('medium-breadcrumb').items = sizeItems;
-    document.getElementById('large-breadcrumb').items = sizeItems;
-
-    // Collapsed examples
-    const longPath = [
-      { label: 'Home', href: '/' },
-      { label: 'Documents', href: '/docs' },
-      { label: 'Projects', href: '/docs/projects' },
-      { label: '2024', href: '/docs/projects/2024' },
-      { label: 'Q1', href: '/docs/projects/2024/q1' },
-      { label: 'Reports', href: '/docs/projects/2024/q1/reports' },
-      { label: 'Final Report' }
-    ];
-
-    document.getElementById('collapsed-breadcrumb').items = longPath;
-    document.getElementById('collapsed-2-breadcrumb').items = longPath;
-
-    // Interactive demo
-    let interactiveItems = [
-      { label: 'Home', href: '/' },
-      { label: 'Page 1', href: '/page1' },
-      { label: 'Page 2', href: '/page2' },
-      { label: 'Current Page' }
-    ];
-
-    const interactiveBreadcrumb = document.getElementById('interactive-breadcrumb');
-    interactiveBreadcrumb.items = interactiveItems;
-
-    window.addItem = function() {
-      const num = interactiveItems.length;
-      interactiveItems.splice(-1, 0, {
-        label: `Page ${num}`,
-        href: `/page${num}`
-      });
-      interactiveBreadcrumb.items = [...interactiveItems];
-    };
-
-    window.removeItem = function() {
-      if (interactiveItems.length > 2) {
-        interactiveItems.splice(-2, 1);
-        interactiveBreadcrumb.items = [...interactiveItems];
-      }
-    };
-
-    window.updateBreadcrumb = function() {
-      interactiveBreadcrumb.separator = document.getElementById('separator-select').value;
-      interactiveBreadcrumb.size = document.getElementById('size-select').value;
-      interactiveBreadcrumb.maxItems = parseInt(document.getElementById('max-items').value) || 0;
-    };
-
-    // Event logging
-    interactiveBreadcrumb.addEventListener('breadcrumb-click', (e) => {
-      const log = document.getElementById('event-log');
-      const time = new Date().toLocaleTimeString();
-      log.innerHTML = `[${time}] Clicked: "${e.detail.label}" (index: ${e.detail.index}, href: ${e.detail.href})<br>` + log.innerHTML;
+    ['sep-slash', 'sep-gt', 'sep-raquo', 'sep-dot', 'sep-pipe'].forEach(id => {
+      document.getElementById(id).items = basic;
     });
 
-    // Real-world examples
-    document.getElementById('ecommerce-breadcrumb').items = [
-      { label: 'Store', href: '/', icon: '🏪' },
-      { label: 'Women', href: '/women' },
-      { label: 'Clothing', href: '/women/clothing' },
-      { label: 'Dresses', href: '/women/clothing/dresses' },
-      { label: 'Summer Collection' }
+    ['size-small', 'size-medium', 'size-large'].forEach(id => {
+      document.getElementById(id).items = basic;
+    });
+
+    document.getElementById('bc-links').items = [
+      { label: 'Home', href: '#home' },
+      { label: 'Category', href: '#category' },
+      { label: 'Subcategory', href: '#subcategory' },
+      { label: 'Active Page' },
     ];
 
-    document.getElementById('docs-breadcrumb').items = [
-      { label: 'Docs', href: '/docs' },
-      { label: 'Components', href: '/docs/components' },
-      { label: 'Navigation', href: '/docs/components/navigation' },
-      { label: 'Breadcrumb' }
+    document.getElementById('bc-icons').items = [
+      { label: 'Home', href: '#', icon: '\u{1F3E0}' },
+      { label: 'Settings', href: '#', icon: '\u2699\uFE0F' },
+      { label: 'Profile', icon: '\u{1F464}' },
     ];
 
-    document.getElementById('filesystem-breadcrumb').items = [
-      { label: 'root', href: '/' },
-      { label: 'home', href: '/home' },
-      { label: 'user', href: '/home/user' },
-      { label: 'documents', href: '/home/user/documents' },
-      { label: 'projects', href: '/home/user/documents/projects' },
-      { label: 'snice', href: '/home/user/documents/projects/snice' },
-      { label: 'components', href: '/home/user/documents/projects/snice/components' },
-      { label: 'breadcrumb.ts' }
+    document.getElementById('bc-iconimages').items = [
+      { label: 'Home', href: '#', iconImage: 'https://i.pravatar.cc/16?img=1' },
+      { label: 'Dashboard', href: '#', iconImage: 'https://i.pravatar.cc/16?img=2' },
+      { label: 'Settings' },
     ];
 
-    document.getElementById('admin-breadcrumb').items = [
-      { label: 'Admin', href: '/admin' },
-      { label: 'Users', href: '/admin/users' },
-      { label: 'Roles', href: '/admin/users/roles' },
-      { label: 'Edit Role' }
+    const deep = [
+      { label: 'Root', href: '#' },
+      { label: 'Level 1', href: '#' },
+      { label: 'Level 2', href: '#' },
+      { label: 'Level 3', href: '#' },
+      { label: 'Level 4', href: '#' },
+      { label: 'Current' },
     ];
+
+    document.getElementById('bc-max3').items = deep;
+    document.getElementById('bc-max2').items = deep;
+    document.getElementById('bc-max0').items = deep;
+
+    document.getElementById('bc-single').items = [{ label: 'Only Item' }];
+    document.getElementById('bc-two').items = [{ label: 'Home', href: '#' }, { label: 'Current' }];
+
+    document.getElementById('bc-many').items = [
+      { label: 'Home', href: '#' },
+      { label: 'A', href: '#' },
+      { label: 'B', href: '#' },
+      { label: 'C', href: '#' },
+      { label: 'D', href: '#' },
+      { label: 'E', href: '#' },
+      { label: 'F', href: '#' },
+      { label: 'Current' },
+    ];
+
+    document.getElementById('bc-long').items = [
+      { label: 'Enterprise Resource Planning Dashboard', href: '#' },
+      { label: 'Human Resources Management Module', href: '#' },
+      { label: 'Employee Performance Review System' },
+    ];
+
+    document.getElementById('bc-short').items = [
+      { label: 'A', href: '#' },
+      { label: 'B', href: '#' },
+      { label: 'C' },
+    ];
+
+    document.getElementById('mx-s-slash').items = basic;
+    document.getElementById('mx-m-gt').items = basic;
+    document.getElementById('mx-l-raquo').items = basic;
   </script>
 </body>
 </html>

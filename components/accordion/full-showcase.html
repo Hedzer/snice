@@ -1,405 +1,257 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snice Accordion Demo</title>
+  <title>Accordion</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
     body {
       font-family: system-ui, -apple-system, sans-serif;
-      padding: 40px;
-      line-height: 1.6;
+      padding: 1.5rem;
       background: var(--snice-color-background);
-      transition: background-color var(--snice-transition-medium) ease, color var(--snice-transition-medium) ease;
-    }
-
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      background: var(--snice-color-background);
-      padding: 40px;
-      border-radius: 8px;
-      box-shadow: var(--snice-shadow-lg);
-    }
-
-    h1 {
       color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: 10px;
     }
-
+    section { margin-bottom: 2rem; }
     h2 {
-      color: var(--snice-color-text-secondary);
-      margin-top: 30px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--snice-color-text-tertiary, #888);
+      margin: 0 0 0.75rem;
     }
-
-    .demo-section {
-      margin: 30px 0;
-    }
-
-    .controls {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-
-    button {
-      padding: 8px 16px;
-      background: var(--snice-color-primary);
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    button:hover {
-      background: var(--snice-color-primary-hover);
-    }
-
-    button:disabled {
-      background: var(--snice-color-text-muted);
-      cursor: not-allowed;
-    }
-
-    .custom-accordion {
-      --accordion-border-color: #cbd5e1;
-      --accordion-border-radius: 12px;
-      --accordion-header-bg: #f8fafc;
-      --accordion-header-bg-hover: #e2e8f0;
-      --accordion-header-bg-active: #cbd5e1;
-      --accordion-header-padding: 20px;
-      --accordion-content-padding: 20px;
-      --accordion-animation-duration: 0.4s;
-    }
-
-    .icon-example {
+    .row {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
     }
-
-    .icon-example svg {
-      width: 20px;
-      height: 20px;
-    }
-
-    code {
-      background: var(--snice-color-background);
-      padding: 2px 6px;
-      border-radius: 3px;
-      font-size: 0.9em;
-    }
-
-    pre {
-      background: var(--snice-color-background);
-      padding: 16px;
-      border-radius: 4px;
-      overflow-x: auto;
-    }
-
-    .status {
-      margin-top: 20px;
-      padding: 12px;
-      background: var(--snice-color-background);
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      color: var(--snice-color-text);
+    .side-by-side {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Snice Accordion Component Demo</h1>
 
-    <div class="demo-section">
-      <h2>Basic Accordion (Single Mode)</h2>
-      <p>Only one item can be expanded at a time.</p>
-      
-      <snice-accordion id="basic-accordion">
-        <snice-accordion-item item-id="item-1" open>
-          <span slot="header">What is Snice?</span>
-          <p>Snice is a modern web component library that provides customizable, accessible UI components built with TypeScript and decorators. It focuses on simplicity, performance, and developer experience.</p>
-        </snice-accordion-item>
-        
-        <snice-accordion-item item-id="item-2">
-          <span slot="header">How do I install Snice?</span>
-          <p>You can install Snice using npm:</p>
-          <pre><code>npm install snice</code></pre>
-          <p>Then import the components you need in your application.</p>
-        </snice-accordion-item>
-        
-        <snice-accordion-item item-id="item-3">
-          <span slot="header">Is Snice accessible?</span>
-          <p>Yes! All Snice components are built with accessibility in mind. They include proper ARIA attributes, keyboard navigation, and follow WCAG guidelines.</p>
-          <ul>
-            <li>Full keyboard support</li>
-            <li>Screen reader friendly</li>
-            <li>ARIA compliant</li>
-            <li>Focus management</li>
-          </ul>
-        </snice-accordion-item>
-      </snice-accordion>
-    </div>
+  <section>
+    <h2>Variant: bordered (default)</h2>
+    <snice-accordion variant="bordered">
+      <snice-accordion-item item-id="b1" open>
+        <span slot="header">First Item (open)</span>
+        <p>Content of the first item, initially expanded.</p>
+      </snice-accordion-item>
+      <snice-accordion-item item-id="b2">
+        <span slot="header">Second Item</span>
+        <p>Content of the second item.</p>
+      </snice-accordion-item>
+      <snice-accordion-item item-id="b3">
+        <span slot="header">Third Item</span>
+        <p>Content of the third item.</p>
+      </snice-accordion-item>
+    </snice-accordion>
+  </section>
 
-    <div class="demo-section">
-      <h2>Multiple Expansion Mode</h2>
-      <p>Multiple items can be expanded simultaneously.</p>
-      
-      <div class="controls">
-        <button onclick="openAll()">Open All</button>
-        <button onclick="closeAll()">Close All</button>
-        <button onclick="toggleSecond()">Toggle Second Item</button>
+  <section>
+    <h2>Variant: elevated</h2>
+    <snice-accordion variant="elevated">
+      <snice-accordion-item item-id="e1" open>
+        <span slot="header">Elevated First</span>
+        <p>Elevated style content.</p>
+      </snice-accordion-item>
+      <snice-accordion-item item-id="e2">
+        <span slot="header">Elevated Second</span>
+        <p>Another elevated item.</p>
+      </snice-accordion-item>
+    </snice-accordion>
+  </section>
+
+  <section>
+    <h2>Multiple mode (multiple items open simultaneously)</h2>
+    <snice-accordion multiple>
+      <snice-accordion-item item-id="m1" open>
+        <span slot="header">Item A (open)</span>
+        <p>Multiple items can be open at once.</p>
+      </snice-accordion-item>
+      <snice-accordion-item item-id="m2" open>
+        <span slot="header">Item B (open)</span>
+        <p>This is also open by default.</p>
+      </snice-accordion-item>
+      <snice-accordion-item item-id="m3">
+        <span slot="header">Item C</span>
+        <p>Click to expand.</p>
+      </snice-accordion-item>
+    </snice-accordion>
+  </section>
+
+  <section>
+    <h2>Single mode (default, only one open at a time)</h2>
+    <snice-accordion>
+      <snice-accordion-item item-id="s1">
+        <span slot="header">Alpha</span>
+        <p>Opening another will close this.</p>
+      </snice-accordion-item>
+      <snice-accordion-item item-id="s2">
+        <span slot="header">Beta</span>
+        <p>Single expansion mode.</p>
+      </snice-accordion-item>
+      <snice-accordion-item item-id="s3">
+        <span slot="header">Gamma</span>
+        <p>Third option.</p>
+      </snice-accordion-item>
+    </snice-accordion>
+  </section>
+
+  <section>
+    <h2>Disabled items</h2>
+    <snice-accordion>
+      <snice-accordion-item item-id="d1">
+        <span slot="header">Enabled Item</span>
+        <p>This item can be toggled.</p>
+      </snice-accordion-item>
+      <snice-accordion-item item-id="d2" disabled>
+        <span slot="header">Disabled Item</span>
+        <p>This content should not be reachable.</p>
+      </snice-accordion-item>
+      <snice-accordion-item item-id="d3">
+        <span slot="header">Another Enabled Item</span>
+        <p>This item can be toggled.</p>
+      </snice-accordion-item>
+    </snice-accordion>
+  </section>
+
+  <section>
+    <h2>Variant x Multiple matrix</h2>
+    <div class="side-by-side">
+      <div>
+        <h2>bordered + single</h2>
+        <snice-accordion variant="bordered">
+          <snice-accordion-item item-id="bs1" open>
+            <span slot="header">Open</span>
+            <p>Bordered single.</p>
+          </snice-accordion-item>
+          <snice-accordion-item item-id="bs2">
+            <span slot="header">Closed</span>
+            <p>Content.</p>
+          </snice-accordion-item>
+        </snice-accordion>
       </div>
-      
-      <snice-accordion id="multiple-accordion" multiple>
-        <snice-accordion-item item-id="multi-1">
-          <span slot="header">
-            <span class="icon-example">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-              </svg>
-              Features
-            </span>
-          </span>
-          <p>Snice offers a wide range of features:</p>
-          <ul>
-            <li>TypeScript support</li>
-            <li>Custom elements</li>
-            <li>Shadow DOM encapsulation</li>
-            <li>Reactive properties</li>
-            <li>Event handling</li>
-          </ul>
-        </snice-accordion-item>
-        
-        <snice-accordion-item item-id="multi-2">
-          <span slot="header">
-            <span class="icon-example">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/>
-              </svg>
-              Code Example
-            </span>
-          </span>
-          <pre><code>import { SniceAccordion } from 'snice/accordion';
-
-// Get accordion element
-const accordion = document.querySelector('snice-accordion');
-
-// Open specific item
-accordion.openItem('item-1');
-
-// Listen for events
-accordion.addEventListener('accordion-open', (e) => {
-  console.log('Opened:', e.detail.itemId);
-});</code></pre>
-        </snice-accordion-item>
-        
-        <snice-accordion-item item-id="multi-3">
-          <span slot="header">
-            <span class="icon-example">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-              </svg>
-              Benefits
-            </span>
-          </span>
-          <p>Why choose Snice?</p>
-          <ul>
-            <li>Lightweight and performant</li>
-            <li>Framework agnostic</li>
-            <li>Customizable styling</li>
-            <li>Well documented</li>
-            <li>Active community</li>
-          </ul>
-        </snice-accordion-item>
-      </snice-accordion>
-    </div>
-
-    <div class="demo-section">
-      <h2>Custom Styled Accordion</h2>
-      <p>Accordion with custom CSS variables for styling.</p>
-      
-      <snice-accordion class="custom-accordion">
-        <snice-accordion-item item-id="custom-1">
-          <span slot="header">Custom Styling</span>
-          <p>This accordion uses custom CSS variables to change its appearance. You can customize:</p>
-          <ul>
-            <li>Border colors and radius</li>
-            <li>Header background colors</li>
-            <li>Padding and spacing</li>
-            <li>Animation duration</li>
-          </ul>
-        </snice-accordion-item>
-        
-        <snice-accordion-item item-id="custom-2">
-          <span slot="header">Dynamic Content</span>
-          <p>Content height adjusts automatically.</p>
-          <button onclick="addContent(this)">Add More Content</button>
-          <div id="dynamic-content"></div>
-        </snice-accordion-item>
-        
-        <snice-accordion-item item-id="custom-3" disabled>
-          <span slot="header">Disabled Item</span>
-          <p>This content cannot be accessed because the item is disabled.</p>
-        </snice-accordion-item>
-      </snice-accordion>
-    </div>
-
-    <div class="demo-section">
-      <h2>Programmatic Control</h2>
-      <p>Control the accordion programmatically.</p>
-      
-      <div class="controls">
-        <button onclick="openItem('prog-1')">Open First</button>
-        <button onclick="closeItem('prog-1')">Close First</button>
-        <button onclick="toggleItem('prog-2')">Toggle Second</button>
-        <button onclick="getActiveItems()">Get Active Items</button>
-      </div>
-      
-      <snice-accordion id="programmatic-accordion">
-        <snice-accordion-item item-id="prog-1">
-          <span slot="header">First Item</span>
-          <p>This item can be controlled programmatically using the accordion's API.</p>
-        </snice-accordion-item>
-        
-        <snice-accordion-item item-id="prog-2">
-          <span slot="header">Second Item</span>
-          <p>Toggle this item using the button above.</p>
-        </snice-accordion-item>
-        
-        <snice-accordion-item item-id="prog-3">
-          <span slot="header">Third Item</span>
-          <p>Another item with some content.</p>
-        </snice-accordion-item>
-      </snice-accordion>
-      
-      <div id="status" class="status"></div>
-    </div>
-
-    <div class="demo-section">
-      <h2>Keyboard Navigation</h2>
-      <p>Use arrow keys to navigate between items, Enter or Space to toggle.</p>
-      
-      <snice-accordion>
-        <snice-accordion-item item-id="nav-1">
-          <span slot="header">Keyboard Support</span>
-          <p>Try these keyboard shortcuts:</p>
-          <ul>
-            <li><code>↓</code> - Move to next item</li>
-            <li><code>↑</code> - Move to previous item</li>
-            <li><code>Home</code> - Move to first item</li>
-            <li><code>End</code> - Move to last item</li>
-            <li><code>Enter</code> or <code>Space</code> - Toggle current item</li>
-          </ul>
-        </snice-accordion-item>
-        
-        <snice-accordion-item item-id="nav-2">
-          <span slot="header">Focus Management</span>
-          <p>Focus is properly managed when navigating with keyboard.</p>
-        </snice-accordion-item>
-        
-        <snice-accordion-item item-id="nav-3">
-          <span slot="header">Accessibility</span>
-          <p>All items have proper ARIA attributes for screen readers.</p>
-        </snice-accordion-item>
-      </snice-accordion>
-    </div>
-
-    <div class="demo-section">
-      <h2>Event Handling</h2>
-      <p>Listen for accordion events.</p>
-      
-      <snice-accordion id="event-accordion">
-        <snice-accordion-item item-id="event-1">
-          <span slot="header">Click me and watch the console</span>
-          <p>Events are logged to the console and displayed below.</p>
-        </snice-accordion-item>
-        
-        <snice-accordion-item item-id="event-2">
-          <span slot="header">Another item to test events</span>
-          <p>Each open/close action triggers an event.</p>
-        </snice-accordion-item>
-      </snice-accordion>
-      
-      <div id="event-log" class="status">
-        <strong>Event Log:</strong><br>
-        <span id="log-content">No events yet...</span>
+      <div>
+        <h2>elevated + multiple</h2>
+        <snice-accordion variant="elevated" multiple>
+          <snice-accordion-item item-id="em1" open>
+            <span slot="header">Open A</span>
+            <p>Elevated multiple.</p>
+          </snice-accordion-item>
+          <snice-accordion-item item-id="em2" open>
+            <span slot="header">Open B</span>
+            <p>Both open.</p>
+          </snice-accordion-item>
+        </snice-accordion>
       </div>
     </div>
-  </div>
+  </section>
+
+  <section>
+    <h2>Edge case: single item</h2>
+    <snice-accordion>
+      <snice-accordion-item item-id="solo">
+        <span slot="header">Only Item</span>
+        <p>Accordion with a single item.</p>
+      </snice-accordion-item>
+    </snice-accordion>
+  </section>
+
+  <section>
+    <h2>Edge case: very long header text</h2>
+    <snice-accordion>
+      <snice-accordion-item item-id="long1">
+        <span slot="header">This is an extremely long header text that should demonstrate how the accordion handles overflow when the header content is much longer than typical usage would require in a normal interface</span>
+        <p>Short content.</p>
+      </snice-accordion-item>
+    </snice-accordion>
+  </section>
+
+  <section>
+    <h2>Edge case: rich content inside</h2>
+    <snice-accordion>
+      <snice-accordion-item item-id="rich1" open>
+        <span slot="header">Rich Content</span>
+        <p>Paragraph one.</p>
+        <p>Paragraph two with <strong>bold</strong> and <em>italic</em> text.</p>
+        <ul>
+          <li>List item one</li>
+          <li>List item two</li>
+          <li>List item three</li>
+        </ul>
+        <p>Final paragraph after a list.</p>
+      </snice-accordion-item>
+    </snice-accordion>
+  </section>
+
+  <section>
+    <h2>Edge case: empty content</h2>
+    <snice-accordion>
+      <snice-accordion-item item-id="empty1">
+        <span slot="header">Empty Body</span>
+      </snice-accordion-item>
+    </snice-accordion>
+  </section>
+
+  <section>
+    <h2>All items open with multiple</h2>
+    <snice-accordion multiple>
+      <snice-accordion-item item-id="ao1" open>
+        <span slot="header">All Open 1</span>
+        <p>First.</p>
+      </snice-accordion-item>
+      <snice-accordion-item item-id="ao2" open>
+        <span slot="header">All Open 2</span>
+        <p>Second.</p>
+      </snice-accordion-item>
+      <snice-accordion-item item-id="ao3" open>
+        <span slot="header">All Open 3</span>
+        <p>Third.</p>
+      </snice-accordion-item>
+    </snice-accordion>
+  </section>
+
+  <section>
+    <h2>Mixed: disabled + open + normal</h2>
+    <snice-accordion multiple>
+      <snice-accordion-item item-id="mix1" open>
+        <span slot="header">Open &amp; Enabled</span>
+        <p>Expanded and interactive.</p>
+      </snice-accordion-item>
+      <snice-accordion-item item-id="mix2" disabled>
+        <span slot="header">Disabled</span>
+        <p>Cannot be toggled.</p>
+      </snice-accordion-item>
+      <snice-accordion-item item-id="mix3">
+        <span slot="header">Closed &amp; Enabled</span>
+        <p>Collapsed but interactive.</p>
+      </snice-accordion-item>
+    </snice-accordion>
+  </section>
 
   <script type="module">
     import './snice-accordion.ts';
     import './snice-accordion-item.ts';
-
-    // Multiple mode controls
-    window.openAll = function() {
-      const accordion = document.getElementById('multiple-accordion');
-      accordion.openAll();
-    };
-
-    window.closeAll = function() {
-      const accordion = document.getElementById('multiple-accordion');
-      accordion.closeAll();
-    };
-
-    window.toggleSecond = function() {
-      const accordion = document.getElementById('multiple-accordion');
-      accordion.toggleItem('multi-2');
-    };
-
-    // Dynamic content
-    window.addContent = function(button) {
-      const container = document.getElementById('dynamic-content');
-      const p = document.createElement('p');
-      p.textContent = `Added paragraph ${container.children.length + 1} at ${new Date().toLocaleTimeString()}`;
-      container.appendChild(p);
-    };
-
-    // Programmatic control
-    window.openItem = function(id) {
-      const accordion = document.getElementById('programmatic-accordion');
-      accordion.openItem(id);
-    };
-
-    window.closeItem = function(id) {
-      const accordion = document.getElementById('programmatic-accordion');
-      accordion.closeItem(id);
-    };
-
-    window.toggleItem = function(id) {
-      const accordion = document.getElementById('programmatic-accordion');
-      accordion.toggleItem(id);
-    };
-
-    window.getActiveItems = function() {
-      const accordion = document.getElementById('programmatic-accordion');
-      const status = document.getElementById('status');
-      const active = Array.from(accordion.activeItems);
-      status.textContent = `Active items: ${active.length > 0 ? active.join(', ') : 'None'}`;
-    };
-
-    // Event handling
-    const eventAccordion = document.getElementById('event-accordion');
-    const logContent = document.getElementById('log-content');
-    let eventCount = 0;
-
-    eventAccordion.addEventListener('accordion-open', (e) => {
-      eventCount++;
-      const message = `[${eventCount}] Opened: ${e.detail.itemId}`;
-      console.log(message);
-      logContent.textContent = message;
-    });
-
-    eventAccordion.addEventListener('accordion-close', (e) => {
-      eventCount++;
-      const message = `[${eventCount}] Closed: ${e.detail.itemId}`;
-      console.log(message);
-      logContent.textContent = message;
-    });
   </script>
 </body>
 </html>

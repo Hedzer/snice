@@ -1,524 +1,269 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snice Badge Demo</title>
+  <title>Badge</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
     body {
       font-family: system-ui, -apple-system, sans-serif;
-      padding: 40px;
-      line-height: 1.6;
+      padding: 1.5rem;
       background: var(--snice-color-background);
-      transition: background-color var(--snice-transition-medium) ease, color var(--snice-transition-medium) ease;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      background: var(--snice-color-background-element);
-      padding: 40px;
-      border-radius: 8px;
-      box-shadow: var(--snice-shadow-lg);
-    }
-
-    h1 {
       color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: 10px;
     }
-
+    section { margin-bottom: 2rem; }
     h2 {
-      color: var(--snice-color-text-secondary);
-      margin-top: 30px;
-    }
-
-    .demo-section {
-      margin: 30px 0;
-      padding: 20px;
-      background: var(--snice-color-background);
-      border-radius: 4px;
-    }
-
-    .demo-label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 500;
-      color: var(--snice-color-text-secondary);
-      font-size: 14px;
-    }
-
-    .demo-item {
-      margin: 20px 0;
-      display: flex;
-      align-items: center;
-      gap: 30px;
-    }
-
-    .badge-target {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 50px;
-      height: 50px;
-      background: var(--snice-color-primary);
-      color: white;
-      border-radius: 8px;
-      font-size: 24px;
-    }
-
-    .badge-avatar {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background: var(--snice-color-primary);
-      color: var(--snice-color-text-inverse);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      font-size: 0.75rem;
       font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--snice-color-text-tertiary, #888);
+      margin: 0 0 0.75rem;
     }
-
-    .badge-button {
-      padding: 10px 20px;
-      background: var(--snice-color-primary);
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 14px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .badge-button:hover {
-      background: var(--snice-color-primary-hover);
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 30px;
-      margin: 20px 0;
-    }
-
-    .inline-demo {
+    .row {
       display: flex;
       align-items: center;
-      gap: 20px;
+      gap: 1.5rem;
       flex-wrap: wrap;
+      margin-bottom: 1rem;
     }
-
-    .controls {
+    .box {
+      width: 3rem;
+      height: 3rem;
+      background: var(--snice-color-background-element, #f0f0f0);
+      border-radius: 0.5rem;
       display: flex;
-      gap: 10px;
-      margin: 20px 0;
-      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
     }
-
-    button {
-      padding: 8px 16px;
-      background: var(--snice-color-background);
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: background 0.2s;
+    .matrix {
+      display: grid;
+      grid-template-columns: auto repeat(6, 1fr);
+      gap: 1rem;
+      align-items: center;
     }
-
-    button:hover {
-      background: var(--snice-color-background);
+    .matrix-label {
+      font-size: 0.7rem;
+      color: var(--snice-color-text-secondary, #aaa);
+      text-align: right;
+      padding-right: 0.5rem;
     }
-
-    input[type="number"] {
-      width: 80px;
-      padding: 8px;
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      font-size: 14px;
+    .grid-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
     }
-
-    code {
-      background: var(--snice-color-background);
-      padding: 2px 6px;
-      border-radius: 3px;
-      font-size: 0.9em;
-    }
-
-    .notification-icon {
-      width: 30px;
-      height: 30px;
+    .grid-item span {
+      font-size: 0.65rem;
+      color: var(--snice-color-text-tertiary, #888);
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Snice Badge Component Demo</h1>
 
-    <div class="demo-section">
-      <h2>Basic Badges with Count</h2>
-      
-      <div class="grid">
-        <div>
-          <span class="demo-label">Default</span>
-          <snice-badge count="5">
-            <div class="badge-target">📧</div>
-          </snice-badge>
-        </div>
+  <section>
+    <h2>All variants</h2>
+    <div class="row">
+      <snice-badge content="5" variant="default"><div class="box">\u{1F4E6}</div></snice-badge>
+      <snice-badge content="5" variant="primary"><div class="box">\u{1F4E6}</div></snice-badge>
+      <snice-badge content="5" variant="success"><div class="box">\u{1F4E6}</div></snice-badge>
+      <snice-badge content="5" variant="warning"><div class="box">\u{1F4E6}</div></snice-badge>
+      <snice-badge content="5" variant="error"><div class="box">\u{1F4E6}</div></snice-badge>
+      <snice-badge content="5" variant="info"><div class="box">\u{1F4E6}</div></snice-badge>
+    </div>
+  </section>
 
-        <div>
-          <span class="demo-label">Primary</span>
-          <snice-badge count="12" variant="primary">
-            <div class="badge-target">🔔</div>
-          </snice-badge>
-        </div>
+  <section>
+    <h2>All sizes</h2>
+    <div class="row">
+      <snice-badge content="3" variant="error" size="small"><div class="box">\u{1F514}</div></snice-badge>
+      <snice-badge content="3" variant="error" size="medium"><div class="box">\u{1F514}</div></snice-badge>
+      <snice-badge content="3" variant="error" size="large"><div class="box">\u{1F514}</div></snice-badge>
+    </div>
+  </section>
 
-        <div>
-          <span class="demo-label">Success</span>
-          <snice-badge count="3" variant="success">
-            <div class="badge-target">✓</div>
-          </snice-badge>
-        </div>
+  <section>
+    <h2>Variant x Size matrix</h2>
+    <div class="matrix">
+      <div class="matrix-label">small</div>
+      <snice-badge content="1" variant="default" size="small"><div class="box">A</div></snice-badge>
+      <snice-badge content="1" variant="primary" size="small"><div class="box">A</div></snice-badge>
+      <snice-badge content="1" variant="success" size="small"><div class="box">A</div></snice-badge>
+      <snice-badge content="1" variant="warning" size="small"><div class="box">A</div></snice-badge>
+      <snice-badge content="1" variant="error" size="small"><div class="box">A</div></snice-badge>
+      <snice-badge content="1" variant="info" size="small"><div class="box">A</div></snice-badge>
 
-        <div>
-          <span class="demo-label">Warning</span>
-          <snice-badge count="7" variant="warning">
-            <div class="badge-target">⚠</div>
-          </snice-badge>
-        </div>
+      <div class="matrix-label">medium</div>
+      <snice-badge content="1" variant="default" size="medium"><div class="box">A</div></snice-badge>
+      <snice-badge content="1" variant="primary" size="medium"><div class="box">A</div></snice-badge>
+      <snice-badge content="1" variant="success" size="medium"><div class="box">A</div></snice-badge>
+      <snice-badge content="1" variant="warning" size="medium"><div class="box">A</div></snice-badge>
+      <snice-badge content="1" variant="error" size="medium"><div class="box">A</div></snice-badge>
+      <snice-badge content="1" variant="info" size="medium"><div class="box">A</div></snice-badge>
 
-        <div>
-          <span class="demo-label">Error</span>
-          <snice-badge count="1" variant="error">
-            <div class="badge-target">!</div>
-          </snice-badge>
-        </div>
+      <div class="matrix-label">large</div>
+      <snice-badge content="1" variant="default" size="large"><div class="box">A</div></snice-badge>
+      <snice-badge content="1" variant="primary" size="large"><div class="box">A</div></snice-badge>
+      <snice-badge content="1" variant="success" size="large"><div class="box">A</div></snice-badge>
+      <snice-badge content="1" variant="warning" size="large"><div class="box">A</div></snice-badge>
+      <snice-badge content="1" variant="error" size="large"><div class="box">A</div></snice-badge>
+      <snice-badge content="1" variant="info" size="large"><div class="box">A</div></snice-badge>
+    </div>
+  </section>
 
-        <div>
-          <span class="demo-label">Info</span>
-          <snice-badge count="99" variant="info">
-            <div class="badge-target">ℹ</div>
-          </snice-badge>
-        </div>
+  <section>
+    <h2>All positions</h2>
+    <div class="row">
+      <div class="grid-item">
+        <snice-badge content="1" variant="error" position="top-right"><div class="box">\u2B1B</div></snice-badge>
+        <span>top-right</span>
+      </div>
+      <div class="grid-item">
+        <snice-badge content="2" variant="error" position="top-left"><div class="box">\u2B1B</div></snice-badge>
+        <span>top-left</span>
+      </div>
+      <div class="grid-item">
+        <snice-badge content="3" variant="error" position="bottom-right"><div class="box">\u2B1B</div></snice-badge>
+        <span>bottom-right</span>
+      </div>
+      <div class="grid-item">
+        <snice-badge content="4" variant="error" position="bottom-left"><div class="box">\u2B1B</div></snice-badge>
+        <span>bottom-left</span>
       </div>
     </div>
+  </section>
 
-    <div class="demo-section">
-      <h2>Badge Positions</h2>
-      
-      <div class="grid">
-        <div>
-          <span class="demo-label">Top Right (Default)</span>
-          <snice-badge count="5" position="top-right" variant="error">
-            <div class="badge-avatar">JD</div>
-          </snice-badge>
-        </div>
+  <section>
+    <h2>Dot mode</h2>
+    <div class="row">
+      <snice-badge dot variant="default"><div class="box">\u{1F4AC}</div></snice-badge>
+      <snice-badge dot variant="primary"><div class="box">\u{1F4AC}</div></snice-badge>
+      <snice-badge dot variant="success"><div class="box">\u{1F4AC}</div></snice-badge>
+      <snice-badge dot variant="warning"><div class="box">\u{1F4AC}</div></snice-badge>
+      <snice-badge dot variant="error"><div class="box">\u{1F4AC}</div></snice-badge>
+      <snice-badge dot variant="info"><div class="box">\u{1F4AC}</div></snice-badge>
+    </div>
+  </section>
 
-        <div>
-          <span class="demo-label">Top Left</span>
-          <snice-badge count="3" position="top-left" variant="success">
-            <div class="badge-avatar">AB</div>
-          </snice-badge>
-        </div>
+  <section>
+    <h2>Pulse animation</h2>
+    <div class="row">
+      <snice-badge dot pulse variant="error"><div class="box">\u{1F514}</div></snice-badge>
+      <snice-badge content="!" pulse variant="error"><div class="box">\u{1F514}</div></snice-badge>
+      <snice-badge content="3" pulse variant="primary"><div class="box">\u{1F514}</div></snice-badge>
+    </div>
+  </section>
 
-        <div>
-          <span class="demo-label">Bottom Right</span>
-          <snice-badge count="7" position="bottom-right" variant="warning">
-            <div class="badge-avatar">XY</div>
-          </snice-badge>
-        </div>
-
-        <div>
-          <span class="demo-label">Bottom Left</span>
-          <snice-badge count="2" position="bottom-left" variant="info">
-            <div class="badge-avatar">PQ</div>
-          </snice-badge>
-        </div>
+  <section>
+    <h2>Count property with max</h2>
+    <div class="row">
+      <div class="grid-item">
+        <snice-badge count="5" variant="error"><div class="box">\u{1F4E7}</div></snice-badge>
+        <span>count=5</span>
+      </div>
+      <div class="grid-item">
+        <snice-badge count="42" variant="error"><div class="box">\u{1F4E7}</div></snice-badge>
+        <span>count=42</span>
+      </div>
+      <div class="grid-item">
+        <snice-badge count="99" variant="error"><div class="box">\u{1F4E7}</div></snice-badge>
+        <span>count=99</span>
+      </div>
+      <div class="grid-item">
+        <snice-badge count="100" variant="error"><div class="box">\u{1F4E7}</div></snice-badge>
+        <span>count=100 (99+)</span>
+      </div>
+      <div class="grid-item">
+        <snice-badge count="999" variant="error"><div class="box">\u{1F4E7}</div></snice-badge>
+        <span>count=999 (99+)</span>
       </div>
     </div>
+  </section>
 
-    <div class="demo-section">
-      <h2>Badge Sizes</h2>
-      
-      <div class="inline-demo">
-        <div>
-          <span class="demo-label">Small</span>
-          <snice-badge count="5" size="small" variant="primary">
-            <div class="badge-target">📧</div>
-          </snice-badge>
-        </div>
-
-        <div>
-          <span class="demo-label">Medium (Default)</span>
-          <snice-badge count="10" size="medium" variant="primary">
-            <div class="badge-target">📧</div>
-          </snice-badge>
-        </div>
-
-        <div>
-          <span class="demo-label">Large</span>
-          <snice-badge count="15" size="large" variant="primary">
-            <div class="badge-target">📧</div>
-          </snice-badge>
-        </div>
+  <section>
+    <h2>Custom max</h2>
+    <div class="row">
+      <div class="grid-item">
+        <snice-badge count="10" max="9" variant="error"><div class="box">\u{1F4AC}</div></snice-badge>
+        <span>max=9, count=10</span>
+      </div>
+      <div class="grid-item">
+        <snice-badge count="1000" max="999" variant="error"><div class="box">\u{1F4AC}</div></snice-badge>
+        <span>max=999, count=1000</span>
       </div>
     </div>
+  </section>
 
-    <div class="demo-section">
-      <h2>Dot Badge</h2>
-      
-      <div class="inline-demo">
-        <div>
-          <span class="demo-label">Simple Dot</span>
-          <snice-badge dot variant="error">
-            <div class="badge-target">🔔</div>
-          </snice-badge>
-        </div>
+  <section>
+    <h2>Content property (text)</h2>
+    <div class="row">
+      <snice-badge content="NEW" variant="primary"><div class="box">\u{1F381}</div></snice-badge>
+      <snice-badge content="HOT" variant="error"><div class="box">\u{1F525}</div></snice-badge>
+      <snice-badge content="BETA" variant="warning"><div class="box">\u2699\uFE0F</div></snice-badge>
+      <snice-badge content="!" variant="error"><div class="box">\u26A0\uFE0F</div></snice-badge>
+    </div>
+  </section>
 
-        <div>
-          <span class="demo-label">Pulsing Dot</span>
-          <snice-badge dot pulse variant="success">
-            <div class="badge-target">💬</div>
-          </snice-badge>
-        </div>
+  <section>
+    <h2>Inline mode</h2>
+    <div class="row">
+      <snice-badge content="5" variant="error" inline></snice-badge>
+      <snice-badge content="NEW" variant="primary" inline></snice-badge>
+      <snice-badge dot variant="success" inline></snice-badge>
+      <snice-badge content="99+" variant="warning" inline></snice-badge>
+    </div>
+  </section>
 
-        <div>
-          <span class="demo-label">Different Sizes</span>
-          <snice-badge dot size="small" variant="warning">
-            <div class="badge-avatar">S</div>
-          </snice-badge>
-          <snice-badge dot size="medium" variant="warning">
-            <div class="badge-avatar">M</div>
-          </snice-badge>
-          <snice-badge dot size="large" variant="warning">
-            <div class="badge-avatar">L</div>
-          </snice-badge>
-        </div>
+  <section>
+    <h2>Offset values</h2>
+    <div class="row">
+      <div class="grid-item">
+        <snice-badge content="0" variant="error" offset="0"><div class="box">A</div></snice-badge>
+        <span>offset=0</span>
+      </div>
+      <div class="grid-item">
+        <snice-badge content="4" variant="error" offset="4"><div class="box">A</div></snice-badge>
+        <span>offset=4</span>
+      </div>
+      <div class="grid-item">
+        <snice-badge content="8" variant="error" offset="8"><div class="box">A</div></snice-badge>
+        <span>offset=8</span>
       </div>
     </div>
+  </section>
 
-    <div class="demo-section">
-      <h2>Max Count</h2>
-      
-      <div class="inline-demo">
-        <div>
-          <span class="demo-label">Under Max (50)</span>
-          <snice-badge count="50" max="99" variant="primary">
-            <div class="badge-target">📧</div>
-          </snice-badge>
-        </div>
+  <section>
+    <h2>Edge case: no badge shown (count=0, no content, no dot)</h2>
+    <snice-badge variant="error"><div class="box">\u{1F4E6}</div></snice-badge>
+  </section>
 
-        <div>
-          <span class="demo-label">At Max (99)</span>
-          <snice-badge count="99" max="99" variant="primary">
-            <div class="badge-target">📧</div>
-          </snice-badge>
-        </div>
-
-        <div>
-          <span class="demo-label">Over Max (100+)</span>
-          <snice-badge count="150" max="99" variant="primary">
-            <div class="badge-target">📧</div>
-          </snice-badge>
-        </div>
-
-        <div>
-          <span class="demo-label">Custom Max (999+)</span>
-          <snice-badge count="1234" max="999" variant="error">
-            <div class="badge-target">🔔</div>
-          </snice-badge>
-        </div>
-      </div>
+  <section>
+    <h2>Dot x Position matrix</h2>
+    <div class="row">
+      <snice-badge dot variant="error" position="top-right"><div class="box">TR</div></snice-badge>
+      <snice-badge dot variant="error" position="top-left"><div class="box">TL</div></snice-badge>
+      <snice-badge dot variant="error" position="bottom-right"><div class="box">BR</div></snice-badge>
+      <snice-badge dot variant="error" position="bottom-left"><div class="box">BL</div></snice-badge>
     </div>
-
-    <div class="demo-section">
-      <h2>Custom Content</h2>
-      
-      <div class="inline-demo">
-        <div>
-          <span class="demo-label">Text Badge</span>
-          <snice-badge content="NEW" variant="success">
-            <button class="badge-button">Features</button>
-          </snice-badge>
-        </div>
-
-        <div>
-          <span class="demo-label">Short Text</span>
-          <snice-badge content="HOT" variant="error">
-            <button class="badge-button">Deals</button>
-          </snice-badge>
-        </div>
-
-        <div>
-          <span class="demo-label">Status</span>
-          <snice-badge content="PRO" variant="info">
-            <div class="badge-avatar">US</div>
-          </snice-badge>
-        </div>
-      </div>
-    </div>
-
-    <div class="demo-section">
-      <h2>Inline Badges</h2>
-      
-      <div>
-        <p>
-          Notifications 
-          <snice-badge count="5" inline variant="primary"></snice-badge>
-        </p>
-        <p>
-          Messages 
-          <snice-badge count="12" inline variant="success"></snice-badge>
-        </p>
-        <p>
-          Alerts 
-          <snice-badge count="3" inline variant="error"></snice-badge>
-        </p>
-        <p>
-          Updates Available 
-          <snice-badge content="NEW" inline variant="info"></snice-badge>
-        </p>
-      </div>
-    </div>
-
-    <div class="demo-section">
-      <h2>Badge with Offset</h2>
-      
-      <div class="inline-demo">
-        <div>
-          <span class="demo-label">No Offset</span>
-          <snice-badge count="5" offset="0" variant="primary">
-            <div class="badge-target">📧</div>
-          </snice-badge>
-        </div>
-
-        <div>
-          <span class="demo-label">Small Offset (4px)</span>
-          <snice-badge count="5" offset="4" variant="primary">
-            <div class="badge-target">📧</div>
-          </snice-badge>
-        </div>
-
-        <div>
-          <span class="demo-label">Large Offset (8px)</span>
-          <snice-badge count="5" offset="8" variant="primary">
-            <div class="badge-target">📧</div>
-          </snice-badge>
-        </div>
-      </div>
-    </div>
-
-    <div class="demo-section">
-      <h2>Interactive Demo</h2>
-      
-      <div class="demo-item">
-        <snice-badge id="interactive-badge" count="0" variant="primary">
-          <div class="badge-target">🔔</div>
-        </snice-badge>
-        
-        <div class="controls">
-          <button onclick="incrementCount()">+1</button>
-          <button onclick="decrementCount()">-1</button>
-          <button onclick="resetCount()">Reset</button>
-          <button onclick="toggleDot()">Toggle Dot</button>
-          <button onclick="togglePulse()">Toggle Pulse</button>
-          <input type="number" id="count-input" value="0" onchange="setCount(this.value)">
-        </div>
-      </div>
-
-      <div class="demo-item">
-        <div class="controls">
-          <button onclick="changeVariant('default')">Default</button>
-          <button onclick="changeVariant('primary')">Primary</button>
-          <button onclick="changeVariant('success')">Success</button>
-          <button onclick="changeVariant('warning')">Warning</button>
-          <button onclick="changeVariant('error')">Error</button>
-          <button onclick="changeVariant('info')">Info</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="demo-section">
-      <h2>Real-world Examples</h2>
-      
-      <div class="inline-demo">
-        <div>
-          <span class="demo-label">Shopping Cart</span>
-          <snice-badge count="3" variant="primary">
-            <svg class="notification-icon" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
-            </svg>
-          </snice-badge>
-        </div>
-
-        <div>
-          <span class="demo-label">User Status</span>
-          <snice-badge dot pulse variant="success" position="bottom-right">
-            <div class="badge-avatar">JD</div>
-          </snice-badge>
-        </div>
-
-        <div>
-          <span class="demo-label">App Updates</span>
-          <snice-badge content="UPDATE" variant="warning">
-            <svg class="notification-icon" viewBox="0 0 24 24" fill="#6b7280">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-            </svg>
-          </snice-badge>
-        </div>
-      </div>
-    </div>
-  </div>
+  </section>
 
   <script type="module">
     import './snice-badge.ts';
-
-    let count = 0;
-
-    window.incrementCount = function() {
-      const badge = document.getElementById('interactive-badge');
-      const input = document.getElementById('count-input');
-      count++;
-      badge.count = count;
-      input.value = count;
-    };
-
-    window.decrementCount = function() {
-      const badge = document.getElementById('interactive-badge');
-      const input = document.getElementById('count-input');
-      count = Math.max(0, count - 1);
-      badge.count = count;
-      input.value = count;
-    };
-
-    window.resetCount = function() {
-      const badge = document.getElementById('interactive-badge');
-      const input = document.getElementById('count-input');
-      count = 0;
-      badge.count = count;
-      input.value = count;
-    };
-
-    window.setCount = function(value) {
-      const badge = document.getElementById('interactive-badge');
-      count = parseInt(value) || 0;
-      badge.count = count;
-    };
-
-    window.toggleDot = function() {
-      const badge = document.getElementById('interactive-badge');
-      badge.dot = !badge.dot;
-    };
-
-    window.togglePulse = function() {
-      const badge = document.getElementById('interactive-badge');
-      badge.pulse = !badge.pulse;
-    };
-
-    window.changeVariant = function(variant) {
-      const badge = document.getElementById('interactive-badge');
-      badge.variant = variant;
-    };
   </script>
 </body>
 </html>

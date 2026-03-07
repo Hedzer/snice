@@ -1,196 +1,172 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Time Range Picker Demo</title>
-    <link rel="stylesheet" href="../theme/theme.css">
-    <style>
-        body {
-            font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
-            padding: var(--snice-spacing-xl, 2rem);
-            background: var(--snice-color-background, white);
-            color: var(--snice-color-text, rgb(23 23 23));
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        h1 {
-            color: var(--snice-color-text, rgb(23 23 23));
-            margin-bottom: var(--snice-spacing-xl, 2rem);
-        }
-
-        .test-section {
-            margin-bottom: var(--snice-spacing-xl, 2rem);
-            padding: var(--snice-spacing-lg, 1.5rem);
-            border: 1px solid var(--snice-color-border, rgb(226 226 226));
-            border-radius: var(--snice-border-radius-lg, 0.5rem);
-            background: var(--snice-color-background-element, rgb(252 251 249));
-        }
-
-        .test-section h3 {
-            margin: 0 0 var(--snice-spacing-md, 1rem) 0;
-            color: var(--snice-color-text, rgb(23 23 23));
-            font-weight: var(--snice-font-weight-semibold, 600);
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: var(--snice-spacing-lg, 1.5rem);
-        }
-
-        @media (max-width: 640px) {
-            .grid { grid-template-columns: 1fr; }
-        }
-
-        #event-log {
-            margin-top: var(--snice-spacing-md, 1rem);
-            padding: var(--snice-spacing-sm, 0.75rem);
-            background: var(--snice-color-background, white);
-            border: 1px solid var(--snice-color-border, rgb(226 226 226));
-            border-radius: var(--snice-border-radius-md, 0.25rem);
-            font-family: monospace;
-            font-size: var(--snice-font-size-sm, 0.875rem);
-            max-height: 10rem;
-            overflow-y: auto;
-            color: var(--snice-color-text-secondary, rgb(82 82 82));
-        }
-    </style>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Time Range Picker</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); margin: 2rem 0 0.75rem; }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+    .label { font-size: 0.7rem; color: var(--snice-color-text-tertiary); margin-bottom: 0.25rem; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Snice Time Range Picker</h1>
 
-        <div class="test-section">
-            <h3>Default (15min granularity, 24h format)</h3>
-            <snice-time-range-picker
-                start-time="08:00"
-                end-time="18:00">
-            </snice-time-range-picker>
-        </div>
+<h2>Default (full day, 15-min granularity, 24h)</h2>
+<snice-time-range-picker></snice-time-range-picker>
 
-        <div class="test-section">
-            <h3>12-Hour Format &amp; 30min Granularity</h3>
-            <snice-time-range-picker
-                granularity="30"
-                format="12h"
-                start-time="09:00"
-                end-time="17:00">
-            </snice-time-range-picker>
-        </div>
+<h2>Granularity Values</h2>
+<div class="grid">
+  <div>
+    <div class="label">granularity=5</div>
+    <snice-time-range-picker granularity="5" start-time="09:00" end-time="10:00"></snice-time-range-picker>
+  </div>
+  <div>
+    <div class="label">granularity=15 (default)</div>
+    <snice-time-range-picker granularity="15" start-time="09:00" end-time="12:00"></snice-time-range-picker>
+  </div>
+  <div>
+    <div class="label">granularity=30</div>
+    <snice-time-range-picker granularity="30" start-time="09:00" end-time="17:00"></snice-time-range-picker>
+  </div>
+  <div>
+    <div class="label">granularity=60</div>
+    <snice-time-range-picker granularity="60" start-time="00:00" end-time="23:00"></snice-time-range-picker>
+  </div>
+</div>
 
-        <div class="test-section">
-            <h3>Granularity Comparison</h3>
-            <div class="grid">
-                <div>
-                    <p style="margin: 0 0 0.5rem; font-weight: 500;">1-Hour Intervals</p>
-                    <snice-time-range-picker
-                        granularity="60"
-                        start-time="06:00"
-                        end-time="22:00">
-                    </snice-time-range-picker>
-                </div>
-                <div>
-                    <p style="margin: 0 0 0.5rem; font-weight: 500;">5-Minute Intervals</p>
-                    <snice-time-range-picker
-                        granularity="5"
-                        start-time="09:00"
-                        end-time="10:00">
-                    </snice-time-range-picker>
-                </div>
-            </div>
-        </div>
+<h2>Start/End Time Constraints</h2>
+<div class="grid">
+  <div>
+    <div class="label">Business hours (08:00-18:00)</div>
+    <snice-time-range-picker start-time="08:00" end-time="18:00"></snice-time-range-picker>
+  </div>
+  <div>
+    <div class="label">Morning (06:00-12:00)</div>
+    <snice-time-range-picker start-time="06:00" end-time="12:00"></snice-time-range-picker>
+  </div>
+  <div>
+    <div class="label">Evening (17:00-22:00)</div>
+    <snice-time-range-picker start-time="17:00" end-time="22:00"></snice-time-range-picker>
+  </div>
+</div>
 
-        <div class="test-section">
-            <h3>With Disabled Ranges (Lunch Break)</h3>
-            <snice-time-range-picker
-                id="disabled-demo"
-                granularity="30"
-                format="12h"
-                start-time="08:00"
-                end-time="18:00"
-                disabled-ranges='[{"start":"12:00","end":"13:00"}]'>
-            </snice-time-range-picker>
-        </div>
+<h2>Format: 24h vs 12h</h2>
+<div class="grid">
+  <div>
+    <div class="label">24h format (default)</div>
+    <snice-time-range-picker format="24h" start-time="09:00" end-time="17:00"></snice-time-range-picker>
+  </div>
+  <div>
+    <div class="label">12h format</div>
+    <snice-time-range-picker format="12h" start-time="09:00" end-time="17:00"></snice-time-range-picker>
+  </div>
+</div>
 
-        <div class="test-section">
-            <h3>Multiple Selection Mode</h3>
-            <snice-time-range-picker
-                multiple
-                granularity="30"
-                start-time="08:00"
-                end-time="18:00">
-            </snice-time-range-picker>
-        </div>
+<h2>Multiple Selection</h2>
+<div class="grid">
+  <div>
+    <div class="label">multiple=false (default, single range)</div>
+    <snice-time-range-picker start-time="09:00" end-time="17:00"></snice-time-range-picker>
+  </div>
+  <div>
+    <div class="label">multiple=true (select multiple ranges)</div>
+    <snice-time-range-picker multiple start-time="09:00" end-time="17:00"></snice-time-range-picker>
+  </div>
+</div>
 
-        <div class="test-section">
-            <h3>Pre-selected Value</h3>
-            <snice-time-range-picker
-                granularity="30"
-                format="12h"
-                start-time="08:00"
-                end-time="18:00"
-                value='[{"start":"09:00","end":"11:00"}]'>
-            </snice-time-range-picker>
-        </div>
+<h2>Disabled Ranges</h2>
+<div class="grid">
+  <div>
+    <div class="label">Lunch break disabled (12:00-13:00)</div>
+    <snice-time-range-picker
+      start-time="09:00"
+      end-time="17:00"
+      disabled-ranges='[{"start":"12:00","end":"13:00"}]'>
+    </snice-time-range-picker>
+  </div>
+  <div>
+    <div class="label">Multiple disabled ranges</div>
+    <snice-time-range-picker
+      start-time="08:00"
+      end-time="18:00"
+      disabled-ranges='[{"start":"10:00","end":"10:30"},{"start":"12:00","end":"13:00"},{"start":"15:00","end":"15:30"}]'>
+    </snice-time-range-picker>
+  </div>
+</div>
 
-        <div class="test-section">
-            <h3>States</h3>
-            <div class="grid">
-                <div>
-                    <p style="margin: 0 0 0.5rem; font-weight: 500;">Disabled</p>
-                    <snice-time-range-picker
-                        disabled
-                        granularity="60"
-                        start-time="09:00"
-                        end-time="12:00"
-                        value='[{"start":"10:00","end":"11:00"}]'>
-                    </snice-time-range-picker>
-                </div>
-                <div>
-                    <p style="margin: 0 0 0.5rem; font-weight: 500;">Readonly</p>
-                    <snice-time-range-picker
-                        readonly
-                        granularity="60"
-                        start-time="09:00"
-                        end-time="12:00"
-                        value='[{"start":"10:00","end":"11:00"}]'>
-                    </snice-time-range-picker>
-                </div>
-            </div>
-        </div>
+<h2>Pre-selected Value</h2>
+<div class="grid">
+  <div>
+    <div class="label">Single range pre-selected</div>
+    <snice-time-range-picker
+      start-time="09:00"
+      end-time="17:00"
+      value='[{"start":"10:00","end":"11:00"}]'>
+    </snice-time-range-picker>
+  </div>
+  <div>
+    <div class="label">Multiple ranges pre-selected</div>
+    <snice-time-range-picker
+      multiple
+      start-time="09:00"
+      end-time="17:00"
+      value='[{"start":"09:00","end":"10:00"},{"start":"14:00","end":"15:00"}]'>
+    </snice-time-range-picker>
+  </div>
+</div>
 
-        <div class="test-section">
-            <h3>Event Log</h3>
-            <snice-time-range-picker
-                id="event-picker"
-                granularity="30"
-                start-time="09:00"
-                end-time="12:00">
-            </snice-time-range-picker>
-            <div id="event-log">Events will appear here...</div>
-        </div>
-    </div>
+<h2>Boolean States</h2>
+<div class="grid">
+  <div>
+    <div class="label">Disabled</div>
+    <snice-time-range-picker disabled start-time="09:00" end-time="17:00" value='[{"start":"10:00","end":"11:00"}]'></snice-time-range-picker>
+  </div>
+  <div>
+    <div class="label">Readonly</div>
+    <snice-time-range-picker readonly start-time="09:00" end-time="17:00" value='[{"start":"10:00","end":"11:00"}]'></snice-time-range-picker>
+  </div>
+</div>
 
-    <script type="module">
-        import './snice-time-range-picker.ts';
+<h2>Combination: 12h + multiple + disabled ranges + granularity 30</h2>
+<snice-time-range-picker
+  format="12h"
+  multiple
+  granularity="30"
+  start-time="08:00"
+  end-time="20:00"
+  disabled-ranges='[{"start":"12:00","end":"13:00"}]'>
+</snice-time-range-picker>
 
-        const log = document.getElementById('event-log');
-        const picker = document.getElementById('event-picker');
+<h2>Edge Cases</h2>
+<div class="grid">
+  <div>
+    <div class="label">Very short range (1 hour, 5-min granularity)</div>
+    <snice-time-range-picker start-time="12:00" end-time="13:00" granularity="5"></snice-time-range-picker>
+  </div>
+  <div>
+    <div class="label">Empty value</div>
+    <snice-time-range-picker start-time="09:00" end-time="12:00"></snice-time-range-picker>
+  </div>
+</div>
 
-        function logEvent(name, detail) {
-            const entry = document.createElement('div');
-            entry.textContent = `[${name}] ${JSON.stringify(detail.ranges || detail.range || detail.start)}`;
-            log.prepend(entry);
-        }
-
-        picker.addEventListener('@snice/time-range-change', (e) => logEvent('change', e.detail));
-        picker.addEventListener('@snice/time-range-select', (e) => logEvent('select', e.detail));
-        picker.addEventListener('@snice/time-range-complete', (e) => logEvent('complete', e.detail));
-    </script>
+<script type="module">
+  import './snice-time-range-picker.ts';
+</script>
 </body>
 </html>

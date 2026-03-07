@@ -1,199 +1,187 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-theme="dark">
 <head>
-  <title>Virtual Scroller Demo</title>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Virtual Scroller</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      padding: 40px;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      font-family: var(--snice-font-family);
-      transition: background-color var(--snice-transition-medium) ease, color var(--snice-transition-medium) ease;
-    }
-    .example {
-      margin: 30px 0;
-    }
-    .example h3 {
-      margin-bottom: 10px;
-      color: var(--snice-color-text);
-    }
-    .controls {
-      margin: 10px 0;
-      display: flex;
-      gap: 10px;
-    }
-    button {
-      padding: 8px 16px;
-      background: var(--snice-color-primary);
-      color: var(--snice-color-text-inverse);
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    button:hover {
-      background: var(--snice-color-primary-dark);
-    }
-    snice-virtual-scroller {
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-    }
-    .list-item {
-      padding: 15px;
-      border-bottom: 1px solid var(--snice-color-border);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .list-item:hover {
-      background: var(--snice-color-background-hover);
-    }
-    .avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: bold;
-      flex-shrink: 0;
-    }
-    .info {
-      flex: 1;
-    }
-    .name {
-      font-weight: 500;
-      margin-bottom: 2px;
-    }
-    .email {
-      font-size: 13px;
-      color: #666;
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); margin: 2rem 0 0.75rem; }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem; }
+    snice-virtual-scroller { border: 1px solid var(--snice-color-border); border-radius: 8px; display: block; }
+    .label { font-size: 0.7rem; color: var(--snice-color-text-tertiary); margin-bottom: 0.25rem; }
+    button { padding: 0.375rem 0.75rem; border: 1px solid var(--snice-color-border); border-radius: 6px; background: var(--snice-color-background); color: var(--snice-color-text); cursor: pointer; font-size: 0.8rem; }
   </style>
-  <script type="module">
-    import './snice-virtual-scroller.ts';
-
-    await customElements.whenDefined('snice-virtual-scroller');
-
-    // Simple list
-    const simpleScroller = document.getElementById('simple-scroller');
-      simpleScroller.items = Array.from({ length: 10000 }, (_, i) => ({
-        id: i,
-        data: `Item ${i + 1}`
-      }));
-
-      simpleScroller.renderItem = (item, index) => {
-        return `<div class="list-item">
-          <div style="color: #666; width: 60px;">#${index + 1}</div>
-          <div>${item.data}</div>
-        </div>`;
-      };
-
-      // User list
-      const userScroller = document.getElementById('user-scroller');
-      userScroller.items = Array.from({ length: 5000 }, (_, i) => ({
-        id: i,
-        data: {
-          name: `User ${i + 1}`,
-          email: `user${i + 1}@example.com`,
-          initials: `U${i + 1}`
-        }
-      }));
-
-      userScroller.renderItem = (item) => {
-        return `<div class="list-item">
-          <div class="avatar">${item.data.initials.substring(0, 2)}</div>
-          <div class="info">
-            <div class="name">${item.data.name}</div>
-            <div class="email">${item.data.email}</div>
-          </div>
-        </div>`;
-      };
-
-      // Controls
-      document.getElementById('scroll-top').addEventListener('click', () => {
-        userScroller.scrollToIndex(0);
-      });
-
-      document.getElementById('scroll-middle').addEventListener('click', () => {
-        userScroller.scrollToIndex(2500);
-      });
-
-      document.getElementById('scroll-bottom').addEventListener('click', () => {
-        userScroller.scrollToIndex(4999);
-      });
-
-      // Variable height list
-      const variableScroller = document.getElementById('variable-scroller');
-      variableScroller.items = Array.from({ length: 1000 }, (_, i) => ({
-        id: i,
-        data: {
-          title: `Post ${i + 1}`,
-          content: i % 3 === 0
-            ? 'Short content.'
-            : i % 3 === 1
-            ? 'Medium length content with a bit more text to show variable heights in the virtual scroller.'
-            : 'Long content with multiple sentences. This demonstrates how the virtual scroller can handle items of different heights. The component will still render efficiently even with varying item sizes.'
-        },
-        height: i % 3 === 0 ? 60 : i % 3 === 1 ? 80 : 120
-      }));
-
-      variableScroller.renderItem = (item) => {
-        return `<div class="list-item" style="flex-direction: column; align-items: flex-start;">
-          <div style="font-weight: 500; margin-bottom: 4px;">${item.data.title}</div>
-          <div style="color: #666; font-size: 13px;">${item.data.content}</div>
-        </div>`;
-      };
-  </script>
 </head>
 <body>
-  <h2>Virtual Scroller Component Demo</h2>
 
-  <div class="example">
-    <h3>Simple List (10,000 items)</h3>
-    <p>Efficiently renders thousands of items by only displaying what's visible.</p>
-    <snice-virtual-scroller id="simple-scroller" style="height: 400px;"></snice-virtual-scroller>
-  </div>
+<h2>Default (10,000 items, item-height=50)</h2>
+<snice-virtual-scroller id="vs-default" style="height: 400px;" item-height="50"></snice-virtual-scroller>
 
-  <div class="example">
-    <h3>User List (5,000 items)</h3>
-    <div class="controls">
-      <button id="scroll-top">Scroll to Top</button>
-      <button id="scroll-middle">Scroll to Middle</button>
-      <button id="scroll-bottom">Scroll to Bottom</button>
-    </div>
-    <snice-virtual-scroller
-      id="user-scroller"
-      style="height: 500px;"
-      item-height="66"></snice-virtual-scroller>
+<h2>Item Height Values</h2>
+<div class="grid">
+  <div>
+    <div class="label">item-height=30</div>
+    <snice-virtual-scroller id="vs-h30" style="height: 300px;" item-height="30"></snice-virtual-scroller>
   </div>
+  <div>
+    <div class="label">item-height=60</div>
+    <snice-virtual-scroller id="vs-h60" style="height: 300px;" item-height="60"></snice-virtual-scroller>
+  </div>
+  <div>
+    <div class="label">item-height=80</div>
+    <snice-virtual-scroller id="vs-h80" style="height: 300px;" item-height="80"></snice-virtual-scroller>
+  </div>
+  <div>
+    <div class="label">item-height=120</div>
+    <snice-virtual-scroller id="vs-h120" style="height: 300px;" item-height="120"></snice-virtual-scroller>
+  </div>
+</div>
 
-  <div class="example">
-    <h3>Variable Height Items (1,000 items)</h3>
-    <p>Each item has a different height (short, medium, long).</p>
-    <snice-virtual-scroller
-      id="variable-scroller"
-      style="height: 400px;"></snice-virtual-scroller>
+<h2>Buffer Size Values</h2>
+<div class="grid">
+  <div>
+    <div class="label">buffer-size=0</div>
+    <snice-virtual-scroller id="vs-b0" style="height: 300px;" item-height="50" buffer-size="0"></snice-virtual-scroller>
   </div>
+  <div>
+    <div class="label">buffer-size=5 (default)</div>
+    <snice-virtual-scroller id="vs-b5" style="height: 300px;" item-height="50" buffer-size="5"></snice-virtual-scroller>
+  </div>
+  <div>
+    <div class="label">buffer-size=20</div>
+    <snice-virtual-scroller id="vs-b20" style="height: 300px;" item-height="50" buffer-size="20"></snice-virtual-scroller>
+  </div>
+</div>
 
-  <div class="example">
-    <h3>Performance Stats</h3>
-    <p>
-      The virtual scroller only renders items that are visible in the viewport, plus a small buffer.
-      This means that even with thousands of items, only a few dozen are actually in the DOM at any time,
-      resulting in excellent performance.
-    </p>
-    <p>
-      <strong>Without virtual scrolling:</strong> Rendering 10,000 items would create 10,000 DOM elements,
-      causing slow initial render and sluggish scrolling.
-    </p>
-    <p>
-      <strong>With virtual scrolling:</strong> Only ~20-30 items are rendered at any time (depending on
-      viewport height and item height), with smooth 60fps scrolling.
-    </p>
+<h2>Custom Render Function</h2>
+<snice-virtual-scroller id="vs-custom" style="height: 350px;" item-height="60"></snice-virtual-scroller>
+
+<h2>Large Dataset (100,000 items)</h2>
+<snice-virtual-scroller id="vs-large" style="height: 400px;" item-height="40"></snice-virtual-scroller>
+
+<h2>Small Dataset (10 items)</h2>
+<snice-virtual-scroller id="vs-small" style="height: 300px;" item-height="50"></snice-virtual-scroller>
+
+<h2>Programmatic Scroll</h2>
+<div class="row" style="margin-bottom: 0.5rem;">
+  <button onclick="document.getElementById('vs-scroll').scrollToIndex(0)">Scroll to #0</button>
+  <button onclick="document.getElementById('vs-scroll').scrollToIndex(250)">Scroll to #250</button>
+  <button onclick="document.getElementById('vs-scroll').scrollToIndex(500)">Scroll to #500</button>
+  <button onclick="document.getElementById('vs-scroll').scrollToIndex(999)">Scroll to #999</button>
+  <button onclick="document.getElementById('vs-scroll').scrollToItem('item-42')">scrollToItem('item-42')</button>
+</div>
+<snice-virtual-scroller id="vs-scroll" style="height: 300px;" item-height="50"></snice-virtual-scroller>
+
+<h2>Estimated Item Height</h2>
+<snice-virtual-scroller id="vs-estimated" style="height: 300px;" item-height="50" estimated-item-height="50"></snice-virtual-scroller>
+
+<h2>Container Heights</h2>
+<div class="grid">
+  <div>
+    <div class="label">200px height</div>
+    <snice-virtual-scroller id="vs-200" style="height: 200px;" item-height="40"></snice-virtual-scroller>
   </div>
+  <div>
+    <div class="label">500px height</div>
+    <snice-virtual-scroller id="vs-500" style="height: 500px;" item-height="40"></snice-virtual-scroller>
+  </div>
+</div>
+
+<h2>Empty List</h2>
+<snice-virtual-scroller id="vs-empty" style="height: 200px;" item-height="50"></snice-virtual-scroller>
+
+<script type="module">
+  import './snice-virtual-scroller.ts';
+
+  function makeItems(count, prefix = 'Item') {
+    return Array.from({ length: count }, (_, i) => ({
+      id: `item-${i}`,
+      data: { name: `${prefix} ${i + 1}`, index: i }
+    }));
+  }
+
+  function defaultRender(item) {
+    return `<div style="padding: 0 1rem; display: flex; align-items: center; height: 100%; border-bottom: 1px solid var(--snice-color-border, #eee); font-size: 0.875rem;">${item.data.name}</div>`;
+  }
+
+  // Default
+  const vsDefault = document.getElementById('vs-default');
+  vsDefault.items = makeItems(10000);
+  vsDefault.renderItem = defaultRender;
+
+  // Item heights
+  for (const h of [30, 60, 80, 120]) {
+    const el = document.getElementById(`vs-h${h}`);
+    el.items = makeItems(1000);
+    el.renderItem = (item) => `<div style="padding: 0 1rem; display: flex; align-items: center; height: 100%; border-bottom: 1px solid var(--snice-color-border, #eee); font-size: 0.875rem;">${item.data.name} (height: ${h}px)</div>`;
+  }
+
+  // Buffer sizes
+  for (const b of [0, 5, 20]) {
+    const el = document.getElementById(`vs-b${b}`);
+    el.items = makeItems(1000);
+    el.renderItem = defaultRender;
+  }
+
+  // Custom render
+  const vsCustom = document.getElementById('vs-custom');
+  vsCustom.items = makeItems(5000).map((item, i) => ({
+    ...item,
+    data: { ...item.data, avatar: `https://i.pravatar.cc/40?img=${(i % 70) + 1}`, role: ['Engineer', 'Designer', 'Manager', 'Analyst'][i % 4] }
+  }));
+  vsCustom.renderItem = (item) => `
+    <div style="padding: 0.5rem 1rem; display: flex; align-items: center; gap: 0.75rem; height: 100%; border-bottom: 1px solid var(--snice-color-border, #eee);">
+      <img src="${item.data.avatar}" style="width: 36px; height: 36px; border-radius: 50%;" loading="lazy">
+      <div>
+        <div style="font-size: 0.875rem; font-weight: 500;">${item.data.name}</div>
+        <div style="font-size: 0.75rem; color: var(--snice-color-text-tertiary, #888);">${item.data.role}</div>
+      </div>
+    </div>`;
+
+  // Large
+  const vsLarge = document.getElementById('vs-large');
+  vsLarge.items = makeItems(100000, 'Record');
+  vsLarge.renderItem = defaultRender;
+
+  // Small
+  const vsSmall = document.getElementById('vs-small');
+  vsSmall.items = makeItems(10);
+  vsSmall.renderItem = defaultRender;
+
+  // Scroll
+  const vsScroll = document.getElementById('vs-scroll');
+  vsScroll.items = makeItems(1000);
+  vsScroll.renderItem = (item) => `<div style="padding: 0 1rem; display: flex; align-items: center; height: 100%; border-bottom: 1px solid var(--snice-color-border, #eee); font-size: 0.875rem;">#${item.data.index} - ${item.data.name}</div>`;
+
+  // Estimated
+  const vsEstimated = document.getElementById('vs-estimated');
+  vsEstimated.items = makeItems(500);
+  vsEstimated.renderItem = defaultRender;
+
+  // Heights
+  for (const h of [200, 500]) {
+    const el = document.getElementById(`vs-${h}`);
+    el.items = makeItems(1000);
+    el.renderItem = defaultRender;
+  }
+
+  // Empty
+  document.getElementById('vs-empty').items = [];
+</script>
 </body>
 </html>

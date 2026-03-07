@@ -1,275 +1,155 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Image Demo</title>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <title>Image</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      padding: 40px;
-      font-family: var(--snice-font-family);
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      max-width: 1000px;
-      margin: 0 auto;
-    }
-    .section {
-      margin-bottom: 60px;
-    }
-    h2 {
-      color: var(--snice-color-text);
-      margin-bottom: 20px;
-      font-size: var(--snice-font-size-2xl);
-    }
-    h3 {
-      color: var(--snice-color-text-secondary);
-      margin-bottom: 16px;
-      font-size: var(--snice-font-size-lg);
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 20px;
-      align-items: center;
-    }
-    .demo-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-    }
-    .demo-item span {
-      font-size: var(--snice-font-size-sm);
-      color: var(--snice-color-text-secondary);
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 1.5rem; flex-wrap: wrap; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1.5rem; }
   </style>
+  <script type="module">import './snice-image.ts';</script>
 </head>
 <body>
-  <h2>Image Component Demo</h2>
 
-  <div class="section">
-    <h3>Sizes</h3>
-    <div class="grid">
-      <div class="demo-item">
-        <snice-image
-          src="https://picsum.photos/200/200?random=1"
-          alt="Small"
-          size="small"
-        ></snice-image>
-        <span>Small</span>
-      </div>
-      <div class="demo-item">
-        <snice-image
-          src="https://picsum.photos/200/200?random=2"
-          alt="Medium"
-          size="medium"
-        ></snice-image>
-        <span>Medium</span>
-      </div>
-      <div class="demo-item">
-        <snice-image
-          src="https://picsum.photos/200/200?random=3"
-          alt="Large"
-          size="large"
-        ></snice-image>
-        <span>Large</span>
-      </div>
-    </div>
-  </div>
+<!-- Variant: rounded (default) -->
+<h2>Variant: rounded (default)</h2>
+<div class="row">
+  <snice-image src="https://picsum.photos/seed/a/300/200" alt="Rounded image" variant="rounded"></snice-image>
+</div>
 
-  <div class="section">
-    <h3>Variants</h3>
-    <div class="grid">
-      <div class="demo-item">
-        <snice-image
-          src="https://picsum.photos/200/200?random=4"
-          alt="Rounded"
-          variant="rounded"
-        ></snice-image>
-        <span>Rounded</span>
-      </div>
-      <div class="demo-item">
-        <snice-image
-          src="https://picsum.photos/200/200?random=5"
-          alt="Square"
-          variant="square"
-        ></snice-image>
-        <span>Square</span>
-      </div>
-      <div class="demo-item">
-        <snice-image
-          src="https://picsum.photos/200/200?random=6"
-          alt="Circle"
-          variant="circle"
-        ></snice-image>
-        <span>Circle</span>
-      </div>
-    </div>
-  </div>
+<!-- Variant: square -->
+<h2>Variant: square</h2>
+<div class="row">
+  <snice-image src="https://picsum.photos/seed/b/300/200" alt="Square image" variant="square"></snice-image>
+</div>
 
-  <div class="section">
-    <h3>Object Fit</h3>
-    <div class="grid">
-      <div class="demo-item">
-        <snice-image
-          src="https://picsum.photos/400/200?random=7"
-          alt="Cover"
-          fit="cover"
-          width="100px"
-          height="100px"
-        ></snice-image>
-        <span>Cover</span>
-      </div>
-      <div class="demo-item">
-        <snice-image
-          src="https://picsum.photos/400/200?random=8"
-          alt="Contain"
-          fit="contain"
-          width="100px"
-          height="100px"
-        ></snice-image>
-        <span>Contain</span>
-      </div>
-      <div class="demo-item">
-        <snice-image
-          src="https://picsum.photos/400/200?random=9"
-          alt="Fill"
-          fit="fill"
-          width="100px"
-          height="100px"
-        ></snice-image>
-        <span>Fill</span>
-      </div>
-    </div>
-  </div>
+<!-- Variant: circle -->
+<h2>Variant: circle</h2>
+<div class="row">
+  <snice-image src="https://picsum.photos/seed/c/200/200" alt="Circle image" variant="circle"></snice-image>
+</div>
 
-  <div class="section">
-    <h3>Custom Dimensions</h3>
-    <div class="grid">
-      <div class="demo-item">
-        <snice-image
-          src="https://picsum.photos/200/200?random=10"
-          width="80px"
-          height="80px"
-        ></snice-image>
-        <span>80x80</span>
-      </div>
-      <div class="demo-item">
-        <snice-image
-          src="https://picsum.photos/200/200?random=11"
-          width="120px"
-          height="80px"
-        ></snice-image>
-        <span>120x80</span>
-      </div>
-      <div class="demo-item">
-        <snice-image
-          src="https://picsum.photos/200/200?random=12"
-          width="100%"
-          height="100px"
-        ></snice-image>
-        <span>100% width</span>
-      </div>
-    </div>
-  </div>
+<!-- All variants compared -->
+<h2>All Variants Compared</h2>
+<div class="row">
+  <snice-image src="https://picsum.photos/seed/d/200/200" alt="Rounded" variant="rounded" size="medium"></snice-image>
+  <snice-image src="https://picsum.photos/seed/e/200/200" alt="Square" variant="square" size="medium"></snice-image>
+  <snice-image src="https://picsum.photos/seed/f/200/200" alt="Circle" variant="circle" size="medium"></snice-image>
+</div>
 
-  <div class="section">
-    <h3>Placeholder</h3>
-    <div class="grid">
-      <div class="demo-item">
-        <snice-image size="small"></snice-image>
-        <span>No src</span>
-      </div>
-      <div class="demo-item">
-        <snice-image size="medium" variant="circle"></snice-image>
-        <span>Circle placeholder</span>
-      </div>
-      <div class="demo-item">
-        <snice-image size="large" variant="rounded"></snice-image>
-        <span>Large placeholder</span>
-      </div>
-    </div>
-  </div>
+<!-- Size: small -->
+<h2>Size: small</h2>
+<div class="row"><snice-image src="https://picsum.photos/seed/g/150/150" alt="Small" size="small"></snice-image></div>
 
-  <div class="section">
-    <h3>Progressive Blur-Up Loading</h3>
-    <p style="color: var(--snice-color-text-secondary); margin-bottom: 20px;">
-      Uses a tiny placeholder image that loads fast, displayed blurred until the full image loads.
-    </p>
-    <div class="grid">
-      <div class="demo-item">
-        <snice-image
-          src="https://picsum.photos/800/600?random=20"
-          placeholder="https://picsum.photos/20/15?random=20"
-          alt="Blur-up demo"
-          width="200px"
-          height="150px"
-        ></snice-image>
-        <span>Blur-up loading</span>
-      </div>
-      <div class="demo-item">
-        <snice-image
-          src="https://picsum.photos/800/600?random=21"
-          placeholder="https://picsum.photos/20/15?random=21"
-          alt="Blur-up circle"
-          variant="circle"
-          width="150px"
-          height="150px"
-        ></snice-image>
-        <span>Circle with blur-up</span>
-      </div>
-      <div class="demo-item">
-        <snice-image
-          src="https://picsum.photos/800/600?random=22"
-          placeholder="https://picsum.photos/20/15?random=22"
-          alt="Blur-up rounded"
-          variant="rounded"
-          width="200px"
-          height="150px"
-        ></snice-image>
-        <span>Rounded with blur-up</span>
-      </div>
-    </div>
-  </div>
+<!-- Size: medium (default) -->
+<h2>Size: medium (default)</h2>
+<div class="row"><snice-image src="https://picsum.photos/seed/h/300/200" alt="Medium" size="medium"></snice-image></div>
 
-  <div class="section">
-    <h3>Responsive Images (srcset & sizes)</h3>
-    <p style="color: var(--snice-color-text-secondary); margin-bottom: 20px;">
-      Automatically selects the best image size based on screen size and device pixel ratio.
-    </p>
-    <div class="grid">
-      <div class="demo-item">
-        <snice-image
-          src="https://picsum.photos/800/600?random=30"
-          srcset="https://picsum.photos/400/300?random=30 400w,
-                  https://picsum.photos/800/600?random=30 800w,
-                  https://picsum.photos/1200/900?random=30 1200w"
-          sizes="(max-width: 600px) 400px, (max-width: 900px) 800px, 1200px"
-          placeholder="https://picsum.photos/20/15?random=30"
-          alt="Responsive image"
-          width="200px"
-          height="150px"
-        ></snice-image>
-        <span>Responsive srcset</span>
-      </div>
-      <div class="demo-item">
-        <snice-image
-          src="https://picsum.photos/800/600?random=31"
-          srcset="https://picsum.photos/400/300?random=31 1x,
-                  https://picsum.photos/800/600?random=31 2x"
-          placeholder="https://picsum.photos/20/15?random=31"
-          alt="Retina image"
-          width="200px"
-          height="150px"
-        ></snice-image>
-        <span>Retina (2x)</span>
-      </div>
-    </div>
-  </div>
+<!-- Size: large -->
+<h2>Size: large</h2>
+<div class="row"><snice-image src="https://picsum.photos/seed/i/500/300" alt="Large" size="large"></snice-image></div>
 
-  <script type="module">
-    import './snice-image.ts';
-  </script>
+<!-- All sizes compared -->
+<h2>All Sizes Compared</h2>
+<div class="row">
+  <snice-image src="https://picsum.photos/seed/j/200/200" alt="Small" size="small"></snice-image>
+  <snice-image src="https://picsum.photos/seed/k/200/200" alt="Medium" size="medium"></snice-image>
+  <snice-image src="https://picsum.photos/seed/l/200/200" alt="Large" size="large"></snice-image>
+</div>
+
+<!-- Fit: cover (default) -->
+<h2>Fit: cover (default)</h2>
+<div class="row"><snice-image src="https://picsum.photos/seed/m/400/200" alt="Cover" fit="cover" width="200px" height="150px"></snice-image></div>
+
+<!-- Fit: contain -->
+<h2>Fit: contain</h2>
+<div class="row"><snice-image src="https://picsum.photos/seed/n/400/200" alt="Contain" fit="contain" width="200px" height="150px"></snice-image></div>
+
+<!-- Fit: fill -->
+<h2>Fit: fill</h2>
+<div class="row"><snice-image src="https://picsum.photos/seed/o/400/200" alt="Fill" fit="fill" width="200px" height="150px"></snice-image></div>
+
+<!-- Fit: none -->
+<h2>Fit: none</h2>
+<div class="row"><snice-image src="https://picsum.photos/seed/p/400/200" alt="None" fit="none" width="200px" height="150px"></snice-image></div>
+
+<!-- Fit: scale-down -->
+<h2>Fit: scale-down</h2>
+<div class="row"><snice-image src="https://picsum.photos/seed/q/400/200" alt="Scale-down" fit="scale-down" width="200px" height="150px"></snice-image></div>
+
+<!-- All fit values compared -->
+<h2>All Fit Values Compared (fixed 200x150)</h2>
+<div class="row">
+  <snice-image src="https://picsum.photos/seed/r/400/200" alt="cover" fit="cover" width="200px" height="150px"></snice-image>
+  <snice-image src="https://picsum.photos/seed/s/400/200" alt="contain" fit="contain" width="200px" height="150px"></snice-image>
+  <snice-image src="https://picsum.photos/seed/t/400/200" alt="fill" fit="fill" width="200px" height="150px"></snice-image>
+  <snice-image src="https://picsum.photos/seed/u/400/200" alt="none" fit="none" width="200px" height="150px"></snice-image>
+  <snice-image src="https://picsum.photos/seed/v/400/200" alt="scale-down" fit="scale-down" width="200px" height="150px"></snice-image>
+</div>
+
+<!-- Lazy loading: true (default) -->
+<h2>Lazy: true (default)</h2>
+<div class="row"><snice-image src="https://picsum.photos/seed/w/300/200" alt="Lazy" lazy></snice-image></div>
+
+<!-- Lazy loading: false -->
+<h2>Lazy: false (eager)</h2>
+<div class="row"><snice-image src="https://picsum.photos/seed/x/300/200" alt="Eager" lazy="false"></snice-image></div>
+
+<!-- Fallback (broken src) -->
+<h2>Fallback Image (broken src)</h2>
+<div class="row">
+  <snice-image src="https://broken-url.invalid/image.jpg" fallback="https://picsum.photos/seed/fallback/200/200" alt="With fallback"></snice-image>
+</div>
+
+<!-- Placeholder -->
+<h2>Placeholder (low-res blur-up)</h2>
+<div class="row">
+  <snice-image src="https://picsum.photos/seed/z/600/400" placeholder="https://picsum.photos/seed/z/30/20" alt="With placeholder" size="large"></snice-image>
+</div>
+
+<!-- Custom width/height -->
+<h2>Custom Width and Height</h2>
+<div class="row">
+  <snice-image src="https://picsum.photos/seed/aa/300/300" alt="100x100" width="100px" height="100px"></snice-image>
+  <snice-image src="https://picsum.photos/seed/bb/300/300" alt="250x150" width="250px" height="150px"></snice-image>
+  <snice-image src="https://picsum.photos/seed/cc/300/300" alt="150x250" width="150px" height="250px"></snice-image>
+</div>
+
+<!-- No src (placeholder state) -->
+<h2>No src (empty placeholder)</h2>
+<div class="row"><snice-image alt="No source provided"></snice-image></div>
+
+<!-- Variant x Size matrix -->
+<h2>Variant x Size Matrix</h2>
+<div class="grid">
+  <snice-image src="https://picsum.photos/seed/1/150/150" variant="rounded" size="small" alt="R/S"></snice-image>
+  <snice-image src="https://picsum.photos/seed/2/150/150" variant="square" size="small" alt="S/S"></snice-image>
+  <snice-image src="https://picsum.photos/seed/3/150/150" variant="circle" size="small" alt="C/S"></snice-image>
+  <snice-image src="https://picsum.photos/seed/4/200/200" variant="rounded" size="medium" alt="R/M"></snice-image>
+  <snice-image src="https://picsum.photos/seed/5/200/200" variant="square" size="medium" alt="S/M"></snice-image>
+  <snice-image src="https://picsum.photos/seed/6/200/200" variant="circle" size="medium" alt="C/M"></snice-image>
+</div>
+
+<!-- Variant x Fit combinations -->
+<h2>Circle + Contain (fixed size)</h2>
+<div class="row">
+  <snice-image src="https://picsum.photos/seed/dd/400/200" variant="circle" fit="contain" width="150px" height="150px" alt="Circle contain"></snice-image>
+  <snice-image src="https://picsum.photos/seed/ee/400/200" variant="circle" fit="cover" width="150px" height="150px" alt="Circle cover"></snice-image>
+</div>
+
 </body>
 </html>

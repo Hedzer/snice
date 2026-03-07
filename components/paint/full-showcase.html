@@ -1,207 +1,149 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snice Paint Component Demo</title>
+  <title>Paint</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      padding: 40px;
-      line-height: 1.6;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      margin: 0;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: 10px;
-      margin-bottom: 30px;
-    }
-
-    h2 {
-      color: var(--snice-color-text);
-      margin-top: 40px;
-      margin-bottom: 20px;
-      font-size: 24px;
-    }
-
-    .demo-section {
-      margin: 30px 0;
-      padding: 20px;
-      background: var(--snice-color-background);
-      border-radius: 8px;
-      border: 1px solid var(--snice-color-border);
-    }
-
-    .demo-label {
-      display: block;
-      margin-bottom: 16px;
-      font-weight: 600;
-      color: var(--snice-color-text-secondary);
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .button-row {
-      display: flex;
-      gap: 12px;
-      margin: 16px 0;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    button {
-      padding: 8px 16px;
-      border: 1px solid var(--snice-color-border);
-      border-radius: 6px;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    button:hover {
-      background: var(--snice-color-background-element, #f0f0f0);
-    }
-
-    snice-paint {
-      width: 100%;
-      height: 400px;
-      display: block;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-
-    .event-log {
-      margin-top: 16px;
-      padding: 12px;
-      background: var(--snice-color-background-element, rgb(252 251 249));
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      font-family: monospace;
-      font-size: 13px;
-      max-height: 150px;
-      overflow-y: auto;
-    }
-
-    .event-log div {
-      margin: 4px 0;
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    section { margin-bottom: 2rem; }
+    snice-paint { height: 250px; display: block; border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 8px; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Paint Component Demo</h1>
 
-    <div class="demo-section">
-      <h2>Default Paint Canvas</h2>
-      <span class="demo-label">Full toolbar with colors, size, eraser, undo, redo, and clear</span>
-      <snice-paint id="paint-default"></snice-paint>
-    </div>
+<h2>Default (all controls)</h2>
+<section>
+  <snice-paint></snice-paint>
+</section>
 
-    <div class="demo-section">
-      <h2>Custom Colors</h2>
-      <span class="demo-label">Custom color palette with color picker slots</span>
-      <snice-paint
-        id="paint-custom"
-        colors='["#ff6b6b","#ffd93d","#6bff6b","#6b6bff","#ff6bff","#6bffff"]'
-        color-selects="2"
-        stroke-width="5"
-      ></snice-paint>
-    </div>
+<h2>Controls: colors only</h2>
+<section>
+  <snice-paint controls="colors"></snice-paint>
+</section>
 
-    <div class="demo-section">
-      <h2>Minimal Controls</h2>
-      <span class="demo-label">Only color selection and size</span>
-      <snice-paint controls="colors,size" background-color="#f8f9fa"></snice-paint>
-    </div>
+<h2>Controls: size only</h2>
+<section>
+  <snice-paint controls="size"></snice-paint>
+</section>
 
-    <div class="demo-section">
-      <h2>No Toolbar</h2>
-      <span class="demo-label">Drawing only, no controls</span>
-      <snice-paint controls="" color="#e74c3c" stroke-width="4" background-color="#1a1a2e" style="height: 250px;"></snice-paint>
-    </div>
+<h2>Controls: eraser only</h2>
+<section>
+  <snice-paint controls="eraser"></snice-paint>
+</section>
 
-    <div class="demo-section">
-      <h2>Interactive Controls</h2>
-      <span class="demo-label">Export and manage the canvas programmatically</span>
-      <snice-paint id="paint-interactive"></snice-paint>
-      <div class="button-row">
-        <button id="btn-download">Download PNG</button>
-        <button id="btn-clear">Clear Canvas</button>
-        <button id="btn-undo">Undo</button>
-        <button id="btn-redo">Redo</button>
-        <button id="btn-count">Stroke Count</button>
-      </div>
-      <div id="stroke-info" style="margin-top: 12px; font-size: 14px; color: var(--snice-color-text-secondary);"></div>
-    </div>
+<h2>Controls: undo,redo</h2>
+<section>
+  <snice-paint controls="undo,redo"></snice-paint>
+</section>
 
-    <div class="demo-section">
-      <h2>Events</h2>
-      <span class="demo-label">Paint events are logged below</span>
-      <snice-paint id="paint-events" style="height: 250px;"></snice-paint>
-      <div id="event-log" class="event-log"></div>
-    </div>
+<h2>Controls: clear only</h2>
+<section>
+  <snice-paint controls="clear"></snice-paint>
+</section>
 
-    <div class="demo-section">
-      <h2>Disabled State</h2>
-      <span class="demo-label">Drawing is disabled</span>
-      <snice-paint disabled style="height: 200px;"></snice-paint>
-    </div>
-  </div>
+<h2>Controls: none (empty string)</h2>
+<section>
+  <snice-paint controls=""></snice-paint>
+</section>
 
-  <script type="module">
-    import './snice-paint.ts';
+<h2>Custom colors</h2>
+<section>
+  <snice-paint colors='["#ff0000","#00ff00","#0000ff","#ffff00","#ff00ff"]'></snice-paint>
+</section>
 
-    // Interactive controls
-    const interactive = document.getElementById('paint-interactive');
+<h2>color-selects="2" (extra color pickers)</h2>
+<section>
+  <snice-paint color-selects="2"></snice-paint>
+</section>
 
-    document.getElementById('btn-download').addEventListener('click', () => {
-      interactive.download();
-    });
+<h2>color-selects="4"</h2>
+<section>
+  <snice-paint color-selects="4"></snice-paint>
+</section>
 
-    document.getElementById('btn-clear').addEventListener('click', () => {
-      interactive.clear();
-    });
+<h2>stroke-width="1"</h2>
+<section>
+  <snice-paint stroke-width="1"></snice-paint>
+</section>
 
-    document.getElementById('btn-undo').addEventListener('click', () => {
-      interactive.undo();
-    });
+<h2>stroke-width="10"</h2>
+<section>
+  <snice-paint stroke-width="10"></snice-paint>
+</section>
 
-    document.getElementById('btn-redo').addEventListener('click', () => {
-      interactive.redo();
-    });
+<h2>stroke-width="20"</h2>
+<section>
+  <snice-paint stroke-width="20"></snice-paint>
+</section>
 
-    document.getElementById('btn-count').addEventListener('click', () => {
-      const strokes = interactive.getStrokes();
-      document.getElementById('stroke-info').textContent = `Total strokes: ${strokes.length}`;
-    });
+<h2>min-stroke-width="5" max-stroke-width="50"</h2>
+<section>
+  <snice-paint min-stroke-width="5" max-stroke-width="50"></snice-paint>
+</section>
 
-    // Event logging
-    const eventPaint = document.getElementById('paint-events');
-    const eventLog = document.getElementById('event-log');
+<h2>background-color="#f0f0f0"</h2>
+<section>
+  <snice-paint background-color="#f0f0f0"></snice-paint>
+</section>
 
-    function logEvent(name, detail) {
-      const entry = document.createElement('div');
-      entry.textContent = `${new Date().toLocaleTimeString()}: ${name}`;
-      eventLog.insertBefore(entry, eventLog.firstChild);
-    }
+<h2>background-color="#1a1a2e"</h2>
+<section>
+  <snice-paint background-color="#1a1a2e" color="#ffffff"></snice-paint>
+</section>
 
-    eventPaint.addEventListener('paint-start', (e) => logEvent('paint-start', e.detail));
-    eventPaint.addEventListener('paint-end', (e) => logEvent('paint-end', e.detail));
-    eventPaint.addEventListener('paint-clear', () => logEvent('paint-clear'));
-    eventPaint.addEventListener('paint-undo', () => logEvent('paint-undo'));
-    eventPaint.addEventListener('paint-redo', () => logEvent('paint-redo'));
-  </script>
+<h2>disabled</h2>
+<section>
+  <snice-paint disabled></snice-paint>
+</section>
+
+<h2>Slot: toolbar-start</h2>
+<section>
+  <snice-paint>
+    <span slot="toolbar-start" style="font-size:0.75rem;padding:0 0.5rem;color:var(--snice-color-text-secondary,#666)">Custom Start</span>
+  </snice-paint>
+</section>
+
+<h2>Slot: toolbar-end</h2>
+<section>
+  <snice-paint>
+    <button slot="toolbar-end" style="padding:0.25rem 0.5rem;font-size:0.75rem;cursor:pointer" onclick="this.closest('snice-paint').download()">Save</button>
+  </snice-paint>
+</section>
+
+<h2>Slot: tools (custom tool buttons)</h2>
+<section>
+  <snice-paint>
+    <button slot="tools" style="padding:0.25rem 0.5rem;font-size:0.75rem;cursor:pointer">Rect</button>
+    <button slot="tools" style="padding:0.25rem 0.5rem;font-size:0.75rem;cursor:pointer">Circle</button>
+  </snice-paint>
+</section>
+
+<h2>Slot: colors (replace default swatches)</h2>
+<section>
+  <snice-paint>
+    <input slot="colors" type="color" value="#3b82f6" style="width:2rem;height:2rem;border:none;cursor:pointer"
+           onchange="this.closest('snice-paint').color = this.value">
+  </snice-paint>
+</section>
+
+<script type="module">
+  import './snice-paint.ts';
+</script>
 </body>
 </html>

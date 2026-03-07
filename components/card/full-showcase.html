@@ -1,501 +1,251 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snice Card Demo</title>
+  <title>Card</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
     body {
-      font-family: var(--snice-font-family);
-      padding: var(--snice-spacing-2xl);
-      line-height: var(--snice-line-height-normal);
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 1.5rem;
       background: var(--snice-color-background);
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    h1 {
       color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: var(--snice-spacing-xs);
     }
-
+    section { margin-bottom: 2rem; }
     h2 {
-      color: var(--snice-color-text-secondary);
-      margin-top: var(--snice-spacing-xl);
-    }
-
-    .demo-section {
-      margin: var(--snice-spacing-xl) 0;
-    }
-
-    .demo-label {
-      display: block;
-      margin-bottom: var(--snice-spacing-md);
-      font-weight: var(--snice-font-weight-medium);
-      color: var(--snice-color-text-secondary);
-      font-size: var(--snice-font-size-sm);
-    }
-
-    .card-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: var(--snice-spacing-lg);
-      margin: var(--snice-spacing-lg) 0;
-    }
-
-    .card-row {
-      display: flex;
-      gap: var(--snice-spacing-lg);
-      margin: var(--snice-spacing-lg) 0;
-      flex-wrap: wrap;
-    }
-
-    /* Card content styles */
-    .card-title {
-      font-size: var(--snice-font-size-xl);
-      font-weight: var(--snice-font-weight-semibold);
-      margin: 0 0 var(--snice-spacing-xs) 0;
-    }
-
-    .card-subtitle {
-      color: var(--snice-color-text-secondary);
-      font-size: var(--snice-font-size-sm);
-      margin: 0 0 var(--snice-spacing-sm) 0;
-    }
-
-    .card-text {
-      color: var(--snice-color-text);
-      line-height: var(--snice-line-height-normal);
-      margin: 0;
-    }
-
-    .card-image-placeholder {
-      width: 100%;
-      height: 180px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 18px;
+      font-size: 0.75rem;
       font-weight: 600;
-    }
-
-    .card-actions {
-      display: flex;
-      gap: var(--snice-spacing-xs);
-      margin-top: var(--snice-spacing-md);
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: var(--snice-spacing-sm);
-      margin: var(--snice-spacing-md) 0;
-    }
-
-    .stat-item {
-      text-align: center;
-    }
-
-    .stat-value {
-      font-size: var(--snice-font-size-2xl);
-      font-weight: var(--snice-font-weight-semibold);
-      color: var(--snice-color-text);
-    }
-
-    .stat-label {
-      font-size: var(--snice-font-size-xs);
-      color: var(--snice-color-text-secondary);
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.05em;
+      color: var(--snice-color-text-tertiary, #888);
+      margin: 0 0 0.75rem;
     }
-
-    .user-avatar {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: #6366f1;
+    .row {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 600;
-      float: left;
-      margin-right: 12px;
-    }
-
-    .controls {
-      display: flex;
-      gap: var(--snice-spacing-xs);
-      margin: var(--snice-spacing-lg) 0;
+      align-items: start;
+      gap: 0.75rem;
       flex-wrap: wrap;
+      margin-bottom: 1rem;
     }
-
-    button {
-      padding: var(--snice-spacing-xs) var(--snice-spacing-md);
-      background: var(--snice-color-primary);
-      color: var(--snice-color-text-inverse);
-      border: none;
-      border-radius: var(--snice-border-radius-md);
-      cursor: pointer;
-      font-size: var(--snice-font-size-sm);
-      transition: background var(--snice-transition-fast);
+    .matrix {
+      display: grid;
+      grid-template-columns: auto repeat(3, 1fr);
+      gap: 0.75rem;
+      align-items: start;
     }
-
-    button:hover {
-      background: var(--snice-color-primary-hover);
+    .matrix-label {
+      font-size: 0.7rem;
+      color: var(--snice-color-text-secondary, #aaa);
+      text-align: right;
+      padding-right: 0.5rem;
+      padding-top: 0.75rem;
     }
-
-    select {
-      padding: var(--snice-spacing-xs) var(--snice-spacing-sm);
-      border: 1px solid var(--snice-color-border);
-      border-radius: var(--snice-border-radius-md);
-      font-size: var(--snice-font-size-sm);
-    }
-
-    .price-tag {
-      font-size: var(--snice-font-size-2xl);
-      font-weight: var(--snice-font-weight-semibold);
-      color: var(--snice-color-success);
-      margin: var(--snice-spacing-sm) 0;
-    }
-
-    .badge {
-      display: inline-block;
-      padding: var(--snice-spacing-3xs) var(--snice-spacing-xs);
-      background: rgb(var(--snice-color-red-100));
-      color: rgb(var(--snice-color-red-900));
-      border-radius: var(--snice-border-radius-md);
-      font-size: var(--snice-font-size-xs);
-      font-weight: var(--snice-font-weight-semibold);
-      margin-bottom: var(--snice-spacing-xs);
-    }
-
-    code {
-      background: var(--snice-color-background-tertiary);
-      padding: var(--snice-spacing-3xs) var(--snice-spacing-2xs);
-      border-radius: var(--snice-border-radius-sm);
-      font-size: 0.9em;
+    snice-card {
+      max-width: 280px;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Snice Card Component Demo</h1>
 
-    <div class="demo-section">
-      <h2>Card Variants</h2>
-      
-      <div class="card-grid">
-        <snice-card variant="elevated">
-          <h3 slot="header">Elevated Card</h3>
-          <p>This is an elevated card with a shadow. It appears to float above the surface.</p>
-          <div slot="footer">
-            <snice-button variant="text" size="small">Action</snice-button>
-          </div>
-        </snice-card>
-
-        <snice-card variant="bordered">
-          <h3 slot="header">Bordered Card</h3>
-          <p>This is a bordered card with a visible border. Great for clean, defined layouts.</p>
-          <div slot="footer">
-            <snice-button variant="text" size="small">Action</snice-button>
-          </div>
-        </snice-card>
-
-        <snice-card variant="flat">
-          <h3 slot="header">Flat Card</h3>
-          <p>This is a flat card with a subtle background. Perfect for minimal designs.</p>
-          <div slot="footer">
-            <snice-button variant="text" size="small">Action</snice-button>
-          </div>
-        </snice-card>
-      </div>
+  <section>
+    <h2>All variants</h2>
+    <div class="row">
+      <snice-card variant="elevated">
+        <p>Elevated variant (default). Has a shadow.</p>
+      </snice-card>
+      <snice-card variant="bordered">
+        <p>Bordered variant. Has a border, no shadow.</p>
+      </snice-card>
+      <snice-card variant="flat">
+        <p>Flat variant. No shadow, no border.</p>
+      </snice-card>
     </div>
+  </section>
 
-    <div class="demo-section">
-      <h2>Card Sizes</h2>
-      
-      <div class="card-row">
-        <snice-card size="small" variant="bordered" style="width: 250px;">
-          <h4 slot="header">Small Card</h4>
-          <p>Compact padding and smaller border radius.</p>
-        </snice-card>
-
-        <snice-card size="medium" variant="bordered" style="width: 280px;">
-          <h4 slot="header">Medium Card</h4>
-          <p>Default size with standard padding and border radius.</p>
-        </snice-card>
-
-        <snice-card size="large" variant="bordered" style="width: 320px;">
-          <h4 slot="header">Large Card</h4>
-          <p>Generous padding and larger border radius for spacious layouts.</p>
-        </snice-card>
-      </div>
+  <section>
+    <h2>All sizes</h2>
+    <div class="row">
+      <snice-card size="small">
+        <p>Small card.</p>
+      </snice-card>
+      <snice-card size="medium">
+        <p>Medium card (default).</p>
+      </snice-card>
+      <snice-card size="large">
+        <p>Large card.</p>
+      </snice-card>
     </div>
+  </section>
 
-    <div class="demo-section">
-      <h2>Clickable Cards</h2>
-      
-      <div class="card-grid">
-        <snice-card variant="elevated" clickable>
-          <h3 class="card-title">Clickable Card</h3>
-          <p class="card-text">Click this card to select it. It will lift on hover and can be toggled.</p>
-        </snice-card>
+  <section>
+    <h2>Variant x Size matrix</h2>
+    <div class="matrix">
+      <div class="matrix-label">small</div>
+      <snice-card variant="elevated" size="small"><p>Elevated small</p></snice-card>
+      <snice-card variant="bordered" size="small"><p>Bordered small</p></snice-card>
+      <snice-card variant="flat" size="small"><p>Flat small</p></snice-card>
 
-        <snice-card variant="bordered" clickable selected>
-          <h3 class="card-title">Pre-selected Card</h3>
-          <p class="card-text">This card starts selected. Click to deselect.</p>
-        </snice-card>
+      <div class="matrix-label">medium</div>
+      <snice-card variant="elevated" size="medium"><p>Elevated medium</p></snice-card>
+      <snice-card variant="bordered" size="medium"><p>Bordered medium</p></snice-card>
+      <snice-card variant="flat" size="medium"><p>Flat medium</p></snice-card>
 
-        <snice-card variant="flat" clickable>
-          <h3 class="card-title">Flat Clickable</h3>
-          <p class="card-text">Even flat cards can be interactive with hover effects.</p>
-        </snice-card>
-
-        <snice-card variant="elevated" clickable disabled>
-          <h3 class="card-title">Disabled Card</h3>
-          <p class="card-text">This card is disabled and cannot be clicked.</p>
-        </snice-card>
-      </div>
+      <div class="matrix-label">large</div>
+      <snice-card variant="elevated" size="large"><p>Elevated large</p></snice-card>
+      <snice-card variant="bordered" size="large"><p>Bordered large</p></snice-card>
+      <snice-card variant="flat" size="large"><p>Flat large</p></snice-card>
     </div>
+  </section>
 
-    <div class="demo-section">
-      <h2>Cards with Images</h2>
-      
-      <div class="card-grid">
-        <snice-card variant="elevated">
-          <div slot="image" class="card-image-placeholder">Image Placeholder</div>
-          <h3 class="card-title">Mountain View</h3>
-          <p class="card-text">Beautiful scenery from the mountain top with breathtaking views.</p>
-          <div class="card-actions">
-            <snice-button variant="text" size="small">View</snice-button>
-            <snice-button variant="text" size="small">Share</snice-button>
-          </div>
-        </snice-card>
-
-        <snice-card variant="elevated">
-          <div slot="image" class="card-image-placeholder" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">Product Image</div>
-          <div class="badge">Sale</div>
-          <h3 class="card-title">Premium Headphones</h3>
-          <p class="price-tag">$199.99</p>
-          <p class="card-text">Wireless noise-canceling headphones with 30-hour battery life.</p>
-        </snice-card>
-
-        <snice-card variant="elevated">
-          <div slot="image" class="card-image-placeholder" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">Beach</div>
-          <h3 class="card-title">Summer Vacation</h3>
-          <p class="card-subtitle">5 days • 4 nights</p>
-          <p class="card-text">Enjoy the perfect beach getaway with all-inclusive resort amenities.</p>
-        </snice-card>
-      </div>
+  <section>
+    <h2>Clickable</h2>
+    <div class="row">
+      <snice-card clickable variant="elevated">
+        <p>Clickable elevated card. Click to toggle selected.</p>
+      </snice-card>
+      <snice-card clickable variant="bordered">
+        <p>Clickable bordered card.</p>
+      </snice-card>
+      <snice-card clickable variant="flat">
+        <p>Clickable flat card.</p>
+      </snice-card>
     </div>
+  </section>
 
-    <div class="demo-section">
-      <h2>Content Layouts</h2>
-      
-      <div class="card-grid">
-        <snice-card variant="bordered">
-          <h3 slot="header">User Profile</h3>
-          <div class="user-avatar">JD</div>
-          <h4 style="margin: 0;">John Doe</h4>
-          <p style="margin: 4px 0; color: #666; font-size: 14px;">Software Developer</p>
-          <p style="clear: both; padding-top: 12px;">Building amazing web applications with modern technologies.</p>
-          <div slot="footer" style="display: flex; justify-content: space-between;">
-            <span style="color: #666; font-size: 14px;">Joined 2024</span>
-            <snice-button variant="text" size="small">Follow</snice-button>
-          </div>
-        </snice-card>
-
-        <snice-card variant="bordered">
-          <h3 slot="header">Statistics</h3>
-          <div class="stats-grid">
-            <div class="stat-item">
-              <div class="stat-value">1.2K</div>
-              <div class="stat-label">Users</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-value">845</div>
-              <div class="stat-label">Active</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-value">92%</div>
-              <div class="stat-label">Growth</div>
-            </div>
-          </div>
-          <div slot="footer">
-            <snice-button variant="text" size="small" style="width: 100%;">View Details</snice-button>
-          </div>
-        </snice-card>
-
-        <snice-card variant="flat">
-          <h3 slot="header">Quick Actions</h3>
-          <div style="display: flex; flex-direction: column; gap: 8px;">
-            <snice-button variant="text" size="small">Create New Project</snice-button>
-            <snice-button variant="text" size="small">Import Data</snice-button>
-            <snice-button variant="text" size="small">Export Report</snice-button>
-            <snice-button variant="text" size="small">Settings</snice-button>
-          </div>
-        </snice-card>
-      </div>
+  <section>
+    <h2>Selected</h2>
+    <div class="row">
+      <snice-card selected variant="elevated">
+        <p>Selected elevated.</p>
+      </snice-card>
+      <snice-card selected variant="bordered">
+        <p>Selected bordered.</p>
+      </snice-card>
     </div>
+  </section>
 
-    <div class="demo-section">
-      <h2>Interactive Demo</h2>
-      
-      <div class="controls">
-        <select id="variant-select">
-          <option value="elevated">Elevated</option>
-          <option value="bordered">Bordered</option>
-          <option value="flat">Flat</option>
-        </select>
-        
-        <select id="size-select">
-          <option value="small">Small</option>
-          <option value="medium" selected>Medium</option>
-          <option value="large">Large</option>
-        </select>
-        
-        <button onclick="toggleClickable()">Toggle Clickable</button>
-        <button onclick="toggleSelected()">Toggle Selected</button>
-        <button onclick="toggleDisabled()">Toggle Disabled</button>
-      </div>
-
-      <div style="max-width: 400px; margin: 20px 0;">
-        <snice-card id="demo-card" variant="elevated" size="medium">
-          <h3 slot="header">Interactive Card</h3>
-          <p>This card demonstrates all the interactive properties. Try changing the settings above to see how the card responds.</p>
-          <p style="margin-top: 12px; font-size: 14px; color: #666;">
-            Current state: <code id="card-state">Default</code>
-          </p>
-          <div slot="footer">
-            <snice-button variant="text" size="small">Sample Action</snice-button>
-          </div>
-        </snice-card>
-      </div>
+  <section>
+    <h2>Disabled</h2>
+    <div class="row">
+      <snice-card disabled variant="elevated">
+        <p>Disabled elevated card.</p>
+      </snice-card>
+      <snice-card disabled clickable variant="bordered">
+        <p>Disabled + clickable bordered card.</p>
+      </snice-card>
     </div>
+  </section>
 
-    <div class="demo-section">
-      <h2>Real-world Examples</h2>
-      
-      <span class="demo-label">Blog Post Cards</span>
-      <div class="card-grid">
-        <snice-card variant="elevated" clickable>
-          <div slot="image" class="card-image-placeholder" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">Tech</div>
-          <span style="color: #6366f1; font-size: 12px; font-weight: 600;">TECHNOLOGY</span>
-          <h3 class="card-title">The Future of Web Development</h3>
-          <p class="card-text">Exploring emerging trends and technologies shaping the future of web development...</p>
-          <p style="margin-top: 12px; color: #666; font-size: 14px;">5 min read • March 15, 2024</p>
-        </snice-card>
-
-        <snice-card variant="elevated" clickable>
-          <div slot="image" class="card-image-placeholder" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">Design</div>
-          <span style="color: #ec4899; font-size: 12px; font-weight: 600;">DESIGN</span>
-          <h3 class="card-title">UI/UX Best Practices</h3>
-          <p class="card-text">Essential design principles for creating intuitive and beautiful user interfaces...</p>
-          <p style="margin-top: 12px; color: #666; font-size: 14px;">8 min read • March 14, 2024</p>
-        </snice-card>
-
-        <snice-card variant="elevated" clickable>
-          <div slot="image" class="card-image-placeholder" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">Dev</div>
-          <span style="color: #0ea5e9; font-size: 12px; font-weight: 600;">DEVELOPMENT</span>
-          <h3 class="card-title">Building Scalable Applications</h3>
-          <p class="card-text">Learn how to architect applications that can grow with your business needs...</p>
-          <p style="margin-top: 12px; color: #666; font-size: 14px;">12 min read • March 13, 2024</p>
-        </snice-card>
-      </div>
-
-      <span class="demo-label" style="margin-top: 30px;">Dashboard Widgets</span>
-      <div class="card-grid">
-        <snice-card variant="flat">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
-              <p style="margin: 0; color: #666; font-size: 14px;">Total Revenue</p>
-              <p style="margin: 4px 0; font-size: 28px; font-weight: 600;">$45,231</p>
-              <p style="margin: 0; color: #10b981; font-size: 14px;">↑ 12% from last month</p>
-            </div>
-            <div style="font-size: 40px;">💰</div>
-          </div>
-        </snice-card>
-
-        <snice-card variant="flat">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
-              <p style="margin: 0; color: #666; font-size: 14px;">Active Users</p>
-              <p style="margin: 4px 0; font-size: 28px; font-weight: 600;">2,847</p>
-              <p style="margin: 0; color: #10b981; font-size: 14px;">↑ 8% from last week</p>
-            </div>
-            <div style="font-size: 40px;">👥</div>
-          </div>
-        </snice-card>
-
-        <snice-card variant="flat">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
-              <p style="margin: 0; color: #666; font-size: 14px;">Conversion Rate</p>
-              <p style="margin: 4px 0; font-size: 28px; font-weight: 600;">3.2%</p>
-              <p style="margin: 0; color: #ef4444; font-size: 14px;">↓ 2% from last month</p>
-            </div>
-            <div style="font-size: 40px;">📊</div>
-          </div>
-        </snice-card>
-      </div>
+  <section>
+    <h2>With header slot</h2>
+    <div class="row">
+      <snice-card variant="elevated">
+        <span slot="header"><strong>Card Title</strong></span>
+        <p>Body content below the header.</p>
+      </snice-card>
+      <snice-card variant="bordered">
+        <span slot="header">Header Text</span>
+        <p>Bordered with header.</p>
+      </snice-card>
     </div>
-  </div>
+  </section>
+
+  <section>
+    <h2>With footer slot</h2>
+    <div class="row">
+      <snice-card variant="elevated">
+        <p>Body content.</p>
+        <span slot="footer">Footer text or actions</span>
+      </snice-card>
+      <snice-card variant="bordered">
+        <p>Content here.</p>
+        <span slot="footer">More info</span>
+      </snice-card>
+    </div>
+  </section>
+
+  <section>
+    <h2>With header + footer + body</h2>
+    <snice-card variant="elevated" style="max-width:320px;">
+      <span slot="header"><strong>Full Card</strong></span>
+      <p>This card has a header, body content, and a footer. All three slots populated.</p>
+      <span slot="footer">Footer content goes here</span>
+    </snice-card>
+  </section>
+
+  <section>
+    <h2>With image slot</h2>
+    <div class="row">
+      <snice-card variant="elevated">
+        <img slot="image" src="https://picsum.photos/280/160?random=1" alt="Sample" style="width:100%;display:block;">
+        <span slot="header"><strong>Image Card</strong></span>
+        <p>Card with an image at the top.</p>
+      </snice-card>
+      <snice-card variant="bordered">
+        <img slot="image" src="https://picsum.photos/280/160?random=2" alt="Sample" style="width:100%;display:block;">
+        <p>Bordered card with image.</p>
+      </snice-card>
+    </div>
+  </section>
+
+  <section>
+    <h2>Clickable + Selected + Disabled combinations</h2>
+    <div class="row">
+      <snice-card clickable>
+        <p>Clickable only</p>
+      </snice-card>
+      <snice-card clickable selected>
+        <p>Clickable + Selected</p>
+      </snice-card>
+      <snice-card clickable disabled>
+        <p>Clickable + Disabled</p>
+      </snice-card>
+      <snice-card clickable selected disabled>
+        <p>Clickable + Selected + Disabled</p>
+      </snice-card>
+      <snice-card selected>
+        <p>Selected (not clickable)</p>
+      </snice-card>
+      <snice-card disabled>
+        <p>Disabled (not clickable)</p>
+      </snice-card>
+    </div>
+  </section>
+
+  <section>
+    <h2>Edge case: empty card</h2>
+    <snice-card variant="elevated"></snice-card>
+  </section>
+
+  <section>
+    <h2>Edge case: very long content</h2>
+    <snice-card variant="bordered" style="max-width:320px;">
+      <span slot="header"><strong>Long Content</strong></span>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+      <span slot="footer">End of content</span>
+    </snice-card>
+  </section>
+
+  <section>
+    <h2>Edge case: single character content</h2>
+    <snice-card variant="elevated">X</snice-card>
+  </section>
 
   <script type="module">
     import './snice-card.ts';
-    import '../button/snice-button.ts';
-
-    const demoCard = document.getElementById('demo-card');
-
-    window.toggleClickable = function() {
-      demoCard.clickable = !demoCard.clickable;
-      updateState();
-    };
-
-    window.toggleSelected = function() {
-      demoCard.selected = !demoCard.selected;
-      updateState();
-    };
-
-    window.toggleDisabled = function() {
-      demoCard.disabled = !demoCard.disabled;
-      updateState();
-    };
-
-    document.getElementById('variant-select').addEventListener('change', (e) => {
-      demoCard.variant = e.target.value;
-      updateState();
-    });
-
-    document.getElementById('size-select').addEventListener('change', (e) => {
-      demoCard.size = e.target.value;
-      updateState();
-    });
-
-    function updateState() {
-      const states = [];
-      if (demoCard.clickable) states.push('Clickable');
-      if (demoCard.selected) states.push('Selected');
-      if (demoCard.disabled) states.push('Disabled');
-      
-      document.getElementById('card-state').textContent = 
-        states.length > 0 ? states.join(', ') : 'Default';
-    }
-
-    // Log card click events
-    document.querySelectorAll('snice-card[clickable]').forEach(card => {
-      card.addEventListener('card-click', (e) => {
-        console.log('Card clicked:', e.detail);
-      });
-    });
   </script>
 </body>
 </html>

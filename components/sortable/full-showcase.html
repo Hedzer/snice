@@ -1,345 +1,127 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snice Sortable Component Demo</title>
+  <title>Sortable</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      padding: 40px;
-      line-height: 1.6;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: 10px;
-      margin-bottom: 30px;
-    }
-
-    h2 {
-      color: var(--snice-color-text);
-      margin-top: 40px;
-      margin-bottom: 20px;
-      font-size: 24px;
-    }
-
-    .demo-section {
-      margin: 30px 0;
-      padding: 20px;
-      background: var(--snice-color-background);
-      border-radius: 8px;
-      border: 1px solid var(--snice-color-border);
-    }
-
-    .demo-label {
-      display: block;
-      margin-bottom: 16px;
-      font-weight: 600;
-      color: var(--snice-color-text-secondary);
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .sortable-container {
-      padding: 20px;
-      background: var(--snice-color-background-secondary);
-      border-radius: 8px;
-      min-height: 200px;
-    }
-
-    .sortable-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 16px 20px;
-      margin-bottom: 8px;
-      background: var(--snice-color-background);
-      border: 1px solid var(--snice-color-border);
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .item {
+      padding: 0.75rem 1rem;
+      background: var(--snice-color-background-element, #fcfbf9);
+      border: 1px solid var(--snice-color-border, #e2e2e2);
       border-radius: 6px;
       cursor: grab;
-      transition: box-shadow 0.2s;
+      user-select: none;
     }
-
-    .sortable-item:hover {
-      box-shadow: var(--snice-shadow-sm);
-    }
-
-    .sortable-item.drag-handle {
-      cursor: grab;
-    }
-
-    .sortable-item-number {
-      width: 28px;
-      height: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--snice-color-primary);
-      color: white;
-      border-radius: 50%;
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    .sortable-item-content {
-      flex: 1;
-    }
-
-    .sortable-item-title {
-      font-weight: 500;
-      margin-bottom: 2px;
-    }
-
-    .sortable-item-desc {
-      font-size: 13px;
-      color: var(--snice-color-text-secondary);
-    }
-
-    .drag-icon {
-      color: var(--snice-color-text-tertiary);
-      cursor: grab;
-    }
-
-    .horizontal-list {
-      display: flex;
-      gap: 12px;
-      padding: 20px;
-      background: var(--snice-color-background-secondary);
-      border-radius: 8px;
-      overflow-x: auto;
-    }
-
-    .horizontal-item {
-      flex-shrink: 0;
-      width: 150px;
-      padding: 20px;
-      background: var(--snice-color-background);
-      border: 1px solid var(--snice-color-border);
-      border-radius: 8px;
-      text-align: center;
-      cursor: grab;
-    }
-
-    .horizontal-item .emoji {
-      font-size: 32px;
-      margin-bottom: 8px;
-    }
-
-    .controls {
-      display: flex;
-      gap: 12px;
-      margin: 20px 0;
-      flex-wrap: wrap;
-    }
-
-    .controls button {
-      padding: 10px 16px;
-      background: var(--snice-color-primary);
-      color: white;
-      border: none;
+    .item:active { cursor: grabbing; }
+    .h-item {
+      padding: 0.75rem 1.25rem;
+      background: var(--snice-color-background-element, #fcfbf9);
+      border: 1px solid var(--snice-color-border, #e2e2e2);
       border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
+      cursor: grab;
+      user-select: none;
     }
-
-    .controls button:hover {
-      background: var(--snice-color-primary-hover);
-    }
-
-    .two-columns {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
-    }
-
-    @media (max-width: 768px) {
-      .two-columns {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .column-title {
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 12px;
-      color: var(--snice-color-text-secondary);
+    .handle {
+      cursor: grab;
+      display: inline-block;
+      margin-right: 0.5rem;
+      color: var(--snice-color-text-tertiary, #888);
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🔄 Snice Sortable Component Demo</h1>
 
-    <div class="demo-section">
-      <h2>Vertical Sortable List</h2>
-      <span class="demo-label">Drag items to reorder</span>
-      
-      <snice-sortable class="sortable-container" id="vertical-sortable">
-        <div class="sortable-item">
-          <div class="sortable-item-number">1</div>
-          <div class="sortable-item-content">
-            <div class="sortable-item-title">Design System</div>
-            <div class="sortable-item-desc">Create consistent UI components</div>
-          </div>
-          <span class="drag-icon">☰</span>
-        </div>
-        <div class="sortable-item">
-          <div class="sortable-item-number">2</div>
-          <div class="sortable-item-content">
-            <div class="sortable-item-title">API Integration</div>
-            <div class="sortable-item-desc">Connect frontend with backend</div>
-          </div>
-          <span class="drag-icon">☰</span>
-        </div>
-        <div class="sortable-item">
-          <div class="sortable-item-number">3</div>
-          <div class="sortable-item-content">
-            <div class="sortable-item-title">User Testing</div>
-            <div class="sortable-item-desc">Gather feedback from users</div>
-          </div>
-          <span class="drag-icon">☰</span>
-        </div>
-        <div class="sortable-item">
-          <div class="sortable-item-number">4</div>
-          <div class="sortable-item-content">
-            <div class="sortable-item-title">Documentation</div>
-            <div class="sortable-item-desc">Write comprehensive docs</div>
-          </div>
-          <span class="drag-icon">☰</span>
-        </div>
-        <div class="sortable-item">
-          <div class="sortable-item-number">5</div>
-          <div class="sortable-item-content">
-            <div class="sortable-item-title">Performance</div>
-            <div class="sortable-item-desc">Optimize loading times</div>
-          </div>
-          <span class="drag-icon">☰</span>
-        </div>
-      </snice-sortable>
+<h2>Direction: Vertical (default)</h2>
+<snice-sortable direction="vertical" style="max-width: 300px;">
+  <div class="item">Item 1</div>
+  <div class="item">Item 2</div>
+  <div class="item">Item 3</div>
+  <div class="item">Item 4</div>
+  <div class="item">Item 5</div>
+</snice-sortable>
 
-      <div class="controls">
-        <button id="get-order">Get Current Order</button>
-        <button id="reset-order">Reset Order</button>
-      </div>
+<h2>Direction: Horizontal</h2>
+<snice-sortable direction="horizontal" style="display: flex; gap: 0.5rem;">
+  <div class="h-item">Alpha</div>
+  <div class="h-item">Bravo</div>
+  <div class="h-item">Charlie</div>
+  <div class="h-item">Delta</div>
+  <div class="h-item">Echo</div>
+</snice-sortable>
 
-      <div id="order-display" style="margin-top: 12px; padding: 12px; background: var(--snice-color-background-secondary); border-radius: 6px; font-family: monospace; font-size: 13px;"></div>
-    </div>
+<h2>Disabled</h2>
+<snice-sortable direction="vertical" disabled style="max-width: 300px;">
+  <div class="item" style="opacity: 0.5; cursor: not-allowed;">Item 1 (disabled)</div>
+  <div class="item" style="opacity: 0.5; cursor: not-allowed;">Item 2 (disabled)</div>
+  <div class="item" style="opacity: 0.5; cursor: not-allowed;">Item 3 (disabled)</div>
+</snice-sortable>
 
-    <div class="demo-section">
-      <h2>Horizontal Sortable</h2>
-      <span class="demo-label">Drag cards horizontally</span>
-      
-      <snice-sortable direction="horizontal" class="horizontal-list">
-        <div class="horizontal-item">
-          <div class="emoji">🎯</div>
-          <div>Goals</div>
-        </div>
-        <div class="horizontal-item">
-          <div class="emoji">📊</div>
-          <div>Analytics</div>
-        </div>
-        <div class="horizontal-item">
-          <div class="emoji">📝</div>
-          <div>Tasks</div>
-        </div>
-        <div class="horizontal-item">
-          <div class="emoji">👥</div>
-          <div>Team</div>
-        </div>
-        <div class="horizontal-item">
-          <div class="emoji">📅</div>
-          <div>Calendar</div>
-        </div>
-        <div class="horizontal-item">
-          <div class="emoji">💼</div>
-          <div>Projects</div>
-        </div>
-      </snice-sortable>
-    </div>
+<h2>With Handle</h2>
+<snice-sortable direction="vertical" handle=".handle" style="max-width: 300px;">
+  <div class="item"><span class="handle">::</span> Drag by handle 1</div>
+  <div class="item"><span class="handle">::</span> Drag by handle 2</div>
+  <div class="item"><span class="handle">::</span> Drag by handle 3</div>
+  <div class="item"><span class="handle">::</span> Drag by handle 4</div>
+</snice-sortable>
 
-    <div class="demo-section">
-      <h2>Connected Lists</h2>
-      <span class="demo-label">Drag items between columns (Kanban style)</span>
-      
-      <div class="two-columns">
-        <div>
-          <div class="column-title">To Do</div>
-          <snice-sortable group="kanban" class="sortable-container" id="todo-list">
-            <div class="sortable-item">
-              <div class="sortable-item-content">
-                <div class="sortable-item-title">Review PR #234</div>
-                <div class="sortable-item-desc">Check code changes</div>
-              </div>
-            </div>
-            <div class="sortable-item">
-              <div class="sortable-item-content">
-                <div class="sortable-item-title">Update Dependencies</div>
-                <div class="sortable-item-desc">Security patches</div>
-              </div>
-            </div>
-          </snice-sortable>
-        </div>
-        
-        <div>
-          <div class="column-title">In Progress</div>
-          <snice-sortable group="kanban" class="sortable-container" id="progress-list">
-            <div class="sortable-item">
-              <div class="sortable-item-content">
-                <div class="sortable-item-title">Feature Implementation</div>
-                <div class="sortable-item-desc">New dashboard widget</div>
-              </div>
-            </div>
-          </snice-sortable>
-        </div>
-      </div>
-    </div>
+<h2>With Group</h2>
+<div class="row" style="align-items: flex-start;">
+  <div style="max-width: 250px;">
+    <div style="font-size: 0.8rem; color: var(--snice-color-text-secondary); margin-bottom: 0.25rem;">Group A</div>
+    <snice-sortable direction="vertical" group="shared">
+      <div class="item">Group A - Item 1</div>
+      <div class="item">Group A - Item 2</div>
+      <div class="item">Group A - Item 3</div>
+    </snice-sortable>
   </div>
+  <div style="max-width: 250px;">
+    <div style="font-size: 0.8rem; color: var(--snice-color-text-secondary); margin-bottom: 0.25rem;">Group B</div>
+    <snice-sortable direction="vertical" group="shared">
+      <div class="item">Group B - Item 1</div>
+      <div class="item">Group B - Item 2</div>
+      <div class="item">Group B - Item 3</div>
+    </snice-sortable>
+  </div>
+</div>
 
-  <script type="module">
-    import './snice-sortable.ts';
+<h2>Many Items</h2>
+<snice-sortable direction="vertical" style="max-width: 300px;">
+  <div class="item">Item 1</div>
+  <div class="item">Item 2</div>
+  <div class="item">Item 3</div>
+  <div class="item">Item 4</div>
+  <div class="item">Item 5</div>
+  <div class="item">Item 6</div>
+  <div class="item">Item 7</div>
+  <div class="item">Item 8</div>
+  <div class="item">Item 9</div>
+  <div class="item">Item 10</div>
+</snice-sortable>
 
-    const verticalSortable = document.getElementById('vertical-sortable');
-    const orderDisplay = document.getElementById('order-display');
+<h2>Single Item</h2>
+<snice-sortable direction="vertical" style="max-width: 300px;">
+  <div class="item">Only one item</div>
+</snice-sortable>
 
-    // Log sort events
-    verticalSortable.addEventListener('sort-start', (e) => {
-      console.log('Sort started:', e.detail);
-    });
-
-    verticalSortable.addEventListener('sort-end', (e) => {
-      console.log('Sort ended:', e.detail);
-      updateOrderDisplay();
-    });
-
-    verticalSortable.addEventListener('sort-change', (e) => {
-      console.log('Sort changed:', e.detail);
-    });
-
-    document.getElementById('get-order').addEventListener('click', () => {
-      updateOrderDisplay();
-    });
-
-    document.getElementById('reset-order').addEventListener('click', () => {
-      // Reload page to reset
-      location.reload();
-    });
-
-    function updateOrderDisplay() {
-      const items = verticalSortable.querySelectorAll('.sortable-item-title');
-      const order = Array.from(items).map((item, i) => `${i + 1}. ${item.textContent}`);
-      orderDisplay.textContent = order.join('\n');
-    }
-  </script>
+<script type="module">
+  import './snice-sortable.ts';
+</script>
 </body>
 </html>

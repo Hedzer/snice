@@ -1,300 +1,247 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snice Markdown Component Demo</title>
+  <title>Markdown</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      padding: 40px;
-      line-height: 1.6;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: 10px;
-      margin-bottom: 30px;
-    }
-
-    h2 {
-      color: var(--snice-color-text);
-      margin-top: 40px;
-      margin-bottom: 20px;
-      font-size: 24px;
-    }
-
-    .demo-section {
-      margin: 30px 0;
-      padding: 20px;
-      background: var(--snice-color-background);
-      border-radius: 8px;
-      border: 1px solid var(--snice-color-border);
-    }
-
-    .demo-label {
-      display: block;
-      margin-bottom: 16px;
-      font-weight: 600;
-      color: var(--snice-color-text-secondary);
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .split-view {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
-
-    @media (max-width: 768px) {
-      .split-view {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .editor-panel {
-      display: flex;
-      flex-direction: column;
-    }
-
-    textarea {
-      width: 100%;
-      min-height: 400px;
-      padding: 16px;
-      border: 1px solid var(--snice-color-border);
-      border-radius: 6px;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      font-family: 'SF Mono', Monaco, monospace;
-      font-size: 14px;
-      line-height: 1.6;
-      resize: vertical;
-    }
-
-    .preview-panel {
-      border: 1px solid var(--snice-color-border);
-      border-radius: 6px;
-      padding: 20px;
-      background: var(--snice-color-background);
-    }
-
-    .controls {
-      display: flex;
-      gap: 12px;
-      margin: 16px 0;
-      flex-wrap: wrap;
-    }
-
-    .controls label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 14px;
-    }
-
-    .example-btn {
-      padding: 8px 12px;
-      background: var(--snice-color-background-secondary);
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 13px;
-    }
-
-    .example-btn:hover {
-      background: var(--snice-color-border);
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
+    snice-markdown { display: block; max-width: 700px; border: 1px solid var(--snice-color-border, #ddd); border-radius: 8px; padding: 1rem; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>📝 Snice Markdown Component Demo</h1>
 
-    <div class="demo-section">
-      <h2>Live Markdown Editor</h2>
-      <span class="demo-label">Type markdown on the left, see rendered output on the right</span>
-      
-      <div class="controls">
-        <label>
-          <input type="checkbox" id="sanitize-check" checked>
-          Sanitize HTML
-        </label>
-        <span style="flex: 1;"></span>
-        <button class="example-btn" data-example="basic">Basic</button>
-        <button class="example-btn" data-example="full">Full Example</button>
-        <button class="example-btn" data-example="code">Code</button>
-        <button class="example-btn" data-example="table">Table</button>
-      </div>
+<h2>Theme: default</h2>
+<snice-markdown theme="default"># Heading 1
+## Heading 2
+### Heading 3
 
-      <div class="split-view">
-        <div class="editor-panel">
-          <textarea id="markdown-input" placeholder="Type your markdown here..."></textarea>
-        </div>
-        <div class="preview-panel">
-          <snice-markdown id="markdown-preview"></snice-markdown>
-        </div>
-      </div>
-    </div>
+A paragraph with **bold**, *italic*, and ~~strikethrough~~ text.
+</snice-markdown>
 
-    <div class="demo-section">
-      <h2>Supported Markdown Features</h2>
-      <ul style="columns: 2; color: var(--snice-color-text-secondary);">
-        <li>Headers (H1-H6)</li>
-        <li>Bold and italic text</li>
-        <li>Links and images</li>
-        <li>Ordered and unordered lists</li>
-        <li>Code blocks with syntax highlighting</li>
-        <li>Inline code</li>
-        <li>Blockquotes</li>
-        <li>Horizontal rules</li>
-        <li>Tables (GFM)</li>
-        <li>Task lists</li>
-        <li>Strikethrough</li>
-      </ul>
-    </div>
-  </div>
+<h2>Theme: github</h2>
+<snice-markdown theme="github"># GitHub Theme
+## Subheading
 
-  <script type="module">
-    import './snice-markdown.ts';
+This uses the GitHub-style rendering theme.
 
-    const input = document.getElementById('markdown-input');
-    const preview = document.getElementById('markdown-preview');
-    const sanitizeCheck = document.getElementById('sanitize-check');
-    const exampleBtns = document.querySelectorAll('.example-btn');
+- List item one
+- List item two
+</snice-markdown>
 
-    const examples = {
-      basic: `# Welcome
+<h2>Headings (h1-h6)</h2>
+<snice-markdown># Heading 1
+## Heading 2
+### Heading 3
+#### Heading 4
+##### Heading 5
+###### Heading 6
+</snice-markdown>
 
-This is a **bold** statement and this is *italic*.
+<h2>Bold, italic, bold-italic</h2>
+<snice-markdown>**Bold text** and *italic text* and ***bold italic text***.
 
-## Lists
+Also __bold__ and _italic_ and ___bold italic___.
+</snice-markdown>
 
-- First item
+<h2>Strikethrough</h2>
+<snice-markdown>This is ~~deleted text~~ with strikethrough.</snice-markdown>
+
+<h2>Unordered list</h2>
+<snice-markdown>- First item
 - Second item
 - Third item
+  - Nested item
+- Fourth item
+</snice-markdown>
 
-## Links
+<h2>Ordered list</h2>
+<snice-markdown>1. First item
+2. Second item
+3. Third item
+4. Fourth item
+</snice-markdown>
 
-Visit [OpenStreetMap](https://www.openstreetmap.org) for maps.`,
+<h2>Task list</h2>
+<snice-markdown>- [x] Completed task
+- [x] Another completed
+- [ ] Pending task
+- [ ] Another pending
+</snice-markdown>
 
-      full: `# Project Documentation
+<h2>Blockquote</h2>
+<snice-markdown>> This is a blockquote.
+> It can span multiple lines.
+> And contain **formatting**.
+</snice-markdown>
 
-## Introduction
+<h2>Inline code</h2>
+<snice-markdown>Use `const x = 42` for inline code. Also `Array.from()` and `document.querySelector()`.</snice-markdown>
 
-This is a comprehensive example of **Markdown** rendering with the \`snice-markdown\` component.
+<h2>Code block</h2>
+<snice-markdown>```javascript
+function hello(name) {
+  console.log(`Hello, ${name}!`);
+  return true;
+}
+```
+</snice-markdown>
 
-### Features
+<h2>Code block (no language)</h2>
+<snice-markdown>```
+plain code block
+no language specified
+```
+</snice-markdown>
 
-1. *Easy* to use
-2. **Powerful** features
-3. Secure by default
+<h2>Code block (multiple languages)</h2>
+<snice-markdown>```typescript
+const greeting: string = 'Hello';
+```
 
-## Code Example
+```python
+greeting = "Hello"
+print(greeting)
+```
 
-Inline code: \`const x = 42;\`
+```css
+.container {
+  display: flex;
+  gap: 1rem;
+}
+```
+</snice-markdown>
 
-> Blockquote: This is an important note that stands out.
+<h2>Links</h2>
+<snice-markdown>[Link text](https://example.com) and another [link](https://example.org).
+
+Autolink: https://example.com/autolinked
+</snice-markdown>
+
+<h2>Images</h2>
+<snice-markdown>![Alt text](https://picsum.photos/seed/md1/300/150)
+
+Text after image.
+</snice-markdown>
+
+<h2>Horizontal rule</h2>
+<snice-markdown>Content above
 
 ---
 
-## Getting Started
+Content below
 
-- Clone the repository
-- Install dependencies
-- Run the dev server
+***
 
-Visit our [documentation](https://example.com) for more details.`,
+More content
 
-      code: `# Code Examples
+___
 
-## JavaScript
+End
+</snice-markdown>
 
-\`\`\`javascript
-function greet(name) {
-  return \`Hello, \${name}!\`;
-}
+<h2>Table (GFM)</h2>
+<snice-markdown>| Name | Age | Role |
+|------|-----|------|
+| Alice | 30 | Engineer |
+| Bob | 25 | Designer |
+| Charlie | 35 | Manager |
+</snice-markdown>
 
-console.log(greet('World'));
-\`\`\`
+<h2>Combined formatting</h2>
+<snice-markdown># Project README
 
-## CSS
+A **full-featured** project with *multiple* features.
 
-\`\`\`css
-.container {
-  display: flex;
-  padding: 1rem;
-  background: #f5f5f5;
-}
-\`\`\`
+## Features
 
-## Python
+- [x] Markdown rendering
+- [x] GFM tables
+- [ ] Custom themes
+- [ ] Plugin system
 
-\`\`\`python
-def fibonacci(n):
-    if n <= 1:
-        return n
-    return fibonacci(n-1) + fibonacci(n-2)
+## Code Example
 
-print(fibonacci(10))
-\`\`\``,
+```javascript
+import { render } from 'snice';
+render(document.body, template);
+```
 
-      table: `# Tables
+> **Note:** This is just an example.
 
-## Comparison
+---
 
-| Feature | Basic | Pro | Enterprise |
-|---------|-------|-----|------------|
-| Users | 5 | 25 | Unlimited |
-| Storage | 10GB | 100GB | 1TB |
-| Support | Email | Priority | 24/7 Phone |
-| Price | Free | $29/mo | $99/mo |
+| Feature | Status |
+|---------|--------|
+| Tables | Done |
+| Lists | Done |
+| Code | Done |
 
-## Task List
+Visit [our docs](https://example.com) for more.
+</snice-markdown>
 
-- [x] Design the interface
-- [x] Implement core features
-- [ ] Add advanced options
-- [ ] Write documentation`
-    };
+<h2>Sanitize: true (default)</h2>
+<snice-markdown sanitize>Safe content with **bold** and a [link](https://example.com).</snice-markdown>
 
-    // Set initial content
-    input.value = examples.full;
-    updatePreview();
+<h2>Sanitize: false</h2>
+<snice-markdown sanitize="false">Content with sanitization disabled. **Bold** still works.</snice-markdown>
 
-    // Event listeners
-    input.addEventListener('input', updatePreview);
+<h2>Programmatic setContent</h2>
+<snice-markdown id="md-programmatic"></snice-markdown>
 
-    sanitizeCheck.addEventListener('change', () => {
-      preview.sanitize = sanitizeCheck.checked;
-    });
+<h2>Empty content</h2>
+<snice-markdown></snice-markdown>
 
-    exampleBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const example = btn.dataset.example;
-        input.value = examples[example];
-        updatePreview();
-      });
-    });
+<h2>Long paragraph (wrapping)</h2>
+<snice-markdown>This is a very long paragraph that contains enough text to demonstrate how the markdown renderer handles text wrapping within the container. It should wrap naturally at the container boundaries without overflowing. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</snice-markdown>
 
-    function updatePreview() {
-      preview.setContent(input.value);
-    }
+<h2>Nested formatting in lists</h2>
+<snice-markdown>- **Bold item** with extra text
+- *Italic item* with `inline code`
+- ~~Struck item~~ replaced
+- [Link item](https://example.com)
+</snice-markdown>
 
-    // Log render events
-    preview.addEventListener('markdown-render', (e) => {
-      console.log('Markdown rendered:', e.detail);
-    });
-  </script>
+<h2>Mixed block elements</h2>
+<snice-markdown>## Section
+
+Paragraph text.
+
+> A quote
+
+- A list item
+
+```
+A code block
+```
+
+Another paragraph.
+
+| Col A | Col B |
+|-------|-------|
+| 1 | 2 |
+</snice-markdown>
+
+<script type="module">
+  import './snice-markdown.ts';
+
+  const mdProg = document.getElementById('md-programmatic');
+  mdProg.setContent('## Dynamic Content\n\nSet via `setContent()` method.\n\n- Item A\n- Item B');
+</script>
 </body>
 </html>

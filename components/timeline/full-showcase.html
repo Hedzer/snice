@@ -1,169 +1,145 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Timeline Demo</title>
+  <title>Timeline</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      padding: 40px;
-      font-family: var(--snice-font-family);
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      max-width: 1000px;
-      margin: 0 auto;
-    }
-
-    .section {
-      margin-bottom: 60px;
-    }
-
-    h2 {
-      color: var(--snice-color-text);
-      margin-bottom: 20px;
-      font-size: var(--snice-font-size-2xl);
-    }
-
-    h3 {
-      color: var(--snice-color-text-secondary);
-      margin-bottom: 16px;
-      font-size: var(--snice-font-size-lg);
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); margin: 2rem 0 0.75rem; }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
   </style>
 </head>
 <body>
-  <h2>Timeline Component Demo</h2>
 
-  <div class="section">
-    <h3>Vertical Timeline (Left)</h3>
-    <snice-timeline id="vertical-left"></snice-timeline>
-  </div>
+<h2>Position: left (default)</h2>
+<snice-timeline id="tl-left" position="left"></snice-timeline>
 
-  <div class="section">
-    <h3>Vertical Timeline (Right)</h3>
-    <snice-timeline id="vertical-right" position="right"></snice-timeline>
-  </div>
+<h2>Position: right</h2>
+<snice-timeline id="tl-right" position="right"></snice-timeline>
 
-  <div class="section">
-    <h3>Vertical Timeline (Alternate)</h3>
-    <snice-timeline id="vertical-alternate" position="alternate"></snice-timeline>
-  </div>
+<h2>Position: alternate</h2>
+<snice-timeline id="tl-alternate" position="alternate"></snice-timeline>
 
-  <div class="section">
-    <h3>Horizontal Timeline</h3>
-    <snice-timeline id="horizontal" orientation="horizontal"></snice-timeline>
-  </div>
+<h2>Orientation: horizontal</h2>
+<div style="overflow-x: auto;">
+  <snice-timeline id="tl-horizontal" orientation="horizontal"></snice-timeline>
+</div>
 
-  <div class="section">
-    <h3>With Variants</h3>
-    <snice-timeline id="with-variants"></snice-timeline>
-  </div>
+<h2>Horizontal + Right</h2>
+<div style="overflow-x: auto;">
+  <snice-timeline id="tl-horiz-right" orientation="horizontal" position="right"></snice-timeline>
+</div>
 
-  <div class="section">
-    <h3>With Custom Icons</h3>
-    <snice-timeline id="with-icons"></snice-timeline>
-  </div>
+<h2>Horizontal + Alternate</h2>
+<div style="overflow-x: auto;">
+  <snice-timeline id="tl-horiz-alt" orientation="horizontal" position="alternate"></snice-timeline>
+</div>
 
-  <div class="section">
-    <h3>Reversed</h3>
-    <snice-timeline id="reversed" reverse></snice-timeline>
-  </div>
+<h2>Reverse Order</h2>
+<snice-timeline id="tl-reverse" reverse></snice-timeline>
 
-  <script type="module">
-    import './snice-timeline.ts';
+<h2>Reverse + Alternate</h2>
+<snice-timeline id="tl-reverse-alt" reverse position="alternate"></snice-timeline>
 
-    const basicEvents = [
-      {
-        timestamp: '2024-01-15 09:00',
-        title: 'Project Started',
-        description: 'Initial planning and requirements gathering'
-      },
-      {
-        timestamp: '2024-01-20 14:30',
-        title: 'Design Phase',
-        description: 'Created mockups and wireframes'
-      },
-      {
-        timestamp: '2024-02-01 10:00',
-        title: 'Development Started',
-        description: 'Began implementing core features'
-      },
-      {
-        timestamp: '2024-02-15 16:00',
-        title: 'Testing Phase',
-        description: 'QA testing and bug fixes'
-      },
-      {
-        timestamp: '2024-02-28 11:00',
-        title: 'Launch',
-        description: 'Successfully deployed to production'
-      }
-    ];
+<h2>All Variants</h2>
+<snice-timeline id="tl-variants"></snice-timeline>
 
-    document.getElementById('vertical-left').items = basicEvents;
-    document.getElementById('vertical-right').items = basicEvents.slice(0, 3);
-    document.getElementById('vertical-alternate').items = basicEvents;
-    document.getElementById('horizontal').items = basicEvents.slice(0, 4);
+<h2>Custom Emoji Icons</h2>
+<snice-timeline id="tl-icons"></snice-timeline>
 
-    // With variants
-    document.getElementById('with-variants').items = [
-      {
-        timestamp: '10:00 AM',
-        title: 'Meeting Scheduled',
-        variant: 'info',
-        description: 'Team sync meeting'
-      },
-      {
-        timestamp: '11:30 AM',
-        title: 'Task Completed',
-        variant: 'success',
-        description: 'All tests passing'
-      },
-      {
-        timestamp: '02:00 PM',
-        title: 'Warning Issued',
-        variant: 'warning',
-        description: 'Approaching deadline'
-      },
-      {
-        timestamp: '04:30 PM',
-        title: 'Build Failed',
-        variant: 'error',
-        description: 'Deployment unsuccessful'
-      }
-    ];
+<h2>Minimal (title only)</h2>
+<snice-timeline id="tl-minimal"></snice-timeline>
 
-    // With custom icons
-    document.getElementById('with-icons').items = [
-      {
-        timestamp: 'January 2024',
-        title: 'Planning',
-        icon: '📋',
-        description: 'Project planning and setup'
-      },
-      {
-        timestamp: 'February 2024',
-        title: 'Development',
-        icon: '💻',
-        description: 'Active development phase'
-      },
-      {
-        timestamp: 'March 2024',
-        title: 'Testing',
-        icon: '🧪',
-        description: 'Quality assurance testing'
-      },
-      {
-        timestamp: 'April 2024',
-        title: 'Launch',
-        icon: '🚀',
-        description: 'Product launch'
-      }
-    ];
+<h2>Single Item</h2>
+<snice-timeline id="tl-single"></snice-timeline>
 
-    // Reversed
-    document.getElementById('reversed').items = basicEvents;
-  </script>
+<h2>Many Items (12)</h2>
+<snice-timeline id="tl-many"></snice-timeline>
+
+<h2>Mixed: some with/without description and timestamp</h2>
+<snice-timeline id="tl-mixed"></snice-timeline>
+
+<h2>Empty Items Array</h2>
+<snice-timeline id="tl-empty"></snice-timeline>
+
+<script type="module">
+  import './snice-timeline.ts';
+
+  const baseItems = [
+    { timestamp: '2024-01-10', title: 'Project Created', description: 'Initial project setup and planning phase', variant: 'success' },
+    { timestamp: '2024-02-15', title: 'Design Review', description: 'UI/UX designs reviewed and approved', variant: 'info' },
+    { timestamp: '2024-03-20', title: 'Development Started', description: 'Sprint 1 begins', variant: 'default' },
+    { timestamp: '2024-04-05', title: 'Bug Found', description: 'Critical performance issue detected', variant: 'error' },
+    { timestamp: '2024-05-01', title: 'Deadline Warning', description: 'Scope adjustments needed', variant: 'warning' },
+  ];
+
+  document.getElementById('tl-left').items = baseItems;
+  document.getElementById('tl-right').items = baseItems;
+  document.getElementById('tl-alternate').items = baseItems;
+  document.getElementById('tl-horizontal').items = baseItems;
+  document.getElementById('tl-horiz-right').items = baseItems;
+  document.getElementById('tl-horiz-alt').items = baseItems;
+  document.getElementById('tl-reverse').items = baseItems;
+  document.getElementById('tl-reverse-alt').items = baseItems;
+
+  document.getElementById('tl-variants').items = [
+    { title: 'Default variant', description: 'variant: default', variant: 'default' },
+    { title: 'Success variant', description: 'variant: success', variant: 'success' },
+    { title: 'Warning variant', description: 'variant: warning', variant: 'warning' },
+    { title: 'Error variant', description: 'variant: error', variant: 'error' },
+    { title: 'Info variant', description: 'variant: info', variant: 'info' },
+  ];
+
+  document.getElementById('tl-icons').items = [
+    { title: 'Rocket Launch', description: 'Deployed to production', icon: '\u{1F680}', variant: 'success' },
+    { title: 'Code Review', description: 'Pull request reviewed', icon: '\u{1F4CB}', variant: 'info' },
+    { title: 'Bug Fix', description: 'Fixed memory leak', icon: '\u{1F41B}', variant: 'error' },
+    { title: 'Meeting', description: 'Sprint planning', icon: '\u{1F4C5}', variant: 'default' },
+    { title: 'Celebration', description: 'Milestone reached', icon: '\u{1F389}', variant: 'success' },
+    { title: 'Warning Sign', description: 'Approaching limit', icon: '\u{26A0}\u{FE0F}', variant: 'warning' },
+  ];
+
+  document.getElementById('tl-minimal').items = [
+    { title: 'Step 1' },
+    { title: 'Step 2' },
+    { title: 'Step 3' },
+    { title: 'Step 4' },
+  ];
+
+  document.getElementById('tl-single').items = [
+    { timestamp: '2024-01-01', title: 'Single Event', description: 'The only item', variant: 'info' },
+  ];
+
+  document.getElementById('tl-many').items = Array.from({ length: 12 }, (_, i) => ({
+    timestamp: `2024-${String(i + 1).padStart(2, '0')}-01`,
+    title: `Event ${i + 1}`,
+    description: `Description for event ${i + 1}`,
+    variant: ['default', 'success', 'warning', 'error', 'info'][i % 5],
+  }));
+
+  document.getElementById('tl-mixed').items = [
+    { timestamp: '9:00 AM', title: 'Started work', variant: 'default' },
+    { timestamp: '10:30 AM', title: 'Team standup', description: 'Discussed sprint goals and blockers', variant: 'info' },
+    { title: 'Lunch break' },
+    { timestamp: '2:00 PM', title: 'Deploy v2.1', description: 'Pushed release to staging', variant: 'success' },
+    { title: 'End of day' },
+  ];
+
+  document.getElementById('tl-empty').items = [];
+</script>
 </body>
 </html>

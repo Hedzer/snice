@@ -1,311 +1,191 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snice Flip Card Component Demo</title>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <title>Flip Card</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      padding: 40px;
-      line-height: 1.6;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: 10px;
-      margin-bottom: 30px;
-    }
-
-    h2 {
-      color: var(--snice-color-text);
-      margin-top: 40px;
-      margin-bottom: 20px;
-      font-size: 24px;
-    }
-
-    .demo-section {
-      margin: 30px 0;
-      padding: 20px;
-      background: var(--snice-color-background);
-      border-radius: 8px;
-      border: 1px solid var(--snice-color-border);
-    }
-
-    .demo-label {
-      display: block;
-      margin-bottom: 16px;
-      font-weight: 600;
-      color: var(--snice-color-text-secondary);
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .card-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 24px;
-    }
-
-    .card-front, .card-back {
-      padding: 30px;
-      text-align: center;
-      height: 200px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      border-radius: 12px;
-      box-shadow: var(--snice-shadow-md);
-    }
-
-    .card-front {
-      background: linear-gradient(135deg, var(--snice-color-primary), var(--snice-color-primary-hover));
-      color: white;
-    }
-
-    .card-back {
-      background: linear-gradient(135deg, var(--snice-color-success), var(--snice-color-success-hover));
-      color: white;
-    }
-
-    .card-icon {
-      font-size: 48px;
-      margin-bottom: 16px;
-    }
-
-    .card-title {
-      font-size: 24px;
-      font-weight: 600;
-      margin: 0 0 8px;
-    }
-
-    .card-text {
-      font-size: 14px;
-      opacity: 0.9;
-    }
-
-    .controls {
-      display: flex;
-      gap: 12px;
-      margin: 20px 0;
-      flex-wrap: wrap;
-      padding: 16px;
-      background: var(--snice-color-background-secondary);
-      border-radius: 6px;
-      border: 1px solid var(--snice-color-border);
-    }
-
-    .controls label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 14px;
-    }
-
-    .controls select {
-      padding: 8px 12px;
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      font-size: 14px;
-    }
-
-    .flip-btn {
-      padding: 10px 20px;
-      background: var(--snice-color-primary);
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    .flip-btn:hover {
-      background: var(--snice-color-primary-hover);
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 1.5rem; flex-wrap: wrap; }
+    .card-face { display: flex; align-items: center; justify-content: center; width: 200px; height: 140px; border-radius: 8px; font-weight: 600; }
+    .front-face { background: var(--snice-color-primary, #2563eb); color: white; }
+    .back-face { background: var(--snice-color-success, #16a34a); color: white; }
+    .alt-front { background: var(--snice-color-danger, #dc2626); color: white; }
+    .alt-back { background: #9333ea; color: white; }
+    snice-flip-card { display: inline-block; width: 200px; height: 140px; }
+    button.demo-btn { padding: 0.4rem 0.8rem; border: 1px solid var(--snice-color-border); border-radius: 4px; background: var(--snice-color-background-element); color: var(--snice-color-text); cursor: pointer; font-size: 0.8rem; }
   </style>
+  <script type="module">import './snice-flip-card.ts';</script>
 </head>
 <body>
-  <div class="container">
-    <h1>🐋 Snice Flip Card Component Demo</h1>
 
-    <div class="demo-section">
-      <h2>Basic Flip Cards</h2>
-      <span class="demo-label">Click cards to flip</span>
-      <div class="card-grid">
-        <snice-flip-card>
-          <div slot="front" class="card-front">
-            <div class="card-icon">🎉</div>
-            <h3 class="card-title">Welcome!</h3>
-            <p class="card-text">Click to see what's on the back</p>
-          </div>
-          <div slot="back" class="card-back">
-            <div class="card-icon">✨</div>
-            <h3 class="card-title">Surprise!</h3>
-            <p class="card-text">You found the hidden content</p>
-          </div>
-        </snice-flip-card>
+<!-- Direction: horizontal (default) -->
+<h2>Direction: horizontal (default)</h2>
+<div class="row">
+  <snice-flip-card direction="horizontal">
+    <div slot="front" class="card-face front-face">Front (horizontal)</div>
+    <div slot="back" class="card-face back-face">Back (horizontal)</div>
+  </snice-flip-card>
+</div>
 
-        <snice-flip-card direction="vertical">
-          <div slot="front" class="card-front" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);">
-            <div class="card-icon">📚</div>
-            <h3 class="card-title">Vertical Flip</h3>
-            <p class="card-text">Flips up and down</p>
-          </div>
-          <div slot="back" class="card-back" style="background: linear-gradient(135deg, #ec4899, #be185d);">
-            <div class="card-icon">🎨</div>
-            <h3 class="card-title">Nice!</h3>
-            <p class="card-text">Smooth animation</p>
-          </div>
-        </snice-flip-card>
+<!-- Direction: vertical -->
+<h2>Direction: vertical</h2>
+<div class="row">
+  <snice-flip-card direction="vertical">
+    <div slot="front" class="card-face front-face">Front (vertical)</div>
+    <div slot="back" class="card-face back-face">Back (vertical)</div>
+  </snice-flip-card>
+</div>
 
-        <snice-flip-card duration="300">
-          <div slot="front" class="card-front" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
-            <div class="card-icon">⚡</div>
-            <h3 class="card-title">Fast Flip</h3>
-            <p class="card-text">300ms duration</p>
-          </div>
-          <div slot="back" class="card-back" style="background: linear-gradient(135deg, #10b981, #059669);">
-            <div class="card-icon">🚀</div>
-            <h3 class="card-title">Quick!</h3>
-            <p class="card-text">Boom!</p>
-          </div>
-        </snice-flip-card>
-      </div>
-    </div>
+<!-- Both directions compared -->
+<h2>Direction Comparison</h2>
+<div class="row">
+  <snice-flip-card direction="horizontal">
+    <div slot="front" class="card-face front-face">Horizontal</div>
+    <div slot="back" class="card-face back-face">Flipped</div>
+  </snice-flip-card>
+  <snice-flip-card direction="vertical">
+    <div slot="front" class="card-face alt-front">Vertical</div>
+    <div slot="back" class="card-face alt-back">Flipped</div>
+  </snice-flip-card>
+</div>
 
-    <div class="demo-section">
-      <h2>Interactive Demo</h2>
-      <span class="demo-label">Control the flip card programmatically</span>
-      
-      <div class="controls">
-        <label>
-          Direction:
-          <select id="direction-select">
-            <option value="horizontal" selected>Horizontal</option>
-            <option value="vertical">Vertical</option>
-          </select>
-        </label>
-        
-        <label>
-          Duration:
-          <select id="duration-select">
-            <option value="300">300ms</option>
-            <option value="600" selected>600ms</option>
-            <option value="1000">1000ms</option>
-          </select>
-        </label>
+<!-- click-to-flip: true (default) -->
+<h2>click-to-flip: true (default)</h2>
+<div class="row">
+  <snice-flip-card click-to-flip>
+    <div slot="front" class="card-face front-face">Click me</div>
+    <div slot="back" class="card-face back-face">Click again</div>
+  </snice-flip-card>
+</div>
 
-        <label>
-          <input type="checkbox" id="click-to-flip" checked>
-          Click to flip
-        </label>
-
-        <button class="flip-btn" id="flip-toggle">Flip Card</button>
-      </div>
-
-      <snice-flip-card id="demo-card" style="display: block; max-width: 300px; margin: 0 auto;">
-        <div slot="front" class="card-front">
-          <div class="card-icon">🎮</div>
-          <h3 class="card-title">Front Side</h3>
-          <p class="card-text">Use controls to customize</p>
-        </div>
-        <div slot="back" class="card-back">
-          <div class="card-icon">🎯</div>
-          <h3 class="card-title">Back Side</h3>
-          <p class="card-text">Fully customizable!</p>
-        </div>
-      </snice-flip-card>
-    </div>
-
-    <div class="demo-section">
-      <h2>Product Card Example</h2>
-      <span class="demo-label">Real-world use case</span>
-      <div class="card-grid" style="max-width: 600px;">
-        <snice-flip-card>
-          <div slot="front" style="background: white; color: #333; height: 350px; border-radius: 12px; box-shadow: var(--snice-shadow-md); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
-            <div style="font-size: 80px; margin-bottom: 16px;">💻</div>
-            <h3 style="margin: 0 0 8px; font-size: 24px;">Pro Laptop</h3>
-            <p style="margin: 0; color: var(--snice-color-primary); font-size: 28px; font-weight: bold;">$1,299</p>
-            <p style="margin-top: 16px; color: #666;">Click for details</p>
-          </div>
-          <div slot="back" style="background: white; color: #333; height: 350px; border-radius: 12px; box-shadow: var(--snice-shadow-md); display: flex; flex-direction: column; padding: 30px;">
-            <h3 style="margin: 0 0 16px;">Specifications</h3>
-            <ul style="text-align: left; line-height: 2; margin: 0; padding-left: 20px;">
-              <li>M3 Pro Chip</li>
-              <li>16GB RAM</li>
-              <li>512GB SSD</li>
-              <li>14" Retina Display</li>
-              <li>18-hour battery</li>
-            </ul>
-            <button class="flip-btn" style="margin-top: auto; width: 100%;">Add to Cart</button>
-          </div>
-        </snice-flip-card>
-
-        <snice-flip-card>
-          <div slot="front" style="background: white; color: #333; height: 350px; border-radius: 12px; box-shadow: var(--snice-shadow-md); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
-            <div style="font-size: 80px; margin-bottom: 16px;">🎧</div>
-            <h3 style="margin: 0 0 8px; font-size: 24px;">Premium Headphones</h3>
-            <p style="margin: 0; color: var(--snice-color-primary); font-size: 28px; font-weight: bold;">$349</p>
-            <p style="margin-top: 16px; color: #666;">Click for details</p>
-          </div>
-          <div slot="back" style="background: white; color: #333; height: 350px; border-radius: 12px; box-shadow: var(--snice-shadow-md); display: flex; flex-direction: column; padding: 30px;">
-            <h3 style="margin: 0 0 16px;">Features</h3>
-            <ul style="text-align: left; line-height: 2; margin: 0; padding-left: 20px;">
-              <li>Active Noise Cancellation</li>
-              <li>Spatial Audio</li>
-              <li>40-hour battery</li>
-              <li>Premium comfort</li>
-              <li>Multi-device pairing</li>
-            </ul>
-            <button class="flip-btn" style="margin-top: auto; width: 100%;">Add to Cart</button>
-          </div>
-        </snice-flip-card>
-      </div>
-    </div>
+<!-- click-to-flip: false -->
+<h2>click-to-flip: false (programmatic only)</h2>
+<div class="row">
+  <snice-flip-card id="fc-prog" click-to-flip="false">
+    <div slot="front" class="card-face front-face">No click flip</div>
+    <div slot="back" class="card-face back-face">Programmatic</div>
+  </snice-flip-card>
+  <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+    <button class="demo-btn" onclick="document.getElementById('fc-prog').flip()">flip()</button>
+    <button class="demo-btn" onclick="document.getElementById('fc-prog').flipTo('front')">flipTo('front')</button>
+    <button class="demo-btn" onclick="document.getElementById('fc-prog').flipTo('back')">flipTo('back')</button>
   </div>
+</div>
 
-  <script type="module">
-    import './snice-flip-card.ts';
+<!-- flipped: true (starts flipped) -->
+<h2>flipped: true (starts showing back)</h2>
+<div class="row">
+  <snice-flip-card flipped>
+    <div slot="front" class="card-face front-face">Front</div>
+    <div slot="back" class="card-face back-face">Started Flipped</div>
+  </snice-flip-card>
+</div>
 
-    const demoCard = document.getElementById('demo-card');
-    const directionSelect = document.getElementById('direction-select');
-    const durationSelect = document.getElementById('duration-select');
-    const clickToFlipCheck = document.getElementById('click-to-flip');
-    const flipToggle = document.getElementById('flip-toggle');
+<!-- Duration variants -->
+<h2>Duration: 200ms (fast)</h2>
+<div class="row">
+  <snice-flip-card duration="200">
+    <div slot="front" class="card-face front-face">200ms</div>
+    <div slot="back" class="card-face back-face">Fast</div>
+  </snice-flip-card>
+</div>
 
-    directionSelect.addEventListener('change', (e) => {
-      demoCard.direction = e.target.value;
-    });
+<h2>Duration: 600ms (default)</h2>
+<div class="row">
+  <snice-flip-card duration="600">
+    <div slot="front" class="card-face front-face">600ms</div>
+    <div slot="back" class="card-face back-face">Default</div>
+  </snice-flip-card>
+</div>
 
-    durationSelect.addEventListener('change', (e) => {
-      demoCard.duration = parseInt(e.target.value);
-    });
+<h2>Duration: 1500ms (slow)</h2>
+<div class="row">
+  <snice-flip-card duration="1500">
+    <div slot="front" class="card-face front-face">1500ms</div>
+    <div slot="back" class="card-face back-face">Slow</div>
+  </snice-flip-card>
+</div>
 
-    clickToFlipCheck.addEventListener('change', (e) => {
-      demoCard.clickToFlip = e.target.checked;
-    });
+<!-- All durations compared -->
+<h2>Duration Comparison</h2>
+<div class="row">
+  <snice-flip-card duration="100">
+    <div slot="front" class="card-face front-face">100ms</div>
+    <div slot="back" class="card-face back-face">100ms</div>
+  </snice-flip-card>
+  <snice-flip-card duration="400">
+    <div slot="front" class="card-face front-face">400ms</div>
+    <div slot="back" class="card-face back-face">400ms</div>
+  </snice-flip-card>
+  <snice-flip-card duration="800">
+    <div slot="front" class="card-face front-face">800ms</div>
+    <div slot="back" class="card-face back-face">800ms</div>
+  </snice-flip-card>
+  <snice-flip-card duration="2000">
+    <div slot="front" class="card-face front-face">2000ms</div>
+    <div slot="back" class="card-face back-face">2000ms</div>
+  </snice-flip-card>
+</div>
 
-    flipToggle.addEventListener('click', () => {
-      demoCard.flip();
-    });
+<!-- Direction x Duration combinations -->
+<h2>Direction x Duration Combinations</h2>
+<div class="row">
+  <snice-flip-card direction="horizontal" duration="300">
+    <div slot="front" class="card-face front-face">H + 300ms</div>
+    <div slot="back" class="card-face back-face">Flipped</div>
+  </snice-flip-card>
+  <snice-flip-card direction="vertical" duration="300">
+    <div slot="front" class="card-face alt-front">V + 300ms</div>
+    <div slot="back" class="card-face alt-back">Flipped</div>
+  </snice-flip-card>
+  <snice-flip-card direction="horizontal" duration="1000">
+    <div slot="front" class="card-face front-face">H + 1000ms</div>
+    <div slot="back" class="card-face back-face">Flipped</div>
+  </snice-flip-card>
+  <snice-flip-card direction="vertical" duration="1000">
+    <div slot="front" class="card-face alt-front">V + 1000ms</div>
+    <div slot="back" class="card-face alt-back">Flipped</div>
+  </snice-flip-card>
+</div>
 
-    // Log flip events
-    demoCard.addEventListener('flip-change', (e) => {
-      console.log('Card flipped:', e.detail);
-    });
-  </script>
+<!-- Slot: front and back with rich content -->
+<h2>Rich Slot Content</h2>
+<div class="row">
+  <snice-flip-card style="width: 250px; height: 180px;">
+    <div slot="front" style="width:250px;height:180px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:8px;">
+      <div style="font-size:2rem;">&#x1F4E6;</div>
+      <div style="font-weight:600;margin-top:0.5rem;">Product Card</div>
+      <div style="font-size:0.75rem;opacity:0.8;">Click to see details</div>
+    </div>
+    <div slot="back" style="width:250px;height:180px;background:white;color:#333;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:8px;border:1px solid #ddd;padding:1rem;box-sizing:border-box;">
+      <div style="font-weight:600;">Product Details</div>
+      <div style="font-size:0.8rem;margin-top:0.5rem;text-align:center;">High-quality widget with premium features. $29.99</div>
+    </div>
+  </snice-flip-card>
+</div>
+
+<!-- Edge: flipped + click-to-flip=false -->
+<h2>Edge: Starts Flipped + No Click Flip</h2>
+<div class="row">
+  <snice-flip-card id="fc-edge" flipped click-to-flip="false">
+    <div slot="front" class="card-face front-face">Front</div>
+    <div slot="back" class="card-face back-face">Starts on back</div>
+  </snice-flip-card>
+  <button class="demo-btn" onclick="document.getElementById('fc-edge').flip()">Toggle</button>
+</div>
+
 </body>
 </html>

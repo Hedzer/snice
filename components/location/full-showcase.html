@@ -1,244 +1,190 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Location Demo</title>
+  <title>Location</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      font-family: var(--snice-font-family);
-      padding: 40px;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: 10px;
-      margin-bottom: 30px;
-    }
-
-    h2 {
-      color: var(--snice-color-text);
-      margin-top: 40px;
-      margin-bottom: 20px;
-      font-size: 1.5em;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 30px;
-      margin: 20px 0;
-    }
-
-    .example {
-      border: 1px solid var(--snice-color-border);
-      padding: 20px;
-      border-radius: var(--snice-border-radius-lg);
-      background: var(--snice-color-background);
-    }
-
-    .example h4 {
-      margin-top: 0;
-      margin-bottom: 15px;
-      color: var(--snice-color-text-secondary);
-      font-size: var(--snice-font-size-sm);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      font-weight: var(--snice-font-weight-semibold);
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
+    snice-location { max-width: 400px; display: block; }
   </style>
-  <script type="module">
-    import './snice-location.ts';
-
-    document.addEventListener('DOMContentLoaded', () => {
-      // Add click event listener
-      document.querySelectorAll('snice-location[clickable]').forEach(loc => {
-        loc.addEventListener('location-click', (e) => {
-          console.log('Location clicked:', e.detail);
-        });
-      });
-    });
-  </script>
 </head>
 <body>
-  <div class="container">
-    <h1>Location Component Demo</h1>
-    <p>Display location information with optional maps and interactive features.</p>
 
-    <h2>Display Modes</h2>
-    <div class="grid">
-      <div class="example">
-        <h4>Full Mode (Default)</h4>
-        <snice-location
-          name="Central Park"
-          address="Central Park"
-          city="New York"
-          state="NY"
-          country="USA"
-          latitude="40.7829"
-          longitude="-73.9654"
-          mode="full">
-        </snice-location>
-      </div>
+<h2>Mode: full (default)</h2>
+<snice-location
+  mode="full"
+  name="Central Park"
+  address="59th to 110th Street"
+  city="New York"
+  state="NY"
+  country="USA"
+  zip-code="10022"
+  latitude="40.7829"
+  longitude="-73.9654">
+</snice-location>
 
-      <div class="example">
-        <h4>Compact Mode</h4>
-        <snice-location
-          name="Empire State Building"
-          address="350 5th Ave"
-          city="New York"
-          state="NY"
-          zip-code="10118"
-          latitude="40.7484"
-          longitude="-73.9857"
-          mode="compact">
-        </snice-location>
-      </div>
+<h2>Mode: compact</h2>
+<snice-location
+  mode="compact"
+  name="Times Square"
+  address="Broadway & 7th Avenue"
+  city="New York"
+  state="NY"
+  latitude="40.7580"
+  longitude="-73.9855">
+</snice-location>
 
-      <div class="example">
-        <h4>Coordinates Only</h4>
-        <snice-location
-          name="Times Square"
-          latitude="40.7580"
-          longitude="-73.9855"
-          mode="coordinates">
-        </snice-location>
-      </div>
+<h2>Mode: coordinates</h2>
+<snice-location
+  mode="coordinates"
+  latitude="40.7484"
+  longitude="-73.9857">
+</snice-location>
 
-      <div class="example">
-        <h4>Address Only</h4>
-        <snice-location
-          name="Brooklyn Bridge"
-          address="Brooklyn Bridge"
-          city="New York"
-          state="NY"
-          mode="address">
-        </snice-location>
-      </div>
-    </div>
+<h2>Mode: address</h2>
+<snice-location
+  mode="address"
+  name="Empire State Building"
+  address="350 Fifth Avenue"
+  city="New York"
+  state="NY"
+  zip-code="10118"
+  country="USA">
+</snice-location>
 
-    <h2>Custom Icons</h2>
-    <div class="grid">
-      <div class="example">
-        <h4>Emoji Icon</h4>
-        <snice-location
-          name="Office"
-          address="123 Business Blvd"
-          city="San Francisco"
-          state="CA"
-          icon="🏢">
-        </snice-location>
-      </div>
+<h2>All modes side-by-side</h2>
+<div class="row">
+  <snice-location mode="full" name="Location" address="123 Main St" city="Springfield" state="IL" latitude="39.7817" longitude="-89.6501"></snice-location>
+  <snice-location mode="compact" name="Location" address="123 Main St" city="Springfield" state="IL" latitude="39.7817" longitude="-89.6501"></snice-location>
+  <snice-location mode="coordinates" latitude="39.7817" longitude="-89.6501"></snice-location>
+  <snice-location mode="address" name="Location" address="123 Main St" city="Springfield" state="IL"></snice-location>
+</div>
 
-      <div class="example">
-        <h4>No Icon</h4>
-        <snice-location
-          name="Home"
-          address="456 Residential St"
-          city="Portland"
-          state="OR">
-        </snice-location>
-      </div>
-    </div>
+<h2>Show icon: true (default)</h2>
+<snice-location name="With Icon" address="123 Main St" city="Town"></snice-location>
 
-    <h2>Interactive Locations</h2>
-    <div class="grid">
-      <div class="example">
-        <h4>Clickable (Opens Map)</h4>
-        <snice-location
-          name="Golden Gate Bridge"
-          address="Golden Gate Bridge"
-          city="San Francisco"
-          state="CA"
-          latitude="37.8199"
-          longitude="-122.4783"
-          clickable>
-        </snice-location>
-      </div>
+<h2>Show icon: false</h2>
+<snice-location name="No Icon" address="123 Main St" city="Town" show-icon="false"></snice-location>
 
-      <div class="example">
-        <h4>With Custom Map</h4>
-        <snice-location
-          name="Custom Location"
-          address="789 Custom Ave"
-          latitude="34.0522"
-          longitude="-118.2437"
-          clickable
-          map-url="https://www.openstreetmap.org/?mlat=34.0522&mlon=-118.2437#map=15/34.0522/-118.2437">
-        </snice-location>
-      </div>
-    </div>
+<h2>Custom icon (emoji)</h2>
+<snice-location name="Office" address="456 Corporate Blvd" city="Business City" icon="&#x1F3E2;"></snice-location>
 
-    <h2>Various Locations</h2>
-    <div class="grid">
-      <div class="example">
-        <h4>Restaurant</h4>
-        <snice-location
-          name="Blue Hill"
-          address="75 Washington Pl"
-          city="New York"
-          state="NY"
-          zip-code="10011"
-          latitude="40.7308"
-          longitude="-73.9973"
-          icon="🍽️"
-          clickable>
-        </snice-location>
-      </div>
+<h2>Custom icon (different emoji)</h2>
+<snice-location name="Home" address="789 Residential Dr" city="Hometown" icon="&#x1F3E0;"></snice-location>
 
-      <div class="example">
-        <h4>Park</h4>
-        <snice-location
-          name="Millennium Park"
-          address="201 E Randolph St"
-          city="Chicago"
-          state="IL"
-          zip-code="60602"
-          latitude="41.8826"
-          longitude="-87.6226"
-          icon="🌳"
-          clickable>
-        </snice-location>
-      </div>
+<h2>Icon image (URL)</h2>
+<snice-location name="Custom Icon Image" address="100 Icon Ave" city="Graphicville" icon-image="https://cdn-icons-png.flaticon.com/24/854/854878.png"></snice-location>
 
-      <div class="example">
-        <h4>Airport</h4>
-        <snice-location
-          name="LAX"
-          address="1 World Way"
-          city="Los Angeles"
-          state="CA"
-          zip-code="90045"
-          latitude="33.9416"
-          longitude="-118.4085"
-          icon="✈️"
-          clickable>
-        </snice-location>
-      </div>
-    </div>
+<h2>Icon slot (Material Symbols)</h2>
+<snice-location name="Slotted Icon" address="200 Slot St" city="Slottown">
+  <span slot="icon" class="material-symbols-outlined" style="font-size:1.5rem;">business</span>
+</snice-location>
 
-    <h2>With Embedded Map</h2>
-    <div class="example">
-      <snice-location
-        name="Statue of Liberty"
-        address="Liberty Island"
-        city="New York"
-        state="NY"
-        latitude="40.6892"
-        longitude="-74.0445"
-        show-map
-        clickable>
-      </snice-location>
-    </div>
-  </div>
+<h2>Clickable</h2>
+<snice-location
+  name="Clickable Location"
+  address="Central Park West"
+  city="New York"
+  state="NY"
+  latitude="40.7829"
+  longitude="-73.9654"
+  clickable>
+</snice-location>
+
+<h2>Clickable + custom icon</h2>
+<snice-location
+  name="Restaurant"
+  address="45 Food Lane"
+  city="Eatville"
+  latitude="40.7128"
+  longitude="-74.0060"
+  icon="&#x1F37D;&#xFE0F;"
+  clickable>
+</snice-location>
+
+<h2>Show map (embedded)</h2>
+<snice-location
+  name="Statue of Liberty"
+  latitude="40.6892"
+  longitude="-74.0445"
+  show-map>
+</snice-location>
+
+<h2>Show map + full address</h2>
+<snice-location
+  name="Golden Gate Bridge"
+  address="Golden Gate Bridge"
+  city="San Francisco"
+  state="CA"
+  country="USA"
+  latitude="37.8199"
+  longitude="-122.4783"
+  show-map>
+</snice-location>
+
+<h2>Custom map URL</h2>
+<snice-location
+  name="Custom Map"
+  address="Custom URL location"
+  city="Mapville"
+  map-url="https://www.google.com/maps?q=48.8566,2.3522&output=embed"
+  show-map>
+</snice-location>
+
+<h2>Name only</h2>
+<snice-location name="Just a Name"></snice-location>
+
+<h2>Address only (no name)</h2>
+<snice-location address="123 Anonymous St" city="Unnamed" state="XX" zip-code="00000"></snice-location>
+
+<h2>Coordinates only</h2>
+<snice-location latitude="51.5074" longitude="-0.1278"></snice-location>
+
+<h2>Full address with all fields</h2>
+<snice-location
+  name="Complete Address"
+  address="742 Evergreen Terrace"
+  city="Springfield"
+  state="IL"
+  zip-code="62704"
+  country="USA"
+  latitude="39.7817"
+  longitude="-89.6501">
+</snice-location>
+
+<h2>Empty (no props)</h2>
+<snice-location></snice-location>
+
+<h2>Mode x clickable matrix</h2>
+<div class="row">
+  <snice-location mode="full" name="Full+Click" address="1 St" city="Town" latitude="40" longitude="-74" clickable></snice-location>
+  <snice-location mode="compact" name="Compact+Click" address="2 St" city="Town" latitude="40" longitude="-74" clickable></snice-location>
+  <snice-location mode="coordinates" latitude="40" longitude="-74" clickable></snice-location>
+  <snice-location mode="address" name="Addr+Click" address="3 St" city="Town" clickable></snice-location>
+</div>
+
+<h2>No icon + different modes</h2>
+<div class="row">
+  <snice-location mode="full" name="No Icon Full" address="1 St" city="Town" show-icon="false"></snice-location>
+  <snice-location mode="compact" name="No Icon Compact" address="2 St" city="Town" show-icon="false"></snice-location>
+</div>
+
+<script type="module">import './snice-location.ts';</script>
 </body>
 </html>

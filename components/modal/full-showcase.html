@@ -1,291 +1,225 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Modal Demo</title>
+  <title>Modal</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      padding: 40px;
-      font-family: var(--snice-font-family);
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      min-height: 200vh; /* To test scroll locking */
-    }
-    
-    .section {
-      margin-bottom: 40px;
-    }
-    
-    h2 {
-      color: var(--snice-color-text);
-      margin-bottom: 20px;
-      font-size: var(--snice-font-size-2xl);
-    }
-    
-    h3 {
-      color: var(--snice-color-text-secondary);
-      margin-bottom: 16px;
-      font-size: var(--snice-font-size-lg);
-    }
-    
-    .button-group {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
-    }
-    
-    button {
-      padding: 8px 16px;
-      background: var(--snice-color-primary);
-      color: var(--snice-color-text-inverse);
-      border: none;
-      border-radius: var(--snice-border-radius-md);
-      font-family: var(--snice-font-family);
-      font-size: var(--snice-font-size-md);
-      cursor: pointer;
-      transition: background-color var(--snice-transition-fast) ease;
-    }
-    
-    button:hover {
-      background: var(--snice-color-primary-hover);
-    }
-    
-    button.secondary {
-      background: var(--snice-color-secondary);
-      color: var(--snice-color-text);
-    }
-    
-    button.secondary:hover {
-      background: var(--snice-color-secondary-hover);
-    }
-    
-    .long-content {
-      height: 1000px;
-      background: linear-gradient(to bottom, #f3f4f6, #e5e7eb);
-      padding: 20px;
-      margin-top: 20px;
-      border-radius: var(--snice-border-radius-lg);
-    }
-    
-    input, textarea {
-      width: 100%;
-      padding: 8px;
-      margin: 8px 0;
-      border: 1px solid var(--snice-color-border);
-      border-radius: var(--snice-border-radius-md);
-      font-family: var(--snice-font-family);
-    }
-    
-    label {
-      display: block;
-      margin-top: 12px;
-      font-weight: 500;
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .btn { padding: 0.5rem 1rem; border: 1px solid var(--snice-color-border, #ddd); border-radius: 6px; background: var(--snice-color-background-element, #f9f9f9); cursor: pointer; font-size: 0.875rem; }
+    .btn-primary { background: var(--snice-color-primary, #2563eb); color: white; border-color: transparent; }
   </style>
 </head>
 <body>
-  <h2>Modal Component Demo</h2>
-  
-  <div class="section">
-    <h3>Basic Modal</h3>
-    <div class="button-group">
-      <button onclick="document.getElementById('basic-modal').show()">Open Basic Modal</button>
-    </div>
-    
-    <snice-modal id="basic-modal" label="Basic Modal">
-      <h2 slot="header">Welcome!</h2>
-      <p>This is a basic modal with header, body, and footer slots.</p>
-      <p>Click the backdrop or press Escape to close.</p>
-      <div slot="footer">
-        <button class="secondary" onclick="document.getElementById('basic-modal').close()">Cancel</button>
-        <button onclick="document.getElementById('basic-modal').close()">Confirm</button>
-      </div>
-    </snice-modal>
-  </div>
 
-  <div class="section">
-    <h3>Different Sizes</h3>
-    <div class="button-group">
-      <button onclick="document.getElementById('small-modal').show()">Small Modal</button>
-      <button onclick="document.getElementById('medium-modal').show()">Medium Modal</button>
-      <button onclick="document.getElementById('large-modal').show()">Large Modal</button>
-      <button onclick="document.getElementById('fullscreen-modal').show()">Fullscreen Modal</button>
-    </div>
-    
-    <snice-modal id="small-modal" size="small" label="Small Modal">
-      <h2 slot="header">Small Modal</h2>
-      <p>This is a small modal, perfect for confirmations.</p>
-      <div slot="footer">
-        <button onclick="document.getElementById('small-modal').close()">Got it</button>
-      </div>
-    </snice-modal>
-    
-    <snice-modal id="medium-modal" size="medium" label="Medium Modal">
-      <h2 slot="header">Medium Modal</h2>
-      <p>This is the default medium size modal.</p>
-      <p>It works well for most content.</p>
-      <div slot="footer">
-        <button onclick="document.getElementById('medium-modal').close()">Close</button>
-      </div>
-    </snice-modal>
-    
-    <snice-modal id="large-modal" size="large" label="Large Modal">
-      <h2 slot="header">Large Modal</h2>
-      <p>This is a large modal for more complex content.</p>
-      <p>It provides more space for forms, tables, or detailed information.</p>
-      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-      <div slot="footer">
-        <button onclick="document.getElementById('large-modal').close()">Close</button>
-      </div>
-    </snice-modal>
-    
-    <snice-modal id="fullscreen-modal" size="fullscreen" label="Fullscreen Modal">
-      <h2 slot="header">Fullscreen Modal</h2>
-      <p>This modal takes up the entire viewport (with padding).</p>
-      <p>Great for complex workflows or full-screen experiences.</p>
-      <div slot="footer">
-        <button onclick="document.getElementById('fullscreen-modal').close()">Exit Fullscreen</button>
-      </div>
-    </snice-modal>
-  </div>
+<h2>Size: small</h2>
+<div class="row">
+  <button class="btn" onclick="document.getElementById('modal-sm').show()">Open Small</button>
+</div>
+<snice-modal id="modal-sm" size="small" label="Small Modal">
+  <h3 slot="header">Small Modal</h3>
+  <p>This is a small-sized modal dialog.</p>
+  <div slot="footer"><button class="btn" onclick="document.getElementById('modal-sm').close()">Close</button></div>
+</snice-modal>
 
-  <div class="section">
-    <h3>No Dismiss Options</h3>
-    <div class="button-group">
-      <button onclick="document.getElementById('no-backdrop-modal').show()">No Backdrop Dismiss</button>
-      <button onclick="document.getElementById('no-escape-modal').show()">No Escape Dismiss</button>
-      <button onclick="document.getElementById('no-dismiss-modal').show()">Force Action</button>
-    </div>
-    
-    <snice-modal id="no-backdrop-modal" no-backdrop-dismiss label="No Backdrop Dismiss">
-      <h2 slot="header">No Backdrop Dismiss</h2>
-      <p>Clicking the backdrop won't close this modal.</p>
-      <p>You can still press Escape or click the X button.</p>
-      <div slot="footer">
-        <button onclick="document.getElementById('no-backdrop-modal').close()">Close</button>
-      </div>
-    </snice-modal>
-    
-    <snice-modal id="no-escape-modal" no-escape-dismiss label="No Escape Dismiss">
-      <h2 slot="header">No Escape Dismiss</h2>
-      <p>Pressing Escape won't close this modal.</p>
-      <p>You can still click the backdrop or the X button.</p>
-      <div slot="footer">
-        <button onclick="document.getElementById('no-escape-modal').close()">Close</button>
-      </div>
-    </snice-modal>
-    
-    <snice-modal id="no-dismiss-modal" no-backdrop-dismiss no-escape-dismiss no-close-button label="Force Action">
-      <h2 slot="header">Important Action Required</h2>
-      <p>This modal can't be dismissed by clicking outside, pressing Escape, or using the X button.</p>
-      <p>The user must make a choice using the action buttons.</p>
-      <div slot="footer">
-        <button class="secondary" onclick="document.getElementById('no-dismiss-modal').close()">Cancel</button>
-        <button onclick="document.getElementById('no-dismiss-modal').close()">Confirm</button>
-      </div>
-    </snice-modal>
-  </div>
+<h2>Size: medium (default)</h2>
+<div class="row">
+  <button class="btn" onclick="document.getElementById('modal-md').show()">Open Medium</button>
+</div>
+<snice-modal id="modal-md" size="medium" label="Medium Modal">
+  <h3 slot="header">Medium Modal</h3>
+  <p>This is the default medium-sized modal dialog.</p>
+  <div slot="footer"><button class="btn" onclick="document.getElementById('modal-md').close()">Close</button></div>
+</snice-modal>
 
-  <div class="section">
-    <h3>Form Modal with Focus Trap</h3>
-    <div class="button-group">
-      <button onclick="document.getElementById('form-modal').show()">Open Form</button>
-    </div>
-    
-    <snice-modal id="form-modal" label="User Form">
-      <h2 slot="header">User Information</h2>
-      <form onsubmit="event.preventDefault(); alert('Form submitted!'); document.getElementById('form-modal').close();">
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required>
-        
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
-        
-        <label for="message">Message:</label>
-        <textarea id="message" name="message" rows="4"></textarea>
-        
-        <div slot="footer">
-          <button type="button" class="secondary" onclick="document.getElementById('form-modal').close()">Cancel</button>
-          <button type="submit">Submit</button>
-        </div>
-      </form>
-    </snice-modal>
-  </div>
+<h2>Size: large</h2>
+<div class="row">
+  <button class="btn" onclick="document.getElementById('modal-lg').show()">Open Large</button>
+</div>
+<snice-modal id="modal-lg" size="large" label="Large Modal">
+  <h3 slot="header">Large Modal</h3>
+  <p>This is a large-sized modal dialog with more room for content.</p>
+  <div slot="footer"><button class="btn" onclick="document.getElementById('modal-lg').close()">Close</button></div>
+</snice-modal>
 
-  <div class="section">
-    <h3>Scrollable Content</h3>
-    <div class="button-group">
-      <button onclick="document.getElementById('scroll-modal').show()">Open Scrollable Modal</button>
-    </div>
-    
-    <snice-modal id="scroll-modal" label="Terms and Conditions">
-      <h2 slot="header">Terms and Conditions</h2>
-      <h3>1. Introduction</h3>
-      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-      
-      <h3>2. Terms of Use</h3>
-      <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-      
-      <h3>3. Privacy Policy</h3>
-      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-      
-      <h3>4. Disclaimers</h3>
-      <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-      
-      <h3>5. Contact Information</h3>
-      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-      
-      <div slot="footer">
-        <button class="secondary" onclick="document.getElementById('scroll-modal').close()">Decline</button>
-        <button onclick="document.getElementById('scroll-modal').close()">Accept</button>
-      </div>
-    </snice-modal>
-  </div>
+<h2>Size: fullscreen</h2>
+<div class="row">
+  <button class="btn" onclick="document.getElementById('modal-fs').show()">Open Fullscreen</button>
+</div>
+<snice-modal id="modal-fs" size="fullscreen" label="Fullscreen Modal">
+  <h3 slot="header">Fullscreen Modal</h3>
+  <p>This modal takes up the entire viewport.</p>
+  <div slot="footer"><button class="btn" onclick="document.getElementById('modal-fs').close()">Close</button></div>
+</snice-modal>
 
-  <div class="section">
-    <h3>Nested Modals</h3>
-    <div class="button-group">
-      <button onclick="document.getElementById('parent-modal').show()">Open Parent Modal</button>
-    </div>
-    
-    <snice-modal id="parent-modal" label="Parent Modal">
-      <h2 slot="header">Parent Modal</h2>
-      <p>This modal can open another modal.</p>
-      <button onclick="document.getElementById('child-modal').show()">Open Child Modal</button>
-      <div slot="footer">
-        <button onclick="document.getElementById('parent-modal').close()">Close</button>
-      </div>
-    </snice-modal>
-    
-    <snice-modal id="child-modal" label="Child Modal">
-      <h2 slot="header">Child Modal</h2>
-      <p>This is a nested modal on top of the parent.</p>
-      <div slot="footer">
-        <button onclick="document.getElementById('child-modal').close()">Close Child</button>
-      </div>
-    </snice-modal>
-  </div>
+<h2>No backdrop dismiss</h2>
+<div class="row">
+  <button class="btn" onclick="document.getElementById('modal-nobd').show()">Open (no backdrop dismiss)</button>
+</div>
+<snice-modal id="modal-nobd" no-backdrop-dismiss label="No Backdrop Dismiss">
+  <h3 slot="header">No Backdrop Dismiss</h3>
+  <p>Clicking the backdrop will NOT close this modal. Use the close button or Escape.</p>
+  <div slot="footer"><button class="btn" onclick="document.getElementById('modal-nobd').close()">Close</button></div>
+</snice-modal>
 
-  <div class="long-content">
-    <h3>Scroll Test Area</h3>
-    <p>This area is here to test that body scroll is locked when a modal is open.</p>
-    <p>Try opening a modal and then attempting to scroll the page.</p>
-  </div>
+<h2>No escape dismiss</h2>
+<div class="row">
+  <button class="btn" onclick="document.getElementById('modal-noesc').show()">Open (no escape dismiss)</button>
+</div>
+<snice-modal id="modal-noesc" no-escape-dismiss label="No Escape Dismiss">
+  <h3 slot="header">No Escape Dismiss</h3>
+  <p>Pressing Escape will NOT close this modal.</p>
+  <div slot="footer"><button class="btn" onclick="document.getElementById('modal-noesc').close()">Close</button></div>
+</snice-modal>
 
-  <script type="module">
-    import './snice-modal.ts';
-    
-    // Listen for modal events
-    document.addEventListener('modal-open', (e) => {
-      console.log('Modal opened:', e.detail.modal);
-    });
-    
-    document.addEventListener('modal-close', (e) => {
-      console.log('Modal closed:', e.detail.modal);
-    });
-  </script>
+<h2>No focus trap</h2>
+<div class="row">
+  <button class="btn" onclick="document.getElementById('modal-noft').show()">Open (no focus trap)</button>
+</div>
+<snice-modal id="modal-noft" no-focus-trap label="No Focus Trap">
+  <h3 slot="header">No Focus Trap</h3>
+  <p>Tab will not be trapped within this modal.</p>
+  <div slot="footer"><button class="btn" onclick="document.getElementById('modal-noft').close()">Close</button></div>
+</snice-modal>
+
+<h2>No close button</h2>
+<div class="row">
+  <button class="btn" onclick="document.getElementById('modal-nocb').show()">Open (no close button)</button>
+</div>
+<snice-modal id="modal-nocb" no-close-button label="No Close Button">
+  <h3 slot="header">No Close Button</h3>
+  <p>The X button is hidden. Use backdrop click, Escape, or footer button.</p>
+  <div slot="footer"><button class="btn" onclick="document.getElementById('modal-nocb').close()">Close</button></div>
+</snice-modal>
+
+<h2>No header</h2>
+<div class="row">
+  <button class="btn" onclick="document.getElementById('modal-noh').show()">Open (no header)</button>
+</div>
+<snice-modal id="modal-noh" no-header label="No Header">
+  <p>This modal has no header section at all.</p>
+  <div slot="footer"><button class="btn" onclick="document.getElementById('modal-noh').close()">Close</button></div>
+</snice-modal>
+
+<h2>No footer</h2>
+<div class="row">
+  <button class="btn" onclick="document.getElementById('modal-nof').show()">Open (no footer)</button>
+</div>
+<snice-modal id="modal-nof" no-footer label="No Footer">
+  <h3 slot="header">No Footer</h3>
+  <p>This modal has no footer section.</p>
+</snice-modal>
+
+<h2>No header + No footer</h2>
+<div class="row">
+  <button class="btn" onclick="document.getElementById('modal-bare').show()">Open (body only)</button>
+</div>
+<snice-modal id="modal-bare" no-header no-footer label="Body Only">
+  <p>Content only. No header, no footer. Click backdrop or press Escape to close.</p>
+</snice-modal>
+
+<h2>No close button + No backdrop + No escape (forced interaction)</h2>
+<div class="row">
+  <button class="btn" onclick="document.getElementById('modal-forced').show()">Open (forced)</button>
+</div>
+<snice-modal id="modal-forced" no-close-button no-backdrop-dismiss no-escape-dismiss label="Forced Interaction">
+  <h3 slot="header">Confirm Required</h3>
+  <p>You must click a button to close this modal. No escape routes.</p>
+  <div slot="footer">
+    <button class="btn" onclick="document.getElementById('modal-forced').close()">Cancel</button>
+    <button class="btn btn-primary" onclick="document.getElementById('modal-forced').close()">Confirm</button>
+  </div>
+</snice-modal>
+
+<h2>All boolean flags: false (defaults)</h2>
+<div class="row">
+  <button class="btn" onclick="document.getElementById('modal-defaults').show()">Open (all defaults)</button>
+</div>
+<snice-modal id="modal-defaults" label="Default Modal">
+  <h3 slot="header">All Defaults</h3>
+  <p>Backdrop dismiss, escape dismiss, focus trap, close button, header, footer - all enabled.</p>
+  <div slot="footer"><button class="btn" onclick="document.getElementById('modal-defaults').close()">Close</button></div>
+</snice-modal>
+
+<h2>Custom label (accessibility)</h2>
+<div class="row">
+  <button class="btn" onclick="document.getElementById('modal-label').show()">Open (custom label)</button>
+</div>
+<snice-modal id="modal-label" label="Delete Confirmation Dialog">
+  <h3 slot="header">Delete Item</h3>
+  <p>Are you sure you want to delete this item? This action cannot be undone.</p>
+  <div slot="footer">
+    <button class="btn" onclick="document.getElementById('modal-label').close()">Cancel</button>
+    <button class="btn btn-primary" onclick="document.getElementById('modal-label').close()">Delete</button>
+  </div>
+</snice-modal>
+
+<h2>Slots: header, default body, footer</h2>
+<div class="row">
+  <button class="btn" onclick="document.getElementById('modal-slots').show()">Open (all slots)</button>
+</div>
+<snice-modal id="modal-slots" label="Slotted Modal">
+  <h3 slot="header" style="margin:0;">Custom Header Content</h3>
+  <div>
+    <p>Body content in default slot.</p>
+    <p>Can contain any HTML.</p>
+  </div>
+  <div slot="footer" style="display:flex;gap:0.5rem;justify-content:flex-end;">
+    <button class="btn" onclick="document.getElementById('modal-slots').close()">Cancel</button>
+    <button class="btn btn-primary" onclick="document.getElementById('modal-slots').close()">Save Changes</button>
+  </div>
+</snice-modal>
+
+<h2>Long scrollable content</h2>
+<div class="row">
+  <button class="btn" onclick="document.getElementById('modal-scroll').show()">Open (long content)</button>
+</div>
+<snice-modal id="modal-scroll" label="Scrollable Content">
+  <h3 slot="header">Long Content</h3>
+  <div>
+    <p>Paragraph 1: Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+    <p>Paragraph 2: Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+    <p>Paragraph 3: Ut enim ad minim veniam, quis nostrud exercitation.</p>
+    <p>Paragraph 4: Duis aute irure dolor in reprehenderit in voluptate.</p>
+    <p>Paragraph 5: Excepteur sint occaecat cupidatat non proident.</p>
+    <p>Paragraph 6: Sunt in culpa qui officia deserunt mollit anim.</p>
+    <p>Paragraph 7: Id est laborum et dolorum fuga.</p>
+    <p>Paragraph 8: Et harum quidem rerum facilis est et expedita distinctio.</p>
+    <p>Paragraph 9: Nam libero tempore, cum soluta nobis est eligendi optio.</p>
+    <p>Paragraph 10: Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus.</p>
+  </div>
+  <div slot="footer"><button class="btn" onclick="document.getElementById('modal-scroll').close()">Close</button></div>
+</snice-modal>
+
+<h2>Size x No header matrix</h2>
+<div class="row">
+  <button class="btn" onclick="document.getElementById('modal-sm-noh').show()">Small + No Header</button>
+  <button class="btn" onclick="document.getElementById('modal-lg-noh').show()">Large + No Header</button>
+</div>
+<snice-modal id="modal-sm-noh" size="small" no-header label="Small No Header">
+  <p>Small with no header.</p>
+  <div slot="footer"><button class="btn" onclick="document.getElementById('modal-sm-noh').close()">Close</button></div>
+</snice-modal>
+<snice-modal id="modal-lg-noh" size="large" no-header label="Large No Header">
+  <p>Large with no header.</p>
+  <div slot="footer"><button class="btn" onclick="document.getElementById('modal-lg-noh').close()">Close</button></div>
+</snice-modal>
+
+<script type="module">import './snice-modal.ts';</script>
 </body>
 </html>

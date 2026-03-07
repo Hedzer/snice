@@ -1,313 +1,166 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Radio Button Demo</title>
+  <title>Radio</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      padding: 40px;
-      font-family: var(--snice-font-family);
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      max-width: 800px;
-      margin: 0 auto;
-    }
-    
-    .section {
-      margin-bottom: 40px;
-    }
-    
-    h2 {
-      color: var(--snice-color-text);
-      margin-bottom: 20px;
-      font-size: var(--snice-font-size-2xl);
-    }
-    
-    h3 {
-      color: var(--snice-color-text-secondary);
-      margin-bottom: 16px;
-      font-size: var(--snice-font-size-lg);
-    }
-    
-    .radio-group {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-    
-    .row {
-      display: flex;
-      gap: 20px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    
-    .output {
-      padding: 10px;
-      background: var(--snice-color-background);
-      border-radius: var(--snice-border-radius-md);
-      font-family: monospace;
-      font-size: var(--snice-font-size-sm);
-      margin-top: 10px;
-    }
-    
-    button {
-      padding: 8px 16px;
-      background: var(--snice-color-primary);
-      color: white;
-      border: none;
-      border-radius: var(--snice-border-radius-md);
-      cursor: pointer;
-      font-size: var(--snice-font-size-md);
-      margin-right: 8px;
-    }
-    
-    button:hover {
-      background: var(--snice-color-primary-hover);
-    }
-    
-    fieldset {
-      border: 1px solid var(--snice-color-border);
-      border-radius: var(--snice-border-radius-md);
-      padding: 16px;
-      margin: 0;
-    }
-    
-    legend {
-      padding: 0 8px;
-      font-weight: 500;
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    section { margin-bottom: 1.5rem; }
   </style>
 </head>
 <body>
-  <h2>Radio Button Component Demo</h2>
-  
-  <div class="section">
-    <h3>Basic Radio Buttons</h3>
-    <div class="radio-group">
-      <snice-radio name="basic" value="option1" label="Option 1" checked></snice-radio>
-      <snice-radio name="basic" value="option2" label="Option 2"></snice-radio>
-      <snice-radio name="basic" value="option3" label="Option 3"></snice-radio>
-      <snice-radio name="basic" value="option4" label="Option 4" disabled></snice-radio>
-    </div>
+
+<h2>Variant: default</h2>
+<section class="row">
+  <snice-radio name="v-default" value="a" label="Option A" checked></snice-radio>
+  <snice-radio name="v-default" value="b" label="Option B"></snice-radio>
+  <snice-radio name="v-default" value="c" label="Option C"></snice-radio>
+</section>
+
+<h2>Variant: block</h2>
+<section style="display:flex;flex-direction:column;gap:0.5rem;max-width:400px">
+  <snice-radio variant="block" name="v-block" value="free" label="Free Plan" description="For individuals and side projects" checked>
+    <span slot="suffix">$0/mo</span>
+  </snice-radio>
+  <snice-radio variant="block" name="v-block" value="pro" label="Pro Plan" description="For growing teams">
+    <span slot="suffix">$12/mo</span>
+  </snice-radio>
+  <snice-radio variant="block" name="v-block" value="ent" label="Enterprise" description="Custom solutions for large orgs">
+    <span slot="suffix">Contact us</span>
+  </snice-radio>
+</section>
+
+<h2>Size: small</h2>
+<section class="row">
+  <snice-radio name="s-small" value="a" label="Small A" size="small" checked></snice-radio>
+  <snice-radio name="s-small" value="b" label="Small B" size="small"></snice-radio>
+</section>
+
+<h2>Size: medium (default)</h2>
+<section class="row">
+  <snice-radio name="s-med" value="a" label="Medium A" size="medium" checked></snice-radio>
+  <snice-radio name="s-med" value="b" label="Medium B" size="medium"></snice-radio>
+</section>
+
+<h2>Size: large</h2>
+<section class="row">
+  <snice-radio name="s-large" value="a" label="Large A" size="large" checked></snice-radio>
+  <snice-radio name="s-large" value="b" label="Large B" size="large"></snice-radio>
+</section>
+
+<h2>All sizes</h2>
+<section class="row">
+  <snice-radio name="all-sizes" value="s" label="Small" size="small"></snice-radio>
+  <snice-radio name="all-sizes" value="m" label="Medium" size="medium" checked></snice-radio>
+  <snice-radio name="all-sizes" value="l" label="Large" size="large"></snice-radio>
+</section>
+
+<h2>Checked: true</h2>
+<section class="row"><snice-radio label="Checked" checked></snice-radio></section>
+
+<h2>Checked: false</h2>
+<section class="row"><snice-radio label="Unchecked"></snice-radio></section>
+
+<h2>Disabled</h2>
+<section class="row">
+  <snice-radio label="Disabled unchecked" disabled></snice-radio>
+  <snice-radio label="Disabled checked" disabled checked></snice-radio>
+</section>
+
+<h2>Loading</h2>
+<section class="row">
+  <snice-radio label="Loading unchecked" loading></snice-radio>
+  <snice-radio label="Loading checked" loading checked></snice-radio>
+</section>
+
+<h2>Required</h2>
+<section class="row">
+  <snice-radio label="Required field" required></snice-radio>
+</section>
+
+<h2>Invalid</h2>
+<section class="row">
+  <snice-radio label="Invalid field" invalid></snice-radio>
+  <snice-radio label="Invalid checked" invalid checked></snice-radio>
+</section>
+
+<h2>No label</h2>
+<section class="row">
+  <snice-radio name="no-label" value="a" checked></snice-radio>
+  <snice-radio name="no-label" value="b"></snice-radio>
+</section>
+
+<h2>Block variant with description</h2>
+<section style="display:flex;flex-direction:column;gap:0.5rem;max-width:400px">
+  <snice-radio variant="block" name="block-desc" value="a" label="With description" description="This is a helpful description" checked></snice-radio>
+  <snice-radio variant="block" name="block-desc" value="b" label="No description"></snice-radio>
+</section>
+
+<h2>Block variant: disabled</h2>
+<section style="display:flex;flex-direction:column;gap:0.5rem;max-width:400px">
+  <snice-radio variant="block" label="Disabled block" description="Cannot be selected" disabled></snice-radio>
+  <snice-radio variant="block" label="Disabled checked block" description="Already selected" disabled checked></snice-radio>
+</section>
+
+<h2>Block variant: loading</h2>
+<section style="display:flex;flex-direction:column;gap:0.5rem;max-width:400px">
+  <snice-radio variant="block" label="Loading block" description="Processing..." loading></snice-radio>
+</section>
+
+<h2>Block variant: sizes</h2>
+<section style="display:flex;flex-direction:column;gap:0.5rem;max-width:400px">
+  <snice-radio variant="block" name="block-size" value="s" label="Small block" description="size=small" size="small" checked></snice-radio>
+  <snice-radio variant="block" name="block-size" value="m" label="Medium block" description="size=medium" size="medium"></snice-radio>
+  <snice-radio variant="block" name="block-size" value="l" label="Large block" description="size=large" size="large"></snice-radio>
+</section>
+
+<h2>Suffix slot (block variant)</h2>
+<section style="display:flex;flex-direction:column;gap:0.5rem;max-width:400px">
+  <snice-radio variant="block" name="suffix" value="a" label="Option A" checked>
+    <span slot="suffix" style="font-weight:600;color:var(--snice-color-primary,#3b82f6)">$9.99</span>
+  </snice-radio>
+  <snice-radio variant="block" name="suffix" value="b" label="Option B">
+    <span slot="suffix" style="font-weight:600;color:var(--snice-color-primary,#3b82f6)">$19.99</span>
+  </snice-radio>
+</section>
+
+<h2>State matrix: size x disabled/loading/invalid</h2>
+<section>
+  <div class="row" style="margin-bottom:0.5rem">
+    <snice-radio label="Small disabled" size="small" disabled></snice-radio>
+    <snice-radio label="Small loading" size="small" loading></snice-radio>
+    <snice-radio label="Small invalid" size="small" invalid></snice-radio>
   </div>
-
-  <div class="section">
-    <h3>Sizes</h3>
-    <fieldset>
-      <legend>Small</legend>
-      <div class="radio-group">
-        <snice-radio size="small" name="size-small" value="1" label="Small Option 1"></snice-radio>
-        <snice-radio size="small" name="size-small" value="2" label="Small Option 2"></snice-radio>
-      </div>
-    </fieldset>
-    
-    <fieldset style="margin-top: 16px;">
-      <legend>Medium (Default)</legend>
-      <div class="radio-group">
-        <snice-radio size="medium" name="size-medium" value="1" label="Medium Option 1"></snice-radio>
-        <snice-radio size="medium" name="size-medium" value="2" label="Medium Option 2"></snice-radio>
-      </div>
-    </fieldset>
-    
-    <fieldset style="margin-top: 16px;">
-      <legend>Large</legend>
-      <div class="radio-group">
-        <snice-radio size="large" name="size-large" value="1" label="Large Option 1"></snice-radio>
-        <snice-radio size="large" name="size-large" value="2" label="Large Option 2"></snice-radio>
-      </div>
-    </fieldset>
+  <div class="row" style="margin-bottom:0.5rem">
+    <snice-radio label="Medium disabled" size="medium" disabled></snice-radio>
+    <snice-radio label="Medium loading" size="medium" loading></snice-radio>
+    <snice-radio label="Medium invalid" size="medium" invalid></snice-radio>
   </div>
-
-  <div class="section">
-    <h3>States</h3>
-    <div class="radio-group">
-      <snice-radio name="states" value="required" label="Required field" required></snice-radio>
-      <snice-radio name="states" value="invalid" label="Invalid state" invalid></snice-radio>
-      <snice-radio name="states" value="disabled" label="Disabled" disabled></snice-radio>
-      <snice-radio name="states" value="disabled-checked" label="Disabled checked" disabled checked></snice-radio>
-    </div>
+  <div class="row">
+    <snice-radio label="Large disabled" size="large" disabled></snice-radio>
+    <snice-radio label="Large loading" size="large" loading></snice-radio>
+    <snice-radio label="Large invalid" size="large" invalid></snice-radio>
   </div>
+</section>
 
-  <div class="section">
-    <h3>Payment Method Example</h3>
-    <fieldset>
-      <legend>Select Payment Method</legend>
-      <div class="radio-group">
-        <snice-radio name="payment" value="card" label="Credit/Debit Card" checked></snice-radio>
-        <snice-radio name="payment" value="paypal" label="PayPal"></snice-radio>
-        <snice-radio name="payment" value="bank" label="Bank Transfer"></snice-radio>
-        <snice-radio name="payment" value="crypto" label="Cryptocurrency"></snice-radio>
-      </div>
-    </fieldset>
-    <button onclick="getPaymentMethod()">Get Selected Payment</button>
-    <div id="payment-output" class="output">Selected: Credit/Debit Card</div>
-  </div>
-
-  <div class="section">
-    <h3>Theme Selection</h3>
-    <fieldset>
-      <legend>Choose Theme</legend>
-      <div class="radio-group">
-        <snice-radio id="theme-light" name="theme" value="light" label="Light" checked></snice-radio>
-        <snice-radio id="theme-dark" name="theme" value="dark" label="Dark"></snice-radio>
-        <snice-radio id="theme-auto" name="theme" value="auto" label="System"></snice-radio>
-      </div>
-    </fieldset>
-    <div id="theme-output" class="output">Current theme: light</div>
-  </div>
-
-  <div class="section">
-    <h3>Loading States</h3>
-    <div class="radio-group">
-      <snice-radio name="loading-demo" value="l1" label="Loading radio" loading></snice-radio>
-      <snice-radio name="loading-demo" value="l2" label="Loading (checked)" loading checked></snice-radio>
-      <snice-radio id="simulate-loading-radio" name="simulate" value="s1" label="Simulate loading"></snice-radio>
-    </div>
-    <button id="loading-btn-radio">Trigger Loading (3s)</button>
-  </div>
-
-  <div class="section">
-    <h3>Interactive Example</h3>
-    <div class="radio-group">
-      <snice-radio id="interactive-1" name="interactive" value="option1" label="Option 1"></snice-radio>
-      <snice-radio id="interactive-2" name="interactive" value="option2" label="Option 2"></snice-radio>
-      <snice-radio id="interactive-3" name="interactive" value="option3" label="Option 3"></snice-radio>
-    </div>
-    <div class="row">
-      <button onclick="document.getElementById('interactive-2').select()">Select Option 2</button>
-      <button onclick="document.getElementById('interactive-1').focus()">Focus Option 1</button>
-      <button onclick="getInteractiveValue()">Get Value</button>
-    </div>
-    <div id="interactive-output" class="output">Events will appear here...</div>
-  </div>
-
-  <div class="section">
-    <h3>Form Example</h3>
-    <form id="demo-form">
-      <fieldset>
-        <legend>Survey</legend>
-        <div style="margin-bottom: 16px;">
-          <strong>How satisfied are you?</strong>
-          <div class="radio-group" style="margin-top: 8px;">
-            <snice-radio name="satisfaction" value="very-satisfied" label="Very Satisfied" required></snice-radio>
-            <snice-radio name="satisfaction" value="satisfied" label="Satisfied" required></snice-radio>
-            <snice-radio name="satisfaction" value="neutral" label="Neutral" required></snice-radio>
-            <snice-radio name="satisfaction" value="dissatisfied" label="Dissatisfied" required></snice-radio>
-            <snice-radio name="satisfaction" value="very-dissatisfied" label="Very Dissatisfied" required></snice-radio>
-          </div>
-        </div>
-        
-        <div>
-          <strong>Would you recommend us?</strong>
-          <div class="radio-group" style="margin-top: 8px;">
-            <snice-radio name="recommend" value="yes" label="Yes" required></snice-radio>
-            <snice-radio name="recommend" value="no" label="No" required></snice-radio>
-            <snice-radio name="recommend" value="maybe" label="Maybe" required></snice-radio>
-          </div>
-        </div>
-      </fieldset>
-      <button type="submit" style="margin-top: 16px;">Submit Survey</button>
-    </form>
-    <div id="form-output" class="output">Form data will appear here...</div>
-  </div>
-
-  <script type="module">
-    import './snice-radio.ts';
-
-    // Loading state demo
-    const loadingRadio = document.getElementById('simulate-loading-radio');
-    const loadingBtnRadio = document.getElementById('loading-btn-radio');
-
-    loadingBtnRadio.addEventListener('click', () => {
-      loadingRadio.loading = true;
-      loadingBtnRadio.disabled = true;
-      loadingBtnRadio.textContent = 'Loading...';
-
-      setTimeout(() => {
-        loadingRadio.loading = false;
-        loadingBtnRadio.disabled = false;
-        loadingBtnRadio.textContent = 'Trigger Loading (3s)';
-      }, 3000);
-    });
-
-    // Payment method
-    window.getPaymentMethod = function() {
-      const radios = document.querySelectorAll('snice-radio[name="payment"]');
-      let selected = null;
-      radios.forEach(radio => {
-        if (radio.checked) {
-          selected = radio;
-        }
-      });
-      const output = document.getElementById('payment-output');
-      if (selected) {
-        output.textContent = `Selected: ${selected.label}`;
-      }
-    };
-    
-    // Theme selection
-    const themeRadios = document.querySelectorAll('snice-radio[name="theme"]');
-    themeRadios.forEach(radio => {
-      radio.addEventListener('radio-change', (e) => {
-        if (e.detail.checked) {
-          document.getElementById('theme-output').textContent = 
-            `Current theme: ${e.detail.value}`;
-        }
-      });
-    });
-    
-    // Interactive example
-    const interactiveRadios = document.querySelectorAll('snice-radio[name="interactive"]');
-    interactiveRadios.forEach(radio => {
-      radio.addEventListener('radio-change', (e) => {
-        document.getElementById('interactive-output').textContent = 
-          `Changed: value=${e.detail.value}, checked=${e.detail.checked}`;
-      });
-    });
-    
-    window.getInteractiveValue = function() {
-      const radios = document.querySelectorAll('snice-radio[name="interactive"]');
-      let selected = null;
-      radios.forEach(radio => {
-        if (radio.checked) {
-          selected = radio;
-        }
-      });
-      document.getElementById('interactive-output').textContent = 
-        selected ? `Current value: ${selected.value}` : 'No selection';
-    };
-    
-    // Form submission
-    document.getElementById('demo-form').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const data = {};
-      const radios = e.target.querySelectorAll('snice-radio');
-      const groups = new Set();
-      
-      radios.forEach(radio => {
-        if (radio.name) {
-          groups.add(radio.name);
-        }
-      });
-      
-      groups.forEach(groupName => {
-        const radios = e.target.querySelectorAll(`snice-radio[name="${groupName}"]`);
-        let selected = null;
-        radios.forEach(radio => {
-          if (radio.checked) {
-            selected = radio;
-          }
-        });
-        data[groupName] = selected ? selected.value : null;
-      });
-      
-      document.getElementById('form-output').textContent = 
-        `Form data: ${JSON.stringify(data, null, 2)}`;
-    });
-  </script>
+<script type="module">
+  import './snice-radio.ts';
+</script>
 </body>
 </html>

@@ -1,155 +1,122 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Date Time Picker Test</title>
-    <link rel="stylesheet" href="../theme/theme.css">
-    <style>
-        body {
-            font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
-            padding: var(--snice-spacing-xl, 2rem);
-            background: var(--snice-color-background);
-            color: var(--snice-color-text, rgb(23 23 23));
-        }
-
-        .container {
-            max-width: 700px;
-            margin: 0 auto;
-            background: var(--snice-color-background-element, white);
-            padding: var(--snice-spacing-xl, 2rem);
-            border-radius: var(--snice-border-radius-lg, 8px);
-            box-shadow: var(--snice-shadow-sm, 0 1px 3px rgba(0,0,0,0.1));
-        }
-
-        .test-section {
-            margin-bottom: var(--snice-spacing-xl, 2rem);
-            padding: var(--snice-spacing-lg, 1.5rem);
-            border: 1px solid var(--snice-color-border, rgb(226 226 226));
-            border-radius: var(--snice-border-radius-lg, 6px);
-            background: var(--snice-color-background-secondary, rgb(249 250 251));
-        }
-
-        .test-section h3 {
-            margin: 0 0 var(--snice-spacing-md, 1rem) 0;
-            font-weight: var(--snice-font-weight-semibold, 600);
-        }
-
-        .form-grid {
-            display: grid;
-            gap: var(--snice-spacing-md, 1rem);
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: var(--snice-spacing-md, 1rem);
-        }
-    </style>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <title>Date Time Picker</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
+    section { margin-bottom: 2rem; max-width: 700px; }
+  </style>
+  <script type="module">import './snice-date-time-picker.ts';</script>
 </head>
 <body>
-    <div class="container">
-        <h1>Snice Date Time Picker Component Test</h1>
 
-        <div class="test-section">
-            <h3>Basic Date Time Picker</h3>
-            <div class="form-grid">
-                <snice-date-time-picker
-                    label="Select Date & Time"
-                    placeholder="Pick a date and time">
-                </snice-date-time-picker>
-            </div>
-        </div>
+<section>
+  <h2>Default (dropdown, 24h)</h2>
+  <snice-date-time-picker label="Appointment"></snice-date-time-picker>
+</section>
 
-        <div class="test-section">
-            <h3>With Initial Value</h3>
-            <div class="form-grid">
-                <snice-date-time-picker
-                    label="Event Start"
-                    value="2024-12-25T14:30">
-                </snice-date-time-picker>
-            </div>
-        </div>
+<section>
+  <h2>With value</h2>
+  <snice-date-time-picker label="Pre-filled" value="2026-12-25T14:30"></snice-date-time-picker>
+</section>
 
-        <div class="test-section">
-            <h3>12-Hour Format</h3>
-            <div class="form-grid">
-                <snice-date-time-picker
-                    label="Meeting Time"
-                    time-format="12h"
-                    value="2024-12-25T14:30">
-                </snice-date-time-picker>
-            </div>
-        </div>
+<section>
+  <h2>time-format="12h"</h2>
+  <snice-date-time-picker label="12-hour" time-format="12h" value="2026-12-25T14:30"></snice-date-time-picker>
+</section>
 
-        <div class="test-section">
-            <h3>With Seconds</h3>
-            <div class="form-grid">
-                <snice-date-time-picker
-                    label="Precise DateTime"
-                    show-seconds
-                    value="2024-12-25T14:30:45">
-                </snice-date-time-picker>
-            </div>
-        </div>
+<section>
+  <h2>time-format="24h" (default)</h2>
+  <snice-date-time-picker label="24-hour" time-format="24h" value="2026-06-15T09:00"></snice-date-time-picker>
+</section>
 
-        <div class="test-section">
-            <h3>Min/Max Constraints</h3>
-            <div class="form-grid">
-                <snice-date-time-picker
-                    label="This Month Only"
-                    min="2024-12-01"
-                    max="2024-12-31"
-                    helper-text="Only December 2024 dates allowed">
-                </snice-date-time-picker>
-            </div>
-        </div>
+<section>
+  <h2>show-seconds</h2>
+  <snice-date-time-picker label="With seconds" show-seconds value="2026-12-25T14:30:45"></snice-date-time-picker>
+</section>
 
-        <div class="test-section">
-            <h3>Inline Variant</h3>
-            <div class="form-grid">
-                <snice-date-time-picker
-                    label="Inline Picker"
-                    variant="inline"
-                    value="2024-06-15T10:00">
-                </snice-date-time-picker>
-            </div>
-        </div>
+<section>
+  <h2>show-seconds + time-format="12h"</h2>
+  <snice-date-time-picker label="12h + seconds" show-seconds time-format="12h" value="2026-12-25T14:30:45"></snice-date-time-picker>
+</section>
 
-        <div class="test-section">
-            <h3>States</h3>
-            <div class="form-row">
-                <snice-date-time-picker
-                    label="Disabled"
-                    disabled
-                    value="2024-12-25T14:30">
-                </snice-date-time-picker>
-                <snice-date-time-picker
-                    label="Readonly"
-                    readonly
-                    value="2024-12-25T14:30">
-                </snice-date-time-picker>
-            </div>
-            <div class="form-row" style="margin-top: 1rem;">
-                <snice-date-time-picker
-                    label="Required"
-                    required>
-                </snice-date-time-picker>
-                <snice-date-time-picker
-                    label="Invalid"
-                    invalid
-                    error-text="Please select a valid date and time">
-                </snice-date-time-picker>
-            </div>
-        </div>
-    </div>
+<section>
+  <h2>Date formats</h2>
+  <snice-date-time-picker label="yyyy-mm-dd (default)" date-format="yyyy-mm-dd" value="2026-03-06T10:00"></snice-date-time-picker>
+  <snice-date-time-picker label="mm/dd/yyyy" date-format="mm/dd/yyyy" value="2026-03-06T10:00" style="margin-top:0.5rem"></snice-date-time-picker>
+  <snice-date-time-picker label="dd/mm/yyyy" date-format="dd/mm/yyyy" value="2026-03-06T10:00" style="margin-top:0.5rem"></snice-date-time-picker>
+  <snice-date-time-picker label="dd-mm-yyyy" date-format="dd-mm-yyyy" value="2026-03-06T10:00" style="margin-top:0.5rem"></snice-date-time-picker>
+</section>
 
-    <script type="module">
-        import './snice-date-time-picker.ts';
+<section>
+  <h2>variant="inline" (always visible)</h2>
+  <snice-date-time-picker label="Inline picker" variant="inline" value="2026-06-15T10:00"></snice-date-time-picker>
+</section>
 
-        document.addEventListener('datetime-change', (e) => {
-            console.log('DateTime changed:', e.detail);
-        });
-    </script>
+<section>
+  <h2>variant="dropdown" (default)</h2>
+  <snice-date-time-picker label="Dropdown" variant="dropdown"></snice-date-time-picker>
+</section>
+
+<section>
+  <h2>min + max</h2>
+  <snice-date-time-picker label="March 2026 only" min="2026-03-01" max="2026-03-31"></snice-date-time-picker>
+</section>
+
+<section>
+  <h2>Disabled</h2>
+  <snice-date-time-picker label="Disabled" disabled value="2026-12-25T14:30"></snice-date-time-picker>
+</section>
+
+<section>
+  <h2>Readonly</h2>
+  <snice-date-time-picker label="Readonly" readonly value="2026-12-25T14:30"></snice-date-time-picker>
+</section>
+
+<section>
+  <h2>Required</h2>
+  <snice-date-time-picker label="Required" required></snice-date-time-picker>
+</section>
+
+<section>
+  <h2>Invalid + error-text</h2>
+  <snice-date-time-picker label="Invalid" invalid error-text="Please select a valid date and time"></snice-date-time-picker>
+</section>
+
+<section>
+  <h2>helper-text</h2>
+  <snice-date-time-picker label="Meeting" helper-text="Select date and time for the meeting"></snice-date-time-picker>
+</section>
+
+<section>
+  <h2>Custom placeholder</h2>
+  <snice-date-time-picker label="Custom" placeholder="Choose date & time..."></snice-date-time-picker>
+</section>
+
+<section>
+  <h2>Form: name</h2>
+  <snice-date-time-picker label="Event Start" name="event_start" required></snice-date-time-picker>
+</section>
+
+<section>
+  <h2>variant="inline" + 12h + show-seconds</h2>
+  <snice-date-time-picker label="Full inline" variant="inline" time-format="12h" show-seconds value="2026-07-04T15:30:00"></snice-date-time-picker>
+</section>
+
 </body>
 </html>

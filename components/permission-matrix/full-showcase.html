@@ -1,194 +1,184 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snice Permission Matrix Demo</title>
+  <title>Permission Matrix</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      font-family: var(--snice-font-family);
-      padding: var(--snice-spacing-2xl);
-      line-height: var(--snice-line-height-normal);
-      background: var(--snice-color-background);
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: var(--snice-spacing-xs);
-    }
-
-    h2 {
-      color: var(--snice-color-text-secondary);
-      margin-top: var(--snice-spacing-xl);
-    }
-
-    .demo-section {
-      margin: var(--snice-spacing-xl) 0;
-    }
-
-    .demo-label {
-      display: block;
-      margin-bottom: var(--snice-spacing-md);
-      font-weight: var(--snice-font-weight-medium);
-      color: var(--snice-color-text-secondary);
-      font-size: var(--snice-font-size-sm);
-    }
-
-    button {
-      padding: var(--snice-spacing-xs) var(--snice-spacing-md);
-      background: var(--snice-color-primary);
-      color: var(--snice-color-text-inverse);
-      border: none;
-      border-radius: var(--snice-border-radius-md);
-      cursor: pointer;
-      font-size: var(--snice-font-size-sm);
-    }
-
-    button:hover {
-      opacity: 0.9;
-    }
-
-    .controls {
-      display: flex;
-      gap: var(--snice-spacing-xs);
-      margin: var(--snice-spacing-md) 0;
-    }
-
-    pre {
-      background: var(--snice-color-background-secondary);
-      padding: var(--snice-spacing-md);
-      border-radius: var(--snice-border-radius-md);
-      overflow-x: auto;
-      font-size: var(--snice-font-size-sm);
-      color: var(--snice-color-text);
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    section { margin-bottom: 2rem; }
+    snice-permission-matrix { display: block; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Snice Permission Matrix Component Demo</h1>
 
-    <div class="demo-section">
-      <h2>Editable Matrix</h2>
-      <span class="demo-label">Click checkboxes to toggle permissions</span>
-      <snice-permission-matrix id="matrix1"></snice-permission-matrix>
+<h2>Editable (default)</h2>
+<section>
+  <snice-permission-matrix id="pm-editable"></snice-permission-matrix>
+</section>
 
-      <div class="controls">
-        <button onclick="logMatrix()">Log Matrix</button>
-        <button onclick="checkPermission()">Check Admin/Delete</button>
-      </div>
-      <pre id="output">Click a checkbox or button to see output...</pre>
-    </div>
+<h2>Readonly</h2>
+<section>
+  <snice-permission-matrix id="pm-readonly" readonly></snice-permission-matrix>
+</section>
 
-    <div class="demo-section">
-      <h2>Read-Only Matrix</h2>
-      <span class="demo-label">View-only mode with check/dash indicators</span>
-      <snice-permission-matrix id="matrix2" readonly></snice-permission-matrix>
-    </div>
+<h2>Many roles, many permissions</h2>
+<section>
+  <snice-permission-matrix id="pm-large"></snice-permission-matrix>
+</section>
 
-    <div class="demo-section">
-      <h2>Grouped Permissions</h2>
-      <span class="demo-label">Permissions organized by category</span>
-      <snice-permission-matrix id="matrix3"></snice-permission-matrix>
-    </div>
-  </div>
+<h2>Single role, single permission</h2>
+<section>
+  <snice-permission-matrix id="pm-minimal"></snice-permission-matrix>
+</section>
 
-  <script type="module">
-    import './snice-permission-matrix.ts';
+<h2>Roles with descriptions</h2>
+<section>
+  <snice-permission-matrix id="pm-role-desc"></snice-permission-matrix>
+</section>
 
-    // === Editable matrix ===
-    const matrix1 = document.getElementById('matrix1');
-    matrix1.roles = [
-      { id: 'admin', name: 'Administrator', description: 'Full system access' },
-      { id: 'editor', name: 'Editor', description: 'Content management' },
-      { id: 'viewer', name: 'Viewer', description: 'Read-only access' },
-      { id: 'guest', name: 'Guest' }
-    ];
-    matrix1.permissions = [
-      { id: 'create', name: 'Create' },
-      { id: 'read', name: 'Read' },
-      { id: 'update', name: 'Update' },
-      { id: 'delete', name: 'Delete' },
-      { id: 'publish', name: 'Publish' },
-      { id: 'manage-users', name: 'Manage Users' }
-    ];
-    matrix1.matrix = {
-      admin: ['create', 'read', 'update', 'delete', 'publish', 'manage-users'],
-      editor: ['create', 'read', 'update', 'publish'],
-      viewer: ['read'],
-      guest: ['read']
-    };
+<h2>Permissions with descriptions</h2>
+<section>
+  <snice-permission-matrix id="pm-perm-desc"></snice-permission-matrix>
+</section>
 
-    // === Read-only matrix ===
-    const matrix2 = document.getElementById('matrix2');
-    matrix2.roles = [
-      { id: 'admin', name: 'Admin' },
-      { id: 'moderator', name: 'Moderator' },
-      { id: 'user', name: 'User' }
-    ];
-    matrix2.permissions = [
-      { id: 'view', name: 'View' },
-      { id: 'comment', name: 'Comment' },
-      { id: 'post', name: 'Post' },
-      { id: 'ban', name: 'Ban Users' },
-      { id: 'settings', name: 'Settings' }
-    ];
-    matrix2.matrix = {
-      admin: ['view', 'comment', 'post', 'ban', 'settings'],
-      moderator: ['view', 'comment', 'post', 'ban'],
-      user: ['view', 'comment', 'post']
-    };
+<h2>All permissions granted</h2>
+<section>
+  <snice-permission-matrix id="pm-all-granted" readonly></snice-permission-matrix>
+</section>
 
-    // === Grouped permissions ===
-    const matrix3 = document.getElementById('matrix3');
-    matrix3.roles = [
-      { id: 'admin', name: 'Admin' },
-      { id: 'manager', name: 'Manager' },
-      { id: 'employee', name: 'Employee' }
-    ];
-    matrix3.permissions = [
-      { id: 'view-docs', name: 'View', group: 'Documents', description: 'View documents' },
-      { id: 'edit-docs', name: 'Edit', group: 'Documents', description: 'Edit documents' },
-      { id: 'delete-docs', name: 'Delete', group: 'Documents' },
-      { id: 'view-reports', name: 'View', group: 'Reports' },
-      { id: 'export-reports', name: 'Export', group: 'Reports' },
-      { id: 'manage-team', name: 'Manage', group: 'Team' },
-      { id: 'view-team', name: 'View', group: 'Team' }
-    ];
-    matrix3.matrix = {
-      admin: ['view-docs', 'edit-docs', 'delete-docs', 'view-reports', 'export-reports', 'manage-team', 'view-team'],
-      manager: ['view-docs', 'edit-docs', 'view-reports', 'export-reports', 'view-team'],
-      employee: ['view-docs', 'view-reports', 'view-team']
-    };
+<h2>No permissions granted</h2>
+<section>
+  <snice-permission-matrix id="pm-none-granted" readonly></snice-permission-matrix>
+</section>
 
-    // === Event listeners ===
-    matrix1.addEventListener('permission-toggle', (e) => {
-      document.getElementById('output').textContent =
-        `Toggle: ${e.detail.roleId} / ${e.detail.permissionId} = ${e.detail.granted}`;
-    });
+<h2>Empty (no data)</h2>
+<section>
+  <snice-permission-matrix id="pm-empty"></snice-permission-matrix>
+</section>
 
-    matrix1.addEventListener('matrix-change', (e) => {
-      console.log('Matrix changed:', e.detail.matrix);
-    });
+<script type="module">
+  import './snice-permission-matrix.ts';
 
-    // === Helper functions ===
-    window.logMatrix = function() {
-      const m = matrix1.getMatrix();
-      document.getElementById('output').textContent = JSON.stringify(m, null, 2);
-    };
+  const roles3 = [
+    { id: 'admin', name: 'Admin', description: 'Full system access' },
+    { id: 'editor', name: 'Editor', description: 'Content management' },
+    { id: 'viewer', name: 'Viewer' }
+  ];
+  const perms4 = [
+    { id: 'create', name: 'Create' },
+    { id: 'read', name: 'Read' },
+    { id: 'update', name: 'Update' },
+    { id: 'delete', name: 'Delete' }
+  ];
+  const matrix3 = {
+    admin: ['create', 'read', 'update', 'delete'],
+    editor: ['create', 'read', 'update'],
+    viewer: ['read']
+  };
 
-    window.checkPermission = function() {
-      const has = matrix1.hasPermission('admin', 'delete');
-      document.getElementById('output').textContent =
-        `Admin has 'delete' permission: ${has}`;
-    };
-  </script>
+  // Editable
+  const pmEdit = document.getElementById('pm-editable');
+  pmEdit.roles = roles3;
+  pmEdit.permissions = perms4;
+  pmEdit.matrix = matrix3;
+
+  // Readonly
+  const pmRo = document.getElementById('pm-readonly');
+  pmRo.roles = roles3;
+  pmRo.permissions = perms4;
+  pmRo.matrix = matrix3;
+
+  // Large
+  const pmLarge = document.getElementById('pm-large');
+  pmLarge.roles = [
+    { id: 'super', name: 'Super Admin' },
+    { id: 'admin', name: 'Admin' },
+    { id: 'manager', name: 'Manager' },
+    { id: 'editor', name: 'Editor' },
+    { id: 'author', name: 'Author' },
+    { id: 'viewer', name: 'Viewer' },
+    { id: 'guest', name: 'Guest' }
+  ];
+  pmLarge.permissions = [
+    { id: 'users.create', name: 'Create Users' },
+    { id: 'users.read', name: 'View Users' },
+    { id: 'users.update', name: 'Edit Users' },
+    { id: 'users.delete', name: 'Delete Users' },
+    { id: 'posts.create', name: 'Create Posts' },
+    { id: 'posts.read', name: 'View Posts' },
+    { id: 'posts.update', name: 'Edit Posts' },
+    { id: 'posts.delete', name: 'Delete Posts' },
+    { id: 'settings', name: 'Settings' },
+    { id: 'billing', name: 'Billing' }
+  ];
+  pmLarge.matrix = {
+    super: ['users.create','users.read','users.update','users.delete','posts.create','posts.read','posts.update','posts.delete','settings','billing'],
+    admin: ['users.create','users.read','users.update','posts.create','posts.read','posts.update','posts.delete','settings'],
+    manager: ['users.read','posts.create','posts.read','posts.update','posts.delete'],
+    editor: ['posts.create','posts.read','posts.update'],
+    author: ['posts.create','posts.read'],
+    viewer: ['posts.read'],
+    guest: []
+  };
+
+  // Minimal
+  const pmMin = document.getElementById('pm-minimal');
+  pmMin.roles = [{ id: 'user', name: 'User' }];
+  pmMin.permissions = [{ id: 'access', name: 'Access' }];
+  pmMin.matrix = { user: ['access'] };
+
+  // Role descriptions
+  const pmRoleDesc = document.getElementById('pm-role-desc');
+  pmRoleDesc.roles = [
+    { id: 'admin', name: 'Admin', description: 'Full system access, can manage all resources' },
+    { id: 'mod', name: 'Moderator', description: 'Can moderate content and users' },
+    { id: 'user', name: 'User', description: 'Standard user access' }
+  ];
+  pmRoleDesc.permissions = perms4;
+  pmRoleDesc.matrix = { admin: ['create','read','update','delete'], mod: ['read','update','delete'], user: ['read'] };
+
+  // Permission descriptions
+  const pmPermDesc = document.getElementById('pm-perm-desc');
+  pmPermDesc.roles = roles3;
+  pmPermDesc.permissions = [
+    { id: 'create', name: 'Create', description: 'Create new records' },
+    { id: 'read', name: 'Read', description: 'View existing records' },
+    { id: 'update', name: 'Update', description: 'Modify existing records' },
+    { id: 'delete', name: 'Delete', description: 'Permanently remove records' }
+  ];
+  pmPermDesc.matrix = matrix3;
+
+  // All granted
+  const pmAll = document.getElementById('pm-all-granted');
+  pmAll.roles = roles3;
+  pmAll.permissions = perms4;
+  pmAll.matrix = {
+    admin: ['create','read','update','delete'],
+    editor: ['create','read','update','delete'],
+    viewer: ['create','read','update','delete']
+  };
+
+  // None granted
+  const pmNone = document.getElementById('pm-none-granted');
+  pmNone.roles = roles3;
+  pmNone.permissions = perms4;
+  pmNone.matrix = { admin: [], editor: [], viewer: [] };
+</script>
 </body>
 </html>

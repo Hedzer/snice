@@ -1,226 +1,144 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Date Picker Test</title>
-    <link rel="stylesheet" href="../theme/theme.css">
-    <style>
-        body {
-            font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Robbox, sans-serif);
-            padding: var(--snice-spacing-xl, 2rem);
-            background: var(--snice-color-background);
-            color: var(--snice-color-text, #374151);
-        }
-        
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: var(--snice-color-background-element, white);
-            padding: var(--snice-spacing-xl, 2rem);
-            border-radius: var(--snice-border-radius-lg, 8px);
-            box-shadow: var(--snice-shadow-sm, 0 1px 3px rgba(0,0,0,0.1));
-        }
-        
-        .test-section {
-            margin-bottom: var(--snice-spacing-xl, 2rem);
-            padding: var(--snice-spacing-lg, 1.5rem);
-            border: 1px solid var(--snice-color-border, #e5e7eb);
-            border-radius: var(--snice-border-radius-lg, 6px);
-            background: var(--snice-color-background-secondary, #f9fafb);
-        }
-        
-        .test-section h3 {
-            margin: 0 0 var(--snice-spacing-md, 1rem) 0;
-            color: var(--snice-color-text, #374151);
-            font-weight: var(--snice-font-weight-semibold, 600);
-        }
-        
-        .form-grid {
-            display: grid;
-            gap: var(--snice-spacing-md, 1rem);
-        }
-        
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: var(--snice-spacing-md, 1rem);
-        }
-        
-        @media (max-width: 640px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <title>Date Picker</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
+    section { margin-bottom: 2rem; max-width: 700px; }
+  </style>
+  <script type="module">import './snice-date-picker.ts';</script>
 </head>
 <body>
-    <div class="container">
-        <h1>Snice Date Picker Component Test</h1>
-        
-        <div class="test-section">
-            <h3>Basic Date Picker</h3>
-            <div class="form-grid">
-                <snice-date-picker 
-                    label="Select Date" 
-                    placeholder="Choose a date"
-                    clearable>
-                </snice-date-picker>
-            </div>
-        </div>
-        
-        <div class="test-section">
-            <h3>Different Formats</h3>
-            <div class="form-grid">
-                <snice-date-picker 
-                    label="US Format (MM/DD/YYYY)" 
-                    format="mm/dd/yyyy">
-                </snice-date-picker>
-                
-                <snice-date-picker 
-                    label="European Format (DD/MM/YYYY)" 
-                    format="dd/mm/yyyy">
-                </snice-date-picker>
-                
-                <snice-date-picker 
-                    label="ISO Format (YYYY-MM-DD)" 
-                    format="yyyy-mm-dd">
-                </snice-date-picker>
-                
-                <snice-date-picker 
-                    label="Long Format (Month DD, YYYY)" 
-                    format="mmmm dd, yyyy">
-                </snice-date-picker>
-            </div>
-        </div>
-        
-        <div class="test-section">
-            <h3>Sizes and Variants</h3>
-            <div class="form-grid">
-                <div class="form-row">
-                    <snice-date-picker 
-                        label="Small Outlined" 
-                        size="small" 
-                        variant="outlined">
-                    </snice-date-picker>
-                    
-                    <snice-date-picker 
-                        label="Medium Filled" 
-                        size="medium" 
-                        variant="filled">
-                    </snice-date-picker>
-                </div>
-                
-                <div class="form-row">
-                    <snice-date-picker 
-                        label="Large Underlined" 
-                        size="large" 
-                        variant="underlined">
-                    </snice-date-picker>
-                </div>
-            </div>
-        </div>
-        
-        <div class="test-section">
-            <h3>With Constraints</h3>
-            <div class="form-grid">
-                <snice-date-picker 
-                    label="Date Range (This Month Only)" 
-                    min="2024-12-01" 
-                    max="2024-12-31"
-                    helper-text="Only dates in December 2024 are allowed">
-                </snice-date-picker>
-            </div>
-        </div>
-        
-        <div class="test-section">
-            <h3>States</h3>
-            <div class="form-grid">
-                <div class="form-row">
-                    <snice-date-picker 
-                        label="Required Field" 
-                        required
-                        helper-text="This field is required">
-                    </snice-date-picker>
-                    
-                    <snice-date-picker 
-                        label="With Error" 
-                        invalid
-                        error-text="Please select a valid date">
-                    </snice-date-picker>
-                </div>
-                
-                <div class="form-row">
-                    <snice-date-picker 
-                        label="Disabled" 
-                        disabled
-                        value="2024-12-25">
-                    </snice-date-picker>
-                    
-                    <snice-date-picker 
-                        label="Read Only" 
-                        readonly
-                        value="2024-12-25">
-                    </snice-date-picker>
-                </div>
-            </div>
-        </div>
 
-        <div class="test-section">
-            <h3>Loading States</h3>
-            <div class="form-grid">
-                <div class="form-row">
-                    <snice-date-picker
-                        label="Loading Picker"
-                        loading>
-                    </snice-date-picker>
+<section>
+  <h2>Default</h2>
+  <snice-date-picker label="Select date"></snice-date-picker>
+</section>
 
-                    <snice-date-picker
-                        id="simulate-loading-datepicker"
-                        label="Simulate Loading"
-                        value="2024-12-25">
-                    </snice-date-picker>
-                </div>
-            </div>
-            <button id="loading-btn-datepicker" style="margin-top: 16px; padding: 8px 16px; cursor: pointer;">Trigger Loading (3s)</button>
-        </div>
-    </div>
+<section>
+  <h2>With value</h2>
+  <snice-date-picker label="Pre-filled" value="2026-03-15"></snice-date-picker>
+</section>
 
-    <script type="module">
-        import './snice-date-picker.ts';
-        
-        // Event listeners for component interaction
-        document.addEventListener('datepicker-change', (e) => {
-            // Handle date changes
-        });
-        
-        document.addEventListener('datepicker-select', (e) => {
-            // Handle date selection
-        });
-        
-        document.addEventListener('datepicker-open', (e) => {
-            // Handle calendar open
-        });
-        
-        document.addEventListener('datepicker-close', (e) => {
-            // Handle calendar close
-        });
+<section>
+  <h2>All formats</h2>
+  <div class="row">
+    <snice-date-picker label="mm/dd/yyyy" format="mm/dd/yyyy" value="2026-03-06"></snice-date-picker>
+    <snice-date-picker label="dd/mm/yyyy" format="dd/mm/yyyy" value="2026-03-06"></snice-date-picker>
+  </div>
+  <div class="row" style="margin-top:0.75rem">
+    <snice-date-picker label="yyyy-mm-dd" format="yyyy-mm-dd" value="2026-03-06"></snice-date-picker>
+    <snice-date-picker label="yyyy/mm/dd" format="yyyy/mm/dd" value="2026-03-06"></snice-date-picker>
+  </div>
+  <div class="row" style="margin-top:0.75rem">
+    <snice-date-picker label="dd-mm-yyyy" format="dd-mm-yyyy" value="2026-03-06"></snice-date-picker>
+    <snice-date-picker label="mm-dd-yyyy" format="mm-dd-yyyy" value="2026-03-06"></snice-date-picker>
+  </div>
+  <div class="row" style="margin-top:0.75rem">
+    <snice-date-picker label="mmmm dd, yyyy" format="mmmm dd, yyyy" value="2026-03-06"></snice-date-picker>
+  </div>
+</section>
 
-        // Loading state demo
-        const loadingDatePicker = document.getElementById('simulate-loading-datepicker');
-        const loadingBtnDatePicker = document.getElementById('loading-btn-datepicker');
+<section>
+  <h2>Sizes</h2>
+  <div class="row">
+    <snice-date-picker label="Small" size="small"></snice-date-picker>
+    <snice-date-picker label="Medium" size="medium"></snice-date-picker>
+    <snice-date-picker label="Large" size="large"></snice-date-picker>
+  </div>
+</section>
 
-        loadingBtnDatePicker.addEventListener('click', () => {
-            loadingDatePicker.loading = true;
-            loadingBtnDatePicker.disabled = true;
-            loadingBtnDatePicker.textContent = 'Loading...';
+<section>
+  <h2>Variants</h2>
+  <div class="row">
+    <snice-date-picker label="Outlined" variant="outlined"></snice-date-picker>
+    <snice-date-picker label="Filled" variant="filled"></snice-date-picker>
+    <snice-date-picker label="Underlined" variant="underlined"></snice-date-picker>
+  </div>
+</section>
 
-            setTimeout(() => {
-                loadingDatePicker.loading = false;
-                loadingBtnDatePicker.disabled = false;
-                loadingBtnDatePicker.textContent = 'Trigger Loading (3s)';
-            }, 3000);
-        });
-    </script>
+<section>
+  <h2>Sizes x Variants</h2>
+  <div class="row">
+    <snice-date-picker label="Small Filled" size="small" variant="filled"></snice-date-picker>
+    <snice-date-picker label="Large Underlined" size="large" variant="underlined"></snice-date-picker>
+  </div>
+</section>
+
+<section>
+  <h2>clearable</h2>
+  <snice-date-picker label="Clearable" value="2026-06-15" clearable></snice-date-picker>
+</section>
+
+<section>
+  <h2>min + max</h2>
+  <snice-date-picker label="Dec 2026 only" min="2026-12-01" max="2026-12-31" helper-text="Only December 2026"></snice-date-picker>
+</section>
+
+<section>
+  <h2>Disabled</h2>
+  <snice-date-picker label="Disabled" disabled value="2026-03-06"></snice-date-picker>
+</section>
+
+<section>
+  <h2>Readonly</h2>
+  <snice-date-picker label="Readonly" readonly value="2026-03-06"></snice-date-picker>
+</section>
+
+<section>
+  <h2>Loading</h2>
+  <snice-date-picker label="Loading" loading></snice-date-picker>
+</section>
+
+<section>
+  <h2>Required</h2>
+  <snice-date-picker label="Required" required helper-text="This field is required"></snice-date-picker>
+</section>
+
+<section>
+  <h2>Invalid + error-text</h2>
+  <snice-date-picker label="Invalid" invalid error-text="Please select a valid date"></snice-date-picker>
+</section>
+
+<section>
+  <h2>helper-text</h2>
+  <snice-date-picker label="With helper" helper-text="Choose your birth date"></snice-date-picker>
+</section>
+
+<section>
+  <h2>Custom placeholder</h2>
+  <snice-date-picker label="Custom" placeholder="Pick a date..."></snice-date-picker>
+</section>
+
+<section>
+  <h2>first-day-of-week="1" (Monday)</h2>
+  <snice-date-picker label="Monday start" first-day-of-week="1"></snice-date-picker>
+</section>
+
+<section>
+  <h2>Form: name + required</h2>
+  <snice-date-picker label="Birthdate" name="birthdate" required></snice-date-picker>
+</section>
+
+<section>
+  <h2>Disabled + value + clearable (clear hidden when disabled)</h2>
+  <snice-date-picker label="Disabled clearable" disabled value="2026-01-01" clearable></snice-date-picker>
+</section>
+
 </body>
 </html>

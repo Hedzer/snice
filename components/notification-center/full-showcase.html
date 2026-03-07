@@ -1,366 +1,201 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snice Notification Center Demo</title>
+  <title>Notification Center</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      font-family: var(--snice-font-family, system-ui, -apple-system, sans-serif);
-      padding: var(--snice-spacing-2xl, 2.5rem);
-      line-height: 1.6;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      margin: 0;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: var(--snice-spacing-sm, 0.75rem);
-      margin-bottom: var(--snice-spacing-lg, 1.5rem);
-      font-size: var(--snice-font-size-2xl, 1.5rem);
-    }
-
-    h2 {
-      color: var(--snice-color-text);
-      margin-top: var(--snice-spacing-xl, 2rem);
-      margin-bottom: var(--snice-spacing-md, 1rem);
-      font-size: var(--snice-font-size-xl, 1.25rem);
-    }
-
-    .demo-section {
-      margin: var(--snice-spacing-lg, 1.5rem) 0;
-      padding: var(--snice-spacing-md, 1rem);
-      background: var(--snice-color-background);
-      border-radius: var(--snice-border-radius-lg, 8px);
-      border: 1px solid var(--snice-color-border);
-    }
-
-    .controls {
-      display: flex;
-      gap: var(--snice-spacing-sm, 0.75rem);
-      margin: var(--snice-spacing-md, 1rem) 0;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    button {
-      padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-md, 1rem);
-      background: var(--snice-color-primary, rgb(37 99 235));
-      color: var(--snice-color-text-inverse, rgb(250 250 250));
-      border: none;
-      border-radius: var(--snice-border-radius-md, 4px);
-      cursor: pointer;
-      font-size: var(--snice-font-size-sm, 0.875rem);
-      font-family: inherit;
-      transition: opacity var(--snice-transition-fast, 150ms);
-    }
-
-    button:hover {
-      opacity: 0.9;
-    }
-
-    button.success {
-      background: var(--snice-color-success, rgb(34 197 94));
-    }
-
-    button.warning {
-      background: var(--snice-color-warning, rgb(245 158 11));
-    }
-
-    button.error {
-      background: var(--snice-color-danger, rgb(220 38 38));
-    }
-
-    button.secondary {
-      background: var(--snice-color-background-element, rgb(252 251 249));
-      color: var(--snice-color-text);
-      border: 1px solid var(--snice-color-border);
-    }
-
-    button.secondary:hover {
-      background: var(--snice-color-border);
-    }
-
-    .notification-center-wrapper {
-      display: flex;
-      justify-content: flex-end;
-      padding: var(--snice-spacing-md, 1rem);
-      background: var(--snice-color-background-element, rgb(252 251 249));
-      border-radius: var(--snice-border-radius-lg, 8px);
-      border: 1px solid var(--snice-color-border);
-    }
-
-    .event-log {
-      margin-top: var(--snice-spacing-md, 1rem);
-      padding: var(--snice-spacing-sm, 0.75rem);
-      background: var(--snice-color-background-element, rgb(252 251 249));
-      border: 1px solid var(--snice-color-border);
-      border-radius: var(--snice-border-radius-md, 4px);
-      font-family: monospace;
-      font-size: var(--snice-font-size-sm, 0.875rem);
-      max-height: 200px;
-      overflow-y: auto;
-    }
-
-    .event-log div {
-      margin: var(--snice-spacing-2xs, 0.25rem) 0;
-      padding: var(--snice-spacing-2xs, 0.25rem);
-    }
-
-    .event-log .event-click { color: var(--snice-color-primary); }
-    .event-log .event-dismiss { color: var(--snice-color-warning); }
-    .event-log .event-read { color: var(--snice-color-success); }
-
-    .info-box {
-      padding: var(--snice-spacing-md, 1rem);
-      background: var(--snice-color-primary-subtle, rgb(239 246 255));
-      border-left: 4px solid var(--snice-color-primary);
-      border-radius: var(--snice-border-radius-md, 4px);
-      margin-bottom: var(--snice-spacing-lg, 1.5rem);
-    }
-
-    .info-box p {
-      margin: 0;
-      font-size: var(--snice-font-size-sm, 0.875rem);
-    }
-
-    .notification-types {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: var(--snice-spacing-md, 1rem);
-      margin-top: var(--snice-spacing-md, 1rem);
-    }
-
-    .type-info {
-      padding: var(--snice-spacing-sm, 0.75rem);
-      background: var(--snice-color-primary-subtle, rgb(239 246 255));
-      border-radius: var(--snice-border-radius-md, 4px);
-      font-size: var(--snice-font-size-sm, 0.875rem);
-    }
-
-    .type-success {
-      padding: var(--snice-spacing-sm, 0.75rem);
-      background: var(--snice-color-success-subtle, rgb(240 253 244));
-      border-radius: var(--snice-border-radius-md, 4px);
-      font-size: var(--snice-font-size-sm, 0.875rem);
-    }
-
-    .type-warning {
-      padding: var(--snice-spacing-sm, 0.75rem);
-      background: var(--snice-color-warning-subtle, rgb(255 251 235));
-      border-radius: var(--snice-border-radius-md, 4px);
-      font-size: var(--snice-font-size-sm, 0.875rem);
-    }
-
-    .type-error {
-      padding: var(--snice-spacing-sm, 0.75rem);
-      background: var(--snice-color-danger-subtle, rgb(254 242 242));
-      border-radius: var(--snice-border-radius-md, 4px);
-      font-size: var(--snice-font-size-sm, 0.875rem);
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
+    .spacer { height: 22rem; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Notification Center Demo</h1>
-    
-    <div class="info-box">
-      <p>The Notification Center component provides a bell icon with a dropdown panel for displaying and managing notifications. Click the bell to open the notification panel.</p>
-    </div>
 
-    <h2>Live Demo</h2>
-    <div class="demo-section">
-      <div class="notification-center-wrapper">
-        <snice-notification-center id="notification-center"></snice-notification-center>
-      </div>
-    </div>
+<h2>Default (with notifications)</h2>
+<snice-notification-center id="nc-default"></snice-notification-center>
+<div class="spacer"></div>
 
-    <h2>Add Notifications</h2>
-    <div class="demo-section">
-      <div class="controls">
-        <button class="success" onclick="addSuccess()">Add Success</button>
-        <button class="warning" onclick="addWarning()">Add Warning</button>
-        <button class="error" onclick="addError()">Add Error</button>
-        <button onclick="addInfo()">Add Info</button>
-        <button class="secondary" onclick="clearAll()">Clear All</button>
-      </div>
+<h2>Empty (no notifications)</h2>
+<snice-notification-center id="nc-empty"></snice-notification-center>
+<div class="spacer"></div>
 
-      <div class="notification-types">
-        <div class="type-info">
-          <strong>ℹ️ Info</strong> - Default notification type for general updates
-        </div>
-        <div class="type-success">
-          <strong>✅ Success</strong> - For successful operations and confirmations
-        </div>
-        <div class="type-warning">
-          <strong>⚠️ Warning</strong> - For alerts that require attention
-        </div>
-        <div class="type-error">
-          <strong>❌ Error</strong> - For error messages and failures
-        </div>
-      </div>
-    </div>
+<h2>Open: true (pre-opened)</h2>
+<snice-notification-center id="nc-open" open></snice-notification-center>
+<div class="spacer"></div>
 
-    <h2>Programmatic Control</h2>
-    <div class="demo-section">
-      <div class="controls">
-        <button class="secondary" onclick="markAllRead()">Mark All as Read</button>
-        <button class="secondary" onclick="openPanel()">Open Panel</button>
-        <button class="secondary" onclick="closePanel()">Close Panel</button>
-        <button class="secondary" onclick="loadSampleData()">Load Sample Data</button>
-      </div>
-    </div>
+<h2>All unread</h2>
+<snice-notification-center id="nc-unread"></snice-notification-center>
+<div class="spacer"></div>
 
-    <h2>Events</h2>
-    <div class="demo-section">
-      <div id="event-log" class="event-log">
-        <div style="color: var(--snice-color-text-tertiary);">Events will appear here...</div>
-      </div>
-    </div>
-  </div>
+<h2>All read (no badge)</h2>
+<snice-notification-center id="nc-read"></snice-notification-center>
+<div class="spacer"></div>
 
-  <script type="module">
-    const notificationCenter = document.getElementById('notification-center');
-    const eventLog = document.getElementById('event-log');
+<h2>Mixed read/unread</h2>
+<snice-notification-center id="nc-mixed"></snice-notification-center>
+<div class="spacer"></div>
 
-    let notificationId = 1;
+<h2>Notification type: info</h2>
+<snice-notification-center id="nc-info"></snice-notification-center>
+<div class="spacer"></div>
 
-    const sampleNotifications = [
-      {
-        id: String(notificationId++),
-        title: 'Welcome!',
-        message: 'Thanks for trying out the Notification Center component.',
-        timestamp: 'Just now',
-        read: false,
-        type: 'info'
-      },
-      {
-        id: String(notificationId++),
-        title: 'Profile Updated',
-        message: 'Your profile information has been successfully saved.',
-        timestamp: '5 minutes ago',
-        read: false,
-        type: 'success'
-      },
-      {
-        id: String(notificationId++),
-        title: 'Storage Warning',
-        message: 'You are using 90% of your storage quota.',
-        timestamp: '1 hour ago',
-        read: true,
-        type: 'warning'
-      },
-      {
-        id: String(notificationId++),
-        title: 'Login Failed',
-        message: 'There was an issue with your recent login attempt.',
-        timestamp: '2 hours ago',
-        read: true,
-        type: 'error'
-      }
-    ];
+<h2>Notification type: success</h2>
+<snice-notification-center id="nc-success"></snice-notification-center>
+<div class="spacer"></div>
 
-    function logEvent(type, message) {
-      if (eventLog.children[0]?.textContent.includes('Events will appear')) {
-        eventLog.innerHTML = '';
-      }
-      const entry = document.createElement('div');
-      entry.className = `event-${type}`;
-      entry.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
-      eventLog.insertBefore(entry, eventLog.firstChild);
-    }
+<h2>Notification type: warning</h2>
+<snice-notification-center id="nc-warning"></snice-notification-center>
+<div class="spacer"></div>
 
-    notificationCenter.addEventListener('notification-click', (e) => {
-      logEvent('click', `Clicked: ${e.detail.notification.title}`);
-    });
+<h2>Notification type: error</h2>
+<snice-notification-center id="nc-error"></snice-notification-center>
+<div class="spacer"></div>
 
-    notificationCenter.addEventListener('notification-dismiss', (e) => {
-      logEvent('dismiss', `Dismissed notification: ${e.detail.id}`);
-    });
+<h2>All types combined</h2>
+<snice-notification-center id="nc-all-types"></snice-notification-center>
+<div class="spacer"></div>
 
-    notificationCenter.addEventListener('notification-read-all', () => {
-      logEvent('read', 'Marked all notifications as read');
-    });
+<h2>Custom icons on notifications</h2>
+<snice-notification-center id="nc-custom-icons"></snice-notification-center>
+<div class="spacer"></div>
 
-    window.addSuccess = () => {
-      const newNotification = {
-        id: String(notificationId++),
-        title: 'Operation Successful',
-        message: 'Your changes have been saved successfully.',
-        timestamp: 'Just now',
-        read: false,
-        type: 'success'
-      };
-      notificationCenter.notifications = [newNotification, ...notificationCenter.notifications];
-    };
+<h2>Custom bell icon (icon property)</h2>
+<snice-notification-center id="nc-bell-icon" icon="&#x1F4E8;"></snice-notification-center>
+<div class="spacer"></div>
 
-    window.addWarning = () => {
-      const newNotification = {
-        id: String(notificationId++),
-        title: 'Attention Needed',
-        message: 'Please review your settings before continuing.',
-        timestamp: 'Just now',
-        read: false,
-        type: 'warning'
-      };
-      notificationCenter.notifications = [newNotification, ...notificationCenter.notifications];
-    };
+<h2>Icon slot (custom bell)</h2>
+<snice-notification-center id="nc-icon-slot">
+  <span slot="icon" style="font-size:1.5rem;">&#x1F4EC;</span>
+</snice-notification-center>
+<div class="spacer"></div>
 
-    window.addError = () => {
-      const newNotification = {
-        id: String(notificationId++),
-        title: 'Error Occurred',
-        message: 'Something went wrong. Please try again later.',
-        timestamp: 'Just now',
-        read: false,
-        type: 'error'
-      };
-      notificationCenter.notifications = [newNotification, ...notificationCenter.notifications];
-    };
+<h2>Single notification</h2>
+<snice-notification-center id="nc-single"></snice-notification-center>
+<div class="spacer"></div>
 
-    window.addInfo = () => {
-      const newNotification = {
-        id: String(notificationId++),
-        title: 'New Update',
-        message: 'A new version is available with exciting features.',
-        timestamp: 'Just now',
-        read: false,
-        type: 'info'
-      };
-      notificationCenter.notifications = [newNotification, ...notificationCenter.notifications];
-    };
+<h2>Many notifications</h2>
+<snice-notification-center id="nc-many"></snice-notification-center>
+<div class="spacer"></div>
 
-    window.clearAll = () => {
-      notificationCenter.notifications = [];
-    };
+<h2>Long message text</h2>
+<snice-notification-center id="nc-long"></snice-notification-center>
+<div class="spacer"></div>
 
-    window.markAllRead = () => {
-      notificationCenter.markAllAsRead();
-    };
+<script type="module">
+  import './snice-notification-center.ts';
+  import '../badge/snice-badge.ts';
 
-    window.openPanel = () => {
-      notificationCenter.open = true;
-    };
+  const now = new Date();
+  const timeAgo = (min) => `${min} min ago`;
 
-    window.closePanel = () => {
-      notificationCenter.open = false;
-    };
+  // Default
+  document.getElementById('nc-default').notifications = [
+    { id: '1', title: 'New message', message: 'You have a new message from Alice', timestamp: timeAgo(2), type: 'info' },
+    { id: '2', title: 'Build succeeded', message: 'Production deploy completed', timestamp: timeAgo(15), type: 'success', read: true },
+    { id: '3', title: 'Disk space low', message: 'Server disk usage at 90%', timestamp: timeAgo(30), type: 'warning' },
+  ];
 
-    window.loadSampleData = () => {
-      notificationCenter.notifications = [...sampleNotifications];
-      notificationId = sampleNotifications.length + 1;
-    };
+  // Empty
+  document.getElementById('nc-empty').notifications = [];
 
-    // Load initial sample data
-    loadSampleData();
-  </script>
+  // Open
+  document.getElementById('nc-open').notifications = [
+    { id: '1', title: 'Welcome', message: 'This panel is pre-opened', timestamp: 'Just now', type: 'info' },
+  ];
+
+  // All unread
+  document.getElementById('nc-unread').notifications = [
+    { id: '1', title: 'Unread 1', message: 'First unread notification', timestamp: timeAgo(1), type: 'info' },
+    { id: '2', title: 'Unread 2', message: 'Second unread notification', timestamp: timeAgo(5), type: 'success' },
+    { id: '3', title: 'Unread 3', message: 'Third unread notification', timestamp: timeAgo(10), type: 'warning' },
+  ];
+
+  // All read
+  document.getElementById('nc-read').notifications = [
+    { id: '1', title: 'Read 1', message: 'Already read', timestamp: timeAgo(60), type: 'info', read: true },
+    { id: '2', title: 'Read 2', message: 'Already read', timestamp: timeAgo(120), type: 'success', read: true },
+  ];
+
+  // Mixed
+  document.getElementById('nc-mixed').notifications = [
+    { id: '1', title: 'New', message: 'Unread notification', timestamp: timeAgo(3), type: 'info' },
+    { id: '2', title: 'Old', message: 'Read notification', timestamp: timeAgo(60), type: 'success', read: true },
+    { id: '3', title: 'Recent', message: 'Another unread', timestamp: timeAgo(10), type: 'warning' },
+  ];
+
+  // Individual types
+  document.getElementById('nc-info').notifications = [
+    { id: '1', title: 'Info', message: 'Informational notification', timestamp: timeAgo(1), type: 'info' },
+  ];
+  document.getElementById('nc-success').notifications = [
+    { id: '1', title: 'Success', message: 'Successful operation', timestamp: timeAgo(1), type: 'success' },
+  ];
+  document.getElementById('nc-warning').notifications = [
+    { id: '1', title: 'Warning', message: 'Warning notification', timestamp: timeAgo(1), type: 'warning' },
+  ];
+  document.getElementById('nc-error').notifications = [
+    { id: '1', title: 'Error', message: 'Error notification', timestamp: timeAgo(1), type: 'error' },
+  ];
+
+  // All types
+  document.getElementById('nc-all-types').notifications = [
+    { id: '1', title: 'Info Alert', message: 'System update available', timestamp: timeAgo(2), type: 'info' },
+    { id: '2', title: 'Success', message: 'Payment processed', timestamp: timeAgo(5), type: 'success' },
+    { id: '3', title: 'Warning', message: 'API rate limit approaching', timestamp: timeAgo(10), type: 'warning' },
+    { id: '4', title: 'Error', message: 'Connection lost', timestamp: timeAgo(15), type: 'error' },
+  ];
+
+  // Custom icons
+  document.getElementById('nc-custom-icons').notifications = [
+    { id: '1', title: 'Delivery', message: 'Package shipped', timestamp: timeAgo(5), icon: '\u{1F4E6}' },
+    { id: '2', title: 'Sale', message: 'Flash sale started', timestamp: timeAgo(10), icon: '\u{1F525}' },
+    { id: '3', title: 'Birthday', message: "It's Bob's birthday!", timestamp: timeAgo(30), icon: '\u{1F382}' },
+  ];
+
+  // Custom bell icon
+  document.getElementById('nc-bell-icon').notifications = [
+    { id: '1', title: 'Mail', message: 'Custom bell icon on trigger', timestamp: timeAgo(1), type: 'info' },
+  ];
+
+  // Icon slot
+  document.getElementById('nc-icon-slot').notifications = [
+    { id: '1', title: 'Mailbox', message: 'Using slotted icon', timestamp: timeAgo(1), type: 'info' },
+  ];
+
+  // Single
+  document.getElementById('nc-single').notifications = [
+    { id: '1', title: 'Solo Notification', message: 'Only one notification in the list', timestamp: timeAgo(1), type: 'info' },
+  ];
+
+  // Many
+  document.getElementById('nc-many').notifications = Array.from({ length: 10 }, (_, i) => ({
+    id: String(i),
+    title: `Notification ${i + 1}`,
+    message: `This is notification number ${i + 1}`,
+    timestamp: timeAgo((i + 1) * 5),
+    type: ['info', 'success', 'warning', 'error'][i % 4],
+    read: i >= 5,
+  }));
+
+  // Long message
+  document.getElementById('nc-long').notifications = [
+    { id: '1', title: 'System Update Required', message: 'A critical system update is available and needs to be installed as soon as possible. Please save your work and restart the application to apply the update. This update includes important security patches.', timestamp: timeAgo(1), type: 'warning' },
+  ];
+</script>
 </body>
 </html>

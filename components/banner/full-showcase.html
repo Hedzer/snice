@@ -1,216 +1,150 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Banner Demo</title>
+  <title>Banner</title>
   <link rel="stylesheet" href="../theme/theme.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
   <style>
     body {
-      padding: 100px 40px 40px;
       font-family: system-ui, -apple-system, sans-serif;
-      max-width: 800px;
-      margin: 0 auto;
-    }
-    .section {
-      margin-bottom: 40px;
-    }
-    h2 {
-      margin-bottom: 20px;
-    }
-    .controls {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
-    }
-    button {
-      padding: 0.5rem 1rem;
-      background: var(--snice-color-primary);
-      color: white;
-      border: none;
-      border-radius: 0.375rem;
-      cursor: pointer;
-      font-size: 0.875rem;
-    }
-    button:hover {
-      background: var(--snice-color-primary-hover);
-    }
-    .note {
-      padding: 1rem;
+      padding: 1.5rem;
       background: var(--snice-color-background);
-      border-radius: 0.375rem;
-      font-size: 0.875rem;
-      color: var(--snice-color-text-secondary);
-      margin-bottom: 20px;
+      color: var(--snice-color-text);
+    }
+    section { margin-bottom: 2rem; }
+    h2 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--snice-color-text-tertiary, #888);
+      margin: 0 0 0.75rem;
+    }
+    .stack {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
     }
   </style>
 </head>
 <body>
-  <h1>Banner Component Demo</h1>
 
-  <div class="note">
-    Note: Banners are fixed positioned at the top or bottom of the viewport. Toggle them using the buttons below.
-  </div>
-
-  <div class="section">
-    <h2>Variants (Top Position)</h2>
-    <div class="controls">
-      <button onclick="showBanner('info-top')">Show Info</button>
-      <button onclick="showBanner('success-top')">Show Success</button>
-      <button onclick="showBanner('warning-top')">Show Warning</button>
-      <button onclick="showBanner('error-top')">Show Error</button>
+  <section>
+    <h2>All variants</h2>
+    <div class="stack">
+      <snice-banner variant="info" message="Info banner message." open></snice-banner>
+      <snice-banner variant="success" message="Success banner message." open></snice-banner>
+      <snice-banner variant="warning" message="Warning banner message." open></snice-banner>
+      <snice-banner variant="error" message="Error banner message." open></snice-banner>
     </div>
-  </div>
+  </section>
 
-  <div class="section">
-    <h2>Bottom Position</h2>
-    <div class="controls">
-      <button onclick="showBanner('info-bottom')">Show Info (Bottom)</button>
-      <button onclick="showBanner('success-bottom')">Show Success (Bottom)</button>
+  <section>
+    <h2>All positions</h2>
+    <div class="stack">
+      <snice-banner variant="info" message="Position: top (default)." position="top" open></snice-banner>
+      <snice-banner variant="info" message="Position: bottom." position="bottom" open></snice-banner>
     </div>
-  </div>
+  </section>
 
-  <div class="section">
-    <h2>With Action Button</h2>
-    <div class="controls">
-      <button onclick="showBanner('with-action')">Show Banner with Action</button>
+  <section>
+    <h2>Dismissible (default: true)</h2>
+    <div class="stack">
+      <snice-banner variant="info" message="Dismissible (default)." open></snice-banner>
+      <snice-banner variant="warning" message="Not dismissible." dismissible="false" open></snice-banner>
     </div>
-  </div>
+  </section>
 
-  <div class="section">
-    <h2>Not Dismissible</h2>
-    <div class="controls">
-      <button onclick="showBanner('not-dismissible')">Show Non-Dismissible</button>
-      <button onclick="hideBanner('not-dismissible')">Hide (Manual)</button>
+  <section>
+    <h2>With action-text</h2>
+    <div class="stack">
+      <snice-banner variant="info" message="New version available." action-text="Update Now" open></snice-banner>
+      <snice-banner variant="success" message="Changes saved." action-text="View" open></snice-banner>
+      <snice-banner variant="warning" message="Your trial expires soon." action-text="Upgrade" open></snice-banner>
+      <snice-banner variant="error" message="Payment failed." action-text="Retry" open></snice-banner>
     </div>
-  </div>
+  </section>
 
-  <div class="section">
-    <h2>Custom Icon</h2>
-    <div class="controls">
-      <button onclick="showBanner('custom-icon')">Show Custom Icon</button>
+  <section>
+    <h2>Custom icon (emoji)</h2>
+    <div class="stack">
+      <snice-banner variant="info" message="Custom lightbulb icon." icon="\u{1F4A1}" open></snice-banner>
+      <snice-banner variant="success" message="Custom party icon." icon="\u{1F389}" open></snice-banner>
+      <snice-banner variant="warning" message="Custom fire icon." icon="\u{1F525}" open></snice-banner>
+      <snice-banner variant="error" message="Custom siren icon." icon="\u{1F6A8}" open></snice-banner>
     </div>
-  </div>
+  </section>
 
-  <div class="section">
-    <h2>Interactive Demo</h2>
-    <div class="controls">
-      <button onclick="showBanner('interactive')">Show Banner</button>
-      <button onclick="hideBanner('interactive')">Hide Banner</button>
-      <button onclick="toggleBanner('interactive')">Toggle Banner</button>
+  <section>
+    <h2>Custom icon via slot (Material Symbols)</h2>
+    <div class="stack">
+      <snice-banner variant="info" message="Material icon via slot." open>
+        <span class="material-symbols-outlined" slot="icon">info</span>
+      </snice-banner>
+      <snice-banner variant="success" message="Check circle via slot." open>
+        <span class="material-symbols-outlined" slot="icon">check_circle</span>
+      </snice-banner>
     </div>
-    <div id="output" style="padding: 10px; background: var(--snice-color-background); border-radius: 4px; margin-top: 10px;">
-      <strong>Status:</strong> Banner hidden
+  </section>
+
+  <section>
+    <h2>Open property (controls visibility)</h2>
+    <div class="stack">
+      <snice-banner variant="info" message="This banner is open." open></snice-banner>
+      <snice-banner variant="info" message="This banner is closed (not visible)."></snice-banner>
     </div>
-  </div>
+  </section>
 
-  <!-- Banners -->
-  <snice-banner
-    id="info-top"
-    variant="info"
-    message="This is an informational message"
-  ></snice-banner>
+  <section>
+    <h2>Slotted content (default slot)</h2>
+    <snice-banner variant="info" message="Main message." open>
+      <span>Additional slotted content after the message.</span>
+    </snice-banner>
+  </section>
 
-  <snice-banner
-    id="success-top"
-    variant="success"
-    message="Operation completed successfully!"
-  ></snice-banner>
+  <section>
+    <h2>Variant x dismissible x action-text matrix</h2>
+    <div class="stack">
+      <snice-banner variant="info" message="Dismissible, no action." open></snice-banner>
+      <snice-banner variant="info" message="Dismissible with action." action-text="Action" open></snice-banner>
+      <snice-banner variant="info" message="Not dismissible, no action." dismissible="false" open></snice-banner>
+      <snice-banner variant="info" message="Not dismissible with action." dismissible="false" action-text="Action" open></snice-banner>
+      <snice-banner variant="error" message="Error, dismissible, action." action-text="Fix" open></snice-banner>
+      <snice-banner variant="error" message="Error, not dismissible." dismissible="false" open></snice-banner>
+    </div>
+  </section>
 
-  <snice-banner
-    id="warning-top"
-    variant="warning"
-    message="Please review your settings"
-  ></snice-banner>
+  <section>
+    <h2>Edge case: very long message</h2>
+    <snice-banner variant="warning" message="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat." action-text="Learn More" open></snice-banner>
+  </section>
 
-  <snice-banner
-    id="error-top"
-    variant="error"
-    message="An error occurred. Please try again."
-  ></snice-banner>
+  <section>
+    <h2>Edge case: single character message</h2>
+    <snice-banner variant="error" message="!" open></snice-banner>
+  </section>
 
-  <snice-banner
-    id="info-bottom"
-    variant="info"
-    position="bottom"
-    message="Banner positioned at the bottom"
-  ></snice-banner>
-
-  <snice-banner
-    id="success-bottom"
-    variant="success"
-    position="bottom"
-    message="Success message at the bottom"
-  ></snice-banner>
-
-  <snice-banner
-    id="with-action"
-    variant="info"
-    message="A new version is available"
-    action-text="Update Now"
-  ></snice-banner>
-
-  <snice-banner
-    id="not-dismissible"
-    variant="warning"
-    message="This banner cannot be dismissed by users"
-    dismissible="false"
-  ></snice-banner>
-
-  <snice-banner
-    id="custom-icon"
-    variant="success"
-    icon="🎉"
-    message="Congratulations! You've completed all tasks"
-  ></snice-banner>
-
-  <snice-banner
-    id="interactive"
-    variant="info"
-    message="This banner can be controlled programmatically"
-  ></snice-banner>
+  <section>
+    <h2>Edge case: empty message</h2>
+    <snice-banner variant="info" message="" open></snice-banner>
+  </section>
 
   <script type="module">
     import './snice-banner.ts';
-
-    window.showBanner = (id) => {
-      const banner = document.getElementById(id);
-      banner.show();
-    };
-
-    window.hideBanner = (id) => {
-      const banner = document.getElementById(id);
-      banner.hide();
-    };
-
-    window.toggleBanner = (id) => {
-      const banner = document.getElementById(id);
-      banner.toggle();
-    };
-
-    // Interactive demo
-    const interactive = document.getElementById('interactive');
-    const output = document.getElementById('output');
-
-    interactive.addEventListener('banner-open', () => {
-      output.innerHTML = '<strong>Status:</strong> Banner opened';
-    });
-
-    interactive.addEventListener('banner-close', () => {
-      output.innerHTML = '<strong>Status:</strong> Banner closed';
-    });
-
-    interactive.addEventListener('banner-action', () => {
-      output.innerHTML = '<strong>Status:</strong> Action clicked!';
-    });
-
-    // With action demo
-    const withAction = document.getElementById('with-action');
-    withAction.addEventListener('banner-action', () => {
-      alert('Update button clicked!');
-      withAction.hide();
-    });
   </script>
 </body>
 </html>

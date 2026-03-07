@@ -1,239 +1,276 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snice App Tiles Demo</title>
+  <title>App Tiles</title>
   <link rel="stylesheet" href="../theme/theme.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
   <style>
     body {
       font-family: system-ui, -apple-system, sans-serif;
-      padding: 40px;
-      line-height: 1.6;
+      padding: 1.5rem;
       background: var(--snice-color-background);
       color: var(--snice-color-text);
     }
-
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: 10px;
-    }
-
+    section { margin-bottom: 2rem; }
     h2 {
-      color: var(--snice-color-text-secondary);
-      margin-top: 30px;
-    }
-
-    .demo-section {
-      margin: 30px 0;
-      padding: 20px;
-      background: var(--snice-color-background);
-      border-radius: 8px;
-      border: 1px solid var(--snice-color-border);
-    }
-
-    .demo-label {
-      display: block;
-      margin-bottom: 16px;
+      font-size: 0.75rem;
       font-weight: 600;
-      color: var(--snice-color-text-secondary);
-      font-size: 14px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.05em;
+      color: var(--snice-color-text-tertiary, #888);
+      margin: 0 0 0.75rem;
     }
-
-    .controls {
+    .row {
       display: flex;
-      gap: 12px;
-      margin: 20px 0;
+      align-items: start;
+      gap: 1.5rem;
       flex-wrap: wrap;
-      padding: 16px;
-      background: var(--snice-color-background);
-      border-radius: 6px;
-      border: 1px solid var(--snice-color-border);
+      margin-bottom: 1rem;
     }
-
-    .controls label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 14px;
-    }
-
-    .controls select {
-      padding: 8px 12px;
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      font-size: 14px;
-    }
-
-    .event-log {
-      margin-top: 16px;
-      padding: 12px;
-      background: var(--snice-color-background);
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      font-family: monospace;
-      font-size: 13px;
-      max-height: 100px;
-      overflow-y: auto;
-      color: var(--snice-color-text-secondary);
+    .side-by-side {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1.5rem;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Snice App Tiles Component Demo</h1>
 
-    <div class="demo-section">
-      <h2>Declarative Usage (snice-app-tile children)</h2>
-      <span class="demo-label">Grid variant with emoji icons</span>
-      <snice-app-tiles columns="4">
-        <snice-app-tile name="Gmail" icon="📧"></snice-app-tile>
-        <snice-app-tile name="Calendar" icon="📅"></snice-app-tile>
-        <snice-app-tile name="Drive" icon="💾"></snice-app-tile>
-        <snice-app-tile name="Photos" icon="📷"></snice-app-tile>
-        <snice-app-tile name="Maps" icon="🗺"></snice-app-tile>
-        <snice-app-tile name="Translate" icon="🌐"></snice-app-tile>
-        <snice-app-tile name="News" icon="📰"></snice-app-tile>
-        <snice-app-tile name="Shopping" icon="🛒" badge="3"></snice-app-tile>
-      </snice-app-tiles>
-    </div>
+  <section>
+    <h2>Variant: grid (default)</h2>
+    <snice-app-tiles id="tiles-grid"></snice-app-tiles>
+  </section>
 
-    <div class="demo-section">
-      <h2>Variants</h2>
+  <section>
+    <h2>Variant: list</h2>
+    <snice-app-tiles id="tiles-list" variant="list"></snice-app-tiles>
+  </section>
 
-      <span class="demo-label">Grid (Default)</span>
-      <snice-app-tiles id="variant-grid" variant="grid" columns="5"></snice-app-tiles>
+  <section>
+    <h2>Variant: compact</h2>
+    <snice-app-tiles id="tiles-compact" variant="compact"></snice-app-tiles>
+  </section>
 
-      <span class="demo-label" style="margin-top: 24px;">List</span>
-      <snice-app-tiles id="variant-list" variant="list" columns="5"></snice-app-tiles>
-
-      <span class="demo-label" style="margin-top: 24px;">Compact</span>
-      <snice-app-tiles id="variant-compact" variant="compact" columns="6"></snice-app-tiles>
-    </div>
-
-    <div class="demo-section">
-      <h2>Sizes</h2>
-      <span class="demo-label">Small (sm)</span>
-      <snice-app-tiles id="size-sm" size="sm" columns="6"></snice-app-tiles>
-
-      <span class="demo-label" style="margin-top: 24px;">Medium (md, default)</span>
-      <snice-app-tiles id="size-md" size="md" columns="6"></snice-app-tiles>
-
-      <span class="demo-label" style="margin-top: 24px;">Large (lg)</span>
-      <snice-app-tiles id="size-lg" size="lg" columns="5"></snice-app-tiles>
-
-      <span class="demo-label" style="margin-top: 24px;">Extra Large (xl)</span>
-      <snice-app-tiles id="size-xl" size="xl" columns="4"></snice-app-tiles>
-    </div>
-
-    <div class="demo-section">
-      <h2>With Badges</h2>
-      <span class="demo-label">Notification badges on tiles</span>
-      <snice-app-tiles id="badge-demo" columns="4"></snice-app-tiles>
-    </div>
-
-    <div class="demo-section">
-      <h2>Interactive Demo</h2>
-      <span class="demo-label">Customize the tiles</span>
-
-      <div class="controls">
-        <label>
-          Variant:
-          <select id="variant-select">
-            <option value="grid">Grid</option>
-            <option value="list">List</option>
-            <option value="compact">Compact</option>
-          </select>
-        </label>
-        <label>
-          Size:
-          <select id="size-select">
-            <option value="sm">Small</option>
-            <option value="md" selected>Medium</option>
-            <option value="lg">Large</option>
-            <option value="xl">Extra Large</option>
-            <option value="2xl">2XL</option>
-          </select>
-        </label>
-        <label>
-          Columns:
-          <select id="columns-select">
-            <option value="3">3</option>
-            <option value="4" selected>4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-          </select>
-        </label>
+  <section>
+    <h2>All variants side by side</h2>
+    <div class="side-by-side">
+      <div>
+        <h2>grid</h2>
+        <snice-app-tiles id="tiles-cmp-grid" variant="grid"></snice-app-tiles>
       </div>
-
-      <snice-app-tiles id="interactive-tiles" columns="4"></snice-app-tiles>
-
-      <div class="event-log" id="event-log">Click a tile to see events here...</div>
+      <div>
+        <h2>list</h2>
+        <snice-app-tiles id="tiles-cmp-list" variant="list"></snice-app-tiles>
+      </div>
+      <div>
+        <h2>compact</h2>
+        <snice-app-tiles id="tiles-cmp-compact" variant="compact"></snice-app-tiles>
+      </div>
     </div>
-  </div>
+  </section>
+
+  <section>
+    <h2>All sizes: sm, md (default), lg, xl, 2xl</h2>
+    <div class="row">
+      <div>
+        <h2>sm</h2>
+        <snice-app-tiles id="tiles-sm" size="sm" columns="3"></snice-app-tiles>
+      </div>
+      <div>
+        <h2>md</h2>
+        <snice-app-tiles id="tiles-md" size="md" columns="3"></snice-app-tiles>
+      </div>
+      <div>
+        <h2>lg</h2>
+        <snice-app-tiles id="tiles-lg" size="lg" columns="3"></snice-app-tiles>
+      </div>
+      <div>
+        <h2>xl</h2>
+        <snice-app-tiles id="tiles-xl" size="xl" columns="3"></snice-app-tiles>
+      </div>
+      <div>
+        <h2>2xl</h2>
+        <snice-app-tiles id="tiles-2xl" size="2xl" columns="3"></snice-app-tiles>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Columns: 2, 3, 4, 5, 6</h2>
+    <div style="display: flex; flex-direction: column; gap: 1rem;">
+      <div>
+        <h2>columns=2</h2>
+        <snice-app-tiles id="tiles-col2" columns="2"></snice-app-tiles>
+      </div>
+      <div>
+        <h2>columns=3</h2>
+        <snice-app-tiles id="tiles-col3" columns="3"></snice-app-tiles>
+      </div>
+      <div>
+        <h2>columns=6</h2>
+        <snice-app-tiles id="tiles-col6" columns="6"></snice-app-tiles>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Icons: emoji</h2>
+    <snice-app-tiles id="tiles-emoji"></snice-app-tiles>
+  </section>
+
+  <section>
+    <h2>Icons: image URLs</h2>
+    <snice-app-tiles id="tiles-images"></snice-app-tiles>
+  </section>
+
+  <section>
+    <h2>Icons: Material Symbols ligatures</h2>
+    <snice-app-tiles id="tiles-material"></snice-app-tiles>
+  </section>
+
+  <section>
+    <h2>No icon (letter fallback)</h2>
+    <snice-app-tiles id="tiles-noicon"></snice-app-tiles>
+  </section>
+
+  <section>
+    <h2>With badges</h2>
+    <snice-app-tiles id="tiles-badges"></snice-app-tiles>
+  </section>
+
+  <section>
+    <h2>With custom colors</h2>
+    <snice-app-tiles id="tiles-colors"></snice-app-tiles>
+  </section>
+
+  <section>
+    <h2>With href (navigation)</h2>
+    <snice-app-tiles id="tiles-href"></snice-app-tiles>
+  </section>
+
+  <section>
+    <h2>Declarative API (child elements)</h2>
+    <snice-app-tiles columns="4">
+      <snice-app-tile name="Mail" icon="\u2709\uFE0F"></snice-app-tile>
+      <snice-app-tile name="Calendar" icon="\u{1F4C5}"></snice-app-tile>
+      <snice-app-tile name="Drive" icon="\u{1F4C1}" badge="3"></snice-app-tile>
+      <snice-app-tile name="Photos" icon="\u{1F5BC}\uFE0F"></snice-app-tile>
+    </snice-app-tiles>
+  </section>
+
+  <section>
+    <h2>Single tile</h2>
+    <snice-app-tiles id="tiles-single" columns="4"></snice-app-tiles>
+  </section>
+
+  <section>
+    <h2>Edge case: very long name</h2>
+    <snice-app-tiles id="tiles-longname" columns="3"></snice-app-tiles>
+  </section>
 
   <script type="module">
     import './snice-app-tiles.ts';
     import '../badge/snice-badge.ts';
 
-    const sampleTiles = [
-      { id: 'mail', name: 'Mail', icon: '📧', color: 'rgb(220 38 38)' },
-      { id: 'calendar', name: 'Calendar', icon: '📅', color: 'rgb(37 99 235)' },
-      { id: 'drive', name: 'Drive', icon: '💾', color: 'rgb(22 163 74)' },
-      { id: 'photos', name: 'Photos', icon: '📷', color: 'rgb(234 88 12)' },
-      { id: 'maps', name: 'Maps', icon: '🗺', color: 'rgb(147 51 234)' },
-      { id: 'news', name: 'News', icon: '📰', color: 'rgb(14 165 233)' },
+    const basic = [
+      { id: '1', name: 'Mail', icon: '\u2709\uFE0F' },
+      { id: '2', name: 'Calendar', icon: '\u{1F4C5}' },
+      { id: '3', name: 'Drive', icon: '\u{1F4C1}' },
+      { id: '4', name: 'Photos', icon: '\u{1F5BC}\uFE0F' },
+      { id: '5', name: 'Maps', icon: '\u{1F5FA}\uFE0F' },
+      { id: '6', name: 'Notes', icon: '\u{1F4DD}' },
     ];
 
-    const badgeTiles = [
-      { id: 'inbox', name: 'Inbox', icon: '📧', badge: '12' },
-      { id: 'chat', name: 'Chat', icon: '💬', badge: '3' },
-      { id: 'tasks', name: 'Tasks', icon: '✅', badge: '7' },
-      { id: 'notes', name: 'Notes', icon: '📝' },
+    document.getElementById('tiles-grid').tiles = basic;
+    document.getElementById('tiles-list').tiles = basic;
+    document.getElementById('tiles-compact').tiles = basic;
+    document.getElementById('tiles-cmp-grid').tiles = basic.slice(0, 4);
+    document.getElementById('tiles-cmp-list').tiles = basic.slice(0, 4);
+    document.getElementById('tiles-cmp-compact').tiles = basic.slice(0, 4);
+
+    const sizeTiles = [
+      { id: '1', name: 'App', icon: '\u2B50' },
+      { id: '2', name: 'Docs', icon: '\u{1F4C4}' },
+      { id: '3', name: 'Chat', icon: '\u{1F4AC}' },
+    ];
+    ['sm', 'md', 'lg', 'xl', '2xl'].forEach(s => {
+      document.getElementById('tiles-' + s).tiles = sizeTiles;
+    });
+
+    const colTiles = Array.from({ length: 6 }, (_, i) => ({ id: String(i), name: `App ${i + 1}`, icon: String.fromCodePoint(0x1F4A0 + i) }));
+    document.getElementById('tiles-col2').tiles = colTiles;
+    document.getElementById('tiles-col3').tiles = colTiles;
+    document.getElementById('tiles-col6').tiles = colTiles;
+
+    document.getElementById('tiles-emoji').tiles = [
+      { id: '1', name: 'Star', icon: '\u2B50' },
+      { id: '2', name: 'Heart', icon: '\u2764\uFE0F' },
+      { id: '3', name: 'Rocket', icon: '\u{1F680}' },
+      { id: '4', name: 'Fire', icon: '\u{1F525}' },
     ];
 
-    // Set tiles for variant demos
-    ['variant-grid', 'variant-list', 'variant-compact'].forEach(id => {
-      document.getElementById(id).tiles = sampleTiles;
-    });
+    document.getElementById('tiles-images').tiles = [
+      { id: '1', name: 'User 1', icon: 'https://i.pravatar.cc/64?img=1' },
+      { id: '2', name: 'User 2', icon: 'https://i.pravatar.cc/64?img=2' },
+      { id: '3', name: 'User 3', icon: 'https://i.pravatar.cc/64?img=3' },
+    ];
 
-    // Set tiles for size demos
-    ['size-sm', 'size-md', 'size-lg', 'size-xl'].forEach(id => {
-      document.getElementById(id).tiles = sampleTiles;
-    });
+    document.getElementById('tiles-material').tiles = [
+      { id: '1', name: 'Home', icon: 'home' },
+      { id: '2', name: 'Settings', icon: 'settings' },
+      { id: '3', name: 'Search', icon: 'search' },
+      { id: '4', name: 'Favorite', icon: 'favorite' },
+    ];
 
-    // Badge demo
-    document.getElementById('badge-demo').tiles = badgeTiles;
+    document.getElementById('tiles-noicon').tiles = [
+      { id: '1', name: 'Alpha' },
+      { id: '2', name: 'Beta' },
+      { id: '3', name: 'Gamma' },
+      { id: '4', name: 'Delta' },
+    ];
 
-    // Interactive demo
-    const interactive = document.getElementById('interactive-tiles');
-    interactive.tiles = sampleTiles;
+    document.getElementById('tiles-badges').tiles = [
+      { id: '1', name: 'Inbox', icon: '\u2709\uFE0F', badge: '12' },
+      { id: '2', name: 'Tasks', icon: '\u2705', badge: '3' },
+      { id: '3', name: 'Alerts', icon: '\u{1F514}', badge: '99+' },
+      { id: '4', name: 'Clean', icon: '\u2B50' },
+    ];
 
-    document.getElementById('variant-select').addEventListener('change', (e) => {
-      interactive.variant = e.target.value;
-    });
-    document.getElementById('size-select').addEventListener('change', (e) => {
-      interactive.size = e.target.value;
-    });
-    document.getElementById('columns-select').addEventListener('change', (e) => {
-      interactive.columns = Number(e.target.value);
-    });
+    document.getElementById('tiles-colors').tiles = [
+      { id: '1', name: 'Red', icon: '\u2764\uFE0F', color: '#dc2626' },
+      { id: '2', name: 'Blue', icon: '\u{1F499}', color: '#2563eb' },
+      { id: '3', name: 'Green', icon: '\u{1F49A}', color: '#16a34a' },
+      { id: '4', name: 'Purple', icon: '\u{1F49C}', color: '#7c3aed' },
+    ];
 
-    interactive.addEventListener('tile-click', (e) => {
-      const log = document.getElementById('event-log');
-      const detail = e.detail;
-      log.textContent = `tile-click: { tile: "${detail.tile.name}", index: ${detail.index} }`;
-    });
+    document.getElementById('tiles-href').tiles = [
+      { id: '1', name: 'Link 1', icon: '\u{1F517}', href: '#link1' },
+      { id: '2', name: 'Link 2', icon: '\u{1F517}', href: '#link2' },
+    ];
+
+    document.getElementById('tiles-single').tiles = [
+      { id: '1', name: 'Sole Tile', icon: '\u{1F4A0}' },
+    ];
+
+    document.getElementById('tiles-longname').tiles = [
+      { id: '1', name: 'Very Long Application Name That Should Truncate', icon: '\u{1F4BB}' },
+      { id: '2', name: 'Short', icon: '\u2B50' },
+      { id: '3', name: 'A', icon: '\u{1F680}' },
+    ];
   </script>
 </body>
 </html>

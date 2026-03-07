@@ -1,161 +1,170 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-theme="dark">
 <head>
-  <title>Product Card Demo</title>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Card</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      padding: 40px;
-      font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
-      background: var(--snice-color-background, rgb(255 255 255));
-      color: var(--snice-color-text, rgb(23 23 23));
-    }
-    h2, h3 {
-      color: var(--snice-color-text, rgb(23 23 23));
-    }
-    .demo-section {
-      margin-bottom: 4rem;
-    }
-    .demo-grid {
-      display: flex;
-      gap: 1.5rem;
-      flex-wrap: wrap;
-    }
-    .demo-grid snice-product-card {
-      width: 300px;
-    }
-    .demo-grid--horizontal snice-product-card {
-      width: 500px;
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
+    section { margin-bottom: 2rem; }
+    snice-product-card { max-width: 320px; }
+    snice-product-card[variant="horizontal"] { max-width: 600px; }
+    snice-product-card[variant="compact"] { max-width: 240px; }
   </style>
-  <script type="module">
-    import './snice-product-card.ts';
-
-    // Vertical cards
-    const card1 = document.getElementById('card1');
-    card1.images = [
-      'https://picsum.photos/seed/shoe1/400/300',
-      'https://picsum.photos/seed/shoe2/400/300',
-      'https://picsum.photos/seed/shoe3/400/300'
-    ];
-    card1.variants = [
-      { type: 'Size', options: ['S', 'M', 'L', 'XL'] },
-      { type: 'Color', options: ['#1a1a2e', '#e94560', '#0f3460', '#16213e'] }
-    ];
-
-    const card2 = document.getElementById('card2');
-    card2.images = ['https://picsum.photos/seed/watch1/400/300'];
-    card2.variants = [
-      { type: 'Band', options: ['Leather', 'Metal', 'Silicone'] }
-    ];
-
-    const card3 = document.getElementById('card3');
-    card3.images = ['https://picsum.photos/seed/bag1/400/300'];
-
-    // Horizontal card
-    const hCard = document.getElementById('hcard');
-    hCard.images = [
-      'https://picsum.photos/seed/laptop1/400/300',
-      'https://picsum.photos/seed/laptop2/400/300'
-    ];
-    hCard.variants = [
-      { type: 'Storage', options: ['256GB', '512GB', '1TB'] },
-      { type: 'Color', options: ['#c0c0c0', '#1a1a1a', '#d4a574'] }
-    ];
-
-    // Compact cards
-    const cCard1 = document.getElementById('ccard1');
-    cCard1.images = ['https://picsum.photos/seed/earbuds/200/200'];
-
-    const cCard2 = document.getElementById('ccard2');
-    cCard2.images = ['https://picsum.photos/seed/charger/200/200'];
-
-    // Event listeners
-    document.querySelectorAll('snice-product-card').forEach(el => {
-      el.addEventListener('add-to-cart', e => {
-        console.log('Add to cart:', e.detail);
-        alert(`Added: ${e.detail.name} - ${JSON.stringify(e.detail.selectedVariants)}`);
-      });
-      el.addEventListener('variant-select', e => {
-        console.log('Variant selected:', e.detail);
-      });
-      el.addEventListener('image-click', e => {
-        console.log('Image clicked:', e.detail);
-      });
-    });
-  </script>
 </head>
 <body>
-  <h2>Product Card Demo</h2>
 
-  <div class="demo-section">
-    <h3>Vertical Variant (default)</h3>
-    <div class="demo-grid">
-      <snice-product-card
-        id="card1"
-        name="Premium Running Shoes"
-        price="129.99"
-        sale-price="89.99"
-        rating="4.5"
-        review-count="342">
-      </snice-product-card>
+<h2>Variant: vertical (default)</h2>
+<section class="row">
+  <snice-product-card id="pc-vert" name="Classic Sneakers" price="129.99" rating="4.5" review-count="342" in-stock></snice-product-card>
+</section>
 
-      <snice-product-card
-        id="card2"
-        name="Classic Watch"
-        price="249.00"
-        rating="4.8"
-        review-count="128">
-      </snice-product-card>
+<h2>Variant: horizontal</h2>
+<section class="row">
+  <snice-product-card id="pc-horiz" variant="horizontal" name="Wireless Headphones" price="199.99" rating="4" review-count="128" in-stock></snice-product-card>
+</section>
 
-      <snice-product-card
-        id="card3"
-        name="Vintage Leather Bag"
-        price="79.99"
-        in-stock="false"
-        rating="3.5"
-        review-count="56">
-      </snice-product-card>
-    </div>
-  </div>
+<h2>Variant: compact</h2>
+<section class="row">
+  <snice-product-card id="pc-compact" variant="compact" name="USB Cable" price="9.99" rating="3.5" review-count="56" in-stock></snice-product-card>
+</section>
 
-  <div class="demo-section">
-    <h3>Horizontal Variant</h3>
-    <div class="demo-grid demo-grid--horizontal">
-      <snice-product-card
-        id="hcard"
-        variant="horizontal"
-        name="MacBook Pro 16-inch"
-        price="2499.00"
-        sale-price="2199.00"
-        rating="4.9"
-        review-count="1024">
-      </snice-product-card>
-    </div>
-  </div>
+<h2>Variant: featured</h2>
+<section class="row">
+  <snice-product-card id="pc-featured" variant="featured" name="Pro Laptop" price="1499" rating="5" review-count="1024" in-stock></snice-product-card>
+</section>
 
-  <div class="demo-section">
-    <h3>Compact Variant</h3>
-    <div class="demo-grid" style="flex-direction: column; max-width: 400px;">
-      <snice-product-card
-        id="ccard1"
-        variant="compact"
-        name="Wireless Earbuds"
-        price="59.99"
-        sale-price="39.99"
-        rating="4.2"
-        review-count="89">
-      </snice-product-card>
+<h2>Sale price</h2>
+<section class="row">
+  <snice-product-card id="pc-sale" name="Winter Jacket" price="199.99" sale-price="139.99" rating="4" review-count="87" in-stock></snice-product-card>
+</section>
 
-      <snice-product-card
-        id="ccard2"
-        variant="compact"
-        name="USB-C Fast Charger"
-        price="24.99"
-        rating="4.0"
-        review-count="203">
-      </snice-product-card>
-    </div>
-  </div>
+<h2>Badge: sale</h2>
+<section class="row">
+  <snice-product-card id="pc-badge-sale" name="Sale Item" price="50" sale-price="29.99" badge="30% OFF" badge-variant="sale" in-stock></snice-product-card>
+</section>
+
+<h2>Badge: new</h2>
+<section class="row">
+  <snice-product-card id="pc-badge-new" name="New Arrival" price="79.99" badge="New" badge-variant="new" in-stock></snice-product-card>
+</section>
+
+<h2>Badge: hot</h2>
+<section class="row">
+  <snice-product-card id="pc-badge-hot" name="Trending Item" price="45" badge="Hot" badge-variant="hot" in-stock></snice-product-card>
+</section>
+
+<h2>Badge: limited</h2>
+<section class="row">
+  <snice-product-card id="pc-badge-limited" name="Limited Edition" price="299" badge="Limited" badge-variant="limited" in-stock></snice-product-card>
+</section>
+
+<h2>Out of stock</h2>
+<section class="row">
+  <snice-product-card id="pc-oos" name="Sold Out Widget" price="59.99" in-stock="false"></snice-product-card>
+</section>
+
+<h2>Low stock (stock-count="3")</h2>
+<section class="row">
+  <snice-product-card id="pc-low" name="Almost Gone" price="39.99" in-stock stock-count="3"></snice-product-card>
+</section>
+
+<h2>Favorite toggled</h2>
+<section class="row">
+  <snice-product-card id="pc-fav" name="Favorited Item" price="24.99" favorite in-stock></snice-product-card>
+</section>
+
+<h2>Loading (skeleton)</h2>
+<section class="row">
+  <snice-product-card loading></snice-product-card>
+  <snice-product-card loading variant="horizontal"></snice-product-card>
+</section>
+
+<h2>Rating values: 0, 1, 2.5, 3, 4.5, 5</h2>
+<section class="row">
+  <snice-product-card id="pc-r0" name="0 Stars" price="10" rating="0" in-stock></snice-product-card>
+  <snice-product-card id="pc-r1" name="1 Star" price="10" rating="1" review-count="2" in-stock></snice-product-card>
+  <snice-product-card id="pc-r25" name="2.5 Stars" price="10" rating="2.5" review-count="15" in-stock></snice-product-card>
+  <snice-product-card id="pc-r3" name="3 Stars" price="10" rating="3" review-count="30" in-stock></snice-product-card>
+  <snice-product-card id="pc-r45" name="4.5 Stars" price="10" rating="4.5" review-count="200" in-stock></snice-product-card>
+  <snice-product-card id="pc-r5" name="5 Stars" price="10" rating="5" review-count="500" in-stock></snice-product-card>
+</section>
+
+<h2>Custom currency</h2>
+<section class="row">
+  <snice-product-card name="Euro Product" price="49.99" currency="EUR" in-stock></snice-product-card>
+  <snice-product-card name="Pound Product" price="39.99" currency="GBP" in-stock></snice-product-card>
+  <snice-product-card name="Yen Product" price="5000" currency="JPY" in-stock></snice-product-card>
+</section>
+
+<h2>With variants (size + color)</h2>
+<section class="row">
+  <snice-product-card id="pc-variants" name="Customizable Shirt" price="34.99" rating="4" review-count="67" in-stock></snice-product-card>
+</section>
+
+<h2>Multiple images (gallery)</h2>
+<section class="row">
+  <snice-product-card id="pc-gallery" name="Multi-Image Product" price="89.99" rating="4.5" review-count="150" in-stock></snice-product-card>
+</section>
+
+<h2>No images</h2>
+<section class="row">
+  <snice-product-card name="No Image Product" price="19.99" in-stock></snice-product-card>
+</section>
+
+<script type="module">
+  import './snice-product-card.ts';
+
+  const imgs = [
+    'https://picsum.photos/seed/prod1/400/400',
+    'https://picsum.photos/seed/prod2/400/400',
+    'https://picsum.photos/seed/prod3/400/400'
+  ];
+  const img1 = ['https://picsum.photos/seed/shoe/400/400'];
+
+  document.getElementById('pc-vert').images = img1;
+  document.getElementById('pc-horiz').images = img1;
+  document.getElementById('pc-compact').images = img1;
+  document.getElementById('pc-featured').images = imgs;
+  document.getElementById('pc-sale').images = img1;
+  document.getElementById('pc-badge-sale').images = img1;
+  document.getElementById('pc-badge-new').images = img1;
+  document.getElementById('pc-badge-hot').images = img1;
+  document.getElementById('pc-badge-limited').images = img1;
+  document.getElementById('pc-oos').images = img1;
+  document.getElementById('pc-low').images = img1;
+  document.getElementById('pc-fav').images = img1;
+
+  // Ratings
+  ['pc-r0','pc-r1','pc-r25','pc-r3','pc-r45','pc-r5'].forEach(id => {
+    document.getElementById(id).images = img1;
+  });
+
+  // Variants
+  const pcV = document.getElementById('pc-variants');
+  pcV.images = img1;
+  pcV.variants = [
+    { type: 'Size', options: ['XS', 'S', 'M', 'L', 'XL'] },
+    { type: 'Color', options: ['#1a1a2e', '#e94560', '#0f3460', '#f5f5f5'] }
+  ];
+
+  // Gallery
+  document.getElementById('pc-gallery').images = imgs;
+</script>
 </body>
 </html>

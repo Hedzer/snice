@@ -1,287 +1,156 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snice Podcast Player Component Demo</title>
+  <title>Podcast Player</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      padding: 40px;
-      line-height: 1.6;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      margin: 0;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: 10px;
-      margin-bottom: 30px;
-    }
-
-    h2 {
-      color: var(--snice-color-text);
-      margin-top: 40px;
-      margin-bottom: 20px;
-      font-size: 24px;
-    }
-
-    .demo-section {
-      margin: 30px 0;
-      padding: 20px;
-      background: var(--snice-color-background);
-      border-radius: 8px;
-      border: 1px solid var(--snice-color-border);
-    }
-
-    .demo-label {
-      display: block;
-      margin-bottom: 16px;
-      font-weight: 600;
-      color: var(--snice-color-text-secondary);
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .controls {
-      display: flex;
-      gap: 12px;
-      margin: 16px 0;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .controls input {
-      padding: 8px 12px;
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      font-size: 14px;
-    }
-
-    button {
-      padding: 8px 16px;
-      border: 1px solid var(--snice-color-border);
-      border-radius: 6px;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    button:hover {
-      background: var(--snice-color-background-element, #f0f0f0);
-    }
-
-    snice-podcast-player {
-      display: block;
-      width: 100%;
-    }
-
-    .event-log {
-      margin-top: 16px;
-      padding: 12px;
-      background: var(--snice-color-background-element, rgb(252 251 249));
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      font-family: monospace;
-      font-size: 13px;
-      max-height: 200px;
-      overflow-y: auto;
-    }
-
-    .event-log div {
-      margin: 4px 0;
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    section { margin-bottom: 2rem; }
+    snice-podcast-player { display: block; max-width: 480px; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Podcast Player Component Demo</h1>
-    <p style="color: var(--snice-color-text-secondary);">Audio player designed for podcasts with playback speed, skip controls, sleep timer, chapters, and episode lists.</p>
 
-    <div class="demo-section">
-      <h2>Direct Audio Source</h2>
-      <span class="demo-label">Load a single audio file with metadata</span>
-      <div class="controls">
-        <input type="text" id="audio-url" placeholder="https://example.com/episode.mp3" style="flex: 1; min-width: 300px;" />
-        <button id="btn-load-audio">Load Audio</button>
-      </div>
-      <snice-podcast-player
-        id="player-direct"
-        title="Sample Episode"
-        show="Demo Podcast"
-        description="Enter an audio URL above and click Load to start listening."
-      ></snice-podcast-player>
-    </div>
+<h2>Direct src with metadata</h2>
+<section>
+  <snice-podcast-player
+    src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+    title="Episode 1: Getting Started"
+    show="Tech Talks"
+    description="An introduction to web components and modern development."
+  ></snice-podcast-player>
+</section>
 
-    <div class="demo-section">
-      <h2>With Chapters</h2>
-      <span class="demo-label">Chapter markers for navigating within an episode</span>
-      <snice-podcast-player
-        id="player-chapters"
-        title="Episode with Chapters"
-        show="Chapter Demo"
-        description="This demo loads chapters programmatically. Load an audio file to see chapter navigation."
-      ></snice-podcast-player>
-      <div class="controls">
-        <input type="text" id="chapter-url" placeholder="https://example.com/episode.mp3" style="flex: 1; min-width: 300px;" />
-        <button id="btn-load-chapters">Load with Chapters</button>
-      </div>
-    </div>
+<h2>With artwork</h2>
+<section>
+  <snice-podcast-player
+    id="player-artwork"
+    src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
+    title="Episode 2: Deep Dive"
+    show="Tech Talks"
+    artwork="https://picsum.photos/seed/podcast/300/300"
+    description="A deep dive into component architecture."
+  ></snice-podcast-player>
+</section>
 
-    <div class="demo-section">
-      <h2>Episode List</h2>
-      <span class="demo-label">Multiple episodes loaded programmatically</span>
-      <snice-podcast-player
-        id="player-episodes"
-        show="Multi-Episode Demo"
-      ></snice-podcast-player>
-      <div class="controls">
-        <button id="btn-load-episodes">Load Sample Episodes</button>
-      </div>
-      <p style="font-size: 13px; color: var(--snice-color-text-secondary); margin-top: 8px;">
-        Note: Sample episodes require valid audio URLs. Click the button to populate the episode list with placeholder entries.
-      </p>
-    </div>
+<h2>Custom skip intervals (skip-back="10" skip-forward="60")</h2>
+<section>
+  <snice-podcast-player
+    src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"
+    title="Custom Skip Intervals"
+    show="Demo Show"
+    skip-back="10"
+    skip-forward="60"
+  ></snice-podcast-player>
+</section>
 
-    <div class="demo-section">
-      <h2>RSS Feed</h2>
-      <span class="demo-label">Load episodes from an RSS feed URL</span>
-      <div class="controls">
-        <input type="text" id="rss-url" placeholder="https://feeds.example.com/podcast.xml" style="flex: 1; min-width: 300px;" />
-        <button id="btn-load-rss">Load RSS Feed</button>
-      </div>
-      <snice-podcast-player id="player-rss"></snice-podcast-player>
-    </div>
+<h2>Custom playback-rate="1.5"</h2>
+<section>
+  <snice-podcast-player
+    src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+    title="1.5x Speed"
+    show="Speed Test"
+    playback-rate="1.5"
+  ></snice-podcast-player>
+</section>
 
-    <div class="demo-section">
-      <h2>Playback Controls</h2>
-      <span class="demo-label">Programmatic control of the player</span>
-      <div class="controls">
-        <button id="btn-play">Play</button>
-        <button id="btn-pause">Pause</button>
-        <button id="btn-skip-back">Skip Back</button>
-        <button id="btn-skip-forward">Skip Forward</button>
-        <button id="btn-rate-1x">1x</button>
-        <button id="btn-rate-1.5x">1.5x</button>
-        <button id="btn-rate-2x">2x</button>
-      </div>
-    </div>
+<h2>volume="0.5"</h2>
+<section>
+  <snice-podcast-player
+    src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
+    title="Half Volume"
+    show="Volume Test"
+    volume="0.5"
+  ></snice-podcast-player>
+</section>
 
-    <div class="demo-section">
-      <h2>Custom Skip Intervals</h2>
-      <span class="demo-label">Skip back 10s, skip forward 60s</span>
-      <snice-podcast-player
-        id="player-custom-skip"
-        title="Custom Skip Demo"
-        show="Skip Intervals"
-        skip-back="10"
-        skip-forward="60"
-        description="This player has custom skip intervals: 10 seconds back and 60 seconds forward."
-      ></snice-podcast-player>
-    </div>
+<h2>muted</h2>
+<section>
+  <snice-podcast-player
+    src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"
+    title="Muted Player"
+    show="Mute Test"
+    muted
+  ></snice-podcast-player>
+</section>
 
-    <div class="demo-section">
-      <h2>Events</h2>
-      <div id="event-log" class="event-log">
-        <div>Waiting for events...</div>
-      </div>
-    </div>
-  </div>
+<h2>With episodes list</h2>
+<section>
+  <snice-podcast-player id="player-episodes" show="Multi-Episode Show"></snice-podcast-player>
+</section>
 
-  <script type="module">
-    import './snice-podcast-player.ts';
+<h2>With chapters</h2>
+<section>
+  <snice-podcast-player id="player-chapters" show="Chapter Demo"></snice-podcast-player>
+</section>
 
-    const playerDirect = document.getElementById('player-direct');
-    const eventLog = document.getElementById('event-log');
+<h2>No src (empty state)</h2>
+<section>
+  <snice-podcast-player title="" show=""></snice-podcast-player>
+</section>
 
-    function logEvent(name, detail) {
-      const entry = document.createElement('div');
-      const info = { ...detail };
-      delete info.player; // avoid circular reference
-      entry.textContent = `${new Date().toLocaleTimeString()}: ${name}`;
-      eventLog.insertBefore(entry, eventLog.firstChild);
+<h2>Title only, no show name</h2>
+<section>
+  <snice-podcast-player
+    src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+    title="Standalone Episode"
+  ></snice-podcast-player>
+</section>
+
+<h2>Long title and description</h2>
+<section>
+  <snice-podcast-player
+    src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
+    title="This Is a Very Long Episode Title That Should Test How the Component Handles Overflow and Text Wrapping in Limited Space"
+    show="The Verbosity Podcast"
+    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris."
+  ></snice-podcast-player>
+</section>
+
+<script type="module">
+  import './snice-podcast-player.ts';
+
+  // Episodes list
+  const playerEp = document.getElementById('player-episodes');
+  playerEp.episodes = [
+    { title: 'Ep 1: Introduction', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', duration: 375, pubDate: 'Jan 15, 2026' },
+    { title: 'Ep 2: Deep Dive', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3', duration: 420, pubDate: 'Jan 22, 2026', artwork: 'https://picsum.photos/seed/ep2/100/100' },
+    { title: 'Ep 3: Advanced Topics', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3', duration: 510, pubDate: 'Jan 29, 2026' },
+    { title: 'Ep 4: Q&A Session', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', duration: 280, pubDate: 'Feb 5, 2026' }
+  ];
+
+  // Chapters
+  const playerCh = document.getElementById('player-chapters');
+  playerCh.episodes = [
+    {
+      title: 'Chaptered Episode',
+      src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+      duration: 375,
+      chapters: [
+        { title: 'Intro', startTime: 0 },
+        { title: 'Main Topic', startTime: 60 },
+        { title: 'Deep Dive', startTime: 180 },
+        { title: 'Wrap Up', startTime: 300 }
+      ]
     }
-
-    // Load direct audio
-    document.getElementById('btn-load-audio').addEventListener('click', () => {
-      const url = document.getElementById('audio-url').value.trim();
-      if (url) {
-        playerDirect.src = url;
-      }
-    });
-
-    // Chapters demo
-    document.getElementById('btn-load-chapters').addEventListener('click', () => {
-      const url = document.getElementById('chapter-url').value.trim();
-      const player = document.getElementById('player-chapters');
-      if (url) {
-        player.src = url;
-        // Set chapters after a brief delay to allow metadata to load
-        setTimeout(() => {
-          player.episodes = [{
-            title: 'Episode with Chapters',
-            src: url,
-            chapters: [
-              { title: 'Introduction', startTime: 0 },
-              { title: 'Main Topic', startTime: 60 },
-              { title: 'Discussion', startTime: 180 },
-              { title: 'Wrap Up', startTime: 300 }
-            ]
-          }];
-          player.currentEpisodeIndex = 0;
-        }, 100);
-      }
-    });
-
-    // Episode list demo
-    document.getElementById('btn-load-episodes').addEventListener('click', () => {
-      const player = document.getElementById('player-episodes');
-      player.episodes = [
-        { title: 'Episode 1: Getting Started', src: '', description: 'An introduction to our podcast', pubDate: 'Jan 1, 2026', duration: 1800 },
-        { title: 'Episode 2: Deep Dive', src: '', description: 'We go deeper into the topic', pubDate: 'Jan 8, 2026', duration: 2400 },
-        { title: 'Episode 3: Expert Interview', src: '', description: 'Talking with an industry expert', pubDate: 'Jan 15, 2026', duration: 3600 },
-        { title: 'Episode 4: Q&A Session', src: '', description: 'Answering listener questions', pubDate: 'Jan 22, 2026', duration: 1500 },
-      ];
-    });
-
-    // RSS feed
-    document.getElementById('btn-load-rss').addEventListener('click', () => {
-      const url = document.getElementById('rss-url').value.trim();
-      if (url) {
-        document.getElementById('player-rss').fromRss = url;
-      }
-    });
-
-    // Playback controls (operate on the direct player)
-    document.getElementById('btn-play').addEventListener('click', () => playerDirect.play());
-    document.getElementById('btn-pause').addEventListener('click', () => playerDirect.pause());
-    document.getElementById('btn-skip-back').addEventListener('click', () => playerDirect.doSkipBack());
-    document.getElementById('btn-skip-forward').addEventListener('click', () => playerDirect.doSkipForward());
-    document.getElementById('btn-rate-1x').addEventListener('click', () => playerDirect.setPlaybackRate(1));
-    document.getElementById('btn-rate-1.5x').addEventListener('click', () => playerDirect.setPlaybackRate(1.5));
-    document.getElementById('btn-rate-2x').addEventListener('click', () => playerDirect.setPlaybackRate(2));
-
-    // Listen to events on all players
-    document.querySelectorAll('snice-podcast-player').forEach(player => {
-      player.addEventListener('podcast-play', (e) => logEvent('podcast-play', e.detail));
-      player.addEventListener('podcast-pause', (e) => logEvent('podcast-pause', e.detail));
-      player.addEventListener('podcast-ended', (e) => logEvent('podcast-ended', e.detail));
-      player.addEventListener('podcast-rate-change', (e) => logEvent('podcast-rate-change', e.detail));
-      player.addEventListener('podcast-episode-change', (e) => logEvent('podcast-episode-change', e.detail));
-      player.addEventListener('podcast-feed-loaded', (e) => logEvent('podcast-feed-loaded', e.detail));
-    });
-  </script>
+  ];
+  playerCh.loadEpisode(0);
+</script>
 </body>
 </html>

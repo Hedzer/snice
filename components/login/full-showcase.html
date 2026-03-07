@@ -1,470 +1,169 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snice Login Component Demo</title>
+  <title>Login</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
-      margin: 0;
-      padding: var(--snice-spacing-xl, 2rem);
-      background: var(--snice-color-background-secondary, rgb(250 250 250));
-      color: var(--snice-color-text, rgb(23 23 23));
-      min-height: 100vh;
-    }
-
-    .demo-container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .demo-header {
-      text-align: center;
-      margin-bottom: var(--snice-spacing-3xl, 4rem);
-    }
-
-    .demo-header h1 {
-      color: var(--snice-color-text, rgb(23 23 23));
-      margin-bottom: var(--snice-spacing-xs, 0.5rem);
-      font-size: var(--snice-font-size-3xl, 1.875rem);
-      font-weight: var(--snice-font-weight-bold, 700);
-    }
-
-    .demo-header p {
-      color: var(--snice-color-text-secondary, rgb(82 82 82));
-      font-size: var(--snice-font-size-lg, 1.125rem);
-    }
-
-    .demo-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-      gap: var(--snice-spacing-xl, 2rem);
-      margin-bottom: var(--snice-spacing-3xl, 4rem);
-    }
-
-    .demo-card {
-      background: var(--snice-color-background);
-      border-radius: var(--snice-border-radius-lg, 0.5rem);
-      border: 1px solid var(--snice-color-border, rgb(226 226 226));
-      padding: var(--snice-spacing-xl, 2rem);
-      box-shadow: var(--snice-shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1));
-    }
-
-    .demo-card h3 {
-      margin: 0 0 var(--snice-spacing-md, 1rem) 0;
-      color: var(--snice-color-text, rgb(23 23 23));
-      font-size: var(--snice-font-size-xl, 1.25rem);
-      font-weight: var(--snice-font-weight-semibold, 600);
-    }
-
-    .demo-card p {
-      margin: 0 0 var(--snice-spacing-lg, 1.5rem) 0;
-      color: var(--snice-color-text-secondary, rgb(82 82 82));
-      font-size: var(--snice-font-size-sm, 0.875rem);
-    }
-
-    .demo-controls {
-      background: var(--snice-color-background);
-      border-radius: var(--snice-border-radius-lg, 0.5rem);
-      border: 1px solid var(--snice-color-border, rgb(226 226 226));
-      padding: var(--snice-spacing-xl, 2rem);
-      box-shadow: var(--snice-shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1));
-      margin-bottom: var(--snice-spacing-xl, 2rem);
-    }
-
-    .demo-controls h3 {
-      margin: 0 0 var(--snice-spacing-md, 1rem) 0;
-      color: var(--snice-color-text, rgb(23 23 23));
-      font-size: var(--snice-font-size-xl, 1.25rem);
-      font-weight: var(--snice-font-weight-semibold, 600);
-    }
-
-    .controls-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: var(--snice-spacing-md, 1rem);
-    }
-
-    .control-group {
-      display: flex;
-      flex-direction: column;
-      gap: var(--snice-spacing-xs, 0.5rem);
-    }
-
-    .control-group label {
-      font-size: var(--snice-font-size-sm, 0.875rem);
-      font-weight: var(--snice-font-weight-medium, 500);
-      color: var(--snice-color-text, rgb(23 23 23));
-    }
-
-    .control-group select,
-    .control-group input[type="text"] {
-      padding: var(--snice-spacing-sm, 0.75rem);
-      border: 1px solid var(--snice-color-border, rgb(226 226 226));
-      border-radius: var(--snice-border-radius-md, 0.25rem);
-      font-size: var(--snice-font-size-sm, 0.875rem);
-      font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
-      background: var(--snice-color-background);
-      color: var(--snice-color-text, rgb(23 23 23));
-      transition: border-color var(--snice-transition-fast, 150ms) ease;
-    }
-
-    .control-group select:focus,
-    .control-group input[type="text"]:focus {
-      outline: none;
-      border-color: var(--snice-color-border-focus, rgb(59 130 246));
-      box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
-    }
-
-    .control-group button {
-      padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-md, 1rem);
-      background: var(--snice-color-primary, rgb(37 99 235));
-      color: var(--snice-color-text-inverse, rgb(250 250 250));
-      border: 1px solid var(--snice-color-primary, rgb(37 99 235));
-      border-radius: var(--snice-border-radius-md, 0.25rem);
-      cursor: pointer;
-      font-size: var(--snice-font-size-sm, 0.875rem);
-      font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
-      font-weight: var(--snice-font-weight-medium, 500);
-      transition: background-color var(--snice-transition-fast, 150ms) ease;
-    }
-
-    .control-group button:hover {
-      background: var(--snice-color-primary-hover, rgb(29 78 216));
-      border-color: var(--snice-color-primary-hover, rgb(29 78 216));
-    }
-
-    .demo-events {
-      background: var(--snice-color-background);
-      border-radius: var(--snice-border-radius-lg, 0.5rem);
-      border: 1px solid var(--snice-color-border, rgb(226 226 226));
-      padding: var(--snice-spacing-xl, 2rem);
-      box-shadow: var(--snice-shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1));
-    }
-
-    .demo-events h3 {
-      margin: 0 0 var(--snice-spacing-md, 1rem) 0;
-      color: var(--snice-color-text, rgb(23 23 23));
-      font-size: var(--snice-font-size-xl, 1.25rem);
-      font-weight: var(--snice-font-weight-semibold, 600);
-    }
-
-    .event-log {
-      background: var(--snice-color-background-secondary, rgb(250 250 250));
-      border: 1px solid var(--snice-color-border, rgb(226 226 226));
-      border-radius: var(--snice-border-radius-md, 0.25rem);
-      padding: var(--snice-spacing-md, 1rem);
-      max-height: 300px;
-      overflow-y: auto;
-      font-family: var(--snice-font-family-mono, SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace);
-      font-size: var(--snice-font-size-xs, 0.75rem);
-    }
-
-    .event-entry {
-      margin-bottom: var(--snice-spacing-xs, 0.5rem);
-      padding: var(--snice-spacing-2xs, 0.25rem);
-      border-radius: var(--snice-border-radius-sm, 0.125rem);
-    }
-
-    .event-success {
-      background: rgb(var(--snice-color-green-100, 220 252 231));
-      color: rgb(var(--snice-color-green-800, 22 101 52));
-    }
-
-    .event-error {
-      background: rgb(var(--snice-color-red-100, 254 226 226));
-      color: rgb(var(--snice-color-red-800, 153 27 27));
-    }
-
-    .event-info {
-      background: rgb(var(--snice-color-blue-100, 219 234 254));
-      color: rgb(var(--snice-color-blue-800, 30 64 175));
-    }
-
-    /* Custom styling for login components */
-    snice-login[slot="footer"] {
-      text-align: center;
-      color: var(--snice-color-text-secondary, rgb(82 82 82));
-      font-size: var(--snice-font-size-sm, 0.875rem);
-    }
-
-    .footer-text {
-      margin: var(--snice-spacing-xs, 0.5rem) 0;
-    }
-
-    .footer-link {
-      color: var(--snice-color-primary, rgb(37 99 235));
-      text-decoration: none;
-      transition: color var(--snice-transition-fast, 150ms) ease;
-    }
-
-    .footer-link:hover {
-      color: var(--snice-color-primary-hover, rgb(29 78 216));
-      text-decoration: underline;
-    }
-
-    @media (max-width: 768px) {
-      .demo-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .controls-grid {
-        grid-template-columns: 1fr;
-      }
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
+    snice-login { max-width: 400px; display: block; }
   </style>
 </head>
 <body>
-  <div class="demo-container">
-    <div class="demo-header">
-      <h1>Snice Login Component Demo</h1>
-      <p>Interactive examples showcasing different variants, sizes, and configurations</p>
-    </div>
 
-    <div class="demo-controls">
-      <h3>Interactive Controls</h3>
-      <div class="controls-grid">
-        <div class="control-group">
-          <label for="variant-select">Variant</label>
-          <select id="variant-select">
-            <option value="default">Default</option>
-            <option value="card" selected>Card</option>
-            <option value="minimal">Minimal</option>
-          </select>
-        </div>
-        
-        <div class="control-group">
-          <label for="size-select">Size</label>
-          <select id="size-select">
-            <option value="small">Small</option>
-            <option value="medium" selected>Medium</option>
-            <option value="large">Large</option>
-          </select>
-        </div>
-        
-        <div class="control-group">
-          <label for="title-input">Title</label>
-          <input type="text" id="title-input" value="Welcome Back" />
-        </div>
-        
-        <div class="control-group">
-          <label for="action-text-input">Action Text</label>
-          <input type="text" id="action-text-input" value="Sign In" />
-        </div>
-        
-        <div class="control-group">
-          <label>
-            <input type="checkbox" id="show-remember" checked /> Show Remember Me
-          </label>
-        </div>
-        
-        <div class="control-group">
-          <label>
-            <input type="checkbox" id="show-forgot" checked /> Show Forgot Password
-          </label>
-        </div>
-        
-        <div class="control-group">
-          <label>
-            <input type="checkbox" id="disabled-toggle" /> Disabled
-          </label>
-        </div>
-        
-        <div class="control-group">
-          <button id="simulate-error">Simulate Error</button>
-        </div>
-        
-        <div class="control-group">
-          <button id="clear-log">Clear Event Log</button>
-        </div>
-      </div>
-    </div>
+<h2>Variant: default</h2>
+<snice-login variant="default"></snice-login>
 
-    <div class="demo-grid">
-      <!-- Interactive Login -->
-      <div class="demo-card">
-        <h3>Interactive Login</h3>
-        <p>Use the controls above to modify this login component in real-time.</p>
-        
-        <snice-login 
-          id="interactive-login"
-          variant="card" 
-          size="medium"
-          title="Welcome Back"
-          action-text="Sign In"
-          show-remember-me
-          show-forgot-password
-          controller="demo-auth-controller">
-          
-          <p slot="subtitle">Please sign in to your account</p>
-          
-          <div slot="footer">
-            <p class="footer-text">Don't have an account?</p>
-            <a href="#" class="footer-link">Sign up here</a>
-          </div>
-        </snice-login>
-      </div>
+<h2>Variant: card</h2>
+<snice-login variant="card"></snice-login>
 
-      <!-- Card Variant Examples -->
-      <div class="demo-card">
-        <h3>Card Variant (Large)</h3>
-        <p>Login form presented in a card layout with shadow and border.</p>
-        
-        <snice-login 
-          variant="card" 
-          size="large"
-          title="Admin Portal"
-          action-text="Access Portal"
-          controller="demo-auth-controller">
-          
-          <p slot="subtitle">Administrator access required</p>
-        </snice-login>
-      </div>
+<h2>Variant: minimal</h2>
+<snice-login variant="minimal"></snice-login>
 
-      <!-- Minimal Variant -->
-      <div class="demo-card">
-        <h3>Minimal Variant</h3>
-        <p>Clean, borderless login form perfect for embedding.</p>
-        
-        <snice-login 
-          variant="minimal" 
-          size="small"
-          title="Quick Sign In"
-          action-text="Continue"
-          show-forgot-password="false"
-          controller="demo-auth-controller">
-          
-          <p slot="subtitle">Enter your credentials</p>
-        </snice-login>
-      </div>
+<h2>All variants side-by-side</h2>
+<div class="row">
+  <snice-login variant="default" title="Default"></snice-login>
+  <snice-login variant="card" title="Card"></snice-login>
+  <snice-login variant="minimal" title="Minimal"></snice-login>
+</div>
 
-      <!-- Default Variant -->
-      <div class="demo-card">
-        <h3>Default Variant</h3>
-        <p>Standard login form without additional styling.</p>
-        
-        <snice-login 
-          variant="default" 
-          size="medium"
-          title="User Login"
-          action-text="Log In"
-          show-remember-me="false"
-          controller="demo-auth-controller">
-          
-          <div slot="footer">
-            <p class="footer-text">Test credentials: demo / password</p>
-          </div>
-        </snice-login>
-      </div>
-    </div>
+<h2>Size: small</h2>
+<snice-login size="small" title="Small Login"></snice-login>
 
-    <div class="demo-events">
-      <h3>Event Log</h3>
-      <div id="event-log" class="event-log">
-        <div class="event-entry event-info">
-          <strong>[INFO]</strong> Demo loaded. Try logging in with username: "demo" and password: "password"
-        </div>
-      </div>
-    </div>
+<h2>Size: medium (default)</h2>
+<snice-login size="medium" title="Medium Login"></snice-login>
+
+<h2>Size: large</h2>
+<snice-login size="large" title="Large Login"></snice-login>
+
+<h2>Variant x Size: card + small</h2>
+<snice-login variant="card" size="small" title="Card Small"></snice-login>
+
+<h2>Variant x Size: card + large</h2>
+<snice-login variant="card" size="large" title="Card Large"></snice-login>
+
+<h2>Variant x Size: minimal + small</h2>
+<snice-login variant="minimal" size="small" title="Minimal Small"></snice-login>
+
+<h2>Variant x Size: minimal + large</h2>
+<snice-login variant="minimal" size="large" title="Minimal Large"></snice-login>
+
+<h2>Custom title</h2>
+<snice-login title="Welcome Back"></snice-login>
+
+<h2>Custom action text</h2>
+<snice-login action-text="Log In"></snice-login>
+
+<h2>Custom title + action text</h2>
+<snice-login title="Create Account" action-text="Register"></snice-login>
+
+<h2>Disabled</h2>
+<snice-login disabled title="Disabled"></snice-login>
+
+<h2>Loading</h2>
+<snice-login loading title="Loading"></snice-login>
+
+<h2>Show remember me: true (default)</h2>
+<snice-login show-remember-me title="Remember Me Shown"></snice-login>
+
+<h2>Show remember me: false</h2>
+<snice-login show-remember-me="false" title="No Remember Me"></snice-login>
+
+<h2>Show forgot password: true (default)</h2>
+<snice-login show-forgot-password title="Forgot Password Shown"></snice-login>
+
+<h2>Show forgot password: false</h2>
+<snice-login show-forgot-password="false" title="No Forgot Password"></snice-login>
+
+<h2>Both options hidden</h2>
+<snice-login show-remember-me="false" show-forgot-password="false" title="No Options"></snice-login>
+
+<h2>Disabled + Loading</h2>
+<snice-login disabled loading title="Disabled + Loading"></snice-login>
+
+<h2>Slot: subtitle</h2>
+<snice-login title="Welcome">
+  <p slot="subtitle" style="margin:0;color:var(--snice-color-text-secondary,#666);">Please sign in to your account</p>
+</snice-login>
+
+<h2>Slot: before-header</h2>
+<snice-login title="Sign In">
+  <div slot="before-header" style="text-align:center;margin-bottom:1rem;font-size:2rem;">&#x1F512;</div>
+</snice-login>
+
+<h2>Slot: after-header</h2>
+<snice-login title="Sign In">
+  <div slot="after-header" style="padding:0.5rem 0;text-align:center;font-size:0.875rem;color:var(--snice-color-text-secondary,#666);">Or sign in with social</div>
+</snice-login>
+
+<h2>Slot: before-form</h2>
+<snice-login title="Sign In">
+  <div slot="before-form" style="padding:0.5rem;background:var(--snice-color-background-element,#f5f5f5);border-radius:4px;text-align:center;font-size:0.875rem;">New here? Create an account first.</div>
+</snice-login>
+
+<h2>Slot: after-form</h2>
+<snice-login title="Sign In">
+  <div slot="after-form" style="margin-top:1rem;text-align:center;font-size:0.875rem;color:var(--snice-color-text-secondary,#666);">By continuing, you agree to our Terms.</div>
+</snice-login>
+
+<h2>Slot: form-top</h2>
+<snice-login title="Sign In">
+  <div slot="form-top" style="padding:0.5rem;background:var(--snice-color-background-element,#f5f5f5);border-radius:4px;margin-bottom:0.5rem;font-size:0.875rem;">Session expired. Please sign in again.</div>
+</snice-login>
+
+<h2>Slot: between-fields</h2>
+<snice-login title="Sign In">
+  <div slot="between-fields" style="padding:0.25rem 0;font-size:0.75rem;color:var(--snice-color-text-tertiary,#888);">Must be at least 8 characters</div>
+</snice-login>
+
+<h2>Slot: before-submit</h2>
+<snice-login title="Sign In">
+  <div slot="before-submit" style="padding:0.25rem 0;">
+    <label style="font-size:0.875rem;display:flex;align-items:center;gap:0.5rem;"><input type="checkbox"> I accept the Terms of Service</label>
   </div>
+</snice-login>
 
-  <!-- Import the components -->
-  <script type="module">
-    // Import the controller first, then the login component
-    import './demo-auth-controller.ts';
-    import './snice-login.ts';
+<h2>Slot: after-submit</h2>
+<snice-login title="Sign In">
+  <div slot="after-submit" style="text-align:center;margin-top:0.5rem;font-size:0.875rem;">
+    <a href="#" style="color:var(--snice-color-primary,#2563eb);">Sign in with SSO</a>
+  </div>
+</snice-login>
 
-    // Get references to interactive elements
-    const interactiveLogin = document.getElementById('interactive-login');
-    const variantSelect = document.getElementById('variant-select');
-    const sizeSelect = document.getElementById('size-select');
-    const titleInput = document.getElementById('title-input');
-    const actionTextInput = document.getElementById('action-text-input');
-    const showRememberCheckbox = document.getElementById('show-remember');
-    const showForgotCheckbox = document.getElementById('show-forgot');
-    const disabledToggle = document.getElementById('disabled-toggle');
-    const simulateErrorBtn = document.getElementById('simulate-error');
-    const clearLogBtn = document.getElementById('clear-log');
-    const eventLog = document.getElementById('event-log');
+<h2>Slot: footer</h2>
+<snice-login title="Sign In">
+  <div slot="footer" style="text-align:center;font-size:0.875rem;">
+    Don't have an account? <a href="#" style="color:var(--snice-color-primary,#2563eb);">Create one</a>
+  </div>
+</snice-login>
 
-    // Update interactive login component
-    function updateInteractiveLogin() {
-      interactiveLogin.variant = variantSelect.value;
-      interactiveLogin.size = sizeSelect.value;
-      interactiveLogin.title = titleInput.value;
-      interactiveLogin.actionText = actionTextInput.value;
-      interactiveLogin.showRememberMe = showRememberCheckbox.checked;
-      interactiveLogin.showForgotPassword = showForgotCheckbox.checked;
-      interactiveLogin.disabled = disabledToggle.checked;
-    }
+<h2>Multiple slots combined</h2>
+<snice-login variant="card" title="Full Customization">
+  <div slot="before-header" style="text-align:center;font-size:2rem;">&#x1F510;</div>
+  <p slot="subtitle" style="margin:0;color:var(--snice-color-text-secondary,#666);">Secure access to your dashboard</p>
+  <div slot="after-submit" style="text-align:center;margin-top:0.75rem;font-size:0.875rem;">
+    <a href="#" style="color:var(--snice-color-primary,#2563eb);">Use Single Sign-On</a>
+  </div>
+  <div slot="footer" style="text-align:center;font-size:0.875rem;">
+    Need help? <a href="#" style="color:var(--snice-color-primary,#2563eb);">Contact support</a>
+  </div>
+</snice-login>
 
-    // Add event listeners for controls
-    variantSelect.addEventListener('change', updateInteractiveLogin);
-    sizeSelect.addEventListener('change', updateInteractiveLogin);
-    titleInput.addEventListener('input', updateInteractiveLogin);
-    actionTextInput.addEventListener('input', updateInteractiveLogin);
-    showRememberCheckbox.addEventListener('change', updateInteractiveLogin);
-    showForgotCheckbox.addEventListener('change', updateInteractiveLogin);
-    disabledToggle.addEventListener('change', updateInteractiveLogin);
-
-    // Simulate error
-    simulateErrorBtn.addEventListener('click', () => {
-      interactiveLogin.setError('Invalid credentials. Please try again.');
-      logEvent('error', 'Simulated error set on interactive login component');
-    });
-
-    // Clear event log
-    clearLogBtn.addEventListener('click', () => {
-      eventLog.innerHTML = '<div class="event-entry event-info"><strong>[INFO]</strong> Event log cleared</div>';
-    });
-
-    // Event logging function
-    function logEvent(type, message, data = null) {
-      const timestamp = new Date().toLocaleTimeString();
-      const entry = document.createElement('div');
-      entry.className = `event-entry event-${type}`;
-      
-      let logMessage = `<strong>[${timestamp}]</strong> ${message}`;
-      if (data) {
-        logMessage += `<br><em>${JSON.stringify(data, null, 2)}</em>`;
-      }
-      
-      entry.innerHTML = logMessage;
-      eventLog.appendChild(entry);
-      eventLog.scrollTop = eventLog.scrollHeight;
-    }
-
-    // Listen for login events on all login components
-    document.addEventListener('login-attempt', (event) => {
-      logEvent('info', 'Login attempt started', event.detail);
-    });
-
-    document.addEventListener('login-success', (event) => {
-      logEvent('success', 'Login successful!', event.detail);
-    });
-
-    document.addEventListener('login-error', (event) => {
-      logEvent('error', 'Login failed', event.detail);
-    });
-
-    document.addEventListener('login-forgot-password', (event) => {
-      logEvent('info', 'Forgot password clicked', event.detail);
-    });
-
-    // Demo-specific events
-    document.addEventListener('demo-auth-response', (event) => {
-      const { success, user, error } = event.detail;
-      if (success) {
-        logEvent('success', `Authentication successful for user: ${user.username}`, event.detail);
-      } else {
-        logEvent('error', `Authentication failed: ${error}`, event.detail);
-      }
-    });
-
-    // Initialize
-    logEvent('info', 'Demo initialized. All login components are ready.');
-  </script>
+<script type="module">import './snice-login.ts';</script>
 </body>
 </html>

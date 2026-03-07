@@ -1,129 +1,175 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Flow Component Demo</title>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <title>Flow</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      padding: 40px;
-      margin: 0;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      transition: background-color var(--snice-transition-medium) ease, color var(--snice-transition-medium) ease;
-    }
-    .demo-section {
-      margin-bottom: 60px;
-    }
-    .demo-section h3 {
-      margin-bottom: 20px;
-    }
-    .controls {
-      margin: 20px 0;
-      display: flex;
-      gap: 10px;
-    }
-    button {
-      padding: 8px 16px;
-      background: var(--snice-color-primary);
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    button:hover {
-      opacity: 0.9;
-    }
-    .theme-toggle {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    snice-flow { display: block; height: 400px; border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 8px; margin-bottom: 1.5rem; }
+    snice-flow.tall { height: 500px; }
   </style>
-</head>
-<body>
-  <button class="theme-toggle" onclick="document.documentElement.dataset.theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'">Toggle Theme</button>
-
-  <h1>Flow Component</h1>
-
-  <div class="demo-section">
-    <h3>Data Pipeline</h3>
-    <snice-flow id="demo1" snap-to-grid minimap style="height:500px"></snice-flow>
-    <div class="controls">
-      <button onclick="document.getElementById('demo1').fitView()">Fit View</button>
-      <button onclick="addNode()">Add Node</button>
-    </div>
-  </div>
-
-  <div class="demo-section">
-    <h3>Simple Flow (No Grid)</h3>
-    <snice-flow id="demo2" minimap style="height:400px"></snice-flow>
-  </div>
-
   <script type="module">
     import './snice-flow.ts';
 
-    const flow1 = document.getElementById('demo1');
-    flow1.nodes = [
-      {
-        id: 'input', x: 40, y: 60, label: 'User Input', type: 'trigger',
-        color: 'rgb(22 163 74)',
-        outputs: [{ id: 'data', label: 'Data' }, { id: 'meta', label: 'Metadata' }],
-      },
-      {
-        id: 'validate', x: 300, y: 40, label: 'Validate', type: 'transform',
-        color: 'rgb(37 99 235)',
-        inputs: [{ id: 'in', label: 'Input' }],
-        outputs: [{ id: 'valid', label: 'Valid' }, { id: 'error', label: 'Error' }],
-      },
-      {
-        id: 'enrich', x: 300, y: 220, label: 'Enrich', type: 'transform',
-        color: 'rgb(37 99 235)',
-        inputs: [{ id: 'in', label: 'Input' }],
-        outputs: [{ id: 'out', label: 'Output' }],
-      },
-      {
-        id: 'save', x: 560, y: 60, label: 'Save to DB', type: 'action',
-        color: 'rgb(147 51 234)',
-        inputs: [{ id: 'data', label: 'Data' }],
-        outputs: [{ id: 'result', label: 'Result' }],
-      },
-      {
-        id: 'notify', x: 560, y: 240, label: 'Alert', type: 'action',
-        color: 'rgb(234 88 12)',
-        inputs: [{ id: 'msg', label: 'Message' }],
-      },
-    ];
-    flow1.edges = [
-      { id: 'e1', source: 'input', target: 'validate', sourcePort: 'data', targetPort: 'in' },
-      { id: 'e2', source: 'input', target: 'enrich', sourcePort: 'meta', targetPort: 'in' },
-      { id: 'e3', source: 'validate', target: 'save', sourcePort: 'valid', targetPort: 'data' },
-      { id: 'e4', source: 'validate', target: 'notify', sourcePort: 'error', targetPort: 'msg', color: 'rgb(220 38 38)', animated: true },
-      { id: 'e5', source: 'enrich', target: 'save', sourcePort: 'out', targetPort: 'data' },
-    ];
+    document.addEventListener('DOMContentLoaded', () => {
+      // Basic flow
+      const f1 = document.getElementById('f-basic');
+      f1.nodes = [
+        { id: 'n1', label: 'Start', x: 40, y: 60, inputs: [], outputs: [{ id: 'o1', label: 'out' }] },
+        { id: 'n2', label: 'Process', x: 280, y: 60, inputs: [{ id: 'i1', label: 'in' }], outputs: [{ id: 'o1', label: 'out' }] },
+        { id: 'n3', label: 'End', x: 520, y: 60, inputs: [{ id: 'i1', label: 'in' }], outputs: [] },
+      ];
+      f1.edges = [
+        { id: 'e1', source: 'n1', target: 'n2', sourcePort: 'o1', targetPort: 'i1' },
+        { id: 'e2', source: 'n2', target: 'n3', sourcePort: 'o1', targetPort: 'i1' },
+      ];
 
-    flow1.addEventListener('node-select', (e) => console.log('Selected:', e.detail.node));
-    flow1.addEventListener('edge-connect', (e) => console.log('Connected:', e.detail.edge));
+      // Snap to grid disabled
+      const f2 = document.getElementById('f-nosnap');
+      f2.nodes = [
+        { id: 'a', label: 'Input', x: 50, y: 80, outputs: [{ id: 'o1', label: 'out' }] },
+        { id: 'b', label: 'Output', x: 300, y: 80, inputs: [{ id: 'i1', label: 'in' }] },
+      ];
+      f2.edges = [{ id: 'e1', source: 'a', target: 'b', sourcePort: 'o1', targetPort: 'i1' }];
 
-    const flow2 = document.getElementById('demo2');
-    flow2.nodes = [
-      { id: 'a', x: 80, y: 100, label: 'Start', outputs: [{ id: 'out', label: 'Next' }] },
-      { id: 'b', x: 350, y: 80, label: 'Step 1', inputs: [{ id: 'in', label: 'In' }], outputs: [{ id: 'out', label: 'Out' }] },
-      { id: 'c', x: 620, y: 100, label: 'End', inputs: [{ id: 'in', label: 'In' }] },
-    ];
-    flow2.edges = [
-      { id: 'e1', source: 'a', target: 'b', sourcePort: 'out', targetPort: 'in' },
-      { id: 'e2', source: 'b', target: 'c', sourcePort: 'out', targetPort: 'in' },
-    ];
+      // Grid size 40
+      const f3 = document.getElementById('f-grid40');
+      f3.nodes = [
+        { id: 'a', label: 'Node A', x: 40, y: 80, outputs: [{ id: 'o1', label: 'out' }] },
+        { id: 'b', label: 'Node B', x: 320, y: 80, inputs: [{ id: 'i1', label: 'in' }] },
+      ];
+      f3.edges = [{ id: 'e1', source: 'a', target: 'b', sourcePort: 'o1', targetPort: 'i1' }];
 
-    let counter = 0;
-    window.addNode = () => {
-      counter++;
-      flow1.addNode({
-        id: `new-${counter}`, x: 100 + counter * 40, y: 350, label: `New ${counter}`,
-        inputs: [{ id: 'in', label: 'In' }],
-        outputs: [{ id: 'out', label: 'Out' }],
-      });
-    };
+      // No minimap
+      const f4 = document.getElementById('f-nomini');
+      f4.nodes = [
+        { id: 'a', label: 'Alpha', x: 60, y: 60, outputs: [{ id: 'o1' }] },
+        { id: 'b', label: 'Beta', x: 300, y: 60, inputs: [{ id: 'i1' }] },
+      ];
+      f4.edges = [{ id: 'e1', source: 'a', target: 'b', sourcePort: 'o1', targetPort: 'i1' }];
+
+      // Read only
+      const f5 = document.getElementById('f-readonly');
+      f5.nodes = [
+        { id: 'a', label: 'Source', x: 60, y: 60, outputs: [{ id: 'o1' }], color: '#2563eb' },
+        { id: 'b', label: 'Transform', x: 280, y: 60, inputs: [{ id: 'i1' }], outputs: [{ id: 'o1' }], color: '#9333ea' },
+        { id: 'c', label: 'Sink', x: 500, y: 60, inputs: [{ id: 'i1' }], color: '#16a34a' },
+      ];
+      f5.edges = [
+        { id: 'e1', source: 'a', target: 'b', sourcePort: 'o1', targetPort: 'i1' },
+        { id: 'e2', source: 'b', target: 'c', sourcePort: 'o1', targetPort: 'i1' },
+      ];
+
+      // Multiple ports
+      const f6 = document.getElementById('f-multiport');
+      f6.nodes = [
+        { id: 'src', label: 'Data Source', x: 40, y: 40, width: 180, height: 120, outputs: [{ id: 'o1', label: 'success' }, { id: 'o2', label: 'error' }] },
+        { id: 'ok', label: 'Success Handler', x: 320, y: 20, inputs: [{ id: 'i1', label: 'data' }], outputs: [{ id: 'o1', label: 'out' }], color: '#16a34a' },
+        { id: 'err', label: 'Error Handler', x: 320, y: 160, inputs: [{ id: 'i1', label: 'error' }], color: '#dc2626' },
+        { id: 'log', label: 'Logger', x: 560, y: 20, inputs: [{ id: 'i1', label: 'in' }] },
+      ];
+      f6.edges = [
+        { id: 'e1', source: 'src', target: 'ok', sourcePort: 'o1', targetPort: 'i1' },
+        { id: 'e2', source: 'src', target: 'err', sourcePort: 'o2', targetPort: 'i1' },
+        { id: 'e3', source: 'ok', target: 'log', sourcePort: 'o1', targetPort: 'i1' },
+      ];
+
+      // Node types + colors
+      const f7 = document.getElementById('f-colors');
+      f7.nodes = [
+        { id: 'a', label: 'Input', type: 'source', x: 40, y: 80, color: '#2563eb', outputs: [{ id: 'o1' }] },
+        { id: 'b', label: 'Filter', type: 'transform', x: 260, y: 40, color: '#f59e0b', inputs: [{ id: 'i1' }], outputs: [{ id: 'o1' }] },
+        { id: 'c', label: 'Map', type: 'transform', x: 260, y: 160, color: '#9333ea', inputs: [{ id: 'i1' }], outputs: [{ id: 'o1' }] },
+        { id: 'd', label: 'Output', type: 'sink', x: 480, y: 100, color: '#16a34a', inputs: [{ id: 'i1' }, { id: 'i2' }] },
+      ];
+      f7.edges = [
+        { id: 'e1', source: 'a', target: 'b', sourcePort: 'o1', targetPort: 'i1' },
+        { id: 'e2', source: 'a', target: 'c', sourcePort: 'o1', targetPort: 'i1' },
+        { id: 'e3', source: 'b', target: 'd', sourcePort: 'o1', targetPort: 'i1' },
+        { id: 'e4', source: 'c', target: 'd', sourcePort: 'o1', targetPort: 'i2' },
+      ];
+
+      // Edge labels + colors + animation
+      const f8 = document.getElementById('f-edgeopts');
+      f8.nodes = [
+        { id: 'a', label: 'API', x: 40, y: 80, outputs: [{ id: 'o1' }] },
+        { id: 'b', label: 'Cache', x: 280, y: 40, inputs: [{ id: 'i1' }], outputs: [{ id: 'o1' }] },
+        { id: 'c', label: 'DB', x: 280, y: 160, inputs: [{ id: 'i1' }], outputs: [{ id: 'o1' }] },
+        { id: 'd', label: 'Response', x: 520, y: 80, inputs: [{ id: 'i1' }, { id: 'i2' }] },
+      ];
+      f8.edges = [
+        { id: 'e1', source: 'a', target: 'b', sourcePort: 'o1', targetPort: 'i1', label: 'fast path', color: '#16a34a' },
+        { id: 'e2', source: 'a', target: 'c', sourcePort: 'o1', targetPort: 'i1', label: 'slow path', color: '#dc2626', animated: true },
+        { id: 'e3', source: 'b', target: 'd', sourcePort: 'o1', targetPort: 'i1' },
+        { id: 'e4', source: 'c', target: 'd', sourcePort: 'o1', targetPort: 'i2' },
+      ];
+
+      // Custom node dimensions
+      const f9 = document.getElementById('f-dims');
+      f9.nodes = [
+        { id: 'a', label: 'Narrow', x: 40, y: 60, width: 100, height: 60, outputs: [{ id: 'o1' }] },
+        { id: 'b', label: 'Wide Node', x: 200, y: 40, width: 220, height: 100, inputs: [{ id: 'i1' }], outputs: [{ id: 'o1' }] },
+        { id: 'c', label: 'Tall', x: 480, y: 20, width: 120, height: 140, inputs: [{ id: 'i1' }] },
+      ];
+      f9.edges = [
+        { id: 'e1', source: 'a', target: 'b', sourcePort: 'o1', targetPort: 'i1' },
+        { id: 'e2', source: 'b', target: 'c', sourcePort: 'o1', targetPort: 'i1' },
+      ];
+
+      // Zoom/pan disabled
+      const f10 = document.getElementById('f-nozoom');
+      f10.nodes = [
+        { id: 'a', label: 'Fixed View', x: 60, y: 60, outputs: [{ id: 'o1' }] },
+        { id: 'b', label: 'No Zoom/Pan', x: 300, y: 60, inputs: [{ id: 'i1' }] },
+      ];
+      f10.edges = [{ id: 'e1', source: 'a', target: 'b', sourcePort: 'o1', targetPort: 'i1' }];
+    });
   </script>
+</head>
+<body>
+
+<h2>Basic Flow (snap-to-grid, zoom, pan, minimap, editable)</h2>
+<snice-flow id="f-basic"></snice-flow>
+
+<h2>snap-to-grid: false</h2>
+<snice-flow id="f-nosnap" snap-to-grid="false"></snice-flow>
+
+<h2>grid-size: 40</h2>
+<snice-flow id="f-grid40" grid-size="40"></snice-flow>
+
+<h2>minimap: false</h2>
+<snice-flow id="f-nomini" minimap="false"></snice-flow>
+
+<h2>editable: false (read-only)</h2>
+<snice-flow id="f-readonly" editable="false"></snice-flow>
+
+<h2>Multiple Input/Output Ports</h2>
+<snice-flow id="f-multiport" class="tall"></snice-flow>
+
+<h2>Node Types + Colors</h2>
+<snice-flow id="f-colors" class="tall"></snice-flow>
+
+<h2>Edge Labels + Colors + Animation</h2>
+<snice-flow id="f-edgeopts" class="tall"></snice-flow>
+
+<h2>Custom Node Dimensions</h2>
+<snice-flow id="f-dims"></snice-flow>
+
+<h2>zoom-enabled: false, pan-enabled: false</h2>
+<snice-flow id="f-nozoom" zoom-enabled="false" pan-enabled="false"></snice-flow>
+
 </body>
 </html>

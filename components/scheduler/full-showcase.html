@@ -1,126 +1,152 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-theme="dark">
 <head>
-  <title>Scheduler Demo</title>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scheduler</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      padding: 40px;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text, rgb(23 23 23));
-      transition: background-color 200ms ease, color 200ms ease;
-    }
-    .theme-toggle {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 1000;
-    }
-    .example {
-      margin: 30px 0;
-    }
-    .example h3 {
-      margin-bottom: 10px;
-    }
-    button {
-      padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-md, 1rem);
-      background: var(--snice-color-primary, rgb(37 99 235));
-      color: var(--snice-color-text-inverse, rgb(250 250 250));
-      border: none;
-      border-radius: var(--snice-border-radius-md, 0.25rem);
-      cursor: pointer;
-      font-size: var(--snice-font-size-sm, 0.875rem);
-      font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
-    }
-    .info {
-      margin-top: 10px;
-      padding: 10px;
-      background: var(--snice-color-background-secondary, rgb(250 250 250));
-      border-radius: 4px;
-      font-size: 14px;
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    section { margin-bottom: 2rem; }
+    snice-scheduler { display: block; height: 500px; border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 8px; overflow: hidden; }
   </style>
-  <script type="module">
-    import 'snice';
-    import './snice-scheduler.ts';
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const scheduler = document.getElementById('main-scheduler');
-
-      const today = new Date();
-      const todayStr = today.toISOString().split('T')[0];
-
-      scheduler.resources = [
-        { id: '1', name: 'Dr. Smith', color: '#2196f3' },
-        { id: '2', name: 'Dr. Johnson', color: '#4caf50' },
-        { id: '3', name: 'Room A', color: '#ff9800' },
-        { id: '4', name: 'Room B', color: '#9c27b0' },
-      ];
-
-      const makeDate = (dayOffset, hour, minute = 0) => {
-        const d = new Date(today);
-        d.setDate(d.getDate() + dayOffset);
-        d.setHours(hour, minute, 0, 0);
-        return d;
-      };
-
-      scheduler.events = [
-        { id: '1', resourceId: '1', start: makeDate(0, 9), end: makeDate(0, 10, 30), title: 'Patient Consultation', color: '#2196f3' },
-        { id: '2', resourceId: '1', start: makeDate(0, 14), end: makeDate(0, 15), title: 'Follow-up', color: '#4caf50' },
-        { id: '3', resourceId: '2', start: makeDate(0, 10), end: makeDate(0, 11), title: 'Surgery Prep', color: '#f44336' },
-        { id: '4', resourceId: '3', start: makeDate(1, 9), end: makeDate(1, 12), title: 'Conference', color: '#ff9800' },
-        { id: '5', resourceId: '4', start: makeDate(2, 13), end: makeDate(2, 15), title: 'Team Meeting', color: '#9c27b0' },
-      ];
-
-      scheduler.addEventListener('event-click', (e) => {
-        document.getElementById('event-info').textContent =
-          `Clicked: ${e.detail.event.title}`;
-      });
-
-      scheduler.addEventListener('slot-click', (e) => {
-        document.getElementById('event-info').textContent =
-          `Slot: Resource ${e.detail.resourceId}, ${e.detail.start.toLocaleTimeString()} - ${e.detail.end.toLocaleTimeString()}`;
-      });
-
-      scheduler.addEventListener('event-move', (e) => {
-        document.getElementById('event-info').textContent =
-          `Moved: ${e.detail.event.title}`;
-      });
-
-      // Business hours scheduler
-      const bizScheduler = document.getElementById('biz-scheduler');
-      bizScheduler.resources = [
-        { id: '1', name: 'Alice', color: '#e91e63' },
-        { id: '2', name: 'Bob', color: '#00bcd4' },
-      ];
-      bizScheduler.events = [
-        { id: '1', resourceId: '1', start: makeDate(0, 9), end: makeDate(0, 10), title: 'Standup', color: '#e91e63' },
-        { id: '2', resourceId: '2', start: makeDate(0, 11), end: makeDate(0, 12), title: 'Review', color: '#00bcd4' },
-      ];
-
-      // Theme toggle
-      document.getElementById('theme-toggle').addEventListener('click', () => {
-        const current = document.documentElement.getAttribute('data-theme');
-        const next = current === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', next);
-      });
-    });
-  </script>
 </head>
 <body>
-  <button id="theme-toggle" class="theme-toggle">Toggle Theme</button>
-  <h2>Scheduler Component Demo</h2>
 
-  <div class="example">
-    <h3>Multi-Resource Scheduler</h3>
-    <p>Drag events to move, resize handles on edges. Click empty slots to create events.</p>
-    <snice-scheduler id="main-scheduler" start-hour="8" end-hour="18"></snice-scheduler>
-    <div class="info" id="event-info">Click an event or slot to see details</div>
-  </div>
+<h2>View: week (default)</h2>
+<section><snice-scheduler id="sch-week" view="week"></snice-scheduler></section>
 
-  <div class="example">
-    <h3>Business Hours (30-min granularity)</h3>
-    <snice-scheduler id="biz-scheduler" start-hour="9" end-hour="17" granularity="30" view="day"></snice-scheduler>
-  </div>
+<h2>View: day</h2>
+<section><snice-scheduler id="sch-day" view="day"></snice-scheduler></section>
+
+<h2>View: month</h2>
+<section><snice-scheduler id="sch-month" view="month"></snice-scheduler></section>
+
+<h2>Granularity: 15 minutes</h2>
+<section><snice-scheduler id="sch-g15" view="day" granularity="15"></snice-scheduler></section>
+
+<h2>Granularity: 30 minutes</h2>
+<section><snice-scheduler id="sch-g30" view="day" granularity="30"></snice-scheduler></section>
+
+<h2>Granularity: 60 minutes (default)</h2>
+<section><snice-scheduler id="sch-g60" view="day" granularity="60"></snice-scheduler></section>
+
+<h2>Business hours (start-hour=8 end-hour=18)</h2>
+<section><snice-scheduler id="sch-biz" view="week" start-hour="8" end-hour="18"></snice-scheduler></section>
+
+<h2>Extended hours (start-hour=6 end-hour=22)</h2>
+<section><snice-scheduler id="sch-ext" view="day" start-hour="6" end-hour="22"></snice-scheduler></section>
+
+<h2>Full day (start-hour=0 end-hour=24)</h2>
+<section><snice-scheduler id="sch-full" view="day" start-hour="0" end-hour="24"></snice-scheduler></section>
+
+<h2>Many resources</h2>
+<section><snice-scheduler id="sch-many" view="week" start-hour="8" end-hour="18" style="height:600px"></snice-scheduler></section>
+
+<h2>Single resource</h2>
+<section><snice-scheduler id="sch-single" view="week" start-hour="9" end-hour="17"></snice-scheduler></section>
+
+<h2>No events (empty)</h2>
+<section><snice-scheduler id="sch-empty" view="week" start-hour="8" end-hour="18"></snice-scheduler></section>
+
+<h2>Colored events</h2>
+<section><snice-scheduler id="sch-colors" view="day" start-hour="8" end-hour="18"></snice-scheduler></section>
+
+<script type="module">
+  import './snice-scheduler.ts';
+
+  const today = new Date();
+  const y = today.getFullYear();
+  const m = today.getMonth();
+  const d = today.getDate();
+
+  const resources = [
+    { id: '1', name: 'Dr. Smith', color: '#2196f3' },
+    { id: '2', name: 'Dr. Johnson', color: '#4caf50' },
+    { id: '3', name: 'Room A', color: '#ff9800' }
+  ];
+
+  const events = [
+    { id: 'e1', resourceId: '1', start: new Date(y,m,d,9,0), end: new Date(y,m,d,10,30), title: 'Consultation', color: '#2196f3' },
+    { id: 'e2', resourceId: '1', start: new Date(y,m,d,11,0), end: new Date(y,m,d,12,0), title: 'Follow-up', color: '#2196f3' },
+    { id: 'e3', resourceId: '2', start: new Date(y,m,d,10,0), end: new Date(y,m,d,11,30), title: 'Surgery', color: '#4caf50' },
+    { id: 'e4', resourceId: '3', start: new Date(y,m,d,14,0), end: new Date(y,m,d,15,0), title: 'Meeting', color: '#ff9800' },
+    { id: 'e5', resourceId: '2', start: new Date(y,m,d,13,0), end: new Date(y,m,d,14,0), title: 'Check-up', color: '#4caf50' }
+  ];
+
+  function setup(id, opts = {}) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.resources = opts.resources || resources;
+    el.events = opts.events || events;
+    if (opts.date) el.date = opts.date;
+  }
+
+  setup('sch-week');
+  setup('sch-day');
+  setup('sch-month');
+  setup('sch-g15');
+  setup('sch-g30');
+  setup('sch-g60');
+  setup('sch-biz');
+  setup('sch-ext');
+  setup('sch-full');
+
+  // Many resources
+  setup('sch-many', {
+    resources: [
+      { id: '1', name: 'Dr. Smith', color: '#2196f3' },
+      { id: '2', name: 'Dr. Johnson', color: '#4caf50' },
+      { id: '3', name: 'Dr. Williams', color: '#ff9800' },
+      { id: '4', name: 'Room A', color: '#9c27b0' },
+      { id: '5', name: 'Room B', color: '#00bcd4' },
+      { id: '6', name: 'Room C', color: '#e91e63' },
+      { id: '7', name: 'Equipment 1', color: '#795548' }
+    ],
+    events: [
+      { id: 'm1', resourceId: '1', start: new Date(y,m,d,9,0), end: new Date(y,m,d,10,0), title: 'Appt 1', color: '#2196f3' },
+      { id: 'm2', resourceId: '3', start: new Date(y,m,d,11,0), end: new Date(y,m,d,12,30), title: 'Appt 2', color: '#ff9800' },
+      { id: 'm3', resourceId: '5', start: new Date(y,m,d,14,0), end: new Date(y,m,d,15,0), title: 'Appt 3', color: '#00bcd4' }
+    ]
+  });
+
+  // Single resource
+  setup('sch-single', {
+    resources: [{ id: '1', name: 'My Calendar', color: '#3b82f6' }],
+    events: [
+      { id: 's1', resourceId: '1', start: new Date(y,m,d,10,0), end: new Date(y,m,d,11,30), title: 'Team Standup', color: '#3b82f6' },
+      { id: 's2', resourceId: '1', start: new Date(y,m,d,14,0), end: new Date(y,m,d,15,0), title: 'Code Review', color: '#10b981' }
+    ]
+  });
+
+  // Empty
+  setup('sch-empty', { resources, events: [] });
+
+  // Colored
+  setup('sch-colors', {
+    resources: [{ id: '1', name: 'Conference Room' }],
+    events: [
+      { id: 'c1', resourceId: '1', start: new Date(y,m,d,8,0), end: new Date(y,m,d,9,0), title: 'Standup', color: '#2196f3' },
+      { id: 'c2', resourceId: '1', start: new Date(y,m,d,10,0), end: new Date(y,m,d,11,30), title: 'Design Review', color: '#4caf50' },
+      { id: 'c3', resourceId: '1', start: new Date(y,m,d,12,0), end: new Date(y,m,d,13,0), title: 'Lunch & Learn', color: '#ff9800' },
+      { id: 'c4', resourceId: '1', start: new Date(y,m,d,14,0), end: new Date(y,m,d,15,30), title: 'Sprint Planning', color: '#9c27b0' },
+      { id: 'c5', resourceId: '1', start: new Date(y,m,d,16,0), end: new Date(y,m,d,17,0), title: 'Retrospective', color: '#f44336' }
+    ]
+  });
+</script>
 </body>
 </html>

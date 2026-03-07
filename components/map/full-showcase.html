@@ -1,236 +1,164 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snice Map Component Demo</title>
+  <title>Map</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      padding: 40px;
-      line-height: 1.6;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: 10px;
-      margin-bottom: 30px;
-    }
-
-    h2 {
-      color: var(--snice-color-text);
-      margin-top: 40px;
-      margin-bottom: 20px;
-      font-size: 24px;
-    }
-
-    .demo-section {
-      margin: 30px 0;
-      padding: 20px;
-      background: var(--snice-color-background);
-      border-radius: 8px;
-      border: 1px solid var(--snice-color-border);
-    }
-
-    .demo-label {
-      display: block;
-      margin-bottom: 16px;
-      font-weight: 600;
-      color: var(--snice-color-text-secondary);
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .controls {
-      display: flex;
-      gap: 12px;
-      margin: 20px 0;
-      flex-wrap: wrap;
-      padding: 16px;
-      background: var(--snice-color-background-secondary);
-      border-radius: 6px;
-      border: 1px solid var(--snice-color-border);
-    }
-
-    .controls button {
-      padding: 10px 16px;
-      background: var(--snice-color-primary);
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    .controls button:hover {
-      background: var(--snice-color-primary-hover);
-    }
-
-    .controls button.secondary {
-      background: var(--snice-color-neutral);
-    }
-
-    .controls button.secondary:hover {
-      background: var(--snice-color-neutral-hover);
-    }
-
-    .map-container {
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: var(--snice-shadow-md);
-    }
-
-    .info-panel {
-      margin-top: 16px;
-      padding: 12px 16px;
-      background: var(--snice-color-background-secondary);
-      border-radius: 6px;
-      font-size: 14px;
-      color: var(--snice-color-text-secondary);
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
+    snice-map { display: block; height: 300px; border: 1px solid var(--snice-color-border, #ddd); border-radius: 8px; overflow: hidden; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🗺️ Snice Map Component Demo</h1>
 
-    <div class="demo-section">
-      <h2>Interactive Map</h2>
-      <span class="demo-label">Drag to pan, scroll to zoom, click to place markers</span>
-      
-      <div class="controls">
-        <button id="btn-london">London</button>
-        <button id="btn-paris">Paris</button>
-        <button id="btn-tokyo">Tokyo</button>
-        <button id="btn-ny">New York</button>
-        <button id="btn-sydney">Sydney</button>
-        <button id="btn-fit" class="secondary">Fit All Markers</button>
-        <button id="btn-clear" class="secondary">Clear Markers</button>
-      </div>
+<h2>Default (London, zoom 13)</h2>
+<snice-map id="map-default"></snice-map>
 
-      <div class="map-container">
-        <snice-map id="demo-map" style="display: block; height: 500px; width: 100%;"></snice-map>
-      </div>
+<h2>Zoom: 3 (continent scale)</h2>
+<snice-map id="map-z3" zoom="3"></snice-map>
 
-      <div class="info-panel">
-        <div>Center: <span id="center-info">51.505, -0.09</span></div>
-        <div>Zoom: <span id="zoom-info">13</span></div>
-        <div>Markers: <span id="marker-count">0</span></div>
-      </div>
-    </div>
+<h2>Zoom: 8 (region scale)</h2>
+<snice-map id="map-z8" zoom="8"></snice-map>
 
-    <div class="demo-section">
-      <h2>Marker Examples</h2>
-      <span class="demo-label">Click on the map above to add custom markers</span>
-      <p style="color: var(--snice-color-text-secondary);">
-        The map supports interactive markers with popups. Try clicking anywhere on the map to add a marker,
-        or use the buttons above to jump to different cities.
-      </p>
-    </div>
-  </div>
+<h2>Zoom: 16 (street scale)</h2>
+<snice-map id="map-z16" zoom="16"></snice-map>
 
-  <script type="module">
-    import './snice-map.ts';
+<h2>Min zoom: 5, max zoom: 10</h2>
+<snice-map id="map-minmax" zoom="7" min-zoom="5" max-zoom="10"></snice-map>
 
-    const map = document.getElementById('demo-map');
-    const centerInfo = document.getElementById('center-info');
-    const zoomInfo = document.getElementById('zoom-info');
-    const markerCount = document.getElementById('marker-count');
+<h2>With markers</h2>
+<snice-map id="map-markers" zoom="5"></snice-map>
 
-    // Predefined locations
-    const locations = {
-      london: { lat: 51.505, lng: -0.09, name: 'London' },
-      paris: { lat: 48.8566, lng: 2.3522, name: 'Paris' },
-      tokyo: { lat: 35.6762, lng: 139.6503, name: 'Tokyo' },
-      ny: { lat: 40.7128, lng: -74.006, name: 'New York' },
-      sydney: { lat: -33.8688, lng: 151.2093, name: 'Sydney' }
-    };
+<h2>Markers with popups</h2>
+<snice-map id="map-popups" zoom="12"></snice-map>
 
-    // Add initial markers
-    const initialMarkers = [
-      { id: 'london', lat: 51.505, lng: -0.09, label: 'London', popup: 'Capital of the UK' },
-      { id: 'paris', lat: 48.8566, lng: 2.3522, label: 'Paris', popup: 'City of Light' }
-    ];
+<h2>Markers with labels</h2>
+<snice-map id="map-labels" zoom="10"></snice-map>
 
-    initialMarkers.forEach(marker => map.addMarker(marker));
-    updateInfo();
+<h2>Single marker</h2>
+<snice-map id="map-single" zoom="14"></snice-map>
 
-    // Button handlers
-    document.getElementById('btn-london').addEventListener('click', () => {
-      map.setCenter(locations.london.lat, locations.london.lng);
-      map.setZoom(13);
-    });
+<h2>Many markers (fitBounds)</h2>
+<snice-map id="map-fitbounds"></snice-map>
 
-    document.getElementById('btn-paris').addEventListener('click', () => {
-      map.setCenter(locations.paris.lat, locations.paris.lng);
-      map.setZoom(13);
-    });
+<h2>Zoom disabled</h2>
+<snice-map id="map-nozoom" zoom="10" zoom-enabled="false"></snice-map>
 
-    document.getElementById('btn-tokyo').addEventListener('click', () => {
-      map.setCenter(locations.tokyo.lat, locations.tokyo.lng);
-      map.setZoom(12);
-    });
+<h2>Drag disabled</h2>
+<snice-map id="map-nodrag" zoom="10" drag-enabled="false"></snice-map>
 
-    document.getElementById('btn-ny').addEventListener('click', () => {
-      map.setCenter(locations.ny.lat, locations.ny.lng);
-      map.setZoom(13);
-    });
+<h2>Both zoom and drag disabled</h2>
+<snice-map id="map-static" zoom="10" zoom-enabled="false" drag-enabled="false"></snice-map>
 
-    document.getElementById('btn-sydney').addEventListener('click', () => {
-      map.setCenter(locations.sydney.lat, locations.sydney.lng);
-      map.setZoom(13);
-    });
+<h2>Different center (New York)</h2>
+<snice-map id="map-nyc" zoom="11"></snice-map>
 
-    document.getElementById('btn-fit').addEventListener('click', () => {
-      map.fitBounds();
-    });
+<h2>Different center (Tokyo)</h2>
+<snice-map id="map-tokyo" zoom="11"></snice-map>
 
-    document.getElementById('btn-clear').addEventListener('click', () => {
-      [...map.markers].forEach(m => map.removeMarker(m.id));
-      updateInfo();
-    });
+<h2>Different center (Sydney)</h2>
+<snice-map id="map-sydney" zoom="11"></snice-map>
 
-    // Map event handlers
-    map.addEventListener('map-move', (e) => {
-      updateInfo();
-    });
+<script type="module">
+  import './snice-map.ts';
 
-    map.addEventListener('map-zoom', (e) => {
-      updateInfo();
-    });
+  // Default map
+  const mapDefault = document.getElementById('map-default');
 
-    map.addEventListener('map-click', (e) => {
-      const { lat, lng } = e.detail;
-      const id = `marker-${Date.now()}`;
-      map.addMarker({
-        id,
-        lat,
-        lng,
-        label: `${lat.toFixed(4)}, ${lng.toFixed(4)}`,
-        popup: `Marker at ${lat.toFixed(4)}, ${lng.toFixed(4)}`
-      });
-      updateInfo();
-    });
+  // Zoom levels
+  const mapZ3 = document.getElementById('map-z3');
+  mapZ3.center = { lat: 20, lng: 0 };
 
-    map.addEventListener('marker-click', (e) => {
-      console.log('Marker clicked:', e.detail.marker);
-    });
+  const mapZ8 = document.getElementById('map-z8');
+  mapZ8.center = { lat: 48.8566, lng: 2.3522 };
 
-    function updateInfo() {
-      centerInfo.textContent = `${map.center.lat.toFixed(4)}, ${map.center.lng.toFixed(4)}`;
-      zoomInfo.textContent = map.zoom;
-      markerCount.textContent = map.markers.length;
-    }
-  </script>
+  const mapZ16 = document.getElementById('map-z16');
+  mapZ16.center = { lat: 40.7484, lng: -73.9857 };
+
+  // Min/max zoom
+  const mapMinmax = document.getElementById('map-minmax');
+  mapMinmax.center = { lat: 40.7128, lng: -74.006 };
+
+  // Markers
+  const mapMarkers = document.getElementById('map-markers');
+  mapMarkers.center = { lat: 48, lng: 5 };
+  mapMarkers.markers = [
+    { id: 'paris', lat: 48.8566, lng: 2.3522, label: 'Paris' },
+    { id: 'london', lat: 51.5074, lng: -0.1278, label: 'London' },
+    { id: 'berlin', lat: 52.52, lng: 13.405, label: 'Berlin' },
+    { id: 'madrid', lat: 40.4168, lng: -3.7038, label: 'Madrid' },
+    { id: 'rome', lat: 41.9028, lng: 12.4964, label: 'Rome' },
+  ];
+
+  // Popups
+  const mapPopups = document.getElementById('map-popups');
+  mapPopups.center = { lat: 40.7128, lng: -74.006 };
+  mapPopups.markers = [
+    { id: 'statue', lat: 40.6892, lng: -74.0445, label: 'Statue of Liberty', popup: 'Statue of Liberty - Gift from France, 1886' },
+    { id: 'empire', lat: 40.7484, lng: -73.9857, label: 'Empire State', popup: 'Empire State Building - 102 floors' },
+    { id: 'central', lat: 40.7829, lng: -73.9654, label: 'Central Park', popup: 'Central Park - 843 acres' },
+  ];
+
+  // Labels
+  const mapLabels = document.getElementById('map-labels');
+  mapLabels.center = { lat: 37.5, lng: -122 };
+  mapLabels.markers = [
+    { id: 'sf', lat: 37.7749, lng: -122.4194, label: 'San Francisco' },
+    { id: 'sj', lat: 37.3382, lng: -121.8863, label: 'San Jose' },
+    { id: 'oak', lat: 37.8044, lng: -122.2712, label: 'Oakland' },
+  ];
+
+  // Single marker
+  const mapSingle = document.getElementById('map-single');
+  mapSingle.center = { lat: 48.8584, lng: 2.2945 };
+  mapSingle.markers = [
+    { id: 'eiffel', lat: 48.8584, lng: 2.2945, label: 'Eiffel Tower', popup: 'Tour Eiffel' },
+  ];
+
+  // Many markers / fitBounds
+  const mapFit = document.getElementById('map-fitbounds');
+  const cities = [
+    { id: 'ny', lat: 40.7128, lng: -74.006, label: 'New York' },
+    { id: 'la', lat: 34.0522, lng: -118.2437, label: 'Los Angeles' },
+    { id: 'chi', lat: 41.8781, lng: -87.6298, label: 'Chicago' },
+    { id: 'hou', lat: 29.7604, lng: -95.3698, label: 'Houston' },
+    { id: 'phx', lat: 33.4484, lng: -112.074, label: 'Phoenix' },
+    { id: 'sea', lat: 47.6062, lng: -122.3321, label: 'Seattle' },
+    { id: 'mia', lat: 25.7617, lng: -80.1918, label: 'Miami' },
+    { id: 'den', lat: 39.7392, lng: -104.9903, label: 'Denver' },
+  ];
+  mapFit.markers = cities;
+  mapFit.fitBounds();
+
+  // Disabled maps
+  const mapNozoom = document.getElementById('map-nozoom');
+  mapNozoom.center = { lat: 51.5074, lng: -0.1278 };
+
+  const mapNodrag = document.getElementById('map-nodrag');
+  mapNodrag.center = { lat: 51.5074, lng: -0.1278 };
+
+  const mapStatic = document.getElementById('map-static');
+  mapStatic.center = { lat: 51.5074, lng: -0.1278 };
+
+  // Different centers
+  document.getElementById('map-nyc').center = { lat: 40.7128, lng: -74.006 };
+  document.getElementById('map-tokyo').center = { lat: 35.6762, lng: 139.6503 };
+  document.getElementById('map-sydney').center = { lat: -33.8688, lng: 151.2093 };
+</script>
 </body>
 </html>

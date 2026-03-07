@@ -1,260 +1,169 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snice Key-Value Demo</title>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <title>Key Value</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      padding: 40px;
-      line-height: 1.6;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-    }
-
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: 10px;
-    }
-
-    h2 {
-      color: var(--snice-color-text-secondary);
-      margin-top: 30px;
-    }
-
-    .demo-section {
-      margin: 30px 0;
-      padding: 20px;
-      background: var(--snice-color-background);
-      border-radius: 8px;
-      border: 1px solid var(--snice-color-border);
-    }
-
-    .demo-label {
-      display: block;
-      margin-bottom: 16px;
-      font-weight: 600;
-      color: var(--snice-color-text-secondary);
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .controls {
-      display: flex;
-      gap: 12px;
-      margin: 16px 0;
-      flex-wrap: wrap;
-    }
-
-    button {
-      padding: 8px 16px;
-      background: var(--snice-color-primary);
-      color: var(--snice-color-text-inverse);
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    button:hover {
-      background: var(--snice-color-primary-hover);
-    }
-
-    .event-log {
-      margin-top: 16px;
-      padding: 12px;
-      background: var(--snice-color-background);
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      font-family: monospace;
-      font-size: 13px;
-      max-height: 100px;
-      overflow-y: auto;
-      color: var(--snice-color-text-secondary);
-    }
-
-    .side-by-side {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
-
-    @media (max-width: 640px) {
-      .side-by-side {
-        grid-template-columns: 1fr;
-      }
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 1.5rem; flex-wrap: wrap; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem; }
+    .box { border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 8px; padding: 1rem; }
   </style>
-</head>
-<body>
-  <div class="container">
-    <h1>Snice Key-Value Component Demo</h1>
-
-    <div class="demo-section">
-      <h2>Basic Edit Mode</h2>
-      <span class="demo-label">Auto-expanding rows with default placeholders</span>
-      <snice-key-value label="Environment Variables"></snice-key-value>
-    </div>
-
-    <div class="demo-section">
-      <h2>Declarative Usage (snice-kv-pair children)</h2>
-      <span class="demo-label">Pre-populated with child elements</span>
-      <snice-key-value label="API Configuration">
-        <snice-kv-pair key="API_URL" value="https://api.example.com"></snice-kv-pair>
-        <snice-kv-pair key="API_KEY" value="sk-abc123xyz"></snice-kv-pair>
-        <snice-kv-pair key="TIMEOUT" value="30000"></snice-kv-pair>
-      </snice-key-value>
-    </div>
-
-    <div class="demo-section">
-      <h2>View Mode vs Edit Mode</h2>
-      <span class="demo-label">Side-by-side comparison</span>
-      <div class="side-by-side">
-        <div>
-          <span class="demo-label">Edit Mode</span>
-          <snice-key-value id="edit-mode" label="Settings" show-copy></snice-key-value>
-        </div>
-        <div>
-          <span class="demo-label">View Mode</span>
-          <snice-key-value id="view-mode" label="Settings" mode="view" show-copy></snice-key-value>
-        </div>
-      </div>
-    </div>
-
-    <div class="demo-section">
-      <h2>With Descriptions</h2>
-      <span class="demo-label">show-description enables a description field per row</span>
-      <snice-key-value id="with-desc" label="Feature Flags" show-description></snice-key-value>
-    </div>
-
-    <div class="demo-section">
-      <h2>Fixed Rows</h2>
-      <span class="demo-label">rows="3" locks to exactly 3 rows (no auto-expand, no delete)</span>
-      <snice-key-value label="Connection Settings" rows="3" key-placeholder="Parameter" value-placeholder="Value"></snice-key-value>
-    </div>
-
-    <div class="demo-section">
-      <h2>Compact Variant</h2>
-      <span class="demo-label">variant="compact" for tighter spacing</span>
-      <snice-key-value id="compact-demo" label="Headers" variant="compact"></snice-key-value>
-    </div>
-
-    <div class="demo-section">
-      <h2>States</h2>
-
-      <span class="demo-label">Disabled</span>
-      <snice-key-value id="disabled-demo" label="Locked Config" disabled></snice-key-value>
-
-      <span class="demo-label" style="margin-top: 24px;">Readonly</span>
-      <snice-key-value id="readonly-demo" label="Read-only Config" readonly></snice-key-value>
-    </div>
-
-    <div class="demo-section">
-      <h2>Interactive Demo</h2>
-      <span class="demo-label">Programmatic control</span>
-
-      <div class="controls">
-        <button onclick="addItem()">Add Item</button>
-        <button onclick="clearItems()">Clear All</button>
-        <button onclick="getItems()">Get Items</button>
-      </div>
-
-      <snice-key-value id="interactive" label="Dynamic Key-Value" show-copy key-placeholder="Enter key" value-placeholder="Enter value"></snice-key-value>
-
-      <div class="event-log" id="event-log">Interact with the component to see events here...</div>
-    </div>
-  </div>
-
   <script type="module">
     import './snice-key-value.ts';
 
-    // Edit/View mode demo
-    const editMode = document.getElementById('edit-mode');
-    const viewMode = document.getElementById('view-mode');
-    const settingsData = [
-      { key: 'theme', value: 'dark' },
-      { key: 'language', value: 'en-US' },
-      { key: 'timezone', value: 'UTC-5' },
-    ];
-    // Wait for components to be ready
-    setTimeout(() => {
-      editMode.setItems(settingsData);
-      viewMode.setItems(settingsData);
-    }, 100);
-
-    // Description demo
-    const descDemo = document.getElementById('with-desc');
-    setTimeout(() => {
-      descDemo.setItems([
-        { key: 'dark_mode', value: 'true', description: 'Enable dark theme for all users' },
-        { key: 'beta_features', value: 'false', description: 'Show experimental features' },
+    document.addEventListener('DOMContentLoaded', () => {
+      // Pre-populated items
+      document.getElementById('kv-populated').setItems([
+        { key: 'name', value: 'John Doe' },
+        { key: 'email', value: 'john@example.com' },
+        { key: 'role', value: 'Admin' },
       ]);
-    }, 100);
 
-    // Compact demo
-    const compactDemo = document.getElementById('compact-demo');
-    setTimeout(() => {
-      compactDemo.setItems([
-        { key: 'Content-Type', value: 'application/json' },
-        { key: 'Authorization', value: 'Bearer token123' },
+      // View mode
+      document.getElementById('kv-view').setItems([
+        { key: 'Host', value: 'api.example.com' },
+        { key: 'Port', value: '443' },
+        { key: 'Protocol', value: 'HTTPS' },
+        { key: 'Timeout', value: '30s' },
       ]);
-    }, 100);
 
-    // Disabled/readonly demos
-    const disabledDemo = document.getElementById('disabled-demo');
-    const readonlyDemo = document.getElementById('readonly-demo');
-    setTimeout(() => {
-      const configData = [
-        { key: 'host', value: 'db.example.com' },
-        { key: 'port', value: '5432' },
-      ];
-      disabledDemo.setItems(configData);
-      readonlyDemo.setItems(configData);
-    }, 100);
+      // With descriptions
+      document.getElementById('kv-desc').setItems([
+        { key: 'API_KEY', value: 'sk-abc123...', description: 'Primary API key for authentication' },
+        { key: 'DB_HOST', value: 'postgres.internal', description: 'Database server hostname' },
+        { key: 'CACHE_TTL', value: '3600', description: 'Cache time-to-live in seconds' },
+      ]);
 
-    // Interactive demo
-    const interactive = document.getElementById('interactive');
-    const log = document.getElementById('event-log');
+      // View mode with descriptions
+      document.getElementById('kv-view-desc').setItems([
+        { key: 'CPU', value: '4 cores', description: 'Allocated processor cores' },
+        { key: 'Memory', value: '16 GB', description: 'Available RAM' },
+        { key: 'Storage', value: '500 GB SSD', description: 'Primary disk capacity' },
+      ]);
 
-    let addCounter = 0;
-    window.addItem = function() {
-      addCounter++;
-      interactive.addItem(`key_${addCounter}`, `value_${addCounter}`);
-    };
+      // Compact variant
+      document.getElementById('kv-compact').setItems([
+        { key: 'Width', value: '1920' },
+        { key: 'Height', value: '1080' },
+        { key: 'DPI', value: '96' },
+      ]);
 
-    window.clearItems = function() {
-      interactive.clear();
-    };
-
-    window.getItems = function() {
-      const items = interactive.getItems();
-      log.textContent = `getItems(): ${JSON.stringify(items)}`;
-    };
-
-    interactive.addEventListener('kv-change', (e) => {
-      log.textContent = `kv-change: ${JSON.stringify(e.detail.items)}`;
-    });
-
-    interactive.addEventListener('kv-add', (e) => {
-      log.textContent = `kv-add: { key: "${e.detail.item.key}", value: "${e.detail.item.value}", index: ${e.detail.index} }`;
-    });
-
-    interactive.addEventListener('kv-remove', (e) => {
-      log.textContent = `kv-remove: { key: "${e.detail.item.key}", value: "${e.detail.item.value}", index: ${e.detail.index} }`;
-    });
-
-    interactive.addEventListener('kv-copy', (e) => {
-      log.textContent = `kv-copy: Copied ${e.detail.items.length} items to clipboard`;
+      // Copy button
+      document.getElementById('kv-copy').setItems([
+        { key: 'token', value: 'eyJhbGciOiJIUzI1NiJ9' },
+        { key: 'expires', value: '2026-12-31' },
+      ]);
     });
   </script>
+</head>
+<body>
+
+<!-- Mode: edit (default) -->
+<h2>Mode: edit (default, empty)</h2>
+<div class="box"><snice-key-value id="kv-empty" label="Environment Variables"></snice-key-value></div>
+
+<h2>Mode: edit (pre-populated)</h2>
+<div class="box"><snice-key-value id="kv-populated" label="User Details"></snice-key-value></div>
+
+<!-- Mode: view -->
+<h2>Mode: view</h2>
+<div class="box"><snice-key-value id="kv-view" mode="view" label="Server Config"></snice-key-value></div>
+
+<!-- Variant: default -->
+<h2>Variant: default</h2>
+<div class="box"><snice-key-value variant="default" label="Default Variant"></snice-key-value></div>
+
+<!-- Variant: compact -->
+<h2>Variant: compact</h2>
+<div class="box"><snice-key-value id="kv-compact" variant="compact" label="Compact Variant"></snice-key-value></div>
+
+<!-- Both variants compared -->
+<h2>Variant Comparison</h2>
+<div class="grid">
+  <div class="box"><snice-key-value variant="default" label="Default"></snice-key-value></div>
+  <div class="box"><snice-key-value variant="compact" label="Compact"></snice-key-value></div>
+</div>
+
+<!-- auto-expand: true (default) -->
+<h2>auto-expand: true (default)</h2>
+<div class="box"><snice-key-value auto-expand label="Auto-expanding rows"></snice-key-value></div>
+
+<!-- auto-expand: false -->
+<h2>auto-expand: false</h2>
+<div class="box"><snice-key-value auto-expand="false" label="No auto-expand"></snice-key-value></div>
+
+<!-- Fixed rows -->
+<h2>Rows: 3 (fixed)</h2>
+<div class="box"><snice-key-value rows="3" label="3 Fixed Rows"></snice-key-value></div>
+
+<h2>Rows: 5 (fixed)</h2>
+<div class="box"><snice-key-value rows="5" label="5 Fixed Rows"></snice-key-value></div>
+
+<!-- show-description -->
+<h2>show-description: true</h2>
+<div class="box"><snice-key-value id="kv-desc" show-description label="With Descriptions"></snice-key-value></div>
+
+<h2>show-description: true (view mode)</h2>
+<div class="box"><snice-key-value id="kv-view-desc" show-description mode="view" label="View with Descriptions"></snice-key-value></div>
+
+<!-- Custom placeholders -->
+<h2>Custom Placeholders (key-placeholder, value-placeholder)</h2>
+<div class="box"><snice-key-value key-placeholder="Header Name" value-placeholder="Header Value" label="HTTP Headers"></snice-key-value></div>
+
+<!-- Disabled -->
+<h2>Disabled</h2>
+<div class="box"><snice-key-value disabled label="Disabled"></snice-key-value></div>
+
+<!-- Readonly -->
+<h2>Readonly</h2>
+<div class="box"><snice-key-value readonly label="Readonly"></snice-key-value></div>
+
+<!-- show-copy -->
+<h2>show-copy: true</h2>
+<div class="box"><snice-key-value id="kv-copy" show-copy label="With Copy Button"></snice-key-value></div>
+
+<!-- No label -->
+<h2>No Label</h2>
+<div class="box"><snice-key-value></snice-key-value></div>
+
+<!-- Declarative API (slot children) -->
+<h2>Declarative API (snice-kv-pair children)</h2>
+<div class="box">
+  <snice-key-value label="Declarative Pairs" mode="view">
+    <snice-kv-pair key="Language" value="TypeScript"></snice-kv-pair>
+    <snice-kv-pair key="Framework" value="Snice"></snice-kv-pair>
+    <snice-kv-pair key="Build" value="Rollup"></snice-kv-pair>
+  </snice-key-value>
+</div>
+
+<!-- Combinations -->
+<h2>Compact + Fixed Rows + Descriptions + Disabled</h2>
+<div class="box"><snice-key-value variant="compact" rows="4" show-description disabled label="Compact Fixed Disabled"></snice-key-value></div>
+
+<h2>View Mode + Copy + No Label</h2>
+<div class="box">
+  <snice-key-value mode="view" show-copy>
+    <snice-kv-pair key="OS" value="Linux"></snice-kv-pair>
+    <snice-kv-pair key="Arch" value="x86_64"></snice-kv-pair>
+  </snice-key-value>
+</div>
+
+<h2>Name (form integration)</h2>
+<div class="box"><snice-key-value name="metadata" label="Metadata"></snice-key-value></div>
+
 </body>
 </html>

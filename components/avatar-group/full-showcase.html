@@ -1,188 +1,248 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snice Avatar Group Demo</title>
+  <title>Avatar Group</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
     body {
       font-family: system-ui, -apple-system, sans-serif;
-      padding: 40px;
-      line-height: 1.6;
+      padding: 1.5rem;
       background: var(--snice-color-background);
-      transition: background-color var(--snice-transition-medium) ease, color var(--snice-transition-medium) ease;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      background: var(--snice-color-background-element);
-      padding: 40px;
-      border-radius: 8px;
-      box-shadow: var(--snice-shadow-lg);
-    }
-
-    h1 {
       color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: 10px;
     }
-
+    section { margin-bottom: 2rem; }
     h2 {
-      color: var(--snice-color-text-secondary);
-      margin-top: 30px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--snice-color-text-tertiary, #888);
+      margin: 0 0 0.75rem;
     }
-
-    .demo-section {
-      margin: 30px 0;
-      padding: 20px;
-      background: var(--snice-color-background);
-      border-radius: 4px;
-    }
-
-    .demo-label {
-      display: block;
-      margin-bottom: 12px;
-      font-weight: 500;
-      color: var(--snice-color-text-secondary);
-      font-size: 14px;
-    }
-
-    .inline-demo {
+    .row {
       display: flex;
       align-items: center;
-      gap: 30px;
+      gap: 0.75rem;
       flex-wrap: wrap;
-      margin: 16px 0;
+      margin-bottom: 1rem;
     }
-
-    .event-log {
-      margin-top: 16px;
-      padding: 12px;
-      background: var(--snice-color-background);
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      font-size: 14px;
-      font-family: monospace;
-      max-height: 150px;
-      overflow-y: auto;
+    .matrix {
+      display: grid;
+      grid-template-columns: auto repeat(3, 1fr);
+      gap: 1rem;
+      align-items: center;
+    }
+    .matrix-label {
+      font-size: 0.7rem;
+      color: var(--snice-color-text-secondary, #aaa);
+      text-align: right;
+      padding-right: 0.5rem;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Snice Avatar Group Component Demo</h1>
 
-    <div class="demo-section">
-      <h2>Basic Avatar Group</h2>
-      <snice-avatar-group id="basic-group"></snice-avatar-group>
-    </div>
-
-    <div class="demo-section">
-      <h2>With Overflow (+N)</h2>
-      <span class="demo-label">max="3"</span>
-      <snice-avatar-group id="overflow-group" max="3"></snice-avatar-group>
-    </div>
-
-    <div class="demo-section">
-      <h2>Sizes</h2>
-      <div class="inline-demo">
-        <div>
-          <span class="demo-label">Small</span>
-          <snice-avatar-group id="small-group" size="small"></snice-avatar-group>
-        </div>
-        <div>
-          <span class="demo-label">Medium (default)</span>
-          <snice-avatar-group id="medium-group" size="medium"></snice-avatar-group>
-        </div>
-        <div>
-          <span class="demo-label">Large</span>
-          <snice-avatar-group id="large-group" size="large"></snice-avatar-group>
-        </div>
+  <section>
+    <h2>All sizes &mdash; imperative API</h2>
+    <div class="row">
+      <div>
+        <h2>small</h2>
+        <snice-avatar-group id="grp-small" size="small"></snice-avatar-group>
+      </div>
+      <div>
+        <h2>medium (default)</h2>
+        <snice-avatar-group id="grp-medium" size="medium"></snice-avatar-group>
+      </div>
+      <div>
+        <h2>large</h2>
+        <snice-avatar-group id="grp-large" size="large"></snice-avatar-group>
       </div>
     </div>
+  </section>
 
-    <div class="demo-section">
-      <h2>Custom Overlap</h2>
-      <div class="inline-demo">
-        <div>
-          <span class="demo-label">overlap="4"</span>
-          <snice-avatar-group id="overlap-4" overlap="4"></snice-avatar-group>
-        </div>
-        <div>
-          <span class="demo-label">overlap="12"</span>
-          <snice-avatar-group id="overlap-12" overlap="12"></snice-avatar-group>
-        </div>
-        <div>
-          <span class="demo-label">overlap="16"</span>
-          <snice-avatar-group id="overlap-16" overlap="16"></snice-avatar-group>
-        </div>
+  <section>
+    <h2>Max property &mdash; overflow badge</h2>
+    <div class="row">
+      <div>
+        <h2>max=3</h2>
+        <snice-avatar-group id="grp-max3" max="3"></snice-avatar-group>
+      </div>
+      <div>
+        <h2>max=5 (default)</h2>
+        <snice-avatar-group id="grp-max5" max="5"></snice-avatar-group>
+      </div>
+      <div>
+        <h2>max=2</h2>
+        <snice-avatar-group id="grp-max2" max="2"></snice-avatar-group>
+      </div>
+      <div>
+        <h2>max=1</h2>
+        <snice-avatar-group id="grp-max1" max="1"></snice-avatar-group>
       </div>
     </div>
+  </section>
 
-    <div class="demo-section">
-      <h2>Events</h2>
-      <snice-avatar-group id="event-group" max="3"></snice-avatar-group>
-      <div class="event-log" id="event-log">Click an avatar or the overflow indicator...</div>
+  <section>
+    <h2>Overlap values</h2>
+    <div class="row">
+      <div>
+        <h2>overlap=0</h2>
+        <snice-avatar-group id="grp-overlap0" overlap="0"></snice-avatar-group>
+      </div>
+      <div>
+        <h2>overlap=8 (default)</h2>
+        <snice-avatar-group id="grp-overlap8" overlap="8"></snice-avatar-group>
+      </div>
+      <div>
+        <h2>overlap=16</h2>
+        <snice-avatar-group id="grp-overlap16" overlap="16"></snice-avatar-group>
+      </div>
+      <div>
+        <h2>overlap=24</h2>
+        <snice-avatar-group id="grp-overlap24" overlap="24"></snice-avatar-group>
+      </div>
     </div>
-  </div>
+  </section>
+
+  <section>
+    <h2>With images</h2>
+    <snice-avatar-group id="grp-images"></snice-avatar-group>
+  </section>
+
+  <section>
+    <h2>With initials only</h2>
+    <snice-avatar-group id="grp-initials"></snice-avatar-group>
+  </section>
+
+  <section>
+    <h2>Mixed: images + initials + fallback</h2>
+    <snice-avatar-group id="grp-mixed"></snice-avatar-group>
+  </section>
+
+  <section>
+    <h2>Custom colors</h2>
+    <snice-avatar-group id="grp-colors"></snice-avatar-group>
+  </section>
+
+  <section>
+    <h2>Declarative API (child snice-avatar elements)</h2>
+    <snice-avatar-group size="large">
+      <snice-avatar name="Alice"></snice-avatar>
+      <snice-avatar name="Bob"></snice-avatar>
+      <snice-avatar name="Carol"></snice-avatar>
+      <snice-avatar name="David"></snice-avatar>
+      <snice-avatar name="Eve"></snice-avatar>
+      <snice-avatar name="Frank"></snice-avatar>
+      <snice-avatar name="Grace"></snice-avatar>
+    </snice-avatar-group>
+  </section>
+
+  <section>
+    <h2>Declarative with max=3</h2>
+    <snice-avatar-group max="3">
+      <snice-avatar name="Alpha"></snice-avatar>
+      <snice-avatar name="Beta"></snice-avatar>
+      <snice-avatar name="Gamma"></snice-avatar>
+      <snice-avatar name="Delta"></snice-avatar>
+      <snice-avatar name="Epsilon"></snice-avatar>
+    </snice-avatar-group>
+  </section>
+
+  <section>
+    <h2>Single avatar</h2>
+    <snice-avatar-group id="grp-single"></snice-avatar-group>
+  </section>
+
+  <section>
+    <h2>No avatars (empty)</h2>
+    <snice-avatar-group id="grp-empty"></snice-avatar-group>
+  </section>
+
+  <section>
+    <h2>Size x max matrix</h2>
+    <div class="matrix">
+      <div class="matrix-label">small, max=3</div>
+      <snice-avatar-group id="mx-s3" size="small" max="3"></snice-avatar-group>
+      <div class="matrix-label">medium, max=3</div>
+      <snice-avatar-group id="mx-m3" size="medium" max="3"></snice-avatar-group>
+
+      <div class="matrix-label">small, max=5</div>
+      <snice-avatar-group id="mx-s5" size="small" max="5"></snice-avatar-group>
+      <div class="matrix-label">large, max=5</div>
+      <snice-avatar-group id="mx-l5" size="large" max="5"></snice-avatar-group>
+    </div>
+  </section>
 
   <script type="module">
     import './snice-avatar-group.ts';
+    import '../avatar/snice-avatar.ts';
 
-    const sampleAvatars = [
-      { name: 'Alice Johnson', initials: 'AJ' },
-      { name: 'Bob Smith', initials: 'BS' },
-      { name: 'Carol Williams', initials: 'CW' },
-      { name: 'David Brown', initials: 'DB' },
-      { name: 'Eve Davis', initials: 'ED' },
-      { name: 'Frank Miller', initials: 'FM' },
-      { name: 'Grace Wilson', initials: 'GW' },
+    const people = [
+      { name: 'Alice Chen', src: 'https://i.pravatar.cc/80?img=1' },
+      { name: 'Bob Smith', src: 'https://i.pravatar.cc/80?img=2' },
+      { name: 'Carol Davis', src: 'https://i.pravatar.cc/80?img=3' },
+      { name: 'David Lee', src: 'https://i.pravatar.cc/80?img=4' },
+      { name: 'Eve Park', src: 'https://i.pravatar.cc/80?img=5' },
+      { name: 'Frank Wu', src: 'https://i.pravatar.cc/80?img=6' },
+      { name: 'Grace Kim', src: 'https://i.pravatar.cc/80?img=7' },
     ];
 
-    const threeAvatars = sampleAvatars.slice(0, 3);
+    const names = people.map(p => ({ name: p.name }));
 
-    // Basic
-    document.getElementById('basic-group').avatars = sampleAvatars.slice(0, 5);
+    document.getElementById('grp-small').avatars = people.slice(0, 4);
+    document.getElementById('grp-medium').avatars = people.slice(0, 4);
+    document.getElementById('grp-large').avatars = people.slice(0, 4);
 
-    // Overflow
-    document.getElementById('overflow-group').avatars = sampleAvatars;
+    document.getElementById('grp-max3').avatars = people;
+    document.getElementById('grp-max5').avatars = people;
+    document.getElementById('grp-max2').avatars = people;
+    document.getElementById('grp-max1').avatars = people;
 
-    // Sizes
-    document.getElementById('small-group').avatars = threeAvatars;
-    document.getElementById('medium-group').avatars = threeAvatars;
-    document.getElementById('large-group').avatars = threeAvatars;
+    document.getElementById('grp-overlap0').avatars = people.slice(0, 4);
+    document.getElementById('grp-overlap8').avatars = people.slice(0, 4);
+    document.getElementById('grp-overlap16').avatars = people.slice(0, 4);
+    document.getElementById('grp-overlap24').avatars = people.slice(0, 4);
 
-    // Overlap
-    document.getElementById('overlap-4').avatars = threeAvatars;
-    document.getElementById('overlap-12').avatars = threeAvatars;
-    document.getElementById('overlap-16').avatars = threeAvatars;
+    document.getElementById('grp-images').avatars = people.slice(0, 5);
 
-    // Events
-    const eventGroup = document.getElementById('event-group');
-    eventGroup.avatars = sampleAvatars;
+    document.getElementById('grp-initials').avatars = names.slice(0, 5);
 
-    const eventLog = document.getElementById('event-log');
-    let logEntries = [];
+    document.getElementById('grp-mixed').avatars = [
+      { name: 'Alice', src: 'https://i.pravatar.cc/80?img=1' },
+      { name: 'Bob' },
+      { name: 'Carol', src: 'https://broken.invalid/404.jpg' },
+      {},
+      { name: 'Eve', initials: 'EP' },
+    ];
 
-    eventGroup.addEventListener('avatar-click', (e) => {
-      const { avatar, index } = e.detail;
-      addLogEntry(`Avatar click: "${avatar.name}" (index ${index})`);
-    });
+    document.getElementById('grp-colors').avatars = [
+      { name: 'Red', color: '#dc2626' },
+      { name: 'Blue', color: '#2563eb' },
+      { name: 'Green', color: '#16a34a' },
+      { name: 'Purple', color: '#7c3aed' },
+    ];
 
-    eventGroup.addEventListener('overflow-click', (e) => {
-      const { remaining, avatars } = e.detail;
-      const names = avatars.map(a => a.name).join(', ');
-      addLogEntry(`Overflow click: ${remaining} more (${names})`);
-    });
+    document.getElementById('grp-single').avatars = [{ name: 'Solo' }];
+    document.getElementById('grp-empty').avatars = [];
 
-    function addLogEntry(message) {
-      const timestamp = new Date().toLocaleTimeString();
-      logEntries.unshift(`[${timestamp}] ${message}`);
-      logEntries = logEntries.slice(0, 10);
-      eventLog.innerHTML = logEntries.join('<br>');
-    }
+    document.getElementById('mx-s3').avatars = people;
+    document.getElementById('mx-m3').avatars = people;
+    document.getElementById('mx-s5').avatars = people;
+    document.getElementById('mx-l5').avatars = people;
   </script>
 </body>
 </html>

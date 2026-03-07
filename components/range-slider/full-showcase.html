@@ -1,72 +1,98 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Range Slider Demo</title>
+  <title>Range Slider</title>
+  <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      padding: 2rem;
-      max-width: 600px;
-      margin: 0 auto;
-      color: var(--snice-color-text, rgb(23 23 23));
-      background: var(--snice-color-background, rgb(255 255 255));
-    }
-    h1 { font-size: 1.5rem; margin-bottom: 2rem; }
-    section { margin-bottom: 2rem; }
-    h2 { font-size: 1rem; margin-bottom: 0.75rem; color: var(--snice-color-text-secondary, rgb(82 82 82)); }
-    .vertical-container { height: 200px; display: flex; justify-content: center; }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    section { margin-bottom: 1.5rem; }
+    snice-range-slider { display: block; width: 100%; max-width: 400px; }
+    snice-range-slider[orientation="vertical"] { width: auto; height: 200px; }
   </style>
 </head>
 <body>
-  <h1>Range Slider</h1>
 
-  <section>
-    <h2>Basic</h2>
-    <snice-range-slider value-low="20" value-high="80"></snice-range-slider>
-  </section>
+<h2>Default (0-100, horizontal)</h2>
+<section><snice-range-slider value-low="20" value-high="80"></snice-range-slider></section>
 
-  <section>
-    <h2>With Tooltips</h2>
-    <snice-range-slider show-tooltip value-low="25" value-high="75"></snice-range-slider>
-  </section>
+<h2>Orientation: horizontal (default)</h2>
+<section><snice-range-slider orientation="horizontal" value-low="30" value-high="70"></snice-range-slider></section>
 
-  <section>
-    <h2>With Labels</h2>
-    <snice-range-slider show-labels min="0" max="500" value-low="100" value-high="400"></snice-range-slider>
-  </section>
+<h2>Orientation: vertical</h2>
+<section><snice-range-slider orientation="vertical" value-low="30" value-high="70"></snice-range-slider></section>
 
-  <section>
-    <h2>Custom Step</h2>
-    <snice-range-slider min="0" max="100" step="10" value-low="20" value-high="70" show-tooltip></snice-range-slider>
-  </section>
+<h2>show-tooltip</h2>
+<section><snice-range-slider show-tooltip value-low="25" value-high="75"></snice-range-slider></section>
 
-  <section>
-    <h2>Vertical</h2>
-    <div class="vertical-container">
-      <snice-range-slider orientation="vertical" value-low="30" value-high="70" show-tooltip></snice-range-slider>
-    </div>
-  </section>
+<h2>show-labels</h2>
+<section><snice-range-slider show-labels value-low="20" value-high="80"></snice-range-slider></section>
 
-  <section>
-    <h2>Disabled</h2>
-    <snice-range-slider disabled value-low="20" value-high="60"></snice-range-slider>
-  </section>
+<h2>show-tooltip + show-labels</h2>
+<section><snice-range-slider show-tooltip show-labels value-low="30" value-high="60"></snice-range-slider></section>
 
-  <section>
-    <h2>Events</h2>
-    <snice-range-slider id="event-demo" min="0" max="100" value-low="25" value-high="75" show-tooltip></snice-range-slider>
-    <p id="event-output">Range: 25 - 75</p>
-  </section>
+<h2>Disabled</h2>
+<section><snice-range-slider disabled value-low="20" value-high="60"></snice-range-slider></section>
 
-  <script type="module">
-    import './snice-range-slider';
+<h2>Step: 1 (default)</h2>
+<section><snice-range-slider step="1" show-tooltip value-low="10" value-high="90"></snice-range-slider></section>
 
-    document.getElementById('event-demo').addEventListener('range-change', (e) => {
-      document.getElementById('event-output').textContent =
-        `Range: ${e.detail.valueLow} - ${e.detail.valueHigh}`;
-    });
-  </script>
+<h2>Step: 5</h2>
+<section><snice-range-slider step="5" show-tooltip value-low="20" value-high="80"></snice-range-slider></section>
+
+<h2>Step: 10</h2>
+<section><snice-range-slider step="10" show-tooltip value-low="30" value-high="70"></snice-range-slider></section>
+
+<h2>Step: 25</h2>
+<section><snice-range-slider step="25" show-tooltip value-low="25" value-high="75"></snice-range-slider></section>
+
+<h2>Custom range: min=0 max=1000</h2>
+<section><snice-range-slider min="0" max="1000" value-low="200" value-high="800" show-labels show-tooltip></snice-range-slider></section>
+
+<h2>Custom range: min=-50 max=50</h2>
+<section><snice-range-slider min="-50" max="50" value-low="-20" value-high="20" show-labels show-tooltip></snice-range-slider></section>
+
+<h2>Narrow range (thumbs close)</h2>
+<section><snice-range-slider value-low="45" value-high="55" show-tooltip></snice-range-slider></section>
+
+<h2>Full range (thumbs at extremes)</h2>
+<section><snice-range-slider value-low="0" value-high="100" show-tooltip show-labels></snice-range-slider></section>
+
+<h2>Same value (collapsed)</h2>
+<section><snice-range-slider value-low="50" value-high="50" show-tooltip></snice-range-slider></section>
+
+<h2>Vertical + show-tooltip</h2>
+<section class="row">
+  <snice-range-slider orientation="vertical" show-tooltip value-low="20" value-high="80"></snice-range-slider>
+</section>
+
+<h2>Vertical + disabled</h2>
+<section class="row">
+  <snice-range-slider orientation="vertical" disabled value-low="30" value-high="60"></snice-range-slider>
+</section>
+
+<h2>Vertical + show-labels</h2>
+<section class="row">
+  <snice-range-slider orientation="vertical" show-labels value-low="10" value-high="90"></snice-range-slider>
+</section>
+
+<script type="module">
+  import './snice-range-slider.ts';
+</script>
 </body>
 </html>

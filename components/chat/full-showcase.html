@@ -1,437 +1,145 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Snice Chat Demo</title>
-    <link rel="stylesheet" href="../theme/theme.css">
-    <style>
-      body {
-        font-family: var(--snice-font-family);
-        margin: 0;
-        padding: 20px;
-        background: var(--snice-color-background);
-        color: var(--snice-color-text);
-        transition: background-color var(--snice-transition-medium) ease, color var(--snice-transition-medium) ease;
-      }
+<html>
+<head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <title>Chat</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    section { margin-bottom: 2rem; max-width: 600px; }
+    snice-chat { --snice-chat-height: 400px; }
+  </style>
+  <script type="module">
+    import './snice-chat.ts';
+    await customElements.whenDefined('snice-chat');
 
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-      }
+    const now = Date.now();
 
-      h1 {
-        margin: 0 0 30px;
-        color: var(--snice-color-text);
-      }
+    // Empty
+    // (no messages set)
 
-      .demo-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-        margin-bottom: 20px;
-      }
+    // Default with messages
+    const chat1 = document.getElementById('chat-default');
+    chat1.addMessage({ type: 'system', content: 'Chat started', author: 'System', timestamp: new Date(now - 3600000) });
+    chat1.addMessage({ type: 'text', content: 'Hello everyone!', author: 'Alice', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alice', timestamp: new Date(now - 300000) });
+    chat1.addMessage({ type: 'text', content: 'Hi Alice, how are you?', author: 'Bob', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Bob', timestamp: new Date(now - 200000), reactions: [{ emoji: '\uD83D\uDC4B', count: 2, users: ['Alice','Charlie'] }] });
+    chat1.addMessage({ type: 'text', content: 'Doing great, thanks!', author: 'You', timestamp: new Date(now - 100000) });
 
-      .demo-section {
-        background: var(--snice-color-background-element);
-        border-radius: 8px;
-        padding: 20px;
-        box-shadow: var(--snice-shadow-sm);
-      }
+    // With file attachment
+    const chat2 = document.getElementById('chat-files');
+    chat2.addMessage({ type: 'text', content: 'Check this out', author: 'Diana', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Diana', timestamp: new Date(now - 500000) });
+    chat2.addMessage({ type: 'image', content: '', author: 'Diana', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Diana', timestamp: new Date(now - 400000), attachment: { type: 'image', url: 'https://picsum.photos/400/200', name: 'mockup.png' } });
+    chat2.addMessage({ type: 'file', content: '', author: 'Eve', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Eve', timestamp: new Date(now - 300000), attachment: { type: 'file', url: '#', name: 'report.pdf', size: 245760 } });
 
-      .demo-section h2 {
-        margin: 0 0 15px;
-        color: var(--snice-color-text);
-        font-size: 18px;
-      }
+    // Edited message
+    const chat3 = document.getElementById('chat-edited');
+    chat3.addMessage({ type: 'text', content: 'This message was edited', author: 'You', timestamp: new Date(now - 60000), edited: true });
+    chat3.addMessage({ type: 'text', content: 'Original message', author: 'Alice', timestamp: new Date(now - 30000) });
 
-      .demo-section p {
-        margin: 0 0 15px;
-        color: var(--snice-color-text-secondary);
-        font-size: 14px;
-      }
+    // No avatars
+    // (show-avatars="false" set in HTML)
+    const chat4 = document.getElementById('chat-no-avatars');
+    chat4.addMessage({ type: 'text', content: 'Message without avatar', author: 'User', timestamp: new Date() });
+    chat4.addMessage({ type: 'text', content: 'Another message', author: 'Other', timestamp: new Date() });
 
-      .controls {
-        margin: 20px 0;
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-      }
+    // No timestamps
+    const chat5 = document.getElementById('chat-no-timestamps');
+    chat5.addMessage({ type: 'text', content: 'Timestamps are hidden', author: 'Alice', timestamp: new Date() });
 
-      button {
-        padding: 8px 16px;
-        border: 1px solid var(--snice-color-border);
-        border-radius: 6px;
-        background: var(--snice-color-background);
-        color: var(--snice-color-text);
-        cursor: pointer;
-        font-size: 14px;
-        transition: background 0.2s;
-      }
+    // No file uploads
+    const chat6 = document.getElementById('chat-no-files');
+    chat6.addMessage({ type: 'text', content: 'File upload button is hidden', author: 'Alice', timestamp: new Date() });
 
-      button:hover {
-        background: var(--snice-color-background-hover);
-      }
+    // Custom placeholder
+    const chat7 = document.getElementById('chat-placeholder');
+    chat7.addMessage({ type: 'text', content: 'Custom placeholder below', author: 'Alice', timestamp: new Date() });
 
-      button:active {
-        background: var(--snice-color-background-active);
-      }
+    // Custom current-user
+    const chat8 = document.getElementById('chat-current-user');
+    chat8.addMessage({ type: 'text', content: 'I am the current user', author: 'Admin', timestamp: new Date() });
+    chat8.addMessage({ type: 'text', content: 'This is from someone else', author: 'Guest', timestamp: new Date() });
 
-      .user-select {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 10px;
-        align-items: center;
-      }
+    // All features disabled
+    const chat9 = document.getElementById('chat-minimal');
+    chat9.addMessage({ type: 'text', content: 'Minimal chat: no avatars, no timestamps, no files, no typing', author: 'User', timestamp: new Date() });
 
-      .user-select label {
-        font-size: 14px;
-        color: #24292f;
-      }
+    // With reactions
+    const chatR = document.getElementById('chat-reactions');
+    chatR.addMessage({ type: 'text', content: 'Reactions showcase', author: 'You', timestamp: new Date(), reactions: [
+      { emoji: '\uD83D\uDC4D', count: 3, users: ['Alice','Bob','You'] },
+      { emoji: '\u2764\uFE0F', count: 1, users: ['Charlie'] },
+      { emoji: '\uD83D\uDE02', count: 5, users: ['Alice','Bob','Charlie','Diana','Eve'] }
+    ]});
+  </script>
+</head>
+<body>
 
-      .user-select select {
-        padding: 6px 12px;
-        border: 1px solid #d0d7de;
-        border-radius: 6px;
-        font-size: 14px;
-      }
+<section>
+  <h2>Empty (no messages)</h2>
+  <snice-chat id="chat-empty" current-user="You"></snice-chat>
+</section>
 
-      snice-chat {
-        --snice-chat-height: 500px;
-      }
+<section>
+  <h2>Default: system + text messages, avatars, timestamps, reactions</h2>
+  <snice-chat id="chat-default" current-user="You"></snice-chat>
+</section>
 
-      @media (max-width: 900px) {
-        .demo-grid {
-          grid-template-columns: 1fr;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1>Snice Chat Component</h1>
+<section>
+  <h2>Image and file attachments</h2>
+  <snice-chat id="chat-files" current-user="You"></snice-chat>
+</section>
 
-      <div class="demo-grid">
-        <div class="demo-section">
-          <h2>Chat Room 1</h2>
-          <p>Interactive chat with multiple users</p>
-          <div class="user-select">
-            <label>Send as:</label>
-            <select id="user-select-1">
-              <option value="You">You</option>
-              <option value="Alice">Alice</option>
-              <option value="Bob">Bob</option>
-              <option value="Charlie">Charlie</option>
-            </select>
-          </div>
-          <snice-chat id="chat1" current-user="You"></snice-chat>
-          <div class="controls">
-            <button id="add-typing-1">Add Typing (Alice)</button>
-            <button id="remove-typing-1">Remove Typing</button>
-            <button id="clear-1">Clear Messages</button>
-          </div>
-        </div>
+<section>
+  <h2>Edited message</h2>
+  <snice-chat id="chat-edited" current-user="You"></snice-chat>
+</section>
 
-        <div class="demo-section">
-          <h2>Chat Room 2</h2>
-          <p>Simple chat interface</p>
-          <div class="user-select">
-            <label>Send as:</label>
-            <select id="user-select-2">
-              <option value="You">You</option>
-              <option value="Diana">Diana</option>
-              <option value="Eve">Eve</option>
-            </select>
-          </div>
-          <snice-chat id="chat2" current-user="You"></snice-chat>
-          <div class="controls">
-            <button id="add-reaction-2">Add Reaction 👍</button>
-            <button id="export-json">Export JSON</button>
-          </div>
-        </div>
-      </div>
+<section>
+  <h2>show-avatars="false"</h2>
+  <snice-chat id="chat-no-avatars" current-user="You" show-avatars="false"></snice-chat>
+</section>
 
-      <div class="demo-section">
-        <h2>Features</h2>
-        <div class="controls">
-          <button id="send-text">Send Text Message</button>
-          <button id="send-image">Send Image</button>
-          <button id="send-file">Send File</button>
-          <button id="send-system">Send System Message</button>
-          <button id="toggle-features">Toggle Features</button>
-        </div>
-      </div>
-    </div>
+<section>
+  <h2>show-timestamps="false"</h2>
+  <snice-chat id="chat-no-timestamps" current-user="You" show-timestamps="false"></snice-chat>
+</section>
 
-    <script type="module">
-      import './snice-chat.ts';
+<section>
+  <h2>allow-files="false"</h2>
+  <snice-chat id="chat-no-files" current-user="You" allow-files="false"></snice-chat>
+</section>
 
-      await customElements.whenDefined('snice-chat');
+<section>
+  <h2>placeholder="Ask a question..."</h2>
+  <snice-chat id="chat-placeholder" current-user="You" placeholder="Ask a question..."></snice-chat>
+</section>
 
-      const chat1 = document.getElementById('chat1');
-      const chat2 = document.getElementById('chat2');
-      const userSelect1 = document.getElementById('user-select-1');
-      const userSelect2 = document.getElementById('user-select-2');
+<section>
+  <h2>current-user="Admin"</h2>
+  <snice-chat id="chat-current-user" current-user="Admin"></snice-chat>
+</section>
 
-      // Sample avatars
-      const avatars = {
-        Alice: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alice',
-        Bob: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Bob',
-        Charlie: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Charlie',
-        Diana: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Diana',
-        Eve: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Eve',
-      };
+<section>
+  <h2>All features off: show-avatars="false" show-timestamps="false" allow-files="false" show-typing="false"</h2>
+  <snice-chat id="chat-minimal" current-user="You" show-avatars="false" show-timestamps="false" allow-files="false" show-typing="false"></snice-chat>
+</section>
 
-      // Initialize with some messages
-      chat1.addMessage({
-        type: 'system',
-        content: 'Welcome to the chat!',
-        author: 'System',
-        timestamp: new Date(Date.now() - 3600000),
-        formats: [],
-      });
+<section>
+  <h2>Multiple reactions on a message</h2>
+  <snice-chat id="chat-reactions" current-user="You"></snice-chat>
+</section>
 
-      chat1.addMessage({
-        type: 'text',
-        content: 'Hey everyone! 👋',
-        author: 'Alice',
-        avatar: avatars.Alice,
-        timestamp: new Date(Date.now() - 3000000),
-        formats: [],
-      });
-
-      chat1.addMessage({
-        type: 'text',
-        content: 'Hi Alice! How are you?',
-        author: 'Bob',
-        avatar: avatars.Bob,
-        timestamp: new Date(Date.now() - 2000000),
-        formats: [],
-        reactions: [{ emoji: '👋', count: 2, users: ['Alice', 'Charlie'] }],
-      });
-
-      chat1.addMessage({
-        type: 'text',
-        content: "I'm doing great, thanks!",
-        author: 'Alice',
-        avatar: avatars.Alice,
-        timestamp: new Date(Date.now() - 1000000),
-        formats: [],
-      });
-
-      chat2.addMessage({
-        type: 'text',
-        content: 'Check out this design mockup',
-        author: 'Diana',
-        avatar: avatars.Diana,
-        timestamp: new Date(Date.now() - 500000),
-        formats: [],
-        attachment: {
-          type: 'image',
-          url: 'https://picsum.photos/400/300',
-          name: 'mockup.png',
-        },
-      });
-
-      // Event handlers for chat1
-      chat1.addEventListener('message-send', (e) => {
-        const user = userSelect1.value;
-        if (e.detail.message) {
-          chat1.addMessage({
-            type: 'text',
-            content: e.detail.message,
-            author: user,
-            avatar: avatars[user],
-            timestamp: new Date(),
-            formats: [],
-          });
-        }
-        if (e.detail.attachments) {
-          e.detail.attachments.forEach((file) => {
-            const isImage = file.type.startsWith('image/');
-            chat1.addMessage({
-              type: isImage ? 'image' : 'file',
-              content: '',
-              author: user,
-              avatar: avatars[user],
-              timestamp: new Date(),
-              formats: [],
-              attachment: {
-                type: isImage ? 'image' : 'file',
-                url: URL.createObjectURL(file),
-                name: file.name,
-                size: file.size,
-              },
-            });
-          });
-        }
-      });
-
-      chat1.addEventListener('message-react', (e) => {
-        const message = chat1.messages.find((m) => m.id === e.detail.messageId);
-        if (message) {
-          const reactions = message.reactions || [];
-          const existing = reactions.find((r) => r.emoji === e.detail.emoji);
-          if (existing) {
-            if (existing.users.includes(chat1.currentUser)) {
-              existing.users = existing.users.filter((u) => u !== chat1.currentUser);
-              existing.count--;
-              if (existing.count === 0) {
-                chat1.updateMessage(e.detail.messageId, {
-                  reactions: reactions.filter((r) => r.emoji !== e.detail.emoji),
-                });
-                return;
-              }
-            } else {
-              existing.users.push(chat1.currentUser);
-              existing.count++;
-            }
-          } else {
-            reactions.push({ emoji: e.detail.emoji, count: 1, users: [chat1.currentUser] });
-          }
-          chat1.updateMessage(e.detail.messageId, { reactions });
-        }
-      });
-
-      chat1.addEventListener('message-edit', (e) => {
-        chat1.updateMessage(e.detail.messageId, {
-          content: e.detail.newContent,
-          edited: true,
-        });
-      });
-
-      chat1.addEventListener('message-delete', (e) => {
-        chat1.deleteMessage(e.detail.messageId);
-      });
-
-      // Event handlers for chat2
-      chat2.addEventListener('message-send', (e) => {
-        const user = userSelect2.value;
-        if (e.detail.message) {
-          chat2.addMessage({
-            type: 'text',
-            content: e.detail.message,
-            author: user,
-            avatar: avatars[user],
-            timestamp: new Date(),
-            formats: [],
-          });
-        }
-      });
-
-      chat2.addEventListener('message-react', (e) => {
-        const message = chat2.messages.find((m) => m.id === e.detail.messageId);
-        if (message) {
-          const reactions = message.reactions || [];
-          const existing = reactions.find((r) => r.emoji === e.detail.emoji);
-          if (existing) {
-            if (existing.users.includes(chat2.currentUser)) {
-              existing.users = existing.users.filter((u) => u !== chat2.currentUser);
-              existing.count--;
-              if (existing.count === 0) {
-                chat2.updateMessage(e.detail.messageId, {
-                  reactions: reactions.filter((r) => r.emoji !== e.detail.emoji),
-                });
-                return;
-              }
-            } else {
-              existing.users.push(chat2.currentUser);
-              existing.count++;
-            }
-          } else {
-            reactions.push({ emoji: e.detail.emoji, count: 1, users: [chat2.currentUser] });
-          }
-          chat2.updateMessage(e.detail.messageId, { reactions });
-        }
-      });
-
-      // Control buttons
-      document.getElementById('add-typing-1').addEventListener('click', () => {
-        chat1.addTypingIndicator('Alice');
-      });
-
-      document.getElementById('remove-typing-1').addEventListener('click', () => {
-        chat1.removeTypingIndicator('Alice');
-      });
-
-      document.getElementById('clear-1').addEventListener('click', () => {
-        chat1.clear();
-      });
-
-      document.getElementById('add-reaction-2').addEventListener('click', () => {
-        if (chat2.messages.length > 0) {
-          const lastMessage = chat2.messages[chat2.messages.length - 1];
-          const reactions = lastMessage.reactions || [];
-          reactions.push({ emoji: '👍', count: 1, users: ['You'] });
-          chat2.updateMessage(lastMessage.id, { reactions });
-        }
-      });
-
-      document.getElementById('export-json').addEventListener('click', () => {
-        console.log('Chat 2 messages:', JSON.stringify(chat2.messages, null, 2));
-        alert('Messages exported to console');
-      });
-
-      document.getElementById('send-text').addEventListener('click', () => {
-        chat1.addMessage({
-          type: 'text',
-          content: 'This is a programmatic message',
-          author: 'You',
-          timestamp: new Date(),
-          formats: [],
-        });
-      });
-
-      document.getElementById('send-image').addEventListener('click', () => {
-        chat1.addMessage({
-          type: 'image',
-          content: '',
-          author: 'You',
-          timestamp: new Date(),
-          formats: [],
-          attachment: {
-            type: 'image',
-            url: 'https://picsum.photos/300/200',
-            name: 'random-image.jpg',
-          },
-        });
-      });
-
-      document.getElementById('send-file').addEventListener('click', () => {
-        chat1.addMessage({
-          type: 'file',
-          content: '',
-          author: 'You',
-          timestamp: new Date(),
-          formats: [],
-          attachment: {
-            type: 'file',
-            url: '#',
-            name: 'document.pdf',
-            size: 245760,
-          },
-        });
-      });
-
-      document.getElementById('send-system').addEventListener('click', () => {
-        chat1.addMessage({
-          type: 'system',
-          content: 'A system notification appeared',
-          author: 'System',
-          timestamp: new Date(),
-          formats: [],
-        });
-      });
-
-      let featuresEnabled = true;
-      document.getElementById('toggle-features').addEventListener('click', () => {
-        featuresEnabled = !featuresEnabled;
-        chat1.showAvatars = featuresEnabled;
-        chat1.showTimestamps = featuresEnabled;
-        chat1.showTyping = featuresEnabled;
-        chat1.allowFiles = featuresEnabled;
-      });
-    </script>
-    <script type="module" src="./snice-chat.ts"></script>
-  </body>
+</body>
 </html>

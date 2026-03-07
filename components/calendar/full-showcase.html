@@ -1,181 +1,176 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-theme="dark">
 <head>
-  <title>Calendar Demo</title>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendar</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
     body {
-      padding: 40px;
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 1.5rem;
       background: var(--snice-color-background);
-      color: var(--snice-color-text, rgb(23 23 23));
-      transition: background-color 200ms ease, color 200ms ease;
+      color: var(--snice-color-text);
     }
-    .theme-toggle {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 1000;
+    section { margin-bottom: 2rem; }
+    h2 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--snice-color-text-tertiary, #888);
+      margin: 0 0 0.75rem;
     }
-    .example {
-      margin: 30px 0;
+    .side-by-side {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
     }
-    .example h3 {
-      margin-bottom: 10px;
-    }
-    .controls {
-      margin: 10px 0;
-      display: flex;
-      gap: 10px;
-    }
-    button {
-      padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-md, 1rem);
-      background: var(--snice-color-primary, rgb(37 99 235));
-      color: var(--snice-color-text-inverse, rgb(250 250 250));
-      border: none;
-      border-radius: var(--snice-border-radius-md, 0.25rem);
-      cursor: pointer;
-      font-size: var(--snice-font-size-sm, 0.875rem);
-      font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
-      transition: background-color var(--snice-transition-fast, 150ms) ease;
-    }
-    button:hover {
-      background: var(--snice-color-primary-hover, rgb(29 78 216));
-    }
-    button:focus-visible {
-      outline: none;
-      box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
-    }
-    .info {
-      margin-top: 10px;
-      padding: 10px;
-      background: var(--snice-color-background-secondary, rgb(250 250 250));
-      border-radius: 4px;
-      font-size: 14px;
+    snice-calendar {
+      max-width: 400px;
     }
   </style>
-  <script type="module">
-    import 'snice';
-    import './snice-calendar.ts';
-
-    document.addEventListener('DOMContentLoaded', () => {
-      // Basic calendar
-      const basicCalendar = document.getElementById('basic-calendar');
-      basicCalendar.addEventListener('calendar-change', (e) => {
-        console.log('Date changed:', e.detail.value);
-        document.getElementById('selected-date').textContent =
-          e.detail.value.toLocaleDateString();
-      });
-
-      // Calendar with events
-      const eventCalendar = document.getElementById('event-calendar');
-      const today = new Date();
-      eventCalendar.events = [
-        {
-          id: 1,
-          title: 'Team Meeting',
-          start: new Date(),
-          color: '#2196f3'
-        },
-        {
-          id: 2,
-          title: 'Conference (3 days)',
-          start: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 5),
-          end: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7),
-          color: '#9c27b0'
-        },
-        {
-          id: 3,
-          title: 'Project Deadline',
-          start: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 10),
-          color: '#f44336'
-        },
-        {
-          id: 4,
-          title: 'Vacation',
-          start: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 15),
-          end: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 20),
-          color: '#ff9800'
-        }
-      ];
-
-      eventCalendar.addEventListener('calendar-event-click', (e) => {
-        alert(`Event: ${e.detail.event.title}`);
-      });
-
-      // Min/Max calendar
-      const restrictedCalendar = document.getElementById('restricted-calendar');
-      const minDate = new Date(today.getFullYear(), today.getMonth(), 1);
-      const maxDate = new Date(today.getFullYear(), today.getMonth() + 2, 0);
-
-      restrictedCalendar.minDate = minDate;
-      restrictedCalendar.maxDate = maxDate;
-
-      // Monday first calendar
-      const mondayCalendar = document.getElementById('monday-calendar');
-      mondayCalendar.firstDayOfWeek = 1;
-
-      // Locale calendar
-      const localeCalendar = document.getElementById('locale-calendar');
-      localeCalendar.locale = 'fr-FR';
-
-      // Theme toggle
-      const themeToggle = document.getElementById('theme-toggle');
-      themeToggle.addEventListener('click', () => {
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', newTheme);
-        themeToggle.textContent = newTheme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
-      });
-    });
-  </script>
 </head>
 <body>
-  <button id="theme-toggle" class="theme-toggle">🌙 Dark Mode</button>
-  <h2>Calendar Component Demo</h2>
 
-  <div class="example">
-    <h3>Basic Calendar</h3>
-    <snice-calendar id="basic-calendar"></snice-calendar>
-    <div class="info">
-      Selected date: <strong id="selected-date">None</strong>
+  <section>
+    <h2>Default (month view)</h2>
+    <snice-calendar></snice-calendar>
+  </section>
+
+  <section>
+    <h2>highlight-today: true (default) vs false</h2>
+    <div class="side-by-side">
+      <div>
+        <h2>highlight-today (default)</h2>
+        <snice-calendar highlight-today></snice-calendar>
+      </div>
+      <div>
+        <h2>no highlight-today</h2>
+        <snice-calendar highlight-today="false"></snice-calendar>
+      </div>
     </div>
-  </div>
+  </section>
 
-  <div class="example">
-    <h3>Calendar with Events</h3>
-    <p>Events are shown as colored bars. Supports both single-day and multi-day events (e.g., Conference spans 3 days, Vacation spans 6 days). Click on an event to see details.</p>
-    <snice-calendar id="event-calendar"></snice-calendar>
-  </div>
+  <section>
+    <h2>show-week-numbers</h2>
+    <snice-calendar show-week-numbers></snice-calendar>
+  </section>
 
-  <div class="example">
-    <h3>Restricted Date Range</h3>
-    <p>This calendar only allows dates in the current and next month.</p>
-    <snice-calendar id="restricted-calendar"></snice-calendar>
-  </div>
-
-  <div class="example">
-    <h3>Week Starting Monday</h3>
-    <snice-calendar id="monday-calendar"></snice-calendar>
-  </div>
-
-  <div class="example">
-    <h3>French Locale</h3>
-    <snice-calendar id="locale-calendar"></snice-calendar>
-  </div>
-
-  <div class="example">
-    <h3>Programmatic Control</h3>
-    <div class="controls">
-      <button onclick="controlCalendar.goToToday()">Go to Today</button>
-      <button onclick="controlCalendar.previousMonth()">Previous Month</button>
-      <button onclick="controlCalendar.nextMonth()">Next Month</button>
-      <button onclick="controlCalendar.goToDate(new Date(2025, 0, 1))">Go to Jan 2025</button>
+  <section>
+    <h2>first-day-of-week: 0 (Sunday) vs 1 (Monday)</h2>
+    <div class="side-by-side">
+      <div>
+        <h2>first-day-of-week=0 (Sunday)</h2>
+        <snice-calendar first-day-of-week="0"></snice-calendar>
+      </div>
+      <div>
+        <h2>first-day-of-week=1 (Monday)</h2>
+        <snice-calendar first-day-of-week="1"></snice-calendar>
+      </div>
     </div>
-    <snice-calendar id="control-calendar"></snice-calendar>
-  </div>
+  </section>
 
-  <script>
-    const controlCalendar = document.getElementById('control-calendar');
+  <section>
+    <h2>With events</h2>
+    <snice-calendar id="cal-events"></snice-calendar>
+  </section>
+
+  <section>
+    <h2>With disabled dates</h2>
+    <snice-calendar id="cal-disabled"></snice-calendar>
+  </section>
+
+  <section>
+    <h2>With min-date and max-date</h2>
+    <snice-calendar id="cal-minmax"></snice-calendar>
+  </section>
+
+  <section>
+    <h2>Locale: en-US vs de-DE vs ja-JP</h2>
+    <div class="side-by-side">
+      <div>
+        <h2>en-US</h2>
+        <snice-calendar locale="en-US"></snice-calendar>
+      </div>
+      <div>
+        <h2>de-DE</h2>
+        <snice-calendar locale="de-DE" first-day-of-week="1"></snice-calendar>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Pre-selected value</h2>
+    <snice-calendar id="cal-value"></snice-calendar>
+  </section>
+
+  <section>
+    <h2>Multiple colored events on same date</h2>
+    <snice-calendar id="cal-multi-events"></snice-calendar>
+  </section>
+
+  <section>
+    <h2>Many events (overflow with +N more)</h2>
+    <snice-calendar id="cal-overflow"></snice-calendar>
+  </section>
+
+  <script type="module">
+    import './snice-calendar.ts';
+
+    const today = new Date();
+    const fmt = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    const addDays = (d, n) => { const r = new Date(d); r.setDate(r.getDate() + n); return r; };
+
+    // Events
+    document.getElementById('cal-events').events = [
+      { id: 1, title: 'Meeting', start: addDays(today, 1), color: '#2563eb' },
+      { id: 2, title: 'Lunch', start: addDays(today, 2), color: '#16a34a' },
+      { id: 3, title: 'Review', start: addDays(today, 3), end: addDays(today, 5), color: '#dc2626' },
+      { id: 4, title: 'Deploy', start: addDays(today, 7), color: '#7c3aed' },
+    ];
+
+    // Disabled dates
+    const disabled = [];
+    for (let i = 1; i <= 5; i++) disabled.push(addDays(today, i * 3));
+    document.getElementById('cal-disabled').disabledDates = disabled;
+
+    // Min/max
+    document.getElementById('cal-minmax').minDate = addDays(today, -7);
+    document.getElementById('cal-minmax').maxDate = addDays(today, 30);
+
+    // Pre-selected
+    document.getElementById('cal-value').value = addDays(today, 5);
+
+    // Multi-colored events
+    const d = addDays(today, 2);
+    document.getElementById('cal-multi-events').events = [
+      { id: 1, title: 'Event A', start: d, color: '#dc2626' },
+      { id: 2, title: 'Event B', start: d, color: '#2563eb' },
+      { id: 3, title: 'Event C', start: d, color: '#16a34a' },
+    ];
+
+    // Overflow
+    const od = addDays(today, 4);
+    document.getElementById('cal-overflow').events = [
+      { id: 1, title: 'Alpha', start: od, color: '#dc2626' },
+      { id: 2, title: 'Beta', start: od, color: '#2563eb' },
+      { id: 3, title: 'Gamma', start: od, color: '#16a34a' },
+      { id: 4, title: 'Delta', start: od, color: '#7c3aed' },
+      { id: 5, title: 'Epsilon', start: od, color: '#f59e0b' },
+    ];
   </script>
 </body>
 </html>

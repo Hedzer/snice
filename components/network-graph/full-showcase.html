@@ -1,195 +1,250 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-theme="dark">
 <head>
-  <title>Network Graph Component Demo</title>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Network Graph</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      padding: 40px;
-      margin: 0;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      transition: background-color var(--snice-transition-medium) ease, color var(--snice-transition-medium) ease;
-    }
-    .demo-section {
-      margin-bottom: 60px;
-    }
-    .demo-section h3 {
-      margin-bottom: 20px;
-    }
-    .controls {
-      margin: 20px 0;
-      display: flex;
-      gap: 10px;
-    }
-    button {
-      padding: 8px 16px;
-      background: var(--snice-color-primary);
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    button:hover {
-      opacity: 0.9;
-    }
-    snice-network-graph {
-      height: 500px;
-      margin-bottom: 20px;
-    }
-    .event-log {
-      font-family: monospace;
-      font-size: 12px;
-      background: var(--snice-color-background-element);
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      padding: 12px;
-      max-height: 120px;
-      overflow-y: auto;
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
+    snice-network-graph { display: block; height: 350px; border: 1px solid var(--snice-color-border, #ddd); border-radius: 8px; overflow: hidden; }
   </style>
 </head>
 <body>
 
-  <h2>Network Graph Component</h2>
+<h2>Layout: force (default)</h2>
+<snice-network-graph id="ng-force" layout="force"></snice-network-graph>
 
-  <!-- Force-directed layout -->
-  <div class="demo-section">
-    <h3>Force-Directed Layout</h3>
-    <snice-network-graph id="force-graph"></snice-network-graph>
-    <div class="controls">
-      <button onclick="toggleTheme()">Toggle Theme</button>
-      <button onclick="randomizeData()">Randomize</button>
-    </div>
-    <div id="event-log" class="event-log">Events will appear here...</div>
-  </div>
+<h2>Layout: circular</h2>
+<snice-network-graph id="ng-circular" layout="circular"></snice-network-graph>
 
-  <!-- Circular layout -->
-  <div class="demo-section">
-    <h3>Circular Layout</h3>
-    <snice-network-graph id="circular-graph" layout="circular" show-labels></snice-network-graph>
-  </div>
+<h2>Layout: grid</h2>
+<snice-network-graph id="ng-grid" layout="grid"></snice-network-graph>
 
-  <!-- Grid layout -->
-  <div class="demo-section">
-    <h3>Grid Layout</h3>
-    <snice-network-graph id="grid-graph" layout="grid" show-labels></snice-network-graph>
-  </div>
+<h2>Show labels: true (default)</h2>
+<snice-network-graph id="ng-labels" layout="circular" show-labels></snice-network-graph>
 
-  <!-- Custom colors and weights -->
-  <div class="demo-section">
-    <h3>Custom Colors and Weights</h3>
-    <snice-network-graph id="custom-graph" show-labels></snice-network-graph>
-  </div>
+<h2>Show labels: false</h2>
+<snice-network-graph id="ng-no-labels" layout="circular" show-labels="false"></snice-network-graph>
 
-  <script type="module">
-    import './snice-network-graph';
+<h2>Zoom enabled: true (default)</h2>
+<snice-network-graph id="ng-zoom" layout="circular" zoom-enabled></snice-network-graph>
 
-    const socialNetwork = {
-      nodes: [
-        { id: 'alice', label: 'Alice', group: 'engineering' },
-        { id: 'bob', label: 'Bob', group: 'engineering' },
-        { id: 'carol', label: 'Carol', group: 'design' },
-        { id: 'dave', label: 'Dave', group: 'design' },
-        { id: 'eve', label: 'Eve', group: 'product' },
-        { id: 'frank', label: 'Frank', group: 'engineering' },
-        { id: 'grace', label: 'Grace', group: 'product' },
-        { id: 'heidi', label: 'Heidi', group: 'design' },
-      ],
-      edges: [
-        { source: 'alice', target: 'bob', label: 'works with' },
-        { source: 'alice', target: 'carol' },
-        { source: 'bob', target: 'frank' },
-        { source: 'carol', target: 'dave' },
-        { source: 'dave', target: 'heidi' },
-        { source: 'eve', target: 'alice' },
-        { source: 'eve', target: 'grace' },
-        { source: 'frank', target: 'grace' },
-        { source: 'bob', target: 'eve' },
-        { source: 'heidi', target: 'grace' },
-      ],
-    };
+<h2>Zoom enabled: false</h2>
+<snice-network-graph id="ng-no-zoom" layout="circular" zoom-enabled="false"></snice-network-graph>
 
-    // Force graph
-    const forceGraph = document.getElementById('force-graph');
-    forceGraph.data = socialNetwork;
+<h2>Drag enabled: true (default)</h2>
+<snice-network-graph id="ng-drag" layout="circular" drag-enabled></snice-network-graph>
 
-    const log = document.getElementById('event-log');
-    function logEvent(text) {
-      const line = document.createElement('div');
-      line.textContent = `[${new Date().toLocaleTimeString()}] ${text}`;
-      log.prepend(line);
+<h2>Drag enabled: false</h2>
+<snice-network-graph id="ng-no-drag" layout="circular" drag-enabled="false"></snice-network-graph>
+
+<h2>Animation: true (default, force layout)</h2>
+<snice-network-graph id="ng-anim" layout="force" animation></snice-network-graph>
+
+<h2>Animation: false (force layout, static positions)</h2>
+<snice-network-graph id="ng-no-anim" layout="force" animation="false"></snice-network-graph>
+
+<h2>Charge strength: -100 (weak repulsion)</h2>
+<snice-network-graph id="ng-charge-weak" layout="force" charge-strength="-100"></snice-network-graph>
+
+<h2>Charge strength: -500 (strong repulsion)</h2>
+<snice-network-graph id="ng-charge-strong" layout="force" charge-strength="-500"></snice-network-graph>
+
+<h2>Link distance: 40 (short)</h2>
+<snice-network-graph id="ng-link-short" layout="force" link-distance="40"></snice-network-graph>
+
+<h2>Link distance: 150 (long)</h2>
+<snice-network-graph id="ng-link-long" layout="force" link-distance="150"></snice-network-graph>
+
+<h2>Nodes with groups (auto color-coded)</h2>
+<snice-network-graph id="ng-groups" layout="force"></snice-network-graph>
+
+<h2>Nodes with custom colors</h2>
+<snice-network-graph id="ng-colors" layout="circular"></snice-network-graph>
+
+<h2>Nodes with custom sizes</h2>
+<snice-network-graph id="ng-sizes" layout="circular"></snice-network-graph>
+
+<h2>Edges with labels</h2>
+<snice-network-graph id="ng-edge-labels" layout="circular"></snice-network-graph>
+
+<h2>Edges with weights (stroke widths)</h2>
+<snice-network-graph id="ng-weights" layout="circular"></snice-network-graph>
+
+<h2>Edges with custom colors</h2>
+<snice-network-graph id="ng-edge-colors" layout="circular"></snice-network-graph>
+
+<h2>Single node</h2>
+<snice-network-graph id="ng-single" layout="force"></snice-network-graph>
+
+<h2>Two connected nodes</h2>
+<snice-network-graph id="ng-pair" layout="force"></snice-network-graph>
+
+<h2>Disconnected nodes</h2>
+<snice-network-graph id="ng-disconnected" layout="force"></snice-network-graph>
+
+<h2>Dense graph (many connections)</h2>
+<snice-network-graph id="ng-dense" layout="force"></snice-network-graph>
+
+<h2>Empty graph</h2>
+<snice-network-graph></snice-network-graph>
+
+<h2>All disabled: no zoom, no drag, no labels</h2>
+<snice-network-graph id="ng-disabled" layout="circular" zoom-enabled="false" drag-enabled="false" show-labels="false"></snice-network-graph>
+
+<script type="module">
+  import './snice-network-graph.ts';
+
+  const basicData = {
+    nodes: [
+      { id: 'a', label: 'Alice' },
+      { id: 'b', label: 'Bob' },
+      { id: 'c', label: 'Charlie' },
+      { id: 'd', label: 'Diana' },
+      { id: 'e', label: 'Eve' },
+    ],
+    edges: [
+      { source: 'a', target: 'b' },
+      { source: 'b', target: 'c' },
+      { source: 'c', target: 'd' },
+      { source: 'd', target: 'e' },
+      { source: 'e', target: 'a' },
+      { source: 'a', target: 'c' },
+    ],
+  };
+
+  const groupData = {
+    nodes: [
+      { id: 'a', label: 'Alice', group: 'Engineering' },
+      { id: 'b', label: 'Bob', group: 'Engineering' },
+      { id: 'c', label: 'Charlie', group: 'Design' },
+      { id: 'd', label: 'Diana', group: 'Design' },
+      { id: 'e', label: 'Eve', group: 'Marketing' },
+      { id: 'f', label: 'Frank', group: 'Marketing' },
+    ],
+    edges: [
+      { source: 'a', target: 'b' },
+      { source: 'c', target: 'd' },
+      { source: 'e', target: 'f' },
+      { source: 'a', target: 'c' },
+      { source: 'b', target: 'e' },
+    ],
+  };
+
+  const colorData = {
+    nodes: [
+      { id: 'r', label: 'Red', color: 'rgb(220 38 38)' },
+      { id: 'g', label: 'Green', color: 'rgb(22 163 74)' },
+      { id: 'b', label: 'Blue', color: 'rgb(37 99 235)' },
+      { id: 'p', label: 'Purple', color: 'rgb(147 51 234)' },
+    ],
+    edges: [
+      { source: 'r', target: 'g' },
+      { source: 'g', target: 'b' },
+      { source: 'b', target: 'p' },
+      { source: 'p', target: 'r' },
+    ],
+  };
+
+  const sizeData = {
+    nodes: [
+      { id: 'sm', label: 'Small (6)', size: 6 },
+      { id: 'md', label: 'Medium (12)', size: 12 },
+      { id: 'lg', label: 'Large (20)', size: 20 },
+      { id: 'xl', label: 'XLarge (30)', size: 30 },
+    ],
+    edges: [
+      { source: 'sm', target: 'md' },
+      { source: 'md', target: 'lg' },
+      { source: 'lg', target: 'xl' },
+    ],
+  };
+
+  const edgeLabelData = {
+    nodes: [
+      { id: 'a', label: 'Server' },
+      { id: 'b', label: 'Database' },
+      { id: 'c', label: 'Cache' },
+    ],
+    edges: [
+      { source: 'a', target: 'b', label: 'queries' },
+      { source: 'a', target: 'c', label: 'reads' },
+      { source: 'c', target: 'b', label: 'invalidates' },
+    ],
+  };
+
+  const weightData = {
+    nodes: [
+      { id: 'a', label: 'A' },
+      { id: 'b', label: 'B' },
+      { id: 'c', label: 'C' },
+      { id: 'd', label: 'D' },
+    ],
+    edges: [
+      { source: 'a', target: 'b', weight: 1 },
+      { source: 'b', target: 'c', weight: 3 },
+      { source: 'c', target: 'd', weight: 5 },
+      { source: 'd', target: 'a', weight: 2 },
+    ],
+  };
+
+  const edgeColorData = {
+    nodes: [
+      { id: 'a', label: 'Node A' },
+      { id: 'b', label: 'Node B' },
+      { id: 'c', label: 'Node C' },
+    ],
+    edges: [
+      { source: 'a', target: 'b', color: 'rgb(220 38 38)' },
+      { source: 'b', target: 'c', color: 'rgb(22 163 74)' },
+      { source: 'c', target: 'a', color: 'rgb(37 99 235)' },
+    ],
+  };
+
+  const denseData = {
+    nodes: Array.from({ length: 12 }, (_, i) => ({ id: `n${i}`, label: `N${i}`, group: `g${i % 3}` })),
+    edges: [],
+  };
+  for (let i = 0; i < 12; i++) {
+    for (let j = i + 1; j < 12; j++) {
+      if (Math.random() < 0.35) denseData.edges.push({ source: `n${i}`, target: `n${j}` });
     }
+  }
 
-    forceGraph.addEventListener('@snice/node-click', (e) => {
-      logEvent(`Node clicked: ${e.detail.node.label || e.detail.node.id}`);
-    });
-    forceGraph.addEventListener('@snice/edge-click', (e) => {
-      logEvent(`Edge clicked: ${e.detail.edge.source} → ${e.detail.edge.target}`);
-    });
-    forceGraph.addEventListener('@snice/node-drag', (e) => {
-      logEvent(`Node dragged: ${e.detail.node.label || e.detail.node.id} to (${Math.round(e.detail.x)}, ${Math.round(e.detail.y)})`);
-    });
+  // Apply data
+  const basicIds = ['ng-force', 'ng-circular', 'ng-grid', 'ng-labels', 'ng-no-labels',
+    'ng-zoom', 'ng-no-zoom', 'ng-drag', 'ng-no-drag', 'ng-anim', 'ng-no-anim',
+    'ng-charge-weak', 'ng-charge-strong', 'ng-link-short', 'ng-link-long', 'ng-disabled'];
+  basicIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.data = basicData;
+  });
 
-    // Circular graph
-    document.getElementById('circular-graph').data = socialNetwork;
-
-    // Grid graph
-    document.getElementById('grid-graph').data = socialNetwork;
-
-    // Custom graph
-    document.getElementById('custom-graph').data = {
-      nodes: [
-        { id: 'server', label: 'Server', size: 20, color: 'rgb(220 38 38)' },
-        { id: 'db', label: 'Database', size: 18, color: 'rgb(37 99 235)' },
-        { id: 'cache', label: 'Cache', size: 14, color: 'rgb(234 88 12)' },
-        { id: 'client1', label: 'Client 1', size: 10, color: 'rgb(22 163 74)' },
-        { id: 'client2', label: 'Client 2', size: 10, color: 'rgb(22 163 74)' },
-        { id: 'client3', label: 'Client 3', size: 10, color: 'rgb(22 163 74)' },
-      ],
-      edges: [
-        { source: 'client1', target: 'server', weight: 2 },
-        { source: 'client2', target: 'server', weight: 2 },
-        { source: 'client3', target: 'server', weight: 2 },
-        { source: 'server', target: 'db', label: 'queries', weight: 4, color: 'rgb(37 99 235)' },
-        { source: 'server', target: 'cache', label: 'reads', weight: 3, color: 'rgb(234 88 12)' },
-        { source: 'cache', target: 'db', label: 'misses', weight: 1 },
-      ],
-    };
-
-    // Theme toggle
-    window.toggleTheme = () => {
-      const html = document.documentElement;
-      html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
-    };
-
-    // Randomize data
-    window.randomizeData = () => {
-      const count = 6 + Math.floor(Math.random() * 8);
-      const groups = ['alpha', 'beta', 'gamma'];
-      const nodes = Array.from({ length: count }, (_, i) => ({
-        id: `n${i}`,
-        label: `Node ${i}`,
-        group: groups[i % groups.length],
-      }));
-      const edges = [];
-      for (let i = 1; i < count; i++) {
-        edges.push({
-          source: `n${Math.floor(Math.random() * i)}`,
-          target: `n${i}`,
-        });
-      }
-      // Add some random extra edges
-      for (let i = 0; i < Math.floor(count / 2); i++) {
-        const a = Math.floor(Math.random() * count);
-        const b = Math.floor(Math.random() * count);
-        if (a !== b) {
-          edges.push({ source: `n${a}`, target: `n${b}` });
-        }
-      }
-      forceGraph.data = { nodes, edges };
-    };
-  </script>
+  document.getElementById('ng-groups').data = groupData;
+  document.getElementById('ng-colors').data = colorData;
+  document.getElementById('ng-sizes').data = sizeData;
+  document.getElementById('ng-edge-labels').data = edgeLabelData;
+  document.getElementById('ng-weights').data = weightData;
+  document.getElementById('ng-edge-colors').data = edgeColorData;
+  document.getElementById('ng-single').data = { nodes: [{ id: 'solo', label: 'Solo Node' }], edges: [] };
+  document.getElementById('ng-pair').data = { nodes: [{ id: 'a', label: 'A' }, { id: 'b', label: 'B' }], edges: [{ source: 'a', target: 'b' }] };
+  document.getElementById('ng-disconnected').data = { nodes: [{ id: 'a', label: 'Island A' }, { id: 'b', label: 'Island B' }, { id: 'c', label: 'Island C' }], edges: [] };
+  document.getElementById('ng-dense').data = denseData;
+</script>
 </body>
 </html>

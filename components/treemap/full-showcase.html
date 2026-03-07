@@ -1,289 +1,177 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snice Treemap Demo</title>
+  <title>Treemap</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      padding: 40px;
-      line-height: 1.6;
-      background: var(--snice-color-background);
-      transition: background-color var(--snice-transition-medium) ease, color var(--snice-transition-medium) ease;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      background: var(--snice-color-background);
-      padding: 40px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    h1 {
-      color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: 10px;
-    }
-
-    h2 {
-      color: var(--snice-color-text-secondary);
-      margin-top: 30px;
-    }
-
-    .demo-section {
-      margin: 30px 0;
-    }
-
-    .demo-item {
-      margin: 20px 0;
-      padding: 20px;
-      background: var(--snice-color-background);
-      border-radius: 4px;
-      border-left: 4px solid #3b82f6;
-    }
-
-    .demo-label {
-      display: block;
-      font-size: 0.85em;
-      color: var(--snice-color-text-secondary);
-      margin-bottom: 10px;
-      font-weight: 500;
-    }
-
-    snice-treemap {
-      height: 400px;
-    }
-
-    .small-treemap {
-      height: 250px;
-    }
-
-    .theme-toggle {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      padding: 8px 16px;
-      border-radius: 8px;
-      border: 1px solid var(--snice-color-border);
-      background: var(--snice-color-background-element);
-      color: var(--snice-color-text);
-      cursor: pointer;
-    }
-
-    .color-schemes {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
-
-    .color-schemes snice-treemap {
-      height: 200px;
-    }
-
-    .event-log {
-      margin-top: 10px;
-      padding: 10px;
-      background: var(--snice-color-background-element);
-      border-radius: 4px;
-      font-size: 0.85em;
-      max-height: 100px;
-      overflow-y: auto;
-      color: var(--snice-color-text-secondary);
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); margin: 2rem 0 0.75rem; }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 1.5rem; }
+    snice-treemap { height: 300px; display: block; }
+    .label { font-size: 0.7rem; color: var(--snice-color-text-tertiary); margin-bottom: 0.25rem; }
   </style>
 </head>
 <body>
 
-<button class="theme-toggle" onclick="document.documentElement.dataset.theme = document.documentElement.dataset.theme === 'dark' ? '' : 'dark'">
-  Toggle Theme
-</button>
+<h2>Color Scheme: default</h2>
+<snice-treemap id="tm-default" show-labels color-scheme="default"></snice-treemap>
 
-<div class="container">
-  <h1>Snice Treemap</h1>
-
-  <div class="demo-section">
-    <h2>Basic Treemap</h2>
-    <div class="demo-item">
-      <span class="demo-label">Simple hierarchical data</span>
-      <snice-treemap id="basic" show-labels show-values></snice-treemap>
-    </div>
-  </div>
-
-  <div class="demo-section">
-    <h2>Drill-Down</h2>
-    <div class="demo-item">
-      <span class="demo-label">Click a rectangle to drill into children (breadcrumbs appear)</span>
-      <snice-treemap id="drillable" show-labels show-values></snice-treemap>
-      <div class="event-log" id="drill-log">Click a node with children to drill down...</div>
-    </div>
-  </div>
-
-  <div class="demo-section">
-    <h2>Color Schemes</h2>
-    <div class="color-schemes">
-      <div class="demo-item">
-        <span class="demo-label">default</span>
-        <snice-treemap id="cs-default" show-labels color-scheme="default"></snice-treemap>
-      </div>
-      <div class="demo-item">
-        <span class="demo-label">blue</span>
-        <snice-treemap id="cs-blue" show-labels color-scheme="blue"></snice-treemap>
-      </div>
-      <div class="demo-item">
-        <span class="demo-label">green</span>
-        <snice-treemap id="cs-green" show-labels color-scheme="green"></snice-treemap>
-      </div>
-      <div class="demo-item">
-        <span class="demo-label">purple</span>
-        <snice-treemap id="cs-purple" show-labels color-scheme="purple"></snice-treemap>
-      </div>
-      <div class="demo-item">
-        <span class="demo-label">warm</span>
-        <snice-treemap id="cs-warm" show-labels color-scheme="warm"></snice-treemap>
-      </div>
-      <div class="demo-item">
-        <span class="demo-label">rainbow</span>
-        <snice-treemap id="cs-rainbow" show-labels color-scheme="rainbow"></snice-treemap>
-      </div>
-    </div>
-  </div>
-
-  <div class="demo-section">
-    <h2>Custom Colors</h2>
-    <div class="demo-item">
-      <span class="demo-label">Nodes with custom color property</span>
-      <snice-treemap id="custom-colors" show-labels show-values></snice-treemap>
-    </div>
-  </div>
-
-  <div class="demo-section">
-    <h2>Events</h2>
-    <div class="demo-item">
-      <span class="demo-label">Click and hover events</span>
-      <snice-treemap id="events" show-labels class="small-treemap"></snice-treemap>
-      <div class="event-log" id="event-log">Interact with the treemap...</div>
-    </div>
-  </div>
+<h2>All Color Schemes</h2>
+<div class="grid">
+  <div><div class="label">default</div><snice-treemap id="tm-cs-default" show-labels color-scheme="default" style="height:200px"></snice-treemap></div>
+  <div><div class="label">blue</div><snice-treemap id="tm-cs-blue" show-labels color-scheme="blue" style="height:200px"></snice-treemap></div>
+  <div><div class="label">green</div><snice-treemap id="tm-cs-green" show-labels color-scheme="green" style="height:200px"></snice-treemap></div>
+  <div><div class="label">purple</div><snice-treemap id="tm-cs-purple" show-labels color-scheme="purple" style="height:200px"></snice-treemap></div>
+  <div><div class="label">orange</div><snice-treemap id="tm-cs-orange" show-labels color-scheme="orange" style="height:200px"></snice-treemap></div>
+  <div><div class="label">warm</div><snice-treemap id="tm-cs-warm" show-labels color-scheme="warm" style="height:200px"></snice-treemap></div>
+  <div><div class="label">cool</div><snice-treemap id="tm-cs-cool" show-labels color-scheme="cool" style="height:200px"></snice-treemap></div>
+  <div><div class="label">rainbow</div><snice-treemap id="tm-cs-rainbow" show-labels color-scheme="rainbow" style="height:200px"></snice-treemap></div>
 </div>
+
+<h2>Show Labels: true vs false</h2>
+<div class="grid">
+  <div><div class="label">show-labels</div><snice-treemap id="tm-labels-on" show-labels style="height:200px"></snice-treemap></div>
+  <div><div class="label">no show-labels</div><snice-treemap id="tm-labels-off" style="height:200px"></snice-treemap></div>
+</div>
+
+<h2>Show Values: true vs false</h2>
+<div class="grid">
+  <div><div class="label">show-values</div><snice-treemap id="tm-values-on" show-labels show-values style="height:200px"></snice-treemap></div>
+  <div><div class="label">show-labels only</div><snice-treemap id="tm-values-off" show-labels style="height:200px"></snice-treemap></div>
+</div>
+
+<h2>Padding Values</h2>
+<div class="grid">
+  <div><div class="label">padding=0</div><snice-treemap id="tm-pad0" show-labels padding="0" style="height:200px"></snice-treemap></div>
+  <div><div class="label">padding=2 (default)</div><snice-treemap id="tm-pad2" show-labels padding="2" style="height:200px"></snice-treemap></div>
+  <div><div class="label">padding=5</div><snice-treemap id="tm-pad5" show-labels padding="5" style="height:200px"></snice-treemap></div>
+  <div><div class="label">padding=10</div><snice-treemap id="tm-pad10" show-labels padding="10" style="height:200px"></snice-treemap></div>
+</div>
+
+<h2>Animation: true (default) vs false</h2>
+<div class="grid">
+  <div><div class="label">animation=true</div><snice-treemap id="tm-anim-on" show-labels animation style="height:200px"></snice-treemap></div>
+  <div><div class="label">animation=false</div><snice-treemap id="tm-anim-off" show-labels style="height:200px"></snice-treemap></div>
+</div>
+
+<h2>Drill-Down (click a cell with children)</h2>
+<snice-treemap id="tm-drill" show-labels show-values style="height:350px"></snice-treemap>
+
+<h2>Custom Node Colors</h2>
+<snice-treemap id="tm-custom-colors" show-labels show-values style="height:250px"></snice-treemap>
+
+<h2>Many Items (20+)</h2>
+<snice-treemap id="tm-many" show-labels style="height:350px"></snice-treemap>
+
+<h2>Single Item</h2>
+<snice-treemap id="tm-single" show-labels show-values style="height:150px"></snice-treemap>
+
+<h2>Two Items (extreme ratio)</h2>
+<snice-treemap id="tm-ratio" show-labels show-values style="height:200px"></snice-treemap>
 
 <script type="module">
   import './snice-treemap.ts';
 
-  const diskUsage = {
-    label: 'Disk Usage',
-    value: 0,
+  const sampleData = {
+    label: 'Portfolio', value: 0,
     children: [
-      { label: 'Documents', value: 45 },
-      { label: 'Photos', value: 30 },
-      { label: 'Videos', value: 80 },
-      { label: 'Music', value: 25 },
-      { label: 'Downloads', value: 60 },
-      { label: 'System', value: 15 },
-      { label: 'Apps', value: 40 },
-      { label: 'Other', value: 10 },
+      { label: 'Stocks', value: 450 },
+      { label: 'Bonds', value: 280 },
+      { label: 'Real Estate', value: 200 },
+      { label: 'Crypto', value: 120 },
+      { label: 'Cash', value: 80 },
+      { label: 'Commodities', value: 60 },
     ]
   };
 
-  document.getElementById('basic').data = diskUsage;
+  // Color scheme demos
+  const schemes = ['default', 'blue', 'green', 'purple', 'orange', 'warm', 'cool', 'rainbow'];
+  for (const s of schemes) {
+    document.getElementById(`tm-cs-${s}`).data = JSON.parse(JSON.stringify(sampleData));
+  }
 
-  // Drillable data
-  const orgData = {
-    label: 'Company',
-    value: 0,
+  document.getElementById('tm-default').data = JSON.parse(JSON.stringify(sampleData));
+  document.getElementById('tm-labels-on').data = JSON.parse(JSON.stringify(sampleData));
+  document.getElementById('tm-labels-off').data = JSON.parse(JSON.stringify(sampleData));
+  document.getElementById('tm-values-on').data = JSON.parse(JSON.stringify(sampleData));
+  document.getElementById('tm-values-off').data = JSON.parse(JSON.stringify(sampleData));
+  document.getElementById('tm-pad0').data = JSON.parse(JSON.stringify(sampleData));
+  document.getElementById('tm-pad2').data = JSON.parse(JSON.stringify(sampleData));
+  document.getElementById('tm-pad5').data = JSON.parse(JSON.stringify(sampleData));
+  document.getElementById('tm-pad10').data = JSON.parse(JSON.stringify(sampleData));
+  document.getElementById('tm-anim-on').data = JSON.parse(JSON.stringify(sampleData));
+
+  const animOff = document.getElementById('tm-anim-off');
+  animOff.animation = false;
+  animOff.data = JSON.parse(JSON.stringify(sampleData));
+
+  // Drill-down
+  document.getElementById('tm-drill').data = {
+    label: 'Company', value: 0,
     children: [
-      {
-        label: 'Engineering',
-        value: 0,
-        children: [
-          { label: 'Frontend', value: 20 },
-          { label: 'Backend', value: 25 },
-          { label: 'DevOps', value: 10 },
-          { label: 'QA', value: 8 },
-          { label: 'Mobile', value: 12 },
-        ]
-      },
-      {
-        label: 'Sales',
-        value: 0,
-        children: [
-          { label: 'Enterprise', value: 30 },
-          { label: 'SMB', value: 15 },
-          { label: 'Partners', value: 10 },
-        ]
-      },
-      {
-        label: 'Marketing',
-        value: 0,
-        children: [
-          { label: 'Content', value: 12 },
-          { label: 'Paid', value: 18 },
-          { label: 'Events', value: 8 },
-        ]
-      },
-      { label: 'HR', value: 10 },
-      { label: 'Finance', value: 8 },
+      { label: 'Engineering', value: 0, children: [
+        { label: 'Frontend', value: 300 },
+        { label: 'Backend', value: 250 },
+        { label: 'DevOps', value: 150 },
+        { label: 'QA', value: 100 },
+      ]},
+      { label: 'Sales', value: 0, children: [
+        { label: 'Enterprise', value: 400 },
+        { label: 'SMB', value: 200 },
+      ]},
+      { label: 'Marketing', value: 180 },
+      { label: 'HR', value: 90 },
     ]
   };
-
-  const drillable = document.getElementById('drillable');
-  drillable.data = orgData;
-
-  const drillLog = document.getElementById('drill-log');
-  drillable.addEventListener('@snice/treemap-drill', (e) => {
-    const { node, path } = e.detail;
-    drillLog.textContent = `Drilled to: ${path.map(n => n.label).join(' > ') || 'Root'}`;
-  });
-
-  // Color scheme data
-  const colorData = {
-    label: 'Data',
-    value: 0,
-    children: [
-      { label: 'A', value: 50 },
-      { label: 'B', value: 35 },
-      { label: 'C', value: 25 },
-      { label: 'D', value: 20 },
-      { label: 'E', value: 15 },
-      { label: 'F', value: 10 },
-    ]
-  };
-
-  ['default', 'blue', 'green', 'purple', 'warm', 'rainbow'].forEach(scheme => {
-    document.getElementById(`cs-${scheme}`).data = colorData;
-  });
 
   // Custom colors
-  document.getElementById('custom-colors').data = {
-    label: 'Budget',
-    value: 0,
+  document.getElementById('tm-custom-colors').data = {
+    label: 'Status', value: 0,
     children: [
-      { label: 'Rent', value: 1500, color: '#e74c3c' },
-      { label: 'Food', value: 600, color: '#2ecc71' },
-      { label: 'Transport', value: 300, color: '#3498db' },
-      { label: 'Utilities', value: 200, color: '#f39c12' },
-      { label: 'Entertainment', value: 150, color: '#9b59b6' },
-      { label: 'Savings', value: 500, color: '#1abc9c' },
+      { label: 'Passed', value: 85, color: '#22c55e' },
+      { label: 'Failed', value: 10, color: '#ef4444' },
+      { label: 'Skipped', value: 5, color: '#eab308' },
     ]
   };
 
-  // Events
-  const eventsMap = document.getElementById('events');
-  eventsMap.data = diskUsage;
+  // Many items
+  document.getElementById('tm-many').data = {
+    label: 'Countries', value: 0,
+    children: Array.from({ length: 20 }, (_, i) => ({
+      label: `Country ${String.fromCharCode(65 + i)}`,
+      value: Math.floor(Math.random() * 500) + 50,
+    }))
+  };
 
-  const eventLog = document.getElementById('event-log');
-  eventsMap.addEventListener('@snice/treemap-click', (e) => {
-    eventLog.textContent = `Clicked: ${e.detail.node.label}`;
-  });
-  eventsMap.addEventListener('@snice/treemap-hover', (e) => {
-    if (e.detail) {
-      eventLog.textContent = `Hovering: ${e.detail.node.label}`;
-    }
-  });
+  // Single
+  document.getElementById('tm-single').data = {
+    label: 'Root', value: 0,
+    children: [{ label: 'Only child', value: 100 }]
+  };
+
+  // Extreme ratio
+  document.getElementById('tm-ratio').data = {
+    label: 'Root', value: 0,
+    children: [
+      { label: 'Large', value: 950 },
+      { label: 'Tiny', value: 5 },
+    ]
+  };
 </script>
-
 </body>
 </html>

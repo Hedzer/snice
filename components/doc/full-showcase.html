@@ -1,84 +1,87 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Snice Doc - Document Editor</title>
-    <link rel="stylesheet" href="../theme/theme.css">
-    <style>
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background: var(--snice-color-background);
-        transition: background-color var(--snice-transition-medium) ease, color var(--snice-transition-medium) ease;
-      }
+<html>
+<head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <title>Doc</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    section { margin-bottom: 2rem; }
+    snice-doc { border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 8px; min-height: 200px; }
+  </style>
+  <script type="module">
+    import './snice-doc.ts';
 
-      .container {
-        max-width: 1400px;
-        margin: 20px auto;
-        background: var(--snice-color-background);
-        border-radius: 8px;
-        box-shadow: var(--snice-shadow-md);
-        height: calc(100vh - 40px);
-        display: flex;
-        flex-direction: column;
-      }
+    await customElements.whenDefined('snice-doc');
 
-      h1 {
-        margin: 0;
-        padding: 20px;
-        color: var(--snice-color-text);
-        border-bottom: 1px solid var(--snice-color-border);
-      }
+    // Pre-filled
+    const prefilled = document.getElementById('doc-prefilled');
+    prefilled.setHTML(`
+      <h1>Document Title</h1>
+      <p>This is a paragraph with <b>bold</b>, <i>italic</i>, and <u>underlined</u> text.</p>
+      <h2>Section Heading</h2>
+      <p>A paragraph under a subheading with a <a href="https://example.com">link</a>.</p>
+      <ul>
+        <li>Bullet item one</li>
+        <li>Bullet item two</li>
+      </ul>
+      <ol>
+        <li>Numbered item one</li>
+        <li>Numbered item two</li>
+      </ol>
+      <hr>
+      <p>Content after a divider.</p>
+    `);
+  </script>
+</head>
+<body>
 
-      snice-doc {
-        flex: 1;
-        --snice-doc-background: #fff;
-        --snice-doc-text-color: #24292f;
-        --snice-doc-muted-color: #57606a;
-        --snice-doc-placeholder-color: #8c959f;
-        --snice-doc-primary-color: #0969da;
-        --snice-doc-border: #d0d7de;
-        --snice-doc-sidebar-background: #f6f8fa;
-        --snice-doc-menu-hover: #e8eaed;
-        --snice-doc-link-color: #0969da;
-        --snice-doc-inline-code-background: rgba(175, 184, 193, 0.2);
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1>Document Editor</h1>
-      <snice-doc id="editor"></snice-doc>
-    </div>
+<section>
+  <h2>Default (empty, icons="default")</h2>
+  <snice-doc></snice-doc>
+</section>
 
-    <script type="module">
-      import './snice-doc.ts';
-      import '../modal/snice-modal.ts';
-      import '../input/snice-input.ts';
-      import '../button/snice-button.ts';
+<section>
+  <h2>Custom placeholder</h2>
+  <snice-doc placeholder="Write your story here..."></snice-doc>
+</section>
 
-      await customElements.whenDefined('snice-doc');
+<section>
+  <h2>Pre-filled content (setHTML)</h2>
+  <snice-doc id="doc-prefilled"></snice-doc>
+</section>
 
-      const editor = document.getElementById('editor');
+<section>
+  <h2>readonly</h2>
+  <snice-doc id="doc-readonly" readonly placeholder="Cannot edit this"></snice-doc>
+</section>
 
-      // Set some initial content
-      editor.setHTML(`
-        <h1>Welcome to the Document Editor!</h1>
-        <p>This is a simple document editor with:</p>
-        <ul>
-          <li><b>Bold</b>, <i>italic</i>, <u>underline</u> formatting</li>
-          <li>Headings (H1, H2, H3)</li>
-          <li>Bullet and numbered lists</li>
-          <li>Images and links</li>
-          <li>Tables</li>
-        </ul>
-        <p>Try typing with <b>bold</b> and hitting Enter - the formatting continues naturally!</p>
-        <h2>Features</h2>
-        <p>Use the toolbar at the top to format your text or insert elements. The sidebar lets you quickly insert images, tables, and dividers.</p>
-        <p>Just start typing anywhere to edit...</p>
-      `);
-    </script>
-  </body>
+<section>
+  <h2>icons="default" (text/emoji icons)</h2>
+  <snice-doc icons="default"></snice-doc>
+</section>
+
+<section>
+  <h2>icons="material" (Material Symbols - requires font loaded)</h2>
+  <snice-doc icons="material"></snice-doc>
+</section>
+
+<section>
+  <h2>icons="fontawesome" (Font Awesome - requires font loaded)</h2>
+  <snice-doc icons="fontawesome"></snice-doc>
+</section>
+
+</body>
 </html>

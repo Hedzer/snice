@@ -1,513 +1,282 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snice Button Component Demo</title>
+  <title>Button</title>
   <link rel="stylesheet" href="../theme/theme.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
   <style>
     body {
       font-family: system-ui, -apple-system, sans-serif;
-      padding: 40px;
-      line-height: 1.6;
+      padding: 1.5rem;
       background: var(--snice-color-background);
       color: var(--snice-color-text);
     }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: 10px;
-      margin-bottom: 30px;
-    }
-
+    section { margin-bottom: 2rem; }
     h2 {
-      color: var(--snice-color-text);
-      margin-top: 40px;
-      margin-bottom: 20px;
-      font-size: 24px;
-    }
-
-    .demo-section {
-      margin: 30px 0;
-      padding: 20px;
-      background: var(--snice-color-background);
-      border-radius: 8px;
-      border: 1px solid var(--snice-color-border);
-    }
-
-    .demo-label {
-      display: block;
-      margin-bottom: 16px;
+      font-size: 0.75rem;
       font-weight: 600;
-      color: var(--snice-color-text-secondary);
-      font-size: 14px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.05em;
+      color: var(--snice-color-text-tertiary, #888);
+      margin: 0 0 0.75rem;
     }
-
-    .button-row {
+    .row {
       display: flex;
-      gap: 12px;
-      margin: 16px 0;
-      flex-wrap: wrap;
       align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
     }
-
-    .button-grid {
+    .matrix {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 16px;
-      margin: 20px 0;
-    }
-
-    .controls {
-      display: flex;
-      gap: 12px;
-      margin: 20px 0;
-      flex-wrap: wrap;
-      padding: 16px;
-      background: var(--snice-color-background);
-      border-radius: 6px;
-      border: 1px solid var(--snice-color-border);
-    }
-
-    .controls label {
-      display: flex;
+      grid-template-columns: auto repeat(6, auto);
+      gap: 0.5rem;
       align-items: center;
-      gap: 8px;
-      font-size: 14px;
     }
-
-    .controls select {
-      padding: 8px 12px;
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      font-size: 14px;
-    }
-
-    .controls input[type="checkbox"] {
-      cursor: pointer;
-    }
-
-    .example-card {
-      padding: 20px;
-      background: var(--snice-color-background);
-      border-radius: 6px;
-      border: 1px solid var(--snice-color-border);
-      margin: 16px 0;
-    }
-
-    .example-card h3 {
-      margin-top: 0;
-      margin-bottom: 16px;
-      font-size: 16px;
-      color: var(--snice-color-text);
-    }
-
-    .code-block {
-      background: var(--snice-color-background);
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      padding: 12px;
-      margin: 12px 0;
-      font-family: monospace;
-      font-size: 13px;
-      overflow-x: auto;
-    }
-
-    .state-display {
-      display: inline-block;
-      padding: 4px 8px;
-      background: var(--snice-color-primary);
-      color: white;
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: 600;
-      margin-left: 8px;
-    }
-
-    .icon-demo {
-      width: 20px;
-      height: 20px;
-      display: inline-block;
+    .matrix-label {
+      font-size: 0.7rem;
+      color: var(--snice-color-text-secondary, #aaa);
+      text-align: right;
+      padding-right: 0.5rem;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🔘 Snice Button Component Demo</h1>
 
-    <div class="demo-section">
-      <h2>Button Variants</h2>
-      <span class="demo-label">All available button styles</span>
-      <div class="button-row">
-        <snice-button variant="default">Default</snice-button>
-        <snice-button variant="primary">Primary</snice-button>
-        <snice-button variant="success">Success</snice-button>
-        <snice-button variant="warning">Warning</snice-button>
-        <snice-button variant="danger">Danger</snice-button>
-        <snice-button variant="text">Text</snice-button>
-      </div>
+  <section>
+    <h2>All variants</h2>
+    <div class="row">
+      <snice-button variant="default">Default</snice-button>
+      <snice-button variant="primary">Primary</snice-button>
+      <snice-button variant="success">Success</snice-button>
+      <snice-button variant="warning">Warning</snice-button>
+      <snice-button variant="danger">Danger</snice-button>
+      <snice-button variant="text">Text</snice-button>
     </div>
+  </section>
 
-    <div class="demo-section">
-      <h2>Button Sizes</h2>
-      <span class="demo-label">Small, medium, and large</span>
-      <div class="button-row">
-        <snice-button size="small" variant="primary">Small</snice-button>
-        <snice-button size="medium" variant="primary">Medium</snice-button>
-        <snice-button size="large" variant="primary">Large</snice-button>
-      </div>
+  <section>
+    <h2>All sizes</h2>
+    <div class="row">
+      <snice-button size="small">Small</snice-button>
+      <snice-button size="medium">Medium</snice-button>
+      <snice-button size="large">Large</snice-button>
     </div>
+  </section>
 
-    <div class="demo-section">
-      <h2>Outline Buttons</h2>
-      <span class="demo-label">Transparent background with colored border</span>
-      <div class="button-row">
-        <snice-button variant="default" outline>Default</snice-button>
-        <snice-button variant="primary" outline>Primary</snice-button>
-        <snice-button variant="success" outline>Success</snice-button>
-        <snice-button variant="warning" outline>Warning</snice-button>
-        <snice-button variant="danger" outline>Danger</snice-button>
-      </div>
+  <section>
+    <h2>Variant x Size matrix</h2>
+    <div class="matrix">
+      <div class="matrix-label">small</div>
+      <snice-button variant="default" size="small">Default</snice-button>
+      <snice-button variant="primary" size="small">Primary</snice-button>
+      <snice-button variant="success" size="small">Success</snice-button>
+      <snice-button variant="warning" size="small">Warning</snice-button>
+      <snice-button variant="danger" size="small">Danger</snice-button>
+      <snice-button variant="text" size="small">Text</snice-button>
+
+      <div class="matrix-label">medium</div>
+      <snice-button variant="default" size="medium">Default</snice-button>
+      <snice-button variant="primary" size="medium">Primary</snice-button>
+      <snice-button variant="success" size="medium">Success</snice-button>
+      <snice-button variant="warning" size="medium">Warning</snice-button>
+      <snice-button variant="danger" size="medium">Danger</snice-button>
+      <snice-button variant="text" size="medium">Text</snice-button>
+
+      <div class="matrix-label">large</div>
+      <snice-button variant="default" size="large">Default</snice-button>
+      <snice-button variant="primary" size="large">Primary</snice-button>
+      <snice-button variant="success" size="large">Success</snice-button>
+      <snice-button variant="warning" size="large">Warning</snice-button>
+      <snice-button variant="danger" size="large">Danger</snice-button>
+      <snice-button variant="text" size="large">Text</snice-button>
     </div>
+  </section>
 
-    <div class="demo-section">
-      <h2>Button Shapes</h2>
-
-      <span class="demo-label">Pill Shape</span>
-      <div class="button-row">
-        <snice-button variant="primary" pill>Pill Button</snice-button>
-        <snice-button variant="success" pill outline>Pill Outline</snice-button>
-        <snice-button variant="danger" pill size="small">Small Pill</snice-button>
-        <snice-button variant="warning" pill size="large">Large Pill</snice-button>
-      </div>
-
-      <span class="demo-label">Circle Shape (for icon-only buttons)</span>
-      <div class="button-row">
-        <snice-button variant="primary" circle>+</snice-button>
-        <snice-button variant="success" circle>✓</snice-button>
-        <snice-button variant="danger" circle>×</snice-button>
-        <snice-button variant="warning" circle outline>!</snice-button>
-        <snice-button variant="default" circle size="small">↻</snice-button>
-        <snice-button variant="primary" circle size="large">★</snice-button>
-      </div>
+  <section>
+    <h2>Outline variants</h2>
+    <div class="row">
+      <snice-button variant="default" outline>Default</snice-button>
+      <snice-button variant="primary" outline>Primary</snice-button>
+      <snice-button variant="success" outline>Success</snice-button>
+      <snice-button variant="warning" outline>Warning</snice-button>
+      <snice-button variant="danger" outline>Danger</snice-button>
+      <snice-button variant="text" outline>Text</snice-button>
     </div>
+  </section>
 
-    <div class="demo-section">
-      <h2>Button States</h2>
+  <section>
+    <h2>Variant x Outline matrix</h2>
+    <div class="matrix">
+      <div class="matrix-label">filled</div>
+      <snice-button variant="default">Default</snice-button>
+      <snice-button variant="primary">Primary</snice-button>
+      <snice-button variant="success">Success</snice-button>
+      <snice-button variant="warning">Warning</snice-button>
+      <snice-button variant="danger">Danger</snice-button>
+      <snice-button variant="text">Text</snice-button>
 
-      <span class="demo-label">Disabled State</span>
-      <div class="button-row">
-        <snice-button variant="default" disabled>Default</snice-button>
-        <snice-button variant="primary" disabled>Primary</snice-button>
-        <snice-button variant="success" disabled outline>Success Outline</snice-button>
-        <snice-button variant="danger" disabled>Danger</snice-button>
-      </div>
-
-      <span class="demo-label">Loading State</span>
-      <div class="button-row">
-        <snice-button variant="primary" loading>Loading...</snice-button>
-        <snice-button variant="success" loading outline>Processing</snice-button>
-        <snice-button variant="warning" loading size="small">Wait</snice-button>
-        <snice-button variant="danger" loading size="large">Please Wait</snice-button>
-      </div>
+      <div class="matrix-label">outline</div>
+      <snice-button variant="default" outline>Default</snice-button>
+      <snice-button variant="primary" outline>Primary</snice-button>
+      <snice-button variant="success" outline>Success</snice-button>
+      <snice-button variant="warning" outline>Warning</snice-button>
+      <snice-button variant="danger" outline>Danger</snice-button>
+      <snice-button variant="text" outline>Text</snice-button>
     </div>
+  </section>
 
-    <div class="demo-section">
-      <h2>Interactive Demo</h2>
-      <span class="demo-label">Customize a button</span>
-
-      <div class="controls">
-        <label>
-          Variant:
-          <select id="variant-select">
-            <option value="default">Default</option>
-            <option value="primary" selected>Primary</option>
-            <option value="success">Success</option>
-            <option value="warning">Warning</option>
-            <option value="danger">Danger</option>
-            <option value="text">Text</option>
-          </select>
-        </label>
-
-        <label>
-          Size:
-          <select id="size-select">
-            <option value="small">Small</option>
-            <option value="medium" selected>Medium</option>
-            <option value="large">Large</option>
-          </select>
-        </label>
-
-        <label>
-          <input type="checkbox" id="outline-check">
-          Outline
-        </label>
-
-        <label>
-          <input type="checkbox" id="pill-check">
-          Pill
-        </label>
-
-        <label>
-          <input type="checkbox" id="circle-check">
-          Circle
-        </label>
-
-        <label>
-          <input type="checkbox" id="disabled-check">
-          Disabled
-        </label>
-
-        <label>
-          <input type="checkbox" id="loading-check">
-          Loading
-        </label>
-      </div>
-
-      <div style="padding: 20px; background: var(--snice-color-background); border-radius: 6px; border: 1px solid var(--snice-color-border);">
-        <snice-button id="demo-button" variant="primary" size="medium">
-          Interactive Button
-        </snice-button>
-        <div style="margin-top: 16px; font-size: 14px; color: var(--snice-color-text-secondary);">
-          Click count: <span class="state-display" id="click-count">0</span>
-        </div>
-      </div>
+  <section>
+    <h2>Pill shape</h2>
+    <div class="row">
+      <snice-button variant="primary" pill>Pill Button</snice-button>
+      <snice-button variant="success" pill outline>Pill Outline</snice-button>
+      <snice-button variant="danger" pill size="small">Small Pill</snice-button>
+      <snice-button variant="warning" pill size="large">Large Pill</snice-button>
     </div>
+  </section>
 
-    <div class="demo-section">
-      <h2>Real-world Examples</h2>
-
-      <div class="example-card">
-        <h3>Form Actions</h3>
-        <div class="button-row">
-          <snice-button variant="primary">Save Changes</snice-button>
-          <snice-button variant="default">Cancel</snice-button>
-          <snice-button variant="danger" outline>Delete</snice-button>
-        </div>
-      </div>
-
-      <div class="example-card">
-        <h3>Toolbar</h3>
-        <div class="button-row">
-          <snice-button variant="default" size="small">New</snice-button>
-          <snice-button variant="default" size="small">Edit</snice-button>
-          <snice-button variant="default" size="small">Copy</snice-button>
-          <snice-button variant="default" size="small">Paste</snice-button>
-          <snice-button variant="danger" size="small" outline>Delete</snice-button>
-        </div>
-      </div>
-
-      <div class="example-card">
-        <h3>Call to Action</h3>
-        <div class="button-row">
-          <snice-button variant="primary" size="large" pill>Get Started Free</snice-button>
-          <snice-button variant="default" size="large" pill outline>Learn More</snice-button>
-        </div>
-      </div>
-
-      <div class="example-card">
-        <h3>Icon Buttons</h3>
-        <div class="button-row">
-          <snice-button variant="primary" circle>+</snice-button>
-          <snice-button variant="default" circle>⚙</snice-button>
-          <snice-button variant="success" circle>✓</snice-button>
-          <snice-button variant="danger" circle>🗑</snice-button>
-          <snice-button variant="warning" circle>⚠</snice-button>
-          <snice-button variant="default" circle outline>❤</snice-button>
-        </div>
-      </div>
-
-      <div class="example-card">
-        <h3>Confirmation Dialog</h3>
-        <p style="margin-bottom: 16px; color: var(--snice-color-text-secondary);">Are you sure you want to delete this item?</p>
-        <div class="button-row">
-          <snice-button variant="danger">Yes, Delete</snice-button>
-          <snice-button variant="default" outline>Cancel</snice-button>
-        </div>
-      </div>
-
-      <div class="example-card">
-        <h3>Loading States in Practice</h3>
-        <div class="button-row">
-          <snice-button id="submit-btn" variant="primary">Submit Form</snice-button>
-          <snice-button id="upload-btn" variant="success">Upload File</snice-button>
-          <snice-button id="delete-btn" variant="danger">Delete Item</snice-button>
-        </div>
-      </div>
-
-      <div class="example-card">
-        <h3>Button Groups</h3>
-        <div class="button-row" style="gap: 0;">
-          <snice-button variant="default" size="small" style="border-radius: 4px 0 0 4px;">Left</snice-button>
-          <snice-button variant="default" size="small" style="border-radius: 0; margin-left: -1px;">Center</snice-button>
-          <snice-button variant="default" size="small" style="border-radius: 0 4px 4px 0; margin-left: -1px;">Right</snice-button>
-        </div>
-      </div>
-
-      <div class="example-card">
-        <h3>Size Comparison</h3>
-        <div class="button-row">
-          <snice-button variant="primary" size="small">Small Primary</snice-button>
-          <snice-button variant="primary" size="medium">Medium Primary</snice-button>
-          <snice-button variant="primary" size="large">Large Primary</snice-button>
-        </div>
-        <div class="button-row" style="margin-top: 12px;">
-          <snice-button variant="success" size="small" outline>Small Outline</snice-button>
-          <snice-button variant="success" size="medium" outline>Medium Outline</snice-button>
-          <snice-button variant="success" size="large" outline>Large Outline</snice-button>
-        </div>
-      </div>
+  <section>
+    <h2>Circle shape</h2>
+    <div class="row">
+      <snice-button variant="primary" circle size="small">+</snice-button>
+      <snice-button variant="primary" circle size="medium">+</snice-button>
+      <snice-button variant="primary" circle size="large">+</snice-button>
+      <snice-button variant="danger" circle>X</snice-button>
+      <snice-button variant="success" circle outline>V</snice-button>
     </div>
+  </section>
 
-    <div class="demo-section">
-      <h2>All Combinations</h2>
-      <span class="demo-label">Variants × Sizes × Styles</span>
-
-      <div class="button-grid">
-        <div>
-          <span class="demo-label" style="font-size: 12px;">Default</span>
-          <div style="display: flex; flex-direction: column; gap: 8px;">
-            <snice-button variant="default" size="small">Small</snice-button>
-            <snice-button variant="default" size="medium">Medium</snice-button>
-            <snice-button variant="default" size="large">Large</snice-button>
-          </div>
-        </div>
-
-        <div>
-          <span class="demo-label" style="font-size: 12px;">Primary</span>
-          <div style="display: flex; flex-direction: column; gap: 8px;">
-            <snice-button variant="primary" size="small">Small</snice-button>
-            <snice-button variant="primary" size="medium">Medium</snice-button>
-            <snice-button variant="primary" size="large">Large</snice-button>
-          </div>
-        </div>
-
-        <div>
-          <span class="demo-label" style="font-size: 12px;">Success</span>
-          <div style="display: flex; flex-direction: column; gap: 8px;">
-            <snice-button variant="success" size="small">Small</snice-button>
-            <snice-button variant="success" size="medium">Medium</snice-button>
-            <snice-button variant="success" size="large">Large</snice-button>
-          </div>
-        </div>
-
-        <div>
-          <span class="demo-label" style="font-size: 12px;">Warning</span>
-          <div style="display: flex; flex-direction: column; gap: 8px;">
-            <snice-button variant="warning" size="small">Small</snice-button>
-            <snice-button variant="warning" size="medium">Medium</snice-button>
-            <snice-button variant="warning" size="large">Large</snice-button>
-          </div>
-        </div>
-
-        <div>
-          <span class="demo-label" style="font-size: 12px;">Danger</span>
-          <div style="display: flex; flex-direction: column; gap: 8px;">
-            <snice-button variant="danger" size="small">Small</snice-button>
-            <snice-button variant="danger" size="medium">Medium</snice-button>
-            <snice-button variant="danger" size="large">Large</snice-button>
-          </div>
-        </div>
-
-        <div>
-          <span class="demo-label" style="font-size: 12px;">Text</span>
-          <div style="display: flex; flex-direction: column; gap: 8px;">
-            <snice-button variant="text" size="small">Small</snice-button>
-            <snice-button variant="text" size="medium">Medium</snice-button>
-            <snice-button variant="text" size="large">Large</snice-button>
-          </div>
-        </div>
-      </div>
+  <section>
+    <h2>Disabled</h2>
+    <div class="row">
+      <snice-button variant="default" disabled>Default</snice-button>
+      <snice-button variant="primary" disabled>Primary</snice-button>
+      <snice-button variant="success" disabled>Success</snice-button>
+      <snice-button variant="danger" disabled outline>Outline</snice-button>
+      <snice-button variant="text" disabled>Text</snice-button>
     </div>
-  </div>
+  </section>
+
+  <section>
+    <h2>Loading</h2>
+    <div class="row">
+      <snice-button variant="default" loading>Default</snice-button>
+      <snice-button variant="primary" loading>Primary</snice-button>
+      <snice-button variant="success" loading>Success</snice-button>
+      <snice-button variant="danger" loading outline>Outline</snice-button>
+      <snice-button variant="text" loading>Text</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Icon property (emoji)</h2>
+    <div class="row">
+      <snice-button variant="primary" icon="\u2B50">Star</snice-button>
+      <snice-button variant="success" icon="\u2714\uFE0F">Done</snice-button>
+      <snice-button variant="danger" icon="\u{1F5D1}\uFE0F">Delete</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Icon property (Material Symbols ligature)</h2>
+    <div class="row">
+      <snice-button variant="primary" icon="home">Home</snice-button>
+      <snice-button variant="success" icon="check">Confirm</snice-button>
+      <snice-button variant="danger" icon="delete">Remove</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Icon slot (Material Symbols)</h2>
+    <div class="row">
+      <snice-button variant="primary">
+        <span class="material-symbols-outlined" slot="icon">search</span>
+        Search
+      </snice-button>
+      <snice-button variant="success">
+        <span class="material-symbols-outlined" slot="icon">add</span>
+        Add
+      </snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>icon-placement: start (default) vs end</h2>
+    <div class="row">
+      <snice-button variant="primary" icon="\u27A1\uFE0F" icon-placement="start">Start</snice-button>
+      <snice-button variant="primary" icon="\u27A1\uFE0F" icon-placement="end">End</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>All button types</h2>
+    <div class="row">
+      <snice-button type="button">type=button</snice-button>
+      <snice-button type="submit" variant="primary">type=submit</snice-button>
+      <snice-button type="reset" variant="default">type=reset</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Link buttons (href)</h2>
+    <div class="row">
+      <snice-button variant="primary" href="#link1">href link</snice-button>
+      <snice-button variant="primary" href="#link2" target="_blank">target=_blank</snice-button>
+      <snice-button variant="primary" href="#download" download="file.txt">download</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Edge case: empty button</h2>
+    <div class="row">
+      <snice-button variant="primary"></snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Edge case: very long text</h2>
+    <div class="row">
+      <snice-button variant="primary">This is a very long button label that should demonstrate text overflow handling in buttons</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Edge case: single character</h2>
+    <div class="row">
+      <snice-button variant="primary" size="small">A</snice-button>
+      <snice-button variant="primary" size="medium">B</snice-button>
+      <snice-button variant="primary" size="large">C</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>All boolean states combined</h2>
+    <div class="row">
+      <snice-button variant="primary" pill outline>Pill + Outline</snice-button>
+      <snice-button variant="primary" pill loading>Pill + Loading</snice-button>
+      <snice-button variant="primary" outline disabled>Outline + Disabled</snice-button>
+      <snice-button variant="primary" pill outline disabled>Pill + Outline + Disabled</snice-button>
+      <snice-button variant="primary" circle loading>L</snice-button>
+    </div>
+  </section>
 
   <script type="module">
     import './snice-button.ts';
-
-    const demoButton = document.getElementById('demo-button');
-    let clickCount = 0;
-
-    // Interactive demo controls
-    document.getElementById('variant-select').addEventListener('change', (e) => {
-      demoButton.variant = e.target.value;
-    });
-
-    document.getElementById('size-select').addEventListener('change', (e) => {
-      demoButton.size = e.target.value;
-    });
-
-    document.getElementById('outline-check').addEventListener('change', (e) => {
-      demoButton.outline = e.target.checked;
-    });
-
-    document.getElementById('pill-check').addEventListener('change', (e) => {
-      demoButton.pill = e.target.checked;
-    });
-
-    document.getElementById('circle-check').addEventListener('change', (e) => {
-      demoButton.circle = e.target.checked;
-    });
-
-    document.getElementById('disabled-check').addEventListener('change', (e) => {
-      demoButton.disabled = e.target.checked;
-    });
-
-    document.getElementById('loading-check').addEventListener('change', (e) => {
-      demoButton.loading = e.target.checked;
-    });
-
-    // Click counter
-    demoButton.addEventListener('click', () => {
-      clickCount++;
-      document.getElementById('click-count').textContent = clickCount;
-    });
-
-    // Loading state demos
-    document.getElementById('submit-btn').addEventListener('click', function() {
-      this.loading = true;
-      setTimeout(() => {
-        this.loading = false;
-      }, 2000);
-    });
-
-    document.getElementById('upload-btn').addEventListener('click', function() {
-      this.loading = true;
-      setTimeout(() => {
-        this.loading = false;
-      }, 3000);
-    });
-
-    document.getElementById('delete-btn').addEventListener('click', function() {
-      this.loading = true;
-      setTimeout(() => {
-        this.loading = false;
-      }, 1500);
-    });
-
-    // Log all button clicks
-    document.querySelectorAll('snice-button').forEach(button => {
-      button.addEventListener('click', (e) => {
-        console.log('Button clicked:', {
-          variant: button.variant,
-          size: button.size,
-          outline: button.outline,
-          pill: button.pill,
-          circle: button.circle,
-          disabled: button.disabled,
-          loading: button.loading
-        });
-      });
-    });
   </script>
 </body>
 </html>

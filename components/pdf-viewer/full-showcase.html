@@ -1,228 +1,90 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snice PDF Viewer Component Demo</title>
+  <title>PDF Viewer</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      padding: 40px;
-      line-height: 1.6;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      margin: 0;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: 10px;
-      margin-bottom: 30px;
-    }
-
-    h2 {
-      color: var(--snice-color-text);
-      margin-top: 40px;
-      margin-bottom: 20px;
-      font-size: 24px;
-    }
-
-    .demo-section {
-      margin: 30px 0;
-      padding: 20px;
-      background: var(--snice-color-background);
-      border-radius: 8px;
-      border: 1px solid var(--snice-color-border);
-    }
-
-    .demo-label {
-      display: block;
-      margin-bottom: 16px;
-      font-weight: 600;
-      color: var(--snice-color-text-secondary);
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .controls {
-      display: flex;
-      gap: 12px;
-      margin: 16px 0;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .controls label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 14px;
-    }
-
-    .controls input, .controls select {
-      padding: 8px 12px;
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      font-size: 14px;
-    }
-
-    button {
-      padding: 8px 16px;
-      border: 1px solid var(--snice-color-border);
-      border-radius: 6px;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    button:hover {
-      background: var(--snice-color-background-element, #f0f0f0);
-    }
-
-    snice-pdf-viewer {
-      width: 100%;
-      height: 600px;
-      display: block;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-
-    .event-log {
-      margin-top: 16px;
-      padding: 12px;
-      background: var(--snice-color-background-element, rgb(252 251 249));
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      font-family: monospace;
-      font-size: 13px;
-      max-height: 150px;
-      overflow-y: auto;
-    }
-
-    .event-log div {
-      margin: 4px 0;
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    section { margin-bottom: 2rem; }
+    snice-pdf-viewer { display: block; height: 500px; border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 8px; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>PDF Viewer Component Demo</h1>
-    <p style="color: var(--snice-color-text-secondary);">Provide a PDF URL to load it in the viewer. The toolbar supports page navigation, zoom, fit modes, download, and print.</p>
 
-    <div class="demo-section">
-      <h2>Load a PDF</h2>
-      <span class="demo-label">Enter a URL or use the sample</span>
-      <div class="controls">
-        <label>
-          PDF URL:
-          <input type="text" id="pdf-url-input" placeholder="https://example.com/document.pdf" style="width: 400px;" />
-        </label>
-        <button id="btn-load">Load PDF</button>
-      </div>
-      <snice-pdf-viewer id="viewer-main"></snice-pdf-viewer>
-    </div>
+<h2>Fit: width (default)</h2>
+<section>
+  <snice-pdf-viewer id="viewer-width" fit="width"></snice-pdf-viewer>
+</section>
 
-    <div class="demo-section">
-      <h2>Programmatic Controls</h2>
-      <span class="demo-label">Navigate and zoom via JavaScript</span>
-      <div class="controls">
-        <button id="btn-prev">Previous Page</button>
-        <button id="btn-next">Next Page</button>
-        <button id="btn-zoom-in">Zoom In</button>
-        <button id="btn-zoom-out">Zoom Out</button>
-        <label>
-          Go to page:
-          <input type="number" id="page-input" min="1" value="1" style="width: 80px;" />
-        </label>
-        <button id="btn-goto">Go</button>
-      </div>
-      <div id="viewer-info" style="margin-top: 8px; font-size: 14px; color: var(--snice-color-text-secondary);"></div>
-    </div>
+<h2>Fit: height</h2>
+<section>
+  <snice-pdf-viewer id="viewer-height" fit="height"></snice-pdf-viewer>
+</section>
 
-    <div class="demo-section">
-      <h2>Fit Modes</h2>
-      <span class="demo-label">Width, height, or full page fit</span>
-      <div class="controls">
-        <label>
-          Fit mode:
-          <select id="fit-select">
-            <option value="width">Fit Width</option>
-            <option value="height">Fit Height</option>
-            <option value="page">Fit Page</option>
-          </select>
-        </label>
-      </div>
-    </div>
+<h2>Fit: page</h2>
+<section>
+  <snice-pdf-viewer id="viewer-page" fit="page"></snice-pdf-viewer>
+</section>
 
-    <div class="demo-section">
-      <h2>Events</h2>
-      <div id="event-log" class="event-log">
-        <div>Waiting for events...</div>
-      </div>
-    </div>
-  </div>
+<h2>Zoom: 0.5</h2>
+<section>
+  <snice-pdf-viewer id="viewer-zoom-half" zoom="0.5" fit="width"></snice-pdf-viewer>
+</section>
 
-  <script type="module">
-    import './snice-pdf-viewer.ts';
+<h2>Zoom: 1.5</h2>
+<section>
+  <snice-pdf-viewer id="viewer-zoom-150" zoom="1.5" fit="width"></snice-pdf-viewer>
+</section>
 
-    const viewer = document.getElementById('viewer-main');
-    const eventLog = document.getElementById('event-log');
+<h2>Zoom: 2</h2>
+<section>
+  <snice-pdf-viewer id="viewer-zoom-200" zoom="2" fit="width"></snice-pdf-viewer>
+</section>
 
-    function logEvent(name, detail) {
-      const entry = document.createElement('div');
-      entry.textContent = `${new Date().toLocaleTimeString()}: ${name} - ${JSON.stringify(detail)}`;
-      eventLog.insertBefore(entry, eventLog.firstChild);
-    }
+<h2>Page: 1 (default)</h2>
+<section>
+  <snice-pdf-viewer id="viewer-p1" page="1"></snice-pdf-viewer>
+</section>
 
-    // Load PDF
-    document.getElementById('btn-load').addEventListener('click', () => {
-      const url = document.getElementById('pdf-url-input').value.trim();
-      if (url) {
-        viewer.src = url;
-      }
-    });
+<h2>No src (empty state)</h2>
+<section>
+  <snice-pdf-viewer></snice-pdf-viewer>
+</section>
 
-    // Programmatic controls
-    document.getElementById('btn-prev').addEventListener('click', () => viewer.prevPage());
-    document.getElementById('btn-next').addEventListener('click', () => viewer.nextPage());
-    document.getElementById('btn-zoom-in').addEventListener('click', () => { viewer.zoom = Math.min(5, viewer.zoom + 0.25); });
-    document.getElementById('btn-zoom-out').addEventListener('click', () => { viewer.zoom = Math.max(0.25, viewer.zoom - 0.25); });
+<h2>Invalid src (error state)</h2>
+<section>
+  <snice-pdf-viewer src="/nonexistent.pdf"></snice-pdf-viewer>
+</section>
 
-    document.getElementById('btn-goto').addEventListener('click', () => {
-      const page = parseInt(document.getElementById('page-input').value, 10);
-      if (!isNaN(page)) viewer.goToPage(page);
-    });
+<script type="module">
+  import './snice-pdf-viewer.ts';
 
-    // Fit mode
-    document.getElementById('fit-select').addEventListener('change', (e) => {
-      viewer.fit = e.target.value;
-    });
+  // Use a sample PDF - adjust path as needed
+  const samplePdf = 'https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf';
 
-    // Events
-    viewer.addEventListener('pdf-loaded', (e) => {
-      logEvent('pdf-loaded', e.detail);
-      document.getElementById('viewer-info').textContent = `Loaded: ${viewer.totalPages} pages, zoom: ${Math.round(viewer.zoom * 100)}%`;
-    });
-
-    viewer.addEventListener('page-change', (e) => {
-      logEvent('page-change', e.detail);
-      document.getElementById('viewer-info').textContent = `Page ${e.detail.page} of ${e.detail.totalPages}, zoom: ${Math.round(viewer.zoom * 100)}%`;
-    });
-
-    viewer.addEventListener('pdf-error', (e) => {
-      logEvent('pdf-error', e.detail);
-    });
-  </script>
+  document.getElementById('viewer-width').src = samplePdf;
+  document.getElementById('viewer-height').src = samplePdf;
+  document.getElementById('viewer-page').src = samplePdf;
+  document.getElementById('viewer-zoom-half').src = samplePdf;
+  document.getElementById('viewer-zoom-150').src = samplePdf;
+  document.getElementById('viewer-zoom-200').src = samplePdf;
+  document.getElementById('viewer-p1').src = samplePdf;
+</script>
 </body>
 </html>

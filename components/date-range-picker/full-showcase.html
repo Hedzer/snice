@@ -1,250 +1,154 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Date Range Picker Demo</title>
-    <link rel="stylesheet" href="../theme/theme.css">
-    <style>
-        body {
-            font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
-            padding: var(--snice-spacing-xl, 2rem);
-            background: var(--snice-color-background);
-            color: var(--snice-color-text, #374151);
-        }
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <title>Date Range Picker</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
+    section { margin-bottom: 2rem; max-width: 800px; }
+  </style>
+  <script type="module">
+    import './snice-date-range-picker.ts';
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: var(--snice-color-background-element, white);
-            padding: var(--snice-spacing-xl, 2rem);
-            border-radius: var(--snice-border-radius-lg, 8px);
-            box-shadow: var(--snice-shadow-sm, 0 1px 3px rgba(0,0,0,0.1));
-        }
+    await customElements.whenDefined('snice-date-range-picker');
 
-        .test-section {
-            margin-bottom: var(--snice-spacing-xl, 2rem);
-            padding: var(--snice-spacing-lg, 1.5rem);
-            border: 1px solid var(--snice-color-border, #e5e7eb);
-            border-radius: var(--snice-border-radius-lg, 6px);
-            background: var(--snice-color-background-secondary, #f9fafb);
-        }
+    // Presets
+    const today = new Date();
+    const presetPicker = document.getElementById('drp-presets');
+    presetPicker.presets = [
+      { label: 'Last 7 days', start: new Date(Date.now() - 7 * 86400000), end: today },
+      { label: 'Last 30 days', start: new Date(Date.now() - 30 * 86400000), end: today },
+      { label: 'This month', start: new Date(today.getFullYear(), today.getMonth(), 1), end: new Date(today.getFullYear(), today.getMonth() + 1, 0) },
+      { label: 'Last month', start: new Date(today.getFullYear(), today.getMonth() - 1, 1), end: new Date(today.getFullYear(), today.getMonth(), 0) },
+    ];
 
-        .test-section h3 {
-            margin: 0 0 var(--snice-spacing-md, 1rem) 0;
-            color: var(--snice-color-text, #374151);
-            font-weight: var(--snice-font-weight-semibold, 600);
-        }
-
-        .form-grid {
-            display: grid;
-            gap: var(--snice-spacing-md, 1rem);
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: var(--snice-spacing-md, 1rem);
-        }
-
-        @media (max-width: 640px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    // Dual + presets
+    const dualPresets = document.getElementById('drp-dual-presets');
+    dualPresets.presets = [
+      { label: 'Last 7 days', start: new Date(Date.now() - 7 * 86400000), end: today },
+      { label: 'This month', start: new Date(today.getFullYear(), today.getMonth(), 1), end: new Date(today.getFullYear(), today.getMonth() + 1, 0) },
+    ];
+  </script>
 </head>
 <body>
-    <div class="container">
-        <h1>Snice Date Range Picker Demo</h1>
 
-        <div class="test-section">
-            <h3>Basic</h3>
-            <div class="form-grid">
-                <snice-date-range-picker
-                    label="Select Date Range"
-                    clearable>
-                </snice-date-range-picker>
-            </div>
-        </div>
+<section>
+  <h2>Default (single column)</h2>
+  <snice-date-range-picker label="Date Range"></snice-date-range-picker>
+</section>
 
-        <div class="test-section">
-            <h3>Dual Column</h3>
-            <div class="form-grid">
-                <snice-date-range-picker
-                    label="Booking Dates"
-                    columns="2"
-                    clearable>
-                </snice-date-range-picker>
-            </div>
-        </div>
+<section>
+  <h2>With start + end values</h2>
+  <snice-date-range-picker label="Pre-filled" start="2026-03-01" end="2026-03-15"></snice-date-range-picker>
+</section>
 
-        <div class="test-section">
-            <h3>With Presets</h3>
-            <div class="form-grid">
-                <snice-date-range-picker
-                    id="preset-picker"
-                    label="Report Period"
-                    columns="2"
-                    clearable>
-                </snice-date-range-picker>
-            </div>
-        </div>
+<section>
+  <h2>columns="2" (dual calendar)</h2>
+  <snice-date-range-picker label="Dual Calendar" columns="2"></snice-date-range-picker>
+</section>
 
-        <div class="test-section">
-            <h3>Sizes</h3>
-            <div class="form-grid">
-                <snice-date-range-picker label="Small" size="small"></snice-date-range-picker>
-                <snice-date-range-picker label="Medium" size="medium"></snice-date-range-picker>
-                <snice-date-range-picker label="Large" size="large"></snice-date-range-picker>
-            </div>
-        </div>
+<section>
+  <h2>With presets (single column)</h2>
+  <snice-date-range-picker id="drp-presets" label="Report Period" clearable></snice-date-range-picker>
+</section>
 
-        <div class="test-section">
-            <h3>Variants</h3>
-            <div class="form-grid">
-                <snice-date-range-picker label="Outlined" variant="outlined"></snice-date-range-picker>
-                <snice-date-range-picker label="Filled" variant="filled"></snice-date-range-picker>
-                <snice-date-range-picker label="Underlined" variant="underlined"></snice-date-range-picker>
-            </div>
-        </div>
+<section>
+  <h2>columns="2" + presets</h2>
+  <snice-date-range-picker id="drp-dual-presets" label="Booking Dates" columns="2" clearable></snice-date-range-picker>
+</section>
 
-        <div class="test-section">
-            <h3>States</h3>
-            <div class="form-grid">
-                <div class="form-row">
-                    <snice-date-range-picker
-                        label="Required"
-                        required
-                        helper-text="This field is required">
-                    </snice-date-range-picker>
+<section>
+  <h2>Sizes</h2>
+  <div class="row">
+    <snice-date-range-picker label="Small" size="small"></snice-date-range-picker>
+    <snice-date-range-picker label="Medium" size="medium"></snice-date-range-picker>
+    <snice-date-range-picker label="Large" size="large"></snice-date-range-picker>
+  </div>
+</section>
 
-                    <snice-date-range-picker
-                        label="Error"
-                        invalid
-                        error-text="Invalid date range">
-                    </snice-date-range-picker>
-                </div>
+<section>
+  <h2>Variants</h2>
+  <div class="row">
+    <snice-date-range-picker label="Outlined" variant="outlined"></snice-date-range-picker>
+    <snice-date-range-picker label="Filled" variant="filled"></snice-date-range-picker>
+    <snice-date-range-picker label="Underlined" variant="underlined"></snice-date-range-picker>
+  </div>
+</section>
 
-                <div class="form-row">
-                    <snice-date-range-picker
-                        label="Disabled"
-                        disabled
-                        start="2026-03-01"
-                        end="2026-03-15">
-                    </snice-date-range-picker>
+<section>
+  <h2>All formats</h2>
+  <snice-date-range-picker label="mm/dd/yyyy" format="mm/dd/yyyy" start="2026-03-01" end="2026-03-15"></snice-date-range-picker>
+  <snice-date-range-picker label="dd/mm/yyyy" format="dd/mm/yyyy" start="2026-03-01" end="2026-03-15" style="margin-top:0.5rem"></snice-date-range-picker>
+  <snice-date-range-picker label="yyyy-mm-dd" format="yyyy-mm-dd" start="2026-03-01" end="2026-03-15" style="margin-top:0.5rem"></snice-date-range-picker>
+  <snice-date-range-picker label="yyyy/mm/dd" format="yyyy/mm/dd" start="2026-03-01" end="2026-03-15" style="margin-top:0.5rem"></snice-date-range-picker>
+  <snice-date-range-picker label="dd-mm-yyyy" format="dd-mm-yyyy" start="2026-03-01" end="2026-03-15" style="margin-top:0.5rem"></snice-date-range-picker>
+  <snice-date-range-picker label="mm-dd-yyyy" format="mm-dd-yyyy" start="2026-03-01" end="2026-03-15" style="margin-top:0.5rem"></snice-date-range-picker>
+  <snice-date-range-picker label="mmmm dd, yyyy" format="mmmm dd, yyyy" start="2026-01-12" end="2026-02-16" style="margin-top:0.5rem"></snice-date-range-picker>
+</section>
 
-                    <snice-date-range-picker
-                        label="Readonly"
-                        readonly
-                        start="2026-03-01"
-                        end="2026-03-15">
-                    </snice-date-range-picker>
-                </div>
-            </div>
-        </div>
+<section>
+  <h2>clearable</h2>
+  <snice-date-range-picker label="Clearable" start="2026-03-01" end="2026-03-31" clearable></snice-date-range-picker>
+</section>
 
-        <div class="test-section">
-            <h3>Different Formats</h3>
-            <div class="form-grid">
-                <snice-date-range-picker
-                    label="US Format (MM/DD/YYYY)"
-                    format="mm/dd/yyyy">
-                </snice-date-range-picker>
+<section>
+  <h2>min + max</h2>
+  <snice-date-range-picker label="March 2026 only" min="2026-03-01" max="2026-03-31" helper-text="Constrained to March 2026"></snice-date-range-picker>
+</section>
 
-                <snice-date-range-picker
-                    label="European Format (DD/MM/YYYY)"
-                    format="dd/mm/yyyy">
-                </snice-date-range-picker>
+<section>
+  <h2>Disabled</h2>
+  <snice-date-range-picker label="Disabled" disabled start="2026-03-01" end="2026-03-15"></snice-date-range-picker>
+</section>
 
-                <snice-date-range-picker
-                    label="ISO Format (YYYY-MM-DD)"
-                    format="yyyy-mm-dd">
-                </snice-date-range-picker>
+<section>
+  <h2>Readonly</h2>
+  <snice-date-range-picker label="Readonly" readonly start="2026-03-01" end="2026-03-15"></snice-date-range-picker>
+</section>
 
-                <snice-date-range-picker
-                    label="Long Format (Month DD, YYYY)"
-                    format="mmmm dd, yyyy"
-                    start="2026-01-12"
-                    end="2026-02-16"
-                    clearable>
-                </snice-date-range-picker>
-            </div>
-        </div>
+<section>
+  <h2>Loading</h2>
+  <snice-date-range-picker label="Loading" loading></snice-date-range-picker>
+</section>
 
-        <div class="test-section">
-            <h3>Loading State</h3>
-            <div class="form-grid">
-                <snice-date-range-picker
-                    id="loading-picker"
-                    label="Loading Dates"
-                    loading>
-                </snice-date-range-picker>
-                <button id="loading-btn" style="width: fit-content; padding: 8px 16px; cursor: pointer; border-radius: 4px; border: 1px solid var(--snice-color-border); background: var(--snice-color-background-element); color: var(--snice-color-text);">Toggle Loading</button>
-            </div>
-        </div>
+<section>
+  <h2>Required</h2>
+  <snice-date-range-picker label="Required" required helper-text="Required field"></snice-date-range-picker>
+</section>
 
-        <div class="test-section">
-            <h3>Form Integration</h3>
-            <form id="demo-form">
-                <div class="form-grid">
-                    <snice-date-range-picker
-                        label="Trip Dates"
-                        name="trip"
-                        required
-                        clearable>
-                    </snice-date-range-picker>
-                    <button type="submit" style="width: fit-content; padding: 8px 16px; cursor: pointer; border-radius: 4px; border: 1px solid var(--snice-color-border); background: var(--snice-color-background-element); color: var(--snice-color-text);">Submit</button>
-                </div>
-            </form>
-        </div>
-    </div>
+<section>
+  <h2>Invalid + error-text</h2>
+  <snice-date-range-picker label="Invalid" invalid error-text="Invalid date range"></snice-date-range-picker>
+</section>
 
-    <script type="module">
-        import './snice-date-range-picker.ts';
+<section>
+  <h2>helper-text</h2>
+  <snice-date-range-picker label="Trip Dates" helper-text="Select check-in and check-out dates"></snice-date-range-picker>
+</section>
 
-        const presetPicker = document.getElementById('preset-picker');
-        const today = new Date();
-        const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-        const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-        const startOfLastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-        const endOfLastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+<section>
+  <h2>first-day-of-week="1" (Monday)</h2>
+  <snice-date-range-picker label="Monday start" first-day-of-week="1"></snice-date-range-picker>
+</section>
 
-        presetPicker.presets = [
-            { label: 'Last 7 days', start: new Date(Date.now() - 7 * 86400000), end: today },
-            { label: 'Last 30 days', start: new Date(Date.now() - 30 * 86400000), end: today },
-            { label: 'This month', start: startOfMonth, end: endOfMonth },
-            { label: 'Last month', start: startOfLastMonth, end: endOfLastMonth },
-        ];
+<section>
+  <h2>Form: name</h2>
+  <snice-date-range-picker label="Vacation" name="vacation" required clearable></snice-date-range-picker>
+</section>
 
-        document.addEventListener('daterange-change', (e) => {
-            console.log('Range changed:', e.detail);
-        });
-
-        document.addEventListener('daterange-preset', (e) => {
-            console.log('Preset selected:', e.detail);
-        });
-
-        document.addEventListener('daterange-open', (e) => {
-            console.log('Calendar opened');
-        });
-
-        document.addEventListener('daterange-close', (e) => {
-            console.log('Calendar closed');
-        });
-
-        // Loading toggle
-        const loadingPicker = document.getElementById('loading-picker');
-        document.getElementById('loading-btn').addEventListener('click', () => {
-            loadingPicker.loading = !loadingPicker.loading;
-        });
-
-        // Form submit
-        document.getElementById('demo-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            console.log('Form data:', Object.fromEntries(formData));
-        });
-    </script>
 </body>
 </html>

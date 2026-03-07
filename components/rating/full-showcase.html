@@ -1,286 +1,143 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snice Rating Component Demo</title>
+  <title>Rating</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      padding: 40px;
-      line-height: 1.6;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      margin: 0;
-    }
-
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: 10px;
-      margin-bottom: 30px;
-    }
-
-    h2 {
-      color: var(--snice-color-text);
-      margin-top: 40px;
-      margin-bottom: 20px;
-      font-size: 24px;
-    }
-
-    .demo-section {
-      margin: 30px 0;
-      padding: 20px;
-      background: var(--snice-color-background);
-      border-radius: 8px;
-      border: 1px solid var(--snice-color-border);
-    }
-
-    .demo-label {
-      display: block;
-      margin-bottom: 16px;
-      font-weight: 600;
-      color: var(--snice-color-text-secondary);
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .rating-row {
-      display: flex;
-      gap: 24px;
-      margin: 16px 0;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .rating-item {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      align-items: flex-start;
-    }
-
-    .rating-item label {
-      font-size: 14px;
-      color: var(--snice-color-text-secondary);
-    }
-
-    .state-display {
-      display: inline-block;
-      padding: 4px 8px;
-      background: var(--snice-color-primary);
-      color: white;
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: 600;
-      margin-left: 8px;
-    }
-
-    .example-card {
-      padding: 20px;
-      background: var(--snice-color-background);
-      border-radius: 6px;
-      border: 1px solid var(--snice-color-border);
-      margin: 16px 0;
-    }
-
-    .example-card h3 {
-      margin-top: 0;
-      margin-bottom: 16px;
-      font-size: 16px;
-      color: var(--snice-color-text);
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    section { margin-bottom: 1.5rem; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Rating Component Demo</h1>
 
-    <div class="demo-section">
-      <h2>Basic Rating</h2>
-      <span class="demo-label">Default 5-star rating</span>
-      <div class="rating-row">
-        <div class="rating-item">
-          <label>Empty</label>
-          <snice-rating value="0"></snice-rating>
-        </div>
-        <div class="rating-item">
-          <label>3 of 5</label>
-          <snice-rating value="3"></snice-rating>
-        </div>
-        <div class="rating-item">
-          <label>Full</label>
-          <snice-rating value="5"></snice-rating>
-        </div>
-      </div>
-    </div>
-
-    <div class="demo-section">
-      <h2>Sizes</h2>
-      <span class="demo-label">Small, medium, and large</span>
-      <div class="rating-row">
-        <div class="rating-item">
-          <label>Small</label>
-          <snice-rating value="3" size="small"></snice-rating>
-        </div>
-        <div class="rating-item">
-          <label>Medium</label>
-          <snice-rating value="3" size="medium"></snice-rating>
-        </div>
-        <div class="rating-item">
-          <label>Large</label>
-          <snice-rating value="3" size="large"></snice-rating>
-        </div>
-      </div>
-    </div>
-
-    <div class="demo-section">
-      <h2>Half-Star Precision</h2>
-      <span class="demo-label">Click left or right half of a star for half values</span>
-      <div class="rating-row">
-        <div class="rating-item">
-          <label>2.5 stars</label>
-          <snice-rating value="2.5" precision="half"></snice-rating>
-        </div>
-        <div class="rating-item">
-          <label>3.5 stars</label>
-          <snice-rating value="3.5" precision="half"></snice-rating>
-        </div>
-        <div class="rating-item">
-          <label>4.5 stars</label>
-          <snice-rating value="4.5" precision="half"></snice-rating>
-        </div>
-      </div>
-    </div>
-
-    <div class="demo-section">
-      <h2>Custom Max</h2>
-      <span class="demo-label">Different maximum values</span>
-      <div class="rating-row">
-        <div class="rating-item">
-          <label>3 of 3</label>
-          <snice-rating value="2" max="3"></snice-rating>
-        </div>
-        <div class="rating-item">
-          <label>7 of 10</label>
-          <snice-rating value="7" max="10" size="small"></snice-rating>
-        </div>
-      </div>
-    </div>
-
-    <div class="demo-section">
-      <h2>Custom Icons</h2>
-      <span class="demo-label">Use different characters as rating icons</span>
-      <div class="rating-row">
-        <div class="rating-item">
-          <label>Hearts</label>
-          <snice-rating value="3" icon="&#9829;"></snice-rating>
-        </div>
-        <div class="rating-item">
-          <label>Diamonds</label>
-          <snice-rating value="4" icon="&#9830;"></snice-rating>
-        </div>
-        <div class="rating-item">
-          <label>Circles</label>
-          <snice-rating value="2" icon="&#9679;"></snice-rating>
-        </div>
-      </div>
-    </div>
-
-    <div class="demo-section">
-      <h2>Readonly</h2>
-      <span class="demo-label">Display only, no interaction</span>
-      <div class="rating-row">
-        <div class="rating-item">
-          <label>4.5 stars (readonly)</label>
-          <snice-rating value="4.5" precision="half" readonly></snice-rating>
-        </div>
-        <div class="rating-item">
-          <label>2 stars (readonly)</label>
-          <snice-rating value="2" readonly></snice-rating>
-        </div>
-      </div>
-    </div>
-
-    <div class="demo-section">
-      <h2>Interactive Demo</h2>
-      <span class="demo-label">Click to rate, use arrow keys to adjust</span>
-      <snice-rating id="interactive-rating" value="0" precision="half" size="large"></snice-rating>
-      <div style="margin-top: 16px; font-size: 14px; color: var(--snice-color-text-secondary);">
-        Current value: <span class="state-display" id="rating-value">0</span>
-      </div>
-    </div>
-
-    <div class="demo-section">
-      <h2>Real-world Examples</h2>
-
-      <div class="example-card">
-        <h3>Product Review</h3>
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <snice-rating value="4" readonly size="small"></snice-rating>
-          <span style="font-size: 14px; color: var(--snice-color-text-secondary);">4.0 out of 5 (128 reviews)</span>
-        </div>
-      </div>
-
-      <div class="example-card">
-        <h3>Feedback Form</h3>
-        <p style="margin-bottom: 12px; font-size: 14px; color: var(--snice-color-text-secondary);">How would you rate your experience?</p>
-        <snice-rating id="feedback-rating" value="0" size="large"></snice-rating>
-        <div id="feedback-message" style="margin-top: 12px; font-size: 14px; color: var(--snice-color-text-secondary);"></div>
-      </div>
-
-      <div class="example-card">
-        <h3>Difficulty Rating</h3>
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <span style="width: 80px; font-size: 14px;">Easy</span>
-            <snice-rating value="1" max="3" readonly size="small"></snice-rating>
-          </div>
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <span style="width: 80px; font-size: 14px;">Medium</span>
-            <snice-rating value="2" max="3" readonly size="small"></snice-rating>
-          </div>
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <span style="width: 80px; font-size: 14px;">Hard</span>
-            <snice-rating value="3" max="3" readonly size="small"></snice-rating>
-          </div>
-        </div>
-      </div>
-    </div>
+<h2>Values: 0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5</h2>
+<section>
+  <div style="display:flex;flex-direction:column;gap:0.5rem">
+    <snice-rating value="0"></snice-rating>
+    <snice-rating value="0.5"></snice-rating>
+    <snice-rating value="1"></snice-rating>
+    <snice-rating value="1.5"></snice-rating>
+    <snice-rating value="2"></snice-rating>
+    <snice-rating value="2.5"></snice-rating>
+    <snice-rating value="3"></snice-rating>
+    <snice-rating value="3.5"></snice-rating>
+    <snice-rating value="4"></snice-rating>
+    <snice-rating value="4.5"></snice-rating>
+    <snice-rating value="5"></snice-rating>
   </div>
+</section>
 
-  <script type="module">
-    import './snice-rating.ts';
+<h2>Size: small</h2>
+<section class="row"><snice-rating value="3" size="small"></snice-rating></section>
 
-    // Interactive demo
-    const interactiveRating = document.getElementById('interactive-rating');
-    const ratingValue = document.getElementById('rating-value');
+<h2>Size: medium (default)</h2>
+<section class="row"><snice-rating value="3" size="medium"></snice-rating></section>
 
-    interactiveRating.addEventListener('rating-change', (e) => {
-      ratingValue.textContent = e.detail.value;
-    });
+<h2>Size: large</h2>
+<section class="row"><snice-rating value="3" size="large"></snice-rating></section>
 
-    // Feedback form example
-    const feedbackRating = document.getElementById('feedback-rating');
-    const feedbackMessage = document.getElementById('feedback-message');
-    const messages = {
-      1: 'We are sorry to hear that. How can we improve?',
-      2: 'We appreciate your feedback.',
-      3: 'Thank you! We will keep working to improve.',
-      4: 'Great! Glad you had a good experience.',
-      5: 'Excellent! Thank you for the perfect rating!'
-    };
+<h2>All sizes</h2>
+<section class="row">
+  <snice-rating value="4" size="small"></snice-rating>
+  <snice-rating value="4" size="medium"></snice-rating>
+  <snice-rating value="4" size="large"></snice-rating>
+</section>
 
-    feedbackRating.addEventListener('rating-change', (e) => {
-      feedbackMessage.textContent = messages[Math.ceil(e.detail.value)] || '';
-    });
-  </script>
+<h2>Precision: full (default)</h2>
+<section class="row"><snice-rating value="3" precision="full"></snice-rating></section>
+
+<h2>Precision: half</h2>
+<section class="row"><snice-rating value="3.5" precision="half"></snice-rating></section>
+
+<h2>Readonly: false (interactive)</h2>
+<section class="row"><snice-rating value="2"></snice-rating></section>
+
+<h2>Readonly: true</h2>
+<section class="row"><snice-rating value="4" readonly></snice-rating></section>
+
+<h2>Max: 5 (default)</h2>
+<section class="row"><snice-rating value="3" max="5"></snice-rating></section>
+
+<h2>Max: 3</h2>
+<section class="row"><snice-rating value="2" max="3"></snice-rating></section>
+
+<h2>Max: 7</h2>
+<section class="row"><snice-rating value="5" max="7"></snice-rating></section>
+
+<h2>Max: 10</h2>
+<section class="row"><snice-rating value="7" max="10"></snice-rating></section>
+
+<h2>Custom icon: heart</h2>
+<section class="row"><snice-rating value="3" icon="&#x2764;" size="large"></snice-rating></section>
+
+<h2>Custom icon: thumbs up</h2>
+<section class="row"><snice-rating value="4" icon="&#x1F44D;" size="large"></snice-rating></section>
+
+<h2>Custom icon: fire</h2>
+<section class="row"><snice-rating value="3.5" icon="&#x1F525;" precision="half" size="large"></snice-rating></section>
+
+<h2>Custom icon: circle</h2>
+<section class="row"><snice-rating value="2" icon="&#x25CF;" size="large"></snice-rating></section>
+
+<h2>Size x Precision matrix</h2>
+<section>
+  <div class="row" style="margin-bottom:0.5rem">
+    <snice-rating value="3.5" size="small" precision="full"></snice-rating>
+    <span style="font-size:0.7rem">small / full</span>
+  </div>
+  <div class="row" style="margin-bottom:0.5rem">
+    <snice-rating value="3.5" size="small" precision="half"></snice-rating>
+    <span style="font-size:0.7rem">small / half</span>
+  </div>
+  <div class="row" style="margin-bottom:0.5rem">
+    <snice-rating value="3.5" size="medium" precision="full"></snice-rating>
+    <span style="font-size:0.7rem">medium / full</span>
+  </div>
+  <div class="row" style="margin-bottom:0.5rem">
+    <snice-rating value="3.5" size="medium" precision="half"></snice-rating>
+    <span style="font-size:0.7rem">medium / half</span>
+  </div>
+  <div class="row" style="margin-bottom:0.5rem">
+    <snice-rating value="3.5" size="large" precision="full"></snice-rating>
+    <span style="font-size:0.7rem">large / full</span>
+  </div>
+  <div class="row">
+    <snice-rating value="3.5" size="large" precision="half"></snice-rating>
+    <span style="font-size:0.7rem">large / half</span>
+  </div>
+</section>
+
+<h2>Readonly x Size</h2>
+<section class="row">
+  <snice-rating value="4" size="small" readonly></snice-rating>
+  <snice-rating value="4" size="medium" readonly></snice-rating>
+  <snice-rating value="4" size="large" readonly></snice-rating>
+</section>
+
+<h2>Empty (value=0)</h2>
+<section class="row"><snice-rating value="0" size="large"></snice-rating></section>
+
+<h2>Full (value=max)</h2>
+<section class="row"><snice-rating value="5" max="5" size="large"></snice-rating></section>
+
+<script type="module">
+  import './snice-rating.ts';
+</script>
 </body>
 </html>

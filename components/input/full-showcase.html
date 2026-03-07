@@ -1,370 +1,224 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Input Demo</title>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <title>Input</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      padding: 40px;
-      font-family: var(--snice-font-family);
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      max-width: 800px;
-      margin: 0 auto;
-    }
-    
-    .section {
-      margin-bottom: 40px;
-    }
-    
-    h2 {
-      color: var(--snice-color-text);
-      margin-bottom: 20px;
-      font-size: var(--snice-font-size-2xl);
-    }
-    
-    h3 {
-      color: var(--snice-color-text-secondary);
-      margin-bottom: 16px;
-      font-size: var(--snice-font-size-lg);
-    }
-    
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      margin-bottom: 20px;
-    }
-    
-    .row {
-      display: flex;
-      gap: 20px;
-      align-items: flex-start;
-    }
-    
-    .row > * {
-      flex: 1;
-    }
-    
-    .output {
-      padding: 10px;
-      background: var(--snice-color-background);
-      border-radius: var(--snice-border-radius-md);
-      font-family: monospace;
-      font-size: var(--snice-font-size-sm);
-      margin-top: 10px;
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
   </style>
+  <script type="module">import './snice-input.ts';</script>
 </head>
 <body>
-  <h2>Input Component Demo</h2>
-  
-  <div class="section">
-    <h3>Basic Inputs</h3>
-    <div class="input-group">
-      <snice-input placeholder="Enter text..." label="Default Input"></snice-input>
-      <snice-input value="Pre-filled value" label="With Value"></snice-input>
-      <snice-input placeholder="Required field" label="Required Input" required></snice-input>
-      <snice-input placeholder="Disabled input" label="Disabled" disabled value="Can't edit this"></snice-input>
-      <snice-input placeholder="Read-only input" label="Read Only" readonly value="Read only value"></snice-input>
-    </div>
-  </div>
 
-  <div class="section">
-    <h3>Input Types</h3>
-    <div class="input-group">
-      <snice-input type="email" placeholder="email@example.com" label="Email" helper-text="Enter a valid email address"></snice-input>
-      <snice-input type="password" placeholder="Enter password" label="Password" password helper-text="Click the eye icon to toggle visibility"></snice-input>
-      <snice-input type="number" placeholder="0" label="Number" min="0" max="100" step="5" helper-text="Min: 0, Max: 100, Step: 5"></snice-input>
-      <snice-input type="tel" placeholder="+1 (555) 000-0000" label="Phone"></snice-input>
-      <snice-input type="url" placeholder="https://example.com" label="URL"></snice-input>
-      <snice-input type="search" placeholder="Search..." label="Search" clearable></snice-input>
-      <snice-input type="date" label="Date"></snice-input>
-      <snice-input type="time" label="Time"></snice-input>
-    </div>
-  </div>
+<!-- Type variants -->
+<h2>Type: text (default)</h2>
+<snice-input type="text" label="Text" placeholder="Enter text"></snice-input>
 
-  <div class="section">
-    <h3>Sizes</h3>
-    <div class="input-group">
-      <snice-input size="small" placeholder="Small input" label="Small"></snice-input>
-      <snice-input size="medium" placeholder="Medium input" label="Medium (Default)"></snice-input>
-      <snice-input size="large" placeholder="Large input" label="Large"></snice-input>
-    </div>
-  </div>
+<h2>Type: email</h2>
+<snice-input type="email" label="Email" placeholder="user@example.com"></snice-input>
 
-  <div class="section">
-    <h3>Variants</h3>
-    <div class="input-group">
-      <snice-input variant="outlined" placeholder="Outlined variant" label="Outlined (Default)"></snice-input>
-      <snice-input variant="filled" placeholder="Filled variant" label="Filled"></snice-input>
-      <snice-input variant="underlined" placeholder="Underlined variant" label="Underlined"></snice-input>
-    </div>
-  </div>
+<h2>Type: password</h2>
+<snice-input type="password" label="Password" placeholder="Enter password" password></snice-input>
 
-  <div class="section">
-    <h3>With Icons</h3>
-    <div class="input-group">
-      <snice-input 
-        placeholder="Search..." 
-        label="With Prefix Icon"
-        prefix-icon="🔍">
-      </snice-input>
-      <snice-input 
-        placeholder="Enter amount" 
-        label="With Suffix Icon"
-        suffix-icon="💵">
-      </snice-input>
-      <snice-input 
-        placeholder="Email address" 
-        label="With Both Icons"
-        prefix-icon="📧"
-        suffix-icon="✓">
-      </snice-input>
-    </div>
-  </div>
+<h2>Type: number</h2>
+<snice-input type="number" label="Number" placeholder="0" min="0" max="100" step="1"></snice-input>
 
-  <div class="section">
-    <h3>Clearable Inputs</h3>
-    <div class="input-group">
-      <snice-input 
-        clearable 
-        value="Clear me!" 
-        label="Clearable Input"
-        helper-text="Hover to see clear button">
-      </snice-input>
-      <snice-input 
-        clearable 
-        value="With suffix icon" 
-        label="Clearable with Icon"
-        suffix-icon="📝">
-      </snice-input>
-    </div>
-  </div>
+<h2>Type: tel</h2>
+<snice-input type="tel" label="Phone" placeholder="(555) 123-4567"></snice-input>
 
-  <div class="section">
-    <h3>Validation States</h3>
-    <div class="input-group">
-      <snice-input 
-        placeholder="Enter email" 
-        label="Valid State"
-        helper-text="This looks good!">
-      </snice-input>
-      <snice-input 
-        invalid
-        value="invalid@" 
-        label="Invalid State"
-        error-text="Please enter a valid email address">
-      </snice-input>
-      <snice-input 
-        type="email"
-        required
-        placeholder="email@example.com" 
-        label="With Pattern Validation"
-        pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
-        helper-text="Must be a valid email format">
-      </snice-input>
-    </div>
-  </div>
+<h2>Type: url</h2>
+<snice-input type="url" label="URL" placeholder="https://example.com"></snice-input>
 
-  <div class="section">
-    <h3>Loading States</h3>
-    <div class="input-group">
-      <snice-input
-        loading
-        placeholder="Processing..."
-        label="Loading Input"
-        helper-text="Input is disabled while loading">
-      </snice-input>
-      <snice-input
-        loading
-        value="Saving changes..."
-        label="Loading with Value">
-      </snice-input>
-      <snice-input
-        id="simulate-loading"
-        placeholder="Click button to simulate loading"
-        label="Simulate Loading"
-        helper-text="Type something and click the button">
-      </snice-input>
-      <button id="loading-btn" style="
-        padding: 10px 20px;
-        background: var(--snice-color-primary);
-        color: white;
-        border: none;
-        border-radius: var(--snice-border-radius-md);
-        cursor: pointer;
-        font-size: var(--snice-font-size-md);
-      ">Trigger Loading (3s)</button>
-    </div>
-  </div>
+<h2>Type: search</h2>
+<snice-input type="search" label="Search" placeholder="Search..." clearable></snice-input>
 
-  <div class="section">
-    <h3>Text Length Constraints</h3>
-    <div class="input-group">
-      <snice-input
-        maxlength="10"
-        placeholder="Max 10 chars"
-        label="Max Length"
-        helper-text="Maximum 10 characters allowed">
-      </snice-input>
-      <snice-input
-        minlength="5"
-        placeholder="Min 5 chars"
-        label="Min Length"
-        helper-text="Minimum 5 characters required">
-      </snice-input>
-    </div>
-  </div>
+<h2>Type: date</h2>
+<snice-input type="date" label="Date"></snice-input>
 
-  <div class="section">
-    <h3>Vertical Alignment</h3>
-    <p style="margin-bottom:12px;color:var(--snice-color-text-secondary)">Use the <code>align</code> attribute to position the input vertically when the host has an explicit height.</p>
-    <div class="row" style="align-items:stretch">
-      <snice-input align="top" style="height:200px;border:1px dashed rgba(128,128,128,0.3);border-radius:8px" label="Top" placeholder="align=top"></snice-input>
-      <snice-input align="center" style="height:200px;border:1px dashed rgba(128,128,128,0.3);border-radius:8px" label="Center" placeholder="align=center"></snice-input>
-      <snice-input align="bottom" style="height:200px;border:1px dashed rgba(128,128,128,0.3);border-radius:8px" label="Bottom" placeholder="align=bottom"></snice-input>
-    </div>
-  </div>
+<h2>Type: time</h2>
+<snice-input type="time" label="Time"></snice-input>
 
-  <div class="section">
-    <h3>Stretch</h3>
-    <p style="margin-bottom:12px;color:var(--snice-color-text-secondary)">Use the <code>stretch</code> attribute to make the inner input fill the full host height.</p>
-    <div class="row" style="align-items:stretch">
-      <snice-input style="height:200px;border:1px dashed rgba(128,128,128,0.3);border-radius:8px" label="Default (no stretch)" placeholder="Input stays normal size"></snice-input>
-      <snice-input stretch style="height:200px;border:1px dashed rgba(128,128,128,0.3);border-radius:8px" label="Stretch" placeholder="Input fills full height"></snice-input>
-    </div>
-  </div>
+<h2>Type: datetime-local</h2>
+<snice-input type="datetime-local" label="Date &amp; Time"></snice-input>
 
-  <div class="section">
-    <h3>Interactive Example</h3>
-    <div class="input-group">
-      <snice-input 
-        id="interactive-input"
-        clearable
-        placeholder="Type something..." 
-        label="Interactive Input"
-        helper-text="Events will be logged below">
-      </snice-input>
-      <div id="output" class="output">
-        <div>Waiting for input...</div>
-      </div>
-    </div>
-  </div>
+<!-- All types grid -->
+<h2>All Types</h2>
+<div class="grid">
+  <snice-input type="text" label="text" placeholder="Text"></snice-input>
+  <snice-input type="email" label="email" placeholder="Email"></snice-input>
+  <snice-input type="password" label="password" placeholder="Password" password></snice-input>
+  <snice-input type="number" label="number" placeholder="0"></snice-input>
+  <snice-input type="tel" label="tel" placeholder="Phone"></snice-input>
+  <snice-input type="url" label="url" placeholder="URL"></snice-input>
+  <snice-input type="search" label="search" placeholder="Search"></snice-input>
+  <snice-input type="date" label="date"></snice-input>
+  <snice-input type="time" label="time"></snice-input>
+  <snice-input type="datetime-local" label="datetime-local"></snice-input>
+</div>
 
-  <div class="section">
-    <h3>Form Example</h3>
-    <form id="demo-form">
-      <div class="input-group">
-        <div class="row">
-          <snice-input 
-            name="firstName"
-            required
-            placeholder="John" 
-            label="First Name">
-          </snice-input>
-          <snice-input 
-            name="lastName"
-            required
-            placeholder="Doe" 
-            label="Last Name">
-          </snice-input>
-        </div>
-        <snice-input 
-          type="email"
-          name="email"
-          required
-          placeholder="john.doe@example.com" 
-          label="Email Address">
-        </snice-input>
-        <snice-input 
-          type="password"
-          name="password"
-          required
-          password
-          minlength="8"
-          placeholder="Min 8 characters" 
-          label="Password">
-        </snice-input>
-        <snice-input 
-          type="tel"
-          name="phone"
-          placeholder="+1 (555) 000-0000" 
-          label="Phone (Optional)">
-        </snice-input>
-        <button type="submit" style="
-          padding: 10px 20px;
-          background: var(--snice-color-primary);
-          color: white;
-          border: none;
-          border-radius: var(--snice-border-radius-md);
-          cursor: pointer;
-          font-size: var(--snice-font-size-md);
-        ">Submit Form</button>
-      </div>
-    </form>
-  </div>
+<!-- Size variants -->
+<h2>Size: small</h2>
+<snice-input size="small" label="Small" placeholder="Small input"></snice-input>
 
-  <script type="module">
-    import './snice-input.ts';
+<h2>Size: medium (default)</h2>
+<snice-input size="medium" label="Medium" placeholder="Medium input"></snice-input>
 
-    // Interactive example
-    const input = document.getElementById('interactive-input');
-    const output = document.getElementById('output');
-    
-    let eventLog = [];
-    
-    function logEvent(type, detail) {
-      eventLog.unshift(`${type}: ${JSON.stringify(detail)}`);
-      eventLog = eventLog.slice(0, 5);
-      output.innerHTML = eventLog.map(log => `<div>${log}</div>`).join('');
-    }
-    
-    input.addEventListener('input-input', (e) => {
-      logEvent('input', { value: e.detail.value });
-    });
-    
-    input.addEventListener('input-change', (e) => {
-      logEvent('change', { value: e.detail.value });
-    });
-    
-    input.addEventListener('input-focus', () => {
-      logEvent('focus', {});
-    });
-    
-    input.addEventListener('input-blur', () => {
-      logEvent('blur', {});
-    });
-    
-    input.addEventListener('input-clear', () => {
-      logEvent('clear', {});
-    });
+<h2>Size: large</h2>
+<snice-input size="large" label="Large" placeholder="Large input"></snice-input>
 
-    // Loading state example
-    const loadingInput = document.getElementById('simulate-loading');
-    const loadingBtn = document.getElementById('loading-btn');
+<h2>All Sizes Compared</h2>
+<div class="row">
+  <snice-input size="small" label="Small" placeholder="Small"></snice-input>
+  <snice-input size="medium" label="Medium" placeholder="Medium"></snice-input>
+  <snice-input size="large" label="Large" placeholder="Large"></snice-input>
+</div>
 
-    loadingBtn.addEventListener('click', () => {
-      loadingInput.loading = true;
-      loadingBtn.disabled = true;
-      loadingBtn.textContent = 'Loading...';
+<!-- Variant -->
+<h2>Variant: outlined (default)</h2>
+<snice-input variant="outlined" label="Outlined" placeholder="Outlined"></snice-input>
 
-      setTimeout(() => {
-        loadingInput.loading = false;
-        loadingBtn.disabled = false;
-        loadingBtn.textContent = 'Trigger Loading (3s)';
-      }, 3000);
-    });
+<h2>Variant: filled</h2>
+<snice-input variant="filled" label="Filled" placeholder="Filled"></snice-input>
 
-    // Form example
-    document.getElementById('demo-form').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const formData = new FormData(e.target);
-      const data = Object.fromEntries(formData);
-      alert('Form submitted with: ' + JSON.stringify(data, null, 2));
-    });
-  </script>
+<h2>Variant: underlined</h2>
+<snice-input variant="underlined" label="Underlined" placeholder="Underlined"></snice-input>
+
+<h2>All Variants Compared</h2>
+<div class="row">
+  <snice-input variant="outlined" label="Outlined" placeholder="Text"></snice-input>
+  <snice-input variant="filled" label="Filled" placeholder="Text"></snice-input>
+  <snice-input variant="underlined" label="Underlined" placeholder="Text"></snice-input>
+</div>
+
+<!-- Boolean states -->
+<h2>Disabled</h2>
+<snice-input disabled label="Disabled" value="Cannot edit"></snice-input>
+
+<h2>Readonly</h2>
+<snice-input readonly label="Readonly" value="Read only value"></snice-input>
+
+<h2>Loading</h2>
+<snice-input loading label="Loading" placeholder="Searching..."></snice-input>
+
+<h2>Required</h2>
+<snice-input required label="Required Field" placeholder="This is required"></snice-input>
+
+<h2>Invalid</h2>
+<snice-input invalid label="Invalid" error-text="This field has an error." value="bad value"></snice-input>
+
+<h2>Clearable</h2>
+<snice-input clearable label="Clearable" value="Clear me"></snice-input>
+
+<h2>Password Toggle</h2>
+<snice-input type="password" password label="Password" value="secret123"></snice-input>
+
+<!-- Helper & Error text -->
+<h2>Helper Text</h2>
+<snice-input label="Username" helper-text="Choose a unique username." placeholder="username"></snice-input>
+
+<h2>Error Text</h2>
+<snice-input label="Email" error-text="Invalid email format." invalid value="not-an-email"></snice-input>
+
+<!-- Icons -->
+<h2>Prefix Icon (emoji)</h2>
+<snice-input prefix-icon="&#x1F50D;" label="Search" placeholder="Search..."></snice-input>
+
+<h2>Suffix Icon (emoji)</h2>
+<snice-input suffix-icon="&#x2709;" label="Email" placeholder="user@example.com"></snice-input>
+
+<h2>Prefix Icon (Material Symbol)</h2>
+<snice-input prefix-icon="search" label="Search" placeholder="Search..."></snice-input>
+
+<h2>Suffix Icon (Material Symbol)</h2>
+<snice-input suffix-icon="mail" label="Email" placeholder="user@example.com"></snice-input>
+
+<h2>Both Prefix + Suffix Icons</h2>
+<snice-input prefix-icon="person" suffix-icon="check_circle" label="Username" value="john_doe"></snice-input>
+
+<!-- Icon slots -->
+<h2>Slot: prefix-icon</h2>
+<snice-input label="Custom Prefix">
+  <span slot="prefix-icon" style="font-size:1.2rem;">$</span>
+</snice-input>
+
+<h2>Slot: suffix-icon</h2>
+<snice-input label="Custom Suffix">
+  <span slot="suffix-icon" style="font-size:0.7rem;color:var(--snice-color-text-tertiary);">.00</span>
+</snice-input>
+
+<!-- Constraints -->
+<h2>Min/Max (number)</h2>
+<snice-input type="number" label="Quantity" min="1" max="99" step="1" value="5"></snice-input>
+
+<h2>Maxlength: 10</h2>
+<snice-input label="Short Code" maxlength="10" placeholder="Max 10 chars"></snice-input>
+
+<h2>Minlength: 3</h2>
+<snice-input label="Minimum 3" minlength="3" placeholder="At least 3 chars"></snice-input>
+
+<h2>Pattern</h2>
+<snice-input label="Zip Code" pattern="[0-9]{5}" placeholder="12345" helper-text="5 digits only"></snice-input>
+
+<!-- Stretch -->
+<h2>Stretch: true</h2>
+<snice-input stretch label="Full Width" placeholder="Takes full width"></snice-input>
+
+<!-- Label align -->
+<h2>Label Align: left (default)</h2>
+<snice-input label="Left Aligned" label-align="left" placeholder="Text"></snice-input>
+
+<h2>Label Align: center</h2>
+<snice-input label="Center Aligned" label-align="center" placeholder="Text"></snice-input>
+
+<h2>Label Align: right</h2>
+<snice-input label="Right Aligned" label-align="right" placeholder="Text"></snice-input>
+
+<!-- No label -->
+<h2>No Label</h2>
+<snice-input placeholder="No label input"></snice-input>
+
+<!-- Autocomplete -->
+<h2>Autocomplete: email</h2>
+<snice-input type="email" label="Email" autocomplete="email" placeholder="user@example.com"></snice-input>
+
+<!-- Size x Variant matrix -->
+<h2>Size x Variant Matrix</h2>
+<div class="grid">
+  <snice-input size="small" variant="outlined" label="S/Outlined" placeholder="Text"></snice-input>
+  <snice-input size="small" variant="filled" label="S/Filled" placeholder="Text"></snice-input>
+  <snice-input size="small" variant="underlined" label="S/Underlined" placeholder="Text"></snice-input>
+  <snice-input size="medium" variant="outlined" label="M/Outlined" placeholder="Text"></snice-input>
+  <snice-input size="medium" variant="filled" label="M/Filled" placeholder="Text"></snice-input>
+  <snice-input size="medium" variant="underlined" label="M/Underlined" placeholder="Text"></snice-input>
+  <snice-input size="large" variant="outlined" label="L/Outlined" placeholder="Text"></snice-input>
+  <snice-input size="large" variant="filled" label="L/Filled" placeholder="Text"></snice-input>
+  <snice-input size="large" variant="underlined" label="L/Underlined" placeholder="Text"></snice-input>
+</div>
+
+<!-- Combinations -->
+<h2>Required + Invalid + Clearable + Prefix Icon</h2>
+<snice-input required invalid clearable prefix-icon="warning" label="Full Combo" error-text="Please fix this." value="bad"></snice-input>
+
+<h2>Disabled + Filled + Large + Value</h2>
+<snice-input disabled variant="filled" size="large" label="Disabled Filled Large" value="Cannot modify"></snice-input>
+
+<h2>Password + Clearable + Loading</h2>
+<snice-input type="password" password clearable loading label="Verifying Password" value="secret"></snice-input>
+
 </body>
 </html>

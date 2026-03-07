@@ -1,99 +1,200 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-theme="dark">
 <head>
-  <title>Pricing Table Demo</title>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pricing Table</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      padding: 40px;
-      font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
-      background: var(--snice-color-background, rgb(255 255 255));
-      color: var(--snice-color-text, rgb(23 23 23));
-    }
-    h2, h3 {
-      color: var(--snice-color-text, rgb(23 23 23));
-    }
-    .demo-section {
-      margin-bottom: 4rem;
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    section { margin-bottom: 2rem; }
+    snice-pricing-table { display: block; }
   </style>
-  <script type="module">
-    import './snice-pricing-table.ts';
-
-    const plans = [
-      {
-        name: 'Starter',
-        price: 0,
-        description: 'Perfect for trying out',
-        features: [
-          { name: '1 user', included: true },
-          { name: '5 projects', included: true },
-          { name: '1GB storage', included: true },
-          { name: 'Email support', included: true },
-          { name: 'API access', included: false },
-          { name: 'Custom domain', included: false }
-        ],
-        cta: 'Get Started Free',
-        ctaVariant: 'outline'
-      },
-      {
-        name: 'Professional',
-        price: 29,
-        annualPrice: 24,
-        description: 'For growing teams',
-        features: [
-          { name: '10 users', included: true },
-          { name: 'Unlimited projects', included: true },
-          { name: '100GB storage', included: true },
-          { name: 'Priority support', included: true },
-          { name: 'API access', included: true },
-          { name: 'Custom domain', included: false }
-        ],
-        cta: 'Start Free Trial',
-        highlighted: true,
-        badge: 'Most Popular'
-      },
-      {
-        name: 'Enterprise',
-        price: 99,
-        annualPrice: 79,
-        description: 'For large organizations',
-        currency: '$',
-        features: [
-          { name: 'Unlimited users', included: true },
-          { name: 'Unlimited projects', included: true },
-          { name: '1TB storage', included: true },
-          { name: '24/7 support', included: true },
-          { name: 'API access', included: true },
-          { name: 'Custom domain', included: true }
-        ],
-        cta: 'Contact Sales',
-        ctaVariant: 'secondary'
-      }
-    ];
-
-    document.getElementById('cards-demo').plans = plans;
-    document.getElementById('table-demo').plans = plans;
-
-    document.querySelectorAll('snice-pricing-table').forEach(el => {
-      el.addEventListener('plan-select', e => {
-        console.log('Plan selected:', e.detail);
-        alert(`Selected: ${e.detail.plan.name} (${e.detail.billing})`);
-      });
-    });
-  </script>
 </head>
 <body>
-  <h2>Pricing Table Demo</h2>
 
-  <div class="demo-section">
-    <h3>Cards Variant (default)</h3>
-    <snice-pricing-table id="cards-demo"></snice-pricing-table>
-  </div>
+<h2>Variant: cards (default) - Declarative</h2>
+<section>
+  <snice-pricing-table variant="cards">
+    <snice-plan name="Free" price="0" cta="Get Started">
+      <snice-feature>5 projects</snice-feature>
+      <snice-feature>1GB storage</snice-feature>
+      <snice-feature excluded>API access</snice-feature>
+      <snice-feature excluded>Priority support</snice-feature>
+    </snice-plan>
+    <snice-plan name="Pro" price="29" annual-price="24" highlighted badge="Popular" cta="Start Trial" description="For growing teams">
+      <snice-feature>Unlimited projects</snice-feature>
+      <snice-feature value="100GB">Storage</snice-feature>
+      <snice-feature>API access</snice-feature>
+      <snice-feature excluded>Priority support</snice-feature>
+    </snice-plan>
+    <snice-plan name="Enterprise" price="99" annual-price="79" cta="Contact Sales" cta-variant="outline" description="For large organizations">
+      <snice-feature>Unlimited projects</snice-feature>
+      <snice-feature value="Unlimited">Storage</snice-feature>
+      <snice-feature>API access</snice-feature>
+      <snice-feature>Priority support</snice-feature>
+    </snice-plan>
+  </snice-pricing-table>
+</section>
 
-  <div class="demo-section">
-    <h3>Table Variant</h3>
-    <snice-pricing-table id="table-demo" variant="table"></snice-pricing-table>
-  </div>
+<h2>Variant: table</h2>
+<section>
+  <snice-pricing-table id="pt-table" variant="table"></snice-pricing-table>
+</section>
+
+<h2>Annual billing toggled on</h2>
+<section>
+  <snice-pricing-table id="pt-annual" variant="cards" annual></snice-pricing-table>
+</section>
+
+<h2>No annual pricing (toggle hidden)</h2>
+<section>
+  <snice-pricing-table variant="cards">
+    <snice-plan name="Basic" price="10" cta="Select">
+      <snice-feature>10 items</snice-feature>
+    </snice-plan>
+    <snice-plan name="Premium" price="30" highlighted cta="Select">
+      <snice-feature>Unlimited items</snice-feature>
+    </snice-plan>
+  </snice-pricing-table>
+</section>
+
+<h2>Custom currency and period</h2>
+<section>
+  <snice-pricing-table variant="cards">
+    <snice-plan name="Starter" price="19" currency="EUR" period="/month" cta="Subscribe">
+      <snice-feature>Basic features</snice-feature>
+    </snice-plan>
+    <snice-plan name="Business" price="49" currency="EUR" period="/month" highlighted badge="Best Value" cta="Subscribe">
+      <snice-feature>All features</snice-feature>
+    </snice-plan>
+  </snice-pricing-table>
+</section>
+
+<h2>CTA variants: primary, secondary, outline</h2>
+<section>
+  <snice-pricing-table variant="cards">
+    <snice-plan name="Plan A" price="10" cta="Primary" cta-variant="primary">
+      <snice-feature>Feature 1</snice-feature>
+    </snice-plan>
+    <snice-plan name="Plan B" price="20" cta="Secondary" cta-variant="secondary">
+      <snice-feature>Feature 1</snice-feature>
+    </snice-plan>
+    <snice-plan name="Plan C" price="30" cta="Outline" cta-variant="outline">
+      <snice-feature>Feature 1</snice-feature>
+    </snice-plan>
+  </snice-pricing-table>
+</section>
+
+<h2>Plan with description</h2>
+<section>
+  <snice-pricing-table variant="cards">
+    <snice-plan name="Hobby" price="0" cta="Start Free" description="For personal projects and experiments">
+      <snice-feature>3 projects</snice-feature>
+    </snice-plan>
+    <snice-plan name="Team" price="49" cta="Try Free" description="Collaboration for small teams" highlighted badge="Recommended">
+      <snice-feature>Unlimited projects</snice-feature>
+      <snice-feature>Team management</snice-feature>
+    </snice-plan>
+  </snice-pricing-table>
+</section>
+
+<h2>Badge variations</h2>
+<section>
+  <snice-pricing-table variant="cards">
+    <snice-plan name="No Badge" price="5" cta="Select">
+      <snice-feature>Basic</snice-feature>
+    </snice-plan>
+    <snice-plan name="Popular" price="15" highlighted badge="Popular" cta="Select">
+      <snice-feature>More</snice-feature>
+    </snice-plan>
+    <snice-plan name="Best Value" price="25" highlighted badge="Best Value" cta="Select">
+      <snice-feature>Most</snice-feature>
+    </snice-plan>
+  </snice-pricing-table>
+</section>
+
+<h2>Feature with string value</h2>
+<section>
+  <snice-pricing-table variant="cards">
+    <snice-plan name="Free" price="0" cta="Start">
+      <snice-feature value="1GB">Storage</snice-feature>
+      <snice-feature value="100/day">API Calls</snice-feature>
+      <snice-feature excluded>Custom Domain</snice-feature>
+    </snice-plan>
+    <snice-plan name="Pro" price="29" highlighted cta="Upgrade">
+      <snice-feature value="100GB">Storage</snice-feature>
+      <snice-feature value="Unlimited">API Calls</snice-feature>
+      <snice-feature>Custom Domain</snice-feature>
+    </snice-plan>
+  </snice-pricing-table>
+</section>
+
+<h2>Single plan</h2>
+<section>
+  <snice-pricing-table variant="cards">
+    <snice-plan name="One Plan" price="9.99" cta="Subscribe" highlighted>
+      <snice-feature>Everything included</snice-feature>
+    </snice-plan>
+  </snice-pricing-table>
+</section>
+
+<h2>Four plans</h2>
+<section>
+  <snice-pricing-table variant="cards">
+    <snice-plan name="Free" price="0" cta="Start"><snice-feature>1 user</snice-feature></snice-plan>
+    <snice-plan name="Basic" price="9" cta="Select"><snice-feature>5 users</snice-feature></snice-plan>
+    <snice-plan name="Pro" price="29" highlighted badge="Popular" cta="Select"><snice-feature>25 users</snice-feature></snice-plan>
+    <snice-plan name="Enterprise" price="99" cta="Contact"><snice-feature>Unlimited</snice-feature></snice-plan>
+  </snice-pricing-table>
+</section>
+
+<h2>Table variant with annual toggle</h2>
+<section>
+  <snice-pricing-table id="pt-table-annual" variant="table"></snice-pricing-table>
+</section>
+
+<script type="module">
+  import './snice-pricing-table.ts';
+
+  const plans = [
+    { name: 'Free', price: 0, cta: 'Get Started', features: [
+      { name: '5 projects', included: true },
+      { name: 'API access', included: false },
+      { name: 'Storage', included: '1GB' },
+      { name: 'Support', included: false }
+    ]},
+    { name: 'Pro', price: 29, annualPrice: 24, cta: 'Start Trial', highlighted: true, badge: 'Popular', features: [
+      { name: '5 projects', included: true },
+      { name: 'API access', included: true },
+      { name: 'Storage', included: '100GB' },
+      { name: 'Support', included: false }
+    ]},
+    { name: 'Enterprise', price: 99, annualPrice: 79, cta: 'Contact Sales', ctaVariant: 'outline', features: [
+      { name: '5 projects', included: true },
+      { name: 'API access', included: true },
+      { name: 'Storage', included: 'Unlimited' },
+      { name: 'Support', included: true }
+    ]}
+  ];
+
+  document.getElementById('pt-table').plans = plans;
+  document.getElementById('pt-annual').plans = plans;
+  document.getElementById('pt-table-annual').plans = plans;
+</script>
 </body>
 </html>

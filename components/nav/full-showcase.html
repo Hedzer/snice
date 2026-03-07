@@ -1,101 +1,172 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nav Demo</title>
+  <title>Nav</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      padding: 40px;
-      font-family: var(--snice-font-family);
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-    }
-
-    .demo-section {
-      margin-bottom: 40px;
-    }
-
-    h2 {
-      color: var(--snice-color-text);
-      margin-bottom: 20px;
-    }
-
-    snice-nav {
-      display: block;
-      margin-bottom: 20px;
-      padding: 20px;
-      background: var(--snice-color-surface);
-      border: 1px solid var(--snice-color-border);
-      border-radius: var(--snice-border-radius-md);
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
+    snice-nav { display: block; border: 1px solid var(--snice-color-border, #ddd); border-radius: 8px; padding: 0.5rem; }
   </style>
 </head>
 <body>
-  <h2>Flat Navigation (Horizontal)</h2>
-  <div class="demo-section">
-    <snice-nav id="flat-nav" variant="flat" orientation="horizontal"></snice-nav>
-  </div>
 
-  <h2>Flat Navigation (Vertical)</h2>
-  <div class="demo-section">
-    <snice-nav id="vertical-nav" variant="flat" orientation="vertical"></snice-nav>
-  </div>
+<h2>Variant: flat + Orientation: horizontal</h2>
+<snice-nav id="nav-flat-h" variant="flat" orientation="horizontal"></snice-nav>
 
-  <h2>Hierarchical Navigation</h2>
-  <div class="demo-section">
-    <snice-nav id="hierarchical-nav" variant="hierarchical" orientation="vertical"></snice-nav>
-  </div>
+<h2>Variant: flat + Orientation: vertical</h2>
+<snice-nav id="nav-flat-v" variant="flat" orientation="vertical" style="max-width:220px;"></snice-nav>
 
-  <h2>Grouped Navigation</h2>
-  <div class="demo-section">
-    <snice-nav id="grouped-nav" variant="grouped" orientation="vertical"></snice-nav>
-  </div>
+<h2>Variant: grouped + Orientation: horizontal</h2>
+<snice-nav id="nav-grouped-h" variant="grouped" orientation="horizontal"></snice-nav>
 
-  <script type="module">
-    import './snice-nav.ts';
+<h2>Variant: grouped + Orientation: vertical</h2>
+<snice-nav id="nav-grouped-v" variant="grouped" orientation="vertical" style="max-width:220px;"></snice-nav>
 
-    // Sample placards for demonstration
-    const samplePlacards = [
-      { name: 'home', title: 'Home', icon: '🏠', order: 1 },
-      { name: 'dashboard', title: 'Dashboard', icon: '📊', order: 2 },
-      { name: 'users', title: 'Users', icon: '👥', order: 3 },
-      { name: 'settings', title: 'Settings', icon: '⚙️', order: 4 },
-      { name: 'help', title: 'Help', icon: '❓', order: 5 }
-    ];
+<h2>Variant: hierarchical + Orientation: horizontal</h2>
+<snice-nav id="nav-hier-h" variant="hierarchical" orientation="horizontal"></snice-nav>
 
-    const hierarchicalPlacards = [
-      { name: 'home', title: 'Home', icon: '🏠', order: 1 },
-      { name: 'products', title: 'Products', icon: '📦', order: 2 },
-      { name: 'products/list', parent: 'products', title: 'Product List', order: 1 },
-      { name: 'products/create', parent: 'products', title: 'Create Product', order: 2 },
-      { name: 'orders', title: 'Orders', icon: '🛒', order: 3 },
-      { name: 'orders/pending', parent: 'orders', title: 'Pending', order: 1 },
-      { name: 'orders/completed', parent: 'orders', title: 'Completed', order: 2 }
-    ];
+<h2>Variant: hierarchical + Orientation: vertical</h2>
+<snice-nav id="nav-hier-v" variant="hierarchical" orientation="vertical" style="max-width:220px;"></snice-nav>
 
-    const groupedPlacards = [
-      { name: 'home', title: 'Home', icon: '🏠', group: 'Main', order: 1 },
-      { name: 'dashboard', title: 'Dashboard', icon: '📊', group: 'Main', order: 2 },
-      { name: 'users', title: 'Users', icon: '👥', group: 'Management', order: 1 },
-      { name: 'roles', title: 'Roles', icon: '🔑', group: 'Management', order: 2 },
-      { name: 'settings', title: 'Settings', icon: '⚙️', group: 'System', order: 1 },
-      { name: 'logs', title: 'Logs', icon: '📝', group: 'System', order: 2 }
-    ];
+<h2>Active route: home</h2>
+<snice-nav id="nav-active-home" variant="flat" orientation="horizontal"></snice-nav>
 
-    // Update nav components when they're ready
-    customElements.whenDefined('snice-nav').then(() => {
-      const flatNav = document.getElementById('flat-nav');
-      const verticalNav = document.getElementById('vertical-nav');
-      const hierarchicalNav = document.getElementById('hierarchical-nav');
-      const groupedNav = document.getElementById('grouped-nav');
+<h2>Active route: products</h2>
+<snice-nav id="nav-active-products" variant="flat" orientation="horizontal"></snice-nav>
 
-      flatNav.update(samplePlacards, undefined, 'dashboard');
-      verticalNav.update(samplePlacards, undefined, 'users');
-      hierarchicalNav.update(hierarchicalPlacards, undefined, 'products/list');
-      groupedNav.update(groupedPlacards, undefined, 'settings');
-    });
-  </script>
+<h2>With icons</h2>
+<snice-nav id="nav-icons" variant="flat" orientation="horizontal"></snice-nav>
+
+<h2>With icons (vertical)</h2>
+<snice-nav id="nav-icons-v" variant="flat" orientation="vertical" style="max-width:220px;"></snice-nav>
+
+<h2>Grouped with icons (vertical)</h2>
+<snice-nav id="nav-grouped-icons" variant="grouped" orientation="vertical" style="max-width:220px;"></snice-nav>
+
+<h2>Hierarchical with children</h2>
+<snice-nav id="nav-hier-children" variant="hierarchical" orientation="vertical" style="max-width:250px;"></snice-nav>
+
+<h2>Single item</h2>
+<snice-nav id="nav-single" variant="flat" orientation="horizontal"></snice-nav>
+
+<h2>Empty (no placards)</h2>
+<snice-nav id="nav-empty" variant="flat" orientation="horizontal"></snice-nav>
+
+<h2>Many items</h2>
+<snice-nav id="nav-many" variant="flat" orientation="horizontal"></snice-nav>
+
+<h2>Ordered items</h2>
+<snice-nav id="nav-ordered" variant="flat" orientation="horizontal"></snice-nav>
+
+<h2>Items with descriptions/tooltips</h2>
+<snice-nav id="nav-desc" variant="flat" orientation="horizontal"></snice-nav>
+
+<script type="module">
+  import './snice-nav.ts';
+
+  const basicPlacards = [
+    { name: 'home', title: 'Home', order: 0 },
+    { name: 'products', title: 'Products', order: 1 },
+    { name: 'about', title: 'About', order: 2 },
+    { name: 'contact', title: 'Contact', order: 3 },
+  ];
+
+  const iconPlacards = [
+    { name: 'home', title: 'Home', icon: '\u{1F3E0}', order: 0 },
+    { name: 'products', title: 'Products', icon: '\u{1F4E6}', order: 1 },
+    { name: 'settings', title: 'Settings', icon: '\u2699\uFE0F', order: 2 },
+    { name: 'profile', title: 'Profile', icon: '\u{1F464}', order: 3 },
+  ];
+
+  const groupedPlacards = [
+    { name: 'home', title: 'Home', icon: '\u{1F3E0}', group: 'Main', order: 0 },
+    { name: 'dashboard', title: 'Dashboard', icon: '\u{1F4CA}', group: 'Main', order: 1 },
+    { name: 'users', title: 'Users', icon: '\u{1F465}', group: 'Admin', order: 0 },
+    { name: 'settings', title: 'Settings', icon: '\u2699\uFE0F', group: 'Admin', order: 1 },
+    { name: 'logs', title: 'Logs', icon: '\u{1F4DD}', group: 'Admin', order: 2 },
+  ];
+
+  const hierPlacards = [
+    { name: 'products', title: 'Products', order: 0 },
+    { name: 'products/electronics', title: 'Electronics', parent: 'products', order: 0 },
+    { name: 'products/clothing', title: 'Clothing', parent: 'products', order: 1 },
+    { name: 'products/books', title: 'Books', parent: 'products', order: 2 },
+    { name: 'services', title: 'Services', order: 1 },
+    { name: 'services/consulting', title: 'Consulting', parent: 'services', order: 0 },
+    { name: 'services/support', title: 'Support', parent: 'services', order: 1 },
+  ];
+
+  const descPlacards = [
+    { name: 'home', title: 'Home', description: 'Go to the homepage', tooltip: 'Navigate to home', order: 0 },
+    { name: 'docs', title: 'Docs', description: 'API documentation', tooltip: 'View documentation', order: 1 },
+    { name: 'help', title: 'Help', description: 'Get help and support', order: 2 },
+  ];
+
+  // Flat horizontal/vertical
+  document.getElementById('nav-flat-h').update(basicPlacards, undefined, 'home');
+  document.getElementById('nav-flat-v').update(basicPlacards, undefined, 'home');
+
+  // Grouped
+  document.getElementById('nav-grouped-h').update(groupedPlacards, undefined, 'home');
+  document.getElementById('nav-grouped-v').update(groupedPlacards, undefined, 'home');
+
+  // Hierarchical
+  document.getElementById('nav-hier-h').update(basicPlacards, undefined, 'home');
+  document.getElementById('nav-hier-v').update(basicPlacards, undefined, 'home');
+
+  // Active routes
+  document.getElementById('nav-active-home').update(basicPlacards, undefined, 'home');
+  document.getElementById('nav-active-products').update(basicPlacards, undefined, 'products');
+
+  // Icons
+  document.getElementById('nav-icons').update(iconPlacards, undefined, 'home');
+  document.getElementById('nav-icons-v').update(iconPlacards, undefined, 'home');
+  document.getElementById('nav-grouped-icons').update(groupedPlacards, undefined, 'dashboard');
+
+  // Hierarchical with children
+  document.getElementById('nav-hier-children').update(hierPlacards, undefined, 'products/electronics');
+
+  // Single
+  document.getElementById('nav-single').update([{ name: 'home', title: 'Home', order: 0 }], undefined, 'home');
+
+  // Empty
+  document.getElementById('nav-empty').update([]);
+
+  // Many
+  const manyPlacards = Array.from({ length: 8 }, (_, i) => ({
+    name: `page-${i}`,
+    title: `Page ${i + 1}`,
+    order: i,
+  }));
+  document.getElementById('nav-many').update(manyPlacards, undefined, 'page-2');
+
+  // Ordered
+  const orderedPlacards = [
+    { name: 'z', title: 'Z (order 3)', order: 3 },
+    { name: 'a', title: 'A (order 1)', order: 1 },
+    { name: 'm', title: 'M (order 2)', order: 2 },
+    { name: 'first', title: 'First (order 0)', order: 0 },
+  ];
+  document.getElementById('nav-ordered').update(orderedPlacards, undefined, 'first');
+
+  // Descriptions
+  document.getElementById('nav-desc').update(descPlacards, undefined, 'docs');
+</script>
 </body>
 </html>

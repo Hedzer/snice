@@ -1,192 +1,131 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Empty State Demo</title>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <title>Empty State</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      padding: 40px;
-      font-family: system-ui, -apple-system, sans-serif;
-      max-width: 1200px;
-      margin: 0 auto;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      transition: background-color var(--snice-transition-medium) ease, color var(--snice-transition-medium) ease;
-    }
-    .section {
-      margin-bottom: 40px;
-    }
-    h2 {
-      margin-bottom: 20px;
-    }
-    .demo-box {
-      border: 2px dashed var(--snice-color-border);
-      border-radius: 8px;
-      min-height: 200px;
-      margin-bottom: 20px;
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+    .box { border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 8px; padding: 1rem; }
   </style>
+  <script type="module">import './snice-empty-state.ts';</script>
 </head>
 <body>
-  <h1>Empty State Demo</h1>
 
-  <div class="section">
-    <h2>Basic</h2>
-    <div class="demo-box">
-      <snice-empty-state></snice-empty-state>
+<!-- Size variants -->
+<h2>Size: small</h2>
+<div class="box"><snice-empty-state size="small" title="No results" description="Try a different search term."></snice-empty-state></div>
+
+<h2>Size: medium (default)</h2>
+<div class="box"><snice-empty-state size="medium" title="No results" description="Try a different search term."></snice-empty-state></div>
+
+<h2>Size: large</h2>
+<div class="box"><snice-empty-state size="large" title="No results" description="Try a different search term."></snice-empty-state></div>
+
+<!-- All sizes side by side -->
+<h2>All Sizes Compared</h2>
+<div class="grid">
+  <div class="box"><snice-empty-state size="small" title="Small" description="Compact size."></snice-empty-state></div>
+  <div class="box"><snice-empty-state size="medium" title="Medium" description="Default size."></snice-empty-state></div>
+  <div class="box"><snice-empty-state size="large" title="Large" description="Large size."></snice-empty-state></div>
+</div>
+
+<!-- Icon: emoji icons -->
+<h2>Icon: Emoji Icons</h2>
+<div class="grid">
+  <div class="box"><snice-empty-state icon="&#x1F4ED;" title="No messages" description="Your inbox is empty."></snice-empty-state></div>
+  <div class="box"><snice-empty-state icon="&#x1F50D;" title="No results" description="No matches found."></snice-empty-state></div>
+  <div class="box"><snice-empty-state icon="&#x1F4C1;" title="No files" description="Upload a file to get started."></snice-empty-state></div>
+  <div class="box"><snice-empty-state icon="&#x1F6D2;" title="Cart is empty" description="Add items to your cart."></snice-empty-state></div>
+  <div class="box"><snice-empty-state icon="&#x1F4CA;" title="No data" description="No analytics data yet."></snice-empty-state></div>
+  <div class="box"><snice-empty-state icon="&#x1F465;" title="No users" description="Invite team members."></snice-empty-state></div>
+</div>
+
+<!-- Icon: Material Symbols -->
+<h2>Icon: Material Symbols</h2>
+<div class="grid">
+  <div class="box"><snice-empty-state icon="inbox" title="No messages" description="Check back later."></snice-empty-state></div>
+  <div class="box"><snice-empty-state icon="search" title="No results" description="Try different keywords."></snice-empty-state></div>
+  <div class="box"><snice-empty-state icon="folder_open" title="No files" description="This folder is empty."></snice-empty-state></div>
+  <div class="box"><snice-empty-state icon="notifications_off" title="No notifications" description="You're all caught up."></snice-empty-state></div>
+</div>
+
+<!-- Title only (no description) -->
+<h2>Title Only (no description)</h2>
+<div class="box"><snice-empty-state title="Nothing here yet"></snice-empty-state></div>
+
+<!-- With description -->
+<h2>With Description</h2>
+<div class="box"><snice-empty-state title="No projects" description="Create your first project to get started with the dashboard."></snice-empty-state></div>
+
+<!-- Action button -->
+<h2>Action Button (action-text)</h2>
+<div class="box"><snice-empty-state title="No tasks" description="You have no pending tasks." action-text="Create Task"></snice-empty-state></div>
+
+<!-- Action as link -->
+<h2>Action as Link (action-text + action-href)</h2>
+<div class="box"><snice-empty-state title="No documentation" description="Documentation has not been created yet." action-text="Go to Docs" action-href="https://example.com"></snice-empty-state></div>
+
+<!-- Slot: icon -->
+<h2>Slot: icon (custom icon content)</h2>
+<div class="box">
+  <snice-empty-state title="Custom Icon" description="Using a slotted SVG icon.">
+    <svg slot="icon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <circle cx="12" cy="12" r="10"/>
+      <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+      <line x1="9" y1="9" x2="9.01" y2="9"/>
+      <line x1="15" y1="9" x2="15.01" y2="9"/>
+    </svg>
+  </snice-empty-state>
+</div>
+
+<!-- Slot: default (extra content below) -->
+<h2>Slot: Default (custom content below)</h2>
+<div class="box">
+  <snice-empty-state title="No integrations" description="Connect your favorite tools.">
+    <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+      <button style="padding: 0.4rem 0.8rem; border: 1px solid var(--snice-color-border); border-radius: 4px; background: transparent; cursor: pointer; color: var(--snice-color-text);">Slack</button>
+      <button style="padding: 0.4rem 0.8rem; border: 1px solid var(--snice-color-border); border-radius: 4px; background: transparent; cursor: pointer; color: var(--snice-color-text);">GitHub</button>
+      <button style="padding: 0.4rem 0.8rem; border: 1px solid var(--snice-color-border); border-radius: 4px; background: transparent; cursor: pointer; color: var(--snice-color-text);">Jira</button>
     </div>
-  </div>
+  </snice-empty-state>
+</div>
 
-  <div class="section">
-    <h2>Common Scenarios</h2>
+<!-- Size x Icon combinations -->
+<h2>Size x Icon Combinations</h2>
+<div class="grid">
+  <div class="box"><snice-empty-state size="small" icon="&#x1F4E6;" title="Small + Emoji" description="Compact."></snice-empty-state></div>
+  <div class="box"><snice-empty-state size="medium" icon="cloud_off" title="Medium + Material" description="Default."></snice-empty-state></div>
+  <div class="box"><snice-empty-state size="large" icon="&#x1F3AF;" title="Large + Emoji" description="Spacious."></snice-empty-state></div>
+</div>
 
-    <h3>No Search Results</h3>
-    <div class="demo-box">
-      <snice-empty-state
-        icon="🔍"
-        title="No results found"
-        description="We couldn't find anything matching your search. Try different keywords."
-        action-text="Clear Search"
-      ></snice-empty-state>
-    </div>
+<!-- Edge: very long text -->
+<h2>Edge: Long Title and Description</h2>
+<div class="box">
+  <snice-empty-state
+    title="This is a very long title that might wrap to multiple lines depending on container width"
+    description="This is an equally long description text that provides additional context and information about why this empty state is being shown and what the user might want to do about it. It should handle wrapping gracefully."
+    action-text="Take Action Now"
+  ></snice-empty-state>
+</div>
 
-    <h3>Empty Inbox</h3>
-    <div class="demo-box">
-      <snice-empty-state
-        icon="📬"
-        title="All caught up!"
-        description="You have no new messages."
-      ></snice-empty-state>
-    </div>
+<!-- Edge: minimal (defaults only) -->
+<h2>Edge: Defaults Only</h2>
+<div class="box"><snice-empty-state></snice-empty-state></div>
 
-    <h3>No Items</h3>
-    <div class="demo-box">
-      <snice-empty-state
-        icon="📦"
-        title="No items yet"
-        description="Get started by creating your first item."
-        action-text="Create Item"
-      ></snice-empty-state>
-    </div>
-
-    <h3>404 Page</h3>
-    <div class="demo-box">
-      <snice-empty-state
-        icon="🤷"
-        title="Page not found"
-        description="The page you're looking for doesn't exist or has been moved."
-        action-text="Go Home"
-        action-href="/"
-      ></snice-empty-state>
-    </div>
-  </div>
-
-  <div class="section">
-    <h2>Sizes</h2>
-
-    <h3>Small</h3>
-    <div class="demo-box">
-      <snice-empty-state
-        size="small"
-        title="No data"
-        description="This is a small empty state"
-      ></snice-empty-state>
-    </div>
-
-    <h3>Medium (Default)</h3>
-    <div class="demo-box">
-      <snice-empty-state
-        size="medium"
-        title="No data"
-        description="This is a medium empty state"
-      ></snice-empty-state>
-    </div>
-
-    <h3>Large</h3>
-    <div class="demo-box">
-      <snice-empty-state
-        size="large"
-        title="No data"
-        description="This is a large empty state"
-      ></snice-empty-state>
-    </div>
-  </div>
-
-  <div class="section">
-    <h2>Different Icons</h2>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-      <div class="demo-box">
-        <snice-empty-state icon="📭" title="Empty" size="small"></snice-empty-state>
-      </div>
-      <div class="demo-box">
-        <snice-empty-state icon="🔍" title="Search" size="small"></snice-empty-state>
-      </div>
-      <div class="demo-box">
-        <snice-empty-state icon="📦" title="Orders" size="small"></snice-empty-state>
-      </div>
-      <div class="demo-box">
-        <snice-empty-state icon="💬" title="Messages" size="small"></snice-empty-state>
-      </div>
-      <div class="demo-box">
-        <snice-empty-state icon="⭐" title="Favorites" size="small"></snice-empty-state>
-      </div>
-      <div class="demo-box">
-        <snice-empty-state icon="📝" title="Notes" size="small"></snice-empty-state>
-      </div>
-    </div>
-  </div>
-
-  <div class="section">
-    <h2>With Custom Content</h2>
-    <div class="demo-box">
-      <snice-empty-state
-        icon="🎨"
-        title="No projects"
-        description="You haven't created any projects yet."
-      >
-        <div style="margin-top: 1rem; display: flex; gap: 10px; justify-content: center;">
-          <button style="padding: 0.5rem 1rem; background: var(--snice-color-primary); color: white; border: none; border-radius: 4px; cursor: pointer;">
-            Create Project
-          </button>
-          <button style="padding: 0.5rem 1rem; background: transparent; color: var(--snice-color-primary); border: 1px solid var(--snice-color-primary); border-radius: 4px; cursor: pointer;">
-            Import Project
-          </button>
-        </div>
-      </snice-empty-state>
-    </div>
-  </div>
-
-  <div class="section">
-    <h2>Interactive Demo</h2>
-    <div class="demo-box">
-      <snice-empty-state
-        id="interactive"
-        icon="🚀"
-        title="Ready to start?"
-        description="Click the button below to begin your journey."
-        action-text="Get Started"
-      ></snice-empty-state>
-    </div>
-    <div id="output" style="padding: 10px; background: var(--snice-color-background); border-radius: 4px; margin-top: 10px;">
-      <strong>Status:</strong> Waiting for action...
-    </div>
-  </div>
-
-  <script type="module">
-    import './snice-empty-state.ts';
-
-    // Interactive demo
-    const interactive = document.getElementById('interactive');
-    const output = document.getElementById('output');
-
-    interactive.addEventListener('empty-state-action', () => {
-      output.innerHTML = '<strong>Status:</strong> Action clicked! ✅';
-      setTimeout(() => {
-        output.innerHTML = '<strong>Status:</strong> Waiting for action...';
-      }, 2000);
-    });
-  </script>
 </body>
 </html>

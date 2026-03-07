@@ -1,293 +1,206 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snice Org Chart Component Demo</title>
+  <title>Org Chart</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      padding: 40px;
-      line-height: 1.6;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-    }
-
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: 10px;
-      margin-bottom: 30px;
-    }
-
-    h2 {
-      color: var(--snice-color-text);
-      margin-top: 40px;
-      margin-bottom: 20px;
-      font-size: 24px;
-    }
-
-    .demo-section {
-      margin: 30px 0;
-      padding: 20px;
-      background: var(--snice-color-background);
-      border-radius: 8px;
-      border: 1px solid var(--snice-color-border);
-    }
-
-    .demo-label {
-      display: block;
-      margin-bottom: 16px;
-      font-weight: 600;
-      color: var(--snice-color-text-secondary);
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .controls {
-      display: flex;
-      gap: 12px;
-      margin: 20px 0;
-      flex-wrap: wrap;
-      padding: 16px;
-      background: var(--snice-color-background-secondary);
-      border-radius: 6px;
-      border: 1px solid var(--snice-color-border);
-    }
-
-    .controls button {
-      padding: 10px 16px;
-      background: var(--snice-color-primary);
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    .controls button:hover {
-      background: var(--snice-color-primary-hover);
-    }
-
-    .controls button.secondary {
-      background: var(--snice-color-neutral);
-    }
-
-    .controls button.secondary:hover {
-      background: var(--snice-color-neutral-hover);
-    }
-
-    .controls select {
-      padding: 8px 12px;
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      font-size: 14px;
-    }
-
-    .chart-container {
-      border: 1px solid var(--snice-color-border);
-      border-radius: 8px;
-      overflow: auto;
-      min-height: 400px;
-      background: var(--snice-color-background-secondary);
-    }
-
-    .info-panel {
-      margin-top: 16px;
-      padding: 12px 16px;
-      background: var(--snice-color-background-secondary);
-      border-radius: 6px;
-      font-size: 14px;
-      color: var(--snice-color-text-secondary);
-    }
-
-    .org-chart-wrapper {
-      padding: 40px;
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .chart-box { border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 8px; overflow: auto; min-height: 200px; padding: 1.5rem; }
+    .chart-box snice-org-chart { display: block; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🏢 Snice Org Chart Component Demo</h1>
 
-    <div class="demo-section">
-      <h2>Organization Chart</h2>
-      <span class="demo-label">Interactive hierarchy visualization</span>
-      
-      <div class="controls">
-        <select id="direction-select">
-          <option value="top-down" selected>Top-Down</option>
-          <option value="left-right">Left-Right</option>
-        </select>
-        
-        <label>
-          <input type="checkbox" id="compact-check">
-          Compact Mode
-        </label>
+<h2>Direction: top-down (default)</h2>
+<div class="chart-box">
+  <snice-org-chart id="chart-td"></snice-org-chart>
+</div>
 
-        <button id="btn-expand">Expand All</button>
-        <button id="btn-collapse">Collapse All</button>
-        <button id="btn-random" class="secondary">Random Data</button>
-      </div>
+<h2>Direction: left-right</h2>
+<div class="chart-box">
+  <snice-org-chart id="chart-lr" direction="left-right"></snice-org-chart>
+</div>
 
-      <div class="chart-container">
-        <div class="org-chart-wrapper">
-          <snice-org-chart id="org-chart" style="display: block;"></snice-org-chart>
-        </div>
-      </div>
+<h2>Compact: false (default)</h2>
+<div class="chart-box">
+  <snice-org-chart id="chart-normal"></snice-org-chart>
+</div>
 
-      <div class="info-panel">
-        <div>Direction: <span id="direction-info">top-down</span></div>
-        <div>Click on nodes to toggle collapse/expand</div>
-        <div id="node-info"></div>
-      </div>
-    </div>
-  </div>
+<h2>Compact: true</h2>
+<div class="chart-box">
+  <snice-org-chart id="chart-compact" compact></snice-org-chart>
+</div>
 
-  <script type="module">
-    import './snice-org-chart.ts';
+<h2>Compact + left-right</h2>
+<div class="chart-box">
+  <snice-org-chart id="chart-compact-lr" direction="left-right" compact></snice-org-chart>
+</div>
 
-    const chart = document.getElementById('org-chart');
-    const directionSelect = document.getElementById('direction-select');
-    const compactCheck = document.getElementById('compact-check');
-    const directionInfo = document.getElementById('direction-info');
-    const nodeInfo = document.getElementById('node-info');
+<h2>With avatars</h2>
+<div class="chart-box">
+  <snice-org-chart id="chart-avatars"></snice-org-chart>
+</div>
 
-    // Sample organization data
-    const orgData = {
-      id: 'ceo',
-      name: 'Sarah Johnson',
-      title: 'Chief Executive Officer',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
-      children: [
-        {
-          id: 'cto',
-          name: 'Michael Chen',
-          title: 'Chief Technology Officer',
-          avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Michael',
+<h2>Without avatars (initials)</h2>
+<div class="chart-box">
+  <snice-org-chart id="chart-initials"></snice-org-chart>
+</div>
+
+<h2>Nodes with title</h2>
+<div class="chart-box">
+  <snice-org-chart id="chart-titles"></snice-org-chart>
+</div>
+
+<h2>Nodes without title</h2>
+<div class="chart-box">
+  <snice-org-chart id="chart-no-titles"></snice-org-chart>
+</div>
+
+<h2>Single node (no children)</h2>
+<div class="chart-box">
+  <snice-org-chart id="chart-single"></snice-org-chart>
+</div>
+
+<h2>Deep hierarchy (4 levels)</h2>
+<div class="chart-box">
+  <snice-org-chart id="chart-deep"></snice-org-chart>
+</div>
+
+<h2>Wide hierarchy (many siblings)</h2>
+<div class="chart-box">
+  <snice-org-chart id="chart-wide"></snice-org-chart>
+</div>
+
+<h2>No data</h2>
+<div class="chart-box">
+  <snice-org-chart id="chart-empty"></snice-org-chart>
+</div>
+
+<script type="module">
+  import './snice-org-chart.ts';
+
+  const fullData = {
+    id: 'ceo', name: 'Sarah Johnson', title: 'CEO',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
+    children: [
+      {
+        id: 'cto', name: 'Michael Chen', title: 'CTO',
+        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Michael',
+        children: [
+          { id: 'dev1', name: 'Emily Davis', title: 'Dev Lead', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emily',
+            children: [
+              { id: 'd1', name: 'Alex Smith', title: 'Engineer' },
+              { id: 'd2', name: 'Jordan Lee', title: 'Engineer' }
+            ]
+          },
+          { id: 'qa1', name: 'Riley Wilson', title: 'QA Lead' }
+        ]
+      },
+      {
+        id: 'cfo', name: 'David Martinez', title: 'CFO',
+        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=David',
+        children: [
+          { id: 'acc1', name: 'Lisa Anderson', title: 'Accountant' }
+        ]
+      },
+      { id: 'cmo', name: 'Jessica White', title: 'CMO' }
+    ]
+  };
+
+  // Top-down
+  document.getElementById('chart-td').data = fullData;
+
+  // Left-right
+  document.getElementById('chart-lr').data = fullData;
+
+  // Normal vs compact
+  document.getElementById('chart-normal').data = fullData;
+  document.getElementById('chart-compact').data = fullData;
+  document.getElementById('chart-compact-lr').data = fullData;
+
+  // With avatars
+  document.getElementById('chart-avatars').data = fullData;
+
+  // Without avatars (initials only)
+  const noAvatarData = {
+    id: 'r', name: 'Root Node', title: 'Director',
+    children: [
+      { id: 'a', name: 'Alice', title: 'Manager', children: [
+        { id: 'a1', name: 'Bob', title: 'Engineer' },
+        { id: 'a2', name: 'Carol', title: 'Designer' }
+      ]},
+      { id: 'b', name: 'Dan', title: 'Manager' }
+    ]
+  };
+  document.getElementById('chart-initials').data = noAvatarData;
+
+  // Titles
+  document.getElementById('chart-titles').data = {
+    id: '1', name: 'Jane Doe', title: 'VP of Engineering',
+    children: [
+      { id: '2', name: 'John Smith', title: 'Staff Engineer' },
+      { id: '3', name: 'Mary Jones', title: 'Senior Engineer' }
+    ]
+  };
+
+  // No titles
+  document.getElementById('chart-no-titles').data = {
+    id: '1', name: 'Team Alpha',
+    children: [
+      { id: '2', name: 'Squad 1' },
+      { id: '3', name: 'Squad 2' },
+      { id: '4', name: 'Squad 3' }
+    ]
+  };
+
+  // Single node
+  document.getElementById('chart-single').data = {
+    id: 'solo', name: 'Standalone Node', title: 'Only member'
+  };
+
+  // Deep hierarchy
+  document.getElementById('chart-deep').data = {
+    id: 'l0', name: 'Level 0', title: 'Root',
+    children: [{
+      id: 'l1', name: 'Level 1', title: 'Child',
+      children: [{
+        id: 'l2', name: 'Level 2', title: 'Grandchild',
+        children: [{
+          id: 'l3', name: 'Level 3', title: 'Great-grandchild',
           children: [
-            {
-              id: 'dev-manager',
-              name: 'Emily Davis',
-              title: 'Development Manager',
-              avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emily',
-              children: [
-                { id: 'dev1', name: 'Alex Smith', title: 'Senior Developer', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex' },
-                { id: 'dev2', name: 'Jordan Lee', title: 'Developer', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jordan' },
-                { id: 'dev3', name: 'Casey Brown', title: 'Junior Developer', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Casey' }
-              ]
-            },
-            {
-              id: 'qa-manager',
-              name: 'Riley Wilson',
-              title: 'QA Manager',
-              avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Riley',
-              children: [
-                { id: 'qa1', name: 'Morgan Taylor', title: 'QA Engineer', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Morgan' }
-              ]
-            }
+            { id: 'l4a', name: 'Level 4a', title: 'Leaf' },
+            { id: 'l4b', name: 'Level 4b', title: 'Leaf' }
           ]
-        },
-        {
-          id: 'cfo',
-          name: 'David Martinez',
-          title: 'Chief Financial Officer',
-          avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=David',
-          children: [
-            {
-              id: 'accounting',
-              name: 'Lisa Anderson',
-              title: 'Accounting Manager',
-              avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Lisa',
-              children: [
-                { id: 'acc1', name: 'Chris Johnson', title: 'Accountant', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Chris' }
-              ]
-            }
-          ]
-        },
-        {
-          id: 'cmo',
-          name: 'Jessica White',
-          title: 'Chief Marketing Officer',
-          avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jessica',
-          children: [
-            { id: 'marketing1', name: 'Sam Thompson', title: 'Marketing Manager', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sam' },
-            { id: 'marketing2', name: 'Pat Garcia', title: 'Content Strategist', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Pat' }
-          ]
-        }
-      ]
-    };
+        }]
+      }]
+    }]
+  };
 
-    // Set data
-    chart.data = orgData;
+  // Wide hierarchy
+  document.getElementById('chart-wide').data = {
+    id: 'boss', name: 'Manager', title: 'Team Lead',
+    children: Array.from({ length: 8 }, (_, i) => ({
+      id: `w${i}`, name: `Employee ${i + 1}`, title: `Role ${i + 1}`
+    }))
+  };
 
-    // Event handlers
-    directionSelect.addEventListener('change', (e) => {
-      chart.direction = e.target.value;
-      directionInfo.textContent = e.target.value;
-    });
-
-    compactCheck.addEventListener('change', (e) => {
-      chart.compact = e.target.checked;
-    });
-
-    document.getElementById('btn-expand').addEventListener('click', () => {
-      chart.expandAll();
-    });
-
-    document.getElementById('btn-collapse').addEventListener('click', () => {
-      chart.collapseAll();
-    });
-
-    document.getElementById('btn-random').addEventListener('click', () => {
-      const randomData = generateRandomOrg();
-      chart.data = randomData;
-    });
-
-    // Chart events
-    chart.addEventListener('node-click', (e) => {
-      const { node } = e.detail;
-      nodeInfo.textContent = `Last clicked: ${node.name} (${node.title})`;
-    });
-
-    chart.addEventListener('node-expand', (e) => {
-      console.log('Node expanded:', e.detail.node.name);
-    });
-
-    chart.addEventListener('node-collapse', (e) => {
-      console.log('Node collapsed:', e.detail.node.name);
-    });
-
-    function generateRandomOrg() {
-      const names = ['Alice', 'Bob', 'Carol', 'Dan', 'Eve', 'Frank', 'Grace', 'Henry'];
-      const titles = ['Manager', 'Director', 'VP', 'Lead', 'Specialist', 'Engineer'];
-      
-      function randomNode(depth = 0) {
-        const name = names[Math.floor(Math.random() * names.length)];
-        const title = titles[Math.floor(Math.random() * titles.length)];
-        const id = `node-${Math.random().toString(36).substr(2, 9)}`;
-        
-        const node = { id, name, title };
-        
-        if (depth < 2 && Math.random() > 0.3) {
-          const childCount = Math.floor(Math.random() * 3) + 1;
-          node.children = Array.from({ length: childCount }, () => randomNode(depth + 1));
-        }
-        
-        return node;
-      }
-      
-      return randomNode();
-    }
-  </script>
+  // Empty: chart-empty left with no data
+</script>
 </body>
 </html>

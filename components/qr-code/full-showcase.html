@@ -1,311 +1,148 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-theme="dark">
 <head>
-  <title>QR Code Demo</title>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Code</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      padding: 40px;
-      margin: 0;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      font-family: var(--snice-font-family);
-      transition: background-color var(--snice-transition-medium) ease, color var(--snice-transition-medium) ease;
-    }
-    .demo-section {
-      margin-bottom: 40px;
-    }
-    .demo-section h3 {
-      margin-bottom: 20px;
-      color: var(--snice-color-text);
-    }
-    .qr-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 30px;
-      margin-top: 20px;
-    }
-    .qr-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      padding: 20px;
-      border: 1px solid var(--snice-color-border);
-      border-radius: 8px;
-      background: var(--snice-color-background-element);
-    }
-    .qr-item label {
-      font-size: 14px;
-      color: var(--snice-color-text-secondary);
-      text-align: center;
-    }
-    .controls {
-      margin: 20px 0;
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    input, select {
-      padding: 8px 12px;
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      font-size: 14px;
-      background: var(--snice-color-background-input);
-      color: var(--snice-color-text);
-    }
-    button {
-      padding: 8px 16px;
-      background: var(--snice-color-primary);
-      color: var(--snice-color-text-inverse);
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    button:hover {
-      background: #1976d2;
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
+    section { margin-bottom: 1.5rem; }
   </style>
-  <script type="module">
-    document.addEventListener('DOMContentLoaded', () => {
-      const customQR = document.getElementById('custom-qr');
-      const valueInput = document.getElementById('value-input');
-      const sizeInput = document.getElementById('size-input');
-      const fgColorInput = document.getElementById('fg-color');
-      const bgColorInput = document.getElementById('bg-color');
-      const updateBtn = document.getElementById('update-btn');
-      const downloadBtn = document.getElementById('download-btn');
-
-      updateBtn.addEventListener('click', () => {
-        customQR.value = valueInput.value;
-        customQR.size = parseInt(sizeInput.value);
-        customQR.fgColor = fgColorInput.value;
-        customQR.bgColor = bgColorInput.value;
-      });
-
-      downloadBtn.addEventListener('click', async () => {
-        await customQR.download('my-qr-code.png');
-      });
-    });
-  </script>
 </head>
 <body>
-  <h2>QR Code Component Demo</h2>
-  <p>Generate QR codes with customizable size, colors, and options.</p>
 
-  <div class="demo-section">
-    <h3>Basic Examples</h3>
-    <div class="qr-grid">
-      <div class="qr-item">
-        <snice-qr-code value="https://example.com" size="200"></snice-qr-code>
-        <label>Website URL</label>
-      </div>
+<h2>Default (canvas, square dots)</h2>
+<section class="row">
+  <snice-qr-code value="https://example.com" size="200"></snice-qr-code>
+</section>
 
-      <div class="qr-item">
-        <snice-qr-code
-          value="mailto:hello@example.com"
-          size="200">
-        </snice-qr-code>
-        <label>Email Address</label>
-      </div>
+<h2>Render mode: canvas</h2>
+<section class="row">
+  <snice-qr-code value="https://example.com" render-mode="canvas" size="150"></snice-qr-code>
+</section>
 
-      <div class="qr-item">
-        <snice-qr-code
-          value="tel:+1234567890"
-          size="200">
-        </snice-qr-code>
-        <label>Phone Number</label>
-      </div>
-    </div>
-  </div>
+<h2>Render mode: svg</h2>
+<section class="row">
+  <snice-qr-code value="https://example.com" render-mode="svg" size="150"></snice-qr-code>
+</section>
 
-  <div class="demo-section">
-    <h3>Dot Styles</h3>
-    <div class="qr-grid">
-      <div class="qr-item">
-        <snice-qr-code
-          value="https://example.com/square"
-          size="200"
-          dot-style="square">
-        </snice-qr-code>
-        <label>Square (Default)</label>
-      </div>
+<h2>Dot style: square (default)</h2>
+<section class="row">
+  <snice-qr-code value="https://example.com" dot-style="square" size="150"></snice-qr-code>
+</section>
 
-      <div class="qr-item">
-        <snice-qr-code
-          value="https://example.com/rounded"
-          size="200"
-          dot-style="rounded">
-        </snice-qr-code>
-        <label>Rounded</label>
-      </div>
+<h2>Dot style: rounded</h2>
+<section class="row">
+  <snice-qr-code value="https://example.com" dot-style="rounded" size="150"></snice-qr-code>
+</section>
 
-      <div class="qr-item">
-        <snice-qr-code
-          value="https://example.com/dots"
-          size="200"
-          dot-style="dots">
-        </snice-qr-code>
-        <label>Dots</label>
-      </div>
-    </div>
-  </div>
+<h2>Dot style: dots</h2>
+<section class="row">
+  <snice-qr-code value="https://example.com" dot-style="dots" size="150"></snice-qr-code>
+</section>
 
-  <div class="demo-section">
-    <h3>Styled Examples</h3>
-    <div class="qr-grid">
-      <div class="qr-item">
-        <snice-qr-code
-          value="https://github.com"
-          size="200"
-          fg-color="#2196f3"
-          bg-color="#e3f2fd"
-          dot-style="rounded">
-        </snice-qr-code>
-        <label>Blue Rounded</label>
-      </div>
+<h2>All dot styles side by side</h2>
+<section class="row">
+  <snice-qr-code value="https://example.com" dot-style="square" size="120"></snice-qr-code>
+  <snice-qr-code value="https://example.com" dot-style="rounded" size="120"></snice-qr-code>
+  <snice-qr-code value="https://example.com" dot-style="dots" size="120"></snice-qr-code>
+</section>
 
-      <div class="qr-item">
-        <snice-qr-code
-          value="https://example.com/promo"
-          size="200"
-          fg-color="#4caf50"
-          bg-color="#e8f5e9"
-          dot-style="dots">
-        </snice-qr-code>
-        <label>Green Dots</label>
-      </div>
+<h2>Error correction: L</h2>
+<section class="row"><snice-qr-code value="https://example.com" error-correction-level="L" size="150"></snice-qr-code></section>
 
-      <div class="qr-item">
-        <snice-qr-code
-          value="https://example.com/special"
-          size="200"
-          fg-color="#9c27b0"
-          bg-color="#f3e5f5"
-          dot-style="rounded">
-        </snice-qr-code>
-        <label>Purple Rounded</label>
-      </div>
-    </div>
-  </div>
+<h2>Error correction: M (default)</h2>
+<section class="row"><snice-qr-code value="https://example.com" error-correction-level="M" size="150"></snice-qr-code></section>
 
-  <div class="demo-section">
-    <h3>Advanced Features</h3>
-    <div class="qr-grid">
-      <div class="qr-item">
-        <snice-qr-code
-          value="https://example.com/download"
-          size="200"
-          center-text="SCAN"
-          center-text-size="20"
-          text-fill-color="#2196f3"
-          text-outline-color="#ffffff">
-        </snice-qr-code>
-        <label>Text Overlay (20px)</label>
-      </div>
+<h2>Error correction: Q</h2>
+<section class="row"><snice-qr-code value="https://example.com" error-correction-level="Q" size="150"></snice-qr-code></section>
 
-      <div class="qr-item">
-        <snice-qr-code
-          value="WIFI:T:WPA;S:MyNetwork;P:password123;;"
-          size="200"
-          center-text="WiFi"
-          center-text-size="28"
-          text-fill-color="#ff9800"
-          text-outline-color="#ffffff">
-        </snice-qr-code>
-        <label>Large Text (28px)</label>
-      </div>
+<h2>Error correction: H</h2>
+<section class="row"><snice-qr-code value="https://example.com" error-correction-level="H" size="150"></snice-qr-code></section>
 
-      <div class="qr-item">
-        <snice-qr-code
-          value="https://github.com/example"
-          size="200"
-          include-image
-          image-url="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23ff5722'/%3E%3Ctext x='50' y='50' text-anchor='middle' dy='0.35em' font-size='40' fill='white' font-weight='bold'%3EG%3C/text%3E%3C/svg%3E"
-          image-size="50">
-        </snice-qr-code>
-        <label>With Logo</label>
-      </div>
-    </div>
-  </div>
+<h2>Size: 100</h2>
+<section class="row"><snice-qr-code value="https://example.com" size="100"></snice-qr-code></section>
 
-  <div class="demo-section">
-    <h3>Interactive QR Code Generator</h3>
-    <div class="controls">
-      <input
-        type="text"
-        id="value-input"
-        placeholder="Enter text or URL"
-        value="https://example.com"
-        style="flex: 1; min-width: 200px;">
-      <input
-        type="number"
-        id="size-input"
-        value="250"
-        min="100"
-        max="500"
-        placeholder="Size">
-      <input
-        type="color"
-        id="fg-color"
-        value="#000000">
-      <input
-        type="color"
-        id="bg-color"
-        value="#ffffff">
-      <button id="update-btn">Update QR Code</button>
-      <button id="download-btn">Download</button>
-    </div>
+<h2>Size: 200</h2>
+<section class="row"><snice-qr-code value="https://example.com" size="200"></snice-qr-code></section>
 
-    <div style="display: flex; justify-content: center; margin-top: 20px;">
-      <snice-qr-code
-        id="custom-qr"
-        value="https://example.com"
-        size="250">
-      </snice-qr-code>
-    </div>
-  </div>
+<h2>Size: 300</h2>
+<section class="row"><snice-qr-code value="https://example.com" size="300"></snice-qr-code></section>
 
-  <div style="margin-top: 40px; padding: 20px; background: #f5f5f5; border-radius: 4px;">
-    <h3 style="margin-top: 0;">Features</h3>
-    <ul>
-      <li>Generate QR codes from any text or URL</li>
-      <li>Customizable size and colors</li>
-      <li><strong>Three dot styles:</strong> square, rounded, or circular dots</li>
-      <li>Text overlay with customizable outline and fill colors</li>
-      <li>SVG or Canvas rendering</li>
-      <li>Adjustable margin/padding</li>
-      <li>Error correction levels (L, M, Q, H)</li>
-      <li>Export as PNG, JPEG, or WebP</li>
-      <li>Download functionality</li>
-      <li>Image overlay support</li>
-    </ul>
+<h2>Custom fg-color / bg-color</h2>
+<section class="row">
+  <snice-qr-code value="https://example.com" fg-color="#2196f3" bg-color="#e3f2fd" size="150"></snice-qr-code>
+  <snice-qr-code value="https://example.com" fg-color="#4caf50" bg-color="#e8f5e9" size="150"></snice-qr-code>
+  <snice-qr-code value="https://example.com" fg-color="#f44336" bg-color="#ffebee" size="150"></snice-qr-code>
+  <snice-qr-code value="https://example.com" fg-color="#ffffff" bg-color="#1a1a2e" size="150"></snice-qr-code>
+</section>
 
-    <h3>Common Use Cases</h3>
-    <ul style="list-style: none; padding: 0;">
-      <li>✓ Website URLs</li>
-      <li>✓ Contact information (vCard)</li>
-      <li>✓ WiFi credentials</li>
-      <li>✓ Email addresses</li>
-      <li>✓ Phone numbers</li>
-      <li>✓ SMS messages</li>
-      <li>✓ Geographic coordinates</li>
-      <li>✓ Payment information</li>
-      <li>✓ Social media profiles</li>
-      <li>✓ Product information</li>
-    </ul>
+<h2>Margin: 0</h2>
+<section class="row"><snice-qr-code value="https://example.com" margin="0" size="150"></snice-qr-code></section>
 
-    <h3>QR Code Formats</h3>
-    <div style="font-family: monospace; font-size: 12px; margin-top: 10px;">
-      <div><strong>URL:</strong> https://example.com</div>
-      <div><strong>Email:</strong> mailto:name@example.com</div>
-      <div><strong>Phone:</strong> tel:+1234567890</div>
-      <div><strong>SMS:</strong> sms:+1234567890?body=Hello</div>
-      <div><strong>WiFi:</strong> WIFI:T:WPA;S:NetworkName;P:password;;</div>
-      <div><strong>Location:</strong> geo:37.7749,-122.4194</div>
-    </div>
-  </div>
-  <script type="module" src="./snice-qr-code.ts"></script>
+<h2>Margin: 4 (default)</h2>
+<section class="row"><snice-qr-code value="https://example.com" margin="4" size="150"></snice-qr-code></section>
+
+<h2>Margin: 10</h2>
+<section class="row"><snice-qr-code value="https://example.com" margin="10" size="150"></snice-qr-code></section>
+
+<h2>Center text</h2>
+<section class="row">
+  <snice-qr-code value="https://example.com" center-text="SCAN" size="200" error-correction-level="H"></snice-qr-code>
+  <snice-qr-code value="https://example.com" center-text="GO" center-text-size="24" text-fill-color="#2196f3" size="200" error-correction-level="H"></snice-qr-code>
+</section>
+
+<h2>Center text with custom colors</h2>
+<section class="row">
+  <snice-qr-code value="https://example.com" center-text="HI" text-fill-color="#ff0000" text-outline-color="#ffffff" size="200" error-correction-level="H"></snice-qr-code>
+</section>
+
+<h2>Data formats: URL, Email, Phone, WiFi, Geo</h2>
+<section class="row">
+  <snice-qr-code value="https://example.com" size="120"></snice-qr-code>
+  <snice-qr-code value="mailto:hello@example.com" size="120"></snice-qr-code>
+  <snice-qr-code value="tel:+15551234567" size="120"></snice-qr-code>
+  <snice-qr-code value="WIFI:T:WPA;S:MyNetwork;P:password123;;" size="120"></snice-qr-code>
+  <snice-qr-code value="geo:37.7749,-122.4194" size="120"></snice-qr-code>
+</section>
+
+<h2>Long text content</h2>
+<section class="row">
+  <snice-qr-code value="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." size="250" error-correction-level="L"></snice-qr-code>
+</section>
+
+<h2>Empty value</h2>
+<section class="row">
+  <snice-qr-code value="" size="150"></snice-qr-code>
+</section>
+
+<h2>Dot style x Render mode matrix</h2>
+<section class="row">
+  <snice-qr-code value="https://example.com" dot-style="square" render-mode="canvas" size="100"></snice-qr-code>
+  <snice-qr-code value="https://example.com" dot-style="rounded" render-mode="canvas" size="100"></snice-qr-code>
+  <snice-qr-code value="https://example.com" dot-style="dots" render-mode="canvas" size="100"></snice-qr-code>
+  <snice-qr-code value="https://example.com" dot-style="square" render-mode="svg" size="100"></snice-qr-code>
+  <snice-qr-code value="https://example.com" dot-style="rounded" render-mode="svg" size="100"></snice-qr-code>
+  <snice-qr-code value="https://example.com" dot-style="dots" render-mode="svg" size="100"></snice-qr-code>
+</section>
+
+<script type="module">
+  import './snice-qr-code.ts';
+</script>
 </body>
 </html>

@@ -1,399 +1,103 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snice Pagination Demo</title>
+  <title>Pagination</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 40px 20px;
-      background: var(--snice-color-background);
-    }
-    
-    h1 {
-      color: var(--snice-color-text);
-      margin-bottom: 32px;
-    }
-
-    .demo-section {
-      background: var(--snice-color-background);
-      padding: 24px;
-      border-radius: 12px;
-      margin-bottom: 32px;
-      box-shadow: var(--snice-shadow-md);
-    }
-
-    .demo-section h2 {
-      color: var(--snice-color-text-secondary);
-      margin-top: 0;
-      margin-bottom: 20px;
-      font-size: 20px;
-    }
-    
-    .demo-row {
-      margin-bottom: 24px;
-    }
-    
-    .demo-label {
-      font-size: 14px;
-      color: var(--snice-color-text-secondary);
-      margin-bottom: 8px;
-    }
-    
-    .demo-controls {
-      display: flex;
-      gap: 12px;
-      margin-top: 20px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-    
-    .demo-control {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    
-    .demo-control label {
-      font-size: 14px;
-      color: var(--snice-color-text-secondary);
-    }
-    
-    .demo-control input[type="number"] {
-      width: 80px;
-      padding: 4px 8px;
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      font-size: 14px;
-      background: var(--snice-color-background-input);
-      color: var(--snice-color-text);
-    }
-
-    .demo-control select {
-      padding: 4px 8px;
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      font-size: 14px;
-      background: var(--snice-color-background-input);
-      color: var(--snice-color-text);
-    }
-    
-    .demo-button {
-      padding: 8px 16px;
-      background: var(--snice-color-primary);
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 14px;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-    
-    .demo-button:hover {
-      background: var(--snice-color-primary-hover);
-    }
-    
-    .event-log {
-      margin-top: 16px;
-      padding: 12px;
-      background: var(--snice-color-background);
-      border: 1px solid var(--snice-color-border);
-      border-radius: 6px;
-      font-family: monospace;
-      font-size: 13px;
-      max-height: 200px;
-      overflow-y: auto;
-    }
-
-    .event-log-entry {
-      padding: 4px 0;
-      border-bottom: 1px solid var(--snice-color-border);
-    }
-
-    .event-log-entry:last-child {
-      border-bottom: none;
-    }
-    
-    code {
-      background: var(--snice-color-background);
-      padding: 2px 4px;
-      border-radius: 3px;
-      font-size: 13px;
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    section { margin-bottom: 1.5rem; }
   </style>
-  <script type="module">
-    import '../../src/index.ts';
-    import './snice-pagination.ts';
-    
-    window.addEventListener('DOMContentLoaded', () => {
-      // Get pagination elements
-      const basicPagination = document.getElementById('basic-pagination');
-      const advancedPagination = document.getElementById('advanced-pagination');
-      const customPagination = document.getElementById('custom-pagination');
-      
-      // Event logging
-      const eventLog = document.getElementById('event-log');
-      let eventCounter = 0;
-      
-      function logEvent(source, detail) {
-        eventCounter++;
-        const entry = document.createElement('div');
-        entry.className = 'event-log-entry';
-        entry.innerHTML = `[${eventCounter}] <strong>${source}:</strong> Page changed to ${detail.page} (previous: ${detail.previousPage})`;
-        eventLog.insertBefore(entry, eventLog.firstChild);
-        
-        // Keep only last 10 entries
-        while (eventLog.children.length > 10) {
-          eventLog.removeChild(eventLog.lastChild);
-        }
-      }
-      
-      // Listen for pagination events
-      basicPagination.addEventListener('pagination-change', (e) => {
-        logEvent('Basic', e.detail);
-      });
-      
-      advancedPagination.addEventListener('pagination-change', (e) => {
-        logEvent('Advanced', e.detail);
-      });
-      
-      customPagination.addEventListener('pagination-change', (e) => {
-        logEvent('Custom', e.detail);
-        document.getElementById('current-page').textContent = e.detail.page;
-      });
-      
-      // Controls for customizable pagination
-      document.getElementById('update-pagination').addEventListener('click', () => {
-        const total = parseInt(document.getElementById('total-pages').value);
-        const current = parseInt(document.getElementById('current-page-input').value);
-        const siblings = parseInt(document.getElementById('siblings').value);
-        const size = document.getElementById('size-select').value;
-        const variant = document.getElementById('variant-select').value;
-        const showFirst = document.getElementById('show-first').checked;
-        const showLast = document.getElementById('show-last').checked;
-        const showPrev = document.getElementById('show-prev').checked;
-        const showNext = document.getElementById('show-next').checked;
-        
-        customPagination.total = total;
-        customPagination.current = current;
-        customPagination.siblings = siblings;
-        customPagination.size = size;
-        customPagination.variant = variant;
-        customPagination.showFirst = showFirst;
-        customPagination.showLast = showLast;
-        customPagination.showPrev = showPrev;
-        customPagination.showNext = showNext;
-        
-        document.getElementById('current-page').textContent = current;
-      });
-      
-      // API method demonstrations
-      document.getElementById('go-to-5').addEventListener('click', () => {
-        customPagination.goToPage(5);
-      });
-      
-      document.getElementById('next-page').addEventListener('click', () => {
-        customPagination.nextPage();
-      });
-      
-      document.getElementById('prev-page').addEventListener('click', () => {
-        customPagination.previousPage();
-      });
-      
-      document.getElementById('first-page').addEventListener('click', () => {
-        customPagination.firstPage();
-      });
-      
-      document.getElementById('last-page').addEventListener('click', () => {
-        customPagination.lastPage();
-      });
-    });
-  </script>
 </head>
 <body>
-  <h1>Snice Pagination Component Demo</h1>
-  
-  <div class="demo-section">
-    <h2>Basic Pagination</h2>
-    <div class="demo-row">
-      <div class="demo-label">Default pagination with 10 pages</div>
-      <snice-pagination 
-        id="basic-pagination"
-        current="1" 
-        total="10">
-      </snice-pagination>
-    </div>
-  </div>
-  
-  <div class="demo-section">
-    <h2>Advanced Examples</h2>
-    
-    <div class="demo-row">
-      <div class="demo-label">Large dataset (100 pages, current page 50)</div>
-      <snice-pagination 
-        id="advanced-pagination"
-        current="50" 
-        total="100"
-        siblings="1">
-      </snice-pagination>
-    </div>
-    
-    <div class="demo-row">
-      <div class="demo-label">Small size, rounded variant</div>
-      <snice-pagination 
-        current="3" 
-        total="5"
-        size="small"
-        variant="rounded">
-      </snice-pagination>
-    </div>
-    
-    <div class="demo-row">
-      <div class="demo-label">Large size, text variant</div>
-      <snice-pagination 
-        current="2" 
-        total="7"
-        size="large"
-        variant="text">
-      </snice-pagination>
-    </div>
-    
-    <div class="demo-row">
-      <div class="demo-label">Without first/last buttons</div>
-      <snice-pagination 
-        current="4" 
-        total="10"
-        show-first="false"
-        show-last="false">
-      </snice-pagination>
-    </div>
-    
-    <div class="demo-row">
-      <div class="demo-label">Without prev/next buttons</div>
-      <snice-pagination 
-        current="3" 
-        total="8"
-        show-prev="false"
-        show-next="false">
-      </snice-pagination>
-    </div>
-    
-    <div class="demo-row">
-      <div class="demo-label">More siblings (shows more pages)</div>
-      <snice-pagination 
-        current="10" 
-        total="20"
-        siblings="3">
-      </snice-pagination>
-    </div>
-  </div>
-  
-  <div class="demo-section">
-    <h2>Customizable Pagination</h2>
-    
-    <div class="demo-row">
-      <snice-pagination 
-        id="custom-pagination"
-        current="1" 
-        total="20"
-        siblings="1">
-      </snice-pagination>
-      <p style="margin-top: 12px; color: var(--snice-color-text-secondary); font-size: 14px;">
-        Current page: <strong id="current-page">1</strong>
-      </p>
-    </div>
-    
-    <div class="demo-controls">
-      <div class="demo-control">
-        <label>Total pages:</label>
-        <input type="number" id="total-pages" value="20" min="1" max="100">
-      </div>
-      
-      <div class="demo-control">
-        <label>Current page:</label>
-        <input type="number" id="current-page-input" value="1" min="1">
-      </div>
-      
-      <div class="demo-control">
-        <label>Siblings:</label>
-        <input type="number" id="siblings" value="1" min="0" max="5">
-      </div>
-      
-      <div class="demo-control">
-        <label>Size:</label>
-        <select id="size-select">
-          <option value="small">Small</option>
-          <option value="medium" selected>Medium</option>
-          <option value="large">Large</option>
-        </select>
-      </div>
-      
-      <div class="demo-control">
-        <label>Variant:</label>
-        <select id="variant-select">
-          <option value="default" selected>Default</option>
-          <option value="rounded">Rounded</option>
-          <option value="text">Text</option>
-        </select>
-      </div>
-    </div>
-    
-    <div class="demo-controls">
-      <div class="demo-control">
-        <label>
-          <input type="checkbox" id="show-first" checked> Show First
-        </label>
-      </div>
-      
-      <div class="demo-control">
-        <label>
-          <input type="checkbox" id="show-last" checked> Show Last
-        </label>
-      </div>
-      
-      <div class="demo-control">
-        <label>
-          <input type="checkbox" id="show-prev" checked> Show Prev
-        </label>
-      </div>
-      
-      <div class="demo-control">
-        <label>
-          <input type="checkbox" id="show-next" checked> Show Next
-        </label>
-      </div>
-      
-      <button id="update-pagination" class="demo-button">Update Pagination</button>
-    </div>
-  </div>
-  
-  <div class="demo-section">
-    <h2>API Methods</h2>
-    <p style="color: var(--snice-color-text-secondary); font-size: 14px; margin-bottom: 16px;">
-      Use these buttons to test the pagination API methods on the custom pagination above.
-    </p>
-    
-    <div class="demo-controls">
-      <button id="go-to-5" class="demo-button">Go to Page 5</button>
-      <button id="next-page" class="demo-button">Next Page</button>
-      <button id="prev-page" class="demo-button">Previous Page</button>
-      <button id="first-page" class="demo-button">First Page</button>
-      <button id="last-page" class="demo-button">Last Page</button>
-    </div>
-  </div>
-  
-  <div class="demo-section">
-    <h2>Event Log</h2>
-    <div class="demo-label">Listen for <code>@snice/pagination-change</code> events</div>
-    <div id="event-log" class="event-log">
-      <div class="event-log-entry" style="color: var(--snice-color-text-secondary);">
-        Pagination events will appear here...
-      </div>
-    </div>
-  </div>
+
+<h2>Variant: default</h2>
+<section class="row"><snice-pagination current="5" total="10" variant="default"></snice-pagination></section>
+
+<h2>Variant: rounded</h2>
+<section class="row"><snice-pagination current="5" total="10" variant="rounded"></snice-pagination></section>
+
+<h2>Variant: text</h2>
+<section class="row"><snice-pagination current="5" total="10" variant="text"></snice-pagination></section>
+
+<h2>Size: small</h2>
+<section class="row"><snice-pagination current="3" total="10" size="small"></snice-pagination></section>
+
+<h2>Size: medium (default)</h2>
+<section class="row"><snice-pagination current="3" total="10" size="medium"></snice-pagination></section>
+
+<h2>Size: large</h2>
+<section class="row"><snice-pagination current="3" total="10" size="large"></snice-pagination></section>
+
+<h2>Size x Variant matrix</h2>
+<section>
+  <div class="row" style="margin-bottom:0.5rem"><snice-pagination current="5" total="20" size="small" variant="default"></snice-pagination><span style="font-size:0.7rem">small / default</span></div>
+  <div class="row" style="margin-bottom:0.5rem"><snice-pagination current="5" total="20" size="small" variant="rounded"></snice-pagination><span style="font-size:0.7rem">small / rounded</span></div>
+  <div class="row" style="margin-bottom:0.5rem"><snice-pagination current="5" total="20" size="small" variant="text"></snice-pagination><span style="font-size:0.7rem">small / text</span></div>
+  <div class="row" style="margin-bottom:0.5rem"><snice-pagination current="5" total="20" size="medium" variant="default"></snice-pagination><span style="font-size:0.7rem">medium / default</span></div>
+  <div class="row" style="margin-bottom:0.5rem"><snice-pagination current="5" total="20" size="medium" variant="rounded"></snice-pagination><span style="font-size:0.7rem">medium / rounded</span></div>
+  <div class="row" style="margin-bottom:0.5rem"><snice-pagination current="5" total="20" size="medium" variant="text"></snice-pagination><span style="font-size:0.7rem">medium / text</span></div>
+  <div class="row" style="margin-bottom:0.5rem"><snice-pagination current="5" total="20" size="large" variant="default"></snice-pagination><span style="font-size:0.7rem">large / default</span></div>
+  <div class="row" style="margin-bottom:0.5rem"><snice-pagination current="5" total="20" size="large" variant="rounded"></snice-pagination><span style="font-size:0.7rem">large / rounded</span></div>
+  <div class="row" style="margin-bottom:0.5rem"><snice-pagination current="5" total="20" size="large" variant="text"></snice-pagination><span style="font-size:0.7rem">large / text</span></div>
+</section>
+
+<h2>Siblings: 1 (default)</h2>
+<section class="row"><snice-pagination current="10" total="20" siblings="1"></snice-pagination></section>
+
+<h2>Siblings: 2</h2>
+<section class="row"><snice-pagination current="10" total="20" siblings="2"></snice-pagination></section>
+
+<h2>Siblings: 3</h2>
+<section class="row"><snice-pagination current="10" total="20" siblings="3"></snice-pagination></section>
+
+<h2>show-first="false"</h2>
+<section class="row"><snice-pagination current="5" total="10" show-first="false"></snice-pagination></section>
+
+<h2>show-last="false"</h2>
+<section class="row"><snice-pagination current="5" total="10" show-last="false"></snice-pagination></section>
+
+<h2>show-prev="false"</h2>
+<section class="row"><snice-pagination current="5" total="10" show-prev="false"></snice-pagination></section>
+
+<h2>show-next="false"</h2>
+<section class="row"><snice-pagination current="5" total="10" show-next="false"></snice-pagination></section>
+
+<h2>All nav buttons hidden</h2>
+<section class="row"><snice-pagination current="5" total="10" show-first="false" show-last="false" show-prev="false" show-next="false"></snice-pagination></section>
+
+<h2>First page (prev/first disabled)</h2>
+<section class="row"><snice-pagination current="1" total="10"></snice-pagination></section>
+
+<h2>Last page (next/last disabled)</h2>
+<section class="row"><snice-pagination current="10" total="10"></snice-pagination></section>
+
+<h2>Single page</h2>
+<section class="row"><snice-pagination current="1" total="1"></snice-pagination></section>
+
+<h2>Few pages (no ellipsis)</h2>
+<section class="row"><snice-pagination current="2" total="3"></snice-pagination></section>
+
+<h2>Many pages (total=100)</h2>
+<section class="row"><snice-pagination current="50" total="100"></snice-pagination></section>
+
+<script type="module">
+  import './snice-pagination.ts';
+</script>
 </body>
 </html>

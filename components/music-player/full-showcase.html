@@ -1,301 +1,140 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snice Music Player Demo</title>
+  <title>Music Player</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      font-family: var(--snice-font-family, system-ui, -apple-system, sans-serif);
-      padding: 2.5rem;
-      line-height: 1.6;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      margin: 0;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: var(--snice-spacing-sm, 0.75rem);
-      margin-bottom: var(--snice-spacing-lg, 1.5rem);
-      font-size: var(--snice-font-size-2xl, 1.5rem);
-    }
-
-    h2 {
-      color: var(--snice-color-text);
-      margin-top: var(--snice-spacing-xl, 2rem);
-      margin-bottom: var(--snice-spacing-md, 1rem);
-      font-size: var(--snice-font-size-xl, 1.25rem);
-    }
-
-    h3 {
-      color: var(--snice-color-text-secondary);
-      margin-top: var(--snice-spacing-lg, 1.5rem);
-      margin-bottom: var(--snice-spacing-sm, 0.75rem);
-      font-size: var(--snice-font-size-md, 1rem);
-      font-weight: var(--snice-font-weight-semibold, 600);
-    }
-
-    .demo-section {
-      margin: var(--snice-spacing-lg, 1.5rem) 0;
-      padding: var(--snice-spacing-md, 1rem);
-      background: var(--snice-color-background);
-      border-radius: var(--snice-border-radius-lg, 8px);
-      border: 1px solid var(--snice-color-border);
-    }
-
-    p {
-      color: var(--snice-color-text-secondary);
-      margin-bottom: var(--snice-spacing-md, 1rem);
-    }
-
-    .info-box {
-      padding: var(--snice-spacing-md, 1rem);
-      background: var(--snice-color-primary-subtle, rgb(239 246 255));
-      border-left: 4px solid var(--snice-color-primary, rgb(37 99 235));
-      border-radius: var(--snice-border-radius-md, 4px);
-      margin: var(--snice-spacing-md, 1rem) 0;
-      font-size: var(--snice-font-size-sm, 0.875rem);
-      color: var(--snice-color-text-secondary);
-    }
-
-    .controls {
-      margin-top: var(--snice-spacing-md, 1rem);
-      display: flex;
-      gap: var(--snice-spacing-sm, 0.75rem);
-      flex-wrap: wrap;
-    }
-
-    button {
-      padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-md, 1rem);
-      background: var(--snice-color-primary, rgb(37 99 235));
-      color: var(--snice-color-text-inverse, rgb(250 250 250));
-      border: none;
-      border-radius: var(--snice-border-radius-md, 4px);
-      cursor: pointer;
-      font-size: var(--snice-font-size-sm, 0.875rem);
-      font-weight: var(--snice-font-weight-medium, 500);
-      transition: background-color var(--snice-transition-fast, 150ms);
-    }
-
-    button:hover {
-      background: var(--snice-color-primary-hover, rgb(29 78 216));
-    }
-
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
+    snice-music-player { display: block; max-width: 500px; border: 1px solid var(--snice-color-border, #ddd); border-radius: 8px; overflow: hidden; }
   </style>
-  <script type="module">
-    // Sample tracks data
-    const sampleTracks = [
-      {
-        id: 'track-1',
-        title: 'Summer Breeze',
-        artist: 'The Acoustic Collective',
-        album: 'Peaceful Moments',
-        artwork: 'https://picsum.photos/seed/music1/200/200',
-        src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-        duration: 360
-      },
-      {
-        id: 'track-2',
-        title: 'Midnight Jazz',
-        artist: 'Smooth Notes Ensemble',
-        album: 'Late Night Sessions',
-        artwork: 'https://picsum.photos/seed/music2/200/200',
-        src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-        duration: 420
-      },
-      {
-        id: 'track-3',
-        title: 'Electric Dreams',
-        artist: 'Synth Wave Collective',
-        album: 'Neon Nights',
-        artwork: 'https://picsum.photos/seed/music3/200/200',
-        src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
-        duration: 300
-      },
-      {
-        id: 'track-4',
-        title: 'Mountain Echo',
-        artist: 'Folk Harmony',
-        album: 'Nature Sounds',
-        artwork: 'https://picsum.photos/seed/music4/200/200',
-        src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
-        duration: 385
-      },
-      {
-        id: 'track-5',
-        title: 'Urban Rhythm',
-        artist: 'City Beats',
-        album: 'Downtown Vibes',
-        artwork: 'https://picsum.photos/seed/music5/200/200',
-        src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3',
-        duration: 340
-      }
-    ];
-
-    document.addEventListener('DOMContentLoaded', () => {
-      // Set tracks for all players
-      const players = document.querySelectorAll('snice-music-player');
-      players.forEach(player => {
-        player.tracks = sampleTracks;
-      });
-
-      // Programmatic controls
-      const prog = document.getElementById('programmatic');
-      document.getElementById('prog-play').onclick = () => prog.play();
-      document.getElementById('prog-pause').onclick = () => prog.pause();
-      document.getElementById('prog-stop').onclick = () => prog.stop();
-      document.getElementById('prog-next').onclick = () => prog.next();
-      document.getElementById('prog-prev').onclick = () => prog.previous();
-      document.getElementById('prog-shuffle').onclick = () => prog.toggleShuffle();
-
-      // Event listeners
-      const eventLog = document.getElementById('event-log');
-      const logger = document.getElementById('logger');
-
-      function logEvent(name, detail) {
-        const entry = document.createElement('div');
-        entry.style.padding = 'var(--snice-spacing-xs, 0.5rem)';
-        entry.style.borderBottom = '1px solid var(--snice-color-border)';
-        entry.innerHTML = `
-          <strong>${name}</strong>
-          <small style="color: var(--snice-color-text-tertiary); margin-left: var(--snice-spacing-xs, 0.5rem);">
-            ${detail}
-          </small>
-        `;
-        eventLog.insertBefore(entry, eventLog.firstChild);
-
-        // Keep only last 10 events
-        while (eventLog.children.length > 10) {
-          eventLog.removeChild(eventLog.lastChild);
-        }
-      }
-
-      logger.addEventListener('player-play', (e) => {
-        logEvent('play', e.detail.track?.title || 'Unknown track');
-      });
-
-      logger.addEventListener('player-pause', (e) => {
-        logEvent('pause', e.detail.track?.title || 'Unknown track');
-      });
-
-      logger.addEventListener('player-stop', () => {
-        logEvent('stop', '');
-      });
-
-      logger.addEventListener('player-track-change', (e) => {
-        logEvent('track-change', e.detail.track.title);
-      });
-
-      logger.addEventListener('player-track-ended', (e) => {
-        logEvent('track-ended', e.detail.track?.title || 'Unknown track');
-      });
-
-      logger.addEventListener('player-shuffle-change', (e) => {
-        logEvent('shuffle-change', e.detail.shuffle ? 'ON' : 'OFF');
-      });
-
-      logger.addEventListener('player-repeat-change', (e) => {
-        logEvent('repeat-change', e.detail.repeat);
-      });
-
-      logger.addEventListener('player-volume-change', (e) => {
-        logEvent('volume-change', Math.round(e.detail.volume * 100) + '%');
-      });
-    });
-  </script>
 </head>
 <body>
-  <div class="container">
-    <h1>Music Player Demo</h1>
-    <p>A full-featured audio player with playlist support, shuffle, repeat, and volume control.</p>
 
-    <div class="info-box">
-      <strong>Note:</strong> This demo uses sample tracks from SoundHelix. Tracks will load on play.
-    </div>
+<h2>Default (all features visible)</h2>
+<snice-music-player id="mp-default"></snice-music-player>
 
-    <h2>Full Player (Default)</h2>
-    <div class="demo-section">
-      <snice-music-player id="default"></snice-music-player>
-    </div>
+<h2>Compact mode</h2>
+<snice-music-player id="mp-compact" compact></snice-music-player>
 
-    <h2>Compact (No Playlist)</h2>
-    <div class="demo-section">
-      <snice-music-player show-playlist="false"></snice-music-player>
-    </div>
+<h2>Show playlist: false</h2>
+<snice-music-player id="mp-no-playlist" show-playlist="false"></snice-music-player>
 
-    <h2>Compact Mode</h2>
-    <div class="demo-section">
-      <snice-music-player
-        compact
-        show-playlist="false">
-      </snice-music-player>
-    </div>
+<h2>Show controls: false</h2>
+<snice-music-player id="mp-no-controls" show-controls="false"></snice-music-player>
 
-    <h2>Minimal (No Artwork or Track Info)</h2>
-    <div class="demo-section">
-      <snice-music-player
-        show-playlist="false"
-        show-artwork="false"
-        show-track-info="false">
-      </snice-music-player>
-    </div>
+<h2>Show volume: false</h2>
+<snice-music-player id="mp-no-volume" show-volume="false"></snice-music-player>
 
-    <h2>Programmatic Control</h2>
-    <div class="demo-section">
-      <snice-music-player
-        id="programmatic"
-        show-playlist="false">
-      </snice-music-player>
-      <div class="controls">
-        <button id="prog-play">Play</button>
-        <button id="prog-pause">Pause</button>
-        <button id="prog-stop">Stop</button>
-        <button id="prog-prev">Previous</button>
-        <button id="prog-next">Next</button>
-        <button id="prog-shuffle">Toggle Shuffle</button>
-      </div>
-    </div>
+<h2>Show artwork: false</h2>
+<snice-music-player id="mp-no-artwork" show-artwork="false"></snice-music-player>
 
-    <h2>Event Logging</h2>
-    <div class="demo-section">
-      <snice-music-player
-        id="logger"
-        show-playlist="false">
-      </snice-music-player>
-      <h3>Recent Events:</h3>
-      <div id="event-log" style="
-        margin-top: var(--snice-spacing-sm, 0.75rem);
-        border: 1px solid var(--snice-color-border);
-        border-radius: var(--snice-border-radius-md, 4px);
-        max-height: 15rem;
-        overflow-y: auto;
-        background: var(--snice-color-background, white);
-      "></div>
-    </div>
+<h2>Show track info: false</h2>
+<snice-music-player id="mp-no-info" show-track-info="false"></snice-music-player>
 
-    <h2>Auto-play</h2>
-    <div class="demo-section">
-      <snice-music-player
-        autoplay
-        show-playlist="false">
-      </snice-music-player>
-      <div class="info-box">
-        Note: Autoplay may be blocked by browser policies. User interaction is usually required.
-      </div>
-    </div>
-  </div>
-  <script type="module" src="./snice-music-player.ts"></script>
+<h2>Compact + no playlist</h2>
+<snice-music-player id="mp-compact-nop" compact show-playlist="false"></snice-music-player>
+
+<h2>No artwork + no volume</h2>
+<snice-music-player id="mp-no-art-vol" show-artwork="false" show-volume="false"></snice-music-player>
+
+<h2>Shuffle enabled</h2>
+<snice-music-player id="mp-shuffle" shuffle></snice-music-player>
+
+<h2>Repeat: all</h2>
+<snice-music-player id="mp-repeat-all" repeat="all"></snice-music-player>
+
+<h2>Repeat: one</h2>
+<snice-music-player id="mp-repeat-one" repeat="one"></snice-music-player>
+
+<h2>Repeat: off (default)</h2>
+<snice-music-player id="mp-repeat-off" repeat="off"></snice-music-player>
+
+<h2>Muted</h2>
+<snice-music-player id="mp-muted" muted></snice-music-player>
+
+<h2>Volume: 0.5</h2>
+<snice-music-player id="mp-vol50" volume="0.5"></snice-music-player>
+
+<h2>Volume: 0</h2>
+<snice-music-player id="mp-vol0" volume="0"></snice-music-player>
+
+<h2>Autoplay</h2>
+<snice-music-player id="mp-autoplay" autoplay></snice-music-player>
+
+<h2>Single track</h2>
+<snice-music-player id="mp-single"></snice-music-player>
+
+<h2>No tracks (empty)</h2>
+<snice-music-player></snice-music-player>
+
+<h2>Many tracks</h2>
+<snice-music-player id="mp-many"></snice-music-player>
+
+<h2>Tracks without artwork</h2>
+<snice-music-player id="mp-no-art-tracks"></snice-music-player>
+
+<h2>Tracks with artwork</h2>
+<snice-music-player id="mp-with-art"></snice-music-player>
+
+<h2>All visibility flags off</h2>
+<snice-music-player id="mp-bare" show-playlist="false" show-controls="false" show-volume="false" show-artwork="false" show-track-info="false"></snice-music-player>
+
+<h2>Shuffle + Repeat all + Compact</h2>
+<snice-music-player id="mp-combo" shuffle repeat="all" compact show-playlist="false"></snice-music-player>
+
+<script type="module">
+  import './snice-music-player.ts';
+
+  const sampleTracks = [
+    { id: '1', title: 'Ambient Dreams', artist: 'Synthwave', album: 'Chill Vibes', duration: 245, src: '' },
+    { id: '2', title: 'Electric Sunset', artist: 'Neon Pulse', album: 'Night Drive', duration: 198, src: '' },
+    { id: '3', title: 'Ocean Breeze', artist: 'Wave Rider', album: 'Beach Sessions', duration: 312, src: '' },
+    { id: '4', title: 'Mountain Echo', artist: 'Alpine Sound', album: 'Nature', duration: 180, src: '' },
+  ];
+
+  const artworkTracks = sampleTracks.map((t, i) => ({
+    ...t,
+    artwork: `https://picsum.photos/seed/track${i}/120/120`,
+  }));
+
+  const ids = ['mp-default', 'mp-compact', 'mp-no-playlist', 'mp-no-controls',
+    'mp-no-volume', 'mp-no-artwork', 'mp-no-info', 'mp-compact-nop',
+    'mp-no-art-vol', 'mp-shuffle', 'mp-repeat-all', 'mp-repeat-one',
+    'mp-repeat-off', 'mp-muted', 'mp-vol50', 'mp-vol0', 'mp-autoplay', 'mp-combo'];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.tracks = sampleTracks;
+  });
+
+  document.getElementById('mp-single').tracks = [sampleTracks[0]];
+
+  document.getElementById('mp-many').tracks = Array.from({ length: 10 }, (_, i) => ({
+    id: String(i),
+    title: `Track ${i + 1}`,
+    artist: `Artist ${String.fromCharCode(65 + (i % 26))}`,
+    duration: 120 + i * 30,
+    src: '',
+  }));
+
+  document.getElementById('mp-no-art-tracks').tracks = sampleTracks;
+  document.getElementById('mp-with-art').tracks = artworkTracks;
+  document.getElementById('mp-bare').tracks = sampleTracks;
+</script>
 </body>
 </html>

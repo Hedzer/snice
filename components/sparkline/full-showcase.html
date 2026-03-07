@@ -1,297 +1,218 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snice Sparkline Demo</title>
+  <title>Sparkline</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      padding: 40px;
-      line-height: 1.6;
-      background: var(--snice-color-background);
-      transition: background-color var(--snice-transition-medium) ease, color var(--snice-transition-medium) ease;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      background: var(--snice-color-background);
-      padding: 40px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    h1 {
-      color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: 10px;
-    }
-
-    h2 {
-      color: var(--snice-color-text-secondary);
-      margin-top: 30px;
-    }
-
-    .demo-section {
-      margin: 30px 0;
-    }
-
-    .demo-item {
-      margin: 20px 0;
-      padding: 20px;
-      background: var(--snice-color-background);
-      border-radius: 4px;
-      border-left: 4px solid #3b82f6;
-    }
-
-    .demo-label {
-      display: block;
-      margin-bottom: 12px;
-      font-weight: 500;
-      color: var(--snice-color-text-secondary);
-    }
-
-    .demo-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
-      margin: 20px 0;
-    }
-
-    .sparkline-wrapper {
-      background: var(--snice-color-background);
-      padding: 15px;
-      border-radius: 4px;
-      border: 1px solid var(--snice-color-border);
-      text-align: center;
-    }
-
-    .sparkline-wrapper h3 {
-      margin: 0 0 10px 0;
-      font-size: 14px;
-      color: var(--snice-color-text-secondary);
-      font-weight: 500;
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🐱 Snice Sparkline Demo</h1>
-    <p>Compact inline charts for visualizing trends and patterns in data.</p>
 
-    <div class="demo-section">
-      <h2>Chart Types</h2>
-      <div class="demo-grid">
-        <div class="sparkline-wrapper">
-          <h3>Line Chart</h3>
-          <snice-sparkline id="line-demo"></snice-sparkline>
-        </div>
-        <div class="sparkline-wrapper">
-          <h3>Bar Chart</h3>
-          <snice-sparkline id="bar-demo" type="bar"></snice-sparkline>
-        </div>
-        <div class="sparkline-wrapper">
-          <h3>Area Chart</h3>
-          <snice-sparkline id="area-demo" type="area"></snice-sparkline>
-        </div>
-      </div>
-    </div>
+<h2>Types</h2>
+<div class="row" id="types"></div>
 
-    <div class="demo-section">
-      <h2>Colors</h2>
-      <div class="demo-grid">
-        <div class="sparkline-wrapper">
-          <h3>Primary</h3>
-          <snice-sparkline id="primary-demo" color="primary"></snice-sparkline>
-        </div>
-        <div class="sparkline-wrapper">
-          <h3>Success</h3>
-          <snice-sparkline id="success-demo" color="success"></snice-sparkline>
-        </div>
-        <div class="sparkline-wrapper">
-          <h3>Warning</h3>
-          <snice-sparkline id="warning-demo" color="warning"></snice-sparkline>
-        </div>
-        <div class="sparkline-wrapper">
-          <h3>Danger</h3>
-          <snice-sparkline id="danger-demo" color="danger"></snice-sparkline>
-        </div>
-        <div class="sparkline-wrapper">
-          <h3>Muted</h3>
-          <snice-sparkline id="muted-demo" color="muted"></snice-sparkline>
-        </div>
-      </div>
-    </div>
+<h2>Colors</h2>
+<div class="row" id="colors"></div>
 
-    <div class="demo-section">
-      <h2>Line Styles</h2>
-      <div class="demo-grid">
-        <div class="sparkline-wrapper">
-          <h3>With Dots</h3>
-          <snice-sparkline id="dots-demo" show-dots></snice-sparkline>
-        </div>
-        <div class="sparkline-wrapper">
-          <h3>With Area Fill</h3>
-          <snice-sparkline id="area-fill-demo" show-area></snice-sparkline>
-        </div>
-        <div class="sparkline-wrapper">
-          <h3>Thick Stroke</h3>
-          <snice-sparkline id="thick-demo" stroke-width="3"></snice-sparkline>
-        </div>
-      </div>
-    </div>
+<h2>Type x Color Matrix</h2>
+<div style="display: grid; grid-template-columns: repeat(5, auto); gap: 1rem; align-items: center;" id="matrix"></div>
 
-    <div class="demo-section">
-      <h2>Sizes</h2>
-      <div class="demo-grid">
-        <div class="sparkline-wrapper">
-          <h3>Small (60x20)</h3>
-          <snice-sparkline id="small-demo" width="60" height="20"></snice-sparkline>
-        </div>
-        <div class="sparkline-wrapper">
-          <h3>Medium (100x30)</h3>
-          <snice-sparkline id="medium-demo" width="100" height="30"></snice-sparkline>
-        </div>
-        <div class="sparkline-wrapper">
-          <h3>Large (150x50)</h3>
-          <snice-sparkline id="large-demo" width="150" height="50"></snice-sparkline>
-        </div>
-      </div>
-    </div>
+<h2>Show Dots</h2>
+<div class="row" id="dots"></div>
 
-    <div class="demo-section">
-      <h2>Smooth Curves</h2>
-      <div class="demo-grid">
-        <div class="sparkline-wrapper">
-          <h3>Sharp (Default)</h3>
-          <snice-sparkline id="sharp-demo" width="150" height="50"></snice-sparkline>
-        </div>
-        <div class="sparkline-wrapper">
-          <h3>Smooth</h3>
-          <snice-sparkline id="smooth-demo" width="150" height="50" smooth></snice-sparkline>
-        </div>
-        <div class="sparkline-wrapper">
-          <h3>Smooth with Area</h3>
-          <snice-sparkline id="smooth-area-demo" width="150" height="50" smooth show-area></snice-sparkline>
-        </div>
-      </div>
-    </div>
+<h2>Show Area</h2>
+<div class="row" id="area"></div>
 
-    <div class="demo-section">
-      <h2>Custom Colors</h2>
-      <div class="demo-grid">
-        <div class="sparkline-wrapper">
-          <h3>Purple</h3>
-          <snice-sparkline id="purple-demo" width="150" height="50" custom-color="#9333ea"></snice-sparkline>
-        </div>
-        <div class="sparkline-wrapper">
-          <h3>Pink</h3>
-          <snice-sparkline id="pink-demo" width="150" height="50" custom-color="#ec4899" smooth></snice-sparkline>
-        </div>
-        <div class="sparkline-wrapper">
-          <h3>Teal</h3>
-          <snice-sparkline id="teal-demo" type="bar" width="150" height="50" custom-color="#14b8a6"></snice-sparkline>
-        </div>
-      </div>
-    </div>
+<h2>Smooth</h2>
+<div class="row" id="smooth"></div>
 
-    <div class="demo-section">
-      <h2>Real-World Examples</h2>
+<h2>Smooth + Show Area</h2>
+<div class="row" id="smooth-area"></div>
 
-      <div class="demo-item">
-        <span class="demo-label">Website Traffic (Last 30 Days)</span>
-        <snice-sparkline id="traffic-demo" color="primary" width="200" height="40" show-area></snice-sparkline>
-      </div>
+<h2>Smooth + Show Dots</h2>
+<div class="row" id="smooth-dots"></div>
 
-      <div class="demo-item">
-        <span class="demo-label">Sales Performance (Weekly)</span>
-        <snice-sparkline id="sales-demo" type="bar" color="success" width="200" height="40"></snice-sparkline>
-      </div>
+<h2>Smooth + Show Area + Show Dots</h2>
+<div class="row" id="all-options"></div>
 
-      <div class="demo-item">
-        <span class="demo-label">Server Response Time (Last Hour)</span>
-        <snice-sparkline id="response-demo" color="warning" width="200" height="40" show-dots></snice-sparkline>
-      </div>
+<h2>Custom Sizes</h2>
+<div class="row" id="sizes"></div>
 
-      <div class="demo-item">
-        <span class="demo-label">Error Rate (Last 24 Hours)</span>
-        <snice-sparkline id="error-demo" type="area" color="danger" width="200" height="40"></snice-sparkline>
-      </div>
-    </div>
-  </div>
+<h2>Custom Stroke Width</h2>
+<div class="row" id="stroke"></div>
 
-  <script type="module">
-    import './snice-sparkline.ts';
+<h2>Custom Color</h2>
+<div class="row" id="custom-color"></div>
 
-    // Sample data generators
-    function randomData(count, min = 0, max = 100) {
-      return Array.from({ length: count }, () =>
-        Math.floor(Math.random() * (max - min + 1)) + min
-      );
-    }
+<h2>Custom Min/Max</h2>
+<div class="row" id="minmax"></div>
 
-    function trendingData(count, direction = 'up') {
-      const data = [];
-      let value = 50;
-      for (let i = 0; i < count; i++) {
-        value += (direction === 'up' ? 1 : -1) * (Math.random() * 10);
-        data.push(Math.max(0, Math.min(100, value)));
-      }
-      return data;
-    }
+<h2>Edge Cases</h2>
+<div class="row" id="edge"></div>
 
-    function volatileData(count) {
-      const data = [];
-      let value = 50;
-      for (let i = 0; i < count; i++) {
-        value += (Math.random() - 0.5) * 30;
-        data.push(Math.max(0, Math.min(100, value)));
-      }
-      return data;
-    }
+<script type="module">
+  import './snice-sparkline.ts';
 
-    // Chart types
-    document.getElementById('line-demo').data = randomData(15);
-    document.getElementById('bar-demo').data = randomData(12);
-    document.getElementById('area-demo').data = randomData(15);
+  const data = [10, 25, 15, 30, 20, 35, 28, 40, 32, 45];
+  const flatData = [20, 20, 20, 20, 20];
+  const singlePoint = [42];
+  const twoPoints = [10, 50];
+  const negativeData = [-10, 5, -20, 15, -5, 10];
 
-    // Colors
-    const colorData = randomData(12);
-    document.getElementById('primary-demo').data = colorData;
-    document.getElementById('success-demo').data = colorData;
-    document.getElementById('warning-demo').data = colorData;
-    document.getElementById('danger-demo').data = colorData;
-    document.getElementById('muted-demo').data = colorData;
+  function spark(props) {
+    const el = document.createElement('snice-sparkline');
+    el.data = props.data || data;
+    if (props.type) el.type = props.type;
+    if (props.color) el.color = props.color;
+    if (props.customColor) el.customColor = props.customColor;
+    if (props.width) el.width = props.width;
+    if (props.height) el.height = props.height;
+    if (props.strokeWidth) el.strokeWidth = props.strokeWidth;
+    if (props.showDots) el.showDots = true;
+    if (props.showArea) el.showArea = true;
+    if (props.smooth) el.smooth = true;
+    if (props.min !== undefined) el.min = props.min;
+    if (props.max !== undefined) el.max = props.max;
+    return el;
+  }
 
-    // Line styles
-    document.getElementById('dots-demo').data = randomData(8);
-    document.getElementById('area-fill-demo').data = randomData(12);
-    document.getElementById('thick-demo').data = randomData(12);
+  function label(text) {
+    const el = document.createElement('span');
+    el.style.fontSize = '0.8rem';
+    el.style.color = 'var(--snice-color-text-secondary)';
+    el.style.minWidth = '60px';
+    el.textContent = text;
+    return el;
+  }
 
-    // Sizes
-    const sizeData = randomData(10);
-    document.getElementById('small-demo').data = sizeData;
-    document.getElementById('medium-demo').data = sizeData;
-    document.getElementById('large-demo').data = sizeData;
+  // Types
+  const types = document.getElementById('types');
+  ['line', 'bar', 'area'].forEach(t => {
+    const wrap = document.createElement('div');
+    wrap.appendChild(label(t));
+    wrap.appendChild(spark({ type: t }));
+    types.appendChild(wrap);
+  });
 
-    // Smooth curves
-    const smoothData = volatileData(15);
-    document.getElementById('sharp-demo').data = smoothData;
-    document.getElementById('smooth-demo').data = smoothData;
-    document.getElementById('smooth-area-demo').data = smoothData;
+  // Colors
+  const colors = document.getElementById('colors');
+  ['primary', 'success', 'warning', 'danger', 'muted'].forEach(c => {
+    const wrap = document.createElement('div');
+    wrap.appendChild(label(c));
+    wrap.appendChild(spark({ color: c }));
+    colors.appendChild(wrap);
+  });
 
-    // Custom colors
-    document.getElementById('purple-demo').data = trendingData(15, 'up');
-    document.getElementById('pink-demo').data = volatileData(15);
-    document.getElementById('teal-demo').data = randomData(12);
+  // Matrix
+  const matrix = document.getElementById('matrix');
+  ['primary', 'success', 'warning', 'danger', 'muted'].forEach(c => {
+    ['line', 'bar', 'area'].forEach(t => {
+      matrix.appendChild(spark({ type: t, color: c }));
+    });
+  });
 
-    // Real-world examples
-    document.getElementById('traffic-demo').data = trendingData(30, 'up');
-    document.getElementById('sales-demo').data = randomData(7, 20, 100);
-    document.getElementById('response-demo').data = volatileData(20);
-    document.getElementById('error-demo').data = [5, 3, 7, 12, 8, 15, 25, 20, 18, 22, 28, 35, 30, 25, 20, 15, 10, 8, 5, 3, 2, 1, 1, 0];
-  </script>
+  // Dots
+  const dots = document.getElementById('dots');
+  dots.appendChild(spark({ showDots: true }));
+  dots.appendChild(spark({ showDots: true, color: 'success' }));
+
+  // Area
+  const area = document.getElementById('area');
+  area.appendChild(spark({ showArea: true }));
+  area.appendChild(spark({ showArea: true, color: 'danger' }));
+
+  // Smooth
+  const smooth = document.getElementById('smooth');
+  smooth.appendChild(spark({ smooth: true }));
+  smooth.appendChild(spark({ smooth: true, color: 'warning' }));
+
+  // Smooth + Area
+  const smoothArea = document.getElementById('smooth-area');
+  smoothArea.appendChild(spark({ smooth: true, showArea: true }));
+  smoothArea.appendChild(spark({ smooth: true, showArea: true, color: 'success' }));
+
+  // Smooth + Dots
+  const smoothDots = document.getElementById('smooth-dots');
+  smoothDots.appendChild(spark({ smooth: true, showDots: true }));
+  smoothDots.appendChild(spark({ smooth: true, showDots: true, color: 'danger' }));
+
+  // All options
+  const allOpts = document.getElementById('all-options');
+  allOpts.appendChild(spark({ smooth: true, showArea: true, showDots: true }));
+  allOpts.appendChild(spark({ smooth: true, showArea: true, showDots: true, color: 'success' }));
+
+  // Sizes
+  const sizes = document.getElementById('sizes');
+  [[60, 20], [100, 30], [150, 40], [200, 50]].forEach(([w, h]) => {
+    const wrap = document.createElement('div');
+    wrap.appendChild(label(`${w}x${h}`));
+    wrap.appendChild(spark({ width: w, height: h }));
+    sizes.appendChild(wrap);
+  });
+
+  // Stroke width
+  const stroke = document.getElementById('stroke');
+  [1, 2, 3, 4, 5].forEach(sw => {
+    const wrap = document.createElement('div');
+    wrap.appendChild(label(`stroke=${sw}`));
+    wrap.appendChild(spark({ strokeWidth: sw }));
+    stroke.appendChild(wrap);
+  });
+
+  // Custom color
+  const customColor = document.getElementById('custom-color');
+  ['#ff6b6b', '#51cf66', '#339af0', '#fcc419', '#845ef7'].forEach(c => {
+    customColor.appendChild(spark({ customColor: c }));
+  });
+
+  // Min/Max
+  const minmax = document.getElementById('minmax');
+  minmax.appendChild(spark({ min: 0, max: 100 }));
+  minmax.appendChild(spark({ min: -50, max: 50, data: negativeData }));
+
+  // Edge cases
+  const edge = document.getElementById('edge');
+  const wrap1 = document.createElement('div');
+  wrap1.appendChild(label('empty'));
+  wrap1.appendChild(spark({ data: [] }));
+  edge.appendChild(wrap1);
+
+  const wrap2 = document.createElement('div');
+  wrap2.appendChild(label('single'));
+  wrap2.appendChild(spark({ data: singlePoint }));
+  edge.appendChild(wrap2);
+
+  const wrap3 = document.createElement('div');
+  wrap3.appendChild(label('two'));
+  wrap3.appendChild(spark({ data: twoPoints }));
+  edge.appendChild(wrap3);
+
+  const wrap4 = document.createElement('div');
+  wrap4.appendChild(label('flat'));
+  wrap4.appendChild(spark({ data: flatData }));
+  edge.appendChild(wrap4);
+
+  const wrap5 = document.createElement('div');
+  wrap5.appendChild(label('negative'));
+  wrap5.appendChild(spark({ data: negativeData }));
+  edge.appendChild(wrap5);
+</script>
 </body>
 </html>

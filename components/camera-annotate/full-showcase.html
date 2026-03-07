@@ -1,193 +1,107 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-theme="dark">
 <head>
-  <title>Camera Annotate Component Demo</title>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Camera Annotate</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
     body {
-      padding: 20px;
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 1.5rem;
       background: var(--snice-color-background);
       color: var(--snice-color-text);
-      transition: background-color var(--snice-transition-medium) ease, color var(--snice-transition-medium) ease;
     }
-    .demo-section {
-      margin-bottom: 40px;
+    section { margin-bottom: 2rem; }
+    h2 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--snice-color-text-tertiary, #888);
+      margin: 0 0 0.75rem;
     }
-    .demo-section h3 {
-      margin-bottom: 12px;
-      color: var(--snice-color-text-secondary);
+    .note {
+      font-size: 0.75rem;
+      color: var(--snice-color-text-tertiary, #888);
+      margin-bottom: 0.5rem;
     }
-    .annotate-wrapper {
-      max-width: 960px;
-      margin: 0 auto;
+    snice-camera-annotate {
+      width: 100%;
+      max-width: 800px;
+      height: 500px;
     }
-    .controls {
-      display: flex;
-      gap: 12px;
-      margin-top: 16px;
-      flex-wrap: wrap;
-    }
-    .controls button {
-      padding: 8px 16px;
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
+    button.open-cam {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--snice-color-border, #ccc);
+      border-radius: 0.25rem;
+      background: var(--snice-color-background-element, #f5f5f5);
+      color: var(--snice-color-text, #333);
       cursor: pointer;
-      font-family: inherit;
-    }
-    .controls button:hover {
-      background: var(--snice-color-background-element);
-    }
-    pre {
-      background: var(--snice-color-background-element);
-      padding: 12px;
-      border-radius: 4px;
-      overflow-x: auto;
-      font-size: 13px;
-      max-height: 300px;
-      overflow-y: auto;
-    }
-    .info-section {
-      padding: 20px;
-      background: var(--snice-color-background);
-      border-radius: 8px;
-      border: 1px solid var(--snice-color-border);
     }
   </style>
-  <script type="module">
-    document.addEventListener('DOMContentLoaded', () => {
-      const annotator = document.getElementById('main-annotator');
-      const output = document.getElementById('output');
-
-      annotator.addEventListener('@snice/capture', (e) => {
-        output.textContent = `Captured: ${e.detail.width}x${e.detail.height}`;
-      });
-
-      annotator.addEventListener('@snice/annotate', (e) => {
-        output.textContent = `New annotation: ${e.detail.annotation.id} (color: ${e.detail.annotation.color})`;
-      });
-
-      annotator.addEventListener('@snice/annotation-change', (e) => {
-        output.textContent = `Annotations: ${e.detail.annotations.length} total`;
-      });
-
-      window.exportAnnotations = () => {
-        const data = annotator.exportAnnotations();
-        output.textContent = JSON.stringify(data, null, 2);
-      };
-
-      window.importAnnotations = () => {
-        try {
-          const data = JSON.parse(output.textContent);
-          annotator.importAnnotations(data);
-        } catch {
-          output.textContent = 'Error: paste valid annotation JSON into the output area first';
-        }
-      };
-
-      window.clearAnnotations = () => {
-        annotator.clearAnnotations();
-        output.textContent = 'Annotations cleared';
-      };
-
-      window.exportImage = () => {
-        const dataURL = annotator.exportImage({ includeLabels: true });
-        const win = window.open('', '_blank');
-        win.document.write(`
-          <html>
-            <head><title>Exported Image</title></head>
-            <body style="margin:0;display:flex;align-items:center;justify-content:center;height:100vh;background:#000;">
-              <img src="${dataURL}" style="max-width:100%;max-height:100%;">
-            </body>
-          </html>
-        `);
-      };
-    });
-  </script>
 </head>
 <body>
-  <div class="demo-section">
-    <h2>Camera Annotate Component</h2>
-    <p>Capture images from camera and annotate them with drawings and labels.</p>
-  </div>
 
-  <div class="demo-section">
-    <h3>Default Usage</h3>
-    <p>Click "Capture" to take a photo, then draw on it. Add labels in the sidebar.</p>
-    <div class="annotate-wrapper">
-      <snice-camera-annotate id="main-annotator"></snice-camera-annotate>
-    </div>
-  </div>
+  <p class="note">Camera annotate requires user activation. Click buttons to create instances.</p>
 
-  <div class="demo-section">
-    <h3>API Controls</h3>
-    <div class="controls">
-      <button onclick="exportAnnotations()">Export Annotations (JSON)</button>
-      <button onclick="importAnnotations()">Import Annotations</button>
-      <button onclick="clearAnnotations()">Clear All</button>
-      <button onclick="exportImage()">Export Image (with labels)</button>
-    </div>
-    <pre id="output">Events will appear here...</pre>
-  </div>
+  <section>
+    <h2>Default (camera mode, auto-rotate-colors=true, show-labels-panel=true)</h2>
+    <button class="open-cam" onclick="createAnnotate('ca-default', {})">Open Camera Annotate</button>
+    <div id="ca-default"></div>
+  </section>
 
-  <div class="demo-section">
-    <h3>Without Labels Panel</h3>
-    <div class="annotate-wrapper">
-      <snice-camera-annotate show-labels-panel="false"></snice-camera-annotate>
-    </div>
-  </div>
+  <section>
+    <h2>auto-rotate-colors: false</h2>
+    <button class="open-cam" onclick="createAnnotate('ca-norotate', { autoRotateColors: false })">Open</button>
+    <div id="ca-norotate"></div>
+  </section>
 
-  <div class="demo-section">
-    <h3>Auto Rotate Off</h3>
-    <div class="annotate-wrapper">
-      <snice-camera-annotate auto-rotate-colors="false"></snice-camera-annotate>
-    </div>
-  </div>
+  <section>
+    <h2>show-labels-panel: false</h2>
+    <button class="open-cam" onclick="createAnnotate('ca-nolabels', { showLabelsPanel: false })">Open</button>
+    <div id="ca-nolabels"></div>
+  </section>
 
-  <div class="info-section">
-    <h3>Features</h3>
-    <ul>
-      <li>Capture image from camera</li>
-      <li>Draw shapes/annotations on captured image</li>
-      <li>Label each annotation in sidebar</li>
-      <li>Hover label to highlight corresponding shape</li>
-      <li>Other shapes dim to opacity 0.2 + grayscale on hover</li>
-      <li>Show/hide individual annotation layers</li>
-      <li>Bulk show/hide all annotations</li>
-      <li>Auto-rotate colors through preset palette</li>
-      <li>Color picker with circular palette</li>
-      <li>Export annotated image with/without labels</li>
-      <li>Save/load annotation data (JSON)</li>
-      <li>Undo last stroke</li>
-      <li>Adjustable stroke width</li>
-    </ul>
+  <section>
+    <h2>Both options off</h2>
+    <button class="open-cam" onclick="createAnnotate('ca-minimal', { autoRotateColors: false, showLabelsPanel: false })">Open</button>
+    <div id="ca-minimal"></div>
+  </section>
 
-    <h3>Properties</h3>
-    <ul>
-      <li><code>mode</code> - "camera" | "annotate" (default: "camera")</li>
-      <li><code>auto-rotate-colors</code> - Boolean, cycle through palette colors (default: true)</li>
-      <li><code>show-labels-panel</code> - Boolean, show sidebar (default: true)</li>
-    </ul>
+  <section>
+    <h2>Mode: camera (default) vs annotate</h2>
+    <p class="note">The mode property switches between camera and annotate views. Capture an image to switch to annotate mode.</p>
+    <button class="open-cam" onclick="createAnnotate('ca-modes', {})">Open (starts in camera mode)</button>
+    <div id="ca-modes"></div>
+  </section>
 
-    <h3>Methods</h3>
-    <ul>
-      <li><code>capture()</code> - Capture current frame and switch to annotate mode</li>
-      <li><code>exportImage({ includeLabels? })</code> - Export annotated image as data URL</li>
-      <li><code>exportAnnotations()</code> - Export annotation data as JSON</li>
-      <li><code>importAnnotations(data)</code> - Load annotation data</li>
-      <li><code>clearAnnotations()</code> - Remove all annotations</li>
-    </ul>
+  <script type="module">
+    import './snice-camera-annotate.ts';
 
-    <h3>Events</h3>
-    <ul>
-      <li><code>@snice/capture</code> - Fired when image is captured</li>
-      <li><code>@snice/annotate</code> - Fired when annotation is added</li>
-      <li><code>@snice/annotation-change</code> - Fired when annotations change</li>
-    </ul>
-  </div>
-  <script type="module" src="./snice-camera-annotate.ts"></script>
+    window.createAnnotate = function(containerId, props) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      const el = document.createElement('snice-camera-annotate');
+      if (props.autoRotateColors === false) el.setAttribute('auto-rotate-colors', 'false');
+      if (props.showLabelsPanel === false) el.setAttribute('show-labels-panel', 'false');
+      el.style.width = '100%';
+      el.style.maxWidth = '800px';
+      el.style.height = '500px';
+      container.appendChild(el);
+    };
+  </script>
 </body>
 </html>

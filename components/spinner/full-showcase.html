@@ -1,194 +1,119 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spinner Demo</title>
+  <title>Spinner</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      padding: 40px;
-      font-family: system-ui, -apple-system, sans-serif;
-      max-width: 800px;
-      margin: 0 auto;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      transition: background-color var(--snice-transition-medium) ease, color var(--snice-transition-medium) ease;
-    }
-    .section {
-      margin-bottom: 40px;
-    }
-    h2 {
-      margin-bottom: 20px;
-    }
-    .spinner-group {
-      display: flex;
-      gap: 30px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    .spinner-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-    }
-    .spinner-item label {
-      font-size: 0.875rem;
-      color: var(--snice-color-text-secondary);
-    }
-    .demo-box {
-      padding: 40px;
-      background: var(--snice-color-background);
-      border-radius: 8px;
-      text-align: center;
-    }
-    button {
-      padding: 0.5rem 1rem;
-      background: var(--snice-color-primary);
-      color: white;
-      border: none;
-      border-radius: 0.375rem;
-      cursor: pointer;
-      font-size: 0.875rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
   </style>
 </head>
 <body>
-  <h1>Spinner Component Demo</h1>
 
-  <div class="section">
-    <h2>Sizes</h2>
-    <div class="spinner-group">
-      <div class="spinner-item">
-        <snice-spinner size="small"></snice-spinner>
-        <label>Small</label>
-      </div>
-      <div class="spinner-item">
-        <snice-spinner size="medium"></snice-spinner>
-        <label>Medium</label>
-      </div>
-      <div class="spinner-item">
-        <snice-spinner size="large"></snice-spinner>
-        <label>Large</label>
-      </div>
-      <div class="spinner-item">
-        <snice-spinner size="xl"></snice-spinner>
-        <label>XL</label>
-      </div>
-    </div>
-  </div>
+<h2>Sizes</h2>
+<div class="row">
+  <snice-spinner size="small"></snice-spinner>
+  <snice-spinner size="medium"></snice-spinner>
+  <snice-spinner size="large"></snice-spinner>
+  <snice-spinner size="xl"></snice-spinner>
+</div>
 
-  <div class="section">
-    <h2>Colors</h2>
-    <div class="spinner-group">
-      <div class="spinner-item">
-        <snice-spinner color="primary"></snice-spinner>
-        <label>Primary</label>
-      </div>
-      <div class="spinner-item">
-        <snice-spinner color="success"></snice-spinner>
-        <label>Success</label>
-      </div>
-      <div class="spinner-item">
-        <snice-spinner color="warning"></snice-spinner>
-        <label>Warning</label>
-      </div>
-      <div class="spinner-item">
-        <snice-spinner color="error"></snice-spinner>
-        <label>Error</label>
-      </div>
-      <div class="spinner-item">
-        <snice-spinner color="info"></snice-spinner>
-        <label>Info</label>
-      </div>
-    </div>
-  </div>
+<h2>Colors</h2>
+<div class="row">
+  <snice-spinner color="primary"></snice-spinner>
+  <snice-spinner color="success"></snice-spinner>
+  <snice-spinner color="warning"></snice-spinner>
+  <snice-spinner color="error"></snice-spinner>
+  <snice-spinner color="info"></snice-spinner>
+</div>
 
-  <div class="section">
-    <h2>With Labels</h2>
-    <div class="spinner-group">
-      <div class="spinner-item">
-        <snice-spinner label="Loading..."></snice-spinner>
-        <label>"Loading..."</label>
-      </div>
-      <div class="spinner-item">
-        <snice-spinner size="large" label="50%"></snice-spinner>
-        <label>"50%"</label>
-      </div>
-    </div>
-  </div>
+<h2>Size x Color Matrix</h2>
+<div style="display: grid; grid-template-columns: repeat(5, auto); gap: 1rem; align-items: center;">
+  <snice-spinner size="small" color="primary"></snice-spinner>
+  <snice-spinner size="small" color="success"></snice-spinner>
+  <snice-spinner size="small" color="warning"></snice-spinner>
+  <snice-spinner size="small" color="error"></snice-spinner>
+  <snice-spinner size="small" color="info"></snice-spinner>
 
-  <div class="section">
-    <h2>Custom Thickness</h2>
-    <div class="spinner-group">
-      <div class="spinner-item">
-        <snice-spinner thickness="2"></snice-spinner>
-        <label>thickness="2"</label>
-      </div>
-      <div class="spinner-item">
-        <snice-spinner thickness="4"></snice-spinner>
-        <label>thickness="4"</label>
-      </div>
-      <div class="spinner-item">
-        <snice-spinner thickness="6"></snice-spinner>
-        <label>thickness="6"</label>
-      </div>
-      <div class="spinner-item">
-        <snice-spinner thickness="8"></snice-spinner>
-        <label>thickness="8"</label>
-      </div>
-    </div>
-  </div>
+  <snice-spinner size="medium" color="primary"></snice-spinner>
+  <snice-spinner size="medium" color="success"></snice-spinner>
+  <snice-spinner size="medium" color="warning"></snice-spinner>
+  <snice-spinner size="medium" color="error"></snice-spinner>
+  <snice-spinner size="medium" color="info"></snice-spinner>
 
-  <div class="section">
-    <h2>Combined Variations</h2>
-    <div class="spinner-group">
-      <snice-spinner size="small" color="primary"></snice-spinner>
-      <snice-spinner size="medium" color="success"></snice-spinner>
-      <snice-spinner size="large" color="warning"></snice-spinner>
-      <snice-spinner size="xl" color="error"></snice-spinner>
-    </div>
-  </div>
+  <snice-spinner size="large" color="primary"></snice-spinner>
+  <snice-spinner size="large" color="success"></snice-spinner>
+  <snice-spinner size="large" color="warning"></snice-spinner>
+  <snice-spinner size="large" color="error"></snice-spinner>
+  <snice-spinner size="large" color="info"></snice-spinner>
 
-  <div class="section">
-    <h2>Loading State Demo</h2>
-    <div class="demo-box">
-      <snice-spinner size="large" color="primary"></snice-spinner>
-      <p style="margin-top: 20px; color: #6b7280;">Loading content, please wait...</p>
-    </div>
-  </div>
+  <snice-spinner size="xl" color="primary"></snice-spinner>
+  <snice-spinner size="xl" color="success"></snice-spinner>
+  <snice-spinner size="xl" color="warning"></snice-spinner>
+  <snice-spinner size="xl" color="error"></snice-spinner>
+  <snice-spinner size="xl" color="info"></snice-spinner>
+</div>
 
-  <div class="section">
-    <h2>Button States</h2>
-    <div style="display: flex; gap: 10px;">
-      <button>
-        Normal Button
-      </button>
-      <button disabled>
-        <snice-spinner size="small"></snice-spinner>
-        Loading...
-      </button>
-    </div>
-  </div>
+<h2>With Label</h2>
+<div class="row">
+  <snice-spinner label="Loading..."></snice-spinner>
+  <snice-spinner label="Please wait" color="success"></snice-spinner>
+  <snice-spinner label="Processing" size="large" color="primary"></snice-spinner>
+  <snice-spinner label="Saving data" size="xl" color="warning"></snice-spinner>
+</div>
 
-  <div class="section">
-    <h2>Inline Usage</h2>
-    <p style="display: flex; align-items: center; gap: 10px;">
-      <snice-spinner size="small"></snice-spinner>
-      Processing your request...
-    </p>
-  </div>
+<h2>Custom Thickness</h2>
+<div class="row">
+  <snice-spinner thickness="2" size="large"></snice-spinner>
+  <snice-spinner thickness="4" size="large"></snice-spinner>
+  <snice-spinner thickness="6" size="large"></snice-spinner>
+  <snice-spinner thickness="8" size="large"></snice-spinner>
+  <snice-spinner thickness="10" size="large"></snice-spinner>
+</div>
 
-  <script type="module">
-    import './snice-spinner.ts';
-  </script>
+<h2>Thickness x Size</h2>
+<div class="row">
+  <snice-spinner thickness="2" size="small"></snice-spinner>
+  <snice-spinner thickness="2" size="medium"></snice-spinner>
+  <snice-spinner thickness="2" size="large"></snice-spinner>
+  <snice-spinner thickness="2" size="xl"></snice-spinner>
+  <snice-spinner thickness="6" size="small"></snice-spinner>
+  <snice-spinner thickness="6" size="medium"></snice-spinner>
+  <snice-spinner thickness="6" size="large"></snice-spinner>
+  <snice-spinner thickness="6" size="xl"></snice-spinner>
+</div>
+
+<h2>No Label (default)</h2>
+<div class="row">
+  <snice-spinner></snice-spinner>
+</div>
+
+<h2>On Dark Background</h2>
+<div style="background: #1a1a2e; padding: 1.5rem; border-radius: 8px;" class="row">
+  <snice-spinner color="primary"></snice-spinner>
+  <snice-spinner color="success"></snice-spinner>
+  <snice-spinner color="warning"></snice-spinner>
+  <snice-spinner color="error"></snice-spinner>
+  <snice-spinner color="info" label="Loading..." style="color: white;"></snice-spinner>
+</div>
+
+<script type="module">
+  import './snice-spinner.ts';
+</script>
 </body>
 </html>

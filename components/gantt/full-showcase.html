@@ -1,197 +1,106 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snice Gantt Chart Demo</title>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <title>Gantt</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      padding: 40px;
-      line-height: 1.6;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: 10px;
-    }
-
-    h2 {
-      color: var(--snice-color-text-secondary);
-      margin-top: 40px;
-    }
-
-    .demo-section {
-      margin: 30px 0;
-      padding: 20px;
-      background: var(--snice-color-background);
-      border-radius: 8px;
-      border: 1px solid var(--snice-color-border);
-    }
-
-    .demo-label {
-      display: block;
-      margin-bottom: 16px;
-      font-weight: 600;
-      color: var(--snice-color-text-secondary);
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .controls {
-      display: flex;
-      gap: 12px;
-      margin: 16px 0;
-      flex-wrap: wrap;
-    }
-
-    button {
-      padding: 8px 16px;
-      background: var(--snice-color-primary);
-      color: var(--snice-color-text-inverse);
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    button:hover {
-      background: var(--snice-color-primary-hover);
-    }
-
-    .event-log {
-      margin-top: 16px;
-      padding: 12px;
-      background: var(--snice-color-background);
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      font-family: monospace;
-      font-size: 13px;
-      max-height: 120px;
-      overflow-y: auto;
-      color: var(--snice-color-text-secondary);
-    }
-
-    snice-gantt {
-      height: 400px;
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    snice-gantt { display: block; border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 8px; margin-bottom: 1.5rem; min-height: 300px; }
   </style>
-</head>
-<body>
-  <div class="container">
-    <h1>Snice Gantt Chart Component Demo</h1>
-
-    <div class="demo-section">
-      <h2>Basic Gantt Chart</h2>
-      <span class="demo-label">Project timeline with tasks and progress</span>
-      <snice-gantt id="basic-gantt"></snice-gantt>
-    </div>
-
-    <div class="demo-section">
-      <h2>Grouped Tasks</h2>
-      <span class="demo-label">Tasks organized by group with color coding</span>
-      <snice-gantt id="grouped-gantt"></snice-gantt>
-    </div>
-
-    <div class="demo-section">
-      <h2>Interactive Demo</h2>
-      <span class="demo-label">Drag bars to move/resize tasks, use zoom controls</span>
-
-      <div class="controls">
-        <button onclick="scrollToToday()">Scroll to Today</button>
-        <button onclick="addTask()">Add Task</button>
-      </div>
-
-      <snice-gantt id="interactive-gantt"></snice-gantt>
-
-      <div class="event-log" id="event-log">Interact with the chart to see events here...</div>
-    </div>
-  </div>
-
   <script type="module">
     import './snice-gantt.ts';
 
-    const today = new Date();
-    const d = (offset) => {
-      const date = new Date(today);
-      date.setDate(date.getDate() + offset);
-      return date.toISOString().split('T')[0];
-    };
-
-    // Basic gantt
-    const basicTasks = [
-      { id: '1', name: 'Planning', start: d(-14), end: d(-7), progress: 100, color: 'rgb(37 99 235)' },
-      { id: '2', name: 'Design', start: d(-10), end: d(-3), progress: 100, color: 'rgb(147 51 234)' },
-      { id: '3', name: 'Development', start: d(-5), end: d(10), progress: 45, color: 'rgb(22 163 74)' },
-      { id: '4', name: 'Testing', start: d(5), end: d(15), progress: 10, color: 'rgb(234 88 12)' },
-      { id: '5', name: 'Deployment', start: d(14), end: d(18), progress: 0, color: 'rgb(220 38 38)' },
+    const baseTasks = [
+      { id: 't1', name: 'Planning', start: '2026-03-01', end: '2026-03-10', progress: 100 },
+      { id: 't2', name: 'Design', start: '2026-03-08', end: '2026-03-20', progress: 75 },
+      { id: 't3', name: 'Development', start: '2026-03-18', end: '2026-04-15', progress: 30 },
+      { id: 't4', name: 'Testing', start: '2026-04-10', end: '2026-04-25', progress: 0 },
+      { id: 't5', name: 'Launch', start: '2026-04-25', end: '2026-04-30', progress: 0 },
     ];
-    document.getElementById('basic-gantt').tasks = basicTasks;
 
-    // Grouped gantt
+    const coloredTasks = [
+      { id: 'c1', name: 'Backend API', start: '2026-03-01', end: '2026-03-20', color: '#2563eb', progress: 60 },
+      { id: 'c2', name: 'Frontend UI', start: '2026-03-10', end: '2026-03-30', color: '#9333ea', progress: 40 },
+      { id: 'c3', name: 'Database', start: '2026-03-05', end: '2026-03-15', color: '#16a34a', progress: 90 },
+      { id: 'c4', name: 'Deployment', start: '2026-03-28', end: '2026-04-05', color: '#ea580c', progress: 0 },
+    ];
+
     const groupedTasks = [
-      { id: 'b1', name: 'UI Mockups', start: d(-10), end: d(-5), progress: 100, group: 'Design', color: 'rgb(147 51 234)' },
-      { id: 'b2', name: 'Style Guide', start: d(-7), end: d(-2), progress: 80, group: 'Design', color: 'rgb(147 51 234)' },
-      { id: 'b3', name: 'Frontend', start: d(-3), end: d(8), progress: 50, group: 'Development', color: 'rgb(37 99 235)' },
-      { id: 'b4', name: 'Backend API', start: d(-5), end: d(6), progress: 60, group: 'Development', color: 'rgb(37 99 235)' },
-      { id: 'b5', name: 'Database', start: d(-8), end: d(-1), progress: 90, group: 'Development', color: 'rgb(37 99 235)' },
-      { id: 'b6', name: 'Unit Tests', start: d(3), end: d(12), progress: 20, group: 'QA', color: 'rgb(22 163 74)' },
-      { id: 'b7', name: 'Integration Tests', start: d(8), end: d(16), progress: 0, group: 'QA', color: 'rgb(22 163 74)' },
+      { id: 'g1', name: 'Requirements', start: '2026-03-01', end: '2026-03-10', group: 'Phase 1', progress: 100 },
+      { id: 'g2', name: 'Architecture', start: '2026-03-05', end: '2026-03-15', group: 'Phase 1', progress: 80 },
+      { id: 'g3', name: 'Sprint 1', start: '2026-03-15', end: '2026-03-28', group: 'Phase 2', progress: 50 },
+      { id: 'g4', name: 'Sprint 2', start: '2026-03-28', end: '2026-04-10', group: 'Phase 2', progress: 10 },
+      { id: 'g5', name: 'QA', start: '2026-04-05', end: '2026-04-20', group: 'Phase 3' },
+      { id: 'g6', name: 'Release', start: '2026-04-18', end: '2026-04-25', group: 'Phase 3' },
     ];
-    document.getElementById('grouped-gantt').tasks = groupedTasks;
 
-    // Interactive gantt
-    let interactiveTasks = [
-      { id: 'i1', name: 'Research', start: d(-7), end: d(-2), progress: 100, color: 'rgb(14 165 233)' },
-      { id: 'i2', name: 'Prototype', start: d(-3), end: d(4), progress: 70, color: 'rgb(147 51 234)' },
-      { id: 'i3', name: 'Implementation', start: d(2), end: d(14), progress: 30, color: 'rgb(22 163 74)' },
-      { id: 'i4', name: 'Review', start: d(12), end: d(18), progress: 0, color: 'rgb(234 88 12)' },
+    const depTasks = [
+      { id: 'd1', name: 'Task A', start: '2026-03-01', end: '2026-03-10', dependencies: [] },
+      { id: 'd2', name: 'Task B', start: '2026-03-10', end: '2026-03-20', dependencies: ['d1'] },
+      { id: 'd3', name: 'Task C', start: '2026-03-20', end: '2026-04-01', dependencies: ['d2'] },
     ];
-    const interactiveGantt = document.getElementById('interactive-gantt');
-    interactiveGantt.tasks = interactiveTasks;
 
-    const log = document.getElementById('event-log');
-    function logEvent(type, detail) {
-      log.textContent = `${type}: ${JSON.stringify(detail, null, 2)}`;
-    }
-
-    interactiveGantt.addEventListener('task-click', (e) => {
-      logEvent('task-click', { name: e.detail.task.name, progress: e.detail.task.progress });
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('[data-base]').forEach(el => { el.tasks = baseTasks; });
+      document.getElementById('g-colored').tasks = coloredTasks;
+      document.getElementById('g-grouped').tasks = groupedTasks;
+      document.getElementById('g-deps').tasks = depTasks;
+      document.getElementById('g-nodeps').tasks = depTasks;
     });
-    interactiveGantt.addEventListener('task-move', (e) => {
-      logEvent('task-move', { name: e.detail.task.name, start: e.detail.start, end: e.detail.end });
-    });
-    interactiveGantt.addEventListener('task-resize', (e) => {
-      logEvent('task-resize', { name: e.detail.task.name, start: e.detail.start, end: e.detail.end });
-    });
-
-    window.scrollToToday = function() {
-      interactiveGantt.scrollToDate(d(0));
-    };
-
-    let taskCounter = 5;
-    window.addTask = function() {
-      interactiveTasks = [...interactiveGantt.tasks, {
-        id: `i${taskCounter}`,
-        name: `New Task ${taskCounter}`,
-        start: d(taskCounter * 3),
-        end: d(taskCounter * 3 + 5),
-        progress: 0,
-        color: 'rgb(161 98 7)',
-      }];
-      interactiveGantt.tasks = interactiveTasks;
-      taskCounter++;
-    };
   </script>
+</head>
+<body>
+
+<!-- Zoom: day -->
+<h2>Zoom: day</h2>
+<snice-gantt data-base zoom="day"></snice-gantt>
+
+<!-- Zoom: week (default) -->
+<h2>Zoom: week (default)</h2>
+<snice-gantt data-base zoom="week"></snice-gantt>
+
+<!-- Zoom: month -->
+<h2>Zoom: month</h2>
+<snice-gantt data-base zoom="month"></snice-gantt>
+
+<!-- show-dependencies: true (default) -->
+<h2>show-dependencies: true (default)</h2>
+<snice-gantt id="g-deps" show-dependencies></snice-gantt>
+
+<!-- show-dependencies: false -->
+<h2>show-dependencies: false</h2>
+<snice-gantt id="g-nodeps" show-dependencies="false"></snice-gantt>
+
+<!-- Task colors -->
+<h2>Custom Task Colors</h2>
+<snice-gantt id="g-colored" zoom="week"></snice-gantt>
+
+<!-- Task progress -->
+<h2>Task Progress (bars show completion)</h2>
+<snice-gantt data-base zoom="week"></snice-gantt>
+
+<!-- Grouped tasks -->
+<h2>Grouped Tasks</h2>
+<snice-gantt id="g-grouped" zoom="week"></snice-gantt>
+
+<!-- Zoom comparison -->
+<h2>Same Data at All Zoom Levels</h2>
+<snice-gantt data-base zoom="day"></snice-gantt>
+<snice-gantt data-base zoom="week"></snice-gantt>
+<snice-gantt data-base zoom="month"></snice-gantt>
+
 </body>
 </html>

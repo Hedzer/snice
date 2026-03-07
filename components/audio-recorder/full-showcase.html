@@ -1,253 +1,136 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snice Audio Recorder Demo</title>
+  <title>Audio Recorder</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
     body {
-      font-family: var(--snice-font-family, system-ui, -apple-system, sans-serif);
-      padding: 2.5rem;
-      line-height: 1.6;
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 1.5rem;
       background: var(--snice-color-background);
       color: var(--snice-color-text);
-      margin: 0;
     }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: var(--snice-spacing-sm, 0.75rem);
-      margin-bottom: var(--snice-spacing-lg, 1.5rem);
-      font-size: var(--snice-font-size-2xl, 1.5rem);
-    }
-
+    section { margin-bottom: 2rem; }
     h2 {
-      color: var(--snice-color-text);
-      margin-top: var(--snice-spacing-xl, 2rem);
-      margin-bottom: var(--snice-spacing-md, 1rem);
-      font-size: var(--snice-font-size-xl, 1.25rem);
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--snice-color-text-tertiary, #888);
+      margin: 0 0 0.75rem;
     }
-
-    h3 {
-      color: var(--snice-color-text-secondary);
-      margin-top: var(--snice-spacing-lg, 1.5rem);
-      margin-bottom: var(--snice-spacing-sm, 0.75rem);
-      font-size: var(--snice-font-size-md, 1rem);
-      font-weight: var(--snice-font-weight-semibold, 600);
-    }
-
-    .demo-section {
-      margin: var(--snice-spacing-lg, 1.5rem) 0;
-      padding: var(--snice-spacing-md, 1rem);
-      background: var(--snice-color-background);
-      border-radius: var(--snice-border-radius-lg, 8px);
-      border: 1px solid var(--snice-color-border);
-    }
-
-    .recordings-list {
-      margin-top: var(--snice-spacing-md, 1rem);
+    .row {
       display: flex;
-      flex-direction: column;
-      gap: var(--snice-spacing-sm, 0.75rem);
-    }
-
-    .recording-item {
-      padding: var(--snice-spacing-sm, 0.75rem);
-      background: var(--snice-color-background-element, rgb(252 251 249));
-      border: 1px solid var(--snice-color-border);
-      border-radius: var(--snice-border-radius-md, 4px);
-      display: flex;
-      align-items: center;
-      gap: var(--snice-spacing-sm, 0.75rem);
-    }
-
-    .recording-item audio {
-      flex: 1;
-    }
-
-    button {
-      padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-md, 1rem);
-      background: var(--snice-color-primary, rgb(37 99 235));
-      color: var(--snice-color-text-inverse, rgb(250 250 250));
-      border: none;
-      border-radius: var(--snice-border-radius-md, 4px);
-      cursor: pointer;
-      font-size: var(--snice-font-size-sm, 0.875rem);
-      font-weight: var(--snice-font-weight-medium, 500);
-      transition: background-color var(--snice-transition-fast, 150ms);
-    }
-
-    button:hover {
-      background: var(--snice-color-primary-hover, rgb(29 78 216));
-    }
-
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .recording-info {
-      font-size: var(--snice-font-size-sm, 0.875rem);
-      color: var(--snice-color-text-secondary);
-    }
-
-    .controls {
-      margin-top: var(--snice-spacing-sm, 0.75rem);
-      display: flex;
-      gap: var(--snice-spacing-xs, 0.5rem);
-      justify-content: center;
+      align-items: start;
+      gap: 1.5rem;
       flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    snice-audio-recorder {
+      max-width: 400px;
     }
   </style>
-  <script type="module">
-    document.addEventListener('DOMContentLoaded', () => {
-      const recorder = document.getElementById('recorder');
-      const recordingsList = document.getElementById('recordings');
-      const recordings = [];
-
-      // Handle recording completion
-      recorder.addEventListener('recorder-stop', async () => {
-        // Get the recording after stop is complete
-        setTimeout(async () => {
-          const recordingUrl = recorder.querySelector('audio')?.src;
-          if (recordingUrl) {
-            recordings.push({
-              url: recordingUrl,
-              duration: recorder.getDuration(),
-              timestamp: Date.now()
-            });
-            updateRecordingsList();
-          }
-        }, 100);
-      });
-
-      // Update recordings list
-      function updateRecordingsList() {
-        recordingsList.innerHTML = '';
-        recordings.forEach((recording, index) => {
-          const item = document.createElement('div');
-          item.className = 'recording-item';
-
-          const audio = document.createElement('audio');
-          audio.src = recording.url;
-          audio.controls = true;
-
-          const info = document.createElement('div');
-          info.className = 'recording-info';
-          info.textContent = `Recording #${index + 1} - ${recording.duration.toFixed(1)}s`;
-
-          const downloadBtn = document.createElement('button');
-          downloadBtn.textContent = 'Download';
-          downloadBtn.onclick = () => {
-            const a = document.createElement('a');
-            a.href = recording.url;
-            a.download = `recording-${recording.timestamp}.webm`;
-            a.click();
-          };
-
-          item.appendChild(info);
-          item.appendChild(audio);
-          item.appendChild(downloadBtn);
-          recordingsList.appendChild(item);
-        });
-      }
-    });
-  </script>
 </head>
 <body>
-  <div class="container">
-    <h1>Audio Recorder Demo</h1>
-    <p>Compact audio recorder with real-time visualization and playback.</p>
 
-    <h3>Default</h3>
-    <div class="demo-section">
-      <snice-audio-recorder id="recorder"></snice-audio-recorder>
-    </div>
+  <section>
+    <h2>Default (all options on)</h2>
+    <snice-audio-recorder></snice-audio-recorder>
+  </section>
 
-    <h3>No Controls (Programmatic)</h3>
-    <div class="demo-section">
-      <snice-audio-recorder id="programmatic" show-controls="false"></snice-audio-recorder>
-      <div class="controls">
-        <button id="prog-start">Start</button>
-        <button id="prog-pause" disabled>Pause</button>
-        <button id="prog-resume" disabled>Resume</button>
-        <button id="prog-stop" disabled>Stop</button>
-        <button id="prog-cancel" disabled>Cancel</button>
+  <section>
+    <h2>show-controls: false</h2>
+    <snice-audio-recorder show-controls="false"></snice-audio-recorder>
+  </section>
+
+  <section>
+    <h2>show-visualizer: false</h2>
+    <snice-audio-recorder show-visualizer="false"></snice-audio-recorder>
+  </section>
+
+  <section>
+    <h2>show-timer: false</h2>
+    <snice-audio-recorder show-timer="false"></snice-audio-recorder>
+  </section>
+
+  <section>
+    <h2>show-playback: false</h2>
+    <snice-audio-recorder show-playback="false"></snice-audio-recorder>
+  </section>
+
+  <section>
+    <h2>All display options off</h2>
+    <snice-audio-recorder show-controls="false" show-visualizer="false" show-timer="false" show-playback="false"></snice-audio-recorder>
+  </section>
+
+  <section>
+    <h2>max-duration: 10 (seconds)</h2>
+    <snice-audio-recorder max-duration="10"></snice-audio-recorder>
+  </section>
+
+  <section>
+    <h2>max-duration: 5</h2>
+    <snice-audio-recorder max-duration="5"></snice-audio-recorder>
+  </section>
+
+  <section>
+    <h2>max-duration: 0 (unlimited, default)</h2>
+    <snice-audio-recorder max-duration="0"></snice-audio-recorder>
+  </section>
+
+  <section>
+    <h2>Bitrate: 64000</h2>
+    <snice-audio-recorder bitrate="64000"></snice-audio-recorder>
+  </section>
+
+  <section>
+    <h2>Bitrate: 256000</h2>
+    <snice-audio-recorder bitrate="256000"></snice-audio-recorder>
+  </section>
+
+  <section>
+    <h2>Boolean combinations matrix</h2>
+    <div class="grid">
+      <div>
+        <h2>controls + visualizer, no timer/playback</h2>
+        <snice-audio-recorder show-controls="true" show-visualizer="true" show-timer="false" show-playback="false"></snice-audio-recorder>
+      </div>
+      <div>
+        <h2>controls + timer, no visualizer/playback</h2>
+        <snice-audio-recorder show-controls="true" show-visualizer="false" show-timer="true" show-playback="false"></snice-audio-recorder>
+      </div>
+      <div>
+        <h2>visualizer + timer, no controls/playback</h2>
+        <snice-audio-recorder show-controls="false" show-visualizer="true" show-timer="true" show-playback="false"></snice-audio-recorder>
+      </div>
+      <div>
+        <h2>All on (default)</h2>
+        <snice-audio-recorder></snice-audio-recorder>
       </div>
     </div>
+  </section>
 
-    <h3>No Playback</h3>
-    <div class="demo-section">
-      <snice-audio-recorder show-playback="false"></snice-audio-recorder>
-    </div>
-
-    <h3>No Visualizer</h3>
-    <div class="demo-section">
-      <snice-audio-recorder show-visualizer="false"></snice-audio-recorder>
-    </div>
-
-    <h3>No Timer</h3>
-    <div class="demo-section">
-      <snice-audio-recorder show-timer="false"></snice-audio-recorder>
-    </div>
-
-    <h2>Recorded Audio</h2>
-    <div id="recordings" class="recordings-list"></div>
-
-    <script>
-      const prog = document.getElementById('programmatic');
-      const startBtn = document.getElementById('prog-start');
-      const pauseBtn = document.getElementById('prog-pause');
-      const resumeBtn = document.getElementById('prog-resume');
-      const stopBtn = document.getElementById('prog-stop');
-      const cancelBtn = document.getElementById('prog-cancel');
-
-      startBtn.onclick = () => {
-        prog.start();
-        startBtn.disabled = true;
-        pauseBtn.disabled = false;
-        stopBtn.disabled = false;
-        cancelBtn.disabled = false;
-      };
-
-      pauseBtn.onclick = () => {
-        prog.pause();
-        pauseBtn.disabled = true;
-        resumeBtn.disabled = false;
-      };
-
-      resumeBtn.onclick = () => {
-        prog.resume();
-        resumeBtn.disabled = true;
-        pauseBtn.disabled = false;
-      };
-
-      stopBtn.onclick = async () => {
-        await prog.stop();
-        startBtn.disabled = false;
-        pauseBtn.disabled = true;
-        resumeBtn.disabled = true;
-        stopBtn.disabled = true;
-        cancelBtn.disabled = true;
-      };
-
-      cancelBtn.onclick = () => {
-        prog.cancel();
-        startBtn.disabled = false;
-        pauseBtn.disabled = true;
-        resumeBtn.disabled = true;
-        stopBtn.disabled = true;
-        cancelBtn.disabled = true;
-      };
-    </script>
-  </div>
-  <script type="module" src="./snice-audio-recorder.ts"></script>
+  <script type="module">
+    import './snice-audio-recorder.ts';
+  </script>
 </body>
 </html>

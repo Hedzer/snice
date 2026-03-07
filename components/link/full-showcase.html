@@ -1,121 +1,129 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Link Demo</title>
+  <title>Link</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      padding: 40px;
-      font-family: var(--snice-font-family);
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      max-width: 1000px;
-      margin: 0 auto;
-    }
-    .section {
-      margin-bottom: 60px;
-    }
-    h2 {
-      color: var(--snice-color-text);
-      margin-bottom: 20px;
-      font-size: var(--snice-font-size-2xl);
-    }
-    h3 {
-      color: var(--snice-color-text-secondary);
-      margin-bottom: 16px;
-      font-size: var(--snice-font-size-lg);
-    }
-    .demo-item {
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .demo-item span {
-      color: var(--snice-color-text-secondary);
-      font-size: var(--snice-font-size-sm);
-      min-width: 120px;
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
   </style>
 </head>
 <body>
-  <h2>Link Component Demo</h2>
 
-  <div class="section">
-    <h3>Variants</h3>
-    <div class="demo-item">
-      <span>Default:</span>
-      <snice-link href="https://example.com" variant="default">Default link</snice-link>
-    </div>
-    <div class="demo-item">
-      <span>Primary:</span>
-      <snice-link href="https://example.com" variant="primary">Primary link</snice-link>
-    </div>
-    <div class="demo-item">
-      <span>Secondary:</span>
-      <snice-link href="https://example.com" variant="secondary">Secondary link</snice-link>
-    </div>
-    <div class="demo-item">
-      <span>Muted:</span>
-      <snice-link href="https://example.com" variant="muted">Muted link</snice-link>
-    </div>
-  </div>
+<h2>Variant: default</h2>
+<div class="row">
+  <snice-link href="/about">Default Link</snice-link>
+</div>
 
-  <div class="section">
-    <h3>External Links</h3>
-    <div class="demo-item">
-      <span>External:</span>
-      <snice-link href="https://google.com" external>Opens in new tab</snice-link>
-    </div>
-    <div class="demo-item">
-      <span>Internal:</span>
-      <snice-link href="#section">Internal link</snice-link>
-    </div>
-  </div>
+<h2>Variant: primary</h2>
+<div class="row">
+  <snice-link href="/page" variant="primary">Primary Link</snice-link>
+</div>
 
-  <div class="section">
-    <h3>Underline</h3>
-    <div class="demo-item">
-      <span>No underline:</span>
-      <snice-link href="https://example.com">Link without underline</snice-link>
-    </div>
-    <div class="demo-item">
-      <span>With underline:</span>
-      <snice-link href="https://example.com" underline>Link with underline</snice-link>
-    </div>
-  </div>
+<h2>Variant: secondary</h2>
+<div class="row">
+  <snice-link href="/page" variant="secondary">Secondary Link</snice-link>
+</div>
 
-  <div class="section">
-    <h3>Disabled</h3>
-    <div class="demo-item">
-      <span>Disabled:</span>
-      <snice-link href="https://example.com" disabled>Disabled link</snice-link>
-    </div>
-  </div>
+<h2>Variant: muted</h2>
+<div class="row">
+  <snice-link href="/page" variant="muted">Muted Link</snice-link>
+</div>
 
-  <div class="section">
-    <h3>In Context</h3>
-    <p style="line-height: 1.6;">
-      This is a paragraph with an <snice-link href="https://example.com">inline link</snice-link>
-      in the middle of the text. You can also have <snice-link href="https://example.com" variant="primary">primary links</snice-link>
-      and <snice-link href="https://google.com" external>external links</snice-link> within paragraphs.
-    </p>
-  </div>
+<h2>All variants side-by-side</h2>
+<div class="row">
+  <snice-link href="#" variant="default">Default</snice-link>
+  <snice-link href="#" variant="primary">Primary</snice-link>
+  <snice-link href="#" variant="secondary">Secondary</snice-link>
+  <snice-link href="#" variant="muted">Muted</snice-link>
+</div>
 
-  <div class="section">
-    <h3>Navigation Example</h3>
-    <nav style="display: flex; gap: 20px;">
-      <snice-link href="#home">Home</snice-link>
-      <snice-link href="#about">About</snice-link>
-      <snice-link href="#services">Services</snice-link>
-      <snice-link href="https://docs.example.com" external>Documentation</snice-link>
-    </nav>
-  </div>
+<h2>Disabled</h2>
+<div class="row">
+  <snice-link href="/page" disabled>Disabled Default</snice-link>
+  <snice-link href="/page" variant="primary" disabled>Disabled Primary</snice-link>
+  <snice-link href="/page" variant="secondary" disabled>Disabled Secondary</snice-link>
+  <snice-link href="/page" variant="muted" disabled>Disabled Muted</snice-link>
+</div>
 
-  <script type="module">
-    import './snice-link.ts';
-  </script>
+<h2>Underline</h2>
+<div class="row">
+  <snice-link href="/docs" underline>Underlined Default</snice-link>
+  <snice-link href="/docs" variant="primary" underline>Underlined Primary</snice-link>
+  <snice-link href="/docs" variant="secondary" underline>Underlined Secondary</snice-link>
+  <snice-link href="/docs" variant="muted" underline>Underlined Muted</snice-link>
+</div>
+
+<h2>External (auto _blank + noopener + arrow icon)</h2>
+<div class="row">
+  <snice-link href="https://example.com" external>External Default</snice-link>
+  <snice-link href="https://example.com" variant="primary" external>External Primary</snice-link>
+  <snice-link href="https://example.com" variant="secondary" external>External Secondary</snice-link>
+  <snice-link href="https://example.com" variant="muted" external>External Muted</snice-link>
+</div>
+
+<h2>External + Underline</h2>
+<div class="row">
+  <snice-link href="https://example.com" external underline>External + Underline</snice-link>
+</div>
+
+<h2>External + Disabled</h2>
+<div class="row">
+  <snice-link href="https://example.com" external disabled>External + Disabled</snice-link>
+</div>
+
+<h2>Hash routing (auto-prepend #)</h2>
+<div class="row">
+  <snice-link href="home" hash>Hash: home</snice-link>
+  <snice-link href="settings" hash variant="primary">Hash: settings</snice-link>
+  <snice-link href="profile" hash variant="secondary">Hash: profile</snice-link>
+</div>
+
+<h2>Target values</h2>
+<div class="row">
+  <snice-link href="/page" target="_self">_self (default)</snice-link>
+  <snice-link href="/page" target="_blank">_blank</snice-link>
+  <snice-link href="/page" target="_parent">_parent</snice-link>
+  <snice-link href="/page" target="_top">_top</snice-link>
+</div>
+
+<h2>Empty href</h2>
+<div class="row">
+  <snice-link>No href</snice-link>
+  <snice-link href="">Empty href</snice-link>
+</div>
+
+<h2>Disabled + Underline</h2>
+<div class="row">
+  <snice-link href="/page" disabled underline>Disabled + Underline</snice-link>
+</div>
+
+<h2>Variant x Disabled x Underline matrix</h2>
+<div class="row">
+  <snice-link href="#" variant="default" disabled underline>Default Dis+UL</snice-link>
+  <snice-link href="#" variant="primary" disabled underline>Primary Dis+UL</snice-link>
+  <snice-link href="#" variant="secondary" disabled underline>Secondary Dis+UL</snice-link>
+  <snice-link href="#" variant="muted" disabled underline>Muted Dis+UL</snice-link>
+</div>
+
+<h2>Inline with text</h2>
+<p>Read the <snice-link href="/docs" variant="primary" underline>documentation</snice-link> for more details, or visit the <snice-link href="https://example.com" external variant="primary">project page</snice-link>.</p>
+
+<script type="module">import './snice-link.ts';</script>
 </body>
 </html>

@@ -1,216 +1,137 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Terminal Demo</title>
+  <title>Terminal</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      font-family: var(--snice-font-family);
-      padding: 40px;
-      margin: 0;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: 10px;
-      margin-bottom: 30px;
-    }
-
-    h2 {
-      color: var(--snice-color-text);
-      margin-top: 40px;
-      margin-bottom: 20px;
-      font-size: 1.5em;
-    }
-
-    .example {
-      margin: 30px 0;
-    }
-
-    .example h3 {
-      color: var(--snice-color-text);
-      margin-bottom: 10px;
-    }
-
-    .terminal-wrapper {
-      border: 1px solid var(--snice-color-border);
-      border-radius: var(--snice-border-radius-md);
-      overflow: hidden;
-    }
-
-    .controls {
-      margin: 10px 0;
-      display: flex;
-      gap: var(--snice-spacing-sm);
-    }
-
-    button {
-      padding: var(--snice-spacing-sm) var(--snice-spacing-md);
-      background: var(--snice-color-primary);
-      color: white;
-      border: none;
-      border-radius: var(--snice-border-radius-sm);
-      cursor: pointer;
-      font-size: var(--snice-font-size-sm);
-      font-weight: var(--snice-font-weight-medium);
-    }
-
-    button:hover {
-      opacity: 0.9;
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    snice-terminal { height: 250px; border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 6px; overflow: hidden; }
   </style>
-  <script type="module">
-    // Import the controller first, then the terminal component
-    import './demo-terminal-controller.ts';
-    import './snice-terminal.ts';
-
-    document.addEventListener('DOMContentLoaded', () => {
-      // Basic terminal
-      const term1 = document.getElementById('terminal-1');
-      term1.writeln('Welcome to snice-terminal!', 'success');
-      term1.writeln('Type "help" to see available commands.', 'info');
-
-      // Terminal with timestamps
-      const term2 = document.getElementById('terminal-2');
-      term2.writeln('Server started on port 3000', 'success');
-      term2.writeln('Watching for file changes...', 'info');
-
-      // Read-only terminal (log viewer)
-      const term3 = document.getElementById('terminal-3');
-      term3.writeln('[INFO] Application starting...', 'info');
-      term3.writeln('[SUCCESS] Database connected', 'success');
-      term3.writeln('[WARNING] Deprecated API usage detected', 'warning');
-      term3.writeln('[ERROR] Failed to connect to cache server', 'error');
-
-      // Interactive demo terminal
-      const term4 = document.getElementById('terminal-4');
-      term4.writeln('Interactive terminal ready!', 'success');
-      term4.writeln('Try: help, ls, cat demo.txt, date, whoami', 'info');
-
-      // Listen to command events
-      term4.addEventListener('terminal-command', (e) => {
-        // Event listener for command execution
-      });
-
-      // Control buttons - demonstrate streaming API
-      document.getElementById('write-line').addEventListener('click', () => {
-        term4.writeln('This is a custom message!', 'output');
-      });
-
-      document.getElementById('write-error').addEventListener('click', () => {
-        term4.writeError('This is an error message!');
-      });
-
-      document.getElementById('write-success').addEventListener('click', () => {
-        term4.writeln('Operation completed successfully!', 'success');
-      });
-
-      document.getElementById('clear-terminal').addEventListener('click', () => {
-        term4.clear();
-      });
-
-      document.getElementById('focus-terminal').addEventListener('click', () => {
-        term4.focus();
-      });
-
-      // Demo: Streaming lines (bulk write)
-      document.getElementById('stream-lines')?.addEventListener('click', () => {
-        term4.writeLines([
-          { content: 'Processing batch operation...', type: 'info' },
-          { content: 'Step 1: Initializing...', type: 'output' },
-          { content: 'Step 2: Processing data...', type: 'output' },
-          { content: 'Step 3: Finalizing...', type: 'output' },
-          { content: 'Batch operation complete!', type: 'success' }
-        ]);
-      });
-
-      document.getElementById('ansi-colors')?.addEventListener('click', () => {
-        term4.writeln('\x1b[31mRed text\x1b[0m');
-        term4.writeln('\x1b[32mGreen text\x1b[0m');
-        term4.writeln('\x1b[33mYellow text\x1b[0m');
-        term4.writeln('\x1b[34mBlue text\x1b[0m');
-        term4.writeln('\x1b[35mMagenta text\x1b[0m');
-        term4.writeln('\x1b[36mCyan text\x1b[0m');
-        term4.writeln('\x1b[91m\x1b[1mBright red bold text\x1b[0m');
-      });
-    });
-  </script>
 </head>
 <body>
-  <div class="container">
-    <h1>Terminal Component Demo</h1>
-    <p>Interactive terminal emulator with command handling, history, and custom styling.</p>
 
-    <div class="example">
-      <h3>Basic Terminal</h3>
-      <div class="terminal-wrapper">
-        <snice-terminal id="terminal-1" controller="demo-terminal-controller"></snice-terminal>
-      </div>
-    </div>
+<h2>Default</h2>
+<snice-terminal id="default-term"></snice-terminal>
 
-    <div class="example">
-      <h3>With Timestamps</h3>
-      <div class="terminal-wrapper">
-        <snice-terminal id="terminal-2" show-timestamps controller="demo-terminal-controller"></snice-terminal>
-      </div>
-    </div>
+<h2>Custom Prompt</h2>
+<snice-terminal id="custom-prompt" prompt="user@host:~$ "></snice-terminal>
 
-    <div class="example">
-      <h3>Read-only (Log Viewer)</h3>
-      <div class="terminal-wrapper">
-        <snice-terminal id="terminal-3" readonly></snice-terminal>
-      </div>
-    </div>
+<h2>Custom CWD</h2>
+<snice-terminal id="custom-cwd" cwd="/home/user/projects"></snice-terminal>
 
-    <div class="example">
-      <h3>Interactive Terminal with Commands & Streaming</h3>
-      <div class="controls">
-        <button id="write-line">Write Line</button>
-        <button id="write-error">Write Error</button>
-        <button id="write-success">Write Success</button>
-        <button id="stream-lines">Stream Lines</button>
-        <button id="ansi-colors">ANSI Colors</button>
-        <button id="clear-terminal">Clear</button>
-        <button id="focus-terminal">Focus</button>
-      </div>
-      <div class="terminal-wrapper">
-        <snice-terminal id="terminal-4" prompt="demo $ " controller="demo-terminal-controller"></snice-terminal>
-      </div>
-    </div>
+<h2>Readonly</h2>
+<snice-terminal id="readonly-term" readonly></snice-terminal>
 
-    <div class="example">
-      <h3>Custom Styling</h3>
-      <div class="terminal-wrapper">
-        <snice-terminal
-          id="terminal-5"
-          prompt="λ "
-          controller="demo-terminal-controller"
-          style="
-            --snice-terminal-height: 300px;
-            --snice-terminal-background: #0a0e27;
-            --snice-terminal-foreground: #8be9fd;
-            --snice-terminal-prompt-color: #50fa7b;
-            --snice-terminal-error-color: #ff5555;
-            --snice-terminal-success-color: #50fa7b;
-          "></snice-terminal>
-      </div>
-    </div>
+<h2>Show Timestamps</h2>
+<snice-terminal id="timestamps" show-timestamps></snice-terminal>
 
-    <script type="module">
-      const term5 = document.getElementById('terminal-5');
-      term5.writeln('Custom styled terminal', 'success');
-      term5.writeln('Try typing "help" or "echo hello world"', 'info');
-    </script>
-  </div>
+<h2>Custom Max Lines (10)</h2>
+<snice-terminal id="max-lines" max-lines="10"></snice-terminal>
+
+<h2>Pre-filled with Output Lines</h2>
+<snice-terminal id="prefilled"></snice-terminal>
+
+<h2>All Line Types</h2>
+<snice-terminal id="line-types" readonly></snice-terminal>
+
+<h2>With Timestamps + Readonly</h2>
+<snice-terminal id="ts-readonly" show-timestamps readonly></snice-terminal>
+
+<h2>Empty Terminal</h2>
+<snice-terminal id="empty-term"></snice-terminal>
+
+<h2>Arrow Prompt</h2>
+<snice-terminal id="arrow-prompt" prompt="> "></snice-terminal>
+
+<h2>Hash Prompt</h2>
+<snice-terminal id="hash-prompt" prompt="# "></snice-terminal>
+
+<script type="module">
+  import './snice-terminal.ts';
+
+  // Default: empty, ready to type
+
+  // Custom prompt: pre-fill some output
+  const cp = document.getElementById('custom-prompt');
+  cp.writeln('Welcome to the terminal', 'info');
+
+  // Custom CWD
+  const cwd = document.getElementById('custom-cwd');
+  cwd.writeln('Current directory: /home/user/projects', 'info');
+
+  // Readonly with content
+  const ro = document.getElementById('readonly-term');
+  ro.writeln('$ npm install', 'input');
+  ro.writeln('added 150 packages in 3.2s', 'output');
+  ro.writeln('$ npm run build', 'input');
+  ro.writeln('Build completed successfully.', 'success');
+
+  // Timestamps
+  const ts = document.getElementById('timestamps');
+  ts.writeln('Server started on port 3000', 'info');
+  ts.writeln('GET /api/users 200 12ms', 'output');
+  ts.writeln('POST /api/login 401 5ms', 'warning');
+  ts.writeln('Database connection error', 'error');
+
+  // Max lines
+  const ml = document.getElementById('max-lines');
+  for (let i = 1; i <= 15; i++) {
+    ml.writeln(`Line ${i} of 15`, 'output');
+  }
+  ml.writeln('Only the last 10 lines should be visible', 'info');
+
+  // Prefilled
+  const pf = document.getElementById('prefilled');
+  pf.writeln('$ git status', 'input');
+  pf.writeln('On branch main', 'output');
+  pf.writeln('Your branch is up to date with \'origin/main\'.', 'output');
+  pf.writeln('nothing to commit, working tree clean', 'output');
+  pf.writeln('$ git log --oneline -3', 'input');
+  pf.writeln('abc1234 feat: add new feature', 'output');
+  pf.writeln('def5678 fix: resolve issue', 'output');
+  pf.writeln('ghi9012 chore: update deps', 'output');
+
+  // All line types
+  const lt = document.getElementById('line-types');
+  lt.writeln('This is an input line', 'input');
+  lt.writeln('This is an output line', 'output');
+  lt.writeln('This is an error line', 'error');
+  lt.writeln('This is an info line', 'info');
+  lt.writeln('This is a success line', 'success');
+  lt.writeln('This is a warning line', 'warning');
+
+  // Timestamps + readonly
+  const tr = document.getElementById('ts-readonly');
+  tr.writeln('Application started', 'success');
+  tr.writeln('Listening on port 8080', 'info');
+  tr.writeln('Request: GET /health', 'output');
+  tr.writeln('Response: 200 OK', 'output');
+  tr.writeln('Warning: Memory usage high', 'warning');
+  tr.writeln('Error: Connection refused', 'error');
+
+  // Arrow prompt
+  const ap = document.getElementById('arrow-prompt');
+  ap.writeln('Using arrow prompt style', 'info');
+
+  // Hash prompt
+  const hp = document.getElementById('hash-prompt');
+  hp.writeln('Using hash prompt (root style)', 'info');
+</script>
 </body>
 </html>

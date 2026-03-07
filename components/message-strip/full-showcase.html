@@ -1,201 +1,114 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snice Message Strip Demo</title>
+  <title>Message Strip</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      padding: 40px;
-      line-height: 1.6;
-      background: var(--snice-color-background);
-      transition: background-color var(--snice-transition-medium) ease, color var(--snice-transition-medium) ease;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      background: var(--snice-color-background-element);
-      padding: 40px;
-      border-radius: 8px;
-      box-shadow: var(--snice-shadow-lg);
-    }
-
-    h1 {
-      color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: 10px;
-    }
-
-    h2 {
-      color: var(--snice-color-text-secondary);
-      margin-top: 30px;
-    }
-
-    .demo-section {
-      margin: 30px 0;
-      padding: 20px;
-      background: var(--snice-color-background);
-      border-radius: 4px;
-    }
-
-    .demo-label {
-      display: block;
-      margin-bottom: 12px;
-      font-weight: 500;
-      color: var(--snice-color-text-secondary);
-      font-size: 14px;
-    }
-
-    .strip-stack {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin: 16px 0;
-    }
-
-    .controls {
-      display: flex;
-      gap: 10px;
-      margin: 16px 0;
-      flex-wrap: wrap;
-    }
-
-    button {
-      padding: 8px 16px;
-      background: var(--snice-color-background-element);
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-      color: var(--snice-color-text);
-    }
-
-    button:hover {
-      background: var(--snice-color-background-element-hover);
-    }
-
-    .form-example {
-      padding: 16px;
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-    }
-
-    .form-field {
-      margin-bottom: 12px;
-    }
-
-    .form-field label {
-      display: block;
-      margin-bottom: 4px;
-      font-size: 14px;
-      color: var(--snice-color-text-secondary);
-    }
-
-    .form-field input {
-      width: 100%;
-      padding: 8px 12px;
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      font-size: 14px;
-      box-sizing: border-box;
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    snice-message-strip { display: block; max-width: 600px; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Snice Message Strip Component Demo</h1>
 
-    <div class="demo-section">
-      <h2>Variants</h2>
-      <div class="strip-stack">
-        <snice-message-strip variant="info">This is an informational message.</snice-message-strip>
-        <snice-message-strip variant="success">Operation completed successfully.</snice-message-strip>
-        <snice-message-strip variant="warning">Please review your changes before proceeding.</snice-message-strip>
-        <snice-message-strip variant="danger">An error occurred while saving your data.</snice-message-strip>
-      </div>
-    </div>
+<h2>Variant: info (default)</h2>
+<snice-message-strip variant="info">This is an informational message.</snice-message-strip>
 
-    <div class="demo-section">
-      <h2>Dismissable</h2>
-      <div class="strip-stack" id="dismissable-strips">
-        <snice-message-strip variant="info" dismissable>You can dismiss this message.</snice-message-strip>
-        <snice-message-strip variant="success" dismissable>Your profile has been updated.</snice-message-strip>
-        <snice-message-strip variant="warning" dismissable>Your session will expire in 5 minutes.</snice-message-strip>
-        <snice-message-strip variant="danger" dismissable>Failed to connect to the server.</snice-message-strip>
-      </div>
-      <div class="controls">
-        <button onclick="resetDismissable()">Reset All</button>
-      </div>
-    </div>
+<h2>Variant: success</h2>
+<snice-message-strip variant="success">Operation completed successfully.</snice-message-strip>
 
-    <div class="demo-section">
-      <h2>Custom Icons</h2>
-      <div class="strip-stack">
-        <snice-message-strip variant="info" icon="🔔">You have 3 new notifications.</snice-message-strip>
-        <snice-message-strip variant="success" icon="🎉">Congratulations! You earned a new badge.</snice-message-strip>
-        <snice-message-strip variant="warning" icon="⏰">Reminder: Meeting starts in 15 minutes.</snice-message-strip>
-      </div>
-    </div>
+<h2>Variant: warning</h2>
+<snice-message-strip variant="warning">Please review your changes before submitting.</snice-message-strip>
 
-    <div class="demo-section">
-      <h2>No Icon</h2>
-      <div class="strip-stack">
-        <snice-message-strip variant="info" icon="none">A message without an icon.</snice-message-strip>
-      </div>
-    </div>
+<h2>Variant: danger</h2>
+<snice-message-strip variant="danger">An error occurred while processing your request.</snice-message-strip>
 
-    <div class="demo-section">
-      <h2>In Context: Form Validation</h2>
-      <div class="form-example">
-        <snice-message-strip variant="danger" dismissable id="form-error" style="margin-bottom: 12px; display: none;">
-          Please fill in all required fields.
-        </snice-message-strip>
-        <div class="form-field">
-          <label>Name *</label>
-          <input type="text" id="name-input" placeholder="Enter your name">
-        </div>
-        <div class="form-field">
-          <label>Email *</label>
-          <input type="email" id="email-input" placeholder="Enter your email">
-        </div>
-        <button onclick="validateForm()">Submit</button>
-      </div>
-    </div>
+<h2>All variants</h2>
+<snice-message-strip variant="info">Info variant</snice-message-strip>
+<snice-message-strip variant="success">Success variant</snice-message-strip>
+<snice-message-strip variant="warning">Warning variant</snice-message-strip>
+<snice-message-strip variant="danger">Danger variant</snice-message-strip>
 
-    <div class="demo-section">
-      <h2>Programmatic Show/Hide</h2>
-      <snice-message-strip variant="success" id="toggle-strip">This message can be toggled programmatically.</snice-message-strip>
-      <div class="controls">
-        <button onclick="document.getElementById('toggle-strip').show()">Show</button>
-        <button onclick="document.getElementById('toggle-strip').hide()">Hide</button>
-      </div>
-    </div>
-  </div>
+<h2>Dismissable: true</h2>
+<snice-message-strip variant="info" dismissable>Dismissable info message. Click X to close.</snice-message-strip>
+<snice-message-strip variant="success" dismissable>Dismissable success message.</snice-message-strip>
+<snice-message-strip variant="warning" dismissable>Dismissable warning message.</snice-message-strip>
+<snice-message-strip variant="danger" dismissable>Dismissable danger message.</snice-message-strip>
 
-  <script type="module">
-    import './snice-message-strip.ts';
+<h2>Dismissable: false (default)</h2>
+<snice-message-strip variant="info">Non-dismissable. No close button.</snice-message-strip>
 
-    window.resetDismissable = function() {
-      document.querySelectorAll('#dismissable-strips snice-message-strip').forEach(strip => {
-        strip.show();
-      });
-    };
+<h2>Custom icon (emoji)</h2>
+<snice-message-strip variant="info" icon="&#x1F514;">Custom bell icon notification.</snice-message-strip>
+<snice-message-strip variant="success" icon="&#x1F389;">Celebration icon for success.</snice-message-strip>
+<snice-message-strip variant="warning" icon="&#x1F6A7;">Construction icon for warning.</snice-message-strip>
+<snice-message-strip variant="danger" icon="&#x1F6A8;">Siren icon for danger.</snice-message-strip>
 
-    window.validateForm = function() {
-      const name = document.getElementById('name-input').value.trim();
-      const email = document.getElementById('email-input').value.trim();
-      const errorStrip = document.getElementById('form-error');
+<h2>Icon: "none" (hides icon)</h2>
+<snice-message-strip variant="info" icon="none">No icon displayed.</snice-message-strip>
+<snice-message-strip variant="success" icon="none">Success without icon.</snice-message-strip>
+<snice-message-strip variant="warning" icon="none">Warning without icon.</snice-message-strip>
+<snice-message-strip variant="danger" icon="none">Danger without icon.</snice-message-strip>
 
-      if (!name || !email) {
-        errorStrip.style.display = '';
-        errorStrip.show();
-      } else {
-        errorStrip.hide();
-      }
-    };
-  </script>
+<h2>Icon slot</h2>
+<snice-message-strip variant="info">
+  <span slot="icon" style="font-size:1.25rem;">&#x2139;&#xFE0F;</span>
+  Custom slotted icon content.
+</snice-message-strip>
+
+<h2>Empty icon (default icon per variant)</h2>
+<snice-message-strip variant="info">Default info icon.</snice-message-strip>
+<snice-message-strip variant="success">Default success icon.</snice-message-strip>
+<snice-message-strip variant="warning">Default warning icon.</snice-message-strip>
+<snice-message-strip variant="danger">Default danger icon.</snice-message-strip>
+
+<h2>Variant x Dismissable matrix</h2>
+<snice-message-strip variant="info" dismissable>Info + Dismissable</snice-message-strip>
+<snice-message-strip variant="success" dismissable>Success + Dismissable</snice-message-strip>
+<snice-message-strip variant="warning" dismissable>Warning + Dismissable</snice-message-strip>
+<snice-message-strip variant="danger" dismissable>Danger + Dismissable</snice-message-strip>
+
+<h2>Variant x Custom icon x Dismissable</h2>
+<snice-message-strip variant="info" icon="&#x1F4E7;" dismissable>Info + Custom icon + Dismissable</snice-message-strip>
+<snice-message-strip variant="danger" icon="&#x26D4;" dismissable>Danger + Custom icon + Dismissable</snice-message-strip>
+
+<h2>Variant x No icon x Dismissable</h2>
+<snice-message-strip variant="info" icon="none" dismissable>Info + No icon + Dismissable</snice-message-strip>
+<snice-message-strip variant="warning" icon="none" dismissable>Warning + No icon + Dismissable</snice-message-strip>
+
+<h2>Long content</h2>
+<snice-message-strip variant="info" dismissable>This is a message strip with much longer content to show how it wraps. It contains enough text to demonstrate multi-line behavior within the component boundaries. The dismiss button should remain aligned properly regardless of content length.</snice-message-strip>
+
+<h2>Short content</h2>
+<snice-message-strip variant="success">Done.</snice-message-strip>
+
+<h2>Programmatic show/hide</h2>
+<snice-message-strip id="ms-toggle" variant="warning" dismissable>Toggle this message strip with show() and hide().</snice-message-strip>
+<div class="row" style="margin-top:0.5rem;">
+  <button onclick="document.getElementById('ms-toggle').show()" style="padding:0.25rem 0.75rem;border:1px solid var(--snice-color-border,#ddd);border-radius:4px;cursor:pointer;">show()</button>
+  <button onclick="document.getElementById('ms-toggle').hide()" style="padding:0.25rem 0.75rem;border:1px solid var(--snice-color-border,#ddd);border-radius:4px;cursor:pointer;">hide()</button>
+</div>
+
+<h2>Rich slot content</h2>
+<snice-message-strip variant="info" dismissable>
+  <strong>Update available:</strong> Version 2.0 is ready. <a href="#" style="color:inherit;text-decoration:underline;">Learn more</a>
+</snice-message-strip>
+
+<script type="module">import './snice-message-strip.ts';</script>
 </body>
 </html>

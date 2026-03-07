@@ -1,433 +1,305 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snice Theme System Demo</title>
+  <title>Theme</title>
   <link rel="stylesheet" href="theme.css">
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: var(--snice-font-family);
-      padding: 40px;
-      line-height: 1.6;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      transition: background-color 0.3s, color 0.3s;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: 10px;
-      margin-bottom: 30px;
-    }
-
-    h2 {
-      color: var(--snice-color-text);
-      margin-top: 40px;
-      margin-bottom: 20px;
-      font-size: 24px;
-    }
-
-    h3 {
-      color: var(--snice-color-text-secondary);
-      margin-top: 24px;
-      margin-bottom: 12px;
-      font-size: 18px;
-    }
-
-    .demo-section {
-      margin: 30px 0;
-      padding: 24px;
-      background: var(--snice-color-background-secondary);
-      border-radius: 8px;
-      border: 1px solid var(--snice-color-border);
-    }
-
-    .demo-label {
-      display: block;
-      margin-bottom: 16px;
-      font-weight: 600;
-      color: var(--snice-color-text-secondary);
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .theme-toggle {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      padding: 12px 24px;
-      background: var(--snice-color-primary);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 600;
-      box-shadow: var(--snice-shadow-md);
-      z-index: 1000;
-    }
-
-    .theme-toggle:hover {
-      background: var(--snice-color-primary-hover);
-    }
-
-    .color-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-      gap: 16px;
-    }
-
-    .color-item {
-      padding: 16px;
-      border-radius: 8px;
-      text-align: center;
-      font-size: 12px;
-      font-weight: 500;
-    }
-
-    .color-item.dark-text {
-      color: #333;
-    }
-
-    .color-item.light-text {
-      color: white;
-    }
-
-    .component-preview {
-      padding: 24px;
-      background: var(--snice-color-background);
-      border: 1px solid var(--snice-color-border);
-      border-radius: 8px;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 6px;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .btn-primary {
-      background: var(--snice-color-primary);
-      color: white;
-    }
-
-    .btn-primary:hover {
-      background: var(--snice-color-primary-hover);
-    }
-
-    .btn-success {
-      background: var(--snice-color-success);
-      color: white;
-    }
-
-    .btn-success:hover {
-      background: var(--snice-color-success-hover);
-    }
-
-    .btn-warning {
-      background: var(--snice-color-warning);
-      color: white;
-    }
-
-    .btn-warning:hover {
-      background: var(--snice-color-warning-hover);
-    }
-
-    .btn-danger {
-      background: var(--snice-color-danger);
-      color: white;
-    }
-
-    .btn-danger:hover {
-      background: var(--snice-color-danger-hover);
-    }
-
-    .btn-neutral {
-      background: var(--snice-color-neutral);
-      color: white;
-    }
-
-    .btn-neutral:hover {
-      background: var(--snice-color-neutral-hover);
-    }
-
-    .btn-secondary {
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      border: 1px solid var(--snice-color-border);
-    }
-
-    .btn-secondary:hover {
-      background: var(--snice-color-background-hover);
-    }
-
-    .card {
-      padding: 20px;
-      background: var(--snice-color-background);
-      border: 1px solid var(--snice-color-border);
-      border-radius: 8px;
-      box-shadow: var(--snice-shadow-sm);
-    }
-
-    .input {
-      width: 100%;
-      padding: 10px 14px;
-      border: 1px solid var(--snice-color-border);
-      border-radius: 6px;
-      background: var(--snice-color-background-input);
-      color: var(--snice-color-text);
-      font-size: 14px;
-    }
-
-    .input:focus {
-      outline: none;
-      border-color: var(--snice-color-border-focus);
-      box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
-    }
-
-    .alert {
-      padding: 16px;
-      border-radius: 6px;
-      font-size: 14px;
-    }
-
-    .alert-info {
-      background: var(--snice-color-primary-subtle);
-      color: var(--snice-color-text);
-    }
-
-    .alert-danger {
-      background: var(--snice-color-danger-subtle);
-      color: var(--snice-color-text);
-    }
-
-    .spacing-demo {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .spacing-item {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .spacing-box {
-      background: var(--snice-color-primary);
-      border-radius: 4px;
-    }
-
-    .shadow-demo {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      gap: 16px;
-    }
-
-    .shadow-box {
-      padding: 24px;
-      background: var(--snice-color-background);
-      border-radius: 8px;
-      text-align: center;
-      font-size: 12px;
-    }
-
-    .typography-demo p {
-      margin: 8px 0;
-    }
-
-    .font-size-2xs { font-size: var(--snice-font-size-2xs); }
-    .font-size-xs { font-size: var(--snice-font-size-xs); }
-    .font-size-sm { font-size: var(--snice-font-size-sm); }
-    .font-size-md { font-size: var(--snice-font-size-md); }
-    .font-size-lg { font-size: var(--snice-font-size-lg); }
-    .font-size-xl { font-size: var(--snice-font-size-xl); }
-    .font-size-2xl { font-size: var(--snice-font-size-2xl); }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); margin: 2rem 0 0.75rem; }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .swatch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 0.5rem; }
+    .swatch { padding: 1rem 0.75rem; border-radius: 6px; font-size: 0.7rem; font-weight: 500; text-align: center; border: 1px solid var(--snice-color-border); }
+    .swatch code { display: block; margin-top: 0.25rem; font-size: 0.6rem; opacity: 0.8; }
+    .scale-row { display: flex; gap: 2px; }
+    .scale-cell { flex: 1; height: 2.5rem; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: 600; }
+    .scale-cell:first-child { border-radius: 6px 0 0 6px; }
+    .scale-cell:last-child { border-radius: 0 6px 6px 0; }
+    .spacing-row { display: flex; align-items: center; gap: 1rem; margin: 0.25rem 0; }
+    .spacing-bar { background: var(--snice-color-primary); border-radius: 3px; height: 1rem; }
+    .spacing-row code { font-size: 0.7rem; min-width: 12rem; }
+    .shadow-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1rem; }
+    .shadow-box { padding: 1.5rem; background: var(--snice-color-background); border-radius: 8px; text-align: center; font-size: 0.7rem; }
+    .radius-row { display: flex; gap: 1rem; flex-wrap: wrap; align-items: end; }
+    .radius-box { background: var(--snice-color-primary); display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: white; font-weight: 600; }
+    .type-sample { margin: 0.25rem 0; }
+    .weight-row { display: flex; gap: 2rem; flex-wrap: wrap; }
+    .weight-sample { font-size: 1rem; }
+    .line-height-sample { background: var(--snice-color-background-secondary); padding: 0.5rem; border-radius: 4px; max-width: 400px; font-size: 0.875rem; }
+    .toggle-btn { position: fixed; top: 1rem; right: 1rem; padding: 0.5rem 1rem; background: var(--snice-color-primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; z-index: 1000; }
+    .z-row { display: flex; align-items: center; gap: 1rem; margin: 0.25rem 0; }
+    .z-bar { background: var(--snice-color-primary); opacity: 0.15; height: 1.5rem; border-radius: 3px; }
+    .z-row code { font-size: 0.7rem; min-width: 16rem; }
+    .transition-row { display: flex; align-items: center; gap: 1rem; margin: 0.25rem 0; }
+    .transition-box { width: 3rem; height: 1.5rem; background: var(--snice-color-primary); border-radius: 4px; cursor: pointer; }
+    .transition-box:hover { background: var(--snice-color-primary-hover); transform: scale(1.1); }
+    .focus-demo { padding: 0.5rem 1rem; border: 1px solid var(--snice-color-border); border-radius: 6px; background: var(--snice-color-background-input); color: var(--snice-color-text); font-size: 0.875rem; }
+    .focus-demo:focus { outline: var(--snice-focus-ring-width) solid var(--snice-focus-ring-color); outline-offset: var(--snice-focus-ring-offset); }
+    .gradient-box { height: 3rem; border-radius: 6px; border: 1px solid var(--snice-color-border); }
+    .interactive-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.5rem; }
+    .interactive-swatch { padding: 0.75rem; border-radius: 6px; font-size: 0.7rem; text-align: center; border: 1px solid var(--snice-color-border); }
   </style>
 </head>
 <body>
-  <button class="theme-toggle" id="theme-toggle">🌙 Toggle Theme</button>
 
-  <div class="container">
-    <h1>🎨 Snice Theme System Demo</h1>
+<button class="toggle-btn" id="toggle">Toggle Dark/Light</button>
 
-    <div class="demo-section">
-      <h2>Theme Overview</h2>
-      <p style="color: var(--snice-color-text-secondary);">
-        The Snice theme system provides a comprehensive set of CSS custom properties for building 
-        consistent, accessible, and themeable interfaces. Click the toggle button in the top-right 
-        corner to switch between light and dark modes.
-      </p>
-    </div>
+<h2>Semantic Colors</h2>
+<div class="swatch-grid">
+  <div class="swatch" style="background: var(--snice-color-primary); color: white;">Primary<code>--snice-color-primary</code></div>
+  <div class="swatch" style="background: var(--snice-color-primary-hover); color: white;">Primary Hover<code>--snice-color-primary-hover</code></div>
+  <div class="swatch" style="background: var(--snice-color-success); color: white;">Success<code>--snice-color-success</code></div>
+  <div class="swatch" style="background: var(--snice-color-success-hover); color: white;">Success Hover<code>--snice-color-success-hover</code></div>
+  <div class="swatch" style="background: var(--snice-color-warning); color: white;">Warning<code>--snice-color-warning</code></div>
+  <div class="swatch" style="background: var(--snice-color-warning-hover); color: white;">Warning Hover<code>--snice-color-warning-hover</code></div>
+  <div class="swatch" style="background: var(--snice-color-danger); color: white;">Danger<code>--snice-color-danger</code></div>
+  <div class="swatch" style="background: var(--snice-color-danger-hover); color: white;">Danger Hover<code>--snice-color-danger-hover</code></div>
+  <div class="swatch" style="background: var(--snice-color-neutral); color: white;">Neutral<code>--snice-color-neutral</code></div>
+  <div class="swatch" style="background: var(--snice-color-neutral-hover); color: white;">Neutral Hover<code>--snice-color-neutral-hover</code></div>
+</div>
 
-    <div class="demo-section">
-      <h2>Color Palette</h2>
-      <span class="demo-label">Semantic Colors</span>
-      <div class="color-grid">
-        <div class="color-item light-text" style="background: var(--snice-color-primary);">Primary</div>
-        <div class="color-item light-text" style="background: var(--snice-color-success);">Success</div>
-        <div class="color-item light-text" style="background: var(--snice-color-warning);">Warning</div>
-        <div class="color-item light-text" style="background: var(--snice-color-danger);">Danger</div>
-        <div class="color-item light-text" style="background: var(--snice-color-neutral);">Neutral</div>
-      </div>
+<h2>Text Colors</h2>
+<div class="swatch-grid">
+  <div class="swatch" style="color: var(--snice-color-text);">Text<code>--snice-color-text</code></div>
+  <div class="swatch" style="color: var(--snice-color-text-secondary);">Text Secondary<code>--snice-color-text-secondary</code></div>
+  <div class="swatch" style="color: var(--snice-color-text-tertiary);">Text Tertiary<code>--snice-color-text-tertiary</code></div>
+  <div class="swatch" style="background: var(--snice-color-primary); color: var(--snice-color-text-inverse);">Text Inverse<code>--snice-color-text-inverse</code></div>
+  <div class="swatch" style="color: var(--snice-color-text-disabled);">Text Disabled<code>--snice-color-text-disabled</code></div>
+</div>
 
-      <h3>Background Colors</h3>
-      <div class="color-grid">
-        <div class="color-item dark-text" style="background: var(--snice-color-background);">Background</div>
-        <div class="color-item dark-text" style="background: var(--snice-color-background-secondary);">Secondary</div>
-        <div class="color-item dark-text" style="background: var(--snice-color-background-tertiary);">Tertiary</div>
-        <div class="color-item dark-text" style="background: var(--snice-color-background-element);">Element</div>
-      </div>
+<h2>Background Colors</h2>
+<div class="swatch-grid">
+  <div class="swatch" style="background: var(--snice-color-background);">Background<code>--snice-color-background</code></div>
+  <div class="swatch" style="background: var(--snice-color-background-secondary);">Secondary<code>--snice-color-background-secondary</code></div>
+  <div class="swatch" style="background: var(--snice-color-background-tertiary);">Tertiary<code>--snice-color-background-tertiary</code></div>
+  <div class="swatch" style="background: var(--snice-color-background-element);">Element<code>--snice-color-background-element</code></div>
+  <div class="swatch" style="background: var(--snice-color-background-input);">Input<code>--snice-color-background-input</code></div>
+</div>
 
-      <h3>Text Colors</h3>
-      <div style="display: flex; flex-direction: column; gap: 8px;">
-        <p style="color: var(--snice-color-text); font-size: 18px;">Primary Text</p>
-        <p style="color: var(--snice-color-text-secondary); font-size: 16px;">Secondary Text</p>
-        <p style="color: var(--snice-color-text-tertiary); font-size: 14px;">Tertiary Text</p>
-      </div>
-    </div>
+<h2>Interactive State Colors</h2>
+<div class="interactive-grid">
+  <div class="interactive-swatch" style="background: var(--snice-color-background-hover);">Hover<code>--snice-color-background-hover</code></div>
+  <div class="interactive-swatch" style="background: var(--snice-color-background-active);">Active<code>--snice-color-background-active</code></div>
+  <div class="interactive-swatch" style="background: var(--snice-color-background-disabled);">Disabled<code>--snice-color-background-disabled</code></div>
+  <div class="interactive-swatch" style="background: var(--snice-color-primary-subtle);">Primary Subtle<code>--snice-color-primary-subtle</code></div>
+  <div class="interactive-swatch" style="background: var(--snice-color-primary-subtle-hover);">Primary Subtle Hover<code>--snice-color-primary-subtle-hover</code></div>
+  <div class="interactive-swatch" style="background: var(--snice-color-danger-subtle);">Danger Subtle<code>--snice-color-danger-subtle</code></div>
+</div>
 
-    <div class="demo-section">
-      <h2>Component Examples</h2>
-      <span class="demo-label">Styled using theme variables</span>
-      
-      <div class="component-preview">
-        <h3>Buttons</h3>
-        <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px;">
-          <button class="btn btn-primary">Primary</button>
-          <button class="btn btn-success">Success</button>
-          <button class="btn btn-warning">Warning</button>
-          <button class="btn btn-danger">Danger</button>
-          <button class="btn btn-neutral">Neutral</button>
-          <button class="btn btn-secondary">Secondary</button>
-        </div>
+<h2>Border Colors</h2>
+<div class="swatch-grid">
+  <div class="swatch" style="border: 2px solid var(--snice-color-border);">Border<code>--snice-color-border</code></div>
+  <div class="swatch" style="border: 2px solid var(--snice-color-border-hover);">Border Hover<code>--snice-color-border-hover</code></div>
+  <div class="swatch" style="border: 2px solid var(--snice-color-border-focus);">Border Focus<code>--snice-color-border-focus</code></div>
+</div>
 
-        <h3>Form Elements</h3>
-        <div style="max-width: 400px;">
-          <input type="text" class="input" placeholder="Type something..." style="margin-bottom: 12px;">
-        </div>
+<h2>Gray Scale (50-950)</h2>
+<div class="scale-row">
+  <div class="scale-cell" style="background: hsl(var(--snice-color-gray-50)); color: #333;">50</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-gray-100)); color: #333;">100</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-gray-200)); color: #333;">200</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-gray-300)); color: #333;">300</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-gray-400)); color: #fff;">400</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-gray-500)); color: #fff;">500</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-gray-600)); color: #fff;">600</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-gray-700)); color: #fff;">700</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-gray-800)); color: #fff;">800</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-gray-900)); color: #fff;">900</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-gray-950)); color: #fff;">950</div>
+</div>
 
-        <h3>Alerts</h3>
-        <div style="display: flex; flex-direction: column; gap: 12px;">
-          <div class="alert alert-info">
-            <strong>Info:</strong> This is an informational message.
-          </div>
-          <div class="alert alert-danger">
-            <strong>Error:</strong> This is an error message.
-          </div>
-        </div>
+<h2>Blue Scale (50-950)</h2>
+<div class="scale-row">
+  <div class="scale-cell" style="background: hsl(var(--snice-color-blue-50)); color: #333;">50</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-blue-100)); color: #333;">100</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-blue-200)); color: #333;">200</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-blue-300)); color: #333;">300</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-blue-400)); color: #fff;">400</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-blue-500)); color: #fff;">500</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-blue-600)); color: #fff;">600</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-blue-700)); color: #fff;">700</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-blue-800)); color: #fff;">800</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-blue-900)); color: #fff;">900</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-blue-950)); color: #fff;">950</div>
+</div>
 
-        <h3>Card</h3>
-        <div class="card" style="max-width: 400px;">
-          <h4 style="margin: 0 0 8px; color: var(--snice-color-text);">Card Title</h4>
-          <p style="margin: 0; color: var(--snice-color-text-secondary);">
-            This card uses theme variables for its background, border, and shadow.
-          </p>
-        </div>
-      </div>
-    </div>
+<h2>Green Scale (50-950)</h2>
+<div class="scale-row">
+  <div class="scale-cell" style="background: hsl(var(--snice-color-green-50)); color: #333;">50</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-green-100)); color: #333;">100</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-green-200)); color: #333;">200</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-green-300)); color: #333;">300</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-green-400)); color: #fff;">400</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-green-500)); color: #fff;">500</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-green-600)); color: #fff;">600</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-green-700)); color: #fff;">700</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-green-800)); color: #fff;">800</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-green-900)); color: #fff;">900</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-green-950)); color: #fff;">950</div>
+</div>
 
-    <div class="demo-section">
-      <h2>Spacing Scale</h2>
-      <span class="demo-label">Consistent spacing throughout</span>
-      <div class="spacing-demo">
-        <div class="spacing-item">
-          <div class="spacing-box" style="width: var(--snice-spacing-3xs); height: var(--snice-spacing-3xs);"></div>
-          <code>--snice-spacing-3xs (2px)</code>
-        </div>
-        <div class="spacing-item">
-          <div class="spacing-box" style="width: var(--snice-spacing-2xs); height: var(--snice-spacing-2xs);"></div>
-          <code>--snice-spacing-2xs (4px)</code>
-        </div>
-        <div class="spacing-item">
-          <div class="spacing-box" style="width: var(--snice-spacing-xs); height: var(--snice-spacing-xs);"></div>
-          <code>--snice-spacing-xs (8px)</code>
-        </div>
-        <div class="spacing-item">
-          <div class="spacing-box" style="width: var(--snice-spacing-sm); height: var(--snice-spacing-sm);"></div>
-          <code>--snice-spacing-sm (12px)</code>
-        </div>
-        <div class="spacing-item">
-          <div class="spacing-box" style="width: var(--snice-spacing-md); height: var(--snice-spacing-md);"></div>
-          <code>--snice-spacing-md (16px)</code>
-        </div>
-        <div class="spacing-item">
-          <div class="spacing-box" style="width: var(--snice-spacing-lg); height: var(--snice-spacing-lg);"></div>
-          <code>--snice-spacing-lg (24px)</code>
-        </div>
-      </div>
-    </div>
+<h2>Red Scale (50-950)</h2>
+<div class="scale-row">
+  <div class="scale-cell" style="background: hsl(var(--snice-color-red-50)); color: #333;">50</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-red-100)); color: #333;">100</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-red-200)); color: #333;">200</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-red-300)); color: #333;">300</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-red-400)); color: #fff;">400</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-red-500)); color: #fff;">500</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-red-600)); color: #fff;">600</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-red-700)); color: #fff;">700</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-red-800)); color: #fff;">800</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-red-900)); color: #fff;">900</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-red-950)); color: #fff;">950</div>
+</div>
 
-    <div class="demo-section">
-      <h2>Shadow Scale</h2>
-      <span class="demo-label">Depth and elevation</span>
-      <div class="shadow-demo">
-        <div class="shadow-box" style="box-shadow: var(--snice-shadow-xs);">XS</div>
-        <div class="shadow-box" style="box-shadow: var(--snice-shadow-sm);">SM</div>
-        <div class="shadow-box" style="box-shadow: var(--snice-shadow-md);">MD</div>
-        <div class="shadow-box" style="box-shadow: var(--snice-shadow-lg);">LG</div>
-        <div class="shadow-box" style="box-shadow: var(--snice-shadow-xl);">XL</div>
-        <div class="shadow-box" style="box-shadow: var(--snice-shadow-2xl);">2XL</div>
-      </div>
-    </div>
+<h2>Yellow Scale (50-950)</h2>
+<div class="scale-row">
+  <div class="scale-cell" style="background: hsl(var(--snice-color-yellow-50)); color: #333;">50</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-yellow-100)); color: #333;">100</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-yellow-200)); color: #333;">200</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-yellow-300)); color: #333;">300</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-yellow-400)); color: #333;">400</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-yellow-500)); color: #fff;">500</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-yellow-600)); color: #fff;">600</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-yellow-700)); color: #fff;">700</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-yellow-800)); color: #fff;">800</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-yellow-900)); color: #fff;">900</div>
+  <div class="scale-cell" style="background: hsl(var(--snice-color-yellow-950)); color: #fff;">950</div>
+</div>
 
-    <div class="demo-section">
-      <h2>Typography</h2>
-      <span class="demo-label">Font sizes and weights</span>
-      <div class="typography-demo">
-        <p class="font-size-2xs">2XS - The quick brown fox (10px)</p>
-        <p class="font-size-xs">XS - The quick brown fox (12px)</p>
-        <p class="font-size-sm">SM - The quick brown fox (14px)</p>
-        <p class="font-size-md">MD - The quick brown fox (16px)</p>
-        <p class="font-size-lg">LG - The quick brown fox (18px)</p>
-        <p class="font-size-xl">XL - The quick brown fox (20px)</p>
-        <p class="font-size-2xl">2XL - The quick brown fox (24px)</p>
-      </div>
-    </div>
+<h2>Spacing Scale</h2>
+<div class="spacing-row"><code>--snice-spacing-3xs (0.125rem / 2px)</code><div class="spacing-bar" style="width: var(--snice-spacing-3xs);"></div></div>
+<div class="spacing-row"><code>--snice-spacing-2xs (0.25rem / 4px)</code><div class="spacing-bar" style="width: var(--snice-spacing-2xs);"></div></div>
+<div class="spacing-row"><code>--snice-spacing-xs (0.5rem / 8px)</code><div class="spacing-bar" style="width: var(--snice-spacing-xs);"></div></div>
+<div class="spacing-row"><code>--snice-spacing-sm (0.75rem / 12px)</code><div class="spacing-bar" style="width: var(--snice-spacing-sm);"></div></div>
+<div class="spacing-row"><code>--snice-spacing-md (1rem / 16px)</code><div class="spacing-bar" style="width: var(--snice-spacing-md);"></div></div>
+<div class="spacing-row"><code>--snice-spacing-lg (1.5rem / 24px)</code><div class="spacing-bar" style="width: var(--snice-spacing-lg);"></div></div>
+<div class="spacing-row"><code>--snice-spacing-xl (2rem / 32px)</code><div class="spacing-bar" style="width: var(--snice-spacing-xl);"></div></div>
+<div class="spacing-row"><code>--snice-spacing-2xl (3rem / 48px)</code><div class="spacing-bar" style="width: var(--snice-spacing-2xl);"></div></div>
+<div class="spacing-row"><code>--snice-spacing-3xl (4rem / 64px)</code><div class="spacing-bar" style="width: var(--snice-spacing-3xl);"></div></div>
 
-    <div class="demo-section">
-      <h2>Border Radius</h2>
-      <span class="demo-label">Rounded corners</span>
-      <div style="display: flex; gap: 16px; flex-wrap: wrap;">
-        <div style="width: 80px; height: 80px; background: var(--snice-color-primary); border-radius: var(--snice-border-radius-sm);"></div>
-        <div style="width: 80px; height: 80px; background: var(--snice-color-primary); border-radius: var(--snice-border-radius-md);"></div>
-        <div style="width: 80px; height: 80px; background: var(--snice-color-primary); border-radius: var(--snice-border-radius-lg);"></div>
-        <div style="width: 80px; height: 80px; background: var(--snice-color-primary); border-radius: var(--snice-border-radius-xl);"></div>
-        <div style="width: 80px; height: 80px; background: var(--snice-color-primary); border-radius: var(--snice-border-radius-circle);"></div>
-        <div style="width: 120px; height: 60px; background: var(--snice-color-primary); border-radius: var(--snice-border-radius-pill);"></div>
-      </div>
-    </div>
+<h2>Font Sizes</h2>
+<p class="type-sample" style="font-size: var(--snice-font-size-2xs);">2xs - 0.625rem (10px) --snice-font-size-2xs</p>
+<p class="type-sample" style="font-size: var(--snice-font-size-xs);">xs - 0.75rem (12px) --snice-font-size-xs</p>
+<p class="type-sample" style="font-size: var(--snice-font-size-sm);">sm - 0.875rem (14px) --snice-font-size-sm</p>
+<p class="type-sample" style="font-size: var(--snice-font-size-md);">md - 1rem (16px) --snice-font-size-md</p>
+<p class="type-sample" style="font-size: var(--snice-font-size-lg);">lg - 1.125rem (18px) --snice-font-size-lg</p>
+<p class="type-sample" style="font-size: var(--snice-font-size-xl);">xl - 1.25rem (20px) --snice-font-size-xl</p>
+<p class="type-sample" style="font-size: var(--snice-font-size-2xl);">2xl - 1.5rem (24px) --snice-font-size-2xl</p>
+<p class="type-sample" style="font-size: var(--snice-font-size-3xl);">3xl - 1.875rem (30px) --snice-font-size-3xl</p>
+<p class="type-sample" style="font-size: var(--snice-font-size-4xl);">4xl - 2.25rem (36px) --snice-font-size-4xl</p>
+
+<h2>Font Weights</h2>
+<div class="weight-row">
+  <span class="weight-sample" style="font-weight: var(--snice-font-weight-light);">Light (300)</span>
+  <span class="weight-sample" style="font-weight: var(--snice-font-weight-normal);">Normal (400)</span>
+  <span class="weight-sample" style="font-weight: var(--snice-font-weight-medium);">Medium (500)</span>
+  <span class="weight-sample" style="font-weight: var(--snice-font-weight-semibold);">Semibold (600)</span>
+  <span class="weight-sample" style="font-weight: var(--snice-font-weight-bold);">Bold (700)</span>
+</div>
+
+<h2>Font Families</h2>
+<p style="font-family: var(--snice-font-family);">System UI font stack (--snice-font-family)</p>
+<p style="font-family: var(--snice-font-family-mono);">Monospace font stack (--snice-font-family-mono): <code>const x = 42;</code></p>
+
+<h2>Line Heights</h2>
+<div class="line-height-sample" style="line-height: var(--snice-line-height-dense);">Dense (1.25) - The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs.</div>
+<br>
+<div class="line-height-sample" style="line-height: var(--snice-line-height-normal);">Normal (1.5) - The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs.</div>
+<br>
+<div class="line-height-sample" style="line-height: var(--snice-line-height-loose);">Loose (1.75) - The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs.</div>
+
+<h2>Border Radius</h2>
+<div class="radius-row">
+  <div><div class="radius-box" style="width: 4rem; height: 4rem; border-radius: var(--snice-border-radius-sm);">sm</div><code style="font-size:0.6rem">2px</code></div>
+  <div><div class="radius-box" style="width: 4rem; height: 4rem; border-radius: var(--snice-border-radius-md);">md</div><code style="font-size:0.6rem">4px</code></div>
+  <div><div class="radius-box" style="width: 4rem; height: 4rem; border-radius: var(--snice-border-radius-lg);">lg</div><code style="font-size:0.6rem">8px</code></div>
+  <div><div class="radius-box" style="width: 4rem; height: 4rem; border-radius: var(--snice-border-radius-xl);">xl</div><code style="font-size:0.6rem">16px</code></div>
+  <div><div class="radius-box" style="width: 4rem; height: 4rem; border-radius: var(--snice-border-radius-circle);">circle</div><code style="font-size:0.6rem">50%</code></div>
+  <div><div class="radius-box" style="width: 7rem; height: 2.5rem; border-radius: var(--snice-border-radius-pill);">pill</div><code style="font-size:0.6rem">9999px</code></div>
+</div>
+
+<h2>Shadows</h2>
+<div class="shadow-grid">
+  <div class="shadow-box" style="box-shadow: var(--snice-shadow-xs);">xs</div>
+  <div class="shadow-box" style="box-shadow: var(--snice-shadow-sm);">sm</div>
+  <div class="shadow-box" style="box-shadow: var(--snice-shadow-md);">md</div>
+  <div class="shadow-box" style="box-shadow: var(--snice-shadow-lg);">lg</div>
+  <div class="shadow-box" style="box-shadow: var(--snice-shadow-xl);">xl</div>
+  <div class="shadow-box" style="box-shadow: var(--snice-shadow-2xl);">2xl</div>
+  <div class="shadow-box" style="box-shadow: var(--snice-shadow-inset-sm);">inset-sm</div>
+  <div class="shadow-box" style="box-shadow: var(--snice-shadow-inset-md);">inset-md</div>
+</div>
+
+<h2>Gradients</h2>
+<div style="display: flex; flex-direction: column; gap: 0.5rem;">
+  <div><code style="font-size:0.7rem">--snice-gradient-subtle</code><div class="gradient-box" style="background: var(--snice-gradient-subtle), var(--snice-color-primary);"></div></div>
+  <div><code style="font-size:0.7rem">--snice-gradient-button</code><div class="gradient-box" style="background: var(--snice-gradient-button), var(--snice-color-primary);"></div></div>
+  <div><code style="font-size:0.7rem">--snice-gradient-surface</code><div class="gradient-box" style="background: var(--snice-gradient-surface), var(--snice-color-primary);"></div></div>
+</div>
+
+<h2>Transitions</h2>
+<div class="row">
+  <div>
+    <code style="font-size:0.7rem">fast (150ms)</code>
+    <div class="transition-box" style="transition: all var(--snice-transition-fast);"></div>
   </div>
+  <div>
+    <code style="font-size:0.7rem">medium (250ms)</code>
+    <div class="transition-box" style="transition: all var(--snice-transition-medium);"></div>
+  </div>
+  <div>
+    <code style="font-size:0.7rem">slow (350ms)</code>
+    <div class="transition-box" style="transition: all var(--snice-transition-slow);"></div>
+  </div>
+</div>
 
-  <script>
-    const themeToggle = document.getElementById('theme-toggle');
+<h2>Z-Index Scale</h2>
+<div class="z-row"><code>--snice-z-index-dropdown: 1000</code><div class="z-bar" style="width: calc(1000 / 10.7 * 1px);"></div></div>
+<div class="z-row"><code>--snice-z-index-sticky: 1020</code><div class="z-bar" style="width: calc(1020 / 10.7 * 1px);"></div></div>
+<div class="z-row"><code>--snice-z-index-fixed: 1030</code><div class="z-bar" style="width: calc(1030 / 10.7 * 1px);"></div></div>
+<div class="z-row"><code>--snice-z-index-modal-backdrop: 1040</code><div class="z-bar" style="width: calc(1040 / 10.7 * 1px);"></div></div>
+<div class="z-row"><code>--snice-z-index-modal: 1050</code><div class="z-bar" style="width: calc(1050 / 10.7 * 1px);"></div></div>
+<div class="z-row"><code>--snice-z-index-tooltip: 1070</code><div class="z-bar" style="width: calc(1070 / 10.7 * 1px);"></div></div>
+
+<h2>Focus Ring</h2>
+<div class="row">
+  <input class="focus-demo" placeholder="Tab here to see focus ring" style="width: 250px;">
+  <button class="focus-demo">Focusable Button</button>
+</div>
+<div style="margin-top:0.5rem; font-size:0.7rem; color: var(--snice-color-text-tertiary);">
+  width: var(--snice-focus-ring-width) = 2px |
+  color: var(--snice-focus-ring-color) |
+  offset: var(--snice-focus-ring-offset) = 2px
+</div>
+
+<h2>Theme Switching</h2>
+<div class="row" style="font-size: 0.8rem;">
+  <code>data-theme="light"</code> forces light |
+  <code>data-theme="dark"</code> forces dark |
+  no attribute follows <code>prefers-color-scheme</code>
+</div>
+
+<script>
+  document.getElementById('toggle').addEventListener('click', () => {
     const html = document.documentElement;
-
-    themeToggle.addEventListener('click', () => {
-      const currentTheme = html.getAttribute('data-theme');
-      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-      html.setAttribute('data-theme', newTheme);
-      themeToggle.textContent = newTheme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
-    });
-  </script>
+    const current = html.getAttribute('data-theme');
+    html.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+  });
+</script>
 </body>
 </html>

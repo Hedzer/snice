@@ -1,62 +1,274 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-theme="dark">
 <head>
-  <title>Metric Table Demo</title>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Metric Table</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      padding: 40px;
-      font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
-      background: var(--snice-color-background, rgb(255 255 255));
-      color: var(--snice-color-text, rgb(23 23 23));
-    }
-    h2, h3 {
-      color: var(--snice-color-text, rgb(23 23 23));
-    }
-    .demo-section {
-      margin-bottom: 4rem;
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
+    snice-metric-table { display: block; max-width: 800px; }
   </style>
-  <script type="module">
-    import './snice-metric-table.ts';
-
-    const columns = [
-      { key: 'name', label: 'Metric', type: 'text' },
-      { key: 'value', label: 'Value', type: 'number' },
-      { key: 'change', label: 'Change', type: 'percent' },
-      { key: 'revenue', label: 'Revenue', type: 'currency' },
-      { key: 'trend', label: 'Trend (7d)', sparkline: true }
-    ];
-
-    const data = [
-      { name: 'Page Views', value: 124500, change: 12.3, revenue: 4521.50, trend: [100, 120, 115, 130, 125, 140, 150] },
-      { name: 'Unique Visitors', value: 45200, change: 8.1, revenue: 2310.00, trend: [40, 42, 38, 45, 43, 48, 52] },
-      { name: 'Bounce Rate', value: 34.2, change: -2.5, revenue: null, trend: [40, 38, 36, 35, 37, 34, 33] },
-      { name: 'Avg Session', value: 245, change: -0.8, revenue: null, trend: [260, 255, 250, 248, 245, 244, 242] },
-      { name: 'Conversions', value: 1823, change: 15.7, revenue: 89450.00, trend: [1200, 1400, 1350, 1500, 1600, 1750, 1823] },
-      { name: 'Cart Abandonment', value: 68.4, change: -5.2, revenue: -12300.00, trend: [75, 73, 72, 70, 69, 68, 67] }
-    ];
-
-    const table = document.getElementById('metric-demo');
-    table.columns = columns;
-    table.data = data;
-    table.sortBy = 'value';
-
-    table.addEventListener('sort-change', e => {
-      console.log('Sort changed:', e.detail);
-    });
-
-    table.addEventListener('row-click', e => {
-      console.log('Row clicked:', e.detail);
-    });
-  </script>
 </head>
 <body>
-  <h2>Metric Table Demo</h2>
 
-  <div class="demo-section">
-    <h3>Full Featured</h3>
-    <snice-metric-table id="metric-demo"></snice-metric-table>
-  </div>
+<h2>Column type: text</h2>
+<snice-metric-table id="mt-text"></snice-metric-table>
+
+<h2>Column type: number</h2>
+<snice-metric-table id="mt-number"></snice-metric-table>
+
+<h2>Column type: percent</h2>
+<snice-metric-table id="mt-percent"></snice-metric-table>
+
+<h2>Column type: currency (USD)</h2>
+<snice-metric-table id="mt-currency-usd"></snice-metric-table>
+
+<h2>Column type: currency (EUR)</h2>
+<snice-metric-table id="mt-currency-eur"></snice-metric-table>
+
+<h2>Sparkline column</h2>
+<snice-metric-table id="mt-sparkline"></snice-metric-table>
+
+<h2>All column types combined</h2>
+<snice-metric-table id="mt-all"></snice-metric-table>
+
+<h2>Sort by: value (desc default)</h2>
+<snice-metric-table id="mt-sort-desc" sort-by="value"></snice-metric-table>
+
+<h2>Sort direction: asc</h2>
+<snice-metric-table id="mt-sort-asc" sort-by="value" sort-direction="asc"></snice-metric-table>
+
+<h2>Sort direction: desc</h2>
+<snice-metric-table id="mt-sort-desc2" sort-by="value" sort-direction="desc"></snice-metric-table>
+
+<h2>Positive and negative values (color coding)</h2>
+<snice-metric-table id="mt-colors"></snice-metric-table>
+
+<h2>Null/undefined values (em-dash)</h2>
+<snice-metric-table id="mt-nulls"></snice-metric-table>
+
+<h2>Single row</h2>
+<snice-metric-table id="mt-single"></snice-metric-table>
+
+<h2>Many rows</h2>
+<snice-metric-table id="mt-many"></snice-metric-table>
+
+<h2>Empty data</h2>
+<snice-metric-table id="mt-empty"></snice-metric-table>
+
+<h2>Sparkline: positive trend</h2>
+<snice-metric-table id="mt-spark-pos"></snice-metric-table>
+
+<h2>Sparkline: negative trend</h2>
+<snice-metric-table id="mt-spark-neg"></snice-metric-table>
+
+<h2>Multiple sparkline columns</h2>
+<snice-metric-table id="mt-multi-spark"></snice-metric-table>
+
+<script type="module">
+  import './snice-metric-table.ts';
+
+  // Text
+  document.getElementById('mt-text').columns = [
+    { key: 'name', label: 'Metric', type: 'text' },
+    { key: 'category', label: 'Category', type: 'text' },
+  ];
+  document.getElementById('mt-text').data = [
+    { name: 'Page Views', category: 'Traffic' },
+    { name: 'Bounce Rate', category: 'Engagement' },
+    { name: 'Conversion', category: 'Revenue' },
+  ];
+
+  // Number
+  document.getElementById('mt-number').columns = [
+    { key: 'name', label: 'Metric', type: 'text' },
+    { key: 'value', label: 'Value', type: 'number' },
+  ];
+  document.getElementById('mt-number').data = [
+    { name: 'Users', value: 124500 },
+    { name: 'Sessions', value: 256789 },
+    { name: 'Events', value: 1023456 },
+  ];
+
+  // Percent
+  document.getElementById('mt-percent').columns = [
+    { key: 'name', label: 'Metric', type: 'text' },
+    { key: 'pct', label: 'Percentage', type: 'percent' },
+  ];
+  document.getElementById('mt-percent').data = [
+    { name: 'Conversion Rate', pct: 3.2 },
+    { name: 'Bounce Rate', pct: -12.5 },
+    { name: 'Growth', pct: 24.8 },
+    { name: 'Churn', pct: -1.3 },
+  ];
+
+  // Currency USD
+  document.getElementById('mt-currency-usd').columns = [
+    { key: 'name', label: 'Product', type: 'text' },
+    { key: 'revenue', label: 'Revenue (USD)', type: 'currency', format: 'USD' },
+  ];
+  document.getElementById('mt-currency-usd').data = [
+    { name: 'Widget A', revenue: 45210.50 },
+    { name: 'Widget B', revenue: 12340.00 },
+    { name: 'Widget C', revenue: 89100.75 },
+  ];
+
+  // Currency EUR
+  document.getElementById('mt-currency-eur').columns = [
+    { key: 'name', label: 'Product', type: 'text' },
+    { key: 'revenue', label: 'Revenue (EUR)', type: 'currency', format: 'EUR' },
+  ];
+  document.getElementById('mt-currency-eur').data = [
+    { name: 'Service X', revenue: 15000 },
+    { name: 'Service Y', revenue: 28500 },
+  ];
+
+  // Sparkline
+  document.getElementById('mt-sparkline').columns = [
+    { key: 'name', label: 'Metric', type: 'text' },
+    { key: 'trend', label: 'Trend', sparkline: true },
+  ];
+  document.getElementById('mt-sparkline').data = [
+    { name: 'Traffic', trend: [100, 120, 130, 150, 180, 200] },
+    { name: 'Revenue', trend: [200, 180, 160, 140, 120, 100] },
+    { name: 'Users', trend: [50, 55, 60, 58, 65, 70] },
+  ];
+
+  // All types
+  const mtAll = document.getElementById('mt-all');
+  mtAll.columns = [
+    { key: 'name', label: 'Metric', type: 'text' },
+    { key: 'value', label: 'Value', type: 'number' },
+    { key: 'change', label: 'Change', type: 'percent' },
+    { key: 'revenue', label: 'Revenue', type: 'currency', format: 'USD' },
+    { key: 'trend', label: 'Trend', sparkline: true },
+  ];
+  mtAll.data = [
+    { name: 'Page Views', value: 124500, change: 12.3, revenue: 4521.50, trend: [100, 120, 130, 150, 180] },
+    { name: 'Bounce Rate', value: 34, change: -2.5, revenue: null, trend: [40, 38, 35, 33, 30] },
+    { name: 'Conversion', value: 892, change: 5.1, revenue: 12340, trend: [60, 65, 70, 72, 80] },
+    { name: 'Revenue', value: 58200, change: -0.8, revenue: 58200, trend: [500, 480, 510, 490, 520] },
+  ];
+
+  // Sort desc
+  const mtSortDesc = document.getElementById('mt-sort-desc');
+  mtSortDesc.columns = [
+    { key: 'name', label: 'Name', type: 'text' },
+    { key: 'value', label: 'Value', type: 'number' },
+  ];
+  mtSortDesc.data = [
+    { name: 'C', value: 300 },
+    { name: 'A', value: 100 },
+    { name: 'B', value: 200 },
+  ];
+
+  // Sort asc
+  const mtSortAsc = document.getElementById('mt-sort-asc');
+  mtSortAsc.columns = mtSortDesc.columns;
+  mtSortAsc.data = mtSortDesc.data;
+
+  // Sort desc2
+  const mtSortDesc2 = document.getElementById('mt-sort-desc2');
+  mtSortDesc2.columns = mtSortDesc.columns;
+  mtSortDesc2.data = mtSortDesc.data;
+
+  // Colors
+  document.getElementById('mt-colors').columns = [
+    { key: 'name', label: 'Metric', type: 'text' },
+    { key: 'change', label: 'Change', type: 'percent' },
+    { key: 'delta', label: 'Delta', type: 'number' },
+  ];
+  document.getElementById('mt-colors').data = [
+    { name: 'Growth', change: 15.5, delta: 250 },
+    { name: 'Decline', change: -8.3, delta: -120 },
+    { name: 'Flat', change: 0, delta: 0 },
+    { name: 'Surge', change: 42.1, delta: 1500 },
+    { name: 'Drop', change: -25.0, delta: -800 },
+  ];
+
+  // Nulls
+  document.getElementById('mt-nulls').columns = [
+    { key: 'name', label: 'Metric', type: 'text' },
+    { key: 'value', label: 'Value', type: 'number' },
+    { key: 'pct', label: 'Percent', type: 'percent' },
+    { key: 'rev', label: 'Revenue', type: 'currency' },
+  ];
+  document.getElementById('mt-nulls').data = [
+    { name: 'Complete', value: 100, pct: 5.5, rev: 1234 },
+    { name: 'Partial', value: null, pct: 3.2, rev: undefined },
+    { name: 'Empty', value: undefined, pct: null, rev: null },
+  ];
+
+  // Single
+  document.getElementById('mt-single').columns = [
+    { key: 'name', label: 'Name', type: 'text' },
+    { key: 'value', label: 'Value', type: 'number' },
+  ];
+  document.getElementById('mt-single').data = [{ name: 'Only Row', value: 42 }];
+
+  // Many
+  const mtMany = document.getElementById('mt-many');
+  mtMany.columns = [
+    { key: 'name', label: 'Metric', type: 'text' },
+    { key: 'value', label: 'Value', type: 'number' },
+    { key: 'change', label: 'Change', type: 'percent' },
+  ];
+  mtMany.data = Array.from({ length: 15 }, (_, i) => ({
+    name: `Metric ${i + 1}`,
+    value: Math.round(Math.random() * 10000),
+    change: +(Math.random() * 40 - 20).toFixed(1),
+  }));
+
+  // Empty
+  document.getElementById('mt-empty').columns = [
+    { key: 'name', label: 'Name', type: 'text' },
+    { key: 'value', label: 'Value', type: 'number' },
+  ];
+  document.getElementById('mt-empty').data = [];
+
+  // Sparkline positive
+  document.getElementById('mt-spark-pos').columns = [
+    { key: 'name', label: 'Metric', type: 'text' },
+    { key: 'trend', label: 'Trend (up)', sparkline: true },
+  ];
+  document.getElementById('mt-spark-pos').data = [
+    { name: 'Growth', trend: [10, 20, 30, 50, 80, 120] },
+  ];
+
+  // Sparkline negative
+  document.getElementById('mt-spark-neg').columns = [
+    { key: 'name', label: 'Metric', type: 'text' },
+    { key: 'trend', label: 'Trend (down)', sparkline: true },
+  ];
+  document.getElementById('mt-spark-neg').data = [
+    { name: 'Decline', trend: [120, 100, 80, 60, 40, 20] },
+  ];
+
+  // Multiple sparklines
+  document.getElementById('mt-multi-spark').columns = [
+    { key: 'name', label: 'Metric', type: 'text' },
+    { key: 'weekly', label: 'Weekly', sparkline: true },
+    { key: 'monthly', label: 'Monthly', sparkline: true },
+  ];
+  document.getElementById('mt-multi-spark').data = [
+    { name: 'Users', weekly: [50, 55, 60, 58, 65], monthly: [200, 220, 250, 280, 300] },
+    { name: 'Revenue', weekly: [100, 95, 110, 105, 120], monthly: [400, 380, 420, 450, 500] },
+  ];
+</script>
 </body>
 </html>

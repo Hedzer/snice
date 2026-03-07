@@ -1,99 +1,154 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Comments Demo</title>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <title>Comments</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      padding: 40px;
-      max-width: 700px;
-      margin: 0 auto;
-      font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
-      background: var(--snice-color-background, rgb(255 255 255));
-      color: var(--snice-color-text, rgb(23 23 23));
-    }
-    h2, h3 {
-      color: var(--snice-color-text, rgb(23 23 23));
-    }
-    .demo-section {
-      margin-bottom: 3rem;
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    section { margin-bottom: 2rem; max-width: 700px; }
   </style>
   <script type="module">
     import './snice-comments.ts';
 
-    const comments1 = document.getElementById('comments-threaded');
-    comments1.comments = [
+    await customElements.whenDefined('snice-comments');
+
+    // Empty
+    document.getElementById('comments-empty').currentUser = 'Me';
+
+    // Threaded with avatars, likes, replies
+    const c1 = document.getElementById('comments-threaded');
+    c1.currentUser = 'Alice';
+    c1.comments = [
       {
-        id: '1',
-        author: 'Alice Johnson',
-        avatar: 'https://i.pravatar.cc/40?u=alice',
-        text: 'This is a great feature! I love the threaded replies.',
-        timestamp: new Date(Date.now() - 3600000).toISOString(),
-        likes: 5,
-        liked: false,
+        id: '1', author: 'Alice', avatar: 'https://i.pravatar.cc/40?u=alice',
+        text: 'Great feature! Threaded replies are excellent.', timestamp: new Date(Date.now() - 3600000).toISOString(),
+        likes: 5, liked: false,
         replies: [
           {
-            id: '2',
-            author: 'Bob Smith',
-            avatar: 'https://i.pravatar.cc/40?u=bob',
-            text: 'Agreed! The nested threads make conversations much easier to follow.',
-            timestamp: new Date(Date.now() - 1800000).toISOString(),
-            likes: 2,
-            liked: true,
+            id: '2', author: 'Bob', avatar: 'https://i.pravatar.cc/40?u=bob',
+            text: 'Agreed, the nesting makes conversations easy to follow.', timestamp: new Date(Date.now() - 1800000).toISOString(),
+            likes: 2, liked: true,
             replies: [
-              {
-                id: '3',
-                author: 'Alice Johnson',
-                avatar: 'https://i.pravatar.cc/40?u=alice',
-                text: 'Thanks Bob! Feel free to like or reply to any comment.',
-                timestamp: new Date(Date.now() - 600000).toISOString(),
-                likes: 0,
-                liked: false
-              }
+              { id: '3', author: 'Alice', avatar: 'https://i.pravatar.cc/40?u=alice',
+                text: 'Thanks Bob!', timestamp: new Date(Date.now() - 600000).toISOString(), likes: 0, liked: false }
             ]
           }
         ]
       },
-      {
-        id: '4',
-        author: 'Charlie Dev',
-        text: 'No avatar? No problem - initials are shown instead.',
-        timestamp: new Date(Date.now() - 7200000).toISOString(),
-        likes: 1,
-        liked: false
-      }
+      { id: '4', author: 'Charlie', text: 'No avatar shows initials instead.', timestamp: new Date(Date.now() - 7200000).toISOString(), likes: 1, liked: false }
     ];
-    comments1.currentUser = 'Alice Johnson';
 
-    const comments2 = document.getElementById('comments-empty');
-    comments2.currentUser = 'New User';
+    // allow-replies="false"
+    const c2 = document.getElementById('comments-no-replies');
+    c2.currentUser = 'Me';
+    c2.comments = [
+      { id: 'a', author: 'User A', text: 'Reply button is hidden.', timestamp: new Date().toISOString(), likes: 0 },
+      { id: 'b', author: 'User B', text: 'Cannot reply to this.', timestamp: new Date().toISOString(), likes: 3 },
+    ];
 
-    // Log events
-    document.querySelectorAll('snice-comments').forEach(el => {
-      el.addEventListener('comment-add', e => console.log('comment-add:', e.detail));
-      el.addEventListener('comment-reply', e => console.log('comment-reply:', e.detail));
-      el.addEventListener('comment-delete', e => console.log('comment-delete:', e.detail));
-      el.addEventListener('comment-like', e => console.log('comment-like:', e.detail));
-    });
+    // allow-likes="false"
+    const c3 = document.getElementById('comments-no-likes');
+    c3.currentUser = 'Me';
+    c3.comments = [
+      { id: 'x', author: 'User X', text: 'Like button is hidden.', timestamp: new Date().toISOString() },
+      { id: 'y', author: 'User Y', text: 'No hearts here.', timestamp: new Date().toISOString() },
+    ];
+
+    // max-depth="1"
+    const c4 = document.getElementById('comments-shallow');
+    c4.currentUser = 'Alice';
+    c4.maxDepth = 1;
+    c4.comments = [
+      { id: 'm1', author: 'Alice', text: 'Top level', timestamp: new Date().toISOString(), likes: 0,
+        replies: [
+          { id: 'm2', author: 'Bob', text: 'Reply (depth 1) - no further nesting allowed', timestamp: new Date().toISOString(), likes: 0 }
+        ]
+      },
+    ];
+
+    // Declarative children
+    // (HTML-based, no JS needed)
+
+    // current-user enables delete on own comments
+    const c5 = document.getElementById('comments-own');
+    c5.currentUser = 'Me';
+    c5.comments = [
+      { id: 'o1', author: 'Me', text: 'I can delete this (my own comment).', timestamp: new Date().toISOString(), likes: 0 },
+      { id: 'o2', author: 'Other', text: 'I cannot delete this.', timestamp: new Date().toISOString(), likes: 2 },
+    ];
+
+    // allow-replies="false" + allow-likes="false"
+    const c6 = document.getElementById('comments-readonly');
+    c6.currentUser = 'Me';
+    c6.comments = [
+      { id: 'r1', author: 'Admin', text: 'Read-only feed: no likes, no replies.', timestamp: new Date().toISOString() },
+    ];
   </script>
 </head>
 <body>
-  <h2>Comments Demo</h2>
 
-  <div class="demo-section">
-    <h3>Threaded Comments</h3>
-    <snice-comments id="comments-threaded"></snice-comments>
-  </div>
+<section>
+  <h2>Empty (no comments)</h2>
+  <snice-comments id="comments-empty"></snice-comments>
+</section>
 
-  <div class="demo-section">
-    <h3>Empty State</h3>
-    <snice-comments id="comments-empty"></snice-comments>
-  </div>
+<section>
+  <h2>Threaded: avatars, likes, nested replies (max-depth="3" default)</h2>
+  <snice-comments id="comments-threaded"></snice-comments>
+</section>
 
-  <div class="demo-section">
-    <h3>Likes Disabled</h3>
-    <snice-comments id="comments-no-likes" allow-likes="false"></snice-comments>
-  </div>
+<section>
+  <h2>allow-replies="false"</h2>
+  <snice-comments id="comments-no-replies" allow-replies="false"></snice-comments>
+</section>
+
+<section>
+  <h2>allow-likes="false"</h2>
+  <snice-comments id="comments-no-likes" allow-likes="false"></snice-comments>
+</section>
+
+<section>
+  <h2>max-depth="1" (shallow nesting)</h2>
+  <snice-comments id="comments-shallow"></snice-comments>
+</section>
+
+<section>
+  <h2>Declarative children (snice-comment elements)</h2>
+  <snice-comments current-user="Me">
+    <snice-comment author="Alice" timestamp="2026-01-15T10:30:00Z">
+      Declarative comment from Alice.
+      <snice-comment author="Bob" timestamp="2026-01-15T11:00:00Z">
+        Reply from Bob.
+      </snice-comment>
+    </snice-comment>
+    <snice-comment author="Charlie" likes="3">
+      Another top-level comment.
+    </snice-comment>
+  </snice-comments>
+</section>
+
+<section>
+  <h2>Own vs other comments (current-user="Me")</h2>
+  <snice-comments id="comments-own"></snice-comments>
+</section>
+
+<section>
+  <h2>allow-replies="false" + allow-likes="false" (minimal)</h2>
+  <snice-comments id="comments-readonly" allow-replies="false" allow-likes="false"></snice-comments>
+</section>
+
 </body>
 </html>

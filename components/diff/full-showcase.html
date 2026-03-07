@@ -1,295 +1,196 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Diff Component Demo</title>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <title>Diff</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      font-family: var(--snice-font-family);
-      padding: 40px;
-      margin: 0;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: 10px;
-      margin-bottom: 30px;
-    }
-
-    h2 {
-      color: var(--snice-color-text);
-      margin-top: 40px;
-      margin-bottom: 20px;
-      font-size: 1.5em;
-    }
-
-    .example {
-      margin: 30px 0;
-    }
-
-    .example h3 {
-      color: var(--snice-color-text);
-      margin-bottom: 10px;
-    }
-
-    .example-description {
-      color: var(--snice-color-text-secondary);
-      margin-bottom: 15px;
-      font-size: 0.9em;
-    }
-
-    .controls {
-      background: var(--snice-color-background-element);
-      padding: 15px;
-      border-radius: var(--snice-border-radius-md);
-      margin-bottom: 20px;
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .control-group {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    label {
-      font-size: 0.9em;
-      color: var(--snice-color-text-secondary);
-    }
-
-    select, input[type="number"] {
-      padding: 6px 10px;
-      border: 1px solid var(--snice-color-border);
-      border-radius: var(--snice-border-radius-sm);
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      font-family: inherit;
-    }
-
-    input[type="checkbox"] {
-      accent-color: var(--snice-color-primary);
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    section { margin-bottom: 2rem; }
   </style>
   <script type="module">
     import './snice-diff.ts';
 
-    // Code diff example
-    const oldCode = `function calculateTotal(items) {
-  let total = 0;
-  for (let i = 0; i < items.length; i++) {
-    total += items[i].price * items[i].quantity;
-  }
-  return total;
-}`;
+    await customElements.whenDefined('snice-diff');
 
-    const newCode = `function calculateTotal(items) {
-  let total = 0;
-  for (const item of items) {
-    total += item.price * item.quantity;
-  }
-  // Apply 10% discount for orders over $100
-  if (total > 100) {
-    total *= 0.9;
-  }
-  return Math.round(total * 100) / 100;
-}`;
+    const oldCode = `function greet(name) {
+  console.log('Hello, ' + name);
+  return true;
+}
 
-    // Text diff example
-    const oldText = `The quick brown fox jumps over the lazy dog.
+const x = 1;
+const y = 2;
+const z = x + y;`;
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+    const newCode = `function greet(name, greeting) {
+  console.log(greeting + ', ' + name);
+  return greeting !== '';
+}
 
-Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.`;
+const x = 1;
+const y = 2;
+const sum = x + y;
+const product = x * y;`;
 
-    const newText = `The quick brown fox jumps over the lazy cat.
+    // Unified
+    const d1 = document.getElementById('diff-unified');
+    d1.oldText = oldCode;
+    d1.newText = newCode;
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-Excepteur sint occaecat cupidatat non proident.
+    // Split
+    const d2 = document.getElementById('diff-split');
+    d2.oldText = oldCode;
+    d2.newText = newCode;
 
-Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+    // No line numbers
+    const d3 = document.getElementById('diff-no-lines');
+    d3.oldText = oldCode;
+    d3.newText = newCode;
 
-Sunt in culpa qui officia deserunt mollit anim id est laborum.`;
+    // No markers
+    const d4 = document.getElementById('diff-no-markers');
+    d4.oldText = oldCode;
+    d4.newText = newCode;
 
-    // Configuration diff example
-    const oldConfig = `{
-  "name": "my-app",
-  "version": "1.0.0",
-  "scripts": {
-    "build": "webpack",
-    "test": "jest"
-  },
-  "dependencies": {
-    "react": "^17.0.0"
-  }
-}`;
+    // No line numbers + no markers
+    const d5 = document.getElementById('diff-minimal');
+    d5.oldText = oldCode;
+    d5.newText = newCode;
 
-    const newConfig = `{
-  "name": "my-app",
-  "version": "1.1.0",
-  "scripts": {
-    "build": "vite build",
-    "test": "vitest",
-    "dev": "vite"
-  },
-  "dependencies": {
-    "react": "^18.0.0",
-    "typescript": "^5.0.0"
-  }
-}`;
+    // context-lines="0"
+    const d6 = document.getElementById('diff-ctx0');
+    d6.oldText = oldCode;
+    d6.newText = newCode;
 
-    // Live demo controls
-    function updateLiveDemo() {
-      const diff = document.getElementById('live-diff');
-      const mode = document.getElementById('mode-select').value;
-      const contextLines = parseInt(document.getElementById('context-lines').value, 10);
-      const lineNumbers = document.getElementById('line-numbers').checked;
-      const markers = document.getElementById('markers').checked;
+    // context-lines="1"
+    const d7 = document.getElementById('diff-ctx1');
+    d7.oldText = oldCode;
+    d7.newText = newCode;
 
-      diff.mode = mode;
-      diff.contextLines = contextLines;
-      diff.lineNumbers = lineNumbers;
-      diff.markers = markers;
-    }
+    // context-lines="10" (all lines)
+    const d8 = document.getElementById('diff-ctx10');
+    d8.oldText = oldCode;
+    d8.newText = newCode;
 
-    document.addEventListener('DOMContentLoaded', () => {
-      // Set up code diff
-      const codeDiff = document.getElementById('code-diff');
-      codeDiff.oldText = oldCode;
-      codeDiff.newText = newCode;
+    // Identical texts
+    const d9 = document.getElementById('diff-identical');
+    d9.oldText = 'Same\nContent\nHere';
+    d9.newText = 'Same\nContent\nHere';
 
-      // Set up text diff
-      const textDiff = document.getElementById('text-diff');
-      textDiff.oldText = oldText;
-      textDiff.newText = newText;
-      textDiff.mode = 'split';
+    // Empty old
+    const d10 = document.getElementById('diff-empty-old');
+    d10.oldText = '';
+    d10.newText = 'New line 1\nNew line 2\nNew line 3';
 
-      // Set up config diff
-      const configDiff = document.getElementById('config-diff');
-      configDiff.oldText = oldConfig;
-      configDiff.newText = newConfig;
-      configDiff.mode = 'unified';
+    // Empty new
+    const d11 = document.getElementById('diff-empty-new');
+    d11.oldText = 'Old line 1\nOld line 2';
+    d11.newText = '';
 
-      // Set up live demo
-      const liveDiff = document.getElementById('live-diff');
-      liveDiff.oldText = oldCode;
-      liveDiff.newText = newCode;
+    // Both empty
+    const d12 = document.getElementById('diff-both-empty');
+    d12.oldText = '';
+    d12.newText = '';
 
-      // Set up event listeners for controls
-      document.getElementById('mode-select').addEventListener('change', updateLiveDemo);
-      document.getElementById('context-lines').addEventListener('change', updateLiveDemo);
-      document.getElementById('line-numbers').addEventListener('change', updateLiveDemo);
-      document.getElementById('markers').addEventListener('change', updateLiveDemo);
+    // Single line change
+    const d13 = document.getElementById('diff-single');
+    d13.oldText = 'hello world';
+    d13.newText = 'hello there';
 
-      // Listen to diff-computed events
-      document.querySelectorAll('snice-diff').forEach(diff => {
-        diff.addEventListener('diff-computed', (e) => {
-          console.log('Diff computed:', e.detail);
-        });
-      });
-    });
+    // Large diff
+    const oldLines = Array.from({ length: 50 }, (_, i) => `line ${i + 1}: original content`);
+    const newLines = [...oldLines];
+    newLines[5] = 'line 6: MODIFIED';
+    newLines[25] = 'line 26: CHANGED';
+    newLines.splice(40, 0, 'line 40.5: INSERTED');
+    const d14 = document.getElementById('diff-large');
+    d14.oldText = oldLines.join('\n');
+    d14.newText = newLines.join('\n');
   </script>
 </head>
 <body>
-  <div class="container">
-    <h1>Diff Component Demo</h1>
-    <p>Display differences between two text or code blocks with unified or split view modes.</p>
 
-    <h2>Code Diff Example</h2>
-    <div class="example">
-      <div class="example-description">
-        Compare code changes with syntax highlighting support. Shows additions, deletions, and unchanged lines.
-      </div>
-      <snice-diff id="code-diff" language="javascript" mode="unified"></snice-diff>
-    </div>
+<section>
+  <h2>mode="unified" (default)</h2>
+  <snice-diff id="diff-unified" mode="unified"></snice-diff>
+</section>
 
-    <h2>Text Diff (Split View)</h2>
-    <div class="example">
-      <div class="example-description">
-        Side-by-side comparison showing old and new versions in separate panes.
-      </div>
-      <snice-diff id="text-diff" mode="split"></snice-diff>
-    </div>
+<section>
+  <h2>mode="split" (side-by-side)</h2>
+  <snice-diff id="diff-split" mode="split"></snice-diff>
+</section>
 
-    <h2>Configuration Diff (Unified View)</h2>
-    <div class="example">
-      <div class="example-description">
-        JSON configuration changes displayed in unified mode with collapsible context.
-      </div>
-      <snice-diff id="config-diff" language="json" mode="unified" context-lines="2"></snice-diff>
-    </div>
+<section>
+  <h2>line-numbers="false"</h2>
+  <snice-diff id="diff-no-lines" line-numbers="false"></snice-diff>
+</section>
 
-    <h2>Live Demo with Controls</h2>
-    <div class="example">
-      <div class="example-description">
-        Interactive demo with configurable options.
-      </div>
-      <div class="controls">
-        <div class="control-group">
-          <label for="mode-select">Mode:</label>
-          <select id="mode-select">
-            <option value="unified">Unified</option>
-            <option value="split">Split</option>
-          </select>
-        </div>
-        <div class="control-group">
-          <label for="context-lines">Context Lines:</label>
-          <input type="number" id="context-lines" value="3" min="0" max="10">
-        </div>
-        <div class="control-group">
-          <label for="line-numbers">
-            <input type="checkbox" id="line-numbers" checked>
-            Line Numbers
-          </label>
-        </div>
-        <div class="control-group">
-          <label for="markers">
-            <input type="checkbox" id="markers" checked>
-            Markers
-          </label>
-        </div>
-      </div>
-      <snice-diff id="live-diff" language="javascript"></snice-diff>
-    </div>
+<section>
+  <h2>markers="false"</h2>
+  <snice-diff id="diff-no-markers" markers="false"></snice-diff>
+</section>
 
-    <h2>Component Properties</h2>
-    <div class="example">
-      <ul>
-        <li><strong>old-text</strong> - The original text content</li>
-        <li><strong>new-text</strong> - The modified text content</li>
-        <li><strong>mode</strong> - Display mode: 'unified' (default) or 'split'</li>
-        <li><strong>language</strong> - Optional language hint for syntax highlighting</li>
-        <li><strong>line-numbers</strong> - Show line numbers (default: true)</li>
-        <li><strong>context-lines</strong> - Number of context lines around changes (default: 3)</li>
-        <li><strong>markers</strong> - Show +/- markers (default: true)</li>
-      </ul>
-    </div>
+<section>
+  <h2>line-numbers="false" + markers="false"</h2>
+  <snice-diff id="diff-minimal" line-numbers="false" markers="false"></snice-diff>
+</section>
 
-    <h2>Events</h2>
-    <div class="example">
-      <p>The component dispatches a <code>diff-computed</code> event when the diff is calculated:</p>
-      <pre style="background: var(--snice-color-background-element); padding: 15px; border-radius: var(--snice-border-radius-md); overflow-x: auto;"><code>diff.addEventListener('diff-computed', (e) => {
-  console.log(e.detail.hunks);      // Array of diff hunks
-  console.log(e.detail.additions);  // Number of lines added
-  console.log(e.detail.deletions);  // Number of lines removed
-});</code></pre>
-    </div>
-  </div>
+<section>
+  <h2>context-lines="0" (changes only)</h2>
+  <snice-diff id="diff-ctx0" context-lines="0"></snice-diff>
+</section>
+
+<section>
+  <h2>context-lines="1"</h2>
+  <snice-diff id="diff-ctx1" context-lines="1"></snice-diff>
+</section>
+
+<section>
+  <h2>context-lines="10" (show all)</h2>
+  <snice-diff id="diff-ctx10" context-lines="10"></snice-diff>
+</section>
+
+<section>
+  <h2>Identical texts (no changes)</h2>
+  <snice-diff id="diff-identical"></snice-diff>
+</section>
+
+<section>
+  <h2>Edge: empty old (all additions)</h2>
+  <snice-diff id="diff-empty-old"></snice-diff>
+</section>
+
+<section>
+  <h2>Edge: empty new (all deletions)</h2>
+  <snice-diff id="diff-empty-new"></snice-diff>
+</section>
+
+<section>
+  <h2>Edge: both empty</h2>
+  <snice-diff id="diff-both-empty"></snice-diff>
+</section>
+
+<section>
+  <h2>Single line change</h2>
+  <snice-diff id="diff-single"></snice-diff>
+</section>
+
+<section>
+  <h2>Large diff (50 lines, scattered changes)</h2>
+  <snice-diff id="diff-large" context-lines="2"></snice-diff>
+</section>
+
 </body>
 </html>

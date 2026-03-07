@@ -1,244 +1,140 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snice Heatmap Demo</title>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <title>Heatmap</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      padding: 40px;
-      line-height: 1.6;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-    }
-
-    .container {
-      max-width: 1000px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: 10px;
-    }
-
-    h2 {
-      color: var(--snice-color-text-secondary);
-      margin-top: 30px;
-    }
-
-    .demo-section {
-      margin: 30px 0;
-      padding: 20px;
-      background: var(--snice-color-background);
-      border-radius: 8px;
-      border: 1px solid var(--snice-color-border);
-      overflow-x: auto;
-    }
-
-    .demo-label {
-      display: block;
-      margin-bottom: 16px;
-      font-weight: 600;
-      color: var(--snice-color-text-secondary);
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .controls {
-      display: flex;
-      gap: 12px;
-      margin: 20px 0;
-      flex-wrap: wrap;
-      padding: 16px;
-      background: var(--snice-color-background);
-      border-radius: 6px;
-      border: 1px solid var(--snice-color-border);
-      align-items: center;
-    }
-
-    .controls label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 14px;
-    }
-
-    .controls select, .controls input {
-      padding: 6px 10px;
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      font-size: 14px;
-    }
-
-    .controls input[type="range"] {
-      width: 120px;
-    }
-
-    .controls input[type="number"] {
-      width: 70px;
-    }
-
-    .event-log {
-      margin-top: 16px;
-      padding: 12px;
-      background: var(--snice-color-background);
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      font-family: monospace;
-      font-size: 13px;
-      color: var(--snice-color-text-secondary);
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    snice-heatmap { display: block; margin-bottom: 1.5rem; }
+    .box { border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; overflow-x: auto; }
   </style>
-</head>
-<body>
-  <div class="container">
-    <h1>Snice Heatmap Component Demo</h1>
-
-    <div class="demo-section">
-      <h2>Basic Heatmap</h2>
-      <span class="demo-label">GitHub-style contribution heatmap (52 weeks)</span>
-      <snice-heatmap id="basic-heatmap"></snice-heatmap>
-    </div>
-
-    <div class="demo-section">
-      <h2>Color Schemes</h2>
-
-      <span class="demo-label">Green (default)</span>
-      <snice-heatmap id="heatmap-green" color-scheme="green" weeks="26"></snice-heatmap>
-
-      <span class="demo-label" style="margin-top: 24px;">Blue</span>
-      <snice-heatmap id="heatmap-blue" color-scheme="blue" weeks="26"></snice-heatmap>
-
-      <span class="demo-label" style="margin-top: 24px;">Purple</span>
-      <snice-heatmap id="heatmap-purple" color-scheme="purple" weeks="26"></snice-heatmap>
-
-      <span class="demo-label" style="margin-top: 24px;">Orange</span>
-      <snice-heatmap id="heatmap-orange" color-scheme="orange" weeks="26"></snice-heatmap>
-
-      <span class="demo-label" style="margin-top: 24px;">Red</span>
-      <snice-heatmap id="heatmap-red" color-scheme="red" weeks="26"></snice-heatmap>
-    </div>
-
-    <div class="demo-section">
-      <h2>Cell Sizes</h2>
-      <span class="demo-label">Small cells (cell-size=8, cell-gap=2)</span>
-      <snice-heatmap id="heatmap-small" cell-size="8" cell-gap="2" weeks="26"></snice-heatmap>
-
-      <span class="demo-label" style="margin-top: 24px;">Large cells (cell-size=16, cell-gap=4)</span>
-      <snice-heatmap id="heatmap-large" cell-size="16" cell-gap="4" weeks="26"></snice-heatmap>
-    </div>
-
-    <div class="demo-section">
-      <h2>Without Labels</h2>
-      <span class="demo-label">show-labels="false" hides day and month labels</span>
-      <snice-heatmap id="heatmap-nolabels" show-labels="false" weeks="26"></snice-heatmap>
-    </div>
-
-    <div class="demo-section">
-      <h2>Interactive Demo</h2>
-      <span class="demo-label">Customize the heatmap</span>
-
-      <div class="controls">
-        <label>
-          Color:
-          <select id="color-select">
-            <option value="green" selected>Green</option>
-            <option value="blue">Blue</option>
-            <option value="purple">Purple</option>
-            <option value="orange">Orange</option>
-            <option value="red">Red</option>
-          </select>
-        </label>
-        <label>
-          Weeks:
-          <input type="number" id="weeks-input" value="52" min="4" max="52">
-        </label>
-        <label>
-          Cell Size:
-          <input type="range" id="cell-size-slider" min="6" max="20" value="12">
-        </label>
-        <label>
-          Cell Gap:
-          <input type="range" id="cell-gap-slider" min="1" max="6" value="3">
-        </label>
-      </div>
-
-      <snice-heatmap id="interactive-heatmap"></snice-heatmap>
-
-      <div class="event-log" id="event-log">Click a cell to see events here...</div>
-    </div>
-  </div>
-
   <script type="module">
     import './snice-heatmap.ts';
 
-    // Generate random contribution data for the past year
-    function generateData(weeks = 52, density = 0.6) {
+    function generateData(weeks) {
       const data = [];
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      const totalDays = weeks * 7;
-
-      for (let i = 0; i < totalDays; i++) {
-        if (Math.random() > density) continue;
+      for (let i = 0; i < weeks * 7; i++) {
         const d = new Date(today);
         d.setDate(d.getDate() - i);
-        const y = d.getFullYear();
-        const m = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        data.push({
-          date: `${y}-${m}-${day}`,
-          value: Math.floor(Math.random() * 12) + 1,
-        });
+        const dateStr = d.toISOString().split('T')[0];
+        const rand = Math.random();
+        if (rand > 0.3) {
+          data.push({ date: dateStr, value: Math.floor(Math.random() * 15) + 1 });
+        }
       }
       return data;
     }
 
-    // Basic heatmap
-    document.getElementById('basic-heatmap').data = generateData(52, 0.6);
+    document.addEventListener('DOMContentLoaded', () => {
+      const data52 = generateData(52);
+      const data26 = generateData(26);
+      const data12 = generateData(12);
 
-    // Color scheme demos
-    const schemeData = generateData(26, 0.5);
-    ['green', 'blue', 'purple', 'orange', 'red'].forEach(scheme => {
-      document.getElementById(`heatmap-${scheme}`).data = schemeData;
-    });
-
-    // Cell size demos
-    const sizeData = generateData(26, 0.5);
-    document.getElementById('heatmap-small').data = sizeData;
-    document.getElementById('heatmap-large').data = sizeData;
-    document.getElementById('heatmap-nolabels').data = sizeData;
-
-    // Interactive demo
-    const interactive = document.getElementById('interactive-heatmap');
-    interactive.data = generateData(52, 0.6);
-
-    document.getElementById('color-select').addEventListener('change', (e) => {
-      interactive.colorScheme = e.target.value;
-    });
-    document.getElementById('weeks-input').addEventListener('change', (e) => {
-      const weeks = Number(e.target.value);
-      interactive.weeks = weeks;
-      interactive.data = generateData(weeks, 0.6);
-    });
-    document.getElementById('cell-size-slider').addEventListener('input', (e) => {
-      interactive.cellSize = Number(e.target.value);
-    });
-    document.getElementById('cell-gap-slider').addEventListener('input', (e) => {
-      interactive.cellGap = Number(e.target.value);
-    });
-
-    interactive.addEventListener('cell-click', (e) => {
-      const log = document.getElementById('event-log');
-      log.textContent = `cell-click: { date: "${e.detail.date}", value: ${e.detail.value} }`;
+      document.querySelectorAll('[data-52]').forEach(el => { el.data = data52; });
+      document.querySelectorAll('[data-26]').forEach(el => { el.data = data26; });
+      document.getElementById('h-12').data = data12;
+      document.getElementById('h-empty').data = [];
+      document.getElementById('h-sparse').data = generateData(52).filter(() => Math.random() > 0.8);
     });
   </script>
+</head>
+<body>
+
+<!-- Color scheme: green (default) -->
+<h2>Color Scheme: green (default)</h2>
+<div class="box"><snice-heatmap data-52 color-scheme="green"></snice-heatmap></div>
+
+<!-- Color scheme: blue -->
+<h2>Color Scheme: blue</h2>
+<div class="box"><snice-heatmap data-52 color-scheme="blue"></snice-heatmap></div>
+
+<!-- Color scheme: purple -->
+<h2>Color Scheme: purple</h2>
+<div class="box"><snice-heatmap data-52 color-scheme="purple"></snice-heatmap></div>
+
+<!-- Color scheme: orange -->
+<h2>Color Scheme: orange</h2>
+<div class="box"><snice-heatmap data-52 color-scheme="orange"></snice-heatmap></div>
+
+<!-- Color scheme: red -->
+<h2>Color Scheme: red</h2>
+<div class="box"><snice-heatmap data-52 color-scheme="red"></snice-heatmap></div>
+
+<!-- show-labels: true (default) -->
+<h2>show-labels: true (default)</h2>
+<div class="box"><snice-heatmap data-26 show-labels weeks="26"></snice-heatmap></div>
+
+<!-- show-labels: false -->
+<h2>show-labels: false</h2>
+<div class="box"><snice-heatmap data-26 show-labels="false" weeks="26"></snice-heatmap></div>
+
+<!-- Cell size -->
+<h2>Cell Size: 8px</h2>
+<div class="box"><snice-heatmap data-26 cell-size="8" weeks="26"></snice-heatmap></div>
+
+<h2>Cell Size: 12px (default)</h2>
+<div class="box"><snice-heatmap data-26 cell-size="12" weeks="26"></snice-heatmap></div>
+
+<h2>Cell Size: 18px</h2>
+<div class="box"><snice-heatmap data-26 cell-size="18" weeks="26"></snice-heatmap></div>
+
+<!-- Cell gap -->
+<h2>Cell Gap: 1px</h2>
+<div class="box"><snice-heatmap data-26 cell-gap="1" weeks="26"></snice-heatmap></div>
+
+<h2>Cell Gap: 3px (default)</h2>
+<div class="box"><snice-heatmap data-26 cell-gap="3" weeks="26"></snice-heatmap></div>
+
+<h2>Cell Gap: 6px</h2>
+<div class="box"><snice-heatmap data-26 cell-gap="6" weeks="26"></snice-heatmap></div>
+
+<!-- show-tooltip: true (default) -->
+<h2>show-tooltip: true (default)</h2>
+<div class="box"><snice-heatmap data-26 show-tooltip weeks="26"></snice-heatmap></div>
+
+<!-- show-tooltip: false -->
+<h2>show-tooltip: false</h2>
+<div class="box"><snice-heatmap data-26 show-tooltip="false" weeks="26"></snice-heatmap></div>
+
+<!-- Weeks -->
+<h2>Weeks: 12</h2>
+<div class="box"><snice-heatmap id="h-12" weeks="12"></snice-heatmap></div>
+
+<h2>Weeks: 26</h2>
+<div class="box"><snice-heatmap data-26 weeks="26"></snice-heatmap></div>
+
+<h2>Weeks: 52 (default)</h2>
+<div class="box"><snice-heatmap data-52 weeks="52"></snice-heatmap></div>
+
+<!-- Combinations -->
+<h2>Purple + Large Cells + Wide Gap</h2>
+<div class="box"><snice-heatmap data-26 color-scheme="purple" cell-size="16" cell-gap="4" weeks="26"></snice-heatmap></div>
+
+<h2>Red + Small Cells + No Labels</h2>
+<div class="box"><snice-heatmap data-52 color-scheme="red" cell-size="8" show-labels="false"></snice-heatmap></div>
+
+<!-- Edge: empty data -->
+<h2>Edge: Empty Data</h2>
+<div class="box"><snice-heatmap id="h-empty"></snice-heatmap></div>
+
+<!-- Edge: sparse data -->
+<h2>Edge: Sparse Data</h2>
+<div class="box"><snice-heatmap id="h-sparse"></snice-heatmap></div>
+
 </body>
 </html>

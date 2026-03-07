@@ -1,234 +1,177 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snice Recipe Component Demo</title>
+  <title>Recipe</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      padding: 40px;
-      line-height: 1.6;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      margin: 0;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: 10px;
-      margin-bottom: 30px;
-    }
-
-    h2 {
-      color: var(--snice-color-text);
-      margin-top: 40px;
-      margin-bottom: 20px;
-      font-size: 24px;
-    }
-
-    .demo-section {
-      margin: 30px 0;
-      padding: 20px;
-      background: var(--snice-color-background);
-      border-radius: 8px;
-      border: 1px solid var(--snice-color-border);
-    }
-
-    .demo-label {
-      display: block;
-      margin-bottom: 16px;
-      font-weight: 600;
-      color: var(--snice-color-text-secondary);
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .event-log {
-      margin-top: 16px;
-      padding: 12px;
-      background: var(--snice-color-background-element, rgb(252 251 249));
-      border: 1px solid var(--snice-color-border);
-      border-radius: 4px;
-      font-family: monospace;
-      font-size: 13px;
-      max-height: 150px;
-      overflow-y: auto;
-    }
-
-    .event-log div {
-      margin: 4px 0;
-    }
-
-    snice-recipe {
-      display: block;
-      width: 100%;
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 1.5rem; flex-wrap: wrap; }
+    section { margin-bottom: 2rem; }
+    snice-recipe { display: block; max-width: 700px; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Recipe Component Demo</h1>
 
-    <div class="demo-section">
-      <h2>Full Recipe</h2>
-      <span class="demo-label">Complete recipe with ingredients, steps, nutrition, and timers</span>
-      <snice-recipe
-        id="recipe-full"
-        title="Classic Margherita Pizza"
-        description="A simple, authentic Margherita pizza with fresh mozzarella, basil, and San Marzano tomato sauce."
-        author="Chef Demo"
-        prep-time="30"
-        cook-time="15"
-        servings="4"
-        difficulty="medium"
-        cuisine="Italian"
-      ></snice-recipe>
-    </div>
+<h2>Variant: full (default)</h2>
+<section><snice-recipe id="r-full" variant="full"></snice-recipe></section>
 
-    <div class="demo-section">
-      <h2>Simple Recipe</h2>
-      <span class="demo-label">Minimal recipe with just ingredients and steps</span>
-      <snice-recipe
-        id="recipe-simple"
-        title="Scrambled Eggs"
-        description="Quick and fluffy scrambled eggs."
-        prep-time="5"
-        cook-time="5"
-        servings="2"
-        difficulty="easy"
-      ></snice-recipe>
-    </div>
+<h2>Variant: card</h2>
+<section><snice-recipe id="r-card" variant="card"></snice-recipe></section>
 
-    <div class="demo-section">
-      <h2>Grouped Ingredients</h2>
-      <span class="demo-label">Recipe with ingredient groups and tags</span>
-      <snice-recipe
-        id="recipe-grouped"
-        title="Chocolate Layer Cake"
-        description="A rich, moist chocolate cake with creamy chocolate frosting."
-        author="Pastry Chef"
-        prep-time="45"
-        cook-time="35"
-        servings="12"
-        difficulty="hard"
-        cuisine="American"
-      ></snice-recipe>
-    </div>
+<h2>Difficulty: easy</h2>
+<section><snice-recipe id="r-easy"></snice-recipe></section>
 
-    <div class="demo-section">
-      <h2>Events</h2>
-      <div id="event-log" class="event-log">
-        <div>Interact with the recipes above to see events...</div>
-      </div>
-    </div>
-  </div>
+<h2>Difficulty: medium</h2>
+<section><snice-recipe id="r-medium"></snice-recipe></section>
 
-  <script type="module">
-    import './snice-recipe.ts';
+<h2>Difficulty: hard</h2>
+<section><snice-recipe id="r-hard"></snice-recipe></section>
 
-    const eventLog = document.getElementById('event-log');
+<h2>With hero image</h2>
+<section><snice-recipe id="r-image"></snice-recipe></section>
 
-    function logEvent(name, detail) {
-      const entry = document.createElement('div');
-      entry.textContent = `${new Date().toLocaleTimeString()}: ${name} - ${JSON.stringify(detail)}`;
-      eventLog.insertBefore(entry, eventLog.firstChild);
-    }
+<h2>Without image</h2>
+<section><snice-recipe id="r-no-image"></snice-recipe></section>
 
-    // Full recipe
-    const recipeFull = document.getElementById('recipe-full');
-    recipeFull.ingredients = [
-      { name: 'Pizza dough', amount: 1, unit: 'lb' },
-      { name: 'San Marzano tomatoes', amount: 1, unit: 'can (14oz)' },
-      { name: 'Fresh mozzarella', amount: 8, unit: 'oz' },
-      { name: 'Fresh basil leaves', amount: 10, unit: '' },
-      { name: 'Extra virgin olive oil', amount: 2, unit: 'tbsp' },
-      { name: 'Garlic cloves', amount: 2, unit: '' },
-      { name: 'Salt', amount: 1, unit: 'tsp' },
-      { name: 'Black pepper', amount: 0.5, unit: 'tsp' },
-    ];
-    recipeFull.steps = [
-      { text: 'Preheat oven to 500F (260C). Place a pizza stone or inverted baking sheet in the oven.', time: 30 },
-      { text: 'Crush the San Marzano tomatoes by hand. Mix with minced garlic, a drizzle of olive oil, and salt.', tip: 'Don\'t over-blend the tomatoes - chunky is better.' },
-      { text: 'Stretch the dough into a 12-inch round on a floured surface. Transfer to a piece of parchment paper.' },
-      { text: 'Spread the tomato sauce evenly over the dough, leaving a 1-inch border for the crust.' },
-      { text: 'Tear the fresh mozzarella into pieces and distribute over the pizza.' },
-      { text: 'Slide the pizza (on parchment) onto the hot stone. Bake until the crust is golden and cheese is bubbly.', time: 12 },
-      { text: 'Remove from oven, top with fresh basil leaves and a drizzle of olive oil. Let cool for 2 minutes before slicing.' },
-    ];
-    recipeFull.nutrition = {
-      calories: 320,
-      protein: 14,
-      carbs: 38,
-      fat: 12,
-      fiber: 2,
-      sodium: 680,
-    };
-    recipeFull.tags = ['Vegetarian', 'Classic'];
+<h2>With nutrition facts</h2>
+<section><snice-recipe id="r-nutrition"></snice-recipe></section>
 
-    // Simple recipe
-    const recipeSimple = document.getElementById('recipe-simple');
-    recipeSimple.ingredients = [
-      { name: 'Large eggs', amount: 4, unit: '' },
-      { name: 'Butter', amount: 1, unit: 'tbsp' },
-      { name: 'Salt', amount: 0.25, unit: 'tsp' },
-      { name: 'Milk', amount: 2, unit: 'tbsp' },
-    ];
-    recipeSimple.steps = [
-      { text: 'Crack eggs into a bowl. Add milk and salt, then whisk until well combined.' },
-      { text: 'Melt butter in a non-stick skillet over medium-low heat.' },
-      { text: 'Pour in the egg mixture. Gently stir with a spatula, pushing eggs from the edges toward the center.', tip: 'Low and slow is the key to creamy eggs.' },
-      { text: 'Remove from heat when eggs are just set but still slightly moist. They will continue cooking from residual heat.' },
-    ];
+<h2>With tags + cuisine</h2>
+<section><snice-recipe id="r-tags"></snice-recipe></section>
 
-    // Grouped ingredients recipe
-    const recipeGrouped = document.getElementById('recipe-grouped');
-    recipeGrouped.ingredients = [
-      { name: 'All-purpose flour', amount: 2, unit: 'cups', group: 'Cake' },
-      { name: 'Cocoa powder', amount: 0.75, unit: 'cup', group: 'Cake' },
-      { name: 'Sugar', amount: 2, unit: 'cups', group: 'Cake' },
-      { name: 'Baking soda', amount: 2, unit: 'tsp', group: 'Cake' },
-      { name: 'Eggs', amount: 2, unit: '', group: 'Cake' },
-      { name: 'Buttermilk', amount: 1, unit: 'cup', group: 'Cake' },
-      { name: 'Vegetable oil', amount: 0.5, unit: 'cup', group: 'Cake' },
-      { name: 'Butter (softened)', amount: 1, unit: 'cup', group: 'Frosting' },
-      { name: 'Cocoa powder', amount: 0.5, unit: 'cup', group: 'Frosting' },
-      { name: 'Powdered sugar', amount: 4, unit: 'cups', group: 'Frosting' },
-      { name: 'Heavy cream', amount: 0.25, unit: 'cup', group: 'Frosting' },
-      { name: 'Vanilla extract', amount: 1, unit: 'tsp', group: 'Frosting' },
-    ];
-    recipeGrouped.steps = [
-      { text: 'Preheat oven to 350F (175C). Grease and flour two 9-inch round cake pans.' },
-      { text: 'In a large bowl, whisk together flour, cocoa powder, sugar, and baking soda.' },
-      { text: 'Add eggs, buttermilk, and vegetable oil. Beat until smooth, about 2 minutes.' },
-      { text: 'Divide batter evenly between the prepared pans.' },
-      { text: 'Bake until a toothpick inserted in the center comes out clean.', time: 35 },
-      { text: 'Let cakes cool in pans for 10 minutes, then turn out onto wire racks to cool completely.', time: 10 },
-      { text: 'For frosting: Beat softened butter until fluffy. Add cocoa powder, powdered sugar, heavy cream, and vanilla. Beat until smooth.' },
-      { text: 'Place one cake layer on a plate. Spread frosting on top. Add second layer and frost the top and sides.' },
-    ];
-    recipeGrouped.nutrition = {
-      calories: 480,
-      protein: 5,
-      carbs: 68,
-      fat: 22,
-    };
-    recipeGrouped.tags = ['Dessert', 'Baking', 'Chocolate'];
+<h2>Grouped ingredients</h2>
+<section><snice-recipe id="r-groups"></snice-recipe></section>
 
-    // Events
-    document.querySelectorAll('snice-recipe').forEach(recipe => {
-      recipe.addEventListener('recipe-serving-change', (e) => logEvent('recipe-serving-change', e.detail));
-      recipe.addEventListener('recipe-step-complete', (e) => logEvent('recipe-step-complete', e.detail));
-      recipe.addEventListener('recipe-ingredient-check', (e) => logEvent('recipe-ingredient-check', { index: e.detail.ingredientIndex, checked: e.detail.checked }));
-    });
-  </script>
+<h2>Steps with timers</h2>
+<section><snice-recipe id="r-timers"></snice-recipe></section>
+
+<h2>Steps with tips</h2>
+<section><snice-recipe id="r-tips"></snice-recipe></section>
+
+<h2>Minimal (title + ingredients only)</h2>
+<section><snice-recipe id="r-minimal"></snice-recipe></section>
+
+<h2>With author</h2>
+<section><snice-recipe id="r-author"></snice-recipe></section>
+
+<h2>Many servings (12)</h2>
+<section><snice-recipe id="r-servings"></snice-recipe></section>
+
+<h2>Long prep/cook times</h2>
+<section><snice-recipe id="r-long-time"></snice-recipe></section>
+
+<script type="module">
+  import './snice-recipe.ts';
+
+  const baseIngredients = [
+    { name: 'Spaghetti', amount: 400, unit: 'g' },
+    { name: 'Pancetta', amount: 200, unit: 'g' },
+    { name: 'Eggs', amount: 4, unit: '' },
+    { name: 'Parmesan', amount: 100, unit: 'g' },
+    { name: 'Black pepper', amount: 2, unit: 'tsp' }
+  ];
+
+  const baseSteps = [
+    { text: 'Bring a large pot of salted water to a boil. Cook spaghetti according to package directions.', time: 10 },
+    { text: 'While pasta cooks, cut pancetta into small cubes and fry in a large skillet over medium heat until crispy.' },
+    { text: 'In a bowl, whisk together eggs and grated Parmesan cheese.' },
+    { text: 'Drain pasta, reserving 1 cup of pasta water. Immediately toss hot pasta with pancetta.' },
+    { text: 'Remove from heat and pour egg mixture over pasta, tossing quickly. Add pasta water as needed.' }
+  ];
+
+  function setup(id, overrides = {}) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.title = overrides.title || 'Pasta Carbonara';
+    el.prepTime = overrides.prepTime !== undefined ? overrides.prepTime : 10;
+    el.cookTime = overrides.cookTime !== undefined ? overrides.cookTime : 20;
+    el.servings = overrides.servings || 4;
+    el.difficulty = overrides.difficulty || 'medium';
+    el.ingredients = overrides.ingredients || baseIngredients;
+    el.steps = overrides.steps || baseSteps;
+    if (overrides.image) el.image = overrides.image;
+    if (overrides.author) el.author = overrides.author;
+    if (overrides.cuisine) el.cuisine = overrides.cuisine;
+    if (overrides.variant) el.variant = overrides.variant;
+    if (overrides.tags) el.tags = overrides.tags;
+    if (overrides.nutrition) el.nutrition = overrides.nutrition;
+    if (overrides.description) el.description = overrides.description;
+  }
+
+  setup('r-full', { description: 'A classic Roman pasta dish with a creamy egg and cheese sauce.' });
+  setup('r-card', { variant: 'card', image: 'https://picsum.photos/seed/pasta/700/400', description: 'Rich and creamy Italian classic.' });
+
+  setup('r-easy', { difficulty: 'easy', title: 'Simple Toast' });
+  setup('r-medium', { difficulty: 'medium' });
+  setup('r-hard', { difficulty: 'hard', title: 'Beef Wellington', prepTime: 45, cookTime: 90 });
+
+  setup('r-image', { image: 'https://picsum.photos/seed/carbonara/700/400' });
+  setup('r-no-image');
+
+  setup('r-nutrition', { nutrition: { calories: 650, protein: 28, carbs: 72, fat: 24, fiber: 3, sodium: 890 } });
+
+  setup('r-tags', { cuisine: 'Italian', tags: ['Pasta', 'Quick', 'Comfort Food', 'Dinner'] });
+
+  setup('r-groups', {
+    ingredients: [
+      { name: 'Spaghetti', amount: 400, unit: 'g', group: 'Pasta' },
+      { name: 'Salt', amount: 1, unit: 'tbsp', group: 'Pasta' },
+      { name: 'Eggs', amount: 4, unit: '', group: 'Sauce' },
+      { name: 'Parmesan', amount: 100, unit: 'g', group: 'Sauce' },
+      { name: 'Pancetta', amount: 200, unit: 'g', group: 'Toppings' },
+      { name: 'Black pepper', amount: 2, unit: 'tsp', group: 'Toppings' }
+    ]
+  });
+
+  setup('r-timers', {
+    steps: [
+      { text: 'Boil water and cook pasta.', time: 10 },
+      { text: 'Fry pancetta until crispy.', time: 8 },
+      { text: 'Mix eggs and cheese.' },
+      { text: 'Combine everything off heat.' },
+      { text: 'Let rest before serving.', time: 2 }
+    ]
+  });
+
+  setup('r-tips', {
+    steps: [
+      { text: 'Boil pasta in salted water.', tip: 'Use 1 tablespoon of salt per liter of water for best flavor.' },
+      { text: 'Fry pancetta until crispy.', tip: 'Use medium-low heat to render the fat slowly for maximum crispness.' },
+      { text: 'Mix eggs and Parmesan.', tip: 'Room temperature eggs emulsify better and reduce the risk of scrambling.' },
+      { text: 'Toss everything together off heat.' }
+    ]
+  });
+
+  setup('r-minimal', {
+    title: 'Quick Guacamole',
+    prepTime: 5, cookTime: 0,
+    difficulty: 'easy',
+    ingredients: [
+      { name: 'Avocado', amount: 2, unit: '' },
+      { name: 'Lime juice', amount: 1, unit: 'tbsp' },
+      { name: 'Salt', amount: 0.5, unit: 'tsp' }
+    ],
+    steps: []
+  });
+
+  setup('r-author', { author: 'Chef Mario Rossi' });
+  setup('r-servings', { servings: 12 });
+  setup('r-long-time', { prepTime: 120, cookTime: 480, title: 'Slow-Cooked Brisket', difficulty: 'hard' });
+</script>
 </body>
 </html>

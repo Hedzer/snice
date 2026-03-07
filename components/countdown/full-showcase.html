@@ -1,267 +1,127 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snice Countdown Demo</title>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <title>Countdown</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      font-family: var(--snice-font-family, system-ui, -apple-system, sans-serif);
-      padding: var(--snice-spacing-2xl, 2.5rem);
-      line-height: 1.6;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-      margin: 0;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: var(--snice-spacing-sm, 0.75rem);
-      margin-bottom: var(--snice-spacing-lg, 1.5rem);
-      font-size: var(--snice-font-size-2xl, 1.5rem);
-    }
-
-    h2 {
-      color: var(--snice-color-text);
-      margin-top: var(--snice-spacing-xl, 2rem);
-      margin-bottom: var(--snice-spacing-md, 1rem);
-      font-size: var(--snice-font-size-xl, 1.25rem);
-    }
-
-    h3 {
-      color: var(--snice-color-text-secondary);
-      margin-top: var(--snice-spacing-lg, 1.5rem);
-      margin-bottom: var(--snice-spacing-sm, 0.75rem);
-      font-size: var(--snice-font-size-md, 1rem);
-      font-weight: var(--snice-font-weight-semibold, 600);
-    }
-
-    .demo-section {
-      margin: var(--snice-spacing-lg, 1.5rem) 0;
-      padding: var(--snice-spacing-md, 1rem);
-      background: var(--snice-color-background);
-      border-radius: var(--snice-border-radius-lg, 8px);
-      border: 1px solid var(--snice-color-border);
-    }
-
-    .demo-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: var(--snice-spacing-lg, 1.5rem);
-    }
-
-    .controls {
-      margin-top: var(--snice-spacing-md, 1rem);
-      display: flex;
-      gap: var(--snice-spacing-sm, 0.75rem);
-      flex-wrap: wrap;
-    }
-
-    button {
-      padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-md, 1rem);
-      background: var(--snice-color-primary, rgb(37 99 235));
-      color: white;
-      border: none;
-      border-radius: var(--snice-border-radius-md, 4px);
-      cursor: pointer;
-      font-size: var(--snice-font-size-sm, 0.875rem);
-      font-family: inherit;
-    }
-
-    button:hover {
-      background: var(--snice-color-primary-hover, rgb(29 78 216));
-    }
-
-    button.secondary {
-      background: var(--snice-color-background-element, rgb(252 251 249));
-      color: var(--snice-color-text);
-      border: 1px solid var(--snice-color-border);
-    }
-
-    button.secondary:hover {
-      background: var(--snice-color-background-hover, rgb(245 245 244));
-    }
-
-    .event-log {
-      margin-top: var(--snice-spacing-md, 1rem);
-      padding: var(--snice-spacing-sm, 0.75rem);
-      background: var(--snice-color-background-element, rgb(252 251 249));
-      border: 1px solid var(--snice-color-border);
-      border-radius: var(--snice-border-radius-md, 4px);
-      font-family: monospace;
-      font-size: var(--snice-font-size-sm, 0.875rem);
-      max-height: 200px;
-      overflow-y: auto;
-    }
-
-    .event-log div {
-      margin: var(--snice-spacing-2xs, 0.25rem) 0;
-    }
-
-    .variant-label {
-      font-size: var(--snice-font-size-sm, 0.875rem);
-      color: var(--snice-color-text-secondary);
-      margin-bottom: var(--snice-spacing-sm, 0.75rem);
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    section { margin-bottom: 2rem; }
   </style>
+  <script type="module">
+    import './snice-countdown.ts';
+    const now = Date.now();
+
+    // Format: dhms
+    document.getElementById('cd-dhms').target = new Date(now + 86400000 + 7200000 + 180000 + 45000).toISOString();
+
+    // Format: hms
+    document.getElementById('cd-hms').target = new Date(now + 7200000 + 300000).toISOString();
+
+    // Format: ms
+    document.getElementById('cd-ms').target = new Date(now + 300000).toISOString();
+
+    // Variants
+    document.getElementById('cd-simple').target = new Date(now + 3600000).toISOString();
+    document.getElementById('cd-flip').target = new Date(now + 3600000).toISOString();
+    document.getElementById('cd-circular').target = new Date(now + 600000).toISOString();
+
+    // Variant x Format combos
+    document.getElementById('cd-flip-dhms').target = new Date(now + 86400000).toISOString();
+    document.getElementById('cd-flip-ms').target = new Date(now + 120000).toISOString();
+    document.getElementById('cd-circular-dhms').target = new Date(now + 86400000).toISOString();
+    document.getElementById('cd-circular-hms').target = new Date(now + 3600000).toISOString();
+
+    // Already completed (past target)
+    document.getElementById('cd-complete').target = new Date(now - 1000).toISOString();
+
+    // Long: New Year
+    const nextYear = new Date().getFullYear() + 1;
+    document.getElementById('cd-newyear').target = new Date(nextYear, 0, 1).toISOString();
+
+    // Short: 10 seconds
+    document.getElementById('cd-short').target = new Date(now + 10000).toISOString();
+  </script>
 </head>
 <body>
-  <div class="container">
-    <h1>Countdown Demo</h1>
-    <p>Countdown component for tracking time until a target date.</p>
 
-    <h2>Format Options</h2>
-    
-    <h3>Days, Hours, Minutes, Seconds (dhms)</h3>
-    <div class="demo-section">
-      <snice-countdown id="countdown-dhms" format="dhms"></snice-countdown>
-      <p class="variant-label">Target: 30 seconds from now</p>
-    </div>
+<section>
+  <h2>format="dhms" (Days, Hours, Min, Sec)</h2>
+  <snice-countdown id="cd-dhms" format="dhms"></snice-countdown>
+</section>
 
-    <h3>Hours, Minutes, Seconds (hms)</h3>
-    <div class="demo-section">
-      <snice-countdown id="countdown-hms" format="hms"></snice-countdown>
-      <p class="variant-label">Target: 2 minutes from now</p>
-    </div>
+<section>
+  <h2>format="hms" (Hours, Min, Sec)</h2>
+  <snice-countdown id="cd-hms" format="hms"></snice-countdown>
+</section>
 
-    <h3>Minutes, Seconds (ms)</h3>
-    <div class="demo-section">
-      <snice-countdown id="countdown-ms" format="ms"></snice-countdown>
-      <p class="variant-label">Target: 5 minutes from now</p>
-    </div>
+<section>
+  <h2>format="ms" (Min, Sec)</h2>
+  <snice-countdown id="cd-ms" format="ms"></snice-countdown>
+</section>
 
-    <h2>Variants</h2>
+<section>
+  <h2>variant="simple" (default)</h2>
+  <snice-countdown id="cd-simple" format="hms" variant="simple"></snice-countdown>
+</section>
 
-    <h3>Simple (default)</h3>
-    <div class="demo-section">
-      <snice-countdown id="countdown-simple" format="dhms"></snice-countdown>
-    </div>
+<section>
+  <h2>variant="flip"</h2>
+  <snice-countdown id="cd-flip" format="hms" variant="flip"></snice-countdown>
+</section>
 
-    <h3>Flip</h3>
-    <div class="demo-section">
-      <snice-countdown id="countdown-flip" variant="flip" format="hms"></snice-countdown>
-    </div>
+<section>
+  <h2>variant="circular"</h2>
+  <snice-countdown id="cd-circular" format="ms" variant="circular"></snice-countdown>
+</section>
 
-    <h3>Circular</h3>
-    <div class="demo-section">
-      <snice-countdown id="countdown-circular" variant="circular" format="ms"></snice-countdown>
-    </div>
+<section>
+  <h2>variant="flip" x format="dhms"</h2>
+  <snice-countdown id="cd-flip-dhms" format="dhms" variant="flip"></snice-countdown>
+</section>
 
-    <h2>Interactive Controls</h2>
-    <div class="demo-section">
-      <snice-countdown id="countdown-controlled" format="hms"></snice-countdown>
-      <div class="controls">
-        <button onclick="addTime(60)">+1 Minute</button>
-        <button onclick="addTime(300)">+5 Minutes</button>
-        <button onclick="addTime(3600)">+1 Hour</button>
-        <button class="secondary" onclick="resetToNow()">Reset to Now + 2 min</button>
-      </div>
-    </div>
+<section>
+  <h2>variant="flip" x format="ms"</h2>
+  <snice-countdown id="cd-flip-ms" format="ms" variant="flip"></snice-countdown>
+</section>
 
-    <h2>Events</h2>
-    <div class="demo-section">
-      <snice-countdown id="countdown-event" format="ms"></snice-countdown>
-      <p class="variant-label">Target: 10 seconds from now (watch for complete event)</p>
-    </div>
-    <div id="event-log" class="event-log">
-      <div><em>Events will appear here...</em></div>
-    </div>
+<section>
+  <h2>variant="circular" x format="dhms"</h2>
+  <snice-countdown id="cd-circular-dhms" format="dhms" variant="circular"></snice-countdown>
+</section>
 
-    <h2>Long-term Countdown</h2>
-    <div class="demo-section">
-      <snice-countdown id="countdown-newyear" format="dhms"></snice-countdown>
-      <p class="variant-label">Countdown to next New Year</p>
-    </div>
-  </div>
+<section>
+  <h2>variant="circular" x format="hms"</h2>
+  <snice-countdown id="cd-circular-hms" format="hms" variant="circular"></snice-countdown>
+</section>
 
-  <script type="module">
-    // Calculate target dates
-    const now = new Date();
-    
-    // Set targets for different demos
-    document.getElementById('countdown-dhms').target = new Date(now.getTime() + 30000).toISOString();
-    document.getElementById('countdown-hms').target = new Date(now.getTime() + 120000).toISOString();
-    document.getElementById('countdown-ms').target = new Date(now.getTime() + 300000).toISOString();
-    document.getElementById('countdown-simple').target = new Date(now.getTime() + 86400000).toISOString();
-    document.getElementById('countdown-flip').target = new Date(now.getTime() + 3600000).toISOString();
-    document.getElementById('countdown-circular').target = new Date(now.getTime() + 600000).toISOString();
-    document.getElementById('countdown-controlled').target = new Date(now.getTime() + 300000).toISOString();
-    document.getElementById('countdown-event').target = new Date(now.getTime() + 10000).toISOString();
-    
-    // Set New Year target
-    const nextYear = now.getFullYear() + 1;
-    document.getElementById('countdown-newyear').target = new Date(nextYear, 0, 1).toISOString();
+<section>
+  <h2>Completed (past target)</h2>
+  <snice-countdown id="cd-complete" format="dhms"></snice-countdown>
+</section>
 
-    // Event logging
-    const eventLog = document.getElementById('event-log');
-    let eventCount = 0;
+<section>
+  <h2>10-second countdown (will complete)</h2>
+  <snice-countdown id="cd-short" format="ms"></snice-countdown>
+</section>
 
-    function logEvent(eventName, detail) {
-      if (eventCount === 0) {
-        eventLog.innerHTML = '';
-      }
-      eventCount++;
-      
-      const entry = document.createElement('div');
-      const time = new Date().toLocaleTimeString();
-      
-      if (detail && typeof detail === 'object') {
-        const { days, hours, minutes, seconds, total } = detail;
-        entry.textContent = `${time}: ${eventName} - days: ${days}, hours: ${hours}, minutes: ${minutes}, seconds: ${seconds}`;
-      } else {
-        entry.textContent = `${time}: ${eventName}`;
-      }
-      
-      eventLog.insertBefore(entry, eventLog.firstChild);
-      
-      // Keep only last 20 events
-      while (eventLog.children.length > 20) {
-        eventLog.removeChild(eventLog.lastChild);
-      }
-    }
+<section>
+  <h2>Long-term: next New Year</h2>
+  <snice-countdown id="cd-newyear" format="dhms"></snice-countdown>
+</section>
 
-    // Listen to all countdown events
-    document.querySelectorAll('snice-countdown').forEach(countdown => {
-      countdown.addEventListener('countdown-tick', (e) => {
-        if (e.target.id === 'countdown-event') {
-          logEvent('countdown-tick', e.detail);
-        }
-      });
-      countdown.addEventListener('countdown-complete', (e) => {
-        logEvent('countdown-complete', null);
-        if (e.target.id === 'countdown-event') {
-          const entry = document.createElement('div');
-          entry.textContent = `${new Date().toLocaleTimeString()}: 🎉 Countdown completed!`;
-          entry.style.color = 'var(--snice-color-success, rgb(22 163 74))';
-          entry.style.fontWeight = 'bold';
-          eventLog.insertBefore(entry, eventLog.firstChild);
-        }
-      });
-    });
-
-    // Interactive controls
-    let controlledTarget = new Date(now.getTime() + 300000);
-
-    window.addTime = function(seconds) {
-      controlledTarget = new Date(controlledTarget.getTime() + seconds * 1000);
-      document.getElementById('countdown-controlled').target = controlledTarget.toISOString();
-      logEvent('Target updated to: ' + controlledTarget.toLocaleTimeString(), null);
-    };
-
-    window.resetToNow = function() {
-      controlledTarget = new Date(Date.now() + 120000);
-      document.getElementById('countdown-controlled').target = controlledTarget.toISOString();
-      logEvent('Reset to: ' + controlledTarget.toLocaleTimeString(), null);
-    };
-  </script>
-
-  <script type="module" src="./snice-countdown.ts"></script>
 </body>
 </html>

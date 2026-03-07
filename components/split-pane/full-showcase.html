@@ -1,295 +1,123 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Split Pane Demo</title>
+  <title>Split Pane</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      font-family: var(--snice-font-family);
-      padding: 40px;
-      margin: 0;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: 10px;
-      margin-bottom: 30px;
-    }
-
-    h2 {
-      color: var(--snice-color-text);
-      margin-top: 40px;
-      margin-bottom: 20px;
-      font-size: 1.5em;
-    }
-
-    .example {
-      margin: 30px 0;
-    }
-
-    .example h3 {
-      color: var(--snice-color-text);
-      margin-bottom: 10px;
-    }
-
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
     .pane-content {
-      padding: 20px;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       height: 100%;
-      box-sizing: border-box;
+      color: var(--snice-color-text-secondary, #525252);
+      font-size: 0.875rem;
     }
-
-    .pane-content h4 {
-      margin-top: 0;
-      color: var(--snice-color-text);
-    }
-
-    .primary-pane {
-      background: var(--snice-color-primary-subtle);
-    }
-
-    .secondary-pane {
-      background: var(--snice-color-background-tertiary);
-    }
-
-    .split-container {
-      height: 400px;
-      border: 1px solid var(--snice-color-border);
-      border-radius: var(--snice-border-radius-md);
+    snice-split-pane {
+      border: 1px solid var(--snice-color-border, #e2e2e2);
+      border-radius: 6px;
       overflow: hidden;
     }
-
-    .controls {
-      margin: 10px 0;
-      display: flex;
-      gap: var(--snice-spacing-sm);
-    }
-
-    button {
-      padding: var(--snice-spacing-sm) var(--snice-spacing-md);
-      background: var(--snice-color-primary);
-      color: white;
-      border: none;
-      border-radius: var(--snice-border-radius-sm);
-      cursor: pointer;
-      font-size: var(--snice-font-size-sm);
-      font-weight: var(--snice-font-weight-medium);
-    }
-
-    button:hover {
-      opacity: 0.9;
-    }
-
-    .nested-slot-wrapper {
-      height: 100%;
-      display: flex;
-    }
   </style>
-  <script type="module">
-    import 'snice';
-    import './snice-split-pane.ts';
-
-    document.addEventListener('DOMContentLoaded', () => {
-      // Controls for first split pane
-      const sp1 = document.getElementById('split-pane-1');
-      document.getElementById('set-30').addEventListener('click', () => {
-        sp1.setPrimarySize(30);
-      });
-      document.getElementById('set-70').addEventListener('click', () => {
-        sp1.setPrimarySize(70);
-      });
-      document.getElementById('reset').addEventListener('click', () => {
-        sp1.reset();
-      });
-
-      // Listen to resize events
-      document.querySelectorAll('snice-split-pane').forEach(sp => {
-        sp.addEventListener('pane-resize', (e) => {
-          console.log('Resize:', {
-            primary: e.detail.primarySize,
-            secondary: e.detail.secondarySize
-          });
-        });
-      });
-    });
-  </script>
 </head>
 <body>
-  <div class="container">
-    <h1>Split Pane Component Demo</h1>
-    <p>Resizable split pane layout with horizontal and vertical orientations.</p>
 
-    <div class="example">
-      <h3>Horizontal Split (Default)</h3>
-      <div class="controls">
-        <button id="set-30">Set to 30%</button>
-        <button id="set-70">Set to 70%</button>
-        <button id="reset">Reset to 50%</button>
-      </div>
-      <div class="split-container">
-        <snice-split-pane id="split-pane-1">
-          <div slot="primary" class="pane-content primary-pane">
-            <h4>Primary Pane (Left)</h4>
-            <p>This is the left pane. Drag the divider to resize.</p>
-          </div>
-          <div slot="secondary" class="pane-content secondary-pane">
-            <h4>Secondary Pane (Right)</h4>
-            <p>This is the right pane. It takes up the remaining space.</p>
-          </div>
-        </snice-split-pane>
-      </div>
-    </div>
+<h2>Direction: Horizontal (default)</h2>
+<snice-split-pane direction="horizontal" style="height: 200px; width: 100%;">
+  <div slot="primary" class="pane-content" style="background: var(--snice-color-background-element, #fcfbf9);">Primary Pane</div>
+  <div slot="secondary" class="pane-content">Secondary Pane</div>
+</snice-split-pane>
 
-    <div class="example">
-      <h3>Vertical Split</h3>
-      <div class="split-container">
-        <snice-split-pane direction="vertical">
-          <div slot="primary" class="pane-content primary-pane">
-            <h4>Primary Pane (Top)</h4>
-            <p>This is the top pane.</p>
-          </div>
-          <div slot="secondary" class="pane-content secondary-pane">
-            <h4>Secondary Pane (Bottom)</h4>
-            <p>This is the bottom pane.</p>
-          </div>
-        </snice-split-pane>
-      </div>
-    </div>
+<h2>Direction: Vertical</h2>
+<snice-split-pane direction="vertical" style="height: 300px; width: 100%;">
+  <div slot="primary" class="pane-content" style="background: var(--snice-color-background-element, #fcfbf9);">Primary (Top)</div>
+  <div slot="secondary" class="pane-content">Secondary (Bottom)</div>
+</snice-split-pane>
 
-    <div class="example">
-      <h3>Custom Initial Size (30/70)</h3>
-      <div class="split-container">
-        <snice-split-pane primary-size="30">
-          <div slot="primary" class="pane-content primary-pane">
-            <h4>Primary (30%)</h4>
-            <p>Starts at 30% width.</p>
-          </div>
-          <div slot="secondary" class="pane-content secondary-pane">
-            <h4>Secondary (70%)</h4>
-            <p>Takes the remaining 70%.</p>
-          </div>
-        </snice-split-pane>
-      </div>
-    </div>
+<h2>Custom Primary Size (30%)</h2>
+<snice-split-pane direction="horizontal" primary-size="30" style="height: 150px; width: 100%;">
+  <div slot="primary" class="pane-content" style="background: var(--snice-color-background-element, #fcfbf9);">30%</div>
+  <div slot="secondary" class="pane-content">70%</div>
+</snice-split-pane>
 
-    <div class="example">
-      <h3>With Minimum Sizes</h3>
-      <div class="split-container">
-        <snice-split-pane min-primary-size="20" min-secondary-size="30">
-          <div slot="primary" class="pane-content primary-pane">
-            <h4>Primary (Min 20%)</h4>
-            <p>Can't be smaller than 20%.</p>
-          </div>
-          <div slot="secondary" class="pane-content secondary-pane">
-            <h4>Secondary (Min 30%)</h4>
-            <p>Can't be smaller than 30%.</p>
-          </div>
-        </snice-split-pane>
-      </div>
-    </div>
+<h2>Custom Primary Size (70%)</h2>
+<snice-split-pane direction="horizontal" primary-size="70" style="height: 150px; width: 100%;">
+  <div slot="primary" class="pane-content" style="background: var(--snice-color-background-element, #fcfbf9);">70%</div>
+  <div slot="secondary" class="pane-content">30%</div>
+</snice-split-pane>
 
-    <div class="example">
-      <h3>With Snap (10% increments)</h3>
-      <div class="split-container">
-        <snice-split-pane snap-size="10">
-          <div slot="primary" class="pane-content primary-pane">
-            <h4>Primary</h4>
-            <p>Snaps to 10% increments when dragging.</p>
-          </div>
-          <div slot="secondary" class="pane-content secondary-pane">
-            <h4>Secondary</h4>
-            <p>Watch the size snap to 10%, 20%, 30%, etc.</p>
-          </div>
-        </snice-split-pane>
-      </div>
-    </div>
+<h2>Min Primary Size (20%)</h2>
+<snice-split-pane direction="horizontal" min-primary-size="20" style="height: 150px; width: 100%;">
+  <div slot="primary" class="pane-content" style="background: var(--snice-color-background-element, #fcfbf9);">Min 20%</div>
+  <div slot="secondary" class="pane-content">Secondary</div>
+</snice-split-pane>
 
-    <div class="example">
-      <h3>Disabled</h3>
-      <div class="split-container">
-        <snice-split-pane disabled primary-size="40">
-          <div slot="primary" class="pane-content primary-pane">
-            <h4>Primary (40%)</h4>
-            <p>Fixed at 40% - divider cannot be dragged.</p>
-          </div>
-          <div slot="secondary" class="pane-content secondary-pane">
-            <h4>Secondary (60%)</h4>
-            <p>Fixed at 60%.</p>
-          </div>
-        </snice-split-pane>
-      </div>
-    </div>
+<h2>Min Secondary Size (30%)</h2>
+<snice-split-pane direction="horizontal" min-secondary-size="30" style="height: 150px; width: 100%;">
+  <div slot="primary" class="pane-content" style="background: var(--snice-color-background-element, #fcfbf9);">Primary</div>
+  <div slot="secondary" class="pane-content">Min 30%</div>
+</snice-split-pane>
 
-    <div class="example">
-      <h3>Nested Split Panes</h3>
-      <div class="split-container">
-        <snice-split-pane>
-          <div slot="primary" class="nested-slot-wrapper">
-            <snice-split-pane direction="vertical">
-              <div slot="primary" class="pane-content primary-pane">
-                <h4>Top Left</h4>
-                <p>This is the top-left pane.</p>
-              </div>
-              <div slot="secondary" class="pane-content secondary-pane">
-                <h4>Bottom Left</h4>
-                <p>This is the bottom-left pane.</p>
-              </div>
-            </snice-split-pane>
-          </div>
-          <div slot="secondary" class="pane-content secondary-pane">
-            <h4>Right Pane</h4>
-            <p>This pane takes the right side.</p>
-          </div>
-        </snice-split-pane>
-      </div>
-    </div>
+<h2>Both Min Sizes (min-primary=25, min-secondary=25)</h2>
+<snice-split-pane direction="horizontal" min-primary-size="25" min-secondary-size="25" style="height: 150px; width: 100%;">
+  <div slot="primary" class="pane-content" style="background: var(--snice-color-background-element, #fcfbf9);">Min 25%</div>
+  <div slot="secondary" class="pane-content">Min 25%</div>
+</snice-split-pane>
 
-    <div class="example">
-      <h3>Code Editor Layout</h3>
-      <div class="split-container" style="height: 500px;">
-        <snice-split-pane primary-size="25">
-          <!-- File tree -->
-          <div slot="primary" style="padding: 10px; background: var(--snice-color-background); color: var(--snice-color-text); overflow: auto; height: 100%; border-right: 1px solid var(--snice-color-border);">
-            <h4 style="margin: 0 0 10px; font-size: var(--snice-font-size-xs); text-transform: uppercase; color: var(--snice-color-text-secondary);">Explorer</h4>
-            <div style="font-size: var(--snice-font-size-sm);">
-              <div>📁 src</div>
-              <div style="margin-left: 15px;">📄 main.ts</div>
-              <div style="margin-left: 15px;">📄 app.ts</div>
-              <div>📁 tests</div>
-              <div style="margin-left: 15px;">📄 app.test.ts</div>
-            </div>
-          </div>
+<h2>Snap Size (10%)</h2>
+<snice-split-pane direction="horizontal" snap-size="10" style="height: 150px; width: 100%;">
+  <div slot="primary" class="pane-content" style="background: var(--snice-color-background-element, #fcfbf9);">Snaps to 10%</div>
+  <div slot="secondary" class="pane-content">Secondary</div>
+</snice-split-pane>
 
-          <!-- Editor and console -->
-          <div slot="secondary" class="nested-slot-wrapper">
-            <snice-split-pane direction="vertical" primary-size="70">
-              <!-- Editor -->
-              <div slot="primary" style="padding: 10px; background: var(--snice-color-background); color: var(--snice-color-text); font-family: monospace; font-size: var(--snice-font-size-sm); overflow: auto;">
-                <div style="margin-bottom: 5px;"><span style="color: var(--snice-color-primary);">function</span> <span>main</span>() {</div>
-                <div style="margin-left: 20px; margin-bottom: 5px;"><span>console</span>.<span>log</span>(<span style="color: var(--snice-color-success);">'Hello, World!'</span>);</div>
-                <div>}</div>
-              </div>
+<h2>Snap Size (25%)</h2>
+<snice-split-pane direction="horizontal" snap-size="25" style="height: 150px; width: 100%;">
+  <div slot="primary" class="pane-content" style="background: var(--snice-color-background-element, #fcfbf9);">Snaps to 25%</div>
+  <div slot="secondary" class="pane-content">Secondary</div>
+</snice-split-pane>
 
-              <!-- Console -->
-              <div slot="secondary" style="padding: 10px; background: var(--snice-color-background-tertiary); color: var(--snice-color-text); font-family: monospace; font-size: var(--snice-font-size-xs); overflow: auto; border-top: 1px solid var(--snice-color-border);">
-                <div style="color: var(--snice-color-text-secondary); margin-bottom: 5px;">TERMINAL</div>
-                <div>$ npm run dev</div>
-                <div style="color: var(--snice-color-success);">Server running on port 3000</div>
-              </div>
-            </snice-split-pane>
-          </div>
-        </snice-split-pane>
-      </div>
-    </div>
+<h2>Disabled</h2>
+<snice-split-pane direction="horizontal" disabled style="height: 150px; width: 100%;">
+  <div slot="primary" class="pane-content" style="background: var(--snice-color-background-element, #fcfbf9);">Disabled</div>
+  <div slot="secondary" class="pane-content">Cannot resize</div>
+</snice-split-pane>
+
+<h2>Vertical + Disabled</h2>
+<snice-split-pane direction="vertical" disabled style="height: 250px; width: 100%;">
+  <div slot="primary" class="pane-content" style="background: var(--snice-color-background-element, #fcfbf9);">Disabled</div>
+  <div slot="secondary" class="pane-content">Cannot resize</div>
+</snice-split-pane>
+
+<h2>Nested Split Panes</h2>
+<snice-split-pane direction="horizontal" style="height: 300px; width: 100%;">
+  <div slot="primary" style="height: 100%;">
+    <snice-split-pane direction="vertical" style="height: 100%; border: none; border-radius: 0;">
+      <div slot="primary" class="pane-content" style="background: var(--snice-color-background-element, #fcfbf9);">Top-Left</div>
+      <div slot="secondary" class="pane-content">Bottom-Left</div>
+    </snice-split-pane>
   </div>
+  <div slot="secondary" class="pane-content">Right</div>
+</snice-split-pane>
+
+<script type="module">
+  import './snice-split-pane.ts';
+</script>
 </body>
 </html>

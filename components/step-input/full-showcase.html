@@ -1,90 +1,115 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Step Input Demo</title>
+  <title>Step Input</title>
+  <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      padding: 2rem;
-      max-width: 600px;
-      margin: 0 auto;
-      color: var(--snice-color-text, rgb(23 23 23));
-      background: var(--snice-color-background, rgb(255 255 255));
-    }
-    h1 { font-size: 1.5rem; margin-bottom: 2rem; }
-    section { margin-bottom: 2rem; }
-    h2 { font-size: 1rem; margin-bottom: 0.75rem; color: var(--snice-color-text-secondary, rgb(82 82 82)); }
-    .row { display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; }
-    label { font-size: 0.875rem; min-width: 5rem; }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
   </style>
 </head>
 <body>
-  <h1>Step Input</h1>
 
-  <section>
-    <h2>Sizes</h2>
-    <div class="row">
-      <label>Small</label>
-      <snice-step-input size="small" value="3" min="0" max="10"></snice-step-input>
-    </div>
-    <div class="row">
-      <label>Medium</label>
-      <snice-step-input size="medium" value="5" min="0" max="10"></snice-step-input>
-    </div>
-    <div class="row">
-      <label>Large</label>
-      <snice-step-input size="large" value="7" min="0" max="10"></snice-step-input>
-    </div>
-  </section>
+<h2>Sizes</h2>
+<div class="row">
+  <snice-step-input size="small" value="5"></snice-step-input>
+  <snice-step-input size="medium" value="5"></snice-step-input>
+  <snice-step-input size="large" value="5"></snice-step-input>
+</div>
 
-  <section>
-    <h2>With Min/Max and Step</h2>
-    <div class="row">
-      <label>Quantity</label>
-      <snice-step-input min="1" max="99" step="1" value="1"></snice-step-input>
-    </div>
-    <div class="row">
-      <label>Temperature</label>
-      <snice-step-input min="60" max="85" step="0.5" value="72"></snice-step-input>
-    </div>
-  </section>
+<h2>Default Value</h2>
+<div class="row">
+  <snice-step-input value="0"></snice-step-input>
+  <snice-step-input value="10"></snice-step-input>
+  <snice-step-input value="100"></snice-step-input>
+  <snice-step-input value="-5"></snice-step-input>
+</div>
 
-  <section>
-    <h2>Wrap Around</h2>
-    <div class="row">
-      <label>Month</label>
-      <snice-step-input min="1" max="12" value="12" wrap></snice-step-input>
-    </div>
-  </section>
+<h2>Min and Max</h2>
+<div class="row">
+  <snice-step-input min="0" max="10" value="5"></snice-step-input>
+  <snice-step-input min="-10" max="10" value="0"></snice-step-input>
+  <snice-step-input min="0" max="100" value="50"></snice-step-input>
+</div>
 
-  <section>
-    <h2>States</h2>
-    <div class="row">
-      <label>Disabled</label>
-      <snice-step-input value="5" disabled></snice-step-input>
-    </div>
-    <div class="row">
-      <label>Readonly</label>
-      <snice-step-input value="42" readonly></snice-step-input>
-    </div>
-  </section>
+<h2>At Boundaries</h2>
+<div class="row">
+  <snice-step-input min="0" max="10" value="0"></snice-step-input>
+  <snice-step-input min="0" max="10" value="10"></snice-step-input>
+</div>
 
-  <section>
-    <h2>Events</h2>
-    <div class="row">
-      <snice-step-input id="event-demo" min="0" max="20" value="10"></snice-step-input>
-      <span id="event-output">Value: 10</span>
-    </div>
-  </section>
+<h2>Custom Step</h2>
+<div class="row">
+  <snice-step-input step="1" value="5" min="0" max="20"></snice-step-input>
+  <snice-step-input step="5" value="10" min="0" max="100"></snice-step-input>
+  <snice-step-input step="10" value="50" min="0" max="100"></snice-step-input>
+  <snice-step-input step="0.1" value="1.5" min="0" max="5"></snice-step-input>
+  <snice-step-input step="0.25" value="2.5" min="0" max="10"></snice-step-input>
+</div>
 
-  <script type="module">
-    import './snice-step-input';
+<h2>Disabled</h2>
+<div class="row">
+  <snice-step-input disabled value="5" size="small"></snice-step-input>
+  <snice-step-input disabled value="5" size="medium"></snice-step-input>
+  <snice-step-input disabled value="5" size="large"></snice-step-input>
+</div>
 
-    document.getElementById('event-demo').addEventListener('value-change', (e) => {
-      document.getElementById('event-output').textContent = `Value: ${e.detail.value} (was ${e.detail.oldValue})`;
-    });
-  </script>
+<h2>Readonly</h2>
+<div class="row">
+  <snice-step-input readonly value="42" size="small"></snice-step-input>
+  <snice-step-input readonly value="42" size="medium"></snice-step-input>
+  <snice-step-input readonly value="42" size="large"></snice-step-input>
+</div>
+
+<h2>Wrap (Cycles min/max)</h2>
+<div class="row">
+  <snice-step-input wrap min="0" max="5" value="5"></snice-step-input>
+  <snice-step-input wrap min="1" max="12" value="12" step="1"></snice-step-input>
+</div>
+
+<h2>No Min/Max (Unbounded)</h2>
+<div class="row">
+  <snice-step-input value="0"></snice-step-input>
+</div>
+
+<h2>Sizes x States</h2>
+<div style="display: grid; grid-template-columns: repeat(3, auto); gap: 0.75rem; align-items: center;">
+  <snice-step-input size="small" value="5"></snice-step-input>
+  <snice-step-input size="small" disabled value="5"></snice-step-input>
+  <snice-step-input size="small" readonly value="5"></snice-step-input>
+
+  <snice-step-input size="medium" value="5"></snice-step-input>
+  <snice-step-input size="medium" disabled value="5"></snice-step-input>
+  <snice-step-input size="medium" readonly value="5"></snice-step-input>
+
+  <snice-step-input size="large" value="5"></snice-step-input>
+  <snice-step-input size="large" disabled value="5"></snice-step-input>
+  <snice-step-input size="large" readonly value="5"></snice-step-input>
+</div>
+
+<h2>Large Numbers</h2>
+<div class="row">
+  <snice-step-input value="99999" step="1000"></snice-step-input>
+  <snice-step-input value="-99999" step="1000"></snice-step-input>
+</div>
+
+<script type="module">
+  import './snice-step-input.ts';
+</script>
 </body>
 </html>

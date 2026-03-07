@@ -1,186 +1,204 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Code Block Demo</title>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <title>Code Block</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      font-family: var(--snice-font-family);
-      padding: 40px;
-      margin: 0;
-      background: var(--snice-color-background);
-      color: var(--snice-color-text);
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      color: var(--snice-color-text);
-      border-bottom: 2px solid var(--snice-color-border);
-      padding-bottom: 10px;
-      margin-bottom: 30px;
-    }
-
-    h2 {
-      color: var(--snice-color-text);
-      margin-top: 40px;
-      margin-bottom: 20px;
-      font-size: 1.5em;
-    }
-
-    .example {
-      margin: 30px 0;
-    }
-
-    .example h3 {
-      color: var(--snice-color-text);
-      margin-bottom: 10px;
-    }
-
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    section { margin-bottom: 2rem; }
   </style>
-  <script type="module">
-    import 'snice';
-    import { SniceCodeBlock } from './snice-code-block.ts';
-    import { highlightCode } from './highlighter.ts';
+  <script type="module">import './snice-code-block.ts';</script>
+</head>
+<body>
 
-    const jsCode = `function fibonacci(n) {
+<section>
+  <h2>language="javascript" (slotted content)</h2>
+  <snice-code-block language="javascript">
+function fibonacci(n) {
   if (n <= 1) return n;
   return fibonacci(n - 1) + fibonacci(n - 2);
 }
+console.log(fibonacci(10));
+  </snice-code-block>
+</section>
 
-console.log(fibonacci(10));`;
+<section>
+  <h2>language="typescript"</h2>
+  <snice-code-block language="typescript">
+interface User {
+  name: string;
+  age: number;
+}
+const greet = (user: User): string => `Hello, ${user.name}!`;
+  </snice-code-block>
+</section>
 
-    const htmlCode = `<!DOCTYPE html>
-<html>
-<head>
-  <title>Example</title>
-</head>
-<body>
-  <h1>Hello World</h1>
-</body>
-</html>`;
+<section>
+  <h2>language="html"</h2>
+  <snice-code-block language="html">
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;&lt;title&gt;Page&lt;/title&gt;&lt;/head&gt;
+&lt;body&gt;&lt;h1&gt;Hello&lt;/h1&gt;&lt;/body&gt;
+&lt;/html&gt;
+  </snice-code-block>
+</section>
 
-    const pythonCode = `def quicksort(arr):
+<section>
+  <h2>language="css"</h2>
+  <snice-code-block language="css">
+.button {
+  background: var(--primary);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 4px;
+}
+  </snice-code-block>
+</section>
+
+<section>
+  <h2>language="json"</h2>
+  <snice-code-block language="json">
+{
+  "name": "snice",
+  "version": "4.25.0",
+  "dependencies": { "rollup": "^4.0.0" }
+}
+  </snice-code-block>
+</section>
+
+<section>
+  <h2>language="python"</h2>
+  <snice-code-block language="python">
+def quicksort(arr):
     if len(arr) <= 1:
         return arr
     pivot = arr[len(arr) // 2]
     left = [x for x in arr if x < pivot]
-    middle = [x for x in arr if x == pivot]
-    right = [x for x in arr if x > pivot]
-    return quicksort(left) + middle + quicksort(right)
+    return quicksort(left) + [pivot] + quicksort([x for x in arr if x > pivot])
+  </snice-code-block>
+</section>
 
-print(quicksort([3, 6, 8, 10, 1, 2, 1]))`;
+<section>
+  <h2>language="bash"</h2>
+  <snice-code-block language="bash">
+#!/bin/bash
+echo "Hello World"
+for i in $(seq 1 5); do
+  echo "Count: $i"
+done
+  </snice-code-block>
+</section>
 
-    const cssCode = `.button {
-  background: var(--primary-color);
-  color: white;
-  padding: 10px 20px;
-  border-radius: 4px;
-  transition: all 0.3s ease;
+<section>
+  <h2>language="plaintext"</h2>
+  <snice-code-block language="plaintext">
+This is plain text with no syntax highlighting.
+It just shows raw content as-is.
+  </snice-code-block>
+</section>
+
+<section>
+  <h2>show-line-numbers</h2>
+  <snice-code-block language="javascript" show-line-numbers>
+const a = 1;
+const b = 2;
+const c = a + b;
+console.log(c);
+  </snice-code-block>
+</section>
+
+<section>
+  <h2>start-line="10" + show-line-numbers</h2>
+  <snice-code-block language="javascript" show-line-numbers start-line="10">
+// Line 10
+function hello() {
+  return 'world';
 }
+  </snice-code-block>
+</section>
 
-.button:hover {
-  opacity: 0.9;
-  transform: translateY(-2px);
-}`;
+<section>
+  <h2>filename="app.js"</h2>
+  <snice-code-block language="javascript" filename="app.js">
+import express from 'express';
+const app = express();
+app.listen(3000);
+  </snice-code-block>
+</section>
 
-    // Use the built-in highlighter
-    SniceCodeBlock.setGlobalHighlighter(highlightCode);
+<section>
+  <h2>filename + show-line-numbers</h2>
+  <snice-code-block language="typescript" filename="index.ts" show-line-numbers>
+import { element, property, render, html } from 'snice';
 
-    document.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('js-code').code = jsCode;
-      document.getElementById('html-code').code = htmlCode;
-      document.getElementById('numbered-code').code = jsCode;
-      document.getElementById('highlighted-code').code = jsCode;
-      document.getElementById('python-code').code = pythonCode;
-      document.getElementById('css-code').code = cssCode;
+@element('my-app')
+class MyApp extends HTMLElement {
+  @property() name = 'World';
+}
+  </snice-code-block>
+</section>
 
-      // Example without highlighter
-      const plainBlock = document.getElementById('plain-code');
-      plainBlock.code = jsCode;
-      plainBlock.setHighlighter(null);
+<section>
+  <h2>copyable="false"</h2>
+  <snice-code-block language="javascript" copyable="false">
+// Copy button is hidden
+const secret = 'hidden';
+  </snice-code-block>
+</section>
 
-      // Listen to highlight events
-      document.querySelectorAll('snice-code-block').forEach(block => {
-        block.addEventListener('@snice/code-before-highlight', (e) => {
-          console.log('Before highlight:', e.detail);
-        });
-        block.addEventListener('@snice/code-after-highlight', (e) => {
-          console.log('After highlight:', e.detail);
-        });
-      });
-    });
-  </script>
-</head>
-<body>
-  <div class="container">
-    <h1>Code Block Component Demo</h1>
-    <p>Display code with optional syntax highlighting, line numbers, and copy functionality.</p>
+<section>
+  <h2>copyable="false" + no filename (no header)</h2>
+  <snice-code-block language="javascript" copyable="false" filename="">
+const x = 42;
+  </snice-code-block>
+</section>
 
-    <h2>Basic Examples</h2>
+<section>
+  <h2>theme="dark" (forced)</h2>
+  <snice-code-block language="javascript" theme="dark">
+const dark = true;
+console.log('Always dark theme');
+  </snice-code-block>
+</section>
 
-    <div class="example">
-      <h3>JavaScript with Syntax Highlighting</h3>
-      <snice-code-block id="js-code" language="javascript"></snice-code-block>
-    </div>
+<section>
+  <h2>theme="light" (forced)</h2>
+  <snice-code-block language="javascript" theme="light">
+const light = true;
+console.log('Always light theme');
+  </snice-code-block>
+</section>
 
-    <div class="example">
-      <h3>HTML with Filename</h3>
-      <snice-code-block id="html-code" language="html" filename="index.html"></snice-code-block>
-    </div>
+<section>
+  <h2>Empty content</h2>
+  <snice-code-block language="javascript"></snice-code-block>
+</section>
 
-    <div class="example">
-      <h3>Python with Line Numbers</h3>
-      <snice-code-block id="python-code" language="python" show-line-numbers></snice-code-block>
-    </div>
+<section>
+  <h2>Single line</h2>
+  <snice-code-block language="javascript">console.log('one liner');</snice-code-block>
+</section>
 
-    <div class="example">
-      <h3>CSS with Highlighted Lines</h3>
-      <snice-code-block id="css-code" language="css" show-line-numbers highlight-lines="[2,3,4]"></snice-code-block>
-    </div>
+<section>
+  <h2>Very long line</h2>
+  <snice-code-block language="javascript">
+const veryLongVariableName = 'This is an extremely long string that should trigger horizontal scrolling in the code block to verify overflow handling works correctly without breaking layout';
+  </snice-code-block>
+</section>
 
-    <h2>Advanced Features</h2>
-
-    <div class="example">
-      <h3>With Line Numbers</h3>
-      <snice-code-block id="numbered-code" language="javascript" show-line-numbers></snice-code-block>
-    </div>
-
-    <div class="example">
-      <h3>With Highlighted Lines (2-4)</h3>
-      <snice-code-block id="highlighted-code" language="javascript" show-line-numbers highlight-lines="[2,3,4]"></snice-code-block>
-    </div>
-
-    <div class="example">
-      <h3>Without Syntax Highlighting</h3>
-      <snice-code-block id="plain-code" language="javascript" show-line-numbers></snice-code-block>
-    </div>
-
-    <h2>Highlighter Options</h2>
-    <div class="example">
-      <p>Code blocks support pluggable syntax highlighting:</p>
-      <ul>
-        <li><strong>Built-in</strong> - Simple highlighter included (JS, TS, HTML, CSS, Python, JSON, Bash)</li>
-        <li><strong>Prism.js</strong> - See <code>components/code-block/highlighters/prism.ts</code></li>
-        <li><strong>highlight.js</strong> - See <code>components/code-block/highlighters/highlight.ts</code></li>
-        <li><strong>Custom</strong> - Implement your own <code>HighlighterFunction</code></li>
-      </ul>
-      <p>Example setup:</p>
-      <pre style="background: var(--snice-color-background); padding: 15px; border-radius: 4px; overflow-x: auto;"><code>import { SniceCodeBlock } from 'snice/components/code-block';
-import { highlightCode } from 'snice/components/code-block/highlighter';
-
-// Use built-in highlighter globally
-SniceCodeBlock.setGlobalHighlighter(highlightCode);
-
-// Or per-instance
-const codeBlock = document.querySelector('snice-code-block');
-codeBlock.setHighlighter(highlightCode);</code></pre>
-    </div>
-  </div>
 </body>
 </html>

@@ -1,94 +1,154 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-theme="dark">
 <head>
-  <title>Order Tracker Demo</title>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Tracker</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body {
-      padding: 40px;
-      font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
-      background: var(--snice-color-background, rgb(255 255 255));
-      color: var(--snice-color-text, rgb(23 23 23));
-    }
-    h2, h3 {
-      color: var(--snice-color-text, rgb(23 23 23));
-    }
-    .demo-section {
-      margin-bottom: 4rem;
-      max-width: 800px;
-    }
-    .demo-section--vertical {
-      max-width: 400px;
-    }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
+    snice-order-tracker { display: block; max-width: 700px; }
   </style>
-  <script type="module">
-    import './snice-order-tracker.ts';
-
-    // Horizontal tracker - shipped
-    const tracker1 = document.getElementById('tracker-shipped');
-    tracker1.steps = [
-      { label: 'Ordered', status: 'completed', timestamp: 'Feb 20, 2026 9:15 AM', description: 'Order placed successfully' },
-      { label: 'Confirmed', status: 'completed', timestamp: 'Feb 20, 2026 9:30 AM' },
-      { label: 'Shipped', status: 'active', timestamp: 'Feb 22, 2026 2:00 PM', description: 'Package left the warehouse' },
-      { label: 'Out for Delivery', status: 'pending' },
-      { label: 'Delivered', status: 'pending' }
-    ];
-
-    // Horizontal tracker - delivered
-    const tracker2 = document.getElementById('tracker-delivered');
-    tracker2.steps = [
-      { label: 'Ordered', status: 'completed', timestamp: 'Feb 15, 2026' },
-      { label: 'Confirmed', status: 'completed', timestamp: 'Feb 15, 2026' },
-      { label: 'Shipped', status: 'completed', timestamp: 'Feb 17, 2026' },
-      { label: 'Out for Delivery', status: 'completed', timestamp: 'Feb 19, 2026' },
-      { label: 'Delivered', status: 'completed', timestamp: 'Feb 19, 2026', description: 'Left at front door' }
-    ];
-
-    // Vertical tracker
-    const tracker3 = document.getElementById('tracker-vertical');
-    tracker3.steps = [
-      { label: 'Order Placed', status: 'completed', timestamp: 'Feb 24, 2026 10:00 AM', description: 'Your order has been received' },
-      { label: 'Payment Confirmed', status: 'completed', timestamp: 'Feb 24, 2026 10:05 AM', description: 'Payment processed successfully' },
-      { label: 'Preparing Order', status: 'active', timestamp: 'Feb 24, 2026 11:30 AM', description: 'Your items are being packed' },
-      { label: 'Ready for Pickup', status: 'pending' },
-      { label: 'Picked Up', status: 'pending' }
-    ];
-
-    // Event listeners
-    document.querySelectorAll('snice-order-tracker').forEach(el => {
-      el.addEventListener('step-click', e => {
-        console.log('Step clicked:', e.detail);
-      });
-    });
-  </script>
 </head>
 <body>
-  <h2>Order Tracker Demo</h2>
 
-  <div class="demo-section">
-    <h3>Horizontal - In Transit</h3>
-    <snice-order-tracker
-      id="tracker-shipped"
-      tracking-number="1Z999AA10123456784"
-      carrier="UPS">
-    </snice-order-tracker>
-  </div>
+<h2>Variant: horizontal (default)</h2>
+<snice-order-tracker id="ot-horizontal" variant="horizontal"></snice-order-tracker>
 
-  <div class="demo-section">
-    <h3>Horizontal - Delivered</h3>
-    <snice-order-tracker
-      id="tracker-delivered"
-      tracking-number="9400111899223"
-      carrier="USPS">
-    </snice-order-tracker>
-  </div>
+<h2>Variant: vertical</h2>
+<snice-order-tracker id="ot-vertical" variant="vertical"></snice-order-tracker>
 
-  <div class="demo-section demo-section--vertical">
-    <h3>Vertical Variant</h3>
-    <snice-order-tracker
-      id="tracker-vertical"
-      variant="vertical">
-    </snice-order-tracker>
-  </div>
+<h2>Step status: all completed</h2>
+<snice-order-tracker id="ot-all-completed" variant="horizontal"></snice-order-tracker>
+
+<h2>Step status: all pending</h2>
+<snice-order-tracker id="ot-all-pending" variant="horizontal"></snice-order-tracker>
+
+<h2>Step status: mixed (completed, active, pending)</h2>
+<snice-order-tracker id="ot-mixed" variant="horizontal"></snice-order-tracker>
+
+<h2>Step status: first active</h2>
+<snice-order-tracker id="ot-first-active" variant="horizontal"></snice-order-tracker>
+
+<h2>Step status: last active</h2>
+<snice-order-tracker id="ot-last-active" variant="horizontal"></snice-order-tracker>
+
+<h2>With tracking number</h2>
+<snice-order-tracker id="ot-tracking" tracking-number="1Z999AA10123456784" variant="horizontal"></snice-order-tracker>
+
+<h2>With carrier</h2>
+<snice-order-tracker id="ot-carrier" carrier="UPS" variant="horizontal"></snice-order-tracker>
+
+<h2>With tracking number + carrier</h2>
+<snice-order-tracker id="ot-both" tracking-number="1Z999AA10123456784" carrier="UPS" variant="horizontal"></snice-order-tracker>
+
+<h2>Vertical + tracking info</h2>
+<snice-order-tracker id="ot-v-tracking" variant="vertical" tracking-number="9400111899562834567890" carrier="USPS"></snice-order-tracker>
+
+<h2>With timestamps</h2>
+<snice-order-tracker id="ot-timestamps" variant="horizontal"></snice-order-tracker>
+
+<h2>With descriptions</h2>
+<snice-order-tracker id="ot-descriptions" variant="vertical"></snice-order-tracker>
+
+<h2>With timestamps + descriptions</h2>
+<snice-order-tracker id="ot-full" variant="vertical" tracking-number="FEDEX-123456" carrier="FedEx"></snice-order-tracker>
+
+<h2>Two steps</h2>
+<snice-order-tracker id="ot-two" variant="horizontal"></snice-order-tracker>
+
+<h2>Single step</h2>
+<snice-order-tracker id="ot-single" variant="horizontal"></snice-order-tracker>
+
+<h2>Many steps (7)</h2>
+<snice-order-tracker id="ot-many" variant="horizontal"></snice-order-tracker>
+
+<h2>Many steps vertical</h2>
+<snice-order-tracker id="ot-many-v" variant="vertical"></snice-order-tracker>
+
+<h2>Empty (no steps)</h2>
+<snice-order-tracker variant="horizontal"></snice-order-tracker>
+
+<h2>No tracking info (steps only)</h2>
+<snice-order-tracker id="ot-no-info" variant="horizontal"></snice-order-tracker>
+
+<script type="module">
+  import './snice-order-tracker.ts';
+
+  const standardSteps = [
+    { label: 'Ordered', status: 'completed', timestamp: 'Feb 20, 2026' },
+    { label: 'Confirmed', status: 'completed', timestamp: 'Feb 20, 2026' },
+    { label: 'Shipped', status: 'active', timestamp: 'Feb 22, 2026' },
+    { label: 'Out for Delivery', status: 'pending' },
+    { label: 'Delivered', status: 'pending' },
+  ];
+
+  const allCompleted = standardSteps.map(s => ({ ...s, status: 'completed', timestamp: 'Feb 25, 2026' }));
+  const allPending = standardSteps.map(s => ({ ...s, status: 'pending', timestamp: undefined }));
+  const firstActive = standardSteps.map((s, i) => ({ ...s, status: i === 0 ? 'active' : 'pending', timestamp: i === 0 ? 'Feb 20, 2026' : undefined }));
+  const lastActive = standardSteps.map((s, i) => ({ ...s, status: i < standardSteps.length - 1 ? 'completed' : 'active', timestamp: `Feb ${20 + i}, 2026` }));
+
+  const descriptionSteps = [
+    { label: 'Order Placed', status: 'completed', timestamp: 'Feb 20, 2026', description: 'Your order has been received and confirmed.' },
+    { label: 'Processing', status: 'completed', timestamp: 'Feb 21, 2026', description: 'Items picked and packed at warehouse.' },
+    { label: 'Shipped', status: 'active', timestamp: 'Feb 22, 2026', description: 'Package left the warehouse via FedEx Ground.' },
+    { label: 'In Transit', status: 'pending', description: 'Package is on its way to your area.' },
+    { label: 'Delivered', status: 'pending', description: 'Package will be left at your door.' },
+  ];
+
+  const manySteps = [
+    { label: 'Order Placed', status: 'completed' },
+    { label: 'Payment Confirmed', status: 'completed' },
+    { label: 'Processing', status: 'completed' },
+    { label: 'Quality Check', status: 'completed' },
+    { label: 'Shipped', status: 'active' },
+    { label: 'In Transit', status: 'pending' },
+    { label: 'Delivered', status: 'pending' },
+  ];
+
+  // Apply data
+  document.getElementById('ot-horizontal').steps = standardSteps;
+  document.getElementById('ot-vertical').steps = standardSteps;
+  document.getElementById('ot-all-completed').steps = allCompleted;
+  document.getElementById('ot-all-pending').steps = allPending;
+  document.getElementById('ot-mixed').steps = standardSteps;
+  document.getElementById('ot-first-active').steps = firstActive;
+  document.getElementById('ot-last-active').steps = lastActive;
+  document.getElementById('ot-tracking').steps = standardSteps;
+  document.getElementById('ot-carrier').steps = standardSteps;
+  document.getElementById('ot-both').steps = standardSteps;
+  document.getElementById('ot-v-tracking').steps = standardSteps;
+
+  document.getElementById('ot-timestamps').steps = standardSteps;
+  document.getElementById('ot-descriptions').steps = descriptionSteps;
+  document.getElementById('ot-full').steps = descriptionSteps;
+
+  document.getElementById('ot-two').steps = [
+    { label: 'Start', status: 'completed' },
+    { label: 'End', status: 'active' },
+  ];
+
+  document.getElementById('ot-single').steps = [
+    { label: 'Processing', status: 'active' },
+  ];
+
+  document.getElementById('ot-many').steps = manySteps;
+  document.getElementById('ot-many-v').steps = manySteps;
+  document.getElementById('ot-no-info').steps = standardSteps;
+</script>
 </body>
 </html>
