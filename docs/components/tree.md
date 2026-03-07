@@ -5,6 +5,78 @@
 
 Displays hierarchical data with expandable/collapsible nodes, selection, checkboxes, icons, and lazy loading.
 
+## Importing
+
+**ESM (bundler)**
+```typescript
+import 'snice/components/tree/snice-tree';
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-tree.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `nodes` | `TreeNode[]` | `[]` | Array of tree nodes |
+| `selectionMode` (attr: `selection-mode`) | `'single' \| 'multiple' \| 'none'` | `'single'` | Selection behavior |
+| `showCheckboxes` (attr: `show-checkboxes`) | `boolean` | `false` | Display checkboxes |
+| `showIcons` (attr: `show-icons`) | `boolean` | `true` | Display node icons |
+| `expandOnClick` (attr: `expand-on-click`) | `boolean` | `false` | Expand/collapse on node click |
+| `selectedNodes` (attr: `selected-nodes`) | `string[]` | `[]` | Selected node IDs |
+| `checkedNodes` (attr: `checked-nodes`) | `string[]` | `[]` | Checked node IDs |
+
+### TreeNode Interface
+
+```typescript
+interface TreeNode {
+  id: string;
+  label: string;
+  icon?: string;
+  iconImage?: string;
+  children?: TreeNode[];
+  disabled?: boolean;
+  selected?: boolean;
+  checked?: boolean;
+  expanded?: boolean;
+  lazy?: boolean;
+  data?: any;
+}
+```
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `expandNode()` | `id: string` | Expand a node |
+| `collapseNode()` | `id: string` | Collapse a node |
+| `toggleNode()` | `id: string` | Toggle expand/collapse |
+| `expandAll()` | -- | Expand all nodes |
+| `collapseAll()` | -- | Collapse all nodes |
+| `selectNode()` | `id: string` | Select a node |
+| `deselectNode()` | `id: string` | Deselect a node |
+| `toggleSelection()` | `id: string` | Toggle selection |
+| `checkNode()` | `id: string` | Check a node |
+| `uncheckNode()` | `id: string` | Uncheck a node |
+| `toggleCheck()` | `id: string` | Toggle checked state |
+| `getNode()` | `id: string` | Get node object |
+| `getSelectedNodes()` | -- | Get all selected nodes |
+| `getCheckedNodes()` | -- | Get all checked nodes |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `tree-node-expand` | `{ nodeId: string, node: TreeNode, tree }` | Node expanded |
+| `tree-node-collapse` | `{ nodeId: string, node: TreeNode, tree }` | Node collapsed |
+| `tree-node-select` | `{ nodeId: string, node: TreeNode, selectedNodes: TreeNode[], tree }` | Node selected |
+| `tree-node-check` | `{ nodeId: string, node: TreeNode, checked: boolean, checkedNodes: TreeNode[], tree }` | Checkbox toggled |
+| `tree-node-lazy-load` | `{ nodeId: string, node: TreeNode, tree }` | Lazy node expanded |
+
 ## Basic Usage
 
 ```typescript
@@ -28,19 +100,6 @@ import 'snice/components/tree/snice-tree';
     }
   ];
 </script>
-```
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/tree/snice-tree';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-tree.min.js"></script>
 ```
 
 ## Examples
@@ -149,62 +208,3 @@ const selected = tree.getSelectedNodes();
 const checked = tree.getCheckedNodes();
 const node = tree.getNode('file1');
 ```
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `nodes` | `TreeNode[]` | `[]` | Array of tree nodes |
-| `selectionMode` (attr: `selection-mode`) | `'single' \| 'multiple' \| 'none'` | `'single'` | Selection behavior |
-| `showCheckboxes` (attr: `show-checkboxes`) | `boolean` | `false` | Display checkboxes |
-| `showIcons` (attr: `show-icons`) | `boolean` | `true` | Display node icons |
-| `expandOnClick` (attr: `expand-on-click`) | `boolean` | `false` | Expand/collapse on node click |
-| `selectedNodes` (attr: `selected-nodes`) | `string[]` | `[]` | Selected node IDs |
-| `checkedNodes` (attr: `checked-nodes`) | `string[]` | `[]` | Checked node IDs |
-
-### TreeNode Interface
-
-```typescript
-interface TreeNode {
-  id: string;
-  label: string;
-  icon?: string;
-  iconImage?: string;
-  children?: TreeNode[];
-  disabled?: boolean;
-  selected?: boolean;
-  checked?: boolean;
-  expanded?: boolean;
-  lazy?: boolean;
-  data?: any;
-}
-```
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `tree-node-expand` | `{ nodeId: string, node: TreeNode, tree }` | Node expanded |
-| `tree-node-collapse` | `{ nodeId: string, node: TreeNode, tree }` | Node collapsed |
-| `tree-node-select` | `{ nodeId: string, node: TreeNode, selectedNodes: TreeNode[], tree }` | Node selected |
-| `tree-node-check` | `{ nodeId: string, node: TreeNode, checked: boolean, checkedNodes: TreeNode[], tree }` | Checkbox toggled |
-| `tree-node-lazy-load` | `{ nodeId: string, node: TreeNode, tree }` | Lazy node expanded |
-
-## Methods
-
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `expandNode()` | `id: string` | Expand a node |
-| `collapseNode()` | `id: string` | Collapse a node |
-| `toggleNode()` | `id: string` | Toggle expand/collapse |
-| `expandAll()` | -- | Expand all nodes |
-| `collapseAll()` | -- | Collapse all nodes |
-| `selectNode()` | `id: string` | Select a node |
-| `deselectNode()` | `id: string` | Deselect a node |
-| `toggleSelection()` | `id: string` | Toggle selection |
-| `checkNode()` | `id: string` | Check a node |
-| `uncheckNode()` | `id: string` | Uncheck a node |
-| `toggleCheck()` | `id: string` | Toggle checked state |
-| `getNode()` | `id: string` | Get node object |
-| `getSelectedNodes()` | -- | Get all selected nodes |
-| `getCheckedNodes()` | -- | Get all checked nodes |

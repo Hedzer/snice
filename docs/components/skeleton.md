@@ -5,16 +5,6 @@
 
 Displays placeholder loading animations to indicate content is being loaded.
 
-## Basic Usage
-
-```typescript
-import 'snice/components/skeleton/snice-skeleton';
-```
-
-```html
-<snice-skeleton></snice-skeleton>
-```
-
 ## Importing
 
 **ESM (bundler)**
@@ -26,6 +16,54 @@ import 'snice/components/skeleton/snice-skeleton';
 ```html
 <script src="snice-runtime.min.js"></script>
 <script src="snice-skeleton.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `variant` | `'text' \| 'circular' \| 'rectangular' \| 'rounded'` | `'text'` | Shape of the skeleton |
+| `width` | `string` | `''` | Custom width (CSS value) |
+| `height` | `string` | `''` | Custom height (CSS value) |
+| `animation` | `'pulse' \| 'wave' \| 'none'` | `'wave'` | Animation style |
+| `count` | `number` | `1` | Number of skeleton lines to render |
+| `spacing` | `string` | `'8px'` | Gap between multiple skeleton lines |
+
+## CSS Custom Properties
+
+| Property | Description | Default |
+|----------|-------------|---------|
+| `--skeleton-bg` | Background color | `var(--snice-color-background-tertiary)` |
+| `--skeleton-highlight` | Wave highlight color | `var(--snice-color-background-secondary)` |
+| `--skeleton-duration` | Animation duration | `1.5s` |
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer skeleton container |
+| `bone` | `<div>` | Individual skeleton placeholder element |
+
+```css
+snice-skeleton::part(bone) {
+  border-radius: 0.5rem;
+}
+
+snice-skeleton::part(base) {
+  padding: 0.5rem;
+}
+```
+
+## Basic Usage
+
+```typescript
+import 'snice/components/skeleton/snice-skeleton';
+```
+
+```html
+<snice-skeleton></snice-skeleton>
 ```
 
 ## Examples
@@ -75,41 +113,3 @@ Use the `spacing` attribute to control the gap between multiple skeleton lines.
 ```html
 <snice-skeleton variant="text" count="3" spacing="12px"></snice-skeleton>
 ```
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `variant` | `'text' \| 'circular' \| 'rectangular' \| 'rounded'` | `'text'` | Shape of the skeleton |
-| `width` | `string` | `''` | Custom width (CSS value) |
-| `height` | `string` | `''` | Custom height (CSS value) |
-| `animation` | `'pulse' \| 'wave' \| 'none'` | `'wave'` | Animation style |
-| `count` | `number` | `1` | Number of skeleton lines to render |
-| `spacing` | `string` | `'8px'` | Gap between multiple skeleton lines |
-
-## CSS Parts
-
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | Outer skeleton container |
-| `bone` | `<div>` | Individual skeleton placeholder element |
-
-```css
-snice-skeleton::part(bone) {
-  border-radius: 0.5rem;
-}
-
-snice-skeleton::part(base) {
-  padding: 0.5rem;
-}
-```
-
-## CSS Custom Properties
-
-| Property | Description | Default |
-|----------|-------------|---------|
-| `--skeleton-bg` | Background color | `var(--snice-color-background-tertiary)` |
-| `--skeleton-highlight` | Wave highlight color | `var(--snice-color-background-secondary)` |
-| `--skeleton-duration` | Animation duration | `1.5s` |

@@ -5,27 +5,13 @@
 The product card component displays a product with image gallery, pricing, star ratings, variant selectors, and an add-to-cart button. Supports vertical, horizontal, and compact layouts.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
+- [Importing](#importing)
 - [Properties](#properties)
 - [Events](#events)
 - [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
-
-## Basic Usage
-
-```html
-<snice-product-card
-  name="Running Shoes"
-  price="129.99"
-  rating="4.5"
-  review-count="342">
-</snice-product-card>
-```
-
-```typescript
-import 'snice/components/product-card/snice-product-card';
-```
 
 ## Importing
 
@@ -115,6 +101,21 @@ Fired when the gallery image is clicked.
 | `price` | Price display area |
 | `variants` | Variant selectors area |
 | `cta` | Add-to-cart button |
+
+## Basic Usage
+
+```html
+<snice-product-card
+  name="Running Shoes"
+  price="129.99"
+  rating="4.5"
+  review-count="342">
+</snice-product-card>
+```
+
+```typescript
+import 'snice/components/product-card/snice-product-card';
+```
 
 ## Examples
 
@@ -234,11 +235,3 @@ Set `in-stock="false"` to disable the add-to-cart button and show an out-of-stoc
 - **Gallery navigation**: Previous/next buttons have `aria-label` attributes
 - **Out of stock**: CTA button is disabled with appropriate state
 - **Keyboard navigation**: All interactive elements are focusable and keyboard-accessible
-
-## Best Practices
-
-1. **Always set a product name**: The title is required for meaningful display
-2. **Provide alt text via name**: The gallery image alt text uses the product name
-3. **Use multiple images**: Gallery navigation enhances the shopping experience
-4. **Show ratings**: Star ratings build trust and help users compare products
-5. **Use variant selectors**: Let users pick size/color before adding to cart

@@ -5,6 +5,69 @@
 
 A vertical timeline of activity entries for displaying audit logs, user activity streams, and event histories.
 
+## Importing
+
+**ESM (bundler)**
+```typescript
+import 'snice/components/activity-feed/snice-activity-feed';
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-activity-feed.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `activities` | `Activity[]` | `[]` | Array of activity objects |
+| `filter` | `string` | `''` | Active filter by activity type |
+| `groupBy` (attr: `group-by`) | `'none' \| 'date'` | `'none'` | Grouping mode |
+
+### Activity Interface
+
+```typescript
+interface Activity {
+  id: string;
+  actor: { name: string; avatar?: string };
+  action: string;
+  target?: string;
+  timestamp: string;
+  icon?: string;
+  type?: string;
+  meta?: Record<string, unknown>;
+}
+```
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `addActivity()` | `activity: Activity` | Prepends an activity to the feed |
+| `clearFilter()` | --- | Resets the active filter |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `activity-click` | `{ activity: Activity }` | Fired when an entry is clicked |
+| `load-more` | `{ count: number }` | Fired when "Load more" button is clicked |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `base` | Feed container |
+| `filters` | Filter button bar |
+| `list` | Activity list |
+| `entry` | Single activity row |
+| `icon` | Activity icon circle |
+| `content` | Activity content area |
+| `timestamp` | Timestamp text |
+| `group-header` | Date group header |
+
 ## Basic Usage
 
 ```typescript
@@ -20,19 +83,6 @@ import 'snice/components/activity-feed/snice-activity-feed';
     { id: '2', actor: { name: 'Bob' }, action: 'commented on', target: 'Issue #42', timestamp: '2024-01-15T11:00:00Z' }
   ];
 </script>
-```
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/activity-feed/snice-activity-feed';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-activity-feed.min.js"></script>
 ```
 
 ## Examples
@@ -105,53 +155,3 @@ feed.addActivity({
   type: 'deploy'
 });
 ```
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `activities` | `Activity[]` | `[]` | Array of activity objects |
-| `filter` | `string` | `''` | Active filter by activity type |
-| `groupBy` (attr: `group-by`) | `'none' \| 'date'` | `'none'` | Grouping mode |
-
-### Activity Interface
-
-```typescript
-interface Activity {
-  id: string;
-  actor: { name: string; avatar?: string };
-  action: string;
-  target?: string;
-  timestamp: string;
-  icon?: string;
-  type?: string;
-  meta?: Record<string, unknown>;
-}
-```
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `activity-click` | `{ activity: Activity }` | Fired when an entry is clicked |
-| `load-more` | `{ count: number }` | Fired when "Load more" button is clicked |
-
-## Methods
-
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `addActivity()` | `activity: Activity` | Prepends an activity to the feed |
-| `clearFilter()` | --- | Resets the active filter |
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `base` | Feed container |
-| `filters` | Filter button bar |
-| `list` | Activity list |
-| `entry` | Single activity row |
-| `icon` | Activity icon circle |
-| `content` | Activity content area |
-| `timestamp` | Timestamp text |
-| `group-header` | Date group header |

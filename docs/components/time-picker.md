@@ -5,16 +5,6 @@
 
 Single time selection with hour/minute/second selectors and AM/PM toggle.
 
-## Basic Usage
-
-```typescript
-import 'snice/components/time-picker/snice-time-picker';
-```
-
-```html
-<snice-time-picker label="Select time"></snice-time-picker>
-```
-
 ## Importing
 
 **ESM (bundler)**
@@ -26,6 +16,72 @@ import 'snice/components/time-picker/snice-time-picker';
 ```html
 <script src="snice-runtime.min.js"></script>
 <script src="snice-time-picker.min.js"></script>
+```
+
+## Properties
+
+| Property | Attribute | Type | Default | Description |
+|----------|-----------|------|---------|-------------|
+| `value` | `value` | `string` | `''` | Time value (HH:MM or HH:MM:SS) |
+| `format` | `format` | `'12h' \| '24h'` | `'24h'` | Display format |
+| `step` | `step` | `1 \| 5 \| 10 \| 15 \| 30` | `15` | Minute step interval |
+| `minTime` | `min-time` | `string` | `''` | Minimum selectable time |
+| `maxTime` | `max-time` | `string` | `''` | Maximum selectable time |
+| `showSeconds` | `show-seconds` | `boolean` | `false` | Show seconds selector |
+| `disabled` | `disabled` | `boolean` | `false` | Disables the picker |
+| `readonly` | `readonly` | `boolean` | `false` | Makes input read-only |
+| `placeholder` | `placeholder` | `string` | `''` | Input placeholder text |
+| `label` | `label` | `string` | `''` | Label text |
+| `helperText` | `helper-text` | `string` | `''` | Helper text below input |
+| `errorText` | `error-text` | `string` | `''` | Error text below input |
+| `required` | `required` | `boolean` | `false` | Marks as required |
+| `invalid` | `invalid` | `boolean` | `false` | Shows invalid styling |
+| `name` | `name` | `string` | `''` | Form field name |
+| `variant` | `variant` | `'dropdown' \| 'inline'` | `'dropdown'` | Display variant |
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `open()` | -- | Opens the dropdown |
+| `close()` | -- | Closes the dropdown |
+| `focus()` | -- | Focuses the input |
+| `blur()` | -- | Removes focus |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `time-change` | `{ value, hours, minutes, seconds, formatted, timePicker }` | Fired when time changes |
+| `timepicker-focus` | `{ timePicker }` | Fired on input focus |
+| `timepicker-blur` | `{ timePicker }` | Fired on input blur |
+| `timepicker-open` | `{ timePicker }` | Fired when dropdown opens |
+| `timepicker-close` | `{ timePicker }` | Fired when dropdown closes |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `base` | The wrapper container |
+| `label` | The label element |
+| `input` | The text input |
+| `toggle` | The clock icon button |
+| `dropdown` | The dropdown/inline container |
+| `hours` | The hours selector column |
+| `minutes` | The minutes selector column |
+| `seconds` | The seconds selector column |
+| `period` | The AM/PM selector column |
+| `helper-text` | The helper text element |
+| `error-text` | The error text element |
+
+## Basic Usage
+
+```typescript
+import 'snice/components/time-picker/snice-time-picker';
+```
+
+```html
+<snice-time-picker label="Select time"></snice-time-picker>
 ```
 
 ## Examples
@@ -119,59 +175,3 @@ document.querySelector('#tp').addEventListener('time-change', (e) => {
 });
 </script>
 ```
-
-## Properties
-
-| Property | Attribute | Type | Default | Description |
-|----------|-----------|------|---------|-------------|
-| `value` | `value` | `string` | `''` | Time value (HH:MM or HH:MM:SS) |
-| `format` | `format` | `'12h' \| '24h'` | `'24h'` | Display format |
-| `step` | `step` | `1 \| 5 \| 10 \| 15 \| 30` | `15` | Minute step interval |
-| `minTime` | `min-time` | `string` | `''` | Minimum selectable time |
-| `maxTime` | `max-time` | `string` | `''` | Maximum selectable time |
-| `showSeconds` | `show-seconds` | `boolean` | `false` | Show seconds selector |
-| `disabled` | `disabled` | `boolean` | `false` | Disables the picker |
-| `readonly` | `readonly` | `boolean` | `false` | Makes input read-only |
-| `placeholder` | `placeholder` | `string` | `''` | Input placeholder text |
-| `label` | `label` | `string` | `''` | Label text |
-| `helperText` | `helper-text` | `string` | `''` | Helper text below input |
-| `errorText` | `error-text` | `string` | `''` | Error text below input |
-| `required` | `required` | `boolean` | `false` | Marks as required |
-| `invalid` | `invalid` | `boolean` | `false` | Shows invalid styling |
-| `name` | `name` | `string` | `''` | Form field name |
-| `variant` | `variant` | `'dropdown' \| 'inline'` | `'dropdown'` | Display variant |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `time-change` | `{ value, hours, minutes, seconds, formatted, timePicker }` | Fired when time changes |
-| `timepicker-focus` | `{ timePicker }` | Fired on input focus |
-| `timepicker-blur` | `{ timePicker }` | Fired on input blur |
-| `timepicker-open` | `{ timePicker }` | Fired when dropdown opens |
-| `timepicker-close` | `{ timePicker }` | Fired when dropdown closes |
-
-## Methods
-
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `open()` | -- | Opens the dropdown |
-| `close()` | -- | Closes the dropdown |
-| `focus()` | -- | Focuses the input |
-| `blur()` | -- | Removes focus |
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `base` | The wrapper container |
-| `label` | The label element |
-| `input` | The text input |
-| `toggle` | The clock icon button |
-| `dropdown` | The dropdown/inline container |
-| `hours` | The hours selector column |
-| `minutes` | The minutes selector column |
-| `seconds` | The seconds selector column |
-| `period` | The AM/PM selector column |
-| `helper-text` | The helper text element |
-| `error-text` | The error text element |

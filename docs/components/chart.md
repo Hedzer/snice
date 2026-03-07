@@ -4,22 +4,6 @@
 
 General-purpose charting component supporting multiple chart types with animations and interactivity.
 
-## Basic Usage
-
-```javascript
-const chart = document.querySelector('snice-chart');
-
-chart.type = 'line';
-chart.datasets = [
-  {
-    label: 'Sales',
-    data: [12, 19, 15, 25, 22, 30],
-    borderColor: '#2196f3'
-  }
-];
-chart.labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-```
-
 ## Properties
 
 | Property | Type | Default | Description |
@@ -30,52 +14,6 @@ chart.labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
 | `options` | `ChartOptions` | `{}` | Chart options |
 | `width` | `number` | `0` | Chart width (0 = auto) |
 | `height` | `number` | `0` | Chart height (0 = auto) |
-
-## Chart Types
-
-- `'line'` - Line chart
-- `'bar'` - Vertical bar chart
-- `'horizontal-bar'` - Horizontal bar chart
-- `'area'` - Area chart (filled line)
-- `'pie'` - Pie chart
-- `'donut'` - Donut chart
-- `'scatter'` - Scatter plot
-- `'bubble'` - Bubble chart
-- `'radar'` - Radar/spider chart
-- `'mixed'` - Mixed chart types
-
-## ChartDataset Interface
-
-```typescript
-interface ChartDataset {
-  label: string;
-  data: (number | ChartDataPoint)[];
-  type?: ChartType; // for mixed charts
-  backgroundColor?: string | string[];
-  borderColor?: string;
-  borderWidth?: number;
-  fill?: boolean;
-  tension?: number; // 0-1 for line smoothing
-  pointRadius?: number;
-  pointHoverRadius?: number;
-  hidden?: boolean;
-}
-```
-
-## ChartOptions Interface
-
-```typescript
-interface ChartOptions {
-  responsive?: boolean;
-  maintainAspectRatio?: boolean;
-  aspectRatio?: number;
-  legend?: ChartLegend;
-  tooltip?: ChartTooltip;
-  animation?: ChartAnimation;
-  xAxis?: ChartAxis;
-  yAxis?: ChartAxis;
-}
-```
 
 ## Methods
 
@@ -132,6 +70,43 @@ Get current chart data.
 ```javascript
 const data = chart.getData();
 console.log(data.datasets, data.labels);
+```
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer chart container |
+| `canvas` | `<div>` | Chart canvas rendering area |
+| `legend` | `<div>` | Legend container |
+
+```css
+snice-chart::part(base) {
+  border: 1px solid #e2e2e2;
+  border-radius: 8px;
+}
+
+snice-chart::part(legend) {
+  padding: 0.5rem;
+}
+```
+
+## Basic Usage
+
+```javascript
+const chart = document.querySelector('snice-chart');
+
+chart.type = 'line';
+chart.datasets = [
+  {
+    label: 'Sales',
+    data: [12, 19, 15, 25, 22, 30],
+    borderColor: '#2196f3'
+  }
+];
+chart.labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
 ```
 
 ## Examples
@@ -507,24 +482,56 @@ chart.datasets = [
 chart.labels = ['Q1', 'Q2', 'Q3', 'Q4', 'Q5'];
 ```
 
-## CSS Parts
+## Performance Tips
 
-Style internal elements from outside the shadow DOM using `::part()`.
+- Limit data points for smooth animations (< 100 points recommended)
+- Disable animations for large datasets
+- Use debouncing for real-time updates
+- Consider data aggregation for time-series data
 
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | Outer chart container |
-| `canvas` | `<div>` | Chart canvas rendering area |
-| `legend` | `<div>` | Legend container |
+## Chart Types
 
-```css
-snice-chart::part(base) {
-  border: 1px solid #e2e2e2;
-  border-radius: 8px;
+- `'line'` - Line chart
+- `'bar'` - Vertical bar chart
+- `'horizontal-bar'` - Horizontal bar chart
+- `'area'` - Area chart (filled line)
+- `'pie'` - Pie chart
+- `'donut'` - Donut chart
+- `'scatter'` - Scatter plot
+- `'bubble'` - Bubble chart
+- `'radar'` - Radar/spider chart
+- `'mixed'` - Mixed chart types
+
+## ChartDataset Interface
+
+```typescript
+interface ChartDataset {
+  label: string;
+  data: (number | ChartDataPoint)[];
+  type?: ChartType; // for mixed charts
+  backgroundColor?: string | string[];
+  borderColor?: string;
+  borderWidth?: number;
+  fill?: boolean;
+  tension?: number; // 0-1 for line smoothing
+  pointRadius?: number;
+  pointHoverRadius?: number;
+  hidden?: boolean;
 }
+```
 
-snice-chart::part(legend) {
-  padding: 0.5rem;
+## ChartOptions Interface
+
+```typescript
+interface ChartOptions {
+  responsive?: boolean;
+  maintainAspectRatio?: boolean;
+  aspectRatio?: number;
+  legend?: ChartLegend;
+  tooltip?: ChartTooltip;
+  animation?: ChartAnimation;
+  xAxis?: ChartAxis;
+  yAxis?: ChartAxis;
 }
 ```
 
@@ -538,10 +545,3 @@ snice-chart::part(legend) {
 - Modern browsers with Custom Elements v1 support
 - SVG rendering support
 - Responsive and touch-friendly
-
-## Performance Tips
-
-- Limit data points for smooth animations (< 100 points recommended)
-- Disable animations for large datasets
-- Use debouncing for real-time updates
-- Consider data aggregation for time-series data

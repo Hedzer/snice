@@ -5,6 +5,68 @@
 
 Content carousel with autoplay, looping, navigation controls, and multi-slide views.
 
+## Importing
+
+**ESM (bundler)**
+```typescript
+import 'snice/components/carousel/snice-carousel';
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-carousel.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `activeIndex` (attr: `active-index`) | `number` | `0` | Current slide index |
+| `autoplay` | `boolean` | `false` | Enable automatic slide advancement |
+| `autoplayInterval` (attr: `autoplay-interval`) | `number` | `3000` | Autoplay interval in milliseconds |
+| `autoplayDirection` (attr: `autoplay-direction`) | `'forward' \| 'backward'` | `'forward'` | Autoplay direction |
+| `loop` | `boolean` | `true` | Enable infinite looping |
+| `showControls` (attr: `show-controls`) | `boolean` | `true` | Show previous/next arrow buttons |
+| `showIndicators` (attr: `show-indicators`) | `boolean` | `true` | Show slide indicator dots |
+| `slidesPerView` (attr: `slides-per-view`) | `number` | `1` | Number of slides visible at once |
+| `spaceBetween` (attr: `space-between`) | `number` | `0` | Space between slides in pixels |
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `next()` | — | Advance to the next slide |
+| `prev()` | — | Go to the previous slide |
+| `goToSlide()` | `index: number` | Navigate to a specific slide by index |
+| `play()` | — | Start autoplay |
+| `pause()` | — | Pause autoplay |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `carousel-slide-change` | `{ activeIndex: number, previousIndex: number, carousel: SniceCarouselElement }` | Fired when the active slide changes |
+
+## Slots
+
+| Name | Description |
+|------|-------------|
+| (default) | Slide content. Each direct child element becomes one slide. |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `container` | The outermost carousel wrapper |
+| `viewport` | The visible slide area |
+| `slides-container` | The flex container holding all slides |
+| `controls` | The prev/next button container |
+| `button-prev` | The previous slide button |
+| `button-next` | The next slide button |
+| `indicators` | The slide indicator dot container |
+| `indicator` | Individual slide indicator dot |
+
 ## Basic Usage
 
 ```typescript
@@ -17,19 +79,6 @@ import 'snice/components/carousel/snice-carousel';
   <div>Slide 2</div>
   <div>Slide 3</div>
 </snice-carousel>
-```
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/carousel/snice-carousel';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-carousel.min.js"></script>
 ```
 
 ## Examples
@@ -181,52 +230,3 @@ Display product cards in a scrollable carousel.
   </div>
 </snice-carousel>
 ```
-
-## Slots
-
-| Name | Description |
-|------|-------------|
-| (default) | Slide content. Each direct child element becomes one slide. |
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `activeIndex` (attr: `active-index`) | `number` | `0` | Current slide index |
-| `autoplay` | `boolean` | `false` | Enable automatic slide advancement |
-| `autoplayInterval` (attr: `autoplay-interval`) | `number` | `3000` | Autoplay interval in milliseconds |
-| `autoplayDirection` (attr: `autoplay-direction`) | `'forward' \| 'backward'` | `'forward'` | Autoplay direction |
-| `loop` | `boolean` | `true` | Enable infinite looping |
-| `showControls` (attr: `show-controls`) | `boolean` | `true` | Show previous/next arrow buttons |
-| `showIndicators` (attr: `show-indicators`) | `boolean` | `true` | Show slide indicator dots |
-| `slidesPerView` (attr: `slides-per-view`) | `number` | `1` | Number of slides visible at once |
-| `spaceBetween` (attr: `space-between`) | `number` | `0` | Space between slides in pixels |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `carousel-slide-change` | `{ activeIndex: number, previousIndex: number, carousel: SniceCarouselElement }` | Fired when the active slide changes |
-
-## Methods
-
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `next()` | — | Advance to the next slide |
-| `prev()` | — | Go to the previous slide |
-| `goToSlide()` | `index: number` | Navigate to a specific slide by index |
-| `play()` | — | Start autoplay |
-| `pause()` | — | Pause autoplay |
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `container` | The outermost carousel wrapper |
-| `viewport` | The visible slide area |
-| `slides-container` | The flex container holding all slides |
-| `controls` | The prev/next button container |
-| `button-prev` | The previous slide button |
-| `button-next` | The next slide button |
-| `indicators` | The slide indicator dot container |
-| `indicator` | Individual slide indicator dot |

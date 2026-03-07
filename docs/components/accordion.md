@@ -5,38 +5,18 @@
 The accordion components provide collapsible sections of content. An `<snice-accordion>` container manages multiple `<snice-accordion-item>` elements, supporting single or multiple open items with keyboard navigation.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
 - [Components](#components)
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
+- [Slots](#slots)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
-
-## Basic Usage
-
-```html
-<snice-accordion>
-  <snice-accordion-item item-id="item-1">
-    <span slot="header">Section 1</span>
-    <div>Content for section 1</div>
-  </snice-accordion-item>
-
-  <snice-accordion-item item-id="item-2">
-    <span slot="header">Section 2</span>
-    <div>Content for section 2</div>
-  </snice-accordion-item>
-
-  <snice-accordion-item item-id="item-3">
-    <span slot="header">Section 3</span>
-    <div>Content for section 3</div>
-  </snice-accordion-item>
-</snice-accordion>
-```
-
-```typescript
-import 'snice/components/accordion/snice-accordion';
-import 'snice/components/accordion/snice-accordion-item';
-```
+- [Keyboard Navigation](#keyboard-navigation)
+- [Accessibility](#accessibility)
+- [Browser Support](#browser-support)
+- [Common Patterns](#common-patterns)
 
 ## Components
 
@@ -172,6 +152,30 @@ Fired when an item is toggled.
 }
 ```
 
+## Slots
+
+### Accordion Item Slots
+
+#### `header` (named slot)
+Content for the clickable header/trigger.
+
+```html
+<snice-accordion-item>
+  <span slot="header">Click to expand</span>
+  <div>Panel content</div>
+</snice-accordion-item>
+```
+
+#### Default slot
+Content that appears when the item is expanded.
+
+```html
+<snice-accordion-item>
+  <span slot="header">Header</span>
+  <div>This content is collapsible</div>
+</snice-accordion-item>
+```
+
 ## CSS Parts
 
 ### Accordion Item Parts
@@ -203,28 +207,30 @@ snice-accordion-item::part(icon) {
 }
 ```
 
-## Slots
-
-### Accordion Item Slots
-
-#### `header` (named slot)
-Content for the clickable header/trigger.
+## Basic Usage
 
 ```html
-<snice-accordion-item>
-  <span slot="header">Click to expand</span>
-  <div>Panel content</div>
-</snice-accordion-item>
+<snice-accordion>
+  <snice-accordion-item item-id="item-1">
+    <span slot="header">Section 1</span>
+    <div>Content for section 1</div>
+  </snice-accordion-item>
+
+  <snice-accordion-item item-id="item-2">
+    <span slot="header">Section 2</span>
+    <div>Content for section 2</div>
+  </snice-accordion-item>
+
+  <snice-accordion-item item-id="item-3">
+    <span slot="header">Section 3</span>
+    <div>Content for section 3</div>
+  </snice-accordion-item>
+</snice-accordion>
 ```
 
-#### Default slot
-Content that appears when the item is expanded.
-
-```html
-<snice-accordion-item>
-  <span slot="header">Header</span>
-  <div>This content is collapsible</div>
-</snice-accordion-item>
+```typescript
+import 'snice/components/accordion/snice-accordion';
+import 'snice/components/accordion/snice-accordion-item';
 ```
 
 ## Examples
@@ -547,16 +553,6 @@ The accordion supports comprehensive keyboard navigation:
 
 - Modern browsers (Chrome, Firefox, Safari, Edge)
 - Requires Custom Elements v1 and Shadow DOM support
-
-## Best Practices
-
-1. **Use descriptive headers**: Make it clear what each section contains
-2. **Keep content concise**: Accordion is best for moderate amounts of content
-3. **Set appropriate IDs**: Provide meaningful `item-id` values for tracking
-4. **Consider initial state**: Open important sections by default
-5. **Use multiple mode sparingly**: Single-open mode is often clearer
-6. **Avoid nesting accordions**: Can be confusing for users
-7. **Test keyboard navigation**: Ensure all interactions work without a mouse
 
 ## Common Patterns
 

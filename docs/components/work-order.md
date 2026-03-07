@@ -3,6 +3,182 @@
 
 A service work order component with task checklists, parts/materials tracking, time/labor calculations, and customer sign-off. Perfect for field service, maintenance, and repair workflows.
 
+## Importing
+
+**ESM (bundler)**
+```typescript
+import 'snice/components/work-order/snice-work-order';
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-work-order.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `woNumber` | `string` | `''` | Work order identifier |
+| `date` | `string` | `''` | Work order date |
+| `dueDate` | `string` | `''` | Due/completion date |
+| `priority` | `'low' \| 'medium' \| 'high' \| 'urgent'` | `'medium'` | Priority level with visual badge |
+| `status` | `'open' \| 'in-progress' \| 'completed' \| 'cancelled'` | `'open'` | Status with visual badge |
+| `customer` | `WorkOrderCustomer \| null` | `null` | Customer information |
+| `description` | `string` | `''` | Scope of work description |
+| `tasks` | `WorkOrderTask[]` | `[]` | Task checklist |
+| `parts` | `WorkOrderPart[]` | `[]` | Parts/materials list |
+| `asset` | `WorkOrderAsset \| null` | `null` | Equipment/asset information |
+| `laborRate` | `number` | `0` | Hourly labor rate for calculations |
+| `notes` | `string` | `''` | Additional notes |
+| `variant` | `'standard' \| 'compact' \| 'field-service' \| 'maintenance' \| 'detailed'` | `'standard'` | Visual style variant |
+| `showQr` | `boolean` | `false` | Show QR code placeholder |
+| `qrData` | `string` | `''` | QR code data |
+| `qrPosition` | `'top-right' \| 'header' \| 'footer'` | `'top-right'` | QR code placement |
+
+### WorkOrderCustomer Interface
+
+```typescript
+interface WorkOrderCustomer {
+  name: string;
+  address?: string;
+  phone?: string;
+  email?: string;
+}
+```
+
+### WorkOrderTask Interface
+
+```typescript
+interface WorkOrderTask {
+  description: string;
+  assignee?: string;
+  completed?: boolean;
+  hours?: number;
+}
+```
+
+### WorkOrderPart Interface
+
+```typescript
+interface WorkOrderPart {
+  name: string;
+  partNumber?: string;
+  quantity: number;
+  unitCost: number;
+}
+```
+
+### WorkOrderAsset Interface
+
+```typescript
+interface WorkOrderAsset {
+  id: string;
+  name: string;
+  location?: string;
+  serial?: string;
+  lastService?: string;
+}
+```
+
+## Methods
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `getTotalPartsCost()` | `number` | Calculate total cost of all parts |
+| `getTotalLaborHours()` | `number` | Sum of all task hours |
+| `getTotalLaborCost()` | `number` | Labor hours × labor rate |
+| `getTotalCost()` | `number` | Parts cost + labor cost |
+| `print()` | `void` | Print the work order |
+| `toJSON()` | `WorkOrderJSON` | Export all data including calculated totals |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `task-toggle` | `{ index, task, completed }` | Fired when a task checkbox is toggled |
+| `status-change` | `{ previousStatus, status }` | Fired when status property changes |
+| `wo-sign` | `{ woNumber, timestamp }` | Fired when sign-off button is clicked |
+
+## Slots
+
+| Slot Name | Description |
+|-----------|-------------|
+| `qr` | QR code content |
+| `signature` | Signature capture area |
+| `footer` | Additional footer content |
+| (default) | Default slot for extra content |
+
+## CSS Custom Properties
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `--wo-max-width` | `50rem` | Maximum width |
+| `--wo-bg` | `white` | Background color |
+| `--wo-bg-element` | `rgb(252 251 249)` | Element background |
+| `--wo-text` | `rgb(23 23 23)` | Text color |
+| `--wo-text-secondary` | `rgb(82 82 82)` | Secondary text |
+| `--wo-border` | `rgb(226 226 226)` | Border color |
+| `--wo-accent` | `rgb(37 99 235)` | Accent color |
+| `--wo-priority-low-bg/text` | various | Low priority badge colors |
+| `--wo-priority-medium-bg/text` | various | Medium priority badge colors |
+| `--wo-priority-high-bg/text` | various | High priority badge colors |
+| `--wo-priority-urgent-bg/text` | various | Urgent priority badge colors |
+| `--wo-task-checkbox-size` | `1.25rem` | Checkbox size |
+| `--wo-signature-line-color` | border color | Signature line color |
+| `--wo-qr-size` | `5rem` | QR code size |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `base` | Root container |
+| `header` | Work order header |
+| `title` | "Work Order" title |
+| `wo-number` | Work order number |
+| `date` | Date field |
+| `due-date` | Due date field |
+| `priority` | Priority badge |
+| `status` | Status badge |
+| `qr-container` | QR code container |
+| `customer` | Customer section |
+| `customer-name` | Customer name |
+| `customer-address` | Customer address |
+| `customer-contact` | Customer phone/email |
+| `asset` | Asset section |
+| `asset-id` | Asset ID |
+| `asset-name` | Asset name |
+| `description` | Scope of work section |
+| `description-label` | "Scope of Work" label |
+| `description-content` | Description text |
+| `tasks` | Tasks section |
+| `task` | Individual task row |
+| `task-checkbox` | Task completion checkbox |
+| `task-description` | Task description |
+| `task-assignee` | Task assignee |
+| `parts` | Parts section |
+| `parts-table` | Parts table |
+| `parts-row` | Parts table row |
+| `part-name` | Part name |
+| `part-number` | Part number |
+| `part-qty` | Part quantity |
+| `part-cost` | Part unit cost |
+| `parts-total` | Parts total |
+| `labor` | Labor section |
+| `labor-hours` | Total hours |
+| `labor-rate` | Hourly rate |
+| `labor-total` | Labor cost total |
+| `costs` | Cost summary section |
+| `grand-total` | Grand total |
+| `notes` | Notes section |
+| `notes-label` | "Notes" heading |
+| `notes-content` | Notes text |
+| `signature` | Sign-off section |
+| `signature-line` | Signature line |
+| `sign-button` | Sign-off button |
+| `footer` | Footer area |
+
 ## Basic Usage
 
 ```html
@@ -26,19 +202,6 @@ A service work order component with task checklists, parts/materials tracking, t
     { name: 'HVAC Filter 20x25', partNumber: 'HF-2025', quantity: 8, unitCost: 24.99 }
   ];
 </script>
-```
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/work-order/snice-work-order';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-work-order.min.js"></script>
 ```
 
 ## Examples
@@ -225,166 +388,3 @@ import 'snice/components/work-order/snice-work-order';
   Print Work Order
 </button>
 ```
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `woNumber` | `string` | `''` | Work order identifier |
-| `date` | `string` | `''` | Work order date |
-| `dueDate` | `string` | `''` | Due/completion date |
-| `priority` | `'low' \| 'medium' \| 'high' \| 'urgent'` | `'medium'` | Priority level with visual badge |
-| `status` | `'open' \| 'in-progress' \| 'completed' \| 'cancelled'` | `'open'` | Status with visual badge |
-| `customer` | `WorkOrderCustomer \| null` | `null` | Customer information |
-| `description` | `string` | `''` | Scope of work description |
-| `tasks` | `WorkOrderTask[]` | `[]` | Task checklist |
-| `parts` | `WorkOrderPart[]` | `[]` | Parts/materials list |
-| `asset` | `WorkOrderAsset \| null` | `null` | Equipment/asset information |
-| `laborRate` | `number` | `0` | Hourly labor rate for calculations |
-| `notes` | `string` | `''` | Additional notes |
-| `variant` | `'standard' \| 'compact' \| 'field-service' \| 'maintenance' \| 'detailed'` | `'standard'` | Visual style variant |
-| `showQr` | `boolean` | `false` | Show QR code placeholder |
-| `qrData` | `string` | `''` | QR code data |
-| `qrPosition` | `'top-right' \| 'header' \| 'footer'` | `'top-right'` | QR code placement |
-
-### WorkOrderCustomer Interface
-
-```typescript
-interface WorkOrderCustomer {
-  name: string;
-  address?: string;
-  phone?: string;
-  email?: string;
-}
-```
-
-### WorkOrderTask Interface
-
-```typescript
-interface WorkOrderTask {
-  description: string;
-  assignee?: string;
-  completed?: boolean;
-  hours?: number;
-}
-```
-
-### WorkOrderPart Interface
-
-```typescript
-interface WorkOrderPart {
-  name: string;
-  partNumber?: string;
-  quantity: number;
-  unitCost: number;
-}
-```
-
-### WorkOrderAsset Interface
-
-```typescript
-interface WorkOrderAsset {
-  id: string;
-  name: string;
-  location?: string;
-  serial?: string;
-  lastService?: string;
-}
-```
-
-## Slots
-
-| Slot Name | Description |
-|-----------|-------------|
-| `qr` | QR code content |
-| `signature` | Signature capture area |
-| `footer` | Additional footer content |
-| (default) | Default slot for extra content |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `task-toggle` | `{ index, task, completed }` | Fired when a task checkbox is toggled |
-| `status-change` | `{ previousStatus, status }` | Fired when status property changes |
-| `wo-sign` | `{ woNumber, timestamp }` | Fired when sign-off button is clicked |
-
-## Methods
-
-| Method | Returns | Description |
-|--------|---------|-------------|
-| `getTotalPartsCost()` | `number` | Calculate total cost of all parts |
-| `getTotalLaborHours()` | `number` | Sum of all task hours |
-| `getTotalLaborCost()` | `number` | Labor hours × labor rate |
-| `getTotalCost()` | `number` | Parts cost + labor cost |
-| `print()` | `void` | Print the work order |
-| `toJSON()` | `WorkOrderJSON` | Export all data including calculated totals |
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `base` | Root container |
-| `header` | Work order header |
-| `title` | "Work Order" title |
-| `wo-number` | Work order number |
-| `date` | Date field |
-| `due-date` | Due date field |
-| `priority` | Priority badge |
-| `status` | Status badge |
-| `qr-container` | QR code container |
-| `customer` | Customer section |
-| `customer-name` | Customer name |
-| `customer-address` | Customer address |
-| `customer-contact` | Customer phone/email |
-| `asset` | Asset section |
-| `asset-id` | Asset ID |
-| `asset-name` | Asset name |
-| `description` | Scope of work section |
-| `description-label` | "Scope of Work" label |
-| `description-content` | Description text |
-| `tasks` | Tasks section |
-| `task` | Individual task row |
-| `task-checkbox` | Task completion checkbox |
-| `task-description` | Task description |
-| `task-assignee` | Task assignee |
-| `parts` | Parts section |
-| `parts-table` | Parts table |
-| `parts-row` | Parts table row |
-| `part-name` | Part name |
-| `part-number` | Part number |
-| `part-qty` | Part quantity |
-| `part-cost` | Part unit cost |
-| `parts-total` | Parts total |
-| `labor` | Labor section |
-| `labor-hours` | Total hours |
-| `labor-rate` | Hourly rate |
-| `labor-total` | Labor cost total |
-| `costs` | Cost summary section |
-| `grand-total` | Grand total |
-| `notes` | Notes section |
-| `notes-label` | "Notes" heading |
-| `notes-content` | Notes text |
-| `signature` | Sign-off section |
-| `signature-line` | Signature line |
-| `sign-button` | Sign-off button |
-| `footer` | Footer area |
-
-## CSS Custom Properties
-
-| Property | Default | Description |
-|----------|---------|-------------|
-| `--wo-max-width` | `50rem` | Maximum width |
-| `--wo-bg` | `white` | Background color |
-| `--wo-bg-element` | `rgb(252 251 249)` | Element background |
-| `--wo-text` | `rgb(23 23 23)` | Text color |
-| `--wo-text-secondary` | `rgb(82 82 82)` | Secondary text |
-| `--wo-border` | `rgb(226 226 226)` | Border color |
-| `--wo-accent` | `rgb(37 99 235)` | Accent color |
-| `--wo-priority-low-bg/text` | various | Low priority badge colors |
-| `--wo-priority-medium-bg/text` | various | Medium priority badge colors |
-| `--wo-priority-high-bg/text` | various | High priority badge colors |
-| `--wo-priority-urgent-bg/text` | various | Urgent priority badge colors |
-| `--wo-task-checkbox-size` | `1.25rem` | Checkbox size |
-| `--wo-signature-line-color` | border color | Signature line color |
-| `--wo-qr-size` | `5rem` | QR code size |

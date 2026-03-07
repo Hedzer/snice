@@ -5,16 +5,6 @@
 
 A customizable hyperlink component with variants, external link handling, and hash routing support.
 
-## Basic Usage
-
-```typescript
-import 'snice/components/link/snice-link';
-```
-
-```html
-<snice-link href="/about">About Us</snice-link>
-```
-
 ## Importing
 
 **ESM (bundler)**
@@ -26,6 +16,48 @@ import 'snice/components/link/snice-link';
 ```html
 <script src="snice-runtime.min.js"></script>
 <script src="snice-link.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `href` | `string` | `''` | Link URL |
+| `target` | `'_self' \| '_blank' \| '_parent' \| '_top'` | `'_self'` | Link target |
+| `variant` | `'default' \| 'primary' \| 'secondary' \| 'muted'` | `'default'` | Visual style |
+| `disabled` | `boolean` | `false` | Disables the link |
+| `external` | `boolean` | `false` | Opens in new tab with `noopener noreferrer` |
+| `underline` | `boolean` | `false` | Shows text underline |
+| `hash` | `boolean` | `false` | Auto-prepends `#` to href |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `click` | `MouseEvent` | Fired on click (prevented when disabled) |
+| `navigate` | `{ href: string }` | Fired on hash link click, cancelable |
+
+## Slots
+
+| Name | Description |
+|------|-------------|
+| (default) | Link text content |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `link` | The anchor element |
+| `external-icon` | The external link arrow icon |
+
+## Basic Usage
+
+```typescript
+import 'snice/components/link/snice-link';
+```
+
+```html
+<snice-link href="/about">About Us</snice-link>
 ```
 
 ## Examples
@@ -111,35 +143,3 @@ Links display inline and work naturally within text.
   <snice-link href="https://github.com" external variant="muted">GitHub</snice-link>
 </footer>
 ```
-
-## Slots
-
-| Name | Description |
-|------|-------------|
-| (default) | Link text content |
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `href` | `string` | `''` | Link URL |
-| `target` | `'_self' \| '_blank' \| '_parent' \| '_top'` | `'_self'` | Link target |
-| `variant` | `'default' \| 'primary' \| 'secondary' \| 'muted'` | `'default'` | Visual style |
-| `disabled` | `boolean` | `false` | Disables the link |
-| `external` | `boolean` | `false` | Opens in new tab with `noopener noreferrer` |
-| `underline` | `boolean` | `false` | Shows text underline |
-| `hash` | `boolean` | `false` | Auto-prepends `#` to href |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `click` | `MouseEvent` | Fired on click (prevented when disabled) |
-| `navigate` | `{ href: string }` | Fired on hash link click, cancelable |
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `link` | The anchor element |
-| `external-icon` | The external link arrow icon |

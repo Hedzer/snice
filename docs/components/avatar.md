@@ -5,16 +5,6 @@
 
 Displays a user profile image with automatic fallback to name-based initials or a default person icon.
 
-## Basic Usage
-
-```typescript
-import 'snice/components/avatar/snice-avatar';
-```
-
-```html
-<snice-avatar src="/user.jpg" name="John Doe"></snice-avatar>
-```
-
 ## Importing
 
 **ESM (bundler)**
@@ -26,6 +16,66 @@ import 'snice/components/avatar/snice-avatar';
 ```html
 <script src="snice-runtime.min.js"></script>
 <script src="snice-avatar.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `src` | `string` | `''` | Image URL |
+| `alt` | `string` | `''` | Alt text for the image (falls back to `name`) |
+| `name` | `string` | `''` | User's name (used for initials and color generation) |
+| `size` | `'xs' \| 'small' \| 'medium' \| 'large' \| 'xl' \| 'xxl'` | `'medium'` | Avatar size |
+| `shape` | `'circle' \| 'square' \| 'rounded'` | `'circle'` | Avatar shape |
+| `fallbackColor` (attr: `fallback-color`) | `string` | `'#ffffff'` | Text color for initials fallback |
+| `fallbackBackground` (attr: `fallback-background`) | `string` | `''` | Background color for initials fallback (overrides auto-color) |
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `getInitials()` | `name: string` | Extract initials from a name string |
+
+## CSS Custom Properties
+
+| Property | Description | Default |
+|----------|-------------|---------|
+| `--avatar-size` | Avatar dimensions | Varies by `size` attribute |
+| `--avatar-bg` | Background color | Auto-generated from name |
+| `--avatar-color` | Text/icon color | `hsl(0 0% 100%)` |
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer avatar container |
+| `image` | `<img>` | The profile image element (when loaded) |
+| `fallback` | `<div>` | Initials or default icon container |
+
+```css
+snice-avatar::part(base) {
+  border: 2px solid #3b82f6;
+}
+
+snice-avatar::part(image) {
+  filter: grayscale(50%);
+}
+
+snice-avatar::part(fallback) {
+  font-weight: 700;
+}
+```
+
+## Basic Usage
+
+```typescript
+import 'snice/components/avatar/snice-avatar';
+```
+
+```html
+<snice-avatar src="/user.jpg" name="John Doe"></snice-avatar>
 ```
 
 ## Examples
@@ -179,56 +229,6 @@ Use small avatars alongside user-generated content.
     <p style="margin: 4px 0 0 0;">Great implementation!</p>
   </div>
 </div>
-```
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `src` | `string` | `''` | Image URL |
-| `alt` | `string` | `''` | Alt text for the image (falls back to `name`) |
-| `name` | `string` | `''` | User's name (used for initials and color generation) |
-| `size` | `'xs' \| 'small' \| 'medium' \| 'large' \| 'xl' \| 'xxl'` | `'medium'` | Avatar size |
-| `shape` | `'circle' \| 'square' \| 'rounded'` | `'circle'` | Avatar shape |
-| `fallbackColor` (attr: `fallback-color`) | `string` | `'#ffffff'` | Text color for initials fallback |
-| `fallbackBackground` (attr: `fallback-background`) | `string` | `''` | Background color for initials fallback (overrides auto-color) |
-
-## Methods
-
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `getInitials()` | `name: string` | Extract initials from a name string |
-
-## CSS Custom Properties
-
-| Property | Description | Default |
-|----------|-------------|---------|
-| `--avatar-size` | Avatar dimensions | Varies by `size` attribute |
-| `--avatar-bg` | Background color | Auto-generated from name |
-| `--avatar-color` | Text/icon color | `hsl(0 0% 100%)` |
-
-## CSS Parts
-
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | Outer avatar container |
-| `image` | `<img>` | The profile image element (when loaded) |
-| `fallback` | `<div>` | Initials or default icon container |
-
-```css
-snice-avatar::part(base) {
-  border: 2px solid #3b82f6;
-}
-
-snice-avatar::part(image) {
-  filter: grayscale(50%);
-}
-
-snice-avatar::part(fallback) {
-  font-weight: 700;
-}
 ```
 
 ## Size Reference

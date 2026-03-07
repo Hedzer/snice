@@ -5,6 +5,60 @@
 
 Displays a rich preview card for a URL with image, title, description, and site info.
 
+## Importing
+
+**ESM (bundler)**
+```typescript
+import 'snice/components/link-preview/snice-link-preview';
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-link-preview.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `url` | `string` | `''` | Target URL (opens on click) |
+| `title` | `string` | `''` | Preview title (clamped to 2 lines) |
+| `description` | `string` | `''` | Preview description (clamped to 3 lines) |
+| `image` | `string` | `''` | Preview image URL |
+| `siteName` (attr: `site-name`) | `string` | `''` | Site name in footer |
+| `favicon` | `string` | `''` | Favicon URL in footer |
+| `variant` | `'vertical' \| 'horizontal'` | `'vertical'` | Card layout direction |
+| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Card size |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `link-click` | `{ url: string }` | Fired when the card is clicked |
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The outer preview card container |
+| `content` | `<div>` | The text content area (title, description, footer) |
+| `title` | `<p>` | The title text element |
+
+```css
+snice-link-preview::part(base) {
+  border-radius: 1rem;
+  border: 2px solid #e2e8f0;
+}
+
+snice-link-preview::part(title) {
+  font-weight: 700;
+  color: #1e293b;
+}
+```
+
 ## Basic Usage
 
 ```typescript
@@ -18,19 +72,6 @@ import 'snice/components/link-preview/snice-link-preview';
   description="An example website for demonstration."
   image="https://example.com/og-image.jpg">
 </snice-link-preview>
-```
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/link-preview/snice-link-preview';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-link-preview.min.js"></script>
 ```
 
 ## Examples
@@ -114,44 +155,3 @@ When no image is provided, a placeholder link icon is shown.
   });
 </script>
 ```
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `url` | `string` | `''` | Target URL (opens on click) |
-| `title` | `string` | `''` | Preview title (clamped to 2 lines) |
-| `description` | `string` | `''` | Preview description (clamped to 3 lines) |
-| `image` | `string` | `''` | Preview image URL |
-| `siteName` (attr: `site-name`) | `string` | `''` | Site name in footer |
-| `favicon` | `string` | `''` | Favicon URL in footer |
-| `variant` | `'vertical' \| 'horizontal'` | `'vertical'` | Card layout direction |
-| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Card size |
-
-## CSS Parts
-
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | The outer preview card container |
-| `content` | `<div>` | The text content area (title, description, footer) |
-| `title` | `<p>` | The title text element |
-
-```css
-snice-link-preview::part(base) {
-  border-radius: 1rem;
-  border: 2px solid #e2e8f0;
-}
-
-snice-link-preview::part(title) {
-  font-weight: 700;
-  color: #1e293b;
-}
-```
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `link-click` | `{ url: string }` | Fired when the card is clicked |

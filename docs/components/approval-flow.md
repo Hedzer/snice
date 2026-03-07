@@ -5,6 +5,65 @@
 
 A visual approval chain showing a sequence of approver nodes with avatar, name, role, and status.
 
+## Importing
+
+**ESM (bundler)**
+```typescript
+import 'snice/components/approval-flow/snice-approval-flow';
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-approval-flow.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `steps` | `ApprovalStep[]` | `[]` | Array of approver step objects |
+| `orientation` | `'horizontal' \| 'vertical'` | `'horizontal'` | Layout direction |
+| `currentStep` (attr: `current-step`) | `string` | `''` | ID of the active step |
+
+### ApprovalStep Object
+
+```typescript
+interface ApprovalStep {
+  id: string;
+  approver: string;
+  role?: string;
+  avatar?: string;
+  status: 'pending' | 'approved' | 'rejected' | 'skipped';
+  comment?: string;
+  timestamp?: string;
+}
+```
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `step-approve` | `{ step: ApprovalStep }` | Approve button clicked on current step |
+| `step-reject` | `{ step: ApprovalStep }` | Reject button clicked on current step |
+| `step-comment` | `{ step: ApprovalStep, comment: string }` | Comment added to a step |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `container` | Main flow container |
+| `step` | Individual step node |
+| `avatar` | Approver avatar circle |
+| `content` | Name/role/status wrapper |
+| `name` | Approver name text |
+| `role` | Approver role text |
+| `status` | Status badge |
+| `comment` | Comment text |
+| `timestamp` | Timestamp text |
+| `actions` | Approve/reject button row |
+| `connector` | Line between steps |
+
 ## Basic Usage
 
 ```typescript
@@ -23,19 +82,6 @@ import 'snice/components/approval-flow/snice-approval-flow';
   ];
   flow.currentStep = '2';
 </script>
-```
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/approval-flow/snice-approval-flow';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-approval-flow.min.js"></script>
 ```
 
 ## Examples
@@ -111,49 +157,3 @@ Set `current-step` to enable approve/reject action buttons on the active step.
   });
 </script>
 ```
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `steps` | `ApprovalStep[]` | `[]` | Array of approver step objects |
-| `orientation` | `'horizontal' \| 'vertical'` | `'horizontal'` | Layout direction |
-| `currentStep` (attr: `current-step`) | `string` | `''` | ID of the active step |
-
-### ApprovalStep Object
-
-```typescript
-interface ApprovalStep {
-  id: string;
-  approver: string;
-  role?: string;
-  avatar?: string;
-  status: 'pending' | 'approved' | 'rejected' | 'skipped';
-  comment?: string;
-  timestamp?: string;
-}
-```
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `step-approve` | `{ step: ApprovalStep }` | Approve button clicked on current step |
-| `step-reject` | `{ step: ApprovalStep }` | Reject button clicked on current step |
-| `step-comment` | `{ step: ApprovalStep, comment: string }` | Comment added to a step |
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `container` | Main flow container |
-| `step` | Individual step node |
-| `avatar` | Approver avatar circle |
-| `content` | Name/role/status wrapper |
-| `name` | Approver name text |
-| `role` | Approver role text |
-| `status` | Status badge |
-| `comment` | Comment text |
-| `timestamp` | Timestamp text |
-| `actions` | Approve/reject button row |
-| `connector` | Line between steps |

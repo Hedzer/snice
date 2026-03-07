@@ -5,16 +5,6 @@
 
 Calendar-based date input with format options and validation.
 
-## Basic Usage
-
-```typescript
-import 'snice/components/date-picker/snice-date-picker';
-```
-
-```html
-<snice-date-picker label="Select date"></snice-date-picker>
-```
-
 ## Importing
 
 **ESM (bundler)**
@@ -26,6 +16,81 @@ import 'snice/components/date-picker/snice-date-picker';
 ```html
 <script src="snice-runtime.min.js"></script>
 <script src="snice-date-picker.min.js"></script>
+```
+
+## Properties
+
+| Property | Attribute | Type | Default | Description |
+|----------|-----------|------|---------|-------------|
+| `value` | `value` | `string` | `''` | Current date value |
+| `format` | `format` | `'yyyy-mm-dd' \| 'mm/dd/yyyy' \| 'dd/mm/yyyy' \| 'yyyy/mm/dd' \| 'dd-mm-yyyy' \| 'mm-dd-yyyy' \| 'mmmm dd, yyyy'` | `'mm/dd/yyyy'` | Display and parse format |
+| `variant` | `variant` | `'outlined' \| 'filled' \| 'underlined'` | `'outlined'` | Input visual style |
+| `size` | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Component size |
+| `placeholder` | `placeholder` | `string` | `''` | Input placeholder text |
+| `label` | `label` | `string` | `''` | Label text |
+| `helperText` | `helper-text` | `string` | `''` | Helper text below input |
+| `errorText` | `error-text` | `string` | `''` | Error text below input |
+| `disabled` | `disabled` | `boolean` | `false` | Disables the picker |
+| `readonly` | `readonly` | `boolean` | `false` | Makes the input read-only |
+| `loading` | `loading` | `boolean` | `false` | Shows loading spinner |
+| `required` | `required` | `boolean` | `false` | Marks as required |
+| `invalid` | `invalid` | `boolean` | `false` | Shows invalid styling |
+| `clearable` | `clearable` | `boolean` | `false` | Shows clear button |
+| `min` | `min` | `string` | `''` | Minimum selectable date |
+| `max` | `max` | `string` | `''` | Maximum selectable date |
+| `name` | `name` | `string` | `''` | Form field name |
+| `showCalendar` | `show-calendar` | `boolean` | `false` | Calendar visibility |
+| `firstDayOfWeek` | `first-day-of-week` | `number` | `0` | First day of week (0=Sun) |
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `focus()` | — | Focuses the input |
+| `blur()` | — | Removes focus |
+| `clear()` | — | Clears the selected date |
+| `open()` | — | Opens the calendar popup |
+| `close()` | — | Closes the calendar popup |
+| `selectDate()` | `date: Date` | Programmatically selects a date |
+| `goToMonth()` | `year: number, month: number` | Navigates calendar to a month |
+| `goToToday()` | — | Selects today's date |
+| `checkValidity()` | — | Returns input validity |
+| `reportValidity()` | — | Reports input validity |
+| `setCustomValidity()` | `message: string` | Sets custom validation message |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `datepicker-input` | `{ value, datePicker }` | Fired on text input |
+| `datepicker-change` | `{ value, date, formatted, iso, datePicker }` | Fired when date changes |
+| `datepicker-focus` | `{ datePicker }` | Fired on input focus |
+| `datepicker-blur` | `{ datePicker }` | Fired on input blur |
+| `datepicker-open` | `{ datePicker }` | Fired when calendar opens |
+| `datepicker-close` | `{ datePicker }` | Fired when calendar closes |
+| `datepicker-clear` | `{ datePicker }` | Fired when value is cleared |
+| `datepicker-select` | `{ date, formatted, iso, datePicker }` | Fired when a date is selected |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `input` | The text input element |
+| `calendar-toggle` | The calendar icon button |
+| `clear` | The clear button |
+| `spinner` | The loading spinner |
+| `calendar` | The calendar popup container |
+| `helper-text` | The helper text element |
+| `error-text` | The error text element |
+
+## Basic Usage
+
+```typescript
+import 'snice/components/date-picker/snice-date-picker';
+```
+
+```html
+<snice-date-picker label="Select date"></snice-date-picker>
 ```
 
 ## Examples
@@ -134,68 +199,3 @@ document.querySelector('#dp').addEventListener('datepicker-change', (e) => {
 });
 </script>
 ```
-
-## Properties
-
-| Property | Attribute | Type | Default | Description |
-|----------|-----------|------|---------|-------------|
-| `value` | `value` | `string` | `''` | Current date value |
-| `format` | `format` | `'yyyy-mm-dd' \| 'mm/dd/yyyy' \| 'dd/mm/yyyy' \| 'yyyy/mm/dd' \| 'dd-mm-yyyy' \| 'mm-dd-yyyy' \| 'mmmm dd, yyyy'` | `'mm/dd/yyyy'` | Display and parse format |
-| `variant` | `variant` | `'outlined' \| 'filled' \| 'underlined'` | `'outlined'` | Input visual style |
-| `size` | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Component size |
-| `placeholder` | `placeholder` | `string` | `''` | Input placeholder text |
-| `label` | `label` | `string` | `''` | Label text |
-| `helperText` | `helper-text` | `string` | `''` | Helper text below input |
-| `errorText` | `error-text` | `string` | `''` | Error text below input |
-| `disabled` | `disabled` | `boolean` | `false` | Disables the picker |
-| `readonly` | `readonly` | `boolean` | `false` | Makes the input read-only |
-| `loading` | `loading` | `boolean` | `false` | Shows loading spinner |
-| `required` | `required` | `boolean` | `false` | Marks as required |
-| `invalid` | `invalid` | `boolean` | `false` | Shows invalid styling |
-| `clearable` | `clearable` | `boolean` | `false` | Shows clear button |
-| `min` | `min` | `string` | `''` | Minimum selectable date |
-| `max` | `max` | `string` | `''` | Maximum selectable date |
-| `name` | `name` | `string` | `''` | Form field name |
-| `showCalendar` | `show-calendar` | `boolean` | `false` | Calendar visibility |
-| `firstDayOfWeek` | `first-day-of-week` | `number` | `0` | First day of week (0=Sun) |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `datepicker-input` | `{ value, datePicker }` | Fired on text input |
-| `datepicker-change` | `{ value, date, formatted, iso, datePicker }` | Fired when date changes |
-| `datepicker-focus` | `{ datePicker }` | Fired on input focus |
-| `datepicker-blur` | `{ datePicker }` | Fired on input blur |
-| `datepicker-open` | `{ datePicker }` | Fired when calendar opens |
-| `datepicker-close` | `{ datePicker }` | Fired when calendar closes |
-| `datepicker-clear` | `{ datePicker }` | Fired when value is cleared |
-| `datepicker-select` | `{ date, formatted, iso, datePicker }` | Fired when a date is selected |
-
-## Methods
-
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `focus()` | — | Focuses the input |
-| `blur()` | — | Removes focus |
-| `clear()` | — | Clears the selected date |
-| `open()` | — | Opens the calendar popup |
-| `close()` | — | Closes the calendar popup |
-| `selectDate()` | `date: Date` | Programmatically selects a date |
-| `goToMonth()` | `year: number, month: number` | Navigates calendar to a month |
-| `goToToday()` | — | Selects today's date |
-| `checkValidity()` | — | Returns input validity |
-| `reportValidity()` | — | Reports input validity |
-| `setCustomValidity()` | `message: string` | Sets custom validation message |
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `input` | The text input element |
-| `calendar-toggle` | The calendar icon button |
-| `clear` | The clear button |
-| `spinner` | The loading spinner |
-| `calendar` | The calendar popup container |
-| `helper-text` | The helper text element |
-| `error-text` | The error text element |

@@ -4,21 +4,6 @@
 
 Record audio with visualization, pause/resume, and playback.
 
-## Basic Usage
-
-```html
-<snice-audio-recorder id="recorder"></snice-audio-recorder>
-
-<script>
-  const recorder = document.getElementById('recorder');
-
-  // Listen for stop event
-  recorder.addEventListener('recorder-stop', async () => {
-    // Recording complete
-  });
-</script>
-```
-
 ## Properties
 
 | Property | Type | Default | Description |
@@ -31,13 +16,6 @@ Record audio with visualization, pause/resume, and playback.
 | `maxDuration` | `number` | `0` | Max duration (seconds, 0=unlimited) |
 | `showTimer` | `boolean` | `true` | Show recording timer |
 | `showPlayback` | `boolean` | `true` | Show playback controls after recording |
-
-## Audio Formats
-
-- `'audio/webm'` - WebM (default)
-- `'audio/ogg'` - Ogg Vorbis
-- `'audio/mp4'` - MP4/AAC
-- `'audio/wav'` - WAV (uncompressed)
 
 ## Methods
 
@@ -79,6 +57,51 @@ Reset recorder state and discard playback.
 - `recorder-resume` - Recording resumed
 - `recorder-cancel` - Recording cancelled
 - `recorder-error` - Error occurred
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer recorder container |
+| `controls` | `<div>` | Recording and playback control buttons |
+| `visualizer` | `<div>` | Audio frequency visualizer bar container |
+| `progress` | `<div>` | Playback progress bar (visible after recording) |
+
+```css
+snice-audio-recorder::part(base) {
+  border-radius: 12px;
+  background: #1e293b;
+  color: white;
+}
+
+snice-audio-recorder::part(visualizer) {
+  height: 80px;
+}
+```
+
+## Basic Usage
+
+```html
+<snice-audio-recorder id="recorder"></snice-audio-recorder>
+
+<script>
+  const recorder = document.getElementById('recorder');
+
+  // Listen for stop event
+  recorder.addEventListener('recorder-stop', async () => {
+    // Recording complete
+  });
+</script>
+```
+
+## Audio Formats
+
+- `'audio/webm'` - WebM (default)
+- `'audio/ogg'` - Ogg Vorbis
+- `'audio/mp4'` - MP4/AAC
+- `'audio/wav'` - WAV (uncompressed)
 
 ## Examples
 
@@ -131,29 +154,6 @@ const recording = await recorder.stop();
 const formData = new FormData();
 formData.append('audio', recording.blob, 'recording.webm');
 await fetch('/upload', { method: 'POST', body: formData });
-```
-
-## CSS Parts
-
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | Outer recorder container |
-| `controls` | `<div>` | Recording and playback control buttons |
-| `visualizer` | `<div>` | Audio frequency visualizer bar container |
-| `progress` | `<div>` | Playback progress bar (visible after recording) |
-
-```css
-snice-audio-recorder::part(base) {
-  border-radius: 12px;
-  background: #1e293b;
-  color: white;
-}
-
-snice-audio-recorder::part(visualizer) {
-  height: 80px;
-}
 ```
 
 ## AudioRecording Interface

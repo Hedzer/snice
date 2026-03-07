@@ -4,15 +4,6 @@
 
 The `<snice-image>` component provides a flexible image display with variants, sizes, lazy loading, and fallback support.
 
-## Basic Usage
-
-```html
-<snice-image
-  src="https://example.com/image.jpg"
-  alt="Description"
-></snice-image>
-```
-
 ## Properties
 
 | Property | Type | Default | Description |
@@ -26,6 +17,15 @@ The `<snice-image>` component provides a flexible image display with variants, s
 | `fit` | `'cover' \| 'contain' \| 'fill' \| 'none' \| 'scale-down'` | `'cover'` | Object-fit behavior |
 | `width` | `string` | `''` | Custom width (CSS value) |
 | `height` | `string` | `''` | Custom height (CSS value) |
+
+## Basic Usage
+
+```html
+<snice-image
+  src="https://example.com/image.jpg"
+  alt="Description"
+></snice-image>
+```
 
 ## Examples
 

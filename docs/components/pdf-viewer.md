@@ -7,23 +7,15 @@
 A PDF document viewer with a built-in toolbar for page navigation, zoom control, fit modes, printing, and downloading. Uses a vendored PDF.js bundle included with the component.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
+- [Importing](#importing)
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
-- [Keyboard Shortcuts](#keyboard-shortcuts)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
+- [Keyboard Shortcuts](#keyboard-shortcuts)
 - [Accessibility](#accessibility)
-
-## Basic Usage
-
-```typescript
-import 'snice/components/pdf-viewer/snice-pdf-viewer';
-```
-
-```html
-<snice-pdf-viewer src="/documents/report.pdf"></snice-pdf-viewer>
-```
 
 ## Importing
 
@@ -87,14 +79,15 @@ snice-pdf-viewer::part(viewport) {
 }
 ```
 
-## Keyboard Shortcuts
+## Basic Usage
 
-| Key | Action |
-|-----|--------|
-| `ArrowRight` / `PageDown` | Next page |
-| `ArrowLeft` / `PageUp` | Previous page |
-| `Ctrl/Cmd + =` | Zoom in |
-| `Ctrl/Cmd + -` | Zoom out |
+```typescript
+import 'snice/components/pdf-viewer/snice-pdf-viewer';
+```
+
+```html
+<snice-pdf-viewer src="/documents/report.pdf"></snice-pdf-viewer>
+```
 
 ## Examples
 
@@ -214,6 +207,15 @@ Use `goToPage()` to navigate directly to any page.
   });
 </script>
 ```
+
+## Keyboard Shortcuts
+
+| Key | Action |
+|-----|--------|
+| `ArrowRight` / `PageDown` | Next page |
+| `ArrowLeft` / `PageUp` | Previous page |
+| `Ctrl/Cmd + =` | Zoom in |
+| `Ctrl/Cmd + -` | Zoom out |
 
 ## Accessibility
 

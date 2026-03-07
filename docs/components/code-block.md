@@ -4,19 +4,6 @@
 
 Display code with syntax highlighting, line numbers, and copy functionality. Uses a JSON-driven tokenizer engine with Monarch-inspired state machine for syntax highlighting.
 
-## Basic Usage
-
-```html
-<snice-code-block id="code" language="javascript" grammar="grammars/typescript.json"></snice-code-block>
-<script>
-  document.getElementById('code').code = `
-function hello() {
-  console.log("Hello World");
-}
-  `;
-</script>
-```
-
 ## Properties
 
 | Property | Type | Default | Description |
@@ -48,6 +35,19 @@ function hello() {
 - `code-after-highlight` - After highlighting (detail: `{ code, language, codeBlock }`)
 - `grammar-request` - Grammar fetch requested (detail: `{ url, language, codeBlock }`). Only dispatched when `fetch-mode="event"`.
 - `grammar-loaded` - Grammar successfully loaded (detail: `{ grammar, url, language, codeBlock }`). Fired after grammar is fetched (native/virtual), received via event mode, or set programmatically with `setGrammar()`.
+
+## Basic Usage
+
+```html
+<snice-code-block id="code" language="javascript" grammar="grammars/typescript.json"></snice-code-block>
+<script>
+  document.getElementById('code').code = `
+function hello() {
+  console.log("Hello World");
+}
+  `;
+</script>
+```
 
 ## Code Formatters
 
@@ -169,6 +169,126 @@ Slotted content is automatically **dedented** — common leading indentation fro
 ```
 
 The 4-space indent from HTML nesting is stripped, but the 2-space relative indent inside the function is preserved.
+
+## Grammar Format
+
+Grammars are JSON-serializable objects with states, transitions, and lookup tables:
+
+```typescript
+interface Grammar {
+  name: string;               // Language name
+  fileTypes?: string[];        // File extensions
+  defaultToken?: string;       // Token type for unmatched text
+  ignoreCase?: boolean;        // Case-insensitive regex matching
+  tokenizer: Record<string, GrammarEntry[]>;  // Named states
+  formatters?: Record<string, FormatRules>;    // Named declarative formatters
+  [key: string]: any;          // Lookup tables (keywords, builtins, etc.)
+}
+```
+
+### Rules
+
+Each state contains an array of rules. Rules can be:
+
+- **Simple**: `[regex, token]` — Match regex, assign token type
+- **With transition**: `[regex, token, nextState]` — Match and change state
+- **Conditional**: `[regex, { cases: { '@table': 'token', '@default': 'fallback' } }]` — Lookup matched text in tables
+- **Include**: `{ include: '@stateName' }` — Include rules from another state
+
+### State Transitions
+
+- `@stateName` — Push state onto stack (enter nested context)
+- `@pop` — Pop state from stack (return to previous context)
+
+### Example: Handling Multi-line Comments
+
+```json
+{
+  "tokenizer": {
+    "root": [
+      ["/\\*", "comment", "@comment"],
+      ["//.*$", "comment"]
+    ],
+    "comment": [
+      ["[^*]+", "comment"],
+      ["\\*/", "comment", "@pop"],
+      ["[*]", "comment"]
+    ]
+  }
+}
+```
+
+### Example: Template Literals with Interpolation
+
+```json
+{
+  "tokenizer": {
+    "root": [
+      ["`", "string", "@template"]
+    ],
+    "template": [
+      ["\\$\\{", "punctuation", "@interpolation"],
+      ["[^`$\\\\]+", "string"],
+      ["\\\\.", "string"],
+      ["`", "string", "@pop"]
+    ],
+    "interpolation": [
+      ["\\}", "punctuation", "@pop"],
+      { "include": "@root" }
+    ]
+  }
+}
+```
+
+## Programmatic API
+
+The highlighter engine can be used directly:
+
+```typescript
+import {
+  highlightCode,
+  tokenize,
+  registerGrammar,
+  unregisterGrammar,
+  getGrammar
+} from 'snice/components/code-block/highlighter';
+
+// Highlight with a grammar object → HTML string
+const html = highlightCode('const x = 1;', grammarObject);
+
+// Highlight with a registered grammar name (plaintext fallback if not found)
+registerGrammar('typescript', tsGrammar);
+const html2 = highlightCode('const x = 1;', 'typescript');
+
+// Get raw tokens
+const tokens = tokenize('const x = 1;', grammarObject);
+// [{ text: 'const', type: 'keyword' }, { text: ' ', type: null }, ...]
+
+// Register a grammar globally
+registerGrammar('myLang', myGrammar);
+
+// Remove a registered grammar
+unregisterGrammar('myLang');
+
+// Look up a registered grammar (returns undefined if not found)
+const grammar = getGrammar('typescript');
+```
+
+## Examples
+
+```html
+<!-- With grammar and line numbers -->
+<snice-code-block grammar="grammars/typescript.json" language="typescript" show-line-numbers></snice-code-block>
+
+<!-- With filename -->
+<snice-code-block grammar="grammars/typescript.json" filename="index.js"></snice-code-block>
+
+<!-- Highlight specific lines -->
+<snice-code-block grammar="grammars/python.json" language="python" highlight-lines="[2,3,4]"></snice-code-block>
+
+<!-- Plaintext (no grammar needed) -->
+<snice-code-block language="plaintext"></snice-code-block>
+```
 
 ## Grammar Files
 
@@ -293,110 +413,6 @@ registerGrammar('js', tsGrammar);
 
 Without a registered grammar or explicit `grammar` property, code is displayed as escaped plaintext.
 
-## Grammar Format
-
-Grammars are JSON-serializable objects with states, transitions, and lookup tables:
-
-```typescript
-interface Grammar {
-  name: string;               // Language name
-  fileTypes?: string[];        // File extensions
-  defaultToken?: string;       // Token type for unmatched text
-  ignoreCase?: boolean;        // Case-insensitive regex matching
-  tokenizer: Record<string, GrammarEntry[]>;  // Named states
-  formatters?: Record<string, FormatRules>;    // Named declarative formatters
-  [key: string]: any;          // Lookup tables (keywords, builtins, etc.)
-}
-```
-
-### Rules
-
-Each state contains an array of rules. Rules can be:
-
-- **Simple**: `[regex, token]` — Match regex, assign token type
-- **With transition**: `[regex, token, nextState]` — Match and change state
-- **Conditional**: `[regex, { cases: { '@table': 'token', '@default': 'fallback' } }]` — Lookup matched text in tables
-- **Include**: `{ include: '@stateName' }` — Include rules from another state
-
-### State Transitions
-
-- `@stateName` — Push state onto stack (enter nested context)
-- `@pop` — Pop state from stack (return to previous context)
-
-### Example: Handling Multi-line Comments
-
-```json
-{
-  "tokenizer": {
-    "root": [
-      ["/\\*", "comment", "@comment"],
-      ["//.*$", "comment"]
-    ],
-    "comment": [
-      ["[^*]+", "comment"],
-      ["\\*/", "comment", "@pop"],
-      ["[*]", "comment"]
-    ]
-  }
-}
-```
-
-### Example: Template Literals with Interpolation
-
-```json
-{
-  "tokenizer": {
-    "root": [
-      ["`", "string", "@template"]
-    ],
-    "template": [
-      ["\\$\\{", "punctuation", "@interpolation"],
-      ["[^`$\\\\]+", "string"],
-      ["\\\\.", "string"],
-      ["`", "string", "@pop"]
-    ],
-    "interpolation": [
-      ["\\}", "punctuation", "@pop"],
-      { "include": "@root" }
-    ]
-  }
-}
-```
-
-## Programmatic API
-
-The highlighter engine can be used directly:
-
-```typescript
-import {
-  highlightCode,
-  tokenize,
-  registerGrammar,
-  unregisterGrammar,
-  getGrammar
-} from 'snice/components/code-block/highlighter';
-
-// Highlight with a grammar object → HTML string
-const html = highlightCode('const x = 1;', grammarObject);
-
-// Highlight with a registered grammar name (plaintext fallback if not found)
-registerGrammar('typescript', tsGrammar);
-const html2 = highlightCode('const x = 1;', 'typescript');
-
-// Get raw tokens
-const tokens = tokenize('const x = 1;', grammarObject);
-// [{ text: 'const', type: 'keyword' }, { text: ' ', type: null }, ...]
-
-// Register a grammar globally
-registerGrammar('myLang', myGrammar);
-
-// Remove a registered grammar
-unregisterGrammar('myLang');
-
-// Look up a registered grammar (returns undefined if not found)
-const grammar = getGrammar('typescript');
-```
-
 ## Theming (Light / Dark Mode)
 
 The code block automatically follows the page's theme. It detects:
@@ -468,19 +484,3 @@ The following token types are styled by default:
 | `builtin` | Red (#e06c75) | Built-in functions |
 
 Colors are customizable via CSS variables (e.g., `--code-keyword-color`).
-
-## Examples
-
-```html
-<!-- With grammar and line numbers -->
-<snice-code-block grammar="grammars/typescript.json" language="typescript" show-line-numbers></snice-code-block>
-
-<!-- With filename -->
-<snice-code-block grammar="grammars/typescript.json" filename="index.js"></snice-code-block>
-
-<!-- Highlight specific lines -->
-<snice-code-block grammar="grammars/python.json" language="python" highlight-lines="[2,3,4]"></snice-code-block>
-
-<!-- Plaintext (no grammar needed) -->
-<snice-code-block language="plaintext"></snice-code-block>
-```

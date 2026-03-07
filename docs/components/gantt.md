@@ -5,22 +5,13 @@
 The Gantt component displays an interactive Gantt chart for project timeline visualization. It features draggable and resizable task bars, multiple zoom levels, task grouping, progress indicators, dependency arrows, and a today line.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
-
-## Basic Usage
-
-```html
-<snice-gantt></snice-gantt>
-```
-
-```typescript
-import 'snice/components/gantt/snice-gantt';
-```
 
 ## Properties
 
@@ -60,6 +51,39 @@ interface GanttTask {
 | `task-resize` | `{ task: GanttTask, start: string, end: string }` | Fired when a task is resized by dragging its left or right handles |
 | `task-move` | `{ task: GanttTask, start: string, end: string }` | Fired when a task bar is dragged to a new position |
 | `task-link` | `{ source: string, target: string }` | Fired when a dependency link is created between tasks |
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer Gantt container |
+| `header` | `<div>` | Top header bar with zoom controls |
+| `controls` | `<div>` | Zoom toggle button group (Day/Week/Month) |
+| `body` | `<div>` | Main content area containing task list and timeline |
+| `task-list` | `<div>` | Left sidebar with task names and groups |
+| `timeline` | `<div>` | Right scrollable timeline with task bars |
+
+```css
+snice-gantt::part(header) {
+  background: #f8fafc;
+}
+
+snice-gantt::part(task-list) {
+  min-width: 200px;
+}
+```
+
+## Basic Usage
+
+```html
+<snice-gantt></snice-gantt>
+```
+
+```typescript
+import 'snice/components/gantt/snice-gantt';
+```
 
 ## Examples
 
@@ -175,29 +199,6 @@ Listen for task interactions to update your application state or sync with a bac
   // Scroll to a specific date on load
   gantt.scrollToDate('2026-03-01');
 </script>
-```
-
-## CSS Parts
-
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | Outer Gantt container |
-| `header` | `<div>` | Top header bar with zoom controls |
-| `controls` | `<div>` | Zoom toggle button group (Day/Week/Month) |
-| `body` | `<div>` | Main content area containing task list and timeline |
-| `task-list` | `<div>` | Left sidebar with task names and groups |
-| `timeline` | `<div>` | Right scrollable timeline with task bars |
-
-```css
-snice-gantt::part(header) {
-  background: #f8fafc;
-}
-
-snice-gantt::part(task-list) {
-  min-width: 200px;
-}
 ```
 
 ## Accessibility

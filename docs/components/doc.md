@@ -4,38 +4,6 @@
 
 A simple WYSIWYG document editor component with formatting toolbar and content insertion capabilities.
 
-## Features
-
-- **WYSIWYG editing** - Direct HTML content editing
-- **Formatting toolbar** - Bold, italic, underline, strikethrough, headings, lists
-- **Content insertion** - Links, images, tables, dividers
-- **Download/Export** - Save as HTML, Markdown, or Plain Text
-- **Icon sets** - Default text labels, Material Icons, or Font Awesome
-- **Paste image support** - Paste images directly from clipboard
-- **Keyboard shortcuts** - Ctrl/Cmd+B for bold, Ctrl/Cmd+I for italic, Ctrl/Cmd+U for underline
-- **Readonly mode** - Display documents without editing capabilities
-- **Dark mode** - Automatic dark mode via prefers-color-scheme
-- **Customizable styling** - CSS custom properties for theming
-
-## Basic Usage
-
-```html
-<snice-doc id="editor"></snice-doc>
-
-<script type="module">
-  import 'snice';
-
-  const editor = document.getElementById('editor');
-
-  // Set initial content
-  editor.setHTML('<h1>Welcome</h1><p>Start editing...</p>');
-
-  // Get content
-  const html = editor.getHTML();
-  console.log(html);
-</script>
-```
-
 ## Properties
 
 | Property          | Attribute          | Type      | Default              | Description                                      |
@@ -99,6 +67,52 @@ Clear all content and reset to an empty paragraph.
 editor.clear();
 ```
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The outer document wrapper |
+| `editor` | `<div>` | The editable content area |
+| `toolbar` | `<div>` | The formatting toolbar |
+
+```css
+snice-doc::part(base) {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+snice-doc::part(toolbar) {
+  padding: 0.5rem;
+  background: #f6f8fa;
+}
+
+snice-doc::part(editor) {
+  min-height: 300px;
+  padding: 1.5rem;
+}
+```
+
+## Basic Usage
+
+```html
+<snice-doc id="editor"></snice-doc>
+
+<script type="module">
+  import 'snice';
+
+  const editor = document.getElementById('editor');
+
+  // Set initial content
+  editor.setHTML('<h1>Welcome</h1><p>Start editing...</p>');
+
+  // Get content
+  const html = editor.getHTML();
+  console.log(html);
+</script>
+```
+
 ## Toolbar Features
 
 The toolbar includes:
@@ -114,6 +128,88 @@ The toolbar includes:
 - **📊** - Insert table
 - **―** - Insert divider
 - **⬇** - Download menu (HTML, Markdown, Plain Text)
+
+## Examples
+
+### Export and Download
+
+```html
+<snice-doc id="editor"></snice-doc>
+<button id="save-md">Save as Markdown</button>
+<button id="save-html">Save as HTML</button>
+
+<script type="module">
+  import 'snice';
+
+  const editor = document.getElementById('editor');
+
+  document.getElementById('save-md').addEventListener('click', () => {
+    editor.downloadAs('markdown', 'my-doc.md');
+  });
+
+  document.getElementById('save-html').addEventListener('click', () => {
+    editor.downloadAs('html', 'my-doc.html');
+  });
+</script>
+```
+
+### Material Icons
+
+```html
+<snice-doc icons="material"></snice-doc>
+```
+
+### Readonly Document Viewer
+
+```html
+<snice-doc readonly></snice-doc>
+
+<script type="module">
+  import 'snice';
+
+  const viewer = document.querySelector('snice-doc');
+  viewer.setHTML(`
+    <h1>Read Only Document</h1>
+    <p>This document cannot be edited.</p>
+  `);
+</script>
+```
+
+### Save and Load Content
+
+```html
+<snice-doc id="editor"></snice-doc>
+<button id="save">Save</button>
+<button id="load">Load</button>
+
+<script type="module">
+  import 'snice';
+
+  const editor = document.getElementById('editor');
+
+  document.getElementById('save').addEventListener('click', () => {
+    localStorage.setItem('document', editor.getHTML());
+  });
+
+  document.getElementById('load').addEventListener('click', () => {
+    const html = localStorage.getItem('document');
+    if (html) editor.setHTML(html);
+  });
+</script>
+```
+
+## Features
+
+- **WYSIWYG editing** - Direct HTML content editing
+- **Formatting toolbar** - Bold, italic, underline, strikethrough, headings, lists
+- **Content insertion** - Links, images, tables, dividers
+- **Download/Export** - Save as HTML, Markdown, or Plain Text
+- **Icon sets** - Default text labels, Material Icons, or Font Awesome
+- **Paste image support** - Paste images directly from clipboard
+- **Keyboard shortcuts** - Ctrl/Cmd+B for bold, Ctrl/Cmd+I for italic, Ctrl/Cmd+U for underline
+- **Readonly mode** - Display documents without editing capabilities
+- **Dark mode** - Automatic dark mode via prefers-color-scheme
+- **Customizable styling** - CSS custom properties for theming
 
 ## Icon Sets
 
@@ -186,102 +282,6 @@ snice-doc {
 ```
 
 Dark mode is supported automatically via `prefers-color-scheme: dark`.
-
-## CSS Parts
-
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | The outer document wrapper |
-| `editor` | `<div>` | The editable content area |
-| `toolbar` | `<div>` | The formatting toolbar |
-
-```css
-snice-doc::part(base) {
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-snice-doc::part(toolbar) {
-  padding: 0.5rem;
-  background: #f6f8fa;
-}
-
-snice-doc::part(editor) {
-  min-height: 300px;
-  padding: 1.5rem;
-}
-```
-
-## Examples
-
-### Export and Download
-
-```html
-<snice-doc id="editor"></snice-doc>
-<button id="save-md">Save as Markdown</button>
-<button id="save-html">Save as HTML</button>
-
-<script type="module">
-  import 'snice';
-
-  const editor = document.getElementById('editor');
-
-  document.getElementById('save-md').addEventListener('click', () => {
-    editor.downloadAs('markdown', 'my-doc.md');
-  });
-
-  document.getElementById('save-html').addEventListener('click', () => {
-    editor.downloadAs('html', 'my-doc.html');
-  });
-</script>
-```
-
-### Material Icons
-
-```html
-<snice-doc icons="material"></snice-doc>
-```
-
-### Readonly Document Viewer
-
-```html
-<snice-doc readonly></snice-doc>
-
-<script type="module">
-  import 'snice';
-
-  const viewer = document.querySelector('snice-doc');
-  viewer.setHTML(`
-    <h1>Read Only Document</h1>
-    <p>This document cannot be edited.</p>
-  `);
-</script>
-```
-
-### Save and Load Content
-
-```html
-<snice-doc id="editor"></snice-doc>
-<button id="save">Save</button>
-<button id="load">Load</button>
-
-<script type="module">
-  import 'snice';
-
-  const editor = document.getElementById('editor');
-
-  document.getElementById('save').addEventListener('click', () => {
-    localStorage.setItem('document', editor.getHTML());
-  });
-
-  document.getElementById('load').addEventListener('click', () => {
-    const html = localStorage.getItem('document');
-    if (html) editor.setHTML(html);
-  });
-</script>
-```
 
 ## Accessibility
 

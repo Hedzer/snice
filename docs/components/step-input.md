@@ -5,16 +5,6 @@
 
 A numeric stepper control with visible increment and decrement buttons flanking an input field.
 
-## Basic Usage
-
-```typescript
-import 'snice/components/step-input/snice-step-input';
-```
-
-```html
-<snice-step-input value="5"></snice-step-input>
-```
-
 ## Importing
 
 **ESM (bundler)**
@@ -26,6 +16,53 @@ import 'snice/components/step-input/snice-step-input';
 ```html
 <script src="snice-runtime.min.js"></script>
 <script src="snice-step-input.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `value` | `number` | `0` | Current value |
+| `min` | `number` | `-Infinity` | Minimum allowed value |
+| `max` | `number` | `Infinity` | Maximum allowed value |
+| `step` | `number` | `1` | Increment/decrement amount |
+| `disabled` | `boolean` | `false` | Disables all interaction |
+| `readonly` | `boolean` | `false` | Prevents value changes |
+| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Control size |
+| `wrap` | `boolean` | `false` | Wrap around at min/max boundaries |
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `increment()` | -- | Increase value by step |
+| `decrement()` | -- | Decrease value by step |
+| `focus()` | `options?: FocusOptions` | Focus the input field |
+| `blur()` | -- | Remove focus |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `value-change` | `{ value: number, oldValue: number, component: SniceStepInputElement }` | Fired when the value changes |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `base` | The outer container |
+| `decrement-button` | The minus (-) button |
+| `increment-button` | The plus (+) button |
+| `input` | The number input field |
+
+## Basic Usage
+
+```typescript
+import 'snice/components/step-input/snice-step-input';
+```
+
+```html
+<snice-step-input value="5"></snice-step-input>
 ```
 
 ## Examples
@@ -86,40 +123,3 @@ Use the `increment()` and `decrement()` methods for programmatic control.
   stepper.decrement(); // value becomes 1
 </script>
 ```
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `value` | `number` | `0` | Current value |
-| `min` | `number` | `-Infinity` | Minimum allowed value |
-| `max` | `number` | `Infinity` | Maximum allowed value |
-| `step` | `number` | `1` | Increment/decrement amount |
-| `disabled` | `boolean` | `false` | Disables all interaction |
-| `readonly` | `boolean` | `false` | Prevents value changes |
-| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Control size |
-| `wrap` | `boolean` | `false` | Wrap around at min/max boundaries |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `value-change` | `{ value: number, oldValue: number, component: SniceStepInputElement }` | Fired when the value changes |
-
-## Methods
-
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `increment()` | -- | Increase value by step |
-| `decrement()` | -- | Decrease value by step |
-| `focus()` | `options?: FocusOptions` | Focus the input field |
-| `blur()` | -- | Remove focus |
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `base` | The outer container |
-| `decrement-button` | The minus (-) button |
-| `increment-button` | The plus (+) button |
-| `input` | The number input field |

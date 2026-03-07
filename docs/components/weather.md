@@ -5,21 +5,13 @@
 The weather component displays current weather conditions with temperature, condition description, humidity, wind speed, and an optional multi-day forecast. It supports Celsius and Fahrenheit units, auto-detected weather icons, and compact or full display variants. The component does not make API calls; it receives all data via properties.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
 - [Properties](#properties)
 - [CSS Custom Properties](#css-custom-properties)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
-
-## Basic Usage
-
-```html
-<snice-weather></snice-weather>
-```
-
-```typescript
-import 'snice/components/weather/snice-weather';
-```
+- [Browser Support](#browser-support)
 
 ## Properties
 
@@ -111,6 +103,16 @@ snice-weather::part(forecast) {
   border-top: 1px solid #e2e8f0;
   padding-top: 1rem;
 }
+```
+
+## Basic Usage
+
+```html
+<snice-weather></snice-weather>
+```
+
+```typescript
+import 'snice/components/weather/snice-weather';
 ```
 
 ## Examples
@@ -250,13 +252,3 @@ The weather component does not call any APIs itself. Fetch data externally and p
 
 - Modern browsers (Chrome, Firefox, Safari, Edge)
 - Requires Custom Elements v1 and Shadow DOM support
-
-## Best Practices
-
-1. **Pass data via property**: Set `weather.data = {...}` (not via attribute) since the data is a complex object
-2. **Handle loading states**: Show a skeleton or spinner while fetching weather data from an API
-3. **Choose the right variant**: Use `full` for dedicated weather displays, `compact` for dashboard widgets or headers
-4. **Match units to locale**: Use Fahrenheit for US audiences and Celsius for most other regions
-5. **Include forecast when available**: The multi-day forecast adds context and is more useful than current conditions alone
-6. **Keep condition strings standard**: Use common weather terms (Sunny, Cloudy, Rain, Snow, etc.) for reliable auto-icon detection
-7. **Refresh data periodically**: Weather data goes stale quickly; consider refreshing every 15-30 minutes

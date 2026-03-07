@@ -5,16 +5,6 @@
 
 An animated loading indicator.
 
-## Basic Usage
-
-```typescript
-import 'snice/components/spinner/snice-spinner';
-```
-
-```html
-<snice-spinner></snice-spinner>
-```
-
 ## Importing
 
 **ESM (bundler)**
@@ -26,6 +16,46 @@ import 'snice/components/spinner/snice-spinner';
 ```html
 <script src="snice-runtime.min.js"></script>
 <script src="snice-spinner.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `size` | `'small' \| 'medium' \| 'large' \| 'xl'` | `'medium'` | Spinner size |
+| `color` | `'primary' \| 'success' \| 'warning' \| 'error' \| 'info'` | `'primary'` | Color variant |
+| `label` | `string` | `''` | Accessible label |
+| `thickness` | `number` | `4` | Stroke thickness |
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The outer spinner container |
+| `circle` | `<svg>` | The SVG spinner circle |
+| `label` | `<span>` | The label text element |
+
+```css
+snice-spinner::part(base) {
+  gap: 0.75rem;
+}
+
+snice-spinner::part(label) {
+  font-size: 0.875rem;
+  color: #64748b;
+}
+```
+
+## Basic Usage
+
+```typescript
+import 'snice/components/spinner/snice-spinner';
+```
+
+```html
+<snice-spinner></snice-spinner>
 ```
 
 ## Examples
@@ -71,33 +101,3 @@ Use a small spinner inline with text.
   Processing...
 </button>
 ```
-
-## CSS Parts
-
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | The outer spinner container |
-| `circle` | `<svg>` | The SVG spinner circle |
-| `label` | `<span>` | The label text element |
-
-```css
-snice-spinner::part(base) {
-  gap: 0.75rem;
-}
-
-snice-spinner::part(label) {
-  font-size: 0.875rem;
-  color: #64748b;
-}
-```
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `size` | `'small' \| 'medium' \| 'large' \| 'xl'` | `'medium'` | Spinner size |
-| `color` | `'primary' \| 'success' \| 'warning' \| 'error' \| 'info'` | `'primary'` | Color variant |
-| `label` | `string` | `''` | Accessible label |
-| `thickness` | `number` | `4` | Stroke thickness |

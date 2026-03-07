@@ -5,6 +5,49 @@
 
 A QR code scanner using device cameras with WebAssembly-based detection.
 
+## Importing
+
+**ESM (bundler)**
+```typescript
+import 'snice/components/qr-reader/snice-qr-reader';
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-qr-reader.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `autoStart` (attr: `auto-start`) | `boolean` | `false` | Auto-start scanning on mount |
+| `camera` | `'front' \| 'back'` | `'back'` | Which camera to use |
+| `pickFirst` (attr: `pick-first`) | `boolean` | `false` | Scan until first hit, then stop |
+| `manualSnap` (attr: `manual-snap`) | `boolean` | `false` | Photo snapshot mode |
+| `scanSpeed` (attr: `scan-speed`) | `number` | `3` | Scan speed 1-10 (ignored with pick-first) |
+| `tapStart` (attr: `tap-start`) | `boolean` | `false` | Tap viewport to toggle scanning |
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `start()` | -- | Start camera and scanning |
+| `stop()` | -- | Stop scanning and release camera |
+| `snap()` | -- | Take snapshot (manual-snap mode), returns data or null |
+| `scanImage()` | `file: File` | Scan QR code from an image file |
+| `switchCamera()` | -- | Toggle between front and back camera |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `qr-scan` | `{ data: string, timestamp: number, reader }` | QR code detected |
+| `qr-error` | `{ error: any, reader }` | Scan error occurred |
+| `camera-ready` | `{ reader }` | Camera initialized |
+| `camera-error` | `{ error: any, reader }` | Camera initialization failed |
+
 ## Basic Usage
 
 ```typescript
@@ -19,19 +62,6 @@ import 'snice/components/qr-reader/snice-qr-reader';
     console.log('QR Code:', e.detail.data);
   });
 </script>
-```
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/qr-reader/snice-qr-reader';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-qr-reader.min.js"></script>
 ```
 
 ## Examples
@@ -130,33 +160,3 @@ reader.addEventListener('camera-ready', () => {
   console.log('Camera initialized');
 });
 ```
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `autoStart` (attr: `auto-start`) | `boolean` | `false` | Auto-start scanning on mount |
-| `camera` | `'front' \| 'back'` | `'back'` | Which camera to use |
-| `pickFirst` (attr: `pick-first`) | `boolean` | `false` | Scan until first hit, then stop |
-| `manualSnap` (attr: `manual-snap`) | `boolean` | `false` | Photo snapshot mode |
-| `scanSpeed` (attr: `scan-speed`) | `number` | `3` | Scan speed 1-10 (ignored with pick-first) |
-| `tapStart` (attr: `tap-start`) | `boolean` | `false` | Tap viewport to toggle scanning |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `qr-scan` | `{ data: string, timestamp: number, reader }` | QR code detected |
-| `qr-error` | `{ error: any, reader }` | Scan error occurred |
-| `camera-ready` | `{ reader }` | Camera initialized |
-| `camera-error` | `{ error: any, reader }` | Camera initialization failed |
-
-## Methods
-
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `start()` | -- | Start camera and scanning |
-| `stop()` | -- | Stop scanning and release camera |
-| `snap()` | -- | Take snapshot (manual-snap mode), returns data or null |
-| `scanImage()` | `file: File` | Scan QR code from an image file |
-| `switchCamera()` | -- | Toggle between front and back camera |

@@ -5,41 +5,13 @@
 The recipe component displays an interactive recipe card with a hero image, ingredient scaling based on serving size, step-by-step mode with per-step timers, ingredient checkboxes, and optional nutrition facts.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
 - [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
-
-## Basic Usage
-
-```html
-<snice-recipe id="my-recipe"></snice-recipe>
-
-<script type="module">
-  import 'snice/components/recipe/snice-recipe';
-
-  const recipe = document.getElementById('my-recipe');
-  recipe.title = 'Pasta Carbonara';
-  recipe.prepTime = 10;
-  recipe.cookTime = 20;
-  recipe.servings = 4;
-  recipe.ingredients = [
-    { name: 'Spaghetti', amount: 400, unit: 'g' },
-    { name: 'Pancetta', amount: 200, unit: 'g' }
-  ];
-  recipe.steps = [
-    { text: 'Boil pasta in salted water.', time: 10 },
-    { text: 'Fry pancetta until crispy.' }
-  ];
-</script>
-```
-
-```typescript
-import 'snice/components/recipe/snice-recipe';
-```
 
 ## Properties
 
@@ -167,6 +139,34 @@ Fired when an ingredient checkbox is toggled.
 | `steps` | Steps/instructions section |
 | `nutrition` | Nutrition facts panel |
 | `controls` | Serving size controls |
+
+## Basic Usage
+
+```html
+<snice-recipe id="my-recipe"></snice-recipe>
+
+<script type="module">
+  import 'snice/components/recipe/snice-recipe';
+
+  const recipe = document.getElementById('my-recipe');
+  recipe.title = 'Pasta Carbonara';
+  recipe.prepTime = 10;
+  recipe.cookTime = 20;
+  recipe.servings = 4;
+  recipe.ingredients = [
+    { name: 'Spaghetti', amount: 400, unit: 'g' },
+    { name: 'Pancetta', amount: 200, unit: 'g' }
+  ];
+  recipe.steps = [
+    { text: 'Boil pasta in salted water.', time: 10 },
+    { text: 'Fry pancetta until crispy.' }
+  ];
+</script>
+```
+
+```typescript
+import 'snice/components/recipe/snice-recipe';
+```
 
 ## Examples
 
@@ -312,12 +312,3 @@ Use `variant="card"` for a compact card display.
 - **Screen readers**: Step numbers, ingredient amounts, and completion states are announced
 - **Timer buttons**: Inline timer buttons on steps with a `time` value are keyboard focusable
 - **Print view**: The `print()` method produces a clean layout for printing
-
-## Best Practices
-
-1. **Include all metadata**: Prep time, cook time, difficulty, and cuisine help users plan
-2. **Group related ingredients**: Use the `group` property to organize ingredients into logical sections
-3. **Add tips to tricky steps**: Use `step.tip` for pro tips that help less experienced cooks
-4. **Use timers on timed steps**: Steps with a `time` value show inline timer buttons for convenience
-5. **Provide nutrition facts**: Include nutrition data when available for health-conscious users
-6. **Use the card variant for lists**: When displaying multiple recipes in a grid, use `variant="card"`

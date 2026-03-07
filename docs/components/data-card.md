@@ -5,6 +5,81 @@
 
 A key-value detail panel for displaying structured data with grouped sections, multiple value types, and edit-in-place support.
 
+## Importing
+
+**ESM (bundler)**
+```typescript
+import 'snice/components/data-card/snice-data-card';
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-data-card.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `fields` | `DataCardField[]` | `[]` | Array of field objects |
+| `editable` | `boolean` | `false` | Enable global edit mode |
+| `variant` | `'default' \| 'horizontal' \| 'compact'` | `'default'` | Layout variant |
+
+### DataCardField Object
+
+```typescript
+interface DataCardField {
+  label: string;
+  value: string | number;
+  type?: 'text' | 'link' | 'badge' | 'date' | 'currency';
+  editable?: boolean;
+  group?: string;
+  icon?: string;
+  href?: string;
+  badgeVariant?: 'default' | 'primary' | 'success' | 'warning' | 'danger';
+}
+```
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `getValues()` | -- | Returns all field values as a `{ label: value }` map |
+| `setValues(data)` | `Record<string, string \| number>` | Updates field values by label |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `field-change` | `{ field: DataCardField, value: string \| number, previousValue: string \| number }` | A field value was changed |
+| `field-save` | `{ field: DataCardField, value: string \| number }` | A field value was saved |
+
+## Slots
+
+| Name | Description |
+|------|-------------|
+| `header` | Custom header content (replaces default header) |
+| `title` | Title text within the default header |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `container` | Main card container |
+| `header` | Header section |
+| `title` | Title text |
+| `edit-toggle` | Edit mode toggle button |
+| `group` | Field group container |
+| `group-title` | Group heading text |
+| `field` | Individual field row |
+| `field-icon` | Field icon |
+| `field-label` | Field label text |
+| `field-value` | Field value display |
+| `field-input` | Edit mode input field |
+| `field-save` | Save button in edit mode |
+| `field-edit` | Edit button per field |
+
 ## Basic Usage
 
 ```typescript
@@ -21,19 +96,6 @@ import 'snice/components/data-card/snice-data-card';
     { label: 'Role', value: 'Administrator' }
   ];
 </script>
-```
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/data-card/snice-data-card';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-data-card.min.js"></script>
 ```
 
 ## Examples
@@ -132,65 +194,3 @@ Use `getValues()` and `setValues()` for programmatic data access.
   card.setValues({ Name: 'Jane', Age: 25 });
 </script>
 ```
-
-## Slots
-
-| Name | Description |
-|------|-------------|
-| `header` | Custom header content (replaces default header) |
-| `title` | Title text within the default header |
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `fields` | `DataCardField[]` | `[]` | Array of field objects |
-| `editable` | `boolean` | `false` | Enable global edit mode |
-| `variant` | `'default' \| 'horizontal' \| 'compact'` | `'default'` | Layout variant |
-
-### DataCardField Object
-
-```typescript
-interface DataCardField {
-  label: string;
-  value: string | number;
-  type?: 'text' | 'link' | 'badge' | 'date' | 'currency';
-  editable?: boolean;
-  group?: string;
-  icon?: string;
-  href?: string;
-  badgeVariant?: 'default' | 'primary' | 'success' | 'warning' | 'danger';
-}
-```
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `field-change` | `{ field: DataCardField, value: string \| number, previousValue: string \| number }` | A field value was changed |
-| `field-save` | `{ field: DataCardField, value: string \| number }` | A field value was saved |
-
-## Methods
-
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `getValues()` | -- | Returns all field values as a `{ label: value }` map |
-| `setValues(data)` | `Record<string, string \| number>` | Updates field values by label |
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `container` | Main card container |
-| `header` | Header section |
-| `title` | Title text |
-| `edit-toggle` | Edit mode toggle button |
-| `group` | Field group container |
-| `group-title` | Group heading text |
-| `field` | Individual field row |
-| `field-icon` | Field icon |
-| `field-label` | Field label text |
-| `field-value` | Field value display |
-| `field-input` | Edit mode input field |
-| `field-save` | Save button in edit mode |
-| `field-edit` | Edit button per field |

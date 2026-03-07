@@ -5,25 +5,13 @@
 The testimonial component displays a quote or review card with author information, avatar, role/company attribution, optional star rating, and multiple visual variants. It is ideal for customer testimonials, reviews, and social proof sections.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
 - [Properties](#properties)
 - [CSS Custom Properties](#css-custom-properties)
 - [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
-
-## Basic Usage
-
-```html
-<snice-testimonial
-  quote="This product changed my workflow completely."
-  author="Jane Doe"
-></snice-testimonial>
-```
-
-```typescript
-import 'snice/components/testimonial/snice-testimonial';
-```
+- [Browser Support](#browser-support)
 
 ## Properties
 
@@ -84,6 +72,19 @@ snice-testimonial::part(quote) {
 snice-testimonial::part(stars) {
   color: #f59e0b;
 }
+```
+
+## Basic Usage
+
+```html
+<snice-testimonial
+  quote="This product changed my workflow completely."
+  author="Jane Doe"
+></snice-testimonial>
+```
+
+```typescript
+import 'snice/components/testimonial/snice-testimonial';
 ```
 
 ## Examples
@@ -200,13 +201,3 @@ Arrange multiple testimonials in a responsive grid layout.
 
 - Modern browsers (Chrome, Firefox, Safari, Edge)
 - Requires Custom Elements v1 and Shadow DOM support
-
-## Best Practices
-
-1. **Use real quotes**: Authentic testimonials build trust; avoid generic placeholder text
-2. **Include author details**: Name and role/company add credibility
-3. **Add avatars when available**: Photos make testimonials more personal and trustworthy
-4. **Use the featured variant sparingly**: Reserve it for one or two standout quotes
-5. **Keep quotes concise**: Shorter quotes are more impactful and easier to scan
-6. **Use the rating when relevant**: Star ratings work well for product reviews but may not suit all testimonial contexts
-7. **Group testimonials together**: Display 3 or more testimonials in a grid for social proof

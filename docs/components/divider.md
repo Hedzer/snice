@@ -5,16 +5,6 @@
 
 Separator line with optional text label.
 
-## Basic Usage
-
-```typescript
-import 'snice/components/divider/snice-divider';
-```
-
-```html
-<snice-divider></snice-divider>
-```
-
 ## Importing
 
 **ESM (bundler)**
@@ -26,6 +16,60 @@ import 'snice/components/divider/snice-divider';
 ```html
 <script src="snice-runtime.min.js"></script>
 <script src="snice-divider.min.js"></script>
+```
+
+## Properties
+
+| Property | Attribute | Type | Default | Description |
+|----------|-----------|------|---------|-------------|
+| `orientation` | `orientation` | `'horizontal' \| 'vertical'` | `'horizontal'` | Divider direction |
+| `variant` | `variant` | `'solid' \| 'dashed' \| 'dotted'` | `'solid'` | Line style |
+| `spacing` | `spacing` | `'none' \| 'small' \| 'medium' \| 'large'` | `'medium'` | Vertical margin |
+| `align` | `align` | `'start' \| 'center' \| 'end'` | `'center'` | Text position |
+| `text` | `text` | `string` | `''` | Text label content |
+| `textBackground` | `text-background` | `string` | `''` | Text label background color |
+| `color` | `color` | `string` | `''` | Custom divider color |
+| `capped` | `capped` | `boolean` | `false` | Rounded line ends |
+
+## CSS Custom Properties
+
+| Property | Description | Default |
+|----------|-------------|---------|
+| `--divider-color` | Line color | `var(--snice-color-border)` |
+| `--divider-thickness` | Line thickness | `1px` |
+| `--divider-text-bg` | Text label background | `transparent` |
+| `--divider-text-padding` | Text label padding | `0 1rem` |
+| `--divider-text-gap` | Gap around text label | `1rem` |
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer divider container |
+| `line` | `<div>` | The divider line(s) |
+| `text` | `<span>` | Optional text label |
+
+```css
+snice-divider::part(line) {
+  border-color: #3b82f6;
+}
+
+snice-divider::part(text) {
+  font-weight: 600;
+  color: #374151;
+}
+```
+
+## Basic Usage
+
+```typescript
+import 'snice/components/divider/snice-divider';
+```
+
+```html
+<snice-divider></snice-divider>
 ```
 
 ## Examples
@@ -107,47 +151,3 @@ Set the `capped` attribute for rounded line ends.
 <snice-divider capped></snice-divider>
 <snice-divider capped variant="dashed"></snice-divider>
 ```
-
-## Properties
-
-| Property | Attribute | Type | Default | Description |
-|----------|-----------|------|---------|-------------|
-| `orientation` | `orientation` | `'horizontal' \| 'vertical'` | `'horizontal'` | Divider direction |
-| `variant` | `variant` | `'solid' \| 'dashed' \| 'dotted'` | `'solid'` | Line style |
-| `spacing` | `spacing` | `'none' \| 'small' \| 'medium' \| 'large'` | `'medium'` | Vertical margin |
-| `align` | `align` | `'start' \| 'center' \| 'end'` | `'center'` | Text position |
-| `text` | `text` | `string` | `''` | Text label content |
-| `textBackground` | `text-background` | `string` | `''` | Text label background color |
-| `color` | `color` | `string` | `''` | Custom divider color |
-| `capped` | `capped` | `boolean` | `false` | Rounded line ends |
-
-## CSS Parts
-
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | Outer divider container |
-| `line` | `<div>` | The divider line(s) |
-| `text` | `<span>` | Optional text label |
-
-```css
-snice-divider::part(line) {
-  border-color: #3b82f6;
-}
-
-snice-divider::part(text) {
-  font-weight: 600;
-  color: #374151;
-}
-```
-
-## CSS Custom Properties
-
-| Property | Description | Default |
-|----------|-------------|---------|
-| `--divider-color` | Line color | `var(--snice-color-border)` |
-| `--divider-thickness` | Line thickness | `1px` |
-| `--divider-text-bg` | Text label background | `transparent` |
-| `--divider-text-padding` | Text label padding | `0 1rem` |
-| `--divider-text-gap` | Gap around text label | `1rem` |

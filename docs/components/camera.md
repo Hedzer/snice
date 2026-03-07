@@ -4,23 +4,6 @@
 
 Live camera feed with built-in mobile-style controls and flexible positioning.
 
-## Basic Usage
-
-```html
-<snice-camera id="camera"></snice-camera>
-
-<script>
-  const camera = document.getElementById('camera');
-
-  // Auto-starts by default, but you can manually start
-  await camera.start();
-
-  // Capture photo
-  const image = await camera.capture();
-  console.log(image.dataURL);
-</script>
-```
-
 ## Properties
 
 | Property | Type | Default | Description |
@@ -34,22 +17,6 @@ Live camera feed with built-in mobile-style controls and flexible positioning.
 | `height` | `number` | `720` | Video height (resolution) |
 | `aspectRatio` | `string` | `'auto'` | Aspect ratio: `'auto'` (fills space), `'16:9'`, `'9:16'`, `'4:3'`, `'1:1'`, `'21:9'` |
 | `objectFit` | `'contain' \| 'cover'` | `'cover'` | How video fits container: `cover` (fills frame, may crop) or `contain` (full video, may letterbox) |
-
-## Control Positions
-
-| Position | Description |
-|----------|-------------|
-| `'auto'` | Auto-detect: `bottom-right` (portrait), `right` (landscape) |
-| **Corners** | |
-| `'bottom-left'` | Bottom-left corner |
-| `'bottom-right'` | Bottom-right corner |
-| `'top-left'` | Top-left corner |
-| `'top-right'` | Top-right corner |
-| **Edges** | |
-| `'bottom'` | Bottom edge (centered) |
-| `'right'` | Right edge (centered) |
-| `'left'` | Left edge (centered) |
-| `'top'` | Top edge (centered) |
 
 ## Methods
 
@@ -169,6 +136,43 @@ Custom controls overlay area. Full viewport, positioned absolutely.
     LIVE
   </div>
 </snice-camera>
+```
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer camera container holding the video feed |
+| `controls` | `<div>` | Built-in control buttons area (capture and switch camera) |
+
+```css
+snice-camera::part(base) {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+snice-camera::part(controls) {
+  padding: 1rem;
+}
+```
+
+## Basic Usage
+
+```html
+<snice-camera id="camera"></snice-camera>
+
+<script>
+  const camera = document.getElementById('camera');
+
+  // Auto-starts by default, but you can manually start
+  await camera.start();
+
+  // Capture photo
+  const image = await camera.capture();
+  console.log(image.dataURL);
+</script>
 ```
 
 ## Examples
@@ -370,25 +374,21 @@ function displayGallery() {
 </style>
 ```
 
-## CSS Parts
+## Control Positions
 
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | Outer camera container holding the video feed |
-| `controls` | `<div>` | Built-in control buttons area (capture and switch camera) |
-
-```css
-snice-camera::part(base) {
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-snice-camera::part(controls) {
-  padding: 1rem;
-}
-```
+| Position | Description |
+|----------|-------------|
+| `'auto'` | Auto-detect: `bottom-right` (portrait), `right` (landscape) |
+| **Corners** | |
+| `'bottom-left'` | Bottom-left corner |
+| `'bottom-right'` | Bottom-right corner |
+| `'top-left'` | Top-left corner |
+| `'top-right'` | Top-right corner |
+| **Edges** | |
+| `'bottom'` | Bottom edge (centered) |
+| `'right'` | Right edge (centered) |
+| `'left'` | Left edge (centered) |
+| `'top'` | Top edge (centered) |
 
 ## Built-in Controls
 

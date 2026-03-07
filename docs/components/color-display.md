@@ -4,12 +4,6 @@
 
 The `<snice-color-display>` component displays colors with a swatch and formatted label.
 
-## Basic Usage
-
-```html
-<snice-color-display value="#3b82f6"></snice-color-display>
-```
-
 ## Properties
 
 | Property | Type | Default | Description |
@@ -20,6 +14,12 @@ The `<snice-color-display>` component displays colors with a swatch and formatte
 | `showLabel` | `boolean` | `true` | Show color label |
 | `swatchSize` | `'small' \| 'medium' \| 'large'` | `'medium'` | Swatch size |
 | `label` | `string` | `''` | Custom label text |
+
+## Basic Usage
+
+```html
+<snice-color-display value="#3b82f6"></snice-color-display>
+```
 
 ## Examples
 

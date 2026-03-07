@@ -5,31 +5,6 @@
 
 A multi-resource week/day/month scheduler for managing events across people, rooms, or equipment.
 
-## Basic Usage
-
-```html
-<snice-scheduler></snice-scheduler>
-```
-
-```javascript
-const scheduler = document.querySelector('snice-scheduler');
-
-scheduler.resources = [
-  { id: '1', name: 'Dr. Smith', color: '#2196f3' },
-  { id: '2', name: 'Room A', color: '#ff9800' },
-];
-
-scheduler.events = [
-  {
-    id: '1',
-    resourceId: '1',
-    start: new Date(2025, 5, 15, 9, 0),
-    end: new Date(2025, 5, 15, 10, 30),
-    title: 'Patient Consultation'
-  },
-];
-```
-
 ## Importing
 
 **ESM (bundler)**
@@ -54,33 +29,6 @@ import 'snice/components/scheduler/snice-scheduler';
 | `granularity` | `granularity` | `number` | `60` | Slot size in minutes (15, 30, 60) |
 | `startHour` | `start-hour` | `number` | `0` | First hour displayed |
 | `endHour` | `end-hour` | `number` | `24` | Last hour displayed |
-
-## Interfaces
-
-### SchedulerResource
-
-```typescript
-interface SchedulerResource {
-  id: string | number;
-  name: string;
-  avatar?: string;  // URL for avatar image
-  color?: string;   // Color for avatar fallback
-}
-```
-
-### SchedulerEvent
-
-```typescript
-interface SchedulerEvent {
-  id: string | number;
-  resourceId: string | number;
-  start: Date | string;
-  end: Date | string;
-  title: string;
-  color?: string;
-  data?: any;
-}
-```
 
 ## Methods
 
@@ -197,6 +145,31 @@ snice-scheduler::part(header) {
 }
 ```
 
+## Basic Usage
+
+```html
+<snice-scheduler></snice-scheduler>
+```
+
+```javascript
+const scheduler = document.querySelector('snice-scheduler');
+
+scheduler.resources = [
+  { id: '1', name: 'Dr. Smith', color: '#2196f3' },
+  { id: '2', name: 'Room A', color: '#ff9800' },
+];
+
+scheduler.events = [
+  {
+    id: '1',
+    resourceId: '1',
+    start: new Date(2025, 5, 15, 9, 0),
+    end: new Date(2025, 5, 15, 10, 30),
+    title: 'Patient Consultation'
+  },
+];
+```
+
 ## Examples
 
 ### Week View with Resources
@@ -258,6 +231,33 @@ scheduler.date = new Date();
 scheduler.view = 'day';
 scheduler.view = 'week';
 scheduler.view = 'month';
+```
+
+## Interfaces
+
+### SchedulerResource
+
+```typescript
+interface SchedulerResource {
+  id: string | number;
+  name: string;
+  avatar?: string;  // URL for avatar image
+  color?: string;   // Color for avatar fallback
+}
+```
+
+### SchedulerEvent
+
+```typescript
+interface SchedulerEvent {
+  id: string | number;
+  resourceId: string | number;
+  start: Date | string;
+  end: Date | string;
+  title: string;
+  color?: string;
+  data?: any;
+}
 ```
 
 ## Accessibility

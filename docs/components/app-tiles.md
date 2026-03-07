@@ -3,17 +3,70 @@
 
 <!-- AI: For a low-token version of this doc, use docs/ai/components/app-tiles.md instead -->
 
-## App Tiles Component
-
-An app launcher grid like Google's app drawer or a phone home screen. Supports material icons, image URLs, emoji, and letter fallbacks with optional badges.
-
 ## Table of Contents
-
-- [Basic Usage](#basic-usage)
+- [Importing](#importing)
 - [Properties](#properties)
-- [Slots](#slots)
 - [Events](#events)
+- [CSS Custom Properties](#css-custom-properties)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
+- [App Tiles Component](#app-tiles-component)
+- [Icon Resolution Order](#icon-resolution-order)
+
+## Importing
+
+**ESM (bundler)**
+```typescript
+import 'snice/components/app-tiles/snice-app-tiles';
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-app-tiles.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `tiles` | `AppTile[]` | `[]` | Array of tile data objects (programmatic mode) |
+| `columns` | `number` | `4` | Number of grid columns |
+| `size` | `'sm' \| 'md' \| 'lg' \| 'xl' \| '2xl'` | `'md'` | Tile size |
+| `variant` | `'grid' \| 'list' \| 'compact'` | `'grid'` | Layout variant |
+
+### AppTile Interface
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `id` | `string` | Unique identifier |
+| `name` | `string` | Tile label |
+| `icon` | `string` | URL, emoji, or Material Symbols ligature name |
+| `color` | `string?` | Background color for letter/ligature fallback |
+| `href` | `string?` | Navigation URL on click |
+| `badge` | `string?` | Badge content |
+
+### snice-app-tile Attributes
+
+| Attribute | Description |
+|-----------|-------------|
+| `name` | Tile label |
+| `icon` | URL, emoji, or Material Symbols ligature |
+| `color` | Background color |
+| `href` | Navigation URL |
+| `badge` | Badge content |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `tile-click` | `{ tile: AppTile, index: number }` | Fired when a tile is clicked |
+
+## CSS Custom Properties
+
+| Variable | Description |
+|----------|-------------|
+| `--snice-app-tile-icon-size` | Override icon container width/height. Takes precedence over the `size` attribute. |
 
 ## Basic Usage
 
@@ -27,19 +80,6 @@ An app launcher grid like Google's app drawer or a phone home screen. Supports m
 
 ```typescript
 import 'snice/components/app-tiles/snice-app-tiles';
-```
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/app-tiles/snice-app-tiles';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-app-tiles.min.js"></script>
 ```
 
 ## Examples
@@ -128,47 +168,9 @@ Use the `badge` attribute to display a notification badge on a tile.
 <snice-app-tile name="AWS" color="rgb(255 153 0)" badge="!"></snice-app-tile>
 ```
 
-## Properties
+## App Tiles Component
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `tiles` | `AppTile[]` | `[]` | Array of tile data objects (programmatic mode) |
-| `columns` | `number` | `4` | Number of grid columns |
-| `size` | `'sm' \| 'md' \| 'lg' \| 'xl' \| '2xl'` | `'md'` | Tile size |
-| `variant` | `'grid' \| 'list' \| 'compact'` | `'grid'` | Layout variant |
-
-### AppTile Interface
-
-| Property | Type | Description |
-|----------|------|-------------|
-| `id` | `string` | Unique identifier |
-| `name` | `string` | Tile label |
-| `icon` | `string` | URL, emoji, or Material Symbols ligature name |
-| `color` | `string?` | Background color for letter/ligature fallback |
-| `href` | `string?` | Navigation URL on click |
-| `badge` | `string?` | Badge content |
-
-### snice-app-tile Attributes
-
-| Attribute | Description |
-|-----------|-------------|
-| `name` | Tile label |
-| `icon` | URL, emoji, or Material Symbols ligature |
-| `color` | Background color |
-| `href` | Navigation URL |
-| `badge` | Badge content |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `tile-click` | `{ tile: AppTile, index: number }` | Fired when a tile is clicked |
-
-## CSS Custom Properties
-
-| Variable | Description |
-|----------|-------------|
-| `--snice-app-tile-icon-size` | Override icon container width/height. Takes precedence over the `size` attribute. |
+An app launcher grid like Google's app drawer or a phone home screen. Supports material icons, image URLs, emoji, and letter fallbacks with optional badges.
 
 ## Icon Resolution Order
 

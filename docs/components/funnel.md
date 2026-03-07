@@ -5,31 +5,14 @@
 The funnel component renders an SVG-based funnel/conversion chart, ideal for visualizing pipeline stages, conversion funnels, and drop-off analysis. Each stage is rendered as a trapezoid shape that narrows proportionally to its value.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
-- [Best Practices](#best-practices)
-
-## Basic Usage
-
-```html
-<snice-funnel id="my-funnel"></snice-funnel>
-
-<script type="module">
-  import 'snice/components/funnel/snice-funnel';
-
-  const funnel = document.getElementById('my-funnel');
-  funnel.data = [
-    { label: 'Visitors', value: 10000 },
-    { label: 'Leads', value: 5000 },
-    { label: 'Opportunities', value: 2000 },
-    { label: 'Customers', value: 500 },
-  ];
-</script>
-```
+- [Browser Support](#browser-support)
 
 ## Properties
 
@@ -84,6 +67,44 @@ funnel.addEventListener('funnel-click', (e) => {
   console.log('Clicked stage:', e.detail.stage.label);
   console.log('Stage index:', e.detail.index);
 });
+```
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer funnel container |
+| `chart` | `<div>` | SVG chart rendering area |
+| `tooltip` | `<div>` | Hover tooltip element |
+
+```css
+snice-funnel::part(base) {
+  padding: 1rem;
+}
+
+snice-funnel::part(tooltip) {
+  font-size: 0.875rem;
+}
+```
+
+## Basic Usage
+
+```html
+<snice-funnel id="my-funnel"></snice-funnel>
+
+<script type="module">
+  import 'snice/components/funnel/snice-funnel';
+
+  const funnel = document.getElementById('my-funnel');
+  funnel.data = [
+    { label: 'Visitors', value: 10000 },
+    { label: 'Leads', value: 5000 },
+    { label: 'Opportunities', value: 2000 },
+    { label: 'Customers', value: 500 },
+  ];
+</script>
 ```
 
 ## Examples
@@ -165,26 +186,6 @@ The gradient variant uses decreasing opacity of the primary color for a smoother
 </script>
 ```
 
-## CSS Parts
-
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | Outer funnel container |
-| `chart` | `<div>` | SVG chart rendering area |
-| `tooltip` | `<div>` | Hover tooltip element |
-
-```css
-snice-funnel::part(base) {
-  padding: 1rem;
-}
-
-snice-funnel::part(tooltip) {
-  font-size: 0.875rem;
-}
-```
-
 ## Accessibility
 
 - **ARIA role**: The SVG has `role="img"` with `aria-label="Funnel chart"`
@@ -198,16 +199,3 @@ snice-funnel::part(tooltip) {
 
 - Modern browsers (Chrome, Firefox, Safari, Edge)
 - Requires Custom Elements v1 and Shadow DOM support
-
-## Best Practices
-
-1. **Order data by value**: Place the largest value first for a natural funnel shape
-2. **Use meaningful labels**: Stage labels should clearly describe each step in the process
-3. **Limit stages**: 3-7 stages works best visually; more than 8 becomes hard to read
-4. **Choose colors wisely**: Use custom colors to match your brand or highlight important stages
-5. **Include percentages**: Conversion percentages help users understand drop-off rates
-6. **Use animation sparingly**: Enable animation for initial page load or dashboard reveals
-7. **Consider orientation**: Vertical works well for sidebar placement; horizontal for wide layouts
-8. **Handle click events**: Use click events to drill down into stage details
-9. **Format values**: Large numbers are automatically formatted (K/M notation)
-10. **Test responsiveness**: The SVG scales with its container width

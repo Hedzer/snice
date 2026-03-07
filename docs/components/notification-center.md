@@ -7,25 +7,16 @@
 A bell icon with a dropdown notification panel. Displays an unread count badge, supports marking notifications as read, and allows dismissing individual items.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
+- [Importing](#importing)
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
-- [Types](#types)
 - [CSS Custom Properties](#css-custom-properties)
 - [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
+- [Types](#types)
 - [Accessibility](#accessibility)
-
-## Basic Usage
-
-```typescript
-import 'snice/components/notification-center/snice-notification-center';
-```
-
-```html
-<snice-notification-center></snice-notification-center>
-```
 
 ## Importing
 
@@ -63,21 +54,31 @@ import 'snice/components/notification-center/snice-notification-center';
 | `notification-dismiss` | `{ id: string }` | Fired when a notification is dismissed |
 | `notification-read-all` | `void` | Fired when all notifications are marked as read |
 
-## Types
+## CSS Custom Properties
 
-### NotificationItem
-
-```typescript
-interface NotificationItem {
-  id: string;                                        // Unique identifier
-  title: string;                                     // Notification title
-  message: string;                                   // Notification body text
-  timestamp: string;                                 // Display timestamp (e.g., "2 min ago")
-  read?: boolean;                                    // Whether the notification has been read
-  icon?: string;                                     // Emoji or text icon (auto-set by type if omitted)
-  type?: 'info' | 'success' | 'warning' | 'error';  // Notification type (determines default icon)
-}
-```
+| Property | Description |
+|----------|-------------|
+| `--snice-font-family` | Font family |
+| `--snice-color-text` | Primary text color |
+| `--snice-color-primary` | Mark-all-read link color and unread highlight |
+| `--snice-color-primary-subtle` | Unread item background |
+| `--snice-color-danger` | Badge background and dismiss hover color |
+| `--snice-color-text-inverse` | Badge text color |
+| `--snice-color-text-secondary` | Message text color |
+| `--snice-color-text-tertiary` | Timestamp, empty state text, and dismiss icon color |
+| `--snice-color-border` | Panel and item border color |
+| `--snice-color-background` | Panel background color |
+| `--snice-color-background-element` | Item hover and bell hover background |
+| `--snice-shadow-lg` | Panel drop shadow |
+| `--snice-spacing-*` | Various spacing tokens |
+| `--snice-font-size-sm` | Small text size |
+| `--snice-font-size-md` | Base text size |
+| `--snice-font-weight-medium` | Medium font weight |
+| `--snice-font-weight-semibold` | Semibold font weight |
+| `--snice-font-weight-bold` | Bold font weight |
+| `--snice-border-radius-md` | Item border radius |
+| `--snice-border-radius-lg` | Panel border radius |
+| `--snice-transition-fast` | Hover transition speed |
 
 ## CSS Parts
 
@@ -106,31 +107,15 @@ snice-notification-center::part(panel) {
 }
 ```
 
-## CSS Custom Properties
+## Basic Usage
 
-| Property | Description |
-|----------|-------------|
-| `--snice-font-family` | Font family |
-| `--snice-color-text` | Primary text color |
-| `--snice-color-primary` | Mark-all-read link color and unread highlight |
-| `--snice-color-primary-subtle` | Unread item background |
-| `--snice-color-danger` | Badge background and dismiss hover color |
-| `--snice-color-text-inverse` | Badge text color |
-| `--snice-color-text-secondary` | Message text color |
-| `--snice-color-text-tertiary` | Timestamp, empty state text, and dismiss icon color |
-| `--snice-color-border` | Panel and item border color |
-| `--snice-color-background` | Panel background color |
-| `--snice-color-background-element` | Item hover and bell hover background |
-| `--snice-shadow-lg` | Panel drop shadow |
-| `--snice-spacing-*` | Various spacing tokens |
-| `--snice-font-size-sm` | Small text size |
-| `--snice-font-size-md` | Base text size |
-| `--snice-font-weight-medium` | Medium font weight |
-| `--snice-font-weight-semibold` | Semibold font weight |
-| `--snice-font-weight-bold` | Bold font weight |
-| `--snice-border-radius-md` | Item border radius |
-| `--snice-border-radius-lg` | Panel border radius |
-| `--snice-transition-fast` | Hover transition speed |
+```typescript
+import 'snice/components/notification-center/snice-notification-center';
+```
+
+```html
+<snice-notification-center></snice-notification-center>
+```
 
 ## Examples
 
@@ -273,6 +258,22 @@ Override the default type-based icon with a custom emoji or text using the `icon
     { id: '3', title: 'Reminder', message: 'Team standup in 15 minutes', timestamp: '10 min ago', icon: '⏰' }
   ];
 </script>
+```
+
+## Types
+
+### NotificationItem
+
+```typescript
+interface NotificationItem {
+  id: string;                                        // Unique identifier
+  title: string;                                     // Notification title
+  message: string;                                   // Notification body text
+  timestamp: string;                                 // Display timestamp (e.g., "2 min ago")
+  read?: boolean;                                    // Whether the notification has been read
+  icon?: string;                                     // Emoji or text icon (auto-set by type if omitted)
+  type?: 'info' | 'success' | 'warning' | 'error';  // Notification type (determines default icon)
+}
 ```
 
 ## Accessibility

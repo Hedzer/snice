@@ -5,28 +5,15 @@
 The flip card component creates a two-sided card with a CSS 3D flip animation. Content is placed in front and back slots, and the card can be flipped by clicking, keyboard interaction, or programmatically.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
 - [Properties](#properties)
-- [Slots](#slots)
 - [Methods](#methods)
 - [Events](#events)
+- [Slots](#slots)
 - [CSS Custom Properties](#css-custom-properties)
 - [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
-
-## Basic Usage
-
-```html
-<snice-flip-card style="width: 300px; height: 200px;">
-  <div slot="front">Front side</div>
-  <div slot="back">Back side</div>
-</snice-flip-card>
-```
-
-```typescript
-import 'snice/components/flip-card/snice-flip-card';
-```
 
 ## Properties
 
@@ -36,13 +23,6 @@ import 'snice/components/flip-card/snice-flip-card';
 | `clickToFlip` (attr: `click-to-flip`) | `boolean` | `true` | Enable click and keyboard interaction to toggle the card |
 | `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | Flip axis direction |
 | `duration` | `number` | `600` | Flip animation duration in milliseconds |
-
-## Slots
-
-| Name | Description |
-|------|-------------|
-| `front` | Content displayed on the front face of the card |
-| `back` | Content displayed on the back face of the card |
 
 ## Methods
 
@@ -56,6 +36,13 @@ import 'snice/components/flip-card/snice-flip-card';
 | Event | Detail | Description |
 |-------|--------|-------------|
 | `flip-change` | `{ flipped: boolean, side: 'front' \| 'back' }` | Fired when the card flips to a different side |
+
+## Slots
+
+| Name | Description |
+|------|-------------|
+| `front` | Content displayed on the front face of the card |
+| `back` | Content displayed on the back face of the card |
 
 ## CSS Custom Properties
 
@@ -85,6 +72,19 @@ snice-flip-card::part(front) {
 snice-flip-card::part(back) {
   background: linear-gradient(135deg, #f093fb, #f5576c);
 }
+```
+
+## Basic Usage
+
+```html
+<snice-flip-card style="width: 300px; height: 200px;">
+  <div slot="front">Front side</div>
+  <div slot="back">Back side</div>
+</snice-flip-card>
+```
+
+```typescript
+import 'snice/components/flip-card/snice-flip-card';
 ```
 
 ## Examples

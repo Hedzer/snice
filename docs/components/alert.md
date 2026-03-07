@@ -5,23 +5,16 @@
 The alert component displays notification messages to provide user feedback for informational, success, warning, or error states. It supports customizable variants, sizes, titles, icons, and optional dismissal.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
+- [Slots](#slots)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
-
-## Basic Usage
-
-```html
-<snice-alert>
-  This is a basic alert message.
-</snice-alert>
-```
-
-```typescript
-import 'snice/components/alert/snice-alert';
-```
+- [Accessibility](#accessibility)
+- [Browser Support](#browser-support)
+- [Common Patterns](#common-patterns)
+- [Variant Colors](#variant-colors)
 
 ## Properties
 
@@ -32,29 +25,6 @@ import 'snice/components/alert/snice-alert';
 | `title` | `string` | `''` | Optional title text |
 | `dismissible` | `boolean` | `false` | Show dismiss button |
 | `icon` | `string` | `''` | Custom icon (URL, image file, emoji) or `'none'` to hide. Use slot for icon fonts. |
-
-## Slots
-
-| Slot Name | Description |
-|-----------|-------------|
-| `icon` | Custom icon content. Overrides the `icon` property and default variant icons. |
-| (default) | Alert message content |
-
-### Icon Slot Usage
-
-Use the `icon` slot for external CSS-based icon fonts (Material Symbols, Font Awesome) that need to work inside shadow DOM:
-
-```html
-<snice-alert variant="info" title="Information">
-  <span slot="icon" class="material-symbols-outlined">info</span>
-  This is an informational message with a Material Symbols icon.
-</snice-alert>
-
-<snice-alert variant="error">
-  <i slot="icon" class="fa-solid fa-circle-exclamation"></i>
-  An error occurred with Font Awesome icon.
-</snice-alert>
-```
 
 ## Methods
 
@@ -112,6 +82,41 @@ Fired when the alert is shown.
   variant: AlertVariant;
   title: string;
 }
+```
+
+## Slots
+
+| Slot Name | Description |
+|-----------|-------------|
+| `icon` | Custom icon content. Overrides the `icon` property and default variant icons. |
+| (default) | Alert message content |
+
+### Icon Slot Usage
+
+Use the `icon` slot for external CSS-based icon fonts (Material Symbols, Font Awesome) that need to work inside shadow DOM:
+
+```html
+<snice-alert variant="info" title="Information">
+  <span slot="icon" class="material-symbols-outlined">info</span>
+  This is an informational message with a Material Symbols icon.
+</snice-alert>
+
+<snice-alert variant="error">
+  <i slot="icon" class="fa-solid fa-circle-exclamation"></i>
+  An error occurred with Font Awesome icon.
+</snice-alert>
+```
+
+## Basic Usage
+
+```html
+<snice-alert>
+  This is a basic alert message.
+</snice-alert>
+```
+
+```typescript
+import 'snice/components/alert/snice-alert';
 ```
 
 ## Examples
@@ -204,7 +209,6 @@ The `icon` property supports multiple formats:
 </snice-alert>
 
 <snice-alert variant="info" icon="💡">
-  Pro tip: Save time by using keyboard shortcuts.
 </snice-alert>
 
 <!-- Image URL -->
@@ -521,19 +525,6 @@ alert.addEventListener('alert-hidden', () => {
 
 - Modern browsers (Chrome, Firefox, Safari, Edge)
 - Requires Custom Elements v1 and Shadow DOM support
-
-## Best Practices
-
-1. **Choose appropriate variants**: Use semantic variants that match the message type
-2. **Keep messages concise**: Short, clear messages are more effective
-3. **Use titles for context**: Titles help users quickly understand the alert type
-4. **Make important alerts dismissible**: Allow users to close alerts they've read
-5. **Auto-dismiss when appropriate**: Consider auto-dismissing success messages
-6. **Position alerts appropriately**: Place alerts near related content or in a notification area
-7. **Don't overuse**: Too many alerts can overwhelm users
-8. **Provide actionable information**: Include next steps or actions when relevant
-9. **Test with screen readers**: Ensure alerts are announced properly
-10. **Handle multiple alerts**: Stack or queue alerts to avoid overwhelming users
 
 ## Common Patterns
 

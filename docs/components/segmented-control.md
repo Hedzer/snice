@@ -5,6 +5,42 @@
 
 A multi-option switcher with a sliding indicator. One option is selected at a time. Unlike a switch (binary) or tabs (with content panes), this is purely a value selector for multiple options.
 
+## Importing
+
+**ESM (bundler)**
+```typescript
+import 'snice/components/segmented-control/snice-segmented-control';
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-segmented-control.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `value` | `string` | `''` | Selected option value |
+| `options` | `SegmentedControlOption[]` | `[]` | Array of `{ value, label, icon?, disabled? }` |
+| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Control size |
+| `disabled` | `boolean` | `false` | Disables the entire control |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `value-change` | `{ value, previousValue, option, control }` | Selection changed |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `base` | The control container |
+| `indicator` | The sliding indicator |
+| `segment` | Each segment button |
+
 ## Basic Usage
 
 ```typescript
@@ -22,19 +58,6 @@ control.options = [
   { value: 'week', label: 'Week' },
   { value: 'month', label: 'Month' },
 ];
-```
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/segmented-control/snice-segmented-control';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-segmented-control.min.js"></script>
 ```
 
 ## Examples
@@ -106,26 +129,3 @@ control.addEventListener('value-change', (e) => {
 const control = document.querySelector('snice-segmented-control');
 control.value = 'month';
 ```
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `value` | `string` | `''` | Selected option value |
-| `options` | `SegmentedControlOption[]` | `[]` | Array of `{ value, label, icon?, disabled? }` |
-| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Control size |
-| `disabled` | `boolean` | `false` | Disables the entire control |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `value-change` | `{ value, previousValue, option, control }` | Selection changed |
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `base` | The control container |
-| `indicator` | The sliding indicator |
-| `segment` | Each segment button |

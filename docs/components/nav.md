@@ -5,6 +5,54 @@
 
 A navigation menu that renders from placard configurations and integrates with Snice's routing system.
 
+## Importing
+
+**ESM (bundler)**
+```typescript
+import 'snice/components/nav/snice-nav';
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-nav.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `variant` | `'flat' \| 'hierarchical' \| 'grouped'` | `'flat'` | Navigation display style |
+| `orientation` | `'horizontal' \| 'vertical'` | `'horizontal'` | Layout direction |
+| `isTopLevel` (attr: `is-top-level`) | `boolean` | `false` | Receive context updates automatically |
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `update()` | `placards, appContext?, currentRoute?, routeParams?` | Update navigation with placard data |
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The outer content wrapper |
+| `nav` | `<nav>` | The navigation element |
+| `link` | `<a>` | An individual navigation link |
+
+```css
+snice-nav::part(nav) {
+  gap: 0.5rem;
+}
+
+snice-nav::part(link) {
+  font-weight: 500;
+  text-decoration: none;
+}
+```
+
 ## Basic Usage
 
 ```typescript
@@ -22,19 +70,6 @@ import 'snice/components/nav/snice-nav';
     { name: 'about', title: 'About', order: 2 },
   ], undefined, 'home');
 </script>
-```
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/nav/snice-nav';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-nav.min.js"></script>
 ```
 
 ## Examples
@@ -158,40 +193,5 @@ interface Placard {
   searchTerms?: string[];            // Search keywords
   attributes?: Record<string, any>;  // Custom data attributes
   visibleOn?: Function | Function[]; // Visibility guard functions
-}
-```
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `variant` | `'flat' \| 'hierarchical' \| 'grouped'` | `'flat'` | Navigation display style |
-| `orientation` | `'horizontal' \| 'vertical'` | `'horizontal'` | Layout direction |
-| `isTopLevel` (attr: `is-top-level`) | `boolean` | `false` | Receive context updates automatically |
-
-## Methods
-
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `update()` | `placards, appContext?, currentRoute?, routeParams?` | Update navigation with placard data |
-
-## CSS Parts
-
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | The outer content wrapper |
-| `nav` | `<nav>` | The navigation element |
-| `link` | `<a>` | An individual navigation link |
-
-```css
-snice-nav::part(nav) {
-  gap: 0.5rem;
-}
-
-snice-nav::part(link) {
-  font-weight: 500;
-  text-decoration: none;
 }
 ```

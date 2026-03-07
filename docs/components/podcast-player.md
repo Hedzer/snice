@@ -7,27 +7,15 @@
 A full-featured podcast player with playback controls, playback speed adjustment, episode list, chapter support, RSS feed parsing, sleep timer, and position memory via localStorage.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
+- [Importing](#importing)
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
-- [Types](#types)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
+- [Types](#types)
 - [Accessibility](#accessibility)
-
-## Basic Usage
-
-```typescript
-import 'snice/components/podcast-player/snice-podcast-player';
-```
-
-```html
-<snice-podcast-player
-  src="/audio/episode.mp3"
-  title="Episode 1"
-  show="My Podcast"
-></snice-podcast-player>
-```
 
 ## Importing
 
@@ -109,48 +97,18 @@ snice-podcast-player::part(controls) {
 }
 ```
 
-## Types
-
-### PodcastEpisode
+## Basic Usage
 
 ```typescript
-interface PodcastEpisode {
-  title: string;                   // Episode title
-  src: string;                     // Audio source URL
-  artwork?: string;                // Episode-specific artwork URL
-  description?: string;            // Episode description
-  pubDate?: string;                // Publication date string
-  duration?: number;               // Duration in seconds
-  chapters?: PodcastChapter[];     // Chapter markers
-}
+import 'snice/components/podcast-player/snice-podcast-player';
 ```
 
-### PodcastChapter
-
-```typescript
-interface PodcastChapter {
-  title: string;          // Chapter title
-  startTime: number;      // Start time in seconds
-  endTime?: number;       // End time in seconds
-  artwork?: string;       // Chapter-specific artwork URL
-}
-```
-
-### RSSFeedData
-
-```typescript
-interface RSSFeedData {
-  title: string;                   // Podcast title from feed
-  artwork?: string;                // Show artwork URL from feed
-  description?: string;            // Show description from feed
-  episodes: PodcastEpisode[];      // Parsed episode list
-}
-```
-
-### PodcastPlayerState
-
-```typescript
-type PodcastPlayerState = 'playing' | 'paused' | 'stopped' | 'loading' | 'error';
+```html
+<snice-podcast-player
+  src="/audio/episode.mp3"
+  title="Episode 1"
+  show="My Podcast"
+></snice-podcast-player>
 ```
 
 ## Examples
@@ -286,6 +244,50 @@ Listen for playback events to integrate with analytics or custom UI.
     status.textContent = `Now playing: ${e.detail.episode.title}`;
   });
 </script>
+```
+
+## Types
+
+### PodcastEpisode
+
+```typescript
+interface PodcastEpisode {
+  title: string;                   // Episode title
+  src: string;                     // Audio source URL
+  artwork?: string;                // Episode-specific artwork URL
+  description?: string;            // Episode description
+  pubDate?: string;                // Publication date string
+  duration?: number;               // Duration in seconds
+  chapters?: PodcastChapter[];     // Chapter markers
+}
+```
+
+### PodcastChapter
+
+```typescript
+interface PodcastChapter {
+  title: string;          // Chapter title
+  startTime: number;      // Start time in seconds
+  endTime?: number;       // End time in seconds
+  artwork?: string;       // Chapter-specific artwork URL
+}
+```
+
+### RSSFeedData
+
+```typescript
+interface RSSFeedData {
+  title: string;                   // Podcast title from feed
+  artwork?: string;                // Show artwork URL from feed
+  description?: string;            // Show description from feed
+  episodes: PodcastEpisode[];      // Parsed episode list
+}
+```
+
+### PodcastPlayerState
+
+```typescript
+type PodcastPlayerState = 'playing' | 'paused' | 'stopped' | 'loading' | 'error';
 ```
 
 ## Accessibility

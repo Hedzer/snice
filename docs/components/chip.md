@@ -5,20 +5,15 @@
 The chip component provides compact elements for tags, filters, selections, or categorizations. It supports icons, avatars, removable states, and multiple visual variants.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
 - [Properties](#properties)
 - [Events](#events)
+- [Slots](#slots)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
-
-## Basic Usage
-
-```html
-<snice-chip label="Tag"></snice-chip>
-```
-
-```typescript
-import 'snice/components/chip/snice-chip';
-```
+- [Accessibility](#accessibility)
+- [Browser Support](#browser-support)
+- [Common Patterns](#common-patterns)
+- [Variant Colors](#variant-colors)
 
 ## Properties
 
@@ -32,6 +27,28 @@ import 'snice/components/chip/snice-chip';
 | `disabled` | `boolean` | `false` | Disable the chip |
 | `icon` | `string` | `''` | Icon (URL, image file, emoji). Use slot for icon fonts. |
 | `avatar` | `string` | `''` | Avatar image URL |
+
+## Events
+
+#### `chip-click`
+Fired when the chip is clicked (not the remove button).
+
+**Usage:**
+```typescript
+chip.addEventListener('chip-click', () => {
+  console.log('Chip clicked');
+});
+```
+
+#### `chip-remove`
+Fired when the remove button is clicked.
+
+**Usage:**
+```typescript
+chip.addEventListener('chip-remove', () => {
+  chip.remove(); // Remove from DOM
+});
+```
 
 ## Slots
 
@@ -55,26 +72,14 @@ Use the `icon` slot for external CSS-based icon fonts:
 
 > **Note**: If `avatar` property is set, the avatar takes precedence and the icon slot will not be displayed.
 
-## Events
+## Basic Usage
 
-#### `chip-click`
-Fired when the chip is clicked (not the remove button).
-
-**Usage:**
-```typescript
-chip.addEventListener('chip-click', () => {
-  console.log('Chip clicked');
-});
+```html
+<snice-chip label="Tag"></snice-chip>
 ```
 
-#### `chip-remove`
-Fired when the remove button is clicked.
-
-**Usage:**
 ```typescript
-chip.addEventListener('chip-remove', () => {
-  chip.remove(); // Remove from DOM
-});
+import 'snice/components/chip/snice-chip';
 ```
 
 ## Examples
@@ -656,19 +661,6 @@ The `icon` property supports multiple formats:
 
 - Modern browsers (Chrome, Firefox, Safari, Edge)
 - Requires Custom Elements v1 and Shadow DOM support
-
-## Best Practices
-
-1. **Keep labels short**: Chips work best with concise text
-2. **Use appropriate variants**: Match colors to semantic meaning
-3. **Make removable when needed**: Allow users to dismiss chips
-4. **Group related chips**: Use containers to organize chip sets
-5. **Limit chip count**: Too many chips can overwhelm users
-6. **Use icons/avatars wisely**: Visual elements should add meaning
-7. **Handle removal gracefully**: Animate or fade out when removing
-8. **Test keyboard navigation**: Ensure chips work without a mouse
-9. **Consider mobile**: Ensure chips are tappable on touch devices
-10. **Provide feedback**: Show selected/active states clearly
 
 ## Common Patterns
 

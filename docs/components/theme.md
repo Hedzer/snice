@@ -5,12 +5,6 @@
 
 Provides all design tokens for Snice components via CSS custom properties. Includes light and dark themes with automatic system preference detection.
 
-## Basic Usage
-
-```html
-<link rel="stylesheet" href="snice/components/theme/theme.css">
-```
-
 ## Importing
 
 **ESM (bundler)**
@@ -21,79 +15,6 @@ import 'snice/components/theme/theme.css';
 **CDN**
 ```html
 <link rel="stylesheet" href="theme.min.css">
-```
-
-## Examples
-
-### Light Theme (Default)
-
-The light theme is applied by default on `:root`.
-
-```html
-<html>
-  <head>
-    <link rel="stylesheet" href="theme.css">
-  </head>
-  <body>
-    <!-- Light theme by default -->
-  </body>
-</html>
-```
-
-### Dark Theme
-
-Set `data-theme="dark"` on any element to apply dark theme tokens.
-
-```html
-<html data-theme="dark">
-  <!-- Dark theme applied -->
-</html>
-```
-
-### Force Light Theme
-
-Set `data-theme="light"` to override system preference and force light theme.
-
-```html
-<html data-theme="light">
-  <!-- Always light, regardless of system preference -->
-</html>
-```
-
-### Automatic Theme (System Preference)
-
-Without a `data-theme` attribute, the theme follows the user's system preference via `prefers-color-scheme`.
-
-```html
-<html>
-  <!-- Follows OS dark/light setting automatically -->
-</html>
-```
-
-### Scoped Dark Section
-
-Apply dark theme to a section of the page.
-
-```html
-<body>
-  <div>Light content here</div>
-  <div data-theme="dark" style="padding: 2rem; background: var(--snice-color-background);">
-    <p style="color: var(--snice-color-text);">Dark section</p>
-  </div>
-</body>
-```
-
-### Theme Toggle
-
-```html
-<button id="toggle">Toggle Theme</button>
-
-<script>
-  document.getElementById('toggle').addEventListener('click', () => {
-    const current = document.documentElement.getAttribute('data-theme');
-    document.documentElement.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
-  });
-</script>
 ```
 
 ## CSS Custom Properties
@@ -212,4 +133,83 @@ The theme defines color scales in HSL format (gray, blue, green, red, yellow) wi
 --snice-color-blue-500: 217 91% 60%;
 /* Use with hsl(): */
 color: hsl(var(--snice-color-blue-500));
+```
+
+## Basic Usage
+
+```html
+<link rel="stylesheet" href="snice/components/theme/theme.css">
+```
+
+## Examples
+
+### Light Theme (Default)
+
+The light theme is applied by default on `:root`.
+
+```html
+<html>
+  <head>
+    <link rel="stylesheet" href="theme.css">
+  </head>
+  <body>
+    <!-- Light theme by default -->
+  </body>
+</html>
+```
+
+### Dark Theme
+
+Set `data-theme="dark"` on any element to apply dark theme tokens.
+
+```html
+<html data-theme="dark">
+  <!-- Dark theme applied -->
+</html>
+```
+
+### Force Light Theme
+
+Set `data-theme="light"` to override system preference and force light theme.
+
+```html
+<html data-theme="light">
+  <!-- Always light, regardless of system preference -->
+</html>
+```
+
+### Automatic Theme (System Preference)
+
+Without a `data-theme` attribute, the theme follows the user's system preference via `prefers-color-scheme`.
+
+```html
+<html>
+  <!-- Follows OS dark/light setting automatically -->
+</html>
+```
+
+### Scoped Dark Section
+
+Apply dark theme to a section of the page.
+
+```html
+<body>
+  <div>Light content here</div>
+  <div data-theme="dark" style="padding: 2rem; background: var(--snice-color-background);">
+    <p style="color: var(--snice-color-text);">Dark section</p>
+  </div>
+</body>
+```
+
+### Theme Toggle
+
+```html
+<button id="toggle">Toggle Theme</button>
+
+<script>
+  document.getElementById('toggle').addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme');
+    document.documentElement.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+  });
+</script>
 ```

@@ -5,6 +5,63 @@
 
 Efficiently renders large lists by only displaying visible items.
 
+## Importing
+
+**ESM (bundler)**
+```typescript
+import 'snice/components/virtual-scroller/snice-virtual-scroller';
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-virtual-scroller.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `items` | `VirtualScrollerItem[]` | `[]` | Array of items to render |
+| `itemHeight` (attr: `item-height`) | `number` | `50` | Default item height (px) |
+| `bufferSize` (attr: `buffer-size`) | `number` | `5` | Extra items rendered outside viewport |
+| `estimatedItemHeight` (attr: `estimated-item-height`) | `number` | `50` | Estimated height for variable items |
+| `renderItem` | `(item: VirtualScrollerItem, index: number) => string` | -- | Function to render each item |
+
+### VirtualScrollerItem Interface
+
+```typescript
+interface VirtualScrollerItem {
+  id: string | number;
+  data: any;
+  height?: number;
+}
+```
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `scrollToIndex()` | `index: number` | Scroll to item at index |
+| `scrollToItem()` | `id: string \| number` | Scroll to item by ID |
+| `refresh()` | -- | Recalculate visible range and re-render |
+| `getVisibleRange()` | -- | Returns `{ start: number, end: number }` |
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The outer scroller container |
+
+```css
+snice-virtual-scroller::part(base) {
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 transparent;
+}
+```
+
 ## Basic Usage
 
 ```typescript
@@ -26,19 +83,6 @@ import 'snice/components/virtual-scroller/snice-virtual-scroller';
     return `<div style="padding: 15px; border-bottom: 1px solid #eee;">${item.data}</div>`;
   };
 </script>
-```
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/virtual-scroller/snice-virtual-scroller';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-virtual-scroller.min.js"></script>
 ```
 
 ## Examples
@@ -127,47 +171,3 @@ scroller.refresh();
 scroller.items = scroller.items.filter(item => item.id !== targetId);
 scroller.refresh();
 ```
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `items` | `VirtualScrollerItem[]` | `[]` | Array of items to render |
-| `itemHeight` (attr: `item-height`) | `number` | `50` | Default item height (px) |
-| `bufferSize` (attr: `buffer-size`) | `number` | `5` | Extra items rendered outside viewport |
-| `estimatedItemHeight` (attr: `estimated-item-height`) | `number` | `50` | Estimated height for variable items |
-| `renderItem` | `(item: VirtualScrollerItem, index: number) => string` | -- | Function to render each item |
-
-### VirtualScrollerItem Interface
-
-```typescript
-interface VirtualScrollerItem {
-  id: string | number;
-  data: any;
-  height?: number;
-}
-```
-
-## CSS Parts
-
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | The outer scroller container |
-
-```css
-snice-virtual-scroller::part(base) {
-  scrollbar-width: thin;
-  scrollbar-color: #94a3b8 transparent;
-}
-```
-
-## Methods
-
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `scrollToIndex()` | `index: number` | Scroll to item at index |
-| `scrollToItem()` | `id: string \| number` | Scroll to item by ID |
-| `refresh()` | -- | Recalculate visible range and re-render |
-| `getVisibleRange()` | -- | Returns `{ start: number, end: number }` |

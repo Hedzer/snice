@@ -5,16 +5,6 @@
 
 A two-handle slider for selecting a numeric range, with a highlighted track between the two thumbs.
 
-## Basic Usage
-
-```typescript
-import 'snice/components/range-slider/snice-range-slider';
-```
-
-```html
-<snice-range-slider value-low="20" value-high="80"></snice-range-slider>
-```
-
 ## Importing
 
 **ESM (bundler)**
@@ -26,6 +16,47 @@ import 'snice/components/range-slider/snice-range-slider';
 ```html
 <script src="snice-runtime.min.js"></script>
 <script src="snice-range-slider.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `min` | `number` | `0` | Minimum value |
+| `max` | `number` | `100` | Maximum value |
+| `step` | `number` | `1` | Step increment |
+| `valueLow` (attr: `value-low`) | `number` | `0` | Low handle position |
+| `valueHigh` (attr: `value-high`) | `number` | `100` | High handle position |
+| `disabled` | `boolean` | `false` | Disables the slider |
+| `showTooltip` (attr: `show-tooltip`) | `boolean` | `false` | Show value tooltip on hover/drag |
+| `showLabels` (attr: `show-labels`) | `boolean` | `false` | Show min/max labels |
+| `orientation` | `'horizontal' \| 'vertical'` | `'horizontal'` | Slider orientation |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `range-change` | `{ valueLow: number, valueHigh: number, component: SniceRangeSliderElement }` | Fired when either handle value changes |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `track` | The slider track |
+| `range` | The highlighted area between the two thumbs |
+| `thumb-low` | The low-value thumb |
+| `thumb-high` | The high-value thumb |
+| `label-min` | The minimum label text |
+| `label-max` | The maximum label text |
+
+## Basic Usage
+
+```typescript
+import 'snice/components/range-slider/snice-range-slider';
+```
+
+```html
+<snice-range-slider value-low="20" value-high="80"></snice-range-slider>
 ```
 
 ## Examples
@@ -83,34 +114,3 @@ Listen to the `range-change` event to react to value changes.
   });
 </script>
 ```
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `min` | `number` | `0` | Minimum value |
-| `max` | `number` | `100` | Maximum value |
-| `step` | `number` | `1` | Step increment |
-| `valueLow` (attr: `value-low`) | `number` | `0` | Low handle position |
-| `valueHigh` (attr: `value-high`) | `number` | `100` | High handle position |
-| `disabled` | `boolean` | `false` | Disables the slider |
-| `showTooltip` (attr: `show-tooltip`) | `boolean` | `false` | Show value tooltip on hover/drag |
-| `showLabels` (attr: `show-labels`) | `boolean` | `false` | Show min/max labels |
-| `orientation` | `'horizontal' \| 'vertical'` | `'horizontal'` | Slider orientation |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `range-change` | `{ valueLow: number, valueHigh: number, component: SniceRangeSliderElement }` | Fired when either handle value changes |
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `track` | The slider track |
-| `range` | The highlighted area between the two thumbs |
-| `thumb-low` | The low-value thumb |
-| `thumb-high` | The high-value thumb |
-| `label-min` | The minimum label text |
-| `label-max` | The maximum label text |

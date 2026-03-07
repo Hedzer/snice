@@ -5,15 +5,84 @@
 The leaderboard component displays a ranked list of entries with optional avatars, change indicators, and podium highlighting. It supports a **dual API**: declarative child elements (`<snice-leaderboard-entry>`) and an imperative `setEntries()` method.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
-- [Declarative API (Child Elements)](#declarative-api-child-elements)
-- [Imperative API (setEntries)](#imperative-api-setentries)
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
-- [Variants](#variants)
 - [CSS Custom Properties](#css-custom-properties)
+- [Basic Usage](#basic-usage)
+- [Declarative API (Child Elements)](#declarative-api-child-elements)
+- [Imperative API (setEntries)](#imperative-api-setentries)
+- [Variants](#variants)
 - [Accessibility](#accessibility)
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `variant` | `'default' \| 'podium' \| 'compact'` | `'default'` | Display variant |
+| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Entry size |
+| `title` | `string` | `''` | Optional title displayed above the list |
+
+## Methods
+
+### `setEntries(entries: LeaderboardEntry[]): void`
+
+Set leaderboard entries imperatively. Each entry is an object with these fields:
+
+```typescript
+interface LeaderboardEntry {
+  rank: number;         // Position number
+  name: string;         // Display name
+  score: number | string; // Score value
+  avatar?: string;      // Avatar image URL
+  change?: number;      // Rank change (positive = up, negative = down)
+  highlighted?: boolean; // Highlight this entry
+}
+```
+
+## Events
+
+### `entry-click`
+
+Fired when a leaderboard entry is clicked.
+
+**Event Detail:**
+```typescript
+{
+  entry: LeaderboardEntry; // The clicked entry data
+  index: number;           // Index of the entry
+}
+```
+
+**Example:**
+```javascript
+leaderboard.addEventListener('entry-click', (e) => {
+  console.log('Clicked:', e.detail.entry.name);
+});
+```
+
+## CSS Custom Properties
+
+| Property | Description | Default |
+|----------|-------------|---------|
+| `--leaderboard-bg` | Background color | `var(--snice-color-background)` |
+| `--leaderboard-text` | Primary text color | `var(--snice-color-text)` |
+| `--leaderboard-text-secondary` | Secondary text color | `var(--snice-color-text-secondary)` |
+| `--leaderboard-border` | Border color | `var(--snice-color-border)` |
+| `--leaderboard-primary` | Highlight/accent color | `var(--snice-color-primary)` |
+| `--leaderboard-success` | Positive change color | `var(--snice-color-success)` |
+| `--leaderboard-danger` | Negative change color | `var(--snice-color-danger)` |
+| `--leaderboard-bg-element` | Element background | `var(--snice-color-background-element)` |
+| `--leaderboard-radius` | Border radius | `var(--snice-border-radius-lg)` |
+
+### CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `base` | The outer leaderboard container |
+| `title` | The title heading |
+| `list` | The entries list |
+| `empty` | The empty state message |
 
 ## Basic Usage
 
@@ -90,52 +159,6 @@ When **both** child elements and `setEntries()` are used:
 - `setEntries()` calls are ignored while child elements are present
 - When all children are removed, `setEntries()` becomes active again
 
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `variant` | `'default' \| 'podium' \| 'compact'` | `'default'` | Display variant |
-| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Entry size |
-| `title` | `string` | `''` | Optional title displayed above the list |
-
-## Methods
-
-### `setEntries(entries: LeaderboardEntry[]): void`
-
-Set leaderboard entries imperatively. Each entry is an object with these fields:
-
-```typescript
-interface LeaderboardEntry {
-  rank: number;         // Position number
-  name: string;         // Display name
-  score: number | string; // Score value
-  avatar?: string;      // Avatar image URL
-  change?: number;      // Rank change (positive = up, negative = down)
-  highlighted?: boolean; // Highlight this entry
-}
-```
-
-## Events
-
-### `entry-click`
-
-Fired when a leaderboard entry is clicked.
-
-**Event Detail:**
-```typescript
-{
-  entry: LeaderboardEntry; // The clicked entry data
-  index: number;           // Index of the entry
-}
-```
-
-**Example:**
-```javascript
-leaderboard.addEventListener('entry-click', (e) => {
-  console.log('Clicked:', e.detail.entry.name);
-});
-```
-
 ## Variants
 
 ### Default
@@ -158,29 +181,6 @@ Tighter spacing with smaller avatars, suitable for sidebars or smaller container
 ```html
 <snice-leaderboard variant="compact">...</snice-leaderboard>
 ```
-
-## CSS Custom Properties
-
-| Property | Description | Default |
-|----------|-------------|---------|
-| `--leaderboard-bg` | Background color | `var(--snice-color-background)` |
-| `--leaderboard-text` | Primary text color | `var(--snice-color-text)` |
-| `--leaderboard-text-secondary` | Secondary text color | `var(--snice-color-text-secondary)` |
-| `--leaderboard-border` | Border color | `var(--snice-color-border)` |
-| `--leaderboard-primary` | Highlight/accent color | `var(--snice-color-primary)` |
-| `--leaderboard-success` | Positive change color | `var(--snice-color-success)` |
-| `--leaderboard-danger` | Negative change color | `var(--snice-color-danger)` |
-| `--leaderboard-bg-element` | Element background | `var(--snice-color-background-element)` |
-| `--leaderboard-radius` | Border radius | `var(--snice-border-radius-lg)` |
-
-### CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `base` | The outer leaderboard container |
-| `title` | The title heading |
-| `list` | The entries list |
-| `empty` | The empty state message |
 
 ## Accessibility
 

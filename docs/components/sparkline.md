@@ -5,6 +5,47 @@
 
 A lightweight inline chart for visualizing trends in compact spaces.
 
+## Importing
+
+**ESM (bundler)**
+```typescript
+import 'snice/components/sparkline/snice-sparkline';
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-sparkline.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `data` | `number[]` | `[]` | Array of numeric values to visualize |
+| `type` | `'line' \| 'bar' \| 'area'` | `'line'` | Chart type |
+| `color` | `'primary' \| 'success' \| 'warning' \| 'danger' \| 'muted'` | `'primary'` | Color variant |
+| `customColor` (attr: `custom-color`) | `string` | `undefined` | Custom CSS color (overrides `color`) |
+| `width` | `number` | `100` | Chart width in pixels |
+| `height` | `number` | `30` | Chart height in pixels |
+| `strokeWidth` (attr: `stroke-width`) | `number` | `2` | Line stroke width |
+| `showDots` (attr: `show-dots`) | `boolean` | `false` | Show dots on data points |
+| `showArea` (attr: `show-area`) | `boolean` | `false` | Show area fill below line |
+| `smooth` | `boolean` | `false` | Use smooth bezier curves |
+| `min` | `number` | `undefined` | Minimum scale value (auto if unset) |
+| `max` | `number` | `undefined` | Maximum scale value (auto if unset) |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `container` | Outer container |
+| `svg` | SVG element |
+| `line` | Line path |
+| `area` | Area fill path |
+| `dot` | Data point dot |
+| `bar` | Bar rectangle |
+
 ## Basic Usage
 
 ```typescript
@@ -17,19 +58,6 @@ import 'snice/components/sparkline/snice-sparkline';
 <script>
   document.getElementById('chart').data = [10, 20, 15, 25, 30];
 </script>
-```
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/sparkline/snice-sparkline';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-sparkline.min.js"></script>
 ```
 
 ## Examples
@@ -117,31 +145,3 @@ Use `min` and `max` to set fixed data bounds for consistent comparison.
   document.getElementById('traffic').data = [1200, 1350, 1100, 1450, 1600, 1550, 1700];
 </script>
 ```
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `data` | `number[]` | `[]` | Array of numeric values to visualize |
-| `type` | `'line' \| 'bar' \| 'area'` | `'line'` | Chart type |
-| `color` | `'primary' \| 'success' \| 'warning' \| 'danger' \| 'muted'` | `'primary'` | Color variant |
-| `customColor` (attr: `custom-color`) | `string` | `undefined` | Custom CSS color (overrides `color`) |
-| `width` | `number` | `100` | Chart width in pixels |
-| `height` | `number` | `30` | Chart height in pixels |
-| `strokeWidth` (attr: `stroke-width`) | `number` | `2` | Line stroke width |
-| `showDots` (attr: `show-dots`) | `boolean` | `false` | Show dots on data points |
-| `showArea` (attr: `show-area`) | `boolean` | `false` | Show area fill below line |
-| `smooth` | `boolean` | `false` | Use smooth bezier curves |
-| `min` | `number` | `undefined` | Minimum scale value (auto if unset) |
-| `max` | `number` | `undefined` | Maximum scale value (auto if unset) |
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `container` | Outer container |
-| `svg` | SVG element |
-| `line` | Line path |
-| `area` | Area fill path |
-| `dot` | Data point dot |
-| `bar` | Bar rectangle |

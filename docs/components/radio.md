@@ -5,18 +5,6 @@
 
 A form radio button input with automatic group management by name.
 
-## Basic Usage
-
-```typescript
-import 'snice/components/radio/snice-radio';
-```
-
-```html
-<snice-radio name="color" value="red" label="Red"></snice-radio>
-<snice-radio name="color" value="green" label="Green"></snice-radio>
-<snice-radio name="color" value="blue" label="Blue"></snice-radio>
-```
-
 ## Importing
 
 **ESM (bundler)**
@@ -28,6 +16,67 @@ import 'snice/components/radio/snice-radio';
 ```html
 <script src="snice-runtime.min.js"></script>
 <script src="snice-radio.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `checked` | `boolean` | `false` | Whether the radio is selected |
+| `disabled` | `boolean` | `false` | Disables interaction |
+| `loading` | `boolean` | `false` | Shows spinner instead of dot |
+| `required` | `boolean` | `false` | Marks as required for forms |
+| `invalid` | `boolean` | `false` | Shows invalid state styling |
+| `variant` | `'default' \| 'block'` | `'default'` | Visual variant. `block` renders card-style layout |
+| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Radio button size |
+| `name` | `string` | `''` | Group name for mutual exclusion |
+| `value` | `string` | `''` | Form value when selected |
+| `label` | `string` | `''` | Label text |
+| `description` | `string` | `''` | Description text below the label (block variant) |
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `focus()` | -- | Focuses the radio input |
+| `blur()` | -- | Removes focus |
+| `click()` | -- | Programmatic click |
+| `select()` | -- | Selects the radio and fires change event |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `radio-change` | `{ checked: boolean, value: string, radio: SniceRadioElement }` | Fired when the selection changes |
+
+## Slots
+
+| Name | Description |
+|------|-------------|
+| `suffix` | End content for block variant (badges, prices, labels) |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `input` | The hidden radio input |
+| `radio` | The radio circle container |
+| `dot` | The inner dot indicator |
+| `spinner` | The loading spinner |
+| `label` | The label text |
+| `content` | The content wrapper (block variant) |
+| `description` | The description text (block variant) |
+
+## Basic Usage
+
+```typescript
+import 'snice/components/radio/snice-radio';
+```
+
+```html
+<snice-radio name="color" value="red" label="Red"></snice-radio>
+<snice-radio name="color" value="green" label="Green"></snice-radio>
+<snice-radio name="color" value="blue" label="Blue"></snice-radio>
 ```
 
 ## Examples
@@ -147,52 +196,3 @@ Use `variant="block"` to render card-style radio buttons, ideal for plan pickers
   });
 </script>
 ```
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `checked` | `boolean` | `false` | Whether the radio is selected |
-| `disabled` | `boolean` | `false` | Disables interaction |
-| `loading` | `boolean` | `false` | Shows spinner instead of dot |
-| `required` | `boolean` | `false` | Marks as required for forms |
-| `invalid` | `boolean` | `false` | Shows invalid state styling |
-| `variant` | `'default' \| 'block'` | `'default'` | Visual variant. `block` renders card-style layout |
-| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Radio button size |
-| `name` | `string` | `''` | Group name for mutual exclusion |
-| `value` | `string` | `''` | Form value when selected |
-| `label` | `string` | `''` | Label text |
-| `description` | `string` | `''` | Description text below the label (block variant) |
-
-## Slots
-
-| Name | Description |
-|------|-------------|
-| `suffix` | End content for block variant (badges, prices, labels) |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `radio-change` | `{ checked: boolean, value: string, radio: SniceRadioElement }` | Fired when the selection changes |
-
-## Methods
-
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `focus()` | -- | Focuses the radio input |
-| `blur()` | -- | Removes focus |
-| `click()` | -- | Programmatic click |
-| `select()` | -- | Selects the radio and fires change event |
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `input` | The hidden radio input |
-| `radio` | The radio circle container |
-| `dot` | The inner dot indicator |
-| `spinner` | The loading spinner |
-| `label` | The label text |
-| `content` | The content wrapper (block variant) |
-| `description` | The description text (block variant) |

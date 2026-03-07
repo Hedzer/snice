@@ -5,23 +5,14 @@
 The cropper component provides an image cropping tool with a draggable and resizable crop area, rotation, zoom controls, optional aspect ratio locking, and a rule-of-thirds grid overlay. It outputs cropped images as Blob objects in PNG, JPEG, or WebP format.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
 - [CSS Custom Properties](#css-custom-properties)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
-
-## Basic Usage
-
-```html
-<snice-cropper src="/photo.jpg"></snice-cropper>
-```
-
-```typescript
-import 'snice/components/cropper/snice-cropper';
-```
 
 ## Properties
 
@@ -56,6 +47,37 @@ import 'snice/components/cropper/snice-cropper';
 | `--snice-color-background-element` | Container background color |
 | `--snice-color-border` | Container border color |
 | `--snice-border-radius-lg` | Container border radius |
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer cropper container |
+| `image-container` | `<div>` | Image display area |
+| `crop-area` | `<div>` | Draggable/resizable crop region with handles |
+
+```css
+snice-cropper::part(base) {
+  border: 2px solid #ccc;
+  border-radius: 12px;
+}
+
+snice-cropper::part(crop-area) {
+  border-color: #3b82f6;
+}
+```
+
+## Basic Usage
+
+```html
+<snice-cropper src="/photo.jpg"></snice-cropper>
+```
+
+```typescript
+import 'snice/components/cropper/snice-cropper';
+```
 
 ## Examples
 
@@ -142,27 +164,6 @@ Track the crop area position and dimensions in real time.
     info.textContent = `Position: (${x}, ${y}) Size: ${width} x ${height}`;
   });
 </script>
-```
-
-## CSS Parts
-
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | Outer cropper container |
-| `image-container` | `<div>` | Image display area |
-| `crop-area` | `<div>` | Draggable/resizable crop region with handles |
-
-```css
-snice-cropper::part(base) {
-  border: 2px solid #ccc;
-  border-radius: 12px;
-}
-
-snice-cropper::part(crop-area) {
-  border-color: #3b82f6;
-}
 ```
 
 ## Accessibility

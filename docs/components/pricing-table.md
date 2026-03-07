@@ -5,32 +5,13 @@
 The pricing table component displays plan comparisons in a card or table layout, with support for monthly/annual billing toggle, highlighted plans, badges, and declarative child elements.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
 - [Properties](#properties)
-- [Child Elements](#child-elements)
 - [Events](#events)
 - [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
+- [Child Elements](#child-elements)
 - [Accessibility](#accessibility)
-
-## Basic Usage
-
-```html
-<snice-pricing-table>
-  <snice-plan name="Free" price="0" cta="Get Started">
-    <snice-feature>5 projects</snice-feature>
-    <snice-feature excluded>API access</snice-feature>
-  </snice-plan>
-  <snice-plan name="Pro" price="29" cta="Start Trial" highlighted>
-    <snice-feature>Unlimited projects</snice-feature>
-    <snice-feature>API access</snice-feature>
-  </snice-plan>
-</snice-pricing-table>
-```
-
-```typescript
-import 'snice/components/pricing-table/snice-pricing-table';
-```
 
 ## Properties
 
@@ -63,34 +44,6 @@ interface PricingFeature {
 }
 ```
 
-## Child Elements
-
-The pricing table supports declarative usage via `<snice-plan>` and `<snice-feature>` child elements as an alternative to setting the `plans` property.
-
-### `<snice-plan>`
-
-| Attribute | Type | Description |
-|-----------|------|-------------|
-| `name` | `string` | Plan name |
-| `price` | `string` | Monthly price |
-| `annual-price` | `string` | Annual price (enables billing toggle) |
-| `period` | `string` | Billing period label (default: '/mo') |
-| `currency` | `string` | Currency symbol (default: '$') |
-| `description` | `string` | Plan description |
-| `cta` | `string` | Call-to-action button text |
-| `cta-variant` | `'primary' \| 'secondary' \| 'outline'` | Button variant |
-| `highlighted` | `boolean` | Emphasize this plan |
-| `badge` | `string` | Badge text (e.g. 'Popular') |
-
-### `<snice-feature>`
-
-| Attribute | Type | Description |
-|-----------|------|-------------|
-| `excluded` | `boolean` | Mark feature as not included (shows X instead of check) |
-| `value` | `string` | Custom display value (e.g. '1GB', '100GB') |
-
-The text content of `<snice-feature>` is used as the feature name.
-
 ## Events
 
 #### `plan-select`
@@ -116,6 +69,25 @@ Fired when a plan's call-to-action button is clicked.
 | `toggle` | Billing toggle switch area |
 | `table-wrapper` | Table layout wrapper |
 | `table` | The comparison table element |
+
+## Basic Usage
+
+```html
+<snice-pricing-table>
+  <snice-plan name="Free" price="0" cta="Get Started">
+    <snice-feature>5 projects</snice-feature>
+    <snice-feature excluded>API access</snice-feature>
+  </snice-plan>
+  <snice-plan name="Pro" price="29" cta="Start Trial" highlighted>
+    <snice-feature>Unlimited projects</snice-feature>
+    <snice-feature>API access</snice-feature>
+  </snice-plan>
+</snice-pricing-table>
+```
+
+```typescript
+import 'snice/components/pricing-table/snice-pricing-table';
+```
 
 ## Examples
 
@@ -233,17 +205,37 @@ Set plans via JavaScript for dynamic pricing data.
 </script>
 ```
 
+## Child Elements
+
+The pricing table supports declarative usage via `<snice-plan>` and `<snice-feature>` child elements as an alternative to setting the `plans` property.
+
+### `<snice-plan>`
+
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| `name` | `string` | Plan name |
+| `price` | `string` | Monthly price |
+| `annual-price` | `string` | Annual price (enables billing toggle) |
+| `period` | `string` | Billing period label (default: '/mo') |
+| `currency` | `string` | Currency symbol (default: '$') |
+| `description` | `string` | Plan description |
+| `cta` | `string` | Call-to-action button text |
+| `cta-variant` | `'primary' \| 'secondary' \| 'outline'` | Button variant |
+| `highlighted` | `boolean` | Emphasize this plan |
+| `badge` | `string` | Badge text (e.g. 'Popular') |
+
+### `<snice-feature>`
+
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| `excluded` | `boolean` | Mark feature as not included (shows X instead of check) |
+| `value` | `string` | Custom display value (e.g. '1GB', '100GB') |
+
+The text content of `<snice-feature>` is used as the feature name.
+
 ## Accessibility
 
 - **Keyboard support**: Tab through plans and activate CTA buttons with Enter or Space
 - **Screen readers**: Plan names, prices, and feature inclusion states are announced
 - **Highlighted plans**: Visually emphasized plans are distinguishable through styling, not color alone
 - **Billing toggle**: The monthly/annual toggle is keyboard accessible
-
-## Best Practices
-
-1. **Highlight the recommended plan**: Use `highlighted` and `badge` to draw attention to the best-value option
-2. **Keep plans comparable**: Use consistent feature lists across plans for easy comparison
-3. **Show savings**: When using annual pricing, the toggle makes savings obvious
-4. **Use the table variant for many features**: Cards work well for 3-5 features; tables scale better for detailed comparisons
-5. **Provide clear CTAs**: Button text should indicate the action (e.g. "Start Trial", "Contact Sales")

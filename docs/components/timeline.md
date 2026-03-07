@@ -5,6 +5,53 @@
 
 Displays events in chronological order with markers, timestamps, and descriptions.
 
+## Importing
+
+**ESM (bundler)**
+```typescript
+import 'snice/components/timeline/snice-timeline';
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-timeline.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `orientation` | `'vertical' \| 'horizontal'` | `'vertical'` | Timeline orientation |
+| `position` | `'left' \| 'right' \| 'alternate'` | `'left'` | Item position (vertical only) |
+| `items` | `TimelineItem[]` | `[]` | Timeline items |
+| `reverse` | `boolean` | `false` | Reverse item order |
+
+### TimelineItem Interface
+
+```typescript
+interface TimelineItem {
+  timestamp?: string;
+  title: string;
+  description?: string;
+  icon?: string;
+  variant?: 'default' | 'success' | 'warning' | 'error' | 'info';
+}
+```
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `container` | Timeline container |
+| `item` | Individual timeline item |
+| `marker` | Item marker circle |
+| `icon` | Marker icon |
+| `content` | Item content area |
+| `timestamp` | Timestamp text |
+| `title` | Title text |
+| `description` | Description text |
+
 ## Basic Usage
 
 ```typescript
@@ -20,19 +67,6 @@ import 'snice/components/timeline/snice-timeline';
     { timestamp: '2024-01-20', title: 'Design Complete', description: 'Mockups approved' }
   ];
 </script>
-```
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/timeline/snice-timeline';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-timeline.min.js"></script>
 ```
 
 ## Examples
@@ -108,37 +142,3 @@ Set the `reverse` attribute to reverse item display order.
 ```html
 <snice-timeline reverse id="reversed"></snice-timeline>
 ```
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `orientation` | `'vertical' \| 'horizontal'` | `'vertical'` | Timeline orientation |
-| `position` | `'left' \| 'right' \| 'alternate'` | `'left'` | Item position (vertical only) |
-| `items` | `TimelineItem[]` | `[]` | Timeline items |
-| `reverse` | `boolean` | `false` | Reverse item order |
-
-### TimelineItem Interface
-
-```typescript
-interface TimelineItem {
-  timestamp?: string;
-  title: string;
-  description?: string;
-  icon?: string;
-  variant?: 'default' | 'success' | 'warning' | 'error' | 'info';
-}
-```
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `container` | Timeline container |
-| `item` | Individual timeline item |
-| `marker` | Item marker circle |
-| `icon` | Marker icon |
-| `content` | Item content area |
-| `timestamp` | Timestamp text |
-| `title` | Title text |
-| `description` | Description text |

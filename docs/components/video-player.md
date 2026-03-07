@@ -5,25 +5,17 @@
 The video player component provides a full-featured video player with custom controls, keyboard shortcuts, picture-in-picture support, fullscreen mode, playback speed selection, and multiple visual variants. It wraps the native HTML video element with a polished, consistent UI.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
 - [Properties](#properties)
-- [Slots](#slots)
 - [Methods](#methods)
 - [Events](#events)
-- [Keyboard Shortcuts](#keyboard-shortcuts)
+- [Slots](#slots)
 - [CSS Custom Properties](#css-custom-properties)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
+- [Keyboard Shortcuts](#keyboard-shortcuts)
 - [Accessibility](#accessibility)
-
-## Basic Usage
-
-```html
-<snice-video-player src="video.mp4" poster="poster.jpg"></snice-video-player>
-```
-
-```typescript
-import 'snice/components/video-player/snice-video-player';
-```
+- [Browser Support](#browser-support)
 
 ## Properties
 
@@ -48,12 +40,6 @@ import 'snice/components/video-player/snice-video-player';
 | `default` | Full controls with progress bar, playback speed selector, and PiP button |
 | `minimal` | Simplified controls without rate or PiP buttons |
 | `cinema` | Larger controls, no border radius, with box shadow for a theater-like appearance |
-
-## Slots
-
-| Slot Name | Description |
-|-----------|-------------|
-| (default) | `<source>` elements for providing multiple video formats |
 
 ## Methods
 
@@ -180,17 +166,11 @@ Fired when volume or mute state changes.
 }
 ```
 
-## Keyboard Shortcuts
+## Slots
 
-| Key | Action |
-|-----|--------|
-| Space / K | Toggle play/pause |
-| F | Toggle fullscreen |
-| M | Toggle mute |
-| ArrowRight | Seek forward 5 seconds |
-| ArrowLeft | Seek backward 5 seconds |
-| ArrowUp | Volume up 10% |
-| ArrowDown | Volume down 10% |
+| Slot Name | Description |
+|-----------|-------------|
+| (default) | `<source>` elements for providing multiple video formats |
 
 ## CSS Custom Properties
 
@@ -227,6 +207,16 @@ snice-video-player::part(controls) {
 snice-video-player::part(progress) {
   height: 6px;
 }
+```
+
+## Basic Usage
+
+```html
+<snice-video-player src="video.mp4" poster="poster.jpg"></snice-video-player>
+```
+
+```typescript
+import 'snice/components/video-player/snice-video-player';
 ```
 
 ## Examples
@@ -336,6 +326,18 @@ Control the player using JavaScript methods.
 <button onclick="document.getElementById('controlled-player').setPlaybackRate(2)">2x Speed</button>
 ```
 
+## Keyboard Shortcuts
+
+| Key | Action |
+|-----|--------|
+| Space / K | Toggle play/pause |
+| F | Toggle fullscreen |
+| M | Toggle mute |
+| ArrowRight | Seek forward 5 seconds |
+| ArrowLeft | Seek backward 5 seconds |
+| ArrowUp | Volume up 10% |
+| ArrowDown | Volume down 10% |
+
 ## Accessibility
 
 - **Keyboard support**: Full keyboard control with Space/K for play/pause, F for fullscreen, M for mute, and arrow keys for seeking and volume
@@ -349,13 +351,3 @@ Control the player using JavaScript methods.
 - Modern browsers (Chrome, Firefox, Safari, Edge)
 - Requires Custom Elements v1 and Shadow DOM support
 - Picture-in-Picture requires browser support (Chrome, Edge, Safari; limited in Firefox)
-
-## Best Practices
-
-1. **Provide a poster image**: Show a meaningful thumbnail before playback starts
-2. **Offer multiple sources**: Use `<source>` elements with WebM and MP4 for broad compatibility
-3. **Respect autoplay policies**: Autoplay requires `muted` in most browsers
-4. **Use appropriate variants**: Choose `minimal` for embedded tutorials, `cinema` for featured content
-5. **Add keyboard hints**: Consider showing keyboard shortcuts in a tooltip or help section
-6. **Handle playback errors**: Listen for error events and show fallback messaging
-7. **Set reasonable defaults**: Start with controls visible and volume at a comfortable level

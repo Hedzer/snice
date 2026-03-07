@@ -6,25 +6,6 @@ A key performance indicator display component for showing metrics with optional 
 
 > **Note**: The `snice-stat` component has been merged into `snice-kpi`. All stat functionality is now available through KPI.
 
-## Features
-
-- **Clear Value Display**: Large, prominent metric value
-- **Icon Support**: Optional icon slot for visual branding
-- **Trend Indicators**: Optional trend value with sentiment icons
-- **Sparkline Integration**: Built-in sparkline chart support
-- **Sentiment Colors**: Visual feedback with up/down/neutral states
-- **Multiple Sizes**: Small, medium, and large variants
-- **Flexible Layout**: Responsive and adaptable to different layouts
-
-## Basic Usage
-
-```html
-<snice-kpi
-  label="Total Revenue"
-  value="$45,231">
-</snice-kpi>
-```
-
 ## Properties
 
 | Property | Type | Default | Description |
@@ -61,6 +42,37 @@ A key performance indicator display component for showing metrics with optional 
 </snice-kpi>
 ```
 
+## CSS Parts
+
+Use `::part()` to style internal elements:
+
+```css
+snice-kpi::part(container) {
+  border: 2px solid #e0e0e0;
+}
+
+snice-kpi::part(label) {
+  text-transform: uppercase;
+}
+
+snice-kpi::part(value) {
+  color: #2563eb;
+}
+
+snice-kpi::part(trend) {
+  font-weight: 700;
+}
+```
+
+## Basic Usage
+
+```html
+<snice-kpi
+  label="Total Revenue"
+  value="$45,231">
+</snice-kpi>
+```
+
 ## With Trend Indicator
 
 ```html
@@ -88,106 +100,6 @@ A key performance indicator display component for showing metrics with optional 
     20, 25, 22, 30, 28, 35, 32, 38, 36, 42, 40, 45, 43, 48
   ];
 </script>
-```
-
-## Sentiment Variants
-
-### Up (Positive)
-```html
-<snice-kpi
-  label="Profit Margin"
-  value="34.2%"
-  trend-value="+3.5%"
-  sentiment="up">
-</snice-kpi>
-```
-
-### Down (Attention Needed)
-```html
-<snice-kpi
-  label="Churn Rate"
-  value="2.3%"
-  trend-value="+0.8%"
-  sentiment="down">
-</snice-kpi>
-```
-
-### Neutral (Stable)
-```html
-<snice-kpi
-  label="Market Share"
-  value="28.5%"
-  trend-value="±0%"
-  sentiment="neutral">
-</snice-kpi>
-```
-
-## Sizes
-
-### Small
-```html
-<snice-kpi
-  label="Active Users"
-  value="1,234"
-  size="small">
-</snice-kpi>
-```
-
-### Medium (Default)
-```html
-<snice-kpi
-  label="Active Users"
-  value="1,234"
-  size="medium">
-</snice-kpi>
-```
-
-### Large
-```html
-<snice-kpi
-  label="Active Users"
-  value="1,234"
-  size="large">
-</snice-kpi>
-```
-
-## CSS Parts
-
-Use `::part()` to style internal elements:
-
-```css
-snice-kpi::part(container) {
-  border: 2px solid #e0e0e0;
-}
-
-snice-kpi::part(label) {
-  text-transform: uppercase;
-}
-
-snice-kpi::part(value) {
-  color: #2563eb;
-}
-
-snice-kpi::part(trend) {
-  font-weight: 700;
-}
-```
-
-## Theming
-
-The component uses these CSS custom properties:
-
-```css
---snice-color-background
---snice-color-border
---snice-color-text
---snice-color-text-secondary
---snice-color-success
---snice-color-danger
---snice-spacing-*
---snice-font-size-*
---snice-font-weight-*
---snice-border-radius-md
 ```
 
 ## Examples
@@ -257,13 +169,93 @@ The component uses these CSS custom properties:
 </snice-kpi>
 ```
 
-## Best Practices
+## Features
 
-1. **Use Clear Labels**: Make metric names concise and understandable
-2. **Format Values**: Present numbers in a readable format ($45K vs $45231.50)
-3. **Consistent Sentiment**: Use 'down' for bad news even if the number decreased (e.g., costs going down is good, but use 'down' for the direction)
-4. **Group Related KPIs**: Display related metrics together for context
-5. **Update Regularly**: Keep metrics fresh with real-time or frequent updates
+- **Clear Value Display**: Large, prominent metric value
+- **Icon Support**: Optional icon slot for visual branding
+- **Trend Indicators**: Optional trend value with sentiment icons
+- **Sparkline Integration**: Built-in sparkline chart support
+- **Sentiment Colors**: Visual feedback with up/down/neutral states
+- **Multiple Sizes**: Small, medium, and large variants
+- **Flexible Layout**: Responsive and adaptable to different layouts
+
+## Sentiment Variants
+
+### Up (Positive)
+```html
+<snice-kpi
+  label="Profit Margin"
+  value="34.2%"
+  trend-value="+3.5%"
+  sentiment="up">
+</snice-kpi>
+```
+
+### Down (Attention Needed)
+```html
+<snice-kpi
+  label="Churn Rate"
+  value="2.3%"
+  trend-value="+0.8%"
+  sentiment="down">
+</snice-kpi>
+```
+
+### Neutral (Stable)
+```html
+<snice-kpi
+  label="Market Share"
+  value="28.5%"
+  trend-value="±0%"
+  sentiment="neutral">
+</snice-kpi>
+```
+
+## Sizes
+
+### Small
+```html
+<snice-kpi
+  label="Active Users"
+  value="1,234"
+  size="small">
+</snice-kpi>
+```
+
+### Medium (Default)
+```html
+<snice-kpi
+  label="Active Users"
+  value="1,234"
+  size="medium">
+</snice-kpi>
+```
+
+### Large
+```html
+<snice-kpi
+  label="Active Users"
+  value="1,234"
+  size="large">
+</snice-kpi>
+```
+
+## Theming
+
+The component uses these CSS custom properties:
+
+```css
+--snice-color-background
+--snice-color-border
+--snice-color-text
+--snice-color-text-secondary
+--snice-color-success
+--snice-color-danger
+--snice-spacing-*
+--snice-font-size-*
+--snice-font-weight-*
+--snice-border-radius-md
+```
 
 ## Accessibility
 

@@ -5,19 +5,6 @@
 
 Structured grid layout for forms with label/field alignment and responsive columns.
 
-## Basic Usage
-
-```typescript
-import 'snice/components/form-layout/snice-form-layout';
-```
-
-```html
-<snice-form-layout>
-  <snice-input label="Name"></snice-input>
-  <snice-input label="Email"></snice-input>
-</snice-form-layout>
-```
-
 ## Importing
 
 **ESM (bundler)**
@@ -29,6 +16,48 @@ import 'snice/components/form-layout/snice-form-layout';
 ```html
 <script src="snice-runtime.min.js"></script>
 <script src="snice-form-layout.min.js"></script>
+```
+
+## Properties
+
+| Property | Attribute | Type | Default | Description |
+|----------|-----------|------|---------|-------------|
+| `columns` | `columns` | `number` | `1` | Number of grid columns |
+| `labelPosition` | `label-position` | `'top' \| 'left' \| 'right'` | `'top'` | Label placement relative to fields |
+| `labelWidth` | `label-width` | `string` | `'8rem'` | Label width when position is left/right |
+| `gap` | `gap` | `'small' \| 'medium' \| 'large'` | `'medium'` | Spacing between fields |
+| `variant` | `variant` | `'default' \| 'compact' \| 'inline'` | `'default'` | Layout variant |
+
+## Slots
+
+| Name | Description |
+|------|-------------|
+| (default) | Form fields (inputs, selects, textareas, etc.) |
+
+## CSS Custom Properties
+
+| Property | Description | Default |
+|----------|-------------|---------|
+| `--form-columns` | Number of grid columns (set via `columns` prop) | `1` |
+| `--form-label-width` | Width of labels in left/right mode (set via `label-width` prop) | `8rem` |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `base` | The form layout grid container |
+
+## Basic Usage
+
+```typescript
+import 'snice/components/form-layout/snice-form-layout';
+```
+
+```html
+<snice-form-layout>
+  <snice-input label="Name"></snice-input>
+  <snice-input label="Email"></snice-input>
+</snice-form-layout>
 ```
 
 ## Examples
@@ -117,35 +146,6 @@ Use CSS `grid-column` on slotted children to span multiple columns.
   <snice-textarea label="Bio" style="grid-column: 1 / -1;"></snice-textarea>
 </snice-form-layout>
 ```
-
-## Slots
-
-| Name | Description |
-|------|-------------|
-| (default) | Form fields (inputs, selects, textareas, etc.) |
-
-## Properties
-
-| Property | Attribute | Type | Default | Description |
-|----------|-----------|------|---------|-------------|
-| `columns` | `columns` | `number` | `1` | Number of grid columns |
-| `labelPosition` | `label-position` | `'top' \| 'left' \| 'right'` | `'top'` | Label placement relative to fields |
-| `labelWidth` | `label-width` | `string` | `'8rem'` | Label width when position is left/right |
-| `gap` | `gap` | `'small' \| 'medium' \| 'large'` | `'medium'` | Spacing between fields |
-| `variant` | `variant` | `'default' \| 'compact' \| 'inline'` | `'default'` | Layout variant |
-
-## CSS Custom Properties
-
-| Property | Description | Default |
-|----------|-------------|---------|
-| `--form-columns` | Number of grid columns (set via `columns` prop) | `1` |
-| `--form-label-width` | Width of labels in left/right mode (set via `label-width` prop) | `8rem` |
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `base` | The form layout grid container |
 
 ## Responsive Behavior
 

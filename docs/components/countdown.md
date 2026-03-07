@@ -5,22 +5,13 @@
 The countdown component displays a countdown timer to a target date with live-updating segments for days, hours, minutes, and seconds. It supports three visual variants (simple, flip, circular) and configurable display formats.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
 - [Properties](#properties)
 - [Events](#events)
 - [CSS Custom Properties](#css-custom-properties)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
-
-## Basic Usage
-
-```html
-<snice-countdown target="2026-12-31T00:00:00Z"></snice-countdown>
-```
-
-```typescript
-import 'snice/components/countdown/snice-countdown';
-```
 
 ## Properties
 
@@ -80,6 +71,16 @@ snice-countdown::part(label) {
 snice-countdown::part(separator) {
   color: #9ca3af;
 }
+```
+
+## Basic Usage
+
+```html
+<snice-countdown target="2026-12-31T00:00:00Z"></snice-countdown>
+```
+
+```typescript
+import 'snice/components/countdown/snice-countdown';
 ```
 
 ## Examples

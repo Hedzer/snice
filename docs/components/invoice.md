@@ -3,6 +3,134 @@
 
 A professional invoice component with line items, automatic tax and discount calculations, status tracking, and QR code support. Supports multiple visual variants and customizable layouts.
 
+## Importing
+
+**ESM (bundler)**
+```typescript
+import 'snice/components/invoice/snice-invoice';
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-invoice.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `invoiceNumber` | `string` | `''` | Invoice identifier |
+| `date` | `string` | `''` | Invoice date (displayed as-is) |
+| `dueDate` | `string` | `''` | Due date (displayed as-is) |
+| `status` | `'draft' \| 'sent' \| 'paid' \| 'overdue' \| 'cancelled'` | `'draft'` | Invoice status with visual badge |
+| `currency` | `string` | `'USD'` | Currency code for formatting |
+| `taxRate` | `number` | `0` | Tax rate percentage applied to subtotal |
+| `discount` | `number` | `0` | Discount percentage applied to subtotal |
+| `from` | `InvoiceParty` | `{ name: '' }` | Sender/biller information |
+| `to` | `InvoiceParty` | `{ name: '' }` | Recipient/customer information |
+| `items` | `InvoiceItem[]` | `[]` | Line items for the invoice |
+| `notes` | `string` | `''` | Additional notes section |
+| `variant` | `'standard' \| 'modern' \| 'classic' \| 'minimal' \| 'detailed'` | `'standard'` | Visual style variant |
+| `showQr` | `boolean` | `false` | Display QR code placeholder |
+| `qrData` | `string` | `''` | Data for QR code |
+| `qrPosition` | `'top-right' \| 'bottom-right' \| 'bottom-left' \| 'footer'` | `'bottom-right'` | QR code placement |
+
+### InvoiceParty Interface
+
+```typescript
+interface InvoiceParty {
+  name: string;
+  address?: string;
+  email?: string;
+  phone?: string;
+  logo?: string;
+}
+```
+
+### InvoiceItem Interface
+
+```typescript
+interface InvoiceItem {
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  amount?: number;  // Optional: calculated if not provided
+  tax?: number;     // Optional: item-specific tax rate
+}
+```
+
+## Methods
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `print()` | `void` | Print the invoice |
+| `toJSON()` | `object` | Export invoice data as JSON object including calculated totals |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `invoice-item-change` | `{ items, subtotal, tax, total }` | Fired when items array changes |
+| `invoice-status-change` | `{ oldStatus, newStatus }` | Fired when status property changes |
+
+## Slots
+
+| Slot Name | Description |
+|-----------|-------------|
+| `qr` | QR code content. Use for payment QR codes or links. |
+| (default) | Additional content rendered in the footer area |
+
+## CSS Custom Properties
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `--invoice-max-width` | `50rem` | Maximum width of invoice |
+| `--invoice-padding` | `2rem` | Internal padding |
+| `--invoice-bg` | `white` | Background color |
+| `--invoice-text` | `rgb(23 23 23)` | Text color |
+| `--invoice-text-secondary` | `rgb(82 82 82)` | Secondary text |
+| `--invoice-accent` | `rgb(37 99 235)` | Accent color |
+| `--invoice-border` | `rgb(226 226 226)` | Border color |
+| `--invoice-border-radius` | `0.5rem` | Border radius |
+| `--invoice-shadow` | `none` | Box shadow |
+| `--invoice-table-header-bg` | `transparent` | Table header background |
+| `--invoice-summary-width` | `16rem` | Summary column width |
+| `--invoice-qr-size` | `6rem` | QR code size |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `base` | Root container |
+| `header` | Invoice header section |
+| `title` | Invoice title element |
+| `status` | Status badge |
+| `logo` | Company logo image |
+| `meta` | Metadata container (invoice #, dates) |
+| `parties` | From/To parties container |
+| `party` | Individual party block |
+| `party-label` | Party label ("From", "Bill To") |
+| `party-name` | Party name |
+| `party-detail` | Party details (address, email, phone) |
+| `table` | Items table |
+| `table-header` | Table header row |
+| `table-row` | Table body rows |
+| `table-cell` | Table cells |
+| `summary` | Summary/totals section |
+| `summary-row` | Summary rows |
+| `summary-label` | Summary labels |
+| `summary-value` | Summary values |
+| `discount-row` | Discount row |
+| `tax-row` | Tax row |
+| `total` | Total row |
+| `notes` | Notes section |
+| `notes-label` | Notes heading |
+| `notes-content` | Notes content |
+| `qr-container` | QR code container |
+| `qr` | QR code element |
+| `footer` | Footer area |
+
 ## Basic Usage
 
 ```html
@@ -25,19 +153,6 @@ A professional invoice component with line items, automatic tax and discount cal
     { description: 'UI Design', quantity: 20, unitPrice: 120 }
   ];
 </script>
-```
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/invoice/snice-invoice';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-invoice.min.js"></script>
 ```
 
 ## Examples
@@ -159,118 +274,3 @@ import 'snice/components/invoice/snice-invoice';
   Print Invoice
 </button>
 ```
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `invoiceNumber` | `string` | `''` | Invoice identifier |
-| `date` | `string` | `''` | Invoice date (displayed as-is) |
-| `dueDate` | `string` | `''` | Due date (displayed as-is) |
-| `status` | `'draft' \| 'sent' \| 'paid' \| 'overdue' \| 'cancelled'` | `'draft'` | Invoice status with visual badge |
-| `currency` | `string` | `'USD'` | Currency code for formatting |
-| `taxRate` | `number` | `0` | Tax rate percentage applied to subtotal |
-| `discount` | `number` | `0` | Discount percentage applied to subtotal |
-| `from` | `InvoiceParty` | `{ name: '' }` | Sender/biller information |
-| `to` | `InvoiceParty` | `{ name: '' }` | Recipient/customer information |
-| `items` | `InvoiceItem[]` | `[]` | Line items for the invoice |
-| `notes` | `string` | `''` | Additional notes section |
-| `variant` | `'standard' \| 'modern' \| 'classic' \| 'minimal' \| 'detailed'` | `'standard'` | Visual style variant |
-| `showQr` | `boolean` | `false` | Display QR code placeholder |
-| `qrData` | `string` | `''` | Data for QR code |
-| `qrPosition` | `'top-right' \| 'bottom-right' \| 'bottom-left' \| 'footer'` | `'bottom-right'` | QR code placement |
-
-### InvoiceParty Interface
-
-```typescript
-interface InvoiceParty {
-  name: string;
-  address?: string;
-  email?: string;
-  phone?: string;
-  logo?: string;
-}
-```
-
-### InvoiceItem Interface
-
-```typescript
-interface InvoiceItem {
-  description: string;
-  quantity: number;
-  unitPrice: number;
-  amount?: number;  // Optional: calculated if not provided
-  tax?: number;     // Optional: item-specific tax rate
-}
-```
-
-## Slots
-
-| Slot Name | Description |
-|-----------|-------------|
-| `qr` | QR code content. Use for payment QR codes or links. |
-| (default) | Additional content rendered in the footer area |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `invoice-item-change` | `{ items, subtotal, tax, total }` | Fired when items array changes |
-| `invoice-status-change` | `{ oldStatus, newStatus }` | Fired when status property changes |
-
-## Methods
-
-| Method | Returns | Description |
-|--------|---------|-------------|
-| `print()` | `void` | Print the invoice |
-| `toJSON()` | `object` | Export invoice data as JSON object including calculated totals |
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `base` | Root container |
-| `header` | Invoice header section |
-| `title` | Invoice title element |
-| `status` | Status badge |
-| `logo` | Company logo image |
-| `meta` | Metadata container (invoice #, dates) |
-| `parties` | From/To parties container |
-| `party` | Individual party block |
-| `party-label` | Party label ("From", "Bill To") |
-| `party-name` | Party name |
-| `party-detail` | Party details (address, email, phone) |
-| `table` | Items table |
-| `table-header` | Table header row |
-| `table-row` | Table body rows |
-| `table-cell` | Table cells |
-| `summary` | Summary/totals section |
-| `summary-row` | Summary rows |
-| `summary-label` | Summary labels |
-| `summary-value` | Summary values |
-| `discount-row` | Discount row |
-| `tax-row` | Tax row |
-| `total` | Total row |
-| `notes` | Notes section |
-| `notes-label` | Notes heading |
-| `notes-content` | Notes content |
-| `qr-container` | QR code container |
-| `qr` | QR code element |
-| `footer` | Footer area |
-
-## CSS Custom Properties
-
-| Property | Default | Description |
-|----------|---------|-------------|
-| `--invoice-max-width` | `50rem` | Maximum width of invoice |
-| `--invoice-padding` | `2rem` | Internal padding |
-| `--invoice-bg` | `white` | Background color |
-| `--invoice-text` | `rgb(23 23 23)` | Text color |
-| `--invoice-text-secondary` | `rgb(82 82 82)` | Secondary text |
-| `--invoice-accent` | `rgb(37 99 235)` | Accent color |
-| `--invoice-border` | `rgb(226 226 226)` | Border color |
-| `--invoice-border-radius` | `0.5rem` | Border radius |
-| `--invoice-shadow` | `none` | Box shadow |
-| `--invoice-table-header-bg` | `transparent` | Table header background |
-| `--invoice-summary-width` | `16rem` | Summary column width |
-| `--invoice-qr-size` | `6rem` | QR code size |

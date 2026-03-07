@@ -6,6 +6,63 @@
 
 A coordinated row of KPI cards with consistent sizing, trend indicators, and responsive grid layout.
 
+## Importing
+
+**ESM (bundler)**
+```typescript
+import 'snice/components/stat-group/snice-stat-group';
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-stat-group.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `stats` | `StatItem[]` | `[]` | Array of stat objects to display |
+| `columns` | `number` | `0` | Number of columns (0 = auto-fit) |
+| `variant` | `'card' \| 'minimal' \| 'bordered'` | `'card'` | Visual style variant |
+
+### StatItem Interface
+
+```typescript
+interface StatItem {
+  label: string;              // Stat label text
+  value: string | number;     // Display value
+  trend?: 'up' | 'down' | 'neutral';  // Trend direction
+  trendValue?: string;        // Trend comparison text
+  icon?: string;              // Icon text or emoji
+  color?: string;             // Accent color for icon and value
+}
+```
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `stat-click` | `{ stat: StatItem, index: number }` | Fired when a stat card is clicked |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `base` | The grid container element |
+| `stat` | Individual stat card element |
+
+```css
+snice-stat-group::part(stat) {
+  border-radius: 1rem;
+}
+
+snice-stat-group::part(base) {
+  gap: 2rem;
+}
+```
+
 ## Basic Usage
 
 ```typescript
@@ -21,19 +78,6 @@ import 'snice/components/stat-group/snice-stat-group';
     { label: 'Users', value: '2,338', trend: 'up', trendValue: '+8.2%' }
   ];
 </script>
-```
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/stat-group/snice-stat-group';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-stat-group.min.js"></script>
 ```
 
 ## Examples
@@ -104,61 +148,8 @@ Listen for the `stat-click` event to respond when a user clicks a stat card.
 </script>
 ```
 
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `stats` | `StatItem[]` | `[]` | Array of stat objects to display |
-| `columns` | `number` | `0` | Number of columns (0 = auto-fit) |
-| `variant` | `'card' \| 'minimal' \| 'bordered'` | `'card'` | Visual style variant |
-
-### StatItem Interface
-
-```typescript
-interface StatItem {
-  label: string;              // Stat label text
-  value: string | number;     // Display value
-  trend?: 'up' | 'down' | 'neutral';  // Trend direction
-  trendValue?: string;        // Trend comparison text
-  icon?: string;              // Icon text or emoji
-  color?: string;             // Accent color for icon and value
-}
-```
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `stat-click` | `{ stat: StatItem, index: number }` | Fired when a stat card is clicked |
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `base` | The grid container element |
-| `stat` | Individual stat card element |
-
-```css
-snice-stat-group::part(stat) {
-  border-radius: 1rem;
-}
-
-snice-stat-group::part(base) {
-  gap: 2rem;
-}
-```
-
 ## Accessibility
 
 - Each stat card has `role="button"` and is keyboard accessible
 - Press Enter or Space to activate a stat card
 - Trend indicators use semantic color coding (green for up, red for down)
-
-## Best Practices
-
-1. Keep stat labels short and descriptive
-2. Use consistent value formatting across stats
-3. Include trend data when comparing periods
-4. Use the `card` variant for dashboard layouts
-5. Use `minimal` variant when embedding in existing card containers
-6. Set `columns` when you need precise layout control

@@ -5,6 +5,48 @@
 
 A primary action button with a dropdown menu of alternative actions. Click the main button for the primary action, or click the chevron dropdown for alternatives.
 
+## Importing
+
+**ESM (bundler)**
+```typescript
+import 'snice/components/split-button/snice-split-button';
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-split-button.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `label` | `string` | `''` | Primary button text |
+| `actions` | `SplitButtonAction[]` | `[]` | Array of `{ label, value, icon?, disabled? }` for dropdown |
+| `variant` | `'default' \| 'primary' \| 'success' \| 'danger'` | `'default'` | Visual style |
+| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Button size |
+| `disabled` | `boolean` | `false` | Disables the entire button |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `primary-click` | `{ button }` | Primary button clicked |
+| `action-click` | `{ value, action, button }` | A dropdown action was selected |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `base` | The button container |
+| `primary` | The primary button |
+| `divider` | The divider between buttons |
+| `toggle` | The dropdown toggle button |
+| `menu` | The dropdown menu container |
+| `menu-items` | The menu items wrapper |
+| `action` | Each menu action button |
+
 ## Basic Usage
 
 ```typescript
@@ -21,19 +63,6 @@ btn.actions = [
   { value: 'save-draft', label: 'Save as Draft' },
   { value: 'save-template', label: 'Save as Template' },
 ];
-```
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/split-button/snice-split-button';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-split-button.min.js"></script>
 ```
 
 ## Examples
@@ -103,32 +132,3 @@ btn.addEventListener('action-click', (e) => {
   console.log('Action object:', e.detail.action);
 });
 ```
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `label` | `string` | `''` | Primary button text |
-| `actions` | `SplitButtonAction[]` | `[]` | Array of `{ label, value, icon?, disabled? }` for dropdown |
-| `variant` | `'default' \| 'primary' \| 'success' \| 'danger'` | `'default'` | Visual style |
-| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Button size |
-| `disabled` | `boolean` | `false` | Disables the entire button |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `primary-click` | `{ button }` | Primary button clicked |
-| `action-click` | `{ value, action, button }` | A dropdown action was selected |
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `base` | The button container |
-| `primary` | The primary button |
-| `divider` | The divider between buttons |
-| `toggle` | The dropdown toggle button |
-| `menu` | The dropdown menu container |
-| `menu-items` | The menu items wrapper |
-| `action` | Each menu action button |

@@ -5,29 +5,15 @@
 The heatmap component displays a GitHub-style contribution calendar heatmap. It visualizes data as a grid of colored cells organized by week and day, with intensity levels indicating the magnitude of each data point.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
 - [Properties](#properties)
 - [Events](#events)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
-
-## Basic Usage
-
-```html
-<snice-heatmap id="my-heatmap"></snice-heatmap>
-
-<script>
-  const heatmap = document.getElementById('my-heatmap');
-  heatmap.data = [
-    { date: '2026-01-15', value: 5 },
-    { date: '2026-01-16', value: 3 },
-    { date: '2026-01-17', value: 8 },
-  ];
-</script>
-```
-
-```typescript
-import 'snice/components/heatmap/snice-heatmap';
-```
+- [Intensity Levels](#intensity-levels)
+- [Color Schemes](#color-schemes)
+- [Accessibility](#accessibility)
+- [Browser Support](#browser-support)
 
 ## Properties
 
@@ -67,6 +53,46 @@ heatmap.addEventListener('cell-click', (e: CustomEvent) => {
 |-----------------|------|-------------|
 | `date` | `string` | ISO date of the clicked cell |
 | `value` | `number` | Value of the clicked cell |
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer heatmap container |
+| `grid-area` | `<div>` | Grid area containing labels and cells |
+| `grid` | `<div>` | Cell grid container |
+| `tooltip` | `<div>` | Hover tooltip showing date and value |
+
+```css
+snice-heatmap::part(base) {
+  padding: 1rem;
+}
+
+snice-heatmap::part(tooltip) {
+  font-size: 0.75rem;
+}
+```
+
+## Basic Usage
+
+```html
+<snice-heatmap id="my-heatmap"></snice-heatmap>
+
+<script>
+  const heatmap = document.getElementById('my-heatmap');
+  heatmap.data = [
+    { date: '2026-01-15', value: 5 },
+    { date: '2026-01-16', value: 3 },
+    { date: '2026-01-17', value: 8 },
+  ];
+</script>
+```
+
+```typescript
+import 'snice/components/heatmap/snice-heatmap';
+```
 
 ## Examples
 
@@ -141,27 +167,6 @@ heatmap.addEventListener('cell-click', (e: CustomEvent) => {
 </script>
 ```
 
-## CSS Parts
-
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | Outer heatmap container |
-| `grid-area` | `<div>` | Grid area containing labels and cells |
-| `grid` | `<div>` | Cell grid container |
-| `tooltip` | `<div>` | Hover tooltip showing date and value |
-
-```css
-snice-heatmap::part(base) {
-  padding: 1rem;
-}
-
-snice-heatmap::part(tooltip) {
-  font-size: 0.75rem;
-}
-```
-
 ## Intensity Levels
 
 Cell colors are calculated based on quartiles of the maximum value in the dataset:
@@ -195,11 +200,3 @@ Cell colors are calculated based on quartiles of the maximum value in the datase
 
 - Modern browsers (Chrome, Firefox, Safari, Edge)
 - Requires Custom Elements v1 and Shadow DOM support
-
-## Best Practices
-
-1. **Pass data via property**: Set `heatmap.data = [...]` (not attribute)
-2. **Use appropriate time ranges**: 52 weeks for yearly view, 12 for quarterly
-3. **Choose meaningful color schemes**: Green for contributions, red for errors, etc.
-4. **Keep values positive**: Intensity levels are calculated from 0 to max
-5. **Format dates correctly**: Always use `YYYY-MM-DD` format

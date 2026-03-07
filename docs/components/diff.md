@@ -5,22 +5,13 @@
 The diff component displays a text diff between two strings with unified or side-by-side (split) views, line numbers, word-level highlighting, collapsible unchanged sections, and addition/deletion statistics.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
 - [Properties](#properties)
 - [Events](#events)
 - [CSS Custom Properties](#css-custom-properties)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
-
-## Basic Usage
-
-```html
-<snice-diff old-text="hello world" new-text="hello there"></snice-diff>
-```
-
-```typescript
-import 'snice/components/diff/snice-diff';
-```
 
 ## Properties
 
@@ -86,6 +77,16 @@ snice-diff::part(header) {
   padding: 8px 12px;
   background: #f8fafc;
 }
+```
+
+## Basic Usage
+
+```html
+<snice-diff old-text="hello world" new-text="hello there"></snice-diff>
+```
+
+```typescript
+import 'snice/components/diff/snice-diff';
 ```
 
 ## Examples

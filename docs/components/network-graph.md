@@ -5,6 +5,62 @@
 
 An SVG-based force-directed graph visualization for displaying relationships between nodes.
 
+## Importing
+
+**ESM (bundler)**
+```typescript
+import 'snice/components/network-graph/snice-network-graph';
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-network-graph.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `data` | `NetworkGraphData` | `{ nodes: [], edges: [] }` | Graph data (set via JS) |
+| `layout` | `'force' \| 'circular' \| 'grid'` | `'force'` | Layout algorithm |
+| `chargeStrength` (attr: `charge-strength`) | `number` | `-300` | Node repulsion force |
+| `linkDistance` (attr: `link-distance`) | `number` | `80` | Target distance between connected nodes |
+| `zoomEnabled` (attr: `zoom-enabled`) | `boolean` | `true` | Enable zoom and pan |
+| `dragEnabled` (attr: `drag-enabled`) | `boolean` | `true` | Enable dragging nodes |
+| `showLabels` (attr: `show-labels`) | `boolean` | `true` | Show node and edge labels |
+| `animation` | `boolean` | `true` | Animate force simulation |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `node-click` | `{ node: NetworkNode }` | Node clicked |
+| `edge-click` | `{ edge: NetworkEdge }` | Edge clicked |
+| `node-drag` | `{ node: NetworkNode, x: number, y: number }` | Node dragged |
+| `graph-zoom` | `{ scale: number, x: number, y: number }` | Zoom changed |
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The outer graph container |
+| `canvas` | `<svg>` | The SVG element where nodes and edges are rendered |
+| `tooltip` | `<div>` | The hover tooltip showing node label and degree |
+
+```css
+snice-network-graph::part(base) {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+snice-network-graph::part(tooltip) {
+  font-size: 0.875rem;
+}
+```
+
 ## Basic Usage
 
 ```typescript
@@ -25,19 +81,6 @@ import 'snice/components/network-graph/snice-network-graph';
     ],
   };
 </script>
-```
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/network-graph/snice-network-graph';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-network-graph.min.js"></script>
 ```
 
 ## Examples
@@ -161,48 +204,5 @@ interface NetworkEdge {
   label?: string;
   weight?: number;   // Stroke width
   color?: string;
-}
-```
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `data` | `NetworkGraphData` | `{ nodes: [], edges: [] }` | Graph data (set via JS) |
-| `layout` | `'force' \| 'circular' \| 'grid'` | `'force'` | Layout algorithm |
-| `chargeStrength` (attr: `charge-strength`) | `number` | `-300` | Node repulsion force |
-| `linkDistance` (attr: `link-distance`) | `number` | `80` | Target distance between connected nodes |
-| `zoomEnabled` (attr: `zoom-enabled`) | `boolean` | `true` | Enable zoom and pan |
-| `dragEnabled` (attr: `drag-enabled`) | `boolean` | `true` | Enable dragging nodes |
-| `showLabels` (attr: `show-labels`) | `boolean` | `true` | Show node and edge labels |
-| `animation` | `boolean` | `true` | Animate force simulation |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `node-click` | `{ node: NetworkNode }` | Node clicked |
-| `edge-click` | `{ edge: NetworkEdge }` | Edge clicked |
-| `node-drag` | `{ node: NetworkNode, x: number, y: number }` | Node dragged |
-| `graph-zoom` | `{ scale: number, x: number, y: number }` | Zoom changed |
-
-## CSS Parts
-
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | The outer graph container |
-| `canvas` | `<svg>` | The SVG element where nodes and edges are rendered |
-| `tooltip` | `<div>` | The hover tooltip showing node label and degree |
-
-```css
-snice-network-graph::part(base) {
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-}
-
-snice-network-graph::part(tooltip) {
-  font-size: 0.875rem;
 }
 ```

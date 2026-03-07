@@ -5,23 +5,16 @@
 The card component provides a container for grouped content with support for headers, footers, different visual styles, interactive states, and responsive sizing.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
 - [Properties](#properties)
-- [Slots](#slots)
 - [Events](#events)
+- [Slots](#slots)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
-
-## Basic Usage
-
-```html
-<snice-card>
-  <p>Card content goes here</p>
-</snice-card>
-```
-
-```typescript
-import 'snice/components/card/snice-card';
-```
+- [Accessibility](#accessibility)
+- [Browser Support](#browser-support)
+- [Common Patterns](#common-patterns)
+- [Variant Styles](#variant-styles)
 
 ## Properties
 
@@ -32,6 +25,26 @@ import 'snice/components/card/snice-card';
 | `clickable` | `boolean` | `false` | Enable hover and click states |
 | `selected` | `boolean` | `false` | Show selected state |
 | `disabled` | `boolean` | `false` | Disable interactions |
+
+## Events
+
+#### `card-click`
+Fired when a clickable card is clicked.
+
+**Event Detail:**
+```typescript
+{
+  selected: boolean;
+  disabled: boolean;
+}
+```
+
+**Usage:**
+```typescript
+card.addEventListener('card-click', (e) => {
+  console.log('Card clicked, selected:', e.detail.selected);
+});
+```
 
 ## Slots
 
@@ -66,26 +79,6 @@ Content for the card footer section.
 </snice-card>
 ```
 
-## Events
-
-#### `card-click`
-Fired when a clickable card is clicked.
-
-**Event Detail:**
-```typescript
-{
-  selected: boolean;
-  disabled: boolean;
-}
-```
-
-**Usage:**
-```typescript
-card.addEventListener('card-click', (e) => {
-  console.log('Card clicked, selected:', e.detail.selected);
-});
-```
-
 ## CSS Parts
 
 Style internal elements from outside the shadow DOM using `::part()`.
@@ -111,6 +104,18 @@ snice-card::part(footer) {
 snice-card::part(base) {
   border-radius: 1rem;
 }
+```
+
+## Basic Usage
+
+```html
+<snice-card>
+  <p>Card content goes here</p>
+</snice-card>
+```
+
+```typescript
+import 'snice/components/card/snice-card';
 ```
 
 ## Examples
@@ -749,19 +754,6 @@ snice-card::part(base) {
 
 - Modern browsers (Chrome, Firefox, Safari, Edge)
 - Requires Custom Elements v1 and Shadow DOM support
-
-## Best Practices
-
-1. **Use appropriate variants**: Choose styles that match your design system
-2. **Keep content focused**: Cards should contain related information
-3. **Use headers wisely**: Headers help organize card content
-4. **Make clickable cards obvious**: Use hover states to indicate interactivity
-5. **Don't overload cards**: Keep content concise and scannable
-6. **Group related cards**: Use grids or lists for multiple cards
-7. **Use footers for actions**: Place buttons and links in the footer
-8. **Consider mobile**: Ensure cards stack well on smaller screens
-9. **Test keyboard navigation**: Ensure clickable cards work without a mouse
-10. **Provide feedback**: Show selected or active states clearly
 
 ## Common Patterns
 

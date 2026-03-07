@@ -5,42 +5,14 @@
 The `<snice-file-gallery>` component provides a file upload gallery with drag-and-drop support, image previews, pausable/resumable uploads, and progress tracking.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
 - [Upload Handler](#upload-handler)
-- [Features](#features)
 - [Examples](#examples)
-
-## Basic Usage
-
-```html
-<snice-file-gallery></snice-file-gallery>
-```
-
-```typescript
-import 'snice/components/file-gallery/snice-file-gallery';
-import { respond } from 'snice';
-
-// Create upload handler
-class UploadController {
-  @respond('file-gallery-upload')
-  async handleUpload(request) {
-    const { file, fileId, onProgress, signal } = request;
-
-    // Implement your upload logic here
-    return {
-      success: true,
-      fileId,
-      url: 'https://example.com/uploaded-file.jpg'
-    };
-  }
-}
-
-const controller = new UploadController();
-controller.attach?.(document.body);
-```
+- [Features](#features)
 
 ## Properties
 
@@ -404,6 +376,35 @@ snice-file-gallery::part(gallery) {
 }
 ```
 
+## Basic Usage
+
+```html
+<snice-file-gallery></snice-file-gallery>
+```
+
+```typescript
+import 'snice/components/file-gallery/snice-file-gallery';
+import { respond } from 'snice';
+
+// Create upload handler
+class UploadController {
+  @respond('file-gallery-upload')
+  async handleUpload(request) {
+    const { file, fileId, onProgress, signal } = request;
+
+    // Implement your upload logic here
+    return {
+      success: true,
+      fileId,
+      url: 'https://example.com/uploaded-file.jpg'
+    };
+  }
+}
+
+const controller = new UploadController();
+controller.attach?.(document.body);
+```
+
 ## Upload Handler
 
 The file gallery uses the `@request/@respond` pattern for uploads. You must implement an upload handler:
@@ -469,18 +470,6 @@ class UploadController {
 const controller = new UploadController();
 controller.attach?.(document.body);
 ```
-
-## Features
-
-- **Drag and Drop**: Native drag-and-drop support with visual feedback
-- **Image Preview**: Automatic thumbnail generation for image files
-- **Pausable Uploads**: Pause and resume uploads using AbortController
-- **Progress Tracking**: Real-time upload progress for each file
-- **File Management**: Add, remove, pause, resume, and retry uploads
-- **View Modes**: Toggle between grid and list layouts
-- **Validation**: File size and type validation with error messaging
-- **Auto Upload**: Optional automatic upload on file add
-- **Accessibility**: Full keyboard support and ARIA attributes
 
 ## Examples
 
@@ -736,3 +725,15 @@ class UploadController {
 const controller = new UploadController();
 controller.attach?.(document.body);
 ```
+
+## Features
+
+- **Drag and Drop**: Native drag-and-drop support with visual feedback
+- **Image Preview**: Automatic thumbnail generation for image files
+- **Pausable Uploads**: Pause and resume uploads using AbortController
+- **Progress Tracking**: Real-time upload progress for each file
+- **File Management**: Add, remove, pause, resume, and retry uploads
+- **View Modes**: Toggle between grid and list layouts
+- **Validation**: File size and type validation with error messaging
+- **Auto Upload**: Optional automatic upload on file add
+- **Accessibility**: Full keyboard support and ARIA attributes

@@ -4,20 +4,6 @@
 
 Display and select dates with event support.
 
-## Basic Usage
-
-```html
-<snice-calendar></snice-calendar>
-```
-
-```javascript
-const calendar = document.querySelector('snice-calendar');
-
-calendar.addEventListener('calendar-change', (e) => {
-  console.log('Selected date:', e.detail.value);
-});
-```
-
 ## Properties
 
 | Property | Type | Default | Description |
@@ -32,19 +18,6 @@ calendar.addEventListener('calendar-change', (e) => {
 | `showWeekNumbers` | `boolean` | `false` | Show week numbers |
 | `firstDayOfWeek` | `number` | `0` | First day of week (0=Sun, 1=Mon) |
 | `locale` | `string` | `'en-US'` | Locale for formatting |
-
-## CalendarEvent Interface
-
-```typescript
-interface CalendarEvent {
-  id: string | number;
-  title: string;
-  start: Date | string;
-  end?: Date | string;
-  color?: string;
-  data?: any;
-}
-```
 
 ## Methods
 
@@ -120,6 +93,19 @@ const events = calendar.getEventsForDate(new Date());
 console.log(`Today has ${events.length} events`);
 ```
 
+## CalendarEvent Interface
+
+```typescript
+interface CalendarEvent {
+  id: string | number;
+  title: string;
+  start: Date | string;
+  end?: Date | string;
+  color?: string;
+  data?: any;
+}
+```
+
 ## Events
 
 ### `calendar-change`
@@ -168,6 +154,20 @@ snice-calendar::part(header) {
 snice-calendar::part(grid) {
   gap: 2px;
 }
+```
+
+## Basic Usage
+
+```html
+<snice-calendar></snice-calendar>
+```
+
+```javascript
+const calendar = document.querySelector('snice-calendar');
+
+calendar.addEventListener('calendar-change', (e) => {
+  console.log('Selected date:', e.detail.value);
+});
 ```
 
 ## Examples

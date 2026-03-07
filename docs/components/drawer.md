@@ -5,41 +5,15 @@
 The `<snice-drawer>` component provides a slide-out panel that appears from any side of the viewport. It's commonly used for navigation menus, filters, settings panels, or additional content that shouldn't occupy permanent screen space.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
 - [Slots](#slots)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
-
-## Basic Usage
-
-```html
-<button id="openDrawer">Open Drawer</button>
-
-<snice-drawer id="myDrawer">
-  <h2 slot="title">Menu</h2>
-
-  <nav>
-    <a href="/">Home</a>
-    <a href="/about">About</a>
-    <a href="/contact">Contact</a>
-  </nav>
-
-  <div slot="footer">
-    <button onclick="this.closest('snice-drawer').hide()">Close</button>
-  </div>
-</snice-drawer>
-```
-
-```typescript
-import 'snice/components/drawer/snice-drawer';
-
-const drawer = document.querySelector('snice-drawer');
-const openBtn = document.querySelector('#openDrawer');
-
-openBtn.addEventListener('click', () => drawer.show());
-```
+- [Accessibility](#accessibility)
+- [Behavior](#behavior)
+- [Browser Support](#browser-support)
 
 ## Properties
 
@@ -148,6 +122,35 @@ Content for the drawer footer. Typically used for action buttons.
     <button>Action</button>
   </div>
 </snice-drawer>
+```
+
+## Basic Usage
+
+```html
+<button id="openDrawer">Open Drawer</button>
+
+<snice-drawer id="myDrawer">
+  <h2 slot="title">Menu</h2>
+
+  <nav>
+    <a href="/">Home</a>
+    <a href="/about">About</a>
+    <a href="/contact">Contact</a>
+  </nav>
+
+  <div slot="footer">
+    <button onclick="this.closest('snice-drawer').hide()">Close</button>
+  </div>
+</snice-drawer>
+```
+
+```typescript
+import 'snice/components/drawer/snice-drawer';
+
+const drawer = document.querySelector('snice-drawer');
+const openBtn = document.querySelector('#openDrawer');
+
+openBtn.addEventListener('click', () => drawer.show());
 ```
 
 ## Examples

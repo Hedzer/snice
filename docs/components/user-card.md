@@ -6,6 +6,66 @@
 
 A profile card that displays a user's avatar, name, role, contact information, social links, and online status. Supports three layout variants for different use cases.
 
+## Importing
+
+**ESM (bundler)**
+```typescript
+import 'snice/components/user-card/snice-user-card';
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-user-card.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `name` | `string` | `''` | User's display name |
+| `avatar` | `string` | `''` | URL for avatar image |
+| `role` | `string` | `''` | User's role or job title |
+| `company` | `string` | `''` | User's company name |
+| `email` | `string` | `''` | Email address (displayed as mailto link) |
+| `phone` | `string` | `''` | Phone number (displayed as tel link) |
+| `location` | `string` | `''` | Location text |
+| `social` | `SocialLink[]` | `[]` | Array of `{ platform, url }` objects. Set via JS property. |
+| `status` | `'online' \| 'away' \| 'offline' \| 'busy'` | `'offline'` | Online status indicator |
+| `variant` | `'card' \| 'horizontal' \| 'compact'` | `'card'` | Layout variant |
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `emitActionClick()` | `action: string` | Dispatches an `action-click` event |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `social-click` | `{ platform: string, url: string }` | Fired when a social link icon is clicked |
+| `action-click` | `{ action: string }` | Fired programmatically via `emitActionClick()` |
+
+## Slots
+
+| Name | Description |
+|------|-------------|
+| (default) | Action buttons or additional content |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `base` | Outer card container |
+| `avatar` | Avatar wrapper element |
+| `status` | Status indicator dot |
+| `name` | Name heading |
+| `role` | Role/company paragraph |
+| `contact` | Contact info container |
+| `social` | Social links row |
+| `actions` | Action buttons wrapper |
+
 ## Basic Usage
 
 ```typescript
@@ -20,19 +80,6 @@ import 'snice/components/user-card/snice-user-card';
   email="sarah@acme.com"
   status="online"
 ></snice-user-card>
-```
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/user-card/snice-user-card';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-user-card.min.js"></script>
 ```
 
 ## Examples
@@ -128,64 +175,9 @@ Use the default slot to add action buttons.
 </div>
 ```
 
-## Slots
-
-| Name | Description |
-|------|-------------|
-| (default) | Action buttons or additional content |
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `name` | `string` | `''` | User's display name |
-| `avatar` | `string` | `''` | URL for avatar image |
-| `role` | `string` | `''` | User's role or job title |
-| `company` | `string` | `''` | User's company name |
-| `email` | `string` | `''` | Email address (displayed as mailto link) |
-| `phone` | `string` | `''` | Phone number (displayed as tel link) |
-| `location` | `string` | `''` | Location text |
-| `social` | `SocialLink[]` | `[]` | Array of `{ platform, url }` objects. Set via JS property. |
-| `status` | `'online' \| 'away' \| 'offline' \| 'busy'` | `'offline'` | Online status indicator |
-| `variant` | `'card' \| 'horizontal' \| 'compact'` | `'card'` | Layout variant |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `social-click` | `{ platform: string, url: string }` | Fired when a social link icon is clicked |
-| `action-click` | `{ action: string }` | Fired programmatically via `emitActionClick()` |
-
-## Methods
-
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `emitActionClick()` | `action: string` | Dispatches an `action-click` event |
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `base` | Outer card container |
-| `avatar` | Avatar wrapper element |
-| `status` | Status indicator dot |
-| `name` | Name heading |
-| `role` | Role/company paragraph |
-| `contact` | Contact info container |
-| `social` | Social links row |
-| `actions` | Action buttons wrapper |
-
 ## Accessibility
 
 - Avatar fallback uses initials derived from the name
 - Status indicator has `role="img"` and `aria-label` with the status value
 - Social link buttons have `aria-label` and `title` with the platform name
 - Contact email and phone are rendered as accessible links
-
-## Best Practices
-
-1. Always provide a `name` - it drives the initials fallback and accessibility
-2. Use `compact` variant in lists or sidebars
-3. Use `horizontal` variant for detail views or wider layouts
-4. Set `social` via JavaScript property (it is an array, not an HTML attribute)
-5. Prefer using `<snice-button>` elements in the action slot for consistency

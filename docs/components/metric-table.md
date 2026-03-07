@@ -6,6 +6,65 @@
 
 A compact data table optimized for numeric and metric data with inline sparklines, color-coded values, and built-in sorting.
 
+## Importing
+
+**ESM (bundler)**
+```typescript
+import 'snice/components/metric-table/snice-metric-table';
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-metric-table.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `columns` | `MetricColumn[]` | `[]` | Column definitions |
+| `data` | `Record<string, any>[]` | `[]` | Row data objects |
+| `sortBy` (attr: `sort-by`) | `string` | `''` | Column key to sort by |
+| `sortDirection` (attr: `sort-direction`) | `'asc' \| 'desc'` | `'desc'` | Sort direction |
+
+### MetricColumn Interface
+
+```typescript
+interface MetricColumn {
+  key: string;           // Data property key
+  label: string;         // Column header label
+  type?: 'text' | 'number' | 'percent' | 'currency';  // Format type
+  format?: string;       // Currency code (e.g., 'EUR') for currency type
+  sparkline?: boolean;   // Render array values as inline sparkline
+}
+```
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `sort-change` | `{ sortBy: string, sortDirection: 'asc' \| 'desc' }` | Fired when sort column or direction changes |
+| `row-click` | `{ row: Record<string, any>, index: number }` | Fired when a row is clicked |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `base` | Root container |
+| `table` | The table element |
+| `row` | Individual table row |
+
+```css
+snice-metric-table::part(row) {
+  height: 3rem;
+}
+
+snice-metric-table::part(table) {
+  font-size: 0.875rem;
+}
+```
+
 ## Basic Usage
 
 ```typescript
@@ -26,19 +85,6 @@ import 'snice/components/metric-table/snice-metric-table';
     { name: 'Visitors', value: 45200 }
   ];
 </script>
-```
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/metric-table/snice-metric-table';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-metric-table.min.js"></script>
 ```
 
 ## Examples
@@ -134,64 +180,9 @@ Listen for `row-click` events to handle row interactions.
 </script>
 ```
 
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `columns` | `MetricColumn[]` | `[]` | Column definitions |
-| `data` | `Record<string, any>[]` | `[]` | Row data objects |
-| `sortBy` (attr: `sort-by`) | `string` | `''` | Column key to sort by |
-| `sortDirection` (attr: `sort-direction`) | `'asc' \| 'desc'` | `'desc'` | Sort direction |
-
-### MetricColumn Interface
-
-```typescript
-interface MetricColumn {
-  key: string;           // Data property key
-  label: string;         // Column header label
-  type?: 'text' | 'number' | 'percent' | 'currency';  // Format type
-  format?: string;       // Currency code (e.g., 'EUR') for currency type
-  sparkline?: boolean;   // Render array values as inline sparkline
-}
-```
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `sort-change` | `{ sortBy: string, sortDirection: 'asc' \| 'desc' }` | Fired when sort column or direction changes |
-| `row-click` | `{ row: Record<string, any>, index: number }` | Fired when a row is clicked |
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `base` | Root container |
-| `table` | The table element |
-| `row` | Individual table row |
-
-```css
-snice-metric-table::part(row) {
-  height: 3rem;
-}
-
-snice-metric-table::part(table) {
-  font-size: 0.875rem;
-}
-```
-
 ## Accessibility
 
 - Column headers have `role="columnheader"` with `aria-sort` attribute
 - Rows are keyboard accessible with `tabindex="0"`
 - Press Enter or Space to activate a row
 - Sort icons provide visual indication of sort state
-
-## Best Practices
-
-1. Use appropriate column types for automatic formatting
-2. Include sparkline columns to show trends at a glance
-3. Set an initial `sort-by` for a sensible default order
-4. Use `null` or `undefined` for missing values (displays as em-dash)
-5. Keep column count manageable for readability (4-7 columns)
-6. Use descriptive column labels that fit in compact headers

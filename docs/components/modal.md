@@ -5,6 +5,55 @@
 
 A dialog overlay with focus trapping, backdrop dismiss, and keyboard navigation.
 
+## Importing
+
+**ESM (bundler)**
+```typescript
+import 'snice/components/modal/snice-modal';
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-modal.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `open` | `boolean` | `false` | Whether the modal is visible |
+| `size` | `'small' \| 'medium' \| 'large' \| 'fullscreen'` | `'medium'` | Modal width variant |
+| `noBackdropDismiss` (attr: `no-backdrop-dismiss`) | `boolean` | `false` | Prevent closing on backdrop click |
+| `noEscapeDismiss` (attr: `no-escape-dismiss`) | `boolean` | `false` | Prevent closing with Escape key |
+| `noFocusTrap` (attr: `no-focus-trap`) | `boolean` | `false` | Disable focus trapping |
+| `noCloseButton` (attr: `no-close-button`) | `boolean` | `false` | Hide the close button |
+| `noHeader` (attr: `no-header`) | `boolean` | `false` | Hide the header section entirely |
+| `noFooter` (attr: `no-footer`) | `boolean` | `false` | Hide the footer section entirely |
+| `label` | `string` | `''` | Accessible label for screen readers |
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `show()` | -- | Opens the modal |
+| `close()` | -- | Closes the modal |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `modal-open` | `{ modal: SniceModalElement }` | Fired when the modal opens |
+| `modal-close` | `{ modal: SniceModalElement }` | Fired when the modal closes |
+
+## Slots
+
+| Name | Description |
+|------|-------------|
+| (default) | Modal body content |
+| `header` | Header content (typically a title) |
+| `footer` | Footer content (typically action buttons) |
+
 ## Basic Usage
 
 ```typescript
@@ -20,19 +69,6 @@ import 'snice/components/modal/snice-modal';
     <button>Confirm</button>
   </div>
 </snice-modal>
-```
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/modal/snice-modal';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-modal.min.js"></script>
 ```
 
 ## Examples
@@ -169,39 +205,3 @@ modal.close(); // Close
 modal.addEventListener('modal-open', () => console.log('Opened'));
 modal.addEventListener('modal-close', () => console.log('Closed'));
 ```
-
-## Slots
-
-| Name | Description |
-|------|-------------|
-| (default) | Modal body content |
-| `header` | Header content (typically a title) |
-| `footer` | Footer content (typically action buttons) |
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `open` | `boolean` | `false` | Whether the modal is visible |
-| `size` | `'small' \| 'medium' \| 'large' \| 'fullscreen'` | `'medium'` | Modal width variant |
-| `noBackdropDismiss` (attr: `no-backdrop-dismiss`) | `boolean` | `false` | Prevent closing on backdrop click |
-| `noEscapeDismiss` (attr: `no-escape-dismiss`) | `boolean` | `false` | Prevent closing with Escape key |
-| `noFocusTrap` (attr: `no-focus-trap`) | `boolean` | `false` | Disable focus trapping |
-| `noCloseButton` (attr: `no-close-button`) | `boolean` | `false` | Hide the close button |
-| `noHeader` (attr: `no-header`) | `boolean` | `false` | Hide the header section entirely |
-| `noFooter` (attr: `no-footer`) | `boolean` | `false` | Hide the footer section entirely |
-| `label` | `string` | `''` | Accessible label for screen readers |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `modal-open` | `{ modal: SniceModalElement }` | Fired when the modal opens |
-| `modal-close` | `{ modal: SniceModalElement }` | Fired when the modal closes |
-
-## Methods
-
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `show()` | -- | Opens the modal |
-| `close()` | -- | Closes the modal |

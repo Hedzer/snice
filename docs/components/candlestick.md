@@ -5,30 +5,15 @@
 The candlestick chart component renders an SVG-based OHLC (Open-High-Low-Close) financial chart, commonly used for stock market and cryptocurrency price visualization. It supports volume bars, crosshair overlay, zoom/pan, tooltips, and responsive sizing.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
+- [CSS Custom Properties](#css-custom-properties)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
-- [Best Practices](#best-practices)
-
-## Basic Usage
-
-```html
-<snice-candlestick id="chart"></snice-candlestick>
-
-<script type="module">
-  import 'snice/components/candlestick/snice-candlestick';
-
-  const chart = document.getElementById('chart');
-  chart.data = [
-    { date: '2024-01-01', open: 100, high: 110, low: 95, close: 105, volume: 500000 },
-    { date: '2024-01-02', open: 105, high: 115, low: 100, close: 98, volume: 600000 },
-    { date: '2024-01-03', open: 98, high: 108, low: 93, close: 107, volume: 450000 },
-  ];
-</script>
-```
+- [Browser Support](#browser-support)
 
 ## Properties
 
@@ -72,6 +57,62 @@ interface CandleData {
 | `candle-click` | `{ candle: CandleData, index: number }` | A candle was clicked |
 | `candle-hover` | `{ candle: CandleData, index: number }` | Mouse entered a candle |
 | `crosshair-move` | `{ price: number, date: string, x: number, y: number }` | Crosshair position changed |
+
+## CSS Custom Properties
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `--snice-candlestick-bullish` | `rgb(22 163 74)` (green) | Bullish candle color |
+| `--snice-candlestick-bearish` | `rgb(220 38 38)` (red) | Bearish candle color |
+
+You can also override colors globally using these CSS custom properties:
+
+```css
+snice-candlestick {
+  --snice-candlestick-bullish: #26a69a;
+  --snice-candlestick-bearish: #ef5350;
+}
+```
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer chart container with mouse event handlers |
+| `canvas` | `<svg>` | SVG element containing the candlestick chart, grid, and axes |
+| `tooltip` | `<div>` | OHLC data tooltip overlay shown on hover |
+
+```css
+snice-candlestick::part(base) {
+  border-radius: 8px;
+  background: #0f172a;
+}
+
+snice-candlestick::part(tooltip) {
+  background: rgba(15, 23, 42, 0.95);
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+```
+
+## Basic Usage
+
+```html
+<snice-candlestick id="chart"></snice-candlestick>
+
+<script type="module">
+  import 'snice/components/candlestick/snice-candlestick';
+
+  const chart = document.getElementById('chart');
+  chart.data = [
+    { date: '2024-01-01', open: 100, high: 110, low: 95, close: 105, volume: 500000 },
+    { date: '2024-01-02', open: 105, high: 115, low: 100, close: 98, volume: 600000 },
+    { date: '2024-01-03', open: 98, high: 108, low: 93, close: 107, volume: 450000 },
+  ];
+</script>
+```
 
 ## Examples
 
@@ -158,45 +199,6 @@ interface CandleData {
 </script>
 ```
 
-## CSS Parts
-
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | Outer chart container with mouse event handlers |
-| `canvas` | `<svg>` | SVG element containing the candlestick chart, grid, and axes |
-| `tooltip` | `<div>` | OHLC data tooltip overlay shown on hover |
-
-```css
-snice-candlestick::part(base) {
-  border-radius: 8px;
-  background: #0f172a;
-}
-
-snice-candlestick::part(tooltip) {
-  background: rgba(15, 23, 42, 0.95);
-  border-radius: 6px;
-  font-size: 0.8rem;
-}
-```
-
-## CSS Custom Properties
-
-| Property | Default | Description |
-|----------|---------|-------------|
-| `--snice-candlestick-bullish` | `rgb(22 163 74)` (green) | Bullish candle color |
-| `--snice-candlestick-bearish` | `rgb(220 38 38)` (red) | Bearish candle color |
-
-You can also override colors globally using these CSS custom properties:
-
-```css
-snice-candlestick {
-  --snice-candlestick-bullish: #26a69a;
-  --snice-candlestick-bearish: #ef5350;
-}
-```
-
 ## Accessibility
 
 - **ARIA role**: The SVG has `role="img"` for screen reader identification
@@ -208,14 +210,3 @@ snice-candlestick {
 
 - Modern browsers (Chrome, Firefox, Safari, Edge)
 - Requires Custom Elements v1 and Shadow DOM support
-
-## Best Practices
-
-1. **Set data via property**: Data is an array of objects, set via JavaScript (`chart.data = [...]`), not as an HTML attribute
-2. **Include volume data**: Even if not displayed, volume data enriches tooltips
-3. **Use appropriate time formats**: Match `time-format` to your data granularity (intraday = `'time'`, daily = `'date'`, monthly = `'month'`)
-4. **Give the chart height**: The component needs an explicit height (set via CSS or a container)
-5. **Limit visible candles**: For large datasets, the chart auto-limits visible candles; use `zoomTo()` for specific ranges
-6. **Handle events**: Use `candle-click` for drill-down, `crosshair-move` for real-time price readout
-7. **Custom colors**: Use `bullish-color` / `bearish-color` or CSS custom properties for theme integration
-8. **Responsive**: The chart uses `ResizeObserver` and redraws on container resize

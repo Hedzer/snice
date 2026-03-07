@@ -5,16 +5,6 @@
 
 An inline contextual message bar for displaying status messages within content flow. Unlike alerts (dismissable card), banners (full-width top), and toasts (floating), message strips are designed to sit inline within your content.
 
-## Basic Usage
-
-```typescript
-import 'snice/components/message-strip/snice-message-strip';
-```
-
-```html
-<snice-message-strip variant="info">This is an informational message.</snice-message-strip>
-```
-
 ## Importing
 
 **ESM (bundler)**
@@ -36,19 +26,6 @@ import 'snice/components/message-strip/snice-message-strip';
 | `dismissable` | `boolean` | `false` | Show dismiss button |
 | `icon` | `string` | `''` | Custom icon (set "none" to hide) |
 
-## Slots
-
-| Name | Description |
-|------|-------------|
-| (default) | Message content |
-| `icon` | Custom icon element |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `dismiss` | `{ variant: string }` | Fired when dismiss button is clicked |
-
 ## Methods
 
 #### `show(): void`
@@ -56,6 +33,47 @@ Show the message strip after it has been hidden.
 
 #### `hide(): void`
 Hide the message strip with a slide-out animation.
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `dismiss` | `{ variant: string }` | Fired when dismiss button is clicked |
+
+## Slots
+
+| Name | Description |
+|------|-------------|
+| (default) | Message content |
+| `icon` | Custom icon element |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `icon` | The icon container |
+| `content` | The message content area |
+| `dismiss` | The dismiss button |
+
+```css
+snice-message-strip::part(content) {
+  font-weight: 500;
+}
+
+snice-message-strip::part(dismiss) {
+  opacity: 0.8;
+}
+```
+
+## Basic Usage
+
+```typescript
+import 'snice/components/message-strip/snice-message-strip';
+```
+
+```html
+<snice-message-strip variant="info">This is an informational message.</snice-message-strip>
+```
 
 ## Examples
 
@@ -166,24 +184,6 @@ Use the `icon` slot for custom icon elements.
     New version available.
   </snice-message-strip>
 </div>
-```
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `icon` | The icon container |
-| `content` | The message content area |
-| `dismiss` | The dismiss button |
-
-```css
-snice-message-strip::part(content) {
-  font-weight: 500;
-}
-
-snice-message-strip::part(dismiss) {
-  opacity: 0.8;
-}
 ```
 
 ## Accessibility

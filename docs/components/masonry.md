@@ -5,6 +5,47 @@
 
 A Pinterest-style layout that arranges items in columns with variable heights using CSS columns.
 
+## Importing
+
+**ESM (bundler)**
+```typescript
+import 'snice/components/masonry/snice-masonry';
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-masonry.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `columns` | `number` | `3` | Number of columns (0 for auto based on `minColumnWidth`) |
+| `gap` | `string` | `'1rem'` | Gap between items (any CSS length) |
+| `minColumnWidth` (attr: `min-column-width`) | `string` | `'250px'` | Minimum column width when `columns` is 0 |
+
+## Slots
+
+| Name | Description |
+|------|-------------|
+| (default) | Items to arrange in the masonry layout |
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The masonry layout container |
+
+```css
+snice-masonry::part(base) {
+  padding: 1rem;
+}
+```
+
 ## Basic Usage
 
 ```typescript
@@ -18,19 +59,6 @@ import 'snice/components/masonry/snice-masonry';
   <div>Card 3</div>
   <div>Card 4</div>
 </snice-masonry>
-```
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/masonry/snice-masonry';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-masonry.min.js"></script>
 ```
 
 ## Examples
@@ -106,32 +134,4 @@ Use the `gap` attribute with any CSS length value.
     masonry.appendChild(card);
   });
 </script>
-```
-
-## Slots
-
-| Name | Description |
-|------|-------------|
-| (default) | Items to arrange in the masonry layout |
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `columns` | `number` | `3` | Number of columns (0 for auto based on `minColumnWidth`) |
-| `gap` | `string` | `'1rem'` | Gap between items (any CSS length) |
-| `minColumnWidth` (attr: `min-column-width`) | `string` | `'250px'` | Minimum column width when `columns` is 0 |
-
-## CSS Parts
-
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | The masonry layout container |
-
-```css
-snice-masonry::part(base) {
-  padding: 1rem;
-}
 ```

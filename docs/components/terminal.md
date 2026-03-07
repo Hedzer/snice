@@ -5,16 +5,6 @@
 
 A shell terminal emulator with command execution, history navigation, and ANSI color support.
 
-## Basic Usage
-
-```typescript
-import 'snice/components/terminal/snice-terminal';
-```
-
-```html
-<snice-terminal prompt="$ " cwd="~"></snice-terminal>
-```
-
 ## Importing
 
 **ESM (bundler)**
@@ -26,6 +16,60 @@ import 'snice/components/terminal/snice-terminal';
 ```html
 <script src="snice-runtime.min.js"></script>
 <script src="snice-terminal.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `prompt` | `string` | `'$ '` | Terminal prompt string |
+| `cwd` | `string` | `'~'` | Current working directory display |
+| `readonly` | `boolean` | `false` | Disable input (display only) |
+| `maxLines` (attr: `max-lines`) | `number` | `1000` | Maximum lines in buffer |
+| `showTimestamps` (attr: `show-timestamps`) | `boolean` | `false` | Show timestamps on each line |
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `write()` | `content: string, type?: TerminalLineType` | Write without newline |
+| `writeln()` | `content: string, type?: TerminalLineType` | Write with newline |
+| `writeLines()` | `lines: Array<{ content: string, type?: TerminalLineType }>` | Write multiple lines |
+| `writeError()` | `content: string` | Write error message |
+| `clear()` | -- | Clear terminal output |
+| `focus()` | -- | Focus the input |
+| `getHistory()` | -- | Get command history, returns `string[]` |
+| `clearHistory()` | -- | Clear command history |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `terminal-command` | `{ command: string, args: string[] }` | Command entered |
+| `terminal-clear` | -- | Terminal cleared |
+| `terminal-ready` | -- | Terminal initialized |
+
+## CSS Custom Properties
+
+| Property | Description | Default |
+|----------|-------------|---------|
+| `--snice-terminal-background` | Terminal background | `#1e1e1e` |
+| `--snice-terminal-foreground` | Default text color | `#d4d4d4` |
+| `--snice-terminal-border` | Border color | `#3c3c3c` |
+| `--snice-terminal-prompt-color` | Prompt color | `#569cd6` |
+| `--snice-terminal-error-color` | Error text | `#ff5555` |
+| `--snice-terminal-info-color` | Info text | `#569cd6` |
+| `--snice-terminal-success-color` | Success text | `#50fa7b` |
+| `--snice-terminal-warning-color` | Warning text | `#f1fa8c` |
+
+## Basic Usage
+
+```typescript
+import 'snice/components/terminal/snice-terminal';
+```
+
+```html
+<snice-terminal prompt="$ " cwd="~"></snice-terminal>
 ```
 
 ## Examples
@@ -101,47 +145,3 @@ terminal.writeln('Information', 'info');
 terminal.writeln('Success message', 'success');
 terminal.writeln('Warning message', 'warning');
 ```
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `prompt` | `string` | `'$ '` | Terminal prompt string |
-| `cwd` | `string` | `'~'` | Current working directory display |
-| `readonly` | `boolean` | `false` | Disable input (display only) |
-| `maxLines` (attr: `max-lines`) | `number` | `1000` | Maximum lines in buffer |
-| `showTimestamps` (attr: `show-timestamps`) | `boolean` | `false` | Show timestamps on each line |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `terminal-command` | `{ command: string, args: string[] }` | Command entered |
-| `terminal-clear` | -- | Terminal cleared |
-| `terminal-ready` | -- | Terminal initialized |
-
-## Methods
-
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `write()` | `content: string, type?: TerminalLineType` | Write without newline |
-| `writeln()` | `content: string, type?: TerminalLineType` | Write with newline |
-| `writeLines()` | `lines: Array<{ content: string, type?: TerminalLineType }>` | Write multiple lines |
-| `writeError()` | `content: string` | Write error message |
-| `clear()` | -- | Clear terminal output |
-| `focus()` | -- | Focus the input |
-| `getHistory()` | -- | Get command history, returns `string[]` |
-| `clearHistory()` | -- | Clear command history |
-
-## CSS Custom Properties
-
-| Property | Description | Default |
-|----------|-------------|---------|
-| `--snice-terminal-background` | Terminal background | `#1e1e1e` |
-| `--snice-terminal-foreground` | Default text color | `#d4d4d4` |
-| `--snice-terminal-border` | Border color | `#3c3c3c` |
-| `--snice-terminal-prompt-color` | Prompt color | `#569cd6` |
-| `--snice-terminal-error-color` | Error text | `#ff5555` |
-| `--snice-terminal-info-color` | Info text | `#569cd6` |
-| `--snice-terminal-success-color` | Success text | `#50fa7b` |
-| `--snice-terminal-warning-color` | Warning text | `#f1fa8c` |

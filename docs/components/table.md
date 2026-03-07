@@ -5,6 +5,81 @@
 
 Displays tabular data with sorting, searching, filtering, row selection, and specialized column types.
 
+## Importing
+
+**ESM (bundler)**
+```typescript
+import 'snice/components/table/snice-table';
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-table.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `striped` | `boolean` | `false` | Alternating row background colors |
+| `searchable` | `boolean` | `false` | Show search input |
+| `filterable` | `boolean` | `false` | Show filter dropdown |
+| `sortable` | `boolean` | `false` | Enable column sorting |
+| `selectable` | `boolean` | `false` | Enable row selection with checkboxes |
+| `hoverable` | `boolean` | `true` | Highlight rows on hover |
+| `clickable` | `boolean` | `false` | Emit events on row click |
+| `list` | `boolean` | `false` | Hide vertical cell borders |
+| `searchDebounce` (attr: `search-debounce`) | `number` | `500` | Search input debounce in milliseconds |
+| `currentSort` (attr: `current-sort`) | `Array<{ column: string, direction: 'asc' \| 'desc' }>` | `[]` | Current sort state |
+| `selector` | `string` | `''` | Current selector filter value |
+| `selectorOptions` (attr: `selector-options`) | `Array<{ value: string, label: string }>` | `[]` | Dropdown filter options |
+| `loading` | `boolean` | `false` | Show loading state |
+| `selectedRows` (attr: `selected-rows`) | `number[]` | `[]` | Indices of selected rows |
+
+## Column Definition
+
+```typescript
+interface ColumnDefinition {
+  key: string;
+  label: string;
+  type?: 'text' | 'number' | 'date' | 'boolean' | 'currency' | 'percent' |
+         'rating' | 'progress' | 'sparkline' | 'accounting' | 'scientific' |
+         'fraction' | 'duration' | 'filesize' | 'custom';
+  align?: 'left' | 'center' | 'right';
+  width?: string;
+  sortable?: boolean;
+  filterable?: boolean;
+  formatter?: (value: any, row?: any) => string;
+  conditionalFormats?: ConditionalFormat[];
+}
+```
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `setData()` | `data: any[]` | Set table row data |
+| `setColumns()` | `columns: ColumnDefinition[]` | Set column definitions |
+| `renderHeader()` | -- | Re-render the table header |
+| `renderBody()` | -- | Re-render the table body |
+| `toggleSort()` | `columnKey: string, multiSort?: boolean` | Toggle sort on a column |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `table-row-selection-changed` | `{ selectedRows: number[], rowIndex: number, selected: boolean }` | A row's selection state changed |
+| `table-select-all-changed` | `{ selectedRows: number[], allSelected: boolean }` | Select-all checkbox toggled |
+| `row-clicked` | `{ rowData: any, rowIndex: number }` | A row was clicked (requires `clickable`) |
+
+## Slots
+
+| Name | Description |
+|------|-------------|
+| `columns` | `<snice-column>` elements for declarative column definitions |
+| `rows` | `<snice-row>` elements for declarative row data |
+
 ## Basic Usage
 
 ```typescript
@@ -26,19 +101,6 @@ import 'snice/components/table/snice-table';
     { name: 'Bob Smith', email: 'bob@example.com', age: 28 }
   ]);
 </script>
-```
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/table/snice-table';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-table.min.js"></script>
 ```
 
 ## Examples
@@ -185,66 +247,4 @@ Use the `@request`/`@respond` pattern to load data from an external source.
     }
   }
 </script>
-```
-
-## Slots
-
-| Name | Description |
-|------|-------------|
-| `columns` | `<snice-column>` elements for declarative column definitions |
-| `rows` | `<snice-row>` elements for declarative row data |
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `striped` | `boolean` | `false` | Alternating row background colors |
-| `searchable` | `boolean` | `false` | Show search input |
-| `filterable` | `boolean` | `false` | Show filter dropdown |
-| `sortable` | `boolean` | `false` | Enable column sorting |
-| `selectable` | `boolean` | `false` | Enable row selection with checkboxes |
-| `hoverable` | `boolean` | `true` | Highlight rows on hover |
-| `clickable` | `boolean` | `false` | Emit events on row click |
-| `list` | `boolean` | `false` | Hide vertical cell borders |
-| `searchDebounce` (attr: `search-debounce`) | `number` | `500` | Search input debounce in milliseconds |
-| `currentSort` (attr: `current-sort`) | `Array<{ column: string, direction: 'asc' \| 'desc' }>` | `[]` | Current sort state |
-| `selector` | `string` | `''` | Current selector filter value |
-| `selectorOptions` (attr: `selector-options`) | `Array<{ value: string, label: string }>` | `[]` | Dropdown filter options |
-| `loading` | `boolean` | `false` | Show loading state |
-| `selectedRows` (attr: `selected-rows`) | `number[]` | `[]` | Indices of selected rows |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `table-row-selection-changed` | `{ selectedRows: number[], rowIndex: number, selected: boolean }` | A row's selection state changed |
-| `table-select-all-changed` | `{ selectedRows: number[], allSelected: boolean }` | Select-all checkbox toggled |
-| `row-clicked` | `{ rowData: any, rowIndex: number }` | A row was clicked (requires `clickable`) |
-
-## Methods
-
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `setData()` | `data: any[]` | Set table row data |
-| `setColumns()` | `columns: ColumnDefinition[]` | Set column definitions |
-| `renderHeader()` | -- | Re-render the table header |
-| `renderBody()` | -- | Re-render the table body |
-| `toggleSort()` | `columnKey: string, multiSort?: boolean` | Toggle sort on a column |
-
-## Column Definition
-
-```typescript
-interface ColumnDefinition {
-  key: string;
-  label: string;
-  type?: 'text' | 'number' | 'date' | 'boolean' | 'currency' | 'percent' |
-         'rating' | 'progress' | 'sparkline' | 'accounting' | 'scientific' |
-         'fraction' | 'duration' | 'filesize' | 'custom';
-  align?: 'left' | 'center' | 'right';
-  width?: string;
-  sortable?: boolean;
-  filterable?: boolean;
-  formatter?: (value: any, row?: any) => string;
-  conditionalFormats?: ConditionalFormat[];
-}
 ```

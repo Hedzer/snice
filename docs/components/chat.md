@@ -4,44 +4,6 @@
 
 A Slack-style chat interface component with messages, typing indicators, reactions, and file attachments.
 
-## Features
-
-- **Message types** - Text, images, files, and system messages
-- **Rich interactions** - Edit, delete, react to messages
-- **Typing indicators** - Show when users are typing
-- **File attachments** - Support for images and files
-- **Message reactions** - Emoji reactions with count
-- **User avatars** - Display user profile images or initials
-- **Timestamps** - Show message times
-- **Auto-scroll** - Automatically scroll to new messages
-- **Customizable styling** - CSS custom properties for theming
-
-## Basic Usage
-
-```html
-<snice-chat id="chat" current-user="You"></snice-chat>
-
-<script type="module">
-  import 'snice';
-
-  const chat = document.getElementById('chat');
-
-  // Listen for messages
-  chat.addEventListener('message-send', (e) => {
-    console.log('New message:', e.detail.message);
-
-    // Add message to chat
-    chat.addMessage({
-      type: 'text',
-      content: e.detail.message,
-      author: 'You',
-      timestamp: new Date(),
-      formats: [],
-    });
-  });
-</script>
-```
-
 ## Properties
 
 | Property          | Attribute          | Type      | Default                  | Description                           |
@@ -251,79 +213,30 @@ snice-chat::part(input) {
 }
 ```
 
-## Message Types
+## Basic Usage
 
-The chat supports different message types:
+```html
+<snice-chat id="chat" current-user="You"></snice-chat>
 
-- `text` - Regular text message
-- `image` - Image attachment
-- `file` - File attachment
-- `system` - System notification
+<script type="module">
+  import 'snice';
 
-## Styling
+  const chat = document.getElementById('chat');
 
-The component can be styled using CSS custom properties:
+  // Listen for messages
+  chat.addEventListener('message-send', (e) => {
+    console.log('New message:', e.detail.message);
 
-```css
-snice-chat {
-  /* Dimensions */
-  --snice-chat-height: 600px;
-  --snice-chat-border-radius: 8px;
-
-  /* Colors */
-  --snice-chat-text-color: #1d1c1d;
-  --snice-chat-background: #fff;
-  --snice-chat-border-color: #ddd;
-  --snice-chat-author-color: #1d1c1d;
-  --snice-chat-timestamp-color: #616061;
-  --snice-chat-system-color: #616061;
-  --snice-chat-placeholder-color: #616061;
-
-  /* Scrollbar */
-  --snice-chat-scrollbar-color: #ccc;
-  --snice-chat-scrollbar-hover-color: #999;
-
-  /* Avatar */
-  --snice-chat-avatar-background: #e0e0e0;
-  --snice-chat-avatar-text-color: #fff;
-
-  /* Attachments */
-  --snice-chat-attachment-border: #ddd;
-  --snice-chat-attachment-background: #f8f8f8;
-  --snice-chat-attachment-icon-background: #e0e0e0;
-  --snice-chat-attachment-icon-color: #666;
-
-  /* Reactions */
-  --snice-chat-reaction-background: #f0f0f0;
-  --snice-chat-reaction-border: #ddd;
-  --snice-chat-reaction-hover-background: #e0e0e0;
-  --snice-chat-reaction-active-background: #1264a3;
-  --snice-chat-reaction-active-color: #fff;
-  --snice-chat-reaction-active-border: #1264a3;
-
-  /* Actions */
-  --snice-chat-actions-background: #fff;
-  --snice-chat-action-color: #616061;
-  --snice-chat-action-hover-background: #f0f0f0;
-
-  /* Typing indicator */
-  --snice-chat-typing-color: #616061;
-  --snice-chat-typing-dot-color: #616061;
-
-  /* Input */
-  --snice-chat-input-background: #fff;
-  --snice-chat-input-container-background: #fff;
-  --snice-chat-input-border: #ddd;
-  --snice-chat-input-focus-border: #1264a3;
-  --snice-chat-button-color: #616061;
-  --snice-chat-button-hover-background: #f0f0f0;
-  --snice-chat-send-color: #fff;
-  --snice-chat-send-background: #1264a3;
-  --snice-chat-send-hover-background: #0e5a8e;
-
-  /* Empty state */
-  --snice-chat-empty-color: #616061;
-}
+    // Add message to chat
+    chat.addMessage({
+      type: 'text',
+      content: e.detail.message,
+      author: 'You',
+      timestamp: new Date(),
+      formats: [],
+    });
+  });
+</script>
 ```
 
 ## Examples
@@ -493,6 +406,93 @@ snice-chat {
     });
   }, 2000);
 </script>
+```
+
+## Features
+
+- **Message types** - Text, images, files, and system messages
+- **Rich interactions** - Edit, delete, react to messages
+- **Typing indicators** - Show when users are typing
+- **File attachments** - Support for images and files
+- **Message reactions** - Emoji reactions with count
+- **User avatars** - Display user profile images or initials
+- **Timestamps** - Show message times
+- **Auto-scroll** - Automatically scroll to new messages
+- **Customizable styling** - CSS custom properties for theming
+
+## Message Types
+
+The chat supports different message types:
+
+- `text` - Regular text message
+- `image` - Image attachment
+- `file` - File attachment
+- `system` - System notification
+
+## Styling
+
+The component can be styled using CSS custom properties:
+
+```css
+snice-chat {
+  /* Dimensions */
+  --snice-chat-height: 600px;
+  --snice-chat-border-radius: 8px;
+
+  /* Colors */
+  --snice-chat-text-color: #1d1c1d;
+  --snice-chat-background: #fff;
+  --snice-chat-border-color: #ddd;
+  --snice-chat-author-color: #1d1c1d;
+  --snice-chat-timestamp-color: #616061;
+  --snice-chat-system-color: #616061;
+  --snice-chat-placeholder-color: #616061;
+
+  /* Scrollbar */
+  --snice-chat-scrollbar-color: #ccc;
+  --snice-chat-scrollbar-hover-color: #999;
+
+  /* Avatar */
+  --snice-chat-avatar-background: #e0e0e0;
+  --snice-chat-avatar-text-color: #fff;
+
+  /* Attachments */
+  --snice-chat-attachment-border: #ddd;
+  --snice-chat-attachment-background: #f8f8f8;
+  --snice-chat-attachment-icon-background: #e0e0e0;
+  --snice-chat-attachment-icon-color: #666;
+
+  /* Reactions */
+  --snice-chat-reaction-background: #f0f0f0;
+  --snice-chat-reaction-border: #ddd;
+  --snice-chat-reaction-hover-background: #e0e0e0;
+  --snice-chat-reaction-active-background: #1264a3;
+  --snice-chat-reaction-active-color: #fff;
+  --snice-chat-reaction-active-border: #1264a3;
+
+  /* Actions */
+  --snice-chat-actions-background: #fff;
+  --snice-chat-action-color: #616061;
+  --snice-chat-action-hover-background: #f0f0f0;
+
+  /* Typing indicator */
+  --snice-chat-typing-color: #616061;
+  --snice-chat-typing-dot-color: #616061;
+
+  /* Input */
+  --snice-chat-input-background: #fff;
+  --snice-chat-input-container-background: #fff;
+  --snice-chat-input-border: #ddd;
+  --snice-chat-input-focus-border: #1264a3;
+  --snice-chat-button-color: #616061;
+  --snice-chat-button-hover-background: #f0f0f0;
+  --snice-chat-send-color: #fff;
+  --snice-chat-send-background: #1264a3;
+  --snice-chat-send-hover-background: #0e5a8e;
+
+  /* Empty state */
+  --snice-chat-empty-color: #616061;
+}
 ```
 
 ## Browser Support

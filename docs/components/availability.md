@@ -5,20 +5,6 @@
 
 A weekly availability grid for setting recurring time ranges. Users can click or drag to toggle time slots on and off.
 
-## Basic Usage
-
-```html
-<snice-availability start-hour="8" end-hour="18"></snice-availability>
-```
-
-```javascript
-const availability = document.querySelector('snice-availability');
-
-availability.addEventListener('availability-change', (e) => {
-  console.log('Availability:', e.detail.value);
-});
-```
-
 ## Importing
 
 **ESM (bundler)**
@@ -42,18 +28,6 @@ import 'snice/components/availability/snice-availability';
 | `endHour` | `end-hour` | `number` | `24` | Last hour displayed |
 | `format` | `format` | `'12h' \| '24h'` | `'12h'` | Time format for labels |
 | `readonly` | `readonly` | `boolean` | `false` | Prevents editing |
-
-## Interfaces
-
-### AvailabilityRange
-
-```typescript
-interface AvailabilityRange {
-  day: number;    // 0=Mon, 1=Tue, 2=Wed, 3=Thu, 4=Fri, 5=Sat, 6=Sun
-  start: string;  // "HH:MM" (24h format)
-  end: string;    // "HH:MM" (24h format)
-}
-```
 
 ## Methods
 
@@ -116,6 +90,20 @@ snice-availability::part(base) {
 snice-availability::part(header) {
   background: #f5f5f5;
 }
+```
+
+## Basic Usage
+
+```html
+<snice-availability start-hour="8" end-hour="18"></snice-availability>
+```
+
+```javascript
+const availability = document.querySelector('snice-availability');
+
+availability.addEventListener('availability-change', (e) => {
+  console.log('Availability:', e.detail.value);
+});
 ```
 
 ## Examples
@@ -209,6 +197,18 @@ const ranges = await data.json();
 
 availability.setAvailability(ranges);
 availability.readonly = true; // Display only
+```
+
+## Interfaces
+
+### AvailabilityRange
+
+```typescript
+interface AvailabilityRange {
+  day: number;    // 0=Mon, 1=Tue, 2=Wed, 3=Thu, 4=Fri, 5=Sat, 6=Sun
+  start: string;  // "HH:MM" (24h format)
+  end: string;    // "HH:MM" (24h format)
+}
 ```
 
 ## Interaction

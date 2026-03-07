@@ -5,16 +5,6 @@
 
 Drag-and-drop form designer that outputs a JSON schema describing the form structure.
 
-## Basic Usage
-
-```typescript
-import 'snice/components/form-builder/snice-form-builder';
-```
-
-```html
-<snice-form-builder></snice-form-builder>
-```
-
 ## Importing
 
 **ESM (bundler)**
@@ -26,6 +16,54 @@ import 'snice/components/form-builder/snice-form-builder';
 ```html
 <script src="snice-runtime.min.js"></script>
 <script src="snice-form-builder.min.js"></script>
+```
+
+## Properties
+
+| Property | Attribute | Type | Default | Description |
+|----------|-----------|------|---------|-------------|
+| `schema` | `schema` | `FormSchema` | `{ fields: [] }` | JSON schema (input/output) |
+| `mode` | `mode` | `'edit' \| 'preview'` | `'edit'` | Current mode |
+| `fieldTypes` | `field-types` | `FormFieldType[]` | all types | Available field types in the palette |
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `getSchema()` | -- | Returns a deep copy of the current schema |
+| `setSchema(schema)` | `schema: FormSchema` | Sets the form schema |
+| `addField(type)` | `type: FormFieldType` | Adds a new field of the given type |
+| `removeField(id)` | `id: string` | Removes the field with the given ID |
+| `preview()` | -- | Switches to preview mode |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `schema-change` | `{ schema: FormSchema }` | Fired when the schema changes |
+| `field-add` | `{ field: FormField }` | Fired when a field is added |
+| `field-remove` | `{ field: FormField }` | Fired when a field is removed |
+| `field-reorder` | `{ oldIndex: number, newIndex: number, field: FormField }` | Fired when a field is reordered |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `base` | The outer form builder container (edit mode) |
+| `mode-toggle` | The edit/preview mode toggle bar |
+| `toolbar` | The field type palette sidebar |
+| `canvas` | The main field list area |
+| `properties` | The field properties panel |
+| `preview` | The preview mode container |
+
+## Basic Usage
+
+```typescript
+import 'snice/components/form-builder/snice-form-builder';
+```
+
+```html
+<snice-form-builder></snice-form-builder>
 ```
 
 ## Examples
@@ -145,14 +183,6 @@ fetch('/api/forms', {
 });
 ```
 
-## Properties
-
-| Property | Attribute | Type | Default | Description |
-|----------|-----------|------|---------|-------------|
-| `schema` | `schema` | `FormSchema` | `{ fields: [] }` | JSON schema (input/output) |
-| `mode` | `mode` | `'edit' \| 'preview'` | `'edit'` | Current mode |
-| `fieldTypes` | `field-types` | `FormFieldType[]` | all types | Available field types in the palette |
-
 ## FormSchema Interface
 
 ```typescript
@@ -201,36 +231,6 @@ interface FormFieldOption {
   value: string;
 }
 ```
-
-## Methods
-
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `getSchema()` | -- | Returns a deep copy of the current schema |
-| `setSchema(schema)` | `schema: FormSchema` | Sets the form schema |
-| `addField(type)` | `type: FormFieldType` | Adds a new field of the given type |
-| `removeField(id)` | `id: string` | Removes the field with the given ID |
-| `preview()` | -- | Switches to preview mode |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `schema-change` | `{ schema: FormSchema }` | Fired when the schema changes |
-| `field-add` | `{ field: FormField }` | Fired when a field is added |
-| `field-remove` | `{ field: FormField }` | Fired when a field is removed |
-| `field-reorder` | `{ oldIndex: number, newIndex: number, field: FormField }` | Fired when a field is reordered |
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `base` | The outer form builder container (edit mode) |
-| `mode-toggle` | The edit/preview mode toggle bar |
-| `toolbar` | The field type palette sidebar |
-| `canvas` | The main field list area |
-| `properties` | The field properties panel |
-| `preview` | The preview mode container |
 
 ## Features
 

@@ -5,31 +5,12 @@
 The `<snice-file-upload>` component provides a file upload interface with drag-and-drop support, file previews, and validation.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
-- [Features](#features)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
-
-## Basic Usage
-
-```html
-<snice-file-upload
-  label="Upload Documents"
-  accept=".pdf,.doc,.docx"
-  max-size="5242880"
-></snice-file-upload>
-```
-
-```typescript
-import 'snice/components/file-upload/snice-file-upload';
-
-const upload = document.querySelector('snice-file-upload');
-upload.addEventListener('file-upload-change', (e) => {
-  console.log('Files:', e.detail.files);
-});
-```
+- [Features](#features)
 
 ## Properties
 
@@ -95,15 +76,24 @@ upload.addEventListener('file-upload-error', (e) => {
 });
 ```
 
-## Features
+## Basic Usage
 
-- **Drag and Drop**: Native drag-and-drop support with visual feedback
-- **Image Preview**: Automatic thumbnail generation for image files
-- **File Validation**: Size and type validation with error messaging
-- **Multiple Files**: Support for single or multiple file selection
-- **File Management**: Add and remove files before upload
-- **Form Integration**: Form-associated custom element
-- **Accessibility**: Full keyboard support and ARIA attributes
+```html
+<snice-file-upload
+  label="Upload Documents"
+  accept=".pdf,.doc,.docx"
+  max-size="5242880"
+></snice-file-upload>
+```
+
+```typescript
+import 'snice/components/file-upload/snice-file-upload';
+
+const upload = document.querySelector('snice-file-upload');
+upload.addEventListener('file-upload-change', (e) => {
+  console.log('Files:', e.detail.files);
+});
+```
 
 ## Examples
 
@@ -263,3 +253,13 @@ upload.addEventListener('file-upload-change', (e) => {
 });
 </script>
 ```
+
+## Features
+
+- **Drag and Drop**: Native drag-and-drop support with visual feedback
+- **Image Preview**: Automatic thumbnail generation for image files
+- **File Validation**: Size and type validation with error messaging
+- **Multiple Files**: Support for single or multiple file selection
+- **File Management**: Add and remove files before upload
+- **Form Integration**: Form-associated custom element
+- **Accessibility**: Full keyboard support and ARIA attributes

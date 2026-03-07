@@ -5,24 +5,6 @@
 
 Displays a row of overlapping avatars with a "+N" overflow indicator when avatars exceed the maximum visible count.
 
-## Basic Usage
-
-```typescript
-import 'snice/components/avatar-group/snice-avatar-group';
-```
-
-```html
-<snice-avatar-group id="group"></snice-avatar-group>
-
-<script>
-  document.getElementById('group').avatars = [
-    { name: 'Alice Johnson' },
-    { name: 'Bob Smith' },
-    { name: 'Carol Williams' }
-  ];
-</script>
-```
-
 ## Importing
 
 **ESM (bundler)**
@@ -62,6 +44,42 @@ interface AvatarGroupItem {
 |-------|--------|-------------|
 | `avatar-click` | `{ avatar: AvatarGroupItem, index: number }` | Fired when an avatar is clicked |
 | `overflow-click` | `{ remaining: number, avatars: AvatarGroupItem[] }` | Fired when "+N" is clicked |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `base` | The avatar group container |
+| `avatar` | Individual avatar buttons |
+| `overflow` | The "+N" overflow button |
+
+```css
+snice-avatar-group::part(avatar) {
+  border-width: 3px;
+}
+
+snice-avatar-group::part(overflow) {
+  font-size: 0.75rem;
+}
+```
+
+## Basic Usage
+
+```typescript
+import 'snice/components/avatar-group/snice-avatar-group';
+```
+
+```html
+<snice-avatar-group id="group"></snice-avatar-group>
+
+<script>
+  document.getElementById('group').avatars = [
+    { name: 'Alice Johnson' },
+    { name: 'Bob Smith' },
+    { name: 'Carol Williams' }
+  ];
+</script>
+```
 
 ## Examples
 
@@ -171,24 +189,6 @@ Use the `overlap` attribute to control spacing.
     { name: 'Viewer', color: '#059669', initials: 'V' }
   ];
 </script>
-```
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `base` | The avatar group container |
-| `avatar` | Individual avatar buttons |
-| `overflow` | The "+N" overflow button |
-
-```css
-snice-avatar-group::part(avatar) {
-  border-width: 3px;
-}
-
-snice-avatar-group::part(overflow) {
-  font-size: 0.75rem;
-}
 ```
 
 ## Accessibility

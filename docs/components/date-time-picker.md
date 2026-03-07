@@ -5,16 +5,6 @@
 
 Combined date and time picker with calendar and scrollable time selectors.
 
-## Basic Usage
-
-```typescript
-import 'snice/components/date-time-picker/snice-date-time-picker';
-```
-
-```html
-<snice-date-time-picker label="Appointment"></snice-date-time-picker>
-```
-
 ## Importing
 
 **ESM (bundler)**
@@ -26,6 +16,70 @@ import 'snice/components/date-time-picker/snice-date-time-picker';
 ```html
 <script src="snice-runtime.min.js"></script>
 <script src="snice-date-time-picker.min.js"></script>
+```
+
+## Properties
+
+| Property | Attribute | Type | Default | Description |
+|----------|-----------|------|---------|-------------|
+| `value` | `value` | `string` | `''` | ISO datetime value (YYYY-MM-DDTHH:MM or YYYY-MM-DDTHH:MM:SS) |
+| `dateFormat` | `date-format` | `string` | `'yyyy-mm-dd'` | Date display format |
+| `timeFormat` | `time-format` | `'12h' \| '24h'` | `'24h'` | Time display format |
+| `min` | `min` | `string` | `''` | Minimum selectable date |
+| `max` | `max` | `string` | `''` | Maximum selectable date |
+| `showSeconds` | `show-seconds` | `boolean` | `false` | Show seconds selector |
+| `disabled` | `disabled` | `boolean` | `false` | Disables the picker |
+| `readonly` | `readonly` | `boolean` | `false` | Makes input read-only |
+| `placeholder` | `placeholder` | `string` | `''` | Input placeholder text |
+| `label` | `label` | `string` | `''` | Label text |
+| `helperText` | `helper-text` | `string` | `''` | Helper text below input |
+| `errorText` | `error-text` | `string` | `''` | Error text below input |
+| `required` | `required` | `boolean` | `false` | Marks as required |
+| `invalid` | `invalid` | `boolean` | `false` | Shows invalid styling |
+| `name` | `name` | `string` | `''` | Form field name |
+| `variant` | `variant` | `'dropdown' \| 'inline'` | `'dropdown'` | Display variant |
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `open()` | -- | Opens the dropdown panel |
+| `close()` | -- | Closes the dropdown panel |
+| `focus()` | -- | Focuses the input |
+| `blur()` | -- | Removes focus |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `datetime-change` | `{ value, date, dateString, timeString, iso, dateTimePicker }` | Fired when date or time changes |
+| `datetimepicker-focus` | `{ dateTimePicker }` | Fired on input focus |
+| `datetimepicker-blur` | `{ dateTimePicker }` | Fired on input blur |
+| `datetimepicker-open` | `{ dateTimePicker }` | Fired when panel opens |
+| `datetimepicker-close` | `{ dateTimePicker }` | Fired when panel closes |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `base` | The wrapper container |
+| `label` | The label element |
+| `input` | The text input |
+| `toggle` | The calendar icon button |
+| `panel` | The dropdown/inline panel |
+| `calendar` | The calendar section |
+| `time` | The time selector section |
+| `helper-text` | The helper text element |
+| `error-text` | The error text element |
+
+## Basic Usage
+
+```typescript
+import 'snice/components/date-time-picker/snice-date-time-picker';
+```
+
+```html
+<snice-date-time-picker label="Appointment"></snice-date-time-picker>
 ```
 
 ## Examples
@@ -126,60 +180,6 @@ document.querySelector('#dtp').addEventListener('datetime-change', (e) => {
 });
 </script>
 ```
-
-## Properties
-
-| Property | Attribute | Type | Default | Description |
-|----------|-----------|------|---------|-------------|
-| `value` | `value` | `string` | `''` | ISO datetime value (YYYY-MM-DDTHH:MM or YYYY-MM-DDTHH:MM:SS) |
-| `dateFormat` | `date-format` | `string` | `'yyyy-mm-dd'` | Date display format |
-| `timeFormat` | `time-format` | `'12h' \| '24h'` | `'24h'` | Time display format |
-| `min` | `min` | `string` | `''` | Minimum selectable date |
-| `max` | `max` | `string` | `''` | Maximum selectable date |
-| `showSeconds` | `show-seconds` | `boolean` | `false` | Show seconds selector |
-| `disabled` | `disabled` | `boolean` | `false` | Disables the picker |
-| `readonly` | `readonly` | `boolean` | `false` | Makes input read-only |
-| `placeholder` | `placeholder` | `string` | `''` | Input placeholder text |
-| `label` | `label` | `string` | `''` | Label text |
-| `helperText` | `helper-text` | `string` | `''` | Helper text below input |
-| `errorText` | `error-text` | `string` | `''` | Error text below input |
-| `required` | `required` | `boolean` | `false` | Marks as required |
-| `invalid` | `invalid` | `boolean` | `false` | Shows invalid styling |
-| `name` | `name` | `string` | `''` | Form field name |
-| `variant` | `variant` | `'dropdown' \| 'inline'` | `'dropdown'` | Display variant |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `datetime-change` | `{ value, date, dateString, timeString, iso, dateTimePicker }` | Fired when date or time changes |
-| `datetimepicker-focus` | `{ dateTimePicker }` | Fired on input focus |
-| `datetimepicker-blur` | `{ dateTimePicker }` | Fired on input blur |
-| `datetimepicker-open` | `{ dateTimePicker }` | Fired when panel opens |
-| `datetimepicker-close` | `{ dateTimePicker }` | Fired when panel closes |
-
-## Methods
-
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `open()` | -- | Opens the dropdown panel |
-| `close()` | -- | Closes the dropdown panel |
-| `focus()` | -- | Focuses the input |
-| `blur()` | -- | Removes focus |
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `base` | The wrapper container |
-| `label` | The label element |
-| `input` | The text input |
-| `toggle` | The calendar icon button |
-| `panel` | The dropdown/inline panel |
-| `calendar` | The calendar section |
-| `time` | The time selector section |
-| `helper-text` | The helper text element |
-| `error-text` | The error text element |
 
 ## Responsive Behavior
 

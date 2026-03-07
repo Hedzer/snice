@@ -4,26 +4,6 @@
 
 Canvas drawing with smooth lazy-brush technology.
 
-## Basic Usage
-
-```html
-<snice-draw id="draw" width="800" height="600"></snice-draw>
-
-<script>
-  const draw = document.getElementById('draw');
-
-  // Clear canvas
-  draw.clear();
-
-  // Undo/redo
-  draw.undo();
-  draw.redo();
-
-  // Download
-  draw.download('my-drawing.png');
-</script>
-```
-
 ## Properties
 
 | Property | Type | Default | Description |
@@ -41,15 +21,6 @@ Canvas drawing with smooth lazy-brush technology.
 | `autoPolygon` | `boolean` | `false` | Enable auto-polygon |
 | `polygonCurvePoints` | `number` | `10` | Polygon curve smoothness (2-30) |
 | `disabled` | `boolean` | `false` | Disable drawing |
-
-## Tools
-
-- `'pen'` - Draw with brush
-- `'eraser'` - Erase strokes
-- `'line'` - Draw straight lines
-- `'rectangle'` - Draw rectangles
-- `'circle'` - Draw circles
-- `'text'` - Add text
 
 ## Methods
 
@@ -87,6 +58,46 @@ Set strokes (for loading saved drawings).
 - `draw-clear` - Canvas cleared
 - `draw-undo` - Undo performed
 - `draw-redo` - Redo performed
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer draw container |
+| `canvas` | `<canvas>` | Drawing canvas element |
+
+```css
+snice-draw::part(base) {
+  border: 1px solid #e2e2e2;
+  border-radius: 8px;
+}
+
+snice-draw::part(canvas) {
+  cursor: crosshair;
+}
+```
+
+## Basic Usage
+
+```html
+<snice-draw id="draw" width="800" height="600"></snice-draw>
+
+<script>
+  const draw = document.getElementById('draw');
+
+  // Clear canvas
+  draw.clear();
+
+  // Undo/redo
+  draw.undo();
+  draw.redo();
+
+  // Download
+  draw.download('my-drawing.png');
+</script>
+```
 
 ## Examples
 
@@ -218,25 +229,14 @@ document.addEventListener('keydown', (e) => {
 });
 ```
 
-## CSS Parts
+## Tools
 
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | Outer draw container |
-| `canvas` | `<canvas>` | Drawing canvas element |
-
-```css
-snice-draw::part(base) {
-  border: 1px solid #e2e2e2;
-  border-radius: 8px;
-}
-
-snice-draw::part(canvas) {
-  cursor: crosshair;
-}
-```
+- `'pen'` - Draw with brush
+- `'eraser'` - Erase strokes
+- `'line'` - Draw straight lines
+- `'rectangle'` - Draw rectangles
+- `'circle'` - Draw circles
+- `'text'` - Add text
 
 ## Lazy Brush
 

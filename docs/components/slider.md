@@ -5,16 +5,6 @@
 
 An interactive range slider for selecting numeric values with mouse, touch, and keyboard support.
 
-## Basic Usage
-
-```typescript
-import 'snice/components/slider/snice-slider';
-```
-
-```html
-<snice-slider label="Volume" min="0" max="100" value="50"></snice-slider>
-```
-
 ## Importing
 
 **ESM (bundler)**
@@ -26,6 +16,67 @@ import 'snice/components/slider/snice-slider';
 ```html
 <script src="snice-runtime.min.js"></script>
 <script src="snice-slider.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `value` | `number` | `0` | Current slider value |
+| `min` | `number` | `0` | Minimum value |
+| `max` | `number` | `100` | Maximum value |
+| `step` | `number` | `1` | Step increment |
+| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Size variant |
+| `variant` | `'default' \| 'primary' \| 'success' \| 'warning' \| 'danger'` | `'default'` | Color variant |
+| `label` | `string` | `''` | Label text |
+| `helperText` (attr: `helper-text`) | `string` | `''` | Helper text below slider |
+| `errorText` (attr: `error-text`) | `string` | `''` | Error message (shown when invalid) |
+| `disabled` | `boolean` | `false` | Disables the slider |
+| `readonly` | `boolean` | `false` | Makes the slider read-only |
+| `required` | `boolean` | `false` | Makes the slider required |
+| `invalid` | `boolean` | `false` | Shows invalid state |
+| `name` | `string` | `''` | Form field name |
+| `showValue` (attr: `show-value`) | `boolean` | `false` | Display current value |
+| `showTicks` (attr: `show-ticks`) | `boolean` | `false` | Show tick marks |
+| `vertical` | `boolean` | `false` | Vertical orientation |
+| `form-align` | (CSS-only attribute) | -- | Gives the track area `min-height: 2.5rem` to align with input/select fields in form rows |
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `focus()` | `options?: FocusOptions` | Focus the slider thumb |
+| `blur()` | -- | Remove focus |
+| `checkValidity()` | -- | Check validation, returns `boolean` |
+| `reportValidity()` | -- | Report validation to user, returns `boolean` |
+| `setCustomValidity()` | `message: string` | Set custom validation message |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `slider-input` | `{ value: number, slider: SniceSliderElement }` | Fired continuously while dragging |
+| `slider-change` | `{ value: number, slider: SniceSliderElement }` | Fired when value is committed |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `track` | The slider track |
+| `fill` | The filled portion of the track |
+| `thumb` | The draggable thumb |
+| `spinner` | Loading spinner (when loading) |
+| `error-text` | Error message container |
+| `helper-text` | Helper text container |
+
+## Basic Usage
+
+```typescript
+import 'snice/components/slider/snice-slider';
+```
+
+```html
+<snice-slider label="Volume" min="0" max="100" value="50"></snice-slider>
 ```
 
 ## Examples
@@ -113,54 +164,3 @@ The slider is form-associated and participates in form submission.
   <button type="submit">Save Settings</button>
 </form>
 ```
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `value` | `number` | `0` | Current slider value |
-| `min` | `number` | `0` | Minimum value |
-| `max` | `number` | `100` | Maximum value |
-| `step` | `number` | `1` | Step increment |
-| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Size variant |
-| `variant` | `'default' \| 'primary' \| 'success' \| 'warning' \| 'danger'` | `'default'` | Color variant |
-| `label` | `string` | `''` | Label text |
-| `helperText` (attr: `helper-text`) | `string` | `''` | Helper text below slider |
-| `errorText` (attr: `error-text`) | `string` | `''` | Error message (shown when invalid) |
-| `disabled` | `boolean` | `false` | Disables the slider |
-| `readonly` | `boolean` | `false` | Makes the slider read-only |
-| `required` | `boolean` | `false` | Makes the slider required |
-| `invalid` | `boolean` | `false` | Shows invalid state |
-| `name` | `string` | `''` | Form field name |
-| `showValue` (attr: `show-value`) | `boolean` | `false` | Display current value |
-| `showTicks` (attr: `show-ticks`) | `boolean` | `false` | Show tick marks |
-| `vertical` | `boolean` | `false` | Vertical orientation |
-| `form-align` | (CSS-only attribute) | -- | Gives the track area `min-height: 2.5rem` to align with input/select fields in form rows |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `slider-input` | `{ value: number, slider: SniceSliderElement }` | Fired continuously while dragging |
-| `slider-change` | `{ value: number, slider: SniceSliderElement }` | Fired when value is committed |
-
-## Methods
-
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `focus()` | `options?: FocusOptions` | Focus the slider thumb |
-| `blur()` | -- | Remove focus |
-| `checkValidity()` | -- | Check validation, returns `boolean` |
-| `reportValidity()` | -- | Report validation to user, returns `boolean` |
-| `setCustomValidity()` | `message: string` | Set custom validation message |
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `track` | The slider track |
-| `fill` | The filled portion of the track |
-| `thumb` | The draggable thumb |
-| `spinner` | Loading spinner (when loading) |
-| `error-text` | Error message container |
-| `helper-text` | Helper text container |

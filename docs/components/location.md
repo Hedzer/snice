@@ -5,6 +5,88 @@
 
 Displays location information with addresses, coordinates, maps, and custom icons.
 
+## Importing
+
+**ESM (bundler)**
+```typescript
+import 'snice/components/location/snice-location';
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-location.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `mode` | `'full' \| 'compact' \| 'coordinates' \| 'address'` | `'full'` | Display mode |
+| `name` | `string` | `''` | Location name |
+| `address` | `string` | `''` | Street address |
+| `city` | `string` | `''` | City name |
+| `state` | `string` | `''` | State or province |
+| `country` | `string` | `''` | Country name |
+| `zipCode` (attr: `zip-code`) | `string` | `''` | ZIP/postal code |
+| `latitude` | `number \| string` | `''` | Latitude coordinate |
+| `longitude` | `number \| string` | `''` | Longitude coordinate |
+| `showMap` (attr: `show-map`) | `boolean` | `false` | Show embedded map |
+| `showIcon` (attr: `show-icon`) | `boolean` | `true` | Show location icon |
+| `icon` | `string` | `'📍'` | Icon (emoji, URL). Use slot for icon fonts. |
+| `iconImage` (attr: `icon-image`) | `string` | `''` | Icon image URL |
+| `mapUrl` (attr: `map-url`) | `string` | `''` | Custom map URL |
+| `clickable` | `boolean` | `false` | Make location clickable |
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `getData()` | -- | Returns complete LocationData object |
+| `getCoordinates()` | -- | Returns `{ latitude, longitude }` or null |
+| `getFullAddress()` | -- | Returns formatted address string |
+| `openMap()` | -- | Opens location in maps (new tab) |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `location-click` | `LocationData` | Fired when a clickable location is clicked |
+
+## Slots
+
+| Name | Description |
+|------|-------------|
+| `icon` | Custom icon content (overrides `icon` and `iconImage` properties) |
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The outer location container |
+| `icon` | `<div>` | The icon container |
+| `content` | `<div>` | The content area with name, address, and coordinates |
+| `map` | `<div>` | The embedded map container (visible when `show-map` is set) |
+
+```css
+snice-location::part(base) {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+snice-location::part(icon) {
+  font-size: 1.5rem;
+}
+
+snice-location::part(map) {
+  border-radius: 4px;
+  overflow: hidden;
+}
+```
+
 ## Basic Usage
 
 ```typescript
@@ -20,19 +102,6 @@ import 'snice/components/location/snice-location';
   latitude="40.7829"
   longitude="-73.9654">
 </snice-location>
-```
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/location/snice-location';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-location.min.js"></script>
 ```
 
 ## Examples
@@ -158,73 +227,4 @@ location.openMap();
 location.addEventListener('location-click', (e) => {
   console.log('Clicked:', e.detail);
 });
-```
-
-## Slots
-
-| Name | Description |
-|------|-------------|
-| `icon` | Custom icon content (overrides `icon` and `iconImage` properties) |
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `mode` | `'full' \| 'compact' \| 'coordinates' \| 'address'` | `'full'` | Display mode |
-| `name` | `string` | `''` | Location name |
-| `address` | `string` | `''` | Street address |
-| `city` | `string` | `''` | City name |
-| `state` | `string` | `''` | State or province |
-| `country` | `string` | `''` | Country name |
-| `zipCode` (attr: `zip-code`) | `string` | `''` | ZIP/postal code |
-| `latitude` | `number \| string` | `''` | Latitude coordinate |
-| `longitude` | `number \| string` | `''` | Longitude coordinate |
-| `showMap` (attr: `show-map`) | `boolean` | `false` | Show embedded map |
-| `showIcon` (attr: `show-icon`) | `boolean` | `true` | Show location icon |
-| `icon` | `string` | `'📍'` | Icon (emoji, URL). Use slot for icon fonts. |
-| `iconImage` (attr: `icon-image`) | `string` | `''` | Icon image URL |
-| `mapUrl` (attr: `map-url`) | `string` | `''` | Custom map URL |
-| `clickable` | `boolean` | `false` | Make location clickable |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `location-click` | `LocationData` | Fired when a clickable location is clicked |
-
-## Methods
-
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `getData()` | -- | Returns complete LocationData object |
-| `getCoordinates()` | -- | Returns `{ latitude, longitude }` or null |
-| `getFullAddress()` | -- | Returns formatted address string |
-| `openMap()` | -- | Opens location in maps (new tab) |
-
-## CSS Parts
-
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | The outer location container |
-| `icon` | `<div>` | The icon container |
-| `content` | `<div>` | The content area with name, address, and coordinates |
-| `map` | `<div>` | The embedded map container (visible when `show-map` is set) |
-
-```css
-snice-location::part(base) {
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 1rem;
-}
-
-snice-location::part(icon) {
-  font-size: 1.5rem;
-}
-
-snice-location::part(map) {
-  border-radius: 4px;
-  overflow: hidden;
-}
 ```

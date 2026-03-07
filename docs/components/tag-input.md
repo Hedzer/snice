@@ -5,24 +5,15 @@
 The tag input component provides a chip/tag-style input field where users can add tags by typing and pressing Enter or comma, remove them with Backspace or the X button, and select from autocomplete suggestions with keyboard navigation.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
-- [Input Behavior](#input-behavior)
 - [CSS Custom Properties](#css-custom-properties)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
+- [Input Behavior](#input-behavior)
 - [Accessibility](#accessibility)
-
-## Basic Usage
-
-```html
-<snice-tag-input placeholder="Add a tag..."></snice-tag-input>
-```
-
-```typescript
-import 'snice/components/tag-input/snice-tag-input';
-```
 
 ## Properties
 
@@ -68,37 +59,6 @@ Focus the input field.
 tagInput.focus();
 ```
 
-## CSS Parts
-
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | The outer wrapper div |
-| `label` | `<label>` | The label element above the input |
-| `container` | `<div>` | Container holding tags and the input field |
-| `tag` | `<span>` | An individual tag chip |
-| `tag-text` | `<span>` | The text content inside a tag |
-| `input` | `<input>` | The text input field |
-| `suggestions` | `<div>` | The autocomplete suggestions dropdown |
-
-```css
-snice-tag-input::part(container) {
-  border-radius: 8px;
-  padding: 0.5rem;
-}
-
-snice-tag-input::part(tag) {
-  background: #e0f2fe;
-  border-radius: 999px;
-  font-weight: 500;
-}
-
-snice-tag-input::part(input) {
-  font-size: 0.875rem;
-}
-```
-
 ## Events
 
 #### `tag-add`
@@ -134,16 +94,6 @@ Fired whenever the tag list changes (add or remove).
 }
 ```
 
-## Input Behavior
-
-| Key | Action |
-|-----|--------|
-| Enter | Add the current input text as a tag, or select the highlighted suggestion |
-| Comma | Split the input on commas and add each part as a tag |
-| Backspace | On empty input, remove the last tag |
-| ArrowUp / ArrowDown | Navigate through the suggestions dropdown |
-| Escape | Close the suggestions dropdown |
-
 ## CSS Custom Properties
 
 | Property | Description | Default |
@@ -157,6 +107,47 @@ Fired whenever the tag list changes (add or remove).
 | `--snice-focus-ring-width` | Focus ring width | `2px` |
 | `--snice-focus-ring-color` | Focus ring color | -- |
 | `--snice-shadow-lg` | Suggestions dropdown shadow | -- |
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The outer wrapper div |
+| `label` | `<label>` | The label element above the input |
+| `container` | `<div>` | Container holding tags and the input field |
+| `tag` | `<span>` | An individual tag chip |
+| `tag-text` | `<span>` | The text content inside a tag |
+| `input` | `<input>` | The text input field |
+| `suggestions` | `<div>` | The autocomplete suggestions dropdown |
+
+```css
+snice-tag-input::part(container) {
+  border-radius: 8px;
+  padding: 0.5rem;
+}
+
+snice-tag-input::part(tag) {
+  background: #e0f2fe;
+  border-radius: 999px;
+  font-weight: 500;
+}
+
+snice-tag-input::part(input) {
+  font-size: 0.875rem;
+}
+```
+
+## Basic Usage
+
+```html
+<snice-tag-input placeholder="Add a tag..."></snice-tag-input>
+```
+
+```typescript
+import 'snice/components/tag-input/snice-tag-input';
+```
 
 ## Examples
 
@@ -270,6 +261,16 @@ Use `max-tags` to restrict the number of tags.
 </script>
 ```
 
+## Input Behavior
+
+| Key | Action |
+|-----|--------|
+| Enter | Add the current input text as a tag, or select the highlighted suggestion |
+| Comma | Split the input on commas and add each part as a tag |
+| Backspace | On empty input, remove the last tag |
+| ArrowUp / ArrowDown | Navigate through the suggestions dropdown |
+| Escape | Close the suggestions dropdown |
+
 ## Accessibility
 
 - **Keyboard support**: Full keyboard navigation for adding, removing, and selecting tags
@@ -277,12 +278,3 @@ Use `max-tags` to restrict the number of tags.
 - **Backspace removal**: Pressing Backspace on an empty input removes the last tag
 - **Label**: The `label` property provides an accessible label for the input
 - **Focus management**: Focus returns to the input after adding or removing a tag
-
-## Best Practices
-
-1. **Provide suggestions when possible**: Autocomplete reduces typos and improves consistency
-2. **Set a max when appropriate**: Use `max-tags` to prevent unbounded tag lists
-3. **Prevent duplicates**: Keep `allowDuplicates` as `false` (default) unless duplicates are meaningful
-4. **Use descriptive placeholders**: Tell users what kind of tags to add (e.g. "Add a skill...", "Type a topic...")
-5. **Listen to `tag-change` for syncing**: Use the `tag-change` event to persist tag changes, as it covers both additions and removals
-6. **Use `label` for forms**: Always provide a label for form contexts to maintain accessibility

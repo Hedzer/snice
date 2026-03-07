@@ -5,22 +5,13 @@
 The rating component provides an interactive star rating input with configurable precision (full or half stars), custom icons, multiple sizes, and full keyboard navigation.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
 - [Properties](#properties)
 - [Events](#events)
 - [CSS Custom Properties](#css-custom-properties)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
-
-## Basic Usage
-
-```html
-<snice-rating value="3" max="5"></snice-rating>
-```
-
-```typescript
-import 'snice/components/rating/snice-rating';
-```
 
 ## Properties
 
@@ -74,6 +65,16 @@ snice-rating::part(star):hover {
 snice-rating::part(base) {
   gap: 0.25rem;
 }
+```
+
+## Basic Usage
+
+```html
+<snice-rating value="3" max="5"></snice-rating>
+```
+
+```typescript
+import 'snice/components/rating/snice-rating';
 ```
 
 ## Examples
@@ -167,11 +168,3 @@ Use the `readonly` attribute to display a rating without allowing interaction.
 - **Focus indicators**: Clear focus ring on the active star
 - **Readonly mode**: When `readonly` is set, the component is not focusable or interactive
 - **Screen readers**: Current value and maximum are announced
-
-## Best Practices
-
-1. **Use half precision for review systems**: Half-star ratings give users more granularity
-2. **Display readonly ratings for averages**: Show aggregate scores as readonly
-3. **Keep max reasonable**: 5 or 10 stars are conventional; more becomes unwieldy
-4. **Provide context**: Pair ratings with labels explaining what is being rated
-5. **Use custom icons sparingly**: Stars are universally understood; custom icons may need additional context

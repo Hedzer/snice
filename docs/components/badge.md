@@ -5,27 +5,15 @@
 The badge component displays notification indicators, status markers, and counts. It can be positioned on other elements or used inline, with support for custom colors, sizes, and animations.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
 - [Properties](#properties)
 - [Methods](#methods)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
-
-## Basic Usage
-
-```html
-<!-- Simple text badge -->
-<snice-badge content="New"></snice-badge>
-
-<!-- Count badge -->
-<snice-badge count="5"></snice-badge>
-
-<!-- Dot indicator -->
-<snice-badge dot></snice-badge>
-```
-
-```typescript
-import 'snice/components/badge/snice-badge';
-```
+- [Accessibility](#accessibility)
+- [Browser Support](#browser-support)
+- [Common Patterns](#common-patterns)
+- [Variant Colors](#variant-colors)
 
 ## Properties
 
@@ -70,6 +58,43 @@ Hide the badge by clearing all content.
 
 ```typescript
 badge.hide();
+```
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer wrapper element |
+| `badge` | `<span>` | The badge indicator element |
+
+```css
+snice-badge::part(badge) {
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+snice-badge::part(base) {
+  display: inline-flex;
+}
+```
+
+## Basic Usage
+
+```html
+<!-- Simple text badge -->
+<snice-badge content="New"></snice-badge>
+
+<!-- Count badge -->
+<snice-badge count="5"></snice-badge>
+
+<!-- Dot indicator -->
+<snice-badge dot></snice-badge>
+```
+
+```typescript
+import 'snice/components/badge/snice-badge';
 ```
 
 ## Examples
@@ -526,26 +551,6 @@ badge.hide();
 </div>
 ```
 
-## CSS Parts
-
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | Outer wrapper element |
-| `badge` | `<span>` | The badge indicator element |
-
-```css
-snice-badge::part(badge) {
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-snice-badge::part(base) {
-  display: inline-flex;
-}
-```
-
 ## Accessibility
 
 - **ARIA role**: Badge has `role="status"` for screen reader announcements
@@ -557,19 +562,6 @@ snice-badge::part(base) {
 
 - Modern browsers (Chrome, Firefox, Safari, Edge)
 - Requires Custom Elements v1 and Shadow DOM support
-
-## Best Practices
-
-1. **Use appropriate variants**: Choose colors that match the badge meaning
-2. **Keep content short**: 1-3 characters work best for badges
-3. **Set reasonable max values**: Default max of 99 works well for most cases
-4. **Use dot for simple indicators**: When exact count isn't needed
-5. **Position appropriately**: Ensure badges don't obscure important content
-6. **Avoid overuse**: Too many badges can reduce their effectiveness
-7. **Make badges clickable if needed**: Wrap in button or link when actionable
-8. **Test with long counts**: Ensure layout handles 99+ properly
-9. **Use pulse sparingly**: Reserve for important notifications
-10. **Consider accessibility**: Ensure badge content is announced to screen readers
 
 ## Common Patterns
 

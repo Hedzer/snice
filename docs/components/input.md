@@ -5,16 +5,6 @@
 
 Text input field with validation, icons, and form association.
 
-## Basic Usage
-
-```typescript
-import 'snice/components/input/snice-input';
-```
-
-```html
-<snice-input label="Name" placeholder="Enter your name"></snice-input>
-```
-
 ## Importing
 
 **ESM (bundler)**
@@ -26,6 +16,94 @@ import 'snice/components/input/snice-input';
 ```html
 <script src="snice-runtime.min.js"></script>
 <script src="snice-input.min.js"></script>
+```
+
+## Properties
+
+| Property | Attribute | Type | Default | Description |
+|----------|-----------|------|---------|-------------|
+| `type` | `type` | `'text' \| 'email' \| 'password' \| 'number' \| 'tel' \| 'url' \| 'search' \| 'date' \| 'time' \| 'datetime-local'` | `'text'` | Input type |
+| `size` | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Input size |
+| `variant` | `variant` | `'outlined' \| 'filled' \| 'underlined'` | `'outlined'` | Visual style |
+| `value` | `value` | `string` | `''` | Input value |
+| `placeholder` | `placeholder` | `string` | `''` | Placeholder text |
+| `label` | `label` | `string` | `''` | Label text |
+| `helperText` | `helper-text` | `string` | `''` | Helper text below input |
+| `errorText` | `error-text` | `string` | `''` | Error text below input |
+| `disabled` | `disabled` | `boolean` | `false` | Disables the input |
+| `readonly` | `readonly` | `boolean` | `false` | Makes the input read-only |
+| `loading` | `loading` | `boolean` | `false` | Shows loading spinner |
+| `required` | `required` | `boolean` | `false` | Marks as required |
+| `invalid` | `invalid` | `boolean` | `false` | Shows invalid styling |
+| `clearable` | `clearable` | `boolean` | `false` | Shows clear button |
+| `password` | `password` | `boolean` | `false` | Shows password visibility toggle |
+| `min` | `min` | `string` | `''` | Minimum value (number inputs) |
+| `max` | `max` | `string` | `''` | Maximum value (number inputs) |
+| `step` | `step` | `string` | `''` | Step value (number inputs) |
+| `pattern` | `pattern` | `string` | `''` | Validation pattern |
+| `maxlength` | `maxlength` | `number` | `-1` | Maximum character length |
+| `minlength` | `minlength` | `number` | `-1` | Minimum character length |
+| `autocomplete` | `autocomplete` | `string` | `''` | Autocomplete hint |
+| `name` | `name` | `string` | `''` | Form field name |
+| `prefixIcon` | `prefix-icon` | `string` | `''` | Prefix icon (emoji, URL, or ligature) |
+| `suffixIcon` | `suffix-icon` | `string` | `''` | Suffix icon (emoji, URL, or ligature) |
+| `align` | `align` | `'top' \| 'center' \| 'bottom' \| ''` | `''` | Vertical alignment when host has explicit height |
+| `labelAlign` | `label-align` | `'left' \| 'center' \| 'right'` | `'left'` | Label text alignment |
+| `stretch` | `stretch` | `boolean` | `false` | Input fills the full host height |
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `focus()` | — | Focuses the input |
+| `blur()` | — | Removes focus |
+| `select()` | — | Selects all text |
+| `clear()` | — | Clears the value |
+| `checkValidity()` | — | Returns input validity |
+| `reportValidity()` | — | Reports input validity |
+| `setCustomValidity()` | `message: string` | Sets custom validation message |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `input-input` | `{ value, input }` | Fired on each keystroke |
+| `input-change` | `{ value, input }` | Fired on value commit |
+| `input-focus` | `{ input }` | Fired on focus |
+| `input-blur` | `{ input }` | Fired on blur |
+| `input-clear` | `{ input }` | Fired when cleared |
+
+## Slots
+
+| Name | Description |
+|------|-------------|
+| `prefix-icon` | Custom prefix icon content (overrides `prefixIcon` property) |
+| `suffix-icon` | Custom suffix icon content (overrides `suffixIcon` property) |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `wrapper` | The outer wrapper element |
+| `label` | The label element |
+| `container` | The input container (holds input + icons) |
+| `input` | The native input element |
+| `prefix-icon` | The prefix icon container |
+| `suffix-icon` | The suffix icon container |
+| `clear` | The clear button |
+| `spinner` | The loading spinner |
+| `password-toggle` | The password visibility toggle |
+| `helper-text` | The helper text element |
+| `error-text` | The error text element |
+
+## Basic Usage
+
+```typescript
+import 'snice/components/input/snice-input';
+```
+
+```html
+<snice-input label="Name" placeholder="Enter your name"></snice-input>
 ```
 
 ## Examples
@@ -200,81 +278,3 @@ inp.addEventListener('input-input', (e) => console.log('Input:', e.detail.value)
 inp.addEventListener('input-change', (e) => console.log('Change:', e.detail.value));
 </script>
 ```
-
-## Slots
-
-| Name | Description |
-|------|-------------|
-| `prefix-icon` | Custom prefix icon content (overrides `prefixIcon` property) |
-| `suffix-icon` | Custom suffix icon content (overrides `suffixIcon` property) |
-
-## Properties
-
-| Property | Attribute | Type | Default | Description |
-|----------|-----------|------|---------|-------------|
-| `type` | `type` | `'text' \| 'email' \| 'password' \| 'number' \| 'tel' \| 'url' \| 'search' \| 'date' \| 'time' \| 'datetime-local'` | `'text'` | Input type |
-| `size` | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Input size |
-| `variant` | `variant` | `'outlined' \| 'filled' \| 'underlined'` | `'outlined'` | Visual style |
-| `value` | `value` | `string` | `''` | Input value |
-| `placeholder` | `placeholder` | `string` | `''` | Placeholder text |
-| `label` | `label` | `string` | `''` | Label text |
-| `helperText` | `helper-text` | `string` | `''` | Helper text below input |
-| `errorText` | `error-text` | `string` | `''` | Error text below input |
-| `disabled` | `disabled` | `boolean` | `false` | Disables the input |
-| `readonly` | `readonly` | `boolean` | `false` | Makes the input read-only |
-| `loading` | `loading` | `boolean` | `false` | Shows loading spinner |
-| `required` | `required` | `boolean` | `false` | Marks as required |
-| `invalid` | `invalid` | `boolean` | `false` | Shows invalid styling |
-| `clearable` | `clearable` | `boolean` | `false` | Shows clear button |
-| `password` | `password` | `boolean` | `false` | Shows password visibility toggle |
-| `min` | `min` | `string` | `''` | Minimum value (number inputs) |
-| `max` | `max` | `string` | `''` | Maximum value (number inputs) |
-| `step` | `step` | `string` | `''` | Step value (number inputs) |
-| `pattern` | `pattern` | `string` | `''` | Validation pattern |
-| `maxlength` | `maxlength` | `number` | `-1` | Maximum character length |
-| `minlength` | `minlength` | `number` | `-1` | Minimum character length |
-| `autocomplete` | `autocomplete` | `string` | `''` | Autocomplete hint |
-| `name` | `name` | `string` | `''` | Form field name |
-| `prefixIcon` | `prefix-icon` | `string` | `''` | Prefix icon (emoji, URL, or ligature) |
-| `suffixIcon` | `suffix-icon` | `string` | `''` | Suffix icon (emoji, URL, or ligature) |
-| `align` | `align` | `'top' \| 'center' \| 'bottom' \| ''` | `''` | Vertical alignment when host has explicit height |
-| `labelAlign` | `label-align` | `'left' \| 'center' \| 'right'` | `'left'` | Label text alignment |
-| `stretch` | `stretch` | `boolean` | `false` | Input fills the full host height |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `input-input` | `{ value, input }` | Fired on each keystroke |
-| `input-change` | `{ value, input }` | Fired on value commit |
-| `input-focus` | `{ input }` | Fired on focus |
-| `input-blur` | `{ input }` | Fired on blur |
-| `input-clear` | `{ input }` | Fired when cleared |
-
-## Methods
-
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `focus()` | — | Focuses the input |
-| `blur()` | — | Removes focus |
-| `select()` | — | Selects all text |
-| `clear()` | — | Clears the value |
-| `checkValidity()` | — | Returns input validity |
-| `reportValidity()` | — | Reports input validity |
-| `setCustomValidity()` | `message: string` | Sets custom validation message |
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `wrapper` | The outer wrapper element |
-| `label` | The label element |
-| `container` | The input container (holds input + icons) |
-| `input` | The native input element |
-| `prefix-icon` | The prefix icon container |
-| `suffix-icon` | The suffix icon container |
-| `clear` | The clear button |
-| `spinner` | The loading spinner |
-| `password-toggle` | The password visibility toggle |
-| `helper-text` | The helper text element |
-| `error-text` | The error text element |

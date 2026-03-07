@@ -5,11 +5,48 @@
 The gauge component renders an SVG-based semicircle gauge/meter chart, ideal for dashboards and data visualization. It displays a value within a range using an animated arc fill with optional label text.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
 - [Properties](#properties)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
-- [Best Practices](#best-practices)
+- [Browser Support](#browser-support)
+- [Variant Colors](#variant-colors)
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `value` | `number` | `0` | Current value to display |
+| `min` | `number` | `0` | Minimum value of the range |
+| `max` | `number` | `100` | Maximum value of the range |
+| `label` | `string` | `''` | Label text displayed below the gauge |
+| `variant` | `'default' \| 'primary' \| 'success' \| 'warning' \| 'error' \| 'info'` | `'default'` | Color variant |
+| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Gauge size |
+| `showValue` | `boolean` | `true` | Whether to display the numeric value |
+| `thickness` | `number` | `8` | Stroke thickness of the gauge arc |
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer gauge container with `role="meter"` |
+| `value` | `<span>` | Numeric value text displayed inside the gauge |
+| `label` | `<span>` | Label text displayed below the gauge |
+
+```css
+snice-gauge::part(value) {
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+snice-gauge::part(label) {
+  color: #64748b;
+  font-size: 0.875rem;
+}
+```
 
 ## Basic Usage
 
@@ -24,19 +61,6 @@ The gauge component renders an SVG-based semicircle gauge/meter chart, ideal for
 ```typescript
 import 'snice/components/gauge/snice-gauge';
 ```
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `value` | `number` | `0` | Current value to display |
-| `min` | `number` | `0` | Minimum value of the range |
-| `max` | `number` | `100` | Maximum value of the range |
-| `label` | `string` | `''` | Label text displayed below the gauge |
-| `variant` | `'default' \| 'primary' \| 'success' \| 'warning' \| 'error' \| 'info'` | `'default'` | Color variant |
-| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Gauge size |
-| `showValue` | `boolean` | `true` | Whether to display the numeric value |
-| `thickness` | `number` | `8` | Stroke thickness of the gauge arc |
 
 ## Examples
 
@@ -141,28 +165,6 @@ import 'snice/components/gauge/snice-gauge';
 </script>
 ```
 
-## CSS Parts
-
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | Outer gauge container with `role="meter"` |
-| `value` | `<span>` | Numeric value text displayed inside the gauge |
-| `label` | `<span>` | Label text displayed below the gauge |
-
-```css
-snice-gauge::part(value) {
-  font-size: 2rem;
-  font-weight: 800;
-}
-
-snice-gauge::part(label) {
-  color: #64748b;
-  font-size: 0.875rem;
-}
-```
-
 ## Accessibility
 
 - **ARIA role**: The gauge has `role="meter"` for screen reader support
@@ -175,19 +177,6 @@ snice-gauge::part(label) {
 
 - Modern browsers (Chrome, Firefox, Safari, Edge)
 - Requires Custom Elements v1 and Shadow DOM support
-
-## Best Practices
-
-1. **Always provide a label**: Labels give context to the displayed value
-2. **Choose meaningful variants**: Use `success` for positive metrics, `error` for critical values, `warning` for attention-needed states
-3. **Set appropriate ranges**: Use `min` and `max` to match your data range rather than displaying raw percentages
-4. **Keep gauges at reasonable sizes**: Use the `size` property or a wrapping container for consistent layout
-5. **Use thickness wisely**: Thinner strokes (4-6) for subtle displays, thicker (10-14) for emphasis
-6. **Group related gauges**: Place gauges in a flex/grid container for dashboard layouts
-7. **Consider color blindness**: Don't rely solely on color to convey meaning; include labels
-8. **Avoid too many gauges**: More than 6-8 gauges on screen becomes hard to parse
-9. **Use dynamic updates**: The gauge animates smoothly when value changes, making it good for live data
-10. **Test at different sizes**: Ensure labels remain readable at smaller sizes
 
 ## Variant Colors
 

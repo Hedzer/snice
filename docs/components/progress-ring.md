@@ -5,16 +5,6 @@
 
 A determinate circular progress indicator that displays progress as an animated SVG ring fill with optional center text.
 
-## Basic Usage
-
-```typescript
-import 'snice/components/progress-ring/snice-progress-ring';
-```
-
-```html
-<snice-progress-ring value="75" show-value></snice-progress-ring>
-```
-
 ## Importing
 
 **ESM (bundler)**
@@ -26,6 +16,45 @@ import 'snice/components/progress-ring/snice-progress-ring';
 ```html
 <script src="snice-runtime.min.js"></script>
 <script src="snice-progress-ring.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `value` | `number` | `0` | Current progress value (0 to max) |
+| `max` | `number` | `100` | Maximum value |
+| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Ring size |
+| `thickness` | `number` | `4` | Ring stroke width |
+| `color` | `string` | `''` | Custom ring color (any CSS color value) |
+| `showValue` (attr: `show-value`) | `boolean` | `false` | Show percentage in center |
+| `label` | `string` | `''` | Custom center text |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `progress-complete` | `{ value: number, max: number, component: SniceProgressRingElement }` | Fired when value reaches max |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `base` | Outer container with `role="progressbar"` |
+| `track` | Background circle |
+| `fill` | Progress circle |
+| `center` | Center text container |
+| `value` | Percentage text |
+| `label` | Label text |
+
+## Basic Usage
+
+```typescript
+import 'snice/components/progress-ring/snice-progress-ring';
+```
+
+```html
+<snice-progress-ring value="75" show-value></snice-progress-ring>
 ```
 
 ## Examples
@@ -96,32 +125,3 @@ Listen to the `progress-complete` event to react when progress reaches the maxim
   });
 </script>
 ```
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `value` | `number` | `0` | Current progress value (0 to max) |
-| `max` | `number` | `100` | Maximum value |
-| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Ring size |
-| `thickness` | `number` | `4` | Ring stroke width |
-| `color` | `string` | `''` | Custom ring color (any CSS color value) |
-| `showValue` (attr: `show-value`) | `boolean` | `false` | Show percentage in center |
-| `label` | `string` | `''` | Custom center text |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `progress-complete` | `{ value: number, max: number, component: SniceProgressRingElement }` | Fired when value reaches max |
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `base` | Outer container with `role="progressbar"` |
-| `track` | Background circle |
-| `fill` | Progress circle |
-| `center` | Center text container |
-| `value` | Percentage text |
-| `label` | Label text |

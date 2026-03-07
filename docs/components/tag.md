@@ -5,16 +5,6 @@
 
 A display-only tag/token for labeling and categorization. Unlike the chip component, tags are simpler with no selection state and are primarily used for status labels, categories, and metadata.
 
-## Basic Usage
-
-```typescript
-import 'snice/components/tag/snice-tag';
-```
-
-```html
-<snice-tag>Label</snice-tag>
-```
-
 ## Importing
 
 **ESM (bundler)**
@@ -38,6 +28,12 @@ import 'snice/components/tag/snice-tag';
 | `outline` | `boolean` | `false` | Use outlined style |
 | `pill` | `boolean` | `false` | Fully rounded corners |
 
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `tag-remove` | `{ tag: SniceTagElement }` | Fired when remove button is clicked |
+
 ## Slots
 
 | Name | Description |
@@ -45,11 +41,30 @@ import 'snice/components/tag/snice-tag';
 | (default) | Tag label content |
 | `icon` | Leading icon content |
 
-## Events
+## CSS Parts
 
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `tag-remove` | `{ tag: SniceTagElement }` | Fired when remove button is clicked |
+| Part | Description |
+|------|-------------|
+| `base` | The tag container span |
+| `icon` | The icon slot wrapper |
+| `label` | The label slot wrapper |
+
+```css
+snice-tag::part(base) {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+```
+
+## Basic Usage
+
+```typescript
+import 'snice/components/tag/snice-tag';
+```
+
+```html
+<snice-tag>Label</snice-tag>
+```
 
 ## Examples
 
@@ -145,21 +160,6 @@ Use the `icon` slot to add a leading icon.
 <snice-tag pill variant="primary" size="small">Technology</snice-tag>
 <snice-tag pill variant="success" size="small">Science</snice-tag>
 <snice-tag pill variant="info" size="small">Design</snice-tag>
-```
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `base` | The tag container span |
-| `icon` | The icon slot wrapper |
-| `label` | The label slot wrapper |
-
-```css
-snice-tag::part(base) {
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
 ```
 
 ## Accessibility

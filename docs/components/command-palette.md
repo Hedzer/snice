@@ -4,6 +4,38 @@
 
 A searchable command palette overlay (⌘K) for quick access to application commands and actions.
 
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `open` | `boolean` | `false` | Palette visibility |
+| `commands` | `CommandItem[]` | `[]` | Array of commands |
+| `placeholder` | `string` | `'Type a command or search...'` | Search input placeholder |
+| `noResultsText` | `string` | `'No results found'` | Empty state text |
+| `maxResults` | `number` | `50` | Maximum results to display |
+| `showRecentCommands` | `boolean` | `true` | Show recent commands when search is empty |
+| `recentCommandsLimit` | `number` | `5` | Number of recent commands to track |
+| `caseSensitive` | `boolean` | `false` | Case-sensitive search |
+
+## Methods
+
+- `show()` - Open the palette
+- `close()` - Close the palette
+- `toggle()` - Toggle palette visibility
+- `addCommand(command: CommandItem)` - Add a command
+- `removeCommand(id: string)` - Remove a command
+- `executeCommand(id: string)` - Execute command by ID
+- `clearSearch()` - Clear search input
+- `focus()` - Focus search input
+
+## Events
+
+- `command-palette-open` - Fired when palette opens
+- `command-palette-close` - Fired when palette closes
+- `command-select` - Fired when command is selected (detail: { command, palette })
+- `command-execute` - Fired when command is executed (detail: { command, palette })
+- `command-search` - Fired when search changes (detail: { query, results, palette })
+
 ## Basic Usage
 
 ```html
@@ -35,62 +67,6 @@ A searchable command palette overlay (⌘K) for quick access to application comm
   // Opens automatically with ⌘K or Ctrl+K
 </script>
 ```
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `open` | `boolean` | `false` | Palette visibility |
-| `commands` | `CommandItem[]` | `[]` | Array of commands |
-| `placeholder` | `string` | `'Type a command or search...'` | Search input placeholder |
-| `noResultsText` | `string` | `'No results found'` | Empty state text |
-| `maxResults` | `number` | `50` | Maximum results to display |
-| `showRecentCommands` | `boolean` | `true` | Show recent commands when search is empty |
-| `recentCommandsLimit` | `number` | `5` | Number of recent commands to track |
-| `caseSensitive` | `boolean` | `false` | Case-sensitive search |
-
-## CommandItem Interface
-
-```typescript
-interface CommandItem {
-  id: string;              // Unique identifier
-  label: string;           // Command name
-  description?: string;    // Command description
-  icon?: string;           // Text/emoji icon
-  iconImage?: string;      // Icon image URL
-  shortcut?: string;       // Keyboard shortcut display
-  category?: string;       // Command category for grouping
-  disabled?: boolean;      // Disable command
-  action?: () => void | Promise<void>;  // Command action
-  data?: any;             // Custom data
-}
-```
-
-## Methods
-
-- `show()` - Open the palette
-- `close()` - Close the palette
-- `toggle()` - Toggle palette visibility
-- `addCommand(command: CommandItem)` - Add a command
-- `removeCommand(id: string)` - Remove a command
-- `executeCommand(id: string)` - Execute command by ID
-- `clearSearch()` - Clear search input
-- `focus()` - Focus search input
-
-## Events
-
-- `command-palette-open` - Fired when palette opens
-- `command-palette-close` - Fired when palette closes
-- `command-select` - Fired when command is selected (detail: { command, palette })
-- `command-execute` - Fired when command is executed (detail: { command, palette })
-- `command-search` - Fired when search changes (detail: { query, results, palette })
-
-## Keyboard Shortcuts
-
-- `⌘K` or `Ctrl+K` - Toggle palette
-- `Escape` - Close palette
-- `↑` / `↓` - Navigate commands
-- `Enter` - Execute active command
 
 ## Examples
 
@@ -148,6 +124,30 @@ palette.addEventListener('command-execute', (e) => {
   analytics.track('command_executed', { command: e.detail.command.id });
 });
 ```
+
+## CommandItem Interface
+
+```typescript
+interface CommandItem {
+  id: string;              // Unique identifier
+  label: string;           // Command name
+  description?: string;    // Command description
+  icon?: string;           // Text/emoji icon
+  iconImage?: string;      // Icon image URL
+  shortcut?: string;       // Keyboard shortcut display
+  category?: string;       // Command category for grouping
+  disabled?: boolean;      // Disable command
+  action?: () => void | Promise<void>;  // Command action
+  data?: any;             // Custom data
+}
+```
+
+## Keyboard Shortcuts
+
+- `⌘K` or `Ctrl+K` - Toggle palette
+- `Escape` - Close palette
+- `↑` / `↓` - Navigate commands
+- `Enter` - Execute active command
 
 ## Accessibility
 

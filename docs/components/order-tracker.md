@@ -5,22 +5,13 @@
 The order tracker component displays an order status timeline with step indicators, tracking information, timestamps, and descriptions. Supports horizontal and vertical layouts.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
+- [Importing](#importing)
 - [Properties](#properties)
 - [Events](#events)
 - [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
-
-## Basic Usage
-
-```html
-<snice-order-tracker></snice-order-tracker>
-```
-
-```typescript
-import 'snice/components/order-tracker/snice-order-tracker';
-```
 
 ## Importing
 
@@ -79,6 +70,16 @@ Fired when a step is clicked.
 | `step` | Individual step |
 | `step-indicator` | Step circle indicator |
 | `step-content` | Step label and details |
+
+## Basic Usage
+
+```html
+<snice-order-tracker></snice-order-tracker>
+```
+
+```typescript
+import 'snice/components/order-tracker/snice-order-tracker';
+```
 
 ## Examples
 
@@ -171,11 +172,3 @@ Use `variant="vertical"` for a top-to-bottom timeline, ideal for sidebars or det
 - **Keyboard navigation**: Each step is focusable and activatable with Enter or Space
 - **Visual indicators**: Completed steps show a checkmark, active steps are highlighted with a ring, pending steps show their number
 - **Status communication**: Step status is conveyed through color and iconography, not color alone
-
-## Best Practices
-
-1. **Use standard order steps**: Ordered > Confirmed > Shipped > Out for Delivery > Delivered
-2. **Include timestamps**: Show when each step occurred for transparency
-3. **Add descriptions for active steps**: Help users understand what's happening now
-4. **Show tracking info**: Display carrier and tracking number when available
-5. **Use vertical layout for detailed tracking**: When steps have descriptions, vertical gives more room

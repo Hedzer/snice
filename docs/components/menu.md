@@ -5,6 +5,72 @@
 
 A dropdown menu with composable items, dividers, icons, and keyboard shortcut hints.
 
+## Importing
+
+**ESM (bundler)**
+```typescript
+import 'snice/components/menu/snice-menu';
+import 'snice/components/menu/snice-menu-item';
+import 'snice/components/menu/snice-menu-divider';
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-menu.min.js"></script>
+```
+
+## Menu Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `open` | `boolean` | `false` | Whether the menu is open |
+| `placement` | `'bottom-start' \| 'bottom-end' \| 'top-start' \| 'top-end' \| 'right-start' \| 'right-end' \| 'left-start' \| 'left-end'` | `'bottom-start'` | Panel placement |
+| `trigger` | `'click' \| 'hover' \| 'manual'` | `'click'` | Trigger mode |
+| `closeOnSelect` (attr: `close-on-select`) | `boolean` | `true` | Close on item selection |
+| `distance` | `number` | `4` | Distance from trigger to panel (px) |
+
+## Menu Item Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `value` | `string` | `''` | Item value |
+| `disabled` | `boolean` | `false` | Disable interaction |
+| `selected` | `boolean` | `false` | Selected state |
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `openMenu()` | -- | Open the menu |
+| `closeMenu()` | -- | Close the menu |
+| `toggleMenu()` | -- | Toggle the menu |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `menu-open` | `{ menu: SniceMenuElement }` | Menu opened |
+| `menu-close` | `{ menu: SniceMenuElement }` | Menu closed |
+| `menu-item-select` | `{ item: SniceMenuItemElement, value: string }` | Item selected |
+
+## Menu Slots
+
+| Name | Description |
+|------|-------------|
+| `trigger` | Element that triggers the menu (required) |
+| `image-left` | Image/icon before the trigger |
+| `image-right` | Image/icon after the trigger |
+| (default) | Menu items and dividers |
+
+## Menu Item Slots
+
+| Name | Description |
+|------|-------------|
+| `icon` | Icon before the item label |
+| (default) | Item label content |
+| `shortcut` | Keyboard shortcut hint |
+
 ## Basic Usage
 
 ```typescript
@@ -21,21 +87,6 @@ import 'snice/components/menu/snice-menu-divider';
   <snice-menu-divider></snice-menu-divider>
   <snice-menu-item value="save">Save</snice-menu-item>
 </snice-menu>
-```
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/menu/snice-menu';
-import 'snice/components/menu/snice-menu-item';
-import 'snice/components/menu/snice-menu-divider';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-menu.min.js"></script>
 ```
 
 ## Examples
@@ -173,54 +224,3 @@ menu.addEventListener('menu-item-select', (e) => {
 menu.addEventListener('menu-open', () => console.log('Opened'));
 menu.addEventListener('menu-close', () => console.log('Closed'));
 ```
-
-## Menu Slots
-
-| Name | Description |
-|------|-------------|
-| `trigger` | Element that triggers the menu (required) |
-| `image-left` | Image/icon before the trigger |
-| `image-right` | Image/icon after the trigger |
-| (default) | Menu items and dividers |
-
-## Menu Item Slots
-
-| Name | Description |
-|------|-------------|
-| `icon` | Icon before the item label |
-| (default) | Item label content |
-| `shortcut` | Keyboard shortcut hint |
-
-## Menu Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `open` | `boolean` | `false` | Whether the menu is open |
-| `placement` | `'bottom-start' \| 'bottom-end' \| 'top-start' \| 'top-end' \| 'right-start' \| 'right-end' \| 'left-start' \| 'left-end'` | `'bottom-start'` | Panel placement |
-| `trigger` | `'click' \| 'hover' \| 'manual'` | `'click'` | Trigger mode |
-| `closeOnSelect` (attr: `close-on-select`) | `boolean` | `true` | Close on item selection |
-| `distance` | `number` | `4` | Distance from trigger to panel (px) |
-
-## Menu Item Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `value` | `string` | `''` | Item value |
-| `disabled` | `boolean` | `false` | Disable interaction |
-| `selected` | `boolean` | `false` | Selected state |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `menu-open` | `{ menu: SniceMenuElement }` | Menu opened |
-| `menu-close` | `{ menu: SniceMenuElement }` | Menu closed |
-| `menu-item-select` | `{ item: SniceMenuItemElement, value: string }` | Item selected |
-
-## Methods
-
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `openMenu()` | -- | Open the menu |
-| `closeMenu()` | -- | Close the menu |
-| `toggleMenu()` | -- | Toggle the menu |

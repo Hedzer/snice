@@ -4,16 +4,6 @@
 
 The `<snice-empty-state>` component provides a consistent way to display empty or no-data states.
 
-## Basic Usage
-
-```html
-<snice-empty-state
-  icon="📭"
-  title="No data"
-  description="There's nothing here yet"
-></snice-empty-state>
-```
-
 ## Properties
 
 | Property | Type | Default | Description |
@@ -24,6 +14,11 @@ The `<snice-empty-state>` component provides a consistent way to display empty o
 | `description` | `string` | `''` | Description text |
 | `actionText` | `string` | `''` | Action button text |
 | `actionHref` | `string` | `''` | Action link URL |
+
+## Events
+
+### `empty-state-action`
+Fired when action button/link is clicked.
 
 ## Slots
 
@@ -47,10 +42,15 @@ Use the `icon` slot for external CSS-based icon fonts:
 </snice-empty-state>
 ```
 
-## Events
+## Basic Usage
 
-### `empty-state-action`
-Fired when action button/link is clicked.
+```html
+<snice-empty-state
+  icon="📭"
+  title="No data"
+  description="There's nothing here yet"
+></snice-empty-state>
+```
 
 ## Examples
 

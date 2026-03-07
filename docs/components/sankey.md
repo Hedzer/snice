@@ -5,6 +5,61 @@
 
 An SVG-based Sankey diagram for visualizing flow between categories.
 
+## Importing
+
+**ESM (bundler)**
+```typescript
+import 'snice/components/sankey/snice-sankey';
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-sankey.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `data` | `SankeyData` | `{ nodes: [], links: [] }` | Nodes and links data (set via JS) |
+| `nodeWidth` (attr: `node-width`) | `number` | `20` | Width of node rectangles |
+| `nodePadding` (attr: `node-padding`) | `number` | `10` | Vertical padding between nodes |
+| `alignment` | `'left' \| 'right' \| 'center' \| 'justify'` | `'justify'` | Leaf node alignment |
+| `showLabels` (attr: `show-labels`) | `boolean` | `true` | Show node labels |
+| `showValues` (attr: `show-values`) | `boolean` | `true` | Show node values |
+| `animation` | `boolean` | `false` | Animate on initial render |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `sankey-node-click` | `{ node: SankeyNode }` | Node clicked |
+| `sankey-link-click` | `{ link: SankeyLink }` | Link clicked |
+| `sankey-hover` | `{ type: 'node' \| 'link', item } \| null` | Hover state changed |
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The outer Sankey container |
+| `chart` | `<div>` | The SVG chart area |
+| `tooltip` | `<div>` | The hover tooltip showing node/link details |
+
+```css
+snice-sankey::part(base) {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+snice-sankey::part(tooltip) {
+  font-size: 0.875rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+```
+
 ## Basic Usage
 
 ```typescript
@@ -25,19 +80,6 @@ import 'snice/components/sankey/snice-sankey';
     ]
   };
 </script>
-```
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/sankey/snice-sankey';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-sankey.min.js"></script>
 ```
 
 ## Examples
@@ -154,47 +196,5 @@ interface SankeyLink {
   target: string;    // Target node id
   value: number;     // Flow value (determines width)
   color?: string;    // Defaults to source color
-}
-```
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `data` | `SankeyData` | `{ nodes: [], links: [] }` | Nodes and links data (set via JS) |
-| `nodeWidth` (attr: `node-width`) | `number` | `20` | Width of node rectangles |
-| `nodePadding` (attr: `node-padding`) | `number` | `10` | Vertical padding between nodes |
-| `alignment` | `'left' \| 'right' \| 'center' \| 'justify'` | `'justify'` | Leaf node alignment |
-| `showLabels` (attr: `show-labels`) | `boolean` | `true` | Show node labels |
-| `showValues` (attr: `show-values`) | `boolean` | `true` | Show node values |
-| `animation` | `boolean` | `false` | Animate on initial render |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `sankey-node-click` | `{ node: SankeyNode }` | Node clicked |
-| `sankey-link-click` | `{ link: SankeyLink }` | Link clicked |
-| `sankey-hover` | `{ type: 'node' \| 'link', item } \| null` | Hover state changed |
-
-## CSS Parts
-
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | The outer Sankey container |
-| `chart` | `<div>` | The SVG chart area |
-| `tooltip` | `<div>` | The hover tooltip showing node/link details |
-
-```css
-snice-sankey::part(base) {
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-}
-
-snice-sankey::part(tooltip) {
-  font-size: 0.875rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 ```

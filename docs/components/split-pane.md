@@ -5,19 +5,6 @@
 
 A resizable split pane layout with horizontal or vertical orientation.
 
-## Basic Usage
-
-```typescript
-import 'snice/components/split-pane/snice-split-pane';
-```
-
-```html
-<snice-split-pane style="height: 400px;">
-  <div slot="primary">Left pane content</div>
-  <div slot="secondary">Right pane content</div>
-</snice-split-pane>
-```
-
 ## Importing
 
 **ESM (bundler)**
@@ -29,6 +16,74 @@ import 'snice/components/split-pane/snice-split-pane';
 ```html
 <script src="snice-runtime.min.js"></script>
 <script src="snice-split-pane.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | Split direction |
+| `primarySize` (attr: `primary-size`) | `number` | `50` | Primary pane size (%) |
+| `minPrimarySize` (attr: `min-primary-size`) | `number` | `10` | Min primary size (%) |
+| `minSecondarySize` (attr: `min-secondary-size`) | `number` | `10` | Min secondary size (%) |
+| `snapSize` (attr: `snap-size`) | `number` | `0` | Snap interval (%, 0 = none) |
+| `disabled` | `boolean` | `false` | Disable resizing |
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `getPrimarySize()` | -- | Get primary pane size (%), returns `number` |
+| `getSecondarySize()` | -- | Get secondary pane size (%), returns `number` |
+| `setPrimarySize()` | `size: number` | Set primary pane size (respects min sizes) |
+| `reset()` | -- | Reset to 50/50 split |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `pane-resize` | `{ primarySize: number, secondarySize: number, splitPane: SniceResizeElement }` | Fired when pane is resized |
+
+## Slots
+
+| Name | Description |
+|------|-------------|
+| `primary` | Primary pane content (left or top) |
+| `secondary` | Secondary pane content (right or bottom) |
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `primary` | `<div>` | The primary pane container |
+| `divider` | `<div>` | The draggable divider bar |
+| `handle` | `<div>` | The visual handle inside the divider |
+| `secondary` | `<div>` | The secondary pane container |
+
+```css
+snice-split-pane::part(divider) {
+  background: #e2e8f0;
+}
+
+snice-split-pane::part(handle) {
+  background: #94a3b8;
+  border-radius: 4px;
+}
+```
+
+## Basic Usage
+
+```typescript
+import 'snice/components/split-pane/snice-split-pane';
+```
+
+```html
+<snice-split-pane style="height: 400px;">
+  <div slot="primary">Left pane content</div>
+  <div slot="secondary">Right pane content</div>
+</snice-split-pane>
 ```
 
 ## Examples
@@ -116,58 +171,3 @@ Set the `disabled` attribute to prevent resizing.
   split.reset();              // Reset to 50/50
 </script>
 ```
-
-## Slots
-
-| Name | Description |
-|------|-------------|
-| `primary` | Primary pane content (left or top) |
-| `secondary` | Secondary pane content (right or bottom) |
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | Split direction |
-| `primarySize` (attr: `primary-size`) | `number` | `50` | Primary pane size (%) |
-| `minPrimarySize` (attr: `min-primary-size`) | `number` | `10` | Min primary size (%) |
-| `minSecondarySize` (attr: `min-secondary-size`) | `number` | `10` | Min secondary size (%) |
-| `snapSize` (attr: `snap-size`) | `number` | `0` | Snap interval (%, 0 = none) |
-| `disabled` | `boolean` | `false` | Disable resizing |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `pane-resize` | `{ primarySize: number, secondarySize: number, splitPane: SniceResizeElement }` | Fired when pane is resized |
-
-## CSS Parts
-
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `primary` | `<div>` | The primary pane container |
-| `divider` | `<div>` | The draggable divider bar |
-| `handle` | `<div>` | The visual handle inside the divider |
-| `secondary` | `<div>` | The secondary pane container |
-
-```css
-snice-split-pane::part(divider) {
-  background: #e2e8f0;
-}
-
-snice-split-pane::part(handle) {
-  background: #94a3b8;
-  border-radius: 4px;
-}
-```
-
-## Methods
-
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `getPrimarySize()` | -- | Get primary pane size (%), returns `number` |
-| `getSecondarySize()` | -- | Get secondary pane size (%), returns `number` |
-| `setPrimarySize()` | `size: number` | Set primary pane size (respects min sizes) |
-| `reset()` | -- | Reset to 50/50 split |

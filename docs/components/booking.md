@@ -5,31 +5,6 @@
 
 A multi-step appointment booking widget with date selection, time slot picking, and confirmation form.
 
-## Basic Usage
-
-```html
-<snice-booking></snice-booking>
-```
-
-```javascript
-const booking = document.querySelector('snice-booking');
-
-booking.availableDates = ['2025-06-15', '2025-06-16', '2025-06-17'];
-booking.availableSlots = [
-  { date: '2025-06-15', time: '09:00', duration: 30 },
-  { date: '2025-06-15', time: '10:00', duration: 30 },
-  { date: '2025-06-16', time: '14:00', duration: 60 },
-];
-booking.fields = [
-  { name: 'name', label: 'Full Name', type: 'text', required: true },
-  { name: 'email', label: 'Email', type: 'email', required: true },
-];
-
-booking.addEventListener('booking-confirm', (e) => {
-  console.log('Booking:', e.detail.booking);
-});
-```
-
 ## Importing
 
 **ESM (bundler)**
@@ -54,40 +29,6 @@ import 'snice/components/booking/snice-booking';
 | `maxDate` | `max-date` | `Date \| string` | `''` | Latest selectable date |
 | `fields` | — | `BookingField[]` | `[]` | Form fields for step 3 |
 | `variant` | `variant` | `'stepper' \| 'inline'` | `'stepper'` | Layout mode |
-
-## Interfaces
-
-### BookingSlot
-
-```typescript
-interface BookingSlot {
-  date: string;     // "YYYY-MM-DD"
-  time: string;     // "HH:MM" (24h format)
-  duration: number;  // Minutes
-}
-```
-
-### BookingField
-
-```typescript
-interface BookingField {
-  name: string;
-  label: string;
-  type: 'text' | 'email' | 'tel' | 'textarea';
-  required?: boolean;
-  placeholder?: string;
-}
-```
-
-### BookingData
-
-```typescript
-interface BookingData {
-  date: string;
-  slot: BookingSlot;
-  fields: Record<string, string>;
-}
-```
 
 ## Methods
 
@@ -174,6 +115,31 @@ snice-booking::part(base) {
 }
 ```
 
+## Basic Usage
+
+```html
+<snice-booking></snice-booking>
+```
+
+```javascript
+const booking = document.querySelector('snice-booking');
+
+booking.availableDates = ['2025-06-15', '2025-06-16', '2025-06-17'];
+booking.availableSlots = [
+  { date: '2025-06-15', time: '09:00', duration: 30 },
+  { date: '2025-06-15', time: '10:00', duration: 30 },
+  { date: '2025-06-16', time: '14:00', duration: 60 },
+];
+booking.fields = [
+  { name: 'name', label: 'Full Name', type: 'text', required: true },
+  { name: 'email', label: 'Email', type: 'email', required: true },
+];
+
+booking.addEventListener('booking-confirm', (e) => {
+  console.log('Booking:', e.detail.booking);
+});
+```
+
 ## Examples
 
 ### Stepper Variant (Default)
@@ -243,6 +209,40 @@ booking.addEventListener('booking-confirm', async (e) => {
 booking.addEventListener('booking-cancel', () => {
   booking.reset();
 });
+```
+
+## Interfaces
+
+### BookingSlot
+
+```typescript
+interface BookingSlot {
+  date: string;     // "YYYY-MM-DD"
+  time: string;     // "HH:MM" (24h format)
+  duration: number;  // Minutes
+}
+```
+
+### BookingField
+
+```typescript
+interface BookingField {
+  name: string;
+  label: string;
+  type: 'text' | 'email' | 'tel' | 'textarea';
+  required?: boolean;
+  placeholder?: string;
+}
+```
+
+### BookingData
+
+```typescript
+interface BookingData {
+  date: string;
+  slot: BookingSlot;
+  fields: Record<string, string>;
+}
 ```
 
 ## Accessibility

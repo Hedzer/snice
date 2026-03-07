@@ -3,6 +3,154 @@
 
 A professional estimate/quote component with optional line items, accept/decline actions, expiry dates, and automatic calculations. Supports comparison mode for presenting multiple options.
 
+## Importing
+
+**ESM (bundler)**
+```typescript
+import 'snice/components/estimate/snice-estimate';
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-estimate.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `estimateNumber` | `string` | `''` | Estimate identifier |
+| `date` | `string` | `''` | Estimate date |
+| `expiryDate` | `string` | `''` | Expiration/valid until date |
+| `status` | `'draft' \| 'sent' \| 'accepted' \| 'declined' \| 'expired'` | `'draft'` | Estimate status |
+| `from` | `EstimateParty \| null` | `null` | Sender/business info |
+| `to` | `EstimateParty \| null` | `null` | Recipient/client info |
+| `items` | `EstimateItem[]` | `[]` | Line items |
+| `currency` | `string` | `'$'` | Currency symbol |
+| `taxRate` | `number` | `0` | Tax rate percentage |
+| `discount` | `number` | `0` | Discount percentage |
+| `notes` | `string` | `''` | Additional notes |
+| `terms` | `string` | `''` | Terms and conditions |
+| `variant` | `'standard' \| 'comparison' \| 'professional' \| 'creative' \| 'minimal'` | `'standard'` | Visual style variant |
+| `showQr` | `boolean` | `false` | Show QR code placeholder |
+| `qrData` | `string` | `''` | QR code data |
+| `qrPosition` | `'top-right' \| 'bottom-right' \| 'footer'` | `'top-right'` | QR code placement |
+
+### EstimateParty Interface
+
+```typescript
+interface EstimateParty {
+  name: string;
+  address?: string;
+  phone?: string;
+  email?: string;
+}
+```
+
+### EstimateItem Interface
+
+```typescript
+interface EstimateItem {
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  optional?: boolean;
+  included?: boolean;
+}
+```
+
+## Methods
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `print()` | `void` | Print the estimate |
+| `toJSON()` | `EstimateJSON` | Export all data including calculated totals |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `estimate-accept` | `{ estimateNumber, items, total }` | Fired when accept button is clicked |
+| `estimate-decline` | `{ estimateNumber }` | Fired when decline button is clicked |
+| `item-toggle` | `{ index, item, included }` | Fired when an optional item is toggled |
+
+## Slots
+
+| Slot Name | Description |
+|-----------|-------------|
+| `logo` | Company logo image |
+| `qr` | QR code content |
+| `footer` | Additional footer content |
+| (default) | Default slot for extra content |
+
+## CSS Custom Properties
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `--estimate-max-width` | `50rem` | Maximum width |
+| `--estimate-bg` | `white` | Background color |
+| `--estimate-bg-element` | `rgb(252 251 249)` | Element background |
+| `--estimate-border` | `rgb(226 226 226)` | Border color |
+| `--estimate-text` | `rgb(23 23 23)` | Text color |
+| `--estimate-text-secondary` | `rgb(82 82 82)` | Secondary text |
+| `--estimate-accent` | `rgb(37 99 235)` | Accent color |
+| `--estimate-header-padding` | `1.5rem` | Header padding |
+| `--estimate-section-padding` | `1rem 1.5rem` | Section padding |
+| `--estimate-radius` | `0.5rem` | Border radius |
+| `--estimate-title-size` | `1.5rem` | Title font size |
+| `--estimate-title-weight` | `700` | Title font weight |
+| `--estimate-accept-bg` | `rgb(22 163 74)` | Accept button background |
+| `--estimate-accept-text` | `white` | Accept button text |
+| `--estimate-decline-bg` | `transparent` | Decline button background |
+| `--estimate-decline-text` | `rgb(220 38 38)` | Decline button text |
+| `--estimate-decline-border` | `rgb(220 38 38)` | Decline button border |
+| `--estimate-total-bg` | `rgb(252 251 249)` | Total row background |
+| `--estimate-total-border` | `rgb(226 226 226)` | Total row border |
+| `--estimate-total-weight` | `700` | Total font weight |
+| `--estimate-qr-size` | `5rem` | QR code size |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `base` | Root container |
+| `header` | Header section |
+| `logo` | Logo slot container |
+| `title` | Estimate title |
+| `meta` | Date meta |
+| `status` | Status badge |
+| `expiry` | Expiry date container |
+| `expiry-date` | Expiry date value |
+| `qr-container` | QR code container |
+| `qr` | QR code element |
+| `parties` | From/To section |
+| `party` | Individual party |
+| `party-label` | Party label ("From", "To") |
+| `party-name` | Party name |
+| `party-detail` | Party details |
+| `table` | Items table |
+| `table-header` | Table header row |
+| `table-row` | Table body rows |
+| `table-cell` | Table cells |
+| `item-toggle` | Optional item toggle button |
+| `summary` | Totals section |
+| `subtotal` | Subtotal row |
+| `discount-row` | Discount row |
+| `tax-row` | Tax row |
+| `total` | Grand total row |
+| `notes` | Notes section |
+| `notes-label` | Notes heading |
+| `notes-content` | Notes text |
+| `terms` | Terms section |
+| `actions` | Action buttons container |
+| `accept-button` | Accept estimate button |
+| `decline-button` | Decline estimate button |
+| `comparison` | Comparison view container |
+| `option` | Comparison option card |
+| `option-button` | Select option button |
+| `footer` | Footer area |
+
 ## Basic Usage
 
 ```html
@@ -25,19 +173,6 @@ A professional estimate/quote component with optional line items, accept/decline
     { description: 'Social Media Kit', quantity: 1, unitPrice: 2000, optional: true }
   ];
 </script>
-```
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/estimate/snice-estimate';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-estimate.min.js"></script>
 ```
 
 ## Examples
@@ -249,138 +384,3 @@ import 'snice/components/estimate/snice-estimate';
   }
 </script>
 ```
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `estimateNumber` | `string` | `''` | Estimate identifier |
-| `date` | `string` | `''` | Estimate date |
-| `expiryDate` | `string` | `''` | Expiration/valid until date |
-| `status` | `'draft' \| 'sent' \| 'accepted' \| 'declined' \| 'expired'` | `'draft'` | Estimate status |
-| `from` | `EstimateParty \| null` | `null` | Sender/business info |
-| `to` | `EstimateParty \| null` | `null` | Recipient/client info |
-| `items` | `EstimateItem[]` | `[]` | Line items |
-| `currency` | `string` | `'$'` | Currency symbol |
-| `taxRate` | `number` | `0` | Tax rate percentage |
-| `discount` | `number` | `0` | Discount percentage |
-| `notes` | `string` | `''` | Additional notes |
-| `terms` | `string` | `''` | Terms and conditions |
-| `variant` | `'standard' \| 'comparison' \| 'professional' \| 'creative' \| 'minimal'` | `'standard'` | Visual style variant |
-| `showQr` | `boolean` | `false` | Show QR code placeholder |
-| `qrData` | `string` | `''` | QR code data |
-| `qrPosition` | `'top-right' \| 'bottom-right' \| 'footer'` | `'top-right'` | QR code placement |
-
-### EstimateParty Interface
-
-```typescript
-interface EstimateParty {
-  name: string;
-  address?: string;
-  phone?: string;
-  email?: string;
-}
-```
-
-### EstimateItem Interface
-
-```typescript
-interface EstimateItem {
-  description: string;
-  quantity: number;
-  unitPrice: number;
-  optional?: boolean;
-  included?: boolean;
-}
-```
-
-## Slots
-
-| Slot Name | Description |
-|-----------|-------------|
-| `logo` | Company logo image |
-| `qr` | QR code content |
-| `footer` | Additional footer content |
-| (default) | Default slot for extra content |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `estimate-accept` | `{ estimateNumber, items, total }` | Fired when accept button is clicked |
-| `estimate-decline` | `{ estimateNumber }` | Fired when decline button is clicked |
-| `item-toggle` | `{ index, item, included }` | Fired when an optional item is toggled |
-
-## Methods
-
-| Method | Returns | Description |
-|--------|---------|-------------|
-| `print()` | `void` | Print the estimate |
-| `toJSON()` | `EstimateJSON` | Export all data including calculated totals |
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `base` | Root container |
-| `header` | Header section |
-| `logo` | Logo slot container |
-| `title` | Estimate title |
-| `meta` | Date meta |
-| `status` | Status badge |
-| `expiry` | Expiry date container |
-| `expiry-date` | Expiry date value |
-| `qr-container` | QR code container |
-| `qr` | QR code element |
-| `parties` | From/To section |
-| `party` | Individual party |
-| `party-label` | Party label ("From", "To") |
-| `party-name` | Party name |
-| `party-detail` | Party details |
-| `table` | Items table |
-| `table-header` | Table header row |
-| `table-row` | Table body rows |
-| `table-cell` | Table cells |
-| `item-toggle` | Optional item toggle button |
-| `summary` | Totals section |
-| `subtotal` | Subtotal row |
-| `discount-row` | Discount row |
-| `tax-row` | Tax row |
-| `total` | Grand total row |
-| `notes` | Notes section |
-| `notes-label` | Notes heading |
-| `notes-content` | Notes text |
-| `terms` | Terms section |
-| `actions` | Action buttons container |
-| `accept-button` | Accept estimate button |
-| `decline-button` | Decline estimate button |
-| `comparison` | Comparison view container |
-| `option` | Comparison option card |
-| `option-button` | Select option button |
-| `footer` | Footer area |
-
-## CSS Custom Properties
-
-| Property | Default | Description |
-|----------|---------|-------------|
-| `--estimate-max-width` | `50rem` | Maximum width |
-| `--estimate-bg` | `white` | Background color |
-| `--estimate-bg-element` | `rgb(252 251 249)` | Element background |
-| `--estimate-border` | `rgb(226 226 226)` | Border color |
-| `--estimate-text` | `rgb(23 23 23)` | Text color |
-| `--estimate-text-secondary` | `rgb(82 82 82)` | Secondary text |
-| `--estimate-accent` | `rgb(37 99 235)` | Accent color |
-| `--estimate-header-padding` | `1.5rem` | Header padding |
-| `--estimate-section-padding` | `1rem 1.5rem` | Section padding |
-| `--estimate-radius` | `0.5rem` | Border radius |
-| `--estimate-title-size` | `1.5rem` | Title font size |
-| `--estimate-title-weight` | `700` | Title font weight |
-| `--estimate-accept-bg` | `rgb(22 163 74)` | Accept button background |
-| `--estimate-accept-text` | `white` | Accept button text |
-| `--estimate-decline-bg` | `transparent` | Decline button background |
-| `--estimate-decline-text` | `rgb(220 38 38)` | Decline button text |
-| `--estimate-decline-border` | `rgb(220 38 38)` | Decline button border |
-| `--estimate-total-bg` | `rgb(252 251 249)` | Total row background |
-| `--estimate-total-border` | `rgb(226 226 226)` | Total row border |
-| `--estimate-total-weight` | `700` | Total font weight |
-| `--estimate-qr-size` | `5rem` | QR code size |

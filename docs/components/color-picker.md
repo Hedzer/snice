@@ -4,16 +4,6 @@
 
 The `<snice-color-picker>` component provides a color selection interface with format conversion and preset colors.
 
-## Basic Usage
-
-```html
-<snice-color-picker
-  label="Brand Color"
-  value="#3b82f6"
-  show-presets
-></snice-color-picker>
-```
-
 ## Properties
 
 | Property | Type | Default | Description |
@@ -46,6 +36,16 @@ Blur the color picker.
 Fired when color changes.
 
 **Detail**: `{ value: string, colorPicker: SniceColorPickerElement }`
+
+## Basic Usage
+
+```html
+<snice-color-picker
+  label="Brand Color"
+  value="#3b82f6"
+  show-presets
+></snice-color-picker>
+```
 
 ## Examples
 

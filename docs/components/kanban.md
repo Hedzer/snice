@@ -4,27 +4,6 @@
 
 Drag-and-drop kanban board with columns and cards.
 
-## Basic Usage
-
-```javascript
-const kanban = document.querySelector('snice-kanban');
-
-kanban.columns = [
-  {
-    id: 'todo',
-    title: 'To Do',
-    cards: [
-      { id: 1, title: 'Task 1', description: 'Do something' }
-    ]
-  },
-  {
-    id: 'done',
-    title: 'Done',
-    cards: []
-  }
-];
-```
-
 ## Properties
 
 | Property | Type | Default | Description |
@@ -32,45 +11,6 @@ kanban.columns = [
 | `columns` | `KanbanColumn[]` | `[]` | Board columns |
 | `allowDragDrop` | `boolean` | `true` | Enable drag and drop |
 | `showCardCount` | `boolean` | `true` | Show card count per column |
-
-## KanbanColumn Interface
-
-```typescript
-interface KanbanColumn {
-  id: string | number;
-  title: string;
-  cards: KanbanCard[];
-  color?: string;
-  limit?: number;
-  collapsed?: boolean;
-}
-```
-
-## KanbanLabel Interface
-
-```typescript
-interface KanbanLabel {
-  text: string;
-  color?: string;            // Text color
-  background?: string;       // Background color
-  icon?: string;            // Emoji or text icon
-  iconPosition?: 'left' | 'right';  // Icon placement
-}
-```
-
-## KanbanCard Interface
-
-```typescript
-interface KanbanCard {
-  id: string | number;
-  title: string;
-  description?: string;
-  assignee?: string;
-  labels?: (string | KanbanLabel)[];  // String or full label object
-  color?: string;
-  data?: any;
-}
-```
 
 ## Methods
 
@@ -183,6 +123,48 @@ kanban.addEventListener('kanban-card-click', (e) => {
 ```
 
 **Detail:** `{ card: KanbanCard, kanban: SniceKanbanElement }`
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer kanban board container |
+| `column-header` | `<div>` | Column header with title and card count |
+| `column-cards` | `<div>` | Card list area within a column |
+
+```css
+snice-kanban::part(column-header) {
+  font-weight: 600;
+  padding: 0.75rem;
+}
+
+snice-kanban::part(column-cards) {
+  min-height: 100px;
+}
+```
+
+## Basic Usage
+
+```javascript
+const kanban = document.querySelector('snice-kanban');
+
+kanban.columns = [
+  {
+    id: 'todo',
+    title: 'To Do',
+    cards: [
+      { id: 1, title: 'Task 1', description: 'Do something' }
+    ]
+  },
+  {
+    id: 'done',
+    title: 'Done',
+    cards: []
+  }
+];
+```
 
 ## Examples
 
@@ -511,24 +493,42 @@ kanban.addEventListener('kanban-card-move', async (e) => {
 });
 ```
 
-## CSS Parts
+## KanbanColumn Interface
 
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | Outer kanban board container |
-| `column-header` | `<div>` | Column header with title and card count |
-| `column-cards` | `<div>` | Card list area within a column |
-
-```css
-snice-kanban::part(column-header) {
-  font-weight: 600;
-  padding: 0.75rem;
+```typescript
+interface KanbanColumn {
+  id: string | number;
+  title: string;
+  cards: KanbanCard[];
+  color?: string;
+  limit?: number;
+  collapsed?: boolean;
 }
+```
 
-snice-kanban::part(column-cards) {
-  min-height: 100px;
+## KanbanLabel Interface
+
+```typescript
+interface KanbanLabel {
+  text: string;
+  color?: string;            // Text color
+  background?: string;       // Background color
+  icon?: string;            // Emoji or text icon
+  iconPosition?: 'left' | 'right';  // Icon placement
+}
+```
+
+## KanbanCard Interface
+
+```typescript
+interface KanbanCard {
+  id: string | number;
+  title: string;
+  description?: string;
+  assignee?: string;
+  labels?: (string | KanbanLabel)[];  // String or full label object
+  color?: string;
+  data?: any;
 }
 ```
 

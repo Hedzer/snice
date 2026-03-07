@@ -7,23 +7,15 @@
 An interactive slippy map component using OpenStreetMap tiles. Supports markers with popups, drag panning, scroll zoom, and programmatic control over the viewport.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
+- [Importing](#importing)
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
-- [Types](#types)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
+- [Types](#types)
 - [Accessibility](#accessibility)
-
-## Basic Usage
-
-```typescript
-import 'snice/components/map/snice-map';
-```
-
-```html
-<snice-map zoom="13"></snice-map>
-```
 
 ## Importing
 
@@ -68,28 +60,36 @@ import 'snice/components/map/snice-map';
 | `map-move` | `{ center: MapCenter; zoom: number }` | Fired after a drag pan operation completes |
 | `map-zoom` | `{ zoom: number }` | Fired when the zoom level changes |
 
-## Types
+## CSS Parts
 
-### MapCenter
+Style internal elements from outside the shadow DOM using `::part()`.
 
-```typescript
-interface MapCenter {
-  lat: number;
-  lng: number;
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The outer map container |
+| `tiles` | `<div>` | The tile layer container |
+| `markers` | `<div>` | The markers layer container |
+| `controls` | `<div>` | The zoom controls container |
+
+```css
+snice-map::part(base) {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+snice-map::part(controls) {
+  opacity: 0.8;
 }
 ```
 
-### MapMarker
+## Basic Usage
 
 ```typescript
-interface MapMarker {
-  id: string;       // Unique identifier
-  lat: number;      // Latitude
-  lng: number;      // Longitude
-  label?: string;   // Marker label text
-  icon?: string;    // Custom icon URL
-  popup?: string;   // Popup text shown on marker click
-}
+import 'snice/components/map/snice-map';
+```
+
+```html
+<snice-map zoom="13"></snice-map>
 ```
 
 ## Examples
@@ -194,25 +194,27 @@ Use the `tile-url` attribute to load tiles from a different provider.
 ></snice-map>
 ```
 
-## CSS Parts
+## Types
 
-Style internal elements from outside the shadow DOM using `::part()`.
+### MapCenter
 
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | The outer map container |
-| `tiles` | `<div>` | The tile layer container |
-| `markers` | `<div>` | The markers layer container |
-| `controls` | `<div>` | The zoom controls container |
-
-```css
-snice-map::part(base) {
-  border-radius: 8px;
-  overflow: hidden;
+```typescript
+interface MapCenter {
+  lat: number;
+  lng: number;
 }
+```
 
-snice-map::part(controls) {
-  opacity: 0.8;
+### MapMarker
+
+```typescript
+interface MapMarker {
+  id: string;       // Unique identifier
+  lat: number;      // Latitude
+  lng: number;      // Longitude
+  label?: string;   // Marker label text
+  icon?: string;    // Custom icon URL
+  popup?: string;   // Popup text shown on marker click
 }
 ```
 

@@ -5,23 +5,14 @@
 The spotlight component provides a guided tour and onboarding experience by highlighting elements on the page with a cutout overlay and step-by-step popover instructions. It supports step navigation, customizable positioning, and smooth transitions between steps.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
 - [CSS Custom Properties](#css-custom-properties)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
-
-## Basic Usage
-
-```html
-<snice-spotlight></snice-spotlight>
-```
-
-```typescript
-import 'snice/components/spotlight/snice-spotlight';
-```
+- [Browser Support](#browser-support)
 
 ## Properties
 
@@ -121,6 +112,16 @@ Fired when the user skips the tour.
 | `--snice-color-primary` | Primary button color | `rgb(37 99 235)` |
 | `--snice-shadow-lg` | Popover box shadow | _(theme default)_ |
 | `--snice-border-radius-lg` | Popover border radius | `0.5rem` |
+
+## Basic Usage
+
+```html
+<snice-spotlight></snice-spotlight>
+```
+
+```typescript
+import 'snice/components/spotlight/snice-spotlight';
+```
 
 ## Examples
 
@@ -229,12 +230,3 @@ Control the tour programmatically using methods, useful for custom navigation UI
 
 - Modern browsers (Chrome, Firefox, Safari, Edge)
 - Requires Custom Elements v1 and Shadow DOM support
-
-## Best Practices
-
-1. **Keep tours short**: Limit to 3-5 steps to avoid user fatigue
-2. **Write clear descriptions**: Each step should explain what the user can do, not just what the element is
-3. **Target visible elements**: Ensure target elements are visible and in the viewport before starting the tour
-4. **Persist completion state**: Use `localStorage` or a backend flag to avoid showing the tour to returning users
-5. **Provide a skip option**: Always let users skip the tour if they prefer
-6. **Use appropriate positions**: Choose positions that don't obscure important UI elements

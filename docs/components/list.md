@@ -5,6 +5,59 @@
 
 A list container with search, infinite scroll, loading states, and composable list items.
 
+## Importing
+
+**ESM (bundler)**
+```typescript
+import 'snice/components/list/snice-list';
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-list.min.js"></script>
+```
+
+## List Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `dividers` | `boolean` | `false` | Shows separator lines between items |
+| `searchable` | `boolean` | `false` | Shows a search input |
+| `search` | `string` | `''` | Current search query value |
+| `infinite` | `boolean` | `false` | Enables infinite scroll loading |
+| `loading` | `boolean` | `false` | Shows loading skeletons |
+| `noResults` (attr: `no-results`) | `boolean` | `false` | Shows empty state |
+| `threshold` | `number` | `0.5` | Intersection threshold for infinite scroll |
+| `skeletonCount` (attr: `skeleton-count`) | `number` | `5` | Number of skeleton placeholders |
+
+## List Item Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `heading` | `string` | `''` | Item heading text |
+| `description` | `string` | `''` | Item description text |
+| `selected` | `boolean` | `false` | Highlights the item |
+| `disabled` | `boolean` | `false` | Disables interaction |
+
+## List Slots
+
+| Name | Description |
+|------|-------------|
+| (default) | List item elements |
+| `before` | Content before the list items |
+| `after` | Content after the list items |
+| `no-results` | Custom empty state (overrides default) |
+| `loading` | Custom loading content (overrides skeleton) |
+
+## List Item Slots
+
+| Name | Description |
+|------|-------------|
+| (default) | Custom item content |
+| `before` | Content before the item (e.g., icon) |
+| `after` | Content after the item (e.g., badge) |
+
 ## Basic Usage
 
 ```typescript
@@ -17,19 +70,6 @@ import 'snice/components/list/snice-list';
   <snice-list-item heading="Drafts" description="2 drafts"></snice-list-item>
   <snice-list-item heading="Sent" description="Last sent 2 hours ago"></snice-list-item>
 </snice-list>
-```
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/list/snice-list';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-list.min.js"></script>
 ```
 
 ## Examples
@@ -112,46 +152,6 @@ Set the `no-results` attribute to show an empty state message.
   <snice-list-item heading="Enterprise" disabled></snice-list-item>
 </snice-list>
 ```
-
-## List Slots
-
-| Name | Description |
-|------|-------------|
-| (default) | List item elements |
-| `before` | Content before the list items |
-| `after` | Content after the list items |
-| `no-results` | Custom empty state (overrides default) |
-| `loading` | Custom loading content (overrides skeleton) |
-
-## List Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `dividers` | `boolean` | `false` | Shows separator lines between items |
-| `searchable` | `boolean` | `false` | Shows a search input |
-| `search` | `string` | `''` | Current search query value |
-| `infinite` | `boolean` | `false` | Enables infinite scroll loading |
-| `loading` | `boolean` | `false` | Shows loading skeletons |
-| `noResults` (attr: `no-results`) | `boolean` | `false` | Shows empty state |
-| `threshold` | `number` | `0.5` | Intersection threshold for infinite scroll |
-| `skeletonCount` (attr: `skeleton-count`) | `number` | `5` | Number of skeleton placeholders |
-
-## List Item Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `heading` | `string` | `''` | Item heading text |
-| `description` | `string` | `''` | Item description text |
-| `selected` | `boolean` | `false` | Highlights the item |
-| `disabled` | `boolean` | `false` | Disables interaction |
-
-## List Item Slots
-
-| Name | Description |
-|------|-------------|
-| (default) | Custom item content |
-| `before` | Content before the item (e.g., icon) |
-| `after` | Content after the item (e.g., badge) |
 
 ## Requests
 

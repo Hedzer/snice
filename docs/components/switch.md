@@ -5,16 +5,6 @@
 
 A toggle switch input for boolean selections.
 
-## Basic Usage
-
-```typescript
-import 'snice/components/switch/snice-switch';
-```
-
-```html
-<snice-switch label="Enable notifications"></snice-switch>
-```
-
 ## Importing
 
 **ESM (bundler)**
@@ -26,6 +16,57 @@ import 'snice/components/switch/snice-switch';
 ```html
 <script src="snice-runtime.min.js"></script>
 <script src="snice-switch.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `checked` | `boolean` | `false` | Whether the switch is on |
+| `disabled` | `boolean` | `false` | Disables the switch |
+| `loading` | `boolean` | `false` | Shows loading spinner |
+| `required` | `boolean` | `false` | Makes the switch required |
+| `invalid` | `boolean` | `false` | Shows invalid state |
+| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Size variant |
+| `name` | `string` | `''` | Form field name |
+| `value` | `string` | `'on'` | Form value when checked |
+| `label` | `string` | `''` | Label text |
+| `labelOn` (attr: `label-on`) | `string` | `''` | Text on switch track when on |
+| `labelOff` (attr: `label-off`) | `string` | `''` | Text on switch track when off |
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `toggle()` | -- | Toggle the switch state |
+| `focus()` | `options?: FocusOptions` | Focus the switch |
+| `blur()` | -- | Remove focus |
+| `click()` | -- | Programmatically click the switch |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `switch-change` | `{ checked: boolean, switch: SniceSwitchElement }` | Switch state changed |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `input` | Hidden input element |
+| `track` | Switch track |
+| `thumb` | Switch thumb |
+| `spinner` | Loading spinner |
+| `label` | Label text |
+
+## Basic Usage
+
+```typescript
+import 'snice/components/switch/snice-switch';
+```
+
+```html
+<snice-switch label="Enable notifications"></snice-switch>
 ```
 
 ## Examples
@@ -87,44 +128,3 @@ The switch contains a native `<input type="checkbox">` internally, which partici
   });
 </script>
 ```
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `checked` | `boolean` | `false` | Whether the switch is on |
-| `disabled` | `boolean` | `false` | Disables the switch |
-| `loading` | `boolean` | `false` | Shows loading spinner |
-| `required` | `boolean` | `false` | Makes the switch required |
-| `invalid` | `boolean` | `false` | Shows invalid state |
-| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Size variant |
-| `name` | `string` | `''` | Form field name |
-| `value` | `string` | `'on'` | Form value when checked |
-| `label` | `string` | `''` | Label text |
-| `labelOn` (attr: `label-on`) | `string` | `''` | Text on switch track when on |
-| `labelOff` (attr: `label-off`) | `string` | `''` | Text on switch track when off |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `switch-change` | `{ checked: boolean, switch: SniceSwitchElement }` | Switch state changed |
-
-## Methods
-
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `toggle()` | -- | Toggle the switch state |
-| `focus()` | `options?: FocusOptions` | Focus the switch |
-| `blur()` | -- | Remove focus |
-| `click()` | -- | Programmatically click the switch |
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `input` | Hidden input element |
-| `track` | Switch track |
-| `thumb` | Switch thumb |
-| `spinner` | Loading spinner |
-| `label` | Label text |

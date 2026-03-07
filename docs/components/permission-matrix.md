@@ -6,6 +6,49 @@
 
 A grid that maps roles to permissions using checkbox toggles. Useful for managing access control, displaying role-based permissions, and configuring authorization settings.
 
+## Importing
+
+**ESM (bundler)**
+```typescript
+import 'snice/components/permission-matrix/snice-permission-matrix';
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-permission-matrix.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `roles` | `PermissionRole[]` | `[]` | Array of role objects: `{ id, name, description? }`. Set via JS. |
+| `permissions` | `Permission[]` | `[]` | Array of permission objects: `{ id, name, group?, description? }`. Set via JS. |
+| `matrix` | `PermissionMatrix` | `{}` | Object mapping role IDs to arrays of permission IDs: `{ [roleId]: string[] }`. Set via JS. |
+| `readonly` | `boolean` | `false` | When true, shows check/dash indicators instead of checkboxes |
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `getMatrix()` | -- | Returns a deep copy of the current permission matrix |
+| `setMatrix()` | `matrix: PermissionMatrix` | Replaces the entire permission matrix |
+| `hasPermission()` | `roleId: string, permId: string` | Returns `true` if the role has the specified permission |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `permission-toggle` | `{ roleId: string, permissionId: string, granted: boolean }` | Fired when a single permission is toggled |
+| `matrix-change` | `{ matrix: PermissionMatrix }` | Fired after any permission change, with the full updated matrix |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `base` | Outer container element |
+
 ## Basic Usage
 
 ```typescript
@@ -34,19 +77,6 @@ import 'snice/components/permission-matrix/snice-permission-matrix';
     viewer: ['read']
   };
 </script>
-```
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/permission-matrix/snice-permission-matrix';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-permission-matrix.min.js"></script>
 ```
 
 ## Examples
@@ -146,36 +176,6 @@ pm.setMatrix({
 });
 ```
 
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `roles` | `PermissionRole[]` | `[]` | Array of role objects: `{ id, name, description? }`. Set via JS. |
-| `permissions` | `Permission[]` | `[]` | Array of permission objects: `{ id, name, group?, description? }`. Set via JS. |
-| `matrix` | `PermissionMatrix` | `{}` | Object mapping role IDs to arrays of permission IDs: `{ [roleId]: string[] }`. Set via JS. |
-| `readonly` | `boolean` | `false` | When true, shows check/dash indicators instead of checkboxes |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `permission-toggle` | `{ roleId: string, permissionId: string, granted: boolean }` | Fired when a single permission is toggled |
-| `matrix-change` | `{ matrix: PermissionMatrix }` | Fired after any permission change, with the full updated matrix |
-
-## Methods
-
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `getMatrix()` | -- | Returns a deep copy of the current permission matrix |
-| `setMatrix()` | `matrix: PermissionMatrix` | Replaces the entire permission matrix |
-| `hasPermission()` | `roleId: string, permId: string` | Returns `true` if the role has the specified permission |
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `base` | Outer container element |
-
 ## Type Definitions
 
 ```typescript
@@ -202,12 +202,3 @@ type PermissionMatrix = { [roleId: string]: string[] };
 - Keyboard navigation works with standard tab/enter/space
 - Focus indicators are visible on checkboxes
 - Column headers use `scope="col"` for screen readers
-
-## Best Practices
-
-1. Keep role and permission IDs stable - they are the keys in the matrix
-2. Use `getMatrix()` to get a safe copy before sending to a backend
-3. Use `readonly` mode for display-only views (e.g., showing current user's permissions)
-4. Add descriptions to roles and permissions for clarity
-5. Group permissions by category when the list is long
-6. Listen to `matrix-change` for bulk save operations, `permission-toggle` for granular tracking

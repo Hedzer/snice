@@ -5,6 +5,50 @@
 
 A step indicator for visualizing multi-step processes, wizards, and workflows.
 
+## Importing
+
+**ESM (bundler)**
+```typescript
+import 'snice/components/stepper/snice-stepper';
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-stepper.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `steps` | `Step[]` | `[]` | Array of step objects |
+| `currentStep` (attr: `current-step`) | `number` | `0` | Index of the active step |
+| `orientation` | `'horizontal' \| 'vertical'` | `'horizontal'` | Layout direction |
+| `clickable` | `boolean` | `false` | Allow clicking steps for navigation |
+
+### Step Object
+
+```typescript
+interface Step {
+  label: string;
+  description?: string;
+  status?: 'pending' | 'active' | 'completed' | 'error';
+}
+```
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `step-change` | `{ previousStep: number, currentStep: number, step: Step }` | A step was clicked (clickable mode only) |
+
+## Slots
+
+| Name | Description |
+|------|-------------|
+| (default) | `<snice-stepper-panel>` elements for step content |
+
 ## Basic Usage
 
 ```typescript
@@ -24,19 +68,6 @@ import 'snice/components/stepper/snice-stepper';
   ];
   stepper.currentStep = 1;
 </script>
-```
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/stepper/snice-stepper';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-stepper.min.js"></script>
 ```
 
 ## Examples
@@ -143,34 +174,3 @@ Use `<snice-stepper-panel>` children for content that auto-shows based on the ac
   ];
 </script>
 ```
-
-## Slots
-
-| Name | Description |
-|------|-------------|
-| (default) | `<snice-stepper-panel>` elements for step content |
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `steps` | `Step[]` | `[]` | Array of step objects |
-| `currentStep` (attr: `current-step`) | `number` | `0` | Index of the active step |
-| `orientation` | `'horizontal' \| 'vertical'` | `'horizontal'` | Layout direction |
-| `clickable` | `boolean` | `false` | Allow clicking steps for navigation |
-
-### Step Object
-
-```typescript
-interface Step {
-  label: string;
-  description?: string;
-  status?: 'pending' | 'active' | 'completed' | 'error';
-}
-```
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `step-change` | `{ previousStep: number, currentStep: number, step: Step }` | A step was clicked (clickable mode only) |

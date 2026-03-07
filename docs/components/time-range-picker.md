@@ -5,16 +5,6 @@
 
 A vertically stacked time slot picker for selecting time ranges within a single day via click and drag.
 
-## Basic Usage
-
-```typescript
-import 'snice/components/time-range-picker/snice-time-range-picker';
-```
-
-```html
-<snice-time-range-picker start-time="08:00" end-time="18:00"></snice-time-range-picker>
-```
-
 ## Importing
 
 **ESM (bundler)**
@@ -26,6 +16,78 @@ import 'snice/components/time-range-picker/snice-time-range-picker';
 ```html
 <script src="snice-runtime.min.js"></script>
 <script src="snice-time-range-picker.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `granularity` | `5 \| 15 \| 30 \| 60` | `15` | Time interval per slot (minutes) |
+| `startTime` (attr: `start-time`) | `string` | `'00:00'` | Day start time (HH:MM) |
+| `endTime` (attr: `end-time`) | `string` | `'23:59'` | Day end time (HH:MM) |
+| `value` | `string` | `''` | JSON array of selected ranges |
+| `disabledRanges` (attr: `disabled-ranges`) | `string` | `''` | JSON array of disabled ranges |
+| `format` | `'12h' \| '24h'` | `'24h'` | Time display format |
+| `multiple` | `boolean` | `false` | Allow multiple non-contiguous ranges |
+| `readonly` | `boolean` | `false` | Show selections but prevent interaction |
+| `disabled` | `boolean` | `false` | Disable all interaction |
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `getSelectedRanges()` | -- | Returns `TimeRange[]` |
+| `setSelectedRanges()` | `ranges: TimeRange[]` | Set selected ranges |
+| `clearSelection()` | -- | Clear all selections |
+| `isSlotDisabled()` | `time: string` | Check if slot is disabled, returns `boolean` |
+
+### TimeRange Interface
+
+```typescript
+interface TimeRange {
+  start: string;  // "HH:MM"
+  end: string;    // "HH:MM"
+}
+```
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `time-range-change` | `{ ranges: TimeRange[], component }` | Selection changed |
+| `time-range-select` | `{ start: string, component }` | Drag selection started |
+| `time-range-complete` | `{ range: TimeRange, ranges: TimeRange[], component }` | Drag selection completed |
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The outer wrapper container |
+| `header` | `<div>` | The header with label and selected value display |
+| `slots` | `<div>` | The time slots container |
+
+```css
+snice-time-range-picker::part(header) {
+  font-weight: 600;
+  padding: 0.75rem;
+}
+
+snice-time-range-picker::part(slots) {
+  max-height: 400px;
+  overflow-y: auto;
+}
+```
+
+## Basic Usage
+
+```typescript
+import 'snice/components/time-range-picker/snice-time-range-picker';
+```
+
+```html
+<snice-time-range-picker start-time="08:00" end-time="18:00"></snice-time-range-picker>
 ```
 
 ## Examples
@@ -118,66 +180,4 @@ picker.setSelectedRanges([
 const ranges = picker.getSelectedRanges();
 picker.clearSelection();
 picker.isSlotDisabled('12:00'); // true if disabled
-```
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `granularity` | `5 \| 15 \| 30 \| 60` | `15` | Time interval per slot (minutes) |
-| `startTime` (attr: `start-time`) | `string` | `'00:00'` | Day start time (HH:MM) |
-| `endTime` (attr: `end-time`) | `string` | `'23:59'` | Day end time (HH:MM) |
-| `value` | `string` | `''` | JSON array of selected ranges |
-| `disabledRanges` (attr: `disabled-ranges`) | `string` | `''` | JSON array of disabled ranges |
-| `format` | `'12h' \| '24h'` | `'24h'` | Time display format |
-| `multiple` | `boolean` | `false` | Allow multiple non-contiguous ranges |
-| `readonly` | `boolean` | `false` | Show selections but prevent interaction |
-| `disabled` | `boolean` | `false` | Disable all interaction |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `time-range-change` | `{ ranges: TimeRange[], component }` | Selection changed |
-| `time-range-select` | `{ start: string, component }` | Drag selection started |
-| `time-range-complete` | `{ range: TimeRange, ranges: TimeRange[], component }` | Drag selection completed |
-
-## CSS Parts
-
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | The outer wrapper container |
-| `header` | `<div>` | The header with label and selected value display |
-| `slots` | `<div>` | The time slots container |
-
-```css
-snice-time-range-picker::part(header) {
-  font-weight: 600;
-  padding: 0.75rem;
-}
-
-snice-time-range-picker::part(slots) {
-  max-height: 400px;
-  overflow-y: auto;
-}
-```
-
-## Methods
-
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `getSelectedRanges()` | -- | Returns `TimeRange[]` |
-| `setSelectedRanges()` | `ranges: TimeRange[]` | Set selected ranges |
-| `clearSelection()` | -- | Clear all selections |
-| `isSlotDisabled()` | `time: string` | Check if slot is disabled, returns `boolean` |
-
-### TimeRange Interface
-
-```typescript
-interface TimeRange {
-  start: string;  // "HH:MM"
-  end: string;    // "HH:MM"
-}
 ```

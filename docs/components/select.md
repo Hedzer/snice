@@ -5,6 +5,73 @@
 
 A customizable dropdown selection with single/multiple selection, search filtering, and composable options.
 
+## Importing
+
+**ESM (bundler)**
+```typescript
+import 'snice/components/select/snice-select';
+import 'snice/components/select/snice-option';
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-select.min.js"></script>
+```
+
+## Select Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `value` | `string` | `''` | Selected value (comma-separated for multiple) |
+| `disabled` | `boolean` | `false` | Disables the select |
+| `required` | `boolean` | `false` | Required for form validation |
+| `invalid` | `boolean` | `false` | Shows invalid state styling |
+| `readonly` | `boolean` | `false` | Readonly state |
+| `loading` | `boolean` | `false` | Shows loading spinner |
+| `multiple` | `boolean` | `false` | Allow multiple selection |
+| `searchable` | `boolean` | `false` | Show search input |
+| `clearable` | `boolean` | `false` | Show clear button |
+| `editable` | `boolean` | `false` | Render editable text input instead of button trigger |
+| `allowFreeText` (attr: `allow-free-text`) | `boolean` | `false` | Allow values not in the options list |
+| `open` | `boolean` | `false` | Whether dropdown is open |
+| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Select size |
+| `name` | `string` | `''` | Form field name |
+| `label` | `string` | `''` | Label text |
+| `placeholder` | `string` | `'Select an option'` | Placeholder text |
+| `maxHeight` (attr: `max-height`) | `string` | `'200px'` | Maximum dropdown height |
+| `options` | `SelectOption[]` | `[]` | Programmatic options array |
+
+## Option Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `value` | `string` | `''` | Option value (falls back to label) |
+| `label` | `string` | `''` | Option label (falls back to text content) |
+| `disabled` | `boolean` | `false` | Disables the option |
+| `selected` | `boolean` | `false` | Initially selected |
+| `icon` | `string` | `''` | Icon image URL |
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `selectOption()` | `value: string` | Select an option by value |
+| `clear()` | -- | Clear the selection |
+| `openDropdown()` | -- | Open the dropdown |
+| `closeDropdown()` | -- | Close the dropdown |
+| `toggleDropdown()` | -- | Toggle the dropdown |
+| `focus()` | -- | Focus the select trigger |
+| `blur()` | -- | Remove focus and close dropdown |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `select-change` | `{ value, option, select }` | Selection changed |
+| `select-open` | `{ select }` | Dropdown opened |
+| `select-close` | `{ select }` | Dropdown closed |
+
 ## Basic Usage
 
 ```typescript
@@ -18,20 +85,6 @@ import 'snice/components/select/snice-option';
   <snice-option value="blue">Blue</snice-option>
   <snice-option value="green">Green</snice-option>
 </snice-select>
-```
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/select/snice-select';
-import 'snice/components/select/snice-option';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-select.min.js"></script>
 ```
 
 ## Examples
@@ -212,56 +265,3 @@ select.options = [
   { value: 'uk', label: 'United Kingdom', icon: '/flags/uk.png' },
 ];
 ```
-
-## Select Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `value` | `string` | `''` | Selected value (comma-separated for multiple) |
-| `disabled` | `boolean` | `false` | Disables the select |
-| `required` | `boolean` | `false` | Required for form validation |
-| `invalid` | `boolean` | `false` | Shows invalid state styling |
-| `readonly` | `boolean` | `false` | Readonly state |
-| `loading` | `boolean` | `false` | Shows loading spinner |
-| `multiple` | `boolean` | `false` | Allow multiple selection |
-| `searchable` | `boolean` | `false` | Show search input |
-| `clearable` | `boolean` | `false` | Show clear button |
-| `editable` | `boolean` | `false` | Render editable text input instead of button trigger |
-| `allowFreeText` (attr: `allow-free-text`) | `boolean` | `false` | Allow values not in the options list |
-| `open` | `boolean` | `false` | Whether dropdown is open |
-| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Select size |
-| `name` | `string` | `''` | Form field name |
-| `label` | `string` | `''` | Label text |
-| `placeholder` | `string` | `'Select an option'` | Placeholder text |
-| `maxHeight` (attr: `max-height`) | `string` | `'200px'` | Maximum dropdown height |
-| `options` | `SelectOption[]` | `[]` | Programmatic options array |
-
-## Option Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `value` | `string` | `''` | Option value (falls back to label) |
-| `label` | `string` | `''` | Option label (falls back to text content) |
-| `disabled` | `boolean` | `false` | Disables the option |
-| `selected` | `boolean` | `false` | Initially selected |
-| `icon` | `string` | `''` | Icon image URL |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `select-change` | `{ value, option, select }` | Selection changed |
-| `select-open` | `{ select }` | Dropdown opened |
-| `select-close` | `{ select }` | Dropdown closed |
-
-## Methods
-
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `selectOption()` | `value: string` | Select an option by value |
-| `clear()` | -- | Clear the selection |
-| `openDropdown()` | -- | Open the dropdown |
-| `closeDropdown()` | -- | Close the dropdown |
-| `toggleDropdown()` | -- | Toggle the dropdown |
-| `focus()` | -- | Focus the select trigger |
-| `blur()` | -- | Remove focus and close dropdown |

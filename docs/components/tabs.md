@@ -5,6 +5,62 @@
 
 A tabbed interface for organizing content into separate panels, using `<snice-tab>` for navigation and `<snice-tab-panel>` for content.
 
+## Importing
+
+**ESM (bundler)**
+```typescript
+import 'snice/components/tabs/snice-tabs';
+import 'snice/components/tabs/snice-tab';
+import 'snice/components/tabs/snice-tab-panel';
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-tabs.min.js"></script>
+```
+
+## Properties
+
+### snice-tabs
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `selected` | `number` | `0` | Index of the selected tab |
+| `placement` | `'top' \| 'bottom' \| 'start' \| 'end'` | `'top'` | Tab navigation position |
+| `noScrollControls` (attr: `no-scroll-controls`) | `boolean` | `false` | Hide scroll buttons for overflowing tabs |
+| `transition` | `string` | `'none'` | Panel transition effect |
+
+### snice-tab
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `disabled` | `boolean` | `false` | Prevents tab selection |
+| `closable` | `boolean` | `false` | Shows close button |
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `selectTab()` | `index: number` | Select tab by index |
+| `show()` | `index: number` | Alias for selectTab |
+| `getTab()` | `index: number` | Get tab element at index |
+| `getPanel()` | `index: number` | Get panel element at index |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `tab-change` | `{ index: number, oldIndex: number, tab: SniceTabElement, panel: SniceTabPanelElement }` | Active tab changed |
+| `tab-close` | `{ tab: SniceTabElement }` | Close button clicked on a closable tab |
+
+## Slots
+
+| Name | Description |
+|------|-------------|
+| `nav` | `<snice-tab>` elements for tab navigation |
+| (default) | `<snice-tab-panel>` elements for tab content |
+
 ## Basic Usage
 
 ```typescript
@@ -23,21 +79,6 @@ import 'snice/components/tabs/snice-tab-panel';
   <snice-tab-panel>Profile content</snice-tab-panel>
   <snice-tab-panel>Settings content</snice-tab-panel>
 </snice-tabs>
-```
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/tabs/snice-tabs';
-import 'snice/components/tabs/snice-tab';
-import 'snice/components/tabs/snice-tab-panel';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-tabs.min.js"></script>
 ```
 
 ## Examples
@@ -124,44 +165,3 @@ tabs.show(1);                // Alias for selectTab
 const tab = tabs.getTab(0);  // Get tab element
 const panel = tabs.getPanel(0); // Get panel element
 ```
-
-## Slots
-
-| Name | Description |
-|------|-------------|
-| `nav` | `<snice-tab>` elements for tab navigation |
-| (default) | `<snice-tab-panel>` elements for tab content |
-
-## Properties
-
-### snice-tabs
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `selected` | `number` | `0` | Index of the selected tab |
-| `placement` | `'top' \| 'bottom' \| 'start' \| 'end'` | `'top'` | Tab navigation position |
-| `noScrollControls` (attr: `no-scroll-controls`) | `boolean` | `false` | Hide scroll buttons for overflowing tabs |
-| `transition` | `string` | `'none'` | Panel transition effect |
-
-### snice-tab
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `disabled` | `boolean` | `false` | Prevents tab selection |
-| `closable` | `boolean` | `false` | Shows close button |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `tab-change` | `{ index: number, oldIndex: number, tab: SniceTabElement, panel: SniceTabPanelElement }` | Active tab changed |
-| `tab-close` | `{ tab: SniceTabElement }` | Close button clicked on a closable tab |
-
-## Methods
-
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `selectTab()` | `index: number` | Select tab by index |
-| `show()` | `index: number` | Alias for selectTab |
-| `getTab()` | `index: number` | Get tab element at index |
-| `getPanel()` | `index: number` | Get panel element at index |

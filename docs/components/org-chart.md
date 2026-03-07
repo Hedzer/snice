@@ -7,23 +7,15 @@
 A hierarchical organizational chart that renders tree-structured data with node cards, connecting lines, avatars, and expand/collapse functionality. Supports both top-down and left-right layout directions.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
+- [Importing](#importing)
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
-- [Types](#types)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
+- [Types](#types)
 - [Accessibility](#accessibility)
-
-## Basic Usage
-
-```typescript
-import 'snice/components/org-chart/snice-org-chart';
-```
-
-```html
-<snice-org-chart direction="top-down"></snice-org-chart>
-```
 
 ## Importing
 
@@ -63,18 +55,36 @@ import 'snice/components/org-chart/snice-org-chart';
 | `node-expand` | `{ node: OrgChartNode }` | Fired when a node is expanded |
 | `node-collapse` | `{ node: OrgChartNode }` | Fired when a node is collapsed |
 
-## Types
+## CSS Parts
 
-### OrgChartNode
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The outer chart container |
+| `tree` | `<div>` | The tree layout wrapper with connecting lines |
+| `node` | `<div>` | Individual node cards (repeated for each node) |
+
+```css
+snice-org-chart::part(base) {
+  padding: 2rem;
+  overflow: auto;
+}
+
+snice-org-chart::part(node) {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+```
+
+## Basic Usage
 
 ```typescript
-interface OrgChartNode {
-  id: string;                    // Unique identifier for the node
-  name: string;                  // Person's name displayed on the card
-  title?: string;                // Job title or role
-  avatar?: string;               // Avatar image URL
-  children?: OrgChartNode[];     // Child nodes in the hierarchy
-}
+import 'snice/components/org-chart/snice-org-chart';
+```
+
+```html
+<snice-org-chart direction="top-down"></snice-org-chart>
 ```
 
 ## Examples
@@ -266,25 +276,17 @@ Use methods to control which branches of the tree are visible.
 </script>
 ```
 
-## CSS Parts
+## Types
 
-Style internal elements from outside the shadow DOM using `::part()`.
+### OrgChartNode
 
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | The outer chart container |
-| `tree` | `<div>` | The tree layout wrapper with connecting lines |
-| `node` | `<div>` | Individual node cards (repeated for each node) |
-
-```css
-snice-org-chart::part(base) {
-  padding: 2rem;
-  overflow: auto;
-}
-
-snice-org-chart::part(node) {
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+```typescript
+interface OrgChartNode {
+  id: string;                    // Unique identifier for the node
+  name: string;                  // Person's name displayed on the card
+  title?: string;                // Job title or role
+  avatar?: string;               // Avatar image URL
+  children?: OrgChartNode[];     // Child nodes in the hierarchy
 }
 ```
 

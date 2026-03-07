@@ -5,18 +5,6 @@
 
 Provides contextual information when users hover, click, or focus an element.
 
-## Basic Usage
-
-```typescript
-import 'snice/components/tooltip/snice-tooltip';
-```
-
-```html
-<snice-tooltip content="This is a tooltip">
-  <button>Hover me</button>
-</snice-tooltip>
-```
-
 ## Importing
 
 **ESM (bundler)**
@@ -28,6 +16,76 @@ import 'snice/components/tooltip/snice-tooltip';
 ```html
 <script src="snice-runtime.min.js"></script>
 <script src="snice-tooltip.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `content` | `string` | `''` | Tooltip text |
+| `position` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | `'top'` | Position relative to trigger |
+| `trigger` | `'hover' \| 'click' \| 'focus' \| 'manual'` | `'hover'` | Interaction that shows tooltip |
+| `delay` | `number` | `0` | Show delay in milliseconds |
+| `hideDelay` (attr: `hide-delay`) | `number` | `0` | Hide delay in milliseconds |
+| `offset` | `number` | `12` | Distance from trigger in pixels |
+| `arrow` | `boolean` | `true` | Show arrow indicator |
+| `open` | `boolean` | `false` | Visibility state |
+| `maxWidth` (attr: `max-width`) | `number` | `250` | Maximum width in pixels |
+| `zIndex` (attr: `z-index`) | `number` | `10000` | Stacking order |
+| `strictPositioning` (attr: `strict-positioning`) | `boolean` | `false` | Disable auto-repositioning |
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `show()` | -- | Show the tooltip |
+| `hide()` | -- | Hide the tooltip |
+| `toggle()` | -- | Toggle visibility |
+| `updatePosition()` | -- | Recalculate position |
+
+## Slots
+
+| Name | Description |
+|------|-------------|
+| (default) | Trigger content the tooltip attaches to |
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `trigger` | `<div>` | Wrapper around the slot/trigger content |
+| `tooltip` | `<div>` | The tooltip popup element |
+| `content` | `<span>` | The text content inside the tooltip |
+| `arrow` | `<div>` | The arrow/caret element pointing to the trigger |
+
+```css
+snice-tooltip::part(tooltip) {
+  background: #1e293b;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+snice-tooltip::part(arrow) {
+  color: #1e293b;
+}
+
+snice-tooltip::part(content) {
+  padding: 8px 14px;
+}
+```
+
+## Basic Usage
+
+```typescript
+import 'snice/components/tooltip/snice-tooltip';
+```
+
+```html
+<snice-tooltip content="This is a tooltip">
+  <button>Hover me</button>
+</snice-tooltip>
 ```
 
 ## Examples
@@ -146,64 +204,6 @@ Set the `strict-positioning` attribute to disable automatic repositioning when n
   </snice-tooltip>
 </div>
 ```
-
-## Slots
-
-| Name | Description |
-|------|-------------|
-| (default) | Trigger content the tooltip attaches to |
-
-## CSS Parts
-
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `trigger` | `<div>` | Wrapper around the slot/trigger content |
-| `tooltip` | `<div>` | The tooltip popup element |
-| `content` | `<span>` | The text content inside the tooltip |
-| `arrow` | `<div>` | The arrow/caret element pointing to the trigger |
-
-```css
-snice-tooltip::part(tooltip) {
-  background: #1e293b;
-  border-radius: 8px;
-  font-size: 13px;
-}
-
-snice-tooltip::part(arrow) {
-  color: #1e293b;
-}
-
-snice-tooltip::part(content) {
-  padding: 8px 14px;
-}
-```
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `content` | `string` | `''` | Tooltip text |
-| `position` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | `'top'` | Position relative to trigger |
-| `trigger` | `'hover' \| 'click' \| 'focus' \| 'manual'` | `'hover'` | Interaction that shows tooltip |
-| `delay` | `number` | `0` | Show delay in milliseconds |
-| `hideDelay` (attr: `hide-delay`) | `number` | `0` | Hide delay in milliseconds |
-| `offset` | `number` | `12` | Distance from trigger in pixels |
-| `arrow` | `boolean` | `true` | Show arrow indicator |
-| `open` | `boolean` | `false` | Visibility state |
-| `maxWidth` (attr: `max-width`) | `number` | `250` | Maximum width in pixels |
-| `zIndex` (attr: `z-index`) | `number` | `10000` | Stacking order |
-| `strictPositioning` (attr: `strict-positioning`) | `boolean` | `false` | Disable auto-repositioning |
-
-## Methods
-
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `show()` | -- | Show the tooltip |
-| `hide()` | -- | Hide the tooltip |
-| `toggle()` | -- | Toggle visibility |
-| `updatePosition()` | -- | Recalculate position |
 
 ## Attribute-Based Tooltips
 

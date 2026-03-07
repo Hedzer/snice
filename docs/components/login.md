@@ -5,16 +5,6 @@
 
 A complete authentication form with username/password fields, using Snice's @request/@respond pattern for controller communication.
 
-## Basic Usage
-
-```typescript
-import 'snice/components/login/snice-login';
-```
-
-```html
-<snice-login controller="auth-controller"></snice-login>
-```
-
 ## Importing
 
 **ESM (bundler)**
@@ -26,6 +16,91 @@ import 'snice/components/login/snice-login';
 ```html
 <script src="snice-runtime.min.js"></script>
 <script src="snice-login.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `variant` | `'default' \| 'card' \| 'minimal'` | `'default'` | Visual style |
+| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Form size |
+| `title` | `string` | `'Sign In'` | Form title |
+| `disabled` | `boolean` | `false` | Disable the form |
+| `loading` | `boolean` | `false` | Show loading state |
+| `showRememberMe` (attr: `show-remember-me`) | `boolean` | `true` | Show "Remember me" checkbox |
+| `showForgotPassword` (attr: `show-forgot-password`) | `boolean` | `true` | Show "Forgot password" link |
+| `actionText` (attr: `action-text`) | `string` | `'Sign In'` | Submit button text |
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `login()` | `credentials?: LoginCredentials` | Trigger login (uses form values if no args) |
+| `reset()` | -- | Clear form, error, and loading state |
+| `setError()` | `message: string` | Display an error message |
+| `clearError()` | -- | Remove error message |
+| `setCredentials()` | `credentials: Partial<LoginCredentials>` | Set form field values |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `login-attempt` | `{ username, timestamp }` | Form submitted |
+| `login-success` | `{ timestamp }` | Login succeeded |
+| `login-error` | `{ error, timestamp }` | Login failed |
+| `login-forgot-password` | `{ timestamp }` | Forgot password clicked |
+
+## Slots
+
+| Name | Description |
+|------|-------------|
+| `before-header` | Content before the header |
+| `after-header` | Content after the header |
+| `subtitle` | Custom subtitle text |
+| `before-form` | Content before the form (e.g., OAuth buttons) |
+| `after-form` | Content after the form |
+| `form-top` | Content at top of form |
+| `between-fields` | Content between username and password fields |
+| `before-submit` | Content before submit button |
+| `after-submit` | Content after submit button |
+| `footer` | Footer content (e.g., signup link) |
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The outer login container |
+| `header` | `<div>` | The header section containing the title |
+| `title` | `<h1>` | The title heading element |
+| `form` | `<form>` | The login form element |
+| `footer` | `<div>` | The footer section below the form |
+
+```css
+snice-login::part(base) {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+snice-login::part(title) {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+snice-login::part(form) {
+  gap: 1.25rem;
+}
+```
+
+## Basic Usage
+
+```typescript
+import 'snice/components/login/snice-login';
+```
+
+```html
+<snice-login controller="auth-controller"></snice-login>
 ```
 
 ## Examples
@@ -166,81 +241,6 @@ interface LoginResult {
   data?: any;
 }
 ```
-
-## Slots
-
-| Name | Description |
-|------|-------------|
-| `before-header` | Content before the header |
-| `after-header` | Content after the header |
-| `subtitle` | Custom subtitle text |
-| `before-form` | Content before the form (e.g., OAuth buttons) |
-| `after-form` | Content after the form |
-| `form-top` | Content at top of form |
-| `between-fields` | Content between username and password fields |
-| `before-submit` | Content before submit button |
-| `after-submit` | Content after submit button |
-| `footer` | Footer content (e.g., signup link) |
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `variant` | `'default' \| 'card' \| 'minimal'` | `'default'` | Visual style |
-| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Form size |
-| `title` | `string` | `'Sign In'` | Form title |
-| `disabled` | `boolean` | `false` | Disable the form |
-| `loading` | `boolean` | `false` | Show loading state |
-| `showRememberMe` (attr: `show-remember-me`) | `boolean` | `true` | Show "Remember me" checkbox |
-| `showForgotPassword` (attr: `show-forgot-password`) | `boolean` | `true` | Show "Forgot password" link |
-| `actionText` (attr: `action-text`) | `string` | `'Sign In'` | Submit button text |
-
-## CSS Parts
-
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | The outer login container |
-| `header` | `<div>` | The header section containing the title |
-| `title` | `<h1>` | The title heading element |
-| `form` | `<form>` | The login form element |
-| `footer` | `<div>` | The footer section below the form |
-
-```css
-snice-login::part(base) {
-  max-width: 400px;
-  margin: 0 auto;
-}
-
-snice-login::part(title) {
-  font-size: 1.5rem;
-  font-weight: 700;
-}
-
-snice-login::part(form) {
-  gap: 1.25rem;
-}
-```
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `login-attempt` | `{ username, timestamp }` | Form submitted |
-| `login-success` | `{ timestamp }` | Login succeeded |
-| `login-error` | `{ error, timestamp }` | Login failed |
-| `login-forgot-password` | `{ timestamp }` | Forgot password clicked |
-
-## Methods
-
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `login()` | `credentials?: LoginCredentials` | Trigger login (uses form values if no args) |
-| `reset()` | -- | Clear form, error, and loading state |
-| `setError()` | `message: string` | Display an error message |
-| `clearError()` | -- | Remove error message |
-| `setCredentials()` | `credentials: Partial<LoginCredentials>` | Set form field values |
 
 ## Requests
 

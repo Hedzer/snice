@@ -5,24 +5,14 @@
 The comments component provides a threaded comment system with nested replies, like/unlike functionality, user avatars, relative timestamps, and current-user awareness for delete permissions.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
 - [CSS Custom Properties](#css-custom-properties)
 - [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
-
-## Basic Usage
-
-```html
-<snice-comments current-user="Alice"></snice-comments>
-```
-
-```typescript
-import 'snice/components/comments/snice-comments';
-```
 
 ## Properties
 
@@ -86,6 +76,16 @@ interface Comment {
 | `base` | Root container element |
 | `input-area` | The new comment input area |
 | `list` | The comments list container |
+
+## Basic Usage
+
+```html
+<snice-comments current-user="Alice"></snice-comments>
+```
+
+```typescript
+import 'snice/components/comments/snice-comments';
+```
 
 ## Examples
 

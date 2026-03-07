@@ -5,29 +5,15 @@
 The book component displays content as a page-flipping book with realistic 3D page-turn animations. It supports spread (two-page) and single-page modes, a customizable cover page, keyboard and touch navigation, and programmatic page control.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
 - [Properties](#properties)
-- [Slots](#slots)
 - [Methods](#methods)
 - [Events](#events)
+- [Slots](#slots)
 - [CSS Custom Properties](#css-custom-properties)
 - [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
-
-## Basic Usage
-
-```html
-<snice-book>
-  <div>Page 1 content</div>
-  <div>Page 2 content</div>
-  <div>Page 3 content</div>
-</snice-book>
-```
-
-```typescript
-import 'snice/components/book/snice-book';
-```
 
 ## Properties
 
@@ -38,12 +24,6 @@ import 'snice/components/book/snice-book';
 | `title` | `string` | `''` | Book title displayed on the cover |
 | `author` | `string` | `''` | Author name displayed on the cover |
 | `totalPages` | `number` | _(read-only)_ | Total number of pages (count of slotted child elements) |
-
-## Slots
-
-| Name | Description |
-|------|-------------|
-| (default) | Page elements. Each child element becomes one page in the book. |
 
 ## Methods
 
@@ -62,6 +42,12 @@ import 'snice/components/book/snice-book';
 | `page-turn` | `{ page: number, direction: 'forward' \| 'backward' }` | Fired when a page turn completes |
 | `page-flip-start` | `{ fromPage: number, toPage: number, direction: 'forward' \| 'backward' }` | Fired when a page flip animation starts |
 | `page-flip-end` | `{ page: number, direction: 'forward' \| 'backward' }` | Fired when a page flip animation finishes |
+
+## Slots
+
+| Name | Description |
+|------|-------------|
+| (default) | Page elements. Each child element becomes one page in the book. |
 
 ## CSS Custom Properties
 
@@ -97,6 +83,20 @@ snice-book::part(base) {
 snice-book::part(book) {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
+```
+
+## Basic Usage
+
+```html
+<snice-book>
+  <div>Page 1 content</div>
+  <div>Page 2 content</div>
+  <div>Page 3 content</div>
+</snice-book>
+```
+
+```typescript
+import 'snice/components/book/snice-book';
 ```
 
 ## Examples

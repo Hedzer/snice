@@ -5,21 +5,16 @@
 The button component provides an interactive element for user actions. It supports multiple variants, sizes, states (loading, disabled), styles (outline, pill, circle), and icons. When `href` is set, clicking navigates via `window.location` (not rendered as an anchor).
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
 - [Properties](#properties)
-- [Slots](#slots)
 - [Methods](#methods)
+- [Events](#events)
+- [Slots](#slots)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
-
-## Basic Usage
-
-```html
-<snice-button>Click me</snice-button>
-```
-
-```typescript
-import 'snice/components/button/snice-button';
-```
+- [Accessibility](#accessibility)
+- [Browser Support](#browser-support)
+- [Common Patterns](#common-patterns)
+- [Variant Colors](#variant-colors)
 
 ## Properties
 
@@ -38,6 +33,42 @@ import 'snice/components/button/snice-button';
 | `download` | `string` | `''` | Download attribute for file downloads |
 | `icon` | `string` | `''` | Icon (URL, image file, emoji). Use slot for icon fonts. |
 | `iconPlacement` | `'start' \| 'end'` | `'start'` | Icon position relative to label |
+
+## Methods
+
+#### `focus(options?: FocusOptions): void`
+Focus the button programmatically.
+
+```typescript
+button.focus();
+button.focus({ preventScroll: true });
+```
+
+#### `blur(): void`
+Remove focus from the button.
+
+```typescript
+button.blur();
+```
+
+#### `click(): void`
+Programmatically click the button.
+
+```typescript
+button.click();
+```
+
+## Events
+
+#### `button-click`
+Fired when the button is clicked.
+
+**Event Detail:**
+```typescript
+{
+  originalEvent: MouseEvent;
+}
+```
 
 ## Slots
 
@@ -110,40 +141,14 @@ The `icon-placement` property works with both the slot and the `icon` property:
 
 > **Note**: The `icon` slot takes precedence over the `icon` property when both are present.
 
-## Events
+## Basic Usage
 
-#### `button-click`
-Fired when the button is clicked.
-
-**Event Detail:**
-```typescript
-{
-  originalEvent: MouseEvent;
-}
+```html
+<snice-button>Click me</snice-button>
 ```
 
-## Methods
-
-#### `focus(options?: FocusOptions): void`
-Focus the button programmatically.
-
 ```typescript
-button.focus();
-button.focus({ preventScroll: true });
-```
-
-#### `blur(): void`
-Remove focus from the button.
-
-```typescript
-button.blur();
-```
-
-#### `click(): void`
-Programmatically click the button.
-
-```typescript
-button.click();
+import 'snice/components/button/snice-button';
 ```
 
 ## Examples
@@ -691,19 +696,6 @@ The `icon` **property** is for simple cases: emoji, image URLs, and image files.
 
 - Modern browsers (Chrome, Firefox, Safari, Edge)
 - Requires Custom Elements v1 and Shadow DOM support
-
-## Best Practices
-
-1. **Use appropriate variants**: Choose colors that match the action's importance
-2. **Provide clear labels**: Button text should describe the action
-3. **Show loading states**: Indicate async operations with loading prop
-4. **Disable during actions**: Prevent double-clicks during processing
-5. **Use icons wisely**: Icons should enhance, not replace text (except circle buttons)
-6. **Group related buttons**: Use button groups for related actions
-7. **Make primary actions prominent**: Use primary variant for main actions
-8. **Avoid too many buttons**: Limit choices to prevent decision fatigue
-9. **Test keyboard navigation**: Ensure all buttons work without a mouse
-10. **Provide feedback**: Show success/error states after actions
 
 ## Common Patterns
 

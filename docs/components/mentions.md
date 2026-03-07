@@ -5,6 +5,75 @@
 
 A text input with inline @mention autocomplete. Typing the trigger character shows a filtered user list dropdown, and selected mentions are stored as structured markers in the value.
 
+## Importing
+
+**ESM (bundler)**
+```typescript
+import 'snice/components/mentions/snice-mentions';
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-mentions.min.js"></script>
+```
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `value` | `string` | `''` | Raw text with `@[Name](id)` mention markers |
+| `users` | `MentionUser[]` | `[]` | Users available for autocomplete |
+| `placeholder` | `string` | `'Type @ to mention someone...'` | Input placeholder text |
+| `readonly` | `boolean` | `false` | Prevents editing |
+| `trigger` | `string` | `'@'` | Character that triggers the autocomplete dropdown |
+
+### MentionUser Interface
+
+```typescript
+interface MentionUser {
+  id: string;
+  name: string;
+  avatar?: string;
+}
+```
+
+### Mention Interface
+
+```typescript
+interface Mention {
+  id: string;
+  name: string;
+  startIndex: number;
+  endIndex: number;
+}
+```
+
+## Methods
+
+| Method | Arguments | Returns | Description |
+|--------|-----------|---------|-------------|
+| `getValue()` | --- | `string` | Raw value with mention markers |
+| `getPlainText()` | --- | `string` | Text with mentions replaced by names |
+| `getMentions()` | --- | `Mention[]` | Array of structured mention data |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `mention-add` | `{ user: MentionUser, value: string }` | Fired when a mention is added |
+| `mention-remove` | `{ user: MentionUser, value: string }` | Fired when a mention is removed from the text |
+| `value-change` | `{ value: string, plainText: string, mentions: Mention[] }` | Fired on any value change |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `base` | Wrapper container |
+| `editor` | Editor container with border |
+| `textarea` | The textarea element |
+| `dropdown` | Autocomplete dropdown |
+
 ## Basic Usage
 
 ```typescript
@@ -21,19 +90,6 @@ import 'snice/components/mentions/snice-mentions';
     { id: 'u2', name: 'Bob Smith' }
   ];
 </script>
-```
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/mentions/snice-mentions';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-mentions.min.js"></script>
 ```
 
 ## Examples
@@ -115,59 +171,3 @@ editor.addEventListener('value-change', e => {
   console.log('Mentions:', e.detail.mentions);
 });
 ```
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `value` | `string` | `''` | Raw text with `@[Name](id)` mention markers |
-| `users` | `MentionUser[]` | `[]` | Users available for autocomplete |
-| `placeholder` | `string` | `'Type @ to mention someone...'` | Input placeholder text |
-| `readonly` | `boolean` | `false` | Prevents editing |
-| `trigger` | `string` | `'@'` | Character that triggers the autocomplete dropdown |
-
-### MentionUser Interface
-
-```typescript
-interface MentionUser {
-  id: string;
-  name: string;
-  avatar?: string;
-}
-```
-
-### Mention Interface
-
-```typescript
-interface Mention {
-  id: string;
-  name: string;
-  startIndex: number;
-  endIndex: number;
-}
-```
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `mention-add` | `{ user: MentionUser, value: string }` | Fired when a mention is added |
-| `mention-remove` | `{ user: MentionUser, value: string }` | Fired when a mention is removed from the text |
-| `value-change` | `{ value: string, plainText: string, mentions: Mention[] }` | Fired on any value change |
-
-## Methods
-
-| Method | Arguments | Returns | Description |
-|--------|-----------|---------|-------------|
-| `getValue()` | --- | `string` | Raw value with mention markers |
-| `getPlainText()` | --- | `string` | Text with mentions replaced by names |
-| `getMentions()` | --- | `Mention[]` | Array of structured mention data |
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `base` | Wrapper container |
-| `editor` | Editor container with border |
-| `textarea` | The textarea element |
-| `dropdown` | Autocomplete dropdown |

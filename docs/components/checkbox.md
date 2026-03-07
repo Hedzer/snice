@@ -5,21 +5,15 @@
 The checkbox component provides a checkbox input with support for checked, indeterminate, and invalid states, multiple sizes, and full keyboard accessibility.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
-
-## Basic Usage
-
-```html
-<snice-checkbox label="Accept terms and conditions"></snice-checkbox>
-```
-
-```typescript
-import 'snice/components/checkbox/snice-checkbox';
-```
+- [Form Integration](#form-integration)
+- [Accessibility](#accessibility)
+- [Browser Support](#browser-support)
+- [Common Patterns](#common-patterns)
 
 ## Properties
 
@@ -78,6 +72,16 @@ checkbox.addEventListener('change', (e) => {
   console.log('Checked:', e.detail.checked);
   console.log('Indeterminate:', e.detail.indeterminate);
 });
+```
+
+## Basic Usage
+
+```html
+<snice-checkbox label="Accept terms and conditions"></snice-checkbox>
+```
+
+```typescript
+import 'snice/components/checkbox/snice-checkbox';
 ```
 
 ## Examples
@@ -654,6 +658,17 @@ checkbox.addEventListener('change', (e) => {
 </script>
 ```
 
+## Form Integration
+
+The checkbox component is not form-associated (no `ElementInternals`). Use a hidden input or listen for `checkbox-change` events to integrate with forms:
+
+```html
+<form>
+  <snice-checkbox name="newsletter" value="yes"></snice-checkbox>
+  <!-- FormData will include: newsletter=yes when checked -->
+</form>
+```
+
 ## Accessibility
 
 - **Form-associated**: Full form integration as native element
@@ -667,19 +682,6 @@ checkbox.addEventListener('change', (e) => {
 
 - Modern browsers (Chrome, Firefox, Safari, Edge)
 - Requires Custom Elements v1, Shadow DOM, and Form-Associated Custom Elements support
-
-## Best Practices
-
-1. **Always provide labels**: Use the `label` property or wrap in a label element
-2. **Use indeterminate appropriately**: For partial selections in hierarchical lists
-3. **Validate required fields**: Show invalid state and error messages
-4. **Group related checkboxes**: Use fieldsets for checkbox groups
-5. **Make clickable area large**: Ensure label is clickable, not just the box
-6. **Show validation feedback**: Indicate errors clearly near the checkbox
-7. **Use appropriate sizes**: Match checkbox size to surrounding content
-8. **Avoid too many checkboxes**: Consider alternative UI for long lists
-9. **Test keyboard navigation**: Ensure all checkboxes work without a mouse
-10. **Handle form submission**: Process checkbox values correctly
 
 ## Common Patterns
 
@@ -702,15 +704,4 @@ checkbox.addEventListener('change', (e) => {
 ### Required Field
 ```html
 <snice-checkbox label="Required" required invalid></snice-checkbox>
-```
-
-## Form Integration
-
-The checkbox component is not form-associated (no `ElementInternals`). Use a hidden input or listen for `checkbox-change` events to integrate with forms:
-
-```html
-<form>
-  <snice-checkbox name="newsletter" value="yes"></snice-checkbox>
-  <!-- FormData will include: newsletter=yes when checked -->
-</form>
 ```

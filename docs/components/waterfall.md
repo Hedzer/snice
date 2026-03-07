@@ -5,22 +5,14 @@
 The waterfall component renders a waterfall chart (also known as a bridge chart) that visualizes the cumulative effect of sequential positive and negative values. Bars are color-coded by type: green for increases, red for decreases, and blue for totals, with optional connector lines and value labels.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
 - [Properties](#properties)
 - [Events](#events)
 - [CSS Custom Properties](#css-custom-properties)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
-
-## Basic Usage
-
-```html
-<snice-waterfall></snice-waterfall>
-```
-
-```typescript
-import 'snice/components/waterfall/snice-waterfall';
-```
+- [Browser Support](#browser-support)
 
 ## Properties
 
@@ -99,6 +91,16 @@ snice-waterfall::part(base) {
 snice-waterfall::part(chart) {
   padding: 1rem;
 }
+```
+
+## Basic Usage
+
+```html
+<snice-waterfall></snice-waterfall>
+```
+
+```typescript
+import 'snice/components/waterfall/snice-waterfall';
 ```
 
 ## Examples
@@ -225,13 +227,3 @@ Hide connector lines and value labels for a cleaner visual.
 
 - Modern browsers (Chrome, Firefox, Safari, Edge)
 - Requires Custom Elements v1 and Shadow DOM support
-
-## Best Practices
-
-1. **Always include total bars**: Start and end with `type: 'total'` bars so viewers can see the full picture
-2. **Use meaningful labels**: Labels should clearly describe what each bar represents
-3. **Keep data sets manageable**: 5-10 bars work well; more than 15 can become hard to read
-4. **Show connectors for clarity**: Connector lines help viewers trace the cumulative flow between bars
-5. **Let type auto-detect when possible**: Omit `type` for regular increase/decrease bars; only specify `type: 'total'` explicitly
-6. **Use animation for presentations**: The `animated` option works well for slide decks and dashboards where data loads dynamically
-7. **Choose orientation based on labels**: Use `horizontal` when labels are long; `vertical` when labels are short

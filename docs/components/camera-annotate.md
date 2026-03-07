@@ -5,24 +5,15 @@
 The camera annotate component combines camera capture with freehand drawing and labeled annotations. It provides a workflow for taking pictures, drawing shapes on them, and adding descriptive labels to each annotation.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Annotation Workflow](#annotation-workflow)
 - [Accessibility](#accessibility)
-- [Best Practices](#best-practices)
-
-## Basic Usage
-
-```html
-<snice-camera-annotate></snice-camera-annotate>
-```
-
-```typescript
-import 'snice/components/camera-annotate/snice-camera-annotate';
-```
+- [Browser Support](#browser-support)
 
 ## Properties
 
@@ -49,6 +40,39 @@ import 'snice/components/camera-annotate/snice-camera-annotate';
 | `capture` | `{ dataURL, width, height }` | Fired when an image is captured from the camera |
 | `annotate` | `{ annotation }` | Fired when a new annotation (shape) is drawn |
 | `annotation-change` | `{ annotations }` | Fired when annotations are modified (add, remove, visibility, label) |
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer layout container |
+| `canvas` | `<div>` | Canvas area containing the video feed and drawing surface |
+| `toolbar` | `<div>` | Toolbar with capture/retake, undo, clear, and export buttons |
+| `sidebar` | `<div>` | Sidebar panel with color palette and annotation labels |
+
+```css
+snice-camera-annotate::part(base) {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+snice-camera-annotate::part(sidebar) {
+  background: #1e293b;
+  color: white;
+}
+```
+
+## Basic Usage
+
+```html
+<snice-camera-annotate></snice-camera-annotate>
+```
+
+```typescript
+import 'snice/components/camera-annotate/snice-camera-annotate';
+```
 
 ## Examples
 
@@ -141,29 +165,6 @@ import 'snice/components/camera-annotate/snice-camera-annotate';
 </script>
 ```
 
-## CSS Parts
-
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | Outer layout container |
-| `canvas` | `<div>` | Canvas area containing the video feed and drawing surface |
-| `toolbar` | `<div>` | Toolbar with capture/retake, undo, clear, and export buttons |
-| `sidebar` | `<div>` | Sidebar panel with color palette and annotation labels |
-
-```css
-snice-camera-annotate::part(base) {
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-snice-camera-annotate::part(sidebar) {
-  background: #1e293b;
-  color: white;
-}
-```
-
 ## Annotation Workflow
 
 1. **Camera Mode**: The component starts showing a live camera feed
@@ -199,13 +200,3 @@ When you hover over an annotation label in the sidebar:
 - Modern browsers (Chrome, Firefox, Safari, Edge)
 - Requires camera access via `getUserMedia`
 - Requires Custom Elements v1 and Shadow DOM support
-
-## Best Practices
-
-1. **Grant camera permissions**: Ensure users have allowed camera access for the capture workflow
-2. **Add labels promptly**: Label annotations as you draw them for better organization
-3. **Use auto-rotate colors**: Keeps annotations visually distinct without manual color selection
-4. **Export regularly**: Save annotation data to prevent loss on page refresh
-5. **Use the sidebar**: Hovering labels helps verify which shape corresponds to which annotation
-6. **Clear before starting fresh**: Use clearAnnotations() or "Retake" to reset
-7. **Export with labels**: When sharing annotated images, include labels for context

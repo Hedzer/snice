@@ -5,40 +5,18 @@
 The breadcrumbs components provide navigation trail indicators showing the user's current location within a hierarchy. Supports icons, custom separators, collapsing for long trails, and multiple sizes.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
 - [Components](#components)
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
+- [Slots](#slots)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
-
-## Basic Usage
-
-```html
-<!-- Using items array -->
-<snice-breadcrumbs id="breadcrumbs"></snice-breadcrumbs>
-
-<script type="module">
-  const breadcrumbs = document.getElementById('breadcrumbs');
-  breadcrumbs.items = [
-    { label: 'Home', href: '/' },
-    { label: 'Products', href: '/products' },
-    { label: 'Laptops', active: true }
-  ];
-</script>
-
-<!-- Or using crumb elements -->
-<snice-breadcrumbs>
-  <snice-crumb href="/" label="Home"></snice-crumb>
-  <snice-crumb href="/products" label="Products"></snice-crumb>
-  <snice-crumb label="Laptops" active></snice-crumb>
-</snice-breadcrumbs>
-```
-
-```typescript
-import 'snice/components/breadcrumbs/snice-breadcrumbs';
-import 'snice/components/breadcrumbs/snice-crumb';
-```
+- [Accessibility](#accessibility)
+- [Browser Support](#browser-support)
+- [Common Patterns](#common-patterns)
+- [When to Use](#when-to-use)
 
 ## Components
 
@@ -81,6 +59,42 @@ interface BreadcrumbItem {
 | `iconImage` | `string` | `''` | Icon image URL (deprecated, use `icon` with URL) |
 | `active` | `boolean` | `false` | Current/active state |
 
+## Methods
+
+#### `setItems(items: BreadcrumbItem[]): void`
+Programmatically set breadcrumb items.
+
+```typescript
+breadcrumbs.setItems([
+  { label: 'Home', href: '/' },
+  { label: 'Docs', href: '/docs' },
+  { label: 'Components', active: true }
+]);
+```
+
+## Events
+
+#### `breadcrumb-click`
+Fired when a breadcrumb link is clicked.
+
+**Event Detail:**
+```typescript
+{
+  item: BreadcrumbItem;
+  index: number;
+  href: string;
+  label: string;
+}
+```
+
+**Usage:**
+```typescript
+breadcrumbs.addEventListener('breadcrumb-click', (e) => {
+  console.log('Clicked:', e.detail.label);
+  console.log('Index:', e.detail.index);
+});
+```
+
 ## Slots
 
 ### Crumb Element Slots
@@ -118,40 +132,60 @@ Use the `icon` slot within `<snice-crumb>` for external CSS-based icon fonts:
 
 > **Note**: Icon slots only work when using `<snice-crumb>` elements, not when using the `items` array property. For icons with the `items` array, use the `icon` property.
 
-## Methods
+## CSS Parts
 
-#### `setItems(items: BreadcrumbItem[]): void`
-Programmatically set breadcrumb items.
+Style internal elements from outside the shadow DOM using `::part()`.
 
-```typescript
-breadcrumbs.setItems([
-  { label: 'Home', href: '/' },
-  { label: 'Docs', href: '/docs' },
-  { label: 'Components', active: true }
-]);
-```
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<nav>` | The navigation container |
+| `list` | `<ol>` | The breadcrumb ordered list |
+| `link` | `<a>` | Individual breadcrumb links |
+| `separator` | `<span>` | Separator characters between items |
+| `ellipsis` | `<button>` | Collapse ellipsis button |
 
-## Events
+```css
+snice-breadcrumbs::part(link) {
+  color: #3b82f6;
+  font-weight: 500;
+}
 
-#### `breadcrumb-click`
-Fired when a breadcrumb link is clicked.
+snice-breadcrumbs::part(separator) {
+  color: #9ca3af;
+  margin: 0 0.75rem;
+}
 
-**Event Detail:**
-```typescript
-{
-  item: BreadcrumbItem;
-  index: number;
-  href: string;
-  label: string;
+snice-breadcrumbs::part(ellipsis) {
+  background: transparent;
 }
 ```
 
-**Usage:**
+## Basic Usage
+
+```html
+<!-- Using items array -->
+<snice-breadcrumbs id="breadcrumbs"></snice-breadcrumbs>
+
+<script type="module">
+  const breadcrumbs = document.getElementById('breadcrumbs');
+  breadcrumbs.items = [
+    { label: 'Home', href: '/' },
+    { label: 'Products', href: '/products' },
+    { label: 'Laptops', active: true }
+  ];
+</script>
+
+<!-- Or using crumb elements -->
+<snice-breadcrumbs>
+  <snice-crumb href="/" label="Home"></snice-crumb>
+  <snice-crumb href="/products" label="Products"></snice-crumb>
+  <snice-crumb label="Laptops" active></snice-crumb>
+</snice-breadcrumbs>
+```
+
 ```typescript
-breadcrumbs.addEventListener('breadcrumb-click', (e) => {
-  console.log('Clicked:', e.detail.label);
-  console.log('Index:', e.detail.index);
-});
+import 'snice/components/breadcrumbs/snice-breadcrumbs';
+import 'snice/components/breadcrumbs/snice-crumb';
 ```
 
 ## Examples
@@ -541,34 +575,6 @@ breadcrumbs.addEventListener('breadcrumb-click', (e) => {
 </script>
 ```
 
-## CSS Parts
-
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<nav>` | The navigation container |
-| `list` | `<ol>` | The breadcrumb ordered list |
-| `link` | `<a>` | Individual breadcrumb links |
-| `separator` | `<span>` | Separator characters between items |
-| `ellipsis` | `<button>` | Collapse ellipsis button |
-
-```css
-snice-breadcrumbs::part(link) {
-  color: #3b82f6;
-  font-weight: 500;
-}
-
-snice-breadcrumbs::part(separator) {
-  color: #9ca3af;
-  margin: 0 0.75rem;
-}
-
-snice-breadcrumbs::part(ellipsis) {
-  background: transparent;
-}
-```
-
 ## Accessibility
 
 - **Semantic HTML**: Uses `<nav>` with `aria-label="Breadcrumb"`
@@ -580,19 +586,6 @@ snice-breadcrumbs::part(ellipsis) {
 
 - Modern browsers (Chrome, Firefox, Safari, Edge)
 - Requires Custom Elements v1 and Shadow DOM support
-
-## Best Practices
-
-1. **Show hierarchy**: Use breadcrumbs for multi-level navigation
-2. **Keep labels concise**: Short, clear segment names work best
-3. **Use appropriate separators**: Choose separators that match your design
-4. **Collapse long trails**: Use `maxItems` for deep hierarchies
-5. **Make links clickable**: All non-active items should be navigable
-6. **Place consistently**: Usually at the top of the page content
-7. **Don't duplicate navigation**: Breadcrumbs complement, not replace, main nav
-8. **Test on mobile**: Consider responsive behavior for small screens
-9. **Handle dynamic updates**: Update breadcrumbs when navigation changes
-10. **Provide context**: Breadcrumbs should reflect actual page hierarchy
 
 ## Common Patterns
 

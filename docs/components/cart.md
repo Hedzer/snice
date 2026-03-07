@@ -5,23 +5,14 @@
 The cart component displays a shopping cart summary with line items, quantity controls, coupon field, tax and discount calculations, and a checkout button.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
+- [Importing](#importing)
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
 - [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
-
-## Basic Usage
-
-```html
-<snice-cart></snice-cart>
-```
-
-```typescript
-import 'snice/components/cart/snice-cart';
-```
 
 ## Importing
 
@@ -140,6 +131,16 @@ Fired when the checkout button is clicked.
 | `checkout` | Checkout button area |
 | `empty` | Empty cart message |
 
+## Basic Usage
+
+```html
+<snice-cart></snice-cart>
+```
+
+```typescript
+import 'snice/components/cart/snice-cart';
+```
+
 ## Examples
 
 ### Cart with Items
@@ -225,11 +226,3 @@ Use the cart methods to add, remove, and update items.
 - **Remove buttons**: Include the item name in the `aria-label` for clarity
 - **Keyboard navigation**: All controls are focusable and operable via keyboard
 - **Semantic structure**: Items are rendered in an unordered list with proper heading hierarchy
-
-## Best Practices
-
-1. **Set tax rate**: Configure `tax-rate` to show accurate totals
-2. **Handle coupon validation server-side**: Listen to the `coupon-apply` event, validate the code, then set the `discount` property
-3. **Use `addItem` for external add-to-cart actions**: Pairs well with `snice-product-card`'s `add-to-cart` event
-4. **Show item images**: Thumbnails help users identify items quickly
-5. **Include variant info**: Display size, color, or other selections in the `variant` string

@@ -5,29 +5,15 @@
 The sortable component provides a drag-and-drop container that allows users to reorder child elements. It supports vertical and horizontal layouts, drag handles, cross-container sorting via groups, and animated reordering with a ghost placeholder.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
 - [Properties](#properties)
-- [Slots](#slots)
 - [Events](#events)
+- [Slots](#slots)
 - [CSS Custom Properties](#css-custom-properties)
 - [CSS Parts](#css-parts)
-- [CSS Classes on Items](#css-classes-on-items)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
+- [CSS Classes on Items](#css-classes-on-items)
 - [Accessibility](#accessibility)
-
-## Basic Usage
-
-```html
-<snice-sortable>
-  <div>Item 1</div>
-  <div>Item 2</div>
-  <div>Item 3</div>
-</snice-sortable>
-```
-
-```typescript
-import 'snice/components/sortable/snice-sortable';
-```
 
 ## Properties
 
@@ -37,12 +23,6 @@ import 'snice/components/sortable/snice-sortable';
 | `handle` | `string` | `''` | CSS selector for the drag handle within each item. If empty, the entire item is draggable. |
 | `disabled` | `boolean` | `false` | Disable drag-and-drop |
 | `group` | `string` | `''` | Group name for cross-container sorting. Items can be dragged between sortable containers that share the same group name. |
-
-## Slots
-
-| Slot Name | Description |
-|-----------|-------------|
-| (default) | The child elements to be sortable. Each direct child becomes a draggable item. |
 
 ## Events
 
@@ -81,6 +61,20 @@ Fired when the order of items actually changes (item dropped in a new position).
 }
 ```
 
+## Slots
+
+| Slot Name | Description |
+|-----------|-------------|
+| (default) | The child elements to be sortable. Each direct child becomes a draggable item. |
+
+## CSS Custom Properties
+
+| Property | Description | Default |
+|----------|-------------|---------|
+| `--snice-spacing-xs` | Gap between items | `0.5rem` |
+| `--snice-transition-fast` | Drag transition speed | `150ms` |
+| `--snice-color-primary` | Ghost placeholder outline color | `rgb(37 99 235)` |
+
 ## CSS Parts
 
 Style internal elements from outside the shadow DOM using `::part()`.
@@ -96,22 +90,19 @@ snice-sortable::part(base) {
 }
 ```
 
-## CSS Custom Properties
+## Basic Usage
 
-| Property | Description | Default |
-|----------|-------------|---------|
-| `--snice-spacing-xs` | Gap between items | `0.5rem` |
-| `--snice-transition-fast` | Drag transition speed | `150ms` |
-| `--snice-color-primary` | Ghost placeholder outline color | `rgb(37 99 235)` |
+```html
+<snice-sortable>
+  <div>Item 1</div>
+  <div>Item 2</div>
+  <div>Item 3</div>
+</snice-sortable>
+```
 
-## CSS Classes on Items
-
-The component automatically adds CSS classes to items during drag operations:
-
-| Class | Description |
-|-------|-------------|
-| `.sortable-dragging` | Applied to the item being dragged (opacity: 0.4) |
-| `.sortable-ghost` | Applied to the placeholder element (dashed outline) |
+```typescript
+import 'snice/components/sortable/snice-sortable';
+```
 
 ## Examples
 
@@ -267,17 +258,18 @@ Use the `disabled` attribute to prevent reordering.
 </snice-sortable>
 ```
 
+## CSS Classes on Items
+
+The component automatically adds CSS classes to items during drag operations:
+
+| Class | Description |
+|-------|-------------|
+| `.sortable-dragging` | Applied to the item being dragged (opacity: 0.4) |
+| `.sortable-ghost` | Applied to the placeholder element (dashed outline) |
+
 ## Accessibility
 
 - **Drag operation**: Items receive `draggable="true"` automatically
 - **Ghost placeholder**: A dashed-outline placeholder shows where the item will be dropped
 - **Visual feedback**: The dragged item has reduced opacity (0.4) during drag
 - **Disabled state**: When `disabled` is set, items are not draggable
-
-## Best Practices
-
-1. **Use drag handles for complex items**: When items contain interactive elements (buttons, links), use a `handle` to avoid accidental drags
-2. **Provide visual feedback**: Style `.sortable-dragging` and `.sortable-ghost` classes for clear drag state indication
-3. **Keep item count reasonable**: Very long sortable lists can be hard to reorder; consider pagination or virtual scrolling
-4. **Use groups for kanban-style layouts**: The `group` property enables cross-container drag-and-drop
-5. **Listen to `sort-change` for persistence**: Use the `sort-change` event (not `sort-end`) to persist order changes, since it only fires when the order actually changed

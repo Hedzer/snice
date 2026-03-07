@@ -7,23 +7,15 @@
 A lightweight GFM-compatible markdown renderer that converts markdown text to styled HTML inside shadow DOM. Includes built-in sanitization to prevent XSS attacks.
 
 ## Table of Contents
-- [Basic Usage](#basic-usage)
+- [Importing](#importing)
 - [Properties](#properties)
 - [Events](#events)
 - [CSS Custom Properties](#css-custom-properties)
-- [Supported Syntax](#supported-syntax)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
 - [Examples](#examples)
+- [Supported Syntax](#supported-syntax)
 - [Accessibility](#accessibility)
-
-## Basic Usage
-
-```typescript
-import 'snice/components/markdown/snice-markdown';
-```
-
-```html
-<snice-markdown># Hello World</snice-markdown>
-```
 
 ## Importing
 
@@ -85,18 +77,15 @@ snice-markdown::part(base) {
 }
 ```
 
-## Supported Syntax
+## Basic Usage
 
-The component supports GitHub Flavored Markdown (GFM):
+```typescript
+import 'snice/components/markdown/snice-markdown';
+```
 
-- **Headings** (h1 through h6)
-- **Inline formatting**: bold, italic, strikethrough
-- **Lists**: ordered, unordered, and task lists with checkboxes
-- **Code**: inline code and fenced code blocks with language class
-- **Blockquotes**
-- **Tables** (GFM pipe-delimited)
-- **Images** and **links** (including autolinks)
-- **Horizontal rules**
+```html
+<snice-markdown># Hello World</snice-markdown>
+```
 
 ## Examples
 
@@ -203,6 +192,19 @@ The endpoint returns the following JSON:
 - [ ] DELETE endpoint
 </snice-markdown>
 ```
+
+## Supported Syntax
+
+The component supports GitHub Flavored Markdown (GFM):
+
+- **Headings** (h1 through h6)
+- **Inline formatting**: bold, italic, strikethrough
+- **Lists**: ordered, unordered, and task lists with checkboxes
+- **Code**: inline code and fenced code blocks with language class
+- **Blockquotes**
+- **Tables** (GFM pipe-delimited)
+- **Images** and **links** (including autolinks)
+- **Horizontal rules**
 
 ## Accessibility
 
