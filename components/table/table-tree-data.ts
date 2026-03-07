@@ -213,6 +213,12 @@ export class TableTreeData {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         this.toggle(treeRow.key);
+        // Dispatch on the button — it'll bubble up to the table
+        btn.dispatchEvent(new CustomEvent('tree-toggle', {
+          detail: { key: treeRow.key, expanded: this.isExpanded(treeRow.key) },
+          bubbles: true,
+          composed: true,
+        }));
       });
       container.appendChild(btn);
     } else {

@@ -89,12 +89,7 @@ export class TableMasterDetail {
     const expandIcon = this.options?.expandIcon || '▶';
     const collapseIcon = this.options?.collapseIcon || '▼';
     btn.textContent = expanded ? collapseIcon : expandIcon;
-    btn.style.cssText = `
-      background: none; border: none; cursor: pointer; padding: 0.25rem;
-      color: inherit; font-size: 0.75rem; line-height: 1;
-      transition: transform 0.2s ease;
-      ${expanded ? 'transform: rotate(0deg);' : ''}
-    `;
+    btn.className = `detail-toggle${expanded ? ' detail-toggle--expanded' : ''}`;
 
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -121,11 +116,6 @@ export class TableMasterDetail {
     const td = document.createElement('td');
     td.colSpan = colSpan;
     td.className = 'detail-cell';
-
-    const height = this.options.detailHeight;
-    if (height && height !== 'auto') {
-      td.style.height = typeof height === 'number' ? `${height}px` : height;
-    }
 
     const content = this.options.getDetailContent(row, rowIndex);
     if (typeof content === 'string') {

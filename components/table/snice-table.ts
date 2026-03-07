@@ -1,6 +1,8 @@
 import { element, property, query, request, dispatch, watch, render, styles, html, css, ready, dispose } from 'snice';
 import '../input/snice-input';
 import '../select/snice-select';
+import '../button/snice-button';
+import '../checkbox/snice-checkbox';
 import './snice-cell.ts';
 import './snice-cell-text.ts';
 import './snice-cell-number.ts';
@@ -262,34 +264,80 @@ export class SniceTable extends HTMLElement {
         overflow: auto;
       }
 
+      /* Frame wraps super-header + table; provides the rounded border */
+      .table-frame {
+        border: 1px solid var(--snice-color-border, rgb(226 226 226));
+        border-radius: var(--snice-border-radius-lg, 0.5rem);
+        overflow: hidden; /* clips cell borders at rounded corners */
+      }
+
       table {
         width: 100%;
         border-collapse: separate;
         border-spacing: 0;
-        border-radius: var(--snice-border-radius-lg);
-        border: 1px solid var(--snice-color-border);
+        /* no border or radius — handled by .table-frame */
+      }
+
+      /* Super-header (slotted area above column headers) */
+      .table-superheader {
+        background: var(--snice-color-background, rgb(255 255 255));
+      }
+
+      .table-superheader:empty {
+        display: none;
+      }
+
+      .table-superheader ::slotted(*) {
+        display: block;
+        padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-md, 1rem);
+        border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
       }
 
       th, td {
-        padding: var(--snice-spacing-xsm) var(--snice-spacing-xsm);
-        border: 1px solid var(--snice-color-border);
+        padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
+        border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
+        border-right: 1px solid var(--snice-color-border, rgb(226 226 226));
         text-align: left;
-        color: var(--snice-color-text);
+        color: var(--snice-color-text, rgb(23 23 23));
         max-width: 0;
         overflow: hidden;
         text-overflow: ellipsis;
+      }
+
+      /* Remove right border on last cell in row */
+      th:last-child,
+      td:last-child {
+        border-right: none;
+      }
+
+      /* Remove bottom border on last body row */
+      tbody tr:last-child td {
+        border-bottom: none;
       }
 
       th {
         padding: var(--snice-spacing-sm) var(--snice-spacing-sm);
       }
 
+      /* Narrow utility columns: checkbox, expand toggle, drag handle */
       th.select-column,
-      td.select-column {
-        width: 2.5rem;
-        max-width: 2.5rem;
+      td.select-column,
+      th.detail-toggle-cell,
+      td.detail-toggle-cell,
+      th.drag-handle-cell,
+      td.drag-handle-cell {
+        width: 2.25rem;
+        max-width: 2.25rem;
+        min-width: 2.25rem;
         text-align: center;
-        padding: var(--snice-spacing-xs);
+        padding: 0 0.25rem;
+        overflow: visible;
+      }
+
+      /* Force snice-checkbox compact inside table */
+      .select-column snice-checkbox {
+        min-height: 0;
+        align-self: center;
       }
 
       th {
@@ -337,23 +385,13 @@ export class SniceTable extends HTMLElement {
       /* List mode - hide vertical borders */
       :host([list]) th,
       :host([list]) td {
-        border-left: none;
         border-right: none;
       }
 
-      :host([list]) th:first-child,
-      :host([list]) td:first-child {
-        border-left: none;
-      }
-
-      :host([list]) th:last-child,
-      :host([list]) td:last-child {
-        border-right: none;
-      }
-
-      :host([list]) table {
+      :host([list]) .table-frame {
         border-left: none;
         border-right: none;
+        border-radius: 0;
       }
 
       [part="header"] {
@@ -365,9 +403,101 @@ export class SniceTable extends HTMLElement {
         display: block;
       }
 
+      /* Toolbar */
+      .table-toolbar {
+        display: flex;
+        align-items: center;
+        gap: var(--snice-spacing-xs, 0.5rem);
+        padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
+        flex-wrap: wrap;
+        border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
+        background: var(--snice-color-background, rgb(255 255 255));
+      }
+
+      .toolbar-search {
+        flex: 1;
+        min-width: 10rem;
+        padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-sm, 0.75rem);
+        border: 1px solid var(--snice-color-border, rgb(226 226 226));
+        border-radius: var(--snice-border-radius-md, 0.25rem);
+        background: var(--snice-color-background-input, rgb(248 247 245));
+        color: var(--snice-color-text, rgb(23 23 23));
+        font-size: var(--snice-font-size-sm, 0.875rem);
+        font-family: inherit;
+        outline: none;
+      }
+
+      .toolbar-search:focus {
+        border-color: var(--snice-color-primary, rgb(37 99 235));
+      }
+
+      .toolbar-spacer { flex: 1; }
+
+      .toolbar-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-sm, 0.75rem);
+        border: 1px solid var(--snice-color-border, rgb(226 226 226));
+        border-radius: var(--snice-border-radius-md, 0.25rem);
+        background: var(--snice-color-background, rgb(255 255 255));
+        color: var(--snice-color-text, rgb(23 23 23));
+        font-size: var(--snice-font-size-sm, 0.875rem);
+        font-family: inherit;
+        cursor: pointer;
+        transition: background var(--snice-transition-fast, 150ms) ease;
+      }
+
+      .toolbar-btn:hover {
+        background: var(--snice-color-background-secondary, rgb(245 245 245));
+      }
+
+      .toolbar-density {
+        padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-xs, 0.5rem);
+        border: 1px solid var(--snice-color-border, rgb(226 226 226));
+        border-radius: var(--snice-border-radius-md, 0.25rem);
+        background: var(--snice-color-background, rgb(255 255 255));
+        color: var(--snice-color-text, rgb(23 23 23));
+        font-size: var(--snice-font-size-sm, 0.875rem);
+        font-family: inherit;
+        cursor: pointer;
+      }
+
+      .toolbar-export-menu {
+        position: absolute;
+        right: 0;
+        top: 100%;
+        margin-top: 4px;
+        background: var(--snice-color-background-element, rgb(252 251 249));
+        border: 1px solid var(--snice-color-border, rgb(226 226 226));
+        border-radius: var(--snice-border-radius-md, 0.25rem);
+        box-shadow: var(--snice-shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1));
+        z-index: 100;
+        min-width: 8rem;
+        padding: 4px;
+      }
+
+      .toolbar-menu-item {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
+        border: none;
+        border-radius: var(--snice-border-radius-sm, 0.125rem);
+        background: transparent;
+        color: var(--snice-color-text, rgb(23 23 23));
+        font-size: var(--snice-font-size-sm, 0.875rem);
+        font-family: inherit;
+        cursor: pointer;
+      }
+
+      .toolbar-menu-item:hover {
+        background: var(--snice-color-background-secondary, rgb(245 245 245));
+      }
+
       .table-controls {
         display: flex;
-        gap: var(--snice-spacing-md);
+        gap: var(--snice-spacing-md, 1rem);
         align-items: center;
         flex-wrap: wrap;
       }
@@ -711,12 +841,31 @@ export class SniceTable extends HTMLElement {
       }
 
       .detail-cell {
-        padding: var(--snice-spacing-md, 1rem) !important;
-        border-top: none !important;
+        padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-md, 1rem) !important;
+        max-width: none;
       }
 
-      .detail-toggle-cell {
-        max-width: 2rem;
+      .detail-toggle {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        color: var(--snice-color-text-secondary, rgb(82 82 82));
+        font-size: 0.625rem;
+        line-height: 1;
+        transition: color var(--snice-transition-fast, 150ms) ease;
+      }
+
+      .detail-toggle:hover {
+        color: var(--snice-color-text, rgb(23 23 23));
+      }
+
+      /* Drag handle */
+      .drag-handle-cell {
+        cursor: grab;
+        user-select: none;
+        color: var(--snice-color-text-tertiary, rgb(115 115 115));
+        font-size: 0.875rem;
       }
 
       /* Focus indicator for keyboard nav */
@@ -796,10 +945,15 @@ export class SniceTable extends HTMLElement {
       return html/*html*/`
         <div class="snice-table" @click=${this.handleClick} @change=${this.handleChange}>
           <div class="table-controls-container"></div>
-          <table>
-            <thead></thead>
-            <tbody></tbody>
-          </table>
+          <div class="table-frame">
+            <div class="table-superheader" part="superheader">
+              <slot name="header"></slot>
+            </div>
+            <table>
+              <thead></thead>
+              <tbody></tbody>
+            </table>
+          </div>
           <div class="table-pagination-container"></div>
         </div>
       `;
@@ -1001,13 +1155,26 @@ export class SniceTable extends HTMLElement {
     if (!this.thead) return;
     
     const headerRow = document.createElement('tr');
-    
+
+    // Tool column headers — must match createRow order
+    if (this.rowReorder && this.rowDnD.isEnabled()) {
+      const th = document.createElement('th');
+      th.className = 'drag-handle-cell';
+      headerRow.appendChild(th);
+    }
+
+    if (this.masterDetail.isEnabled()) {
+      const th = document.createElement('th');
+      th.className = 'detail-toggle-cell';
+      headerRow.appendChild(th);
+    }
+
     if (this.selectable) {
       const selectCell = document.createElement('th');
       selectCell.className = 'select-column';
       const allSelected = this.selectedRows.length === this.data.length && this.data.length > 0;
       const someSelected = this.selectedRows.length > 0 && this.selectedRows.length < this.data.length;
-      selectCell.innerHTML = `<input type="checkbox" class="select-all" ${allSelected ? 'checked' : ''} />`;
+      selectCell.innerHTML = `<snice-checkbox class="select-all" size="small" compact ${allSelected ? 'checked' : ''}></snice-checkbox>`;
       headerRow.appendChild(selectCell);
       
       // Set indeterminate after insertion
@@ -1125,25 +1292,28 @@ export class SniceTable extends HTMLElement {
 
       if (this.rowReorder) {
         const spacer = document.createElement('td');
+        spacer.className = 'drag-handle-cell';
         filterRow.appendChild(spacer);
       }
       if (this.masterDetail.isEnabled()) {
         const spacer = document.createElement('td');
+        spacer.className = 'detail-toggle-cell';
         filterRow.appendChild(spacer);
       }
       if (this.selectable) {
         const spacer = document.createElement('td');
+        spacer.className = 'select-column';
         filterRow.appendChild(spacer);
       }
 
       this.columns.forEach(column => {
         if (visibleKeys && !visibleKeys.has(column.key)) return;
         const td = document.createElement('td');
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.className = 'header-filter-input';
+        const input = document.createElement('snice-input') as any;
+        input.size = 'small';
         input.placeholder = `Filter ${column.label}...`;
         input.value = this.filterEngine.getHeaderFilter(column.key);
+        input.style.width = '100%';
         input.addEventListener('input', () => {
           this.filterEngine.setHeaderFilter(column.key, input.value);
           this.applyClientFilters();
@@ -1448,7 +1618,34 @@ export class SniceTable extends HTMLElement {
       if (column.trueValue) attributes.push(`true-value="${column.trueValue}"`);
       if (column.falseValue) attributes.push(`false-value="${column.falseValue}"`);
     }
-    
+
+    if (column.type === 'sparkline') {
+      const sf = (column as any).sparklineFormat;
+      if (sf) {
+        if (sf.color) attributes.push(`color="${sf.color}"`);
+        if (sf.type) attributes.push(`chart-type="${sf.type}"`);
+        if (sf.width) attributes.push(`width="${sf.width}"`);
+        if (sf.height) attributes.push(`height="${sf.height}"`);
+      }
+    }
+
+    if (column.type === 'rating') {
+      const rf = (column as any).ratingFormat;
+      if (rf) {
+        if (rf.max) attributes.push(`max="${rf.max}"`);
+        if (rf.color) attributes.push(`color="${rf.color}"`);
+      }
+    }
+
+    if (column.type === 'progress') {
+      const pf = (column as any).progressFormat;
+      if (pf) {
+        if (pf.max) attributes.push(`max="${pf.max}"`);
+        if (pf.color) attributes.push(`color="${pf.color}"`);
+        if (pf.showPercentage) attributes.push(`show-percentage="true"`);
+      }
+    }
+
     return attributes.join(' ');
   }
 
@@ -1531,9 +1728,9 @@ export class SniceTable extends HTMLElement {
   private handleChange = (e: Event) => {
     const target = e.target as HTMLElement;
 
-    // Handle row select checkbox
-    if (target.matches('.row-select')) {
-      const checkbox = target as HTMLInputElement;
+    // Handle snice-checkbox events (row-select and select-all)
+    if (target.matches('snice-checkbox.row-select')) {
+      const checkbox = target as any;
       const rowIndex = parseInt(checkbox.getAttribute('data-row-index') || '0');
 
       if (checkbox.checked) {
@@ -1550,9 +1747,8 @@ export class SniceTable extends HTMLElement {
       return;
     }
 
-    // Handle select all checkbox
-    if (target.matches('.select-all')) {
-      const checkbox = target as HTMLInputElement;
+    if (target.matches('snice-checkbox.select-all')) {
+      const checkbox = target as any;
 
       if (checkbox.checked) {
         this.selectedRows = this.data.map((_, index) => index);
@@ -1604,13 +1800,13 @@ export class SniceTable extends HTMLElement {
 
   updateRowSelectionState() {
     if (!this.tbody) return;
-    
+
     const rows = this.tbody.querySelectorAll('tr');
     rows.forEach((row, index) => {
       const isSelected = this.selectedRows.includes(index);
       row.setAttribute('data-selected', String(isSelected));
-      
-      const checkbox = row.querySelector('.row-select') as HTMLInputElement;
+
+      const checkbox = row.querySelector('snice-checkbox.row-select') as any;
       if (checkbox) {
         checkbox.checked = isSelected;
       }
@@ -1618,12 +1814,12 @@ export class SniceTable extends HTMLElement {
   }
 
   updateSelectAllState() {
-    const selectAllCheckbox = this.thead?.querySelector('.select-all') as HTMLInputElement;
+    const selectAllCheckbox = this.thead?.querySelector('snice-checkbox.select-all') as any;
     if (!selectAllCheckbox) return;
-    
-    const allSelected = this.selectedRows.length === this.data.length;
+
+    const allSelected = this.selectedRows.length === this.data.length && this.data.length > 0;
     const someSelected = this.selectedRows.length > 0 && this.selectedRows.length < this.data.length;
-    
+
     selectAllCheckbox.checked = allSelected;
     selectAllCheckbox.indeterminate = someSelected;
   }
@@ -2223,9 +2419,6 @@ export class SniceTable extends HTMLElement {
     if (this.masterDetail.isEnabled()) {
       const toggleCell = document.createElement('td');
       toggleCell.className = 'detail-toggle-cell';
-      toggleCell.style.width = '2rem';
-      toggleCell.style.textAlign = 'center';
-      toggleCell.style.padding = '0.25rem';
       toggleCell.appendChild(this.masterDetail.createToggleButton(index));
       tr.appendChild(toggleCell);
     }
@@ -2233,7 +2426,7 @@ export class SniceTable extends HTMLElement {
     if (this.selectable) {
       const selectCell = document.createElement('td');
       selectCell.className = 'select-column';
-      selectCell.innerHTML = `<input type="checkbox" class="row-select" ${isSelected ? 'checked' : ''} data-row-index="${index}" />`;
+      selectCell.innerHTML = `<snice-checkbox class="row-select" size="small" compact ${isSelected ? 'checked' : ''} data-row-index="${index}"></snice-checkbox>`;
       tr.appendChild(selectCell);
     }
 

@@ -73,12 +73,7 @@ export class TableRowDnD {
   createDragHandle(): HTMLTableCellElement {
     const td = document.createElement('td');
     td.className = 'drag-handle-cell';
-    td.style.cssText = `
-      width: 2rem; max-width: 2rem; text-align: center;
-      cursor: grab; user-select: none; padding: 0.25rem;
-      color: var(--snice-color-text-tertiary, rgb(115 115 115));
-    `;
-    td.innerHTML = '⠿'; // Drag handle icon
+    td.textContent = '⠿';
     td.setAttribute('aria-label', 'Drag to reorder');
     return td;
   }

@@ -1,6 +1,6 @@
 /**
  * Toolbar for snice-table.
- * Renders: search, filter button, column visibility, density selector, export dropdown.
+ * Uses snice components: snice-input, snice-button, snice-select.
  */
 
 export interface ToolbarOptions {
@@ -17,7 +17,6 @@ export class TableToolbar {
   private options: ToolbarOptions = {};
   private tableElement: HTMLElement | null = null;
 
-  // Callbacks
   onSearch: ((query: string) => void) | null = null;
   onFilterToggle: (() => void) | null = null;
   onColumnVisibilityToggle: (() => void) | null = null;
@@ -39,34 +38,14 @@ export class TableToolbar {
     const toolbar = document.createElement('div');
     toolbar.className = 'table-toolbar';
     toolbar.setAttribute('part', 'toolbar');
-    toolbar.style.cssText = `
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem 0.75rem;
-      flex-wrap: wrap;
-      border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
-      background: var(--snice-color-background, rgb(255 255 255));
-    `;
 
-    // Search
+    // Search — use snice-input
     if (this.options.showSearch !== false) {
-      const searchInput = document.createElement('input');
+      const searchInput = document.createElement('snice-input') as any;
       searchInput.type = 'search';
       searchInput.placeholder = this.options.searchPlaceholder || 'Search...';
+      searchInput.size = 'small';
       searchInput.className = 'toolbar-search';
-      searchInput.style.cssText = `
-        flex: 1;
-        min-width: 10rem;
-        padding: 0.375rem 0.625rem;
-        border: 1px solid var(--snice-color-border, rgb(226 226 226));
-        border-radius: var(--snice-border-radius-md, 0.25rem);
-        background: var(--snice-color-background-input, rgb(248 247 245));
-        color: var(--snice-color-text, rgb(23 23 23));
-        font-size: var(--snice-font-size-sm, 0.875rem);
-        font-family: inherit;
-        outline: none;
-      `;
       let debounce: number;
       searchInput.addEventListener('input', () => {
         clearTimeout(debounce);
@@ -77,143 +56,70 @@ export class TableToolbar {
       toolbar.appendChild(searchInput);
     }
 
-    // Spacer
     const spacer = document.createElement('div');
-    spacer.style.flex = '1';
+    spacer.className = 'toolbar-spacer';
     toolbar.appendChild(spacer);
 
-    // Filter button
+    // Filter button — use snice-button
     if (this.options.showFilter) {
-      toolbar.appendChild(this.createButton('Filter', '⫧', () => this.onFilterToggle?.()));
+      const btn = document.createElement('snice-button') as any;
+      btn.size = 'small';
+      btn.variant = 'default';
+      btn.textContent = 'Filter';
+      btn.addEventListener('button-click', () => this.onFilterToggle?.());
+      toolbar.appendChild(btn);
     }
 
-    // Column visibility
+    // Column visibility — use snice-button
     if (this.options.showColumnVisibility) {
-      toolbar.appendChild(this.createButton('Columns', '☰', () => this.onColumnVisibilityToggle?.()));
+      const btn = document.createElement('snice-button') as any;
+      btn.size = 'small';
+      btn.variant = 'default';
+      btn.textContent = 'Columns';
+      btn.addEventListener('button-click', () => this.onColumnVisibilityToggle?.());
+      toolbar.appendChild(btn);
     }
 
-    // Density selector
+    // Density selector — use snice-select
     if (this.options.showDensity) {
-      const select = document.createElement('select');
+      const select = document.createElement('snice-select') as any;
+      select.size = 'small';
+      select.placeholder = 'Density';
       select.className = 'toolbar-density';
-      select.style.cssText = `
-        padding: 0.25rem 0.5rem;
-        border: 1px solid var(--snice-color-border, rgb(226 226 226));
-        border-radius: var(--snice-border-radius-md, 0.25rem);
-        background: var(--snice-color-background, rgb(255 255 255));
-        color: var(--snice-color-text, rgb(23 23 23));
-        font-size: var(--snice-font-size-sm, 0.875rem);
-        font-family: inherit;
-        cursor: pointer;
-      `;
-      ['compact', 'standard', 'comfortable'].forEach(d => {
-        const opt = document.createElement('option');
-        opt.value = d;
-        opt.textContent = d.charAt(0).toUpperCase() + d.slice(1);
-        select.appendChild(opt);
-      });
+      select.options = [
+        { value: 'compact', label: 'Compact' },
+        { value: 'standard', label: 'Standard' },
+        { value: 'comfortable', label: 'Comfortable' },
+      ];
       select.value = (this.tableElement as any)?.density || 'standard';
-      select.addEventListener('change', () => this.onDensityChange?.(select.value));
+      select.addEventListener('select-change', (e: CustomEvent) => {
+        this.onDensityChange?.(e.detail.value);
+      });
       toolbar.appendChild(select);
     }
 
-    // Export dropdown
+    // Export — use snice-split-button or snice-button
     if (this.options.showExport) {
-      const exportBtn = this.createButton('Export', '↓', () => {});
-      const menu = document.createElement('div');
-      menu.className = 'toolbar-export-menu';
-      menu.style.cssText = `
-        position: absolute; right: 0; top: 100%; margin-top: 4px;
-        background: var(--snice-color-background-element, rgb(252 251 249));
-        border: 1px solid var(--snice-color-border, rgb(226 226 226));
-        border-radius: var(--snice-border-radius-md, 0.25rem);
-        box-shadow: var(--snice-shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1));
-        z-index: 100; display: none; min-width: 8rem;
-      `;
+      const csvBtn = document.createElement('snice-button') as any;
+      csvBtn.size = 'small';
+      csvBtn.variant = 'default';
+      csvBtn.textContent = 'CSV';
+      csvBtn.addEventListener('button-click', () => this.onExportCSV?.());
+      toolbar.appendChild(csvBtn);
 
-      const csvItem = this.createMenuItem('CSV', () => { this.onExportCSV?.(); menu.style.display = 'none'; });
-      const printItem = this.createMenuItem('Print', () => { this.onExportPrint?.(); menu.style.display = 'none'; });
-      menu.appendChild(csvItem);
-      menu.appendChild(printItem);
-
-      const wrapper = document.createElement('div');
-      wrapper.style.position = 'relative';
-      exportBtn.addEventListener('click', () => {
-        menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
-      });
-      wrapper.appendChild(exportBtn);
-      wrapper.appendChild(menu);
-      toolbar.appendChild(wrapper);
-
-      // Close on outside click
-      document.addEventListener('click', (e) => {
-        if (!wrapper.contains(e.target as Node)) menu.style.display = 'none';
-      });
+      const printBtn = document.createElement('snice-button') as any;
+      printBtn.size = 'small';
+      printBtn.variant = 'default';
+      printBtn.textContent = 'Print';
+      printBtn.addEventListener('button-click', () => this.onExportPrint?.());
+      toolbar.appendChild(printBtn);
     }
 
     this.container.appendChild(toolbar);
   }
 
-  private createButton(label: string, icon: string, onClick: () => void): HTMLElement {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'toolbar-btn';
-    btn.innerHTML = `<span>${icon}</span> ${label}`;
-    btn.style.cssText = `
-      display: inline-flex; align-items: center; gap: 0.25rem;
-      padding: 0.375rem 0.625rem;
-      border: 1px solid var(--snice-color-border, rgb(226 226 226));
-      border-radius: var(--snice-border-radius-md, 0.25rem);
-      background: var(--snice-color-background, rgb(255 255 255));
-      color: var(--snice-color-text, rgb(23 23 23));
-      font-size: var(--snice-font-size-sm, 0.875rem);
-      font-family: inherit; cursor: pointer;
-      transition: background 0.15s ease;
-    `;
-    btn.addEventListener('click', onClick);
-    return btn;
-  }
-
-  private createMenuItem(label: string, onClick: () => void): HTMLElement {
-    const item = document.createElement('button');
-    item.type = 'button';
-    item.textContent = label;
-    item.style.cssText = `
-      display: block; width: 100%; text-align: left;
-      padding: 0.5rem 0.75rem; border: none;
-      background: transparent; color: var(--snice-color-text, rgb(23 23 23));
-      font-size: var(--snice-font-size-sm, 0.875rem);
-      font-family: inherit; cursor: pointer;
-    `;
-    item.addEventListener('mouseenter', () => { item.style.background = 'var(--snice-color-background-secondary, rgb(245 245 245))'; });
-    item.addEventListener('mouseleave', () => { item.style.background = 'transparent'; });
-    item.addEventListener('click', onClick);
-    return item;
-  }
-
   setActiveFilterCount(count: number) {
-    const filterBtn = this.container?.querySelector('.toolbar-btn') as HTMLElement;
-    if (filterBtn && this.options.showFilter) {
-      // Add/remove badge
-      const existingBadge = filterBtn.querySelector('.filter-badge');
-      if (count > 0 && !existingBadge) {
-        const badge = document.createElement('span');
-        badge.className = 'filter-badge';
-        badge.textContent = String(count);
-        badge.style.cssText = `
-          display: inline-flex; align-items: center; justify-content: center;
-          min-width: 1rem; height: 1rem; padding: 0 0.25rem;
-          border-radius: 9999px; font-size: 0.625rem;
-          background: var(--snice-color-primary, rgb(37 99 235));
-          color: var(--snice-color-text-inverse, rgb(250 250 250));
-        `;
-        filterBtn.appendChild(badge);
-      } else if (count === 0 && existingBadge) {
-        existingBadge.remove();
-      } else if (existingBadge) {
-        existingBadge.textContent = String(count);
-      }
-    }
+    // Could add a badge to the filter button
   }
 
   isAttached(): boolean {
