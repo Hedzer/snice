@@ -6618,8 +6618,8 @@ stepper.currentStep = 1;</snice-code-block>
           { key: 'revenue', label: 'Revenue', type: 'text', align: 'right', sortable: true },
           { key: 'growth', label: 'Growth', type: 'text', align: 'right', sortable: true },
           { key: 'users', label: 'Users', type: 'text', align: 'right', sortable: true },
-          { key: 'trend', label: 'Trend', type: 'sparkline',
-            sparklineFormat: { type: 'line', color: '#3b82f6' } },
+          { key: 'trend', label: 'Trend', type: 'sparkline', sortable: false,
+            sparklineFormat: { type: 'line', color: '#3b82f6', height: 24, width: 80 } },
           { key: 'status', label: 'Status', type: 'text', sortable: true }
         ];
         table.setData([
@@ -6635,16 +6635,6 @@ stepper.currentStep = 1;</snice-code-block>
         requestAnimationFrame(() => {
           if (table.renderHeader) table.renderHeader();
           if (table.renderBody) table.renderBody();
-          // Fix sparkline colors (canvas can't resolve CSS vars during initial render)
-          setTimeout(() => {
-            const root = table.shadowRoot;
-            if (root) {
-              const colors = ['#3b82f6','#ef4444','#22c55e','#f59e0b','#8b5cf6','#06b6d4','#10b981','#ec4899'];
-              root.querySelectorAll('snice-cell-sparkline').forEach((cell, i) => {
-                cell.color = colors[i % colors.length];
-              });
-            }
-          }, 500);
         });
       }
     });
