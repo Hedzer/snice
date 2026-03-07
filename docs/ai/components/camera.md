@@ -127,6 +127,19 @@ camera.toggleFullscreen();
 - `base` - Outer camera container div
 - `controls` - Built-in control buttons area (capture, switch camera)
 
+## CSS Custom Properties
+
+- `--snice-camera-bg` - Camera background (default: `rgb(0 0 0)`)
+- `--snice-camera-overlay` - Controls gradient overlay (default: `rgb(0 0 0 / 0.5)`)
+- `--snice-camera-controls-color` - Controls icon/text color (default: `rgb(255 255 255)`)
+- `--snice-camera-btn-bg` - Button background (default: `rgb(0 0 0 / 0.4)`)
+- `--snice-camera-btn-hover-bg` - Button hover background (default: `rgb(0 0 0 / 0.6)`)
+- `--snice-camera-capture-bg` - Capture button background (default: `rgb(255 255 255 / 0.95)`)
+- `--snice-camera-capture-color` - Capture button icon color (default: `rgb(51 51 51)`)
+- `--snice-camera-capture-hover-bg` - Capture button hover (default: `rgb(255 255 255)`)
+- `--snice-camera-flash-color` - Flash overlay color (default: `rgb(255 255 255)`)
+- `--snice-camera-status-bg` - Status badge background (default: `rgb(0 0 0 / 0.7)`)
+
 ## Features
 
 - Auto-starts on load (default)

@@ -71,12 +71,29 @@ Visual separator between items.
 <snice-menu close-on-select="false">...</snice-menu>
 ```
 
-## Features
+## CSS Parts
 
-- 8 placement options
-- Click, hover, or manual trigger
-- Auto-close on select (configurable)
-- Auto-close on outside click
-- Icon and shortcut slots
-- Disabled/selected item states
-- ARIA roles (menu, menuitem)
+### snice-menu
+- `trigger` - Trigger wrapper
+- `image-left` - Left image container
+- `image-right` - Right image container
+- `panel` - Dropdown panel
+- `content` - Panel content wrapper
+
+### snice-menu-item
+- `item` - Item container
+- `icon` - Icon wrapper
+- `label` - Label wrapper
+- `shortcut` - Shortcut wrapper
+
+## CSS Custom Properties
+
+```css
+--menu-bg: var(--snice-color-background, white);
+--menu-border: var(--snice-color-border, #e5e7eb);
+--menu-shadow: var(--snice-shadow-lg, ...);
+--menu-z-index: var(--snice-z-index-dropdown, 1000);
+--menu-border-radius: var(--snice-radius-md, 0.375rem);
+--menu-min-width: 10rem;
+--menu-distance: 4px;  /* set via distance property */
+```

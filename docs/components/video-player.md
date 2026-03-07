@@ -176,6 +176,17 @@ Fired when volume or mute state changes.
 
 | Property | Description | Default |
 |----------|-------------|---------|
+| `--snice-video-overlay-bg` | Video background color | `rgb(0 0 0)` |
+| `--snice-video-overlay-alpha` | Overlay with alpha for center play and paused state | `rgb(0 0 0 / 0.5)` |
+| `--snice-video-controls-color` | Controls text and icon color | `rgb(255 255 255)` |
+| `--snice-video-controls-hover-bg` | Button hover background | `rgb(255 255 255 / 0.15)` |
+| `--snice-video-controls-active-bg` | Button active/pressed background | `rgb(255 255 255 / 0.25)` |
+| `--snice-video-progress-track` | Progress bar track background | `rgb(255 255 255 / 0.3)` |
+| `--snice-video-progress-buffered` | Buffered progress indicator color | `rgb(255 255 255 / 0.4)` |
+| `--snice-video-poster-play-bg` | Poster play button background | `rgb(0 0 0 / 0.6)` |
+| `--snice-video-poster-play-hover-bg` | Poster play button hover background | `rgb(0 0 0 / 0.8)` |
+| `--snice-video-controls-gradient` | Controls bar gradient overlay | `rgb(0 0 0 / 0.7)` |
+| `--snice-video-spinner-track` | Loading spinner track color | `rgb(255 255 255 / 0.3)` |
 | `--snice-color-primary` | Progress bar fill color | `rgb(37 99 235)` |
 | `--snice-border-radius-lg` | Container border radius | `0.5rem` |
 | `--snice-transition-fast` | Control button transitions | `150ms` |

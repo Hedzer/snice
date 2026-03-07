@@ -6,6 +6,13 @@
 
 A compact data table optimized for numeric and metric data with inline sparklines, color-coded values, and built-in sorting.
 
+## Table of Contents
+- [Properties](#properties)
+- [Events](#events)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+
 ## Importing
 
 **ESM (bundler)**

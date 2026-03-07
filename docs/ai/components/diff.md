@@ -37,10 +37,10 @@ interface DiffHunk {
 ## CSS Custom Properties
 
 ```css
---snice-diff-added-bg          /* Added line background */
---snice-diff-removed-bg        /* Removed line background */
---snice-diff-added-word-bg     /* Word-level added highlight */
---snice-diff-removed-word-bg   /* Word-level removed highlight */
+--diff-add-bg              /* Added line background */
+--diff-remove-bg           /* Removed line background */
+--diff-add-word-bg         /* Word-level added highlight */
+--diff-remove-word-bg      /* Word-level removed highlight */
 ```
 
 **CSS Parts:**

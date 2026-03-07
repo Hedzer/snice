@@ -76,6 +76,7 @@ Style internal elements from outside the shadow DOM using `::part()`.
 | `base` | `<div>` | The outer document wrapper |
 | `editor` | `<div>` | The editable content area |
 | `toolbar` | `<div>` | The formatting toolbar |
+| `icon` | `<span>` | Toolbar icon element |
 
 ```css
 snice-doc::part(base) {
@@ -270,14 +271,13 @@ snice-doc {
 
   /* Toolbar */
   --snice-doc-toolbar-background: #f6f8fa;
-  --snice-doc-toolbar-border: #e1e4e8;
+
+  /* Borders */
+  --snice-doc-border: #e1e4e8;
+  --snice-doc-hover-background: #e8eaed;
 
   /* Sidebar */
   --snice-doc-sidebar-background: #f6f8fa;
-  --snice-doc-sidebar-border: #e1e4e8;
-
-  /* Spacing */
-  --snice-doc-padding: 20px;
 }
 ```
 

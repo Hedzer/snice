@@ -19,6 +19,17 @@ interface TimelineItem {
 }
 ```
 
+## CSS Parts
+
+- `container` - Timeline container
+- `item` - Individual timeline item
+- `marker` - Item marker circle
+- `icon` - Marker icon
+- `content` - Item content area
+- `timestamp` - Timestamp text
+- `title` - Title text
+- `description` - Description text
+
 ## Usage
 
 ```html

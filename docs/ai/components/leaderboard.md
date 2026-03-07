@@ -29,6 +29,10 @@ interface LeaderboardEntry {
 }
 ```
 
+## Slots
+
+- `(default)` - `<snice-leaderboard-entry>` child elements for declarative API
+
 ## Child Elements
 
 ### `<snice-leaderboard-entry>`
@@ -50,13 +54,15 @@ Data container element. Attributes: `rank` (Number), `name` (String), `score` (S
 ## CSS Custom Properties
 
 ```css
---leaderboard-bg          /* Background (default: --snice-color-background) */
---leaderboard-text        /* Text color (default: --snice-color-text) */
---leaderboard-border      /* Border color (default: --snice-color-border) */
---leaderboard-primary     /* Primary accent (default: --snice-color-primary) */
---leaderboard-success     /* Up change color (default: --snice-color-success) */
---leaderboard-danger      /* Down change color (default: --snice-color-danger) */
---leaderboard-radius      /* Border radius (default: --snice-border-radius-lg) */
+--leaderboard-bg              /* Background (default: --snice-color-background) */
+--leaderboard-text            /* Text color (default: --snice-color-text) */
+--leaderboard-text-secondary  /* Secondary text (default: --snice-color-text-secondary) */
+--leaderboard-border          /* Border color (default: --snice-color-border) */
+--leaderboard-primary         /* Primary accent (default: --snice-color-primary) */
+--leaderboard-success         /* Up change color (default: --snice-color-success) */
+--leaderboard-danger          /* Down change color (default: --snice-color-danger) */
+--leaderboard-bg-element      /* Element background (default: --snice-color-background-element) */
+--leaderboard-radius          /* Border radius (default: --snice-border-radius-lg) */
 ```
 
 **CSS Parts:** `base`, `title`, `list`, `empty`

@@ -15,12 +15,12 @@ precision: 'full' | 'half'              // Click precision (default: 'full')
 
 ## Events
 
-- `rating-change` -> `{ value: number }` -- Rating value changed
+- `rating-change` → `{ value: number }` - Rating value changed
 
 ## Keyboard
 
-- `ArrowRight` / `ArrowUp` -- Increase value
-- `ArrowLeft` / `ArrowDown` -- Decrease value
+- `ArrowRight` / `ArrowUp` - Increase value
+- `ArrowLeft` / `ArrowDown` - Decrease value
 - Step size: 1 (full) or 0.5 (half precision)
 
 ## CSS Custom Properties

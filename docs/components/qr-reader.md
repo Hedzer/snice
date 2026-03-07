@@ -48,6 +48,16 @@ import 'snice/components/qr-reader/snice-qr-reader';
 | `camera-ready` | `{ reader }` | Camera initialized |
 | `camera-error` | `{ error: any, reader }` | Camera initialization failed |
 
+## CSS Custom Properties
+
+| Property | Description | Default |
+|----------|-------------|---------|
+| `--qr-reader-bg` | Container and viewport background | `rgb(0 0 0)` |
+| `--qr-reader-overlay` | Overlay and gradient color | `rgb(0 0 0 / 0.7)` |
+| `--qr-reader-controls-color` | Button icon and text color | `rgb(255 255 255)` |
+| `--qr-reader-btn-bg` | Button background | `rgb(0 0 0 / 0.4)` |
+| `--qr-reader-btn-hover-bg` | Button hover background | `rgb(0 0 0 / 0.6)` |
+
 ## Basic Usage
 
 ```typescript

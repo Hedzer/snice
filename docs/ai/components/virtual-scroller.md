@@ -9,7 +9,7 @@ items: VirtualScrollerItem[] = [];
 itemHeight: number = 50;              // attr: item-height, px
 bufferSize: number = 5;               // attr: buffer-size
 estimatedItemHeight: number = 50;     // attr: estimated-item-height
-renderItem: (item: VirtualScrollerItem, index: number) => string | HTMLElement;
+renderItem: (item: VirtualScrollerItem, index: number) => string | HTMLElement;  // JS property only
 
 interface VirtualScrollerItem {
   id: string | number;

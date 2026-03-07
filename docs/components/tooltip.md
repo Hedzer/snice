@@ -5,6 +5,15 @@
 
 Provides contextual information when users hover, click, or focus an element.
 
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Slots](#slots)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Attribute-Based Tooltips](#attribute-based-tooltips)
+
 ## Importing
 
 **ESM (bundler)**

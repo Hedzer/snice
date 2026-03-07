@@ -14,14 +14,21 @@ disabled: boolean = false;
 
 ## Slots
 
+- `(default)` - Card body content
 - `header` - Card header
 - `image` - Card image (top of card)
 - `footer` - Card footer
-- default - Card body content
 
 ## Events
 
-- `card-click` - Fired when clickable card is clicked. Detail: `{ selected: boolean }`
+- `card-click` → `{ selected: boolean }`
+
+## CSS Parts
+
+- `base` - Outer card container
+- `header` - Card header section
+- `body` - Card body section
+- `footer` - Card footer section
 
 ## Usage
 
@@ -56,17 +63,3 @@ disabled: boolean = false;
 <snice-card clickable disabled>Disabled</snice-card>
 ```
 
-**CSS Parts:**
-- `base` - Outer card container
-- `header` - Card header section
-- `body` - Card body section
-- `footer` - Card footer section
-
-## Features
-
-- 3 style variants (elevated/bordered/flat)
-- 3 size options for padding
-- Clickable with hover/focus states
-- Selected state
-- Disabled state
-- Header/footer slots

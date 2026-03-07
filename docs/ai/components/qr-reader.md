@@ -53,6 +53,14 @@ reader.start();
 const result = await reader.snap();
 ```
 
+## CSS Custom Properties
+
+- `--qr-reader-bg` - Container background (default: `rgb(0 0 0)`)
+- `--qr-reader-overlay` - Overlay/gradient color (default: `rgb(0 0 0 / 0.7)`)
+- `--qr-reader-controls-color` - Button icon/text color (default: `rgb(255 255 255)`)
+- `--qr-reader-btn-bg` - Button background (default: `rgb(0 0 0 / 0.4)`)
+- `--qr-reader-btn-hover-bg` - Button hover background (default: `rgb(0 0 0 / 0.6)`)
+
 ## Features
 
 - ZXing WASM decoder (Apache 2.0 + MIT)

@@ -9,6 +9,7 @@ The `<snice-drawer>` component provides a slide-out panel that appears from any 
 - [Methods](#methods)
 - [Events](#events)
 - [Slots](#slots)
+- [CSS Parts](#css-parts)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
@@ -123,6 +124,20 @@ Content for the drawer footer. Typically used for action buttons.
   </div>
 </snice-drawer>
 ```
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `backdrop` | `<div>` | Backdrop overlay |
+| `base` | `<div>` | The drawer panel container |
+| `header` | `<div>` | Header section |
+| `title` | `<h2>` | Title wrapper |
+| `close` | `<button>` | Close button |
+| `body` | `<div>` | Body content section |
+| `footer` | `<div>` | Footer section |
 
 ## Basic Usage
 

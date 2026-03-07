@@ -49,9 +49,11 @@ Simple WYSIWYG document editor with toolbar and sidebar.
 - **Ctrl/Cmd+I** - Italic
 - **Ctrl/Cmd+U** - Underline
 
-## CSS Variables
+## CSS Custom Properties
 
 ```css
+--snice-doc-font-family
+--snice-doc-font-size
 --snice-doc-text-color
 --snice-doc-background
 --snice-doc-muted-color
@@ -60,10 +62,9 @@ Simple WYSIWYG document editor with toolbar and sidebar.
 --snice-doc-link-color
 --snice-doc-inline-code-background
 --snice-doc-toolbar-background
---snice-doc-toolbar-border
+--snice-doc-border
+--snice-doc-hover-background
 --snice-doc-sidebar-background
---snice-doc-sidebar-border
---snice-doc-padding
 ```
 
 ## Example
@@ -87,10 +88,12 @@ doc.downloadAs('html');
 doc.downloadAs('text');
 ```
 
-**CSS Parts:**
+## CSS Parts
+
 - `base` - Outer document wrapper
 - `editor` - Editable content area
 - `toolbar` - Formatting toolbar
+- `icon` - Toolbar icon element
 
 ## Features
 

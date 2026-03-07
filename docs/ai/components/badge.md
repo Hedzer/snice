@@ -17,6 +17,10 @@ pulse: boolean = false;
 offset: number = 0;
 ```
 
+## Slots
+
+- `(default)` - Content the badge overlays
+
 ## Methods
 
 - `setBadgeContent(content)` - Set text content

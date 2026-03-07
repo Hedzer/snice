@@ -26,7 +26,7 @@ import 'snice/components/virtual-scroller/snice-virtual-scroller';
 | `itemHeight` (attr: `item-height`) | `number` | `50` | Default item height (px) |
 | `bufferSize` (attr: `buffer-size`) | `number` | `5` | Extra items rendered outside viewport |
 | `estimatedItemHeight` (attr: `estimated-item-height`) | `number` | `50` | Estimated height for variable items |
-| `renderItem` | `(item: VirtualScrollerItem, index: number) => string` | -- | Function to render each item |
+| `renderItem` | `(item: VirtualScrollerItem, index: number) => string \| HTMLElement` | -- | Function to render each item (JS property only) |
 
 ### VirtualScrollerItem Interface
 

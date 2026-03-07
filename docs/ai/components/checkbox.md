@@ -67,6 +67,10 @@ document.querySelector('#cb').addEventListener('checkbox-change', (e) => {
 </script>
 ```
 
+## CSS Parts
+
+`input`, `checkbox`, `spinner`, `label`
+
 ## Features
 
 - Form-associated custom element

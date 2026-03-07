@@ -46,6 +46,9 @@ stretch: boolean = false;                 // input fills full host height
 - `blur()` - Blur input
 - `select()` - Select text
 - `clear()` - Clear value
+- `checkValidity()` - Check validation, returns `boolean`
+- `reportValidity()` - Report validation to user, returns `boolean`
+- `setCustomValidity(message)` - Set custom validation message
 
 ## Events
 

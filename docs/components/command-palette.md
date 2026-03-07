@@ -4,6 +4,17 @@
 
 A searchable command palette overlay (⌘K) for quick access to application commands and actions.
 
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [CommandItem Interface](#commanditem-interface)
+- [Keyboard Shortcuts](#keyboard-shortcuts)
+- [Accessibility](#accessibility)
+
 ## Properties
 
 | Property | Type | Default | Description |
@@ -123,6 +134,36 @@ palette.addEventListener('command-execute', (e) => {
   console.log('Executed:', e.detail.command.label);
   analytics.track('command_executed', { command: e.detail.command.id });
 });
+```
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `container` | `<div>` | Main palette container |
+| `search` | `<div>` | Search area wrapper |
+| `input` | `<input>` | Search input element |
+| `results` | `<div>` | Results list container |
+| `empty` | `<div>` | Empty state message |
+| `category` | `<div>` | Category group header |
+| `item` | `<button>` | Individual command item |
+| `item-icon` | `<div>` | Item icon wrapper |
+| `item-icon-image` | `<img>` | Item icon image |
+| `item-content` | `<div>` | Item label and description wrapper |
+| `item-label` | `<div>` | Item label text |
+| `item-description` | `<div>` | Item description text |
+| `item-shortcut` | `<div>` | Keyboard shortcut badge |
+
+```css
+snice-command-palette::part(container) {
+  max-width: 800px;
+}
+
+snice-command-palette::part(item) {
+  border-radius: 0.25rem;
+}
 ```
 
 ## CommandItem Interface

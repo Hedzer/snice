@@ -30,6 +30,11 @@ outputType: CropperOutputType = 'png'         // attr: output-type — 'png' | '
 --snice-color-background-element  /* Container background */
 --snice-color-border              /* Container border */
 --snice-border-radius-lg          /* Container radius */
+--cropper-overlay                 /* Overlay mask color (default: rgb(0 0 0 / 0.5)) */
+--cropper-border-color            /* Crop area border color (default: rgb(255 255 255)) */
+--cropper-guide-color             /* Rule-of-thirds guide color (default: rgb(255 255 255 / 0.4)) */
+--cropper-handle-color            /* Resize handle fill (default: rgb(255 255 255)) */
+--cropper-handle-border           /* Resize handle border (default: rgb(0 0 0 / 0.3)) */
 ```
 
 **CSS Parts:**

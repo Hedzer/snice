@@ -49,6 +49,10 @@ interface ToastOptions {
 }
 ```
 
+## Events (snice-toast)
+
+- `close-toast` → `{ id: string }` - Close button clicked
+
 ## Container Methods
 
 - `show(message, options?)` - Show toast, returns ID

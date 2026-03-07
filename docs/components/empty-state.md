@@ -4,6 +4,28 @@
 
 The `<snice-empty-state>` component provides a consistent way to display empty or no-data states.
 
+## Table of Contents
+- [Importing](#importing)
+- [Properties](#properties)
+- [Events](#events)
+- [Slots](#slots)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+
+## Importing
+
+**ESM (bundler)**
+```typescript
+import 'snice/components/empty-state/snice-empty-state';
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-empty-state.min.js"></script>
+```
+
 ## Properties
 
 | Property | Type | Default | Description |
@@ -12,13 +34,20 @@ The `<snice-empty-state>` component provides a consistent way to display empty o
 | `icon` | `string` | `'📭'` | Icon (URL, image file, emoji). Use slot for icon fonts. |
 | `title` | `string` | `'No data'` | Title text |
 | `description` | `string` | `''` | Description text |
-| `actionText` | `string` | `''` | Action button text |
-| `actionHref` | `string` | `''` | Action link URL |
+| `actionText` (attr: `action-text`) | `string` | `''` | Action button text |
+| `actionHref` (attr: `action-href`) | `string` | `''` | Action link URL |
 
 ## Events
 
-### `empty-state-action`
+#### `empty-state-action`
 Fired when action button/link is clicked.
+
+**Event Detail:**
+```typescript
+{
+  emptyState: SniceEmptyStateElement;
+}
+```
 
 ## Slots
 
@@ -41,6 +70,16 @@ Use the `icon` slot for external CSS-based icon fonts:
   <i slot="icon" class="fa-solid fa-box-open fa-4x"></i>
 </snice-empty-state>
 ```
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `container` | Outer empty state wrapper |
+| `icon` | Icon wrapper |
+| `title` | Title element |
+| `description` | Description paragraph |
+| `action` | Action button or link |
 
 ## Basic Usage
 
@@ -100,4 +139,29 @@ Use the `icon` slot for external CSS-based icon fonts:
     <button>Import Project</button>
   </div>
 </snice-empty-state>
+```
+
+### Sizes
+
+```html
+<snice-empty-state size="small" title="Small"></snice-empty-state>
+<snice-empty-state size="medium" title="Medium"></snice-empty-state>
+<snice-empty-state size="large" title="Large"></snice-empty-state>
+```
+
+### Event Handling
+
+```html
+<snice-empty-state
+  id="empty"
+  title="No items yet"
+  description="Create your first item to get started"
+  action-text="Create Item"
+></snice-empty-state>
+
+<script>
+  document.querySelector('#empty').addEventListener('empty-state-action', (e) => {
+    console.log('Action clicked', e.detail);
+  });
+</script>
 ```

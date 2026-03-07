@@ -20,6 +20,10 @@ interface AvatarGroupItem {
 }
 ```
 
+## Slots
+
+- `(default)` - `<snice-avatar>` elements for declarative mode
+
 ## Events
 
 - `avatar-click` → `{ avatar: AvatarGroupItem, index: number }`

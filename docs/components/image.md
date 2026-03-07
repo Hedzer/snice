@@ -4,6 +4,12 @@
 
 The `<snice-image>` component provides a flexible image display with variants, sizes, lazy loading, and fallback support.
 
+## Table of Contents
+- [Properties](#properties)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [CSS Parts](#css-parts)
+
 ## Properties
 
 | Property | Type | Default | Description |
@@ -11,6 +17,9 @@ The `<snice-image>` component provides a flexible image display with variants, s
 | `src` | `string` | `''` | Image source URL |
 | `alt` | `string` | `''` | Alternative text |
 | `fallback` | `string` | `''` | Fallback image URL on error |
+| `placeholder` | `string` | `''` | Low-res placeholder image shown while loading |
+| `srcset` | `string` | `''` | Responsive srcset attribute |
+| `sizes` | `string` | `''` | Responsive sizes attribute |
 | `variant` | `'rounded' \| 'square' \| 'circle'` | `'rounded'` | Shape variant |
 | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Predefined size |
 | `lazy` | `boolean` | `true` | Enable lazy loading |
@@ -87,7 +96,13 @@ The `<snice-image>` component provides a flexible image display with variants, s
 <snice-image variant="circle" size="medium"></snice-image>
 ```
 
-## Styling
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `container` | Image container div |
+| `image` | The img element |
+| `placeholder` | Placeholder element (shown when loading or no src) |
 
 ```css
 snice-image::part(container) {

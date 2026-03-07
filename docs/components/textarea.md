@@ -41,6 +41,7 @@ import 'snice/components/textarea/snice-textarea';
 | `autocomplete` | `string` | `''` | Autocomplete attribute |
 | `name` | `string` | `''` | Form field name |
 | `autoGrow` (attr: `auto-grow`) | `boolean` | `false` | Auto-expand height |
+| `loading` | `boolean` | `false` | Show loading spinner |
 
 ## Methods
 

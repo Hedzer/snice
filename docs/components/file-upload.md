@@ -254,6 +254,16 @@ upload.addEventListener('file-upload-change', (e) => {
 </script>
 ```
 
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `upload-area` | Drop zone container |
+| `input` | Hidden file input |
+| `file-item` | Individual file entry |
+| `error-text` | Error text element |
+| `helper-text` | Helper text element |
+
 ## Features
 
 - **Drag and Drop**: Native drag-and-drop support with visual feedback

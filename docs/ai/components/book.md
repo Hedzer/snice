@@ -33,17 +33,13 @@ readonly totalPages: number      // Getter, count of slotted page elements
 ## CSS Custom Properties
 
 ```css
---book-bg           /* Page background */
---book-text          /* Text color */
---book-text-secondary /* Secondary text */
---book-border        /* Border color */
---book-primary       /* Primary accent */
---book-shadow        /* Book shadow */
---book-page-bg       /* Individual page background */
---book-page-line     /* Ruled line color */
---book-spine-bg      /* Spine color */
---book-cover-bg      /* Cover background */
---book-flip-duration /* Flip animation duration, default 0.6s */
+--page-bg            /* Page background color (default: #F5F5F5) */
+--dark-text          /* Primary text color (default: #2A2935) */
+--baseline           /* Base spacing unit (default: 12px) */
+--book-title         /* Book title font family (default: 'Tulpen One', sans-serif) */
+--title              /* Section title / body heading font (default: 'Cormorant Garamond', serif) */
+--body               /* Body text font (default: 'Cormorant Garamond', serif) */
+--base-size          /* Base font size, derived from baseline (default: calc(var(--baseline) * 1.2)) */
 ```
 
 ## CSS Parts

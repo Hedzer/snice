@@ -30,7 +30,6 @@ chat.addMessage({
   author: 'Alice',
   avatar: 'https://example.com/alice.jpg',
   timestamp: new Date(),
-  formats: [],
 });
 ```
 
@@ -233,7 +232,6 @@ snice-chat::part(input) {
       content: e.detail.message,
       author: 'You',
       timestamp: new Date(),
-      formats: [],
     });
   });
 </script>
@@ -257,7 +255,6 @@ snice-chat::part(input) {
       content: e.detail.message,
       author: 'You',
       timestamp: new Date(),
-      formats: [],
     });
   });
 </script>
@@ -279,7 +276,6 @@ snice-chat::part(input) {
     author: 'Bob',
     avatar: 'https://example.com/bob.jpg',
     timestamp: new Date(),
-    formats: [],
   });
 </script>
 ```
@@ -299,7 +295,6 @@ snice-chat::part(input) {
     content: '',
     author: 'Alice',
     timestamp: new Date(),
-    formats: [],
     attachment: {
       type: 'image',
       url: 'https://example.com/image.jpg',
@@ -312,7 +307,6 @@ snice-chat::part(input) {
     content: '',
     author: 'Bob',
     timestamp: new Date(),
-    formats: [],
     attachment: {
       type: 'file',
       url: 'https://example.com/document.pdf',
@@ -338,7 +332,6 @@ snice-chat::part(input) {
     content: 'Great work!',
     author: 'Alice',
     timestamp: new Date(),
-    formats: [],
     reactions: [
       { emoji: '👍', count: 3, users: ['Bob', 'Charlie', 'Diana'] },
       { emoji: '🎉', count: 1, users: ['Eve'] },
@@ -377,7 +370,6 @@ snice-chat::part(input) {
     content: 'Alice joined the channel',
     author: 'System',
     timestamp: new Date(),
-    formats: [],
   });
 </script>
 ```
@@ -402,7 +394,6 @@ snice-chat::part(input) {
       content: 'Sorry for the delay!',
       author: 'Alice',
       timestamp: new Date(),
-      formats: [],
     });
   }, 2000);
 </script>

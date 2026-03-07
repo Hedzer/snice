@@ -33,19 +33,35 @@ The chip component provides compact elements for tags, filters, selections, or c
 #### `chip-click`
 Fired when the chip is clicked (not the remove button).
 
+**Event Detail:**
+```typescript
+{
+  label: string;
+  selected: boolean;
+}
+```
+
 **Usage:**
 ```typescript
-chip.addEventListener('chip-click', () => {
-  console.log('Chip clicked');
+chip.addEventListener('chip-click', (e) => {
+  console.log('Chip clicked:', e.detail.label, 'selected:', e.detail.selected);
 });
 ```
 
 #### `chip-remove`
 Fired when the remove button is clicked.
 
+**Event Detail:**
+```typescript
+{
+  label: string;
+}
+```
+
 **Usage:**
 ```typescript
-chip.addEventListener('chip-remove', () => {
+chip.addEventListener('chip-remove', (e) => {
+  console.log('Removed:', e.detail.label);
   chip.remove(); // Remove from DOM
 });
 ```
@@ -125,7 +141,7 @@ import 'snice/components/chip/snice-chip';
 
 <script type="module">
   const chip = document.getElementById('removable-chip');
-  chip.addEventListener('remove', () => {
+  chip.addEventListener('chip-remove', () => {
     chip.remove();
   });
 </script>
@@ -225,7 +241,7 @@ The `icon` property supports multiple formats:
 <script type="module">
   const chips = document.querySelectorAll('.tag-container snice-chip');
   chips.forEach(chip => {
-    chip.addEventListener('remove', () => {
+    chip.addEventListener('chip-remove', () => {
       chip.remove();
     });
   });
@@ -322,7 +338,7 @@ The `icon` property supports multiple formats:
     chip.avatar = contact.avatar;
     chip.removable = true;
 
-    chip.addEventListener('remove', () => {
+    chip.addEventListener('chip-remove', () => {
       chip.remove();
       console.log('Removed:', contact.name);
     });
@@ -437,7 +453,7 @@ The `icon` property supports multiple formats:
       chip.variant = 'primary';
       chip.removable = true;
 
-      chip.addEventListener('remove', () => {
+      chip.addEventListener('chip-remove', () => {
         currentSkills = currentSkills.filter(s => s !== skill);
         renderSkills();
       });
@@ -632,7 +648,7 @@ The `icon` property supports multiple formats:
   const clearButton = document.getElementById('clear-filters');
 
   // Handle remove events
-  container.addEventListener('remove', (e) => {
+  container.addEventListener('chip-remove', (e) => {
     e.target.remove();
     updateFilterCount();
   });

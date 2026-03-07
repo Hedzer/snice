@@ -7,6 +7,7 @@ Bell icon with dropdown notification panel. Shows unread badge, supports dismiss
 ```ts
 notifications: NotificationItem[]       // Array of notification objects
 open: boolean                           // Whether the dropdown panel is visible (default: false)
+icon: string                            // Custom bell icon (URL, image file, emoji) (default: '')
 ```
 
 ### NotificationItem
@@ -25,20 +26,24 @@ interface NotificationItem {
 
 ## Methods
 
-- `markAsRead(id: string)` -- Mark single notification as read
-- `markAllAsRead()` -- Mark all notifications as read
-- `dismiss(id: string)` -- Remove notification from list
+- `markAsRead(id: string)` - Mark single notification as read
+- `markAllAsRead()` - Mark all notifications as read
+- `dismiss(id: string)` - Remove notification from list
 
 ## Events
 
-- `notification-click` -> `{ notification: NotificationItem }` -- Notification item clicked
-- `notification-dismiss` -> `{ id: string }` -- Notification dismissed
-- `notification-read-all` -> `void` -- All marked as read
+- `notification-click` → `{ notification: NotificationItem }` - Notification item clicked
+- `notification-dismiss` → `{ id: string }` - Notification dismissed
+- `notification-read-all` → `void` - All marked as read
+
+## Slots
+
+- `icon` - Custom bell icon content (overrides `icon` property)
 
 ## CSS Parts
 
 - `trigger` - The bell icon button
-- `badge` - The unread count badge
+- `icon` - The bell icon span
 - `panel` - The dropdown notification panel
 - `panel-header` - The panel header with title and mark-all-read action
 

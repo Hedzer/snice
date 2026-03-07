@@ -35,7 +35,6 @@ Fired when a clickable card is clicked.
 ```typescript
 {
   selected: boolean;
-  disabled: boolean;
 }
 ```
 
@@ -47,6 +46,16 @@ card.addEventListener('card-click', (e) => {
 ```
 
 ## Slots
+
+### `image` (named slot)
+Image displayed at the top of the card. The slotted element is styled full-width with top border radius.
+
+```html
+<snice-card>
+  <img slot="image" src="/photo.jpg" alt="Card image">
+  <p>Body content</p>
+</snice-card>
+```
 
 ### `header` (named slot)
 Content for the card header section.

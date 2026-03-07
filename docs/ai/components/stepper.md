@@ -18,6 +18,10 @@ interface Step {
 }
 ```
 
+## Slots
+
+- `(default)` - `<snice-stepper-panel>` elements (auto show/hide based on currentStep)
+
 ## Events
 
 - `step-change` → `{ previousStep, currentStep, step }` - Cancelable via preventDefault()
@@ -35,6 +39,7 @@ interface Step {
 - `step-label` - Step label text
 - `step-description` - Description text
 - `step-connector` - Line between steps
+- `panels` - Panels container (wraps slotted content)
 
 ## Usage
 

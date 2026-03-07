@@ -16,6 +16,7 @@ open: boolean = false;
 
 ## Slots
 
+- `(default)` - Additional content after the message
 - `icon` - Custom icon content (overrides `icon` property and default variant icons)
 
 ## Methods
@@ -26,9 +27,17 @@ open: boolean = false;
 
 ## Events
 
-- `banner-open` - {banner}
-- `banner-close` - {banner}
-- `banner-action` - {banner}
+- `banner-open` → `{ banner }`
+- `banner-close` → `{ banner }`
+- `banner-action` → `{ banner }`
+
+## CSS Parts
+
+- `banner` - Main banner container
+- `icon` - Icon wrapper
+- `message` - Message text
+- `action` - Action button
+- `close` - Close/dismiss button
 
 ## Usage
 

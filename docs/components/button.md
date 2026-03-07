@@ -58,6 +58,27 @@ Programmatically click the button.
 button.click();
 ```
 
+#### `setLoading(loading: boolean): void`
+Set the loading state programmatically.
+
+```typescript
+button.setLoading(true);
+```
+
+#### `setDisabled(disabled: boolean): void`
+Set the disabled state programmatically.
+
+```typescript
+button.setDisabled(true);
+```
+
+#### `setVariant(variant: ButtonVariant): void`
+Set the variant programmatically.
+
+```typescript
+button.setVariant('success');
+```
+
 ## Events
 
 #### `button-click`
@@ -140,6 +161,15 @@ The `icon-placement` property works with both the slot and the `icon` property:
 ```
 
 > **Note**: The `icon` slot takes precedence over the `icon` property when both are present.
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `base` | The button element |
+| `spinner` | Loading spinner |
+| `label` | Button label text |
+| `icon` | Icon container |
 
 ## Basic Usage
 

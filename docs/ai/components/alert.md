@@ -14,6 +14,7 @@ icon: string = '';
 
 ## Slots
 
+- `(default)` - Alert message content
 - `icon` - Custom icon content (overrides `icon` property and default icons)
 
 ## Methods
@@ -23,9 +24,9 @@ icon: string = '';
 
 ## Events
 
-- `alert-dismiss` - Fired when dismiss button clicked. Detail: `{ variant, title }`
-- `alert-shown` - Fired when show() is called. Detail: `{ variant, title }`
-- `alert-hidden` - Fired after hide animation completes. Detail: `{ variant, title }`
+- `alert-dismiss` → `{ variant, title }` - Dismiss button clicked
+- `alert-shown` → `{ variant, title }` - Alert shown
+- `alert-hidden` → `{ variant, title }` - Alert hidden after animation
 
 ## Usage
 

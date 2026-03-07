@@ -36,6 +36,13 @@ import 'snice/components/table/snice-table';
 | `selectorOptions` (attr: `selector-options`) | `Array<{ value: string, label: string }>` | `[]` | Dropdown filter options |
 | `loading` | `boolean` | `false` | Show loading state |
 | `selectedRows` (attr: `selected-rows`) | `number[]` | `[]` | Indices of selected rows |
+| `pagination` | `boolean` | `false` | Enable pagination |
+| `paginationMode` (attr: `pagination-mode`) | `'client' \| 'server'` | `'client'` | Client-side or server-side pagination |
+| `pageSize` (attr: `page-size`) | `number` | `10` | Rows per page |
+| `currentPage` (attr: `current-page`) | `number` | `1` | Current page number |
+| `totalItems` (attr: `total-items`) | `number` | `0` | Total item count (server mode) |
+| `pageSizes` | `number[]` | `[10, 25, 50, 100]` | Available page size options (JS only) |
+| `filterable` | `boolean` | `false` | Show filter dropdown |
 
 ## Column Definition
 
@@ -64,6 +71,10 @@ interface ColumnDefinition {
 | `renderHeader()` | -- | Re-render the table header |
 | `renderBody()` | -- | Re-render the table body |
 | `toggleSort()` | `columnKey: string, multiSort?: boolean` | Toggle sort on a column |
+| `renderControls()` | -- | Re-render search/filter controls |
+| `renderPagination()` | -- | Re-render pagination |
+| `goToPage()` | `page: number` | Navigate to a specific page |
+| `setPageSize()` | `size: number` | Change rows per page |
 
 ## Events
 
@@ -72,6 +83,7 @@ interface ColumnDefinition {
 | `table-row-selection-changed` | `{ selectedRows: number[], rowIndex: number, selected: boolean }` | A row's selection state changed |
 | `table-select-all-changed` | `{ selectedRows: number[], allSelected: boolean }` | Select-all checkbox toggled |
 | `row-clicked` | `{ rowData: any, rowIndex: number }` | A row was clicked (requires `clickable`) |
+| `page-change` | `{ page: number, pageSize: number, totalPages: number, totalItems: number }` | Page or page size changed |
 
 ## Slots
 

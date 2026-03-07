@@ -20,8 +20,8 @@ interface WaterfallDataPoint {
 
 ## Events
 
-- `bar-click` -> `{ item: WaterfallDataPoint; index: number }`
-- `bar-hover` -> `{ item: WaterfallDataPoint; index: number }`
+- `bar-click` → `{ item: WaterfallDataPoint; index: number }` — bar clicked
+- `bar-hover` → `{ item: WaterfallDataPoint; index: number }` — bar hovered
 
 ## CSS Custom Properties
 

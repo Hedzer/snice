@@ -49,6 +49,32 @@ interface Step {
 |------|-------------|
 | (default) | `<snice-stepper-panel>` elements for step content |
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `container` | `<div>` | Main stepper container |
+| `step` | `<div>` | Individual step wrapper |
+| `step-indicator` | `<div>` | Circular step number/checkmark |
+| `step-content` | `<div>` | Label + description wrapper |
+| `step-label` | `<div>` | Step label text |
+| `step-description` | `<div>` | Step description text |
+| `step-connector` | `<div>` | Line connecting steps |
+| `panels` | `<div>` | Container wrapping slotted panel content |
+
+```css
+snice-stepper::part(step-indicator) {
+  width: 40px;
+  height: 40px;
+}
+
+snice-stepper::part(step-connector) {
+  background: #3b82f6;
+}
+```
+
 ## Basic Usage
 
 ```typescript

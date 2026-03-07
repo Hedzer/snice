@@ -33,6 +33,7 @@ Individual collapsible section within an accordion.
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `multiple` | `boolean` | `false` | Allow multiple items open simultaneously |
+| `variant` | `'bordered' \| 'elevated'` | `'bordered'` | Visual style variant |
 
 ### Accordion Item
 

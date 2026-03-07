@@ -115,10 +115,12 @@ Responsive switching: inline above the breakpoint, overlay below. Uses `window.m
 - Breakpoint mode (responsive inline ↔ overlay switching)
 - ARIA attributes (role, aria-modal, aria-hidden)
 
-## Notes
+## CSS Parts
 
-- Push content targets first `<main>` or `<body>`
-- Contained mode positions relative to parent
-- Default dismissal: close button, backdrop click, Escape key
-- Inline CSS must come after all position/size rules in stylesheet (specificity tie → source order wins)
-- Breakpoint and inline can coexist; breakpoint toggles the `inline` attribute at runtime
+- `backdrop` - Backdrop overlay
+- `base` - The drawer panel container
+- `header` - Header section
+- `title` - Title wrapper (h2)
+- `close` - Close button
+- `body` - Body content section
+- `footer` - Footer section

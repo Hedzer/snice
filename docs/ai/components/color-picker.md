@@ -26,12 +26,18 @@ loading: boolean = false;
 - `focus()` - Focus picker
 - `blur()` - Blur picker
 
+## CSS Parts
+
+- `spinner` - Loading spinner
+- `error-text` - Error text element
+- `helper-text` - Helper text element
+
 ## Events
 
-- `color-picker-input` - {value, colorPicker}
-- `color-picker-change` - {value, colorPicker}
-- `color-picker-focus` - {colorPicker}
-- `color-picker-blur` - {colorPicker}
+- `color-picker-input` → `{ value, colorPicker }`
+- `color-picker-change` → `{ value, colorPicker }`
+- `color-picker-focus` → `{ colorPicker }`
+- `color-picker-blur` → `{ colorPicker }`
 
 ## Usage
 

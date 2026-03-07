@@ -37,6 +37,7 @@ import 'snice/components/notification-center/snice-notification-center';
 |----------|------|---------|-------------|
 | `notifications` | `NotificationItem[]` | `[]` | Array of notification objects to display |
 | `open` | `boolean` | `false` | Whether the dropdown panel is visible |
+| `icon` | `string` | `''` | Custom bell icon (URL, image file, emoji). Use slot for icon fonts. |
 
 ## Methods
 
@@ -80,6 +81,12 @@ import 'snice/components/notification-center/snice-notification-center';
 | `--snice-border-radius-lg` | Panel border radius |
 | `--snice-transition-fast` | Hover transition speed |
 
+## Slots
+
+| Slot Name | Description |
+|-----------|-------------|
+| `icon` | Custom bell icon content. Overrides the `icon` property. Useful for icon fonts (Material Symbols, Font Awesome). |
+
 ## CSS Parts
 
 Style internal elements from outside the shadow DOM using `::part()`.
@@ -87,7 +94,7 @@ Style internal elements from outside the shadow DOM using `::part()`.
 | Part | Element | Description |
 |------|---------|-------------|
 | `trigger` | `<button>` | The bell icon button |
-| `badge` | `<span>` | The unread count badge |
+| `icon` | `<span>` | The bell icon span |
 | `panel` | `<div>` | The dropdown notification panel |
 | `panel-header` | `<div>` | The panel header with title and mark-all-read action |
 

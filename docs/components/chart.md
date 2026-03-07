@@ -57,8 +57,8 @@ Toggle dataset visibility.
 chart.toggleDataset(0);
 ```
 
-### `exportImage(format?: 'svg'): string`
-Export chart as SVG string.
+### `exportImage(format?: 'png' | 'svg'): string`
+Export chart as a data URL string. Defaults to `'svg'`.
 
 ```javascript
 const svg = chart.exportImage('svg');

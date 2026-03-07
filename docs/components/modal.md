@@ -54,6 +54,19 @@ import 'snice/components/modal/snice-modal';
 | `header` | Header content (typically a title) |
 | `footer` | Footer content (typically action buttons) |
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `backdrop` | `<div>` | The backdrop overlay |
+| `panel` | `<div>` | The modal panel container |
+| `header` | `<div>` | Header section |
+| `close` | `<button>` | Close button |
+| `body` | `<div>` | Body content section |
+| `footer` | `<div>` | Footer section |
+
 ## Basic Usage
 
 ```typescript

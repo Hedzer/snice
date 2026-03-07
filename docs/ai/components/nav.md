@@ -56,6 +56,7 @@ nav.update([
 - `base` - Outer content wrapper
 - `nav` - Navigation element
 - `link` - Individual nav link
+- `icon` - Nav item icon (img or span)
 
 ## Features
 

@@ -1,5 +1,6 @@
-# Invoice
-`<snice-invoice>`
+<!-- AI: For a low-token version of this doc, use docs/ai/components/invoice.md instead -->
+
+# Invoice Component
 
 A professional invoice component with line items, automatic tax and discount calculations, status tracking, and QR code support. Supports multiple visual variants and customizable layouts.
 

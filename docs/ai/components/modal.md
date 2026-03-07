@@ -52,11 +52,11 @@ modal.close();
 modal.addEventListener('modal-close', () => console.log('Closed'));
 ```
 
-## Features
+## CSS Parts
 
-- Body scroll lock when open
-- Focus trap with Tab navigation
-- Focus restoration on close
-- Backdrop click to close
-- Escape key to close
-- ARIA attributes (role, aria-modal, aria-label, aria-hidden)
+- `backdrop` - The backdrop overlay
+- `panel` - The modal panel container
+- `header` - Header section
+- `close` - Close button
+- `body` - Body content section
+- `footer` - Footer section

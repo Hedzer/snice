@@ -28,10 +28,18 @@ files: FileList | null;
 - `clear()` - Clear all files
 - `removeFile(index)` - Remove file by index
 
+## CSS Parts
+
+- `upload-area` - Drop zone container
+- `input` - Hidden file input
+- `file-item` - Individual file entry
+- `error-text` - Error text element
+- `helper-text` - Helper text element
+
 ## Events
 
-- `file-upload-change` - {files, fileUpload}
-- `file-upload-error` - {message, fileUpload}
+- `file-upload-change` → `{ files, fileUpload }`
+- `file-upload-error` → `{ message, fileUpload }`
 
 ## Usage
 

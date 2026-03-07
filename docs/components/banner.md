@@ -4,6 +4,15 @@
 
 The `<snice-banner>` component displays fixed-position notification banners at the top or bottom of the viewport.
 
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [Slots](#slots)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+
 ## Properties
 
 | Property | Type | Default | Description |
@@ -18,25 +27,34 @@ The `<snice-banner>` component displays fixed-position notification banners at t
 
 ## Methods
 
-### `show(): void`
+#### `show(): void`
 Show the banner.
 
-### `hide(): void`
+```typescript
+banner.show();
+```
+
+#### `hide(): void`
 Hide the banner.
 
-### `toggle(): void`
+```typescript
+banner.hide();
+```
+
+#### `toggle(): void`
 Toggle banner visibility.
+
+```typescript
+banner.toggle();
+```
 
 ## Events
 
-### `banner-open`
-Fired when banner opens.
-
-### `banner-close`
-Fired when banner closes.
-
-### `banner-action`
-Fired when action button is clicked.
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `banner-open` | `{ banner }` | Fired when banner opens |
+| `banner-close` | `{ banner }` | Fired when banner closes |
+| `banner-action` | `{ banner }` | Fired when action button is clicked |
 
 ## Slots
 
@@ -58,6 +76,18 @@ Use the `icon` slot for external CSS-based icon fonts:
   <i slot="icon" class="fa-solid fa-check-circle"></i>
 </snice-banner>
 ```
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `banner` | `<div>` | The main banner container |
+| `icon` | `<span>` | The icon wrapper |
+| `message` | `<span>` | The message text |
+| `action` | `<button>` | The action button (when `actionText` is set) |
+| `close` | `<button>` | The close/dismiss button |
 
 ## Basic Usage
 

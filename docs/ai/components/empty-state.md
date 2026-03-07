@@ -20,7 +20,15 @@ actionHref: string = '';       // attribute: action-href
 
 ## Events
 
-- `empty-state-action` - {emptyState}
+- `empty-state-action` → `{ emptyState }`
+
+## CSS Parts
+
+- `container` - Outer empty state wrapper
+- `icon` - Icon wrapper
+- `title` - Title element
+- `description` - Description paragraph
+- `action` - Action button or link
 
 ## Usage
 

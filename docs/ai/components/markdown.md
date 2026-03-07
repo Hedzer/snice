@@ -13,14 +13,18 @@ theme: 'default' | 'github'             // Visual theme
 
 - `setContent(markdown: string)` — Set markdown source programmatically
 
+## Slots
+
+- (default) - Markdown source text
+
 ## Input
 
 Content via slotted text or `setContent()`. No `content` attribute/property.
 
 ## Events
 
-- `markdown-render` -> `{ html: string }` -- Fired after markdown is rendered
-- `link-click` -> `{ href: string; text: string }` -- Fired when a link is clicked (default prevented)
+- `markdown-render` → `{ html: string }` - Fired after markdown is rendered
+- `link-click` → `{ href: string; text: string }` - Fired when a link is clicked (default prevented)
 
 ## CSS Custom Properties
 

@@ -32,13 +32,13 @@ Slack-style chat interface with messages, typing indicators, reactions, and file
 
 ## Events
 
-- `message-send: CustomEvent<{ message: string; attachments?: File[] }>` - Message sent
-- `message-edit: CustomEvent<{ messageId: string; newContent: string }>` - Message edited
-- `message-delete: CustomEvent<{ messageId: string }>` - Message deleted
-- `message-react: CustomEvent<{ messageId: string; emoji: string }>` - Reaction added
-- `message-thread: CustomEvent<{ messageId: string }>` - Thread started
-- `typing-start: CustomEvent<{}>` - User started typing
-- `typing-stop: CustomEvent<{}>` - User stopped typing
+- `message-send` → `{ message: string; attachments?: File[] }` - Message sent
+- `message-edit` → `{ messageId: string; newContent: string }` - Message edited
+- `message-delete` → `{ messageId: string }` - Message deleted
+- `message-react` → `{ messageId: string; emoji: string }` - Reaction added
+- `message-thread` → `{ messageId: string }` - Thread started
+- `typing-start` → `{}` - User started typing
+- `typing-stop` → `{}` - User stopped typing
 
 **CSS Parts:**
 - `base` - Chat container
@@ -94,12 +94,12 @@ const chat = document.querySelector('snice-chat');
 
 // Add message
 chat.addMessage({
-  type: 'text', content: 'Hello!', author: 'Alice', timestamp: new Date(), formats: [],
+  type: 'text', content: 'Hello!', author: 'Alice', timestamp: new Date(),
 });
 
 // Handle send
 chat.addEventListener('message-send', (e) => {
-  chat.addMessage({ type: 'text', content: e.detail.message, author: 'You', timestamp: new Date(), formats: [] });
+  chat.addMessage({ type: 'text', content: e.detail.message, author: 'You', timestamp: new Date() });
 });
 
 // Typing indicators

@@ -1,32 +1,45 @@
 # snice-table
 
-Data table with sorting, search, selection, and 15 column types.
+Data table with sorting, search, selection, pagination, and 15 column types.
 
 ## Properties
 
 ```typescript
-size: 'small'|'medium'|'large' = 'medium';
-variant: 'default'|'striped'|'bordered' = 'default';
 striped: boolean = false;
-hoverable: boolean = true;
-bordered: boolean = false;
-stickyHeader: boolean = false;    // attr: sticky-header
+searchable: boolean = false;
+filterable: boolean = false;
 sortable: boolean = false;
 selectable: boolean = false;
+hoverable: boolean = true;
 clickable: boolean = false;
-loading: boolean = false;
-searchable: boolean = false;
-searchDebounce: number = 300;     // attr: search-debounce
 list: boolean = false;
+loading: boolean = false;
+searchDebounce: number = 500;     // attr: search-debounce
 selector: string = '';
-selectorOptions: string = '';     // attr: selector-options
+selectorOptions: Array<{value: string, label: string}> = []; // JS only
+currentSort: Array<{column: string, direction: 'asc'|'desc'}> = []; // JS only
+selectedRows: number[] = [];      // JS only
+pagination: boolean = false;
+paginationMode: 'client'|'server' = 'client'; // attr: pagination-mode
+pageSize: number = 10;            // attr: page-size
+currentPage: number = 1;          // attr: current-page
+totalItems: number = 0;           // attr: total-items
+pageSizes: number[] = [10, 25, 50, 100]; // JS only
+columns: any[] = [];              // JS only (plain property)
+data: any[] = [];                 // JS only (plain property)
 ```
+
+## Slots
+
+- `columns` - `<snice-column>` elements for declarative column definitions
+- `rows` - `<snice-row>` elements for declarative row data
 
 ## Events
 
 - `row-clicked` → `{ rowData, rowIndex }`
 - `table-row-selection-changed` → `{ selectedRows, rowIndex, selected }`
 - `table-select-all-changed` → `{ selectedRows, allSelected }`
+- `page-change` → `{ page, pageSize, totalPages, totalItems }`
 
 ## Methods
 
@@ -34,7 +47,11 @@ selectorOptions: string = '';     // attr: selector-options
 - `setColumns(columns)` - Set column definitions
 - `renderHeader()` - Re-render header
 - `renderBody()` - Re-render body
-- `toggleSort(column)` - Sort by column
+- `renderControls()` - Re-render search/filter controls
+- `renderPagination()` - Re-render pagination
+- `toggleSort(columnKey, multiSort?)` - Toggle sort on a column
+- `goToPage(page)` - Navigate to a specific page
+- `setPageSize(size)` - Change rows per page
 
 ## Column Types
 

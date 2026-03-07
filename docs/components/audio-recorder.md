@@ -16,6 +16,7 @@ Record audio with visualization, pause/resume, and playback.
 | `maxDuration` | `number` | `0` | Max duration (seconds, 0=unlimited) |
 | `showTimer` | `boolean` | `true` | Show recording timer |
 | `showPlayback` | `boolean` | `true` | Show playback controls after recording |
+| `recordedUrl` | `string` | `''` | URL of recorded audio (set automatically after stop) |
 
 ## Methods
 

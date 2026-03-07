@@ -51,10 +51,10 @@ interface DiffHunk {
 
 | Property | Description |
 |----------|-------------|
-| `--snice-diff-added-bg` | Background color for added lines |
-| `--snice-diff-removed-bg` | Background color for removed lines |
-| `--snice-diff-added-word-bg` | Word-level highlight color for added text |
-| `--snice-diff-removed-word-bg` | Word-level highlight color for removed text |
+| `--diff-add-bg` | Background color for added lines |
+| `--diff-remove-bg` | Background color for removed lines |
+| `--diff-add-word-bg` | Word-level highlight color for added text |
+| `--diff-remove-word-bg` | Word-level highlight color for removed text |
 
 ## CSS Parts
 

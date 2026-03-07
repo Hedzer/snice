@@ -6,6 +6,13 @@
 
 A coordinated row of KPI cards with consistent sizing, trend indicators, and responsive grid layout.
 
+## Table of Contents
+- [Properties](#properties)
+- [Events](#events)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+
 ## Importing
 
 **ESM (bundler)**

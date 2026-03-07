@@ -42,11 +42,16 @@ The cropper component provides an image cropping tool with a draggable and resiz
 
 ## CSS Custom Properties
 
-| Property | Description |
-|----------|-------------|
-| `--snice-color-background-element` | Container background color |
-| `--snice-color-border` | Container border color |
-| `--snice-border-radius-lg` | Container border radius |
+| Property | Description | Default |
+|----------|-------------|---------|
+| `--snice-color-background-element` | Container background color | `rgb(252 251 249)` |
+| `--snice-color-border` | Container border color | `rgb(226 226 226)` |
+| `--snice-border-radius-lg` | Container border radius | `0.5rem` |
+| `--cropper-overlay` | Overlay mask color outside crop area | `rgb(0 0 0 / 0.5)` |
+| `--cropper-border-color` | Crop area border color | `rgb(255 255 255)` |
+| `--cropper-guide-color` | Rule-of-thirds guide line color | `rgb(255 255 255 / 0.4)` |
+| `--cropper-handle-color` | Resize handle fill color | `rgb(255 255 255)` |
+| `--cropper-handle-border` | Resize handle border color | `rgb(0 0 0 / 0.3)` |
 
 ## CSS Parts
 

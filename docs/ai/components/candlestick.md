@@ -32,18 +32,14 @@ interface CandleData {
 
 ## Methods
 
-```typescript
-resetZoom(): void;                     // Show all data
-zoomTo(startIndex: number, endIndex: number): void;  // Zoom to range
-```
+- `resetZoom()` — reset zoom to show all data
+- `zoomTo(startIndex: number, endIndex: number)` — zoom to index range
 
 ## Events
 
-```typescript
-'candle-click': { candle: CandleData; index: number }
-'candle-hover': { candle: CandleData; index: number }
-'crosshair-move': { price: number; date: string; x: number; y: number }
-```
+- `candle-click` → `{ candle: CandleData; index: number }` — candle clicked
+- `candle-hover` → `{ candle: CandleData; index: number }` — candle hovered
+- `crosshair-move` → `{ price: number; date: string; x: number; y: number }` — crosshair moved
 
 ## Usage
 

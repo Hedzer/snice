@@ -138,6 +138,21 @@ Custom controls overlay area. Full viewport, positioned absolutely.
 </snice-camera>
 ```
 
+## CSS Custom Properties
+
+| Property | Description | Default |
+|----------|-------------|---------|
+| `--snice-camera-bg` | Camera background color | `rgb(0 0 0)` |
+| `--snice-camera-overlay` | Controls gradient overlay color | `rgb(0 0 0 / 0.5)` |
+| `--snice-camera-controls-color` | Controls icon and text color | `rgb(255 255 255)` |
+| `--snice-camera-btn-bg` | Button background | `rgb(0 0 0 / 0.4)` |
+| `--snice-camera-btn-hover-bg` | Button hover background | `rgb(0 0 0 / 0.6)` |
+| `--snice-camera-capture-bg` | Capture button background | `rgb(255 255 255 / 0.95)` |
+| `--snice-camera-capture-color` | Capture button icon color | `rgb(51 51 51)` |
+| `--snice-camera-capture-hover-bg` | Capture button hover background | `rgb(255 255 255)` |
+| `--snice-camera-flash-color` | Flash overlay color | `rgb(255 255 255)` |
+| `--snice-camera-status-bg` | Status badge background | `rgb(0 0 0 / 0.7)` |
+
 ## CSS Parts
 
 Style internal elements from outside the shadow DOM using `::part()`.

@@ -21,9 +21,24 @@ spaceBetween: number = 0;
 - `next()`, `prev()`, `goToSlide(index)`
 - `play()`, `pause()`
 
+## Slots
+
+- `(default)` - Slide content (each direct child = one slide)
+
 ## Events
 
-- `carousel-slide-change` (detail: { activeIndex, previousIndex, carousel })
+- `carousel-slide-change` → `{ activeIndex, previousIndex, carousel }`
+
+## CSS Parts
+
+- `container` - Outermost carousel wrapper
+- `viewport` - Visible slide area
+- `slides-container` - Flex container holding all slides
+- `controls` - Prev/next button container
+- `button-prev` - Previous slide button
+- `button-next` - Next slide button
+- `indicators` - Slide indicator dot container
+- `indicator` - Individual indicator dot
 
 ## Usage
 

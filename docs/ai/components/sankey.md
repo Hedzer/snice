@@ -27,9 +27,9 @@ interface SankeyLink { source: string; target: string; value: number; color?: st
 
 ## Events
 
-- `sankey-node-click` - `{ node: SankeyNode }` - Node clicked
-- `sankey-link-click` - `{ link: SankeyLink }` - Link clicked
-- `sankey-hover` - `{ type: 'node'|'link', item: SankeyNode|SankeyLink } | null` - Hover change
+- `sankey-node-click` → `{ node: SankeyNode }` — node clicked
+- `sankey-link-click` → `{ link: SankeyLink }` — link clicked
+- `sankey-hover` → `{ type: 'node'|'link', item: SankeyNode|SankeyLink } | null` — hover change
 
 ## Usage
 

@@ -11,9 +11,15 @@ size: 'small'|'medium'|'large' = 'medium';
 disabled: boolean = false;
 ```
 
+## CSS Parts
+
+- `base` - Root container
+- `indicator` - Sliding selection indicator
+- `segment` - Individual option button
+
 ## Events
 
-- `value-change` -> `{ value, previousValue, option, control }`
+- `value-change` → `{ value, previousValue, option, control }`
 
 ## Usage
 

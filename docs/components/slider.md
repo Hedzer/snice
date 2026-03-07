@@ -39,6 +39,7 @@ import 'snice/components/slider/snice-slider';
 | `showValue` (attr: `show-value`) | `boolean` | `false` | Display current value |
 | `showTicks` (attr: `show-ticks`) | `boolean` | `false` | Show tick marks |
 | `vertical` | `boolean` | `false` | Vertical orientation |
+| `loading` | `boolean` | `false` | Show loading spinner |
 | `form-align` | (CSS-only attribute) | -- | Gives the track area `min-height: 2.5rem` to align with input/select fields in form rows |
 
 ## Methods

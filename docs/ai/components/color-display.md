@@ -39,6 +39,12 @@ label: string = '';
 <snice-color-display value="#3b82f6" show-swatch="false"></snice-color-display>
 ```
 
+## CSS Parts
+
+- `container` - Outer container
+- `swatch` - Color swatch element
+- `label` - Color label text
+
 ## Features
 
 - Auto-converts hex to RGB/HSL

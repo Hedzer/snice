@@ -16,7 +16,7 @@ label: string = '';                // custom center text
 
 ## Events
 
-- `progress-complete` -> `{ value: number, max: number, component: SniceProgressRingElement }`
+- `progress-complete` → `{ value, max, component }`
 
 ## CSS Parts
 

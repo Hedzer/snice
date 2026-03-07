@@ -8,7 +8,9 @@ The leaderboard component displays a ranked list of entries with optional avatar
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
+- [Slots](#slots)
 - [CSS Custom Properties](#css-custom-properties)
+- [CSS Parts](#css-parts)
 - [Basic Usage](#basic-usage)
 - [Declarative API (Child Elements)](#declarative-api-child-elements)
 - [Imperative API (setEntries)](#imperative-api-setentries)
@@ -60,6 +62,12 @@ leaderboard.addEventListener('entry-click', (e) => {
   console.log('Clicked:', e.detail.entry.name);
 });
 ```
+
+## Slots
+
+| Name | Description |
+|------|-------------|
+| (default) | `<snice-leaderboard-entry>` child elements for declarative data |
 
 ## CSS Custom Properties
 

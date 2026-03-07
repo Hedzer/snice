@@ -18,6 +18,13 @@ Display code with syntax highlighting, line numbers, and copy functionality. Use
 | `filename` | `string` | `''` | File name to display |
 | `format` | `string` | `''` | Formatter name from grammar (e.g. `"pretty"`), or any truthy string with `setFormatter()` |
 | `theme` | `'' \| 'dark' \| 'light'` | `''` | Force a specific color theme; empty string auto-detects from page or OS |
+| `fetchMode` | `'native' \| 'virtual' \| 'event'` | `'native'` | How grammar URLs are fetched: `native` uses fetch(), `virtual` uses import(), `event` dispatches `grammar-request` |
+
+## Slots
+
+| Slot | Description |
+|------|-------------|
+| (default) | Code content as slotted text (auto-dedented) |
 
 ## Methods
 
@@ -25,6 +32,7 @@ Display code with syntax highlighting, line numbers, and copy functionality. Use
 - `highlight()` - Manually trigger syntax highlighting
 - `setHighlighter(fn)` - Set an external highlighter function for this instance
 - `setFormatter(fn)` - Set a code formatter function for this instance
+- `setGrammar(grammar)` - Set a grammar object programmatically
 
 ## Events
 
@@ -484,3 +492,27 @@ The following token types are styled by default:
 | `builtin` | Red (#e06c75) | Built-in functions |
 
 Colors are customizable via CSS variables (e.g., `--code-keyword-color`).
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `container` | `<div>` | The outer code block wrapper |
+| `header` | `<div>` | The header bar with filename and copy button |
+| `filename` | `<span>` | The filename display |
+| `copy-button` | `<button>` | The copy-to-clipboard button |
+| `content` | `<div>` | The scrollable code content area |
+| `pre` | `<pre>` | The pre-formatted code container |
+| `code` | `<code>` | The code element containing highlighted tokens |
+
+```css
+snice-code-block::part(container) {
+  border-radius: 8px;
+}
+
+snice-code-block::part(header) {
+  padding: 0.5rem 1rem;
+}
+```

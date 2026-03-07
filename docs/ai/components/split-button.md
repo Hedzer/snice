@@ -7,15 +7,30 @@ Primary action button with dropdown menu of alternative actions.
 ```typescript
 label: string = '';
 actions: SplitButtonAction[] = [];  // { label, value, icon?, disabled? }
-variant: 'default'|'primary'|'success'|'danger' = 'default';
+variant: 'default'|'primary'|'success'|'warning'|'danger' = 'default';
 size: 'small'|'medium'|'large' = 'medium';
 disabled: boolean = false;
+loading: boolean = false;
+outline: boolean = false;
+pill: boolean = false;
+icon: string = '';                  // Icon (URL, image file, emoji)
+iconPlacement: 'start'|'end' = 'start';
 ```
+
+## CSS Parts
+
+- `base` - Root container
+- `primary` - Primary action button
+- `divider` - Divider between buttons
+- `toggle` - Dropdown toggle button
+- `menu` - Dropdown menu container
+- `menu-items` - Menu items wrapper
+- `action` - Individual action button
 
 ## Events
 
-- `primary-click` -> `{ button }`
-- `action-click` -> `{ value, action, button }`
+- `primary-click` → `{ button }`
+- `action-click` → `{ value, action, button }`
 
 ## Usage
 

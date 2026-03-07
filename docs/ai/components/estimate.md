@@ -14,7 +14,7 @@ taxRate: number = 0                      // attribute: tax-rate — percentage
 discount: number = 0                     // Discount percentage
 notes: string = ''                       // Footer notes
 terms: string = ''                       // Terms & conditions
-variant: EstimateVariant = 'standard'    // 'standard' | 'compact' | 'detailed' | 'comparison'
+variant: EstimateVariant = 'standard'    // 'standard' | 'comparison' | 'professional' | 'creative' | 'minimal'
 showQr: boolean = false                  // attribute: show-qr
 qrData: string = ''                      // attribute: qr-data
 qrPosition: QrPosition = 'top-right'     // attribute: qr-position — 'top-right' | 'bottom-right' | 'footer'
@@ -62,9 +62,10 @@ interface EstimateItem {
 ## Variants
 
 - `standard` - Clean professional layout
-- `compact` - Dense layout with reduced spacing
-- `detailed` - Full accounting details
 - `comparison` - Card-based option selector (one card per item)
+- `professional` - Dark header gradient, shadow, accent labels
+- `creative` - Gradient header, rounded pill buttons, vibrant colors
+- `minimal` - No borders/shadows, flat typography, reduced spacing
 
 ## Usage
 
@@ -93,4 +94,4 @@ est.addEventListener('item-toggle', e => console.log('Item toggled:', e.detail))
 
 ## CSS Parts
 
-`base`, `header`, `logo`, `title`, `status`, `expiry`, `meta`, `parties`, `party`, `party-label`, `party-name`, `party-detail`, `table`, `table-header`, `table-row`, `table-cell`, `item-toggle`, `summary`, `subtotal`, `discount-row`, `tax-row`, `total`, `notes`, `notes-label`, `notes-content`, `terms`, `actions`, `accept-button`, `decline-button`, `footer`, `qr-container`, `qr`, `comparison`, `option`, `option-button`
+`base`, `header`, `logo`, `title`, `status`, `expiry`, `expiry-date`, `meta`, `parties`, `party`, `party-label`, `party-name`, `party-detail`, `table`, `table-header`, `table-row`, `table-cell`, `item-toggle`, `summary`, `subtotal`, `discount-row`, `tax-row`, `total`, `notes`, `notes-label`, `notes-content`, `terms`, `actions`, `accept-button`, `decline-button`, `footer`, `qr-container`, `qr`, `comparison`, `option`, `option-button`

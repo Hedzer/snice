@@ -1,3 +1,5 @@
+<!-- AI: For a low-token version of this doc, use docs/ai/components/key-value.md instead -->
+
 # Key Value
 `<snice-key-value>`
 

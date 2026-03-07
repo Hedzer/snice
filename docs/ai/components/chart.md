@@ -59,15 +59,13 @@ interface ChartOptions {
 
 ## Methods
 
-```typescript
-refresh(): void
-update(datasets: ChartDataset[]): void
-addDataset(dataset: ChartDataset): void
-removeDataset(index: number): void
-toggleDataset(index: number): void
-exportImage(format?: 'svg'): string
-getData(): { datasets: ChartDataset[]; labels: string[] }
-```
+- `refresh()` — re-render the chart
+- `update(datasets: ChartDataset[])` — replace all datasets
+- `addDataset(dataset: ChartDataset)` — append a dataset
+- `removeDataset(index: number)` — remove dataset by index
+- `toggleDataset(index: number)` — toggle dataset visibility
+- `exportImage(format?: 'png'|'svg')` — returns data URL string (default: `'svg'`)
+- `getData()` — returns `{ datasets: ChartDataset[]; labels: string[] }`
 
 ## Usage
 

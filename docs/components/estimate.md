@@ -1,5 +1,6 @@
-# Estimate
-`<snice-estimate>`
+<!-- AI: For a low-token version of this doc, use docs/ai/components/estimate.md instead -->
+
+# Estimate Component
 
 A professional estimate/quote component with optional line items, accept/decline actions, expiry dates, and automatic calculations. Supports comparison mode for presenting multiple options.
 
@@ -82,7 +83,6 @@ interface EstimateItem {
 | `logo` | Company logo image |
 | `qr` | QR code content |
 | `footer` | Additional footer content |
-| (default) | Default slot for extra content |
 
 ## CSS Custom Properties
 

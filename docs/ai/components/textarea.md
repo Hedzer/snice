@@ -39,6 +39,9 @@ loading: boolean = false;
 - `focus()` - Focus textarea
 - `blur()` - Blur textarea
 - `select()` - Select text
+- `checkValidity()` - Check validation, returns `boolean`
+- `reportValidity()` - Report validation to user, returns `boolean`
+- `setCustomValidity(message)` - Set custom validation message
 
 ## Usage
 
@@ -54,3 +57,7 @@ loading: boolean = false;
 <snice-textarea helper-text="Max 500 characters"></snice-textarea>
 <snice-textarea invalid error-text="Required field"></snice-textarea>
 ```
+
+## CSS Parts
+
+`textarea`, `spinner`, `error-text`, `helper-text`

@@ -13,6 +13,7 @@ showVisualizer: boolean = true;
 maxDuration: number = 0;
 showTimer: boolean = true;
 showPlayback: boolean = true;
+recordedUrl: string = '';          // URL of recorded audio (set after stop)
 ```
 
 ## Methods

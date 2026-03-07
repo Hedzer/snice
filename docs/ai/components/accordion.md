@@ -9,7 +9,8 @@ Collapsible sections with single or multiple open mode and keyboard navigation.
 Container managing accordion items.
 
 ```typescript
-multiple: boolean = false;  // Allow multiple items open
+multiple: boolean = false;                         // Allow multiple items open
+variant: 'bordered' | 'elevated' = 'bordered';    // Visual style variant
 ```
 
 **Methods:**

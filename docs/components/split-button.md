@@ -24,9 +24,14 @@ import 'snice/components/split-button/snice-split-button';
 |----------|------|---------|-------------|
 | `label` | `string` | `''` | Primary button text |
 | `actions` | `SplitButtonAction[]` | `[]` | Array of `{ label, value, icon?, disabled? }` for dropdown |
-| `variant` | `'default' \| 'primary' \| 'success' \| 'danger'` | `'default'` | Visual style |
+| `variant` | `'default' \| 'primary' \| 'success' \| 'warning' \| 'danger'` | `'default'` | Visual style |
 | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Button size |
 | `disabled` | `boolean` | `false` | Disables the entire button |
+| `loading` | `boolean` | `false` | Shows loading spinner and disables button |
+| `outline` | `boolean` | `false` | Use outline style (transparent background) |
+| `pill` | `boolean` | `false` | Use pill (fully rounded) shape |
+| `icon` | `string` | `''` | Icon (URL, image file, emoji) |
+| `iconPlacement` (attr: `icon-placement`) | `'start' \| 'end'` | `'start'` | Icon position relative to label |
 
 ## Events
 

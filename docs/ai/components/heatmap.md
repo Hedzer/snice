@@ -16,9 +16,7 @@ weeks: number = 52;                      // Number of weeks to display
 
 ## Events
 
-```typescript
-'cell-click': CustomEvent<{ date: string; value: number }>
-```
+- `cell-click` → `{ date: string; value: number }` — fired when a cell is clicked
 
 ## Usage
 

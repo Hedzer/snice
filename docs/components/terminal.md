@@ -53,14 +53,49 @@ import 'snice/components/terminal/snice-terminal';
 
 | Property | Description | Default |
 |----------|-------------|---------|
+| `--snice-terminal-height` | Terminal height | `400px` |
+| `--snice-terminal-font-size` | Font size | `0.875rem` |
+| `--snice-terminal-line-height` | Line height | `1.2` |
 | `--snice-terminal-background` | Terminal background | `#1e1e1e` |
 | `--snice-terminal-foreground` | Default text color | `#d4d4d4` |
-| `--snice-terminal-border` | Border color | `#3c3c3c` |
-| `--snice-terminal-prompt-color` | Prompt color | `#569cd6` |
-| `--snice-terminal-error-color` | Error text | `#ff5555` |
-| `--snice-terminal-info-color` | Info text | `#569cd6` |
-| `--snice-terminal-success-color` | Success text | `#50fa7b` |
-| `--snice-terminal-warning-color` | Warning text | `#f1fa8c` |
+| `--snice-terminal-border-radius` | Border radius | `var(--snice-border-radius-md, 0.25rem)` |
+| `--snice-terminal-scrollbar-color` | Scrollbar thumb color | `var(--snice-color-border)` |
+| `--snice-terminal-input-color` | Input text color | `#d4d4d4` |
+| `--snice-terminal-output-color` | Output text color | `#d4d4d4` |
+| `--snice-terminal-error-color` | Error text color | `#f48771` |
+| `--snice-terminal-info-color` | Info text color | `#75beff` |
+| `--snice-terminal-success-color` | Success text color | `#89d185` |
+| `--snice-terminal-warning-color` | Warning text color | `#dcdcaa` |
+| `--snice-terminal-timestamp-color` | Timestamp color | `hsl(0 0% 40%)` |
+| `--snice-terminal-prompt-color` | Prompt color | `#89d185` |
+| `--snice-terminal-cursor-color` | Cursor color | `#d4d4d4` |
+| `--snice-terminal-selection-color` | Text selection color | `hsl(210 52% 31% / 0.6)` |
+| `--snice-terminal-hint-color` | Empty state hint color | `hsl(0 0% 40%)` |
+
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `container` | `<div>` | The terminal container |
+| `output` | `<div>` | The scrollable output area |
+| `input-line` | `<div>` | The input line wrapper |
+| `prompt` | `<span>` | The prompt text |
+| `input` | `<input>` | The text input field |
+| `line` | `<div>` | Individual output line |
+| `timestamp` | `<span>` | Line timestamp |
+| `line-content` | `<span>` | Line text content |
+
+```css
+snice-terminal::part(container) {
+  padding: 1rem;
+}
+
+snice-terminal::part(prompt) {
+  color: #89d185;
+}
+```
 
 ## Basic Usage
 

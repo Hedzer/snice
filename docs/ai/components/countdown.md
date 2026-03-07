@@ -12,8 +12,8 @@ variant: CountdownVariant = 'simple'          // attr: variant — 'simple' | 'f
 
 ## Events
 
-- `countdown-complete` -> `void` — Fires when countdown reaches zero
-- `countdown-tick` -> `{ days: number, hours: number, minutes: number, seconds: number, total: number }` — Fires every second
+- `countdown-complete` → `void` - Fires when countdown reaches zero
+- `countdown-tick` → `{ days, hours, minutes, seconds, total }` - Fires every second
 
 ## CSS Custom Properties
 

@@ -1,5 +1,6 @@
-# Work Order
-`<snice-work-order>`
+<!-- AI: For a low-token version of this doc, use docs/ai/components/work-order.md instead -->
+
+# Work Order Component
 
 A service work order component with task checklists, parts/materials tracking, time/labor calculations, and customer sign-off. Perfect for field service, maintenance, and repair workflows.
 
@@ -176,6 +177,7 @@ interface WorkOrderAsset {
 | `notes-content` | Notes text |
 | `signature` | Sign-off section |
 | `signature-line` | Signature line |
+| `signature-date` | Signature date line |
 | `sign-button` | Sign-off button |
 | `footer` | Footer area |
 

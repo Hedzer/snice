@@ -20,6 +20,10 @@ variant: 'default'|'compact'|'inline' = 'default';
 
 None — this is a layout-only component.
 
+## CSS Parts
+
+- `base` - Root layout container
+
 ## CSS Custom Properties
 
 - `--form-columns` - Number of grid columns (set automatically from `columns` prop)

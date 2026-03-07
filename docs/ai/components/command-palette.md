@@ -103,15 +103,18 @@ interface CommandItem {
 </script>
 ```
 
-## Features
+## CSS Parts
 
-- ⌘K/Ctrl+K keyboard shortcut
-- Arrow key navigation
-- Fuzzy search filtering
-- Command categories/grouping
-- Recent commands tracking
-- Icons and keyboard shortcuts display
-- Async action support
-- Focus trap when open
-- Backdrop click to close
-- Escape to close
+- `container` - Main palette container
+- `search` - Search area wrapper
+- `input` - Search input element
+- `results` - Results list container
+- `empty` - Empty state message
+- `category` - Category header
+- `item` - Command item button
+- `item-icon` - Item icon wrapper
+- `item-icon-image` - Item icon image
+- `item-content` - Item label + description wrapper
+- `item-label` - Item label text
+- `item-description` - Item description text
+- `item-shortcut` - Item keyboard shortcut badge

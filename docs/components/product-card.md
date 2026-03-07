@@ -39,7 +39,12 @@ import 'snice/components/product-card/snice-product-card';
 | `reviewCount` | `review-count` | `number` | `0` | Number of reviews |
 | `variants` | — | `ProductVariant[]` | `[]` | Variant selector groups |
 | `inStock` | `in-stock` | `boolean` | `true` | Whether product is in stock |
-| `variant` | `variant` | `'vertical' \| 'horizontal' \| 'compact'` | `'vertical'` | Card layout variant |
+| `variant` | `variant` | `'vertical' \| 'horizontal' \| 'compact' \| 'featured' \| 'minimal' \| 'grid'` | `'vertical'` | Card layout variant |
+| `badge` | `badge` | `string` | `''` | Badge text (e.g. "SALE", "NEW") |
+| `badgeVariant` | `badge-variant` | `'sale' \| 'new' \| 'featured'` | `'sale'` | Badge visual style |
+| `loading` | `loading` | `boolean` | `false` | Shows skeleton loading state |
+| `favorite` | `favorite` | `boolean` | `false` | Favorite/heart toggle state |
+| `stockCount` | `stock-count` | `number` | `-1` | Stock count (-1 hides, <5 shows urgency) |
 
 ### ProductVariant Interface
 
@@ -89,6 +94,21 @@ Fired when the gallery image is clicked.
 }
 ```
 
+#### `favorite`
+Fired when the favorite/heart button is toggled.
+
+**Event Detail:**
+```typescript
+{
+  favorited: boolean;  // Whether the product is now favorited
+}
+```
+
+#### `quick-view`
+Fired when the quick view overlay is clicked.
+
+**Event Detail:** `void`
+
 ## CSS Parts
 
 | Part | Description |
@@ -101,6 +121,16 @@ Fired when the gallery image is clicked.
 | `price` | Price display area |
 | `variants` | Variant selectors area |
 | `cta` | Add-to-cart button |
+| `stock` | Stock status indicator |
+| `badge` | Product badge (SALE, NEW, etc.) |
+| `favorite-btn` | Favorite/heart button |
+| `image` | Gallery image element |
+| `stars` | Star rating container |
+| `price-current` | Current price display |
+| `price-original` | Original price (strikethrough on sale) |
+| `discount` | Discount percentage badge |
+| `variant-group` | Variant selector group |
+| `variant-option` | Individual variant option button |
 
 ## Basic Usage
 

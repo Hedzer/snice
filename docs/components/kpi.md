@@ -6,6 +6,13 @@ A key performance indicator display component for showing metrics with optional 
 
 > **Note**: The `snice-stat` component has been merged into `snice-kpi`. All stat functionality is now available through KPI.
 
+## Table of Contents
+- [Properties](#properties)
+- [Slots](#slots)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+
 ## Properties
 
 | Property | Type | Default | Description |
@@ -44,7 +51,17 @@ A key performance indicator display component for showing metrics with optional 
 
 ## CSS Parts
 
-Use `::part()` to style internal elements:
+| Part | Description |
+|------|-------------|
+| `container` | Main KPI container |
+| `header` | Header section |
+| `main` | Main content area (label + value) |
+| `label` | Label text |
+| `value` | Value text |
+| `trend` | Trend indicator container |
+| `trend-icon` | Trend icon (arrow) |
+| `trend-value` | Trend value text |
+| `sparkline` | Sparkline chart container |
 
 ```css
 snice-kpi::part(container) {

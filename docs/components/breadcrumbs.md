@@ -11,6 +11,7 @@ The breadcrumbs components provide navigation trail indicators showing the user'
 - [Events](#events)
 - [Slots](#slots)
 - [CSS Parts](#css-parts)
+- [CSS Custom Properties](#css-custom-properties)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
@@ -574,6 +575,17 @@ import 'snice/components/breadcrumbs/snice-crumb';
   ];
 </script>
 ```
+
+## CSS Custom Properties
+
+| Property | Description | Default |
+|----------|-------------|---------|
+| `--breadcrumb-font-size` | Font size of breadcrumb items | `0.875rem` |
+| `--breadcrumb-spacing` | Spacing around separators | `0.5rem` |
+| `--breadcrumb-color` | Default text color | `var(--snice-color-text-secondary)` |
+| `--breadcrumb-hover-color` | Hover text color | `var(--snice-color-primary)` |
+| `--breadcrumb-active-color` | Active item text color | `var(--snice-color-text)` |
+| `--breadcrumb-separator-color` | Separator color | `var(--snice-color-text-tertiary)` |
 
 ## Accessibility
 

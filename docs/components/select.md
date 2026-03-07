@@ -34,6 +34,8 @@ import 'snice/components/select/snice-option';
 | `clearable` | `boolean` | `false` | Show clear button |
 | `editable` | `boolean` | `false` | Render editable text input instead of button trigger |
 | `allowFreeText` (attr: `allow-free-text`) | `boolean` | `false` | Allow values not in the options list |
+| `remote` | `boolean` | `false` | Enable remote async search via `@request('select/search')` |
+| `searchDebounce` (attr: `search-debounce`) | `number` | `300` | Debounce delay in ms for remote search |
 | `open` | `boolean` | `false` | Whether dropdown is open |
 | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Select size |
 | `name` | `string` | `''` | Form field name |

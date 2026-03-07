@@ -2,7 +2,7 @@
 
 # Book Component
 
-The book component displays content as a page-flipping book with realistic 3D page-turn animations. It supports spread (two-page) and single-page modes, a customizable cover page, keyboard and touch navigation, and programmatic page control.
+The book component displays content as a page-flipping book with realistic 3D page-turn animations. It supports a customizable cover page, keyboard and touch navigation, and programmatic page control.
 
 ## Table of Contents
 - [Properties](#properties)
@@ -53,17 +53,13 @@ The book component displays content as a page-flipping book with realistic 3D pa
 
 | Property | Description |
 |----------|-------------|
-| `--book-bg` | Page background color |
-| `--book-text` | Primary text color |
-| `--book-text-secondary` | Secondary text color |
-| `--book-border` | Border color |
-| `--book-primary` | Primary accent color |
-| `--book-shadow` | Book shadow |
-| `--book-page-bg` | Individual page background |
-| `--book-page-line` | Ruled line color on pages |
-| `--book-spine-bg` | Spine color |
-| `--book-cover-bg` | Cover background color |
-| `--book-flip-duration` | Flip animation duration (default: `0.6s`) |
+| `--page-bg` | Page background color (default: `#F5F5F5`) |
+| `--dark-text` | Primary text color (default: `#2A2935`) |
+| `--baseline` | Base spacing unit (default: `12px`) |
+| `--book-title` | Book title font family (default: `'Tulpen One', sans-serif`) |
+| `--title` | Section title / body heading font (default: `'Cormorant Garamond', serif`) |
+| `--body` | Body text font (default: `'Cormorant Garamond', serif`) |
+| `--base-size` | Base font size, derived from baseline (default: `calc(var(--baseline) * 1.2)`) |
 
 ## CSS Parts
 
@@ -114,31 +110,6 @@ Use the `title`, `author`, and `cover-image` attributes to create a book with a 
 </snice-book>
 ```
 
-### Single Page Mode
-
-Use `mode="single"` for narrow viewports or when you want one page visible at a time.
-
-```html
-<snice-book mode="single" title="User Guide">
-  <div>Welcome to the application...</div>
-  <div>Getting started with your first project...</div>
-  <div>Advanced features and configuration...</div>
-</snice-book>
-```
-
-### Spread Mode (Two-Page View)
-
-The default `mode="spread"` displays two pages side by side like an open book.
-
-```html
-<snice-book mode="spread" title="Photo Album" author="Jane Doe">
-  <div><img src="/photos/1.jpg" alt="Vacation day 1"></div>
-  <div><img src="/photos/2.jpg" alt="Vacation day 2"></div>
-  <div><img src="/photos/3.jpg" alt="Vacation day 3"></div>
-  <div><img src="/photos/4.jpg" alt="Vacation day 4"></div>
-</snice-book>
-```
-
 ### Programmatic Navigation
 
 Use methods to control the book from JavaScript.
@@ -169,7 +140,7 @@ Use methods to control the book from JavaScript.
 Each page can contain arbitrary HTML including text, images, and interactive elements.
 
 ```html
-<snice-book title="Product Catalog" mode="spread">
+<snice-book title="Product Catalog">
   <div style="padding: 2rem;">
     <h2>Introduction</h2>
     <p>Browse our latest collection of premium products.</p>

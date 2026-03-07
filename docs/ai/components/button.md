@@ -22,6 +22,7 @@ iconPlacement: 'start'|'end' = 'start';
 
 ## Slots
 
+- `(default)` - Button label content
 - `icon` - Custom icon content (overrides `icon` property)
 
 ## Events
@@ -33,6 +34,9 @@ iconPlacement: 'start'|'end' = 'start';
 - `focus(options?)` - Focus button
 - `blur()` - Blur button
 - `click()` - Programmatic click
+- `setLoading(loading)` - Set loading state
+- `setDisabled(disabled)` - Set disabled state
+- `setVariant(variant)` - Set variant
 
 ## Usage
 
@@ -90,6 +94,10 @@ iconPlacement: 'start'|'end' = 'start';
 <snice-button href="/page">Link</snice-button>
 <snice-button href="/file.pdf" download>Download</snice-button>
 ```
+
+## CSS Parts
+
+`base`, `spinner`, `label`, `icon`
 
 ## Features
 

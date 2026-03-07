@@ -61,6 +61,21 @@ import 'snice/components/tabs/snice-tab-panel';
 | `nav` | `<snice-tab>` elements for tab navigation |
 | (default) | `<snice-tab-panel>` elements for tab content |
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outermost tabs container |
+| `nav-container` | `<div>` | Nav bar wrapper (includes scroll buttons) |
+| `nav` | `<div>` | Tab navigation scroll area |
+| `indicator` | `<div>` | Active tab indicator bar |
+| `scroll-button` | `<button>` | Scroll arrow button (both) |
+| `scroll-button-start` | `<button>` | Start scroll button |
+| `scroll-button-end` | `<button>` | End scroll button |
+| `panels` | `<div>` | Panel content wrapper |
+
 ## Basic Usage
 
 ```typescript

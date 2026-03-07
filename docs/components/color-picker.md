@@ -21,6 +21,7 @@ The `<snice-color-picker>` component provides a color selection interface with f
 | `showInput` (attr: `show-input`) | `boolean` | `true` | Show text input |
 | `showPresets` (attr: `show-presets`) | `boolean` | `false` | Show preset colors |
 | `presets` | `string[]` | `[...]` | Preset color values |
+| `loading` | `boolean` | `false` | Loading state |
 
 ## Methods
 
@@ -32,10 +33,20 @@ Blur the color picker.
 
 ## Events
 
-### `color-picker-change`
-Fired when color changes.
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `color-picker-input` | `{ value: string, colorPicker }` | Fired during color input |
+| `color-picker-change` | `{ value: string, colorPicker }` | Fired when color changes |
+| `color-picker-focus` | `{ colorPicker }` | Fired on input focus |
+| `color-picker-blur` | `{ colorPicker }` | Fired on input blur |
 
-**Detail**: `{ value: string, colorPicker: SniceColorPickerElement }`
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `spinner` | Loading spinner element |
+| `error-text` | Error text element |
+| `helper-text` | Helper text element |
 
 ## Basic Usage
 

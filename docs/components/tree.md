@@ -5,6 +5,15 @@
 
 Displays hierarchical data with expandable/collapsible nodes, selection, checkboxes, icons, and lazy loading.
 
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [CSS Parts](#css-parts)
+- [CSS Custom Properties](#css-custom-properties)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+
 ## Importing
 
 **ESM (bundler)**
@@ -22,6 +31,7 @@ import 'snice/components/tree/snice-tree';
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
+| `selectable` | `boolean` | `true` | Enable or disable node selection |
 | `nodes` | `TreeNode[]` | `[]` | Array of tree nodes |
 | `selectionMode` (attr: `selection-mode`) | `'single' \| 'multiple' \| 'none'` | `'single'` | Selection behavior |
 | `showCheckboxes` (attr: `show-checkboxes`) | `boolean` | `false` | Display checkboxes |
@@ -42,6 +52,7 @@ interface TreeNode {
   disabled?: boolean;
   selected?: boolean;
   checked?: boolean;
+  indeterminate?: boolean;
   expanded?: boolean;
   lazy?: boolean;
   data?: any;
@@ -66,6 +77,7 @@ interface TreeNode {
 | `getNode()` | `id: string` | Get node object |
 | `getSelectedNodes()` | -- | Get all selected nodes |
 | `getCheckedNodes()` | -- | Get all checked nodes |
+| `updateNode()` | `id: string, updates: Partial<TreeNode>` | Update a node's properties |
 
 ## Events
 
@@ -76,6 +88,19 @@ interface TreeNode {
 | `tree-node-select` | `{ nodeId: string, node: TreeNode, selectedNodes: TreeNode[], tree }` | Node selected |
 | `tree-node-check` | `{ nodeId: string, node: TreeNode, checked: boolean, checkedNodes: TreeNode[], tree }` | Checkbox toggled |
 | `tree-node-lazy-load` | `{ nodeId: string, node: TreeNode, tree }` | Lazy node expanded |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `container` | Main tree container |
+| `content` | Tree content area |
+
+## CSS Custom Properties
+
+| Property | Description | Default |
+|----------|-------------|---------|
+| `--tree-max-height` | Maximum height of the tree | `100%` |
 
 ## Basic Usage
 

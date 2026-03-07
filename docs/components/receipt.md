@@ -1,5 +1,6 @@
-# Receipt
-`<snice-receipt>`
+<!-- AI: For a low-token version of this doc, use docs/ai/components/receipt.md instead -->
+
+# Receipt Component
 
 A transaction receipt component for displaying purchase details with merchant info, line items, totals, and payment method. Supports multiple visual variants including thermal printer style.
 

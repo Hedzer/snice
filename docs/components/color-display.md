@@ -74,19 +74,27 @@ The `<snice-color-display>` component displays colors with a swatch and formatte
 ></snice-color-display>
 ```
 
-## Styling
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `container` | `<div>` | The outer container |
+| `swatch` | `<div>` | The color swatch element |
+| `label` | `<span>` | The color label text |
 
 ```css
 snice-color-display::part(container) {
-  /* Container */
+  gap: 0.5rem;
 }
 
 snice-color-display::part(swatch) {
-  /* Color swatch */
+  border-radius: 50%;
 }
 
 snice-color-display::part(label) {
-  /* Color label */
+  font-family: monospace;
 }
 ```
 

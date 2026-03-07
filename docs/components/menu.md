@@ -5,6 +5,18 @@
 
 A dropdown menu with composable items, dividers, icons, and keyboard shortcut hints.
 
+## Table of Contents
+- [Menu Properties](#menu-properties)
+- [Menu Item Properties](#menu-item-properties)
+- [Methods](#methods)
+- [Events](#events)
+- [Menu Slots](#menu-slots)
+- [Menu Item Slots](#menu-item-slots)
+- [CSS Parts](#css-parts)
+- [CSS Custom Properties](#css-custom-properties)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+
 ## Importing
 
 **ESM (bundler)**
@@ -70,6 +82,38 @@ import 'snice/components/menu/snice-menu-divider';
 | `icon` | Icon before the item label |
 | (default) | Item label content |
 | `shortcut` | Keyboard shortcut hint |
+
+## CSS Parts
+
+### Menu Parts
+
+| Part | Description |
+|------|-------------|
+| `trigger` | The trigger wrapper element |
+| `image-left` | Left image container |
+| `image-right` | Right image container |
+| `panel` | The dropdown panel |
+| `content` | Panel content wrapper |
+
+### Menu Item Parts
+
+| Part | Description |
+|------|-------------|
+| `item` | The menu item container |
+| `icon` | Icon wrapper |
+| `label` | Label wrapper |
+| `shortcut` | Keyboard shortcut wrapper |
+
+## CSS Custom Properties
+
+| Property | Description | Default |
+|----------|-------------|---------|
+| `--menu-bg` | Panel background color | `var(--snice-color-background, white)` |
+| `--menu-border` | Panel border color | `var(--snice-color-border, #e5e7eb)` |
+| `--menu-shadow` | Panel box shadow | `var(--snice-shadow-lg)` |
+| `--menu-z-index` | Panel z-index | `var(--snice-z-index-dropdown, 1000)` |
+| `--menu-border-radius` | Panel border radius | `var(--snice-radius-md, 0.375rem)` |
+| `--menu-min-width` | Minimum panel width | `10rem` |
 
 ## Basic Usage
 

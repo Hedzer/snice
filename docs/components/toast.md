@@ -74,7 +74,7 @@ interface ToastOptions {
 
 | Event | Detail | Description |
 |-------|--------|-------------|
-| `close-toast` | -- | Toast close button clicked |
+| `close-toast` | `{ id: string }` | Toast close button clicked |
 
 ## CSS Parts
 

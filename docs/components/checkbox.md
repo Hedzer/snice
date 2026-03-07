@@ -28,6 +28,7 @@ The checkbox component provides a checkbox input with support for checked, indet
 | `name` | `string` | `''` | Form field name |
 | `value` | `string` | `'on'` | Form field value when checked |
 | `label` | `string` | `''` | Label text |
+| `loading` | `boolean` | `false` | Show loading spinner |
 
 ## Methods
 
@@ -52,6 +53,20 @@ Programmatically click the checkbox.
 checkbox.click();
 ```
 
+#### `toggle(): void`
+Toggle the checked state.
+
+```typescript
+checkbox.toggle();
+```
+
+#### `setIndeterminate(): void`
+Set the checkbox to indeterminate state.
+
+```typescript
+checkbox.setIndeterminate();
+```
+
 ## Events
 
 #### `checkbox-change`
@@ -73,6 +88,15 @@ checkbox.addEventListener('change', (e) => {
   console.log('Indeterminate:', e.detail.indeterminate);
 });
 ```
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `input` | Hidden checkbox input |
+| `checkbox` | Custom checkbox element |
+| `spinner` | Loading spinner |
+| `label` | Label text |
 
 ## Basic Usage
 

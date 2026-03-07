@@ -36,17 +36,36 @@ showTimestamps: boolean = false; // attr: show-timestamps
 ## CSS Custom Properties
 
 ```css
---snice-terminal-background
---snice-terminal-foreground
---snice-terminal-border
---snice-terminal-prompt-color
---snice-terminal-input-color
---snice-terminal-output-color
---snice-terminal-error-color
---snice-terminal-info-color
---snice-terminal-success-color
---snice-terminal-warning-color
+--snice-terminal-height            /* 400px */
+--snice-terminal-font-size         /* 0.875rem */
+--snice-terminal-line-height       /* 1.2 */
+--snice-terminal-background        /* #1e1e1e */
+--snice-terminal-foreground        /* #d4d4d4 */
+--snice-terminal-border-radius     /* var(--snice-border-radius-md, 0.25rem) */
+--snice-terminal-scrollbar-color
+--snice-terminal-input-color       /* #d4d4d4 */
+--snice-terminal-output-color      /* #d4d4d4 */
+--snice-terminal-error-color       /* #f48771 */
+--snice-terminal-info-color        /* #75beff */
+--snice-terminal-success-color     /* #89d185 */
+--snice-terminal-warning-color     /* #dcdcaa */
+--snice-terminal-timestamp-color   /* hsl(0 0% 40%) */
+--snice-terminal-prompt-color      /* #89d185 */
+--snice-terminal-cursor-color      /* #d4d4d4 */
+--snice-terminal-selection-color   /* hsl(210 52% 31% / 0.6) */
+--snice-terminal-hint-color        /* hsl(0 0% 40%) */
 ```
+
+## CSS Parts
+
+- `container` - Terminal container
+- `output` - Output scrollable area
+- `input-line` - Input line wrapper
+- `prompt` - Prompt text
+- `input` - Text input field
+- `line` - Individual output line
+- `timestamp` - Line timestamp
+- `line-content` - Line text content
 
 ## Usage
 

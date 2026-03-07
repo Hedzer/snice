@@ -1,7 +1,6 @@
-# App Tiles
-`<snice-app-tiles>`
-
 <!-- AI: For a low-token version of this doc, use docs/ai/components/app-tiles.md instead -->
+
+# App Tiles Component
 
 ## Table of Contents
 - [Importing](#importing)

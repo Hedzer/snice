@@ -19,6 +19,12 @@ width: string = '';
 height: string = '';
 ```
 
+## CSS Parts
+
+- `container` - Image container div
+- `image` - The img element
+- `placeholder` - Placeholder element (shown when loading or no src)
+
 ## Usage
 
 ```html

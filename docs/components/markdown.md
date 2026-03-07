@@ -9,6 +9,7 @@ A lightweight GFM-compatible markdown renderer that converts markdown text to st
 ## Table of Contents
 - [Importing](#importing)
 - [Properties](#properties)
+- [Methods](#methods)
 - [Events](#events)
 - [CSS Custom Properties](#css-custom-properties)
 - [CSS Parts](#css-parts)
@@ -36,6 +37,12 @@ import 'snice/components/markdown/snice-markdown';
 |----------|------|---------|-------------|
 | `sanitize` | `boolean` | `true` | Whether to sanitize the HTML output to prevent XSS |
 | `theme` | `'default' \| 'github'` | `'default'` | Visual theme for the rendered output |
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `setContent()` | `markdown: string` | Set the markdown source programmatically |
 
 ## Events
 

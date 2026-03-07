@@ -17,6 +17,8 @@ searchable: boolean = false;        // Show search input in dropdown
 clearable: boolean = false;         // Show clear button
 editable: boolean = false;          // Editable text input trigger (replaces button)
 allowFreeText: boolean = false;     // attr: allow-free-text — allow values not in options
+remote: boolean = false;            // Remote search via @request('select/search')
+searchDebounce: number = 300;       // attr: search-debounce — debounce ms for remote search
 open: boolean = false;              // Dropdown open state
 loading: boolean = false;           // Loading state (shows spinner)
 size: 'small'|'medium'|'large' = 'medium';
@@ -99,10 +101,29 @@ When `editable` is set:
 - If no match and no `allow-free-text`, reverts to last valid value
 - Options set via JS `options` property (array), child `<snice-option>` elements, or both (merged)
 
+## Remote Search (@request/@respond)
+
+When `remote` is set with `searchable` or `editable`:
+- Typing fires `@request('select/search')` with `{ query, select }` after debounce
+- Controller `@respond('select/search')` returns `SelectOption[]`
+- Dropdown shows spinner while waiting, then refreshes with results
+- Opening dropdown triggers initial search with current query
+- `loading` property no longer closes dropdown when `remote` is true
+
+```typescript
+// Controller
+@respond('select/search')
+async handleSearch(req, respond) {
+  const results = await fetch(`/api/users?q=${req.query}`).then(r => r.json());
+  respond(results.map(u => ({ value: u.id, label: u.name })));
+}
+```
+
 ## Features
 
 - Single and multiple selection
 - Search filtering (in-dropdown or editable input)
+- Remote async search via @request/@respond
 - Editable text input mode (replaces combobox)
 - Keyboard navigation
 - Form integration

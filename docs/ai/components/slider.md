@@ -36,6 +36,9 @@ loading: boolean = false;
 
 - `focus()` - Focus slider thumb
 - `blur()` - Blur slider thumb
+- `checkValidity()` - Check validation, returns `boolean`
+- `reportValidity()` - Report validation to user, returns `boolean`
+- `setCustomValidity(message)` - Set custom validation message
 
 ## Usage
 
@@ -49,3 +52,7 @@ loading: boolean = false;
 <snice-slider label="Qty" form-align></snice-slider> <!-- aligns with inputs in form rows -->
 <snice-slider min="0" max="100" step="5" value="50"></snice-slider>
 ```
+
+## CSS Parts
+
+`track`, `fill`, `thumb`, `spinner`, `error-text`, `helper-text`

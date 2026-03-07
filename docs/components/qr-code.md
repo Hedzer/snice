@@ -25,7 +25,7 @@ import 'snice/components/qr-code/snice-qr-code';
 | `value` | `string` | `''` | Data to encode |
 | `size` | `number` | `200` | QR code size in pixels |
 | `errorCorrectionLevel` (attr: `error-correction-level`) | `'L' \| 'M' \| 'Q' \| 'H'` | `'M'` | Error correction level |
-| `renderMode` (attr: `render-mode`) | `'canvas' \| 'svg'` | `'svg'` | Rendering mode |
+| `renderMode` (attr: `render-mode`) | `'canvas' \| 'svg'` | `'canvas'` | Rendering mode |
 | `dotStyle` (attr: `dot-style`) | `'square' \| 'rounded' \| 'dots'` | `'square'` | Module shape style |
 | `margin` | `number` | `4` | Quiet zone size |
 | `fgColor` (attr: `fg-color`) | `string` | `'#000000'` | Foreground color |
@@ -42,9 +42,18 @@ import 'snice/components/qr-code/snice-qr-code';
 
 | Method | Arguments | Description |
 |--------|-----------|-------------|
+| `toSVGString()` | -- | Export as SVG markup string (sync, only when renderMode is `'svg'`) |
 | `toDataURL()` | `type?: string, quality?: number` | Export as data URL (async) |
 | `toBlob()` | `type?: string, quality?: number` | Export as Blob (async) |
 | `download()` | `filename?: string` | Download as image file |
+
+## CSS Custom Properties
+
+| Property | Description | Default |
+|----------|-------------|---------|
+| `--qr-bg` | Container background color | _(theme default)_ |
+| `--qr-border-radius` | Container border radius | _(theme default)_ |
+| `--qr-padding` | Container padding | _(theme default)_ |
 
 ## CSS Parts
 

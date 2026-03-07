@@ -8,7 +8,7 @@ QR code generator with customizable styling and export.
 value: string = '';
 size: number = 200;
 errorCorrectionLevel: 'L'|'M'|'Q'|'H' = 'M';  // attr: error-correction-level
-renderMode: 'canvas'|'svg' = 'svg';              // attr: render-mode
+renderMode: 'canvas'|'svg' = 'canvas';            // attr: render-mode
 dotStyle: 'square'|'rounded'|'dots' = 'square';  // attr: dot-style
 margin: number = 4;
 fgColor: string = '#000000';                      // attr: fg-color
@@ -24,9 +24,16 @@ textOutlineColor: string = '#ffffff';             // attr: text-outline-color
 
 ## Methods
 
+- `toSVGString()` - Export as SVG markup string (sync, only when renderMode='svg')
 - `toDataURL(type?, quality?)` - Export as data URL (async)
 - `toBlob(type?, quality?)` - Export as Blob (async)
 - `download(filename?)` - Download as image file
+
+## CSS Custom Properties
+
+- `--qr-bg` - Container background
+- `--qr-border-radius` - Container border radius
+- `--qr-padding` - Container padding
 
 ## Usage
 

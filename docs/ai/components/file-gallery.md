@@ -17,8 +17,8 @@ allowDelete: boolean = true;   // attribute: allow-delete
 autoUpload: boolean = true;    // attribute: auto-upload
 showDropzone: boolean = true;  // attribute: show-dropzone
 showAddButton: boolean = false; // attribute: show-add-button
-showHeader: boolean = true;    // attribute: show-header
-files: GalleryFile[]; // read-only
+showHeader: boolean = true;     // attribute: show-header
+files: GalleryFile[];           // read-only
 ```
 
 ## Getters

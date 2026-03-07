@@ -40,6 +40,22 @@ transitionDuration: number = 300; // attr: transition-duration
 - `getTab(index)` - Get tab element
 - `getPanel(index)` - Get panel element
 
+## Slots
+
+- `nav` - `<snice-tab>` elements for tab navigation
+- `(default)` - `<snice-tab-panel>` elements for tab content
+
+## CSS Parts
+
+- `base` - Outermost tabs container
+- `nav-container` - Nav bar wrapper (includes scroll buttons)
+- `nav` - Tab navigation scroll area
+- `indicator` - Active tab indicator bar
+- `scroll-button` - Scroll arrow button (both)
+- `scroll-button-start` - Start scroll button
+- `scroll-button-end` - End scroll button
+- `panels` - Panel content wrapper
+
 ## Usage
 
 ```html

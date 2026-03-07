@@ -30,6 +30,7 @@ The `<snice-file-gallery>` component provides a file upload gallery with drag-an
 | `autoUpload` | `boolean` | `true` | Start upload immediately on file add |
 | `showDropzone` | `boolean` | `true` | Show drop zone for drag & drop uploads |
 | `showAddButton` | `boolean` | `false` | Show add button tile in gallery |
+| `showHeader` (attr: `show-header`) | `boolean` | `true` | Show gallery header section |
 | `files` | `GalleryFile[]` | `[]` | Current files (read-only) |
 
 ## Methods

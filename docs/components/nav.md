@@ -41,6 +41,7 @@ Style internal elements from outside the shadow DOM using `::part()`.
 | `base` | `<div>` | The outer content wrapper |
 | `nav` | `<nav>` | The navigation element |
 | `link` | `<a>` | An individual navigation link |
+| `icon` | `<img>` or `<span>` | Nav item icon element |
 
 ```css
 snice-nav::part(nav) {

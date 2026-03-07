@@ -5,6 +5,15 @@
 
 A key-value detail panel for displaying structured data with grouped sections, multiple value types, and edit-in-place support.
 
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [Slots](#slots)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+
 ## Importing
 
 **ESM (bundler)**

@@ -26,17 +26,13 @@ interface FunnelStage {
 
 ## Methods
 
-```typescript
-setStages(stages: FunnelStage[]): void;
-exportImage(format?: 'png' | 'svg'): string;  // returns data URL
-```
+- `setStages(stages: FunnelStage[])` — replace all stages
+- `exportImage(format?: 'png'|'svg')` — returns data URL string
 
 ## Events
 
-```typescript
-'funnel-click': CustomEvent<{ stage: FunnelStage; index: number }>
-'funnel-hover': CustomEvent<{ stage: FunnelStage; index: number }>
-```
+- `funnel-click` → `{ stage: FunnelStage; index: number }` — stage clicked
+- `funnel-hover` → `{ stage: FunnelStage; index: number }` — stage hovered
 
 ## Usage
 

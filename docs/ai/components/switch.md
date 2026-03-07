@@ -31,8 +31,10 @@ loading: boolean = false;
 
 ## CSS Parts
 
+- `input` - Hidden input element
 - `track` - Switch track
 - `thumb` - Switch thumb
+- `spinner` - Loading spinner
 - `label` - Label text
 
 ## Usage
