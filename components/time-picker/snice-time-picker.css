@@ -66,6 +66,24 @@
   box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) rgb(220 38 38 / 0.3);
 }
 
+/* Size variants */
+.input--small {
+  padding: 0.375rem 2.75rem 0.375rem 0.625rem;
+  font-size: 0.875rem;
+  min-height: 2rem;
+}
+
+.input--large {
+  padding: 0.75rem 3.5rem 0.75rem 1rem;
+  font-size: 1rem;
+  min-height: 3rem;
+}
+
+/* Loading */
+.input--loading {
+  cursor: wait;
+}
+
 .input:disabled {
   background: var(--snice-color-background-secondary, rgb(243 244 246));
   color: var(--snice-color-text-tertiary, rgb(115 115 115));
@@ -227,4 +245,49 @@
 
 .error-text {
   color: var(--snice-color-danger, rgb(220 38 38));
+}
+
+/* Spinner */
+.spinner {
+  position: absolute;
+  right: 3rem;
+  width: 1em;
+  height: 1em;
+  pointer-events: none;
+}
+
+.spinner::after {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Clear button */
+.clear-button {
+  position: absolute;
+  right: 2.5rem;
+  padding: 0.25rem;
+  border: none;
+  background: transparent;
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
+  cursor: pointer;
+  border-radius: 4px;
+  transition: color var(--snice-transition-fast, 150ms) ease, background-color var(--snice-transition-fast, 150ms) ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clear-button:hover {
+  color: var(--snice-color-text, rgb(23 23 23));
+  background: var(--snice-color-background-tertiary, rgb(240 240 240));
 }

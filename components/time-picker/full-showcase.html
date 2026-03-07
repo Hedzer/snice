@@ -121,6 +121,24 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 <h2>Combination: 12h + seconds + step 5 + inline</h2>
 <snice-time-picker label="Full combo" variant="inline" format="12h" show-seconds step="5" value="14:30:15"></snice-time-picker>
 
+<h2>Sizes</h2>
+<div class="grid">
+  <snice-time-picker label="Small" size="small" value="10:00"></snice-time-picker>
+  <snice-time-picker label="Medium" size="medium" value="10:00"></snice-time-picker>
+  <snice-time-picker label="Large" size="large" value="10:00"></snice-time-picker>
+</div>
+
+<h2>Loading</h2>
+<div class="grid">
+  <snice-time-picker label="Loading" loading></snice-time-picker>
+</div>
+
+<h2>Clearable</h2>
+<div class="grid">
+  <snice-time-picker label="Clearable" clearable value="14:30"></snice-time-picker>
+  <snice-time-picker label="Disabled + clearable" disabled clearable value="14:30"></snice-time-picker>
+</div>
+
 <h2>Edge Cases</h2>
 <div class="grid">
   <snice-time-picker label="No value"></snice-time-picker>

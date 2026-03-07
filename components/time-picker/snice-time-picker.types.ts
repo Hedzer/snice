@@ -1,6 +1,7 @@
 export type TimePickerFormat = '12h' | '24h';
 export type TimePickerStep = 1 | 5 | 10 | 15 | 30;
 export type TimePickerVariant = 'dropdown' | 'inline';
+export type TimePickerSize = 'small' | 'medium' | 'large';
 
 export interface SniceTimePickerElement extends HTMLElement {
   value: string;
@@ -19,12 +20,19 @@ export interface SniceTimePickerElement extends HTMLElement {
   invalid: boolean;
   name: string;
   variant: TimePickerVariant;
+  size: TimePickerSize;
+  loading: boolean;
+  clearable: boolean;
 
   // Methods
   open(): void;
   close(): void;
   focus(): void;
   blur(): void;
+  clear(): void;
+  checkValidity(): boolean;
+  reportValidity(): boolean;
+  setCustomValidity(message: string): void;
 }
 
 export interface TimeChangeDetail {
@@ -52,10 +60,15 @@ export interface TimePickerCloseDetail {
   timePicker: SniceTimePickerElement;
 }
 
+export interface TimePickerClearDetail {
+  timePicker: SniceTimePickerElement;
+}
+
 export interface SniceTimePickerEventMap {
   'time-change': CustomEvent<TimeChangeDetail>;
   'timepicker-focus': CustomEvent<TimePickerFocusDetail>;
   'timepicker-blur': CustomEvent<TimePickerBlurDetail>;
   'timepicker-open': CustomEvent<TimePickerOpenDetail>;
   'timepicker-close': CustomEvent<TimePickerCloseDetail>;
+  'timepicker-clear': CustomEvent<TimePickerClearDetail>;
 }

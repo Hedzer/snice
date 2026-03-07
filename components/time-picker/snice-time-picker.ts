@@ -1,6 +1,6 @@
 import { element, property, query, watch, dispatch, ready, render, styles, html, css } from 'snice';
 import cssContent from './snice-time-picker.css?inline';
-import type { TimePickerFormat, TimePickerStep, TimePickerVariant, SniceTimePickerElement } from './snice-time-picker.types';
+import type { TimePickerFormat, TimePickerStep, TimePickerVariant, TimePickerSize, SniceTimePickerElement } from './snice-time-picker.types';
 
 @element('snice-time-picker', { formAssociated: true })
 export class SniceTimePicker extends HTMLElement implements SniceTimePickerElement {
@@ -61,6 +61,15 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
   @property()
   variant: TimePickerVariant = 'dropdown';
 
+  @property()
+  size: TimePickerSize = 'medium';
+
+  @property({ type: Boolean })
+  loading = false;
+
+  @property({ type: Boolean })
+  clearable = false;
+
   @property({ type: Boolean, attribute: 'show-dropdown' })
   private showDropdown = false;
 
@@ -69,6 +78,9 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
 
   @query('.dropdown')
   dropdown?: HTMLElement;
+
+  @query('.clear-button')
+  clearButton?: HTMLButtonElement;
 
   private hours = 0;
   private minutes = 0;
@@ -84,6 +96,13 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
   renderContent() {
     const labelClasses = ['label', this.required ? 'label--required' : ''].filter(Boolean).join(' ');
     const isInline = this.variant === 'inline';
+    const inputClasses = [
+      'input',
+      `input--${this.size}`,
+      this.invalid ? 'input--invalid' : '',
+      this.loading ? 'input--loading' : ''
+    ].filter(Boolean).join(' ');
+    const isDisabledOrLoading = this.disabled || this.loading;
 
     return html/*html*/`
       <div class="time-picker-wrapper" part="base">
@@ -94,11 +113,11 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
         <if ${!isInline}>
           <div class="input-container">
             <input
-              class="input ${this.invalid ? 'input--invalid' : ''}"
+              class="${inputClasses}"
               type="text"
               value="${this.getFormattedValue()}"
               placeholder="${this.placeholder || this.getPlaceholder()}"
-              ?disabled=${this.disabled}
+              ?disabled=${isDisabledOrLoading}
               ?readonly=${this.readonly}
               ?required=${this.required}
               name="${this.name || ''}"
@@ -117,13 +136,31 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
               aria-label="Open time picker"
               tabindex="-1"
               part="toggle"
-              ?disabled=${this.disabled}
+              ?disabled=${isDisabledOrLoading}
               @click=${this.handleToggle}
             >
               <svg viewBox="0 0 24 24" width="18" height="18">
                 <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" fill="currentColor"/>
               </svg>
             </button>
+
+            <button
+              class="clear-button"
+              type="button"
+              aria-label="Clear"
+              tabindex="-1"
+              part="clear"
+              style="display: none;"
+              @click=${(e: Event) => this.handleClear(e)}
+            >
+              <svg viewBox="0 0 24 24" width="16" height="16">
+                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
+              </svg>
+            </button>
+
+            <if ${this.loading}>
+              <span class="spinner" part="spinner"></span>
+            </if>
           </div>
         </if>
 
@@ -231,6 +268,7 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
       this.internals.setFormValue(this.value);
     }
     this.setupClickOutside();
+    queueMicrotask(() => this.updateClearButton());
   }
 
   private parseValue() {
@@ -389,6 +427,7 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
     if (this.internals) {
       this.internals.setFormValue(this.value);
     }
+    this.updateClearButton();
     this.emitTimeChange();
   }
 
@@ -505,6 +544,7 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
     if (this.input) {
       this.input.disabled = this.disabled;
     }
+    this.updateClearButton();
   }
 
   @watch('invalid')
@@ -559,6 +599,22 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
     return { timePicker: this };
   }
 
+  @dispatch('timepicker-clear', { bubbles: true, composed: true })
+  private emitClear() {
+    return { timePicker: this };
+  }
+
+  private handleClear(e: Event) {
+    e.stopPropagation();
+    this.clear();
+  }
+
+  private updateClearButton() {
+    if (!this.clearButton || !this.clearable) return;
+    const shouldShow = this.value && !this.disabled && !this.readonly;
+    this.clearButton.style.display = shouldShow ? '' : 'none';
+  }
+
   // Public API
 
   open() {
@@ -585,5 +641,32 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
 
   blur() {
     this.input?.blur();
+  }
+
+  clear() {
+    this.hours = 0;
+    this.minutes = 0;
+    this.seconds = 0;
+    this.period = 'AM';
+    this.value = '';
+    if (this.input) {
+      this.input.value = '';
+    }
+    this.updateClearButton();
+    this.emitClear();
+    this.emitTimeChange();
+    this.focus();
+  }
+
+  checkValidity() {
+    return this.input?.checkValidity() ?? true;
+  }
+
+  reportValidity() {
+    return this.input?.reportValidity() ?? true;
+  }
+
+  setCustomValidity(message: string) {
+    this.input?.setCustomValidity(message);
   }
 }
