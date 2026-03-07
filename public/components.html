@@ -6796,7 +6796,7 @@ stepper.currentStep = 1;</snice-code-block>
         } else if (command === 'status') {
           terminal.writeln('All systems operational ✓', 'success');
         } else if (command === 'version') {
-          terminal.writeln('Snice v4.8.0 (build ea70767)', 'info');
+          terminal.writeln('Snice v4.25.0 (build ea70767)', 'info');
         } else if (command.startsWith('echo ')) {
           terminal.writeln(command.slice(5));
         } else {
@@ -7626,14 +7626,19 @@ weather.data = {
     </div><!-- #comp-sections -->
   </main>
 
-  <!-- Help drawer -->
+  <!-- More panel -->
   <div class="help-overlay" id="help-overlay" style="display:none"></div>
   <aside class="help-drawer" id="help-drawer" style="visibility:hidden">
     <div class="help-drawer-header">
-      <h3 id="help-drawer-title">Help</h3>
+      <h3 id="help-drawer-title">Component</h3>
       <button class="help-drawer-close" id="help-drawer-close" aria-label="Close">&times;</button>
     </div>
+    <div class="help-drawer-tabs">
+      <button class="help-drawer-tab active" data-tab="docs">Docs</button>
+      <button class="help-drawer-tab" data-tab="showcase">Full Showcase</button>
+    </div>
     <div class="help-drawer-body" id="help-drawer-body"></div>
+    <iframe class="help-drawer-iframe" id="help-drawer-iframe" style="display:none" sandbox="allow-scripts allow-same-origin"></iframe>
   </aside>
 
 
@@ -8049,15 +8054,15 @@ weather.data = {
         allSections.push(entry);
         if (catByIndex[catIndex]) catByIndex[catIndex].sections.push(entry);
 
-        // Add "Read docs" link inline with h3
-        if (!el.querySelector('.help-link')) {
+        // Add "More" link inline with h3
+        if (!el.querySelector('.more-link')) {
           const slug = id.replace('comp-', '');
           const link = document.createElement('a');
-          link.className = 'help-link';
+          link.className = 'more-link';
           link.href = '#';
           link.dataset.slug = slug;
           link.dataset.name = name;
-          link.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Read docs';
+          link.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg> More';
           el.style.display = 'flex';
           el.style.alignItems = 'baseline';
           el.style.gap = '0.75rem';
@@ -8288,14 +8293,18 @@ weather.data = {
       });
     })();
 
-    // Help drawer logic
+    // More panel logic
     (function() {
       const overlay = document.getElementById('help-overlay');
       const drawer = document.getElementById('help-drawer');
       const body = document.getElementById('help-drawer-body');
+      const iframe = document.getElementById('help-drawer-iframe');
       const title = document.getElementById('help-drawer-title');
       const closeBtn = document.getElementById('help-drawer-close');
+      const tabs = drawer.querySelectorAll('.help-drawer-tab');
       const cache = {};
+      let currentSlug = '';
+      let currentTab = 'docs';
 
       function openDrawer() { overlay.style.display = ''; drawer.style.visibility = ''; drawer.classList.add('open'); overlay.classList.add('open'); document.body.style.overflow = 'hidden'; }
       function closeDrawer() { drawer.classList.remove('open'); overlay.classList.remove('open'); document.body.style.overflow = ''; }
@@ -8304,9 +8313,24 @@ weather.data = {
       overlay.addEventListener('click', closeDrawer);
       document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
 
+      function showTab(tab) {
+        currentTab = tab;
+        tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+        if (tab === 'docs') {
+          body.style.display = '';
+          iframe.style.display = 'none';
+          loadDocs(currentSlug);
+        } else {
+          body.style.display = 'none';
+          iframe.style.display = '';
+          loadShowcase(currentSlug);
+        }
+      }
+
+      tabs.forEach(t => t.addEventListener('click', () => showTab(t.dataset.tab)));
+
       async function fetchDoc(slug) {
         if (cache[slug]) return cache[slug];
-        // Try the slug directly first
         const candidates = DOC_SLUGS[slug] ? DOC_SLUGS[slug] : [slug];
         let combined = '';
         for (const name of candidates) {
@@ -8316,7 +8340,6 @@ weather.data = {
           } catch(e) {}
         }
         if (!combined) {
-          // Try ai docs as fallback
           for (const name of candidates) {
             try {
               const res = await fetch('docs/ai/components/' + name + '.md');
@@ -8328,28 +8351,41 @@ weather.data = {
         return cache[slug];
       }
 
-      document.addEventListener('click', async e => {
-        const btn = e.target.closest('.help-link');
-        if (!btn) return;
-        e.preventDefault();
-        const slug = btn.dataset.slug;
-        const name = btn.dataset.name;
-        title.textContent = name;
+      async function loadDocs(slug) {
+        if (currentTab !== 'docs') return;
         body.innerHTML = '<p style="opacity:0.5">Loading...</p>';
-        openDrawer();
         const md = await fetchDoc(slug);
         if (md) {
           body.innerHTML = mdToHtml(md);
         } else {
-          body.innerHTML = '<p style="opacity:0.5">No documentation available yet for this component.</p>';
+          body.innerHTML = '<p style="opacity:0.5">No documentation available yet.</p>';
         }
+      }
+
+      function loadShowcase(slug) {
+        if (currentTab !== 'showcase') return;
+        const candidates = DOC_SLUGS[slug] ? DOC_SLUGS[slug] : [slug];
+        const src = 'showcase/' + candidates[0] + '.html';
+        if (!iframe.src || !iframe.src.endsWith(src)) {
+          iframe.src = src;
+        }
+      }
+
+      document.addEventListener('click', async e => {
+        const btn = e.target.closest('.more-link');
+        if (!btn) return;
+        e.preventDefault();
+        currentSlug = btn.dataset.slug;
+        title.textContent = btn.dataset.name;
+        openDrawer();
+        showTab(currentTab);
       });
     })();
     }); // DOMContentLoaded
   </script>
   <style>
-    /* Help docs link */
-    .help-link {
+    /* More link */
+    .more-link {
       display: inline-flex;
       align-items: center;
       gap: 0.35rem;
@@ -8360,10 +8396,10 @@ weather.data = {
       cursor: pointer;
       margin-top: 0.15rem;
     }
-    .help-link:hover {
+    .more-link:hover {
       text-decoration: underline;
     }
-    .help-link svg {
+    .more-link svg {
       opacity: 0.8;
     }
 
@@ -8410,8 +8446,7 @@ weather.data = {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 1rem 1.25rem;
-      border-bottom: 1px solid var(--snice-color-border, rgba(128,128,128,0.2));
+      padding: 1rem 1.25rem 0.5rem;
       flex-shrink: 0;
     }
     .help-drawer-header h3 {
@@ -8429,6 +8464,36 @@ weather.data = {
       line-height: 1;
     }
     .help-drawer-close:hover { opacity: 1; }
+
+    /* Drawer tabs */
+    .help-drawer-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--snice-color-border, rgba(128,128,128,0.2));
+      flex-shrink: 0;
+      padding: 0 1.25rem;
+    }
+    .help-drawer-tab {
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--snice-color-text-secondary, #aaa);
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 0.6rem 0.75rem;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+      font-family: inherit;
+    }
+    .help-drawer-tab:hover { color: var(--snice-color-text, #eee); }
+    .help-drawer-tab.active {
+      color: var(--snice-color-primary, #2563eb);
+      border-bottom-color: var(--snice-color-primary, #2563eb);
+    }
+    .help-drawer-iframe {
+      flex: 1;
+      border: none;
+      width: 100%;
+    }
 
     /* Help drawer content */
     .help-drawer-body {

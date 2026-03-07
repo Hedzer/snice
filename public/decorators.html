@@ -44,7 +44,7 @@
     <div class="dec-section">
       <h3><code>@element</code></h3>
       <p class="desc">Register a custom element. Extends HTMLElement with reactive properties and lifecycle.</p>
-      <snice-code-block language="snice" grammar="grammars/snice.json">@element('my-card')
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@element('my-card')
 class MyCard extends HTMLElement {
   @property() title = '';
   @property({ type: Number }) count = 0;
@@ -60,7 +60,7 @@ class MyCard extends HTMLElement {
     <div class="dec-section">
       <h3><code>@page</code></h3>
       <p class="desc">Routable page component with route parameters, guards, and lifecycle hooks.</p>
-      <snice-code-block language="snice" grammar="grammars/snice.json">// Guard receives context + route params
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// Guard receives context + route params
 const auth: Guard&lt;AppContext&gt; = (ctx, params) =&gt; ctx.isAuthenticated();
 
 @page({ tag: 'user-page', routes: ['/users/:id'], guards: [auth] })
@@ -81,7 +81,7 @@ class UserPage extends HTMLElement {
     <div class="dec-section">
       <h3><code>@controller</code></h3>
       <p class="desc">Hot-swap logic on any element — keep your UI, change what it does.</p>
-      <snice-code-block language="snice" grammar="grammars/snice.json">@controller('weather')
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@controller('weather')
 class WeatherData {
   async attach(el) {
     const data = await fetch('/api/weather').then(r =&gt; r.json());
@@ -104,7 +104,7 @@ class WeatherData {
     <div class="dec-section">
       <h3><code>@layout</code></h3>
       <p class="desc">Page wrapper for the routing system. Layouts persist across route changes and wrap page content.</p>
-      <snice-code-block language="snice" grammar="grammars/snice.json">@layout('app-shell')
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@layout('app-shell')
 class AppShell extends HTMLElement {
   @render()
   template() {
@@ -127,7 +127,7 @@ class HomePage extends HTMLElement { }</snice-code-block>
     <div class="dec-section">
       <h3><code>@property</code> & <code>@watch</code></h3>
       <p class="desc">Reactive properties that trigger re-renders. Watch for changes.</p>
-      <snice-code-block language="snice" grammar="grammars/snice.json">@property() name = '';
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@property() name = '';
 @property({ type: Number }) count = 0;
 @property({ type: Boolean, reflect: true }) active = false;
 
@@ -140,7 +140,7 @@ onCountChange(newVal, oldVal) {
     <div class="dec-section">
       <h3><code>@render</code> & <code>@styles</code></h3>
       <p class="desc">Template method with differential rendering. Scoped CSS styles.</p>
-      <snice-code-block language="snice" grammar="grammars/snice.json">@render()
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@render()
 template() {
   return html`
     &lt;div class="card"&gt;
@@ -164,7 +164,7 @@ componentStyles() {
     <div class="dec-section">
       <h3><code>@ready</code> & <code>@dispose</code></h3>
       <p class="desc">Lifecycle hooks for initialization and cleanup.</p>
-      <snice-code-block language="snice" grammar="grammars/snice.json">@ready()
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@ready()
 onMount() {
   this.interval = setInterval(() =&gt; this.tick(), 1000);
   console.log('Component connected');
@@ -180,7 +180,7 @@ cleanup() {
     <div class="dec-section">
       <h3><code>@moved</code> & <code>@adopted</code></h3>
       <p class="desc">Execute when an element is moved between documents (e.g. into an iframe).</p>
-      <snice-code-block language="snice" grammar="grammars/snice.json">@moved()
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@moved()
 onMoved() {
   // Element was moved in the DOM (e.g. reparented)
   this.recalculateLayout();
@@ -196,7 +196,7 @@ onAdopted() {
     <div class="dec-section">
       <h3><code>@query</code> & <code>@queryAll</code></h3>
       <p class="desc">DOM element references within shadow DOM.</p>
-      <snice-code-block language="snice" grammar="grammars/snice.json">@query('input') inputEl;
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@query('input') inputEl;
 @queryAll('.item') items;
 
 @ready()
@@ -209,7 +209,7 @@ setup() {
     <div class="dec-section">
       <h3><code>@on</code> & <code>@dispatch</code></h3>
       <p class="desc">Event delegation and custom event emission.</p>
-      <snice-code-block language="snice" grammar="grammars/snice.json">// @on: delegated event listener
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// @on: delegated event listener
 @on('click', '.entry')
 editEntry(e) {
   this.selected = e.target.dataset.id;
@@ -238,7 +238,7 @@ handleItemClick(e) {
     <div class="dec-section">
       <h3><code>@context</code></h3>
       <p class="desc">Receive router navigation context updates.</p>
-      <snice-code-block language="snice" grammar="grammars/snice.json">// Method receives Context on route changes
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// Method receives Context on route changes
 @context()
 handleContext(ctx: Context) {
   this.user = ctx.application.user;
@@ -250,7 +250,7 @@ handleContext(ctx: Context) {
     <div class="dec-section">
       <h3><code>@observe</code></h3>
       <p class="desc">Watch for intersection, resize, media query, or DOM mutation changes.</p>
-      <snice-code-block language="snice" grammar="grammars/snice.json">// Fires when element enters/exits viewport
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// Fires when element enters/exits viewport
 @observe('self', 'intersection', { threshold: 0.5 })
 onVisible(entry: IntersectionObserverEntry) {
   this.visible = entry.isIntersecting;
@@ -279,7 +279,7 @@ onMutation(records: MutationRecord[]) {
     <div class="dec-section">
       <h3><code>@request</code> & <code>@respond</code></h3>
       <p class="desc">Async generator pattern for parent-child communication.</p>
-      <snice-code-block language="snice" grammar="grammars/snice.json">// Requester: async generator yields payload, awaits response
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// Requester: async generator yields payload, awaits response
 @request('fetch-user')
 async *fetchUser(id: string) {
   const user = await (yield { id });
@@ -299,7 +299,7 @@ async handleFetchUser({ id }) {
     <div class="dec-section">
       <h3><code>@debounce</code> & <code>@throttle</code></h3>
       <p class="desc">Rate-limit method execution. Debounce waits for quiet; throttle limits frequency.</p>
-      <snice-code-block language="snice" grammar="grammars/snice.json">// Wait 300ms after last call before executing
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// Wait 300ms after last call before executing
 @debounce(300)
 onSearchInput(query: string) {
   this.results = await this.search(query);
@@ -322,7 +322,7 @@ handleSearch(e: Event) {
     <div class="dec-section">
       <h3><code>@once</code> & <code>@memoize</code></h3>
       <p class="desc">Execute a method only once, or cache return values for repeated calls.</p>
-      <snice-code-block language="snice" grammar="grammars/snice.json">// Only runs once, subsequent calls are no-ops
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// Only runs once, subsequent calls are no-ops
 @once()
 initialize() {
   this.setupWebSocket();
@@ -345,7 +345,7 @@ onFirstRender() {
     <div class="dec-section">
       <h3>Template Syntax</h3>
       <p class="desc">Property binding, conditionals, loops, and event shortcuts.</p>
-      <snice-code-block language="snice" grammar="grammars/snice.json">// Property binding
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// Property binding
 html`&lt;input .value=${this.text}&gt;`
 
 // Conditionals
