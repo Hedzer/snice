@@ -2,15 +2,10 @@
   display: block;
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
 
-  /* Two-tier: variant colors */
-  --strip-info-bg: var(--snice-color-info-light, rgb(219 234 254 / 0.6));
-  --strip-info-border: var(--snice-color-primary, rgb(37 99 235));
-  --strip-success-bg: var(--snice-color-success-light, rgb(220 252 231 / 0.6));
-  --strip-success-border: var(--snice-color-success, rgb(22 163 74));
-  --strip-warning-bg: var(--snice-color-warning-light, rgb(254 249 195 / 0.6));
-  --strip-warning-border: var(--snice-color-warning, rgb(217 119 6));
-  --strip-danger-bg: var(--snice-color-danger-light, rgb(254 226 226 / 0.6));
-  --strip-danger-border: var(--snice-color-danger, rgb(220 38 38));
+  /* Two-tier: variant colors (self-contained, no theme dependency) */
+  --strip-bg: var(--snice-color-background, rgb(255 255 255));
+  --strip-border-color: var(--snice-color-border, rgb(226 226 226));
+  --strip-text-color: var(--snice-color-text, rgb(23 23 23));
 }
 
 :host([hidden]) {
@@ -21,10 +16,12 @@
   display: flex;
   align-items: center;
   padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
-  border-radius: var(--snice-border-radius-md, 4px);
-  font-size: 0.875rem;
+  border-radius: var(--snice-border-radius-lg, 0.5rem);
+  font-size: var(--snice-font-size-sm, 0.875rem);
   line-height: var(--snice-line-height-normal, 1.5);
-  border-left: 3px solid;
+  border: 1px solid var(--strip-border-color);
+  background: var(--strip-bg);
+  color: var(--strip-text-color);
   gap: var(--snice-spacing-xs, 0.5rem);
   animation: stripSlideIn 0.2s ease;
 }
@@ -40,56 +37,109 @@
 @keyframes stripSlideIn {
   from {
     opacity: 0;
-    transform: translateX(-0.5rem);
+    transform: translateY(-0.375rem);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateY(0);
   }
 }
 
 @keyframes stripSlideOut {
   from {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateY(0);
   }
   to {
     opacity: 0;
-    transform: translateX(-0.5rem);
+    transform: translateY(-0.375rem);
   }
 }
 
-/* Variants */
-:host([variant="info"]) .message-strip,
-:host(:not([variant])) .message-strip {
-  background: var(--strip-info-bg);
-  border-left-color: var(--strip-info-border);
-  color: var(--snice-color-text, rgb(23 23 23));
+/* Variants — self-contained light fallbacks, dark mode via :host-context or data-theme */
+:host([variant="info"]),
+:host(:not([variant])) {
+  --strip-bg: rgb(219 234 254);
+  --strip-border-color: rgb(147 180 233);
+  --strip-text-color: rgb(30 64 135);
 }
 
-:host([variant="success"]) .message-strip {
-  background: var(--strip-success-bg);
-  border-left-color: var(--strip-success-border);
-  color: var(--snice-color-text, rgb(23 23 23));
+:host([variant="success"]) {
+  --strip-bg: rgb(220 252 231);
+  --strip-border-color: rgb(74 179 120);
+  --strip-text-color: rgb(22 101 52);
 }
 
-:host([variant="warning"]) .message-strip {
-  background: var(--strip-warning-bg);
-  border-left-color: var(--strip-warning-border);
-  color: var(--snice-color-text, rgb(23 23 23));
+:host([variant="warning"]) {
+  --strip-bg: rgb(254 243 199);
+  --strip-border-color: rgb(202 138 4);
+  --strip-text-color: rgb(113 63 18);
 }
 
-:host([variant="danger"]) .message-strip {
-  background: var(--strip-danger-bg);
-  border-left-color: var(--strip-danger-border);
-  color: var(--snice-color-text, rgb(23 23 23));
+:host([variant="danger"]) {
+  --strip-bg: rgb(254 226 226);
+  --strip-border-color: rgb(185 94 94);
+  --strip-text-color: rgb(127 29 29);
+}
+
+/* Dark mode overrides */
+@media (prefers-color-scheme: dark) {
+  :host([variant="info"]),
+  :host(:not([variant])) {
+    --strip-bg: rgb(23 37 63);
+    --strip-border-color: rgb(44 72 117);
+    --strip-text-color: rgb(173 210 255);
+  }
+
+  :host([variant="success"]) {
+    --strip-bg: rgb(12 45 28);
+    --strip-border-color: rgb(28 82 52);
+    --strip-text-color: rgb(167 243 198);
+  }
+
+  :host([variant="warning"]) {
+    --strip-bg: rgb(50 36 11);
+    --strip-border-color: rgb(101 73 17);
+    --strip-text-color: rgb(253 224 137);
+  }
+
+  :host([variant="danger"]) {
+    --strip-bg: rgb(55 17 17);
+    --strip-border-color: rgb(109 40 40);
+    --strip-text-color: rgb(254 178 178);
+  }
+}
+
+:host-context([data-theme="dark"]) :is([variant="info"]),
+:host-context([data-theme="dark"]):not([variant]) {
+  --strip-bg: rgb(23 37 63);
+  --strip-border-color: rgb(44 72 117);
+  --strip-text-color: rgb(173 210 255);
+}
+
+:host-context([data-theme="dark"])[variant="success"] {
+  --strip-bg: rgb(12 45 28);
+  --strip-border-color: rgb(28 82 52);
+  --strip-text-color: rgb(167 243 198);
+}
+
+:host-context([data-theme="dark"])[variant="warning"] {
+  --strip-bg: rgb(50 36 11);
+  --strip-border-color: rgb(101 73 17);
+  --strip-text-color: rgb(253 224 137);
+}
+
+:host-context([data-theme="dark"])[variant="danger"] {
+  --strip-bg: rgb(55 17 17);
+  --strip-border-color: rgb(109 40 40);
+  --strip-text-color: rgb(254 178 178);
 }
 
 /* Icon */
 .message-strip-icon {
   flex-shrink: 0;
-  width: 1.125rem;
-  height: 1.125rem;
+  width: 1.25rem;
+  height: 1.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -107,8 +157,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 1.125rem;
-  height: 1.125rem;
+  width: 1.25rem;
+  height: 1.25rem;
   font-size: 1.125rem;
   line-height: 1;
 }
@@ -143,13 +193,13 @@
 /* Dismiss button */
 .message-strip-dismiss {
   flex-shrink: 0;
-  padding: 0.125rem;
+  padding: var(--snice-spacing-2xs, 0.25rem);
   background: none;
   border: none;
   cursor: pointer;
-  opacity: 0.5;
+  opacity: 0.6;
   transition: opacity var(--snice-transition-fast, 150ms) ease;
-  border-radius: var(--snice-border-radius-md, 4px);
+  border-radius: var(--snice-border-radius-md, 0.25rem);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -162,8 +212,8 @@
 }
 
 .message-strip-dismiss:focus-visible {
-  outline: 2px solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
-  outline-offset: 1px;
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
 }
 
 .message-strip-dismiss svg {

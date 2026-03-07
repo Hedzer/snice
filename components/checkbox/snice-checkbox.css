@@ -6,6 +6,11 @@
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
 }
 
+:host([size="small"]) {
+  min-height: 2rem;
+  align-self: center;
+}
+
 .checkbox-wrapper {
   display: inline-flex;
   align-items: center;

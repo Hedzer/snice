@@ -72,12 +72,6 @@
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  height: 1.25rem;
-}
-
-.tree-item__checkbox snice-checkbox {
-  display: flex;
-  align-items: center;
 }
 
 .tree-item__icon {

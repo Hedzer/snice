@@ -1,7 +1,7 @@
 :host {
   display: block;
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
-  contain: layout style paint;
+  contain: layout style;
 }
 
 .calendar {
@@ -80,6 +80,7 @@
   transition: background-color var(--snice-transition-fast, 150ms) ease;
   position: relative;
   background: var(--snice-color-background, rgb(255 255 255));
+  color: var(--snice-color-text, rgb(23 23 23));
   overflow: hidden;
 }
 
@@ -107,11 +108,11 @@
 }
 
 .calendar__day--today {
-  background: hsl(var(--snice-color-blue-100));
+  background: var(--snice-color-primary-subtle, rgb(239 246 255));
 }
 
 .calendar__day--today:hover {
-  background: hsl(var(--snice-color-blue-200));
+  background: var(--snice-color-primary-subtle-hover, rgb(219 234 254));
 }
 
 .calendar__day--selected {
