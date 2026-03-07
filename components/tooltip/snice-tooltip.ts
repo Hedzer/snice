@@ -50,6 +50,8 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
   private hideTimeout?: number;
   private activePosition: TooltipPosition = 'top';
   private portalElement?: HTMLElement;
+  private scrollHandler = () => this.updatePosition();
+  private rafId = 0;
 
   @render()
   render() {
@@ -84,6 +86,9 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
   @dispose()
   cleanup() {
     this.clearTimeouts();
+    window.removeEventListener('scroll', this.scrollHandler, { capture: true } as EventListenerOptions);
+    window.removeEventListener('resize', this.scrollHandler);
+    cancelAnimationFrame(this.rafId);
     if (this.portalElement) {
       this.portalElement.remove();
       this.portalElement = undefined;
@@ -216,6 +221,10 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
     this.updatePosition();
     this.portalElement.classList.add('snice-tooltip--visible');
 
+    // Track scroll/resize to keep tooltip anchored
+    window.addEventListener('scroll', this.scrollHandler, { capture: true, passive: true });
+    window.addEventListener('resize', this.scrollHandler, { passive: true });
+
     if (this.trigger === 'click') {
       setTimeout(() => {
         document.addEventListener('click', this.handleClickOutside);
@@ -227,6 +236,11 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
     if (!this.portalElement) return;
 
     this.portalElement.classList.remove('snice-tooltip--visible');
+
+    // Stop tracking scroll/resize
+    window.removeEventListener('scroll', this.scrollHandler, { capture: true } as EventListenerOptions);
+    window.removeEventListener('resize', this.scrollHandler);
+    cancelAnimationFrame(this.rafId);
 
     setTimeout(() => {
       if (this.portalElement) {
