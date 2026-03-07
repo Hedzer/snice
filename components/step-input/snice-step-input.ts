@@ -195,6 +195,7 @@ export class SniceStepInput extends HTMLElement implements SniceStepInputElement
 
   @watch('value')
   handleValueChange() {
+    this.clampValue();
     if (this.input && this.input.value !== String(this.value)) {
       this.input.value = String(this.value);
     }
