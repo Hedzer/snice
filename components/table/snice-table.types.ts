@@ -171,9 +171,25 @@ export interface ColumnDefinition {
   type?: ColumnType;
   align?: ColumnAlign;
   width?: string;
+  flex?: number;
+  minWidth?: number;
+  maxWidth?: number;
   sortable?: boolean;
   filterable?: boolean;
+  resizable?: boolean;
+  reorderable?: boolean;
+  hideable?: boolean;
+  pinnable?: boolean;
+  pinned?: 'left' | 'right' | false;
+  editable?: boolean;
+  exportable?: boolean;
   formatter?: (value: any, row?: any) => string;
+  valueGetter?: (value: any, row: any) => any;
+  valueFormatter?: (value: any, row: any) => string;
+  valueParser?: (value: string, row: any) => any;
+  valueSetter?: (value: any, row: any) => any;
+  sortComparator?: (a: any, b: any, direction: 'asc' | 'desc') => number;
+  colSpan?: number | ((value: any, row: any) => number);
   
   // Excel-like formatting
   numberFormat?: NumberFormat;

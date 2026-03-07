@@ -1,4 +1,4 @@
-import { element, property, query, request, dispatch, watch, render, styles, html, css, ready } from 'snice';
+import { element, property, query, request, dispatch, watch, render, styles, html, css, ready, dispose } from 'snice';
 import '../input/snice-input';
 import '../select/snice-select';
 import './snice-cell.ts';
@@ -13,6 +13,14 @@ import './snice-cell-filesize.ts';
 import './snice-cell-sparkline.ts';
 import './snice-column.ts';
 import './snice-row.ts';
+import { TableVirtualizer } from './table-virtualizer';
+import { TableColumnManager } from './table-column-manager';
+import { TableFilterEngine } from './table-filter-engine';
+import { TableEditor } from './table-editor';
+import { TableKeyboard } from './table-keyboard';
+import { TableExport } from './table-export';
+import type { ColumnFilter, FilterLogic, FilterModel } from './table-filter-engine';
+import type { ValuePipeline } from './table-editor';
 
 @element('snice-table')
 export class SniceTable extends HTMLElement {
@@ -93,8 +101,43 @@ export class SniceTable extends HTMLElement {
   @property({ type: Boolean,  attribute: 'loading' })
   loading: boolean = false;
 
+  @property({ type: Boolean, attribute: 'virtualize' })
+  virtualize = false;
+
+  @property({ type: Number, attribute: 'row-height' })
+  rowHeight = 48;
+
+  @property({ type: Number, attribute: 'virtual-buffer' })
+  virtualBuffer = 200;
+
+  @property({ type: Boolean, attribute: 'column-resize' })
+  columnResize = false;
+
+  @property({ type: Boolean, attribute: 'editable' })
+  editable = false;
+
+  @property({ attribute: 'edit-mode' })
+  editMode: 'cell' | 'row' = 'cell';
+
+  @property({ attribute: 'density' })
+  density: 'compact' | 'standard' | 'comfortable' = 'standard';
+
+  @property({ type: Boolean, attribute: 'header-filters' })
+  headerFilters = false;
+
+  @property({ type: Boolean, attribute: 'quick-filter' })
+  quickFilter = false;
+
   @property({ type: Array, attribute: false })
   selectedRows: number[] = [];
+
+  // Module instances
+  private virtualizer = new TableVirtualizer();
+  private columnManager = new TableColumnManager();
+  private filterEngine = new TableFilterEngine();
+  private editor = new TableEditor();
+  private keyboard = new TableKeyboard();
+  private exporter = new TableExport();
 
   @query('table')
   table!: HTMLTableElement;
@@ -469,6 +512,128 @@ export class SniceTable extends HTMLElement {
         outline-offset: 2px;
       }
 
+      /* Column resize handle */
+      .resize-handle {
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        cursor: col-resize;
+        background: transparent;
+        z-index: 1;
+      }
+
+      .resize-handle:hover,
+      .resize-handle:active {
+        background: var(--snice-color-primary, rgb(37 99 235));
+      }
+
+      /* Filter indicator */
+      th.filtered::after {
+        content: '';
+        position: absolute;
+        top: 4px;
+        right: 8px;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--snice-color-primary, rgb(37 99 235));
+      }
+
+      /* Pinned column separator */
+      td[style*="sticky"],
+      th[style*="sticky"] {
+        box-shadow: 2px 0 4px -1px rgb(0 0 0 / 0.1);
+      }
+
+      /* Density: compact */
+      :host([density="compact"]) th {
+        padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-xs, 0.5rem);
+        font-size: var(--snice-font-size-xs, 0.75rem);
+      }
+
+      :host([density="compact"]) td {
+        padding: var(--snice-spacing-3xs, 0.125rem) var(--snice-spacing-xs, 0.5rem);
+        font-size: var(--snice-font-size-xs, 0.75rem);
+      }
+
+      /* Density: comfortable */
+      :host([density="comfortable"]) th {
+        padding: var(--snice-spacing-md, 1rem);
+      }
+
+      :host([density="comfortable"]) td {
+        padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-md, 1rem);
+      }
+
+      /* Editing */
+      .table-editor-input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: var(--snice-spacing-2xs, 0.25rem);
+        border: 2px solid var(--snice-color-primary, rgb(37 99 235));
+        border-radius: var(--snice-border-radius-sm, 0.125rem);
+        font-family: inherit;
+        font-size: inherit;
+        color: var(--snice-color-text, rgb(23 23 23));
+        background: var(--snice-color-background, rgb(255 255 255));
+        outline: none;
+      }
+
+      .table-editor-select {
+        width: 100%;
+        padding: var(--snice-spacing-2xs, 0.25rem);
+        border: 2px solid var(--snice-color-primary, rgb(37 99 235));
+        border-radius: var(--snice-border-radius-sm, 0.125rem);
+        font-family: inherit;
+        font-size: inherit;
+      }
+
+      .table-editor-checkbox {
+        width: 1rem;
+        height: 1rem;
+      }
+
+      td.editing {
+        padding: 2px !important;
+      }
+
+      .cell-error {
+        color: var(--snice-color-danger, rgb(220 38 38));
+        font-size: var(--snice-font-size-xs, 0.75rem);
+        margin-top: 2px;
+      }
+
+      /* Header filter row */
+      .header-filter-row td {
+        padding: var(--snice-spacing-2xs, 0.25rem);
+        background: var(--snice-color-background-secondary, rgb(245 245 245));
+      }
+
+      .header-filter-input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-xs, 0.5rem);
+        border: 1px solid var(--snice-color-border, rgb(226 226 226));
+        border-radius: var(--snice-border-radius-sm, 0.125rem);
+        font-size: var(--snice-font-size-xs, 0.75rem);
+        font-family: inherit;
+        color: var(--snice-color-text, rgb(23 23 23));
+        background: var(--snice-color-background-input, rgb(248 247 245));
+      }
+
+      .header-filter-input:focus {
+        outline: none;
+        border-color: var(--snice-color-primary, rgb(37 99 235));
+      }
+
+      /* Focus indicator for keyboard nav */
+      [data-grid-focus] {
+        outline: 2px solid var(--snice-color-primary, rgb(37 99 235));
+        outline-offset: -2px;
+      }
+
       /* Slotted table layout */
       .snice-table--slotted {
         border: 1px solid var(--snice-color-border);
@@ -616,6 +781,14 @@ export class SniceTable extends HTMLElement {
 
     // Render controls after initial setup
     this.renderControls();
+
+    // Initialize feature modules
+    this.initializeModules();
+
+    // Setup virtualization if enabled
+    if (this.virtualize) {
+      requestAnimationFrame(() => this.setupVirtualization());
+    }
   }
 
   private async processSlottedContent() {
@@ -720,10 +893,36 @@ export class SniceTable extends HTMLElement {
       }, 0);
     }
 
+    // Determine which columns are visible
+    const visibleStates = this.columnManager.getVisibleColumns();
+    const visibleKeys = visibleStates.length > 0 ? new Set(visibleStates.map(s => s.key)) : null;
+
     this.columns.forEach(column => {
+      // Skip hidden columns
+      if (visibleKeys && !visibleKeys.has(column.key)) return;
+
       const th = document.createElement('th');
       th.setAttribute('data-key', column.key);
-      
+
+      // Apply column width
+      const state = this.columnManager.getState(column.key);
+      if (state) {
+        th.style.width = `${state.width}px`;
+
+        // Pinned column sticky positioning
+        if (state.pinned === 'left') {
+          const offsets = this.columnManager.getPinnedLeftOffsets();
+          th.style.position = 'sticky';
+          th.style.left = `${offsets.get(column.key) ?? 0}px`;
+          th.style.zIndex = '2';
+        } else if (state.pinned === 'right') {
+          const offsets = this.columnManager.getPinnedRightOffsets();
+          th.style.position = 'sticky';
+          th.style.right = `${offsets.get(column.key) ?? 0}px`;
+          th.style.zIndex = '2';
+        }
+      }
+
       if (this.sortable && column.sortable !== false) {
         th.classList.add('sortable');
         th.setAttribute('role', 'button');
@@ -731,7 +930,32 @@ export class SniceTable extends HTMLElement {
       } else {
         th.textContent = column.label;
       }
-      
+
+      // Filter indicator
+      if (this.filterEngine.hasColumnFilter(column.key)) {
+        th.classList.add('filtered');
+      }
+
+      // Resize handle
+      if (this.columnResize && column.resizable !== false) {
+        const handle = document.createElement('span');
+        handle.className = 'resize-handle';
+        handle.addEventListener('mousedown', (e) => {
+          e.stopPropagation();
+          this.columnManager.startResize(column.key, e.clientX);
+        });
+        handle.addEventListener('dblclick', (e) => {
+          e.stopPropagation();
+          if (this.tbody) {
+            this.columnManager.autoSizeColumn(column.key, this.tbody);
+            this.renderHeader();
+            this.renderBody();
+          }
+        });
+        th.appendChild(handle);
+        th.style.position = 'relative';
+      }
+
       headerRow.appendChild(th);
     });
 
@@ -776,6 +1000,22 @@ export class SniceTable extends HTMLElement {
   renderBody() {
     if (!this.tbody) return;
 
+    // Update column manager when columns change
+    if (this.columns.length > 0) {
+      this.columnManager.initialize(this.columns, this);
+    }
+
+    // Virtualized rendering: delegate to virtualizer
+    if (this.virtualize && this.virtualizer.isEnabled()) {
+      const filtered = this.getFilteredData();
+      this.virtualizer.setTotalRows(filtered.length);
+      this.virtualizer.refresh();
+
+      // Still render pagination
+      if (this.pagination) this.renderPagination();
+      return;
+    }
+
     this.tbody.innerHTML = '';
 
     if (this.data.length === 0 && this.columns.length > 0) {
@@ -806,44 +1046,21 @@ export class SniceTable extends HTMLElement {
 
     const fragment = document.createDocumentFragment();
 
+    // Apply client-side filters
+    let filteredData = this.getFilteredData();
+
     // Client-side pagination: slice data
-    let displayData = this.data;
+    let displayData = filteredData;
     let startIndex = 0;
     if (this.pagination && this.paginationMode === 'client') {
-      this.totalItems = this.data.length;
+      this.totalItems = filteredData.length;
       startIndex = (this.currentPage - 1) * this.pageSize;
-      displayData = this.data.slice(startIndex, startIndex + this.pageSize);
+      displayData = filteredData.slice(startIndex, startIndex + this.pageSize);
     }
 
     displayData.forEach((rowData, i) => {
       const index = startIndex + i;
-      const tr = document.createElement('tr');
-      tr.setAttribute('data-index', String(index));
-
-      // Set row selection state
-      const isSelected = this.selectedRows.includes(index);
-      tr.setAttribute('data-selected', String(isSelected));
-
-      if (this.selectable) {
-        const selectCell = document.createElement('td');
-        selectCell.className = 'select-column';
-        selectCell.innerHTML = `<input type="checkbox" class="row-select" ${isSelected ? 'checked' : ''} data-row-index="${index}" />`;
-        tr.appendChild(selectCell);
-      }
-
-      this.columns.forEach(column => {
-        const td = document.createElement('td');
-        const value = rowData[column.key];
-
-        // Create cell component as HTML string
-        const cellTagName = this.getCellTagName(column.type);
-        const attributes = this.getCellAttributes(column, value);
-        td.innerHTML = `<${cellTagName} ${attributes}></${cellTagName}>`;
-
-        tr.appendChild(td);
-      });
-
-      fragment.appendChild(tr);
+      fragment.appendChild(this.createRow(rowData, index));
     });
 
     this.tbody.appendChild(fragment);
@@ -1259,6 +1476,339 @@ export class SniceTable extends HTMLElement {
       selectedRows: this.selectedRows,
       allSelected
     };
+  }
+
+  // ── Module Integration: Initialize ──
+
+  private initializeModules() {
+    // Column manager
+    this.columnManager.initialize(this.columns, this);
+
+    // Editor
+    if (this.editable) {
+      this.editor.attach(this);
+      this.editor.setEditMode(this.editMode);
+      const editableCols = this.columns.filter(c => c.editable !== false).map(c => c.key);
+      this.editor.setEditableColumns(editableCols);
+
+      // Register value pipelines
+      for (const col of this.columns) {
+        if (col.valueGetter || col.valueFormatter || col.valueParser || col.valueSetter) {
+          this.editor.setPipeline(col.key, {
+            valueGetter: col.valueGetter,
+            valueFormatter: col.valueFormatter,
+            valueParser: col.valueParser,
+            valueSetter: col.valueSetter,
+          });
+        }
+      }
+    }
+
+    // Keyboard
+    if (this.shadowRoot) {
+      this.keyboard.attach({
+        shadowRoot: this.shadowRoot,
+        totalRows: this.data.length,
+        totalColumns: this.columns.length,
+        tabMode: 'all',
+        isEditing: () => this.editor.isEditing(),
+        onCellActivate: (row, col) => {
+          if (this.editable) this.startEdit(row, col);
+        },
+        onSelectionToggle: (row) => {
+          if (this.selectable) this.toggleRowSelection(row);
+        },
+        onSelectAll: () => {
+          if (this.selectable) this.selectAllRows();
+        },
+      });
+    }
+  }
+
+  @dispose()
+  cleanup() {
+    this.virtualizer.detach();
+    this.keyboard.detach();
+  }
+
+  // ── Virtualization API ──
+
+  private setupVirtualization() {
+    if (!this.virtualize || !this.shadowRoot) return;
+
+    const scrollContainer = this.shadowRoot.querySelector('.snice-table') as HTMLElement;
+    if (!scrollContainer) return;
+
+    this.virtualizer.attach({
+      rowHeight: this.rowHeight,
+      bufferPx: this.virtualBuffer,
+      totalRows: this.getFilteredData().length,
+      scrollContainer,
+      renderRange: (start, end) => this.renderRowRange(start, end),
+    });
+  }
+
+  private renderRowRange(startIndex: number, endIndex: number): DocumentFragment {
+    const fragment = document.createDocumentFragment();
+    const displayData = this.getFilteredData();
+
+    for (let i = startIndex; i < endIndex && i < displayData.length; i++) {
+      const rowData = displayData[i];
+      const tr = this.createRow(rowData, i);
+      fragment.appendChild(tr);
+    }
+
+    return fragment;
+  }
+
+  scrollToRow(index: number) {
+    this.virtualizer.scrollToRow(index);
+  }
+
+  getScrollPosition() {
+    return this.virtualizer.getScrollPosition();
+  }
+
+  // ── Filtering API ──
+
+  setColumnFilter(column: string, operator: any, value: any) {
+    this.filterEngine.setColumnFilter(column, operator, value);
+    this.applyClientFilters();
+  }
+
+  removeColumnFilter(column: string) {
+    this.filterEngine.removeColumnFilter(column);
+    this.applyClientFilters();
+  }
+
+  setQuickFilter(text: string) {
+    this.filterEngine.setQuickFilter(text);
+    this.applyClientFilters();
+  }
+
+  setFilterModel(model: FilterModel) {
+    this.filterEngine.setFilterModel(model);
+    this.applyClientFilters();
+  }
+
+  getFilterModel() {
+    return this.filterEngine.getFilterModel();
+  }
+
+  clearAllFilters() {
+    this.filterEngine.clearAllFilters();
+    this.applyClientFilters();
+  }
+
+  private getFilteredData(): any[] {
+    if (!this.filterEngine.hasActiveFilters()) return this.data;
+    return this.filterEngine.applyFilters(this.data, this.columns);
+  }
+
+  private applyClientFilters() {
+    if (this._hasController) {
+      // Server-side: send filter params to controller
+      this.debouncedDataRequest();
+    } else {
+      // Client-side: re-render with filtered data
+      this.renderBody();
+    }
+  }
+
+  // ── Column API ──
+
+  setColumnVisible(key: string, visible: boolean) {
+    this.columnManager.setColumnVisible(key, visible);
+    this.renderHeader();
+    this.renderBody();
+  }
+
+  showAllColumns() {
+    this.columnManager.showAllColumns();
+    this.renderHeader();
+    this.renderBody();
+  }
+
+  hideAllColumns() {
+    this.columnManager.hideAllColumns();
+    this.renderHeader();
+    this.renderBody();
+  }
+
+  getColumnVisibility() {
+    return this.columnManager.getVisibilityModel();
+  }
+
+  pinColumn(key: string, side: 'left' | 'right') {
+    this.columnManager.pinColumn(key, side);
+    this.renderHeader();
+    this.renderBody();
+  }
+
+  unpinColumn(key: string) {
+    this.columnManager.unpinColumn(key);
+    this.renderHeader();
+    this.renderBody();
+  }
+
+  autoSizeColumn(key: string) {
+    if (this.tbody) {
+      this.columnManager.autoSizeColumn(key, this.tbody);
+      this.renderHeader();
+    }
+  }
+
+  autoSizeAllColumns() {
+    if (this.tbody) {
+      this.columnManager.autoSizeAll(this.tbody);
+      this.renderHeader();
+    }
+  }
+
+  moveColumn(key: string, toIndex: number) {
+    this.columnManager.moveColumn(key, toIndex);
+    this.renderHeader();
+    this.renderBody();
+  }
+
+  // ── Editing API ──
+
+  startEdit(rowIndex: number, columnKey: string) {
+    if (!this.editable) return;
+    const row = this.data[rowIndex];
+    if (!row) return;
+
+    if (this.editMode === 'row') {
+      this.editor.startRowEdit(rowIndex, row);
+    } else {
+      const value = row[columnKey];
+      this.editor.startCellEdit(rowIndex, columnKey, value, row);
+    }
+    // Re-render the affected row to show editor
+    this.renderBody();
+  }
+
+  async commitEdit(): Promise<string | null> {
+    if (this.editMode === 'row') {
+      const errors = await this.editor.commitRowEdit();
+      this.renderBody();
+      return errors ? 'Validation errors' : null;
+    } else {
+      const error = await this.editor.commitCellEdit();
+      this.renderBody();
+      return error;
+    }
+  }
+
+  cancelEdit() {
+    if (this.editMode === 'row') {
+      this.editor.cancelRowEdit();
+    } else {
+      this.editor.cancelCellEdit();
+    }
+    this.renderBody();
+  }
+
+  // ── Export API ──
+
+  exportCSV(options?: any) {
+    const data = this.getFilteredData();
+    const selectedData = options?.selectedOnly
+      ? this.selectedRows.map(i => data[i]).filter(Boolean)
+      : data;
+    this.exporter.exportCSV(selectedData, this.columns, options);
+  }
+
+  printTable(options?: any) {
+    this.exporter.print(this, options);
+  }
+
+  async copyToClipboard(options?: any): Promise<boolean> {
+    return this.exporter.copyToClipboard(this.getFilteredData(), this.columns, this.selectedRows, options);
+  }
+
+  // ── Selection helpers ──
+
+  private toggleRowSelection(rowIndex: number) {
+    const isSelected = this.selectedRows.includes(rowIndex);
+    if (isSelected) {
+      this.selectedRows = this.selectedRows.filter(i => i !== rowIndex);
+    } else {
+      this.selectedRows = [...this.selectedRows, rowIndex];
+    }
+    this.updateRowSelectionState();
+    this.updateSelectAllState();
+    this.dispatchRowSelectionChanged(rowIndex, !isSelected);
+  }
+
+  private selectAllRows() {
+    if (this.selectedRows.length === this.data.length) {
+      this.selectedRows = [];
+    } else {
+      this.selectedRows = this.data.map((_, i) => i);
+    }
+    this.updateRowSelectionState();
+    this.updateSelectAllState();
+    this.dispatchSelectAllChanged(this.selectedRows.length === this.data.length);
+  }
+
+  // ── Row creation helper (used by both regular and virtualized rendering) ──
+
+  private createRow(rowData: any, index: number): HTMLTableRowElement {
+    const tr = document.createElement('tr');
+    tr.setAttribute('data-index', String(index));
+
+    const isSelected = this.selectedRows.includes(index);
+    tr.setAttribute('data-selected', String(isSelected));
+
+    if (this.selectable) {
+      const selectCell = document.createElement('td');
+      selectCell.className = 'select-column';
+      selectCell.innerHTML = `<input type="checkbox" class="row-select" ${isSelected ? 'checked' : ''} data-row-index="${index}" />`;
+      tr.appendChild(selectCell);
+    }
+
+    const visibleCols = this.columnManager.getAllStates().length > 0
+      ? this.columnManager.getVisibleColumns()
+      : null;
+
+    const columnsToRender = visibleCols
+      ? this.columns.filter(col => visibleCols.some(s => s.key === col.key))
+      : this.columns;
+
+    columnsToRender.forEach(column => {
+      const td = document.createElement('td');
+      td.setAttribute('data-key', column.key);
+      const value = rowData[column.key];
+      const cellTagName = this.getCellTagName(column.type);
+      const attributes = this.getCellAttributes(column, value);
+      td.innerHTML = `<${cellTagName} ${attributes}></${cellTagName}>`;
+
+      // Apply column width
+      const state = this.columnManager.getState(column.key);
+      if (state) {
+        td.style.width = `${state.width}px`;
+
+        // Pinned column sticky positioning
+        if (state.pinned === 'left') {
+          const offsets = this.columnManager.getPinnedLeftOffsets();
+          td.style.position = 'sticky';
+          td.style.left = `${offsets.get(column.key) ?? 0}px`;
+          td.style.zIndex = '1';
+          td.style.background = 'var(--snice-color-background, rgb(255 255 255))';
+        } else if (state.pinned === 'right') {
+          const offsets = this.columnManager.getPinnedRightOffsets();
+          td.style.position = 'sticky';
+          td.style.right = `${offsets.get(column.key) ?? 0}px`;
+          td.style.zIndex = '1';
+          td.style.background = 'var(--snice-color-background, rgb(255 255 255))';
+        }
+      }
+
+      tr.appendChild(td);
+    });
+
+    return tr;
   }
 
 }
