@@ -1,4 +1,4 @@
-[//]: # (AI: For a low-token version of this doc, use docs/ai/components/network-graph.md instead)
+<!-- AI: For a low-token version of this doc, use docs/ai/components/network-graph.md instead -->
 
 # Network Graph
 `<snice-network-graph>`

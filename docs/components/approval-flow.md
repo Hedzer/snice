@@ -1,4 +1,4 @@
-[//]: # (AI: For a low-token version of this doc, use docs/ai/components/approval-flow.md instead)
+<!-- AI: For a low-token version of this doc, use docs/ai/components/approval-flow.md instead -->
 
 # Approval Flow
 `<snice-approval-flow>`

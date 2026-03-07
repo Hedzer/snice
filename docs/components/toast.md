@@ -1,4 +1,4 @@
-[//]: # (AI: For a low-token version of this doc, use docs/ai/components/toast.md instead)
+<!-- AI: For a low-token version of this doc, use docs/ai/components/toast.md instead -->
 
 # Toast
 `<snice-toast-container>`

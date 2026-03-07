@@ -1,4 +1,4 @@
-[//]: # (AI: For a low-token version of this doc, use docs/ai/components/avatar-group.md instead)
+<!-- AI: For a low-token version of this doc, use docs/ai/components/avatar-group.md instead -->
 
 # Avatar Group Component
 `<snice-avatar-group>`

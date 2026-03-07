@@ -1,4 +1,4 @@
-[//]: # (AI: For a low-token version of this doc, use docs/ai/components/mentions.md instead)
+<!-- AI: For a low-token version of this doc, use docs/ai/components/mentions.md instead -->
 
 # Mentions
 `<snice-mentions>`

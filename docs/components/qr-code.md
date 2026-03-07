@@ -1,4 +1,4 @@
-[//]: # (AI: For a low-token version of this doc, use docs/ai/components/qr-code.md instead)
+<!-- AI: For a low-token version of this doc, use docs/ai/components/qr-code.md instead -->
 
 # QR Code
 `<snice-qr-code>`

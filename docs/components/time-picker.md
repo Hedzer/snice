@@ -1,4 +1,4 @@
-[//]: # (AI: For a low-token version of this doc, use docs/ai/components/time-picker.md instead)
+<!-- AI: For a low-token version of this doc, use docs/ai/components/time-picker.md instead -->
 
 # Time Picker
 `<snice-time-picker>`

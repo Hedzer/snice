@@ -1,4 +1,4 @@
-[//]: # (AI: For a low-token version of this doc, use docs/ai/components/org-chart.md instead)
+<!-- AI: For a low-token version of this doc, use docs/ai/components/org-chart.md instead -->
 
 # Org Chart Component
 

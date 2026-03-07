@@ -1,4 +1,4 @@
-[//]: # (AI: For a low-token version of this doc, use docs/ai/components/link-preview.md instead)
+<!-- AI: For a low-token version of this doc, use docs/ai/components/link-preview.md instead -->
 
 # Link Preview
 `<snice-link-preview>`

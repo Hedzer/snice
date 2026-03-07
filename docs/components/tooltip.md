@@ -1,4 +1,4 @@
-[//]: # (AI: For a low-token version of this doc, use docs/ai/components/tooltip.md instead)
+<!-- AI: For a low-token version of this doc, use docs/ai/components/tooltip.md instead -->
 
 # Tooltip
 `<snice-tooltip>`

@@ -1,4 +1,4 @@
-[//]: # (AI: For a low-token version of this doc, use docs/ai/components/login.md instead)
+<!-- AI: For a low-token version of this doc, use docs/ai/components/login.md instead -->
 
 # Login
 `<snice-login>`

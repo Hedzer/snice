@@ -1,4 +1,4 @@
-[//]: # (AI: For a low-token version of this doc, use docs/ai/components/tag-input.md instead)
+<!-- AI: For a low-token version of this doc, use docs/ai/components/tag-input.md instead -->
 
 # Tag Input Component
 

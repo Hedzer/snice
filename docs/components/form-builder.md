@@ -1,4 +1,4 @@
-[//]: # (AI: For a low-token version of this doc, use docs/ai/components/form-builder.md instead)
+<!-- AI: For a low-token version of this doc, use docs/ai/components/form-builder.md instead -->
 
 # Form Builder
 `<snice-form-builder>`

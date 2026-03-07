@@ -1,4 +1,4 @@
-[//]: # (AI: For a low-token version of this doc, use docs/ai/components/qr-reader.md instead)
+<!-- AI: For a low-token version of this doc, use docs/ai/components/qr-reader.md instead -->
 
 # QR Reader
 `<snice-qr-reader>`

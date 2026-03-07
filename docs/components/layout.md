@@ -1,4 +1,4 @@
-[//]: # (AI: For a low-token version of this doc, use docs/ai/components/layout.md instead)
+<!-- AI: For a low-token version of this doc, use docs/ai/components/layout.md instead -->
 
 # Layout
 `<snice-layout>`

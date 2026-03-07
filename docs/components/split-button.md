@@ -1,4 +1,4 @@
-[//]: # (AI: For a low-token version of this doc, use docs/ai/components/split-button.md instead)
+<!-- AI: For a low-token version of this doc, use docs/ai/components/split-button.md instead -->
 
 # Split Button
 `<snice-split-button>`

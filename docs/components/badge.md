@@ -1,4 +1,4 @@
-[//]: # (AI: For a low-token version of this doc, use docs/ai/components/badge.md instead)
+<!-- AI: For a low-token version of this doc, use docs/ai/components/badge.md instead -->
 
 # Badge Component
 
