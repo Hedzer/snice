@@ -289,6 +289,67 @@
   cursor: default;
 }
 
+/* Year Button in header */
+.year-button {
+  background: none;
+  border: none;
+  font-size: var(--snice-font-size-md, 1rem);
+  font-weight: var(--snice-font-weight-semibold, 600);
+  font-family: inherit;
+  color: var(--snice-color-primary);
+  cursor: pointer;
+  padding: 0.125rem 0.375rem;
+  border-radius: var(--snice-border-radius-md, 4px);
+  transition: background-color var(--snice-transition-fast, 0.15s) ease;
+}
+
+.year-button:hover {
+  background: var(--snice-color-background-tertiary);
+}
+
+/* Year Grid */
+.year-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+}
+
+.year-cell {
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0.625rem 0.25rem;
+  border-radius: var(--snice-border-radius-md, 4px);
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  font-family: inherit;
+  color: var(--snice-color-text);
+  transition: background-color var(--snice-transition-fast, 0.15s) ease, color var(--snice-transition-fast, 0.15s) ease;
+}
+
+.year-cell:hover {
+  background: var(--snice-color-background-tertiary);
+}
+
+.year-cell--current {
+  outline: 2px solid var(--snice-color-primary);
+  outline-offset: -2px;
+  color: var(--snice-color-primary);
+  font-weight: var(--snice-font-weight-semibold, 600);
+}
+
+.year-cell--selected {
+  background: var(--snice-color-primary);
+  color: var(--snice-color-text-inverse);
+  font-weight: var(--snice-font-weight-semibold, 600);
+}
+
+.month-label {
+  font-size: var(--snice-font-size-md, 1rem);
+  font-weight: var(--snice-font-weight-semibold, 600);
+  color: var(--snice-color-text);
+}
+
 /* Calendar Footer */
 .calendar-footer {
   margin-top: 1rem;

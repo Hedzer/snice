@@ -92,6 +92,8 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
 
   private selectedDate: Date | null = null;
   private viewDate = new Date();
+  private calendarView: 'days' | 'years' = 'days';
+  private yearRangeStart = 0;
   
   private monthNames = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -178,33 +180,55 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
           </if>
 
           <div class="calendar" part="calendar" ?hidden=${!this.showCalendar} @click=${(e: Event) => this.handleCalendarClick(e)}>
-            <div class="calendar-header">
-              <button class="nav-button" type="button" data-nav="prev-month" aria-label="Previous month">
-                <svg viewBox="0 0 24 24" width="20" height="20">
-                  <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" fill="currentColor"/>
-                </svg>
-              </button>
+            <case ${this.calendarView}>
+              <when value="years">
+                <div class="calendar-header">
+                  <button class="nav-button" type="button" data-nav="prev-years" aria-label="Previous years">
+                    <svg viewBox="0 0 24 24" width="20" height="20">
+                      <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" fill="currentColor"/>
+                    </svg>
+                  </button>
+                  <div class="calendar-title">
+                    <span class="month-label">${this.yearRangeStart} — ${this.yearRangeStart + 11}</span>
+                  </div>
+                  <button class="nav-button" type="button" data-nav="next-years" aria-label="Next years">
+                    <svg viewBox="0 0 24 24" width="20" height="20">
+                      <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" fill="currentColor"/>
+                    </svg>
+                  </button>
+                </div>
+                <div class="year-grid">
+                  ${this.getYearsGrid()}
+                </div>
+              </when>
+              <default>
+                <div class="calendar-header">
+                  <button class="nav-button" type="button" data-nav="prev-month" aria-label="Previous month">
+                    <svg viewBox="0 0 24 24" width="20" height="20">
+                      <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" fill="currentColor"/>
+                    </svg>
+                  </button>
 
-              <div class="calendar-title">
-                <button class="month-button" type="button" data-nav="month-picker">
-                  ${this.monthNames[this.viewDate.getMonth()]} ${this.viewDate.getFullYear()}
-                </button>
-              </div>
+                  <div class="calendar-title">
+                    <span class="month-label">${this.monthNames[this.viewDate.getMonth()]} </span><button class="year-button" type="button" data-nav="show-years">${this.viewDate.getFullYear()}</button>
+                  </div>
 
-              <button class="nav-button" type="button" data-nav="next-month" aria-label="Next month">
-                <svg viewBox="0 0 24 24" width="20" height="20">
-                  <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" fill="currentColor"/>
-                </svg>
-              </button>
-            </div>
+                  <button class="nav-button" type="button" data-nav="next-month" aria-label="Next month">
+                    <svg viewBox="0 0 24 24" width="20" height="20">
+                      <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" fill="currentColor"/>
+                    </svg>
+                  </button>
+                </div>
 
-            <div class="calendar-weekdays">
-              ${this.getDayHeaders()}
-            </div>
+                <div class="calendar-weekdays">
+                  ${this.getDayHeaders()}
+                </div>
 
-            <div class="calendar-days">
-              ${this.getDaysGrid()}
-            </div>
+                <div class="calendar-days">
+                  ${this.getDaysGrid()}
+                </div>
+              </default>
+            </case>
 
             <div class="calendar-footer">
               <snice-button class="today-button" variant="default" size="small" data-nav="today">
@@ -390,6 +414,22 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
     return days.map(day => html`<div class="weekday">${day}</div>`);
   }
 
+  private getYearsGrid() {
+    const currentYear = new Date().getFullYear();
+    const selectedYear = this.viewDate.getFullYear();
+    const years = [];
+    for (let i = 0; i < 12; i++) {
+      const year = this.yearRangeStart + i;
+      const classes = ['year-cell'];
+      if (year === currentYear) classes.push('year-cell--current');
+      if (year === selectedYear) classes.push('year-cell--selected');
+      years.push(html`
+        <button class="${classes.join(' ')}" type="button" data-year="${year}">${year}</button>
+      `);
+    }
+    return years;
+  }
+
   private getDaysGrid() {
     const year = this.viewDate.getFullYear();
     const month = this.viewDate.getMonth();
@@ -572,6 +612,14 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
     e.stopPropagation();
     const target = e.target as HTMLElement;
 
+    if (target.closest('[data-year]')) {
+      const year = parseInt(target.closest('[data-year]')!.getAttribute('data-year')!, 10);
+      this.viewDate = new Date(year, this.viewDate.getMonth(), 1);
+      this.calendarView = 'days';
+      this.updateCalendarGrid();
+      return;
+    }
+
     if (target.closest('[data-date]')) {
       const dateString = target.closest('[data-date]')?.getAttribute('data-date');
       if (dateString) {
@@ -609,7 +657,21 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
         this.updateCalendarGrid();
         break;
       case 'today':
+        this.calendarView = 'days';
         this.goToToday();
+        break;
+      case 'show-years':
+        this.yearRangeStart = this.viewDate.getFullYear() - (this.viewDate.getFullYear() % 12);
+        this.calendarView = 'years';
+        this.updateCalendarGrid();
+        break;
+      case 'prev-years':
+        this.yearRangeStart -= 12;
+        this.updateCalendarGrid();
+        break;
+      case 'next-years':
+        this.yearRangeStart += 12;
+        this.updateCalendarGrid();
         break;
     }
   }
@@ -753,6 +815,7 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
   open() {
     if (!this.disabled && !this.readonly) {
       this.showCalendar = true;
+      this.calendarView = 'days';
       if (this.selectedDate) {
         this.viewDate = new Date(this.selectedDate);
       }
