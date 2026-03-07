@@ -30,15 +30,15 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     // Default palette with all features
     const pal1 = document.getElementById('pal-default');
     pal1.commands = [
-      { id: 'new', label: 'New File', description: 'Create a new file', icon: '\uD83D\uDCC4', shortcut: '\u2318N', category: 'File' },
-      { id: 'open', label: 'Open File', description: 'Open existing file', icon: '\uD83D\uDCC2', shortcut: '\u2318O', category: 'File' },
-      { id: 'save', label: 'Save', description: 'Save current file', icon: '\uD83D\uDCBE', shortcut: '\u2318S', category: 'File' },
-      { id: 'cut', label: 'Cut', icon: '\u2702\uFE0F', shortcut: '\u2318X', category: 'Edit' },
-      { id: 'copy', label: 'Copy', icon: '\uD83D\uDCCB', shortcut: '\u2318C', category: 'Edit' },
-      { id: 'paste', label: 'Paste', icon: '\uD83D\uDCC4', shortcut: '\u2318V', category: 'Edit' },
-      { id: 'find', label: 'Find', description: 'Find in document', icon: '\uD83D\uDD0D', shortcut: '\u2318F', category: 'Search' },
-      { id: 'settings', label: 'Settings', description: 'Open settings', icon: '\u2699\uFE0F', shortcut: '\u2318,', category: 'View' },
-      { id: 'theme', label: 'Toggle Theme', icon: '\uD83C\uDF13', category: 'View' },
+      { id: 'new', label: 'New File', description: 'Create a new file', icon: '📄', shortcut: '⌘N', category: 'File' },
+      { id: 'open', label: 'Open File', description: 'Open existing file', icon: '📂', shortcut: '⌘O', category: 'File' },
+      { id: 'save', label: 'Save', description: 'Save current file', icon: '💾', shortcut: '⌘S', category: 'File' },
+      { id: 'cut', label: 'Cut', icon: '✂️', shortcut: '⌘X', category: 'Edit' },
+      { id: 'copy', label: 'Copy', icon: '📋', shortcut: '⌘C', category: 'Edit' },
+      { id: 'paste', label: 'Paste', icon: '📄', shortcut: '⌘V', category: 'Edit' },
+      { id: 'find', label: 'Find', description: 'Find in document', icon: '🔍', shortcut: '⌘F', category: 'Search' },
+      { id: 'settings', label: 'Settings', description: 'Open settings', icon: '⚙️', shortcut: '⌘,', category: 'View' },
+      { id: 'theme', label: 'Toggle Theme', icon: '🌓', category: 'View' },
     ];
 
     // Minimal: no categories, no icons, no shortcuts
@@ -52,10 +52,10 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     // Disabled items
     const pal3 = document.getElementById('pal-disabled');
     pal3.commands = [
-      { id: 'e1', label: 'Enabled', icon: '\u2705', category: 'Status' },
-      { id: 'd1', label: 'Disabled', icon: '\u274C', category: 'Status', disabled: true },
-      { id: 'e2', label: 'Also enabled', icon: '\u2705', category: 'Status' },
-      { id: 'd2', label: 'Also disabled', icon: '\u274C', category: 'Status', disabled: true },
+      { id: 'e1', label: 'Enabled', icon: '✅', category: 'Status' },
+      { id: 'd1', label: 'Disabled', icon: '❌', category: 'Status', disabled: true },
+      { id: 'e2', label: 'Also enabled', icon: '✅', category: 'Status' },
+      { id: 'd2', label: 'Also disabled', icon: '❌', category: 'Status', disabled: true },
     ];
 
     // Custom placeholder and no-results text
@@ -78,7 +78,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     pal6.commands = [
       { id: 'img1', label: 'GitHub', iconImage: 'https://github.com/favicon.ico', category: 'Links' },
       { id: 'img2', label: 'Google', iconImage: 'https://www.google.com/favicon.ico', category: 'Links' },
-      { id: 'emoji', label: 'Emoji icon', icon: '\uD83D\uDE80', category: 'Icons' },
+      { id: 'emoji', label: 'Emoji icon', icon: '🚀', category: 'Icons' },
       { id: 'text', label: 'No icon', category: 'Icons' },
     ];
 

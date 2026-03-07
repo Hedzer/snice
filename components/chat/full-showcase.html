@@ -34,7 +34,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     const chat1 = document.getElementById('chat-default');
     chat1.addMessage({ type: 'system', content: 'Chat started', author: 'System', timestamp: new Date(now - 3600000) });
     chat1.addMessage({ type: 'text', content: 'Hello everyone!', author: 'Alice', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alice', timestamp: new Date(now - 300000) });
-    chat1.addMessage({ type: 'text', content: 'Hi Alice, how are you?', author: 'Bob', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Bob', timestamp: new Date(now - 200000), reactions: [{ emoji: '\uD83D\uDC4B', count: 2, users: ['Alice','Charlie'] }] });
+    chat1.addMessage({ type: 'text', content: 'Hi Alice, how are you?', author: 'Bob', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Bob', timestamp: new Date(now - 200000), reactions: [{ emoji: '👋', count: 2, users: ['Alice','Charlie'] }] });
     chat1.addMessage({ type: 'text', content: 'Doing great, thanks!', author: 'You', timestamp: new Date(now - 100000) });
 
     // With file attachment
@@ -78,9 +78,9 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     // With reactions
     const chatR = document.getElementById('chat-reactions');
     chatR.addMessage({ type: 'text', content: 'Reactions showcase', author: 'You', timestamp: new Date(), reactions: [
-      { emoji: '\uD83D\uDC4D', count: 3, users: ['Alice','Bob','You'] },
-      { emoji: '\u2764\uFE0F', count: 1, users: ['Charlie'] },
-      { emoji: '\uD83D\uDE02', count: 5, users: ['Alice','Bob','Charlie','Diana','Eve'] }
+      { emoji: '👍', count: 3, users: ['Alice','Bob','You'] },
+      { emoji: '❤️', count: 1, users: ['Charlie'] },
+      { emoji: '😂', count: 5, users: ['Alice','Bob','Charlie','Diana','Eve'] }
     ]});
   </script>
 </head>

@@ -65,7 +65,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 
     // Currency: euro
     const euroCart = document.getElementById('cart-euro');
-    euroCart.currency = '\u20AC';
+    euroCart.currency = '€';
     euroCart.items = [
       { id: '1', name: 'Baguette', price: 2.50, quantity: 3 },
       { id: '2', name: 'Croissant', price: 1.80, quantity: 6 }
@@ -73,7 +73,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 
     // Currency: pound
     const poundCart = document.getElementById('cart-pound');
-    poundCart.currency = '\u00A3';
+    poundCart.currency = '£';
     poundCart.items = [
       { id: '1', name: 'Tea Set', price: 34.99, quantity: 1 }
     ];
@@ -128,12 +128,12 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 </section>
 
 <section>
-  <h2>currency="\u20AC" (Euro)</h2>
+  <h2>currency="€" (Euro)</h2>
   <snice-cart id="cart-euro"></snice-cart>
 </section>
 
 <section>
-  <h2>currency="\u00A3" (Pound)</h2>
+  <h2>currency="£" (Pound)</h2>
   <snice-cart id="cart-pound"></snice-cart>
 </section>
 

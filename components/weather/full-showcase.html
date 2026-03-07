@@ -151,7 +151,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     document.getElementById(c.id).data = { temp: c.temp, condition: c.condition, humidity: 50, wind: 15 };
   }
 
-  document.getElementById('w-custom-icon').data = { temp: 25, condition: 'Alien Weather', icon: '\u{1F47D}', humidity: 99, wind: 999 };
+  document.getElementById('w-custom-icon').data = { temp: 25, condition: 'Alien Weather', icon: '👽', humidity: 99, wind: 999 };
 
   document.getElementById('w-humidity').data = { temp: 30, condition: 'Sunny', humidity: 80 };
   document.getElementById('w-wind-only').data = { temp: 15, condition: 'Windy', wind: 45 };
@@ -162,9 +162,9 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   document.getElementById('w-forecast-icons').data = {
     temp: 18, condition: 'Cloudy', humidity: 70, wind: 25,
     forecast: [
-      { day: 'Mon', high: 20, low: 14, condition: 'Sunny', icon: '\u{2600}\u{FE0F}' },
-      { day: 'Tue', high: 18, low: 12, condition: 'Rain', icon: '\u{1F327}\u{FE0F}' },
-      { day: 'Wed', high: 22, low: 15, condition: 'Clear', icon: '\u{1F31E}' },
+      { day: 'Mon', high: 20, low: 14, condition: 'Sunny', icon: '☀️' },
+      { day: 'Tue', high: 18, low: 12, condition: 'Rain', icon: '🌧️' },
+      { day: 'Wed', high: 22, low: 15, condition: 'Clear', icon: '🌞' },
     ]
   };
   document.getElementById('w-no-forecast').data = { temp: 25, condition: 'Sunny', humidity: 30, wind: 5 };

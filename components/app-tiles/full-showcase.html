@@ -165,10 +165,10 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <section>
     <h2>Declarative API (child elements)</h2>
     <snice-app-tiles columns="4">
-      <snice-app-tile name="Mail" icon="\u2709\uFE0F"></snice-app-tile>
-      <snice-app-tile name="Calendar" icon="\u{1F4C5}"></snice-app-tile>
-      <snice-app-tile name="Drive" icon="\u{1F4C1}" badge="3"></snice-app-tile>
-      <snice-app-tile name="Photos" icon="\u{1F5BC}\uFE0F"></snice-app-tile>
+      <snice-app-tile name="Mail" icon="✉️"></snice-app-tile>
+      <snice-app-tile name="Calendar" icon="📅"></snice-app-tile>
+      <snice-app-tile name="Drive" icon="📁" badge="3"></snice-app-tile>
+      <snice-app-tile name="Photos" icon="🖼️"></snice-app-tile>
     </snice-app-tiles>
   </section>
 
@@ -187,12 +187,12 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     import '../badge/snice-badge.ts';
 
     const basic = [
-      { id: '1', name: 'Mail', icon: '\u2709\uFE0F' },
-      { id: '2', name: 'Calendar', icon: '\u{1F4C5}' },
-      { id: '3', name: 'Drive', icon: '\u{1F4C1}' },
-      { id: '4', name: 'Photos', icon: '\u{1F5BC}\uFE0F' },
-      { id: '5', name: 'Maps', icon: '\u{1F5FA}\uFE0F' },
-      { id: '6', name: 'Notes', icon: '\u{1F4DD}' },
+      { id: '1', name: 'Mail', icon: '✉️' },
+      { id: '2', name: 'Calendar', icon: '📅' },
+      { id: '3', name: 'Drive', icon: '📁' },
+      { id: '4', name: 'Photos', icon: '🖼️' },
+      { id: '5', name: 'Maps', icon: '🗺️' },
+      { id: '6', name: 'Notes', icon: '📝' },
     ];
 
     document.getElementById('tiles-grid').tiles = basic;
@@ -203,9 +203,9 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     document.getElementById('tiles-cmp-compact').tiles = basic.slice(0, 4);
 
     const sizeTiles = [
-      { id: '1', name: 'App', icon: '\u2B50' },
-      { id: '2', name: 'Docs', icon: '\u{1F4C4}' },
-      { id: '3', name: 'Chat', icon: '\u{1F4AC}' },
+      { id: '1', name: 'App', icon: '⭐' },
+      { id: '2', name: 'Docs', icon: '📄' },
+      { id: '3', name: 'Chat', icon: '💬' },
     ];
     ['sm', 'md', 'lg', 'xl', '2xl'].forEach(s => {
       document.getElementById('tiles-' + s).tiles = sizeTiles;
@@ -217,10 +217,10 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     document.getElementById('tiles-col6').tiles = colTiles;
 
     document.getElementById('tiles-emoji').tiles = [
-      { id: '1', name: 'Star', icon: '\u2B50' },
-      { id: '2', name: 'Heart', icon: '\u2764\uFE0F' },
-      { id: '3', name: 'Rocket', icon: '\u{1F680}' },
-      { id: '4', name: 'Fire', icon: '\u{1F525}' },
+      { id: '1', name: 'Star', icon: '⭐' },
+      { id: '2', name: 'Heart', icon: '❤️' },
+      { id: '3', name: 'Rocket', icon: '🚀' },
+      { id: '4', name: 'Fire', icon: '🔥' },
     ];
 
     document.getElementById('tiles-images').tiles = [
@@ -244,32 +244,32 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     ];
 
     document.getElementById('tiles-badges').tiles = [
-      { id: '1', name: 'Inbox', icon: '\u2709\uFE0F', badge: '12' },
-      { id: '2', name: 'Tasks', icon: '\u2705', badge: '3' },
-      { id: '3', name: 'Alerts', icon: '\u{1F514}', badge: '99+' },
-      { id: '4', name: 'Clean', icon: '\u2B50' },
+      { id: '1', name: 'Inbox', icon: '✉️', badge: '12' },
+      { id: '2', name: 'Tasks', icon: '✅', badge: '3' },
+      { id: '3', name: 'Alerts', icon: '🔔', badge: '99+' },
+      { id: '4', name: 'Clean', icon: '⭐' },
     ];
 
     document.getElementById('tiles-colors').tiles = [
-      { id: '1', name: 'Red', icon: '\u2764\uFE0F', color: '#dc2626' },
-      { id: '2', name: 'Blue', icon: '\u{1F499}', color: '#2563eb' },
-      { id: '3', name: 'Green', icon: '\u{1F49A}', color: '#16a34a' },
-      { id: '4', name: 'Purple', icon: '\u{1F49C}', color: '#7c3aed' },
+      { id: '1', name: 'Red', icon: '❤️', color: '#dc2626' },
+      { id: '2', name: 'Blue', icon: '💙', color: '#2563eb' },
+      { id: '3', name: 'Green', icon: '💚', color: '#16a34a' },
+      { id: '4', name: 'Purple', icon: '💜', color: '#7c3aed' },
     ];
 
     document.getElementById('tiles-href').tiles = [
-      { id: '1', name: 'Link 1', icon: '\u{1F517}', href: '#link1' },
-      { id: '2', name: 'Link 2', icon: '\u{1F517}', href: '#link2' },
+      { id: '1', name: 'Link 1', icon: '🔗', href: '#link1' },
+      { id: '2', name: 'Link 2', icon: '🔗', href: '#link2' },
     ];
 
     document.getElementById('tiles-single').tiles = [
-      { id: '1', name: 'Sole Tile', icon: '\u{1F4A0}' },
+      { id: '1', name: 'Sole Tile', icon: '💠' },
     ];
 
     document.getElementById('tiles-longname').tiles = [
-      { id: '1', name: 'Very Long Application Name That Should Truncate', icon: '\u{1F4BB}' },
-      { id: '2', name: 'Short', icon: '\u2B50' },
-      { id: '3', name: 'A', icon: '\u{1F680}' },
+      { id: '1', name: 'Very Long Application Name That Should Truncate', icon: '💻' },
+      { id: '2', name: 'Short', icon: '⭐' },
+      { id: '3', name: 'A', icon: '🚀' },
     ];
   </script>
 </body>
