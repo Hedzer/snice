@@ -20,24 +20,24 @@
   --wo-danger: var(--snice-color-danger, rgb(220 38 38));
 
   /* Priority badge colors */
-  --wo-priority-low-bg: rgb(59 130 246 / 0.1);
-  --wo-priority-low-text: rgb(37 99 235);
-  --wo-priority-medium-bg: rgb(245 158 11 / 0.1);
-  --wo-priority-medium-text: rgb(217 119 6);
-  --wo-priority-high-bg: rgb(249 115 22 / 0.1);
-  --wo-priority-high-text: rgb(234 88 12);
-  --wo-priority-urgent-bg: rgb(220 38 38 / 0.1);
-  --wo-priority-urgent-text: rgb(220 38 38);
+  --wo-priority-low-bg: var(--snice-color-primary-light, rgb(59 130 246 / 0.1));
+  --wo-priority-low-text: var(--snice-color-primary, rgb(37 99 235));
+  --wo-priority-medium-bg: var(--snice-color-warning-light, rgb(245 158 11 / 0.1));
+  --wo-priority-medium-text: var(--snice-color-warning, rgb(217 119 6));
+  --wo-priority-high-bg: var(--snice-color-warning-strong-light, rgb(249 115 22 / 0.1));
+  --wo-priority-high-text: var(--snice-color-warning-strong, rgb(234 88 12));
+  --wo-priority-urgent-bg: var(--snice-color-danger-light, rgb(220 38 38 / 0.1));
+  --wo-priority-urgent-text: var(--snice-color-danger, rgb(220 38 38));
 
   /* Status badge colors */
-  --wo-status-open-bg: rgb(59 130 246 / 0.1);
-  --wo-status-open-text: rgb(37 99 235);
-  --wo-status-in-progress-bg: rgb(245 158 11 / 0.1);
-  --wo-status-in-progress-text: rgb(217 119 6);
-  --wo-status-completed-bg: rgb(22 163 74 / 0.1);
-  --wo-status-completed-text: rgb(22 163 74);
-  --wo-status-cancelled-bg: rgb(107 114 128 / 0.1);
-  --wo-status-cancelled-text: rgb(107 114 128);
+  --wo-status-open-bg: var(--snice-color-primary-light, rgb(59 130 246 / 0.1));
+  --wo-status-open-text: var(--snice-color-primary, rgb(37 99 235));
+  --wo-status-in-progress-bg: var(--snice-color-warning-light, rgb(245 158 11 / 0.1));
+  --wo-status-in-progress-text: var(--snice-color-warning, rgb(217 119 6));
+  --wo-status-completed-bg: var(--snice-color-success-light, rgb(22 163 74 / 0.1));
+  --wo-status-completed-text: var(--snice-color-success, rgb(22 163 74));
+  --wo-status-cancelled-bg: var(--snice-color-neutral-light, rgb(107 114 128 / 0.1));
+  --wo-status-cancelled-text: var(--snice-color-neutral, rgb(107 114 128));
 
   /* Task styling */
   --wo-task-checkbox-size: 1.25rem;
@@ -353,7 +353,7 @@
   background: var(--wo-bg);
   transition: all var(--snice-transition-fast, 150ms);
   padding: 0;
-  color: rgb(255 255 255);
+  color: var(--snice-color-text-inverse, rgb(255 255 255));
 }
 
 .wo__task-checkbox:hover {
@@ -587,7 +587,7 @@
 
 .wo__sign-btn:hover {
   background: var(--wo-accent);
-  color: rgb(255 255 255);
+  color: var(--snice-color-text-inverse, rgb(255 255 255));
 }
 
 .wo__sign-btn:focus-visible {

@@ -19,11 +19,11 @@
   --pc-title-size: var(--product-card-title-size, var(--snice-font-size-lg, 1.125rem));
   --pc-price-size: var(--product-card-price-size, var(--snice-font-size-2xl, 1.5rem));
   --pc-badge-bg: var(--product-card-badge-bg, var(--snice-color-danger, rgb(220 38 38)));
-  --pc-badge-color: var(--product-card-badge-color, rgb(255 255 255));
+  --pc-badge-color: var(--product-card-badge-color, var(--snice-color-text-inverse, rgb(255 255 255)));
   --pc-cta-bg: var(--product-card-cta-bg, var(--snice-color-primary, rgb(37 99 235)));
-  --pc-cta-color: var(--product-card-cta-color, rgb(255 255 255));
+  --pc-cta-color: var(--product-card-cta-color, var(--snice-color-text-inverse, rgb(255 255 255)));
   --pc-cta-radius: var(--product-card-cta-radius, var(--snice-border-radius-md, 0.25rem));
-  --pc-favorite-color: var(--product-card-favorite-color, rgb(239 68 68));
+  --pc-favorite-color: var(--product-card-favorite-color, var(--snice-color-danger, rgb(239 68 68)));
 }
 
 * {
@@ -134,7 +134,7 @@
   left: 0;
   right: 0;
   height: 50%;
-  background: linear-gradient(to top, rgb(0 0 0 / 0.6), transparent);
+  background: var(--product-card-gallery-gradient, linear-gradient(to top, rgb(0 0 0 / 0.6), transparent));
   pointer-events: none;
   z-index: 1;
 }
@@ -388,7 +388,7 @@
 }
 
 .product-card__badge--featured {
-  background: linear-gradient(135deg, rgb(168 85 247), rgb(236 72 153));
+  background: var(--product-card-badge-featured-bg, linear-gradient(135deg, rgb(168 85 247), rgb(236 72 153)));
 }
 
 /* ── Favorite button ── */
@@ -453,7 +453,7 @@
 .product-card__quick-view {
   position: absolute;
   inset: 0;
-  background: rgb(0 0 0 / 0.35);
+  background: var(--product-card-overlay, rgb(0 0 0 / 0.35));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -527,11 +527,11 @@
 }
 
 .product-card__star--filled {
-  color: rgb(250 204 21);
+  color: var(--product-card-star-color, rgb(250 204 21));
 }
 
 .product-card__star--half {
-  color: rgb(250 204 21);
+  color: var(--product-card-star-color, rgb(250 204 21));
 }
 
 .product-card__star--empty {
@@ -571,7 +571,7 @@
   font-size: 0.75rem;
   font-weight: var(--snice-font-weight-semibold, 600);
   color: var(--pc-success);
-  background: rgb(22 163 74 / 0.1);
+  background: var(--snice-color-success-light, rgb(22 163 74 / 0.1));
   padding: var(--snice-spacing-3xs, 0.125rem) var(--snice-spacing-2xs, 0.25rem);
   border-radius: var(--snice-border-radius-md, 0.25rem);
 }
@@ -616,7 +616,7 @@
 }
 
 .product-card__stock-urgency {
-  color: rgb(217 119 6);
+  color: var(--snice-color-warning, rgb(217 119 6));
   font-weight: var(--snice-font-weight-semibold, 600);
 }
 
@@ -667,7 +667,7 @@
 
 .product-card__variant-option--selected {
   border-color: var(--pc-primary);
-  background: rgb(37 99 235 / 0.05);
+  background: var(--snice-color-primary-subtle, rgb(37 99 235 / 0.05));
   color: var(--pc-primary);
   font-weight: var(--snice-font-weight-medium, 500);
   box-shadow: 0 0 0 1px var(--pc-primary);
@@ -756,8 +756,8 @@
 .product-card__cta-spinner {
   width: 1rem;
   height: 1rem;
-  border: 2px solid rgb(255 255 255 / 0.3);
-  border-top-color: rgb(255 255 255);
+  border: 2px solid var(--snice-color-text-inverse-subtle, rgb(255 255 255 / 0.3));
+  border-top-color: var(--snice-color-text-inverse, rgb(255 255 255));
   border-radius: 50%;
   animation: pc-spin 0.6s linear infinite;
 }
@@ -772,8 +772,8 @@
   position: absolute;
   top: var(--snice-spacing-xs, 0.5rem);
   right: var(--snice-spacing-xs, 0.5rem);
-  background: rgb(0 0 0 / 0.7);
-  color: rgb(255 255 255);
+  background: var(--product-card-out-of-stock-bg, rgb(0 0 0 / 0.7));
+  color: var(--snice-color-text-inverse, rgb(255 255 255));
   font-size: 0.75rem;
   font-weight: var(--snice-font-weight-semibold, 600);
   padding: var(--snice-spacing-3xs, 0.125rem) var(--snice-spacing-xs, 0.5rem);
@@ -789,14 +789,14 @@
 .product-card__skeleton-image {
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, var(--pc-bg-element) 25%, rgb(226 226 226 / 0.4) 50%, var(--pc-bg-element) 75%);
+  background: linear-gradient(90deg, var(--pc-bg-element) 25%, var(--snice-color-border-subtle, rgb(226 226 226 / 0.4)) 50%, var(--pc-bg-element) 75%);
   background-size: 200% 100%;
   animation: pc-shimmer 1.5s ease-in-out infinite;
 }
 
 .product-card__skeleton-line {
   border-radius: var(--snice-border-radius-md, 0.25rem);
-  background: linear-gradient(90deg, var(--pc-bg-element) 25%, rgb(226 226 226 / 0.4) 50%, var(--pc-bg-element) 75%);
+  background: linear-gradient(90deg, var(--pc-bg-element) 25%, var(--snice-color-border-subtle, rgb(226 226 226 / 0.4)) 50%, var(--pc-bg-element) 75%);
   background-size: 200% 100%;
   animation: pc-shimmer 1.5s ease-in-out infinite;
 }

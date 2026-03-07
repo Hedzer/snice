@@ -9,7 +9,7 @@
   flex: 1;
   font-size: 0.875rem; /* 14px */
   line-height: 1.25rem; /* 20px */
-  color: var(--snice-color-text);
+  color: var(--snice-color-text, rgb(23 23 23));
 }
 
 .cell-content {
@@ -119,59 +119,59 @@
 
 /* Conditional Formatting Support */
 :host(.positive) {
-  color: var(--snice-color-success);
+  color: var(--snice-color-success, rgb(22 163 74));
 }
 
 :host(.negative) {
-  color: var(--snice-color-danger);
+  color: var(--snice-color-danger, rgb(220 38 38));
 }
 
 :host(.warning) {
-  color: var(--snice-color-warning);
-  background-color: hsl(var(--snice-color-yellow-100));
+  color: var(--snice-color-warning, rgb(234 179 8));
+  background-color: rgb(254 249 195 / 0.3);
 }
 
 :host(.danger) {
-  color: var(--snice-color-danger);
-  background-color: hsl(var(--snice-color-red-100));
+  color: var(--snice-color-danger, rgb(220 38 38));
+  background-color: rgb(254 226 226 / 0.3);
 }
 
 :host(.success) {
-  color: var(--snice-color-success);
-  background-color: hsl(var(--snice-color-green-100));
+  color: var(--snice-color-success, rgb(22 163 74));
+  background-color: rgb(220 252 231 / 0.3);
 }
 
 :host(.info) {
-  color: var(--snice-color-primary);
-  background-color: hsl(var(--snice-color-blue-100));
+  color: var(--snice-color-primary, rgb(37 99 235));
+  background-color: rgb(219 234 254 / 0.3);
 }
 
 /* Date-specific styling */
 :host(.date--today) {
-  font-weight: var(--snice-font-weight-semibold);
-  color: var(--snice-color-primary);
+  font-weight: var(--snice-font-weight-semibold, 600);
+  color: var(--snice-color-primary, rgb(37 99 235));
 }
 
 :host(.date--past) {
-  color: var(--snice-color-text-secondary);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
 }
 
 :host(.date--future) {
-  color: var(--snice-color-success);
+  color: var(--snice-color-success, rgb(22 163 74));
 }
 
 /* Number-specific styling */
 :host(.number--negative.number--negative-red) {
-  color: var(--snice-color-danger);
+  color: var(--snice-color-danger, rgb(220 38 38));
 }
 
 :host(.number--positive.number--highlighted) {
-  color: var(--snice-color-success);
-  font-weight: var(--snice-font-weight-semibold);
+  color: var(--snice-color-success, rgb(22 163 74));
+  font-weight: var(--snice-font-weight-semibold, 600);
 }
 
 :host(.number--zero) {
-  color: var(--snice-color-text-secondary);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
 }
 
 /* Truncation Support */
@@ -191,7 +191,7 @@
 /* Empty State */
 :host([value=""]) .cell-content,
 :host(:not([value])) .cell-content {
-  color: var(--snice-color-text-secondary);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
 }
 
 /* Loading State */
@@ -211,7 +211,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(90deg, transparent, hsl(0 0% 100% / 0.6), transparent);
+  background: linear-gradient(90deg, transparent, var(--snice-color-background, rgb(255 255 255 / 0.6)), transparent);
   animation: cell-shimmer 1.5s infinite;
 }
 
@@ -226,7 +226,7 @@
 
 /* Focus States */
 :host(:focus-within) {
-  outline: 2px solid var(--snice-color-primary);
+  outline: 2px solid var(--snice-color-primary, rgb(37 99 235));
   outline-offset: -2px;
 }
 
@@ -239,7 +239,7 @@
 }
 
 .cell-content a {
-  color: var(--snice-color-primary);
+  color: var(--snice-color-primary, rgb(37 99 235));
   text-decoration: none;
 }
 
@@ -269,11 +269,11 @@
 /* High Contrast Mode */
 @media (prefers-contrast: high) {
   :host(.positive) {
-    background-color: hsl(var(--snice-color-green-100));
+    background-color: rgb(220 252 231 / 0.3);
   }
 
   :host(.negative) {
-    background-color: hsl(var(--snice-color-red-100));
+    background-color: rgb(254 226 226 / 0.3);
   }
   
   .cell-content a {

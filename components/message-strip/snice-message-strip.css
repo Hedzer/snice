@@ -1,6 +1,16 @@
 :host {
   display: block;
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+
+  /* Two-tier: variant colors */
+  --strip-info-bg: var(--snice-color-info-light, rgb(219 234 254 / 0.6));
+  --strip-info-border: var(--snice-color-primary, rgb(37 99 235));
+  --strip-success-bg: var(--snice-color-success-light, rgb(220 252 231 / 0.6));
+  --strip-success-border: var(--snice-color-success, rgb(22 163 74));
+  --strip-warning-bg: var(--snice-color-warning-light, rgb(254 249 195 / 0.6));
+  --strip-warning-border: var(--snice-color-warning, rgb(217 119 6));
+  --strip-danger-bg: var(--snice-color-danger-light, rgb(254 226 226 / 0.6));
+  --strip-danger-border: var(--snice-color-danger, rgb(220 38 38));
 }
 
 :host([hidden]) {
@@ -10,12 +20,12 @@
 .message-strip {
   display: flex;
   align-items: center;
-  padding: 0.5rem 0.75rem; /* 8px 12px */
-  border-radius: 4px;
-  font-size: 0.875rem; /* 14px */
+  padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
+  border-radius: var(--snice-border-radius-md, 4px);
+  font-size: 0.875rem;
   line-height: var(--snice-line-height-normal, 1.5);
   border-left: 3px solid;
-  gap: 0.5rem; /* 8px */
+  gap: var(--snice-spacing-xs, 0.5rem);
   animation: stripSlideIn 0.2s ease;
 }
 
@@ -30,7 +40,7 @@
 @keyframes stripSlideIn {
   from {
     opacity: 0;
-    transform: translateX(-8px);
+    transform: translateX(-0.5rem);
   }
   to {
     opacity: 1;
@@ -45,60 +55,41 @@
   }
   to {
     opacity: 0;
-    transform: translateX(-8px);
+    transform: translateX(-0.5rem);
   }
 }
 
 /* Variants */
 :host([variant="info"]) .message-strip,
 :host(:not([variant])) .message-strip {
-  background: hsl(215 100% 96% / 0.6);
-  border-left-color: hsl(var(--snice-color-blue-500));
+  background: var(--strip-info-bg);
+  border-left-color: var(--strip-info-border);
   color: var(--snice-color-text, rgb(23 23 23));
 }
 
 :host([variant="success"]) .message-strip {
-  background: hsl(140 100% 96% / 0.6);
-  border-left-color: hsl(var(--snice-color-green-500));
+  background: var(--strip-success-bg);
+  border-left-color: var(--strip-success-border);
   color: var(--snice-color-text, rgb(23 23 23));
 }
 
 :host([variant="warning"]) .message-strip {
-  background: hsl(45 100% 96% / 0.6);
-  border-left-color: hsl(var(--snice-color-yellow-500));
+  background: var(--strip-warning-bg);
+  border-left-color: var(--strip-warning-border);
   color: var(--snice-color-text, rgb(23 23 23));
 }
 
 :host([variant="danger"]) .message-strip {
-  background: hsl(0 100% 96% / 0.6);
-  border-left-color: hsl(var(--snice-color-red-500));
+  background: var(--strip-danger-bg);
+  border-left-color: var(--strip-danger-border);
   color: var(--snice-color-text, rgb(23 23 23));
-}
-
-@media (prefers-color-scheme: dark) {
-  :host([variant="info"]) .message-strip,
-  :host(:not([variant])) .message-strip {
-    background: hsl(215 100% 20% / 0.3);
-  }
-
-  :host([variant="success"]) .message-strip {
-    background: hsl(140 100% 20% / 0.3);
-  }
-
-  :host([variant="warning"]) .message-strip {
-    background: hsl(45 100% 20% / 0.3);
-  }
-
-  :host([variant="danger"]) .message-strip {
-    background: hsl(0 100% 20% / 0.3);
-  }
 }
 
 /* Icon */
 .message-strip-icon {
   flex-shrink: 0;
-  width: 1.125rem; /* 18px */
-  height: 1.125rem; /* 18px */
+  width: 1.125rem;
+  height: 1.125rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -116,30 +107,30 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 1.125rem; /* 18px */
-  height: 1.125rem; /* 18px */
-  font-size: 1.125rem; /* 18px */
+  width: 1.125rem;
+  height: 1.125rem;
+  font-size: 1.125rem;
   line-height: 1;
 }
 
 /* Default icons per variant */
 :host([variant="info"]) .message-strip-icon--default::before,
 :host(:not([variant])) .message-strip-icon--default::before {
-  content: "\2139"; /* ℹ */
+  content: "\2139"; /* info */
   font-weight: bold;
 }
 
 :host([variant="success"]) .message-strip-icon--default::before {
-  content: "\2713"; /* ✓ */
+  content: "\2713"; /* check */
   font-weight: bold;
 }
 
 :host([variant="warning"]) .message-strip-icon--default::before {
-  content: "\26A0"; /* ⚠ */
+  content: "\26A0"; /* warning */
 }
 
 :host([variant="danger"]) .message-strip-icon--default::before {
-  content: "\2715"; /* ✕ */
+  content: "\2715"; /* x */
   font-weight: bold;
 }
 
@@ -152,13 +143,13 @@
 /* Dismiss button */
 .message-strip-dismiss {
   flex-shrink: 0;
-  padding: 0.125rem; /* 2px */
+  padding: 0.125rem;
   background: none;
   border: none;
   cursor: pointer;
   opacity: 0.5;
   transition: opacity var(--snice-transition-fast, 150ms) ease;
-  border-radius: 4px;
+  border-radius: var(--snice-border-radius-md, 4px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -176,6 +167,6 @@
 }
 
 .message-strip-dismiss svg {
-  width: 0.875rem; /* 14px */
-  height: 0.875rem; /* 14px */
+  width: 0.875rem;
+  height: 0.875rem;
 }

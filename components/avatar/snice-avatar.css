@@ -2,7 +2,7 @@
   display: inline-block;
   --avatar-size: 2.5rem; /* 40px */
   --avatar-bg: var(--snice-color-text-tertiary, rgb(115 115 115));
-  --avatar-color: rgb(255 255 255);
+  --avatar-color: var(--snice-color-text-inverse, rgb(255 255 255));
 }
 
 /* Meta elements should not interfere with layout */
@@ -92,14 +92,14 @@ case, when, default, if {
   transition: opacity 0.2s ease;
   /* Text outline for contrast */
   text-shadow:
-    -1px -1px 0 hsl(0 0% 0% / 0.4),
-     1px -1px 0 hsl(0 0% 0% / 0.4),
-    -1px  1px 0 hsl(0 0% 0% / 0.4),
-     1px  1px 0 hsl(0 0% 0% / 0.4),
-     0   -1px 0 hsl(0 0% 0% / 0.4),
-     0    1px 0 hsl(0 0% 0% / 0.4),
-    -1px  0   0 hsl(0 0% 0% / 0.4),
-     1px  0   0 hsl(0 0% 0% / 0.4);
+    -1px -1px 0 rgb(0 0 0 / 0.4),
+     1px -1px 0 rgb(0 0 0 / 0.4),
+    -1px  1px 0 rgb(0 0 0 / 0.4),
+     1px  1px 0 rgb(0 0 0 / 0.4),
+     0   -1px 0 rgb(0 0 0 / 0.4),
+     0    1px 0 rgb(0 0 0 / 0.4),
+    -1px  0   0 rgb(0 0 0 / 0.4),
+     1px  0   0 rgb(0 0 0 / 0.4);
 }
 
 .avatar-fallback--visible {
@@ -115,26 +115,26 @@ case, when, default, if {
 }
 
 /* Avatar color classes for fallback backgrounds */
-.avatar--red { background: rgb(var(--avatar-color-red, 239 68 68)); }
-.avatar--orange { background: rgb(var(--avatar-color-orange, 251 146 60)); }
-.avatar--yellow { background: rgb(var(--avatar-color-yellow, 234 179 8)); }
-.avatar--lime { background: rgb(var(--avatar-color-lime, 163 230 53)); }
-.avatar--green { background: rgb(var(--avatar-color-green, 34 197 94)); }
-.avatar--teal { background: rgb(var(--avatar-color-teal, 20 184 166)); }
-.avatar--cyan { background: rgb(var(--avatar-color-cyan, 6 182 212)); }
-.avatar--sky { background: rgb(var(--avatar-color-sky, 14 165 233)); }
-.avatar--blue { background: rgb(var(--avatar-color-blue, 59 130 246)); }
-.avatar--indigo { background: rgb(var(--avatar-color-indigo, 99 102 241)); }
-.avatar--violet { background: rgb(var(--avatar-color-violet, 139 92 246)); }
-.avatar--purple { background: rgb(var(--avatar-color-purple, 168 85 247)); }
-.avatar--fuchsia { background: rgb(var(--avatar-color-fuchsia, 217 70 239)); }
-.avatar--pink { background: rgb(var(--avatar-color-pink, 236 72 153)); }
-.avatar--rose { background: rgb(var(--avatar-color-rose, 244 63 94)); }
+.avatar--red { background: var(--avatar-palette-red, rgb(239 68 68)); }
+.avatar--orange { background: var(--avatar-palette-orange, rgb(251 146 60)); }
+.avatar--yellow { background: var(--avatar-palette-yellow, rgb(234 179 8)); }
+.avatar--lime { background: var(--avatar-palette-lime, rgb(163 230 53)); }
+.avatar--green { background: var(--avatar-palette-green, rgb(34 197 94)); }
+.avatar--teal { background: var(--avatar-palette-teal, rgb(20 184 166)); }
+.avatar--cyan { background: var(--avatar-palette-cyan, rgb(6 182 212)); }
+.avatar--sky { background: var(--avatar-palette-sky, rgb(14 165 233)); }
+.avatar--blue { background: var(--avatar-palette-blue, rgb(59 130 246)); }
+.avatar--indigo { background: var(--avatar-palette-indigo, rgb(99 102 241)); }
+.avatar--violet { background: var(--avatar-palette-violet, rgb(139 92 246)); }
+.avatar--purple { background: var(--avatar-palette-purple, rgb(168 85 247)); }
+.avatar--fuchsia { background: var(--avatar-palette-fuchsia, rgb(217 70 239)); }
+.avatar--pink { background: var(--avatar-palette-pink, rgb(236 72 153)); }
+.avatar--rose { background: var(--avatar-palette-rose, rgb(244 63 94)); }
 
 /* Group avatar support */
 :host(.avatar-group-item) {
   margin-left: -0.5rem; /* -8px */
-  border: 2px solid var(--snice-color-background);
+  border: 2px solid var(--snice-color-background, rgb(255 255 255));
   border-radius: 50%;
 }
 
@@ -143,5 +143,5 @@ case, when, default, if {
 }
 
 :host(.avatar-group-item) .avatar {
-  border: 2px solid var(--snice-color-background);
+  border: 2px solid var(--snice-color-background, rgb(255 255 255));
 }

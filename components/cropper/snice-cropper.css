@@ -52,13 +52,13 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgb(0 0 0 / 0.5);
+  background: var(--cropper-overlay, rgb(0 0 0 / 0.5));
 }
 
 .crop-area {
   position: absolute;
-  border: 2px solid rgb(255 255 255);
-  box-shadow: 0 0 0 9999px rgb(0 0 0 / 0.5);
+  border: 2px solid var(--cropper-border-color, rgb(255 255 255));
+  box-shadow: 0 0 0 9999px var(--cropper-overlay, rgb(0 0 0 / 0.5));
   cursor: move;
   pointer-events: auto;
 }
@@ -70,8 +70,8 @@
   left: 0;
   right: 0;
   height: 33.34%;
-  border-top: 1px solid rgb(255 255 255 / 0.4);
-  border-bottom: 1px solid rgb(255 255 255 / 0.4);
+  border-top: 1px solid var(--cropper-guide-color, rgb(255 255 255 / 0.4));
+  border-bottom: 1px solid var(--cropper-guide-color, rgb(255 255 255 / 0.4));
   pointer-events: none;
 }
 
@@ -82,8 +82,8 @@
   top: 0;
   bottom: 0;
   width: 33.34%;
-  border-left: 1px solid rgb(255 255 255 / 0.4);
-  border-right: 1px solid rgb(255 255 255 / 0.4);
+  border-left: 1px solid var(--cropper-guide-color, rgb(255 255 255 / 0.4));
+  border-right: 1px solid var(--cropper-guide-color, rgb(255 255 255 / 0.4));
   pointer-events: none;
 }
 
@@ -92,8 +92,8 @@
   position: absolute;
   width: 0.75rem;
   height: 0.75rem;
-  background: rgb(255 255 255);
-  border: 1px solid rgb(0 0 0 / 0.3);
+  background: var(--cropper-handle-color, rgb(255 255 255));
+  border: 1px solid var(--cropper-handle-border, rgb(0 0 0 / 0.3));
   border-radius: 50%;
   pointer-events: auto;
 }

@@ -1,6 +1,6 @@
 /* JSON Cell Base */
 :host {
-  color: var(--snice-color-text);
+  color: var(--snice-color-text, rgb(23 23 23));
   display: flex;
   align-items: center;
   min-height: 2.5rem; /* 40px */
@@ -24,7 +24,7 @@
 .json-toggle {
   background: none;
   border: none;
-  color: var(--snice-color-text-secondary);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
   cursor: pointer;
   padding: 0.125rem 0.25rem;
   font-size: 0.75rem;
@@ -35,11 +35,11 @@
 }
 
 .json-toggle:hover {
-  background-color: var(--snice-color-background-hover);
+  background-color: var(--snice-color-background-hover, rgb(245 245 245));
 }
 
 .json-toggle:focus {
-  outline: 2px solid var(--snice-color-primary);
+  outline: 2px solid var(--snice-color-primary, rgb(37 99 235));
   outline-offset: 2px;
 }
 
@@ -61,7 +61,7 @@
 }
 
 .json-preview {
-  color: var(--snice-color-text-secondary);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
   font-style: italic;
 }
 
@@ -74,31 +74,31 @@
 }
 
 .json-key {
-  color: var(--snice-color-primary);
+  color: var(--snice-color-primary, rgb(37 99 235));
   font-weight: 500;
   margin-right: 0.25rem;
 }
 
 .json-string {
-  color: var(--snice-color-success);
+  color: var(--snice-color-success, rgb(22 163 74));
 }
 
 .json-number {
-  color: var(--snice-color-info);
+  color: var(--snice-color-info, rgb(59 130 246));
 }
 
 .json-boolean {
-  color: var(--snice-color-warning);
+  color: var(--snice-color-warning, rgb(234 179 8));
 }
 
 .json-null,
 .json-undefined {
-  color: var(--snice-color-text-secondary);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
   font-style: italic;
 }
 
 .json-empty {
-  color: var(--snice-color-text-secondary);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
   font-style: italic;
 }
 
@@ -118,7 +118,7 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   :host {
-  color: var(--snice-color-text);
+  color: var(--snice-color-text, rgb(23 23 23));
     font-size: 0.75rem; /* 12px */
     line-height: 1rem; /* 16px */
   }

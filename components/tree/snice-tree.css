@@ -24,6 +24,6 @@
 .tree__empty {
   padding: var(--snice-spacing-lg, 1.5rem);
   text-align: center;
-  color: var(--snice-color-text-muted, rgb(115 115 115));
+  color: var(--snice-color-text-tertiary, rgb(115 115 115));
   font-style: italic;
 }

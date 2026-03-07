@@ -2,16 +2,16 @@
   display: block;
 
   /* Dark theme defaults (One Dark) */
-  --_cb-bg: #282c34;
-  --_cb-text: #abb2bf;
-  --_cb-header-bg: #21252b;
+  --_cb-bg: var(--snice-color-background-tertiary, #282c34);
+  --_cb-text: var(--snice-color-text-secondary, #abb2bf);
+  --_cb-header-bg: var(--snice-color-background-secondary, #21252b);
   --_cb-header-border: var(--snice-color-border, rgb(51 56 66));
-  --_cb-header-text: #9da5b4;
+  --_cb-header-text: var(--snice-color-text-tertiary, #9da5b4);
   --_cb-btn-border: var(--snice-color-border, rgb(75 82 99));
   --_cb-btn-hover-bg: var(--snice-color-background-hover, rgb(51 56 66));
   --_cb-btn-hover-border: var(--snice-color-border-hover, rgb(92 99 112));
-  --_cb-line-number: #636d83;
-  --_cb-highlight-bg: rgba(255, 255, 255, 0.07);
+  --_cb-line-number: var(--snice-color-text-tertiary, #636d83);
+  --_cb-highlight-bg: rgb(255 255 255 / 0.07);
   --_cb-keyword: #c678dd;
   --_cb-function: #61afef;
   --_cb-string: #98c379;
@@ -31,16 +31,16 @@
 /* OS prefers light (fallback when no data-theme) */
 @media (prefers-color-scheme: light) {
   :host(:not([theme])) {
-    --_cb-bg: #fafafa;
-    --_cb-text: #383a42;
-    --_cb-header-bg: #eaeaeb;
+    --_cb-bg: var(--snice-color-background-tertiary, #fafafa);
+    --_cb-text: var(--snice-color-text, #383a42);
+    --_cb-header-bg: var(--snice-color-background-secondary, #eaeaeb);
     --_cb-header-border: var(--snice-color-border, rgb(208 208 208));
-    --_cb-header-text: #696c77;
+    --_cb-header-text: var(--snice-color-text-tertiary, #696c77);
     --_cb-btn-border: var(--snice-color-border, rgb(192 192 192));
     --_cb-btn-hover-bg: var(--snice-color-background-hover, rgb(216 216 217));
     --_cb-btn-hover-border: var(--snice-color-border-hover, rgb(160 160 160));
-    --_cb-line-number: #9d9d9f;
-    --_cb-highlight-bg: rgba(0, 0, 0, 0.05);
+    --_cb-line-number: var(--snice-color-text-tertiary, #9d9d9f);
+    --_cb-highlight-bg: rgb(0 0 0 / 0.05);
     --_cb-keyword: #a626a4;
     --_cb-function: #4078f2;
     --_cb-string: #50a14f;
@@ -60,16 +60,16 @@
 
 /* Snice theme system: explicit dark (overrides media query) */
 :host-context([data-theme="dark"]) {
-  --_cb-bg: #282c34;
-  --_cb-text: #abb2bf;
-  --_cb-header-bg: #21252b;
+  --_cb-bg: var(--snice-color-background-tertiary, #282c34);
+  --_cb-text: var(--snice-color-text-secondary, #abb2bf);
+  --_cb-header-bg: var(--snice-color-background-secondary, #21252b);
   --_cb-header-border: var(--snice-color-border, rgb(51 56 66));
-  --_cb-header-text: #9da5b4;
+  --_cb-header-text: var(--snice-color-text-tertiary, #9da5b4);
   --_cb-btn-border: var(--snice-color-border, rgb(75 82 99));
   --_cb-btn-hover-bg: var(--snice-color-background-hover, rgb(51 56 66));
   --_cb-btn-hover-border: var(--snice-color-border-hover, rgb(92 99 112));
-  --_cb-line-number: #636d83;
-  --_cb-highlight-bg: rgba(255, 255, 255, 0.07);
+  --_cb-line-number: var(--snice-color-text-tertiary, #636d83);
+  --_cb-highlight-bg: rgb(255 255 255 / 0.07);
   --_cb-keyword: #c678dd;
   --_cb-function: #61afef;
   --_cb-string: #98c379;
@@ -88,16 +88,16 @@
 
 /* Snice theme system: explicit light */
 :host-context([data-theme="light"]) {
-  --_cb-bg: #fafafa;
-  --_cb-text: #383a42;
-  --_cb-header-bg: #eaeaeb;
+  --_cb-bg: var(--snice-color-background-tertiary, #fafafa);
+  --_cb-text: var(--snice-color-text, #383a42);
+  --_cb-header-bg: var(--snice-color-background-secondary, #eaeaeb);
   --_cb-header-border: var(--snice-color-border, rgb(208 208 208));
-  --_cb-header-text: #696c77;
+  --_cb-header-text: var(--snice-color-text-tertiary, #696c77);
   --_cb-btn-border: var(--snice-color-border, rgb(192 192 192));
   --_cb-btn-hover-bg: var(--snice-color-background-hover, rgb(216 216 217));
   --_cb-btn-hover-border: var(--snice-color-border-hover, rgb(160 160 160));
-  --_cb-line-number: #9d9d9f;
-  --_cb-highlight-bg: rgba(0, 0, 0, 0.05);
+  --_cb-line-number: var(--snice-color-text-tertiary, #9d9d9f);
+  --_cb-highlight-bg: rgb(0 0 0 / 0.05);
   --_cb-keyword: #a626a4;
   --_cb-function: #4078f2;
   --_cb-string: #50a14f;
@@ -116,16 +116,16 @@
 
 /* Forced dark via attribute */
 :host([theme="dark"]) {
-  --_cb-bg: #282c34;
-  --_cb-text: #abb2bf;
-  --_cb-header-bg: #21252b;
+  --_cb-bg: var(--snice-color-background-tertiary, #282c34);
+  --_cb-text: var(--snice-color-text-secondary, #abb2bf);
+  --_cb-header-bg: var(--snice-color-background-secondary, #21252b);
   --_cb-header-border: var(--snice-color-border, rgb(51 56 66));
-  --_cb-header-text: #9da5b4;
+  --_cb-header-text: var(--snice-color-text-tertiary, #9da5b4);
   --_cb-btn-border: var(--snice-color-border, rgb(75 82 99));
   --_cb-btn-hover-bg: var(--snice-color-background-hover, rgb(51 56 66));
   --_cb-btn-hover-border: var(--snice-color-border-hover, rgb(92 99 112));
-  --_cb-line-number: #636d83;
-  --_cb-highlight-bg: rgba(255, 255, 255, 0.07);
+  --_cb-line-number: var(--snice-color-text-tertiary, #636d83);
+  --_cb-highlight-bg: rgb(255 255 255 / 0.07);
   --_cb-keyword: #c678dd;
   --_cb-function: #61afef;
   --_cb-string: #98c379;
@@ -144,16 +144,16 @@
 
 /* Forced light via attribute */
 :host([theme="light"]) {
-  --_cb-bg: #fafafa;
-  --_cb-text: #383a42;
-  --_cb-header-bg: #eaeaeb;
+  --_cb-bg: var(--snice-color-background-tertiary, #fafafa);
+  --_cb-text: var(--snice-color-text, #383a42);
+  --_cb-header-bg: var(--snice-color-background-secondary, #eaeaeb);
   --_cb-header-border: var(--snice-color-border, rgb(208 208 208));
-  --_cb-header-text: #696c77;
+  --_cb-header-text: var(--snice-color-text-tertiary, #696c77);
   --_cb-btn-border: var(--snice-color-border, rgb(192 192 192));
   --_cb-btn-hover-bg: var(--snice-color-background-hover, rgb(216 216 217));
   --_cb-btn-hover-border: var(--snice-color-border-hover, rgb(160 160 160));
-  --_cb-line-number: #9d9d9f;
-  --_cb-highlight-bg: rgba(0, 0, 0, 0.05);
+  --_cb-line-number: var(--snice-color-text-tertiary, #9d9d9f);
+  --_cb-highlight-bg: rgb(0 0 0 / 0.05);
   --_cb-keyword: #a626a4;
   --_cb-function: #4078f2;
   --_cb-string: #50a14f;
@@ -202,7 +202,7 @@
   border-radius: var(--snice-border-radius-sm, 0.25rem);
   cursor: pointer;
   font-size: var(--snice-font-size-xs, 0.75rem);
-  transition: all 0.2s;
+  transition: all var(--snice-transition-fast, 150ms);
 }
 
 .code-block__copy:hover {
@@ -211,9 +211,9 @@
 }
 
 .code-block__copy--copied {
-  background: var(--snice-color-success);
-  border-color: hsl(var(--snice-color-green-500));
-  color: hsl(0 0% 100%);
+  background: var(--snice-color-success, rgb(22 163 74));
+  border-color: var(--snice-color-success, rgb(22 163 74));
+  color: var(--snice-color-text-inverse, rgb(250 250 250));
 }
 
 .code-block__content {
@@ -241,7 +241,7 @@
 
 .code-block__line--highlight {
   background: var(--_cb-highlight-bg);
-  border-left: 3px solid var(--snice-color-primary);
+  border-left: 3px solid var(--snice-color-primary, rgb(37 99 235));
   padding-left: calc(var(--snice-spacing-sm, 0.75rem) - 3px);
   margin-left: calc(-1 * var(--snice-spacing-md, 1rem));
   padding-right: var(--snice-spacing-md, 1rem);

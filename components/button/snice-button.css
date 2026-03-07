@@ -22,7 +22,7 @@
   white-space: nowrap;
   vertical-align: middle;
   padding: 0;
-  box-shadow: var(--snice-shadow-xs);
+  box-shadow: var(--snice-shadow-xs, 0 1px 2px 0 rgb(0 0 0 / 0.03));
   transition:
     color var(--snice-transition-fast, 150ms) ease,
     background-color var(--snice-transition-fast, 150ms) ease,
@@ -38,7 +38,7 @@
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: var(--snice-gradient-button);
+  background: var(--snice-gradient-button, none);
   pointer-events: none;
 }
 
@@ -52,7 +52,7 @@
 
 .button:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-focus-ring-color);
+  box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
 }
 
 .button--disabled {
@@ -93,14 +93,14 @@
 .button--default:hover:not(.button--disabled) {
   background-color: var(--snice-color-background-secondary, rgb(250 250 250));
   border-color: var(--snice-color-border-hover, rgb(204 204 204));
-  box-shadow: var(--snice-shadow-sm);
+  box-shadow: var(--snice-shadow-sm, 0 1px 2px 0 rgb(0 0 0 / 0.05));
   transform: translateY(-1px);
 }
 
 .button--default:active:not(.button--disabled) {
   background-color: var(--snice-color-background-tertiary, rgb(248 248 248));
   border-color: var(--snice-color-border-hover, rgb(204 204 204));
-  box-shadow: var(--snice-shadow-inset-sm);
+  box-shadow: var(--snice-shadow-inset-sm, inset 0 1px 2px rgb(0 0 0 / 0.05));
   transform: translateY(0);
 }
 
@@ -114,14 +114,14 @@
 .button--primary:hover:not(.button--disabled) {
   background-color: var(--snice-color-primary-hover, rgb(29 78 216));
   border-color: var(--snice-color-primary-hover, rgb(29 78 216));
-  box-shadow: var(--snice-shadow-sm);
+  box-shadow: var(--snice-shadow-sm, 0 1px 2px 0 rgb(0 0 0 / 0.05));
   transform: translateY(-1px);
 }
 
 .button--primary:active:not(.button--disabled) {
   background-color: color-mix(in srgb, var(--snice-color-primary, rgb(37 99 235)) 85%, white);
   border-color: color-mix(in srgb, var(--snice-color-primary, rgb(37 99 235)) 85%, white);
-  box-shadow: var(--snice-shadow-inset-sm);
+  box-shadow: var(--snice-shadow-inset-sm, inset 0 1px 2px rgb(0 0 0 / 0.05));
   transform: translateY(0);
 }
 
@@ -135,14 +135,14 @@
 .button--success:hover:not(.button--disabled) {
   background-color: var(--snice-color-success-hover, rgb(21 128 61));
   border-color: var(--snice-color-success-hover, rgb(21 128 61));
-  box-shadow: var(--snice-shadow-sm);
+  box-shadow: var(--snice-shadow-sm, 0 1px 2px 0 rgb(0 0 0 / 0.05));
   transform: translateY(-1px);
 }
 
 .button--success:active:not(.button--disabled) {
   background-color: color-mix(in srgb, var(--snice-color-success, rgb(22 163 74)) 85%, white);
   border-color: color-mix(in srgb, var(--snice-color-success, rgb(22 163 74)) 85%, white);
-  box-shadow: var(--snice-shadow-inset-sm);
+  box-shadow: var(--snice-shadow-inset-sm, inset 0 1px 2px rgb(0 0 0 / 0.05));
   transform: translateY(0);
 }
 
@@ -156,14 +156,14 @@
 .button--warning:hover:not(.button--disabled) {
   background-color: var(--snice-color-warning-hover, rgb(161 98 7));
   border-color: var(--snice-color-warning-hover, rgb(161 98 7));
-  box-shadow: var(--snice-shadow-sm);
+  box-shadow: var(--snice-shadow-sm, 0 1px 2px 0 rgb(0 0 0 / 0.05));
   transform: translateY(-1px);
 }
 
 .button--warning:active:not(.button--disabled) {
   background-color: color-mix(in srgb, var(--snice-color-warning, rgb(202 138 4)) 85%, white);
   border-color: color-mix(in srgb, var(--snice-color-warning, rgb(202 138 4)) 85%, white);
-  box-shadow: var(--snice-shadow-inset-sm);
+  box-shadow: var(--snice-shadow-inset-sm, inset 0 1px 2px rgb(0 0 0 / 0.05));
   transform: translateY(0);
 }
 
@@ -177,14 +177,14 @@
 .button--danger:hover:not(.button--disabled) {
   background-color: var(--snice-color-danger-hover, rgb(185 28 28));
   border-color: var(--snice-color-danger-hover, rgb(185 28 28));
-  box-shadow: var(--snice-shadow-sm);
+  box-shadow: var(--snice-shadow-sm, 0 1px 2px 0 rgb(0 0 0 / 0.05));
   transform: translateY(-1px);
 }
 
 .button--danger:active:not(.button--disabled) {
   background-color: color-mix(in srgb, var(--snice-color-danger, rgb(220 38 38)) 85%, white);
   border-color: color-mix(in srgb, var(--snice-color-danger, rgb(220 38 38)) 85%, white);
-  box-shadow: var(--snice-shadow-inset-sm);
+  box-shadow: var(--snice-shadow-inset-sm, inset 0 1px 2px rgb(0 0 0 / 0.05));
   transform: translateY(0);
 }
 
@@ -201,14 +201,14 @@
 }
 
 .button--text:hover:not(.button--disabled) {
-  background-color: hsl(var(--snice-color-blue-500) / 0.1);
+  background-color: var(--snice-color-primary-alpha, rgb(37 99 235 / 0.1));
   color: var(--snice-color-primary-hover, rgb(29 78 216));
   box-shadow: none;
   transform: none;
 }
 
 .button--text:active:not(.button--disabled) {
-  background-color: hsl(var(--snice-color-blue-500) / 0.15);
+  background-color: var(--snice-color-primary-alpha-strong, rgb(37 99 235 / 0.15));
   box-shadow: none;
   transform: none;
 }
@@ -248,13 +248,13 @@
 }
 
 .button--outline:hover:not(.button--disabled) {
-  background-color: hsl(var(--snice-color-gray-500) / 0.1);
+  background-color: var(--snice-color-border-alpha, rgb(82 82 82 / 0.1));
   box-shadow: none;
   transform: none;
 }
 
 .button--outline:active:not(.button--disabled) {
-  background-color: hsl(var(--snice-color-gray-500) / 0.15);
+  background-color: var(--snice-color-border-alpha-strong, rgb(82 82 82 / 0.15));
   box-shadow: none;
   transform: none;
 }

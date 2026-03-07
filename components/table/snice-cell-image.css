@@ -1,6 +1,6 @@
 /* Image Cell Base */
 :host {
-  color: var(--snice-color-text);
+  color: var(--snice-color-text, rgb(23 23 23));
   display: flex;
   align-items: center;
   min-height: 2.5rem; /* 40px */
@@ -22,7 +22,7 @@
 .cell-image {
   display: block;
   object-fit: cover;
-  background-color: hsl(var(--snice-color-gray-100));
+  background-color: rgb(243 244 246);
 }
 
 /* Size variants */
@@ -56,8 +56,8 @@
 
 /* Placeholder */
 .cell-image--placeholder {
-  background: linear-gradient(135deg, hsl(var(--snice-color-gray-200)) 0%, hsl(var(--snice-color-gray-300)) 100%);
-  border: 1px solid hsl(var(--snice-color-gray-300));
+  background: linear-gradient(135deg, rgb(229 231 235) 0%, rgb(209 213 219) 100%);
+  border: 1px solid rgb(209 213 219);
   position: relative;
 }
 

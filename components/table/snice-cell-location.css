@@ -1,6 +1,6 @@
 /* Location Cell Base */
 :host {
-  color: var(--snice-color-text);
+  color: var(--snice-color-text, rgb(23 23 23));
   display: flex;
   align-items: center;
   min-height: 2.5rem; /* 40px */
@@ -29,7 +29,7 @@
 }
 
 .location-link {
-  color: var(--snice-color-primary);
+  color: var(--snice-color-primary, rgb(37 99 235));
   text-decoration: none;
   transition: color 0.2s ease;
   overflow: hidden;
@@ -38,29 +38,29 @@
 }
 
 .location-link:hover {
-  color: var(--snice-color-primary-dark);
+  color: var(--snice-color-primary-dark, rgb(29 78 216));
   text-decoration: underline;
 }
 
 .location-link:focus {
-  outline: 2px solid var(--snice-color-primary);
+  outline: 2px solid var(--snice-color-primary, rgb(37 99 235));
   outline-offset: 2px;
   border-radius: 2px;
 }
 
 .location-link:visited {
-  color: var(--snice-color-secondary);
+  color: var(--snice-color-secondary, rgb(107 114 128));
 }
 
 .location-text {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: var(--snice-color-text);
+  color: var(--snice-color-text, rgb(23 23 23));
 }
 
 .location-empty {
-  color: var(--snice-color-text-secondary);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
   font-style: italic;
 }
 
@@ -80,7 +80,7 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   :host {
-  color: var(--snice-color-text);
+  color: var(--snice-color-text, rgb(23 23 23));
     font-size: 0.75rem; /* 12px */
     line-height: 1rem; /* 16px */
   }
@@ -99,7 +99,7 @@
   .location-link::after {
     content: " (" attr(href) ")";
     font-size: 0.75rem;
-    color: var(--snice-color-text-secondary);
+    color: var(--snice-color-text-secondary, rgb(82 82 82));
   }
 
   .location-icon {

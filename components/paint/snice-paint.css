@@ -17,10 +17,10 @@
 .paint-toolbar {
   display: flex;
   flex-direction: column;
-  gap: 3px;
-  padding: 8px 6px;
-  background: var(--paint-toolbar-bg, var(--snice-color-background-secondary, hsl(0 0% 96%)));
-  width: 48px;
+  gap: 0.1875rem;
+  padding: 0.5rem 0.375rem;
+  background: var(--paint-toolbar-bg, var(--snice-color-background-secondary, rgb(245 245 245)));
+  width: 3rem;
   align-items: center;
   flex-shrink: 0;
   overflow-y: auto;
@@ -28,10 +28,10 @@
 
 .paint-toolbar-label {
   font-size: 0.5rem;
-  color: var(--snice-color-text-tertiary, hsl(0 0% 55%));
+  color: var(--snice-color-text-tertiary, rgb(140 140 140));
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin: 2px 0;
+  margin: 0.125rem 0;
   user-select: none;
   font-family: system-ui, -apple-system, sans-serif;
 }
@@ -39,45 +39,45 @@
 .paint-toolbar-sep {
   width: 100%;
   height: 1px;
-  background: var(--snice-color-border, hsl(0 0% 85%));
-  margin: 4px 0;
+  background: var(--snice-color-border, rgb(217 217 217));
+  margin: 0.25rem 0;
 }
 
 .paint-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 2rem;
+  height: 2rem;
   border-radius: 6px;
   border: none;
   background: transparent;
-  color: var(--snice-color-text-secondary, hsl(0 0% 45%));
+  color: var(--snice-color-text-secondary, rgb(115 115 115));
   cursor: pointer;
   transition: all 0.15s;
   padding: 0;
 }
 
 .paint-btn:hover {
-  background: var(--snice-color-background-tertiary, hsl(0 0% 90%));
+  background: var(--snice-color-background-tertiary, rgb(230 230 230));
 }
 
 .paint-btn.active {
-  background: var(--snice-color-primary, hsl(207 90% 54%));
-  color: white;
+  background: var(--snice-color-primary, rgb(37 99 235));
+  color: var(--snice-color-text-inverse, rgb(255 255 255));
 }
 
 .paint-btn.danger {
-  color: var(--snice-color-danger, hsl(0 72% 51%));
+  color: var(--snice-color-danger, rgb(220 38 38));
 }
 
 .paint-btn.danger:hover {
-  background: hsla(0, 72%, 51%, 0.1);
+  background: var(--snice-color-danger-light, rgb(220 38 38 / 0.1));
 }
 
 .paint-swatch {
-  width: 15px;
-  height: 15px;
+  width: 0.9375rem;
+  height: 0.9375rem;
   border-radius: 50%;
   background: var(--c);
   cursor: pointer;
@@ -91,24 +91,24 @@
 }
 
 .paint-swatch.active {
-  border-color: var(--snice-color-primary, hsl(207 90% 54%));
-  box-shadow: 0 0 0 1px var(--snice-color-primary, hsl(207 90% 54%));
+  border-color: var(--snice-color-primary, rgb(37 99 235));
+  box-shadow: 0 0 0 1px var(--snice-color-primary, rgb(37 99 235));
 }
 
 .paint-swatches {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 3px;
+  gap: 0.1875rem;
 }
 
 .paint-swatch-select {
   appearance: none;
   -webkit-appearance: none;
-  width: 15px;
-  height: 15px;
+  width: 0.9375rem;
+  height: 0.9375rem;
   border-radius: 50%;
   cursor: pointer;
-  border: 2px dashed var(--snice-color-text-tertiary, hsl(0 0% 55%));
+  border: 2px dashed var(--snice-color-text-tertiary, rgb(140 140 140));
   padding: 0;
   background: transparent;
   transition: all 0.15s;
@@ -135,8 +135,8 @@
 }
 
 .paint-swatch-select.active {
-  border-color: var(--snice-color-primary, hsl(207 90% 54%));
-  box-shadow: 0 0 0 1px var(--snice-color-primary, hsl(207 90% 54%));
+  border-color: var(--snice-color-primary, rgb(37 99 235));
+  box-shadow: 0 0 0 1px var(--snice-color-primary, rgb(37 99 235));
 }
 
 .paint-swatch-select:hover {
@@ -144,8 +144,8 @@
 }
 
 .paint-size-slider {
-  width: 34px;
-  accent-color: var(--snice-color-primary, hsl(207 90% 54%));
+  width: 2.125rem;
+  accent-color: var(--snice-color-primary, rgb(37 99 235));
 }
 
 .paint-canvas-wrap {
@@ -187,7 +187,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
+  gap: 0.1875rem;
 }
 
 ::slotted([slot="colors"]),
@@ -195,5 +195,5 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
+  gap: 0.1875rem;
 }

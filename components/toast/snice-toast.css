@@ -1,12 +1,12 @@
 /* Toast Container */
 :host {
   position: fixed;
-  z-index: var(--snice-z-index-tooltip);
+  z-index: var(--snice-z-index-tooltip, 1070);
   pointer-events: none;
   display: flex;
   flex-direction: column;
-  gap: var(--snice-spacing-sm);
-  padding: var(--snice-spacing-md);
+  gap: var(--snice-spacing-sm, 0.75rem);
+  padding: var(--snice-spacing-md, 1rem);
 }
 
 /* Position variants */
@@ -53,17 +53,17 @@
   pointer-events: auto;
   display: flex;
   align-items: center;
-  gap: var(--snice-spacing-sm);
+  gap: var(--snice-spacing-sm, 0.75rem);
   min-width: 12.5rem; /* 200px */
   max-width: 20rem; /* 320px */
-  padding: var(--snice-spacing-sm) var(--snice-spacing-md);
-  border-radius: var(--snice-border-radius-lg);
-  box-shadow: var(--snice-shadow-lg);
-  font-family: var(--snice-font-family);
-  font-size: var(--snice-font-size-sm);
-  line-height: var(--snice-line-height-normal);
-  animation: slideIn var(--snice-transition-medium) ease-out;
-  transition: all var(--snice-transition-medium) ease;
+  padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-md, 1rem);
+  border-radius: var(--snice-border-radius-lg, 0.5rem);
+  box-shadow: var(--snice-shadow-lg, 0 10px 24px -3px rgb(0 0 0 / 0.05), 0 4px 12px -4px rgb(0 0 0 / 0.06));
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  line-height: var(--snice-line-height-normal, 1.5);
+  animation: slideIn var(--snice-transition-medium, 250ms) ease-out;
+  transition: all var(--snice-transition-medium, 250ms) ease;
 }
 
 [hidden] {
@@ -71,30 +71,30 @@
 }
 
 .toast.toast--hiding {
-  animation: slideOut 0.3s ease-out;
+  animation: slideOut var(--snice-transition-medium, 250ms) ease-out;
   opacity: 0;
   transform: translateY(100%);
 }
 
 /* Type variants */
 .toast--success {
-  background-color: var(--snice-color-success);
-  color: var(--snice-color-text-inverse);
+  background-color: var(--snice-color-success, rgb(22 163 74));
+  color: var(--snice-color-text-inverse, rgb(250 250 250));
 }
 
 .toast--error {
-  background-color: var(--snice-color-danger);
-  color: var(--snice-color-text-inverse);
+  background-color: var(--snice-color-danger, rgb(220 38 38));
+  color: var(--snice-color-text-inverse, rgb(250 250 250));
 }
 
 .toast--warning {
-  background-color: var(--snice-color-warning);
-  color: var(--snice-color-text-inverse);
+  background-color: var(--snice-color-warning, rgb(202 138 4));
+  color: var(--snice-color-text-inverse, rgb(250 250 250));
 }
 
 .toast--info {
-  background-color: var(--snice-color-primary);
-  color: var(--snice-color-text-inverse);
+  background-color: var(--snice-color-primary, rgb(37 99 235));
+  color: var(--snice-color-text-inverse, rgb(250 250 250));
 }
 
 /* Toast icon */
@@ -129,7 +129,7 @@
   justify-content: center;
   cursor: pointer;
   opacity: 0.7;
-  transition: opacity var(--snice-transition-fast);
+  transition: opacity var(--snice-transition-fast, 150ms);
   background: none;
   border: none;
   color: inherit;
@@ -171,11 +171,11 @@
 
 /* For top-positioned toasts - slide down */
 :host([position^="top"]) .toast {
-  animation: slideInTop var(--snice-transition-medium) ease-out;
+  animation: slideInTop var(--snice-transition-medium, 250ms) ease-out;
 }
 
 :host([position^="top"]) .toast.toast--hiding {
-  animation: slideOutTop var(--snice-transition-medium) ease-out;
+  animation: slideOutTop var(--snice-transition-medium, 250ms) ease-out;
   transform: translateY(-100%);
 }
 
@@ -207,7 +207,7 @@
   bottom: 0;
   left: 0;
   height: 0.1875rem; /* 3px */
-  background-color: hsl(0 0% 100% / 0.3);
-  border-radius: 0 0 var(--snice-toast-border-radius) var(--snice-toast-border-radius);
+  background-color: rgb(255 255 255 / 0.3);
+  border-radius: 0 0 var(--snice-border-radius-lg, 0.5rem) var(--snice-border-radius-lg, 0.5rem);
   transition: width linear;
 }

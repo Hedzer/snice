@@ -39,8 +39,8 @@
   height: 2.5rem;
   border-radius: 50%;
   border: none;
-  background: hsl(0 0% 0% / 0.5);
-  color: hsl(0 0% 100%);
+  background: var(--carousel-btn-bg, rgb(0 0 0 / 0.5));
+  color: var(--carousel-btn-color, rgb(255 255 255));
   cursor: pointer;
   display: grid;
   place-items: center;
@@ -56,7 +56,7 @@
 }
 
 .carousel__button:hover {
-  background: hsl(0 0% 0% / 0.7);
+  background: var(--carousel-btn-hover-bg, rgb(0 0 0 / 0.7));
 }
 
 .carousel__button:disabled {
@@ -76,20 +76,20 @@
   height: 0.5rem;
   border-radius: 50%;
   border: none;
-  background: var(--snice-color-border);
+  background: var(--snice-color-border, rgb(226 226 226));
   cursor: pointer;
   padding: 0;
   transition: background 0.2s;
 }
 
 .carousel__indicator--active {
-  background: var(--snice-color-primary);
+  background: var(--snice-color-primary, rgb(37 99 235));
 }
 
 .carousel__indicator:hover {
-  background: var(--snice-color-border-hover);
+  background: var(--snice-color-border-hover, rgb(200 200 200));
 }
 
 .carousel__indicator--active:hover {
-  background: var(--snice-color-primary-hover);
+  background: var(--snice-color-primary-hover, rgb(29 78 216));
 }

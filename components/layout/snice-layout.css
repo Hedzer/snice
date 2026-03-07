@@ -15,15 +15,15 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-lg, 2rem);
-  background: var(--snice-color-background);
-  border-bottom: 1px solid var(--snice-color-border);
-  box-shadow: var(--snice-shadow-xs);
+  background: var(--snice-color-background, rgb(255 255 255));
+  border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
+  box-shadow: var(--snice-shadow-xs, 0 1px 2px 0 rgb(0 0 0 / 0.05));
 }
 
 .brand h1 {
   margin: 0;
   font-size: var(--snice-font-size-xl, 1.5rem);
-  color: var(--snice-color-text);
+  color: var(--snice-color-text, rgb(23 23 23));
   font-weight: var(--snice-font-weight-semibold, 600);
 }
 
@@ -34,7 +34,7 @@
 
 .nav ::slotted(a) {
   text-decoration: none;
-  color: var(--snice-color-text-secondary);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
   font-weight: var(--snice-font-weight-medium, 500);
   padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-md, 1rem);
   border-radius: var(--snice-border-radius-md, 4px);
@@ -42,19 +42,19 @@
 }
 
 .nav ::slotted(a:hover) {
-  color: var(--snice-color-primary);
-  background: var(--snice-color-background-secondary);
+  color: var(--snice-color-primary, rgb(37 99 235));
+  background: var(--snice-color-background-secondary, rgb(250 250 250));
 }
 
 .nav ::slotted(a.active) {
-  color: var(--snice-color-primary);
-  background: var(--snice-color-primary-subtle);
+  color: var(--snice-color-primary, rgb(37 99 235));
+  background: var(--snice-color-primary-subtle, rgb(239 246 255));
   font-weight: var(--snice-font-weight-semibold, 600);
 }
 
 .main {
   padding: var(--snice-spacing-lg, 2rem);
-  background: var(--snice-color-background-secondary);
+  background: var(--snice-color-background-secondary, rgb(250 250 250));
   overflow-y: auto;
   position: relative;
   z-index: 0;
@@ -62,10 +62,10 @@
 
 .footer {
   padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-lg, 2rem);
-  background: var(--snice-color-background);
-  border-top: 1px solid var(--snice-color-border);
+  background: var(--snice-color-background, rgb(255 255 255));
+  border-top: 1px solid var(--snice-color-border, rgb(226 226 226));
   text-align: center;
-  color: var(--snice-color-text-secondary);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
   font-size: var(--snice-font-size-sm, 0.875rem);
 }
 

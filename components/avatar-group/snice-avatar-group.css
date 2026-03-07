@@ -41,7 +41,7 @@
   justify-content: center;
   font-size: var(--avatar-group-font-size);
   font-weight: var(--snice-font-weight-semibold, 600);
-  color: rgb(255 255 255);
+  color: var(--snice-color-text-inverse, rgb(255 255 255));
   user-select: none;
   background: var(--snice-color-text-tertiary, rgb(115 115 115));
   padding: 0;
@@ -94,21 +94,21 @@
 }
 
 /* Avatar color classes */
-.avatar-color-red { background: rgb(239 68 68); }
-.avatar-color-orange { background: rgb(251 146 60); }
-.avatar-color-yellow { background: rgb(234 179 8); }
-.avatar-color-lime { background: rgb(163 230 53); }
-.avatar-color-green { background: rgb(34 197 94); }
-.avatar-color-teal { background: rgb(20 184 166); }
-.avatar-color-cyan { background: rgb(6 182 212); }
-.avatar-color-sky { background: rgb(14 165 233); }
-.avatar-color-blue { background: rgb(59 130 246); }
-.avatar-color-indigo { background: rgb(99 102 241); }
-.avatar-color-violet { background: rgb(139 92 246); }
-.avatar-color-purple { background: rgb(168 85 247); }
-.avatar-color-fuchsia { background: rgb(217 70 239); }
-.avatar-color-pink { background: rgb(236 72 153); }
-.avatar-color-rose { background: rgb(244 63 94); }
+.avatar-color-red { background: var(--avatar-palette-red, rgb(239 68 68)); }
+.avatar-color-orange { background: var(--avatar-palette-orange, rgb(251 146 60)); }
+.avatar-color-yellow { background: var(--avatar-palette-yellow, rgb(234 179 8)); }
+.avatar-color-lime { background: var(--avatar-palette-lime, rgb(163 230 53)); }
+.avatar-color-green { background: var(--avatar-palette-green, rgb(34 197 94)); }
+.avatar-color-teal { background: var(--avatar-palette-teal, rgb(20 184 166)); }
+.avatar-color-cyan { background: var(--avatar-palette-cyan, rgb(6 182 212)); }
+.avatar-color-sky { background: var(--avatar-palette-sky, rgb(14 165 233)); }
+.avatar-color-blue { background: var(--avatar-palette-blue, rgb(59 130 246)); }
+.avatar-color-indigo { background: var(--avatar-palette-indigo, rgb(99 102 241)); }
+.avatar-color-violet { background: var(--avatar-palette-violet, rgb(139 92 246)); }
+.avatar-color-purple { background: var(--avatar-palette-purple, rgb(168 85 247)); }
+.avatar-color-fuchsia { background: var(--avatar-palette-fuchsia, rgb(217 70 239)); }
+.avatar-color-pink { background: var(--avatar-palette-pink, rgb(236 72 153)); }
+.avatar-color-rose { background: var(--avatar-palette-rose, rgb(244 63 94)); }
 
 /* ── Slotted mode — style <snice-avatar> children ── */
 ::slotted(snice-avatar) {

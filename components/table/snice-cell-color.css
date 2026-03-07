@@ -1,6 +1,6 @@
 /* Color Cell Base */
 :host {
-  color: var(--snice-color-text);
+  color: var(--snice-color-text, rgb(23 23 23));
   display: flex;
   align-items: center;
   min-height: 2.5rem; /* 40px */
@@ -21,10 +21,10 @@
 }
 
 .color-swatch {
-  border: 1px solid var(--snice-color-border);
+  border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: 0.25rem; /* 4px */
   flex-shrink: 0;
-  box-shadow: var(--snice-shadow-xs);
+  box-shadow: var(--snice-shadow-xs, 0 1px 2px 0 rgb(0 0 0 / 0.03));
 }
 
 /* Swatch sizes */
@@ -46,7 +46,7 @@
 .color-text {
   font-family: monospace;
   font-size: 0.875rem; /* 14px */
-  color: var(--snice-color-text);
+  color: var(--snice-color-text, rgb(23 23 23));
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -68,7 +68,7 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   :host {
-  color: var(--snice-color-text);
+  color: var(--snice-color-text, rgb(23 23 23));
     font-size: 0.75rem; /* 12px */
     line-height: 1rem; /* 16px */
   }
@@ -96,7 +96,7 @@
 /* Print Styles */
 @media print {
   .color-swatch {
-    border: 2px solid var(--snice-color-text);
+    border: 2px solid var(--snice-color-text, rgb(23 23 23));
   }
 
   .color-text {

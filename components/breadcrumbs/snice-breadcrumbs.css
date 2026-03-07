@@ -2,10 +2,10 @@
   display: block;
   --breadcrumb-font-size: 0.875rem; /* 14px */
   --breadcrumb-spacing: 0.5rem; /* 8px */
-  --breadcrumb-color: var(--snice-color-text-secondary, #525252);
-  --breadcrumb-hover-color: var(--snice-color-primary, #2563eb);
-  --breadcrumb-active-color: var(--snice-color-text, #171717);
-  --breadcrumb-separator-color: var(--snice-color-text-tertiary, #a3a3a3);
+  --breadcrumb-color: var(--snice-color-text-secondary, rgb(82 82 82));
+  --breadcrumb-hover-color: var(--snice-color-primary, rgb(37 99 235));
+  --breadcrumb-active-color: var(--snice-color-text, rgb(23 23 23));
+  --breadcrumb-separator-color: var(--snice-color-text-tertiary, rgb(163 163 163));
 }
 
 /* Meta elements should not interfere with layout */
@@ -50,7 +50,7 @@ case, when, default, if {
 }
 
 .breadcrumb-link:focus-visible {
-  box-shadow: 0 0 0 2px var(--snice-focus-ring-color);
+  box-shadow: 0 0 0 2px var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
 }
 
 .breadcrumb-text {
@@ -124,23 +124,23 @@ case, when, default, if {
 }
 
 .breadcrumb-ellipsis:hover {
-  background: hsl(0 0% 0% / 0.05);
+  background: var(--snice-color-background-hover, rgb(0 0 0 / 0.05));
 }
 
 .breadcrumb-ellipsis:focus-visible {
-  box-shadow: 0 0 0 2px var(--snice-focus-ring-color);
+  box-shadow: 0 0 0 2px var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
   outline: none;
 }
 
 /* Sizes */
 :host([size="small"]) {
-  --breadcrumb-font-size: 12px;
-  --breadcrumb-spacing: 6px;
+  --breadcrumb-font-size: 0.75rem;
+  --breadcrumb-spacing: 0.375rem;
 }
 
 :host([size="large"]) {
-  --breadcrumb-font-size: 16px;
-  --breadcrumb-spacing: 10px;
+  --breadcrumb-font-size: 1rem;
+  --breadcrumb-spacing: 0.625rem;
 }
 
 /* Collapsed state */

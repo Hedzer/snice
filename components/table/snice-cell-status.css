@@ -1,6 +1,6 @@
 /* Status Cell Base */
 :host {
-  color: var(--snice-color-text);
+  color: var(--snice-color-text, rgb(23 23 23));
   display: flex;
   align-items: center;
   min-height: 2.5rem; /* 40px */
@@ -30,28 +30,28 @@
 
 /* Status variants */
 .status-dot--online {
-  background-color: var(--snice-color-success);
-  box-shadow: 0 0 0 2px hsl(var(--snice-color-green-500) / 0.2);
+  background-color: var(--snice-color-success, rgb(22 163 74));
+  box-shadow: 0 0 0 2px rgb(22 163 74 / 0.2);
 }
 
 .status-dot--offline {
-  background-color: hsl(var(--snice-color-gray-400));
-  box-shadow: 0 0 0 2px hsl(var(--snice-color-gray-500) / 0.2);
+  background-color: rgb(156 163 175);
+  box-shadow: 0 0 0 2px rgb(107 114 128 / 0.2);
 }
 
 .status-dot--busy {
-  background-color: var(--snice-color-danger);
-  box-shadow: 0 0 0 2px hsl(var(--snice-color-red-500) / 0.2);
+  background-color: var(--snice-color-danger, rgb(220 38 38));
+  box-shadow: 0 0 0 2px rgb(220 38 38 / 0.2);
 }
 
 .status-dot--away {
-  background-color: var(--snice-color-warning);
-  box-shadow: 0 0 0 2px hsl(var(--snice-color-yellow-500) / 0.2);
+  background-color: var(--snice-color-warning, rgb(234 179 8));
+  box-shadow: 0 0 0 2px rgb(234 179 8 / 0.2);
 }
 
 .status-dot--custom {
-  background-color: var(--snice-color-primary);
-  box-shadow: 0 0 0 2px hsl(var(--snice-color-blue-500) / 0.2);
+  background-color: var(--snice-color-primary, rgb(37 99 235));
+  box-shadow: 0 0 0 2px rgb(37 99 235 / 0.2);
 }
 
 /* Animated pulse for online status */
@@ -63,7 +63,7 @@
   right: -2px;
   bottom: -2px;
   border-radius: 50%;
-  border: 2px solid var(--snice-color-success);
+  border: 2px solid var(--snice-color-success, rgb(22 163 74));
   animation: status-pulse 2s ease-in-out infinite;
   opacity: 0;
 }
@@ -86,23 +86,23 @@
 }
 
 .status-label--online {
-  color: var(--snice-color-success);
+  color: var(--snice-color-success, rgb(22 163 74));
 }
 
 .status-label--offline {
-  color: var(--snice-color-text-secondary);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
 }
 
 .status-label--busy {
-  color: var(--snice-color-danger);
+  color: var(--snice-color-danger, rgb(220 38 38));
 }
 
 .status-label--away {
-  color: var(--snice-color-warning);
+  color: var(--snice-color-warning, rgb(234 179 8));
 }
 
 .status-label--custom {
-  color: var(--snice-color-text);
+  color: var(--snice-color-text, rgb(23 23 23));
 }
 
 /* Text Alignment */
@@ -121,7 +121,7 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   :host {
-  color: var(--snice-color-text);
+  color: var(--snice-color-text, rgb(23 23 23));
     font-size: 0.75rem; /* 12px */
     line-height: 1rem; /* 16px */
   }
@@ -142,26 +142,26 @@
 /* Print Styles */
 @media print {
   .status-dot {
-    border: 1px solid var(--snice-color-text);
+    border: 1px solid var(--snice-color-text, rgb(23 23 23));
   }
 
   .status-dot--online {
-    background-color: var(--snice-color-background);
-    border-color: var(--snice-color-success);
+    background-color: var(--snice-color-background, rgb(255 255 255));
+    border-color: var(--snice-color-success, rgb(22 163 74));
   }
 
   .status-dot--offline {
-    background-color: var(--snice-color-background);
-    border-color: var(--snice-color-neutral);
+    background-color: var(--snice-color-background, rgb(255 255 255));
+    border-color: var(--snice-color-neutral, rgb(107 114 128));
   }
 
   .status-dot--busy {
-    background-color: var(--snice-color-background);
-    border-color: var(--snice-color-danger);
+    background-color: var(--snice-color-background, rgb(255 255 255));
+    border-color: var(--snice-color-danger, rgb(220 38 38));
   }
 
   .status-dot--away {
-    background-color: var(--snice-color-background);
-    border-color: var(--snice-color-warning);
+    background-color: var(--snice-color-background, rgb(255 255 255));
+    border-color: var(--snice-color-warning, rgb(234 179 8));
   }
 }

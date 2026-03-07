@@ -3,11 +3,20 @@
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   contain: layout style paint;
   width: 100%;
+
+  /* Two-tier: video overlay/control colors */
+  --video-overlay-bg: var(--snice-video-overlay-bg, rgb(0 0 0));
+  --video-overlay-alpha: var(--snice-video-overlay-alpha, rgb(0 0 0 / 0.5));
+  --video-controls-color: var(--snice-video-controls-color, rgb(255 255 255));
+  --video-controls-hover-bg: var(--snice-video-controls-hover-bg, rgb(255 255 255 / 0.15));
+  --video-controls-active-bg: var(--snice-video-controls-active-bg, rgb(255 255 255 / 0.25));
+  --video-progress-track: var(--snice-video-progress-track, rgb(255 255 255 / 0.3));
+  --video-progress-buffered: var(--snice-video-progress-buffered, rgb(255 255 255 / 0.4));
 }
 
 .video-container {
   position: relative;
-  background: rgb(0 0 0);
+  background: var(--video-overlay-bg);
   border-radius: var(--snice-border-radius-lg, 0.5rem);
   overflow: hidden;
   width: 100%;
@@ -35,7 +44,7 @@ video {
   justify-content: center;
   background-size: cover;
   background-position: center;
-  background-color: rgb(0 0 0);
+  background-color: var(--video-overlay-bg);
   cursor: pointer;
   z-index: 1;
 }
@@ -43,7 +52,7 @@ video {
 .video-poster-play {
   width: 4.5rem;
   height: 4.5rem;
-  background: rgb(0 0 0 / 0.6);
+  background: var(--snice-video-poster-play-bg, rgb(0 0 0 / 0.6));
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -54,11 +63,11 @@ video {
 
 .video-poster-play:hover {
   transform: scale(1.1);
-  background: rgb(0 0 0 / 0.8);
+  background: var(--snice-video-poster-play-hover-bg, rgb(0 0 0 / 0.8));
 }
 
 .video-poster-play svg {
-  color: rgb(255 255 255);
+  color: var(--video-controls-color);
   margin-left: 0.25rem;
 }
 
@@ -68,7 +77,7 @@ video {
   bottom: 0;
   left: 0;
   right: 0;
-  background: linear-gradient(transparent, rgb(0 0 0 / 0.7));
+  background: linear-gradient(transparent, var(--snice-video-controls-gradient, rgb(0 0 0 / 0.7)));
   padding: var(--snice-spacing-lg, 1.5rem) var(--snice-spacing-md, 1rem) var(--snice-spacing-sm, 0.75rem);
   opacity: 0;
   transition: opacity var(--snice-transition-medium, 250ms) ease;
@@ -103,7 +112,7 @@ video {
 .video-progress-track {
   width: 100%;
   height: 100%;
-  background: rgb(255 255 255 / 0.3);
+  background: var(--video-progress-track);
   border-radius: 9999px;
   position: relative;
   overflow: hidden;
@@ -114,7 +123,7 @@ video {
   top: 0;
   left: 0;
   height: 100%;
-  background: rgb(255 255 255 / 0.4);
+  background: var(--video-progress-buffered);
   border-radius: 9999px;
 }
 
@@ -167,7 +176,7 @@ video {
   cursor: pointer;
   padding: var(--snice-spacing-2xs, 0.25rem);
   border-radius: var(--snice-border-radius-md, 0.25rem);
-  color: rgb(255 255 255);
+  color: var(--video-controls-color);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -176,11 +185,11 @@ video {
 }
 
 .video-btn:hover {
-  background: rgb(255 255 255 / 0.15);
+  background: var(--video-controls-hover-bg);
 }
 
 .video-btn:active {
-  background: rgb(255 255 255 / 0.25);
+  background: var(--video-controls-active-bg);
 }
 
 .video-btn:focus-visible {
@@ -202,7 +211,7 @@ video {
 /* Time display */
 .video-time {
   font-size: var(--snice-font-size-xs, 0.75rem);
-  color: rgb(255 255 255);
+  color: var(--video-controls-color);
   font-variant-numeric: tabular-nums;
   user-select: none;
   white-space: nowrap;
@@ -220,7 +229,7 @@ video {
   appearance: none;
   width: 0;
   height: 0.25rem;
-  background: rgb(255 255 255 / 0.3);
+  background: var(--video-progress-track);
   border-radius: 9999px;
   outline: none;
   cursor: pointer;
@@ -245,7 +254,7 @@ video {
   appearance: none;
   width: 0.75rem;
   height: 0.75rem;
-  background: rgb(255 255 255);
+  background: var(--video-controls-color);
   border-radius: 50%;
   cursor: pointer;
   margin-top: -0.25rem;
@@ -254,20 +263,20 @@ video {
 .video-volume-slider::-moz-range-track {
   width: 100%;
   height: 0.25rem;
-  background: rgb(255 255 255 / 0.3);
+  background: var(--video-progress-track);
   border-radius: 9999px;
 }
 
 .video-volume-slider::-moz-range-progress {
   height: 0.25rem;
-  background: rgb(255 255 255);
+  background: var(--video-controls-color);
   border-radius: 9999px;
 }
 
 .video-volume-slider::-moz-range-thumb {
   width: 0.75rem;
   height: 0.75rem;
-  background: rgb(255 255 255);
+  background: var(--video-controls-color);
   border: none;
   border-radius: 50%;
   cursor: pointer;
@@ -289,7 +298,7 @@ video {
   transform: translate(-50%, -50%);
   width: 4rem;
   height: 4rem;
-  background: rgb(0 0 0 / 0.5);
+  background: var(--video-overlay-alpha);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -305,7 +314,7 @@ video {
 }
 
 .video-center-play svg {
-  color: rgb(255 255 255);
+  color: var(--video-controls-color);
   width: 2rem;
   height: 2rem;
   margin-left: 0.25rem;
@@ -313,7 +322,7 @@ video {
 
 /* Minimal variant */
 :host([variant="minimal"]) .video-controls {
-  background: rgb(0 0 0 / 0.5);
+  background: var(--video-overlay-alpha);
   padding: var(--snice-spacing-xs, 0.5rem);
 }
 
@@ -362,8 +371,8 @@ video {
 .video-loading-spinner {
   width: 2.5rem;
   height: 2.5rem;
-  border: 3px solid rgb(255 255 255 / 0.3);
-  border-top-color: rgb(255 255 255);
+  border: 3px solid var(--snice-video-spinner-track, rgb(255 255 255 / 0.3));
+  border-top-color: var(--video-controls-color);
   border-radius: 50%;
   animation: video-spin 0.8s linear infinite;
 }

@@ -1,6 +1,6 @@
 /* Percentage Cell Base */
 :host {
-  color: var(--snice-color-text);
+  color: var(--snice-color-text, rgb(23 23 23));
   display: flex;
   align-items: center;
   min-height: 2.5rem; /* 40px */
@@ -36,28 +36,28 @@
 
 /* Percentage color variants */
 :host(.percentage--positive) {
-  color: var(--snice-color-success);
+  color: var(--snice-color-success, rgb(22 163 74));
 }
 
 :host(.percentage--negative) {
-  color: var(--snice-color-danger);
+  color: var(--snice-color-danger, rgb(220 38 38));
 }
 
 :host(.percentage--zero) {
-  color: var(--snice-color-text-secondary);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
 }
 
 /* Trend arrow colors */
 :host(.percentage--trend-up) .percentage-trend {
-  color: var(--snice-color-success);
+  color: var(--snice-color-success, rgb(22 163 74));
 }
 
 :host(.percentage--trend-down) .percentage-trend {
-  color: var(--snice-color-danger);
+  color: var(--snice-color-danger, rgb(220 38 38));
 }
 
 :host(.percentage--trend-neutral) .percentage-trend {
-  color: var(--snice-color-text-secondary);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
 }
 
 /* Text Alignment */
@@ -76,7 +76,7 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   :host {
-  color: var(--snice-color-text);
+  color: var(--snice-color-text, rgb(23 23 23));
     font-size: 0.75rem; /* 12px */
     line-height: 1rem; /* 16px */
   }
@@ -89,7 +89,7 @@
 /* Print Styles */
 @media print {
   :host {
-  color: var(--snice-color-text);
+  color: var(--snice-color-text, rgb(23 23 23));
     font-size: 0.75rem; /* 12px */
   }
 

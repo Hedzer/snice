@@ -3,26 +3,10 @@
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   contain: layout style paint;
 
-  --snice-diff-added-bg: rgb(220 252 231 / 0.5);
-  --snice-diff-removed-bg: rgb(254 226 226 / 0.5);
-  --snice-diff-added-word-bg: rgb(187 247 208 / 0.7);
-  --snice-diff-removed-word-bg: rgb(254 202 202 / 0.7);
-}
-
-:host-context([data-theme="dark"]) {
-  --snice-diff-added-bg: rgb(22 163 74 / 0.15);
-  --snice-diff-removed-bg: rgb(220 38 38 / 0.15);
-  --snice-diff-added-word-bg: rgb(22 163 74 / 0.3);
-  --snice-diff-removed-word-bg: rgb(220 38 38 / 0.3);
-}
-
-@media (prefers-color-scheme: dark) {
-  :host {
-    --snice-diff-added-bg: rgb(22 163 74 / 0.15);
-    --snice-diff-removed-bg: rgb(220 38 38 / 0.15);
-    --snice-diff-added-word-bg: rgb(22 163 74 / 0.3);
-    --snice-diff-removed-word-bg: rgb(220 38 38 / 0.3);
-  }
+  --diff-add-bg: var(--snice-color-success-light, rgb(220 252 231 / 0.5));
+  --diff-remove-bg: var(--snice-color-danger-light, rgb(254 226 226 / 0.5));
+  --diff-add-word-bg: var(--snice-color-success-emphasis, rgb(187 247 208 / 0.7));
+  --diff-remove-word-bg: var(--snice-color-danger-emphasis, rgb(254 202 202 / 0.7));
 }
 
 .diff-container {
@@ -105,11 +89,11 @@
 }
 
 .diff-line--added {
-  background: var(--snice-diff-added-bg, rgb(220 252 231 / 0.5));
+  background: var(--diff-add-bg);
 }
 
 .diff-line--removed {
-  background: var(--snice-diff-removed-bg, rgb(254 226 226 / 0.5));
+  background: var(--diff-remove-bg);
 }
 
 .diff-line--unchanged {
@@ -153,12 +137,12 @@
 
 /* Word-level highlights */
 .diff-word-add {
-  background: var(--snice-diff-added-word-bg, rgb(187 247 208 / 0.7));
+  background: var(--diff-add-word-bg);
   border-radius: 2px;
 }
 
 .diff-word-del {
-  background: var(--snice-diff-removed-word-bg, rgb(254 202 202 / 0.7));
+  background: var(--diff-remove-word-bg);
   border-radius: 2px;
 }
 

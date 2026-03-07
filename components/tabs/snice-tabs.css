@@ -2,8 +2,8 @@
   display: block;
   position: relative;
   /* CSS custom properties for child components */
-  --snice-tabs-panel-padding: var(--snice-spacing-md);
-  --snice-tabs-transition-duration: 300ms;
+  --snice-tabs-panel-padding: var(--snice-spacing-md, 1rem);
+  --snice-tabs-transition-duration: var(--snice-transition-medium, 250ms);
 }
 
 .tabs {
@@ -30,25 +30,25 @@
 .tabs__nav-container {
   display: flex;
   position: relative;
-  border-bottom: 1px solid var(--snice-color-border);
+  border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
 }
 
 .tabs--bottom .tabs__nav-container {
   border-bottom: none;
-  border-top: 1px solid var(--snice-color-border);
+  border-top: 1px solid var(--snice-color-border, rgb(226 226 226));
 }
 
 .tabs--start .tabs__nav-container,
 .tabs--end .tabs__nav-container {
   flex-direction: column;
   border-bottom: none;
-  border-right: 1px solid var(--snice-color-border);
+  border-right: 1px solid var(--snice-color-border, rgb(226 226 226));
   min-width: 12.5rem; /* 200px */
 }
 
 .tabs--end .tabs__nav-container {
   border-right: none;
-  border-left: 1px solid var(--snice-color-border);
+  border-left: 1px solid var(--snice-color-border, rgb(226 226 226));
 }
 
 .tabs__nav {
@@ -87,10 +87,10 @@
 
 .tabs__indicator {
   position: absolute;
-  background-color: var(--snice-color-primary);
-  transition: transform var(--snice-transition-medium) ease,
-              width var(--snice-transition-medium) ease,
-              height var(--snice-transition-medium) ease;
+  background-color: var(--snice-color-primary, rgb(37 99 235));
+  transition: transform var(--snice-transition-medium, 250ms) ease,
+              width var(--snice-transition-medium, 250ms) ease,
+              height var(--snice-transition-medium, 250ms) ease;
   bottom: 0;
   left: 0;
   pointer-events: none;
@@ -122,12 +122,12 @@
   width: 2rem; /* 32px */
   padding: 0;
   border: none;
-  background: var(--snice-color-background);
-  color: var(--snice-color-text-secondary);
+  background: var(--snice-color-background, rgb(255 255 255));
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
   cursor: pointer;
-  transition: color var(--snice-transition-fast) ease,
-              background-color var(--snice-transition-fast) ease,
-              opacity var(--snice-transition-fast) ease;
+  transition: color var(--snice-transition-fast, 150ms) ease,
+              background-color var(--snice-transition-fast, 150ms) ease,
+              opacity var(--snice-transition-fast, 150ms) ease;
 }
 
 .tabs__scroll-button--visible {
@@ -142,12 +142,12 @@
 }
 
 .tabs__scroll-button:hover:not(.tabs__scroll-button--disabled) {
-  color: var(--snice-color-text);
-  background: var(--snice-color-background-secondary);
+  color: var(--snice-color-text, rgb(23 23 23));
+  background: var(--snice-color-background-secondary, rgb(250 250 250));
 }
 
 .tabs__scroll-button:focus-visible {
-  outline: 2px solid var(--snice-color-primary);
+  outline: 2px solid var(--snice-color-primary, rgb(37 99 235));
   outline-offset: -2px;
 }
 
@@ -162,7 +162,7 @@
 
 .tabs__panels {
   flex: 1;
-  padding: var(--snice-tabs-panel-padding);
+  padding: var(--snice-tabs-panel-padding, 1rem);
   position: relative;
   /* Prevent scrollbars during transitions */
   overflow: hidden;

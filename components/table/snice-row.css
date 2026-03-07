@@ -12,8 +12,8 @@
   min-height: 2.5rem; /* 40px */
   height: 2.5rem; /* 40px */
   background: transparent;
-  color: var(--snice-color-text);
-  border-bottom: 1px solid var(--snice-color-border);
+  color: var(--snice-color-text, rgb(23 23 23));
+  border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
   transition: background-color 0.15s ease;
 }
 
@@ -21,14 +21,14 @@
 .cell {
   display: flex;
   align-items: center;
-  border-right: 1px solid var(--snice-color-border);
+  border-right: 1px solid var(--snice-color-border, rgb(226 226 226));
   min-height: 2.5rem; /* 40px */
   height: 2.5rem; /* 40px */
   min-width: 6.25rem; /* 100px */
   flex: 1;
   word-wrap: break-word;
   overflow: hidden;
-  color: var(--snice-color-text);
+  color: var(--snice-color-text, rgb(23 23 23));
 }
 
 .cell:last-child {
@@ -104,7 +104,7 @@
 
 /* Row States */
 :host(.row--hoverable) .row-container:hover {
-  background-color: var(--snice-color-background-secondary);
+  background-color: var(--snice-color-background-secondary, rgb(245 245 245));
 }
 
 :host(.row--clickable) .row-container {
@@ -112,35 +112,35 @@
 }
 
 :host(.row--clickable) .row-container:hover {
-  background-color: var(--snice-color-background-tertiary);
+  background-color: var(--snice-color-background-tertiary, rgb(240 240 240));
 }
 
 :host(.row--selected) .row-container {
-  background-color: var(--snice-color-primary-light);
+  background-color: var(--snice-color-primary-light, rgb(219 234 254));
 }
 
 :host(.row--selected.row--hoverable) .row-container:hover {
-  background-color: var(--snice-color-primary-lighter);
+  background-color: var(--snice-color-primary-lighter, rgb(239 246 255));
 }
 
 /* Highlighted State */
 :host(.row--highlighted) .row-container {
-  background-color: var(--snice-color-warning-light) !important;
+  background-color: var(--snice-color-warning-light, rgb(254 249 195)) !important;
   animation: row-highlight-fade 2s ease-out;
 }
 
 @keyframes row-highlight-fade {
   0% {
-    background-color: var(--snice-color-warning-lighter);
+    background-color: var(--snice-color-warning-lighter, rgb(254 252 232));
   }
   100% {
-    background-color: var(--snice-color-warning-light);
+    background-color: var(--snice-color-warning-light, rgb(254 249 195));
   }
 }
 
 /* Focus States */
 :host(:focus) .row-container {
-  outline: 2px solid var(--snice-color-primary);
+  outline: 2px solid var(--snice-color-primary, rgb(37 99 235));
   outline-offset: -2px;
 }
 
@@ -150,12 +150,12 @@
 
 /* Striped Rows (applied by parent table) */
 :host(.row--striped) .row-container {
-  background-color: var(--snice-color-background-secondary);
+  background-color: var(--snice-color-background-secondary, rgb(245 245 245));
 }
 
 /* Bordered Rows (applied by parent table) */
 :host(.row--bordered) .row-container {
-  border-bottom: 1px solid var(--snice-color-border);
+  border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
 }
 
 /* Size Variants */
@@ -212,7 +212,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(90deg, transparent, hsl(0 0% 100% / 0.6), transparent);
+  background: linear-gradient(90deg, transparent, var(--snice-color-background, rgb(255 255 255 / 0.6)), transparent);
   animation: loading-shimmer 1.5s infinite;
 }
 
@@ -233,7 +233,7 @@
 
   :host(.row--highlighted) .row-container {
     animation: none;
-    background-color: var(--snice-color-warning-light) !important;
+    background-color: var(--snice-color-warning-light, rgb(254 249 195)) !important;
   }
 
   :host(.row--loading) .row-container::after {

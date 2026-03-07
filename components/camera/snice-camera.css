@@ -4,9 +4,16 @@
   height: 100%;
   max-width: 40rem; /* 640px */
   position: relative;
-  background: rgb(0 0 0);
+  background: var(--camera-bg, rgb(0 0 0));
   border-radius: var(--snice-border-radius-lg, 0.5rem);
   overflow: hidden;
+
+  /* Two-tier: camera overlay/control colors */
+  --camera-bg: var(--snice-camera-bg, rgb(0 0 0));
+  --camera-overlay: var(--snice-camera-overlay, rgb(0 0 0 / 0.5));
+  --camera-controls-color: var(--snice-camera-controls-color, rgb(255 255 255));
+  --camera-btn-bg: var(--snice-camera-btn-bg, rgb(0 0 0 / 0.4));
+  --camera-btn-hover-bg: var(--snice-camera-btn-hover-bg, rgb(0 0 0 / 0.6));
 }
 
 :host([aspect-ratio="auto"]) {
@@ -21,7 +28,7 @@
   position: relative;
   width: 100%;
   height: 100%;
-  background: rgb(0 0 0);
+  background: var(--camera-bg);
 }
 
 :host(:not([aspect-ratio])) .camera-container {
@@ -118,7 +125,7 @@ video.mirror {
   justify-content: center;
   flex-direction: row;
   padding: var(--snice-spacing-xl, 1.875rem) var(--snice-spacing-lg, 1.25rem); /* 30px 20px */
-  background: linear-gradient(to top, rgb(0 0 0 / 0.5), transparent);
+  background: linear-gradient(to top, var(--camera-overlay), transparent);
 }
 
 .camera-controls.right {
@@ -128,7 +135,7 @@ video.mirror {
   flex-direction: column;
   justify-content: center;
   padding: var(--snice-spacing-lg, 1.25rem) var(--snice-spacing-xl, 1.5rem); /* 20px 24px */
-  background: linear-gradient(to left, rgb(0 0 0 / 0.5), transparent);
+  background: linear-gradient(to left, var(--camera-overlay), transparent);
 }
 
 .camera-controls.left {
@@ -138,7 +145,7 @@ video.mirror {
   flex-direction: column;
   justify-content: center;
   padding: var(--snice-spacing-lg, 1.25rem) var(--snice-spacing-xl, 1.5rem); /* 20px 24px */
-  background: linear-gradient(to right, rgb(0 0 0 / 0.5), transparent);
+  background: linear-gradient(to right, var(--camera-overlay), transparent);
 }
 
 .camera-controls.top {
@@ -148,7 +155,7 @@ video.mirror {
   justify-content: center;
   flex-direction: row;
   padding: var(--snice-spacing-xl, 1.875rem) var(--snice-spacing-lg, 1.25rem); /* 30px 20px */
-  background: linear-gradient(to bottom, rgb(0 0 0 / 0.5), transparent);
+  background: linear-gradient(to bottom, var(--camera-overlay), transparent);
 }
 
 /* Corner positions */
@@ -185,19 +192,19 @@ video.mirror {
   height: 3rem; /* 48px */
   border-radius: var(--snice-border-radius-circle, 50%);
   border: none;
-  background: rgb(0 0 0 / 0.4);
+  background: var(--camera-btn-bg);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all var(--snice-transition-fast, 150ms) ease;
-  color: rgb(255 255 255);
+  color: var(--camera-controls-color);
   backdrop-filter: blur(0.5rem);
   padding: 0;
 }
 
 .camera-btn:hover {
-  background: rgb(0 0 0 / 0.6);
+  background: var(--camera-btn-hover-bg);
   transform: scale(1.05);
 }
 
@@ -219,12 +226,12 @@ video.mirror {
 .camera-btn.capture {
   width: 3.5rem; /* 56px */
   height: 3.5rem; /* 56px */
-  background: rgb(255 255 255 / 0.95);
-  color: hsl(0 0% 20%);
+  background: var(--snice-camera-capture-bg, rgb(255 255 255 / 0.95));
+  color: var(--snice-camera-capture-color, rgb(51 51 51));
 }
 
 .camera-btn.capture:hover {
-  background: rgb(255 255 255);
+  background: var(--snice-camera-capture-hover-bg, rgb(255 255 255));
 }
 
 .camera-btn.capture svg {
@@ -237,8 +244,8 @@ video.mirror {
   top: var(--snice-spacing-md, 1rem); /* 16px */
   left: var(--snice-spacing-md, 1rem); /* 16px */
   padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem); /* 8px 12px */
-  background: rgb(0 0 0 / 0.7);
-  color: rgb(255 255 255);
+  background: var(--snice-camera-status-bg, rgb(0 0 0 / 0.7));
+  color: var(--camera-controls-color);
   border-radius: var(--snice-border-radius-sm, 0.25rem);
   font-size: var(--snice-font-size-xs, 0.75rem); /* 12px */
   display: flex;
@@ -251,7 +258,7 @@ video.mirror {
   width: 0.5rem; /* 8px */
   height: 0.5rem; /* 8px */
   border-radius: var(--snice-border-radius-circle, 50%);
-  background: var(--snice-color-success, rgb(76 175 80));
+  background: var(--snice-color-success, rgb(22 163 74));
   animation: pulse 2s ease-in-out infinite;
 }
 
@@ -269,8 +276,8 @@ video.mirror {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: hsl(var(--snice-color-red-600) / 0.9);
-  color: rgb(255 255 255);
+  background: var(--snice-color-danger, rgb(220 38 38));
+  color: var(--camera-controls-color);
   padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-xl, 1.5rem); /* 16px 24px */
   border-radius: var(--snice-border-radius-lg, 0.5rem);
   text-align: center;
@@ -283,7 +290,7 @@ video.mirror {
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
-  color: rgb(255 255 255);
+  color: var(--camera-controls-color);
   opacity: 0.5;
 }
 
@@ -299,7 +306,7 @@ video.mirror {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgb(255 255 255);
+  background: var(--snice-camera-flash-color, rgb(255 255 255));
   opacity: 0;
   pointer-events: none;
   transition: opacity var(--snice-transition-fast, 100ms) ease;

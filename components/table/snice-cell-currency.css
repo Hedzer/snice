@@ -2,7 +2,7 @@
 /* Import base styles from snice-cell.css */
 
 :host {
-  color: var(--snice-color-text);
+  color: var(--snice-color-text, rgb(23 23 23));
   font-variant-numeric: tabular-nums;
   text-align: right;
 }

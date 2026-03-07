@@ -3,7 +3,7 @@
   align-items: center;
   align-self: flex-end;
   min-height: 2.5rem; /* 40px — matches form field height for alignment */
-  font-family: var(--snice-font-family);
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
 }
 
 .checkbox-wrapper {
@@ -40,10 +40,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--snice-color-background-input);
-  border: 2px solid var(--snice-color-border);
-  border-radius: var(--snice-border-radius-sm);
-  transition: all var(--snice-transition-fast) ease;
+  background: var(--snice-color-background-input, rgb(248 247 245));
+  border: 2px solid var(--snice-color-border, rgb(226 226 226));
+  border-radius: var(--snice-border-radius-sm, 0.125rem);
+  transition: all var(--snice-transition-fast, 150ms) ease;
 }
 
 /* Size variants */
@@ -64,39 +64,39 @@
 
 /* States */
 .checkbox-input:checked ~ .checkbox {
-  background: var(--snice-color-primary);
-  border-color: var(--snice-color-primary);
+  background: var(--snice-color-primary, rgb(37 99 235));
+  border-color: var(--snice-color-primary, rgb(37 99 235));
 }
 
 .checkbox-input:focus-visible ~ .checkbox {
-  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
 }
 
 .checkbox-input:disabled ~ .checkbox {
-  background: var(--snice-color-background-secondary);
-  border-color: var(--snice-color-border);
+  background: var(--snice-color-background-secondary, rgb(250 250 250));
+  border-color: var(--snice-color-border, rgb(226 226 226));
 }
 
 .checkbox-input:disabled:checked ~ .checkbox {
-  background: var(--snice-color-text-secondary);
-  border-color: var(--snice-color-text-secondary);
+  background: var(--snice-color-text-secondary, rgb(82 82 82));
+  border-color: var(--snice-color-text-secondary, rgb(82 82 82));
 }
 
 /* Invalid state */
 .checkbox--invalid {
-  border-color: var(--snice-color-danger);
+  border-color: var(--snice-color-danger, rgb(220 38 38));
 }
 
 .checkbox-input:checked ~ .checkbox--invalid {
-  background: var(--snice-color-danger);
-  border-color: var(--snice-color-danger);
+  background: var(--snice-color-danger, rgb(220 38 38));
+  border-color: var(--snice-color-danger, rgb(220 38 38));
 }
 
 /* Checkmark */
 .checkbox-icon {
   position: absolute;
   display: none;
-  color: var(--snice-color-text-inverse);
+  color: var(--snice-color-text-inverse, rgb(250 250 250));
 }
 
 .checkbox-input:checked ~ .checkbox .checkbox-icon--check {
@@ -130,47 +130,47 @@
 /* Label */
 .checkbox-label {
   margin-left: 0.5rem; /* 8px */
-  color: var(--snice-color-text);
+  color: var(--snice-color-text, rgb(23 23 23));
   cursor: pointer;
 }
 
 .checkbox-label--small {
-  font-size: var(--snice-font-size-sm);
+  font-size: var(--snice-font-size-sm, 0.875rem);
 }
 
 .checkbox-label--medium {
-  font-size: var(--snice-font-size-md);
+  font-size: var(--snice-font-size-md, 1rem);
 }
 
 .checkbox-label--large {
-  font-size: var(--snice-font-size-lg);
+  font-size: var(--snice-font-size-lg, 1.125rem);
 }
 
 .checkbox-wrapper--disabled .checkbox-label {
-  color: var(--snice-color-text-secondary);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
   cursor: not-allowed;
 }
 
 /* Required indicator */
 .checkbox-label--required::after {
   content: ' *';
-  color: var(--snice-color-danger);
+  color: var(--snice-color-danger, rgb(220 38 38));
 }
 
 /* Focus ring for keyboard navigation */
 .checkbox-input:focus-visible ~ .checkbox {
-  outline: 2px solid var(--snice-color-primary);
+  outline: 2px solid var(--snice-color-primary, rgb(37 99 235));
   outline-offset: 2px;
 }
 
 /* Hover effect */
 .checkbox-wrapper:not(.checkbox-wrapper--disabled):hover .checkbox {
-  border-color: var(--snice-color-primary);
+  border-color: var(--snice-color-primary, rgb(37 99 235));
 }
 
 .checkbox-wrapper:not(.checkbox-wrapper--disabled):hover .checkbox-input:checked ~ .checkbox {
-  background: var(--snice-color-primary-hover);
-  border-color: var(--snice-color-primary-hover);
+  background: var(--snice-color-primary-hover, rgb(29 78 216));
+  border-color: var(--snice-color-primary-hover, rgb(29 78 216));
 }
 /* Loading State */
 .checkbox-wrapper--loading {
