@@ -61,7 +61,6 @@ const x = 42;
 
 &lt;!-- Custom formatter (same pattern as setHighlighter) --&gt;
 &lt;script&gt;
-  const cb = document.querySelector('snice-code-block');
   cb.setFormatter((code, language) =&gt; {
     // format → then highlight runs automatically
     return myPrettier.format(code, { parser: language });
