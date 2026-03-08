@@ -1,3 +1,10 @@
+# [4.27.0](https://gitlab.com/Hedzer/snice/compare/v4.26.2...v4.27.0) (2026-03-08)
+
+
+### Features
+
+* auto-update llms.txt version and component count during release ([30eab55](https://gitlab.com/Hedzer/snice/commit/30eab552504b2de664d8d677de8a53ffa73f6154))
+
 ## [4.26.2](https://gitlab.com/Hedzer/snice/compare/v4.26.1...v4.26.2) (2026-03-08)
 
 
