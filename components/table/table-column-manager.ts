@@ -156,6 +156,15 @@ export class TableColumnManager {
       // Remove flex if manually resized
       state.flex = undefined;
 
+      // Apply width to DOM immediately
+      const root = this.tableElement?.shadowRoot;
+      if (root) {
+        const th = root.querySelector(`th[data-key="${columnKey}"]`) as HTMLElement;
+        if (th) th.style.width = `${newWidth}px`;
+        const tds = root.querySelectorAll(`td[data-key="${columnKey}"]`) as NodeListOf<HTMLElement>;
+        tds.forEach(td => td.style.width = `${newWidth}px`);
+      }
+
       // Dispatch resize event
       this.tableElement?.dispatchEvent(new CustomEvent('column-resize', {
         detail: { key: columnKey, width: newWidth },
