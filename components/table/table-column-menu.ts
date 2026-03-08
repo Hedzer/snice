@@ -111,7 +111,8 @@ export class TableColumnMenu {
     // Close on outside click (delay to avoid immediate close)
     setTimeout(() => {
       this.outsideClickHandler = (e: MouseEvent) => {
-        if (!menu.contains(e.target as Node)) this.hide();
+        const path = e.composedPath();
+        if (!path.includes(menu)) this.hide();
       };
       document.addEventListener('click', this.outsideClickHandler, { capture: true });
     }, 0);
