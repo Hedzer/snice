@@ -115,6 +115,18 @@ describe('snice-tabs', () => {
     expect(indicator).toBeTruthy();
   });
 
+  it('should position indicator on initial render without rAF', async () => {
+    const tabs = await createTabsStructure({ selected: 0 });
+
+    const indicator = queryShadow(tabs as HTMLElement, '.tabs__indicator') as HTMLElement;
+    expect(indicator).toBeTruthy();
+
+    // Indicator should have width/transform set synchronously after @ready()
+    // (no rAF needed — the DOM is already laid out when @ready fires)
+    const style = indicator.style;
+    expect(style.transform).toContain('translateX');
+  });
+
   it('should mark selected tab as active', async () => {
     const tabs = await createTabsStructure({ selected: 1 });
 

@@ -47,4 +47,46 @@ describe('snice-list', () => {
     await wait(50);
     expect(list.loading).toBe(true);
   });
+
+  it('should render sentinel element when infinite is true', async () => {
+    list = await createComponent<SniceListElement>('snice-list', { infinite: true });
+    const sentinel = list.shadowRoot?.querySelector('.list__sentinel');
+    expect(sentinel).toBeTruthy();
+  });
+
+  it('should render search input when searchable', async () => {
+    list = await createComponent<SniceListElement>('snice-list', { searchable: true });
+    const input = list.shadowRoot?.querySelector('.list__search-input');
+    expect(input).toBeTruthy();
+  });
+
+  it('should not render search input by default', async () => {
+    list = await createComponent<SniceListElement>('snice-list');
+    const input = list.shadowRoot?.querySelector('.list__search-input');
+    expect(input).toBeFalsy();
+  });
+
+  it('should show no-results slot when noResults is true', async () => {
+    list = await createComponent<SniceListElement>('snice-list');
+    list.noResults = true;
+    await wait(50);
+    const emptyState = list.shadowRoot?.querySelector('snice-empty-state');
+    expect(emptyState).toBeTruthy();
+  });
+
+  it('should show loading skeletons when loading', async () => {
+    list = await createComponent<SniceListElement>('snice-list');
+    list.loading = true;
+    await wait(50);
+    const skeletons = list.shadowRoot?.querySelectorAll('snice-skeleton');
+    expect(skeletons?.length).toBe(5);
+  });
+
+  it('should respect custom skeletonCount', async () => {
+    list = await createComponent<SniceListElement>('snice-list', { 'skeleton-count': 3 });
+    list.loading = true;
+    await wait(50);
+    const skeletons = list.shadowRoot?.querySelectorAll('snice-skeleton');
+    expect(skeletons?.length).toBe(3);
+  });
 });

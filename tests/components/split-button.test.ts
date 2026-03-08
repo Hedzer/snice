@@ -211,6 +211,26 @@ describe('snice-split-button', () => {
     expect(el.actions).toHaveLength(2);
   });
 
+  it('should render initial actions in the menu DOM', async () => {
+    await createSplitButton();
+    const actions = queryShadowAll(el as HTMLElement, '.split-button__action');
+    expect(actions.length).toBe(3);
+    expect(actions[0]?.textContent?.trim()).toContain('Save as Draft');
+  });
+
+  it('should update menu DOM when actions change', async () => {
+    await createSplitButton();
+    el.actions = [
+      { value: 'x', label: 'Export' },
+      { value: 'y', label: 'Import' },
+    ];
+    await new Promise(resolve => setTimeout(resolve, 50));
+    const actions = queryShadowAll(el as HTMLElement, '.split-button__action');
+    expect(actions.length).toBe(2);
+    expect(actions[0]?.textContent?.trim()).toContain('Export');
+    expect(actions[1]?.textContent?.trim()).toContain('Import');
+  });
+
   it('should have correct ARIA attributes on toggle', async () => {
     await createSplitButton();
     const toggle = queryShadow(el as HTMLElement, '.split-button__toggle');

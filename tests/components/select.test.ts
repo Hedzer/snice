@@ -411,6 +411,52 @@ describe('snice-select', () => {
     expect(select.value).toBe('option2');
   });
 
+  it('should initialize trigger state immediately after ready (no rAF needed)', async () => {
+    const select = await createSelectWithOptions();
+    // No extra setTimeout — @ready runs after synchronous render
+    const trigger = queryShadow(select as HTMLElement, '.select-trigger') as HTMLButtonElement;
+    expect(trigger).toBeTruthy();
+    expect(trigger.disabled).toBe(false);
+    expect(trigger.getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('should initialize dropdown content immediately after ready', async () => {
+    const select = await createSelectWithOptions({ optionCount: 3 });
+    const optionsList = queryShadow(select as HTMLElement, '.select-options');
+    expect(optionsList).toBeTruthy();
+    // Options are rendered as innerHTML by updateDropdownContent → renderOptions
+    expect(optionsList!.innerHTML).toContain('select-option');
+  });
+
+  it('should show placeholder in value display on init', async () => {
+    const select = await createSelectWithOptions();
+    const placeholder = queryShadow(select as HTMLElement, '.select-placeholder');
+    expect(placeholder).toBeTruthy();
+    expect(placeholder?.textContent).toBe('Select an option');
+  });
+
+  it('should initialize value display when value is pre-set', async () => {
+    container = document.createElement('div');
+    document.body.appendChild(container);
+
+    const select = document.createElement('snice-select') as SniceSelectElement;
+    select.value = 'option2';
+
+    for (let i = 0; i < 3; i++) {
+      const option = document.createElement('snice-option');
+      option.setAttribute('value', `option${i + 1}`);
+      option.setAttribute('label', `Option ${i + 1}`);
+      select.appendChild(option);
+    }
+
+    container.appendChild(select);
+    await select.ready;
+
+    const valueDisplay = queryShadow(select as HTMLElement, '.select-value--single');
+    expect(valueDisplay).toBeTruthy();
+    expect(valueDisplay?.textContent?.trim()).toBe('Option 2');
+  });
+
   it('should close dropdown when disabled is set to true', async () => {
     const select = await createSelectWithOptions();
     const tracker = trackRenders(select as HTMLElement);
@@ -505,6 +551,29 @@ describe('snice-select editable mode', () => {
   it('should support readonly state', async () => {
     const select = await createEditableSelect({ readonly: true });
     expect(select.readonly).toBe(true);
+  });
+
+  it('should initialize editable input state immediately after ready', async () => {
+    const select = await createEditableSelect();
+    const input = queryShadow(select as HTMLElement, '.select-editable-input') as HTMLInputElement;
+    expect(input).toBeTruthy();
+    expect(input.getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('should sync editable input to pre-set value on init', async () => {
+    container = document.createElement('div');
+    document.body.appendChild(container);
+
+    const select = document.createElement('snice-select') as SniceSelectElement;
+    select.editable = true;
+    select.value = 'banana';
+    select.options = defaultOptions;
+    container.appendChild(select);
+    await select.ready;
+
+    const input = queryShadow(select as HTMLElement, '.select-editable-input') as HTMLInputElement;
+    expect(input).toBeTruthy();
+    expect(input.value).toBe('Banana');
   });
 
   it('should update value when set programmatically', async () => {

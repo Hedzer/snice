@@ -235,6 +235,77 @@ describe('snice-form-builder', () => {
     expect(fb.mode).toBe('preview');
   });
 
+  it('should add dragging class synchronously on dragstart', async () => {
+    fb = await createComponent<SniceFormBuilderElement>('snice-form-builder');
+    fb.addField('text');
+    fb.addField('email');
+    await wait();
+
+    const fieldEl = fb.shadowRoot!.querySelectorAll('.field')[0] as HTMLElement;
+    expect(fieldEl).toBeTruthy();
+
+    const dragEvent = new DragEvent('dragstart', {
+      bubbles: true,
+      cancelable: true,
+    });
+    Object.defineProperty(dragEvent, 'dataTransfer', {
+      value: { effectAllowed: '', setData: vi.fn() },
+    });
+
+    fieldEl.dispatchEvent(dragEvent);
+
+    // Class should be added synchronously — no rAF needed
+    expect(fieldEl.classList.contains('field--dragging')).toBe(true);
+  });
+
+  it('should remove dragging class on dragend', async () => {
+    fb = await createComponent<SniceFormBuilderElement>('snice-form-builder');
+    fb.addField('text');
+    await wait();
+
+    const fieldEl = fb.shadowRoot!.querySelector('.field') as HTMLElement;
+    fieldEl.classList.add('field--dragging');
+
+    const dragEndEvent = new DragEvent('dragend', { bubbles: true, cancelable: true });
+    fieldEl.dispatchEvent(dragEndEvent);
+
+    expect(fieldEl.classList.contains('field--dragging')).toBe(false);
+  });
+
+  it('should reorder fields on drop', async () => {
+    fb = await createComponent<SniceFormBuilderElement>('snice-form-builder');
+    fb.addField('text');
+    fb.addField('email');
+    fb.addField('number');
+    await wait();
+
+    const handler = vi.fn();
+    fb.addEventListener('field-reorder', handler as EventListener);
+
+    const fields = fb.shadowRoot!.querySelectorAll('.field');
+
+    // Simulate drag field 0
+    const dragStartEvent = new DragEvent('dragstart', { bubbles: true, cancelable: true });
+    Object.defineProperty(dragStartEvent, 'dataTransfer', {
+      value: { effectAllowed: '', setData: vi.fn() },
+    });
+    fields[0].dispatchEvent(dragStartEvent);
+
+    // Simulate drop on field 2
+    const dropEvent = new DragEvent('drop', { bubbles: true, cancelable: true });
+    Object.defineProperty(dropEvent, 'dataTransfer', {
+      value: { dropEffect: '', getData: vi.fn().mockReturnValue('') },
+    });
+    fields[2].dispatchEvent(dropEvent);
+    await wait();
+
+    // text was at 0, dropped on 2 → adjusted index = 1
+    expect(fb.schema.fields[0].type).toBe('email');
+    expect(fb.schema.fields[1].type).toBe('text');
+    expect(fb.schema.fields[2].type).toBe('number');
+    expect(handler).toHaveBeenCalled();
+  });
+
   it('should accept custom field-types', async () => {
     fb = await createComponent<SniceFormBuilderElement>('snice-form-builder');
     fb.fieldTypes = ['text', 'email', 'select'];

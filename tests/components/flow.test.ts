@@ -74,6 +74,32 @@ describe('snice-flow', () => {
       const minimap = queryShadow(flow as HTMLElement, '.flow__minimap');
       expect(minimap).toBeTruthy();
     });
+
+    it('should set up SVG groups synchronously during init', async () => {
+      flow = await createComponent<SniceFlowElement>('snice-flow');
+      // SVG defs and transform group should exist immediately after ready (no rAF needed)
+      const svg = queryShadow(flow as HTMLElement, '.flow__svg');
+      expect(svg).toBeTruthy();
+      const defs = svg!.querySelector('defs');
+      expect(defs).toBeTruthy();
+      const marker = defs!.querySelector('marker#flow-arrow');
+      expect(marker).toBeTruthy();
+      const transformGroup = svg!.querySelector('g');
+      expect(transformGroup).toBeTruthy();
+    });
+
+    it('should accept data immediately after creation without extra frame delay', async () => {
+      flow = await createComponent<SniceFlowElement>('snice-flow');
+      // Set data right away — no rAF should be needed for init
+      flow.nodes = [...SAMPLE_NODES];
+      flow.edges = [...SAMPLE_EDGES];
+      await wait(50);
+
+      const nodes = queryShadowAll(flow as HTMLElement, '.flow__node');
+      expect(nodes.length).toBe(3);
+      const edges = queryShadowAll(flow as HTMLElement, '.flow__edge');
+      expect(edges.length).toBe(2);
+    });
   });
 
   describe('data rendering', () => {

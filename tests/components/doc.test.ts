@@ -110,5 +110,71 @@ describe('snice-doc', () => {
 
       expect(html).toContain('Test content');
     });
+
+    it('should clear editor content', async () => {
+      doc = await createComponent<SniceDocElement>('snice-doc');
+      await wait(50);
+
+      doc.setHTML('<p>Some content to clear</p>');
+      expect(doc.getHTML()).toContain('Some content to clear');
+
+      doc.clear();
+      expect(doc.getHTML()).toBe('<p><br></p>');
+    });
+
+    it('should get plain text', async () => {
+      doc = await createComponent<SniceDocElement>('snice-doc');
+      await wait(50);
+
+      doc.setHTML('<p>Hello</p><p>World</p>');
+      const text = doc.getText();
+
+      expect(text).toContain('Hello');
+      expect(text).toContain('World');
+    });
+
+    it('should convert to markdown', async () => {
+      doc = await createComponent<SniceDocElement>('snice-doc');
+      await wait(50);
+
+      doc.setHTML('<h1>Title</h1><p>Paragraph text</p>');
+      const md = doc.getMarkdown();
+
+      expect(md).toContain('# Title');
+      expect(md).toContain('Paragraph text');
+    });
+
+    it('should queue HTML set before editor is ready', async () => {
+      const el = document.createElement('snice-doc') as SniceDocElement;
+      el.setHTML('<p>Queued content</p>');
+      document.body.appendChild(el);
+      await (el as any).ready;
+      await wait(50);
+
+      doc = el;
+      expect(doc.getHTML()).toContain('Queued content');
+    });
+  });
+
+  describe('toolbar', () => {
+    it('should render toolbar buttons', async () => {
+      doc = await createComponent<SniceDocElement>('snice-doc');
+      await wait(50);
+
+      const buttons = queryShadow(doc as HTMLElement, '.toolbar')
+        ?.querySelectorAll('.toolbar-btn');
+      expect(buttons).toBeTruthy();
+      expect(buttons!.length).toBeGreaterThan(0);
+    });
+
+    it('should render toolbar dividers', async () => {
+      doc = await createComponent<SniceDocElement>('snice-doc');
+      await wait(50);
+
+      const dividers = queryShadow(doc as HTMLElement, '.toolbar')
+        ?.querySelectorAll('.toolbar-divider');
+      expect(dividers).toBeTruthy();
+      expect(dividers!.length).toBeGreaterThan(0);
+    });
   });
 });

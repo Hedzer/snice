@@ -131,49 +131,45 @@ describe('snice-tree', () => {
       expect(node?.expanded).toBe(true);
     });
 
-    it.skip('should collapse node', async () => {
+    it('should collapse node', async () => {
       tree = await createComponent<SniceTreeElement>('snice-tree');
       tree.nodes = getSampleData();
       await wait(50);
-      const tracker = trackRenders(tree as HTMLElement);
       tree.collapseNode('root');
-      await tracker.next();
+      await wait(50);
       const node = tree.getNode('root');
       expect(node?.expanded).toBe(false);
     });
 
-    it.skip('should toggle node', async () => {
+    it('should toggle node', async () => {
       tree = await createComponent<SniceTreeElement>('snice-tree');
       tree.nodes = getSampleData();
       await wait(50);
-      const tracker = trackRenders(tree as HTMLElement);
       const initialState = tree.getNode('root')?.expanded;
       tree.toggleNode('root');
-      await tracker.next();
+      await wait(50);
       const node = tree.getNode('root');
       expect(node?.expanded).toBe(!initialState);
     });
 
-    it.skip('should expand all nodes', async () => {
+    it('should expand all nodes', async () => {
       tree = await createComponent<SniceTreeElement>('snice-tree');
       tree.nodes = getSampleData();
       await wait(50);
-      const tracker = trackRenders(tree as HTMLElement);
       tree.expandAll();
-      await tracker.next();
+      await wait(50);
       const root = tree.getNode('root');
       const child2 = tree.getNode('child2');
       expect(root?.expanded).toBe(true);
       expect(child2?.expanded).toBe(true);
     });
 
-    it.skip('should collapse all nodes', async () => {
+    it('should collapse all nodes', async () => {
       tree = await createComponent<SniceTreeElement>('snice-tree');
       tree.nodes = getSampleData();
       await wait(50);
-      const tracker = trackRenders(tree as HTMLElement);
       tree.collapseAll();
-      await tracker.next();
+      await wait(50);
       const node = tree.getNode('root');
       expect(node?.expanded).toBe(false);
     });
@@ -270,6 +266,45 @@ describe('snice-tree', () => {
       tree.toggleCheck('child1');
       await wait(50);
       expect(tree.checkedNodes).not.toContain('child1');
+    });
+  });
+
+  describe('node updates', () => {
+    it('should update node via updateNode', async () => {
+      tree = await createComponent<SniceTreeElement>('snice-tree');
+      tree.nodes = getSampleData();
+      await wait(50);
+      tree.updateNode('child1', { label: 'Updated Child 1' });
+      await wait(50);
+      const node = tree.getNode('child1');
+      expect(node?.label).toBe('Updated Child 1');
+    });
+
+    it('should handle selectedNodes property change via @watch', async () => {
+      tree = await createComponent<SniceTreeElement>('snice-tree', {
+        selectionMode: 'multiple'
+      });
+      tree.nodes = getSampleData();
+      await wait(50);
+      // Directly set selectedNodes property (triggers @watch handler)
+      tree.selectedNodes = ['child1', 'child2'];
+      await wait(50);
+      const selected = tree.getSelectedNodes();
+      expect(selected.length).toBe(2);
+      expect(selected.map(n => n.id)).toContain('child1');
+      expect(selected.map(n => n.id)).toContain('child2');
+    });
+
+    it('should handle checkedNodes property change via @watch', async () => {
+      tree = await createComponent<SniceTreeElement>('snice-tree');
+      tree.nodes = getSampleData();
+      await wait(50);
+      // Directly set checkedNodes property (triggers @watch handler)
+      tree.checkedNodes = ['child1'];
+      await wait(50);
+      const checked = tree.getCheckedNodes();
+      expect(checked.length).toBe(1);
+      expect(checked[0].id).toBe('child1');
     });
   });
 

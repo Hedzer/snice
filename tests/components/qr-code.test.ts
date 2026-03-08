@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { createComponent, removeComponent, wait } from './test-utils';
+import { createComponent, removeComponent, wait, queryShadow } from './test-utils';
 import '../../components/qr-code/snice-qr-code';
 import type { SniceQRCodeElement } from '../../components/qr-code/snice-qr-code.types';
 
@@ -131,6 +131,56 @@ describe('snice-qr-code', () => {
 
     const blob = await qrCode.toBlob();
     expect(blob).toBeInstanceOf(Blob);
+  });
+
+  it('should render a canvas element when value is set', async () => {
+    qrCode = await createComponent<SniceQRCodeElement>('snice-qr-code', {
+      value: 'https://example.com'
+    });
+
+    await wait(50);
+    const container = queryShadow<HTMLElement>(qrCode as HTMLElement, '.qr-container');
+    const canvas = container?.querySelector('canvas');
+    expect(canvas).toBeTruthy();
+  });
+
+  it('should render an SVG element in SVG render mode', async () => {
+    qrCode = await createComponent<SniceQRCodeElement>('snice-qr-code', {
+      value: 'https://example.com',
+      'render-mode': 'svg'
+    });
+
+    await wait(50);
+    const container = queryShadow<HTMLElement>(qrCode as HTMLElement, '.qr-container');
+    const svg = container?.querySelector('svg');
+    expect(svg).toBeTruthy();
+  });
+
+  it('should regenerate QR code when value changes', async () => {
+    qrCode = await createComponent<SniceQRCodeElement>('snice-qr-code', {
+      value: 'first'
+    });
+
+    await wait(50);
+    const container = queryShadow<HTMLElement>(qrCode as HTMLElement, '.qr-container');
+    const firstCanvas = container?.querySelector('canvas');
+    expect(firstCanvas).toBeTruthy();
+
+    // Change value
+    qrCode.value = 'second';
+    await wait(50);
+
+    const secondCanvas = container?.querySelector('canvas');
+    expect(secondCanvas).toBeTruthy();
+  });
+
+  it('should not render QR code when value is empty', async () => {
+    qrCode = await createComponent<SniceQRCodeElement>('snice-qr-code');
+
+    await wait(50);
+    const container = queryShadow<HTMLElement>(qrCode as HTMLElement, '.qr-container');
+    const canvas = container?.querySelector('canvas');
+    expect(canvas).toBeFalsy();
   });
 
   it('should support different QR versions based on text length', async () => {

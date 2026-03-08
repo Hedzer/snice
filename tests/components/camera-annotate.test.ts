@@ -191,6 +191,63 @@ describe('snice-camera-annotate', () => {
     });
   });
 
+  describe('mode switching', () => {
+    it('should start camera when mode changes to camera', async () => {
+      el = await createComponent<SniceCameraAnnotateElement>('snice-camera-annotate');
+      // Mode starts as camera, switch away and back
+      el.mode = 'annotate';
+      await new Promise(r => setTimeout(r, 20));
+      el.mode = 'camera';
+      await new Promise(r => setTimeout(r, 20));
+      // getUserMedia should have been called (initial + after retake)
+      expect(navigator.mediaDevices.getUserMedia).toHaveBeenCalled();
+    });
+
+    it('should render canvas when mode is annotate', async () => {
+      el = await createComponent<SniceCameraAnnotateElement>('snice-camera-annotate');
+      el.mode = 'annotate';
+      await new Promise(r => setTimeout(r, 20));
+      const canvas = queryShadow(el as HTMLElement, '.ca-draw-canvas');
+      expect(canvas).toBeTruthy();
+      expect(canvas?.classList.contains('hidden')).toBe(false);
+    });
+
+    it('should hide video when mode is annotate', async () => {
+      el = await createComponent<SniceCameraAnnotateElement>('snice-camera-annotate');
+      el.mode = 'annotate';
+      await new Promise(r => setTimeout(r, 20));
+      const video = queryShadow(el as HTMLElement, '.ca-video');
+      expect(video?.classList.contains('hidden')).toBe(true);
+    });
+
+    it('should show video when mode is camera', async () => {
+      el = await createComponent<SniceCameraAnnotateElement>('snice-camera-annotate');
+      const video = queryShadow(el as HTMLElement, '.ca-video');
+      expect(video?.classList.contains('hidden')).toBe(false);
+    });
+
+    it('should reset annotations state on clearAnnotations', async () => {
+      el = await createComponent<SniceCameraAnnotateElement>('snice-camera-annotate');
+
+      el.importAnnotations({
+        annotations: [{
+          id: 'ann-1', strokeId: 'stroke-1', label: 'Test',
+          color: '#ff0000', visible: true, timestamp: Date.now()
+        }],
+        strokes: [{
+          id: 'stroke-1', color: '#ff0000', width: 3,
+          points: [{ x: 0, y: 0 }, { x: 10, y: 10 }], timestamp: Date.now()
+        }],
+        imageWidth: 640, imageHeight: 480
+      });
+
+      el.clearAnnotations();
+      const data = el.exportAnnotations();
+      expect(data.annotations).toEqual([]);
+      expect(data.strokes).toEqual([]);
+    });
+  });
+
   describe('events', () => {
     it('should fire annotation-change on clearAnnotations', async () => {
       el = await createComponent<SniceCameraAnnotateElement>('snice-camera-annotate');
