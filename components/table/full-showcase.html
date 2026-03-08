@@ -117,9 +117,9 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     ];
     cells.forEach(c => {
       const card = document.createElement('div');
-      card.style.cssText = 'border:1px solid var(--snice-color-border,#555);border-radius:var(--snice-border-radius-md,0.25rem);padding:0.5rem 0.75rem;background:var(--snice-color-background-element,#252538);';
+      card.style.cssText = 'border:1px solid var(--snice-color-border, rgb(226 226 226));border-radius:var(--snice-border-radius-md,0.25rem);padding:0.5rem 0.75rem;background:var(--snice-color-background-element, rgb(252 251 249));';
       const lbl = document.createElement('div');
-      lbl.style.cssText = 'font-size:0.65rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--snice-color-text-tertiary,#888);margin-bottom:0.375rem;';
+      lbl.style.cssText = 'font-size:0.65rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--snice-color-text-tertiary, rgb(115 115 115));margin-bottom:0.375rem;';
       lbl.textContent = c.label;
       card.appendChild(lbl);
       const el = document.createElement(c.tag);
