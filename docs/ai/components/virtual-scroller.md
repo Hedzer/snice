@@ -32,21 +32,19 @@ interface VirtualScrollerItem {
 ## Usage
 
 ```html
-<snice-virtual-scroller id="list" style="height: 400px;" item-height="60"></snice-virtual-scroller>
+<snice-virtual-scroller style="height: 400px;" item-height="60"></snice-virtual-scroller>
+```
 
-<script>
-  const scroller = document.getElementById('list');
+```typescript
+scroller.items = Array.from({ length: 10000 }, (_, i) => ({
+  id: i,
+  data: { name: `Item ${i + 1}` }
+}));
 
-  scroller.items = Array.from({ length: 10000 }, (_, i) => ({
-    id: i,
-    data: { name: `Item ${i + 1}` }
-  }));
+scroller.renderItem = (item) => {
+  return `<div style="padding: 15px;">${item.data.name}</div>`;
+};
 
-  scroller.renderItem = (item) => {
-    return `<div style="padding: 15px;">${item.data.name}</div>`;
-  };
-
-  scroller.scrollToIndex(500);
-  const range = scroller.getVisibleRange();
-</script>
+scroller.scrollToIndex(500);
+const range = scroller.getVisibleRange();
 ```

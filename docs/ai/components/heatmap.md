@@ -21,19 +21,18 @@ weeks: number = 52;                      // Number of weeks to display
 ## Usage
 
 ```html
-<snice-heatmap id="heatmap" color-scheme="green"></snice-heatmap>
+<snice-heatmap color-scheme="green"></snice-heatmap>
+```
 
-<script>
-  const heatmap = document.getElementById('heatmap');
-  heatmap.data = [
-    { date: '2026-01-15', value: 5 },
-    { date: '2026-01-16', value: 3 },
-  ];
+```typescript
+heatmap.data = [
+  { date: '2026-01-15', value: 5 },
+  { date: '2026-01-16', value: 3 },
+];
 
-  heatmap.addEventListener('cell-click', (e) => {
-    console.log(e.detail.date, e.detail.value);
-  });
-</script>
+heatmap.addEventListener('cell-click', (e) => {
+  console.log(e.detail.date, e.detail.value);
+});
 ```
 
 **CSS Parts:**

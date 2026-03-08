@@ -44,14 +44,14 @@ interface CandleData {
 ## Usage
 
 ```html
-<snice-candlestick id="chart" show-volume></snice-candlestick>
+<snice-candlestick show-volume></snice-candlestick>
+```
 
-<script>
-  chart.data = [
-    { date: '2024-01-01', open: 100, high: 110, low: 95, close: 105, volume: 500000 },
-    { date: '2024-01-02', open: 105, high: 115, low: 100, close: 98, volume: 600000 },
-  ];
-</script>
+```typescript
+chart.data = [
+  { date: '2024-01-01', open: 100, high: 110, low: 95, close: 105, volume: 500000 },
+  { date: '2024-01-02', open: 105, high: 115, low: 100, close: 98, volume: 600000 },
+];
 ```
 
 ## Features

@@ -71,14 +71,13 @@ showTimestamps: boolean = false; // attr: show-timestamps
 
 ```html
 <snice-terminal prompt="$ " cwd="~"></snice-terminal>
+```
 
-<script>
-  const terminal = document.querySelector('snice-terminal');
-  terminal.writeln('Welcome!', 'info');
-  terminal.writeError('Something failed');
+```typescript
+terminal.writeln('Welcome!', 'info');
+terminal.writeError('Something failed');
 
-  terminal.addEventListener('terminal-command', (e) => {
-    console.log('Command:', e.detail.command, e.detail.args);
-  });
-</script>
+terminal.addEventListener('terminal-command', (e) => {
+  console.log('Command:', e.detail.command, e.detail.args);
+});
 ```

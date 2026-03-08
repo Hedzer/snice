@@ -14,7 +14,10 @@ const x = 1;
 
 <!-- Property (programmatic) -->
 <snice-code-block id="cb"></snice-code-block>
-<script>document.getElementById('cb').code = 'const x = 1;';</script>
+```
+
+```typescript
+cb.code = 'const x = 1;';
 ```
 
 Slotted content is hidden and re-rendered with highlighting in the shadow DOM. If both are provided, slotted content sets the `code` property on ready.
@@ -65,13 +68,14 @@ Requires `@respond('snice/code-block/load-grammar')` handler (controller or page
 ### Event
 
 ```html
-<snice-code-block id="cb" grammar="grammars/typescript.json" fetch-mode="event" code="const x = 1"></snice-code-block>
-<script>
-  document.getElementById('cb').addEventListener('grammar-request', async (e) => {
-    const grammar = await fetch(e.detail.url).then(r => r.json());
-    e.detail.codeBlock.setGrammar(grammar);
-  });
-</script>
+<snice-code-block grammar="grammars/typescript.json" fetch-mode="event" code="const x = 1"></snice-code-block>
+```
+
+```typescript
+cb.addEventListener('grammar-request', async (e) => {
+  const grammar = await fetch(e.detail.url).then(r => r.json());
+  e.detail.codeBlock.setGrammar(grammar);
+});
 ```
 
 Event detail type:
@@ -212,8 +216,9 @@ console.log('hello');
 </snice-code-block>
 
 <!-- Programmatic -->
-<snice-code-block id="code" language="javascript" grammar="grammars/typescript.json" show-line-numbers filename="app.js"></snice-code-block>
-<script>
-  document.getElementById('code').code = `console.log('hello');`;
-</script>
+<snice-code-block language="javascript" grammar="grammars/typescript.json" show-line-numbers filename="app.js"></snice-code-block>
+```
+
+```typescript
+codeBlock.code = `console.log('hello');`;
 ```

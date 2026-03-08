@@ -47,15 +47,15 @@ interface Mention {
 ## Usage
 
 ```html
-<snice-mentions id="editor" placeholder="Write something..."></snice-mentions>
-<script>
-  const editor = document.getElementById('editor');
-  editor.users = [
-    { id: 'u1', name: 'Alice Johnson', avatar: 'alice.jpg' },
-    { id: 'u2', name: 'Bob Smith' }
-  ];
-  editor.value = 'Hey @[Alice Johnson](u1), check this out!';
-  editor.addEventListener('mention-add', e => console.log('Mentioned:', e.detail.user));
-  editor.addEventListener('value-change', e => console.log('Mentions:', e.detail.mentions));
-</script>
+<snice-mentions placeholder="Write something..."></snice-mentions>
+```
+
+```typescript
+editor.users = [
+  { id: 'u1', name: 'Alice Johnson', avatar: 'alice.jpg' },
+  { id: 'u2', name: 'Bob Smith' }
+];
+editor.value = 'Hey @[Alice Johnson](u1), check this out!';
+editor.addEventListener('mention-add', e => console.log('Mentioned:', e.detail.user));
+editor.addEventListener('value-change', e => console.log('Mentions:', e.detail.mentions));
 ```

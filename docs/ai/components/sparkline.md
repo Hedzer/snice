@@ -31,9 +31,14 @@ max?: number;
 ## Usage
 
 ```html
-<snice-sparkline id="chart"></snice-sparkline>
-<script>document.getElementById('chart').data = [10, 20, 15, 25, 30];</script>
+<snice-sparkline></snice-sparkline>
+```
 
+```typescript
+sparkline.data = [10, 20, 15, 25, 30];
+```
+
+```html
 <snice-sparkline type="bar" color="success"></snice-sparkline>
 <snice-sparkline type="area" color="danger" min="0"></snice-sparkline>
 <snice-sparkline smooth show-area show-dots width="150" height="40"></snice-sparkline>

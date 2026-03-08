@@ -76,16 +76,16 @@ files: FileList | null;
 <snice-file-upload size="large"></snice-file-upload>
 
 <!-- Events -->
-<snice-file-upload id="upload"></snice-file-upload>
-<script>
-const upload = document.querySelector('#upload');
+<snice-file-upload></snice-file-upload>
+```
+
+```typescript
 upload.addEventListener('file-upload-change', (e) => {
   console.log('Files:', e.detail.files);
 });
 upload.addEventListener('file-upload-error', (e) => {
   console.error('Error:', e.detail.message);
 });
-</script>
 ```
 
 ## Features

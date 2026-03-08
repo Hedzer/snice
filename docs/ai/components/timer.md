@@ -38,16 +38,15 @@ running: boolean;           // read-only
 
 <!-- Countdown (counts down from 60s) -->
 <snice-timer mode="timer" initial-time="60"></snice-timer>
+```
 
-<script>
-  const timer = document.querySelector('snice-timer');
-  timer.start();
-  timer.stop();
-  timer.reset();
-  console.log(timer.getTime());
+```typescript
+timer.start();
+timer.stop();
+timer.reset();
+console.log(timer.getTime());
 
-  timer.addEventListener('timer-complete', () => {
-    console.log('Countdown finished');
-  });
-</script>
+timer.addEventListener('timer-complete', () => {
+  console.log('Countdown finished');
+});
 ```

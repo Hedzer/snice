@@ -43,15 +43,16 @@ interface ApprovalStep {
 ## Usage
 
 ```html
-<snice-approval-flow id="flow" current-step="2" orientation="vertical"></snice-approval-flow>
-<script>
-  document.getElementById('flow').steps = [
-    { id: '1', approver: 'Alice Smith', role: 'Manager', status: 'approved', comment: 'Looks good', timestamp: 'Jan 15' },
-    { id: '2', approver: 'Bob Jones', role: 'Director', status: 'pending' },
-    { id: '3', approver: 'Carol White', role: 'VP', status: 'pending' }
-  ];
-  document.getElementById('flow').addEventListener('step-approve', e => {
-    console.log('Approved by:', e.detail.step.approver);
-  });
-</script>
+<snice-approval-flow current-step="2" orientation="vertical"></snice-approval-flow>
+```
+
+```typescript
+flow.steps = [
+  { id: '1', approver: 'Alice Smith', role: 'Manager', status: 'approved', comment: 'Looks good', timestamp: 'Jan 15' },
+  { id: '2', approver: 'Bob Jones', role: 'Director', status: 'pending' },
+  { id: '3', approver: 'Carol White', role: 'VP', status: 'pending' }
+];
+flow.addEventListener('step-approve', e => {
+  console.log('Approved by:', e.detail.step.approver);
+});
 ```

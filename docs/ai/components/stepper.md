@@ -45,16 +45,19 @@ interface Step {
 
 ```html
 <!-- Basic -->
-<snice-stepper id="stepper"></snice-stepper>
-<script>
-  document.getElementById('stepper').steps = [
-    { label: 'Account' },
-    { label: 'Profile' },
-    { label: 'Complete' }
-  ];
-  document.getElementById('stepper').currentStep = 1;
-</script>
+<snice-stepper></snice-stepper>
+```
 
+```typescript
+stepper.steps = [
+  { label: 'Account' },
+  { label: 'Profile' },
+  { label: 'Complete' }
+];
+stepper.currentStep = 1;
+```
+
+```html
 <!-- With panels (auto show/hide based on currentStep) -->
 <snice-stepper id="wizard" clickable></snice-stepper>
 <snice-stepper-panel>Step 1 content</snice-stepper-panel>
@@ -65,11 +68,12 @@ interface Step {
 <snice-stepper orientation="vertical"></snice-stepper>
 
 <!-- Error state -->
-<script>
-  stepper.steps = [
-    { label: 'Upload', status: 'completed' },
-    { label: 'Validate', status: 'error' },
-    { label: 'Process', status: 'pending' }
-  ];
-</script>
+```
+
+```typescript
+stepper.steps = [
+  { label: 'Upload', status: 'completed' },
+  { label: 'Validate', status: 'error' },
+  { label: 'Process', status: 'pending' }
+];
 ```

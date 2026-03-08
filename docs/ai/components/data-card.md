@@ -45,13 +45,14 @@ interface DataCardField {
 ## Usage
 
 ```html
-<snice-data-card id="details" variant="default"></snice-data-card>
-<script>
-  document.getElementById('details').fields = [
-    { label: 'Name', value: 'John Doe', group: 'Personal' },
-    { label: 'Email', value: 'john@example.com', type: 'link', href: 'mailto:john@example.com', group: 'Personal' },
-    { label: 'Status', value: 'Active', type: 'badge', badgeVariant: 'success', group: 'Account' },
-    { label: 'Balance', value: '$1,250.00', type: 'currency', group: 'Account' }
-  ];
-</script>
+<snice-data-card variant="default"></snice-data-card>
+```
+
+```typescript
+details.fields = [
+  { label: 'Name', value: 'John Doe', group: 'Personal' },
+  { label: 'Email', value: 'john@example.com', type: 'link', href: 'mailto:john@example.com', group: 'Personal' },
+  { label: 'Status', value: 'Active', type: 'badge', badgeVariant: 'success', group: 'Account' },
+  { label: 'Balance', value: '$1,250.00', type: 'currency', group: 'Account' }
+];
 ```

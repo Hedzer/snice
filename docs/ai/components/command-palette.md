@@ -55,52 +55,53 @@ interface CommandItem {
 
 ```html
 <!-- Basic -->
-<snice-command-palette id="pal"></snice-command-palette>
-<script>
-  document.getElementById('pal').commands = [
-    {
-      id: 'new',
-      label: 'New File',
-      description: 'Create a new file',
-      icon: '📄',
-      shortcut: '⌘N',
-      category: 'File',
-      action: () => console.log('New file')
-    },
-    {
-      id: 'save',
-      label: 'Save',
-      icon: '💾',
-      shortcut: '⌘S',
-      category: 'File',
-      action: () => console.log('Saved')
-    }
-  ];
-</script>
+<snice-command-palette></snice-command-palette>
+```
 
-<!-- Opens with ⌘K or Ctrl+K -->
+```typescript
+palette.commands = [
+  {
+    id: 'new',
+    label: 'New File',
+    description: 'Create a new file',
+    icon: '📄',
+    shortcut: '⌘N',
+    category: 'File',
+    action: () => console.log('New file')
+  },
+  {
+    id: 'save',
+    label: 'Save',
+    icon: '💾',
+    shortcut: '⌘S',
+    category: 'File',
+    action: () => console.log('Saved')
+  }
+];
+```
 
+Opens with Cmd+K or Ctrl+K.
+
+```html
 <!-- Manual trigger -->
 <button onclick="palette.show()">Open</button>
+```
 
-<!-- With async actions -->
-<script>
-  palette.commands = [{
-    id: 'logout',
-    label: 'Logout',
-    action: async () => {
-      await fetch('/api/logout', { method: 'POST' });
-      location.href = '/login';
-    }
-  }];
-</script>
+```typescript
+// With async actions
+palette.commands = [{
+  id: 'logout',
+  label: 'Logout',
+  action: async () => {
+    await fetch('/api/logout', { method: 'POST' });
+    location.href = '/login';
+  }
+}];
 
-<!-- Events -->
-<script>
-  palette.addEventListener('command-execute', (e) => {
-    console.log('Executed:', e.detail.command.label);
-  });
-</script>
+// Events
+palette.addEventListener('command-execute', (e) => {
+  console.log('Executed:', e.detail.command.label);
+});
 ```
 
 ## CSS Parts

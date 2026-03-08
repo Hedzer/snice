@@ -60,16 +60,18 @@ description: string = '';
 </snice-key-value>
 
 <!-- Imperative -->
-<snice-key-value id="kv" label="Environment Variables"></snice-key-value>
-<script>
-  const kv = document.getElementById('kv');
-  kv.setItems([
-    { key: 'NODE_ENV', value: 'production' },
-    { key: 'PORT', value: '3000' }
-  ]);
-  kv.addEventListener('kv-change', e => console.log(e.detail.items));
-</script>
+<snice-key-value label="Environment Variables"></snice-key-value>
+```
 
+```typescript
+kv.setItems([
+  { key: 'NODE_ENV', value: 'production' },
+  { key: 'PORT', value: '3000' }
+]);
+kv.addEventListener('kv-change', e => console.log(e.detail.items));
+```
+
+```html
 <!-- Fixed rows -->
 <snice-key-value rows="5" label="Config"></snice-key-value>
 
