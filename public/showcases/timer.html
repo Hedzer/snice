@@ -16,3 +16,55 @@
         </div>
       </div>
     </div>
+
+<script>
+    customElements.whenDefined('snice-timer').then(() => {
+      const stopwatch = document.getElementById('demo-stopwatch');
+      const timer60 = document.getElementById('demo-timer-60');
+      const timer300 = document.getElementById('demo-timer-300');
+      if (!stopwatch || !timer60 || !timer300) return;
+
+      let stopped = false;
+      const delay = (ms) => new Promise(r => setTimeout(r, ms));
+
+      async function loop() {
+        while (!stopped) {
+          // Reset all timers
+          stopwatch.reset();
+          timer60.reset();
+          timer300.reset();
+          await delay(600);
+
+          // Start all three
+          stopwatch.start();
+          timer60.start();
+          timer300.start();
+
+          // Let them run for 8 seconds
+          await delay(8000);
+          if (stopped) break;
+
+          // Pause all
+          stopwatch.stop();
+          timer60.stop();
+          timer300.stop();
+          await delay(1500);
+
+          // Resume briefly
+          stopwatch.start();
+          timer60.start();
+          timer300.start();
+          await delay(4000);
+          if (stopped) break;
+
+          // Stop and reset
+          stopwatch.stop();
+          timer60.stop();
+          timer300.stop();
+          await delay(1000);
+        }
+      }
+
+      loop();
+    });
+</script>
