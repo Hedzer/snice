@@ -2645,12 +2645,11 @@ el.addEventListener('comment-add',
             </div>
           </snice-drawer>
           <snice-drawer-target for="drawer-push-demo" style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;justify-content:center">
-            <snice-button variant="primary" onclick="document.getElementById('drawer-left').show()">Left</snice-button>
-            <snice-button variant="default" onclick="document.getElementById('drawer-right').show()">Right</snice-button>
-            <snice-button variant="default" onclick="document.getElementById('drawer-top').show()">Top</snice-button>
-            <snice-button variant="default" onclick="document.getElementById('drawer-bottom').show()">Bottom</snice-button>
+            <snice-button variant="primary" onclick="document.getElementById('drawer-left').toggle()">Left</snice-button>
+            <snice-button variant="default" onclick="document.getElementById('drawer-right').toggle()">Right</snice-button>
+            <snice-button variant="default" onclick="document.getElementById('drawer-top').toggle()">Top</snice-button>
+            <snice-button variant="default" onclick="document.getElementById('drawer-bottom').toggle()">Bottom</snice-button>
             <snice-button variant="success" outline onclick="document.getElementById('drawer-push-demo').toggle()">Push Content</snice-button>
-
           </snice-drawer-target>
         </div>
         <div class="comp-split-code">
