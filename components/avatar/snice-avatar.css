@@ -90,16 +90,6 @@ case, when, default, if {
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.2s ease;
-  /* Text outline for contrast */
-  text-shadow:
-    -1px -1px 0 rgb(0 0 0 / 0.4),
-     1px -1px 0 rgb(0 0 0 / 0.4),
-    -1px  1px 0 rgb(0 0 0 / 0.4),
-     1px  1px 0 rgb(0 0 0 / 0.4),
-     0   -1px 0 rgb(0 0 0 / 0.4),
-     0    1px 0 rgb(0 0 0 / 0.4),
-    -1px  0   0 rgb(0 0 0 / 0.4),
-     1px  0   0 rgb(0 0 0 / 0.4);
 }
 
 .avatar-fallback--visible {

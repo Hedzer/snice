@@ -72,11 +72,6 @@
 }
 
 .avatar-initials {
-  text-shadow:
-    -1px -1px 0 rgb(0 0 0 / 0.3),
-     1px -1px 0 rgb(0 0 0 / 0.3),
-    -1px  1px 0 rgb(0 0 0 / 0.3),
-     1px  1px 0 rgb(0 0 0 / 0.3);
 }
 
 .avatar-fallback-icon {
