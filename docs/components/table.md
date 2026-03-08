@@ -3,7 +3,7 @@
 # Table
 `<snice-table>`
 
-Displays tabular data with sorting, searching, filtering, row selection, and specialized column types.
+Displays tabular data with sorting, filtering, search, selection, pagination, column resize, column menu, tree data, master-detail, toolbar, and 20+ specialized column types.
 
 ## Importing
 
@@ -30,19 +30,21 @@ import 'snice/components/table/snice-table';
 | `hoverable` | `boolean` | `true` | Highlight rows on hover |
 | `clickable` | `boolean` | `false` | Emit events on row click |
 | `list` | `boolean` | `false` | Hide vertical cell borders |
-| `searchDebounce` (attr: `search-debounce`) | `number` | `500` | Search input debounce in milliseconds |
-| `currentSort` (attr: `current-sort`) | `Array<{ column: string, direction: 'asc' \| 'desc' }>` | `[]` | Current sort state |
-| `selector` | `string` | `''` | Current selector filter value |
-| `selectorOptions` (attr: `selector-options`) | `Array<{ value: string, label: string }>` | `[]` | Dropdown filter options |
+| `editable` | `boolean` | `false` | Enable inline cell editing |
+| `column-resize` | `boolean` | `false` | Enable column resizing by dragging |
+| `column-menu` | `boolean` | `false` | Enable right-click column menu |
+| `header-filters` | `boolean` | `false` | Show inline filter inputs below headers |
+| `density` | `'compact'\|'standard'\|'comfortable'` | `'standard'` | Row height density |
 | `loading` | `boolean` | `false` | Show loading state |
-| `selectedRows` (attr: `selected-rows`) | `number[]` | `[]` | Indices of selected rows |
+| `searchDebounce` (attr: `search-debounce`) | `number` | `500` | Search input debounce in milliseconds |
+| `currentSort` | `Array<{ column, direction }>` | `[]` | Current sort state (JS only) |
+| `selectedRows` | `number[]` | `[]` | Indices of selected rows (JS only) |
 | `pagination` | `boolean` | `false` | Enable pagination |
-| `paginationMode` (attr: `pagination-mode`) | `'client' \| 'server'` | `'client'` | Client-side or server-side pagination |
+| `paginationMode` (attr: `pagination-mode`) | `'client'\|'server'` | `'client'` | Client-side or server-side pagination |
 | `pageSize` (attr: `page-size`) | `number` | `10` | Rows per page |
 | `currentPage` (attr: `current-page`) | `number` | `1` | Current page number |
 | `totalItems` (attr: `total-items`) | `number` | `0` | Total item count (server mode) |
 | `pageSizes` | `number[]` | `[10, 25, 50, 100]` | Available page size options (JS only) |
-| `filterable` | `boolean` | `false` | Show filter dropdown |
 
 ## Column Definition
 
@@ -51,14 +53,33 @@ interface ColumnDefinition {
   key: string;
   label: string;
   type?: 'text' | 'number' | 'date' | 'boolean' | 'currency' | 'percent' |
-         'rating' | 'progress' | 'sparkline' | 'accounting' | 'scientific' |
-         'fraction' | 'duration' | 'filesize' | 'custom';
+         'rating' | 'progress' | 'sparkline' | 'tag' | 'status' | 'email' |
+         'phone' | 'link' | 'color' | 'image' | 'duration' | 'filesize' |
+         'location' | 'json' | 'actions' | 'custom';
   align?: 'left' | 'center' | 'right';
   width?: string;
   sortable?: boolean;
-  filterable?: boolean;
+  resizable?: boolean;       // default: true (when column-resize enabled)
+  reorderable?: boolean;     // default: true
+  hideable?: boolean;        // default: true
+  pinnable?: boolean;        // default: true
   formatter?: (value: any, row?: any) => string;
+  numberFormat?: { decimals?, thousandsSeparator?, prefix?, suffix?, negativeStyle? };
+  ratingFormat?: { max?, color? };
+  progressFormat?: { max?, color?, colorize?, showPercentage?, height? };
+  sparklineFormat?: { type?, color?, width?, height? };
+  percentageFormat?: { decimals?, colorize? };
+  currencyFormat?: CurrencyFormat;
+  dateFormat?: DateFormat;
+  booleanFormat?: BooleanFormat;
+  tagFormat?: TagFormat;
+  statusFormat?: StatusFormat;
+  linkFormat?: { target?, external? };
+  colorFormat?: { showSwatch?, displayFormat? };
+  emailFormat?: { showIcon? };
+  phoneFormat?: { showIcon?, format? };
   conditionalFormats?: ConditionalFormat[];
+  colSpan?: number | ((value, row) => number);
 }
 ```
 
@@ -68,22 +89,39 @@ interface ColumnDefinition {
 |--------|-----------|-------------|
 | `setData()` | `data: any[]` | Set table row data |
 | `setColumns()` | `columns: ColumnDefinition[]` | Set column definitions |
+| `setToolbar()` | `options: ToolbarOptions` | Add toolbar with search, sort, filter, export |
+| `setTreeData()` | `options: TreeDataOptions` | Enable tree/hierarchical data |
+| `setDetailPanel()` | `options: DetailPanelOptions` | Enable master-detail expand rows |
 | `renderHeader()` | -- | Re-render the table header |
 | `renderBody()` | -- | Re-render the table body |
 | `toggleSort()` | `columnKey: string, multiSort?: boolean` | Toggle sort on a column |
-| `renderControls()` | -- | Re-render search/filter controls |
-| `renderPagination()` | -- | Re-render pagination |
 | `goToPage()` | `page: number` | Navigate to a specific page |
 | `setPageSize()` | `size: number` | Change rows per page |
+| `setColumnFilter()` | `column, operator, value` | Set filter on a column |
+| `removeColumnFilter()` | `column: string` | Remove filter from column |
+| `clearAllFilters()` | -- | Clear all filters |
+| `setFilterModel()` | `model: FilterModel` | Set full filter model |
+| `getFilterModel()` | -- | Get current filter model |
+| `setQuickFilter()` | `text: string` | Set quick search filter |
+| `pinColumn()` | `key, side: 'left'\|'right'` | Pin column to left or right |
+| `unpinColumn()` | `key: string` | Unpin column |
+| `setColumnVisible()` | `key, visible: boolean` | Show/hide column |
+| `autoSizeColumn()` | `key: string` | Auto-size column to fit content |
+| `autoSizeAllColumns()` | -- | Auto-size all columns |
+| `moveColumn()` | `key, toIndex: number` | Reorder column position |
 
 ## Events
 
 | Event | Detail | Description |
 |-------|--------|-------------|
-| `table-row-selection-changed` | `{ selectedRows: number[], rowIndex: number, selected: boolean }` | A row's selection state changed |
-| `table-select-all-changed` | `{ selectedRows: number[], allSelected: boolean }` | Select-all checkbox toggled |
-| `row-clicked` | `{ rowData: any, rowIndex: number }` | A row was clicked (requires `clickable`) |
-| `page-change` | `{ page: number, pageSize: number, totalPages: number, totalItems: number }` | Page or page size changed |
+| `table-row-selection-changed` | `{ selectedRows, rowIndex, selected }` | A row's selection state changed |
+| `table-select-all-changed` | `{ selectedRows, allSelected }` | Select-all checkbox toggled |
+| `row-clicked` | `{ rowData, rowIndex }` | A row was clicked (requires `clickable`) |
+| `page-change` | `{ page, pageSize, totalPages, totalItems }` | Page or page size changed |
+| `column-resize` | `{ key, width }` | Column is being resized |
+| `column-resize-end` | `{ key, width }` | Column resize finished |
+| `filter-change` | filter model | Filter state changed |
+| `sort-change` | sort model | Sort state changed |
 
 ## Slots
 
@@ -91,138 +129,135 @@ interface ColumnDefinition {
 |------|-------------|
 | `columns` | `<snice-column>` elements for declarative column definitions |
 | `rows` | `<snice-row>` elements for declarative row data |
+| `header` | Superheader content above column headers |
 
 ## Basic Usage
 
-```typescript
-import 'snice/components/table/snice-table';
-```
-
-```html
-<snice-table id="users"></snice-table>
-
-<script>
-  const table = document.querySelector('#users');
-  table.setColumns([
-    { key: 'name', label: 'Name' },
-    { key: 'email', label: 'Email' },
-    { key: 'age', label: 'Age', type: 'number', align: 'right' }
-  ]);
-  table.setData([
-    { name: 'Alice Johnson', email: 'alice@example.com', age: 32 },
-    { name: 'Bob Smith', email: 'bob@example.com', age: 28 }
-  ]);
-</script>
+```javascript
+table.setColumns([
+  { key: 'name', label: 'Name', sortable: true },
+  { key: 'email', label: 'Email' },
+  { key: 'age', label: 'Age', type: 'number', align: 'right' }
+]);
+table.setData([
+  { name: 'Alice Johnson', email: 'alice@example.com', age: 32 },
+  { name: 'Bob Smith', email: 'bob@example.com', age: 28 }
+]);
 ```
 
 ## Examples
 
-### Striped and Hoverable
-
-Use the `striped` attribute for alternating row colors and `hoverable` for row highlight on hover.
-
-```html
-<snice-table striped hoverable></snice-table>
-```
-
-### List Mode
-
-Use the `list` attribute to hide vertical cell borders for a cleaner list appearance.
-
-```html
-<snice-table list></snice-table>
-```
-
-### Sortable Columns
-
-Set the `sortable` attribute to enable column sorting. Clicking a column header cycles through ascending, descending, and unsorted states. Multi-column sort is supported.
-
-```html
-<snice-table sortable></snice-table>
-
-<script>
-  const table = document.querySelector('snice-table');
-  table.setColumns([
-    { key: 'name', label: 'Name', sortable: true },
-    { key: 'age', label: 'Age', type: 'number', sortable: true },
-    { key: 'role', label: 'Role', sortable: false }
-  ]);
-</script>
-```
-
-### Searchable
-
-Set the `searchable` attribute to show a search input above the table.
-
-```html
-<snice-table searchable search-debounce="300"></snice-table>
-```
-
-### Row Selection
-
-Set the `selectable` attribute to enable row selection with checkboxes and a select-all header checkbox.
-
-```html
-<snice-table selectable></snice-table>
-
-<script>
-  const table = document.querySelector('snice-table');
-  table.addEventListener('table-row-selection-changed', (e) => {
-    console.log('Selected rows:', e.detail.selectedRows);
-  });
-</script>
-```
-
-### Clickable Rows
-
-Set the `clickable` attribute to emit events when rows are clicked.
-
-```html
-<snice-table clickable></snice-table>
-
-<script>
-  const table = document.querySelector('snice-table');
-  table.addEventListener('row-clicked', (e) => {
-    console.log('Clicked row:', e.detail.rowData);
-  });
-</script>
-```
-
-### Column Types
-
-Use the `type` property on column definitions to apply specialized formatting.
+### Pro Table (All Features)
 
 ```javascript
+// <snice-table sortable selectable column-resize column-menu striped hoverable>
 table.setColumns([
-  { key: 'name', label: 'Name', type: 'text' },
-  { key: 'price', label: 'Price', type: 'number', decimals: 2, prefix: '$' },
-  { key: 'created', label: 'Created', type: 'date', dateFormat: 'medium' },
-  { key: 'active', label: 'Active', type: 'boolean', useSymbols: true },
+  { key: 'product', label: 'Product', sortable: true },
+  { key: 'revenue', label: 'Revenue', type: 'currency',
+    numberFormat: { prefix: '$', thousandsSeparator: true, decimals: 0 } },
   { key: 'rating', label: 'Rating', type: 'rating' },
-  { key: 'progress', label: 'Progress', type: 'progress' },
-  { key: 'trend', label: 'Trend', type: 'sparkline' },
-  { key: 'elapsed', label: 'Elapsed', type: 'duration' },
-  { key: 'size', label: 'Size', type: 'filesize' }
+  { key: 'progress', label: 'Completion', type: 'progress',
+    progressFormat: { colorize: true } },
+  { key: 'trend', label: 'Trend', type: 'sparkline',
+    sparklineFormat: { type: 'line', height: 24, width: 80 } },
+  { key: 'status', label: 'Status', type: 'tag' }
+]);
+table.setData([
+  { product: 'Alpha', revenue: 284500, rating: 4.5, progress: 92,
+    trend: { values: [32,35,38,42,45,48], color: '#22c55e' }, status: 'Active' },
+  { product: 'Beta', revenue: 891200, rating: 4, progress: 34,
+    trend: { values: [50,48,45,43,42,40], color: '#ef4444' }, status: 'Paused' }
+]);
+table.setToolbar({ showSearch: true, showSort: true, showFilter: true, showExport: true });
+```
+
+### Per-Row Cell Styling
+
+Sparklines and progress bars support per-row color via object values:
+
+```javascript
+// Sparkline with per-row color
+{ trend: { values: [10, 20, 30, 40], color: '#22c55e' } }
+
+// Progress with per-row color
+{ completion: { value: 85, color: '#22c55e' } }
+```
+
+Set `colorize: true` on `progressFormat` to auto-color based on value:
+- Green (≥70%), Yellow (≥40%), Red (<40%)
+
+### Toolbar
+
+```javascript
+table.setToolbar({
+  showSearch: true,     // Search input (left-aligned)
+  showSort: true,       // Opens sort modal (multi-sort)
+  showFilter: true,     // Opens filter modal (MUI X Pro format)
+  showExport: true      // CSV export button
+});
+```
+
+The sort and filter buttons open modal dialogs using `snice-modal` with `snice-select` and `snice-input` components.
+
+### Column Menu (Right-Click)
+
+Enable with `column-menu` attribute. Right-click any column header for:
+- Sort Ascending / Descending
+- Filter (opens filter modal pre-populated with that column)
+- Hide Column
+- Pin Left / Pin Right / Unpin
+- Auto-size
+
+### Column Resize
+
+Enable with `column-resize` attribute. Drag the right edge of any column header to resize. Double-click the resize handle to auto-size to content. Uses `table-layout: fixed` for precise width control.
+
+### Filter Model (MUI X Pro Compatible)
+
+```javascript
+// Set filters programmatically
+table.setFilterModel({
+  filters: [
+    { column: 'name', operator: 'contains', value: 'john' },
+    { column: 'age', operator: 'gt', value: 25 }
+  ],
+  logic: 'and'  // 'and' | 'or'
+});
+
+// Text operators: contains, equals, startsWith, endsWith, isEmpty, isNotEmpty
+// Number operators: eq, neq, gt, gte, lt, lte
+// Date operators: is, not, after, before, onOrAfter, onOrBefore
+// Boolean operators: is
+```
+
+### Tree Data
+
+```javascript
+table.setTreeData({
+  getPath: (row) => row.path,      // Returns path array e.g. ['US', 'CA']
+  groupColumn: 'name',             // Column with expand/collapse toggle
+  defaultExpansionDepth: 1          // Auto-expand to depth 1
+});
+
+table.setData([
+  { id: 1, name: 'USA', path: ['USA'] },
+  { id: 2, name: 'California', path: ['USA', 'CA'] },
+  { id: 3, name: 'New York', path: ['USA', 'NY'] }
 ]);
 ```
 
-### Loading State
+Clicking either the caret icon or the parent node text will expand/collapse.
 
-Set the `loading` attribute to dim the table body and show a loading indicator.
+### Select-All with Filters
 
-```html
-<snice-table loading></snice-table>
-```
+When filters are active, the select-all checkbox only selects the visible/filtered rows — not all data. This matches MUI X Pro behavior.
 
 ### Declarative Columns and Rows
-
-Use `<snice-column>` and `<snice-row>` elements for a declarative table structure.
 
 ```html
 <snice-table striped hoverable>
   <snice-column slot="columns" key="name" label="Name"></snice-column>
   <snice-column slot="columns" key="email" label="Email"></snice-column>
-
   <snice-row slot="rows" data='{"name":"Alice","email":"alice@example.com"}'></snice-row>
   <snice-row slot="rows" data='{"name":"Bob","email":"bob@example.com"}'></snice-row>
 </snice-table>
@@ -230,33 +265,32 @@ Use `<snice-column>` and `<snice-row>` elements for a declarative table structur
 
 ### With Controller (Request/Respond)
 
-Use the `@request`/`@respond` pattern to load data from an external source.
-
 ```html
 <my-table-controller></my-table-controller>
 <snice-table searchable sortable></snice-table>
+```
 
-<script type="module">
-  import { element, respond } from 'snice';
+```typescript
+import { element, respond } from 'snice';
 
-  @element('my-table-controller')
-  class MyTableController extends HTMLElement {
-    @respond('table/config')
-    getConfig() {
-      return {
-        columns: [
-          { key: 'name', label: 'Name' },
-          { key: 'status', label: 'Status', type: 'boolean' }
-        ]
-      };
-    }
-
-    @respond('table/data')
-    async getData(params) {
-      const response = await fetch(`/api/users?search=${params.search}`);
-      const data = await response.json();
-      return { data };
-    }
+@element('my-table-controller')
+class MyTableController extends HTMLElement {
+  @respond('table/config')
+  getConfig() {
+    return {
+      columns: [
+        { key: 'name', label: 'Name' },
+        { key: 'status', label: 'Status', type: 'boolean' }
+      ]
+    };
   }
-</script>
+
+  @respond('table/data')
+  async getData(params) {
+    // params includes: search, sort, filter, page, pageSize
+    const response = await fetch(`/api/users?search=${params.search}`);
+    const data = await response.json();
+    return { data };
+  }
+}
 ```
