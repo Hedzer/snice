@@ -1559,14 +1559,17 @@ export class SniceTable extends HTMLElement {
     const sortIndex = this.currentSort.findIndex(s => s.column === column.key);
     const isActive = !!sortItem;
 
-    let indicator = '▲▼'; // Default unsorted state
+    const chevronUp = `<svg width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 5l4-4 4 4"/></svg>`;
+    const chevronDown = `<svg width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l4 4 4-4"/></svg>`;
+
+    let indicator = `<span style="display:flex;flex-direction:column;gap:0;opacity:0.3">${chevronUp}${chevronDown}</span>`;
     let orderNumber = '';
 
     if (sortItem) {
       if (sortItem.direction === 'asc') {
-        indicator = '▲';
+        indicator = chevronUp;
       } else if (sortItem.direction === 'desc') {
-        indicator = '▼';
+        indicator = chevronDown;
       }
 
       if (this.currentSort.length > 1) {
@@ -2629,22 +2632,26 @@ export class SniceTable extends HTMLElement {
     this.toolbar.onSearch = (query) => this.setQuickFilter(query);
     this.toolbar.onSortColumn = (key, dir) => {
       this.currentSort = [{ column: key, direction: dir }];
-      this.sortLocalData();
       this.renderHeader();
+      if (this._hasController) this.debouncedDataRequest();
+      else this.sortLocalData();
     };
-    this.toolbar.onFilterColumn = (key, value) => {
-      if (value) {
-        this.filterEngine.setColumnFilter(key, 'contains', value);
-      } else {
-        this.filterEngine.removeColumnFilter(key);
+    this.toolbar.onFilterColumn = (key, operator, value) => {
+      this.setColumnFilter(key, operator, value);
+    };
+    this.toolbar.onRemoveFilter = (key) => {
+      this.removeColumnFilter(key);
+    };
+    this.toolbar.onSetFilterModel = (filters, logic) => {
+      this.filterEngine.clearAllFilters();
+      this.filterEngine.setFilterLogic(logic);
+      for (const f of filters) {
+        this.filterEngine.setColumnFilter(f.column, f.operator, f.value);
       }
-      this.data = this.filterEngine.applyFilters(this._unsortedData, this.columns);
-      this.renderBody();
+      this.applyClientFilters();
     };
     this.toolbar.onClearFilters = () => {
-      this.filterEngine.clearAllFilters();
-      this.data = [...this._unsortedData];
-      this.renderBody();
+      this.clearAllFilters();
     };
     this.toolbar.onExportCSV = () => this.exportCSV();
     this.toolbar.onFullscreen = () => this.toggleFullscreen();
