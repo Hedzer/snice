@@ -1017,8 +1017,6 @@ tiles.addEventListener('tile-click',
 &lt;/snice-book&gt;
 
 &lt;script&gt;
-  const book = document.querySelector(
-    'snice-book');
   book.nextPage();
   book.goToPage(1);
   book.addEventListener('page-turn',
@@ -1969,7 +1967,6 @@ const x = 42;
 
 &lt;!-- Custom formatter (same pattern as setHighlighter) --&gt;
 &lt;script&gt;
-  const cb = document.querySelector('snice-code-block');
   cb.setFormatter((code, language) =&gt; {
     // format → then highlight runs automatically
     return myPrettier.format(code, { parser: language });
@@ -2117,9 +2114,7 @@ const x = 42;
           </div>
           <div class="code-panel" id="comments-imper">
             <span class="code-lang">javascript</span>
-            <snice-code-block language="javascript" grammar="grammars/typescript.json?v=80938d7">const el = document.querySelector(
-  'snice-comments');
-el.comments = [
+            <snice-code-block language="javascript" grammar="grammars/typescript.json?v=80938d7">el.comments = [
   { id: '1', author: 'Bob',
     avatar: 'avatar.jpg',
     text: 'Great post!',
@@ -2164,8 +2159,6 @@ el.addEventListener('comment-add',
 &gt;&lt;/snice-countdown&gt;
 
 &lt;script&gt;
-  const cd = document.querySelector(
-    'snice-countdown');
   cd.addEventListener('countdown-complete',
     () =&gt; alert('Done!'));
 &lt;/script&gt;</snice-code-block>
@@ -2200,9 +2193,6 @@ el.addEventListener('comment-add',
 &gt;&lt;/snice-cropper&gt;
 
 &lt;script&gt;
-  const cropper = document.querySelector(
-    'snice-cropper');
-
   // Get cropped image
   const blob = await cropper.crop();
 
@@ -2523,8 +2513,6 @@ el.addEventListener('comment-add',
 &gt;&lt;/snice-diff&gt;
 
 &lt;script&gt;
-  const diff = document.querySelector(
-    'snice-diff');
   diff.oldText = 'function hello() {\n'
     + '  return "hello";\n}';
   diff.newText = 'function hello() {\n'
@@ -2582,8 +2570,6 @@ el.addEventListener('comment-add',
           <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;snice-doc icons="material"&gt;&lt;/snice-doc&gt;
 
 &lt;script&gt;
-  const editor = document.querySelector('snice-doc');
-
   editor.setHTML(`
     &lt;h1&gt;Welcome!&lt;/h1&gt;
     &lt;p&gt;Rich text with &lt;b&gt;bold&lt;/b&gt;,
@@ -2912,8 +2898,6 @@ el.addEventListener('comment-add',
 &lt;/snice-flip-card&gt;
 
 &lt;script&gt;
-  const card = document.querySelector(
-    'snice-flip-card');
   card.flip();
   card.flipTo('back');
   card.addEventListener('flip-change',
@@ -3118,8 +3102,6 @@ el.addEventListener('comment-add',
           <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;snice-gantt zoom="week"&gt;&lt;/snice-gantt&gt;
 
 &lt;script&gt;
-  const gantt = document.querySelector(
-    'snice-gantt');
   gantt.tasks = [
     { id: '1', name: 'Design',
       start: '2026-03-01',
@@ -3627,8 +3609,6 @@ el.addEventListener('comment-add',
 
 &lt;!-- Imperative (setEntries) --&gt;
 &lt;script&gt;
-  const lb = document.querySelector(
-    'snice-leaderboard');
   lb.setEntries([
     { rank: 1, name: 'Alice',
       score: 2500, change: 3 },
@@ -3879,8 +3859,6 @@ el.addEventListener('comment-add',
           <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;snice-map zoom="13"&gt;&lt;/snice-map&gt;
 
 &lt;script&gt;
-  const map = document.querySelector(
-    'snice-map');
   map.center = { lat: 51.505, lng: -0.09 };
   map.markers = [
     { id: '1', lat: 51.505,
@@ -3965,9 +3943,7 @@ const greeting = (name) => {
           </div>
           <div class="code-panel" id="md-imper">
             <span class="code-lang">javascript</span>
-            <snice-code-block language="javascript" grammar="grammars/typescript.json?v=80938d7">const md = document.querySelector(
-  'snice-markdown');
-md.setContent('## Dynamic\n\n'
+            <snice-code-block language="javascript" grammar="grammars/typescript.json?v=80938d7">md.setContent('## Dynamic\n\n'
   + '- Item 1\n- Item 2\n\n'
   + '**Bold** and *italic*');
 
@@ -4524,8 +4500,6 @@ nav.update([
 &lt;/snice-notification-center&gt;
 
 &lt;script&gt;
-  const nc = document.querySelector(
-    'snice-notification-center');
   nc.notifications = [
     { id: '1', title: 'New comment',
       message: 'Alice commented on your PR',
@@ -4617,8 +4591,6 @@ nav.update([
 &gt;&lt;/snice-org-chart&gt;
 
 &lt;script&gt;
-  const chart = document.querySelector(
-    'snice-org-chart');
   chart.data = {
     id: '1', name: 'CEO',
     title: 'Chief Executive',
@@ -4712,7 +4684,6 @@ nav.update([
 &gt;&lt;/snice-draw&gt;
 
 &lt;script&gt;
-  const paint = document.querySelector('snice-paint');
   paint.addEventListener('color-select', (e) =&gt; {
     console.log('Custom color:', e.detail.color);
   });
@@ -4736,9 +4707,6 @@ nav.update([
 &gt;&lt;/snice-pdf-viewer&gt;
 
 &lt;script&gt;
-  const viewer = document.querySelector(
-    'snice-pdf-viewer');
-
   viewer.addEventListener('pdf-loaded',
     e =&gt; console.log(
       'Pages:', e.detail.totalPages));
@@ -4853,8 +4821,6 @@ nav.update([
 &gt;&lt;/snice-podcast-player&gt;
 
 &lt;script&gt;
-  const player = document.querySelector(
-    'snice-podcast-player');
   player.addEventListener('podcast-play',
     e =&gt; console.log(e.detail));
   player.setPlaybackRate(1.5);
@@ -4938,9 +4904,7 @@ nav.update([
           </div>
           <div class="code-panel" id="pt-imper">
             <span class="code-lang">javascript</span>
-            <snice-code-block language="javascript" grammar="grammars/typescript.json?v=80938d7">const pt = document.querySelector(
-  'snice-pricing-table');
-pt.plans = [
+            <snice-code-block language="javascript" grammar="grammars/typescript.json?v=80938d7">pt.plans = [
   { name: 'Free', price: 0,
     features: [
       { name: '1 user', included: true },
@@ -5479,8 +5443,6 @@ pt.addEventListener('plan-select',
 &lt;/snice-rating&gt;
 
 &lt;script&gt;
-  const rating = document.querySelector(
-    'snice-rating');
   rating.addEventListener('rating-change',
     e =&gt; console.log(e.detail.value));
 &lt;/script&gt;</snice-code-block>
@@ -6054,8 +6016,6 @@ control.options = [
 &lt;/snice-sortable&gt;
 
 &lt;script&gt;
-  const sortable = document.querySelector(
-    'snice-sortable');
   sortable.addEventListener('sort-change',
     e =&gt; console.log(
       e.detail.oldIndex,
@@ -6162,8 +6122,6 @@ button.actions = [
           <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;snice-spotlight&gt;&lt;/snice-spotlight&gt;
 
 &lt;script&gt;
-  const spotlight = document.querySelector(
-    'snice-spotlight');
   spotlight.steps = [
     { target: '#search',
       title: 'Search',
@@ -6205,9 +6163,7 @@ button.actions = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">javascript</span>
-          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=80938d7">const sheet = document.querySelector(
-  'snice-spreadsheet');
-sheet.columns = [
+          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=80938d7">sheet.columns = [
   { header: 'Product', type: 'text' },
   { header: 'Q1', type: 'number', width: 90 },
   { header: 'Q2', type: 'number', width: 90 },
@@ -6801,8 +6757,6 @@ stepper.currentStep = 1;</snice-code-block>
 &gt;&lt;/snice-tag-input&gt;
 
 &lt;script&gt;
-  const input = document.querySelector(
-    'snice-tag-input');
   input.suggestions = [
     'JavaScript', 'TypeScript',
     'Python', 'Rust', 'Go'
@@ -7630,8 +7584,6 @@ timeline.items = [
 &gt;&lt;/snice-video-player&gt;
 
 &lt;script&gt;
-  const player = document.querySelector(
-    'snice-video-player');
   player.play();
   player.seekTo(30);
   player.setPlaybackRate(1.5);
@@ -7660,11 +7612,7 @@ timeline.items = [
         </div>
         <div class="comp-split-code">
           <span class="code-lang">javascript</span>
-          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=80938d7">const scroller = document.querySelector(
-  'snice-virtual-scroller'
-);
-
-scroller.items = Array.from({ length: 5000 }, (_, i) =&gt; ({
+          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=80938d7">scroller.items = Array.from({ length: 5000 }, (_, i) =&gt; ({
   id: i,
   data: { name: `User ${i + 1}`,
           email: `user${i + 1}@example.com` }
@@ -7713,9 +7661,7 @@ scroller.scrollToIndex(2500); // jump to any index</snice-code-block>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">javascript</span>
-          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=80938d7">const chart = document.querySelector(
-  'snice-waterfall');
-chart.data = [
+          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=80938d7">chart.data = [
   { label: 'Revenue',
     value: 1000, type: 'total' },
   { label: 'Product Sales',
@@ -7764,9 +7710,7 @@ chart.addEventListener('bar-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">javascript</span>
-          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=80938d7">const weather = document.querySelector(
-  'snice-weather');
-weather.unit = 'celsius';
+          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=80938d7">weather.unit = 'celsius';
 weather.variant = 'full';
 weather.data = {
   temp: 22,

@@ -23,8 +23,6 @@
 &gt;&lt;/snice-podcast-player&gt;
 
 &lt;script&gt;
-  const player = document.querySelector(
-    'snice-podcast-player');
   player.addEventListener('podcast-play',
     e =&gt; console.log(e.detail));
   player.setPlaybackRate(1.5);

@@ -14,9 +14,6 @@
 &gt;&lt;/snice-pdf-viewer&gt;
 
 &lt;script&gt;
-  const viewer = document.querySelector(
-    'snice-pdf-viewer');
-
   viewer.addEventListener('pdf-loaded',
     e =&gt; console.log(
       'Pages:', e.detail.totalPages));
