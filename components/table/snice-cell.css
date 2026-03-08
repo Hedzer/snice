@@ -49,7 +49,16 @@
 
 :host([type="boolean"]) {
   text-align: center;
-  font-size: 1rem; /* 16px */
+  font-size: 1rem;
+}
+
+/* Boolean colored symbols */
+.boolean--true {
+  color: var(--snice-color-success, rgb(22 163 74));
+}
+
+.boolean--false {
+  color: var(--snice-color-danger, rgb(220 38 38));
 }
 
 :host([type="rating"]) {
