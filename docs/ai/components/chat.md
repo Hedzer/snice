@@ -89,9 +89,7 @@ interface MessageReaction {
 
 ## Usage
 
-```javascript
-const chat = document.querySelector('snice-chat');
-
+```typescript
 // Add message
 chat.addMessage({
   type: 'text', content: 'Hello!', author: 'Alice', timestamp: new Date(),

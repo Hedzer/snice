@@ -83,20 +83,18 @@ snice-draw::part(canvas) {
 
 ```html
 <snice-draw id="draw" width="800" height="600"></snice-draw>
+```
 
-<script>
-  const draw = document.getElementById('draw');
+```typescript
+// Clear canvas
+draw.clear();
 
-  // Clear canvas
-  draw.clear();
+// Undo/redo
+draw.undo();
+draw.redo();
 
-  // Undo/redo
-  draw.undo();
-  draw.redo();
-
-  // Download
-  draw.download('my-drawing.png');
-</script>
+// Download
+draw.download('my-drawing.png');
 ```
 
 ## Examples
@@ -109,8 +107,7 @@ snice-draw::part(canvas) {
 
 ### Custom Colors
 
-```javascript
-const draw = document.querySelector('snice-draw');
+```typescript
 draw.color = '#ff0000';
 draw.strokeWidth = 5;
 ```
@@ -279,9 +276,7 @@ Auto-polygon automatically processes completed strokes into closed shapes. When 
 
 **Example:**
 
-```javascript
-const draw = document.querySelector('snice-draw');
-
+```typescript
 // Enable auto-polygon
 draw.autoPolygon = true;
 

@@ -63,7 +63,6 @@ import 'snice/components/split-button/snice-split-button';
 ```
 
 ```typescript
-const btn = document.querySelector('snice-split-button');
 btn.actions = [
   { value: 'save-draft', label: 'Save as Draft' },
   { value: 'save-template', label: 'Save as Template' },
@@ -126,8 +125,6 @@ btn.actions = [
 ### Event Handling
 
 ```typescript
-const btn = document.querySelector('snice-split-button');
-
 btn.addEventListener('primary-click', () => {
   console.log('Primary action triggered');
 });

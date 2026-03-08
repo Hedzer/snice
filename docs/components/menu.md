@@ -198,12 +198,14 @@ Set `trigger="hover"` to open the menu on mouse hover.
 Set `trigger="manual"` and use methods to control the menu programmatically.
 
 ```html
-<snice-menu id="manualMenu" trigger="manual">
+<snice-menu trigger="manual">
   <button slot="trigger">Manual</button>
   <snice-menu-item value="1">Option 1</snice-menu-item>
 </snice-menu>
+```
 
-<button onclick="document.getElementById('manualMenu').openMenu()">Open</button>
+```typescript
+menu.openMenu();
 ```
 
 ### Disabled Items
@@ -259,8 +261,6 @@ Use `image-left` and `image-right` slots for avatar menus.
 ### Event Handling
 
 ```typescript
-const menu = document.querySelector('snice-menu');
-
 menu.addEventListener('menu-item-select', (e) => {
   console.log('Selected:', e.detail.value);
 });

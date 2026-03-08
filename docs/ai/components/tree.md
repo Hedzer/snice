@@ -61,19 +61,19 @@ interface TreeNode {
 ## Usage
 
 ```html
-<snice-tree id="tree" selection-mode="single"></snice-tree>
-<script>
-  document.getElementById('tree').nodes = [
-    {
-      id: 'src', label: 'src', icon: '📁', expanded: true,
-      children: [
-        { id: 'index.ts', label: 'index.ts', icon: '📄' },
-        { id: 'main.ts', label: 'main.ts', icon: '📄' }
-      ]
-    }
-  ];
-</script>
-
+<snice-tree selection-mode="single"></snice-tree>
 <snice-tree selection-mode="multiple" show-checkboxes></snice-tree>
 <snice-tree show-icons="false" expand-on-click></snice-tree>
+```
+
+```typescript
+tree.nodes = [
+  {
+    id: 'src', label: 'src', icon: '📁', expanded: true,
+    children: [
+      { id: 'index.ts', label: 'index.ts', icon: '📄' },
+      { id: 'main.ts', label: 'main.ts', icon: '📄' }
+    ]
+  }
+];
 ```

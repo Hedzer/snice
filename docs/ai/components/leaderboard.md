@@ -77,10 +77,9 @@ Data container element. Attributes: `rank` (Number), `name` (String), `score` (S
 </snice-leaderboard>
 ```
 
-```js
+```typescript
 // Imperative
-const lb = document.querySelector('snice-leaderboard');
-lb.setEntries([
+leaderboard.setEntries([
   { rank: 1, name: 'Alice', score: 2500, avatar: 'alice.jpg', change: 3, highlighted: true },
   { rank: 2, name: 'Bob', score: 2100, change: -1 },
 ]);

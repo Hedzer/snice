@@ -111,8 +111,7 @@ When no `icon` is provided, the first letter of the name is used with the specif
 
 Set the `tiles` property with an array of tile objects to use image URLs.
 
-```javascript
-const tiles = document.querySelector('snice-app-tiles');
+```typescript
 tiles.columns = 3;
 tiles.tiles = [
   { id: '1', name: 'Chrome', icon: 'https://cdn.example.com/chrome.svg' },

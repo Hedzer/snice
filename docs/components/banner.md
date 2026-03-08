@@ -119,11 +119,12 @@ Style internal elements from outside the shadow DOM using `::part()`.
   open
 ></snice-banner>
 
-<script>
-document.querySelector('snice-banner').addEventListener('banner-action', () => {
+```
+
+```typescript
+banner.addEventListener('banner-action', () => {
   console.log('Update clicked');
 });
-</script>
 ```
 
 ### Bottom Position

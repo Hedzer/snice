@@ -51,10 +51,13 @@ after   // Content after sparkline (e.g., actions)
   trend-value="+15.3%"
   sentiment="up">
 </snice-kpi>
-<script>
-  document.getElementById('sales').trendData = [20, 25, 22, 30, 28, 35, 32];
-</script>
+```
 
+```typescript
+sales.trendData = [20, 25, 22, 30, 28, 35, 32];
+```
+
+```html
 <!-- Sentiments -->
 <snice-kpi sentiment="up"></snice-kpi>     <!-- Green, ↑ -->
 <snice-kpi sentiment="down"></snice-kpi>   <!-- Red, ↓ -->
@@ -94,11 +97,12 @@ after   // Content after sparkline (e.g., actions)
     sentiment="down">
   </snice-kpi>
 </div>
-<script>
-  document.getElementById('mrr').trendData = [100, 110, 105, 120, 115, 130, 127];
-  document.getElementById('users').trendData = [2000, 2100, 2200, 2250, 2300, 2345];
-  document.getElementById('churn').trendData = [1.5, 1.8, 2.0, 2.2, 2.1, 2.3];
-</script>
+```
+
+```typescript
+mrr.trendData = [100, 110, 105, 120, 115, 130, 127];
+users.trendData = [2000, 2100, 2200, 2250, 2300, 2345];
+churn.trendData = [1.5, 1.8, 2.0, 2.2, 2.1, 2.3];
 ```
 
 ## CSS Parts

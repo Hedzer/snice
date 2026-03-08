@@ -213,13 +213,14 @@ Listen for changes using the `datetime-change` event.
 
 ```html
 <snice-date-time-picker id="dtp" label="Pick date & time"></snice-date-time-picker>
-<script>
-document.querySelector('#dtp').addEventListener('datetime-change', (e) => {
+```
+
+```typescript
+dtp.addEventListener('datetime-change', (e) => {
   console.log('ISO:', e.detail.iso);
   console.log('Date:', e.detail.dateString);
   console.log('Time:', e.detail.timeString);
 });
-</script>
 ```
 
 ### Form Validation
@@ -231,12 +232,11 @@ The component supports the Constraint Validation API. Use `checkValidity()`, `re
   <snice-date-time-picker name="appointment" required label="Appointment"></snice-date-time-picker>
   <button type="submit">Submit</button>
 </form>
+```
 
-<script>
-const picker = document.querySelector('snice-date-time-picker');
+```typescript
 picker.setCustomValidity('Please select a future date and time');
 picker.reportValidity();
-</script>
 ```
 
 ## Responsive Behavior

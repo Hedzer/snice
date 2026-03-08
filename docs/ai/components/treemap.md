@@ -36,24 +36,24 @@ interface TreemapNode {
 ## Usage
 
 ```html
-<snice-treemap id="map" show-labels show-values style="height: 400px;"></snice-treemap>
-<script>
-  document.getElementById('map').data = {
-    label: 'Root',
-    value: 0,
-    children: [
-      { label: 'A', value: 50 },
-      { label: 'B', value: 30, color: '#e74c3c' },
-      { label: 'C', value: 20, children: [
-        { label: 'C1', value: 12 },
-        { label: 'C2', value: 8 }
-      ]}
-    ]
-  };
-</script>
-
+<snice-treemap show-labels show-values style="height: 400px;"></snice-treemap>
 <snice-treemap color-scheme="blue" show-labels></snice-treemap>
 <snice-treemap color-scheme="rainbow" show-labels show-values></snice-treemap>
+```
+
+```typescript
+treemap.data = {
+  label: 'Root',
+  value: 0,
+  children: [
+    { label: 'A', value: 50 },
+    { label: 'B', value: 30, color: '#e74c3c' },
+    { label: 'C', value: 20, children: [
+      { label: 'C1', value: 12 },
+      { label: 'C2', value: 8 }
+    ]}
+  ]
+};
 ```
 
 **CSS Parts:**

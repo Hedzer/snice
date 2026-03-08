@@ -81,13 +81,13 @@ open: boolean = false;
 <snice-banner icon="/icons/update.svg" message="Update" open></snice-banner>
 
 <!-- API -->
-<snice-banner id="banner" message="Hello"></snice-banner>
-<script>
-const banner = document.querySelector('#banner');
+<snice-banner message="Hello"></snice-banner>
+```
+
+```typescript
 banner.show();
 banner.hide();
 banner.toggle();
-</script>
 ```
 
 ## Features

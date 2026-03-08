@@ -158,10 +158,10 @@ Use the `icon` slot for external CSS-based icon fonts:
   description="Create your first item to get started"
   action-text="Create Item"
 ></snice-empty-state>
+```
 
-<script>
-  document.querySelector('#empty').addEventListener('empty-state-action', (e) => {
-    console.log('Action clicked', e.detail);
-  });
-</script>
+```typescript
+empty.addEventListener('empty-state-action', (e) => {
+  console.log('Action clicked', e.detail);
+});
 ```

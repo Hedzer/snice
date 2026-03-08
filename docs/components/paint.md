@@ -216,8 +216,6 @@ paint.addEventListener('color-select', (e) => {
 ### Programmatic Control
 
 ```typescript
-const paint = document.querySelector('snice-paint');
-
 // Change settings
 paint.color = '#ff6600';
 paint.strokeWidth = 8;
@@ -236,8 +234,6 @@ const blob = await paint.toBlob('image/jpeg', 0.9);
 ### Save and Restore Strokes
 
 ```typescript
-const paint = document.querySelector('snice-paint');
-
 // Save strokes
 const strokes = paint.getStrokes();
 localStorage.setItem('painting', JSON.stringify(strokes));
@@ -250,8 +246,6 @@ paint.setStrokes(saved);
 ### Event Handling
 
 ```typescript
-const paint = document.querySelector('snice-paint');
-
 paint.addEventListener('paint-end', (e) => {
   console.log(`Stroke with ${e.detail.stroke.points.length} points`);
 });

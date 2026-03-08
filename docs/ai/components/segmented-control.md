@@ -28,7 +28,6 @@ disabled: boolean = false;
 ```
 
 ```typescript
-const control = document.querySelector('snice-segmented-control');
 control.options = [
   { value: 'day', label: 'Day' },
   { value: 'week', label: 'Week' },

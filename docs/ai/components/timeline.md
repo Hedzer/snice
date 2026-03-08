@@ -33,14 +33,16 @@ interface TimelineItem {
 ## Usage
 
 ```html
-<snice-timeline id="timeline"></snice-timeline>
-<script>
-  document.getElementById('timeline').items = [
-    { timestamp: '2024-01-15', title: 'Created', description: 'Project started', variant: 'success' },
-    { timestamp: '2024-02-01', title: 'Review', description: 'In review', variant: 'warning', icon: '📋' },
-    { timestamp: '2024-03-01', title: 'Launch', description: 'Deployed', variant: 'info', icon: '🚀' }
-  ];
-</script>
+<snice-timeline></snice-timeline>
+```
+
+```typescript
+timeline.items = [
+  { timestamp: '2024-01-15', title: 'Created', description: 'Project started', variant: 'success' },
+  { timestamp: '2024-02-01', title: 'Review', description: 'In review', variant: 'warning', icon: '📋' },
+  { timestamp: '2024-03-01', title: 'Launch', description: 'Deployed', variant: 'info', icon: '🚀' }
+];
+```
 
 <snice-timeline position="alternate"></snice-timeline>
 <snice-timeline position="right"></snice-timeline>

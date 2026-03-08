@@ -65,8 +65,7 @@ interface Comment {
 <snice-comments current-user="Alice" allow-replies max-depth="3"></snice-comments>
 ```
 
-```js
-const comments = document.querySelector('snice-comments');
+```typescript
 comments.comments = [
   { id: '1', author: 'Bob', text: 'Great post!', timestamp: '2026-02-20T10:00:00Z', likes: 3 },
   { id: '2', author: 'Alice', text: 'Thanks!', timestamp: '2026-02-20T11:00:00Z', likes: 0 }

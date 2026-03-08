@@ -48,8 +48,7 @@ readonly totalPages: number              // Total pages in document
 ></snice-pdf-viewer>
 ```
 
-```js
-const viewer = document.querySelector('snice-pdf-viewer');
+```typescript
 viewer.src = '/documents/report.pdf';
 
 viewer.addEventListener('pdf-loaded', (e) => {

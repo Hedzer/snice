@@ -95,9 +95,7 @@ snice-chart::part(legend) {
 
 ## Basic Usage
 
-```javascript
-const chart = document.querySelector('snice-chart');
-
+```typescript
 chart.type = 'line';
 chart.datasets = [
   {
@@ -434,17 +432,15 @@ setInterval(() => {
 ### Responsive Chart
 
 ```html
-<snice-chart id="responsive-chart"></snice-chart>
+<snice-chart></snice-chart>
+```
 
-<script>
-  const chart = document.getElementById('responsive-chart');
-
-  chart.options = {
-    responsive: true,
-    maintainAspectRatio: true,
-    aspectRatio: 2 // 2:1 ratio
-  };
-</script>
+```typescript
+chart.options = {
+  responsive: true,
+  maintainAspectRatio: true,
+  aspectRatio: 2 // 2:1 ratio
+};
 ```
 
 ### Financial Chart

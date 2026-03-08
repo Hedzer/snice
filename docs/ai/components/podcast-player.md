@@ -84,8 +84,7 @@ interface PodcastChapter {
 <snice-podcast-player from-rss="https://example.com/feed.xml"></snice-podcast-player>
 ```
 
-```js
-const player = document.querySelector('snice-podcast-player');
+```typescript
 player.episodes = [
   { title: 'Ep 1', src: '/audio/ep1.mp3', duration: 1800 },
   { title: 'Ep 2', src: '/audio/ep2.mp3', duration: 2400,

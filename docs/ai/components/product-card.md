@@ -56,8 +56,7 @@ interface ProductVariant {
 </snice-product-card>
 ```
 
-```js
-const card = document.querySelector('snice-product-card');
+```typescript
 card.images = ['shoe1.jpg', 'shoe2.jpg', 'shoe3.jpg'];
 card.variants = [
   { type: 'Size', options: ['S', 'M', 'L', 'XL'] },

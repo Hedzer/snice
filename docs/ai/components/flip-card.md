@@ -51,8 +51,7 @@ When `click-to-flip` is enabled:
 </snice-flip-card>
 ```
 
-```js
-const card = document.querySelector('snice-flip-card');
+```typescript
 card.flipTo('back');
 card.addEventListener('flip-change', e => console.log(e.detail.side));
 ```

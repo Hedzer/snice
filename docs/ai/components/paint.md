@@ -94,9 +94,7 @@ Toolbar auto-shows when any slot has content, even if `controls=""`.
 <snice-paint min-stroke-width="2" max-stroke-width="50"></snice-paint>
 ```
 
-```javascript
-const paint = document.querySelector('snice-paint');
-
+```typescript
 // Export
 paint.download('artwork.png');
 const url = paint.toDataURL();

@@ -135,17 +135,13 @@ Load an entire podcast from an RSS feed. The player automatically parses the fee
 <snice-podcast-player
   from-rss="https://example.com/podcast/feed.xml"
 ></snice-podcast-player>
+```
 
-<script type="module">
-  import 'snice/components/podcast-player/snice-podcast-player';
-
-  const player = document.querySelector('snice-podcast-player');
-
-  player.addEventListener('podcast-feed-loaded', (e) => {
-    console.log('Podcast:', e.detail.feed.title);
-    console.log('Episodes:', e.detail.feed.episodes.length);
-  });
-</script>
+```typescript
+player.addEventListener('podcast-feed-loaded', (e) => {
+  console.log('Podcast:', e.detail.feed.title);
+  console.log('Episodes:', e.detail.feed.episodes.length);
+});
 ```
 
 ### Episode List with Chapters
@@ -153,44 +149,41 @@ Load an entire podcast from an RSS feed. The player automatically parses the fee
 Provide an array of episodes with chapter markers for enhanced navigation.
 
 ```html
-<snice-podcast-player id="player"></snice-podcast-player>
+<snice-podcast-player></snice-podcast-player>
+```
 
-<script type="module">
-  import 'snice/components/podcast-player/snice-podcast-player';
+```typescript
+player.show = 'Tech Weekly';
+player.artwork = '/images/tech-weekly.jpg';
 
-  const player = document.getElementById('player');
-  player.show = 'Tech Weekly';
-  player.artwork = '/images/tech-weekly.jpg';
+player.episodes = [
+  {
+    title: 'Episode 1: Getting Started',
+    src: '/audio/ep1.mp3',
+    duration: 1800,
+    pubDate: '2025-01-15',
+    chapters: [
+      { title: 'Intro', startTime: 0 },
+      { title: 'Main Topic', startTime: 120 },
+      { title: 'Q&A', startTime: 1200 },
+      { title: 'Outro', startTime: 1700 }
+    ]
+  },
+  {
+    title: 'Episode 2: Advanced Patterns',
+    src: '/audio/ep2.mp3',
+    duration: 2400,
+    pubDate: '2025-01-22'
+  },
+  {
+    title: 'Episode 3: Performance Tips',
+    src: '/audio/ep3.mp3',
+    duration: 2100,
+    pubDate: '2025-01-29'
+  }
+];
 
-  player.episodes = [
-    {
-      title: 'Episode 1: Getting Started',
-      src: '/audio/ep1.mp3',
-      duration: 1800,
-      pubDate: '2025-01-15',
-      chapters: [
-        { title: 'Intro', startTime: 0 },
-        { title: 'Main Topic', startTime: 120 },
-        { title: 'Q&A', startTime: 1200 },
-        { title: 'Outro', startTime: 1700 }
-      ]
-    },
-    {
-      title: 'Episode 2: Advanced Patterns',
-      src: '/audio/ep2.mp3',
-      duration: 2400,
-      pubDate: '2025-01-22'
-    },
-    {
-      title: 'Episode 3: Performance Tips',
-      src: '/audio/ep3.mp3',
-      duration: 2100,
-      pubDate: '2025-01-29'
-    }
-  ];
-
-  player.loadEpisode(0);
-</script>
+player.loadEpisode(0);
 ```
 
 ### Playback Speed and Skip Duration
@@ -212,38 +205,28 @@ Customize skip intervals and playback speed for different listening preferences.
 
 Listen for playback events to integrate with analytics or custom UI.
 
-```html
-<snice-podcast-player id="player" src="/audio/episode.mp3" title="Episode 1"></snice-podcast-player>
-<div id="status">Stopped</div>
+```typescript
+player.addEventListener('podcast-play', () => {
+  console.log('Playing');
+});
 
-<script type="module">
-  import 'snice/components/podcast-player/snice-podcast-player';
+player.addEventListener('podcast-pause', () => {
+  console.log('Paused');
+});
 
-  const player = document.getElementById('player');
-  const status = document.getElementById('status');
+player.addEventListener('podcast-time-update', (e) => {
+  const { currentTime, duration } = e.detail;
+  const percent = Math.round((currentTime / duration) * 100);
+  console.log(`Playing: ${percent}%`);
+});
 
-  player.addEventListener('podcast-play', () => {
-    status.textContent = 'Playing';
-  });
+player.addEventListener('podcast-ended', () => {
+  console.log('Finished');
+});
 
-  player.addEventListener('podcast-pause', () => {
-    status.textContent = 'Paused';
-  });
-
-  player.addEventListener('podcast-time-update', (e) => {
-    const { currentTime, duration } = e.detail;
-    const percent = Math.round((currentTime / duration) * 100);
-    status.textContent = `Playing: ${percent}%`;
-  });
-
-  player.addEventListener('podcast-ended', () => {
-    status.textContent = 'Finished';
-  });
-
-  player.addEventListener('podcast-episode-change', (e) => {
-    status.textContent = `Now playing: ${e.detail.episode.title}`;
-  });
-</script>
+player.addEventListener('podcast-episode-change', (e) => {
+  console.log(`Now playing: ${e.detail.episode.title}`);
+});
 ```
 
 ## Types

@@ -165,17 +165,18 @@ snice-breadcrumbs::part(ellipsis) {
 
 ```html
 <!-- Using items array -->
-<snice-breadcrumbs id="breadcrumbs"></snice-breadcrumbs>
+<snice-breadcrumbs></snice-breadcrumbs>
+```
 
-<script type="module">
-  const breadcrumbs = document.getElementById('breadcrumbs');
-  breadcrumbs.items = [
-    { label: 'Home', href: '/' },
-    { label: 'Products', href: '/products' },
-    { label: 'Laptops', active: true }
-  ];
-</script>
+```typescript
+breadcrumbs.items = [
+  { label: 'Home', href: '/' },
+  { label: 'Products', href: '/products' },
+  { label: 'Laptops', active: true }
+];
+```
 
+```html
 <!-- Or using crumb elements -->
 <snice-breadcrumbs>
   <snice-crumb href="/" label="Home"></snice-crumb>
@@ -194,17 +195,16 @@ import 'snice/components/breadcrumbs/snice-crumb';
 ### Basic Breadcrumbs
 
 ```html
-<snice-breadcrumbs id="basic"></snice-breadcrumbs>
+<snice-breadcrumbs></snice-breadcrumbs>
+```
 
-<script type="module">
-  const breadcrumbs = document.getElementById('basic');
-  breadcrumbs.items = [
-    { label: 'Home', href: '/' },
-    { label: 'Products', href: '/products' },
-    { label: 'Electronics', href: '/products/electronics' },
-    { label: 'Laptops', active: true }
-  ];
-</script>
+```typescript
+breadcrumbs.items = [
+  { label: 'Home', href: '/' },
+  { label: 'Products', href: '/products' },
+  { label: 'Electronics', href: '/products/electronics' },
+  { label: 'Laptops', active: true }
+];
 ```
 
 ### Using Crumb Elements
@@ -236,100 +236,95 @@ import 'snice/components/breadcrumbs/snice-crumb';
 <!-- Pipe -->
 <snice-breadcrumbs separator="|"></snice-breadcrumbs>
 
-<script type="module">
-  const items = [
-    { label: 'Home', href: '/' },
-    { label: 'Settings', href: '/settings' },
-    { label: 'Profile', active: true }
-  ];
+```
 
-  document.querySelectorAll('snice-breadcrumbs').forEach(bc => {
-    bc.items = items;
-  });
-</script>
+```typescript
+const items = [
+  { label: 'Home', href: '/' },
+  { label: 'Settings', href: '/settings' },
+  { label: 'Profile', active: true }
+];
+
+// Apply to all breadcrumbs above
+breadcrumbs.forEach(bc => {
+  bc.items = items;
+});
 ```
 
 ### Different Sizes
 
 ```html
-<snice-breadcrumbs size="small" id="small-bc"></snice-breadcrumbs>
-<snice-breadcrumbs size="medium" id="medium-bc"></snice-breadcrumbs>
-<snice-breadcrumbs size="large" id="large-bc"></snice-breadcrumbs>
+<snice-breadcrumbs size="small"></snice-breadcrumbs>
+<snice-breadcrumbs size="medium"></snice-breadcrumbs>
+<snice-breadcrumbs size="large"></snice-breadcrumbs>
+```
 
-<script type="module">
-  const items = [
-    { label: 'Home', href: '/' },
-    { label: 'Catalog', href: '/catalog' },
-    { label: 'Products', active: true }
-  ];
+```typescript
+const items = [
+  { label: 'Home', href: '/' },
+  { label: 'Catalog', href: '/catalog' },
+  { label: 'Products', active: true }
+];
 
-  document.querySelectorAll('[id$="-bc"]').forEach(bc => {
-    bc.items = items;
-  });
-</script>
+// Apply to each breadcrumbs element above
+breadcrumbs.items = items;
 ```
 
 ### With Icons
 
 ```html
-<snice-breadcrumbs id="icon-breadcrumbs"></snice-breadcrumbs>
+<snice-breadcrumbs></snice-breadcrumbs>
+```
 
-<script type="module">
-  const breadcrumbs = document.getElementById('icon-breadcrumbs');
-  breadcrumbs.items = [
-    { label: 'Home', href: '/', icon: '🏠' },
-    { label: 'Settings', href: '/settings', icon: '⚙️' },
-    { label: 'Profile', icon: '👤', active: true }
-  ];
-</script>
+```typescript
+breadcrumbs.items = [
+  { label: 'Home', href: '/', icon: '🏠' },
+  { label: 'Settings', href: '/settings', icon: '⚙️' },
+  { label: 'Profile', icon: '👤', active: true }
+];
 ```
 
 ### With Icon Images
 
 ```html
-<snice-breadcrumbs id="image-breadcrumbs"></snice-breadcrumbs>
+<snice-breadcrumbs></snice-breadcrumbs>
+```
 
-<script type="module">
-  const breadcrumbs = document.getElementById('image-breadcrumbs');
-  breadcrumbs.items = [
-    { label: 'Home', href: '/', iconImage: '/icons/home.svg' },
-    { label: 'Dashboard', href: '/dashboard', iconImage: '/icons/dashboard.svg' },
-    { label: 'Analytics', iconImage: '/icons/analytics.svg', active: true }
-  ];
-</script>
+```typescript
+breadcrumbs.items = [
+  { label: 'Home', href: '/', iconImage: '/icons/home.svg' },
+  { label: 'Dashboard', href: '/dashboard', iconImage: '/icons/dashboard.svg' },
+  { label: 'Analytics', iconImage: '/icons/analytics.svg', active: true }
+];
 ```
 
 ### Collapsed Breadcrumbs
 
 ```html
 <!-- Show first and last 2 items, collapse middle -->
-<snice-breadcrumbs max-items="3" id="collapsed"></snice-breadcrumbs>
+<snice-breadcrumbs max-items="3"></snice-breadcrumbs>
+```
 
-<script type="module">
-  const breadcrumbs = document.getElementById('collapsed');
-  breadcrumbs.items = [
-    { label: 'Home', href: '/' },
-    { label: 'Level 1', href: '/level1' },
-    { label: 'Level 2', href: '/level2' },
-    { label: 'Level 3', href: '/level3' },
-    { label: 'Level 4', href: '/level4' },
-    { label: 'Current Page', active: true }
-  ];
-</script>
+```typescript
+breadcrumbs.items = [
+  { label: 'Home', href: '/' },
+  { label: 'Level 1', href: '/level1' },
+  { label: 'Level 2', href: '/level2' },
+  { label: 'Level 3', href: '/level3' },
+  { label: 'Level 4', href: '/level4' },
+  { label: 'Current Page', active: true }
+];
 ```
 
 ### Dynamic Breadcrumbs
 
 ```html
-<snice-breadcrumbs id="dynamic"></snice-breadcrumbs>
+<snice-breadcrumbs></snice-breadcrumbs>
+```
 
-<script type="module">
-  import type { SniceBreadcrumbsElement } from 'snice/components/breadcrumbs/snice-breadcrumbs.types';
-
-  const breadcrumbs = document.getElementById('dynamic') as SniceBreadcrumbsElement;
-
-  // Simulate navigation
-  function updateBreadcrumbs(path) {
+```typescript
+// Simulate navigation
+function updateBreadcrumbs(path) {
     const segments = path.split('/').filter(Boolean);
     const items = [{ label: 'Home', href: '/' }];
 
@@ -357,51 +352,47 @@ import 'snice/components/breadcrumbs/snice-crumb';
       updateBreadcrumbs(e.detail.href);
     }
   });
-</script>
 ```
 
 ### E-commerce Breadcrumbs
 
 ```html
-<snice-breadcrumbs id="ecommerce" separator=">"></snice-breadcrumbs>
+<snice-breadcrumbs separator=">"></snice-breadcrumbs>
+```
 
-<script type="module">
-  const breadcrumbs = document.getElementById('ecommerce');
-  breadcrumbs.items = [
-    { label: 'Home', href: '/', icon: '🏠' },
-    { label: 'Electronics', href: '/category/electronics', icon: '⚡' },
-    { label: 'Computers', href: '/category/electronics/computers', icon: '💻' },
-    { label: 'Laptops', href: '/category/electronics/computers/laptops', icon: '📱' },
-    { label: 'MacBook Pro 16"', active: true }
-  ];
-</script>
+```typescript
+breadcrumbs.items = [
+  { label: 'Home', href: '/', icon: '🏠' },
+  { label: 'Electronics', href: '/category/electronics', icon: '⚡' },
+  { label: 'Computers', href: '/category/electronics/computers', icon: '💻' },
+  { label: 'Laptops', href: '/category/electronics/computers/laptops', icon: '📱' },
+  { label: 'MacBook Pro 16"', active: true }
+];
 ```
 
 ### Documentation Breadcrumbs
 
 ```html
-<snice-breadcrumbs id="docs" separator="•"></snice-breadcrumbs>
+<snice-breadcrumbs separator="•"></snice-breadcrumbs>
+```
 
-<script type="module">
-  const breadcrumbs = document.getElementById('docs');
-  breadcrumbs.items = [
-    { label: 'Docs', href: '/docs' },
-    { label: 'API Reference', href: '/docs/api' },
-    { label: 'Components', href: '/docs/api/components' },
-    { label: 'Breadcrumbs', active: true }
-  ];
-</script>
+```typescript
+breadcrumbs.items = [
+  { label: 'Docs', href: '/docs' },
+  { label: 'API Reference', href: '/docs/api' },
+  { label: 'Components', href: '/docs/api/components' },
+  { label: 'Breadcrumbs', active: true }
+];
 ```
 
 ### File System Navigation
 
 ```html
-<snice-breadcrumbs id="filesystem" separator="/"></snice-breadcrumbs>
+<snice-breadcrumbs separator="/"></snice-breadcrumbs>
+```
 
-<script type="module">
-  const breadcrumbs = document.getElementById('filesystem');
-
-  function navigateToFolder(path) {
+```typescript
+function navigateToFolder(path) {
     const folders = path.split('/').filter(Boolean);
     const items = [{ label: 'Root', href: '/' }];
 
@@ -426,18 +417,16 @@ import 'snice/components/breadcrumbs/snice-crumb';
       navigateToFolder(e.detail.href);
     }
   });
-</script>
 ```
 
 ### Multi-level Navigation
 
 ```html
-<snice-breadcrumbs id="multilevel" max-items="4"></snice-breadcrumbs>
+<snice-breadcrumbs max-items="4"></snice-breadcrumbs>
+```
 
-<script type="module">
-  const breadcrumbs = document.getElementById('multilevel');
-
-  const navigation = {
+```typescript
+const navigation = {
     '/': { label: 'Home' },
     '/products': { label: 'Products' },
     '/products/electronics': { label: 'Electronics' },
@@ -468,24 +457,21 @@ import 'snice/components/breadcrumbs/snice-crumb';
   }
 
   buildBreadcrumbs('/products/electronics/computers/laptops/gaming');
-</script>
 ```
 
 ### Breadcrumbs with Event Handling
 
 ```html
-<snice-breadcrumbs id="event-breadcrumbs"></snice-breadcrumbs>
+<snice-breadcrumbs></snice-breadcrumbs>
 
-<div id="event-log" style="margin-top: 1rem; padding: 1rem; background: #f3f4f6; border-radius: 0.375rem;">
+<div style="margin-top: 1rem; padding: 1rem; background: #f3f4f6; border-radius: 0.375rem;">
   <strong>Events:</strong>
   <div id="events"></div>
 </div>
+```
 
-<script type="module">
-  const breadcrumbs = document.getElementById('event-breadcrumbs');
-  const eventsContainer = document.getElementById('events');
-
-  breadcrumbs.items = [
+```typescript
+breadcrumbs.items = [
     { label: 'Home', href: '/' },
     { label: 'Level 1', href: '/level1' },
     { label: 'Level 2', href: '/level2' },
@@ -501,7 +487,6 @@ import 'snice/components/breadcrumbs/snice-crumb';
     // Prevent default navigation if needed
     // e.preventDefault();
   });
-</script>
 ```
 
 ### Responsive Breadcrumbs
@@ -515,12 +500,11 @@ import 'snice/components/breadcrumbs/snice-crumb';
   }
 </style>
 
-<snice-breadcrumbs id="responsive" max-items="3"></snice-breadcrumbs>
+<snice-breadcrumbs max-items="3"></snice-breadcrumbs>
+```
 
-<script type="module">
-  const breadcrumbs = document.getElementById('responsive');
-
-  // Adjust max items based on screen size
+```typescript
+// Adjust max items based on screen size
   function updateMaxItems() {
     if (window.innerWidth < 640) {
       breadcrumbs.maxItems = 2;
@@ -541,7 +525,6 @@ import 'snice/components/breadcrumbs/snice-crumb';
 
   updateMaxItems();
   window.addEventListener('resize', updateMaxItems);
-</script>
 ```
 
 ### Breadcrumbs with Custom Styling
@@ -564,16 +547,15 @@ import 'snice/components/breadcrumbs/snice-crumb';
   }
 </style>
 
-<snice-breadcrumbs id="styled-breadcrumbs"></snice-breadcrumbs>
+<snice-breadcrumbs></snice-breadcrumbs>
+```
 
-<script type="module">
-  const breadcrumbs = document.getElementById('styled-breadcrumbs');
-  breadcrumbs.items = [
-    { label: 'Home', href: '/' },
-    { label: 'Styled', href: '/styled' },
-    { label: 'Breadcrumbs', active: true }
-  ];
-</script>
+```typescript
+breadcrumbs.items = [
+  { label: 'Home', href: '/' },
+  { label: 'Styled', href: '/styled' },
+  { label: 'Breadcrumbs', active: true }
+];
 ```
 
 ## CSS Custom Properties

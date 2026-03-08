@@ -59,7 +59,6 @@ toggle()  // Toggle drawer
 ```
 
 ```typescript
-const drawer = document.querySelector('snice-drawer');
 drawer.show();
 drawer.hide();
 drawer.toggle();

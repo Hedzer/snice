@@ -68,26 +68,25 @@ qrPosition: QrPosition = 'top-right'               // attribute: qr-position; 't
   qr-position="top-right">
   <img slot="qr" src="qr.png" alt="QR" />
 </snice-work-order>
+```
 
-<script>
-  const wo = document.querySelector('snice-work-order');
-  wo.customer = { name: 'Acme Corp', address: '123 Main St', phone: '555-1234' };
-  wo.description = 'Replace HVAC system on 3rd floor';
-  wo.asset = { id: 'HVAC-301', name: 'Rooftop Unit', location: '3rd Floor', serial: 'SN-2019-4521' };
-  wo.tasks = [
-    { description: 'Remove old unit', assignee: 'John', completed: true, hours: 2 },
-    { description: 'Install new unit', assignee: 'Jane', completed: false, hours: 4 }
-  ];
-  wo.parts = [
-    { name: 'Air Filter', partNumber: 'AF-100', quantity: 2, unitCost: 25.50 },
-    { name: 'Compressor', partNumber: 'CP-200', quantity: 1, unitCost: 450 }
-  ];
-  wo.laborRate = 75;
-  wo.notes = 'Customer prefers morning appointments';
+```typescript
+wo.customer = { name: 'Acme Corp', address: '123 Main St', phone: '555-1234' };
+wo.description = 'Replace HVAC system on 3rd floor';
+wo.asset = { id: 'HVAC-301', name: 'Rooftop Unit', location: '3rd Floor', serial: 'SN-2019-4521' };
+wo.tasks = [
+  { description: 'Remove old unit', assignee: 'John', completed: true, hours: 2 },
+  { description: 'Install new unit', assignee: 'Jane', completed: false, hours: 4 }
+];
+wo.parts = [
+  { name: 'Air Filter', partNumber: 'AF-100', quantity: 2, unitCost: 25.50 },
+  { name: 'Compressor', partNumber: 'CP-200', quantity: 1, unitCost: 450 }
+];
+wo.laborRate = 75;
+wo.notes = 'Customer prefers morning appointments';
 
-  wo.addEventListener('task-toggle', e => console.log(e.detail));
-  wo.addEventListener('wo-sign', e => console.log('Signed:', e.detail));
-</script>
+wo.addEventListener('task-toggle', e => console.log(e.detail));
+wo.addEventListener('wo-sign', e => console.log('Signed:', e.detail));
 ```
 
 ## CSS Parts

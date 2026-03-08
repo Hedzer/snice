@@ -113,8 +113,7 @@ import 'snice/components/terminal/snice-terminal';
 
 Use the `writeln` method with a line type to display styled output.
 
-```javascript
-const terminal = document.querySelector('snice-terminal');
+```typescript
 terminal.writeln('Welcome!', 'info');
 terminal.writeln('File saved', 'success');
 terminal.writeln('Disk space low', 'warning');
@@ -134,29 +133,36 @@ Set the `readonly` attribute to disable input and use as a display-only log view
 Use the `@request`/`@respond` pattern to handle commands.
 
 ```html
-<my-controller></my-controller>
-<snice-terminal prompt="myapp $ "></snice-terminal>
+<snice-terminal prompt="myapp $ " controller="shell-handler"></snice-terminal>
+```
 
-<script type="module">
-  import { element, respond } from 'snice';
+```typescript
+import { controller, respond, IController } from 'snice';
 
-  @element('my-controller')
-  class MyController extends HTMLElement {
-    @respond('terminal-command')
-    async handleCommand(payload) {
-      const { command, args } = payload;
+@controller('shell-handler')
+class ShellHandler implements IController {
+  element: HTMLElement | null = null;
 
-      switch (command) {
-        case 'hello':
-          return { output: `Hello, ${args[0] || 'World'}!`, exitCode: 0 };
-        case 'clear':
-          return { output: '\x1B[CLEAR]' };
-        default:
-          return { error: `Unknown: ${command}`, exitCode: 127 };
-      }
+  async attach(element: HTMLElement) {
+    this.element = element;
+  }
+
+  async detach() {}
+
+  @respond('terminal-command')
+  async handleCommand(payload) {
+    const { command, args } = payload;
+
+    switch (command) {
+      case 'hello':
+        return { output: `Hello, ${args[0] || 'World'}!`, exitCode: 0 };
+      case 'clear':
+        return { output: '\x1B[CLEAR]' };
+      default:
+        return { error: `Unknown: ${command}`, exitCode: 127 };
     }
   }
-</script>
+}
 ```
 
 ### ANSI Colors

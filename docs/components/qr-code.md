@@ -179,8 +179,6 @@ Use `center-text` to overlay text in the center of the QR code.
 ### Export
 
 ```typescript
-const qr = document.querySelector('snice-qr-code');
-
 // Data URL
 const dataURL = await qr.toDataURL('image/png');
 
@@ -195,13 +193,11 @@ qr.download('my-qr-code.png');
 
 ```html
 <input type="text" id="qrInput" placeholder="Enter text">
-<snice-qr-code id="qr"></snice-qr-code>
+<snice-qr-code></snice-qr-code>
+```
 
-<script type="module">
-  import 'snice/components/qr-code/snice-qr-code';
-
-  document.getElementById('qrInput').addEventListener('input', (e) => {
-    document.getElementById('qr').value = e.target.value;
-  });
-</script>
+```typescript
+qrInput.addEventListener('input', (e) => {
+  qr.value = e.target.value;
+});
 ```

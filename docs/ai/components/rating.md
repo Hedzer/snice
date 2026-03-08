@@ -52,8 +52,7 @@ Uses `role="radiogroup"` with individual `role="radio"` stars. Keyboard accessib
 <snice-rating icon="&#x2764;" max="10"></snice-rating>
 ```
 
-```js
-const rating = document.querySelector('snice-rating');
+```typescript
 rating.addEventListener('rating-change', (e) => {
   console.log('New rating:', e.detail.value);
 });

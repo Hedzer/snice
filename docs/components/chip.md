@@ -139,12 +139,12 @@ import 'snice/components/chip/snice-chip';
   variant="primary">
 </snice-chip>
 
-<script type="module">
-  const chip = document.getElementById('removable-chip');
-  chip.addEventListener('chip-remove', () => {
-    chip.remove();
-  });
-</script>
+```
+
+```typescript
+chip.addEventListener('chip-remove', () => {
+  chip.remove();
+});
 ```
 
 ### Chips with Icons
@@ -200,15 +200,15 @@ The `icon` property supports multiple formats:
 <snice-chip label="Option 2"></snice-chip>
 <snice-chip label="Option 3"></snice-chip>
 
-<script type="module">
-  const chips = document.querySelectorAll('snice-chip');
-  chips.forEach(chip => {
-    chip.addEventListener('click', () => {
-      chips.forEach(c => c.selected = false);
-      chip.selected = true;
-    });
+```
+
+```typescript
+chips.forEach(chip => {
+  chip.addEventListener('click', () => {
+    chips.forEach(c => c.selected = false);
+    chip.selected = true;
   });
-</script>
+});
 ```
 
 ### Disabled Chips
@@ -238,14 +238,14 @@ The `icon` property supports multiple formats:
   <snice-chip label="Angular" variant="error" removable></snice-chip>
 </div>
 
-<script type="module">
-  const chips = document.querySelectorAll('.tag-container snice-chip');
-  chips.forEach(chip => {
-    chip.addEventListener('chip-remove', () => {
-      chip.remove();
-    });
+```
+
+```typescript
+chips.forEach(chip => {
+  chip.addEventListener('chip-remove', () => {
+    chip.remove();
   });
-</script>
+});
 ```
 
 ### Filter Chips
@@ -288,20 +288,17 @@ The `icon` property supports multiple formats:
   </div>
 </div>
 
-<script type="module">
-  import type { SniceChipElement } from 'snice/components/chip/snice-chip.types';
+```
 
-  const filterChips = document.querySelectorAll('.filter-chips snice-chip') as NodeListOf<SniceChipElement>;
-
-  filterChips.forEach(chip => {
-    chip.addEventListener('click', () => {
-      chip.selected = !chip.selected;
-      console.log('Filters:', Array.from(filterChips)
-        .filter(c => c.selected)
-        .map(c => c.label));
-    });
+```typescript
+filterChips.forEach(chip => {
+  chip.addEventListener('click', () => {
+    chip.selected = !chip.selected;
+    console.log('Filters:', Array.from(filterChips)
+      .filter(c => c.selected)
+      .map(c => c.label));
   });
-</script>
+});
 ```
 
 ### Contact Chips
@@ -321,31 +318,30 @@ The `icon` property supports multiple formats:
   <div class="contacts" id="recipients"></div>
 </div>
 
-<script type="module">
-  import 'snice/components/chip/snice-chip';
+```
 
-  const contacts = [
-    { name: 'John Doe', email: 'john@example.com', avatar: 'https://via.placeholder.com/32' },
-    { name: 'Jane Smith', email: 'jane@example.com', avatar: 'https://via.placeholder.com/32/FF6B6B' },
-    { name: 'Bob Johnson', email: 'bob@example.com', avatar: 'https://via.placeholder.com/32/4ECDC4' }
-  ];
+```typescript
+import 'snice/components/chip/snice-chip';
 
-  const container = document.getElementById('recipients');
+const contacts = [
+  { name: 'John Doe', email: 'john@example.com', avatar: 'https://via.placeholder.com/32' },
+  { name: 'Jane Smith', email: 'jane@example.com', avatar: 'https://via.placeholder.com/32/FF6B6B' },
+  { name: 'Bob Johnson', email: 'bob@example.com', avatar: 'https://via.placeholder.com/32/4ECDC4' }
+];
 
-  contacts.forEach(contact => {
-    const chip = document.createElement('snice-chip');
-    chip.label = contact.name;
-    chip.avatar = contact.avatar;
-    chip.removable = true;
+contacts.forEach(contact => {
+  const chip = document.createElement('snice-chip');
+  chip.label = contact.name;
+  chip.avatar = contact.avatar;
+  chip.removable = true;
 
-    chip.addEventListener('chip-remove', () => {
-      chip.remove();
-      console.log('Removed:', contact.name);
-    });
-
-    container.appendChild(chip);
+  chip.addEventListener('chip-remove', () => {
+    chip.remove();
+    console.log('Removed:', contact.name);
   });
-</script>
+
+  container.appendChild(chip);
+});
 ```
 
 ### Status Chips
@@ -436,42 +432,40 @@ The `icon` property supports multiple formats:
   <button id="add-skill" style="margin-top: 1rem;">Add Skill</button>
 </div>
 
-<script type="module">
-  import 'snice/components/chip/snice-chip';
+```
 
-  const skillsList = document.getElementById('skill-list');
-  const addButton = document.getElementById('add-skill');
+```typescript
+import 'snice/components/chip/snice-chip';
 
-  const availableSkills = ['JavaScript', 'Python', 'Java', 'C++', 'React', 'Vue', 'Node.js', 'Docker'];
-  let currentSkills = ['JavaScript', 'React', 'Node.js'];
+const availableSkills = ['JavaScript', 'Python', 'Java', 'C++', 'React', 'Vue', 'Node.js', 'Docker'];
+let currentSkills = ['JavaScript', 'React', 'Node.js'];
 
-  function renderSkills() {
-    skillsList.innerHTML = '';
-    currentSkills.forEach(skill => {
-      const chip = document.createElement('snice-chip');
-      chip.label = skill;
-      chip.variant = 'primary';
-      chip.removable = true;
+function renderSkills() {
+  skillsList.innerHTML = '';
+  currentSkills.forEach(skill => {
+    const chip = document.createElement('snice-chip');
+    chip.label = skill;
+    chip.variant = 'primary';
+    chip.removable = true;
 
-      chip.addEventListener('chip-remove', () => {
-        currentSkills = currentSkills.filter(s => s !== skill);
-        renderSkills();
-      });
-
-      skillsList.appendChild(chip);
-    });
-  }
-
-  addButton.addEventListener('click', () => {
-    const skill = prompt('Enter skill name:');
-    if (skill && !currentSkills.includes(skill)) {
-      currentSkills.push(skill);
+    chip.addEventListener('chip-remove', () => {
+      currentSkills = currentSkills.filter(s => s !== skill);
       renderSkills();
-    }
-  });
+    });
 
-  renderSkills();
-</script>
+    skillsList.appendChild(chip);
+  });
+}
+
+addButton.addEventListener('click', () => {
+  const skill = prompt('Enter skill name:');
+  if (skill && !currentSkills.includes(skill)) {
+    currentSkills.push(skill);
+    renderSkills();
+  }
+});
+
+renderSkills();
 ```
 
 ### Interactive Selection
@@ -516,26 +510,23 @@ The `icon` property supports multiple formats:
   </div>
 </div>
 
-<script type="module">
-  import type { SniceChipElement } from 'snice/components/chip/snice-chip.types';
+```
 
-  // Single selection for language
-  const languageChips = document.querySelectorAll('#language-group snice-chip') as NodeListOf<SniceChipElement>;
-  languageChips.forEach(chip => {
-    chip.addEventListener('click', () => {
-      languageChips.forEach(c => c.selected = false);
-      chip.selected = true;
-    });
+```typescript
+// Single selection for language
+languageChips.forEach(chip => {
+  chip.addEventListener('click', () => {
+    languageChips.forEach(c => c.selected = false);
+    chip.selected = true;
   });
+});
 
-  // Multiple selection for topics
-  const topicChips = document.querySelectorAll('#topics-group snice-chip') as NodeListOf<SniceChipElement>;
-  topicChips.forEach(chip => {
-    chip.addEventListener('click', () => {
-      chip.selected = !chip.selected;
-    });
+// Multiple selection for topics
+topicChips.forEach(chip => {
+  chip.addEventListener('click', () => {
+    chip.selected = !chip.selected;
   });
-</script>
+});
 ```
 
 ### Search Result Tags
@@ -643,27 +634,25 @@ The `icon` property supports multiple formats:
   </div>
 </div>
 
-<script type="module">
-  const container = document.getElementById('active-filters');
-  const clearButton = document.getElementById('clear-filters');
+```
 
-  // Handle remove events
-  container.addEventListener('chip-remove', (e) => {
-    e.target.remove();
-    updateFilterCount();
-  });
+```typescript
+// Handle remove events
+container.addEventListener('chip-remove', (e) => {
+  e.target.remove();
+  updateFilterCount();
+});
 
-  // Clear all filters
-  clearButton.addEventListener('click', () => {
-    container.innerHTML = '';
-    updateFilterCount();
-  });
+// Clear all filters
+clearButton.addEventListener('click', () => {
+  container.innerHTML = '';
+  updateFilterCount();
+});
 
-  function updateFilterCount() {
-    const count = container.querySelectorAll('snice-chip').length;
-    document.querySelector('.filters-header h4').textContent = `Active Filters (${count})`;
-  }
-</script>
+function updateFilterCount() {
+  const count = container.querySelectorAll('snice-chip').length;
+  header.textContent = `Active Filters (${count})`;
+}
 ```
 
 ## Accessibility

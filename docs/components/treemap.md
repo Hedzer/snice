@@ -88,20 +88,20 @@ import 'snice/components/treemap/snice-treemap';
 ```
 
 ```html
-<snice-treemap id="usage" show-labels show-values style="height: 400px;"></snice-treemap>
+<snice-treemap show-labels show-values style="height: 400px;"></snice-treemap>
+```
 
-<script>
-  document.getElementById('usage').data = {
-    label: 'Disk Usage',
-    value: 0,
-    children: [
-      { label: 'Documents', value: 45 },
-      { label: 'Photos', value: 30 },
-      { label: 'Videos', value: 80 },
-      { label: 'Music', value: 25 }
-    ]
-  };
-</script>
+```typescript
+treemap.data = {
+  label: 'Disk Usage',
+  value: 0,
+  children: [
+    { label: 'Documents', value: 45 },
+    { label: 'Photos', value: 30 },
+    { label: 'Videos', value: 80 },
+    { label: 'Music', value: 25 }
+  ]
+};
 ```
 
 ## Examples
@@ -120,7 +120,7 @@ Use the `color-scheme` attribute to change the palette.
 
 Set the `color` property on individual nodes to override the scheme.
 
-```javascript
+```typescript
 treemap.data = {
   label: 'Budget',
   value: 0,
@@ -137,40 +137,39 @@ treemap.data = {
 Click a rectangle with children to drill into it. A breadcrumb trail appears for navigation.
 
 ```html
-<snice-treemap id="org" show-labels style="height: 400px;"></snice-treemap>
+<snice-treemap show-labels style="height: 400px;"></snice-treemap>
+```
 
-<script>
-  document.getElementById('org').data = {
-    label: 'Company',
-    value: 0,
-    children: [
-      {
-        label: 'Engineering',
-        value: 0,
-        children: [
-          { label: 'Frontend', value: 20 },
-          { label: 'Backend', value: 25 },
-          { label: 'DevOps', value: 10 }
-        ]
-      },
-      {
-        label: 'Sales',
-        value: 0,
-        children: [
-          { label: 'Enterprise', value: 30 },
-          { label: 'SMB', value: 15 }
-        ]
-      },
-      { label: 'HR', value: 10 }
-    ]
-  };
-</script>
+```typescript
+treemap.data = {
+  label: 'Company',
+  value: 0,
+  children: [
+    {
+      label: 'Engineering',
+      value: 0,
+      children: [
+        { label: 'Frontend', value: 20 },
+        { label: 'Backend', value: 25 },
+        { label: 'DevOps', value: 10 }
+      ]
+    },
+    {
+      label: 'Sales',
+      value: 0,
+      children: [
+        { label: 'Enterprise', value: 30 },
+        { label: 'SMB', value: 15 }
+      ]
+    },
+    { label: 'HR', value: 10 }
+  ]
+};
 ```
 
 ### Programmatic Navigation
 
-```javascript
-const treemap = document.querySelector('snice-treemap');
+```typescript
 treemap.drillDown(node);   // Drill into a node
 treemap.drillUp();          // Go back one level
 treemap.drillToRoot();      // Reset to root

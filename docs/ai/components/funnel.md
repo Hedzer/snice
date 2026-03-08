@@ -38,14 +38,18 @@ interface FunnelStage {
 
 ```html
 <!-- Basic -->
-<snice-funnel id="f1"></snice-funnel>
-<script>
-  document.getElementById('f1').data = [
-    { label: 'Visitors', value: 10000 },
-    { label: 'Leads', value: 5000 },
-    { label: 'Customers', value: 500 },
-  ];
-</script>
+<snice-funnel></snice-funnel>
+```
+
+```typescript
+funnel.data = [
+  { label: 'Visitors', value: 10000 },
+  { label: 'Leads', value: 5000 },
+  { label: 'Customers', value: 500 },
+];
+```
+
+```html
 
 <!-- Gradient variant -->
 <snice-funnel variant="gradient"></snice-funnel>

@@ -67,9 +67,7 @@ Supports declarative usage via `<snice-plan>` and `<snice-feature>`:
 </snice-pricing-table>
 ```
 
-```js
-// Programmatic
-const table = document.querySelector('snice-pricing-table');
+```typescript
 table.plans = [
   { name: 'Free', price: 0, cta: 'Get Started', features: [
     { name: '5 projects', included: true },

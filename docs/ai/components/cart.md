@@ -51,8 +51,7 @@ interface CartItem {
 <snice-cart tax-rate="8.5" currency="$"></snice-cart>
 ```
 
-```js
-const cart = document.querySelector('snice-cart');
+```typescript
 cart.items = [
   { id: '1', name: 'Running Shoes', image: 'shoe.jpg', price: 89.99, quantity: 1, variant: 'Size: M' },
   { id: '2', name: 'Watch', price: 249.00, quantity: 1 }

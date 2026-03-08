@@ -155,9 +155,7 @@ Use the `value` attribute (JSON string) to set initial selections.
 
 ### Event Handling
 
-```javascript
-const picker = document.querySelector('snice-time-range-picker');
-
+```typescript
 picker.addEventListener('time-range-change', (e) => {
   console.log('Selected ranges:', e.detail.ranges);
 });
@@ -169,9 +167,7 @@ picker.addEventListener('time-range-complete', (e) => {
 
 ### Programmatic Control
 
-```javascript
-const picker = document.querySelector('snice-time-range-picker');
-
+```typescript
 picker.setSelectedRanges([
   { start: '09:00', end: '11:00' },
   { start: '14:00', end: '16:00' }

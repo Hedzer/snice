@@ -152,22 +152,18 @@ Hide the first, last, previous, or next buttons as needed.
 ### Event Handling
 
 ```html
-<snice-pagination id="pager" total="20"></snice-pagination>
+<snice-pagination total="20"></snice-pagination>
+```
 
-<script type="module">
-  import 'snice/components/pagination/snice-pagination';
-
-  document.getElementById('pager').addEventListener('pagination-change', (e) => {
-    console.log(`Page ${e.detail.previousPage} → ${e.detail.page}`);
-  });
-</script>
+```typescript
+pagination.addEventListener('pagination-change', (e) => {
+  console.log(`Page ${e.detail.previousPage} → ${e.detail.page}`);
+});
 ```
 
 ### Programmatic Control
 
 ```typescript
-const pagination = document.querySelector('snice-pagination');
-
 pagination.goToPage(5);
 pagination.nextPage();
 pagination.previousPage();

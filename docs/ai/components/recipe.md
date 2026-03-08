@@ -66,8 +66,7 @@ interface RecipeNutrition {
 
 ## Usage
 
-```js
-const recipe = document.querySelector('snice-recipe');
+```typescript
 recipe.title = 'Pasta Carbonara';
 recipe.prepTime = 10;
 recipe.cookTime = 20;

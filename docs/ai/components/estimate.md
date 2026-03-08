@@ -73,9 +73,9 @@ interface EstimateItem {
 <snice-estimate estimate-number="EST-001" date="2026-01-15" status="sent" tax-rate="10">
   <img slot="logo" src="logo.png" alt="Logo" />
 </snice-estimate>
+```
 
-<script>
-const est = document.querySelector('snice-estimate');
+```typescript
 est.from = { name: 'Studio', address: '100 Design Blvd', email: 'hi@studio.com' };
 est.to = { name: 'Client Inc', address: '200 Innovation Way' };
 est.items = [
@@ -86,7 +86,7 @@ est.terms = 'Payment due within 30 days';
 
 est.addEventListener('estimate-accept', e => console.log('Accepted:', e.detail));
 est.addEventListener('item-toggle', e => console.log('Item toggled:', e.detail));
-</script>
+```
 
 <!-- Comparison variant -->
 <snice-estimate variant="comparison"></snice-estimate>

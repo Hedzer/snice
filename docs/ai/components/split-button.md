@@ -39,7 +39,6 @@ iconPlacement: 'start'|'end' = 'start';
 ```
 
 ```typescript
-const btn = document.querySelector('snice-split-button');
 btn.actions = [
   { value: 'save-draft', label: 'Save as Draft' },
   { value: 'save-template', label: 'Save as Template' },

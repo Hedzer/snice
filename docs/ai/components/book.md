@@ -65,8 +65,7 @@ readonly totalPages: number      // Getter, count of slotted page elements
 </snice-book>
 ```
 
-```js
-const book = document.querySelector('snice-book');
+```typescript
 book.goToPage(2);
 book.addEventListener('page-turn', e => console.log(e.detail.page));
 ```

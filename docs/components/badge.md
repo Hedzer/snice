@@ -304,23 +304,20 @@ import 'snice/components/badge/snice-badge';
 
 <button onclick="addToCart()">Add Item</button>
 <button onclick="clearCart()">Clear Cart</button>
+```
 
-<script type="module">
-  import type { SniceBadgeElement } from 'snice/components/badge/snice-badge.types';
+```typescript
+let cartCount = 0;
 
-  let cartCount = 0;
-  const badge = document.getElementById('cart-badge') as SniceBadgeElement;
+window.addToCart = () => {
+  cartCount++;
+  badge.setBadgeCount(cartCount);
+};
 
-  window.addToCart = () => {
-    cartCount++;
-    badge.setBadgeCount(cartCount);
-  };
-
-  window.clearCart = () => {
-    cartCount = 0;
-    badge.hide();
-  };
-</script>
+window.clearCart = () => {
+  cartCount = 0;
+  badge.hide();
+};
 ```
 
 ### Status Indicators
@@ -402,15 +399,12 @@ import 'snice/components/badge/snice-badge';
   <button onclick="setCount(500)">500 messages</button>
 </div>
 
-<script type="module">
-  import type { SniceBadgeElement } from 'snice/components/badge/snice-badge.types';
+```
 
-  const badge = document.getElementById('msg-badge') as SniceBadgeElement;
-
-  window.setCount = (count) => {
-    badge.setBadgeCount(count);
-  };
-</script>
+```typescript
+window.setCount = (count) => {
+  badge.setBadgeCount(count);
+};
 ```
 
 ### Badge with Custom Offset

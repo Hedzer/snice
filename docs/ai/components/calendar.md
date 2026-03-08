@@ -56,13 +56,16 @@ getEventsForDate(date: Date | string): CalendarEvent[]
 <snice-calendar></snice-calendar>
 
 <!-- With events -->
-<snice-calendar id="cal"></snice-calendar>
-<script>
-cal.events = [
+<snice-calendar></snice-calendar>
+```
+
+```typescript
+calendar.events = [
   { id: 1, title: 'Meeting', start: new Date(), color: '#2196f3' }
 ];
-</script>
+```
 
+```html
 <!-- With restrictions -->
 <snice-calendar
   min-date="2024-01-01"
@@ -70,14 +73,14 @@ cal.events = [
   first-day-of-week="1"
   locale="fr-FR">
 </snice-calendar>
+```
 
-<!-- Programmatic control -->
-<script>
+```typescript
+// Programmatic control
 calendar.goToToday();
 calendar.previousMonth();
 calendar.nextMonth();
 calendar.goToDate(new Date(2024, 5, 15));
-</script>
 ```
 
 **CSS Parts:**

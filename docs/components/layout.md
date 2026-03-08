@@ -102,7 +102,6 @@ Use the `update()` method to sync navigation with the router.
 </snice-layout>
 ```
 
-```javascript
-const layout = document.querySelector('#app-layout');
+```typescript
 layout.update(appContext, placards, currentRoute, routeParams);
 ```

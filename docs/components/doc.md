@@ -99,19 +99,17 @@ snice-doc::part(editor) {
 
 ```html
 <snice-doc id="editor"></snice-doc>
+```
 
-<script type="module">
-  import 'snice';
+```typescript
+import 'snice';
 
-  const editor = document.getElementById('editor');
+// Set initial content
+editor.setHTML('<h1>Welcome</h1><p>Start editing...</p>');
 
-  // Set initial content
-  editor.setHTML('<h1>Welcome</h1><p>Start editing...</p>');
-
-  // Get content
-  const html = editor.getHTML();
-  console.log(html);
-</script>
+// Get content
+const html = editor.getHTML();
+console.log(html);
 ```
 
 ## Toolbar Features
@@ -138,20 +136,16 @@ The toolbar includes:
 <snice-doc id="editor"></snice-doc>
 <button id="save-md">Save as Markdown</button>
 <button id="save-html">Save as HTML</button>
+```
 
-<script type="module">
-  import 'snice';
+```typescript
+saveMd.addEventListener('click', () => {
+  editor.downloadAs('markdown', 'my-doc.md');
+});
 
-  const editor = document.getElementById('editor');
-
-  document.getElementById('save-md').addEventListener('click', () => {
-    editor.downloadAs('markdown', 'my-doc.md');
-  });
-
-  document.getElementById('save-html').addEventListener('click', () => {
-    editor.downloadAs('html', 'my-doc.html');
-  });
-</script>
+saveHtml.addEventListener('click', () => {
+  editor.downloadAs('html', 'my-doc.html');
+});
 ```
 
 ### Material Icons
@@ -164,16 +158,13 @@ The toolbar includes:
 
 ```html
 <snice-doc readonly></snice-doc>
+```
 
-<script type="module">
-  import 'snice';
-
-  const viewer = document.querySelector('snice-doc');
-  viewer.setHTML(`
-    <h1>Read Only Document</h1>
-    <p>This document cannot be edited.</p>
-  `);
-</script>
+```typescript
+viewer.setHTML(`
+  <h1>Read Only Document</h1>
+  <p>This document cannot be edited.</p>
+`);
 ```
 
 ### Save and Load Content
@@ -182,21 +173,17 @@ The toolbar includes:
 <snice-doc id="editor"></snice-doc>
 <button id="save">Save</button>
 <button id="load">Load</button>
+```
 
-<script type="module">
-  import 'snice';
+```typescript
+save.addEventListener('click', () => {
+  localStorage.setItem('document', editor.getHTML());
+});
 
-  const editor = document.getElementById('editor');
-
-  document.getElementById('save').addEventListener('click', () => {
-    localStorage.setItem('document', editor.getHTML());
-  });
-
-  document.getElementById('load').addEventListener('click', () => {
-    const html = localStorage.getItem('document');
-    if (html) editor.setHTML(html);
-  });
-</script>
+load.addEventListener('click', () => {
+  const html = localStorage.getItem('document');
+  if (html) editor.setHTML(html);
+});
 ```
 
 ## Features
@@ -302,10 +289,7 @@ Works in all modern browsers that support:
 Full TypeScript support:
 
 ```typescript
-import type { SniceDoc } from 'snice/doc';
-
-const editor = document.querySelector<SniceDoc>('snice-doc');
-const html = editor?.getHTML();
-const markdown = editor?.getMarkdown();
-editor?.downloadAs('markdown', 'export.md');
+const html = editor.getHTML();
+const markdown = editor.getMarkdown();
+editor.downloadAs('markdown', 'export.md');
 ```

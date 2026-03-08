@@ -352,13 +352,13 @@ import 'snice/components/accordion/snice-accordion-item';
 </snice-accordion>
 
 <div style="display: flex; gap: 8px; margin-top: 1rem;">
-  <button onclick="document.querySelector('#controlled').openAll()">
+  <button onclick="controlled.openAll()">
     Open All
   </button>
-  <button onclick="document.querySelector('#controlled').closeAll()">
+  <button onclick="controlled.closeAll()">
     Close All
   </button>
-  <button onclick="document.querySelector('#controlled').toggleItem('item-2')">
+  <button onclick="controlled.toggleItem('item-2')">
     Toggle Item 2
   </button>
 </div>
@@ -367,10 +367,6 @@ import 'snice/components/accordion/snice-accordion-item';
 ### With Event Handling
 
 ```typescript
-import type { SniceAccordionElement } from 'snice/components/accordion/snice-accordion.types';
-
-const accordion = document.querySelector<SniceAccordionElement>('snice-accordion');
-
 accordion.addEventListener('accordion-open', (e) => {
   console.log('Opened item:', e.detail.itemId);
   // Track analytics, load content, etc.
@@ -401,23 +397,22 @@ accordion.toggleItem('item-3');
   </snice-accordion-item>
 </snice-accordion>
 
-<script type="module">
-  import 'snice/components/accordion/snice-accordion';
-  import 'snice/components/accordion/snice-accordion-item';
+```
 
-  const accordion = document.querySelector('#lazyAccordion');
+```typescript
+import 'snice/components/accordion/snice-accordion';
+import 'snice/components/accordion/snice-accordion-item';
 
-  accordion.addEventListener('accordion-open', async (e) => {
-    const contentId = `content-${e.detail.itemId.split('-')[1]}`;
-    const contentEl = document.querySelector(`#${contentId}`);
+accordion.addEventListener('accordion-open', async (e) => {
+  const contentId = `content-${e.detail.itemId.split('-')[1]}`;
+  const contentEl = document.querySelector(`#${contentId}`);
 
-    if (contentEl.textContent === 'Loading...') {
-      const response = await fetch(`/api/content/${e.detail.itemId}`);
-      const data = await response.json();
-      contentEl.innerHTML = data.html;
-    }
-  });
-</script>
+  if (contentEl.textContent === 'Loading...') {
+    const response = await fetch(`/api/content/${e.detail.itemId}`);
+    const data = await response.json();
+    contentEl.innerHTML = data.html;
+  }
+});
 ```
 
 ### Settings Accordion

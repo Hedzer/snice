@@ -68,8 +68,7 @@ name: string = ''
 ></snice-tag-input>
 ```
 
-```js
-const tagInput = document.querySelector('snice-tag-input');
+```typescript
 tagInput.suggestions = ['JavaScript', 'TypeScript', 'Python', 'Rust', 'Go'];
 tagInput.value = ['JavaScript'];
 

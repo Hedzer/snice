@@ -55,10 +55,9 @@ thickness: number = 4;            // Stroke width for circular variant
 ```
 
 ```typescript
-const prog = document.querySelector('snice-progress');
-prog.setProgress(75);
-prog.setProgress(3, 10);
-console.log(prog.getPercentage());
+progress.setProgress(75);
+progress.setProgress(3, 10);
+console.log(progress.getPercentage());
 ```
 
 **CSS Parts (linear):**

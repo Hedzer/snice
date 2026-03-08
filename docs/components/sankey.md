@@ -67,19 +67,19 @@ import 'snice/components/sankey/snice-sankey';
 ```
 
 ```html
-<snice-sankey id="diagram" show-labels show-values style="height: 300px;"></snice-sankey>
+<snice-sankey show-labels show-values style="height: 300px;"></snice-sankey>
+```
 
-<script type="module">
-  document.getElementById('diagram').data = {
-    nodes: [
-      { id: 'source', label: 'Source', color: '#2196f3' },
-      { id: 'target', label: 'Target', color: '#4caf50' }
-    ],
-    links: [
-      { source: 'source', target: 'target', value: 100 }
-    ]
-  };
-</script>
+```typescript
+sankey.data = {
+  nodes: [
+    { id: 'source', label: 'Source', color: '#2196f3' },
+    { id: 'target', label: 'Target', color: '#4caf50' }
+  ],
+  links: [
+    { source: 'source', target: 'target', value: 100 }
+  ]
+};
 ```
 
 ## Examples
@@ -87,47 +87,47 @@ import 'snice/components/sankey/snice-sankey';
 ### Energy Flow
 
 ```html
-<snice-sankey id="energy" show-labels show-values animation style="height: 400px;"></snice-sankey>
+<snice-sankey show-labels show-values animation style="height: 400px;"></snice-sankey>
+```
 
-<script type="module">
-  document.getElementById('energy').data = {
-    nodes: [
-      { id: 'solar', label: 'Solar', color: '#f59e0b' },
-      { id: 'wind', label: 'Wind', color: '#3b82f6' },
-      { id: 'electric', label: 'Electricity', color: '#8b5cf6' },
-      { id: 'residential', label: 'Residential', color: '#10b981' },
-      { id: 'commercial', label: 'Commercial', color: '#06b6d4' }
-    ],
-    links: [
-      { source: 'solar', target: 'electric', value: 120 },
-      { source: 'wind', target: 'electric', value: 90 },
-      { source: 'electric', target: 'residential', value: 130 },
-      { source: 'electric', target: 'commercial', value: 80 }
-    ]
-  };
-</script>
+```typescript
+sankey.data = {
+  nodes: [
+    { id: 'solar', label: 'Solar', color: '#f59e0b' },
+    { id: 'wind', label: 'Wind', color: '#3b82f6' },
+    { id: 'electric', label: 'Electricity', color: '#8b5cf6' },
+    { id: 'residential', label: 'Residential', color: '#10b981' },
+    { id: 'commercial', label: 'Commercial', color: '#06b6d4' }
+  ],
+  links: [
+    { source: 'solar', target: 'electric', value: 120 },
+    { source: 'wind', target: 'electric', value: 90 },
+    { source: 'electric', target: 'residential', value: 130 },
+    { source: 'electric', target: 'commercial', value: 80 }
+  ]
+};
 ```
 
 ### Budget Breakdown
 
 ```html
-<snice-sankey id="budget" show-labels show-values style="height: 300px;"></snice-sankey>
+<snice-sankey show-labels show-values style="height: 300px;"></snice-sankey>
+```
 
-<script type="module">
-  document.getElementById('budget').data = {
-    nodes: [
-      { id: 'salary', label: 'Salary', color: '#10b981' },
-      { id: 'housing', label: 'Housing', color: '#ef4444' },
-      { id: 'food', label: 'Food', color: '#f59e0b' },
-      { id: 'savings', label: 'Savings', color: '#06b6d4' }
-    ],
-    links: [
-      { source: 'salary', target: 'housing', value: 1500 },
-      { source: 'salary', target: 'food', value: 600 },
-      { source: 'salary', target: 'savings', value: 900 }
-    ]
-  };
-</script>
+```typescript
+sankey.data = {
+  nodes: [
+    { id: 'salary', label: 'Salary', color: '#10b981' },
+    { id: 'housing', label: 'Housing', color: '#ef4444' },
+    { id: 'food', label: 'Food', color: '#f59e0b' },
+    { id: 'savings', label: 'Savings', color: '#06b6d4' }
+  ],
+  links: [
+    { source: 'salary', target: 'housing', value: 1500 },
+    { source: 'salary', target: 'food', value: 600 },
+    { source: 'salary', target: 'savings', value: 900 }
+  ]
+};
 ```
 
 ### Alignment Options
@@ -160,8 +160,6 @@ Set the `animation` attribute for animated rendering.
 ### Event Handling
 
 ```typescript
-const sankey = document.querySelector('snice-sankey');
-
 sankey.addEventListener('sankey-node-click', (e) => {
   console.log('Node:', e.detail.node.label);
 });

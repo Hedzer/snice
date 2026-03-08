@@ -68,8 +68,7 @@ When `icon` is omitted, mapped from `condition` string:
 <snice-weather unit="celsius" variant="full"></snice-weather>
 ```
 
-```js
-const weather = document.querySelector('snice-weather');
+```typescript
 weather.data = {
   temp: 22,
   condition: 'Partly Cloudy',

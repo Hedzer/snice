@@ -121,7 +121,7 @@ Set the `removable` attribute to show a remove button.
 ```
 
 ```typescript
-document.querySelector('snice-tag').addEventListener('tag-remove', (e) => {
+tag.addEventListener('tag-remove', (e) => {
   e.target.remove();
 });
 ```

@@ -101,7 +101,6 @@ if (gallery.canAddFiles()) {
 Add files to the gallery.
 
 ```typescript
-const fileInput = document.querySelector('input[type="file"]');
 gallery.addFiles(fileInput.files);
 ```
 
@@ -380,20 +379,26 @@ snice-file-gallery::part(gallery) {
 ## Basic Usage
 
 ```html
-<snice-file-gallery></snice-file-gallery>
+<snice-file-gallery controller="upload-handler"></snice-file-gallery>
 ```
 
 ```typescript
-import 'snice/components/file-gallery/snice-file-gallery';
-import { respond } from 'snice';
+import { controller, respond, IController } from 'snice';
 
-// Create upload handler
-class UploadController {
+@controller('upload-handler')
+class UploadHandler implements IController {
+  element: HTMLElement | null = null;
+
+  async attach(element: HTMLElement) {
+    this.element = element;
+  }
+
+  async detach() {}
+
   @respond('file-gallery-upload')
   async handleUpload(request) {
     const { file, fileId, onProgress, signal } = request;
 
-    // Implement your upload logic here
     return {
       success: true,
       fileId,
@@ -401,58 +406,52 @@ class UploadController {
     };
   }
 }
-
-const controller = new UploadController();
-controller.attach?.(document.body);
 ```
 
 ## Upload Handler
 
-The file gallery uses the `@request/@respond` pattern for uploads. You must implement an upload handler:
+The file gallery uses the `@request/@respond` pattern for uploads. Attach a controller with `@respond('file-gallery-upload')`:
 
 ```typescript
-import { respond } from 'snice';
+import { controller, respond, IController } from 'snice';
 
-class UploadController {
+@controller('upload-handler')
+class UploadHandler implements IController {
+  element: HTMLElement | null = null;
+
+  async attach(element: HTMLElement) {
+    this.element = element;
+  }
+
+  async detach() {}
+
   @respond('file-gallery-upload')
   async handleUpload(request) {
     const { file, fileId, onProgress, signal } = request;
 
-    // Create FormData
     const formData = new FormData();
     formData.append('file', file);
 
-    // Upload with progress tracking
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
 
-      // Track upload progress
       xhr.upload.addEventListener('progress', (e) => {
         if (e.lengthComputable && onProgress) {
           onProgress(e.loaded / e.total);
         }
       });
 
-      // Handle completion
       xhr.addEventListener('load', () => {
         if (xhr.status === 200) {
           const response = JSON.parse(xhr.responseText);
-          resolve({
-            success: true,
-            fileId,
-            url: response.url
-          });
+          resolve({ success: true, fileId, url: response.url });
         } else {
           reject(new Error('Upload failed'));
         }
       });
 
-      // Handle errors
-      xhr.addEventListener('error', () => {
-        reject(new Error('Network error'));
-      });
+      xhr.addEventListener('error', () => reject(new Error('Network error')));
 
-      // Handle cancellation
       if (signal) {
         signal.addEventListener('abort', () => {
           xhr.abort();
@@ -460,16 +459,11 @@ class UploadController {
         });
       }
 
-      // Send request
       xhr.open('POST', '/api/upload');
       xhr.send(formData);
     });
   }
 }
-
-// Attach controller to document
-const controller = new UploadController();
-controller.attach?.(document.body);
 ```
 
 ## Examples
@@ -489,21 +483,17 @@ controller.attach?.(document.body);
 ### Manual Upload Mode
 
 ```html
-<snice-file-gallery id="manual-gallery" auto-upload="false"></snice-file-gallery>
+<snice-file-gallery auto-upload="false" controller="upload-handler"></snice-file-gallery>
+```
 
-<script>
-const gallery = document.getElementById('manual-gallery');
-
+```typescript
 // Upload files manually
-async function uploadAll() {
-  const files = gallery.files;
-  for (const file of files) {
-    if (file.uploadStatus === 'pending') {
-      await gallery.resumeUpload(file.id);
-    }
+const files = gallery.files;
+for (const file of files) {
+  if (file.uploadStatus === 'pending') {
+    await gallery.resumeUpload(file.id);
   }
 }
-</script>
 ```
 
 ### File Limits
@@ -543,12 +533,7 @@ async function uploadAll() {
 
 ### Tracking Upload Events
 
-```html
-<snice-file-gallery id="gallery"></snice-file-gallery>
-
-<script>
-const gallery = document.getElementById('gallery');
-
+```typescript
 gallery.addEventListener('files-change', (e) => {
   console.log('Files changed:', e.detail.files);
 });
@@ -564,44 +549,16 @@ gallery.addEventListener('upload-complete', (e) => {
 gallery.addEventListener('upload-error', (e) => {
   console.error('Upload failed:', e.detail.error);
 });
-</script>
 ```
 
 ### Programmatic File Management
 
-```html
-<snice-file-gallery id="gallery"></snice-file-gallery>
-<button onclick="pauseAll()">Pause All</button>
-<button onclick="resumeAll()">Resume All</button>
-<button onclick="retryAll()">Retry All</button>
-<button onclick="clearCompleted()">Clear Completed</button>
-<button onclick="clearAll()">Clear All</button>
-
-<script>
-const gallery = document.getElementById('gallery');
-
-function pauseAll() {
-  gallery.pauseAll();
-}
-
-function resumeAll() {
-  gallery.resumeAll();
-}
-
-function retryAll() {
-  gallery.retryAll();
-}
-
-function clearCompleted() {
-  gallery.clearCompleted();
-}
-
-function clearAll() {
-  if (confirm('Clear all files?')) {
-    gallery.clear();
-  }
-}
-</script>
+```typescript
+gallery.pauseAll();
+gallery.resumeAll();
+gallery.retryAll();
+gallery.clearCompleted();
+gallery.clear();
 ```
 
 ### Custom Badges for Collaboration
@@ -609,54 +566,24 @@ function clearAll() {
 Use badges to show user avatars on files in collaborative scenarios:
 
 ```html
-<snice-file-gallery id="collab-gallery" show-dropzone="false" show-add-button="true"></snice-file-gallery>
+<snice-file-gallery show-dropzone="false" show-add-button="true" controller="upload-handler"></snice-file-gallery>
+```
 
-<script>
-const gallery = document.getElementById('collab-gallery');
+```typescript
+const avatarHTML = `<div style="
+  width: 40px; height: 40px; border-radius: 50%;
+  background: #3b82f6; color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: bold; border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+">JD</div>`;
 
-// Simulate collaborative file uploads with user badges
-const users = [
-  { name: 'John Doe', initials: 'JD', color: '#3b82f6', position: 'top-right' },
-  { name: 'Jane Smith', initials: 'JS', color: '#ef4444', position: 'top-left' },
-  { name: 'Bob Wilson', initials: 'BW', color: '#10b981', position: 'bottom-right' },
-];
-
-gallery.addEventListener('files-change', (e) => {
-  const newFiles = e.detail.files.filter(f => !f.badge);
-
-  newFiles.forEach((file, index) => {
-    const user = users[index % users.length];
-
-    const avatarHTML = `<div style="
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: ${user.color};
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      font-size: 14px;
-      border: 2px solid white;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    ">${user.initials}</div>`;
-
-    gallery.setFileBadge(file.id, avatarHTML, user.position);
-  });
-});
-</script>
+gallery.setFileBadge('file-id-123', avatarHTML, 'top-right');
 ```
 
 ### Custom Action Buttons
 
-```html
-<snice-file-gallery id="gallery" show-dropzone="false" show-add-button="true"></snice-file-gallery>
-
-<script>
-const gallery = document.getElementById('gallery');
-
-// Add camera action
+```typescript
 const cameraIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
   <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" stroke-width="2"/>
   <circle cx="12" cy="13" r="4" stroke-width="2"/>
@@ -664,10 +591,8 @@ const cameraIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
 
 const cameraActionId = gallery.addCustomAction(cameraIcon, 'Camera');
 
-// Handle camera action
 gallery.addEventListener('custom-action-click', (e) => {
   if (e.detail.actionId === cameraActionId) {
-    // Open camera interface
     openCamera().then((imageBlob) => {
       const file = new File([imageBlob], `photo-${Date.now()}.jpg`, { type: 'image/jpeg' });
       const preview = URL.createObjectURL(imageBlob);
@@ -675,15 +600,19 @@ gallery.addEventListener('custom-action-click', (e) => {
     });
   }
 });
-</script>
 ```
 
 ### Advanced Upload Handler with Retry
 
 ```typescript
-import { respond } from 'snice';
+import { controller, respond, IController } from 'snice';
 
-class UploadController {
+@controller('upload-with-retry')
+class UploadWithRetry implements IController {
+  element: HTMLElement | null = null;
+  async attach(element: HTMLElement) { this.element = element; }
+  async detach() {}
+
   @respond('file-gallery-upload')
   async handleUpload(request) {
     const { file, fileId, onProgress, signal } = request;
@@ -699,19 +628,12 @@ class UploadController {
           signal,
         });
 
-        if (!response.ok) {
-          throw new Error(`Upload failed: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`Upload failed: ${response.status}`);
 
         const data = await response.json();
-        return {
-          success: true,
-          fileId,
-          url: data.url
-        };
+        return { success: true, fileId, url: data.url };
       } catch (error) {
         if (retries > 0 && error.name !== 'AbortError') {
-          console.log(`Retrying upload (${retries} attempts left)...`);
           await new Promise(resolve => setTimeout(resolve, 1000));
           return uploadToServer(retries - 1);
         }
@@ -722,9 +644,6 @@ class UploadController {
     return uploadToServer();
   }
 }
-
-const controller = new UploadController();
-controller.attach?.(document.body);
 ```
 
 ## Features

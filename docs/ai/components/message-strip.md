@@ -45,11 +45,12 @@ icon: string = '';  // Custom icon (set "none" to hide)
 <snice-message-strip variant="info" icon="none">No icon shown.</snice-message-strip>
 
 <!-- Programmatic -->
-<snice-message-strip id="msg">Message</snice-message-strip>
-<script>
-  document.getElementById('msg').hide();
-  document.getElementById('msg').show();
-</script>
+<snice-message-strip>Message</snice-message-strip>
+```
+
+```typescript
+messageStrip.hide();
+messageStrip.show();
 ```
 
 **CSS Parts:**

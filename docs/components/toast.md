@@ -173,14 +173,13 @@ Toast.show('Bottom Right', { position: 'bottom-right' });
 Use a container element directly for more control.
 
 ```html
-<snice-toast-container id="toaster" position="bottom-center"></snice-toast-container>
+<snice-toast-container position="bottom-center"></snice-toast-container>
+```
 
-<script>
-  const container = document.querySelector('#toaster');
-  const id = container.show('Hello!', { type: 'success' });
-  container.hide(id);
-  container.clear();
-</script>
+```typescript
+const id = container.show('Hello!', { type: 'success' });
+container.hide(id);
+container.clear();
 ```
 
 ### Form Validation

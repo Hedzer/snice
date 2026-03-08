@@ -162,10 +162,7 @@ Style internal elements from outside the shadow DOM using `::part()`.
 ```typescript
 import 'snice/components/drawer/snice-drawer';
 
-const drawer = document.querySelector('snice-drawer');
-const openBtn = document.querySelector('#openDrawer');
-
-openBtn.addEventListener('click', () => drawer.show());
+openDrawer.addEventListener('click', () => myDrawer.show());
 ```
 
 ## Examples
@@ -184,15 +181,10 @@ openBtn.addEventListener('click', () => drawer.show());
     <a href="/about">About</a>
   </nav>
 </snice-drawer>
+```
 
-<script type="module">
-  import 'snice/components/drawer/snice-drawer';
-
-  const drawer = document.querySelector('#drawer');
-  const toggleBtn = document.querySelector('#toggle');
-
-  toggleBtn.addEventListener('click', () => drawer.toggle());
-</script>
+```typescript
+toggle.addEventListener('click', () => drawer.toggle());
 ```
 
 ### Position Variants
@@ -369,14 +361,10 @@ You can combine `breakpoint` with `open` to control the overlay state on mobile:
     <button onclick="this.closest('snice-drawer').hide()">Apply</button>
   </div>
 </snice-drawer>
+```
 
-<script type="module">
-  import 'snice/components/drawer/snice-drawer';
-
-  document.querySelector('#showFilters').addEventListener('click', () => {
-    document.querySelector('#filtersDrawer').show();
-  });
-</script>
+```typescript
+showFilters.addEventListener('click', () => filtersDrawer.show());
 ```
 
 ### Settings Panel
@@ -423,24 +411,17 @@ You can combine `breakpoint` with `open` to control the overlay state on mobile:
     </button>
   </div>
 </snice-drawer>
+```
 
-<script type="module">
-  import 'snice/components/drawer/snice-drawer';
+```typescript
+showSettings.addEventListener('click', () => settingsDrawer.show());
 
-  const drawer = document.querySelector('#settingsDrawer');
-  const form = document.querySelector('#settingsForm');
-
-  document.querySelector('#showSettings').addEventListener('click', () => {
-    drawer.show();
-  });
-
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const data = new FormData(form);
-    console.log('Settings:', Object.fromEntries(data));
-    drawer.hide();
-  });
-</script>
+settingsForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const data = new FormData(settingsForm);
+  console.log('Settings:', Object.fromEntries(data));
+  settingsDrawer.hide();
+});
 ```
 
 ### Mobile Navigation
@@ -459,29 +440,20 @@ You can combine `breakpoint` with `open` to control the overlay state on mobile:
     <a href="/contact" style="padding: 0.5rem;">Contact</a>
   </nav>
 </snice-drawer>
+```
 
-<script type="module">
-  import 'snice/components/drawer/snice-drawer';
+```typescript
+menuBtn.addEventListener('click', () => navDrawer.show());
 
-  const drawer = document.querySelector('#navDrawer');
-  const menuBtn = document.querySelector('#menuBtn');
-
-  menuBtn.addEventListener('click', () => drawer.show());
-
-  // Close drawer when clicking a link
-  drawer.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', () => drawer.hide());
-  });
-</script>
+// Close drawer when clicking a link
+navDrawer.querySelectorAll('a').forEach(link => {
+  link.addEventListener('click', () => navDrawer.hide());
+});
 ```
 
 ### With Event Handling
 
 ```typescript
-import type { SniceDrawerElement } from 'snice/components/drawer/snice-drawer.types';
-
-const drawer = document.querySelector<SniceDrawerElement>('snice-drawer');
-
 drawer.addEventListener('drawer-open', () => {
   console.log('Drawer opened');
   // Pause video, load content, etc.
@@ -510,33 +482,27 @@ drawer.toggle();
     <p>Loading...</p>
   </div>
 </snice-drawer>
+```
 
-<script type="module">
-  import 'snice/components/drawer/snice-drawer';
+```typescript
+showDetails.addEventListener('click', async () => {
+  detailsDrawer.show();
 
-  const drawer = document.querySelector('#detailsDrawer');
-  const title = document.querySelector('#itemTitle');
-  const content = document.querySelector('#itemContent');
+  // Fetch data
+  const response = await fetch('/api/item/123');
+  const item = await response.json();
 
-  document.querySelector('#showDetails').addEventListener('click', async () => {
-    drawer.show();
-
-    // Fetch data
-    const response = await fetch('/api/item/123');
-    const item = await response.json();
-
-    // Update content
-    title.textContent = item.name;
-    content.innerHTML = `
-      <dl>
-        <dt>Price:</dt>
-        <dd>$${item.price}</dd>
-        <dt>Description:</dt>
-        <dd>${item.description}</dd>
-      </dl>
-    `;
-  });
-</script>
+  // Update content
+  itemTitle.textContent = item.name;
+  itemContent.innerHTML = `
+    <dl>
+      <dt>Price:</dt>
+      <dd>$${item.price}</dd>
+      <dt>Description:</dt>
+      <dd>${item.description}</dd>
+    </dl>
+  `;
+});
 ```
 
 ### Complete Example
@@ -584,16 +550,13 @@ drawer.toggle();
   <script type="module">
     import 'snice/components/drawer/snice-drawer';
 
-    const drawer = document.querySelector('snice-drawer');
-    const menuBtn = document.querySelector('#menuBtn');
-
-    menuBtn.addEventListener('click', () => drawer.show());
+    menuBtn.addEventListener('click', () => navDrawer.show());
 
     // Close drawer on link click
-    drawer.querySelectorAll('a').forEach(link => {
+    navDrawer.querySelectorAll('a').forEach(link => {
       link.addEventListener('click', (e) => {
         e.preventDefault();
-        drawer.hide();
+        navDrawer.hide();
         console.log('Navigate to:', link.getAttribute('href'));
       });
     });

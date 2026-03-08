@@ -61,9 +61,9 @@ None
 
 ```html
 <snice-scheduler start-hour="8" end-hour="18" granularity="30"></snice-scheduler>
+```
 
-<script>
-const scheduler = document.querySelector('snice-scheduler');
+```typescript
 scheduler.resources = [
   { id: '1', name: 'Dr. Smith', color: '#2196f3' },
   { id: '2', name: 'Room A', color: '#ff9800' },
@@ -74,7 +74,6 @@ scheduler.events = [
 
 scheduler.addEventListener('event-click', e => console.log(e.detail.event));
 scheduler.addEventListener('slot-click', e => console.log(e.detail.resourceId, e.detail.start));
-</script>
 ```
 
 ## Features

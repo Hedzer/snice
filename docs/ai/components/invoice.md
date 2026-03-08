@@ -62,8 +62,7 @@ interface InvoiceItem {
 
 ## Usage
 
-```javascript
-const inv = document.querySelector('snice-invoice');
+```typescript
 inv.from = { name: 'Acme Corp', address: '123 Main St', email: 'billing@acme.com' };
 inv.to = { name: 'Client Inc', address: '456 Oak Ave' };
 inv.items = [

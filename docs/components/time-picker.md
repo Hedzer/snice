@@ -206,12 +206,11 @@ The component supports the Constraint Validation API. Use `checkValidity()`, `re
   <snice-time-picker name="startTime" required label="Start Time"></snice-time-picker>
   <button type="submit">Submit</button>
 </form>
+```
 
-<script>
-const picker = document.querySelector('snice-time-picker');
+```typescript
 picker.setCustomValidity('Please select a time during business hours');
 picker.reportValidity();
-</script>
 ```
 
 ### Event Handling
@@ -219,12 +218,13 @@ picker.reportValidity();
 Listen for time changes using the `time-change` event.
 
 ```html
-<snice-time-picker id="tp" label="Pick a time"></snice-time-picker>
-<script>
-document.querySelector('#tp').addEventListener('time-change', (e) => {
+<snice-time-picker label="Pick a time"></snice-time-picker>
+```
+
+```typescript
+picker.addEventListener('time-change', (e) => {
   console.log('Value:', e.detail.value);
   console.log('Formatted:', e.detail.formatted);
   console.log('Hours:', e.detail.hours, 'Minutes:', e.detail.minutes);
 });
-</script>
 ```

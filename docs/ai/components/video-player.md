@@ -99,8 +99,7 @@ readonly duration: number      // read-only, set from video metadata
 </snice-video-player>
 ```
 
-```js
-const player = document.querySelector('snice-video-player');
+```typescript
 player.addEventListener('video-ended', () => {
   console.log('Video finished');
 });

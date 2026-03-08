@@ -77,11 +77,15 @@ actionHref: string = '';       // attribute: action-href
 
 <!-- Events -->
 <snice-empty-state id="empty" action-text="Click"></snice-empty-state>
-<script>
-document.querySelector('#empty').addEventListener('empty-state-action', () => {
+```
+
+```typescript
+empty.addEventListener('empty-state-action', () => {
   console.log('Action clicked');
 });
-</script>
+```
+
+```html
 
 <!-- Custom content -->
 <snice-empty-state title="No data">

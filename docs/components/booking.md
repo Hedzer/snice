@@ -121,9 +121,7 @@ snice-booking::part(base) {
 <snice-booking></snice-booking>
 ```
 
-```javascript
-const booking = document.querySelector('snice-booking');
-
+```typescript
 booking.availableDates = ['2025-06-15', '2025-06-16', '2025-06-17'];
 booking.availableSlots = [
   { date: '2025-06-15', time: '09:00', duration: 30 },
@@ -186,9 +184,7 @@ booking.fields = [
 
 ### Complete Booking Flow
 
-```javascript
-const booking = document.querySelector('snice-booking');
-
+```typescript
 // Set up available dates and slots
 booking.availableDates = getAvailableDates();
 booking.availableSlots = getAvailableSlots();

@@ -192,18 +192,17 @@ interface WorkOrderAsset {
   labor-rate="85"
   description="HVAC system inspection and filter replacement.">
 </snice-work-order>
+```
 
-<script>
-  const wo = document.querySelector('snice-work-order');
-  wo.customer = { name: 'Office Park LLC', phone: '(555) 123-4567' };
-  wo.tasks = [
-    { description: 'Inspect units', assignee: 'Mike', hours: 2, completed: true },
-    { description: 'Replace filters', assignee: 'Mike', hours: 3 }
-  ];
-  wo.parts = [
-    { name: 'HVAC Filter 20x25', partNumber: 'HF-2025', quantity: 8, unitCost: 24.99 }
-  ];
-</script>
+```typescript
+wo.customer = { name: 'Office Park LLC', phone: '(555) 123-4567' };
+wo.tasks = [
+  { description: 'Inspect units', assignee: 'Mike', hours: 2, completed: true },
+  { description: 'Replace filters', assignee: 'Mike', hours: 3 }
+];
+wo.parts = [
+  { name: 'HVAC Filter 20x25', partNumber: 'HF-2025', quantity: 8, unitCost: 24.99 }
+];
 ```
 
 ## Examples
@@ -212,90 +211,82 @@ interface WorkOrderAsset {
 
 ```html
 <snice-work-order
-  id="basic-wo"
   wo-number="WO-001"
   date="2026-03-01"
   priority="medium"
   status="open"
   description="Routine maintenance check.">
 </snice-work-order>
+```
 
-<script>
-  const wo = document.getElementById('basic-wo');
-  wo.customer = { name: 'ABC Company' };
-  wo.tasks = [
-    { description: 'Check system status', completed: false }
-  ];
-</script>
+```typescript
+wo.customer = { name: 'ABC Company' };
+wo.tasks = [
+  { description: 'Check system status', completed: false }
+];
 ```
 
 ### With Asset Information
 
 ```html
 <snice-work-order
-  id="asset-wo"
   wo-number="WO-002"
   date="2026-03-01"
   description="Repair malfunctioning equipment.">
 </snice-work-order>
+```
 
-<script>
-  const wo = document.getElementById('asset-wo');
-  wo.customer = { name: 'Manufacturing Plant' };
-  wo.asset = {
-    id: 'EQ-12345',
-    name: 'CNC Machine Alpha',
-    location: 'Building B, Floor 2',
-    serial: 'SN789456123',
-    lastService: '2025-12-15'
-  };
-  wo.tasks = [
-    { description: 'Diagnose issue', completed: true },
-    { description: 'Replace worn parts', completed: false }
-  ];
-</script>
+```typescript
+wo.customer = { name: 'Manufacturing Plant' };
+wo.asset = {
+  id: 'EQ-12345',
+  name: 'CNC Machine Alpha',
+  location: 'Building B, Floor 2',
+  serial: 'SN789456123',
+  lastService: '2025-12-15'
+};
+wo.tasks = [
+  { description: 'Diagnose issue', completed: true },
+  { description: 'Replace worn parts', completed: false }
+];
 ```
 
 ### Task Checklist with Hours
 
 ```html
 <snice-work-order
-  id="task-wo"
   wo-number="WO-003"
   labor-rate="75"
   description="Server room maintenance.">
 </snice-work-order>
+```
 
-<script>
-  const wo = document.getElementById('task-wo');
-  wo.customer = { name: 'Tech Corp' };
-  wo.tasks = [
-    { description: 'Clean server racks', assignee: 'John D.', hours: 2, completed: true },
-    { description: 'Replace failed drives', assignee: 'John D.', hours: 1.5, completed: true },
-    { description: 'Update firmware', assignee: 'Sarah M.', hours: 1, completed: false },
-    { description: 'Run diagnostics', assignee: 'Sarah M.', hours: 0.5, completed: false }
-  ];
-</script>
+```typescript
+wo.customer = { name: 'Tech Corp' };
+wo.tasks = [
+  { description: 'Clean server racks', assignee: 'John D.', hours: 2, completed: true },
+  { description: 'Replace failed drives', assignee: 'John D.', hours: 1.5, completed: true },
+  { description: 'Update firmware', assignee: 'Sarah M.', hours: 1, completed: false },
+  { description: 'Run diagnostics', assignee: 'Sarah M.', hours: 0.5, completed: false }
+];
 ```
 
 ### Parts and Materials
 
 ```html
 <snice-work-order
-  id="parts-wo"
   wo-number="WO-004"
   labor-rate="90">
 </snice-work-order>
+```
 
-<script>
-  const wo = document.getElementById('parts-wo');
-  wo.customer = { name: 'Property Management' };
-  wo.parts = [
-    { name: 'Air Filter 16x25x1', partNumber: 'AF-1625', quantity: 12, unitCost: 8.99 },
-    { name: 'Thermostat', partNumber: 'TH-WIFI', quantity: 3, unitCost: 149.99 },
-    { name: 'Duct Tape', partNumber: 'DT-HEAVY', quantity: 5, unitCost: 12.50 }
-  ];
-</script>
+```typescript
+wo.customer = { name: 'Property Management' };
+wo.parts = [
+  { name: 'Air Filter 16x25x1', partNumber: 'AF-1625', quantity: 12, unitCost: 8.99 },
+  { name: 'Thermostat', partNumber: 'TH-WIFI', quantity: 3, unitCost: 149.99 },
+  { name: 'Duct Tape', partNumber: 'DT-HEAVY', quantity: 5, unitCost: 12.50 }
+];
 ```
 
 ### Different Priorities and Statuses
@@ -335,58 +326,56 @@ interface WorkOrderAsset {
 ### Listening for Events
 
 ```html
-<snice-work-order id="event-wo" wo-number="WO-EVT-001"></snice-work-order>
+<snice-work-order wo-number="WO-EVT-001"></snice-work-order>
+```
 
-<script>
-  const wo = document.getElementById('event-wo');
-  
-  wo.addEventListener('task-toggle', (e) => {
-    console.log('Task toggled:', e.detail.index, 'Completed:', e.detail.completed);
-  });
-  
-  wo.addEventListener('status-change', (e) => {
-    console.log('Status changed from', e.detail.previousStatus, 'to', e.detail.status);
-  });
-  
-  wo.addEventListener('wo-sign', (e) => {
-    console.log('Work order signed at', e.detail.timestamp);
-  });
-</script>
+```typescript
+wo.addEventListener('task-toggle', (e) => {
+  console.log('Task toggled:', e.detail.index, 'Completed:', e.detail.completed);
+});
+
+wo.addEventListener('status-change', (e) => {
+  console.log('Status changed from', e.detail.previousStatus, 'to', e.detail.status);
+});
+
+wo.addEventListener('wo-sign', (e) => {
+  console.log('Work order signed at', e.detail.timestamp);
+});
 ```
 
 ### Cost Calculation
 
 ```html
 <snice-work-order
-  id="cost-wo"
   wo-number="WO-COST-001"
   labor-rate="100">
 </snice-work-order>
+```
 
-<script>
-  const wo = document.getElementById('cost-wo');
-  wo.tasks = [
-    { description: 'Labor 1', hours: 2, completed: true },
-    { description: 'Labor 2', hours: 3, completed: false }
-  ];
-  wo.parts = [
-    { name: 'Part A', quantity: 2, unitCost: 50 },
-    { name: 'Part B', quantity: 1, unitCost: 150 }
-  ];
-  
-  // Access calculated totals
-  console.log('Parts cost:', wo.getTotalPartsCost());
-  console.log('Labor hours:', wo.getTotalLaborHours());
-  console.log('Labor cost:', wo.getTotalLaborCost());
-  console.log('Total cost:', wo.getTotalCost());
-</script>
+```typescript
+wo.tasks = [
+  { description: 'Labor 1', hours: 2, completed: true },
+  { description: 'Labor 2', hours: 3, completed: false }
+];
+wo.parts = [
+  { name: 'Part A', quantity: 2, unitCost: 50 },
+  { name: 'Part B', quantity: 1, unitCost: 150 }
+];
+
+// Access calculated totals
+console.log('Parts cost:', wo.getTotalPartsCost());
+console.log('Labor hours:', wo.getTotalLaborHours());
+console.log('Labor cost:', wo.getTotalLaborCost());
+console.log('Total cost:', wo.getTotalCost());
 ```
 
 ### Print Work Order
 
 ```html
-<snice-work-order id="print-wo" wo-number="WO-PRINT-001"></snice-work-order>
-<button onclick="document.getElementById('print-wo').print()">
-  Print Work Order
-</button>
+<snice-work-order wo-number="WO-PRINT-001"></snice-work-order>
+<button>Print Work Order</button>
+```
+
+```typescript
+wo.print();
 ```

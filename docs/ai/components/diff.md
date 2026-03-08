@@ -61,8 +61,7 @@ interface DiffHunk {
 <snice-diff old-text="hello world" new-text="hello there" mode="unified" context-lines="3"></snice-diff>
 ```
 
-```js
-const diff = document.querySelector('snice-diff');
+```typescript
 diff.oldText = originalCode;
 diff.newText = modifiedCode;
 diff.addEventListener('diff-computed', e => {

@@ -109,22 +109,22 @@ import 'snice/components/tree/snice-tree';
 ```
 
 ```html
-<snice-tree id="file-tree"></snice-tree>
+<snice-tree></snice-tree>
+```
 
-<script>
-  document.getElementById('file-tree').nodes = [
-    {
-      id: 'src',
-      label: 'src',
-      icon: '📁',
-      expanded: true,
-      children: [
-        { id: 'index.ts', label: 'index.ts', icon: '📄' },
-        { id: 'main.ts', label: 'main.ts', icon: '📄' }
-      ]
-    }
-  ];
-</script>
+```typescript
+tree.nodes = [
+  {
+    id: 'src',
+    label: 'src',
+    icon: '📁',
+    expanded: true,
+    children: [
+      { id: 'index.ts', label: 'index.ts', icon: '📄' },
+      { id: 'main.ts', label: 'main.ts', icon: '📄' }
+    ]
+  }
+];
 ```
 
 ## Examples
@@ -134,19 +134,18 @@ import 'snice/components/tree/snice-tree';
 Use `selection-mode="single"` to allow selecting one node at a time.
 
 ```html
-<snice-tree id="single-tree" selection-mode="single"></snice-tree>
+<snice-tree selection-mode="single"></snice-tree>
+```
 
-<script>
-  const tree = document.getElementById('single-tree');
-  tree.nodes = [
-    { id: '1', label: 'Item 1' },
-    { id: '2', label: 'Item 2' },
-    { id: '3', label: 'Item 3' }
-  ];
-  tree.addEventListener('tree-node-select', (e) => {
-    console.log('Selected:', e.detail.node.label);
-  });
-</script>
+```typescript
+tree.nodes = [
+  { id: '1', label: 'Item 1' },
+  { id: '2', label: 'Item 2' },
+  { id: '3', label: 'Item 3' }
+];
+tree.addEventListener('tree-node-select', (e) => {
+  console.log('Selected:', e.detail.node.label);
+});
 ```
 
 ### Multiple Selection
@@ -162,21 +161,21 @@ Use `selection-mode="multiple"` to allow selecting multiple nodes.
 Set the `show-checkboxes` attribute to display checkboxes for multi-select.
 
 ```html
-<snice-tree id="checkbox-tree" show-checkboxes></snice-tree>
+<snice-tree show-checkboxes></snice-tree>
+```
 
-<script>
-  document.getElementById('checkbox-tree').nodes = [
-    {
-      id: 'features',
-      label: 'Features',
-      children: [
-        { id: 'dark-mode', label: 'Dark Mode' },
-        { id: 'notifications', label: 'Notifications' },
-        { id: 'auto-save', label: 'Auto-save' }
-      ]
-    }
-  ];
-</script>
+```typescript
+tree.nodes = [
+  {
+    id: 'features',
+    label: 'Features',
+    children: [
+      { id: 'dark-mode', label: 'Dark Mode' },
+      { id: 'notifications', label: 'Notifications' },
+      { id: 'auto-save', label: 'Auto-save' }
+    ]
+  }
+];
 ```
 
 ### Lazy Loading
@@ -184,23 +183,22 @@ Set the `show-checkboxes` attribute to display checkboxes for multi-select.
 Set `lazy: true` on nodes to load children on demand.
 
 ```html
-<snice-tree id="lazy-tree"></snice-tree>
+<snice-tree></snice-tree>
+```
 
-<script>
-  const tree = document.getElementById('lazy-tree');
-  tree.nodes = [
-    { id: 'folder', label: 'Click to load...', icon: '📁', lazy: true, children: [] }
-  ];
+```typescript
+tree.nodes = [
+  { id: 'folder', label: 'Click to load...', icon: '📁', lazy: true, children: [] }
+];
 
-  tree.addEventListener('tree-node-lazy-load', async (e) => {
-    const node = e.detail.node;
-    const data = await fetch(`/api/nodes/${node.id}`).then(r => r.json());
-    node.children = data.map(item => ({ id: item.id, label: item.name, icon: '📄' }));
-    node.lazy = false;
-    node.expanded = true;
-    tree.nodes = [...tree.nodes];
-  });
-</script>
+tree.addEventListener('tree-node-lazy-load', async (e) => {
+  const node = e.detail.node;
+  const data = await fetch(`/api/nodes/${node.id}`).then(r => r.json());
+  node.children = data.map(item => ({ id: item.id, label: item.name, icon: '📄' }));
+  node.lazy = false;
+  node.expanded = true;
+  tree.nodes = [...tree.nodes];
+});
 ```
 
 ### Expand on Click
@@ -221,8 +219,7 @@ Set `show-icons="false"` to hide node icons.
 
 ### Programmatic Control
 
-```javascript
-const tree = document.querySelector('snice-tree');
+```typescript
 tree.expandAll();
 tree.collapseAll();
 tree.expandNode('folder1');

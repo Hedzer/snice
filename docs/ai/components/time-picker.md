@@ -70,12 +70,13 @@ variant: 'dropdown'|'inline' = 'dropdown';
 <snice-time-picker readonly value="15:30"></snice-time-picker>
 
 <!-- Event handling -->
-<snice-time-picker id="tp"></snice-time-picker>
-<script>
-document.querySelector('#tp').addEventListener('time-change', (e) => {
+<snice-time-picker></snice-time-picker>
+```
+
+```typescript
+picker.addEventListener('time-change', (e) => {
   console.log('Time:', e.detail.value, e.detail.formatted);
 });
-</script>
 ```
 
 ## CSS Parts

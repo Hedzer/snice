@@ -60,14 +60,14 @@ interface AppTile {
 </snice-app-tiles>
 
 <!-- Programmatic with image icons -->
-<snice-app-tiles id="tiles" columns="3"></snice-app-tiles>
-<script>
-  const tiles = document.querySelector('#tiles');
-  tiles.tiles = [
-    { id: '1', name: 'Chrome', icon: 'https://example.com/chrome.svg' },
-    { id: '2', name: 'Slack', icon: 'https://example.com/slack.svg' },
-  ];
-</script>
+<snice-app-tiles columns="3"></snice-app-tiles>
+```
+
+```typescript
+tiles.tiles = [
+  { id: '1', name: 'Chrome', icon: 'https://example.com/chrome.svg' },
+  { id: '2', name: 'Slack', icon: 'https://example.com/slack.svg' },
+];
 
 <!-- Letter fallback (no icon) -->
 <snice-app-tiles columns="3">

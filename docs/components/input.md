@@ -272,9 +272,9 @@ Listen for input events using `input-input` and `input-change`.
 
 ```html
 <snice-input id="inp" label="Type something"></snice-input>
-<script>
-const inp = document.querySelector('#inp');
+```
+
+```typescript
 inp.addEventListener('input-input', (e) => console.log('Input:', e.detail.value));
 inp.addEventListener('input-change', (e) => console.log('Change:', e.detail.value));
-</script>
 ```

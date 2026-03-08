@@ -125,8 +125,7 @@ When data is empty, shows "Double-click or start typing to add data"
 <snice-spreadsheet></snice-spreadsheet>
 ```
 
-```js
-const sheet = document.querySelector('snice-spreadsheet');
+```typescript
 sheet.columns = [
   { header: 'Name', type: 'text' },
   { header: 'Amount', type: 'number', width: 100 },

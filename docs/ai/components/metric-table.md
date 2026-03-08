@@ -38,21 +38,20 @@ interface MetricColumn {
 
 ```html
 <snice-metric-table sort-by="value"></snice-metric-table>
+```
 
-<script>
-  const el = document.querySelector('snice-metric-table');
-  el.columns = [
-    { key: 'name', label: 'Metric', type: 'text' },
-    { key: 'value', label: 'Value', type: 'number' },
-    { key: 'change', label: 'Change', type: 'percent' },
-    { key: 'revenue', label: 'Revenue', type: 'currency' },
-    { key: 'trend', label: 'Trend', sparkline: true }
-  ];
-  el.data = [
-    { name: 'Page Views', value: 124500, change: 12.3, revenue: 4521.50, trend: [100, 120, 130, 150] },
-    { name: 'Bounce Rate', value: 34.2, change: -2.5, revenue: null, trend: [40, 38, 35, 33] }
-  ];
-</script>
+```typescript
+el.columns = [
+  { key: 'name', label: 'Metric', type: 'text' },
+  { key: 'value', label: 'Value', type: 'number' },
+  { key: 'change', label: 'Change', type: 'percent' },
+  { key: 'revenue', label: 'Revenue', type: 'currency' },
+  { key: 'trend', label: 'Trend', sparkline: true }
+];
+el.data = [
+  { name: 'Page Views', value: 124500, change: 12.3, revenue: 4521.50, trend: [100, 120, 130, 150] },
+  { name: 'Bounce Rate', value: 34.2, change: -2.5, revenue: null, trend: [40, 38, 35, 33] }
+];
 ```
 
 ## Features

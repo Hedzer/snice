@@ -40,8 +40,7 @@ interface WaterfallDataPoint {
 <snice-waterfall show-values show-connectors></snice-waterfall>
 ```
 
-```js
-const chart = document.querySelector('snice-waterfall');
+```typescript
 chart.data = [
   { label: 'Start', value: 1000, type: 'total' },
   { label: 'Revenue', value: 500 },

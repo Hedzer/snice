@@ -53,8 +53,7 @@ group: string = ''            // group name for cross-container sorting
 </snice-sortable>
 ```
 
-```js
-const sortable = document.querySelector('snice-sortable');
+```typescript
 sortable.addEventListener('sort-change', (e) => {
   console.log(`Moved from ${e.detail.oldIndex} to ${e.detail.newIndex}`);
 });

@@ -45,7 +45,6 @@ tapStart: boolean = false;          // attr: tap-start, tap viewport to start/st
 ```
 
 ```typescript
-const reader = document.querySelector('snice-qr-reader');
 reader.addEventListener('qr-scan', (e) => console.log(e.detail.data));
 reader.start();
 

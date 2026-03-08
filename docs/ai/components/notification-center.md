@@ -79,8 +79,7 @@ interface NotificationItem {
 <snice-notification-center></snice-notification-center>
 ```
 
-```js
-const nc = document.querySelector('snice-notification-center');
+```typescript
 nc.notifications = [
   { id: '1', title: 'New message', message: 'You have a new message', timestamp: '2 min ago', type: 'info' },
   { id: '2', title: 'Deployed', message: 'Build succeeded', timestamp: '5 min ago', type: 'success', read: true }

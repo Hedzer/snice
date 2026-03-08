@@ -29,8 +29,7 @@ readonly: boolean = false;
 <snice-permission-matrix id="pm-ro" readonly></snice-permission-matrix>
 ```
 
-```javascript
-const pm = document.getElementById('pm');
+```typescript
 pm.roles = [
   { id: 'admin', name: 'Admin', description: 'Full access' },
   { id: 'editor', name: 'Editor' },

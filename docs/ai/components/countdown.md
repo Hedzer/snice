@@ -54,8 +54,7 @@ Uses standard snice design tokens:
 <snice-countdown target="2026-12-31T00:00:00Z" format="dhms" variant="flip"></snice-countdown>
 ```
 
-```js
-const cd = document.querySelector('snice-countdown');
+```typescript
 cd.addEventListener('countdown-complete', () => alert('Done!'));
 cd.addEventListener('countdown-tick', e => console.log(e.detail.total));
 ```

@@ -36,7 +36,6 @@ interface AvatarGroupItem {
 ```
 
 ```typescript
-const group = document.getElementById('group');
 group.avatars = [
   { name: 'Alice Johnson', initials: 'AJ' },
   { name: 'Bob Smith', src: '/avatars/bob.jpg' },

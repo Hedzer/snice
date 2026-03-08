@@ -34,17 +34,16 @@ Add quick-select preset buttons to the calendar sidebar. Presets are set via Jav
   columns="2"
   clearable
 ></snice-date-range-picker>
+```
 
-<script>
-  const picker = document.getElementById('my-picker');
-  const today = new Date();
+```typescript
+const today = new Date();
 
-  picker.presets = [
-    { label: 'Last 7 days', start: new Date(Date.now() - 7 * 86400000), end: today },
-    { label: 'Last 30 days', start: new Date(Date.now() - 30 * 86400000), end: today },
-    { label: 'This month', start: new Date(today.getFullYear(), today.getMonth(), 1), end: new Date(today.getFullYear(), today.getMonth() + 1, 0) },
-  ];
-</script>
+picker.presets = [
+  { label: 'Last 7 days', start: new Date(Date.now() - 7 * 86400000), end: today },
+  { label: 'Last 30 days', start: new Date(Date.now() - 30 * 86400000), end: today },
+  { label: 'This month', start: new Date(today.getFullYear(), today.getMonth(), 1), end: new Date(today.getFullYear(), today.getMonth() + 1, 0) },
+];
 ```
 
 Hovering over a preset shows a dashed preview of the range on the calendar. Clicking a preset selects both dates and closes the calendar.

@@ -266,31 +266,40 @@ When filters are active, the select-all checkbox only selects the visible/filter
 ### With Controller (Request/Respond)
 
 ```html
-<my-table-controller></my-table-controller>
-<snice-table searchable sortable></snice-table>
+<snice-table searchable sortable controller="user-table"></snice-table>
 ```
 
 ```typescript
-import { element, respond } from 'snice';
+import { controller, respond, IController } from 'snice';
 
-@element('my-table-controller')
-class MyTableController extends HTMLElement {
+@controller('user-table')
+class UserTableController implements IController {
+  element: HTMLElement | null = null;
+
+  async attach(element: HTMLElement) {
+    this.element = element;
+  }
+
+  async detach() {}
+
   @respond('table/config')
-  getConfig() {
+  async getTableConfig() {
     return {
       columns: [
         { key: 'name', label: 'Name' },
-        { key: 'status', label: 'Status', type: 'boolean' }
+        { key: 'email', label: 'Email' },
+        { key: 'role', label: 'Role' },
+        { key: 'active', label: 'Status', type: 'boolean' }
       ]
     };
   }
 
   @respond('table/data')
-  async getData(params) {
-    // params includes: search, sort, filter, page, pageSize
+  async getTableData(params) {
+    // params includes: search, sort, filter, selector, page, pageSize
     const response = await fetch(`/api/users?search=${params.search}`);
-    const data = await response.json();
-    return { data };
+    const json = await response.json();
+    return { data: json.users, total: json.total };
   }
 }
 ```

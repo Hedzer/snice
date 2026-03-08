@@ -98,9 +98,7 @@ snice-availability::part(header) {
 <snice-availability start-hour="8" end-hour="18"></snice-availability>
 ```
 
-```javascript
-const availability = document.querySelector('snice-availability');
-
+```typescript
 availability.addEventListener('availability-change', (e) => {
   console.log('Availability:', e.detail.value);
 });

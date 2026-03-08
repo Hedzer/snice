@@ -66,12 +66,12 @@ import 'snice/components/qr-reader/snice-qr-reader';
 
 ```html
 <snice-qr-reader auto-start></snice-qr-reader>
+```
 
-<script type="module">
-  document.querySelector('snice-qr-reader').addEventListener('qr-scan', (e) => {
-    console.log('QR Code:', e.detail.data);
-  });
-</script>
+```typescript
+reader.addEventListener('qr-scan', (e) => {
+  console.log('QR Code:', e.detail.data);
+});
 ```
 
 ## Examples
@@ -87,9 +87,12 @@ Set `auto-start` to begin scanning when the component mounts.
 ### Manual Control
 
 ```html
-<snice-qr-reader id="reader"></snice-qr-reader>
-<button onclick="document.getElementById('reader').start()">Start</button>
-<button onclick="document.getElementById('reader').stop()">Stop</button>
+<snice-qr-reader></snice-qr-reader>
+```
+
+```typescript
+reader.start();
+reader.stop();
 ```
 
 ### Pick-First (One-Shot)
@@ -97,16 +100,15 @@ Set `auto-start` to begin scanning when the component mounts.
 Set `pick-first` to scan at maximum speed until the first QR code is found, then auto-stop.
 
 ```html
-<snice-qr-reader id="scanner" pick-first></snice-qr-reader>
+<snice-qr-reader pick-first></snice-qr-reader>
+```
 
-<script type="module">
-  const scanner = document.getElementById('scanner');
-  scanner.addEventListener('qr-scan', (e) => {
-    console.log('Found:', e.detail.data);
-    // Scanner stops and releases camera automatically
-  });
-  scanner.start();
-</script>
+```typescript
+scanner.addEventListener('qr-scan', (e) => {
+  console.log('Found:', e.detail.data);
+  // Scanner stops and releases camera automatically
+});
+scanner.start();
 ```
 
 ### Manual Snapshot
@@ -114,18 +116,17 @@ Set `pick-first` to scan at maximum speed until the first QR code is found, then
 Set `manual-snap` for a photo-based scanning mode with manual trigger.
 
 ```html
-<snice-qr-reader id="snapReader" manual-snap></snice-qr-reader>
-<button id="snapBtn">Take Photo</button>
+<snice-qr-reader manual-snap></snice-qr-reader>
+<button>Take Photo</button>
+```
 
-<script type="module">
-  const reader = document.getElementById('snapReader');
-  reader.start(); // Opens camera viewfinder
+```typescript
+reader.start(); // Opens camera viewfinder
 
-  document.getElementById('snapBtn').addEventListener('click', async () => {
-    const result = await reader.snap();
-    console.log(result ? `Found: ${result}` : 'No QR code found');
-  });
-</script>
+snapBtn.addEventListener('click', async () => {
+  const result = await reader.snap();
+  console.log(result ? `Found: ${result}` : 'No QR code found');
+});
 ```
 
 ### Front Camera
@@ -156,8 +157,6 @@ Set `tap-start` to let users click the viewport to toggle scanning.
 ### Error Handling
 
 ```typescript
-const reader = document.querySelector('snice-qr-reader');
-
 reader.addEventListener('qr-error', (e) => {
   console.error('Scan error:', e.detail.error);
 });

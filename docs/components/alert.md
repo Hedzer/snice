@@ -249,38 +249,35 @@ The `icon` property supports multiple formats:
   <button type="submit">Sign Up</button>
 </form>
 
-<script type="module">
-  import 'snice/components/alert/snice-alert';
+```
 
-  const form = document.getElementById('signup-form');
-  const errorAlert = document.getElementById('form-error');
-  const errorList = document.getElementById('error-list');
+```typescript
+import 'snice/components/alert/snice-alert';
 
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const errors = [];
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const errors = [];
 
-    const email = form.email.value;
-    const password = form.password.value;
+  const email = form.email.value;
+  const password = form.password.value;
 
-    if (!email.includes('@')) {
-      errors.push('Invalid email address');
-    }
+  if (!email.includes('@')) {
+    errors.push('Invalid email address');
+  }
 
-    if (password.length < 8) {
-      errors.push('Password must be at least 8 characters');
-    }
+  if (password.length < 8) {
+    errors.push('Password must be at least 8 characters');
+  }
 
-    if (errors.length > 0) {
-      errorList.innerHTML = errors.map(err => `<li>${err}</li>`).join('');
-      errorAlert.style.display = 'block';
-      errorAlert.show();
-    } else {
-      errorAlert.style.display = 'none';
-      // Submit form
-    }
-  });
-</script>
+  if (errors.length > 0) {
+    errorList.innerHTML = errors.map(err => `<li>${err}</li>`).join('');
+    errorAlert.style.display = 'block';
+    errorAlert.show();
+  } else {
+    errorAlert.style.display = 'none';
+    // Submit form
+  }
+});
 ```
 
 ### Dynamic Alerts
@@ -291,62 +288,59 @@ The `icon` property supports multiple formats:
 <button onclick="showSuccessAlert()">Show Success</button>
 <button onclick="showErrorAlert()">Show Error</button>
 
-<script type="module">
-  import 'snice/components/alert/snice-alert';
+```
 
-  window.showSuccessAlert = () => {
-    const container = document.getElementById('alert-container');
-    const alert = document.createElement('snice-alert');
-    alert.variant = 'success';
-    alert.title = 'Success!';
-    alert.dismissible = true;
-    alert.textContent = 'Operation completed successfully.';
+```typescript
+import 'snice/components/alert/snice-alert';
 
-    container.appendChild(alert);
+window.showSuccessAlert = () => {
+  const alert = document.createElement('snice-alert');
+  alert.variant = 'success';
+  alert.title = 'Success!';
+  alert.dismissible = true;
+  alert.textContent = 'Operation completed successfully.';
 
-    alert.addEventListener('alert-hidden', () => {
-      alert.remove();
-    });
-  };
+  container.appendChild(alert);
 
-  window.showErrorAlert = () => {
-    const container = document.getElementById('alert-container');
-    const alert = document.createElement('snice-alert');
-    alert.variant = 'error';
-    alert.title = 'Error';
-    alert.dismissible = true;
-    alert.textContent = 'Something went wrong. Please try again.';
+  alert.addEventListener('alert-hidden', () => {
+    alert.remove();
+  });
+};
 
-    container.appendChild(alert);
+window.showErrorAlert = () => {
+  const alert = document.createElement('snice-alert');
+  alert.variant = 'error';
+  alert.title = 'Error';
+  alert.dismissible = true;
+  alert.textContent = 'Something went wrong. Please try again.';
 
-    alert.addEventListener('alert-hidden', () => {
-      alert.remove();
-    });
-  };
-</script>
+  container.appendChild(alert);
+
+  alert.addEventListener('alert-hidden', () => {
+    alert.remove();
+  });
+};
 ```
 
 ### Auto-Dismiss Alert
 
 ```html
-<snice-alert id="auto-dismiss" variant="success" title="Saved!">
+<snice-alert variant="success" title="Saved!">
   Your changes have been saved.
 </snice-alert>
+```
 
-<script type="module">
-  import 'snice/components/alert/snice-alert';
+```typescript
+import 'snice/components/alert/snice-alert';
 
-  const alert = document.getElementById('auto-dismiss');
+// Auto-dismiss after 5 seconds
+setTimeout(() => {
+  alert.hide();
+}, 5000);
 
-  // Auto-dismiss after 5 seconds
-  setTimeout(() => {
-    alert.hide();
-  }, 5000);
-
-  alert.addEventListener('alert-hidden', () => {
-    console.log('Alert was auto-dismissed');
-  });
-</script>
+alert.addEventListener('alert-hidden', () => {
+  console.log('Alert was auto-dismissed');
+});
 ```
 
 ### Alert with Links
@@ -392,30 +386,30 @@ The `icon` property supports multiple formats:
 <button onclick="notify('warning', 'Low disk space')">Warning</button>
 <button onclick="notify('error', 'Connection lost')">Error</button>
 
-<script type="module">
-  import 'snice/components/alert/snice-alert';
+```
 
-  window.notify = (variant, message) => {
-    const container = document.getElementById('notifications');
-    const alert = document.createElement('snice-alert');
+```typescript
+import 'snice/components/alert/snice-alert';
 
-    alert.variant = variant;
-    alert.dismissible = true;
-    alert.textContent = message;
-    alert.style.marginBottom = '0.5rem';
+window.notify = (variant, message) => {
+  const alert = document.createElement('snice-alert');
 
-    container.appendChild(alert);
+  alert.variant = variant;
+  alert.dismissible = true;
+  alert.textContent = message;
+  alert.style.marginBottom = '0.5rem';
 
-    // Auto-dismiss after 4 seconds
-    setTimeout(() => {
-      alert.hide();
-    }, 4000);
+  container.appendChild(alert);
 
-    alert.addEventListener('alert-hidden', () => {
-      alert.remove();
-    });
-  };
-</script>
+  // Auto-dismiss after 4 seconds
+  setTimeout(() => {
+    alert.hide();
+  }, 4000);
+
+  alert.addEventListener('alert-hidden', () => {
+    alert.remove();
+  });
+};
 ```
 
 ### Alert Stack
@@ -448,10 +442,6 @@ The `icon` property supports multiple formats:
 ### Event Handling
 
 ```typescript
-import type { SniceAlertElement } from 'snice/components/alert/snice-alert.types';
-
-const alert = document.querySelector<SniceAlertElement>('snice-alert');
-
 alert.addEventListener('alert-dismiss', (e) => {
   console.log('User dismissed alert:', e.detail);
   // Track analytics
@@ -475,42 +465,38 @@ alert.addEventListener('alert-hidden', () => {
 ### API Response Alerts
 
 ```html
-<snice-alert id="api-alert" style="display: none;"></snice-alert>
+<snice-alert style="display: none;"></snice-alert>
 
 <button onclick="makeApiCall()">Make API Call</button>
+```
 
-<script type="module">
-  import type { SniceAlertElement } from 'snice/components/alert/snice-alert.types';
+```typescript
+window.makeApiCall = async () => {
+  try {
+    const response = await fetch('/api/data');
 
-  window.makeApiCall = async () => {
-    const alert = document.getElementById('api-alert') as SniceAlertElement;
-
-    try {
-      const response = await fetch('/api/data');
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      alert.variant = 'success';
-      alert.title = 'Success!';
-      alert.textContent = 'Data loaded successfully.';
-      alert.dismissible = true;
-      alert.style.display = 'block';
-      alert.show();
-
-    } catch (error) {
-      alert.variant = 'error';
-      alert.title = 'Error';
-      alert.textContent = `Failed to load data: ${error.message}`;
-      alert.dismissible = true;
-      alert.style.display = 'block';
-      alert.show();
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-  };
-</script>
+
+    const data = await response.json();
+
+    alert.variant = 'success';
+    alert.title = 'Success!';
+    alert.textContent = 'Data loaded successfully.';
+    alert.dismissible = true;
+    alert.style.display = 'block';
+    alert.show();
+
+  } catch (error) {
+    alert.variant = 'error';
+    alert.title = 'Error';
+    alert.textContent = `Failed to load data: ${error.message}`;
+    alert.dismissible = true;
+    alert.style.display = 'block';
+    alert.show();
+  }
+};
 ```
 
 ## Accessibility

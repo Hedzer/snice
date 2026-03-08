@@ -45,7 +45,6 @@ interface Placard {
 ```
 
 ```typescript
-const nav = document.querySelector('snice-nav');
 nav.update([
   { name: 'home', title: 'Home', icon: '🏠', order: 0 },
   { name: 'products', title: 'Products', order: 1 },

@@ -59,12 +59,13 @@ loading: boolean = false;
 <snice-checkbox name="newsletter" value="yes" label="Subscribe"></snice-checkbox>
 
 <!-- Event handling -->
-<snice-checkbox id="cb"></snice-checkbox>
-<script>
-document.querySelector('#cb').addEventListener('checkbox-change', (e) => {
+<snice-checkbox></snice-checkbox>
+```
+
+```typescript
+checkbox.addEventListener('checkbox-change', (e) => {
   console.log('Checked:', e.detail.checked);
 });
-</script>
 ```
 
 ## CSS Parts

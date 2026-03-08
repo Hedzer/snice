@@ -57,8 +57,13 @@ strictPositioning: boolean = false; // attr: strict-positioning
 <snice-tooltip id="tip" content="Manual" trigger="manual">
   <span>Element</span>
 </snice-tooltip>
-<script>document.querySelector('#tip').open = true;</script>
+```
 
+```typescript
+tip.open = true;
+```
+
+```html
 <snice-tooltip content="Delayed" delay="500" hide-delay="200">
   <button>Wait</button>
 </snice-tooltip>

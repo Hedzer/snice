@@ -162,9 +162,7 @@ snice-calendar::part(grid) {
 <snice-calendar></snice-calendar>
 ```
 
-```javascript
-const calendar = document.querySelector('snice-calendar');
-
+```typescript
 calendar.addEventListener('calendar-change', (e) => {
   console.log('Selected date:', e.detail.value);
 });
@@ -180,9 +178,7 @@ calendar.addEventListener('calendar-change', (e) => {
 
 ### With Events
 
-```javascript
-const calendar = document.querySelector('snice-calendar');
-
+```typescript
 calendar.events = [
   {
     id: 1,
@@ -267,9 +263,7 @@ calendar.addEventListener('calendar-event-click', (e) => {
 
 ### Booking System
 
-```javascript
-const calendar = document.querySelector('snice-calendar');
-
+```typescript
 // Load bookings
 const bookings = await fetchBookings();
 calendar.events = bookings.map(b => ({
@@ -304,9 +298,7 @@ calendar.events = [
 
 ### Meeting Scheduler
 
-```javascript
-const calendar = document.querySelector('snice-calendar');
-
+```typescript
 // Show team meetings
 calendar.events = teamMeetings.map(m => ({
   id: m.id,

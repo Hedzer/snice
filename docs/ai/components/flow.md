@@ -74,7 +74,6 @@ interface FlowEdge {
 ```
 
 ```typescript
-const flow = document.getElementById('flow');
 flow.nodes = [
   { id: 'a', x: 50, y: 50, label: 'Start',
     outputs: [{ id: 'out', label: 'Out' }] },

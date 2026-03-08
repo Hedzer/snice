@@ -75,11 +75,12 @@ firstDayOfWeek: number = 0;    // attribute: first-day-of-week, 0=Sun, 1=Mon, et
 
 <!-- Event handling -->
 <snice-date-picker id="dp"></snice-date-picker>
-<script>
-document.querySelector('#dp').addEventListener('datepicker-change', (e) => {
+```
+
+```typescript
+dp.addEventListener('datepicker-change', (e) => {
   console.log('Date:', e.detail.value);
 });
-</script>
 ```
 
 ## Features

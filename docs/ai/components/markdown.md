@@ -67,8 +67,7 @@ This is **bold** and *italic*.
 </snice-markdown>
 ```
 
-```js
-const md = document.querySelector('snice-markdown');
+```typescript
 md.setContent('## Dynamic Content\n\n- Item 1\n- Item 2');
 
 md.addEventListener('link-click', (e) => {

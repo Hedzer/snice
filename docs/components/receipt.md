@@ -162,15 +162,14 @@ interface ReceiptTaxLine {
   tax="4.76"
   payment-method="Visa ending in 4242">
 </snice-receipt>
+```
 
-<script>
-  const rcpt = document.querySelector('snice-receipt');
-  rcpt.merchant = { name: 'Coffee Shop', address: '789 Main St' };
-  rcpt.items = [
-    { name: 'Latte', quantity: 2, price: 5.50 },
-    { name: 'Muffin', quantity: 1, price: 3.95 }
-  ];
-</script>
+```typescript
+rcpt.merchant = { name: 'Coffee Shop', address: '789 Main St' };
+rcpt.items = [
+  { name: 'Latte', quantity: 2, price: 5.50 },
+  { name: 'Muffin', quantity: 1, price: 3.95 }
+];
 ```
 
 ## Examples
@@ -179,24 +178,22 @@ interface ReceiptTaxLine {
 
 ```html
 <snice-receipt
-  id="standard-receipt"
   receipt-number="RCT-001"
   date="2026-03-01 2:30 PM"
   payment-method="Credit Card">
 </snice-receipt>
+```
 
-<script>
-  const receipt = document.getElementById('standard-receipt');
-  receipt.merchant = { 
-    name: 'My Store', 
-    address: '123 Main St',
-    phone: '(555) 123-4567'
-  };
-  receipt.items = [
-    { name: 'Item 1', quantity: 1, price: 19.99 },
-    { name: 'Item 2', quantity: 2, price: 9.99 }
-  ];
-</script>
+```typescript
+receipt.merchant = {
+  name: 'My Store',
+  address: '123 Main St',
+  phone: '(555) 123-4567'
+};
+receipt.items = [
+  { name: 'Item 1', quantity: 1, price: 19.99 },
+  { name: 'Item 2', quantity: 2, price: 9.99 }
+];
 ```
 
 ### Thermal Printer Style
@@ -227,44 +224,40 @@ interface ReceiptTaxLine {
 
 ```html
 <snice-receipt
-  id="tax-receipt"
   receipt-number="RCT-003"
   currency="CAD">
 </snice-receipt>
+```
 
-<script>
-  const r = document.getElementById('tax-receipt');
-  r.merchant = { name: 'Canadian Store' };
-  r.items = [{ name: 'Product', quantity: 1, price: 100 }];
-  r.taxes = [
-    { label: 'GST', rate: 5, amount: 5.00 },
-    { label: 'PST', rate: 7, amount: 7.00 }
-  ];
-</script>
+```typescript
+receipt.merchant = { name: 'Canadian Store' };
+receipt.items = [{ name: 'Product', quantity: 1, price: 100 }];
+receipt.taxes = [
+  { label: 'GST', rate: 5, amount: 5.00 },
+  { label: 'PST', rate: 7, amount: 7.00 }
+];
 ```
 
 ### With Tip
 
 ```html
 <snice-receipt
-  id="restaurant-receipt"
   receipt-number="T-128"
   date="2026-03-01"
   payment-method="Visa •••• 4242">
 </snice-receipt>
+```
 
-<script>
-  const rest = document.getElementById('restaurant-receipt');
-  rest.merchant = { name: 'Bistro Restaurant' };
-  rest.items = [
-    { name: 'Steak Dinner', quantity: 2, price: 32.00 },
-    { name: 'Wine', quantity: 1, price: 45.00 }
-  ];
-  rest.subtotal = 109.00;
-  rest.tax = 10.90;
-  rest.tip = 22.00;  // 20% tip
-  rest.total = 141.90;
-</script>
+```typescript
+receipt.merchant = { name: 'Bistro Restaurant' };
+receipt.items = [
+  { name: 'Steak Dinner', quantity: 2, price: 32.00 },
+  { name: 'Wine', quantity: 1, price: 45.00 }
+];
+receipt.subtotal = 109.00;
+receipt.tax = 10.90;
+receipt.tip = 22.00;  // 20% tip
+receipt.total = 141.90;
 ```
 
 ### With QR Code
@@ -291,8 +284,10 @@ interface ReceiptTaxLine {
 ### Print Receipt
 
 ```html
-<snice-receipt id="print-receipt"></snice-receipt>
-<button onclick="document.getElementById('print-receipt').print()">
-  Print Receipt
-</button>
+<snice-receipt></snice-receipt>
+<button>Print Receipt</button>
+```
+
+```typescript
+receipt.print();
 ```

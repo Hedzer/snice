@@ -52,7 +52,6 @@ import 'snice/components/segmented-control/snice-segmented-control';
 ```
 
 ```typescript
-const control = document.querySelector('snice-segmented-control');
 control.options = [
   { value: 'day', label: 'Day' },
   { value: 'week', label: 'Week' },
@@ -114,8 +113,6 @@ control.options = [
 ### Event Handling
 
 ```typescript
-const control = document.querySelector('snice-segmented-control');
-
 control.addEventListener('value-change', (e) => {
   console.log('New value:', e.detail.value);
   console.log('Previous value:', e.detail.previousValue);
@@ -126,6 +123,5 @@ control.addEventListener('value-change', (e) => {
 ### Programmatic Control
 
 ```typescript
-const control = document.querySelector('snice-segmented-control');
 control.value = 'month';
 ```

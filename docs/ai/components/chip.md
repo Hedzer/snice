@@ -67,12 +67,12 @@ avatar: string = '';
 <snice-chip label="Large" size="large"></snice-chip>
 
 <!-- Events -->
-<snice-chip id="chip" label="Click me" removable></snice-chip>
-<script>
-const chip = document.querySelector('#chip');
+<snice-chip label="Click me" removable></snice-chip>
+```
+
+```typescript
 chip.addEventListener('chip-click', (e) => console.log('Clicked', e.detail));
 chip.addEventListener('chip-remove', () => chip.remove());
-</script>
 ```
 
 ## Features

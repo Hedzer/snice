@@ -162,9 +162,9 @@ Use methods to control the carousel from JavaScript.
   <img src="/photos/3.jpg" alt="Photo 3">
 </snice-carousel>
 
-<button onclick="document.getElementById('myCarousel').prev()">Previous</button>
-<button onclick="document.getElementById('myCarousel').next()">Next</button>
-<button onclick="document.getElementById('myCarousel').goToSlide(0)">First</button>
+<button onclick="myCarousel.prev()">Previous</button>
+<button onclick="myCarousel.next()">Next</button>
+<button onclick="myCarousel.goToSlide(0)">First</button>
 ```
 
 ### Event Handling
@@ -172,8 +172,6 @@ Use methods to control the carousel from JavaScript.
 Listen for slide changes to synchronize other UI elements.
 
 ```typescript
-const carousel = document.querySelector<SniceCarouselElement>('snice-carousel');
-
 carousel.addEventListener('carousel-slide-change', (e: CustomEvent) => {
   console.log('Active slide:', e.detail.activeIndex);
   console.log('Previous slide:', e.detail.previousIndex);

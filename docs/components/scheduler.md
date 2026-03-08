@@ -35,7 +35,7 @@ import 'snice/components/scheduler/snice-scheduler';
 ### `addEvent(event: SchedulerEvent): void`
 Add a new event to the scheduler.
 
-```javascript
+```typescript
 scheduler.addEvent({
   id: 'new-1',
   resourceId: '1',
@@ -48,21 +48,21 @@ scheduler.addEvent({
 ### `removeEvent(id: string | number): void`
 Remove an event by its ID.
 
-```javascript
+```typescript
 scheduler.removeEvent('1');
 ```
 
 ### `scrollToDate(date: Date | string): void`
 Navigate the scheduler to a specific date.
 
-```javascript
+```typescript
 scheduler.scrollToDate(new Date(2025, 5, 20));
 ```
 
 ### `scrollToResource(id: string | number): void`
 Scroll a resource row into view.
 
-```javascript
+```typescript
 scheduler.scrollToResource('3');
 ```
 
@@ -71,7 +71,7 @@ scheduler.scrollToResource('3');
 ### `event-create`
 Dispatched when a new event is created by dragging on an empty slot.
 
-```javascript
+```typescript
 scheduler.addEventListener('event-create', (e) => {
   console.log('New event:', e.detail.event);
 });
@@ -82,7 +82,7 @@ scheduler.addEventListener('event-create', (e) => {
 ### `event-move`
 Dispatched when an event is dragged to a new position or resource.
 
-```javascript
+```typescript
 scheduler.addEventListener('event-move', (e) => {
   console.log('Moved:', e.detail.event.title);
   console.log('From resource:', e.detail.oldResourceId);
@@ -95,7 +95,7 @@ scheduler.addEventListener('event-move', (e) => {
 ### `event-resize`
 Dispatched when an event is resized via edge handles.
 
-```javascript
+```typescript
 scheduler.addEventListener('event-resize', (e) => {
   console.log('Resized:', e.detail.event.title);
 });
@@ -106,7 +106,7 @@ scheduler.addEventListener('event-resize', (e) => {
 ### `event-click`
 Dispatched when an event is clicked.
 
-```javascript
+```typescript
 scheduler.addEventListener('event-click', (e) => {
   showEventDetails(e.detail.event);
 });
@@ -117,7 +117,7 @@ scheduler.addEventListener('event-click', (e) => {
 ### `slot-click`
 Dispatched when an empty time slot is clicked.
 
-```javascript
+```typescript
 scheduler.addEventListener('slot-click', (e) => {
   console.log('Resource:', e.detail.resourceId);
   console.log('Time:', e.detail.start, '-', e.detail.end);
@@ -151,9 +151,7 @@ snice-scheduler::part(header) {
 <snice-scheduler></snice-scheduler>
 ```
 
-```javascript
-const scheduler = document.querySelector('snice-scheduler');
-
+```typescript
 scheduler.resources = [
   { id: '1', name: 'Dr. Smith', color: '#2196f3' },
   { id: '2', name: 'Room A', color: '#ff9800' },
@@ -174,7 +172,7 @@ scheduler.events = [
 
 ### Week View with Resources
 
-```javascript
+```typescript
 scheduler.resources = [
   { id: '1', name: 'Dr. Smith', avatar: '/avatars/smith.jpg', color: '#2196f3' },
   { id: '2', name: 'Dr. Johnson', color: '#4caf50' },
@@ -196,7 +194,7 @@ scheduler.resources = [
 
 ### Handling Event Interactions
 
-```javascript
+```typescript
 // Create new events from empty slots
 scheduler.addEventListener('slot-click', (e) => {
   const newEvent = {
@@ -223,7 +221,7 @@ scheduler.addEventListener('event-resize', (e) => {
 
 ### Navigate Programmatically
 
-```javascript
+```typescript
 // Go to today
 scheduler.date = new Date();
 

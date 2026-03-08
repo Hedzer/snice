@@ -60,9 +60,7 @@ preview(): void                        // switch to preview mode
 
 ## Usage
 
-```javascript
-const fb = document.querySelector('snice-form-builder');
-
+```typescript
 // Set schema
 fb.setSchema({
   title: 'Contact Form',
@@ -93,9 +91,10 @@ fb.addEventListener('schema-change', e => console.log(e.detail.schema));
 ```html
 <!-- Limit field types -->
 <snice-form-builder></snice-form-builder>
-<script>
-  fb.fieldTypes = ['text', 'email', 'select', 'checkbox'];
-</script>
+```
+
+```typescript
+fb.fieldTypes = ['text', 'email', 'select', 'checkbox'];
 ```
 
 **CSS Parts:**

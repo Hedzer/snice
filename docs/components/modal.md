@@ -153,65 +153,57 @@ Set `no-escape-dismiss` to prevent closing with the Escape key.
 ### Confirmation Dialog
 
 ```html
-<button id="deleteBtn">Delete Item</button>
+<button>Delete Item</button>
 
-<snice-modal id="confirmModal" size="small" label="Confirm Delete">
+<snice-modal size="small" label="Confirm Delete">
   <div slot="header"><h2>Confirm Delete</h2></div>
   <p>Are you sure? This action cannot be undone.</p>
   <div slot="footer">
-    <button id="cancelBtn">Cancel</button>
-    <button id="confirmBtn">Delete</button>
+    <button>Cancel</button>
+    <button>Delete</button>
   </div>
 </snice-modal>
+```
 
-<script type="module">
-  import 'snice/components/modal/snice-modal';
-
-  const modal = document.getElementById('confirmModal');
-  document.getElementById('deleteBtn').addEventListener('click', () => modal.show());
-  document.getElementById('cancelBtn').addEventListener('click', () => modal.close());
-  document.getElementById('confirmBtn').addEventListener('click', () => {
-    console.log('Item deleted');
-    modal.close();
-  });
-</script>
+```typescript
+deleteBtn.addEventListener('click', () => modal.show());
+cancelBtn.addEventListener('click', () => modal.close());
+confirmBtn.addEventListener('click', () => {
+  console.log('Item deleted');
+  modal.close();
+});
 ```
 
 ### Form in Modal
 
 ```html
-<button id="editBtn">Edit Profile</button>
+<button>Edit Profile</button>
 
-<snice-modal id="formModal" label="Edit Profile">
+<snice-modal label="Edit Profile">
   <div slot="header"><h2>Edit Profile</h2></div>
-  <form id="profileForm" style="display:flex;flex-direction:column;gap:1rem;">
+  <form style="display:flex;flex-direction:column;gap:1rem;">
     <label>Name: <input type="text" name="name" required></label>
     <label>Email: <input type="email" name="email" required></label>
   </form>
   <div slot="footer">
     <button onclick="this.closest('snice-modal').close()">Cancel</button>
-    <button type="submit" form="profileForm">Save</button>
+    <button type="submit">Save</button>
   </div>
 </snice-modal>
+```
 
-<script type="module">
-  import 'snice/components/modal/snice-modal';
-
-  const modal = document.getElementById('formModal');
-  document.getElementById('editBtn').addEventListener('click', () => modal.show());
-  document.getElementById('profileForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    console.log('Saved:', Object.fromEntries(new FormData(e.target)));
-    modal.close();
-  });
-</script>
+```typescript
+editBtn.addEventListener('click', () => modal.show());
+profileForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  console.log('Saved:', Object.fromEntries(new FormData(e.target)));
+  modal.close();
+});
 ```
 
 ### Programmatic Control
 
 ```typescript
-const modal = document.querySelector('snice-modal');
-
 modal.show();  // Open
 modal.close(); // Close
 

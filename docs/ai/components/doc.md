@@ -69,9 +69,7 @@ Simple WYSIWYG document editor with toolbar and sidebar.
 
 ## Example
 
-```javascript
-const doc = document.querySelector('snice-doc');
-
+```typescript
 doc.setHTML(`
   <h1>Title</h1>
   <p>Content with <b>bold</b> and <i>italic</i>.</p>

@@ -59,8 +59,7 @@ interface GanttTask {
 <snice-gantt zoom="week" show-dependencies></snice-gantt>
 ```
 
-```js
-const gantt = document.querySelector('snice-gantt');
+```typescript
 gantt.tasks = [
   { id: '1', name: 'Design', start: '2026-03-01', end: '2026-03-07', progress: 80, group: 'Phase 1' },
   { id: '2', name: 'Develop', start: '2026-03-05', end: '2026-03-15', dependencies: ['1'], group: 'Phase 1' },

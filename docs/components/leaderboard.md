@@ -57,7 +57,7 @@ Fired when a leaderboard entry is clicked.
 ```
 
 **Example:**
-```javascript
+```typescript
 leaderboard.addEventListener('entry-click', (e) => {
   console.log('Clicked:', e.detail.entry.name);
 });
@@ -149,9 +149,7 @@ Use `<snice-leaderboard-entry>` elements as children of `<snice-leaderboard>`. E
 
 For dynamic data (e.g., fetched from an API), use the `setEntries()` method.
 
-```javascript
-const leaderboard = document.querySelector('snice-leaderboard');
-
+```typescript
 leaderboard.setEntries([
   { rank: 1, name: 'Alice', score: 2500, avatar: 'alice.jpg', change: 3, highlighted: true },
   { rank: 2, name: 'Bob', score: 2100, change: -1 },

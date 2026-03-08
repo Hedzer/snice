@@ -173,8 +173,7 @@ Use the `selected` attribute to set the initially active tab index.
 
 ### Programmatic Control
 
-```javascript
-const tabs = document.querySelector('snice-tabs');
+```typescript
 tabs.selectTab(2);           // Select by index
 tabs.show(1);                // Alias for selectTab
 const tab = tabs.getTab(0);  // Get tab element

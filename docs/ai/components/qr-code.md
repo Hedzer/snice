@@ -51,7 +51,6 @@ textOutlineColor: string = '#ffffff';             // attr: text-outline-color
 ```
 
 ```typescript
-const qr = document.querySelector('snice-qr-code');
 qr.value = 'https://example.com';
 const url = await qr.toDataURL('image/png');
 const blob = await qr.toBlob('image/png');

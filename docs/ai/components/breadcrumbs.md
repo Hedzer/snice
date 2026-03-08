@@ -64,13 +64,14 @@ interface BreadcrumbItem {
 ```html
 <!-- Imperative -->
 <snice-breadcrumbs></snice-breadcrumbs>
-<script>
+```
+
+```typescript
 breadcrumbs.items = [
   { label: 'Home', href: '/' },
   { label: 'Products', href: '/products' },
   { label: 'Laptop', active: true }
 ];
-</script>
 
 <!-- Declarative -->
 <snice-breadcrumbs>

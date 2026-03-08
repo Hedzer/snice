@@ -40,8 +40,7 @@ interface OrderStep {
 </snice-order-tracker>
 ```
 
-```js
-const tracker = document.querySelector('snice-order-tracker');
+```typescript
 tracker.steps = [
   { label: 'Ordered', status: 'completed', timestamp: 'Feb 20, 2026' },
   { label: 'Confirmed', status: 'completed', timestamp: 'Feb 20, 2026' },

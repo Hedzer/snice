@@ -102,13 +102,13 @@ import 'snice/components/music-player/snice-music-player';
 ```
 
 ```html
-<snice-music-player id="player"></snice-music-player>
+<snice-music-player></snice-music-player>
+```
 
-<script type="module">
-  document.getElementById('player').tracks = [
-    { id: '1', title: 'Summer Breeze', artist: 'The Collective', src: '/audio/track1.mp3' }
-  ];
-</script>
+```typescript
+player.tracks = [
+  { id: '1', title: 'Summer Breeze', artist: 'The Collective', src: '/audio/track1.mp3' }
+];
 ```
 
 ## Examples
@@ -116,30 +116,30 @@ import 'snice/components/music-player/snice-music-player';
 ### Full Player with Playlist
 
 ```html
-<snice-music-player id="player"></snice-music-player>
+<snice-music-player></snice-music-player>
+```
 
-<script type="module">
-  document.getElementById('player').tracks = [
-    {
-      id: '1',
-      title: 'Summer Breeze',
-      artist: 'The Acoustic Collective',
-      album: 'Peaceful Moments',
-      artwork: '/images/album1.jpg',
-      src: '/audio/track1.mp3',
-      duration: 360
-    },
-    {
-      id: '2',
-      title: 'Midnight Jazz',
-      artist: 'Smooth Notes Ensemble',
-      album: 'Late Night Sessions',
-      artwork: '/images/album2.jpg',
-      src: '/audio/track2.mp3',
-      duration: 420
-    }
-  ];
-</script>
+```typescript
+player.tracks = [
+  {
+    id: '1',
+    title: 'Summer Breeze',
+    artist: 'The Acoustic Collective',
+    album: 'Peaceful Moments',
+    artwork: '/images/album1.jpg',
+    src: '/audio/track1.mp3',
+    duration: 360
+  },
+  {
+    id: '2',
+    title: 'Midnight Jazz',
+    artist: 'Smooth Notes Ensemble',
+    album: 'Late Night Sessions',
+    artwork: '/images/album2.jpg',
+    src: '/audio/track2.mp3',
+    duration: 420
+  }
+];
 ```
 
 ### Compact Player
@@ -177,7 +177,6 @@ Set the `autoplay` attribute to start playback automatically (browser policies m
 ```
 
 ```typescript
-const player = document.querySelector('snice-music-player');
 player.toggleShuffle();
 player.setRepeat('all');  // 'off' | 'all' | 'one'
 ```
@@ -185,8 +184,6 @@ player.setRepeat('all');  // 'off' | 'all' | 'one'
 ### Programmatic Control
 
 ```typescript
-const player = document.querySelector('snice-music-player');
-
 await player.play();
 player.pause();
 player.stop();
@@ -203,8 +200,6 @@ console.log(track.title);
 ### Event Handling
 
 ```typescript
-const player = document.querySelector('snice-music-player');
-
 player.addEventListener('player-play', (e) => {
   console.log('Playing:', e.detail.track.title);
 });

@@ -46,8 +46,7 @@ interface SpotlightStep {
 <snice-spotlight></snice-spotlight>
 ```
 
-```js
-const spotlight = document.querySelector('snice-spotlight');
+```typescript
 spotlight.steps = [
   { target: '#step1', title: 'Welcome', description: 'This is the first step', position: 'bottom' },
   { target: '#step2', title: 'Next', description: 'Click here to continue', position: 'right' },

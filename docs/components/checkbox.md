@@ -179,20 +179,19 @@ import 'snice/components/checkbox/snice-checkbox';
   <button type="submit">Sign Up</button>
 </form>
 
-<script type="module">
-  import 'snice/components/checkbox/snice-checkbox';
+```
 
-  const form = document.getElementById('signup-form');
+```typescript
+import 'snice/components/checkbox/snice-checkbox';
 
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const formData = new FormData(form);
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const formData = new FormData(form);
 
-    console.log('Terms accepted:', formData.get('terms'));
-    console.log('Newsletter:', formData.get('newsletter'));
-    console.log('Marketing:', formData.get('marketing'));
-  });
-</script>
+  console.log('Terms accepted:', formData.get('terms'));
+  console.log('Newsletter:', formData.get('newsletter'));
+  console.log('Marketing:', formData.get('marketing'));
+});
 ```
 
 ### Select All Pattern
@@ -207,14 +206,11 @@ import 'snice/components/checkbox/snice-checkbox';
   <snice-checkbox class="item-checkbox" label="Item 4" value="item4"></snice-checkbox>
 </div>
 
-<script type="module">
-  import type { SniceCheckboxElement } from 'snice/components/checkbox/snice-checkbox.types';
+```
 
-  const selectAll = document.getElementById('select-all') as SniceCheckboxElement;
-  const items = Array.from(document.querySelectorAll('.item-checkbox')) as SniceCheckboxElement[];
-
-  // Handle select all change
-  selectAll.addEventListener('change', (e) => {
+```typescript
+// Handle select all change
+selectAll.addEventListener('change', (e) => {
     items.forEach(item => {
       item.checked = e.detail.checked;
     });
@@ -244,7 +240,6 @@ import 'snice/components/checkbox/snice-checkbox';
 
   // Initialize state
   updateSelectAllState();
-</script>
 ```
 
 ### Checkbox Group
@@ -298,17 +293,10 @@ import 'snice/components/checkbox/snice-checkbox';
   <button type="submit" style="margin-top: 1rem;">Continue</button>
 </form>
 
-<script type="module">
-  import type { SniceCheckboxElement } from 'snice/components/checkbox/snice-checkbox.types';
+```
 
-  const form = document.getElementById('agreement-form');
-  const requiredCheckboxes = [
-    document.getElementById('terms-cb'),
-    document.getElementById('privacy-cb'),
-    document.getElementById('age-cb')
-  ] as SniceCheckboxElement[];
-
-  form.addEventListener('submit', (e) => {
+```typescript
+form.addEventListener('submit', (e) => {
     e.preventDefault();
 
     // Validate required checkboxes
@@ -338,7 +326,6 @@ import 'snice/components/checkbox/snice-checkbox';
       }
     });
   });
-</script>
 ```
 
 ### Settings Checkboxes
@@ -521,22 +508,19 @@ import 'snice/components/checkbox/snice-checkbox';
   </div>
 </div>
 
-<script type="module">
-  import type { SniceCheckboxElement } from 'snice/components/checkbox/snice-checkbox.types';
+```
 
-  const taskCheckboxes = document.querySelectorAll('.task-cb') as NodeListOf<SniceCheckboxElement>;
-
-  taskCheckboxes.forEach(cb => {
-    cb.addEventListener('change', (e) => {
-      const taskItem = cb.closest('.task-item');
-      if (e.detail.checked) {
-        taskItem?.classList.add('completed');
-      } else {
-        taskItem?.classList.remove('completed');
-      }
-    });
+```typescript
+taskCheckboxes.forEach(cb => {
+  cb.addEventListener('change', (e) => {
+    const taskItem = cb.closest('.task-item');
+    if (e.detail.checked) {
+      taskItem?.classList.add('completed');
+    } else {
+      taskItem?.classList.remove('completed');
+    }
   });
-</script>
+});
 ```
 
 ### Filter Checkboxes
@@ -607,32 +591,31 @@ import 'snice/components/checkbox/snice-checkbox';
 ```html
 <div id="permissions-container"></div>
 
-<script type="module">
-  import 'snice/components/checkbox/snice-checkbox';
+```
 
-  const permissions = [
-    { name: 'read', label: 'Read', checked: true },
-    { name: 'write', label: 'Write', checked: true },
-    { name: 'delete', label: 'Delete', checked: false },
-    { name: 'admin', label: 'Administrator', checked: false }
-  ];
+```typescript
+import 'snice/components/checkbox/snice-checkbox';
 
-  const container = document.getElementById('permissions-container');
+const permissions = [
+  { name: 'read', label: 'Read', checked: true },
+  { name: 'write', label: 'Write', checked: true },
+  { name: 'delete', label: 'Delete', checked: false },
+  { name: 'admin', label: 'Administrator', checked: false }
+];
 
-  permissions.forEach(perm => {
-    const checkbox = document.createElement('snice-checkbox');
-    checkbox.name = 'permissions';
-    checkbox.value = perm.name;
-    checkbox.label = perm.label;
-    checkbox.checked = perm.checked;
+permissions.forEach(perm => {
+  const checkbox = document.createElement('snice-checkbox');
+  checkbox.name = 'permissions';
+  checkbox.value = perm.name;
+  checkbox.label = perm.label;
+  checkbox.checked = perm.checked;
 
-    checkbox.addEventListener('change', (e) => {
-      console.log(`${perm.label} permission:`, e.detail.checked);
-    });
-
-    container.appendChild(checkbox);
+  checkbox.addEventListener('change', (e) => {
+    console.log(`${perm.label} permission:`, e.detail.checked);
   });
-</script>
+
+  container.appendChild(checkbox);
+});
 ```
 
 ### Validation Example
@@ -653,14 +636,10 @@ import 'snice/components/checkbox/snice-checkbox';
   <button type="submit" style="margin-top: 1rem;">Submit</button>
 </form>
 
-<script type="module">
-  import type { SniceCheckboxElement } from 'snice/components/checkbox/snice-checkbox.types';
+```
 
-  const form = document.getElementById('validation-form');
-  const checkbox = document.getElementById('consent-cb') as SniceCheckboxElement;
-  const errorMessage = document.getElementById('error-message');
-
-  form.addEventListener('submit', (e) => {
+```typescript
+form.addEventListener('submit', (e) => {
     e.preventDefault();
 
     if (!checkbox.checked) {
@@ -679,7 +658,6 @@ import 'snice/components/checkbox/snice-checkbox';
       errorMessage.style.display = 'none';
     }
   });
-</script>
 ```
 
 ## Form Integration

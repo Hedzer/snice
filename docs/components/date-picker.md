@@ -196,10 +196,11 @@ Listen for date changes using the `datepicker-change` event.
 
 ```html
 <snice-date-picker id="dp" label="Pick a date"></snice-date-picker>
-<script>
-document.querySelector('#dp').addEventListener('datepicker-change', (e) => {
+```
+
+```typescript
+dp.addEventListener('datepicker-change', (e) => {
   console.log('Date:', e.detail.formatted);
   console.log('ISO:', e.detail.iso);
 });
-</script>
 ```

@@ -54,8 +54,9 @@ interface BookingData {
 
 ```html
 <snice-booking></snice-booking>
+```
 
-<script>
+```typescript
 booking.availableDates = ['2025-06-15', '2025-06-16'];
 booking.availableSlots = [
   { date: '2025-06-15', time: '09:00', duration: 30 },
@@ -69,7 +70,6 @@ booking.fields = [
 booking.addEventListener('booking-confirm', e => {
   console.log(e.detail.booking);
 });
-</script>
 
 <!-- Inline variant (all steps visible) -->
 <snice-booking variant="inline"></snice-booking>

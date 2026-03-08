@@ -99,8 +99,6 @@ disabled: boolean = false;
 ## Programmatic Control
 
 ```typescript
-const accordion = document.querySelector('snice-accordion');
-
 // Control items
 accordion.openItem('item-1');
 accordion.closeItem('item-2');
@@ -114,7 +112,6 @@ accordion.addEventListener('accordion-open', (e) => {
 });
 
 // Control individual item
-const item = document.querySelector('snice-accordion-item');
 item.toggle();
 item.expand();
 item.collapse();

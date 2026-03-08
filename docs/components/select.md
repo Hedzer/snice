@@ -169,7 +169,7 @@ Use the `icon` attribute on options to display an image.
 ### Form Integration
 
 ```html
-<form id="userForm">
+<form>
   <snice-select name="role" label="User role" required>
     <snice-option value="user">User</snice-option>
     <snice-option value="admin">Admin</snice-option>
@@ -177,23 +177,18 @@ Use the `icon` attribute on options to display an image.
   </snice-select>
   <button type="submit">Submit</button>
 </form>
+```
 
-<script type="module">
-  import 'snice/components/select/snice-select';
-  import 'snice/components/select/snice-option';
-
-  document.getElementById('userForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    console.log(Object.fromEntries(new FormData(e.target)));
-  });
-</script>
+```typescript
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  console.log(Object.fromEntries(new FormData(e.target)));
+});
 ```
 
 ### Programmatic Control
 
 ```typescript
-const select = document.querySelector('snice-select');
-
 select.selectOption('apple');
 select.clear();
 select.openDropdown();
@@ -204,8 +199,6 @@ select.toggleDropdown();
 ### Event Handling
 
 ```typescript
-const select = document.querySelector('snice-select');
-
 select.addEventListener('select-change', (e) => {
   console.log('Selected:', e.detail.value);
 });
@@ -217,19 +210,17 @@ select.addEventListener('select-close', () => console.log('Closed'));
 ### Validation
 
 ```html
-<snice-select id="category" name="category" label="Category" required>
+<snice-select name="category" label="Category" required>
   <snice-option value="tech">Technology</snice-option>
   <snice-option value="health">Health</snice-option>
 </snice-select>
+```
 
-<script type="module">
-  const select = document.getElementById('category');
-
-  function validate() {
-    select.invalid = !select.value;
-    return !!select.value;
-  }
-</script>
+```typescript
+function validate() {
+  select.invalid = !select.value;
+  return !!select.value;
+}
 ```
 
 ### Editable Mode
@@ -241,7 +232,6 @@ Set the `editable` attribute to render a text input instead of a button. Users c
 ```
 
 ```typescript
-const select = document.querySelector('snice-select');
 select.options = [
   { value: 'apple', label: 'Apple' },
   { value: 'banana', label: 'Banana' },

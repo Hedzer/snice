@@ -46,8 +46,7 @@ interface OrgChartNode {
 <snice-org-chart direction="top-down"></snice-org-chart>
 ```
 
-```js
-const chart = document.querySelector('snice-org-chart');
+```typescript
 chart.data = {
   id: 'ceo',
   name: 'Jane Smith',

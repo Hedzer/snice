@@ -64,8 +64,7 @@ Visual separator between items.
 <snice-menu trigger="hover">...</snice-menu>
 
 <!-- Manual control -->
-<snice-menu trigger="manual" id="m">...</snice-menu>
-<script>document.getElementById('m').openMenu();</script>
+<snice-menu trigger="manual">...</snice-menu>
 
 <!-- Keep open -->
 <snice-menu close-on-select="false">...</snice-menu>

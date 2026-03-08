@@ -118,11 +118,14 @@ stretch: boolean = false;                 // input fills full host height
 
 <!-- Events -->
 <snice-input id="inp"></snice-input>
-<script>
-const inp = document.querySelector('#inp');
+```
+
+```typescript
 inp.addEventListener('input-input', (e) => console.log('Input:', e.detail.value));
 inp.addEventListener('input-change', (e) => console.log('Change:', e.detail.value));
-</script>
+```
+
+```html
 
 <!-- Vertical alignment (when host has explicit height) -->
 <snice-input style="height:200px" align="top"></snice-input>

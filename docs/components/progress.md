@@ -176,26 +176,21 @@ Use the `thickness` attribute to control the circular variant's stroke width.
 ### Dynamic Updates
 
 ```html
-<snice-progress id="upload" value="0"></snice-progress>
+<snice-progress value="0"></snice-progress>
+```
 
-<script type="module">
-  import 'snice/components/progress/snice-progress';
+```typescript
+let value = 0;
 
-  const progress = document.getElementById('upload');
-  let value = 0;
-
-  setInterval(() => {
-    value = (value + 10) % 100;
-    progress.value = value;
-  }, 500);
-</script>
+setInterval(() => {
+  value = (value + 10) % 100;
+  progress.value = value;
+}, 500);
 ```
 
 ### Programmatic Control
 
 ```typescript
-const progress = document.querySelector('snice-progress');
-
 // Set progress
 progress.setProgress(75);
 progress.setProgress(3, 10); // value 3, max 10

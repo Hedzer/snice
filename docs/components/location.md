@@ -213,8 +213,6 @@ Use `map-url` to link to an alternative maps provider.
 ### Programmatic Usage
 
 ```typescript
-const location = document.querySelector('snice-location');
-
 // Get data
 const data = location.getData();
 const coords = location.getCoordinates();

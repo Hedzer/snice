@@ -163,16 +163,15 @@ interface EstimateItem {
   tax-rate="8"
   notes="This estimate is valid for 15 days.">
 </snice-estimate>
+```
 
-<script>
-  const est = document.querySelector('snice-estimate');
-  est.from = { name: 'Design Studio' };
-  est.to = { name: 'Client Corp' };
-  est.items = [
-    { description: 'Brand Identity', quantity: 1, unitPrice: 5000 },
-    { description: 'Social Media Kit', quantity: 1, unitPrice: 2000, optional: true }
-  ];
-</script>
+```typescript
+est.from = { name: 'Design Studio' };
+est.to = { name: 'Client Corp' };
+est.items = [
+  { description: 'Brand Identity', quantity: 1, unitPrice: 5000 },
+  { description: 'Social Media Kit', quantity: 1, unitPrice: 2000, optional: true }
+];
 ```
 
 ## Examples
@@ -187,16 +186,15 @@ interface EstimateItem {
   expiry-date="2026-04-01"
   status="sent">
 </snice-estimate>
+```
 
-<script>
-  const est = document.getElementById('basic-est');
-  est.from = { name: 'Your Business' };
-  est.to = { name: 'Prospective Client' };
-  est.items = [
-    { description: 'Service A', quantity: 1, unitPrice: 1000 },
-    { description: 'Service B', quantity: 2, unitPrice: 500 }
-  ];
-</script>
+```typescript
+est.from = { name: 'Your Business' };
+est.to = { name: 'Prospective Client' };
+est.items = [
+  { description: 'Service A', quantity: 1, unitPrice: 1000 },
+  { description: 'Service B', quantity: 2, unitPrice: 500 }
+];
 ```
 
 ### With Optional Items
@@ -208,17 +206,16 @@ interface EstimateItem {
   currency="$"
   tax-rate="10">
 </snice-estimate>
+```
 
-<script>
-  const est = document.getElementById('optional-est');
-  est.from = { name: 'Web Agency' };
-  est.to = { name: 'Startup Inc' };
-  est.items = [
-    { description: 'Website Design (required)', quantity: 1, unitPrice: 5000 },
-    { description: 'SEO Package (optional)', quantity: 1, unitPrice: 1500, optional: true },
-    { description: 'Content Writing (optional)', quantity: 10, unitPrice: 100, optional: true }
-  ];
-</script>
+```typescript
+est.from = { name: 'Web Agency' };
+est.to = { name: 'Startup Inc' };
+est.items = [
+  { description: 'Website Design (required)', quantity: 1, unitPrice: 5000 },
+  { description: 'SEO Package (optional)', quantity: 1, unitPrice: 1500, optional: true },
+  { description: 'Content Writing (optional)', quantity: 10, unitPrice: 100, optional: true }
+];
 ```
 
 ### Different Statuses
@@ -248,15 +245,14 @@ interface EstimateItem {
   estimate-number="EST-COMP"
   variant="comparison">
 </snice-estimate>
+```
 
-<script>
-  const est = document.getElementById('comparison-est');
-  est.items = [
-    { description: 'Basic Package', quantity: 1, unitPrice: 1999 },
-    { description: 'Standard Package', quantity: 1, unitPrice: 3999 },
-    { description: 'Premium Package', quantity: 1, unitPrice: 7999 }
-  ];
-</script>
+```typescript
+est.items = [
+  { description: 'Basic Package', quantity: 1, unitPrice: 1999 },
+  { description: 'Standard Package', quantity: 1, unitPrice: 3999 },
+  { description: 'Premium Package', quantity: 1, unitPrice: 7999 }
+];
 ```
 
 ### With Discount and Tax
@@ -270,16 +266,15 @@ interface EstimateItem {
   discount="10"
   notes="Spring promotion: 10% off all services">
 </snice-estimate>
+```
 
-<script>
-  const est = document.getElementById('discount-est');
-  est.from = { name: 'European Services GmbH' };
-  est.to = { name: 'Client SE' };
-  est.items = [
-    { description: 'Consulting', quantity: 20, unitPrice: 150 },
-    { description: 'Implementation', quantity: 40, unitPrice: 120 }
-  ];
-</script>
+```typescript
+est.from = { name: 'European Services GmbH' };
+est.to = { name: 'Client SE' };
+est.items = [
+  { description: 'Consulting', quantity: 20, unitPrice: 150 },
+  { description: 'Implementation', quantity: 40, unitPrice: 120 }
+];
 ```
 
 ### With Terms and Conditions
@@ -292,13 +287,12 @@ interface EstimateItem {
   notes="Payment terms: Net 30 days upon acceptance."
   terms="Cancellation policy: 50% refund if cancelled within 5 business days. No refunds after work has commenced.">
 </snice-estimate>
+```
 
-<script>
-  const est = document.getElementById('terms-est');
-  est.from = { name: 'Professional Services' };
-  est.to = { name: 'Corporate Client' };
-  est.items = [{ description: 'Project Work', quantity: 1, unitPrice: 25000 }];
-</script>
+```typescript
+est.from = { name: 'Professional Services' };
+est.to = { name: 'Corporate Client' };
+est.items = [{ description: 'Project Work', quantity: 1, unitPrice: 25000 }];
 ```
 
 ### Listening for Events
@@ -309,30 +303,29 @@ interface EstimateItem {
   estimate-number="EST-EVT"
   status="sent">
 </snice-estimate>
+```
 
-<script>
-  const est = document.getElementById('event-est');
-  est.from = { name: 'Vendor' };
-  est.to = { name: 'Customer' };
-  est.items = [
-    { description: 'Item 1', quantity: 1, unitPrice: 500, optional: true },
-    { description: 'Item 2', quantity: 1, unitPrice: 300 }
-  ];
-  
-  est.addEventListener('item-toggle', (e) => {
-    console.log('Item', e.detail.index, 'included:', e.detail.included);
-  });
-  
-  est.addEventListener('estimate-accept', (e) => {
-    console.log('Estimate accepted!', e.detail.estimateNumber);
-    console.log('Total:', e.detail.total);
-    console.log('Items:', e.detail.items);
-  });
-  
-  est.addEventListener('estimate-decline', (e) => {
-    console.log('Estimate declined:', e.detail.estimateNumber);
-  });
-</script>
+```typescript
+est.from = { name: 'Vendor' };
+est.to = { name: 'Customer' };
+est.items = [
+  { description: 'Item 1', quantity: 1, unitPrice: 500, optional: true },
+  { description: 'Item 2', quantity: 1, unitPrice: 300 }
+];
+
+est.addEventListener('item-toggle', (e) => {
+  console.log('Item', e.detail.index, 'included:', e.detail.included);
+});
+
+est.addEventListener('estimate-accept', (e) => {
+  console.log('Estimate accepted!', e.detail.estimateNumber);
+  console.log('Total:', e.detail.total);
+  console.log('Items:', e.detail.items);
+});
+
+est.addEventListener('estimate-decline', (e) => {
+  console.log('Estimate declined:', e.detail.estimateNumber);
+});
 ```
 
 ### With QR Code
@@ -373,14 +366,11 @@ interface EstimateItem {
 ```html
 <snice-estimate id="json-est" estimate-number="EST-JSON"></snice-estimate>
 <button onclick="exportEstimate()">Export JSON</button>
+```
 
-<script>
-  function exportEstimate() {
-    const est = document.getElementById('json-est');
-    const data = est.toJSON();
-    console.log(data);
-    // Contains: estimateNumber, date, expiryDate, status, items, 
-    // subtotal, discountAmount, taxAmount, total, etc.
-  }
-</script>
+```typescript
+const data = est.toJSON();
+console.log(data);
+// Contains: estimateNumber, date, expiryDate, status, items,
+// subtotal, discountAmount, taxAmount, total, etc.
 ```

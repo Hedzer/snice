@@ -108,7 +108,7 @@ Set the `dismissable` attribute to allow users to close the message.
 ```
 
 ```typescript
-document.querySelector('snice-message-strip').addEventListener('dismiss', (e) => {
+messageStrip.addEventListener('dismiss', (e) => {
   console.log(`Dismissed: ${e.detail.variant}`);
 });
 ```
@@ -145,38 +145,37 @@ Use the `icon` slot for custom icon elements.
 ### Programmatic Show/Hide
 
 ```html
-<snice-message-strip id="msg" variant="success">
+<snice-message-strip variant="success">
   Your changes have been saved.
 </snice-message-strip>
+```
 
-<button onclick="document.getElementById('msg').hide()">Hide</button>
-<button onclick="document.getElementById('msg').show()">Show</button>
+```typescript
+messageStrip.hide();
+messageStrip.show();
 ```
 
 ### Form Validation Context
 
 ```html
 <form>
-  <snice-message-strip id="error" variant="danger" dismissable style="display: none;">
+  <snice-message-strip variant="danger" dismissable style="display: none;">
     Please fill in all required fields.
   </snice-message-strip>
 
   <input type="text" required>
   <button type="submit">Submit</button>
 </form>
+```
 
-<script type="module">
-  const form = document.querySelector('form');
-  const error = document.getElementById('error');
-
-  form.addEventListener('submit', (e) => {
-    if (!form.checkValidity()) {
-      e.preventDefault();
-      error.style.display = '';
-      error.show();
-    }
-  });
-</script>
+```typescript
+form.addEventListener('submit', (e) => {
+  if (!form.checkValidity()) {
+    e.preventDefault();
+    errorStrip.style.display = '';
+    errorStrip.show();
+  }
+});
 ```
 
 ### Stacked Messages

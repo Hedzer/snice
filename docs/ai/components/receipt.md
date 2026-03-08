@@ -147,17 +147,6 @@ interface ReceiptTaxLine {
   variant="standard">
 </snice-receipt>
 
-<script>
-  const r = document.querySelector('snice-receipt');
-  r.merchant = { name: 'Coffee House', address: '123 Brew St', phone: '555-0100' };
-  r.items = [
-    { name: 'Cappuccino', quantity: 2, price: 4.50 },
-    { name: 'Croissant', quantity: 1, price: 3.75 }
-  ];
-  r.tax = 1.15;
-  r.tip = 2.00;
-</script>
-
 <!-- Thermal -->
 <snice-receipt variant="thermal"></snice-receipt>
 
@@ -165,16 +154,24 @@ interface ReceiptTaxLine {
 <snice-receipt variant="modern" show-qr qr-position="bottom">
   <snice-qr-code slot="qr" value="https://receipt.example.com/4521"></snice-qr-code>
 </snice-receipt>
+```
 
-<!-- Detailed with tax breakdown -->
-<script>
-  r.variant = 'detailed';
-  r.taxes = [
-    { label: 'State Tax', rate: 6, amount: 3.00 },
-    { label: 'City Tax', rate: 2, amount: 1.00 }
-  ];
-  r.items = [{ name: 'Widget', quantity: 1, price: 50, sku: 'WDG-001', note: 'Gift wrapped' }];
-</script>
+```typescript
+receipt.merchant = { name: 'Coffee House', address: '123 Brew St', phone: '555-0100' };
+receipt.items = [
+  { name: 'Cappuccino', quantity: 2, price: 4.50 },
+  { name: 'Croissant', quantity: 1, price: 3.75 }
+];
+receipt.tax = 1.15;
+receipt.tip = 2.00;
+
+// Detailed with tax breakdown
+receipt.variant = 'detailed';
+receipt.taxes = [
+  { label: 'State Tax', rate: 6, amount: 3.00 },
+  { label: 'City Tax', rate: 2, amount: 1.00 }
+];
+receipt.items = [{ name: 'Widget', quantity: 1, price: 50, sku: 'WDG-001', note: 'Gift wrapped' }];
 ```
 
 ## Notes

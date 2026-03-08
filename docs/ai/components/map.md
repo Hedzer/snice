@@ -66,8 +66,7 @@ interface MapMarker {
 <snice-map zoom="10" min-zoom="3" max-zoom="16"></snice-map>
 ```
 
-```js
-const map = document.querySelector('snice-map');
+```typescript
 map.center = { lat: 40.7128, lng: -74.006 };
 map.markers = [
   { id: 'nyc', lat: 40.7128, lng: -74.006, label: 'NYC', popup: 'New York City' },

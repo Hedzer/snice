@@ -46,7 +46,6 @@ label: string = '';                  // Accessible label
 ```
 
 ```typescript
-const modal = document.querySelector('snice-modal');
 modal.show();
 modal.close();
 modal.addEventListener('modal-close', () => console.log('Closed'));

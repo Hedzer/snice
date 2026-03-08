@@ -37,8 +37,9 @@ interface AvailabilityRange {
 
 ```html
 <snice-availability start-hour="8" end-hour="18" granularity="30"></snice-availability>
+```
 
-<script>
+```typescript
 // Pre-fill
 availability.setAvailability([
   { day: 0, start: '09:00', end: '17:00' },
@@ -55,7 +56,6 @@ const ranges = availability.getAvailability();
 
 // Clear all
 availability.clear();
-</script>
 
 <!-- Readonly display -->
 <snice-availability readonly></snice-availability>

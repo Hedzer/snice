@@ -67,13 +67,15 @@ variant: 'dropdown'|'inline' = 'dropdown';
 
 <!-- Event handling -->
 <snice-date-time-picker id="dtp"></snice-date-time-picker>
-<script>
-document.querySelector('#dtp').addEventListener('datetime-change', (e) => {
+```
+
+```typescript
+dtp.addEventListener('datetime-change', (e) => {
   console.log('ISO:', e.detail.iso);
   console.log('Date:', e.detail.dateString);
   console.log('Time:', e.detail.timeString);
 });
-</script>
+```
 ```
 
 ## CSS Parts

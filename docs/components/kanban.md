@@ -147,9 +147,7 @@ snice-kanban::part(column-cards) {
 
 ## Basic Usage
 
-```javascript
-const kanban = document.querySelector('snice-kanban');
-
+```typescript
 kanban.columns = [
   {
     id: 'todo',

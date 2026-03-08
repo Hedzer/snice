@@ -185,33 +185,23 @@ export class AuthController implements IController {
 
 ### Event-Based (Without Controller)
 
-```html
-<snice-login id="login"></snice-login>
+```typescript
+login.addEventListener('login-success', () => {
+  window.location.href = '/dashboard';
+});
 
-<script type="module">
-  import 'snice/components/login/snice-login';
+login.addEventListener('login-error', (e) => {
+  console.error('Failed:', e.detail.error);
+});
 
-  const login = document.getElementById('login');
-
-  login.addEventListener('login-success', () => {
-    window.location.href = '/dashboard';
-  });
-
-  login.addEventListener('login-error', (e) => {
-    console.error('Failed:', e.detail.error);
-  });
-
-  login.addEventListener('login-forgot-password', () => {
-    window.location.href = '/forgot-password';
-  });
-</script>
+login.addEventListener('login-forgot-password', () => {
+  window.location.href = '/forgot-password';
+});
 ```
 
 ### Programmatic Control
 
 ```typescript
-const login = document.querySelector('snice-login');
-
 // Set credentials
 login.setCredentials({ username: 'user@example.com', password: 'pass123' });
 

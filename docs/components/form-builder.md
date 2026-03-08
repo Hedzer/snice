@@ -72,9 +72,7 @@ import 'snice/components/form-builder/snice-form-builder';
 
 Use the `setSchema()` method to load an existing form definition.
 
-```javascript
-const fb = document.querySelector('snice-form-builder');
-
+```typescript
 fb.setSchema({
   title: 'Contact Us',
   description: 'We\'d love to hear from you.',

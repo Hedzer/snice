@@ -55,8 +55,7 @@ outputType: CropperOutputType = 'png'         // attr: output-type — 'png' | '
 <snice-cropper src="/photo.jpg" aspect-ratio="1" output-type="jpeg"></snice-cropper>
 ```
 
-```js
-const cropper = document.querySelector('snice-cropper');
+```typescript
 const blob = await cropper.crop();
 
 // Rotate 90 degrees clockwise

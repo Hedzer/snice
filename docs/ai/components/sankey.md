@@ -34,19 +34,19 @@ interface SankeyLink { source: string; target: string; value: number; color?: st
 ## Usage
 
 ```html
-<snice-sankey id="my-sankey" show-labels show-values animation></snice-sankey>
+<snice-sankey show-labels show-values animation></snice-sankey>
+```
 
-<script>
-  document.getElementById('my-sankey').data = {
-    nodes: [
-      { id: 'a', label: 'Source', color: '#2196f3' },
-      { id: 'b', label: 'Target', color: '#4caf50' }
-    ],
-    links: [
-      { source: 'a', target: 'b', value: 100 }
-    ]
-  };
-</script>
+```typescript
+sankey.data = {
+  nodes: [
+    { id: 'a', label: 'Source', color: '#2196f3' },
+    { id: 'b', label: 'Target', color: '#4caf50' }
+  ],
+  links: [
+    { source: 'a', target: 'b', value: 100 }
+  ]
+};
 ```
 
 **CSS Parts:**
