@@ -89,6 +89,23 @@
   color: var(--snice-color-text-inverse, rgb(250 250 250));
 }
 
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .tag {
+    background: hsl(214 100% 15%);
+    color: hsl(213 97% 80%);
+  }
+
+  .tag-remove {
+    color: hsl(213 97% 80%);
+  }
+
+  .tag-remove:hover {
+    background: hsl(213 97% 80%);
+    color: hsl(214 100% 10%);
+  }
+}
+
 /* Input */
 .tag-input-field {
   flex: 1;

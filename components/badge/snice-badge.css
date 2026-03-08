@@ -28,8 +28,11 @@
   box-shadow: var(--snice-shadow-sm, 0 1px 2px 0 rgb(0 0 0 / 0.05));
   border: 2px solid var(--snice-color-background, rgb(255 255 255 / 0.9));
   box-sizing: border-box;
-  text-shadow: 0 1px 3px rgb(0 0 0 / 0.8), 0 0 2px rgb(0 0 0 / 0.6), 0 0 6px rgb(0 0 0 / 0.3);
-  -webkit-text-stroke: 0.5px rgb(0 0 0 / 0.25);
+  text-shadow:
+    -1px -1px 0 rgb(0 0 0 / 0.3),
+     1px -1px 0 rgb(0 0 0 / 0.3),
+    -1px  1px 0 rgb(0 0 0 / 0.3),
+     1px  1px 0 rgb(0 0 0 / 0.3);
 }
 
 .badge--dot {
