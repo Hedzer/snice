@@ -21,7 +21,7 @@
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "npm run sync-versions && npm run website:build:full"
+        "prepareCmd": "npm run website:build:full"
       }
     ],
     [
@@ -32,7 +32,8 @@
           "package-lock.json",
           "CHANGELOG.md",
           "bin/templates/**/package.json",
-          "public/**"
+          "public/**",
+          "adapters/react/**"
         ],
         "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }

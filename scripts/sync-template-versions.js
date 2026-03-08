@@ -7,9 +7,9 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Read main package.json version
+// Use CLI argument if provided, otherwise read from package.json
 const mainPackageJson = JSON.parse(readFileSync(join(__dirname, '../package.json'), 'utf8'));
-const currentVersion = mainPackageJson.version;
+const currentVersion = process.argv[2] || mainPackageJson.version;
 const majorVersion = currentVersion.split('.')[0];
 const versionRange = `^${majorVersion}.0.0`;
 
