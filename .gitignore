@@ -86,3 +86,4 @@ public/components/
 .plans/
 .research/
 /*.png
+.playwright-mcp/
