@@ -1,3 +1,10 @@
+## [4.26.1](https://gitlab.com/Hedzer/snice/compare/v4.26.0...v4.26.1) (2026-03-08)
+
+
+### Bug Fixes
+
+* clean up orphaned release tags and fix release pipeline ([6fee8e0](https://gitlab.com/Hedzer/snice/commit/6fee8e045a63ae18ebd2e634285ea3e307d6a0c4))
+
 # [4.19.0](https://gitlab.com/Hedzer/snice/compare/v4.18.0...v4.19.0) (2026-03-08)
 
 
