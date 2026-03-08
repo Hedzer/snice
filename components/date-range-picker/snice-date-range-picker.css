@@ -1,7 +1,10 @@
 /* Date Range Picker Component Styles — matches snice-date-picker exactly */
 :host {
-  display: block;
+  display: inline-block;
   position: relative;
+  width: 100%;
+  max-width: 20rem; /* 320px */
+  box-sizing: border-box;
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
   font-size: var(--snice-font-size-sm, 0.875rem);
   line-height: var(--snice-line-height-normal, 1.5);
