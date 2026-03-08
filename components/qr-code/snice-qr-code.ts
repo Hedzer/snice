@@ -1,4 +1,4 @@
-import { element, property, render, styles, query, ready, html, css } from 'snice';
+import { element, property, render, styles, query, ready, watch, html, css } from 'snice';
 import type { QRCodeErrorCorrectionLevel, QRCodeRenderMode, QRCodeDotStyle, SniceQRCodeElement } from './snice-qr-code.types';
 import qrCodeStyles from './snice-qr-code.css?inline';
 import { QRCode } from './qrcode';
@@ -70,15 +70,29 @@ export class SniceQRCode extends HTMLElement implements SniceQRCodeElement {
     }
   }
 
+  @watch('value')
+  @watch('size')
+  @watch('errorCorrectionLevel')
+  @watch('renderMode')
+  @watch('dotStyle')
+  @watch('margin')
+  @watch('fgColor')
+  @watch('bgColor')
+  @watch('includeImage')
+  @watch('imageUrl')
+  @watch('imageSize')
+  @watch('centerText')
+  @watch('centerTextSize')
+  @watch('textFillColor')
+  @watch('textOutlineColor')
+  private onPropertyChange() {
+    if (this.value) {
+      this.generateQRCode();
+    }
+  }
+
   @render()
   render() {
-    // Trigger QR code generation after render
-    if (this.value) {
-      requestAnimationFrame(() => {
-        this.generateQRCode();
-      });
-    }
-
     return html/*html*/`
       <div part="base" class="qr-container"></div>
     `;
@@ -114,10 +128,7 @@ export class SniceQRCode extends HTMLElement implements SniceQRCodeElement {
       margin: this.margin
     } as any);
 
-    // Apply overlays after QR code is rendered
-    requestAnimationFrame(() => {
-      this.applyOverlays();
-    });
+    this.applyOverlays();
   }
 
   private applyOverlays() {

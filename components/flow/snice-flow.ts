@@ -130,12 +130,10 @@ export class SniceFlow extends HTMLElement implements SniceFlowElement {
       }
     });
     this.resizeObserver.observe(this);
-    requestAnimationFrame(() => {
-      this.ensureSvgSetup();
-      this.attachListeners();
-      this.initialized = true;
-      this.rebuild();
-    });
+    this.ensureSvgSetup();
+    this.attachListeners();
+    this.initialized = true;
+    this.rebuild();
   }
 
   @watch('nodes')

@@ -431,10 +431,8 @@ export class SniceDoc extends HTMLElement {
 
     customElements.whenDefined('snice-modal').then(() => {
       requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          (dialog as any).open = true;
-          setTimeout(() => rowsInput.focus(), 100);
-        });
+        (dialog as any).show();
+        setTimeout(() => rowsInput.focus(), 100);
       });
     });
   }

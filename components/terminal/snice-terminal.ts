@@ -1,4 +1,4 @@
-import { element, property, dispatch, request, render, styles, html, css, query, unsafeHTML } from 'snice';
+import { element, property, dispatch, request, render, styles, html, css, query, unsafeHTML, ready } from 'snice';
 import cssContent from './snice-terminal.css?inline';
 import type {
   SniceTerminalElement,
@@ -56,7 +56,8 @@ export class SniceTerminal extends HTMLElement implements SniceTerminalElement {
     return {};
   }
 
-  connectedCallback() {
+  @ready()
+  onReady() {
     this.dispatchReadyEvent();
   }
 

@@ -94,12 +94,8 @@ export class SniceTree extends HTMLElement implements SniceTreeElement {
     this.updateTreeItemsDOM();
 
     // Restore loading state and finish any completed loads
-    requestAnimationFrame(() => {
-      this.restoreLoadingState();
-      requestAnimationFrame(() => {
-        this.finishLoadingNodes();
-      });
-    });
+    this.restoreLoadingState();
+    this.finishLoadingNodes();
   }
 
   private trackLoadingNodes() {
@@ -160,44 +156,27 @@ export class SniceTree extends HTMLElement implements SniceTreeElement {
   }
 
   private updateTreeItems() {
-    // Wait for next frame to ensure elements are rendered
-    requestAnimationFrame(() => {
-      if (!this.treeItems || this.treeItems.length === 0) {
-        // Fallback to manual query if @queryAll hasn't populated yet
-        const items = this.shadowRoot?.querySelectorAll('.tree > .tree__content > snice-tree-item');
-        if (items) {
-          items.forEach((item, index) => {
-            if (this.nodes[index] && (item as any).setNode) {
-              (item as any).setNode(this.nodes[index], 0);
-            }
-          });
+    // Query items directly — they were just appended to the DOM in updateTreeItemsDOM
+    const items = this.shadowRoot?.querySelectorAll('.tree__content > snice-tree-item');
+    if (items) {
+      items.forEach((item, index) => {
+        if (this.nodes[index] && (item as any).setNode) {
+          (item as any).setNode(this.nodes[index], 0);
         }
-      } else {
-        this.treeItems.forEach((item, index) => {
-          if (this.nodes[index] && (item as any).setNode) {
-            (item as any).setNode(this.nodes[index], 0);
-          }
-        });
-      }
-    });
+      });
+    }
   }
 
   @watch('selectedNodes')
   handleSelectedNodesChange() {
     this.syncNodeStates();
-    // Update tree item selected states
-    requestAnimationFrame(() => {
-      this.updateSelectedStatesOnly();
-    });
+    this.updateSelectedStatesOnly();
   }
 
   @watch('checkedNodes')
   handleCheckedNodesChange() {
     this.syncNodeStates();
-    // Update tree item checkbox states
-    requestAnimationFrame(() => {
-      this.updateCheckboxStatesOnly();
-    });
+    this.updateCheckboxStatesOnly();
   }
 
   private buildNodeMap() {

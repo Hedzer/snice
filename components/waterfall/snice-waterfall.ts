@@ -93,10 +93,7 @@ export class SniceWaterfall extends HTMLElement implements SniceWaterfallElement
   }
 
   private rebuildChart() {
-    if (!this.chartEl) {
-      requestAnimationFrame(() => this.rebuildChart());
-      return;
-    }
+    if (!this.chartEl) return;
 
     if (this.bars.length === 0) {
       this.chartEl.innerHTML = '';

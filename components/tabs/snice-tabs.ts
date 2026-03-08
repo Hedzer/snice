@@ -168,10 +168,7 @@ export class SniceTabs extends HTMLElement {
 
   setupTabs() {
     this.updateSelection();
-    // Delay indicator update to ensure DOM is ready
-    requestAnimationFrame(() => {
-      this.updateIndicator();
-    });
+    this.updateIndicator();
   }
 
   @dispatch('tab-change', { bubbles: true, composed: true })

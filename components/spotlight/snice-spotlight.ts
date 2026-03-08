@@ -238,9 +238,7 @@ export class SniceSpotlight extends HTMLElement implements SniceSpotlightElement
 
     // Use instant scroll so getBoundingClientRect is accurate immediately
     target.scrollIntoView({ behavior: 'instant', block: 'center' });
-
-    // Position after layout
-    requestAnimationFrame(() => this._updatePosition());
+    this._updatePosition();
   }
 
   start() {

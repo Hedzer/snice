@@ -148,10 +148,7 @@ export class SniceFunnel extends HTMLElement implements SniceFunnelElement {
 
   private rebuildChart() {
     const chart = this.chartEl;
-    if (!chart) {
-      requestAnimationFrame(() => this.rebuildChart());
-      return;
-    }
+    if (!chart) return;
 
     const svgString = this.orientation === 'horizontal'
       ? this.buildHorizontalSVG()

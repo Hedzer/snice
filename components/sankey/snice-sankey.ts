@@ -500,10 +500,7 @@ export class SniceSankey extends HTMLElement implements SniceSankeyElement {
 
   private rebuildChart() {
     const chart = this.chartEl;
-    if (!chart) {
-      requestAnimationFrame(() => this.rebuildChart());
-      return;
-    }
+    if (!chart) return;
 
     const hasData = this.layoutNodes.length > 0;
     if (!hasData) {

@@ -327,22 +327,17 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
       this.internals.setFormValue(this.value);
     }
 
-    // Wait for @query decorators to populate shadow DOM elements
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        if (this.editable) {
-          this.syncEditableInputToValue();
-          this.updateEditableState();
-        } else {
-          // Set initial imperative state
-          this.updateTriggerState();
-          this.updateValueDisplay();
-          this.updateClearButton();
-        }
-        this.updateDropdownState();
-        this.updateDropdownContent();
-      });
-    });
+    if (this.editable) {
+      this.syncEditableInputToValue();
+      this.updateEditableState();
+    } else {
+      // Set initial imperative state
+      this.updateTriggerState();
+      this.updateValueDisplay();
+      this.updateClearButton();
+    }
+    this.updateDropdownState();
+    this.updateDropdownContent();
 
     // Watch for changes to child options
     this.observeChildren();

@@ -171,8 +171,7 @@ export class SniceFormBuilder extends HTMLElement implements SniceFormBuilderEle
       e.dataTransfer.effectAllowed = 'move';
       e.dataTransfer.setData('text/plain', String(index));
     }
-    const target = e.currentTarget as HTMLElement;
-    requestAnimationFrame(() => target.classList.add('field--dragging'));
+    (e.currentTarget as HTMLElement).classList.add('field--dragging');
   }
 
   private handleFieldDragOver(index: number, e: DragEvent): void {

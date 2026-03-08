@@ -278,12 +278,7 @@ export class SniceCameraAnnotate extends HTMLElement implements SniceCameraAnnot
 
     this.stopCamera();
     this.mode = 'annotate';
-
-    // Init canvas after mode switch renders it
-    requestAnimationFrame(() => {
-      this.initDrawCanvas();
-      this.emitCapture();
-    });
+    this.emitCapture();
   }
 
   private retake(): void {
@@ -295,7 +290,6 @@ export class SniceCameraAnnotate extends HTMLElement implements SniceCameraAnnot
     this.colorIndex = 0;
     this.activeColor = PRESET_COLORS[0];
     this.mode = 'camera';
-    requestAnimationFrame(() => this.startCamera());
   }
 
   // --- Drawing ---
@@ -650,9 +644,14 @@ export class SniceCameraAnnotate extends HTMLElement implements SniceCameraAnnot
   }
 
   @watch('mode')
-  handleModeChange() {
+  async handleModeChange() {
+    // Wait for microtask render to complete so DOM reflects the new mode
+    await Promise.resolve();
+
     if (this.mode === 'annotate' && this.capturedImage) {
-      requestAnimationFrame(() => this.initDrawCanvas());
+      this.initDrawCanvas();
+    } else if (this.mode === 'camera') {
+      this.startCamera();
     }
   }
 

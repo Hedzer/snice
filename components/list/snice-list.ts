@@ -41,10 +41,7 @@ export class SniceList extends HTMLElement {
     }) as EventListener);
 
     if (this.infinite) {
-      // Wait for render to complete before setting up infinite scroll
-      requestAnimationFrame(() => {
-        this.setupInfiniteScroll();
-      });
+      this.setupInfiniteScroll();
     }
   }
 

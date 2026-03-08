@@ -114,10 +114,7 @@ export class SniceAppTiles extends HTMLElement implements SniceAppTilesElement {
 
   private rebuild() {
     const container = this.tilesContainerEl;
-    if (!container) {
-      requestAnimationFrame(() => this.rebuild());
-      return;
-    }
+    if (!container) return;
 
     container.style.setProperty('--tiles-columns', String(this.columns));
     container.classList.toggle('tiles--list', this.variant === 'list');

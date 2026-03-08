@@ -136,9 +136,7 @@ export class SniceSplitButton extends HTMLElement implements SniceSplitButtonEle
 
   @ready()
   init() {
-    requestAnimationFrame(() => {
-      this.updateMenuContent();
-    });
+    this.updateMenuContent();
     this.setupGlobalListeners();
   }
 
@@ -268,9 +266,7 @@ export class SniceSplitButton extends HTMLElement implements SniceSplitButtonEle
 
   @watch('actions')
   handleActionsChange() {
-    requestAnimationFrame(() => {
-      this.updateMenuContent();
-    });
+    this.updateMenuContent();
   }
 
   @watch('disabled')

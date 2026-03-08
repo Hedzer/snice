@@ -718,10 +718,7 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
 
   private rebuild() {
     const wrapper = this.wrapperEl;
-    if (!wrapper) {
-      requestAnimationFrame(() => this.rebuild());
-      return;
-    }
+    if (!wrapper) return;
 
     if (!this.listenersAttached) {
       this.attachListeners();

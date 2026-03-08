@@ -289,10 +289,7 @@ export class SniceTreemap extends HTMLElement implements SniceTreemapElement {
 
   /** Rebuild the entire SVG chart via innerHTML on the chart container */
   private rebuildChart() {
-    if (!this.chartEl) {
-      requestAnimationFrame(() => this.rebuildChart());
-      return;
-    }
+    if (!this.chartEl) return;
 
     this._rects = this.computeRects();
 

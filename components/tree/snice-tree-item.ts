@@ -64,15 +64,9 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
       this.indeterminate = node.indeterminate;
     }
 
-    // Update DOM
+    // Update DOM (this also calls updateChildrenDOM which creates child elements
+    // and synchronously calls updateChildTreeItems)
     this.updateDOM();
-
-    // Update child tree items after render completes
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        this.updateChildTreeItems();
-      });
-    });
   }
 
   @watch('expanded')
@@ -189,11 +183,9 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
       this.toggle();
     });
 
-    // Attach checkbox listener after element is defined
-    requestAnimationFrame(() => {
-      const checkbox = this.shadowRoot!.querySelector('snice-checkbox');
-      checkbox?.addEventListener('checkbox-change', (e) => this.handleCheckboxChangeEvent(e as CustomEvent));
-    });
+    // Attach checkbox listener — element exists in the DOM already (just set innerHTML above)
+    const checkbox = this.shadowRoot!.querySelector('snice-checkbox');
+    checkbox?.addEventListener('checkbox-change', (e) => this.handleCheckboxChangeEvent(e as CustomEvent));
   }
 
   private updateDOM() {
@@ -292,12 +284,9 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
     }
 
     if (checkbox) {
-      // Use requestAnimationFrame to ensure checkbox component is ready
-      requestAnimationFrame(() => {
-        checkbox.checked = this.checked;
-        checkbox.indeterminate = this.indeterminate;
-        checkbox.disabled = this.node.disabled || false;
-      });
+      checkbox.checked = this.checked;
+      checkbox.indeterminate = this.indeterminate;
+      checkbox.disabled = this.node.disabled || false;
     }
   }
 
@@ -330,10 +319,8 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
       childrenContainer.appendChild(item);
     });
 
-    // Update child nodes after they're added to DOM
-    requestAnimationFrame(() => {
-      this.updateChildTreeItems();
-    });
+    // Update child nodes — they were just appended to the DOM above
+    this.updateChildTreeItems();
   }
 
   private handleContentClick(e: MouseEvent) {
