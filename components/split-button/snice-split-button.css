@@ -90,7 +90,7 @@
 
 .split-button--default .split-button__primary:hover:not(:disabled),
 .split-button--default .split-button__toggle:hover:not(:disabled) {
-  background: var(--snice-color-background-secondary, rgb(245 245 245));
+  background: var(--snice-color-background-hover, rgb(241 241 241));
 }
 
 .split-button--default .split-button__divider {
@@ -203,7 +203,7 @@
 
 .split-button--outline .split-button__primary:hover:not(:disabled),
 .split-button--outline .split-button__toggle:hover:not(:disabled) {
-  background: var(--snice-color-background-secondary, rgb(245 245 245));
+  background: var(--snice-color-background-hover, rgb(241 241 241));
 }
 
 .split-button--outline .split-button__divider {
@@ -382,7 +382,7 @@
 }
 
 .split-button__action:hover:not(:disabled) {
-  background: var(--snice-color-background-secondary, rgb(245 245 245));
+  background: var(--snice-color-background-hover, rgb(241 241 241));
 }
 
 .split-button__action:focus-visible {
