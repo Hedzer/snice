@@ -1,30 +1,27 @@
     <!-- ── 10. Table ── -->
     <div class="comp-section">
       <h3>Table</h3>
-      <p class="comp-desc">Data tables with 15 column types, sorting, search, selection, and Excel-like formatting</p>
+      <p class="comp-desc">Data tables with 20+ column types, sorting, filtering, search, column resize, toolbar, and Excel-like formatting</p>
       <div class="comp-split comp-split-stacked">
         <div class="comp-split-demo demo-col">
-          <snice-table id="demo-table" size="medium" hoverable sortable selectable searchable striped style="width:100%"></snice-table>
+          <snice-table id="demo-table" size="medium" hoverable sortable selectable column-resize column-menu striped style="width:100%"></snice-table>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">javascript</span>
           <snice-code-block language="javascript" grammar="grammars/typescript.json?v=80938d7">table.columns = [
   { key: 'product', label: 'Product', sortable: true },
-  { key: 'revenue', label: 'Revenue', align: 'right',
-    formatter: v =&gt; '$' + Number(v).toLocaleString() },
-  { key: 'growth', label: 'Growth', align: 'right',
-    formatter: v =&gt; (v &gt;= 0 ? '+' : '') + v.toFixed(1) + '%' },
-  { key: 'users', label: 'Users', align: 'right',
-    formatter: v =&gt; Number(v).toLocaleString() },
-  { key: 'trend', label: 'Trend', type: 'sparkline',
-    sparklineFormat: { type: 'line', color: '#3b82f6' } },
-  { key: 'status', label: 'Status' }
+  { key: 'revenue', label: 'Revenue', type: 'currency' },
+  { key: 'growth', label: 'Growth', type: 'percent' },
+  { key: 'rating', label: 'Rating', type: 'rating' },
+  { key: 'progress', label: 'Completion', type: 'progress' },
+  { key: 'trend', label: 'Trend', type: 'sparkline' },
+  { key: 'status', label: 'Status', type: 'tag' }
 ];
 
-// 15 built-in types: text, number, currency, percent,
-// rating, progress, sparkline, boolean, date,
-// duration, filesize, accounting, scientific,
-// fraction, custom</snice-code-block>
+// 20+ built-in types: text, number, currency, percent,
+// rating, progress, sparkline, boolean, date, tag,
+// duration, filesize, email, phone, link, color,
+// image, status, actions, location</snice-code-block>
         </div>
       </div>
     </div>
@@ -34,24 +31,26 @@
       const table = document.getElementById('demo-table');
       if (table) {
         table.columns = [
-          { key: 'product', label: 'Product', type: 'text', sortable: true },
-          { key: 'revenue', label: 'Revenue', type: 'text', align: 'right', sortable: true },
-          { key: 'growth', label: 'Growth', type: 'text', align: 'right', sortable: true },
-          { key: 'users', label: 'Users', type: 'text', align: 'right', sortable: true },
-          { key: 'trend', label: 'Trend', type: 'sparkline', sortable: false,
-            sparklineFormat: { type: 'line', color: '#3b82f6', height: 24, width: 80 } },
-          { key: 'status', label: 'Status', type: 'text', sortable: true }
+          { key: 'product', label: 'Product', type: 'text', sortable: true, width: '160' },
+          { key: 'revenue', label: 'Revenue', type: 'currency', sortable: true, width: '120' },
+          { key: 'growth', label: 'Growth', type: 'percent', sortable: true, width: '80' },
+          { key: 'rating', label: 'Rating', type: 'rating', sortable: true, width: '110' },
+          { key: 'progress', label: 'Completion', type: 'progress', sortable: true, width: '120' },
+          { key: 'trend', label: 'Trend', type: 'sparkline', sortable: false, width: '100',
+            sparklineFormat: { type: 'line', height: 24, width: 80 } },
+          { key: 'status', label: 'Status', type: 'tag', sortable: true, width: '80' }
         ];
         table.setData([
-          { product: 'Nebula Pro', revenue: '$284,500', growth: '+12.5%', users: '12,450', trend: [32,35,38,36,42,45,48], status: 'Active' },
-          { product: 'Quantum Core', revenue: '$891,200', growth: '\u22123.2%', users: '45,200', trend: [50,48,45,47,43,42,40], status: 'Active' },
-          { product: 'Luna Shield', revenue: '$156,800', growth: '+28.7%', users: '8,900', trend: [20,28,35,40,52,58,65], status: 'Active' },
-          { product: 'Flux Engine', revenue: '$423,900', growth: '+5.1%', users: '28,100', trend: [40,42,41,43,42,44,43], status: 'Active' },
-          { product: 'Atlas Cloud', revenue: '$1,245,000', growth: '\u22128.4%', users: '67,500', trend: [60,55,50,48,44,40,38], status: 'Paused' },
-          { product: 'Prism Analytics', revenue: '$367,400', growth: '+18.3%', users: '19,800', trend: [25,30,33,38,42,48,52], status: 'Active' },
-          { product: 'Vortex Cache', revenue: '$98,700', growth: '+42.6%', users: '5,200', trend: [10,18,25,30,38,45,55], status: 'Active' },
-          { product: 'Helios API', revenue: '$712,800', growth: '+2.8%', users: '38,400', trend: [44,45,43,46,45,47,46], status: 'Active' }
+          { product: 'Nebula Pro', revenue: 284500, growth: 12.5, rating: 4.5, progress: 92, trend: { values: [32,35,38,36,42,45,48], color: '#22c55e' }, status: 'Active' },
+          { product: 'Quantum Core', revenue: 891200, growth: -3.2, rating: 4, progress: 78, trend: { values: [50,48,45,47,43,42,40], color: '#ef4444' }, status: 'Active' },
+          { product: 'Luna Shield', revenue: 156800, growth: 28.7, rating: 5, progress: 45, trend: { values: [20,28,35,40,52,58,65], color: '#22c55e' }, status: 'Active' },
+          { product: 'Flux Engine', revenue: 423900, growth: 5.1, rating: 3.5, progress: 88, trend: { values: [40,42,41,43,42,44,43], color: '#eab308' }, status: 'Active' },
+          { product: 'Atlas Cloud', revenue: 1245000, growth: -8.4, rating: 3, progress: 34, trend: { values: [60,55,50,48,44,40,38], color: '#ef4444' }, status: 'Paused' },
+          { product: 'Prism Analytics', revenue: 367400, growth: 18.3, rating: 4, progress: 67, trend: { values: [25,30,33,38,42,48,52], color: '#22c55e' }, status: 'Active' },
+          { product: 'Vortex Cache', revenue: 98700, growth: 42.6, rating: 4.5, progress: 23, trend: { values: [10,18,25,30,38,45,55], color: '#22c55e' }, status: 'Beta' },
+          { product: 'Helios API', revenue: 712800, growth: 2.8, rating: 4, progress: 95, trend: { values: [44,45,43,46,45,47,46], color: '#eab308' }, status: 'Active' }
         ]);
+        table.setToolbar({ showSearch: true, showSort: true, showFilter: true, showExport: true });
         requestAnimationFrame(() => {
           if (table.renderHeader) table.renderHeader();
           if (table.renderBody) table.renderBody();
