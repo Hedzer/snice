@@ -1393,8 +1393,11 @@ export class SniceTable extends HTMLElement {
     if (this.selectable) {
       const selectCell = document.createElement('th');
       selectCell.className = 'select-column';
-      const allSelected = this.selectedRows.length === this.data.length && this.data.length > 0;
-      const someSelected = this.selectedRows.length > 0 && this.selectedRows.length < this.data.length;
+      const filteredData = this.getFilteredData();
+      const filteredIndices = filteredData.map((row) => this.data.indexOf(row));
+      const selectedInFiltered = filteredIndices.filter(i => this.selectedRows.includes(i));
+      const allSelected = selectedInFiltered.length === filteredIndices.length && filteredIndices.length > 0;
+      const someSelected = selectedInFiltered.length > 0 && selectedInFiltered.length < filteredIndices.length;
       selectCell.innerHTML = `<snice-checkbox class="select-all" size="small" compact ${allSelected ? 'checked' : ''}></snice-checkbox>`;
       headerRow.appendChild(selectCell);
       
@@ -1535,6 +1538,7 @@ export class SniceTable extends HTMLElement {
         const input = document.createElement('snice-input') as any;
         input.size = 'small';
         input.placeholder = `Filter ${column.label}...`;
+        input.setAttribute('data-column', column.key);
         input.value = this.filterEngine.getHeaderFilter(column.key);
         input.style.cssText = 'width:100%;--snice-color-border:transparent;--snice-border-radius-md:0;';
         input.addEventListener('input', () => {
@@ -1852,127 +1856,142 @@ export class SniceTable extends HTMLElement {
     return `<button class="pagination__btn pagination__page${active}" data-page="${page}">${page}</button>`;
   }
 
-  getCellAttributes(column: any, value: any): string {
-    const attributes = [
-      `type="${column.type}"`,
-      `align="${column.align || 'left'}"`,
-      `value="${String(value || '').replace(/"/g, '&quot;')}"`,
-      `in-table="true"`
-    ];
-    
-    // Add type-specific attributes
-    if (column.type === 'number' || column.type === 'currency') {
-      if (column.decimals !== undefined) attributes.push(`decimals="${column.decimals}"`);
-      if (column.thousandsSeparator) attributes.push(`thousands-separator="true"`);
-      if (column.prefix) attributes.push(`prefix="${column.prefix}"`);
-      if (column.suffix) attributes.push(`suffix="${column.suffix}"`);
-    }
-    
-    if (column.type === 'date') {
-      if (column.dateFormat) attributes.push(`date-format="${column.dateFormat}"`);
-    }
-    
-    if (column.type === 'boolean') {
-      if (column.useSymbols) attributes.push(`use-symbols="true"`);
-      if (column.trueSymbol) attributes.push(`true-symbol="${column.trueSymbol}"`);
-      if (column.falseSymbol) attributes.push(`false-symbol="${column.falseSymbol}"`);
-      if (column.trueValue) attributes.push(`true-value="${column.trueValue}"`);
-      if (column.falseValue) attributes.push(`false-value="${column.falseValue}"`);
+  /** Create a cell element safely using createElement + setAttribute */
+  createCellElement(column: any, value: any): HTMLElement {
+    const tagName = this.getCellTagName(column.type);
+    const el = document.createElement(tagName) as any;
+
+    // Base attributes
+    el.setAttribute('type', column.type || 'text');
+    el.setAttribute('align', column.align || 'left');
+    el.setAttribute('in-table', 'true');
+
+    // Value: serialize objects to JSON, primitives as string
+    const isObjectValue = value !== null && typeof value === 'object';
+    if (isObjectValue) {
+      el.setAttribute('value', JSON.stringify(value));
+    } else {
+      el.setAttribute('value', String(value ?? ''));
     }
 
-    if (column.type === 'sparkline') {
-      const sf = (column as any).sparklineFormat;
-      if (sf) {
-        if (sf.color) attributes.push(`color="${sf.color}"`);
-        if (sf.type) attributes.push(`chart-type="${sf.type}"`);
-        if (sf.width) attributes.push(`width="${sf.width}"`);
-        if (sf.height) attributes.push(`height="${sf.height}"`);
+    // Column definition as property (for formatter access etc.)
+    el.column = column;
+
+    // Type-specific attributes
+    switch (column.type) {
+      case 'number':
+      case 'currency': {
+        if (column.decimals !== undefined) el.setAttribute('decimals', String(column.decimals));
+        if (column.thousandsSeparator) el.setAttribute('thousands-separator', 'true');
+        if (column.prefix) el.setAttribute('prefix', column.prefix);
+        if (column.suffix) el.setAttribute('suffix', column.suffix);
+        if (column.type === 'currency') {
+          const cf = column.currencyFormat;
+          if (cf) {
+            if (cf.currency) el.setAttribute('currency', cf.currency);
+            if (cf.locale) el.setAttribute('locale', cf.locale);
+            if (cf.display) el.setAttribute('display', cf.display);
+            if (cf.decimals !== undefined) el.setAttribute('decimals', String(cf.decimals));
+          }
+        }
+        break;
+      }
+      case 'date':
+        if (column.dateFormat) el.setAttribute('date-format', column.dateFormat);
+        break;
+      case 'boolean':
+        if (column.useSymbols) el.setAttribute('use-symbols', 'true');
+        if (column.trueSymbol) el.setAttribute('true-symbol', column.trueSymbol);
+        if (column.falseSymbol) el.setAttribute('false-symbol', column.falseSymbol);
+        if (column.trueValue) el.setAttribute('true-value', column.trueValue);
+        if (column.falseValue) el.setAttribute('false-value', column.falseValue);
+        break;
+      case 'sparkline': {
+        const sf = column.sparklineFormat;
+        if (sf) {
+          if (sf.color) el.setAttribute('color', sf.color);
+          if (sf.type) el.setAttribute('chart-type', sf.type);
+          if (sf.width) el.setAttribute('width', String(sf.width));
+          if (sf.height) el.setAttribute('height', String(sf.height));
+        }
+        break;
+      }
+      case 'rating': {
+        const rf = column.ratingFormat;
+        if (rf) {
+          if (rf.max) el.setAttribute('max', String(rf.max));
+          if (rf.color) el.setAttribute('color', rf.color);
+        }
+        break;
+      }
+      case 'progress': {
+        const pf = column.progressFormat;
+        if (pf) {
+          if (pf.max) el.setAttribute('max', String(pf.max));
+          if (pf.color) el.setAttribute('color', pf.color);
+          if (pf.showPercentage) el.setAttribute('show-percentage', 'true');
+        }
+        break;
+      }
+      case 'percentage':
+      case 'percent': {
+        const pf = column.percentageFormat;
+        if (pf) {
+          if (pf.decimals !== undefined) el.setAttribute('decimals', String(pf.decimals));
+          if (pf.colorize) el.setAttribute('colorize', 'true');
+        }
+        break;
+      }
+      case 'status': {
+        const sf = column.statusFormat;
+        if (sf) {
+          if (sf.variant) el.setAttribute('variant', sf.variant);
+          if (sf.showDot) el.setAttribute('show-dot', 'true');
+        }
+        break;
+      }
+      case 'link': {
+        const lf = column.linkFormat;
+        if (lf) {
+          if (lf.target) el.setAttribute('target', lf.target);
+          if (lf.external) el.setAttribute('external', 'true');
+        }
+        break;
+      }
+      case 'image': {
+        const imf = column.imageFormat;
+        if (imf) {
+          if (imf.shape) el.setAttribute('shape', imf.shape);
+          if (imf.size) el.setAttribute('size', imf.size);
+        }
+        break;
+      }
+      case 'color': {
+        const cf = column.colorFormat;
+        if (cf) {
+          if (cf.showSwatch !== false) el.setAttribute('show-swatch', 'true');
+          if (cf.displayFormat) el.setAttribute('display-format', cf.displayFormat);
+        }
+        break;
+      }
+      case 'email': {
+        const ef = column.emailFormat;
+        if (ef) {
+          if (ef.showIcon) el.setAttribute('show-icon', 'true');
+        }
+        break;
+      }
+      case 'phone': {
+        const pf = column.phoneFormat;
+        if (pf) {
+          if (pf.showIcon) el.setAttribute('show-icon', 'true');
+          if (pf.format) el.setAttribute('format', 'true');
+        }
+        break;
       }
     }
 
-    if (column.type === 'rating') {
-      const rf = (column as any).ratingFormat;
-      if (rf) {
-        if (rf.max) attributes.push(`max="${rf.max}"`);
-        if (rf.color) attributes.push(`color="${rf.color}"`);
-      }
-    }
-
-    if (column.type === 'progress') {
-      const pf = (column as any).progressFormat;
-      if (pf) {
-        if (pf.max) attributes.push(`max="${pf.max}"`);
-        if (pf.color) attributes.push(`color="${pf.color}"`);
-        if (pf.showPercentage) attributes.push(`show-percentage="true"`);
-      }
-    }
-
-    if (column.type === 'currency') {
-      const cf = (column as any).currencyFormat;
-      if (cf) {
-        if (cf.currency) attributes.push(`currency="${cf.currency}"`);
-        if (cf.locale) attributes.push(`locale="${cf.locale}"`);
-        if (cf.display) attributes.push(`display="${cf.display}"`);
-        if (cf.decimals !== undefined) attributes.push(`decimals="${cf.decimals}"`);
-      }
-    }
-
-    if (column.type === 'percentage' || column.type === 'percent') {
-      const pf = (column as any).percentageFormat;
-      if (pf) {
-        if (pf.decimals !== undefined) attributes.push(`decimals="${pf.decimals}"`);
-        if (pf.colorize) attributes.push(`colorize="true"`);
-      }
-    }
-
-    if (column.type === 'status') {
-      const sf = (column as any).statusFormat;
-      if (sf) {
-        if (sf.variant) attributes.push(`variant="${sf.variant}"`);
-        if (sf.showDot) attributes.push(`show-dot="true"`);
-      }
-    }
-
-    if (column.type === 'link') {
-      const lf = (column as any).linkFormat;
-      if (lf) {
-        if (lf.target) attributes.push(`target="${lf.target}"`);
-        if (lf.external) attributes.push(`external="true"`);
-      }
-    }
-
-    if (column.type === 'image') {
-      const imf = (column as any).imageFormat;
-      if (imf) {
-        if (imf.shape) attributes.push(`shape="${imf.shape}"`);
-        if (imf.size) attributes.push(`size="${imf.size}"`);
-      }
-    }
-
-    if (column.type === 'color') {
-      const cf = (column as any).colorFormat;
-      if (cf) {
-        if (cf.showSwatch !== false) attributes.push(`show-swatch="true"`);
-        if (cf.displayFormat) attributes.push(`display-format="${cf.displayFormat}"`);
-      }
-    }
-
-    if (column.type === 'email') {
-      const ef = (column as any).emailFormat;
-      if (ef) {
-        if (ef.showIcon) attributes.push(`show-icon="true"`);
-      }
-    }
-
-    if (column.type === 'phone') {
-      const pf = (column as any).phoneFormat;
-      if (pf) {
-        if (pf.showIcon) attributes.push(`show-icon="true"`);
-        if (pf.format) attributes.push(`format="true"`);
-      }
-    }
-
-    return attributes.join(' ');
+    return el;
   }
 
   getCellTagName(type: string): string {
@@ -2117,7 +2136,9 @@ export class SniceTable extends HTMLElement {
       const checkbox = target as any;
 
       if (checkbox.checked) {
-        this.selectedRows = this.data.map((_, index) => index);
+        // Select only filtered/displayed rows, not all data
+        const filteredData = this.getFilteredData();
+        this.selectedRows = filteredData.map((row) => this.data.indexOf(row));
       } else {
         this.selectedRows = [];
       }
@@ -2183,8 +2204,11 @@ export class SniceTable extends HTMLElement {
     const selectAllCheckbox = this.thead?.querySelector('snice-checkbox.select-all') as any;
     if (!selectAllCheckbox) return;
 
-    const allSelected = this.selectedRows.length === this.data.length && this.data.length > 0;
-    const someSelected = this.selectedRows.length > 0 && this.selectedRows.length < this.data.length;
+    const filteredData = this.getFilteredData();
+    const filteredIndices = filteredData.map((row) => this.data.indexOf(row));
+    const selectedInFiltered = filteredIndices.filter(i => this.selectedRows.includes(i));
+    const allSelected = selectedInFiltered.length === filteredIndices.length && filteredIndices.length > 0;
+    const someSelected = selectedInFiltered.length > 0 && selectedInFiltered.length < filteredIndices.length;
 
     selectAllCheckbox.checked = allSelected;
     selectAllCheckbox.indeterminate = someSelected;
@@ -2584,14 +2608,19 @@ export class SniceTable extends HTMLElement {
   }
 
   private selectAllRows() {
-    if (this.selectedRows.length === this.data.length) {
-      this.selectedRows = [];
+    const filteredData = this.getFilteredData();
+    const filteredIndices = filteredData.map((row) => this.data.indexOf(row));
+    const allFilteredSelected = filteredIndices.every(i => this.selectedRows.includes(i));
+
+    if (allFilteredSelected) {
+      this.selectedRows = this.selectedRows.filter(i => !filteredIndices.includes(i));
     } else {
-      this.selectedRows = this.data.map((_, i) => i);
+      const combined = new Set([...this.selectedRows, ...filteredIndices]);
+      this.selectedRows = Array.from(combined);
     }
     this.updateRowSelectionState();
     this.updateSelectAllState();
-    this.dispatchSelectAllChanged(this.selectedRows.length === this.data.length);
+    this.dispatchSelectAllChanged(allFilteredSelected);
   }
 
   // ── Master-Detail API ──
@@ -2725,16 +2754,8 @@ export class SniceTable extends HTMLElement {
       else this.sortLocalData();
     };
     this.columnMenuManager.onFilter = (col) => {
-      // Toggle header filters and focus the filter input for this column
-      if (!this.headerFilters) {
-        this.headerFilters = true;
-        this.renderHeader();
-      }
-      // Focus the filter input for the clicked column
-      requestAnimationFrame(() => {
-        const input = this.thead?.querySelector(`.header-filter-row input[data-column="${col}"]`) as HTMLInputElement;
-        input?.focus();
-      });
+      // Open filter modal pre-populated with this column (MUI X Pro behavior)
+      this.toolbar.openFilterModal(col);
     };
     this.columnMenuManager.onHide = (col) => this.setColumnVisible(col, false);
     this.columnMenuManager.onPinLeft = (col) => this.pinColumn(col, 'left');
@@ -2920,9 +2941,7 @@ export class SniceTable extends HTMLElement {
         }
         td.appendChild(textSpan);
       } else {
-        const cellTagName = this.getCellTagName(column.type);
-        const attributes = this.getCellAttributes(column, value);
-        td.innerHTML = `<${cellTagName} ${attributes}></${cellTagName}>`;
+        td.appendChild(this.createCellElement(column, value));
       }
 
       // Apply column width
