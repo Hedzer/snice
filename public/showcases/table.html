@@ -32,10 +32,12 @@
       if (table) {
         table.columns = [
           { key: 'product', label: 'Product', type: 'text', sortable: true, width: '160' },
-          { key: 'revenue', label: 'Revenue', type: 'currency', sortable: true, width: '120' },
+          { key: 'revenue', label: 'Revenue', type: 'currency', sortable: true, width: '120',
+            numberFormat: { prefix: '$', thousandsSeparator: true, decimals: 0 } },
           { key: 'growth', label: 'Growth', type: 'percent', sortable: true, width: '80' },
           { key: 'rating', label: 'Rating', type: 'rating', sortable: true, width: '110' },
-          { key: 'progress', label: 'Completion', type: 'progress', sortable: true, width: '120' },
+          { key: 'progress', label: 'Completion', type: 'progress', sortable: true, width: '120',
+            progressFormat: { colorize: true } },
           { key: 'trend', label: 'Trend', type: 'sparkline', sortable: false, width: '100',
             sparklineFormat: { type: 'line', height: 24, width: 80 } },
           { key: 'status', label: 'Status', type: 'tag', sortable: true, width: '80' }
