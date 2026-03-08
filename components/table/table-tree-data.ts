@@ -199,8 +199,8 @@ export class TableTreeData {
     if (treeRow.hasChildren) {
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'tree-toggle';
-      btn.textContent = treeRow.expanded ? '\u25BC' : '\u25B6';
+      btn.className = `tree-toggle${treeRow.expanded ? ' tree-toggle--expanded' : ''}`;
+      btn.innerHTML = `<svg class="tree-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>`;
       btn.setAttribute('aria-expanded', String(treeRow.expanded));
       btn.addEventListener('click', (e) => {
         e.stopPropagation();

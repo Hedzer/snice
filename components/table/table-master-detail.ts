@@ -111,13 +111,32 @@ export class TableMasterDetail {
     const td = document.createElement('td');
     td.colSpan = colSpan;
     td.className = 'detail-cell';
+    td.style.padding = '0';
+    td.style.border = 'none';
+
+    // Animated wrapper — same pattern as snice-accordion
+    const wrapper = document.createElement('div');
+    wrapper.className = 'detail-content';
+
+    const inner = document.createElement('div');
+    inner.className = 'detail-content-inner';
 
     const content = this.options.getDetailContent(row, rowIndex);
     if (typeof content === 'string') {
-      td.innerHTML = content;
+      inner.innerHTML = content;
     } else if (content instanceof HTMLElement) {
-      td.appendChild(content);
+      inner.appendChild(content);
     }
+
+    wrapper.appendChild(inner);
+    td.appendChild(wrapper);
+
+    // Trigger animation after insertion
+    requestAnimationFrame(() => {
+      const height = inner.scrollHeight;
+      wrapper.style.setProperty('--detail-max-height', `${height}px`);
+      wrapper.classList.add('detail-content--open');
+    });
 
     tr.appendChild(td);
     return tr;
