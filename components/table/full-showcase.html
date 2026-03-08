@@ -25,6 +25,9 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 </head>
 <body>
 
+<h2>Cell Types</h2>
+<div id="cell-type-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(10rem,1fr));gap:0.75rem;margin-bottom:2rem"></div>
+
 <h2>Pro: Sortable + Header Filters + Column Menu (right-click headers)</h2>
 <p class="note">Click headers to sort (multi-sort). Right-click headers for column menu. Inline header filters below columns.</p>
 <snice-table id="pro-table" sortable searchable selectable column-resize column-menu header-filters hoverable striped></snice-table>
@@ -59,8 +62,6 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 <h2>Client-Side Pagination (5 per page)</h2>
 <snice-table id="paginated" pagination page-size="5" sortable hoverable></snice-table>
 
-<h2>Cell Types</h2>
-<snice-table id="cell-types" sortable hoverable></snice-table>
 
 <h2>Super-Header Slot</h2>
 <snice-table id="super-header" sortable hoverable>
@@ -87,6 +88,53 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 
 <script type="module">
   import './snice-table.ts';
+
+  // ── Cell Types Grid (standalone cells, not in a table) ──
+  {
+    const grid = document.getElementById('cell-type-grid');
+    const cells = [
+      { tag: 'snice-cell-text', label: 'Text', attrs: 'value="Alice Johnson"' },
+      { tag: 'snice-cell-number', label: 'Number', attrs: 'value="95000" decimals="0" thousands-separator="true"' },
+      { tag: 'snice-cell-number', label: 'Currency', attrs: 'value="95000" decimals="2" prefix="$" thousands-separator="true"' },
+      { tag: 'snice-cell-percentage', label: 'Percent', attrs: 'value="12.5"' },
+      { tag: 'snice-cell-date', label: 'Date', attrs: 'value="2024-03-15"' },
+      { tag: 'snice-cell-boolean', label: 'Boolean', attrs: 'value="true"' },
+      { tag: 'snice-cell-rating', label: 'Rating', attrs: 'value="4"' },
+      { tag: 'snice-cell-progress', label: 'Progress', attrs: 'value="75"' },
+      { tag: 'snice-cell-sparkline', label: 'Sparkline', attrs: 'value="32,35,38,36,42,45,48" color="#3b82f6"' },
+      { tag: 'snice-cell-duration', label: 'Duration', attrs: 'value="3661"' },
+      { tag: 'snice-cell-filesize', label: 'File Size', attrs: 'value="1048576"' },
+      { tag: 'snice-cell-tag', label: 'Tag', attrs: 'value="Engineering"' },
+      { tag: 'snice-cell-status', label: 'Status', attrs: 'value="Active" show-dot="true"' },
+      { tag: 'snice-cell-email', label: 'Email', attrs: 'value="alice@example.com"' },
+      { tag: 'snice-cell-phone', label: 'Phone', attrs: 'value="+1-555-0101"' },
+      { tag: 'snice-cell-link', label: 'Link', attrs: 'value="https://example.com"' },
+      { tag: 'snice-cell-color', label: 'Color', attrs: 'value="#3b82f6"' },
+      { tag: 'snice-cell-boolean', label: 'Bool (false)', attrs: 'value="false" use-symbols="true"' },
+      { tag: 'snice-cell-rating', label: 'Rating (5)', attrs: 'value="5" max="5"' },
+      { tag: 'snice-cell-progress', label: 'Progress (100%)', attrs: 'value="100"' },
+      { tag: 'snice-cell-sparkline', label: 'Spark (red)', attrs: 'value="50,48,45,43,40,38,35" color="#ef4444"' },
+    ];
+    cells.forEach(c => {
+      const card = document.createElement('div');
+      card.style.cssText = 'border:1px solid var(--snice-color-border,#555);border-radius:var(--snice-border-radius-md,0.25rem);padding:0.5rem 0.75rem;background:var(--snice-color-background-element,#252538);';
+      const lbl = document.createElement('div');
+      lbl.style.cssText = 'font-size:0.65rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--snice-color-text-tertiary,#888);margin-bottom:0.375rem;';
+      lbl.textContent = c.label;
+      card.appendChild(lbl);
+      const el = document.createElement(c.tag);
+      c.attrs.split('" ').forEach(pair => {
+        const eqIdx = pair.indexOf('=');
+        if (eqIdx > -1) {
+          const key = pair.substring(0, eqIdx);
+          const val = pair.substring(eqIdx + 1).replace(/^"|"$/g, '');
+          el.setAttribute(key, val);
+        }
+      });
+      card.appendChild(el);
+      grid.appendChild(card);
+    });
+  }
 
   const columns = [
     { key: 'name', label: 'Name', type: 'text' },
@@ -217,22 +265,6 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   // ── Pagination ──
   setup('paginated');
 
-  // ── Cell Types ──
-  const typedCols = [
-    { key: 'name', label: 'Name', type: 'text' },
-    { key: 'salary', label: 'Salary', type: 'number', decimals: 0, prefix: '$', thousandsSeparator: true },
-    { key: 'startDate', label: 'Start Date', type: 'date' },
-    { key: 'active', label: 'Active', type: 'boolean' },
-    { key: 'rating', label: 'Rating', type: 'rating' },
-    { key: 'progress', label: 'Progress', type: 'progress' },
-  ];
-  const typedData = [
-    { name: 'Alice', salary: 95000, startDate: '2022-03-15', active: true, rating: 4, progress: 75 },
-    { name: 'Bob', salary: 72000, startDate: '2023-01-10', active: true, rating: 3, progress: 50 },
-    { name: 'Charlie', salary: 68000, startDate: '2023-06-01', active: false, rating: 5, progress: 90 },
-    { name: 'Diana', salary: 82000, startDate: '2021-11-20', active: true, rating: 4, progress: 100 },
-  ];
-  setup('cell-types', typedCols, typedData);
 
   // ── Super-header ──
   setup('super-header');
