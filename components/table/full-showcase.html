@@ -25,9 +25,9 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 </head>
 <body>
 
-<h2>MUI-Style: Sortable + Header Filters + Column Menu (right-click headers)</h2>
+<h2>Pro: Sortable + Header Filters + Column Menu (right-click headers)</h2>
 <p class="note">Click headers to sort (multi-sort). Right-click headers for column menu. Inline header filters below columns.</p>
-<snice-table id="mui-style" sortable searchable selectable column-resize column-menu header-filters hoverable striped></snice-table>
+<snice-table id="pro-table" sortable searchable selectable column-resize column-menu header-filters hoverable striped></snice-table>
 
 <h2>Toolbar + Export + Quick Filter</h2>
 <p class="note">Built-in toolbar with search, density selector, and export dropdown.</p>
@@ -120,8 +120,8 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     return el;
   }
 
-  // ── MUI-style: sortable + header filters + column menu ──
-  setup('mui-style');
+  // ── Pro table: sortable + header filters + column menu ──
+  setup('pro-table');
 
   // ── Toolbar + export ──
   const toolbarTable = setup('toolbar-demo');

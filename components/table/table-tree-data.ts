@@ -193,27 +193,19 @@ export class TableTreeData {
   /** Create the expand/collapse toggle for a tree node */
   createToggle(treeRow: TreeRow): HTMLElement {
     const container = document.createElement('span');
-    container.style.cssText = `
-      display: inline-flex;
-      align-items: center;
-      padding-left: ${treeRow.depth * 1.5}rem;
-    `;
+    container.className = 'tree-indent';
+    container.style.paddingLeft = `${treeRow.depth * 1.5}rem`;
 
     if (treeRow.hasChildren) {
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'tree-toggle';
-      btn.style.cssText = `
-        background: none; border: none; cursor: pointer; padding: 0.125rem;
-        color: inherit; font-size: 0.7rem; line-height: 1; width: 1.25rem;
-        display: inline-flex; align-items: center; justify-content: center;
-      `;
-      btn.textContent = treeRow.expanded ? '▼' : '▶';
+      btn.textContent = treeRow.expanded ? '\u25BC' : '\u25B6';
       btn.setAttribute('aria-expanded', String(treeRow.expanded));
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         this.toggle(treeRow.key);
-        // Dispatch on the button — it'll bubble up to the table
+        // Dispatch on the button — composed:true crosses shadow DOM boundary
         btn.dispatchEvent(new CustomEvent('tree-toggle', {
           detail: { key: treeRow.key, expanded: this.isExpanded(treeRow.key) },
           bubbles: true,
@@ -224,7 +216,7 @@ export class TableTreeData {
     } else {
       // Spacer for leaf nodes (align with siblings)
       const spacer = document.createElement('span');
-      spacer.style.cssText = 'display: inline-block; width: 1.25rem;';
+      spacer.className = 'tree-spacer';
       container.appendChild(spacer);
     }
 

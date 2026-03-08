@@ -24,7 +24,6 @@ export class TableRowDnD {
     if (!reorderable) return;
 
     tr.draggable = true;
-    tr.style.cursor = 'grab';
 
     tr.addEventListener('dragstart', (e) => {
       this.dragSourceIndex = rowIndex;
@@ -35,7 +34,6 @@ export class TableRowDnD {
 
     tr.addEventListener('dragend', () => {
       tr.style.opacity = '1';
-      tr.style.cursor = 'grab';
       this.removeDropIndicator();
       this.dragSourceIndex = -1;
     });
@@ -73,7 +71,7 @@ export class TableRowDnD {
   createDragHandle(): HTMLTableCellElement {
     const td = document.createElement('td');
     td.className = 'drag-handle-cell';
-    td.textContent = '⠿';
+    td.textContent = '\u2817';
     td.setAttribute('aria-label', 'Drag to reorder');
     return td;
   }
@@ -82,11 +80,6 @@ export class TableRowDnD {
     this.removeDropIndicator();
     this.dropIndicator = document.createElement('div');
     this.dropIndicator.className = 'drop-indicator';
-    this.dropIndicator.style.cssText = `
-      position: absolute; left: 0; right: 0; height: 2px;
-      background: var(--snice-color-primary, rgb(37 99 235));
-      z-index: 10; pointer-events: none;
-    `;
 
     const rect = targetRow.getBoundingClientRect();
     const parentRect = targetRow.parentElement?.getBoundingClientRect();

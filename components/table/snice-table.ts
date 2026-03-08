@@ -13,6 +13,18 @@ import './snice-cell-progress.ts';
 import './snice-cell-duration.ts';
 import './snice-cell-filesize.ts';
 import './snice-cell-sparkline.ts';
+import './snice-cell-percentage.ts';
+import './snice-cell-tag.ts';
+import './snice-cell-status.ts';
+import './snice-cell-actions.ts';
+import './snice-cell-link.ts';
+import './snice-cell-email.ts';
+import './snice-cell-phone.ts';
+import './snice-cell-color.ts';
+import './snice-cell-location.ts';
+import './snice-cell-json.ts';
+import './snice-cell-currency.ts';
+import './snice-cell-image.ts';
 import './snice-column.ts';
 import './snice-row.ts';
 import { TableVirtualizer } from './table-virtualizer';
@@ -299,7 +311,6 @@ export class SniceTable extends HTMLElement {
         border-right: 1px solid var(--snice-color-border, rgb(226 226 226));
         text-align: left;
         color: var(--snice-color-text, rgb(23 23 23));
-        max-width: 0;
         overflow: hidden;
         text-overflow: ellipsis;
       }
@@ -326,12 +337,13 @@ export class SniceTable extends HTMLElement {
       td.detail-toggle-cell,
       th.drag-handle-cell,
       td.drag-handle-cell {
-        width: 2.25rem;
-        max-width: 2.25rem;
-        min-width: 2.25rem;
+        width: 1.75rem;
+        max-width: 1.75rem;
+        min-width: 1.75rem;
         text-align: center;
-        padding: 0 0.25rem;
+        padding: 0 0.125rem;
         overflow: visible;
+        box-sizing: content-box;
       }
 
       /* Force snice-checkbox compact inside table */
@@ -417,82 +429,13 @@ export class SniceTable extends HTMLElement {
       .toolbar-search {
         flex: 1;
         min-width: 10rem;
-        padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-sm, 0.75rem);
-        border: 1px solid var(--snice-color-border, rgb(226 226 226));
-        border-radius: var(--snice-border-radius-md, 0.25rem);
-        background: var(--snice-color-background-input, rgb(248 247 245));
-        color: var(--snice-color-text, rgb(23 23 23));
-        font-size: var(--snice-font-size-sm, 0.875rem);
-        font-family: inherit;
-        outline: none;
-      }
-
-      .toolbar-search:focus {
-        border-color: var(--snice-color-primary, rgb(37 99 235));
       }
 
       .toolbar-spacer { flex: 1; }
 
-      .toolbar-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.25rem;
-        padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-sm, 0.75rem);
-        border: 1px solid var(--snice-color-border, rgb(226 226 226));
-        border-radius: var(--snice-border-radius-md, 0.25rem);
-        background: var(--snice-color-background, rgb(255 255 255));
-        color: var(--snice-color-text, rgb(23 23 23));
-        font-size: var(--snice-font-size-sm, 0.875rem);
-        font-family: inherit;
-        cursor: pointer;
-        transition: background var(--snice-transition-fast, 150ms) ease;
-      }
-
-      .toolbar-btn:hover {
-        background: var(--snice-color-background-secondary, rgb(245 245 245));
-      }
-
+      /* snice-button/snice-select handle their own styling — just layout here */
       .toolbar-density {
-        padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-xs, 0.5rem);
-        border: 1px solid var(--snice-color-border, rgb(226 226 226));
-        border-radius: var(--snice-border-radius-md, 0.25rem);
-        background: var(--snice-color-background, rgb(255 255 255));
-        color: var(--snice-color-text, rgb(23 23 23));
-        font-size: var(--snice-font-size-sm, 0.875rem);
-        font-family: inherit;
-        cursor: pointer;
-      }
-
-      .toolbar-export-menu {
-        position: absolute;
-        right: 0;
-        top: 100%;
-        margin-top: 4px;
-        background: var(--snice-color-background-element, rgb(252 251 249));
-        border: 1px solid var(--snice-color-border, rgb(226 226 226));
-        border-radius: var(--snice-border-radius-md, 0.25rem);
-        box-shadow: var(--snice-shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1));
-        z-index: 100;
-        min-width: 8rem;
-        padding: 4px;
-      }
-
-      .toolbar-menu-item {
-        display: block;
-        width: 100%;
-        text-align: left;
-        padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
-        border: none;
-        border-radius: var(--snice-border-radius-sm, 0.125rem);
-        background: transparent;
-        color: var(--snice-color-text, rgb(23 23 23));
-        font-size: var(--snice-font-size-sm, 0.875rem);
-        font-family: inherit;
-        cursor: pointer;
-      }
-
-      .toolbar-menu-item:hover {
-        background: var(--snice-color-background-secondary, rgb(245 245 245));
+        min-width: 7rem;
       }
 
       .table-controls {
@@ -510,11 +453,7 @@ export class SniceTable extends HTMLElement {
         display: none;
       }
 
-      .search-input,
-      .selector-input {
-        height: 2.5rem;
-      }
-
+      /* snice-input/snice-select handle own styling — layout only */
       .search-input {
         min-width: 12.5rem;
         flex: 1;
@@ -660,19 +599,8 @@ export class SniceTable extends HTMLElement {
       }
 
       .pagination__size-select {
-        padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-xs, 0.5rem);
-        border: 1px solid var(--snice-color-border, rgb(226 226 226));
-        border-radius: var(--snice-border-radius-md, 0.25rem);
-        background: var(--snice-color-background, rgb(255 255 255));
-        color: var(--snice-color-text, rgb(23 23 23));
-        font-size: var(--snice-font-size-sm, 0.875rem);
-        font-family: inherit;
-        cursor: pointer;
-      }
-
-      .pagination__size-select:focus-visible {
-        outline: 2px solid var(--snice-color-primary, rgb(37 99 235));
-        outline-offset: 2px;
+        min-width: 4.5rem;
+        --snice-select-min-height: 1.75rem;
       }
 
       /* Column resize handle */
@@ -705,8 +633,8 @@ export class SniceTable extends HTMLElement {
       }
 
       /* Pinned column separator */
-      td[style*="sticky"],
-      th[style*="sticky"] {
+      .pinned-cell {
+        background: var(--snice-color-background, rgb(255 255 255));
         box-shadow: 2px 0 4px -1px rgb(0 0 0 / 0.1);
       }
 
@@ -770,36 +698,66 @@ export class SniceTable extends HTMLElement {
 
       /* Header filter row */
       .header-filter-row td {
-        padding: var(--snice-spacing-2xs, 0.25rem);
+        padding: 0;
         background: var(--snice-color-background-secondary, rgb(245 245 245));
+        border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
       }
 
       .header-filter-input {
         width: 100%;
         box-sizing: border-box;
         padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-xs, 0.5rem);
-        border: 1px solid var(--snice-color-border, rgb(226 226 226));
-        border-radius: var(--snice-border-radius-sm, 0.125rem);
+        border: none;
         font-size: var(--snice-font-size-xs, 0.75rem);
         font-family: inherit;
         color: var(--snice-color-text, rgb(23 23 23));
-        background: var(--snice-color-background-input, rgb(248 247 245));
+        background: transparent;
+        outline: none;
+      }
+
+      .header-filter-input::placeholder {
+        color: var(--snice-color-text-tertiary, rgb(115 115 115));
       }
 
       .header-filter-input:focus {
-        outline: none;
-        border-color: var(--snice-color-primary, rgb(37 99 235));
+        background: var(--snice-color-background-input, rgb(248 247 245));
       }
 
       /* Tree data indentation */
+      .tree-indent {
+        display: inline-flex;
+        align-items: center;
+      }
+
       .tree-toggle {
-        transition: transform 0.15s ease;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0.125rem;
+        color: inherit;
+        font-size: 0.7rem;
+        line-height: 1;
+        width: 1.25rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform var(--snice-transition-fast, 150ms) ease;
+      }
+
+      .tree-toggle:hover {
+        color: var(--snice-color-primary, rgb(37 99 235));
+      }
+
+      .tree-spacer {
+        display: inline-block;
+        width: 1.25rem;
       }
 
       /* Row pinning */
       .pinned-row {
         font-weight: var(--snice-font-weight-medium, 500);
         border-bottom: 2px solid var(--snice-color-border, rgb(226 226 226));
+        background: var(--snice-color-background-secondary, rgb(245 245 245));
       }
 
       .pinned-row--top {
@@ -823,11 +781,16 @@ export class SniceTable extends HTMLElement {
 
       /* DnD */
       .drag-handle-cell {
-        max-width: 2rem;
-        font-size: 1rem;
+        font-size: 0.875rem;
       }
 
       .drop-indicator {
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--snice-color-primary, rgb(37 99 235));
+        z-index: 10;
         pointer-events: none;
       }
 
@@ -851,13 +814,25 @@ export class SniceTable extends HTMLElement {
         cursor: pointer;
         padding: 0;
         color: var(--snice-color-text-secondary, rgb(82 82 82));
-        font-size: 0.625rem;
         line-height: 1;
-        transition: color var(--snice-transition-fast, 150ms) ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
       }
 
       .detail-toggle:hover {
         color: var(--snice-color-text, rgb(23 23 23));
+      }
+
+      .detail-toggle-icon {
+        width: 1rem;
+        height: 1rem;
+        transition: transform 0.2s ease;
+        transform: rotate(-90deg);
+      }
+
+      .detail-toggle--expanded .detail-toggle-icon {
+        transform: rotate(0deg);
       }
 
       /* Drag handle */
@@ -872,6 +847,56 @@ export class SniceTable extends HTMLElement {
       [data-grid-focus] {
         outline: 2px solid var(--snice-color-primary, rgb(37 99 235));
         outline-offset: -2px;
+      }
+
+      /* Column menu */
+      .table-column-menu {
+        position: fixed;
+        z-index: 10001;
+        min-width: 10rem;
+        background: var(--snice-color-background-element, rgb(252 251 249));
+        border: 1px solid var(--snice-color-border, rgb(226 226 226));
+        border-radius: var(--snice-border-radius-md, 0.25rem);
+        box-shadow: var(--snice-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1));
+        padding: 4px;
+      }
+
+      .column-menu-separator {
+        height: 1px;
+        background: var(--snice-color-border, rgb(226 226 226));
+        margin: 4px 0;
+      }
+
+      .column-menu-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+        padding: 0.375rem 0.625rem;
+        border: none;
+        border-radius: 3px;
+        background: transparent;
+        color: var(--snice-color-text, rgb(23 23 23));
+        font-size: var(--snice-font-size-sm, 0.875rem);
+        font-family: inherit;
+        cursor: pointer;
+        text-align: left;
+        white-space: nowrap;
+      }
+
+      .column-menu-item:hover {
+        background: var(--snice-color-background-secondary, rgb(245 245 245));
+      }
+
+      .column-menu-item:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .column-menu-icon {
+        width: 1.25rem;
+        text-align: center;
+        display: inline-block;
       }
 
       /* Slotted table layout */
@@ -931,7 +956,7 @@ export class SniceTable extends HTMLElement {
     if (hasSlottedRows) {
       // Use slotted rows layout
       return html/*html*/`
-        <div class="snice-table snice-table--slotted" @click=${this.handleClick} @change=${this.handleChange}>
+        <div class="snice-table snice-table--slotted" @click=${this.handleClick} @change=${this.handleChange} @checkbox-change=${this.handleChange}>
           <div class="table-controls-container"></div>
           <div class="table-header" id="slotted-header"></div>
           <div class="table-body">
@@ -943,7 +968,7 @@ export class SniceTable extends HTMLElement {
     } else {
       // Use traditional table layout
       return html/*html*/`
-        <div class="snice-table" @click=${this.handleClick} @change=${this.handleChange}>
+        <div class="snice-table" @click=${this.handleClick} @change=${this.handleChange} @checkbox-change=${this.handleChange}>
           <div class="table-controls-container"></div>
           <div class="table-frame">
             <div class="table-superheader" part="superheader">
@@ -1205,11 +1230,13 @@ export class SniceTable extends HTMLElement {
         // Pinned column sticky positioning
         if (state.pinned === 'left') {
           const offsets = this.columnManager.getPinnedLeftOffsets();
+          th.classList.add('pinned-cell');
           th.style.position = 'sticky';
           th.style.left = `${offsets.get(column.key) ?? 0}px`;
           th.style.zIndex = '2';
         } else if (state.pinned === 'right') {
           const offsets = this.columnManager.getPinnedRightOffsets();
+          th.classList.add('pinned-cell');
           th.style.position = 'sticky';
           th.style.right = `${offsets.get(column.key) ?? 0}px`;
           th.style.zIndex = '2';
@@ -1290,7 +1317,7 @@ export class SniceTable extends HTMLElement {
       const filterRow = document.createElement('tr');
       filterRow.className = 'header-filter-row';
 
-      if (this.rowReorder) {
+      if (this.rowReorder && this.rowDnD.isEnabled()) {
         const spacer = document.createElement('td');
         spacer.className = 'drag-handle-cell';
         filterRow.appendChild(spacer);
@@ -1382,11 +1409,15 @@ export class SniceTable extends HTMLElement {
     this.tbody.innerHTML = '';
 
     if (this.data.length === 0 && this.columns.length > 0) {
+      const toolCols = (this.selectable ? 1 : 0)
+        + (this.masterDetail.isEnabled() ? 1 : 0)
+        + (this.rowReorder && this.rowDnD.isEnabled() ? 1 : 0);
+      const colSpan = this.columns.length + toolCols;
+
       if (this.loading) {
         // Show loading spinner
         const tr = document.createElement('tr');
         const td = document.createElement('td');
-        const colSpan = this.columns.length + (this.selectable ? 1 : 0);
         td.colSpan = colSpan;
         td.className = 'no-data';
         td.innerHTML = '<snice-progress variant="circular" indeterminate size="small"></snice-progress>';
@@ -1397,7 +1428,6 @@ export class SniceTable extends HTMLElement {
         // Show "No Data" message
         const tr = document.createElement('tr');
         const td = document.createElement('td');
-        const colSpan = this.columns.length + (this.selectable ? 1 : 0);
         td.colSpan = colSpan;
         td.className = 'no-data';
         td.textContent = 'No Data';
@@ -1421,14 +1451,14 @@ export class SniceTable extends HTMLElement {
       displayData = filteredData.slice(startIndex, startIndex + this.pageSize);
     }
 
-    const extraCols = (this.selectable ? 1 : 0) + (this.masterDetail.isEnabled() ? 1 : 0) + (this.rowReorder ? 1 : 0);
+    const extraCols = (this.selectable ? 1 : 0) + (this.masterDetail.isEnabled() ? 1 : 0) + (this.rowReorder && this.rowDnD.isEnabled() ? 1 : 0);
     const totalColSpan = this.columns.length + extraCols;
 
     // Pinned top rows
     for (const row of this.pinnedTopRows) {
       const tr = this.createRow(row, -1);
       tr.classList.add('pinned-row', 'pinned-row--top');
-      tr.style.background = 'var(--snice-color-background-secondary, rgb(245 245 245))';
+      // pinned row bg handled by CSS class
       fragment.appendChild(tr);
     }
 
@@ -1457,7 +1487,7 @@ export class SniceTable extends HTMLElement {
     for (const row of this.pinnedBottomRows) {
       const tr = this.createRow(row, -1);
       tr.classList.add('pinned-row', 'pinned-row--bottom');
-      tr.style.background = 'var(--snice-color-background-secondary, rgb(245 245 245))';
+      // pinned row bg handled by CSS class
       fragment.appendChild(tr);
     }
 
@@ -1547,43 +1577,65 @@ export class SniceTable extends HTMLElement {
       pageButtons.push(this.pageButton(totalPages));
     }
 
-    const pageSizeOptions = this.pageSizes.map(s =>
-      `<option value="${s}" ${s === this.pageSize ? 'selected' : ''}>${s}</option>`
-    ).join('');
+    container.innerHTML = '';
 
-    container.innerHTML = `
-      <div class="pagination" part="pagination">
-        <div class="pagination__info">
-          Showing ${start}–${end} of ${total}
-        </div>
-        <div class="pagination__controls">
-          <button class="pagination__btn pagination__first" ${this.currentPage <= 1 ? 'disabled' : ''} data-page="1" aria-label="First page">⟨⟨</button>
-          <button class="pagination__btn pagination__prev" ${this.currentPage <= 1 ? 'disabled' : ''} data-page="${this.currentPage - 1}" aria-label="Previous page">⟨</button>
-          ${pageButtons.join('')}
-          <button class="pagination__btn pagination__next" ${this.currentPage >= totalPages ? 'disabled' : ''} data-page="${this.currentPage + 1}" aria-label="Next page">⟩</button>
-          <button class="pagination__btn pagination__last" ${this.currentPage >= totalPages ? 'disabled' : ''} data-page="${totalPages}" aria-label="Last page">⟩⟩</button>
-        </div>
-        <div class="pagination__size">
-          <label>Rows per page:</label>
-          <select class="pagination__size-select">${pageSizeOptions}</select>
-        </div>
-      </div>
+    const pagination = document.createElement('div');
+    pagination.className = 'pagination';
+    pagination.setAttribute('part', 'pagination');
+
+    // Info
+    const info = document.createElement('div');
+    info.className = 'pagination__info';
+    info.textContent = `Showing ${start}\u2013${end} of ${total}`;
+    pagination.appendChild(info);
+
+    // Controls
+    const controls = document.createElement('div');
+    controls.className = 'pagination__controls';
+    controls.innerHTML = `
+      <button class="pagination__btn pagination__first" ${this.currentPage <= 1 ? 'disabled' : ''} data-page="1" aria-label="First page">\u27E8\u27E8</button>
+      <button class="pagination__btn pagination__prev" ${this.currentPage <= 1 ? 'disabled' : ''} data-page="${this.currentPage - 1}" aria-label="Previous page">\u27E8</button>
+      ${pageButtons.join('')}
+      <button class="pagination__btn pagination__next" ${this.currentPage >= totalPages ? 'disabled' : ''} data-page="${this.currentPage + 1}" aria-label="Next page">\u27E9</button>
+      <button class="pagination__btn pagination__last" ${this.currentPage >= totalPages ? 'disabled' : ''} data-page="${totalPages}" aria-label="Last page">\u27E9\u27E9</button>
     `;
+    pagination.appendChild(controls);
 
-    // Bind events
-    container.querySelectorAll('[data-page]').forEach(btn => {
+    // Page size selector — use snice-select
+    const sizeContainer = document.createElement('div');
+    sizeContainer.className = 'pagination__size';
+    const sizeLabel = document.createElement('label');
+    sizeLabel.textContent = 'Rows per page:';
+    sizeContainer.appendChild(sizeLabel);
+
+    const sizeSelect = document.createElement('snice-select') as any;
+    sizeSelect.size = 'small';
+    sizeSelect.className = 'pagination__size-select';
+    for (const s of this.pageSizes) {
+      const opt = document.createElement('snice-option') as any;
+      opt.setAttribute('value', String(s));
+      opt.textContent = String(s);
+      if (s === this.pageSize) opt.setAttribute('selected', '');
+      sizeSelect.appendChild(opt);
+    }
+    sizeSelect.value = String(this.pageSize);
+    sizeContainer.appendChild(sizeSelect);
+    pagination.appendChild(sizeContainer);
+
+    container.appendChild(pagination);
+
+    // Bind page button events
+    controls.querySelectorAll('[data-page]').forEach(btn => {
       btn.addEventListener('click', () => {
         const page = parseInt((btn as HTMLElement).getAttribute('data-page')!);
         this.goToPage(page);
       });
     });
 
-    const sizeSelect = container.querySelector('.pagination__size-select') as HTMLSelectElement;
-    if (sizeSelect) {
-      sizeSelect.addEventListener('change', () => {
-        this.setPageSize(parseInt(sizeSelect.value));
-      });
-    }
+    // Bind size select event
+    sizeSelect.addEventListener('select-change', (e: CustomEvent) => {
+      this.setPageSize(parseInt(e.detail.value));
+    });
   }
 
   private pageButton(page: number): string {
@@ -1646,6 +1698,71 @@ export class SniceTable extends HTMLElement {
       }
     }
 
+    if (column.type === 'currency') {
+      const cf = (column as any).currencyFormat;
+      if (cf) {
+        if (cf.currency) attributes.push(`currency="${cf.currency}"`);
+        if (cf.locale) attributes.push(`locale="${cf.locale}"`);
+        if (cf.display) attributes.push(`display="${cf.display}"`);
+        if (cf.decimals !== undefined) attributes.push(`decimals="${cf.decimals}"`);
+      }
+    }
+
+    if (column.type === 'percentage' || column.type === 'percent') {
+      const pf = (column as any).percentageFormat;
+      if (pf) {
+        if (pf.decimals !== undefined) attributes.push(`decimals="${pf.decimals}"`);
+        if (pf.colorize) attributes.push(`colorize="true"`);
+      }
+    }
+
+    if (column.type === 'status') {
+      const sf = (column as any).statusFormat;
+      if (sf) {
+        if (sf.variant) attributes.push(`variant="${sf.variant}"`);
+        if (sf.showDot) attributes.push(`show-dot="true"`);
+      }
+    }
+
+    if (column.type === 'link') {
+      const lf = (column as any).linkFormat;
+      if (lf) {
+        if (lf.target) attributes.push(`target="${lf.target}"`);
+        if (lf.external) attributes.push(`external="true"`);
+      }
+    }
+
+    if (column.type === 'image') {
+      const imf = (column as any).imageFormat;
+      if (imf) {
+        if (imf.shape) attributes.push(`shape="${imf.shape}"`);
+        if (imf.size) attributes.push(`size="${imf.size}"`);
+      }
+    }
+
+    if (column.type === 'color') {
+      const cf = (column as any).colorFormat;
+      if (cf) {
+        if (cf.showSwatch !== false) attributes.push(`show-swatch="true"`);
+        if (cf.displayFormat) attributes.push(`display-format="${cf.displayFormat}"`);
+      }
+    }
+
+    if (column.type === 'email') {
+      const ef = (column as any).emailFormat;
+      if (ef) {
+        if (ef.showIcon) attributes.push(`show-icon="true"`);
+      }
+    }
+
+    if (column.type === 'phone') {
+      const pf = (column as any).phoneFormat;
+      if (pf) {
+        if (pf.showIcon) attributes.push(`show-icon="true"`);
+        if (pf.format) attributes.push(`format="true"`);
+      }
+    }
+
     return attributes.join(' ');
   }
 
@@ -1672,6 +1789,27 @@ export class SniceTable extends HTMLElement {
         return 'snice-cell-sparkline';
       case 'image':
         return 'snice-cell-image';
+      case 'percentage':
+      case 'percent':
+        return 'snice-cell-percentage';
+      case 'tag':
+        return 'snice-cell-tag';
+      case 'status':
+        return 'snice-cell-status';
+      case 'actions':
+        return 'snice-cell-actions';
+      case 'link':
+        return 'snice-cell-link';
+      case 'email':
+        return 'snice-cell-email';
+      case 'phone':
+        return 'snice-cell-phone';
+      case 'color':
+        return 'snice-cell-color';
+      case 'location':
+        return 'snice-cell-location';
+      case 'json':
+        return 'snice-cell-json';
       default:
         return 'snice-cell';
     }
@@ -1694,7 +1832,7 @@ export class SniceTable extends HTMLElement {
     const tr = target.closest('tbody tr') as HTMLElement;
     if (tr) {
       // Don't trigger if clicking on checkbox or other interactive elements
-      if (target.matches('input[type="checkbox"], button, a, .interactive')) {
+      if (target.matches('input[type="checkbox"], button, a, .interactive, snice-checkbox, snice-button, snice-input, snice-select')) {
         return;
       }
 
@@ -2196,6 +2334,7 @@ export class SniceTable extends HTMLElement {
 
   setDetailPanel(options: DetailPanelOptions) {
     this.masterDetail.attach(this, options);
+    this.renderHeader();
     this.renderBody();
   }
 
@@ -2481,16 +2620,16 @@ export class SniceTable extends HTMLElement {
         // Pinned column sticky positioning
         if (state.pinned === 'left') {
           const offsets = this.columnManager.getPinnedLeftOffsets();
+          td.classList.add('pinned-cell');
           td.style.position = 'sticky';
           td.style.left = `${offsets.get(column.key) ?? 0}px`;
           td.style.zIndex = '1';
-          td.style.background = 'var(--snice-color-background, rgb(255 255 255))';
         } else if (state.pinned === 'right') {
           const offsets = this.columnManager.getPinnedRightOffsets();
+          td.classList.add('pinned-cell');
           td.style.position = 'sticky';
           td.style.right = `${offsets.get(column.key) ?? 0}px`;
           td.style.zIndex = '1';
-          td.style.background = 'var(--snice-color-background, rgb(255 255 255))';
         }
       }
 

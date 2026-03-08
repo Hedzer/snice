@@ -77,24 +77,19 @@ export class TableMasterDetail {
     return new Set(this.expandedRows);
   }
 
-  /** Create the expand/collapse toggle button */
+  /** Create the expand/collapse toggle button — uses same chevron SVG as snice-accordion */
   createToggleButton(rowIndex: number): HTMLElement {
-    const btn = document.createElement('button');
-    btn.className = 'detail-toggle';
-    btn.setAttribute('aria-expanded', String(this.isExpanded(rowIndex)));
-    btn.setAttribute('aria-label', this.isExpanded(rowIndex) ? 'Collapse row' : 'Expand row');
-    btn.type = 'button';
-
     const expanded = this.isExpanded(rowIndex);
-    const expandIcon = this.options?.expandIcon || '▶';
-    const collapseIcon = this.options?.collapseIcon || '▼';
-    btn.textContent = expanded ? collapseIcon : expandIcon;
+    const btn = document.createElement('button');
+    btn.type = 'button';
     btn.className = `detail-toggle${expanded ? ' detail-toggle--expanded' : ''}`;
+    btn.setAttribute('aria-expanded', String(expanded));
+    btn.setAttribute('aria-label', expanded ? 'Collapse row' : 'Expand row');
+    btn.innerHTML = `<svg class="detail-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>`;
 
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       this.toggle(rowIndex);
-      // Re-render is handled by the table
       this.tableElement?.dispatchEvent(new CustomEvent('detail-toggle', {
         detail: { rowIndex, expanded: this.isExpanded(rowIndex) },
         bubbles: true,

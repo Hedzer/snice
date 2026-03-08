@@ -44,52 +44,41 @@ export class TableColumnMenu {
 
     const menu = document.createElement('div');
     menu.className = 'table-column-menu';
-    menu.style.cssText = `
-      position: fixed;
-      left: ${x}px;
-      top: ${y}px;
-      z-index: 10001;
-      min-width: 10rem;
-      background: var(--snice-color-background-element, rgb(252 251 249));
-      border: 1px solid var(--snice-color-border, rgb(226 226 226));
-      border-radius: var(--snice-border-radius-md, 0.25rem);
-      box-shadow: var(--snice-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1));
-      padding: 4px;
-      animation: columnMenuIn 0.15s ease;
-    `;
+    menu.style.left = `${x}px`;
+    menu.style.top = `${y}px`;
 
     const actions: ColumnMenuAction[] = [];
 
     if (options?.sortable !== false) {
-      actions.push({ label: 'Sort Ascending', icon: '↑', action: 'sort-asc' });
-      actions.push({ label: 'Sort Descending', icon: '↓', action: 'sort-desc' });
+      actions.push({ label: 'Sort Ascending', icon: '\u2191', action: 'sort-asc' });
+      actions.push({ label: 'Sort Descending', icon: '\u2193', action: 'sort-desc' });
       actions.push({ label: '', action: '', separator: true });
     }
 
     if (options?.filterable !== false) {
-      actions.push({ label: 'Filter...', icon: '⫧', action: 'filter' });
+      actions.push({ label: 'Filter...', icon: '\u2AE7', action: 'filter' });
     }
 
     if (options?.hideable !== false) {
-      actions.push({ label: 'Hide Column', icon: '👁', action: 'hide' });
+      actions.push({ label: 'Hide Column', icon: '\uD83D\uDC41', action: 'hide' });
     }
 
     if (options?.pinnable !== false) {
       if (options?.pinned) {
-        actions.push({ label: 'Unpin', icon: '📌', action: 'unpin' });
+        actions.push({ label: 'Unpin', icon: '\uD83D\uDCCC', action: 'unpin' });
       } else {
-        actions.push({ label: 'Pin Left', icon: '⇤', action: 'pin-left' });
-        actions.push({ label: 'Pin Right', icon: '⇥', action: 'pin-right' });
+        actions.push({ label: 'Pin Left', icon: '\u21E4', action: 'pin-left' });
+        actions.push({ label: 'Pin Right', icon: '\u21E5', action: 'pin-right' });
       }
     }
 
     actions.push({ label: '', action: '', separator: true });
-    actions.push({ label: 'Auto-size', icon: '↔', action: 'autosize' });
+    actions.push({ label: 'Auto-size', icon: '\u2194', action: 'autosize' });
 
     for (const action of actions) {
       if (action.separator) {
         const sep = document.createElement('div');
-        sep.style.cssText = 'height: 1px; background: var(--snice-color-border, rgb(226 226 226)); margin: 4px 0;';
+        sep.className = 'column-menu-separator';
         menu.appendChild(sep);
         continue;
       }
@@ -97,16 +86,7 @@ export class TableColumnMenu {
       const item = document.createElement('button');
       item.type = 'button';
       item.className = 'column-menu-item';
-      item.innerHTML = `${action.icon ? `<span style="width:1.25rem;text-align:center;display:inline-block">${action.icon}</span>` : ''}<span>${action.label}</span>`;
-      item.style.cssText = `
-        display: flex; align-items: center; gap: 0.5rem; width: 100%;
-        padding: 0.375rem 0.625rem; border: none; border-radius: 3px;
-        background: transparent; color: var(--snice-color-text, rgb(23 23 23));
-        font-size: var(--snice-font-size-sm, 0.875rem); font-family: inherit;
-        cursor: pointer; text-align: left; white-space: nowrap;
-      `;
-      item.addEventListener('mouseenter', () => { item.style.background = 'var(--snice-color-background-secondary, rgb(245 245 245))'; });
-      item.addEventListener('mouseleave', () => { item.style.background = 'transparent'; });
+      item.innerHTML = `${action.icon ? `<span class="column-menu-icon">${action.icon}</span>` : ''}<span>${action.label}</span>`;
       item.addEventListener('click', () => {
         this.handleAction(action.action);
         this.hide();
@@ -114,8 +94,6 @@ export class TableColumnMenu {
 
       if (action.disabled) {
         item.disabled = true;
-        item.style.opacity = '0.5';
-        item.style.cursor = 'not-allowed';
       }
 
       menu.appendChild(item);
