@@ -132,7 +132,7 @@ export class TableToolbar {
   private mkRemoveBtn(onClick: () => void): HTMLElement {
     const btn = document.createElement('snice-button') as any;
     btn.size = 'small';
-    btn.variant = 'ghost';
+    btn.variant = 'text';
     btn.textContent = '✕';
     btn.style.cssText = 'flex:0 0 auto;';
     btn.addEventListener('click', onClick);
@@ -169,8 +169,8 @@ export class TableToolbar {
       const row = document.createElement('div');
       row.style.cssText = 'display:flex;align-items:center;gap:0.375rem;';
 
-      const colSelect = this.mkSelect(colOptions, preset?.column, 'flex:1 1 0;min-width:0;max-width:none;', true);
-      const dirSelect = this.mkSelect(dirOptions, preset?.direction || 'asc', 'flex:1 1 0;min-width:0;max-width:none;');
+      const colSelect = this.mkSelect(colOptions, preset?.column, 'width:10rem;', true);
+      const dirSelect = this.mkSelect(dirOptions, preset?.direction || 'asc', 'width:8rem;');
 
       row.appendChild(colSelect);
       row.appendChild(dirSelect);
@@ -196,11 +196,12 @@ export class TableToolbar {
       addSortRow();
     }
 
-    // Add sort button
+    // Add sort button — width matches colSelect + dirSelect + gap so right edge aligns with ✕
     const addBtn = document.createElement('snice-button') as any;
     addBtn.size = 'small';
-    addBtn.variant = 'ghost';
+    addBtn.variant = 'text';
     addBtn.textContent = '+ Add sort';
+    addBtn.style.cssText = 'width:calc(10rem + 8rem + 0.375rem);';
     addBtn.addEventListener('click', () => addSortRow());
     content.appendChild(addBtn);
 
@@ -211,7 +212,7 @@ export class TableToolbar {
 
     const clearBtn = document.createElement('snice-button') as any;
     clearBtn.size = 'small';
-    clearBtn.variant = 'ghost';
+    clearBtn.variant = 'text';
     clearBtn.textContent = 'Clear';
     clearBtn.addEventListener('click', () => {
       this.onSetSortModel?.([]);
@@ -245,7 +246,7 @@ export class TableToolbar {
 
     const engine = this.filterEngine || new TableFilterEngine();
     const currentModel = engine.getFilterModel();
-    const modal = this.createModal('Filters', 'medium');
+    const modal = this.createModal('Filters');
 
     const body = modal.querySelector('[slot="default"]') || modal;
     const content = document.createElement('div');
@@ -263,23 +264,23 @@ export class TableToolbar {
 
     const andBtn = document.createElement('snice-button') as any;
     andBtn.size = 'small';
-    andBtn.variant = currentLogic === 'and' ? 'primary' : 'ghost';
+    andBtn.variant = currentLogic === 'and' ? 'primary' : 'text';
     andBtn.textContent = 'AND';
 
     const orBtn = document.createElement('snice-button') as any;
     orBtn.size = 'small';
-    orBtn.variant = currentLogic === 'or' ? 'primary' : 'ghost';
+    orBtn.variant = currentLogic === 'or' ? 'primary' : 'text';
     orBtn.textContent = 'OR';
 
     andBtn.addEventListener('click', () => {
       currentLogic = 'and';
       andBtn.variant = 'primary';
-      orBtn.variant = 'ghost';
+      orBtn.variant = 'text';
     });
     orBtn.addEventListener('click', () => {
       currentLogic = 'or';
       orBtn.variant = 'primary';
-      andBtn.variant = 'ghost';
+      andBtn.variant = 'text';
     });
 
     logicRow.appendChild(andBtn);
@@ -298,20 +299,20 @@ export class TableToolbar {
 
     const addFilterRow = (preset?: { column: string; operator: FilterOperator; value: any }) => {
       const row = document.createElement('div');
-      row.style.cssText = 'display:flex;align-items:center;gap:0.375rem;';
+      row.style.cssText = 'display:flex;flex-direction:column;gap:0.25rem;padding:0.5rem;border:1px solid var(--snice-color-border,rgb(226 226 226));border-radius:var(--snice-border-radius-md,0.25rem);position:relative;';
 
       // Column select
-      const colSelect = this.mkSelect(colOptions, preset?.column, 'flex:1 1 0;min-width:0;max-width:none;', true);
+      const colSelect = this.mkSelect(colOptions, preset?.column, 'width:100%;max-width:none;', true);
       row.appendChild(colSelect);
 
       // Operator select — populated based on column type
       const opSelect = document.createElement('snice-select') as any;
       opSelect.size = 'small';
-      opSelect.style.cssText = 'flex:1 1 0;min-width:0;max-width:none;';
+      opSelect.style.cssText = 'width:100%;max-width:none;';
       row.appendChild(opSelect);
 
       // Value input
-      const valInput = this.mkInput('Value...', preset?.value != null ? String(preset.value) : undefined, 'flex:1 1 0;min-width:0;');
+      const valInput = this.mkInput('Value...', preset?.value != null ? String(preset.value) : undefined, 'width:100%;');
       row.appendChild(valInput);
 
       const populateOperators = () => {
@@ -351,11 +352,13 @@ export class TableToolbar {
         return { column: colKey, operator: op, value: val };
       };
 
-      row.appendChild(this.mkRemoveBtn(() => {
+      const removeBtn = this.mkRemoveBtn(() => {
         row.remove();
         const idx = filterRows.findIndex(r => r.getFilter === getFilter);
         if (idx >= 0) filterRows.splice(idx, 1);
-      }));
+      });
+      removeBtn.style.cssText = 'position:absolute;top:-0.5rem;right:-0.5rem;z-index:1;';
+      row.appendChild(removeBtn);
 
       filterRows.push({ getFilter });
       rowsContainer.appendChild(row);
@@ -373,7 +376,7 @@ export class TableToolbar {
     // Add Filter button
     const addBtn = document.createElement('snice-button') as any;
     addBtn.size = 'small';
-    addBtn.variant = 'ghost';
+    addBtn.variant = 'text';
     addBtn.textContent = '+ Add filter';
     addBtn.addEventListener('click', () => addFilterRow());
     content.appendChild(addBtn);
@@ -385,7 +388,7 @@ export class TableToolbar {
 
     const clearBtn = document.createElement('snice-button') as any;
     clearBtn.size = 'small';
-    clearBtn.variant = 'ghost';
+    clearBtn.variant = 'text';
     clearBtn.textContent = 'Clear all';
     clearBtn.addEventListener('click', () => {
       this.onClearFilters?.();
