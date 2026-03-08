@@ -131,7 +131,7 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
     if (this.pushContent && !this.isInlineActive()) {
       const mainContent = document.querySelector('main') || document.body;
       if (mainContent && mainContent !== document.body) {
-        (mainContent as HTMLElement).style.transition = 'margin 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+        (mainContent as HTMLElement).style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
       }
     }
 
@@ -200,8 +200,7 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
     if (this.pushContent) {
       const mainContent = document.querySelector('main') || document.body;
       if (mainContent && mainContent !== document.body) {
-        (mainContent as HTMLElement).style.marginLeft = '';
-        (mainContent as HTMLElement).style.marginTop = '';
+        (mainContent as HTMLElement).style.transform = '';
       }
     }
   }
@@ -338,32 +337,28 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
 
   private updatePushContent() {
     if (!this.pushContent) return;
-    
+
     // Apply to body or main content container
     const mainContent = document.querySelector('main') || document.body;
     if (mainContent && mainContent !== document.body) {
       // Set transition first if not already set
-      if (!mainContent.style.transition) {
-        (mainContent as HTMLElement).style.transition = 'margin 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+      if (!(mainContent as HTMLElement).style.transition) {
+        (mainContent as HTMLElement).style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
       }
-      
+
       if (this.open) {
         // Use CSS custom property that's calculated in CSS based on size/position
-        const amount = getComputedStyle(this).getPropertyValue('--drawer-push-amount');
-        const propertyMap: Record<string, string> = {
-          left: 'marginLeft',
-          right: 'marginRight',
-          top: 'marginTop',
-          bottom: 'marginBottom'
+        const amount = getComputedStyle(this).getPropertyValue('--drawer-push-amount').trim();
+        // Use transform instead of margin to avoid breaking margin:auto centering
+        const translateFn: Record<string, string> = {
+          left: `translateX(${amount})`,
+          right: `translateX(${amount})`,  // amount is negative from CSS
+          top: `translateY(${amount})`,
+          bottom: `translateY(${amount})`  // amount is negative from CSS
         };
-        const property = propertyMap[this.position] || 'marginLeft';
-        (mainContent as HTMLElement).style[property as any] = amount || '0px';
+        (mainContent as HTMLElement).style.transform = translateFn[this.position] || `translateX(${amount})`;
       } else {
-        // Reset margins
-        (mainContent as HTMLElement).style.marginLeft = '';
-        (mainContent as HTMLElement).style.marginRight = '';
-        (mainContent as HTMLElement).style.marginTop = '';
-        (mainContent as HTMLElement).style.marginBottom = '';
+        (mainContent as HTMLElement).style.transform = '';
       }
     }
   }
