@@ -37,10 +37,10 @@ export class SniceCellBoolean extends HTMLElement implements SniceCellElement {
   useSymbols: boolean = true;
 
   @property({  attribute: 'true-symbol' })
-  trueSymbol: string = '✓';
+  trueSymbol: string = 'svg';
 
   @property({  attribute: 'false-symbol' })
-  falseSymbol: string = '✗';
+  falseSymbol: string = 'svg';
 
   @render()
   render() {
@@ -102,8 +102,15 @@ export class SniceCellBoolean extends HTMLElement implements SniceCellElement {
     const isTrue = Boolean(this.value);
 
     if (format.useSymbols ?? this.useSymbols) {
-      const symbol = isTrue ? (format.trueSymbol ?? this.trueSymbol) : (format.falseSymbol ?? this.falseSymbol);
+      const trueSymbolVal = format.trueSymbol ?? this.trueSymbol;
+      const falseSymbolVal = format.falseSymbol ?? this.falseSymbol;
       const colorClass = isTrue ? 'boolean--true' : 'boolean--false';
+      if (isTrue && trueSymbolVal === 'svg') {
+        return `<span class="${colorClass}"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><polyline points="3.5 8.5 6.5 11.5 12.5 4.5"/></svg></span>`;
+      } else if (!isTrue && falseSymbolVal === 'svg') {
+        return `<span class="${colorClass}"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><line x1="4" y1="4" x2="12" y2="12"/><line x1="12" y1="4" x2="4" y2="12"/></svg></span>`;
+      }
+      const symbol = isTrue ? trueSymbolVal : falseSymbolVal;
       return `<span class="${colorClass}">${symbol}</span>`;
     } else {
       const text = isTrue ? (format.trueValue ?? this.trueValue) : (format.falseValue ?? this.falseValue);
