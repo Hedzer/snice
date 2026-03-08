@@ -53,6 +53,15 @@
   background: var(--feed-primary);
   border-color: var(--feed-primary);
   color: rgb(255 255 255);
+  text-shadow:
+    -1px  0   0 rgb(0 0 0 / 0.3),
+     1px  0   0 rgb(0 0 0 / 0.3),
+     0   -1px 0 rgb(0 0 0 / 0.3),
+     0    1px 0 rgb(0 0 0 / 0.3),
+    -1px -1px 0 rgb(0 0 0 / 0.3),
+     1px -1px 0 rgb(0 0 0 / 0.3),
+    -1px  1px 0 rgb(0 0 0 / 0.3),
+     1px  1px 0 rgb(0 0 0 / 0.3);
 }
 
 .feed__filter--active:hover {
