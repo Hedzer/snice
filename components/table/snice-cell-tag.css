@@ -41,33 +41,33 @@
   color: var(--snice-color-text, rgb(23 23 23));
 }
 
-/* Primary — matches chip primary */
+/* Primary */
 .tag--primary {
-  background: var(--snice-color-primary-subtle, rgb(219 234 254));
+  background: color-mix(in srgb, var(--snice-color-primary, rgb(37 99 235)) 12%, var(--snice-color-background, rgb(255 255 255)));
   color: var(--snice-color-primary, rgb(37 99 235));
 }
 
-/* Success — matches chip success */
+/* Success */
 .tag--success {
-  background: var(--_chip-success-bg, rgb(220 252 231));
+  background: color-mix(in srgb, var(--snice-color-success, rgb(22 163 74)) 12%, var(--snice-color-background, rgb(255 255 255)));
   color: var(--snice-color-success, rgb(22 163 74));
 }
 
-/* Danger — matches chip danger */
+/* Danger */
 .tag--danger {
-  background: var(--_chip-danger-bg, rgb(254 226 226));
+  background: color-mix(in srgb, var(--snice-color-danger, rgb(220 38 38)) 12%, var(--snice-color-background, rgb(255 255 255)));
   color: var(--snice-color-danger, rgb(220 38 38));
 }
 
-/* Warning — matches chip warning */
+/* Warning */
 .tag--warning {
-  background: var(--_chip-warning-bg, rgb(254 243 199));
+  background: color-mix(in srgb, var(--snice-color-warning, rgb(161 98 7)) 12%, var(--snice-color-background, rgb(255 255 255)));
   color: var(--snice-color-warning, rgb(161 98 7));
 }
 
-/* Info — matches chip primary */
+/* Info */
 .tag--info {
-  background: var(--snice-color-primary-subtle, rgb(219 234 254));
+  background: color-mix(in srgb, var(--snice-color-primary, rgb(37 99 235)) 12%, var(--snice-color-background, rgb(255 255 255)));
   color: var(--snice-color-primary, rgb(37 99 235));
 }
 
