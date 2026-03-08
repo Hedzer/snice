@@ -125,7 +125,14 @@ export class SniceCellSparkline extends HTMLElement implements SniceCellElement 
 
     const width = format.width ?? this.width;
     const height = format.height ?? this.height;
-    const color = format.color ?? this.color;
+    // Per-row color override: value can be { values: [], color: '...' } (object or JSON string)
+    let rowColor: string | null = null;
+    if (this.value && typeof this.value === 'object' && !Array.isArray(this.value)) {
+      rowColor = this.value.color || null;
+    } else if (typeof this.value === 'string' && this.value.startsWith('{')) {
+      try { rowColor = JSON.parse(this.value).color || null; } catch { /* ignore */ }
+    }
+    const color = rowColor ?? format.color ?? this.color;
     const type = format.type ?? this.chartType;
 
     return this.createCanvas(data, width, height, color, type);
@@ -141,8 +148,22 @@ export class SniceCellSparkline extends HTMLElement implements SniceCellElement 
     if (Array.isArray(this.value)) {
       return this.value.map(v => Number(v)).filter(n => !isNaN(n));
     }
-    
+
+    // Support { values: [...], color: '...' } object format (set as property)
+    if (this.value && typeof this.value === 'object' && !Array.isArray(this.value) && Array.isArray(this.value.values)) {
+      return this.value.values.map((v: any) => Number(v)).filter((n: number) => !isNaN(n));
+    }
+
     if (typeof this.value === 'string') {
+      // Try to parse as JSON object with values/color (e.g. '{"values":[1,2,3],"color":"#22c55e"}')
+      if (this.value.startsWith('{')) {
+        try {
+          const parsed = JSON.parse(this.value);
+          if (parsed && Array.isArray(parsed.values)) {
+            return parsed.values.map((v: any) => Number(v)).filter((n: number) => !isNaN(n));
+          }
+        } catch { /* fall through */ }
+      }
       // Try to parse as JSON array first (e.g., "[1,2,3]")
       if (this.value.startsWith('[') && this.value.endsWith(']')) {
         try {
