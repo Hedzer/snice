@@ -21,7 +21,7 @@
   border-radius: 10px;
   font-size: 0.75rem; /* 12px */
   font-weight: 600;
-  line-height: 1;
+  line-height: 0.85;
   white-space: nowrap;
   z-index: 1;
   transition: opacity 0.2s ease;
@@ -29,6 +29,10 @@
   border: 2px solid var(--snice-color-background, rgb(255 255 255 / 0.9));
   box-sizing: border-box;
   text-shadow:
+    -1px  0   0 rgb(0 0 0 / 0.3),
+     1px  0   0 rgb(0 0 0 / 0.3),
+     0   -1px 0 rgb(0 0 0 / 0.3),
+     0    1px 0 rgb(0 0 0 / 0.3),
     -1px -1px 0 rgb(0 0 0 / 0.3),
      1px -1px 0 rgb(0 0 0 / 0.3),
     -1px  1px 0 rgb(0 0 0 / 0.3),
@@ -45,8 +49,8 @@
 
 /* Sizes */
 :host([size="small"]) .badge {
-  min-width: 1rem; /* 16px */
-  height: 1rem; /* 16px */
+  min-width: 1.125rem; /* 18px */
+  height: 1.125rem; /* 18px */
   padding: 0 0.25rem; /* 0 4px */
   font-size: 0.625rem; /* 10px */
 }
@@ -136,30 +140,30 @@
 :host([variant="default"]) .badge,
 :host(:not([variant])) .badge {
   background: var(--snice-color-neutral, rgb(107 114 128));
-  color: var(--snice-color-text-inverse, rgb(255 255 255));
+  color: rgb(255 255 255);
 }
 
 :host([variant="primary"]) .badge {
   background: var(--snice-color-primary, rgb(37 99 235));
-  color: var(--snice-color-text-inverse, rgb(255 255 255));
+  color: rgb(255 255 255);
 }
 
 :host([variant="success"]) .badge {
   background: var(--snice-color-success, rgb(22 163 74));
-  color: var(--snice-color-text-inverse, rgb(255 255 255));
+  color: rgb(255 255 255);
 }
 
 :host([variant="warning"]) .badge {
   background: var(--snice-color-warning, rgb(217 119 6));
-  color: var(--snice-color-text-inverse, rgb(255 255 255));
+  color: rgb(255 255 255);
 }
 
 :host([variant="error"]) .badge {
   background: var(--snice-color-danger, rgb(220 38 38));
-  color: var(--snice-color-text-inverse, rgb(255 255 255));
+  color: rgb(255 255 255);
 }
 
 :host([variant="info"]) .badge {
   background: var(--snice-color-primary, rgb(37 99 235));
-  color: var(--snice-color-text-inverse, rgb(255 255 255));
+  color: rgb(255 255 255);
 }
