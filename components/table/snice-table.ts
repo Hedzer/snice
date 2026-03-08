@@ -219,6 +219,7 @@ export class SniceTable extends HTMLElement {
       const params: any = {
         search: this.searchText,
         sort: this.currentSort,
+        filter: this.filterEngine.getFilterModel(),
         selector: this.selector
       };
 
@@ -311,6 +312,7 @@ export class SniceTable extends HTMLElement {
 
       table {
         width: 100%;
+        table-layout: fixed;
         border-collapse: separate;
         border-spacing: 0;
         /* no border or radius — handled by .table-frame */
@@ -1534,7 +1536,7 @@ export class SniceTable extends HTMLElement {
         input.size = 'small';
         input.placeholder = `Filter ${column.label}...`;
         input.value = this.filterEngine.getHeaderFilter(column.key);
-        input.style.width = '100%';
+        input.style.cssText = 'width:100%;--snice-color-border:transparent;--snice-border-radius-md:0;';
         input.addEventListener('input', () => {
           this.filterEngine.setHeaderFilter(column.key, input.value);
           this.applyClientFilters();
@@ -2907,6 +2909,15 @@ export class SniceTable extends HTMLElement {
         td.appendChild(toggle);
         const textSpan = document.createElement('span');
         textSpan.textContent = value == null ? '' : String(value);
+        // Clicking the text label also toggles expand/collapse
+        if (treeRow.hasChildren) {
+          textSpan.style.cursor = 'pointer';
+          textSpan.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.treeData.toggle(treeRow.key);
+            this.renderBody();
+          });
+        }
         td.appendChild(textSpan);
       } else {
         const cellTagName = this.getCellTagName(column.type);
