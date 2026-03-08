@@ -1,0 +1,322 @@
+# Snice — Full Reference
+
+> Decorator-driven web component framework with differential rendering, routing, controllers, and 130+ UI components. Zero dependencies. MIT licensed.
+
+- Version: 4.26.x
+- Website: https://snice.dev
+- npm: https://www.npmjs.com/package/snice
+- CDN: https://cdn.snice.dev
+
+For per-component docs, use the MCP server: `claude mcp add snice -- npx snice mcp`
+
+---
+
+## Installation
+
+```bash
+npx snice create-app my-app --template=base   # or --template=pwa
+```
+
+Note: Use `--template=base` (equals sign), not `--template base` (space).
+
+### Manual Setup
+
+Requires bundler (Vite, esbuild, Rollup). package.json: `"type": "module"`
+
+tsconfig.json:
+```json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "experimentalDecorators": false,
+    "useDefineForClassFields": false
+  }
+}
+```
+
+---
+
+## Architecture
+
+- **Elements** (`@element`): Visual web components with Shadow DOM. Receive data via properties, emit events. NO business logic, NO fetch(), NO API calls.
+- **Pages** (`@page`): Routable views. Handle API calls, orchestrate elements, manage state.
+- **Controllers** (`@controller`): Reusable non-visual behaviors attached to elements.
+- **Layouts** (`@layout`): Persistent page wrappers (nav, sidebar) across route changes.
+
+---
+
+## Decorators
+
+### Class Decorators
+
+```typescript
+@element('tag-name', options?: { formAssociated?: boolean })
+@page({ tag, routes, guards?, placard? })   // `page` from Router(), NOT 'snice'
+@controller('name')
+@layout('tag-name')
+```
+
+### Rendering
+
+```typescript
+@render(options?: { debounce?, throttle?, once?, sync?, differential? })
+// Returns TemplateResult from html`...`. Auto re-renders on @property changes.
+// differential: true (default) — patches only changed nodes
+// differential: false — clears shadow root, re-renders from scratch
+// once: true — imperative mode: renders once, use @watch + @query to update
+
+@styles()
+// Returns CSSResult from css`...`. Scoped to shadow DOM. Called once (not reactive).
+```
+
+### Properties
+
+```typescript
+@property(options?: { type?, attribute?, converter?, hasChanged? })
+// Types: String (default), Number, Boolean, Object, Array
+// Syncs with attributes, triggers re-render
+// Boolean attrs: "false" string → false (non-standard)
+// No `reflect` option — attributes sync automatically
+
+@watch(...propertyNames: string[])
+// Callback: (oldVal, newVal, propertyName) => void
+```
+
+### Lifecycle
+
+```typescript
+@ready()     // After styles + event handlers set up
+@dispose()   // On disconnectedCallback
+@moved()     // On adoptedCallback
+@adopted()   // Alias for @moved
+```
+
+### DOM Queries
+
+```typescript
+@query(selector, options?: { light?: boolean })    // Single element
+@queryAll(selector, options?: { light?: boolean })  // NodeListOf<Element>
+// Default: shadow DOM. { light: true } for controllers on native elements.
+```
+
+### Events
+
+```typescript
+// Template:
+html`<button @click=${handler}>...`
+html`<input @keydown:Enter=${handler} />`
+html`<input @keydown.ctrl+s=${handler} />`
+
+// Decorator:
+@on(event, selector?, options?)
+// Options: { debounce?, throttle?, preventDefault?, stopPropagation?, once?, capture?, passive?, target? }
+
+@dispatch(eventName, options?: { debounce?, throttle?, dispatchOnUndefined? })
+// Fires CustomEvent with return value as detail. Supports async.
+```
+
+### Communication
+
+```typescript
+@request(channel, options?)
+// Async generator: yield payload → await response
+// Options: { timeout?, discoveryTimeout?, debounce?, throttle?, bubbles?, cancelable? }
+
+@respond(channel, options?)
+// Handle requests. One responder per channel.
+
+// Example:
+@request('fetch-user')
+async *fetchUser(id: string): any {
+  const user = await (yield { id });
+  return user;
+}
+
+@respond('fetch-user')
+async handleFetchUser({ id }: { id: string }) {
+  return await fetch(`/api/users/${id}`).then(r => r.json());
+}
+```
+
+### Observers
+
+```typescript
+@observe(target, selector?, options?)
+// 'intersection' — viewport visibility
+// 'resize' — element size changes
+// 'media:(query)' — e.g. 'media:(min-width: 768px)'
+// 'mutation:childList' | 'mutation:attributes' | 'mutation:attributes:name'
+```
+
+### Context & Router
+
+```typescript
+@context(options?: { debounce?, throttle?, once? })
+// Receives Context on navigation and ctx.update() calls
+// ctx.application — your app state
+// ctx.navigation — { placards, route, params }
+// ctx.fetch — middleware-aware fetch
+// ctx.update() — signal all @context subscribers
+
+Router({ target, type: 'hash' | 'pushstate', context?, layout?, fetcher? })
+// Returns: { page, navigate, initialize }
+// IMPORTANT: `page` from Router(), NOT from 'snice'
+```
+
+```typescript
+// router.ts
+export const { page, navigate, initialize } = Router({
+  target: '#app',
+  type: 'hash',
+  context: { user: null },
+  layout: 'app-shell'
+});
+
+// Guards: synchronous only, no async, no redirects
+type Guard<T> = (context: T, params: RouteParams) => boolean
+```
+
+### Fetcher
+
+```typescript
+const fetcher = new ContextAwareFetcher();
+fetcher.use('request', function(request, next) {
+  const app = this.application as MyAppContext;
+  if (app.user?.token) request.headers.set('Authorization', `Bearer ${app.user.token}`);
+  return next();
+});
+// Pass to Router({ fetcher }), use via ctx.fetch() in pages
+```
+
+### Utilities
+
+```typescript
+@debounce(wait?, { leading?, trailing?, maxWait? })
+@throttle(wait?, { leading?, trailing? })
+@once(perInstance?)
+@memoize({ keyGenerator?, maxSize?, ttl? })
+```
+
+---
+
+## Template Syntax
+
+```typescript
+html`...`  // TemplateResult
+css`...`   // CSSResult
+
+attr="${val}"       // String attribute
+.prop=${val}        // Property (objects, arrays)
+?attr=${bool}       // Boolean attribute (toggles presence)
+@event=${handler}   // Event listener (auto-bound)
+
+<if ${condition}>...</if>
+<case ${value}>
+  <when value="x">...</when>
+  <default>...</default>
+</case>
+${items.map(i => html`<li>${i}</li>`)}
+```
+
+**Pitfall**: Compound `<if>` expressions get stripped by minifiers — pre-compute as const.
+
+---
+
+## All Exports
+
+```typescript
+import {
+  element, controller, layout,       // class decorators (page from Router)
+  property, watch, context,          // state
+  render, styles, html, css,         // rendering
+  query, queryAll,                   // DOM
+  on, dispatch,                      // events
+  request, respond,                  // communication
+  observe,                           // observers
+  ready, dispose, moved, adopted,    // lifecycle
+  Router,                            // routing
+  debounce, throttle, once, memoize, // utilities
+  useNativeElementControllers        // controller= on native elements
+} from 'snice';
+```
+
+---
+
+## Components (130+ published)
+
+Import via side-effect: `import 'snice/components/button/snice-button'`
+
+**Layout & Navigation:** accordion, breadcrumbs, card, carousel, divider, drawer, flip-card, layout, masonry, menu, modal, nav, pagination, segmented-control, split-pane, stepper, tabs, tree, virtual-scroller
+
+**Forms & Input:** button, checkbox, chip, color-picker, date-picker, date-range-picker, date-time-picker, file-upload, input, radio, range-slider, rating, select, slider, split-button, step-input, switch, tag-input, textarea, time-picker, time-range-picker
+
+**Data Display:** activity-feed, app-tiles, avatar, avatar-group, badge, calendar, candlestick, chart, code-block, color-display, countdown, data-card, diff, funnel, gantt, gauge, heatmap, image, invoice, kanban, key-value, kpi, leaderboard, list, map, metric-table, network-graph, org-chart, pdf-viewer, pricing-table, product-card, progress, progress-ring, qr-code, receipt, recipe, sankey, skeleton, sparkline, spreadsheet, stat-group, table, tag, timeline, timer, treemap, waterfall, weather, work-order
+
+**Communication & Media:** audio-recorder, book, camera, camera-annotate, chat, comments, doc, draw, file-gallery, link, link-preview, location, markdown, message-strip, music-player, notification-center, paint, podcast-player, terminal, testimonial, toast, user-card, video-player
+
+**Feedback & Status:** alert, approval-flow, availability, banner, booking, cart, cropper, empty-state, estimate, flow, login, order-tracker, permission-matrix, qr-reader, sortable, spinner, spotlight, tooltip
+
+**Utility:** theme
+
+Per-component docs available via MCP server (`get_component_docs` tool)
+
+### Component Conventions
+- Tag prefix: `snice-` (e.g., `<snice-button>`)
+- `?open` toggles visibility; `.show()` / `.hide()` for imperative control
+- Events: kebab-case (`count-changed`), data via `e.detail.value`
+- Most support `variant` (default, primary, success, warning, error, info) and `size` (small, medium, large)
+- CSS custom properties: `--snice-*` namespace
+
+### CDN
+
+```html
+<script src="https://cdn.snice.dev/runtime/snice-runtime.min.js"></script>
+<script src="https://cdn.snice.dev/components/snice-button.min.js"></script>
+```
+
+### React Adapters
+
+```jsx
+import { SniceButton } from 'snice/adapters/react';
+```
+
+React 17/18/19. Prop mapping, event callbacks, ref forwarding, form integration.
+
+---
+
+## Theming
+
+CSS custom properties with `--snice-*` namespace. Dark mode via `data-theme="dark"` or `prefers-color-scheme`.
+
+Core variables: `--snice-color-primary`, `-success`, `-warning`, `-danger`, `-neutral`, `-text`, `-text-secondary`, `-text-tertiary`, `-background`, `-background-element`, `-border`, `--snice-font-family`, `--snice-font-size-*`, `--snice-spacing-*`, `--snice-border-radius-*`, `--snice-shadow-*`, `--snice-transition-*`, `--snice-focus-ring-*`.
+
+---
+
+## Pitfalls
+
+- **Not Lit**: Don't import from `lit` or extend `LitElement`
+- **No `@state()`**: Use `@property()` for all reactive state
+- **No `@customElement()`**: Use `@element('tag-name')`
+- **No `reflect`**: Attributes sync automatically
+- **Elements are visual only**: No fetch/API calls — use pages/controllers
+- **Boolean attrs**: `"false"` string → `false`
+- **Events**: kebab-case names, `e.detail.value` not `e.target.value`, `CustomEvent` not `Event`
+- **`page`**: Comes from `Router()`, not `'snice'` exports
+- **Router `type`**: Required — `'hash'` or `'pushstate'`
+- **Guards**: Sync only, boolean return, no async/redirects
+- **`<if>` expressions**: Compound expressions stripped by minifiers — pre-compute as const
+- **Testing**: `await el.ready` before assertions, `el.shadowRoot.querySelector()` for shadow DOM
+
+---
+
+## More Information
+
+- https://snice.dev — Website with live demos and guides
+- https://snice.dev/components.html — Interactive component demos
+- https://snice.dev/guide.html — Getting started guide
+- https://snice.dev/decorators.html — Decorator reference
+- npm: https://www.npmjs.com/package/snice
+- MCP server: `claude mcp add snice -- npx snice mcp`

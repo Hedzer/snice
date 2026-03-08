@@ -1,0 +1,97 @@
+# Snice
+
+> Decorator-driven web component framework with differential rendering, routing, controllers, and 130+ UI components. Zero dependencies. MIT licensed.
+
+- Version: 4.26.x
+- Website: https://snice.dev
+- npm: https://www.npmjs.com/package/snice
+- CDN: https://cdn.snice.dev
+
+## Where to Find Information
+
+### For AI Assistants
+- [llms-full.txt](https://snice.dev/llms-full.txt) — Complete API reference, architecture rules, all decorators, template syntax, router, pitfalls
+- MCP server (see below) — Query component docs, decorator reference, and more interactively
+
+### For Humans
+- https://snice.dev/guide.html — Getting started guide
+- https://snice.dev/components.html — Live interactive component demos
+- https://snice.dev/decorators.html — Decorator reference with examples
+
+### MCP Server (AI Tool Integration)
+```
+claude mcp add snice -- npx snice mcp
+```
+Tools: list_components, get_component_docs, get_decorator_docs, get_overview, generate_component, search_docs, validate_code
+
+## What Snice Is
+
+A TypeScript web component framework using TC39 decorators and Shadow DOM. Components extend `HTMLElement` directly — no base class, no virtual DOM. Differential rendering patches only changed DOM nodes.
+
+Four building blocks:
+- **Elements** (`@element`) — Visual components. Receive data via properties, emit events.
+- **Pages** (`@page`) — Routable views. Handle API calls and orchestration.
+- **Controllers** (`@controller`) — Reusable non-visual behaviors.
+- **Layouts** (`@layout`) — Persistent page wrappers (nav, sidebar).
+
+## Quick Start
+
+```bash
+npx snice create-app my-app --template=base
+```
+
+```typescript
+import { element, property, render, styles, html, css } from 'snice';
+
+@element('my-counter')
+class MyCounter extends HTMLElement {
+  @property({ type: Number }) count = 0;
+
+  @styles()
+  css() { return css`:host { display: block; }`; }
+
+  @render()
+  template() {
+    return html`<button @click=${() => this.count++}>${this.count}</button>`;
+  }
+}
+```
+
+## Components (130+ published)
+
+**Layout & Navigation:** accordion, breadcrumbs, card, carousel, divider, drawer, flip-card, layout, masonry, menu, modal, nav, pagination, segmented-control, split-pane, stepper, tabs, tree, virtual-scroller
+
+**Forms & Input:** button, checkbox, chip, color-picker, date-picker, date-range-picker, date-time-picker, file-upload, input, radio, range-slider, rating, select, slider, split-button, step-input, switch, tag-input, textarea, time-picker, time-range-picker
+
+**Data Display:** activity-feed, app-tiles, avatar, avatar-group, badge, calendar, candlestick, chart, code-block, color-display, countdown, data-card, diff, funnel, gantt, gauge, heatmap, image, invoice, kanban, key-value, kpi, leaderboard, list, map, metric-table, network-graph, org-chart, pdf-viewer, pricing-table, product-card, progress, progress-ring, qr-code, receipt, recipe, sankey, skeleton, sparkline, spreadsheet, stat-group, table, tag, timeline, timer, treemap, waterfall, weather, work-order
+
+**Communication & Media:** audio-recorder, book, camera, camera-annotate, chat, comments, doc, draw, file-gallery, link, link-preview, location, markdown, message-strip, music-player, notification-center, paint, podcast-player, terminal, testimonial, toast, user-card, video-player
+
+**Feedback & Status:** alert, approval-flow, availability, banner, booking, cart, cropper, empty-state, estimate, flow, login, order-tracker, permission-matrix, qr-reader, sortable, spinner, spotlight, tooltip
+
+**Utility:** theme
+
+## Usage Modes
+
+### npm (bundled apps)
+```typescript
+import 'snice/components/button/snice-button';
+```
+
+### CDN (no build step)
+```html
+<script src="https://cdn.snice.dev/runtime/snice-runtime.min.js"></script>
+<script src="https://cdn.snice.dev/components/snice-button.min.js"></script>
+```
+
+### React
+```jsx
+import { SniceButton } from 'snice/adapters/react';
+```
+
+## Key Warnings
+
+- Snice is NOT Lit — don't import from `lit` or extend `LitElement`
+- No `@state()` — use `@property()` for all reactive state
+- `page` decorator comes from `Router()`, not from `'snice'` exports
+- Elements are visual only — no fetch/API calls (use pages/controllers)
