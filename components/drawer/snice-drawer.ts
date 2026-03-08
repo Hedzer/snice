@@ -338,25 +338,24 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
   private updatePushContent() {
     if (!this.pushContent) return;
 
-    // Apply to body or main content container
     const mainContent = document.querySelector('main') || document.body;
     if (mainContent && mainContent !== document.body) {
-      // Set transition first if not already set
       if (!(mainContent as HTMLElement).style.transition) {
         (mainContent as HTMLElement).style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
       }
 
       if (this.open) {
-        // Use CSS custom property that's calculated in CSS based on size/position
-        const amount = getComputedStyle(this).getPropertyValue('--drawer-push-amount').trim();
-        // Use transform instead of margin to avoid breaking margin:auto centering
-        const translateFn: Record<string, string> = {
-          left: `translateX(${amount})`,
-          right: `translateX(${amount})`,  // amount is negative from CSS
-          top: `translateY(${amount})`,
-          bottom: `translateY(${amount})`  // amount is negative from CSS
-        };
-        (mainContent as HTMLElement).style.transform = translateFn[this.position] || `translateX(${amount})`;
+        // Defer to next frame so [open] attribute is reflected and CSS vars are computed
+        requestAnimationFrame(() => {
+          const amount = getComputedStyle(this).getPropertyValue('--drawer-push-amount').trim();
+          const translateFn: Record<string, string> = {
+            left: `translateX(${amount})`,
+            right: `translateX(${amount})`,
+            top: `translateY(${amount})`,
+            bottom: `translateY(${amount})`
+          };
+          (mainContent as HTMLElement).style.transform = translateFn[this.position] || `translateX(${amount})`;
+        });
       } else {
         (mainContent as HTMLElement).style.transform = '';
       }
