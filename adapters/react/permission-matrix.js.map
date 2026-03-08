@@ -1,0 +1,1 @@
+{"version":3,"file":"permission-matrix.js","sourceRoot":"","sources":["permission-matrix.tsx"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,WAAW,CAAC;AAc/C;;;;;;;;;;;;;;;GAeG;AACH,MAAM,CAAC,MAAM,gBAAgB,GAAG,kBAAkB,CAAwB;IACxE,OAAO,EAAE,yBAAyB;IAClC,UAAU,EAAE,CAAC,OAAO,EAAC,aAAa,EAAC,QAAQ,EAAC,UAAU,CAAC;IACvD,MAAM,EAAE,EAAE;IACV,cAAc,EAAE,KAAK;CACtB,CAAC,CAAC"}

@@ -1,0 +1,1 @@
+{"version":3,"file":"message-strip.d.ts","sourceRoot":"","sources":["message-strip.tsx"],"names":[],"mappings":"AACA,OAAO,KAAK,EAAE,cAAc,EAAE,MAAM,SAAS,CAAC;AAE9C;;GAEG;AACH,MAAM,WAAW,iBAAkB,SAAQ,cAAc;IACvD,OAAO,CAAC,EAAE,GAAG,CAAC;IACd,WAAW,CAAC,EAAE,GAAG,CAAC;IAClB,IAAI,CAAC,EAAE,GAAG,CAAC;CAEZ;AAED;;;;;;;;;;;;;;;GAeG;AACH,eAAO,MAAM,YAAY,gHAKvB,CAAC"}

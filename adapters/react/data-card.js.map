@@ -1,0 +1,1 @@
+{"version":3,"file":"data-card.js","sourceRoot":"","sources":["data-card.tsx"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,WAAW,CAAC;AAa/C;;;;;;;;;;;;;;;GAeG;AACH,MAAM,CAAC,MAAM,QAAQ,GAAG,kBAAkB,CAAgB;IACxD,OAAO,EAAE,iBAAiB;IAC1B,UAAU,EAAE,CAAC,QAAQ,EAAC,UAAU,EAAC,SAAS,CAAC;IAC3C,MAAM,EAAE,EAAE;IACV,cAAc,EAAE,KAAK;CACtB,CAAC,CAAC"}

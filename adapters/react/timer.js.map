@@ -1,0 +1,1 @@
+{"version":3,"file":"timer.js","sourceRoot":"","sources":["timer.tsx"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,WAAW,CAAC;AAc/C;;;;;;;;;;;;;;;GAeG;AACH,MAAM,CAAC,MAAM,KAAK,GAAG,kBAAkB,CAAa;IAClD,OAAO,EAAE,aAAa;IACtB,UAAU,EAAE,CAAC,MAAM,EAAC,aAAa,EAAC,SAAS,EAAC,MAAM,CAAC;IACnD,MAAM,EAAE,EAAE;IACV,cAAc,EAAE,KAAK;CACtB,CAAC,CAAC"}

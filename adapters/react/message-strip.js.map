@@ -1,0 +1,1 @@
+{"version":3,"file":"message-strip.js","sourceRoot":"","sources":["message-strip.tsx"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,WAAW,CAAC;AAa/C;;;;;;;;;;;;;;;GAeG;AACH,MAAM,CAAC,MAAM,YAAY,GAAG,kBAAkB,CAAoB;IAChE,OAAO,EAAE,qBAAqB;IAC9B,UAAU,EAAE,CAAC,SAAS,EAAC,aAAa,EAAC,MAAM,CAAC;IAC5C,MAAM,EAAE,EAAE;IACV,cAAc,EAAE,KAAK;CACtB,CAAC,CAAC"}

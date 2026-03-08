@@ -1,0 +1,1 @@
+{"version":3,"file":"approval-flow.js","sourceRoot":"","sources":["approval-flow.tsx"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,WAAW,CAAC;AAa/C;;;;;;;;;;;;;;;GAeG;AACH,MAAM,CAAC,MAAM,YAAY,GAAG,kBAAkB,CAAoB;IAChE,OAAO,EAAE,qBAAqB;IAC9B,UAAU,EAAE,CAAC,OAAO,EAAC,aAAa,EAAC,aAAa,CAAC;IACjD,MAAM,EAAE,EAAE;IACV,cAAc,EAAE,KAAK;CACtB,CAAC,CAAC"}

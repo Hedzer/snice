@@ -1,0 +1,1 @@
+{"version":3,"file":"accordion.js","sourceRoot":"","sources":["accordion.tsx"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,WAAW,CAAC;AAY/C;;;;;;;;;;;;;;;GAeG;AACH,MAAM,CAAC,MAAM,SAAS,GAAG,kBAAkB,CAAiB;IAC1D,OAAO,EAAE,iBAAiB;IAC1B,UAAU,EAAE,CAAC,UAAU,EAAC,SAAS,CAAC;IAClC,MAAM,EAAE,EAAE;IACV,cAAc,EAAE,KAAK;CACtB,CAAC,CAAC"}

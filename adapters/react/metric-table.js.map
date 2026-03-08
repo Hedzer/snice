@@ -1,0 +1,1 @@
+{"version":3,"file":"metric-table.js","sourceRoot":"","sources":["metric-table.tsx"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,WAAW,CAAC;AAc/C;;;;;;;;;;;;;;;GAeG;AACH,MAAM,CAAC,MAAM,WAAW,GAAG,kBAAkB,CAAmB;IAC9D,OAAO,EAAE,oBAAoB;IAC7B,UAAU,EAAE,CAAC,SAAS,EAAC,MAAM,EAAC,QAAQ,EAAC,eAAe,CAAC;IACvD,MAAM,EAAE,EAAE;IACV,cAAc,EAAE,KAAK;CACtB,CAAC,CAAC"}

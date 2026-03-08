@@ -1,0 +1,1 @@
+{"version":3,"file":"notification-center.d.ts","sourceRoot":"","sources":["notification-center.tsx"],"names":[],"mappings":"AACA,OAAO,KAAK,EAAE,cAAc,EAAE,MAAM,SAAS,CAAC;AAE9C;;GAEG;AACH,MAAM,WAAW,uBAAwB,SAAQ,cAAc;IAC7D,aAAa,CAAC,EAAE,GAAG,CAAC;IACpB,IAAI,CAAC,EAAE,GAAG,CAAC;IACX,IAAI,CAAC,EAAE,GAAG,CAAC;CAEZ;AAED;;;;;;;;;;;;;;;GAeG;AACH,eAAO,MAAM,kBAAkB,sHAK7B,CAAC"}

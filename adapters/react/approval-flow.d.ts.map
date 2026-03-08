@@ -1,0 +1,1 @@
+{"version":3,"file":"approval-flow.d.ts","sourceRoot":"","sources":["approval-flow.tsx"],"names":[],"mappings":"AACA,OAAO,KAAK,EAAE,cAAc,EAAE,MAAM,SAAS,CAAC;AAE9C;;GAEG;AACH,MAAM,WAAW,iBAAkB,SAAQ,cAAc;IACvD,KAAK,CAAC,EAAE,GAAG,CAAC;IACZ,WAAW,CAAC,EAAE,GAAG,CAAC;IAClB,WAAW,CAAC,EAAE,GAAG,CAAC;CAEnB;AAED;;;;;;;;;;;;;;;GAeG;AACH,eAAO,MAAM,YAAY,gHAKvB,CAAC"}

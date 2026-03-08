@@ -1,0 +1,1 @@
+{"version":3,"file":"form-layout.js","sourceRoot":"","sources":["form-layout.tsx"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,WAAW,CAAC;AAe/C;;;;;;;;;;;;;;;GAeG;AACH,MAAM,CAAC,MAAM,UAAU,GAAG,kBAAkB,CAAkB;IAC5D,OAAO,EAAE,mBAAmB;IAC5B,UAAU,EAAE,CAAC,SAAS,EAAC,eAAe,EAAC,YAAY,EAAC,KAAK,EAAC,SAAS,CAAC;IACpE,MAAM,EAAE,EAAE;IACV,cAAc,EAAE,KAAK;CACtB,CAAC,CAAC"}

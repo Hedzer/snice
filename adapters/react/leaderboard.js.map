@@ -1,0 +1,1 @@
+{"version":3,"file":"leaderboard.js","sourceRoot":"","sources":["leaderboard.tsx"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,WAAW,CAAC;AAc/C;;;;;;;;;;;;;;;GAeG;AACH,MAAM,CAAC,MAAM,WAAW,GAAG,kBAAkB,CAAmB;IAC9D,OAAO,EAAE,mBAAmB;IAC5B,UAAU,EAAE,CAAC,SAAS,EAAC,MAAM,EAAC,OAAO,EAAC,SAAS,CAAC;IAChD,MAAM,EAAE,EAAE;IACV,cAAc,EAAE,KAAK;CACtB,CAAC,CAAC"}

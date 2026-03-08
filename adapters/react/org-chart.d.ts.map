@@ -1,0 +1,1 @@
+{"version":3,"file":"org-chart.d.ts","sourceRoot":"","sources":["org-chart.tsx"],"names":[],"mappings":"AACA,OAAO,KAAK,EAAE,cAAc,EAAE,MAAM,SAAS,CAAC;AAE9C;;GAEG;AACH,MAAM,WAAW,aAAc,SAAQ,cAAc;IACnD,IAAI,CAAC,EAAE,GAAG,CAAC;IACX,SAAS,CAAC,EAAE,GAAG,CAAC;IAChB,OAAO,CAAC,EAAE,GAAG,CAAC;IACd,aAAa,CAAC,EAAE,GAAG,CAAC;CAErB;AAED;;;;;;;;;;;;;;;GAeG;AACH,eAAO,MAAM,QAAQ,4GAKnB,CAAC"}

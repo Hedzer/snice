@@ -1,0 +1,1 @@
+{"version":3,"file":"flip-card.js","sourceRoot":"","sources":["flip-card.tsx"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,WAAW,CAAC;AAc/C;;;;;;;;;;;;;;;GAeG;AACH,MAAM,CAAC,MAAM,QAAQ,GAAG,kBAAkB,CAAgB;IACxD,OAAO,EAAE,iBAAiB;IAC1B,UAAU,EAAE,CAAC,SAAS,EAAC,aAAa,EAAC,WAAW,EAAC,UAAU,CAAC;IAC5D,MAAM,EAAE,EAAE;IACV,cAAc,EAAE,KAAK;CACtB,CAAC,CAAC"}

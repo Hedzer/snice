@@ -1,0 +1,1 @@
+{"version":3,"file":"gantt.d.ts","sourceRoot":"","sources":["gantt.tsx"],"names":[],"mappings":"AACA,OAAO,KAAK,EAAE,cAAc,EAAE,MAAM,SAAS,CAAC;AAE9C;;GAEG;AACH,MAAM,WAAW,UAAW,SAAQ,cAAc;IAChD,KAAK,CAAC,EAAE,GAAG,CAAC;IACZ,IAAI,CAAC,EAAE,GAAG,CAAC;IACX,gBAAgB,CAAC,EAAE,GAAG,CAAC;CAExB;AAED;;;;;;;;;;;;;;;GAeG;AACH,eAAO,MAAM,KAAK,yGAKhB,CAAC"}

@@ -1,0 +1,1 @@
+{"version":3,"file":"kanban.js","sourceRoot":"","sources":["kanban.tsx"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,WAAW,CAAC;AAa/C;;;;;;;;;;;;;;;GAeG;AACH,MAAM,CAAC,MAAM,MAAM,GAAG,kBAAkB,CAAc;IACpD,OAAO,EAAE,cAAc;IACvB,UAAU,EAAE,CAAC,SAAS,EAAC,eAAe,EAAC,eAAe,CAAC;IACvD,MAAM,EAAE,EAAE;IACV,cAAc,EAAE,KAAK;CACtB,CAAC,CAAC"}

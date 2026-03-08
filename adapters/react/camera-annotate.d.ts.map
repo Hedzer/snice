@@ -1,0 +1,1 @@
+{"version":3,"file":"camera-annotate.d.ts","sourceRoot":"","sources":["camera-annotate.tsx"],"names":[],"mappings":"AACA,OAAO,KAAK,EAAE,cAAc,EAAE,MAAM,SAAS,CAAC;AAE9C;;GAEG;AACH,MAAM,WAAW,mBAAoB,SAAQ,cAAc;IACzD,IAAI,CAAC,EAAE,GAAG,CAAC;IACX,gBAAgB,CAAC,EAAE,GAAG,CAAC;IACvB,eAAe,CAAC,EAAE,GAAG,CAAC;CAEvB;AAED;;;;;;;;;;;;;;;GAeG;AACH,eAAO,MAAM,cAAc,kHAKzB,CAAC"}
