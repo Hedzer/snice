@@ -1,11 +1,13 @@
 /**
  * Toolbar for snice-table.
- * Uses snice components: snice-input, snice-button, snice-select.
+ * Uses snice components. Search left-aligned + short.
+ * Filter/Sort as icon buttons. Export/Print as icon buttons.
  */
 
 export interface ToolbarOptions {
   showSearch?: boolean;
   showFilter?: boolean;
+  showSort?: boolean;
   showColumnVisibility?: boolean;
   showDensity?: boolean;
   showExport?: boolean;
@@ -19,6 +21,7 @@ export class TableToolbar {
 
   onSearch: ((query: string) => void) | null = null;
   onFilterToggle: (() => void) | null = null;
+  onSortToggle: (() => void) | null = null;
   onColumnVisibilityToggle: (() => void) | null = null;
   onDensityChange: ((density: string) => void) | null = null;
   onExportCSV: (() => void) | null = null;
@@ -39,7 +42,7 @@ export class TableToolbar {
     toolbar.className = 'table-toolbar';
     toolbar.setAttribute('part', 'toolbar');
 
-    // Search — use snice-input
+    // Search — left-aligned, short width
     if (this.options.showSearch !== false) {
       const searchInput = document.createElement('snice-input') as any;
       searchInput.type = 'search';
@@ -60,57 +63,77 @@ export class TableToolbar {
     spacer.className = 'toolbar-spacer';
     toolbar.appendChild(spacer);
 
-    // Filter button — use snice-button
+    // Filter — icon button
     if (this.options.showFilter) {
       const btn = document.createElement('snice-button') as any;
       btn.size = 'small';
-      btn.variant = 'default';
-      btn.textContent = 'Filter';
+      btn.variant = 'text';
+      btn.icon = 'text://⫧';
+      btn.setAttribute('aria-label', 'Filter');
+      btn.setAttribute('title', 'Filter');
       btn.addEventListener('button-click', () => this.onFilterToggle?.());
       toolbar.appendChild(btn);
     }
 
-    // Column visibility — use snice-button
+    // Sort — icon button
+    if (this.options.showSort) {
+      const btn = document.createElement('snice-button') as any;
+      btn.size = 'small';
+      btn.variant = 'text';
+      btn.icon = 'text://↕';
+      btn.setAttribute('aria-label', 'Sort');
+      btn.setAttribute('title', 'Sort');
+      btn.addEventListener('button-click', () => this.onSortToggle?.());
+      toolbar.appendChild(btn);
+    }
+
+    // Column visibility — icon button
     if (this.options.showColumnVisibility) {
       const btn = document.createElement('snice-button') as any;
       btn.size = 'small';
-      btn.variant = 'default';
-      btn.textContent = 'Columns';
+      btn.variant = 'text';
+      btn.icon = 'text://☰';
+      btn.setAttribute('aria-label', 'Columns');
+      btn.setAttribute('title', 'Columns');
       btn.addEventListener('button-click', () => this.onColumnVisibilityToggle?.());
       toolbar.appendChild(btn);
     }
 
-    // Density selector — use snice-select
+    // Density — icon button (cycles through densities)
     if (this.options.showDensity) {
-      const select = document.createElement('snice-select') as any;
-      select.size = 'small';
-      select.placeholder = 'Density';
-      select.className = 'toolbar-density';
-      select.options = [
-        { value: 'compact', label: 'Compact' },
-        { value: 'standard', label: 'Standard' },
-        { value: 'comfortable', label: 'Comfortable' },
-      ];
-      select.value = (this.tableElement as any)?.density || 'standard';
-      select.addEventListener('select-change', (e: CustomEvent) => {
-        this.onDensityChange?.(e.detail.value);
+      const btn = document.createElement('snice-button') as any;
+      btn.size = 'small';
+      btn.variant = 'text';
+      btn.icon = 'text://≡';
+      btn.setAttribute('aria-label', 'Density');
+      btn.setAttribute('title', 'Density');
+      const densities = ['compact', 'standard', 'comfortable'];
+      let idx = densities.indexOf((this.tableElement as any)?.density || 'standard');
+      btn.addEventListener('button-click', () => {
+        idx = (idx + 1) % densities.length;
+        this.onDensityChange?.(densities[idx]);
+        btn.setAttribute('title', `Density: ${densities[idx]}`);
       });
-      toolbar.appendChild(select);
+      toolbar.appendChild(btn);
     }
 
-    // Export — use snice-split-button or snice-button
+    // Export CSV — icon button
     if (this.options.showExport) {
       const csvBtn = document.createElement('snice-button') as any;
       csvBtn.size = 'small';
-      csvBtn.variant = 'default';
-      csvBtn.textContent = 'CSV';
+      csvBtn.variant = 'text';
+      csvBtn.icon = 'text://↓';
+      csvBtn.setAttribute('aria-label', 'Export CSV');
+      csvBtn.setAttribute('title', 'Export CSV');
       csvBtn.addEventListener('button-click', () => this.onExportCSV?.());
       toolbar.appendChild(csvBtn);
 
       const printBtn = document.createElement('snice-button') as any;
       printBtn.size = 'small';
-      printBtn.variant = 'default';
-      printBtn.textContent = 'Print';
+      printBtn.variant = 'text';
+      printBtn.icon = 'text://⎙';
+      printBtn.setAttribute('aria-label', 'Print');
+      printBtn.setAttribute('title', 'Print');
       printBtn.addEventListener('button-click', () => this.onExportPrint?.());
       toolbar.appendChild(printBtn);
     }
@@ -118,8 +141,8 @@ export class TableToolbar {
     this.container.appendChild(toolbar);
   }
 
-  setActiveFilterCount(count: number) {
-    // Could add a badge to the filter button
+  setActiveFilterCount(_count: number) {
+    // Future: add badge to filter button
   }
 
   isAttached(): boolean {
