@@ -238,7 +238,8 @@ export class TableToolbar {
 
   // ── Filter Modal — MUI X Pro style: multiple filter rows ──
 
-  private openFilterModal() {
+  /** Open filter modal, optionally pre-selecting a column */
+  openFilterModal(presetColumn?: string) {
     this.closeModal();
 
     const columns = this.tableElement?.columns || [];
@@ -376,11 +377,13 @@ export class TableToolbar {
       rowsContainer.appendChild(badge);
     };
 
-    // Pre-populate from current filter model
+    // Pre-populate from current filter model or preset column
     if (currentModel.filters.length > 0) {
       for (const f of currentModel.filters) {
         addFilterRow(f);
       }
+    } else if (presetColumn) {
+      addFilterRow({ column: presetColumn, operator: 'contains' as FilterOperator, value: '' });
     } else {
       addFilterRow(); // Start with one empty row
     }
