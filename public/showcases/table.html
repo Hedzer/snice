@@ -50,10 +50,10 @@
           { product: 'Vortex Cache', revenue: 98700, growth: 42.6, rating: 4.5, progress: 23, trend: { values: [10,18,25,30,38,45,55], color: '#22c55e' }, status: 'Beta' },
           { product: 'Helios API', revenue: 712800, growth: 2.8, rating: 4, progress: 95, trend: { values: [44,45,43,46,45,47,46], color: '#eab308' }, status: 'Active' }
         ]);
-        table.setToolbar({ showSearch: true, showSort: true, showFilter: true, showExport: true });
         requestAnimationFrame(() => {
           if (table.renderHeader) table.renderHeader();
           if (table.renderBody) table.renderBody();
+          table.setToolbar({ showSearch: true, showSort: true, showFilter: true, showExport: true });
         });
       }
     });
