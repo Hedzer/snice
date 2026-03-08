@@ -378,7 +378,7 @@ function defineElement(tagName: string, constructor: any, context: ClassDecorato
   if (options?.formAssociated) constructor.formAssociated = true;
   applyElementFunctionality(constructor);
   if (customElements.get(tagName)) {
-    console.warn(`[snice] "${tagName}" is already registered. Skipping.`);
+    if ((globalThis as any).SNICE_DEBUG) console.warn(`[snice] "${tagName}" is already registered. Skipping.`);
     return constructor;
   }
   customElements.define(tagName, constructor);
