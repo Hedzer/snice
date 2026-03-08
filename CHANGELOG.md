@@ -1,3 +1,13 @@
+## [4.26.2](https://gitlab.com/Hedzer/snice/compare/v4.26.1...v4.26.2) (2026-03-08)
+
+
+### Bug Fixes
+
+* add text-shadow to activity-feed active filter for contrast ([b014dad](https://gitlab.com/Hedzer/snice/commit/b014dadc112535d9383ee9dc1a70dbfc5632fd80))
+* improve badge text contrast, sizing, and color consistency ([ed9a457](https://gitlab.com/Hedzer/snice/commit/ed9a45704f4798cf41c41afe65871e01fa97b43a))
+* remove text-shadow from chip, avatar, avatar-group, progress components ([2f78d64](https://gitlab.com/Hedzer/snice/commit/2f78d64c8dfa121fb890951b15cb47508e4f1799))
+* remove unused --snice-text-shadow theme variable ([0518f06](https://gitlab.com/Hedzer/snice/commit/0518f064d2ca01016f08c1040cc2d39a408bf731))
+
 ## [4.26.1](https://gitlab.com/Hedzer/snice/compare/v4.26.0...v4.26.1) (2026-03-08)
 
 
