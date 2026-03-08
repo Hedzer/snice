@@ -112,7 +112,16 @@ for (const entry of readdirSync(componentsDir)) {
 const showcaseCount = readdirSync(showcaseDir).length;
 console.log(`  ${showcaseCount} showcase pages built`);
 
-// 3. Stamp everything
+// 3. Copy llms.txt files to site root
+for (const f of ['llms.txt', 'llms-full.txt']) {
+  const src = join(root, f);
+  if (existsSync(src)) {
+    cpSync(src, join(siteDir, f));
+    console.log(`  Copied ${f}`);
+  }
+}
+
+// 4. Stamp everything
 console.log('Stamping assets...');
 execSync(`node scripts/stamp-assets.js --dir ${siteDir}`, { stdio: 'inherit', cwd: root });
 
