@@ -727,14 +727,18 @@ export class SniceTable extends HTMLElement {
       .tree-indent {
         display: inline-flex;
         align-items: center;
+        vertical-align: middle;
       }
 
       .tree-toggle {
         background: none;
         border: none;
         cursor: pointer;
-        padding: 0.125rem;
-        color: inherit;
+        padding: 0;
+        color: var(--snice-color-text-secondary, rgb(82 82 82));
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         font-size: 0.7rem;
         line-height: 1;
         width: 1.25rem;
@@ -745,7 +749,18 @@ export class SniceTable extends HTMLElement {
       }
 
       .tree-toggle:hover {
-        color: var(--snice-color-primary, rgb(37 99 235));
+        color: var(--snice-color-text, rgb(23 23 23));
+      }
+
+      .tree-toggle-icon {
+        width: 1rem;
+        height: 1rem;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transform: rotate(-90deg);
+      }
+
+      .tree-toggle--expanded .tree-toggle-icon {
+        transform: rotate(0deg);
       }
 
       .tree-spacer {
@@ -798,14 +813,29 @@ export class SniceTable extends HTMLElement {
         cursor: grabbing;
       }
 
-      /* Master-detail */
+      /* Master-detail — animated like accordion */
       .detail-row {
-        background: var(--snice-color-background-secondary, rgb(245 245 245));
+        background: var(--snice-color-background-element, rgb(252 251 249));
       }
 
       .detail-cell {
-        padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-md, 1rem) !important;
         max-width: none;
+      }
+
+      .detail-content {
+        overflow: hidden;
+        max-height: 0;
+        transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: max-height;
+      }
+
+      .detail-content--open {
+        max-height: var(--detail-max-height, 31.25rem);
+      }
+
+      .detail-content-inner {
+        padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-md, 1rem);
+        border-top: 1px solid var(--snice-color-border, rgb(226 226 226));
       }
 
       .detail-toggle {
@@ -1995,11 +2025,12 @@ export class SniceTable extends HTMLElement {
       }
     }
 
-    this.renderHeader(); // Update sort indicators immediately
+    this.renderHeader();
+    this.dispatchSortChange();
     if (this._hasController) {
-      this.debouncedDataRequest(); // Delegate to controller for server-side sort
+      this.debouncedDataRequest();
     } else {
-      this.sortLocalData(); // Sort in-memory data
+      this.sortLocalData();
     }
   }
 
@@ -2047,6 +2078,36 @@ export class SniceTable extends HTMLElement {
       selectedRows: this.selectedRows,
       allSelected
     };
+  }
+
+  @dispatch('sort-change', { bubbles: true, composed: true })
+  private dispatchSortChange() {
+    return { sort: this.currentSort };
+  }
+
+  @dispatch('filter-change', { bubbles: true, composed: true })
+  private dispatchFilterChange() {
+    return { filters: this.filterEngine.getFilterModel() };
+  }
+
+  @dispatch('column-visibility-change', { bubbles: true, composed: true })
+  private dispatchColumnVisibilityChange(key: string, visible: boolean) {
+    return { key, visible, visibility: this.columnManager.getVisibilityModel() };
+  }
+
+  @dispatch('column-pin-change', { bubbles: true, composed: true })
+  private dispatchColumnPinChange(key: string, pinned: 'left' | 'right' | false) {
+    return { key, pinned };
+  }
+
+  @dispatch('column-order-change', { bubbles: true, composed: true })
+  private dispatchColumnOrderChange(key: string, toIndex: number) {
+    return { key, toIndex };
+  }
+
+  @dispatch('density-change', { bubbles: true, composed: true })
+  private dispatchDensityChange() {
+    return { density: this.density };
   }
 
   // ── Module Integration: Initialize ──
@@ -2181,6 +2242,7 @@ export class SniceTable extends HTMLElement {
   }
 
   private applyClientFilters() {
+    this.dispatchFilterChange();
     if (this._hasController) {
       // Server-side: send filter params to controller
       this.debouncedDataRequest();
@@ -2196,6 +2258,7 @@ export class SniceTable extends HTMLElement {
     this.columnManager.setColumnVisible(key, visible);
     this.renderHeader();
     this.renderBody();
+    this.dispatchColumnVisibilityChange(key, visible);
   }
 
   showAllColumns() {
@@ -2218,12 +2281,14 @@ export class SniceTable extends HTMLElement {
     this.columnManager.pinColumn(key, side);
     this.renderHeader();
     this.renderBody();
+    this.dispatchColumnPinChange(key, side);
   }
 
   unpinColumn(key: string) {
     this.columnManager.unpinColumn(key);
     this.renderHeader();
     this.renderBody();
+    this.dispatchColumnPinChange(key, false);
   }
 
   autoSizeColumn(key: string) {
@@ -2244,6 +2309,7 @@ export class SniceTable extends HTMLElement {
     this.columnManager.moveColumn(key, toIndex);
     this.renderHeader();
     this.renderBody();
+    this.dispatchColumnOrderChange(key, toIndex);
   }
 
   // ── Editing API ──
@@ -2431,6 +2497,18 @@ export class SniceTable extends HTMLElement {
       this.renderHeader();
       if (this._hasController) this.debouncedDataRequest();
       else this.sortLocalData();
+    };
+    this.columnMenuManager.onFilter = (col) => {
+      // Toggle header filters and focus the filter input for this column
+      if (!this.headerFilters) {
+        this.headerFilters = true;
+        this.renderHeader();
+      }
+      // Focus the filter input for the clicked column
+      requestAnimationFrame(() => {
+        const input = this.thead?.querySelector(`.header-filter-row input[data-column="${col}"]`) as HTMLInputElement;
+        input?.focus();
+      });
     };
     this.columnMenuManager.onHide = (col) => this.setColumnVisible(col, false);
     this.columnMenuManager.onPinLeft = (col) => this.pinColumn(col, 'left');
