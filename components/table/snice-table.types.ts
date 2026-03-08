@@ -54,6 +54,7 @@ export interface ProgressFormat {
   max?: number;
   showPercentage?: boolean;
   color?: string;
+  colorize?: boolean;
   backgroundColor?: string;
   height?: string;
 }
