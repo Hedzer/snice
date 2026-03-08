@@ -352,16 +352,28 @@ export class TableToolbar {
         return { column: colKey, operator: op, value: val };
       };
 
-      const removeBtn = this.mkRemoveBtn(() => {
-        row.remove();
+      // Wrap filter card in a snice-badge with ✕ for removal
+      const badge = document.createElement('snice-badge') as any;
+      badge.content = '✕';
+      badge.variant = 'error';
+      badge.size = 'small';
+      badge.position = 'top-right';
+      badge.style.cursor = 'pointer';
+      badge.appendChild(row);
+
+      // Click the badge dot to remove this filter
+      badge.addEventListener('click', (e: MouseEvent) => {
+        // Only respond to clicks on the badge indicator itself, not the card content
+        const path = e.composedPath();
+        const hitBadge = path.some((el: any) => el.classList?.contains('badge'));
+        if (!hitBadge) return;
+        badge.remove();
         const idx = filterRows.findIndex(r => r.getFilter === getFilter);
         if (idx >= 0) filterRows.splice(idx, 1);
       });
-      removeBtn.style.cssText = 'position:absolute;top:-0.5rem;right:-0.5rem;z-index:1;';
-      row.appendChild(removeBtn);
 
       filterRows.push({ getFilter });
-      rowsContainer.appendChild(row);
+      rowsContainer.appendChild(badge);
     };
 
     // Pre-populate from current filter model
