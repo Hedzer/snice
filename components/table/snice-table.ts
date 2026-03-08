@@ -269,7 +269,30 @@ export class SniceTable extends HTMLElement {
     return css/*css*/`
       :host {
         display: block;
+        position: relative;
       }
+
+      /* Fullscreen / zoom mode */
+      :host(.table-fullscreen) {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 10000;
+        background: var(--snice-color-background, rgb(255 255 255));
+        padding: var(--snice-spacing-md, 1rem);
+        overflow: auto;
+      }
+
+      :host(.table-fullscreen) .snice-table {
+        height: 100%;
+      }
+
+      :host(.table-fullscreen) .table-frame {
+        max-height: calc(100vh - 4rem);
+      }
+
 
       .snice-table {
         width: 100%;
@@ -278,9 +301,10 @@ export class SniceTable extends HTMLElement {
 
       /* Frame wraps super-header + table; provides the rounded border */
       .table-frame {
+        position: relative;
         border: 1px solid var(--snice-color-border, rgb(226 226 226));
         border-radius: var(--snice-border-radius-lg, 0.5rem);
-        overflow: hidden; /* clips cell borders at rounded corners */
+        overflow: auto; /* allows scroll when table exceeds container */
       }
 
       table {
@@ -327,7 +351,7 @@ export class SniceTable extends HTMLElement {
       }
 
       th {
-        padding: var(--snice-spacing-sm) var(--snice-spacing-sm);
+        padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-sm, 0.75rem);
       }
 
       /* Narrow utility columns: checkbox, expand toggle, drag handle */
@@ -353,10 +377,10 @@ export class SniceTable extends HTMLElement {
       }
 
       th {
-        background-color: var(--snice-color-background-secondary);
-        color: var(--snice-color-text);
-        font-weight: var(--snice-font-weight-semibold);
-        border-bottom: 2px solid var(--snice-color-border);
+        background-color: var(--snice-color-background-secondary, rgb(245 245 245));
+        color: var(--snice-color-text, rgb(23 23 23));
+        font-weight: var(--snice-font-weight-semibold, 600);
+        border-bottom: 2px solid var(--snice-color-border, rgb(226 226 226));
       }
 
       th.sortable {
@@ -365,16 +389,16 @@ export class SniceTable extends HTMLElement {
       }
 
       th.sortable:hover {
-        background-color: var(--snice-color-background-tertiary);
+        background-color: var(--snice-color-background-tertiary, rgb(235 235 235));
       }
 
       /* Row styling */
       :host([striped]) tbody tr:nth-child(even) {
-        background-color: var(--snice-color-background-secondary);
+        background-color: var(--snice-color-background-secondary, rgb(245 245 245));
       }
 
       :host([hoverable]) tbody tr:hover {
-        background-color: var(--snice-color-background-tertiary);
+        background-color: var(--snice-color-background-tertiary, rgb(235 235 235));
       }
 
       :host([clickable]) tbody tr {
@@ -386,12 +410,12 @@ export class SniceTable extends HTMLElement {
       }
 
       tbody tr[data-selected="true"] {
-        background-color: var(--snice-color-background-tertiary);
-        border-left: 3px solid var(--snice-color-primary);
+        background-color: var(--snice-color-background-tertiary, rgb(235 235 235));
+        border-left: 3px solid var(--snice-color-primary, rgb(37 99 235));
       }
 
       tbody tr[data-selected="true"]:hover {
-        background-color: var(--snice-color-background-tertiary);
+        background-color: var(--snice-color-background-tertiary, rgb(235 235 235));
       }
 
       /* List mode - hide vertical borders */
@@ -407,11 +431,11 @@ export class SniceTable extends HTMLElement {
       }
 
       [part="header"] {
-        background-color: var(--snice-color-background);
+        background-color: var(--snice-color-background, rgb(255 255 255));
       }
 
       [part="body"] {
-        background-color: var(--snice-table-body-bg, --snice-color-background);
+        background-color: var(--snice-table-body-bg, var(--snice-color-background, rgb(255 255 255)));
         display: block;
       }
 
@@ -421,28 +445,156 @@ export class SniceTable extends HTMLElement {
         align-items: center;
         gap: var(--snice-spacing-xs, 0.5rem);
         padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
-        flex-wrap: wrap;
-        border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
         background: var(--snice-color-background, rgb(255 255 255));
       }
 
       .toolbar-search {
-        flex: 1;
-        min-width: 10rem;
+        width: 16rem;
+        max-width: 16rem;
+        flex: 0 0 auto;
       }
 
-      .toolbar-spacer { flex: 1; }
+      .toolbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        margin-left: auto;
+      }
 
-      /* snice-button/snice-select handle their own styling — just layout here */
-      .toolbar-density {
-        min-width: 7rem;
+      .toolbar-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2rem;
+        height: 2rem;
+        border: 1px solid var(--snice-color-border, rgb(226 226 226));
+        border-radius: var(--snice-border-radius-md, 0.25rem);
+        background: var(--snice-color-background, rgb(255 255 255));
+        color: var(--snice-color-text-secondary, rgb(82 82 82));
+        cursor: pointer;
+        transition: all var(--snice-transition-fast, 150ms) ease;
+        padding: 0;
+        line-height: 1;
+        font-family: inherit;
+      }
+
+      .toolbar-btn:hover {
+        background: var(--snice-color-background-secondary, rgb(245 245 245));
+        color: var(--snice-color-text, rgb(23 23 23));
+      }
+
+      .toolbar-btn svg {
+        width: 16px;
+        height: 16px;
+      }
+
+      /* Toolbar dropdown menus */
+      .toolbar-menu {
+        position: absolute;
+        z-index: 10001;
+        min-width: 12rem;
+        background: var(--snice-color-background, rgb(255 255 255));
+        border: 1px solid var(--snice-color-border, rgb(226 226 226));
+        border-radius: var(--snice-border-radius-md, 0.25rem);
+        box-shadow: var(--snice-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1));
+        padding: var(--snice-spacing-2xs, 0.25rem);
+      }
+
+      .toolbar-menu-title {
+        padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-xs, 0.5rem);
+        font-size: var(--snice-font-size-xs, 0.75rem);
+        font-weight: var(--snice-font-weight-semibold, 600);
+        color: var(--snice-color-text-tertiary, rgb(115 115 115));
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .toolbar-menu-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-xs, 0.5rem);
+        border: none;
+        border-radius: 3px;
+        background: transparent;
+        color: var(--snice-color-text, rgb(23 23 23));
+        font-size: var(--snice-font-size-sm, 0.875rem);
+        font-family: inherit;
+        cursor: pointer;
+        text-align: left;
+      }
+
+      .toolbar-menu-item:hover {
+        background: var(--snice-color-background-secondary, rgb(245 245 245));
+      }
+
+      .toolbar-menu-item--active {
+        color: var(--snice-color-primary, rgb(37 99 235));
+        font-weight: var(--snice-font-weight-medium, 500);
+      }
+
+      .toolbar-menu-item-indicator {
+        font-size: 0.75rem;
+        opacity: 0.7;
+      }
+
+      .toolbar-clear-btn {
+        margin-top: var(--snice-spacing-2xs, 0.25rem);
+        border-top: 1px solid var(--snice-color-border, rgb(226 226 226));
+        border-radius: 0;
+        color: var(--snice-color-text-secondary, rgb(82 82 82));
+        font-size: var(--snice-font-size-xs, 0.75rem);
+      }
+
+      /* Filter menu */
+      .toolbar-filter-menu {
+        min-width: 16rem;
+        padding: var(--snice-spacing-xs, 0.5rem);
+      }
+
+      .toolbar-filter-row {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        margin-bottom: var(--snice-spacing-2xs, 0.25rem);
+      }
+
+      .toolbar-filter-label {
+        font-size: var(--snice-font-size-xs, 0.75rem);
+        color: var(--snice-color-text-secondary, rgb(82 82 82));
+        font-weight: var(--snice-font-weight-medium, 500);
+      }
+
+      .toolbar-filter-input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-xs, 0.5rem);
+        border: 1px solid var(--snice-color-border, rgb(226 226 226));
+        border-radius: var(--snice-border-radius-md, 0.25rem);
+        font-size: var(--snice-font-size-sm, 0.875rem);
+        font-family: inherit;
+        color: var(--snice-color-text, rgb(23 23 23));
+        background: var(--snice-color-background, rgb(255 255 255));
+        outline: none;
+      }
+
+      .toolbar-filter-input:focus {
+        border-color: var(--snice-color-primary, rgb(37 99 235));
+      }
+
+      .toolbar-filter-input::placeholder {
+        color: var(--snice-color-text-tertiary, rgb(115 115 115));
       }
 
       .table-controls {
         display: flex;
-        gap: var(--snice-spacing-md, 1rem);
+        gap: var(--snice-spacing-xs, 0.5rem);
         align-items: center;
         flex-wrap: wrap;
+        padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
+        padding-left: 0;
+        justify-content: flex-start;
       }
 
       :host(:not([searchable])) .search-input {
@@ -455,8 +607,9 @@ export class SniceTable extends HTMLElement {
 
       /* snice-input/snice-select handle own styling — layout only */
       .search-input {
-        min-width: 12.5rem;
-        flex: 1;
+        width: 16rem;
+        max-width: 16rem;
+        flex: 0 0 auto;
       }
 
       .selector-input {
@@ -468,7 +621,7 @@ export class SniceTable extends HTMLElement {
       .sort-header {
         display: flex;
         align-items: center;
-        gap: var(--snice-spacing-xs);
+        gap: var(--snice-spacing-xs, 0.5rem);
         justify-content: space-between;
       }
 
@@ -479,7 +632,7 @@ export class SniceTable extends HTMLElement {
         font-size: 0.7em;
         line-height: 1;
         opacity: 0.3;
-        transition: opacity var(--snice-transition-fast);
+        transition: opacity var(--snice-transition-fast, 150ms);
       }
 
       .sort-indicator.active {
@@ -488,9 +641,9 @@ export class SniceTable extends HTMLElement {
 
       .sort-order {
         font-size: 0.6em;
-        background: var(--snice-color-primary);
-        color: var(--snice-color-text-inverse);
-        border-radius: var(--snice-border-radius-sm);
+        background: var(--snice-color-primary, rgb(37 99 235));
+        color: var(--snice-color-text-inverse, rgb(250 250 250));
+        border-radius: var(--snice-border-radius-sm, 0.125rem);
         padding: 1px 3px;
         min-width: 12px;
         text-align: center;
@@ -498,7 +651,7 @@ export class SniceTable extends HTMLElement {
 
       /* Loading fade */
       tbody {
-        transition: opacity var(--snice-transition-normal);
+        transition: opacity var(--snice-transition-normal, 250ms);
       }
 
       :host([loading]) tbody {
@@ -507,8 +660,8 @@ export class SniceTable extends HTMLElement {
 
       .no-data {
         text-align: center;
-        padding: var(--snice-spacing-lg);
-        color: var(--snice-color-text-secondary);
+        padding: var(--snice-spacing-lg, 1.5rem);
+        color: var(--snice-color-text-secondary, rgb(82 82 82));
       }
 
       /* Pagination */
@@ -768,6 +921,16 @@ export class SniceTable extends HTMLElement {
         width: 1.25rem;
       }
 
+      /* Tree child rows animate in */
+      tr.tree-child {
+        animation: tree-row-in 0.2s ease;
+      }
+
+      @keyframes tree-row-in {
+        from { opacity: 0; transform: translateY(-4px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
       /* Row pinning */
       .pinned-row {
         font-weight: var(--snice-font-weight-medium, 500);
@@ -923,6 +1086,11 @@ export class SniceTable extends HTMLElement {
         cursor: not-allowed;
       }
 
+      .column-menu-item--active {
+        color: var(--snice-color-primary, rgb(37 99 235));
+        font-weight: var(--snice-font-weight-medium, 500);
+      }
+
       .column-menu-icon {
         width: 1.25rem;
         text-align: center;
@@ -931,8 +1099,8 @@ export class SniceTable extends HTMLElement {
 
       /* Slotted table layout */
       .snice-table--slotted {
-        border: 1px solid var(--snice-color-border);
-        border-radius: var(--snice-border-radius-lg);
+        border: 1px solid var(--snice-color-border, rgb(226 226 226));
+        border-radius: var(--snice-border-radius-lg, 0.5rem);
         overflow: hidden;
       }
 
@@ -940,19 +1108,19 @@ export class SniceTable extends HTMLElement {
         display: grid;
         grid-auto-flow: column;
         grid-auto-columns: 1fr;
-        background-color: var(--snice-color-background-secondary);
-        border-bottom: 2px solid var(--snice-color-border);
-        padding: var(--snice-spacing-sm);
-        font-weight: var(--snice-font-weight-semibold);
-        color: var(--snice-color-text);
+        background-color: var(--snice-color-background-secondary, rgb(245 245 245));
+        border-bottom: 2px solid var(--snice-color-border, rgb(226 226 226));
+        padding: var(--snice-spacing-sm, 0.75rem);
+        font-weight: var(--snice-font-weight-semibold, 600);
+        color: var(--snice-color-text, rgb(23 23 23));
       }
 
       .snice-table--slotted .header-cell {
-        color: var(--snice-color-text);
+        color: var(--snice-color-text, rgb(23 23 23));
       }
 
       .snice-table--slotted .table-header::slotted(snice-column) {
-        padding: var(--snice-spacing-sm);
+        padding: var(--snice-spacing-sm, 0.75rem);
       }
 
       .snice-table--slotted .table-body {
@@ -961,7 +1129,7 @@ export class SniceTable extends HTMLElement {
       }
 
       .snice-table--slotted .table-body::slotted(snice-row) {
-        border-bottom: 1px solid var(--snice-color-border);
+        border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
       }
 
       .snice-table--slotted .table-body::slotted(snice-row:last-child) {
@@ -969,11 +1137,11 @@ export class SniceTable extends HTMLElement {
       }
 
       :host([striped]) .snice-table--slotted .table-body::slotted(snice-row:nth-child(even)) {
-        background-color: var(--snice-color-background-secondary);
+        background-color: var(--snice-color-background-secondary, rgb(245 245 245));
       }
 
       :host([hoverable]) .snice-table--slotted .table-body::slotted(snice-row:hover) {
-        background-color: var(--snice-color-background-tertiary);
+        background-color: var(--snice-color-background-tertiary, rgb(235 235 235));
       }
     `;
   }
@@ -1036,7 +1204,10 @@ export class SniceTable extends HTMLElement {
         searchInput.className = 'search-input';
         searchInput.setAttribute('type', 'search');
         searchInput.setAttribute('placeholder', 'Search...');
-        searchInput.setAttribute('size', 'medium');
+        searchInput.setAttribute('size', 'small');
+        searchInput.style.width = '16rem';
+        searchInput.style.maxWidth = '16rem';
+        searchInput.style.flex = '0 0 auto';
         searchInput.addEventListener('input', this.handleSearchInput);
         controlsDiv.appendChild(searchInput);
       }
@@ -1845,6 +2016,25 @@ export class SniceTable extends HTMLElement {
     }
   }
 
+  private _escHandler: ((e: KeyboardEvent) => void) | null = null;
+
+  toggleFullscreen = () => {
+    const isFullscreen = this.classList.contains('table-fullscreen');
+    if (isFullscreen) {
+      this.classList.remove('table-fullscreen');
+      if (this._escHandler) {
+        document.removeEventListener('keydown', this._escHandler);
+        this._escHandler = null;
+      }
+    } else {
+      this.classList.add('table-fullscreen');
+      this._escHandler = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') this.toggleFullscreen();
+      };
+      document.addEventListener('keydown', this._escHandler);
+    }
+  }
+
   private handleClick = (e: MouseEvent) => {
     const target = e.target as HTMLElement;
 
@@ -2437,9 +2627,27 @@ export class SniceTable extends HTMLElement {
 
     this.toolbar.attach(this, container, options);
     this.toolbar.onSearch = (query) => this.setQuickFilter(query);
-    this.toolbar.onDensityChange = (d) => { this.density = d as any; };
+    this.toolbar.onSortColumn = (key, dir) => {
+      this.currentSort = [{ column: key, direction: dir }];
+      this.sortLocalData();
+      this.renderHeader();
+    };
+    this.toolbar.onFilterColumn = (key, value) => {
+      if (value) {
+        this.filterEngine.setColumnFilter(key, 'contains', value);
+      } else {
+        this.filterEngine.removeColumnFilter(key);
+      }
+      this.data = this.filterEngine.applyFilters(this._unsortedData, this.columns);
+      this.renderBody();
+    };
+    this.toolbar.onClearFilters = () => {
+      this.filterEngine.clearAllFilters();
+      this.data = [...this._unsortedData];
+      this.renderBody();
+    };
     this.toolbar.onExportCSV = () => this.exportCSV();
-    this.toolbar.onExportPrint = () => this.printTable();
+    this.toolbar.onFullscreen = () => this.toggleFullscreen();
   }
 
   // ── Tree Data API ──
@@ -2615,6 +2823,7 @@ export class SniceTable extends HTMLElement {
   private createRow(rowData: any, index: number, treeRow?: TreeRow): HTMLTableRowElement {
     const tr = document.createElement('tr');
     tr.setAttribute('data-index', String(index));
+    if (treeRow && treeRow.depth > 0) tr.classList.add('tree-child');
 
     // Row height
     if (this.rowHeightCallback) {
