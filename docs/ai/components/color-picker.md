@@ -62,13 +62,13 @@ loading: boolean = false;
 <snice-color-picker size="large"></snice-color-picker>
 
 <!-- Events -->
-<snice-color-picker id="picker"></snice-color-picker>
-<script>
-const picker = document.querySelector('#picker');
+<snice-color-picker></snice-color-picker>
+```
+
+```typescript
 picker.addEventListener('color-picker-change', (e) => {
   console.log('Color:', e.detail.value);
 });
-</script>
 ```
 
 ## Features

@@ -50,7 +50,6 @@ funnel.data = [
 ```
 
 ```html
-
 <!-- Gradient variant -->
 <snice-funnel variant="gradient"></snice-funnel>
 
