@@ -13,11 +13,31 @@ export interface TableProps extends SniceBaseProps {
   hoverable?: any;
   clickable?: any;
   list?: any;
+  pagination?: any;
+  paginationMode?: any;
+  pageSize?: any;
+  currentPage?: any;
+  totalItems?: any;
+  pageSizes?: any;
   searchDebounce?: any;
   currentSort?: any;
   selector?: any;
   selectorOptions?: any;
   loading?: any;
+  virtualize?: any;
+  rowHeight?: any;
+  virtualBuffer?: any;
+  columnResize?: any;
+  editable?: any;
+  editMode?: any;
+  density?: any;
+  headerFilters?: any;
+  quickFilter?: any;
+  rowReorder?: any;
+  columnReorder?: any;
+  columnMenu?: any;
+  lazyLoad?: any;
+  lazyLoadThreshold?: any;
   selectedRows?: any;
 
 }
@@ -40,7 +60,7 @@ export interface TableProps extends SniceBaseProps {
  */
 export const Table = createReactAdapter<TableProps>({
   tagName: 'snice-table',
-  properties: ["striped","searchable","filterable","sortable","selectable","hoverable","clickable","list","searchDebounce","currentSort","selector","selectorOptions","loading","selectedRows"],
+  properties: ["striped","searchable","filterable","sortable","selectable","hoverable","clickable","list","pagination","paginationMode","pageSize","currentPage","totalItems","pageSizes","searchDebounce","currentSort","selector","selectorOptions","loading","virtualize","rowHeight","virtualBuffer","columnResize","editable","editMode","density","headerFilters","quickFilter","rowReorder","columnReorder","columnMenu","lazyLoad","lazyLoadThreshold","selectedRows"],
   events: {},
   formAssociated: false
 });
