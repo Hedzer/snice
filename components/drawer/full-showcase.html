@@ -17,165 +17,243 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
     body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
-    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
-    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
-    button.demo-btn { padding: 0.5rem 1rem; border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 6px; background: var(--snice-color-background-element, #fcfbf9); color: var(--snice-color-text); cursor: pointer; font-size: 0.875rem; }
-    .contained-box { position: relative; border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 8px; height: 300px; overflow: hidden; margin-bottom: 1rem; }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); margin: 1.5rem 0 0.5rem; }
+    h2:first-child { margin-top: 0; }
+    .box { position: relative; border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 8px; overflow: hidden; margin-bottom: 1rem; background: color-mix(in srgb, var(--snice-color-background, #fff) 90%, var(--snice-color-text, #000) 10%); }
+    .box-h { height: 200px; }
+    .box-tall { height: 280px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
+    .label { position: absolute; top: 0.5rem; right: 0.5rem; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); z-index: 9999; background: color-mix(in srgb, var(--snice-color-background, #fff) 90%, var(--snice-color-text, #000) 10%); padding: 0.15rem 0.4rem; border-radius: 4px; pointer-events: none; }
+    .menu { display: flex; flex-direction: column; padding: 0.5rem; }
+    .menu a { display: block; padding: 0.4rem 0.75rem; font-size: 0.8rem; color: var(--snice-color-text-secondary, #666); text-decoration: none; border-radius: 4px; }
+    .menu a:hover { background: var(--snice-color-background-hover, #f3f4f6); }
+    .menu a.active { color: var(--snice-color-primary, #2563eb); background: color-mix(in srgb, var(--snice-color-primary, #2563eb) 10%, transparent); }
   </style>
-  <script type="module">import './snice-drawer.ts';</script>
+  <script type="module">import './snice-drawer.ts'; import './snice-drawer-target.ts';</script>
 </head>
 <body>
 
-<!-- Position variants -->
-<h2>Position: left (default)</h2>
-<div class="row"><button class="demo-btn" onclick="document.getElementById('d-left').show()">Open Left</button></div>
-<snice-drawer id="d-left" position="left"><span slot="title">Left Drawer</span><p>Left-positioned drawer.</p></snice-drawer>
-
-<h2>Position: right</h2>
-<div class="row"><button class="demo-btn" onclick="document.getElementById('d-right').show()">Open Right</button></div>
-<snice-drawer id="d-right" position="right"><span slot="title">Right Drawer</span><p>Right-positioned drawer.</p></snice-drawer>
-
-<h2>Position: top</h2>
-<div class="row"><button class="demo-btn" onclick="document.getElementById('d-top').show()">Open Top</button></div>
-<snice-drawer id="d-top" position="top"><span slot="title">Top Drawer</span><p>Top-positioned drawer.</p></snice-drawer>
-
-<h2>Position: bottom</h2>
-<div class="row"><button class="demo-btn" onclick="document.getElementById('d-bottom').show()">Open Bottom</button></div>
-<snice-drawer id="d-bottom" position="bottom"><span slot="title">Bottom Drawer</span><p>Bottom-positioned drawer.</p></snice-drawer>
-
-<!-- Size variants -->
-<h2>Size: small</h2>
-<div class="row"><button class="demo-btn" onclick="document.getElementById('d-sm').show()">Open Small</button></div>
-<snice-drawer id="d-sm" size="small"><span slot="title">Small</span><p>Small drawer.</p></snice-drawer>
-
-<h2>Size: medium (default)</h2>
-<div class="row"><button class="demo-btn" onclick="document.getElementById('d-md').show()">Open Medium</button></div>
-<snice-drawer id="d-md" size="medium"><span slot="title">Medium</span><p>Medium drawer.</p></snice-drawer>
-
-<h2>Size: large</h2>
-<div class="row"><button class="demo-btn" onclick="document.getElementById('d-lg').show()">Open Large</button></div>
-<snice-drawer id="d-lg" size="large"><span slot="title">Large</span><p>Large drawer.</p></snice-drawer>
-
-<h2>Size: xl</h2>
-<div class="row"><button class="demo-btn" onclick="document.getElementById('d-xl').show()">Open XL</button></div>
-<snice-drawer id="d-xl" size="xl"><span slot="title">XL</span><p>Extra-large drawer.</p></snice-drawer>
-
-<h2>Size: xxl</h2>
-<div class="row"><button class="demo-btn" onclick="document.getElementById('d-xxl').show()">Open XXL</button></div>
-<snice-drawer id="d-xxl" size="xxl"><span slot="title">XXL</span><p>XXL drawer.</p></snice-drawer>
-
-<h2>Size: xxxl</h2>
-<div class="row"><button class="demo-btn" onclick="document.getElementById('d-xxxl').show()">Open XXXL</button></div>
-<snice-drawer id="d-xxxl" size="xxxl"><span slot="title">XXXL</span><p>XXXL drawer.</p></snice-drawer>
-
-<h2>Size: full</h2>
-<div class="row"><button class="demo-btn" onclick="document.getElementById('d-full').show()">Open Full</button></div>
-<snice-drawer id="d-full" size="full"><span slot="title">Full</span><p>Full-size drawer.</p></snice-drawer>
-
-<!-- Boolean properties -->
-<h2>no-backdrop</h2>
-<div class="row"><button class="demo-btn" onclick="document.getElementById('d-nob').show()">Open (no backdrop)</button></div>
-<snice-drawer id="d-nob" no-backdrop><span slot="title">No Backdrop</span><p>No overlay behind drawer.</p></snice-drawer>
-
-<h2>no-backdrop-dismiss</h2>
-<div class="row"><button class="demo-btn" onclick="document.getElementById('d-nobd').show()">Open (backdrop stays)</button></div>
-<snice-drawer id="d-nobd" no-backdrop-dismiss><span slot="title">No Backdrop Dismiss</span><p>Clicking backdrop does not close.</p></snice-drawer>
-
-<h2>no-escape-dismiss</h2>
-<div class="row"><button class="demo-btn" onclick="document.getElementById('d-noesc').show()">Open (no escape)</button></div>
-<snice-drawer id="d-noesc" no-escape-dismiss><span slot="title">No Escape Dismiss</span><p>Escape key disabled.</p></snice-drawer>
-
-<h2>no-focus-trap</h2>
-<div class="row"><button class="demo-btn" onclick="document.getElementById('d-noft').show()">Open (no focus trap)</button></div>
-<snice-drawer id="d-noft" no-focus-trap><span slot="title">No Focus Trap</span><p>Focus is not trapped.</p></snice-drawer>
-
-<h2>persistent</h2>
-<div class="row">
-  <button class="demo-btn" onclick="document.getElementById('d-persist').show()">Open Persistent</button>
-  <button class="demo-btn" onclick="document.getElementById('d-persist').hide()">Close (programmatic)</button>
-</div>
-<snice-drawer id="d-persist" persistent><span slot="title">Persistent</span><p>No close button, no dismiss via backdrop/escape.</p></snice-drawer>
-
-<h2>no-header</h2>
-<div class="row"><button class="demo-btn" onclick="document.getElementById('d-noh').show()">Open (no header)</button></div>
-<snice-drawer id="d-noh" no-header><p>Drawer with no header.</p></snice-drawer>
-
-<h2>no-footer</h2>
-<div class="row"><button class="demo-btn" onclick="document.getElementById('d-nof').show()">Open (no footer)</button></div>
-<snice-drawer id="d-nof" no-footer><span slot="title">No Footer</span><p>Footer slot hidden.</p></snice-drawer>
-
-<!-- Slots -->
-<h2>Slot: title</h2>
-<div class="row"><button class="demo-btn" onclick="document.getElementById('d-title').show()">Open with Title</button></div>
-<snice-drawer id="d-title"><span slot="title">Custom Title Content</span><p>Body content.</p></snice-drawer>
-
-<h2>Slot: footer</h2>
-<div class="row"><button class="demo-btn" onclick="document.getElementById('d-footer').show()">Open with Footer</button></div>
-<snice-drawer id="d-footer">
-  <span slot="title">With Footer</span>
-  <p>Drawer body content.</p>
-  <div slot="footer" style="display: flex; gap: 0.5rem; justify-content: flex-end;">
-    <button class="demo-btn" onclick="document.getElementById('d-footer').hide()">Cancel</button>
-    <button class="demo-btn" style="background: var(--snice-color-primary, #2563eb); color: white; border: none;">Save</button>
+<!-- Positions -->
+<h2>Positions</h2>
+<div class="grid">
+  <div class="box box-h">
+    <span class="label">left</span>
+    <snice-drawer position="left" size="small" contained open no-backdrop no-escape-dismiss no-header no-footer>
+      <nav class="menu">
+        <a href="#" class="active">Dashboard</a>
+        <a href="#">Projects</a>
+        <a href="#">Settings</a>
+        <a href="#">Profile</a>
+      </nav>
+    </snice-drawer>
   </div>
-</snice-drawer>
-
-<!-- Inline mode -->
-<h2>Inline Mode (open, inline, contained)</h2>
-<div class="contained-box">
-  <snice-drawer inline open contained position="left" size="small">
-    <span slot="title">Inline</span>
-    <p>Always visible.</p>
-  </snice-drawer>
-  <div style="padding: 1rem; margin-left: 260px;">Main content beside inline drawer.</div>
-</div>
-
-<!-- Contained mode -->
-<h2>Contained Mode</h2>
-<div class="contained-box">
-  <snice-drawer id="d-contained" contained position="left" size="small">
-    <span slot="title">Contained</span>
-    <p>Scoped to parent container.</p>
-  </snice-drawer>
-  <div style="padding: 1rem;">
-    <button class="demo-btn" onclick="document.getElementById('d-contained').toggle()">Toggle Contained</button>
-    <p>Drawer stays within this box.</p>
+  <div class="box box-h">
+    <span class="label">right</span>
+    <snice-drawer position="right" size="small" contained open no-backdrop no-escape-dismiss no-header no-footer>
+      <nav class="menu">
+        <a href="#">Details</a>
+        <a href="#" class="active">Activity</a>
+        <a href="#">Comments</a>
+        <a href="#">History</a>
+      </nav>
+    </snice-drawer>
+  </div>
+  <div class="box box-h">
+    <span class="label">top</span>
+    <snice-drawer position="top" size="small" contained open no-backdrop no-escape-dismiss no-header no-footer>
+      <div style="display:flex;gap:1rem;justify-content:center;align-items:center;padding:0.75rem;font-size:0.8rem;color:var(--snice-color-text-secondary)">
+        <span>Home</span><span>Products</span><span>Pricing</span><span>About</span>
+      </div>
+    </snice-drawer>
+  </div>
+  <div class="box box-h">
+    <span class="label">bottom</span>
+    <snice-drawer position="bottom" size="small" contained open no-backdrop no-escape-dismiss no-header no-footer>
+      <div style="display:flex;gap:1rem;justify-content:center;align-items:center;padding:0.75rem;font-size:0.8rem;color:var(--snice-color-text-secondary)">
+        <span>Save</span><span>Share</span><span>Export</span><span>Delete</span>
+      </div>
+    </snice-drawer>
   </div>
 </div>
 
-<!-- Push content -->
+<!-- Sizes (left position) -->
+<h2>Sizes</h2>
+<div class="grid">
+  <div class="box box-h">
+    <span class="label">small</span>
+    <snice-drawer position="left" size="small" contained open no-backdrop no-escape-dismiss no-header no-footer>
+      <nav class="menu">
+        <a href="#" class="active">Home</a>
+        <a href="#">Search</a>
+        <a href="#">Saved</a>
+      </nav>
+    </snice-drawer>
+  </div>
+  <div class="box box-h">
+    <span class="label">medium</span>
+    <snice-drawer position="left" size="medium" contained open no-backdrop no-escape-dismiss no-header no-footer>
+      <nav class="menu">
+        <a href="#" class="active">Home</a>
+        <a href="#">Search</a>
+        <a href="#">Saved</a>
+      </nav>
+    </snice-drawer>
+  </div>
+  <div class="box box-h">
+    <span class="label">large</span>
+    <snice-drawer position="left" size="large" contained open no-backdrop no-escape-dismiss no-header no-footer>
+      <nav class="menu">
+        <a href="#" class="active">Home</a>
+        <a href="#">Search</a>
+        <a href="#">Saved</a>
+      </nav>
+    </snice-drawer>
+  </div>
+  <div class="box box-h">
+    <span class="label">full</span>
+    <snice-drawer position="left" size="full" contained open no-backdrop no-escape-dismiss no-header no-footer>
+      <nav class="menu">
+        <a href="#" class="active">Home</a>
+        <a href="#">Search</a>
+        <a href="#">Saved</a>
+      </nav>
+    </snice-drawer>
+  </div>
+</div>
+
+<!-- Features -->
+<h2>Features</h2>
+<div class="grid">
+  <div class="box box-h">
+    <span class="label">with header</span>
+    <snice-drawer position="left" size="small" contained open no-backdrop no-escape-dismiss no-footer>
+      <span slot="title">Navigation</span>
+      <nav class="menu">
+        <a href="#" class="active">Dashboard</a>
+        <a href="#">Projects</a>
+        <a href="#">Settings</a>
+      </nav>
+    </snice-drawer>
+  </div>
+  <div class="box box-h">
+    <span class="label">persistent</span>
+    <snice-drawer position="left" size="small" contained open no-backdrop no-escape-dismiss persistent no-footer>
+      <span slot="title">Persistent</span>
+      <nav class="menu">
+        <a href="#" class="active">Home</a>
+        <a href="#">Browse</a>
+        <a href="#">Help</a>
+      </nav>
+    </snice-drawer>
+  </div>
+  <div class="box box-h">
+    <span class="label">with footer</span>
+    <snice-drawer position="left" size="small" contained open no-backdrop no-escape-dismiss no-header>
+      <nav class="menu">
+        <a href="#">General</a>
+        <a href="#" class="active">Account</a>
+      </nav>
+      <div slot="footer" style="display:flex;gap:0.5rem;justify-content:flex-end">
+        <button style="padding:0.25rem 0.75rem;border:1px solid var(--snice-color-border);border-radius:4px;background:var(--snice-color-background);color:var(--snice-color-text);cursor:pointer;font-size:0.8rem">Cancel</button>
+        <button style="padding:0.25rem 0.75rem;border:none;border-radius:4px;background:var(--snice-color-primary,#2563eb);color:white;cursor:pointer;font-size:0.8rem">Save</button>
+      </div>
+    </snice-drawer>
+  </div>
+  <div class="box box-h">
+    <span class="label">no-backdrop</span>
+    <snice-drawer position="right" size="small" contained open no-backdrop no-escape-dismiss no-header no-footer>
+      <nav class="menu">
+        <a href="#" class="active">Info</a>
+        <a href="#">Files</a>
+        <a href="#">Tags</a>
+      </nav>
+    </snice-drawer>
+    <div style="padding:1rem;font-size:0.8rem;color:var(--snice-color-text-secondary)">Content visible behind</div>
+  </div>
+</div>
+
+<!-- Push Content -->
 <h2>Push Content</h2>
-<div class="row">
-  <button class="demo-btn" onclick="document.getElementById('d-push').toggle()">Toggle Push Drawer</button>
+<div class="box box-tall">
+  <snice-drawer id="d-push" push-content contained position="left" size="small" open no-backdrop no-escape-dismiss no-footer>
+    <span slot="title">Navigation</span>
+    <nav class="menu">
+      <a href="#" class="active">Dashboard</a>
+      <a href="#">Projects</a>
+      <a href="#">Team</a>
+      <a href="#">Reports</a>
+      <a href="#">Settings</a>
+    </nav>
+  </snice-drawer>
+  <snice-drawer-target for="d-push" style="padding:1rem">
+    <p style="font-size:0.85rem;color:var(--snice-color-text-secondary);margin:0 0 0.75rem">This content shifts when the drawer opens.</p>
+    <button onclick="document.getElementById('d-push').toggle()" style="padding:0.4rem 0.85rem;border:1px solid var(--snice-color-border);border-radius:6px;background:var(--snice-color-background-element);color:var(--snice-color-text);cursor:pointer;font-size:0.8rem">Toggle Push Drawer</button>
+  </snice-drawer-target>
 </div>
-<snice-drawer id="d-push" push-content position="left" size="small">
-  <span slot="title">Push Content</span>
-  <p>Pushes main content aside.</p>
-</snice-drawer>
 
-<!-- Position x Size matrix -->
-<h2>Position x Size Combinations</h2>
-<div class="row">
-  <button class="demo-btn" onclick="document.getElementById('d-rs').show()">Right + Small</button>
-  <button class="demo-btn" onclick="document.getElementById('d-tl').show()">Top + Large</button>
-  <button class="demo-btn" onclick="document.getElementById('d-bf').show()">Bottom + Full</button>
-  <button class="demo-btn" onclick="document.getElementById('d-lxl').show()">Left + XL</button>
+<!-- Inline Mode -->
+<h2>Inline Mode</h2>
+<div class="box box-tall" style="display:flex">
+  <snice-drawer inline open contained position="left" size="small" no-footer>
+    <span slot="title">Sidebar</span>
+    <nav class="menu">
+      <a href="#" class="active">Home</a>
+      <a href="#">Explore</a>
+      <a href="#">Notifications</a>
+      <a href="#">Messages</a>
+      <a href="#">Settings</a>
+    </nav>
+  </snice-drawer>
+  <div style="flex:1;padding:1rem;font-size:0.85rem;color:var(--snice-color-text-secondary)">
+    Main content beside inline drawer. No backdrop, no focus trap.
+  </div>
 </div>
-<snice-drawer id="d-rs" position="right" size="small"><span slot="title">Right Small</span><p>Content.</p></snice-drawer>
-<snice-drawer id="d-tl" position="top" size="large"><span slot="title">Top Large</span><p>Content.</p></snice-drawer>
-<snice-drawer id="d-bf" position="bottom" size="full"><span slot="title">Bottom Full</span><p>Content.</p></snice-drawer>
-<snice-drawer id="d-lxl" position="left" size="xl"><span slot="title">Left XL</span><p>Content.</p></snice-drawer>
 
-<!-- Edge case: all dismissals disabled -->
-<h2>All Dismiss Methods Disabled</h2>
-<div class="row">
-  <button class="demo-btn" onclick="document.getElementById('d-all').show()">Open (no dismiss at all)</button>
-  <button class="demo-btn" onclick="document.getElementById('d-all').hide()">Close (programmatic)</button>
+<!-- Position x Size combos -->
+<h2>Position + Size Combos</h2>
+<div class="grid">
+  <div class="box box-h">
+    <span class="label">right + small</span>
+    <snice-drawer position="right" size="small" contained open no-backdrop no-escape-dismiss no-header no-footer>
+      <nav class="menu">
+        <a href="#" class="active">Filters</a>
+        <a href="#">Sort</a>
+        <a href="#">Group</a>
+      </nav>
+    </snice-drawer>
+  </div>
+  <div class="box box-h">
+    <span class="label">top + small</span>
+    <snice-drawer position="top" size="small" contained open no-backdrop no-escape-dismiss no-header no-footer>
+      <div style="display:flex;gap:1.5rem;justify-content:center;align-items:center;padding:0.75rem;font-size:0.8rem">
+        <a href="#" style="color:var(--snice-color-primary);text-decoration:none">Overview</a>
+        <a href="#" style="color:var(--snice-color-text-secondary);text-decoration:none">Analytics</a>
+        <a href="#" style="color:var(--snice-color-text-secondary);text-decoration:none">Reports</a>
+      </div>
+    </snice-drawer>
+  </div>
+  <div class="box box-h">
+    <span class="label">bottom + small</span>
+    <snice-drawer position="bottom" size="small" contained open no-backdrop no-escape-dismiss no-header no-footer>
+      <div style="display:flex;gap:1.5rem;justify-content:center;align-items:center;padding:0.75rem;font-size:0.8rem">
+        <span style="color:var(--snice-color-text-secondary)">Share</span>
+        <span style="color:var(--snice-color-text-secondary)">Copy Link</span>
+        <span style="color:var(--snice-color-primary)">Download</span>
+      </div>
+    </snice-drawer>
+  </div>
+  <div class="box box-h">
+    <span class="label">left + large</span>
+    <snice-drawer position="left" size="large" contained open no-backdrop no-escape-dismiss no-header no-footer>
+      <nav class="menu">
+        <a href="#" class="active">All Files</a>
+        <a href="#">Shared</a>
+        <a href="#">Recent</a>
+        <a href="#">Trash</a>
+      </nav>
+    </snice-drawer>
+  </div>
 </div>
-<snice-drawer id="d-all" persistent no-backdrop-dismiss no-escape-dismiss>
-  <span slot="title">Fully Locked</span>
-  <p>Cannot be closed by user interaction. Must use .hide().</p>
-</snice-drawer>
 
 </body>
 </html>

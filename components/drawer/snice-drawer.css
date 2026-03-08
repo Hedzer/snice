@@ -38,6 +38,11 @@
   position: absolute;
   width: 100%;
   height: 100%;
+  overflow: clip;
+}
+
+:host([contained][inline]) {
+  overflow: visible;
 }
 
 .drawer-backdrop {

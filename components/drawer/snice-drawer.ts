@@ -236,6 +236,7 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
 
   @on('click', { target: '.drawer-close' })
   handleCloseClick(e: MouseEvent) {
+    if (this.persistent) return;
     e.stopPropagation();
     this.hide();
   }
@@ -282,8 +283,8 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
       document.body.style.overflow = 'hidden';
     }
 
-    // Focus management
-    if (!this.noFocusTrap && this.drawerElement) {
+    // Focus management (skip for contained drawers — they're in-page, not modal)
+    if (!this.noFocusTrap && !this.contained && this.drawerElement) {
       this.drawerElement.focus({ preventScroll: true });
     }
 
