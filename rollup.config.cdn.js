@@ -28,6 +28,7 @@ const COMPONENT_CHILDREN = {
   'select': ['option'],
   'toast': ['toast-container'],
   'menu': ['menu-item', 'menu-divider'],
+  'drawer': ['drawer-target'],
   // Note: These components define children inline or differently, no separate files:
   'tree': ['tree-item'],
   'list': ['list-item'],
