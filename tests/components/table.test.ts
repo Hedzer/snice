@@ -183,6 +183,50 @@ describe('snice-table', () => {
       cm.initialize([{ key: 'x', label: 'X' }], el);
       expect(cm.isResizing()).toBe(false);
     });
+
+    it('should update column width in DOM when resize handle is dragged', async () => {
+      table = await createTable({ attrs: { 'column-resize': true } });
+      const handle = queryShadow(table as HTMLElement, '.resize-handle') as HTMLElement;
+      expect(handle).toBeTruthy();
+
+      const th = queryShadow(table as HTMLElement, 'th[data-key="id"]') as HTMLElement;
+      expect(th).toBeTruthy();
+
+      // Capture the initial width before dragging
+      const initialWidth = parseInt(th.style.width) || 150; // default is 150
+
+      // Simulate mousedown on handle
+      handle.dispatchEvent(new MouseEvent('mousedown', { clientX: 100, bubbles: true }));
+
+      // Simulate mousemove to drag 50px right
+      document.dispatchEvent(new MouseEvent('mousemove', { clientX: 150, bubbles: true }));
+      await wait(10);
+
+      // The th should have an inline width style set during drag
+      expect(th.style.width).toBeTruthy();
+      const dragWidth = parseInt(th.style.width);
+      expect(dragWidth).toBe(initialWidth + 50); // Verify actual size change, not just any value
+
+      // td should also be updated
+      const td = queryShadow(table as HTMLElement, 'td[data-key="id"]') as HTMLElement;
+      expect(td).toBeTruthy();
+      expect(td.style.width).toBe(`${dragWidth}px`);
+
+      // Simulate mouseup
+      document.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+      await wait(10);
+
+      // State should be persisted — re-render and check width survives
+      const stateBefore = (table as any).columnManager.getState('id');
+      expect(stateBefore.width).toBe(dragWidth);
+
+      table.renderHeader();
+      table.renderBody();
+      await wait(10);
+
+      const thAfter = queryShadow(table as HTMLElement, 'th[data-key="id"]') as HTMLElement;
+      expect(thAfter.style.width).toBe(`${dragWidth}px`);
+    });
   });
 
   // ── Feature 3: Column Auto-sizing ──
@@ -717,6 +761,38 @@ describe('snice-table', () => {
     it('should have setTreeData on table', async () => {
       table = await createTable();
       expect(typeof table.setTreeData).toBe('function');
+    });
+
+    it('should expand/collapse when clicking parent node text, not just the caret', async () => {
+      table = await createTable({
+        columns: [
+          { key: 'name', label: 'Name' },
+          { key: 'id', label: 'ID' },
+        ],
+        data: treeTestData,
+      });
+      table.setTreeData({ getPath: (row: any) => row.path, groupColumn: 'name' });
+      await wait(50);
+
+      // Initially collapsed — only root nodes visible (2 rows)
+      let rows = queryShadowAll(table as HTMLElement, 'tbody tr');
+      expect(rows.length).toBe(2);
+
+      // Find the text span in the group column (not the toggle button)
+      const firstRow = rows[0] as HTMLElement;
+      const groupTd = firstRow.querySelector('td[data-key="name"]') as HTMLElement;
+      expect(groupTd).toBeTruthy();
+      // The text span is the last child (after the tree-indent container)
+      const textSpans = groupTd.querySelectorAll('span:not(.tree-indent)');
+      const textSpan = textSpans[textSpans.length - 1] as HTMLElement;
+      expect(textSpan).toBeTruthy();
+
+      // Click the text — should expand
+      textSpan.click();
+      await wait(50);
+
+      rows = queryShadowAll(table as HTMLElement, 'tbody tr');
+      expect(rows.length).toBeGreaterThan(2); // Children now visible
     });
   });
 
@@ -1509,7 +1585,8 @@ describe('snice-table', () => {
     it('should track callbacks on toolbar module', () => {
       const tb = new TableToolbar();
       expect(tb.onSearch).toBeNull();
-      expect(tb.onDensityChange).toBeNull();
+      expect(tb.onSortColumn).toBeNull();
+      expect(tb.onFilterColumn).toBeNull();
       expect(tb.onExportCSV).toBeNull();
     });
 
