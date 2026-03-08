@@ -100,6 +100,31 @@ Responsive switching: inline above the breakpoint, overlay below. Uses `window.m
 - Listener cleaned up on `@dispose()`
 - `@watch('breakpoint')` tears down old listener and sets up new one when value changes
 
+## Push Content with `<snice-drawer-target>`
+
+Use `<snice-drawer-target>` to wrap content that should be pushed when a drawer opens. The target watches the drawer's `[open]` attribute via MutationObserver and applies a `translateX()` or `translateY()` transform.
+
+```typescript
+// snice-drawer-target properties
+for: string = '';   // ID of the linked drawer
+push: string = '';  // Current push amount (e.g. '240px'), set automatically
+```
+
+```html
+<snice-drawer id="nav" position="left" size="small" contained push-content>
+  <span slot="title">Nav</span>
+</snice-drawer>
+<snice-drawer-target for="nav">
+  <main>This content slides when drawer opens</main>
+</snice-drawer-target>
+```
+
+- Target measures drawer panel width/height directly via `shadowRoot.querySelector('.drawer').offsetWidth`
+- Left/right drawers → `translateX`, top/bottom → `translateY`
+- Transition: `transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)`
+- Resets parent `scrollLeft`/`scrollTop` after transform change (prevents `overflow:hidden` scroll bug)
+- Cleanup on disconnect via `@dispose()`
+
 ## Features
 
 - Slides from any edge (left, right, top, bottom)
@@ -108,10 +133,11 @@ Responsive switching: inline above the breakpoint, overlay below. Uses `window.m
 - Focus restoration on close
 - Backdrop click to close
 - Escape key to close
-- Push content mode
+- Push content mode via `<snice-drawer-target>`
 - Persistent mode (no close button)
 - Inline mode (persistent sidebar in document flow)
 - Breakpoint mode (responsive inline ↔ overlay switching)
+- Contained mode uses `overflow: clip` to prevent scroll bugs during transform animations
 - ARIA attributes (role, aria-modal, aria-hidden)
 
 ## CSS Parts

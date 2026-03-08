@@ -264,12 +264,40 @@ toggle.addEventListener('click', () => drawer.toggle());
 
 ### Push Content
 
+Use `<snice-drawer-target>` to wrap content that should be pushed aside when a drawer opens. Link it to a drawer using the `for` attribute.
+
 ```html
-<snice-drawer push-content>
-  <h2 slot="title">Push Content</h2>
-  <p>Main content slides over when this opens.</p>
-</snice-drawer>
+<div style="position: relative; height: 400px; overflow: hidden;">
+  <snice-drawer id="sidebar" position="left" size="small" contained push-content>
+    <span slot="title">Navigation</span>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/about">About</a>
+    </nav>
+  </snice-drawer>
+
+  <snice-drawer-target for="sidebar">
+    <main>
+      <h1>Main Content</h1>
+      <p>This content slides when the drawer opens.</p>
+    </main>
+  </snice-drawer-target>
+</div>
 ```
+
+The `<snice-drawer-target>` component:
+- Watches the linked drawer's `open` attribute via MutationObserver
+- Measures the drawer panel's actual width/height
+- Applies a smooth `translateX()` or `translateY()` transform
+- Automatically resets when the drawer closes
+- Handles `overflow:hidden` parent scroll reset
+
+#### Drawer Target Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `for` | `string` | `''` | ID of the linked `<snice-drawer>` element |
+| `push` | `string` | `''` | Current push amount (e.g. `'240px'`). Set automatically when linked to a drawer, or set manually for custom control. |
 
 ### Inline Mode
 
@@ -640,9 +668,7 @@ This behavior can be customized:
 
 ### Push Content Mode
 
-When `pushContent` is enabled, the drawer pushes the main content aside instead of overlaying it. This is useful for persistent navigation panels. The pushed element is determined by:
-1. First `<main>` element in the document
-2. Falls back to `<body>` if no `<main>` exists
+When `push-content` is set on a drawer, use `<snice-drawer-target for="drawer-id">` to wrap the content that should be pushed aside. The target element watches the drawer's open state and applies a CSS transform to slide its contents. This approach uses transforms (not margins) for smooth 60fps animations and avoids layout thrash.
 
 ## Browser Support
 
