@@ -3,6 +3,8 @@ import '../input/snice-input';
 import '../select/snice-select';
 import '../button/snice-button';
 import '../checkbox/snice-checkbox';
+import '../modal/snice-modal';
+import '../empty-state/snice-empty-state';
 import './snice-cell.ts';
 import './snice-cell-text.ts';
 import './snice-cell-number.ts';
@@ -445,6 +447,7 @@ export class SniceTable extends HTMLElement {
         align-items: center;
         gap: var(--snice-spacing-xs, 0.5rem);
         padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
+        padding-left: 0;
         background: var(--snice-color-background, rgb(255 255 255));
       }
 
@@ -919,16 +922,6 @@ export class SniceTable extends HTMLElement {
       .tree-spacer {
         display: inline-block;
         width: 1.25rem;
-      }
-
-      /* Tree child rows animate in */
-      tr.tree-child {
-        animation: tree-row-in 0.2s ease;
-      }
-
-      @keyframes tree-row-in {
-        from { opacity: 0; transform: translateY(-4px); }
-        to { opacity: 1; transform: translateY(0); }
       }
 
       /* Row pinning */
@@ -1629,12 +1622,22 @@ export class SniceTable extends HTMLElement {
         this.tbody.appendChild(tr);
         return;
       } else {
-        // Show "No Data" message
+        // Show empty state
         const tr = document.createElement('tr');
         const td = document.createElement('td');
         td.colSpan = colSpan;
         td.className = 'no-data';
-        td.textContent = 'No Data';
+        const slotted = this.querySelector('[slot="empty-state"]');
+        if (slotted) {
+          td.appendChild(slotted.cloneNode(true));
+        } else {
+          const empty = document.createElement('snice-empty-state');
+          empty.setAttribute('size', 'small');
+          empty.setAttribute('icon', '📭');
+          empty.setAttribute('title', 'No data');
+          empty.setAttribute('description', 'No records to display.');
+          td.appendChild(empty);
+        }
         tr.appendChild(td);
         this.tbody.appendChild(tr);
         return;
@@ -2636,6 +2639,12 @@ export class SniceTable extends HTMLElement {
       if (this._hasController) this.debouncedDataRequest();
       else this.sortLocalData();
     };
+    this.toolbar.onSetSortModel = (sortModel) => {
+      this.currentSort = sortModel;
+      this.renderHeader();
+      if (this._hasController) this.debouncedDataRequest();
+      else this.sortLocalData();
+    };
     this.toolbar.onFilterColumn = (key, operator, value) => {
       this.setColumnFilter(key, operator, value);
     };
@@ -2830,7 +2839,6 @@ export class SniceTable extends HTMLElement {
   private createRow(rowData: any, index: number, treeRow?: TreeRow): HTMLTableRowElement {
     const tr = document.createElement('tr');
     tr.setAttribute('data-index', String(index));
-    if (treeRow && treeRow.depth > 0) tr.classList.add('tree-child');
 
     // Row height
     if (this.rowHeightCallback) {
