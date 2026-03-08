@@ -20,3 +20,8 @@ export interface SniceDrawerElement extends HTMLElement {
   hide(): void;
   toggle(): void;
 }
+
+export interface SniceDrawerTargetElement extends HTMLElement {
+  for: string;
+  push: string;
+}

@@ -221,6 +221,11 @@
   transform: translateY(0);
 }
 
+:host([position="top"]) .drawer {
+  border-bottom: 1px solid var(--snice-color-border, rgb(229 231 235));
+  box-shadow: 0 4px 16px rgb(0 0 0 / 0.25);
+}
+
 /* Position: Bottom */
 :host([position="bottom"]) .drawer {
   bottom: 0;
@@ -260,6 +265,11 @@
 
 :host([position="bottom"][open]) .drawer {
   transform: translateY(0);
+}
+
+:host([position="bottom"]) .drawer {
+  border-top: 1px solid var(--snice-color-border, rgb(229 231 235));
+  box-shadow: 0 -4px 16px rgb(0 0 0 / 0.25);
 }
 
 /* Drawer Header */

@@ -127,14 +127,6 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
       this.setupBreakpointListener();
     }
 
-    // Pre-set transition for push content mode to avoid jump on first use
-    if (this.pushContent && !this.isInlineActive()) {
-      const mainContent = document.querySelector('main') || document.body;
-      if (mainContent && mainContent !== document.body) {
-        (mainContent as HTMLElement).style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-      }
-    }
-
     if (this.open && !this.isInlineActive()) {
       this.handleOpen();
     }
@@ -195,13 +187,6 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
     if (this.boundHandleEscape) {
       document.removeEventListener('keydown', this.boundHandleEscape);
       this.boundHandleEscape = undefined;
-    }
-    // Reset push content
-    if (this.pushContent) {
-      const mainContent = document.querySelector('main') || document.body;
-      if (mainContent && mainContent !== document.body) {
-        (mainContent as HTMLElement).style.transform = '';
-      }
     }
   }
 
@@ -292,21 +277,14 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
       document.addEventListener('keydown', this.boundHandleEscape);
     }
 
-    // REMOVED: No longer manipulating document.body.style.overflow
-    // The drawer is now contained and doesn't need to prevent body scroll
-
-    // Focus management
-    if (!this.noFocusTrap) {
-      requestAnimationFrame(() => {
-        if (this.drawerElement) {
-          this.drawerElement.focus({ preventScroll: true });
-        }
-      });
+    // Lock body scroll for full-page (non-contained) drawers
+    if (!this.contained) {
+      document.body.style.overflow = 'hidden';
     }
 
-    // Push content if enabled (still supported for those who need it)
-    if (this.pushContent) {
-      this.updatePushContent();
+    // Focus management
+    if (!this.noFocusTrap && this.drawerElement) {
+      this.drawerElement.focus({ preventScroll: true });
     }
 
     this.dispatchOpenEvent();
@@ -319,7 +297,10 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
       this.boundHandleEscape = undefined;
     }
 
-    // REMOVED: No longer manipulating document.body.style.overflow
+    // Unlock body scroll for full-page (non-contained) drawers
+    if (!this.contained) {
+      document.body.style.overflow = '';
+    }
 
     // Restore focus
     if (this.previousFocus && this.previousFocus.focus) {
@@ -327,39 +308,7 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
       this.previousFocus = undefined;
     }
 
-    // Reset push content
-    if (this.pushContent) {
-      this.updatePushContent();
-    }
-
     this.dispatchCloseEvent();
-  }
-
-  private updatePushContent() {
-    if (!this.pushContent) return;
-
-    const mainContent = document.querySelector('main') || document.body;
-    if (mainContent && mainContent !== document.body) {
-      if (!(mainContent as HTMLElement).style.transition) {
-        (mainContent as HTMLElement).style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-      }
-
-      if (this.open) {
-        // Defer to next frame so [open] attribute is reflected and CSS vars are computed
-        requestAnimationFrame(() => {
-          const amount = getComputedStyle(this).getPropertyValue('--drawer-push-amount').trim();
-          const translateFn: Record<string, string> = {
-            left: `translateX(${amount})`,
-            right: `translateX(${amount})`,
-            top: `translateY(${amount})`,
-            bottom: `translateY(${amount})`
-          };
-          (mainContent as HTMLElement).style.transform = translateFn[this.position] || `translateX(${amount})`;
-        });
-      } else {
-        (mainContent as HTMLElement).style.transform = '';
-      }
-    }
   }
 
   private getFocusableElements(): NodeListOf<Element> {
