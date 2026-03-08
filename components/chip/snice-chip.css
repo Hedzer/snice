@@ -63,11 +63,6 @@
 :host(:not([variant])) .chip--selected {
   background: var(--snice-color-neutral, rgb(82 82 82));
   color: var(--snice-color-text-inverse, rgb(250 250 250));
-  text-shadow:
-    -1px -1px 0 rgb(0 0 0 / 0.3),
-     1px -1px 0 rgb(0 0 0 / 0.3),
-    -1px  1px 0 rgb(0 0 0 / 0.3),
-     1px  1px 0 rgb(0 0 0 / 0.3);
 }
 
 :host([variant="primary"]) .chip {
@@ -82,11 +77,6 @@
 :host([variant="primary"]) .chip--selected {
   background: var(--snice-color-primary, rgb(37 99 235));
   color: var(--snice-color-text-inverse, rgb(250 250 250));
-  text-shadow:
-    -1px -1px 0 rgb(0 0 0 / 0.3),
-     1px -1px 0 rgb(0 0 0 / 0.3),
-    -1px  1px 0 rgb(0 0 0 / 0.3),
-     1px  1px 0 rgb(0 0 0 / 0.3);
 }
 
 :host([variant="success"]) .chip {
@@ -101,11 +91,6 @@
 :host([variant="success"]) .chip--selected {
   background: var(--snice-color-success, rgb(22 163 74));
   color: var(--snice-color-text-inverse, rgb(250 250 250));
-  text-shadow:
-    -1px -1px 0 rgb(0 0 0 / 0.3),
-     1px -1px 0 rgb(0 0 0 / 0.3),
-    -1px  1px 0 rgb(0 0 0 / 0.3),
-     1px  1px 0 rgb(0 0 0 / 0.3);
 }
 
 :host([variant="warning"]) .chip {
@@ -120,11 +105,6 @@
 :host([variant="warning"]) .chip--selected {
   background: var(--snice-color-warning, rgb(161 98 7));
   color: var(--snice-color-text-inverse, rgb(250 250 250));
-  text-shadow:
-    -1px -1px 0 rgb(0 0 0 / 0.3),
-     1px -1px 0 rgb(0 0 0 / 0.3),
-    -1px  1px 0 rgb(0 0 0 / 0.3),
-     1px  1px 0 rgb(0 0 0 / 0.3);
 }
 
 :host([variant="error"]) .chip {
@@ -139,11 +119,6 @@
 :host([variant="error"]) .chip--selected {
   background: var(--snice-color-danger, rgb(220 38 38));
   color: var(--snice-color-text-inverse, rgb(250 250 250));
-  text-shadow:
-    -1px -1px 0 rgb(0 0 0 / 0.3),
-     1px -1px 0 rgb(0 0 0 / 0.3),
-    -1px  1px 0 rgb(0 0 0 / 0.3),
-     1px  1px 0 rgb(0 0 0 / 0.3);
 }
 
 :host([variant="info"]) .chip {
@@ -158,11 +133,6 @@
 :host([variant="info"]) .chip--selected {
   background: var(--snice-color-primary, rgb(37 99 235));
   color: var(--snice-color-text-inverse, rgb(250 250 250));
-  text-shadow:
-    -1px -1px 0 rgb(0 0 0 / 0.3),
-     1px -1px 0 rgb(0 0 0 / 0.3),
-    -1px  1px 0 rgb(0 0 0 / 0.3),
-     1px  1px 0 rgb(0 0 0 / 0.3);
 }
 
 /* Dark mode */
