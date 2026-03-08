@@ -21,7 +21,7 @@
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "npm run website:build:full"
+        "prepareCmd": "node scripts/update-llms.js ${nextRelease.version} && npm run website:build:full"
       }
     ],
     [
@@ -32,6 +32,8 @@
           "package-lock.json",
           "CHANGELOG.md",
           "bin/templates/**/package.json",
+          "llms.txt",
+          "llms-full.txt",
           "public/**",
           "adapters/react/**"
         ],
