@@ -24,6 +24,7 @@ export class TableToolbar {
 
   onSearch: ((query: string) => void) | null = null;
   onSortColumn: ((columnKey: string, direction: 'asc' | 'desc') => void) | null = null;
+  onSetSortModel: ((sortModel: { column: string; direction: 'asc' | 'desc' }[]) => void) | null = null;
   onFilterColumn: ((columnKey: string, operator: FilterOperator, value: any) => void) | null = null;
   onRemoveFilter: ((columnKey: string) => void) | null = null;
   onClearFilters: (() => void) | null = null;
@@ -106,6 +107,38 @@ export class TableToolbar {
     return btn;
   }
 
+  // ── Helpers to create snice-select / snice-input ──
+
+  private mkSelect(opts: { value: string; label: string }[], selected?: string, style?: string, searchable = false): any {
+    const sel = document.createElement('snice-select') as any;
+    sel.size = 'small';
+    sel.searchable = searchable;
+    sel.maxHeight = '150px';
+    sel.options = opts;
+    if (selected) sel.value = selected;
+    if (style) sel.style.cssText = style;
+    return sel;
+  }
+
+  private mkInput(placeholder: string, value?: string, style?: string): any {
+    const inp = document.createElement('snice-input') as any;
+    inp.size = 'small';
+    inp.placeholder = placeholder;
+    if (value != null) inp.value = value;
+    if (style) inp.style.cssText = style;
+    return inp;
+  }
+
+  private mkRemoveBtn(onClick: () => void): HTMLElement {
+    const btn = document.createElement('snice-button') as any;
+    btn.size = 'small';
+    btn.variant = 'ghost';
+    btn.textContent = '✕';
+    btn.style.cssText = 'flex:0 0 auto;';
+    btn.addEventListener('click', onClick);
+    return btn;
+  }
+
   // ── Sort Modal ──
 
   private openSortModal() {
@@ -113,50 +146,92 @@ export class TableToolbar {
 
     const columns = this.tableElement?.columns || [];
     if (!columns.length) return;
+    const sortableColumns = columns.filter((c: any) => c.sortable !== false);
 
-    const currentSort = this.tableElement?.currentSort || [];
+    const currentSort: { column: string; direction: 'asc' | 'desc' }[] =
+      [...(this.tableElement?.currentSort || [])];
     const modal = this.createModal('Sort');
 
     const body = modal.querySelector('[slot="default"]') || modal;
     const content = document.createElement('div');
     content.style.cssText = 'display:flex;flex-direction:column;gap:0.5rem;';
 
-    for (const col of columns) {
-      if (col.sortable === false) continue;
-      const active = currentSort.find((s: any) => s.column === col.key);
+    const rowsContainer = document.createElement('div');
+    rowsContainer.style.cssText = 'display:flex;flex-direction:column;gap:0.5rem;';
+    content.appendChild(rowsContainer);
 
+    const colOptions = sortableColumns.map((c: any) => ({ value: c.key, label: c.label || c.key }));
+    const dirOptions = [{ value: 'asc', label: 'Ascending' }, { value: 'desc', label: 'Descending' }];
+
+    const sortRows: { getSort: () => { column: string; direction: 'asc' | 'desc' } }[] = [];
+
+    const addSortRow = (preset?: { column: string; direction: 'asc' | 'desc' }) => {
       const row = document.createElement('div');
-      row.style.cssText = 'display:flex;align-items:center;gap:0.5rem;padding:0.375rem 0;';
+      row.style.cssText = 'display:flex;align-items:center;gap:0.375rem;';
 
-      const label = document.createElement('span');
-      label.style.cssText = 'flex:1;font-size:0.875rem;';
-      label.textContent = col.label || col.key;
-      row.appendChild(label);
+      const colSelect = this.mkSelect(colOptions, preset?.column, 'flex:1 1 0;min-width:0;max-width:none;', true);
+      const dirSelect = this.mkSelect(dirOptions, preset?.direction || 'asc', 'flex:1 1 0;min-width:0;max-width:none;');
 
-      const ascBtn = document.createElement('snice-button') as any;
-      ascBtn.size = 'small';
-      ascBtn.variant = active?.direction === 'asc' ? 'primary' : 'ghost';
-      ascBtn.textContent = '↑ Asc';
-      ascBtn.addEventListener('click', () => {
-        this.onSortColumn?.(col.key, 'asc');
-        this.closeModal();
-      });
-      row.appendChild(ascBtn);
+      row.appendChild(colSelect);
+      row.appendChild(dirSelect);
 
-      const descBtn = document.createElement('snice-button') as any;
-      descBtn.size = 'small';
-      descBtn.variant = active?.direction === 'desc' ? 'primary' : 'ghost';
-      descBtn.textContent = '↓ Desc';
-      descBtn.addEventListener('click', () => {
-        this.onSortColumn?.(col.key, 'desc');
-        this.closeModal();
-      });
-      row.appendChild(descBtn);
+      const getSort = (): { column: string; direction: 'asc' | 'desc' } => {
+        return { column: colSelect.value, direction: dirSelect.value as 'asc' | 'desc' };
+      };
 
-      content.appendChild(row);
+      row.appendChild(this.mkRemoveBtn(() => {
+        row.remove();
+        const idx = sortRows.findIndex(r => r.getSort === getSort);
+        if (idx >= 0) sortRows.splice(idx, 1);
+      }));
+
+      sortRows.push({ getSort });
+      rowsContainer.appendChild(row);
+    };
+
+    // Pre-populate
+    if (currentSort.length > 0) {
+      for (const s of currentSort) addSortRow(s);
+    } else {
+      addSortRow();
     }
 
+    // Add sort button
+    const addBtn = document.createElement('snice-button') as any;
+    addBtn.size = 'small';
+    addBtn.variant = 'ghost';
+    addBtn.textContent = '+ Add sort';
+    addBtn.addEventListener('click', () => addSortRow());
+    content.appendChild(addBtn);
+
+    // Footer
+    const footer = document.createElement('div');
+    footer.setAttribute('slot', 'footer');
+    footer.style.cssText = 'display:flex;gap:0.5rem;justify-content:flex-end;';
+
+    const clearBtn = document.createElement('snice-button') as any;
+    clearBtn.size = 'small';
+    clearBtn.variant = 'ghost';
+    clearBtn.textContent = 'Clear';
+    clearBtn.addEventListener('click', () => {
+      this.onSetSortModel?.([]);
+      this.closeModal();
+    });
+    footer.appendChild(clearBtn);
+
+    const applyBtn = document.createElement('snice-button') as any;
+    applyBtn.size = 'small';
+    applyBtn.variant = 'primary';
+    applyBtn.textContent = 'Apply';
+    applyBtn.addEventListener('click', () => {
+      const sorts = sortRows.map(r => r.getSort()).filter(Boolean) as { column: string; direction: 'asc' | 'desc' }[];
+      this.onSetSortModel?.(sorts);
+      this.closeModal();
+    });
+    footer.appendChild(applyBtn);
+
     body.appendChild(content);
+    modal.appendChild(footer);
     this.showModal(modal);
   }
 
@@ -170,7 +245,7 @@ export class TableToolbar {
 
     const engine = this.filterEngine || new TableFilterEngine();
     const currentModel = engine.getFilterModel();
-    const modal = this.createModal('Filters');
+    const modal = this.createModal('Filters', 'medium');
 
     const body = modal.querySelector('[slot="default"]') || modal;
     const content = document.createElement('div');
@@ -216,6 +291,8 @@ export class TableToolbar {
     rowsContainer.style.cssText = 'display:flex;flex-direction:column;gap:0.5rem;';
     content.appendChild(rowsContainer);
 
+    const colOptions = columns.map((c: any) => ({ value: c.key, label: c.label || c.key }));
+
     // Track filter rows for apply
     const filterRows: { getFilter: () => { column: string; operator: FilterOperator; value: any } | null }[] = [];
 
@@ -224,40 +301,25 @@ export class TableToolbar {
       row.style.cssText = 'display:flex;align-items:center;gap:0.375rem;';
 
       // Column select
-      const colSelect = document.createElement('select');
-      colSelect.style.cssText = 'flex:0 0 auto;min-width:7rem;padding:0.375rem 0.5rem;border:1px solid var(--snice-color-border,rgb(226 226 226));border-radius:var(--snice-border-radius-md,0.25rem);font-size:0.8rem;font-family:inherit;color:var(--snice-color-text,rgb(23 23 23));background:var(--snice-color-background,rgb(255 255 255));outline:none;';
-      for (const col of columns) {
-        const opt = document.createElement('option');
-        opt.value = col.key;
-        opt.textContent = col.label || col.key;
-        colSelect.appendChild(opt);
-      }
-      if (preset) colSelect.value = preset.column;
+      const colSelect = this.mkSelect(colOptions, preset?.column, 'flex:1 1 0;min-width:0;max-width:none;', true);
       row.appendChild(colSelect);
 
-      // Operator select
-      const opSelect = document.createElement('select');
-      opSelect.style.cssText = 'flex:0 0 auto;min-width:7rem;padding:0.375rem 0.5rem;border:1px solid var(--snice-color-border,rgb(226 226 226));border-radius:var(--snice-border-radius-md,0.25rem);font-size:0.8rem;font-family:inherit;color:var(--snice-color-text,rgb(23 23 23));background:var(--snice-color-background,rgb(255 255 255));outline:none;';
+      // Operator select — populated based on column type
+      const opSelect = document.createElement('snice-select') as any;
+      opSelect.size = 'small';
+      opSelect.style.cssText = 'flex:1 1 0;min-width:0;max-width:none;';
+      row.appendChild(opSelect);
 
       // Value input
-      const valInput = document.createElement('input');
-      valInput.type = 'text';
-      valInput.placeholder = 'Value...';
-      valInput.style.cssText = 'flex:1;min-width:0;padding:0.375rem 0.5rem;border:1px solid var(--snice-color-border,rgb(226 226 226));border-radius:var(--snice-border-radius-md,0.25rem);font-size:0.8rem;font-family:inherit;color:var(--snice-color-text,rgb(23 23 23));background:var(--snice-color-background,rgb(255 255 255));outline:none;';
-      if (preset?.value != null) valInput.value = String(preset.value);
+      const valInput = this.mkInput('Value...', preset?.value != null ? String(preset.value) : undefined, 'flex:1 1 0;min-width:0;');
+      row.appendChild(valInput);
 
       const populateOperators = () => {
         const colKey = colSelect.value;
         const colDef = columns.find((c: any) => c.key === colKey);
         const colType = colDef?.type || 'text';
         const operators = engine.getOperatorsForType(colType);
-        opSelect.innerHTML = '';
-        for (const op of operators) {
-          const opt = document.createElement('option');
-          opt.value = op.value;
-          opt.textContent = op.label;
-          opSelect.appendChild(opt);
-        }
+        opSelect.options = operators.map(op => ({ value: op.value, label: op.label }));
         if (preset && colKey === preset.column) {
           opSelect.value = preset.operator;
         }
@@ -277,21 +339,6 @@ export class TableToolbar {
       opSelect.addEventListener('change', updateValueVis);
       populateOperators();
 
-      row.appendChild(opSelect);
-      row.appendChild(valInput);
-
-      // Remove row button
-      const removeBtn = document.createElement('button');
-      removeBtn.type = 'button';
-      removeBtn.textContent = '✕';
-      removeBtn.style.cssText = 'flex:0 0 auto;width:1.75rem;height:1.75rem;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--snice-color-border,rgb(226 226 226));border-radius:var(--snice-border-radius-md,0.25rem);background:var(--snice-color-background,rgb(255 255 255));color:var(--snice-color-text-secondary,rgb(82 82 82));cursor:pointer;font-size:0.75rem;padding:0;';
-      removeBtn.addEventListener('click', () => {
-        row.remove();
-        const idx = filterRows.findIndex(r => r.getFilter === getFilter);
-        if (idx >= 0) filterRows.splice(idx, 1);
-      });
-      row.appendChild(removeBtn);
-
       const getFilter = (): { column: string; operator: FilterOperator; value: any } | null => {
         const colKey = colSelect.value;
         const colDef = columns.find((c: any) => c.key === colKey);
@@ -303,6 +350,12 @@ export class TableToolbar {
         if (opDef?.requiresValue && !val) return null;
         return { column: colKey, operator: op, value: val };
       };
+
+      row.appendChild(this.mkRemoveBtn(() => {
+        row.remove();
+        const idx = filterRows.findIndex(r => r.getFilter === getFilter);
+        if (idx >= 0) filterRows.splice(idx, 1);
+      }));
 
       filterRows.push({ getFilter });
       rowsContainer.appendChild(row);
@@ -358,10 +411,12 @@ export class TableToolbar {
 
   // ── Modal Helpers — uses snice-modal ──
 
-  private createModal(title: string): HTMLElement {
+  private createModal(title: string, size: string = 'small'): HTMLElement {
     const modal = document.createElement('snice-modal') as any;
-    modal.size = 'small';
+    modal.size = size;
     modal.label = title;
+    modal.noBackdropDismiss = true;
+    modal.style.cssText = '--modal-padding: 0.75rem;';
 
     const header = document.createElement('span');
     header.setAttribute('slot', 'header');
@@ -383,6 +438,9 @@ export class TableToolbar {
 
     requestAnimationFrame(() => {
       (modal as any).open = true;
+      // Prevent scrollbar from snice-select absolute dropdowns
+      const body = modal.shadowRoot?.querySelector('.modal__body') as HTMLElement;
+      if (body) body.style.overflow = 'visible';
     });
   }
 
