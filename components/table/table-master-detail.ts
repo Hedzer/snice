@@ -50,8 +50,31 @@ export class TableMasterDetail {
     }));
   }
 
-  /** Collapse a row */
+  /** Collapse a row — animates out before removing */
   collapse(rowIndex: number) {
+    // Animate out if possible
+    const shadowRoot = this.tableElement?.shadowRoot;
+    if (shadowRoot) {
+      const detailRow = shadowRoot.querySelector(`tr[data-detail-for="${rowIndex}"]`);
+      if (detailRow) {
+        const wrapper = detailRow.querySelector('.detail-content') as HTMLElement;
+        if (wrapper) {
+          wrapper.classList.remove('detail-content--open');
+          wrapper.style.maxHeight = '0';
+          // Wait for animation to finish, then remove
+          wrapper.addEventListener('transitionend', () => {
+            this.expandedRows.delete(rowIndex);
+            this.tableElement?.dispatchEvent(new CustomEvent('row-collapse', {
+              detail: { rowIndex },
+              bubbles: true,
+              composed: true,
+            }));
+          }, { once: true });
+          return;
+        }
+      }
+    }
+    // Fallback: immediate
     this.expandedRows.delete(rowIndex);
     this.tableElement?.dispatchEvent(new CustomEvent('row-collapse', {
       detail: { rowIndex },
