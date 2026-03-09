@@ -1,4 +1,4 @@
-import { element, property, query, on, render, styles, html, css } from 'snice';
+import { element, property, query, render, styles, html, css } from 'snice';
 import { renderIcon } from '../utils';
 import cssContent from './snice-button.css?inline';
 import type { ButtonVariant, ButtonSize, ButtonType, IconPlacement, SniceButtonElement } from './snice-button.types';
@@ -53,7 +53,12 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
   @property({ attribute: 'icon-placement',  })
   iconPlacement: IconPlacement = 'start';
 
-  private hasIconSlot = false;
+  @query('[slot="icon"]', { light: true })
+  private iconSlotChild?: Element;
+
+  private get hasIconSlot() {
+    return !!this.iconSlotChild;
+  }
 
   @query('.button')
   button?: HTMLButtonElement;
@@ -66,12 +71,6 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
 
   @query('.icon')
   iconElement?: HTMLImageElement;
-
-  @on('slotchange', { target: 'slot[name="icon"]' })
-  handleIconSlotChange() {
-    const slot = this.shadowRoot?.querySelector('slot[name="icon"]') as HTMLSlotElement;
-    this.hasIconSlot = (slot?.assignedNodes().length ?? 0) > 0;
-  }
 
   @render()
   render() {
