@@ -1,4 +1,4 @@
-import { element, property, query, watch, dispatch, render, styles, on } from 'snice';
+import { element, property, query, watch, dispatch, render, styles, on, ready } from 'snice';
 import { html, css } from 'snice';
 import cssContent from './snice-action-bar.css?inline';
 import type { ActionBarPosition, ActionBarSize, ActionBarVariant, SniceActionBarElement, ActionBarEventDetail } from './snice-action-bar.types';
@@ -13,6 +13,11 @@ export class SniceActionBar extends HTMLElement implements SniceActionBarElement
   @property({ type: Boolean, attribute: 'no-escape-dismiss' }) noEscapeDismiss = false;
 
   @query('slot') private slotElement?: HTMLSlotElement;
+
+  @ready()
+  onReady() {
+    this.setAttribute('data-ready', '');
+  }
 
   @watch('open')
   handleOpenChange() {
