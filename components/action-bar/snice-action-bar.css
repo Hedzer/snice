@@ -7,10 +7,6 @@
   pointer-events: none;
   opacity: 0;
   visibility: hidden;
-}
-
-/* Only enable transitions after first render to prevent fade-out on load */
-:host([data-ready]) {
   transition: opacity var(--snice-transition-medium, 250ms) ease, transform var(--snice-transition-medium, 250ms) ease, visibility 0s linear var(--snice-transition-medium, 250ms);
 }
 
