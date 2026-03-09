@@ -389,4 +389,9 @@
 .button--circle .icon-slot,
 .button--circle .icon {
   margin: 0;
+  transform: none;
+}
+
+.button--circle .icon-slot ::slotted(*) {
+  font-size: 1.125em;
 }
