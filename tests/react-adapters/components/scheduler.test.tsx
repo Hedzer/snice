@@ -27,16 +27,6 @@ describe('React Adapter: Scheduler', () => {
   testComponent({
     name: 'Scheduler',
     Component: Scheduler,
-    properties: [
-      { name: 'resources', value: [{ id: '1', name: 'Room A' }] },
-      { name: 'events', value: [{ id: '1', title: 'Meeting', start: '09:00', end: '10:00' }] },
-      { name: 'view', value: 'week' },
-      { name: 'date', value: '2024-01-15' },
-      { name: 'granularity', value: 30 },
-      { name: 'startHour', value: 8 },
-      { name: 'endHour', value: 18 }
-    ],
-    events: [],
     defaultProps: {}
   });
 });

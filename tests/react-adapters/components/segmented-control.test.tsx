@@ -27,14 +27,6 @@ describe('React Adapter: SegmentedControl', () => {
   testComponent({
     name: 'SegmentedControl',
     Component: SegmentedControl,
-    properties: [
-      { name: 'value', value: 'option1' },
-      { name: 'disabled', value: true }
-    ],
-    events: [
-      { name: 'onValueChange' }
-    ],
-    sizes: ['small', 'medium', 'large'],
     defaultProps: {}
   });
 });

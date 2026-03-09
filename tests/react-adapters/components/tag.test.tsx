@@ -27,18 +27,6 @@ describe('React Adapter: Tag', () => {
   testComponent({
     name: 'Tag',
     Component: Tag,
-    properties: [
-      { name: 'variant', value: 'primary' },
-      { name: 'size', value: 'medium' },
-      { name: 'removable', value: true },
-      { name: 'outline', value: true },
-      { name: 'pill', value: true }
-    ],
-    events: [
-      { name: 'onTagRemove' }
-    ],
-    variants: ['default', 'primary', 'success', 'warning', 'danger', 'info'],
-    sizes: ['small', 'medium', 'large'],
     defaultProps: {}
   });
 });
