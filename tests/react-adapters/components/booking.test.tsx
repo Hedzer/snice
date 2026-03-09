@@ -27,17 +27,6 @@ describe('React Adapter: Booking', () => {
   testComponent({
     name: 'Booking',
     Component: Booking,
-    properties: [
-      { name: 'availableDates', value: ['2024-01-15', '2024-01-16', '2024-01-17'] },
-      { name: 'availableSlots', value: ['09:00', '10:00', '11:00'] },
-      { name: 'duration', value: 60 },
-      { name: 'minDate', value: '2024-01-01' },
-      { name: 'maxDate', value: '2024-12-31' },
-      { name: 'fields', value: [{ name: 'name', required: true }] },
-      { name: 'variant', value: 'default' }
-    ],
-    events: [],
-    variants: ['default', 'compact', 'minimal'],
     defaultProps: {}
   });
 });

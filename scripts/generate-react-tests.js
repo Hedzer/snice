@@ -171,6 +171,12 @@ const componentTestConfig = {
     properties: ['label', 'autoExpand', 'rows', 'showDescription', 'keyPlaceholder', 'valuePlaceholder', 'disabled', 'readonly', 'name', 'mode', 'showCopy'],
     events: ['onKvAdd', 'onKvRemove', 'onKvChange', 'onKvCopy'],
     variants: ['default', 'compact']
+  },
+  'action-bar': {
+    properties: ['open', 'position', 'noAnimation', 'noEscapeDismiss'],
+    events: ['onActionBarOpen', 'onActionBarClose'],
+    variants: ['default', 'pill'],
+    sizes: ['small', 'medium']
   }
 };
 
