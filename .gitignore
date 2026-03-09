@@ -87,6 +87,7 @@ public/components/
 .research/
 /*.png
 .playwright-mcp/
+.worktrees/
 
 # Marketing (keep dir, ignore contents)
 marketing/**
