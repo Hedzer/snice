@@ -5,6 +5,7 @@
  * Do not edit manually - run `npm run generate:react-adapters` to regenerate
  */
 export { Accordion } from './accordion';
+export { ActionBar } from './action-bar';
 export { ActivityFeed } from './activity-feed';
 export { Alert } from './alert';
 export { AppTiles } from './app-tiles';
@@ -137,6 +138,7 @@ export { Waterfall } from './waterfall';
 export { Weather } from './weather';
 export { WorkOrder } from './work-order';
 export type { AccordionProps } from './accordion';
+export type { ActionBarProps } from './action-bar';
 export type { ActivityFeedProps } from './activity-feed';
 export type { AlertProps } from './alert';
 export type { AppTilesProps } from './app-tiles';
