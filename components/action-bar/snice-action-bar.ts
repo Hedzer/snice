@@ -1,4 +1,4 @@
-import { element, property, watch, dispatch, render, styles, on } from 'snice';
+import { element, property, query, watch, dispatch, render, styles, on } from 'snice';
 import { html, css } from 'snice';
 import cssContent from './snice-action-bar.css?inline';
 import type { ActionBarPosition, ActionBarSize, ActionBarVariant, SniceActionBarElement, ActionBarEventDetail } from './snice-action-bar.types';
@@ -12,21 +12,25 @@ export class SniceActionBar extends HTMLElement implements SniceActionBarElement
   @property({ type: Boolean, attribute: 'no-animation' }) noAnimation = false;
   @property({ type: Boolean, attribute: 'no-escape-dismiss' }) noEscapeDismiss = false;
 
-  @watch('open')
-  updateOpenAttribute() {
-    if (this.open) {
-      this.setAttribute('open', '');
-    } else {
-      this.removeAttribute('open');
-    }
-  }
+  @query('slot') private slotElement?: HTMLSlotElement;
 
   @watch('open')
   handleOpenChange() {
     if (this.open) {
+      this.setAttribute('open', '');
       this.emitOpen();
     } else {
+      this.removeAttribute('open');
       this.emitClose();
+    }
+  }
+
+  @watch('noAnimation')
+  updateNoAnimationAttribute() {
+    if (this.noAnimation) {
+      this.setAttribute('no-animation', '');
+    } else {
+      this.removeAttribute('no-animation');
     }
   }
 
@@ -85,9 +89,8 @@ export class SniceActionBar extends HTMLElement implements SniceActionBarElement
   }
 
   private getFocusableChildren(): HTMLElement[] {
-    const slot = this.shadowRoot?.querySelector('slot');
-    if (!slot) return [];
-    const elements = slot.assignedElements({ flatten: true }) as HTMLElement[];
+    if (!this.slotElement) return [];
+    const elements = this.slotElement.assignedElements({ flatten: true }) as HTMLElement[];
     return elements.filter(el =>
       !el.hasAttribute('disabled') &&
       (el.tabIndex >= 0 || el.matches('button, [href], input, select, textarea, [tabindex]'))
@@ -97,7 +100,7 @@ export class SniceActionBar extends HTMLElement implements SniceActionBarElement
   @render()
   template() {
     return html`
-      <div class="action-bar" role="toolbar" part="base">
+      <div class="action-bar" role="toolbar" aria-label="Actions" part="base">
         <slot></slot>
       </div>
     `;

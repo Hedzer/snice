@@ -25,6 +25,8 @@
 :host([position="bottom"]) {
   bottom: var(--snice-spacing-sm, 0.75rem);
   left: 50%;
+  top: auto;
+  right: auto;
   transform: translate(-50%, 0.5rem);
 }
 :host([open]),

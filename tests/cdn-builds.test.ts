@@ -11,7 +11,7 @@ import fs from 'fs';
 import path from 'path';
 
 describe('CDN Builds', () => {
-  const testComponents = ['button', 'input', 'card', 'alert'];
+  const testComponents = ['action-bar', 'button', 'input', 'card', 'alert'];
   const outputDir = 'dist/cdn';
 
   describe('Build Process', () => {
