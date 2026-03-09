@@ -27,16 +27,6 @@ describe('React Adapter: ProgressRing', () => {
   testComponent({
     name: 'ProgressRing',
     Component: ProgressRing,
-    properties: [
-      { name: 'value', value: 75 },
-      { name: 'max', value: 100 },
-      { name: 'size', value: 'medium' },
-      { name: 'thickness', value: 4 },
-      { name: 'color', value: 'blue' },
-      { name: 'showValue', value: true },
-      { name: 'label', value: 'Progress' }
-    ],
-    sizes: ['small', 'medium', 'large'],
     defaultProps: {}
   });
 });

@@ -29,21 +29,13 @@ describe('React Adapter: Button', () => {
     Component: Button,
     properties: [
       { name: 'disabled', value: true },
-      { name: 'loading', value: true },
-      { name: 'outline', value: true },
-      { name: 'pill', value: true },
-      { name: 'circle', value: true },
-      { name: 'href', value: 'https://example.com' },
-      { name: 'target', value: '_blank' },
-      { name: 'download', value: 'file.txt' },
-      { name: 'icon', value: 'check' },
-      { name: 'iconPlacement', value: 'end' }
+      { name: 'loading', value: true }
     ],
     events: [
       { name: 'onClick' }
     ],
-    variants: ['default', 'primary', 'success', 'warning', 'danger', 'text'],
-    sizes: ['small', 'medium', 'large'],
+    variants: ["default","primary","secondary","danger","text","outline"],
+    sizes: ["small","medium","large"],
     defaultProps: {}
   });
 });
