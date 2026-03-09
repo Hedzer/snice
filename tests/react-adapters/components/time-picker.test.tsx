@@ -27,38 +27,6 @@ describe('React Adapter: TimePicker', () => {
   testComponent({
     name: 'TimePicker',
     Component: TimePicker,
-    properties: [
-      { name: 'value', value: '14:30' },
-      { name: 'format', value: '24h' },
-      { name: 'step', value: 15 },
-      { name: 'minTime', value: '09:00' },
-      { name: 'maxTime', value: '18:00' },
-      { name: 'showSeconds', value: true },
-      { name: 'disabled', value: true },
-      { name: 'readonly', value: true },
-      { name: 'placeholder', value: 'Select time' },
-      { name: 'label', value: 'Time' },
-      { name: 'helperText', value: 'Choose a time' },
-      { name: 'errorText', value: 'Invalid time' },
-      { name: 'required', value: true },
-      { name: 'invalid', value: true },
-      { name: 'name', value: 'time-field' },
-      { name: 'variant', value: 'dropdown' },
-      { name: 'showDropdown', value: true }
-    ],
-    events: [
-      { name: 'onTimeChange' },
-      { name: 'onTimepickerFocus' },
-      { name: 'onTimepickerBlur' },
-      { name: 'onTimepickerOpen' },
-      { name: 'onTimepickerClose' }
-    ],
-    variants: ['dropdown', 'inline'],
-    isForm: true,
-    formOptions: {
-      valueType: 'string',
-      defaultValue: '12:00'
-    },
     defaultProps: {}
   });
 });

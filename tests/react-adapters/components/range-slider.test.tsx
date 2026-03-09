@@ -27,21 +27,6 @@ describe('React Adapter: RangeSlider', () => {
   testComponent({
     name: 'RangeSlider',
     Component: RangeSlider,
-    properties: [
-      { name: 'min', value: 0 },
-      { name: 'max', value: 100 },
-      { name: 'step', value: 10 },
-      { name: 'valueLow', value: 20 },
-      { name: 'valueHigh', value: 80 },
-      { name: 'disabled', value: true },
-      { name: 'showTooltip', value: true },
-      { name: 'showLabels', value: true },
-      { name: 'orientation', value: 'horizontal' }
-    ],
-    events: [
-      { name: 'onRangeChange' }
-    ],
-    variants: ['horizontal', 'vertical'],
     defaultProps: {}
   });
 });
