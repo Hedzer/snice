@@ -84,7 +84,7 @@
   "homepage": "https://snice.dev",
   "repository": {
     "type": "git",
-    "url": "git@gitlab.com:Hedzer/snice.git"
+    "url": "https://github.com/Hedzer/snice.git"
   },
   "bugs": {
     "url": "https://gitlab.com/Hedzer/snice/-/issues"
