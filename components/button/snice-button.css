@@ -325,6 +325,7 @@
   width: 1.25em;
   height: 1.25em;
   line-height: 1;
+  transform: translateY(1px);
 }
 
 .icon-slot:empty {
