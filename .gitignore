@@ -87,3 +87,7 @@ public/components/
 .research/
 /*.png
 .playwright-mcp/
+
+# Marketing (keep dir, ignore contents)
+marketing/**
+!marketing/.gitkeep

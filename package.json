@@ -133,7 +133,8 @@
     "website:dev": "npm run website:build && vite --port 52891",
     "website:deploy": "npm run website:build:full && node scripts/build-deploy.js && npx wrangler deploy",
     "website:test": "vitest run tests/website.test.ts",
-    "website:test:render": "npm run website:build && cd public && python3 -m http.server 52891 & sleep 2 && npx playwright test tests/website-render.test.ts; kill %1"
+    "website:test:render": "npm run website:build && cd public && python3 -m http.server 52891 & sleep 2 && npx playwright test tests/website-render.test.ts; kill %1",
+    "screenshots": "node scripts/take-screenshots.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.56.1",
