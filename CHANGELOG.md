@@ -1,3 +1,17 @@
+# [4.28.0](https://github.com/Hedzer/snice/compare/v4.27.0...v4.28.0) (2026-03-09)
+
+
+### Bug Fixes
+
+* button icon slot detection uses [@query](https://github.com/query) instead of slotchange ([6d3879a](https://github.com/Hedzer/snice/commit/6d3879a6f3e95b31aa18326584fe0fbea539b5c5))
+* revert badge line-height to 1 ([1605ce5](https://github.com/Hedzer/snice/commit/1605ce5a23f2cad14f5c629a81b57da47ec2803d))
+* update repository URL to GitHub ([05c0a79](https://github.com/Hedzer/snice/commit/05c0a79f7f98b1ec1d98b8c8f46f104de240853c))
+
+
+### Features
+
+* add component screenshot script for marketing composites ([ba30feb](https://github.com/Hedzer/snice/commit/ba30febba5c9c21aa8f7cdf6ef68ec5cc3d24250))
+
 # [4.27.0](https://gitlab.com/Hedzer/snice/compare/v4.26.2...v4.27.0) (2026-03-08)
 
 
