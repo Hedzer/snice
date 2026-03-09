@@ -1099,14 +1099,30 @@ export function matchesKeyboardFilter(event: KeyboardEvent, filter: KeyboardFilt
 const NOT_SET = Symbol('not-set');
 
 export class ConditionalIfPart extends Part {
-  private ifElement: HTMLElement;
+  private startNode: Comment;
+  private endNode: Comment;
   private value: any = NOT_SET;
-  private fragment: DocumentFragment | null = null;
+  private childFragment: DocumentFragment | null = null;
 
   constructor(ifElement: Element) {
     super();
-    this.ifElement = ifElement as HTMLElement;
-    this.ifElement.style.display = 'contents';
+    const parent = ifElement.parentNode!;
+
+    // Create comment boundary markers
+    this.startNode = document.createComment('if');
+    this.endNode = document.createComment('/if');
+
+    // Insert markers where <if> is
+    parent.insertBefore(this.startNode, ifElement);
+    parent.insertBefore(this.endNode, ifElement.nextSibling);
+
+    // Move <if>'s children between the markers
+    while (ifElement.firstChild) {
+      parent.insertBefore(ifElement.firstChild, this.endNode);
+    }
+
+    // Remove the <if> element from DOM
+    parent.removeChild(ifElement);
   }
 
   commit(value: any): void {
@@ -1116,26 +1132,32 @@ export class ConditionalIfPart extends Part {
 
     if (condition) {
       // Show: restore children from fragment
-      if (this.fragment && this.fragment.hasChildNodes()) {
-        this.ifElement.appendChild(this.fragment);
+      if (this.childFragment && this.childFragment.hasChildNodes()) {
+        this.startNode.parentNode!.insertBefore(this.childFragment, this.endNode);
       }
     } else {
       // Hide: move children to fragment
-      if (!this.fragment) {
-        this.fragment = document.createDocumentFragment();
+      if (!this.childFragment) {
+        this.childFragment = document.createDocumentFragment();
       }
-      while (this.ifElement.firstChild) {
-        this.fragment.appendChild(this.ifElement.firstChild);
+      let node = this.startNode.nextSibling;
+      while (node && node !== this.endNode) {
+        const next = node.nextSibling;
+        this.childFragment.appendChild(node);
+        node = next;
       }
     }
   }
 
   clear(): void {
-    if (!this.fragment) {
-      this.fragment = document.createDocumentFragment();
+    if (!this.childFragment) {
+      this.childFragment = document.createDocumentFragment();
     }
-    while (this.ifElement.firstChild) {
-      this.fragment.appendChild(this.ifElement.firstChild);
+    let node = this.startNode.nextSibling;
+    while (node && node !== this.endNode) {
+      const next = node.nextSibling;
+      this.childFragment.appendChild(node);
+      node = next;
     }
   }
 }
@@ -1145,36 +1167,45 @@ export class ConditionalIfPart extends Part {
  * Removes/inserts matching branch based on value
  */
 export class ConditionalCasePart extends Part {
-  private caseElement: Element;
+  private startNode: Comment;
+  private endNode: Comment;
   private value: any = NOT_SET;
-  private childrenMap: Map<string, Element> = new Map();
-  private fragments: Map<Element, DocumentFragment> = new Map();
-  private defaultChild: Element | null = null;
-  private currentChild: Element | null = null;
+  private branches: Map<string, DocumentFragment> = new Map();
+  private defaultBranch: DocumentFragment | null = null;
+  private currentKey: string | null = null;
 
   constructor(caseElement: Element) {
     super();
-    this.caseElement = caseElement;
-    (this.caseElement as HTMLElement).style.display = 'contents';
+    const parent = caseElement.parentNode!;
 
-    // Build map and store children in fragments initially
-    for (const child of Array.from(this.caseElement.children)) {
+    // Create comment boundary markers
+    this.startNode = document.createComment('case');
+    this.endNode = document.createComment('/case');
+
+    // Insert markers where <case> is
+    parent.insertBefore(this.startNode, caseElement);
+    parent.insertBefore(this.endNode, caseElement.nextSibling);
+
+    // Extract branches from <when> and <default> children
+    for (const child of Array.from(caseElement.children)) {
       const childTag = child.tagName.toLowerCase();
       if (childTag === 'when') {
-        (child as HTMLElement).style.display = 'contents';
         const whenValue = child.getAttribute('value') || '';
-        this.childrenMap.set(whenValue, child);
         const fragment = document.createDocumentFragment();
-        fragment.appendChild(child);
-        this.fragments.set(child, fragment);
+        while (child.firstChild) {
+          fragment.appendChild(child.firstChild);
+        }
+        this.branches.set(whenValue, fragment);
       } else if (childTag === 'default') {
-        (child as HTMLElement).style.display = 'contents';
-        this.defaultChild = child;
-        const fragment = document.createDocumentFragment();
-        fragment.appendChild(child);
-        this.fragments.set(child, fragment);
+        this.defaultBranch = document.createDocumentFragment();
+        while (child.firstChild) {
+          this.defaultBranch.appendChild(child.firstChild);
+        }
       }
     }
+
+    // Remove the <case> element from DOM
+    parent.removeChild(caseElement);
   }
 
   commit(value: any): void {
@@ -1183,33 +1214,39 @@ export class ConditionalCasePart extends Part {
 
     const valueStr = String(value);
 
-    // Remove current child
-    if (this.currentChild) {
-      const fragment = this.fragments.get(this.currentChild);
-      if (fragment && !fragment.hasChildNodes()) {
-        fragment.appendChild(this.currentChild);
-      }
-    }
+    // Move current content back to its fragment
+    this._collectCurrent();
 
-    // Insert matching child
-    const matchingChild = this.childrenMap.get(valueStr) || this.defaultChild;
-    if (matchingChild) {
-      const fragment = this.fragments.get(matchingChild);
-      if (fragment && fragment.hasChildNodes()) {
-        this.caseElement.appendChild(fragment);
-      }
-      this.currentChild = matchingChild;
+    // Insert matching branch
+    const hasBranch = this.branches.has(valueStr);
+    const matchingFragment = hasBranch ? this.branches.get(valueStr)! : this.defaultBranch;
+    this.currentKey = hasBranch ? valueStr : (this.defaultBranch ? '__default__' : null);
+
+    if (matchingFragment && matchingFragment.hasChildNodes()) {
+      this.startNode.parentNode!.insertBefore(matchingFragment, this.endNode);
+    }
+  }
+
+  private _collectCurrent(): void {
+    if (this.currentKey === null) return;
+
+    const fragment = this.currentKey === '__default__'
+      ? this.defaultBranch
+      : this.branches.get(this.currentKey);
+
+    if (!fragment) return;
+
+    let node = this.startNode.nextSibling;
+    while (node && node !== this.endNode) {
+      const next = node.nextSibling;
+      fragment.appendChild(node);
+      node = next;
     }
   }
 
   clear(): void {
-    if (this.currentChild) {
-      const fragment = this.fragments.get(this.currentChild);
-      if (fragment && !fragment.hasChildNodes()) {
-        fragment.appendChild(this.currentChild);
-      }
-      this.currentChild = null;
-    }
+    this._collectCurrent();
+    this.currentKey = null;
   }
 }
 

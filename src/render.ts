@@ -321,21 +321,17 @@ export function applyStyles(element: HTMLElement): void {
       element.attachShadow({ mode: 'open' });
     }
 
-    // Create base styles for meta elements (if, case)
-    const baseStyleSheet = new CSSStyleSheet();
-    baseStyleSheet.replaceSync('if, case { display: contents; }');
-
     if (!element.shadowRoot) return;
 
     // Prefer constructable stylesheets
     if (result.styleSheet && 'adoptedStyleSheets' in element.shadowRoot) {
-      element.shadowRoot.adoptedStyleSheets = [baseStyleSheet, result.styleSheet];
+      element.shadowRoot.adoptedStyleSheets = [result.styleSheet];
       return;
     }
 
     // Fallback to <style> tag
     const style = document.createElement('style');
-    style.textContent = 'if, case { display: contents; }\n' + result.cssText;
+    style.textContent = result.cssText;
     element.shadowRoot.appendChild(style);
   } catch (error) {
     console.error('Error applying styles:', error);
