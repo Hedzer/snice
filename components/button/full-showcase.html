@@ -204,6 +204,28 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <section>
     <h2>Icon slot (Material Symbols)</h2>
     <div class="row">
+      <snice-button variant="primary" size="small">
+        <span class="material-symbols-outlined" slot="icon">home</span>
+        Home
+      </snice-button>
+      <snice-button variant="primary" size="medium">
+        <span class="material-symbols-outlined" slot="icon">home</span>
+        Home
+      </snice-button>
+      <snice-button variant="primary" size="large">
+        <span class="material-symbols-outlined" slot="icon">home</span>
+        Home
+      </snice-button>
+    </div>
+    <div class="row">
+      <snice-button variant="success">
+        <span class="material-symbols-outlined" slot="icon">check</span>
+        Confirm
+      </snice-button>
+      <snice-button variant="danger">
+        <span class="material-symbols-outlined" slot="icon">delete</span>
+        Remove
+      </snice-button>
       <snice-button variant="primary">
         <span class="material-symbols-outlined" slot="icon">search</span>
         Search
