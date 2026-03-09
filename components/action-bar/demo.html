@@ -17,6 +17,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Action Bar</title>
   <link rel="stylesheet" href="../theme/theme.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap">
   <style>
     body {
       font-family: system-ui, -apple-system, sans-serif;
@@ -42,8 +43,8 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     }
     .card {
       position: relative;
-      width: 15rem;
-      height: 10rem;
+      width: 20rem;
+      height: 12rem;
       background: var(--snice-color-background-element, rgb(252 251 249));
       border: 1px solid var(--snice-color-border, rgb(226 226 226));
       border-radius: var(--snice-border-radius-lg, 0.5rem);
@@ -55,29 +56,47 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
       font-size: 0.875rem;
     }
     .card-wide {
-      width: 20rem;
-      height: 12rem;
-    }
-    .card-tall {
-      width: 10rem;
+      width: 24rem;
       height: 14rem;
     }
-    .action-btn {
-      background: none;
-      border: 1px solid var(--snice-color-border, rgb(226 226 226));
-      border-radius: var(--snice-border-radius-md, 0.25rem);
-      padding: 0.375rem 0.5rem;
-      cursor: pointer;
-      font-size: 1rem;
-      color: var(--snice-color-text, rgb(23 23 23));
-      line-height: 1;
-    }
-    .action-btn:hover {
-      background: var(--snice-color-background, rgb(255 255 255));
+    .card-tall {
+      width: 12rem;
+      height: 16rem;
     }
   </style>
 </head>
 <body>
+
+  <section>
+    <h2>Pill variant with icon buttons (hover to show)</h2>
+    <div class="row">
+      <div class="card"
+           onmouseenter="this.querySelector('snice-action-bar').show()"
+           onmouseleave="this.querySelector('snice-action-bar').hide()">
+        Hover me
+        <snice-action-bar position="bottom" variant="pill">
+          <snice-button variant="text" circle size="small">
+            <span slot="icon" class="material-symbols-outlined">favorite</span>
+          </snice-button>
+          <snice-button variant="text" circle size="small">
+            <span slot="icon" class="material-symbols-outlined">chat_bubble</span>
+          </snice-button>
+          <snice-button variant="text" circle size="small">
+            <span slot="icon" class="material-symbols-outlined">repeat</span>
+          </snice-button>
+          <snice-button variant="text" circle size="small">
+            <span slot="icon" class="material-symbols-outlined">bookmark</span>
+          </snice-button>
+          <snice-button variant="text" circle size="small">
+            <span slot="icon" class="material-symbols-outlined">edit</span>
+          </snice-button>
+          <snice-button variant="danger" circle size="small">
+            <span slot="icon" class="material-symbols-outlined">delete</span>
+          </snice-button>
+        </snice-action-bar>
+      </div>
+    </div>
+  </section>
 
   <section>
     <h2>Default variant (hover to show)</h2>
@@ -87,25 +106,15 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
            onmouseleave="this.querySelector('snice-action-bar').hide()">
         Hover me
         <snice-action-bar position="bottom">
-          <button class="action-btn">Edit</button>
-          <button class="action-btn">Copy</button>
-          <button class="action-btn">Delete</button>
-        </snice-action-bar>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <h2>Pill variant (hover to show)</h2>
-    <div class="row">
-      <div class="card"
-           onmouseenter="this.querySelector('snice-action-bar').show()"
-           onmouseleave="this.querySelector('snice-action-bar').hide()">
-        Hover me
-        <snice-action-bar position="bottom" variant="pill">
-          <button class="action-btn">Save</button>
-          <button class="action-btn">Share</button>
-          <button class="action-btn">Print</button>
+          <snice-button variant="text" circle size="small">
+            <span slot="icon" class="material-symbols-outlined">content_copy</span>
+          </snice-button>
+          <snice-button variant="text" circle size="small">
+            <span slot="icon" class="material-symbols-outlined">share</span>
+          </snice-button>
+          <snice-button variant="text" circle size="small">
+            <span slot="icon" class="material-symbols-outlined">print</span>
+          </snice-button>
         </snice-action-bar>
       </div>
     </div>
@@ -118,34 +127,50 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
            onmouseenter="this.querySelectorAll('snice-action-bar').forEach(b => b.show())"
            onmouseleave="this.querySelectorAll('snice-action-bar').forEach(b => b.hide())">
         Hover me (all corners)
-        <snice-action-bar position="top-left" size="small">
-          <button class="action-btn">TL</button>
+        <snice-action-bar position="top-left" size="small" variant="pill">
+          <snice-button variant="text" circle size="small">
+            <span slot="icon" class="material-symbols-outlined">push_pin</span>
+          </snice-button>
         </snice-action-bar>
-        <snice-action-bar position="top-right" size="small">
-          <button class="action-btn">TR</button>
+        <snice-action-bar position="top-right" size="small" variant="pill">
+          <snice-button variant="text" circle size="small">
+            <span slot="icon" class="material-symbols-outlined">close</span>
+          </snice-button>
         </snice-action-bar>
-        <snice-action-bar position="bottom-left" size="small">
-          <button class="action-btn">BL</button>
+        <snice-action-bar position="bottom-left" size="small" variant="pill">
+          <snice-button variant="text" circle size="small">
+            <span slot="icon" class="material-symbols-outlined">info</span>
+          </snice-button>
         </snice-action-bar>
-        <snice-action-bar position="bottom-right" size="small">
-          <button class="action-btn">BR</button>
+        <snice-action-bar position="bottom-right" size="small" variant="pill">
+          <snice-button variant="text" circle size="small">
+            <span slot="icon" class="material-symbols-outlined">more_vert</span>
+          </snice-button>
         </snice-action-bar>
       </div>
       <div class="card card-wide"
            onmouseenter="this.querySelectorAll('snice-action-bar').forEach(b => b.show())"
            onmouseleave="this.querySelectorAll('snice-action-bar').forEach(b => b.hide())">
         Hover me (edges)
-        <snice-action-bar position="top" size="small">
-          <button class="action-btn">Top</button>
+        <snice-action-bar position="top" size="small" variant="pill">
+          <snice-button variant="text" circle size="small">
+            <span slot="icon" class="material-symbols-outlined">expand_less</span>
+          </snice-button>
         </snice-action-bar>
-        <snice-action-bar position="bottom" size="small">
-          <button class="action-btn">Bottom</button>
+        <snice-action-bar position="bottom" size="small" variant="pill">
+          <snice-button variant="text" circle size="small">
+            <span slot="icon" class="material-symbols-outlined">expand_more</span>
+          </snice-button>
         </snice-action-bar>
-        <snice-action-bar position="left" size="small">
-          <button class="action-btn">L</button>
+        <snice-action-bar position="left" size="small" variant="pill">
+          <snice-button variant="text" circle size="small">
+            <span slot="icon" class="material-symbols-outlined">chevron_left</span>
+          </snice-button>
         </snice-action-bar>
-        <snice-action-bar position="right" size="small">
-          <button class="action-btn">R</button>
+        <snice-action-bar position="right" size="small" variant="pill">
+          <snice-button variant="text" circle size="small">
+            <span slot="icon" class="material-symbols-outlined">chevron_right</span>
+          </snice-button>
         </snice-action-bar>
       </div>
     </div>
@@ -158,20 +183,32 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
            onmouseenter="this.querySelector('snice-action-bar').show()"
            onmouseleave="this.querySelector('snice-action-bar').hide()">
         Small
-        <snice-action-bar position="bottom" size="small">
-          <button class="action-btn">A</button>
-          <button class="action-btn">B</button>
-          <button class="action-btn">C</button>
+        <snice-action-bar position="bottom" size="small" variant="pill">
+          <snice-button variant="text" circle size="small">
+            <span slot="icon" class="material-symbols-outlined">thumb_up</span>
+          </snice-button>
+          <snice-button variant="text" circle size="small">
+            <span slot="icon" class="material-symbols-outlined">thumb_down</span>
+          </snice-button>
+          <snice-button variant="text" circle size="small">
+            <span slot="icon" class="material-symbols-outlined">reply</span>
+          </snice-button>
         </snice-action-bar>
       </div>
       <div class="card"
            onmouseenter="this.querySelector('snice-action-bar').show()"
            onmouseleave="this.querySelector('snice-action-bar').hide()">
         Medium
-        <snice-action-bar position="bottom" size="medium">
-          <button class="action-btn">A</button>
-          <button class="action-btn">B</button>
-          <button class="action-btn">C</button>
+        <snice-action-bar position="bottom" size="medium" variant="pill">
+          <snice-button variant="text" circle size="small">
+            <span slot="icon" class="material-symbols-outlined">thumb_up</span>
+          </snice-button>
+          <snice-button variant="text" circle size="small">
+            <span slot="icon" class="material-symbols-outlined">thumb_down</span>
+          </snice-button>
+          <snice-button variant="text" circle size="small">
+            <span slot="icon" class="material-symbols-outlined">reply</span>
+          </snice-button>
         </snice-action-bar>
       </div>
     </div>
@@ -182,9 +219,13 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     <div class="row">
       <div class="card">
         Always visible
-        <snice-action-bar no-animation position="top-right" size="small">
-          <button class="action-btn">Edit</button>
-          <button class="action-btn">Delete</button>
+        <snice-action-bar no-animation position="top-right" size="small" variant="pill">
+          <snice-button variant="text" circle size="small">
+            <span slot="icon" class="material-symbols-outlined">edit</span>
+          </snice-button>
+          <snice-button variant="danger" circle size="small">
+            <span slot="icon" class="material-symbols-outlined">delete</span>
+          </snice-button>
         </snice-action-bar>
       </div>
     </div>
@@ -192,6 +233,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 
   <script type="module">
     import './snice-action-bar.ts';
+    import '../button/snice-button.ts';
   </script>
 </body>
 </html>
