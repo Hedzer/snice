@@ -5,6 +5,7 @@
  * Do not edit manually - run `npm run generate:react-adapters` to regenerate
  */
 export { Accordion } from './accordion';
+export { ActionBar } from './action-bar';
 export { ActivityFeed } from './activity-feed';
 export { Alert } from './alert';
 export { AppTiles } from './app-tiles';
