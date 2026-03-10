@@ -16,73 +16,56 @@ Modeled after [Shoelace](https://shoelace.style) — the gold standard for web c
 ### Section Order (strict)
 
 ```
-1. Title + Tag Name
-2. One-sentence description
-3. Basic Usage (simplest possible example)
-4. Import paths (ESM, CDN)
-5. Examples (H2)
-   └── Individual examples (H3 each)
-6. Slots
-7. Properties
-8. Events
-9. Methods
-10. CSS Custom Properties (if any)
-11. CSS Parts (if any)
+1. <!-- AI: ... --> comment (invisible HTML comment linking to AI docs)
+2. # Component Name
+3. Description paragraph
+4. ## Table of Contents (links to all sections below)
+5. ## Components (only if multi-element, e.g. accordion + accordion-item)
+6. ## Properties (table format)
+7. ## Methods
+8. ## Events
+9. ## Slots
+10. ## CSS Parts (or ## CSS Custom Properties if applicable)
+11. ## Basic Usage (simplest example + import statement)
+12. ## Examples (H2, individual examples as H3)
+13. ## Keyboard Navigation (only if applicable)
+14. ## Accessibility
 ```
+
+**Removed sections** (do NOT include):
+- `## Importing` — merge import code into Basic Usage
+- `## Browser Support`
+- `## Common Patterns`
 
 ### Section Details
 
-#### 1. Title + Tag Name
+#### 1. AI Comment + Title + Description
 
 ```markdown
-# Button
-`<snice-button>`
-```
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/button.md -->
 
-#### 2. Description
+# Button Component
 
-One sentence. What it is and what it does. No fluff.
-
-```markdown
 Buttons represent actions available to the user.
 ```
 
-#### 3. Basic Usage
+#### 2. Table of Contents
 
-The absolute simplest example. Import + minimal HTML.
-
-```markdown
-## Basic Usage
-
-\`\`\`typescript
-import 'snice/components/button/snice-button';
-\`\`\`
-
-\`\`\`html
-<snice-button>Click me</snice-button>
-\`\`\`
-```
-
-#### 4. Import Paths
-
-Show ESM and CDN.
+Links to every section that exists in the doc. Anchors are lowercase, spaces→hyphens.
 
 ```markdown
-## Importing
-
-**ESM (bundler)**
-\`\`\`typescript
-import 'snice/components/button/snice-button';
-\`\`\`
-
-**CDN**
-\`\`\`html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-button.min.js"></script>
-\`\`\`
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [Slots](#slots)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Accessibility](#accessibility)
 ```
 
-#### 5. Examples
+#### 3. Examples
 
 Each example gets an H3 heading. Follow this pattern:
 
@@ -208,6 +191,8 @@ Note the attribute name when it differs:
 
 ### Format
 
+AI docs follow the **same section order** as human docs, but in low-token format:
+
 ```markdown
 # snice-<name>
 
@@ -222,27 +207,36 @@ disabled: boolean = false;
 loading: boolean = false;
 \`\`\`
 
-## Slots
-
-- `(default)` - Label content
-- `icon` - Custom icon (overrides `icon` prop)
-
-## Events
-
-- `snice-click` → `{ originalEvent: MouseEvent }`
-
 ## Methods
 
 - `focus(options?)` - Focus
 - `blur()` - Remove focus
 
-## Usage
+## Events
+
+- `snice-click` → `{ originalEvent: MouseEvent }`
+
+## Slots
+
+- `(default)` - Label content
+- `icon` - Custom icon (overrides `icon` prop)
+
+## CSS Parts
+
+- `base` - The button element
+- `label` - The label container
+
+## Basic Usage
 
 \`\`\`html
 <snice-button variant="primary">Save</snice-button>
 <snice-button loading disabled>Processing</snice-button>
-<snice-button href="/page" target="_blank">Link</snice-button>
 \`\`\`
+
+## Accessibility
+
+- Keyboard: Enter, Space to activate
+- ARIA: role=button, aria-disabled
 ```
 
 ### AI Doc Rules
