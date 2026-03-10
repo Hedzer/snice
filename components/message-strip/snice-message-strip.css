@@ -56,83 +56,30 @@
   }
 }
 
-/* Variants — self-contained light fallbacks, dark mode via :host-context or data-theme */
+/* Variants — use semantic theme tokens that auto-switch light/dark */
 :host([variant="info"]),
 :host(:not([variant])) {
-  --strip-bg: rgb(219 234 254);
-  --strip-border-color: rgb(147 180 233);
-  --strip-text-color: rgb(30 64 135);
+  --strip-bg: var(--snice-color-primary-subtle, hsl(214 100% 97%));
+  --strip-border-color: var(--snice-color-primary, hsl(217 83% 53%));
+  --strip-text-color: var(--snice-color-primary-hover, hsl(217 77% 48%));
 }
 
 :host([variant="success"]) {
-  --strip-bg: rgb(220 252 231);
-  --strip-border-color: rgb(74 179 120);
-  --strip-text-color: rgb(22 101 52);
+  --strip-bg: var(--snice-color-success-subtle, hsl(138 76% 97%));
+  --strip-border-color: var(--snice-color-success, hsl(142 76% 36%));
+  --strip-text-color: var(--snice-color-success-hover, hsl(142 72% 29%));
 }
 
 :host([variant="warning"]) {
-  --strip-bg: rgb(254 243 199);
-  --strip-border-color: rgb(202 138 4);
-  --strip-text-color: rgb(113 63 18);
+  --strip-bg: var(--snice-color-warning-subtle, hsl(55 92% 95%));
+  --strip-border-color: var(--snice-color-warning, hsl(41 96% 40%));
+  --strip-text-color: var(--snice-color-warning-hover, hsl(36 88% 33%));
 }
 
 :host([variant="danger"]) {
-  --strip-bg: rgb(254 226 226);
-  --strip-border-color: rgb(185 94 94);
-  --strip-text-color: rgb(127 29 29);
-}
-
-/* Dark mode overrides */
-@media (prefers-color-scheme: dark) {
-  :host([variant="info"]),
-  :host(:not([variant])) {
-    --strip-bg: rgb(23 37 63);
-    --strip-border-color: rgb(44 72 117);
-    --strip-text-color: rgb(173 210 255);
-  }
-
-  :host([variant="success"]) {
-    --strip-bg: rgb(12 45 28);
-    --strip-border-color: rgb(28 82 52);
-    --strip-text-color: rgb(167 243 198);
-  }
-
-  :host([variant="warning"]) {
-    --strip-bg: rgb(50 36 11);
-    --strip-border-color: rgb(101 73 17);
-    --strip-text-color: rgb(253 224 137);
-  }
-
-  :host([variant="danger"]) {
-    --strip-bg: rgb(55 17 17);
-    --strip-border-color: rgb(109 40 40);
-    --strip-text-color: rgb(254 178 178);
-  }
-}
-
-:host-context([data-theme="dark"]) :is([variant="info"]),
-:host-context([data-theme="dark"]):not([variant]) {
-  --strip-bg: rgb(23 37 63);
-  --strip-border-color: rgb(44 72 117);
-  --strip-text-color: rgb(173 210 255);
-}
-
-:host-context([data-theme="dark"])[variant="success"] {
-  --strip-bg: rgb(12 45 28);
-  --strip-border-color: rgb(28 82 52);
-  --strip-text-color: rgb(167 243 198);
-}
-
-:host-context([data-theme="dark"])[variant="warning"] {
-  --strip-bg: rgb(50 36 11);
-  --strip-border-color: rgb(101 73 17);
-  --strip-text-color: rgb(253 224 137);
-}
-
-:host-context([data-theme="dark"])[variant="danger"] {
-  --strip-bg: rgb(55 17 17);
-  --strip-border-color: rgb(109 40 40);
-  --strip-text-color: rgb(254 178 178);
+  --strip-bg: var(--snice-color-danger-subtle, hsl(0 86% 97%));
+  --strip-border-color: var(--snice-color-danger, hsl(0 72% 51%));
+  --strip-text-color: var(--snice-color-danger-hover, hsl(0 74% 42%));
 }
 
 /* Icon */
