@@ -8,6 +8,8 @@ export interface SniceBinpackElement extends HTMLElement {
   transitionDuration: string;
   stagger: number;
   resize: boolean;
+  draggable: boolean;
+  dragThrottle: number;
 
   layout(): void;
   fit(element: HTMLElement, x?: number, y?: number): void;
@@ -15,6 +17,8 @@ export interface SniceBinpackElement extends HTMLElement {
   stamp(elements: HTMLElement | HTMLElement[]): void;
   unstamp(elements: HTMLElement | HTMLElement[]): void;
   getItemElements(): HTMLElement[];
+  getLayout(): BinpackLayout;
+  setLayout(layout: BinpackLayout): void;
 }
 
 export interface BinpackLayoutCompleteDetail {
@@ -27,10 +31,26 @@ export interface BinpackFitCompleteDetail {
   y: number;
 }
 
+export interface BinpackDragItemPositionedDetail {
+  item: HTMLElement;
+  x: number;
+  y: number;
+}
+
 export interface BinpackEventMap {
   'binpack-layout-complete': CustomEvent<BinpackLayoutCompleteDetail>;
   'binpack-fit-complete': CustomEvent<BinpackFitCompleteDetail>;
+  'binpack-drag-item-positioned': CustomEvent<BinpackDragItemPositionedDetail>;
 }
+
+export interface BinpackLayoutEntry {
+  order: number;
+  hidden?: boolean;
+  col?: number;
+  row?: number;
+}
+
+export type BinpackLayout = Record<string, BinpackLayoutEntry>;
 
 export interface Rect {
   x: number;
