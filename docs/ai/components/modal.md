@@ -41,10 +41,6 @@ label: string = '';                  // Accessible label
 - `body` - Body content section
 - `footer` - Footer section
 
-## Keyboard
-
-Escape closes (unless no-escape-dismiss). Tab/Shift+Tab cycle focus within modal.
-
 ## Basic Usage
 
 ```typescript
@@ -67,3 +63,8 @@ modal.show();
 modal.close();
 modal.addEventListener('modal-close', () => console.log('Closed'));
 ```
+
+## Keyboard Navigation
+
+- Escape closes (unless `no-escape-dismiss`)
+- Tab/Shift+Tab cycle focus within modal

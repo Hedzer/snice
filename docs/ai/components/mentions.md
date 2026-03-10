@@ -48,10 +48,6 @@ interface Mention {
 - `textarea` - Text input
 - `dropdown` - Autocomplete dropdown
 
-## Keyboard
-
-Arrow Down/Up navigate dropdown, Enter/Tab select, Escape closes.
-
 ## Basic Usage
 
 ```typescript
@@ -71,3 +67,9 @@ editor.value = 'Hey @[Alice Johnson](u1), check this out!';
 editor.addEventListener('mention-add', e => console.log('Mentioned:', e.detail.user));
 editor.addEventListener('value-change', e => console.log('Mentions:', e.detail.mentions));
 ```
+
+## Keyboard Navigation
+
+- Arrow Down/Up navigate dropdown
+- Enter/Tab select
+- Escape closes
