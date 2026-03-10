@@ -102,9 +102,15 @@
   cursor: wait;
 }
 
+.input--loading ~ .calendar-toggle {
+  visibility: hidden;
+}
+
 .spinner {
   position: absolute;
-  right: 3rem;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
   width: 1em;
   height: 1em;
   pointer-events: none;
