@@ -163,6 +163,69 @@ class UserProfile extends HTMLElement {
 // Wiring: <user-profile controller="api"></user-profile>
 ```
 
+### Vanilla JS: createRequestHandler
+
+Handle `@request` channels without decorators. Useful for non-Snice code,
+third-party integrations, or vanilla JS apps.
+
+```typescript
+import { createRequestHandler } from 'snice';
+
+// Scoped to an ancestor element (catches bubbling requests)
+const cleanup = createRequestHandler(containerEl, {
+  'fetch-user': async (payload) => {
+    const res = await fetch(`/api/users/${payload.id}`);
+    return res.json();
+  },
+  'save-settings': async (payload) => {
+    await fetch('/api/settings', { method: 'POST', body: JSON.stringify(payload) });
+    return { ok: true };
+  }
+});
+
+// Global handler (listens on document)
+const cleanup2 = createRequestHandler(document, {
+  'fetch-user': async (payload) => ({ name: 'Jane', id: payload.id }),
+});
+
+// Remove all listeners
+cleanup();
+```
+
+### React: useRequestHandler
+
+React hook equivalent. Lives in `src/react/`, built to `adapters/react/`.
+
+```tsx
+import { useRequestHandler } from 'snice/react/useRequestHandler';
+
+function App() {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useRequestHandler(containerRef, {
+    'fetch-user': async (payload) => {
+      const res = await fetch(`/api/users/${payload.id}`);
+      return res.json();
+    },
+  });
+
+  return (
+    <div ref={containerRef}>
+      <snice-user-card />
+    </div>
+  );
+}
+
+// Global handler (null ref = document)
+useRequestHandler(null, {
+  'fetch-user': async (payload) => ({ name: 'Jane' }),
+});
+```
+
+Route map callbacks always use the latest version (ref-stable) — no need
+for `useCallback` or stable references. Re-subscribes only when channel
+names change.
+
 ## Fetch with Middleware
 
 ```typescript
