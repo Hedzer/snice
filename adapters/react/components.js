@@ -16,6 +16,7 @@ export { Avatar } from './avatar';
 export { AvatarGroup } from './avatar-group';
 export { Badge } from './badge';
 export { Banner } from './banner';
+export { Binpack } from './binpack';
 export { Book } from './book';
 export { Booking } from './booking';
 export { Breadcrumbs } from './breadcrumbs';
