@@ -193,15 +193,22 @@ export default [
     ]
   },
 
-  // React hooks (source in src/react/, built to dist/react/, copied to adapters/react/)
+  // React integration (source in src/react/, built to dist/react/, copied to adapters/react/)
   {
-    input: 'src/react/useRequestHandler.ts',
-    external: ['react'],
+    input: {
+      'index': 'src/react/index.ts',
+      'SniceProvider': 'src/react/SniceProvider.tsx',
+      'SniceRouter': 'src/react/SniceRouter.tsx',
+      'matchRoute': 'src/react/matchRoute.ts',
+      'useRequestHandler': 'src/react/useRequestHandler.ts',
+    },
+    external: ['react', 'react/jsx-runtime', 'pica-route'],
     output: {
-      file: 'dist/react/useRequestHandler.js',
+      dir: 'dist/react',
       format: 'es',
       banner,
-      sourcemap: true
+      sourcemap: true,
+      entryFileNames: '[name].js',
     },
     plugins: [
       resolve(),
@@ -209,7 +216,9 @@ export default [
         tsconfig: './tsconfig.src.json',
         declaration: true,
         declarationDir: './dist/react',
-        rootDir: './src/react'
+        outDir: './dist/react',
+        rootDir: './src/react',
+        jsx: 'react-jsx',
       }),
       {
         name: 'copy-react-hooks',
@@ -218,7 +227,9 @@ export default [
           const dest = 'adapters/react';
           if (fs.existsSync(src)) {
             for (const file of fs.readdirSync(src)) {
-              fs.copyFileSync(path.join(src, file), path.join(dest, file));
+              if (file.endsWith('.js') || file.endsWith('.d.ts') || file.endsWith('.js.map') || file.endsWith('.d.ts.map')) {
+                fs.copyFileSync(path.join(src, file), path.join(dest, file));
+              }
             }
           }
         }
