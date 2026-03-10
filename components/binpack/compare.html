@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Binpack vs Packery Comparison</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: #1a1a2e; color: #eee; padding: 1.5rem; }
+    h1 { font-size: 1rem; margin-bottom: 1rem; color: #888; text-transform: uppercase; letter-spacing: 0.05em; }
+    .compare { display: flex; gap: 2rem; margin-bottom: 2rem; }
+    .panel { flex: 1; }
+    .panel h2 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #888; margin-bottom: 0.5rem; }
+    .container { width: 480px; border: 1px solid rgba(128,128,128,0.3); border-radius: 4px; position: relative; }
+    .item { display: flex; align-items: center; justify-content: center; border-radius: 6px; font-size: 0.75rem; font-weight: 600; color: white; }
+    /* Packery items need position absolute */
+    .packery-container .item { position: absolute; }
+  </style>
+</head>
+<body>
+
+<h1>Binpack vs Packery — Same Container (480px), Same Items</h1>
+
+<!-- Test 1: Items as multiples of 80px base -->
+<div class="compare">
+  <div class="panel">
+    <h2>Snice Binpack (gap: 8px)</h2>
+    <snice-binpack class="container" gap="8px" id="snice1">
+      <div class="item" style="width:160px;height:160px;background:#2563eb">1</div>
+      <div class="item" style="width:240px;height:80px;background:#16a34a">2</div>
+      <div class="item" style="width:80px;height:240px;background:#dc2626">3</div>
+      <div class="item" style="width:160px;height:80px;background:#8b5cf6">4</div>
+      <div class="item" style="width:80px;height:80px;background:#eab308">5</div>
+      <div class="item" style="width:240px;height:160px;background:#14b8a6">6</div>
+      <div class="item" style="width:80px;height:160px;background:#f97316">7</div>
+      <div class="item" style="width:160px;height:80px;background:#ec4899">8</div>
+      <div class="item" style="width:80px;height:80px;background:#a855f7">9</div>
+      <div class="item" style="width:160px;height:160px;background:#0ea5e9">10</div>
+      <div class="item" style="width:240px;height:80px;background:#f43f5e">11</div>
+      <div class="item" style="width:80px;height:160px;background:#22c55e">12</div>
+    </snice-binpack>
+  </div>
+  <div class="panel">
+    <h2>Packery (gutter: 8)</h2>
+    <div class="container packery-container" id="packery1">
+      <div class="item" style="width:160px;height:160px;background:#2563eb">1</div>
+      <div class="item" style="width:240px;height:80px;background:#16a34a">2</div>
+      <div class="item" style="width:80px;height:240px;background:#dc2626">3</div>
+      <div class="item" style="width:160px;height:80px;background:#8b5cf6">4</div>
+      <div class="item" style="width:80px;height:80px;background:#eab308">5</div>
+      <div class="item" style="width:240px;height:160px;background:#14b8a6">6</div>
+      <div class="item" style="width:80px;height:160px;background:#f97316">7</div>
+      <div class="item" style="width:160px;height:80px;background:#ec4899">8</div>
+      <div class="item" style="width:80px;height:80px;background:#a855f7">9</div>
+      <div class="item" style="width:160px;height:160px;background:#0ea5e9">10</div>
+      <div class="item" style="width:240px;height:80px;background:#f43f5e">11</div>
+      <div class="item" style="width:80px;height:160px;background:#22c55e">12</div>
+    </div>
+  </div>
+</div>
+
+<!-- Test 2: Items as multiples of 60px base -->
+<h1>Test 2 — 60px base multiples</h1>
+<div class="compare">
+  <div class="panel">
+    <h2>Snice Binpack (gap: 6px)</h2>
+    <snice-binpack class="container" gap="6px" id="snice2">
+      <div class="item" style="width:180px;height:120px;background:#2563eb">1</div>
+      <div class="item" style="width:120px;height:180px;background:#16a34a">2</div>
+      <div class="item" style="width:240px;height:60px;background:#dc2626">3</div>
+      <div class="item" style="width:60px;height:120px;background:#8b5cf6">4</div>
+      <div class="item" style="width:120px;height:120px;background:#eab308">5</div>
+      <div class="item" style="width:180px;height:60px;background:#14b8a6">6</div>
+      <div class="item" style="width:60px;height:60px;background:#f97316">7</div>
+      <div class="item" style="width:120px;height:60px;background:#ec4899">8</div>
+      <div class="item" style="width:180px;height:120px;background:#a855f7">9</div>
+      <div class="item" style="width:60px;height:180px;background:#0ea5e9">10</div>
+      <div class="item" style="width:120px;height:60px;background:#f43f5e">11</div>
+      <div class="item" style="width:240px;height:120px;background:#22c55e">12</div>
+    </snice-binpack>
+  </div>
+  <div class="panel">
+    <h2>Packery (gutter: 6)</h2>
+    <div class="container packery-container" id="packery2">
+      <div class="item" style="width:180px;height:120px;background:#2563eb">1</div>
+      <div class="item" style="width:120px;height:180px;background:#16a34a">2</div>
+      <div class="item" style="width:240px;height:60px;background:#dc2626">3</div>
+      <div class="item" style="width:60px;height:120px;background:#8b5cf6">4</div>
+      <div class="item" style="width:120px;height:120px;background:#eab308">5</div>
+      <div class="item" style="width:180px;height:60px;background:#14b8a6">6</div>
+      <div class="item" style="width:60px;height:60px;background:#f97316">7</div>
+      <div class="item" style="width:120px;height:60px;background:#ec4899">8</div>
+      <div class="item" style="width:180px;height:120px;background:#a855f7">9</div>
+      <div class="item" style="width:60px;height:180px;background:#0ea5e9">10</div>
+      <div class="item" style="width:120px;height:60px;background:#f43f5e">11</div>
+      <div class="item" style="width:240px;height:120px;background:#22c55e">12</div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import './snice-binpack.ts';
+</script>
+<script src="https://unpkg.com/packery@3/dist/packery.pkgd.min.js"></script>
+<script>
+  // Wait for Packery script to load, then init
+  window.addEventListener('load', () => {
+    new Packery('#packery1', { itemSelector: '.item', gutter: 8 });
+    new Packery('#packery2', { itemSelector: '.item', gutter: 6 });
+  });
+</script>
+</body>
+</html>
