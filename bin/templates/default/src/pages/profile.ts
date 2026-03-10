@@ -35,10 +35,8 @@ export class ProfilePage extends HTMLElement {
   async handleLogout() {
     await logout();
 
-    if (this.ctx && this.ctx.application.principal) {
-      const principal = this.ctx.application.principal as Principal;
-      principal.user = null;
-      principal.isAuthenticated = false;
+    if (this.ctx) {
+      this.ctx.update();
     }
 
     window.location.hash = '#/login';
@@ -141,12 +139,12 @@ export class ProfilePage extends HTMLElement {
 
       h1 {
         margin: 0 0 0.5rem 0;
-        color: var(--primary-color);
+        color: var(--snice-color-primary);
       }
 
       .email {
         margin: 0 0 1rem 0;
-        color: var(--text-light);
+        color: var(--snice-color-text-secondary);
       }
 
       .header-actions a {
@@ -163,7 +161,7 @@ export class ProfilePage extends HTMLElement {
 
       h3 {
         margin: 0 0 1rem 0;
-        color: var(--primary-color);
+        color: var(--snice-color-primary);
       }
 
       .info-grid {
@@ -176,22 +174,22 @@ export class ProfilePage extends HTMLElement {
         display: flex;
         justify-content: space-between;
         padding: 0.75rem;
-        background: var(--bg-secondary);
-        border-radius: var(--radius-sm);
+        background: var(--snice-color-background-secondary);
+        border-radius: var(--snice-border-radius-md);
       }
 
       .label {
         font-weight: 600;
-        color: var(--text-color);
+        color: var(--snice-color-text);
       }
 
       .value {
-        color: var(--text-light);
+        color: var(--snice-color-text-secondary);
       }
 
       .section p {
         margin: 0 0 1rem 0;
-        color: var(--text-light);
+        color: var(--snice-color-text-secondary);
       }
     `;
   }

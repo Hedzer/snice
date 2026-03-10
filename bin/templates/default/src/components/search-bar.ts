@@ -58,12 +58,12 @@ export class SearchBar extends HTMLElement {
       }
 
       .search-container:focus-within {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 15%, transparent);
+        border-color: var(--snice-color-primary);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--snice-color-primary) 15%, transparent);
       }
 
       .icon {
-        color: var(--text-light);
+        color: var(--snice-color-text-secondary);
         font-size: 0.875rem;
       }
 
@@ -73,26 +73,26 @@ export class SearchBar extends HTMLElement {
         outline: none;
         background: transparent;
         font-size: 0.875rem;
-        color: var(--text-color);
+        color: var(--snice-color-text);
       }
 
       input::placeholder {
-        color: var(--text-light);
+        color: var(--snice-color-text-secondary);
       }
 
       .clear {
         background: none;
         border: none;
         cursor: pointer;
-        color: var(--text-light);
+        color: var(--snice-color-text-secondary);
         font-size: 0.75rem;
         padding: 0.125rem 0.25rem;
-        border-radius: var(--radius-sm);
+        border-radius: var(--snice-border-radius-md);
       }
 
       .clear:hover {
-        background: var(--bg-secondary);
-        color: var(--text-color);
+        background: var(--snice-color-background-secondary);
+        color: var(--snice-color-text);
       }
     `;
   }

@@ -1,5 +1,4 @@
 import type { Context } from 'snice';
-import type { Principal } from '../types/auth';
 import { clearToken } from '../services/storage';
 
 export async function errorMiddleware(
@@ -11,13 +10,7 @@ export async function errorMiddleware(
   if (response.status === 401) {
     clearToken();
 
-    // Update context to reflect logged out state
-    if (this.application.principal) {
-      const principal = this.application.principal as Principal;
-      principal.user = null;
-      principal.isAuthenticated = false;
-    }
-
+    // Getters in context will reflect logged-out state since token is cleared
     window.location.href = '#/login';
     throw new Error('Unauthorized - redirecting to login');
   }

@@ -166,12 +166,12 @@ export class NotificationsPage extends HTMLElement {
 
       h1 {
         margin: 0;
-        color: var(--primary-color);
+        color: var(--snice-color-primary);
       }
 
       .count {
         font-size: 0.8125rem;
-        color: var(--text-light);
+        color: var(--snice-color-text-secondary);
       }
 
       .filters {
@@ -182,23 +182,23 @@ export class NotificationsPage extends HTMLElement {
 
       .filter-btn {
         padding: 0.375rem 0.75rem;
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-sm);
-        background: var(--bg-primary);
-        color: var(--text-light);
+        border: 1px solid var(--snice-color-border);
+        border-radius: var(--snice-border-radius-md);
+        background: var(--snice-color-background);
+        color: var(--snice-color-text-secondary);
         font-size: 0.8125rem;
         cursor: pointer;
         transition: all 0.15s;
       }
 
       .filter-btn:hover {
-        border-color: var(--primary-color);
-        color: var(--primary-color);
+        border-color: var(--snice-color-primary);
+        color: var(--snice-color-primary);
       }
 
       .filter-btn.active {
-        background: var(--primary-color);
-        border-color: var(--primary-color);
+        background: var(--snice-color-primary);
+        border-color: var(--snice-color-primary);
         color: white;
       }
 
