@@ -256,8 +256,9 @@ export function SniceRouter({
   }
 
   // Apply layout
-  const layoutToUse = matchedRoute?.layout !== undefined ? matchedRoute.layout : defaultLayout;
-  if (layoutToUse && layoutToUse !== false && content !== null) {
+  const layoutCandidate = matchedRoute?.layout !== undefined ? matchedRoute.layout : defaultLayout;
+  const layoutToUse = layoutCandidate === false ? undefined : layoutCandidate;
+  if (layoutToUse && content !== null) {
     content = renderFlexible(
       layoutToUse as ComponentType<{ children: ReactNode }> | string,
       { children: content },
