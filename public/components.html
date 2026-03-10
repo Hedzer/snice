@@ -1019,28 +1019,34 @@ tiles.addEventListener('tile-click',
       <h3>Binpack</h3>
       <p class="comp-desc">JS-driven bin-packing layout — items fill gaps like Tetris</p>
       <style>
-        .bp-item { display: flex; align-items: center; justify-content: center; border-radius: 4px; font-size: 0.75rem; font-weight: 600; color: white; }
+        .bp-item { display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 0.8rem; font-weight: 600; color: white; opacity: 0.92; }
       </style>
       <div class="comp-split">
         <div class="comp-split-demo" style="width:100%">
-          <snice-binpack gap="8px" style="max-width:30rem">
-            <div class="bp-item" style="width:120px;height:120px;background:var(--snice-color-primary,rgb(37 99 235))">1</div>
-            <div class="bp-item" style="width:180px;height:80px;background:rgb(22 163 74)">2</div>
-            <div class="bp-item" style="width:100px;height:160px;background:rgb(220 38 38)">3</div>
-            <div class="bp-item" style="width:160px;height:100px;background:rgb(139 92 246)">4</div>
-            <div class="bp-item" style="width:80px;height:80px;background:rgb(234 179 8)">5</div>
-            <div class="bp-item" style="width:120px;height:60px;background:rgb(236 72 153)">6</div>
-            <div class="bp-item" style="width:140px;height:140px;background:rgb(20 184 166)">7</div>
-            <div class="bp-item" style="width:100px;height:80px;background:rgb(249 115 22)">8</div>
-            <div class="bp-item" style="width:60px;height:60px;background:rgb(168 85 247)">9</div>
+          <snice-binpack gap="6px">
+            <div class="bp-item" style="width:180px;height:130px;background:var(--snice-color-primary,rgb(37 99 235))">1</div>
+            <div class="bp-item" style="width:220px;height:90px;background:rgb(22 163 74)">2</div>
+            <div class="bp-item" style="width:130px;height:190px;background:rgb(220 38 38)">3</div>
+            <div class="bp-item" style="width:170px;height:110px;background:rgb(139 92 246)">4</div>
+            <div class="bp-item" style="width:100px;height:100px;background:rgb(234 179 8)">5</div>
+            <div class="bp-item" style="width:160px;height:70px;background:rgb(236 72 153)">6</div>
+            <div class="bp-item" style="width:200px;height:150px;background:rgb(20 184 166)">7</div>
+            <div class="bp-item" style="width:120px;height:90px;background:rgb(249 115 22)">8</div>
+            <div class="bp-item" style="width:90px;height:70px;background:rgb(168 85 247)">9</div>
+            <div class="bp-item" style="width:110px;height:140px;background:rgb(14 165 233)">10</div>
+            <div class="bp-item" style="width:150px;height:80px;background:rgb(244 63 94)">11</div>
+            <div class="bp-item" style="width:80px;height:110px;background:rgb(34 197 94)">12</div>
+            <div class="bp-item" style="width:140px;height:60px;background:rgb(217 70 239)">13</div>
+            <div class="bp-item" style="width:70px;height:90px;background:rgb(251 146 60)">14</div>
           </snice-binpack>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;snice-binpack gap="8px"&gt;
-  &lt;div style="width:120px;height:120px"&gt;1&lt;/div&gt;
-  &lt;div style="width:180px;height:80px"&gt;2&lt;/div&gt;
-  &lt;div style="width:100px;height:160px"&gt;3&lt;/div&gt;
+          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;snice-binpack gap="6px"&gt;
+  &lt;div style="width:180px;height:130px"&gt;1&lt;/div&gt;
+  &lt;div style="width:220px;height:90px"&gt;2&lt;/div&gt;
+  &lt;div style="width:130px;height:190px"&gt;3&lt;/div&gt;
+  &lt;div style="width:170px;height:110px"&gt;4&lt;/div&gt;
   &lt;!-- Items fill gaps automatically --&gt;
 &lt;/snice-binpack&gt;
 
