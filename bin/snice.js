@@ -14,7 +14,7 @@ const __dirname = dirname(__filename);
 const args = process.argv.slice(2);
 const command = args[0];
 
-if (command === 'create-app') {
+if (command === 'create-app' || command === 'create-react-app') {
   // Parse arguments - separate flags from positional arguments
   const flags = {};
   const positional = [];
@@ -34,7 +34,7 @@ if (command === 'create-app') {
   }
 
   const projectPath = positional[0] || '.';
-  const template = flags.template || 'base';
+  const template = command === 'create-react-app' ? 'react' : (flags.template || 'base');
 
   createApp(projectPath, template);
 } else if (command === 'mcp') {
@@ -81,6 +81,7 @@ Snice CLI
 Usage:
   snice create-app [options] <project-name>
   snice create-app [options] .                          Initialize in current directory
+  snice create-react-app <project-name>                 Shortcut for --template=react
   snice build-component <component-name> [options]      Build CDN component
   snice validate                                        Check project for common issues
   snice mcp                                             Start MCP server for AI assistants
@@ -97,6 +98,7 @@ Build Component Options:
 Templates:
   base    - Minimal starter with counter example (default)
   pwa     - Progressive Web App with auth, middleware, and live notifications
+  react   - React + Snice with routing, guards, layouts, and context
 
 MCP Server:
   Start a Model Context Protocol server for AI-assisted development.
@@ -105,6 +107,7 @@ MCP Server:
 Examples:
   snice create-app my-app
   snice create-app my-app --template=pwa
+  snice create-app my-app --template=react
   snice build-component button
   snice build-component button --output=./cdn --format=iife
   snice mcp
@@ -145,7 +148,7 @@ function createApp(projectPath, template = 'base') {
   // Check if template exists
   if (!existsSync(templateDir)) {
     console.error(`❌ Template "${template}" not found!`);
-    console.error(`Available templates: base, pwa`);
+    console.error(`Available templates: base, pwa, react`);
     process.exit(1);
   }
 
