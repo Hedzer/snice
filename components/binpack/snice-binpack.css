@@ -25,3 +25,37 @@
 :host([ready]) ::slotted(*) {
   transition: transform var(--binpack-transition-duration) ease;
 }
+
+/* Dragging states */
+::slotted(.binpack-dragging) {
+  z-index: 100;
+  opacity: 0.9;
+  transition: none !important;
+  cursor: grabbing !important;
+  user-select: none;
+}
+
+::slotted(.binpack-positioning) {
+  z-index: 99;
+}
+
+:host([draggable]) ::slotted(*) {
+  cursor: grab;
+}
+
+/* Drop placeholder */
+.binpack-drop-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  outline: 3px dashed rgba(128, 128, 128, 0.5);
+  outline-offset: -6px;
+  border-radius: 4px;
+  transition: transform 0.2s ease;
+  pointer-events: none;
+  display: none;
+}
+
+.binpack-drop-placeholder.visible {
+  display: block;
+}
