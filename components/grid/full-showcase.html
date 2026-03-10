@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grid - Full Showcase</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 1.5rem;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+    }
+    section { margin-bottom: 2.5rem; }
+    h2 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--snice-color-text-tertiary, rgb(136 136 136));
+      margin: 0 0 0.75rem;
+    }
+    .controls {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .controls button {
+      padding: 0.35rem 0.7rem;
+      border: 1px solid var(--snice-color-border, rgb(60 60 60));
+      border-radius: 6px;
+      background: var(--snice-color-background-element, rgb(30 30 30));
+      color: var(--snice-color-text);
+      cursor: pointer;
+      font-size: 0.75rem;
+      transition: all 0.15s;
+    }
+    .controls button:hover {
+      background: var(--snice-color-primary, rgb(37 99 235));
+      color: white;
+      border-color: transparent;
+    }
+    .controls button.active {
+      background: var(--snice-color-primary, rgb(37 99 235));
+      color: white;
+      border-color: transparent;
+    }
+    .controls .sep {
+      width: 1px;
+      height: 1.2rem;
+      background: var(--snice-color-border, rgb(60 60 60));
+    }
+    snice-grid {
+      border: 1px solid var(--snice-color-border, rgb(60 60 60));
+      border-radius: 6px;
+    }
+    .item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: white;
+      user-select: none;
+    }
+    .label {
+      text-align: center;
+      font-size: 0.6rem;
+      color: var(--snice-color-text-tertiary, rgb(136 136 136));
+      margin-top: 0.35rem;
+    }
+    .side-by-side {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .side-by-side > div { flex: 1; min-width: 280px; }
+    /* Layout output panel */
+    .layout-output {
+      background: var(--snice-color-background-element, rgb(20 20 20));
+      border: 1px solid var(--snice-color-border, rgb(60 60 60));
+      border-radius: 6px;
+      padding: 0.75rem;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.65rem;
+      line-height: 1.5;
+      color: var(--snice-color-text-secondary, rgb(180 180 180));
+      max-height: 10rem;
+      overflow-y: auto;
+      white-space: pre;
+      margin-top: 0.5rem;
+      transition: opacity 0.3s;
+    }
+    .layout-output.flash {
+      animation: flash-bg 0.4s ease;
+    }
+    @keyframes flash-bg {
+      0% { background: rgba(59, 130, 246, 0.15); }
+      100% { background: var(--snice-color-background-element, rgb(20 20 20)); }
+    }
+    /* Dashboard widgets */
+    .widget {
+      border-radius: 8px;
+      font-size: 0.7rem;
+      color: #e0e0e0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      user-select: none;
+    }
+    .widget-hdr {
+      padding: 0.4rem 0.6rem;
+      font-weight: 600;
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      opacity: 0.7;
+    }
+    .widget-body {
+      flex: 1;
+      padding: 0.2rem 0.6rem 0.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .big { font-size: 1.4rem; font-weight: 700; color: #fff; line-height: 1.1; }
+    .sub { font-size: 0.55rem; opacity: 0.6; margin-top: 0.1rem; }
+    .up { color: #4ade80; }
+    /* Colors */
+    .c1 { background: linear-gradient(135deg, #1e3a5f, #2563eb); }
+    .c2 { background: linear-gradient(135deg, #134e4a, #14b8a6); }
+    .c3 { background: linear-gradient(135deg, #3b1764, #8b5cf6); }
+    .c4 { background: linear-gradient(135deg, #4a1d2e, #e11d48); }
+    .c5 { background: linear-gradient(135deg, #1a3320, #16a34a); }
+    .c6 { background: linear-gradient(135deg, #431407, #ea580c); }
+    .c7 { background: linear-gradient(135deg, #1e293b, #334155); }
+    .c8 { background: linear-gradient(135deg, #1a2e05, #65a30d); }
+    .c9 { background: linear-gradient(135deg, #1e1b4b, #4f46e5); }
+    .c10 { background: linear-gradient(135deg, #0c4a6e, #0284c7); }
+    .flat1 { background: var(--snice-color-primary, rgb(37 99 235)); }
+    .flat2 { background: var(--snice-color-success, rgb(22 163 74)); }
+    .flat3 { background: var(--snice-color-danger, rgb(220 38 38)); }
+    .flat4 { background: rgb(139 92 246); }
+    .flat5 { background: rgb(234 179 8); }
+    .flat6 { background: rgb(236 72 153); }
+    .flat7 { background: rgb(20 184 166); }
+    .flat8 { background: rgb(249 115 22); }
+  </style>
+</head>
+<body>
+
+  <!-- 1. Basic Grid — items at various positions, no spanning -->
+  <section>
+    <h2>Basic grid — items at explicit positions</h2>
+    <snice-grid gap="8px" column-width="80" row-height="80">
+      <div class="item flat1" grid-col="0" grid-row="0">A</div>
+      <div class="item flat2" grid-col="1" grid-row="0">B</div>
+      <div class="item flat3" grid-col="2" grid-row="0">C</div>
+      <div class="item flat4" grid-col="0" grid-row="1">D</div>
+      <div class="item flat5" grid-col="2" grid-row="1">E</div>
+      <div class="item flat6" grid-col="1" grid-row="2">F</div>
+      <div class="item flat7" grid-col="3" grid-row="0">G</div>
+      <div class="item flat8" grid-col="3" grid-row="2">H</div>
+    </snice-grid>
+    <div class="label">grid-col / grid-row — each item placed at a specific cell</div>
+  </section>
+
+  <!-- 2. Spanning — items spanning multiple columns and rows -->
+  <section>
+    <h2>Spanning — items across multiple cells</h2>
+    <snice-grid gap="8px" column-width="80" row-height="80">
+      <div class="item c1" grid-col="0" grid-row="0" grid-colspan="2" grid-rowspan="2">2x2</div>
+      <div class="item c2" grid-col="2" grid-row="0" grid-colspan="3">3x1</div>
+      <div class="item c3" grid-col="2" grid-row="1" grid-rowspan="2">1x2</div>
+      <div class="item c4" grid-col="3" grid-row="1">1x1</div>
+      <div class="item c5" grid-col="4" grid-row="1">1x1</div>
+      <div class="item c6" grid-col="0" grid-row="2" grid-colspan="2">2x1</div>
+      <div class="item c7" grid-col="3" grid-row="2" grid-colspan="2">2x1</div>
+    </snice-grid>
+    <div class="label">grid-colspan / grid-rowspan — items span multiple columns or rows</div>
+  </section>
+
+  <!-- 3. Collision Resolution — overlapping positions push right-then-down -->
+  <section>
+    <h2>Collision resolution — overlapping items push right then down</h2>
+    <div class="side-by-side">
+      <div>
+        <h2>All items at (0,0)</h2>
+        <snice-grid gap="8px" column-width="80" row-height="80" columns="4">
+          <div class="item flat1" grid-col="0" grid-row="0">1</div>
+          <div class="item flat2" grid-col="0" grid-row="0">2</div>
+          <div class="item flat3" grid-col="0" grid-row="0">3</div>
+          <div class="item flat4" grid-col="0" grid-row="0">4</div>
+          <div class="item flat5" grid-col="0" grid-row="0">5</div>
+          <div class="item flat6" grid-col="0" grid-row="0">6</div>
+          <div class="item flat7" grid-col="0" grid-row="0">7</div>
+          <div class="item flat8" grid-col="0" grid-row="0">8</div>
+        </snice-grid>
+        <div class="label">columns="4" — items wrap to next row when row is full</div>
+      </div>
+      <div>
+        <h2>Mixed collisions with spans</h2>
+        <snice-grid gap="8px" column-width="80" row-height="80" columns="4">
+          <div class="item c1" grid-col="0" grid-row="0" grid-colspan="2" grid-rowspan="2">2x2</div>
+          <div class="item c4" grid-col="0" grid-row="0">pushed</div>
+          <div class="item c5" grid-col="1" grid-row="0">pushed</div>
+          <div class="item c6" grid-col="0" grid-row="0" grid-colspan="2">pushed</div>
+        </snice-grid>
+        <div class="label">Items requesting occupied cells are relocated automatically</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Fixed Grid Size — bounded grid with columns and rows -->
+  <section>
+    <h2>Fixed grid size — columns and rows attributes</h2>
+    <snice-grid gap="8px" column-width="80" row-height="80" columns="5" rows="3">
+      <div class="item flat1" grid-col="0" grid-row="0">1</div>
+      <div class="item flat2" grid-col="1" grid-row="0" grid-colspan="2">2</div>
+      <div class="item flat3" grid-col="3" grid-row="0" grid-rowspan="2">3</div>
+      <div class="item flat4" grid-col="4" grid-row="0">4</div>
+      <div class="item flat5" grid-col="0" grid-row="1" grid-colspan="3">5</div>
+      <div class="item flat6" grid-col="4" grid-row="1">6</div>
+      <div class="item flat7" grid-col="0" grid-row="2" grid-colspan="2">7</div>
+      <div class="item flat8" grid-col="2" grid-row="2" grid-colspan="3">8</div>
+    </snice-grid>
+    <div class="label">columns="5" rows="3" — container is exactly 5 columns by 3 rows</div>
+  </section>
+
+  <!-- 5. Draggable — interactive drag-and-drop with snap -->
+  <section>
+    <h2>Draggable — drag items to rearrange with snap-to-grid</h2>
+    <snice-grid id="drag-grid" draggable gap="8px" column-width="100" row-height="100">
+      <div class="item c1" name="alpha" grid-col="0" grid-row="0" grid-colspan="2">alpha</div>
+      <div class="item c2" name="beta" grid-col="2" grid-row="0">beta</div>
+      <div class="item c3" name="gamma" grid-col="0" grid-row="1">gamma</div>
+      <div class="item c4" name="delta" grid-col="1" grid-row="1" grid-colspan="2">delta</div>
+      <div class="item c5" name="epsilon" grid-col="0" grid-row="2" grid-colspan="3">epsilon</div>
+    </snice-grid>
+    <div class="label">draggable — items snap to nearest grid cell on drop</div>
+  </section>
+
+  <!-- 6. Stagger Animation -->
+  <section>
+    <h2>Stagger animation — cascade delay</h2>
+    <div class="controls">
+      <button onclick="replayStagger()">Replay animation</button>
+    </div>
+    <snice-grid id="stagger-grid" gap="8px" column-width="80" row-height="80" transition-duration="0.6s" stagger="50">
+      <div class="item flat1" grid-col="0" grid-row="0">1</div>
+      <div class="item flat2" grid-col="1" grid-row="0">2</div>
+      <div class="item flat3" grid-col="2" grid-row="0">3</div>
+      <div class="item flat4" grid-col="3" grid-row="0">4</div>
+      <div class="item flat5" grid-col="0" grid-row="1">5</div>
+      <div class="item flat6" grid-col="1" grid-row="1">6</div>
+      <div class="item flat7" grid-col="2" grid-row="1">7</div>
+      <div class="item flat8" grid-col="3" grid-row="1">8</div>
+      <div class="item c1" grid-col="0" grid-row="2" grid-colspan="2">9</div>
+      <div class="item c4" grid-col="2" grid-row="2" grid-colspan="2">10</div>
+    </snice-grid>
+    <div class="label">transition-duration="0.6s" stagger="50"</div>
+  </section>
+
+  <!-- 7. Layout Persistence — getLayout / setLayout -->
+  <section>
+    <h2>getLayout() / setLayout() — persist and restore</h2>
+    <div class="controls">
+      <button onclick="captureLayout()">getLayout()</button>
+      <button onclick="restoreLayout()">setLayout()</button>
+      <div class="sep"></div>
+      <button onclick="scrambleGrid()">Scramble positions</button>
+      <button onclick="toggleHidden()">Toggle "gamma" hidden</button>
+    </div>
+    <snice-grid id="persist-grid" draggable gap="8px" column-width="80" row-height="80">
+      <div class="item c1" name="alpha" grid-col="0" grid-row="0" grid-colspan="2">alpha</div>
+      <div class="item c2" name="beta" grid-col="2" grid-row="0">beta</div>
+      <div class="item c3" name="gamma" grid-col="3" grid-row="0" grid-rowspan="2">gamma</div>
+      <div class="item c4" name="delta" grid-col="0" grid-row="1" grid-colspan="2" grid-rowspan="2">delta</div>
+      <div class="item c5" name="epsilon" grid-col="2" grid-row="1">epsilon</div>
+      <div class="item c6" name="zeta" grid-col="2" grid-row="2" grid-colspan="2">zeta</div>
+    </snice-grid>
+    <div class="layout-output" id="persist-output">// Click getLayout() to see the layout object</div>
+  </section>
+
+  <!-- 8. Dashboard Example — full dashboard with varied widget sizes -->
+  <section>
+    <h2>Dashboard example — drag widgets to rearrange</h2>
+    <div class="controls">
+      <button onclick="saveDash()">Save layout</button>
+      <button onclick="loadDash()">Load layout</button>
+      <div class="sep"></div>
+      <button onclick="toggleWidget('alerts')">Toggle alerts</button>
+      <button onclick="addWidget()">+ Add widget</button>
+    </div>
+    <snice-grid id="dashboard" draggable gap="8px" column-width="80" row-height="80">
+      <div class="widget c1" name="revenue" grid-col="0" grid-row="0" grid-colspan="2" grid-rowspan="2">
+        <div class="widget-hdr">Revenue</div>
+        <div class="widget-body">
+          <div class="big">$48.2k</div>
+          <div class="sub"><span class="up">&#9650; 12.5%</span> vs last month</div>
+        </div>
+      </div>
+      <div class="widget c2" name="users" grid-col="2" grid-row="0">
+        <div class="widget-hdr">Users</div>
+        <div class="widget-body"><div class="big" style="font-size:1.1rem">3,842</div></div>
+      </div>
+      <div class="widget c3" name="cpu" grid-col="3" grid-row="0">
+        <div class="widget-hdr">CPU</div>
+        <div class="widget-body" style="align-items:center">
+          <svg viewBox="0 0 56 56" width="48" height="48"><circle cx="28" cy="28" r="22" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="5"/><circle cx="28" cy="28" r="22" fill="none" stroke="#a78bfa" stroke-width="5" stroke-dasharray="103 138" stroke-dashoffset="-69" stroke-linecap="round"/><text x="28" y="32" text-anchor="middle" fill="white" font-size="12" font-weight="700">74%</text></svg>
+        </div>
+      </div>
+      <div class="widget c4" name="orders" grid-col="2" grid-row="1" grid-colspan="2">
+        <div class="widget-hdr">Orders</div>
+        <div class="widget-body" style="flex-direction:row;align-items:center;gap:0.8rem">
+          <div><div class="big" style="font-size:1.2rem">284</div><div class="sub">today</div></div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:3px">
+            <div style="height:4px;border-radius:2px;background:rgba(255,255,255,0.1)"><div style="width:82%;height:100%;border-radius:2px;background:#fb7185"></div></div>
+            <div style="height:4px;border-radius:2px;background:rgba(255,255,255,0.1)"><div style="width:12%;height:100%;border-radius:2px;background:#fbbf24"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="widget c7" name="traffic" grid-col="0" grid-row="2" grid-colspan="3">
+        <div class="widget-hdr">Traffic</div>
+        <div class="widget-body" style="font-size:0.6rem;gap:2px">
+          <div style="display:flex;justify-content:space-between"><span>Organic</span><span style="color:#fff">45%</span></div>
+          <div style="display:flex;justify-content:space-between"><span>Social</span><span style="color:#fff">28%</span></div>
+          <div style="display:flex;justify-content:space-between"><span>Direct</span><span style="color:#fff">18%</span></div>
+        </div>
+      </div>
+      <div class="widget c5" name="memory" grid-col="3" grid-row="2">
+        <div class="widget-hdr">Mem</div>
+        <div class="widget-body" style="align-items:center">
+          <svg viewBox="0 0 56 56" width="48" height="48"><circle cx="28" cy="28" r="22" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="5"/><circle cx="28" cy="28" r="22" fill="none" stroke="#4ade80" stroke-width="5" stroke-dasharray="83 138" stroke-dashoffset="-69" stroke-linecap="round"/><text x="28" y="32" text-anchor="middle" fill="white" font-size="12" font-weight="700">61%</text></svg>
+        </div>
+      </div>
+      <div class="widget c6" name="alerts" grid-col="0" grid-row="3" grid-colspan="2">
+        <div class="widget-hdr">Alerts</div>
+        <div class="widget-body" style="font-size:0.6rem;gap:2px">
+          <div style="display:flex;justify-content:space-between"><span style="color:#fbbf24">&#x26a0; DB spike</span><span style="opacity:0.4">2m</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:#4ade80">&#x2713; Deploy</span><span style="opacity:0.4">14m</span></div>
+        </div>
+      </div>
+      <div class="widget c8" name="uptime" grid-col="2" grid-row="3">
+        <div class="widget-hdr">Uptime</div>
+        <div class="widget-body" style="align-items:center"><div class="big" style="font-size:1rem">99.9%</div><div class="sub">30d</div></div>
+      </div>
+    </snice-grid>
+    <div class="layout-output" id="dash-output">// Drag a widget or click "Save layout" to see output</div>
+  </section>
+
+  <script type="module">
+    import './snice-grid.ts';
+
+    // ── Helpers ──
+    function showLayout(el, output) {
+      const layout = el.getLayout();
+      output.textContent = JSON.stringify(layout, null, 2);
+      output.classList.remove('flash');
+      void output.offsetWidth;
+      output.classList.add('flash');
+    }
+
+    // ── Stagger replay ──
+    window.replayStagger = () => {
+      const grid = document.getElementById('stagger-grid');
+      const items = grid.getItemElements();
+      items.forEach(el => { el.style.transform = 'translate(0px, 0px)'; });
+      requestAnimationFrame(() => grid.layout());
+    };
+
+    // ── Layout Persistence ──
+    let capturedLayout = null;
+    const persistOut = () => document.getElementById('persist-output');
+
+    window.captureLayout = () => {
+      const grid = document.getElementById('persist-grid');
+      capturedLayout = grid.getLayout();
+      showLayout(grid, persistOut());
+    };
+
+    window.restoreLayout = () => {
+      if (!capturedLayout) { persistOut().textContent = '// Capture a layout first'; return; }
+      const grid = document.getElementById('persist-grid');
+      grid.setLayout(capturedLayout);
+      persistOut().textContent = '// Layout restored!\n' + JSON.stringify(capturedLayout, null, 2);
+    };
+
+    window.scrambleGrid = () => {
+      const grid = document.getElementById('persist-grid');
+      const items = grid.getItemElements().filter(c => c.hasAttribute('name'));
+      const positions = [[0,0],[1,0],[2,0],[3,0],[0,1],[1,1],[2,1],[3,1]];
+      items.forEach((item, i) => {
+        const pos = positions[Math.floor(Math.random() * positions.length)];
+        item.setAttribute('grid-col', String(pos[0]));
+        item.setAttribute('grid-row', String(pos[1]));
+        item.removeAttribute('grid-colspan');
+        item.removeAttribute('grid-rowspan');
+      });
+      grid.layout();
+      showLayout(grid, persistOut());
+    };
+
+    window.toggleHidden = () => {
+      const grid = document.getElementById('persist-grid');
+      const gamma = grid.querySelector('[name="gamma"]');
+      if (gamma) {
+        gamma.toggleAttribute('hidden');
+        grid.layout();
+        showLayout(grid, persistOut());
+      }
+    };
+
+    // ── Dashboard controls ──
+    const dash = () => document.getElementById('dashboard');
+    const dashOut = () => document.getElementById('dash-output');
+    let savedLayout = null;
+
+    document.addEventListener('grid-drag-item-positioned', (e) => {
+      const grid = e.target.closest('snice-grid');
+      if (grid?.id === 'dashboard') showLayout(grid, dashOut());
+    });
+
+    window.saveDash = () => {
+      savedLayout = dash().getLayout();
+      showLayout(dash(), dashOut());
+      localStorage.setItem('grid-demo-layout', JSON.stringify(savedLayout));
+    };
+
+    window.loadDash = () => {
+      const stored = localStorage.getItem('grid-demo-layout');
+      if (stored) {
+        const layout = JSON.parse(stored);
+        dash().setLayout(layout);
+        showLayout(dash(), dashOut());
+      } else {
+        dashOut().textContent = '// No saved layout found';
+      }
+    };
+
+    window.toggleWidget = (name) => {
+      const el = dash().querySelector(`[name="${name}"]`);
+      if (!el) return;
+      el.toggleAttribute('hidden');
+      dash().layout();
+    };
+
+    let widgetCount = 0;
+    const extraNames = ['latency','errors','requests','cache','queue','threads'];
+    const extraColors = ['c1','c2','c3','c4','c5','c6','c7','c8'];
+    window.addWidget = () => {
+      const d = dash();
+      const div = document.createElement('div');
+      const n = extraNames[widgetCount % extraNames.length];
+      const c = extraColors[widgetCount % extraColors.length];
+      div.className = `widget ${c}`;
+      div.setAttribute('name', `${n}-${widgetCount}`);
+      div.setAttribute('grid-col', '0');
+      div.setAttribute('grid-row', '0');
+      div.innerHTML = `<div class="widget-hdr">${n}</div><div class="widget-body"><div class="big" style="font-size:1rem">${Math.floor(Math.random()*100)}%</div></div>`;
+      d.appendChild(div);
+      widgetCount++;
+    };
+  </script>
+</body>
+</html>
