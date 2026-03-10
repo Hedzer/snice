@@ -193,6 +193,39 @@ export default [
     ]
   },
 
+  // React hooks (source in src/react/, built to dist/react/, copied to adapters/react/)
+  {
+    input: 'src/react/useRequestHandler.ts',
+    external: ['react'],
+    output: {
+      file: 'dist/react/useRequestHandler.js',
+      format: 'es',
+      banner,
+      sourcemap: true
+    },
+    plugins: [
+      resolve(),
+      typescript({
+        tsconfig: './tsconfig.src.json',
+        declaration: true,
+        declarationDir: './dist/react',
+        rootDir: './src/react'
+      }),
+      {
+        name: 'copy-react-hooks',
+        writeBundle() {
+          const src = 'dist/react';
+          const dest = 'adapters/react';
+          if (fs.existsSync(src)) {
+            for (const file of fs.readdirSync(src)) {
+              fs.copyFileSync(path.join(src, file), path.join(dest, file));
+            }
+          }
+        }
+      }
+    ]
+  },
+
   // Component builds - single config with multiple inputs preserving folder structure
   {
     input: componentFiles.reduce((acc, file) => {
