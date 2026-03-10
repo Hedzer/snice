@@ -142,10 +142,11 @@ class MyCounter extends HTMLElement {
 - `@context()` receives Context on navigation
 
 **Guards:**
-- Signature: `(context: AppContext, params: RouteParams) => boolean`
+- Signature: `(context: AppContext, params: RouteParams) => boolean | Promise<boolean>`
 - TWO params: context (raw AppContext) and route params
 - Return `true` to allow, `false` renders 403 page
-- NO async guards, NO string redirects (boolean only)
+- Sync or async — async guards are awaited; React router shows `loading` component during async resolution
+- NO string redirects (boolean/Promise<boolean> only)
 - Multiple guards use AND logic, short-circuit on first false
 - Example: `(ctx, params) => ctx.user !== null`
 - Factory: `const hasRole = (role) => (ctx, params) => ctx.user?.role === role`

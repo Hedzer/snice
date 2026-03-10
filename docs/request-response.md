@@ -369,41 +369,27 @@ cleanup();
 
 ### React: useRequestHandler
 
+For full documentation, examples, options, and global handler patterns, see the **[React Integration guide](./react-integration.md#userequesthandler)**.
+
 ```tsx
-import { useRef } from 'react';
-import { useRequestHandler } from 'snice/react/useRequestHandler';
+import { useRequestHandler } from 'snice/react';
 
 function Dashboard() {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
 
-  // Routes are ref-stable — no useCallback needed
-  useRequestHandler(containerRef, {
+  useRequestHandler(ref, {
     'fetch-user': async (payload) => {
       const res = await fetch(`/api/users/${payload.id}`);
       return res.json();
     },
-    'save-settings': async (payload) => {
-      await fetch('/api/settings', { method: 'POST', body: JSON.stringify(payload) });
-      return { ok: true };
-    },
   });
 
   return (
-    <div ref={containerRef}>
+    <div ref={ref}>
       <snice-user-card />
-      <snice-settings-panel />
     </div>
   );
 }
-
-// Global handler (null ref = document)
-function GlobalProvider({ children }) {
-  useRequestHandler(null, {
-    'fetch-config': async () => ({ theme: 'dark', locale: 'en' }),
-  });
-
-  return <>{children}</>;
-}
 ```
 
-The hook automatically cleans up listeners on unmount and re-subscribes only when the set of channel names changes. Route callbacks always use the latest version without re-attaching listeners.
+Route callbacks are ref-stable — no `useCallback` needed. Listeners re-attach only when channel names change. Cleanup is automatic on unmount.

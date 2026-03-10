@@ -489,5 +489,5 @@ function AppShell({ children }) {
   return <div className="shell"><nav>...</nav><main>{children}</main></div>;
 }
 
-const authGuard = (ctx, params) => !!ctx.principal;
+const authGuard = (ctx, params) => !!ctx.user;
 ```
