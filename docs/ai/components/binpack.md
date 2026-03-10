@@ -14,6 +14,8 @@ originTop: boolean = true;                      // false = bottom-to-top — att
 transitionDuration: string = '0.4s';            // CSS transition duration — attr: transition-duration
 stagger: number = 0;                            // ms delay between each item transition
 resize: boolean = true;                         // auto re-layout on container resize
+draggable: boolean = false;                     // enable drag-to-reorder
+dragThrottle: number = 120;                     // ms throttle for drag layout updates — attr: drag-throttle
 ```
 
 ## Slots
@@ -24,6 +26,7 @@ resize: boolean = true;                         // auto re-layout on container r
 
 - `binpack-layout-complete` -> `{ items: HTMLElement[] }`
 - `binpack-fit-complete` -> `{ item: HTMLElement, x: number, y: number }`
+- `binpack-drag-item-positioned` -> `{ item: HTMLElement, x: number, y: number }`
 
 ## Methods
 
@@ -57,7 +60,19 @@ resize: boolean = true;                         // auto re-layout on container r
 <snice-binpack column-width="100" row-height="100">
   <div style="width:80px;height:80px">A</div>
 </snice-binpack>
+
+<!-- Draggable dashboard -->
+<snice-binpack draggable gap="8px" column-width="80" row-height="80">
+  <div style="width:160px;height:160px">Revenue</div>
+  <div style="width:80px;height:80px">CPU</div>
+  <div style="width:160px;height:80px">Orders</div>
+</snice-binpack>
 ```
+
+## Drag CSS Classes
+
+- `.binpack-dragging` — applied during drag (no transition, z-index: 100)
+- `.binpack-positioning` — applied while animating to final position after drop
 
 ## Notes
 
