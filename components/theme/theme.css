@@ -97,7 +97,12 @@
 
   --snice-color-primary-subtle: hsl(var(--snice-color-blue-50));
   --snice-color-primary-subtle-hover: hsl(var(--snice-color-blue-100));
+  --snice-color-success-subtle: hsl(var(--snice-color-green-50));
+  --snice-color-success-subtle-hover: hsl(var(--snice-color-green-100));
+  --snice-color-warning-subtle: hsl(var(--snice-color-yellow-50));
+  --snice-color-warning-subtle-hover: hsl(var(--snice-color-yellow-100));
   --snice-color-danger-subtle: hsl(var(--snice-color-red-50));
+  --snice-color-danger-subtle-hover: hsl(var(--snice-color-red-100));
 
   /* Spacing */
   --snice-spacing-3xs: 0.125rem;  /* 2px */
@@ -216,7 +221,12 @@
 
   --snice-color-primary-subtle: hsl(var(--snice-color-blue-950));
   --snice-color-primary-subtle-hover: hsl(var(--snice-color-blue-900));
+  --snice-color-success-subtle: hsl(var(--snice-color-green-950));
+  --snice-color-success-subtle-hover: hsl(var(--snice-color-green-900));
+  --snice-color-warning-subtle: hsl(var(--snice-color-yellow-950));
+  --snice-color-warning-subtle-hover: hsl(var(--snice-color-yellow-900));
   --snice-color-danger-subtle: hsl(var(--snice-color-red-950));
+  --snice-color-danger-subtle-hover: hsl(var(--snice-color-red-900));
 
   --snice-shadow-xs: 0 1px 3px 0 hsl(0 0% 0% / 0.2), 0 1px 2px 0 hsl(0 0% 0% / 0.3);
   --snice-shadow-sm: 0 2px 6px 0 hsl(0 0% 0% / 0.2), 0 2px 4px -1px hsl(0 0% 0% / 0.3);
@@ -274,7 +284,12 @@
 
     --snice-color-primary-subtle: hsl(var(--snice-color-blue-950));
     --snice-color-primary-subtle-hover: hsl(var(--snice-color-blue-900));
+    --snice-color-success-subtle: hsl(var(--snice-color-green-950));
+    --snice-color-success-subtle-hover: hsl(var(--snice-color-green-900));
+    --snice-color-warning-subtle: hsl(var(--snice-color-yellow-950));
+    --snice-color-warning-subtle-hover: hsl(var(--snice-color-yellow-900));
     --snice-color-danger-subtle: hsl(var(--snice-color-red-950));
+    --snice-color-danger-subtle-hover: hsl(var(--snice-color-red-900));
 
     --snice-shadow-xs: 0 1px 2px 0 hsl(0 0% 0% / 0.1);
     --snice-shadow-sm: 0 1px 3px 0 hsl(0 0% 0% / 0.15), 0 1px 2px -1px hsl(0 0% 0% / 0.15);
