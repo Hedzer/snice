@@ -179,8 +179,8 @@ const componentTestConfig = {
     sizes: ['small', 'medium']
   },
   'binpack': {
-    properties: ['gap', 'columnWidth', 'rowHeight', 'horizontal', 'originLeft', 'originTop', 'transitionDuration', 'stagger', 'resize'],
-    events: ['onBinpackLayoutComplete', 'onBinpackFitComplete']
+    properties: ['gap', 'columnWidth', 'rowHeight', 'horizontal', 'originLeft', 'originTop', 'transitionDuration', 'stagger', 'resize', 'draggable', 'dragThrottle'],
+    events: ['onBinpackLayoutComplete', 'onBinpackFitComplete', 'onBinpackDragItemPositioned']
   }
 };
 
