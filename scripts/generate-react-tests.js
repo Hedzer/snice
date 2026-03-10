@@ -181,6 +181,10 @@ const componentTestConfig = {
   'binpack': {
     properties: ['gap', 'columnWidth', 'rowHeight', 'horizontal', 'originLeft', 'originTop', 'transitionDuration', 'stagger', 'resize', 'draggable', 'dragThrottle'],
     events: ['onBinpackLayoutComplete', 'onBinpackFitComplete', 'onBinpackDragItemPositioned']
+  },
+  'grid': {
+    properties: ['gap', 'columnWidth', 'rowHeight', 'columns', 'rows', 'originLeft', 'originTop', 'transitionDuration', 'stagger', 'resize', 'draggable', 'dragThrottle'],
+    events: ['onGridLayoutComplete', 'onGridDragItemPositioned']
   }
 };
 
