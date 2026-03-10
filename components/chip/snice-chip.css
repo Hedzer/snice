@@ -66,121 +66,73 @@
 }
 
 :host([variant="primary"]) .chip {
-  background: var(--snice-color-primary-subtle, rgb(219 234 254));
-  color: var(--snice-color-primary, rgb(37 99 235));
+  background: var(--snice-color-primary-subtle, hsl(214 100% 97%));
+  color: var(--snice-color-primary-hover, hsl(217 77% 48%));
 }
 
 :host([variant="primary"]) .chip:hover:not([aria-disabled="true"]):not(.chip--selected) {
-  background: var(--snice-color-primary-subtle-hover, rgb(191 219 254));
+  background: var(--snice-color-primary-subtle-hover, hsl(214 95% 93%));
 }
 
 :host([variant="primary"]) .chip--selected {
-  background: var(--snice-color-primary, rgb(37 99 235));
+  background: var(--snice-color-primary, hsl(217 83% 53%));
   color: var(--snice-color-text-inverse, rgb(250 250 250));
 }
 
 :host([variant="success"]) .chip {
-  background: var(--_chip-success-bg, rgb(220 252 231));
-  color: var(--snice-color-success, rgb(22 163 74));
+  background: var(--snice-color-success-subtle, hsl(138 76% 97%));
+  color: var(--snice-color-success-hover, hsl(142 72% 29%));
 }
 
 :host([variant="success"]) .chip:hover:not([aria-disabled="true"]):not(.chip--selected) {
-  background: var(--_chip-success-hover-bg, rgb(187 247 208));
+  background: var(--snice-color-success-subtle-hover, hsl(141 84% 93%));
 }
 
 :host([variant="success"]) .chip--selected {
-  background: var(--snice-color-success, rgb(22 163 74));
+  background: var(--snice-color-success, hsl(142 76% 36%));
   color: var(--snice-color-text-inverse, rgb(250 250 250));
 }
 
 :host([variant="warning"]) .chip {
-  background: var(--_chip-warning-bg, rgb(254 243 199));
-  color: var(--snice-color-warning, rgb(161 98 7));
+  background: var(--snice-color-warning-subtle, hsl(55 92% 95%));
+  color: var(--snice-color-warning-hover, hsl(36 88% 33%));
 }
 
 :host([variant="warning"]) .chip:hover:not([aria-disabled="true"]):not(.chip--selected) {
-  background: var(--_chip-warning-hover-bg, rgb(254 249 195));
+  background: var(--snice-color-warning-subtle-hover, hsl(55 97% 88%));
 }
 
 :host([variant="warning"]) .chip--selected {
-  background: var(--snice-color-warning, rgb(161 98 7));
+  background: var(--snice-color-warning, hsl(41 96% 40%));
   color: var(--snice-color-text-inverse, rgb(250 250 250));
 }
 
 :host([variant="error"]) .chip {
-  background: var(--snice-color-danger-subtle, rgb(254 226 226));
-  color: var(--snice-color-danger, rgb(220 38 38));
+  background: var(--snice-color-danger-subtle, hsl(0 86% 97%));
+  color: var(--snice-color-danger-hover, hsl(0 74% 42%));
 }
 
 :host([variant="error"]) .chip:hover:not([aria-disabled="true"]):not(.chip--selected) {
-  background: var(--_chip-error-hover-bg, rgb(254 202 202));
+  background: var(--snice-color-danger-subtle-hover, hsl(0 93% 94%));
 }
 
 :host([variant="error"]) .chip--selected {
-  background: var(--snice-color-danger, rgb(220 38 38));
+  background: var(--snice-color-danger, hsl(0 72% 51%));
   color: var(--snice-color-text-inverse, rgb(250 250 250));
 }
 
 :host([variant="info"]) .chip {
-  background: var(--snice-color-primary-subtle, rgb(219 234 254));
-  color: var(--snice-color-primary, rgb(37 99 235));
+  background: var(--snice-color-primary-subtle, hsl(214 100% 97%));
+  color: var(--snice-color-primary-hover, hsl(217 77% 48%));
 }
 
 :host([variant="info"]) .chip:hover:not([aria-disabled="true"]):not(.chip--selected) {
-  background: var(--snice-color-primary-subtle-hover, rgb(191 219 254));
+  background: var(--snice-color-primary-subtle-hover, hsl(214 95% 93%));
 }
 
 :host([variant="info"]) .chip--selected {
-  background: var(--snice-color-primary, rgb(37 99 235));
+  background: var(--snice-color-primary, hsl(217 83% 53%));
   color: var(--snice-color-text-inverse, rgb(250 250 250));
-}
-
-/* Dark mode */
-@media (prefers-color-scheme: dark) {
-  :host([variant="primary"]) .chip {
-    background: hsl(214 100% 15%);
-    color: hsl(var(--snice-color-blue-300));
-  }
-
-  :host([variant="primary"]) .chip:hover:not([aria-disabled="true"]):not(.chip--selected) {
-    background: hsl(214 100% 20%);
-  }
-
-  :host([variant="success"]) .chip {
-    background: hsl(142 76% 12%);
-    color: hsl(var(--snice-color-green-300));
-  }
-
-  :host([variant="success"]) .chip:hover:not([aria-disabled="true"]):not(.chip--selected) {
-    background: hsl(142 76% 16%);
-  }
-
-  :host([variant="warning"]) .chip {
-    background: hsl(32 95% 12%);
-    color: hsl(var(--snice-color-yellow-300));
-  }
-
-  :host([variant="warning"]) .chip:hover:not([aria-disabled="true"]):not(.chip--selected) {
-    background: hsl(32 95% 16%);
-  }
-
-  :host([variant="error"]) .chip {
-    background: hsl(0 72% 14%);
-    color: hsl(var(--snice-color-red-300));
-  }
-
-  :host([variant="error"]) .chip:hover:not([aria-disabled="true"]):not(.chip--selected) {
-    background: hsl(0 72% 18%);
-  }
-
-  :host([variant="info"]) .chip {
-    background: hsl(214 100% 15%);
-    color: hsl(var(--snice-color-blue-300));
-  }
-
-  :host([variant="info"]) .chip:hover:not([aria-disabled="true"]):not(.chip--selected) {
-    background: hsl(214 100% 20%);
-  }
 }
 
 /* Avatar */
